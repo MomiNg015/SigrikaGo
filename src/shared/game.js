@@ -1,0 +1,437 @@
+export const BOARD_SIZE = 13;
+export const KOMI_STONES = 2.75;
+export const COLORS = {
+  black: "black",
+  white: "white"
+};
+
+export function opponent(color) {
+  return color === COLORS.black ? COLORS.white : COLORS.black;
+}
+
+export function createGameState(players = []) {
+  return {
+    size: BOARD_SIZE,
+    points: createPoints(),
+    turn: COLORS.black,
+    moveNumber: 0,
+    passes: 0,
+    captures: { black: 0, white: 0 },
+    ko: null,
+    history: [],
+    players,
+    skillUses: Object.fromEntries(players.map((p) => [p.color, 1])),
+    phase: "playing",
+    scoring: null,
+    winner: null
+  };
+}
+
+export function createPoints(size = BOARD_SIZE) {
+  const points = [];
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      points.push({
+        id: pointId(x, y),
+        x,
+        y,
+        valid: true,
+        stone: null,
+        mark: null,
+        neighbors: baseNeighbors(x, y, size)
+      });
+    }
+  }
+  return points;
+}
+
+export function pointId(x, y) {
+  return `${x},${y}`;
+}
+
+export function parsePointId(id) {
+  const [x, y] = id.split(",").map(Number);
+  return { x, y };
+}
+
+function baseNeighbors(x, y, size) {
+  return [
+    [x - 1, y],
+    [x + 1, y],
+    [x, y - 1],
+    [x, y + 1]
+  ]
+    .filter(([nx, ny]) => nx >= 0 && ny >= 0 && nx < size && ny < size)
+    .map(([nx, ny]) => pointId(nx, ny));
+}
+
+export function getPoint(state, id) {
+  return state.points.find((p) => p.id === id);
+}
+
+export function activeNeighbors(state, point) {
+  return point.neighbors
+    .map((id) => getPoint(state, id))
+    .filter((neighbor) => neighbor?.valid);
+}
+
+export function cloneState(state) {
+  return structuredClone(state);
+}
+
+export function playMove(state, color, id) {
+  if (state.phase !== "playing") return fail("对局当前不能落子");
+  if (state.turn !== color) return fail("还没有轮到你");
+  const next = cloneState(state);
+  const point = getPoint(next, id);
+  if (!point?.valid) return fail("该交叉点不可落子");
+  if (point.stone) return fail("该交叉点已有棋子");
+  if (next.ko === id) return fail("此处为劫禁着点");
+
+  point.stone = color;
+  const removed = [];
+  for (const neighbor of activeNeighbors(next, point)) {
+    if (neighbor.stone === opponent(color)) {
+      const group = collectGroup(next, neighbor.id);
+      if (group.liberties.size === 0) {
+        removed.push(...group.stones);
+      }
+    }
+  }
+
+  for (const stone of removed) {
+    getPoint(next, stone).stone = null;
+  }
+
+  const ownGroup = collectGroup(next, id);
+  if (ownGroup.liberties.size === 0) return fail("禁自杀");
+
+  next.captures[color] += removed.length;
+  next.ko = removed.length === 1 && ownGroup.stones.length === 1 && ownGroup.liberties.size === 1
+    ? removed[0]
+    : null;
+  next.turn = opponent(color);
+  next.passes = 0;
+  next.moveNumber += 1;
+  next.history.push({ type: "move", color, id, captures: removed, moveNumber: next.moveNumber });
+  return ok(next);
+}
+
+export function passMove(state, color) {
+  if (state.phase !== "playing") return fail("对局当前不能弃一手");
+  if (state.turn !== color) return fail("还没有轮到你");
+  const next = cloneState(state);
+  next.turn = opponent(color);
+  next.ko = null;
+  next.passes += 1;
+  next.moveNumber += 1;
+  next.history.push({ type: "pass", color, moveNumber: next.moveNumber });
+  if (next.passes >= 2) {
+    next.phase = "counting-requested";
+    next.scoring = prepareScoringState(next);
+  }
+  return ok(next);
+}
+
+export function resignGame(state, color) {
+  const next = cloneState(state);
+  next.phase = "finished";
+  next.winner = {
+    color: opponent(color),
+    reason: "resign",
+    text: `${color === COLORS.black ? "黑" : "白"}方认输`
+  };
+  return ok(next);
+}
+
+export function useSkill(state, color, characterId, targetId) {
+  if (state.phase !== "playing") return fail("对局当前不能使用技能");
+  if (state.turn !== color) return fail("还没有轮到你");
+  if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
+  if (characterId === "sigrika") return erasePoint(state, color, targetId);
+  if (characterId === "danea") return flipStone(state, color, targetId);
+  return fail("未知角色技能");
+}
+
+export function erasePoint(state, color, id) {
+  const next = cloneState(state);
+  const point = getPoint(next, id);
+  if (!point?.valid) return fail("该交叉点已不可用");
+  if (point.stone) return fail("只能抹除空交叉点");
+  point.valid = false;
+  point.mark = null;
+  point.neighbors = [];
+  for (const other of next.points) {
+    other.neighbors = other.neighbors.filter((neighborId) => neighborId !== id);
+  }
+  next.skillUses[color] -= 1;
+  next.ko = null;
+  next.history.push({ type: "skill", skill: "星辰符文", color, id, moveNumber: next.moveNumber });
+  return ok(resolveCapturesAfterMutation(next, color, false));
+}
+
+export function flipStone(state, color, id) {
+  const next = cloneState(state);
+  const point = getPoint(next, id);
+  if (!point?.valid || !point.stone) return fail("必须指定棋盘上的棋子");
+  point.stone = opponent(point.stone);
+  next.skillUses[color] -= 1;
+  next.ko = null;
+  next.history.push({ type: "skill", skill: "染秽", color, id, moveNumber: next.moveNumber });
+  return ok(resolveCapturesAfterMutation(next, color, true));
+}
+
+function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true) {
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const visited = new Set();
+    for (const point of state.points) {
+      if (!point.valid || !point.stone || visited.has(point.id)) continue;
+      const group = collectGroup(state, point.id);
+      group.stones.forEach((stone) => visited.add(stone));
+      if (group.liberties.size === 0) {
+        for (const stone of group.stones) getPoint(state, stone).stone = null;
+        state.captures[opponent(point.stone)] += group.stones.length;
+        changed = true;
+      }
+    }
+  }
+  if (consumesTurn) {
+    state.turn = opponent(actorColor);
+    state.moveNumber += 1;
+  }
+  return state;
+}
+
+export function collectGroup(state, startId) {
+  const start = getPoint(state, startId);
+  if (!start?.valid || !start.stone) return { color: null, stones: [], liberties: new Set() };
+  const stones = [];
+  const liberties = new Set();
+  const seen = new Set([startId]);
+  const queue = [start];
+
+  while (queue.length) {
+    const point = queue.shift();
+    stones.push(point.id);
+    for (const neighbor of activeNeighbors(state, point)) {
+      if (!neighbor.stone) {
+        liberties.add(neighbor.id);
+      } else if (neighbor.stone === start.stone && !seen.has(neighbor.id)) {
+        seen.add(neighbor.id);
+        queue.push(neighbor);
+      }
+    }
+  }
+
+  return { color: start.stone, stones, liberties };
+}
+
+export function createScoringState() {
+  return {
+    requestedBy: null,
+    acceptedBy: null,
+    deadStones: [],
+    deadStoneOwners: {},
+    neutralPoints: [],
+    territory: { black: [], white: [] },
+    confirmedBy: [],
+    resultAcceptedBy: [],
+    resultDeadline: null,
+    result: null
+  };
+}
+
+export function prepareScoringState(state, scoring = null) {
+  const nextScoring = {
+    ...createScoringState(),
+    ...(scoring ?? state.scoring ?? {})
+  };
+  nextScoring.deadStones = nextScoring.deadStones ?? [];
+  nextScoring.deadStoneOwners = nextScoring.deadStoneOwners ?? {};
+  nextScoring.neutralPoints = nextScoring.neutralPoints ?? [];
+  nextScoring.confirmedBy = nextScoring.confirmedBy ?? [];
+  nextScoring.resultAcceptedBy = nextScoring.resultAcceptedBy ?? [];
+  nextScoring.territory = computeTerritoryMarks(state, new Set(nextScoring.neutralPoints));
+  return nextScoring;
+}
+
+export function markDeadGroup(state, id) {
+  const next = cloneState(state);
+  const group = collectGroup(next, id);
+  if (!group.stones.length) return fail("请选择棋子");
+  const dead = new Set(next.scoring?.deadStones ?? []);
+  const owners = { ...(next.scoring?.deadStoneOwners ?? {}) };
+  const shouldRemove = group.stones.every((stone) => dead.has(stone));
+  const owner = opponent(group.color);
+  const stonesToUpdate = shouldRemove ? group.stones : collectDeadCandidates(next, group, owner);
+  for (const stone of stonesToUpdate) {
+    if (shouldRemove) {
+      dead.delete(stone);
+      delete owners[stone];
+    } else {
+      dead.add(stone);
+      owners[stone] = owner;
+    }
+  }
+  next.scoring.deadStones = [...dead];
+  next.scoring.deadStoneOwners = owners;
+  next.scoring.confirmedBy = [];
+  next.scoring.resultAcceptedBy = [];
+  next.scoring.result = null;
+  return ok(next);
+}
+
+export function toggleNeutralPoint(state, id) {
+  const next = cloneState(state);
+  const point = getPoint(next, id);
+  if (!point?.valid || point.stone) return fail("只能标记空交叉点");
+  const neutral = new Set(next.scoring?.neutralPoints ?? []);
+  if (neutral.has(id)) neutral.delete(id);
+  else neutral.add(id);
+  next.scoring.neutralPoints = [...neutral];
+  next.scoring.territory = computeTerritoryMarks(next, neutral);
+  next.scoring.confirmedBy = [];
+  next.scoring.resultAcceptedBy = [];
+  next.scoring.result = null;
+  return ok(next);
+}
+
+export function resetDeadMarks(state) {
+  const next = cloneState(state);
+  if (!next.scoring) next.scoring = createScoringState();
+  next.scoring.deadStones = [];
+  next.scoring.deadStoneOwners = {};
+  next.scoring.confirmedBy = [];
+  next.scoring.resultAcceptedBy = [];
+  next.scoring.result = null;
+  next.scoring.resultDeadline = null;
+  next.scoring.territory = computeTerritoryMarks(next, new Set(next.scoring.neutralPoints ?? []));
+  return ok(next);
+}
+
+export function scoreGame(state) {
+  const dead = new Set(state.scoring?.deadStones ?? []);
+  const neutral = new Set(state.scoring?.neutralPoints ?? []);
+  const board = cloneState(state);
+  for (const id of dead) {
+    const point = getPoint(board, id);
+    if (point) point.stone = null;
+  }
+
+  let black = 0;
+  let white = 0;
+  for (const point of board.points) {
+    if (!point.valid) continue;
+    if (point.stone === COLORS.black) black += 1;
+    if (point.stone === COLORS.white) white += 1;
+  }
+
+  const visited = new Set();
+  for (const point of board.points) {
+    if (!point.valid || point.stone || visited.has(point.id) || neutral.has(point.id)) continue;
+    const territory = collectTerritory(board, point.id, neutral);
+    territory.points.forEach((id) => visited.add(id));
+    if (territory.borderColors.size === 1) {
+      const [owner] = territory.borderColors;
+      if (owner === COLORS.black) black += territory.points.length;
+      if (owner === COLORS.white) white += territory.points.length;
+    }
+  }
+
+  const blackAfterKomi = black - KOMI_STONES;
+  const whiteAfterKomi = white;
+  const margin = Math.abs(blackAfterKomi - whiteAfterKomi);
+  const winnerColor = blackAfterKomi > whiteAfterKomi ? COLORS.black : COLORS.white;
+  return {
+    black,
+    white,
+    blackAfterKomi,
+    whiteAfterKomi,
+    winnerColor,
+    margin,
+    text: `${winnerColor === COLORS.black ? "黑" : "白"}胜${formatStones(margin)}子`
+  };
+}
+
+function computeTerritoryMarks(state, neutral) {
+  const territory = { black: [], white: [] };
+  const visited = new Set();
+  for (const point of state.points) {
+    if (!point.valid || point.stone || visited.has(point.id) || neutral.has(point.id)) continue;
+    const area = collectTerritory(state, point.id, neutral);
+    area.points.forEach((areaId) => visited.add(areaId));
+    if (area.borderColors.size === 1) {
+      const [owner] = area.borderColors;
+      territory[owner].push(...area.points);
+    }
+  }
+  return territory;
+}
+
+function collectDeadCandidates(state, group, owner) {
+  const territorySet = new Set(state.scoring?.territory?.[owner] ?? []);
+  const deadColor = group.color;
+  if (!territorySet.size) return group.stones;
+
+  const stones = new Set(group.stones);
+  const seen = new Set(group.stones);
+  const queue = [...group.stones];
+  while (queue.length) {
+    const current = getPoint(state, queue.shift());
+    if (!current) continue;
+    for (const neighbor of activeNeighbors(state, current)) {
+      if (seen.has(neighbor.id)) continue;
+      if (neighbor.stone === owner) continue;
+      if (neighbor.stone && neighbor.stone !== deadColor) continue;
+      if (!neighbor.stone && !territorySet.has(neighbor.id)) continue;
+      seen.add(neighbor.id);
+      if (neighbor.stone === deadColor) {
+        const connected = collectGroup(state, neighbor.id);
+        for (const stone of connected.stones) {
+          stones.add(stone);
+          if (!seen.has(stone)) {
+            seen.add(stone);
+            queue.push(stone);
+          }
+        }
+      } else {
+        queue.push(neighbor.id);
+      }
+    }
+  }
+  return [...stones];
+}
+
+function collectTerritory(state, startId, neutral) {
+  const points = [];
+  const borderColors = new Set();
+  const seen = new Set([startId]);
+  const queue = [getPoint(state, startId)];
+  while (queue.length) {
+    const point = queue.shift();
+    points.push(point.id);
+    for (const neighbor of activeNeighbors(state, point)) {
+      if (neighbor.stone) {
+        borderColors.add(neighbor.stone);
+      } else if (!seen.has(neighbor.id) && !neutral.has(neighbor.id)) {
+        seen.add(neighbor.id);
+        queue.push(neighbor);
+      }
+    }
+  }
+  return { points, borderColors };
+}
+
+export function formatStones(value) {
+  return Number.isInteger(value) ? `${value}` : `${Math.round(value * 100) / 100}`;
+}
+
+function ok(state) {
+  return { ok: true, state };
+}
+
+function fail(error) {
+  return { ok: false, error };
+}
