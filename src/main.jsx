@@ -234,18 +234,18 @@ function AuthScreen({ onAuth }) {
           <img src={CHARACTERS.sigrika.portrait} alt="瑗挎牸鑾夊崱" />
           <div>
             <p>SigrikaGo</p>
-            <h1>绌烘兂鍥存</h1>
+            <h1>空想围棋</h1>
           </div>
         </div>
         <form onSubmit={submit} className="auth-form">
           <div className="segmented">
-            <button type="button" className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>鐧诲綍</button>
-            <button type="button" className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>娉ㄥ唽</button>
+            <button type="button" className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>登录</button>
+            <button type="button" className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>注册</button>
           </div>
           <label>用户名<input value={username} onChange={(event) => setUsername(event.target.value)} /></label>
           <label>密码<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>
           {error && <p className="form-error">{error}</p>}
-          <button className="primary-action" type="submit">{mode === "login" ? "杩涘叆妫嬭垗" : "鍒涘缓璐﹀彿"}</button>
+          <button className="primary-action" type="submit">{mode === "login" ? "进入棋舍" : "创建账号"}</button>
         </form>
       </section>
     </main>
@@ -266,25 +266,26 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
         <button className="home-entry house-entry" onClick={onOpenHouse}>
           <div className="entry-copy">
             <UserRound size={30} />
-            <strong>妫嬭垗</strong>
+            <strong>棋舍</strong>
             <span>{user.username} · {user.rank} · {user.rating}分</span>
           </div>
-          <img className="entry-portrait" src={CHARACTERS[user.selectedCharacter]?.portrait} alt="鍑烘垬瑙掕壊" />
+          <img className="entry-portrait" src={CHARACTERS[user.selectedCharacter]?.portrait} alt="出战角色" />
         </button>
-        <Panel title="绌烘兂瀵瑰眬" icon={<Swords />}>
+        <Panel title="空想对局" icon={<Swords />}>
           <button className="match-button" onClick={onStartMatch}>
             <Sparkles size={22} />
-            寮€濮嬪尮閰?          </button>
+            开始匹配
+          </button>
           <p className="quiet-text">13路，中国数子规则，黑贴2又3/4子。</p>
         </Panel>
         <button className="home-entry watch-entry" onClick={onOpenWatch}>
           <Eye size={30} />
-          <strong>瑙傛垬</strong>
+          <strong>观战</strong>
           <span>输入5位房间号进入观战席</span>
         </button>
         <button className="home-entry shop-entry" onClick={onOpenShop}>
           <ShoppingBag size={30} />
-          <strong>鍟嗗煄</strong>
+          <strong>商城</strong>
           <span>角色、物品、装饰即将开放</span>
         </button>
       </section>
@@ -353,8 +354,8 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
     <main className="room-screen">
       <header className="room-header">
         <div>
-          <p>鎴块棿鍙?{room.code}</p>
-          {isReplay && <h1>妫嬭氨鍥炴斁</h1>}
+          <p>房间号 {room.code}</p>
+          {isReplay && <h1>棋谱回放</h1>}
         </div>
         <div className="room-toggles">
           <button className={showMoves ? "toggle active" : "toggle"} onClick={() => setShowMoves(!showMoves)} title="鏄剧ず鎵嬫暟"><Hash size={16} /></button>
@@ -493,14 +494,14 @@ function PlayerInfo({ player, game, align, isWinner = false }) {
       <img src={character.portrait} alt={character.name} />
       <div className="player-meta">
         <button className="name-button">{player.user.username}</button>
-        <span>{player.user.rank} 路 {player.user.rating}</span>
+        <span>{player.user.rank} · {player.user.rating}</span>
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "鎵ч粦" : "鎵х櫧"} />
       </div>
       <TimeBar time={player.time} />
-      <div className="captures">鎻愬瓙 {player.captures}</div>
+      <div className="captures">提子 {player.captures}</div>
       <div className={`skill-chip ${skillUses <= 0 ? "spent" : ""}`} title={character.skill.description}>
         <Sparkles size={16} />
-        {character.skill.name} 路 {skillUses}
+        {character.skill.name} · {skillUses}
       </div>
     </aside>
   );
@@ -514,7 +515,7 @@ function TimeBar({ time }) {
     : Math.max(0, Math.min(100, ((time.periodRemaining ?? time.byoYomi) / time.byoYomi) * 100));
   return (
     <div className={`timer ${inMain ? "main-time" : isFinalByoYomi ? "final-byo-yomi" : "byo-yomi"}`}>
-      <div className="timer-text">{formatClock(time.main)} + {time.periodRemaining ?? time.byoYomi}s 脳 {time.periods}</div>
+      <div className="timer-text">{formatClock(time.main)} + {time.periodRemaining ?? time.byoYomi}s × {time.periods}</div>
       <div className="timer-track"><span style={{ width: `${progress}%` }} /></div>
     </div>
   );
@@ -525,8 +526,8 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
     return (
       <nav className="action-bar">
         <button><MonitorPlay size={18} />鍥炴斁</button>
-        <button><Pause size={18} />鏆傚仠</button>
-        <button><Play size={18} />缁х画</button>
+        <button><Pause size={18} />暂停</button>
+        <button><Play size={18} />继续</button>
         <button onClick={onBack}><DoorOpen size={18} />退出房间</button>
       </nav>
     );
@@ -534,15 +535,15 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
   return (
     <nav className="action-bar">
       <button onClick={onPass} disabled={phase !== "playing"}>弃一手</button>
-      <button onClick={onCountingRequest} disabled={phase !== "playing"}>鐢宠鏁板瓙</button>
+      <button onClick={onCountingRequest} disabled={phase !== "playing"}>申请数子</button>
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
         onClick={() => setPendingSkill(!pendingSkill)}
         disabled={!me || phase !== "playing" || !isMyTurn || skillUses <= 0}
       >
-        <Sparkles size={20} />鎶€鑳?路 {skillUses}
+        <Sparkles size={20} />技能 · {skillUses}
       </button>
-      <button onClick={onResign}><Flag size={18} />璁よ緭</button>
+      <button onClick={onResign}><Flag size={18} />认输</button>
       <button onClick={onBack}><DoorOpen size={18} />退出房间</button>
     </nav>
   );
@@ -551,7 +552,7 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
 function ReplayBar({ step, max, onStep }) {
   return (
     <section className="replay-bar">
-      <button onClick={() => onStep(0)} disabled={step <= 0}>寮€灞€</button>
+      <button onClick={() => onStep(0)} disabled={step <= 0}>开局</button>
       <button onClick={() => onStep(Math.max(0, step - 1))} disabled={step <= 0}>上一步</button>
       <input
         type="range"
@@ -561,7 +562,7 @@ function ReplayBar({ step, max, onStep }) {
         onChange={(event) => onStep(Number(event.target.value))}
       />
       <button onClick={() => onStep(Math.min(max, step + 1))} disabled={step >= max}>下一步</button>
-      <button onClick={() => onStep(max)} disabled={step >= max}>缁堝眬</button>
+      <button onClick={() => onStep(max)} disabled={step >= max}>终局</button>
       <span>{step}/{max}手</span>
     </section>
   );
@@ -575,13 +576,13 @@ function CountingPanel({ room, user, scoring, onRespond, onConfirm, onReset, onA
   if (room.game.phase === "counting-requested") {
     return (
       <section className="counting-panel">
-        <strong>鏁板瓙鐢宠</strong>
+        <strong>数子申请</strong>
         <p>{isRequester ? "等待对方确认。" : "对方申请数子，30秒内确认。"}</p>
         <div className="progress"><span /></div>
         {!isRequester && (
           <div className="inline-actions">
-            <button onClick={() => onRespond(true)}>鍚屾剰鏁板瓙</button>
-            <button onClick={() => onRespond(false)}>缁х画瀵瑰眬</button>
+            <button onClick={() => onRespond(true)}>同意数子</button>
+            <button onClick={() => onRespond(false)}>继续对局</button>
           </div>
         )}
       </section>
@@ -618,7 +619,7 @@ function ChatBox({ room, onChat, readonly = false }) {
   const [text, setText] = useState("");
   return (
     <section className="chat-box">
-      <header><MessageCircle size={18} />瀵瑰眬鑱婂ぉ</header>
+      <header><MessageCircle size={18} />对局聊天</header>
       <div className="chat-log">
         {room.chat.map((message) => (
           <p key={message.id} className={message.type}>
@@ -634,7 +635,7 @@ function ChatBox({ room, onChat, readonly = false }) {
           onChat(text);
           setText("");
         }}>
-          <input value={text} onChange={(event) => setText(event.target.value)} placeholder="杈撳叆鑱婂ぉ鍐呭" />
+          <input value={text} onChange={(event) => setText(event.target.value)} placeholder="输入聊天内容" />
           <button><Send size={18} /></button>
         </form>
       )}
@@ -647,12 +648,12 @@ function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay })
     <div className="modal-backdrop">
       <section className="house-modal">
         <button className="close-button" onClick={onClose}><X size={20} /></button>
-        <h2>妫嬭垗</h2>
+        <h2>棋舍</h2>
         <div className="profile-grid">
           <Stat label="战绩" value={`${user.wins}胜${user.losses}负`} />
-          <Stat label="绉垎" value={user.rating} />
-          <Stat label="娈典綅" value={user.rank} />
-          <Stat label="閲戝竵" value={user.coins} />
+          <Stat label="积分" value={user.rating} />
+          <Stat label="段位" value={user.rank} />
+          <Stat label="金币" value={user.coins} />
         </div>
         <div className="character-list">
           {characterList.map((character) => (
@@ -669,12 +670,12 @@ function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay })
           ))}
         </div>
         <section className="replay-list">
-          <h3>瀵瑰眬鍥炴斁</h3>
+          <h3>对局回放</h3>
           {records.length === 0 && <p className="quiet-text">暂无已结束的对局记录。</p>}
           {records.map((record) => (
             <button className="replay-item" key={record.id} onClick={() => onOpenReplay(record.id)}>
               <strong>{record.blackName} vs {record.whiteName}</strong>
-              <span>{record.resultText} 路 {record.moveCount}鎵?路 {formatDateTime(record.createdAt)}</span>
+              <span>{record.resultText} · {record.moveCount}手 · {formatDateTime(record.createdAt)}</span>
             </button>
           ))}
         </section>
@@ -688,7 +689,7 @@ function WatchModal({ code, setCode, onJoin, onClose }) {
     <div className="modal-backdrop">
       <section className="small-modal">
         <button className="close-button" onClick={onClose}><X size={20} /></button>
-        <h2>瑙傛垬</h2>
+        <h2>观战</h2>
         <WatchPad code={code} setCode={setCode} onJoin={onJoin} />
       </section>
     </div>
@@ -699,14 +700,14 @@ function WatchPad({ code, setCode, onJoin }) {
   const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
   return (
     <div className="watch-pad">
-      <div className="room-code">{code.padEnd(5, "路")}</div>
+      <div className="room-code">{code.padEnd(5, "·")}</div>
       <div className="keypad">
         {keys.map((key) => (
           <button key={key} onClick={() => setCode((code + key).slice(0, 5))}>{key}</button>
         ))}
         <button onClick={() => setCode(code.slice(0, -1))}>退格</button>
       </div>
-      <button className="secondary-action" onClick={onJoin} disabled={code.length !== 5}>杩涘叆瑙傛垬</button>
+      <button className="secondary-action" onClick={onJoin} disabled={code.length !== 5}>进入观战</button>
     </div>
   );
 }
@@ -724,7 +725,7 @@ function MatchModal({ user, startedAt, onCancel }) {
         <img className="match-portrait" src={character.portrait} alt={character.name} />
         <h2>匹配中</h2>
         <p>{Math.floor((now - startedAt) / 1000)} 秒</p>
-        <button onClick={onCancel}>鍙栨秷鍖归厤</button>
+        <button onClick={onCancel}>取消匹配</button>
       </section>
     </div>
   );
@@ -735,9 +736,9 @@ function ShopModal({ onClose }) {
     <div className="modal-backdrop">
       <section className="shop-modal">
         <button className="close-button" onClick={onClose}><X size={20} /></button>
-        <h2>鍟嗗煄</h2>
+        <h2>商城</h2>
         <div className="shop-grid">
-          {["瑙掕壊", "鐗╁搧", "瑁呴グ"].map((type) => (
+          {["角色", "物品", "装饰"].map((type) => (
             <div className="shop-item" key={type}>
               <ShoppingBag />
               <strong>{type}</strong>
@@ -762,9 +763,9 @@ function ResultModal({ room, onClose }) {
           <strong>{winner?.user.username}</strong>
         </div>
         <div className="result-summary">
-          <h2>瀵瑰眬缁撴灉</h2>
-          <p>{room.game.winner?.text ?? "瀵瑰眬缁撴潫"}</p>
-          <button onClick={onClose}>纭</button>
+          <h2>对局结果</h2>
+          <p>{room.game.winner?.text ?? "对局结束"}</p>
+          <button onClick={onClose}>确认</button>
         </div>
       </section>
     </div>
