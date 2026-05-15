@@ -85,11 +85,11 @@ export function handleGameAction(roomCode, userId, action, io) {
   room.game = result.state;
   resetByoYomi(player);
   const label = player.color === COLORS.black ? "黑" : "白";
-  if (action.type === "pass") appendSystem(room, `${label}方弃一手`);
-  if (action.type === "resign") appendSystem(room, `${label}方认输`);
+  if (action.type === "pass") appendSystem(room, `${label}方弃一手。`);
+  if (action.type === "resign") appendSystem(room, `${label}方认输。`);
   if (action.type === "skill") {
     const character = CHARACTERS[player.characterId];
-    appendSystem(room, `${player.user.username}使用了${character.skill.name}`);
+    appendSystem(room, `${player.user.username}使用了${character.skill.name}。`);
   }
   if (room.game.phase === "finished") scheduleRoomClose(roomCode, io);
   return { ok: true, room };
@@ -100,6 +100,8 @@ export function requestCounting(roomCode, userId, io) {
   if (!room) return { ok: false, error: "房间不存在" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能申请数子" };
+  if (room.game.phase !== "playing") return { ok: false, error: "当前不能申请数子" };
+
   room.game.phase = "counting-requested";
   room.game.scoring = prepareScoringState(room.game, createScoringState());
   room.game.scoring.requestedBy = userId;
@@ -122,6 +124,10 @@ export function respondCounting(roomCode, userId, accepted) {
   const room = rooms.get(roomCode);
   if (!room) return { ok: false, error: "房间不存在" };
   if (room.game.phase !== "counting-requested") return { ok: false, error: "当前没有数子申请" };
+  const player = room.players.find((p) => p.user.id === userId);
+  if (!player) return { ok: false, error: "观战者不能确认数子" };
+  if (room.game.scoring?.requestedBy === userId) return { ok: false, error: "需要等待对方确认" };
+
   if (!accepted) {
     room.game.phase = "playing";
     room.game.scoring = null;
@@ -140,11 +146,15 @@ export function respondCounting(roomCode, userId, accepted) {
 export function handleScoringAction(roomCode, userId, action, io) {
   const room = rooms.get(roomCode);
   if (!room) return { ok: false, error: "房间不存在" };
-  if (room.game.phase !== "marking-dead" && room.game.phase !== "result-review") {
-    return { ok: false, error: "当前不在数子阶段" };
-  }
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能确认数子" };
+
+  if (["mark-dead", "mark-neutral", "reset-dead", "confirm-dead"].includes(action.type)) {
+    if (room.game.phase !== "marking-dead") return { ok: false, error: "当前不在死子确认阶段" };
+  }
+  if (["accept-result", "reject-result"].includes(action.type)) {
+    if (room.game.phase !== "result-review") return { ok: false, error: "当前不在结果确认阶段" };
+  }
 
   let result = { ok: true, state: room.game };
   if (action.type === "mark-dead") result = markDeadGroup(room.game, action.pointId);
@@ -153,8 +163,6 @@ export function handleScoringAction(roomCode, userId, action, io) {
   if (!result.ok) return result;
   room.game = result.state;
 
-  if (action.type === "mark-dead") appendSystem(room, `${player.user.username}更新了死子标记。`);
-  if (action.type === "mark-neutral") appendSystem(room, `${player.user.username}更新了非目标记。`);
   if (action.type === "reset-dead") appendSystem(room, `${player.user.username}重新确认死子。`);
 
   if (action.type === "confirm-dead") {

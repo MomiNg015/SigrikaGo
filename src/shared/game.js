@@ -93,15 +93,11 @@ export function playMove(state, color, id) {
   for (const neighbor of activeNeighbors(next, point)) {
     if (neighbor.stone === opponent(color)) {
       const group = collectGroup(next, neighbor.id);
-      if (group.liberties.size === 0) {
-        removed.push(...group.stones);
-      }
+      if (group.liberties.size === 0) removed.push(...group.stones);
     }
   }
 
-  for (const stone of removed) {
-    getPoint(next, stone).stone = null;
-  }
+  for (const stone of removed) getPoint(next, stone).stone = null;
 
   const ownGroup = collectGroup(next, id);
   if (ownGroup.liberties.size === 0) return fail("禁自杀");
@@ -137,7 +133,7 @@ export function resignGame(state, color) {
   const next = cloneState(state);
   next.phase = "finished";
   next.winner = {
-    color: opponent(color),
+    winnerColor: opponent(color),
     reason: "resign",
     text: `${color === COLORS.black ? "黑" : "白"}方认输`
   };
@@ -259,15 +255,20 @@ export function prepareScoringState(state, scoring = null) {
 
 export function markDeadGroup(state, id) {
   const next = cloneState(state);
+  if (!next.scoring) next.scoring = prepareScoringState(next);
   const group = collectGroup(next, id);
   if (!group.stones.length) return fail("请选择棋子");
-  const dead = new Set(next.scoring?.deadStones ?? []);
-  const owners = { ...(next.scoring?.deadStoneOwners ?? {}) };
-  const shouldRemove = group.stones.every((stone) => dead.has(stone));
+
+  const dead = new Set(next.scoring.deadStones ?? []);
+  const owners = { ...(next.scoring.deadStoneOwners ?? {}) };
+  const clickedGroupAlreadyMarked = group.stones.every((stone) => dead.has(stone));
   const owner = opponent(group.color);
-  const stonesToUpdate = shouldRemove ? group.stones : collectDeadCandidates(next, group, owner);
+  const stonesToUpdate = clickedGroupAlreadyMarked
+    ? group.stones
+    : collectPotentialDeadStones(next, group, owner);
+
   for (const stone of stonesToUpdate) {
-    if (shouldRemove) {
+    if (clickedGroupAlreadyMarked) {
       dead.delete(stone);
       delete owners[stone];
     } else {
@@ -275,40 +276,42 @@ export function markDeadGroup(state, id) {
       owners[stone] = owner;
     }
   }
+
   next.scoring.deadStones = [...dead];
   next.scoring.deadStoneOwners = owners;
-  next.scoring.confirmedBy = [];
-  next.scoring.resultAcceptedBy = [];
-  next.scoring.result = null;
+  clearScoringConfirmations(next.scoring);
   return ok(next);
 }
 
 export function toggleNeutralPoint(state, id) {
   const next = cloneState(state);
+  if (!next.scoring) next.scoring = prepareScoringState(next);
   const point = getPoint(next, id);
   if (!point?.valid || point.stone) return fail("只能标记空交叉点");
-  const neutral = new Set(next.scoring?.neutralPoints ?? []);
+  const neutral = new Set(next.scoring.neutralPoints ?? []);
   if (neutral.has(id)) neutral.delete(id);
   else neutral.add(id);
   next.scoring.neutralPoints = [...neutral];
   next.scoring.territory = computeTerritoryMarks(next, neutral);
-  next.scoring.confirmedBy = [];
-  next.scoring.resultAcceptedBy = [];
-  next.scoring.result = null;
+  clearScoringConfirmations(next.scoring);
   return ok(next);
 }
 
 export function resetDeadMarks(state) {
   const next = cloneState(state);
-  if (!next.scoring) next.scoring = createScoringState();
+  if (!next.scoring) next.scoring = prepareScoringState(next);
   next.scoring.deadStones = [];
   next.scoring.deadStoneOwners = {};
-  next.scoring.confirmedBy = [];
-  next.scoring.resultAcceptedBy = [];
-  next.scoring.result = null;
-  next.scoring.resultDeadline = null;
   next.scoring.territory = computeTerritoryMarks(next, new Set(next.scoring.neutralPoints ?? []));
+  clearScoringConfirmations(next.scoring);
   return ok(next);
+}
+
+function clearScoringConfirmations(scoring) {
+  scoring.confirmedBy = [];
+  scoring.resultAcceptedBy = [];
+  scoring.result = null;
+  scoring.resultDeadline = null;
 }
 
 export function scoreGame(state) {
@@ -320,33 +323,31 @@ export function scoreGame(state) {
     if (point) point.stone = null;
   }
 
-  let black = 0;
-  let white = 0;
+  let blackStones = 0;
+  let whiteStones = 0;
   for (const point of board.points) {
     if (!point.valid) continue;
-    if (point.stone === COLORS.black) black += 1;
-    if (point.stone === COLORS.white) white += 1;
+    if (point.stone === COLORS.black) blackStones += 1;
+    if (point.stone === COLORS.white) whiteStones += 1;
   }
 
-  const visited = new Set();
-  for (const point of board.points) {
-    if (!point.valid || point.stone || visited.has(point.id) || neutral.has(point.id)) continue;
-    const territory = collectTerritory(board, point.id, neutral);
-    territory.points.forEach((id) => visited.add(id));
-    if (territory.borderColors.size === 1) {
-      const [owner] = territory.borderColors;
-      if (owner === COLORS.black) black += territory.points.length;
-      if (owner === COLORS.white) white += territory.points.length;
-    }
-  }
-
+  const territory = computeTerritoryMarks(board, neutral);
+  const blackTerritory = territory.black.length;
+  const whiteTerritory = territory.white.length;
+  const black = blackStones + blackTerritory;
+  const white = whiteStones + whiteTerritory;
   const blackAfterKomi = black - KOMI_STONES;
   const whiteAfterKomi = white;
   const margin = Math.abs(blackAfterKomi - whiteAfterKomi);
   const winnerColor = blackAfterKomi > whiteAfterKomi ? COLORS.black : COLORS.white;
+
   return {
     black,
     white,
+    blackStones,
+    whiteStones,
+    blackTerritory,
+    whiteTerritory,
     blackAfterKomi,
     whiteAfterKomi,
     winnerColor,
@@ -370,14 +371,13 @@ function computeTerritoryMarks(state, neutral) {
   return territory;
 }
 
-function collectDeadCandidates(state, group, owner) {
-  const territorySet = new Set(state.scoring?.territory?.[owner] ?? []);
+function collectPotentialDeadStones(state, group, owner) {
   const deadColor = group.color;
-  if (!territorySet.size) return group.stones;
-
+  const neutral = new Set(state.scoring?.neutralPoints ?? []);
   const stones = new Set(group.stones);
   const seen = new Set(group.stones);
   const queue = [...group.stones];
+
   while (queue.length) {
     const current = getPoint(state, queue.shift());
     if (!current) continue;
@@ -385,8 +385,7 @@ function collectDeadCandidates(state, group, owner) {
       if (seen.has(neighbor.id)) continue;
       if (neighbor.stone === owner) continue;
       if (neighbor.stone && neighbor.stone !== deadColor) continue;
-      if (!neighbor.stone && !territorySet.has(neighbor.id)) continue;
-      seen.add(neighbor.id);
+
       if (neighbor.stone === deadColor) {
         const connected = collectGroup(state, neighbor.id);
         for (const stone of connected.stones) {
@@ -396,32 +395,51 @@ function collectDeadCandidates(state, group, owner) {
             queue.push(stone);
           }
         }
-      } else {
-        queue.push(neighbor.id);
+        continue;
+      }
+
+      const area = collectTerritoryIgnoringColor(state, neighbor.id, neutral, deadColor);
+      if (area.owner !== owner) continue;
+      for (const areaId of area.points) {
+        if (!seen.has(areaId)) {
+          seen.add(areaId);
+          queue.push(areaId);
+        }
       }
     }
   }
+
   return [...stones];
 }
 
 function collectTerritory(state, startId, neutral) {
+  return collectTerritoryIgnoringColor(state, startId, neutral, null);
+}
+
+function collectTerritoryIgnoringColor(state, startId, neutral, ignoredColor) {
   const points = [];
   const borderColors = new Set();
   const seen = new Set([startId]);
   const queue = [getPoint(state, startId)];
   while (queue.length) {
     const point = queue.shift();
+    if (!point?.valid || point.stone || neutral.has(point.id)) continue;
     points.push(point.id);
     for (const neighbor of activeNeighbors(state, point)) {
       if (neighbor.stone) {
-        borderColors.add(neighbor.stone);
+        if (neighbor.stone !== ignoredColor) borderColors.add(neighbor.stone);
       } else if (!seen.has(neighbor.id) && !neutral.has(neighbor.id)) {
         seen.add(neighbor.id);
         queue.push(neighbor);
       }
     }
   }
-  return { points, borderColors };
+  const [owner] = borderColors;
+  return {
+    points,
+    borderColors,
+    owner: borderColors.size === 1 ? owner : null
+  };
 }
 
 export function formatStones(value) {

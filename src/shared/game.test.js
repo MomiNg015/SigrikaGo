@@ -4,9 +4,11 @@ import {
   createGameState,
   erasePoint,
   getPoint,
+  markDeadGroup,
   passMove,
   playMove,
   pointId,
+  prepareScoringState,
   scoreGame,
   useSkill
 } from "./game.js";
@@ -15,9 +17,20 @@ function forceStone(state, x, y, color) {
   getPoint(state, pointId(x, y)).stone = color;
 }
 
+function surroundWhiteBox(state) {
+  for (let x = 1; x <= 5; x += 1) {
+    forceStone(state, x, 1, COLORS.white);
+    forceStone(state, x, 5, COLORS.white);
+  }
+  for (let y = 2; y <= 4; y += 1) {
+    forceStone(state, 1, y, COLORS.white);
+    forceStone(state, 5, y, COLORS.white);
+  }
+}
+
 describe("SigrikaGo rules", () => {
   it("captures surrounded stones", () => {
-    let state = createGameState();
+    const state = createGameState();
     forceStone(state, 1, 1, COLORS.white);
     forceStone(state, 0, 1, COLORS.black);
     forceStone(state, 2, 1, COLORS.black);
@@ -32,7 +45,7 @@ describe("SigrikaGo rules", () => {
   });
 
   it("rejects suicide", () => {
-    let state = createGameState();
+    const state = createGameState();
     forceStone(state, 0, 1, COLORS.white);
     forceStone(state, 1, 0, COLORS.white);
     state.turn = COLORS.black;
@@ -44,7 +57,7 @@ describe("SigrikaGo rules", () => {
   });
 
   it("creates a ko ban after single-stone capture", () => {
-    let state = createGameState();
+    const state = createGameState();
     forceStone(state, 1, 0, COLORS.white);
     forceStone(state, 0, 0, COLORS.black);
     forceStone(state, 2, 0, COLORS.black);
@@ -66,6 +79,7 @@ describe("SigrikaGo rules", () => {
 
     expect(state.phase).toBe("counting-requested");
     expect(state.scoring).toBeTruthy();
+    expect(state.scoring.territory).toEqual({ black: [], white: [] });
   });
 
   it("erases an empty intersection and disconnects neighbors", () => {
@@ -95,12 +109,54 @@ describe("SigrikaGo rules", () => {
     const state = createGameState();
     forceStone(state, 0, 0, COLORS.black);
     forceStone(state, 12, 12, COLORS.white);
-    state.scoring = { deadStones: [], neutralPoints: [] };
+    state.scoring = prepareScoringState(state);
 
     const result = scoreGame(state);
 
     expect(result.blackAfterKomi).toBe(-1.75);
     expect(result.whiteAfterKomi).toBe(1);
     expect(result.text).toBe("白胜2.75子");
+  });
+
+  it("marks connected potential dead stones inside the opponent territory", () => {
+    const state = createGameState();
+    surroundWhiteBox(state);
+    forceStone(state, 2, 2, COLORS.black);
+    forceStone(state, 4, 2, COLORS.black);
+    state.scoring = prepareScoringState(state);
+
+    const result = markDeadGroup(state, pointId(2, 2));
+
+    expect(result.ok).toBe(true);
+    expect(result.state.scoring.deadStones).toContain(pointId(2, 2));
+    expect(result.state.scoring.deadStones).toContain(pointId(4, 2));
+    expect(result.state.scoring.deadStoneOwners[pointId(2, 2)]).toBe(COLORS.white);
+    expect(result.state.scoring.deadStoneOwners[pointId(4, 2)]).toBe(COLORS.white);
+  });
+
+  it("scores by temporarily removing marked dead stones and preserving board stones", () => {
+    const state = createGameState();
+    surroundWhiteBox(state);
+    forceStone(state, 2, 2, COLORS.black);
+    const inside = new Set([
+      pointId(2, 2), pointId(3, 2), pointId(4, 2),
+      pointId(2, 3), pointId(3, 3), pointId(4, 3),
+      pointId(2, 4), pointId(3, 4), pointId(4, 4)
+    ]);
+    const neutralOutside = state.points
+      .filter((point) => point.valid && !point.stone && !inside.has(point.id))
+      .map((point) => point.id);
+    state.scoring = {
+      ...prepareScoringState(state),
+      deadStones: [pointId(2, 2)],
+      deadStoneOwners: { [pointId(2, 2)]: COLORS.white },
+      neutralPoints: neutralOutside
+    };
+
+    const result = scoreGame(state);
+
+    expect(result.whiteTerritory).toBe(9);
+    expect(result.white).toBe(25);
+    expect(getPoint(state, pointId(2, 2)).stone).toBe(COLORS.black);
   });
 });
