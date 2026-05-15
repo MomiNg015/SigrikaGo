@@ -476,18 +476,46 @@ p {
 .skill-chip {
   min-height: 42px;
   border-radius: 999px;
-  background: #fff3d7;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(105deg, rgba(255, 249, 231, 0.96), rgba(255, 237, 247, 0.96)) padding-box,
+    linear-gradient(105deg, #d9a02e, #f26aa7, #6f8df4) border-box;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  position: relative;
+  overflow: hidden;
+  color: #2d2430;
+  font-family: "Microsoft YaHei", "PingFang SC", serif;
   font-size: 14px;
+  font-weight: 900;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78), 0 8px 18px rgba(166, 105, 148, 0.16);
+}
+
+.skill-chip::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+
+.skill-chip svg {
+  color: #9b5bd4;
+  filter: drop-shadow(0 1px 3px rgba(255, 196, 71, 0.45));
 }
 
 .skill-chip.spent {
+  border-color: #cfc8d3;
   background: #d9d4dc;
   color: #817784;
   box-shadow: none;
+}
+
+.skill-chip.spent::before {
+  display: none;
 }
 
 .color-badge {
@@ -741,13 +769,47 @@ p {
   z-index: 5;
 }
 
+.territory-mark::before,
+.territory-mark::after,
+.dead-mark::before,
+.dead-mark::after,
+.neutral-mark::before,
+.neutral-mark::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 64%;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: center;
+}
+
+.territory-mark::before,
+.dead-mark::before,
+.neutral-mark::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.territory-mark::after,
+.dead-mark::after,
+.neutral-mark::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
 .territory-mark {
   width: 46%;
   height: 46%;
   background: transparent;
-  font-size: 18px;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.78);
   z-index: 3;
+}
+
+.territory-mark::before,
+.territory-mark::after {
+  width: 54%;
+  height: 2px;
+  box-shadow: 0 1px 2px rgba(255, 255, 255, 0.55);
 }
 
 .territory-mark.black,
@@ -810,6 +872,14 @@ p {
 .action-bar .skill-action.active {
   background: linear-gradient(135deg, #ffcf4d, #e74492);
   box-shadow: 0 0 0 4px rgba(255, 188, 52, 0.24), 0 12px 26px rgba(226, 105, 76, 0.32);
+}
+
+.action-bar .exit-action {
+  background: linear-gradient(135deg, #ffffff, #eef4ff);
+  border-color: #aebff2;
+  color: #405077;
+  box-shadow: 0 6px 16px rgba(93, 127, 232, 0.12);
+  font-weight: 700;
 }
 
 .action-bar .skill-action.spent,

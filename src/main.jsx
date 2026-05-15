@@ -231,7 +231,7 @@ function AuthScreen({ onAuth }) {
     <main className="auth-screen">
       <section className="auth-panel">
         <div className="brand-lockup">
-          <img src={CHARACTERS.sigrika.portrait} alt="瑗挎牸鑾夊崱" />
+          <img src={CHARACTERS.sigrika.portrait} alt="西格莉卡" />
           <div>
             <p>SigrikaGo</p>
             <h1>空想围棋</h1>
@@ -258,7 +258,7 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
       <header className="topbar">
         <div>
           <p>SigrikaGo</p>
-          <h1>澶у巺</h1>
+          <h1>大厅</h1>
         </div>
         <button className="icon-button" title="退出登录" onClick={onLogout}><LogOut size={20} /></button>
       </header>
@@ -466,11 +466,12 @@ function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPo
   const labels = Array.from({ length: BOARD_SIZE }, (_, index) => coordLetter(index));
   const rows = Array.from({ length: BOARD_SIZE }, (_, index) => BOARD_SIZE - index);
   const lines = buildBoardLines(game.points);
+  const showScoringMarks = ["marking-dead", "result-review", "finished"].includes(game.phase);
   const territoryOwner = new Map([
-    ...(game.scoring?.territory?.black ?? []).map((id) => [id, COLORS.black]),
-    ...(game.scoring?.territory?.white ?? []).map((id) => [id, COLORS.white])
+    ...(showScoringMarks ? game.scoring?.territory?.black ?? [] : []).map((id) => [id, COLORS.black]),
+    ...(showScoringMarks ? game.scoring?.territory?.white ?? [] : []).map((id) => [id, COLORS.white])
   ]);
-  const deadStoneOwners = game.scoring?.deadStoneOwners ?? {};
+  const deadStoneOwners = showScoringMarks ? game.scoring?.deadStoneOwners ?? {} : {};
   return (
     <div className={`board-wrap ${pendingSkill ? "targeting" : ""}`}>
       {showCoords && <div className="coord-row coord-top">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
@@ -512,9 +513,9 @@ function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPo
           >
             {point.stone && <span className="stone">{lastMove?.id === point.id && <i />}{showMoves && moveNumbers.has(point.id) && <b>{moveNumbers.get(point.id)}</b>}</span>}
             {!point.valid && <span className="void" />}
-            {emptyTerritoryOwner && <span className={`territory-mark ${emptyTerritoryOwner}`}>×</span>}
-            {deadOwner && <span className={`dead-mark ${deadOwner}`}>×</span>}
-            {game.scoring?.neutralPoints?.includes(point.id) && <span className="neutral-mark">×</span>}
+            {emptyTerritoryOwner && <span className={`territory-mark ${emptyTerritoryOwner}`} aria-label={`${emptyTerritoryOwner} territory`} />}
+            {deadOwner && <span className={`dead-mark ${deadOwner}`} aria-label={`${deadOwner} dead-stone mark`} />}
+            {showScoringMarks && game.scoring?.neutralPoints?.includes(point.id) && <span className="neutral-mark" aria-label="neutral point" />}
           </button>
           );
         })}
@@ -568,7 +569,7 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
         <button><MonitorPlay size={18} />回放</button>
         <button><Pause size={18} />暂停</button>
         <button><Play size={18} />继续</button>
-        <button onClick={onBack}><DoorOpen size={18} />退出房间</button>
+        <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
       </nav>
     );
   }
@@ -584,7 +585,7 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
         <Sparkles size={20} />技能 · {skillUses}
       </button>
       <button onClick={onResign} disabled={phase === "finished"}><Flag size={18} />认输</button>
-      <button onClick={onBack}><DoorOpen size={18} />退出房间</button>
+      <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
     </nav>
   );
 }
@@ -657,10 +658,17 @@ function CountingPanel({ room, user, scoring, onRespond, onConfirm, onReset, onA
 
 function ChatBox({ room, onChat, readonly = false }) {
   const [text, setText] = useState("");
+  const logRef = useRef(null);
+
+  useEffect(() => {
+    if (!logRef.current) return;
+    logRef.current.scrollTop = logRef.current.scrollHeight;
+  }, [room.chat.length]);
+
   return (
     <section className="chat-box">
       <header><MessageCircle size={18} />对局聊天</header>
-      <div className="chat-log">
+      <div className="chat-log" ref={logRef}>
         {room.chat.map((message) => (
           <p key={message.id} className={message.type}>
             <span>[{message.moveNumber}手 {formatMessageTime(message.createdAt)}]</span>
@@ -858,7 +866,7 @@ async function api(path, options = {}) {
     body: options.body ? JSON.stringify(options.body) : undefined
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error ?? "璇锋眰澶辫触");
+  if (!response.ok) throw new Error(data.error ?? "请求失败");
   return data;
 }
 
