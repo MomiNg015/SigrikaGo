@@ -6,3 +6,4 @@ dist
 prisma/dev.db
 dev-server.*.log
 .superpowers/
+.worktrees/
