@@ -61,6 +61,13 @@ describe("admin route helpers", () => {
     })).toEqual({});
   });
 
+  it("rejects integer updates outside the Prisma Int range", () => {
+    expect(sanitizeUserUpdate({
+      rating: 1e100,
+      coins: "999999999999999999999999999999"
+    })).toEqual({});
+  });
+
   it("resets passwords inside a transaction without leaking secrets to audit logs", async () => {
     const auditWrites = [];
     const tx = {

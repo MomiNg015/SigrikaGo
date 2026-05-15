@@ -12,6 +12,8 @@ const EDITABLE_USER_FIELDS = new Set([
   "ownedCharacters",
   "selectedCharacter"
 ]);
+const PRISMA_INT_MIN = -2147483648;
+const PRISMA_INT_MAX = 2147483647;
 
 export function serializeAudit(value) {
   if (value == null) return null;
@@ -218,9 +220,16 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
 }
 
 function parseIntegerInput(value) {
-  if (typeof value === "number") return Number.isInteger(value) && Number.isFinite(value) ? value : null;
-  if (typeof value === "string" && /^\d+$/.test(value)) return Number(value);
+  if (typeof value === "number") return isPrismaInt(value) ? value : null;
+  if (typeof value === "string" && /^\d+$/.test(value)) {
+    const parsed = Number(value);
+    return isPrismaInt(parsed) ? parsed : null;
+  }
   return null;
+}
+
+function isPrismaInt(value) {
+  return Number.isSafeInteger(value) && value >= PRISMA_INT_MIN && value <= PRISMA_INT_MAX;
 }
 
 async function writeAudit(prisma, adminUser, action, targetId, before, after) {
