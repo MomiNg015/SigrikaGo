@@ -295,8 +295,9 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
 
 function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPendingSkill, onBack, onGameAction, onCountingRequest, onCountingRespond, onScoringAction, onChat }) {
   const [showCoords, setShowCoords] = useState(true);
-  const [showMoves, setShowMoves] = useState(true);
+  const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [skillBanner, setSkillBanner] = useState(null);
   const isReplay = replayStep !== null;
   const displayRoom = isReplay ? replayRoomAt(room, replayStep) : room;
   const me = displayRoom.players.find((p) => p.user.id === user.id);
@@ -306,7 +307,14 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
   const scoring = displayRoom.game.scoring;
   const soundMoveRef = useRef(null);
   const voiceRef = useRef({});
+  const skillTimerRef = useRef(null);
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
+
+  useEffect(() => {
+    return () => {
+      if (skillTimerRef.current) window.clearTimeout(skillTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (isReplay) return;
@@ -336,11 +344,22 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
 
   function handlePoint(point) {
     if (isReplay) return;
+    if (skillBanner) return;
     if (displayRoom.game.phase === "marking-dead") return handleScoringPoint(point);
     if (role !== "player") return;
     if (pendingSkill) {
-      onGameAction({ type: "skill", pointId: point.id });
       setPendingSkill(false);
+      if (canPreviewSkill(displayRoom.game, me, point)) {
+        const character = CHARACTERS[me.characterId];
+        setSkillBanner({ character, skillName: character.skill.name });
+        skillTimerRef.current = window.setTimeout(() => {
+          onGameAction({ type: "skill", pointId: point.id });
+          setSkillBanner(null);
+          skillTimerRef.current = null;
+        }, 2000);
+        return;
+      }
+      onGameAction({ type: "skill", pointId: point.id });
       return;
     }
     onGameAction({ type: "move", pointId: point.id });
@@ -403,7 +422,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
               onNeutral={(id) => onScoringAction({ type: "mark-neutral", pointId: id })}
             />
           </div>
-          <div className="status-slot">
+          <div className={`status-slot ${!isReplay && scoring ? "floating-status" : ""}`}>
             {isReplay && (
               <ReplayBar
                 step={replayStep}
@@ -431,6 +450,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
             isMyTurn={Boolean(me && displayRoom.game.turn === me.color)}
             pendingSkill={pendingSkill}
             setPendingSkill={setPendingSkill}
+            skillLocked={Boolean(skillBanner)}
             skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
             onPass={() => onGameAction({ type: "pass" })}
             onCountingRequest={onCountingRequest}
@@ -456,6 +476,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           }}
         />
       )}
+      {skillBanner && <SkillBanner banner={skillBanner} />}
     </main>
   );
 }
@@ -562,7 +583,7 @@ function TimeBar({ time }) {
   );
 }
 
-function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillUses, onPass, onCountingRequest, onResign, onBack }) {
+function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, onPass, onCountingRequest, onResign, onBack }) {
   if (role === "spectator") {
     return (
       <nav className="action-bar">
@@ -575,16 +596,16 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
   }
   return (
     <nav className="action-bar">
-      <button onClick={onPass} disabled={phase !== "playing"}>弃一手</button>
-      <button onClick={onCountingRequest} disabled={phase !== "playing"}>申请数子</button>
+      <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>弃一手</button>
+      <button onClick={onCountingRequest} disabled={phase !== "playing" || skillLocked}>申请数子</button>
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
         onClick={() => setPendingSkill(!pendingSkill)}
-        disabled={!me || phase !== "playing" || !isMyTurn || skillUses <= 0}
+        disabled={!me || phase !== "playing" || !isMyTurn || skillLocked || skillUses <= 0}
       >
         <Sparkles size={20} />技能 · {skillUses}
       </button>
-      <button onClick={onResign} disabled={phase === "finished"}><Flag size={18} />认输</button>
+      <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} />认输</button>
       <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
     </nav>
   );
@@ -670,7 +691,7 @@ function ChatBox({ room, onChat, readonly = false }) {
       <header><MessageCircle size={18} />对局聊天</header>
       <div className="chat-log" ref={logRef}>
         {room.chat.map((message) => (
-          <p key={message.id} className={message.type}>
+          <p key={message.id} className={`${message.type} ${message.kind ?? ""}`}>
             <span>[{message.moveNumber}手 {formatMessageTime(message.createdAt)}]</span>
             {message.type === "chat" && <strong>{message.username}：</strong>}
             {message.text}
@@ -692,41 +713,79 @@ function ChatBox({ room, onChat, readonly = false }) {
 }
 
 function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay }) {
+  const [detailCharacter, setDetailCharacter] = useState(null);
+  const [showReplays, setShowReplays] = useState(false);
+  const stats = deriveHouseStats(user, records);
+  const owned = new Set(user.ownedCharacters ?? []);
+  const emptySlots = Array.from({ length: 4 }, (_, index) => index);
+
   return (
     <div className="modal-backdrop">
       <section className="house-modal">
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <h2>棋舍</h2>
         <div className="profile-grid">
-          <Stat label="战绩" value={`${user.wins}胜${user.losses}负`} />
-          <Stat label="积分" value={user.rating} />
+          <Stat label="战绩" value={`${stats.wins}胜${stats.losses}负`} />
+          <Stat label="积分" value={stats.rating} />
           <Stat label="段位" value={user.rank} />
           <Stat label="金币" value={user.coins} />
         </div>
         <div className="character-list">
           {characterList.map((character) => (
             <button
-              className={`character-card ${user.selectedCharacter === character.id ? "selected" : ""}`}
+              className={`character-card portrait-card ${user.selectedCharacter === character.id ? "selected" : ""}`}
               key={character.id}
-              onClick={() => onSelectCharacter(character.id)}
+              onClick={() => setDetailCharacter(character)}
             >
               <img src={character.portrait} alt={character.name} />
               <strong>{character.name}</strong>
-              <span>{character.skill.name}</span>
-              <small>{character.skill.description}</small>
+              {!owned.has(character.id) && <span>未获得</span>}
+            </button>
+          ))}
+          {emptySlots.map((slot) => (
+            <button className="character-card portrait-card locked" key={`empty-${slot}`} disabled>
+              <span className="locked-portrait">?</span>
+              <strong>未获得角色</strong>
             </button>
           ))}
         </div>
-        <section className="replay-list">
-          <h3>对局回放</h3>
-          {records.length === 0 && <p className="quiet-text">暂无已结束的对局记录。</p>}
-          {records.map((record) => (
-            <button className="replay-item" key={record.id} onClick={() => onOpenReplay(record.id)}>
-              <strong>{record.blackName} vs {record.whiteName}</strong>
-              <span>{record.resultText} · {record.moveCount}手 · {formatDateTime(record.createdAt)}</span>
+        <button className="replay-open-button" onClick={() => setShowReplays(true)}>
+          <MonitorPlay size={18} />对局回放
+        </button>
+        {detailCharacter && (
+          <section className="nested-modal character-detail">
+            <button className="close-button" onClick={() => setDetailCharacter(null)}><X size={18} /></button>
+            <img src={detailCharacter.portrait} alt={detailCharacter.name} />
+            <h3>{detailCharacter.name}</h3>
+            <strong>{detailCharacter.skill.name}</strong>
+            <p>{detailCharacter.skill.description}</p>
+            <button
+              className="primary-action"
+              disabled={!owned.has(detailCharacter.id) || user.selectedCharacter === detailCharacter.id}
+              onClick={() => {
+                onSelectCharacter(detailCharacter.id);
+                setDetailCharacter(null);
+              }}
+            >
+              {user.selectedCharacter === detailCharacter.id ? "出战中" : owned.has(detailCharacter.id) ? "设为出战" : "未获得"}
             </button>
-          ))}
-        </section>
+          </section>
+        )}
+        {showReplays && (
+          <section className="nested-modal replay-dialog">
+            <button className="close-button" onClick={() => setShowReplays(false)}><X size={18} /></button>
+            <h3>对局回放</h3>
+            <div className="replay-list">
+              {records.length === 0 && <p className="quiet-text">暂无已结束的对局记录。</p>}
+              {records.map((record) => (
+                <button className="replay-item" key={record.id} onClick={() => onOpenReplay(record.id)}>
+                  <strong>{record.blackName} vs {record.whiteName}</strong>
+                  <span>{record.resultText} · {record.moveCount}手 · {formatDateTime(record.createdAt)}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
       </section>
     </div>
   );
@@ -835,6 +894,18 @@ function ResultModal({ room, onClose }) {
   );
 }
 
+function SkillBanner({ banner }) {
+  return (
+    <div className="skill-burst" aria-live="polite">
+      <img src={banner.character.portrait} alt={banner.character.name} />
+      <div>
+        <span>{banner.character.name}</span>
+        <strong>{banner.skillName}</strong>
+      </div>
+    </div>
+  );
+}
+
 function Panel({ title, icon, children }) {
   return (
     <section className="panel">
@@ -846,6 +917,39 @@ function Panel({ title, icon, children }) {
 
 function Stat({ label, value }) {
   return <div className="stat"><span>{label}</span><strong>{value}</strong></div>;
+}
+
+function deriveHouseStats(user, records) {
+  let wins = 0;
+  let losses = 0;
+  for (const record of records) {
+    const color = record.blackName === user.username ? COLORS.black : record.whiteName === user.username ? COLORS.white : null;
+    const winner = winnerColorFromRecord(record);
+    if (!color || !winner) continue;
+    if (color === winner) wins += 1;
+    else losses += 1;
+  }
+  return {
+    wins,
+    losses,
+    rating: 1000 + wins * 20
+  };
+}
+
+function winnerColorFromRecord(record) {
+  const text = record.resultText ?? "";
+  if (text.startsWith("黑胜") || text.includes("白方认输")) return COLORS.black;
+  if (text.startsWith("白胜") || text.includes("黑方认输")) return COLORS.white;
+  return null;
+}
+
+function canPreviewSkill(game, player, point) {
+  if (!player || game.phase !== "playing" || game.turn !== player.color) return false;
+  if ((game.skillUses[player.color] ?? 0) <= 0) return false;
+  if (!point?.valid) return false;
+  if (player.characterId === "sigrika") return !point.stone;
+  if (player.characterId === "danea") return Boolean(point.stone);
+  return false;
 }
 
 function Toast({ text, onClose }) {

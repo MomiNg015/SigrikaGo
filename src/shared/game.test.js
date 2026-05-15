@@ -125,13 +125,25 @@ describe("SigrikaGo rules", () => {
     forceStone(state, 4, 2, COLORS.black);
     state.scoring = prepareScoringState(state);
 
-    const result = markDeadGroup(state, pointId(2, 2));
+    const result = markDeadGroup(state, pointId(2, 2), COLORS.black);
 
     expect(result.ok).toBe(true);
     expect(result.state.scoring.deadStones).toContain(pointId(2, 2));
     expect(result.state.scoring.deadStones).toContain(pointId(4, 2));
     expect(result.state.scoring.deadStoneOwners[pointId(2, 2)]).toBe(COLORS.white);
     expect(result.state.scoring.deadStoneOwners[pointId(4, 2)]).toBe(COLORS.white);
+  });
+
+  it("only lets a player mark their own stones as dead", () => {
+    const state = createGameState();
+    surroundWhiteBox(state);
+    forceStone(state, 2, 2, COLORS.black);
+    state.scoring = prepareScoringState(state);
+
+    const result = markDeadGroup(state, pointId(2, 2), COLORS.white);
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toBe("只能标记自己颜色的死子");
   });
 
   it("scores by temporarily removing marked dead stones and preserving board stones", () => {

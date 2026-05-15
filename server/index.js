@@ -68,7 +68,7 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 app.get("/api/me", authHttp, async (req, res) => {
-  res.json({ user: publicUser(req.user) });
+  res.json({ user: await publicUserWithHistory(req.user) });
 });
 
 app.post("/api/me/character", authHttp, async (req, res) => {
@@ -209,6 +209,43 @@ async function authHttp(req, res, next) {
 
 function sendResult(socket, result) {
   if (!result.ok) socket.emit("error:toast", result.error);
+}
+
+async function publicUserWithHistory(user) {
+  const records = await prisma.gameRecord.findMany({
+    where: {
+      OR: [
+        { blackUserId: user.id },
+        { whiteUserId: user.id }
+      ]
+    },
+    select: {
+      blackUserId: true,
+      whiteUserId: true,
+      resultText: true
+    }
+  });
+  let wins = 0;
+  let losses = 0;
+  for (const record of records) {
+    const color = record.blackUserId === user.id ? "black" : record.whiteUserId === user.id ? "white" : null;
+    const winner = winnerColorFromText(record.resultText);
+    if (!color || !winner) continue;
+    if (color === winner) wins += 1;
+    else losses += 1;
+  }
+  return {
+    ...publicUser(user),
+    wins,
+    losses,
+    rating: 1000 + wins * 20
+  };
+}
+
+function winnerColorFromText(text = "") {
+  if (text.startsWith("黑胜") || text.includes("白方认输")) return "black";
+  if (text.startsWith("白胜") || text.includes("黑方认输")) return "white";
+  return null;
 }
 
 server.listen(PORT, () => {

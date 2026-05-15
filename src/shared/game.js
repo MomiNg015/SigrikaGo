@@ -253,11 +253,12 @@ export function prepareScoringState(state, scoring = null) {
   return nextScoring;
 }
 
-export function markDeadGroup(state, id) {
+export function markDeadGroup(state, id, markerColor = null) {
   const next = cloneState(state);
   if (!next.scoring) next.scoring = prepareScoringState(next);
   const group = collectGroup(next, id);
   if (!group.stones.length) return fail("请选择棋子");
+  if (markerColor && group.color !== markerColor) return fail("只能标记自己颜色的死子");
 
   const dead = new Set(next.scoring.deadStones ?? []);
   const owners = { ...(next.scoring.deadStoneOwners ?? {}) };

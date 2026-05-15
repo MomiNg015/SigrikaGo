@@ -2,7 +2,10 @@ import {
   COLORS,
   createGameState,
   createScoringState,
+  getPoint,
   markDeadGroup,
+  opponent,
+  parsePointId,
   passMove,
   playMove,
   prepareScoringState,
@@ -75,10 +78,14 @@ export function handleGameAction(roomCode, userId, action, io) {
   if (!player) return { ok: false, error: "观战者不能操作棋局" };
 
   let result;
+  let skillNotice = null;
   if (action.type === "move") result = playMove(room.game, player.color, action.pointId);
   if (action.type === "pass") result = passMove(room.game, player.color);
   if (action.type === "resign") result = resignGame(room.game, player.color);
-  if (action.type === "skill") result = useSkill(room.game, player.color, player.characterId, action.pointId);
+  if (action.type === "skill") {
+    skillNotice = describeSkillUse(room, player, action.pointId);
+    result = useSkill(room.game, player.color, player.characterId, action.pointId);
+  }
   if (!result) return { ok: false, error: "未知操作" };
   if (!result.ok) return result;
 
@@ -88,8 +95,7 @@ export function handleGameAction(roomCode, userId, action, io) {
   if (action.type === "pass") appendSystem(room, `${label}方弃一手。`);
   if (action.type === "resign") appendSystem(room, `${label}方认输。`);
   if (action.type === "skill") {
-    const character = CHARACTERS[player.characterId];
-    appendSystem(room, `${player.user.username}使用了${character.skill.name}。`);
+    appendSystem(room, skillNotice, { kind: "skill" });
   }
   if (room.game.phase === "finished") scheduleRoomClose(roomCode, io);
   return { ok: true, room };
@@ -157,7 +163,7 @@ export function handleScoringAction(roomCode, userId, action, io) {
   }
 
   let result = { ok: true, state: room.game };
-  if (action.type === "mark-dead") result = markDeadGroup(room.game, action.pointId);
+  if (action.type === "mark-dead") result = markDeadGroup(room.game, action.pointId, player.color);
   if (action.type === "mark-neutral") result = toggleNeutralPoint(room.game, action.pointId);
   if (action.type === "reset-dead") result = resetDeadMarks(room.game);
   if (!result.ok) return result;
@@ -294,14 +300,43 @@ function randomRoomCode() {
   return code;
 }
 
-function appendSystem(room, text) {
+function appendSystem(room, text, options = {}) {
   room.chat.push({
     id: crypto.randomUUID(),
     type: "system",
+    kind: options.kind ?? null,
     moveNumber: room.game.moveNumber,
     text,
     createdAt: Date.now()
   });
+}
+
+function describeSkillUse(room, player, targetId) {
+  const character = CHARACTERS[player.characterId];
+  const colorLabel = player.color === COLORS.black ? "黑" : "白";
+  const fixed = `${colorLabel}方${player.user.username}使用了${character.name}的“${character.skill.name}”技能`;
+  const coord = formatPointLabel(targetId);
+  if (player.characterId === "sigrika") {
+    return `${fixed}。从天而降破坏了${coord}的点位，铛！`;
+  }
+  if (player.characterId === "danea") {
+    const point = getPoint(room.game, targetId);
+    const from = stoneLabel(point?.stone);
+    const to = stoneLabel(point?.stone ? opponent(point.stone) : null);
+    return `${fixed}。诅咒了${coord}的${from}，将其从${from}变成了${to}。`;
+  }
+  return `${fixed}。`;
+}
+
+function formatPointLabel(id) {
+  const { x, y } = parsePointId(id);
+  return `${"ABCDEFGHJKLMN"[x]}-${13 - y}`;
+}
+
+function stoneLabel(color) {
+  if (color === COLORS.black) return "黑棋";
+  if (color === COLORS.white) return "白棋";
+  return "棋子";
 }
 
 function startGameClock(room, io) {
@@ -394,7 +429,7 @@ async function saveGameRecord(room) {
   const white = room.players.find((player) => player.color === COLORS.white);
   if (!black || !white) return;
   room.recordSaved = true;
-  await prisma.gameRecord.create({
+  const recordCreate = prisma.gameRecord.create({
     data: {
       roomCode: room.code,
       blackUserId: black.user.id,
@@ -408,4 +443,26 @@ async function saveGameRecord(room) {
       snapshot: JSON.stringify(roomView(room, black.user.id))
     }
   });
+  if (![COLORS.black, COLORS.white].includes(room.game.winner?.winnerColor)) {
+    await recordCreate;
+    return;
+  }
+  const winner = room.game.winner.winnerColor === COLORS.black ? black : white;
+  const loser = winner.color === COLORS.black ? white : black;
+  await prisma.$transaction([
+    recordCreate,
+    prisma.user.update({
+      where: { id: winner.user.id },
+      data: {
+        wins: { increment: 1 },
+        rating: { increment: 20 }
+      }
+    }),
+    prisma.user.update({
+      where: { id: loser.user.id },
+      data: {
+        losses: { increment: 1 }
+      }
+    })
+  ]);
 }
