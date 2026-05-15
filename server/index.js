@@ -8,6 +8,7 @@ import { Server } from "socket.io";
 import { prisma, publicUser } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
+import { createAdminRouter } from "./adminRoutes.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -39,12 +40,13 @@ const io = new Server(server, {
   }
 });
 
-void requireAdmin;
 await promoteConfiguredAdmins(prisma);
 
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
+
+app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma }));
 
 app.post("/api/auth/register", async (req, res) => {
   const username = String(req.body.username ?? "").trim();
