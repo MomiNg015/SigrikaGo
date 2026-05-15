@@ -28,25 +28,107 @@ export function sanitizeUserUpdate(body = {}) {
     if (key === "status" && [USER_STATUS.active, USER_STATUS.banned].includes(value)) {
       data.status = value;
     }
-    if (key === "rank") {
-      data.rank = String(value ?? "").trim().slice(0, 20);
+    if (key === "rank" && typeof value === "string") {
+      data.rank = value.trim().slice(0, 20);
     }
     if (key === "rating") {
-      const rating = Number(value);
-      if (Number.isFinite(rating)) data.rating = rating;
+      const rating = parseIntegerInput(value);
+      if (rating != null) data.rating = rating;
     }
     if (key === "coins") {
-      const coins = Number(value);
-      if (Number.isFinite(coins)) data.coins = coins;
+      const coins = parseIntegerInput(value);
+      if (coins != null) data.coins = coins;
     }
     if (key === "ownedCharacters" && Array.isArray(value)) {
-      data.ownedCharacters = value.map((character) => String(character).trim()).filter(Boolean).join(",");
+      data.ownedCharacters = value
+        .filter((character) => typeof character === "string")
+        .map((character) => character.trim())
+        .filter(Boolean)
+        .join(",");
     }
-    if (key === "selectedCharacter") {
-      data.selectedCharacter = String(value ?? "").trim();
+    if (key === "selectedCharacter" && typeof value === "string") {
+      data.selectedCharacter = value.trim();
     }
   }
   return data;
+}
+
+export function requireUserUpdateData(data) {
+  if (Object.keys(data).length > 0) return data;
+  throw routeError(400, "没有可更新字段");
+}
+
+export async function updateUserProfile({ prisma, adminUser, userId, body }) {
+  const data = requireUserUpdateData(sanitizeUserUpdate(body));
+  const user = await prisma.$transaction(async (tx) => {
+    const before = await tx.user.findUnique({ where: { id: userId } });
+    if (!before) throw routeError(404, "User not found");
+    const after = await tx.user.update({
+      where: { id: userId },
+      data
+    });
+    await writeAudit(tx, adminUser, "user.update", userId, publicUser(before), publicUser(after));
+    return after;
+  });
+  return { user: publicUser(user) };
+}
+
+export async function banUser({ prisma, adminUser, userId, reason }) {
+  const user = await prisma.$transaction(async (tx) => {
+    const before = await tx.user.findUnique({ where: { id: userId } });
+    if (!before) throw routeError(404, "User not found");
+    const after = await tx.user.update({
+      where: { id: userId },
+      data: {
+        status: USER_STATUS.banned,
+        banReason: reason,
+        bannedAt: new Date()
+      }
+    });
+    await writeAudit(tx, adminUser, "user.ban", userId, publicUser(before), {
+      ...publicUser(after),
+      banReason: after.banReason,
+      bannedAt: after.bannedAt
+    });
+    return after;
+  });
+  return { user: publicUser(user) };
+}
+
+export async function unbanUser({ prisma, adminUser, userId }) {
+  const user = await prisma.$transaction(async (tx) => {
+    const before = await tx.user.findUnique({ where: { id: userId } });
+    if (!before) throw routeError(404, "User not found");
+    const after = await tx.user.update({
+      where: { id: userId },
+      data: {
+        status: USER_STATUS.active,
+        banReason: null,
+        bannedAt: null
+      }
+    });
+    await writeAudit(tx, adminUser, "user.unban", userId, {
+      ...publicUser(before),
+      banReason: before.banReason,
+      bannedAt: before.bannedAt
+    }, publicUser(after));
+    return after;
+  });
+  return { user: publicUser(user) };
+}
+
+export async function resetUserPassword({ prisma, adminUser, userId, password }) {
+  await prisma.$transaction(async (tx) => {
+    const before = await tx.user.findUnique({ where: { id: userId } });
+    if (!before) throw routeError(404, "User not found");
+    const passwordHash = await bcrypt.hash(password, 10);
+    await tx.user.update({
+      where: { id: userId },
+      data: { passwordHash }
+    });
+    await writeAudit(tx, adminUser, "user.reset-password", userId, { id: before.id }, { passwordReset: true });
+  });
+  return { ok: true };
 }
 
 export function createAdminRouter({ prisma, uploadMiddleware = null }) {
@@ -88,18 +170,11 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
   });
 
   router.patch("/users/:id", async (req, res) => {
-    const before = await prisma.user.findUnique({ where: { id: req.params.id } });
-    if (!before) {
-      res.status(404).json({ error: "User not found" });
-      return;
+    try {
+      res.json(await updateUserProfile({ prisma, adminUser: req.user, userId: req.params.id, body: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
     }
-    const data = sanitizeUserUpdate(req.body);
-    const after = await prisma.user.update({
-      where: { id: req.params.id },
-      data
-    });
-    await writeAudit(prisma, req.user, "user.update", req.params.id, publicUser(before), publicUser(after));
-    res.json({ user: publicUser(after) });
   });
 
   router.post("/users/:id/ban", async (req, res) => {
@@ -108,47 +183,19 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       res.status(400).json({ error: "Ban reason must be at least 2 characters" });
       return;
     }
-    const before = await prisma.user.findUnique({ where: { id: req.params.id } });
-    if (!before) {
-      res.status(404).json({ error: "User not found" });
-      return;
+    try {
+      res.json(await banUser({ prisma, adminUser: req.user, userId: req.params.id, reason }));
+    } catch (error) {
+      sendRouteError(res, error);
     }
-    const after = await prisma.user.update({
-      where: { id: req.params.id },
-      data: {
-        status: USER_STATUS.banned,
-        banReason: reason,
-        bannedAt: new Date()
-      }
-    });
-    await writeAudit(prisma, req.user, "user.ban", req.params.id, publicUser(before), {
-      ...publicUser(after),
-      banReason: after.banReason,
-      bannedAt: after.bannedAt
-    });
-    res.json({ user: publicUser(after) });
   });
 
   router.post("/users/:id/unban", async (req, res) => {
-    const before = await prisma.user.findUnique({ where: { id: req.params.id } });
-    if (!before) {
-      res.status(404).json({ error: "User not found" });
-      return;
+    try {
+      res.json(await unbanUser({ prisma, adminUser: req.user, userId: req.params.id }));
+    } catch (error) {
+      sendRouteError(res, error);
     }
-    const after = await prisma.user.update({
-      where: { id: req.params.id },
-      data: {
-        status: USER_STATUS.active,
-        banReason: null,
-        bannedAt: null
-      }
-    });
-    await writeAudit(prisma, req.user, "user.unban", req.params.id, {
-      ...publicUser(before),
-      banReason: before.banReason,
-      bannedAt: before.bannedAt
-    }, publicUser(after));
-    res.json({ user: publicUser(after) });
   });
 
   router.post("/users/:id/reset-password", async (req, res) => {
@@ -157,21 +204,20 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       res.status(400).json({ error: "Password must be at least 4 characters" });
       return;
     }
-    const before = await prisma.user.findUnique({ where: { id: req.params.id } });
-    if (!before) {
-      res.status(404).json({ error: "User not found" });
-      return;
+    try {
+      res.json(await resetUserPassword({ prisma, adminUser: req.user, userId: req.params.id, password }));
+    } catch (error) {
+      sendRouteError(res, error);
     }
-    const passwordHash = await bcrypt.hash(password, 10);
-    await prisma.user.update({
-      where: { id: req.params.id },
-      data: { passwordHash }
-    });
-    await writeAudit(prisma, req.user, "user.reset-password", req.params.id, { id: before.id }, { passwordReset: true });
-    res.json({ ok: true });
   });
 
   return router;
+}
+
+function parseIntegerInput(value) {
+  if (typeof value === "number") return Number.isInteger(value) && Number.isFinite(value) ? value : null;
+  if (typeof value === "string" && /^\d+$/.test(value)) return Number(value);
+  return null;
 }
 
 async function writeAudit(prisma, adminUser, action, targetId, before, after) {
@@ -185,4 +231,18 @@ async function writeAudit(prisma, adminUser, action, targetId, before, after) {
       afterJson: serializeAudit(after)
     }
   });
+}
+
+function routeError(status, message) {
+  const error = new Error(message);
+  error.status = status;
+  return error;
+}
+
+function sendRouteError(res, error) {
+  if (error.status) {
+    res.status(error.status).json({ error: error.message });
+    return;
+  }
+  throw error;
 }
