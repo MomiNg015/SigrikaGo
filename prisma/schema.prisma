@@ -11,6 +11,10 @@ model User {
   id                 String   @id @default(cuid())
   username           String   @unique
   passwordHash       String
+  role               String   @default("player")
+  status             String   @default("active")
+  banReason          String?
+  bannedAt           DateTime?
   rank               String   @default("18级")
   rating             Int      @default(1000)
   wins               Int      @default(0)
@@ -36,5 +40,46 @@ model GameRecord {
   resultText  String
   moveCount   Int
   snapshot    String
+  createdAt   DateTime @default(now())
+}
+
+model Character {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  name           String
+  portraitUrl    String
+  portraitSource String          @default("url")
+  palette        String          @default("#5d7fe8")
+  enabled        Boolean         @default(true)
+  sortOrder      Int             @default(0)
+  skill          CharacterSkill?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model CharacterSkill {
+  id          String    @id @default(cuid())
+  characterId String    @unique
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  effectType  String
+  name        String
+  description String
+  uses        Int       @default(1)
+  freeTurn    Boolean   @default(false)
+  targetRule  String
+  paramsJson  String    @default("{}")
+  enabled     Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model AdminAuditLog {
+  id          String   @id @default(cuid())
+  adminUserId String
+  action      String
+  targetType  String
+  targetId    String
+  beforeJson  String?
+  afterJson   String?
   createdAt   DateTime @default(now())
 }

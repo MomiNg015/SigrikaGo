@@ -6,6 +6,8 @@ export function publicUser(user) {
   return {
     id: user.id,
     username: user.username,
+    role: user.role ?? "player",
+    status: user.status ?? "active",
     rank: user.rank,
     rating: user.rating,
     wins: user.wins,
