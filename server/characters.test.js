@@ -31,6 +31,6 @@ describe("character admin helpers", () => {
     });
 
     expect(result.ok).toBe(false);
-    expect(result.errors.join("\n")).toContain("目标规则");
+    expect(result.error).toContain("目标规则");
   });
 });

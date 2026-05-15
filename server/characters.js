@@ -42,7 +42,7 @@ export function validateCharacterInput(input = {}) {
     errors.push("paramsJson 必须是有效 JSON");
   }
 
-  if (errors.length) return { ok: false, errors };
+  if (errors.length) return { ok: false, error: errors.join("\n") };
 
   return {
     ok: true,

@@ -1,3 +1,5 @@
+import { CHARACTERS } from "./characters.js";
+
 export const BOARD_SIZE = 13;
 export const KOMI_STONES = 2.75;
 export const COLORS = {
@@ -159,22 +161,23 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
 
 export function normalizeSkillConfig(skillOrCharacterId) {
   if (skillOrCharacterId?.effectType) return skillOrCharacterId;
-  if (skillOrCharacterId === "sigrika") {
+  const fallback = CHARACTERS[skillOrCharacterId];
+  if (fallback?.skill?.id === "erase-point") {
     return {
       effectType: "erase-point",
-      name: "星辰符文",
-      uses: 1,
-      freeTurn: true,
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: Boolean(fallback.skill.freeTurn),
       targetRule: "empty-point",
       params: {}
     };
   }
-  if (skillOrCharacterId === "danea") {
+  if (fallback?.skill?.id === "flip-stone") {
     return {
       effectType: "flip-stone",
-      name: "染移",
-      uses: 1,
-      freeTurn: false,
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: Boolean(fallback.skill.freeTurn),
       targetRule: "stone",
       params: {}
     };

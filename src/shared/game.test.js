@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { CHARACTERS } from "./characters.js";
 import {
   COLORS,
   createGameState,
@@ -103,6 +104,7 @@ describe("SigrikaGo rules", () => {
     expect(getPoint(result.state, pointId(4, 4)).stone).toBe(COLORS.black);
     expect(result.state.skillUses.black).toBe(0);
     expect(result.state.turn).toBe(COLORS.white);
+    expect(result.state.history.at(-1).skill).toBe(CHARACTERS.danea.skill.name);
   });
 
   it("uses configured erase-point skill without consuming the turn", () => {
