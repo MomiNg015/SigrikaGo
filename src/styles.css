@@ -147,7 +147,8 @@ p {
 .action-bar button,
 .counting-panel button,
 .chat-box button,
-.watch-pad button {
+.watch-pad button,
+.danger-action {
   border: 0;
   border-radius: 8px;
   padding: 12px 14px;
@@ -426,6 +427,8 @@ p {
 .player-meta {
   display: grid;
   gap: 4px;
+  justify-items: center;
+  text-align: center;
 }
 
 .player-meta span,
@@ -721,7 +724,11 @@ p {
 .dead-mark,
 .neutral-mark {
   position: absolute;
-  inset: 12%;
+  left: 50%;
+  top: 50%;
+  width: 52%;
+  height: 52%;
+  transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -730,13 +737,17 @@ p {
   font-size: 12px;
   font-weight: 800;
   pointer-events: none;
+  line-height: 1;
+  z-index: 5;
 }
 
 .territory-mark {
-  inset: 24%;
+  width: 46%;
+  height: 46%;
   background: transparent;
-  font-size: 22px;
+  font-size: 18px;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.78);
+  z-index: 3;
 }
 
 .territory-mark.black,
@@ -802,7 +813,8 @@ p {
 }
 
 .action-bar .skill-action.spent,
-.action-bar .skill-action:disabled {
+.action-bar .skill-action:disabled,
+.action-bar button:disabled {
   background: #d6cfd9;
   color: #7d7282;
   border-color: #cfc6d2;
@@ -923,11 +935,33 @@ p {
 .small-modal,
 .shop-modal,
 .house-modal,
+.confirm-modal,
 .result-modal {
   width: min(420px, 100%);
   padding: 22px;
   text-align: center;
   position: relative;
+}
+
+.confirm-modal {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(72, 44, 86, 0.18);
+}
+
+.confirm-modal p {
+  color: #5f4f63;
+  margin-bottom: 18px;
+}
+
+.confirm-actions {
+  justify-content: center;
+}
+
+.danger-action {
+  background: #d94a62;
+  color: #fff;
 }
 
 .result-modal {

@@ -279,6 +279,7 @@ export function markDeadGroup(state, id) {
 
   next.scoring.deadStones = [...dead];
   next.scoring.deadStoneOwners = owners;
+  next.scoring.territory = computeScoringTerritory(next);
   clearScoringConfirmations(next.scoring);
   return ok(next);
 }
@@ -292,7 +293,7 @@ export function toggleNeutralPoint(state, id) {
   if (neutral.has(id)) neutral.delete(id);
   else neutral.add(id);
   next.scoring.neutralPoints = [...neutral];
-  next.scoring.territory = computeTerritoryMarks(next, neutral);
+  next.scoring.territory = computeScoringTerritory(next);
   clearScoringConfirmations(next.scoring);
   return ok(next);
 }
@@ -302,7 +303,7 @@ export function resetDeadMarks(state) {
   if (!next.scoring) next.scoring = prepareScoringState(next);
   next.scoring.deadStones = [];
   next.scoring.deadStoneOwners = {};
-  next.scoring.territory = computeTerritoryMarks(next, new Set(next.scoring.neutralPoints ?? []));
+  next.scoring.territory = computeScoringTerritory(next);
   clearScoringConfirmations(next.scoring);
   return ok(next);
 }
@@ -369,6 +370,15 @@ function computeTerritoryMarks(state, neutral) {
     }
   }
   return territory;
+}
+
+function computeScoringTerritory(state) {
+  const board = cloneState(state);
+  for (const id of state.scoring?.deadStones ?? []) {
+    const point = getPoint(board, id);
+    if (point) point.stone = null;
+  }
+  return computeTerritoryMarks(board, new Set(state.scoring?.neutralPoints ?? []));
 }
 
 function collectPotentialDeadStones(state, group, owner) {

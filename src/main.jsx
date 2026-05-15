@@ -296,6 +296,7 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
 function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPendingSkill, onBack, onGameAction, onCountingRequest, onCountingRespond, onScoringAction, onChat }) {
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(true);
+  const [confirmAction, setConfirmAction] = useState(null);
   const isReplay = replayStep !== null;
   const displayRoom = isReplay ? replayRoomAt(room, replayStep) : room;
   const me = displayRoom.players.find((p) => p.user.id === user.id);
@@ -350,6 +351,32 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
     else if (point.valid) onScoringAction({ type: "mark-neutral", pointId: point.id });
   }
 
+  function requestResignConfirm() {
+    if (displayRoom.game.phase === "finished") return;
+    setConfirmAction({
+      title: "确认认输",
+      message: "是否认输？",
+      confirmText: "认输",
+      onConfirm: () => onGameAction({ type: "resign" })
+    });
+  }
+
+  function requestExitConfirm() {
+    if (displayRoom.game.phase !== "finished" && role === "player") {
+      setConfirmAction({
+        title: "退出房间",
+        message: "对局还没结束，是否认输并退出房间？",
+        confirmText: "认输并退出",
+        onConfirm: () => {
+          onGameAction({ type: "resign" });
+          onBack();
+        }
+      });
+      return;
+    }
+    onBack();
+  }
+
   return (
     <main className="room-screen">
       <header className="room-header">
@@ -358,8 +385,8 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           {isReplay && <h1>棋谱回放</h1>}
         </div>
         <div className="room-toggles">
-          <button className={showMoves ? "toggle active" : "toggle"} onClick={() => setShowMoves(!showMoves)} title="鏄剧ず鎵嬫暟"><Hash size={16} /></button>
-          <button className={showCoords ? "toggle active" : "toggle"} onClick={() => setShowCoords(!showCoords)} title="鏄剧ず鍧愭爣"><PanelRight size={16} /></button>
+          <button className={showMoves ? "toggle active" : "toggle"} onClick={() => setShowMoves(!showMoves)} title="显示手数"><Hash size={16} /></button>
+          <button className={showCoords ? "toggle active" : "toggle"} onClick={() => setShowCoords(!showCoords)} title="显示坐标"><PanelRight size={16} /></button>
         </div>
       </header>
       <section className="battle-layout">
@@ -407,8 +434,8 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
             skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
             onPass={() => onGameAction({ type: "pass" })}
             onCountingRequest={onCountingRequest}
-            onResign={() => onGameAction({ type: "resign" })}
-            onBack={onBack}
+            onResign={requestResignConfirm}
+            onBack={requestExitConfirm}
           />
         </div>
         <div className="room-side">
@@ -416,6 +443,19 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           <ChatBox room={displayRoom} onChat={onChat} readonly={isReplay} />
         </div>
       </section>
+      {confirmAction && (
+        <ConfirmModal
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText={confirmAction.confirmText}
+          onCancel={() => setConfirmAction(null)}
+          onConfirm={() => {
+            const action = confirmAction.onConfirm;
+            setConfirmAction(null);
+            action();
+          }}
+        />
+      )}
     </main>
   );
 }
@@ -495,7 +535,7 @@ function PlayerInfo({ player, game, align, isWinner = false }) {
       <div className="player-meta">
         <button className="name-button">{player.user.username}</button>
         <span>{player.user.rank} · {player.user.rating}</span>
-        <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "鎵ч粦" : "鎵х櫧"} />
+        <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
       </div>
       <TimeBar time={player.time} />
       <div className="captures">提子 {player.captures}</div>
@@ -525,7 +565,7 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
   if (role === "spectator") {
     return (
       <nav className="action-bar">
-        <button><MonitorPlay size={18} />鍥炴斁</button>
+        <button><MonitorPlay size={18} />回放</button>
         <button><Pause size={18} />暂停</button>
         <button><Play size={18} />继续</button>
         <button onClick={onBack}><DoorOpen size={18} />退出房间</button>
@@ -543,7 +583,7 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
       >
         <Sparkles size={20} />技能 · {skillUses}
       </button>
-      <button onClick={onResign}><Flag size={18} />认输</button>
+      <button onClick={onResign} disabled={phase === "finished"}><Flag size={18} />认输</button>
       <button onClick={onBack}><DoorOpen size={18} />退出房间</button>
     </nav>
   );
@@ -623,7 +663,7 @@ function ChatBox({ room, onChat, readonly = false }) {
       <div className="chat-log">
         {room.chat.map((message) => (
           <p key={message.id} className={message.type}>
-            <span>[{message.moveNumber}鎵?{formatMessageTime(message.createdAt)}]</span>
+            <span>[{message.moveNumber}手 {formatMessageTime(message.createdAt)}]</span>
             {message.type === "chat" && <strong>{message.username}：</strong>}
             {message.text}
           </p>
@@ -745,6 +785,21 @@ function ShopModal({ onClose }) {
               <span>即将开放</span>
             </div>
           ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
+  return (
+    <div className="modal-backdrop">
+      <section className="confirm-modal">
+        <h2>{title}</h2>
+        <p>{message}</p>
+        <div className="inline-actions confirm-actions">
+          <button className="danger-action" onClick={onConfirm}>{confirmText}</button>
+          <button className="secondary-action" onClick={onCancel}>取消</button>
         </div>
       </section>
     </div>
