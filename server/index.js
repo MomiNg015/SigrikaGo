@@ -38,6 +38,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadDir = path.join(__dirname, "..", "public", "uploads", "characters");
 fs.mkdirSync(uploadDir, { recursive: true });
 const upload = multer({
+  limits: { fileSize: 3 * 1024 * 1024 },
   storage: multer.diskStorage({
     destination: uploadDir,
     filename: (_req, file, cb) => {

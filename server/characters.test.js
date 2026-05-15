@@ -30,6 +30,17 @@ describe("character admin helpers", () => {
     expect(result.value.skill.targetRule).toBe("empty-point");
   });
 
+  it("preserves upload portrait source metadata", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      portraitUrl: "/uploads/characters/character-1-danea.png",
+      portraitSource: "upload"
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.portraitSource).toBe("upload");
+  });
+
   it("rejects erase-point skills targeting a stone", () => {
     const result = validateCharacterInput({
       ...validInput,

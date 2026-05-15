@@ -186,6 +186,7 @@ describe("admin character routes", () => {
     const response = await requestAdminRoute(prisma, "/characters/danea", {
       method: "PATCH",
       body: {
+        portraitSource: "upload",
         skillName: "Mirror Step",
         uses: 2
       }
@@ -194,6 +195,7 @@ describe("admin character routes", () => {
     expect(response.status).toBe(200);
     expect(response.body.character.skill.name).toBe("Mirror Step");
     expect(response.body.character.skill.uses).toBe(2);
+    expect(characterUpdates[0].portraitSource).toBe("upload");
     expect(characterUpdates[0].skill.upsert.update.name).toBe("Mirror Step");
     expect(characterUpdates[0].skill.upsert.update.uses).toBe(2);
   });
@@ -311,6 +313,7 @@ function characterFixture() {
     slug: "danea",
     name: "Danea",
     portraitUrl: "/assets/danea.png",
+    portraitSource: "url",
     palette: "#6ab7ff",
     enabled: true,
     sortOrder: 1,

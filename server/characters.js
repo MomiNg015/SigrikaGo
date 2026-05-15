@@ -17,6 +17,7 @@ export function validateCharacterInput(input = {}) {
   const slug = String(input.slug ?? "").trim();
   const name = String(input.name ?? "").trim();
   const portraitUrl = String(input.portraitUrl ?? input.portrait ?? "").trim();
+  const portraitSource = String(input.portraitSource ?? "url").trim();
   const palette = String(input.palette ?? "#5d7fe8").trim();
   const effectType = String(skillInput.effectType ?? "").trim();
   const skillName = String(skillInput.name ?? input.skillName ?? "").trim();
@@ -34,6 +35,9 @@ export function validateCharacterInput(input = {}) {
   }
   if (!name) errors.push("name is required");
   if (!portraitUrl) errors.push("portraitUrl is required");
+  if (!["url", "upload"].includes(portraitSource)) {
+    errors.push("portraitSource must be url or upload");
+  }
   if (!Object.hasOwn(EFFECT_TARGET_RULES, effectType)) {
     errors.push("effectType must be erase-point or flip-stone");
   }
@@ -62,6 +66,7 @@ export function validateCharacterInput(input = {}) {
       slug,
       name,
       portraitUrl,
+      portraitSource,
       palette,
       enabled,
       sortOrder,
