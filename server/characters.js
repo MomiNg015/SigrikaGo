@@ -6,8 +6,14 @@ const EFFECT_TARGET_RULES = {
 };
 
 export function validateCharacterInput(input = {}) {
+  if (!isPlainObject(input)) {
+    return { ok: false, error: "payload must be an object" };
+  }
+
   const errors = [];
   const skillInput = input.skill ?? input;
+  if (!isPlainObject(skillInput)) errors.push("skill must be an object");
+
   const slug = String(input.slug ?? "").trim();
   const name = String(input.name ?? "").trim();
   const portraitUrl = String(input.portraitUrl ?? input.portrait ?? "").trim();
@@ -16,30 +22,36 @@ export function validateCharacterInput(input = {}) {
   const skillName = String(skillInput.name ?? input.skillName ?? "").trim();
   const description = String(skillInput.description ?? input.skillDescription ?? "").trim();
   const targetRule = String(skillInput.targetRule ?? "").trim();
-  const uses = Number(skillInput.uses ?? input.uses);
-  const freeTurn = Boolean(skillInput.freeTurn ?? input.freeTurn);
-  const paramsJson = String(skillInput.paramsJson ?? input.paramsJson ?? "{}");
+  const uses = skillInput.uses ?? input.uses;
+  const enabled = input.enabled ?? true;
+  const sortOrder = input.sortOrder ?? 0;
+  const freeTurn = skillInput.freeTurn ?? input.freeTurn ?? false;
+  const paramsJson = skillInput.paramsJson ?? input.paramsJson ?? "{}";
   let params = {};
 
   if (!/^[a-z0-9-]{2,40}$/.test(slug)) {
-    errors.push("slug 只能包含小写字母、数字和短横线，长度 2-40");
+    errors.push("slug must contain lowercase letters, numbers, or hyphens and be 2-40 characters");
   }
-  if (!name) errors.push("name 必填");
-  if (!portraitUrl) errors.push("portraitUrl 必填");
+  if (!name) errors.push("name is required");
+  if (!portraitUrl) errors.push("portraitUrl is required");
   if (!Object.hasOwn(EFFECT_TARGET_RULES, effectType)) {
-    errors.push("effectType 只支持 erase-point 和 flip-stone");
+    errors.push("effectType must be erase-point or flip-stone");
   }
   if (EFFECT_TARGET_RULES[effectType] && targetRule !== EFFECT_TARGET_RULES[effectType]) {
     errors.push("目标规则与技能类型不匹配");
   }
   if (!Number.isInteger(uses) || uses < 0 || uses > 9) {
-    errors.push("uses 必须是 0 到 9 的整数");
+    errors.push("uses must be an integer from 0 to 9");
   }
+  if (typeof enabled !== "boolean") errors.push("enabled must be a boolean");
+  if (!Number.isInteger(sortOrder)) errors.push("sortOrder must be an integer");
+  if (typeof freeTurn !== "boolean") errors.push("freeTurn must be a boolean");
+  if (typeof paramsJson !== "string") errors.push("paramsJson must be a string");
 
   try {
-    params = JSON.parse(paramsJson);
+    params = JSON.parse(typeof paramsJson === "string" ? paramsJson : "{}");
   } catch {
-    errors.push("paramsJson 必须是有效 JSON");
+    errors.push("paramsJson must be valid JSON");
   }
 
   if (errors.length) return { ok: false, error: errors.join("\n") };
@@ -51,8 +63,8 @@ export function validateCharacterInput(input = {}) {
       name,
       portraitUrl,
       palette,
-      enabled: input.enabled ?? true,
-      sortOrder: Number(input.sortOrder ?? 0),
+      enabled,
+      sortOrder,
       skill: {
         effectType,
         name: skillName,
@@ -142,4 +154,8 @@ function parseParams(paramsJson) {
   } catch {
     return {};
   }
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }

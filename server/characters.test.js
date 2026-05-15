@@ -33,4 +33,45 @@ describe("character admin helpers", () => {
     expect(result.ok).toBe(false);
     expect(result.error).toContain("目标规则");
   });
+
+  it("rejects null payload without throwing", () => {
+    const result = validateCharacterInput(null);
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("payload");
+  });
+
+  it("rejects invalid top-level runtime types", () => {
+    const enabledResult = validateCharacterInput({
+      ...validInput,
+      enabled: "false"
+    });
+    const sortOrderResult = validateCharacterInput({
+      ...validInput,
+      sortOrder: "abc"
+    });
+
+    expect(enabledResult.ok).toBe(false);
+    expect(enabledResult.error).toContain("enabled");
+    expect(sortOrderResult.ok).toBe(false);
+    expect(sortOrderResult.error).toContain("sortOrder");
+  });
+
+  it("rejects invalid skill boolean runtime types", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      skill: {
+        effectType: "erase-point",
+        name: "星辰符文",
+        description: "抹除一个空交叉点。",
+        uses: 1,
+        freeTurn: "false",
+        targetRule: "empty-point",
+        paramsJson: "{}"
+      }
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("freeTurn");
+  });
 });
