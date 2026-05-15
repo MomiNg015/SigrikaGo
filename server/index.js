@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import { prisma, publicUser } from "./db.js";
+import { makeAuth, withToken } from "./auth.js";
+import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -25,6 +27,7 @@ const app = express();
 const server = createServer(app);
 const PORT = Number(process.env.PORT ?? 3001);
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret";
+const { authHttp, requireAdmin } = makeAuth({ prisma, jwtSecret: JWT_SECRET });
 
 app.use(cors());
 app.use(express.json());
@@ -35,6 +38,9 @@ const io = new Server(server, {
     credentials: true
   }
 });
+
+void requireAdmin;
+await promoteConfiguredAdmins(prisma);
 
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
@@ -50,7 +56,8 @@ app.post("/api/auth/register", async (req, res) => {
   const passwordHash = await bcrypt.hash(password, 10);
   try {
     const user = await prisma.user.create({ data: { username, passwordHash } });
-    res.json(withToken(user));
+    const syncedUser = await syncConfiguredAdmin(user, prisma);
+    res.json(withToken(syncedUser, JWT_SECRET));
   } catch {
     res.status(409).json({ error: "用户名已存在" });
   }
@@ -64,7 +71,12 @@ app.post("/api/auth/login", async (req, res) => {
     res.status(401).json({ error: "用户名或密码错误" });
     return;
   }
-  res.json(withToken(user));
+  if (user.status === USER_STATUS.banned) {
+    res.status(403).json({ error: user.banReason ? `账号已封禁：${user.banReason}` : "账号已封禁" });
+    return;
+  }
+  const syncedUser = await syncConfiguredAdmin(user, prisma);
+  res.json(withToken(syncedUser, JWT_SECRET));
 });
 
 app.get("/api/me", authHttp, async (req, res) => {
@@ -186,26 +198,6 @@ io.on("connection", (socket) => {
     detachSocket(socket.id);
   });
 });
-
-function withToken(user) {
-  return {
-    token: jwt.sign({ sub: user.id }, JWT_SECRET, { expiresIn: "14d" }),
-    user: publicUser(user)
-  };
-}
-
-async function authHttp(req, res, next) {
-  try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    const payload = jwt.verify(token, JWT_SECRET);
-    const user = await prisma.user.findUnique({ where: { id: payload.sub } });
-    if (!user) throw new Error("missing user");
-    req.user = user;
-    next();
-  } catch {
-    res.status(401).json({ error: "请先登录" });
-  }
-}
 
 function sendResult(socket, result) {
   if (!result.ok) socket.emit("error:toast", result.error);
