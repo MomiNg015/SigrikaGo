@@ -105,6 +105,52 @@ describe("SigrikaGo rules", () => {
     expect(result.state.turn).toBe(COLORS.white);
   });
 
+  it("uses configured erase-point skill without consuming the turn", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    state.turn = COLORS.black;
+
+    const result = useSkill(
+      state,
+      COLORS.black,
+      {
+        effectType: "erase-point",
+        name: "星辰符文",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "empty-point",
+        params: {}
+      },
+      pointId(6, 6)
+    );
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(6, 6)).valid).toBe(false);
+    expect(result.state.turn).toBe(COLORS.black);
+  });
+
+  it("uses configured flip-stone skill and consumes the turn", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    forceStone(state, 4, 4, COLORS.white);
+
+    const result = useSkill(
+      state,
+      COLORS.black,
+      {
+        effectType: "flip-stone",
+        name: "染移",
+        uses: 1,
+        freeTurn: false,
+        targetRule: "stone",
+        params: {}
+      },
+      pointId(4, 4)
+    );
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(4, 4)).stone).toBe(COLORS.black);
+    expect(result.state.turn).toBe(COLORS.white);
+  });
+
   it("scores with black komi of 2.75 stones", () => {
     const state = createGameState();
     forceStone(state, 0, 0, COLORS.black);

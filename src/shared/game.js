@@ -140,16 +140,49 @@ export function resignGame(state, color) {
   return ok(next);
 }
 
-export function useSkill(state, color, characterId, targetId) {
+export function useSkill(state, color, skillOrCharacterId, targetId) {
   if (state.phase !== "playing") return fail("对局当前不能使用技能");
   if (state.turn !== color) return fail("还没有轮到你");
   if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
-  if (characterId === "sigrika") return erasePoint(state, color, targetId);
-  if (characterId === "danea") return flipStone(state, color, targetId);
+  const skill = normalizeSkillConfig(skillOrCharacterId);
+  if (skill?.effectType === "erase-point") {
+    return erasePoint(state, color, targetId, {
+      skillName: skill.name,
+      consumesTurn: !skill.freeTurn
+    });
+  }
+  if (skill?.effectType === "flip-stone") {
+    return flipStone(state, color, targetId, { skillName: skill.name });
+  }
   return fail("未知角色技能");
 }
 
-export function erasePoint(state, color, id) {
+export function normalizeSkillConfig(skillOrCharacterId) {
+  if (skillOrCharacterId?.effectType) return skillOrCharacterId;
+  if (skillOrCharacterId === "sigrika") {
+    return {
+      effectType: "erase-point",
+      name: "星辰符文",
+      uses: 1,
+      freeTurn: true,
+      targetRule: "empty-point",
+      params: {}
+    };
+  }
+  if (skillOrCharacterId === "danea") {
+    return {
+      effectType: "flip-stone",
+      name: "染移",
+      uses: 1,
+      freeTurn: false,
+      targetRule: "stone",
+      params: {}
+    };
+  }
+  return null;
+}
+
+export function erasePoint(state, color, id, options = {}) {
   const next = cloneState(state);
   const point = getPoint(next, id);
   if (!point?.valid) return fail("该交叉点已不可用");
@@ -163,10 +196,11 @@ export function erasePoint(state, color, id) {
   next.skillUses[color] -= 1;
   next.ko = null;
   next.history.push({ type: "skill", skill: "星辰符文", color, id, moveNumber: next.moveNumber });
-  return ok(resolveCapturesAfterMutation(next, color, false));
+  if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
+  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false));
 }
 
-export function flipStone(state, color, id) {
+export function flipStone(state, color, id, options = {}) {
   const next = cloneState(state);
   const point = getPoint(next, id);
   if (!point?.valid || !point.stone) return fail("必须指定棋盘上的棋子");
@@ -174,6 +208,7 @@ export function flipStone(state, color, id) {
   next.skillUses[color] -= 1;
   next.ko = null;
   next.history.push({ type: "skill", skill: "染秽", color, id, moveNumber: next.moveNumber });
+  if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
   return ok(resolveCapturesAfterMutation(next, color, true));
 }
 
