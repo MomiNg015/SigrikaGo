@@ -5,3 +5,4 @@ dist
 *.db-journal
 prisma/dev.db
 dev-server.*.log
+.superpowers/
