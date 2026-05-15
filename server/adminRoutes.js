@@ -29,7 +29,8 @@ export function sanitizeUserUpdate(body = {}) {
       data.status = value;
     }
     if (key === "rank" && typeof value === "string") {
-      data.rank = value.trim().slice(0, 20);
+      const rank = value.trim().slice(0, 20);
+      if (rank) data.rank = rank;
     }
     if (key === "rating") {
       const rating = parseIntegerInput(value);
@@ -40,14 +41,16 @@ export function sanitizeUserUpdate(body = {}) {
       if (coins != null) data.coins = coins;
     }
     if (key === "ownedCharacters" && Array.isArray(value)) {
-      data.ownedCharacters = value
+      const ownedCharacters = value
         .filter((character) => typeof character === "string")
         .map((character) => character.trim())
         .filter(Boolean)
         .join(",");
+      if (ownedCharacters) data.ownedCharacters = ownedCharacters;
     }
     if (key === "selectedCharacter" && typeof value === "string") {
-      data.selectedCharacter = value.trim();
+      const selectedCharacter = value.trim();
+      if (selectedCharacter) data.selectedCharacter = selectedCharacter;
     }
   }
   return data;
