@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { safeUploadFilename } from "./adminRoutes.js";
 import { validateCharacterInput } from "./characters.js";
 
 const validInput = {
@@ -16,6 +17,11 @@ const validInput = {
 };
 
 describe("character admin helpers", () => {
+  it("creates safe upload filenames", () => {
+    const name = safeUploadFilename("Danea Pretty.PNG", "image/png");
+    expect(name).toMatch(/^character-[a-f0-9-]+-danea-pretty\.png$/);
+  });
+
   it("accepts a valid erase-point skill targeting an empty point", () => {
     const result = validateCharacterInput(validInput);
 

@@ -3,12 +3,17 @@ import bcrypt from "bcryptjs";
 import cors from "cors";
 import express from "express";
 import jwt from "jsonwebtoken";
+import fs from "node:fs";
 import { createServer } from "node:http";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import multer from "multer";
 import { Server } from "socket.io";
 import { prisma, publicUser } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
-import { createAdminRouter } from "./adminRoutes.js";
+import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
+import { listPublicCharacters, seedCharacters } from "./characters.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -29,9 +34,25 @@ const server = createServer(app);
 const PORT = Number(process.env.PORT ?? 3001);
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret";
 const { authHttp, requireAdmin } = makeAuth({ prisma, jwtSecret: JWT_SECRET });
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uploadDir = path.join(__dirname, "..", "public", "uploads", "characters");
+fs.mkdirSync(uploadDir, { recursive: true });
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: uploadDir,
+    filename: (_req, file, cb) => {
+      try {
+        cb(null, safeUploadFilename(file.originalname, file.mimetype));
+      } catch (error) {
+        cb(error);
+      }
+    }
+  })
+});
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "..", "public", "uploads")));
 
 const io = new Server(server, {
   cors: {
@@ -40,13 +61,18 @@ const io = new Server(server, {
   }
 });
 
+await seedCharacters(prisma);
 await promoteConfiguredAdmins(prisma);
 
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
 
-app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma }));
+app.get("/api/characters", authHttp, async (_req, res) => {
+  res.json({ characters: await listPublicCharacters(prisma) });
+});
+
+app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
 
 app.post("/api/auth/register", async (req, res) => {
   const username = String(req.body.username ?? "").trim();

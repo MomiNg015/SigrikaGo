@@ -179,6 +179,26 @@ describe("admin user routes", () => {
   });
 });
 
+describe("admin character routes", () => {
+  it("allows PATCH /characters/:id to update legacy top-level skill fields", async () => {
+    const { prisma, characterUpdates } = characterRoutePrisma();
+
+    const response = await requestAdminRoute(prisma, "/characters/danea", {
+      method: "PATCH",
+      body: {
+        skillName: "Mirror Step",
+        uses: 2
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.character.skill.name).toBe("Mirror Step");
+    expect(response.body.character.skill.uses).toBe(2);
+    expect(characterUpdates[0].skill.upsert.update.name).toBe("Mirror Step");
+    expect(characterUpdates[0].skill.upsert.update.uses).toBe(2);
+  });
+});
+
 function userFixture() {
   return {
     id: "user-1",
@@ -238,6 +258,72 @@ function transactionPrisma() {
         calls.push("transaction");
         return callback(tx);
       }
+    }
+  };
+}
+
+function characterRoutePrisma() {
+  const characterUpdates = [];
+  const character = characterFixture();
+  const tx = {
+    character: {
+      findFirst: async () => character,
+      update: async ({ data }) => {
+        characterUpdates.push(data);
+        return {
+          ...character,
+          ...data,
+          skill: {
+            ...character.skill,
+            ...data.skill.upsert.update
+          }
+        };
+      }
+    },
+    adminAuditLog: {
+      create: async ({ data }) => data
+    }
+  };
+  return {
+    characterUpdates,
+    prisma: {
+      character: {
+        findFirst: () => {
+          throw new Error("mutation must use the transaction client");
+        },
+        update: () => {
+          throw new Error("mutation must use the transaction client");
+        }
+      },
+      adminAuditLog: {
+        create: () => {
+          throw new Error("mutation must use the transaction client");
+        }
+      },
+      $transaction: async (callback) => callback(tx)
+    }
+  };
+}
+
+function characterFixture() {
+  return {
+    id: "character-db-1",
+    slug: "danea",
+    name: "Danea",
+    portraitUrl: "/assets/danea.png",
+    palette: "#6ab7ff",
+    enabled: true,
+    sortOrder: 1,
+    createdAt: new Date("2026-01-01T00:00:00Z"),
+    skill: {
+      id: "skill-1",
+      effectType: "flip-stone",
+      name: "Old Skill",
+      description: "Flip a stone",
+      uses: 1,
+      freeTurn: false,
+      targetRule: "stone",
+      paramsJson: "{}"
     }
   };
 }
