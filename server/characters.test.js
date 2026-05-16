@@ -1,12 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { safeUploadFilename } from "./adminRoutes.js";
-import { toCharacterPayload, validateCharacterInput } from "./characters.js";
+import { listPublicCharacterResponse, toCharacterPayload, validateCharacterInput } from "./characters.js";
 
 const validInput = {
   slug: "star-rune",
   name: "星辰符文师",
   palette: "#ff9b4d",
   portraitUrl: "/assets/sigrika_centered.png",
+  skill: {
+    effectType: "erase-point",
+    name: "Star Rune",
+    description: "Erase one empty intersection.",
+    uses: 1,
+    freeTurn: true,
+    targetRule: "empty-point",
+    paramsJson: "{}"
+  },
   effectType: "erase-point",
   skillName: "星辰符文",
   skillDescription: "抹除一个空交叉点。",
@@ -71,7 +80,10 @@ describe("character admin helpers", () => {
   it("rejects erase-point skills targeting a stone", () => {
     const result = validateCharacterInput({
       ...validInput,
-      targetRule: "stone"
+      skill: {
+        ...validInput.skill,
+        targetRule: "stone"
+      }
     });
 
     expect(result.ok).toBe(false);
@@ -117,5 +129,60 @@ describe("character admin helpers", () => {
 
     expect(result.ok).toBe(false);
     expect(result.error).toContain("freeTurn");
+  });
+
+  it("rejects blank skill name and description", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      skill: {
+        ...validInput.skill,
+        name: " ",
+        description: ""
+      }
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("skill.name");
+    expect(result.error).toContain("skill.description");
+  });
+
+  it("requires skill name and description from the nested skill object", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      skill: undefined,
+      skillName: validInput.skill.name,
+      skillDescription: validInput.skill.description
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("skill must be an object");
+  });
+
+  it("returns enabled public characters plus disabled slugs", async () => {
+    const response = await listPublicCharacterResponse({
+      character: {
+        findMany: async (query) => {
+          if (query.where?.enabled === true) {
+            return [{
+              id: "character-db-1",
+              slug: "danea",
+              name: "Danea",
+              portraitUrl: "/assets/danea.png",
+              portraitSource: "url",
+              palette: "#6ab7ff",
+              enabled: true,
+              skill: null
+            }];
+          }
+          return [
+            { slug: "sigrika", enabled: false },
+            { slug: "danea", enabled: true }
+          ];
+        }
+      }
+    });
+
+    expect(response.characters.map((character) => character.id)).toEqual(["danea"]);
+    expect(response.disabledSlugs).toEqual(["sigrika"]);
   });
 });

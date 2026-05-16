@@ -24,13 +24,18 @@ describe("admin route helpers", () => {
       passwordHash: "ignored"
     })).toEqual({
       role: "admin",
-      status: "banned",
       rank: "17级",
       rating: 1020,
       coins: 500,
       ownedCharacters: "sigrika,danea",
       selectedCharacter: "danea"
     });
+  });
+
+  it("does not allow generic profile updates to change user status", () => {
+    expect(sanitizeUserUpdate({
+      status: "banned"
+    })).toEqual({});
   });
 
   it("serializes audit before and after values", () => {

@@ -11,8 +11,8 @@ export function validateCharacterInput(input = {}) {
   }
 
   const errors = [];
-  const skillInput = input.skill ?? input;
-  if (!isPlainObject(skillInput)) errors.push("skill must be an object");
+  const skillInput = isPlainObject(input.skill) ? input.skill : {};
+  if (!isPlainObject(input.skill)) errors.push("skill must be an object");
 
   const slug = String(input.slug ?? "").trim();
   const name = String(input.name ?? "").trim();
@@ -20,8 +20,8 @@ export function validateCharacterInput(input = {}) {
   const portraitSource = String(input.portraitSource ?? "url").trim();
   const palette = String(input.palette ?? "#5d7fe8").trim();
   const effectType = String(skillInput.effectType ?? "").trim();
-  const skillName = String(skillInput.name ?? input.skillName ?? "").trim();
-  const description = String(skillInput.description ?? input.skillDescription ?? "").trim();
+  const skillName = String(skillInput.name ?? "").trim();
+  const description = String(skillInput.description ?? "").trim();
   const targetRule = String(skillInput.targetRule ?? "").trim();
   const uses = skillInput.uses ?? input.uses;
   const enabled = input.enabled ?? true;
@@ -34,6 +34,8 @@ export function validateCharacterInput(input = {}) {
     errors.push("slug must contain lowercase letters, numbers, or hyphens and be 2-40 characters");
   }
   if (!name) errors.push("name is required");
+  if (!skillName) errors.push("skill.name is required");
+  if (!description) errors.push("skill.description is required");
   if (!portraitUrl) errors.push("portraitUrl is required");
   if (!["url", "upload"].includes(portraitSource)) {
     errors.push("portraitSource must be url or upload");
@@ -142,12 +144,22 @@ export async function seedCharacters(prisma) {
 }
 
 export async function listPublicCharacters(prisma) {
+  return (await listPublicCharacterResponse(prisma)).characters;
+}
+
+export async function listPublicCharacterResponse(prisma) {
   const characters = await prisma.character.findMany({
     where: { enabled: true },
     include: { skill: true },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
   });
-  return characters.map(toCharacterPayload);
+  const records = await prisma.character.findMany({
+    select: { slug: true, enabled: true }
+  });
+  return {
+    characters: characters.map(toCharacterPayload),
+    disabledSlugs: records.filter((record) => !record.enabled).map((record) => record.slug)
+  };
 }
 
 function targetRuleForEffect(effectType) {

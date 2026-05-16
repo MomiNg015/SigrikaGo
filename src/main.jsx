@@ -56,7 +56,7 @@ function App() {
         setView("home");
         api("/api/characters", { token })
           .then((data) => {
-            setCharacters(mergeCharacters(data.characters));
+            setCharacters(mergeCharacters(data.characters, data.disabledSlugs));
           })
           .catch(() => setCharacters(CHARACTERS));
       })

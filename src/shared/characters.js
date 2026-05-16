@@ -3,12 +3,16 @@ import { FALLBACK_CHARACTERS, fallbackCharacterList } from "./characterFallback.
 export const CHARACTERS = FALLBACK_CHARACTERS;
 export const characterList = fallbackCharacterList;
 
-export function mergeCharacters(apiCharacters = []) {
-  const merged = { ...CHARACTERS };
+export function mergeCharacters(apiCharacters = [], disabledSlugs = []) {
+  const disabled = new Set(Array.isArray(disabledSlugs) ? disabledSlugs : []);
+  const merged = Object.fromEntries(
+    Object.entries(CHARACTERS).filter(([slug]) => !disabled.has(slug))
+  );
   if (!Array.isArray(apiCharacters)) return merged;
 
   for (const raw of apiCharacters) {
     if (!raw?.id) continue;
+    if (disabled.has(raw.id)) continue;
     const fallback = CHARACTERS[raw.id] ?? CHARACTERS.sigrika;
     merged[raw.id] = {
       ...fallback,

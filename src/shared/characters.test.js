@@ -28,4 +28,11 @@ describe("character fallback", () => {
     expect(Object.keys(mergeCharacters([]))).toEqual(expect.arrayContaining(["sigrika", "danea"]));
     expect(Object.keys(mergeCharacters("bad payload"))).toEqual(expect.arrayContaining(["sigrika", "danea"]));
   });
+
+  it("removes disabled built-in characters from merged fallback data", () => {
+    const merged = mergeCharacters([{ id: "danea", name: "Danea" }], ["sigrika"]);
+
+    expect(merged.sigrika).toBeUndefined();
+    expect(merged.danea).toBeDefined();
+  });
 });

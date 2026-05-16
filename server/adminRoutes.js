@@ -7,7 +7,6 @@ import { publicUser } from "./db.js";
 
 const EDITABLE_USER_FIELDS = new Set([
   "role",
-  "status",
   "rank",
   "rating",
   "coins",
@@ -47,9 +46,6 @@ export function sanitizeUserUpdate(body = {}) {
     if (!EDITABLE_USER_FIELDS.has(key)) continue;
     if (key === "role" && [USER_ROLES.player, USER_ROLES.admin].includes(value)) {
       data.role = value;
-    }
-    if (key === "status" && [USER_STATUS.active, USER_STATUS.banned].includes(value)) {
-      data.status = value;
     }
     if (key === "rank" && typeof value === "string") {
       const rank = value.trim().slice(0, 20);

@@ -2,7 +2,6 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import express from "express";
-import jwt from "jsonwebtoken";
 import fs from "node:fs";
 import { createServer } from "node:http";
 import path from "node:path";
@@ -13,9 +12,10 @@ import { prisma, publicUser } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
-import { listPublicCharacters, seedCharacters } from "./characters.js";
+import { listPublicCharacterResponse, listPublicCharacters, seedCharacters } from "./characters.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
+import { authenticateSocketUser } from "./socketAuth.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -73,7 +73,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.get("/api/characters", async (_req, res) => {
-  res.json({ characters: await listPublicCharacters(prisma) });
+  res.json(await listPublicCharacterResponse(prisma));
 });
 
 app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
@@ -164,18 +164,15 @@ app.get("/api/replays/:id", authHttp, async (req, res) => {
 
 io.use(async (socket, next) => {
   try {
-    const token = socket.handshake.auth?.token;
-    const payload = jwt.verify(token, JWT_SECRET);
-    const user = await prisma.user.findUnique({ where: { id: payload.sub } });
-    if (!user) throw new Error("user not found");
-    socket.user = publicUser(user);
-    const { characters, disabledSlugs } = await characterSelectionData();
-    const selected = resolveSelectedCharacter(socket.user.selectedCharacter, characters, disabledSlugs);
-    socket.user.selectedCharacter = selected.characterId;
-    socket.user.characterConfig = selected.characterConfig;
+    socket.user = await authenticateSocketUser({
+      token: socket.handshake.auth?.token,
+      jwtSecret: JWT_SECRET,
+      prisma,
+      characterSelectionData
+    });
     next();
-  } catch {
-    next(new Error("unauthorized"));
+  } catch (error) {
+    next(new Error(error.message === "forbidden" ? "forbidden" : "unauthorized"));
   }
 });
 
