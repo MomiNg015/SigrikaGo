@@ -2,11 +2,20 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import express from "express";
-import jwt from "jsonwebtoken";
+import fs from "node:fs";
 import { createServer } from "node:http";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import multer from "multer";
 import { Server } from "socket.io";
 import { prisma, publicUser } from "./db.js";
+import { makeAuth, withToken } from "./auth.js";
+import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
+import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
+import { listPublicCharacterResponse, listPublicCharacters, seedCharacters } from "./characters.js";
 import { CHARACTERS } from "../src/shared/characters.js";
+import { resolveSelectedCharacter } from "./characterSelection.js";
+import { authenticateSocketUser } from "./socketAuth.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -28,9 +37,28 @@ const app = express();
 const server = createServer(app);
 const PORT = Number(process.env.PORT ?? 3001);
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret";
+const { authHttp, requireAdmin } = makeAuth({ prisma, jwtSecret: JWT_SECRET });
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uploadDir = path.join(__dirname, "..", "public", "uploads", "characters");
+fs.mkdirSync(uploadDir, { recursive: true });
+const upload = multer({
+  limits: { fileSize: 3 * 1024 * 1024 },
+  storage: multer.diskStorage({
+    destination: uploadDir,
+    filename: (_req, file, cb) => {
+      const filename = safeUploadFilename(file.originalname, file.mimetype);
+      if (!filename) {
+        cb(Object.assign(new Error("Unsupported image type"), { status: 400 }));
+        return;
+      }
+      cb(null, filename);
+    }
+  })
+});
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "..", "public", "uploads")));
 
 const io = new Server(server, {
   cors: {
@@ -39,9 +67,18 @@ const io = new Server(server, {
   }
 });
 
+await seedCharacters(prisma);
+await promoteConfiguredAdmins(prisma);
+
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
+
+app.get("/api/characters", async (_req, res) => {
+  res.json(await listPublicCharacterResponse(prisma));
+});
+
+app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
 
 app.post("/api/auth/register", async (req, res) => {
   const username = String(req.body.username ?? "").trim();
@@ -53,7 +90,8 @@ app.post("/api/auth/register", async (req, res) => {
   const passwordHash = await bcrypt.hash(password, 10);
   try {
     const user = await prisma.user.create({ data: { username, passwordHash } });
-    res.json(withToken(user));
+    const syncedUser = await syncConfiguredAdmin(user, prisma);
+    res.json(withToken(syncedUser, JWT_SECRET));
   } catch {
     res.status(409).json({ error: "用户名已存在" });
   }
@@ -67,7 +105,12 @@ app.post("/api/auth/login", async (req, res) => {
     res.status(401).json({ error: "用户名或密码错误" });
     return;
   }
-  res.json(withToken(user));
+  if (user.status === USER_STATUS.banned) {
+    res.status(403).json({ error: user.banReason ? `账号已封禁：${user.banReason}` : "账号已封禁" });
+    return;
+  }
+  const syncedUser = await syncConfiguredAdmin(user, prisma);
+  res.json(withToken(syncedUser, JWT_SECRET));
 });
 
 app.get("/api/me", authHttp, async (req, res) => {
@@ -76,7 +119,8 @@ app.get("/api/me", authHttp, async (req, res) => {
 
 app.post("/api/me/character", authHttp, async (req, res) => {
   const characterId = String(req.body.characterId ?? "");
-  if (!CHARACTERS[characterId]) {
+  const { characters, disabledSlugs } = await characterSelectionData();
+  if (!characters[characterId] && (disabledSlugs.has(characterId) || !CHARACTERS[characterId])) {
     res.status(400).json({ error: "未知角色" });
     return;
   }
@@ -122,14 +166,15 @@ app.get("/api/replays/:id", authHttp, async (req, res) => {
 
 io.use(async (socket, next) => {
   try {
-    const token = socket.handshake.auth?.token;
-    const payload = jwt.verify(token, JWT_SECRET);
-    const user = await prisma.user.findUnique({ where: { id: payload.sub } });
-    if (!user) throw new Error("user not found");
-    socket.user = publicUser(user);
+    socket.user = await authenticateSocketUser({
+      token: socket.handshake.auth?.token,
+      jwtSecret: JWT_SECRET,
+      prisma,
+      characterSelectionData
+    });
     next();
-  } catch {
-    next(new Error("unauthorized"));
+  } catch (error) {
+    next(new Error(error.message === "forbidden" ? "forbidden" : "unauthorized"));
   }
 });
 
@@ -202,28 +247,24 @@ io.on("connection", (socket) => {
   });
 });
 
-function withToken(user) {
-  return {
-    token: jwt.sign({ sub: user.id }, JWT_SECRET, { expiresIn: "14d" }),
-    user: publicUser(user)
-  };
-}
-
-async function authHttp(req, res, next) {
-  try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    const payload = jwt.verify(token, JWT_SECRET);
-    const user = await prisma.user.findUnique({ where: { id: payload.sub } });
-    if (!user) throw new Error("missing user");
-    req.user = user;
-    next();
-  } catch {
-    res.status(401).json({ error: "请先登录" });
-  }
-}
-
 function sendResult(socket, result) {
   if (!result.ok) socket.emit("error:toast", result.error);
+}
+
+async function characterMap() {
+  const list = await listPublicCharacters(prisma);
+  return Object.fromEntries(list.map((character) => [character.id, character]));
+}
+
+async function characterSelectionData() {
+  const [characters, records] = await Promise.all([
+    characterMap(),
+    prisma.character.findMany({ select: { slug: true, enabled: true } })
+  ]);
+  return {
+    characters,
+    disabledSlugs: new Set(records.filter((record) => !record.enabled).map((record) => record.slug))
+  };
 }
 
 async function publicUserWithHistory(user) {

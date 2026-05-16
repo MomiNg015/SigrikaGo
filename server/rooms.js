@@ -84,31 +84,34 @@ export function handleGameAction(roomCode, userId, action, io) {
   if (room.game.pendingSkill) return { ok: false, error: "技能演出中" };
 
   if (action.type === "skill") {
-    const result = useSkill(room.game, player.color, player.characterId, action.pointId);
+    const skillConfig = player.character?.skill ?? player.characterId;
+    const result = useSkill(room.game, player.color, skillConfig, action.pointId);
     if (!result.ok) return result;
     const skillNotice = describeSkillUse(room, player, action.pointId);
 
-    const character = CHARACTERS[player.characterId];
+    const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
+    const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
     const pendingSkill = {
       id: crypto.randomUUID(),
       color: player.color,
       username: player.user.username,
-      characterId: character.id,
+      characterId: character.id ?? player.characterId,
+      character: player.character ?? null,
       characterName: character.name,
-      skillName: character.skill.name
+      skillName: skill.name
     };
     room.game = {
-      ...room.game,
+      ...result.state,
       phase: "skill-preview",
       pendingSkill
     };
+    appendSystem(room, skillNotice, { kind: "skill" });
     setTimeout(() => {
       const latest = rooms.get(roomCode);
       if (!latest || latest.game.pendingSkill?.id !== pendingSkill.id) return;
       result.state.pendingSkill = null;
       latest.game = result.state;
       resetByoYomi(player);
-      appendSystem(latest, skillNotice, { kind: "skill" });
       appendNotices(latest, result.notices);
       if (latest.game.phase === "finished") scheduleRoomClose(roomCode, io);
       broadcastRoom(io, latest);
@@ -333,6 +336,7 @@ export function roomView(room, viewerId) {
       user: p.user,
       color: p.color,
       characterId: p.characterId,
+      character: p.character,
       captures: room.game.captures[p.color],
       time: p.time
     })),
@@ -372,7 +376,8 @@ function createRoom(first, second) {
     game: createGameState(players.map((p) => ({
       userId: p.user.id,
       color: p.color,
-      characterId: p.characterId
+      characterId: p.characterId,
+      character: p.character
     }))),
     chat: [],
     createdAt: Date.now(),
@@ -391,6 +396,7 @@ function toRoomPlayer(player, color) {
     socketId: player.socketId,
     color,
     characterId: player.user.selectedCharacter,
+    character: player.user.characterConfig ?? null,
     time: {
       main: 5 * 60,
       byoYomi: 30,
@@ -426,20 +432,22 @@ function appendNotices(room, notices = []) {
 }
 
 function describeSkillUse(room, player, targetId) {
-  const character = CHARACTERS[player.characterId];
+  const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
+  const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
+  const effectType = skill.effectType ?? skill.id;
   const colorLabel = player.color === COLORS.black ? "黑" : "白";
-  const fixed = `${colorLabel}方${player.user.username}使用了${character.name}的“${character.skill.name}”技能`;
+  const fixed = `${colorLabel}方${player.user.username}使用了${character.name}的“${skill.name}”技能`;
   const coord = formatPointLabel(targetId);
-  if (player.characterId === "sigrika") {
+  if (effectType === "erase-point") {
     return `${fixed}。从天而降破坏了${coord}的点位，铛！`;
   }
-  if (player.characterId === "danea") {
+  if (effectType === "flip-stone") {
     const point = getPoint(room.game, targetId);
     const from = stoneLabel(point?.stone);
     const to = stoneLabel(point?.stone ? opponent(point.stone) : null);
     return `${fixed}。诅咒了${coord}的${from}，将其从${from}变成了${to}。`;
   }
-  if (player.characterId === "aemeath") {
+  if (effectType === "hidden-hand" || player.characterId === "aemeath") {
     return `${fixed}。落下了电子幽灵般的一手，应该不会被发现吧...`;
   }
   return `${fixed}。`;

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { CHARACTERS } from "./characters.js";
 import {
   COLORS,
   createDrawResult,
@@ -108,6 +109,107 @@ describe("SigrikaGo rules", () => {
     expect(result.state.skillUses.black).toBe(0);
     expect(result.state.skillCosts.black).toBe(3);
     expect(result.state.turn).toBe(COLORS.white);
+    expect(result.state.history.at(-1).skill).toBe(CHARACTERS.danea.skill.name);
+  });
+
+  it("initializes configured skill uses from player character skills", () => {
+    const state = createGameState([
+      {
+        color: COLORS.black,
+        character: {
+          skill: {
+            effectType: "erase-point",
+            name: "Locked Rune",
+            uses: 0,
+            freeTurn: true
+          }
+        }
+      },
+      {
+        color: COLORS.white,
+        character: {
+          skill: {
+            effectType: "flip-stone",
+            name: "Double Hex",
+            uses: 2,
+            freeTurn: false
+          }
+        }
+      }
+    ]);
+
+    expect(state.skillUses.black).toBe(0);
+    expect(state.skillUses.white).toBe(2);
+  });
+
+  it("uses configured erase-point skill without consuming the turn", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    state.turn = COLORS.black;
+
+    const result = useSkill(
+      state,
+      COLORS.black,
+      {
+        effectType: "erase-point",
+        name: "星辰符文",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "empty-point",
+        params: {}
+      },
+      pointId(6, 6)
+    );
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(6, 6)).valid).toBe(false);
+    expect(result.state.turn).toBe(COLORS.black);
+  });
+
+  it("uses configured flip-stone skill and consumes the turn", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    forceStone(state, 4, 4, COLORS.white);
+
+    const result = useSkill(
+      state,
+      COLORS.black,
+      {
+        effectType: "flip-stone",
+        name: "染移",
+        uses: 1,
+        freeTurn: false,
+        targetRule: "stone",
+        params: {}
+      },
+      pointId(4, 4)
+    );
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(4, 4)).stone).toBe(COLORS.black);
+    expect(result.state.turn).toBe(COLORS.white);
+  });
+
+  it("uses configured flip-stone skill without consuming a free turn", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    forceStone(state, 4, 4, COLORS.white);
+
+    const result = useSkill(
+      state,
+      COLORS.black,
+      {
+        effectType: "flip-stone",
+        name: "Free Hex",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "stone",
+        params: {}
+      },
+      pointId(4, 4)
+    );
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(4, 4)).stone).toBe(COLORS.black);
+    expect(result.state.turn).toBe(COLORS.black);
+    expect(result.state.moveNumber).toBe(0);
   });
 
   it("places a hidden hand with Aemeath skill", () => {

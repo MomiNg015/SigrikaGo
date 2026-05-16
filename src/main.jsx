@@ -16,6 +16,7 @@ import {
   PanelRight,
   Pause,
   Play,
+  Plus,
   Send,
   Settings,
   ShoppingBag,
@@ -23,9 +24,10 @@ import {
   Swords,
   UserRound,
   Volume2,
+  Upload,
   X
 } from "lucide-react";
-import { CHARACTERS, characterList } from "./shared/characters.js";
+import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
 import { BOARD_SIZE, COLORS, createGameState, passMove, playMove, useSkill } from "./shared/game.js";
 import "./styles.css";
 
@@ -55,6 +57,9 @@ function App() {
   const [replayRecords, setReplayRecords] = useState([]);
   const [replayStep, setReplayStep] = useState(null);
   const [dismissedResultRoom, setDismissedResultRoom] = useState("");
+  const [characters, setCharacters] = useState(CHARACTERS);
+  const [adminTab, setAdminTab] = useState("overview");
+  const characterListView = Object.values(characters);
 
   useEffect(() => {
     if (!token) return;
@@ -62,10 +67,16 @@ function App() {
       .then((data) => {
         setUser(data.user);
         setView("home");
+        api("/api/characters", { token })
+          .then((data) => {
+            setCharacters(mergeCharacters(data.characters, data.disabledSlugs));
+          })
+          .catch(() => setCharacters(CHARACTERS));
       })
       .catch(() => {
         localStorage.removeItem("sigrika-token");
         setToken("");
+        setCharacters(CHARACTERS);
       });
   }, [token]);
 
@@ -117,6 +128,7 @@ function App() {
     setToken("");
     setUser(null);
     setRoom(null);
+    setCharacters(CHARACTERS);
     setView("login");
   }
 
@@ -176,6 +188,7 @@ function App() {
       {view === "home" && user && (
         <HomeScreen
           user={user}
+          characters={characters}
           onLogout={logout}
           onSelectCharacter={selectCharacter}
           onStartMatch={startMatch}
@@ -183,12 +196,37 @@ function App() {
           onOpenWatch={() => setShowWatch(true)}
           onOpenShop={() => setShowShop(true)}
           onOpenSettings={() => setShowSettings(true)}
+          onOpenAdmin={() => setView("admin")}
+        />
+      )}
+      {view === "admin" && user?.role === "admin" && (
+        <AdminConsole
+          user={user}
+          token={token}
+          tab={adminTab}
+          setTab={setAdminTab}
+          onBack={() => setView("home")}
+        />
+      )}
+      {view === "admin" && user?.role !== "admin" && (
+        <HomeScreen
+          user={user}
+          characters={characters}
+          onLogout={logout}
+          onSelectCharacter={selectCharacter}
+          onStartMatch={startMatch}
+          onOpenHouse={() => setShowHouse(true)}
+          onOpenWatch={() => setShowWatch(true)}
+          onOpenShop={() => setShowShop(true)}
+          onOpenSettings={() => setShowSettings(true)}
+          onOpenAdmin={() => setView("admin")}
         />
       )}
       {view === "room" && room && user && (
         <RoomScreen
           room={room}
           user={user}
+          characters={characters}
           replayStep={replayStep}
           setReplayStep={setReplayStep}
           pendingSkill={pendingSkill}
@@ -209,16 +247,17 @@ function App() {
         />
       )}
       {room?.game.phase === "finished" && dismissedResultRoom !== room.code && (
-        <ResultModal room={room} onClose={() => setDismissedResultRoom(room.code)} />
+        <ResultModal room={room} characters={characters} onClose={() => setDismissedResultRoom(room.code)} />
       )}
       {matchStart && <MatchModal user={user} startedAt={matchStart} onCancel={() => {
         socket?.emit("match:leave");
         setMatchStart(null);
-      }} />}
+      }} characters={characters} />}
       {showHouse && user && (
         <HouseModal
           user={user}
           records={replayRecords}
+          characterListView={characterListView}
           onClose={() => setShowHouse(false)}
           onSelectCharacter={selectCharacter}
           onOpenReplay={openReplay}
@@ -244,6 +283,556 @@ function App() {
         />
       )}
     </div>
+  );
+}
+
+function AdminConsole({ user, token, tab, setTab, onBack }) {
+  const tabs = ["overview", "users", "characters", "audit"];
+  const [summary, setSummary] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [adminCharacters, setAdminCharacters] = useState([]);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [adminError, setAdminError] = useState("");
+
+  useEffect(() => {
+    if (tab !== "overview") return;
+    setAdminError("");
+    adminApi("/summary", token)
+      .then(setSummary)
+      .catch((error) => setAdminError(error.message));
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "users") return;
+    refreshUsers();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "characters") return;
+    refreshCharacters();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "audit") return;
+    refreshAuditLogs();
+  }, [tab, token]);
+
+  async function refreshUsers(nextSelectedId = selectedUser?.id) {
+    setAdminError("");
+    try {
+      const data = await adminApi("/users", token);
+      const nextUsers = data.users ?? [];
+      setUsers(nextUsers);
+      if (nextSelectedId) {
+        setSelectedUser(nextUsers.find((candidate) => candidate.id === nextSelectedId) ?? null);
+      }
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  }
+
+  async function refreshCharacters() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/characters", token);
+      setAdminCharacters(data.characters ?? []);
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  }
+
+  async function refreshAuditLogs() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/audit-logs", token);
+      setAuditLogs(data.auditLogs ?? []);
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  }
+
+  return (
+    <main className="admin-screen">
+      <aside className="admin-sidebar">
+        <strong>SigrikaGo Admin</strong>
+        {tabs.map((item) => (
+          <button key={item} className={tab === item ? "active" : ""} onClick={() => setTab(item)}>
+            {item}
+          </button>
+        ))}
+        <button onClick={onBack}>返回大厅</button>
+      </aside>
+      <section className="admin-main">
+        <header><span>{user.username}</span><strong>{tab}</strong></header>
+        {adminError && <p className="form-error admin-error">{adminError}</p>}
+        {tab === "overview" && <AdminOverview summary={summary} />}
+        {tab === "users" && (
+          <>
+            <AdminUsers users={users} onSelect={setSelectedUser} />
+            {selectedUser && (
+              <UserEditor
+                user={selectedUser}
+                token={token}
+                onClose={() => setSelectedUser(null)}
+                onRefresh={refreshUsers}
+              />
+            )}
+          </>
+        )}
+        {tab === "characters" && (
+          <AdminCharacters characters={adminCharacters} token={token} onSaved={refreshCharacters} />
+        )}
+        {tab === "audit" && <AdminAudit logs={auditLogs} />}
+      </section>
+    </main>
+  );
+}
+
+function AdminOverview({ summary }) {
+  const cards = [
+    ["用户", summary?.summary?.users ?? 0],
+    ["封禁", summary?.summary?.bannedUsers ?? 0],
+    ["角色", summary?.summary?.characters ?? 0],
+    ["棋谱", summary?.summary?.gameRecords ?? 0]
+  ];
+  return (
+    <div className="admin-grid">
+      {cards.map(([label, value]) => <Stat key={label} label={label} value={value} />)}
+    </div>
+  );
+}
+
+function AdminUsers({ users, onSelect }) {
+  return (
+    <div className="admin-table-wrap">
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>用户名</th>
+            <th>权限</th>
+            <th>状态</th>
+            <th>段位</th>
+            <th>积分</th>
+            <th>金币</th>
+            <th>胜负</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id} onClick={() => onSelect(user)}>
+              <td>{user.username}</td>
+              <td>{user.role}</td>
+              <td>{user.status}</td>
+              <td>{user.rank}</td>
+              <td>{user.rating}</td>
+              <td>{user.coins}</td>
+              <td>{user.wins}/{user.losses}</td>
+            </tr>
+          ))}
+          {users.length === 0 && (
+            <tr>
+              <td colSpan="7">暂无用户</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function AdminCharacters({ characters, token, onSaved }) {
+  const [draft, setDraft] = useState(null);
+
+  function startNewCharacter() {
+    setDraft(emptyCharacterDraft());
+  }
+
+  function selectCharacter(character) {
+    setDraft(buildCharacterDraft(character));
+  }
+
+  return (
+    <div className="admin-character-layout">
+      <section className="admin-character-list">
+        <button className="admin-add-button" onClick={startNewCharacter}>
+          <Plus size={18} />新增角色
+        </button>
+        <div className="admin-character-cards">
+          {characters.map((character) => (
+            <button
+              key={character.dbId ?? character.id}
+              className={`admin-character-card ${draft?.dbId === character.dbId ? "selected" : ""}`}
+              onClick={() => selectCharacter(character)}
+            >
+              <img src={character.portrait} alt={character.name} />
+              <span>
+                <strong>{character.name}</strong>
+                <small>{character.id}</small>
+              </span>
+              <em>{character.enabled ? "启用" : "停用"}</em>
+            </button>
+          ))}
+          {characters.length === 0 && <p className="quiet-text">暂无角色。</p>}
+        </div>
+      </section>
+      <section className="admin-character-editor">
+        {draft ? (
+          <CharacterEditor
+            draft={draft}
+            setDraft={setDraft}
+            token={token}
+            onCancel={() => setDraft(null)}
+            onSaved={async () => {
+              setDraft(null);
+              await onSaved();
+            }}
+          />
+        ) : (
+          <div className="admin-empty-state">
+            <strong>选择一个角色</strong>
+            <p className="quiet-text">从左侧选择角色，或新建角色后编辑技能和肖像。</p>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
+  const [actionError, setActionError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  function updateDraft(field, value) {
+    setActionError("");
+    setDraft((current) => ({ ...current, [field]: value }));
+  }
+
+  function updateSkill(field, value) {
+    setActionError("");
+    setDraft((current) => ({
+      ...current,
+      skill: {
+        ...current.skill,
+        [field]: value
+      }
+    }));
+  }
+
+  function updateSkillEffect(effectType) {
+    setActionError("");
+    setDraft((current) => ({
+      ...current,
+      skill: {
+        ...current.skill,
+        effectType,
+        targetRule: targetRuleForEffect(effectType)
+      }
+    }));
+  }
+
+  async function handleUpload(file) {
+    if (!file) return;
+    setUploading(true);
+    setActionError("");
+    try {
+      const url = await uploadPortrait(file, token);
+      setDraft((current) => ({
+        ...current,
+        portraitUrl: url,
+        portraitSource: "upload"
+      }));
+    } catch (error) {
+      setActionError(error.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function saveCharacter(event) {
+    event.preventDefault();
+    const body = characterDraftToBody(draft);
+    if (!body) {
+      setActionError("uses 和 sortOrder 必须是整数，uses 范围为 0-9");
+      return;
+    }
+
+    setSaving(true);
+    setActionError("");
+    try {
+      const id = draft.dbId ?? draft.originalSlug;
+      await adminApi(id ? `/characters/${id}` : "/characters", token, {
+        method: id ? "PATCH" : "POST",
+        body
+      });
+      await onSaved();
+    } catch (error) {
+      setActionError(error.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form className="admin-character-form" onSubmit={saveCharacter}>
+      <div className="admin-form-heading">
+        <div>
+          <h2>{draft.dbId ? "编辑角色" : "新增角色"}</h2>
+          <p className="quiet-text">{draft.originalSlug || "new-character"}</p>
+        </div>
+        <div className="inline-actions">
+          <button className="secondary-action" type="button" onClick={onCancel}>取消</button>
+          <button className="primary-action" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</button>
+        </div>
+      </div>
+      {actionError && <p className="form-error admin-action-error">{actionError}</p>}
+      <div className="admin-character-form-grid">
+        <label>slug
+          <input value={draft.slug} onChange={(event) => updateDraft("slug", event.target.value)} />
+        </label>
+        <label>name
+          <input value={draft.name} onChange={(event) => updateDraft("name", event.target.value)} />
+        </label>
+        <label>portraitUrl
+          <input value={draft.portraitUrl} onChange={(event) => updateDraft("portraitUrl", event.target.value)} />
+        </label>
+        <label>portraitSource
+          <select value={draft.portraitSource} onChange={(event) => updateDraft("portraitSource", event.target.value)}>
+            <option value="url">url</option>
+            <option value="upload">upload</option>
+          </select>
+        </label>
+        <label>palette
+          <input type="color" value={draft.palette} onChange={(event) => updateDraft("palette", event.target.value)} />
+        </label>
+        <label>sortOrder
+          <input type="number" value={draft.sortOrder} onChange={(event) => updateDraft("sortOrder", event.target.value)} />
+        </label>
+        <label className="admin-checkbox">
+          <input type="checkbox" checked={draft.enabled} onChange={(event) => updateDraft("enabled", event.target.checked)} />
+          enabled
+        </label>
+        <label className="admin-upload-field">上传肖像
+          <span>
+            <Upload size={18} />
+            {uploading ? "上传中" : "选择文件"}
+            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={(event) => handleUpload(event.target.files?.[0])} />
+          </span>
+        </label>
+      </div>
+      {draft.portraitUrl && (
+        <div className="admin-portrait-preview">
+          <img src={draft.portraitUrl} alt={draft.name || "character portrait"} />
+        </div>
+      )}
+      <h3>Skill</h3>
+      <div className="admin-character-form-grid">
+        <label>skill.effectType
+          <select value={draft.skill.effectType} onChange={(event) => updateSkillEffect(event.target.value)}>
+            <option value="erase-point">erase-point</option>
+            <option value="flip-stone">flip-stone</option>
+          </select>
+        </label>
+        <label>skill.name
+          <input value={draft.skill.name} onChange={(event) => updateSkill("name", event.target.value)} />
+        </label>
+        <label className="wide-field">skill.description
+          <textarea value={draft.skill.description} onChange={(event) => updateSkill("description", event.target.value)} />
+        </label>
+        <label>skill.uses
+          <input type="number" min="0" max="9" value={draft.skill.uses} onChange={(event) => updateSkill("uses", event.target.value)} />
+        </label>
+        <label>skill.targetRule
+          <select value={draft.skill.targetRule} onChange={(event) => updateSkill("targetRule", event.target.value)}>
+            <option value="empty-point">empty-point</option>
+            <option value="stone">stone</option>
+          </select>
+        </label>
+        <label className="admin-checkbox">
+          <input type="checkbox" checked={draft.skill.freeTurn} onChange={(event) => updateSkill("freeTurn", event.target.checked)} />
+          skill.freeTurn
+        </label>
+        <label className="wide-field">skill.paramsJson
+          <textarea value={draft.skill.paramsJson} onChange={(event) => updateSkill("paramsJson", event.target.value)} />
+        </label>
+      </div>
+    </form>
+  );
+}
+
+function AdminAudit({ logs }) {
+  return (
+    <div className="admin-table-wrap audit-table-wrap">
+      <table className="admin-table audit-table">
+        <thead>
+          <tr>
+            <th>时间</th>
+            <th>管理员</th>
+            <th>动作</th>
+            <th>目标</th>
+          </tr>
+        </thead>
+        <tbody>
+          {logs.map((log) => (
+            <tr key={log.id}>
+              <td>{formatDateTime(log.createdAt)}</td>
+              <td>{log.adminUserId ?? "-"}</td>
+              <td>{log.action}</td>
+              <td>{log.targetType ?? "-"} · {log.targetId ?? "-"}</td>
+            </tr>
+          ))}
+          {logs.length === 0 && (
+            <tr>
+              <td colSpan="4">暂无审计日志</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function UserEditor({ user, token, onClose, onRefresh }) {
+  const [draft, setDraft] = useState(() => buildUserDraft(user));
+  const [banReason, setBanReason] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setDraft(buildUserDraft(user));
+    setBanReason("");
+    setNewPassword("");
+    setActionError("");
+  }, [user]);
+
+  function updateDraft(field, value) {
+    setActionError("");
+    setDraft((current) => ({ ...current, [field]: value }));
+  }
+
+  async function runAction(action) {
+    setSaving(true);
+    setActionError("");
+    try {
+      await action();
+      await onRefresh(user.id);
+    } catch (error) {
+      setActionError(error.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveUser(event) {
+    event.preventDefault();
+    const rating = parseAdminInteger(draft.rating);
+    if (rating == null) {
+      setActionError("积分必须是 32-bit signed int 范围内的整数");
+      return;
+    }
+    const coins = parseAdminInteger(draft.coins);
+    if (coins == null) {
+      setActionError("金币必须是 32-bit signed int 范围内的整数");
+      return;
+    }
+    await runAction(() => adminApi(`/users/${draft.id}`, token, {
+      method: "PATCH",
+      body: {
+        role: draft.role,
+        rank: draft.rank,
+        rating,
+        coins,
+        ownedCharacters: draft.ownedCharactersText.split(",").map((item) => item.trim()).filter(Boolean),
+        selectedCharacter: draft.selectedCharacter
+      }
+    }));
+  }
+
+  async function banUser() {
+    const reason = banReason.trim();
+    if (reason.length < 2) {
+      setActionError("封禁原因至少需要 2 个字符");
+      return;
+    }
+    if (!window.confirm(`确认封禁 ${user.username}？`)) return;
+    await runAction(() => adminApi(`/users/${user.id}/ban`, token, {
+      method: "POST",
+      body: { reason }
+    }));
+  }
+
+  async function unbanUser() {
+    if (!window.confirm(`确认解封 ${user.username}？`)) return;
+    await runAction(() => adminApi(`/users/${user.id}/unban`, token, { method: "POST" }));
+  }
+
+  async function resetPassword() {
+    if (newPassword.length < 4) {
+      setActionError("新密码至少需要 4 个字符");
+      return;
+    }
+    if (!window.confirm(`确认重置 ${user.username} 的密码？`)) return;
+    await runAction(async () => {
+      await adminApi(`/users/${user.id}/reset-password`, token, {
+        method: "POST",
+        body: { password: newPassword }
+      });
+      setNewPassword("");
+    });
+  }
+
+  return (
+    <aside className="admin-drawer">
+      <button className="close-button" onClick={onClose}><X size={18} /></button>
+      <h2>{user.username}</h2>
+      <p className="quiet-text">{user.status} · {user.wins}/{user.losses}</p>
+      {actionError && <p className="form-error admin-action-error">{actionError}</p>}
+      <form className="admin-form" onSubmit={saveUser}>
+        <label>权限
+          <select value={draft.role} onChange={(event) => updateDraft("role", event.target.value)}>
+            <option value="player">player</option>
+            <option value="admin">admin</option>
+          </select>
+        </label>
+        <label>段位
+          <input value={draft.rank} onChange={(event) => updateDraft("rank", event.target.value)} />
+        </label>
+        <label>积分
+          <input type="number" value={draft.rating} onChange={(event) => updateDraft("rating", event.target.value)} />
+        </label>
+        <label>金币
+          <input type="number" value={draft.coins} onChange={(event) => updateDraft("coins", event.target.value)} />
+        </label>
+        <label>拥有角色
+          <input value={draft.ownedCharactersText} onChange={(event) => updateDraft("ownedCharactersText", event.target.value)} />
+        </label>
+        <label>出战角色
+          <input value={draft.selectedCharacter} onChange={(event) => updateDraft("selectedCharacter", event.target.value)} />
+        </label>
+        <button className="primary-action" type="submit" disabled={saving}>保存</button>
+      </form>
+      <div className="admin-danger-zone">
+        <label>封禁原因
+          <input value={banReason} onChange={(event) => {
+            setActionError("");
+            setBanReason(event.target.value);
+          }} />
+        </label>
+        <div className="inline-actions">
+          <button className="danger-action" onClick={banUser} disabled={saving || user.status === "banned"}>封禁</button>
+          <button className="secondary-action" onClick={unbanUser} disabled={saving || user.status !== "banned"}>解封</button>
+        </div>
+        <label>新密码
+          <input type="password" value={newPassword} onChange={(event) => {
+            setActionError("");
+            setNewPassword(event.target.value);
+          }} />
+        </label>
+        <button className="secondary-action" onClick={resetPassword} disabled={saving}>重置密码</button>
+      </div>
+    </aside>
   );
 }
 
@@ -292,7 +881,7 @@ function AuthScreen({ onAuth }) {
   );
 }
 
-function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, onOpenShop, onOpenSettings }) {
+function HomeScreen({ user, characters, onLogout, onStartMatch, onOpenHouse, onOpenWatch, onOpenShop, onOpenSettings, onOpenAdmin }) {
   return (
     <main className="home-screen">
       <header className="topbar">
@@ -312,7 +901,7 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
             <strong>棋舍</strong>
             <span>{user.username} · {user.rank} · {user.rating}分</span>
           </div>
-          <img className="entry-portrait" src={CHARACTERS[user.selectedCharacter]?.portrait} alt="出战角色" />
+          <img className="entry-portrait" src={findCharacter(characters, user.selectedCharacter).portrait} alt="出战角色" />
         </button>
         <Panel title="空想对局" icon={<Swords />}>
           <button className="match-button" onClick={onStartMatch}>
@@ -331,12 +920,19 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
           <strong>商城</strong>
           <span>角色、物品、装饰即将开放</span>
         </button>
+        {user.role === "admin" && (
+          <button className="home-entry admin-entry" onClick={onOpenAdmin}>
+            <Settings size={30} />
+            <strong>后台管理</strong>
+            <span>用户、角色与系统配置</span>
+          </button>
+        )}
       </section>
     </main>
   );
 }
 
-function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat }) {
+function RoomScreen({ room, user, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat }) {
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -447,6 +1043,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           <PlayerInfo
             player={opponent}
             game={displayRoom.game}
+            characters={characters}
             align="opponent"
             isWinner={displayRoom.game.phase === "finished" && opponent?.color === winnerColor}
             isActiveTurn={displayRoom.game.phase === "playing" && opponent?.color === displayRoom.game.turn}
@@ -510,6 +1107,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           <PlayerInfo
             player={me ?? displayRoom.players[0]}
             game={displayRoom.game}
+            characters={characters}
             align="self"
             isWinner={displayRoom.game.phase === "finished" && (me ?? displayRoom.players[0])?.color === winnerColor}
             isActiveTurn={displayRoom.game.phase === "playing" && (me ?? displayRoom.players[0])?.color === displayRoom.game.turn}
@@ -532,7 +1130,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           }}
         />
       )}
-      {skillPreview && <SkillBanner banner={skillPreview} />}
+      {skillPreview && <SkillBanner banner={skillPreview} characters={characters} />}
     </main>
   );
 }
@@ -607,9 +1205,9 @@ function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPo
   );
 }
 
-function PlayerInfo({ player, game, align, isWinner = false, isActiveTurn = false, isDrawResult = false, isSkillTargeting = false }) {
+function PlayerInfo({ player, game, characters, align, isWinner = false, isActiveTurn = false, isDrawResult = false, isSkillTargeting = false }) {
   if (!player) return <aside className="player-info empty" />;
-  const character = CHARACTERS[player.characterId];
+  const character = findCharacter(characters, player.character ?? player.characterId);
   const skillUses = game.skillUses[player.color] ?? 0;
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   return (
@@ -790,12 +1388,12 @@ function ChatBox({ room, onChat, readonly = false }) {
   );
 }
 
-function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay }) {
+function HouseModal({ user, records, characterListView, onClose, onSelectCharacter, onOpenReplay }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
   const [showReplays, setShowReplays] = useState(false);
   const stats = deriveHouseStats(user, records);
   const owned = new Set(user.ownedCharacters ?? []);
-  const emptySlots = Array.from({ length: Math.max(0, 10 - characterList.length) }, (_, index) => index);
+  const emptySlots = Array.from({ length: Math.max(0, 10 - characterListView.length) }, (_, index) => index);
 
   return (
     <div className="modal-backdrop">
@@ -809,7 +1407,7 @@ function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay })
           <Stat label="金币" value={user.coins} />
         </div>
         <div className="character-list">
-          {characterList.map((character) => (
+          {characterListView.map((character) => (
             <div
               className={`character-card portrait-card ${user.selectedCharacter === character.id ? "selected" : ""}`}
               key={character.id}
@@ -913,9 +1511,9 @@ function WatchPad({ code, setCode, onJoin }) {
   );
 }
 
-function MatchModal({ user, startedAt, onCancel }) {
+function MatchModal({ user, startedAt, onCancel, characters }) {
   const [now, setNow] = useState(Date.now());
-  const character = CHARACTERS[user?.selectedCharacter] ?? CHARACTERS.sigrika;
+  const character = findCharacter(characters, user?.selectedCharacter);
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 500);
     return () => clearInterval(id);
@@ -1010,11 +1608,11 @@ function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
   );
 }
 
-function ResultModal({ room, onClose }) {
+function ResultModal({ room, characters, onClose }) {
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
   const isDraw = !winnerColor;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
-  const character = CHARACTERS[winner?.characterId] ?? CHARACTERS.sigrika;
+  const character = findCharacter(characters, winner?.character ?? winner?.characterId);
   return (
     <div className="modal-backdrop">
       <section className={`result-modal ${winnerColor === COLORS.black ? "black-win" : ""} ${isDraw ? "draw-result" : ""}`}>
@@ -1034,8 +1632,8 @@ function ResultModal({ room, onClose }) {
   );
 }
 
-function SkillBanner({ banner }) {
-  const character = CHARACTERS[banner.characterId] ?? CHARACTERS.sigrika;
+function SkillBanner({ banner, characters }) {
+  const character = findCharacter(characters, banner.character ?? banner.characterId);
   return (
     <div className="skill-burst" aria-live="polite">
       <img src={character.portrait} alt={banner.characterName ?? character.name} />
@@ -1088,6 +1686,129 @@ function winnerColorFromRecord(record) {
   return null;
 }
 
+function buildUserDraft(user) {
+  return {
+    id: user.id,
+    role: user.role ?? "player",
+    rank: user.rank ?? "",
+    rating: user.rating ?? 0,
+    coins: user.coins ?? 0,
+    ownedCharactersText: (user.ownedCharacters ?? []).join(", "),
+    selectedCharacter: user.selectedCharacter ?? ""
+  };
+}
+
+function emptyCharacterDraft() {
+  return {
+    dbId: "",
+    originalSlug: "",
+    slug: "",
+    name: "",
+    portraitUrl: "",
+    portraitSource: "url",
+    palette: "#5d7fe8",
+    enabled: true,
+    sortOrder: 0,
+    skill: {
+      effectType: "erase-point",
+      name: "",
+      description: "",
+      uses: 1,
+      freeTurn: false,
+      targetRule: "empty-point",
+      paramsJson: "{}"
+    }
+  };
+}
+
+function buildCharacterDraft(character) {
+  const skill = character.skill ?? {};
+  return {
+    dbId: character.dbId ?? "",
+    originalSlug: character.id ?? "",
+    slug: character.id ?? "",
+    name: character.name ?? "",
+    portraitUrl: character.portrait ?? "",
+    portraitSource: character.portraitSource ?? "url",
+    palette: character.palette ?? "#5d7fe8",
+    enabled: character.enabled ?? true,
+    sortOrder: character.sortOrder ?? 0,
+    skill: {
+      effectType: skill.effectType ?? "erase-point",
+      name: skill.name ?? "",
+      description: skill.description ?? "",
+      uses: skill.uses ?? 1,
+      freeTurn: skill.freeTurn ?? false,
+      targetRule: skill.targetRule ?? targetRuleForEffect(skill.effectType ?? "erase-point"),
+      paramsJson: skill.paramsJson ?? JSON.stringify(skill.params ?? {})
+    }
+  };
+}
+
+function characterDraftToBody(draft) {
+  const sortOrder = parseAdminInteger(draft.sortOrder);
+  const uses = parseAdminInteger(draft.skill.uses);
+  if (sortOrder == null || uses == null || uses < 0 || uses > 9) return null;
+  return {
+    slug: draft.slug.trim(),
+    name: draft.name.trim(),
+    portraitUrl: draft.portraitUrl.trim(),
+    portraitSource: draft.portraitSource,
+    palette: draft.palette,
+    enabled: Boolean(draft.enabled),
+    sortOrder,
+    skill: {
+      effectType: draft.skill.effectType,
+      name: draft.skill.name.trim(),
+      description: draft.skill.description.trim(),
+      uses,
+      freeTurn: Boolean(draft.skill.freeTurn),
+      targetRule: draft.skill.targetRule,
+      paramsJson: draft.skill.paramsJson
+    }
+  };
+}
+
+function targetRuleForEffect(effectType) {
+  return effectType === "flip-stone" ? "stone" : "empty-point";
+}
+
+function parseAdminInteger(value) {
+  const text = String(value ?? "").trim();
+  if (!/^-?\d+$/.test(text)) return null;
+  const number = Number(text);
+  if (!Number.isSafeInteger(number)) return null;
+  if (number < -2147483648 || number > 2147483647) return null;
+  return number;
+}
+
+function canPreviewSkill(game, player, point) {
+  if (!player || game.phase !== "playing" || game.turn !== player.color) return false;
+  if ((game.skillUses[player.color] ?? 0) <= 0) return false;
+  if (!point?.valid) return false;
+  const skill = player.character?.skill ?? CHARACTERS[player.characterId]?.skill;
+  const effectType = skill?.effectType ?? skill?.id;
+  if (effectType === "erase-point") return !point.stone;
+  if (effectType === "flip-stone") return Boolean(point.stone);
+  return false;
+}
+
+function findCharacter(characters, characterOrId) {
+  const characterId = typeof characterOrId === "string" ? characterOrId : characterOrId?.id;
+  const fallback = CHARACTERS[characterId] ?? CHARACTERS.sigrika;
+  if (characterOrId && typeof characterOrId === "object") {
+    return {
+      ...fallback,
+      ...characterOrId,
+      skill: {
+        ...fallback.skill,
+        ...(characterOrId.skill ?? {})
+      }
+    };
+  }
+  return characters[characterId] ?? fallback;
+}
+
 function Toast({ text, onClose }) {
   useEffect(() => {
     const id = setTimeout(onClose, 3000);
@@ -1108,6 +1829,23 @@ async function api(path, options = {}) {
   const data = await response.json();
   if (!response.ok) throw new Error(data.error ?? "请求失败");
   return data;
+}
+
+async function adminApi(path, token, options = {}) {
+  return api(`/api/admin${path}`, { ...options, token });
+}
+
+async function uploadPortrait(file, token) {
+  const form = new FormData();
+  form.append("portrait", file);
+  const response = await fetch(`${API_BASE}/api/admin/uploads/character-portrait`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error ?? "上传失败");
+  return data.url;
 }
 
 function loadAudioSettings() {
@@ -1233,7 +1971,7 @@ function replayRoomAt(room, step) {
     if (entry.type === "pass") result = passMove(game, entry.color);
     if (entry.type === "skill") {
       const player = replayPlayers.find((candidate) => candidate.color === entry.color);
-      result = useSkill(game, entry.color, player?.characterId, entry.id);
+      result = useSkill(game, entry.color, player?.character?.skill ?? player?.characterId, entry.id);
     }
     if (result?.ok) game = result.state;
   }

@@ -23,7 +23,7 @@ export function createGameState(players = []) {
     ko: null,
     history: [],
     players,
-    skillUses: Object.fromEntries(players.map((p) => [p.color, 1])),
+    skillUses: Object.fromEntries(players.map((p) => [p.color, configuredSkillUses(p)])),
     skillCosts: { black: 0, white: 0 },
     skillCostNotes: [],
     phase: "playing",
@@ -173,7 +173,7 @@ export function createResignResult(resigningColor) {
   return {
     winnerColor,
     reason: "resign",
-    text: `${colorName(winnerColor)}中盘胜`
+    text: `${colorName(winnerColor)}\u4e2d\u76d8\u80dc`
   };
 }
 
@@ -182,7 +182,7 @@ export function createTimeoutResult(timeoutColor) {
   return {
     winnerColor,
     reason: "timeout",
-    text: `${colorName(winnerColor)}超时胜`
+    text: `${colorName(winnerColor)}\u8d85\u65f6\u80dc`
   };
 }
 
@@ -190,25 +190,89 @@ export function createDrawResult(reason = "agreement") {
   return {
     winnerColor: null,
     reason,
-    text: "和棋"
+    text: "\u548c\u68cb"
   };
 }
 
-export function useSkill(state, color, characterId, targetId) {
+export function useSkill(state, color, skillOrCharacterId, targetId) {
   if (state.phase !== "playing") return fail("对局当前不能使用技能");
   if (state.turn !== color) return fail("还没有轮到你");
   if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
-  if (characterId === "sigrika") return erasePoint(state, color, targetId);
-  if (characterId === "danea") return flipStone(state, color, targetId);
-  if (characterId === "aemeath") return playHiddenHand(state, color, targetId);
+  const skill = normalizeSkillConfig(skillOrCharacterId);
+  if (skill?.effectType === "erase-point") {
+    return erasePoint(state, color, targetId, {
+      skillName: skill.name,
+      consumesTurn: !skill.freeTurn
+    });
+  }
+  if (skill?.effectType === "flip-stone") {
+    return flipStone(state, color, targetId, {
+      skillName: skill.name,
+      consumesTurn: !skill.freeTurn
+    });
+  }
+  if (skill?.effectType === "hidden-hand") {
+    return playHiddenHand(state, color, targetId, {
+      skillName: skill.name,
+      characterId: skill.characterId ?? "aemeath"
+    });
+  }
   return fail("未知角色技能");
 }
 
-export function playHiddenHand(state, color, id) {
-  return placeStone(state, color, id, { hidden: true });
+function configuredSkillUses(player) {
+  const skill = normalizeSkillConfig(player?.character?.skill ?? player?.skill ?? player?.characterId);
+  return Number.isInteger(skill?.uses) ? skill.uses : 1;
 }
 
-export function erasePoint(state, color, id) {
+export function normalizeSkillConfig(skillOrCharacterId) {
+  if (skillOrCharacterId?.effectType) return skillOrCharacterId;
+  const fallback = CHARACTERS[skillOrCharacterId];
+  if (fallback?.skill?.id === "erase-point") {
+    return {
+      characterId: fallback.id,
+      effectType: "erase-point",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: Boolean(fallback.skill.freeTurn),
+      targetRule: "empty-point",
+      params: {}
+    };
+  }
+  if (fallback?.skill?.id === "flip-stone") {
+    return {
+      characterId: fallback.id,
+      effectType: "flip-stone",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: Boolean(fallback.skill.freeTurn),
+      targetRule: "stone",
+      params: {}
+    };
+  }
+  if (fallback?.skill?.id === "hidden-hand") {
+    return {
+      characterId: fallback.id,
+      effectType: "hidden-hand",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: false,
+      targetRule: "empty-point",
+      params: {}
+    };
+  }
+  return null;
+}
+
+export function playHiddenHand(state, color, id, options = {}) {
+  const result = placeStone(state, color, id, { hidden: true });
+  if (result.ok && options.skillName) {
+    result.state.history[result.state.history.length - 1].skill = options.skillName;
+  }
+  return result;
+}
+
+export function erasePoint(state, color, id, options = {}) {
   const next = cloneState(state);
   const point = getPoint(next, id);
   if (!point?.valid) return fail("该交叉点已不可用");
@@ -224,10 +288,11 @@ export function erasePoint(state, color, id) {
   applySkillCost(next, color, "sigrika");
   next.ko = null;
   next.history.push({ type: "skill", skill: "星辰符文", color, id, moveNumber: next.moveNumber });
-  return ok(resolveCapturesAfterMutation(next, color, false));
+  if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
+  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false));
 }
 
-export function flipStone(state, color, id) {
+export function flipStone(state, color, id, options = {}) {
   const next = cloneState(state);
   const point = getPoint(next, id);
   if (!point?.valid || !point.stone) return fail("必须指定棋盘上的棋子");
@@ -237,7 +302,8 @@ export function flipStone(state, color, id) {
   applySkillCost(next, color, "danea");
   next.ko = null;
   next.history.push({ type: "skill", skill: "染秽", color, id, moveNumber: next.moveNumber });
-  return ok(resolveCapturesAfterMutation(next, color, true));
+  if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
+  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? true));
 }
 
 function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true) {
@@ -595,7 +661,7 @@ export function formatStones(value) {
 }
 
 function colorName(color) {
-  return color === COLORS.black ? "黑" : "白";
+  return color === COLORS.black ? "\u9ed1" : "\u767d";
 }
 
 function applySkillCost(state, color, characterId) {
