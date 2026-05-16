@@ -177,6 +177,14 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
     });
   });
 
+  router.get("/audit-logs", async (_req, res) => {
+    const auditLogs = await prisma.adminAuditLog.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 100
+    });
+    res.json({ auditLogs });
+  });
+
   router.get("/users", async (_req, res) => {
     const users = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
@@ -241,7 +249,7 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       include: { skill: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
     });
-    res.json({ characters: characters.map(toCharacterPayload) });
+    res.json({ characters: characters.map(toAdminCharacterPayload) });
   });
 
   router.post("/characters", async (req, res) => {
@@ -418,6 +426,20 @@ function skillData(skill) {
     targetRule: skill.targetRule,
     paramsJson: skill.paramsJson,
     enabled: true
+  };
+}
+
+function toAdminCharacterPayload(record) {
+  const payload = toCharacterPayload(record);
+  return {
+    ...payload,
+    sortOrder: record.sortOrder,
+    skill: payload.skill
+      ? {
+          ...payload.skill,
+          paramsJson: record.skill?.paramsJson ?? "{}"
+        }
+      : null
   };
 }
 

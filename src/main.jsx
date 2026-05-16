@@ -12,12 +12,14 @@ import {
   PanelRight,
   Pause,
   Play,
+  Plus,
   Send,
   Settings,
   ShoppingBag,
   Sparkles,
   Swords,
   UserRound,
+  Upload,
   X
 } from "lucide-react";
 import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
@@ -235,6 +237,8 @@ function AdminConsole({ user, token, tab, setTab, onBack }) {
   const tabs = ["overview", "users", "characters", "audit"];
   const [summary, setSummary] = useState(null);
   const [users, setUsers] = useState([]);
+  const [adminCharacters, setAdminCharacters] = useState([]);
+  const [auditLogs, setAuditLogs] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [adminError, setAdminError] = useState("");
 
@@ -251,6 +255,16 @@ function AdminConsole({ user, token, tab, setTab, onBack }) {
     refreshUsers();
   }, [tab, token]);
 
+  useEffect(() => {
+    if (tab !== "characters") return;
+    refreshCharacters();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "audit") return;
+    refreshAuditLogs();
+  }, [tab, token]);
+
   async function refreshUsers(nextSelectedId = selectedUser?.id) {
     setAdminError("");
     try {
@@ -260,6 +274,26 @@ function AdminConsole({ user, token, tab, setTab, onBack }) {
       if (nextSelectedId) {
         setSelectedUser(nextUsers.find((candidate) => candidate.id === nextSelectedId) ?? null);
       }
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  }
+
+  async function refreshCharacters() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/characters", token);
+      setAdminCharacters(data.characters ?? []);
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  }
+
+  async function refreshAuditLogs() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/audit-logs", token);
+      setAuditLogs(data.auditLogs ?? []);
     } catch (error) {
       setAdminError(error.message);
     }
@@ -293,6 +327,10 @@ function AdminConsole({ user, token, tab, setTab, onBack }) {
             )}
           </>
         )}
+        {tab === "characters" && (
+          <AdminCharacters characters={adminCharacters} token={token} onSaved={refreshCharacters} />
+        )}
+        {tab === "audit" && <AdminAudit logs={auditLogs} />}
       </section>
     </main>
   );
@@ -342,6 +380,258 @@ function AdminUsers({ users, onSelect }) {
           {users.length === 0 && (
             <tr>
               <td colSpan="7">暂无用户</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function AdminCharacters({ characters, token, onSaved }) {
+  const [draft, setDraft] = useState(null);
+
+  function startNewCharacter() {
+    setDraft(emptyCharacterDraft());
+  }
+
+  function selectCharacter(character) {
+    setDraft(buildCharacterDraft(character));
+  }
+
+  return (
+    <div className="admin-character-layout">
+      <section className="admin-character-list">
+        <button className="admin-add-button" onClick={startNewCharacter}>
+          <Plus size={18} />新增角色
+        </button>
+        <div className="admin-character-cards">
+          {characters.map((character) => (
+            <button
+              key={character.dbId ?? character.id}
+              className={`admin-character-card ${draft?.dbId === character.dbId ? "selected" : ""}`}
+              onClick={() => selectCharacter(character)}
+            >
+              <img src={character.portrait} alt={character.name} />
+              <span>
+                <strong>{character.name}</strong>
+                <small>{character.id}</small>
+              </span>
+              <em>{character.enabled ? "启用" : "停用"}</em>
+            </button>
+          ))}
+          {characters.length === 0 && <p className="quiet-text">暂无角色。</p>}
+        </div>
+      </section>
+      <section className="admin-character-editor">
+        {draft ? (
+          <CharacterEditor
+            draft={draft}
+            setDraft={setDraft}
+            token={token}
+            onCancel={() => setDraft(null)}
+            onSaved={async () => {
+              setDraft(null);
+              await onSaved();
+            }}
+          />
+        ) : (
+          <div className="admin-empty-state">
+            <strong>选择一个角色</strong>
+            <p className="quiet-text">从左侧选择角色，或新建角色后编辑技能和肖像。</p>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
+  const [actionError, setActionError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  function updateDraft(field, value) {
+    setActionError("");
+    setDraft((current) => ({ ...current, [field]: value }));
+  }
+
+  function updateSkill(field, value) {
+    setActionError("");
+    setDraft((current) => ({
+      ...current,
+      skill: {
+        ...current.skill,
+        [field]: value
+      }
+    }));
+  }
+
+  function updateSkillEffect(effectType) {
+    setActionError("");
+    setDraft((current) => ({
+      ...current,
+      skill: {
+        ...current.skill,
+        effectType,
+        targetRule: targetRuleForEffect(effectType)
+      }
+    }));
+  }
+
+  async function handleUpload(file) {
+    if (!file) return;
+    setUploading(true);
+    setActionError("");
+    try {
+      const url = await uploadPortrait(file, token);
+      setDraft((current) => ({
+        ...current,
+        portraitUrl: url,
+        portraitSource: "upload"
+      }));
+    } catch (error) {
+      setActionError(error.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function saveCharacter(event) {
+    event.preventDefault();
+    const body = characterDraftToBody(draft);
+    if (!body) {
+      setActionError("uses 和 sortOrder 必须是整数，uses 范围为 0-9");
+      return;
+    }
+
+    setSaving(true);
+    setActionError("");
+    try {
+      const id = draft.dbId ?? draft.originalSlug;
+      await adminApi(id ? `/characters/${id}` : "/characters", token, {
+        method: id ? "PATCH" : "POST",
+        body
+      });
+      await onSaved();
+    } catch (error) {
+      setActionError(error.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form className="admin-character-form" onSubmit={saveCharacter}>
+      <div className="admin-form-heading">
+        <div>
+          <h2>{draft.dbId ? "编辑角色" : "新增角色"}</h2>
+          <p className="quiet-text">{draft.originalSlug || "new-character"}</p>
+        </div>
+        <div className="inline-actions">
+          <button className="secondary-action" type="button" onClick={onCancel}>取消</button>
+          <button className="primary-action" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</button>
+        </div>
+      </div>
+      {actionError && <p className="form-error admin-action-error">{actionError}</p>}
+      <div className="admin-character-form-grid">
+        <label>slug
+          <input value={draft.slug} onChange={(event) => updateDraft("slug", event.target.value)} />
+        </label>
+        <label>name
+          <input value={draft.name} onChange={(event) => updateDraft("name", event.target.value)} />
+        </label>
+        <label>portraitUrl
+          <input value={draft.portraitUrl} onChange={(event) => updateDraft("portraitUrl", event.target.value)} />
+        </label>
+        <label>portraitSource
+          <select value={draft.portraitSource} onChange={(event) => updateDraft("portraitSource", event.target.value)}>
+            <option value="url">url</option>
+            <option value="upload">upload</option>
+          </select>
+        </label>
+        <label>palette
+          <input type="color" value={draft.palette} onChange={(event) => updateDraft("palette", event.target.value)} />
+        </label>
+        <label>sortOrder
+          <input type="number" value={draft.sortOrder} onChange={(event) => updateDraft("sortOrder", event.target.value)} />
+        </label>
+        <label className="admin-checkbox">
+          <input type="checkbox" checked={draft.enabled} onChange={(event) => updateDraft("enabled", event.target.checked)} />
+          enabled
+        </label>
+        <label className="admin-upload-field">上传肖像
+          <span>
+            <Upload size={18} />
+            {uploading ? "上传中" : "选择文件"}
+            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={(event) => handleUpload(event.target.files?.[0])} />
+          </span>
+        </label>
+      </div>
+      {draft.portraitUrl && (
+        <div className="admin-portrait-preview">
+          <img src={draft.portraitUrl} alt={draft.name || "character portrait"} />
+        </div>
+      )}
+      <h3>Skill</h3>
+      <div className="admin-character-form-grid">
+        <label>skill.effectType
+          <select value={draft.skill.effectType} onChange={(event) => updateSkillEffect(event.target.value)}>
+            <option value="erase-point">erase-point</option>
+            <option value="flip-stone">flip-stone</option>
+          </select>
+        </label>
+        <label>skill.name
+          <input value={draft.skill.name} onChange={(event) => updateSkill("name", event.target.value)} />
+        </label>
+        <label className="wide-field">skill.description
+          <textarea value={draft.skill.description} onChange={(event) => updateSkill("description", event.target.value)} />
+        </label>
+        <label>skill.uses
+          <input type="number" min="0" max="9" value={draft.skill.uses} onChange={(event) => updateSkill("uses", event.target.value)} />
+        </label>
+        <label>skill.targetRule
+          <select value={draft.skill.targetRule} onChange={(event) => updateSkill("targetRule", event.target.value)}>
+            <option value="empty-point">empty-point</option>
+            <option value="stone">stone</option>
+          </select>
+        </label>
+        <label className="admin-checkbox">
+          <input type="checkbox" checked={draft.skill.freeTurn} onChange={(event) => updateSkill("freeTurn", event.target.checked)} />
+          skill.freeTurn
+        </label>
+        <label className="wide-field">skill.paramsJson
+          <textarea value={draft.skill.paramsJson} onChange={(event) => updateSkill("paramsJson", event.target.value)} />
+        </label>
+      </div>
+    </form>
+  );
+}
+
+function AdminAudit({ logs }) {
+  return (
+    <div className="admin-table-wrap audit-table-wrap">
+      <table className="admin-table audit-table">
+        <thead>
+          <tr>
+            <th>时间</th>
+            <th>管理员</th>
+            <th>动作</th>
+            <th>目标</th>
+          </tr>
+        </thead>
+        <tbody>
+          {logs.map((log) => (
+            <tr key={log.id}>
+              <td>{formatDateTime(log.createdAt)}</td>
+              <td>{log.adminUserId ?? "-"}</td>
+              <td>{log.action}</td>
+              <td>{log.targetType ?? "-"} · {log.targetId ?? "-"}</td>
+            </tr>
+          ))}
+          {logs.length === 0 && (
+            <tr>
+              <td colSpan="4">暂无审计日志</td>
             </tr>
           )}
         </tbody>
@@ -1249,6 +1539,81 @@ function buildUserDraft(user) {
   };
 }
 
+function emptyCharacterDraft() {
+  return {
+    dbId: "",
+    originalSlug: "",
+    slug: "",
+    name: "",
+    portraitUrl: "",
+    portraitSource: "url",
+    palette: "#5d7fe8",
+    enabled: true,
+    sortOrder: 0,
+    skill: {
+      effectType: "erase-point",
+      name: "",
+      description: "",
+      uses: 1,
+      freeTurn: false,
+      targetRule: "empty-point",
+      paramsJson: "{}"
+    }
+  };
+}
+
+function buildCharacterDraft(character) {
+  const skill = character.skill ?? {};
+  return {
+    dbId: character.dbId ?? "",
+    originalSlug: character.id ?? "",
+    slug: character.id ?? "",
+    name: character.name ?? "",
+    portraitUrl: character.portrait ?? "",
+    portraitSource: character.portraitSource ?? "url",
+    palette: character.palette ?? "#5d7fe8",
+    enabled: character.enabled ?? true,
+    sortOrder: character.sortOrder ?? 0,
+    skill: {
+      effectType: skill.effectType ?? "erase-point",
+      name: skill.name ?? "",
+      description: skill.description ?? "",
+      uses: skill.uses ?? 1,
+      freeTurn: skill.freeTurn ?? false,
+      targetRule: skill.targetRule ?? targetRuleForEffect(skill.effectType ?? "erase-point"),
+      paramsJson: skill.paramsJson ?? JSON.stringify(skill.params ?? {})
+    }
+  };
+}
+
+function characterDraftToBody(draft) {
+  const sortOrder = parseAdminInteger(draft.sortOrder);
+  const uses = parseAdminInteger(draft.skill.uses);
+  if (sortOrder == null || uses == null || uses < 0 || uses > 9) return null;
+  return {
+    slug: draft.slug.trim(),
+    name: draft.name.trim(),
+    portraitUrl: draft.portraitUrl.trim(),
+    portraitSource: draft.portraitSource,
+    palette: draft.palette,
+    enabled: Boolean(draft.enabled),
+    sortOrder,
+    skill: {
+      effectType: draft.skill.effectType,
+      name: draft.skill.name.trim(),
+      description: draft.skill.description.trim(),
+      uses,
+      freeTurn: Boolean(draft.skill.freeTurn),
+      targetRule: draft.skill.targetRule,
+      paramsJson: draft.skill.paramsJson
+    }
+  };
+}
+
+function targetRuleForEffect(effectType) {
+  return effectType === "flip-stone" ? "stone" : "empty-point";
+}
+
 function parseAdminInteger(value) {
   const text = String(value ?? "").trim();
   if (!/^-?\d+$/.test(text)) return null;
@@ -1295,6 +1660,19 @@ async function api(path, options = {}) {
 
 async function adminApi(path, token, options = {}) {
   return api(`/api/admin${path}`, { ...options, token });
+}
+
+async function uploadPortrait(file, token) {
+  const form = new FormData();
+  form.append("portrait", file);
+  const response = await fetch(`${API_BASE}/api/admin/uploads/character-portrait`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error ?? "上传失败");
+  return data.url;
 }
 
 function playStoneSound() {
