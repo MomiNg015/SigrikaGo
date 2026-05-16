@@ -172,6 +172,7 @@ function App() {
       {view === "admin" && user?.role === "admin" && (
         <AdminConsole
           user={user}
+          token={token}
           tab={adminTab}
           setTab={setAdminTab}
           onBack={() => setView("home")}
@@ -230,8 +231,40 @@ function App() {
   );
 }
 
-function AdminConsole({ user, tab, setTab, onBack }) {
+function AdminConsole({ user, token, tab, setTab, onBack }) {
   const tabs = ["overview", "users", "characters", "audit"];
+  const [summary, setSummary] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [adminError, setAdminError] = useState("");
+
+  useEffect(() => {
+    if (tab !== "overview") return;
+    setAdminError("");
+    adminApi("/summary", token)
+      .then(setSummary)
+      .catch((error) => setAdminError(error.message));
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "users") return;
+    refreshUsers();
+  }, [tab, token]);
+
+  async function refreshUsers(nextSelectedId = selectedUser?.id) {
+    setAdminError("");
+    try {
+      const data = await adminApi("/users", token);
+      const nextUsers = data.users ?? [];
+      setUsers(nextUsers);
+      if (nextSelectedId) {
+        setSelectedUser(nextUsers.find((candidate) => candidate.id === nextSelectedId) ?? null);
+      }
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  }
+
   return (
     <main className="admin-screen">
       <aside className="admin-sidebar">
@@ -245,8 +278,199 @@ function AdminConsole({ user, tab, setTab, onBack }) {
       </aside>
       <section className="admin-main">
         <header><span>{user.username}</span><strong>{tab}</strong></header>
+        {adminError && <p className="form-error admin-error">{adminError}</p>}
+        {tab === "overview" && <AdminOverview summary={summary} />}
+        {tab === "users" && (
+          <>
+            <AdminUsers users={users} onSelect={setSelectedUser} />
+            {selectedUser && (
+              <UserEditor
+                user={selectedUser}
+                token={token}
+                onClose={() => setSelectedUser(null)}
+                onError={setAdminError}
+                onRefresh={refreshUsers}
+              />
+            )}
+          </>
+        )}
       </section>
     </main>
+  );
+}
+
+function AdminOverview({ summary }) {
+  const cards = [
+    ["用户", summary?.summary?.users ?? 0],
+    ["封禁", summary?.summary?.bannedUsers ?? 0],
+    ["角色", summary?.summary?.characters ?? 0],
+    ["棋谱", summary?.summary?.gameRecords ?? 0]
+  ];
+  return (
+    <div className="admin-grid">
+      {cards.map(([label, value]) => <Stat key={label} label={label} value={value} />)}
+    </div>
+  );
+}
+
+function AdminUsers({ users, onSelect }) {
+  return (
+    <div className="admin-table-wrap">
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>用户名</th>
+            <th>权限</th>
+            <th>状态</th>
+            <th>段位</th>
+            <th>积分</th>
+            <th>金币</th>
+            <th>胜负</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id} onClick={() => onSelect(user)}>
+              <td>{user.username}</td>
+              <td>{user.role}</td>
+              <td>{user.status}</td>
+              <td>{user.rank}</td>
+              <td>{user.rating}</td>
+              <td>{user.coins}</td>
+              <td>{user.wins}/{user.losses}</td>
+            </tr>
+          ))}
+          {users.length === 0 && (
+            <tr>
+              <td colSpan="7">暂无用户</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function UserEditor({ user, token, onClose, onError, onRefresh }) {
+  const [draft, setDraft] = useState(() => buildUserDraft(user));
+  const [banReason, setBanReason] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setDraft(buildUserDraft(user));
+    setBanReason("");
+    setNewPassword("");
+  }, [user]);
+
+  function updateDraft(field, value) {
+    setDraft((current) => ({ ...current, [field]: value }));
+  }
+
+  async function runAction(action) {
+    setSaving(true);
+    onError("");
+    try {
+      await action();
+      await onRefresh(user.id);
+    } catch (error) {
+      onError(error.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveUser(event) {
+    event.preventDefault();
+    await runAction(() => adminApi(`/users/${draft.id}`, token, {
+      method: "PATCH",
+      body: {
+        role: draft.role,
+        rank: draft.rank,
+        rating: Number(draft.rating),
+        coins: Number(draft.coins),
+        ownedCharacters: draft.ownedCharactersText.split(",").map((item) => item.trim()).filter(Boolean),
+        selectedCharacter: draft.selectedCharacter
+      }
+    }));
+  }
+
+  async function banUser() {
+    const reason = banReason.trim();
+    if (!reason) {
+      onError("请输入封禁原因");
+      return;
+    }
+    if (!window.confirm(`确认封禁 ${user.username}？`)) return;
+    await runAction(() => adminApi(`/users/${user.id}/ban`, token, {
+      method: "POST",
+      body: { reason }
+    }));
+  }
+
+  async function unbanUser() {
+    if (!window.confirm(`确认解封 ${user.username}？`)) return;
+    await runAction(() => adminApi(`/users/${user.id}/unban`, token, { method: "POST" }));
+  }
+
+  async function resetPassword() {
+    if (!newPassword) {
+      onError("请输入新密码");
+      return;
+    }
+    if (!window.confirm(`确认重置 ${user.username} 的密码？`)) return;
+    await runAction(async () => {
+      await adminApi(`/users/${user.id}/reset-password`, token, {
+        method: "POST",
+        body: { password: newPassword }
+      });
+      setNewPassword("");
+    });
+  }
+
+  return (
+    <aside className="admin-drawer">
+      <button className="close-button" onClick={onClose}><X size={18} /></button>
+      <h2>{user.username}</h2>
+      <p className="quiet-text">{user.status} · {user.wins}/{user.losses}</p>
+      <form className="admin-form" onSubmit={saveUser}>
+        <label>权限
+          <select value={draft.role} onChange={(event) => updateDraft("role", event.target.value)}>
+            <option value="player">player</option>
+            <option value="admin">admin</option>
+          </select>
+        </label>
+        <label>段位
+          <input value={draft.rank} onChange={(event) => updateDraft("rank", event.target.value)} />
+        </label>
+        <label>积分
+          <input type="number" value={draft.rating} onChange={(event) => updateDraft("rating", event.target.value)} />
+        </label>
+        <label>金币
+          <input type="number" value={draft.coins} onChange={(event) => updateDraft("coins", event.target.value)} />
+        </label>
+        <label>拥有角色
+          <input value={draft.ownedCharactersText} onChange={(event) => updateDraft("ownedCharactersText", event.target.value)} />
+        </label>
+        <label>出战角色
+          <input value={draft.selectedCharacter} onChange={(event) => updateDraft("selectedCharacter", event.target.value)} />
+        </label>
+        <button className="primary-action" type="submit" disabled={saving}>保存</button>
+      </form>
+      <div className="admin-danger-zone">
+        <label>封禁原因
+          <input value={banReason} onChange={(event) => setBanReason(event.target.value)} />
+        </label>
+        <div className="inline-actions">
+          <button className="danger-action" onClick={banUser} disabled={saving || user.status === "banned"}>封禁</button>
+          <button className="secondary-action" onClick={unbanUser} disabled={saving || user.status !== "banned"}>解封</button>
+        </div>
+        <label>新密码
+          <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} />
+        </label>
+        <button className="secondary-action" onClick={resetPassword} disabled={saving}>重置密码</button>
+      </div>
+    </aside>
   );
 }
 
@@ -994,6 +1218,18 @@ function winnerColorFromRecord(record) {
   return null;
 }
 
+function buildUserDraft(user) {
+  return {
+    id: user.id,
+    role: user.role ?? "player",
+    rank: user.rank ?? "",
+    rating: user.rating ?? 0,
+    coins: user.coins ?? 0,
+    ownedCharactersText: (user.ownedCharacters ?? []).join(", "),
+    selectedCharacter: user.selectedCharacter ?? ""
+  };
+}
+
 function canPreviewSkill(game, player, point) {
   if (!player || game.phase !== "playing" || game.turn !== player.color) return false;
   if ((game.skillUses[player.color] ?? 0) <= 0) return false;
@@ -1027,6 +1263,10 @@ async function api(path, options = {}) {
   const data = await response.json();
   if (!response.ok) throw new Error(data.error ?? "请求失败");
   return data;
+}
+
+async function adminApi(path, token, options = {}) {
+  return api(`/api/admin${path}`, { ...options, token });
 }
 
 function playStoneSound() {

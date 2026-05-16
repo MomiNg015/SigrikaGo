@@ -15,7 +15,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -331,6 +332,129 @@ p {
 .admin-main header strong {
   font-size: 22px;
   color: #2d2430;
+}
+
+.admin-error {
+  margin: 14px 0 0;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.admin-table-wrap {
+  margin-top: 16px;
+  overflow-x: auto;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #f0e6f2;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.admin-table th {
+  background: #f8f1fa;
+  color: #5b4860;
+  font-size: 14px;
+}
+
+.admin-table td {
+  color: #35283a;
+}
+
+.admin-table tbody tr {
+  cursor: pointer;
+}
+
+.admin-table tbody tr:hover {
+  background: #f7fbff;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-drawer {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  bottom: 24px;
+  z-index: 12;
+  width: min(420px, calc(100vw - 32px));
+  overflow: auto;
+  padding: 22px;
+  background: #fffafd;
+  border: 1px solid rgba(128, 102, 142, 0.18);
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(58, 39, 70, 0.2);
+}
+
+.admin-drawer h2 {
+  margin-right: 44px;
+  margin-bottom: 6px;
+}
+
+.admin-form,
+.admin-danger-zone {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-form {
+  margin-top: 18px;
+}
+
+.admin-danger-zone {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #eaddea;
+}
+
+.admin-form label,
+.admin-danger-zone label {
+  display: grid;
+  gap: 6px;
+  color: #6b596d;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-danger-zone input {
+  width: 100%;
+  border: 1px solid #ddcfe2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #2d2430;
+  outline: none;
+}
+
+.admin-form input:focus,
+.admin-form select:focus,
+.admin-danger-zone input:focus {
+  border-color: #9eb2ee;
+  box-shadow: 0 0 0 3px rgba(93, 127, 232, 0.14);
+}
+
+.admin-drawer .secondary-action,
+.admin-drawer .danger-action,
+.admin-drawer .primary-action {
+  min-height: 42px;
 }
 
 .panel {
@@ -1413,6 +1537,10 @@ p {
     min-height: 420px;
   }
 
+  .admin-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .player-info {
     grid-template-columns: 86px 1fr;
     align-items: center;
@@ -1475,6 +1603,19 @@ p {
 
   .action-bar button {
     flex: 1 1 42%;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-main {
+    padding: 14px;
+  }
+
+  .admin-drawer {
+    inset: 9px;
+    width: auto;
   }
 
   .skill-burst {
