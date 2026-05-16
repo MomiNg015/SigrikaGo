@@ -22,7 +22,7 @@ export function createGameState(players = []) {
     ko: null,
     history: [],
     players,
-    skillUses: Object.fromEntries(players.map((p) => [p.color, 1])),
+    skillUses: Object.fromEntries(players.map((p) => [p.color, configuredSkillUses(p)])),
     phase: "playing",
     scoring: null,
     winner: null
@@ -154,9 +154,17 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
     });
   }
   if (skill?.effectType === "flip-stone") {
-    return flipStone(state, color, targetId, { skillName: skill.name });
+    return flipStone(state, color, targetId, {
+      skillName: skill.name,
+      consumesTurn: !skill.freeTurn
+    });
   }
   return fail("未知角色技能");
+}
+
+function configuredSkillUses(player) {
+  const skill = normalizeSkillConfig(player?.character?.skill ?? player?.skill ?? player?.characterId);
+  return Number.isInteger(skill?.uses) ? skill.uses : 1;
 }
 
 export function normalizeSkillConfig(skillOrCharacterId) {
@@ -212,7 +220,7 @@ export function flipStone(state, color, id, options = {}) {
   next.ko = null;
   next.history.push({ type: "skill", skill: "染秽", color, id, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
-  return ok(resolveCapturesAfterMutation(next, color, true));
+  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? true));
 }
 
 function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true) {
