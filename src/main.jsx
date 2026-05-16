@@ -20,7 +20,7 @@ import {
   UserRound,
   X
 } from "lucide-react";
-import { CHARACTERS } from "./shared/characters.js";
+import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
 import { BOARD_SIZE, COLORS, createGameState, passMove, playMove, useSkill } from "./shared/game.js";
 import "./styles.css";
 
@@ -54,7 +54,7 @@ function App() {
         setView("home");
         api("/api/characters", { token })
           .then((data) => {
-            setCharacters(Object.fromEntries(data.characters.map((character) => [character.id, character])));
+            setCharacters(mergeCharacters(data.characters));
           })
           .catch(() => setCharacters(CHARACTERS));
       })
