@@ -32,7 +32,8 @@ button {
 
 .auth-screen,
 .home-screen,
-.room-screen {
+.room-screen,
+.admin-screen {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
   padding: 24px 0;
@@ -259,6 +260,77 @@ p {
 
 .shop-entry {
   background: linear-gradient(135deg, rgba(255, 250, 239, 0.96), rgba(255, 240, 247, 0.9));
+}
+
+.admin-entry {
+  background: linear-gradient(135deg, rgba(242, 248, 244, 0.96), rgba(237, 244, 255, 0.9));
+}
+
+.admin-screen {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.admin-sidebar,
+.admin-main {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
+}
+
+.admin-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 16px;
+}
+
+.admin-sidebar strong {
+  margin-bottom: 8px;
+  color: #2d2430;
+}
+
+.admin-sidebar button {
+  min-height: 42px;
+  border: 1px solid #dfd0e5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4f3d55;
+  text-align: left;
+  padding: 10px 12px;
+}
+
+.admin-sidebar button.active {
+  background: #eef4ff;
+  border-color: #9eb2ee;
+  color: #314676;
+  font-weight: 800;
+}
+
+.admin-main {
+  min-height: calc(100dvh - 48px);
+  padding: 18px;
+}
+
+.admin-main header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(128, 102, 142, 0.16);
+}
+
+.admin-main header span {
+  color: #7d6a82;
+}
+
+.admin-main header strong {
+  font-size: 22px;
+  color: #2d2430;
 }
 
 .panel {
@@ -1328,12 +1400,17 @@ p {
 
 @media (max-width: 900px) {
   .home-grid,
-  .battle-layout {
+  .battle-layout,
+  .admin-screen {
     grid-template-columns: 1fr;
   }
 
   .battle-layout {
     display: grid;
+  }
+
+  .admin-main {
+    min-height: 420px;
   }
 
   .player-info {
@@ -1367,7 +1444,8 @@ p {
 @media (max-width: 620px) {
   .auth-screen,
   .home-screen,
-  .room-screen {
+  .room-screen,
+  .admin-screen {
     width: min(100% - 18px, 1180px);
     padding: 12px 0;
   }

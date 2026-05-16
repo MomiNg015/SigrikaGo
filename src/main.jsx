@@ -13,13 +13,14 @@ import {
   Pause,
   Play,
   Send,
+  Settings,
   ShoppingBag,
   Sparkles,
   Swords,
   UserRound,
   X
 } from "lucide-react";
-import { CHARACTERS, characterList } from "./shared/characters.js";
+import { CHARACTERS } from "./shared/characters.js";
 import { BOARD_SIZE, COLORS, createGameState, passMove, playMove, useSkill } from "./shared/game.js";
 import "./styles.css";
 
@@ -41,6 +42,9 @@ function App() {
   const [replayRecords, setReplayRecords] = useState([]);
   const [replayStep, setReplayStep] = useState(null);
   const [dismissedResultRoom, setDismissedResultRoom] = useState("");
+  const [characters, setCharacters] = useState(CHARACTERS);
+  const [adminTab, setAdminTab] = useState("overview");
+  const characterListView = Object.values(characters);
 
   useEffect(() => {
     if (!token) return;
@@ -48,10 +52,16 @@ function App() {
       .then((data) => {
         setUser(data.user);
         setView("home");
+        api("/api/characters", { token })
+          .then((data) => {
+            setCharacters(Object.fromEntries(data.characters.map((character) => [character.id, character])));
+          })
+          .catch(() => setCharacters(CHARACTERS));
       })
       .catch(() => {
         localStorage.removeItem("sigrika-token");
         setToken("");
+        setCharacters(CHARACTERS);
       });
   }, [token]);
 
@@ -99,6 +109,7 @@ function App() {
     setToken("");
     setUser(null);
     setRoom(null);
+    setCharacters(CHARACTERS);
     setView("login");
   }
 
@@ -148,18 +159,29 @@ function App() {
       {view === "home" && user && (
         <HomeScreen
           user={user}
+          characters={characters}
           onLogout={logout}
           onSelectCharacter={selectCharacter}
           onStartMatch={startMatch}
           onOpenHouse={() => setShowHouse(true)}
           onOpenWatch={() => setShowWatch(true)}
           onOpenShop={() => setShowShop(true)}
+          onOpenAdmin={() => setView("admin")}
+        />
+      )}
+      {view === "admin" && user?.role === "admin" && (
+        <AdminConsole
+          user={user}
+          tab={adminTab}
+          setTab={setAdminTab}
+          onBack={() => setView("home")}
         />
       )}
       {view === "room" && room && user && (
         <RoomScreen
           room={room}
           user={user}
+          characters={characters}
           replayStep={replayStep}
           setReplayStep={setReplayStep}
           pendingSkill={pendingSkill}
@@ -176,16 +198,17 @@ function App() {
         />
       )}
       {room?.game.phase === "finished" && dismissedResultRoom !== room.code && (
-        <ResultModal room={room} onClose={() => setDismissedResultRoom(room.code)} />
+        <ResultModal room={room} characters={characters} onClose={() => setDismissedResultRoom(room.code)} />
       )}
       {matchStart && <MatchModal user={user} startedAt={matchStart} onCancel={() => {
         socket?.emit("match:leave");
         setMatchStart(null);
-      }} />}
+      }} characters={characters} />}
       {showHouse && user && (
         <HouseModal
           user={user}
           records={replayRecords}
+          characterListView={characterListView}
           onClose={() => setShowHouse(false)}
           onSelectCharacter={selectCharacter}
           onOpenReplay={openReplay}
@@ -204,6 +227,26 @@ function App() {
       )}
       {showShop && <ShopModal onClose={() => setShowShop(false)} />}
     </div>
+  );
+}
+
+function AdminConsole({ user, tab, setTab, onBack }) {
+  const tabs = ["overview", "users", "characters", "audit"];
+  return (
+    <main className="admin-screen">
+      <aside className="admin-sidebar">
+        <strong>SigrikaGo Admin</strong>
+        {tabs.map((item) => (
+          <button key={item} className={tab === item ? "active" : ""} onClick={() => setTab(item)}>
+            {item}
+          </button>
+        ))}
+        <button onClick={onBack}>返回大厅</button>
+      </aside>
+      <section className="admin-main">
+        <header><span>{user.username}</span><strong>{tab}</strong></header>
+      </section>
+    </main>
   );
 }
 
@@ -252,7 +295,7 @@ function AuthScreen({ onAuth }) {
   );
 }
 
-function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, onOpenShop }) {
+function HomeScreen({ user, characters, onLogout, onStartMatch, onOpenHouse, onOpenWatch, onOpenShop, onOpenAdmin }) {
   return (
     <main className="home-screen">
       <header className="topbar">
@@ -269,7 +312,7 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
             <strong>棋舍</strong>
             <span>{user.username} · {user.rank} · {user.rating}分</span>
           </div>
-          <img className="entry-portrait" src={CHARACTERS[user.selectedCharacter]?.portrait} alt="出战角色" />
+          <img className="entry-portrait" src={findCharacter(characters, user.selectedCharacter).portrait} alt="出战角色" />
         </button>
         <Panel title="空想对局" icon={<Swords />}>
           <button className="match-button" onClick={onStartMatch}>
@@ -288,12 +331,19 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
           <strong>商城</strong>
           <span>角色、物品、装饰即将开放</span>
         </button>
+        {user.role === "admin" && (
+          <button className="home-entry admin-entry" onClick={onOpenAdmin}>
+            <Settings size={30} />
+            <strong>后台管理</strong>
+            <span>用户、角色与系统配置</span>
+          </button>
+        )}
       </section>
     </main>
   );
 }
 
-function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPendingSkill, onBack, onGameAction, onCountingRequest, onCountingRespond, onScoringAction, onChat }) {
+function RoomScreen({ room, user, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, onBack, onGameAction, onCountingRequest, onCountingRespond, onScoringAction, onChat }) {
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -350,7 +400,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
     if (pendingSkill) {
       setPendingSkill(false);
       if (canPreviewSkill(displayRoom.game, me, point)) {
-        const character = CHARACTERS[me.characterId];
+        const character = findCharacter(characters, me.characterId);
         setSkillBanner({ character, skillName: character.skill.name });
         skillTimerRef.current = window.setTimeout(() => {
           onGameAction({ type: "skill", pointId: point.id });
@@ -409,7 +459,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
         </div>
       </header>
       <section className="battle-layout">
-        <PlayerInfo player={opponent} game={displayRoom.game} align="opponent" isWinner={displayRoom.game.phase === "finished" && opponent?.color === winnerColor} />
+        <PlayerInfo player={opponent} game={displayRoom.game} characters={characters} align="opponent" isWinner={displayRoom.game.phase === "finished" && opponent?.color === winnerColor} />
         <div className="board-column">
           <div className="board-stage">
             <Board
@@ -459,7 +509,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           />
         </div>
         <div className="room-side">
-          <PlayerInfo player={me ?? displayRoom.players[0]} game={displayRoom.game} align="self" isWinner={displayRoom.game.phase === "finished" && (me ?? displayRoom.players[0])?.color === winnerColor} />
+          <PlayerInfo player={me ?? displayRoom.players[0]} game={displayRoom.game} characters={characters} align="self" isWinner={displayRoom.game.phase === "finished" && (me ?? displayRoom.players[0])?.color === winnerColor} />
           <ChatBox room={displayRoom} onChat={onChat} readonly={isReplay} />
         </div>
       </section>
@@ -476,7 +526,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           }}
         />
       )}
-      {skillBanner && <SkillBanner banner={skillBanner} />}
+      {skillBanner && <SkillBanner banner={skillBanner} characters={characters} />}
     </main>
   );
 }
@@ -547,9 +597,9 @@ function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPo
   );
 }
 
-function PlayerInfo({ player, game, align, isWinner = false }) {
+function PlayerInfo({ player, game, characters, align, isWinner = false }) {
   if (!player) return <aside className="player-info empty" />;
-  const character = CHARACTERS[player.characterId];
+  const character = findCharacter(characters, player.characterId);
   const skillUses = game.skillUses[player.color] ?? 0;
   return (
     <aside className={`player-info ${align} ${isWinner ? "winner" : ""}`}>
@@ -712,7 +762,7 @@ function ChatBox({ room, onChat, readonly = false }) {
   );
 }
 
-function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay }) {
+function HouseModal({ user, records, characterListView, onClose, onSelectCharacter, onOpenReplay }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
   const [showReplays, setShowReplays] = useState(false);
   const stats = deriveHouseStats(user, records);
@@ -731,7 +781,7 @@ function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay })
           <Stat label="金币" value={user.coins} />
         </div>
         <div className="character-list">
-          {characterList.map((character) => (
+          {characterListView.map((character) => (
             <button
               className={`character-card portrait-card ${user.selectedCharacter === character.id ? "selected" : ""}`}
               key={character.id}
@@ -819,9 +869,9 @@ function WatchPad({ code, setCode, onJoin }) {
   );
 }
 
-function MatchModal({ user, startedAt, onCancel }) {
+function MatchModal({ user, startedAt, onCancel, characters }) {
   const [now, setNow] = useState(Date.now());
-  const character = CHARACTERS[user?.selectedCharacter] ?? CHARACTERS.sigrika;
+  const character = findCharacter(characters, user?.selectedCharacter);
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 500);
     return () => clearInterval(id);
@@ -873,10 +923,10 @@ function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
   );
 }
 
-function ResultModal({ room, onClose }) {
+function ResultModal({ room, characters, onClose }) {
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
-  const character = CHARACTERS[winner?.characterId] ?? CHARACTERS.sigrika;
+  const character = findCharacter(characters, winner?.characterId);
   return (
     <div className="modal-backdrop">
       <section className="result-modal">
@@ -894,12 +944,13 @@ function ResultModal({ room, onClose }) {
   );
 }
 
-function SkillBanner({ banner }) {
+function SkillBanner({ banner, characters }) {
+  const character = findCharacter(characters, banner.character.id);
   return (
     <div className="skill-burst" aria-live="polite">
-      <img src={banner.character.portrait} alt={banner.character.name} />
+      <img src={character.portrait} alt={character.name} />
       <div>
-        <span>{banner.character.name}</span>
+        <span>{character.name}</span>
         <strong>{banner.skillName}</strong>
       </div>
     </div>
@@ -950,6 +1001,10 @@ function canPreviewSkill(game, player, point) {
   if (player.characterId === "sigrika") return !point.stone;
   if (player.characterId === "danea") return Boolean(point.stone);
   return false;
+}
+
+function findCharacter(characters, characterId) {
+  return characters[characterId] ?? CHARACTERS[characterId] ?? CHARACTERS.sigrika;
 }
 
 function Toast({ text, onClose }) {
