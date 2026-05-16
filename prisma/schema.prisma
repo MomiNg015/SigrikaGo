@@ -17,7 +17,7 @@ model User {
   losses             Int      @default(0)
   coins              Int      @default(300)
   selectedCharacter  String   @default("sigrika")
-  ownedCharacters    String   @default("sigrika,danea")
+  ownedCharacters    String   @default("sigrika,danea,aemeath")
   ownedItems         String   @default("")
   ownedDecorations   String   @default("")
   createdAt          DateTime @default(now())

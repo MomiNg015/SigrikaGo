@@ -1,9 +1,12 @@
+import { CHARACTERS } from "./characters.js";
+
 export const BOARD_SIZE = 13;
 export const KOMI_STONES = 2.75;
 export const COLORS = {
   black: "black",
   white: "white"
 };
+export const HIDDEN_HAND_NOTICE = "发现隐藏手了！";
 
 export function opponent(color) {
   return color === COLORS.black ? COLORS.white : COLORS.black;
@@ -21,8 +24,11 @@ export function createGameState(players = []) {
     history: [],
     players,
     skillUses: Object.fromEntries(players.map((p) => [p.color, 1])),
+    skillCosts: { black: 0, white: 0 },
+    skillCostNotes: [],
     phase: "playing",
     scoring: null,
+    suspendedHiddenHands: [],
     winner: null
   };
 }
@@ -80,15 +86,33 @@ export function cloneState(state) {
 }
 
 export function playMove(state, color, id) {
+  return placeStone(state, color, id, { hidden: false });
+}
+
+function placeStone(state, color, id, { hidden }) {
   if (state.phase !== "playing") return fail("对局当前不能落子");
   if (state.turn !== color) return fail("还没有轮到你");
   const next = cloneState(state);
   const point = getPoint(next, id);
   if (!point?.valid) return fail("该交叉点不可落子");
-  if (point.stone) return fail("该交叉点已有棋子");
+  if (point.stone) {
+    if (!hidden && isUnexposedOpponentHiddenHand(point, color)) {
+      revealHiddenHand(point);
+      return ok(next, { notices: [HIDDEN_HAND_NOTICE] });
+    }
+    return fail("该交叉点已有棋子");
+  }
   if (next.ko === id) return fail("此处为劫禁着点");
 
   point.stone = color;
+  if (hidden) {
+    point.hiddenHand = {
+      owner: color,
+      exposed: false,
+      effect: "hidden-hand"
+    };
+  }
+
   const removed = [];
   for (const neighbor of activeNeighbors(next, point)) {
     if (neighbor.stone === opponent(color)) {
@@ -97,10 +121,11 @@ export function playMove(state, color, id) {
     }
   }
 
-  for (const stone of removed) getPoint(next, stone).stone = null;
+  for (const stone of removed) clearStone(next, stone);
 
   const ownGroup = collectGroup(next, id);
   if (ownGroup.liberties.size === 0) return fail("禁自杀");
+  const notices = revealCapturingHiddenHands(next, ownGroup, removed, color);
 
   next.captures[color] += removed.length;
   next.ko = removed.length === 1 && ownGroup.stones.length === 1 && ownGroup.liberties.size === 1
@@ -109,8 +134,14 @@ export function playMove(state, color, id) {
   next.turn = opponent(color);
   next.passes = 0;
   next.moveNumber += 1;
-  next.history.push({ type: "move", color, id, captures: removed, moveNumber: next.moveNumber });
-  return ok(next);
+  next.history.push(hidden
+    ? { type: "skill", skill: "小爱出击", color, id, captures: removed, moveNumber: next.moveNumber }
+    : { type: "move", color, id, captures: removed, moveNumber: next.moveNumber });
+  if (hidden) {
+    next.skillUses[color] -= 1;
+    applySkillCost(next, color, "aemeath");
+  }
+  return ok(next, { notices });
 }
 
 export function passMove(state, color) {
@@ -124,6 +155,7 @@ export function passMove(state, color) {
   next.history.push({ type: "pass", color, moveNumber: next.moveNumber });
   if (next.passes >= 2) {
     next.phase = "counting-requested";
+    suspendUnexposedHiddenHands(next);
     next.scoring = prepareScoringState(next);
   }
   return ok(next);
@@ -132,12 +164,34 @@ export function passMove(state, color) {
 export function resignGame(state, color) {
   const next = cloneState(state);
   next.phase = "finished";
-  next.winner = {
-    winnerColor: opponent(color),
-    reason: "resign",
-    text: `${color === COLORS.black ? "黑" : "白"}方认输`
-  };
+  next.winner = createResignResult(color);
   return ok(next);
+}
+
+export function createResignResult(resigningColor) {
+  const winnerColor = opponent(resigningColor);
+  return {
+    winnerColor,
+    reason: "resign",
+    text: `${colorName(winnerColor)}中盘胜`
+  };
+}
+
+export function createTimeoutResult(timeoutColor) {
+  const winnerColor = opponent(timeoutColor);
+  return {
+    winnerColor,
+    reason: "timeout",
+    text: `${colorName(winnerColor)}超时胜`
+  };
+}
+
+export function createDrawResult(reason = "agreement") {
+  return {
+    winnerColor: null,
+    reason,
+    text: "和棋"
+  };
 }
 
 export function useSkill(state, color, characterId, targetId) {
@@ -146,7 +200,12 @@ export function useSkill(state, color, characterId, targetId) {
   if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
   if (characterId === "sigrika") return erasePoint(state, color, targetId);
   if (characterId === "danea") return flipStone(state, color, targetId);
+  if (characterId === "aemeath") return playHiddenHand(state, color, targetId);
   return fail("未知角色技能");
+}
+
+export function playHiddenHand(state, color, id) {
+  return placeStone(state, color, id, { hidden: true });
 }
 
 export function erasePoint(state, color, id) {
@@ -156,11 +215,13 @@ export function erasePoint(state, color, id) {
   if (point.stone) return fail("只能抹除空交叉点");
   point.valid = false;
   point.mark = null;
+  point.skillEffect = "erased-point";
   point.neighbors = [];
   for (const other of next.points) {
     other.neighbors = other.neighbors.filter((neighborId) => neighborId !== id);
   }
   next.skillUses[color] -= 1;
+  applySkillCost(next, color, "sigrika");
   next.ko = null;
   next.history.push({ type: "skill", skill: "星辰符文", color, id, moveNumber: next.moveNumber });
   return ok(resolveCapturesAfterMutation(next, color, false));
@@ -171,7 +232,9 @@ export function flipStone(state, color, id) {
   const point = getPoint(next, id);
   if (!point?.valid || !point.stone) return fail("必须指定棋盘上的棋子");
   point.stone = opponent(point.stone);
+  point.skillEffect = "flipped-stone";
   next.skillUses[color] -= 1;
+  applySkillCost(next, color, "danea");
   next.ko = null;
   next.history.push({ type: "skill", skill: "染秽", color, id, moveNumber: next.moveNumber });
   return ok(resolveCapturesAfterMutation(next, color, true));
@@ -187,7 +250,7 @@ function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true) {
       const group = collectGroup(state, point.id);
       group.stones.forEach((stone) => visited.add(stone));
       if (group.liberties.size === 0) {
-        for (const stone of group.stones) getPoint(state, stone).stone = null;
+        for (const stone of group.stones) clearStone(state, stone);
         state.captures[opponent(point.stone)] += group.stones.length;
         changed = true;
       }
@@ -251,6 +314,42 @@ export function prepareScoringState(state, scoring = null) {
   nextScoring.resultAcceptedBy = nextScoring.resultAcceptedBy ?? [];
   nextScoring.territory = computeTerritoryMarks(state, new Set(nextScoring.neutralPoints));
   return nextScoring;
+}
+
+export function suspendUnexposedHiddenHands(state) {
+  const suspended = state.suspendedHiddenHands ?? [];
+  for (const point of state.points) {
+    if (!point.stone || !point.hiddenHand || point.hiddenHand.exposed) continue;
+    suspended.push({ id: point.id, color: point.stone });
+    point.stone = null;
+    point.hiddenHand = null;
+  }
+  state.suspendedHiddenHands = suspended;
+  return state;
+}
+
+export function restoreSuspendedHiddenHands(state) {
+  for (const hidden of state.suspendedHiddenHands ?? []) {
+    const point = getPoint(state, hidden.id);
+    if (!point?.valid || point.stone) continue;
+    point.stone = hidden.color;
+    point.hiddenHand = {
+      owner: hidden.color,
+      exposed: false,
+      effect: "hidden-hand"
+    };
+  }
+  state.suspendedHiddenHands = [];
+  return state;
+}
+
+export function exposeHiddenHands(state) {
+  restoreSuspendedHiddenHands(state);
+  let revealed = false;
+  for (const point of state.points) {
+    if (point.hiddenHand && revealHiddenHand(point)) revealed = true;
+  }
+  return revealed ? [HIDDEN_HAND_NOTICE] : [];
 }
 
 export function markDeadGroup(state, id, markerColor = null) {
@@ -336,8 +435,10 @@ export function scoreGame(state) {
   const territory = computeTerritoryMarks(board, neutral);
   const blackTerritory = territory.black.length;
   const whiteTerritory = territory.white.length;
-  const black = blackStones + blackTerritory;
-  const white = whiteStones + whiteTerritory;
+  const blackSkillCost = numericSkillCost(state, COLORS.black);
+  const whiteSkillCost = numericSkillCost(state, COLORS.white);
+  const black = blackStones + blackTerritory - blackSkillCost;
+  const white = whiteStones + whiteTerritory - whiteSkillCost;
   const blackAfterKomi = black - KOMI_STONES;
   const whiteAfterKomi = white;
   const margin = Math.abs(blackAfterKomi - whiteAfterKomi);
@@ -350,6 +451,8 @@ export function scoreGame(state) {
     whiteStones,
     blackTerritory,
     whiteTerritory,
+    blackSkillCost,
+    whiteSkillCost,
     blackAfterKomi,
     whiteAfterKomi,
     winnerColor,
@@ -453,12 +556,65 @@ function collectTerritoryIgnoringColor(state, startId, neutral, ignoredColor) {
   };
 }
 
+function isUnexposedOpponentHiddenHand(point, color) {
+  return point.hiddenHand && !point.hiddenHand.exposed && point.hiddenHand.owner !== color;
+}
+
+function revealHiddenHand(point) {
+  if (!point.hiddenHand || point.hiddenHand.exposed) return false;
+  point.hiddenHand.exposed = true;
+  return true;
+}
+
+function revealCapturingHiddenHands(state, ownGroup, removed, color) {
+  if (removed.length === 0) return [];
+  let revealed = false;
+  for (const stone of ownGroup.stones) {
+    const point = getPoint(state, stone);
+    if (point?.hiddenHand && revealHiddenHand(point)) revealed = true;
+  }
+  for (const removedId of removed) {
+    const removedPoint = getPoint(state, removedId);
+    if (!removedPoint) continue;
+    for (const neighbor of activeNeighbors(state, removedPoint)) {
+      if (neighbor.stone === color && neighbor.hiddenHand && revealHiddenHand(neighbor)) revealed = true;
+    }
+  }
+  return revealed ? [HIDDEN_HAND_NOTICE] : [];
+}
+
+function clearStone(state, id) {
+  const point = getPoint(state, id);
+  if (!point) return;
+  point.stone = null;
+  point.hiddenHand = null;
+}
+
 export function formatStones(value) {
   return Number.isInteger(value) ? `${value}` : `${Math.round(value * 100) / 100}`;
 }
 
-function ok(state) {
-  return { ok: true, state };
+function colorName(color) {
+  return color === COLORS.black ? "黑" : "白";
+}
+
+function applySkillCost(state, color, characterId) {
+  const cost = CHARACTERS[characterId]?.skill?.cost ?? 0;
+  if (typeof cost === "number") {
+    state.skillCosts = state.skillCosts ?? { black: 0, white: 0 };
+    state.skillCosts[color] = (state.skillCosts[color] ?? 0) + cost;
+    return;
+  }
+  state.skillCostNotes = state.skillCostNotes ?? [];
+  state.skillCostNotes.push({ color, characterId, cost });
+}
+
+function numericSkillCost(state, color) {
+  return state.skillCosts?.[color] ?? 0;
+}
+
+function ok(state, extra = {}) {
+  return { ok: true, state, ...extra };
 }
 
 function fail(error) {

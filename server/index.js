@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import { prisma, publicUser } from "./db.js";
+import { CHARACTERS } from "../src/shared/characters.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -17,7 +18,9 @@ import {
   joinMatchmaking,
   leaveMatchmaking,
   requestCounting,
+  requestDraw,
   respondCounting,
+  respondDraw,
   roomView
 } from "./rooms.js";
 
@@ -73,7 +76,7 @@ app.get("/api/me", authHttp, async (req, res) => {
 
 app.post("/api/me/character", authHttp, async (req, res) => {
   const characterId = String(req.body.characterId ?? "");
-  if (!["sigrika", "danea"].includes(characterId)) {
+  if (!CHARACTERS[characterId]) {
     res.status(400).json({ error: "未知角色" });
     return;
   }
@@ -171,6 +174,18 @@ io.on("connection", (socket) => {
     if (result.ok) broadcastRoom(io, result.room);
   });
 
+  socket.on("draw:request", ({ roomCode }) => {
+    const result = requestDraw(roomCode, socket.user.id, io);
+    sendResult(socket, result);
+    if (result.ok) broadcastRoom(io, result.room);
+  });
+
+  socket.on("draw:respond", ({ roomCode, accepted }) => {
+    const result = respondDraw(roomCode, socket.user.id, accepted, io);
+    sendResult(socket, result);
+    if (result.ok) broadcastRoom(io, result.room);
+  });
+
   socket.on("scoring:action", (payload) => {
     const result = handleScoringAction(payload.roomCode, socket.user.id, payload.action, io);
     sendResult(socket, result);
@@ -243,8 +258,8 @@ async function publicUserWithHistory(user) {
 }
 
 function winnerColorFromText(text = "") {
-  if (text.startsWith("黑胜") || text.includes("白方认输")) return "black";
-  if (text.startsWith("白胜") || text.includes("黑方认输")) return "white";
+  if (text.startsWith("黑胜") || text.startsWith("黑中盘胜") || text.startsWith("黑超时胜")) return "black";
+  if (text.startsWith("白胜") || text.startsWith("白中盘胜") || text.startsWith("白超时胜")) return "white";
   return null;
 }
 

@@ -4,19 +4,25 @@ import { io } from "socket.io-client";
 import {
   DoorOpen,
   Eye,
+  Bell,
   Flag,
   Hash,
+  Info,
   LogOut,
   MessageCircle,
+  Mic2,
   MonitorPlay,
+  Music,
   PanelRight,
   Pause,
   Play,
   Send,
+  Settings,
   ShoppingBag,
   Sparkles,
   Swords,
   UserRound,
+  Volume2,
   X
 } from "lucide-react";
 import { CHARACTERS, characterList } from "./shared/characters.js";
@@ -24,6 +30,12 @@ import { BOARD_SIZE, COLORS, createGameState, passMove, playMove, useSkill } fro
 import "./styles.css";
 
 const API_BASE = "http://localhost:3001";
+const DEFAULT_AUDIO_SETTINGS = {
+  master: 80,
+  bgm: 60,
+  sfx: 80,
+  voice: 80
+};
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("sigrika-token") ?? "");
@@ -36,6 +48,8 @@ function App() {
   const [showShop, setShowShop] = useState(false);
   const [showHouse, setShowHouse] = useState(false);
   const [showWatch, setShowWatch] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [audioSettings, setAudioSettings] = useState(loadAudioSettings);
   const [watchCode, setWatchCode] = useState("");
   const [pendingSkill, setPendingSkill] = useState(false);
   const [replayRecords, setReplayRecords] = useState([]);
@@ -86,6 +100,10 @@ function App() {
       .catch((error) => setToast(error.message));
   }, [showHouse, token]);
 
+  useEffect(() => {
+    localStorage.setItem("sigrika-audio-settings", JSON.stringify(audioSettings));
+  }, [audioSettings]);
+
   function handleAuth(nextToken, nextUser) {
     localStorage.setItem("sigrika-token", nextToken);
     setToken(nextToken);
@@ -131,6 +149,16 @@ function App() {
     socket?.emit("scoring:action", { roomCode: room.code, action });
   }
 
+  function requestDraw() {
+    if (!room) return;
+    socket?.emit("draw:request", { roomCode: room.code });
+  }
+
+  function respondDraw(accepted) {
+    if (!room) return;
+    socket?.emit("draw:respond", { roomCode: room.code, accepted });
+  }
+
   async function openReplay(recordId) {
     const data = await api(`/api/replays/${recordId}`, { token });
     const snapshot = data.record.snapshot;
@@ -154,6 +182,7 @@ function App() {
           onOpenHouse={() => setShowHouse(true)}
           onOpenWatch={() => setShowWatch(true)}
           onOpenShop={() => setShowShop(true)}
+          onOpenSettings={() => setShowSettings(true)}
         />
       )}
       {view === "room" && room && user && (
@@ -164,6 +193,8 @@ function App() {
           setReplayStep={setReplayStep}
           pendingSkill={pendingSkill}
           setPendingSkill={setPendingSkill}
+          audioSettings={audioSettings}
+          onOpenSettings={() => setShowSettings(true)}
           onBack={() => {
             setReplayStep(null);
             setView("home");
@@ -171,6 +202,8 @@ function App() {
           onGameAction={emitGame}
           onCountingRequest={() => socket?.emit("counting:request", { roomCode: room.code })}
           onCountingRespond={(accepted) => socket?.emit("counting:respond", { roomCode: room.code, accepted })}
+          onDrawRequest={requestDraw}
+          onDrawRespond={respondDraw}
           onScoringAction={emitScoring}
           onChat={(text) => socket?.emit("chat:send", { roomCode: room.code, text })}
         />
@@ -203,6 +236,13 @@ function App() {
         />
       )}
       {showShop && <ShopModal onClose={() => setShowShop(false)} />}
+      {showSettings && (
+        <SettingsModal
+          audioSettings={audioSettings}
+          setAudioSettings={setAudioSettings}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
     </div>
   );
 }
@@ -252,7 +292,7 @@ function AuthScreen({ onAuth }) {
   );
 }
 
-function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, onOpenShop }) {
+function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, onOpenShop, onOpenSettings }) {
   return (
     <main className="home-screen">
       <header className="topbar">
@@ -260,7 +300,10 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
           <p>SigrikaGo</p>
           <h1>大厅</h1>
         </div>
-        <button className="icon-button" title="退出登录" onClick={onLogout}><LogOut size={20} /></button>
+        <div className="topbar-actions">
+          <button className="icon-button" title="设置" onClick={onOpenSettings}><Settings size={20} /></button>
+          <button className="icon-button" title="退出登录" onClick={onLogout}><LogOut size={20} /></button>
+        </div>
       </header>
       <section className="home-grid">
         <button className="home-entry house-entry" onClick={onOpenHouse}>
@@ -293,11 +336,10 @@ function HomeScreen({ user, onLogout, onStartMatch, onOpenHouse, onOpenWatch, on
   );
 }
 
-function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPendingSkill, onBack, onGameAction, onCountingRequest, onCountingRespond, onScoringAction, onChat }) {
+function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat }) {
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
-  const [skillBanner, setSkillBanner] = useState(null);
   const isReplay = replayStep !== null;
   const displayRoom = isReplay ? replayRoomAt(room, replayStep) : room;
   const me = displayRoom.players.find((p) => p.user.id === user.id);
@@ -305,60 +347,51 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
   const role = isReplay ? "spectator" : displayRoom.role;
   const activePlayer = displayRoom.players.find((p) => p.color === displayRoom.game.turn);
   const scoring = displayRoom.game.scoring;
+  const drawRequest = displayRoom.game.drawRequest;
   const soundMoveRef = useRef(null);
   const voiceRef = useRef({});
-  const skillTimerRef = useRef(null);
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
-
-  useEffect(() => {
-    return () => {
-      if (skillTimerRef.current) window.clearTimeout(skillTimerRef.current);
-    };
-  }, []);
+  const skillPreview = displayRoom.game.pendingSkill;
 
   useEffect(() => {
     if (isReplay) return;
     const lastMove = [...displayRoom.game.history].reverse().find((entry) => entry.type === "move");
     if (!lastMove || soundMoveRef.current === lastMove.moveNumber) return;
     soundMoveRef.current = lastMove.moveNumber;
-    playStoneSound();
-  }, [displayRoom.game.history, isReplay]);
+    playStoneSound(audioSettings);
+  }, [displayRoom.game.history, isReplay, audioSettings]);
 
   useEffect(() => {
     if (isReplay || !activePlayer) return;
     const timer = activePlayer.time;
     const periodKey = `${activePlayer.color}-periods`;
+    const mainKey = `${activePlayer.color}-main`;
     const previousPeriods = voiceRef.current[periodKey];
+    const previousMain = voiceRef.current[mainKey];
+    if (typeof previousMain === "number" && previousMain > 0 && timer.main <= 0) {
+      speakText("开始读秒", audioSettings);
+    }
     if (timer.main <= 0 && timer.periodRemaining <= 10 && timer.periodRemaining > 0) {
       const countdownKey = `${activePlayer.color}-${timer.periods}-${timer.periodRemaining}`;
       if (!voiceRef.current[countdownKey]) {
         voiceRef.current[countdownKey] = true;
-        playCountdownBeep(timer.periodRemaining);
+        playCountdownBeep(timer.periodRemaining, audioSettings);
       }
     }
     if (typeof previousPeriods === "number" && timer.periods < previousPeriods) {
-      speakText(`还剩${timer.periods}次读秒`);
+      speakText(`还剩${timer.periods}次读秒`, audioSettings);
     }
+    voiceRef.current[mainKey] = timer.main;
     voiceRef.current[periodKey] = timer.periods;
-  }, [activePlayer, isReplay]);
+  }, [activePlayer, isReplay, audioSettings]);
 
   function handlePoint(point) {
     if (isReplay) return;
-    if (skillBanner) return;
+    if (skillPreview) return;
     if (displayRoom.game.phase === "marking-dead") return handleScoringPoint(point);
     if (role !== "player") return;
     if (pendingSkill) {
       setPendingSkill(false);
-      if (canPreviewSkill(displayRoom.game, me, point)) {
-        const character = CHARACTERS[me.characterId];
-        setSkillBanner({ character, skillName: character.skill.name });
-        skillTimerRef.current = window.setTimeout(() => {
-          onGameAction({ type: "skill", pointId: point.id });
-          setSkillBanner(null);
-          skillTimerRef.current = null;
-        }, 2000);
-        return;
-      }
       onGameAction({ type: "skill", pointId: point.id });
       return;
     }
@@ -404,12 +437,38 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           {isReplay && <h1>棋谱回放</h1>}
         </div>
         <div className="room-toggles">
+          <button className="toggle" onClick={onOpenSettings} title="设置"><Settings size={16} /></button>
           <button className={showMoves ? "toggle active" : "toggle"} onClick={() => setShowMoves(!showMoves)} title="显示手数"><Hash size={16} /></button>
           <button className={showCoords ? "toggle active" : "toggle"} onClick={() => setShowCoords(!showCoords)} title="显示坐标"><PanelRight size={16} /></button>
         </div>
       </header>
       <section className="battle-layout">
-        <PlayerInfo player={opponent} game={displayRoom.game} align="opponent" isWinner={displayRoom.game.phase === "finished" && opponent?.color === winnerColor} />
+        <div className="opponent-side">
+          <PlayerInfo
+            player={opponent}
+            game={displayRoom.game}
+            align="opponent"
+            isWinner={displayRoom.game.phase === "finished" && opponent?.color === winnerColor}
+            isActiveTurn={displayRoom.game.phase === "playing" && opponent?.color === displayRoom.game.turn}
+            isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
+          />
+          {!isReplay && (
+            <div className={`status-slot side-status ${scoring || drawRequest ? "" : "empty-status"}`}>
+              <StatusPanel
+                room={displayRoom}
+                user={user}
+                scoring={scoring}
+                drawRequest={drawRequest}
+                onRespond={onCountingRespond}
+                onDrawRespond={onDrawRespond}
+                onConfirm={() => onScoringAction({ type: "confirm-dead" })}
+                onReset={() => onScoringAction({ type: "reset-dead" })}
+                onAccept={() => onScoringAction({ type: "accept-result" })}
+                onReject={() => onScoringAction({ type: "reject-result" })}
+              />
+            </div>
+          )}
+        </div>
         <div className="board-column">
           <div className="board-stage">
             <Board
@@ -422,24 +481,12 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
               onNeutral={(id) => onScoringAction({ type: "mark-neutral", pointId: id })}
             />
           </div>
-          <div className={`status-slot ${!isReplay && scoring ? "floating-status" : ""}`}>
+          <div className="status-slot">
             {isReplay && (
               <ReplayBar
                 step={replayStep}
                 max={room.game.history.length}
                 onStep={setReplayStep}
-              />
-            )}
-            {!isReplay && (
-              <CountingPanel
-                room={displayRoom}
-                user={user}
-                scoring={scoring}
-                onRespond={onCountingRespond}
-                onConfirm={() => onScoringAction({ type: "confirm-dead" })}
-                onReset={() => onScoringAction({ type: "reset-dead" })}
-                onAccept={() => onScoringAction({ type: "accept-result" })}
-                onReject={() => onScoringAction({ type: "reject-result" })}
               />
             )}
           </div>
@@ -450,16 +497,25 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
             isMyTurn={Boolean(me && displayRoom.game.turn === me.color)}
             pendingSkill={pendingSkill}
             setPendingSkill={setPendingSkill}
-            skillLocked={Boolean(skillBanner)}
+            skillLocked={Boolean(skillPreview)}
             skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
             onPass={() => onGameAction({ type: "pass" })}
             onCountingRequest={onCountingRequest}
+            onDrawRequest={onDrawRequest}
             onResign={requestResignConfirm}
             onBack={requestExitConfirm}
           />
         </div>
         <div className="room-side">
-          <PlayerInfo player={me ?? displayRoom.players[0]} game={displayRoom.game} align="self" isWinner={displayRoom.game.phase === "finished" && (me ?? displayRoom.players[0])?.color === winnerColor} />
+          <PlayerInfo
+            player={me ?? displayRoom.players[0]}
+            game={displayRoom.game}
+            align="self"
+            isWinner={displayRoom.game.phase === "finished" && (me ?? displayRoom.players[0])?.color === winnerColor}
+            isActiveTurn={displayRoom.game.phase === "playing" && (me ?? displayRoom.players[0])?.color === displayRoom.game.turn}
+            isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
+            isSkillTargeting={Boolean(pendingSkill && role === "player")}
+          />
           <ChatBox room={displayRoom} onChat={onChat} readonly={isReplay} />
         </div>
       </section>
@@ -476,7 +532,7 @@ function RoomScreen({ room, user, replayStep, setReplayStep, pendingSkill, setPe
           }}
         />
       )}
-      {skillBanner && <SkillBanner banner={skillBanner} />}
+      {skillPreview && <SkillBanner banner={skillPreview} />}
     </main>
   );
 }
@@ -512,10 +568,14 @@ function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPo
         {game.points.map((point) => {
           const emptyTerritoryOwner = !point.stone ? territoryOwner.get(point.id) : null;
           const deadOwner = point.stone ? deadStoneOwners[point.id] : null;
+          const hiddenClass = point.hiddenHand
+            ? point.hiddenHand.exposed ? "hidden-hand exposed-hidden-hand" : "hidden-hand"
+            : "";
+          const skillEffectClass = point.skillEffect ?? "";
           return (
           <button
             key={point.id}
-            className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${isStarPoint(point.x, point.y) ? "star" : ""}`}
+            className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${isStarPoint(point.x, point.y) ? "star" : ""}`}
             style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
             onPointerDown={(event) => {
               if (!onScoringPoint) return;
@@ -547,12 +607,13 @@ function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPo
   );
 }
 
-function PlayerInfo({ player, game, align, isWinner = false }) {
+function PlayerInfo({ player, game, align, isWinner = false, isActiveTurn = false, isDrawResult = false, isSkillTargeting = false }) {
   if (!player) return <aside className="player-info empty" />;
   const character = CHARACTERS[player.characterId];
   const skillUses = game.skillUses[player.color] ?? 0;
+  const skillCost = game.skillCosts?.[player.color] ?? 0;
   return (
-    <aside className={`player-info ${align} ${isWinner ? "winner" : ""}`}>
+    <aside className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""}`}>
       <img src={character.portrait} alt={character.name} />
       <div className="player-meta">
         <button className="name-button">{player.user.username}</button>
@@ -560,8 +621,8 @@ function PlayerInfo({ player, game, align, isWinner = false }) {
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
       </div>
       <TimeBar time={player.time} />
-      <div className="captures">提子 {player.captures}</div>
-      <div className={`skill-chip ${skillUses <= 0 ? "spent" : ""}`} title={character.skill.description}>
+      <div className="captures">提子 {player.captures} · 代价 {skillCost}</div>
+      <div className={`skill-chip ${skillUses <= 0 ? "spent" : ""} ${isSkillTargeting ? "targeting" : ""}`} title={character.skill.description}>
         <Sparkles size={16} />
         {character.skill.name} · {skillUses}
       </div>
@@ -583,7 +644,7 @@ function TimeBar({ time }) {
   );
 }
 
-function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, onPass, onCountingRequest, onResign, onBack }) {
+function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, onPass, onCountingRequest, onDrawRequest, onResign, onBack }) {
   if (role === "spectator") {
     return (
       <nav className="action-bar">
@@ -605,6 +666,7 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
       >
         <Sparkles size={20} />技能 · {skillUses}
       </button>
+      <button onClick={onDrawRequest} disabled={phase !== "playing" || skillLocked}>申请和棋</button>
       <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} />认输</button>
       <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
     </nav>
@@ -630,7 +692,23 @@ function ReplayBar({ step, max, onStep }) {
   );
 }
 
-function CountingPanel({ room, user, scoring, onRespond, onConfirm, onReset, onAccept, onReject }) {
+function StatusPanel({ room, user, scoring, drawRequest, onRespond, onDrawRespond, onConfirm, onReset, onAccept, onReject }) {
+  if (room.game.phase === "draw-requested" && drawRequest) {
+    const isRequester = drawRequest.requestedBy === user.id;
+    return (
+      <section className="counting-panel">
+        <strong>和棋申请</strong>
+        <p>{isRequester ? "等待对方确认和棋。" : "对方向你申请和棋，是否同意"}</p>
+        <div className="progress draw-progress"><span /></div>
+        {!isRequester && (
+          <div className="inline-actions">
+            <button onClick={() => onDrawRespond(true)}>同意和棋</button>
+            <button onClick={() => onDrawRespond(false)}>继续对局</button>
+          </div>
+        )}
+      </section>
+    );
+  }
   if (!scoring) return null;
   const isRequester = scoring.requestedBy === user.id;
   const confirmed = scoring.confirmedBy?.includes(user.id);
@@ -717,7 +795,7 @@ function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay })
   const [showReplays, setShowReplays] = useState(false);
   const stats = deriveHouseStats(user, records);
   const owned = new Set(user.ownedCharacters ?? []);
-  const emptySlots = Array.from({ length: 4 }, (_, index) => index);
+  const emptySlots = Array.from({ length: Math.max(0, 10 - characterList.length) }, (_, index) => index);
 
   return (
     <div className="modal-backdrop">
@@ -732,21 +810,40 @@ function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay })
         </div>
         <div className="character-list">
           {characterList.map((character) => (
-            <button
+            <div
               className={`character-card portrait-card ${user.selectedCharacter === character.id ? "selected" : ""}`}
               key={character.id}
               onClick={() => setDetailCharacter(character)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") setDetailCharacter(character);
+              }}
             >
+              <button
+                className={`sortie-button ${user.selectedCharacter === character.id ? "selected" : ""}`}
+                title={user.selectedCharacter === character.id ? "出战中" : "设为出战"}
+                disabled={!owned.has(character.id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onSelectCharacter(character.id);
+                }}
+              >
+                <Flag size={18} />
+              </button>
               <img src={character.portrait} alt={character.name} />
               <strong>{character.name}</strong>
               {!owned.has(character.id) && <span>未获得</span>}
-            </button>
+            </div>
           ))}
           {emptySlots.map((slot) => (
-            <button className="character-card portrait-card locked" key={`empty-${slot}`} disabled>
+            <div className="character-card portrait-card locked" key={`empty-${slot}`}>
+              <button className="sortie-button" disabled title="未获得">
+                <Flag size={18} />
+              </button>
               <span className="locked-portrait">?</span>
               <strong>未获得角色</strong>
-            </button>
+            </div>
           ))}
         </div>
         <button className="replay-open-button" onClick={() => setShowReplays(true)}>
@@ -755,20 +852,17 @@ function HouseModal({ user, records, onClose, onSelectCharacter, onOpenReplay })
         {detailCharacter && (
           <section className="nested-modal character-detail">
             <button className="close-button" onClick={() => setDetailCharacter(null)}><X size={18} /></button>
-            <img src={detailCharacter.portrait} alt={detailCharacter.name} />
-            <h3>{detailCharacter.name}</h3>
-            <strong>{detailCharacter.skill.name}</strong>
-            <p>{detailCharacter.skill.description}</p>
-            <button
-              className="primary-action"
-              disabled={!owned.has(detailCharacter.id) || user.selectedCharacter === detailCharacter.id}
-              onClick={() => {
-                onSelectCharacter(detailCharacter.id);
-                setDetailCharacter(null);
-              }}
-            >
-              {user.selectedCharacter === detailCharacter.id ? "出战中" : owned.has(detailCharacter.id) ? "设为出战" : "未获得"}
-            </button>
+            <div className="character-detail-art">
+              <img src={detailCharacter.portrait} alt={detailCharacter.name} />
+            </div>
+            <div className="character-detail-copy">
+              <h3>{detailCharacter.name}</h3>
+              <div className="skill-title-row">
+                <strong>{detailCharacter.skill.name}</strong>
+                <span className="skill-cost-badge">代价 {formatSkillCost(detailCharacter.skill.cost)}</span>
+              </div>
+              <p>{detailCharacter.skill.description}</p>
+            </div>
           </section>
         )}
         {showReplays && (
@@ -858,6 +952,49 @@ function ShopModal({ onClose }) {
   );
 }
 
+function SettingsModal({ audioSettings, setAudioSettings, onClose }) {
+  const [tab, setTab] = useState("audio");
+  const audioItems = [
+    { key: "master", label: "主音量", icon: <Volume2 size={18} /> },
+    { key: "bgm", label: "背景音乐", icon: <Music size={18} /> },
+    { key: "sfx", label: "提示声", icon: <Bell size={18} /> },
+    { key: "voice", label: "语音", icon: <Mic2 size={18} /> }
+  ];
+  return (
+    <div className="modal-backdrop">
+      <section className="settings-modal">
+        <button className="close-button" onClick={onClose}><X size={20} /></button>
+        <h2>设置</h2>
+        <div className="settings-tabs" role="tablist">
+          <button className={tab === "audio" ? "active" : ""} onClick={() => setTab("audio")}><Volume2 size={16} />音频</button>
+          <button className={tab === "about" ? "active" : ""} onClick={() => setTab("about")}><Info size={16} />关于</button>
+        </div>
+        {tab === "audio" && (
+          <div className="settings-panel">
+            {audioItems.map((item) => (
+              <label className="volume-row" key={item.key}>
+                <span>{item.icon}{item.label}</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={audioSettings[item.key]}
+                  onChange={(event) => setAudioSettings((settings) => ({
+                    ...settings,
+                    [item.key]: Number(event.target.value)
+                  }))}
+                />
+                <strong>{audioSettings[item.key]}</strong>
+              </label>
+            ))}
+          </div>
+        )}
+        {tab === "about" && <div className="settings-panel about-panel" />}
+      </section>
+    </div>
+  );
+}
+
 function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
   return (
     <div className="modal-backdrop">
@@ -875,15 +1012,18 @@ function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
 
 function ResultModal({ room, onClose }) {
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
+  const isDraw = !winnerColor;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
   const character = CHARACTERS[winner?.characterId] ?? CHARACTERS.sigrika;
   return (
     <div className="modal-backdrop">
-      <section className="result-modal">
-        <div className="result-winner">
-          <img src={character.portrait} alt={character.name} />
-          <strong>{winner?.user.username}</strong>
-        </div>
+      <section className={`result-modal ${winnerColor === COLORS.black ? "black-win" : ""} ${isDraw ? "draw-result" : ""}`}>
+        {!isDraw && (
+          <div className="result-winner">
+            <img src={character.portrait} alt={character.name} />
+            <strong>{winner?.user.username}</strong>
+          </div>
+        )}
         <div className="result-summary">
           <h2>对局结果</h2>
           <p>{room.game.winner?.text ?? "对局结束"}</p>
@@ -895,12 +1035,13 @@ function ResultModal({ room, onClose }) {
 }
 
 function SkillBanner({ banner }) {
+  const character = CHARACTERS[banner.characterId] ?? CHARACTERS.sigrika;
   return (
     <div className="skill-burst" aria-live="polite">
-      <img src={banner.character.portrait} alt={banner.character.name} />
+      <img src={character.portrait} alt={banner.characterName ?? character.name} />
       <div>
-        <span>{banner.character.name}</span>
-        <strong>{banner.skillName}</strong>
+        <span>{banner.characterName ?? character.name}</span>
+        <strong>{banner.skillName ?? character.skill.name}</strong>
       </div>
     </div>
   );
@@ -917,6 +1058,10 @@ function Panel({ title, icon, children }) {
 
 function Stat({ label, value }) {
   return <div className="stat"><span>{label}</span><strong>{value}</strong></div>;
+}
+
+function formatSkillCost(cost) {
+  return typeof cost === "number" ? `${cost}子` : cost;
 }
 
 function deriveHouseStats(user, records) {
@@ -938,18 +1083,9 @@ function deriveHouseStats(user, records) {
 
 function winnerColorFromRecord(record) {
   const text = record.resultText ?? "";
-  if (text.startsWith("黑胜") || text.includes("白方认输")) return COLORS.black;
-  if (text.startsWith("白胜") || text.includes("黑方认输")) return COLORS.white;
+  if (text.startsWith("黑胜") || text.startsWith("黑中盘胜") || text.startsWith("黑超时胜")) return COLORS.black;
+  if (text.startsWith("白胜") || text.startsWith("白中盘胜") || text.startsWith("白超时胜")) return COLORS.white;
   return null;
-}
-
-function canPreviewSkill(game, player, point) {
-  if (!player || game.phase !== "playing" || game.turn !== player.color) return false;
-  if ((game.skillUses[player.color] ?? 0) <= 0) return false;
-  if (!point?.valid) return false;
-  if (player.characterId === "sigrika") return !point.stone;
-  if (player.characterId === "danea") return Boolean(point.stone);
-  return false;
 }
 
 function Toast({ text, onClose }) {
@@ -974,7 +1110,24 @@ async function api(path, options = {}) {
   return data;
 }
 
-function playStoneSound() {
+function loadAudioSettings() {
+  try {
+    return {
+      ...DEFAULT_AUDIO_SETTINGS,
+      ...JSON.parse(localStorage.getItem("sigrika-audio-settings") ?? "{}")
+    };
+  } catch {
+    return DEFAULT_AUDIO_SETTINGS;
+  }
+}
+
+function audioVolume(settings, channel) {
+  return Math.max(0, Math.min(1, ((settings?.master ?? DEFAULT_AUDIO_SETTINGS.master) / 100) * ((settings?.[channel] ?? 100) / 100)));
+}
+
+function playStoneSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  const volume = audioVolume(audioSettings, "sfx");
+  if (volume <= 0) return;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) return;
   const context = new AudioContextClass();
@@ -984,7 +1137,7 @@ function playStoneSound() {
   oscillator.frequency.setValueAtTime(260, context.currentTime);
   oscillator.frequency.exponentialRampToValueAtTime(95, context.currentTime + 0.08);
   gain.gain.setValueAtTime(0.001, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.22, context.currentTime + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.22 * volume, context.currentTime + 0.01);
   gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.12);
   oscillator.connect(gain);
   gain.connect(context.destination);
@@ -992,7 +1145,9 @@ function playStoneSound() {
   oscillator.stop(context.currentTime + 0.13);
 }
 
-function playCountdownBeep(second) {
+function playCountdownBeep(second, audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  const volume = audioVolume(audioSettings, "sfx");
+  if (volume <= 0) return;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) return;
   const context = new AudioContextClass();
@@ -1001,7 +1156,7 @@ function playCountdownBeep(second) {
   oscillator.type = second <= 3 ? "square" : "sine";
   oscillator.frequency.setValueAtTime(second <= 3 ? 880 : 620, context.currentTime);
   gain.gain.setValueAtTime(0.001, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime(second <= 3 ? 0.2 : 0.13, context.currentTime + 0.01);
+  gain.gain.exponentialRampToValueAtTime((second <= 3 ? 0.2 : 0.13) * volume, context.currentTime + 0.01);
   gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.11);
   oscillator.connect(gain);
   gain.connect(context.destination);
@@ -1009,12 +1164,15 @@ function playCountdownBeep(second) {
   oscillator.stop(context.currentTime + 0.12);
 }
 
-function speakText(text) {
+function speakText(text, audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  const volume = audioVolume(audioSettings, "voice");
+  if (volume <= 0) return;
   if (!("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "zh-CN";
   utterance.rate = 1.05;
+  utterance.volume = volume;
   window.speechSynthesis.speak(utterance);
 }
 
