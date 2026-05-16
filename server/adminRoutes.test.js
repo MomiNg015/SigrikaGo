@@ -199,6 +199,29 @@ describe("admin character routes", () => {
     expect(characterUpdates[0].skill.upsert.update.name).toBe("Mirror Step");
     expect(characterUpdates[0].skill.upsert.update.uses).toBe(2);
   });
+
+  it("returns JSON for unsupported portrait upload types", async () => {
+    const uploadMiddleware = uploadMiddlewareThatFails(Object.assign(new Error("Unsupported image type"), { status: 400 }));
+    const response = await requestAdminRoute({ character: {} }, "/uploads/character-portrait", {
+      method: "POST",
+      uploadMiddleware
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: "Unsupported image type" });
+  });
+
+  it("returns JSON for oversized portrait uploads", async () => {
+    const error = Object.assign(new Error("File too large"), { code: "LIMIT_FILE_SIZE" });
+    const uploadMiddleware = uploadMiddlewareThatFails(error);
+    const response = await requestAdminRoute({ character: {} }, "/uploads/character-portrait", {
+      method: "POST",
+      uploadMiddleware
+    });
+
+    expect(response.status).toBe(413);
+    expect(response.body).toEqual({ error: "Portrait file must be 3MB or smaller" });
+  });
 });
 
 function userFixture() {
@@ -331,14 +354,22 @@ function characterFixture() {
   };
 }
 
-async function requestAdminRoute(prisma, path, { method, body }) {
+function uploadMiddlewareThatFails(error) {
+  return {
+    single: () => (_req, _res, next) => {
+      next(error);
+    }
+  };
+}
+
+async function requestAdminRoute(prisma, path, { method, body, uploadMiddleware }) {
   const app = express();
   app.use(express.json());
   app.use((req, _res, next) => {
     req.user = { id: "admin-1" };
     next();
   });
-  app.use(createAdminRouter({ prisma }));
+  app.use(createAdminRouter({ prisma, uploadMiddleware }));
   const server = app.listen(0);
   try {
     await new Promise((resolve) => server.once("listening", resolve));
@@ -346,7 +377,7 @@ async function requestAdminRoute(prisma, path, { method, body }) {
     const response = await fetch(`http://127.0.0.1:${port}${path}`, {
       method,
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(body)
+      body: body == null ? undefined : JSON.stringify(body)
     });
     return {
       status: response.status,

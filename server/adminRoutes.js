@@ -30,7 +30,7 @@ export function serializeAudit(value) {
 
 export function safeUploadFilename(originalName, mimeType) {
   const extension = ALLOWED_UPLOAD_TYPES.get(mimeType);
-  if (!extension) throw routeError(400, "Unsupported image type");
+  if (!extension) return null;
   const stem = String(originalName ?? "")
     .replace(/\.[^.]*$/, "")
     .toLowerCase()
@@ -286,13 +286,25 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
   });
 
   if (uploadMiddleware) {
-    router.post("/uploads/character-portrait", uploadMiddleware.single("portrait"), (req, res) => {
-      if (!req.file) {
-        res.status(400).json({ error: "portrait file is required" });
-        return;
+    router.post(
+      "/uploads/character-portrait",
+      (req, res, next) => {
+        uploadMiddleware.single("portrait")(req, res, (error) => {
+          if (error) {
+            sendUploadError(res, error);
+            return;
+          }
+          next();
+        });
+      },
+      (req, res) => {
+        if (!req.file) {
+          res.status(400).json({ error: "portrait file is required" });
+          return;
+        }
+        res.json({ url: `/uploads/characters/${req.file.filename}` });
       }
-      res.json({ url: `/uploads/characters/${req.file.filename}` });
-    });
+    );
   }
 
   return router;
@@ -496,6 +508,18 @@ function routeError(status, message) {
 }
 
 function sendRouteError(res, error) {
+  if (error.status) {
+    res.status(error.status).json({ error: error.message });
+    return;
+  }
+  throw error;
+}
+
+function sendUploadError(res, error) {
+  if (error.code === "LIMIT_FILE_SIZE") {
+    res.status(413).json({ error: "Portrait file must be 3MB or smaller" });
+    return;
+  }
   if (error.status) {
     res.status(error.status).json({ error: error.message });
     return;

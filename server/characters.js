@@ -104,6 +104,7 @@ export function toCharacterPayload(record) {
     name: record.name,
     palette: record.palette,
     portrait: record.portraitUrl,
+    portraitSource: record.portraitSource,
     enabled: record.enabled,
     skill
   };

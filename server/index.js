@@ -42,11 +42,12 @@ const upload = multer({
   storage: multer.diskStorage({
     destination: uploadDir,
     filename: (_req, file, cb) => {
-      try {
-        cb(null, safeUploadFilename(file.originalname, file.mimetype));
-      } catch (error) {
-        cb(error);
+      const filename = safeUploadFilename(file.originalname, file.mimetype);
+      if (!filename) {
+        cb(Object.assign(new Error("Unsupported image type"), { status: 400 }));
+        return;
       }
+      cb(null, filename);
     }
   })
 });
@@ -69,7 +70,7 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
 
-app.get("/api/characters", authHttp, async (_req, res) => {
+app.get("/api/characters", async (_req, res) => {
   res.json({ characters: await listPublicCharacters(prisma) });
 });
 

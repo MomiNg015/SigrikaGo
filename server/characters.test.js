@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { safeUploadFilename } from "./adminRoutes.js";
-import { validateCharacterInput } from "./characters.js";
+import { toCharacterPayload, validateCharacterInput } from "./characters.js";
 
 const validInput = {
   slug: "star-rune",
@@ -20,6 +20,33 @@ describe("character admin helpers", () => {
   it("creates safe upload filenames", () => {
     const name = safeUploadFilename("Danea Pretty.PNG", "image/png");
     expect(name).toMatch(/^character-[a-f0-9-]+-danea-pretty\.png$/);
+  });
+
+  it("returns null for unsupported upload mime types", () => {
+    expect(safeUploadFilename("danea.png", "image/svg+xml")).toBeNull();
+  });
+
+  it("sanitizes upload filenames with paths and spoofed extensions", () => {
+    const name = safeUploadFilename("..\\Danea Pretty.php.PNG", "image/webp");
+
+    expect(name).toMatch(/^character-[a-f0-9-]+-danea-pretty-php\.webp$/);
+    expect(name).not.toContain("\\");
+    expect(name).not.toContain("..");
+  });
+
+  it("returns portraitSource in character payloads", () => {
+    const payload = toCharacterPayload({
+      id: "character-db-1",
+      slug: "danea",
+      name: "Danea",
+      portraitUrl: "/uploads/characters/danea.png",
+      portraitSource: "upload",
+      palette: "#6ab7ff",
+      enabled: true,
+      skill: null
+    });
+
+    expect(payload.portraitSource).toBe("upload");
   });
 
   it("accepts a valid erase-point skill targeting an empty point", () => {
