@@ -4,6 +4,7 @@ import { Router } from "express";
 import { USER_ROLES, USER_STATUS } from "./adminConfig.js";
 import { toCharacterPayload, validateCharacterInput } from "./characters.js";
 import { publicUser } from "./db.js";
+import { toShopItemPayload, validateDecorationInput, validateShopItemInput } from "./shop.js";
 
 const EDITABLE_USER_FIELDS = new Set([
   "role",
@@ -198,6 +199,39 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
     res.json({ user: publicUser(user) });
   });
 
+  router.get("/users/:id/replays", async (req, res) => {
+    const records = await prisma.gameRecord.findMany({
+      where: {
+        OR: [
+          { blackUserId: req.params.id },
+          { whiteUserId: req.params.id }
+        ]
+      },
+      orderBy: { createdAt: "desc" },
+      take: 100
+    });
+    res.json({
+      records: records.map((record) => ({
+        id: record.id,
+        roomCode: record.roomCode,
+        blackName: record.blackName,
+        whiteName: record.whiteName,
+        resultText: record.resultText,
+        moveCount: record.moveCount,
+        createdAt: record.createdAt
+      }))
+    });
+  });
+
+  router.get("/replays/:id", async (req, res) => {
+    const record = await prisma.gameRecord.findUnique({ where: { id: req.params.id } });
+    if (!record) {
+      res.status(404).json({ error: "棋谱不存在" });
+      return;
+    }
+    res.json({ record: { ...record, snapshot: JSON.parse(record.snapshot) } });
+  });
+
   router.patch("/users/:id", async (req, res) => {
     try {
       res.json(await updateUserProfile({ prisma, adminUser: req.user, userId: req.params.id, body: req.body }));
@@ -246,6 +280,94 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
     });
     res.json({ characters: characters.map(toAdminCharacterPayload) });
+  });
+
+  router.get("/decorations", async (_req, res) => {
+    const decorations = await prisma.decoration.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
+    });
+    res.json({ decorations });
+  });
+
+  router.post("/decorations", async (req, res) => {
+    const validated = validateDecorationInput(req.body);
+    if (!validated.ok) {
+      res.status(400).json({ error: validated.error });
+      return;
+    }
+    try {
+      const decoration = await prisma.decoration.create({ data: validated.value });
+      res.json({ decoration });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/decorations/:id", async (req, res) => {
+    const validated = validateDecorationInput(req.body);
+    if (!validated.ok) {
+      res.status(400).json({ error: validated.error });
+      return;
+    }
+    try {
+      const decoration = await prisma.decoration.update({ where: { id: req.params.id }, data: validated.value });
+      res.json({ decoration });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/decorations/:id", async (req, res) => {
+    try {
+      const decoration = await prisma.decoration.update({ where: { id: req.params.id }, data: { enabled: false } });
+      res.json({ decoration });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/shop-items", async (_req, res) => {
+    const items = await prisma.shopItem.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
+    });
+    res.json({ items: items.map(toShopItemPayload) });
+  });
+
+  router.post("/shop-items", async (req, res) => {
+    const validated = validateShopItemInput(req.body);
+    if (!validated.ok) {
+      res.status(400).json({ error: validated.error });
+      return;
+    }
+    try {
+      const item = await prisma.shopItem.create({ data: validated.value });
+      res.json({ item: toShopItemPayload(item) });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/shop-items/:id", async (req, res) => {
+    const validated = validateShopItemInput(req.body);
+    if (!validated.ok) {
+      res.status(400).json({ error: validated.error });
+      return;
+    }
+    try {
+      const item = await prisma.shopItem.update({ where: { id: req.params.id }, data: validated.value });
+      res.json({ item: toShopItemPayload(item) });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/shop-items/:id", async (req, res) => {
+    try {
+      const item = await prisma.shopItem.update({ where: { id: req.params.id }, data: { enabled: false } });
+      res.json({ item: toShopItemPayload(item) });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
   });
 
   router.post("/characters", async (req, res) => {
@@ -421,6 +543,9 @@ function skillData(skill) {
     freeTurn: skill.freeTurn,
     targetRule: skill.targetRule,
     paramsJson: skill.paramsJson,
+    costType: skill.costType,
+    costValue: skill.costValue,
+    systemMessage: skill.systemMessage,
     enabled: true
   };
 }
@@ -465,6 +590,9 @@ function legacySkillInput(input) {
   if (Object.hasOwn(input, "freeTurn")) skill.freeTurn = input.freeTurn;
   if (Object.hasOwn(input, "targetRule")) skill.targetRule = input.targetRule;
   if (Object.hasOwn(input, "paramsJson")) skill.paramsJson = input.paramsJson;
+  if (Object.hasOwn(input, "costType")) skill.costType = input.costType;
+  if (Object.hasOwn(input, "costValue")) skill.costValue = input.costValue;
+  if (Object.hasOwn(input, "systemMessage")) skill.systemMessage = input.systemMessage;
   return skill;
 }
 
@@ -484,7 +612,10 @@ function characterRecordToInput(record) {
       uses: record.skill?.uses ?? 0,
       freeTurn: record.skill?.freeTurn ?? false,
       targetRule: record.skill?.targetRule ?? "",
-      paramsJson: record.skill?.paramsJson ?? "{}"
+      paramsJson: record.skill?.paramsJson ?? "{}",
+      costType: record.skill?.costType ?? "numeric",
+      costValue: record.skill?.costValue ?? "0",
+      systemMessage: record.skill?.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。"
     }
   };
 }

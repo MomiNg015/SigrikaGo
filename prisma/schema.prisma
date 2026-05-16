@@ -68,9 +68,40 @@ model CharacterSkill {
   freeTurn    Boolean   @default(false)
   targetRule  String
   paramsJson  String    @default("{}")
+  costType    String    @default("numeric")
+  costValue   String    @default("0")
+  systemMessage String   @default("{color}{player}使用了{character}的“{skill}”技能，目标是{point}。")
   enabled     Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model Decoration {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String   @default("")
+  imageUrl    String   @default("")
+  enabled     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ShopItem {
+  id              String   @id @default(cuid())
+  name            String
+  category        String
+  targetId        String
+  priceCoins      Int
+  discountPercent Int      @default(0)
+  purchasable     Boolean  @default(true)
+  enabled         Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  description     String   @default("")
+  imageUrl         String   @default("")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model AdminAuditLog {

@@ -16,6 +16,7 @@ import { listPublicCharacterResponse, listPublicCharacters, seedCharacters } fro
 import { CHARACTERS } from "../src/shared/characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { authenticateSocketUser } from "./socketAuth.js";
+import { listShopItems, purchaseShopItem } from "./shop.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -76,6 +77,18 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/characters", async (_req, res) => {
   res.json(await listPublicCharacterResponse(prisma));
+});
+
+app.get("/api/shop", authHttp, async (_req, res) => {
+  res.json(await listShopItems(prisma));
+});
+
+app.post("/api/shop/:id/purchase", authHttp, async (req, res) => {
+  try {
+    res.json(await purchaseShopItem({ prisma, userId: req.user.id, itemId: req.params.id }));
+  } catch (error) {
+    res.status(error.status ?? 500).json({ error: error.message ?? "购买失败" });
+  }
 });
 
 app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));

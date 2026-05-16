@@ -64,6 +64,83 @@ describe("character admin helpers", () => {
     expect(result.ok).toBe(true);
     expect(result.value.skill.effectType).toBe("erase-point");
     expect(result.value.skill.targetRule).toBe("empty-point");
+    expect(result.value.skill.costType).toBe("numeric");
+    expect(result.value.skill.costValue).toBe("0");
+    expect(result.value.skill.systemMessage).toContain("{player}");
+  });
+
+  it("accepts numeric skill costs and preserves them in payloads", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      skill: {
+        ...validInput.skill,
+        costType: "numeric",
+        costValue: "3",
+        systemMessage: "{player} uses {skill}"
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.skill.costType).toBe("numeric");
+    expect(result.value.skill.costValue).toBe("3");
+    expect(result.value.skill.systemMessage).toBe("{player} uses {skill}");
+
+    const payload = toCharacterPayload({
+      id: "character-db-1",
+      slug: "sigrika",
+      name: "Sigrika",
+      portraitUrl: "/assets/sigrika.png",
+      portraitSource: "url",
+      palette: "#ff9b4d",
+      enabled: true,
+      skill: {
+        id: "skill-1",
+        effectType: "erase-point",
+        name: "Star Rune",
+        uses: 1,
+        description: "Erase one point.",
+        freeTurn: true,
+        targetRule: "empty-point",
+        paramsJson: "{}",
+        costType: "numeric",
+        costValue: "3",
+        systemMessage: "{player} uses {skill}"
+      }
+    });
+
+    expect(payload.skill.costType).toBe("numeric");
+    expect(payload.skill.costValue).toBe("3");
+    expect(payload.skill.cost).toBe(3);
+    expect(payload.skill.systemMessage).toBe("{player} uses {skill}");
+  });
+
+  it("rejects non-numeric cost values for numeric costs", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      skill: {
+        ...validInput.skill,
+        costType: "numeric",
+        costValue: "三子"
+      }
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("costValue");
+  });
+
+  it("accepts special skill costs as display-only text", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      skill: {
+        ...validInput.skill,
+        costType: "special",
+        costValue: "下次读秒缩短"
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.skill.costType).toBe("special");
+    expect(result.value.skill.costValue).toBe("下次读秒缩短");
   });
 
   it("preserves upload portrait source metadata", () => {

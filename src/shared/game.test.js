@@ -165,6 +165,64 @@ describe("SigrikaGo rules", () => {
     expect(result.state.turn).toBe(COLORS.black);
   });
 
+  it("adds configured numeric skill costs when a dynamic skill is used", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    state.turn = COLORS.black;
+
+    const result = useSkill(
+      state,
+      COLORS.black,
+      {
+        effectType: "erase-point",
+        name: "Costly Rune",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "empty-point",
+        costType: "numeric",
+        costValue: "5",
+        params: {}
+      },
+      pointId(6, 6)
+    );
+
+    expect(result.ok).toBe(true);
+    expect(result.state.skillCosts.black).toBe(5);
+    expect(result.state.skillCostNotes.at(-1)).toMatchObject({
+      color: COLORS.black,
+      costType: "numeric",
+      costValue: "5"
+    });
+  });
+
+  it("keeps special skill costs as notes without changing numeric scoring cost", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    state.turn = COLORS.black;
+
+    const result = useSkill(
+      state,
+      COLORS.black,
+      {
+        effectType: "erase-point",
+        name: "Story Rune",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "empty-point",
+        costType: "special",
+        costValue: "下次读秒缩短",
+        params: {}
+      },
+      pointId(6, 6)
+    );
+
+    expect(result.ok).toBe(true);
+    expect(result.state.skillCosts.black).toBe(0);
+    expect(result.state.skillCostNotes.at(-1)).toMatchObject({
+      color: COLORS.black,
+      costType: "special",
+      costValue: "下次读秒缩短"
+    });
+  });
+
   it("uses configured flip-stone skill and consumes the turn", () => {
     const state = createGameState([{ color: COLORS.black }]);
     forceStone(state, 4, 4, COLORS.white);

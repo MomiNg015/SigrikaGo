@@ -53,6 +53,7 @@ describe("rooms character integration", () => {
         name: "Admin Rune",
         uses: 1,
         description: "Custom admin skill",
+        systemMessage: "{color}{player}发动{character}的{skill}，目标{point}",
         freeTurn: true,
         targetRule: "empty-point",
         params: {}
@@ -72,5 +73,6 @@ describe("rooms character integration", () => {
     expect(room.chat.at(-1)).toMatchObject({ kind: "skill" });
     expect(room.chat.at(-1).text).toContain(black.character.name);
     expect(room.chat.at(-1).text).toContain(black.character.skill.name);
+    expect(room.chat.at(-1).text).toContain("目标D-10");
   });
 });

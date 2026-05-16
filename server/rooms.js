@@ -438,6 +438,15 @@ function describeSkillUse(room, player, targetId) {
   const colorLabel = player.color === COLORS.black ? "黑" : "白";
   const fixed = `${colorLabel}方${player.user.username}使用了${character.name}的“${skill.name}”技能`;
   const coord = formatPointLabel(targetId);
+  if (skill.systemMessage) {
+    return renderSkillMessage(skill.systemMessage, {
+      player: player.user.username,
+      character: character.name,
+      skill: skill.name,
+      point: coord,
+      color: colorLabel
+    });
+  }
   if (effectType === "erase-point") {
     return `${fixed}。从天而降破坏了${coord}的点位，铛！`;
   }
@@ -451,6 +460,15 @@ function describeSkillUse(room, player, targetId) {
     return `${fixed}。落下了电子幽灵般的一手，应该不会被发现吧...`;
   }
   return `${fixed}。`;
+}
+
+function renderSkillMessage(template, values) {
+  return String(template)
+    .replaceAll("{player}", values.player)
+    .replaceAll("{character}", values.character)
+    .replaceAll("{skill}", values.skill)
+    .replaceAll("{point}", values.point)
+    .replaceAll("{color}", values.color);
 }
 
 function formatPointLabel(id) {

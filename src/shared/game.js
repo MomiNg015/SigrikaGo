@@ -89,7 +89,7 @@ export function playMove(state, color, id) {
   return placeStone(state, color, id, { hidden: false });
 }
 
-function placeStone(state, color, id, { hidden }) {
+function placeStone(state, color, id, { hidden, skill = null }) {
   if (state.phase !== "playing") return fail("对局当前不能落子");
   if (state.turn !== color) return fail("还没有轮到你");
   const next = cloneState(state);
@@ -139,7 +139,7 @@ function placeStone(state, color, id, { hidden }) {
     : { type: "move", color, id, captures: removed, moveNumber: next.moveNumber });
   if (hidden) {
     next.skillUses[color] -= 1;
-    applySkillCost(next, color, "aemeath");
+    applySkillCost(next, color, skill ?? "aemeath");
   }
   return ok(next, { notices });
 }
@@ -202,19 +202,22 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
   if (skill?.effectType === "erase-point") {
     return erasePoint(state, color, targetId, {
       skillName: skill.name,
-      consumesTurn: !skill.freeTurn
+      consumesTurn: !skill.freeTurn,
+      skill
     });
   }
   if (skill?.effectType === "flip-stone") {
     return flipStone(state, color, targetId, {
       skillName: skill.name,
-      consumesTurn: !skill.freeTurn
+      consumesTurn: !skill.freeTurn,
+      skill
     });
   }
   if (skill?.effectType === "hidden-hand") {
     return playHiddenHand(state, color, targetId, {
       skillName: skill.name,
-      characterId: skill.characterId ?? "aemeath"
+      characterId: skill.characterId ?? "aemeath",
+      skill
     });
   }
   return fail("未知角色技能");
@@ -235,6 +238,9 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       name: fallback.skill.name,
       uses: fallback.skill.uses ?? 1,
       freeTurn: Boolean(fallback.skill.freeTurn),
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+      systemMessage: fallback.skill.systemMessage,
       targetRule: "empty-point",
       params: {}
     };
@@ -246,6 +252,9 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       name: fallback.skill.name,
       uses: fallback.skill.uses ?? 1,
       freeTurn: Boolean(fallback.skill.freeTurn),
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+      systemMessage: fallback.skill.systemMessage,
       targetRule: "stone",
       params: {}
     };
@@ -257,6 +266,9 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       name: fallback.skill.name,
       uses: fallback.skill.uses ?? 1,
       freeTurn: false,
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+      systemMessage: fallback.skill.systemMessage,
       targetRule: "empty-point",
       params: {}
     };
@@ -265,7 +277,7 @@ export function normalizeSkillConfig(skillOrCharacterId) {
 }
 
 export function playHiddenHand(state, color, id, options = {}) {
-  const result = placeStone(state, color, id, { hidden: true });
+  const result = placeStone(state, color, id, { hidden: true, skill: options.skill ?? options.characterId ?? "aemeath" });
   if (result.ok && options.skillName) {
     result.state.history[result.state.history.length - 1].skill = options.skillName;
   }
@@ -285,7 +297,7 @@ export function erasePoint(state, color, id, options = {}) {
     other.neighbors = other.neighbors.filter((neighborId) => neighborId !== id);
   }
   next.skillUses[color] -= 1;
-  applySkillCost(next, color, "sigrika");
+  applySkillCost(next, color, options.skill ?? "sigrika");
   next.ko = null;
   next.history.push({ type: "skill", skill: "星辰符文", color, id, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
@@ -299,7 +311,7 @@ export function flipStone(state, color, id, options = {}) {
   point.stone = opponent(point.stone);
   point.skillEffect = "flipped-stone";
   next.skillUses[color] -= 1;
-  applySkillCost(next, color, "danea");
+  applySkillCost(next, color, options.skill ?? "danea");
   next.ko = null;
   next.history.push({ type: "skill", skill: "染秽", color, id, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
@@ -664,15 +676,26 @@ function colorName(color) {
   return color === COLORS.black ? "\u9ed1" : "\u767d";
 }
 
-function applySkillCost(state, color, characterId) {
-  const cost = CHARACTERS[characterId]?.skill?.cost ?? 0;
-  if (typeof cost === "number") {
+function applySkillCost(state, color, skillOrCharacterId) {
+  const skill = typeof skillOrCharacterId === "string"
+    ? CHARACTERS[skillOrCharacterId]?.skill
+    : skillOrCharacterId;
+  const costType = skill?.costType ?? "numeric";
+  const costValue = String(skill?.costValue ?? skill?.cost ?? 0);
+  if (costType === "numeric") {
+    const cost = Number(costValue);
     state.skillCosts = state.skillCosts ?? { black: 0, white: 0 };
-    state.skillCosts[color] = (state.skillCosts[color] ?? 0) + cost;
-    return;
+    if (Number.isFinite(cost)) {
+      state.skillCosts[color] = (state.skillCosts[color] ?? 0) + cost;
+    }
   }
   state.skillCostNotes = state.skillCostNotes ?? [];
-  state.skillCostNotes.push({ color, characterId, cost });
+  state.skillCostNotes.push({
+    color,
+    characterId: typeof skillOrCharacterId === "string" ? skillOrCharacterId : skill?.characterId ?? null,
+    costType,
+    costValue
+  });
 }
 
 function numericSkillCost(state, color) {

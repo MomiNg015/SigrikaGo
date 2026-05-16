@@ -182,6 +182,58 @@ describe("admin user routes", () => {
     expect(response.status).toBe(400);
     expect(response.body).toEqual({ error: "没有可更新字段" });
   });
+
+  it("lists game records for any selected user", async () => {
+    const response = await requestAdminRoute({
+      gameRecord: {
+        findMany: async (query) => {
+          expect(query.where.OR).toEqual([
+            { blackUserId: "user-1" },
+            { whiteUserId: "user-1" }
+          ]);
+          return [{
+            id: "record-1",
+            roomCode: "12345",
+            blackName: "alice",
+            whiteName: "bob",
+            resultText: "黑中盘胜",
+            moveCount: 42,
+            createdAt: new Date("2026-01-01T00:00:00Z")
+          }];
+        }
+      }
+    }, "/users/user-1/replays", { method: "GET" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.records).toEqual([{
+      id: "record-1",
+      roomCode: "12345",
+      blackName: "alice",
+      whiteName: "bob",
+      resultText: "黑中盘胜",
+      moveCount: 42,
+      createdAt: "2026-01-01T00:00:00.000Z"
+    }]);
+  });
+
+  it("lets admins read any replay snapshot by id", async () => {
+    const snapshot = { code: "12345", game: { history: [] } };
+    const response = await requestAdminRoute({
+      gameRecord: {
+        findUnique: async ({ where }) => {
+          expect(where).toEqual({ id: "record-1" });
+          return {
+            id: "record-1",
+            roomCode: "12345",
+            snapshot: JSON.stringify(snapshot)
+          };
+        }
+      }
+    }, "/replays/record-1", { method: "GET" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.record.snapshot).toEqual(snapshot);
+  });
 });
 
 describe("admin character routes", () => {
@@ -226,6 +278,61 @@ describe("admin character routes", () => {
 
     expect(response.status).toBe(413);
     expect(response.body).toEqual({ error: "Portrait file must be 3MB or smaller" });
+  });
+});
+
+describe("admin shop and decoration routes", () => {
+  it("creates and lists decorations", async () => {
+    const decorations = [];
+    const response = await requestAdminRoute({
+      decoration: {
+        create: async ({ data }) => {
+          const record = { id: "decoration-1", ...data, createdAt: new Date("2026-01-01T00:00:00Z") };
+          decorations.push(record);
+          return record;
+        },
+        findMany: async () => decorations
+      }
+    }, "/decorations", {
+      method: "POST",
+      body: {
+        slug: "moon-frame",
+        name: "月光头像框",
+        description: "柔和月光装饰",
+        imageUrl: "/assets/moon.png",
+        enabled: true,
+        sortOrder: 1
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.decoration.slug).toBe("moon-frame");
+  });
+
+  it("creates shop items with character or decoration categories", async () => {
+    const response = await requestAdminRoute({
+      shopItem: {
+        create: async ({ data }) => ({ id: "shop-1", ...data }),
+        findMany: async () => []
+      }
+    }, "/shop-items", {
+      method: "POST",
+      body: {
+        name: "购买达妮娅",
+        category: "character",
+        targetId: "danea",
+        priceCoins: 100,
+        discountPercent: 20,
+        purchasable: true,
+        enabled: true,
+        sortOrder: 1,
+        description: "解锁角色",
+        imageUrl: "/assets/Danea_centered.png"
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.item.finalPrice).toBe(80);
   });
 });
 

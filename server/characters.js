@@ -2,8 +2,10 @@ import { CHARACTERS } from "../src/shared/characters.js";
 
 const EFFECT_TARGET_RULES = {
   "erase-point": "empty-point",
-  "flip-stone": "stone"
+  "flip-stone": "stone",
+  "hidden-hand": "empty-point"
 };
+const COST_TYPES = new Set(["numeric", "special"]);
 
 export function validateCharacterInput(input = {}) {
   if (!isPlainObject(input)) {
@@ -28,6 +30,10 @@ export function validateCharacterInput(input = {}) {
   const sortOrder = input.sortOrder ?? 0;
   const freeTurn = skillInput.freeTurn ?? input.freeTurn ?? false;
   const paramsJson = skillInput.paramsJson ?? input.paramsJson ?? "{}";
+  const costType = String(skillInput.costType ?? input.costType ?? "numeric").trim();
+  const fallbackCostValue = skillInput.cost ?? input.cost ?? 0;
+  const costValue = String(skillInput.costValue ?? input.costValue ?? fallbackCostValue).trim();
+  const systemMessage = String(skillInput.systemMessage ?? input.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。").trim();
   let params = {};
 
   if (!/^[a-z0-9-]{2,40}$/.test(slug)) {
@@ -41,7 +47,7 @@ export function validateCharacterInput(input = {}) {
     errors.push("portraitSource must be url or upload");
   }
   if (!Object.hasOwn(EFFECT_TARGET_RULES, effectType)) {
-    errors.push("effectType must be erase-point or flip-stone");
+    errors.push("effectType must be erase-point, flip-stone, or hidden-hand");
   }
   if (EFFECT_TARGET_RULES[effectType] && targetRule !== EFFECT_TARGET_RULES[effectType]) {
     errors.push("目标规则与技能类型不匹配");
@@ -53,6 +59,14 @@ export function validateCharacterInput(input = {}) {
   if (!Number.isInteger(sortOrder)) errors.push("sortOrder must be an integer");
   if (typeof freeTurn !== "boolean") errors.push("freeTurn must be a boolean");
   if (typeof paramsJson !== "string") errors.push("paramsJson must be a string");
+  if (!COST_TYPES.has(costType)) errors.push("costType must be numeric or special");
+  if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) {
+    errors.push("costValue must be numeric when costType is numeric");
+  }
+  if (costType === "special" && !costValue) {
+    errors.push("costValue is required when costType is special");
+  }
+  if (!systemMessage) errors.push("systemMessage is required");
 
   try {
     params = JSON.parse(typeof paramsJson === "string" ? paramsJson : "{}");
@@ -80,7 +94,10 @@ export function validateCharacterInput(input = {}) {
         freeTurn,
         targetRule,
         params,
-        paramsJson: JSON.stringify(params)
+        paramsJson: JSON.stringify(params),
+        costType,
+        costValue,
+        systemMessage
       }
     }
   };
@@ -96,7 +113,11 @@ export function toCharacterPayload(record) {
         description: record.skill.description,
         freeTurn: record.skill.freeTurn,
         targetRule: record.skill.targetRule,
-        params: parseParams(record.skill.paramsJson)
+        params: parseParams(record.skill.paramsJson),
+        costType: record.skill.costType ?? "numeric",
+        costValue: record.skill.costValue ?? String(record.skill.cost ?? 0),
+        cost: numericCost(record.skill),
+        systemMessage: record.skill.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。"
       }
     : null;
 
@@ -115,8 +136,11 @@ export function toCharacterPayload(record) {
 export async function seedCharacters(prisma) {
   const entries = Object.values(CHARACTERS);
   for (const [sortOrder, character] of entries.entries()) {
-    const existing = await prisma.character.findUnique({ where: { slug: character.id } });
-    if (existing) continue;
+    const existing = await prisma.character.findUnique({ where: { slug: character.id }, include: { skill: true } });
+    if (existing) {
+      await syncBuiltinSkillCost(prisma, existing, character);
+      continue;
+    }
 
     await prisma.character.create({
       data: {
@@ -135,12 +159,32 @@ export async function seedCharacters(prisma) {
             freeTurn: Boolean(character.skill.freeTurn),
             targetRule: targetRuleForEffect(character.skill.id),
             paramsJson: "{}",
+            costType: character.skill.costType ?? "numeric",
+            costValue: String(character.skill.costValue ?? character.skill.cost ?? 0),
+            systemMessage: character.skill.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。",
             enabled: true
           }
         }
       }
     });
   }
+}
+
+async function syncBuiltinSkillCost(prisma, existing, character) {
+  const fallbackCost = String(character.skill.costValue ?? character.skill.cost ?? 0);
+  if (!existing.skill || fallbackCost === "0") return;
+  const looksLikeOriginalSkill = existing.skill.name === character.skill.name
+    && existing.skill.description === character.skill.description
+    && existing.skill.effectType === character.skill.id;
+  if (!looksLikeOriginalSkill) return;
+  if (existing.skill.costType === "numeric" && existing.skill.costValue === fallbackCost) return;
+  await prisma.characterSkill.update({
+    where: { id: existing.skill.id },
+    data: {
+      costType: character.skill.costType ?? "numeric",
+      costValue: fallbackCost
+    }
+  });
 }
 
 export async function listPublicCharacters(prisma) {
@@ -164,6 +208,12 @@ export async function listPublicCharacterResponse(prisma) {
 
 function targetRuleForEffect(effectType) {
   return EFFECT_TARGET_RULES[effectType] ?? "stone";
+}
+
+function numericCost(skill) {
+  if ((skill.costType ?? "numeric") !== "numeric") return 0;
+  const value = Number(skill.costValue ?? skill.cost ?? 0);
+  return Number.isFinite(value) ? value : 0;
 }
 
 function parseParams(paramsJson) {

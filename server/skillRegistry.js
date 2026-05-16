@@ -9,7 +9,10 @@ export function skillConfigForCharacter(character) {
     name: fallback.skill.name,
     uses: fallback.skill.uses ?? 1,
     freeTurn: Boolean(fallback.skill.freeTurn),
-    targetRule: fallback.skill.id === "erase-point" ? "empty-point" : "stone",
+    costType: fallback.skill.costType ?? "numeric",
+    costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+    systemMessage: fallback.skill.systemMessage,
+    targetRule: fallback.skill.id === "flip-stone" ? "stone" : "empty-point",
     params: {}
   };
 }

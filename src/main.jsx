@@ -31,7 +31,8 @@ import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
 import { BOARD_SIZE, COLORS, createGameState, passMove, playMove, useSkill } from "./shared/game.js";
 import "./styles.css";
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = "";
+const SOCKET_BASE = "http://localhost:3001";
 const DEFAULT_AUDIO_SETTINGS = {
   master: 80,
   bgm: 60,
@@ -82,7 +83,7 @@ function App() {
 
   useEffect(() => {
     if (!token || !user) return;
-    const nextSocket = io(API_BASE, { auth: { token } });
+    const nextSocket = io(SOCKET_BASE, { auth: { token } });
     nextSocket.on("match:waiting", ({ startedAt }) => setMatchStart(startedAt));
     nextSocket.on("match:found", (roomView) => {
       setRoom(roomView);
@@ -181,6 +182,15 @@ function App() {
     setView("room");
   }
 
+  async function openAdminReplay(recordId) {
+    const data = await adminApi(`/replays/${recordId}`, token);
+    const snapshot = data.record.snapshot;
+    setRoom(snapshot);
+    setReplayStep(snapshot.game.history.length);
+    setPendingSkill(false);
+    setView("room");
+  }
+
   return (
     <div className="app-shell">
       {toast && <Toast text={toast} onClose={() => setToast("")} />}
@@ -206,6 +216,7 @@ function App() {
           tab={adminTab}
           setTab={setAdminTab}
           onBack={() => setView("home")}
+          onOpenReplay={openAdminReplay}
         />
       )}
       {view === "admin" && user?.role !== "admin" && (
@@ -274,7 +285,14 @@ function App() {
           }}
         />
       )}
-      {showShop && <ShopModal onClose={() => setShowShop(false)} />}
+      {showShop && (
+        <ShopModal
+          token={token}
+          user={user}
+          onPurchased={(nextUser) => setUser(nextUser)}
+          onClose={() => setShowShop(false)}
+        />
+      )}
       {showSettings && (
         <SettingsModal
           audioSettings={audioSettings}
@@ -286,12 +304,22 @@ function App() {
   );
 }
 
-function AdminConsole({ user, token, tab, setTab, onBack }) {
-  const tabs = ["overview", "users", "characters", "audit"];
+function AdminConsole({ user, token, tab, setTab, onBack, onOpenReplay }) {
+  const tabs = ["overview", "users", "characters", "shop", "decorations", "audit"];
+  const tabLabels = {
+    overview: "概览",
+    users: "用户管理",
+    characters: "角色管理",
+    shop: "商城管理",
+    decorations: "装饰管理",
+    audit: "审计日志"
+  };
   const [summary, setSummary] = useState(null);
   const [users, setUsers] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
+  const [shopItems, setShopItems] = useState([]);
+  const [decorations, setDecorations] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [adminError, setAdminError] = useState("");
 
@@ -316,6 +344,16 @@ function AdminConsole({ user, token, tab, setTab, onBack }) {
   useEffect(() => {
     if (tab !== "audit") return;
     refreshAuditLogs();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "shop") return;
+    refreshShopItems();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "decorations") return;
+    refreshDecorations();
   }, [tab, token]);
 
   async function refreshUsers(nextSelectedId = selectedUser?.id) {
@@ -352,19 +390,39 @@ function AdminConsole({ user, token, tab, setTab, onBack }) {
     }
   }
 
+  async function refreshShopItems() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/shop-items", token);
+      setShopItems(data.items ?? []);
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  }
+
+  async function refreshDecorations() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/decorations", token);
+      setDecorations(data.decorations ?? []);
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  }
+
   return (
     <main className="admin-screen">
       <aside className="admin-sidebar">
         <strong>SigrikaGo Admin</strong>
         {tabs.map((item) => (
           <button key={item} className={tab === item ? "active" : ""} onClick={() => setTab(item)}>
-            {item}
+            {tabLabels[item]}
           </button>
         ))}
         <button onClick={onBack}>返回大厅</button>
       </aside>
       <section className="admin-main">
-        <header><span>{user.username}</span><strong>{tab}</strong></header>
+        <header><span>{user.username}</span><strong>{tabLabels[tab]}</strong></header>
         {adminError && <p className="form-error admin-error">{adminError}</p>}
         {tab === "overview" && <AdminOverview summary={summary} />}
         {tab === "users" && (
@@ -376,12 +434,19 @@ function AdminConsole({ user, token, tab, setTab, onBack }) {
                 token={token}
                 onClose={() => setSelectedUser(null)}
                 onRefresh={refreshUsers}
+                onOpenReplay={onOpenReplay}
               />
             )}
           </>
         )}
         {tab === "characters" && (
           <AdminCharacters characters={adminCharacters} token={token} onSaved={refreshCharacters} />
+        )}
+        {tab === "shop" && (
+          <AdminShopItems items={shopItems} token={token} onSaved={refreshShopItems} onClearError={() => setAdminError("")} />
+        )}
+        {tab === "decorations" && (
+          <AdminDecorations decorations={decorations} token={token} onSaved={refreshDecorations} />
         )}
         {tab === "audit" && <AdminAudit logs={auditLogs} />}
       </section>
@@ -483,9 +548,9 @@ function AdminCharacters({ characters, token, onSaved }) {
             setDraft={setDraft}
             token={token}
             onCancel={() => setDraft(null)}
-            onSaved={async () => {
-              setDraft(null);
+            onSaved={async (savedCharacter) => {
               await onSaved();
+              if (savedCharacter) setDraft(buildCharacterDraft(savedCharacter));
             }}
           />
         ) : (
@@ -499,8 +564,123 @@ function AdminCharacters({ characters, token, onSaved }) {
   );
 }
 
+function AdminShopItems({ items, token, onSaved, onClearError }) {
+  const [draft, setDraft] = useState(emptyShopItemDraft());
+  const [message, setMessage] = useState("");
+
+  async function save(event) {
+    event.preventDefault();
+    onClearError();
+    setMessage("");
+    const validated = validateShopItemDraft(draft);
+    if (!validated.ok) {
+      setMessage(validated.error);
+      return;
+    }
+    const id = draft.id;
+    const data = await adminApi(id ? `/shop-items/${id}` : "/shop-items", token, {
+      method: id ? "PATCH" : "POST",
+      body: validated.value
+    });
+    setDraft(buildShopItemDraft(data.item));
+    setMessage("保存成功");
+    await onSaved();
+  }
+
+  async function disableItem(item) {
+    await adminApi(`/shop-items/${item.id}`, token, { method: "DELETE" });
+    await onSaved();
+  }
+
+  return (
+    <div className="admin-management-grid">
+      <section className="admin-table-wrap">
+        <button className="admin-add-button" onClick={() => { onClearError(); setMessage(""); setDraft(emptyShopItemDraft()); }}><Plus size={18} />新增商品</button>
+        <table className="admin-table">
+          <thead><tr><th>商品</th><th>类别</th><th>价格</th><th>状态</th></tr></thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.id} onClick={() => { onClearError(); setMessage(""); setDraft(buildShopItemDraft(item)); }}>
+                <td>{item.name}</td><td>{shopCategoryLabel(item.category)}</td><td>{item.finalPrice}/{item.priceCoins}</td><td>{item.enabled ? "展示" : "隐藏"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+      <form className="admin-character-form" onSubmit={save}>
+        <h2>{draft.id ? "编辑商品" : "新增商品"}</h2>
+        {message && <p className={message === "保存成功" ? "admin-success" : "form-error admin-action-error"}>{message}</p>}
+        <div className="admin-character-form-grid">
+          <label><AdminFieldLabel text="商品名" tip="商城中显示的商品名称。" /><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></label>
+          <label><AdminFieldLabel text="类别" tip="购买后获得角色或装饰。" /><select value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })}><option value="character">角色</option><option value="decoration">装饰</option></select></label>
+          <label><AdminFieldLabel text="目标标识" tip="角色 slug 或装饰 slug。" /><input value={draft.targetId} onChange={(e) => setDraft({ ...draft, targetId: e.target.value })} /></label>
+          <label><AdminFieldLabel text="金币价格" tip="购买所需原价金币。" /><input type="number" value={draft.priceCoins} onChange={(e) => setDraft({ ...draft, priceCoins: e.target.value })} /></label>
+          <label><AdminFieldLabel text="折扣" tip="0 到 100 的折扣百分比。" /><input type="number" min="0" max="100" value={draft.discountPercent} onChange={(e) => setDraft({ ...draft, discountPercent: e.target.value })} /></label>
+          <label><AdminFieldLabel text="排序" tip="商品显示顺序。" /><input type="number" value={draft.sortOrder} onChange={(e) => setDraft({ ...draft, sortOrder: e.target.value })} /></label>
+          <label className="admin-checkbox"><input type="checkbox" checked={draft.purchasable} onChange={(e) => setDraft({ ...draft, purchasable: e.target.checked })} /><AdminFieldLabel text="可购买" tip="关闭后商品可展示但不能购买。" /></label>
+          <label className="admin-checkbox"><input type="checkbox" checked={draft.enabled} onChange={(e) => setDraft({ ...draft, enabled: e.target.checked })} /><AdminFieldLabel text="展示" tip="关闭后不在商城显示。" /></label>
+          <label className="wide-field"><AdminFieldLabel text="图片地址" tip="商城卡片图片。" /><input value={draft.imageUrl} onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })} /></label>
+          <label className="wide-field"><AdminFieldLabel text="商品描述" tip="商城中显示的商品说明。" /><textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></label>
+        </div>
+        <div className="inline-actions">
+          <button className="primary-action" type="submit">保存</button>
+          {draft.id && <button className="secondary-action" type="button" onClick={() => disableItem(draft)}>下架</button>}
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function AdminDecorations({ decorations, token, onSaved }) {
+  const [draft, setDraft] = useState(emptyDecorationDraft());
+  const [message, setMessage] = useState("");
+
+  async function save(event) {
+    event.preventDefault();
+    setMessage("");
+    const body = decorationDraftToBody(draft);
+    if (!body) {
+      setMessage("请填写装饰标识、名称和正确排序");
+      return;
+    }
+    const data = await adminApi(draft.id ? `/decorations/${draft.id}` : "/decorations", token, {
+      method: draft.id ? "PATCH" : "POST",
+      body
+    });
+    setDraft(buildDecorationDraft(data.decoration));
+    setMessage("保存成功");
+    await onSaved();
+  }
+
+  return (
+    <div className="admin-management-grid">
+      <section className="admin-table-wrap">
+        <button className="admin-add-button" onClick={() => setDraft(emptyDecorationDraft())}><Plus size={18} />新增装饰</button>
+        <table className="admin-table">
+          <thead><tr><th>装饰</th><th>标识</th><th>状态</th></tr></thead>
+          <tbody>{decorations.map((decoration) => <tr key={decoration.id} onClick={() => setDraft(buildDecorationDraft(decoration))}><td>{decoration.name}</td><td>{decoration.slug}</td><td>{decoration.enabled ? "启用" : "停用"}</td></tr>)}</tbody>
+        </table>
+      </section>
+      <form className="admin-character-form" onSubmit={save}>
+        <h2>{draft.id ? "编辑装饰" : "新增装饰"}</h2>
+        {message && <p className={message === "保存成功" ? "admin-success" : "form-error admin-action-error"}>{message}</p>}
+        <div className="admin-character-form-grid">
+          <label><AdminFieldLabel text="装饰标识" tip="装饰唯一 slug，用于购买后写入用户拥有列表。" /><input value={draft.slug} onChange={(e) => setDraft({ ...draft, slug: e.target.value })} /></label>
+          <label><AdminFieldLabel text="装饰名称" tip="棋舍里显示的装饰名称。" /><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></label>
+          <label><AdminFieldLabel text="图片地址" tip="装饰预览图片。" /><input value={draft.imageUrl} onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })} /></label>
+          <label><AdminFieldLabel text="排序" tip="装饰显示顺序。" /><input type="number" value={draft.sortOrder} onChange={(e) => setDraft({ ...draft, sortOrder: e.target.value })} /></label>
+          <label className="admin-checkbox"><input type="checkbox" checked={draft.enabled} onChange={(e) => setDraft({ ...draft, enabled: e.target.checked })} /><AdminFieldLabel text="启用" tip="关闭后不展示该装饰。" /></label>
+          <label className="wide-field"><AdminFieldLabel text="装饰描述" tip="棋舍和商城中展示的装饰说明。" /><textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></label>
+        </div>
+        <button className="primary-action" type="submit">保存</button>
+      </form>
+    </div>
+  );
+}
+
 function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
   const [actionError, setActionError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -554,19 +734,21 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
     event.preventDefault();
     const body = characterDraftToBody(draft);
     if (!body) {
-      setActionError("uses 和 sortOrder 必须是整数，uses 范围为 0-9");
+      setActionError("排序和使用次数必须是整数；数值代价只能填数字，特殊代价需要填写文本");
       return;
     }
 
     setSaving(true);
     setActionError("");
+    setSuccessMessage("");
     try {
       const id = draft.dbId ?? draft.originalSlug;
-      await adminApi(id ? `/characters/${id}` : "/characters", token, {
+      const data = await adminApi(id ? `/characters/${id}` : "/characters", token, {
         method: id ? "PATCH" : "POST",
         body
       });
-      await onSaved();
+      setSuccessMessage("保存成功");
+      await onSaved(data.character);
     } catch (error) {
       setActionError(error.message);
     } finally {
@@ -587,33 +769,34 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
         </div>
       </div>
       {actionError && <p className="form-error admin-action-error">{actionError}</p>}
+      {successMessage && <p className="admin-success">{successMessage}</p>}
       <div className="admin-character-form-grid">
-        <label>slug
+        <label><AdminFieldLabel text="角色标识" tip="角色的唯一 slug，用于存档、拥有角色和出战角色匹配。" />
           <input value={draft.slug} onChange={(event) => updateDraft("slug", event.target.value)} />
         </label>
-        <label>name
+        <label><AdminFieldLabel text="角色名称" tip="显示在棋舍、对局资料和技能演出中的角色名。" />
           <input value={draft.name} onChange={(event) => updateDraft("name", event.target.value)} />
         </label>
-        <label>portraitUrl
+        <label><AdminFieldLabel text="立绘地址" tip="角色立绘图片地址，可以是资源路径或上传后生成的路径。" />
           <input value={draft.portraitUrl} onChange={(event) => updateDraft("portraitUrl", event.target.value)} />
         </label>
-        <label>portraitSource
+        <label><AdminFieldLabel text="立绘来源" tip="标记立绘来自外部路径还是后台上传。" />
           <select value={draft.portraitSource} onChange={(event) => updateDraft("portraitSource", event.target.value)}>
-            <option value="url">url</option>
-            <option value="upload">upload</option>
+            <option value="url">路径</option>
+            <option value="upload">上传</option>
           </select>
         </label>
-        <label>palette
+        <label><AdminFieldLabel text="主题色" tip="角色卡片和视觉提示使用的代表色。" />
           <input type="color" value={draft.palette} onChange={(event) => updateDraft("palette", event.target.value)} />
         </label>
-        <label>sortOrder
+        <label><AdminFieldLabel text="排序" tip="角色在列表中的显示顺序，数字越小越靠前。" />
           <input type="number" value={draft.sortOrder} onChange={(event) => updateDraft("sortOrder", event.target.value)} />
         </label>
         <label className="admin-checkbox">
           <input type="checkbox" checked={draft.enabled} onChange={(event) => updateDraft("enabled", event.target.checked)} />
-          enabled
+          <AdminFieldLabel text="启用" tip="关闭后该角色不会出现在玩家可选角色中。" />
         </label>
-        <label className="admin-upload-field">上传肖像
+        <label className="admin-upload-field"><AdminFieldLabel text="上传立绘" tip="上传 png、jpg、webp 或 gif 作为角色立绘。" />
           <span>
             <Upload size={18} />
             {uploading ? "上传中" : "选择文件"}
@@ -626,34 +809,51 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
           <img src={draft.portraitUrl} alt={draft.name || "character portrait"} />
         </div>
       )}
-      <h3>Skill</h3>
+      <h3>技能</h3>
       <div className="admin-character-form-grid">
-        <label>skill.effectType
+        <label><AdminFieldLabel text="技能效果" tip="决定技能实际执行的规则类型。" />
           <select value={draft.skill.effectType} onChange={(event) => updateSkillEffect(event.target.value)}>
-            <option value="erase-point">erase-point</option>
-            <option value="flip-stone">flip-stone</option>
+            <option value="erase-point">抹除交叉点</option>
+            <option value="flip-stone">棋子反色</option>
+            <option value="hidden-hand">隐藏手</option>
           </select>
         </label>
-        <label>skill.name
+        <label><AdminFieldLabel text="技能名" tip="展示给玩家看的技能名称。" />
           <input value={draft.skill.name} onChange={(event) => updateSkill("name", event.target.value)} />
         </label>
-        <label className="wide-field">skill.description
+        <label className="wide-field"><AdminFieldLabel text="技能描述" tip="棋舍角色详情中展示的技能说明。" />
           <textarea value={draft.skill.description} onChange={(event) => updateSkill("description", event.target.value)} />
         </label>
-        <label>skill.uses
+        <label className="wide-field"><AdminFieldLabel text="技能系统信息" tip="发动技能后写入系统聊天。可用 {player}、{character}、{skill}、{point}、{color}。" />
+          <textarea value={draft.skill.systemMessage} onChange={(event) => updateSkill("systemMessage", event.target.value)} />
+        </label>
+        <label><AdminFieldLabel text="使用次数" tip="每局可使用该技能的次数，范围 0 到 9。" />
           <input type="number" min="0" max="9" value={draft.skill.uses} onChange={(event) => updateSkill("uses", event.target.value)} />
         </label>
-        <label>skill.targetRule
+        <label><AdminFieldLabel text="目标规则" tip="限制技能可以点选空点还是已有棋子。" />
           <select value={draft.skill.targetRule} onChange={(event) => updateSkill("targetRule", event.target.value)}>
-            <option value="empty-point">empty-point</option>
-            <option value="stone">stone</option>
+            <option value="empty-point">空交叉点</option>
+            <option value="stone">棋子</option>
           </select>
         </label>
         <label className="admin-checkbox">
           <input type="checkbox" checked={draft.skill.freeTurn} onChange={(event) => updateSkill("freeTurn", event.target.checked)} />
-          skill.freeTurn
+          <AdminFieldLabel text="不消耗回合" tip="开启后释放技能不会交出当前回合。" />
         </label>
-        <label className="wide-field">skill.paramsJson
+        <label><AdminFieldLabel text="代价类别" tip="数值会在数子时扣除；特殊只展示文本，暂时不影响规则。" />
+          <select value={draft.skill.costType} onChange={(event) => updateSkill("costType", event.target.value)}>
+            <option value="numeric">数值</option>
+            <option value="special">特殊</option>
+          </select>
+        </label>
+        <label><AdminFieldLabel text="代价说明" tip="数值类别只能填写数字；特殊类别可填写展示文本。" />
+          <input
+            type={draft.skill.costType === "numeric" ? "number" : "text"}
+            value={draft.skill.costValue}
+            onChange={(event) => updateSkill("costValue", event.target.value)}
+          />
+        </label>
+        <label className="wide-field"><AdminFieldLabel text="技能参数" tip="保留给扩展技能使用的 JSON 参数。" />
           <textarea value={draft.skill.paramsJson} onChange={(event) => updateSkill("paramsJson", event.target.value)} />
         </label>
       </div>
@@ -693,10 +893,12 @@ function AdminAudit({ logs }) {
   );
 }
 
-function UserEditor({ user, token, onClose, onRefresh }) {
+function UserEditor({ user, token, onClose, onRefresh, onOpenReplay }) {
   const [draft, setDraft] = useState(() => buildUserDraft(user));
   const [banReason, setBanReason] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [userReplays, setUserReplays] = useState([]);
+  const [loadingReplays, setLoadingReplays] = useState(false);
   const [actionError, setActionError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -704,6 +906,7 @@ function UserEditor({ user, token, onClose, onRefresh }) {
     setDraft(buildUserDraft(user));
     setBanReason("");
     setNewPassword("");
+    setUserReplays([]);
     setActionError("");
   }, [user]);
 
@@ -783,6 +986,19 @@ function UserEditor({ user, token, onClose, onRefresh }) {
     });
   }
 
+  async function loadUserReplays() {
+    setLoadingReplays(true);
+    setActionError("");
+    try {
+      const data = await adminApi(`/users/${user.id}/replays`, token);
+      setUserReplays(data.records ?? []);
+    } catch (error) {
+      setActionError(error.message);
+    } finally {
+      setLoadingReplays(false);
+    }
+  }
+
   return (
     <aside className="admin-drawer">
       <button className="close-button" onClick={onClose}><X size={18} /></button>
@@ -790,31 +1006,48 @@ function UserEditor({ user, token, onClose, onRefresh }) {
       <p className="quiet-text">{user.status} · {user.wins}/{user.losses}</p>
       {actionError && <p className="form-error admin-action-error">{actionError}</p>}
       <form className="admin-form" onSubmit={saveUser}>
-        <label>权限
+        <label><AdminFieldLabel text="权限" tip="控制该账号是普通玩家还是管理员。" />
           <select value={draft.role} onChange={(event) => updateDraft("role", event.target.value)}>
-            <option value="player">player</option>
-            <option value="admin">admin</option>
+            <option value="player">玩家</option>
+            <option value="admin">管理员</option>
           </select>
         </label>
-        <label>段位
+        <label><AdminFieldLabel text="段位" tip="显示在大厅、对局信息和个人棋舍中的段位文本。" />
           <input value={draft.rank} onChange={(event) => updateDraft("rank", event.target.value)} />
         </label>
-        <label>积分
+        <label><AdminFieldLabel text="积分" tip="用户的匹配积分，必须是整数。" />
           <input type="number" value={draft.rating} onChange={(event) => updateDraft("rating", event.target.value)} />
         </label>
-        <label>金币
+        <label><AdminFieldLabel text="金币" tip="用户当前拥有的金币数量，必须是整数。" />
           <input type="number" value={draft.coins} onChange={(event) => updateDraft("coins", event.target.value)} />
         </label>
-        <label>拥有角色
+        <label><AdminFieldLabel text="拥有角色" tip="该用户已解锁的角色 slug，多个角色用英文逗号分隔。" />
           <input value={draft.ownedCharactersText} onChange={(event) => updateDraft("ownedCharactersText", event.target.value)} />
         </label>
-        <label>出战角色
+        <label><AdminFieldLabel text="出战角色" tip="该用户当前默认出战角色的 slug。" />
           <input value={draft.selectedCharacter} onChange={(event) => updateDraft("selectedCharacter", event.target.value)} />
         </label>
         <button className="primary-action" type="submit" disabled={saving}>保存</button>
       </form>
+      <div className="admin-replay-zone">
+        <div className="admin-section-title">
+          <AdminFieldLabel text="用户棋谱" tip="查看并回放该用户参与过的任意对局。" />
+          <button className="secondary-action" onClick={loadUserReplays} disabled={loadingReplays}>
+            {loadingReplays ? "加载中" : "加载棋谱"}
+          </button>
+        </div>
+        <div className="admin-replay-list">
+          {userReplays.map((record) => (
+            <button key={record.id} className="admin-replay-item" onClick={() => onOpenReplay(record.id)}>
+              <strong>{record.blackName} vs {record.whiteName}</strong>
+              <span>{record.resultText} · {record.moveCount}手 · {formatDateTime(record.createdAt)}</span>
+            </button>
+          ))}
+          {!loadingReplays && userReplays.length === 0 && <p className="quiet-text">尚未加载或暂无棋谱。</p>}
+        </div>
+      </div>
       <div className="admin-danger-zone">
-        <label>封禁原因
+        <label><AdminFieldLabel text="封禁原因" tip="封禁账号时记录的原因，至少 2 个字符。" />
           <input value={banReason} onChange={(event) => {
             setActionError("");
             setBanReason(event.target.value);
@@ -824,7 +1057,7 @@ function UserEditor({ user, token, onClose, onRefresh }) {
           <button className="danger-action" onClick={banUser} disabled={saving || user.status === "banned"}>封禁</button>
           <button className="secondary-action" onClick={unbanUser} disabled={saving || user.status !== "banned"}>解封</button>
         </div>
-        <label>新密码
+        <label><AdminFieldLabel text="新密码" tip="为该用户重置登录密码，至少 4 个字符。" />
           <input type="password" value={newPassword} onChange={(event) => {
             setActionError("");
             setNewPassword(event.target.value);
@@ -1447,6 +1680,15 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
         <button className="replay-open-button" onClick={() => setShowReplays(true)}>
           <MonitorPlay size={18} />对局回放
         </button>
+        <section className="owned-decoration-section">
+          <h3>已拥有装饰</h3>
+          <div className="owned-decoration-list">
+            {(user.ownedDecorations ?? []).length === 0 && <p className="quiet-text">暂无装饰。</p>}
+            {(user.ownedDecorations ?? []).map((decoration) => (
+              <span className="owned-decoration-chip" key={decoration}>{decoration}</span>
+            ))}
+          </div>
+        </section>
         {detailCharacter && (
           <section className="nested-modal character-detail">
             <button className="close-button" onClick={() => setDetailCharacter(null)}><X size={18} /></button>
@@ -1457,7 +1699,7 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
               <h3>{detailCharacter.name}</h3>
               <div className="skill-title-row">
                 <strong>{detailCharacter.skill.name}</strong>
-                <span className="skill-cost-badge">代价 {formatSkillCost(detailCharacter.skill.cost)}</span>
+                <span className="skill-cost-badge">代价 {formatSkillCost(detailCharacter.skill)}</span>
               </div>
               <p>{detailCharacter.skill.description}</p>
             </div>
@@ -1530,20 +1772,98 @@ function MatchModal({ user, startedAt, onCancel, characters }) {
   );
 }
 
-function ShopModal({ onClose }) {
+function ShopModal({ token, user, onPurchased, onClose }) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState("character");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [purchasingId, setPurchasingId] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setError("");
+    api("/api/shop", { token })
+      .then((data) => {
+        if (alive) setItems(data.items ?? []);
+      })
+      .catch((apiError) => {
+        if (alive) setError(apiError.message);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [token]);
+
+  async function buyItem(item) {
+    setMessage("");
+    setError("");
+    setPurchasingId(item.id);
+    try {
+      const data = await api(`/api/shop/${item.id}/purchase`, { method: "POST", token });
+      onPurchased(data.user);
+      setMessage(`已购买 ${item.name}`);
+    } catch (apiError) {
+      setError(apiError.message);
+    } finally {
+      setPurchasingId("");
+    }
+  }
+
+  const visibleItems = items.filter((item) => item.category === activeCategory);
+  const categories = [
+    ["character", "角色"],
+    ["decoration", "装饰"]
+  ];
+
   return (
     <div className="modal-backdrop">
       <section className="shop-modal">
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <h2>商城</h2>
-        <div className="shop-grid">
-          {["角色", "物品", "装饰"].map((type) => (
-            <div className="shop-item" key={type}>
-              <ShoppingBag />
-              <strong>{type}</strong>
-              <span>即将开放</span>
-            </div>
+        <p className="shop-wallet">金币 {user?.coins ?? 0}</p>
+        <div className="shop-tabs" role="tablist">
+          {categories.map(([key, label]) => (
+            <button key={key} className={activeCategory === key ? "active" : ""} onClick={() => setActiveCategory(key)}>
+              {label}
+            </button>
           ))}
+        </div>
+        {message && <p className="admin-success">{message}</p>}
+        {error && <p className="form-error admin-action-error">{error}</p>}
+        {loading && <p className="quiet-text">加载中...</p>}
+        <div className="shop-grid">
+          {!loading && visibleItems.map((item) => {
+            const owned = item.category === "character"
+              ? user?.ownedCharacters?.includes(item.targetId)
+              : user?.ownedDecorations?.includes(item.targetId);
+            const tooExpensive = (user?.coins ?? 0) < item.finalPrice;
+            const disabled = owned || !item.purchasable || tooExpensive || purchasingId === item.id;
+            return (
+              <article className="shop-item" key={item.id}>
+                {item.imageUrl ? <img src={item.imageUrl} alt={item.name} /> : <ShoppingBag />}
+                <strong>{item.name}</strong>
+                <span>{item.description || shopCategoryLabel(item.category)}</span>
+                <p className="shop-price">
+                  {item.discountPercent > 0 && <s>{item.priceCoins}</s>}
+                  <b>{item.finalPrice}</b> 金币
+                </p>
+                <button className="primary-action" disabled={disabled} onClick={() => buyItem(item)}>
+                  {owned ? "已拥有" : purchasingId === item.id ? "购买中" : !item.purchasable ? "不可购买" : tooExpensive ? "金币不足" : "购买"}
+                </button>
+              </article>
+            );
+          })}
+          {!loading && visibleItems.length === 0 && (
+            <div className="shop-empty">
+              <ShoppingBag />
+              <span>暂无商品</span>
+            </div>
+          )}
         </div>
       </section>
     </div>
@@ -1658,8 +1978,17 @@ function Stat({ label, value }) {
   return <div className="stat"><span>{label}</span><strong>{value}</strong></div>;
 }
 
-function formatSkillCost(cost) {
-  return typeof cost === "number" ? `${cost}子` : cost;
+function AdminFieldLabel({ text, tip }) {
+  return <span className="admin-field-label" title={tip}>{text}</span>;
+}
+
+function formatSkillCost(skillOrCost) {
+  if (skillOrCost && typeof skillOrCost === "object") {
+    const costType = skillOrCost.costType ?? "numeric";
+    const costValue = String(skillOrCost.costValue ?? skillOrCost.cost ?? 0);
+    return costType === "numeric" ? `${costValue || 0}子` : costValue;
+  }
+  return typeof skillOrCost === "number" ? `${skillOrCost}子` : skillOrCost;
 }
 
 function deriveHouseStats(user, records) {
@@ -1716,7 +2045,10 @@ function emptyCharacterDraft() {
       uses: 1,
       freeTurn: false,
       targetRule: "empty-point",
-      paramsJson: "{}"
+      paramsJson: "{}",
+      costType: "numeric",
+      costValue: "0",
+      systemMessage: "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。"
     }
   };
 }
@@ -1740,7 +2072,10 @@ function buildCharacterDraft(character) {
       uses: skill.uses ?? 1,
       freeTurn: skill.freeTurn ?? false,
       targetRule: skill.targetRule ?? targetRuleForEffect(skill.effectType ?? "erase-point"),
-      paramsJson: skill.paramsJson ?? JSON.stringify(skill.params ?? {})
+      paramsJson: skill.paramsJson ?? JSON.stringify(skill.params ?? {}),
+      costType: skill.costType ?? "numeric",
+      costValue: String(skill.costValue ?? skill.cost ?? 0),
+      systemMessage: skill.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。"
     }
   };
 }
@@ -1749,6 +2084,10 @@ function characterDraftToBody(draft) {
   const sortOrder = parseAdminInteger(draft.sortOrder);
   const uses = parseAdminInteger(draft.skill.uses);
   if (sortOrder == null || uses == null || uses < 0 || uses > 9) return null;
+  const costType = draft.skill.costType === "special" ? "special" : "numeric";
+  const costValue = String(draft.skill.costValue ?? "").trim();
+  if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) return null;
+  if (costType === "special" && !costValue) return null;
   return {
     slug: draft.slug.trim(),
     name: draft.name.trim(),
@@ -1764,9 +2103,75 @@ function characterDraftToBody(draft) {
       uses,
       freeTurn: Boolean(draft.skill.freeTurn),
       targetRule: draft.skill.targetRule,
-      paramsJson: draft.skill.paramsJson
+      paramsJson: draft.skill.paramsJson,
+      costType,
+      costValue,
+      systemMessage: draft.skill.systemMessage.trim()
     }
   };
+}
+
+function emptyShopItemDraft() {
+  return { id: "", name: "", category: "character", targetId: "", priceCoins: 100, discountPercent: 0, purchasable: true, enabled: true, sortOrder: 0, description: "", imageUrl: "" };
+}
+
+function buildShopItemDraft(item) {
+  return { ...emptyShopItemDraft(), ...item };
+}
+
+function validateShopItemDraft(draft) {
+  const priceCoins = parseAdminInteger(draft.priceCoins);
+  const discountPercent = parseAdminInteger(draft.discountPercent);
+  const sortOrder = parseAdminInteger(draft.sortOrder);
+  const errors = [];
+  if (!draft.name.trim()) errors.push("商品名");
+  if (!draft.targetId.trim()) errors.push("目标标识");
+  if (priceCoins == null || priceCoins < 0) errors.push("金币价格必须是 0 或更大的整数");
+  if (discountPercent == null || discountPercent < 0 || discountPercent > 100) errors.push("折扣必须是 0 到 100 的整数");
+  if (sortOrder == null) errors.push("排序必须是整数");
+  if (errors.length) {
+    return { ok: false, error: `请检查：${errors.join("、")}` };
+  }
+  return {
+    ok: true,
+    value: {
+      name: draft.name.trim(),
+      category: draft.category,
+      targetId: draft.targetId.trim(),
+      priceCoins,
+      discountPercent,
+      purchasable: Boolean(draft.purchasable),
+      enabled: Boolean(draft.enabled),
+      sortOrder,
+      description: draft.description.trim(),
+      imageUrl: draft.imageUrl.trim()
+    }
+  };
+}
+
+function emptyDecorationDraft() {
+  return { id: "", slug: "", name: "", description: "", imageUrl: "", enabled: true, sortOrder: 0 };
+}
+
+function buildDecorationDraft(decoration) {
+  return { ...emptyDecorationDraft(), ...decoration };
+}
+
+function decorationDraftToBody(draft) {
+  const sortOrder = parseAdminInteger(draft.sortOrder);
+  if (!draft.slug.trim() || !draft.name.trim() || sortOrder == null) return null;
+  return {
+    slug: draft.slug.trim(),
+    name: draft.name.trim(),
+    description: draft.description.trim(),
+    imageUrl: draft.imageUrl.trim(),
+    enabled: Boolean(draft.enabled),
+    sortOrder
+  };
+}
+
+function shopCategoryLabel(category) {
+  return category === "decoration" ? "装饰" : "角色";
 }
 
 function targetRuleForEffect(effectType) {
@@ -1826,6 +2231,12 @@ async function api(path, options = {}) {
     },
     body: options.body ? JSON.stringify(options.body) : undefined
   });
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    const text = await response.text();
+    const isHtml = text.trimStart().startsWith("<!DOCTYPE") || text.trimStart().startsWith("<html");
+    throw new Error(isHtml ? "接口返回了前端页面而不是 JSON，请刷新页面并确认后端服务已启动。" : "接口返回格式不是 JSON。");
+  }
   const data = await response.json();
   if (!response.ok) throw new Error(data.error ?? "请求失败");
   return data;

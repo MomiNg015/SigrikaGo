@@ -9,6 +9,9 @@ export const FALLBACK_CHARACTERS = {
       name: "星辉符文",
       uses: 1,
       cost: 3,
+      costType: "numeric",
+      costValue: "3",
+      systemMessage: "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。",
       description: "抹除棋盘上指定交叉点。该点不再可落子，也不参与数子。（使用该技能不消耗本次落子）",
       freeTurn: true
     }
@@ -23,6 +26,9 @@ export const FALLBACK_CHARACTERS = {
       name: "染秽",
       uses: 1,
       cost: 3,
+      costType: "numeric",
+      costValue: "3",
+      systemMessage: "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。",
       description: "指定棋盘上的某个棋子，将其反色。"
     }
   },
@@ -36,6 +42,9 @@ export const FALLBACK_CHARACTERS = {
       name: "小爱出击",
       uses: 1,
       cost: 0,
+      costType: "numeric",
+      costValue: "0",
+      systemMessage: "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。",
       description: "本轮落子为隐藏手。落下了电子幽灵般的一手，应该不会被发现吧...",
       effectTags: ["隐藏手"]
     }
