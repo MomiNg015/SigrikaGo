@@ -84,7 +84,8 @@ export function handleGameAction(roomCode, userId, action, io) {
   if (action.type === "resign") result = resignGame(room.game, player.color);
   if (action.type === "skill") {
     skillNotice = describeSkillUse(room, player, action.pointId);
-    result = useSkill(room.game, player.color, player.characterId, action.pointId);
+    const skillConfig = player.character?.skill ?? player.characterId;
+    result = useSkill(room.game, player.color, skillConfig, action.pointId);
   }
   if (!result) return { ok: false, error: "未知操作" };
   if (!result.ok) return result;
@@ -240,6 +241,7 @@ export function roomView(room, viewerId) {
       user: p.user,
       color: p.color,
       characterId: p.characterId,
+      character: p.character,
       captures: room.game.captures[p.color],
       time: p.time
     })),
@@ -265,7 +267,8 @@ function createRoom(first, second) {
     game: createGameState(players.map((p) => ({
       userId: p.user.id,
       color: p.color,
-      characterId: p.characterId
+      characterId: p.characterId,
+      character: p.character
     }))),
     chat: [],
     createdAt: Date.now(),
@@ -283,6 +286,7 @@ function toRoomPlayer(player, color) {
     socketId: player.socketId,
     color,
     characterId: player.user.selectedCharacter,
+    character: player.user.characterConfig ?? null,
     time: {
       main: 5 * 60,
       byoYomi: 30,
@@ -312,14 +316,16 @@ function appendSystem(room, text, options = {}) {
 }
 
 function describeSkillUse(room, player, targetId) {
-  const character = CHARACTERS[player.characterId];
+  const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
+  const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
+  const effectType = skill.effectType ?? skill.id;
   const colorLabel = player.color === COLORS.black ? "黑" : "白";
-  const fixed = `${colorLabel}方${player.user.username}使用了${character.name}的“${character.skill.name}”技能`;
+  const fixed = `${colorLabel}方${player.user.username}使用了${character.name}的“${skill.name}”技能`;
   const coord = formatPointLabel(targetId);
-  if (player.characterId === "sigrika") {
+  if (effectType === "erase-point") {
     return `${fixed}。从天而降破坏了${coord}的点位，铛！`;
   }
-  if (player.characterId === "danea") {
+  if (effectType === "flip-stone") {
     const point = getPoint(room.game, targetId);
     const from = stoneLabel(point?.stone);
     const to = stoneLabel(point?.stone ? opponent(point.stone) : null);

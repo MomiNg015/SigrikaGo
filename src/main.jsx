@@ -933,7 +933,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
     if (pendingSkill) {
       setPendingSkill(false);
       if (canPreviewSkill(displayRoom.game, me, point)) {
-        const character = findCharacter(characters, me.characterId);
+        const character = findCharacter(characters, me.character ?? me.characterId);
         setSkillBanner({ character, skillName: character.skill.name });
         skillTimerRef.current = window.setTimeout(() => {
           onGameAction({ type: "skill", pointId: point.id });
@@ -1132,7 +1132,7 @@ function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPo
 
 function PlayerInfo({ player, game, characters, align, isWinner = false }) {
   if (!player) return <aside className="player-info empty" />;
-  const character = findCharacter(characters, player.characterId);
+  const character = findCharacter(characters, player.character ?? player.characterId);
   const skillUses = game.skillUses[player.color] ?? 0;
   return (
     <aside className={`player-info ${align} ${isWinner ? "winner" : ""}`}>
@@ -1459,7 +1459,7 @@ function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
 function ResultModal({ room, characters, onClose }) {
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
-  const character = findCharacter(characters, winner?.characterId);
+  const character = findCharacter(characters, winner?.character ?? winner?.characterId);
   return (
     <div className="modal-backdrop">
       <section className="result-modal">
@@ -1478,7 +1478,7 @@ function ResultModal({ room, characters, onClose }) {
 }
 
 function SkillBanner({ banner, characters }) {
-  const character = findCharacter(characters, banner.character.id);
+  const character = findCharacter(characters, banner.character);
   return (
     <div className="skill-burst" aria-live="polite">
       <img src={character.portrait} alt={character.name} />
@@ -1627,13 +1627,27 @@ function canPreviewSkill(game, player, point) {
   if (!player || game.phase !== "playing" || game.turn !== player.color) return false;
   if ((game.skillUses[player.color] ?? 0) <= 0) return false;
   if (!point?.valid) return false;
-  if (player.characterId === "sigrika") return !point.stone;
-  if (player.characterId === "danea") return Boolean(point.stone);
+  const skill = player.character?.skill ?? CHARACTERS[player.characterId]?.skill;
+  const effectType = skill?.effectType ?? skill?.id;
+  if (effectType === "erase-point") return !point.stone;
+  if (effectType === "flip-stone") return Boolean(point.stone);
   return false;
 }
 
-function findCharacter(characters, characterId) {
-  return characters[characterId] ?? CHARACTERS[characterId] ?? CHARACTERS.sigrika;
+function findCharacter(characters, characterOrId) {
+  const characterId = typeof characterOrId === "string" ? characterOrId : characterOrId?.id;
+  const fallback = CHARACTERS[characterId] ?? CHARACTERS.sigrika;
+  if (characterOrId && typeof characterOrId === "object") {
+    return {
+      ...fallback,
+      ...characterOrId,
+      skill: {
+        ...fallback.skill,
+        ...(characterOrId.skill ?? {})
+      }
+    };
+  }
+  return characters[characterId] ?? fallback;
 }
 
 function Toast({ text, onClose }) {
@@ -1776,7 +1790,7 @@ function replayRoomAt(room, step) {
     if (entry.type === "pass") result = passMove(game, entry.color);
     if (entry.type === "skill") {
       const player = replayPlayers.find((candidate) => candidate.color === entry.color);
-      result = useSkill(game, entry.color, player?.characterId, entry.id);
+      result = useSkill(game, entry.color, player?.character?.skill ?? player?.characterId, entry.id);
     }
     if (result?.ok) game = result.state;
   }

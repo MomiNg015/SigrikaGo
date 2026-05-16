@@ -14,6 +14,7 @@ import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
 import { listPublicCharacters, seedCharacters } from "./characters.js";
+import { CHARACTERS } from "../src/shared/characters.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -115,7 +116,8 @@ app.get("/api/me", authHttp, async (req, res) => {
 
 app.post("/api/me/character", authHttp, async (req, res) => {
   const characterId = String(req.body.characterId ?? "");
-  if (!["sigrika", "danea"].includes(characterId)) {
+  const characters = await characterMap();
+  if (!characters[characterId] && !CHARACTERS[characterId]) {
     res.status(400).json({ error: "未知角色" });
     return;
   }
@@ -166,6 +168,8 @@ io.use(async (socket, next) => {
     const user = await prisma.user.findUnique({ where: { id: payload.sub } });
     if (!user) throw new Error("user not found");
     socket.user = publicUser(user);
+    const characters = await characterMap();
+    socket.user.characterConfig = characters[socket.user.selectedCharacter] ?? null;
     next();
   } catch {
     next(new Error("unauthorized"));
@@ -231,6 +235,11 @@ io.on("connection", (socket) => {
 
 function sendResult(socket, result) {
   if (!result.ok) socket.emit("error:toast", result.error);
+}
+
+async function characterMap() {
+  const list = await listPublicCharacters(prisma);
+  return Object.fromEntries(list.map((character) => [character.id, character]));
 }
 
 async function publicUserWithHistory(user) {
