@@ -338,6 +338,14 @@ p {
   margin: 14px 0 0;
 }
 
+.admin-action-error {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff1f4;
+  border: 1px solid #f0b6c1;
+}
+
 .admin-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

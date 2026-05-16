@@ -288,7 +288,6 @@ function AdminConsole({ user, token, tab, setTab, onBack }) {
                 user={selectedUser}
                 token={token}
                 onClose={() => setSelectedUser(null)}
-                onError={setAdminError}
                 onRefresh={refreshUsers}
               />
             )}
@@ -351,30 +350,33 @@ function AdminUsers({ users, onSelect }) {
   );
 }
 
-function UserEditor({ user, token, onClose, onError, onRefresh }) {
+function UserEditor({ user, token, onClose, onRefresh }) {
   const [draft, setDraft] = useState(() => buildUserDraft(user));
   const [banReason, setBanReason] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [actionError, setActionError] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setDraft(buildUserDraft(user));
     setBanReason("");
     setNewPassword("");
+    setActionError("");
   }, [user]);
 
   function updateDraft(field, value) {
+    setActionError("");
     setDraft((current) => ({ ...current, [field]: value }));
   }
 
   async function runAction(action) {
     setSaving(true);
-    onError("");
+    setActionError("");
     try {
       await action();
       await onRefresh(user.id);
     } catch (error) {
-      onError(error.message);
+      setActionError(error.message);
     } finally {
       setSaving(false);
     }
@@ -382,13 +384,23 @@ function UserEditor({ user, token, onClose, onError, onRefresh }) {
 
   async function saveUser(event) {
     event.preventDefault();
+    const rating = parseAdminInteger(draft.rating);
+    if (rating == null) {
+      setActionError("积分必须是 32-bit signed int 范围内的整数");
+      return;
+    }
+    const coins = parseAdminInteger(draft.coins);
+    if (coins == null) {
+      setActionError("金币必须是 32-bit signed int 范围内的整数");
+      return;
+    }
     await runAction(() => adminApi(`/users/${draft.id}`, token, {
       method: "PATCH",
       body: {
         role: draft.role,
         rank: draft.rank,
-        rating: Number(draft.rating),
-        coins: Number(draft.coins),
+        rating,
+        coins,
         ownedCharacters: draft.ownedCharactersText.split(",").map((item) => item.trim()).filter(Boolean),
         selectedCharacter: draft.selectedCharacter
       }
@@ -397,8 +409,8 @@ function UserEditor({ user, token, onClose, onError, onRefresh }) {
 
   async function banUser() {
     const reason = banReason.trim();
-    if (!reason) {
-      onError("请输入封禁原因");
+    if (reason.length < 2) {
+      setActionError("封禁原因至少需要 2 个字符");
       return;
     }
     if (!window.confirm(`确认封禁 ${user.username}？`)) return;
@@ -414,8 +426,8 @@ function UserEditor({ user, token, onClose, onError, onRefresh }) {
   }
 
   async function resetPassword() {
-    if (!newPassword) {
-      onError("请输入新密码");
+    if (newPassword.length < 4) {
+      setActionError("新密码至少需要 4 个字符");
       return;
     }
     if (!window.confirm(`确认重置 ${user.username} 的密码？`)) return;
@@ -433,6 +445,7 @@ function UserEditor({ user, token, onClose, onError, onRefresh }) {
       <button className="close-button" onClick={onClose}><X size={18} /></button>
       <h2>{user.username}</h2>
       <p className="quiet-text">{user.status} · {user.wins}/{user.losses}</p>
+      {actionError && <p className="form-error admin-action-error">{actionError}</p>}
       <form className="admin-form" onSubmit={saveUser}>
         <label>权限
           <select value={draft.role} onChange={(event) => updateDraft("role", event.target.value)}>
@@ -459,14 +472,20 @@ function UserEditor({ user, token, onClose, onError, onRefresh }) {
       </form>
       <div className="admin-danger-zone">
         <label>封禁原因
-          <input value={banReason} onChange={(event) => setBanReason(event.target.value)} />
+          <input value={banReason} onChange={(event) => {
+            setActionError("");
+            setBanReason(event.target.value);
+          }} />
         </label>
         <div className="inline-actions">
           <button className="danger-action" onClick={banUser} disabled={saving || user.status === "banned"}>封禁</button>
           <button className="secondary-action" onClick={unbanUser} disabled={saving || user.status !== "banned"}>解封</button>
         </div>
         <label>新密码
-          <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} />
+          <input type="password" value={newPassword} onChange={(event) => {
+            setActionError("");
+            setNewPassword(event.target.value);
+          }} />
         </label>
         <button className="secondary-action" onClick={resetPassword} disabled={saving}>重置密码</button>
       </div>
@@ -1228,6 +1247,15 @@ function buildUserDraft(user) {
     ownedCharactersText: (user.ownedCharacters ?? []).join(", "),
     selectedCharacter: user.selectedCharacter ?? ""
   };
+}
+
+function parseAdminInteger(value) {
+  const text = String(value ?? "").trim();
+  if (!/^-?\d+$/.test(text)) return null;
+  const number = Number(text);
+  if (!Number.isSafeInteger(number)) return null;
+  if (number < -2147483648 || number > 2147483647) return null;
+  return number;
 }
 
 function canPreviewSkill(game, player, point) {
