@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "vitest";
-import { COLORS, pointId } from "../src/shared/game.js";
+import { COLORS, getPoint, pointId } from "../src/shared/game.js";
 import { handleGameAction, joinMatchmaking, leaveMatchmaking } from "./rooms.js";
 
 function fakeIo() {
@@ -53,7 +53,7 @@ describe("rooms character integration", () => {
         name: "Admin Rune",
         uses: 1,
         description: "Custom admin skill",
-        systemMessage: "{color}{player}发动{character}的{skill}，目标{point}",
+        systemMessage: "{fromColor}{player} uses {character} {skill}; to {toColor}; target {point}",
         freeTurn: true,
         targetRule: "empty-point",
         params: {}
@@ -73,6 +73,40 @@ describe("rooms character integration", () => {
     expect(room.chat.at(-1)).toMatchObject({ kind: "skill" });
     expect(room.chat.at(-1).text).toContain(black.character.name);
     expect(room.chat.at(-1).text).toContain(black.character.skill.name);
-    expect(room.chat.at(-1).text).toContain("目标D-10");
+    expect(room.chat.at(-1).text).toContain("黑棋");
+    expect(room.chat.at(-1).text).toContain("白棋");
+    expect(room.chat.at(-1).text).toContain("target D-10");
+  });
+
+  test("renders targetColor from the targeted stone before a skill mutates it", () => {
+    const characterConfig = {
+      id: "danea",
+      name: "Admin Danea",
+      portrait: "/custom.png",
+      palette: "#123456",
+      skill: {
+        id: "custom-flip",
+        effectType: "flip-stone",
+        name: "Admin Flip",
+        uses: 1,
+        description: "Custom flip skill",
+        systemMessage: "{targetColor} becomes {toColor}",
+        freeTurn: false,
+        targetRule: "stone",
+        params: {}
+      }
+    };
+    const io = fakeIo();
+    joinMatchmaking({ user: user("alice", "danea", characterConfig), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("bob", "danea", characterConfig), socketId: "socket-b" }, io);
+    clearInterval(room.timerId);
+
+    const black = room.players.find((player) => player.color === COLORS.black);
+    const targetId = pointId(3, 3);
+    getPoint(room.game, targetId).stone = COLORS.white;
+    const result = handleGameAction(room.code, black.user.id, { type: "skill", pointId: targetId }, io);
+
+    expect(result.ok).toBe(true);
+    expect(room.chat.at(-1).text).toContain("白棋 becomes 黑棋");
   });
 });

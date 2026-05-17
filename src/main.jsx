@@ -2,6 +2,20 @@
 import { createRoot } from "react-dom/client";
 import { io } from "socket.io-client";
 import {
+  buildCharacterDraft,
+  buildDecorationDraft,
+  buildShopItemDraft,
+  characterDraftToBody,
+  decorationDraftToBody,
+  emptyCharacterDraft,
+  emptyDecorationDraft,
+  emptyShopItemDraft,
+  parseAdminInteger,
+  shopCategoryLabel,
+  targetRuleForEffect,
+  validateShopItemDraft
+} from "./shared/adminDrafts.js";
+import {
   DoorOpen,
   Eye,
   Bell,
@@ -22,6 +36,7 @@ import {
   ShoppingBag,
   Sparkles,
   Swords,
+  Trophy,
   UserRound,
   Volume2,
   Upload,
@@ -29,6 +44,8 @@ import {
 } from "lucide-react";
 import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
 import { BOARD_SIZE, COLORS, createGameState, passMove, playMove, useSkill } from "./shared/game.js";
+import { derivePlayerRecordStats } from "./shared/gameRecords.js";
+import { SKILL_MESSAGE_TIP } from "./shared/skillMessages.js";
 import "./styles.css";
 
 const API_BASE = "";
@@ -50,6 +67,7 @@ function App() {
   const [matchStart, setMatchStart] = useState(null);
   const [showShop, setShowShop] = useState(false);
   const [showHouse, setShowHouse] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showWatch, setShowWatch] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [audioSettings, setAudioSettings] = useState(loadAudioSettings);
@@ -203,6 +221,7 @@ function App() {
           onSelectCharacter={selectCharacter}
           onStartMatch={startMatch}
           onOpenHouse={() => setShowHouse(true)}
+          onOpenLeaderboard={() => setShowLeaderboard(true)}
           onOpenWatch={() => setShowWatch(true)}
           onOpenShop={() => setShowShop(true)}
           onOpenSettings={() => setShowSettings(true)}
@@ -227,6 +246,7 @@ function App() {
           onSelectCharacter={selectCharacter}
           onStartMatch={startMatch}
           onOpenHouse={() => setShowHouse(true)}
+          onOpenLeaderboard={() => setShowLeaderboard(true)}
           onOpenWatch={() => setShowWatch(true)}
           onOpenShop={() => setShowShop(true)}
           onOpenSettings={() => setShowSettings(true)}
@@ -272,6 +292,13 @@ function App() {
           onClose={() => setShowHouse(false)}
           onSelectCharacter={selectCharacter}
           onOpenReplay={openReplay}
+        />
+      )}
+      {showLeaderboard && (
+        <LeaderboardModal
+          token={token}
+          characters={characters}
+          onClose={() => setShowLeaderboard(false)}
         />
       )}
       {showWatch && (
@@ -683,14 +710,22 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
   const [successMessage, setSuccessMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const draftKey = draft.dbId || draft.originalSlug || "new-character";
+
+  useEffect(() => {
+    setSuccessMessage("");
+    setActionError("");
+  }, [draftKey]);
 
   function updateDraft(field, value) {
     setActionError("");
+    setSuccessMessage("");
     setDraft((current) => ({ ...current, [field]: value }));
   }
 
   function updateSkill(field, value) {
     setActionError("");
+    setSuccessMessage("");
     setDraft((current) => ({
       ...current,
       skill: {
@@ -702,6 +737,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
 
   function updateSkillEffect(effectType) {
     setActionError("");
+    setSuccessMessage("");
     setDraft((current) => ({
       ...current,
       skill: {
@@ -716,6 +752,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
     if (!file) return;
     setUploading(true);
     setActionError("");
+    setSuccessMessage("");
     try {
       const url = await uploadPortrait(file, token);
       setDraft((current) => ({
@@ -824,7 +861,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
         <label className="wide-field"><AdminFieldLabel text="技能描述" tip="棋舍角色详情中展示的技能说明。" />
           <textarea value={draft.skill.description} onChange={(event) => updateSkill("description", event.target.value)} />
         </label>
-        <label className="wide-field"><AdminFieldLabel text="技能系统信息" tip="发动技能后写入系统聊天。可用 {player}、{character}、{skill}、{point}、{color}。" />
+        <label className="wide-field"><AdminFieldLabel text="技能系统信息" tip={SKILL_MESSAGE_TIP} />
           <textarea value={draft.skill.systemMessage} onChange={(event) => updateSkill("systemMessage", event.target.value)} />
         </label>
         <label><AdminFieldLabel text="使用次数" tip="每局可使用该技能的次数，范围 0 到 9。" />
@@ -1114,7 +1151,7 @@ function AuthScreen({ onAuth }) {
   );
 }
 
-function HomeScreen({ user, characters, onLogout, onStartMatch, onOpenHouse, onOpenWatch, onOpenShop, onOpenSettings, onOpenAdmin }) {
+function HomeScreen({ user, characters, onLogout, onStartMatch, onOpenHouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenSettings, onOpenAdmin }) {
   return (
     <main className="home-screen">
       <header className="topbar">
@@ -1147,6 +1184,11 @@ function HomeScreen({ user, characters, onLogout, onStartMatch, onOpenHouse, onO
           <Eye size={30} />
           <strong>观战</strong>
           <span>输入5位房间号进入观战席</span>
+        </button>
+        <button className="home-entry leaderboard-entry" onClick={onOpenLeaderboard}>
+          <Trophy size={30} />
+          <strong>排行榜</strong>
+          <span>积分、胜负与常用角色</span>
         </button>
         <button className="home-entry shop-entry" onClick={onOpenShop}>
           <ShoppingBag size={30} />
@@ -1624,7 +1666,7 @@ function ChatBox({ room, onChat, readonly = false }) {
 function HouseModal({ user, records, characterListView, onClose, onSelectCharacter, onOpenReplay }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
   const [showReplays, setShowReplays] = useState(false);
-  const stats = deriveHouseStats(user, records);
+  const stats = derivePlayerRecordStats(user, records);
   const owned = new Set(user.ownedCharacters ?? []);
   const emptySlots = Array.from({ length: Math.max(0, 10 - characterListView.length) }, (_, index) => index);
 
@@ -1732,6 +1774,79 @@ function WatchModal({ code, setCode, onJoin, onClose }) {
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <h2>观战</h2>
         <WatchPad code={code} setCode={setCode} onJoin={onJoin} />
+      </section>
+    </div>
+  );
+}
+
+function LeaderboardModal({ token, characters, onClose }) {
+  const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setError("");
+    api("/api/leaderboard", { token })
+      .then((data) => {
+        if (alive) setPlayers(data.players ?? []);
+      })
+      .catch((apiError) => {
+        if (alive) setError(apiError.message);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [token]);
+
+  return (
+    <div className="modal-backdrop">
+      <section className="leaderboard-modal">
+        <button className="close-button" onClick={onClose}><X size={20} /></button>
+        <header className="leaderboard-header">
+          <Trophy size={26} />
+          <div>
+            <h2>排行榜</h2>
+            <p className="quiet-text">至少完成一盘对局的注册用户</p>
+          </div>
+        </header>
+        {loading && <p className="quiet-text">加载中...</p>}
+        {error && <p className="form-error admin-action-error">{error}</p>}
+        {!loading && !error && players.length === 0 && <p className="quiet-text">暂无上榜用户。</p>}
+        {!loading && !error && players.length > 0 && (
+          <div className="leaderboard-list">
+            <div className="leaderboard-heading">
+              <span>排名</span>
+              <span>常用角色</span>
+              <span>用户名</span>
+              <span>积分</span>
+              <span>总对局数</span>
+              <span>胜局数</span>
+              <span>负局数</span>
+            </div>
+            {players.map((player, index) => {
+              const character = findCharacter(characters, player.commonCharacter);
+              return (
+                <article className="leaderboard-row" key={player.id}>
+                  <strong className="leaderboard-rank">#{index + 1}</strong>
+                  <img src={character.portrait} alt={character.name} />
+                  <div className="leaderboard-player">
+                    <strong>{player.username}</strong>
+                    <span>{character.name}</span>
+                  </div>
+                  <b>{player.rating}</b>
+                  <span>{player.totalGames}</span>
+                  <span>{player.wins}</span>
+                  <span>{player.losses}</span>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </section>
     </div>
   );
@@ -1991,30 +2106,6 @@ function formatSkillCost(skillOrCost) {
   return typeof skillOrCost === "number" ? `${skillOrCost}子` : skillOrCost;
 }
 
-function deriveHouseStats(user, records) {
-  let wins = 0;
-  let losses = 0;
-  for (const record of records) {
-    const color = record.blackName === user.username ? COLORS.black : record.whiteName === user.username ? COLORS.white : null;
-    const winner = winnerColorFromRecord(record);
-    if (!color || !winner) continue;
-    if (color === winner) wins += 1;
-    else losses += 1;
-  }
-  return {
-    wins,
-    losses,
-    rating: 1000 + wins * 20
-  };
-}
-
-function winnerColorFromRecord(record) {
-  const text = record.resultText ?? "";
-  if (text.startsWith("黑胜") || text.startsWith("黑中盘胜") || text.startsWith("黑超时胜")) return COLORS.black;
-  if (text.startsWith("白胜") || text.startsWith("白中盘胜") || text.startsWith("白超时胜")) return COLORS.white;
-  return null;
-}
-
 function buildUserDraft(user) {
   return {
     id: user.id,
@@ -2025,166 +2116,6 @@ function buildUserDraft(user) {
     ownedCharactersText: (user.ownedCharacters ?? []).join(", "),
     selectedCharacter: user.selectedCharacter ?? ""
   };
-}
-
-function emptyCharacterDraft() {
-  return {
-    dbId: "",
-    originalSlug: "",
-    slug: "",
-    name: "",
-    portraitUrl: "",
-    portraitSource: "url",
-    palette: "#5d7fe8",
-    enabled: true,
-    sortOrder: 0,
-    skill: {
-      effectType: "erase-point",
-      name: "",
-      description: "",
-      uses: 1,
-      freeTurn: false,
-      targetRule: "empty-point",
-      paramsJson: "{}",
-      costType: "numeric",
-      costValue: "0",
-      systemMessage: "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。"
-    }
-  };
-}
-
-function buildCharacterDraft(character) {
-  const skill = character.skill ?? {};
-  return {
-    dbId: character.dbId ?? "",
-    originalSlug: character.id ?? "",
-    slug: character.id ?? "",
-    name: character.name ?? "",
-    portraitUrl: character.portrait ?? "",
-    portraitSource: character.portraitSource ?? "url",
-    palette: character.palette ?? "#5d7fe8",
-    enabled: character.enabled ?? true,
-    sortOrder: character.sortOrder ?? 0,
-    skill: {
-      effectType: skill.effectType ?? "erase-point",
-      name: skill.name ?? "",
-      description: skill.description ?? "",
-      uses: skill.uses ?? 1,
-      freeTurn: skill.freeTurn ?? false,
-      targetRule: skill.targetRule ?? targetRuleForEffect(skill.effectType ?? "erase-point"),
-      paramsJson: skill.paramsJson ?? JSON.stringify(skill.params ?? {}),
-      costType: skill.costType ?? "numeric",
-      costValue: String(skill.costValue ?? skill.cost ?? 0),
-      systemMessage: skill.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。"
-    }
-  };
-}
-
-function characterDraftToBody(draft) {
-  const sortOrder = parseAdminInteger(draft.sortOrder);
-  const uses = parseAdminInteger(draft.skill.uses);
-  if (sortOrder == null || uses == null || uses < 0 || uses > 9) return null;
-  const costType = draft.skill.costType === "special" ? "special" : "numeric";
-  const costValue = String(draft.skill.costValue ?? "").trim();
-  if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) return null;
-  if (costType === "special" && !costValue) return null;
-  return {
-    slug: draft.slug.trim(),
-    name: draft.name.trim(),
-    portraitUrl: draft.portraitUrl.trim(),
-    portraitSource: draft.portraitSource,
-    palette: draft.palette,
-    enabled: Boolean(draft.enabled),
-    sortOrder,
-    skill: {
-      effectType: draft.skill.effectType,
-      name: draft.skill.name.trim(),
-      description: draft.skill.description.trim(),
-      uses,
-      freeTurn: Boolean(draft.skill.freeTurn),
-      targetRule: draft.skill.targetRule,
-      paramsJson: draft.skill.paramsJson,
-      costType,
-      costValue,
-      systemMessage: draft.skill.systemMessage.trim()
-    }
-  };
-}
-
-function emptyShopItemDraft() {
-  return { id: "", name: "", category: "character", targetId: "", priceCoins: 100, discountPercent: 0, purchasable: true, enabled: true, sortOrder: 0, description: "", imageUrl: "" };
-}
-
-function buildShopItemDraft(item) {
-  return { ...emptyShopItemDraft(), ...item };
-}
-
-function validateShopItemDraft(draft) {
-  const priceCoins = parseAdminInteger(draft.priceCoins);
-  const discountPercent = parseAdminInteger(draft.discountPercent);
-  const sortOrder = parseAdminInteger(draft.sortOrder);
-  const errors = [];
-  if (!draft.name.trim()) errors.push("商品名");
-  if (!draft.targetId.trim()) errors.push("目标标识");
-  if (priceCoins == null || priceCoins < 0) errors.push("金币价格必须是 0 或更大的整数");
-  if (discountPercent == null || discountPercent < 0 || discountPercent > 100) errors.push("折扣必须是 0 到 100 的整数");
-  if (sortOrder == null) errors.push("排序必须是整数");
-  if (errors.length) {
-    return { ok: false, error: `请检查：${errors.join("、")}` };
-  }
-  return {
-    ok: true,
-    value: {
-      name: draft.name.trim(),
-      category: draft.category,
-      targetId: draft.targetId.trim(),
-      priceCoins,
-      discountPercent,
-      purchasable: Boolean(draft.purchasable),
-      enabled: Boolean(draft.enabled),
-      sortOrder,
-      description: draft.description.trim(),
-      imageUrl: draft.imageUrl.trim()
-    }
-  };
-}
-
-function emptyDecorationDraft() {
-  return { id: "", slug: "", name: "", description: "", imageUrl: "", enabled: true, sortOrder: 0 };
-}
-
-function buildDecorationDraft(decoration) {
-  return { ...emptyDecorationDraft(), ...decoration };
-}
-
-function decorationDraftToBody(draft) {
-  const sortOrder = parseAdminInteger(draft.sortOrder);
-  if (!draft.slug.trim() || !draft.name.trim() || sortOrder == null) return null;
-  return {
-    slug: draft.slug.trim(),
-    name: draft.name.trim(),
-    description: draft.description.trim(),
-    imageUrl: draft.imageUrl.trim(),
-    enabled: Boolean(draft.enabled),
-    sortOrder
-  };
-}
-
-function shopCategoryLabel(category) {
-  return category === "decoration" ? "装饰" : "角色";
-}
-
-function targetRuleForEffect(effectType) {
-  return effectType === "flip-stone" ? "stone" : "empty-point";
-}
-
-function parseAdminInteger(value) {
-  const text = String(value ?? "").trim();
-  if (!/^-?\d+$/.test(text)) return null;
-  const number = Number(text);
-  if (!Number.isSafeInteger(number)) return null;
-  if (number < -2147483648 || number > 2147483647) return null;
-  return number;
 }
 
 function canPreviewSkill(game, player, point) {
@@ -2430,6 +2361,3 @@ function formatClock(seconds) {
 }
 
 createRoot(document.getElementById("root")).render(<App />);
-
-
-

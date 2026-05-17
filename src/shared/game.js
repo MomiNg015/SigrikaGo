@@ -6,6 +6,15 @@ export const COLORS = {
   black: "black",
   white: "white"
 };
+export const GAME_PHASES = {
+  playing: "playing",
+  countingRequested: "counting-requested",
+  markingDead: "marking-dead",
+  resultReview: "result-review",
+  drawRequested: "draw-requested",
+  skillPreview: "skill-preview",
+  finished: "finished"
+};
 export const HIDDEN_HAND_NOTICE = "发现隐藏手了！";
 
 export function opponent(color) {
@@ -26,7 +35,7 @@ export function createGameState(players = []) {
     skillUses: Object.fromEntries(players.map((p) => [p.color, configuredSkillUses(p)])),
     skillCosts: { black: 0, white: 0 },
     skillCostNotes: [],
-    phase: "playing",
+    phase: GAME_PHASES.playing,
     scoring: null,
     suspendedHiddenHands: [],
     winner: null
@@ -90,7 +99,7 @@ export function playMove(state, color, id) {
 }
 
 function placeStone(state, color, id, { hidden, skill = null }) {
-  if (state.phase !== "playing") return fail("对局当前不能落子");
+  if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能落子");
   if (state.turn !== color) return fail("还没有轮到你");
   const next = cloneState(state);
   const point = getPoint(next, id);
@@ -145,7 +154,7 @@ function placeStone(state, color, id, { hidden, skill = null }) {
 }
 
 export function passMove(state, color) {
-  if (state.phase !== "playing") return fail("对局当前不能弃一手");
+  if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能弃一手");
   if (state.turn !== color) return fail("还没有轮到你");
   const next = cloneState(state);
   next.turn = opponent(color);
@@ -154,7 +163,7 @@ export function passMove(state, color) {
   next.moveNumber += 1;
   next.history.push({ type: "pass", color, moveNumber: next.moveNumber });
   if (next.passes >= 2) {
-    next.phase = "counting-requested";
+    next.phase = GAME_PHASES.countingRequested;
     suspendUnexposedHiddenHands(next);
     next.scoring = prepareScoringState(next);
   }
@@ -163,7 +172,7 @@ export function passMove(state, color) {
 
 export function resignGame(state, color) {
   const next = cloneState(state);
-  next.phase = "finished";
+  next.phase = GAME_PHASES.finished;
   next.winner = createResignResult(color);
   return ok(next);
 }
@@ -195,7 +204,7 @@ export function createDrawResult(reason = "agreement") {
 }
 
 export function useSkill(state, color, skillOrCharacterId, targetId) {
-  if (state.phase !== "playing") return fail("对局当前不能使用技能");
+  if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能使用技能");
   if (state.turn !== color) return fail("还没有轮到你");
   if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
   const skill = normalizeSkillConfig(skillOrCharacterId);

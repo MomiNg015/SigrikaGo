@@ -1,0 +1,173 @@
+import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
+
+export function emptyCharacterDraft() {
+  return {
+    dbId: "",
+    originalSlug: "",
+    slug: "",
+    name: "",
+    portraitUrl: "",
+    portraitSource: "url",
+    palette: "#5d7fe8",
+    enabled: true,
+    sortOrder: 0,
+    skill: {
+      effectType: "erase-point",
+      name: "",
+      description: "",
+      uses: 1,
+      freeTurn: false,
+      targetRule: "empty-point",
+      paramsJson: "{}",
+      costType: "numeric",
+      costValue: "0",
+      systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE
+    }
+  };
+}
+
+export function buildCharacterDraft(character) {
+  const skill = character.skill ?? {};
+  return {
+    dbId: character.dbId ?? "",
+    originalSlug: character.id ?? "",
+    slug: character.id ?? "",
+    name: character.name ?? "",
+    portraitUrl: character.portrait ?? "",
+    portraitSource: character.portraitSource ?? "url",
+    palette: character.palette ?? "#5d7fe8",
+    enabled: character.enabled ?? true,
+    sortOrder: character.sortOrder ?? 0,
+    skill: {
+      effectType: skill.effectType ?? "erase-point",
+      name: skill.name ?? "",
+      description: skill.description ?? "",
+      uses: skill.uses ?? 1,
+      freeTurn: skill.freeTurn ?? false,
+      targetRule: skill.targetRule ?? targetRuleForEffect(skill.effectType ?? "erase-point"),
+      paramsJson: skill.paramsJson ?? JSON.stringify(skill.params ?? {}),
+      costType: skill.costType ?? "numeric",
+      costValue: String(skill.costValue ?? skill.cost ?? 0),
+      systemMessage: skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE
+    }
+  };
+}
+
+export function characterDraftToBody(draft) {
+  const sortOrder = parseAdminInteger(draft.sortOrder);
+  const uses = parseAdminInteger(draft.skill.uses);
+  if (sortOrder == null || uses == null || uses < 0 || uses > 9) return null;
+  const costType = draft.skill.costType === "special" ? "special" : "numeric";
+  const costValue = String(draft.skill.costValue ?? "").trim();
+  if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) return null;
+  if (costType === "special" && !costValue) return null;
+  return {
+    slug: draft.slug.trim(),
+    name: draft.name.trim(),
+    portraitUrl: draft.portraitUrl.trim(),
+    portraitSource: draft.portraitSource,
+    palette: draft.palette,
+    enabled: Boolean(draft.enabled),
+    sortOrder,
+    skill: {
+      effectType: draft.skill.effectType,
+      name: draft.skill.name.trim(),
+      description: draft.skill.description.trim(),
+      uses,
+      freeTurn: Boolean(draft.skill.freeTurn),
+      targetRule: draft.skill.targetRule,
+      paramsJson: draft.skill.paramsJson,
+      costType,
+      costValue,
+      systemMessage: draft.skill.systemMessage.trim()
+    }
+  };
+}
+
+export function emptyShopItemDraft() {
+  return {
+    id: "",
+    name: "",
+    category: "character",
+    targetId: "",
+    priceCoins: 100,
+    discountPercent: 0,
+    purchasable: true,
+    enabled: true,
+    sortOrder: 0,
+    description: "",
+    imageUrl: ""
+  };
+}
+
+export function buildShopItemDraft(item) {
+  return { ...emptyShopItemDraft(), ...item };
+}
+
+export function validateShopItemDraft(draft) {
+  const priceCoins = parseAdminInteger(draft.priceCoins);
+  const discountPercent = parseAdminInteger(draft.discountPercent);
+  const sortOrder = parseAdminInteger(draft.sortOrder);
+  const errors = [];
+  if (!draft.name.trim()) errors.push("商品名");
+  if (!draft.targetId.trim()) errors.push("目标标识");
+  if (priceCoins == null || priceCoins < 0) errors.push("金币价格必须是 0 或更大的整数");
+  if (discountPercent == null || discountPercent < 0 || discountPercent > 100) errors.push("折扣必须是 0 到 100 的整数");
+  if (sortOrder == null) errors.push("排序必须是整数");
+  if (errors.length) {
+    return { ok: false, error: `请检查：${errors.join("、")}` };
+  }
+  return {
+    ok: true,
+    value: {
+      name: draft.name.trim(),
+      category: draft.category,
+      targetId: draft.targetId.trim(),
+      priceCoins,
+      discountPercent,
+      purchasable: Boolean(draft.purchasable),
+      enabled: Boolean(draft.enabled),
+      sortOrder,
+      description: draft.description.trim(),
+      imageUrl: draft.imageUrl.trim()
+    }
+  };
+}
+
+export function emptyDecorationDraft() {
+  return { id: "", slug: "", name: "", description: "", imageUrl: "", enabled: true, sortOrder: 0 };
+}
+
+export function buildDecorationDraft(decoration) {
+  return { ...emptyDecorationDraft(), ...decoration };
+}
+
+export function decorationDraftToBody(draft) {
+  const sortOrder = parseAdminInteger(draft.sortOrder);
+  if (!draft.slug.trim() || !draft.name.trim() || sortOrder == null) return null;
+  return {
+    slug: draft.slug.trim(),
+    name: draft.name.trim(),
+    description: draft.description.trim(),
+    imageUrl: draft.imageUrl.trim(),
+    enabled: Boolean(draft.enabled),
+    sortOrder
+  };
+}
+
+export function shopCategoryLabel(category) {
+  return category === "decoration" ? "装饰" : "角色";
+}
+
+export function targetRuleForEffect(effectType) {
+  return effectType === "flip-stone" ? "stone" : "empty-point";
+}
+
+export function parseAdminInteger(value) {
+  const text = String(value ?? "").trim();
+  if (!/^-?\d+$/.test(text)) return null;
+  const number = Number(text);
+  if (!Number.isSafeInteger(number)) return null;
+  if (number < -2147483648 || number > 2147483647) return null;
+  return number;
+}

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 import { safeUploadFilename } from "./adminRoutes.js";
 import { listPublicCharacterResponse, toCharacterPayload, validateCharacterInput } from "./characters.js";
 
@@ -67,6 +68,38 @@ describe("character admin helpers", () => {
     expect(result.value.skill.costType).toBe("numeric");
     expect(result.value.skill.costValue).toBe("0");
     expect(result.value.skill.systemMessage).toContain("{player}");
+  });
+
+  it("uses the shared default system message when no custom message is provided", () => {
+    const result = validateCharacterInput(validInput);
+
+    expect(result.ok).toBe(true);
+    expect(result.value.skill.systemMessage).toBe(DEFAULT_SKILL_SYSTEM_MESSAGE);
+
+    const payload = toCharacterPayload({
+      id: "character-db-1",
+      slug: "sigrika",
+      name: "Sigrika",
+      portraitUrl: "/assets/sigrika.png",
+      portraitSource: "url",
+      palette: "#ff9b4d",
+      enabled: true,
+      skill: {
+        id: "skill-1",
+        effectType: "erase-point",
+        name: "Star Rune",
+        uses: 1,
+        description: "Erase one point.",
+        freeTurn: true,
+        targetRule: "empty-point",
+        paramsJson: "{}",
+        costType: "numeric",
+        costValue: "3",
+        systemMessage: null
+      }
+    });
+
+    expect(payload.skill.systemMessage).toBe(DEFAULT_SKILL_SYSTEM_MESSAGE);
   });
 
   it("accepts numeric skill costs and preserves them in payloads", () => {

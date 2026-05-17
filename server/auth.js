@@ -2,7 +2,16 @@ import jwt from "jsonwebtoken";
 import { publicUser } from "./db.js";
 import { USER_ROLES, USER_STATUS } from "./adminConfig.js";
 
+const DEFAULT_JWT_SECRETS = new Set(["dev-secret", "change-me-in-production"]);
+
+export function assertSafeJwtSecret(jwtSecret, env = process.env.NODE_ENV ?? "development") {
+  if (env === "production" && DEFAULT_JWT_SECRETS.has(String(jwtSecret ?? ""))) {
+    throw new Error("JWT_SECRET must be changed before running in production");
+  }
+}
+
 export function makeAuth({ prisma, jwtSecret }) {
+  assertSafeJwtSecret(jwtSecret);
   async function authHttp(req, res, next) {
     try {
       const token = req.headers.authorization?.replace("Bearer ", "");

@@ -1,6 +1,9 @@
 import express from "express";
 import { describe, expect, it } from "vitest";
 import {
+  assertSafeJwtSecret,
+} from "./auth.js";
+import {
   banUser,
   createAdminRouter,
   requireUserUpdateData,
@@ -12,6 +15,12 @@ import {
 } from "./adminRoutes.js";
 
 describe("admin route helpers", () => {
+  it("rejects default JWT secrets in production", () => {
+    expect(() => assertSafeJwtSecret("change-me-in-production", "production")).toThrow("JWT_SECRET");
+    expect(() => assertSafeJwtSecret("dev-secret", "production")).toThrow("JWT_SECRET");
+    expect(() => assertSafeJwtSecret("local-only", "development")).not.toThrow();
+  });
+
   it("sanitizes editable user fields", () => {
     expect(sanitizeUserUpdate({
       role: "admin",
@@ -144,6 +153,27 @@ describe("admin route helpers", () => {
       "tx.adminAuditLog.create"
     ]);
     expect(auditWrites[0].action).toBe("user.ban");
+  });
+
+  it("does not allow removing the last active admin", async () => {
+    const { prisma } = transactionPrisma({
+      user: { ...userFixture(), role: "admin" },
+      otherActiveAdmins: 0
+    });
+
+    await expect(updateUserProfile({
+      prisma,
+      adminUser: { id: "admin-1" },
+      userId: "user-1",
+      body: { role: "player" }
+    })).rejects.toThrow("Cannot remove the last active admin");
+
+    await expect(banUser({
+      prisma,
+      adminUser: { id: "admin-1" },
+      userId: "user-1",
+      reason: "risk"
+    })).rejects.toThrow("Cannot remove the last active admin");
   });
 
   it("unbans users and audit logs in the same transaction", async () => {
@@ -284,15 +314,41 @@ describe("admin character routes", () => {
 describe("admin shop and decoration routes", () => {
   it("creates and lists decorations", async () => {
     const decorations = [];
+    const calls = [];
+    const auditWrites = [];
     const response = await requestAdminRoute({
       decoration: {
         create: async ({ data }) => {
+          calls.push("top.decoration.create");
           const record = { id: "decoration-1", ...data, createdAt: new Date("2026-01-01T00:00:00Z") };
           decorations.push(record);
           return record;
         },
         findMany: async () => decorations
-      }
+      },
+      adminAuditLog: {
+        create: async () => {
+          calls.push("top.adminAuditLog.create");
+          throw new Error("audit must use the transaction client");
+        }
+      },
+      $transaction: async (callback) => callback({
+        decoration: {
+          create: async ({ data }) => {
+            calls.push("tx.decoration.create");
+            const record = { id: "decoration-1", ...data, createdAt: new Date("2026-01-01T00:00:00Z") };
+            decorations.push(record);
+            return record;
+          }
+        },
+        adminAuditLog: {
+          create: async ({ data }) => {
+            calls.push("tx.adminAuditLog.create");
+            auditWrites.push(data);
+            return data;
+          }
+        }
+      })
     }, "/decorations", {
       method: "POST",
       body: {
@@ -307,14 +363,46 @@ describe("admin shop and decoration routes", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.decoration.slug).toBe("moon-frame");
+    expect(calls).toEqual(["tx.decoration.create", "tx.adminAuditLog.create"]);
+    expect(auditWrites[0].action).toBe("decoration.create");
+    expect(auditWrites[0].targetType).toBe("decoration");
   });
 
   it("creates shop items with character or decoration categories", async () => {
+    const calls = [];
+    const auditWrites = [];
     const response = await requestAdminRoute({
+      character: {
+        findUnique: async ({ where }) => where.slug === "danea" ? { id: "character-1", slug: "danea" } : null
+      },
       shopItem: {
-        create: async ({ data }) => ({ id: "shop-1", ...data }),
+        create: async () => {
+          calls.push("top.shopItem.create");
+          throw new Error("shop mutation must use the transaction client");
+        },
         findMany: async () => []
-      }
+      },
+      adminAuditLog: {
+        create: async () => {
+          calls.push("top.adminAuditLog.create");
+          throw new Error("audit must use the transaction client");
+        }
+      },
+      $transaction: async (callback) => callback({
+        shopItem: {
+          create: async ({ data }) => {
+            calls.push("tx.shopItem.create");
+            return { id: "shop-1", ...data };
+          }
+        },
+        adminAuditLog: {
+          create: async ({ data }) => {
+            calls.push("tx.adminAuditLog.create");
+            auditWrites.push(data);
+            return data;
+          }
+        }
+      })
     }, "/shop-items", {
       method: "POST",
       body: {
@@ -333,6 +421,37 @@ describe("admin shop and decoration routes", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.item.finalPrice).toBe(80);
+    expect(calls).toEqual(["tx.shopItem.create", "tx.adminAuditLog.create"]);
+    expect(auditWrites[0].action).toBe("shop-item.create");
+    expect(auditWrites[0].targetType).toBe("shop-item");
+  });
+
+  it("rejects shop items whose target does not exist", async () => {
+    const response = await requestAdminRoute({
+      character: {
+        findUnique: async () => null
+      },
+      shopItem: {
+        create: async () => {
+          throw new Error("should not create invalid shop item");
+        }
+      }
+    }, "/shop-items", {
+      method: "POST",
+      body: {
+        name: "Missing Character",
+        category: "character",
+        targetId: "missing",
+        priceCoins: 100,
+        discountPercent: 0,
+        purchasable: true,
+        enabled: true,
+        sortOrder: 1
+      }
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: "Shop character target does not exist" });
   });
 });
 
@@ -355,9 +474,10 @@ function userFixture() {
   };
 }
 
-function transactionPrisma() {
+function transactionPrisma(options = {}) {
   const calls = [];
   const auditWrites = [];
+  const fixture = options.user ?? userFixture();
   const topLevelAccessError = () => {
     throw new Error("mutation must use the transaction client");
   };
@@ -365,11 +485,15 @@ function transactionPrisma() {
     user: {
       findUnique: async () => {
         calls.push("tx.user.findUnique");
-        return userFixture();
+        return fixture;
+      },
+      count: async () => {
+        calls.push("tx.user.count");
+        return options.otherActiveAdmins ?? 1;
       },
       update: async ({ data }) => {
         calls.push("tx.user.update");
-        return { ...userFixture(), ...data };
+        return { ...fixture, ...data };
       }
     },
     adminAuditLog: {
@@ -386,6 +510,7 @@ function transactionPrisma() {
     prisma: {
       user: {
         findUnique: topLevelAccessError,
+        count: topLevelAccessError,
         update: topLevelAccessError
       },
       adminAuditLog: {

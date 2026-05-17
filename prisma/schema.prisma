@@ -38,8 +38,11 @@ model GameRecord {
   blackCharacter String
   whiteCharacter String
   resultText  String
+  winnerColor String?
+  resultReason String?
   moveCount   Int
   snapshot    String
+  snapshotVersion Int @default(1)
   createdAt   DateTime @default(now())
 }
 
@@ -70,7 +73,7 @@ model CharacterSkill {
   paramsJson  String    @default("{}")
   costType    String    @default("numeric")
   costValue   String    @default("0")
-  systemMessage String   @default("{color}{player}使用了{character}的“{skill}”技能，目标是{point}。")
+  systemMessage String   @default("{fromColor}{player}使用了{character}的“{skill}”技能，目标是{point}。")
   enabled     Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

@@ -1,0 +1,932 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>SigrikaGo System Design</title>
+<style>
+  @page { size: A4; margin: 14mm 12mm; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    color: #202124;
+    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.62;
+  }
+  h1 { font-size: 28px; margin: 0 0 18px; }
+  h2 { font-size: 20px; margin: 28px 0 10px; padding-bottom: 4px; border-bottom: 1px solid #ddd; }
+  h3 { font-size: 16px; margin: 18px 0 8px; }
+  p { margin: 8px 0; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  li { margin: 3px 0; }
+  code {
+    font-family: Consolas, "Courier New", monospace;
+    background: #f5f5f5;
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+  pre {
+    background: #f6f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+    page-break-inside: avoid;
+  }
+  pre code { background: transparent; padding: 0; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #ddd; padding: 6px 8px; }
+  a { color: #2457c5; text-decoration: none; }
+</style>
+</head>
+<body>
+<h1>SigrikaGo System Design</h1>
+<p>本文档基于当前代码库静态分析生成，目标是方便后续维护者和 AI 继续接手。未在代码中确认的内容会标注为“待确认”。</p>
+<h2>1. 项目目录结构说明</h2>
+<pre><code class="language-text">SigrikaGo/
+  .env.example                 # 本地环境变量模板
+  index.html                   # Vite 入口 HTML
+  package.json                 # npm 脚本与依赖
+  vite.config.js               # Vite + React 配置，开发期代理 /api 与 /uploads 到后端
+  docs/
+    system-design.md           # 本文档
+    superpowers/               # 既有设计/计划文档
+  prisma/
+    schema.prisma              # Prisma SQLite 数据模型
+  public/
+    assets/                    # 角色/其他静态图片资源
+  server/
+    index.js                   # Express + Socket.IO 服务入口
+    rooms.js                   # 实时房间、匹配、对局流程、计时、棋谱保存
+    auth.js                    # HTTP JWT 鉴权与管理员中间件
+    socketAuth.js              # Socket.IO JWT 鉴权与角色解析
+    adminConfig.js             # 管理员用户名配置与角色提升
+    adminRoutes.js             # /api/admin 后台管理路由
+    characters.js              # 角色/技能校验、序列化、内置角色种子
+    characterSelection.js      # 用户出战角色解析与 fallback
+    db.js                      # Prisma Client 与 publicUser 序列化
+    shop.js                    # 商城/装饰校验、价格、购买逻辑
+    leaderboard.js             # 排行榜统计逻辑
+    skillRegistry.js           # 角色技能 fallback 配置转换
+    *.test.js                  # Vitest 单元测试
+  src/
+    main.jsx                   # React 单页应用、主要组件与前端业务逻辑
+    styles.css                 # 全局样式
+    shared/
+      game.js                  # 13 路围棋规则、技能、数子、回放核心逻辑
+      characters.js            # 前端角色合并逻辑
+      characterFallback.js     # 内置角色 fallback 配置
+      *.test.js                # 共享逻辑测试
+</code></pre>
+<p>运行相关文件：</p>
+<ul>
+<li><code>.env</code> 未纳入 Git，当前模板包含 <code>DATABASE_URL</code>、<code>JWT_SECRET</code>、<code>PORT</code>。</li>
+<li><code>.gitignore</code> 排除了 <code>node_modules</code>、<code>dist</code>、<code>.env</code>、SQLite 数据库、开发日志等。</li>
+<li>当前目录不是 Git 仓库本身，至少在本机环境下 <code>git status</code> 不可用。</li>
+</ul>
+<h2>2. 当前核心模块</h2>
+<h3>前端</h3>
+<ul>
+<li><p><code>src/main.jsx</code></p>
+<ul>
+<li>React SPA 的集中入口。</li>
+<li>包含认证、大厅、对局、棋舍、商城、排行榜、设置、后台管理等组件。</li>
+<li>使用 <code>useState</code> / <code>useEffect</code> 做本地状态管理。</li>
+<li>通过 <code>fetch</code> 调用 HTTP API，通过 <code>socket.io-client</code> 连接实时对局。</li>
+</ul>
+</li>
+<li><p><code>src/shared/game.js</code></p>
+<ul>
+<li>共享的游戏规则引擎。</li>
+<li>负责棋盘状态、落子、提子、禁自杀、劫、弃手、认输、技能、隐藏手、死子标记、数子、回放重算等。</li>
+<li>该模块被前端回放逻辑与服务端房间逻辑共同使用。</li>
+</ul>
+</li>
+<li><p><code>src/shared/characters.js</code> 与 <code>src/shared/characterFallback.js</code></p>
+<ul>
+<li>定义内置角色 fallback。</li>
+<li>将后端 DB 角色与内置角色合并。</li>
+</ul>
+</li>
+<li><p><code>src/styles.css</code></p>
+<ul>
+<li>单文件全局样式，覆盖全部页面、弹窗、棋盘、后台、商城等。</li>
+</ul>
+</li>
+</ul>
+<h3>后端</h3>
+<ul>
+<li><p><code>server/index.js</code></p>
+<ul>
+<li>Express HTTP API 与 Socket.IO 入口。</li>
+<li>初始化内置角色 seed、提升配置管理员。</li>
+<li>注册公开 API、登录/注册 API、用户 API、棋谱 API、排行榜 API，并挂载 <code>/api/admin</code>。</li>
+</ul>
+</li>
+<li><p><code>server/rooms.js</code></p>
+<ul>
+<li>内存态房间系统。</li>
+<li>管理匹配队列、房间成员、观战、Socket 广播、聊天、计时、读秒、和棋/数子流程、技能演出、结束后保存棋谱与更新胜负积分。</li>
+</ul>
+</li>
+<li><p><code>server/adminRoutes.js</code></p>
+<ul>
+<li>后台管理路由。</li>
+<li>管理用户、封禁/解封、重置密码、角色、技能、装饰、商城商品、上传、审计日志、任意用户棋谱查看。</li>
+</ul>
+</li>
+<li><p><code>server/characters.js</code></p>
+<ul>
+<li>角色输入校验、技能校验、公开 payload 转换、内置角色初始化。</li>
+</ul>
+</li>
+<li><p><code>server/shop.js</code></p>
+<ul>
+<li>商城商品和装饰校验、折扣价格计算、购买事务。</li>
+</ul>
+</li>
+<li><p><code>server/leaderboard.js</code></p>
+<ul>
+<li>从用户与棋谱记录中统计排行榜。</li>
+</ul>
+</li>
+<li><p><code>server/auth.js</code> / <code>server/socketAuth.js</code></p>
+<ul>
+<li>HTTP 与 Socket.IO 的 JWT 鉴权。</li>
+</ul>
+</li>
+<li><p><code>server/db.js</code></p>
+<ul>
+<li>Prisma Client 单例和用户公开字段序列化。</li>
+</ul>
+</li>
+</ul>
+<h2>3. 已实现功能列表</h2>
+<h3>账号与用户</h3>
+<ul>
+<li>用户注册与登录。</li>
+<li>密码使用 <code>bcryptjs</code> 哈希存储。</li>
+<li>JWT 登录态，token 有效期为 14 天。</li>
+<li>用户状态支持 <code>active</code> / <code>banned</code>。</li>
+<li>管理员可配置、可在启动或登录时自动提升。</li>
+<li>用户公开字段序列化会隐藏 <code>passwordHash</code>。</li>
+</ul>
+<h3>大厅与个人空间</h3>
+<ul>
+<li>大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。</li>
+<li>棋舍展示用户战绩、积分、拥有角色、出战角色。</li>
+<li>棋舍可查看个人对局回放。</li>
+<li>设置弹窗支持音量配置，并保存在 <code>localStorage</code>。</li>
+</ul>
+<h3>对局</h3>
+<ul>
+<li>Socket.IO 两人匹配。</li>
+<li>5 位房间号观战。</li>
+<li>13 路棋盘。</li>
+<li>中国数子规则，<code>KOMI_STONES = 2.75</code>。</li>
+<li>基础规则：落子、提子、禁自杀、劫、弃手、认输。</li>
+<li>对局聊天和系统消息。</li>
+<li>计时与读秒：房间玩家包含 <code>mainTime</code>、<code>byoYomi</code>、<code>byoYomiPeriods</code> 等内存字段。</li>
+<li>超时判负。</li>
+<li>双方连续弃手进入数子申请/确认流程。</li>
+<li>数子流程：申请、接受/拒绝、标记死子、标记单官/中立点、确认死子、结果确认、拒绝后继续。</li>
+<li>和棋申请，10 秒超时拒绝。</li>
+<li>结束后保存棋谱，并更新胜者积分/胜局、败者负局。</li>
+</ul>
+<h3>技能与角色</h3>
+<ul>
+<li>内置角色 fallback：<code>sigrika</code>、<code>danea</code>、<code>aemeath</code>。</li>
+<li>DB 角色会覆盖/合并内置角色。</li>
+<li>技能类型：<ul>
+<li><code>erase-point</code>：抹除空交叉点，点位不可落子且不参与数子。</li>
+<li><code>flip-stone</code>：反转目标棋子颜色。</li>
+<li><code>hidden-hand</code>：隐藏手，未暴露前对对方隐藏。</li>
+</ul>
+</li>
+<li>技能可配置：<ul>
+<li>使用次数 <code>uses</code></li>
+<li>是否不消耗回合 <code>freeTurn</code></li>
+<li>目标规则 <code>targetRule</code></li>
+<li>参数 JSON <code>paramsJson</code></li>
+<li>代价类型 <code>costType</code></li>
+<li>代价值 <code>costValue</code></li>
+<li>系统消息模板 <code>systemMessage</code></li>
+</ul>
+</li>
+<li>系统消息模板当前支持：<code>{player}</code>、<code>{character}</code>、<code>{skill}</code>、<code>{point}</code>、<code>{fromColor}</code>、<code>{toColor}</code>、<code>{targetColor}</code>，并保留 <code>{color}</code> 兼容旧配置。</li>
+</ul>
+<h3>棋谱与回放</h3>
+<ul>
+<li>对局结束后写入 <code>GameRecord</code>。</li>
+<li>棋谱保存房间快照 <code>snapshot</code>。</li>
+<li>用户可看自己的最近 30 条棋谱。</li>
+<li>管理员可查看任意用户棋谱与任意棋谱详情。</li>
+<li>前端回放通过 <code>replayRoomAt</code> 基于历史步骤重放共享规则逻辑。</li>
+</ul>
+<h3>商城与装饰</h3>
+<ul>
+<li>商品支持 <code>character</code> 与 <code>decoration</code> 两类。</li>
+<li>商品有原价、折扣、是否可购买、是否展示、排序、描述、图片。</li>
+<li>购买会扣除用户金币，并写入 <code>ownedCharacters</code> 或 <code>ownedDecorations</code>。</li>
+<li>装饰数据模型和后台管理已实现；玩家端装饰实际使用方式待确认。</li>
+</ul>
+<h3>排行榜</h3>
+<ul>
+<li>入口在大厅。</li>
+<li>API 为 <code>GET /api/leaderboard</code>。</li>
+<li>仅展示至少完成过一盘对局的用户。</li>
+<li>按 <code>rating</code> 降序排序。</li>
+<li>从棋谱统计总对局数、胜局数、负局数。</li>
+<li>“常用角色”按棋谱中该用户使用次数最多的角色计算。</li>
+</ul>
+<h3>后台管理</h3>
+<ul>
+<li>概览：用户数、封禁用户数、启用角色数、棋谱数、最近审计日志。</li>
+<li>用户管理：列表、编辑角色/段位/积分/金币/拥有角色/出战角色、封禁、解封、重置密码、查看用户棋谱。</li>
+<li>角色管理：新增/编辑/禁用角色，配置技能系统。</li>
+<li>角色立绘上传：支持 png/jpeg/webp/gif，大小限制 3MB。</li>
+<li>商城管理：增改商品、下架商品。</li>
+<li>装饰管理：增改装饰、停用装饰。</li>
+<li>审计日志：记录部分后台操作前后值。</li>
+</ul>
+<h2>4. 数据模型与字段说明</h2>
+<p>数据源定义在 <code>prisma/schema.prisma</code>，数据库为 SQLite。</p>
+<h3>User</h3>
+<p>用户账号与资产/战绩。</p>
+<ul>
+<li><code>id</code>: 主键 cuid。</li>
+<li><code>username</code>: 唯一用户名。</li>
+<li><code>passwordHash</code>: bcrypt 哈希密码。</li>
+<li><code>role</code>: 用户角色，当前代码使用 <code>player</code> / <code>admin</code>。</li>
+<li><code>status</code>: 用户状态，当前代码使用 <code>active</code> / <code>banned</code>。</li>
+<li><code>banReason</code>: 封禁原因，可空。</li>
+<li><code>bannedAt</code>: 封禁时间，可空。</li>
+<li><code>rank</code>: 段位/等级文本。默认值在当前 schema 终端显示存在编码问题，语义待确认。</li>
+<li><code>rating</code>: 积分，默认 1000。</li>
+<li><code>wins</code>: 胜局数，默认 0。</li>
+<li><code>losses</code>: 负局数，默认 0。</li>
+<li><code>coins</code>: 金币，默认 300。</li>
+<li><code>selectedCharacter</code>: 出战角色 slug，默认 <code>sigrika</code>。</li>
+<li><code>ownedCharacters</code>: 逗号分隔的角色 slug 字符串，默认包含内置角色。</li>
+<li><code>ownedItems</code>: 逗号分隔字符串；当前代码未看到具体购买/使用逻辑，待确认。</li>
+<li><code>ownedDecorations</code>: 逗号分隔装饰 slug。</li>
+<li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
+</ul>
+<h3>GameRecord</h3>
+<p>结束对局记录。</p>
+<ul>
+<li><code>id</code>: 主键 cuid。</li>
+<li><code>roomCode</code>: 房间号。</li>
+<li><code>blackUserId</code>, <code>whiteUserId</code>: 黑白双方用户 id。</li>
+<li><code>blackName</code>, <code>whiteName</code>: 保存时的用户名快照。</li>
+<li><code>blackCharacter</code>, <code>whiteCharacter</code>: 双方角色 slug 快照。</li>
+<li><code>resultText</code>: 结果文本。</li>
+<li><code>moveCount</code>: 手数。</li>
+<li><code>snapshot</code>: JSON 字符串，保存 <code>roomView</code> 快照。</li>
+<li><code>createdAt</code>: 创建时间。</li>
+</ul>
+<h3>Character</h3>
+<p>可配置角色。</p>
+<ul>
+<li><code>id</code>: 主键 cuid。</li>
+<li><code>slug</code>: 唯一角色标识，用于前端匹配、出战角色、拥有角色、棋谱角色字段。</li>
+<li><code>name</code>: 角色名。</li>
+<li><code>portraitUrl</code>: 立绘 URL 或静态路径。</li>
+<li><code>portraitSource</code>: <code>url</code> 或 <code>upload</code>。</li>
+<li><code>palette</code>: 代表色。</li>
+<li><code>enabled</code>: 是否启用。</li>
+<li><code>sortOrder</code>: 排序。</li>
+<li><code>skill</code>: 一对一 <code>CharacterSkill</code>。</li>
+<li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
+</ul>
+<h3>CharacterSkill</h3>
+<p>角色技能配置。</p>
+<ul>
+<li><code>id</code>: 主键 cuid。</li>
+<li><code>characterId</code>: 关联 <code>Character.id</code>，唯一。</li>
+<li><code>effectType</code>: 技能实际效果类型，当前支持 <code>erase-point</code>、<code>flip-stone</code>、<code>hidden-hand</code>。</li>
+<li><code>name</code>: 技能名。</li>
+<li><code>description</code>: 技能描述。</li>
+<li><code>uses</code>: 每局使用次数。</li>
+<li><code>freeTurn</code>: 是否不消耗回合。</li>
+<li><code>targetRule</code>: 目标规则，当前校验为 <code>empty-point</code> 或 <code>stone</code>。</li>
+<li><code>paramsJson</code>: JSON 字符串，当前作为扩展参数保留。</li>
+<li><code>costType</code>: <code>numeric</code> 或 <code>special</code>。</li>
+<li><code>costValue</code>: 代价值；<code>numeric</code> 会参与数子扣分，<code>special</code> 当前仅展示。</li>
+<li><code>systemMessage</code>: 技能系统消息模板。</li>
+<li><code>enabled</code>: 是否启用；当前公开角色 payload 未看到按 skill.enabled 过滤，待确认。</li>
+<li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
+</ul>
+<h3>Decoration</h3>
+<p>装饰配置。</p>
+<ul>
+<li><code>id</code>: 主键 cuid。</li>
+<li><code>slug</code>: 唯一装饰标识。</li>
+<li><code>name</code>: 装饰名。</li>
+<li><code>description</code>: 描述。</li>
+<li><code>imageUrl</code>: 图片地址。</li>
+<li><code>enabled</code>: 是否启用。</li>
+<li><code>sortOrder</code>: 排序。</li>
+<li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
+</ul>
+<h3>ShopItem</h3>
+<p>商城商品。</p>
+<ul>
+<li><code>id</code>: 主键 cuid。</li>
+<li><code>name</code>: 商品名。</li>
+<li><code>category</code>: <code>character</code> 或 <code>decoration</code>。</li>
+<li><code>targetId</code>: 商品对应角色 slug 或装饰 slug。</li>
+<li><code>priceCoins</code>: 原价金币。</li>
+<li><code>discountPercent</code>: 折扣百分比 0-100。</li>
+<li><code>purchasable</code>: 是否可购买。</li>
+<li><code>enabled</code>: 是否展示。</li>
+<li><code>sortOrder</code>: 排序。</li>
+<li><code>description</code>: 描述。</li>
+<li><code>imageUrl</code>: 图片地址。</li>
+<li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
+</ul>
+<h3>AdminAuditLog</h3>
+<p>后台审计日志。</p>
+<ul>
+<li><code>id</code>: 主键 cuid。</li>
+<li><code>adminUserId</code>: 操作管理员用户 id。</li>
+<li><code>action</code>: 操作类型，如 <code>user.update</code>、<code>character.update</code>。</li>
+<li><code>targetType</code>: 目标类型，如 <code>user</code>、<code>character</code>。</li>
+<li><code>targetId</code>: 目标 id 或 slug。</li>
+<li><code>beforeJson</code>: 操作前 JSON，可空。</li>
+<li><code>afterJson</code>: 操作后 JSON，可空。</li>
+<li><code>createdAt</code>: 创建时间。</li>
+</ul>
+<h2>5. 数据之间的关系</h2>
+<ul>
+<li><p><code>Character</code> 与 <code>CharacterSkill</code> 是一对一关系：</p>
+<ul>
+<li><code>CharacterSkill.characterId</code> 唯一并引用 <code>Character.id</code>。</li>
+<li>删除角色会级联删除技能。</li>
+</ul>
+</li>
+<li><p><code>User</code> 与 <code>GameRecord</code> 没有 Prisma relation 声明，但通过字符串字段形成逻辑关系：</p>
+<ul>
+<li><code>GameRecord.blackUserId</code> / <code>whiteUserId</code> 对应 <code>User.id</code>。</li>
+<li><code>GameRecord.blackName</code> / <code>whiteName</code> 是用户名快照。</li>
+</ul>
+</li>
+<li><p><code>Character</code> 与 <code>GameRecord</code> 没有 Prisma relation 声明：</p>
+<ul>
+<li><code>GameRecord.blackCharacter</code> / <code>whiteCharacter</code> 保存角色 slug 快照。</li>
+<li>前端展示时通过 <code>findCharacter</code> 在当前角色集合中解析。</li>
+</ul>
+</li>
+<li><p><code>User</code> 与角色/装饰拥有关系没有 join table：</p>
+<ul>
+<li><code>User.ownedCharacters</code>、<code>ownedDecorations</code> 使用逗号分隔字符串。</li>
+<li><code>User.selectedCharacter</code> 保存单个角色 slug。</li>
+</ul>
+</li>
+<li><p><code>ShopItem.targetId</code> 与角色/装饰没有数据库外键：</p>
+<ul>
+<li><code>category = character</code> 时逻辑上指向 <code>Character.slug</code>。</li>
+<li><code>category = decoration</code> 时逻辑上指向 <code>Decoration.slug</code>。</li>
+</ul>
+</li>
+<li><p>实时 <code>Room</code>、<code>Player</code>、<code>GameState</code> 不是数据库模型：</p>
+<ul>
+<li>保存在 <code>server/rooms.js</code> 的内存 <code>Map</code>。</li>
+<li>对局结束后才以 <code>GameRecord.snapshot</code> 形式落库。</li>
+</ul>
+</li>
+</ul>
+<h2>6. API 路由与接口用途</h2>
+<h3>公开/普通用户 HTTP API</h3>
+<ul>
+<li><p><code>GET /api/health</code></p>
+<ul>
+<li>健康检查。</li>
+</ul>
+</li>
+<li><p><code>GET /api/characters</code></p>
+<ul>
+<li>返回启用角色列表和停用 slug 列表。</li>
+<li>不要求登录。</li>
+</ul>
+</li>
+<li><p><code>POST /api/auth/register</code></p>
+<ul>
+<li>注册账号。</li>
+<li>用户名至少 2 位，密码至少 4 位。</li>
+</ul>
+</li>
+<li><p><code>POST /api/auth/login</code></p>
+<ul>
+<li>登录并返回 JWT 与公开用户信息。</li>
+<li>被封禁用户返回 403。</li>
+</ul>
+</li>
+<li><p><code>GET /api/me</code></p>
+<ul>
+<li>登录用户信息。</li>
+<li>会基于棋谱重新计算展示用 <code>wins</code>、<code>losses</code>、<code>rating = 1000 + wins * 20</code>。</li>
+</ul>
+</li>
+<li><p><code>POST /api/me/character</code></p>
+<ul>
+<li>修改当前出战角色。</li>
+<li>会校验角色存在且未停用；逻辑同时考虑 DB 角色和 fallback 角色。</li>
+</ul>
+</li>
+<li><p><code>GET /api/shop</code></p>
+<ul>
+<li>登录后获取启用商城商品。</li>
+</ul>
+</li>
+<li><p><code>POST /api/shop/:id/purchase</code></p>
+<ul>
+<li>登录后购买商品。</li>
+<li>扣金币并更新拥有角色/装饰。</li>
+</ul>
+</li>
+<li><p><code>GET /api/leaderboard</code></p>
+<ul>
+<li>登录后获取排行榜。</li>
+<li>基于所有用户和所有棋谱统计。</li>
+</ul>
+</li>
+<li><p><code>GET /api/replays</code></p>
+<ul>
+<li>获取当前用户最近 30 条棋谱。</li>
+</ul>
+</li>
+<li><p><code>GET /api/replays/:id</code></p>
+<ul>
+<li>获取当前用户参与的指定棋谱详情与快照。</li>
+</ul>
+</li>
+</ul>
+<h3>后台 HTTP API</h3>
+<p>所有 <code>/api/admin/*</code> 路由都经过 <code>authHttp</code> 和 <code>requireAdmin</code>。</p>
+<ul>
+<li><p><code>GET /api/admin/summary</code></p>
+<ul>
+<li>后台概览数据和最近 8 条审计日志。</li>
+</ul>
+</li>
+<li><p><code>GET /api/admin/audit-logs</code></p>
+<ul>
+<li>最近 100 条审计日志。</li>
+</ul>
+</li>
+<li><p><code>GET /api/admin/users</code></p>
+<ul>
+<li>最多 200 个用户。</li>
+</ul>
+</li>
+<li><p><code>GET /api/admin/users/:id</code></p>
+<ul>
+<li>单个用户详情。</li>
+</ul>
+</li>
+<li><p><code>GET /api/admin/users/:id/replays</code></p>
+<ul>
+<li>任意用户最多 100 条棋谱。</li>
+</ul>
+</li>
+<li><p><code>GET /api/admin/replays/:id</code></p>
+<ul>
+<li>任意棋谱详情。</li>
+</ul>
+</li>
+<li><p><code>PATCH /api/admin/users/:id</code></p>
+<ul>
+<li>编辑用户 role、rank、rating、coins、ownedCharacters、selectedCharacter。</li>
+</ul>
+</li>
+<li><p><code>POST /api/admin/users/:id/ban</code></p>
+<ul>
+<li>封禁用户。</li>
+</ul>
+</li>
+<li><p><code>POST /api/admin/users/:id/unban</code></p>
+<ul>
+<li>解封用户。</li>
+</ul>
+</li>
+<li><p><code>POST /api/admin/users/:id/reset-password</code></p>
+<ul>
+<li>重置用户密码。</li>
+</ul>
+</li>
+<li><p><code>GET /api/admin/characters</code></p>
+<ul>
+<li>后台角色列表，包含停用角色与技能 <code>paramsJson</code>。</li>
+</ul>
+</li>
+<li><p><code>POST /api/admin/characters</code></p>
+<ul>
+<li>新增角色与技能。</li>
+</ul>
+</li>
+<li><p><code>PATCH /api/admin/characters/:id</code></p>
+<ul>
+<li>按 DB id 或 slug 更新角色与技能。</li>
+</ul>
+</li>
+<li><p><code>DELETE /api/admin/characters/:id</code></p>
+<ul>
+<li>将角色 <code>enabled</code> 设为 false。</li>
+</ul>
+</li>
+<li><p><code>POST /api/admin/uploads/character-portrait</code></p>
+<ul>
+<li>上传角色立绘。</li>
+<li>需要 multipart 字段 <code>portrait</code>。</li>
+</ul>
+</li>
+<li><p><code>GET /api/admin/decorations</code></p>
+<ul>
+<li>装饰列表。</li>
+</ul>
+</li>
+<li><p><code>POST /api/admin/decorations</code></p>
+<ul>
+<li>新增装饰。</li>
+</ul>
+</li>
+<li><p><code>PATCH /api/admin/decorations/:id</code></p>
+<ul>
+<li>更新装饰。</li>
+</ul>
+</li>
+<li><p><code>DELETE /api/admin/decorations/:id</code></p>
+<ul>
+<li>将装饰 <code>enabled</code> 设为 false。</li>
+</ul>
+</li>
+<li><p><code>GET /api/admin/shop-items</code></p>
+<ul>
+<li>商城商品列表。</li>
+</ul>
+</li>
+<li><p><code>POST /api/admin/shop-items</code></p>
+<ul>
+<li>新增商品。</li>
+</ul>
+</li>
+<li><p><code>PATCH /api/admin/shop-items/:id</code></p>
+<ul>
+<li>更新商品。</li>
+</ul>
+</li>
+<li><p><code>DELETE /api/admin/shop-items/:id</code></p>
+<ul>
+<li>将商品 <code>enabled</code> 设为 false。</li>
+</ul>
+</li>
+</ul>
+<h3>Socket.IO 事件</h3>
+<p>鉴权：</p>
+<ul>
+<li><code>io.use</code><ul>
+<li>使用 JWT 鉴权。</li>
+<li>校验用户存在、未封禁，并解析出战角色。</li>
+</ul>
+</li>
+</ul>
+<p>服务端监听：</p>
+<ul>
+<li><p><code>match:join</code></p>
+<ul>
+<li>加入匹配队列；匹配成功后创建房间并广播。</li>
+</ul>
+</li>
+<li><p><code>match:leave</code></p>
+<ul>
+<li>离开匹配队列。</li>
+</ul>
+</li>
+<li><p><code>room:join</code></p>
+<ul>
+<li>根据 5 位房间号加入观战或重连玩家。</li>
+</ul>
+</li>
+<li><p><code>game:action</code></p>
+<ul>
+<li>对局动作：<code>move</code>、<code>pass</code>、<code>resign</code>、<code>skill</code>。</li>
+</ul>
+</li>
+<li><p><code>counting:request</code></p>
+<ul>
+<li>申请数子。</li>
+</ul>
+</li>
+<li><p><code>counting:respond</code></p>
+<ul>
+<li>接受/拒绝数子。</li>
+</ul>
+</li>
+<li><p><code>draw:request</code></p>
+<ul>
+<li>申请和棋。</li>
+</ul>
+</li>
+<li><p><code>draw:respond</code></p>
+<ul>
+<li>接受/拒绝和棋。</li>
+</ul>
+</li>
+<li><p><code>scoring:action</code></p>
+<ul>
+<li>数子阶段动作：标记死子、中立点、重置、确认、接受/拒绝结果。</li>
+</ul>
+</li>
+<li><p><code>chat:send</code></p>
+<ul>
+<li>房间聊天。</li>
+</ul>
+</li>
+<li><p><code>disconnect</code></p>
+<ul>
+<li>清理匹配队列 socket 和观战列表。</li>
+</ul>
+</li>
+</ul>
+<p>服务端发出：</p>
+<ul>
+<li><code>match:waiting</code></li>
+<li><code>match:found</code></li>
+<li><code>room:update</code></li>
+<li><code>room:closed</code></li>
+<li><code>error:toast</code></li>
+<li><code>me</code></li>
+</ul>
+<h2>7. 权限系统现状</h2>
+<ul>
+<li><p>登录态使用 JWT：</p>
+<ul>
+<li><code>withToken</code> 签发 <code>{ sub: user.id }</code>，有效期 14 天。</li>
+<li>HTTP 请求通过 <code>Authorization: Bearer &lt;token&gt;</code>。</li>
+<li>Socket.IO 通过 <code>handshake.auth.token</code>。</li>
+</ul>
+</li>
+<li><p>用户角色：</p>
+<ul>
+<li><code>player</code></li>
+<li><code>admin</code></li>
+</ul>
+</li>
+<li><p>用户状态：</p>
+<ul>
+<li><code>active</code></li>
+<li><code>banned</code></li>
+</ul>
+</li>
+<li><p>管理员来源：</p>
+<ul>
+<li><code>.env</code> 中 <code>ADMIN_USERNAMES</code> 逗号分隔。</li>
+<li>服务启动时 <code>promoteConfiguredAdmins</code> 会批量提升已存在用户。</li>
+<li>登录/注册时 <code>syncConfiguredAdmin</code> 会提升匹配用户名。</li>
+</ul>
+</li>
+<li><p>后台权限：</p>
+<ul>
+<li><code>/api/admin</code> 路由挂载前统一使用 <code>authHttp</code> 和 <code>requireAdmin</code>。</li>
+<li>前端只对 <code>user.role === &quot;admin&quot;</code> 显示后台入口，但真正权限以后端为准。</li>
+</ul>
+</li>
+<li><p>封禁效果：</p>
+<ul>
+<li>HTTP 鉴权发现 <code>status === banned</code> 返回 403。</li>
+<li>Socket 鉴权发现封禁抛出 <code>forbidden</code>。</li>
+<li>登录时封禁用户也返回 403。</li>
+</ul>
+</li>
+<li><p>当前未看到：</p>
+<ul>
+<li>CSRF 防护。</li>
+<li>登录/注册限流。</li>
+<li>JWT refresh / 主动失效机制。</li>
+<li>操作级细粒度权限。</li>
+</ul>
+</li>
+</ul>
+<h2>8. 公共组件与通用逻辑</h2>
+<h3>前端公共组件</h3>
+<p>当前公共组件都集中在 <code>src/main.jsx</code>：</p>
+<ul>
+<li><code>Panel</code>: 面板标题与图标容器。</li>
+<li><code>Stat</code>: 小统计卡片。</li>
+<li><code>AdminFieldLabel</code>: 带 title 提示的后台字段标签。</li>
+<li><code>Toast</code>: 自动消失提示。</li>
+<li><code>ConfirmModal</code>: 通用确认弹窗。</li>
+<li><code>WatchPad</code>: 观战房间号输入。</li>
+<li><code>ReplayBar</code>: 回放进度控制。</li>
+<li><code>PlayerInfo</code>: 对局双方信息。</li>
+<li><code>Board</code>: 棋盘渲染与点击处理。</li>
+<li><code>ChatBox</code>: 聊天面板。</li>
+<li><code>SkillBanner</code>: 技能演出浮层。</li>
+<li><code>ResultModal</code>: 对局结果弹窗。</li>
+</ul>
+<h3>前端通用函数</h3>
+<ul>
+<li><code>api</code>: HTTP JSON 请求封装。</li>
+<li><code>adminApi</code>: <code>/api/admin</code> 请求封装。</li>
+<li><code>uploadPortrait</code>: 上传角色立绘。</li>
+<li><code>findCharacter</code>: 从角色 map 或 fallback 中解析角色。</li>
+<li><code>deriveHouseStats</code>: 从个人棋谱推导棋舍展示战绩。</li>
+<li><code>winnerColorFromRecord</code>: 基于结果文本判断胜方。</li>
+<li><code>buildCharacterDraft</code> / <code>characterDraftToBody</code>: 后台角色表单数据转换。</li>
+<li><code>validateShopItemDraft</code> / <code>decorationDraftToBody</code>: 后台商城/装饰表单校验。</li>
+<li><code>replayRoomAt</code>: 用历史记录重放房间状态。</li>
+<li>音频相关：<code>loadAudioSettings</code>、<code>playStoneSound</code>、<code>playCountdownBeep</code>、<code>speakText</code>。</li>
+</ul>
+<h3>后端通用逻辑</h3>
+<ul>
+<li><code>publicUser</code>: 用户公开字段白名单。</li>
+<li><code>makeAuth</code>: HTTP 鉴权与管理员中间件。</li>
+<li><code>validateCharacterInput</code>: 角色/技能输入校验。</li>
+<li><code>toCharacterPayload</code>: 角色公开 payload。</li>
+<li><code>validateShopItemInput</code> / <code>validateDecorationInput</code>: 商城与装饰校验。</li>
+<li><code>buildLeaderboard</code>: 排行榜统计。</li>
+<li><code>safeUploadFilename</code>: 上传文件名清洗。</li>
+<li><code>writeAudit</code>: 后台审计日志写入。</li>
+</ul>
+<h2>9. 状态管理方式</h2>
+<h3>前端状态</h3>
+<ul>
+<li>使用 React 本地状态，没有 Redux/Zustand 等全局状态库。</li>
+<li>顶层 <code>App</code> 管理：<ul>
+<li><code>token</code></li>
+<li><code>user</code></li>
+<li><code>view</code></li>
+<li><code>room</code></li>
+<li><code>socket</code></li>
+<li>各类弹窗开关</li>
+<li><code>characters</code></li>
+<li><code>replayRecords</code></li>
+<li><code>replayStep</code></li>
+<li>音频配置</li>
+</ul>
+</li>
+<li>登录 token 存在 <code>localStorage</code> 的 <code>sigrika-token</code>。</li>
+<li>音频设置存在 <code>localStorage</code> 的 <code>sigrika-audio-settings</code>。</li>
+<li>房间状态由服务端 Socket 广播覆盖到前端 <code>room</code>。</li>
+<li>回放状态通过 <code>replayStep</code> 和 <code>replayRoomAt</code> 从快照历史中派生。</li>
+</ul>
+<h3>后端状态</h3>
+<ul>
+<li><p>数据库持久化：</p>
+<ul>
+<li>用户、角色、技能、装饰、商城、棋谱、审计日志。</li>
+</ul>
+</li>
+<li><p>内存状态：</p>
+<ul>
+<li><code>server/rooms.js</code> 的 <code>rooms = new Map()</code>。</li>
+<li><code>waitingPlayer</code> 匹配队列。</li>
+<li>房间计时器、读秒、观战者、聊天、当前棋局状态。</li>
+</ul>
+</li>
+<li><p>对局结束持久化：</p>
+<ul>
+<li><code>scheduleRoomClose</code> 调用 <code>saveGameRecord</code>。</li>
+<li>房间 5 分钟后关闭并从内存删除。</li>
+</ul>
+</li>
+</ul>
+<h2>10. 已知技术债</h2>
+<p>以下只列代码中能观察到的事项：</p>
+<ul>
+<li><p>部分源码、schema、README 中的中文在当前终端显示为乱码。运行时页面部分中文可能正常，但文件编码状态需要统一确认。</p>
+</li>
+<li><p>没有 Prisma migrations 目录，当前只看到 <code>prisma db push</code> 脚本。跨机器/多人协作时数据库结构变更缺少可审计迁移历史。</p>
+</li>
+<li><p><code>prisma db push</code> 在当前机器曾出现空的 <code>Schema engine error</code>，后续需要确认是不是本机环境问题。</p>
+</li>
+<li><p>实时房间在内存中：</p>
+<ul>
+<li>服务重启会丢失未结束房间。</li>
+<li>不支持多进程/多实例横向扩展。</li>
+</ul>
+</li>
+<li><p>多处胜负判断依赖 <code>resultText</code> 文本前缀，而不是结构化字段：</p>
+<ul>
+<li><code>publicUserWithHistory</code></li>
+<li><code>deriveHouseStats</code></li>
+<li><code>leaderboard</code></li>
+<li>管理/排行统计未来如果改文案，可能影响统计。</li>
+</ul>
+</li>
+<li><p><code>GameRecord</code> 与 <code>User</code>、<code>Character</code> 没有数据库外键关系，依赖字符串逻辑关联。</p>
+</li>
+<li><p>用户拥有角色/装饰使用 CSV 字符串字段：</p>
+<ul>
+<li>查询和约束能力弱。</li>
+<li>容易产生重复或无效 slug。</li>
+</ul>
+</li>
+<li><p>商城 <code>targetId</code> 没有外键校验；购买时只按字符串写入拥有列表，是否存在目标角色/装饰待进一步校验。</p>
+</li>
+<li><p>前端 <code>src/main.jsx</code> 过大，包含所有页面组件、API helper、回放、音频、后台表单等，后续维护成本会升高。</p>
+</li>
+<li><p>全局样式集中在 <code>src/styles.css</code>，规模较大，组件样式边界不清。</p>
+</li>
+<li><p>技能扩展当前由 <code>effectType</code> 分支实现，<code>paramsJson</code> 已保留但核心规则尚未通用化。</p>
+</li>
+<li><p>后台审计覆盖了用户和角色的主要操作，但装饰、商城商品的增改删当前未看到写审计日志。</p>
+</li>
+<li><p><code>CharacterSkill.enabled</code> 字段存在，但当前公开角色序列化没有明确按该字段过滤技能，语义待确认。</p>
+</li>
+<li><p>认证安全能力较基础：</p>
+<ul>
+<li>无限流。</li>
+<li>JWT 无服务端失效表。</li>
+<li>默认 <code>JWT_SECRET</code> 模板为 <code>change-me-in-production</code>，部署前必须更换。</li>
+</ul>
+</li>
+<li><p>上传文件只按 MIME 类型和扩展生成文件名，未看到图片内容解码校验，待确认是否足够。</p>
+</li>
+<li><p>当前测试覆盖较多规则和后台 helper，但前端交互没有专门的自动化测试。</p>
+</li>
+</ul>
+<h2>11. 后续扩展建议</h2>
+<ul>
+<li><p>建立 Prisma migration 流程：</p>
+<ul>
+<li>引入 <code>prisma migrate dev</code> / <code>migrate deploy</code>。</li>
+<li>将现有 SQLite schema 固化为首个迁移。</li>
+</ul>
+</li>
+<li><p>将核心统计结构化：</p>
+<ul>
+<li>在 <code>GameRecord</code> 增加 <code>winnerColor</code>、<code>resultReason</code>、双方最终积分变化等字段。</li>
+<li>排行榜、棋舍战绩、用户统计改用结构化字段。</li>
+</ul>
+</li>
+<li><p>拆分前端模块：</p>
+<ul>
+<li><code>pages/HomeScreen.jsx</code></li>
+<li><code>pages/RoomScreen.jsx</code></li>
+<li><code>admin/*</code></li>
+<li><code>modals/*</code></li>
+<li><code>api/client.js</code></li>
+<li><code>audio/*</code></li>
+<li><code>replay/*</code></li>
+</ul>
+</li>
+<li><p>拆分样式：</p>
+<ul>
+<li>按页面/组件拆 CSS，或引入明确的 CSS module/组件样式约定。</li>
+</ul>
+</li>
+<li><p>重构拥有关系：</p>
+<ul>
+<li>将 <code>ownedCharacters</code>、<code>ownedDecorations</code> 从 CSV 改为关系表。</li>
+<li>为商城购买添加唯一约束，避免重复购买。</li>
+</ul>
+</li>
+<li><p>强化权限和安全：</p>
+<ul>
+<li>登录/注册限流。</li>
+<li>更严格的上传校验。</li>
+<li>管理员操作二次确认/审计扩展。</li>
+<li>JWT secret 检查，生产环境禁止默认值。</li>
+</ul>
+</li>
+<li><p>实时服务可扩展化：</p>
+<ul>
+<li>若需要多实例，需引入共享房间状态或 Socket.IO adapter。</li>
+<li>对局状态可考虑周期性持久化，避免服务重启丢局。</li>
+</ul>
+</li>
+<li><p>技能系统演进：</p>
+<ul>
+<li>将技能效果从硬编码分支迁移到 registry。</li>
+<li>明确定义 <code>paramsJson</code> schema。</li>
+<li>将系统消息占位符列表集中维护并在后台显示。</li>
+</ul>
+</li>
+<li><p>排行榜扩展：</p>
+<ul>
+<li>支持分页和赛季。</li>
+<li>支持按胜率、总局数、近期积分等维度排序。</li>
+<li>后端返回常用角色次数，前端可展示“使用 N 次”。</li>
+</ul>
+</li>
+<li><p>角色/装饰资源管理：</p>
+<ul>
+<li>为上传文件建立记录表，便于清理无引用文件。</li>
+<li>装饰在玩家端的实际展示/装备逻辑需要补齐或明确。</li>
+</ul>
+</li>
+<li><p>测试扩展：</p>
+<ul>
+<li>增加 API 路由集成测试。</li>
+<li>增加前端关键流程测试：登录、匹配、后台角色保存、排行榜弹窗。</li>
+<li>增加回放快照兼容性测试。</li>
+</ul>
+</li>
+</ul>
+
+</body>
+</html>

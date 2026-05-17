@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
 import { Router } from "express";
 import { USER_ROLES, USER_STATUS } from "./adminConfig.js";
+import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 import { toCharacterPayload, validateCharacterInput } from "./characters.js";
 import { publicUser } from "./db.js";
 import { toShopItemPayload, validateDecorationInput, validateShopItemInput } from "./shop.js";
@@ -86,6 +87,9 @@ export async function updateUserProfile({ prisma, adminUser, userId, body }) {
   const user = await prisma.$transaction(async (tx) => {
     const before = await tx.user.findUnique({ where: { id: userId } });
     if (!before) throw routeError(404, "User not found");
+    if (before.role === USER_ROLES.admin && data.role && data.role !== USER_ROLES.admin) {
+      await assertNotLastActiveAdmin(tx, before.id);
+    }
     const after = await tx.user.update({
       where: { id: userId },
       data
@@ -100,6 +104,9 @@ export async function banUser({ prisma, adminUser, userId, reason }) {
   const user = await prisma.$transaction(async (tx) => {
     const before = await tx.user.findUnique({ where: { id: userId } });
     if (!before) throw routeError(404, "User not found");
+    if (before.role === USER_ROLES.admin && before.status !== USER_STATUS.banned) {
+      await assertNotLastActiveAdmin(tx, before.id);
+    }
     const after = await tx.user.update({
       where: { id: userId },
       data: {
@@ -217,6 +224,8 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
         blackName: record.blackName,
         whiteName: record.whiteName,
         resultText: record.resultText,
+        winnerColor: record.winnerColor,
+        resultReason: record.resultReason,
         moveCount: record.moveCount,
         createdAt: record.createdAt
       }))
@@ -296,7 +305,7 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       return;
     }
     try {
-      const decoration = await prisma.decoration.create({ data: validated.value });
+      const decoration = await createDecoration({ prisma, adminUser: req.user, input: validated.value });
       res.json({ decoration });
     } catch (error) {
       sendRouteError(res, error);
@@ -310,7 +319,12 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       return;
     }
     try {
-      const decoration = await prisma.decoration.update({ where: { id: req.params.id }, data: validated.value });
+      const decoration = await updateDecoration({
+        prisma,
+        adminUser: req.user,
+        decorationId: req.params.id,
+        input: validated.value
+      });
       res.json({ decoration });
     } catch (error) {
       sendRouteError(res, error);
@@ -319,7 +333,11 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
 
   router.delete("/decorations/:id", async (req, res) => {
     try {
-      const decoration = await prisma.decoration.update({ where: { id: req.params.id }, data: { enabled: false } });
+      const decoration = await disableDecoration({
+        prisma,
+        adminUser: req.user,
+        decorationId: req.params.id
+      });
       res.json({ decoration });
     } catch (error) {
       sendRouteError(res, error);
@@ -340,7 +358,8 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       return;
     }
     try {
-      const item = await prisma.shopItem.create({ data: validated.value });
+      await assertShopTargetExists(prisma, validated.value);
+      const item = await createShopItem({ prisma, adminUser: req.user, input: validated.value });
       res.json({ item: toShopItemPayload(item) });
     } catch (error) {
       sendRouteError(res, error);
@@ -354,7 +373,13 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       return;
     }
     try {
-      const item = await prisma.shopItem.update({ where: { id: req.params.id }, data: validated.value });
+      await assertShopTargetExists(prisma, validated.value);
+      const item = await updateShopItem({
+        prisma,
+        adminUser: req.user,
+        itemId: req.params.id,
+        input: validated.value
+      });
       res.json({ item: toShopItemPayload(item) });
     } catch (error) {
       sendRouteError(res, error);
@@ -363,7 +388,7 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
 
   router.delete("/shop-items/:id", async (req, res) => {
     try {
-      const item = await prisma.shopItem.update({ where: { id: req.params.id }, data: { enabled: false } });
+      const item = await disableShopItem({ prisma, adminUser: req.user, itemId: req.params.id });
       res.json({ item: toShopItemPayload(item) });
     } catch (error) {
       sendRouteError(res, error);
@@ -501,6 +526,78 @@ async function disableCharacter({ prisma, adminUser, characterId }) {
   });
 }
 
+async function createDecoration({ prisma, adminUser, input }) {
+  return prisma.$transaction(async (tx) => {
+    const decoration = await tx.decoration.create({ data: input });
+    await writeAudit(tx, adminUser, "decoration.create", decoration.slug, null, decoration, "decoration");
+    return decoration;
+  });
+}
+
+async function updateDecoration({ prisma, adminUser, decorationId, input }) {
+  return prisma.$transaction(async (tx) => {
+    const before = await tx.decoration.findUnique({ where: { id: decorationId } });
+    if (!before) throw routeError(404, "Decoration not found");
+    const after = await tx.decoration.update({ where: { id: decorationId }, data: input });
+    await writeAudit(tx, adminUser, "decoration.update", after.slug, before, after, "decoration");
+    return after;
+  });
+}
+
+async function disableDecoration({ prisma, adminUser, decorationId }) {
+  return prisma.$transaction(async (tx) => {
+    const before = await tx.decoration.findUnique({ where: { id: decorationId } });
+    if (!before) throw routeError(404, "Decoration not found");
+    const after = await tx.decoration.update({ where: { id: decorationId }, data: { enabled: false } });
+    await writeAudit(tx, adminUser, "decoration.disable", after.slug, before, after, "decoration");
+    return after;
+  });
+}
+
+async function createShopItem({ prisma, adminUser, input }) {
+  return prisma.$transaction(async (tx) => {
+    const item = await tx.shopItem.create({ data: input });
+    await writeAudit(tx, adminUser, "shop-item.create", item.id, null, toShopItemPayload(item), "shop-item");
+    return item;
+  });
+}
+
+async function updateShopItem({ prisma, adminUser, itemId, input }) {
+  return prisma.$transaction(async (tx) => {
+    const before = await tx.shopItem.findUnique({ where: { id: itemId } });
+    if (!before) throw routeError(404, "Shop item not found");
+    const after = await tx.shopItem.update({ where: { id: itemId }, data: input });
+    await writeAudit(
+      tx,
+      adminUser,
+      "shop-item.update",
+      after.id,
+      toShopItemPayload(before),
+      toShopItemPayload(after),
+      "shop-item"
+    );
+    return after;
+  });
+}
+
+async function disableShopItem({ prisma, adminUser, itemId }) {
+  return prisma.$transaction(async (tx) => {
+    const before = await tx.shopItem.findUnique({ where: { id: itemId } });
+    if (!before) throw routeError(404, "Shop item not found");
+    const after = await tx.shopItem.update({ where: { id: itemId }, data: { enabled: false } });
+    await writeAudit(
+      tx,
+      adminUser,
+      "shop-item.disable",
+      after.id,
+      toShopItemPayload(before),
+      toShopItemPayload(after),
+      "shop-item"
+    );
+    return after;
+  });
+}
+
 function characterCreateData(input) {
   return {
     slug: input.slug,
@@ -615,7 +712,7 @@ function characterRecordToInput(record) {
       paramsJson: record.skill?.paramsJson ?? "{}",
       costType: record.skill?.costType ?? "numeric",
       costValue: record.skill?.costValue ?? "0",
-      systemMessage: record.skill?.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。"
+      systemMessage: record.skill?.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE
     }
   };
 }
@@ -648,6 +745,29 @@ async function writeAudit(prisma, adminUser, action, targetId, before, after, ta
       afterJson: serializeAudit(after)
     }
   });
+}
+
+async function assertNotLastActiveAdmin(prisma, userId) {
+  const otherAdmins = await prisma.user.count({
+    where: {
+      id: { not: userId },
+      role: USER_ROLES.admin,
+      status: USER_STATUS.active
+    }
+  });
+  if (otherAdmins <= 0) throw routeError(400, "Cannot remove the last active admin");
+}
+
+async function assertShopTargetExists(prisma, item) {
+  if (item.category === "character") {
+    const character = await prisma.character.findUnique({ where: { slug: item.targetId } });
+    if (!character) throw routeError(400, "Shop character target does not exist");
+    return;
+  }
+  if (item.category === "decoration") {
+    const decoration = await prisma.decoration.findUnique({ where: { slug: item.targetId } });
+    if (!decoration) throw routeError(400, "Shop decoration target does not exist");
+  }
 }
 
 function routeError(status, message) {

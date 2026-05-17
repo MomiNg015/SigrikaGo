@@ -1,4 +1,5 @@
 import { CHARACTERS } from "../src/shared/characters.js";
+import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 
 const EFFECT_TARGET_RULES = {
   "erase-point": "empty-point",
@@ -33,7 +34,7 @@ export function validateCharacterInput(input = {}) {
   const costType = String(skillInput.costType ?? input.costType ?? "numeric").trim();
   const fallbackCostValue = skillInput.cost ?? input.cost ?? 0;
   const costValue = String(skillInput.costValue ?? input.costValue ?? fallbackCostValue).trim();
-  const systemMessage = String(skillInput.systemMessage ?? input.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。").trim();
+  const systemMessage = String(skillInput.systemMessage ?? input.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE).trim();
   let params = {};
 
   if (!/^[a-z0-9-]{2,40}$/.test(slug)) {
@@ -117,7 +118,7 @@ export function toCharacterPayload(record) {
         costType: record.skill.costType ?? "numeric",
         costValue: record.skill.costValue ?? String(record.skill.cost ?? 0),
         cost: numericCost(record.skill),
-        systemMessage: record.skill.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。"
+        systemMessage: record.skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE
       }
     : null;
 
@@ -161,7 +162,7 @@ export async function seedCharacters(prisma) {
             paramsJson: "{}",
             costType: character.skill.costType ?? "numeric",
             costValue: String(character.skill.costValue ?? character.skill.cost ?? 0),
-            systemMessage: character.skill.systemMessage ?? "{color}{player}使用了{character}的“{skill}”技能，目标是{point}。",
+            systemMessage: character.skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE,
             enabled: true
           }
         }

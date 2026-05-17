@@ -1,5 +1,6 @@
 import {
   COLORS,
+  GAME_PHASES,
   createDrawResult,
   createGameState,
   createScoringState,
@@ -22,6 +23,7 @@ import {
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { prisma } from "./db.js";
+import { gameResultMetadata } from "./gameRecords.js";
 
 const rooms = new Map();
 let waitingPlayer = null;
@@ -31,7 +33,7 @@ export function getRoom(roomCode) {
 }
 
 export function listActiveRooms() {
-  return [...rooms.values()].filter((room) => room.game.phase !== "finished");
+  return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
 }
 
 export function joinMatchmaking(player, io) {
@@ -102,7 +104,7 @@ export function handleGameAction(roomCode, userId, action, io) {
     };
     room.game = {
       ...result.state,
-      phase: "skill-preview",
+      phase: GAME_PHASES.skillPreview,
       pendingSkill
     };
     appendSystem(room, skillNotice, { kind: "skill" });
@@ -113,7 +115,7 @@ export function handleGameAction(roomCode, userId, action, io) {
       latest.game = result.state;
       resetByoYomi(player);
       appendNotices(latest, result.notices);
-      if (latest.game.phase === "finished") scheduleRoomClose(roomCode, io);
+      if (latest.game.phase === GAME_PHASES.finished) scheduleRoomClose(roomCode, io);
       broadcastRoom(io, latest);
     }, 2000);
     return { ok: true, room };
@@ -132,7 +134,7 @@ export function handleGameAction(roomCode, userId, action, io) {
   const label = player.color === COLORS.black ? "黑" : "白";
   if (action.type === "pass") appendSystem(room, `${label}方弃一手。`);
   if (action.type === "resign") appendSystem(room, `${label}方认输。`);
-  if (room.game.phase === "finished") {
+  if (room.game.phase === GAME_PHASES.finished) {
     appendNotices(room, exposeHiddenHands(room.game));
     scheduleRoomClose(roomCode, io);
   }
@@ -144,9 +146,9 @@ export function requestCounting(roomCode, userId, io) {
   if (!room) return { ok: false, error: "房间不存在" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能申请数子" };
-  if (room.game.phase !== "playing") return { ok: false, error: "当前不能申请数子" };
+  if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请数子" };
 
-  room.game.phase = "counting-requested";
+  room.game.phase = GAME_PHASES.countingRequested;
   suspendUnexposedHiddenHands(room.game);
   room.game.scoring = prepareScoringState(room.game, createScoringState());
   room.game.scoring.requestedBy = userId;
@@ -154,9 +156,9 @@ export function requestCounting(roomCode, userId, io) {
   appendSystem(room, `${player.user.username}申请数子。`);
   setTimeout(() => {
     const latest = rooms.get(roomCode);
-    if (latest?.game.phase === "counting-requested" && latest.countingDeadline && Date.now() >= latest.countingDeadline) {
+    if (latest?.game.phase === GAME_PHASES.countingRequested && latest.countingDeadline && Date.now() >= latest.countingDeadline) {
       restoreSuspendedHiddenHands(latest.game);
-      latest.game.phase = "playing";
+      latest.game.phase = GAME_PHASES.playing;
       latest.game.scoring = null;
       latest.countingDeadline = null;
       appendSystem(latest, "数子申请超时，视为不同意数子。");
@@ -169,20 +171,20 @@ export function requestCounting(roomCode, userId, io) {
 export function respondCounting(roomCode, userId, accepted) {
   const room = rooms.get(roomCode);
   if (!room) return { ok: false, error: "房间不存在" };
-  if (room.game.phase !== "counting-requested") return { ok: false, error: "当前没有数子申请" };
+  if (room.game.phase !== GAME_PHASES.countingRequested) return { ok: false, error: "当前没有数子申请" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能确认数子" };
   if (room.game.scoring?.requestedBy === userId) return { ok: false, error: "需要等待对方确认" };
 
   if (!accepted) {
     restoreSuspendedHiddenHands(room.game);
-    room.game.phase = "playing";
+    room.game.phase = GAME_PHASES.playing;
     room.game.scoring = null;
     room.countingDeadline = null;
     appendSystem(room, "数子申请被拒绝，对局继续。");
     return { ok: true, room };
   }
-  room.game.phase = "marking-dead";
+  room.game.phase = GAME_PHASES.markingDead;
   room.game.scoring = prepareScoringState(room.game, room.game.scoring);
   room.game.scoring.acceptedBy = userId;
   room.countingDeadline = null;
@@ -195,9 +197,9 @@ export function requestDraw(roomCode, userId, io) {
   if (!room) return { ok: false, error: "房间不存在" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能申请和棋" };
-  if (room.game.phase !== "playing") return { ok: false, error: "当前不能申请和棋" };
+  if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请和棋" };
 
-  room.game.phase = "draw-requested";
+  room.game.phase = GAME_PHASES.drawRequested;
   room.game.drawRequest = {
     requestedBy: userId,
     requestedColor: player.color
@@ -206,8 +208,8 @@ export function requestDraw(roomCode, userId, io) {
   appendSystem(room, `${player.user.username}申请和棋。`);
   setTimeout(() => {
     const latest = rooms.get(roomCode);
-    if (latest?.game.phase === "draw-requested" && latest.drawDeadline && Date.now() >= latest.drawDeadline) {
-      latest.game.phase = "playing";
+    if (latest?.game.phase === GAME_PHASES.drawRequested && latest.drawDeadline && Date.now() >= latest.drawDeadline) {
+      latest.game.phase = GAME_PHASES.playing;
       latest.game.drawRequest = null;
       latest.drawDeadline = null;
       appendSystem(latest, "和棋申请超时，对局继续。");
@@ -220,20 +222,20 @@ export function requestDraw(roomCode, userId, io) {
 export function respondDraw(roomCode, userId, accepted, io) {
   const room = rooms.get(roomCode);
   if (!room) return { ok: false, error: "房间不存在" };
-  if (room.game.phase !== "draw-requested") return { ok: false, error: "当前没有和棋申请" };
+  if (room.game.phase !== GAME_PHASES.drawRequested) return { ok: false, error: "当前没有和棋申请" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能确认和棋" };
   if (room.game.drawRequest?.requestedBy === userId) return { ok: false, error: "需要等待对方确认" };
 
   if (!accepted) {
-    room.game.phase = "playing";
+    room.game.phase = GAME_PHASES.playing;
     room.game.drawRequest = null;
     room.drawDeadline = null;
     appendSystem(room, `${player.user.username}不同意和棋，对局继续。`);
     return { ok: true, room };
   }
 
-  room.game.phase = "finished";
+  room.game.phase = GAME_PHASES.finished;
   room.game.drawRequest = null;
   room.game.winner = createDrawResult("agreement");
   room.drawDeadline = null;
@@ -249,10 +251,10 @@ export function handleScoringAction(roomCode, userId, action, io) {
   if (!player) return { ok: false, error: "观战者不能确认数子" };
 
   if (["mark-dead", "mark-neutral", "reset-dead", "confirm-dead"].includes(action.type)) {
-    if (room.game.phase !== "marking-dead") return { ok: false, error: "当前不在死子确认阶段" };
+    if (room.game.phase !== GAME_PHASES.markingDead) return { ok: false, error: "当前不在死子确认阶段" };
   }
   if (["accept-result", "reject-result"].includes(action.type)) {
-    if (room.game.phase !== "result-review") return { ok: false, error: "当前不在结果确认阶段" };
+    if (room.game.phase !== GAME_PHASES.resultReview) return { ok: false, error: "当前不在结果确认阶段" };
   }
 
   let result = { ok: true, state: room.game };
@@ -271,7 +273,7 @@ export function handleScoringAction(roomCode, userId, action, io) {
     appendSystem(room, `${player.user.username}确认死子。`);
     if (room.game.scoring.confirmedBy.length === 2) {
       const score = scoreGame(room.game);
-      room.game.phase = "result-review";
+      room.game.phase = GAME_PHASES.resultReview;
       room.game.scoring.result = score;
       room.game.scoring.resultDeadline = Date.now() + 30000;
       appendSystem(room, `数子结果：${score.text}。`);
@@ -284,7 +286,7 @@ export function handleScoringAction(roomCode, userId, action, io) {
     accepted.add(userId);
     room.game.scoring.resultAcceptedBy = [...accepted];
     if (room.game.scoring.resultAcceptedBy.length === 2) {
-      room.game.phase = "finished";
+      room.game.phase = GAME_PHASES.finished;
       room.game.winner = room.game.scoring.result;
       appendNotices(room, exposeHiddenHands(room.game));
       appendSystem(room, `对局结束，${room.game.scoring.result.text}。`);
@@ -294,7 +296,7 @@ export function handleScoringAction(roomCode, userId, action, io) {
 
   if (action.type === "reject-result") {
     restoreSuspendedHiddenHands(room.game);
-    room.game.phase = "playing";
+    room.game.phase = GAME_PHASES.playing;
     room.game.scoring = null;
     appendSystem(room, `${player.user.username}不同意结果，对局继续。`);
   }
@@ -436,6 +438,10 @@ function describeSkillUse(room, player, targetId) {
   const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
   const effectType = skill.effectType ?? skill.id;
   const colorLabel = player.color === COLORS.black ? "黑" : "白";
+  const targetStone = getPoint(room.game, targetId)?.stone;
+  const fromColor = stoneLabel(player.color);
+  const toColor = stoneLabel(opponent(targetStone ?? player.color));
+  const targetColor = stoneLabel(targetStone);
   const fixed = `${colorLabel}方${player.user.username}使用了${character.name}的“${skill.name}”技能`;
   const coord = formatPointLabel(targetId);
   if (skill.systemMessage) {
@@ -444,7 +450,10 @@ function describeSkillUse(room, player, targetId) {
       character: character.name,
       skill: skill.name,
       point: coord,
-      color: colorLabel
+      color: colorLabel,
+      fromColor,
+      toColor,
+      targetColor
     });
   }
   if (effectType === "erase-point") {
@@ -468,6 +477,9 @@ function renderSkillMessage(template, values) {
     .replaceAll("{character}", values.character)
     .replaceAll("{skill}", values.skill)
     .replaceAll("{point}", values.point)
+    .replaceAll("{fromColor}", values.fromColor)
+    .replaceAll("{toColor}", values.toColor)
+    .replaceAll("{targetColor}", values.targetColor)
     .replaceAll("{color}", values.color);
 }
 
@@ -489,7 +501,7 @@ function startGameClock(room, io) {
       clearInterval(room.timerId);
       return;
     }
-    if (room.game.phase !== "playing") {
+    if (room.game.phase !== GAME_PHASES.playing) {
       room.lastTick = Date.now();
       return;
     }
@@ -501,7 +513,7 @@ function startGameClock(room, io) {
     if (!active) return;
     tickPlayerClock(active, elapsed);
     if (active.time.main <= 0 && active.time.periods <= 0) {
-      room.game.phase = "finished";
+      room.game.phase = GAME_PHASES.finished;
       room.game.winner = createTimeoutResult(active.color);
       appendSystem(room, `${active.user.username}超时，对局结束。`);
       scheduleRoomClose(room.code, io);
@@ -538,8 +550,8 @@ function scheduleResultReviewTimeout(roomCode, io) {
   setTimeout(() => {
     const latest = rooms.get(roomCode);
     const deadline = latest?.game.scoring?.resultDeadline;
-    if (latest?.game.phase === "result-review" && deadline && Date.now() >= deadline) {
-      latest.game.phase = "playing";
+    if (latest?.game.phase === GAME_PHASES.resultReview && deadline && Date.now() >= deadline) {
+      latest.game.phase = GAME_PHASES.playing;
       latest.game.scoring = null;
       appendSystem(latest, "数子结果确认超时，对局继续。");
       broadcastRoom(io, latest);
@@ -563,11 +575,12 @@ function scheduleRoomClose(roomCode, io) {
 }
 
 async function saveGameRecord(room) {
-  if (room.recordSaved || room.game.phase !== "finished") return;
+  if (room.recordSaved || room.game.phase !== GAME_PHASES.finished) return;
   const black = room.players.find((player) => player.color === COLORS.black);
   const white = room.players.find((player) => player.color === COLORS.white);
   if (!black || !white) return;
   room.recordSaved = true;
+  const resultMetadata = gameResultMetadata(room.game.winner);
   const recordCreate = prisma.gameRecord.create({
     data: {
       roomCode: room.code,
@@ -578,8 +591,11 @@ async function saveGameRecord(room) {
       blackCharacter: black.characterId,
       whiteCharacter: white.characterId,
       resultText: room.game.winner?.text ?? "对局结束",
+      winnerColor: resultMetadata.winnerColor,
+      resultReason: resultMetadata.resultReason,
       moveCount: room.game.moveNumber,
-      snapshot: JSON.stringify(roomView(room, black.user.id))
+      snapshot: JSON.stringify(roomView(room, black.user.id)),
+      snapshotVersion: 1
     }
   });
   if (![COLORS.black, COLORS.white].includes(room.game.winner?.winnerColor)) {

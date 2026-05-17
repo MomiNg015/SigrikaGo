@@ -16,6 +16,8 @@ import { listPublicCharacterResponse, listPublicCharacters, seedCharacters } fro
 import { CHARACTERS } from "../src/shared/characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { authenticateSocketUser } from "./socketAuth.js";
+import { buildLeaderboard } from "./leaderboard.js";
+import { recordWinnerColor } from "./gameRecords.js";
 import { listShopItems, purchaseShopItem } from "./shop.js";
 import {
   addChat,
@@ -81,6 +83,31 @@ app.get("/api/characters", async (_req, res) => {
 
 app.get("/api/shop", authHttp, async (_req, res) => {
   res.json(await listShopItems(prisma));
+});
+
+app.get("/api/leaderboard", authHttp, async (_req, res) => {
+  const [users, records] = await Promise.all([
+    prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        rating: true,
+        selectedCharacter: true
+      }
+    }),
+    prisma.gameRecord.findMany({
+      select: {
+        blackUserId: true,
+        whiteUserId: true,
+        blackCharacter: true,
+        whiteCharacter: true,
+        winnerColor: true,
+        resultReason: true,
+        resultText: true
+      }
+    })
+  ]);
+  res.json({ players: buildLeaderboard(users, records) });
 });
 
 app.post("/api/shop/:id/purchase", authHttp, async (req, res) => {
@@ -162,6 +189,8 @@ app.get("/api/replays", authHttp, async (req, res) => {
       blackName: record.blackName,
       whiteName: record.whiteName,
       resultText: record.resultText,
+      winnerColor: record.winnerColor,
+      resultReason: record.resultReason,
       moveCount: record.moveCount,
       createdAt: record.createdAt
     }))
@@ -291,6 +320,7 @@ async function publicUserWithHistory(user) {
     select: {
       blackUserId: true,
       whiteUserId: true,
+      winnerColor: true,
       resultText: true
     }
   });
@@ -298,7 +328,7 @@ async function publicUserWithHistory(user) {
   let losses = 0;
   for (const record of records) {
     const color = record.blackUserId === user.id ? "black" : record.whiteUserId === user.id ? "white" : null;
-    const winner = winnerColorFromText(record.resultText);
+    const winner = recordWinnerColor(record);
     if (!color || !winner) continue;
     if (color === winner) wins += 1;
     else losses += 1;
@@ -309,12 +339,6 @@ async function publicUserWithHistory(user) {
     losses,
     rating: 1000 + wins * 20
   };
-}
-
-function winnerColorFromText(text = "") {
-  if (text.startsWith("黑胜") || text.startsWith("黑中盘胜") || text.startsWith("黑超时胜")) return "black";
-  if (text.startsWith("白胜") || text.startsWith("白中盘胜") || text.startsWith("白超时胜")) return "white";
-  return null;
 }
 
 server.listen(PORT, () => {

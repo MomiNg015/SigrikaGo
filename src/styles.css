@@ -280,6 +280,10 @@ p {
   background: linear-gradient(135deg, rgba(247, 250, 255, 0.96), rgba(236, 244, 255, 0.9));
 }
 
+.leaderboard-entry {
+  background: linear-gradient(135deg, rgba(255, 251, 229, 0.96), rgba(235, 247, 255, 0.9));
+}
+
 .shop-entry {
   background: linear-gradient(135deg, rgba(255, 250, 239, 0.96), rgba(255, 240, 247, 0.9));
 }
@@ -1685,6 +1689,7 @@ p {
 .small-modal,
 .shop-modal,
 .house-modal,
+.leaderboard-modal,
 .confirm-modal,
 .result-modal,
 .settings-modal {
@@ -1697,6 +1702,7 @@ p {
 .small-modal,
 .shop-modal,
 .house-modal,
+.leaderboard-modal,
 .settings-modal {
   background: #fffafd;
   border: 1px solid rgba(128, 102, 142, 0.18);
@@ -2010,6 +2016,89 @@ p {
   text-align: left;
   max-height: calc(100dvh - (var(--page-pad) * 2));
   overflow: auto;
+}
+
+.leaderboard-modal {
+  width: min(880px, calc(100vw - (var(--page-pad) * 2)));
+  text-align: left;
+  max-height: calc(100dvh - (var(--page-pad) * 2));
+  overflow: auto;
+}
+
+.leaderboard-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 44px;
+  margin-bottom: 16px;
+}
+
+.leaderboard-header h2,
+.leaderboard-header p {
+  margin: 0;
+}
+
+.leaderboard-list {
+  min-width: 720px;
+  display: grid;
+  gap: 8px;
+}
+
+.leaderboard-heading,
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 62px 82px minmax(140px, 1fr) repeat(4, minmax(72px, 0.55fr));
+  align-items: center;
+  gap: 10px;
+}
+
+.leaderboard-heading {
+  padding: 0 14px;
+  color: #7d6a82;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.leaderboard-row {
+  min-height: 76px;
+  padding: 10px 14px;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.leaderboard-rank {
+  color: #5d7fe8;
+  font-size: 20px;
+}
+
+.leaderboard-row img {
+  width: 72px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.leaderboard-player {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.leaderboard-player strong,
+.leaderboard-player span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard-player span,
+.leaderboard-row > span {
+  color: #7d6a82;
+}
+
+.leaderboard-row > b {
+  color: #2d2430;
+  font-size: 20px;
 }
 
 .owned-decoration-section {
