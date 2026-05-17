@@ -13,7 +13,9 @@ import {
   passMove,
   playMove,
   prepareScoringState,
+  randomLayout,
   resetDeadMarks,
+  restoreSkillUse,
   restoreSuspendedHiddenHands,
   resignGame,
   scoreGame,
@@ -23,7 +25,7 @@ import {
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { prisma } from "./db.js";
-import { gameResultMetadata } from "./gameRecords.js";
+import { gameResultMetadata, ratingDeltaForResult } from "./gameRecords.js";
 
 const rooms = new Map();
 let waitingPlayer = null;
@@ -103,7 +105,7 @@ export function handleGameAction(roomCode, userId, action, io) {
       skillName: skill.name
     };
     room.game = {
-      ...result.state,
+      ...room.game,
       phase: GAME_PHASES.skillPreview,
       pendingSkill
     };
@@ -125,15 +127,19 @@ export function handleGameAction(roomCode, userId, action, io) {
   if (action.type === "move") result = playMove(room.game, player.color, action.pointId);
   if (action.type === "pass") result = passMove(room.game, player.color);
   if (action.type === "resign") result = resignGame(room.game, player.color);
+  if (action.type === "test-random-layout") result = randomLayout(room.game, { black: 50, white: 50 });
+  if (action.type === "test-restore-skill") result = restoreSkillUse(room.game, player.color);
   if (!result) return { ok: false, error: "未知操作" };
   if (!result.ok) return result;
 
   room.game = result.state;
   appendNotices(room, result.notices);
-  resetByoYomi(player);
+  if (!action.type.startsWith("test-")) resetByoYomi(player);
   const label = player.color === COLORS.black ? "黑" : "白";
   if (action.type === "pass") appendSystem(room, `${label}方弃一手。`);
   if (action.type === "resign") appendSystem(room, `${label}方认输。`);
+  if (action.type === "test-random-layout") appendSystem(room, "测试工具：已生成随机布局。");
+  if (action.type === "test-restore-skill") appendSystem(room, `测试工具：${label}方已恢复技能次数。`);
   if (room.game.phase === GAME_PHASES.finished) {
     appendNotices(room, exposeHiddenHands(room.game));
     scheduleRoomClose(roomCode, io);
@@ -329,7 +335,8 @@ export function broadcastRoom(io, room) {
 }
 
 export function roomView(room, viewerId) {
-  const viewerColor = room.players.find((p) => p.user.id === viewerId)?.color ?? null;
+  const playerColor = room.players.find((p) => p.user.id === viewerId)?.color ?? null;
+  const viewerColor = playerColor ?? COLORS.black;
   return {
     code: room.code,
     viewerId,
@@ -610,13 +617,14 @@ async function saveGameRecord(room) {
       where: { id: winner.user.id },
       data: {
         wins: { increment: 1 },
-        rating: { increment: 20 }
+        rating: { increment: ratingDeltaForResult(winner.color, room.game.winner.winnerColor) }
       }
     }),
     prisma.user.update({
       where: { id: loser.user.id },
       data: {
-        losses: { increment: 1 }
+        losses: { increment: 1 },
+        rating: { increment: ratingDeltaForResult(loser.color, room.game.winner.winnerColor) }
       }
     })
   ]);

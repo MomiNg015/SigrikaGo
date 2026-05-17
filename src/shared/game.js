@@ -98,6 +98,57 @@ export function playMove(state, color, id) {
   return placeStone(state, color, id, { hidden: false });
 }
 
+export function randomLayout(state, counts = { black: 50, white: 50 }) {
+  if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能随机布局");
+  const validPoints = state.points.filter((point) => point.valid);
+  const blackCount = Math.max(0, Math.floor(Number(counts.black ?? 50)));
+  const whiteCount = Math.max(0, Math.floor(Number(counts.white ?? 50)));
+  if (blackCount + whiteCount > validPoints.length) return fail("棋盘空间不足");
+
+  for (let attempt = 0; attempt < 3000; attempt += 1) {
+    const next = cloneState(state);
+    clearBoardStones(next);
+    const colors = shuffle([
+      ...Array.from({ length: blackCount }, () => COLORS.black),
+      ...Array.from({ length: whiteCount }, () => COLORS.white)
+    ]);
+    const points = shuffle(next.points.filter((point) => point.valid));
+    for (const [index, color] of colors.entries()) {
+      points[index].stone = color;
+    }
+    if (allStoneGroupsHaveLiberties(next)) {
+      next.ko = null;
+      next.passes = 0;
+      next.captures = { black: 0, white: 0 };
+      next.scoring = null;
+      next.suspendedHiddenHands = [];
+      next.winner = null;
+      next.history.push({
+        type: "test-random-layout",
+        black: blackCount,
+        white: whiteCount,
+        moveNumber: next.moveNumber
+      });
+      return ok(next);
+    }
+  }
+
+  return fail("随机布局生成失败，请重试");
+}
+
+export function restoreSkillUse(state, color) {
+  if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能恢复技能");
+  const next = cloneState(state);
+  const player = next.players.find((candidate) => candidate.color === color);
+  next.skillUses[color] = configuredSkillUses(player);
+  next.history.push({
+    type: "test-restore-skill",
+    color,
+    moveNumber: next.moveNumber
+  });
+  return ok(next);
+}
+
 function placeStone(state, color, id, { hidden, skill = null }) {
   if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能落子");
   if (state.turn !== color) return fail("还没有轮到你");
@@ -140,6 +191,7 @@ function placeStone(state, color, id, { hidden, skill = null }) {
   next.ko = removed.length === 1 && ownGroup.stones.length === 1 && ownGroup.liberties.size === 1
     ? removed[0]
     : null;
+  clearBlastMarkers(next, color);
   next.turn = opponent(color);
   next.passes = 0;
   next.moveNumber += 1;
@@ -229,7 +281,46 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
       skill
     });
   }
+  if (skill?.effectType === "random-blast") {
+    return randomBlast(state, color, {
+      skillName: skill.name,
+      consumesTurn: !skill.freeTurn,
+      skill
+    });
+  }
   return fail("未知角色技能");
+}
+
+function clearBoardStones(state) {
+  for (const point of state.points) {
+    point.stone = null;
+    point.hiddenHand = null;
+    if (point.skillEffect !== "erased-point") {
+      point.skillEffect = null;
+      point.skillEffectOwner = null;
+    }
+    point.mark = null;
+  }
+}
+
+function allStoneGroupsHaveLiberties(state) {
+  const visited = new Set();
+  for (const point of state.points) {
+    if (!point.valid || !point.stone || visited.has(point.id)) continue;
+    const group = collectGroup(state, point.id);
+    group.stones.forEach((stone) => visited.add(stone));
+    if (group.liberties.size === 0) return false;
+  }
+  return true;
+}
+
+function shuffle(items) {
+  const next = [...items];
+  for (let index = next.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [next[index], next[swapIndex]] = [next[swapIndex], next[index]];
+  }
+  return next;
 }
 
 function configuredSkillUses(player) {
@@ -282,6 +373,20 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       params: {}
     };
   }
+  if (fallback?.skill?.id === "random-blast") {
+    return {
+      characterId: fallback.id,
+      effectType: "random-blast",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: Boolean(fallback.skill.freeTurn),
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+      systemMessage: fallback.skill.systemMessage,
+      targetRule: "any-point",
+      params: fallback.skill.params ?? { size: 3 }
+    };
+  }
   return null;
 }
 
@@ -322,9 +427,64 @@ export function flipStone(state, color, id, options = {}) {
   next.skillUses[color] -= 1;
   applySkillCost(next, color, options.skill ?? "danea");
   next.ko = null;
-  next.history.push({ type: "skill", skill: "染秽", color, id, moveNumber: next.moveNumber });
+  next.history.push({ type: "skill", skill: "染秽", effectType: "flip-stone", color, id, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
   return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? true));
+}
+
+export function randomBlast(state, color, options = {}) {
+  const next = cloneState(state);
+  const size = Math.max(1, Number(options.skill?.params?.size ?? 3) || 3);
+  const radius = Math.floor(size / 2);
+  const center = options.centerId ? parsePointId(options.centerId) : null;
+  const centerX = center ? clampBlastCenter(center.x, next.size, radius) : randomBlastCenter(next.size, radius);
+  const centerY = center ? clampBlastCenter(center.y, next.size, radius) : randomBlastCenter(next.size, radius);
+  let removed = 0;
+  const marked = [];
+
+  for (let y = centerY - radius; y <= centerY + radius; y += 1) {
+    for (let x = centerX - radius; x <= centerX + radius; x += 1) {
+      if (x < 0 || y < 0 || x >= next.size || y >= next.size) continue;
+      const point = getPoint(next, pointId(x, y));
+      if (!point?.valid) continue;
+      if (point.stone) {
+        clearStone(next, point.id);
+        removed += 1;
+      }
+      point.skillEffect = "blast-marker";
+      point.skillEffectOwner = color;
+      marked.push(point.id);
+    }
+  }
+
+  next.skillUses[color] -= 1;
+  applySkillCost(next, color, options.skill ?? "baconbits");
+  next.ko = null;
+  next.history.push({
+    type: "skill",
+    effectType: "random-blast",
+    skill: options.skillName ?? "猪小仙爆炸",
+    color,
+    id: pointId(centerX, centerY),
+    removed,
+    marked,
+    moveNumber: next.moveNumber
+  });
+  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false));
+}
+
+function randomBlastCenter(boardSize, radius) {
+  const min = radius;
+  const max = boardSize - radius - 1;
+  if (min > max) return Math.floor(boardSize / 2);
+  return min + Math.floor(Math.random() * (max - min + 1));
+}
+
+function clampBlastCenter(value, boardSize, radius) {
+  const min = radius;
+  const max = boardSize - radius - 1;
+  if (min > max) return Math.floor(boardSize / 2);
+  return Math.min(max, Math.max(min, value));
 }
 
 function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true) {
@@ -675,6 +835,15 @@ function clearStone(state, id) {
   if (!point) return;
   point.stone = null;
   point.hiddenHand = null;
+}
+
+function clearBlastMarkers(state, ownerColor) {
+  for (const point of state.points) {
+    if (point.skillEffect !== "blast-marker") continue;
+    if (point.skillEffectOwner !== ownerColor) continue;
+    point.skillEffect = null;
+    point.skillEffectOwner = null;
+  }
 }
 
 export function formatStones(value) {

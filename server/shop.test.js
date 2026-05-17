@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { listShopItems, purchaseShopItem } from "./shop.js";
+import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
 
 describe("shop", () => {
   it("lists enabled shop items with final prices", async () => {
@@ -90,6 +90,33 @@ describe("shop", () => {
 
     expect(response.user.coins).toBe(40);
     expect(response.user.ownedDecorations).toContain("moon-frame");
+  });
+
+  it("seeds Baconbits as a 9999 coin shop character", async () => {
+    const calls = [];
+    await seedBuiltinShopItems({
+      shopItem: {
+        findFirst: async (query) => {
+          calls.push(["findFirst", query]);
+          return null;
+        },
+        create: async ({ data }) => {
+          calls.push(["create", data]);
+          return data;
+        }
+      }
+    });
+
+    expect(calls.at(-1)).toEqual([
+      "create",
+      expect.objectContaining({
+        name: "猪小仙",
+        category: "character",
+        targetId: "baconbits",
+        priceCoins: 9999,
+        imageUrl: "/assets/baconbits.png"
+      })
+    ]);
   });
 });
 

@@ -17,8 +17,8 @@ import { CHARACTERS } from "../src/shared/characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { authenticateSocketUser } from "./socketAuth.js";
 import { buildLeaderboard } from "./leaderboard.js";
-import { recordWinnerColor } from "./gameRecords.js";
-import { listShopItems, purchaseShopItem } from "./shop.js";
+import { derivePlayerRecordStats } from "./gameRecords.js";
+import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -71,6 +71,7 @@ const io = new Server(server, {
 });
 
 await seedCharacters(prisma);
+await seedBuiltinShopItems(prisma);
 await promoteConfiguredAdmins(prisma);
 
 app.get("/api/health", (_req, res) => {
@@ -324,20 +325,14 @@ async function publicUserWithHistory(user) {
       resultText: true
     }
   });
-  let wins = 0;
-  let losses = 0;
-  for (const record of records) {
-    const color = record.blackUserId === user.id ? "black" : record.whiteUserId === user.id ? "white" : null;
-    const winner = recordWinnerColor(record);
-    if (!color || !winner) continue;
-    if (color === winner) wins += 1;
-    else losses += 1;
-  }
+  const stats = derivePlayerRecordStats(user, records);
   return {
     ...publicUser(user),
-    wins,
-    losses,
-    rating: 1000 + wins * 20
+    totalGames: stats.totalGames,
+    wins: stats.wins,
+    losses: stats.losses,
+    draws: stats.draws,
+    rating: stats.rating
   };
 }
 

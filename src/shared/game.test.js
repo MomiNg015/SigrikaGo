@@ -12,6 +12,9 @@ import {
   playMove,
   pointId,
   prepareScoringState,
+  randomBlast,
+  randomLayout,
+  restoreSkillUse,
   resignGame,
   scoreGame,
   useSkill
@@ -19,6 +22,29 @@ import {
 
 function forceStone(state, x, y, color) {
   getPoint(state, pointId(x, y)).stone = color;
+}
+
+function collectTestGroup(state, startId) {
+  const start = getPoint(state, startId);
+  const stones = [];
+  const liberties = new Set();
+  const queue = [startId];
+  const visited = new Set();
+  while (queue.length) {
+    const id = queue.shift();
+    if (visited.has(id)) continue;
+    visited.add(id);
+    const point = getPoint(state, id);
+    if (!point || point.stone !== start.stone) continue;
+    stones.push(id);
+    for (const neighborId of point.neighbors) {
+      const neighbor = getPoint(state, neighborId);
+      if (!neighbor?.valid) continue;
+      if (!neighbor.stone) liberties.add(neighbor.id);
+      else if (neighbor.stone === start.stone && !visited.has(neighbor.id)) queue.push(neighbor.id);
+    }
+  }
+  return { stones, liberties };
 }
 
 function surroundWhiteBox(state) {
@@ -244,6 +270,11 @@ describe("SigrikaGo rules", () => {
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(4, 4)).stone).toBe(COLORS.black);
     expect(result.state.turn).toBe(COLORS.white);
+    expect(result.state.history.at(-1)).toMatchObject({
+      type: "skill",
+      effectType: "flip-stone",
+      id: pointId(4, 4)
+    });
   });
 
   it("uses configured flip-stone skill without consuming a free turn", () => {
@@ -270,6 +301,81 @@ describe("SigrikaGo rules", () => {
     expect(result.state.moveNumber).toBe(0);
   });
 
+  it("uses configured random blast skill to remove stones in a random 3x3 area without consuming the turn", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    state.turn = COLORS.black;
+    forceStone(state, 4, 4, COLORS.black);
+    forceStone(state, 5, 4, COLORS.white);
+    forceStone(state, 6, 6, COLORS.black);
+    forceStone(state, 9, 9, COLORS.white);
+    const originalRandom = Math.random;
+    Math.random = () => 4 / 13;
+
+    try {
+      const result = useSkill(
+        state,
+        COLORS.black,
+        {
+          effectType: "random-blast",
+          name: "猪小仙爆炸",
+          uses: 1,
+          freeTurn: true,
+          targetRule: "any-point",
+          costType: "numeric",
+          costValue: "0",
+          params: { size: 3 }
+        },
+        pointId(0, 0)
+      );
+
+      expect(result.ok).toBe(true);
+      expect(getPoint(result.state, pointId(4, 4)).stone).toBeNull();
+      expect(getPoint(result.state, pointId(5, 4)).stone).toBeNull();
+      expect(getPoint(result.state, pointId(6, 6)).stone).toBe(COLORS.black);
+      expect(getPoint(result.state, pointId(9, 9)).stone).toBe(COLORS.white);
+      expect(getPoint(result.state, pointId(4, 4)).skillEffect).toBe("blast-marker");
+      expect(getPoint(result.state, pointId(4, 4)).skillEffectOwner).toBe(COLORS.black);
+      expect(result.state.history.at(-1).effectType).toBe("random-blast");
+      expect(result.state.history.at(-1).marked).toHaveLength(9);
+      expect(result.state.skillUses.black).toBe(0);
+      expect(result.state.skillCosts.black).toBe(0);
+      expect(result.state.turn).toBe(COLORS.black);
+      expect(result.state.moveNumber).toBe(0);
+      expect(result.state.history.at(-1).skill).toBe("猪小仙爆炸");
+      const moveResult = playMove(result.state, COLORS.black, pointId(4, 4));
+      expect(moveResult.ok).toBe(true);
+      expect(getPoint(moveResult.state, pointId(4, 4)).stone).toBe(COLORS.black);
+      expect(getPoint(moveResult.state, pointId(4, 4)).skillEffect).toBeNull();
+      expect(getPoint(moveResult.state, pointId(5, 4)).skillEffect).toBeNull();
+    } finally {
+      Math.random = originalRandom;
+    }
+  });
+
+  it("keeps random blast effects as a complete 3x3 area near board edges", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    const originalRandom = Math.random;
+    Math.random = () => 0;
+
+    try {
+      const result = randomBlast(state, COLORS.black, {
+        skill: {
+          params: { size: 3 },
+          costType: "numeric",
+          costValue: "0"
+        }
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result.state.history.at(-1).id).toBe(pointId(1, 1));
+      expect(result.state.history.at(-1).marked).toHaveLength(9);
+      expect(result.state.history.at(-1).marked).toContain(pointId(0, 0));
+      expect(result.state.history.at(-1).marked).toContain(pointId(2, 2));
+    } finally {
+      Math.random = originalRandom;
+    }
+  });
+
   it("places a hidden hand with Aemeath skill", () => {
     const state = createGameState([{ color: COLORS.black }]);
 
@@ -285,6 +391,37 @@ describe("SigrikaGo rules", () => {
     expect(result.state.skillUses.black).toBe(0);
     expect(result.state.skillCosts.black).toBe(0);
     expect(result.state.turn).toBe(COLORS.white);
+  });
+
+  it("creates a random test layout with 50 black and 50 white stones and no dead groups", () => {
+    const state = createGameState();
+
+    const result = randomLayout(state, { black: 50, white: 50 });
+
+    expect(result.ok).toBe(true);
+    expect(result.state.points.filter((point) => point.stone === COLORS.black)).toHaveLength(50);
+    expect(result.state.points.filter((point) => point.stone === COLORS.white)).toHaveLength(50);
+    for (const point of result.state.points.filter((candidate) => candidate.stone)) {
+      expect(result.state.points.some((candidate) => candidate.id === point.id)).toBe(true);
+      expect(result.state.points.find((candidate) => candidate.id === point.id)).toBe(point);
+    }
+    const visited = new Set();
+    for (const point of result.state.points.filter((candidate) => candidate.stone)) {
+      if (visited.has(point.id)) continue;
+      const group = collectTestGroup(result.state, point.id);
+      group.stones.forEach((stone) => visited.add(stone));
+      expect(group.liberties.size).toBeGreaterThan(0);
+    }
+  });
+
+  it("restores the current player's configured skill uses", () => {
+    const state = createGameState([{ color: COLORS.black, character: { skill: { effectType: "erase-point", uses: 2 } } }]);
+    state.skillUses.black = 0;
+
+    const result = restoreSkillUse(state, COLORS.black);
+
+    expect(result.ok).toBe(true);
+    expect(result.state.skillUses.black).toBe(2);
   });
 
   it("reveals a hidden hand when it participates in a capture", () => {

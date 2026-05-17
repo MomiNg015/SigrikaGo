@@ -50,6 +50,25 @@ export const FALLBACK_CHARACTERS = {
       description: "本轮落子为隐藏手。落下了电子幽灵般的一手，应该不会被发现吧...",
       effectTags: ["隐藏手"]
     }
+  },
+  baconbits: {
+    id: "baconbits",
+    name: "猪小仙",
+    palette: "#f59ab2",
+    portrait: "/assets/baconbits.png",
+    acquisitionMethod: "商城购买",
+    skill: {
+      id: "random-blast",
+      name: "猪小仙爆炸",
+      uses: 1,
+      cost: 0,
+      costType: "numeric",
+      costValue: "0",
+      systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
+      description: "随机移除棋盘上3*3区域的棋子。",
+      freeTurn: true,
+      params: { size: 3 }
+    }
   }
 };
 

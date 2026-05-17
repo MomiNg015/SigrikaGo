@@ -52,6 +52,7 @@ model Character {
   name           String
   portraitUrl    String
   portraitSource String          @default("url")
+  acquisitionMethod String       @default("")
   palette        String          @default("#5d7fe8")
   enabled        Boolean         @default(true)
   sortOrder      Int             @default(0)

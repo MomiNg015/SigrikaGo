@@ -6,9 +6,11 @@ describe("shared game record helpers", () => {
     expect(recordWinnerColor({ winnerColor: "white", resultText: "黑胜3.25子" })).toBe("white");
   });
 
-  it("falls back to legacy result text when structured winner color is missing", () => {
+  it("falls back to readable Chinese legacy result text when structured winner color is missing", () => {
     expect(recordWinnerColor({ resultText: "黑胜3.25子" })).toBe("black");
     expect(recordWinnerColor({ resultText: "白中盘胜" })).toBe("white");
+    expect(recordWinnerColor({ resultText: "白方认输" })).toBe("black");
+    expect(recordWinnerColor({ resultText: "黑方超时" })).toBe("white");
     expect(recordWinnerColor({ resultText: "和棋" })).toBeNull();
   });
 
@@ -24,9 +26,30 @@ describe("shared game record helpers", () => {
     );
 
     expect(stats).toEqual({
+      totalGames: 4,
       wins: 1,
       losses: 2,
-      rating: 1020
+      draws: 1,
+      rating: 980
+    });
+  });
+
+  it("does not count unrecognized legacy records as draws", () => {
+    const stats = derivePlayerRecordStats(
+      { id: "user-1", username: "alice" },
+      [
+        { blackUserId: "user-1", whiteUserId: "user-2", resultText: "白胜2.75子" },
+        { blackUserId: "user-1", whiteUserId: "user-2", resultText: "result pending" },
+        { blackUserId: "user-1", whiteUserId: "user-2", resultText: "和棋" }
+      ]
+    );
+
+    expect(stats).toEqual({
+      totalGames: 3,
+      wins: 0,
+      losses: 1,
+      draws: 1,
+      rating: 980
     });
   });
 

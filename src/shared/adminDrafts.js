@@ -8,6 +8,7 @@ export function emptyCharacterDraft() {
     name: "",
     portraitUrl: "",
     portraitSource: "url",
+    acquisitionMethod: "",
     palette: "#5d7fe8",
     enabled: true,
     sortOrder: 0,
@@ -35,6 +36,7 @@ export function buildCharacterDraft(character) {
     name: character.name ?? "",
     portraitUrl: character.portrait ?? "",
     portraitSource: character.portraitSource ?? "url",
+    acquisitionMethod: character.acquisitionMethod ?? "",
     palette: character.palette ?? "#5d7fe8",
     enabled: character.enabled ?? true,
     sortOrder: character.sortOrder ?? 0,
@@ -66,6 +68,7 @@ export function characterDraftToBody(draft) {
     name: draft.name.trim(),
     portraitUrl: draft.portraitUrl.trim(),
     portraitSource: draft.portraitSource,
+    acquisitionMethod: String(draft.acquisitionMethod ?? "").trim(),
     palette: draft.palette,
     enabled: Boolean(draft.enabled),
     sortOrder,
@@ -160,7 +163,9 @@ export function shopCategoryLabel(category) {
 }
 
 export function targetRuleForEffect(effectType) {
-  return effectType === "flip-stone" ? "stone" : "empty-point";
+  if (effectType === "flip-stone") return "stone";
+  if (effectType === "random-blast") return "any-point";
+  return "empty-point";
 }
 
 export function parseAdminInteger(value) {

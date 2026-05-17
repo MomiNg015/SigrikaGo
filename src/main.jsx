@@ -28,23 +28,28 @@ import {
   MonitorPlay,
   Music,
   PanelRight,
-  Pause,
-  Play,
   Plus,
+  SkipBack,
+  SkipForward,
   Send,
   Settings,
   ShoppingBag,
+  Shuffle,
   Sparkles,
+  StepBack,
+  StepForward,
   Swords,
   Trophy,
   UserRound,
   Volume2,
+  RotateCcw,
   Upload,
   X
 } from "lucide-react";
 import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
-import { BOARD_SIZE, COLORS, createGameState, passMove, playMove, useSkill } from "./shared/game.js";
+import { BOARD_SIZE, COLORS, createGameState, passMove, playMove, randomBlast, useSkill } from "./shared/game.js";
 import { derivePlayerRecordStats } from "./shared/gameRecords.js";
+import { canPreviewSkillTarget, lastMarkedAction } from "./shared/boardView.js";
 import { SKILL_MESSAGE_TIP } from "./shared/skillMessages.js";
 import "./styles.css";
 
@@ -86,11 +91,7 @@ function App() {
       .then((data) => {
         setUser(data.user);
         setView("home");
-        api("/api/characters", { token })
-          .then((data) => {
-            setCharacters(mergeCharacters(data.characters, data.disabledSlugs));
-          })
-          .catch(() => setCharacters(CHARACTERS));
+        refreshPublicCharacters();
       })
       .catch(() => {
         localStorage.removeItem("sigrika-token");
@@ -118,7 +119,15 @@ function App() {
       setView("home");
       setToast("房间已关闭。");
     });
-    nextSocket.on("error:toast", setToast);
+    nextSocket.on("error:toast", (message) => {
+      if (String(message).includes("房间不存在")) {
+        setRoom(null);
+        setReplayStep(null);
+        setPendingSkill(false);
+        setView("home");
+      }
+      setToast(message);
+    });
     setSocket(nextSocket);
     return () => nextSocket.close();
   }, [token, user]);
@@ -139,6 +148,15 @@ function App() {
     setToken(nextToken);
     setUser(nextUser);
     setView("home");
+  }
+
+  async function refreshPublicCharacters() {
+    try {
+      const data = await api("/api/characters", { token });
+      setCharacters(mergeCharacters(data.characters, data.disabledSlugs));
+    } catch {
+      setCharacters(CHARACTERS);
+    }
   }
 
   function logout() {
@@ -234,6 +252,8 @@ function App() {
           token={token}
           tab={adminTab}
           setTab={setAdminTab}
+          onCurrentUserChange={setUser}
+          onCharactersChanged={refreshPublicCharacters}
           onBack={() => setView("home")}
           onOpenReplay={openAdminReplay}
         />
@@ -331,7 +351,7 @@ function App() {
   );
 }
 
-function AdminConsole({ user, token, tab, setTab, onBack, onOpenReplay }) {
+function AdminConsole({ user, token, tab, setTab, onCurrentUserChange, onCharactersChanged, onBack, onOpenReplay }) {
   const tabs = ["overview", "users", "characters", "shop", "decorations", "audit"];
   const tabLabels = {
     overview: "概览",
@@ -458,16 +478,25 @@ function AdminConsole({ user, token, tab, setTab, onBack, onOpenReplay }) {
             {selectedUser && (
               <UserEditor
                 user={selectedUser}
+                currentUserId={user.id}
                 token={token}
                 onClose={() => setSelectedUser(null)}
                 onRefresh={refreshUsers}
+                onCurrentUserChange={onCurrentUserChange}
                 onOpenReplay={onOpenReplay}
               />
             )}
           </>
         )}
         {tab === "characters" && (
-          <AdminCharacters characters={adminCharacters} token={token} onSaved={refreshCharacters} />
+          <AdminCharacters
+            characters={adminCharacters}
+            token={token}
+            onSaved={async () => {
+              await refreshCharacters();
+              await onCharactersChanged();
+            }}
+          />
         )}
         {tab === "shop" && (
           <AdminShopItems items={shopItems} token={token} onSaved={refreshShopItems} onClearError={() => setAdminError("")} />
@@ -823,6 +852,9 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
             <option value="upload">上传</option>
           </select>
         </label>
+        <label><AdminFieldLabel text="获得途径" tip="展示在棋舍角色详情中的纯文本说明。" />
+          <input value={draft.acquisitionMethod} onChange={(event) => updateDraft("acquisitionMethod", event.target.value)} />
+        </label>
         <label><AdminFieldLabel text="主题色" tip="角色卡片和视觉提示使用的代表色。" />
           <input type="color" value={draft.palette} onChange={(event) => updateDraft("palette", event.target.value)} />
         </label>
@@ -853,6 +885,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
             <option value="erase-point">抹除交叉点</option>
             <option value="flip-stone">棋子反色</option>
             <option value="hidden-hand">隐藏手</option>
+            <option value="random-blast">随机爆炸</option>
           </select>
         </label>
         <label><AdminFieldLabel text="技能名" tip="展示给玩家看的技能名称。" />
@@ -871,6 +904,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
           <select value={draft.skill.targetRule} onChange={(event) => updateSkill("targetRule", event.target.value)}>
             <option value="empty-point">空交叉点</option>
             <option value="stone">棋子</option>
+            <option value="any-point">任意点</option>
           </select>
         </label>
         <label className="admin-checkbox">
@@ -930,7 +964,7 @@ function AdminAudit({ logs }) {
   );
 }
 
-function UserEditor({ user, token, onClose, onRefresh, onOpenReplay }) {
+function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentUserChange, onOpenReplay }) {
   const [draft, setDraft] = useState(() => buildUserDraft(user));
   const [banReason, setBanReason] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -956,7 +990,8 @@ function UserEditor({ user, token, onClose, onRefresh, onOpenReplay }) {
     setSaving(true);
     setActionError("");
     try {
-      await action();
+      const result = await action();
+      if (result?.user?.id === currentUserId) onCurrentUserChange(result.user);
       await onRefresh(user.id);
     } catch (error) {
       setActionError(error.message);
@@ -1040,7 +1075,7 @@ function UserEditor({ user, token, onClose, onRefresh, onOpenReplay }) {
     <aside className="admin-drawer">
       <button className="close-button" onClick={onClose}><X size={18} /></button>
       <h2>{user.username}</h2>
-      <p className="quiet-text">{user.status} · {user.wins}/{user.losses}</p>
+      <p className="quiet-text">状态 {user.status} · 战绩 {user.wins}胜/{user.losses}负</p>
       {actionError && <p className="form-error admin-action-error">{actionError}</p>}
       <form className="admin-form" onSubmit={saveUser}>
         <label><AdminFieldLabel text="权限" tip="控制该账号是普通玩家还是管理员。" />
@@ -1211,11 +1246,20 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [spectatorStep, setSpectatorStep] = useState(null);
+  const liveStepRef = useRef(room.game.history.length);
   const isReplay = replayStep !== null;
-  const displayRoom = isReplay ? replayRoomAt(room, replayStep) : room;
-  const me = displayRoom.players.find((p) => p.user.id === user.id);
-  const opponent = displayRoom.players.find((p) => p.user.id !== user.id) ?? displayRoom.players[1];
+  const liveStep = room.game.history.length;
+  const isLiveSpectator = room.role === "spectator" && !isReplay;
+  const effectiveSpectatorStep = spectatorStep ?? liveStep;
+  const boardStep = isReplay ? replayStep : isLiveSpectator ? effectiveSpectatorStep : null;
+  const boardGame = boardStep == null || boardStep >= liveStep ? room.game : replayGameAt(room, boardStep);
+  const displayRoom = isReplay ? replayRoomAt(room, replayStep) : isLiveSpectator ? { ...room, game: boardGame } : room;
   const role = isReplay ? "spectator" : displayRoom.role;
+  const blackPlayer = displayRoom.players.find((p) => p.color === COLORS.black);
+  const whitePlayer = displayRoom.players.find((p) => p.color === COLORS.white);
+  const me = role === "spectator" ? blackPlayer : displayRoom.players.find((p) => p.user.id === user.id);
+  const opponent = role === "spectator" ? whitePlayer : displayRoom.players.find((p) => p.user.id !== user.id) ?? displayRoom.players[1];
   const activePlayer = displayRoom.players.find((p) => p.color === displayRoom.game.turn);
   const scoring = displayRoom.game.scoring;
   const drawRequest = displayRoom.game.drawRequest;
@@ -1223,6 +1267,19 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   const voiceRef = useRef({});
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
   const skillPreview = displayRoom.game.pendingSkill;
+
+  useEffect(() => {
+    if (!isLiveSpectator) {
+      liveStepRef.current = liveStep;
+      return;
+    }
+    setSpectatorStep((current) => {
+      const wasFollowingLive = current == null || current >= liveStepRef.current;
+      liveStepRef.current = liveStep;
+      if (wasFollowingLive) return liveStep;
+      return Math.min(current, liveStep);
+    });
+  }, [isLiveSpectator, liveStep, room.code]);
 
   useEffect(() => {
     if (isReplay) return;
@@ -1348,19 +1405,13 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
               showCoords={showCoords}
               showMoves={showMoves}
               pendingSkill={pendingSkill}
+              previewPlayer={role === "player" ? me : null}
               onPoint={handlePoint}
               onScoringPoint={displayRoom.game.phase === "marking-dead" ? handleScoringPoint : null}
               onNeutral={(id) => onScoringAction({ type: "mark-neutral", pointId: id })}
             />
           </div>
           <div className="status-slot">
-            {isReplay && (
-              <ReplayBar
-                step={replayStep}
-                max={room.game.history.length}
-                onStep={setReplayStep}
-              />
-            )}
           </div>
           <ActionBar
             role={role}
@@ -1371,6 +1422,11 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             setPendingSkill={setPendingSkill}
             skillLocked={Boolean(skillPreview)}
             skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
+            replayStep={boardStep ?? liveStep}
+            replayMax={liveStep}
+            onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
+            onTestRandomLayout={() => onGameAction({ type: "test-random-layout" })}
+            onTestRestoreSkill={() => onGameAction({ type: "test-restore-skill" })}
             onPass={() => onGameAction({ type: "pass" })}
             onCountingRequest={onCountingRequest}
             onDrawRequest={onDrawRequest}
@@ -1410,8 +1466,8 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   );
 }
 
-function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPoint, onNeutral }) {
-  const lastMove = [...game.history].reverse().find((entry) => entry.type === "move");
+function Board({ game, showCoords, showMoves, pendingSkill, previewPlayer, onPoint, onScoringPoint, onNeutral }) {
+  const markedAction = lastMarkedAction(game.history);
   const moveNumbers = new Map(game.history.filter((entry) => entry.type === "move").map((entry) => [entry.id, entry.moveNumber]));
   const labels = Array.from({ length: BOARD_SIZE }, (_, index) => coordLetter(index));
   const rows = Array.from({ length: BOARD_SIZE }, (_, index) => BOARD_SIZE - index);
@@ -1445,10 +1501,11 @@ function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPo
             ? point.hiddenHand.exposed ? "hidden-hand exposed-hidden-hand" : "hidden-hand"
             : "";
           const skillEffectClass = point.skillEffect ?? "";
+          const previewClass = canPreviewPoint(game, previewPlayer, point, pendingSkill, Boolean(onScoringPoint)) ? "previewable" : "";
           return (
           <button
             key={point.id}
-            className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${isStarPoint(point.x, point.y) ? "star" : ""}`}
+            className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${previewClass} ${isStarPoint(point.x, point.y) ? "star" : ""}`}
             style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
             onPointerDown={(event) => {
               if (!onScoringPoint) return;
@@ -1465,7 +1522,7 @@ function Board({ game, showCoords, showMoves, pendingSkill, onPoint, onScoringPo
             }}
             title={coordLabel(point.x, point.y)}
           >
-            {point.stone && <span className="stone">{lastMove?.id === point.id && <i />}{showMoves && moveNumbers.has(point.id) && <b>{moveNumbers.get(point.id)}</b>}</span>}
+            {point.stone && <span className="stone">{markedAction?.id === point.id && <i />}{showMoves && moveNumbers.has(point.id) && <b>{moveNumbers.get(point.id)}</b>}</span>}
             {!point.valid && <span className="void" />}
             {emptyTerritoryOwner && <span className={`territory-mark ${emptyTerritoryOwner}`} aria-label={`${emptyTerritoryOwner} territory`} />}
             {deadOwner && <span className={`dead-mark ${deadOwner}`} aria-label={`${deadOwner} dead-stone mark`} />}
@@ -1494,7 +1551,10 @@ function PlayerInfo({ player, game, characters, align, isWinner = false, isActiv
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
       </div>
       <TimeBar time={player.time} />
-      <div className="captures">提子 {player.captures} · 代价 {skillCost}</div>
+      <div className="captures">
+        <span><strong>提子</strong>{player.captures}</span>
+        <span><strong>代价</strong>{skillCost}</span>
+      </div>
       <div className={`skill-chip ${skillUses <= 0 ? "spent" : ""} ${isSkillTargeting ? "targeting" : ""}`} title={character.skill.description}>
         <Sparkles size={16} />
         {character.skill.name} · {skillUses}
@@ -1517,13 +1577,23 @@ function TimeBar({ time }) {
   );
 }
 
-function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, onPass, onCountingRequest, onDrawRequest, onResign, onBack }) {
+function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, replayStep = 0, replayMax = 0, onReplayStep, onTestRandomLayout, onTestRestoreSkill, onPass, onCountingRequest, onDrawRequest, onResign, onBack }) {
   if (role === "spectator") {
     return (
       <nav className="action-bar">
-        <button><MonitorPlay size={18} />回放</button>
-        <button><Pause size={18} />暂停</button>
-        <button><Play size={18} />继续</button>
+        <button title="回到第0手" onClick={() => onReplayStep?.(0)} disabled={!onReplayStep || replayStep <= 0}>
+          <SkipBack size={20} />
+        </button>
+        <button title="上一手" onClick={() => onReplayStep?.(Math.max(0, replayStep - 1))} disabled={!onReplayStep || replayStep <= 0}>
+          <StepBack size={20} />
+        </button>
+        <span className="replay-step-indicator"><MonitorPlay size={16} />{replayStep}/{replayMax}</span>
+        <button title="下一手" onClick={() => onReplayStep?.(Math.min(replayMax, replayStep + 1))} disabled={!onReplayStep || replayStep >= replayMax}>
+          <StepForward size={20} />
+        </button>
+        <button title="跳到最新一手" onClick={() => onReplayStep?.(replayMax)} disabled={!onReplayStep || replayStep >= replayMax}>
+          <SkipForward size={20} />
+        </button>
         <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
       </nav>
     );
@@ -1541,8 +1611,26 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
       </button>
       <button onClick={onDrawRequest} disabled={phase !== "playing" || skillLocked}>申请和棋</button>
       <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} />认输</button>
+      <TestTools
+        disabled={phase !== "playing" || skillLocked || !me}
+        onRandomLayout={onTestRandomLayout}
+        onRestoreSkill={onTestRestoreSkill}
+      />
       <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
     </nav>
+  );
+}
+
+function TestTools({ disabled, onRandomLayout, onRestoreSkill }) {
+  return (
+    <span className="test-tools" aria-label="测试工具">
+      <button title="随机布局" onClick={onRandomLayout} disabled={disabled}>
+        <Shuffle size={18} />随机布局
+      </button>
+      <button title="恢复技能" onClick={onRestoreSkill} disabled={disabled}>
+        <RotateCcw size={18} />恢复技能
+      </button>
+    </span>
   );
 }
 
@@ -1668,6 +1756,7 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
   const [showReplays, setShowReplays] = useState(false);
   const stats = derivePlayerRecordStats(user, records);
   const owned = new Set(user.ownedCharacters ?? []);
+  const detailOwned = detailCharacter ? owned.has(detailCharacter.id) : false;
   const emptySlots = Array.from({ length: Math.max(0, 10 - characterListView.length) }, (_, index) => index);
 
   return (
@@ -1676,7 +1765,8 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <h2>棋舍</h2>
         <div className="profile-grid">
-          <Stat label="战绩" value={`${stats.wins}胜${stats.losses}负`} />
+          <Stat label="总对局" value={stats.totalGames} />
+          <Stat label="战绩" value={`${stats.wins}胜${stats.losses}负${stats.draws}和`} />
           <Stat label="积分" value={stats.rating} />
           <Stat label="段位" value={user.rank} />
           <Stat label="金币" value={user.coins} />
@@ -1684,7 +1774,7 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
         <div className="character-list">
           {characterListView.map((character) => (
             <div
-              className={`character-card portrait-card ${user.selectedCharacter === character.id ? "selected" : ""}`}
+              className={`character-card portrait-card ${user.selectedCharacter === character.id ? "selected" : ""} ${owned.has(character.id) ? "" : "unowned"}`}
               key={character.id}
               onClick={() => setDetailCharacter(character)}
               role="button"
@@ -1706,7 +1796,6 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
               </button>
               <img src={character.portrait} alt={character.name} />
               <strong>{character.name}</strong>
-              {!owned.has(character.id) && <span>未获得</span>}
             </div>
           ))}
           {emptySlots.map((slot) => (
@@ -1732,7 +1821,7 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
           </div>
         </section>
         {detailCharacter && (
-          <section className="nested-modal character-detail">
+          <section className={`nested-modal character-detail ${detailOwned ? "" : "unowned"}`}>
             <button className="close-button" onClick={() => setDetailCharacter(null)}><X size={18} /></button>
             <div className="character-detail-art">
               <img src={detailCharacter.portrait} alt={detailCharacter.name} />
@@ -1744,6 +1833,7 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
                 <span className="skill-cost-badge">代价 {formatSkillCost(detailCharacter.skill)}</span>
               </div>
               <p>{detailCharacter.skill.description}</p>
+              <p className="acquisition-method"><strong>获得途径</strong>{detailCharacter.acquisitionMethod || "初始可用"}</p>
             </div>
           </section>
         )}
@@ -2119,14 +2209,14 @@ function buildUserDraft(user) {
 }
 
 function canPreviewSkill(game, player, point) {
+  return canPreviewSkillTarget({ game, player, point, fallbackCharacters: CHARACTERS });
+}
+
+function canPreviewPoint(game, player, point, pendingSkill, isScoringMode) {
+  if (isScoringMode) return false;
   if (!player || game.phase !== "playing" || game.turn !== player.color) return false;
-  if ((game.skillUses[player.color] ?? 0) <= 0) return false;
-  if (!point?.valid) return false;
-  const skill = player.character?.skill ?? CHARACTERS[player.characterId]?.skill;
-  const effectType = skill?.effectType ?? skill?.id;
-  if (effectType === "erase-point") return !point.stone;
-  if (effectType === "flip-stone") return Boolean(point.stone);
-  return false;
+  if (pendingSkill) return canPreviewSkill(game, player, point);
+  return Boolean(point?.valid && !point.stone);
 }
 
 function findCharacter(characters, characterOrId) {
@@ -2136,6 +2226,7 @@ function findCharacter(characters, characterOrId) {
     return {
       ...fallback,
       ...characterOrId,
+      acquisitionMethod: characterOrId.acquisitionMethod ?? fallback.acquisitionMethod ?? "",
       skill: {
         ...fallback.skill,
         ...(characterOrId.skill ?? {})
@@ -2300,23 +2391,12 @@ function replayRoomAt(room, step) {
   if (step >= room.game.history.length) {
     return { ...room, role: "spectator" };
   }
-  let game = createGameState(room.game.players);
+  const game = replayGameAt(room, step);
   const replayPlayers = room.players.map((player) => ({
     ...player,
     captures: 0,
     time: player.time ?? { main: 0, byoYomi: 30, periodRemaining: 30, periods: 0 }
   }));
-
-  for (const entry of room.game.history.slice(0, step)) {
-    let result = null;
-    if (entry.type === "move") result = playMove(game, entry.color, entry.id);
-    if (entry.type === "pass") result = passMove(game, entry.color);
-    if (entry.type === "skill") {
-      const player = replayPlayers.find((candidate) => candidate.color === entry.color);
-      result = useSkill(game, entry.color, player?.character?.skill ?? player?.characterId, entry.id);
-    }
-    if (result?.ok) game = result.state;
-  }
 
   for (const player of replayPlayers) {
     player.captures = game.captures[player.color] ?? 0;
@@ -2329,6 +2409,31 @@ function replayRoomAt(room, step) {
     game,
     chat: room.chat.filter((message) => message.moveNumber <= game.moveNumber)
   };
+}
+
+function replayGameAt(room, step) {
+  let game = createGameState(room.game.players);
+  for (const entry of room.game.history.slice(0, step)) {
+    let result = null;
+    if (entry.type === "move") result = playMove(game, entry.color, entry.id);
+    if (entry.type === "pass") result = passMove(game, entry.color);
+    if (entry.type === "skill") {
+      const player = room.players.find((candidate) => candidate.color === entry.color);
+      const skill = player?.character?.skill ?? player?.characterId;
+      if (entry.effectType === "random-blast") {
+        result = randomBlast(game, entry.color, {
+          skill,
+          skillName: entry.skill,
+          consumesTurn: false,
+          centerId: entry.id
+        });
+      } else {
+        result = useSkill(game, entry.color, skill, entry.id);
+      }
+    }
+    if (result?.ok) game = result.state;
+  }
+  return game;
 }
 
 function isStarPoint(x, y) {

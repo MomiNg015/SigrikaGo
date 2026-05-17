@@ -35,5 +35,6 @@ describe("publicUser", () => {
       ownedItems: [],
       ownedDecorations: []
     });
+    expect(publicUser(user).ownedCharacters).not.toContain("baconbits");
   });
 });

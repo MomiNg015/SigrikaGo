@@ -51,12 +51,41 @@ describe("character admin helpers", () => {
       name: "Danea",
       portraitUrl: "/uploads/characters/danea.png",
       portraitSource: "upload",
+      acquisitionMethod: "商城购买",
       palette: "#6ab7ff",
       enabled: true,
       skill: null
     });
 
     expect(payload.portraitSource).toBe("upload");
+    expect(payload.acquisitionMethod).toBe("商城购买");
+  });
+
+  it("omits disabled skills from public character payloads", () => {
+    const payload = toCharacterPayload({
+      id: "character-db-1",
+      slug: "danea",
+      name: "Danea",
+      portraitUrl: "/uploads/characters/danea.png",
+      portraitSource: "upload",
+      palette: "#6ab7ff",
+      enabled: true,
+      skill: {
+        id: "skill-1",
+        effectType: "flip-stone",
+        name: "Moon Flip",
+        uses: 1,
+        description: "Flip one stone.",
+        freeTurn: false,
+        targetRule: "stone",
+        paramsJson: "{}",
+        costType: "numeric",
+        costValue: "1",
+        enabled: false
+      }
+    });
+
+    expect(payload.skill).toBeNull();
   });
 
   it("accepts a valid erase-point skill targeting an empty point", () => {
@@ -68,6 +97,29 @@ describe("character admin helpers", () => {
     expect(result.value.skill.costType).toBe("numeric");
     expect(result.value.skill.costValue).toBe("0");
     expect(result.value.skill.systemMessage).toContain("{player}");
+  });
+
+  it("accepts random blast skills targeting any point", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      acquisitionMethod: "商城购买",
+      skill: {
+        effectType: "random-blast",
+        name: "猪小仙爆炸",
+        description: "随机移除棋盘上3*3区域的棋子。",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "any-point",
+        paramsJson: "{\"size\":3}",
+        costType: "numeric",
+        costValue: "0"
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.acquisitionMethod).toBe("商城购买");
+    expect(result.value.skill.effectType).toBe("random-blast");
+    expect(result.value.skill.targetRule).toBe("any-point");
   });
 
   it("uses the shared default system message when no custom message is provided", () => {

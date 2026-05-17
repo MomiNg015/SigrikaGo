@@ -1,6 +1,20 @@
 import { publicUser } from "./db.js";
 
 const SHOP_CATEGORIES = new Set(["character", "decoration"]);
+const BUILTIN_SHOP_ITEMS = [
+  {
+    name: "猪小仙",
+    category: "character",
+    targetId: "baconbits",
+    priceCoins: 9999,
+    discountPercent: 0,
+    purchasable: true,
+    enabled: true,
+    sortOrder: 100,
+    description: "获得角色猪小仙。",
+    imageUrl: "/assets/baconbits.png"
+  }
+];
 
 export function finalShopPrice(item) {
   const discount = Math.max(0, Math.min(100, Number(item.discountPercent ?? 0)));
@@ -92,6 +106,25 @@ export async function listShopItems(prisma) {
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
   });
   return { items: items.map(toShopItemPayload) };
+}
+
+export async function seedBuiltinShopItems(prisma) {
+  for (const item of BUILTIN_SHOP_ITEMS) {
+    const existing = await prisma.shopItem.findFirst({
+      where: {
+        category: item.category,
+        targetId: item.targetId
+      }
+    });
+    if (existing) {
+      await prisma.shopItem.update({
+        where: { id: existing.id },
+        data: item
+      });
+      continue;
+    }
+    await prisma.shopItem.create({ data: item });
+  }
 }
 
 export async function purchaseShopItem({ prisma, userId, itemId }) {

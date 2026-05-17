@@ -24,12 +24,15 @@ describe("admin draft helpers", () => {
       dbId: "character-1",
       name: "Danea",
       portrait: "/assets/danea.png",
+      acquisitionMethod: "商城购买",
       skill: { effectType: "flip-stone", params: { radius: 1 } }
     });
 
     expect(draft.slug).toBe("danea");
+    expect(draft.acquisitionMethod).toBe("商城购买");
     expect(draft.skill.targetRule).toBe("stone");
     expect(draft.skill.paramsJson).toBe("{\"radius\":1}");
+    expect(targetRuleForEffect("random-blast")).toBe("any-point");
   });
 
   it("serializes valid character drafts and rejects invalid numeric fields", () => {
@@ -38,6 +41,7 @@ describe("admin draft helpers", () => {
       slug: "new-character",
       name: "New Character",
       portraitUrl: "/assets/new.png",
+      acquisitionMethod: "商城购买",
       sortOrder: "2",
       skill: {
         ...emptyCharacterDraft().skill,
@@ -49,6 +53,7 @@ describe("admin draft helpers", () => {
     };
 
     expect(characterDraftToBody(draft).skill.costValue).toBe("3");
+    expect(characterDraftToBody(draft).acquisitionMethod).toBe("商城购买");
     expect(characterDraftToBody({ ...draft, skill: { ...draft.skill, uses: "10" } })).toBeNull();
     expect(characterDraftToBody({ ...draft, skill: { ...draft.skill, costValue: "three" } })).toBeNull();
   });

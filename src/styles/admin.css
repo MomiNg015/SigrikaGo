@@ -1,0 +1,474 @@
+/* Admin console */
+
+.admin-screen {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.admin-sidebar,
+.admin-main {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
+}
+
+.admin-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 16px;
+}
+
+.admin-sidebar strong {
+  margin-bottom: 8px;
+  color: #2d2430;
+}
+
+.admin-sidebar button {
+  min-height: 42px;
+  border: 1px solid #dfd0e5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4f3d55;
+  text-align: left;
+  padding: 10px 12px;
+}
+
+.admin-sidebar button.active {
+  background: #eef4ff;
+  border-color: #9eb2ee;
+  color: #314676;
+  font-weight: 800;
+}
+
+.admin-main {
+  min-height: calc(100dvh - 48px);
+  padding: 18px;
+}
+
+.admin-main header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(128, 102, 142, 0.16);
+}
+
+.admin-main header span {
+  color: #7d6a82;
+}
+
+.admin-main header strong {
+  font-size: 22px;
+  color: #2d2430;
+}
+
+.admin-error {
+  margin: 14px 0 0;
+}
+
+.admin-action-error {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff1f4;
+  border: 1px solid #f0b6c1;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.admin-management-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.4fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.admin-table-wrap {
+  margin-top: 16px;
+  overflow-x: auto;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #f0e6f2;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.admin-table th {
+  background: #f8f1fa;
+  color: #5b4860;
+  font-size: 14px;
+}
+
+.admin-table td {
+  color: #35283a;
+}
+
+.admin-table tbody tr {
+  cursor: pointer;
+}
+
+.admin-table tbody tr:hover {
+  background: #f7fbff;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-drawer {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  bottom: 24px;
+  z-index: 12;
+  width: min(420px, calc(100vw - 32px));
+  overflow: auto;
+  padding: 22px;
+  background: #fffafd;
+  border: 1px solid rgba(128, 102, 142, 0.18);
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(58, 39, 70, 0.2);
+}
+
+.admin-drawer h2 {
+  margin-right: 44px;
+  margin-bottom: 6px;
+}
+
+.admin-form,
+.admin-danger-zone {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-form {
+  margin-top: 18px;
+}
+
+.admin-danger-zone {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #eaddea;
+}
+
+.admin-replay-zone {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #eaddea;
+  display: grid;
+  gap: 10px;
+}
+
+.admin-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin-field-label {
+  color: #6b596d;
+  font-weight: 800;
+  cursor: help;
+}
+
+.admin-replay-list {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-replay-item {
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #fff;
+  color: #2d2430;
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+  text-align: left;
+}
+
+.admin-replay-item span {
+  color: #7d6a82;
+  font-size: 13px;
+}
+
+.admin-form label,
+.admin-danger-zone label {
+  display: grid;
+  gap: 6px;
+  color: #6b596d;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-danger-zone input {
+  width: 100%;
+  border: 1px solid #ddcfe2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #2d2430;
+  outline: none;
+}
+
+.admin-form input:focus,
+.admin-form select:focus,
+.admin-danger-zone input:focus {
+  border-color: #9eb2ee;
+  box-shadow: 0 0 0 3px rgba(93, 127, 232, 0.14);
+}
+
+.admin-drawer .secondary-action,
+.admin-drawer .danger-action,
+.admin-drawer .primary-action {
+  min-height: 42px;
+}
+
+.admin-character-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+  align-items: start;
+}
+
+.admin-character-list,
+.admin-character-editor,
+.admin-empty-state {
+  min-width: 0;
+}
+
+.admin-add-button {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: #5d7fe8;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.admin-character-cards {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.admin-character-card {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #fff;
+  color: #2d2430;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  text-align: left;
+}
+
+.admin-character-card.selected {
+  border-color: #5d7fe8;
+  box-shadow: 0 0 0 3px rgba(93, 127, 232, 0.14);
+}
+
+.admin-character-card img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+}
+
+.admin-character-card span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.admin-character-card strong,
+.admin-character-card small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-character-card small {
+  color: #7d6a82;
+}
+
+.admin-character-card em {
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: #eef4ff;
+  color: #405077;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-character-editor {
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #fff;
+  padding: 16px;
+}
+
+.admin-empty-state {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.admin-character-form {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-form-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-form-heading h2,
+.admin-character-form h3 {
+  margin: 0;
+}
+
+.admin-character-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-character-form label {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+  color: #6b596d;
+}
+
+.admin-character-form input,
+.admin-character-form select,
+.admin-character-form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #ddcfe2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #2d2430;
+  outline: none;
+}
+
+.admin-character-form textarea {
+  min-height: 94px;
+  resize: vertical;
+}
+
+.admin-character-form input:focus,
+.admin-character-form select:focus,
+.admin-character-form textarea:focus {
+  border-color: #9eb2ee;
+  box-shadow: 0 0 0 3px rgba(93, 127, 232, 0.14);
+}
+
+.admin-character-form input[type="color"] {
+  min-height: 42px;
+  padding: 4px;
+}
+
+.admin-checkbox {
+  align-content: end;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.admin-checkbox input {
+  width: 18px;
+  height: 18px;
+}
+
+.wide-field {
+  grid-column: 1 / -1;
+}
+
+.admin-upload-field span {
+  min-height: 42px;
+  border: 1px solid #dfd0e5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4f3d55;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  font-weight: 800;
+}
+
+.admin-upload-field input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.admin-portrait-preview {
+  min-height: 124px;
+  border: 1px dashed #d9c9df;
+  border-radius: 8px;
+  background: #fbf7fd;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+
+.admin-portrait-preview img {
+  max-width: 220px;
+  width: 100%;
+  height: 130px;
+  object-fit: contain;
+}
+
+.audit-table-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.audit-table {
+  min-width: 680px;
+}

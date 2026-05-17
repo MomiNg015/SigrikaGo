@@ -4,7 +4,8 @@ import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 const EFFECT_TARGET_RULES = {
   "erase-point": "empty-point",
   "flip-stone": "stone",
-  "hidden-hand": "empty-point"
+  "hidden-hand": "empty-point",
+  "random-blast": "any-point"
 };
 const COST_TYPES = new Set(["numeric", "special"]);
 
@@ -21,6 +22,7 @@ export function validateCharacterInput(input = {}) {
   const name = String(input.name ?? "").trim();
   const portraitUrl = String(input.portraitUrl ?? input.portrait ?? "").trim();
   const portraitSource = String(input.portraitSource ?? "url").trim();
+  const acquisitionMethod = String(input.acquisitionMethod ?? "").trim();
   const palette = String(input.palette ?? "#5d7fe8").trim();
   const effectType = String(skillInput.effectType ?? "").trim();
   const skillName = String(skillInput.name ?? "").trim();
@@ -48,7 +50,7 @@ export function validateCharacterInput(input = {}) {
     errors.push("portraitSource must be url or upload");
   }
   if (!Object.hasOwn(EFFECT_TARGET_RULES, effectType)) {
-    errors.push("effectType must be erase-point, flip-stone, or hidden-hand");
+    errors.push("effectType must be erase-point, flip-stone, hidden-hand, or random-blast");
   }
   if (EFFECT_TARGET_RULES[effectType] && targetRule !== EFFECT_TARGET_RULES[effectType]) {
     errors.push("目标规则与技能类型不匹配");
@@ -84,6 +86,7 @@ export function validateCharacterInput(input = {}) {
       name,
       portraitUrl,
       portraitSource,
+      acquisitionMethod,
       palette,
       enabled,
       sortOrder,
@@ -105,7 +108,7 @@ export function validateCharacterInput(input = {}) {
 }
 
 export function toCharacterPayload(record) {
-  const skill = record.skill
+  const skill = record.skill && record.skill.enabled !== false
     ? {
         id: record.skill.id,
         effectType: record.skill.effectType,
@@ -129,6 +132,7 @@ export function toCharacterPayload(record) {
     palette: record.palette,
     portrait: record.portraitUrl,
     portraitSource: record.portraitSource,
+    acquisitionMethod: record.acquisitionMethod ?? "",
     enabled: record.enabled,
     skill
   };
@@ -139,6 +143,7 @@ export async function seedCharacters(prisma) {
   for (const [sortOrder, character] of entries.entries()) {
     const existing = await prisma.character.findUnique({ where: { slug: character.id }, include: { skill: true } });
     if (existing) {
+      await syncBuiltinCharacterFields(prisma, existing, character, sortOrder);
       await syncBuiltinSkillCost(prisma, existing, character);
       continue;
     }
@@ -148,6 +153,7 @@ export async function seedCharacters(prisma) {
         slug: character.id,
         name: character.name,
         portraitUrl: character.portrait,
+        acquisitionMethod: character.acquisitionMethod ?? "",
         palette: character.palette,
         enabled: true,
         sortOrder,
@@ -159,7 +165,7 @@ export async function seedCharacters(prisma) {
             uses: character.skill.uses ?? 1,
             freeTurn: Boolean(character.skill.freeTurn),
             targetRule: targetRuleForEffect(character.skill.id),
-            paramsJson: "{}",
+            paramsJson: JSON.stringify(character.skill.params ?? {}),
             costType: character.skill.costType ?? "numeric",
             costValue: String(character.skill.costValue ?? character.skill.cost ?? 0),
             systemMessage: character.skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE,
@@ -168,6 +174,14 @@ export async function seedCharacters(prisma) {
         }
       }
     });
+  }
+}
+
+async function syncBuiltinCharacterFields(prisma, existing, character, sortOrder) {
+  const data = {};
+  if (existing.sortOrder !== sortOrder) data.sortOrder = sortOrder;
+  if (Object.keys(data).length) {
+    await prisma.character.update({ where: { id: existing.id }, data });
   }
 }
 

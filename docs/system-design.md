@@ -36,6 +36,7 @@ SigrikaGo/
     styles.css                 # 全局样式
     shared/
       game.js                  # 13 路围棋规则、技能、数子、回放核心逻辑
+      boardView.js             # 棋盘展示辅助：最后落子/技能标记与技能预览判定
       characters.js            # 前端角色合并逻辑
       characterFallback.js     # 内置角色 fallback 配置
       *.test.js                # 共享逻辑测试
@@ -130,16 +131,22 @@ SigrikaGo/
 - 双方连续弃手进入数子申请/确认流程。
 - 数子流程：申请、接受/拒绝、标记死子、标记单官/中立点、确认死子、结果确认、拒绝后继续。
 - 和棋申请，10 秒超时拒绝。
-- 结束后保存棋谱，并更新胜者积分/胜局、败者负局。
+- 结束后保存棋谱，并更新战绩与积分：胜者 +20，败者 -20，和棋双方 0。
+- 开发测试按钮：`test-random-layout` 会清空棋盘并生成符合基本气规则的 50 黑 50 白随机布局；`test-restore-skill` 会恢复当前玩家技能次数。该入口用于本地测试，后续应便于统一移除。
 
 ### 技能与角色
 
-- 内置角色 fallback：`sigrika`、`danea`、`aemeath`。
+- 内置角色 fallback：`sigrika`、`danea`、`aemeath`、`baconbits`。
 - DB 角色会覆盖/合并内置角色。
+- 所有存在的角色都会出现在棋舍角色列表；未拥有角色以灰色状态展示，可查看信息但不可出战。
+- 角色信息包含 `acquisitionMethod`/“获得途径”纯文本，可由后台维护。
 - 技能类型：
   - `erase-point`：抹除空交叉点，点位不可落子且不参与数子。
   - `flip-stone`：反转目标棋子颜色。
   - `hidden-hand`：隐藏手，未暴露前对对方隐藏。
+  - `random-blast`：随机选择一个完整区域并移除其中棋子；猪小仙当前使用固定完整 3x3，中心点被限制在棋盘内部，避免边角裁剪。
+- 技能演出流程：服务端先进入 `skill-preview` 并广播 `pendingSkill`，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。
+- 无目标技能不显示落子/目标预览；猪小仙技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。
 - 技能可配置：
   - 使用次数 `uses`
   - 是否不消耗回合 `freeTurn`
@@ -157,12 +164,16 @@ SigrikaGo/
 - 用户可看自己的最近 30 条棋谱。
 - 管理员可查看任意用户棋谱与任意棋谱详情。
 - 前端回放通过 `replayRoomAt` 基于历史步骤重放共享规则逻辑。
+- 观战者进入房间后默认使用黑方对局视角，包括双方信息区位置；下方操作栏切换为图标式回放控制。
+- 观战回放只改变棋盘内容，不改变实时信息区内容（计时、读秒、提子、代价等保持实际对局进程）。
+- 观战者停在最新手时会自动跟随实时进程；如果手动回退到旧手，则新进程不会强制跳回最新。
 
 ### 商城与装饰
 
 - 商品支持 `character` 与 `decoration` 两类。
 - 商品有原价、折扣、是否可购买、是否展示、排序、描述、图片。
 - 购买会扣除用户金币，并写入 `ownedCharacters` 或 `ownedDecorations`。
+- 内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。
 - 装饰数据模型和后台管理已实现；玩家端装饰实际使用方式待确认。
 
 ### 排行榜
@@ -171,7 +182,7 @@ SigrikaGo/
 - API 为 `GET /api/leaderboard`。
 - 仅展示至少完成过一盘对局的用户。
 - 按 `rating` 降序排序。
-- 从棋谱统计总对局数、胜局数、负局数。
+- 从棋谱统计总对局数、胜局数、负局数、和棋数。
 - “常用角色”按棋谱中该用户使用次数最多的角色计算。
 
 ### 后台管理
@@ -234,6 +245,7 @@ SigrikaGo/
 - `portraitUrl`: 立绘 URL 或静态路径。
 - `portraitSource`: `url` 或 `upload`。
 - `palette`: 代表色。
+- `acquisitionMethod`: 获得途径纯文本，显示在棋舍角色详情中。
 - `enabled`: 是否启用。
 - `sortOrder`: 排序。
 - `skill`: 一对一 `CharacterSkill`。
@@ -245,12 +257,12 @@ SigrikaGo/
 
 - `id`: 主键 cuid。
 - `characterId`: 关联 `Character.id`，唯一。
-- `effectType`: 技能实际效果类型，当前支持 `erase-point`、`flip-stone`、`hidden-hand`。
+- `effectType`: 技能实际效果类型，当前支持 `erase-point`、`flip-stone`、`hidden-hand`、`random-blast`。
 - `name`: 技能名。
 - `description`: 技能描述。
 - `uses`: 每局使用次数。
 - `freeTurn`: 是否不消耗回合。
-- `targetRule`: 目标规则，当前校验为 `empty-point` 或 `stone`。
+- `targetRule`: 目标规则，当前校验为 `empty-point`、`stone` 或 `any-point`。
 - `paramsJson`: JSON 字符串，当前作为扩展参数保留。
 - `costType`: `numeric` 或 `special`。
 - `costValue`: 代价值；`numeric` 会参与数子扣分，`special` 当前仅展示。
@@ -348,7 +360,7 @@ SigrikaGo/
 
 - `GET /api/me`
   - 登录用户信息。
-  - 会基于棋谱重新计算展示用 `wins`、`losses`、`rating = 1000 + wins * 20`。
+  - 会返回公开用户字段；当前代码中仍存在基于棋谱重新计算展示用战绩/积分的逻辑，需与持久化 `User.rating` 的胜 +20、负 -20、和棋 0 规则保持一致。
 
 - `POST /api/me/character`
   - 修改当前出战角色。
@@ -395,6 +407,7 @@ SigrikaGo/
 
 - `PATCH /api/admin/users/:id`
   - 编辑用户 role、rank、rating、coins、ownedCharacters、selectedCharacter。
+  - 管理员保存后前端会同步当前登录用户信息，避免后台金币/角色等资产更新后棋舍和商城仍显示旧数据。
 
 - `POST /api/admin/users/:id/ban`
   - 封禁用户。
@@ -466,6 +479,7 @@ SigrikaGo/
 
 - `game:action`
   - 对局动作：`move`、`pass`、`resign`、`skill`。
+  - 本地测试动作：`test-random-layout`、`test-restore-skill`。这两个动作当前走同一 Socket 入口，但命名集中为 `test-*`，便于后续移除。
 
 - `counting:request`
   - 申请数子。
@@ -550,6 +564,7 @@ SigrikaGo/
 - `ChatBox`: 聊天面板。
 - `SkillBanner`: 技能演出浮层。
 - `ResultModal`: 对局结果弹窗。
+- `TestTools`: 对局测试按钮组，当前包含随机布局和恢复技能，集中封装以便未来下线。
 
 ### 前端通用函数
 
@@ -560,7 +575,8 @@ SigrikaGo/
 - `derivePlayerRecordStats` / `recordWinnerColor`: 位于 `src/shared/gameRecords.js`，前后端共用棋谱胜负与战绩推导逻辑，优先基于 `winnerColor` 结构化字段，旧记录回退到 `resultText` 文本前缀。
 - `buildCharacterDraft` / `characterDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台角色表单数据转换。
 - `validateShopItemDraft` / `decorationDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台商城/装饰表单校验。
-- `replayRoomAt`: 用历史记录重放房间状态。
+- `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定。
+- `replayRoomAt`: 用历史记录重放房间状态；观战实时回放另由 `replayGameAt` 只派生棋盘进程。
 - 音频相关：`loadAudioSettings`、`playStoneSound`、`playCountdownBeep`、`speakText`。
 
 ### 后端通用逻辑
@@ -571,6 +587,7 @@ SigrikaGo/
 - `toCharacterPayload`: 角色公开 payload。
 - `validateShopItemInput` / `validateDecorationInput`: 商城与装饰校验。
 - `buildLeaderboard`: 排行榜统计。
+- `ratingDeltaForResult`: 根据 `winnerColor` 计算玩家积分变化；胜方 +20、负方 -20、和棋 0。
 - `safeUploadFilename`: 上传文件名清洗。
 - `writeAudit`: 后台审计日志写入。
 - `DEFAULT_SKILL_SYSTEM_MESSAGE` / `SKILL_MESSAGE_TOKENS`: 前后端共用的技能系统消息默认模板与占位符列表。
@@ -624,6 +641,7 @@ SigrikaGo/
 - 实时房间在内存中：
   - 服务重启会丢失未结束房间。
   - 不支持多进程/多实例横向扩展。
+  - 技能演出依赖 `setTimeout` 延迟落子/变更效果；进程重启或未来多实例部署时需要额外的状态恢复/调度设计。
 
 - 胜负判断已开始使用 `winnerColor` 结构化字段，但仍需要保留旧 `resultText` 回退逻辑以兼容历史棋谱。后续应考虑补迁移历史数据。
 
@@ -635,11 +653,20 @@ SigrikaGo/
 
 - 商城后台新增/修改时会校验 `targetId` 对应角色或装饰存在；数据库层仍没有外键约束，购买时仍依赖字符串拥有列表。
 
+- 当前用户资产与战绩存在多处来源：
+  - `User.rating` 会被对局结果和后台编辑直接更新。
+  - 棋舍/排行榜部分统计从 `GameRecord` 派生。
+  - `/api/me` 仍有基于棋谱重算展示字段的逻辑，需要与“负者 -20、和棋 0”的新积分规则继续核对，避免持久化积分和展示积分分叉。
+
 - 前端 `src/main.jsx` 仍然过大，包含所有页面组件、API helper、回放、音频等；后台表单草稿转换和棋谱统计逻辑已先拆到 `src/shared/adminDrafts.js`、`src/shared/gameRecords.js`。
 
 - 全局样式集中在 `src/styles.css`，规模较大，组件样式边界不清。
 
-- 技能扩展当前由 `effectType` 分支实现，`paramsJson` 已保留但核心规则尚未通用化。
+- 技能扩展当前由 `effectType` 分支实现，`paramsJson` 已保留但核心规则尚未通用化；`random-blast` 的完整 3x3、演出延迟、回放重放、棋盘高亮清理等逻辑分散在共享规则、服务端房间和前端棋盘中。
+
+- 观战回放目前在前端由实时房间快照和历史重放派生，信息区保持实时、棋盘可回退；该“双状态”模型需要更多自动化测试覆盖，避免未来房间字段变更时出现棋盘/信息区不同步。
+
+- 测试用对局按钮虽然已集中在 `TestTools` 和 `test-*` action，但当前没有环境开关或权限限制；如果进入生产构建，需要在发布前移除或加显式开发模式保护。
 
 - 后台审计已覆盖用户、角色、装饰、商城商品的主要增改/禁用操作；后续可继续细化到登录、购买、上传等事件。
 
@@ -653,6 +680,8 @@ SigrikaGo/
 - 上传文件只按 MIME 类型和扩展生成文件名，未看到图片内容解码校验，待确认是否足够。
 
 - 当前测试覆盖较多规则和后台 helper，但前端交互没有专门的自动化测试。
+
+- `docs/system-design.html` 是旧的生成产物，当前更新只维护 Markdown 源文件；若该 HTML 仍作为交付文档使用，需要建立可重复生成流程或从版本管理中移除生成物。
 
 ## 11. 后续扩展建议
 
@@ -694,6 +723,11 @@ SigrikaGo/
   - 将技能效果从硬编码分支迁移到 registry。
   - 明确定义 `paramsJson` schema。
   - 将系统消息占位符列表集中维护并在后台显示。
+  - 将技能目标规则、预览规则、演出时序、回放重放参数纳入同一个技能契约，减少前后端重复判断。
+
+- 测试工具治理：
+  - 为测试按钮增加开发模式开关，或在构建/部署流程中明确剔除。
+  - 服务端拒绝非开发环境的 `test-*` action。
 
 - 排行榜扩展：
   - 支持分页和赛季。

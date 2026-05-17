@@ -1,0 +1,153 @@
+/* Responsive overrides */
+
+@media (max-width: 900px) {
+  .home-grid,
+  .battle-layout,
+  .admin-screen {
+    grid-template-columns: 1fr;
+  }
+
+  .battle-layout {
+    display: grid;
+  }
+
+  .admin-main {
+    min-height: 420px;
+  }
+
+  .admin-character-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-management-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .player-info {
+    grid-template-columns: 86px 1fr;
+    align-items: center;
+  }
+
+  .player-info img {
+    height: 92px;
+  }
+
+  .player-info.opponent { order: 1; }
+  .board-column { order: 2; }
+  .room-side { order: 3; }
+
+  .battle-layout {
+    overflow: visible;
+  }
+
+  .status-slot.floating-status {
+    position: static;
+    width: 100%;
+  }
+
+  .board-wrap {
+    min-width: 0;
+    width: min(100%, var(--board-size));
+  }
+
+  .character-detail {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .auth-screen,
+  .home-screen,
+  .room-screen,
+  .admin-screen {
+    width: calc(100vw - 18px);
+    padding: 12px 0;
+  }
+
+  .topbar,
+  .room-header {
+    align-items: flex-start;
+  }
+
+  .profile-grid,
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .board-wrap {
+    min-width: 0;
+    width: 100%;
+    padding: 10px;
+    grid-template-columns: 22px 1fr 22px;
+    grid-template-rows: 22px 1fr 22px;
+  }
+
+  .action-bar {
+    justify-content: stretch;
+  }
+
+  .action-bar button {
+    flex: 1 1 42%;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-main {
+    padding: 14px;
+  }
+
+  .admin-drawer {
+    inset: 9px;
+    width: auto;
+  }
+
+  .admin-form-heading {
+    display: grid;
+  }
+
+  .admin-form-heading .inline-actions {
+    width: 100%;
+  }
+
+  .admin-form-heading .inline-actions button {
+    flex: 1 1 0;
+  }
+
+  .admin-character-editor {
+    padding: 12px;
+  }
+
+  .admin-character-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide-field {
+    grid-column: auto;
+  }
+
+  .skill-burst {
+    grid-template-columns: 100px 1fr;
+    min-height: 112px;
+    padding: 14px 18px;
+  }
+
+  .skill-burst img {
+    width: 96px;
+    height: 88px;
+  }
+
+  .volume-row {
+    grid-template-columns: 1fr;
+  }
+
+  .volume-row strong {
+    text-align: left;
+  }
+}
