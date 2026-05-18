@@ -24,6 +24,10 @@
   gap: clamp(8px, 1vw, 10px);
 }
 
+.profile-grid .stat:first-child {
+  text-align: left;
+}
+
 .stat {
   padding: clamp(10px, 1vw, 12px);
   border-radius: 8px;

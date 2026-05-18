@@ -7,6 +7,7 @@ export const COLORS = {
   white: "white"
 };
 export const GAME_PHASES = {
+  opening: "opening",
   playing: "playing",
   countingRequested: "counting-requested",
   markingDead: "marking-dead",
@@ -35,6 +36,7 @@ export function createGameState(players = []) {
     skillUses: Object.fromEntries(players.map((p) => [p.color, configuredSkillUses(p)])),
     skillCosts: { black: 0, white: 0 },
     skillCostNotes: [],
+    passives: createPassiveState(players),
     phase: GAME_PHASES.playing,
     scoring: null,
     suspendedHiddenHands: [],
@@ -94,8 +96,64 @@ export function cloneState(state) {
   return structuredClone(state);
 }
 
-export function playMove(state, color, id) {
-  return placeStone(state, color, id, { hidden: false });
+export function playMove(state, color, id, options = {}) {
+  return placeStone(state, color, id, { hidden: false, colorIllusion: options.colorIllusion });
+}
+
+export function activatePassiveSkill(state, color, skillOrCharacterId) {
+  if (![GAME_PHASES.playing, GAME_PHASES.skillPreview].includes(state.phase)) return fail("当前不能发动被动技能");
+  const skill = normalizeSkillConfig(skillOrCharacterId);
+  if (skill?.effectType !== "color-illusion-passive") return fail("不是可发动的被动技能");
+  const next = cloneState(state);
+  next.passives = next.passives ?? {};
+  const passive = next.passives[color]?.colorIllusion ?? {
+    active: false,
+    triggered: false,
+    probability: passiveProbability(skill)
+  };
+  if (passive.triggered) return fail("被动技能已经发动");
+  next.passives[color] = {
+    ...(next.passives[color] ?? {}),
+    colorIllusion: {
+      ...passive,
+      active: true,
+      triggered: true,
+      probability: passiveProbability(skill)
+    }
+  };
+  next.phase = GAME_PHASES.playing;
+  next.pendingSkill = null;
+  next.history.push({
+    type: "skill",
+    effectType: "color-illusion-passive",
+    skill: skill.name,
+    color,
+    moveNumber: next.moveNumber
+  });
+  return ok(next);
+}
+
+export function gameViewForColor(game, viewerColor) {
+  const view = cloneState(game);
+  const showColorIllusions = [GAME_PHASES.playing, GAME_PHASES.skillPreview, GAME_PHASES.drawRequested].includes(view.phase);
+  view.points = view.points.map((point) => {
+    let nextPoint = point;
+    if (nextPoint.hiddenHand && !nextPoint.hiddenHand.exposed && nextPoint.hiddenHand.owner !== viewerColor) {
+      nextPoint = {
+        ...nextPoint,
+        stone: null,
+        hiddenHand: null
+      };
+    }
+    if (showColorIllusions && nextPoint.colorIllusion && nextPoint.colorIllusion.owner !== viewerColor && nextPoint.stone) {
+      nextPoint = {
+        ...nextPoint,
+        stone: nextPoint.colorIllusion.visibleAs
+      };
+    }
+    return nextPoint;
+  });
+  return view;
 }
 
 export function randomLayout(state, counts = { black: 50, white: 50 }) {
@@ -149,7 +207,7 @@ export function restoreSkillUse(state, color) {
   return ok(next);
 }
 
-function placeStone(state, color, id, { hidden, skill = null }) {
+function placeStone(state, color, id, { hidden, skill = null, colorIllusion = undefined }) {
   if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能落子");
   if (state.turn !== color) return fail("还没有轮到你");
   const next = cloneState(state);
@@ -172,6 +230,7 @@ function placeStone(state, color, id, { hidden, skill = null }) {
       effect: "hidden-hand"
     };
   }
+  applyColorIllusion(next, color, point, colorIllusion);
 
   const removed = [];
   for (const neighbor of activeNeighbors(next, point)) {
@@ -197,12 +256,29 @@ function placeStone(state, color, id, { hidden, skill = null }) {
   next.moveNumber += 1;
   next.history.push(hidden
     ? { type: "skill", skill: "小爱出击", color, id, captures: removed, moveNumber: next.moveNumber }
-    : { type: "move", color, id, captures: removed, moveNumber: next.moveNumber });
+    : { type: "move", color, id, captures: removed, colorIllusion: point.colorIllusion ?? null, moveNumber: next.moveNumber });
   if (hidden) {
     next.skillUses[color] -= 1;
     applySkillCost(next, color, skill ?? "aemeath");
   }
   return ok(next, { notices });
+}
+
+function applyColorIllusion(state, color, point, override) {
+  if (override !== undefined) {
+    point.colorIllusion = override ? structuredClone(override) : null;
+    return;
+  }
+  const passive = state.passives?.[color]?.colorIllusion;
+  if (!passive?.active || Math.random() >= passive.probability) {
+    point.colorIllusion = null;
+    return;
+  }
+  point.colorIllusion = {
+    owner: color,
+    visibleAs: opponent(color),
+    effect: "color-illusion-passive"
+  };
 }
 
 export function passMove(state, color) {
@@ -295,6 +371,7 @@ function clearBoardStones(state) {
   for (const point of state.points) {
     point.stone = null;
     point.hiddenHand = null;
+    point.colorIllusion = null;
     if (point.skillEffect !== "erased-point") {
       point.skillEffect = null;
       point.skillEffectOwner = null;
@@ -328,8 +405,51 @@ function configuredSkillUses(player) {
   return Number.isInteger(skill?.uses) ? skill.uses : 1;
 }
 
+function createPassiveState(players = []) {
+  return Object.fromEntries(players
+    .map((player) => {
+      const skill = normalizeSkillConfig(player?.character?.skill ?? player?.skill ?? player?.characterId);
+      if (skill?.effectType !== "color-illusion-passive") return null;
+      return [player.color, {
+        colorIllusion: {
+          active: false,
+          triggered: false,
+          probability: passiveProbability(skill)
+        }
+      }];
+    })
+    .filter(Boolean));
+}
+
+function passiveProbability(skill) {
+  const value = Number(skill?.params?.probability ?? 0.8);
+  return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0.8;
+}
+
+function targetRuleForEffect(effectType) {
+  if (effectType === "flip-stone") return "stone";
+  if (effectType === "random-blast") return "any-point";
+  if (effectType === "color-illusion-passive") return "none";
+  return "empty-point";
+}
+
 export function normalizeSkillConfig(skillOrCharacterId) {
   if (skillOrCharacterId?.effectType) return skillOrCharacterId;
+  if (skillOrCharacterId?.id) {
+    const effectType = skillOrCharacterId.id;
+    return {
+      characterId: skillOrCharacterId.characterId ?? null,
+      effectType,
+      name: skillOrCharacterId.name,
+      uses: skillOrCharacterId.uses ?? (effectType === "color-illusion-passive" ? 0 : 1),
+      freeTurn: Boolean(skillOrCharacterId.freeTurn),
+      costType: skillOrCharacterId.costType ?? "numeric",
+      costValue: String(skillOrCharacterId.costValue ?? skillOrCharacterId.cost ?? 0),
+      systemMessage: skillOrCharacterId.systemMessage,
+      targetRule: targetRuleForEffect(effectType),
+      params: skillOrCharacterId.params ?? {}
+    };
+  }
   const fallback = CHARACTERS[skillOrCharacterId];
   if (fallback?.skill?.id === "erase-point") {
     return {
@@ -387,6 +507,20 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       params: fallback.skill.params ?? { size: 3 }
     };
   }
+  if (fallback?.skill?.id === "color-illusion-passive") {
+    return {
+      characterId: fallback.id,
+      effectType: "color-illusion-passive",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 0,
+      freeTurn: true,
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+      systemMessage: fallback.skill.systemMessage,
+      targetRule: "none",
+      params: fallback.skill.params ?? { probability: 0.8 }
+    };
+  }
   return null;
 }
 
@@ -423,6 +557,7 @@ export function flipStone(state, color, id, options = {}) {
   const point = getPoint(next, id);
   if (!point?.valid || !point.stone) return fail("必须指定棋盘上的棋子");
   point.stone = opponent(point.stone);
+  point.colorIllusion = null;
   point.skillEffect = "flipped-stone";
   next.skillUses[color] -= 1;
   applySkillCost(next, color, options.skill ?? "danea");
@@ -835,6 +970,7 @@ function clearStone(state, id) {
   if (!point) return;
   point.stone = null;
   point.hiddenHand = null;
+  point.colorIllusion = null;
 }
 
 function clearBlastMarkers(state, ownerColor) {

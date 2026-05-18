@@ -6,6 +6,7 @@ import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 import { toCharacterPayload, validateCharacterInput } from "./characters.js";
 import { publicUser } from "./db.js";
 import { toShopItemPayload, validateDecorationInput, validateShopItemInput } from "./shop.js";
+import { getPublicSiteSettings, updateSiteSettings } from "./siteSettings.js";
 
 const EDITABLE_USER_FIELDS = new Set([
   "role",
@@ -187,6 +188,18 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       take: 100
     });
     res.json({ auditLogs });
+  });
+
+  router.get("/site-settings", async (_req, res) => {
+    res.json({ settings: await getPublicSiteSettings(prisma) });
+  });
+
+  router.patch("/site-settings", async (req, res) => {
+    try {
+      res.json(await updateSiteSettings({ prisma, adminUser: req.user, body: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
   });
 
   router.get("/users", async (_req, res) => {

@@ -8,7 +8,9 @@ export function skillConfigForCharacter(character) {
     ? "stone"
     : fallback.skill.id === "random-blast"
       ? "any-point"
-      : "empty-point";
+      : fallback.skill.id === "color-illusion-passive"
+        ? "none"
+        : "empty-point";
   return {
     effectType: fallback.skill.id,
     name: fallback.skill.name,

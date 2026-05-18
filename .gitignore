@@ -7,5 +7,6 @@ prisma/dev.db
 dev-server.*.log
 .superpowers/
 .worktrees/
+.tmp/
 
 dev-client.*.log

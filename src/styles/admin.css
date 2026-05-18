@@ -86,6 +86,37 @@
   margin-top: 16px;
 }
 
+.admin-list-section {
+  margin-top: 16px;
+}
+
+.admin-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.admin-section-title-block {
+  display: grid;
+  gap: 3px;
+}
+
+.admin-section-title-block h2 {
+  margin: 0;
+  color: #2d2430;
+  font-size: 18px;
+}
+
+.admin-section-title-block span {
+  color: #7d6a82;
+  font-size: 13px;
+}
+
 .admin-management-grid {
   display: grid;
   grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.4fr);
@@ -105,6 +136,10 @@
   width: 100%;
   min-width: 760px;
   border-collapse: collapse;
+}
+
+.admin-table.compact {
+  min-width: 680px;
 }
 
 .admin-table th,
@@ -137,6 +172,50 @@
   border-bottom: 0;
 }
 
+.admin-table-empty {
+  color: #7d6a82;
+  text-align: center;
+  padding: 24px 12px;
+}
+
+.admin-row-action {
+  min-height: 32px;
+  border: 1px solid #d6e0ff;
+  border-radius: 8px;
+  background: #f7fbff;
+  color: #314676;
+  padding: 6px 10px;
+  font-weight: 800;
+}
+
+.admin-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: #f3eff5;
+  color: #5b4860;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-status-pill.green {
+  background: #ecf9f0;
+  color: #267044;
+}
+
+.admin-status-pill.red {
+  background: #fff1f4;
+  color: #a7354c;
+}
+
+.admin-status-pill.blue {
+  background: #eef4ff;
+  color: #314676;
+}
+
 .admin-drawer {
   position: fixed;
   top: 24px;
@@ -150,6 +229,25 @@
   border: 1px solid rgba(128, 102, 142, 0.18);
   border-radius: 8px;
   box-shadow: 0 24px 80px rgba(58, 39, 70, 0.2);
+}
+
+.admin-crud-drawer {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  bottom: 24px;
+  z-index: 12;
+  width: min(620px, calc(100vw - 32px));
+  overflow: auto;
+  padding: 22px;
+  background: #fffafd;
+  border: 1px solid rgba(128, 102, 142, 0.18);
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(58, 39, 70, 0.2);
+}
+
+.admin-crud-drawer .admin-character-form {
+  padding-right: 36px;
 }
 
 .admin-drawer h2 {
@@ -224,6 +322,7 @@
 
 .admin-form input,
 .admin-form select,
+.admin-form textarea,
 .admin-danger-zone input {
   width: 100%;
   border: 1px solid #ddcfe2;
@@ -236,9 +335,25 @@
 
 .admin-form input:focus,
 .admin-form select:focus,
+.admin-form textarea:focus,
 .admin-danger-zone input:focus {
   border-color: #9eb2ee;
   box-shadow: 0 0 0 3px rgba(93, 127, 232, 0.14);
+}
+
+.admin-form textarea {
+  resize: vertical;
+  min-height: 88px;
+  font: inherit;
+}
+
+.admin-settings-form {
+  max-width: 620px;
+}
+
+.admin-save-message {
+  color: #267044;
+  font-weight: 800;
 }
 
 .admin-drawer .secondary-action,

@@ -1,11 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { CHARACTERS } from "./characters.js";
 import {
   COLORS,
+  GAME_PHASES,
   createDrawResult,
   createGameState,
   createTimeoutResult,
   erasePoint,
+  flipStone,
   getPoint,
   markDeadGroup,
   passMove,
@@ -17,6 +19,8 @@ import {
   restoreSkillUse,
   resignGame,
   scoreGame,
+  activatePassiveSkill,
+  gameViewForColor,
   useSkill
 } from "./game.js";
 
@@ -189,6 +193,78 @@ describe("SigrikaGo rules", () => {
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(6, 6)).valid).toBe(false);
     expect(result.state.turn).toBe(COLORS.black);
+  });
+
+  it("activates Nabomo passive and disguises later stones only for the opponent view", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "nabomo", character: CHARACTERS.nabomo },
+      { color: COLORS.white, characterId: "sigrika", character: CHARACTERS.sigrika }
+    ]);
+
+    const passive = activatePassiveSkill(state, COLORS.black, CHARACTERS.nabomo.skill);
+    expect(passive.ok).toBe(true);
+    expect(passive.state.passives.black.colorIllusion.active).toBe(true);
+    expect(passive.state.history.at(-1)).toMatchObject({
+      type: "skill",
+      effectType: "color-illusion-passive",
+      color: COLORS.black
+    });
+
+    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.79);
+    const move = playMove(passive.state, COLORS.black, pointId(3, 3));
+    randomSpy.mockRestore();
+
+    expect(move.ok).toBe(true);
+    expect(getPoint(move.state, pointId(3, 3)).stone).toBe(COLORS.black);
+    expect(getPoint(gameViewForColor(move.state, COLORS.black), pointId(3, 3)).stone).toBe(COLORS.black);
+    expect(getPoint(gameViewForColor(move.state, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.white);
+    expect(move.state.history.at(-1).colorIllusion).toMatchObject({
+      owner: COLORS.black,
+      visibleAs: COLORS.white
+    });
+  });
+
+  it("reveals Nabomo disguised stones during counting and after the game ends", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "nabomo", character: CHARACTERS.nabomo },
+      { color: COLORS.white, characterId: "sigrika", character: CHARACTERS.sigrika }
+    ]);
+    const passive = activatePassiveSkill(state, COLORS.black, CHARACTERS.nabomo.skill).state;
+    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.1);
+    const move = playMove(passive, COLORS.black, pointId(3, 3)).state;
+    randomSpy.mockRestore();
+
+    expect(getPoint(gameViewForColor(move, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.white);
+
+    const counting = { ...move, phase: GAME_PHASES.markingDead };
+    expect(getPoint(gameViewForColor(counting, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.black);
+
+    const finished = { ...move, phase: GAME_PHASES.finished };
+    expect(getPoint(gameViewForColor(finished, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.black);
+  });
+
+  it("lets Danea flip the real stone and clear Nabomo disguise on the target", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "nabomo", character: CHARACTERS.nabomo },
+      { color: COLORS.white, characterId: "danea", character: CHARACTERS.danea }
+    ]);
+    const passive = activatePassiveSkill(state, COLORS.black, CHARACTERS.nabomo.skill).state;
+    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.1);
+    let game = playMove(passive, COLORS.black, pointId(3, 3)).state;
+    randomSpy.mockRestore();
+    game.turn = COLORS.white;
+
+    const result = flipStone(game, COLORS.white, pointId(3, 3), {
+      skill: CHARACTERS.danea.skill,
+      skillName: CHARACTERS.danea.skill.name,
+      consumesTurn: false
+    });
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(3, 3)).stone).toBe(COLORS.white);
+    expect(getPoint(result.state, pointId(3, 3)).colorIllusion).toBe(null);
+    expect(getPoint(gameViewForColor(result.state, COLORS.black), pointId(3, 3)).stone).toBe(COLORS.white);
+    expect(getPoint(gameViewForColor(result.state, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.white);
   });
 
   it("adds configured numeric skill costs when a dynamic skill is used", () => {

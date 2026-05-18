@@ -72,10 +72,40 @@
   100% { background-position: 0% 50%; }
 }
 
+.portrait-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
 .player-info img {
   width: 100%;
   height: var(--side-portrait);
   object-fit: contain;
+}
+
+.viewpoint-button {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(91, 112, 163, 0.28);
+  background: rgba(255, 255, 255, 0.9);
+  color: #5d6b91;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(56, 70, 112, 0.16);
+  z-index: 2;
+}
+
+.viewpoint-button.active {
+  color: #fff;
+  border-color: rgba(67, 120, 232, 0.72);
+  background: linear-gradient(135deg, #4378e8, #7a9dff);
+  box-shadow: 0 12px 28px rgba(67, 120, 232, 0.28);
 }
 
 .name-button {

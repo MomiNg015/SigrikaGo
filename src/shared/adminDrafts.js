@@ -165,6 +165,7 @@ export function shopCategoryLabel(category) {
 export function targetRuleForEffect(effectType) {
   if (effectType === "flip-stone") return "stone";
   if (effectType === "random-blast") return "any-point";
+  if (effectType === "color-illusion-passive") return "none";
   return "empty-point";
 }
 

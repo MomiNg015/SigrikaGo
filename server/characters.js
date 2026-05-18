@@ -5,7 +5,8 @@ const EFFECT_TARGET_RULES = {
   "erase-point": "empty-point",
   "flip-stone": "stone",
   "hidden-hand": "empty-point",
-  "random-blast": "any-point"
+  "random-blast": "any-point",
+  "color-illusion-passive": "none"
 };
 const COST_TYPES = new Set(["numeric", "special"]);
 
@@ -50,7 +51,7 @@ export function validateCharacterInput(input = {}) {
     errors.push("portraitSource must be url or upload");
   }
   if (!Object.hasOwn(EFFECT_TARGET_RULES, effectType)) {
-    errors.push("effectType must be erase-point, flip-stone, hidden-hand, or random-blast");
+    errors.push("effectType must be erase-point, flip-stone, hidden-hand, random-blast, or color-illusion-passive");
   }
   if (EFFECT_TARGET_RULES[effectType] && targetRule !== EFFECT_TARGET_RULES[effectType]) {
     errors.push("目标规则与技能类型不匹配");

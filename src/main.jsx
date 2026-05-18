@@ -1,20 +1,6 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { io } from "socket.io-client";
-import {
-  buildCharacterDraft,
-  buildDecorationDraft,
-  buildShopItemDraft,
-  characterDraftToBody,
-  decorationDraftToBody,
-  emptyCharacterDraft,
-  emptyDecorationDraft,
-  emptyShopItemDraft,
-  parseAdminInteger,
-  shopCategoryLabel,
-  targetRuleForEffect,
-  validateShopItemDraft
-} from "./shared/adminDrafts.js";
 import {
   DoorOpen,
   Eye,
@@ -28,7 +14,6 @@ import {
   MonitorPlay,
   Music,
   PanelRight,
-  Plus,
   SkipBack,
   SkipForward,
   Send,
@@ -43,24 +28,24 @@ import {
   UserRound,
   Volume2,
   RotateCcw,
-  Upload,
   X
 } from "lucide-react";
 import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
-import { BOARD_SIZE, COLORS, createGameState, passMove, playMove, randomBlast, useSkill } from "./shared/game.js";
+import { BOARD_SIZE, COLORS, GAME_PHASES, activatePassiveSkill, createGameState, gameViewForColor, passMove, playMove, randomBlast, useSkill } from "./shared/game.js";
 import { derivePlayerRecordStats } from "./shared/gameRecords.js";
 import { canPreviewSkillTarget, lastMarkedAction } from "./shared/boardView.js";
-import { SKILL_MESSAGE_TIP } from "./shared/skillMessages.js";
+import { boardSoundActionAtStep, latestBoardSoundAction } from "./shared/boardAudio.js";
+import { MATCH_SUCCESS_SOUND, latestSkillCharacterId, resolveBackgroundMusic, resolveResultSound, resolveSkillVoice } from "./shared/musicLibrary.js";
+import { nextTimeAnnouncement } from "./shared/timeAnnouncements.js";
+import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
+import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "./shared/systemVoices.js";
+import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playCountdownBeep, playEffectSound, playVoiceSound, speakText } from "./audio/playback.jsx";
+import AdminConsole from "./admin/AdminConsole.jsx";
+import { adminApi, api } from "./api/client.js";
 import "./styles.css";
 
-const API_BASE = "";
 const SOCKET_BASE = "http://localhost:3001";
-const DEFAULT_AUDIO_SETTINGS = {
-  master: 80,
-  bgm: 60,
-  sfx: 80,
-  voice: 80
-};
+const SHOW_TEST_TOOLS = import.meta.env.DEV;
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("sigrika-token") ?? "");
@@ -70,6 +55,7 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [toast, setToast] = useState("");
   const [matchStart, setMatchStart] = useState(null);
+  const [matchSuccess, setMatchSuccess] = useState(null);
   const [showShop, setShowShop] = useState(false);
   const [showHouse, setShowHouse] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
@@ -82,8 +68,29 @@ function App() {
   const [replayStep, setReplayStep] = useState(null);
   const [dismissedResultRoom, setDismissedResultRoom] = useState("");
   const [characters, setCharacters] = useState(CHARACTERS);
+  const [siteSettings, setSiteSettings] = useState(DEFAULT_SITE_SETTINGS);
   const [adminTab, setAdminTab] = useState("overview");
+  const matchSuccessRef = useRef(matchSuccess);
   const characterListView = Object.values(characters);
+  const resultModalOpen = room?.game.phase === "finished" && dismissedResultRoom !== room.code;
+  const backgroundMusic = resolveBackgroundMusic({
+    view,
+    skillPreview: room?.game?.pendingSkill,
+    latestSkillCharacterId: latestSkillCharacterId(room),
+    gamePhase: room?.game?.phase,
+    matchSuccess: Boolean(matchSuccess),
+    resultModalOpen,
+    selections: user?.musicSelections,
+    ownedMusicIds: user?.ownedMusicIds
+  });
+
+  useEffect(() => {
+    matchSuccessRef.current = matchSuccess;
+  }, [matchSuccess]);
+
+  useEffect(() => {
+    refreshSiteSettings();
+  }, []);
 
   useEffect(() => {
     if (!token) return;
@@ -95,7 +102,17 @@ function App() {
       })
       .catch(() => {
         localStorage.removeItem("sigrika-token");
+        socket?.close();
         setToken("");
+        setUser(null);
+        setRoom(null);
+        setMatchStart(null);
+        setMatchSuccess(null);
+        setShowShop(false);
+        setShowHouse(false);
+        setShowLeaderboard(false);
+        setShowWatch(false);
+        setView("login");
         setCharacters(CHARACTERS);
       });
   }, [token]);
@@ -105,12 +122,20 @@ function App() {
     const nextSocket = io(SOCKET_BASE, { auth: { token } });
     nextSocket.on("match:waiting", ({ startedAt }) => setMatchStart(startedAt));
     nextSocket.on("match:found", (roomView) => {
-      setRoom(roomView);
       setReplayStep(null);
       setMatchStart(null);
-      setView("room");
+      const transition = {
+        room: roomView,
+        startedAt: Date.now()
+      };
+      matchSuccessRef.current = transition;
+      setMatchSuccess(transition);
     });
     nextSocket.on("room:update", (roomView) => {
+      if (matchSuccessRef.current) {
+        setMatchSuccess((current) => current ? { ...current, room: roomView } : current);
+        return;
+      }
       setRoom(roomView);
       setView("room");
     });
@@ -124,6 +149,7 @@ function App() {
         setRoom(null);
         setReplayStep(null);
         setPendingSkill(false);
+        setMatchSuccess(null);
         setView("home");
       }
       setToast(message);
@@ -159,12 +185,22 @@ function App() {
     }
   }
 
+  async function refreshSiteSettings() {
+    try {
+      const data = await api("/api/site-settings");
+      setSiteSettings({ ...DEFAULT_SITE_SETTINGS, ...(data.settings ?? {}) });
+    } catch {
+      setSiteSettings(DEFAULT_SITE_SETTINGS);
+    }
+  }
+
   function logout() {
     localStorage.removeItem("sigrika-token");
     socket?.close();
     setToken("");
     setUser(null);
     setRoom(null);
+    setMatchSuccess(null);
     setCharacters(CHARACTERS);
     setView("login");
   }
@@ -179,6 +215,7 @@ function App() {
   }
 
   function startMatch() {
+    setMatchSuccess(null);
     setMatchStart(Date.now());
     socket?.emit("match:join");
   }
@@ -229,12 +266,14 @@ function App() {
 
   return (
     <div className="app-shell">
+      <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} />
       {toast && <Toast text={toast} onClose={() => setToast("")} />}
       {view === "login" && <AuthScreen onAuth={handleAuth} />}
       {view === "home" && user && (
         <HomeScreen
           user={user}
           characters={characters}
+          siteSettings={siteSettings}
           onLogout={logout}
           onSelectCharacter={selectCharacter}
           onStartMatch={startMatch}
@@ -254,6 +293,7 @@ function App() {
           setTab={setAdminTab}
           onCurrentUserChange={setUser}
           onCharactersChanged={refreshPublicCharacters}
+          onSiteSettingsChanged={setSiteSettings}
           onBack={() => setView("home")}
           onOpenReplay={openAdminReplay}
         />
@@ -262,6 +302,7 @@ function App() {
         <HomeScreen
           user={user}
           characters={characters}
+          siteSettings={siteSettings}
           onLogout={logout}
           onSelectCharacter={selectCharacter}
           onStartMatch={startMatch}
@@ -297,13 +338,31 @@ function App() {
           onChat={(text) => socket?.emit("chat:send", { roomCode: room.code, text })}
         />
       )}
-      {room?.game.phase === "finished" && dismissedResultRoom !== room.code && (
-        <ResultModal room={room} characters={characters} onClose={() => setDismissedResultRoom(room.code)} />
+      {resultModalOpen && (
+        <ResultModal
+          room={room}
+          user={user}
+          characters={characters}
+          audioSettings={audioSettings}
+          onClose={() => setDismissedResultRoom(room.code)}
+        />
       )}
       {matchStart && <MatchModal user={user} startedAt={matchStart} onCancel={() => {
         socket?.emit("match:leave");
         setMatchStart(null);
       }} characters={characters} />}
+      {matchSuccess && (
+        <MatchSuccessModal
+          startedAt={matchSuccess.startedAt}
+          audioSettings={audioSettings}
+          onComplete={() => {
+            setRoom(matchSuccess.room);
+            matchSuccessRef.current = null;
+            setMatchSuccess(null);
+            setView("room");
+          }}
+        />
+      )}
       {showHouse && user && (
         <HouseModal
           user={user}
@@ -348,796 +407,6 @@ function App() {
         />
       )}
     </div>
-  );
-}
-
-function AdminConsole({ user, token, tab, setTab, onCurrentUserChange, onCharactersChanged, onBack, onOpenReplay }) {
-  const tabs = ["overview", "users", "characters", "shop", "decorations", "audit"];
-  const tabLabels = {
-    overview: "概览",
-    users: "用户管理",
-    characters: "角色管理",
-    shop: "商城管理",
-    decorations: "装饰管理",
-    audit: "审计日志"
-  };
-  const [summary, setSummary] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [adminCharacters, setAdminCharacters] = useState([]);
-  const [auditLogs, setAuditLogs] = useState([]);
-  const [shopItems, setShopItems] = useState([]);
-  const [decorations, setDecorations] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [adminError, setAdminError] = useState("");
-
-  useEffect(() => {
-    if (tab !== "overview") return;
-    setAdminError("");
-    adminApi("/summary", token)
-      .then(setSummary)
-      .catch((error) => setAdminError(error.message));
-  }, [tab, token]);
-
-  useEffect(() => {
-    if (tab !== "users") return;
-    refreshUsers();
-  }, [tab, token]);
-
-  useEffect(() => {
-    if (tab !== "characters") return;
-    refreshCharacters();
-  }, [tab, token]);
-
-  useEffect(() => {
-    if (tab !== "audit") return;
-    refreshAuditLogs();
-  }, [tab, token]);
-
-  useEffect(() => {
-    if (tab !== "shop") return;
-    refreshShopItems();
-  }, [tab, token]);
-
-  useEffect(() => {
-    if (tab !== "decorations") return;
-    refreshDecorations();
-  }, [tab, token]);
-
-  async function refreshUsers(nextSelectedId = selectedUser?.id) {
-    setAdminError("");
-    try {
-      const data = await adminApi("/users", token);
-      const nextUsers = data.users ?? [];
-      setUsers(nextUsers);
-      if (nextSelectedId) {
-        setSelectedUser(nextUsers.find((candidate) => candidate.id === nextSelectedId) ?? null);
-      }
-    } catch (error) {
-      setAdminError(error.message);
-    }
-  }
-
-  async function refreshCharacters() {
-    setAdminError("");
-    try {
-      const data = await adminApi("/characters", token);
-      setAdminCharacters(data.characters ?? []);
-    } catch (error) {
-      setAdminError(error.message);
-    }
-  }
-
-  async function refreshAuditLogs() {
-    setAdminError("");
-    try {
-      const data = await adminApi("/audit-logs", token);
-      setAuditLogs(data.auditLogs ?? []);
-    } catch (error) {
-      setAdminError(error.message);
-    }
-  }
-
-  async function refreshShopItems() {
-    setAdminError("");
-    try {
-      const data = await adminApi("/shop-items", token);
-      setShopItems(data.items ?? []);
-    } catch (error) {
-      setAdminError(error.message);
-    }
-  }
-
-  async function refreshDecorations() {
-    setAdminError("");
-    try {
-      const data = await adminApi("/decorations", token);
-      setDecorations(data.decorations ?? []);
-    } catch (error) {
-      setAdminError(error.message);
-    }
-  }
-
-  return (
-    <main className="admin-screen">
-      <aside className="admin-sidebar">
-        <strong>SigrikaGo Admin</strong>
-        {tabs.map((item) => (
-          <button key={item} className={tab === item ? "active" : ""} onClick={() => setTab(item)}>
-            {tabLabels[item]}
-          </button>
-        ))}
-        <button onClick={onBack}>返回大厅</button>
-      </aside>
-      <section className="admin-main">
-        <header><span>{user.username}</span><strong>{tabLabels[tab]}</strong></header>
-        {adminError && <p className="form-error admin-error">{adminError}</p>}
-        {tab === "overview" && <AdminOverview summary={summary} />}
-        {tab === "users" && (
-          <>
-            <AdminUsers users={users} onSelect={setSelectedUser} />
-            {selectedUser && (
-              <UserEditor
-                user={selectedUser}
-                currentUserId={user.id}
-                token={token}
-                onClose={() => setSelectedUser(null)}
-                onRefresh={refreshUsers}
-                onCurrentUserChange={onCurrentUserChange}
-                onOpenReplay={onOpenReplay}
-              />
-            )}
-          </>
-        )}
-        {tab === "characters" && (
-          <AdminCharacters
-            characters={adminCharacters}
-            token={token}
-            onSaved={async () => {
-              await refreshCharacters();
-              await onCharactersChanged();
-            }}
-          />
-        )}
-        {tab === "shop" && (
-          <AdminShopItems items={shopItems} token={token} onSaved={refreshShopItems} onClearError={() => setAdminError("")} />
-        )}
-        {tab === "decorations" && (
-          <AdminDecorations decorations={decorations} token={token} onSaved={refreshDecorations} />
-        )}
-        {tab === "audit" && <AdminAudit logs={auditLogs} />}
-      </section>
-    </main>
-  );
-}
-
-function AdminOverview({ summary }) {
-  const cards = [
-    ["用户", summary?.summary?.users ?? 0],
-    ["封禁", summary?.summary?.bannedUsers ?? 0],
-    ["角色", summary?.summary?.characters ?? 0],
-    ["棋谱", summary?.summary?.gameRecords ?? 0]
-  ];
-  return (
-    <div className="admin-grid">
-      {cards.map(([label, value]) => <Stat key={label} label={label} value={value} />)}
-    </div>
-  );
-}
-
-function AdminUsers({ users, onSelect }) {
-  return (
-    <div className="admin-table-wrap">
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>用户名</th>
-            <th>权限</th>
-            <th>状态</th>
-            <th>段位</th>
-            <th>积分</th>
-            <th>金币</th>
-            <th>胜负</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id} onClick={() => onSelect(user)}>
-              <td>{user.username}</td>
-              <td>{user.role}</td>
-              <td>{user.status}</td>
-              <td>{user.rank}</td>
-              <td>{user.rating}</td>
-              <td>{user.coins}</td>
-              <td>{user.wins}/{user.losses}</td>
-            </tr>
-          ))}
-          {users.length === 0 && (
-            <tr>
-              <td colSpan="7">暂无用户</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function AdminCharacters({ characters, token, onSaved }) {
-  const [draft, setDraft] = useState(null);
-
-  function startNewCharacter() {
-    setDraft(emptyCharacterDraft());
-  }
-
-  function selectCharacter(character) {
-    setDraft(buildCharacterDraft(character));
-  }
-
-  return (
-    <div className="admin-character-layout">
-      <section className="admin-character-list">
-        <button className="admin-add-button" onClick={startNewCharacter}>
-          <Plus size={18} />新增角色
-        </button>
-        <div className="admin-character-cards">
-          {characters.map((character) => (
-            <button
-              key={character.dbId ?? character.id}
-              className={`admin-character-card ${draft?.dbId === character.dbId ? "selected" : ""}`}
-              onClick={() => selectCharacter(character)}
-            >
-              <img src={character.portrait} alt={character.name} />
-              <span>
-                <strong>{character.name}</strong>
-                <small>{character.id}</small>
-              </span>
-              <em>{character.enabled ? "启用" : "停用"}</em>
-            </button>
-          ))}
-          {characters.length === 0 && <p className="quiet-text">暂无角色。</p>}
-        </div>
-      </section>
-      <section className="admin-character-editor">
-        {draft ? (
-          <CharacterEditor
-            draft={draft}
-            setDraft={setDraft}
-            token={token}
-            onCancel={() => setDraft(null)}
-            onSaved={async (savedCharacter) => {
-              await onSaved();
-              if (savedCharacter) setDraft(buildCharacterDraft(savedCharacter));
-            }}
-          />
-        ) : (
-          <div className="admin-empty-state">
-            <strong>选择一个角色</strong>
-            <p className="quiet-text">从左侧选择角色，或新建角色后编辑技能和肖像。</p>
-          </div>
-        )}
-      </section>
-    </div>
-  );
-}
-
-function AdminShopItems({ items, token, onSaved, onClearError }) {
-  const [draft, setDraft] = useState(emptyShopItemDraft());
-  const [message, setMessage] = useState("");
-
-  async function save(event) {
-    event.preventDefault();
-    onClearError();
-    setMessage("");
-    const validated = validateShopItemDraft(draft);
-    if (!validated.ok) {
-      setMessage(validated.error);
-      return;
-    }
-    const id = draft.id;
-    const data = await adminApi(id ? `/shop-items/${id}` : "/shop-items", token, {
-      method: id ? "PATCH" : "POST",
-      body: validated.value
-    });
-    setDraft(buildShopItemDraft(data.item));
-    setMessage("保存成功");
-    await onSaved();
-  }
-
-  async function disableItem(item) {
-    await adminApi(`/shop-items/${item.id}`, token, { method: "DELETE" });
-    await onSaved();
-  }
-
-  return (
-    <div className="admin-management-grid">
-      <section className="admin-table-wrap">
-        <button className="admin-add-button" onClick={() => { onClearError(); setMessage(""); setDraft(emptyShopItemDraft()); }}><Plus size={18} />新增商品</button>
-        <table className="admin-table">
-          <thead><tr><th>商品</th><th>类别</th><th>价格</th><th>状态</th></tr></thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={item.id} onClick={() => { onClearError(); setMessage(""); setDraft(buildShopItemDraft(item)); }}>
-                <td>{item.name}</td><td>{shopCategoryLabel(item.category)}</td><td>{item.finalPrice}/{item.priceCoins}</td><td>{item.enabled ? "展示" : "隐藏"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-      <form className="admin-character-form" onSubmit={save}>
-        <h2>{draft.id ? "编辑商品" : "新增商品"}</h2>
-        {message && <p className={message === "保存成功" ? "admin-success" : "form-error admin-action-error"}>{message}</p>}
-        <div className="admin-character-form-grid">
-          <label><AdminFieldLabel text="商品名" tip="商城中显示的商品名称。" /><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></label>
-          <label><AdminFieldLabel text="类别" tip="购买后获得角色或装饰。" /><select value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })}><option value="character">角色</option><option value="decoration">装饰</option></select></label>
-          <label><AdminFieldLabel text="目标标识" tip="角色 slug 或装饰 slug。" /><input value={draft.targetId} onChange={(e) => setDraft({ ...draft, targetId: e.target.value })} /></label>
-          <label><AdminFieldLabel text="金币价格" tip="购买所需原价金币。" /><input type="number" value={draft.priceCoins} onChange={(e) => setDraft({ ...draft, priceCoins: e.target.value })} /></label>
-          <label><AdminFieldLabel text="折扣" tip="0 到 100 的折扣百分比。" /><input type="number" min="0" max="100" value={draft.discountPercent} onChange={(e) => setDraft({ ...draft, discountPercent: e.target.value })} /></label>
-          <label><AdminFieldLabel text="排序" tip="商品显示顺序。" /><input type="number" value={draft.sortOrder} onChange={(e) => setDraft({ ...draft, sortOrder: e.target.value })} /></label>
-          <label className="admin-checkbox"><input type="checkbox" checked={draft.purchasable} onChange={(e) => setDraft({ ...draft, purchasable: e.target.checked })} /><AdminFieldLabel text="可购买" tip="关闭后商品可展示但不能购买。" /></label>
-          <label className="admin-checkbox"><input type="checkbox" checked={draft.enabled} onChange={(e) => setDraft({ ...draft, enabled: e.target.checked })} /><AdminFieldLabel text="展示" tip="关闭后不在商城显示。" /></label>
-          <label className="wide-field"><AdminFieldLabel text="图片地址" tip="商城卡片图片。" /><input value={draft.imageUrl} onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })} /></label>
-          <label className="wide-field"><AdminFieldLabel text="商品描述" tip="商城中显示的商品说明。" /><textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></label>
-        </div>
-        <div className="inline-actions">
-          <button className="primary-action" type="submit">保存</button>
-          {draft.id && <button className="secondary-action" type="button" onClick={() => disableItem(draft)}>下架</button>}
-        </div>
-      </form>
-    </div>
-  );
-}
-
-function AdminDecorations({ decorations, token, onSaved }) {
-  const [draft, setDraft] = useState(emptyDecorationDraft());
-  const [message, setMessage] = useState("");
-
-  async function save(event) {
-    event.preventDefault();
-    setMessage("");
-    const body = decorationDraftToBody(draft);
-    if (!body) {
-      setMessage("请填写装饰标识、名称和正确排序");
-      return;
-    }
-    const data = await adminApi(draft.id ? `/decorations/${draft.id}` : "/decorations", token, {
-      method: draft.id ? "PATCH" : "POST",
-      body
-    });
-    setDraft(buildDecorationDraft(data.decoration));
-    setMessage("保存成功");
-    await onSaved();
-  }
-
-  return (
-    <div className="admin-management-grid">
-      <section className="admin-table-wrap">
-        <button className="admin-add-button" onClick={() => setDraft(emptyDecorationDraft())}><Plus size={18} />新增装饰</button>
-        <table className="admin-table">
-          <thead><tr><th>装饰</th><th>标识</th><th>状态</th></tr></thead>
-          <tbody>{decorations.map((decoration) => <tr key={decoration.id} onClick={() => setDraft(buildDecorationDraft(decoration))}><td>{decoration.name}</td><td>{decoration.slug}</td><td>{decoration.enabled ? "启用" : "停用"}</td></tr>)}</tbody>
-        </table>
-      </section>
-      <form className="admin-character-form" onSubmit={save}>
-        <h2>{draft.id ? "编辑装饰" : "新增装饰"}</h2>
-        {message && <p className={message === "保存成功" ? "admin-success" : "form-error admin-action-error"}>{message}</p>}
-        <div className="admin-character-form-grid">
-          <label><AdminFieldLabel text="装饰标识" tip="装饰唯一 slug，用于购买后写入用户拥有列表。" /><input value={draft.slug} onChange={(e) => setDraft({ ...draft, slug: e.target.value })} /></label>
-          <label><AdminFieldLabel text="装饰名称" tip="棋舍里显示的装饰名称。" /><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></label>
-          <label><AdminFieldLabel text="图片地址" tip="装饰预览图片。" /><input value={draft.imageUrl} onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })} /></label>
-          <label><AdminFieldLabel text="排序" tip="装饰显示顺序。" /><input type="number" value={draft.sortOrder} onChange={(e) => setDraft({ ...draft, sortOrder: e.target.value })} /></label>
-          <label className="admin-checkbox"><input type="checkbox" checked={draft.enabled} onChange={(e) => setDraft({ ...draft, enabled: e.target.checked })} /><AdminFieldLabel text="启用" tip="关闭后不展示该装饰。" /></label>
-          <label className="wide-field"><AdminFieldLabel text="装饰描述" tip="棋舍和商城中展示的装饰说明。" /><textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></label>
-        </div>
-        <button className="primary-action" type="submit">保存</button>
-      </form>
-    </div>
-  );
-}
-
-function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
-  const [actionError, setActionError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const draftKey = draft.dbId || draft.originalSlug || "new-character";
-
-  useEffect(() => {
-    setSuccessMessage("");
-    setActionError("");
-  }, [draftKey]);
-
-  function updateDraft(field, value) {
-    setActionError("");
-    setSuccessMessage("");
-    setDraft((current) => ({ ...current, [field]: value }));
-  }
-
-  function updateSkill(field, value) {
-    setActionError("");
-    setSuccessMessage("");
-    setDraft((current) => ({
-      ...current,
-      skill: {
-        ...current.skill,
-        [field]: value
-      }
-    }));
-  }
-
-  function updateSkillEffect(effectType) {
-    setActionError("");
-    setSuccessMessage("");
-    setDraft((current) => ({
-      ...current,
-      skill: {
-        ...current.skill,
-        effectType,
-        targetRule: targetRuleForEffect(effectType)
-      }
-    }));
-  }
-
-  async function handleUpload(file) {
-    if (!file) return;
-    setUploading(true);
-    setActionError("");
-    setSuccessMessage("");
-    try {
-      const url = await uploadPortrait(file, token);
-      setDraft((current) => ({
-        ...current,
-        portraitUrl: url,
-        portraitSource: "upload"
-      }));
-    } catch (error) {
-      setActionError(error.message);
-    } finally {
-      setUploading(false);
-    }
-  }
-
-  async function saveCharacter(event) {
-    event.preventDefault();
-    const body = characterDraftToBody(draft);
-    if (!body) {
-      setActionError("排序和使用次数必须是整数；数值代价只能填数字，特殊代价需要填写文本");
-      return;
-    }
-
-    setSaving(true);
-    setActionError("");
-    setSuccessMessage("");
-    try {
-      const id = draft.dbId ?? draft.originalSlug;
-      const data = await adminApi(id ? `/characters/${id}` : "/characters", token, {
-        method: id ? "PATCH" : "POST",
-        body
-      });
-      setSuccessMessage("保存成功");
-      await onSaved(data.character);
-    } catch (error) {
-      setActionError(error.message);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <form className="admin-character-form" onSubmit={saveCharacter}>
-      <div className="admin-form-heading">
-        <div>
-          <h2>{draft.dbId ? "编辑角色" : "新增角色"}</h2>
-          <p className="quiet-text">{draft.originalSlug || "new-character"}</p>
-        </div>
-        <div className="inline-actions">
-          <button className="secondary-action" type="button" onClick={onCancel}>取消</button>
-          <button className="primary-action" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</button>
-        </div>
-      </div>
-      {actionError && <p className="form-error admin-action-error">{actionError}</p>}
-      {successMessage && <p className="admin-success">{successMessage}</p>}
-      <div className="admin-character-form-grid">
-        <label><AdminFieldLabel text="角色标识" tip="角色的唯一 slug，用于存档、拥有角色和出战角色匹配。" />
-          <input value={draft.slug} onChange={(event) => updateDraft("slug", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="角色名称" tip="显示在棋舍、对局资料和技能演出中的角色名。" />
-          <input value={draft.name} onChange={(event) => updateDraft("name", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="立绘地址" tip="角色立绘图片地址，可以是资源路径或上传后生成的路径。" />
-          <input value={draft.portraitUrl} onChange={(event) => updateDraft("portraitUrl", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="立绘来源" tip="标记立绘来自外部路径还是后台上传。" />
-          <select value={draft.portraitSource} onChange={(event) => updateDraft("portraitSource", event.target.value)}>
-            <option value="url">路径</option>
-            <option value="upload">上传</option>
-          </select>
-        </label>
-        <label><AdminFieldLabel text="获得途径" tip="展示在棋舍角色详情中的纯文本说明。" />
-          <input value={draft.acquisitionMethod} onChange={(event) => updateDraft("acquisitionMethod", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="主题色" tip="角色卡片和视觉提示使用的代表色。" />
-          <input type="color" value={draft.palette} onChange={(event) => updateDraft("palette", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="排序" tip="角色在列表中的显示顺序，数字越小越靠前。" />
-          <input type="number" value={draft.sortOrder} onChange={(event) => updateDraft("sortOrder", event.target.value)} />
-        </label>
-        <label className="admin-checkbox">
-          <input type="checkbox" checked={draft.enabled} onChange={(event) => updateDraft("enabled", event.target.checked)} />
-          <AdminFieldLabel text="启用" tip="关闭后该角色不会出现在玩家可选角色中。" />
-        </label>
-        <label className="admin-upload-field"><AdminFieldLabel text="上传立绘" tip="上传 png、jpg、webp 或 gif 作为角色立绘。" />
-          <span>
-            <Upload size={18} />
-            {uploading ? "上传中" : "选择文件"}
-            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={(event) => handleUpload(event.target.files?.[0])} />
-          </span>
-        </label>
-      </div>
-      {draft.portraitUrl && (
-        <div className="admin-portrait-preview">
-          <img src={draft.portraitUrl} alt={draft.name || "character portrait"} />
-        </div>
-      )}
-      <h3>技能</h3>
-      <div className="admin-character-form-grid">
-        <label><AdminFieldLabel text="技能效果" tip="决定技能实际执行的规则类型。" />
-          <select value={draft.skill.effectType} onChange={(event) => updateSkillEffect(event.target.value)}>
-            <option value="erase-point">抹除交叉点</option>
-            <option value="flip-stone">棋子反色</option>
-            <option value="hidden-hand">隐藏手</option>
-            <option value="random-blast">随机爆炸</option>
-          </select>
-        </label>
-        <label><AdminFieldLabel text="技能名" tip="展示给玩家看的技能名称。" />
-          <input value={draft.skill.name} onChange={(event) => updateSkill("name", event.target.value)} />
-        </label>
-        <label className="wide-field"><AdminFieldLabel text="技能描述" tip="棋舍角色详情中展示的技能说明。" />
-          <textarea value={draft.skill.description} onChange={(event) => updateSkill("description", event.target.value)} />
-        </label>
-        <label className="wide-field"><AdminFieldLabel text="技能系统信息" tip={SKILL_MESSAGE_TIP} />
-          <textarea value={draft.skill.systemMessage} onChange={(event) => updateSkill("systemMessage", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="使用次数" tip="每局可使用该技能的次数，范围 0 到 9。" />
-          <input type="number" min="0" max="9" value={draft.skill.uses} onChange={(event) => updateSkill("uses", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="目标规则" tip="限制技能可以点选空点还是已有棋子。" />
-          <select value={draft.skill.targetRule} onChange={(event) => updateSkill("targetRule", event.target.value)}>
-            <option value="empty-point">空交叉点</option>
-            <option value="stone">棋子</option>
-            <option value="any-point">任意点</option>
-          </select>
-        </label>
-        <label className="admin-checkbox">
-          <input type="checkbox" checked={draft.skill.freeTurn} onChange={(event) => updateSkill("freeTurn", event.target.checked)} />
-          <AdminFieldLabel text="不消耗回合" tip="开启后释放技能不会交出当前回合。" />
-        </label>
-        <label><AdminFieldLabel text="代价类别" tip="数值会在数子时扣除；特殊只展示文本，暂时不影响规则。" />
-          <select value={draft.skill.costType} onChange={(event) => updateSkill("costType", event.target.value)}>
-            <option value="numeric">数值</option>
-            <option value="special">特殊</option>
-          </select>
-        </label>
-        <label><AdminFieldLabel text="代价说明" tip="数值类别只能填写数字；特殊类别可填写展示文本。" />
-          <input
-            type={draft.skill.costType === "numeric" ? "number" : "text"}
-            value={draft.skill.costValue}
-            onChange={(event) => updateSkill("costValue", event.target.value)}
-          />
-        </label>
-        <label className="wide-field"><AdminFieldLabel text="技能参数" tip="保留给扩展技能使用的 JSON 参数。" />
-          <textarea value={draft.skill.paramsJson} onChange={(event) => updateSkill("paramsJson", event.target.value)} />
-        </label>
-      </div>
-    </form>
-  );
-}
-
-function AdminAudit({ logs }) {
-  return (
-    <div className="admin-table-wrap audit-table-wrap">
-      <table className="admin-table audit-table">
-        <thead>
-          <tr>
-            <th>时间</th>
-            <th>管理员</th>
-            <th>动作</th>
-            <th>目标</th>
-          </tr>
-        </thead>
-        <tbody>
-          {logs.map((log) => (
-            <tr key={log.id}>
-              <td>{formatDateTime(log.createdAt)}</td>
-              <td>{log.adminUserId ?? "-"}</td>
-              <td>{log.action}</td>
-              <td>{log.targetType ?? "-"} · {log.targetId ?? "-"}</td>
-            </tr>
-          ))}
-          {logs.length === 0 && (
-            <tr>
-              <td colSpan="4">暂无审计日志</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentUserChange, onOpenReplay }) {
-  const [draft, setDraft] = useState(() => buildUserDraft(user));
-  const [banReason, setBanReason] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [userReplays, setUserReplays] = useState([]);
-  const [loadingReplays, setLoadingReplays] = useState(false);
-  const [actionError, setActionError] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    setDraft(buildUserDraft(user));
-    setBanReason("");
-    setNewPassword("");
-    setUserReplays([]);
-    setActionError("");
-  }, [user]);
-
-  function updateDraft(field, value) {
-    setActionError("");
-    setDraft((current) => ({ ...current, [field]: value }));
-  }
-
-  async function runAction(action) {
-    setSaving(true);
-    setActionError("");
-    try {
-      const result = await action();
-      if (result?.user?.id === currentUserId) onCurrentUserChange(result.user);
-      await onRefresh(user.id);
-    } catch (error) {
-      setActionError(error.message);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function saveUser(event) {
-    event.preventDefault();
-    const rating = parseAdminInteger(draft.rating);
-    if (rating == null) {
-      setActionError("积分必须是 32-bit signed int 范围内的整数");
-      return;
-    }
-    const coins = parseAdminInteger(draft.coins);
-    if (coins == null) {
-      setActionError("金币必须是 32-bit signed int 范围内的整数");
-      return;
-    }
-    await runAction(() => adminApi(`/users/${draft.id}`, token, {
-      method: "PATCH",
-      body: {
-        role: draft.role,
-        rank: draft.rank,
-        rating,
-        coins,
-        ownedCharacters: draft.ownedCharactersText.split(",").map((item) => item.trim()).filter(Boolean),
-        selectedCharacter: draft.selectedCharacter
-      }
-    }));
-  }
-
-  async function banUser() {
-    const reason = banReason.trim();
-    if (reason.length < 2) {
-      setActionError("封禁原因至少需要 2 个字符");
-      return;
-    }
-    if (!window.confirm(`确认封禁 ${user.username}？`)) return;
-    await runAction(() => adminApi(`/users/${user.id}/ban`, token, {
-      method: "POST",
-      body: { reason }
-    }));
-  }
-
-  async function unbanUser() {
-    if (!window.confirm(`确认解封 ${user.username}？`)) return;
-    await runAction(() => adminApi(`/users/${user.id}/unban`, token, { method: "POST" }));
-  }
-
-  async function resetPassword() {
-    if (newPassword.length < 4) {
-      setActionError("新密码至少需要 4 个字符");
-      return;
-    }
-    if (!window.confirm(`确认重置 ${user.username} 的密码？`)) return;
-    await runAction(async () => {
-      await adminApi(`/users/${user.id}/reset-password`, token, {
-        method: "POST",
-        body: { password: newPassword }
-      });
-      setNewPassword("");
-    });
-  }
-
-  async function loadUserReplays() {
-    setLoadingReplays(true);
-    setActionError("");
-    try {
-      const data = await adminApi(`/users/${user.id}/replays`, token);
-      setUserReplays(data.records ?? []);
-    } catch (error) {
-      setActionError(error.message);
-    } finally {
-      setLoadingReplays(false);
-    }
-  }
-
-  return (
-    <aside className="admin-drawer">
-      <button className="close-button" onClick={onClose}><X size={18} /></button>
-      <h2>{user.username}</h2>
-      <p className="quiet-text">状态 {user.status} · 战绩 {user.wins}胜/{user.losses}负</p>
-      {actionError && <p className="form-error admin-action-error">{actionError}</p>}
-      <form className="admin-form" onSubmit={saveUser}>
-        <label><AdminFieldLabel text="权限" tip="控制该账号是普通玩家还是管理员。" />
-          <select value={draft.role} onChange={(event) => updateDraft("role", event.target.value)}>
-            <option value="player">玩家</option>
-            <option value="admin">管理员</option>
-          </select>
-        </label>
-        <label><AdminFieldLabel text="段位" tip="显示在大厅、对局信息和个人棋舍中的段位文本。" />
-          <input value={draft.rank} onChange={(event) => updateDraft("rank", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="积分" tip="用户的匹配积分，必须是整数。" />
-          <input type="number" value={draft.rating} onChange={(event) => updateDraft("rating", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="金币" tip="用户当前拥有的金币数量，必须是整数。" />
-          <input type="number" value={draft.coins} onChange={(event) => updateDraft("coins", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="拥有角色" tip="该用户已解锁的角色 slug，多个角色用英文逗号分隔。" />
-          <input value={draft.ownedCharactersText} onChange={(event) => updateDraft("ownedCharactersText", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="出战角色" tip="该用户当前默认出战角色的 slug。" />
-          <input value={draft.selectedCharacter} onChange={(event) => updateDraft("selectedCharacter", event.target.value)} />
-        </label>
-        <button className="primary-action" type="submit" disabled={saving}>保存</button>
-      </form>
-      <div className="admin-replay-zone">
-        <div className="admin-section-title">
-          <AdminFieldLabel text="用户棋谱" tip="查看并回放该用户参与过的任意对局。" />
-          <button className="secondary-action" onClick={loadUserReplays} disabled={loadingReplays}>
-            {loadingReplays ? "加载中" : "加载棋谱"}
-          </button>
-        </div>
-        <div className="admin-replay-list">
-          {userReplays.map((record) => (
-            <button key={record.id} className="admin-replay-item" onClick={() => onOpenReplay(record.id)}>
-              <strong>{record.blackName} vs {record.whiteName}</strong>
-              <span>{record.resultText} · {record.moveCount}手 · {formatDateTime(record.createdAt)}</span>
-            </button>
-          ))}
-          {!loadingReplays && userReplays.length === 0 && <p className="quiet-text">尚未加载或暂无棋谱。</p>}
-        </div>
-      </div>
-      <div className="admin-danger-zone">
-        <label><AdminFieldLabel text="封禁原因" tip="封禁账号时记录的原因，至少 2 个字符。" />
-          <input value={banReason} onChange={(event) => {
-            setActionError("");
-            setBanReason(event.target.value);
-          }} />
-        </label>
-        <div className="inline-actions">
-          <button className="danger-action" onClick={banUser} disabled={saving || user.status === "banned"}>封禁</button>
-          <button className="secondary-action" onClick={unbanUser} disabled={saving || user.status !== "banned"}>解封</button>
-        </div>
-        <label><AdminFieldLabel text="新密码" tip="为该用户重置登录密码，至少 4 个字符。" />
-          <input type="password" value={newPassword} onChange={(event) => {
-            setActionError("");
-            setNewPassword(event.target.value);
-          }} />
-        </label>
-        <button className="secondary-action" onClick={resetPassword} disabled={saving}>重置密码</button>
-      </div>
-    </aside>
   );
 }
 
@@ -1186,13 +455,13 @@ function AuthScreen({ onAuth }) {
   );
 }
 
-function HomeScreen({ user, characters, onLogout, onStartMatch, onOpenHouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenSettings, onOpenAdmin }) {
+function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, onLogout, onStartMatch, onOpenHouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenSettings, onOpenAdmin }) {
   return (
     <main className="home-screen">
       <header className="topbar">
         <div>
-          <p>SigrikaGo</p>
-          <h1>大厅</h1>
+          <p>{siteSettings.homeSubtitle}</p>
+          <h1>{siteSettings.homeTitle}</h1>
         </div>
         <div className="topbar-actions">
           <button className="icon-button" title="设置" onClick={onOpenSettings}><Settings size={20} /></button>
@@ -1247,14 +516,20 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [spectatorStep, setSpectatorStep] = useState(null);
+  const [viewColor, setViewColor] = useState(COLORS.black);
   const liveStepRef = useRef(room.game.history.length);
   const isReplay = replayStep !== null;
   const liveStep = room.game.history.length;
   const isLiveSpectator = room.role === "spectator" && !isReplay;
   const effectiveSpectatorStep = spectatorStep ?? liveStep;
   const boardStep = isReplay ? replayStep : isLiveSpectator ? effectiveSpectatorStep : null;
-  const boardGame = boardStep == null || boardStep >= liveStep ? room.game : replayGameAt(room, boardStep);
-  const displayRoom = isReplay ? replayRoomAt(room, replayStep) : isLiveSpectator ? { ...room, game: boardGame } : room;
+  const rawBoardGame = boardStep == null || boardStep >= liveStep
+    ? isLiveSpectator && room.gameViews?.[viewColor] ? room.gameViews[viewColor] : room.game
+    : replayGameAt(room, boardStep);
+  const boardGame = (isReplay || isLiveSpectator) && !(isLiveSpectator && boardStep >= liveStep && room.gameViews?.[viewColor])
+    ? gameViewForColor(rawBoardGame, viewColor)
+    : rawBoardGame;
+  const displayRoom = isReplay ? replayRoomAt(room, replayStep, viewColor) : isLiveSpectator ? { ...room, game: boardGame } : room;
   const role = isReplay ? "spectator" : displayRoom.role;
   const blackPlayer = displayRoom.players.find((p) => p.color === COLORS.black);
   const whitePlayer = displayRoom.players.find((p) => p.color === COLORS.white);
@@ -1264,9 +539,12 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   const scoring = displayRoom.game.scoring;
   const drawRequest = displayRoom.game.drawRequest;
   const soundMoveRef = useRef(null);
+  const replayStepSoundRef = useRef(replayStep);
   const voiceRef = useRef({});
+  const systemVoiceRef = useRef({});
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
   const skillPreview = displayRoom.game.pendingSkill;
+  const canSwitchView = role === "spectator";
 
   useEffect(() => {
     if (!isLiveSpectator) {
@@ -1282,12 +560,19 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   }, [isLiveSpectator, liveStep, room.code]);
 
   useEffect(() => {
-    if (isReplay) return;
-    const lastMove = [...displayRoom.game.history].reverse().find((entry) => entry.type === "move");
-    if (!lastMove || soundMoveRef.current === lastMove.moveNumber) return;
-    soundMoveRef.current = lastMove.moveNumber;
-    playStoneSound(audioSettings);
-  }, [displayRoom.game.history, isReplay, audioSettings]);
+    const boardSoundAction = latestBoardSoundAction(displayRoom.game.history);
+    if (isReplay) {
+      const previousReplayStep = replayStepSoundRef.current;
+      replayStepSoundRef.current = replayStep;
+      if (typeof previousReplayStep !== "number" || replayStep !== previousReplayStep + 1) return;
+      playBoardSound(boardSoundActionAtStep(room.game.history, replayStep), audioSettings);
+      return;
+    }
+    replayStepSoundRef.current = replayStep;
+    if (!boardSoundAction || soundMoveRef.current === boardSoundAction.key) return;
+    soundMoveRef.current = boardSoundAction.key;
+    playBoardSound(boardSoundAction, audioSettings);
+  }, [displayRoom.game.history, isReplay, replayStep, audioSettings]);
 
   useEffect(() => {
     if (isReplay || !activePlayer) return;
@@ -1296,8 +581,17 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
     const mainKey = `${activePlayer.color}-main`;
     const previousPeriods = voiceRef.current[periodKey];
     const previousMain = voiceRef.current[mainKey];
-    if (typeof previousMain === "number" && previousMain > 0 && timer.main <= 0) {
-      speakText("开始读秒", audioSettings);
+    const announcement = nextTimeAnnouncement({
+      previous: { main: previousMain, periods: previousPeriods },
+      current: timer
+    });
+    if (announcement?.type === "voice") {
+      playSystemVoice(announcement.event, {
+        character: activePlayer.character,
+        params: announcement.params,
+        fallbackText: announcement.text,
+        audioSettings
+      });
     }
     if (timer.main <= 0 && timer.periodRemaining <= 10 && timer.periodRemaining > 0) {
       const countdownKey = `${activePlayer.color}-${timer.periods}-${timer.periodRemaining}`;
@@ -1306,17 +600,26 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
         playCountdownBeep(timer.periodRemaining, audioSettings);
       }
     }
-    if (typeof previousPeriods === "number" && timer.periods < previousPeriods) {
-      speakText(`还剩${timer.periods}次读秒`, audioSettings);
-    }
     voiceRef.current[mainKey] = timer.main;
     voiceRef.current[periodKey] = timer.periods;
   }, [activePlayer, isReplay, audioSettings]);
+
+  useEffect(() => {
+    if (isReplay) return;
+    const gameStartMessage = displayRoom.chat.findLast?.((message) => message.kind === "game-start");
+    if (!gameStartMessage || systemVoiceRef.current.gameStart === gameStartMessage.id) return;
+    systemVoiceRef.current.gameStart = gameStartMessage.id;
+    playSystemVoice(SYSTEM_VOICE_EVENTS.gameStart, {
+      character: me?.character,
+      audioSettings
+    });
+  }, [displayRoom.chat, isReplay, me?.character, audioSettings]);
 
   function handlePoint(point) {
     if (isReplay) return;
     if (skillPreview) return;
     if (displayRoom.game.phase === "marking-dead") return handleScoringPoint(point);
+    if (displayRoom.game.phase !== GAME_PHASES.playing) return;
     if (role !== "player") return;
     if (pendingSkill) {
       setPendingSkill(false);
@@ -1377,6 +680,9 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             game={displayRoom.game}
             characters={characters}
             align="opponent"
+            viewColor={viewColor}
+            canSwitchView={canSwitchView}
+            onViewColor={setViewColor}
             isWinner={displayRoom.game.phase === "finished" && opponent?.color === winnerColor}
             isActiveTurn={displayRoom.game.phase === "playing" && opponent?.color === displayRoom.game.turn}
             isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
@@ -1425,6 +731,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             replayStep={boardStep ?? liveStep}
             replayMax={liveStep}
             onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
+            showTestTools={SHOW_TEST_TOOLS}
             onTestRandomLayout={() => onGameAction({ type: "test-random-layout" })}
             onTestRestoreSkill={() => onGameAction({ type: "test-restore-skill" })}
             onPass={() => onGameAction({ type: "pass" })}
@@ -1440,6 +747,9 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             game={displayRoom.game}
             characters={characters}
             align="self"
+            viewColor={viewColor}
+            canSwitchView={canSwitchView}
+            onViewColor={setViewColor}
             isWinner={displayRoom.game.phase === "finished" && (me ?? displayRoom.players[0])?.color === winnerColor}
             isActiveTurn={displayRoom.game.phase === "playing" && (me ?? displayRoom.players[0])?.color === displayRoom.game.turn}
             isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
@@ -1461,7 +771,10 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
           }}
         />
       )}
-      {skillPreview && <SkillBanner banner={skillPreview} characters={characters} />}
+      {!isReplay && displayRoom.game.phase === GAME_PHASES.opening && (
+        <OpeningModal room={displayRoom} player={me} />
+      )}
+      {skillPreview && <SkillBanner banner={skillPreview} characters={characters} audioSettings={audioSettings} />}
     </main>
   );
 }
@@ -1537,14 +850,26 @@ function Board({ game, showCoords, showMoves, pendingSkill, previewPlayer, onPoi
   );
 }
 
-function PlayerInfo({ player, game, characters, align, isWinner = false, isActiveTurn = false, isDrawResult = false, isSkillTargeting = false }) {
+function PlayerInfo({ player, game, characters, align, viewColor = COLORS.black, canSwitchView = false, onViewColor, isWinner = false, isActiveTurn = false, isDrawResult = false, isSkillTargeting = false }) {
   if (!player) return <aside className="player-info empty" />;
   const character = findCharacter(characters, player.character ?? player.characterId);
   const skillUses = game.skillUses[player.color] ?? 0;
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   return (
     <aside className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""}`}>
-      <img src={character.portrait} alt={character.name} />
+      <div className="portrait-wrap">
+        {canSwitchView && (
+          <button
+            className={`viewpoint-button ${viewColor === player.color ? "active" : ""}`}
+            type="button"
+            title={`切换到${player.color === COLORS.black ? "黑方" : "白方"}视角`}
+            onClick={() => onViewColor?.(player.color)}
+          >
+            <Eye size={18} />
+          </button>
+        )}
+        <img src={character.portrait} alt={character.name} />
+      </div>
       <div className="player-meta">
         <button className="name-button">{player.user.username}</button>
         <span>{player.user.rank} · {player.user.rating}</span>
@@ -1577,7 +902,7 @@ function TimeBar({ time }) {
   );
 }
 
-function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, replayStep = 0, replayMax = 0, onReplayStep, onTestRandomLayout, onTestRestoreSkill, onPass, onCountingRequest, onDrawRequest, onResign, onBack }) {
+function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, replayStep = 0, replayMax = 0, showTestTools = false, onReplayStep, onTestRandomLayout, onTestRestoreSkill, onPass, onCountingRequest, onDrawRequest, onResign, onBack }) {
   if (role === "spectator") {
     return (
       <nav className="action-bar">
@@ -1611,11 +936,13 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
       </button>
       <button onClick={onDrawRequest} disabled={phase !== "playing" || skillLocked}>申请和棋</button>
       <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} />认输</button>
-      <TestTools
-        disabled={phase !== "playing" || skillLocked || !me}
-        onRandomLayout={onTestRandomLayout}
-        onRestoreSkill={onTestRestoreSkill}
-      />
+      {showTestTools && (
+        <TestTools
+          disabled={phase !== "playing" || skillLocked || !me}
+          onRandomLayout={onTestRandomLayout}
+          onRestoreSkill={onTestRestoreSkill}
+        />
+      )}
       <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
     </nav>
   );
@@ -1765,8 +1092,7 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <h2>棋舍</h2>
         <div className="profile-grid">
-          <Stat label="总对局" value={stats.totalGames} />
-          <Stat label="战绩" value={`${stats.wins}胜${stats.losses}负${stats.draws}和`} />
+          <Stat label="战绩" value={`${stats.totalGames}局 · ${stats.wins}胜${stats.losses}负${stats.draws}和`} />
           <Stat label="积分" value={stats.rating} />
           <Stat label="段位" value={user.rank} />
           <Stat label="金币" value={user.coins} />
@@ -1977,6 +1303,58 @@ function MatchModal({ user, startedAt, onCancel, characters }) {
   );
 }
 
+function MatchSuccessModal({ startedAt, audioSettings, onComplete }) {
+  const [now, setNow] = useState(Date.now());
+  const completedRef = useRef(false);
+  const remaining = Math.max(0, 3 - Math.floor((now - startedAt) / 1000));
+
+  useEffect(() => {
+    playEffectSound(MATCH_SUCCESS_SOUND, audioSettings);
+  }, [audioSettings]);
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 200);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    if (remaining > 0 || completedRef.current) return;
+    completedRef.current = true;
+    onComplete();
+  }, [remaining, onComplete]);
+
+  return (
+    <div className="modal-backdrop">
+      <section className="small-modal match-success-modal">
+        <MonitorPlay size={34} />
+        <h2>匹配成功</h2>
+        <p>{remaining} 秒后进入对弈</p>
+      </section>
+    </div>
+  );
+}
+
+function OpeningModal({ room, player }) {
+  const [now, setNow] = useState(Date.now());
+  const remaining = Math.max(0, Math.ceil(((room.openingEndsAt ?? now) - now) / 1000));
+  const colorText = player?.color === COLORS.black ? "黑" : player?.color === COLORS.white ? "白" : "";
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 200);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="modal-backdrop opening-backdrop">
+      <section className="small-modal opening-modal">
+        <Swords size={34} />
+        <h2>{colorText ? `本局你执${colorText}` : "对局即将开始"}</h2>
+        <p>{remaining} 秒后正式开始</p>
+      </section>
+    </div>
+  );
+}
+
 function ShopModal({ token, user, onPurchased, onClose }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1987,6 +1365,14 @@ function ShopModal({ token, user, onPurchased, onClose }) {
 
   useEffect(() => {
     let alive = true;
+    if (!token || !user) {
+      setLoading(false);
+      setItems([]);
+      setError("请先登录");
+      return () => {
+        alive = false;
+      };
+    }
     setLoading(true);
     setError("");
     api("/api/shop", { token })
@@ -2002,7 +1388,7 @@ function ShopModal({ token, user, onPurchased, onClose }) {
     return () => {
       alive = false;
     };
-  }, [token]);
+  }, [token, user]);
 
   async function buyItem(item) {
     setMessage("");
@@ -2133,11 +1519,21 @@ function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
   );
 }
 
-function ResultModal({ room, characters, onClose }) {
+function ResultModal({ room, user, characters, audioSettings, onClose }) {
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
   const isDraw = !winnerColor;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
   const character = findCharacter(characters, winner?.character ?? winner?.characterId);
+  const playedResultSoundRef = useRef(false);
+
+  useEffect(() => {
+    if (playedResultSoundRef.current) return;
+    const sound = resolveResultSound(room, user);
+    if (!sound) return;
+    playedResultSoundRef.current = true;
+    playEffectSound(sound, audioSettings);
+  }, [room.code, room.game.winner, user?.id, audioSettings]);
+
   return (
     <div className="modal-backdrop">
       <section className={`result-modal ${winnerColor === COLORS.black ? "black-win" : ""} ${isDraw ? "draw-result" : ""}`}>
@@ -2157,8 +1553,17 @@ function ResultModal({ room, characters, onClose }) {
   );
 }
 
-function SkillBanner({ banner, characters }) {
+function SkillBanner({ banner, characters, audioSettings }) {
+  const playedVoiceBannerRef = useRef("");
   const character = findCharacter(characters, banner.character ?? banner.characterId);
+  useEffect(() => {
+    if (!banner?.id || playedVoiceBannerRef.current === banner.id) return;
+    const voiceSrc = resolveSkillVoice(banner);
+    if (!voiceSrc) return;
+    playedVoiceBannerRef.current = banner.id;
+    playVoiceSound(voiceSrc, audioSettings);
+  }, [banner, audioSettings]);
+
   return (
     <div className="skill-burst" aria-live="polite">
       <img src={character.portrait} alt={banner.characterName ?? character.name} />
@@ -2183,10 +1588,6 @@ function Stat({ label, value }) {
   return <div className="stat"><span>{label}</span><strong>{value}</strong></div>;
 }
 
-function AdminFieldLabel({ text, tip }) {
-  return <span className="admin-field-label" title={tip}>{text}</span>;
-}
-
 function formatSkillCost(skillOrCost) {
   if (skillOrCost && typeof skillOrCost === "object") {
     const costType = skillOrCost.costType ?? "numeric";
@@ -2194,18 +1595,6 @@ function formatSkillCost(skillOrCost) {
     return costType === "numeric" ? `${costValue || 0}子` : costValue;
   }
   return typeof skillOrCost === "number" ? `${skillOrCost}子` : skillOrCost;
-}
-
-function buildUserDraft(user) {
-  return {
-    id: user.id,
-    role: user.role ?? "player",
-    rank: user.rank ?? "",
-    rating: user.rating ?? 0,
-    coins: user.coins ?? 0,
-    ownedCharactersText: (user.ownedCharacters ?? []).join(", "),
-    selectedCharacter: user.selectedCharacter ?? ""
-  };
 }
 
 function canPreviewSkill(game, player, point) {
@@ -2244,107 +1633,14 @@ function Toast({ text, onClose }) {
   return <div className="toast">{text}</div>;
 }
 
-async function api(path, options = {}) {
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: options.method ?? "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.token ? { Authorization: `Bearer ${options.token}` } : {})
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
-  const contentType = response.headers.get("content-type") ?? "";
-  if (!contentType.includes("application/json")) {
-    const text = await response.text();
-    const isHtml = text.trimStart().startsWith("<!DOCTYPE") || text.trimStart().startsWith("<html");
-    throw new Error(isHtml ? "接口返回了前端页面而不是 JSON，请刷新页面并确认后端服务已启动。" : "接口返回格式不是 JSON。");
+function playSystemVoice(event, { character, params, fallbackText, audioSettings }) {
+  const voice = resolveSystemVoice(event, { character, params });
+  if (voice.type === "audio" && voice.src) {
+    playVoiceSound(voice.src, audioSettings);
+    return;
   }
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error ?? "请求失败");
-  return data;
-}
-
-async function adminApi(path, token, options = {}) {
-  return api(`/api/admin${path}`, { ...options, token });
-}
-
-async function uploadPortrait(file, token) {
-  const form = new FormData();
-  form.append("portrait", file);
-  const response = await fetch(`${API_BASE}/api/admin/uploads/character-portrait`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: form
-  });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error ?? "上传失败");
-  return data.url;
-}
-
-function loadAudioSettings() {
-  try {
-    return {
-      ...DEFAULT_AUDIO_SETTINGS,
-      ...JSON.parse(localStorage.getItem("sigrika-audio-settings") ?? "{}")
-    };
-  } catch {
-    return DEFAULT_AUDIO_SETTINGS;
-  }
-}
-
-function audioVolume(settings, channel) {
-  return Math.max(0, Math.min(1, ((settings?.master ?? DEFAULT_AUDIO_SETTINGS.master) / 100) * ((settings?.[channel] ?? 100) / 100)));
-}
-
-function playStoneSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
-  const volume = audioVolume(audioSettings, "sfx");
-  if (volume <= 0) return;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return;
-  const context = new AudioContextClass();
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
-  oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(260, context.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(95, context.currentTime + 0.08);
-  gain.gain.setValueAtTime(0.001, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.22 * volume, context.currentTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.12);
-  oscillator.connect(gain);
-  gain.connect(context.destination);
-  oscillator.start();
-  oscillator.stop(context.currentTime + 0.13);
-}
-
-function playCountdownBeep(second, audioSettings = DEFAULT_AUDIO_SETTINGS) {
-  const volume = audioVolume(audioSettings, "sfx");
-  if (volume <= 0) return;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return;
-  const context = new AudioContextClass();
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
-  oscillator.type = second <= 3 ? "square" : "sine";
-  oscillator.frequency.setValueAtTime(second <= 3 ? 880 : 620, context.currentTime);
-  gain.gain.setValueAtTime(0.001, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime((second <= 3 ? 0.2 : 0.13) * volume, context.currentTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.11);
-  oscillator.connect(gain);
-  gain.connect(context.destination);
-  oscillator.start();
-  oscillator.stop(context.currentTime + 0.12);
-}
-
-function speakText(text, audioSettings = DEFAULT_AUDIO_SETTINGS) {
-  const volume = audioVolume(audioSettings, "voice");
-  if (volume <= 0) return;
-  if (!("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "zh-CN";
-  utterance.rate = 1.05;
-  utterance.volume = volume;
-  window.speechSynthesis.speak(utterance);
+  const text = voice.text || fallbackText;
+  if (text) speakText(text, audioSettings);
 }
 
 function coordLabel(x, y) {
@@ -2387,10 +1683,7 @@ function buildBoardLines(points) {
   return lines;
 }
 
-function replayRoomAt(room, step) {
-  if (step >= room.game.history.length) {
-    return { ...room, role: "spectator" };
-  }
+function replayRoomAt(room, step, viewColor = COLORS.black) {
   const game = replayGameAt(room, step);
   const replayPlayers = room.players.map((player) => ({
     ...player,
@@ -2406,7 +1699,7 @@ function replayRoomAt(room, step) {
     ...room,
     role: "spectator",
     players: replayPlayers,
-    game,
+    game: gameViewForColor(game, viewColor),
     chat: room.chat.filter((message) => message.moveNumber <= game.moveNumber)
   };
 }
@@ -2415,12 +1708,16 @@ function replayGameAt(room, step) {
   let game = createGameState(room.game.players);
   for (const entry of room.game.history.slice(0, step)) {
     let result = null;
-    if (entry.type === "move") result = playMove(game, entry.color, entry.id);
+    if (entry.type === "move") result = playMove(game, entry.color, entry.id, {
+      colorIllusion: Object.hasOwn(entry, "colorIllusion") ? entry.colorIllusion : null
+    });
     if (entry.type === "pass") result = passMove(game, entry.color);
     if (entry.type === "skill") {
       const player = room.players.find((candidate) => candidate.color === entry.color);
       const skill = player?.character?.skill ?? player?.characterId;
-      if (entry.effectType === "random-blast") {
+      if (entry.effectType === "color-illusion-passive") {
+        result = activatePassiveSkill(game, entry.color, skill);
+      } else if (entry.effectType === "random-blast") {
         result = randomBlast(game, entry.color, {
           skill,
           skillName: entry.skill,

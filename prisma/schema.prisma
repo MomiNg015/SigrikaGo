@@ -118,3 +118,10 @@ model AdminAuditLog {
   afterJson   String?
   createdAt   DateTime @default(now())
 }
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

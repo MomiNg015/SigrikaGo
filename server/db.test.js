@@ -37,4 +37,25 @@ describe("publicUser", () => {
     });
     expect(publicUser(user).ownedCharacters).not.toContain("baconbits");
   });
+
+  it("automatically unlocks Nabomo when rating reaches 1400", () => {
+    const user = {
+      id: "u1",
+      username: "player",
+      passwordHash: "secret",
+      role: "player",
+      status: "active",
+      rank: "18级",
+      rating: 1400,
+      wins: 0,
+      losses: 0,
+      coins: 0,
+      selectedCharacter: "sigrika",
+      ownedCharacters: "sigrika",
+      ownedItems: "",
+      ownedDecorations: ""
+    };
+
+    expect(publicUser(user).ownedCharacters).toContain("nabomo");
+  });
 });

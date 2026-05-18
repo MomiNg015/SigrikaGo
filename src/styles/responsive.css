@@ -15,6 +15,11 @@
     min-height: 420px;
   }
 
+  .admin-section-header {
+    display: grid;
+    align-items: stretch;
+  }
+
   .admin-character-layout {
     grid-template-columns: 1fr;
   }
@@ -106,6 +111,16 @@
   .admin-drawer {
     inset: 9px;
     width: auto;
+  }
+
+  .admin-crud-drawer {
+    inset: 9px;
+    width: auto;
+    padding: 18px;
+  }
+
+  .admin-crud-drawer .admin-character-form {
+    padding-right: 0;
   }
 
   .admin-form-heading {

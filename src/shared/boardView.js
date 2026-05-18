@@ -10,7 +10,21 @@ export function canPreviewSkillTarget({ game, player, point, fallbackCharacters 
   if (!point?.valid) return false;
   const skill = player.character?.skill ?? fallbackCharacters?.[player.characterId]?.skill;
   const effectType = skill?.effectType ?? skill?.id;
-  if (effectType === "erase-point") return !point.stone;
-  if (effectType === "flip-stone") return Boolean(point.stone);
+  const targetRule = skill?.targetRule ?? targetRuleForEffect(effectType);
+  return canTargetPointByRule(targetRule, point);
+}
+
+function canTargetPointByRule(targetRule, point) {
+  if (targetRule === "stone") return Boolean(point.stone);
+  if (targetRule === "empty-point") return !point.stone;
+  if (targetRule === "any-point") return true;
   return false;
+}
+
+function targetRuleForEffect(effectType) {
+  if (effectType === "flip-stone") return "stone";
+  if (effectType === "random-blast") return "any-point";
+  if (effectType === "color-illusion-passive") return "none";
+  if (effectType === "erase-point" || effectType === "hidden-hand") return "empty-point";
+  return "none";
 }

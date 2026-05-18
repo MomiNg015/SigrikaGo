@@ -24,6 +24,13 @@ describe("character selection resolution", () => {
     expect(result.characterConfig).toEqual(CHARACTERS.danea);
   });
 
+  test("falls back when the selected character is not owned", () => {
+    const result = resolveSelectedCharacter("nabomo", {}, new Set(), ["sigrika", "danea", "aemeath"]);
+
+    expect(result.characterId).toBe("sigrika");
+    expect(result.characterConfig).toEqual(CHARACTERS.sigrika);
+  });
+
   test("does not fall back to disabled static Sigrika when another static character is enabled", () => {
     const result = resolveSelectedCharacter("removed-character", {}, new Set(["sigrika"]));
 

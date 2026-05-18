@@ -11,7 +11,7 @@ export async function authenticateSocketUser({ token, jwtSecret, prisma, charact
 
   const socketUser = publicUser(user);
   const { characters, disabledSlugs } = await characterSelectionData();
-  const selected = resolveSelectedCharacter(socketUser.selectedCharacter, characters, disabledSlugs);
+  const selected = resolveSelectedCharacter(socketUser.selectedCharacter, characters, disabledSlugs, socketUser.ownedCharacters);
   return {
     ...socketUser,
     selectedCharacter: selected.characterId,

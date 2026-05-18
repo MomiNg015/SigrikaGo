@@ -69,6 +69,26 @@ export const FALLBACK_CHARACTERS = {
       freeTurn: true,
       params: { size: 3 }
     }
+  },
+  nabomo: {
+    id: "nabomo",
+    name: "娜波摩",
+    palette: "#8fb4f7",
+    portrait: "/assets/nabomo.png",
+    acquisitionMethod: "积分达到1400分时自动获得",
+    skill: {
+      id: "color-illusion-passive",
+      name: "千变万化",
+      uses: 0,
+      cost: 0,
+      costType: "numeric",
+      costValue: "0",
+      systemMessage: "{fromColor}{player}使用了{character}的“{skill}”技能，之后自己的落子会在对手视角里千变万化。",
+      description: "被动技。自己的落子有80%概率在对手视角里会变成对手棋子颜色。",
+      freeTurn: true,
+      passive: true,
+      params: { probability: 0.8 }
+    }
   }
 };
 

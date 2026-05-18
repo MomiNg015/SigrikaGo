@@ -29,16 +29,22 @@ SigrikaGo/
     db.js                      # Prisma Client 与 publicUser 序列化
     shop.js                    # 商城/装饰校验、价格、购买逻辑
     leaderboard.js             # 排行榜统计逻辑
+    siteSettings.js            # 站点公开配置与后台更新逻辑
     skillRegistry.js           # 角色技能 fallback 配置转换
     *.test.js                  # Vitest 单元测试
   src/
-    main.jsx                   # React 单页应用、主要组件与前端业务逻辑
+    main.jsx                   # React 单页应用入口与大厅/对局/弹窗组装
+    api/
+      client.js                # 前端 HTTP JSON、后台 API、上传请求封装
+    admin/
+      AdminConsole.jsx         # 后台管理界面与后台 CRUD 组件
     styles.css                 # 全局样式
     shared/
       game.js                  # 13 路围棋规则、技能、数子、回放核心逻辑
       boardView.js             # 棋盘展示辅助：最后落子/技能标记与技能预览判定
       characters.js            # 前端角色合并逻辑
       characterFallback.js     # 内置角色 fallback 配置
+      siteSettings.js          # 前后端共用站点配置默认值
       *.test.js                # 共享逻辑测试
 ```
 
@@ -46,7 +52,7 @@ SigrikaGo/
 
 - `.env` 未纳入 Git，当前模板包含 `DATABASE_URL`、`JWT_SECRET`、`PORT`。
 - `.gitignore` 排除了 `node_modules`、`dist`、`.env`、SQLite 数据库、开发日志等。
-- 当前目录不是 Git 仓库本身，至少在本机环境下 `git status` 不可用。
+- 当前工作目录是 Git 仓库工作树，当前分支可通过 `git status` 检查。
 
 ## 2. 当前核心模块
 
@@ -54,14 +60,27 @@ SigrikaGo/
 
 - `src/main.jsx`
   - React SPA 的集中入口。
-  - 包含认证、大厅、对局、棋舍、商城、排行榜、设置、后台管理等组件。
+  - 包含认证、大厅、对局、棋舍、商城、排行榜、设置等组件，并挂载后台管理入口。
   - 使用 `useState` / `useEffect` 做本地状态管理。
-  - 通过 `fetch` 调用 HTTP API，通过 `socket.io-client` 连接实时对局。
+  - 通过 `src/api/client.js` 调用 HTTP API，通过 `socket.io-client` 连接实时对局。
+
+- `src/admin/AdminConsole.jsx`
+  - 后台管理界面模块。
+  - 包含概览、用户、角色、商城、装饰、系统设置、审计日志等后台组件。
+  - 该模块已从 `src/main.jsx` 拆出，但内部仍可继续按业务域拆分。
+
+- `src/api/client.js`
+  - 前端 HTTP 请求封装。
+  - 提供普通 JSON API、后台 API 和角色立绘上传 helper。
 
 - `src/shared/game.js`
   - 共享的游戏规则引擎。
   - 负责棋盘状态、落子、提子、禁自杀、劫、弃手、认输、技能、隐藏手、死子标记、数子、回放重算等。
   - 该模块被前端回放逻辑与服务端房间逻辑共同使用。
+
+- `src/shared/systemVoices.js`
+  - 定义系统语音事件 key 和默认 TTS 文本。
+  - 当前预留 `game-start`、进入读秒、剩余读秒次数、读秒倒计时、超时、胜/负/和结果等事件，未来可由角色专属语音资源覆盖。
 
 - `src/shared/characters.js` 与 `src/shared/characterFallback.js`
   - 定义内置角色 fallback。
@@ -83,7 +102,11 @@ SigrikaGo/
 
 - `server/adminRoutes.js`
   - 后台管理路由。
-  - 管理用户、封禁/解封、重置密码、角色、技能、装饰、商城商品、上传、审计日志、任意用户棋谱查看。
+  - 管理用户、封禁/解封、重置密码、角色、技能、装饰、商城商品、站点设置、上传、审计日志、任意用户棋谱查看。
+
+- `server/siteSettings.js`
+  - 站点公开配置读取和后台更新逻辑。
+  - 当前管理大厅标题 `homeTitle` 与大厅副标题 `homeSubtitle`，并写入后台审计日志。
 
 - `server/characters.js`
   - 角色输入校验、技能校验、公开 payload 转换、内置角色初始化。
@@ -114,6 +137,7 @@ SigrikaGo/
 ### 大厅与个人空间
 
 - 大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。
+- 大厅顶部标题和副标题来自 `GET /api/site-settings`；未配置或接口失败时回退到 `大厅` / `SigrikaGo`。
 - 棋舍展示用户战绩、积分、拥有角色、出战角色。
 - 棋舍可查看个人对局回放。
 - 设置弹窗支持音量配置，并保存在 `localStorage`。
@@ -126,6 +150,8 @@ SigrikaGo/
 - 中国数子规则，`KOMI_STONES = 2.75`。
 - 基础规则：落子、提子、禁自杀、劫、弃手、认输。
 - 对局聊天和系统消息。
+- 匹配成功后先显示 3 秒匹配成功弹窗；进入房间后处于 `opening` 开局展示阶段，玩家看到“本局你执黑/白”弹窗，服务端在该阶段暂停棋钟和落子/技能操作。
+- 开局展示结束后服务端切换到 `playing`，写入 `game-start` 系统消息，前端播放“对局开始”系统语音，并从该时刻开始推进棋钟。
 - 计时与读秒：房间玩家包含 `mainTime`、`byoYomi`、`byoYomiPeriods` 等内存字段。
 - 超时判负。
 - 双方连续弃手进入数子申请/确认流程。
@@ -136,16 +162,20 @@ SigrikaGo/
 
 ### 技能与角色
 
-- 内置角色 fallback：`sigrika`、`danea`、`aemeath`、`baconbits`。
+- 内置角色 fallback：`sigrika`、`danea`、`aemeath`、`baconbits`、`nabomo`。
 - DB 角色会覆盖/合并内置角色。
 - 所有存在的角色都会出现在棋舍角色列表；未拥有角色以灰色状态展示，可查看信息但不可出战。
 - 角色信息包含 `acquisitionMethod`/“获得途径”纯文本，可由后台维护。
+- 娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 `User.rating` 自动补充 `nabomo` 到已拥有角色列表。
 - 技能类型：
   - `erase-point`：抹除空交叉点，点位不可落子且不参与数子。
   - `flip-stone`：反转目标棋子颜色。
   - `hidden-hand`：隐藏手，未暴露前对对方隐藏。
   - `random-blast`：随机选择一个完整区域并移除其中棋子；猪小仙当前使用固定完整 3x3，中心点被限制在棋盘内部，避免边角裁剪。
+  - `color-illusion-passive`：娜波摩被动技“千变万化”。第一次轮到娜波摩玩家时自动进入技能演出，演出结束后该玩家后续落子有 80% 概率在对手视角中显示为对手颜色，真实棋盘规则仍按实际颜色计算；进入数子、结果确认或对局结束后会显示真实棋盘。
+  - 达妮娅 `flip-stone` 作用于真实棋子；如果目标点带有娜波摩伪装，反色后会清除该点伪装。
 - 技能演出流程：服务端先进入 `skill-preview` 并广播 `pendingSkill`，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。
+- 开局被动技能不会在 `opening` 阶段触发；正式进入 `playing` 后才按延迟规则触发，避免和执色提示/开局语音重叠。
 - 无目标技能不显示落子/目标预览；猪小仙技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。
 - 技能可配置：
   - 使用次数 `uses`
@@ -164,7 +194,8 @@ SigrikaGo/
 - 用户可看自己的最近 30 条棋谱。
 - 管理员可查看任意用户棋谱与任意棋谱详情。
 - 前端回放通过 `replayRoomAt` 基于历史步骤重放共享规则逻辑。
-- 观战者进入房间后默认使用黑方对局视角，包括双方信息区位置；下方操作栏切换为图标式回放控制。
+- 观战者进入房间后默认使用黑方对局视角，包括双方信息区位置；黑白双方信息区立绘左侧提供眼睛图标，可切换黑方/白方视角；下方操作栏切换为图标式回放控制。
+- 棋谱回放同样支持黑方/白方视角切换，回放棋盘会按所选视角重放隐藏手和娜波摩伪装效果。
 - 观战回放只改变棋盘内容，不改变实时信息区内容（计时、读秒、提子、代价等保持实际对局进程）。
 - 观战者停在最新手时会自动跟随实时进程；如果手动回退到旧手，则新进程不会强制跳回最新。
 
@@ -188,11 +219,12 @@ SigrikaGo/
 ### 后台管理
 
 - 概览：用户数、封禁用户数、启用角色数、棋谱数、最近审计日志。
-- 用户管理：列表、编辑角色/段位/积分/金币/拥有角色/出战角色、封禁、解封、重置密码、查看用户棋谱。
-- 角色管理：新增/编辑/禁用角色，配置技能系统。
+- 用户管理：列表、状态标签、右侧抽屉编辑角色/段位/积分/金币/拥有角色/出战角色、封禁、解封、重置密码、查看用户棋谱。
+- 角色管理：左侧角色列表、右侧编辑面板，支持新增/编辑/禁用角色、配置技能系统。
 - 角色立绘上传：支持 png/jpeg/webp/gif，大小限制 3MB。
-- 商城管理：增改商品、下架商品。
-- 装饰管理：增改装饰、停用装饰。
+- 商城管理：列表主视图，新增/编辑商品在右侧抽屉中完成，支持下架商品。
+- 装饰管理：列表主视图，新增/编辑装饰在右侧抽屉中完成，支持停用装饰。
+- 系统设置：可编辑大厅标题和大厅副标题；保存后通过 `SiteSetting` 持久化，并立即回写当前前端大厅状态。
 - 审计日志：记录部分后台操作前后值。
 
 ## 4. 数据模型与字段说明
@@ -257,7 +289,7 @@ SigrikaGo/
 
 - `id`: 主键 cuid。
 - `characterId`: 关联 `Character.id`，唯一。
-- `effectType`: 技能实际效果类型，当前支持 `erase-point`、`flip-stone`、`hidden-hand`、`random-blast`。
+- `effectType`: 技能实际效果类型，当前支持 `erase-point`、`flip-stone`、`hidden-hand`、`random-blast`、`color-illusion-passive`。
 - `name`: 技能名。
 - `description`: 技能描述。
 - `uses`: 每局使用次数。
@@ -313,6 +345,14 @@ SigrikaGo/
 - `afterJson`: 操作后 JSON，可空。
 - `createdAt`: 创建时间。
 
+### SiteSetting
+
+站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。
+
+- `key`: 主键。当前使用 `homeTitle` 与 `homeSubtitle`。
+- `value`: 配置值字符串。
+- `createdAt`, `updatedAt`: 创建和更新时间。
+
 ## 5. 数据之间的关系
 
 - `Character` 与 `CharacterSkill` 是一对一关系：
@@ -350,6 +390,11 @@ SigrikaGo/
   - 返回启用角色列表和停用 slug 列表。
   - 不要求登录。
 
+- `GET /api/site-settings`
+  - 返回公开站点配置。
+  - 当前包含大厅标题 `homeTitle` 与大厅副标题 `homeSubtitle`。
+  - 不要求登录；前端接口失败时使用 `src/shared/siteSettings.js` 中的默认值。
+
 - `POST /api/auth/register`
   - 注册账号。
   - 用户名至少 2 位，密码至少 4 位。
@@ -360,7 +405,7 @@ SigrikaGo/
 
 - `GET /api/me`
   - 登录用户信息。
-  - 会返回公开用户字段；当前代码中仍存在基于棋谱重新计算展示用战绩/积分的逻辑，需与持久化 `User.rating` 的胜 +20、负 -20、和棋 0 规则保持一致。
+  - 会返回公开用户字段；`rating` 以持久化 `User.rating` 为权威值，`totalGames`、`wins`、`losses`、`draws` 从棋谱派生。
 
 - `POST /api/me/character`
   - 修改当前出战角色。
@@ -392,6 +437,14 @@ SigrikaGo/
 
 - `GET /api/admin/audit-logs`
   - 最近 100 条审计日志。
+
+- `GET /api/admin/site-settings`
+  - 读取后台可编辑的站点配置。
+
+- `PATCH /api/admin/site-settings`
+  - 更新大厅标题和大厅副标题。
+  - `homeTitle` 会 trim 并限制到 24 字符；`homeSubtitle` 会 trim 并限制到 80 字符。
+  - 写入 `AdminAuditLog`，action 为 `site-settings.update`。
 
 - `GET /api/admin/users`
   - 最多 200 个用户。
@@ -550,11 +603,13 @@ SigrikaGo/
 
 ### 前端公共组件
 
-当前公共组件都集中在 `src/main.jsx`：
+当前公共组件仍以 `src/main.jsx` 为主，后台管理组件已拆到 `src/admin/AdminConsole.jsx`：
 
 - `Panel`: 面板标题与图标容器。
 - `Stat`: 小统计卡片。
-- `AdminFieldLabel`: 带 title 提示的后台字段标签。
+- `AdminFieldLabel`: 带 title 提示的后台字段标签，位于 `src/admin/AdminConsole.jsx`。
+- `AdminSectionHeader`: 后台列表页标题、数量和主操作按钮，位于 `src/admin/AdminConsole.jsx`。
+- `AdminStatusPill`: 后台表格状态标签，位于 `src/admin/AdminConsole.jsx`。
 - `Toast`: 自动消失提示。
 - `ConfirmModal`: 通用确认弹窗。
 - `WatchPad`: 观战房间号输入。
@@ -568,13 +623,14 @@ SigrikaGo/
 
 ### 前端通用函数
 
-- `api`: HTTP JSON 请求封装。
-- `adminApi`: `/api/admin` 请求封装。
-- `uploadPortrait`: 上传角色立绘。
+- `api`: HTTP JSON 请求封装，位于 `src/api/client.js`。
+- `adminApi`: `/api/admin` 请求封装，位于 `src/api/client.js`。
+- `uploadPortrait`: 上传角色立绘，位于 `src/api/client.js`。
 - `findCharacter`: 从角色 map 或 fallback 中解析角色。
 - `derivePlayerRecordStats` / `recordWinnerColor`: 位于 `src/shared/gameRecords.js`，前后端共用棋谱胜负与战绩推导逻辑，优先基于 `winnerColor` 结构化字段，旧记录回退到 `resultText` 文本前缀。
 - `buildCharacterDraft` / `characterDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台角色表单数据转换。
 - `validateShopItemDraft` / `decorationDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台商城/装饰表单校验。
+- `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题/副标题默认值。
 - `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定。
 - `replayRoomAt`: 用历史记录重放房间状态；观战实时回放另由 `replayGameAt` 只派生棋盘进程。
 - 音频相关：`loadAudioSettings`、`playStoneSound`、`playCountdownBeep`、`speakText`。
@@ -586,6 +642,7 @@ SigrikaGo/
 - `validateCharacterInput`: 角色/技能输入校验。
 - `toCharacterPayload`: 角色公开 payload。
 - `validateShopItemInput` / `validateDecorationInput`: 商城与装饰校验。
+- `getPublicSiteSettings` / `updateSiteSettings`: 站点配置读取、清洗、持久化和审计写入。
 - `buildLeaderboard`: 排行榜统计。
 - `ratingDeltaForResult`: 根据 `winnerColor` 计算玩家积分变化；胜方 +20、负方 -20、和棋 0。
 - `safeUploadFilename`: 上传文件名清洗。
@@ -617,7 +674,7 @@ SigrikaGo/
 ### 后端状态
 
 - 数据库持久化：
-  - 用户、角色、技能、装饰、商城、棋谱、审计日志。
+  - 用户、角色、技能、装饰、商城、棋谱、审计日志、站点设置。
 
 - 内存状态：
   - `server/rooms.js` 的 `rooms = new Map()`。
@@ -634,9 +691,9 @@ SigrikaGo/
 
 - 部分源码、schema、README 中的中文在当前终端显示为乱码。运行时页面部分中文可能正常，但文件编码状态需要统一确认。
 
-- Prisma migrations 目录已开始建立；后续跨机器协作时需要坚持使用 migration 管理结构变更，避免继续依赖临时 `db push`。
+- Prisma migrations 目录已开始建立，`SiteSetting` 已有结构迁移；后续跨机器协作时需要坚持使用 migration 管理结构变更，避免继续依赖临时 `db push`。
 
-- `prisma db push` 在当前机器曾出现空的 `Schema engine error`，后续需要确认是不是本机环境问题。
+- `prisma db push` 已可同步当前开发库 schema，但 Windows 上 Prisma Client generate 可能因运行中的 Node 后端占用 `query_engine-windows.dll.node` 而出现 EPERM rename；遇到时需要先停止后端进程再重新运行 `npm run prisma:generate` 或 `npm run prisma:push`。
 
 - 实时房间在内存中：
   - 服务重启会丢失未结束房间。
@@ -654,11 +711,11 @@ SigrikaGo/
 - 商城后台新增/修改时会校验 `targetId` 对应角色或装饰存在；数据库层仍没有外键约束，购买时仍依赖字符串拥有列表。
 
 - 当前用户资产与战绩存在多处来源：
-  - `User.rating` 会被对局结果和后台编辑直接更新。
-  - 棋舍/排行榜部分统计从 `GameRecord` 派生。
-  - `/api/me` 仍有基于棋谱重算展示字段的逻辑，需要与“负者 -20、和棋 0”的新积分规则继续核对，避免持久化积分和展示积分分叉。
+  - `User.rating` 会被对局结果和后台编辑直接更新，`/api/me` 已改为直接返回该持久化积分。
+  - 棋舍/排行榜的总局、胜负、和棋等统计仍从 `GameRecord` 派生。
+  - 后续如继续扩展赛季/积分流水，需要决定是否增加结构化积分变更记录。
 
-- 前端 `src/main.jsx` 仍然过大，包含所有页面组件、API helper、回放、音频等；后台表单草稿转换和棋谱统计逻辑已先拆到 `src/shared/adminDrafts.js`、`src/shared/gameRecords.js`。
+- 前端 `src/main.jsx` 已先拆出后台管理模块和 API helper，但仍然偏大，仍包含大厅、对局、棋舍、商城、排行榜、设置、回放、音频等组件；后台管理目前集中在 `src/admin/AdminConsole.jsx`，后续可继续按用户/角色/商城/装饰拆分。
 
 - 全局样式集中在 `src/styles.css`，规模较大，组件样式边界不清。
 
@@ -666,9 +723,11 @@ SigrikaGo/
 
 - 观战回放目前在前端由实时房间快照和历史重放派生，信息区保持实时、棋盘可回退；该“双状态”模型需要更多自动化测试覆盖，避免未来房间字段变更时出现棋盘/信息区不同步。
 
-- 测试用对局按钮虽然已集中在 `TestTools` 和 `test-*` action，但当前没有环境开关或权限限制；如果进入生产构建，需要在发布前移除或加显式开发模式保护。
+- 测试用对局按钮已集中在 `TestTools` 和 `test-*` action，并已增加环境保护：
+  - 前端仅在 Vite 开发环境显示按钮。
+  - 服务端在 `NODE_ENV=production` 时拒绝 `test-*` action。
 
-- 后台审计已覆盖用户、角色、装饰、商城商品的主要增改/禁用操作；后续可继续细化到登录、购买、上传等事件。
+- 后台审计已覆盖用户、角色、装饰、商城商品和站点设置的主要增改/禁用操作；后续可继续细化到登录、购买、上传等事件。
 
 - `CharacterSkill.enabled` 字段存在，但当前公开角色序列化没有明确按该字段过滤技能，语义待确认。
 
@@ -694,11 +753,12 @@ SigrikaGo/
   - 排行榜、棋舍战绩、用户统计改用结构化字段。
 
 - 拆分前端模块：
-  - `pages/HomeScreen.jsx`
-  - `pages/RoomScreen.jsx`
-  - `admin/*`
-  - `modals/*`
-  - `api/client.js`
+  - 已完成：`src/admin/AdminConsole.jsx`
+  - 已完成：`src/api/client.js`
+  - 后续：`pages/HomeScreen.jsx`
+  - 后续：`pages/RoomScreen.jsx`
+  - 后续：继续拆分 `admin/*`
+  - 后续：`modals/*`
   - `audio/*`
   - `replay/*`
 
@@ -726,8 +786,8 @@ SigrikaGo/
   - 将技能目标规则、预览规则、演出时序、回放重放参数纳入同一个技能契约，减少前后端重复判断。
 
 - 测试工具治理：
-  - 为测试按钮增加开发模式开关，或在构建/部署流程中明确剔除。
-  - 服务端拒绝非开发环境的 `test-*` action。
+  - 已完成基础开发/生产保护。
+  - 后续可进一步将测试工具移动到单独调试面板，或通过管理员/开发者权限显式开启。
 
 - 排行榜扩展：
   - 支持分页和赛季。
@@ -742,3 +802,64 @@ SigrikaGo/
   - 增加 API 路由集成测试。
   - 增加前端关键流程测试：登录、匹配、后台角色保存、排行榜弹窗。
   - 增加回放快照兼容性测试。
+
+## Audio System Notes
+
+当前音频系统主要由 `src/shared/musicLibrary.js`、`src/shared/audioScheduling.js`、`src/shared/boardAudio.js`、`src/shared/voiceEffects.js` 与 `src/audio/playback.jsx` 中的播放运行时组成。
+
+### Background Music
+
+- BGM 资源配置集中在 `MUSIC_TRACKS`，按 `home`、`battle`、`skill` 三类管理。
+- 主界面默认 BGM 使用 `hidamari_intro_once.ogg` + `hidamari_loop.ogg`。
+- 对弈常规 BGM 使用 `shanjifu_intro_once.ogg` + `shanjifu_loop.ogg`。
+- 角色技能 BGM 当前配置：达妮娅使用 `bgm_*`，西格莉卡使用 `koimoon_132_micro_*`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`。
+- BGM 优先级为：角色技能 BGM > 对弈常规 BGM > 主界面 BGM。
+- 角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。
+- 匹配成功倒计时、对局结果弹窗、对局结束阶段会停止 BGM。
+- `BackgroundMusic` 使用 Web Audio 播放，预解码 intro/loop buffer，并在同一 `AudioContext` 时间线上调度 intro 到 loop，避免 HTMLAudio 切文件造成明显卡顿。
+- 音量变化只调节 gain，不改变播放 identity；因此主音量或 BGM 音量调到 0 后再恢复，不会导致 BGM 从头播放。
+- 默认音频设置为 `master: 80`、`bgm: 50`、`sfx: 80`、`voice: 80`，保存于 `localStorage` 的 `sigrika-audio-settings`。
+
+### Effects And Replay Audio
+
+- 匹配成功播放 `match-success.mp3`，同时停止 BGM。
+- 对局结果弹窗出现时停止 BGM；胜方播放 `result-victory.mp3`，负方播放 `result-defeat.mp3`，和棋不播放结果音效。
+- 普通落子播放 `godown_clear.ogg`。
+- 提子动作播放 `go_capture_clear.ogg`。
+- `boardAudio.js` 根据历史记录中的当前棋盘动作判断落子音或提子音；回放界面点击“下一手”时也会按该步历史播放对应音效，弃手不会重复播放上一手棋盘音效。
+- 落子、提子、匹配成功和结果音效均走 `sfx` 音量通道。
+- 读秒蜂鸣仍由 Web Audio oscillator 生成，超时时语音播报“超时”，不会播报“还剩0次读秒”。
+
+### Skill Voice
+
+- 角色技能语音配置集中在 `CHARACTER_SKILL_VOICES`。
+- 当前已配置：西格莉卡 `sigrika_skill.ogg`，爱弥斯 `aemeath_skill.ogg`，猪小仙 `baconbits_skill.ogg`。
+- `SkillBanner` 出现时同步触发技能语音，同一个 banner id 只播放一次。
+- 技能语音走 `voice` 音量通道。
+- `playVoiceSound` 使用 Web Audio 播放链：source -> dry/wet reverb mix -> voice gain -> destination。
+- `voiceEffects.js` 当前预设为轻量空灵混响：`boost: 1.35`、`wet: 0.28`、`dry: 0.9`、`reverbSeconds: 1.6`、`reverbDecay: 2.2`、`preDelaySeconds: 0.035`。
+- 如果 Web Audio 或资源加载失败，技能语音会回退到普通 `Audio` 播放，仍应用 1.35 倍 voice 增益上限。
+
+### System Voice
+
+- 系统语音事件集中在 `src/shared/systemVoices.js`，通过 `resolveSystemVoice` 解析。
+- 当前默认走 TTS 文本；如果角色配置了 `systemVoices[event]`，则优先播放对应音频。
+- 已预留事件：`game-start`、`byo-yomi-start`、`byo-yomi-periods`、`byo-yomi-countdown`、`timeout`、`result-victory`、`result-defeat`、`result-draw`。
+- 对局正式开始时，服务端写入 kind 为 `game-start` 的系统消息，前端据此播放“对局开始”语音。
+- 进入读秒、剩余读秒次数和超时播报已经接入事件化 resolver；读秒倒计时和结果语音事件已预留，后续可接角色专属资源。
+
+### Static Audio Assets
+
+- BGM 和效果音位于 `public/assets/music/`。
+- 技能语音位于 `public/assets/voice/`。
+- 转码用临时工具目录 `.tmp/` 已加入 `.gitignore`，不应提交。
+
+### Audio Technical Debt
+
+- Runtime audio playback now lives in `src/audio/playback.jsx`, but that module still owns several playback concerns (`BackgroundMusic`, board effects, result sounds, skill voice effects, countdown beeps, TTS). Future cleanup can split it by BGM/effects/voice if the feature set grows.
+- Skill voice playback creates a short-lived `AudioContext` per voice. This is simple and safe, but future tuning may benefit from a shared voice/effects context with explicit cleanup and browser autoplay handling.
+- Voice reverb now uses a deterministic generated impulse. If authored reverb tails become important, replace it with a static impulse asset.
+- BGM assets are committed directly under `public/assets/music/` and increase repository size. If the soundtrack grows, consider Git LFS, an asset CDN, or a manifest-driven asset pipeline.
+- Music ownership, purchase availability, and player selection are represented in configuration shape but not yet backed by persisted music inventory/settings UI.
+- Character skill voice configuration is static in `CHARACTER_SKILL_VOICES`; future admin-configurable voices would need schema/API/upload support and cache invalidation rules.
+- No browser-level automated test currently verifies actual audio playback, Web Audio graph routing, or autoplay fallback behavior; existing coverage focuses on deterministic helper logic.

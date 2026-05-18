@@ -266,6 +266,50 @@ describe("admin user routes", () => {
   });
 });
 
+describe("admin site settings routes", () => {
+  it("allows admins to read and update lobby copy", async () => {
+    const store = new Map();
+    const auditWrites = [];
+    const prisma = {
+      siteSetting: {
+        findMany: async () => [...store.entries()].map(([key, value]) => ({ key, value }))
+      },
+      $transaction: async (callback) => callback({
+        siteSetting: {
+          upsert: async ({ where, create, update }) => {
+            store.set(where.key, update.value);
+            return { ...create, value: update.value };
+          },
+          findMany: async () => [...store.entries()].map(([key, value]) => ({ key, value }))
+        },
+        adminAuditLog: {
+          create: async ({ data }) => {
+            auditWrites.push(data);
+            return data;
+          }
+        }
+      })
+    };
+
+    const updateResponse = await requestAdminRoute(prisma, "/site-settings", {
+      method: "PATCH",
+      body: {
+        homeTitle: "棋境大厅",
+        homeSubtitle: "SigrikaGo 测试服"
+      }
+    });
+    const readResponse = await requestAdminRoute(prisma, "/site-settings", { method: "GET" });
+
+    expect(updateResponse.status).toBe(200);
+    expect(updateResponse.body.settings).toEqual({
+      homeTitle: "棋境大厅",
+      homeSubtitle: "SigrikaGo 测试服"
+    });
+    expect(readResponse.body.settings.homeTitle).toBe("棋境大厅");
+    expect(auditWrites[0].action).toBe("site-settings.update");
+  });
+});
+
 describe("admin character routes", () => {
   it("allows PATCH /characters/:id to update legacy top-level skill fields", async () => {
     const { prisma, characterUpdates } = characterRoutePrisma();

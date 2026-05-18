@@ -17,8 +17,9 @@ import { CHARACTERS } from "../src/shared/characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { authenticateSocketUser } from "./socketAuth.js";
 import { buildLeaderboard } from "./leaderboard.js";
-import { derivePlayerRecordStats } from "./gameRecords.js";
+import { publicUserWithRecordStats } from "./userProfile.js";
 import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
+import { getPublicSiteSettings } from "./siteSettings.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -84,6 +85,10 @@ app.get("/api/characters", async (_req, res) => {
 
 app.get("/api/shop", authHttp, async (_req, res) => {
   res.json(await listShopItems(prisma));
+});
+
+app.get("/api/site-settings", async (_req, res) => {
+  res.json({ settings: await getPublicSiteSettings(prisma) });
 });
 
 app.get("/api/leaderboard", authHttp, async (_req, res) => {
@@ -160,6 +165,11 @@ app.get("/api/me", authHttp, async (req, res) => {
 
 app.post("/api/me/character", authHttp, async (req, res) => {
   const characterId = String(req.body.characterId ?? "");
+  const publicProfile = publicUser(req.user);
+  if (!publicProfile.ownedCharacters.includes(characterId)) {
+    res.status(403).json({ error: "尚未获得该角色" });
+    return;
+  }
   const { characters, disabledSlugs } = await characterSelectionData();
   if (!characters[characterId] && (disabledSlugs.has(characterId) || !CHARACTERS[characterId])) {
     res.status(400).json({ error: "未知角色" });
@@ -325,15 +335,7 @@ async function publicUserWithHistory(user) {
       resultText: true
     }
   });
-  const stats = derivePlayerRecordStats(user, records);
-  return {
-    ...publicUser(user),
-    totalGames: stats.totalGames,
-    wins: stats.wins,
-    losses: stats.losses,
-    draws: stats.draws,
-    rating: stats.rating
-  };
+  return publicUserWithRecordStats(user, records);
 }
 
 server.listen(PORT, () => {

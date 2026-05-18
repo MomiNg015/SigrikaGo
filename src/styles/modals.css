@@ -376,6 +376,57 @@
   animation: match-hop 0.9s ease-in-out infinite;
 }
 
+.match-success-modal {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.match-success-modal svg {
+  color: #3a8f75;
+  filter: drop-shadow(0 10px 16px rgba(58, 143, 117, 0.18));
+}
+
+.match-success-modal h2 {
+  margin: 0;
+}
+
+.match-success-modal p {
+  margin: 0;
+  color: #67586d;
+  font-weight: 700;
+}
+
+.opening-backdrop {
+  animation: opening-fade 3s ease forwards;
+}
+
+.opening-modal {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.opening-modal svg {
+  color: #5d7fe8;
+  filter: drop-shadow(0 10px 16px rgba(93, 127, 232, 0.2));
+}
+
+.opening-modal h2,
+.opening-modal p {
+  margin: 0;
+}
+
+.opening-modal p {
+  color: #67586d;
+  font-weight: 700;
+}
+
+@keyframes opening-fade {
+  0%, 78% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 @keyframes match-hop {
   0%, 100% { transform: translateY(0); }
   45% { transform: translateY(-12px); }
