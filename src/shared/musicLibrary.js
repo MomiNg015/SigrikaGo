@@ -10,7 +10,7 @@ export const MATCH_SUCCESS_SOUND = "/assets/music/match-success.mp3";
 export const VICTORY_SOUND = "/assets/music/result-victory.mp3";
 export const DEFEAT_SOUND = "/assets/music/result-defeat.mp3";
 export const CHARACTER_SKILL_VOICES = {
-  sigrika: "/assets/voice/sigrika_skill.ogg",
+  sigrika: "/assets/voice/sigrika_2_no_exclaim.ogg",
   aemeath: "/assets/voice/aemeath_skill.ogg",
   baconbits: "/assets/voice/baconbits_skill.ogg"
 };

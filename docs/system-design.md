@@ -836,7 +836,7 @@ SigrikaGo/
 ### Skill Voice
 
 - 角色技能语音配置集中在 `CHARACTER_SKILL_VOICES`。
-- 当前已配置：西格莉卡 `sigrika_skill.ogg`，爱弥斯 `aemeath_skill.ogg`，猪小仙 `baconbits_skill.ogg`。
+- 当前已配置：西格莉卡 `sigrika_2_no_exclaim.ogg`，爱弥斯 `aemeath_skill.ogg`，猪小仙 `baconbits_skill.ogg`。
 - `characterVoiceMapForSkill` 可将现有技能语音桥接为角色 `systemVoices` 的 `skill-cast` 事件映射。
 - `SkillBanner` 出现时同步触发技能语音，同一个 banner id 只播放一次。
 - 技能语音走 `voice` 音量通道。

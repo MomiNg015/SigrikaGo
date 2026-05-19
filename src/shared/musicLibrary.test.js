@@ -253,7 +253,7 @@ describe("background music library", () => {
   });
 
   it("uses the configured Sigrika skill voice", () => {
-    expect(resolveSkillVoice({ characterId: "sigrika" })).toBe("/assets/voice/sigrika_skill.ogg");
+    expect(resolveSkillVoice({ characterId: "sigrika" })).toBe("/assets/voice/sigrika_2_no_exclaim.ogg");
   });
 
   it("uses the configured Aemeath skill voice", () => {
@@ -275,10 +275,10 @@ describe("background music library", () => {
 
   it("bridges configured skill voices into character system voice maps", () => {
     expect(characterVoiceMapForSkill({
-      sigrika: "/assets/voice/sigrika_skill.ogg"
+      sigrika: "/assets/voice/sigrika_2_no_exclaim.ogg"
     })).toEqual({
       sigrika: {
-        "skill-cast": "/assets/voice/sigrika_skill.ogg"
+        "skill-cast": "/assets/voice/sigrika_2_no_exclaim.ogg"
       }
     });
   });
