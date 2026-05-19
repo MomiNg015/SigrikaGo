@@ -322,7 +322,7 @@ p {
   height: clamp(118px, 14.5vw, 176px);
   object-fit: contain;
   justify-self: end;
-  align-self: end;
+  align-self: center;
   filter: drop-shadow(0 14px 22px rgba(74, 48, 88, 0.18));
 }
 

@@ -879,7 +879,7 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
   - Decisive game persistence uses `resultRewardDelta`; winner records gain coins and rating, loser records gain consolation coins and lose rating. Draws remain record-only for rewards.
 - Home layout:
   - The home screen prioritizes "空想对局" as the largest primary action.
-  - "棋舍" is a secondary profile/character entry with the selected portrait and player info.
+  - "棋舍" is a secondary profile/character entry with the selected portrait vertically centered beside player info.
   - "商城", "观战", "排行榜", and admin management are compact circular utility icon buttons anchored to the lower-right area; each button shows only icon plus title.
   - Narrow utility overflow is contained inside the utility grid instead of expanding the whole page.
 - Character voice categories:
