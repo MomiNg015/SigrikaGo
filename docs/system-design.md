@@ -829,7 +829,7 @@ SigrikaGo/
 - 提子动作播放 `go_capture_clear.ogg`。
 - `boardAudio.js` 根据历史记录中的当前棋盘动作判断落子音或提子音；回放界面点击“下一手”时也会按该步历史播放对应音效，弃手不会重复播放上一手棋盘音效。
 - 落子、提子、匹配成功和结果音效均走 `sfx` 音量通道。
-- 读秒蜂鸣仍由 Web Audio oscillator 生成，超时时语音播报“超时”，不会播报“还剩0次读秒”。
+- 读秒 10 到 1 秒倒计时通过 `playSystemVoice(countdown-N)` 播放角色语音或 TTS，超时时语音播报“超时”，不会播报“还剩0次读秒”。
 
 ### Skill Voice
 
@@ -858,7 +858,7 @@ SigrikaGo/
 
 ### Audio Technical Debt
 
-- Runtime audio playback now lives in `src/audio/playback.jsx`, but that module still owns several playback concerns (`BackgroundMusic`, board effects, result sounds, skill voice effects, countdown beeps, TTS). Future cleanup can split it by BGM/effects/voice if the feature set grows.
+- Runtime audio playback now lives in `src/audio/playback.jsx`, but that module still owns several playback concerns (`BackgroundMusic`, board effects, result sounds, skill voice effects, system voice/TTS). Future cleanup can split it by BGM/effects/voice if the feature set grows.
 - Skill voice playback creates a short-lived `AudioContext` per voice. This is simple and safe, but future tuning may benefit from a shared voice/effects context with explicit cleanup and browser autoplay handling.
 - Voice reverb now uses a deterministic generated impulse. If authored reverb tails become important, replace it with a static impulse asset.
 - BGM assets are committed directly under `public/assets/music/` and increase repository size. If the soundtrack grows, consider Git LFS, an asset CDN, or a manifest-driven asset pipeline.
