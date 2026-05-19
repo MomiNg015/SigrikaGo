@@ -527,7 +527,7 @@
 
 .black .stone.decorated-stone,
 .white .stone.decorated-stone {
-  background: center / 108% 108% no-repeat var(--stone-decoration-image);
+  background: center / 100% 100% no-repeat var(--stone-decoration-image);
   box-shadow: 0 4px 8px rgba(45, 29, 18, 0.24);
 }
 

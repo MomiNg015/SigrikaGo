@@ -220,6 +220,7 @@ SigrikaGo/
 - 购买会扣除用户金币，并写入 `ownedCharacters` 或 `ownedDecorations`。
 - 内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。
 - 内置装饰商品会 seed 爪印棋子，价格 500 金币。
+- 爪印棋子使用 image-gen 生成图裁切出的透明 PNG 贴图：`paw-stone-black.png`、`paw-stone-white.png` 和 `paw-stone-preview.png`。
 - 玩家购买棋子装饰后会进入棋舍装饰区，可点击应用；空选择表示继续使用默认棋子。
 - 对局棋盘按棋子颜色找到对应玩家的 `selectedStoneDecoration`，黑白双方可分别显示各自设置的棋子样式；未设置时保持默认棋子。
 

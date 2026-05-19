@@ -141,7 +141,7 @@ describe("shop", () => {
         category: "decoration",
         targetId: "paw-stone",
         priceCoins: 500,
-        imageUrl: "/assets/decorations/paw-stone-preview.svg"
+        imageUrl: "/assets/decorations/paw-stone-preview.png"
       })
     ]);
   });

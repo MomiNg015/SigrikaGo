@@ -5,10 +5,10 @@ export const STONE_DECORATIONS = {
     description: "圆润棋面上带有爪印图案的黑白棋子。",
     category: "stone",
     priceCoins: 500,
-    previewImageUrl: "/assets/decorations/paw-stone-preview.svg",
+    previewImageUrl: "/assets/decorations/paw-stone-preview.png",
     images: {
-      black: "/assets/decorations/paw-stone-black.svg",
-      white: "/assets/decorations/paw-stone-white.svg"
+      black: "/assets/decorations/paw-stone-black.png",
+      white: "/assets/decorations/paw-stone-white.png"
     }
   }
 };
