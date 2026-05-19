@@ -863,3 +863,37 @@ SigrikaGo/
 - Music ownership, purchase availability, and player selection are represented in configuration shape but not yet backed by persisted music inventory/settings UI.
 - Character skill voice configuration is static in `CHARACTER_SKILL_VOICES`; future admin-configurable voices would need schema/API/upload support and cache invalidation rules.
 - No browser-level automated test currently verifies actual audio playback, Web Audio graph routing, or autoplay fallback behavior; existing coverage focuses on deterministic helper logic.
+
+## Next UI And Voice Design
+
+The next planned UI/audio iteration is specified in `docs/superpowers/specs/2026-05-19-result-home-voice-room-design.md`.
+
+- Result rewards:
+  - Result modal should show the current player's rating and coin changes.
+  - Rating remains win `+20`, loss `-20`, draw `0`.
+  - Coins should become win `+50`, loss `+20`, draw `0`.
+  - Backend persistence should remain the source of truth; frontend display should use shared result reward helpers.
+- Home layout:
+  - Home screen should prioritize "空想对局" as the largest primary action.
+  - "棋舍" remains a secondary profile/character entry.
+  - "商城", "观战", "排行榜", and admin management should be medium icon buttons.
+- Character voice categories:
+  - Character voice events should be explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
+  - Countdown voice should use 10 separate second-specific assets, but must be preloaded/decoded before live playback so timer state is not blocked by file reads.
+  - Missing character voice assets should fall back to generic voice or TTS according to the resolver.
+- Room time display:
+  - Player timers should use a nixie/digital-clock style instead of compact text like `30s × 3`.
+  - Byo-yomi period count should also be shown as a leading-zero digital counter such as `03`, `02`, `01`.
+  - The period counter should be visually smaller than the main time/second display.
+- Room action area:
+  - Normal play shows regular action buttons below the board.
+  - Request phases replace the relevant player's action area with request text, countdown, and agree/disagree controls.
+  - Dead-stone marking and scoring review replace both players' action area with scoring workflow controls.
+  - The lower-left panel is reserved for text operation hints.
+- Finished-game portrait badges:
+  - Winner portraits should show a red circular "胜" badge.
+  - Loser portraits should show a black circular "负" badge.
+  - Draws should not show win/loss badges.
+- Responsive direction:
+  - Desktop and tablet should keep the same room/home layout structure and shrink to a minimum viable size.
+  - Mobile should preserve the same structure where possible, preferring controlled scrolling or scaling over a different information architecture.
