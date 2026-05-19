@@ -783,7 +783,7 @@
 .decision-copy {
   min-width: 0;
   display: grid;
-  gap: 3px;
+  gap: 5px;
   color: #4d4256;
 }
 
@@ -805,6 +805,21 @@
   justify-content: flex-end;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.decision-progress {
+  overflow: hidden;
+  width: min(280px, 100%);
+  height: 7px;
+  border-radius: 999px;
+  background: #eaddea;
+}
+
+.decision-progress span {
+  display: block;
+  height: 100%;
+  background: #e279ad;
+  animation: shrink linear forwards;
 }
 
 .decision-waiting {
@@ -888,15 +903,6 @@
   cursor: not-allowed;
 }
 
-.counting-panel {
-  padding: clamp(10px, 1vw, 14px);
-  margin: 0;
-}
-
-.counting-panel p {
-  margin-bottom: 8px;
-}
-
 .status-slot {
   width: var(--board-size);
   max-width: 100%;
@@ -936,14 +942,6 @@
   width: min(360px, calc(100% - 16px));
 }
 
-.side-status {
-  width: 100%;
-}
-
-.side-status.empty-status {
-  display: none;
-}
-
 .status-slot:empty {
   display: none;
 }
@@ -969,25 +967,6 @@
 
 .replay-bar input {
   width: 100%;
-}
-
-.progress {
-  overflow: hidden;
-  height: 8px;
-  border-radius: 999px;
-  background: #eaddea;
-  margin-bottom: 12px;
-}
-
-.progress span {
-  display: block;
-  height: 100%;
-  background: #e279ad;
-  animation: shrink 30s linear forwards;
-}
-
-.draw-progress span {
-  animation-duration: 10s;
 }
 
 @keyframes shrink {

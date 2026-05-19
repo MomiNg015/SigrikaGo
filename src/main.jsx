@@ -753,6 +753,9 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
             scoring={scoring}
             drawRequest={drawRequest}
+            drawDeadline={displayRoom.drawDeadline ?? drawRequest?.deadline}
+            countingDeadline={displayRoom.countingDeadline ?? scoring?.deadline}
+            resultDeadline={displayRoom.resultDeadline ?? scoring?.resultDeadline}
             replayStep={boardStep ?? liveStep}
             replayMax={liveStep}
             onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
@@ -984,7 +987,7 @@ function OperationHint({ room, user, scoring, drawRequest }) {
   );
 }
 
-function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, scoring, drawRequest, replayStep = 0, replayMax = 0, showTestTools = false, onReplayStep, onTestRandomLayout, onTestRestoreSkill, onPass, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult, onResign, onBack }) {
+function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, scoring, drawRequest, drawDeadline, countingDeadline, resultDeadline, replayStep = 0, replayMax = 0, showTestTools = false, onReplayStep, onTestRandomLayout, onTestRestoreSkill, onPass, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult, onResign, onBack }) {
   if (role === "spectator") {
     return (
       <nav className="action-bar">
@@ -1014,9 +1017,12 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
     return (
       <DecisionBar
         phase={phase}
-        userId={me?.user.id}
+        userId={me?.user?.id}
         scoring={scoring}
         drawRequest={drawRequest}
+        drawDeadline={drawDeadline}
+        countingDeadline={countingDeadline}
+        resultDeadline={resultDeadline}
         onCountingRespond={onCountingRespond}
         onDrawRespond={onDrawRespond}
         onConfirmScoring={onConfirmScoring}
@@ -1051,16 +1057,19 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
   );
 }
 
-function DecisionBar({ phase, userId, scoring, drawRequest, onCountingRespond, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult }) {
+function DecisionBar({ phase, userId, scoring, drawRequest, drawDeadline, countingDeadline, resultDeadline, onCountingRespond, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult }) {
+  const hasParticipant = Boolean(userId);
   if (phase === GAME_PHASES.drawRequested && drawRequest) {
-    const isRequester = drawRequest.requestedBy === userId;
+    const isRequester = hasParticipant && drawRequest.requestedBy === userId;
+    const canRespond = hasParticipant && !isRequester;
     return (
       <nav className={`action-bar decision-bar ${isRequester ? "waiting" : ""}`} aria-live="polite">
         <div className="decision-copy">
           <strong>和棋申请</strong>
-          <span>{isRequester ? "等待对方确认和棋。" : "对方申请和棋，是否同意？"}</span>
+          <span>{isRequester ? "等待对方确认和棋。" : hasParticipant ? "对方申请和棋，是否同意？" : "和棋申请确认中。"}</span>
+          <DecisionProgress deadline={drawDeadline} fallbackSeconds={10} />
         </div>
-        {isRequester ? (
+        {!canRespond ? (
           <span className="decision-waiting">等待中</span>
         ) : (
           <div className="decision-actions">
@@ -1073,14 +1082,16 @@ function DecisionBar({ phase, userId, scoring, drawRequest, onCountingRespond, o
   }
 
   if (phase === GAME_PHASES.countingRequested && scoring) {
-    const isRequester = scoring.requestedBy === userId;
+    const isRequester = hasParticipant && scoring.requestedBy === userId;
+    const canRespond = hasParticipant && !isRequester;
     return (
       <nav className={`action-bar decision-bar ${isRequester ? "waiting" : ""}`} aria-live="polite">
         <div className="decision-copy">
           <strong>数子申请</strong>
-          <span>{isRequester ? "等待对方确认数子。" : "对方申请数子，是否同意？"}</span>
+          <span>{isRequester ? "等待对方确认数子。" : hasParticipant ? "对方申请数子，是否同意？" : "数子申请确认中。"}</span>
+          <DecisionProgress deadline={countingDeadline} fallbackSeconds={30} />
         </div>
-        {isRequester ? (
+        {!canRespond ? (
           <span className="decision-waiting">等待中</span>
         ) : (
           <div className="decision-actions">
@@ -1093,38 +1104,59 @@ function DecisionBar({ phase, userId, scoring, drawRequest, onCountingRespond, o
   }
 
   if (phase === GAME_PHASES.markingDead && scoring) {
-    const confirmed = scoring.confirmedBy?.includes(userId);
+    const confirmed = hasParticipant && scoring.confirmedBy?.includes(userId);
     return (
-      <nav className={`action-bar decision-bar ${confirmed ? "waiting" : ""}`} aria-live="polite">
+      <nav className={`action-bar decision-bar ${!hasParticipant || confirmed ? "waiting" : ""}`} aria-live="polite">
         <div className="decision-copy">
           <strong>确认死子</strong>
-          <span>{confirmed ? "你已确认，等待双方完成确认。" : "确认当前死子标记，或重新确认。"}</span>
+          <span>{!hasParticipant ? "死子确认进行中。" : confirmed ? "你已确认，等待双方完成确认。" : "确认当前死子标记，或重新确认。"}</span>
         </div>
-        <div className="decision-actions">
-          <button onClick={onConfirmScoring} disabled={confirmed}>{confirmed ? "已确认" : "确认死子"}</button>
-          <button className="secondary-action" onClick={onResetScoring}>重新确认</button>
-        </div>
+        {!hasParticipant ? (
+          <span className="decision-waiting">等待中</span>
+        ) : (
+          <div className="decision-actions">
+            <button onClick={onConfirmScoring} disabled={confirmed}>{confirmed ? "已确认" : "确认死子"}</button>
+            <button className="secondary-action" onClick={onResetScoring}>重新确认</button>
+          </div>
+        )}
       </nav>
     );
   }
 
   if (phase === GAME_PHASES.resultReview && scoring) {
-    const accepted = scoring.resultAcceptedBy?.includes(userId);
+    const accepted = hasParticipant && scoring.resultAcceptedBy?.includes(userId);
     return (
-      <nav className={`action-bar decision-bar ${accepted ? "waiting" : ""}`} aria-live="polite">
+      <nav className={`action-bar decision-bar ${!hasParticipant || accepted ? "waiting" : ""}`} aria-live="polite">
         <div className="decision-copy">
           <strong>{scoring.result?.text ?? "结果确认"}</strong>
           <span>黑 {scoring.result?.black ?? "-"} 子，白 {scoring.result?.white ?? "-"} 子，黑贴 2又3/4 子。</span>
+          <DecisionProgress deadline={resultDeadline ?? scoring.resultDeadline} fallbackSeconds={30} />
         </div>
-        <div className="decision-actions">
-          <button onClick={onAcceptResult} disabled={accepted}>{accepted ? "已同意" : "同意结果"}</button>
-          <button onClick={onRejectResult}>不同意</button>
-        </div>
+        {!hasParticipant ? (
+          <span className="decision-waiting">等待中</span>
+        ) : (
+          <div className="decision-actions">
+            <button onClick={onAcceptResult} disabled={accepted}>{accepted ? "已同意" : "同意结果"}</button>
+            <button onClick={onRejectResult}>不同意</button>
+          </div>
+        )}
       </nav>
     );
   }
 
   return null;
+}
+
+function DecisionProgress({ deadline, fallbackSeconds }) {
+  const remainingSeconds = Number.isFinite(deadline)
+    ? Math.max(0.1, (deadline - Date.now()) / 1000)
+    : fallbackSeconds;
+
+  return (
+    <div className="decision-progress" aria-hidden="true">
+      <span key={deadline ?? fallbackSeconds} style={{ animationDuration: `${remainingSeconds}s` }} />
+    </div>
+  );
 }
 
 function TestTools({ disabled, onRandomLayout, onRestoreSkill }) {
