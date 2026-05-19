@@ -1,7 +1,6 @@
 /* Responsive overrides */
 
 @media (max-width: 900px) {
-  .battle-layout,
   .admin-screen {
     grid-template-columns: 1fr;
   }
@@ -12,8 +11,8 @@
     padding-bottom: 4px;
   }
 
-  .battle-layout {
-    display: grid;
+  .room-screen {
+    overflow-x: auto;
   }
 
   .admin-main {
@@ -46,12 +45,8 @@
     height: 92px;
   }
 
-  .player-info.opponent { order: 1; }
-  .board-column { order: 2; }
-  .room-side { order: 3; }
-
   .battle-layout {
-    overflow: visible;
+    min-width: calc(160px + 430px + 220px + (var(--fluid-gap) * 2));
   }
 
   .status-slot.floating-status {

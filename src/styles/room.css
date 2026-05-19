@@ -2,7 +2,7 @@
 
 .battle-layout {
   display: grid;
-  grid-template-columns: minmax(0, var(--left-panel)) minmax(0, var(--board-size)) minmax(0, var(--right-panel));
+  grid-template-columns: minmax(160px, var(--left-panel)) minmax(430px, var(--board-size)) minmax(220px, var(--right-panel));
   justify-content: center;
   gap: var(--fluid-gap);
   align-items: start;

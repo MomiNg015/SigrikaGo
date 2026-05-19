@@ -905,3 +905,4 @@ The next planned UI/audio iteration is specified in `docs/superpowers/specs/2026
 - Responsive direction:
   - Desktop and tablet should keep the same room/home layout structure and shrink to a minimum viable size.
   - Mobile should preserve the same structure where possible, preferring controlled scrolling or scaling over a different information architecture.
+  - Implemented for room surfaces: the player/board/side layout keeps its three-column structure across desktop and tablet widths, with practical column minimums and controlled horizontal scrolling on narrow screens.
