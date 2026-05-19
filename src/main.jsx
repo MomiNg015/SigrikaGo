@@ -440,7 +440,7 @@ function AuthScreen({ onAuth }) {
           <img src={CHARACTERS.sigrika.portrait} alt="西格莉卡" />
           <div>
             <p>SigrikaGo</p>
-            <h1>空想围棋</h1>
+            <h1>星炬学院围棋部</h1>
           </div>
         </div>
         <form onSubmit={submit} className="auth-form">
