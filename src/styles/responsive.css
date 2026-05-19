@@ -1,10 +1,15 @@
 /* Responsive overrides */
 
 @media (max-width: 900px) {
-  .home-grid,
   .battle-layout,
   .admin-screen {
     grid-template-columns: 1fr;
+  }
+
+  .home-grid-featured {
+    grid-template-columns: minmax(360px, 1.45fr) minmax(320px, 0.9fr);
+    overflow-x: auto;
+    padding-bottom: 4px;
   }
 
   .battle-layout {
@@ -102,6 +107,30 @@
 
   .admin-grid {
     grid-template-columns: 1fr;
+  }
+
+  .home-grid-featured {
+    grid-template-columns: minmax(300px, 1fr);
+    grid-template-areas:
+      "match"
+      "house"
+      "utilities";
+    overflow-x: visible;
+  }
+
+  .home-match-feature {
+    min-height: 280px;
+  }
+
+  .home-utility-grid,
+  .home-utility-grid-admin {
+    grid-template-columns: repeat(3, minmax(108px, 1fr));
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .utility-entry {
+    min-width: 108px;
   }
 
   .admin-main {

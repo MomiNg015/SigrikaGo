@@ -222,10 +222,66 @@ p {
   color: #4f3d55;
 }
 
-.home-grid {
+.home-grid,
+.home-grid-featured {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--fluid-gap);
+}
+
+.home-grid-featured {
+  grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.95fr);
+  grid-template-areas:
+    "match house"
+    "match utilities";
+  align-items: stretch;
+}
+
+.home-match-feature {
+  grid-area: match;
+  min-height: clamp(330px, 36vw, 480px);
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(239, 246, 255, 0.86)),
+    #ffffff;
+  color: #2d2430;
+  box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
+  display: grid;
+  align-content: space-between;
+  gap: clamp(18px, 2vw, 26px);
+  padding: clamp(20px, 2.6vw, 34px);
+  overflow: hidden;
+}
+
+.match-feature-copy {
+  display: grid;
+  gap: clamp(12px, 1.4vw, 18px);
+  align-content: start;
+  max-width: 560px;
+}
+
+.match-feature-copy svg {
+  color: #5d7fe8;
+}
+
+.match-feature-copy h2 {
+  margin: 0 0 10px;
+  font-size: clamp(34px, 4.6vw, 58px);
+  line-height: 1;
+}
+
+.match-feature-copy p {
+  margin: 0;
+  font-size: clamp(15px, 1.3vw, 18px);
+}
+
+.match-button-large {
+  width: min(280px, 100%);
+  min-height: clamp(56px, 5.4vw, 72px);
+  font-size: clamp(18px, 1.7vw, 22px);
+  font-weight: 800;
+  justify-self: start;
 }
 
 .home-entry {
@@ -247,6 +303,12 @@ p {
   grid-template-columns: minmax(0, 1fr) clamp(118px, 15vw, 180px);
   text-align: left;
   overflow: hidden;
+}
+
+.house-entry-secondary {
+  grid-area: house;
+  min-height: clamp(186px, 18vw, 230px);
+  align-content: stretch;
 }
 
 .entry-copy {
@@ -292,4 +354,31 @@ p {
 
 .admin-entry {
   background: linear-gradient(135deg, rgba(242, 248, 244, 0.96), rgba(237, 244, 255, 0.9));
+}
+
+.home-utility-grid {
+  grid-area: utilities;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(116px, 1fr));
+  gap: var(--fluid-gap);
+  align-self: stretch;
+}
+
+.home-utility-grid-admin {
+  grid-template-columns: repeat(4, minmax(104px, 1fr));
+}
+
+.utility-entry {
+  min-height: clamp(126px, 12vw, 156px);
+  padding: clamp(12px, 1.2vw, 16px);
+  gap: 8px;
+}
+
+.utility-entry strong {
+  font-size: clamp(16px, 1.45vw, 19px);
+}
+
+.utility-entry span {
+  font-size: clamp(12px, 1vw, 14px);
+  line-height: 1.35;
 }

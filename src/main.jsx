@@ -457,6 +457,8 @@ function AuthScreen({ onAuth }) {
 }
 
 function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, onLogout, onStartMatch, onOpenHouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenSettings, onOpenAdmin }) {
+  const selectedCharacter = findCharacter(characters, user.selectedCharacter);
+
   return (
     <main className="home-screen">
       <header className="topbar">
@@ -469,44 +471,52 @@ function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, on
           <button className="icon-button" title="退出登录" onClick={onLogout}><LogOut size={20} /></button>
         </div>
       </header>
-      <section className="home-grid">
-        <button className="home-entry house-entry" onClick={onOpenHouse}>
+      <section className="home-grid-featured">
+        <section className="home-match-feature">
+          <div className="match-feature-copy">
+            <Swords size={34} />
+            <div>
+              <h2>空想对局</h2>
+              <p className="quiet-text">13路，中国数子规则，黑贴2又3/4子。</p>
+            </div>
+          </div>
+          <button className="match-button match-button-large" onClick={onStartMatch}>
+            <Sparkles size={24} />
+            开始匹配
+          </button>
+        </section>
+        <button className="home-entry house-entry house-entry-secondary" onClick={onOpenHouse}>
           <div className="entry-copy">
             <UserRound size={30} />
             <strong>棋舍</strong>
             <span>{user.username} · {user.rank} · {user.rating}分</span>
           </div>
-          <img className="entry-portrait" src={findCharacter(characters, user.selectedCharacter).portrait} alt="出战角色" />
+          <img className="entry-portrait" src={selectedCharacter.portrait} alt="出战角色" />
         </button>
-        <Panel title="空想对局" icon={<Swords />}>
-          <button className="match-button" onClick={onStartMatch}>
-            <Sparkles size={22} />
-            开始匹配
+        <div className={user.role === "admin" ? "home-utility-grid home-utility-grid-admin" : "home-utility-grid"}>
+          <button className="home-entry utility-entry watch-entry" onClick={onOpenWatch}>
+            <Eye size={28} />
+            <strong>观战</strong>
+            <span>输入5位房间号进入观战席</span>
           </button>
-          <p className="quiet-text">13路，中国数子规则，黑贴2又3/4子。</p>
-        </Panel>
-        <button className="home-entry watch-entry" onClick={onOpenWatch}>
-          <Eye size={30} />
-          <strong>观战</strong>
-          <span>输入5位房间号进入观战席</span>
-        </button>
-        <button className="home-entry leaderboard-entry" onClick={onOpenLeaderboard}>
-          <Trophy size={30} />
-          <strong>排行榜</strong>
-          <span>积分、胜负与常用角色</span>
-        </button>
-        <button className="home-entry shop-entry" onClick={onOpenShop}>
-          <ShoppingBag size={30} />
-          <strong>商城</strong>
-          <span>角色、物品、装饰即将开放</span>
-        </button>
-        {user.role === "admin" && (
-          <button className="home-entry admin-entry" onClick={onOpenAdmin}>
-            <Settings size={30} />
-            <strong>后台管理</strong>
-            <span>用户、角色与系统配置</span>
+          <button className="home-entry utility-entry leaderboard-entry" onClick={onOpenLeaderboard}>
+            <Trophy size={28} />
+            <strong>排行榜</strong>
+            <span>积分、胜负与常用角色</span>
           </button>
-        )}
+          <button className="home-entry utility-entry shop-entry" onClick={onOpenShop}>
+            <ShoppingBag size={28} />
+            <strong>商城</strong>
+            <span>角色、物品、装饰即将开放</span>
+          </button>
+          {user.role === "admin" && (
+            <button className="home-entry utility-entry admin-entry" onClick={onOpenAdmin}>
+              <Settings size={30} />
+              <strong>后台管理</strong>
+              <span>用户、角色与系统配置</span>
+            </button>
+          )}
+        </div>
       </section>
     </main>
   );
