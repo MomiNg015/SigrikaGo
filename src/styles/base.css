@@ -69,7 +69,6 @@ button {
 .panel,
 .small-modal,
 .shop-modal,
-.counting-panel,
 .chat-box,
 .player-info {
   background: rgba(255, 255, 255, 0.82);
@@ -158,7 +157,6 @@ p {
 .secondary-action,
 .match-button,
 .action-bar button,
-.counting-panel button,
 .chat-box button,
 .watch-pad button,
 .danger-action {
