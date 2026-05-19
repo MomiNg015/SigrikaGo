@@ -25,4 +25,17 @@ describe("result rewards", () => {
       coins: COIN_DRAW_DELTA
     });
   });
+
+  it("treats missing or invalid player color as a draw-like no-op", () => {
+    expect(resultRewardDelta(null, COLORS.black)).toEqual({
+      outcome: "draw",
+      rating: 0,
+      coins: COIN_DRAW_DELTA
+    });
+    expect(resultRewardDelta("observer", COLORS.white)).toEqual({
+      outcome: "draw",
+      rating: 0,
+      coins: COIN_DRAW_DELTA
+    });
+  });
 });
