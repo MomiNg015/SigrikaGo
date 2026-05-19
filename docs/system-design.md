@@ -884,6 +884,8 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
   - Narrow utility overflow is contained inside the utility grid instead of expanding the whole page.
 - Character voice categories:
   - Character voice events are explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
+  - Built-in skill voice assets are bridged into each character's `systemVoices.skill-cast` map at runtime, so skill banners use the same `resolveSystemVoice` route as other role voices.
+  - Character detail clicks in the house route through `house-detail`; missing assets stay silent until a character-specific detail voice is configured.
   - Countdown voice uses 10 second-specific events, with invalid countdown event names rejected before character audio override.
   - Missing character voice assets fall back to generic voice/TTS according to `resolveSystemVoice`.
 - Room time display:
@@ -901,3 +903,4 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
 - Responsive direction:
   - The room player/board/side layout keeps its three-column structure across desktop and tablet widths.
   - Narrow room screens use practical column minimums and controlled horizontal scrolling instead of switching to a stacked layout.
+  - Tablet/mobile overrides do not reshape room player cards, preserving the vertical portrait, digital timer, and action hierarchy inside the fixed three-column room layout.

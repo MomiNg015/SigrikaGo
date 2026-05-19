@@ -36,15 +36,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .player-info {
-    grid-template-columns: 86px 1fr;
-    align-items: center;
-  }
-
-  .player-info img {
-    height: 92px;
-  }
-
   .battle-layout {
     min-width: calc(160px + 430px + 220px + (var(--fluid-gap) * 2));
   }

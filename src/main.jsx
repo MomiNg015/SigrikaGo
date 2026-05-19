@@ -35,18 +35,19 @@ import { BOARD_SIZE, COLORS, GAME_PHASES, activatePassiveSkill, createGameState,
 import { derivePlayerRecordStats } from "./shared/gameRecords.js";
 import { canPreviewSkillTarget, lastMarkedAction } from "./shared/boardView.js";
 import { boardSoundActionAtStep, latestBoardSoundAction } from "./shared/boardAudio.js";
-import { MATCH_SUCCESS_SOUND, latestSkillCharacterId, resolveBackgroundMusic, resolveResultSound, resolveSkillVoice } from "./shared/musicLibrary.js";
+import { MATCH_SUCCESS_SOUND, characterVoiceMapForSkill, latestSkillCharacterId, resolveBackgroundMusic, resolveResultSound } from "./shared/musicLibrary.js";
 import { nextCountdownAnnouncement, nextTimeAnnouncement } from "./shared/timeAnnouncements.js";
 import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
 import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "./shared/systemVoices.js";
 import { resultRewardDelta } from "./shared/resultRewards.js";
-import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playEffectSound, playPreloadedVoiceSound, playVoiceSound, preloadVoiceSound, speakText } from "./audio/playback.jsx";
+import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playEffectSound, playPreloadedVoiceSound, preloadVoiceSound, speakText } from "./audio/playback.jsx";
 import AdminConsole from "./admin/AdminConsole.jsx";
 import { adminApi, api } from "./api/client.js";
 import "./styles.css";
 
 const SOCKET_BASE = "http://localhost:3001";
 const SHOW_TEST_TOOLS = import.meta.env.DEV;
+const DEFAULT_CHARACTER_SYSTEM_VOICES = characterVoiceMapForSkill();
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("sigrika-token") ?? "");
@@ -369,6 +370,7 @@ function App() {
           user={user}
           records={replayRecords}
           characterListView={characterListView}
+          audioSettings={audioSettings}
           onClose={() => setShowHouse(false)}
           onSelectCharacter={selectCharacter}
           onOpenReplay={openReplay}
@@ -1226,13 +1228,20 @@ function ChatBox({ room, onChat, readonly = false }) {
   );
 }
 
-function HouseModal({ user, records, characterListView, onClose, onSelectCharacter, onOpenReplay }) {
+function HouseModal({ user, records, characterListView, audioSettings, onClose, onSelectCharacter, onOpenReplay }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
   const [showReplays, setShowReplays] = useState(false);
   const stats = derivePlayerRecordStats(user, records);
   const owned = new Set(user.ownedCharacters ?? []);
   const detailOwned = detailCharacter ? owned.has(detailCharacter.id) : false;
   const emptySlots = Array.from({ length: Math.max(0, 10 - characterListView.length) }, (_, index) => index);
+  function openCharacterDetail(character) {
+    setDetailCharacter(character);
+    playSystemVoice(SYSTEM_VOICE_EVENTS.houseDetail, {
+      character: withCharacterSystemVoices(character),
+      audioSettings
+    });
+  }
 
   return (
     <div className="modal-backdrop">
@@ -1250,11 +1259,11 @@ function HouseModal({ user, records, characterListView, onClose, onSelectCharact
             <div
               className={`character-card portrait-card ${user.selectedCharacter === character.id ? "selected" : ""} ${owned.has(character.id) ? "" : "unowned"}`}
               key={character.id}
-              onClick={() => setDetailCharacter(character)}
+              onClick={() => openCharacterDetail(character)}
               role="button"
               tabIndex={0}
               onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") setDetailCharacter(character);
+                if (event.key === "Enter" || event.key === " ") openCharacterDetail(character);
               }}
             >
               <button
@@ -1715,11 +1724,11 @@ function SkillBanner({ banner, characters, audioSettings }) {
   const character = findCharacter(characters, banner.character ?? banner.characterId);
   useEffect(() => {
     if (!banner?.id || playedVoiceBannerRef.current === banner.id) return;
-    const voiceSrc = resolveSkillVoice(banner);
-    if (!voiceSrc) return;
+    const voice = resolveSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, { character });
+    if (voice.type !== "audio" && !voice.text) return;
     playedVoiceBannerRef.current = banner.id;
-    playVoiceSound(voiceSrc, audioSettings);
-  }, [banner, audioSettings]);
+    playSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, { character, audioSettings });
+  }, [banner, character, audioSettings]);
 
   return (
     <div className="skill-burst" aria-live="polite">
@@ -1769,7 +1778,7 @@ function findCharacter(characters, characterOrId) {
   const characterId = typeof characterOrId === "string" ? characterOrId : characterOrId?.id;
   const fallback = CHARACTERS[characterId] ?? CHARACTERS.sigrika;
   if (characterOrId && typeof characterOrId === "object") {
-    return {
+    return withCharacterSystemVoices({
       ...fallback,
       ...characterOrId,
       acquisitionMethod: characterOrId.acquisitionMethod ?? fallback.acquisitionMethod ?? "",
@@ -1777,9 +1786,20 @@ function findCharacter(characters, characterOrId) {
         ...fallback.skill,
         ...(characterOrId.skill ?? {})
       }
-    };
+    });
   }
-  return characters[characterId] ?? fallback;
+  return withCharacterSystemVoices(characters[characterId] ?? fallback);
+}
+
+function withCharacterSystemVoices(character) {
+  if (!character?.id) return character;
+  return {
+    ...character,
+    systemVoices: {
+      ...(DEFAULT_CHARACTER_SYSTEM_VOICES[character.id] ?? {}),
+      ...(character.systemVoices ?? {})
+    }
+  };
 }
 
 function Toast({ text, onClose }) {
