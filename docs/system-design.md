@@ -881,6 +881,7 @@ The next planned UI/audio iteration is specified in `docs/superpowers/specs/2026
   - Home screen should prioritize "空想对局" as the largest primary action.
   - "棋舍" remains a secondary profile/character entry.
   - "商城", "观战", "排行榜", and admin management should be medium icon buttons.
+  - Utility button overflow should remain contained inside the utility grid at narrow widths.
 - Character voice categories:
   - Character voice events should be explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
   - Countdown voice should use 10 separate second-specific assets, but must be preloaded/decoded before live playback so timer state is not blocked by file reads.

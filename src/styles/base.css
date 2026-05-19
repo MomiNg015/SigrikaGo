@@ -362,6 +362,10 @@ p {
   grid-template-columns: repeat(3, minmax(116px, 1fr));
   gap: var(--fluid-gap);
   align-self: stretch;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .home-utility-grid-admin {
