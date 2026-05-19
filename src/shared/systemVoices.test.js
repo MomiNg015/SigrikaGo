@@ -72,7 +72,9 @@ describe("system voices", () => {
     const character = {
       systemVoices: {
         [SYSTEM_VOICE_EVENTS.byoYomiCountdown]: "/assets/voice/bad-countdown.ogg",
-        [SYSTEM_VOICE_EVENTS.countdown(11)]: "/assets/voice/countdown-11.ogg"
+        [SYSTEM_VOICE_EVENTS.countdown(11)]: "/assets/voice/countdown-11.ogg",
+        "countdown-01": "/assets/voice/countdown-01.ogg",
+        "countdown-0001": "/assets/voice/countdown-0001.ogg"
       }
     };
 
@@ -81,6 +83,14 @@ describe("system voices", () => {
       text: ""
     });
     expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(11), { character })).toEqual({
+      type: "tts",
+      text: ""
+    });
+    expect(resolveSystemVoice("countdown-01", { character })).toEqual({
+      type: "tts",
+      text: ""
+    });
+    expect(resolveSystemVoice("countdown-0001", { character })).toEqual({
       type: "tts",
       text: ""
     });

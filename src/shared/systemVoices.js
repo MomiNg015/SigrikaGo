@@ -30,9 +30,12 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
     const text = countdownText(params.seconds);
     if (!text) return { type: "tts", text: "" };
   }
-  const countdownMatch = /^countdown-(\d+)$/.exec(event);
+  const countdownMatch = /^(countdown-(1|2|3|4|5|6|7|8|9|10))$/.exec(event);
+  if (typeof event === "string" && event.startsWith("countdown-") && !countdownMatch) {
+    return { type: "tts", text: "" };
+  }
   if (countdownMatch) {
-    const text = countdownText(Number(countdownMatch[1]));
+    const text = countdownText(Number(countdownMatch[2]));
     if (!text) return { type: "tts", text: "" };
   }
   const characterVoice = character?.systemVoices?.[event];
@@ -50,7 +53,7 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
     return { type: "tts", text: countdownText(params.seconds) };
   }
   if (countdownMatch) {
-    return { type: "tts", text: countdownText(Number(countdownMatch[1])) };
+    return { type: "tts", text: countdownText(Number(countdownMatch[2])) };
   }
   return { type: "tts", text: DEFAULT_SYSTEM_VOICE_TEXT[event] ?? "" };
 }
