@@ -33,11 +33,13 @@ SigrikaGo/
     skillRegistry.js           # 角色技能 fallback 配置转换
     *.test.js                  # Vitest 单元测试
   src/
-    main.jsx                   # React 单页应用入口与大厅/对局/弹窗组装
+    main.jsx                   # React 单页应用入口与对局/弹窗组装
     api/
       client.js                # 前端 HTTP JSON、后台 API、上传请求封装
     admin/
       AdminConsole.jsx         # 后台管理界面与后台 CRUD 组件
+    home/
+      HomeScreen.jsx           # 大厅首页布局、匹配入口、棋舍入口和工具入口
     styles.css                 # 全局样式
     shared/
       game.js                  # 13 路围棋规则、技能、数子、回放核心逻辑
@@ -60,9 +62,13 @@ SigrikaGo/
 
 - `src/main.jsx`
   - React SPA 的集中入口。
-  - 包含认证、大厅、对局、棋舍、商城、排行榜、设置等组件，并挂载后台管理入口。
+  - 包含认证、对局、棋舍、商城、排行榜、设置等组件，并挂载后台管理入口。
   - 使用 `useState` / `useEffect` 做本地状态管理。
   - 通过 `src/api/client.js` 调用 HTTP API，通过 `socket.io-client` 连接实时对局。
+
+- `src/home/HomeScreen.jsx`
+  - 大厅首页展示组件。
+  - 负责大厅标题/副标题、匹配主入口、棋舍入口、观战/排行榜/商城/后台管理工具入口。
 
 - `src/admin/AdminConsole.jsx`
   - 后台管理界面模块。
