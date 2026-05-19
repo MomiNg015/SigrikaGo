@@ -635,7 +635,7 @@ SigrikaGo/
 - `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题/副标题默认值。
 - `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定。
 - `replayRoomAt`: 用历史记录重放房间状态；观战实时回放另由 `replayGameAt` 只派生棋盘进程。
-- 音频相关：`loadAudioSettings`、`playStoneSound`、`playCountdownBeep`、`speakText`。
+- 音频相关：`loadAudioSettings`、`playStoneSound`、`playSystemVoice` 路由、`preloadVoiceSound`、`playPreloadedVoiceSound`、`speakText`。
 
 ### 后端通用逻辑
 
@@ -868,41 +868,36 @@ SigrikaGo/
 - No browser-level automated test currently verifies actual audio playback, Web Audio graph routing, or autoplay fallback behavior; existing coverage focuses on deterministic helper logic.
 - Countdown character voice assets are opportunistically preloaded and decoded into a module-level Web Audio buffer cache while the active player is in byo-yomi. Cached playback reuses the same dry/wet reverb voice chain as regular voice playback, and failures fall back to the existing voice path without blocking timers.
 
-## Next UI And Voice Design
+## Result Rewards And Room UI
 
-The next planned UI/audio iteration is specified in `docs/superpowers/specs/2026-05-19-result-home-voice-room-design.md`, with implementation steps in `docs/superpowers/plans/2026-05-19-result-home-voice-room.md`.
+This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice-room-design.md` and `docs/superpowers/plans/2026-05-19-result-home-voice-room.md`.
 
 - Result rewards:
-  - Result modal should show the current player's rating and coin changes.
-  - Rating remains win `+20`, loss `-20`, draw `0`.
-  - Coins should become win `+50`, loss `+20`, draw `0`.
-  - Backend persistence should remain the source of truth; frontend display should use shared result reward helpers.
+  - The result modal displays the current player's rating and coin deltas.
+  - Rating deltas are win `+20`, loss `-20`, draw `0`.
+  - Coin deltas are win `+50`, loss `+20`, draw `0`.
+  - Decisive game persistence uses `resultRewardDelta`; winner records gain coins and rating, loser records gain consolation coins and lose rating. Draws remain record-only for rewards.
 - Home layout:
-  - Home screen should prioritize "空想对局" as the largest primary action.
-  - "棋舍" remains a secondary profile/character entry.
-  - "商城", "观战", "排行榜", and admin management should be medium icon buttons.
-  - Utility button overflow should remain contained inside the utility grid at narrow widths.
+  - The home screen prioritizes "空想对局" as the largest primary action.
+  - "棋舍" is a secondary profile/character entry with the selected portrait and player info.
+  - "商城", "观战", "排行榜", and admin management are medium utility icon buttons.
+  - Narrow utility overflow is contained inside the utility grid instead of expanding the whole page.
 - Character voice categories:
-  - Character voice events should be explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
-  - Countdown voice should use 10 separate second-specific assets, but must be preloaded/decoded before live playback so timer state is not blocked by file reads.
-  - Missing character voice assets should fall back to generic voice or TTS according to the resolver.
+  - Character voice events are explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
+  - Countdown voice uses 10 second-specific events, with invalid countdown event names rejected before character audio override.
+  - Missing character voice assets fall back to generic voice/TTS according to `resolveSystemVoice`.
 - Room time display:
-  - Implemented in `src/main.jsx` and `src/styles/room.css`: player timers now render a digital/nixie-style label, primary time/seconds, and smaller leading-zero byo-yomi period counter.
-  - Player timers should use a nixie/digital-clock style instead of compact text like `30s × 3`.
-  - Byo-yomi period count should also be shown as a leading-zero digital counter such as `03`, `02`, `01`.
-  - The period counter should be visually smaller than the main time/second display.
+  - Player timers render a digital/nixie-style label, primary time/seconds, and smaller leading-zero byo-yomi period counter.
+  - The compact `30s × 3` style is no longer used in the player info timer.
 - Room action area:
   - Normal play shows regular action buttons below the board.
-  - Implemented in `src/main.jsx` and `src/styles/room.css`: request, dead-stone, and result-review decisions now render in the main board action area through phase-aware decision controls with participant-safe action gating and countdown progress, while the board status slot renders text-only operation hints.
-  - Request phases replace the relevant player's action area with request text, countdown, and agree/disagree controls.
-  - Dead-stone marking and scoring review replace both players' action area with scoring workflow controls.
-  - The lower-left panel is reserved for text operation hints.
+  - Draw requests, counting requests, dead-stone marking, and result review render in the main board action area through phase-aware `DecisionBar` controls.
+  - Decision controls are participant-safe: missing/non-player local state sees an informational waiting state instead of active buttons.
+  - Request and result-review decision bars include countdown/progress visuals.
+  - The board status slot renders text-only operation hints.
 - Finished-game portrait badges:
-  - Implemented in room player portraits: decisive finished games show a red circular win badge and a black circular loss badge; draw results show no portrait badge.
-  - Winner portraits should show a red circular "胜" badge.
-  - Loser portraits should show a black circular "负" badge.
-  - Draws should not show win/loss badges.
+  - Decisive finished games show a red circular "胜" badge on the winner portrait and a black circular "负" badge on the loser portrait.
+  - Draw results show no win/loss portrait badge.
 - Responsive direction:
-  - Desktop and tablet should keep the same room/home layout structure and shrink to a minimum viable size.
-  - Mobile should preserve the same structure where possible, preferring controlled scrolling or scaling over a different information architecture.
-  - Implemented for room surfaces: the player/board/side layout keeps its three-column structure across desktop and tablet widths, with practical column minimums and controlled horizontal scrolling on narrow screens.
+  - The room player/board/side layout keeps its three-column structure across desktop and tablet widths.
+  - Narrow room screens use practical column minimums and controlled horizontal scrolling instead of switching to a stacked layout.
