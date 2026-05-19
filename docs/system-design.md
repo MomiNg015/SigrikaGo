@@ -887,6 +887,7 @@ The next planned UI/audio iteration is specified in `docs/superpowers/specs/2026
   - Countdown voice should use 10 separate second-specific assets, but must be preloaded/decoded before live playback so timer state is not blocked by file reads.
   - Missing character voice assets should fall back to generic voice or TTS according to the resolver.
 - Room time display:
+  - Implemented in `src/main.jsx` and `src/styles/room.css`: player timers now render a digital/nixie-style label, primary time/seconds, and smaller leading-zero byo-yomi period counter.
   - Player timers should use a nixie/digital-clock style instead of compact text like `30s × 3`.
   - Byo-yomi period count should also be shown as a leading-zero digital counter such as `03`, `02`, `01`.
   - The period counter should be visually smaller than the main time/second display.
@@ -896,6 +897,7 @@ The next planned UI/audio iteration is specified in `docs/superpowers/specs/2026
   - Dead-stone marking and scoring review replace both players' action area with scoring workflow controls.
   - The lower-left panel is reserved for text operation hints.
 - Finished-game portrait badges:
+  - Implemented in room player portraits: decisive finished games show a red circular win badge and a black circular loss badge; draw results show no portrait badge.
   - Winner portraits should show a red circular "胜" badge.
   - Loser portraits should show a black circular "负" badge.
   - Draws should not show win/loss badges.

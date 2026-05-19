@@ -893,6 +893,7 @@ function PlayerInfo({ player, game, characters, align, viewColor = COLORS.black,
   const character = findCharacter(characters, player.character ?? player.characterId);
   const skillUses = game.skillUses[player.color] ?? 0;
   const skillCost = game.skillCosts?.[player.color] ?? 0;
+  const resultBadge = isDrawResult ? null : isWinner ? "胜" : game.phase === "finished" ? "负" : null;
   return (
     <aside className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""}`}>
       <div className="portrait-wrap">
@@ -907,6 +908,7 @@ function PlayerInfo({ player, game, characters, align, viewColor = COLORS.black,
           </button>
         )}
         <img src={character.portrait} alt={character.name} />
+        {resultBadge && <span className={`result-badge ${resultBadge === "胜" ? "win" : "loss"}`}>{resultBadge}</span>}
       </div>
       <div className="player-meta">
         <button className="name-button">{player.user.username}</button>
@@ -929,12 +931,18 @@ function PlayerInfo({ player, game, characters, align, viewColor = COLORS.black,
 function TimeBar({ time }) {
   const inMain = time.main > 0;
   const isFinalByoYomi = !inMain && time.periods <= 1;
+  const displayValue = inMain ? formatClock(time.main) : String(time.periodRemaining ?? time.byoYomi).padStart(2, "0");
+  const periodValue = String(Math.max(0, time.periods ?? 0)).padStart(2, "0");
   const progress = inMain
     ? Math.max(0, Math.min(100, (time.main / (5 * 60)) * 100))
     : Math.max(0, Math.min(100, ((time.periodRemaining ?? time.byoYomi) / time.byoYomi) * 100));
   return (
-    <div className={`timer ${inMain ? "main-time" : isFinalByoYomi ? "final-byo-yomi" : "byo-yomi"}`}>
-      <div className="timer-text">{formatClock(time.main)} + {time.periodRemaining ?? time.byoYomi}s × {time.periods}</div>
+    <div className={`timer digital-timer ${inMain ? "main-time" : isFinalByoYomi ? "final-byo-yomi" : "byo-yomi"}`}>
+      <div className="timer-label">{inMain ? "主时间" : "读秒"}</div>
+      <div className="timer-digits">
+        <span className="timer-primary">{displayValue}</span>
+        {!inMain && <span className="timer-periods" title={`还剩${time.periods}次读秒`}>{periodValue}</span>}
+      </div>
       <div className="timer-track"><span style={{ width: `${progress}%` }} /></div>
     </div>
   );
