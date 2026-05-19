@@ -866,7 +866,7 @@ SigrikaGo/
 
 ## Next UI And Voice Design
 
-The next planned UI/audio iteration is specified in `docs/superpowers/specs/2026-05-19-result-home-voice-room-design.md`.
+The next planned UI/audio iteration is specified in `docs/superpowers/specs/2026-05-19-result-home-voice-room-design.md`, with implementation steps in `docs/superpowers/plans/2026-05-19-result-home-voice-room.md`.
 
 - Result rewards:
   - Result modal should show the current player's rating and coin changes.
