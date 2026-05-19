@@ -39,6 +39,7 @@ import { MATCH_SUCCESS_SOUND, latestSkillCharacterId, resolveBackgroundMusic, re
 import { nextTimeAnnouncement } from "./shared/timeAnnouncements.js";
 import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
 import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "./shared/systemVoices.js";
+import { resultRewardDelta } from "./shared/resultRewards.js";
 import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playCountdownBeep, playEffectSound, playVoiceSound, speakText } from "./audio/playback.jsx";
 import AdminConsole from "./admin/AdminConsole.jsx";
 import { adminApi, api } from "./api/client.js";
@@ -1524,6 +1525,9 @@ function ResultModal({ room, user, characters, audioSettings, onClose }) {
   const isDraw = !winnerColor;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
   const character = findCharacter(characters, winner?.character ?? winner?.characterId);
+  const currentPlayer = room.players.find((player) => player.user?.id === user?.id);
+  const reward = currentPlayer ? resultRewardDelta(currentPlayer.color, winnerColor) : null;
+  const signed = (value) => (value > 0 ? `+${value}` : String(value));
   const playedResultSoundRef = useRef(false);
 
   useEffect(() => {
@@ -1546,6 +1550,12 @@ function ResultModal({ room, user, characters, audioSettings, onClose }) {
         <div className="result-summary">
           <h2>对局结果</h2>
           <p>{room.game.winner?.text ?? "对局结束"}</p>
+          {reward && (
+            <div className="result-rewards" aria-label="本局收益">
+              <span><strong>积分</strong>{signed(reward.rating)}</span>
+              <span><strong>金币</strong>{signed(reward.coins)}</span>
+            </div>
+          )}
           <button onClick={onClose}>确认</button>
         </div>
       </section>

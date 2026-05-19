@@ -618,7 +618,7 @@ SigrikaGo/
 - `Board`: 棋盘渲染与点击处理。
 - `ChatBox`: 聊天面板。
 - `SkillBanner`: 技能演出浮层。
-- `ResultModal`: 对局结果弹窗。
+- `ResultModal`: 对局结果弹窗；当前用户是房间玩家时展示本局积分与金币变化。
 - `TestTools`: 对局测试按钮组，当前包含随机布局和恢复技能，集中封装以便未来下线。
 
 ### 前端通用函数
