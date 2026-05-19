@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  characterVoiceMapForSkill,
   DEFEAT_SOUND,
   MATCH_SUCCESS_SOUND,
   MUSIC_TRACKS,
@@ -270,5 +271,15 @@ describe("background music library", () => {
     );
 
     expect(voice).toBe("/assets/voice/sigrika-skill.ogg");
+  });
+
+  it("bridges configured skill voices into character system voice maps", () => {
+    expect(characterVoiceMapForSkill({
+      sigrika: "/assets/voice/sigrika_skill.ogg"
+    })).toEqual({
+      sigrika: {
+        "skill-cast": "/assets/voice/sigrika_skill.ogg"
+      }
+    });
   });
 });

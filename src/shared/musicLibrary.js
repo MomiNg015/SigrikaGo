@@ -1,3 +1,5 @@
+import { SYSTEM_VOICE_EVENTS } from "./systemVoices.js";
+
 export const MUSIC_TYPES = {
   home: "home",
   battle: "battle",
@@ -146,6 +148,17 @@ export function resolveSkillVoice(skillPreview, voices = CHARACTER_SKILL_VOICES)
   const characterId = skillPreview?.characterId ?? skillPreview?.character?.id;
   if (!characterId) return null;
   return voices[characterId] ?? null;
+}
+
+export function characterVoiceMapForSkill(voices = CHARACTER_SKILL_VOICES) {
+  return Object.fromEntries(
+    Object.entries(voices)
+      .filter(([, src]) => Boolean(src))
+      .map(([characterId, src]) => [
+        characterId,
+        { [SYSTEM_VOICE_EVENTS.skillCast]: src }
+      ])
+  );
 }
 
 function findSkillTrack(skillPreview, tracks) {

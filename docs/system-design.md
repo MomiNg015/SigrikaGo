@@ -835,6 +835,7 @@ SigrikaGo/
 
 - 角色技能语音配置集中在 `CHARACTER_SKILL_VOICES`。
 - 当前已配置：西格莉卡 `sigrika_skill.ogg`，爱弥斯 `aemeath_skill.ogg`，猪小仙 `baconbits_skill.ogg`。
+- `characterVoiceMapForSkill` 可将现有技能语音桥接为角色 `systemVoices` 的 `skill-cast` 事件映射。
 - `SkillBanner` 出现时同步触发技能语音，同一个 banner id 只播放一次。
 - 技能语音走 `voice` 音量通道。
 - `playVoiceSound` 使用 Web Audio 播放链：source -> dry/wet reverb mix -> voice gain -> destination。
@@ -845,7 +846,7 @@ SigrikaGo/
 
 - 系统语音事件集中在 `src/shared/systemVoices.js`，通过 `resolveSystemVoice` 解析。
 - 当前默认走 TTS 文本；如果角色配置了 `systemVoices[event]`，则优先播放对应音频。
-- 已预留事件：`game-start`、`byo-yomi-start`、`byo-yomi-periods`、`byo-yomi-countdown`、`timeout`、`result-victory`、`result-defeat`、`result-draw`。
+- 已预留事件：`game-start`、`skill-cast`、`byo-yomi-start`、`byo-yomi-periods`、`byo-yomi-period-2`、`byo-yomi-period-1`、`byo-yomi-countdown`、`countdown-N`、`timeout`、`result-victory`、`result-defeat`、`result-draw`、`house-detail`。
 - 对局正式开始时，服务端写入 kind 为 `game-start` 的系统消息，前端据此播放“对局开始”语音。
 - 进入读秒、剩余读秒次数和超时播报已经接入事件化 resolver；读秒倒计时和结果语音事件已预留，后续可接角色专属资源。
 
