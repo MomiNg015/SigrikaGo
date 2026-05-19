@@ -880,7 +880,7 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
 - Home layout:
   - The home screen prioritizes "空想对局" as the largest primary action.
   - "棋舍" is a secondary profile/character entry with the selected portrait and player info.
-  - "商城", "观战", "排行榜", and admin management are medium utility icon buttons.
+  - "商城", "观战", "排行榜", and admin management are compact circular utility icon buttons anchored to the lower-right area; each button shows only icon plus title.
   - Narrow utility overflow is contained inside the utility grid instead of expanding the whole page.
 - Character voice categories:
   - Character voice events are explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.

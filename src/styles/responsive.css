@@ -110,13 +110,15 @@
 
   .home-utility-grid,
   .home-utility-grid-admin {
-    grid-template-columns: repeat(3, minmax(108px, 1fr));
-    overflow-x: auto;
-    padding-bottom: 4px;
+    grid-template-columns: repeat(3, 78px);
+    justify-content: end;
+    overflow: visible;
+    padding-bottom: 0;
   }
 
   .utility-entry {
-    min-width: 108px;
+    width: 78px;
+    height: 78px;
   }
 
   .admin-main {
