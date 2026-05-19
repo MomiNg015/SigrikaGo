@@ -893,6 +893,7 @@ The next planned UI/audio iteration is specified in `docs/superpowers/specs/2026
   - The period counter should be visually smaller than the main time/second display.
 - Room action area:
   - Normal play shows regular action buttons below the board.
+  - Implemented in `src/main.jsx` and `src/styles/room.css`: request, dead-stone, and result-review decisions now render in the main board action area through phase-aware decision controls, while the board status slot renders text-only operation hints.
   - Request phases replace the relevant player's action area with request text, countdown, and agree/disagree controls.
   - Dead-stone marking and scoring review replace both players' action area with scoring workflow controls.
   - The lower-left panel is reserved for text operation hints.

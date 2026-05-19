@@ -725,22 +725,6 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             isActiveTurn={displayRoom.game.phase === "playing" && opponent?.color === displayRoom.game.turn}
             isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
           />
-          {!isReplay && (
-            <div className={`status-slot side-status ${scoring || drawRequest ? "" : "empty-status"}`}>
-              <StatusPanel
-                room={displayRoom}
-                user={user}
-                scoring={scoring}
-                drawRequest={drawRequest}
-                onRespond={onCountingRespond}
-                onDrawRespond={onDrawRespond}
-                onConfirm={() => onScoringAction({ type: "confirm-dead" })}
-                onReset={() => onScoringAction({ type: "reset-dead" })}
-                onAccept={() => onScoringAction({ type: "accept-result" })}
-                onReject={() => onScoringAction({ type: "reject-result" })}
-              />
-            </div>
-          )}
         </div>
         <div className="board-column">
           <div className="board-stage">
@@ -756,6 +740,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             />
           </div>
           <div className="status-slot">
+            <OperationHint room={displayRoom} user={user} scoring={scoring} drawRequest={drawRequest} />
           </div>
           <ActionBar
             role={role}
@@ -766,6 +751,8 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             setPendingSkill={setPendingSkill}
             skillLocked={Boolean(skillPreview)}
             skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
+            scoring={scoring}
+            drawRequest={drawRequest}
             replayStep={boardStep ?? liveStep}
             replayMax={liveStep}
             onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
@@ -774,7 +761,13 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             onTestRestoreSkill={() => onGameAction({ type: "test-restore-skill" })}
             onPass={() => onGameAction({ type: "pass" })}
             onCountingRequest={onCountingRequest}
+            onCountingRespond={onCountingRespond}
             onDrawRequest={onDrawRequest}
+            onDrawRespond={onDrawRespond}
+            onConfirmScoring={() => onScoringAction({ type: "confirm-dead" })}
+            onResetScoring={() => onScoringAction({ type: "reset-dead" })}
+            onAcceptResult={() => onScoringAction({ type: "accept-result" })}
+            onRejectResult={() => onScoringAction({ type: "reject-result" })}
             onResign={requestResignConfirm}
             onBack={requestExitConfirm}
           />
@@ -948,7 +941,50 @@ function TimeBar({ time }) {
   );
 }
 
-function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, replayStep = 0, replayMax = 0, showTestTools = false, onReplayStep, onTestRandomLayout, onTestRestoreSkill, onPass, onCountingRequest, onDrawRequest, onResign, onBack }) {
+function OperationHint({ room, user, scoring, drawRequest }) {
+  const phase = room.game.phase;
+  const isDrawRequester = drawRequest?.requestedBy === user.id;
+  const isCountingRequester = scoring?.requestedBy === user.id;
+  const confirmed = scoring?.confirmedBy?.includes(user.id);
+  const accepted = scoring?.resultAcceptedBy?.includes(user.id);
+
+  let title = "操作提示";
+  let text = "";
+
+  if (phase === GAME_PHASES.drawRequested && drawRequest) {
+    title = "和棋申请";
+    text = isDrawRequester ? "已发送和棋申请，等待对方在行动区确认。" : "对方申请和棋，请在行动区选择同意或不同意。";
+  } else if (phase === GAME_PHASES.countingRequested && scoring) {
+    title = "数子申请";
+    text = isCountingRequester ? "已发送数子申请，等待对方在行动区确认。" : "对方申请数子，请在行动区选择同意或不同意。";
+  } else if (phase === GAME_PHASES.markingDead && scoring) {
+    title = "死子确认";
+    text = confirmed ? "你已确认死子，等待双方确认完成。" : "点选棋盘上的疑似死子或空点标记后，在行动区确认。";
+  } else if (phase === GAME_PHASES.resultReview && scoring) {
+    title = "结果确认";
+    text = accepted ? "你已同意结果，等待对方确认。" : "请核对数子结果，并在行动区同意或不同意。";
+  } else if (phase === GAME_PHASES.playing) {
+    const activePlayer = room.players.find((player) => player.color === room.game.turn);
+    text = activePlayer?.user.id === user.id ? "轮到你行棋，可在棋盘落子或使用下方行动。" : "等待对方行棋。";
+  } else if (phase === GAME_PHASES.finished) {
+    title = "对局结束";
+    text = room.game.winner?.text ?? "对局已经结束。";
+  } else if (phase === GAME_PHASES.opening) {
+    text = "等待双方确认开局。";
+  } else if (phase === GAME_PHASES.skillPreview) {
+    text = "技能效果展示中，请稍候。";
+  }
+
+  if (!text) return null;
+  return (
+    <section className="operation-hint" aria-live="polite">
+      <strong>{title}</strong>
+      <p>{text}</p>
+    </section>
+  );
+}
+
+function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, scoring, drawRequest, replayStep = 0, replayMax = 0, showTestTools = false, onReplayStep, onTestRandomLayout, onTestRestoreSkill, onPass, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult, onResign, onBack }) {
   if (role === "spectator") {
     return (
       <nav className="action-bar">
@@ -967,6 +1003,27 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
         </button>
         <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
       </nav>
+    );
+  }
+  const hasDecision =
+    (phase === GAME_PHASES.drawRequested && drawRequest) ||
+    (phase === GAME_PHASES.countingRequested && scoring) ||
+    (phase === GAME_PHASES.markingDead && scoring) ||
+    (phase === GAME_PHASES.resultReview && scoring);
+  if (hasDecision) {
+    return (
+      <DecisionBar
+        phase={phase}
+        userId={me?.user.id}
+        scoring={scoring}
+        drawRequest={drawRequest}
+        onCountingRespond={onCountingRespond}
+        onDrawRespond={onDrawRespond}
+        onConfirmScoring={onConfirmScoring}
+        onResetScoring={onResetScoring}
+        onAcceptResult={onAcceptResult}
+        onRejectResult={onRejectResult}
+      />
     );
   }
   return (
@@ -992,6 +1049,82 @@ function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, s
       <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
     </nav>
   );
+}
+
+function DecisionBar({ phase, userId, scoring, drawRequest, onCountingRespond, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult }) {
+  if (phase === GAME_PHASES.drawRequested && drawRequest) {
+    const isRequester = drawRequest.requestedBy === userId;
+    return (
+      <nav className={`action-bar decision-bar ${isRequester ? "waiting" : ""}`} aria-live="polite">
+        <div className="decision-copy">
+          <strong>和棋申请</strong>
+          <span>{isRequester ? "等待对方确认和棋。" : "对方申请和棋，是否同意？"}</span>
+        </div>
+        {isRequester ? (
+          <span className="decision-waiting">等待中</span>
+        ) : (
+          <div className="decision-actions">
+            <button onClick={() => onDrawRespond?.(true)}>同意</button>
+            <button onClick={() => onDrawRespond?.(false)}>不同意</button>
+          </div>
+        )}
+      </nav>
+    );
+  }
+
+  if (phase === GAME_PHASES.countingRequested && scoring) {
+    const isRequester = scoring.requestedBy === userId;
+    return (
+      <nav className={`action-bar decision-bar ${isRequester ? "waiting" : ""}`} aria-live="polite">
+        <div className="decision-copy">
+          <strong>数子申请</strong>
+          <span>{isRequester ? "等待对方确认数子。" : "对方申请数子，是否同意？"}</span>
+        </div>
+        {isRequester ? (
+          <span className="decision-waiting">等待中</span>
+        ) : (
+          <div className="decision-actions">
+            <button onClick={() => onCountingRespond?.(true)}>同意</button>
+            <button onClick={() => onCountingRespond?.(false)}>不同意</button>
+          </div>
+        )}
+      </nav>
+    );
+  }
+
+  if (phase === GAME_PHASES.markingDead && scoring) {
+    const confirmed = scoring.confirmedBy?.includes(userId);
+    return (
+      <nav className={`action-bar decision-bar ${confirmed ? "waiting" : ""}`} aria-live="polite">
+        <div className="decision-copy">
+          <strong>确认死子</strong>
+          <span>{confirmed ? "你已确认，等待双方完成确认。" : "确认当前死子标记，或重新确认。"}</span>
+        </div>
+        <div className="decision-actions">
+          <button onClick={onConfirmScoring} disabled={confirmed}>{confirmed ? "已确认" : "确认死子"}</button>
+          <button className="secondary-action" onClick={onResetScoring}>重新确认</button>
+        </div>
+      </nav>
+    );
+  }
+
+  if (phase === GAME_PHASES.resultReview && scoring) {
+    const accepted = scoring.resultAcceptedBy?.includes(userId);
+    return (
+      <nav className={`action-bar decision-bar ${accepted ? "waiting" : ""}`} aria-live="polite">
+        <div className="decision-copy">
+          <strong>{scoring.result?.text ?? "结果确认"}</strong>
+          <span>黑 {scoring.result?.black ?? "-"} 子，白 {scoring.result?.white ?? "-"} 子，黑贴 2又3/4 子。</span>
+        </div>
+        <div className="decision-actions">
+          <button onClick={onAcceptResult} disabled={accepted}>{accepted ? "已同意" : "同意结果"}</button>
+          <button onClick={onRejectResult}>不同意</button>
+        </div>
+      </nav>
+    );
+  }
+
+  return null;
 }
 
 function TestTools({ disabled, onRandomLayout, onRestoreSkill }) {
@@ -1024,69 +1157,6 @@ function ReplayBar({ step, max, onStep }) {
       <span>{step}/{max}手</span>
     </section>
   );
-}
-
-function StatusPanel({ room, user, scoring, drawRequest, onRespond, onDrawRespond, onConfirm, onReset, onAccept, onReject }) {
-  if (room.game.phase === "draw-requested" && drawRequest) {
-    const isRequester = drawRequest.requestedBy === user.id;
-    return (
-      <section className="counting-panel">
-        <strong>和棋申请</strong>
-        <p>{isRequester ? "等待对方确认和棋。" : "对方向你申请和棋，是否同意"}</p>
-        <div className="progress draw-progress"><span /></div>
-        {!isRequester && (
-          <div className="inline-actions">
-            <button onClick={() => onDrawRespond(true)}>同意和棋</button>
-            <button onClick={() => onDrawRespond(false)}>继续对局</button>
-          </div>
-        )}
-      </section>
-    );
-  }
-  if (!scoring) return null;
-  const isRequester = scoring.requestedBy === user.id;
-  const confirmed = scoring.confirmedBy?.includes(user.id);
-  const resultAccepted = scoring.resultAcceptedBy?.includes(user.id);
-  if (room.game.phase === "counting-requested") {
-    return (
-      <section className="counting-panel">
-        <strong>数子申请</strong>
-        <p>{isRequester ? "等待对方确认。" : "对方申请数子，30秒内确认。"}</p>
-        <div className="progress"><span /></div>
-        {!isRequester && (
-          <div className="inline-actions">
-            <button onClick={() => onRespond(true)}>同意数子</button>
-            <button onClick={() => onRespond(false)}>继续对局</button>
-          </div>
-        )}
-      </section>
-    );
-  }
-  if (room.game.phase === "marking-dead") {
-    return (
-      <section className="counting-panel">
-        <strong>确认死子</strong>
-        <p>已自动标出确定地盘。点击疑似死子会按所属地盘扩展标记；点已标记棋子可取消该块。右键空点标记非目。</p>
-        <div className="inline-actions">
-          <button onClick={onConfirm} disabled={confirmed}>{confirmed ? "已确认" : "确认死子"}</button>
-          <button className="secondary-action" onClick={onReset}>重新确认死子</button>
-        </div>
-      </section>
-    );
-  }  if (room.game.phase === "result-review") {
-    return (
-      <section className="counting-panel">
-        <strong>{scoring.result?.text}</strong>
-        <p>黑 {scoring.result?.black} 子，白 {scoring.result?.white} 子，黑贴 2又3/4 子。</p>
-        <p>30秒内双方同意则结束，否则继续对局。</p>
-        <div className="progress"><span /></div>
-        <div className="inline-actions">
-          <button onClick={onAccept} disabled={resultAccepted}>{resultAccepted ? "已同意" : "同意结果"}</button>
-          <button onClick={onReject}>继续对局</button>
-        </div>
-      </section>
-    );
-  }  return null;
 }
 
 function ChatBox({ room, onChat, readonly = false }) {
