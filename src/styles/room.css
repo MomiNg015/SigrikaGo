@@ -206,23 +206,23 @@
   align-content: center;
   gap: 5px;
   background:
-    linear-gradient(180deg, rgba(34, 39, 57, 0.96), rgba(18, 20, 30, 0.98)) padding-box,
-    linear-gradient(135deg, rgba(255, 105, 105, 0.56), rgba(91, 127, 232, 0.5)) border-box;
+    linear-gradient(180deg, rgba(255, 252, 244, 0.98), rgba(244, 249, 255, 0.96)) padding-box,
+    linear-gradient(135deg, rgba(255, 196, 92, 0.5), rgba(112, 161, 255, 0.42)) border-box;
   border: 1px solid transparent;
-  color: #ffe9cf;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 20px rgba(47, 50, 78, 0.12);
+  color: #745536;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86), 0 8px 20px rgba(128, 103, 76, 0.12);
 }
 
 .player-info.active-turn .digital-timer {
   background:
-    linear-gradient(180deg, rgba(46, 34, 38, 0.96), rgba(23, 18, 23, 0.98)) padding-box,
-    linear-gradient(135deg, rgba(255, 199, 80, 0.72), rgba(255, 88, 109, 0.56)) border-box;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 10px 24px rgba(203, 160, 46, 0.18);
+    linear-gradient(180deg, rgba(255, 249, 222, 0.98), rgba(255, 243, 235, 0.96)) padding-box,
+    linear-gradient(135deg, rgba(255, 190, 55, 0.7), rgba(255, 111, 135, 0.44)) border-box;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 24px rgba(203, 160, 46, 0.16);
 }
 
 .timer-label {
   min-height: 14px;
-  color: rgba(255, 242, 218, 0.76);
+  color: rgba(117, 83, 47, 0.72);
   font-size: 11px;
   font-weight: 800;
   line-height: 1;
@@ -235,12 +235,12 @@
   align-items: baseline;
   justify-content: center;
   gap: 8px;
-  color: #ffcf7a;
+  color: #d87a16;
   font-family: "Consolas", "Courier New", monospace;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   letter-spacing: 0;
-  text-shadow: 0 0 10px rgba(255, 99, 73, 0.58), 0 0 18px rgba(255, 197, 97, 0.34);
+  text-shadow: 0 0 8px rgba(255, 166, 61, 0.42), 0 0 14px rgba(255, 215, 127, 0.28);
 }
 
 .timer-primary {
@@ -253,14 +253,14 @@
 .timer-periods {
   min-width: 2ch;
   display: inline-block;
-  color: #ffdca4;
+  color: #b46b22;
   font-size: clamp(16px, 1.8vw, 21px);
   font-weight: 900;
 }
 
 .timer.final-byo-yomi .timer-digits {
-  color: #ff7d74;
-  text-shadow: 0 0 10px rgba(255, 52, 52, 0.62), 0 0 18px rgba(255, 189, 46, 0.38);
+  color: #df4f42;
+  text-shadow: 0 0 8px rgba(255, 95, 76, 0.42), 0 0 14px rgba(255, 177, 102, 0.3);
 }
 
 .timer-text {

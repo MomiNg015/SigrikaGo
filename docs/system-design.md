@@ -890,6 +890,7 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
   - Missing character voice assets fall back to generic voice/TTS according to `resolveSystemVoice`.
 - Room time display:
   - Player timers render a digital/nixie-style label, primary time/seconds, and smaller leading-zero byo-yomi period counter.
+  - The timer panel uses a light background with subtle state accents instead of a dark display block.
   - The compact `30s × 3` style is no longer used in the player info timer.
 - Room action area:
   - Normal play shows regular action buttons below the board.
