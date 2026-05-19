@@ -31,7 +31,7 @@ import {
   X
 } from "lucide-react";
 import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
-import { BOARD_SIZE, COLORS, GAME_PHASES, activatePassiveSkill, createGameState, gameViewForColor, passMove, playMove, randomBlast, useSkill } from "./shared/game.js";
+import { BOARD_SIZE, COLORS, GAME_PHASES, activatePassiveSkill, createGameState, formatStones, gameViewForColor, passMove, playMove, randomBlast, useSkill } from "./shared/game.js";
 import { derivePlayerRecordStats } from "./shared/gameRecords.js";
 import { canPreviewSkillTarget, lastMarkedAction } from "./shared/boardView.js";
 import { boardSoundActionAtStep, latestBoardSoundAction } from "./shared/boardAudio.js";
@@ -727,6 +727,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             isActiveTurn={displayRoom.game.phase === "playing" && opponent?.color === displayRoom.game.turn}
             isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
           />
+          <OperationHint room={displayRoom} user={user} scoring={scoring} drawRequest={drawRequest} />
         </div>
         <div className="board-column">
           <div className="board-stage">
@@ -740,9 +741,6 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
               onScoringPoint={displayRoom.game.phase === "marking-dead" ? handleScoringPoint : null}
               onNeutral={(id) => onScoringAction({ type: "mark-neutral", pointId: id })}
             />
-          </div>
-          <div className="status-slot">
-            <OperationHint room={displayRoom} user={user} scoring={scoring} drawRequest={drawRequest} />
           </div>
           <ActionBar
             role={role}
@@ -980,13 +978,53 @@ function OperationHint({ room, user, scoring, drawRequest }) {
     text = "技能效果展示中，请稍候。";
   }
 
+  const score = scoring?.result ?? room.game.winner;
   if (!text) return null;
   return (
     <section className="operation-hint" aria-live="polite">
       <strong>{title}</strong>
       <p>{text}</p>
+      {(phase === GAME_PHASES.resultReview || phase === GAME_PHASES.finished) && score?.formula && (
+        <ScoringBreakdown result={score} compact />
+      )}
     </section>
   );
+}
+
+function ScoringBreakdown({ result, compact = false }) {
+  if (!result?.formula) return null;
+  const black = result.formula.black;
+  const white = result.formula.white;
+  const winner = result.winnerColor === COLORS.black ? "黑" : "白";
+  const rows = [
+    ["黑棋", black],
+    ["白棋", white]
+  ];
+
+  return (
+    <div className={`scoring-breakdown ${compact ? "compact" : ""}`}>
+      {rows.map(([label, item]) => (
+        <div className="scoring-line" key={label}>
+          <strong>{label}</strong>
+          <span>
+            棋子 {formatStones(item.stones)} + 目数 {formatStones(item.territory)} {signedStoneTerm(item.komi, "贴目")} {signedStoneTerm(item.ownSkillCost, "己方代价")} {signedStoneTerm(item.opponentSkillCost, "对方代价")}
+          </span>
+          <b>{formatStones(item.total)}</b>
+        </div>
+      ))}
+      <div className="scoring-line result">
+        <strong>差值</strong>
+        <span>黑棋结果 - 白棋结果</span>
+        <b>{winner}胜{formatStones(result.margin)}子</b>
+      </div>
+    </div>
+  );
+}
+
+function signedStoneTerm(value, label) {
+  if (!value) return `+ ${label} 0`;
+  const sign = value > 0 ? "+" : "-";
+  return `${sign} ${label} ${formatStones(Math.abs(value))}`;
 }
 
 function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, scoring, drawRequest, drawDeadline, countingDeadline, resultDeadline, replayStep = 0, replayMax = 0, showTestTools = false, onReplayStep, onTestRandomLayout, onTestRestoreSkill, onPass, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult, onResign, onBack }) {
@@ -1131,7 +1169,8 @@ function DecisionBar({ phase, userId, scoring, drawRequest, drawDeadline, counti
       <nav className={`action-bar decision-bar ${!hasParticipant || accepted ? "waiting" : ""}`} aria-live="polite">
         <div className="decision-copy">
           <strong>{scoring.result?.text ?? "结果确认"}</strong>
-          <span>黑 {scoring.result?.black ?? "-"} 子，白 {scoring.result?.white ?? "-"} 子，黑贴 2又3/4 子。</span>
+          <span>请核对数子计算过程，确认无误后同意结果。</span>
+          <ScoringBreakdown result={scoring.result} />
           <DecisionProgress deadline={resultDeadline ?? scoring.resultDeadline} fallbackSeconds={30} />
         </div>
         {!hasParticipant ? (

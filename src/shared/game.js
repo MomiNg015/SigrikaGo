@@ -819,16 +819,22 @@ export function scoreGame(state) {
   const whiteTerritory = territory.white.length;
   const blackSkillCost = numericSkillCost(state, COLORS.black);
   const whiteSkillCost = numericSkillCost(state, COLORS.white);
-  const black = blackStones + blackTerritory - blackSkillCost;
-  const white = whiteStones + whiteTerritory - whiteSkillCost;
-  const blackAfterKomi = black - KOMI_STONES;
+  const blackRaw = blackStones + blackTerritory;
+  const whiteRaw = whiteStones + whiteTerritory;
+  const black = blackRaw - KOMI_STONES - blackSkillCost + whiteSkillCost;
+  const white = whiteRaw + KOMI_STONES - whiteSkillCost + blackSkillCost;
+  const blackAfterKomi = black;
   const whiteAfterKomi = white;
-  const margin = Math.abs(blackAfterKomi - whiteAfterKomi);
-  const winnerColor = blackAfterKomi > whiteAfterKomi ? COLORS.black : COLORS.white;
+  const marginValue = black - white;
+  const margin = Math.abs(marginValue);
+  const winnerColor = marginValue > 0 ? COLORS.black : COLORS.white;
+  const winnerName = winnerColor === COLORS.black ? "黑" : "白";
 
   return {
     black,
     white,
+    blackRaw,
+    whiteRaw,
     blackStones,
     whiteStones,
     blackTerritory,
@@ -839,7 +845,27 @@ export function scoreGame(state) {
     whiteAfterKomi,
     winnerColor,
     margin,
-    text: `${winnerColor === COLORS.black ? "黑" : "白"}胜${formatStones(margin)}子`
+    marginValue,
+    formula: {
+      black: {
+        stones: blackStones,
+        territory: blackTerritory,
+        komi: -KOMI_STONES,
+        ownSkillCost: -blackSkillCost,
+        opponentSkillCost: whiteSkillCost,
+        total: black
+      },
+      white: {
+        stones: whiteStones,
+        territory: whiteTerritory,
+        komi: KOMI_STONES,
+        ownSkillCost: -whiteSkillCost,
+        opponentSkillCost: blackSkillCost,
+        total: white
+      },
+      margin: marginValue
+    },
+    text: `${winnerName}胜${formatStones(margin)}子`
   };
 }
 
@@ -983,7 +1009,28 @@ function clearBlastMarkers(state, ownerColor) {
 }
 
 export function formatStones(value) {
-  return Number.isInteger(value) ? `${value}` : `${Math.round(value * 100) / 100}`;
+  if (!Number.isFinite(value)) return "0";
+  const sign = value < 0 ? "-" : "";
+  const abs = Math.abs(value);
+  const denominator = 100;
+  const numerator = Math.round(abs * denominator);
+  const whole = Math.floor(numerator / denominator);
+  const remainder = numerator % denominator;
+  if (remainder === 0) return `${sign}${whole}`;
+  const divisor = gcd(remainder, denominator);
+  const fraction = `${remainder / divisor}/${denominator / divisor}`;
+  return whole > 0 ? `${sign}${whole}又${fraction}` : `${sign}${fraction}`;
+}
+
+function gcd(a, b) {
+  let x = Math.abs(a);
+  let y = Math.abs(b);
+  while (y) {
+    const next = x % y;
+    x = y;
+    y = next;
+  }
+  return x || 1;
 }
 
 function colorName(color) {

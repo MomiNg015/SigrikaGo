@@ -575,8 +575,20 @@ describe("SigrikaGo rules", () => {
     const result = scoreGame(state);
 
     expect(result.blackAfterKomi).toBe(-1.75);
-    expect(result.whiteAfterKomi).toBe(1);
-    expect(result.text).toBe("白胜2.75子");
+    expect(result.whiteAfterKomi).toBe(3.75);
+    expect(result.formula.black).toMatchObject({
+      stones: 1,
+      territory: 0,
+      komi: -2.75,
+      total: -1.75
+    });
+    expect(result.formula.white).toMatchObject({
+      stones: 1,
+      territory: 0,
+      komi: 2.75,
+      total: 3.75
+    });
+    expect(result.text).toBe("白胜5又1/2子");
   });
 
   it("subtracts numeric skill cost before deciding the scoring winner", () => {
@@ -590,9 +602,11 @@ describe("SigrikaGo rules", () => {
     const result = scoreGame(state);
 
     expect(result.blackSkillCost).toBe(3);
-    expect(result.black).toBe(-1);
+    expect(result.black).toBe(-3.75);
     expect(result.blackAfterKomi).toBe(-3.75);
+    expect(result.white).toBe(6.75);
     expect(result.winnerColor).toBe(COLORS.white);
+    expect(result.text).toBe("白胜10又1/2子");
   });
 
   it("describes resignation as a midgame win for the opponent", () => {
@@ -675,7 +689,30 @@ describe("SigrikaGo rules", () => {
     const result = scoreGame(state);
 
     expect(result.whiteTerritory).toBe(9);
-    expect(result.white).toBe(25);
+    expect(result.white).toBe(27.75);
     expect(getPoint(state, pointId(2, 2)).stone).toBe(COLORS.black);
+  });
+
+  it("adds the opponent numeric skill cost to each scoring result", () => {
+    const state = createGameState();
+    forceStone(state, 0, 0, COLORS.black);
+    forceStone(state, 12, 12, COLORS.white);
+    state.skillCosts.black = 3;
+    state.skillCosts.white = 1;
+    state.scoring = prepareScoringState(state);
+
+    const result = scoreGame(state);
+
+    expect(result.formula.black).toMatchObject({
+      ownSkillCost: -3,
+      opponentSkillCost: 1,
+      total: -3.75
+    });
+    expect(result.formula.white).toMatchObject({
+      ownSkillCost: -1,
+      opponentSkillCost: 3,
+      total: 5.75
+    });
+    expect(result.text).toBe("白胜9又1/2子");
   });
 });

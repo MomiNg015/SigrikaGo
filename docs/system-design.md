@@ -897,11 +897,12 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
   - Draw requests, counting requests, dead-stone marking, and result review render in the main board action area through phase-aware `DecisionBar` controls.
   - Decision controls are participant-safe: missing/non-player local state sees an informational waiting state instead of active buttons.
   - Request and result-review decision bars include countdown/progress visuals.
-  - The board status slot renders text-only operation hints.
+  - Text-only operation hints render below the opponent info area, to the left of the main board action area.
+  - Scoring result review shows a formatted calculation breakdown. Black result is `black stones + territory - komi - own skill cost + opponent skill cost`; white result is `white stones + territory + komi - own skill cost + opponent skill cost`. The displayed margin is `black result - white result`, formatted as whole/fraction stones.
 - Finished-game portrait badges:
-  - Decisive finished games show a red circular "胜" badge on the winner portrait and a black circular "负" badge on the loser portrait.
+  - Decisive finished games show transparent outline badges overlapping the portrait lower-right: red text/red ring for "胜", black text/black ring for "负".
   - Draw results show no win/loss portrait badge.
 - Responsive direction:
-  - The room player/board/side layout keeps its three-column structure across desktop and tablet widths.
+  - The room player/board/side layout keeps its three-column structure across desktop and tablet widths; opponent and self info columns use the same width.
   - Narrow room screens use practical column minimums and controlled horizontal scrolling instead of switching to a stacked layout.
   - Tablet/mobile overrides do not reshape room player cards, preserving the vertical portrait, digital timer, and action hierarchy inside the fixed three-column room layout.

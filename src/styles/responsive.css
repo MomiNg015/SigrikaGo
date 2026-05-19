@@ -37,7 +37,7 @@
   }
 
   .battle-layout {
-    min-width: calc(160px + 430px + 220px + (var(--fluid-gap) * 2));
+    min-width: calc(220px + 430px + 220px + (var(--fluid-gap) * 2));
   }
 
   .status-slot.floating-status {
