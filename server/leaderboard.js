@@ -1,4 +1,5 @@
 import { recordWinnerColor } from "./gameRecords.js";
+import { rankFromRating } from "../src/shared/ratingRank.js";
 
 export function buildLeaderboard(users = [], records = []) {
   const rows = new Map();
@@ -27,6 +28,7 @@ export function buildLeaderboard(users = [], records = []) {
       id: row.id,
       username: row.username,
       rating: row.rating,
+      rank: rankFromRating(row.rating),
       totalGames: row.totalGames,
       wins: row.wins,
       losses: row.losses,

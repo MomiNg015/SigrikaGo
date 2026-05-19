@@ -1346,6 +1346,7 @@ function LeaderboardModal({ token, characters, onClose }) {
               <span>排名</span>
               <span>常用角色</span>
               <span>用户名</span>
+              <span>段位</span>
               <span>积分</span>
               <span>总对局数</span>
               <span>胜局数</span>
@@ -1361,6 +1362,7 @@ function LeaderboardModal({ token, characters, onClose }) {
                     <strong>{player.username}</strong>
                     <span>{character.name}</span>
                   </div>
+                  <span>{player.rank}</span>
                   <b>{player.rating}</b>
                   <span>{player.totalGames}</span>
                   <span>{player.wins}</span>
