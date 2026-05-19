@@ -221,7 +221,7 @@ SigrikaGo/
 ### 后台管理
 
 - 概览：用户数、封禁用户数、启用角色数、棋谱数、最近审计日志。
-- 用户管理：列表、状态标签、右侧抽屉编辑角色/段位/积分/金币/拥有角色/出战角色、封禁、解封、重置密码、查看用户棋谱。
+- 用户管理：列表、状态标签、右侧抽屉编辑角色、积分、金币、拥有角色、出战角色；段位由积分自动换算只读展示；支持封禁、解封、重置密码、查看用户棋谱。
 - 角色管理：左侧角色列表、右侧编辑面板，支持新增/编辑/禁用角色、配置技能系统。
 - 角色立绘上传：支持 png/jpeg/webp/gif，大小限制 3MB。
 - 商城管理：列表主视图，新增/编辑商品在右侧抽屉中完成，支持下架商品。
@@ -244,8 +244,8 @@ SigrikaGo/
 - `status`: 用户状态，当前代码使用 `active` / `banned`。
 - `banReason`: 封禁原因，可空。
 - `bannedAt`: 封禁时间，可空。
-- `rank`: 段位/等级文本。默认值在当前 schema 终端显示存在编码问题，语义待确认。
-- `rating`: 积分，默认 1000。
+- `rank`: 兼容旧数据的持久化字段；前端和 API 展示值不直接读取该字段，而是通过 `rating` 自动换算。
+- `rating`: 积分，默认 1000，允许为负数。段位规则：`[900, 1000)` 为 1段，之后每 100 分升 1段，1700 分及以上封顶为 9段；`[800, 900)` 为 1级，之后每低 100 分级位加 1，`[0, 100)` 为 9级，小于 0 分为 10级。
 - `wins`: 胜局数，默认 0。
 - `losses`: 负局数，默认 0。
 - `coins`: 金币，默认 300。
@@ -461,7 +461,7 @@ SigrikaGo/
   - 任意棋谱详情。
 
 - `PATCH /api/admin/users/:id`
-  - 编辑用户 role、rank、rating、coins、ownedCharacters、selectedCharacter。
+  - 编辑用户 role、rating、coins、ownedCharacters、selectedCharacter；rank 由 rating 自动派生，不允许单独编辑。
   - 管理员保存后前端会同步当前登录用户信息，避免后台金币/角色等资产更新后棋舍和商城仍显示旧数据。
 
 - `POST /api/admin/users/:id/ban`
@@ -640,7 +640,8 @@ SigrikaGo/
 
 ### 后端通用逻辑
 
-- `publicUser`: 用户公开字段白名单。
+- `publicUser`: 用户公开字段白名单，并通过 `rankFromRating` 将积分转换为段位/级位。
+- `rankFromRating`: 位于 `src/shared/ratingRank.js`，前后端共用的积分到段位/级位换算逻辑。
 - `makeAuth`: HTTP 鉴权与管理员中间件。
 - `validateCharacterInput`: 角色/技能输入校验。
 - `toCharacterPayload`: 角色公开 payload。

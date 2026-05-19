@@ -9,7 +9,7 @@ describe("public user profile stats", () => {
       passwordHash: "hidden",
       role: "player",
       status: "active",
-      rank: "18级",
+      rank: "stored-rank",
       rating: 960,
       wins: 0,
       losses: 0,
@@ -33,5 +33,6 @@ describe("public user profile stats", () => {
     expect(profile.losses).toBe(1);
     expect(profile.draws).toBe(1);
     expect(profile.rating).toBe(960);
+    expect(profile.rank).toBe("1段");
   });
 });

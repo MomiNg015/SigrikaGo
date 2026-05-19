@@ -16,6 +16,7 @@ import {
 } from "../shared/adminDrafts.js";
 import { SKILL_MESSAGE_TIP } from "../shared/skillMessages.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
+import { rankFromRating } from "../shared/ratingRank.js";
 import { adminApi, uploadPortrait } from "../api/client.js";
 
 export default function AdminConsole({ user, token, tab, setTab, onCurrentUserChange, onCharactersChanged, onSiteSettingsChanged, onBack, onOpenReplay }) {
@@ -847,7 +848,6 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
       method: "PATCH",
       body: {
         role: draft.role,
-        rank: draft.rank,
         rating,
         coins,
         ownedCharacters: draft.ownedCharactersText.split(",").map((item) => item.trim()).filter(Boolean),
@@ -915,8 +915,8 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
             <option value="admin">管理员</option>
           </select>
         </label>
-        <label><AdminFieldLabel text="段位" tip="显示在大厅、对局信息和个人棋舍中的段位文本。" />
-          <input value={draft.rank} onChange={(event) => updateDraft("rank", event.target.value)} />
+        <label><AdminFieldLabel text="段位" tip="段位由积分自动换算，显示在大厅、对局信息和个人棋舍中。" />
+          <input value={rankFromRating(draft.rating)} readOnly />
         </label>
         <label><AdminFieldLabel text="积分" tip="用户的匹配积分，必须是整数。" />
           <input type="number" value={draft.rating} onChange={(event) => updateDraft("rating", event.target.value)} />
@@ -983,7 +983,6 @@ function buildUserDraft(user) {
   return {
     id: user.id,
     role: user.role ?? "player",
-    rank: user.rank ?? "",
     rating: user.rating ?? 0,
     coins: user.coins ?? 0,
     ownedCharactersText: (user.ownedCharacters ?? []).join(", "),

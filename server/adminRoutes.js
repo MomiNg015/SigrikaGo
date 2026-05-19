@@ -10,7 +10,6 @@ import { getPublicSiteSettings, updateSiteSettings } from "./siteSettings.js";
 
 const EDITABLE_USER_FIELDS = new Set([
   "role",
-  "rank",
   "rating",
   "coins",
   "ownedCharacters",
@@ -49,10 +48,6 @@ export function sanitizeUserUpdate(body = {}) {
     if (!EDITABLE_USER_FIELDS.has(key)) continue;
     if (key === "role" && [USER_ROLES.player, USER_ROLES.admin].includes(value)) {
       data.role = value;
-    }
-    if (key === "rank" && typeof value === "string") {
-      const rank = value.trim().slice(0, 20);
-      if (rank) data.rank = rank;
     }
     if (key === "rating") {
       const rating = parseIntegerInput(value);

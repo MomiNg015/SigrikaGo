@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { rankFromRating } from "../src/shared/ratingRank.js";
 
 export const prisma = new PrismaClient();
 
@@ -18,7 +19,7 @@ export function publicUser(user) {
     username: user.username,
     role: user.role ?? "player",
     status: user.status ?? "active",
-    rank: user.rank,
+    rank: rankFromRating(user.rating),
     rating: user.rating,
     wins: user.wins,
     losses: user.losses,

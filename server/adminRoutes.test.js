@@ -33,7 +33,6 @@ describe("admin route helpers", () => {
       passwordHash: "ignored"
     })).toEqual({
       role: "admin",
-      rank: "17级",
       rating: 1020,
       coins: 500,
       ownedCharacters: "sigrika,danea",
@@ -121,10 +120,11 @@ describe("admin route helpers", () => {
       prisma,
       adminUser: { id: "admin-1" },
       userId: "user-1",
-      body: { rank: "19级" }
+      body: { rating: "1150" }
     });
 
-    expect(result.user.rank).toBe("19级");
+    expect(result.user.rating).toBe(1150);
+    expect(result.user.rank).toBe("3段");
     expect(calls).toEqual([
       "transaction",
       "tx.user.findUnique",
