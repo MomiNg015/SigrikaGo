@@ -57,7 +57,7 @@ export function derivePlayerRecordStats(user = {}, records = []) {
     wins,
     losses,
     draws,
-    rating: RATING_BASE + wins * RATING_WIN_DELTA + losses * RATING_LOSS_DELTA
+    rating: Number.isFinite(user.rating) ? user.rating : RATING_BASE + wins * RATING_WIN_DELTA + losses * RATING_LOSS_DELTA
   };
 }
 

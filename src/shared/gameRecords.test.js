@@ -34,6 +34,21 @@ describe("shared game record helpers", () => {
     });
   });
 
+  it("keeps persisted user rating instead of recalculating it from visible records", () => {
+    const stats = derivePlayerRecordStats(
+      { id: "user-1", username: "alice", rating: 1260 },
+      [
+        { blackUserId: "user-1", whiteUserId: "user-2", winnerColor: "black" }
+      ]
+    );
+
+    expect(stats).toMatchObject({
+      totalGames: 1,
+      wins: 1,
+      rating: 1260
+    });
+  });
+
   it("does not count unrecognized legacy records as draws", () => {
     const stats = derivePlayerRecordStats(
       { id: "user-1", username: "alice" },
