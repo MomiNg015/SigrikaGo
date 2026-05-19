@@ -595,7 +595,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
       });
     }
     if (timer.main <= 0 && timer.periodRemaining <= 10 && timer.periodRemaining > 0) {
-      const countdownKey = `${activePlayer.color}-${timer.periods}-${timer.periodRemaining}`;
+      const countdownKey = `${activePlayer.color}-${displayRoom.game.history.length}-${timer.periods}-${timer.periodRemaining}`;
       if (!voiceRef.current[countdownKey]) {
         voiceRef.current[countdownKey] = true;
         const countdownAnnouncement = nextCountdownAnnouncement({ seconds: timer.periodRemaining });

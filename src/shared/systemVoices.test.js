@@ -68,6 +68,42 @@ describe("system voices", () => {
     });
   });
 
+  it("rejects character audio overrides for invalid countdown announcements", () => {
+    const character = {
+      systemVoices: {
+        [SYSTEM_VOICE_EVENTS.byoYomiCountdown]: "/assets/voice/bad-countdown.ogg",
+        [SYSTEM_VOICE_EVENTS.countdown(11)]: "/assets/voice/countdown-11.ogg"
+      }
+    };
+
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.byoYomiCountdown, { character })).toEqual({
+      type: "tts",
+      text: ""
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(11), { character })).toEqual({
+      type: "tts",
+      text: ""
+    });
+  });
+
+  it("keeps character audio overrides for valid countdown announcements", () => {
+    const character = {
+      systemVoices: {
+        [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/countdown-10.ogg",
+        [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/countdown-1.ogg"
+      }
+    };
+
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(10), { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/countdown-10.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(1), { character })).toEqual({
+      type: "audio",
+      src: "/assets/voice/countdown-1.ogg"
+    });
+  });
+
   it("delegates final byo-yomi periods to explicit period events", () => {
     expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.byoYomiPeriods, { params: { periods: 2 } })).toEqual({
       type: "tts",

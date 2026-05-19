@@ -26,6 +26,15 @@ const DEFAULT_SYSTEM_VOICE_TEXT = {
 };
 
 export function resolveSystemVoice(event, { character = null, params = {} } = {}) {
+  if (event === SYSTEM_VOICE_EVENTS.byoYomiCountdown) {
+    const text = countdownText(params.seconds);
+    if (!text) return { type: "tts", text: "" };
+  }
+  const countdownMatch = /^countdown-(\d+)$/.exec(event);
+  if (countdownMatch) {
+    const text = countdownText(Number(countdownMatch[1]));
+    if (!text) return { type: "tts", text: "" };
+  }
   const characterVoice = character?.systemVoices?.[event];
   if (characterVoice) return { type: "audio", src: characterVoice };
   if (event === SYSTEM_VOICE_EVENTS.byoYomiPeriods) {
@@ -40,7 +49,6 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
   if (event === SYSTEM_VOICE_EVENTS.byoYomiCountdown) {
     return { type: "tts", text: countdownText(params.seconds) };
   }
-  const countdownMatch = /^countdown-(\d+)$/.exec(event);
   if (countdownMatch) {
     return { type: "tts", text: countdownText(Number(countdownMatch[1])) };
   }
