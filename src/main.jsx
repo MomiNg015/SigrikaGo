@@ -1293,7 +1293,7 @@ function HouseModal({ user, records, characterListView, audioSettings, onClose, 
                   disabled={selected || applyingDecoration === decorationId}
                   onClick={() => applyDecoration(decorationId)}
                 >
-                  {decoration?.previewImageUrl && <img src={decoration.previewImageUrl} alt="" />}
+                  {decoration ? <StoneDecorationPreview decoration={decoration} /> : null}
                   <span>{decoration?.name ?? decorationId}</span>
                   <strong>{selected ? "使用中" : applyingDecoration === decorationId ? "应用中" : "应用"}</strong>
                 </button>
@@ -1599,7 +1599,9 @@ function ShopModal({ token, user, onPurchased, onClose }) {
             const disabled = owned || !item.purchasable || tooExpensive || purchasingId === item.id;
             return (
               <article className="shop-item" key={item.id}>
-                {item.imageUrl ? <img src={item.imageUrl} alt={item.name} /> : <ShoppingBag />}
+                {item.category === "decoration" && getStoneDecoration(item.targetId)
+                  ? <StoneDecorationPreview decoration={getStoneDecoration(item.targetId)} label={item.name} large />
+                  : item.imageUrl ? <img src={item.imageUrl} alt={item.name} /> : <ShoppingBag />}
                 <strong>{item.name}</strong>
                 <span>{item.description || shopCategoryLabel(item.category)}</span>
                 <p className="shop-price">
@@ -1663,6 +1665,15 @@ function SettingsModal({ audioSettings, setAudioSettings, onClose }) {
         )}
         {tab === "about" && <div className="settings-panel about-panel" />}
       </section>
+    </div>
+  );
+}
+
+function StoneDecorationPreview({ decoration, label = "", large = false }) {
+  return (
+    <div className={`stone-decoration-preview ${large ? "large" : ""}`} aria-label={label || decoration.name}>
+      <span style={{ "--preview-stone-image": `url("${decoration.images.black}")` }} />
+      <span style={{ "--preview-stone-image": `url("${decoration.images.white}")` }} />
     </div>
   );
 }

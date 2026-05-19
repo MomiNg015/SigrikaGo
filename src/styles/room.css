@@ -527,8 +527,8 @@
 
 .black .stone.decorated-stone,
 .white .stone.decorated-stone {
-  background: center / contain no-repeat var(--stone-decoration-image);
-  box-shadow: 0 5px 10px rgba(45, 29, 18, 0.25);
+  background: center / 108% 108% no-repeat var(--stone-decoration-image);
+  box-shadow: 0 4px 8px rgba(45, 29, 18, 0.24);
 }
 
 .hidden-hand .stone {

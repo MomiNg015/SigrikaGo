@@ -131,6 +131,11 @@
   object-fit: contain;
 }
 
+.owned-decoration-chip .stone-decoration-preview {
+  width: 58px;
+  height: 32px;
+}
+
 .owned-decoration-chip strong {
   font-size: 12px;
 }
@@ -253,6 +258,30 @@
   width: 100%;
   height: 112px;
   object-fit: contain;
+}
+
+.stone-decoration-preview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.stone-decoration-preview.large {
+  width: 100%;
+  height: 112px;
+  gap: 12px;
+}
+
+.stone-decoration-preview span {
+  width: 30px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: center / 108% 108% no-repeat var(--preview-stone-image);
+}
+
+.stone-decoration-preview.large span {
+  width: 88px;
 }
 
 .shop-item svg {
