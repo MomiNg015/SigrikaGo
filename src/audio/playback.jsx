@@ -13,6 +13,10 @@ export const DEFAULT_AUDIO_SETTINGS = {
   voice: 80
 };
 
+const voiceBufferCache = new Map();
+const voicePromiseCache = new Map();
+let sharedVoiceContext = null;
+
 export function BackgroundMusic({ track, audioSettings }) {
   const playerRef = useRef({
     context: null,
@@ -187,18 +191,75 @@ export function playVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   });
 }
 
-async function playVoiceSoundWithEffects(src, volume) {
+export function preloadVoiceSound(src) {
+  if (!src) return Promise.resolve(null);
+  if (voiceBufferCache.has(src)) return Promise.resolve(voiceBufferCache.get(src));
+  if (voicePromiseCache.has(src)) return voicePromiseCache.get(src);
+  const context = getVoiceAudioContext();
+  if (!context) return Promise.resolve(null);
+  const promise = fetch(src)
+    .then((response) => response.arrayBuffer())
+    .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
+    .then((buffer) => {
+      voiceBufferCache.set(src, buffer);
+      return buffer;
+    })
+    .catch(() => null)
+    .finally(() => {
+      voicePromiseCache.delete(src);
+    });
+  voicePromiseCache.set(src, promise);
+  return promise;
+}
+
+export function playPreloadedVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  if (!voiceBufferCache.has(src)) {
+    playVoiceSound(src, audioSettings);
+    return;
+  }
+  const volume = audioVolume(audioSettings, "voice");
+  if (volume <= 0) return;
+  const buffer = voiceBufferCache.get(src);
+  playVoiceBuffer(buffer, boostedVoiceVolume(volume)).catch(() => {
+    playVoiceSound(src, audioSettings);
+  });
+}
+
+function getVoiceAudioContext() {
+  if (sharedVoiceContext && sharedVoiceContext.state !== "closed") return sharedVoiceContext;
+  if (typeof window === "undefined") return null;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) throw new Error("Web Audio is not available");
-  const context = new AudioContextClass();
+  if (!AudioContextClass) return null;
+  sharedVoiceContext = new AudioContextClass();
+  return sharedVoiceContext;
+}
+
+async function playVoiceSoundWithEffects(src, volume) {
+  const context = getVoiceAudioContext();
+  if (!context) throw new Error("Web Audio is not available");
   if (context.state === "suspended") await context.resume();
   const response = await fetch(src);
   const arrayBuffer = await response.arrayBuffer();
   const buffer = await context.decodeAudioData(arrayBuffer);
+  await playVoiceBuffer(buffer, volume);
+}
+
+async function playVoiceBuffer(buffer, volume) {
+  const context = getVoiceAudioContext();
+  if (!context) throw new Error("Web Audio is not available");
+  if (context.state === "suspended") await context.resume();
 
   const source = context.createBufferSource();
   source.buffer = buffer;
 
+  const cleanupNodes = connectVoiceSource(context, source, volume);
+  source.start();
+  source.onended = () => {
+    setTimeout(cleanupNodes, VOICE_EFFECT_SETTINGS.reverbSeconds * 1000 + 250);
+  };
+}
+
+function connectVoiceSource(context, source, volume) {
   const voiceGain = context.createGain();
   voiceGain.gain.value = volume;
 
@@ -221,9 +282,14 @@ async function playVoiceSoundWithEffects(src, volume) {
   convolver.connect(wetGain);
   wetGain.connect(voiceGain);
   voiceGain.connect(context.destination);
-  source.start();
-  source.onended = () => {
-    setTimeout(() => context.close().catch(() => {}), VOICE_EFFECT_SETTINGS.reverbSeconds * 1000 + 250);
+  return () => {
+    for (const node of [source, dryGain, preDelay, convolver, wetGain, voiceGain]) {
+      try {
+        node.disconnect();
+      } catch {
+        // Nodes can already be disconnected after browser cleanup.
+      }
+    }
   };
 }
 

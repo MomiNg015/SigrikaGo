@@ -40,7 +40,7 @@ import { nextCountdownAnnouncement, nextTimeAnnouncement } from "./shared/timeAn
 import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
 import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "./shared/systemVoices.js";
 import { resultRewardDelta } from "./shared/resultRewards.js";
-import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playEffectSound, playVoiceSound, speakText } from "./audio/playback.jsx";
+import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playEffectSound, playPreloadedVoiceSound, playVoiceSound, preloadVoiceSound, speakText } from "./audio/playback.jsx";
 import AdminConsole from "./admin/AdminConsole.jsx";
 import { adminApi, api } from "./api/client.js";
 import "./styles.css";
@@ -542,6 +542,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   const soundMoveRef = useRef(null);
   const replayStepSoundRef = useRef(replayStep);
   const voiceRef = useRef({});
+  const preloadedCountdownRef = useRef("");
   const systemVoiceRef = useRef({});
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
   const skillPreview = displayRoom.game.pendingSkill;
@@ -612,6 +613,24 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
     voiceRef.current[mainKey] = timer.main;
     voiceRef.current[periodKey] = timer.periods;
   }, [activePlayer, isReplay, audioSettings]);
+
+  useEffect(() => {
+    if (isReplay || !activePlayer || !(activePlayer.time?.main <= 0)) return;
+    const preloadSources = [];
+    for (let seconds = 10; seconds >= 1; seconds -= 1) {
+      const voice = resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(seconds), {
+        character: activePlayer.character,
+        params: { seconds }
+      });
+      if (voice.type === "audio" && voice.src) preloadSources.push(voice.src);
+    }
+    const preloadKey = `${activePlayer.color}:${preloadSources.join("|")}`;
+    if (!preloadSources.length || preloadedCountdownRef.current === preloadKey) return;
+    preloadedCountdownRef.current = preloadKey;
+    for (const src of preloadSources) {
+      preloadVoiceSound(src);
+    }
+  }, [activePlayer, isReplay]);
 
   useEffect(() => {
     if (isReplay) return;
@@ -1654,7 +1673,7 @@ function Toast({ text, onClose }) {
 function playSystemVoice(event, { character, params, fallbackText, audioSettings }) {
   const voice = resolveSystemVoice(event, { character, params });
   if (voice.type === "audio" && voice.src) {
-    playVoiceSound(voice.src, audioSettings);
+    playPreloadedVoiceSound(voice.src, audioSettings);
     return;
   }
   const text = voice.text || fallbackText;

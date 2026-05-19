@@ -865,6 +865,7 @@ SigrikaGo/
 - Music ownership, purchase availability, and player selection are represented in configuration shape but not yet backed by persisted music inventory/settings UI.
 - Character skill voice configuration is static in `CHARACTER_SKILL_VOICES`; future admin-configurable voices would need schema/API/upload support and cache invalidation rules.
 - No browser-level automated test currently verifies actual audio playback, Web Audio graph routing, or autoplay fallback behavior; existing coverage focuses on deterministic helper logic.
+- Countdown character voice assets are opportunistically preloaded and decoded into a module-level Web Audio buffer cache while the active player is in byo-yomi. Cached playback reuses the same dry/wet reverb voice chain as regular voice playback, and failures fall back to the existing voice path without blocking timers.
 
 ## Next UI And Voice Design
 
