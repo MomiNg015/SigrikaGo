@@ -859,7 +859,7 @@ SigrikaGo/
 ### Audio Technical Debt
 
 - Runtime audio playback now lives in `src/audio/playback.jsx`, but that module still owns several playback concerns (`BackgroundMusic`, board effects, result sounds, skill voice effects, system voice/TTS). Future cleanup can split it by BGM/effects/voice if the feature set grows.
-- Skill voice playback creates a short-lived `AudioContext` per voice. This is simple and safe, but future tuning may benefit from a shared voice/effects context with explicit cleanup and browser autoplay handling.
+- Voice playback uses a shared module-level Web Audio context when available; regular voice playback, cached playback, and preload decoding all reuse that context. Future tuning may still need more explicit lifecycle cleanup and browser autoplay handling.
 - Voice reverb now uses a deterministic generated impulse. If authored reverb tails become important, replace it with a static impulse asset.
 - BGM assets are committed directly under `public/assets/music/` and increase repository size. If the soundtrack grows, consider Git LFS, an asset CDN, or a manifest-driven asset pipeline.
 - Music ownership, purchase availability, and player selection are represented in configuration shape but not yet backed by persisted music inventory/settings UI.
