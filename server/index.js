@@ -20,6 +20,7 @@ import { buildLeaderboard } from "./leaderboard.js";
 import { publicUserWithRecordStats } from "./userProfile.js";
 import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
 import { getPublicSiteSettings } from "./siteSettings.js";
+import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -178,6 +179,26 @@ app.post("/api/me/character", authHttp, async (req, res) => {
   const user = await prisma.user.update({
     where: { id: req.user.id },
     data: { selectedCharacter: characterId }
+  });
+  res.json({ user: publicUser(user) });
+});
+
+app.post("/api/me/decoration", authHttp, async (req, res) => {
+  const decorationId = String(req.body.decorationId ?? "").trim();
+  if (decorationId) {
+    if (!getStoneDecoration(decorationId)) {
+      res.status(400).json({ error: "未知棋子装饰" });
+      return;
+    }
+    const ownedDecorations = publicUser(req.user).ownedDecorations;
+    if (!ownedDecorations.includes(decorationId)) {
+      res.status(403).json({ error: "尚未获得该装饰" });
+      return;
+    }
+  }
+  const user = await prisma.user.update({
+    where: { id: req.user.id },
+    data: { selectedStoneDecoration: decorationId }
   });
   res.json({ user: publicUser(user) });
 });

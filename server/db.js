@@ -25,6 +25,7 @@ export function publicUser(user) {
     losses: user.losses,
     coins: user.coins,
     selectedCharacter: user.selectedCharacter,
+    selectedStoneDecoration: user.selectedStoneDecoration ?? "",
     ownedCharacters: [...ownedCharacters],
     ownedItems: user.ownedItems.split(",").filter(Boolean),
     ownedDecorations: user.ownedDecorations.split(",").filter(Boolean)

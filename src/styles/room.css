@@ -525,6 +525,12 @@
     radial-gradient(circle at 34% 26%, #ffffff, #d9dce2 78%);
 }
 
+.black .stone.decorated-stone,
+.white .stone.decorated-stone {
+  background: center / contain no-repeat var(--stone-decoration-image);
+  box-shadow: 0 5px 10px rgba(45, 29, 18, 0.25);
+}
+
 .hidden-hand .stone {
   opacity: 0.48;
   filter: saturate(1.15) drop-shadow(0 0 9px rgba(99, 222, 232, 0.6));

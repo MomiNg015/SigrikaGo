@@ -15,6 +15,7 @@ describe("publicUser", () => {
       losses: 2,
       coins: 300,
       selectedCharacter: "sigrika",
+      selectedStoneDecoration: "paw-stone",
       ownedCharacters: "sigrika,danea",
       ownedItems: "",
       ownedDecorations: ""
@@ -31,6 +32,7 @@ describe("publicUser", () => {
       losses: 2,
       coins: 300,
       selectedCharacter: "sigrika",
+      selectedStoneDecoration: "paw-stone",
       ownedCharacters: ["sigrika", "danea", "aemeath"],
       ownedItems: [],
       ownedDecorations: []
@@ -51,6 +53,7 @@ describe("publicUser", () => {
       losses: 0,
       coins: 0,
       selectedCharacter: "sigrika",
+      selectedStoneDecoration: "",
       ownedCharacters: "sigrika",
       ownedItems: "",
       ownedDecorations: ""

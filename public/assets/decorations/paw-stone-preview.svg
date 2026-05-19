@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 150">
+  <rect width="260" height="150" fill="#f7f4ef"/>
+  <image href="/assets/decorations/paw-stone-black.svg" x="16" y="15" width="120" height="120"/>
+  <image href="/assets/decorations/paw-stone-white.svg" x="124" y="15" width="120" height="120"/>
+</svg>

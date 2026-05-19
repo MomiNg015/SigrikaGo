@@ -219,7 +219,9 @@ SigrikaGo/
 - 商品有原价、折扣、是否可购买、是否展示、排序、描述、图片。
 - 购买会扣除用户金币，并写入 `ownedCharacters` 或 `ownedDecorations`。
 - 内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。
-- 装饰数据模型和后台管理已实现；玩家端装饰实际使用方式待确认。
+- 内置装饰商品会 seed 爪印棋子，价格 500 金币。
+- 玩家购买棋子装饰后会进入棋舍装饰区，可点击应用；空选择表示继续使用默认棋子。
+- 对局棋盘按棋子颜色找到对应玩家的 `selectedStoneDecoration`，黑白双方可分别显示各自设置的棋子样式；未设置时保持默认棋子。
 
 ### 排行榜
 
@@ -264,6 +266,7 @@ SigrikaGo/
 - `losses`: 负局数，默认 0。
 - `coins`: 金币，默认 300。
 - `selectedCharacter`: 出战角色 slug，默认 `sigrika`。
+- `selectedStoneDecoration`: 当前应用的棋子装饰 slug，空字符串表示默认棋子样式。
 - `ownedCharacters`: 逗号分隔的角色 slug 字符串，默认包含内置角色。
 - `ownedItems`: 逗号分隔字符串；当前代码未看到具体购买/使用逻辑，待确认。
 - `ownedDecorations`: 逗号分隔装饰 slug。
@@ -426,6 +429,10 @@ SigrikaGo/
 - `POST /api/me/character`
   - 修改当前出战角色。
   - 会校验角色存在且未停用；逻辑同时考虑 DB 角色和 fallback 角色。
+
+- `POST /api/me/decoration`
+  - 应用或清空当前棋子装饰。
+  - 非空 `decorationId` 必须是已知棋子装饰且用户已拥有。
 
 - `GET /api/shop`
   - 登录后获取启用商城商品。

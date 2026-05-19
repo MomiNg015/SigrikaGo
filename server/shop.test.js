@@ -107,7 +107,7 @@ describe("shop", () => {
       }
     });
 
-    expect(calls.at(-1)).toEqual([
+    expect(calls).toContainEqual([
       "create",
       expect.objectContaining({
         name: "猪小仙",
@@ -115,6 +115,33 @@ describe("shop", () => {
         targetId: "baconbits",
         priceCoins: 9999,
         imageUrl: "/assets/baconbits.png"
+      })
+    ]);
+  });
+
+  it("seeds the paw stone decoration as a 500 coin shop decoration", async () => {
+    const calls = [];
+    await seedBuiltinShopItems({
+      shopItem: {
+        findFirst: async (query) => {
+          calls.push(["findFirst", query]);
+          return null;
+        },
+        create: async ({ data }) => {
+          calls.push(["create", data]);
+          return data;
+        }
+      }
+    });
+
+    expect(calls).toContainEqual([
+      "create",
+      expect.objectContaining({
+        name: "爪印棋子",
+        category: "decoration",
+        targetId: "paw-stone",
+        priceCoins: 500,
+        imageUrl: "/assets/decorations/paw-stone-preview.svg"
       })
     ]);
   });

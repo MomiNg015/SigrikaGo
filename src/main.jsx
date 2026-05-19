@@ -38,6 +38,7 @@ import { nextCountdownAnnouncement, nextTimeAnnouncement } from "./shared/timeAn
 import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
 import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "./shared/systemVoices.js";
 import { resultRewardDelta } from "./shared/resultRewards.js";
+import { getStoneDecoration, stoneDecorationImage } from "./shared/stoneDecorations.js";
 import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playEffectSound, playPreloadedVoiceSound, preloadVoiceSound, speakText } from "./audio/playback.jsx";
 import AdminConsole from "./admin/AdminConsole.jsx";
 import AuthScreen from "./auth/AuthScreen.jsx";
@@ -216,6 +217,15 @@ function App() {
     setUser(data.user);
   }
 
+  async function applyStoneDecoration(decorationId) {
+    const data = await api("/api/me/decoration", {
+      method: "POST",
+      token,
+      body: { decorationId }
+    });
+    setUser(data.user);
+  }
+
   function startMatch() {
     setMatchSuccess(null);
     setMatchStart(Date.now());
@@ -373,6 +383,7 @@ function App() {
           audioSettings={audioSettings}
           onClose={() => setShowHouse(false)}
           onSelectCharacter={selectCharacter}
+          onApplyDecoration={applyStoneDecoration}
           onOpenReplay={openReplay}
         />
       )}
@@ -648,6 +659,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
               showMoves={showMoves}
               pendingSkill={pendingSkill}
               previewPlayer={role === "player" ? me : null}
+              stoneDecorations={stoneDecorationsForRoom(displayRoom)}
               onPoint={handlePoint}
               onScoringPoint={displayRoom.game.phase === "marking-dead" ? handleScoringPoint : null}
               onNeutral={(id) => onScoringAction({ type: "mark-neutral", pointId: id })}
@@ -724,7 +736,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   );
 }
 
-function Board({ game, showCoords, showMoves, pendingSkill, previewPlayer, onPoint, onScoringPoint, onNeutral }) {
+function Board({ game, showCoords, showMoves, pendingSkill, previewPlayer, stoneDecorations = {}, onPoint, onScoringPoint, onNeutral }) {
   const markedAction = lastMarkedAction(game.history);
   const moveNumbers = new Map(game.history.filter((entry) => entry.type === "move").map((entry) => [entry.id, entry.moveNumber]));
   const labels = Array.from({ length: BOARD_SIZE }, (_, index) => coordLetter(index));
@@ -760,6 +772,7 @@ function Board({ game, showCoords, showMoves, pendingSkill, previewPlayer, onPoi
             : "";
           const skillEffectClass = point.skillEffect ?? "";
           const previewClass = canPreviewPoint(game, previewPlayer, point, pendingSkill, Boolean(onScoringPoint)) ? "previewable" : "";
+          const decorationImage = point.stone ? stoneDecorationImage(stoneDecorations[point.stone], point.stone) : null;
           return (
           <button
             key={point.id}
@@ -780,7 +793,15 @@ function Board({ game, showCoords, showMoves, pendingSkill, previewPlayer, onPoi
             }}
             title={coordLabel(point.x, point.y)}
           >
-            {point.stone && <span className="stone">{markedAction?.id === point.id && <i />}{showMoves && moveNumbers.has(point.id) && <b>{moveNumbers.get(point.id)}</b>}</span>}
+            {point.stone && (
+              <span
+                className={`stone ${decorationImage ? "decorated-stone" : ""}`}
+                style={decorationImage ? { "--stone-decoration-image": `url("${decorationImage}")` } : undefined}
+              >
+                {markedAction?.id === point.id && <i />}
+                {showMoves && moveNumbers.has(point.id) && <b>{moveNumbers.get(point.id)}</b>}
+              </span>
+            )}
             {!point.valid && <span className="void" />}
             {emptyTerritoryOwner && <span className={`territory-mark ${emptyTerritoryOwner}`} aria-label={`${emptyTerritoryOwner} territory`} />}
             {deadOwner && <span className={`dead-mark ${deadOwner}`} aria-label={`${deadOwner} dead-stone mark`} />}
@@ -1178,9 +1199,11 @@ function ChatBox({ room, onChat, readonly = false }) {
   );
 }
 
-function HouseModal({ user, records, characterListView, audioSettings, onClose, onSelectCharacter, onOpenReplay }) {
+function HouseModal({ user, records, characterListView, audioSettings, onClose, onSelectCharacter, onApplyDecoration, onOpenReplay }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
   const [showReplays, setShowReplays] = useState(false);
+  const [applyingDecoration, setApplyingDecoration] = useState("");
+  const [decorationError, setDecorationError] = useState("");
   const stats = derivePlayerRecordStats(user, records);
   const owned = new Set(user.ownedCharacters ?? []);
   const detailOwned = detailCharacter ? owned.has(detailCharacter.id) : false;
@@ -1191,6 +1214,18 @@ function HouseModal({ user, records, characterListView, audioSettings, onClose, 
       character: withCharacterSystemVoices(character),
       audioSettings
     });
+  }
+
+  async function applyDecoration(decorationId) {
+    setDecorationError("");
+    setApplyingDecoration(decorationId || "default");
+    try {
+      await onApplyDecoration(decorationId);
+    } catch (error) {
+      setDecorationError(error.message);
+    } finally {
+      setApplyingDecoration("");
+    }
   }
 
   return (
@@ -1248,10 +1283,29 @@ function HouseModal({ user, records, characterListView, audioSettings, onClose, 
           <h3>已拥有装饰</h3>
           <div className="owned-decoration-list">
             {(user.ownedDecorations ?? []).length === 0 && <p className="quiet-text">暂无装饰。</p>}
-            {(user.ownedDecorations ?? []).map((decoration) => (
-              <span className="owned-decoration-chip" key={decoration}>{decoration}</span>
-            ))}
+            {(user.ownedDecorations ?? []).map((decorationId) => {
+              const decoration = getStoneDecoration(decorationId);
+              const selected = user.selectedStoneDecoration === decorationId;
+              return (
+                <button
+                  className={`owned-decoration-chip ${selected ? "selected" : ""}`}
+                  key={decorationId}
+                  disabled={selected || applyingDecoration === decorationId}
+                  onClick={() => applyDecoration(decorationId)}
+                >
+                  {decoration?.previewImageUrl && <img src={decoration.previewImageUrl} alt="" />}
+                  <span>{decoration?.name ?? decorationId}</span>
+                  <strong>{selected ? "使用中" : applyingDecoration === decorationId ? "应用中" : "应用"}</strong>
+                </button>
+              );
+            })}
           </div>
+          {user.selectedStoneDecoration && (
+            <button className="secondary-action" disabled={applyingDecoration === "default"} onClick={() => applyDecoration("")}>
+              恢复默认棋子
+            </button>
+          )}
+          {decorationError && <p className="form-error admin-action-error">{decorationError}</p>}
         </section>
         {detailCharacter && (
           <section className={`nested-modal character-detail ${detailOwned ? "" : "unowned"}`}>
@@ -1724,6 +1778,15 @@ function canPreviewPoint(game, player, point, pendingSkill, isScoringMode) {
   if (!player || game.phase !== "playing" || game.turn !== player.color) return false;
   if (pendingSkill) return canPreviewSkill(game, player, point);
   return Boolean(point?.valid && !point.stone);
+}
+
+function stoneDecorationsForRoom(room) {
+  return Object.fromEntries(
+    (room.players ?? []).map((player) => [
+      player.color,
+      player.user?.selectedStoneDecoration ?? ""
+    ])
+  );
 }
 
 function findCharacter(characters, characterOrId) {

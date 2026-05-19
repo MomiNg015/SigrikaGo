@@ -1,4 +1,5 @@
 import { publicUser } from "./db.js";
+import { STONE_DECORATIONS } from "../src/shared/stoneDecorations.js";
 
 const SHOP_CATEGORIES = new Set(["character", "decoration"]);
 const BUILTIN_SHOP_ITEMS = [
@@ -14,7 +15,18 @@ const BUILTIN_SHOP_ITEMS = [
     description: "获得角色猪小仙。",
     imageUrl: "/assets/baconbits.png"
   }
-];
+].concat(Object.values(STONE_DECORATIONS).map((decoration, index) => ({
+  name: decoration.name,
+  category: "decoration",
+  targetId: decoration.id,
+  priceCoins: decoration.priceCoins,
+  discountPercent: 0,
+  purchasable: true,
+  enabled: true,
+  sortOrder: 200 + index,
+  description: decoration.description,
+  imageUrl: decoration.previewImageUrl
+})));
 
 export function finalShopPrice(item) {
   const discount = Math.max(0, Math.min(100, Number(item.discountPercent ?? 0)));

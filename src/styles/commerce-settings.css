@@ -98,14 +98,41 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-bottom: 10px;
 }
 
 .owned-decoration-chip {
-  padding: 7px 10px;
+  min-height: 46px;
+  padding: 6px 10px;
   border-radius: 8px;
+  border: 1px solid #ddebe9;
   background: #eef6f5;
   color: #315d60;
   font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.owned-decoration-chip:disabled {
+  cursor: default;
+}
+
+.owned-decoration-chip.selected {
+  border-color: #5d7fe8;
+  background: #eef3ff;
+  color: #435fb9;
+}
+
+.owned-decoration-chip img {
+  width: 52px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.owned-decoration-chip strong {
+  font-size: 12px;
 }
 
 .shop-modal {
