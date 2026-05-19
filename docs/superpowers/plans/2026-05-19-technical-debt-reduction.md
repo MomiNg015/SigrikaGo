@@ -13,6 +13,7 @@
 ## File Structure
 
 - Modify `src/main.jsx`: remove extracted screen/modal components while keeping app orchestration in place.
+- Create `src/auth/AuthScreen.jsx`: own the login/register panel and auth submit UI.
 - Create `src/home/HomeScreen.jsx`: own the home screen layout and utility entry buttons.
 - Modify `docs/system-design.md`: record each completed extraction or debt decision.
 - Later tasks will add focused files under `src/room/`, `src/modals/`, and `server/rooms/` as they are tackled.
@@ -76,6 +77,8 @@ git commit -m "Extract home screen component"
 ```
 
 ## Task 3: Next P0 Candidates
+
+- [x] Extract `AuthScreen` into `src/auth/AuthScreen.jsx` as another self-contained `src/main.jsx` reduction.
 
 - [ ] Extract room socket lifecycle from `App` into a focused hook.
 - [ ] Extract `RoomScreen` into `src/room/RoomScreen.jsx` after the hook boundary is stable.

@@ -36,6 +36,8 @@ SigrikaGo/
     main.jsx                   # React 单页应用入口与对局/弹窗组装
     api/
       client.js                # 前端 HTTP JSON、后台 API、上传请求封装
+    auth/
+      AuthScreen.jsx           # 登录/注册界面
     admin/
       AdminConsole.jsx         # 后台管理界面与后台 CRUD 组件
     home/
@@ -62,9 +64,13 @@ SigrikaGo/
 
 - `src/main.jsx`
   - React SPA 的集中入口。
-  - 包含认证、对局、棋舍、商城、排行榜、设置等组件，并挂载后台管理入口。
+  - 包含对局、棋舍、商城、排行榜、设置等组件，并挂载后台管理入口。
   - 使用 `useState` / `useEffect` 做本地状态管理。
   - 通过 `src/api/client.js` 调用 HTTP API，通过 `socket.io-client` 连接实时对局。
+
+- `src/auth/AuthScreen.jsx`
+  - 登录/注册展示组件。
+  - 调用 `src/api/client.js` 完成认证请求，并通过 `onAuth` 回写 token 与用户信息。
 
 - `src/home/HomeScreen.jsx`
   - 大厅首页展示组件。
