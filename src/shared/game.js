@@ -826,7 +826,7 @@ export function scoreGame(state) {
   const blackAfterKomi = black;
   const whiteAfterKomi = white;
   const marginValue = black - white;
-  const margin = Math.abs(marginValue);
+  const margin = Math.abs(marginValue) / 2;
   const winnerColor = marginValue > 0 ? COLORS.black : COLORS.white;
   const winnerName = winnerColor === COLORS.black ? "黑" : "白";
 

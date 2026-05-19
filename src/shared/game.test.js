@@ -588,7 +588,9 @@ describe("SigrikaGo rules", () => {
       komi: 2.75,
       total: 3.75
     });
-    expect(result.text).toBe("白胜5又1/2子");
+    expect(result.marginValue).toBe(-5.5);
+    expect(result.margin).toBe(2.75);
+    expect(result.text).toBe("白胜2又3/4子");
   });
 
   it("subtracts numeric skill cost before deciding the scoring winner", () => {
@@ -606,7 +608,9 @@ describe("SigrikaGo rules", () => {
     expect(result.blackAfterKomi).toBe(-3.75);
     expect(result.white).toBe(6.75);
     expect(result.winnerColor).toBe(COLORS.white);
-    expect(result.text).toBe("白胜10又1/2子");
+    expect(result.marginValue).toBe(-10.5);
+    expect(result.margin).toBe(5.25);
+    expect(result.text).toBe("白胜5又1/4子");
   });
 
   it("describes resignation as a midgame win for the opponent", () => {
@@ -713,6 +717,8 @@ describe("SigrikaGo rules", () => {
       opponentSkillCost: 3,
       total: 5.75
     });
-    expect(result.text).toBe("白胜9又1/2子");
+    expect(result.marginValue).toBe(-9.5);
+    expect(result.margin).toBe(4.75);
+    expect(result.text).toBe("白胜4又3/4子");
   });
 });
