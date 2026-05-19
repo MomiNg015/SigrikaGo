@@ -513,6 +513,7 @@ describe("SigrikaGo rules", () => {
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(4, 4)).stone).toBe(null);
     expect(getPoint(result.state, pointId(4, 5)).hiddenHand.exposed).toBe(true);
+    expect(result.state.history.at(-1).hiddenHandRevealed).toBe(true);
     expect(result.notices).toContain("发现隐藏手了！");
   });
 
@@ -534,6 +535,7 @@ describe("SigrikaGo rules", () => {
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(4, 4)).stone).toBe(null);
     expect(getPoint(result.state, pointId(4, 3)).hiddenHand.exposed).toBe(true);
+    expect(result.state.history.at(-1).hiddenHandRevealed).toBe(true);
     expect(result.notices).toContain("发现隐藏手了！");
   });
 

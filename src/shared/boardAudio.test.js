@@ -21,6 +21,15 @@ describe("board audio helpers", () => {
     });
   });
 
+  it("uses the hidden reveal sound when a board action exposes a hidden hand", () => {
+    expect(latestBoardSoundAction([
+      { type: "move", color: "black", id: "4,4", captures: ["5,4"], hiddenHandRevealed: true, moveNumber: 1 }
+    ])).toMatchObject({
+      key: "move-1-4,4",
+      sound: BOARD_SOUND_TYPES.hiddenReveal
+    });
+  });
+
   it("does not replay the previous stone sound when the replay step is a pass", () => {
     expect(boardSoundActionAtStep([
       { type: "move", color: "black", id: "4,4", captures: [], moveNumber: 1 },

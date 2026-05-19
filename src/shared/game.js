@@ -254,9 +254,10 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
   next.turn = opponent(color);
   next.passes = 0;
   next.moveNumber += 1;
+  const hiddenHandRevealed = notices.includes(HIDDEN_HAND_NOTICE);
   next.history.push(hidden
-    ? { type: "skill", skill: "小爱出击", color, id, captures: removed, moveNumber: next.moveNumber }
-    : { type: "move", color, id, captures: removed, colorIllusion: point.colorIllusion ?? null, moveNumber: next.moveNumber });
+    ? { type: "skill", skill: "小爱出击", color, id, captures: removed, hiddenHandRevealed, moveNumber: next.moveNumber }
+    : { type: "move", color, id, captures: removed, colorIllusion: point.colorIllusion ?? null, hiddenHandRevealed, moveNumber: next.moveNumber });
   if (hidden) {
     next.skillUses[color] -= 1;
     applySkillCost(next, color, skill ?? "aemeath");

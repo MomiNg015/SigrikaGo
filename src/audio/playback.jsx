@@ -5,6 +5,7 @@ import { VOICE_EFFECT_SETTINGS, boostedVoiceVolume, createAiryReverbImpulse } fr
 
 export const STONE_SOUND = "/assets/music/godown_clear.ogg";
 export const CAPTURE_SOUND = "/assets/music/go_capture_clear.ogg";
+export const HIDDEN_HAND_REVEAL_SOUND = "/assets/music/hidden_hand_reveal.ogg";
 
 export const DEFAULT_AUDIO_SETTINGS = {
   master: 80,
@@ -315,6 +316,10 @@ export function playCaptureSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
 
 export function playBoardSound(boardSoundAction, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   if (!boardSoundAction) return;
+  if (boardSoundAction.sound === BOARD_SOUND_TYPES.hiddenReveal) {
+    playEffectSound(HIDDEN_HAND_REVEAL_SOUND, audioSettings);
+    return;
+  }
   if (boardSoundAction.sound === BOARD_SOUND_TYPES.capture) {
     playCaptureSound(audioSettings);
     return;

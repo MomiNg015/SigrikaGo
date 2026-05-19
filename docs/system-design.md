@@ -828,8 +828,9 @@ SigrikaGo/
 - 对局结果弹窗出现时停止 BGM；胜方播放 `result-victory.mp3`，负方播放 `result-defeat.mp3`，和棋不播放结果音效。
 - 普通落子播放 `godown_clear.ogg`。
 - 提子动作播放 `go_capture_clear.ogg`。
+- 隐藏手暴露播放 `hidden_hand_reveal.ogg`；回放下一步遇到带有隐藏手暴露标记的历史动作时也会播放该音效。
 - `boardAudio.js` 根据历史记录中的当前棋盘动作判断落子音或提子音；回放界面点击“下一手”时也会按该步历史播放对应音效，弃手不会重复播放上一手棋盘音效。
-- 落子、提子、匹配成功和结果音效均走 `sfx` 音量通道。
+- 落子、提子、隐藏手暴露、匹配成功和结果音效均走 `sfx` 音量通道。
 - 读秒 10 到 1 秒倒计时通过 `playSystemVoice(countdown-N)` 播放角色语音或 TTS，超时时语音播报“超时”，不会播报“还剩0次读秒”。
 
 ### Skill Voice

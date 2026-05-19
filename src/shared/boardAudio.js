@@ -1,6 +1,7 @@
 export const BOARD_SOUND_TYPES = {
   stone: "stone",
-  capture: "capture"
+  capture: "capture",
+  hiddenReveal: "hidden-reveal"
 };
 
 export function latestBoardSoundAction(history = []) {
@@ -19,6 +20,10 @@ function boardSoundActionFromHistoryEntry(action) {
   if (action.type !== "move" && !(action.type === "skill" && Array.isArray(action.captures))) return null;
   return {
     key: `${action.type}-${action.moveNumber}-${action.id}`,
-    sound: action.captures?.length > 0 ? BOARD_SOUND_TYPES.capture : BOARD_SOUND_TYPES.stone
+    sound: action.hiddenHandRevealed
+      ? BOARD_SOUND_TYPES.hiddenReveal
+      : action.captures?.length > 0
+        ? BOARD_SOUND_TYPES.capture
+        : BOARD_SOUND_TYPES.stone
   };
 }

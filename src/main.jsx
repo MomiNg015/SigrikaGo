@@ -34,7 +34,7 @@ import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
 import { BOARD_SIZE, COLORS, GAME_PHASES, activatePassiveSkill, createGameState, formatStones, gameViewForColor, passMove, playMove, randomBlast, useSkill } from "./shared/game.js";
 import { derivePlayerRecordStats } from "./shared/gameRecords.js";
 import { canPreviewSkillTarget, lastMarkedAction } from "./shared/boardView.js";
-import { boardSoundActionAtStep, latestBoardSoundAction } from "./shared/boardAudio.js";
+import { BOARD_SOUND_TYPES, boardSoundActionAtStep, latestBoardSoundAction } from "./shared/boardAudio.js";
 import { MATCH_SUCCESS_SOUND, characterVoiceMapForSkill, latestSkillCharacterId, resolveBackgroundMusic, resolveResultSound } from "./shared/musicLibrary.js";
 import { nextCountdownAnnouncement, nextTimeAnnouncement } from "./shared/timeAnnouncements.js";
 import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
@@ -552,6 +552,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   const scoring = displayRoom.game.scoring;
   const drawRequest = displayRoom.game.drawRequest;
   const soundMoveRef = useRef(null);
+  const hiddenRevealSoundRef = useRef(null);
   const replayStepSoundRef = useRef(replayStep);
   const voiceRef = useRef({});
   const preloadedCountdownRef = useRef("");
@@ -587,6 +588,27 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
     soundMoveRef.current = boardSoundAction.key;
     playBoardSound(boardSoundAction, audioSettings);
   }, [displayRoom.game.history, isReplay, replayStep, audioSettings]);
+
+  useEffect(() => {
+    if (isReplay) return;
+    const exposedIds = displayRoom.game.points
+      .filter((point) => point.hiddenHand?.exposed)
+      .map((point) => point.id)
+      .sort();
+    const exposedKey = exposedIds.join("|");
+    if (hiddenRevealSoundRef.current == null) {
+      hiddenRevealSoundRef.current = exposedKey;
+      return;
+    }
+    if (hiddenRevealSoundRef.current === exposedKey) return;
+    const previous = new Set(hiddenRevealSoundRef.current.split("|").filter(Boolean));
+    hiddenRevealSoundRef.current = exposedKey;
+    const hasNewExposure = exposedIds.some((id) => !previous.has(id));
+    const latestAction = latestBoardSoundAction(displayRoom.game.history);
+    if (hasNewExposure && latestAction?.sound !== BOARD_SOUND_TYPES.hiddenReveal) {
+      playBoardSound({ key: `hidden-reveal-${exposedKey}`, sound: BOARD_SOUND_TYPES.hiddenReveal }, audioSettings);
+    }
+  }, [displayRoom.game.points, displayRoom.game.history, isReplay, audioSettings]);
 
   useEffect(() => {
     if (isReplay || !activePlayer) return;
