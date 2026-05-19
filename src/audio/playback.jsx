@@ -230,7 +230,12 @@ function getVoiceAudioContext() {
   if (typeof window === "undefined") return null;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) return null;
-  sharedVoiceContext = new AudioContextClass();
+  try {
+    sharedVoiceContext = new AudioContextClass();
+  } catch {
+    sharedVoiceContext = null;
+    return null;
+  }
   return sharedVoiceContext;
 }
 
