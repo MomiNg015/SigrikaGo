@@ -57,7 +57,7 @@ export const MUSIC_TRACKS = {
     characterId: "sigrika",
     defaultUnlocked: true,
     purchasable: false,
-    playback: introLoop("/assets/music/koimoon_132_micro_intro_once.ogg", "/assets/music/koimoon_132_micro_loop.ogg")
+    playback: introLoop("/assets/music/koimoon_132_intro_no_fadein_2p5s.ogg", "/assets/music/koimoon_132_micro_loop.ogg")
   },
   "aemeath-skill-default": {
     id: "aemeath-skill-default",

@@ -114,7 +114,7 @@ describe("background music library", () => {
       characterId: "sigrika",
       playback: {
         mode: "intro-loop",
-        introSrc: "/assets/music/koimoon_132_micro_intro_once.ogg",
+        introSrc: "/assets/music/koimoon_132_intro_no_fadein_2p5s.ogg",
         loopSrc: "/assets/music/koimoon_132_micro_loop.ogg",
         loop: true
       }

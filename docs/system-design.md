@@ -814,7 +814,7 @@ SigrikaGo/
 - BGM 资源配置集中在 `MUSIC_TRACKS`，按 `home`、`battle`、`skill` 三类管理。
 - 主界面默认 BGM 使用 `hidamari_intro_once.ogg` + `hidamari_loop.ogg`。
 - 对弈常规 BGM 使用 `shanjifu_intro_once.ogg` + `shanjifu_loop.ogg`。
-- 角色技能 BGM 当前配置：达妮娅使用 `bgm_*`，西格莉卡使用 `koimoon_132_micro_*`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`。
+- 角色技能 BGM 当前配置：达妮娅使用 `bgm_*`，西格莉卡使用 `koimoon_132_intro_no_fadein_2p5s.ogg` + `koimoon_132_micro_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`。
 - BGM 优先级为：角色技能 BGM > 对弈常规 BGM > 主界面 BGM。
 - 角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。
 - 匹配成功倒计时、对局结果弹窗、对局结束阶段会停止 BGM。
