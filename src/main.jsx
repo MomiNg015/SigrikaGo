@@ -36,11 +36,11 @@ import { derivePlayerRecordStats } from "./shared/gameRecords.js";
 import { canPreviewSkillTarget, lastMarkedAction } from "./shared/boardView.js";
 import { boardSoundActionAtStep, latestBoardSoundAction } from "./shared/boardAudio.js";
 import { MATCH_SUCCESS_SOUND, latestSkillCharacterId, resolveBackgroundMusic, resolveResultSound, resolveSkillVoice } from "./shared/musicLibrary.js";
-import { nextTimeAnnouncement } from "./shared/timeAnnouncements.js";
+import { nextCountdownAnnouncement, nextTimeAnnouncement } from "./shared/timeAnnouncements.js";
 import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
 import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "./shared/systemVoices.js";
 import { resultRewardDelta } from "./shared/resultRewards.js";
-import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playCountdownBeep, playEffectSound, playVoiceSound, speakText } from "./audio/playback.jsx";
+import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playEffectSound, playVoiceSound, speakText } from "./audio/playback.jsx";
 import AdminConsole from "./admin/AdminConsole.jsx";
 import { adminApi, api } from "./api/client.js";
 import "./styles.css";
@@ -598,7 +598,15 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
       const countdownKey = `${activePlayer.color}-${timer.periods}-${timer.periodRemaining}`;
       if (!voiceRef.current[countdownKey]) {
         voiceRef.current[countdownKey] = true;
-        playCountdownBeep(timer.periodRemaining, audioSettings);
+        const countdownAnnouncement = nextCountdownAnnouncement({ seconds: timer.periodRemaining });
+        if (countdownAnnouncement?.type === "voice") {
+          playSystemVoice(countdownAnnouncement.event, {
+            character: activePlayer.character,
+            params: countdownAnnouncement.params,
+            fallbackText: countdownAnnouncement.text,
+            audioSettings
+          });
+        }
       }
     }
     voiceRef.current[mainKey] = timer.main;

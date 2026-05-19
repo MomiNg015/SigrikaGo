@@ -38,11 +38,16 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
     return { type: "tts", text: `还剩${params.periods}次读秒` };
   }
   if (event === SYSTEM_VOICE_EVENTS.byoYomiCountdown) {
-    return { type: "tts", text: String(params.seconds) };
+    return { type: "tts", text: countdownText(params.seconds) };
   }
   const countdownMatch = /^countdown-(\d+)$/.exec(event);
   if (countdownMatch) {
-    return { type: "tts", text: countdownMatch[1] };
+    return { type: "tts", text: countdownText(Number(countdownMatch[1])) };
   }
   return { type: "tts", text: DEFAULT_SYSTEM_VOICE_TEXT[event] ?? "" };
+}
+
+function countdownText(seconds) {
+  if (!Number.isInteger(seconds) || seconds < 1 || seconds > 10) return "";
+  return String(seconds);
 }

@@ -848,7 +848,7 @@ SigrikaGo/
 - 当前默认走 TTS 文本；如果角色配置了 `systemVoices[event]`，则优先播放对应音频。
 - 已预留事件：`game-start`、`skill-cast`、`byo-yomi-start`、`byo-yomi-periods`、`byo-yomi-period-2`、`byo-yomi-period-1`、`byo-yomi-countdown`、`countdown-N`、`timeout`、`result-victory`、`result-defeat`、`result-draw`、`house-detail`。
 - 对局正式开始时，服务端写入 kind 为 `game-start` 的系统消息，前端据此播放“对局开始”语音。
-- 进入读秒、剩余读秒次数和超时播报已经接入事件化 resolver；读秒倒计时和结果语音事件已预留，后续可接角色专属资源。
+- 进入读秒、剩余读秒次数和超时播报已经接入事件化 resolver；剩余 2/1 次读秒使用显式 `byo-yomi-period-2`、`byo-yomi-period-1` 事件，10 到 1 秒倒计时使用 `countdown-10` 到 `countdown-1` 角色语音事件。
 
 ### Static Audio Assets
 

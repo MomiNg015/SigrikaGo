@@ -49,6 +49,25 @@ describe("system voices", () => {
     });
   });
 
+  it("returns empty TTS text for malformed countdown announcements", () => {
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.byoYomiCountdown)).toEqual({
+      type: "tts",
+      text: ""
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.byoYomiCountdown, { params: { seconds: "5" } })).toEqual({
+      type: "tts",
+      text: ""
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(0))).toEqual({
+      type: "tts",
+      text: ""
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(11))).toEqual({
+      type: "tts",
+      text: ""
+    });
+  });
+
   it("delegates final byo-yomi periods to explicit period events", () => {
     expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.byoYomiPeriods, { params: { periods: 2 } })).toEqual({
       type: "tts",
