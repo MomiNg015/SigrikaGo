@@ -1,7 +1,44 @@
-﻿import { afterEach, describe, expect, test, vi } from "vitest";
+﻿import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { COLORS, GAME_PHASES, getPoint, pointId } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
-import { clearRoomsForTest, clearRoomTimers, completeRoomOpening, handleGameAction, joinMatchmaking, roomView, startInitialPassiveSkillNow } from "./rooms.js";
+const prismaMocks = vi.hoisted(() => ({
+  gameRecordCreate: vi.fn(),
+  transaction: vi.fn(),
+  userUpdate: vi.fn()
+}));
+
+vi.mock("./db.js", () => ({
+  prisma: {
+    gameRecord: {
+      create: prismaMocks.gameRecordCreate
+    },
+    user: {
+      update: prismaMocks.userUpdate
+    },
+    $transaction: prismaMocks.transaction
+  }
+}));
+
+import {
+  clearRoomsForTest,
+  clearRoomTimers,
+  completeRoomOpening,
+  handleGameAction,
+  joinMatchmaking,
+  requestDraw,
+  respondDraw,
+  roomView,
+  startInitialPassiveSkillNow
+} from "./rooms.js";
+
+beforeEach(() => {
+  prismaMocks.gameRecordCreate.mockReset();
+  prismaMocks.gameRecordCreate.mockResolvedValue({ id: "record" });
+  prismaMocks.userUpdate.mockReset();
+  prismaMocks.userUpdate.mockImplementation((operation) => Promise.resolve(operation));
+  prismaMocks.transaction.mockReset();
+  prismaMocks.transaction.mockImplementation((operations) => Promise.all(operations));
+});
 
 function fakeIo() {
   return {
@@ -34,6 +71,58 @@ function user(id, selectedCharacter, characterConfig = null) {
     ownedDecorations: []
   };
 }
+
+describe("room game record persistence", () => {
+  afterEach(() => {
+    clearRoomsForTest();
+    vi.useRealTimers();
+  });
+
+  test("persists winner and loser coin rewards for decisive finished games", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    joinMatchmaking({ user: user("winner", "sigrika"), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("loser", "sigrika"), socketId: "socket-b" }, io);
+    Math.random.mockRestore();
+    completeRoomOpening(room, io);
+
+    const loser = room.players.find((player) => player.color === COLORS.white);
+    const result = handleGameAction(room.code, loser.user.id, { type: "resign" }, io);
+
+    expect(result.ok).toBe(true);
+    expect(prismaMocks.userUpdate).toHaveBeenCalledTimes(2);
+    const updatesByUserId = new Map(prismaMocks.userUpdate.mock.calls.map(([operation]) => [operation.where.id, operation]));
+    expect(updatesByUserId.get("winner").data).toMatchObject({
+      wins: { increment: 1 },
+      rating: { increment: 20 },
+      coins: { increment: 50 }
+    });
+    expect(updatesByUserId.get("loser").data).toMatchObject({
+      losses: { increment: 1 },
+      rating: { increment: -20 },
+      coins: { increment: 20 }
+    });
+  });
+
+  test("persists draw records without updating user rewards", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    joinMatchmaking({ user: user("draw-alice", "sigrika"), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("draw-bob", "sigrika"), socketId: "socket-b" }, io);
+    completeRoomOpening(room, io);
+
+    const requester = room.players[0];
+    const responder = room.players[1];
+    expect(requestDraw(room.code, requester.user.id, io).ok).toBe(true);
+    const result = respondDraw(room.code, responder.user.id, true, io);
+
+    expect(result.ok).toBe(true);
+    expect(prismaMocks.gameRecordCreate).toHaveBeenCalledTimes(1);
+    expect(prismaMocks.userUpdate).not.toHaveBeenCalled();
+    expect(prismaMocks.transaction).not.toHaveBeenCalled();
+  });
+});
 
 describe("rooms character integration", () => {
   afterEach(() => {

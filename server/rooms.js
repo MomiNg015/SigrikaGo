@@ -26,8 +26,9 @@ import {
   useSkill
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
+import { resultRewardDelta } from "../src/shared/resultRewards.js";
 import { prisma } from "./db.js";
-import { gameResultMetadata, ratingDeltaForResult } from "./gameRecords.js";
+import { gameResultMetadata } from "./gameRecords.js";
 
 const rooms = new Map();
 let waitingPlayer = null;
@@ -717,20 +718,24 @@ async function saveGameRecord(room) {
   }
   const winner = room.game.winner.winnerColor === COLORS.black ? black : white;
   const loser = winner.color === COLORS.black ? white : black;
+  const winnerReward = resultRewardDelta(winner.color, room.game.winner.winnerColor);
+  const loserReward = resultRewardDelta(loser.color, room.game.winner.winnerColor);
   await prisma.$transaction([
     recordCreate,
     prisma.user.update({
       where: { id: winner.user.id },
       data: {
         wins: { increment: 1 },
-        rating: { increment: ratingDeltaForResult(winner.color, room.game.winner.winnerColor) }
+        rating: { increment: winnerReward.rating },
+        coins: { increment: winnerReward.coins }
       }
     }),
     prisma.user.update({
       where: { id: loser.user.id },
       data: {
         losses: { increment: 1 },
-        rating: { increment: ratingDeltaForResult(loser.color, room.game.winner.winnerColor) }
+        rating: { increment: loserReward.rating },
+        coins: { increment: loserReward.coins }
       }
     })
   ]);
