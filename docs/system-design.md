@@ -628,6 +628,7 @@ SigrikaGo/
 - `uploadPortrait`: 上传角色立绘，位于 `src/api/client.js`。
 - `findCharacter`: 从角色 map 或 fallback 中解析角色。
 - `derivePlayerRecordStats` / `recordWinnerColor`: 位于 `src/shared/gameRecords.js`，前后端共用棋谱胜负与战绩推导逻辑，优先基于 `winnerColor` 结构化字段，旧记录回退到 `resultText` 文本前缀。
+- `resultRewardDelta`: 位于 `src/shared/resultRewards.js`，集中维护结果奖励差值，供后端持久化与前端结果展示共用；积分胜 `+20`、负 `-20`、和 `0`，金币胜 `+50`、负 `+20`、和 `0`。
 - `buildCharacterDraft` / `characterDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台角色表单数据转换。
 - `validateShopItemDraft` / `decorationDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台商城/装饰表单校验。
 - `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题/副标题默认值。
