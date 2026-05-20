@@ -1,54 +1,60 @@
-import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { io } from "socket.io-client";
 import {
-  DoorOpen,
-  Eye,
-  Bell,
+  ChartNoAxesColumn,
+  CircleDollarSign,
   Flag,
+  Gem,
   Hash,
-  Info,
-  MessageCircle,
-  Mic2,
+  MessageSquareText,
   MonitorPlay,
-  Music,
   PanelRight,
-  SkipBack,
-  SkipForward,
-  Send,
   Settings,
   ShoppingBag,
-  Shuffle,
   Sparkles,
-  StepBack,
-  StepForward,
   Swords,
+  Star,
   Trophy,
-  Volume2,
-  RotateCcw,
   X
 } from "lucide-react";
 import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
-import { BOARD_SIZE, COLORS, GAME_PHASES, activatePassiveSkill, createGameState, formatStones, gameViewForColor, passMove, playMove, randomBlast, useSkill } from "./shared/game.js";
+import { COLORS, GAME_PHASES, gameViewForColor } from "./shared/game.js";
 import { derivePlayerRecordStats } from "./shared/gameRecords.js";
-import { canPreviewSkillTarget, lastMarkedAction } from "./shared/boardView.js";
 import { BOARD_SOUND_TYPES, boardSoundActionAtStep, latestBoardSoundAction } from "./shared/boardAudio.js";
-import { MATCH_SUCCESS_SOUND, characterVoiceMapForSkill, latestSkillCharacterId, resolveBackgroundMusic, resolveResultSound } from "./shared/musicLibrary.js";
+import { MATCH_SUCCESS_SOUND, latestSkillCharacterId, resolveBackgroundMusic, resolveResultSound } from "./shared/musicLibrary.js";
 import { nextCountdownAnnouncement, nextTimeAnnouncement } from "./shared/timeAnnouncements.js";
 import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
 import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "./shared/systemVoices.js";
 import { resultRewardDelta } from "./shared/resultRewards.js";
-import { getStoneDecoration, stoneDecorationImage } from "./shared/stoneDecorations.js";
-import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playEffectSound, playPreloadedVoiceSound, preloadVoiceSound, speakText } from "./audio/playback.jsx";
+import { getStoneDecoration } from "./shared/stoneDecorations.js";
+import { findCharacter } from "./shared/characterDisplay.js";
+import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playBoardSound, playEffectSound, preloadVoiceSound } from "./audio/playback.jsx";
+import { playSystemVoice } from "./audio/systemVoicePlayback.js";
 import AdminConsole from "./admin/AdminConsole.jsx";
 import AuthScreen from "./auth/AuthScreen.jsx";
 import HomeScreen from "./home/HomeScreen.jsx";
+import LeaderboardModal from "./modals/LeaderboardModal.jsx";
+import MessageBoardModal from "./modals/MessageBoardModal.jsx";
+import SettingsModal from "./modals/SettingsModal.jsx";
+import WatchModal from "./modals/WatchModal.jsx";
+import ActionBar from "./room/ActionBar.jsx";
+import Board from "./room/Board.jsx";
+import ChatBox from "./room/ChatBox.jsx";
+import OperationHint from "./room/OperationHint.jsx";
+import PlayerInfo from "./room/PlayerInfo.jsx";
+import RoomPeopleList from "./room/RoomPeopleList.jsx";
+import {
+  replayGameAt,
+  replayRoomAt,
+  stoneDecorationsForRoom,
+  voiceCharacterForPlayer
+} from "./room/roomView.js";
 import { adminApi, api } from "./api/client.js";
 import "./styles.css";
 
 const SOCKET_BASE = "http://localhost:3001";
 const SHOW_TEST_TOOLS = import.meta.env.DEV;
-const DEFAULT_CHARACTER_SYSTEM_VOICES = characterVoiceMapForSkill();
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("sigrika-token") ?? "");
@@ -64,6 +70,7 @@ function App() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showWatch, setShowWatch] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showMessageBoard, setShowMessageBoard] = useState(false);
   const [audioSettings, setAudioSettings] = useState(loadAudioSettings);
   const [watchCode, setWatchCode] = useState("");
   const [pendingSkill, setPendingSkill] = useState(false);
@@ -294,6 +301,7 @@ function App() {
           onOpenWatch={() => setShowWatch(true)}
           onOpenShop={() => setShowShop(true)}
           onOpenSettings={() => setShowSettings(true)}
+          onOpenMessageBoard={() => setShowMessageBoard(true)}
           onOpenAdmin={() => setView("admin")}
         />
       )}
@@ -323,6 +331,7 @@ function App() {
           onOpenWatch={() => setShowWatch(true)}
           onOpenShop={() => setShowShop(true)}
           onOpenSettings={() => setShowSettings(true)}
+          onOpenMessageBoard={() => setShowMessageBoard(true)}
           onOpenAdmin={() => setView("admin")}
         />
       )}
@@ -337,6 +346,7 @@ function App() {
           setPendingSkill={setPendingSkill}
           audioSettings={audioSettings}
           onOpenSettings={() => setShowSettings(true)}
+          onOpenMessageBoard={() => setShowMessageBoard(true)}
           onBack={() => {
             setReplayStep(null);
             setView("home");
@@ -415,16 +425,18 @@ function App() {
       )}
       {showSettings && (
         <SettingsModal
+          siteSettings={siteSettings}
           audioSettings={audioSettings}
           setAudioSettings={setAudioSettings}
           onClose={() => setShowSettings(false)}
         />
       )}
+      {showMessageBoard && <MessageBoardModal onClose={() => setShowMessageBoard(false)} />}
     </div>
   );
 }
 
-function RoomScreen({ room, user, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat }) {
+function RoomScreen({ room, user, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat }) {
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -523,7 +535,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
     });
     if (announcement?.type === "voice") {
       playSystemVoice(announcement.event, {
-        character: activePlayer.character,
+        character: voiceCharacterForPlayer(activePlayer, characters),
         params: announcement.params,
         fallbackText: announcement.text,
         audioSettings
@@ -536,7 +548,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
         const countdownAnnouncement = nextCountdownAnnouncement({ seconds: timer.periodRemaining });
         if (countdownAnnouncement?.type === "voice") {
           playSystemVoice(countdownAnnouncement.event, {
-            character: activePlayer.character,
+            character: voiceCharacterForPlayer(activePlayer, characters),
             params: countdownAnnouncement.params,
             fallbackText: countdownAnnouncement.text,
             audioSettings
@@ -546,14 +558,14 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
     }
     voiceRef.current[mainKey] = timer.main;
     voiceRef.current[periodKey] = timer.periods;
-  }, [activePlayer, isReplay, audioSettings]);
+  }, [activePlayer, characters, isReplay, audioSettings]);
 
   useEffect(() => {
     if (isReplay || !activePlayer || !(activePlayer.time?.main <= 0)) return;
     const preloadSources = [];
     for (let seconds = 10; seconds >= 1; seconds -= 1) {
       const voice = resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(seconds), {
-        character: activePlayer.character,
+        character: voiceCharacterForPlayer(activePlayer, characters),
         params: { seconds }
       });
       if (voice.type === "audio" && voice.src) preloadSources.push(voice.src);
@@ -564,7 +576,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
     for (const src of preloadSources) {
       preloadVoiceSound(src);
     }
-  }, [activePlayer, isReplay]);
+  }, [activePlayer, characters, isReplay]);
 
   useEffect(() => {
     if (isReplay) return;
@@ -572,10 +584,10 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
     if (!gameStartMessage || systemVoiceRef.current.gameStart === gameStartMessage.id) return;
     systemVoiceRef.current.gameStart = gameStartMessage.id;
     playSystemVoice(SYSTEM_VOICE_EVENTS.gameStart, {
-      character: me?.character,
+      character: voiceCharacterForPlayer(me, characters),
       audioSettings
     });
-  }, [displayRoom.chat, isReplay, me?.character, audioSettings]);
+  }, [displayRoom.chat, isReplay, me, characters, audioSettings]);
 
   function handlePoint(point) {
     if (isReplay) return;
@@ -630,6 +642,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
           {isReplay && <h1>棋谱回放</h1>}
         </div>
         <div className="room-toggles">
+          <button className="toggle" onClick={onOpenMessageBoard} title="留言板"><MessageSquareText size={16} /></button>
           <button className="toggle" onClick={onOpenSettings} title="设置"><Settings size={16} /></button>
           <button className={showMoves ? "toggle active" : "toggle"} onClick={() => setShowMoves(!showMoves)} title="显示手数"><Hash size={16} /></button>
           <button className={showCoords ? "toggle active" : "toggle"} onClick={() => setShowCoords(!showCoords)} title="显示坐标"><PanelRight size={16} /></button>
@@ -649,6 +662,7 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
             isActiveTurn={displayRoom.game.phase === "playing" && opponent?.color === displayRoom.game.turn}
             isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
           />
+          <RoomPeopleList room={displayRoom} />
           <OperationHint room={displayRoom} user={user} scoring={scoring} drawRequest={drawRequest} />
         </div>
         <div className="board-column">
@@ -736,469 +750,6 @@ function RoomScreen({ room, user, characters, replayStep, setReplayStep, pending
   );
 }
 
-function Board({ game, showCoords, showMoves, pendingSkill, previewPlayer, stoneDecorations = {}, onPoint, onScoringPoint, onNeutral }) {
-  const markedAction = lastMarkedAction(game.history);
-  const moveNumbers = new Map(game.history.filter((entry) => entry.type === "move").map((entry) => [entry.id, entry.moveNumber]));
-  const labels = Array.from({ length: BOARD_SIZE }, (_, index) => coordLetter(index));
-  const rows = Array.from({ length: BOARD_SIZE }, (_, index) => BOARD_SIZE - index);
-  const lines = buildBoardLines(game.points);
-  const showScoringMarks = ["marking-dead", "result-review", "finished"].includes(game.phase);
-  const territoryOwner = new Map([
-    ...(showScoringMarks ? game.scoring?.territory?.black ?? [] : []).map((id) => [id, COLORS.black]),
-    ...(showScoringMarks ? game.scoring?.territory?.white ?? [] : []).map((id) => [id, COLORS.white])
-  ]);
-  const deadStoneOwners = showScoringMarks ? game.scoring?.deadStoneOwners ?? {} : {};
-  return (
-    <div className={`board-wrap ${pendingSkill ? "targeting" : ""}`}>
-      {showCoords && <div className="coord-row coord-top">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
-      {showCoords && <div className="coord-col coord-left">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
-      <div className="board" style={{ "--size": BOARD_SIZE }}>
-        <svg className="board-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          {lines.map((line) => (
-            <line
-              key={line.key}
-              x1={line.x1}
-              y1={line.y1}
-              x2={line.x2}
-              y2={line.y2}
-            />
-          ))}
-        </svg>
-        {game.points.map((point) => {
-          const emptyTerritoryOwner = !point.stone ? territoryOwner.get(point.id) : null;
-          const deadOwner = point.stone ? deadStoneOwners[point.id] : null;
-          const hiddenClass = point.hiddenHand
-            ? point.hiddenHand.exposed ? "hidden-hand exposed-hidden-hand" : "hidden-hand"
-            : "";
-          const skillEffectClass = point.skillEffect ?? "";
-          const previewClass = canPreviewPoint(game, previewPlayer, point, pendingSkill, Boolean(onScoringPoint)) ? "previewable" : "";
-          const decorationImage = point.stone ? stoneDecorationImage(stoneDecorations[point.stone], point.stone) : null;
-          return (
-          <button
-            key={point.id}
-            className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${previewClass} ${isStarPoint(point.x, point.y) ? "star" : ""}`}
-            style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
-            onPointerDown={(event) => {
-              if (!onScoringPoint) return;
-              event.preventDefault();
-              event.stopPropagation();
-              onScoringPoint(point);
-            }}
-            onClick={() => {
-              if (!onScoringPoint) onPoint(point);
-            }}
-            onContextMenu={(event) => {
-              event.preventDefault();
-              if (game.phase === "marking-dead") onNeutral(point.id);
-            }}
-            title={coordLabel(point.x, point.y)}
-          >
-            {point.stone && (
-              <span
-                className={`stone ${decorationImage ? "decorated-stone" : ""}`}
-                style={decorationImage ? { "--stone-decoration-image": `url("${decorationImage}")` } : undefined}
-              >
-                {markedAction?.id === point.id && <i />}
-                {showMoves && moveNumbers.has(point.id) && <b>{moveNumbers.get(point.id)}</b>}
-              </span>
-            )}
-            {!point.valid && <span className="void" />}
-            {emptyTerritoryOwner && <span className={`territory-mark ${emptyTerritoryOwner}`} aria-label={`${emptyTerritoryOwner} territory`} />}
-            {deadOwner && <span className={`dead-mark ${deadOwner}`} aria-label={`${deadOwner} dead-stone mark`} />}
-            {showScoringMarks && game.scoring?.neutralPoints?.includes(point.id) && <span className="neutral-mark" aria-label="neutral point" />}
-          </button>
-          );
-        })}
-      </div>
-      {showCoords && <div className="coord-col coord-right">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
-      {showCoords && <div className="coord-row coord-bottom">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
-    </div>
-  );
-}
-
-function PlayerInfo({ player, game, characters, align, viewColor = COLORS.black, canSwitchView = false, onViewColor, isWinner = false, isActiveTurn = false, isDrawResult = false, isSkillTargeting = false }) {
-  if (!player) return <aside className="player-info empty" />;
-  const character = findCharacter(characters, player.character ?? player.characterId);
-  const skillUses = game.skillUses[player.color] ?? 0;
-  const skillCost = game.skillCosts?.[player.color] ?? 0;
-  const resultBadge = isDrawResult ? null : isWinner ? "胜" : game.phase === "finished" ? "负" : null;
-  return (
-    <aside className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""}`}>
-      <div className="portrait-wrap">
-        {canSwitchView && (
-          <button
-            className={`viewpoint-button ${viewColor === player.color ? "active" : ""}`}
-            type="button"
-            title={`切换到${player.color === COLORS.black ? "黑方" : "白方"}视角`}
-            onClick={() => onViewColor?.(player.color)}
-          >
-            <Eye size={18} />
-          </button>
-        )}
-        <img src={character.portrait} alt={character.name} />
-        {resultBadge && <span className={`result-badge ${resultBadge === "胜" ? "win" : "loss"}`}>{resultBadge}</span>}
-      </div>
-      <div className="player-meta">
-        <button className="name-button">{player.user.username}</button>
-        <span>{player.user.rank} · {player.user.rating}</span>
-        <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
-      </div>
-      <TimeBar time={player.time} />
-      <div className="captures">
-        <span><strong>提子</strong>{player.captures}</span>
-        <span><strong>代价</strong>{skillCost}</span>
-      </div>
-      <div className={`skill-chip ${skillUses <= 0 ? "spent" : ""} ${isSkillTargeting ? "targeting" : ""}`} title={character.skill.description}>
-        <Sparkles size={16} />
-        {character.skill.name} · {skillUses}
-      </div>
-    </aside>
-  );
-}
-
-function TimeBar({ time }) {
-  const inMain = time.main > 0;
-  const isFinalByoYomi = !inMain && time.periods <= 1;
-  const displayValue = inMain ? formatClock(time.main) : String(time.periodRemaining ?? time.byoYomi).padStart(2, "0");
-  const periodValue = String(Math.max(0, time.periods ?? 0)).padStart(2, "0");
-  const progress = inMain
-    ? Math.max(0, Math.min(100, (time.main / (5 * 60)) * 100))
-    : Math.max(0, Math.min(100, ((time.periodRemaining ?? time.byoYomi) / time.byoYomi) * 100));
-  return (
-    <div className={`timer digital-timer ${inMain ? "main-time" : isFinalByoYomi ? "final-byo-yomi" : "byo-yomi"}`}>
-      <div className="timer-label">{inMain ? "主时间" : "读秒"}</div>
-      <div className="timer-digits">
-        <span className="timer-primary">{displayValue}</span>
-        {!inMain && <span className="timer-periods" title={`还剩${time.periods}次读秒`}>{periodValue}</span>}
-      </div>
-      <div className="timer-track"><span style={{ width: `${progress}%` }} /></div>
-    </div>
-  );
-}
-
-function OperationHint({ room, user, scoring, drawRequest }) {
-  const phase = room.game.phase;
-  const isDrawRequester = drawRequest?.requestedBy === user.id;
-  const isCountingRequester = scoring?.requestedBy === user.id;
-  const confirmed = scoring?.confirmedBy?.includes(user.id);
-  const accepted = scoring?.resultAcceptedBy?.includes(user.id);
-
-  let title = "操作提示";
-  let text = "";
-
-  if (phase === GAME_PHASES.drawRequested && drawRequest) {
-    title = "和棋申请";
-    text = isDrawRequester ? "已发送和棋申请，等待对方在行动区确认。" : "对方申请和棋，请在行动区选择同意或不同意。";
-  } else if (phase === GAME_PHASES.countingRequested && scoring) {
-    title = "数子申请";
-    text = isCountingRequester ? "已发送数子申请，等待对方在行动区确认。" : "对方申请数子，请在行动区选择同意或不同意。";
-  } else if (phase === GAME_PHASES.markingDead && scoring) {
-    title = "死子确认";
-    text = confirmed ? "你已确认死子，等待双方确认完成。" : "点选棋盘上的疑似死子或空点标记后，在行动区确认。";
-  } else if (phase === GAME_PHASES.resultReview && scoring) {
-    title = "结果确认";
-    text = accepted ? "你已同意结果，等待对方确认。" : "请核对数子结果，并在行动区同意或不同意。";
-  } else if (phase === GAME_PHASES.playing) {
-    const activePlayer = room.players.find((player) => player.color === room.game.turn);
-    text = activePlayer?.user.id === user.id ? "轮到你行棋，可在棋盘落子或使用下方行动。" : "等待对方行棋。";
-  } else if (phase === GAME_PHASES.finished) {
-    title = "对局结束";
-    text = room.game.winner?.text ?? "对局已经结束。";
-  } else if (phase === GAME_PHASES.opening) {
-    text = "等待双方确认开局。";
-  } else if (phase === GAME_PHASES.skillPreview) {
-    text = "技能效果展示中，请稍候。";
-  }
-
-  const score = scoring?.result ?? room.game.winner;
-  if (!text) return null;
-  return (
-    <section className="operation-hint" aria-live="polite">
-      <strong>{title}</strong>
-      <p>{text}</p>
-      {(phase === GAME_PHASES.resultReview || phase === GAME_PHASES.finished) && score?.formula && (
-        <ScoringBreakdown result={score} compact />
-      )}
-    </section>
-  );
-}
-
-function ScoringBreakdown({ result, compact = false }) {
-  if (!result?.formula) return null;
-  const black = result.formula.black;
-  const white = result.formula.white;
-  const winner = result.winnerColor === COLORS.black ? "黑" : "白";
-  const rows = [
-    ["黑棋", black],
-    ["白棋", white]
-  ];
-
-  return (
-    <div className={`scoring-breakdown ${compact ? "compact" : ""}`}>
-      {rows.map(([label, item]) => (
-        <div className="scoring-line" key={label}>
-          <strong>{label}</strong>
-          <span>
-            棋子 {formatStones(item.stones)} + 目数 {formatStones(item.territory)} {signedStoneTerm(item.komi, "贴目")} {signedStoneTerm(item.ownSkillCost, "己方代价")} {signedStoneTerm(item.opponentSkillCost, "对方代价")}
-          </span>
-          <b>{formatStones(item.total)}</b>
-        </div>
-      ))}
-      <div className="scoring-line result">
-        <strong>差值</strong>
-        <span>黑棋结果 - 白棋结果</span>
-        <b>{winner}胜{formatStones(result.margin)}子</b>
-      </div>
-    </div>
-  );
-}
-
-function signedStoneTerm(value, label) {
-  if (!value) return `+ ${label} 0`;
-  const sign = value > 0 ? "+" : "-";
-  return `${sign} ${label} ${formatStones(Math.abs(value))}`;
-}
-
-function ActionBar({ role, phase, me, isMyTurn, pendingSkill, setPendingSkill, skillLocked = false, skillUses, scoring, drawRequest, drawDeadline, countingDeadline, resultDeadline, replayStep = 0, replayMax = 0, showTestTools = false, onReplayStep, onTestRandomLayout, onTestRestoreSkill, onPass, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult, onResign, onBack }) {
-  if (role === "spectator") {
-    return (
-      <nav className="action-bar">
-        <button title="回到第0手" onClick={() => onReplayStep?.(0)} disabled={!onReplayStep || replayStep <= 0}>
-          <SkipBack size={20} />
-        </button>
-        <button title="上一手" onClick={() => onReplayStep?.(Math.max(0, replayStep - 1))} disabled={!onReplayStep || replayStep <= 0}>
-          <StepBack size={20} />
-        </button>
-        <span className="replay-step-indicator"><MonitorPlay size={16} />{replayStep}/{replayMax}</span>
-        <button title="下一手" onClick={() => onReplayStep?.(Math.min(replayMax, replayStep + 1))} disabled={!onReplayStep || replayStep >= replayMax}>
-          <StepForward size={20} />
-        </button>
-        <button title="跳到最新一手" onClick={() => onReplayStep?.(replayMax)} disabled={!onReplayStep || replayStep >= replayMax}>
-          <SkipForward size={20} />
-        </button>
-        <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
-      </nav>
-    );
-  }
-  const hasDecision =
-    (phase === GAME_PHASES.drawRequested && drawRequest) ||
-    (phase === GAME_PHASES.countingRequested && scoring) ||
-    (phase === GAME_PHASES.markingDead && scoring) ||
-    (phase === GAME_PHASES.resultReview && scoring);
-  if (hasDecision) {
-    return (
-      <DecisionBar
-        phase={phase}
-        userId={me?.user?.id}
-        scoring={scoring}
-        drawRequest={drawRequest}
-        drawDeadline={drawDeadline}
-        countingDeadline={countingDeadline}
-        resultDeadline={resultDeadline}
-        onCountingRespond={onCountingRespond}
-        onDrawRespond={onDrawRespond}
-        onConfirmScoring={onConfirmScoring}
-        onResetScoring={onResetScoring}
-        onAcceptResult={onAcceptResult}
-        onRejectResult={onRejectResult}
-      />
-    );
-  }
-  return (
-    <nav className="action-bar">
-      <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>弃一手</button>
-      <button onClick={onCountingRequest} disabled={phase !== "playing" || skillLocked}>申请数子</button>
-      <button
-        className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
-        onClick={() => setPendingSkill(!pendingSkill)}
-        disabled={!me || phase !== "playing" || !isMyTurn || skillLocked || skillUses <= 0}
-      >
-        <Sparkles size={20} />技能 · {skillUses}
-      </button>
-      <button onClick={onDrawRequest} disabled={phase !== "playing" || skillLocked}>申请和棋</button>
-      <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} />认输</button>
-      {showTestTools && (
-        <TestTools
-          disabled={phase !== "playing" || skillLocked || !me}
-          onRandomLayout={onTestRandomLayout}
-          onRestoreSkill={onTestRestoreSkill}
-        />
-      )}
-      <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
-    </nav>
-  );
-}
-
-function DecisionBar({ phase, userId, scoring, drawRequest, drawDeadline, countingDeadline, resultDeadline, onCountingRespond, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult }) {
-  const hasParticipant = Boolean(userId);
-  if (phase === GAME_PHASES.drawRequested && drawRequest) {
-    const isRequester = hasParticipant && drawRequest.requestedBy === userId;
-    const canRespond = hasParticipant && !isRequester;
-    return (
-      <nav className={`action-bar decision-bar ${isRequester ? "waiting" : ""}`} aria-live="polite">
-        <div className="decision-copy">
-          <strong>和棋申请</strong>
-          <span>{isRequester ? "等待对方确认和棋。" : hasParticipant ? "对方申请和棋，是否同意？" : "和棋申请确认中。"}</span>
-          <DecisionProgress deadline={drawDeadline} fallbackSeconds={10} />
-        </div>
-        {!canRespond ? (
-          <span className="decision-waiting">等待中</span>
-        ) : (
-          <div className="decision-actions">
-            <button onClick={() => onDrawRespond?.(true)}>同意</button>
-            <button onClick={() => onDrawRespond?.(false)}>不同意</button>
-          </div>
-        )}
-      </nav>
-    );
-  }
-
-  if (phase === GAME_PHASES.countingRequested && scoring) {
-    const isRequester = hasParticipant && scoring.requestedBy === userId;
-    const canRespond = hasParticipant && !isRequester;
-    return (
-      <nav className={`action-bar decision-bar ${isRequester ? "waiting" : ""}`} aria-live="polite">
-        <div className="decision-copy">
-          <strong>数子申请</strong>
-          <span>{isRequester ? "等待对方确认数子。" : hasParticipant ? "对方申请数子，是否同意？" : "数子申请确认中。"}</span>
-          <DecisionProgress deadline={countingDeadline} fallbackSeconds={30} />
-        </div>
-        {!canRespond ? (
-          <span className="decision-waiting">等待中</span>
-        ) : (
-          <div className="decision-actions">
-            <button onClick={() => onCountingRespond?.(true)}>同意</button>
-            <button onClick={() => onCountingRespond?.(false)}>不同意</button>
-          </div>
-        )}
-      </nav>
-    );
-  }
-
-  if (phase === GAME_PHASES.markingDead && scoring) {
-    const confirmed = hasParticipant && scoring.confirmedBy?.includes(userId);
-    return (
-      <nav className={`action-bar decision-bar ${!hasParticipant || confirmed ? "waiting" : ""}`} aria-live="polite">
-        <div className="decision-copy">
-          <strong>确认死子</strong>
-          <span>{!hasParticipant ? "死子确认进行中。" : confirmed ? "你已确认，等待双方完成确认。" : "确认当前死子标记，或重新确认。"}</span>
-        </div>
-        {!hasParticipant ? (
-          <span className="decision-waiting">等待中</span>
-        ) : (
-          <div className="decision-actions">
-            <button onClick={onConfirmScoring} disabled={confirmed}>{confirmed ? "已确认" : "确认死子"}</button>
-            <button className="secondary-action" onClick={onResetScoring}>重新确认</button>
-          </div>
-        )}
-      </nav>
-    );
-  }
-
-  if (phase === GAME_PHASES.resultReview && scoring) {
-    const accepted = hasParticipant && scoring.resultAcceptedBy?.includes(userId);
-    return (
-      <nav className={`action-bar decision-bar ${!hasParticipant || accepted ? "waiting" : ""}`} aria-live="polite">
-        <div className="decision-copy">
-          <strong>{scoring.result?.text ?? "结果确认"}</strong>
-          <span>请核对数子计算过程，确认无误后同意结果。</span>
-          <ScoringBreakdown result={scoring.result} />
-          <DecisionProgress deadline={resultDeadline ?? scoring.resultDeadline} fallbackSeconds={30} />
-        </div>
-        {!hasParticipant ? (
-          <span className="decision-waiting">等待中</span>
-        ) : (
-          <div className="decision-actions">
-            <button onClick={onAcceptResult} disabled={accepted}>{accepted ? "已同意" : "同意结果"}</button>
-            <button onClick={onRejectResult}>不同意</button>
-          </div>
-        )}
-      </nav>
-    );
-  }
-
-  return null;
-}
-
-function DecisionProgress({ deadline, fallbackSeconds }) {
-  const remainingSeconds = Number.isFinite(deadline)
-    ? Math.max(0.1, (deadline - Date.now()) / 1000)
-    : fallbackSeconds;
-
-  return (
-    <div className="decision-progress" aria-hidden="true">
-      <span key={deadline ?? fallbackSeconds} style={{ animationDuration: `${remainingSeconds}s` }} />
-    </div>
-  );
-}
-
-function TestTools({ disabled, onRandomLayout, onRestoreSkill }) {
-  return (
-    <span className="test-tools" aria-label="测试工具">
-      <button title="随机布局" onClick={onRandomLayout} disabled={disabled}>
-        <Shuffle size={18} />随机布局
-      </button>
-      <button title="恢复技能" onClick={onRestoreSkill} disabled={disabled}>
-        <RotateCcw size={18} />恢复技能
-      </button>
-    </span>
-  );
-}
-
-function ReplayBar({ step, max, onStep }) {
-  return (
-    <section className="replay-bar">
-      <button onClick={() => onStep(0)} disabled={step <= 0}>开局</button>
-      <button onClick={() => onStep(Math.max(0, step - 1))} disabled={step <= 0}>上一步</button>
-      <input
-        type="range"
-        min="0"
-        max={max}
-        value={step}
-        onChange={(event) => onStep(Number(event.target.value))}
-      />
-      <button onClick={() => onStep(Math.min(max, step + 1))} disabled={step >= max}>下一步</button>
-      <button onClick={() => onStep(max)} disabled={step >= max}>终局</button>
-      <span>{step}/{max}手</span>
-    </section>
-  );
-}
-
-function ChatBox({ room, onChat, readonly = false }) {
-  const [text, setText] = useState("");
-  const logRef = useRef(null);
-
-  useEffect(() => {
-    if (!logRef.current) return;
-    logRef.current.scrollTop = logRef.current.scrollHeight;
-  }, [room.chat.length]);
-
-  return (
-    <section className="chat-box">
-      <header><MessageCircle size={18} />对局聊天</header>
-      <div className="chat-log" ref={logRef}>
-        {room.chat.map((message) => (
-          <p key={message.id} className={`${message.type} ${message.kind ?? ""}`}>
-            <span>[{message.moveNumber}手 {formatMessageTime(message.createdAt)}]</span>
-            {message.type === "chat" && <strong>{message.username}：</strong>}
-            {message.text}
-          </p>
-        ))}
-      </div>
-      {!readonly && (
-        <form onSubmit={(event) => {
-          event.preventDefault();
-          onChat(text);
-          setText("");
-        }}>
-          <input value={text} onChange={(event) => setText(event.target.value)} placeholder="输入聊天内容" />
-          <button><Send size={18} /></button>
-        </form>
-      )}
-    </section>
-  );
-}
-
 function HouseModal({ user, records, characterListView, audioSettings, onClose, onSelectCharacter, onApplyDecoration, onOpenReplay }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
   const [showReplays, setShowReplays] = useState(false);
@@ -1211,7 +762,7 @@ function HouseModal({ user, records, characterListView, audioSettings, onClose, 
   function openCharacterDetail(character) {
     setDetailCharacter(character);
     playSystemVoice(SYSTEM_VOICE_EVENTS.houseDetail, {
-      character: withCharacterSystemVoices(character),
+      character,
       audioSettings
     });
   }
@@ -1232,12 +783,17 @@ function HouseModal({ user, records, characterListView, audioSettings, onClose, 
     <div className="modal-backdrop">
       <section className="house-modal">
         <button className="close-button" onClick={onClose}><X size={20} /></button>
-        <h2>棋舍</h2>
+        <header className="house-header">
+          <h2>棋舍</h2>
+          <button className="replay-open-button" onClick={() => setShowReplays(true)}>
+            <MonitorPlay size={18} />对局回放
+          </button>
+        </header>
         <div className="profile-grid">
-          <Stat label="战绩" value={`${stats.totalGames}局 · ${stats.wins}胜${stats.losses}负${stats.draws}和`} />
-          <Stat label="积分" value={stats.rating} />
-          <Stat label="段位" value={user.rank} />
-          <Stat label="金币" value={user.coins} />
+          <Stat label="战绩" value={`${stats.totalGames}局 · ${stats.wins}胜${stats.losses}负${stats.draws}和`} icon={<ChartNoAxesColumn size={16} />} />
+          <Stat label="积分" value={stats.rating} icon={<Star size={16} />} />
+          <Stat label="段位" value={user.rank} icon={<Trophy size={16} />} />
+          <Stat label="金币" value={user.coins} icon={<CircleDollarSign size={16} />} />
         </div>
         <div className="character-list">
           {characterListView.map((character) => (
@@ -1272,15 +828,19 @@ function HouseModal({ user, records, characterListView, audioSettings, onClose, 
                 <Flag size={18} />
               </button>
               <span className="locked-portrait">?</span>
-              <strong>未获得角色</strong>
+              <strong>敬请期待</strong>
             </div>
           ))}
         </div>
-        <button className="replay-open-button" onClick={() => setShowReplays(true)}>
-          <MonitorPlay size={18} />对局回放
-        </button>
         <section className="owned-decoration-section">
-          <h3>已拥有装饰</h3>
+          <div className="owned-decoration-header">
+            <h3>装饰</h3>
+            {user.selectedStoneDecoration && (
+              <button className="secondary-action compact-action" disabled={applyingDecoration === "default"} onClick={() => applyDecoration("")}>
+                恢复初始装饰
+              </button>
+            )}
+          </div>
           <div className="owned-decoration-list">
             {(user.ownedDecorations ?? []).length === 0 && <p className="quiet-text">暂无装饰。</p>}
             {(user.ownedDecorations ?? []).map((decorationId) => {
@@ -1300,11 +860,6 @@ function HouseModal({ user, records, characterListView, audioSettings, onClose, 
               );
             })}
           </div>
-          {user.selectedStoneDecoration && (
-            <button className="secondary-action" disabled={applyingDecoration === "default"} onClick={() => applyDecoration("")}>
-              恢复默认棋子
-            </button>
-          )}
           {decorationError && <p className="form-error admin-action-error">{decorationError}</p>}
         </section>
         {detailCharacter && (
@@ -1340,109 +895,6 @@ function HouseModal({ user, records, characterListView, audioSettings, onClose, 
           </section>
         )}
       </section>
-    </div>
-  );
-}
-
-function WatchModal({ code, setCode, onJoin, onClose }) {
-  return (
-    <div className="modal-backdrop">
-      <section className="small-modal">
-        <button className="close-button" onClick={onClose}><X size={20} /></button>
-        <h2>观战</h2>
-        <WatchPad code={code} setCode={setCode} onJoin={onJoin} />
-      </section>
-    </div>
-  );
-}
-
-function LeaderboardModal({ token, characters, onClose }) {
-  const [players, setPlayers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    let alive = true;
-    setLoading(true);
-    setError("");
-    api("/api/leaderboard", { token })
-      .then((data) => {
-        if (alive) setPlayers(data.players ?? []);
-      })
-      .catch((apiError) => {
-        if (alive) setError(apiError.message);
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [token]);
-
-  return (
-    <div className="modal-backdrop">
-      <section className="leaderboard-modal">
-        <button className="close-button" onClick={onClose}><X size={20} /></button>
-        <header className="leaderboard-header">
-          <Trophy size={26} />
-          <div>
-            <h2>排行榜</h2>
-            <p className="quiet-text">至少完成一盘对局的注册用户</p>
-          </div>
-        </header>
-        {loading && <p className="quiet-text">加载中...</p>}
-        {error && <p className="form-error admin-action-error">{error}</p>}
-        {!loading && !error && players.length === 0 && <p className="quiet-text">暂无上榜用户。</p>}
-        {!loading && !error && players.length > 0 && (
-          <div className="leaderboard-list">
-            <div className="leaderboard-heading">
-              <span>排名</span>
-              <span>常用角色</span>
-              <span>用户名</span>
-              <span>段位</span>
-              <span>积分</span>
-              <span>总对局数</span>
-              <span>胜局数</span>
-              <span>负局数</span>
-            </div>
-            {players.map((player, index) => {
-              const character = findCharacter(characters, player.commonCharacter);
-              return (
-                <article className="leaderboard-row" key={player.id}>
-                  <strong className="leaderboard-rank">#{index + 1}</strong>
-                  <img src={character.portrait} alt={character.name} />
-                  <div className="leaderboard-player">
-                    <strong>{player.username}</strong>
-                    <span>{character.name}</span>
-                  </div>
-                  <span>{player.rank}</span>
-                  <b>{player.rating}</b>
-                  <span>{player.totalGames}</span>
-                  <span>{player.wins}</span>
-                  <span>{player.losses}</span>
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </section>
-    </div>
-  );
-}
-
-function WatchPad({ code, setCode, onJoin }) {
-  const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-  return (
-    <div className="watch-pad">
-      <div className="room-code">{code.padEnd(5, "·")}</div>
-      <div className="keypad">
-        {keys.map((key) => (
-          <button key={key} onClick={() => setCode((code + key).slice(0, 5))}>{key}</button>
-        ))}
-        <button onClick={() => setCode(code.slice(0, -1))}>退格</button>
-      </div>
-      <button className="secondary-action" onClick={onJoin} disabled={code.length !== 5}>进入观战</button>
     </div>
   );
 }
@@ -1569,6 +1021,7 @@ function ShopModal({ token, user, onPurchased, onClose }) {
   }
 
   const visibleItems = items.filter((item) => item.category === activeCategory);
+  const shopSlots = Array.from({ length: 8 }, (_, index) => visibleItems[index] ?? null);
   const categories = [
     ["character", "角色"],
     ["decoration", "装饰"]
@@ -1578,12 +1031,19 @@ function ShopModal({ token, user, onPurchased, onClose }) {
     <div className="modal-backdrop">
       <section className="shop-modal">
         <button className="close-button" onClick={onClose}><X size={20} /></button>
-        <h2>商城</h2>
-        <p className="shop-wallet">金币 {user?.coins ?? 0}</p>
-        <div className="shop-tabs" role="tablist">
+        <header className="shop-header">
+          <div className="shop-title-block">
+            <h2>扎希拉商店</h2>
+            <p className="shop-wallet"><CircleDollarSign size={18} />{user?.coins ?? 0}</p>
+          </div>
+          <div className="shop-mascot-slot" aria-label="Q版立绘占位区">
+            <Gem size={26} />
+          </div>
+        </header>
+        <div className="shop-tabs" role="tablist" aria-label="商城分类">
           {categories.map(([key, label]) => (
             <button key={key} className={activeCategory === key ? "active" : ""} onClick={() => setActiveCategory(key)}>
-              {label}
+              <span>{label}</span>
             </button>
           ))}
         </div>
@@ -1591,19 +1051,26 @@ function ShopModal({ token, user, onPurchased, onClose }) {
         {error && <p className="form-error admin-action-error">{error}</p>}
         {loading && <p className="quiet-text">加载中...</p>}
         <div className="shop-grid">
-          {!loading && visibleItems.map((item) => {
+          {!loading && shopSlots.map((item, index) => {
+            if (!item) {
+              return (
+                <article className="shop-item shop-item-empty" key={`empty-${activeCategory}-${index}`}>
+                  <ShoppingBag />
+                  <strong>暂未上架</strong>
+                </article>
+              );
+            }
             const owned = item.category === "character"
               ? user?.ownedCharacters?.includes(item.targetId)
               : user?.ownedDecorations?.includes(item.targetId);
             const tooExpensive = (user?.coins ?? 0) < item.finalPrice;
             const disabled = owned || !item.purchasable || tooExpensive || purchasingId === item.id;
             return (
-              <article className="shop-item" key={item.id}>
+              <article className={`shop-item ${owned ? "owned" : ""}`} key={item.id}>
                 {item.category === "decoration" && getStoneDecoration(item.targetId)
                   ? <StoneDecorationPreview decoration={getStoneDecoration(item.targetId)} label={item.name} large />
                   : item.imageUrl ? <img src={item.imageUrl} alt={item.name} /> : <ShoppingBag />}
                 <strong>{item.name}</strong>
-                <span>{item.description || shopCategoryLabel(item.category)}</span>
                 <p className="shop-price">
                   {item.discountPercent > 0 && <s>{item.priceCoins}</s>}
                   <b>{item.finalPrice}</b> 金币
@@ -1614,56 +1081,7 @@ function ShopModal({ token, user, onPurchased, onClose }) {
               </article>
             );
           })}
-          {!loading && visibleItems.length === 0 && (
-            <div className="shop-empty">
-              <ShoppingBag />
-              <span>暂无商品</span>
-            </div>
-          )}
         </div>
-      </section>
-    </div>
-  );
-}
-
-function SettingsModal({ audioSettings, setAudioSettings, onClose }) {
-  const [tab, setTab] = useState("audio");
-  const audioItems = [
-    { key: "master", label: "主音量", icon: <Volume2 size={18} /> },
-    { key: "bgm", label: "背景音乐", icon: <Music size={18} /> },
-    { key: "sfx", label: "提示声", icon: <Bell size={18} /> },
-    { key: "voice", label: "语音", icon: <Mic2 size={18} /> }
-  ];
-  return (
-    <div className="modal-backdrop">
-      <section className="settings-modal">
-        <button className="close-button" onClick={onClose}><X size={20} /></button>
-        <h2>设置</h2>
-        <div className="settings-tabs" role="tablist">
-          <button className={tab === "audio" ? "active" : ""} onClick={() => setTab("audio")}><Volume2 size={16} />音频</button>
-          <button className={tab === "about" ? "active" : ""} onClick={() => setTab("about")}><Info size={16} />关于</button>
-        </div>
-        {tab === "audio" && (
-          <div className="settings-panel">
-            {audioItems.map((item) => (
-              <label className="volume-row" key={item.key}>
-                <span>{item.icon}{item.label}</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={audioSettings[item.key]}
-                  onChange={(event) => setAudioSettings((settings) => ({
-                    ...settings,
-                    [item.key]: Number(event.target.value)
-                  }))}
-                />
-                <strong>{audioSettings[item.key]}</strong>
-              </label>
-            ))}
-          </div>
-        )}
-        {tab === "about" && <div className="settings-panel about-panel" />}
       </section>
     </div>
   );
@@ -1767,8 +1185,8 @@ function Panel({ title, icon, children }) {
   );
 }
 
-function Stat({ label, value }) {
-  return <div className="stat"><span>{label}</span><strong>{value}</strong></div>;
+function Stat({ label, value, icon = null }) {
+  return <div className="stat"><span>{icon}{label}</span><strong>{value}</strong></div>;
 }
 
 function formatSkillCost(skillOrCost) {
@@ -1780,173 +1198,12 @@ function formatSkillCost(skillOrCost) {
   return typeof skillOrCost === "number" ? `${skillOrCost}子` : skillOrCost;
 }
 
-function canPreviewSkill(game, player, point) {
-  return canPreviewSkillTarget({ game, player, point, fallbackCharacters: CHARACTERS });
-}
-
-function canPreviewPoint(game, player, point, pendingSkill, isScoringMode) {
-  if (isScoringMode) return false;
-  if (!player || game.phase !== "playing" || game.turn !== player.color) return false;
-  if (pendingSkill) return canPreviewSkill(game, player, point);
-  return Boolean(point?.valid && !point.stone);
-}
-
-function stoneDecorationsForRoom(room) {
-  return Object.fromEntries(
-    (room.players ?? []).map((player) => [
-      player.color,
-      player.user?.selectedStoneDecoration ?? ""
-    ])
-  );
-}
-
-function findCharacter(characters, characterOrId) {
-  const characterId = typeof characterOrId === "string" ? characterOrId : characterOrId?.id;
-  const fallback = CHARACTERS[characterId] ?? CHARACTERS.sigrika;
-  if (characterOrId && typeof characterOrId === "object") {
-    return withCharacterSystemVoices({
-      ...fallback,
-      ...characterOrId,
-      acquisitionMethod: characterOrId.acquisitionMethod ?? fallback.acquisitionMethod ?? "",
-      skill: {
-        ...fallback.skill,
-        ...(characterOrId.skill ?? {})
-      }
-    });
-  }
-  return withCharacterSystemVoices(characters[characterId] ?? fallback);
-}
-
-function withCharacterSystemVoices(character) {
-  if (!character?.id) return character;
-  return {
-    ...character,
-    systemVoices: {
-      ...(DEFAULT_CHARACTER_SYSTEM_VOICES[character.id] ?? {}),
-      ...(character.systemVoices ?? {})
-    }
-  };
-}
-
 function Toast({ text, onClose }) {
   useEffect(() => {
     const id = setTimeout(onClose, 3000);
     return () => clearTimeout(id);
   }, [onClose]);
   return <div className="toast">{text}</div>;
-}
-
-function playSystemVoice(event, { character, params, fallbackText, audioSettings }) {
-  const voice = resolveSystemVoice(event, { character, params });
-  if (voice.type === "audio" && voice.src) {
-    playPreloadedVoiceSound(voice.src, audioSettings);
-    return;
-  }
-  const text = voice.text || fallbackText;
-  if (text) speakText(text, audioSettings);
-}
-
-function coordLabel(x, y) {
-  return `${coordLetter(x)}${BOARD_SIZE - y}`;
-}
-
-function coordLetter(x) {
-  return "ABCDEFGHJKLMN"[x];
-}
-
-function buildBoardLines(points) {
-  const valid = new Set(points.filter((point) => point.valid).map((point) => point.id));
-  const lines = [];
-  const center = (value) => ((value + 0.5) / BOARD_SIZE) * 100;
-
-  for (const point of points) {
-    if (!point.valid) continue;
-    const right = `${point.x + 1},${point.y}`;
-    if (point.x < BOARD_SIZE - 1 && valid.has(right)) {
-      lines.push({
-        key: `${point.id}-h`,
-        x1: center(point.x),
-        y1: center(point.y),
-        x2: center(point.x + 1),
-        y2: center(point.y)
-      });
-    }
-    const down = `${point.x},${point.y + 1}`;
-    if (point.y < BOARD_SIZE - 1 && valid.has(down)) {
-      lines.push({
-        key: `${point.id}-v`,
-        x1: center(point.x),
-        y1: center(point.y),
-        x2: center(point.x),
-        y2: center(point.y + 1)
-      });
-    }
-  }
-
-  return lines;
-}
-
-function replayRoomAt(room, step, viewColor = COLORS.black) {
-  const game = replayGameAt(room, step);
-  const replayPlayers = room.players.map((player) => ({
-    ...player,
-    captures: 0,
-    time: player.time ?? { main: 0, byoYomi: 30, periodRemaining: 30, periods: 0 }
-  }));
-
-  for (const player of replayPlayers) {
-    player.captures = game.captures[player.color] ?? 0;
-  }
-
-  return {
-    ...room,
-    role: "spectator",
-    players: replayPlayers,
-    game: gameViewForColor(game, viewColor),
-    chat: room.chat.filter((message) => message.moveNumber <= game.moveNumber)
-  };
-}
-
-function replayGameAt(room, step) {
-  let game = createGameState(room.game.players);
-  for (const entry of room.game.history.slice(0, step)) {
-    let result = null;
-    if (entry.type === "move") result = playMove(game, entry.color, entry.id, {
-      colorIllusion: Object.hasOwn(entry, "colorIllusion") ? entry.colorIllusion : null
-    });
-    if (entry.type === "pass") result = passMove(game, entry.color);
-    if (entry.type === "skill") {
-      const player = room.players.find((candidate) => candidate.color === entry.color);
-      const skill = player?.character?.skill ?? player?.characterId;
-      if (entry.effectType === "color-illusion-passive") {
-        result = activatePassiveSkill(game, entry.color, skill);
-      } else if (entry.effectType === "random-blast") {
-        result = randomBlast(game, entry.color, {
-          skill,
-          skillName: entry.skill,
-          consumesTurn: false,
-          centerId: entry.id
-        });
-      } else {
-        result = useSkill(game, entry.color, skill, entry.id);
-      }
-    }
-    if (result?.ok) game = result.state;
-  }
-  return game;
-}
-
-function isStarPoint(x, y) {
-  return ((x === 3 || x === 9) && (y === 3 || y === 9)) || (x === 6 && y === 6);
-}
-
-function formatMessageTime(value) {
-  return new Date(value).toLocaleTimeString("zh-CN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false
-  });
 }
 
 function formatDateTime(value) {
@@ -1957,12 +1214,6 @@ function formatDateTime(value) {
     minute: "2-digit",
     hour12: false
   });
-}
-
-function formatClock(seconds) {
-  const minutes = Math.floor(seconds / 60);
-  const rest = seconds % 60;
-  return `${minutes}:${String(rest).padStart(2, "0")}`;
 }
 
 createRoot(document.getElementById("root")).render(<App />);

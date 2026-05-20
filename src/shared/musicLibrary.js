@@ -15,6 +15,16 @@ export const CHARACTER_SKILL_VOICES = {
   baconbits: "/assets/voice/baconbits_skill.ogg"
 };
 
+export const CHARACTER_SYSTEM_VOICES = {
+  baconbits: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/baconbits_game_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/baconbits_byo_yomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/baconbits_byo_yomi_periods.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/baconbits_byo_yomi_periods.ogg",
+    [SYSTEM_VOICE_EVENTS.timeout]: "/assets/voice/baconbits_timeout.ogg"
+  }
+};
+
 function introLoop(introSrc, loopSrc) {
   return {
     mode: "intro-loop",
@@ -150,14 +160,21 @@ export function resolveSkillVoice(skillPreview, voices = CHARACTER_SKILL_VOICES)
   return voices[characterId] ?? null;
 }
 
-export function characterVoiceMapForSkill(voices = CHARACTER_SKILL_VOICES) {
+export function characterVoiceMapForSkill(voices = CHARACTER_SKILL_VOICES, systemVoices = CHARACTER_SYSTEM_VOICES) {
+  const characterIds = new Set([
+    ...Object.keys(systemVoices ?? {}),
+    ...Object.keys(voices ?? {})
+  ]);
   return Object.fromEntries(
-    Object.entries(voices)
-      .filter(([, src]) => Boolean(src))
-      .map(([characterId, src]) => [
+    [...characterIds]
+      .map((characterId) => [
         characterId,
-        { [SYSTEM_VOICE_EVENTS.skillCast]: src }
+        {
+          ...(systemVoices?.[characterId] ?? {}),
+          ...(voices?.[characterId] ? { [SYSTEM_VOICE_EVENTS.skillCast]: voices[characterId] } : {})
+        }
       ])
+      .filter(([, voiceMap]) => Object.keys(voiceMap).length > 0)
   );
 }
 

@@ -226,7 +226,7 @@ function AdminSiteSettings({ token, onSaved }) {
 
   return (
     <section className="admin-list-section">
-      <AdminSectionHeader title="大厅文案" meta="修改大厅标题和副标题" />
+      <AdminSectionHeader title="大厅文案" meta="修改大厅标题、副标题和关于文本" />
       <form className="admin-form admin-settings-form" onSubmit={saveSettings}>
         <label>
           <AdminFieldLabel text="大厅标题" tip="显示在大厅顶部的主标题。" />
@@ -243,6 +243,15 @@ function AdminSiteSettings({ token, onSaved }) {
             rows={3}
             value={draft.homeSubtitle}
             onChange={(event) => setDraft((current) => ({ ...current, homeSubtitle: event.target.value }))}
+          />
+        </label>
+        <label>
+          <AdminFieldLabel text="关于文本" tip="显示在玩家设置弹窗的关于页，可填写较长说明。" />
+          <textarea
+            maxLength={3000}
+            rows={8}
+            value={draft.aboutText}
+            onChange={(event) => setDraft((current) => ({ ...current, aboutText: event.target.value }))}
           />
         </label>
         <div className="inline-actions">

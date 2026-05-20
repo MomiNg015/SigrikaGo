@@ -429,7 +429,7 @@ function passiveProbability(skill) {
 
 function targetRuleForEffect(effectType) {
   if (effectType === "flip-stone") return "stone";
-  if (effectType === "random-blast") return "any-point";
+  if (effectType === "random-blast") return "none";
   if (effectType === "color-illusion-passive") return "none";
   return "empty-point";
 }
@@ -504,7 +504,7 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       costType: fallback.skill.costType ?? "numeric",
       costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
       systemMessage: fallback.skill.systemMessage,
-      targetRule: "any-point",
+      targetRule: "none",
       params: fallback.skill.params ?? { size: 3 }
     };
   }
@@ -573,8 +573,10 @@ export function randomBlast(state, color, options = {}) {
   const size = Math.max(1, Number(options.skill?.params?.size ?? 3) || 3);
   const radius = Math.floor(size / 2);
   const center = options.centerId ? parsePointId(options.centerId) : null;
-  const centerX = center ? clampBlastCenter(center.x, next.size, radius) : randomBlastCenter(next.size, radius);
-  const centerY = center ? clampBlastCenter(center.y, next.size, radius) : randomBlastCenter(next.size, radius);
+  const randomCenter = center ? null : randomBlastStoneCenter(next, radius);
+  if (!center && !randomCenter) return fail("棋盘上没有可作为技能中心的棋子");
+  const centerX = center ? clampBlastCenter(center.x, next.size, radius) : randomCenter.x;
+  const centerY = center ? clampBlastCenter(center.y, next.size, radius) : randomCenter.y;
   let removed = 0;
   const marked = [];
 
@@ -609,11 +611,18 @@ export function randomBlast(state, color, options = {}) {
   return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false));
 }
 
-function randomBlastCenter(boardSize, radius) {
+function randomBlastStoneCenter(state, radius) {
   const min = radius;
-  const max = boardSize - radius - 1;
-  if (min > max) return Math.floor(boardSize / 2);
-  return min + Math.floor(Math.random() * (max - min + 1));
+  const max = state.size - radius - 1;
+  const candidates = state.points.filter((point) => {
+    if (!point.valid || !point.stone) return false;
+    const { x, y } = parsePointId(point.id);
+    if (x <= 0 || y <= 0 || x >= state.size - 1 || y >= state.size - 1) return false;
+    return x >= min && x <= max && y >= min && y <= max;
+  });
+  if (!candidates.length) return null;
+  const point = candidates[Math.floor(Math.random() * candidates.length)];
+  return parsePointId(point.id);
 }
 
 function clampBlastCenter(value, boardSize, radius) {

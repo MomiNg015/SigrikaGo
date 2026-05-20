@@ -99,7 +99,7 @@ describe("character admin helpers", () => {
     expect(result.value.skill.systemMessage).toContain("{player}");
   });
 
-  it("accepts random blast skills targeting any point", () => {
+  it("accepts random blast skills with no target", () => {
     const result = validateCharacterInput({
       ...validInput,
       acquisitionMethod: "商城购买",
@@ -109,7 +109,7 @@ describe("character admin helpers", () => {
         description: "随机移除棋盘上3*3区域的棋子。",
         uses: 1,
         freeTurn: true,
-        targetRule: "any-point",
+        targetRule: "none",
         paramsJson: "{\"size\":3}",
         costType: "numeric",
         costValue: "0"
@@ -119,7 +119,7 @@ describe("character admin helpers", () => {
     expect(result.ok).toBe(true);
     expect(result.value.acquisitionMethod).toBe("商城购买");
     expect(result.value.skill.effectType).toBe("random-blast");
-    expect(result.value.skill.targetRule).toBe("any-point");
+    expect(result.value.skill.targetRule).toBe("none");
   });
 
   it("uses the shared default system message when no custom message is provided", () => {

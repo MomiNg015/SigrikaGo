@@ -5,7 +5,7 @@ const EFFECT_TARGET_RULES = {
   "erase-point": "empty-point",
   "flip-stone": "stone",
   "hidden-hand": "empty-point",
-  "random-blast": "any-point",
+  "random-blast": "none",
   "color-illusion-passive": "none"
 };
 const COST_TYPES = new Set(["numeric", "special"]);

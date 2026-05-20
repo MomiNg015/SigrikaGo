@@ -118,7 +118,7 @@ SigrikaGo/
 
 - `server/siteSettings.js`
   - 站点公开配置读取和后台更新逻辑。
-  - 当前管理大厅标题 `homeTitle` 与大厅副标题 `homeSubtitle`，并写入后台审计日志。
+  - 当前管理大厅标题 `homeTitle`、大厅副标题 `homeSubtitle` 与设置关于页长文本 `aboutText`，并写入后台审计日志。
 
 - `server/characters.js`
   - 角色输入校验、技能校验、公开 payload 转换、内置角色初始化。
@@ -151,10 +151,12 @@ SigrikaGo/
 - 登录页品牌标题显示为 `星炬学院围棋部`。
 - 大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。
 - 大厅首页布局 A：空想对局作为最大主行动面板；棋舍作为带出战角色与用户段位/积分的次级入口；观战、排行榜、商城、后台管理以中等图标按钮呈现。
-- 大厅顶部标题和副标题来自 `GET /api/site-settings`；未配置或接口失败时回退到 `大厅` / `SigrikaGo`。
+- 大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色。
+- 大厅顶部标题和副标题来自 `GET /api/site-settings`；未配置或接口失败时回退到 `大厅` / `SigrikaGo`。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。
+- 大厅与对局页右上操作区共用同一个留言板入口。留言板当前为前端占位弹窗，包含输入框和提交按钮，提交暂不落库。
 - 棋舍展示用户战绩、积分、拥有角色、出战角色。
-- 棋舍可查看个人对局回放。
-- 设置弹窗支持音量配置，并保存在 `localStorage`。
+- 棋舍标题右侧可查看个人对局回放；装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。战绩、积分、段位、金币统计项带对应小图标。
+- 设置弹窗支持音量配置，并保存在 `localStorage`；关于页展示后台可编辑的站点长文本。
 
 ### 对局
 
@@ -167,6 +169,9 @@ SigrikaGo/
 - 匹配成功后先显示 3 秒匹配成功弹窗；进入房间后处于 `opening` 开局展示阶段，玩家看到“本局你执黑/白”弹窗，服务端在该阶段暂停棋钟和落子/技能操作。
 - 开局展示结束后服务端切换到 `playing`，写入 `game-start` 系统消息，前端播放“对局开始”系统语音，并从该时刻开始推进棋钟。
 - 计时与读秒：房间玩家包含 `mainTime`、`byoYomi`、`byoYomiPeriods` 等内存字段。
+- 玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能代价使用红色强调。
+- 技能栏支持悬停/点击展开“挂画”式技能说明面板，说明随鼠标移出或再次点击收起。
+- 对手信息区下方显示“房间成员”，固定最多 3 行高度并可滚动；对局者用黑/白棋图标标识执色且用户名为红色，观战者为黑色用户名。点击任一行会展开占位操作面板：信息、申请好友、加入黑名单、密谈。
 - 超时判负。
 - 双方连续弃手进入数子申请/确认流程。
 - 数子流程：申请、接受/拒绝、标记死子、标记单官/中立点、确认死子、结果确认、拒绝后继续。
@@ -185,12 +190,12 @@ SigrikaGo/
   - `erase-point`：抹除空交叉点，点位不可落子且不参与数子。
   - `flip-stone`：反转目标棋子颜色。
   - `hidden-hand`：隐藏手，未暴露前对对方隐藏。
-  - `random-blast`：随机选择一个完整区域并移除其中棋子；猪小仙当前使用固定完整 3x3，中心点被限制在棋盘内部，避免边角裁剪。
+  - `random-blast`：随机选择棋盘上非一路的已有棋子作为中心，并移除以该棋子为中心的固定 3x3 区域内棋子。
   - `color-illusion-passive`：娜波摩被动技“千变万化”。第一次轮到娜波摩玩家时自动进入技能演出，演出结束后该玩家后续落子有 80% 概率在对手视角中显示为对手颜色，真实棋盘规则仍按实际颜色计算；进入数子、结果确认或对局结束后会显示真实棋盘。
   - 达妮娅 `flip-stone` 作用于真实棋子；如果目标点带有娜波摩伪装，反色后会清除该点伪装。
 - 技能演出流程：服务端先进入 `skill-preview` 并广播 `pendingSkill`，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。
 - 开局被动技能不会在 `opening` 阶段触发；正式进入 `playing` 后才按延迟规则触发，避免和执色提示/开局语音重叠。
-- 无目标技能不显示落子/目标预览；猪小仙技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。
+- 无目标技能不显示落子/目标预览；猪小仙 `random-blast` 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。
 - 技能可配置：
   - 使用次数 `uses`
   - 是否不消耗回合 `freeTurn`
@@ -217,6 +222,8 @@ SigrikaGo/
 
 - 商品支持 `character` 与 `decoration` 两类。
 - 商品有原价、折扣、是否可购买、是否展示、排序、描述、图片。
+- 玩家商城标题显示为“扎希拉商店”，大厅入口显示为“商店”。商品区固定为 2 行 4 列且切换分类不改变槽位或窗口尺寸；空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。金币余额显示为金币图标加金额的金色标签。
+- 商城商品卡片不显示商品描述栏；商品名位于商品图下方居中。商品卡片内部使用固定图片区、名称区、价格区和按钮区，避免窗口尺寸变化时内容被挤出商品栏。
 - 购买会扣除用户金币，并写入 `ownedCharacters` 或 `ownedDecorations`。
 - 内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。
 - 内置装饰商品会 seed 爪印棋子，价格 500 金币。
@@ -232,6 +239,7 @@ SigrikaGo/
 - 按 `rating` 降序排序。
 - 每行展示段位，段位由 `rankFromRating(rating)` 派生，和大厅/棋舍/对局信息保持一致。
 - 从棋谱统计总对局数、胜局数、负局数、和棋数。
+- 最后一列展示胜率，按 `胜局数 / 总对局数 * 100%` 计算并保留 1 位小数；所有列内容居中显示。用户名和常用角色名限制在各自列宽内，过长时使用省略号。
 - “常用角色”按棋谱中该用户使用次数最多的角色计算。
 - 棋舍中的积分显示使用 `User.rating` 持久化值；总局、胜负、和棋仍由棋谱统计，避免后台积分编辑或对局结算后与棋舍显示不同步。
 
@@ -314,7 +322,7 @@ SigrikaGo/
 - `description`: 技能描述。
 - `uses`: 每局使用次数。
 - `freeTurn`: 是否不消耗回合。
-- `targetRule`: 目标规则，当前校验为 `empty-point`、`stone` 或 `any-point`。
+- `targetRule`: 目标规则，当前校验为 `empty-point`、`stone`、`any-point` 或 `none`；猪小仙 `random-blast` 为 `none`，但仍进入待释放确认状态，点击棋盘任意点后才释放。
 - `paramsJson`: JSON 字符串，当前作为扩展参数保留。
 - `costType`: `numeric` 或 `special`。
 - `costValue`: 代价值；`numeric` 会参与数子扣分，`special` 当前仅展示。
@@ -369,7 +377,7 @@ SigrikaGo/
 
 站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。
 
-- `key`: 主键。当前使用 `homeTitle` 与 `homeSubtitle`。
+- `key`: 主键。当前使用 `homeTitle`、`homeSubtitle` 与 `aboutText`。
 - `value`: 配置值字符串。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 
@@ -412,7 +420,7 @@ SigrikaGo/
 
 - `GET /api/site-settings`
   - 返回公开站点配置。
-  - 当前包含大厅标题 `homeTitle` 与大厅副标题 `homeSubtitle`。
+  - 当前包含大厅标题 `homeTitle`、大厅副标题 `homeSubtitle` 与设置关于页长文本 `aboutText`。
   - 不要求登录；前端接口失败时使用 `src/shared/siteSettings.js` 中的默认值。
 
 - `POST /api/auth/register`
@@ -466,8 +474,8 @@ SigrikaGo/
   - 读取后台可编辑的站点配置。
 
 - `PATCH /api/admin/site-settings`
-  - 更新大厅标题和大厅副标题。
-  - `homeTitle` 会 trim 并限制到 24 字符；`homeSubtitle` 会 trim 并限制到 80 字符。
+  - 更新大厅标题、大厅副标题和设置关于页长文本。
+  - `homeTitle` 会 trim 并限制到 24 字符；`homeSubtitle` 会 trim 并限制到 80 字符；`aboutText` 会 trim 并限制到 3000 字符。
   - 写入 `AdminAuditLog`，action 为 `site-settings.update`。
 
 - `GET /api/admin/users`
@@ -553,6 +561,7 @@ SigrikaGo/
 
 - `room:join`
   - 根据 5 位房间号加入观战或重连玩家。
+  - `roomView` 中包含 `players`、`spectators` 和 `spectatorCount`；`spectators` 为观战用户列表，供房间成员列表实时展示。
 
 - `game:action`
   - 对局动作：`move`、`pass`、`resign`、`skill`。
@@ -577,7 +586,7 @@ SigrikaGo/
   - 房间聊天。
 
 - `disconnect`
-  - 清理匹配队列 socket 和观战列表。
+  - 清理匹配队列 socket 和观战列表；若观战列表变化，会重新广播房间状态。
 
 服务端发出：
 
@@ -655,7 +664,7 @@ SigrikaGo/
 - `resultRewardDelta`: 位于 `src/shared/resultRewards.js`，集中维护结果奖励差值，供后端持久化与前端结果展示共用；积分胜 `+20`、负 `-20`、和 `0`，金币胜 `+50`、负 `+20`、和 `0`。
 - `buildCharacterDraft` / `characterDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台角色表单数据转换。
 - `validateShopItemDraft` / `decorationDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台商城/装饰表单校验。
-- `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题/副标题默认值。
+- `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题、副标题和设置关于文本默认值。
 - `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定。
 - `replayRoomAt`: 用历史记录重放房间状态；观战实时回放另由 `replayGameAt` 只派生棋盘进程。
 - 音频相关：`loadAudioSettings`、`playStoneSound`、`playSystemVoice` 路由、`preloadVoiceSound`、`playPreloadedVoiceSound`、`speakText`。
@@ -910,6 +919,7 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
 - Character voice categories:
   - Character voice events are explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
   - Built-in skill voice assets are bridged into each character's `systemVoices.skill-cast` map at runtime, so skill banners use the same `resolveSystemVoice` route as other role voices.
+  - Baconbits now has role voice assets for `game-start`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, and `timeout`; the period 2 and period 1 events reuse `baconbits_byo_yomi_periods.ogg`.
   - Character detail clicks in the house route through `house-detail`; missing assets stay silent until a character-specific detail voice is configured.
   - Countdown voice uses 10 second-specific events, with invalid countdown event names rejected before character audio override.
   - Missing character voice assets fall back to generic voice/TTS according to `resolveSystemVoice`.
@@ -931,3 +941,35 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
   - The room player/board/side layout keeps its three-column structure across desktop and tablet widths; opponent and self info columns use the same width.
   - Narrow room screens use practical column minimums and controlled horizontal scrolling instead of switching to a stacked layout.
   - Tablet/mobile overrides do not reshape room player cards, preserving the vertical portrait, digital timer, and action hierarchy inside the fixed three-column room layout.
+
+## Frontend Module Extraction Update
+
+This update reduces the highest-payoff frontend coupling without changing user-facing behavior.
+
+- Character display helpers now live in `src/shared/characterDisplay.js`.
+  - `findCharacter` centralizes DB character plus built-in fallback merging.
+  - `withCharacterSystemVoices` centralizes the runtime bridge from skill voice assets into character `systemVoices`.
+- System voice playback now lives in `src/audio/systemVoicePlayback.js`.
+  - `playSystemVoice` resolves role/system voice events, plays preloaded audio when available, and falls back to TTS text.
+  - `src/main.jsx` no longer owns the system voice resolver/playback wrapper.
+- Low-coupling modal components have been extracted from `src/main.jsx` into `src/modals/`.
+  - `MessageBoardModal.jsx`
+  - `SettingsModal.jsx`
+  - `WatchModal.jsx`
+  - `LeaderboardModal.jsx`
+- Room view helpers now live in `src/room/roomView.js`.
+  - The module owns replay view reconstruction, room member list shaping, coordinate labels, board line geometry, preview eligibility helpers, scoring term text, and timer/message formatting helpers.
+  - These helpers are covered by `src/room/roomView.test.js` so runtime-only room view dependencies are easier to catch.
+- Low-coupling room UI components have started moving from `src/main.jsx` into `src/room/`.
+  - `TimeBar.jsx` owns the player timer/digital display panel.
+  - `ChatBox.jsx` owns room chat rendering, scroll-to-bottom behavior, and chat submission UI.
+  - `PlayerInfo.jsx` owns player portrait, rank/rating tags, timer, captures/cost display, result badge, and skill detail popover.
+  - `RoomPeopleList.jsx` owns the fixed-height room member list and placeholder member action popover.
+  - `ActionBar.jsx` owns spectator replay controls, normal player actions, test tool buttons, and phase-aware decision bars.
+  - `ScoringBreakdown.jsx` owns the formatted counting formula/result breakdown used by hints and result-review controls.
+  - `Board.jsx` owns board grid rendering, coordinate labels, stones, move numbers, scoring marks, skill effect markers, decorated stone images, and board point events.
+  - `OperationHint.jsx` owns phase-aware text hints and compact scoring breakdown display under the opponent-side panel.
+- Current remaining frontend debt:
+  - `src/main.jsx` still owns `RoomScreen`, house/shop/match/result/opening modals, and part of page orchestration.
+  - A full `RoomScreen` big-bang move is intentionally deferred because the component has dense local dependencies. Continue with smaller slices first, such as socket lifecycle hooks, room people/action panels, or individual room subcomponents.
+  - `src/admin/AdminConsole.jsx`, `src/shared/game.js`, `server/rooms.js`, and large style files remain high-value follow-up targets.

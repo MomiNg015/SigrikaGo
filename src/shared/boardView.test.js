@@ -80,4 +80,18 @@ describe("board view helpers", () => {
       point: { valid: true, stone: null }
     })).toBe(true);
   });
+
+  it("does not preview Baconbits random blast targets", () => {
+    const game = {
+      phase: GAME_PHASES.playing,
+      turn: COLORS.black,
+      skillUses: { black: 1 }
+    };
+
+    expect(canPreviewSkillTarget({
+      game,
+      player: { color: COLORS.black, character: { skill: { effectType: "random-blast" } } },
+      point: { valid: true, stone: COLORS.white }
+    })).toBe(false);
+  });
 });

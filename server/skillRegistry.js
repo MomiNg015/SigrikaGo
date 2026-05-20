@@ -7,7 +7,7 @@ export function skillConfigForCharacter(character) {
   const targetRule = fallback.skill.id === "flip-stone"
     ? "stone"
     : fallback.skill.id === "random-blast"
-      ? "any-point"
+      ? "none"
       : fallback.skill.id === "color-illusion-passive"
         ? "none"
         : "empty-point";

@@ -385,7 +385,7 @@ describe("SigrikaGo rules", () => {
     forceStone(state, 6, 6, COLORS.black);
     forceStone(state, 9, 9, COLORS.white);
     const originalRandom = Math.random;
-    Math.random = () => 4 / 13;
+    Math.random = () => 0;
 
     try {
       const result = useSkill(
@@ -396,12 +396,12 @@ describe("SigrikaGo rules", () => {
           name: "猪小仙爆炸",
           uses: 1,
           freeTurn: true,
-          targetRule: "any-point",
+          targetRule: "none",
           costType: "numeric",
           costValue: "0",
           params: { size: 3 }
         },
-        pointId(0, 0)
+        null
       );
 
       expect(result.ok).toBe(true);
@@ -428,28 +428,40 @@ describe("SigrikaGo rules", () => {
     }
   });
 
-  it("keeps random blast effects as a complete 3x3 area near board edges", () => {
+  it("chooses the random blast center from existing non-edge stones", () => {
     const state = createGameState([{ color: COLORS.black }]);
+    state.turn = COLORS.black;
+    forceStone(state, 0, 6, COLORS.white);
+    forceStone(state, 4, 4, COLORS.black);
+    forceStone(state, 9, 9, COLORS.white);
     const originalRandom = Math.random;
     Math.random = () => 0;
 
     try {
-      const result = randomBlast(state, COLORS.black, {
-        skill: {
-          params: { size: 3 },
-          costType: "numeric",
-          costValue: "0"
-        }
-      });
+      const result = useSkill(state, COLORS.black, "baconbits", null);
 
       expect(result.ok).toBe(true);
-      expect(result.state.history.at(-1).id).toBe(pointId(1, 1));
-      expect(result.state.history.at(-1).marked).toHaveLength(9);
-      expect(result.state.history.at(-1).marked).toContain(pointId(0, 0));
-      expect(result.state.history.at(-1).marked).toContain(pointId(2, 2));
+      expect(result.state.history.at(-1).id).toBe(pointId(4, 4));
+      expect(getPoint(result.state, pointId(0, 6)).stone).toBe(COLORS.white);
+      expect(getPoint(result.state, pointId(4, 4)).stone).toBeNull();
     } finally {
       Math.random = originalRandom;
     }
+  });
+
+  it("rejects random blast when there are no non-edge stones", () => {
+    const state = createGameState([{ color: COLORS.black }]);
+    forceStone(state, 0, 0, COLORS.black);
+
+    const result = randomBlast(state, COLORS.black, {
+      skill: {
+        params: { size: 3 },
+        costType: "numeric",
+        costValue: "0"
+      }
+    });
+
+    expect(result.ok).toBe(false);
   });
 
   it("places a hidden hand with Aemeath skill", () => {

@@ -6,7 +6,7 @@
   }
 
   .home-grid-featured {
-    grid-template-columns: minmax(360px, 1.45fr) minmax(320px, 0.9fr);
+    grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.45fr);
     overflow-x: auto;
     padding-bottom: 4px;
   }
@@ -70,8 +70,7 @@
     align-items: flex-start;
   }
 
-  .profile-grid,
-  .shop-grid {
+  .profile-grid {
     grid-template-columns: 1fr;
   }
 

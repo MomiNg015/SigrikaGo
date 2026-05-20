@@ -20,6 +20,7 @@ vi.mock("./db.js", () => ({
 }));
 
 import {
+  attachSocketToRoom,
   clearRoomsForTest,
   clearRoomTimers,
   completeRoomOpening,
@@ -203,6 +204,41 @@ describe("rooms character integration", () => {
     expect(targetDuringPreview).toBe(COLORS.white);
     expect(room.chat.at(-1).text).toContain("白棋 becomes 黑棋");
   });
+
+  test("uses Baconbits board clicks as release confirmation instead of blast centers", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    joinMatchmaking({ user: user("bacon", "baconbits"), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("other", "sigrika"), socketId: "socket-b" }, io);
+    Math.random.mockRestore();
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+
+    const bacon = room.players.find((player) => player.user.selectedCharacter === "baconbits");
+    room.game.turn = bacon.color;
+    getPoint(room.game, pointId(4, 4)).stone = COLORS.black;
+    getPoint(room.game, pointId(9, 9)).stone = COLORS.white;
+
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    const result = handleGameAction(room.code, bacon.user.id, { type: "skill", pointId: pointId(12, 12) }, io);
+    Math.random.mockRestore();
+
+    expect(result.ok).toBe(true);
+    expect(room.game.phase).toBe(GAME_PHASES.skillPreview);
+    expect(room.game.history).toHaveLength(0);
+    expect(room.chat.at(-1).text).toContain("无目标");
+
+    vi.advanceTimersByTime(2000);
+
+    expect(room.game.history.at(-1)).toMatchObject({
+      effectType: "random-blast",
+      id: pointId(4, 4)
+    });
+    expect(getPoint(room.game, pointId(4, 4)).stone).toBeNull();
+    expect(getPoint(room.game, pointId(12, 12)).stone).toBeNull();
+    expect(getPoint(room.game, pointId(12, 12)).skillEffect).toBeFalsy();
+  });
 });
 
 describe("rooms removable test tools", () => {
@@ -316,5 +352,31 @@ describe("room opening sequence", () => {
 
     expect(startInitialPassiveSkillNow(room, io)).toBe(true);
     expect(room.game.phase).toBe(GAME_PHASES.skillPreview);
+  });
+});
+
+describe("room participants view", () => {
+  afterEach(() => {
+    clearRoomsForTest();
+  });
+
+  test("includes spectator user details for the in-room people list", () => {
+    const io = fakeIo();
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    joinMatchmaking({ user: user("black-player", "sigrika"), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("white-player", "danea"), socketId: "socket-b" }, io);
+    Math.random.mockRestore();
+
+    const spectator = { ...user("watcher", "aemeath"), username: "watcher-name", rank: "3段", rating: 1160 };
+    attachSocketToRoom(room.code, { id: "socket-watch", join: vi.fn() }, spectator);
+
+    const view = roomView(room, room.players[0].user.id);
+
+    expect(view.spectators).toHaveLength(1);
+    expect(view.spectators[0].user).toMatchObject({
+      username: "watcher-name",
+      rank: "3段",
+      rating: 1160
+    });
   });
 });

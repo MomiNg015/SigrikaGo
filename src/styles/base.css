@@ -51,6 +51,12 @@ button {
   padding: var(--page-pad) 0;
 }
 
+.home-screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
 .room-screen {
   min-height: 100dvh;
   display: flex;
@@ -208,6 +214,35 @@ p {
   gap: clamp(8px, 0.9vw, 10px);
 }
 
+.home-screen .topbar {
+  position: relative;
+  min-height: 74px;
+  justify-content: flex-end;
+  margin-bottom: 0;
+}
+
+.home-title-lockup {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  transform: translateX(-50%);
+  min-width: min(520px, 62vw);
+  text-align: center;
+  pointer-events: none;
+}
+
+.home-title-lockup p {
+  margin: 0 0 2px;
+  transform: translateX(-22px);
+  color: #8a6b8f;
+}
+
+.home-title-lockup h1 {
+  margin: 0;
+  transform: translateX(18px);
+  line-height: 1.05;
+}
+
 .icon-button,
 .close-button {
   width: 42px;
@@ -228,11 +263,66 @@ p {
 }
 
 .home-grid-featured {
-  grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.95fr);
+  grid-template-columns: minmax(360px, 0.95fr) minmax(0, 1.55fr);
   grid-template-areas:
-    "match house"
-    "match utilities";
+    "house match"
+    "utilities match";
   align-items: stretch;
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
+.home-player-plaque {
+  width: fit-content;
+  max-width: min(620px, 100%);
+  min-height: 74px;
+  display: inline-grid;
+  grid-template-columns: 58px auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  border: 1px solid color-mix(in srgb, var(--plaque-color) 36%, #ffffff);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--plaque-color) 24%, #ffffff), rgba(255, 255, 255, 0.86)),
+    #ffffff;
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--plaque-color) 18%, transparent);
+  margin-top: 0;
+}
+
+.plaque-avatar {
+  width: 58px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #fff4fb, #eaf5ff);
+  border: 1px solid rgba(137, 111, 154, 0.2);
+  overflow: hidden;
+}
+
+.plaque-avatar img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.home-player-plaque strong {
+  font-size: 18px;
+  color: #34253c;
+}
+
+.plaque-stats {
+  min-width: 86px;
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  text-align: center;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #6f5a75;
+  font-weight: 800;
 }
 
 .home-match-feature {
@@ -358,11 +448,11 @@ p {
   grid-area: utilities;
   display: grid;
   grid-template-columns: repeat(3, clamp(78px, 7vw, 92px));
-  justify-content: end;
+  justify-content: center;
   align-content: end;
   gap: clamp(10px, 1.1vw, 14px);
   align-self: end;
-  justify-self: end;
+  justify-self: stretch;
   min-width: 0;
   width: 100%;
   max-width: 100%;
@@ -406,4 +496,29 @@ p {
 
 .home-utility-grid-admin .utility-entry strong {
   font-size: clamp(11px, 0.9vw, 13px);
+}
+
+.message-board-modal {
+  width: min(460px, calc(100vw - (var(--page-pad) * 2)));
+  display: grid;
+  gap: 14px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
+  padding: 24px;
+}
+
+.message-board-modal h2 {
+  margin: 0;
+}
+
+.message-board-modal textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.message-board-modal .primary-action {
+  justify-self: end;
 }

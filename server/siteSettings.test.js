@@ -41,13 +41,15 @@ describe("site settings", () => {
       adminUser: { id: "admin-1" },
       body: {
         homeTitle: "  新大厅标题  ",
-        homeSubtitle: ` ${"副".repeat(90)} `
+        homeSubtitle: ` ${"副".repeat(90)} `,
+        aboutText: ` ${"关于".repeat(1600)} `
       }
     });
 
     expect(result.settings.homeTitle).toBe("新大厅标题");
     expect(result.settings.homeSubtitle).toHaveLength(80);
-    expect(writes.map((write) => write.where.key)).toEqual(["homeTitle", "homeSubtitle"]);
+    expect(result.settings.aboutText).toHaveLength(3000);
+    expect(writes.map((write) => write.where.key)).toEqual(["homeTitle", "homeSubtitle", "aboutText"]);
     expect(auditWrites[0]).toMatchObject({
       action: "site-settings.update",
       targetType: "site-settings",

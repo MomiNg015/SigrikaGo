@@ -1,0 +1,82 @@
+import { describe, expect, test } from "vitest";
+import {
+  coordLabel,
+  formatClock,
+  roomPeople,
+  signedStoneTerm,
+  stoneDecorationsForRoom
+} from "./roomView.js";
+import { COLORS } from "../shared/game.js";
+
+describe("roomView helpers", () => {
+  test("formats room members from players and spectators", () => {
+    const room = {
+      players: [
+        {
+          color: COLORS.black,
+          user: { id: "user-black", username: "black-player", rank: "9段", rating: 2020 }
+        },
+        {
+          color: COLORS.white,
+          user: { id: "user-white", username: "white-player", rank: "3段", rating: 1160 }
+        }
+      ],
+      spectators: [
+        { user: { id: "watcher", username: "watcher-name", rank: "1级", rating: 850 } }
+      ]
+    };
+
+    expect(roomPeople(room)).toEqual([
+      {
+        id: "player-black-user-black",
+        role: "player",
+        color: COLORS.black,
+        username: "black-player",
+        rank: "9段",
+        rating: 2020
+      },
+      {
+        id: "player-white-user-white",
+        role: "player",
+        color: COLORS.white,
+        username: "white-player",
+        rank: "3段",
+        rating: 1160
+      },
+      {
+        id: "spectator-watcher",
+        role: "spectator",
+        color: null,
+        username: "watcher-name",
+        rank: "1级",
+        rating: 850
+      }
+    ]);
+  });
+
+  test("collects each player's selected stone decoration by color", () => {
+    const room = {
+      players: [
+        { color: COLORS.black, user: { selectedStoneDecoration: "paw-stone" } },
+        { color: COLORS.white, user: {} }
+      ]
+    };
+
+    expect(stoneDecorationsForRoom(room)).toEqual({
+      black: "paw-stone",
+      white: ""
+    });
+  });
+
+  test("formats board labels and timer text", () => {
+    expect(coordLabel(0, 0)).toBe("A13");
+    expect(coordLabel(8, 12)).toBe("J1");
+    expect(formatClock(181)).toBe("3:01");
+  });
+
+  test("formats signed scoring terms as fractions", () => {
+    expect(signedStoneTerm(-2.75, "贴目")).toBe("- 贴目 2又3/4");
+    expect(signedStoneTerm(1.5, "对方代价")).toBe("+ 对方代价 1又1/2");
+    expect(signedStoneTerm(0, "己方代价")).toBe("+ 己方代价 0");
+  });
+});

@@ -28,7 +28,7 @@
 }
 
 .leaderboard-list {
-  min-width: 720px;
+  min-width: 820px;
   display: grid;
   gap: 8px;
 }
@@ -36,9 +36,10 @@
 .leaderboard-heading,
 .leaderboard-row {
   display: grid;
-  grid-template-columns: 62px 82px minmax(140px, 1fr) repeat(5, minmax(64px, 0.55fr));
+  grid-template-columns: 62px 82px minmax(116px, 0.88fr) repeat(6, minmax(64px, 0.55fr));
   align-items: center;
   gap: 10px;
+  text-align: center;
 }
 
 .leaderboard-heading {
@@ -56,6 +57,11 @@
   background: #ffffff;
 }
 
+.leaderboard-row > * {
+  min-width: 0;
+  justify-self: center;
+}
+
 .leaderboard-rank {
   color: #5d7fe8;
   font-size: 20px;
@@ -68,13 +74,18 @@
 }
 
 .leaderboard-player {
+  width: 100%;
   min-width: 0;
   display: grid;
   gap: 3px;
+  justify-items: center;
+  text-align: center;
 }
 
 .leaderboard-player strong,
 .leaderboard-player span {
+  width: 100%;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -92,6 +103,39 @@
 
 .owned-decoration-section {
   margin-top: 18px;
+}
+
+.house-header,
+.owned-decoration-header,
+.shop-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.house-header {
+  justify-content: flex-start;
+  padding-right: 44px;
+  margin-bottom: 18px;
+}
+
+.house-header h2,
+.owned-decoration-header h3,
+.shop-header h2,
+.shop-wallet {
+  margin: 0;
+}
+
+.owned-decoration-header {
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+
+.compact-action {
+  min-height: 0;
+  padding: 7px 11px;
+  border-radius: 8px;
+  font-size: 13px;
 }
 
 .owned-decoration-list {
@@ -141,31 +185,84 @@
 }
 
 .shop-modal {
-  width: min(780px, calc(100vw - (var(--page-pad) * 2)));
+  width: min(900px, calc(100vw - (var(--page-pad) * 2)));
+  min-height: 696px;
   text-align: left;
   max-height: calc(100dvh - (var(--page-pad) * 2));
   overflow: auto;
 }
 
+.shop-header {
+  justify-content: space-between;
+  padding-right: 48px;
+  margin-bottom: 16px;
+}
+
+.shop-title-block {
+  display: grid;
+  gap: 8px;
+}
+
+.shop-header h2 {
+  color: #34253c;
+  font-size: 30px;
+  letter-spacing: 0;
+}
+
 .shop-wallet {
-  margin: 0 0 14px;
-  color: #5f4f63;
+  width: fit-content;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff3a8, #f4c552);
+  border: 1px solid rgba(188, 132, 25, 0.22);
+  color: #65450c;
   font-weight: 800;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 7px 16px rgba(173, 128, 28, 0.12);
+}
+
+.shop-mascot-slot {
+  width: 118px;
+  height: 96px;
+  border: 1px dashed rgba(143, 113, 162, 0.34);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.9), transparent 38%),
+    linear-gradient(135deg, rgba(255, 228, 241, 0.75), rgba(226, 239, 255, 0.8));
+  color: #9a83a6;
+  display: grid;
+  place-items: center;
 }
 
 .shop-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
+  display: inline-flex;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fffdfd, #f2eef5);
+  border: 1px solid #ead8ef;
+  box-shadow: inset 0 -1px 0 rgba(122, 88, 148, 0.06);
 }
 
 .shop-tabs button {
-  min-width: 84px;
+  min-width: 96px;
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 18px;
+  background: transparent;
+  color: #755c7c;
+  font-weight: 900;
+  box-shadow: none;
 }
 
 .shop-tabs button.active {
-  background: #5d7fe8;
-  color: #fff;
+  background: linear-gradient(180deg, #ffffff, #e8f0ff);
+  color: #34253c;
+  box-shadow: 0 4px 10px rgba(112, 91, 155, 0.12);
 }
 
 .settings-modal {
@@ -209,6 +306,18 @@
   border: 1px dashed #e0d2e5;
   border-radius: 8px;
   background: #fbf7fd;
+  min-height: 230px;
+  max-height: min(48vh, 420px);
+  align-content: start;
+  overflow: auto;
+  padding: 14px;
+  white-space: pre-wrap;
+  line-height: 1.8;
+  color: #4f3d55;
+}
+
+.about-panel p {
+  margin: 0;
 }
 
 .volume-row {
@@ -239,25 +348,65 @@
 
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, 246px);
+  gap: 10px;
 }
 
 .shop-item {
   display: grid;
+  grid-template-rows: 82px minmax(32px, auto) auto 40px;
   gap: 8px;
-  align-content: start;
-  padding: 14px;
+  align-content: stretch;
+  justify-items: stretch;
+  min-width: 0;
+  overflow: hidden;
+  padding: 12px;
   border-radius: 8px;
-  border: 1px solid #eaddea;
-  background: #f8f1fa;
-  min-height: 240px;
+  border: 1px solid rgba(226, 207, 231, 0.9);
+  background:
+    radial-gradient(circle at 24% 14%, rgba(255, 255, 255, 0.92), transparent 28%),
+    linear-gradient(145deg, #fff2f8, #edf6ff 58%, #fff7df);
+  height: 246px;
+  box-shadow: 0 10px 20px rgba(86, 61, 110, 0.08);
+}
+
+.shop-item > strong {
+  align-self: center;
+  min-width: 0;
+  max-width: 100%;
+  text-align: center;
+  line-height: 1.22;
+  overflow-wrap: anywhere;
+}
+
+.shop-item.owned {
+  background: linear-gradient(145deg, #f1fbef, #dcf0df);
+  border-color: #c7e2c8;
+  color: #506b54;
+  box-shadow: none;
+}
+
+.shop-item-empty {
+  align-content: center;
+  justify-items: center;
+  grid-template-rows: auto auto;
+  text-align: center;
+  color: #8c8790;
+  background: #eeeeef;
+  border-color: #d6d6d9;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+
+.shop-item-empty svg {
+  color: #aaa6ad;
 }
 
 .shop-item img {
   width: 100%;
-  height: 112px;
+  height: 82px;
   object-fit: contain;
+  min-width: 0;
 }
 
 .stone-decoration-preview {
@@ -269,7 +418,7 @@
 
 .stone-decoration-preview.large {
   width: 100%;
-  height: 112px;
+  height: 82px;
   gap: 12px;
 }
 
@@ -281,7 +430,7 @@
 }
 
 .stone-decoration-preview.large span {
-  width: 88px;
+  width: 64px;
 }
 
 .shop-item svg {
@@ -293,14 +442,27 @@
 
 .shop-price {
   display: flex;
+  justify-content: flex-end;
   gap: 8px;
   align-items: baseline;
+  align-self: center;
+  min-width: 0;
+  max-width: 100%;
   margin: 0;
   color: #4f3d55;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .shop-price b {
   font-size: 22px;
+}
+
+.shop-item .primary-action {
+  align-self: end;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .shop-empty {

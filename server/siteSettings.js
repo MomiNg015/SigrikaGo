@@ -4,7 +4,8 @@ import { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
 const SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS);
 const SITE_SETTING_LIMITS = {
   homeTitle: 24,
-  homeSubtitle: 80
+  homeSubtitle: 80,
+  aboutText: 3000
 };
 
 export async function getPublicSiteSettings(prisma) {

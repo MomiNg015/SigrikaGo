@@ -32,7 +32,7 @@ describe("admin draft helpers", () => {
     expect(draft.acquisitionMethod).toBe("商城购买");
     expect(draft.skill.targetRule).toBe("stone");
     expect(draft.skill.paramsJson).toBe("{\"radius\":1}");
-    expect(targetRuleForEffect("random-blast")).toBe("any-point");
+    expect(targetRuleForEffect("random-blast")).toBe("none");
   });
 
   it("serializes valid character drafts and rejects invalid numeric fields", () => {

@@ -317,7 +317,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    detachSocket(socket.id);
+    for (const room of detachSocket(socket.id)) {
+      broadcastRoom(io, room);
+    }
   });
 });
 

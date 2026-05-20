@@ -295,7 +295,8 @@ describe("admin site settings routes", () => {
       method: "PATCH",
       body: {
         homeTitle: "棋境大厅",
-        homeSubtitle: "SigrikaGo 测试服"
+        homeSubtitle: "SigrikaGo 测试服",
+        aboutText: "关于测试文本"
       }
     });
     const readResponse = await requestAdminRoute(prisma, "/site-settings", { method: "GET" });
@@ -303,7 +304,8 @@ describe("admin site settings routes", () => {
     expect(updateResponse.status).toBe(200);
     expect(updateResponse.body.settings).toEqual({
       homeTitle: "棋境大厅",
-      homeSubtitle: "SigrikaGo 测试服"
+      homeSubtitle: "SigrikaGo 测试服",
+      aboutText: "关于测试文本"
     });
     expect(readResponse.body.settings.homeTitle).toBe("棋境大厅");
     expect(auditWrites[0].action).toBe("site-settings.update");

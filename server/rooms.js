@@ -91,9 +91,13 @@ export function attachSocketToRoom(roomCode, socket, user) {
 
 export function detachSocket(socketId) {
   if (waitingPlayer?.socketId === socketId) waitingPlayer = null;
+  const changedRooms = [];
   for (const room of rooms.values()) {
+    const before = room.spectators.length;
     room.spectators = room.spectators.filter((s) => s.socketId !== socketId);
+    if (room.spectators.length !== before) changedRooms.push(room);
   }
+  return changedRooms;
 }
 
 export function handleGameAction(roomCode, userId, action, io) {
@@ -108,9 +112,10 @@ export function handleGameAction(roomCode, userId, action, io) {
 
   if (action.type === "skill") {
     const skillConfig = player.character?.skill ?? player.characterId;
-    const result = useSkill(room.game, player.color, skillConfig, action.pointId);
+    const skillTargetId = skillUsesConfirmationPoint(skillConfig) ? null : action.pointId;
+    const result = useSkill(room.game, player.color, skillConfig, skillTargetId);
     if (!result.ok) return result;
-    const skillNotice = describeSkillUse(room, player, action.pointId);
+    const skillNotice = describeSkillUse(room, player, skillTargetId);
 
     const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
     const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
@@ -376,7 +381,10 @@ export function roomView(room, viewerId) {
       captures: room.game.captures[p.color],
       time: p.time
     })),
-    spectators: room.spectators.length,
+    spectatorCount: room.spectators.length,
+    spectators: room.spectators.map((spectator) => ({
+      user: spectator.user
+    })),
     game: role === "spectator" ? view.black : view[viewerColor],
     gameViews: role === "spectator" ? view : null,
     chat: room.chat,
@@ -583,6 +591,14 @@ function describeSkillUse(room, player, targetId) {
     return `${fixed}。落下了电子幽灵般的一手，应该不会被发现吧...`;
   }
   return `${fixed}。`;
+}
+
+function skillUsesConfirmationPoint(skillConfig) {
+  const skill = typeof skillConfig === "string"
+    ? CHARACTERS[skillConfig]?.skill
+    : skillConfig;
+  const effectType = skill?.effectType ?? skill?.id;
+  return effectType === "random-blast";
 }
 
 function renderSkillMessage(template, values) {

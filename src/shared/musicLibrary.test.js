@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  CHARACTER_SYSTEM_VOICES,
   characterVoiceMapForSkill,
   DEFEAT_SOUND,
   MATCH_SUCCESS_SOUND,
@@ -276,10 +277,31 @@ describe("background music library", () => {
   it("bridges configured skill voices into character system voice maps", () => {
     expect(characterVoiceMapForSkill({
       sigrika: "/assets/voice/sigrika_2_no_exclaim.ogg"
-    })).toEqual({
+    }, {})).toEqual({
       sigrika: {
         "skill-cast": "/assets/voice/sigrika_2_no_exclaim.ogg"
       }
+    });
+  });
+
+  it("includes Baconbits character system voices", () => {
+    expect(CHARACTER_SYSTEM_VOICES.baconbits).toMatchObject({
+      "game-start": "/assets/voice/baconbits_game_start.ogg",
+      "byo-yomi-start": "/assets/voice/baconbits_byo_yomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/baconbits_byo_yomi_periods.ogg",
+      "byo-yomi-period-1": "/assets/voice/baconbits_byo_yomi_periods.ogg",
+      timeout: "/assets/voice/baconbits_timeout.ogg"
+    });
+  });
+
+  it("merges Baconbits system voices with the skill voice bridge", () => {
+    expect(characterVoiceMapForSkill().baconbits).toMatchObject({
+      "game-start": "/assets/voice/baconbits_game_start.ogg",
+      "byo-yomi-start": "/assets/voice/baconbits_byo_yomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/baconbits_byo_yomi_periods.ogg",
+      "byo-yomi-period-1": "/assets/voice/baconbits_byo_yomi_periods.ogg",
+      timeout: "/assets/voice/baconbits_timeout.ogg",
+      "skill-cast": "/assets/voice/baconbits_skill.ogg"
     });
   });
 });
