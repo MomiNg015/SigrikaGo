@@ -107,17 +107,16 @@
     min-height: 280px;
   }
 
-  .home-utility-grid,
-  .home-utility-grid-admin {
-    grid-template-columns: repeat(3, 78px);
+  .home-utility-grid {
+    grid-template-columns: repeat(4, 72px);
     justify-content: end;
     overflow: visible;
     padding-bottom: 0;
   }
 
   .utility-entry {
-    width: 78px;
-    height: 78px;
+    width: 72px;
+    height: 72px;
   }
 
   .admin-main {

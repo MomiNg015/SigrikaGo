@@ -1,0 +1,138 @@
+import { describe, expect, it } from "vitest";
+import {
+  getUserProfile,
+  getUserReplays,
+  listSocialUsers,
+  RELATIONSHIP_TYPES,
+  setRelationship
+} from "./social.js";
+
+describe("social profiles and relationships", () => {
+  it("formats profile records and per-character stats in readable Chinese", async () => {
+    const profile = await getUserProfile({
+      prisma: socialProfilePrisma({
+        users: [{
+          id: "user-1",
+          username: "moming",
+          rating: 1200,
+          selectedCharacter: "aemeath",
+          ownedCharacters: "sigrika,aemeath"
+        }],
+        records: [
+          record({ id: "r-1", blackUserId: "user-1", whiteUserId: "user-2", winnerColor: "black", blackCharacter: "aemeath" }),
+          record({ id: "r-2", blackUserId: "user-2", whiteUserId: "user-1", winnerColor: "black", whiteCharacter: "sigrika" }),
+          record({ id: "r-3", blackUserId: "user-1", whiteUserId: "user-2", winnerColor: null, blackCharacter: "aemeath" })
+        ]
+      }),
+      userId: "user-1",
+      viewerId: "viewer-1",
+      statusForUser: () => "online"
+    });
+
+    expect(profile.record).toBe("3局 · 1胜1负1和");
+    expect(profile.characterStats).toEqual([
+      { characterId: "aemeath", record: "2局 · 1胜0负1和", winRate: "50.0%" },
+      { characterId: "sigrika", record: "1局 · 0胜1负0和", winRate: "0.0%" }
+    ]);
+  });
+
+  it("keeps friend and blacklist mutually exclusive", async () => {
+    const writes = [];
+    const prisma = {
+      $executeRaw: async (strings, ...values) => {
+        writes.push(values);
+      }
+    };
+
+    await setRelationship({
+      prisma,
+      ownerUserId: "owner-1",
+      targetUserId: "target-1",
+      type: RELATIONSHIP_TYPES.friend
+    });
+    await setRelationship({
+      prisma,
+      ownerUserId: "owner-1",
+      targetUserId: "target-1",
+      type: RELATIONSHIP_TYPES.blacklist
+    });
+
+    expect(writes.map((row) => row.at(-1))).toEqual([
+      RELATIONSHIP_TYPES.friend,
+      RELATIONSHIP_TYPES.blacklist
+    ]);
+  });
+
+  it("lists social users with rank and online status", async () => {
+    const result = await listSocialUsers({
+      prisma: {
+        $queryRaw: async () => [
+          { targetUserId: "target-1", type: RELATIONSHIP_TYPES.friend },
+          { targetUserId: "target-2", type: RELATIONSHIP_TYPES.blacklist }
+        ],
+        user: {
+          findMany: async () => [
+            { id: "target-1", username: "friend", rating: 1200, selectedCharacter: "sigrika", ownedCharacters: "sigrika" },
+            { id: "target-2", username: "blocked", rating: 800, selectedCharacter: "danea", ownedCharacters: "danea" }
+          ]
+        }
+      },
+      userId: "owner-1",
+      statusForUser: (id) => id === "target-1" ? "online" : "offline"
+    });
+
+    expect(result.friends[0]).toMatchObject({ username: "friend", rank: "4段", status: "online" });
+    expect(result.blacklist[0]).toMatchObject({ username: "blocked", rank: "1级", status: "offline" });
+  });
+
+  it("returns replay summaries for any target user without viewer context", async () => {
+    const records = await getUserReplays({
+      prisma: socialProfilePrisma({
+        users: [{ id: "target-1" }],
+        records: [record({ id: "r-1", blackUserId: "target-1", whiteUserId: "user-2", blackCharacter: "sigrika" })]
+      }),
+      userId: "target-1"
+    });
+
+    expect(records).toEqual([expect.objectContaining({
+      id: "r-1",
+      blackName: "black",
+      whiteName: "white",
+      blackCharacter: "sigrika"
+    })]);
+  });
+});
+
+function socialProfilePrisma({ users = [], records = [] }) {
+  return {
+    user: {
+      findUnique: async ({ where }) => users.find((user) => user.id === where.id) ?? null,
+      findMany: async ({ where }) => users.filter((user) => where.id.in.includes(user.id))
+    },
+    gameRecord: {
+      findMany: async ({ where }) => records.filter((item) => {
+        const targetIds = where.OR.map((condition) => condition.blackUserId ?? condition.whiteUserId);
+        return targetIds.includes(item.blackUserId) || targetIds.includes(item.whiteUserId);
+      })
+    },
+    $queryRaw: async () => []
+  };
+}
+
+function record(overrides = {}) {
+  return {
+    id: "record-1",
+    roomCode: "12345",
+    blackUserId: "black-user",
+    whiteUserId: "white-user",
+    blackName: "black",
+    whiteName: "white",
+    blackCharacter: "sigrika",
+    whiteCharacter: "danea",
+    resultText: "黑胜1/2子",
+    winnerColor: "black",
+    moveCount: 10,
+    createdAt: new Date("2026-05-22T12:00:00Z"),
+    ...overrides
+  };
+}

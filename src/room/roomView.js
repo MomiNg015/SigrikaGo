@@ -38,6 +38,7 @@ export function voiceCharacterForPlayer(player, characters) {
 export function roomPeople(room) {
   const players = (room.players ?? []).map((player) => ({
     id: `player-${player.color}-${player.user.id}`,
+    userId: player.user.id,
     role: "player",
     color: player.color,
     username: player.user.username,
@@ -46,6 +47,7 @@ export function roomPeople(room) {
   }));
   const spectators = (room.spectators ?? []).map((spectator) => ({
     id: `spectator-${spectator.user.id}`,
+    userId: spectator.user.id,
     role: "spectator",
     color: null,
     username: spectator.user.username,
@@ -77,7 +79,8 @@ export function buildBoardLines(points) {
         x1: center(point.x),
         y1: center(point.y),
         x2: center(point.x + 1),
-        y2: center(point.y)
+        y2: center(point.y),
+        edge: point.y === 0 || point.y === BOARD_SIZE - 1
       });
     }
     const down = `${point.x},${point.y + 1}`;
@@ -87,7 +90,8 @@ export function buildBoardLines(points) {
         x1: center(point.x),
         y1: center(point.y),
         x2: center(point.x),
-        y2: center(point.y + 1)
+        y2: center(point.y + 1),
+        edge: point.x === 0 || point.x === BOARD_SIZE - 1
       });
     }
   }
@@ -100,11 +104,13 @@ export function replayRoomAt(room, step, viewColor = COLORS.black) {
   const replayPlayers = room.players.map((player) => ({
     ...player,
     captures: 0,
+    skillRemovals: 0,
     time: player.time ?? { main: 0, byoYomi: 30, periodRemaining: 30, periods: 0 }
   }));
 
   for (const player of replayPlayers) {
     player.captures = game.captures[player.color] ?? 0;
+    player.skillRemovals = game.skillRemovals?.[player.color] ?? 0;
   }
 
   return {

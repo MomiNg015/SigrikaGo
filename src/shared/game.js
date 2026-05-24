@@ -30,6 +30,7 @@ export function createGameState(players = []) {
     moveNumber: 0,
     passes: 0,
     captures: { black: 0, white: 0 },
+    skillRemovals: { black: 0, white: 0 },
     ko: null,
     history: [],
     players,
@@ -550,22 +551,26 @@ export function erasePoint(state, color, id, options = {}) {
   next.ko = null;
   next.history.push({ type: "skill", skill: "星辰符文", color, id, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
-  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false));
+  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false, "skillRemovals"));
 }
 
 export function flipStone(state, color, id, options = {}) {
   const next = cloneState(state);
   const point = getPoint(next, id);
   if (!point?.valid || !point.stone) return fail("必须指定棋盘上的棋子");
+  const originalColor = point.stone;
+  const removalOwner = opponent(originalColor);
   point.stone = opponent(point.stone);
   point.colorIllusion = null;
   point.skillEffect = "flipped-stone";
+  next.skillRemovals ??= { black: 0, white: 0 };
+  next.skillRemovals[removalOwner] = (next.skillRemovals[removalOwner] ?? 0) + 1;
   next.skillUses[color] -= 1;
   applySkillCost(next, color, options.skill ?? "danea");
   next.ko = null;
-  next.history.push({ type: "skill", skill: "染秽", effectType: "flip-stone", color, id, moveNumber: next.moveNumber });
+  next.history.push({ type: "skill", skill: "染秽", effectType: "flip-stone", color, id, skillRemovalOwner: removalOwner, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
-  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? true));
+  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? true, "skillRemovals"));
 }
 
 export function randomBlast(state, color, options = {}) {
@@ -578,6 +583,7 @@ export function randomBlast(state, color, options = {}) {
   const centerX = center ? clampBlastCenter(center.x, next.size, radius) : randomCenter.x;
   const centerY = center ? clampBlastCenter(center.y, next.size, radius) : randomCenter.y;
   let removed = 0;
+  const removedByColor = { black: 0, white: 0 };
   const marked = [];
 
   for (let y = centerY - radius; y <= centerY + radius; y += 1) {
@@ -586,6 +592,7 @@ export function randomBlast(state, color, options = {}) {
       const point = getPoint(next, pointId(x, y));
       if (!point?.valid) continue;
       if (point.stone) {
+        removedByColor[point.stone] = (removedByColor[point.stone] ?? 0) + 1;
         clearStone(next, point.id);
         removed += 1;
       }
@@ -596,6 +603,9 @@ export function randomBlast(state, color, options = {}) {
   }
 
   next.skillUses[color] -= 1;
+  next.skillRemovals ??= { black: 0, white: 0 };
+  next.skillRemovals.black = (next.skillRemovals.black ?? 0) + (removedByColor.white ?? 0);
+  next.skillRemovals.white = (next.skillRemovals.white ?? 0) + (removedByColor.black ?? 0);
   applySkillCost(next, color, options.skill ?? "baconbits");
   next.ko = null;
   next.history.push({
@@ -605,10 +615,11 @@ export function randomBlast(state, color, options = {}) {
     color,
     id: pointId(centerX, centerY),
     removed,
+    removedByColor,
     marked,
     moveNumber: next.moveNumber
   });
-  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false));
+  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false, "skillRemovals"));
 }
 
 function randomBlastStoneCenter(state, radius) {
@@ -632,7 +643,7 @@ function clampBlastCenter(value, boardSize, radius) {
   return Math.min(max, Math.max(min, value));
 }
 
-function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true) {
+function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true, counter = "captures") {
   let changed = true;
   while (changed) {
     changed = false;
@@ -642,8 +653,14 @@ function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true) {
       const group = collectGroup(state, point.id);
       group.stones.forEach((stone) => visited.add(stone));
       if (group.liberties.size === 0) {
+        const removalOwner = opponent(point.stone);
         for (const stone of group.stones) clearStone(state, stone);
-        state.captures[opponent(point.stone)] += group.stones.length;
+        if (counter === "skillRemovals") {
+          state.skillRemovals ??= { black: 0, white: 0 };
+          state.skillRemovals[removalOwner] = (state.skillRemovals[removalOwner] ?? 0) + group.stones.length;
+        } else {
+          state.captures[removalOwner] += group.stones.length;
+        }
         changed = true;
       }
     }

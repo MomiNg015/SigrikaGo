@@ -32,15 +32,32 @@
   padding: clamp(10px, 1vw, 12px);
   border-radius: 8px;
   background: #f8f1fa;
+  border: 0;
+  color: #2d2430;
+  text-align: left;
 }
 
-.stat span {
+.stat-button {
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.stat-button:hover,
+.stat-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(93, 127, 232, 0.16);
+  outline: 2px solid rgba(93, 127, 232, 0.28);
+  outline-offset: 0;
+}
+
+.stat > span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  position: relative;
 }
 
-.stat span,
+.stat > span,
 .quiet-text,
 .character-card small,
 .character-card span,
@@ -51,6 +68,74 @@
 .stat strong {
   display: block;
   margin-top: 4px;
+}
+
+.character-record-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.character-record-row {
+  display: grid;
+  grid-template-columns: 64px minmax(86px, 1fr) minmax(144px, 1.2fr) 72px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.character-record-row img {
+  width: 58px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.character-record-row span {
+  color: #5f5066;
+  font-weight: 800;
+}
+
+.character-record-row b {
+  color: #4f7b5d;
+}
+
+.stat-tip-wrap {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  color: #7d6a82;
+  cursor: help;
+}
+
+.stat-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 3;
+  width: 250px;
+  max-width: min(250px, 72vw);
+  padding: 10px 12px;
+  border: 1px solid rgba(128, 102, 142, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 16px 36px rgba(72, 44, 86, 0.16);
+  color: #4f3d55;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 8px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.stat-tip-wrap:hover .stat-tip,
+.stat-tip-wrap:focus-within .stat-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 .character-list {
@@ -175,4 +260,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+}
+
+.keypad span {
+  min-height: 44px;
 }

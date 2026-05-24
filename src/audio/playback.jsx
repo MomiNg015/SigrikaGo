@@ -346,6 +346,33 @@ export function playCountdownBeep(second, audioSettings = DEFAULT_AUDIO_SETTINGS
   oscillator.stop(context.currentTime + 0.12);
 }
 
+export function playDoorbellSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  const volume = audioVolume(audioSettings, "sfx");
+  if (volume <= 0) return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+  const context = new AudioContextClass();
+  if (context.state === "suspended") context.resume().catch(() => {});
+  const tones = [
+    { at: 0, frequency: 784, length: 0.18 },
+    { at: 0.16, frequency: 1046.5, length: 0.28 }
+  ];
+  for (const tone of tones) {
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const start = context.currentTime + tone.at;
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(tone.frequency, start);
+    gain.gain.setValueAtTime(0.001, start);
+    gain.gain.exponentialRampToValueAtTime(0.2 * volume, start + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, start + tone.length);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(start);
+    oscillator.stop(start + tone.length + 0.04);
+  }
+}
+
 export function speakText(text, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   const volume = audioVolume(audioSettings, "voice");
   if (volume <= 0) return;

@@ -55,7 +55,7 @@ describe("shop", () => {
     const response = await purchaseShopItem({ prisma, userId: user.id, itemId: item.id });
 
     expect(response.user.coins).toBe(30);
-    expect(response.user.ownedCharacters).toContain("danea");
+    expect(response.user.ownedCharacters).toContain("denia");
   });
 
   it("deducts coins and grants a purchased decoration", async () => {

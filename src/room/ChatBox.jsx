@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageCircle, Send } from "lucide-react";
+import { CHARACTERS } from "../shared/characters.js";
+import { findCharacter } from "../shared/characterDisplay.js";
 import { formatMessageTime } from "./roomView.js";
 
 export default function ChatBox({ room, onChat, readonly = false }) {
@@ -18,7 +20,7 @@ export default function ChatBox({ room, onChat, readonly = false }) {
         {room.chat.map((message) => (
           <p key={message.id} className={`${message.type} ${message.kind ?? ""}`}>
             <span>[{message.moveNumber}手 {formatMessageTime(message.createdAt)}]</span>
-            {message.type === "chat" && <strong>{message.username}：</strong>}
+            {message.type === "chat" && <strong>{chatName(message, room)}：</strong>}
             {message.text}
           </p>
         ))}
@@ -35,4 +37,11 @@ export default function ChatBox({ room, onChat, readonly = false }) {
       )}
     </section>
   );
+}
+
+function chatName(message, room) {
+  const player = room.players?.find((candidate) => candidate.user?.id === message.userId);
+  if (!player) return message.username;
+  const character = findCharacter(CHARACTERS, player.character ?? player.characterId);
+  return `${message.username}[${character.name}]`;
 }

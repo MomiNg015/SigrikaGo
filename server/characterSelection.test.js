@@ -20,8 +20,8 @@ describe("character selection resolution", () => {
   test("allows static fallback when no database row exists", () => {
     const result = resolveSelectedCharacter("danea", {});
 
-    expect(result.characterId).toBe("danea");
-    expect(result.characterConfig).toEqual(CHARACTERS.danea);
+    expect(result.characterId).toBe("denia");
+    expect(result.characterConfig).toEqual({ ...CHARACTERS.danea, id: "denia" });
   });
 
   test("falls back when the selected character is not owned", () => {
@@ -34,7 +34,7 @@ describe("character selection resolution", () => {
   test("does not fall back to disabled static Sigrika when another static character is enabled", () => {
     const result = resolveSelectedCharacter("removed-character", {}, new Set(["sigrika"]));
 
-    expect(result.characterId).toBe("danea");
-    expect(result.characterConfig).toEqual(CHARACTERS.danea);
+    expect(result.characterId).toBe("denia");
+    expect(result.characterConfig).toEqual({ ...CHARACTERS.danea, id: "denia" });
   });
 });

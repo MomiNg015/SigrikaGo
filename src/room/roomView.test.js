@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  buildBoardLines,
   coordLabel,
   formatClock,
   roomPeople,
@@ -29,6 +30,7 @@ describe("roomView helpers", () => {
     expect(roomPeople(room)).toEqual([
       {
         id: "player-black-user-black",
+        userId: "user-black",
         role: "player",
         color: COLORS.black,
         username: "black-player",
@@ -37,6 +39,7 @@ describe("roomView helpers", () => {
       },
       {
         id: "player-white-user-white",
+        userId: "user-white",
         role: "player",
         color: COLORS.white,
         username: "white-player",
@@ -45,6 +48,7 @@ describe("roomView helpers", () => {
       },
       {
         id: "spectator-watcher",
+        userId: "watcher",
         role: "spectator",
         color: null,
         username: "watcher-name",
@@ -78,5 +82,22 @@ describe("roomView helpers", () => {
     expect(signedStoneTerm(-2.75, "贴目")).toBe("- 贴目 2又3/4");
     expect(signedStoneTerm(1.5, "对方代价")).toBe("+ 对方代价 1又1/2");
     expect(signedStoneTerm(0, "己方代价")).toBe("+ 己方代价 0");
+  });
+
+  test("marks first-line board segments as edge lines", () => {
+    const points = Array.from({ length: 13 * 13 }, (_, index) => {
+      const x = index % 13;
+      const y = Math.floor(index / 13);
+      return { id: `${x},${y}`, x, y, valid: true };
+    });
+
+    const lines = buildBoardLines(points);
+    const edgeLines = lines.filter((line) => line.edge);
+
+    expect(lines).toHaveLength(312);
+    expect(edgeLines).toHaveLength(48);
+    expect(lines.find((line) => line.key === "0,0-h")?.edge).toBe(true);
+    expect(lines.find((line) => line.key === "0,0-v")?.edge).toBe(true);
+    expect(lines.find((line) => line.key === "6,6-h")?.edge).toBe(false);
   });
 });

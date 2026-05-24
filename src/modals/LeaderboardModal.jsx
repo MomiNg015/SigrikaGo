@@ -28,8 +28,8 @@ export default function LeaderboardModal({ token, characters, onClose }) {
   }, [token]);
 
   return (
-    <div className="modal-backdrop">
-      <section className="leaderboard-modal">
+    <div className="modal-backdrop" onClick={onClose}>
+      <section className="leaderboard-modal" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <header className="leaderboard-header">
           <Trophy size={26} />

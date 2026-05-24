@@ -44,6 +44,7 @@ export default function Board({
               y1={line.y1}
               x2={line.x2}
               y2={line.y2}
+              className={line.edge ? "edge-line" : undefined}
             />
           ))}
         </svg>

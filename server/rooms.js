@@ -45,6 +45,10 @@ export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
 }
 
+export function isUserInActiveRoom(userId) {
+  return listActiveRooms().some((room) => room.players.some((player) => player.user.id === userId));
+}
+
 export function clearRoomsForTest() {
   for (const room of rooms.values()) {
     clearRoomTimers(room);
@@ -98,6 +102,20 @@ export function detachSocket(socketId) {
     if (room.spectators.length !== before) changedRooms.push(room);
   }
   return changedRooms;
+}
+
+export function createDirectRoom(first, second, io) {
+  leaveMatchmaking(first.user.id);
+  leaveMatchmaking(second.user.id);
+  const room = createRoom(first, second);
+  rooms.set(room.code, room);
+  startGameClock(room, io);
+  scheduleGameStart(room, io);
+  appendSystem(room, "对局申请已同意，3秒后进入空想对局。");
+  io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
+  io.to(second.socketId).emit("match:found", roomView(room, second.user.id));
+  broadcastRoom(io, room);
+  return room;
 }
 
 export function handleGameAction(roomCode, userId, action, io) {
@@ -379,6 +397,7 @@ export function roomView(room, viewerId) {
       characterId: p.characterId,
       character: p.character,
       captures: room.game.captures[p.color],
+      skillRemovals: room.game.skillRemovals?.[p.color] ?? 0,
       time: p.time
     })),
     spectatorCount: room.spectators.length,

@@ -22,6 +22,7 @@ export default function ActionBar({
   setPendingSkill,
   skillLocked = false,
   skillUses,
+  hasAnyStones = true,
   scoring,
   drawRequest,
   drawDeadline,
@@ -92,7 +93,7 @@ export default function ActionBar({
   return (
     <nav className="action-bar">
       <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>弃一手</button>
-      <button onClick={onCountingRequest} disabled={phase !== "playing" || skillLocked}>申请数子</button>
+      <button onClick={onCountingRequest} disabled={phase !== "playing" || skillLocked || !hasAnyStones}>申请数子</button>
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
         onClick={() => setPendingSkill(!pendingSkill)}

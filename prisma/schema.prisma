@@ -15,7 +15,7 @@ model User {
   status             String   @default("active")
   banReason          String?
   bannedAt           DateTime?
-  rank               String   @default("18级")
+  rank               String   @default("2段")
   rating             Int      @default(1000)
   wins               Int      @default(0)
   losses             Int      @default(0)
@@ -27,6 +27,19 @@ model User {
   ownedDecorations   String   @default("")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+}
+
+model UserRelationship {
+  id           String   @id @default(cuid())
+  ownerUserId  String
+  targetUserId String
+  type         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([ownerUserId, targetUserId])
+  @@index([ownerUserId, type])
+  @@index([targetUserId])
 }
 
 model GameRecord {

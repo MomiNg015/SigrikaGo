@@ -142,6 +142,46 @@ describe("SigrikaGo rules", () => {
     expect(result.state.history.at(-1).skill).toBe(CHARACTERS.danea.skill.name);
   });
 
+  it("counts skill removals for the player who gains an opponent stone through flip skills", () => {
+    const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    forceStone(state, 4, 4, COLORS.white);
+
+    const result = useSkill(state, COLORS.black, "danea", pointId(4, 4));
+
+    expect(result.ok).toBe(true);
+    expect(result.state.skillRemovals.black).toBe(1);
+    expect(result.state.skillRemovals.white).toBe(0);
+  });
+
+  it("counts stones removed by skill follow-up cleanup as skill removals instead of captures", () => {
+    const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    forceStone(state, 1, 1, COLORS.white);
+    forceStone(state, 1, 2, COLORS.white);
+    forceStone(state, 0, 1, COLORS.black);
+    forceStone(state, 2, 1, COLORS.black);
+    forceStone(state, 0, 2, COLORS.black);
+    forceStone(state, 2, 2, COLORS.black);
+    forceStone(state, 1, 3, COLORS.black);
+
+    const result = useSkill(state, COLORS.black, "danea", pointId(1, 1));
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(1, 2)).stone).toBe(null);
+    expect(result.state.captures.black).toBe(0);
+    expect(result.state.skillRemovals.black).toBe(2);
+  });
+
+  it("counts skill removals for the opponent when a flip gives away own stone", () => {
+    const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    forceStone(state, 4, 4, COLORS.black);
+
+    const result = useSkill(state, COLORS.black, "danea", pointId(4, 4));
+
+    expect(result.ok).toBe(true);
+    expect(result.state.skillRemovals.black).toBe(0);
+    expect(result.state.skillRemovals.white).toBe(1);
+  });
+
   it("initializes configured skill uses from player character skills", () => {
     const state = createGameState([
       {
@@ -415,6 +455,8 @@ describe("SigrikaGo rules", () => {
       expect(result.state.history.at(-1).marked).toHaveLength(9);
       expect(result.state.skillUses.black).toBe(0);
       expect(result.state.skillCosts.black).toBe(0);
+      expect(result.state.skillRemovals.black).toBe(1);
+      expect(result.state.skillRemovals.white).toBe(1);
       expect(result.state.turn).toBe(COLORS.black);
       expect(result.state.moveNumber).toBe(0);
       expect(result.state.history.at(-1).skill).toBe("猪小仙爆炸");

@@ -22,6 +22,7 @@ export default function PlayerInfo({
   const character = findCharacter(characters, player.character ?? player.characterId);
   const skillUses = game.skillUses[player.color] ?? 0;
   const skillCost = game.skillCosts?.[player.color] ?? 0;
+  const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
   const resultBadge = isDrawResult ? null : isWinner ? "胜" : game.phase === "finished" ? "负" : null;
   return (
     <aside className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""}`}>
@@ -48,6 +49,7 @@ export default function PlayerInfo({
       <TimeBar time={player.time} />
       <div className="captures">
         <span><strong>提子</strong>{player.captures}</span>
+        <span><strong>除子</strong>{skillRemovals}</span>
         <span className="cost-stat"><strong>代价</strong>{skillCost}</span>
       </div>
       <div

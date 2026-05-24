@@ -1,4 +1,5 @@
 import { CHARACTERS } from "../src/shared/characters.js";
+import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 
 const EFFECT_TARGET_RULES = {
@@ -216,9 +217,32 @@ export async function listPublicCharacterResponse(prisma) {
   const records = await prisma.character.findMany({
     select: { slug: true, enabled: true }
   });
+  const canonicalApiIds = new Set(
+    characters
+      .map((record) => record.slug)
+      .filter((slug) => canonicalCharacterId(slug) === slug)
+  );
+  const seenCharacters = new Set();
+  const publicCharacters = [];
+  for (const record of characters) {
+    const characterId = canonicalCharacterId(record.slug);
+    if (record.slug !== characterId && canonicalApiIds.has(characterId)) continue;
+    if (seenCharacters.has(characterId)) continue;
+    seenCharacters.add(characterId);
+    publicCharacters.push(toCharacterPayload({ ...record, slug: characterId }));
+  }
+  const enabledCanonical = new Set(records.filter((record) => record.enabled).map((record) => canonicalCharacterId(record.slug)));
+  const disabledSlugs = [];
+  const seenDisabled = new Set();
+  for (const record of records) {
+    const characterId = canonicalCharacterId(record.slug);
+    if (record.enabled || enabledCanonical.has(characterId) || seenDisabled.has(characterId)) continue;
+    seenDisabled.add(characterId);
+    disabledSlugs.push(characterId);
+  }
   return {
-    characters: characters.map(toCharacterPayload),
-    disabledSlugs: records.filter((record) => !record.enabled).map((record) => record.slug)
+    characters: publicCharacters,
+    disabledSlugs
   };
 }
 

@@ -1,27 +1,32 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SigrikaGo System Design</title>
 <style>
   @page { size: A4; margin: 14mm 12mm; }
   * { box-sizing: border-box; }
   body {
-    margin: 0;
+    margin: 0 auto;
+    max-width: 980px;
     color: #202124;
+    background: #fff;
     font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
     font-size: 14px;
-    line-height: 1.62;
+    line-height: 1.68;
+    padding: 32px 24px 48px;
   }
-  h1 { font-size: 28px; margin: 0 0 18px; }
-  h2 { font-size: 20px; margin: 28px 0 10px; padding-bottom: 4px; border-bottom: 1px solid #ddd; }
-  h3 { font-size: 16px; margin: 18px 0 8px; }
+  h1 { font-size: 30px; margin: 0 0 18px; }
+  h2 { font-size: 21px; margin: 30px 0 12px; padding-bottom: 5px; border-bottom: 1px solid #dde3ea; }
+  h3 { font-size: 17px; margin: 20px 0 8px; }
+  h4 { font-size: 15px; margin: 16px 0 6px; }
   p { margin: 8px 0; }
-  ul, ol { padding-left: 22px; margin: 8px 0; }
-  li { margin: 3px 0; }
+  ul, ol { padding-left: 24px; margin: 8px 0; }
+  li { margin: 4px 0; }
   code {
     font-family: Consolas, "Courier New", monospace;
-    background: #f5f5f5;
+    background: #f4f6f8;
     padding: 1px 4px;
     border-radius: 4px;
     font-size: 0.92em;
@@ -36,16 +41,21 @@
     page-break-inside: avoid;
   }
   pre code { background: transparent; padding: 0; }
+  a { color: #315fce; text-decoration: none; }
   table { border-collapse: collapse; width: 100%; }
   th, td { border: 1px solid #ddd; padding: 6px 8px; }
-  a { color: #2457c5; text-decoration: none; }
+  blockquote { margin: 10px 0; padding-left: 14px; border-left: 3px solid #d7dce3; color: #555; }
+  @media print {
+    body { max-width: none; padding: 0; }
+    a { color: inherit; }
+  }
 </style>
 </head>
 <body>
 <h1>SigrikaGo System Design</h1>
 <p>本文档基于当前代码库静态分析生成，目标是方便后续维护者和 AI 继续接手。未在代码中确认的内容会标注为“待确认”。</p>
 <h2>1. 项目目录结构说明</h2>
-<pre><code class="language-text">SigrikaGo/
+<pre><code>SigrikaGo/
   .env.example                 # 本地环境变量模板
   index.html                   # Vite 入口 HTML
   package.json                 # npm 脚本与依赖
@@ -69,186 +79,491 @@
     db.js                      # Prisma Client 与 publicUser 序列化
     shop.js                    # 商城/装饰校验、价格、购买逻辑
     leaderboard.js             # 排行榜统计逻辑
+    siteSettings.js            # 站点公开配置与后台更新逻辑
     skillRegistry.js           # 角色技能 fallback 配置转换
     *.test.js                  # Vitest 单元测试
   src/
-    main.jsx                   # React 单页应用、主要组件与前端业务逻辑
+    main.jsx                   # React 单页应用入口与对局/弹窗组装
+    api/
+      client.js                # 前端 HTTP JSON、后台 API、上传请求封装
+    auth/
+      AuthScreen.jsx           # 登录/注册界面
+    admin/
+      AdminConsole.jsx         # 后台管理界面与后台 CRUD 组件
+    home/
+      HomeScreen.jsx           # 大厅首页布局、匹配入口、棋舍入口和工具入口
     styles.css                 # 全局样式
     shared/
       game.js                  # 13 路围棋规则、技能、数子、回放核心逻辑
+      boardView.js             # 棋盘展示辅助：最后落子/技能标记与技能预览判定
       characters.js            # 前端角色合并逻辑
       characterFallback.js     # 内置角色 fallback 配置
-      *.test.js                # 共享逻辑测试
-</code></pre>
+      siteSettings.js          # 前后端共用站点配置默认值
+      *.test.js                # 共享逻辑测试</code></pre>
 <p>运行相关文件：</p>
 <ul>
 <li><code>.env</code> 未纳入 Git，当前模板包含 <code>DATABASE_URL</code>、<code>JWT_SECRET</code>、<code>PORT</code>。</li>
+</ul>
+<ul>
 <li><code>.gitignore</code> 排除了 <code>node_modules</code>、<code>dist</code>、<code>.env</code>、SQLite 数据库、开发日志等。</li>
-<li>当前目录不是 Git 仓库本身，至少在本机环境下 <code>git status</code> 不可用。</li>
+</ul>
+<ul>
+<li>当前工作目录是 Git 仓库工作树，当前分支可通过 <code>git status</code> 检查。</li>
 </ul>
 <h2>2. 当前核心模块</h2>
 <h3>前端</h3>
 <ul>
-<li><p><code>src/main.jsx</code></p>
+<li><code>src/main.jsx</code></li>
 <ul>
 <li>React SPA 的集中入口。</li>
-<li>包含认证、大厅、对局、棋舍、商城、排行榜、设置、后台管理等组件。</li>
-<li>使用 <code>useState</code> / <code>useEffect</code> 做本地状态管理。</li>
-<li>通过 <code>fetch</code> 调用 HTTP API，通过 <code>socket.io-client</code> 连接实时对局。</li>
 </ul>
-</li>
-<li><p><code>src/shared/game.js</code></p>
+<ul>
+<li>包含对局、棋舍、商城、排行榜、设置等组件，并挂载后台管理入口。</li>
+</ul>
+<ul>
+<li>使用 <code>useState</code> / <code>useEffect</code> 做本地状态管理。</li>
+</ul>
+<ul>
+<li>通过 <code>src/api/client.js</code> 调用 HTTP API，通过 <code>socket.io-client</code> 连接实时对局。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/auth/AuthScreen.jsx</code></li>
+<ul>
+<li>登录/注册展示组件。</li>
+</ul>
+<ul>
+<li>调用 <code>src/api/client.js</code> 完成认证请求，并通过 <code>onAuth</code> 回写 token 与用户信息。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/home/HomeScreen.jsx</code></li>
+<ul>
+<li>大厅首页展示组件。</li>
+</ul>
+<ul>
+<li>负责大厅标题/副标题、匹配主入口、棋舍入口、观战/排行榜/商城/后台管理工具入口。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/admin/AdminConsole.jsx</code></li>
+<ul>
+<li>后台管理界面模块。</li>
+</ul>
+<ul>
+<li>包含概览、用户、角色、商城、装饰、系统设置、审计日志等后台组件。</li>
+</ul>
+<ul>
+<li>该模块已从 <code>src/main.jsx</code> 拆出，但内部仍可继续按业务域拆分。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/api/client.js</code></li>
+<ul>
+<li>前端 HTTP 请求封装。</li>
+</ul>
+<ul>
+<li>提供普通 JSON API、后台 API 和角色立绘上传 helper。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/shared/game.js</code></li>
 <ul>
 <li>共享的游戏规则引擎。</li>
+</ul>
+<ul>
 <li>负责棋盘状态、落子、提子、禁自杀、劫、弃手、认输、技能、隐藏手、死子标记、数子、回放重算等。</li>
+</ul>
+<ul>
 <li>该模块被前端回放逻辑与服务端房间逻辑共同使用。</li>
 </ul>
-</li>
-<li><p><code>src/shared/characters.js</code> 与 <code>src/shared/characterFallback.js</code></p>
+</ul>
+<ul>
+<li><code>src/shared/systemVoices.js</code></li>
+<ul>
+<li>定义系统语音事件 key 和默认 TTS 文本。</li>
+</ul>
+<ul>
+<li>当前预留 <code>game-start</code>、进入读秒、剩余读秒次数、读秒倒计时、超时、胜/负/和结果等事件，未来可由角色专属语音资源覆盖。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/shared/characters.js</code> 与 <code>src/shared/characterFallback.js</code></li>
 <ul>
 <li>定义内置角色 fallback。</li>
+</ul>
+<ul>
 <li>将后端 DB 角色与内置角色合并。</li>
 </ul>
-</li>
-<li><p><code>src/styles.css</code></p>
+</ul>
+<ul>
+<li><code>src/styles.css</code></li>
 <ul>
 <li>单文件全局样式，覆盖全部页面、弹窗、棋盘、后台、商城等。</li>
 </ul>
-</li>
 </ul>
 <h3>后端</h3>
 <ul>
-<li><p><code>server/index.js</code></p>
+<li><code>server/index.js</code></li>
 <ul>
 <li>Express HTTP API 与 Socket.IO 入口。</li>
+</ul>
+<ul>
 <li>初始化内置角色 seed、提升配置管理员。</li>
+</ul>
+<ul>
 <li>注册公开 API、登录/注册 API、用户 API、棋谱 API、排行榜 API，并挂载 <code>/api/admin</code>。</li>
 </ul>
-</li>
-<li><p><code>server/rooms.js</code></p>
+</ul>
+<ul>
+<li><code>server/rooms.js</code></li>
 <ul>
 <li>内存态房间系统。</li>
+</ul>
+<ul>
 <li>管理匹配队列、房间成员、观战、Socket 广播、聊天、计时、读秒、和棋/数子流程、技能演出、结束后保存棋谱与更新胜负积分。</li>
 </ul>
-</li>
-<li><p><code>server/adminRoutes.js</code></p>
+</ul>
+<ul>
+<li><code>server/adminRoutes.js</code></li>
 <ul>
 <li>后台管理路由。</li>
-<li>管理用户、封禁/解封、重置密码、角色、技能、装饰、商城商品、上传、审计日志、任意用户棋谱查看。</li>
 </ul>
-</li>
-<li><p><code>server/characters.js</code></p>
+<ul>
+<li>管理用户、封禁/解封、重置密码、角色、技能、装饰、商城商品、站点设置、上传、审计日志、任意用户棋谱查看。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/siteSettings.js</code></li>
+<ul>
+<li>站点公开配置读取和后台更新逻辑。</li>
+</ul>
+<ul>
+<li>当前管理大厅标题 <code>homeTitle</code>、大厅副标题 <code>homeSubtitle</code> 与设置关于页长文本 <code>aboutText</code>，并写入后台审计日志。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/characters.js</code></li>
 <ul>
 <li>角色输入校验、技能校验、公开 payload 转换、内置角色初始化。</li>
 </ul>
-</li>
-<li><p><code>server/shop.js</code></p>
+</ul>
+<ul>
+<li><code>server/shop.js</code></li>
 <ul>
 <li>商城商品和装饰校验、折扣价格计算、购买事务。</li>
 </ul>
-</li>
-<li><p><code>server/leaderboard.js</code></p>
+</ul>
+<ul>
+<li><code>server/leaderboard.js</code></li>
 <ul>
 <li>从用户与棋谱记录中统计排行榜。</li>
 </ul>
-</li>
-<li><p><code>server/auth.js</code> / <code>server/socketAuth.js</code></p>
+</ul>
+<ul>
+<li><code>server/auth.js</code> / <code>server/socketAuth.js</code></li>
 <ul>
 <li>HTTP 与 Socket.IO 的 JWT 鉴权。</li>
 </ul>
-</li>
-<li><p><code>server/db.js</code></p>
+</ul>
+<ul>
+<li><code>server/db.js</code></li>
 <ul>
 <li>Prisma Client 单例和用户公开字段序列化。</li>
 </ul>
-</li>
 </ul>
 <h2>3. 已实现功能列表</h2>
 <h3>账号与用户</h3>
 <ul>
 <li>用户注册与登录。</li>
+</ul>
+<ul>
 <li>密码使用 <code>bcryptjs</code> 哈希存储。</li>
+</ul>
+<ul>
 <li>JWT 登录态，token 有效期为 14 天。</li>
+</ul>
+<ul>
 <li>用户状态支持 <code>active</code> / <code>banned</code>。</li>
+</ul>
+<ul>
 <li>管理员可配置、可在启动或登录时自动提升。</li>
+</ul>
+<ul>
 <li>用户公开字段序列化会隐藏 <code>passwordHash</code>。</li>
 </ul>
 <h3>大厅与个人空间</h3>
 <ul>
+<li>登录页品牌标题显示为 <code>星炬学院围棋部</code>。</li>
+</ul>
+<ul>
 <li>大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。</li>
+</ul>
+<ul>
+<li>大厅首页布局 A：空想对局作为最大主行动面板；棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
+</ul>
+<ul>
+<li>大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色。</li>
+</ul>
+<ul>
+<li>大厅顶部标题和副标题来自 <code>GET /api/site-settings</code>；未配置或接口失败时回退到 <code>大厅</code> / <code>SigrikaGo</code>。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。</li>
+</ul>
+<ul>
+<li>大厅与对局页右上操作区共用同一个留言板入口。留言板当前为前端占位弹窗，输入框默认提示“Bug、问题反馈和意见都可以在这里提交哦”，包含提交按钮，提交暂不落库。</li>
+</ul>
+<ul>
 <li>棋舍展示用户战绩、积分、拥有角色、出战角色。</li>
-<li>棋舍可查看个人对局回放。</li>
-<li>设置弹窗支持音量配置，并保存在 <code>localStorage</code>。</li>
+</ul>
+<ul>
+<li>棋舍标题右侧可查看个人对局回放；回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。战绩、积分、段位、金币统计项带对应小图标。</li>
+</ul>
+<ul>
+<li>设置弹窗支持音量配置，并保存在 <code>localStorage</code>；关于页展示后台可编辑的站点长文本。</li>
 </ul>
 <h3>对局</h3>
 <ul>
 <li>Socket.IO 两人匹配。</li>
+</ul>
+<ul>
 <li>5 位房间号观战。</li>
+</ul>
+<ul>
 <li>13 路棋盘。</li>
+</ul>
+<ul>
 <li>中国数子规则，<code>KOMI_STONES = 2.75</code>。</li>
+</ul>
+<ul>
 <li>基础规则：落子、提子、禁自杀、劫、弃手、认输。</li>
-<li>对局聊天和系统消息。</li>
+</ul>
+<ul>
+<li>对局聊天和系统消息；若聊天发送者是本局对局者，聊天名后追加 <code>[出战角色名字]</code>。</li>
+</ul>
+<ul>
+<li>匹配成功后先显示 3 秒匹配成功弹窗；进入房间后处于 <code>opening</code> 开局展示阶段，玩家看到“本局你执黑/白”弹窗，服务端在该阶段暂停棋钟和落子/技能操作。</li>
+</ul>
+<ul>
+<li>收到匹配成功事件时，前端会自动关闭大厅上已打开的商店、棋舍、排行榜、观战、好友、设置和留言板弹窗，避免弹窗盖住后续对局切换。</li>
+</ul>
+<ul>
+<li>开局展示结束后服务端切换到 <code>playing</code>，写入 <code>game-start</code> 系统消息，前端播放“对局开始”系统语音，并从该时刻开始推进棋钟。</li>
+</ul>
+<ul>
 <li>计时与读秒：房间玩家包含 <code>mainTime</code>、<code>byoYomi</code>、<code>byoYomiPeriods</code> 等内存字段。</li>
+</ul>
+<ul>
+<li>玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能代价使用红色强调。</li>
+</ul>
+<ul>
+<li>技能栏支持悬停/点击展开“挂画”式技能说明面板，说明随鼠标移出或再次点击收起。</li>
+</ul>
+<ul>
+<li>对手信息区下方显示“房间成员”，固定最多 3 行高度并可滚动；回放模式不显示房间成员区域。对局者用黑/白棋图标标识执色且用户名为红色，观战者为黑色用户名。点击任一行会展开占位操作面板：详细信息、加好友/解除好友、加入黑名单/从黑名单解除、密谈。自己所在行的加好友和黑名单操作禁用；好友关系下加入黑名单按钮禁用。成员行按关系显示背景：自己为淡黄色，好友为浅绿色渐变，黑名单成员为灰色。加好友会自动从黑名单移除目标用户。</li>
+</ul>
+<ul>
+<li>操作提示区在轮到当前用户处理落子、数子/和棋申请、死子确认或结果确认时切换为浅红色背景；普通等待状态保持常规提示背景。观战和回放模式不显示操作提示区。</li>
+</ul>
+<ul>
 <li>超时判负。</li>
+</ul>
+<ul>
 <li>双方连续弃手进入数子申请/确认流程。</li>
+</ul>
+<ul>
 <li>数子流程：申请、接受/拒绝、标记死子、标记单官/中立点、确认死子、结果确认、拒绝后继续。</li>
+</ul>
+<ul>
 <li>和棋申请，10 秒超时拒绝。</li>
-<li>结束后保存棋谱，并更新胜者积分/胜局、败者负局。</li>
+</ul>
+<ul>
+<li>结束后保存棋谱，并通过 <code>resultRewardDelta</code> 更新战绩、积分与金币：胜者积分 +20 / 金币 +50，败者积分 -20 / 金币 +20，和棋不更新用户奖励。</li>
+</ul>
+<ul>
+<li>开发测试按钮：<code>test-random-layout</code> 会清空棋盘并生成符合基本气规则的 50 黑 50 白随机布局；<code>test-restore-skill</code> 会恢复当前玩家技能次数。该入口用于本地测试，后续应便于统一移除。</li>
 </ul>
 <h3>技能与角色</h3>
 <ul>
-<li>内置角色 fallback：<code>sigrika</code>、<code>danea</code>、<code>aemeath</code>。</li>
+<li>内置角色 fallback：<code>sigrika</code>、<code>denia</code>、<code>aemeath</code>、<code>baconbits</code>、<code>nabomo</code>。历史数据中可能仍存在旧别名 <code>danea</code>；公共角色列表、前端合并、用户公开资料和出战角色解析会将其规范化为 <code>denia</code>，避免部员手册中重复出现两个达妮娅。</li>
+</ul>
+<ul>
 <li>DB 角色会覆盖/合并内置角色。</li>
-<li>技能类型：<ul>
+</ul>
+<ul>
+<li>所有存在的角色都会出现在棋舍角色列表；未拥有角色以灰色状态展示，可查看信息但不可出战。</li>
+</ul>
+<ul>
+<li>角色信息包含 <code>acquisitionMethod</code>/“获得途径”纯文本，可由后台维护。</li>
+</ul>
+<ul>
+<li>娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 <code>User.rating</code> 自动补充 <code>nabomo</code> 到已拥有角色列表。</li>
+</ul>
+<ul>
+<li>技能类型：</li>
+<ul>
 <li><code>erase-point</code>：抹除空交叉点，点位不可落子且不参与数子。</li>
+</ul>
+<ul>
 <li><code>flip-stone</code>：反转目标棋子颜色。</li>
+</ul>
+<ul>
 <li><code>hidden-hand</code>：隐藏手，未暴露前对对方隐藏。</li>
 </ul>
-</li>
-<li>技能可配置：<ul>
+<ul>
+<li><code>random-blast</code>：随机选择棋盘上非一路的已有棋子作为中心，并移除以该棋子为中心的固定 3x3 区域内棋子。</li>
+</ul>
+<ul>
+<li><code>color-illusion-passive</code>：娜波摩被动技“千变万化”。第一次轮到娜波摩玩家时自动进入技能演出，演出结束后该玩家后续落子有 80% 概率在对手视角中显示为对手颜色，真实棋盘规则仍按实际颜色计算；进入数子、结果确认或对局结束后会显示真实棋盘。</li>
+</ul>
+<ul>
+<li>达妮娅 <code>flip-stone</code> 作用于真实棋子；如果目标点带有娜波摩伪装，反色后会清除该点伪装。</li>
+</ul>
+</ul>
+<ul>
+<li>技能演出流程：服务端先进入 <code>skill-preview</code> 并广播 <code>pendingSkill</code>，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。</li>
+</ul>
+<ul>
+<li>开局被动技能不会在 <code>opening</code> 阶段触发；正式进入 <code>playing</code> 后才按延迟规则触发，避免和执色提示/开局语音重叠。</li>
+</ul>
+<ul>
+<li>无目标技能不显示落子/目标预览；猪小仙 <code>random-blast</code> 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。</li>
+</ul>
+<ul>
+<li>技能可配置：</li>
+<ul>
 <li>使用次数 <code>uses</code></li>
+</ul>
+<ul>
 <li>是否不消耗回合 <code>freeTurn</code></li>
+</ul>
+<ul>
 <li>目标规则 <code>targetRule</code></li>
+</ul>
+<ul>
 <li>参数 JSON <code>paramsJson</code></li>
+</ul>
+<ul>
 <li>代价类型 <code>costType</code></li>
+</ul>
+<ul>
 <li>代价值 <code>costValue</code></li>
+</ul>
+<ul>
 <li>系统消息模板 <code>systemMessage</code></li>
 </ul>
-</li>
+</ul>
+<ul>
 <li>系统消息模板当前支持：<code>{player}</code>、<code>{character}</code>、<code>{skill}</code>、<code>{point}</code>、<code>{fromColor}</code>、<code>{toColor}</code>、<code>{targetColor}</code>，并保留 <code>{color}</code> 兼容旧配置。</li>
 </ul>
 <h3>棋谱与回放</h3>
 <ul>
 <li>对局结束后写入 <code>GameRecord</code>。</li>
+</ul>
+<ul>
 <li>棋谱保存房间快照 <code>snapshot</code>。</li>
+</ul>
+<ul>
 <li>用户可看自己的最近 30 条棋谱。</li>
+</ul>
+<ul>
 <li>管理员可查看任意用户棋谱与任意棋谱详情。</li>
+</ul>
+<ul>
 <li>前端回放通过 <code>replayRoomAt</code> 基于历史步骤重放共享规则逻辑。</li>
+</ul>
+<ul>
+<li>观战者进入房间后默认使用黑方对局视角，包括双方信息区位置；黑白双方信息区立绘左侧提供眼睛图标，可切换黑方/白方视角；下方操作栏切换为图标式回放控制。</li>
+</ul>
+<ul>
+<li>棋谱回放同样支持黑方/白方视角切换，回放棋盘会按所选视角重放隐藏手和娜波摩伪装效果。</li>
+</ul>
+<ul>
+<li>观战回放只改变棋盘内容，不改变实时信息区内容（计时、读秒、提子、代价等保持实际对局进程）。</li>
+</ul>
+<ul>
+<li>观战者停在最新手时会自动跟随实时进程；如果手动回退到旧手，则新进程不会强制跳回最新。</li>
 </ul>
 <h3>商城与装饰</h3>
 <ul>
 <li>商品支持 <code>character</code> 与 <code>decoration</code> 两类。</li>
+</ul>
+<ul>
 <li>商品有原价、折扣、是否可购买、是否展示、排序、描述、图片。</li>
+</ul>
+<ul>
+<li>玩家商城标题显示为“扎希拉商店”，大厅入口显示为“商店”。商品区固定为 2 行 4 列且切换分类不改变槽位或窗口尺寸；空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。金币余额显示为金币图标加金额的金色标签。商店右上角展示扎希亚 Q 版立绘，资源位于 <code>/assets/zahiya_shop.png</code>，立绘区域不额外绘制占位背景和线框。</li>
+</ul>
+<ul>
+<li>商城商品卡片不显示商品描述栏；商品名位于商品图下方居中。商品卡片内部使用固定图片区、名称区、价格区和按钮区，避免窗口尺寸变化时内容被挤出商品栏。</li>
+</ul>
+<ul>
 <li>购买会扣除用户金币，并写入 <code>ownedCharacters</code> 或 <code>ownedDecorations</code>。</li>
-<li>装饰数据模型和后台管理已实现；玩家端装饰实际使用方式待确认。</li>
+</ul>
+<ul>
+<li>内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。</li>
+</ul>
+<ul>
+<li>内置装饰商品会 seed 爪印棋子，价格 500 金币。</li>
+</ul>
+<ul>
+<li>爪印棋子使用 image-gen 生成图裁切出的透明 PNG 贴图：<code>paw-stone-black.png</code>、<code>paw-stone-white.png</code> 和 <code>paw-stone-preview.png</code>。</li>
+</ul>
+<ul>
+<li>玩家购买棋子装饰后会进入棋舍装饰区，可点击应用；空选择表示继续使用默认棋子。</li>
+</ul>
+<ul>
+<li>对局棋盘按棋子颜色找到对应玩家的 <code>selectedStoneDecoration</code>，黑白双方可分别显示各自设置的棋子样式；未设置时保持默认棋子。</li>
 </ul>
 <h3>排行榜</h3>
 <ul>
 <li>入口在大厅。</li>
+</ul>
+<ul>
 <li>API 为 <code>GET /api/leaderboard</code>。</li>
+</ul>
+<ul>
 <li>仅展示至少完成过一盘对局的用户。</li>
+</ul>
+<ul>
 <li>按 <code>rating</code> 降序排序。</li>
-<li>从棋谱统计总对局数、胜局数、负局数。</li>
+</ul>
+<ul>
+<li>每行展示段位，段位由 <code>rankFromRating(rating)</code> 派生，和大厅/棋舍/对局信息保持一致。</li>
+</ul>
+<ul>
+<li>从棋谱统计总对局数、胜局数、负局数、和棋数。</li>
+</ul>
+<ul>
+<li>最后一列展示胜率，按 <code>胜局数 / 总对局数 * 100%</code> 计算并保留 1 位小数；所有列内容居中显示。用户名和常用角色名限制在各自列宽内，过长时使用省略号。</li>
+</ul>
+<ul>
 <li>“常用角色”按棋谱中该用户使用次数最多的角色计算。</li>
+</ul>
+<ul>
+<li>棋舍中的积分显示使用 <code>User.rating</code> 持久化值；总局、胜负、和棋仍由棋谱统计，避免后台积分编辑或对局结算后与棋舍显示不同步。</li>
 </ul>
 <h3>后台管理</h3>
 <ul>
 <li>概览：用户数、封禁用户数、启用角色数、棋谱数、最近审计日志。</li>
-<li>用户管理：列表、编辑角色/段位/积分/金币/拥有角色/出战角色、封禁、解封、重置密码、查看用户棋谱。</li>
-<li>角色管理：新增/编辑/禁用角色，配置技能系统。</li>
+</ul>
+<ul>
+<li>用户管理：列表、状态标签、右侧抽屉编辑角色、积分、金币、拥有角色、出战角色；段位由积分自动换算只读展示；支持封禁、解封、重置密码、查看用户棋谱。</li>
+</ul>
+<ul>
+<li>角色管理：左侧角色列表、右侧编辑面板，支持新增/编辑/禁用角色、配置技能系统。</li>
+</ul>
+<ul>
 <li>角色立绘上传：支持 png/jpeg/webp/gif，大小限制 3MB。</li>
-<li>商城管理：增改商品、下架商品。</li>
-<li>装饰管理：增改装饰、停用装饰。</li>
+</ul>
+<ul>
+<li>商城管理：列表主视图，新增/编辑商品在右侧抽屉中完成，支持下架商品。</li>
+</ul>
+<ul>
+<li>装饰管理：列表主视图，新增/编辑装饰在右侧抽屉中完成，支持停用装饰。</li>
+</ul>
+<ul>
+<li>系统设置：可编辑大厅标题和大厅副标题；保存后通过 <code>SiteSetting</code> 持久化，并立即回写当前前端大厅状态。</li>
+</ul>
+<ul>
 <li>审计日志：记录部分后台操作前后值。</li>
 </ul>
 <h2>4. 数据模型与字段说明</h2>
@@ -257,676 +572,1715 @@
 <p>用户账号与资产/战绩。</p>
 <ul>
 <li><code>id</code>: 主键 cuid。</li>
+</ul>
+<ul>
 <li><code>username</code>: 唯一用户名。</li>
+</ul>
+<ul>
 <li><code>passwordHash</code>: bcrypt 哈希密码。</li>
+</ul>
+<ul>
 <li><code>role</code>: 用户角色，当前代码使用 <code>player</code> / <code>admin</code>。</li>
+</ul>
+<ul>
 <li><code>status</code>: 用户状态，当前代码使用 <code>active</code> / <code>banned</code>。</li>
+</ul>
+<ul>
 <li><code>banReason</code>: 封禁原因，可空。</li>
+</ul>
+<ul>
 <li><code>bannedAt</code>: 封禁时间，可空。</li>
-<li><code>rank</code>: 段位/等级文本。默认值在当前 schema 终端显示存在编码问题，语义待确认。</li>
-<li><code>rating</code>: 积分，默认 1000。</li>
+</ul>
+<ul>
+<li><code>rank</code>: 兼容旧数据的持久化字段，schema 默认值为 <code>2段</code>，与默认 <code>rating = 1000</code> 的段位派生结果保持一致；前端和 API 展示值不直接读取该字段，而是通过 <code>rating</code> 自动换算。</li>
+</ul>
+<ul>
+<li><code>rating</code>: 积分，默认 1000，允许为负数。段位规则：<code>[900, 1000)</code> 为 1段，之后每 100 分升 1段，1700 分及以上封顶为 9段；<code>[800, 900)</code> 为 1级，之后每低 100 分级位加 1，<code>[0, 100)</code> 为 9级，小于 0 分为 10级。</li>
+</ul>
+<ul>
 <li><code>wins</code>: 胜局数，默认 0。</li>
+</ul>
+<ul>
 <li><code>losses</code>: 负局数，默认 0。</li>
+</ul>
+<ul>
 <li><code>coins</code>: 金币，默认 300。</li>
+</ul>
+<ul>
 <li><code>selectedCharacter</code>: 出战角色 slug，默认 <code>sigrika</code>。</li>
+</ul>
+<ul>
+<li><code>selectedStoneDecoration</code>: 当前应用的棋子装饰 slug，空字符串表示默认棋子样式。</li>
+</ul>
+<ul>
 <li><code>ownedCharacters</code>: 逗号分隔的角色 slug 字符串，默认包含内置角色。</li>
+</ul>
+<ul>
 <li><code>ownedItems</code>: 逗号分隔字符串；当前代码未看到具体购买/使用逻辑，待确认。</li>
+</ul>
+<ul>
 <li><code>ownedDecorations</code>: 逗号分隔装饰 slug。</li>
+</ul>
+<ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
+</ul>
+<h3>UserRelationship</h3>
+<p>用户关系表，用于好友与黑名单。</p>
+<ul>
+<li><code>ownerUserId</code>: 关系拥有者。</li>
+</ul>
+<ul>
+<li><code>targetUserId</code>: 关系目标用户。</li>
+</ul>
+<ul>
+<li><code>type</code>: 当前使用 <code>friend</code> 或 <code>blacklist</code>。</li>
+</ul>
+<ul>
+<li>同一个 <code>ownerUserId + targetUserId</code> 只有一条记录；好友和黑名单互斥，通过更新 <code>type</code> 覆盖。</li>
+</ul>
+<ul>
+<li>已在 <code>prisma/schema.prisma</code> 声明，并通过 <code>202605220001_add_user_relationship</code> migration 固化建表和索引；服务启动时仍保留 <code>ensureSocialSchema</code> 作为开发库兜底。</li>
 </ul>
 <h3>GameRecord</h3>
 <p>结束对局记录。</p>
 <ul>
 <li><code>id</code>: 主键 cuid。</li>
+</ul>
+<ul>
 <li><code>roomCode</code>: 房间号。</li>
+</ul>
+<ul>
 <li><code>blackUserId</code>, <code>whiteUserId</code>: 黑白双方用户 id。</li>
+</ul>
+<ul>
 <li><code>blackName</code>, <code>whiteName</code>: 保存时的用户名快照。</li>
+</ul>
+<ul>
 <li><code>blackCharacter</code>, <code>whiteCharacter</code>: 双方角色 slug 快照。</li>
+</ul>
+<ul>
 <li><code>resultText</code>: 结果文本。</li>
+</ul>
+<ul>
 <li><code>moveCount</code>: 手数。</li>
+</ul>
+<ul>
 <li><code>snapshot</code>: JSON 字符串，保存 <code>roomView</code> 快照。</li>
+</ul>
+<ul>
 <li><code>createdAt</code>: 创建时间。</li>
 </ul>
 <h3>Character</h3>
 <p>可配置角色。</p>
 <ul>
 <li><code>id</code>: 主键 cuid。</li>
+</ul>
+<ul>
 <li><code>slug</code>: 唯一角色标识，用于前端匹配、出战角色、拥有角色、棋谱角色字段。</li>
+</ul>
+<ul>
 <li><code>name</code>: 角色名。</li>
+</ul>
+<ul>
 <li><code>portraitUrl</code>: 立绘 URL 或静态路径。</li>
+</ul>
+<ul>
 <li><code>portraitSource</code>: <code>url</code> 或 <code>upload</code>。</li>
+</ul>
+<ul>
 <li><code>palette</code>: 代表色。</li>
+</ul>
+<ul>
+<li><code>acquisitionMethod</code>: 获得途径纯文本，显示在棋舍角色详情中。</li>
+</ul>
+<ul>
 <li><code>enabled</code>: 是否启用。</li>
+</ul>
+<ul>
 <li><code>sortOrder</code>: 排序。</li>
+</ul>
+<ul>
 <li><code>skill</code>: 一对一 <code>CharacterSkill</code>。</li>
+</ul>
+<ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <h3>CharacterSkill</h3>
 <p>角色技能配置。</p>
 <ul>
 <li><code>id</code>: 主键 cuid。</li>
+</ul>
+<ul>
 <li><code>characterId</code>: 关联 <code>Character.id</code>，唯一。</li>
-<li><code>effectType</code>: 技能实际效果类型，当前支持 <code>erase-point</code>、<code>flip-stone</code>、<code>hidden-hand</code>。</li>
+</ul>
+<ul>
+<li><code>effectType</code>: 技能实际效果类型，当前支持 <code>erase-point</code>、<code>flip-stone</code>、<code>hidden-hand</code>、<code>random-blast</code>、<code>color-illusion-passive</code>。</li>
+</ul>
+<ul>
 <li><code>name</code>: 技能名。</li>
+</ul>
+<ul>
 <li><code>description</code>: 技能描述。</li>
+</ul>
+<ul>
 <li><code>uses</code>: 每局使用次数。</li>
+</ul>
+<ul>
 <li><code>freeTurn</code>: 是否不消耗回合。</li>
-<li><code>targetRule</code>: 目标规则，当前校验为 <code>empty-point</code> 或 <code>stone</code>。</li>
+</ul>
+<ul>
+<li><code>targetRule</code>: 目标规则，当前校验为 <code>empty-point</code>、<code>stone</code>、<code>any-point</code> 或 <code>none</code>；猪小仙 <code>random-blast</code> 为 <code>none</code>，但仍进入待释放确认状态，点击棋盘任意点后才释放。</li>
+</ul>
+<ul>
 <li><code>paramsJson</code>: JSON 字符串，当前作为扩展参数保留。</li>
+</ul>
+<ul>
 <li><code>costType</code>: <code>numeric</code> 或 <code>special</code>。</li>
+</ul>
+<ul>
 <li><code>costValue</code>: 代价值；<code>numeric</code> 会参与数子扣分，<code>special</code> 当前仅展示。</li>
+</ul>
+<ul>
 <li><code>systemMessage</code>: 技能系统消息模板。</li>
+</ul>
+<ul>
 <li><code>enabled</code>: 是否启用；当前公开角色 payload 未看到按 skill.enabled 过滤，待确认。</li>
+</ul>
+<ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <h3>Decoration</h3>
 <p>装饰配置。</p>
 <ul>
 <li><code>id</code>: 主键 cuid。</li>
+</ul>
+<ul>
 <li><code>slug</code>: 唯一装饰标识。</li>
+</ul>
+<ul>
 <li><code>name</code>: 装饰名。</li>
+</ul>
+<ul>
 <li><code>description</code>: 描述。</li>
+</ul>
+<ul>
 <li><code>imageUrl</code>: 图片地址。</li>
+</ul>
+<ul>
 <li><code>enabled</code>: 是否启用。</li>
+</ul>
+<ul>
 <li><code>sortOrder</code>: 排序。</li>
+</ul>
+<ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <h3>ShopItem</h3>
 <p>商城商品。</p>
 <ul>
 <li><code>id</code>: 主键 cuid。</li>
+</ul>
+<ul>
 <li><code>name</code>: 商品名。</li>
+</ul>
+<ul>
 <li><code>category</code>: <code>character</code> 或 <code>decoration</code>。</li>
+</ul>
+<ul>
 <li><code>targetId</code>: 商品对应角色 slug 或装饰 slug。</li>
+</ul>
+<ul>
 <li><code>priceCoins</code>: 原价金币。</li>
+</ul>
+<ul>
 <li><code>discountPercent</code>: 折扣百分比 0-100。</li>
+</ul>
+<ul>
 <li><code>purchasable</code>: 是否可购买。</li>
+</ul>
+<ul>
 <li><code>enabled</code>: 是否展示。</li>
+</ul>
+<ul>
 <li><code>sortOrder</code>: 排序。</li>
+</ul>
+<ul>
 <li><code>description</code>: 描述。</li>
+</ul>
+<ul>
 <li><code>imageUrl</code>: 图片地址。</li>
+</ul>
+<ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <h3>AdminAuditLog</h3>
 <p>后台审计日志。</p>
 <ul>
 <li><code>id</code>: 主键 cuid。</li>
+</ul>
+<ul>
 <li><code>adminUserId</code>: 操作管理员用户 id。</li>
+</ul>
+<ul>
 <li><code>action</code>: 操作类型，如 <code>user.update</code>、<code>character.update</code>。</li>
+</ul>
+<ul>
 <li><code>targetType</code>: 目标类型，如 <code>user</code>、<code>character</code>。</li>
+</ul>
+<ul>
 <li><code>targetId</code>: 目标 id 或 slug。</li>
+</ul>
+<ul>
 <li><code>beforeJson</code>: 操作前 JSON，可空。</li>
+</ul>
+<ul>
 <li><code>afterJson</code>: 操作后 JSON，可空。</li>
+</ul>
+<ul>
 <li><code>createdAt</code>: 创建时间。</li>
+</ul>
+<h3>SiteSetting</h3>
+<p>站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。</p>
+<ul>
+<li><code>key</code>: 主键。当前使用 <code>homeTitle</code>、<code>homeSubtitle</code> 与 <code>aboutText</code>。</li>
+</ul>
+<ul>
+<li><code>value</code>: 配置值字符串。</li>
+</ul>
+<ul>
+<li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <h2>5. 数据之间的关系</h2>
 <ul>
-<li><p><code>Character</code> 与 <code>CharacterSkill</code> 是一对一关系：</p>
+<li><code>Character</code> 与 <code>CharacterSkill</code> 是一对一关系：</li>
 <ul>
 <li><code>CharacterSkill.characterId</code> 唯一并引用 <code>Character.id</code>。</li>
+</ul>
+<ul>
 <li>删除角色会级联删除技能。</li>
 </ul>
-</li>
-<li><p><code>User</code> 与 <code>GameRecord</code> 没有 Prisma relation 声明，但通过字符串字段形成逻辑关系：</p>
+</ul>
+<ul>
+<li><code>User</code> 与 <code>GameRecord</code> 没有 Prisma relation 声明，但通过字符串字段形成逻辑关系：</li>
 <ul>
 <li><code>GameRecord.blackUserId</code> / <code>whiteUserId</code> 对应 <code>User.id</code>。</li>
+</ul>
+<ul>
 <li><code>GameRecord.blackName</code> / <code>whiteName</code> 是用户名快照。</li>
 </ul>
-</li>
-<li><p><code>Character</code> 与 <code>GameRecord</code> 没有 Prisma relation 声明：</p>
+</ul>
+<ul>
+<li><code>Character</code> 与 <code>GameRecord</code> 没有 Prisma relation 声明：</li>
 <ul>
 <li><code>GameRecord.blackCharacter</code> / <code>whiteCharacter</code> 保存角色 slug 快照。</li>
+</ul>
+<ul>
 <li>前端展示时通过 <code>findCharacter</code> 在当前角色集合中解析。</li>
 </ul>
-</li>
-<li><p><code>User</code> 与角色/装饰拥有关系没有 join table：</p>
+</ul>
+<ul>
+<li><code>User</code> 与角色/装饰拥有关系没有 join table：</li>
 <ul>
 <li><code>User.ownedCharacters</code>、<code>ownedDecorations</code> 使用逗号分隔字符串。</li>
+</ul>
+<ul>
 <li><code>User.selectedCharacter</code> 保存单个角色 slug。</li>
 </ul>
-</li>
-<li><p><code>ShopItem.targetId</code> 与角色/装饰没有数据库外键：</p>
+</ul>
+<ul>
+<li><code>ShopItem.targetId</code> 与角色/装饰没有数据库外键：</li>
 <ul>
 <li><code>category = character</code> 时逻辑上指向 <code>Character.slug</code>。</li>
+</ul>
+<ul>
 <li><code>category = decoration</code> 时逻辑上指向 <code>Decoration.slug</code>。</li>
 </ul>
-</li>
-<li><p>实时 <code>Room</code>、<code>Player</code>、<code>GameState</code> 不是数据库模型：</p>
+</ul>
+<ul>
+<li>实时 <code>Room</code>、<code>Player</code>、<code>GameState</code> 不是数据库模型：</li>
 <ul>
 <li>保存在 <code>server/rooms.js</code> 的内存 <code>Map</code>。</li>
+</ul>
+<ul>
 <li>对局结束后才以 <code>GameRecord.snapshot</code> 形式落库。</li>
 </ul>
-</li>
 </ul>
 <h2>6. API 路由与接口用途</h2>
 <h3>公开/普通用户 HTTP API</h3>
 <ul>
-<li><p><code>GET /api/health</code></p>
+<li><code>GET /api/health</code></li>
 <ul>
 <li>健康检查。</li>
 </ul>
-</li>
-<li><p><code>GET /api/characters</code></p>
+</ul>
+<ul>
+<li><code>GET /api/characters</code></li>
 <ul>
 <li>返回启用角色列表和停用 slug 列表。</li>
+</ul>
+<ul>
 <li>不要求登录。</li>
 </ul>
-</li>
-<li><p><code>POST /api/auth/register</code></p>
+</ul>
+<ul>
+<li><code>GET /api/site-settings</code></li>
+<ul>
+<li>返回公开站点配置。</li>
+</ul>
+<ul>
+<li>当前包含大厅标题 <code>homeTitle</code>、大厅副标题 <code>homeSubtitle</code> 与设置关于页长文本 <code>aboutText</code>。</li>
+</ul>
+<ul>
+<li>不要求登录；前端接口失败时使用 <code>src/shared/siteSettings.js</code> 中的默认值。</li>
+</ul>
+</ul>
+<ul>
+<li><code>POST /api/auth/register</code></li>
 <ul>
 <li>注册账号。</li>
+</ul>
+<ul>
 <li>用户名至少 2 位，密码至少 4 位。</li>
 </ul>
-</li>
-<li><p><code>POST /api/auth/login</code></p>
+</ul>
+<ul>
+<li><code>POST /api/auth/login</code></li>
 <ul>
 <li>登录并返回 JWT 与公开用户信息。</li>
+</ul>
+<ul>
 <li>被封禁用户返回 403。</li>
 </ul>
-</li>
-<li><p><code>GET /api/me</code></p>
+</ul>
+<ul>
+<li><code>GET /api/me</code></li>
 <ul>
 <li>登录用户信息。</li>
-<li>会基于棋谱重新计算展示用 <code>wins</code>、<code>losses</code>、<code>rating = 1000 + wins * 20</code>。</li>
 </ul>
-</li>
-<li><p><code>POST /api/me/character</code></p>
+<ul>
+<li>会返回公开用户字段；<code>rating</code> 以持久化 <code>User.rating</code> 为权威值，<code>totalGames</code>、<code>wins</code>、<code>losses</code>、<code>draws</code> 从棋谱派生。</li>
+</ul>
+</ul>
+<ul>
+<li><code>POST /api/me/character</code></li>
 <ul>
 <li>修改当前出战角色。</li>
+</ul>
+<ul>
 <li>会校验角色存在且未停用；逻辑同时考虑 DB 角色和 fallback 角色。</li>
 </ul>
-</li>
-<li><p><code>GET /api/shop</code></p>
+</ul>
+<ul>
+<li><code>POST /api/me/decoration</code></li>
+<ul>
+<li>应用或清空当前棋子装饰。</li>
+</ul>
+<ul>
+<li>非空 <code>decorationId</code> 必须是已知棋子装饰且用户已拥有。</li>
+</ul>
+</ul>
+<ul>
+<li><code>GET /api/shop</code></li>
 <ul>
 <li>登录后获取启用商城商品。</li>
 </ul>
-</li>
-<li><p><code>POST /api/shop/:id/purchase</code></p>
+</ul>
+<ul>
+<li><code>POST /api/shop/:id/purchase</code></li>
 <ul>
 <li>登录后购买商品。</li>
+</ul>
+<ul>
 <li>扣金币并更新拥有角色/装饰。</li>
 </ul>
-</li>
-<li><p><code>GET /api/leaderboard</code></p>
+</ul>
+<ul>
+<li><code>GET /api/leaderboard</code></li>
 <ul>
 <li>登录后获取排行榜。</li>
+</ul>
+<ul>
 <li>基于所有用户和所有棋谱统计。</li>
 </ul>
-</li>
-<li><p><code>GET /api/replays</code></p>
-<ul>
-<li>获取当前用户最近 30 条棋谱。</li>
 </ul>
-</li>
-<li><p><code>GET /api/replays/:id</code></p>
 <ul>
-<li>获取当前用户参与的指定棋谱详情与快照。</li>
+<li><code>GET /api/social</code></li>
+<ul>
+<li>登录后获取当前用户的好友列表和黑名单列表；每个成员包含用户名、段位、积分、常用角色和在线状态。</li>
 </ul>
-</li>
+</ul>
+<ul>
+<li><code>POST /api/social/friends/:targetId</code></li>
+<ul>
+<li>将目标用户设为好友；同一目标此前若在黑名单中，会被覆盖为好友关系。</li>
+</ul>
+</ul>
+<ul>
+<li><code>DELETE /api/social/friends/:targetId</code></li>
+<ul>
+<li>解除好友关系。</li>
+</ul>
+</ul>
+<ul>
+<li><code>POST /api/social/blacklist/:targetId</code></li>
+<ul>
+<li>将目标用户加入黑名单；同一目标此前若是好友，会被覆盖为黑名单关系。</li>
+</ul>
+</ul>
+<ul>
+<li><code>DELETE /api/social/blacklist/:targetId</code></li>
+<ul>
+<li>从黑名单移除目标用户。</li>
+</ul>
+</ul>
+<ul>
+<li><code>GET /api/users/:id/profile</code></li>
+<ul>
+<li>获取用户资料卡：用户名、战绩、积分、段位、角色战绩和查看者与目标的关系；不随资料卡预取对局回放。</li>
+</ul>
+</ul>
+<ul>
+<li><code>GET /api/users/:id/replays</code></li>
+<ul>
+<li>按需获取目标用户最近 30 条棋谱摘要；资料卡中的“对局回放”按钮点击后调用该接口并弹出回放列表。</li>
+</ul>
+</ul>
+<ul>
+<li><code>GET /api/replays</code></li>
+<ul>
+<li>获取当前用户最近 30 条棋谱；摘要包含黑白双方使用角色，供回放列表显示角色立绘。</li>
+</ul>
+</ul>
+<ul>
+<li><code>GET /api/replays/:id</code></li>
+<ul>
+<li>获取指定棋谱详情与快照；用于个人棋舍回放，也用于他人资料卡中的公开回放入口。</li>
+</ul>
 </ul>
 <h3>后台 HTTP API</h3>
 <p>所有 <code>/api/admin/*</code> 路由都经过 <code>authHttp</code> 和 <code>requireAdmin</code>。</p>
 <ul>
-<li><p><code>GET /api/admin/summary</code></p>
+<li><code>GET /api/admin/summary</code></li>
 <ul>
 <li>后台概览数据和最近 8 条审计日志。</li>
 </ul>
-</li>
-<li><p><code>GET /api/admin/audit-logs</code></p>
+</ul>
+<ul>
+<li><code>GET /api/admin/audit-logs</code></li>
 <ul>
 <li>最近 100 条审计日志。</li>
 </ul>
-</li>
-<li><p><code>GET /api/admin/users</code></p>
+</ul>
+<ul>
+<li><code>GET /api/admin/site-settings</code></li>
+<ul>
+<li>读取后台可编辑的站点配置。</li>
+</ul>
+</ul>
+<ul>
+<li><code>PATCH /api/admin/site-settings</code></li>
+<ul>
+<li>更新大厅标题、大厅副标题和设置关于页长文本。</li>
+</ul>
+<ul>
+<li><code>homeTitle</code> 会 trim 并限制到 24 字符；<code>homeSubtitle</code> 会 trim 并限制到 80 字符；<code>aboutText</code> 会 trim 并限制到 3000 字符。</li>
+</ul>
+<ul>
+<li>写入 <code>AdminAuditLog</code>，action 为 <code>site-settings.update</code>。</li>
+</ul>
+</ul>
+<ul>
+<li><code>GET /api/admin/users</code></li>
 <ul>
 <li>最多 200 个用户。</li>
 </ul>
-</li>
-<li><p><code>GET /api/admin/users/:id</code></p>
+</ul>
+<ul>
+<li><code>GET /api/admin/users/:id</code></li>
 <ul>
 <li>单个用户详情。</li>
 </ul>
-</li>
-<li><p><code>GET /api/admin/users/:id/replays</code></p>
+</ul>
+<ul>
+<li><code>GET /api/admin/users/:id/replays</code></li>
 <ul>
 <li>任意用户最多 100 条棋谱。</li>
 </ul>
-</li>
-<li><p><code>GET /api/admin/replays/:id</code></p>
+</ul>
+<ul>
+<li><code>GET /api/admin/replays/:id</code></li>
 <ul>
 <li>任意棋谱详情。</li>
 </ul>
-</li>
-<li><p><code>PATCH /api/admin/users/:id</code></p>
-<ul>
-<li>编辑用户 role、rank、rating、coins、ownedCharacters、selectedCharacter。</li>
 </ul>
-</li>
-<li><p><code>POST /api/admin/users/:id/ban</code></p>
+<ul>
+<li><code>PATCH /api/admin/users/:id</code></li>
+<ul>
+<li>编辑用户 role、rating、coins、ownedCharacters、selectedCharacter；rank 由 rating 自动派生，不允许单独编辑。</li>
+</ul>
+<ul>
+<li>管理员保存后前端会同步当前登录用户信息，避免后台金币/角色等资产更新后棋舍和商城仍显示旧数据。</li>
+</ul>
+</ul>
+<ul>
+<li><code>POST /api/admin/users/:id/ban</code></li>
 <ul>
 <li>封禁用户。</li>
 </ul>
-</li>
-<li><p><code>POST /api/admin/users/:id/unban</code></p>
+</ul>
+<ul>
+<li><code>POST /api/admin/users/:id/unban</code></li>
 <ul>
 <li>解封用户。</li>
 </ul>
-</li>
-<li><p><code>POST /api/admin/users/:id/reset-password</code></p>
+</ul>
+<ul>
+<li><code>POST /api/admin/users/:id/reset-password</code></li>
 <ul>
 <li>重置用户密码。</li>
 </ul>
-</li>
-<li><p><code>GET /api/admin/characters</code></p>
+</ul>
+<ul>
+<li><code>GET /api/admin/characters</code></li>
 <ul>
 <li>后台角色列表，包含停用角色与技能 <code>paramsJson</code>。</li>
 </ul>
-</li>
-<li><p><code>POST /api/admin/characters</code></p>
+</ul>
+<ul>
+<li><code>POST /api/admin/characters</code></li>
 <ul>
 <li>新增角色与技能。</li>
 </ul>
-</li>
-<li><p><code>PATCH /api/admin/characters/:id</code></p>
+</ul>
+<ul>
+<li><code>PATCH /api/admin/characters/:id</code></li>
 <ul>
 <li>按 DB id 或 slug 更新角色与技能。</li>
 </ul>
-</li>
-<li><p><code>DELETE /api/admin/characters/:id</code></p>
+</ul>
+<ul>
+<li><code>DELETE /api/admin/characters/:id</code></li>
 <ul>
 <li>将角色 <code>enabled</code> 设为 false。</li>
 </ul>
-</li>
-<li><p><code>POST /api/admin/uploads/character-portrait</code></p>
+</ul>
+<ul>
+<li><code>POST /api/admin/uploads/character-portrait</code></li>
 <ul>
 <li>上传角色立绘。</li>
+</ul>
+<ul>
 <li>需要 multipart 字段 <code>portrait</code>。</li>
 </ul>
-</li>
-<li><p><code>GET /api/admin/decorations</code></p>
+</ul>
+<ul>
+<li><code>GET /api/admin/decorations</code></li>
 <ul>
 <li>装饰列表。</li>
 </ul>
-</li>
-<li><p><code>POST /api/admin/decorations</code></p>
+</ul>
+<ul>
+<li><code>POST /api/admin/decorations</code></li>
 <ul>
 <li>新增装饰。</li>
 </ul>
-</li>
-<li><p><code>PATCH /api/admin/decorations/:id</code></p>
+</ul>
+<ul>
+<li><code>PATCH /api/admin/decorations/:id</code></li>
 <ul>
 <li>更新装饰。</li>
 </ul>
-</li>
-<li><p><code>DELETE /api/admin/decorations/:id</code></p>
+</ul>
+<ul>
+<li><code>DELETE /api/admin/decorations/:id</code></li>
 <ul>
 <li>将装饰 <code>enabled</code> 设为 false。</li>
 </ul>
-</li>
-<li><p><code>GET /api/admin/shop-items</code></p>
+</ul>
+<ul>
+<li><code>GET /api/admin/shop-items</code></li>
 <ul>
 <li>商城商品列表。</li>
 </ul>
-</li>
-<li><p><code>POST /api/admin/shop-items</code></p>
+</ul>
+<ul>
+<li><code>POST /api/admin/shop-items</code></li>
 <ul>
 <li>新增商品。</li>
 </ul>
-</li>
-<li><p><code>PATCH /api/admin/shop-items/:id</code></p>
+</ul>
+<ul>
+<li><code>PATCH /api/admin/shop-items/:id</code></li>
 <ul>
 <li>更新商品。</li>
 </ul>
-</li>
-<li><p><code>DELETE /api/admin/shop-items/:id</code></p>
+</ul>
+<ul>
+<li><code>DELETE /api/admin/shop-items/:id</code></li>
 <ul>
 <li>将商品 <code>enabled</code> 设为 false。</li>
 </ul>
-</li>
 </ul>
 <h3>Socket.IO 事件</h3>
 <p>鉴权：</p>
 <ul>
-<li><code>io.use</code><ul>
+<li><code>io.use</code></li>
+<ul>
 <li>使用 JWT 鉴权。</li>
+</ul>
+<ul>
 <li>校验用户存在、未封禁，并解析出战角色。</li>
 </ul>
-</li>
 </ul>
 <p>服务端监听：</p>
 <ul>
-<li><p><code>match:join</code></p>
+<li><code>match:join</code></li>
 <ul>
 <li>加入匹配队列；匹配成功后创建房间并广播。</li>
 </ul>
-</li>
-<li><p><code>match:leave</code></p>
+</ul>
+<ul>
+<li><code>match:leave</code></li>
 <ul>
 <li>离开匹配队列。</li>
 </ul>
-</li>
-<li><p><code>room:join</code></p>
+</ul>
+<ul>
+<li><code>room:join</code></li>
 <ul>
 <li>根据 5 位房间号加入观战或重连玩家。</li>
 </ul>
-</li>
-<li><p><code>game:action</code></p>
+<ul>
+<li><code>roomView</code> 中包含 <code>players</code>、<code>spectators</code> 和 <code>spectatorCount</code>；<code>spectators</code> 为观战用户列表，供房间成员列表实时展示。</li>
+</ul>
+</ul>
+<ul>
+<li><code>game:action</code></li>
 <ul>
 <li>对局动作：<code>move</code>、<code>pass</code>、<code>resign</code>、<code>skill</code>。</li>
 </ul>
-</li>
-<li><p><code>counting:request</code></p>
+<ul>
+<li>本地测试动作：<code>test-random-layout</code>、<code>test-restore-skill</code>。这两个动作当前走同一 Socket 入口，但命名集中为 <code>test-*</code>，便于后续移除。</li>
+</ul>
+</ul>
+<ul>
+<li><code>counting:request</code></li>
 <ul>
 <li>申请数子。</li>
 </ul>
-</li>
-<li><p><code>counting:respond</code></p>
+</ul>
+<ul>
+<li><code>counting:respond</code></li>
 <ul>
 <li>接受/拒绝数子。</li>
 </ul>
-</li>
-<li><p><code>draw:request</code></p>
+</ul>
+<ul>
+<li><code>draw:request</code></li>
 <ul>
 <li>申请和棋。</li>
 </ul>
-</li>
-<li><p><code>draw:respond</code></p>
+</ul>
+<ul>
+<li><code>draw:respond</code></li>
 <ul>
 <li>接受/拒绝和棋。</li>
 </ul>
-</li>
-<li><p><code>scoring:action</code></p>
+</ul>
+<ul>
+<li><code>scoring:action</code></li>
 <ul>
 <li>数子阶段动作：标记死子、中立点、重置、确认、接受/拒绝结果。</li>
 </ul>
-</li>
-<li><p><code>chat:send</code></p>
+</ul>
+<ul>
+<li><code>chat:send</code></li>
 <ul>
 <li>房间聊天。</li>
 </ul>
-</li>
-<li><p><code>disconnect</code></p>
-<ul>
-<li>清理匹配队列 socket 和观战列表。</li>
 </ul>
-</li>
+<ul>
+<li><code>disconnect</code></li>
+<ul>
+<li>清理匹配队列 socket 和观战列表；若观战列表变化，会重新广播房间状态。</li>
+</ul>
 </ul>
 <p>服务端发出：</p>
 <ul>
 <li><code>match:waiting</code></li>
+</ul>
+<ul>
 <li><code>match:found</code></li>
+</ul>
+<ul>
 <li><code>room:update</code></li>
+</ul>
+<ul>
 <li><code>room:closed</code></li>
+</ul>
+<ul>
 <li><code>error:toast</code></li>
+</ul>
+<ul>
 <li><code>me</code></li>
 </ul>
 <h2>7. 权限系统现状</h2>
 <ul>
-<li><p>登录态使用 JWT：</p>
+<li>登录态使用 JWT：</li>
 <ul>
 <li><code>withToken</code> 签发 <code>{ sub: user.id }</code>，有效期 14 天。</li>
+</ul>
+<ul>
 <li>HTTP 请求通过 <code>Authorization: Bearer &lt;token&gt;</code>。</li>
+</ul>
+<ul>
 <li>Socket.IO 通过 <code>handshake.auth.token</code>。</li>
 </ul>
-</li>
-<li><p>用户角色：</p>
+</ul>
+<ul>
+<li>用户角色：</li>
 <ul>
 <li><code>player</code></li>
+</ul>
+<ul>
 <li><code>admin</code></li>
 </ul>
-</li>
-<li><p>用户状态：</p>
+</ul>
+<ul>
+<li>用户状态：</li>
 <ul>
 <li><code>active</code></li>
+</ul>
+<ul>
 <li><code>banned</code></li>
 </ul>
-</li>
-<li><p>管理员来源：</p>
+</ul>
+<ul>
+<li>管理员来源：</li>
 <ul>
 <li><code>.env</code> 中 <code>ADMIN_USERNAMES</code> 逗号分隔。</li>
+</ul>
+<ul>
 <li>服务启动时 <code>promoteConfiguredAdmins</code> 会批量提升已存在用户。</li>
+</ul>
+<ul>
 <li>登录/注册时 <code>syncConfiguredAdmin</code> 会提升匹配用户名。</li>
 </ul>
-</li>
-<li><p>后台权限：</p>
+</ul>
+<ul>
+<li>后台权限：</li>
 <ul>
 <li><code>/api/admin</code> 路由挂载前统一使用 <code>authHttp</code> 和 <code>requireAdmin</code>。</li>
+</ul>
+<ul>
 <li>前端只对 <code>user.role === &quot;admin&quot;</code> 显示后台入口，但真正权限以后端为准。</li>
 </ul>
-</li>
-<li><p>封禁效果：</p>
+</ul>
+<ul>
+<li>封禁效果：</li>
 <ul>
 <li>HTTP 鉴权发现 <code>status === banned</code> 返回 403。</li>
+</ul>
+<ul>
 <li>Socket 鉴权发现封禁抛出 <code>forbidden</code>。</li>
+</ul>
+<ul>
 <li>登录时封禁用户也返回 403。</li>
 </ul>
-</li>
-<li><p>当前未看到：</p>
+</ul>
+<ul>
+<li>当前未看到：</li>
 <ul>
 <li>CSRF 防护。</li>
+</ul>
+<ul>
 <li>登录/注册限流。</li>
+</ul>
+<ul>
 <li>JWT refresh / 主动失效机制。</li>
+</ul>
+<ul>
 <li>操作级细粒度权限。</li>
 </ul>
-</li>
 </ul>
 <h2>8. 公共组件与通用逻辑</h2>
 <h3>前端公共组件</h3>
-<p>当前公共组件都集中在 <code>src/main.jsx</code>：</p>
+<p>当前公共组件仍以 <code>src/main.jsx</code> 为主，后台管理组件已拆到 <code>src/admin/AdminConsole.jsx</code>：</p>
 <ul>
 <li><code>Panel</code>: 面板标题与图标容器。</li>
+</ul>
+<ul>
 <li><code>Stat</code>: 小统计卡片。</li>
-<li><code>AdminFieldLabel</code>: 带 title 提示的后台字段标签。</li>
-<li><code>Toast</code>: 自动消失提示。</li>
+</ul>
+<ul>
+<li><code>AdminFieldLabel</code>: 带 title 提示的后台字段标签，位于 <code>src/admin/AdminConsole.jsx</code>。</li>
+</ul>
+<ul>
+<li><code>AdminSectionHeader</code>: 后台列表页标题、数量和主操作按钮，位于 <code>src/admin/AdminConsole.jsx</code>。</li>
+</ul>
+<ul>
+<li><code>AdminStatusPill</code>: 后台表格状态标签，位于 <code>src/admin/AdminConsole.jsx</code>。</li>
+</ul>
+<ul>
+<li><code>Toast</code>: 自动消失提示，使用高对比渐变底色突出规则错误、非法操作等短提示。</li>
+</ul>
+<ul>
 <li><code>ConfirmModal</code>: 通用确认弹窗。</li>
+</ul>
+<ul>
 <li><code>WatchPad</code>: 观战房间号输入。</li>
+</ul>
+<ul>
 <li><code>ReplayBar</code>: 回放进度控制。</li>
+</ul>
+<ul>
 <li><code>PlayerInfo</code>: 对局双方信息。</li>
+</ul>
+<ul>
 <li><code>Board</code>: 棋盘渲染与点击处理。</li>
+</ul>
+<ul>
 <li><code>ChatBox</code>: 聊天面板。</li>
+</ul>
+<ul>
 <li><code>SkillBanner</code>: 技能演出浮层。</li>
-<li><code>ResultModal</code>: 对局结果弹窗。</li>
+</ul>
+<ul>
+<li><code>ResultModal</code>: 对局结果弹窗；当前用户是房间玩家时展示本局积分与金币变化。</li>
+</ul>
+<ul>
+<li><code>TestTools</code>: 对局测试按钮组，当前包含随机布局和恢复技能，集中封装以便未来下线。</li>
 </ul>
 <h3>前端通用函数</h3>
 <ul>
-<li><code>api</code>: HTTP JSON 请求封装。</li>
-<li><code>adminApi</code>: <code>/api/admin</code> 请求封装。</li>
-<li><code>uploadPortrait</code>: 上传角色立绘。</li>
+<li><code>api</code>: HTTP JSON 请求封装，位于 <code>src/api/client.js</code>。</li>
+</ul>
+<ul>
+<li><code>adminApi</code>: <code>/api/admin</code> 请求封装，位于 <code>src/api/client.js</code>。</li>
+</ul>
+<ul>
+<li><code>uploadPortrait</code>: 上传角色立绘，位于 <code>src/api/client.js</code>。</li>
+</ul>
+<ul>
 <li><code>findCharacter</code>: 从角色 map 或 fallback 中解析角色。</li>
-<li><code>deriveHouseStats</code>: 从个人棋谱推导棋舍展示战绩。</li>
-<li><code>winnerColorFromRecord</code>: 基于结果文本判断胜方。</li>
-<li><code>buildCharacterDraft</code> / <code>characterDraftToBody</code>: 后台角色表单数据转换。</li>
-<li><code>validateShopItemDraft</code> / <code>decorationDraftToBody</code>: 后台商城/装饰表单校验。</li>
-<li><code>replayRoomAt</code>: 用历史记录重放房间状态。</li>
-<li>音频相关：<code>loadAudioSettings</code>、<code>playStoneSound</code>、<code>playCountdownBeep</code>、<code>speakText</code>。</li>
+</ul>
+<ul>
+<li><code>derivePlayerRecordStats</code> / <code>recordWinnerColor</code>: 位于 <code>src/shared/gameRecords.js</code>，前后端共用棋谱胜负与战绩推导逻辑，优先基于 <code>winnerColor</code> 结构化字段，旧记录回退到 <code>resultText</code> 文本前缀。</li>
+</ul>
+<ul>
+<li><code>resultRewardDelta</code>: 位于 <code>src/shared/resultRewards.js</code>，集中维护结果奖励差值，供后端持久化与前端结果展示共用；积分胜 <code>+20</code>、负 <code>-20</code>、和 <code>0</code>，金币胜 <code>+50</code>、负 <code>+20</code>、和 <code>0</code>。</li>
+</ul>
+<ul>
+<li><code>buildCharacterDraft</code> / <code>characterDraftToBody</code>: 位于 <code>src/shared/adminDrafts.js</code>，后台角色表单数据转换。</li>
+</ul>
+<ul>
+<li><code>validateShopItemDraft</code> / <code>decorationDraftToBody</code>: 位于 <code>src/shared/adminDrafts.js</code>，后台商城/装饰表单校验。</li>
+</ul>
+<ul>
+<li><code>DEFAULT_SITE_SETTINGS</code>: 位于 <code>src/shared/siteSettings.js</code>，前后端共用大厅标题、副标题和设置关于文本默认值。</li>
+</ul>
+<ul>
+<li><code>lastMarkedAction</code> / <code>canPreviewSkillTarget</code>: 位于 <code>src/shared/boardView.js</code>，用于统一棋盘最后落子/技能标记与技能预览判定。</li>
+</ul>
+<ul>
+<li><code>replayRoomAt</code>: 用历史记录重放房间状态；观战实时回放另由 <code>replayGameAt</code> 只派生棋盘进程。</li>
+</ul>
+<ul>
+<li>音频相关：<code>loadAudioSettings</code>、<code>playStoneSound</code>、<code>playSystemVoice</code> 路由、<code>preloadVoiceSound</code>、<code>playPreloadedVoiceSound</code>、<code>speakText</code>。</li>
 </ul>
 <h3>后端通用逻辑</h3>
 <ul>
-<li><code>publicUser</code>: 用户公开字段白名单。</li>
+<li><code>publicUser</code>: 用户公开字段白名单，并通过 <code>rankFromRating</code> 将积分转换为段位/级位。</li>
+</ul>
+<ul>
+<li><code>rankFromRating</code>: 位于 <code>src/shared/ratingRank.js</code>，前后端共用的积分到段位/级位换算逻辑。</li>
+</ul>
+<ul>
 <li><code>makeAuth</code>: HTTP 鉴权与管理员中间件。</li>
+</ul>
+<ul>
 <li><code>validateCharacterInput</code>: 角色/技能输入校验。</li>
+</ul>
+<ul>
 <li><code>toCharacterPayload</code>: 角色公开 payload。</li>
+</ul>
+<ul>
 <li><code>validateShopItemInput</code> / <code>validateDecorationInput</code>: 商城与装饰校验。</li>
+</ul>
+<ul>
+<li><code>getPublicSiteSettings</code> / <code>updateSiteSettings</code>: 站点配置读取、清洗、持久化和审计写入。</li>
+</ul>
+<ul>
 <li><code>buildLeaderboard</code>: 排行榜统计。</li>
+</ul>
+<ul>
+<li><code>ratingDeltaForResult</code>: 根据 <code>winnerColor</code> 计算玩家积分变化；胜方 +20、负方 -20、和棋 0。</li>
+</ul>
+<ul>
 <li><code>safeUploadFilename</code>: 上传文件名清洗。</li>
+</ul>
+<ul>
 <li><code>writeAudit</code>: 后台审计日志写入。</li>
+</ul>
+<ul>
+<li><code>DEFAULT_SKILL_SYSTEM_MESSAGE</code> / <code>SKILL_MESSAGE_TOKENS</code>: 前后端共用的技能系统消息默认模板与占位符列表。</li>
+</ul>
+<ul>
+<li><code>gameResultMetadata</code> / <code>recordWinnerColor</code>: 后端通过 <code>server/gameRecords.js</code> re-export 共享棋谱结构化结果逻辑。</li>
 </ul>
 <h2>9. 状态管理方式</h2>
 <h3>前端状态</h3>
 <ul>
 <li>使用 React 本地状态，没有 Redux/Zustand 等全局状态库。</li>
-<li>顶层 <code>App</code> 管理：<ul>
+</ul>
+<ul>
+<li>顶层 <code>App</code> 管理：</li>
+<ul>
 <li><code>token</code></li>
+</ul>
+<ul>
 <li><code>user</code></li>
+</ul>
+<ul>
 <li><code>view</code></li>
+</ul>
+<ul>
 <li><code>room</code></li>
+</ul>
+<ul>
 <li><code>socket</code></li>
+</ul>
+<ul>
 <li>各类弹窗开关</li>
+</ul>
+<ul>
 <li><code>characters</code></li>
+</ul>
+<ul>
 <li><code>replayRecords</code></li>
+</ul>
+<ul>
 <li><code>replayStep</code></li>
+</ul>
+<ul>
 <li>音频配置</li>
 </ul>
-</li>
+</ul>
+<ul>
 <li>登录 token 存在 <code>localStorage</code> 的 <code>sigrika-token</code>。</li>
+</ul>
+<ul>
 <li>音频设置存在 <code>localStorage</code> 的 <code>sigrika-audio-settings</code>。</li>
+</ul>
+<ul>
 <li>房间状态由服务端 Socket 广播覆盖到前端 <code>room</code>。</li>
+</ul>
+<ul>
+<li>对局页 <code>RoomScreen</code> 需要从顶层 <code>App</code> 接收当前 <code>token</code>，再传给房间成员列表等需要调用社交接口的子组件；匹配成功倒计时完成后由同一份房间快照切换到对局页。</li>
+</ul>
+<ul>
 <li>回放状态通过 <code>replayStep</code> 和 <code>replayRoomAt</code> 从快照历史中派生。</li>
 </ul>
 <h3>后端状态</h3>
 <ul>
-<li><p>数据库持久化：</p>
+<li>数据库持久化：</li>
 <ul>
-<li>用户、角色、技能、装饰、商城、棋谱、审计日志。</li>
+<li>用户、角色、技能、装饰、商城、棋谱、审计日志、站点设置。</li>
 </ul>
-</li>
-<li><p>内存状态：</p>
+</ul>
+<ul>
+<li>内存状态：</li>
 <ul>
 <li><code>server/rooms.js</code> 的 <code>rooms = new Map()</code>。</li>
+</ul>
+<ul>
 <li><code>waitingPlayer</code> 匹配队列。</li>
+</ul>
+<ul>
 <li>房间计时器、读秒、观战者、聊天、当前棋局状态。</li>
 </ul>
-</li>
-<li><p>对局结束持久化：</p>
+</ul>
+<ul>
+<li>对局结束持久化：</li>
 <ul>
 <li><code>scheduleRoomClose</code> 调用 <code>saveGameRecord</code>。</li>
+</ul>
+<ul>
 <li>房间 5 分钟后关闭并从内存删除。</li>
 </ul>
-</li>
 </ul>
 <h2>10. 已知技术债</h2>
 <p>以下只列代码中能观察到的事项：</p>
 <ul>
-<li><p>部分源码、schema、README 中的中文在当前终端显示为乱码。运行时页面部分中文可能正常，但文件编码状态需要统一确认。</p>
-</li>
-<li><p>没有 Prisma migrations 目录，当前只看到 <code>prisma db push</code> 脚本。跨机器/多人协作时数据库结构变更缺少可审计迁移历史。</p>
-</li>
-<li><p><code>prisma db push</code> 在当前机器曾出现空的 <code>Schema engine error</code>，后续需要确认是不是本机环境问题。</p>
-</li>
-<li><p>实时房间在内存中：</p>
+<li>Prisma schema 的中文默认值已增加 <code>server/schemaIntegrity.test.js</code> 防回归检查；<code>docs/system-design.html</code> 已改为由 <code>npm run docs:system-design</code> 从 Markdown 确定性生成，后续如发现乱码应优先确认终端/浏览器编码和源文件 UTF-8 状态。</li>
+</ul>
+<ul>
+<li>Prisma migrations 目录已开始建立，<code>SiteSetting</code>、<code>selectedStoneDecoration</code>、<code>UserRelationship</code> 等结构已有迁移；后续跨机器协作时需要坚持使用 migration 管理结构变更，避免继续依赖临时 <code>db push</code>。</li>
+</ul>
+<ul>
+<li><code>prisma db push</code> 已可同步当前开发库 schema，但 Windows 上 Prisma Client generate 可能因运行中的 Node 后端占用 <code>query_engine-windows.dll.node</code> 而出现 EPERM rename；遇到时需要先停止后端进程再重新运行 <code>npm run prisma:generate</code> 或 <code>npm run prisma:push</code>。</li>
+</ul>
+<ul>
+<li>实时房间在内存中：</li>
 <ul>
 <li>服务重启会丢失未结束房间。</li>
+</ul>
+<ul>
 <li>不支持多进程/多实例横向扩展。</li>
 </ul>
-</li>
-<li><p>多处胜负判断依赖 <code>resultText</code> 文本前缀，而不是结构化字段：</p>
 <ul>
-<li><code>publicUserWithHistory</code></li>
-<li><code>deriveHouseStats</code></li>
-<li><code>leaderboard</code></li>
-<li>管理/排行统计未来如果改文案，可能影响统计。</li>
+<li>技能演出依赖 <code>setTimeout</code> 延迟落子/变更效果；进程重启或未来多实例部署时需要额外的状态恢复/调度设计。</li>
 </ul>
-</li>
-<li><p><code>GameRecord</code> 与 <code>User</code>、<code>Character</code> 没有数据库外键关系，依赖字符串逻辑关联。</p>
-</li>
-<li><p>用户拥有角色/装饰使用 CSV 字符串字段：</p>
+</ul>
+<ul>
+<li>胜负判断已开始使用 <code>winnerColor</code> 结构化字段，但仍需要保留旧 <code>resultText</code> 回退逻辑以兼容历史棋谱。后续应考虑补迁移历史数据。</li>
+</ul>
+<ul>
+<li><code>GameRecord</code> 与 <code>User</code>、<code>Character</code> 没有数据库外键关系，依赖字符串逻辑关联。</li>
+</ul>
+<ul>
+<li>用户拥有角色/装饰使用 CSV 字符串字段：</li>
 <ul>
 <li>查询和约束能力弱。</li>
+</ul>
+<ul>
 <li>容易产生重复或无效 slug。</li>
 </ul>
-</li>
-<li><p>商城 <code>targetId</code> 没有外键校验；购买时只按字符串写入拥有列表，是否存在目标角色/装饰待进一步校验。</p>
-</li>
-<li><p>前端 <code>src/main.jsx</code> 过大，包含所有页面组件、API helper、回放、音频、后台表单等，后续维护成本会升高。</p>
-</li>
-<li><p>全局样式集中在 <code>src/styles.css</code>，规模较大，组件样式边界不清。</p>
-</li>
-<li><p>技能扩展当前由 <code>effectType</code> 分支实现，<code>paramsJson</code> 已保留但核心规则尚未通用化。</p>
-</li>
-<li><p>后台审计覆盖了用户和角色的主要操作，但装饰、商城商品的增改删当前未看到写审计日志。</p>
-</li>
-<li><p><code>CharacterSkill.enabled</code> 字段存在，但当前公开角色序列化没有明确按该字段过滤技能，语义待确认。</p>
-</li>
-<li><p>认证安全能力较基础：</p>
+</ul>
+<ul>
+<li>商城后台新增/修改时会校验 <code>targetId</code> 对应角色或装饰存在；数据库层仍没有外键约束，购买时仍依赖字符串拥有列表。</li>
+</ul>
+<ul>
+<li>当前用户资产与战绩存在多处来源：</li>
+<ul>
+<li><code>User.rating</code> 会被对局结果和后台编辑直接更新，<code>/api/me</code> 已改为直接返回该持久化积分。</li>
+</ul>
+<ul>
+<li>棋舍/排行榜的总局、胜负、和棋等统计仍从 <code>GameRecord</code> 派生。</li>
+</ul>
+<ul>
+<li>后续如继续扩展赛季/积分流水，需要决定是否增加结构化积分变更记录。</li>
+</ul>
+</ul>
+<ul>
+<li>前端 <code>src/main.jsx</code> 已先拆出后台管理模块和 API helper，但仍然偏大，仍包含大厅、对局、棋舍、商城、排行榜、设置、回放、音频等组件；后台管理目前集中在 <code>src/admin/AdminConsole.jsx</code>，后续可继续按用户/角色/商城/装饰拆分。</li>
+</ul>
+<ul>
+<li>全局样式集中在 <code>src/styles.css</code>，规模较大，组件样式边界不清。</li>
+</ul>
+<ul>
+<li>技能扩展当前由 <code>effectType</code> 分支实现，<code>paramsJson</code> 已保留但核心规则尚未通用化；<code>random-blast</code> 的完整 3x3、演出延迟、回放重放、棋盘高亮清理等逻辑分散在共享规则、服务端房间和前端棋盘中。</li>
+</ul>
+<ul>
+<li>观战回放目前在前端由实时房间快照和历史重放派生，信息区保持实时、棋盘可回退；该“双状态”模型需要更多自动化测试覆盖，避免未来房间字段变更时出现棋盘/信息区不同步。</li>
+</ul>
+<ul>
+<li>测试用对局按钮已集中在 <code>TestTools</code> 和 <code>test-*</code> action，并已增加环境保护：</li>
+<ul>
+<li>前端仅在 Vite 开发环境显示按钮。</li>
+</ul>
+<ul>
+<li>服务端在 <code>NODE_ENV=production</code> 时拒绝 <code>test-*</code> action。</li>
+</ul>
+</ul>
+<ul>
+<li>后台审计已覆盖用户、角色、装饰、商城商品和站点设置的主要增改/禁用操作；后续可继续细化到登录、购买、上传等事件。</li>
+</ul>
+<ul>
+<li><code>CharacterSkill.enabled</code> 字段存在，但当前公开角色序列化没有明确按该字段过滤技能，语义待确认。</li>
+</ul>
+<ul>
+<li>社交模块已增加 <code>server/social.test.js</code> 覆盖好友/黑名单互斥、公开资料统计和公开回放摘要；仍缺少端到端 UI 测试覆盖好友弹窗、对局申请横幅和资料卡回放弹窗。</li>
+</ul>
+<ul>
+<li>认证安全能力较基础：</li>
 <ul>
 <li>无限流。</li>
-<li>JWT 无服务端失效表。</li>
-<li>默认 <code>JWT_SECRET</code> 模板为 <code>change-me-in-production</code>，部署前必须更换。</li>
 </ul>
-</li>
-<li><p>上传文件只按 MIME 类型和扩展生成文件名，未看到图片内容解码校验，待确认是否足够。</p>
-</li>
-<li><p>当前测试覆盖较多规则和后台 helper，但前端交互没有专门的自动化测试。</p>
-</li>
+<ul>
+<li>JWT 无服务端失效表。</li>
+</ul>
+<ul>
+<li>生产环境已拒绝默认 <code>JWT_SECRET</code>，部署时仍需在环境变量中提供强随机密钥。</li>
+</ul>
+</ul>
+<ul>
+<li>上传文件只按 MIME 类型和扩展生成文件名，未看到图片内容解码校验，待确认是否足够。</li>
+</ul>
+<ul>
+<li>当前测试覆盖较多规则和后台 helper，但前端交互没有专门的自动化测试。</li>
+</ul>
+<ul>
+<li><code>docs/system-design.html</code> 是生成产物；修改本文档后运行 <code>npm run docs:system-design</code> 同步 HTML，避免 Markdown 与交付版漂移。</li>
 </ul>
 <h2>11. 后续扩展建议</h2>
 <ul>
-<li><p>建立 Prisma migration 流程：</p>
+<li>建立 Prisma migration 流程：</li>
 <ul>
 <li>引入 <code>prisma migrate dev</code> / <code>migrate deploy</code>。</li>
-<li>将现有 SQLite schema 固化为首个迁移。</li>
 </ul>
-</li>
-<li><p>将核心统计结构化：</p>
 <ul>
-<li>在 <code>GameRecord</code> 增加 <code>winnerColor</code>、<code>resultReason</code>、双方最终积分变化等字段。</li>
-<li>排行榜、棋舍战绩、用户统计改用结构化字段。</li>
+<li>后续新增结构变更继续优先生成 migration，避免只依赖 <code>prisma db push</code>。</li>
 </ul>
-</li>
-<li><p>拆分前端模块：</p>
+</ul>
 <ul>
-<li><code>pages/HomeScreen.jsx</code></li>
-<li><code>pages/RoomScreen.jsx</code></li>
-<li><code>admin/*</code></li>
-<li><code>modals/*</code></li>
-<li><code>api/client.js</code></li>
+<li>将核心统计结构化：</li>
+<ul>
+<li><code>GameRecord</code> 已增加 <code>winnerColor</code>、<code>resultReason</code>；后续可继续补双方最终积分变化等字段。</li>
+</ul>
+<ul>
+<li>排行榜、棋舍战绩、用户统计目前仍从棋谱派生；若引入赛季，需要明确结构化统计来源。</li>
+</ul>
+</ul>
+<ul>
+<li>拆分前端模块：</li>
+<ul>
+<li>已完成：<code>src/admin/AdminConsole.jsx</code></li>
+</ul>
+<ul>
+<li>已完成：<code>src/api/client.js</code></li>
+</ul>
+<ul>
+<li>已完成：<code>src/modals/HouseModal.jsx</code></li>
+</ul>
+<ul>
+<li>已完成：<code>src/modals/ShopModal.jsx</code></li>
+</ul>
+<ul>
+<li>已完成：<code>src/modals/GameLifecycleModals.jsx</code></li>
+</ul>
+<ul>
+<li>已完成：<code>src/modals/FeedbackModals.jsx</code></li>
+</ul>
+<ul>
+<li>后续：<code>pages/HomeScreen.jsx</code></li>
+</ul>
+<ul>
+<li>后续：<code>pages/RoomScreen.jsx</code></li>
+</ul>
+<ul>
+<li>后续：继续拆分 <code>admin/*</code></li>
+</ul>
+<ul>
+<li>后续：<code>modals/*</code></li>
+</ul>
+<ul>
 <li><code>audio/*</code></li>
+</ul>
+<ul>
 <li><code>replay/*</code></li>
 </ul>
-</li>
-<li><p>拆分样式：</p>
+</ul>
+<ul>
+<li>拆分样式：</li>
 <ul>
 <li>按页面/组件拆 CSS，或引入明确的 CSS module/组件样式约定。</li>
 </ul>
-</li>
-<li><p>重构拥有关系：</p>
+</ul>
+<ul>
+<li>重构拥有关系：</li>
 <ul>
 <li>将 <code>ownedCharacters</code>、<code>ownedDecorations</code> 从 CSV 改为关系表。</li>
+</ul>
+<ul>
 <li>为商城购买添加唯一约束，避免重复购买。</li>
 </ul>
-</li>
-<li><p>强化权限和安全：</p>
+</ul>
+<ul>
+<li>强化权限和安全：</li>
 <ul>
 <li>登录/注册限流。</li>
+</ul>
+<ul>
 <li>更严格的上传校验。</li>
+</ul>
+<ul>
 <li>管理员操作二次确认/审计扩展。</li>
+</ul>
+<ul>
 <li>JWT secret 检查，生产环境禁止默认值。</li>
 </ul>
-</li>
-<li><p>实时服务可扩展化：</p>
+</ul>
+<ul>
+<li>实时服务可扩展化：</li>
 <ul>
 <li>若需要多实例，需引入共享房间状态或 Socket.IO adapter。</li>
+</ul>
+<ul>
 <li>对局状态可考虑周期性持久化，避免服务重启丢局。</li>
 </ul>
-</li>
-<li><p>技能系统演进：</p>
+</ul>
+<ul>
+<li>技能系统演进：</li>
 <ul>
 <li>将技能效果从硬编码分支迁移到 registry。</li>
+</ul>
+<ul>
 <li>明确定义 <code>paramsJson</code> schema。</li>
+</ul>
+<ul>
 <li>将系统消息占位符列表集中维护并在后台显示。</li>
 </ul>
-</li>
-<li><p>排行榜扩展：</p>
+<ul>
+<li>将技能目标规则、预览规则、演出时序、回放重放参数纳入同一个技能契约，减少前后端重复判断。</li>
+</ul>
+</ul>
+<ul>
+<li>测试工具治理：</li>
+<ul>
+<li>已完成基础开发/生产保护。</li>
+</ul>
+<ul>
+<li>后续可进一步将测试工具移动到单独调试面板，或通过管理员/开发者权限显式开启。</li>
+</ul>
+</ul>
+<ul>
+<li>排行榜扩展：</li>
 <ul>
 <li>支持分页和赛季。</li>
+</ul>
+<ul>
 <li>支持按胜率、总局数、近期积分等维度排序。</li>
+</ul>
+<ul>
 <li>后端返回常用角色次数，前端可展示“使用 N 次”。</li>
 </ul>
-</li>
-<li><p>角色/装饰资源管理：</p>
+</ul>
+<ul>
+<li>角色/装饰资源管理：</li>
 <ul>
 <li>为上传文件建立记录表，便于清理无引用文件。</li>
+</ul>
+<ul>
 <li>装饰在玩家端的实际展示/装备逻辑需要补齐或明确。</li>
 </ul>
-</li>
-<li><p>测试扩展：</p>
+</ul>
+<ul>
+<li>测试扩展：</li>
 <ul>
 <li>增加 API 路由集成测试。</li>
+</ul>
+<ul>
 <li>增加前端关键流程测试：登录、匹配、后台角色保存、排行榜弹窗。</li>
+</ul>
+<ul>
 <li>增加回放快照兼容性测试。</li>
 </ul>
-</li>
 </ul>
-
+<h2>Audio System Notes</h2>
+<p>当前音频系统主要由 <code>src/shared/musicLibrary.js</code>、<code>src/shared/audioScheduling.js</code>、<code>src/shared/boardAudio.js</code>、<code>src/shared/voiceEffects.js</code> 与 <code>src/audio/playback.jsx</code> 中的播放运行时组成。</p>
+<h3>Background Music</h3>
+<ul>
+<li>BGM 资源配置集中在 <code>MUSIC_TRACKS</code>，按 <code>home</code>、<code>battle</code>、<code>skill</code> 三类管理。</li>
+</ul>
+<ul>
+<li>主界面默认 BGM 使用 <code>hidamari_intro_once.ogg</code> + <code>hidamari_loop.ogg</code>。</li>
+</ul>
+<ul>
+<li>对弈常规 BGM 使用 <code>shanjifu_intro_once.ogg</code> + <code>shanjifu_loop.ogg</code>。</li>
+</ul>
+<ul>
+<li>角色技能 BGM 当前配置：达妮娅使用 <code>bgm_*</code>，西格莉卡使用 <code>koimoon_132_intro_no_fadein_2p5s.ogg</code> + <code>koimoon_132_micro_loop.ogg</code>，爱弥斯使用 <code>lhl_*</code>，猪小仙使用 <code>matoya_*</code>，娜波摩使用 <code>busizhe_*</code>。</li>
+</ul>
+<ul>
+<li>BGM 优先级为：角色技能 BGM &gt; 对弈常规 BGM &gt; 主界面 BGM。</li>
+</ul>
+<ul>
+<li>角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。</li>
+</ul>
+<ul>
+<li>匹配成功倒计时、对局结果弹窗、对局结束阶段会停止 BGM。</li>
+</ul>
+<ul>
+<li><code>BackgroundMusic</code> 使用 Web Audio 播放，预解码 intro/loop buffer，并在同一 <code>AudioContext</code> 时间线上调度 intro 到 loop，避免 HTMLAudio 切文件造成明显卡顿。</li>
+</ul>
+<ul>
+<li>音量变化只调节 gain，不改变播放 identity；因此主音量或 BGM 音量调到 0 后再恢复，不会导致 BGM 从头播放。</li>
+</ul>
+<ul>
+<li>默认音频设置为 <code>master: 80</code>、<code>bgm: 50</code>、<code>sfx: 80</code>、<code>voice: 80</code>，保存于 <code>localStorage</code> 的 <code>sigrika-audio-settings</code>。</li>
+</ul>
+<h3>Effects And Replay Audio</h3>
+<ul>
+<li>匹配成功播放 <code>match-success.mp3</code>，同时停止 BGM。</li>
+</ul>
+<ul>
+<li>对局结果弹窗出现时停止 BGM；胜方播放 <code>result-victory.mp3</code>，负方播放 <code>result-defeat.mp3</code>，和棋不播放结果音效。</li>
+</ul>
+<ul>
+<li>普通落子播放 <code>godown_clear.ogg</code>。</li>
+</ul>
+<ul>
+<li>提子动作播放 <code>go_capture_clear.ogg</code>。</li>
+</ul>
+<ul>
+<li>隐藏手暴露播放 <code>hidden_hand_reveal.ogg</code>；回放下一步遇到带有隐藏手暴露标记的历史动作时也会播放该音效。</li>
+</ul>
+<ul>
+<li><code>boardAudio.js</code> 根据历史记录中的当前棋盘动作判断落子音或提子音；回放界面点击“下一手”时也会按该步历史播放对应音效，弃手不会重复播放上一手棋盘音效。</li>
+</ul>
+<ul>
+<li>落子、提子、隐藏手暴露、匹配成功和结果音效均走 <code>sfx</code> 音量通道。</li>
+</ul>
+<ul>
+<li>读秒 10 到 1 秒倒计时通过 <code>playSystemVoice(countdown-N)</code> 播放角色语音或 TTS，超时时语音播报“超时”，不会播报“还剩0次读秒”。</li>
+</ul>
+<h3>Skill Voice</h3>
+<ul>
+<li>角色技能语音配置集中在 <code>CHARACTER_SKILL_VOICES</code>。</li>
+</ul>
+<ul>
+<li>当前已配置：西格莉卡 <code>sigrika_2_no_exclaim.ogg</code>，爱弥斯 <code>aemeath_skill.ogg</code>，猪小仙 <code>baconbits_skill.ogg</code>。</li>
+</ul>
+<ul>
+<li><code>characterVoiceMapForSkill</code> 可将现有技能语音桥接为角色 <code>systemVoices</code> 的 <code>skill-cast</code> 事件映射。</li>
+</ul>
+<ul>
+<li><code>SkillBanner</code> 出现时同步触发技能语音，同一个 banner id 只播放一次。</li>
+</ul>
+<ul>
+<li>技能语音走 <code>voice</code> 音量通道。</li>
+</ul>
+<ul>
+<li><code>playVoiceSound</code> 使用 Web Audio 播放链：source -&gt; dry/wet reverb mix -&gt; voice gain -&gt; destination。</li>
+</ul>
+<ul>
+<li><code>voiceEffects.js</code> 当前预设为轻量空灵混响：<code>boost: 1.35</code>、<code>wet: 0.28</code>、<code>dry: 0.9</code>、<code>reverbSeconds: 1.6</code>、<code>reverbDecay: 2.2</code>、<code>preDelaySeconds: 0.035</code>。</li>
+</ul>
+<ul>
+<li>如果 Web Audio 或资源加载失败，技能语音会回退到普通 <code>Audio</code> 播放，仍应用 1.35 倍 voice 增益上限。</li>
+</ul>
+<h3>System Voice</h3>
+<ul>
+<li>系统语音事件集中在 <code>src/shared/systemVoices.js</code>，通过 <code>resolveSystemVoice</code> 解析。</li>
+</ul>
+<ul>
+<li>当前默认走 TTS 文本；如果角色配置了 <code>systemVoices[event]</code>，则优先播放对应音频。</li>
+</ul>
+<ul>
+<li>已预留事件：<code>game-start</code>、<code>skill-cast</code>、<code>byo-yomi-start</code>、<code>byo-yomi-periods</code>、<code>byo-yomi-period-2</code>、<code>byo-yomi-period-1</code>、<code>byo-yomi-countdown</code>、<code>countdown-N</code>、<code>timeout</code>、<code>result-victory</code>、<code>result-defeat</code>、<code>result-draw</code>、<code>house-detail</code>。</li>
+</ul>
+<ul>
+<li>对局正式开始时，服务端写入 kind 为 <code>game-start</code> 的系统消息，前端据此播放“对局开始”语音。</li>
+</ul>
+<ul>
+<li>进入读秒、剩余读秒次数和超时播报已经接入事件化 resolver；剩余 2/1 次读秒使用显式 <code>byo-yomi-period-2</code>、<code>byo-yomi-period-1</code> 事件，10 到 1 秒倒计时使用 <code>countdown-10</code> 到 <code>countdown-1</code> 角色语音事件。</li>
+</ul>
+<h3>Static Audio Assets</h3>
+<ul>
+<li>BGM 和效果音位于 <code>public/assets/music/</code>。</li>
+</ul>
+<ul>
+<li>技能语音位于 <code>public/assets/voice/</code>。</li>
+</ul>
+<ul>
+<li>转码用临时工具目录 <code>.tmp/</code> 已加入 <code>.gitignore</code>，不应提交。</li>
+</ul>
+<h3>Audio Technical Debt</h3>
+<ul>
+<li>Runtime audio playback now lives in <code>src/audio/playback.jsx</code>, but that module still owns several playback concerns (<code>BackgroundMusic</code>, board effects, result sounds, skill voice effects, system voice/TTS). Future cleanup can split it by BGM/effects/voice if the feature set grows.</li>
+</ul>
+<ul>
+<li>Voice playback uses a shared module-level Web Audio context when available; regular voice playback, cached playback, and preload decoding all reuse that context. Future tuning may still need more explicit lifecycle cleanup and browser autoplay handling.</li>
+</ul>
+<ul>
+<li>Voice reverb now uses a deterministic generated impulse. If authored reverb tails become important, replace it with a static impulse asset.</li>
+</ul>
+<ul>
+<li>BGM assets are committed directly under <code>public/assets/music/</code> and increase repository size. If the soundtrack grows, consider Git LFS, an asset CDN, or a manifest-driven asset pipeline.</li>
+</ul>
+<ul>
+<li>Music ownership, purchase availability, and player selection are represented in configuration shape but not yet backed by persisted music inventory/settings UI.</li>
+</ul>
+<ul>
+<li>Character skill voice configuration is static in <code>CHARACTER_SKILL_VOICES</code>; future admin-configurable voices would need schema/API/upload support and cache invalidation rules.</li>
+</ul>
+<ul>
+<li>No browser-level automated test currently verifies actual audio playback, Web Audio graph routing, or autoplay fallback behavior; existing coverage focuses on deterministic helper logic.</li>
+</ul>
+<ul>
+<li>Countdown character voice assets are opportunistically preloaded and decoded into a module-level Web Audio buffer cache while the active player is in byo-yomi. Cached playback reuses the same dry/wet reverb voice chain as regular voice playback, and failures fall back to the existing voice path without blocking timers.</li>
+</ul>
+<h2>Result Rewards And Room UI</h2>
+<p>This implementation follows <code>docs/superpowers/specs/2026-05-19-result-home-voice-room-design.md</code> and <code>docs/superpowers/plans/2026-05-19-result-home-voice-room.md</code>.</p>
+<ul>
+<li>Result rewards:</li>
+<ul>
+<li>The result modal displays the current player's rating and coin deltas.</li>
+</ul>
+<ul>
+<li>Rating deltas are win <code>+20</code>, loss <code>-20</code>, draw <code>0</code>.</li>
+</ul>
+<ul>
+<li>Coin deltas are win <code>+50</code>, loss <code>+20</code>, draw <code>0</code>.</li>
+</ul>
+<ul>
+<li>Decisive game persistence uses <code>resultRewardDelta</code>; winner records gain coins and rating, loser records gain consolation coins and lose rating. Draws remain record-only for rewards.</li>
+</ul>
+</ul>
+<ul>
+<li>Home layout:</li>
+<ul>
+<li>The home screen prioritizes &quot;空想对局&quot; as the largest primary action.</li>
+</ul>
+<ul>
+<li>&quot;棋舍&quot; is a secondary profile/character entry with the selected portrait vertically centered beside player info.</li>
+</ul>
+<ul>
+<li>大厅标题与副标题独立于右上角操作区，居中显示在中上方；副标题和标题保持错位排版并使用更大的字号填充顶部视觉空间。</li>
+</ul>
+<ul>
+<li>&quot;商店&quot;, &quot;排行榜&quot;, &quot;观战&quot;, and &quot;好友&quot; are compact circular utility icon buttons anchored under the house card; each button shows only icon plus title. Admin management is available only to admins and appears as a labeled circular button below the top-right settings button, right-aligned with the logout/settings action stack.</li>
+</ul>
+<ul>
+<li>Narrow utility overflow is contained inside the utility grid instead of expanding the whole page.</li>
+</ul>
+<ul>
+<li>The friend button opens a social modal backed by <code>/api/social</code> with &quot;好友&quot; and &quot;黑名单&quot; tabs. Each list row shows online state, common character portrait, username, rank, rating, and a gear action button. Friend actions are &quot;详细信息&quot;, &quot;密谈&quot;, &quot;对局申请&quot;, and &quot;解除好友&quot;; blacklist actions are &quot;详细信息&quot; and &quot;从黑名单解除&quot;. Clicking a gear action expands a small horizontal action row directly below that user row; clicking the same gear again collapses the row.</li>
+</ul>
+<ul>
+<li>&quot;详细信息&quot; uses a shared independent modal with common character portrait, username, record, rating, rank, per-character record rows, and a &quot;对局回放&quot; button. Replay rows are loaded lazily only after that button is clicked, displayed in a fixed-height scrollable dialog, and each row can open an individual public replay. The same profile card is reused by the room member popover.</li>
+</ul>
+<ul>
+<li>Profile replay dialogs include the viewed user's username in the title. The dialog shell keeps the title and close button fixed while only the replay list scrolls.</li>
+</ul>
+<ul>
+<li>&quot;解除好友&quot; and &quot;从黑名单解除&quot; use a shared confirmation panel and persist through <code>UserRelationship</code>. Adding a friend automatically removes/overwrites blacklist state for that target, and adding to blacklist overwrites friend state.</li>
+</ul>
+<ul>
+<li>&quot;对局申请&quot; is enabled only for online users who are not currently playing. The server tracks connected sockets and active room players; <code>duel:request</code> delivers a <code>duel:incoming</code> event to the target user, <code>duel:respond</code> accepts/rejects the request, and acceptance creates a direct room through the same match-found/opening flow as normal matchmaking. Timeout or rejection emits a red danger notice to the requester.</li>
+</ul>
+<ul>
+<li>The house rank stat includes a hover help icon explaining that rank is derived from rating, 1000 points is 1-dan, each 100 points changes one rank, and 9-dan is the maximum.</li>
+</ul>
+</ul>
+<ul>
+<li>Character voice categories:</li>
+<ul>
+<li>Character voice events are explicit: <code>game-start</code>, <code>skill-cast</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, <code>countdown-10</code> through <code>countdown-1</code>, <code>timeout</code>, <code>result-victory</code>, <code>result-defeat</code>, <code>result-draw</code>, and <code>house-detail</code>.</li>
+</ul>
+<ul>
+<li>Built-in skill voice assets are bridged into each character's <code>systemVoices.skill-cast</code> map at runtime, so skill banners use the same <code>resolveSystemVoice</code> route as other role voices.</li>
+</ul>
+<ul>
+<li>Baconbits now has role voice assets for <code>game-start</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, and <code>timeout</code>; the period 2 and period 1 events reuse <code>baconbits_byo_yomi_periods.ogg</code>.</li>
+</ul>
+<ul>
+<li>Character detail clicks in the house route through <code>house-detail</code>; missing assets stay silent until a character-specific detail voice is configured.</li>
+</ul>
+<ul>
+<li>Countdown voice uses 10 second-specific events, with invalid countdown event names rejected before character audio override.</li>
+</ul>
+<ul>
+<li>Missing character voice assets fall back to generic voice/TTS according to <code>resolveSystemVoice</code>.</li>
+</ul>
+</ul>
+<ul>
+<li>Room time display:</li>
+<ul>
+<li>Player timers render a digital/nixie-style label, primary time/seconds, and smaller leading-zero byo-yomi period counter.</li>
+</ul>
+<ul>
+<li>The timer panel uses a light background with subtle state accents instead of a dark display block.</li>
+</ul>
+<ul>
+<li>The compact <code>30s × 3</code> style is no longer used in the player info timer.</li>
+</ul>
+</ul>
+<ul>
+<li>Room action area:</li>
+<ul>
+<li>Normal play shows regular action buttons below the board.</li>
+</ul>
+<ul>
+<li>Draw requests, counting requests, dead-stone marking, and result review render in the main board action area through phase-aware <code>DecisionBar</code> controls.</li>
+</ul>
+<ul>
+<li>Decision controls are participant-safe: missing/non-player local state sees an informational waiting state instead of active buttons.</li>
+</ul>
+<ul>
+<li>Request and result-review decision bars include countdown/progress visuals.</li>
+</ul>
+<ul>
+<li>Text-only operation hints render below the opponent info area, to the left of the main board action area.</li>
+</ul>
+<ul>
+<li>Scoring result review shows a formatted calculation breakdown. Black result is <code>black stones + territory - komi - own skill cost + opponent skill cost</code>; white result is <code>white stones + territory + komi - own skill cost + opponent skill cost</code>. The raw difference is <code>black result - white result</code>; the displayed winning margin is <code>abs(raw difference) / 2</code>, formatted as whole/fraction stones.</li>
+</ul>
+</ul>
+<ul>
+<li>Finished-game portrait badges:</li>
+<ul>
+<li>Decisive finished games show transparent outline badges overlapping the portrait lower-right: red text/red ring for &quot;胜&quot;, black text/black ring for &quot;负&quot;.</li>
+</ul>
+<ul>
+<li>Draw results show no win/loss portrait badge.</li>
+</ul>
+</ul>
+<ul>
+<li>Responsive direction:</li>
+<ul>
+<li>The room player/board/side layout keeps its three-column structure across desktop and tablet widths; opponent and self info columns use the same width.</li>
+</ul>
+<ul>
+<li>Narrow room screens use practical column minimums and controlled horizontal scrolling instead of switching to a stacked layout.</li>
+</ul>
+<ul>
+<li>Tablet/mobile overrides do not reshape room player cards, preserving the vertical portrait, digital timer, and action hierarchy inside the fixed three-column room layout.</li>
+</ul>
+</ul>
+<h2>Frontend Module Extraction Update</h2>
+<p>This update reduces the highest-payoff frontend coupling without changing user-facing behavior.</p>
+<ul>
+<li>Character display helpers now live in <code>src/shared/characterDisplay.js</code>.</li>
+<ul>
+<li><code>findCharacter</code> centralizes DB character plus built-in fallback merging.</li>
+</ul>
+<ul>
+<li><code>withCharacterSystemVoices</code> centralizes the runtime bridge from skill voice assets into character <code>systemVoices</code>.</li>
+</ul>
+</ul>
+<ul>
+<li>System voice playback now lives in <code>src/audio/systemVoicePlayback.js</code>.</li>
+<ul>
+<li><code>playSystemVoice</code> resolves role/system voice events, plays preloaded audio when available, and falls back to TTS text.</li>
+</ul>
+<ul>
+<li><code>src/main.jsx</code> no longer owns the system voice resolver/playback wrapper.</li>
+</ul>
+</ul>
+<ul>
+<li>Low-coupling modal components have been extracted from <code>src/main.jsx</code> into <code>src/modals/</code>.</li>
+<ul>
+<li><code>MessageBoardModal.jsx</code></li>
+</ul>
+<ul>
+<li><code>SettingsModal.jsx</code></li>
+</ul>
+<ul>
+<li><code>WatchModal.jsx</code></li>
+</ul>
+<ul>
+<li><code>LeaderboardModal.jsx</code></li>
+</ul>
+<ul>
+<li><code>HouseModal.jsx</code> owns the player manual/profile modal, owned character grid, decoration application controls, personal replay dialog, and per-character record dialog.</li>
+</ul>
+<ul>
+<li><code>ShopModal.jsx</code> owns the 扎希拉商店 modal, category tabs, fixed 8-slot item grid, purchase flow, item ownership state, and shop mascot/item preview rendering.</li>
+</ul>
+<ul>
+<li><code>GameLifecycleModals.jsx</code> owns the matching, match-success countdown, opening color prompt, and result/reward modals. It also exposes pure countdown, color-label, and signed-delta helpers covered by <code>GameLifecycleModals.test.js</code>.</li>
+</ul>
+<ul>
+<li><code>FeedbackModals.jsx</code> owns the generic confirm modal, toast, and direct-duel request banner. Its duel countdown/progress helpers are covered by <code>FeedbackModals.test.js</code>.</li>
+</ul>
+<ul>
+<li><code>StoneDecorationPreview.jsx</code> owns reusable black/white decoration previews for house and shop surfaces.</li>
+</ul>
+</ul>
+<ul>
+<li>Room view helpers now live in <code>src/room/roomView.js</code>.</li>
+<ul>
+<li>The module owns replay view reconstruction, room member list shaping, coordinate labels, board line geometry, preview eligibility helpers, scoring term text, and timer/message formatting helpers.</li>
+</ul>
+<ul>
+<li>These helpers are covered by <code>src/room/roomView.test.js</code> so runtime-only room view dependencies are easier to catch.</li>
+</ul>
+</ul>
+<ul>
+<li>Low-coupling room UI components have started moving from <code>src/main.jsx</code> into <code>src/room/</code>.</li>
+<ul>
+<li><code>TimeBar.jsx</code> owns the player timer/digital display panel.</li>
+</ul>
+<ul>
+<li><code>ChatBox.jsx</code> owns room chat rendering, scroll-to-bottom behavior, and chat submission UI.</li>
+</ul>
+<ul>
+<li><code>PlayerInfo.jsx</code> owns player portrait, rank/rating tags, timer, captures/cost display, result badge, and skill detail popover.</li>
+</ul>
+<ul>
+<li><code>RoomPeopleList.jsx</code> owns the fixed-height room member list and placeholder member action popover.</li>
+</ul>
+<ul>
+<li><code>ActionBar.jsx</code> owns spectator replay controls, normal player actions, test tool buttons, and phase-aware decision bars.</li>
+</ul>
+<ul>
+<li><code>ScoringBreakdown.jsx</code> owns the formatted counting formula/result breakdown used by hints and result-review controls.</li>
+</ul>
+<ul>
+<li><code>Board.jsx</code> owns board grid rendering, coordinate labels, stones, move numbers, scoring marks, skill effect markers, decorated stone images, and board point events.</li>
+</ul>
+<ul>
+<li><code>Board.jsx</code> marks first-line board grid segments so the visual &quot;一路&quot; can render bolder than internal lines. Board grid strokes are intentionally heavier for readability, with both normal and first-line strokes scaled up together.</li>
+</ul>
+<ul>
+<li><code>OperationHint.jsx</code> owns phase-aware text hints and compact scoring breakdown display under the opponent-side panel.</li>
+</ul>
+</ul>
+<ul>
+<li>Current remaining frontend debt:</li>
+<ul>
+<li><code>src/main.jsx</code> still owns <code>RoomScreen</code>, the skill banner, and part of page orchestration.</li>
+</ul>
+<ul>
+<li>A full <code>RoomScreen</code> big-bang move is intentionally deferred because the component has dense local dependencies. Continue with smaller slices first, such as socket lifecycle hooks, room people/action panels, or individual room subcomponents.</li>
+</ul>
+<ul>
+<li><code>src/admin/AdminConsole.jsx</code>, <code>src/shared/game.js</code>, <code>server/rooms.js</code>, and large style files remain high-value follow-up targets.</li>
+</ul>
+</ul>
+<h2>Recent Home, Shop, And Board UI Adjustments</h2>
+<ul>
+<li>The former home/house entry is now presented to players as “部员手册”; the underlying profile, character, decoration, and personal replay functions are unchanged.</li>
+</ul>
+<ul>
+<li>The home match description is “13路，数子规则，黑贴2又3/4子，用时5分钟30秒3次”.</li>
+</ul>
+<ul>
+<li>The home player plaque uses a light rank/rating tag with dark text. Admin management uses the same circular icon-plus-title layout and sizing pattern as the home utility buttons.</li>
+</ul>
+<ul>
+<li>The shop keeps its fixed 2 x 4 slot layout but uses shorter item cards so the shop modal stays more compact.</li>
+</ul>
+<ul>
+<li>Friend list action buttons expand as a full-width horizontal action row with evenly aligned button columns.</li>
+</ul>
+<ul>
+<li>The house stats for rating and coins use the same help-tip pattern as rank: rating explains +20/-20/0 changes; coins explain +50/+20/0 rewards.</li>
+</ul>
+<ul>
+<li>Counting request is disabled while the board has no stones.</li>
+</ul>
+<ul>
+<li>Main-time timer digits use a gray display color, while byo-yomi states keep their warning colors.</li>
+</ul>
+<ul>
+<li>Board grid strokes are heavier overall; first-line grid segments are marked separately and rendered much thicker than internal lines. Skill targeting highlights use a gradient glow instead of a solid outline.</li>
+</ul>
+<ul>
+<li>Latest room/home refinements:</li>
+<ul>
+<li>The home player plaque rank/rating chip uses a light background with dark text again, while the admin-only management button remains a green circular icon-plus-title control aligned with the home user plaque.</li>
+</ul>
+<ul>
+<li>Incoming direct duel requests play a short synthesized doorbell SFX on the effects channel before showing the request banner.</li>
+</ul>
+<ul>
+<li>The house/player manual record stat is clickable and opens a per-character record list for owned characters.</li>
+</ul>
+<ul>
+<li>Player info now separates captures, skill removals (&quot;除子&quot;), and skill cost. Skill removals count opponent stones removed or converted by skills for the side that benefits from the removal/conversion.</li>
+</ul>
+<ul>
+<li>Skill follow-up cleanup counts stones removed by skill-created no-liberty states as skill removals instead of normal captures, so &quot;提子&quot; remains only ordinary capture count.</li>
+</ul>
+<ul>
+<li>Room headers include live game context after the room number using separate chips: black player/rank, white player/rank, and current move count.</li>
+</ul>
+<ul>
+<li>The first-line board grid stroke was reduced from the heaviest iteration while remaining bolder than internal lines.</li>
+</ul>
+</ul>
 </body>
 </html>

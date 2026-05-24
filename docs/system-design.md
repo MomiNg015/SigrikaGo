@@ -150,12 +150,12 @@ SigrikaGo/
 
 - 登录页品牌标题显示为 `星炬学院围棋部`。
 - 大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。
-- 大厅首页布局 A：空想对局作为最大主行动面板；棋舍作为带出战角色与用户段位/积分的次级入口；观战、排行榜、商城、后台管理以中等图标按钮呈现。
+- 大厅首页布局 A：空想对局作为最大主行动面板；棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。
 - 大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色。
 - 大厅顶部标题和副标题来自 `GET /api/site-settings`；未配置或接口失败时回退到 `大厅` / `SigrikaGo`。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。
-- 大厅与对局页右上操作区共用同一个留言板入口。留言板当前为前端占位弹窗，包含输入框和提交按钮，提交暂不落库。
+- 大厅与对局页右上操作区共用同一个留言板入口。留言板当前为前端占位弹窗，输入框默认提示“Bug、问题反馈和意见都可以在这里提交哦”，包含提交按钮，提交暂不落库。
 - 棋舍展示用户战绩、积分、拥有角色、出战角色。
-- 棋舍标题右侧可查看个人对局回放；装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。战绩、积分、段位、金币统计项带对应小图标。
+- 棋舍标题右侧可查看个人对局回放；回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。战绩、积分、段位、金币统计项带对应小图标。
 - 设置弹窗支持音量配置，并保存在 `localStorage`；关于页展示后台可编辑的站点长文本。
 
 ### 对局
@@ -165,13 +165,15 @@ SigrikaGo/
 - 13 路棋盘。
 - 中国数子规则，`KOMI_STONES = 2.75`。
 - 基础规则：落子、提子、禁自杀、劫、弃手、认输。
-- 对局聊天和系统消息。
+- 对局聊天和系统消息；若聊天发送者是本局对局者，聊天名后追加 `[出战角色名字]`。
 - 匹配成功后先显示 3 秒匹配成功弹窗；进入房间后处于 `opening` 开局展示阶段，玩家看到“本局你执黑/白”弹窗，服务端在该阶段暂停棋钟和落子/技能操作。
+- 收到匹配成功事件时，前端会自动关闭大厅上已打开的商店、棋舍、排行榜、观战、好友、设置和留言板弹窗，避免弹窗盖住后续对局切换。
 - 开局展示结束后服务端切换到 `playing`，写入 `game-start` 系统消息，前端播放“对局开始”系统语音，并从该时刻开始推进棋钟。
 - 计时与读秒：房间玩家包含 `mainTime`、`byoYomi`、`byoYomiPeriods` 等内存字段。
 - 玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能代价使用红色强调。
 - 技能栏支持悬停/点击展开“挂画”式技能说明面板，说明随鼠标移出或再次点击收起。
-- 对手信息区下方显示“房间成员”，固定最多 3 行高度并可滚动；对局者用黑/白棋图标标识执色且用户名为红色，观战者为黑色用户名。点击任一行会展开占位操作面板：信息、申请好友、加入黑名单、密谈。
+- 对手信息区下方显示“房间成员”，固定最多 3 行高度并可滚动；回放模式不显示房间成员区域。对局者用黑/白棋图标标识执色且用户名为红色，观战者为黑色用户名。点击任一行会展开占位操作面板：详细信息、加好友/解除好友、加入黑名单/从黑名单解除、密谈。自己所在行的加好友和黑名单操作禁用；好友关系下加入黑名单按钮禁用。成员行按关系显示背景：自己为淡黄色，好友为浅绿色渐变，黑名单成员为灰色。加好友会自动从黑名单移除目标用户。
+- 操作提示区在轮到当前用户处理落子、数子/和棋申请、死子确认或结果确认时切换为浅红色背景；普通等待状态保持常规提示背景。观战和回放模式不显示操作提示区。
 - 超时判负。
 - 双方连续弃手进入数子申请/确认流程。
 - 数子流程：申请、接受/拒绝、标记死子、标记单官/中立点、确认死子、结果确认、拒绝后继续。
@@ -181,7 +183,7 @@ SigrikaGo/
 
 ### 技能与角色
 
-- 内置角色 fallback：`sigrika`、`danea`、`aemeath`、`baconbits`、`nabomo`。
+- 内置角色 fallback：`sigrika`、`denia`、`aemeath`、`baconbits`、`nabomo`。历史数据中可能仍存在旧别名 `danea`；公共角色列表、前端合并、用户公开资料和出战角色解析会将其规范化为 `denia`，避免部员手册中重复出现两个达妮娅。
 - DB 角色会覆盖/合并内置角色。
 - 所有存在的角色都会出现在棋舍角色列表；未拥有角色以灰色状态展示，可查看信息但不可出战。
 - 角色信息包含 `acquisitionMethod`/“获得途径”纯文本，可由后台维护。
@@ -222,7 +224,7 @@ SigrikaGo/
 
 - 商品支持 `character` 与 `decoration` 两类。
 - 商品有原价、折扣、是否可购买、是否展示、排序、描述、图片。
-- 玩家商城标题显示为“扎希拉商店”，大厅入口显示为“商店”。商品区固定为 2 行 4 列且切换分类不改变槽位或窗口尺寸；空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。金币余额显示为金币图标加金额的金色标签。
+- 玩家商城标题显示为“扎希拉商店”，大厅入口显示为“商店”。商品区固定为 2 行 4 列且切换分类不改变槽位或窗口尺寸；空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。金币余额显示为金币图标加金额的金色标签。商店右上角展示扎希亚 Q 版立绘，资源位于 `/assets/zahiya_shop.png`，立绘区域不额外绘制占位背景和线框。
 - 商城商品卡片不显示商品描述栏；商品名位于商品图下方居中。商品卡片内部使用固定图片区、名称区、价格区和按钮区，避免窗口尺寸变化时内容被挤出商品栏。
 - 购买会扣除用户金币，并写入 `ownedCharacters` 或 `ownedDecorations`。
 - 内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。
@@ -269,7 +271,7 @@ SigrikaGo/
 - `status`: 用户状态，当前代码使用 `active` / `banned`。
 - `banReason`: 封禁原因，可空。
 - `bannedAt`: 封禁时间，可空。
-- `rank`: 兼容旧数据的持久化字段；前端和 API 展示值不直接读取该字段，而是通过 `rating` 自动换算。
+- `rank`: 兼容旧数据的持久化字段，schema 默认值为 `2段`，与默认 `rating = 1000` 的段位派生结果保持一致；前端和 API 展示值不直接读取该字段，而是通过 `rating` 自动换算。
 - `rating`: 积分，默认 1000，允许为负数。段位规则：`[900, 1000)` 为 1段，之后每 100 分升 1段，1700 分及以上封顶为 9段；`[800, 900)` 为 1级，之后每低 100 分级位加 1，`[0, 100)` 为 9级，小于 0 分为 10级。
 - `wins`: 胜局数，默认 0。
 - `losses`: 负局数，默认 0。
@@ -280,6 +282,16 @@ SigrikaGo/
 - `ownedItems`: 逗号分隔字符串；当前代码未看到具体购买/使用逻辑，待确认。
 - `ownedDecorations`: 逗号分隔装饰 slug。
 - `createdAt`, `updatedAt`: 创建和更新时间。
+
+### UserRelationship
+
+用户关系表，用于好友与黑名单。
+
+- `ownerUserId`: 关系拥有者。
+- `targetUserId`: 关系目标用户。
+- `type`: 当前使用 `friend` 或 `blacklist`。
+- 同一个 `ownerUserId + targetUserId` 只有一条记录；好友和黑名单互斥，通过更新 `type` 覆盖。
+- 已在 `prisma/schema.prisma` 声明，并通过 `202605220001_add_user_relationship` migration 固化建表和索引；服务启动时仍保留 `ensureSocialSchema` 作为开发库兜底。
 
 ### GameRecord
 
@@ -454,11 +466,32 @@ SigrikaGo/
   - 登录后获取排行榜。
   - 基于所有用户和所有棋谱统计。
 
+- `GET /api/social`
+  - 登录后获取当前用户的好友列表和黑名单列表；每个成员包含用户名、段位、积分、常用角色和在线状态。
+
+- `POST /api/social/friends/:targetId`
+  - 将目标用户设为好友；同一目标此前若在黑名单中，会被覆盖为好友关系。
+
+- `DELETE /api/social/friends/:targetId`
+  - 解除好友关系。
+
+- `POST /api/social/blacklist/:targetId`
+  - 将目标用户加入黑名单；同一目标此前若是好友，会被覆盖为黑名单关系。
+
+- `DELETE /api/social/blacklist/:targetId`
+  - 从黑名单移除目标用户。
+
+- `GET /api/users/:id/profile`
+  - 获取用户资料卡：用户名、战绩、积分、段位、角色战绩和查看者与目标的关系；不随资料卡预取对局回放。
+
+- `GET /api/users/:id/replays`
+  - 按需获取目标用户最近 30 条棋谱摘要；资料卡中的“对局回放”按钮点击后调用该接口并弹出回放列表。
+
 - `GET /api/replays`
-  - 获取当前用户最近 30 条棋谱。
+  - 获取当前用户最近 30 条棋谱；摘要包含黑白双方使用角色，供回放列表显示角色立绘。
 
 - `GET /api/replays/:id`
-  - 获取当前用户参与的指定棋谱详情与快照。
+  - 获取指定棋谱详情与快照；用于个人棋舍回放，也用于他人资料卡中的公开回放入口。
 
 ### 后台 HTTP API
 
@@ -643,7 +676,7 @@ SigrikaGo/
 - `AdminFieldLabel`: 带 title 提示的后台字段标签，位于 `src/admin/AdminConsole.jsx`。
 - `AdminSectionHeader`: 后台列表页标题、数量和主操作按钮，位于 `src/admin/AdminConsole.jsx`。
 - `AdminStatusPill`: 后台表格状态标签，位于 `src/admin/AdminConsole.jsx`。
-- `Toast`: 自动消失提示。
+- `Toast`: 自动消失提示，使用高对比渐变底色突出规则错误、非法操作等短提示。
 - `ConfirmModal`: 通用确认弹窗。
 - `WatchPad`: 观战房间号输入。
 - `ReplayBar`: 回放进度控制。
@@ -704,6 +737,7 @@ SigrikaGo/
 - 登录 token 存在 `localStorage` 的 `sigrika-token`。
 - 音频设置存在 `localStorage` 的 `sigrika-audio-settings`。
 - 房间状态由服务端 Socket 广播覆盖到前端 `room`。
+- 对局页 `RoomScreen` 需要从顶层 `App` 接收当前 `token`，再传给房间成员列表等需要调用社交接口的子组件；匹配成功倒计时完成后由同一份房间快照切换到对局页。
 - 回放状态通过 `replayStep` 和 `replayRoomAt` 从快照历史中派生。
 
 ### 后端状态
@@ -724,9 +758,9 @@ SigrikaGo/
 
 以下只列代码中能观察到的事项：
 
-- 部分源码、schema、README 中的中文在当前终端显示为乱码。运行时页面部分中文可能正常，但文件编码状态需要统一确认。
+- Prisma schema 的中文默认值已增加 `server/schemaIntegrity.test.js` 防回归检查；`docs/system-design.html` 已改为由 `npm run docs:system-design` 从 Markdown 确定性生成，后续如发现乱码应优先确认终端/浏览器编码和源文件 UTF-8 状态。
 
-- Prisma migrations 目录已开始建立，`SiteSetting` 已有结构迁移；后续跨机器协作时需要坚持使用 migration 管理结构变更，避免继续依赖临时 `db push`。
+- Prisma migrations 目录已开始建立，`SiteSetting`、`selectedStoneDecoration`、`UserRelationship` 等结构已有迁移；后续跨机器协作时需要坚持使用 migration 管理结构变更，避免继续依赖临时 `db push`。
 
 - `prisma db push` 已可同步当前开发库 schema，但 Windows 上 Prisma Client generate 可能因运行中的 Node 后端占用 `query_engine-windows.dll.node` 而出现 EPERM rename；遇到时需要先停止后端进程再重新运行 `npm run prisma:generate` 或 `npm run prisma:push`。
 
@@ -766,6 +800,8 @@ SigrikaGo/
 
 - `CharacterSkill.enabled` 字段存在，但当前公开角色序列化没有明确按该字段过滤技能，语义待确认。
 
+- 社交模块已增加 `server/social.test.js` 覆盖好友/黑名单互斥、公开资料统计和公开回放摘要；仍缺少端到端 UI 测试覆盖好友弹窗、对局申请横幅和资料卡回放弹窗。
+
 - 认证安全能力较基础：
   - 无限流。
   - JWT 无服务端失效表。
@@ -775,21 +811,25 @@ SigrikaGo/
 
 - 当前测试覆盖较多规则和后台 helper，但前端交互没有专门的自动化测试。
 
-- `docs/system-design.html` 是旧的生成产物，当前更新只维护 Markdown 源文件；若该 HTML 仍作为交付文档使用，需要建立可重复生成流程或从版本管理中移除生成物。
+- `docs/system-design.html` 是生成产物；修改本文档后运行 `npm run docs:system-design` 同步 HTML，避免 Markdown 与交付版漂移。
 
 ## 11. 后续扩展建议
 
 - 建立 Prisma migration 流程：
   - 引入 `prisma migrate dev` / `migrate deploy`。
-  - 将现有 SQLite schema 固化为首个迁移。
+  - 后续新增结构变更继续优先生成 migration，避免只依赖 `prisma db push`。
 
 - 将核心统计结构化：
-  - 在 `GameRecord` 增加 `winnerColor`、`resultReason`、双方最终积分变化等字段。
-  - 排行榜、棋舍战绩、用户统计改用结构化字段。
+  - `GameRecord` 已增加 `winnerColor`、`resultReason`；后续可继续补双方最终积分变化等字段。
+  - 排行榜、棋舍战绩、用户统计目前仍从棋谱派生；若引入赛季，需要明确结构化统计来源。
 
 - 拆分前端模块：
   - 已完成：`src/admin/AdminConsole.jsx`
   - 已完成：`src/api/client.js`
+  - 已完成：`src/modals/HouseModal.jsx`
+  - 已完成：`src/modals/ShopModal.jsx`
+  - 已完成：`src/modals/GameLifecycleModals.jsx`
+  - 已完成：`src/modals/FeedbackModals.jsx`
   - 后续：`pages/HomeScreen.jsx`
   - 后续：`pages/RoomScreen.jsx`
   - 后续：继续拆分 `admin/*`
@@ -914,8 +954,15 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
 - Home layout:
   - The home screen prioritizes "空想对局" as the largest primary action.
   - "棋舍" is a secondary profile/character entry with the selected portrait vertically centered beside player info.
-  - "商城", "观战", "排行榜", and admin management are compact circular utility icon buttons anchored to the lower-right area; each button shows only icon plus title.
+  - 大厅标题与副标题独立于右上角操作区，居中显示在中上方；副标题和标题保持错位排版并使用更大的字号填充顶部视觉空间。
+  - "商店", "排行榜", "观战", and "好友" are compact circular utility icon buttons anchored under the house card; each button shows only icon plus title. Admin management is available only to admins and appears as a labeled circular button below the top-right settings button, right-aligned with the logout/settings action stack.
   - Narrow utility overflow is contained inside the utility grid instead of expanding the whole page.
+  - The friend button opens a social modal backed by `/api/social` with "好友" and "黑名单" tabs. Each list row shows online state, common character portrait, username, rank, rating, and a gear action button. Friend actions are "详细信息", "密谈", "对局申请", and "解除好友"; blacklist actions are "详细信息" and "从黑名单解除". Clicking a gear action expands a small horizontal action row directly below that user row; clicking the same gear again collapses the row.
+  - "详细信息" uses a shared independent modal with common character portrait, username, record, rating, rank, per-character record rows, and a "对局回放" button. Replay rows are loaded lazily only after that button is clicked, displayed in a fixed-height scrollable dialog, and each row can open an individual public replay. The same profile card is reused by the room member popover.
+  - Profile replay dialogs include the viewed user's username in the title. The dialog shell keeps the title and close button fixed while only the replay list scrolls.
+  - "解除好友" and "从黑名单解除" use a shared confirmation panel and persist through `UserRelationship`. Adding a friend automatically removes/overwrites blacklist state for that target, and adding to blacklist overwrites friend state.
+  - "对局申请" is enabled only for online users who are not currently playing. The server tracks connected sockets and active room players; `duel:request` delivers a `duel:incoming` event to the target user, `duel:respond` accepts/rejects the request, and acceptance creates a direct room through the same match-found/opening flow as normal matchmaking. Timeout or rejection emits a red danger notice to the requester.
+  - The house rank stat includes a hover help icon explaining that rank is derived from rating, 1000 points is 1-dan, each 100 points changes one rank, and 9-dan is the maximum.
 - Character voice categories:
   - Character voice events are explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
   - Built-in skill voice assets are bridged into each character's `systemVoices.skill-cast` map at runtime, so skill banners use the same `resolveSystemVoice` route as other role voices.
@@ -957,6 +1004,11 @@ This update reduces the highest-payoff frontend coupling without changing user-f
   - `SettingsModal.jsx`
   - `WatchModal.jsx`
   - `LeaderboardModal.jsx`
+  - `HouseModal.jsx` owns the player manual/profile modal, owned character grid, decoration application controls, personal replay dialog, and per-character record dialog.
+  - `ShopModal.jsx` owns the 扎希拉商店 modal, category tabs, fixed 8-slot item grid, purchase flow, item ownership state, and shop mascot/item preview rendering.
+  - `GameLifecycleModals.jsx` owns the matching, match-success countdown, opening color prompt, and result/reward modals. It also exposes pure countdown, color-label, and signed-delta helpers covered by `GameLifecycleModals.test.js`.
+  - `FeedbackModals.jsx` owns the generic confirm modal, toast, and direct-duel request banner. Its duel countdown/progress helpers are covered by `FeedbackModals.test.js`.
+  - `StoneDecorationPreview.jsx` owns reusable black/white decoration previews for house and shop surfaces.
 - Room view helpers now live in `src/room/roomView.js`.
   - The module owns replay view reconstruction, room member list shaping, coordinate labels, board line geometry, preview eligibility helpers, scoring term text, and timer/message formatting helpers.
   - These helpers are covered by `src/room/roomView.test.js` so runtime-only room view dependencies are easier to catch.
@@ -968,8 +1020,29 @@ This update reduces the highest-payoff frontend coupling without changing user-f
   - `ActionBar.jsx` owns spectator replay controls, normal player actions, test tool buttons, and phase-aware decision bars.
   - `ScoringBreakdown.jsx` owns the formatted counting formula/result breakdown used by hints and result-review controls.
   - `Board.jsx` owns board grid rendering, coordinate labels, stones, move numbers, scoring marks, skill effect markers, decorated stone images, and board point events.
+  - `Board.jsx` marks first-line board grid segments so the visual "一路" can render bolder than internal lines. Board grid strokes are intentionally heavier for readability, with both normal and first-line strokes scaled up together.
   - `OperationHint.jsx` owns phase-aware text hints and compact scoring breakdown display under the opponent-side panel.
 - Current remaining frontend debt:
-  - `src/main.jsx` still owns `RoomScreen`, house/shop/match/result/opening modals, and part of page orchestration.
+  - `src/main.jsx` still owns `RoomScreen`, the skill banner, and part of page orchestration.
   - A full `RoomScreen` big-bang move is intentionally deferred because the component has dense local dependencies. Continue with smaller slices first, such as socket lifecycle hooks, room people/action panels, or individual room subcomponents.
   - `src/admin/AdminConsole.jsx`, `src/shared/game.js`, `server/rooms.js`, and large style files remain high-value follow-up targets.
+
+## Recent Home, Shop, And Board UI Adjustments
+
+- The former home/house entry is now presented to players as “部员手册”; the underlying profile, character, decoration, and personal replay functions are unchanged.
+- The home match description is “13路，数子规则，黑贴2又3/4子，用时5分钟30秒3次”.
+- The home player plaque uses a light rank/rating tag with dark text. Admin management uses the same circular icon-plus-title layout and sizing pattern as the home utility buttons.
+- The shop keeps its fixed 2 x 4 slot layout but uses shorter item cards so the shop modal stays more compact.
+- Friend list action buttons expand as a full-width horizontal action row with evenly aligned button columns.
+- The house stats for rating and coins use the same help-tip pattern as rank: rating explains +20/-20/0 changes; coins explain +50/+20/0 rewards.
+- Counting request is disabled while the board has no stones.
+- Main-time timer digits use a gray display color, while byo-yomi states keep their warning colors.
+- Board grid strokes are heavier overall; first-line grid segments are marked separately and rendered much thicker than internal lines. Skill targeting highlights use a gradient glow instead of a solid outline.
+- Latest room/home refinements:
+  - The home player plaque rank/rating chip uses a light background with dark text again, while the admin-only management button remains a green circular icon-plus-title control aligned with the home user plaque.
+  - Incoming direct duel requests play a short synthesized doorbell SFX on the effects channel before showing the request banner.
+  - The house/player manual record stat is clickable and opens a per-character record list for owned characters.
+  - Player info now separates captures, skill removals ("除子"), and skill cost. Skill removals count opponent stones removed or converted by skills for the side that benefits from the removal/conversion.
+  - Skill follow-up cleanup counts stones removed by skill-created no-liberty states as skill removals instead of normal captures, so "提子" remains only ordinary capture count.
+  - Room headers include live game context after the room number using separate chips: black player/rank, white player/rank, and current move count.
+  - The first-line board grid stroke was reduced from the heaviest iteration while remaining bolder than internal lines.

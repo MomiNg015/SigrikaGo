@@ -25,10 +25,12 @@ import {
   addChat,
   attachSocketToRoom,
   broadcastRoom,
+  createDirectRoom,
   detachSocket,
   getRoom,
   handleGameAction,
   handleScoringAction,
+  isUserInActiveRoom,
   joinMatchmaking,
   leaveMatchmaking,
   requestCounting,
@@ -37,6 +39,16 @@ import {
   respondDraw,
   roomView
 } from "./rooms.js";
+import {
+  deleteRelationship,
+  ensureSocialSchema,
+  getUserProfile,
+  getUserReplays,
+  listSocialUsers,
+  RELATIONSHIP_TYPES,
+  setRelationship,
+  toSocialUser
+} from "./social.js";
 
 const app = express();
 const server = createServer(app);
@@ -74,6 +86,7 @@ const io = new Server(server, {
 
 await seedCharacters(prisma);
 await seedBuiltinShopItems(prisma);
+await ensureSocialSchema(prisma);
 await promoteConfiguredAdmins(prisma);
 
 app.get("/api/health", (_req, res) => {
@@ -87,6 +100,8 @@ app.get("/api/characters", async (_req, res) => {
 app.get("/api/shop", authHttp, async (_req, res) => {
   res.json(await listShopItems(prisma));
 });
+const onlineSockets = new Map();
+const pendingDuelRequests = new Map();
 
 app.get("/api/site-settings", async (_req, res) => {
   res.json({ settings: await getPublicSiteSettings(prisma) });
@@ -115,6 +130,88 @@ app.get("/api/leaderboard", authHttp, async (_req, res) => {
     })
   ]);
   res.json({ players: buildLeaderboard(users, records) });
+});
+
+app.get("/api/social", authHttp, async (req, res) => {
+  res.json(await listSocialUsers({
+    prisma,
+    userId: req.user.id,
+    statusForUser
+  }));
+});
+
+app.post("/api/social/friends/:targetId", authHttp, async (req, res) => {
+  try {
+    await setRelationship({
+      prisma,
+      ownerUserId: req.user.id,
+      targetUserId: req.params.targetId,
+      type: RELATIONSHIP_TYPES.friend
+    });
+    res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
+  } catch (error) {
+    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
+  }
+});
+
+app.delete("/api/social/friends/:targetId", authHttp, async (req, res) => {
+  await deleteRelationship({
+    prisma,
+    ownerUserId: req.user.id,
+    targetUserId: req.params.targetId,
+    type: RELATIONSHIP_TYPES.friend
+  });
+  res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
+});
+
+app.post("/api/social/blacklist/:targetId", authHttp, async (req, res) => {
+  try {
+    await setRelationship({
+      prisma,
+      ownerUserId: req.user.id,
+      targetUserId: req.params.targetId,
+      type: RELATIONSHIP_TYPES.blacklist
+    });
+    res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
+  } catch (error) {
+    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
+  }
+});
+
+app.delete("/api/social/blacklist/:targetId", authHttp, async (req, res) => {
+  await deleteRelationship({
+    prisma,
+    ownerUserId: req.user.id,
+    targetUserId: req.params.targetId,
+    type: RELATIONSHIP_TYPES.blacklist
+  });
+  res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
+});
+
+app.get("/api/users/:id/profile", authHttp, async (req, res) => {
+  const profile = await getUserProfile({
+    prisma,
+    userId: req.params.id,
+    viewerId: req.user.id,
+    statusForUser
+  });
+  if (!profile) {
+    res.status(404).json({ error: "用户不存在" });
+    return;
+  }
+  res.json({ profile });
+});
+
+app.get("/api/users/:id/replays", async (req, res) => {
+  const records = await getUserReplays({
+    prisma,
+    userId: req.params.id
+  });
+  if (!records) {
+    res.status(404).json({ error: "用户不存在" });
+    return;
+  }
+  res.json({ records });
 });
 
 app.post("/api/shop/:id/purchase", authHttp, async (req, res) => {
@@ -224,6 +321,8 @@ app.get("/api/replays", authHttp, async (req, res) => {
       winnerColor: record.winnerColor,
       resultReason: record.resultReason,
       moveCount: record.moveCount,
+      blackCharacter: record.blackCharacter,
+      whiteCharacter: record.whiteCharacter,
       createdAt: record.createdAt
     }))
   });
@@ -231,7 +330,7 @@ app.get("/api/replays", authHttp, async (req, res) => {
 
 app.get("/api/replays/:id", authHttp, async (req, res) => {
   const record = await prisma.gameRecord.findUnique({ where: { id: req.params.id } });
-  if (!record || (record.blackUserId !== req.user.id && record.whiteUserId !== req.user.id)) {
+  if (!record) {
     res.status(404).json({ error: "棋谱不存在" });
     return;
   }
@@ -253,6 +352,7 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", (socket) => {
+  registerOnlineSocket(socket);
   socket.emit("me", socket.user);
 
   socket.on("match:join", () => {
@@ -316,7 +416,16 @@ io.on("connection", (socket) => {
     if (room) broadcastRoom(io, room);
   });
 
+  socket.on("duel:request", ({ targetUserId }) => {
+    handleDuelRequest(socket, String(targetUserId ?? ""));
+  });
+
+  socket.on("duel:respond", ({ requestId, accepted }) => {
+    handleDuelResponse(socket, String(requestId ?? ""), Boolean(accepted));
+  });
+
   socket.on("disconnect", () => {
+    unregisterOnlineSocket(socket);
     for (const room of detachSocket(socket.id)) {
       broadcastRoom(io, room);
     }
@@ -325,6 +434,113 @@ io.on("connection", (socket) => {
 
 function sendResult(socket, result) {
   if (!result.ok) socket.emit("error:toast", result.error);
+}
+
+function registerOnlineSocket(socket) {
+  const sockets = onlineSockets.get(socket.user.id) ?? new Set();
+  sockets.add(socket.id);
+  onlineSockets.set(socket.user.id, sockets);
+}
+
+function unregisterOnlineSocket(socket) {
+  const sockets = onlineSockets.get(socket.user.id);
+  if (!sockets) return;
+  sockets.delete(socket.id);
+  if (sockets.size === 0) onlineSockets.delete(socket.user.id);
+  for (const [requestId, request] of pendingDuelRequests) {
+    if (request.fromSocketId === socket.id || request.targetSocketId === socket.id) expireDuelRequest(requestId);
+  }
+}
+
+function statusForUser(userId) {
+  if (isUserInActiveRoom(userId)) return "playing";
+  return onlineSockets.has(userId) ? "online" : "offline";
+}
+
+function firstOnlineSocket(userId) {
+  const socketId = onlineSockets.get(userId)?.values().next().value;
+  return socketId ? io.sockets.sockets.get(socketId) : null;
+}
+
+function handleDuelRequest(socket, targetUserId) {
+  if (!targetUserId || targetUserId === socket.user.id) {
+    socket.emit("error:toast", "不能向自己申请对局");
+    return;
+  }
+  if (isUserInActiveRoom(socket.user.id)) {
+    socket.emit("error:toast", "你正在对局中，无法申请对局。");
+    return;
+  }
+  if (isUserInActiveRoom(targetUserId)) {
+    socket.emit("duel:unavailable", { targetUserId, reason: "playing" });
+    socket.emit("error:toast", "对方正在对局中。");
+    return;
+  }
+  const targetSocket = firstOnlineSocket(targetUserId);
+  if (!targetSocket) {
+    socket.emit("duel:unavailable", { targetUserId, reason: "offline" });
+    socket.emit("error:toast", "对方不在线。");
+    return;
+  }
+  const requestId = crypto.randomUUID();
+  const expiresAt = Date.now() + 20000;
+  const request = {
+    id: requestId,
+    fromSocketId: socket.id,
+    targetSocketId: targetSocket.id,
+    fromUser: socket.user,
+    targetUser: targetSocket.user,
+    timerId: setTimeout(() => expireDuelRequest(requestId), 20000)
+  };
+  pendingDuelRequests.set(requestId, request);
+  targetSocket.emit("duel:incoming", {
+    requestId,
+    expiresAt,
+    from: toSocialUser(socket.user, statusForUser(socket.user.id))
+  });
+  socket.emit("duel:sent", {
+    requestId,
+    target: toSocialUser(targetSocket.user, statusForUser(targetSocket.user.id)),
+    expiresAt
+  });
+}
+
+function handleDuelResponse(socket, requestId, accepted) {
+  const request = pendingDuelRequests.get(requestId);
+  if (!request || request.targetSocketId !== socket.id) return;
+  pendingDuelRequests.delete(requestId);
+  clearTimeout(request.timerId);
+  const fromSocket = io.sockets.sockets.get(request.fromSocketId);
+  if (!fromSocket) return;
+  if (!accepted) {
+    fromSocket.emit("duel:rejected", { requestId, username: socket.user.username });
+    socket.emit("duel:closed", { requestId });
+    return;
+  }
+  if (isUserInActiveRoom(fromSocket.user.id) || isUserInActiveRoom(socket.user.id)) {
+    fromSocket.emit("duel:rejected", { requestId, username: socket.user.username, reason: "playing" });
+    socket.emit("duel:closed", { requestId });
+    return;
+  }
+  createDirectRoom(
+    { user: fromSocket.user, socketId: fromSocket.id },
+    { user: socket.user, socketId: socket.id },
+    io
+  );
+  socket.emit("duel:closed", { requestId });
+}
+
+function expireDuelRequest(requestId) {
+  const request = pendingDuelRequests.get(requestId);
+  if (!request) return;
+  pendingDuelRequests.delete(requestId);
+  clearTimeout(request.timerId);
+  io.to(request.fromSocketId).emit("duel:rejected", {
+    requestId,
+    username: request.targetUser.username,
+    reason: "timeout"
+  });
+  io.to(request.targetSocketId).emit("duel:closed", { requestId });
 }
 
 async function characterMap() {

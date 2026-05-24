@@ -33,7 +33,7 @@ describe("publicUser", () => {
       coins: 300,
       selectedCharacter: "sigrika",
       selectedStoneDecoration: "paw-stone",
-      ownedCharacters: ["sigrika", "danea", "aemeath"],
+      ownedCharacters: ["sigrika", "denia", "aemeath"],
       ownedItems: [],
       ownedDecorations: []
     });

@@ -11,8 +11,8 @@ export default function SettingsModal({ siteSettings = DEFAULT_SITE_SETTINGS, au
     { key: "voice", label: "语音", icon: <Mic2 size={18} /> }
   ];
   return (
-    <div className="modal-backdrop">
-      <section className="settings-modal">
+    <div className="modal-backdrop" onClick={onClose}>
+      <section className="settings-modal" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <h2>设置</h2>
         <div className="settings-tabs" role="tablist">

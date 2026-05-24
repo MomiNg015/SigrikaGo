@@ -344,7 +344,49 @@ describe("character admin helpers", () => {
       }
     });
 
-    expect(response.characters.map((character) => character.id)).toEqual(["danea"]);
+    expect(response.characters.map((character) => character.id)).toEqual(["denia"]);
     expect(response.disabledSlugs).toEqual(["sigrika"]);
+  });
+
+  it("deduplicates legacy character aliases in the public character response", async () => {
+    const response = await listPublicCharacterResponse({
+      character: {
+        findMany: async (query) => {
+          if (query.where?.enabled === true) {
+            return [
+              {
+                id: "legacy-danea",
+                slug: "danea",
+                name: "旧达妮娅",
+                portraitUrl: "/assets/Danea_centered.png",
+                portraitSource: "url",
+                palette: "#f2a4d8",
+                acquisitionMethod: "",
+                enabled: true,
+                skill: null
+              },
+              {
+                id: "canonical-denia",
+                slug: "denia",
+                name: "达妮娅",
+                portraitUrl: "/assets/Danea_centered.png",
+                portraitSource: "url",
+                palette: "#f2a4d8",
+                acquisitionMethod: "",
+                enabled: true,
+                skill: null
+              }
+            ];
+          }
+          return [
+            { slug: "danea", enabled: true },
+            { slug: "denia", enabled: true }
+          ];
+        }
+      }
+    });
+
+    expect(response.characters.map((character) => character.id)).toEqual(["denia"]);
+    expect(response.characters[0].name).toBe("达妮娅");
   });
 });
