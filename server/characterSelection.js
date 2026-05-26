@@ -5,7 +5,7 @@ export function resolveSelectedCharacter(selectedCharacter, dbCharacters = {}, d
   const selected = canonicalCharacterId(typeof selectedCharacter === "string" ? selectedCharacter : "");
   const disabled = new Set([...(disabledSlugs instanceof Set ? disabledSlugs : new Set(disabledSlugs))].map(canonicalCharacterId));
   const owned = Array.isArray(ownedCharacters) ? new Set(ownedCharacters.map(canonicalCharacterId)) : null;
-  if (!disabled.has(selected) && (!owned || owned.has(selected)) && dbCharacters[selected]) {
+  if ((!owned || owned.has(selected)) && dbCharacters[selected]) {
     return {
       characterId: selected,
       characterConfig: dbCharacters[selected]

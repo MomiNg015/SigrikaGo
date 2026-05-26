@@ -80,8 +80,8 @@ describe("roomView helpers", () => {
 
   test("formats signed scoring terms as fractions", () => {
     expect(signedStoneTerm(-2.75, "贴目")).toBe("- 贴目 2又3/4");
-    expect(signedStoneTerm(1.5, "对方代价")).toBe("+ 对方代价 1又1/2");
-    expect(signedStoneTerm(0, "己方代价")).toBe("+ 己方代价 0");
+    expect(signedStoneTerm(1.5, "对方超频")).toBe("+ 对方超频 1又1/2");
+    expect(signedStoneTerm(0, "己方超频")).toBe("+ 己方超频 0");
   });
 
   test("marks first-line board segments as edge lines", () => {

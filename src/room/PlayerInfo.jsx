@@ -4,6 +4,11 @@ import { COLORS } from "../shared/game.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import TimeBar from "./TimeBar.jsx";
 
+export const PLAYER_INFO_TOOLTIPS = {
+  skillRemovals: "除子：因技能影响而从棋盘上移除的对方棋子数。数目时+除子*1的数值。",
+  overclock: "超频：角色发动技能所造成的代价。数目时-超频*2的数值。"
+};
+
 export default function PlayerInfo({
   player,
   game,
@@ -49,8 +54,22 @@ export default function PlayerInfo({
       <TimeBar time={player.time} />
       <div className="captures">
         <span><strong>提子</strong>{player.captures}</span>
-        <span><strong>除子</strong>{skillRemovals}</span>
-        <span className="cost-stat"><strong>代价</strong>{skillCost}</span>
+        <span
+          className="info-stat removal-stat"
+          data-tooltip={PLAYER_INFO_TOOLTIPS.skillRemovals}
+          tabIndex={0}
+          title={PLAYER_INFO_TOOLTIPS.skillRemovals}
+        >
+          <strong>除子</strong>{skillRemovals}
+        </span>
+        <span
+          className="info-stat cost-stat"
+          data-tooltip={PLAYER_INFO_TOOLTIPS.overclock}
+          tabIndex={0}
+          title={PLAYER_INFO_TOOLTIPS.overclock}
+        >
+          <strong>超频</strong>{skillCost}
+        </span>
       </div>
       <div
         className={`skill-chip-wrap ${skillDetailOpen ? "open" : ""}`}

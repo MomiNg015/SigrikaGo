@@ -1,4 +1,5 @@
 import { SYSTEM_VOICE_EVENTS } from "./systemVoices.js";
+import { canonicalCharacterId } from "./characterAliases.js";
 
 export const MUSIC_TYPES = {
   home: "home",
@@ -10,12 +11,32 @@ export const MATCH_SUCCESS_SOUND = "/assets/music/match-success.mp3";
 export const VICTORY_SOUND = "/assets/music/result-victory.mp3";
 export const DEFEAT_SOUND = "/assets/music/result-defeat.mp3";
 export const CHARACTER_SKILL_VOICES = {
+  denia: "/assets/voice/denia_skill_cast.ogg",
   sigrika: "/assets/voice/sigrika_2_no_exclaim.ogg",
   aemeath: "/assets/voice/aemeath_skill.ogg",
   baconbits: "/assets/voice/baconbits_skill.ogg"
 };
 
 export const CHARACTER_SYSTEM_VOICES = {
+  denia: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/denia_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/denia_byoyomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/denia_byoyomi_remaining_2.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/denia_byoyomi_remaining_1.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/denia_countdown_10.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(9)]: "/assets/voice/denia_countdown_9.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(8)]: "/assets/voice/denia_countdown_8.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(7)]: "/assets/voice/denia_countdown_7.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(6)]: "/assets/voice/denia_countdown_6.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(5)]: "/assets/voice/denia_countdown_5.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(4)]: "/assets/voice/denia_countdown_4.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(3)]: "/assets/voice/denia_countdown_3.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(2)]: "/assets/voice/denia_countdown_2.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/denia_countdown_1.ogg",
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/denia_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/denia_result_loss.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/denia_result_draw.ogg"
+  },
   baconbits: {
     [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/baconbits_game_start.ogg",
     [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/baconbits_byo_yomi_start.ogg",
@@ -51,11 +72,11 @@ export const MUSIC_TRACKS = {
     purchasable: false,
     playback: introLoop("/assets/music/shanjifu_intro_once.ogg", "/assets/music/shanjifu_loop.ogg")
   },
-  "danea-skill-default": {
-    id: "danea-skill-default",
-    name: "Danea Skill BGM",
+  "denia-skill-default": {
+    id: "denia-skill-default",
+    name: "Denia Skill BGM",
     type: MUSIC_TYPES.skill,
-    characterId: "danea",
+    characterId: "denia",
     defaultUnlocked: true,
     purchasable: false,
     playback: introLoop("/assets/music/bgm_intro_once.ogg", "/assets/music/bgm_loop.ogg")
@@ -143,7 +164,7 @@ export function latestSkillCharacterId(room) {
   const latestSkill = [...(room.game.history ?? [])].reverse().find((entry) => entry.type === "skill");
   if (!latestSkill) return null;
   const player = (room.players ?? []).find((candidate) => candidate.color === latestSkill.color);
-  return player?.character?.id ?? player?.characterId ?? null;
+  return canonicalCharacterId(player?.character?.id ?? player?.characterId ?? null);
 }
 
 export function resolveResultSound(room, user) {
@@ -179,10 +200,10 @@ export function characterVoiceMapForSkill(voices = CHARACTER_SKILL_VOICES, syste
 }
 
 function findSkillTrack(skillPreview, tracks) {
-  const characterId = skillPreview?.characterId ?? skillPreview?.character?.id;
+  const characterId = canonicalCharacterId(skillPreview?.characterId ?? skillPreview?.character?.id);
   if (!characterId) return null;
   return Object.values(tracks).find((track) => (
-    track.type === MUSIC_TYPES.skill && track.characterId === characterId
+    track.type === MUSIC_TYPES.skill && canonicalCharacterId(track.characterId) === characterId
   )) ?? null;
 }
 

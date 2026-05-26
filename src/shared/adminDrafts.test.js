@@ -58,6 +58,35 @@ describe("admin draft helpers", () => {
     expect(characterDraftToBody({ ...draft, skill: { ...draft.skill, costValue: "three" } })).toBeNull();
   });
 
+  it("preserves the skill enabled flag in character drafts", () => {
+    const draft = buildCharacterDraft({
+      id: "danea",
+      name: "Danea",
+      portrait: "/assets/danea.png",
+      skill: {
+        effectType: "flip-stone",
+        name: "Flip",
+        description: "Flip a stone.",
+        enabled: false
+      }
+    });
+
+    expect(draft.skill.enabled).toBe(false);
+
+    const body = characterDraftToBody({
+      ...draft,
+      sortOrder: "1",
+      skill: {
+        ...draft.skill,
+        uses: "1",
+        costValue: "0",
+        systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE
+      }
+    });
+
+    expect(body.skill.enabled).toBe(false);
+  });
+
   it("validates shop and decoration drafts", () => {
     const shop = buildShopItemDraft({
       name: "Danea",

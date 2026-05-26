@@ -437,17 +437,42 @@
 }
 
 .shop-modal {
-  width: min(900px, calc(100vw - (var(--page-pad) * 2)));
-  min-height: 696px;
+  width: min(980px, calc(100vw - (var(--page-pad) * 2)));
+  min-height: 700px;
   text-align: left;
   max-height: calc(100dvh - (var(--page-pad) * 2));
   overflow: auto;
 }
 
+.shop-layout {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 20px;
+  min-height: 640px;
+}
+
+.shop-sidebar {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: minmax(78px, auto) 1fr auto;
+  align-items: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 16px 8px 22px;
+  border-right: 1px solid rgba(226, 207, 231, 0.9);
+}
+
+.shop-content {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  align-content: start;
+  gap: 12px;
+  padding: 6px 0 4px;
+}
+
 .shop-header {
-  justify-content: space-between;
-  padding-right: 48px;
-  margin-bottom: 16px;
+  min-height: 44px;
 }
 
 .shop-title-block {
@@ -457,7 +482,7 @@
 
 .shop-header h2 {
   color: #34253c;
-  font-size: 30px;
+  font-size: 36px;
   letter-spacing: 0;
 }
 
@@ -476,9 +501,50 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 7px 16px rgba(173, 128, 28, 0.12);
 }
 
+.shop-mascot-bubble {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 166px);
+  min-height: 42px;
+  padding: 10px 13px;
+  border: 2px solid #34253c;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #34253c;
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 10px 22px rgba(69, 48, 80, 0.12);
+}
+
+.shop-mascot-bubble::before,
+.shop-mascot-bubble::after {
+  content: "";
+  position: absolute;
+  border: 2px solid #34253c;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.shop-mascot-bubble::before {
+  right: 16px;
+  bottom: -18px;
+  width: 14px;
+  height: 10px;
+}
+
+.shop-mascot-bubble::after {
+  right: -2px;
+  bottom: -34px;
+  width: 9px;
+  height: 7px;
+}
+
 .shop-mascot-slot {
-  width: 118px;
-  height: 96px;
+  width: 172px;
+  height: 250px;
+  margin: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -497,7 +563,8 @@
   display: inline-flex;
   gap: 6px;
   padding: 6px;
-  margin-bottom: 16px;
+  width: 286px;
+  margin-bottom: 12px;
   border-radius: 8px;
   background: linear-gradient(180deg, #fffdfd, #f2eef5);
   border: 1px solid #ead8ef;
@@ -505,6 +572,7 @@
 }
 
 .shop-tabs button {
+  flex: 1;
   min-width: 96px;
   border: 0;
   border-radius: 7px;
@@ -605,14 +673,14 @@
 .shop-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-rows: repeat(2, 214px);
+  grid-template-rows: repeat(2, 194px);
   gap: 10px;
 }
 
 .shop-item {
   display: grid;
-  grid-template-rows: 64px minmax(28px, auto) auto 36px;
-  gap: 7px;
+  grid-template-rows: 78px minmax(24px, auto) auto 36px;
+  gap: 4px;
   align-content: stretch;
   justify-items: stretch;
   min-width: 0;
@@ -623,7 +691,7 @@
   background:
     radial-gradient(circle at 24% 14%, rgba(255, 255, 255, 0.92), transparent 28%),
     linear-gradient(145deg, #fff2f8, #edf6ff 58%, #fff7df);
-  height: 214px;
+  height: 194px;
   box-shadow: 0 10px 20px rgba(86, 61, 110, 0.08);
 }
 
@@ -631,6 +699,7 @@
   align-self: center;
   min-width: 0;
   max-width: 100%;
+  font-size: 18px;
   text-align: center;
   line-height: 1.22;
   overflow-wrap: anywhere;
@@ -660,7 +729,7 @@
 
 .shop-item img {
   width: 100%;
-  height: 64px;
+  height: 78px;
   object-fit: contain;
   min-width: 0;
 }
@@ -699,19 +768,20 @@
 .shop-price {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
   align-items: baseline;
   align-self: center;
   min-width: 0;
   max-width: 100%;
   margin: 0;
   color: #4f3d55;
+  font-size: 18px;
   text-align: right;
   white-space: nowrap;
 }
 
 .shop-price b {
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .shop-item .primary-action {
@@ -730,6 +800,32 @@
   border: 1px dashed #dfd0e5;
   border-radius: 8px;
   color: #7d6a82;
+}
+
+.shop-pagination {
+  min-height: 36px;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.shop-pagination button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #ded2e4;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffffff, #f6f0f8);
+  color: #66506d;
+  font-weight: 900;
+  box-shadow: 0 8px 18px rgba(74, 48, 92, 0.08);
+}
+
+.shop-pagination button.active {
+  border-color: rgba(91, 127, 232, 0.42);
+  background: linear-gradient(135deg, #5d7fe8, #d86ba8);
+  color: #ffffff;
 }
 
 .close-button {
@@ -752,6 +848,11 @@
   border: 1px solid rgba(255, 255, 255, 0.46);
   font-weight: 900;
   animation: toast-fade 3s ease forwards;
+}
+
+.toast.success {
+  background: linear-gradient(135deg, #48b978, #23985f);
+  box-shadow: 0 16px 36px rgba(35, 152, 95, 0.28);
 }
 
 @keyframes toast-fade {

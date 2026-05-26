@@ -84,16 +84,16 @@ describe("background music library", () => {
     expect(resolveResultSound(room, { id: "spectator" })).toBeNull();
   });
 
-  it("uses the previous home music as Danea skill music", () => {
+  it("uses the previous home music as Denia skill music", () => {
     const track = resolveBackgroundMusic({
       view: "room",
-      skillPreview: { characterId: "danea" }
+      skillPreview: { characterId: "denia" }
     });
 
     expect(track).toMatchObject({
-      id: "danea-skill-default",
+      id: "denia-skill-default",
       type: "skill",
-      characterId: "danea",
+      characterId: "denia",
       playback: {
         mode: "intro-loop",
         introSrc: "/assets/music/bgm_intro_once.ogg",
@@ -182,10 +182,10 @@ describe("background music library", () => {
   it("keeps the latest skill character music active after the skill banner ends", () => {
     const track = resolveBackgroundMusic({
       view: "room",
-      latestSkillCharacterId: "danea"
+      latestSkillCharacterId: "denia"
     });
 
-    expect(track.id).toBe("danea-skill-default");
+    expect(track.id).toBe("denia-skill-default");
   });
 
   it("stops background music after the game is finished", () => {
@@ -210,11 +210,11 @@ describe("background music library", () => {
       },
       players: [
         { color: "black", characterId: "sigrika" },
-        { color: "white", character: { id: "danea" } }
+        { color: "white", character: { id: "denia" } }
       ]
     });
 
-    expect(characterId).toBe("danea");
+    expect(characterId).toBe("denia");
   });
 
   it("prioritizes a configured skill track over battle music", () => {
@@ -265,6 +265,10 @@ describe("background music library", () => {
     expect(resolveSkillVoice({ characterId: "baconbits" })).toBe("/assets/voice/baconbits_skill.ogg");
   });
 
+  it("uses the configured Denia skill voice", () => {
+    expect(resolveSkillVoice({ characterId: "denia" })).toBe("/assets/voice/denia_skill_cast.ogg");
+  });
+
   it("resolves a configured skill voice from the skill banner character", () => {
     const voice = resolveSkillVoice(
       { character: { id: "sigrika" } },
@@ -291,6 +295,20 @@ describe("background music library", () => {
       "byo-yomi-period-2": "/assets/voice/baconbits_byo_yomi_periods.ogg",
       "byo-yomi-period-1": "/assets/voice/baconbits_byo_yomi_periods.ogg",
       timeout: "/assets/voice/baconbits_timeout.ogg"
+    });
+  });
+
+  it("includes Denia character system voices", () => {
+    expect(CHARACTER_SYSTEM_VOICES.denia).toMatchObject({
+      "game-start": "/assets/voice/denia_match_start.ogg",
+      "byo-yomi-start": "/assets/voice/denia_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/denia_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/denia_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/denia_countdown_10.ogg",
+      "countdown-1": "/assets/voice/denia_countdown_1.ogg",
+      "result-victory": "/assets/voice/denia_result_win.ogg",
+      "result-defeat": "/assets/voice/denia_result_loss.ogg",
+      "result-draw": "/assets/voice/denia_result_draw.ogg"
     });
   });
 

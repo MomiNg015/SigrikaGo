@@ -8,7 +8,6 @@ import {
   createTimeoutResult,
   exposeHiddenHands,
   getPoint,
-  gameViewForColor,
   markDeadGroup,
   opponent,
   parsePointId,
@@ -29,6 +28,8 @@ import { CHARACTERS } from "../src/shared/characters.js";
 import { resultRewardDelta } from "../src/shared/resultRewards.js";
 import { prisma } from "./db.js";
 import { gameResultMetadata } from "./gameRecords.js";
+import { buildRoomView } from "./roomView.js";
+import { normalizeChatText, validatePointId, validateRoomCode } from "./security.js";
 
 const rooms = new Map();
 let waitingPlayer = null;
@@ -80,7 +81,9 @@ export function leaveMatchmaking(userId) {
 }
 
 export function attachSocketToRoom(roomCode, socket, user) {
-  const room = rooms.get(roomCode);
+  const validatedRoomCode = validateRoomCode(roomCode);
+  if (!validatedRoomCode.ok) return null;
+  const room = rooms.get(validatedRoomCode.value);
   if (!room) return null;
   const player = room.players.find((p) => p.user.id === user.id);
   if (player) {
@@ -119,7 +122,12 @@ export function createDirectRoom(first, second, io) {
 }
 
 export function handleGameAction(roomCode, userId, action, io) {
-  const room = rooms.get(roomCode);
+  const validatedRoomCode = validateRoomCode(roomCode);
+  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
+  const code = validatedRoomCode.value;
+  const validationError = validateActionPoint(action);
+  if (validationError) return { ok: false, error: validationError };
+  const room = rooms.get(code);
   if (!room) return { ok: false, error: "房间不存在" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能操作棋局" };
@@ -153,7 +161,7 @@ export function handleGameAction(roomCode, userId, action, io) {
     };
     appendSystem(room, skillNotice, { kind: "skill" });
     scheduleRoomTimeout(room, () => {
-      const latest = rooms.get(roomCode);
+      const latest = rooms.get(code);
       if (!latest || latest.game.pendingSkill?.id !== pendingSkill.id) return;
       result.state.pendingSkill = null;
       latest.game = result.state;
@@ -193,7 +201,10 @@ export function handleGameAction(roomCode, userId, action, io) {
 }
 
 export function requestCounting(roomCode, userId, io) {
-  const room = rooms.get(roomCode);
+  const validatedRoomCode = validateRoomCode(roomCode);
+  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
+  const code = validatedRoomCode.value;
+  const room = rooms.get(code);
   if (!room) return { ok: false, error: "房间不存在" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能申请数子" };
@@ -206,7 +217,7 @@ export function requestCounting(roomCode, userId, io) {
   room.countingDeadline = Date.now() + 30000;
   appendSystem(room, `${player.user.username}申请数子。`);
   setTimeout(() => {
-    const latest = rooms.get(roomCode);
+    const latest = rooms.get(code);
     if (latest?.game.phase === GAME_PHASES.countingRequested && latest.countingDeadline && Date.now() >= latest.countingDeadline) {
       restoreSuspendedHiddenHands(latest.game);
       latest.game.phase = GAME_PHASES.playing;
@@ -220,7 +231,9 @@ export function requestCounting(roomCode, userId, io) {
 }
 
 export function respondCounting(roomCode, userId, accepted) {
-  const room = rooms.get(roomCode);
+  const validatedRoomCode = validateRoomCode(roomCode);
+  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
+  const room = rooms.get(validatedRoomCode.value);
   if (!room) return { ok: false, error: "房间不存在" };
   if (room.game.phase !== GAME_PHASES.countingRequested) return { ok: false, error: "当前没有数子申请" };
   const player = room.players.find((p) => p.user.id === userId);
@@ -244,7 +257,10 @@ export function respondCounting(roomCode, userId, accepted) {
 }
 
 export function requestDraw(roomCode, userId, io) {
-  const room = rooms.get(roomCode);
+  const validatedRoomCode = validateRoomCode(roomCode);
+  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
+  const code = validatedRoomCode.value;
+  const room = rooms.get(code);
   if (!room) return { ok: false, error: "房间不存在" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能申请和棋" };
@@ -258,7 +274,7 @@ export function requestDraw(roomCode, userId, io) {
   room.drawDeadline = Date.now() + 10000;
   appendSystem(room, `${player.user.username}申请和棋。`);
   setTimeout(() => {
-    const latest = rooms.get(roomCode);
+    const latest = rooms.get(code);
     if (latest?.game.phase === GAME_PHASES.drawRequested && latest.drawDeadline && Date.now() >= latest.drawDeadline) {
       latest.game.phase = GAME_PHASES.playing;
       latest.game.drawRequest = null;
@@ -271,7 +287,9 @@ export function requestDraw(roomCode, userId, io) {
 }
 
 export function respondDraw(roomCode, userId, accepted, io) {
-  const room = rooms.get(roomCode);
+  const validatedRoomCode = validateRoomCode(roomCode);
+  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
+  const room = rooms.get(validatedRoomCode.value);
   if (!room) return { ok: false, error: "房间不存在" };
   if (room.game.phase !== GAME_PHASES.drawRequested) return { ok: false, error: "当前没有和棋申请" };
   const player = room.players.find((p) => p.user.id === userId);
@@ -296,7 +314,11 @@ export function respondDraw(roomCode, userId, accepted, io) {
 }
 
 export function handleScoringAction(roomCode, userId, action, io) {
-  const room = rooms.get(roomCode);
+  const validatedRoomCode = validateRoomCode(roomCode);
+  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
+  const validationError = validateActionPoint(action);
+  if (validationError) return { ok: false, error: validationError };
+  const room = rooms.get(validatedRoomCode.value);
   if (!room) return { ok: false, error: "房间不存在" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能确认数子" };
@@ -356,15 +378,19 @@ export function handleScoringAction(roomCode, userId, action, io) {
 }
 
 export function addChat(roomCode, user, text) {
-  const room = rooms.get(roomCode);
-  if (!room || !text?.trim()) return null;
+  const validatedRoomCode = validateRoomCode(roomCode);
+  if (!validatedRoomCode.ok) return null;
+  const normalizedText = normalizeChatText(text);
+  if (!normalizedText.ok) return null;
+  const room = rooms.get(validatedRoomCode.value);
+  if (!room) return null;
   room.chat.push({
     id: crypto.randomUUID(),
     type: "chat",
     userId: user.id,
     username: user.username,
     moveNumber: room.game.moveNumber,
-    text: text.trim().slice(0, 240),
+    text: normalizedText.value,
     createdAt: Date.now()
   });
   return room;
@@ -380,43 +406,14 @@ export function broadcastRoom(io, room) {
 }
 
 export function roomView(room, viewerId) {
-  const playerColor = room.players.find((p) => p.user.id === viewerId)?.color ?? null;
-  const viewerColor = playerColor ?? COLORS.black;
-  const role = room.players.some((p) => p.user.id === viewerId) ? "player" : "spectator";
-  const view = {
-    black: gameViewFor(room.game, COLORS.black),
-    white: gameViewFor(room.game, COLORS.white)
-  };
-  return {
-    code: room.code,
-    viewerId,
-    role,
-    players: room.players.map((p) => ({
-      user: p.user,
-      color: p.color,
-      characterId: p.characterId,
-      character: p.character,
-      captures: room.game.captures[p.color],
-      skillRemovals: room.game.skillRemovals?.[p.color] ?? 0,
-      time: p.time
-    })),
-    spectatorCount: room.spectators.length,
-    spectators: room.spectators.map((spectator) => ({
-      user: spectator.user
-    })),
-    game: role === "spectator" ? view.black : view[viewerColor],
-    gameViews: role === "spectator" ? view : null,
-    chat: room.chat,
-    openingEndsAt: room.openingEndsAt,
-    closesAt: room.closesAt,
-    countingDeadline: room.countingDeadline,
-    drawDeadline: room.drawDeadline,
-    resultDeadline: room.game.scoring?.resultDeadline ?? null
-  };
+  return buildRoomView(room, viewerId);
 }
 
-function gameViewFor(game, viewerColor) {
-  return gameViewForColor(game, viewerColor);
+function validateActionPoint(action) {
+  if (!action || typeof action !== "object") return "未知操作";
+  if (action.pointId == null) return null;
+  const point = validatePointId(action.pointId);
+  return point.ok ? null : point.error;
 }
 
 function createRoom(first, second) {

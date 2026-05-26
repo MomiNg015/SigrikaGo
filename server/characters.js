@@ -34,6 +34,7 @@ export function validateCharacterInput(input = {}) {
   const enabled = input.enabled ?? true;
   const sortOrder = input.sortOrder ?? 0;
   const freeTurn = skillInput.freeTurn ?? input.freeTurn ?? false;
+  const skillEnabled = skillInput.enabled ?? true;
   const paramsJson = skillInput.paramsJson ?? input.paramsJson ?? "{}";
   const costType = String(skillInput.costType ?? input.costType ?? "numeric").trim();
   const fallbackCostValue = skillInput.cost ?? input.cost ?? 0;
@@ -63,6 +64,7 @@ export function validateCharacterInput(input = {}) {
   if (typeof enabled !== "boolean") errors.push("enabled must be a boolean");
   if (!Number.isInteger(sortOrder)) errors.push("sortOrder must be an integer");
   if (typeof freeTurn !== "boolean") errors.push("freeTurn must be a boolean");
+  if (typeof skillEnabled !== "boolean") errors.push("skill.enabled must be a boolean");
   if (typeof paramsJson !== "string") errors.push("paramsJson must be a string");
   if (!COST_TYPES.has(costType)) errors.push("costType must be numeric or special");
   if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) {
@@ -103,7 +105,8 @@ export function validateCharacterInput(input = {}) {
         paramsJson: JSON.stringify(params),
         costType,
         costValue,
-        systemMessage
+        systemMessage,
+        enabled: skillEnabled
       }
     }
   };

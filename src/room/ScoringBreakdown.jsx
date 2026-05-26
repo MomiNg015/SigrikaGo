@@ -17,7 +17,7 @@ export default function ScoringBreakdown({ result, compact = false }) {
         <div className="scoring-line" key={label}>
           <strong>{label}</strong>
           <span>
-            棋子 {formatStones(item.stones)} + 目数 {formatStones(item.territory)} {signedStoneTerm(item.komi, "贴目")} {signedStoneTerm(item.ownSkillCost, "己方代价")} {signedStoneTerm(item.opponentSkillCost, "对方代价")}
+            棋子 {formatStones(item.stones)} + 目数 {formatStones(item.territory)} {signedStoneTerm(item.komi, "贴目")} {signedStoneTerm(item.ownSkillCost, "己方超频")} {signedStoneTerm(item.opponentSkillCost, "对方超频")}
           </span>
           <b>{formatStones(item.total)}</b>
         </div>

@@ -71,6 +71,57 @@ button {
   place-items: center;
 }
 
+.asset-preload-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--page-pad);
+}
+
+.asset-preload-panel {
+  width: min(320px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+}
+
+.preload-mark {
+  width: 72px;
+  aspect-ratio: 1;
+  border: 3px solid rgba(93, 127, 232, 0.18);
+  border-top-color: #5d7fe8;
+  border-radius: 50%;
+  animation: preload-spin 0.9s linear infinite;
+}
+
+.asset-preload-panel p {
+  margin: 0;
+  color: #4f3d55;
+  font-weight: 900;
+}
+
+.preload-bar {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(128, 102, 142, 0.14);
+}
+
+.preload-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5d7fe8, #3aa06f);
+  transition: width 0.18s ease;
+}
+
+@keyframes preload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .auth-panel,
 .panel,
 .small-modal,
@@ -216,7 +267,19 @@ p {
 }
 
 .room-code-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 9px;
   margin-right: 2px;
+  border: 1px solid rgba(128, 102, 142, 0.14);
+  border-radius: 999px;
+  background: #f0eef2;
+  color: #7b667f;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 900;
+  white-space: nowrap;
 }
 
 .room-info-tag {
@@ -612,6 +675,13 @@ p {
 .message-board-modal textarea {
   min-height: 160px;
   resize: vertical;
+}
+
+.message-board-counter {
+  margin-top: -8px;
+  color: #7d6a82;
+  font-size: 13px;
+  text-align: right;
 }
 
 .message-board-modal .primary-action {

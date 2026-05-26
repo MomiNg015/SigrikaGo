@@ -26,4 +26,17 @@ describe("Prisma schema integrity", () => {
     expect(existsSync(migrationPath)).toBe(true);
     expect(readFileSync(migrationPath, "utf8")).toContain("CREATE TABLE IF NOT EXISTS UserRelationship");
   });
+
+  it("tracks feedback messages through a migration", () => {
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202605250001_add_feedback_message",
+      "migration.sql"
+    );
+
+    expect(existsSync(migrationPath)).toBe(true);
+    expect(readFileSync(migrationPath, "utf8")).toContain("CREATE TABLE IF NOT EXISTS \"FeedbackMessage\"");
+  });
 });

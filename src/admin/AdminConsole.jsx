@@ -20,7 +20,7 @@ import { rankFromRating } from "../shared/ratingRank.js";
 import { adminApi, uploadPortrait } from "../api/client.js";
 
 export default function AdminConsole({ user, token, tab, setTab, onCurrentUserChange, onCharactersChanged, onSiteSettingsChanged, onBack, onOpenReplay }) {
-  const tabs = ["overview", "users", "characters", "shop", "decorations", "settings", "audit"];
+  const tabs = ["overview", "users", "characters", "shop", "decorations", "settings", "feedback", "audit"];
   const tabLabels = {
     overview: "概览",
     users: "用户管理",
@@ -28,12 +28,14 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
     shop: "商城管理",
     decorations: "装饰管理",
     settings: "系统设置",
+    feedback: "留言反馈",
     audit: "审计日志"
   };
   const [summary, setSummary] = useState(null);
   const [users, setUsers] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
+  const [feedbackMessages, setFeedbackMessages] = useState([]);
   const [shopItems, setShopItems] = useState([]);
   const [decorations, setDecorations] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -60,6 +62,11 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
   useEffect(() => {
     if (tab !== "audit") return;
     refreshAuditLogs();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "feedback") return;
+    refreshFeedbackMessages();
   }, [tab, token]);
 
   useEffect(() => {
@@ -101,6 +108,16 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
     try {
       const data = await adminApi("/audit-logs", token);
       setAuditLogs(data.auditLogs ?? []);
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  }
+
+  async function refreshFeedbackMessages() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/feedback", token);
+      setFeedbackMessages(data.feedbackMessages ?? []);
     } catch (error) {
       setAdminError(error.message);
     }
@@ -174,6 +191,7 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
           <AdminDecorations decorations={decorations} token={token} onSaved={refreshDecorations} />
         )}
         {tab === "settings" && <AdminSiteSettings token={token} onSaved={onSiteSettingsChanged} />}
+        {tab === "feedback" && <AdminFeedback messages={feedbackMessages} />}
         {tab === "audit" && <AdminAudit logs={auditLogs} />}
       </section>
     </main>
@@ -639,7 +657,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
     event.preventDefault();
     const body = characterDraftToBody(draft);
     if (!body) {
-      setActionError("排序和使用次数必须是整数；数值代价只能填数字，特殊代价需要填写文本");
+      setActionError("排序和使用次数必须是整数；数值超频只能填数字，特殊超频需要填写文本");
       return;
     }
 
@@ -752,13 +770,17 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
           <input type="checkbox" checked={draft.skill.freeTurn} onChange={(event) => updateSkill("freeTurn", event.target.checked)} />
           <AdminFieldLabel text="不消耗回合" tip="开启后释放技能不会交出当前回合。" />
         </label>
-        <label><AdminFieldLabel text="代价类别" tip="数值会在数子时扣除；特殊只展示文本，暂时不影响规则。" />
+        <label className="admin-checkbox">
+          <input type="checkbox" checked={draft.skill.enabled} onChange={(event) => updateSkill("enabled", event.target.checked)} />
+          <AdminFieldLabel text="技能启用" tip="关闭后，该角色公开资料不会下发技能，玩家也不能使用该技能。" />
+        </label>
+        <label><AdminFieldLabel text="超频类别" tip="数值会在数子时扣除；特殊只展示文本，暂时不影响规则。" />
           <select value={draft.skill.costType} onChange={(event) => updateSkill("costType", event.target.value)}>
             <option value="numeric">数值</option>
             <option value="special">特殊</option>
           </select>
         </label>
-        <label><AdminFieldLabel text="代价说明" tip="数值类别只能填写数字；特殊类别可填写展示文本。" />
+        <label><AdminFieldLabel text="超频说明" tip="数值类别只能填写数字；特殊类别可填写展示文本。" />
           <input
             type={draft.skill.costType === "numeric" ? "number" : "text"}
             value={draft.skill.costValue}
@@ -770,6 +792,39 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
         </label>
       </div>
     </form>
+  );
+}
+
+function AdminFeedback({ messages }) {
+  return (
+    <section className="admin-list-section">
+      <AdminSectionHeader title="留言反馈" meta={`${messages.length} 条最近反馈`} />
+      <div className="admin-table-wrap">
+        <table className="admin-table feedback-table">
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>用户</th>
+              <th>内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            {messages.map((message) => (
+              <tr key={message.id}>
+                <td>{formatDateTime(message.createdAt)}</td>
+                <td>{message.username}</td>
+                <td>{message.content}</td>
+              </tr>
+            ))}
+            {messages.length === 0 && (
+              <tr>
+                <td colSpan="3">暂无留言反馈</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
 

@@ -22,7 +22,8 @@ export function emptyCharacterDraft() {
       paramsJson: "{}",
       costType: "numeric",
       costValue: "0",
-      systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE
+      systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
+      enabled: true
     }
   };
 }
@@ -50,7 +51,8 @@ export function buildCharacterDraft(character) {
       paramsJson: skill.paramsJson ?? JSON.stringify(skill.params ?? {}),
       costType: skill.costType ?? "numeric",
       costValue: String(skill.costValue ?? skill.cost ?? 0),
-      systemMessage: skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE
+      systemMessage: skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE,
+      enabled: skill.enabled ?? true
     }
   };
 }
@@ -82,7 +84,8 @@ export function characterDraftToBody(draft) {
       paramsJson: draft.skill.paramsJson,
       costType,
       costValue,
-      systemMessage: draft.skill.systemMessage.trim()
+      systemMessage: draft.skill.systemMessage.trim(),
+      enabled: Boolean(draft.skill.enabled)
     }
   };
 }

@@ -165,7 +165,7 @@ export default function HouseModal({ user, records, characterListView, audioSett
                 <h3>{detailCharacter.name}</h3>
                 <div className="skill-title-row">
                   <strong>{detailCharacter.skill.name}</strong>
-                  <span className="skill-cost-badge">代价 {formatSkillCost(detailCharacter.skill)}</span>
+                  <span className="skill-cost-badge">超频 {formatSkillCost(detailCharacter.skill)}</span>
                 </div>
                 <p>{detailCharacter.skill.description}</p>
                 <p className="acquisition-method"><strong>获得途径</strong>{detailCharacter.acquisitionMethod || "初始可用"}</p>

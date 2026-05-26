@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import cors from "cors";
 import express from "express";
 import fs from "node:fs";
+import helmet from "helmet";
 import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,11 +17,20 @@ import { listPublicCharacterResponse, listPublicCharacters, seedCharacters } fro
 import { CHARACTERS } from "../src/shared/characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { authenticateSocketUser } from "./socketAuth.js";
+import { createFeedbackMessage } from "./feedback.js";
 import { buildLeaderboard } from "./leaderboard.js";
 import { publicUserWithRecordStats } from "./userProfile.js";
 import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
 import { getPublicSiteSettings } from "./siteSettings.js";
 import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
+import {
+  corsOriginForRequest,
+  createApiRateLimit,
+  createAuthRateLimit,
+  validatePassword,
+  validateRoomCode,
+  validateUsername
+} from "./security.js";
 import {
   addChat,
   attachSocketToRoom,
@@ -57,6 +67,7 @@ const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret";
 const { authHttp, requireAdmin } = makeAuth({ prisma, jwtSecret: JWT_SECRET });
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadDir = path.join(__dirname, "..", "public", "uploads", "characters");
+const distDir = path.join(__dirname, "..", "dist");
 fs.mkdirSync(uploadDir, { recursive: true });
 const upload = multer({
   limits: { fileSize: 3 * 1024 * 1024 },
@@ -73,15 +84,35 @@ const upload = multer({
   })
 });
 
-app.use(cors());
-app.use(express.json());
+const corsOptions = {
+  origin: (origin, callback) => corsOriginForRequest(origin, callback),
+  credentials: true
+};
+
+app.set("trust proxy", 1);
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      mediaSrc: ["'self'", "data:", "blob:"],
+      connectSrc: ["'self'", "https:", "wss:", "ws:"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      frameAncestors: ["'none'"]
+    }
+  }
+}));
+app.use(cors(corsOptions));
+app.use(express.json({ limit: "64kb" }));
+app.use("/api/auth", createAuthRateLimit());
+app.use("/api", createApiRateLimit());
 app.use("/uploads", express.static(path.join(__dirname, "..", "public", "uploads")));
 
 const io = new Server(server, {
-  cors: {
-    origin: true,
-    credentials: true
-  }
+  cors: corsOptions
 });
 
 await seedCharacters(prisma);
@@ -105,6 +136,18 @@ const pendingDuelRequests = new Map();
 
 app.get("/api/site-settings", async (_req, res) => {
   res.json({ settings: await getPublicSiteSettings(prisma) });
+});
+
+app.post("/api/feedback", authHttp, async (req, res) => {
+  try {
+    res.json(await createFeedbackMessage({
+      prisma,
+      user: req.user,
+      content: req.body.content
+    }));
+  } catch (error) {
+    res.status(error.status ?? 500).json({ error: error.message ?? "反馈提交失败" });
+  }
 });
 
 app.get("/api/leaderboard", authHttp, async (_req, res) => {
@@ -225,12 +268,18 @@ app.post("/api/shop/:id/purchase", authHttp, async (req, res) => {
 app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
 
 app.post("/api/auth/register", async (req, res) => {
-  const username = String(req.body.username ?? "").trim();
-  const password = String(req.body.password ?? "");
-  if (username.length < 2 || password.length < 4) {
-    res.status(400).json({ error: "用户名至少2位，密码至少4位" });
+  const usernameResult = validateUsername(req.body.username);
+  const passwordResult = validatePassword(req.body.password);
+  if (!usernameResult.ok) {
+    res.status(400).json({ error: usernameResult.error });
     return;
   }
+  if (!passwordResult.ok) {
+    res.status(400).json({ error: passwordResult.error });
+    return;
+  }
+  const username = usernameResult.value;
+  const password = passwordResult.value;
   const passwordHash = await bcrypt.hash(password, 10);
   try {
     const user = await prisma.user.create({ data: { username, passwordHash } });
@@ -242,8 +291,14 @@ app.post("/api/auth/register", async (req, res) => {
 });
 
 app.post("/api/auth/login", async (req, res) => {
-  const username = String(req.body.username ?? "").trim();
-  const password = String(req.body.password ?? "");
+  const usernameResult = validateUsername(req.body.username);
+  const passwordResult = validatePassword(req.body.password);
+  if (!usernameResult.ok || !passwordResult.ok) {
+    res.status(401).json({ error: "用户名或密码错误" });
+    return;
+  }
+  const username = usernameResult.value;
+  const password = passwordResult.value;
   const user = await prisma.user.findUnique({ where: { username } });
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
     res.status(401).json({ error: "用户名或密码错误" });
@@ -352,6 +407,7 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", (socket) => {
+  installSocketRateGuard(socket);
   registerOnlineSocket(socket);
   socket.emit("me", socket.user);
 
@@ -365,8 +421,13 @@ io.on("connection", (socket) => {
     socket.emit("match:left");
   });
 
-  socket.on("room:join", ({ roomCode }) => {
-    const room = attachSocketToRoom(roomCode, socket, socket.user);
+  socket.on("room:join", ({ roomCode } = {}) => {
+    const validatedRoomCode = validateRoomCode(roomCode);
+    if (!validatedRoomCode.ok) {
+      socket.emit("error:toast", validatedRoomCode.error);
+      return;
+    }
+    const room = attachSocketToRoom(validatedRoomCode.value, socket, socket.user);
     if (!room) {
       socket.emit("error:toast", "房间不存在或已经关闭");
       return;
@@ -375,52 +436,52 @@ io.on("connection", (socket) => {
     broadcastRoom(io, room);
   });
 
-  socket.on("game:action", (payload) => {
+  socket.on("game:action", (payload = {}) => {
     const result = handleGameAction(payload.roomCode, socket.user.id, payload.action, io);
     sendResult(socket, result);
     if (result.ok) broadcastRoom(io, result.room);
   });
 
-  socket.on("counting:request", ({ roomCode }) => {
+  socket.on("counting:request", ({ roomCode } = {}) => {
     const result = requestCounting(roomCode, socket.user.id, io);
     sendResult(socket, result);
     if (result.ok) broadcastRoom(io, result.room);
   });
 
-  socket.on("counting:respond", ({ roomCode, accepted }) => {
+  socket.on("counting:respond", ({ roomCode, accepted } = {}) => {
     const result = respondCounting(roomCode, socket.user.id, accepted);
     sendResult(socket, result);
     if (result.ok) broadcastRoom(io, result.room);
   });
 
-  socket.on("draw:request", ({ roomCode }) => {
+  socket.on("draw:request", ({ roomCode } = {}) => {
     const result = requestDraw(roomCode, socket.user.id, io);
     sendResult(socket, result);
     if (result.ok) broadcastRoom(io, result.room);
   });
 
-  socket.on("draw:respond", ({ roomCode, accepted }) => {
+  socket.on("draw:respond", ({ roomCode, accepted } = {}) => {
     const result = respondDraw(roomCode, socket.user.id, accepted, io);
     sendResult(socket, result);
     if (result.ok) broadcastRoom(io, result.room);
   });
 
-  socket.on("scoring:action", (payload) => {
+  socket.on("scoring:action", (payload = {}) => {
     const result = handleScoringAction(payload.roomCode, socket.user.id, payload.action, io);
     sendResult(socket, result);
     if (result.ok) broadcastRoom(io, result.room);
   });
 
-  socket.on("chat:send", ({ roomCode, text }) => {
+  socket.on("chat:send", ({ roomCode, text } = {}) => {
     const room = addChat(roomCode, socket.user, text);
     if (room) broadcastRoom(io, room);
   });
 
-  socket.on("duel:request", ({ targetUserId }) => {
+  socket.on("duel:request", ({ targetUserId } = {}) => {
     handleDuelRequest(socket, String(targetUserId ?? ""));
   });
 
-  socket.on("duel:respond", ({ requestId, accepted }) => {
+  socket.on("duel:respond", ({ requestId, accepted } = {}) => {
     handleDuelResponse(socket, String(requestId ?? ""), Boolean(accepted));
   });
 
@@ -434,6 +495,24 @@ io.on("connection", (socket) => {
 
 function sendResult(socket, result) {
   if (!result.ok) socket.emit("error:toast", result.error);
+}
+
+function installSocketRateGuard(socket) {
+  socket.data.rateGuard = { startedAt: Date.now(), count: 0 };
+  socket.use((_packet, next) => {
+    const guard = socket.data.rateGuard;
+    const now = Date.now();
+    if (now - guard.startedAt > 10000) {
+      guard.startedAt = now;
+      guard.count = 0;
+    }
+    guard.count += 1;
+    if (guard.count > 120) {
+      socket.emit("error:toast", "操作过于频繁，请稍后再试");
+      return;
+    }
+    next();
+  });
 }
 
 function registerOnlineSocket(socket) {
@@ -575,6 +654,20 @@ async function publicUserWithHistory(user) {
     }
   });
   return publicUserWithRecordStats(user, records);
+}
+
+if (process.env.NODE_ENV === "production" && fs.existsSync(distDir)) {
+  app.use(express.static(distDir, {
+    maxAge: "1h",
+    setHeaders: (res, filePath) => {
+      if (/\.[a-f0-9]{8,}\./i.test(filePath)) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      }
+    }
+  }));
+  app.get(/^(?!\/api|\/socket\.io|\/uploads).*/, (_req, res) => {
+    res.sendFile(path.join(distDir, "index.html"));
+  });
 }
 
 server.listen(PORT, () => {

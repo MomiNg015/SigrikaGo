@@ -15,13 +15,13 @@ export function ConfirmModal({ title, message, confirmText, onConfirm, onCancel 
   );
 }
 
-export function Toast({ text, onClose }) {
+export function Toast({ text, tone = "danger", onClose }) {
   useEffect(() => {
     const id = setTimeout(onClose, 3000);
     return () => clearTimeout(id);
   }, [onClose]);
 
-  return <div className="toast">{text}</div>;
+  return <div className={`toast ${tone}`}>{text}</div>;
 }
 
 export function DuelRequestBanner({ request, onAccept, onReject, onTimeout }) {

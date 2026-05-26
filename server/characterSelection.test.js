@@ -24,6 +24,14 @@ describe("character selection resolution", () => {
     expect(result.characterConfig).toEqual({ ...CHARACTERS.danea, id: "denia" });
   });
 
+  test("keeps enabled canonical Denia when a disabled legacy Danea row also exists", () => {
+    const denia = { ...CHARACTERS.danea, id: "denia", name: "达妮娅" };
+    const result = resolveSelectedCharacter("denia", { denia }, new Set(["denia"]), ["denia"]);
+
+    expect(result.characterId).toBe("denia");
+    expect(result.characterConfig).toEqual(denia);
+  });
+
   test("falls back when the selected character is not owned", () => {
     const result = resolveSelectedCharacter("nabomo", {}, new Set(), ["sigrika", "danea", "aemeath"]);
 

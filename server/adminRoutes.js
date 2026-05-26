@@ -5,6 +5,7 @@ import { USER_ROLES, USER_STATUS } from "./adminConfig.js";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 import { toCharacterPayload, validateCharacterInput } from "./characters.js";
 import { publicUser } from "./db.js";
+import { listFeedbackMessages } from "./feedback.js";
 import { toShopItemPayload, validateDecorationInput, validateShopItemInput } from "./shop.js";
 import { getPublicSiteSettings, updateSiteSettings } from "./siteSettings.js";
 
@@ -183,6 +184,10 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       take: 100
     });
     res.json({ auditLogs });
+  });
+
+  router.get("/feedback", async (_req, res) => {
+    res.json(await listFeedbackMessages({ prisma }));
   });
 
   router.get("/site-settings", async (_req, res) => {
@@ -411,7 +416,7 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
     }
     try {
       const character = await createCharacter({ prisma, adminUser: req.user, input: validated.value });
-      res.json({ character: toCharacterPayload(character) });
+      res.json({ character: toAdminCharacterPayload(character) });
     } catch (error) {
       sendRouteError(res, error);
     }
@@ -425,7 +430,7 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
         characterId: req.params.id,
         body: req.body
       });
-      res.json({ character: toCharacterPayload(character) });
+      res.json({ character: toAdminCharacterPayload(character) });
     } catch (error) {
       sendRouteError(res, error);
     }
@@ -438,7 +443,7 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
         adminUser: req.user,
         characterId: req.params.id
       });
-      res.json({ character: toCharacterPayload(character) });
+      res.json({ character: toAdminCharacterPayload(character) });
     } catch (error) {
       sendRouteError(res, error);
     }
@@ -653,21 +658,34 @@ function skillData(skill) {
     costType: skill.costType,
     costValue: skill.costValue,
     systemMessage: skill.systemMessage,
-    enabled: true
+    enabled: skill.enabled
   };
 }
 
 function toAdminCharacterPayload(record) {
   const payload = toCharacterPayload(record);
+  const skill = record.skill
+    ? {
+        id: record.skill.id,
+        effectType: record.skill.effectType,
+        name: record.skill.name,
+        uses: record.skill.uses,
+        description: record.skill.description,
+        freeTurn: record.skill.freeTurn,
+        targetRule: record.skill.targetRule,
+        params: {},
+        costType: record.skill.costType ?? "numeric",
+        costValue: record.skill.costValue ?? String(record.skill.cost ?? 0),
+        cost: 0,
+        systemMessage: record.skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE,
+        enabled: record.skill.enabled ?? true,
+        paramsJson: record.skill.paramsJson ?? "{}"
+      }
+    : null;
   return {
     ...payload,
     sortOrder: record.sortOrder,
-    skill: payload.skill
-      ? {
-          ...payload.skill,
-          paramsJson: record.skill?.paramsJson ?? "{}"
-        }
-      : null
+    skill
   };
 }
 
@@ -700,6 +718,7 @@ function legacySkillInput(input) {
   if (Object.hasOwn(input, "costType")) skill.costType = input.costType;
   if (Object.hasOwn(input, "costValue")) skill.costValue = input.costValue;
   if (Object.hasOwn(input, "systemMessage")) skill.systemMessage = input.systemMessage;
+  if (Object.hasOwn(input, "skillEnabled")) skill.enabled = input.skillEnabled;
   return skill;
 }
 
@@ -723,7 +742,8 @@ function characterRecordToInput(record) {
       paramsJson: record.skill?.paramsJson ?? "{}",
       costType: record.skill?.costType ?? "numeric",
       costValue: record.skill?.costValue ?? "0",
-      systemMessage: record.skill?.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE
+      systemMessage: record.skill?.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE,
+      enabled: record.skill?.enabled ?? true
     }
   };
 }

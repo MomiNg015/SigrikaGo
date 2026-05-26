@@ -37,8 +37,8 @@ export default function AuthScreen({ onAuth }) {
             <button type="button" className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>登录</button>
             <button type="button" className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>注册</button>
           </div>
-          <label>用户名<input value={username} onChange={(event) => setUsername(event.target.value)} /></label>
-          <label>密码<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+          <label>用户名<input value={username} maxLength={16} autoComplete="username" onChange={(event) => setUsername(event.target.value)} /></label>
+          <label>密码<input type="password" minLength={6} maxLength={14} autoComplete={mode === "login" ? "current-password" : "new-password"} value={password} onChange={(event) => setPassword(event.target.value)} /></label>
           {error && <p className="form-error">{error}</p>}
           <button className="primary-action" type="submit">{mode === "login" ? "进入棋舍" : "创建账号"}</button>
         </form>

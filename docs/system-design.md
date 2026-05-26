@@ -1,3 +1,8 @@
+## UI Asset Notes
+
+- `public/assets/go-board-13-ui-1.png` through `public/assets/go-board-13-ui-4.png` are transparent PNG candidates for the home screen fantasy match button. They are generated as exact 13-line Go boards with five star points and no stones, with restrained hand-drawn tech doodle decoration around the board.
+- `public/assets/go-board-13-clean-3d-1.png` through `public/assets/go-board-13-clean-3d-4.png` are cleaner transparent 13-line Go board candidates with straight grid lines, no gray construction strokes, five star points, no stones, and a simple 3D board thickness for the same home screen button.
+
 # SigrikaGo System Design
 
 本文档基于当前代码库静态分析生成，目标是方便后续维护者和 AI 继续接手。未在代码中确认的内容会标注为“待确认”。
@@ -20,6 +25,7 @@ SigrikaGo/
   server/
     index.js                   # Express + Socket.IO 服务入口
     rooms.js                   # 实时房间、匹配、对局流程、计时、棋谱保存
+    roomView.js                # 房间视图序列化，按玩家/观战者生成可见棋盘和计数信息
     auth.js                    # HTTP JWT 鉴权与管理员中间件
     socketAuth.js              # Socket.IO JWT 鉴权与角色解析
     adminConfig.js             # 管理员用户名配置与角色提升
@@ -33,7 +39,7 @@ SigrikaGo/
     skillRegistry.js           # 角色技能 fallback 配置转换
     *.test.js                  # Vitest 单元测试
   src/
-    main.jsx                   # React 单页应用入口与对局/弹窗组装
+    main.jsx                   # React 单页应用入口、Socket 状态与页面级弹窗编排
     api/
       client.js                # 前端 HTTP JSON、后台 API、上传请求封装
     auth/
@@ -42,7 +48,9 @@ SigrikaGo/
       AdminConsole.jsx         # 后台管理界面与后台 CRUD 组件
     home/
       HomeScreen.jsx           # 大厅首页布局、匹配入口、棋舍入口和工具入口
-    styles.css                 # 全局样式
+    room/
+      RoomScreen.jsx           # 对局页容器，编排棋盘、玩家信息、聊天、房间成员、行动区和房间级音效
+    styles.css                 # CSS 入口文件，按域导入 styles/*.css
     shared/
       game.js                  # 13 路围棋规则、技能、数子、回放核心逻辑
       boardView.js             # 棋盘展示辅助：最后落子/技能标记与技能预览判定
@@ -64,8 +72,8 @@ SigrikaGo/
 
 - `src/main.jsx`
   - React SPA 的集中入口。
-  - 包含对局、棋舍、商城、排行榜、设置等组件，并挂载后台管理入口。
-  - 使用 `useState` / `useEffect` 做本地状态管理。
+  - 负责登录态、Socket.IO 生命周期、顶层页面切换、匹配/对局结果/商店/好友等页面级弹窗编排，并挂载后台管理入口。
+  - 对局页已经下沉到 `src/room/RoomScreen.jsx`，`src/main.jsx` 不再直接持有房间 UI 子树。
   - 通过 `src/api/client.js` 调用 HTTP API，通过 `socket.io-client` 连接实时对局。
 
 - `src/auth/AuthScreen.jsx`
@@ -75,6 +83,11 @@ SigrikaGo/
 - `src/home/HomeScreen.jsx`
   - 大厅首页展示组件。
   - 负责大厅标题/副标题、匹配主入口、棋舍入口、观战/排行榜/商城/后台管理工具入口。
+
+- `src/room/RoomScreen.jsx`
+  - 对局页容器组件。
+  - 编排玩家信息、棋盘、行动区、房间成员、操作提示、聊天、开局提示、技能横幅和房间级音效。
+  - 导出 `roomGameInfoForPlayers` 等房间标题辅助逻辑，便于在不挂载完整对局页的情况下单测关键展示格式。
 
 - `src/admin/AdminConsole.jsx`
   - 后台管理界面模块。
@@ -99,7 +112,7 @@ SigrikaGo/
   - 将后端 DB 角色与内置角色合并。
 
 - `src/styles.css`
-  - 单文件全局样式，覆盖全部页面、弹窗、棋盘、后台、商城等。
+  - CSS 入口文件，当前按 `styles/base.css`、`admin.css`、`lobby.css`、`room.css`、`modals.css`、`commerce-settings.css`、`responsive.css` 分域导入。
 
 ### 后端
 
@@ -111,6 +124,11 @@ SigrikaGo/
 - `server/rooms.js`
   - 内存态房间系统。
   - 管理匹配队列、房间成员、观战、Socket 广播、聊天、计时、读秒、和棋/数子流程、技能演出、结束后保存棋谱与更新胜负积分。
+
+- `server/roomView.js`
+  - 房间视图序列化模块。
+  - 根据 viewerId 判断玩家或观战者身份，生成对应颜色视角的棋盘、双视角观战数据、玩家提子/除子计数、计时、聊天和阶段 deadline。
+  - 该模块把 `server/rooms.js` 中纯数据投影逻辑移出实时流程，降低房间广播和棋谱快照代码的耦合。
 
 - `server/adminRoutes.js`
   - 后台管理路由。
@@ -170,7 +188,7 @@ SigrikaGo/
 - 收到匹配成功事件时，前端会自动关闭大厅上已打开的商店、棋舍、排行榜、观战、好友、设置和留言板弹窗，避免弹窗盖住后续对局切换。
 - 开局展示结束后服务端切换到 `playing`，写入 `game-start` 系统消息，前端播放“对局开始”系统语音，并从该时刻开始推进棋钟。
 - 计时与读秒：房间玩家包含 `mainTime`、`byoYomi`、`byoYomiPeriods` 等内存字段。
-- 玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能代价使用红色强调。
+- 玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能超频使用红色强调。除子与超频标签支持悬停说明：除子说明其会在数目时按 `+除子*1` 计入，超频说明其会在数目时按 `-超频*2` 扣减。
 - 技能栏支持悬停/点击展开“挂画”式技能说明面板，说明随鼠标移出或再次点击收起。
 - 对手信息区下方显示“房间成员”，固定最多 3 行高度并可滚动；回放模式不显示房间成员区域。对局者用黑/白棋图标标识执色且用户名为红色，观战者为黑色用户名。点击任一行会展开占位操作面板：详细信息、加好友/解除好友、加入黑名单/从黑名单解除、密谈。自己所在行的加好友和黑名单操作禁用；好友关系下加入黑名单按钮禁用。成员行按关系显示背景：自己为淡黄色，好友为浅绿色渐变，黑名单成员为灰色。加好友会自动从黑名单移除目标用户。
 - 操作提示区在轮到当前用户处理落子、数子/和棋申请、死子确认或结果确认时切换为浅红色背景；普通等待状态保持常规提示背景。观战和回放模式不显示操作提示区。
@@ -183,7 +201,7 @@ SigrikaGo/
 
 ### 技能与角色
 
-- 内置角色 fallback：`sigrika`、`denia`、`aemeath`、`baconbits`、`nabomo`。历史数据中可能仍存在旧别名 `danea`；公共角色列表、前端合并、用户公开资料和出战角色解析会将其规范化为 `denia`，避免部员手册中重复出现两个达妮娅。
+- 内置角色 fallback：`sigrika`、`denia`、`aemeath`、`baconbits`、`nabomo`。历史数据中可能仍存在旧别名 `danea`；公共角色列表、前端合并、用户公开资料和出战角色解析会将其规范化为 `denia`，避免部员手册中重复出现两个达妮娅。若数据库中同时存在启用的 canonical `denia` 和禁用的旧 `danea`，出战角色解析以启用的 `denia` 公开角色为准，不让旧禁用别名覆盖当前可用角色。
 - DB 角色会覆盖/合并内置角色。
 - 所有存在的角色都会出现在棋舍角色列表；未拥有角色以灰色状态展示，可查看信息但不可出战。
 - 角色信息包含 `acquisitionMethod`/“获得途径”纯文本，可由后台维护。
@@ -201,10 +219,11 @@ SigrikaGo/
 - 技能可配置：
   - 使用次数 `uses`
   - 是否不消耗回合 `freeTurn`
+  - 是否启用 `enabled`
   - 目标规则 `targetRule`
   - 参数 JSON `paramsJson`
-  - 代价类型 `costType`
-  - 代价值 `costValue`
+  - 超频类型 `costType`
+  - 超频值 `costValue`
   - 系统消息模板 `systemMessage`
 - 系统消息模板当前支持：`{player}`、`{character}`、`{skill}`、`{point}`、`{fromColor}`、`{toColor}`、`{targetColor}`，并保留 `{color}` 兼容旧配置。
 
@@ -217,15 +236,15 @@ SigrikaGo/
 - 前端回放通过 `replayRoomAt` 基于历史步骤重放共享规则逻辑。
 - 观战者进入房间后默认使用黑方对局视角，包括双方信息区位置；黑白双方信息区立绘左侧提供眼睛图标，可切换黑方/白方视角；下方操作栏切换为图标式回放控制。
 - 棋谱回放同样支持黑方/白方视角切换，回放棋盘会按所选视角重放隐藏手和娜波摩伪装效果。
-- 观战回放只改变棋盘内容，不改变实时信息区内容（计时、读秒、提子、代价等保持实际对局进程）。
+- 观战回放只改变棋盘内容，不改变实时信息区内容（计时、读秒、提子、超频等保持实际对局进程）。
 - 观战者停在最新手时会自动跟随实时进程；如果手动回退到旧手，则新进程不会强制跳回最新。
 
 ### 商城与装饰
 
 - 商品支持 `character` 与 `decoration` 两类。
 - 商品有原价、折扣、是否可购买、是否展示、排序、描述、图片。
-- 玩家商城标题显示为“扎希拉商店”，大厅入口显示为“商店”。商品区固定为 2 行 4 列且切换分类不改变槽位或窗口尺寸；空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。金币余额显示为金币图标加金额的金色标签。商店右上角展示扎希亚 Q 版立绘，资源位于 `/assets/zahiya_shop.png`，立绘区域不额外绘制占位背景和线框。
-- 商城商品卡片不显示商品描述栏；商品名位于商品图下方居中。商品卡片内部使用固定图片区、名称区、价格区和按钮区，避免窗口尺寸变化时内容被挤出商品栏。
+- 玩家商城标题显示为“扎希拉商店”，大厅入口显示为“商店”。商店窗口分为左右两列：左侧窄列为扎希拉接待区，上方是独立聊天气泡，中间展示扎希拉 Q 版立绘，底部显示金币图标加金额的金色标签；右侧宽列为标题、分类选项卡、商品栏和页码。商品区每页固定为 2 行 4 列共 8 个槽位，底部显示页码；商品数超过 8 个时自动增加页码，点击页码切换对应商品栏，切换分类会回到第 1 页且不改变槽位或窗口尺寸。空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。扎希拉资源位于 `/assets/zahiya_shop.png`，打开商店时聊天气泡从“今天想买些什么？”“刚刚进了一批好货哟~”“欢迎来到扎希拉商店！”中随机展示一句。
+- 商城商品卡片不显示商品描述栏；商品名位于商品图下方居中。商品卡片内部使用固定图片区、名称区、价格区和按钮区，商品图相对放大，商品名与售价使用同级字号并收紧间距，避免窗口尺寸变化时内容被挤出商品栏。
 - 购买会扣除用户金币，并写入 `ownedCharacters` 或 `ownedDecorations`。
 - 内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。
 - 内置装饰商品会 seed 爪印棋子，价格 500 金币。
@@ -337,9 +356,9 @@ SigrikaGo/
 - `targetRule`: 目标规则，当前校验为 `empty-point`、`stone`、`any-point` 或 `none`；猪小仙 `random-blast` 为 `none`，但仍进入待释放确认状态，点击棋盘任意点后才释放。
 - `paramsJson`: JSON 字符串，当前作为扩展参数保留。
 - `costType`: `numeric` 或 `special`。
-- `costValue`: 代价值；`numeric` 会参与数子扣分，`special` 当前仅展示。
+- `costValue`: 超频值；`numeric` 会参与数子扣分，`special` 当前仅展示。
 - `systemMessage`: 技能系统消息模板。
-- `enabled`: 是否启用；当前公开角色 payload 未看到按 skill.enabled 过滤，待确认。
+- `enabled`: 是否启用；公开角色 payload 会过滤禁用技能，后台角色表单可独立控制角色启用与技能启用。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 
 ### Decoration
@@ -669,10 +688,8 @@ SigrikaGo/
 
 ### 前端公共组件
 
-当前公共组件仍以 `src/main.jsx` 为主，后台管理组件已拆到 `src/admin/AdminConsole.jsx`：
+当前公共组件已从 `src/main.jsx` 按页面域逐步拆出，后台管理组件位于 `src/admin/AdminConsole.jsx`，对局页容器位于 `src/room/RoomScreen.jsx`：
 
-- `Panel`: 面板标题与图标容器。
-- `Stat`: 小统计卡片。
 - `AdminFieldLabel`: 带 title 提示的后台字段标签，位于 `src/admin/AdminConsole.jsx`。
 - `AdminSectionHeader`: 后台列表页标题、数量和主操作按钮，位于 `src/admin/AdminConsole.jsx`。
 - `AdminStatusPill`: 后台表格状态标签，位于 `src/admin/AdminConsole.jsx`。
@@ -786,7 +803,7 @@ SigrikaGo/
 
 - 前端 `src/main.jsx` 已先拆出后台管理模块和 API helper，但仍然偏大，仍包含大厅、对局、棋舍、商城、排行榜、设置、回放、音频等组件；后台管理目前集中在 `src/admin/AdminConsole.jsx`，后续可继续按用户/角色/商城/装饰拆分。
 
-- 全局样式集中在 `src/styles.css`，规模较大，组件样式边界不清。
+- 全局样式入口已拆为多个 `src/styles/*.css` 分域文件；较大的 `room.css`、`modals.css`、`commerce-settings.css` 仍可继续按组件边界细分。
 
 - 技能扩展当前由 `effectType` 分支实现，`paramsJson` 已保留但核心规则尚未通用化；`random-blast` 的完整 3x3、演出延迟、回放重放、棋盘高亮清理等逻辑分散在共享规则、服务端房间和前端棋盘中。
 
@@ -797,8 +814,6 @@ SigrikaGo/
   - 服务端在 `NODE_ENV=production` 时拒绝 `test-*` action。
 
 - 后台审计已覆盖用户、角色、装饰、商城商品和站点设置的主要增改/禁用操作；后续可继续细化到登录、购买、上传等事件。
-
-- `CharacterSkill.enabled` 字段存在，但当前公开角色序列化没有明确按该字段过滤技能，语义待确认。
 
 - 社交模块已增加 `server/social.test.js` 覆盖好友/黑名单互斥、公开资料统计和公开回放摘要；仍缺少端到端 UI 测试覆盖好友弹窗、对局申请横幅和资料卡回放弹窗。
 
@@ -830,6 +845,7 @@ SigrikaGo/
   - 已完成：`src/modals/ShopModal.jsx`
   - 已完成：`src/modals/GameLifecycleModals.jsx`
   - 已完成：`src/modals/FeedbackModals.jsx`
+  - 已完成：`src/modals/SkillBanner.jsx`
   - 后续：`pages/HomeScreen.jsx`
   - 后续：`pages/RoomScreen.jsx`
   - 后续：继续拆分 `admin/*`
@@ -838,7 +854,7 @@ SigrikaGo/
   - `replay/*`
 
 - 拆分样式：
-  - 按页面/组件拆 CSS，或引入明确的 CSS module/组件样式约定。
+  - 已完成基础分域 CSS；后续继续细分较大的房间、弹窗、商店/设置样式，或引入明确的 CSS module/组件样式约定。
 
 - 重构拥有关系：
   - 将 `ownedCharacters`、`ownedDecorations` 从 CSV 改为关系表。
@@ -887,7 +903,7 @@ SigrikaGo/
 - BGM 资源配置集中在 `MUSIC_TRACKS`，按 `home`、`battle`、`skill` 三类管理。
 - 主界面默认 BGM 使用 `hidamari_intro_once.ogg` + `hidamari_loop.ogg`。
 - 对弈常规 BGM 使用 `shanjifu_intro_once.ogg` + `shanjifu_loop.ogg`。
-- 角色技能 BGM 当前配置：达妮娅使用 `bgm_*`，西格莉卡使用 `koimoon_132_intro_no_fadein_2p5s.ogg` + `koimoon_132_micro_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`。
+- 角色技能 BGM 当前配置：达妮娅使用 canonical `denia-skill-default`（`bgm_*`），西格莉卡使用 `koimoon_132_intro_no_fadein_2p5s.ogg` + `koimoon_132_micro_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`。BGM resolver 会先把历史 `danea` 规范化为 `denia`，再查找角色技能 BGM。
 - BGM 优先级为：角色技能 BGM > 对弈常规 BGM > 主界面 BGM。
 - 角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。
 - 匹配成功倒计时、对局结果弹窗、对局结束阶段会停止 BGM。
@@ -965,6 +981,8 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
   - The house rank stat includes a hover help icon explaining that rank is derived from rating, 1000 points is 1-dan, each 100 points changes one rank, and 9-dan is the maximum.
 - Character voice categories:
   - Character voice events are explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
+  - Recommended upload naming for full character voice packs uses one folder per character, for example `C:/codex/musicsour/cVoice/denia/`. Prefer OGG files with stable English scene keys: `match_start.ogg`, `skill_cast.ogg`, `byoyomi_start.ogg`, `byoyomi_remaining_2.ogg`, `byoyomi_remaining_1.ogg`, `countdown_10.ogg` through `countdown_01.ogg`, `timeout.ogg`, `result_win.ogg`, `result_loss.ogg`, `result_draw.ogg`, and `house_detail.ogg`. Avoid Chinese characters, spaces, and punctuation in filenames so Windows paths, frontend asset references, and build tooling stay predictable.
+  - Denia now has a full AI voice pack under `public/assets/voice/denia_*.ogg`, covering `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`.
   - Built-in skill voice assets are bridged into each character's `systemVoices.skill-cast` map at runtime, so skill banners use the same `resolveSystemVoice` route as other role voices.
   - Baconbits now has role voice assets for `game-start`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, and `timeout`; the period 2 and period 1 events reuse `baconbits_byo_yomi_periods.ogg`.
   - Character detail clicks in the house route through `house-detail`; missing assets stay silent until a character-specific detail voice is configured.
@@ -1008,11 +1026,13 @@ This update reduces the highest-payoff frontend coupling without changing user-f
   - `ShopModal.jsx` owns the 扎希拉商店 modal, category tabs, fixed 8-slot item grid, purchase flow, item ownership state, and shop mascot/item preview rendering.
   - `GameLifecycleModals.jsx` owns the matching, match-success countdown, opening color prompt, and result/reward modals. It also exposes pure countdown, color-label, and signed-delta helpers covered by `GameLifecycleModals.test.js`.
   - `FeedbackModals.jsx` owns the generic confirm modal, toast, and direct-duel request banner. Its duel countdown/progress helpers are covered by `FeedbackModals.test.js`.
+  - `SkillBanner.jsx` owns the skill burst overlay and skill-cast voice trigger. The helper that prevents duplicate or empty voice playback is covered by `SkillBanner.test.js`.
   - `StoneDecorationPreview.jsx` owns reusable black/white decoration previews for house and shop surfaces.
 - Room view helpers now live in `src/room/roomView.js`.
   - The module owns replay view reconstruction, room member list shaping, coordinate labels, board line geometry, preview eligibility helpers, scoring term text, and timer/message formatting helpers.
   - These helpers are covered by `src/room/roomView.test.js` so runtime-only room view dependencies are easier to catch.
 - Low-coupling room UI components have started moving from `src/main.jsx` into `src/room/`.
+  - `RoomScreen.jsx` owns room-level derived state, replay/spectator projection, room header game info, per-room sound effects, skill/opening modals, and layout composition for the full battle screen.
   - `TimeBar.jsx` owns the player timer/digital display panel.
   - `ChatBox.jsx` owns room chat rendering, scroll-to-bottom behavior, and chat submission UI.
   - `PlayerInfo.jsx` owns player portrait, rank/rating tags, timer, captures/cost display, result badge, and skill detail popover.
@@ -1023,9 +1043,10 @@ This update reduces the highest-payoff frontend coupling without changing user-f
   - `Board.jsx` marks first-line board grid segments so the visual "一路" can render bolder than internal lines. Board grid strokes are intentionally heavier for readability, with both normal and first-line strokes scaled up together.
   - `OperationHint.jsx` owns phase-aware text hints and compact scoring breakdown display under the opponent-side panel.
 - Current remaining frontend debt:
-  - `src/main.jsx` still owns `RoomScreen`, the skill banner, and part of page orchestration.
-  - A full `RoomScreen` big-bang move is intentionally deferred because the component has dense local dependencies. Continue with smaller slices first, such as socket lifecycle hooks, room people/action panels, or individual room subcomponents.
-  - `src/admin/AdminConsole.jsx`, `src/shared/game.js`, `server/rooms.js`, and large style files remain high-value follow-up targets.
+  - `src/main.jsx` now mainly owns App-level auth, Socket.IO connection lifecycle, page routing, match/duel events, and modal orchestration. It is still sizable but no longer owns the room UI tree.
+  - `src/room/RoomScreen.jsx` is a better-contained but still dense room container; future extractions can split room sound/effect hooks, replay/spectator projection helpers, and room action handlers.
+  - Server room view serialization now lives in `server/roomView.js`, so `server/rooms.js` can focus more narrowly on real-time room lifecycle, timers, actions, broadcasts, and persistence triggers.
+  - `src/admin/AdminConsole.jsx`, `src/shared/game.js`, the remaining real-time flow inside `server/rooms.js`, and large style files remain high-value follow-up targets.
 
 ## Recent Home, Shop, And Board UI Adjustments
 
@@ -1044,5 +1065,39 @@ This update reduces the highest-payoff frontend coupling without changing user-f
   - The house/player manual record stat is clickable and opens a per-character record list for owned characters.
   - Player info now separates captures, skill removals ("除子"), and skill cost. Skill removals count opponent stones removed or converted by skills for the side that benefits from the removal/conversion.
   - Skill follow-up cleanup counts stones removed by skill-created no-liberty states as skill removals instead of normal captures, so "提子" remains only ordinary capture count.
-  - Room headers include live game context after the room number using separate chips: black player/rank, white player/rank, and current move count.
-  - The first-line board grid stroke was reduced from the heaviest iteration while remaining bolder than internal lines.
+- Room headers include live game context after the room number using separate chips: black player/rank, white player/rank, and current move count.
+- The room number itself is rendered as a light-gray rounded chip so it reads as part of the same header metadata system.
+- The first-line board grid stroke was reduced from the heaviest iteration while remaining bolder than internal lines.
+
+## Production Deployment Hardening
+
+- Runtime security helpers live in `server/security.js`.
+- Username input is normalized server-side and must be 2-16 characters, limited to Chinese characters, English letters, numbers, and `_`.
+- Password input is enforced server-side as 6-14 characters. Registration returns the exact validation issue; login returns a generic username/password error for invalid credentials or invalid credential shapes.
+- Chat text is normalized server-side by removing control characters, trimming whitespace, rejecting empty messages, and capping messages at 240 characters.
+- Room codes accepted by Socket.IO room operations must be exactly five digits. Board point payloads must be `x,y` coordinates within the 13x13 board.
+- Express now uses `helmet` security headers, a 64 KB JSON body limit, auth-specific rate limiting, and general `/api` rate limiting.
+- HTTP CORS and Socket.IO CORS use the same origin allowlist. Production origins come from `PUBLIC_ORIGIN`, `SITE_ORIGIN`, and comma-separated `ALLOWED_ORIGINS`; development additionally allows localhost ports used by Vite and the local server.
+- Socket.IO connections install a per-socket event guard that rejects excessive event traffic within a short window.
+- In production, if `dist/` exists, the Node server can serve the built Vite app and SPA fallback while still keeping `/api`, `/socket.io`, and `/uploads` routed to backend behavior.
+
+## Login Asset Preloading
+
+- Frontend deployment helpers live in `src/shared/preloadAssets.js`.
+- Socket.IO now connects to `window.location.origin`, so the deployed site can run behind `https://sigrika.fun` without a hard-coded localhost socket endpoint.
+- Vite development proxy forwards `/socket.io` websocket traffic to the local backend, keeping the same-origin socket path usable in development and production.
+- After a valid token is confirmed, the app enters a `preloading` view before the home screen.
+- Fresh login and stored-token startup both enter `preloading` before the home screen, preventing the home screen from flashing before assets begin loading.
+- The preload step fetches core character portraits, stone decoration images, common board/result/match sound effects, default home and battle BGM, and owned character skill voices.
+- Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.
+- The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.
+
+## Feedback Messages
+
+- Player feedback is persisted in the `FeedbackMessage` Prisma model, backed by the `202605250001_add_feedback_message` migration.
+- Logged-in users submit feedback through `POST /api/feedback`; the server stores `userId`, current `username`, normalized `content`, and `createdAt`.
+- Feedback content strips control characters, trims whitespace, rejects empty submissions, and caps content at 400 characters.
+- The home and room message-board modal calls the feedback API. On success it closes the modal and shows a green top toast: `感谢您的反馈！`.
+- The message-board textarea uses the same 400-character limit and displays the remaining character count below the input.
+- Admins can view the latest 100 feedback messages through `GET /api/admin/feedback`.
+- The admin console includes a `留言反馈` tab that displays submit time, username, and full feedback content with wrapping for longer text.

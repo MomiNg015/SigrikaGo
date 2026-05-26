@@ -154,6 +154,19 @@ describe("character admin helpers", () => {
     expect(payload.skill.systemMessage).toBe(DEFAULT_SKILL_SYSTEM_MESSAGE);
   });
 
+  it("preserves disabled skill state from admin character input", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      skill: {
+        ...validInput.skill,
+        enabled: false
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.skill.enabled).toBe(false);
+  });
+
   it("accepts numeric skill costs and preserves them in payloads", () => {
     const result = validateCharacterInput({
       ...validInput,

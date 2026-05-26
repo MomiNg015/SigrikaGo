@@ -264,6 +264,32 @@ describe("admin user routes", () => {
     expect(response.status).toBe(200);
     expect(response.body.record.snapshot).toEqual(snapshot);
   });
+
+  it("lists submitted feedback messages for admins", async () => {
+    const response = await requestAdminRoute({
+      feedbackMessage: {
+        findMany: async (query) => {
+          expect(query).toMatchObject({
+            orderBy: { createdAt: "desc" },
+            take: 100
+          });
+          return [{
+            id: "feedback-1",
+            userId: "user-1",
+            username: "alice",
+            content: "希望优化大厅",
+            createdAt: new Date("2026-05-25T00:00:00Z")
+          }];
+        }
+      }
+    }, "/feedback", { method: "GET" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.feedbackMessages[0]).toMatchObject({
+      username: "alice",
+      content: "希望优化大厅"
+    });
+  });
 });
 
 describe("admin site settings routes", () => {
@@ -331,6 +357,37 @@ describe("admin character routes", () => {
     expect(characterUpdates[0].portraitSource).toBe("upload");
     expect(characterUpdates[0].skill.upsert.update.name).toBe("Mirror Step");
     expect(characterUpdates[0].skill.upsert.update.uses).toBe(2);
+  });
+
+  it("allows PATCH /characters/:id to disable a character skill", async () => {
+    const { prisma, characterUpdates } = characterRoutePrisma();
+
+    const response = await requestAdminRoute(prisma, "/characters/danea", {
+      method: "PATCH",
+      body: {
+        skill: {
+          enabled: false
+        }
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.character.skill.enabled).toBe(false);
+    expect(characterUpdates[0].skill.upsert.update.enabled).toBe(false);
+  });
+
+  it("lists disabled character skills for admin editing", async () => {
+    const fixture = characterFixture();
+    const character = { ...fixture, skill: { ...fixture.skill, enabled: false } };
+    const response = await requestAdminRoute({
+      character: {
+        findMany: async () => [character]
+      }
+    }, "/characters", { method: "GET" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.characters[0].skill.enabled).toBe(false);
+    expect(response.body.characters[0].skill.name).toBe(character.skill.name);
   });
 
   it("returns JSON for unsupported portrait upload types", async () => {
@@ -632,7 +689,11 @@ function characterFixture() {
       uses: 1,
       freeTurn: false,
       targetRule: "stone",
-      paramsJson: "{}"
+      paramsJson: "{}",
+      costType: "numeric",
+      costValue: "0",
+      systemMessage: "{player} uses {skill}",
+      enabled: true
     }
   };
 }
