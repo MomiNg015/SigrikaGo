@@ -13,16 +13,15 @@ import {
 } from "./musicLibrary.js";
 
 describe("background music library", () => {
-  it("uses the configured intro and loop files for the default home music", () => {
+  it("uses the configured loop file for the default home music", () => {
     const track = resolveBackgroundMusic({ view: "home" });
 
     expect(track).toMatchObject({
       id: "home-default",
       type: "home",
       playback: {
-        mode: "intro-loop",
-        introSrc: "/assets/music/hidamari_intro_once.ogg",
-        loopSrc: "/assets/music/hidamari_loop.ogg",
+        mode: "single-loop",
+        src: "/assets/music/main_bgm.ogg",
         loop: true
       }
     });

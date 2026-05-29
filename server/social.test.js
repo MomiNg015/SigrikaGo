@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getUserProfile,
+  getUserProfileByUsername,
   getUserReplays,
   listSocialUsers,
   RELATIONSHIP_TYPES,
@@ -63,6 +64,27 @@ describe("social profiles and relationships", () => {
     ]);
   });
 
+  it("writes relationship timestamps explicitly for schemas without db defaults", async () => {
+    const writes = [];
+    const prisma = {
+      $executeRaw: async (strings, ...values) => {
+        writes.push(values);
+      }
+    };
+
+    await setRelationship({
+      prisma,
+      ownerUserId: "owner-1",
+      targetUserId: "target-1",
+      type: RELATIONSHIP_TYPES.friend
+    });
+
+    expect(writes[0]).toHaveLength(7);
+    expect(writes[0][4]).toBeInstanceOf(Date);
+    expect(writes[0][5]).toBeInstanceOf(Date);
+    expect(writes[0][6]).toBe(RELATIONSHIP_TYPES.friend);
+  });
+
   it("lists social users with rank and online status", async () => {
     const result = await listSocialUsers({
       prisma: {
@@ -101,12 +123,33 @@ describe("social profiles and relationships", () => {
       blackCharacter: "sigrika"
     })]);
   });
+
+  it("finds public profile by exact username for social search", async () => {
+    const profile = await getUserProfileByUsername({
+      prisma: socialProfilePrisma({
+        users: [
+          { id: "target-1", username: "露露米", rating: 1080, selectedCharacter: "baconbits", ownedCharacters: "baconbits" }
+        ]
+      }),
+      username: "露露米",
+      viewerId: "viewer-1",
+      statusForUser: () => "offline"
+    });
+
+    expect(profile).toMatchObject({
+      id: "target-1",
+      username: "露露米",
+      rank: "2段",
+      status: "offline"
+    });
+  });
 });
 
 function socialProfilePrisma({ users = [], records = [] }) {
   return {
     user: {
       findUnique: async ({ where }) => users.find((user) => user.id === where.id) ?? null,
+      findFirst: async ({ where }) => users.find((user) => user.username === where.username) ?? null,
       findMany: async ({ where }) => users.filter((user) => where.id.in.includes(user.id))
     },
     gameRecord: {

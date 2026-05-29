@@ -8,7 +8,8 @@ import {
   SkipForward,
   Sparkles,
   StepBack,
-  StepForward
+  StepForward,
+  Timer
 } from "lucide-react";
 import { GAME_PHASES } from "../shared/game.js";
 import ScoringBreakdown from "./ScoringBreakdown.jsx";
@@ -22,7 +23,9 @@ export default function ActionBar({
   setPendingSkill,
   skillLocked = false,
   skillUses,
+  skillAvailable = true,
   hasAnyStones = true,
+  opponentConnected = true,
   scoring,
   drawRequest,
   drawDeadline,
@@ -34,6 +37,7 @@ export default function ActionBar({
   onReplayStep,
   onTestRandomLayout,
   onTestRestoreSkill,
+  onTestEnterByoYomi,
   onPass,
   onCountingRequest,
   onCountingRespond,
@@ -93,26 +97,31 @@ export default function ActionBar({
   return (
     <nav className="action-bar">
       <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>弃一手</button>
-      <button onClick={onCountingRequest} disabled={phase !== "playing" || skillLocked || !hasAnyStones}>申请数子</button>
+      <button onClick={onCountingRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, hasAnyStones, opponentConnected })}>申请数子</button>
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
         onClick={() => setPendingSkill(!pendingSkill)}
-        disabled={!me || phase !== "playing" || !isMyTurn || skillLocked || skillUses <= 0}
+        disabled={!me || phase !== "playing" || !isMyTurn || skillLocked || skillUses <= 0 || !skillAvailable}
       >
         <Sparkles size={20} />技能 · {skillUses}
       </button>
-      <button onClick={onDrawRequest} disabled={phase !== "playing" || skillLocked}>申请和棋</button>
+      <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, opponentConnected })}>申请和棋</button>
       <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} />认输</button>
       {showTestTools && (
         <TestTools
           disabled={phase !== "playing" || skillLocked || !me}
           onRandomLayout={onTestRandomLayout}
           onRestoreSkill={onTestRestoreSkill}
+          onEnterByoYomi={onTestEnterByoYomi}
         />
       )}
       <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
     </nav>
   );
+}
+
+export function canRequestOpponentDecision({ phase, skillLocked = false, hasAnyStones = true, opponentConnected = true } = {}) {
+  return phase === GAME_PHASES.playing && !skillLocked && hasAnyStones && opponentConnected !== false;
 }
 
 function DecisionBar({ phase, userId, scoring, drawRequest, drawDeadline, countingDeadline, resultDeadline, onCountingRespond, onDrawRespond, onConfirmScoring, onResetScoring, onAcceptResult, onRejectResult }) {
@@ -218,7 +227,7 @@ function DecisionProgress({ deadline, fallbackSeconds }) {
   );
 }
 
-function TestTools({ disabled, onRandomLayout, onRestoreSkill }) {
+function TestTools({ disabled, onRandomLayout, onRestoreSkill, onEnterByoYomi }) {
   return (
     <span className="test-tools" aria-label="测试工具">
       <button title="随机布局" onClick={onRandomLayout} disabled={disabled}>
@@ -226,6 +235,9 @@ function TestTools({ disabled, onRandomLayout, onRestoreSkill }) {
       </button>
       <button title="恢复技能" onClick={onRestoreSkill} disabled={disabled}>
         <RotateCcw size={18} />恢复技能
+      </button>
+      <button title="进入读秒" onClick={onEnterByoYomi} disabled={disabled}>
+        <Timer size={18} />进入读秒
       </button>
     </span>
   );

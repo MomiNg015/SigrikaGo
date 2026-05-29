@@ -1,6 +1,7 @@
 import {
   CAPTURE_SOUND,
   HIDDEN_HAND_REVEAL_SOUND,
+  preloadEffectSound,
   STONE_SOUND
 } from "../audio/playback.jsx";
 import {
@@ -11,6 +12,7 @@ import {
   VICTORY_SOUND,
   DEFEAT_SOUND
 } from "./musicLibrary.js";
+import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { STONE_DECORATIONS } from "./stoneDecorations.js";
 
 export function deploymentSocketBase(locationLike = globalThis.location) {
@@ -26,12 +28,14 @@ export function playbackAssetSources(playback) {
 export function loginPreloadAssets({
   characters = {},
   ownedCharacters = [],
+  itemEffects = {},
   tracks = MUSIC_TRACKS,
   skillVoices = CHARACTER_SKILL_VOICES,
   musicSelections = DEFAULT_MUSIC_SELECTIONS
 } = {}) {
   const images = compactUnique([
     ...Object.values(characters).map((character) => character?.portrait),
+    itemEffects?.deniaRainbowGlow ? DENIA_CANDY_PORTRAIT : null,
     ...Object.values(STONE_DECORATIONS).flatMap((decoration) => [
       decoration.previewImageUrl,
       decoration.images?.black,
@@ -62,9 +66,10 @@ export function loginPreloadAssets({
 export async function preloadLoginAssets(assets, { onProgress = () => {} } = {}) {
   const images = assets?.images ?? [];
   const audio = assets?.audio ?? [];
+  const decodedEffects = new Set([STONE_SOUND, CAPTURE_SOUND, HIDDEN_HAND_REVEAL_SOUND]);
   const tasks = [
     ...images.map((src) => () => preloadImage(src)),
-    ...audio.map((src) => () => preloadFetch(src))
+    ...audio.map((src) => () => decodedEffects.has(src) ? preloadEffectSound(src) : preloadFetch(src))
   ];
   if (tasks.length === 0) {
     onProgress(1);

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm:dev:server\" \"npm:dev:client\"",
     "dev:client": "vite --host 0.0.0.0",
-    "dev:server": "node --watch server/index.js",
+    "dev:server": "node --watch-path=server --watch-path=src/shared server/index.js",
     "build": "vite build",
     "start": "node server/index.js",
     "test": "vitest run --exclude \"**/.worktrees/**\"",

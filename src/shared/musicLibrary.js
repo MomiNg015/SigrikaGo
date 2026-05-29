@@ -62,7 +62,7 @@ export const MUSIC_TRACKS = {
     type: MUSIC_TYPES.home,
     defaultUnlocked: true,
     purchasable: false,
-    playback: introLoop("/assets/music/hidamari_intro_once.ogg", "/assets/music/hidamari_loop.ogg")
+    playback: { mode: "single-loop", src: "/assets/music/main_bgm.ogg", loop: true }
   },
   "battle-default": {
     id: "battle-default",

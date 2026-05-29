@@ -1,11 +1,14 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import { CHARACTERS } from "./characters.js";
 import {
   COLORS,
   GAME_PHASES,
+  canStartSkill,
   createDrawResult,
   createGameState,
   createTimeoutResult,
+  collectGroup,
   erasePoint,
   flipStone,
   getPoint,
@@ -16,6 +19,7 @@ import {
   prepareScoringState,
   randomBlast,
   randomLayout,
+  resultWithInvalidFlagForGame,
   restoreSkillUse,
   resignGame,
   scoreGame,
@@ -62,7 +66,47 @@ function surroundWhiteBox(state) {
   }
 }
 
+function functionSource(source, name, nextName) {
+  const start = source.indexOf(`function ${name}`);
+  const end = source.indexOf(`function ${nextName}`, start + 1);
+  return source.slice(start, end);
+}
+
 describe("SigrikaGo rules", () => {
+  it("looks up standard board points without linear array search", () => {
+    const state = createGameState();
+    state.points.find = () => {
+      throw new Error("linear lookup should not run for standard points");
+    };
+
+    expect(getPoint(state, pointId(6, 6))).toMatchObject({ id: pointId(6, 6), x: 6, y: 6 });
+  });
+
+  it("falls back to id lookup for non-standard point arrays", () => {
+    const state = createGameState();
+    const first = state.points[0];
+    const center = getPoint(state, pointId(6, 6));
+    state.points[0] = center;
+    state.points[6 * state.size + 6] = first;
+
+    expect(getPoint(state, pointId(6, 6))).toBe(center);
+  });
+
+  it("returns no point for empty skill targets", () => {
+    expect(getPoint(createGameState(), null)).toBeUndefined();
+  });
+
+  it("collects connected groups without shifting queue arrays", () => {
+    expect(collectGroup.toString()).not.toContain(".shift(");
+  });
+
+  it("traverses scoring regions without shifting queue arrays", () => {
+    const source = readFileSync(new URL("./game.js", import.meta.url), "utf8");
+
+    expect(functionSource(source, "collectPotentialDeadStones", "collectTerritory")).not.toContain(".shift(");
+    expect(functionSource(source, "collectTerritoryIgnoringColor", "isUnexposedOpponentHiddenHand")).not.toContain(".shift(");
+  });
+
   it("captures surrounded stones", () => {
     const state = createGameState();
     forceStone(state, 1, 1, COLORS.white);
@@ -281,6 +325,23 @@ describe("SigrikaGo rules", () => {
 
     const finished = { ...move, phase: GAME_PHASES.finished };
     expect(getPoint(gameViewForColor(finished, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.black);
+  });
+
+  it("keeps Nabomo disguised stones while counting is only requested", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "nabomo", character: CHARACTERS.nabomo },
+      { color: COLORS.white, characterId: "sigrika", character: CHARACTERS.sigrika }
+    ]);
+    const passive = activatePassiveSkill(state, COLORS.black, CHARACTERS.nabomo.skill).state;
+    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.1);
+    const move = playMove(passive, COLORS.black, pointId(3, 3)).state;
+    randomSpy.mockRestore();
+
+    const requested = { ...move, phase: GAME_PHASES.countingRequested };
+    expect(getPoint(gameViewForColor(requested, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.white);
+
+    const markingDead = { ...move, phase: GAME_PHASES.markingDead };
+    expect(getPoint(gameViewForColor(markingDead, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.black);
   });
 
   it("lets Danea flip the real stone and clear Nabomo disguise on the target", () => {
@@ -506,6 +567,19 @@ describe("SigrikaGo rules", () => {
     expect(result.ok).toBe(false);
   });
 
+  it("reports stone-dependent skills unavailable while the board has no stones", () => {
+    const state = createGameState([{ color: COLORS.black, characterId: "denia" }]);
+
+    expect(canStartSkill(state, "denia")).toBe(false);
+    expect(canStartSkill(state, "baconbits")).toBe(false);
+    expect(canStartSkill(state, "aemeath")).toBe(true);
+
+    forceStone(state, 4, 4, COLORS.white);
+
+    expect(canStartSkill(state, "denia")).toBe(true);
+    expect(canStartSkill(state, "baconbits")).toBe(true);
+  });
+
   it("places a hidden hand with Aemeath skill", () => {
     const state = createGameState([{ color: COLORS.black }]);
 
@@ -677,6 +751,27 @@ describe("SigrikaGo rules", () => {
     expect(result.ok).toBe(true);
     expect(result.state.winner.winnerColor).toBe(COLORS.black);
     expect(result.state.winner.text).toBe("黑中盘胜");
+  });
+
+  it("marks any result through move 10 as an invalid game", () => {
+    const state = createGameState();
+    state.moveNumber = 10;
+
+    expect(resultWithInvalidFlagForGame(state, createTimeoutResult(COLORS.white))).toMatchObject({
+      winnerColor: COLORS.black,
+      invalid: true
+    });
+  });
+
+  it("keeps results after move 10 valid", () => {
+    const state = createGameState();
+    state.moveNumber = 11;
+
+    expect(resultWithInvalidFlagForGame(state, createDrawResult("agreement"))).toEqual({
+      winnerColor: null,
+      reason: "agreement",
+      text: "和棋"
+    });
   });
 
   it("creates a draw result without a winner color", () => {

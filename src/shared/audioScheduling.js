@@ -1,5 +1,6 @@
 export const BGM_FADE_SECONDS = 0.35;
 export const BGM_START_DELAY_SECONDS = 0.08;
+export const BGM_DUCK_RATIO = 0.35;
 
 export function createPlaybackKey(track) {
   if (!track) return "";
@@ -28,4 +29,9 @@ export function createVolumeRamp({ from, to, startAt, duration = BGM_FADE_SECOND
     { type: "set", value: from, time: startAt },
     { type: "linear", value: to, time: startAt + duration }
   ];
+}
+
+export function createDuckedVolume({ volume, activeVoiceCount, duckRatio = BGM_DUCK_RATIO }) {
+  if (activeVoiceCount <= 0) return volume;
+  return volume * duckRatio;
 }

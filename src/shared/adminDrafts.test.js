@@ -101,6 +101,7 @@ describe("admin draft helpers", () => {
     expect(validated.value.priceCoins).toBe(100);
     expect(validated.value.discountPercent).toBe(20);
     expect(shopCategoryLabel("decoration")).toBe("装饰");
+    expect(shopCategoryLabel("item")).toBe("道具");
     expect(validateShopItemDraft({ ...shop, discountPercent: "101" }).ok).toBe(false);
 
     expect(decorationDraftToBody(buildDecorationDraft({

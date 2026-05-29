@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { deriveCharacterRecordStats } from "./HouseModal.jsx";
+import { characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats } from "./HouseModal.jsx";
+import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 
 describe("deriveCharacterRecordStats", () => {
   const user = {
@@ -25,5 +26,17 @@ describe("deriveCharacterRecordStats", () => {
       { character: characters[0], total: 1, wins: 1, losses: 0, draws: 0 },
       { character: characters[1], total: 1, wins: 0, losses: 1, draws: 0 }
     ]);
+  });
+
+  it("disables Sigrika sortie and swaps Denia portrait from candy effects", () => {
+    const itemEffects = {
+      sigrikaCandyDisabled: true,
+      deniaRainbowGlow: true
+    };
+
+    expect(characterSortieDisabledReason("sigrika", itemEffects)).toBe("糖果效果中，暂时无法出战");
+    expect(characterSortieDisabledReason("denia", itemEffects)).toBe("");
+    expect(characterCandyPortrait({ id: "denia", portrait: "/assets/Danea_centered.png" }, itemEffects)).toBe(DENIA_CANDY_PORTRAIT);
+    expect(characterCandyPortrait({ id: "sigrika", portrait: "/assets/sigrika_centered.png" }, itemEffects)).toBe("/assets/sigrika_centered.png");
   });
 });

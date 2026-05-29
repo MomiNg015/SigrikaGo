@@ -24,6 +24,8 @@ model User {
   selectedStoneDecoration String @default("")
   ownedCharacters    String   @default("sigrika,danea,aemeath")
   ownedItems         String   @default("")
+  itemPurchaseCounts String   @default("")
+  itemEffects        String   @default("")
   ownedDecorations   String   @default("")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
@@ -111,6 +113,8 @@ model ShopItem {
   name            String
   category        String
   targetId        String
+  itemTargetType  String   @default("self")
+  stockQuantity   Int      @default(-1)
   priceCoins      Int
   discountPercent Int      @default(0)
   purchasable     Boolean  @default(true)
@@ -149,4 +153,14 @@ model FeedbackMessage {
 
   @@index([createdAt])
   @@index([userId])
+}
+
+model PersistedRoom {
+  code      String   @id
+  status    String   @default("active")
+  snapshot  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
 }

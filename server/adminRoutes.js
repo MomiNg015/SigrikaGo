@@ -1,19 +1,23 @@
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
+import { readFile, unlink } from "node:fs/promises";
 import { Router } from "express";
 import { USER_ROLES, USER_STATUS } from "./adminConfig.js";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 import { toCharacterPayload, validateCharacterInput } from "./characters.js";
 import { publicUser } from "./db.js";
 import { listFeedbackMessages } from "./feedback.js";
+import { normalizeOwnedItems, serializeOwnedItems } from "./items.js";
 import { toShopItemPayload, validateDecorationInput, validateShopItemInput } from "./shop.js";
 import { getPublicSiteSettings, updateSiteSettings } from "./siteSettings.js";
+import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
 
 const EDITABLE_USER_FIELDS = new Set([
   "role",
   "rating",
   "coins",
   "ownedCharacters",
+  "ownedItems",
   "selectedCharacter"
 ]);
 const PRISMA_INT_MIN = -2147483648;
@@ -43,6 +47,51 @@ export function safeUploadFilename(originalName, mimeType) {
   return `character-${crypto.randomUUID()}-${stem || "portrait"}${extension}`;
 }
 
+export function detectImageMimeFromBuffer(buffer) {
+  if (!Buffer.isBuffer(buffer)) return null;
+  if (buffer.length >= 8
+    && buffer[0] === 0x89
+    && buffer[1] === 0x50
+    && buffer[2] === 0x4e
+    && buffer[3] === 0x47
+    && buffer[4] === 0x0d
+    && buffer[5] === 0x0a
+    && buffer[6] === 0x1a
+    && buffer[7] === 0x0a) {
+    return "image/png";
+  }
+  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+    return "image/jpeg";
+  }
+  if (buffer.subarray(0, 6).toString("ascii") === "GIF87a" || buffer.subarray(0, 6).toString("ascii") === "GIF89a") {
+    return "image/gif";
+  }
+  if (buffer.length >= 12
+    && buffer.subarray(0, 4).toString("ascii") === "RIFF"
+    && buffer.subarray(8, 12).toString("ascii") === "WEBP") {
+    return "image/webp";
+  }
+  return null;
+}
+
+export async function validatePortraitUpload({ file, readFile: readUploadedFile = readFile }) {
+  if (!file?.path) throw routeError(400, "portrait file is required");
+  if (!ALLOWED_UPLOAD_TYPES.has(file.mimetype)) throw routeError(400, "Unsupported image type");
+  const detectedMime = detectImageMimeFromBuffer(await readUploadedFile(file.path));
+  if (!detectedMime) throw routeError(400, "Unsupported image type");
+  if (detectedMime !== file.mimetype) throw routeError(400, "Portrait file content does not match image type");
+  return file;
+}
+
+async function removeUploadedFile(file) {
+  if (!file?.path) return;
+  try {
+    await unlink(file.path);
+  } catch {
+    // The file may already have been removed by the platform or test harness.
+  }
+}
+
 export function sanitizeUserUpdate(body = {}) {
   const data = {};
   for (const [key, value] of Object.entries(body)) {
@@ -65,6 +114,9 @@ export function sanitizeUserUpdate(body = {}) {
         .filter(Boolean)
         .join(",");
       if (ownedCharacters) data.ownedCharacters = ownedCharacters;
+    }
+    if (key === "ownedItems") {
+      data.ownedItems = serializeOwnedItems(normalizeOwnedItems(value));
     }
     if (key === "selectedCharacter" && typeof value === "string") {
       const selectedCharacter = value.trim();
@@ -461,12 +513,18 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
           next();
         });
       },
-      (req, res) => {
-        if (!req.file) {
-          res.status(400).json({ error: "portrait file is required" });
-          return;
+      async (req, res) => {
+        try {
+          if (!req.file) {
+            res.status(400).json({ error: "portrait file is required" });
+            return;
+          }
+          await validatePortraitUpload({ file: req.file });
+          res.json({ url: `/uploads/characters/${req.file.filename}` });
+        } catch (error) {
+          await removeUploadedFile(req.file);
+          sendUploadError(res, error);
         }
-        res.json({ url: `/uploads/characters/${req.file.filename}` });
       }
     );
   }
@@ -797,7 +855,9 @@ async function assertShopTargetExists(prisma, item) {
   }
   if (item.category === "decoration") {
     const decoration = await prisma.decoration.findUnique({ where: { slug: item.targetId } });
-    if (!decoration) throw routeError(400, "Shop decoration target does not exist");
+    if (!decoration && !getStoneDecoration(item.targetId)) {
+      throw routeError(400, "Shop decoration target does not exist");
+    }
   }
 }
 

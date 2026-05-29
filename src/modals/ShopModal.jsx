@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { CircleDollarSign, ShoppingBag, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { CircleDollarSign, Package, ShoppingBag, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { getStoneDecoration } from "../shared/stoneDecorations.js";
 import StoneDecorationPreview from "./StoneDecorationPreview.jsx";
 
 const SHOP_CATEGORIES = [
   ["character", "角色"],
+  ["item", "道具"],
   ["decoration", "装饰"]
 ];
 
@@ -17,14 +18,12 @@ export const SHOP_MASCOT_LINES = [
 
 const SHOP_PAGE_SIZE = 8;
 
-export default function ShopModal({ token, user, onPurchased, onClose }) {
+export default function ShopModal({ token, user, onPurchased, onNotice, onClose }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("character");
   const [activePage, setActivePage] = useState(1);
   const [mascotLine] = useState(() => pickShopMascotLine());
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
   const [purchasingId, setPurchasingId] = useState("");
 
   useEffect(() => {
@@ -32,19 +31,18 @@ export default function ShopModal({ token, user, onPurchased, onClose }) {
     if (!token || !user) {
       setLoading(false);
       setItems([]);
-      setError("请先登录");
+      onNotice?.("请先登录", "danger");
       return () => {
         alive = false;
       };
     }
     setLoading(true);
-    setError("");
     api("/api/shop", { token })
       .then((data) => {
         if (alive) setItems(data.items ?? []);
       })
       .catch((apiError) => {
-        if (alive) setError(apiError.message);
+        if (alive) onNotice?.(apiError.message, "danger");
       })
       .finally(() => {
         if (alive) setLoading(false);
@@ -52,30 +50,31 @@ export default function ShopModal({ token, user, onPurchased, onClose }) {
     return () => {
       alive = false;
     };
-  }, [token, user]);
+  }, [token, user, onNotice]);
 
   async function buyItem(item) {
-    setMessage("");
-    setError("");
     setPurchasingId(item.id);
     try {
       const data = await api(`/api/shop/${item.id}/purchase`, { method: "POST", token });
       onPurchased(data.user);
-      setMessage(`已购买 ${item.name}`);
+      if (data.item) {
+        setItems((current) => current.map((shopItem) => shopItem.id === data.item.id ? data.item : shopItem));
+      }
+      onNotice?.(`已购买${item.name}`, "success");
     } catch (apiError) {
-      setError(apiError.message);
+      onNotice?.(apiError.message, "danger");
     } finally {
       setPurchasingId("");
     }
   }
 
-  const pageCount = getShopPageCount(items, activeCategory);
+  const pageCount = useMemo(() => getShopPageCount(items, activeCategory), [items, activeCategory]);
 
   useEffect(() => {
     setActivePage((page) => Math.min(page, pageCount));
   }, [pageCount]);
 
-  const shopSlots = buildShopSlots(items, activeCategory, activePage);
+  const shopSlots = useMemo(() => buildShopSlots(items, activeCategory, activePage), [items, activeCategory, activePage]);
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -85,16 +84,14 @@ export default function ShopModal({ token, user, onPurchased, onClose }) {
           <aside className="shop-sidebar" aria-label="扎希拉接待区">
             <div className="shop-mascot-bubble" aria-live="polite">{mascotLine}</div>
             <div className="shop-mascot-slot" aria-label="扎希拉立绘">
-              <img src="/assets/zahiya_shop.png" alt="扎希拉" />
+              <img src="/assets/zahiya_shop.png" alt="扎希拉" decoding="async" />
             </div>
-            <p className="shop-wallet"><CircleDollarSign size={18} />{user?.coins ?? 0}</p>
+            <div className="shop-wallet-wrap">
+              <span>你当前拥有</span>
+              <p className="shop-wallet"><CircleDollarSign size={18} />{user?.coins ?? 0}</p>
+            </div>
           </aside>
           <div className="shop-content">
-            <header className="shop-header">
-              <div className="shop-title-block">
-                <h2>扎希拉商店</h2>
-              </div>
-            </header>
             <div className="shop-tabs" role="tablist" aria-label="商城分类">
               {SHOP_CATEGORIES.map(([key, label]) => (
                 <button
@@ -109,8 +106,6 @@ export default function ShopModal({ token, user, onPurchased, onClose }) {
                 </button>
               ))}
             </div>
-            {message && <p className="admin-success">{message}</p>}
-            {error && <p className="form-error admin-action-error">{error}</p>}
             {loading && <p className="quiet-text">加载中...</p>}
             <div className="shop-grid">
               {!loading && shopSlots.map((item, index) => {
@@ -124,19 +119,27 @@ export default function ShopModal({ token, user, onPurchased, onClose }) {
                 }
                 const owned = isShopItemOwned(item, user);
                 const tooExpensive = (user?.coins ?? 0) < item.finalPrice;
-                const disabled = owned || !item.purchasable || tooExpensive || purchasingId === item.id;
+                const soldOut = isShopItemSoldOut(item);
+                const disabled = owned || soldOut || !item.purchasable || tooExpensive || purchasingId === item.id;
                 return (
                   <article className={`shop-item ${owned ? "owned" : ""}`} key={item.id}>
                     {item.category === "decoration" && getStoneDecoration(item.targetId)
                       ? <StoneDecorationPreview decoration={getStoneDecoration(item.targetId)} label={item.name} large />
-                      : item.imageUrl ? <img src={item.imageUrl} alt={item.name} /> : <ShoppingBag />}
+                      : item.imageUrl ? <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" /> : item.category === "item" ? <Package /> : <ShoppingBag />}
                     <strong>{item.name}</strong>
-                    <p className="shop-price">
-                      {item.discountPercent > 0 && <s>{item.priceCoins}</s>}
-                      <b>{item.finalPrice}</b> 金币
-                    </p>
+                    <p className="shop-description">{getShopItemDescription(item)}</p>
+                    <div className="shop-card-meta">
+                      <span>{getShopItemQuantityLabel(item)}</span>
+                      <p className="shop-price">
+                        <span className="shop-price-number-wrap">
+                          {item.discountPercent > 0 && <s className="shop-original-price">{item.priceCoins}</s>}
+                          <b>{item.finalPrice}</b>
+                        </span>
+                        <span className="shop-price-unit">金币</span>
+                      </p>
+                    </div>
                     <button className="primary-action" disabled={disabled} onClick={() => buyItem(item)}>
-                      {owned ? "已拥有" : purchasingId === item.id ? "购买中" : !item.purchasable ? "不可购买" : tooExpensive ? "金币不足" : "购买"}
+                      {owned ? "已拥有" : soldOut ? "已售罄" : purchasingId === item.id ? "购买中" : !item.purchasable ? "不可购买" : tooExpensive ? "金币不足" : "购买"}
                     </button>
                   </article>
                 );
@@ -187,4 +190,20 @@ export function isShopItemOwned(item = {}, user = {}) {
   if (item.category === "character") return Boolean(user?.ownedCharacters?.includes(item.targetId));
   if (item.category === "decoration") return Boolean(user?.ownedDecorations?.includes(item.targetId));
   return false;
+}
+
+export function isShopItemSoldOut(item = {}) {
+  return item.category === "item" && item.stockQuantity >= 0 && (item.remainingStock ?? item.stockQuantity) <= 0;
+}
+
+export function getShopItemDescription(item = {}) {
+  return String(item.description ?? "").trim() || "暂无介绍";
+}
+
+export function getShopItemQuantityLabel(item = {}) {
+  if (item.category === "item") {
+    if (item.stockQuantity >= 0) return `库存 ${item.remainingStock ?? item.stockQuantity}`;
+    return "不限量";
+  }
+  return "限购 1";
 }

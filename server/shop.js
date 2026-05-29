@@ -1,7 +1,9 @@
 import { publicUser } from "./db.js";
+import { normalizeItemTargetType, parseOwnedItems, serializeOwnedItems } from "./items.js";
+import { RAINBOW_BEAN_CANDY_ID } from "./itemEffects.js";
 import { STONE_DECORATIONS } from "../src/shared/stoneDecorations.js";
 
-const SHOP_CATEGORIES = new Set(["character", "decoration"]);
+const SHOP_CATEGORIES = new Set(["character", "decoration", "item"]);
 const BUILTIN_SHOP_ITEMS = [
   {
     name: "猪小仙",
@@ -14,31 +16,55 @@ const BUILTIN_SHOP_ITEMS = [
     sortOrder: 100,
     description: "获得角色猪小仙。",
     imageUrl: "/assets/baconbits.png"
-  }
-].concat(Object.values(STONE_DECORATIONS).map((decoration, index) => ({
-  name: decoration.name,
-  category: "decoration",
-  targetId: decoration.id,
-  priceCoins: decoration.priceCoins,
-  discountPercent: 0,
-  purchasable: true,
-  enabled: true,
-  sortOrder: 200 + index,
-  description: decoration.description,
-  imageUrl: decoration.previewImageUrl
-})));
+  },
+  {
+    name: "彩虹豆豆跳跳糖",
+    category: "item",
+    targetId: RAINBOW_BEAN_CANDY_ID,
+    itemTargetType: "character",
+    stockQuantity: 10,
+    priceCoins: 10,
+    discountPercent: 0,
+    purchasable: true,
+    enabled: true,
+    sortOrder: 150,
+    description: "产地不明的糖果，据说有神秘的效果",
+    imageUrl: "/assets/items/rainbow-bean-candy.png"
+  },
+  ...Object.values(STONE_DECORATIONS).map((decoration, index) => ({
+    name: decoration.name,
+    category: "decoration",
+    targetId: decoration.id,
+    priceCoins: decoration.priceCoins,
+    discountPercent: 0,
+    purchasable: true,
+    enabled: true,
+    sortOrder: 200 + index,
+    description: decoration.description,
+    imageUrl: decoration.previewImageUrl
+  }))
+];
 
 export function finalShopPrice(item) {
   const discount = Math.max(0, Math.min(100, Number(item.discountPercent ?? 0)));
   return Math.max(0, Math.ceil(Number(item.priceCoins ?? 0) * (100 - discount) / 100));
 }
 
-export function toShopItemPayload(item) {
+export function toShopItemPayload(item, purchaseCounts = {}) {
+  const stockQuantity = item.stockQuantity ?? -1;
+  const purchasedCount = Math.max(0, Number(purchaseCounts[item.targetId] ?? 0) || 0);
+  const remainingStock = item.category === "item" && stockQuantity >= 0
+    ? Math.max(0, stockQuantity - purchasedCount)
+    : stockQuantity;
   return {
     id: item.id,
     name: item.name,
     category: item.category,
     targetId: item.targetId,
+    itemTargetType: normalizeItemTargetType(item.itemTargetType),
+    stockQuantity,
+    purchasedCount,
+    remainingStock,
     priceCoins: item.priceCoins,
     discountPercent: item.discountPercent ?? 0,
     finalPrice: finalShopPrice(item),
@@ -55,6 +81,8 @@ export function validateShopItemInput(input = {}) {
   const name = String(input.name ?? "").trim();
   const category = String(input.category ?? "").trim();
   const targetId = String(input.targetId ?? "").trim();
+  const itemTargetType = normalizeItemTargetType(input.itemTargetType);
+  const stockQuantity = parseStockQuantity(input.stockQuantity ?? -1);
   const priceCoins = parseNonNegativeInt(input.priceCoins);
   const discountPercent = parseNonNegativeInt(input.discountPercent ?? 0);
   const sortOrder = parseIntValue(input.sortOrder ?? 0);
@@ -62,8 +90,9 @@ export function validateShopItemInput(input = {}) {
   const enabled = input.enabled ?? true;
 
   if (!name) errors.push("name is required");
-  if (!SHOP_CATEGORIES.has(category)) errors.push("category must be character or decoration");
+  if (!SHOP_CATEGORIES.has(category)) errors.push("category must be character, decoration, or item");
   if (!targetId) errors.push("targetId is required");
+  if (stockQuantity == null) errors.push("stockQuantity must be -1 or a non-negative integer");
   if (priceCoins == null) errors.push("priceCoins must be a non-negative integer");
   if (discountPercent == null || discountPercent > 100) errors.push("discountPercent must be an integer from 0 to 100");
   if (sortOrder == null) errors.push("sortOrder must be an integer");
@@ -77,6 +106,8 @@ export function validateShopItemInput(input = {}) {
       name,
       category,
       targetId,
+      itemTargetType,
+      stockQuantity,
       priceCoins,
       discountPercent,
       purchasable,
@@ -112,12 +143,16 @@ export function validateDecorationInput(input = {}) {
   };
 }
 
-export async function listShopItems(prisma) {
-  const items = await prisma.shopItem.findMany({
-    where: { enabled: true },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
-  });
-  return { items: items.map(toShopItemPayload) };
+export async function listShopItems(prisma, userId = "") {
+  const [items, user] = await Promise.all([
+    prisma.shopItem.findMany({
+      where: { enabled: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
+    }),
+    userId ? prisma.user.findUnique({ where: { id: userId } }) : null
+  ]);
+  const purchaseCounts = parseItemPurchaseCounts(user?.itemPurchaseCounts);
+  return { items: items.map((item) => toShopItemPayload(item, purchaseCounts)) };
 }
 
 export async function seedBuiltinShopItems(prisma) {
@@ -128,13 +163,7 @@ export async function seedBuiltinShopItems(prisma) {
         targetId: item.targetId
       }
     });
-    if (existing) {
-      await prisma.shopItem.update({
-        where: { id: existing.id },
-        data: item
-      });
-      continue;
-    }
+    if (existing) continue;
     await prisma.shopItem.create({ data: item });
   }
 }
@@ -148,6 +177,12 @@ export async function purchaseShopItem({ prisma, userId, itemId }) {
     if (!user) throw routeError(404, "用户不存在");
     if (!item || !item.enabled || !item.purchasable) throw routeError(400, "商品不可购买");
 
+    const itemPurchaseCounts = parseItemPurchaseCounts(user.itemPurchaseCounts);
+    const purchasedCount = itemPurchaseCounts[item.targetId] ?? 0;
+    if (item.category === "item" && item.stockQuantity >= 0 && purchasedCount >= item.stockQuantity) {
+      throw routeError(400, "道具库存不足");
+    }
+
     const price = finalShopPrice(item);
     if (user.coins < price) throw routeError(400, "金币不足");
 
@@ -160,13 +195,48 @@ export async function purchaseShopItem({ prisma, userId, itemId }) {
     } else if (item.category === "decoration") {
       if (ownedDecorations.includes(item.targetId)) throw routeError(400, "已拥有该装饰");
       data.ownedDecorations = [...ownedDecorations, item.targetId].join(",");
+    } else if (item.category === "item") {
+      const ownedItems = parseOwnedItems(user.ownedItems);
+      ownedItems[item.targetId] = (ownedItems[item.targetId] ?? 0) + 1;
+      itemPurchaseCounts[item.targetId] = purchasedCount + 1;
+      data.ownedItems = serializeOwnedItems(ownedItems);
+      data.itemPurchaseCounts = serializeItemPurchaseCounts(itemPurchaseCounts);
     } else {
       throw routeError(400, "未知商品类别");
     }
 
     const updated = await tx.user.update({ where: { id: user.id }, data });
-    return { user: publicUser(updated), item: toShopItemPayload(item) };
+    return { user: publicUser(updated), item: toShopItemPayload(item, itemPurchaseCounts) };
   });
+}
+
+export function parseItemPurchaseCounts(value) {
+  const text = String(value ?? "").trim();
+  if (!text) return {};
+  if (text.startsWith("{")) {
+    try {
+      return normalizeCountObject(JSON.parse(text));
+    } catch {
+      return {};
+    }
+  }
+  const counts = {};
+  for (const itemId of text.split(",").map((item) => item.trim()).filter(Boolean)) {
+    counts[itemId] = (counts[itemId] ?? 0) + 1;
+  }
+  return counts;
+}
+
+export function serializeItemPurchaseCounts(value = {}) {
+  return JSON.stringify(normalizeCountObject(value));
+}
+
+function normalizeCountObject(value = {}) {
+  return Object.fromEntries(
+    Object.entries(value)
+      .map(([itemId, quantity]) => [String(itemId).trim(), Math.max(0, Math.floor(Number(quantity) || 0))])
+      .filter(([itemId, quantity]) => itemId && quantity > 0)
+  );
 }
 
 function listFromCsv(value) {
@@ -176,6 +246,11 @@ function listFromCsv(value) {
 function parseNonNegativeInt(value) {
   const number = parseIntValue(value);
   return number == null || number < 0 ? null : number;
+}
+
+function parseStockQuantity(value) {
+  const number = parseIntValue(value);
+  return number == null || number < -1 ? null : number;
 }
 
 function parseIntValue(value) {

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { rankFromRating } from "../src/shared/ratingRank.js";
+import { parseItemEffects } from "./itemEffects.js";
 
 export const prisma = new PrismaClient();
 
@@ -28,7 +29,27 @@ export function publicUser(user) {
     selectedCharacter: canonicalCharacterId(user.selectedCharacter),
     selectedStoneDecoration: user.selectedStoneDecoration ?? "",
     ownedCharacters: [...ownedCharacters],
-    ownedItems: user.ownedItems.split(",").filter(Boolean),
+    ownedItems: publicOwnedItems(user.ownedItems),
+    itemEffects: parseItemEffects(user.itemEffects),
     ownedDecorations: user.ownedDecorations.split(",").filter(Boolean)
   };
+}
+
+function publicOwnedItems(value) {
+  const text = String(value ?? "").trim();
+  if (!text) return [];
+  if (text.startsWith("{")) {
+    try {
+      return Object.entries(JSON.parse(text))
+        .map(([itemId, quantity]) => ({ itemId, quantity: Number(quantity) || 0 }))
+        .filter((item) => item.itemId && item.quantity > 0);
+    } catch {
+      return [];
+    }
+  }
+  const counts = {};
+  for (const itemId of text.split(",").map((item) => item.trim()).filter(Boolean)) {
+    counts[itemId] = (counts[itemId] ?? 0) + 1;
+  }
+  return Object.entries(counts).map(([itemId, quantity]) => ({ itemId, quantity }));
 }

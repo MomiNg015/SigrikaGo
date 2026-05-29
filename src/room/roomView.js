@@ -43,7 +43,8 @@ export function roomPeople(room) {
     color: player.color,
     username: player.user.username,
     rank: player.user.rank,
-    rating: player.user.rating
+    rating: player.user.rating,
+    connected: player.connected
   }));
   const spectators = (room.spectators ?? []).map((spectator) => ({
     id: `spectator-${spectator.user.id}`,

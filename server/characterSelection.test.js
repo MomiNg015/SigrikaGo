@@ -45,4 +45,11 @@ describe("character selection resolution", () => {
     expect(result.characterId).toBe("denia");
     expect(result.characterConfig).toEqual({ ...CHARACTERS.danea, id: "denia" });
   });
+
+  test("does not resolve a blocked candy-effect character", () => {
+    const result = resolveSelectedCharacter("sigrika", {}, new Set(), ["sigrika", "denia"], new Set(["sigrika"]));
+
+    expect(result.characterId).toBe("denia");
+    expect(result.characterConfig).toEqual({ ...CHARACTERS.danea, id: "denia" });
+  });
 });

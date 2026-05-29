@@ -113,6 +113,28 @@
   color: #121217;
 }
 
+.disconnect-badge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  display: inline-grid;
+  place-items: center;
+  min-width: 74px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 2px solid #d91528;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #d91528;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+  box-shadow: 0 8px 20px rgba(85, 12, 24, 0.14);
+}
+
 .viewpoint-button {
   position: absolute;
   left: 0;
@@ -632,7 +654,7 @@
 .black .stone.decorated-stone,
 .white .stone.decorated-stone {
   background: center / 100% 100% no-repeat var(--stone-decoration-image);
-  box-shadow: 0 4px 8px rgba(45, 29, 18, 0.24);
+  box-shadow: none;
 }
 
 .hidden-hand .stone {
@@ -1132,9 +1154,18 @@
   color: #6f6874;
 }
 
+.room-person.disconnected {
+  background: #eee9ef;
+  color: #958897;
+}
+
 .room-person.player .room-person-name {
   color: #d92f42;
   font-weight: 900;
+}
+
+.room-person.player.disconnected .room-person-name {
+  color: #9a879d;
 }
 
 .room-person.spectator .room-person-name {

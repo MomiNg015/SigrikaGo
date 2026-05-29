@@ -1,7 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { buildShopSlots, getShopPageCount, isShopItemOwned, pickShopMascotLine, SHOP_MASCOT_LINES } from "./ShopModal.jsx";
+import { readFileSync } from "node:fs";
+import {
+  buildShopSlots,
+  getShopPageCount,
+  getShopItemDescription,
+  getShopItemQuantityLabel,
+  isShopItemOwned,
+  isShopItemSoldOut,
+  pickShopMascotLine,
+  SHOP_MASCOT_LINES
+} from "./ShopModal.jsx";
 import ShopModal from "./ShopModal.jsx";
 
 describe("ShopModal helpers", () => {
@@ -16,6 +26,9 @@ describe("ShopModal helpers", () => {
     expect(html).toContain("shop-layout");
     expect(html).toContain("shop-sidebar");
     expect(html).toContain("shop-content");
+    expect(html).toContain("你当前拥有");
+    expect(html).toContain('decoding="async"');
+    expect(html).not.toContain("<h2");
     expect(html).not.toContain("shop-header-display");
   });
 
@@ -73,5 +86,42 @@ describe("ShopModal helpers", () => {
     expect(isShopItemOwned({ category: "character", targetId: "denia" }, user)).toBe(true);
     expect(isShopItemOwned({ category: "decoration", targetId: "paw-stone" }, user)).toBe(true);
     expect(isShopItemOwned({ category: "character", targetId: "baconbits" }, user)).toBe(false);
+  });
+
+  it("marks per-user item stock as sold out from remainingStock", () => {
+    expect(isShopItemSoldOut({ category: "item", stockQuantity: 10, remainingStock: 0 })).toBe(true);
+    expect(isShopItemSoldOut({ category: "item", stockQuantity: 10, remainingStock: 1 })).toBe(false);
+    expect(isShopItemSoldOut({ category: "item", stockQuantity: -1, remainingStock: -1 })).toBe(false);
+    expect(isShopItemSoldOut({ category: "character", stockQuantity: 0, remainingStock: 0 })).toBe(false);
+  });
+
+  it("builds compact item description and quantity labels for shop cards", () => {
+    expect(getShopItemDescription({ description: "  产地不明的糖果  " })).toBe("产地不明的糖果");
+    expect(getShopItemDescription({})).toBe("暂无介绍");
+    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: 10, remainingStock: 4 })).toBe("库存 4");
+    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: -1 })).toBe("不限量");
+    expect(getShopItemQuantityLabel({ category: "decoration" })).toBe("限购 1");
+  });
+
+  it("keeps the scrollable shop grid top reachable when viewport height is short", () => {
+    const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
+    const shopGridBlock = css.match(/\.shop-grid\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(shopGridBlock).toContain("overflow: auto");
+    expect(shopGridBlock).toContain("align-content: safe center");
+  });
+
+  it("styles discounted original prices as a compact line above the current price", () => {
+    const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
+    const shopPriceBlock = css.match(/\.shop-price\s*\{[^}]+\}/)?.[0] ?? "";
+    const priceNumberWrapBlock = css.match(/\.shop-price-number-wrap\s*\{[^}]+\}/)?.[0] ?? "";
+    const originalPriceBlock = css.match(/\.shop-original-price\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(shopPriceBlock).toContain("align-items: baseline");
+    expect(priceNumberWrapBlock).toContain("position: relative");
+    expect(originalPriceBlock).toContain("position: absolute");
+    expect(originalPriceBlock).toContain("right: 0");
+    expect(originalPriceBlock).toContain("color: #df3f4f");
+    expect(originalPriceBlock).toContain("font-size: 12px");
   });
 });

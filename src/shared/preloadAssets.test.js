@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CHARACTER_SKILL_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
+import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { deploymentSocketBase, loginPreloadAssets, playbackAssetSources } from "./preloadAssets.js";
 
 describe("deployment preload asset helpers", () => {
@@ -27,9 +28,22 @@ describe("deployment preload asset helpers", () => {
 
     expect(assets.images).toContain("/assets/sigrika_centered.png");
     expect(assets.images).toContain("/assets/Aemeath_centered.png");
+    expect(assets.images).not.toContain(DENIA_CANDY_PORTRAIT);
     expect(assets.audio).toContain("/assets/music/godown_clear.ogg");
-    expect(assets.audio).toContain("/assets/music/hidamari_intro_once.ogg");
+    expect(assets.audio).toContain("/assets/music/main_bgm.ogg");
     expect(assets.audio).toContain("/assets/music/shanjifu_loop.ogg");
     expect(assets.audio).toContain("/assets/voice/sigrika_2_no_exclaim.ogg");
+  });
+
+  it("preloads the candy portrait only while the active user has the candy effect", () => {
+    const assets = loginPreloadAssets({
+      characters: {
+        denia: { portrait: "/assets/Danea_centered.png" }
+      },
+      itemEffects: { deniaRainbowGlow: true }
+    });
+
+    expect(assets.images).toContain("/assets/Danea_centered.png");
+    expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
   });
 });

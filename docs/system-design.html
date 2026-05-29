@@ -59,6 +59,9 @@
 <ul>
 <li><code>public/assets/go-board-13-clean-3d-1.png</code> through <code>public/assets/go-board-13-clean-3d-4.png</code> are cleaner transparent 13-line Go board candidates with straight grid lines, no gray construction strokes, five star points, no stones, and a simple 3D board thickness for the same home screen button.</li>
 </ul>
+<ul>
+<li><code>public/assets/effects/denia-bubble-pop.gif</code> is a 256x256 transparent GIF preview for the planned Denia target-point skill effect. It runs for 2 seconds: 0.0-0.5s glass bubble generation, 0.5-1.2s black ink/energy fill, 1.2-1.5s crack and pressure buildup, and 1.5-2.0s burst into black shards, smoke particles, glass flecks, and a light shock ring.</li>
+</ul>
 <h1>SigrikaGo System Design</h1>
 <p>本文档基于当前代码库静态分析生成，目标是方便后续维护者和 AI 继续接手。未在代码中确认的内容会标注为“待确认”。</p>
 <h2>1. 项目目录结构说明</h2>
@@ -118,6 +121,9 @@
 <li><code>.gitignore</code> 排除了 <code>node_modules</code>、<code>dist</code>、<code>.env</code>、SQLite 数据库、开发日志等。</li>
 </ul>
 <ul>
+<li><code>npm run dev</code> 同时启动 Vite 与后端服务；后端开发脚本使用 <code>node --watch-path=server --watch-path=src/shared server/index.js</code>，只监听源码目录，避免 SQLite <code>dev.db</code> 写入触发后端重启并造成对局中 socket 断开或 API <code>ECONNRESET</code>。</li>
+</ul>
+<ul>
 <li>当前工作目录是 Git 仓库工作树，当前分支可通过 <code>git status</code> 检查。</li>
 </ul>
 <h2>2. 当前核心模块</h2>
@@ -141,6 +147,9 @@
 <li><code>src/auth/AuthScreen.jsx</code></li>
 <ul>
 <li>登录/注册展示组件。</li>
+</ul>
+<ul>
+<li>注册模式显示“确认密码”输入框；前端会先校验两次密码一致，再提交注册请求。</li>
 </ul>
 <ul>
 <li>调用 <code>src/api/client.js</code> 完成认证请求，并通过 <code>onAuth</code> 回写 token 与用户信息。</li>
@@ -176,7 +185,16 @@
 <li>包含概览、用户、角色、商城、装饰、系统设置、审计日志等后台组件。</li>
 </ul>
 <ul>
-<li>该模块已从 <code>src/main.jsx</code> 拆出，但内部仍可继续按业务域拆分。</li>
+<li>该模块已从 <code>src/main.jsx</code> 拆出，且顶部侧栏/标题外壳已下沉到 <code>src/admin/AdminShell.jsx</code>；内部 tab 内容仍可继续按业务域拆分。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/admin/AdminShell.jsx</code></li>
+<ul>
+<li>后台管理外壳组件。</li>
+</ul>
+<ul>
+<li>统一维护后台 tab 列表、tab 文案、侧栏切换、返回大厅按钮、当前管理员名和页面标题，供后续继续拆分后台 tab 时复用。</li>
 </ul>
 </ul>
 <ul>
@@ -189,6 +207,36 @@
 </ul>
 </ul>
 <ul>
+<li><code>src/app/resumeSession.js</code></li>
+<ul>
+<li>前端断线恢复/结果恢复的纯逻辑模块。</li>
+</ul>
+<ul>
+<li>集中维护最近玩家房间号的 localStorage key、恢复请求 payload，以及已结束房间恢复为结果弹窗时需要触发的状态变更。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/roomUserSync.js</code></li>
+<ul>
+<li>前端房间视图中的当前用户状态同步模块。</li>
+</ul>
+<ul>
+<li>当 <code>match:found</code>、<code>room:update</code> 或结果恢复携带房间玩家 payload 时，会把当前登录用户对应的 <code>player.user</code> 合并回全局 <code>user</code>，确保糖果效果、金币、出战角色等状态在结算广播后立即刷新。</li>
+</ul>
+<ul>
+<li>合并结果与当前用户内容一致时会保留原对象引用；主 Socket 连接只依赖 token 与用户 id，不会因为糖果效果、金币等资料刷新而重建连接，避免玩家房间 <code>socketId</code> 与前端当前连接脱节。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/socketHandlers.js</code></li>
+<ul>
+<li>前端 Socket.IO 事件处理器模块。</li>
+</ul>
+<ul>
+<li>集中安装并处理 <code>match:*</code>、<code>room:*</code>、<code>duel:*</code>、<code>error:toast</code> 和 <code>account:logged-out</code> 事件，把房间恢复、匹配过渡、轻量棋钟、约战提示和账号踢下线的状态变更从 <code>src/main.jsx</code> 中移出，便于单元测试和后续 hook 化。</li>
+</ul>
+</ul>
+<ul>
 <li><code>src/shared/game.js</code></li>
 <ul>
 <li>共享的游戏规则引擎。</li>
@@ -198,6 +246,51 @@
 </ul>
 <ul>
 <li>该模块被前端回放逻辑与服务端房间逻辑共同使用。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/shared/gameBoard.js</code></li>
+<ul>
+<li>共享棋盘几何与点位访问模块。</li>
+</ul>
+<ul>
+<li>集中维护标准棋盘尺寸、点 id 解析/生成、棋盘点创建、快速点查找和有效邻居过滤。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/shared/gameConstants.js</code></li>
+<ul>
+<li>共享棋色常量与对手颜色推导。</li>
+</ul>
+<ul>
+<li><code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/shared/gameResults.js</code></li>
+<ul>
+<li>共享对局结果与无效局判定模块。</li>
+</ul>
+<ul>
+<li>集中维护早期无效局阈值、认输/超时/和棋结果结构，以及给早期结果追加 invalid 标记的逻辑。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/shared/gameSkills.js</code></li>
+<ul>
+<li>共享技能配置归一化模块。</li>
+</ul>
+<ul>
+<li>将角色 id、内置角色技能和后台技能配置转换为规则引擎可执行的 skill config，并维护技能目标启动条件。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/shared/stoneFormatting.js</code></li>
+<ul>
+<li>共享子数格式化模块。</li>
+</ul>
+<ul>
+<li>用于数子结果、胜负差距和房间计分展示中的整数/分数子显示。</li>
 </ul>
 </ul>
 <ul>
@@ -236,6 +329,36 @@
 <ul>
 <li>注册公开 API、登录/注册 API、用户 API、棋谱 API、排行榜 API，并挂载 <code>/api/admin</code>。</li>
 </ul>
+<ul>
+<li>JSON body 解析错误会通过统一错误处理中间件返回 JSON，避免前端 API helper 因 Express 默认 HTML 错误页显示“接口返回格式不是 JSON”。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/duelRequests.js</code></li>
+<ul>
+<li>好友/社交对局申请状态机。</li>
+</ul>
+<ul>
+<li>管理待确认约战请求、20 秒过期定时器、同意/拒绝/断线过期事件，以及接受后创建直连房间；<code>server/index.js</code> 只负责把 Socket.IO 事件转发给该模块。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/onlineSessions.js</code></li>
+<ul>
+<li>在线 socket 与登录会话生命周期模块。</li>
+</ul>
+<ul>
+<li>管理用户到 socket id 的索引、登录后等待 socket 连接的短期清理 timer、强制登录踢下线、断开最后一个 socket 后清理 session，以及社交在线状态/首个在线 socket 查询。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/httpErrors.js</code></li>
+<ul>
+<li>HTTP 错误响应中间件模块。</li>
+</ul>
+<ul>
+<li>当前负责把 JSON body 解析错误转换为 JSON 响应，避免 Express 默认 HTML 错误页穿透到前端 API helper。</li>
+</ul>
 </ul>
 <ul>
 <li><code>server/rooms.js</code></li>
@@ -243,7 +366,7 @@
 <li>内存态房间系统。</li>
 </ul>
 <ul>
-<li>管理匹配队列、房间成员、观战、Socket 广播、聊天、计时、读秒、和棋/数子流程、技能演出、结束后保存棋谱与更新胜负积分。</li>
+<li>管理匹配队列、房间成员、观战、Socket 广播、聊天、计时、读秒、和棋/数子流程、技能演出、结束后保存棋谱与触发结果结算。</li>
 </ul>
 </ul>
 <ul>
@@ -256,6 +379,42 @@
 </ul>
 <ul>
 <li>该模块把 <code>server/rooms.js</code> 中纯数据投影逻辑移出实时流程，降低房间广播和棋谱快照代码的耦合。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/roomItemEffects.js</code></li>
+<ul>
+<li>房间结算时的道具效果处理模块。</li>
+</ul>
+<ul>
+<li>当前负责有效局结束后计算并应用彩虹豆豆跳跳糖清除效果；无效局不会清除糖果效果。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/roomRewards.js</code></li>
+<ul>
+<li>房间结算时的内存用户奖励应用模块。</li>
+</ul>
+<ul>
+<li>将胜负积分、金币、战绩增量写回房间内存玩家，保证最终 <code>room:update</code> 能带上最新用户状态。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/roomStatePersistence.js</code></li>
+<ul>
+<li>房间内存状态与持久化快照之间的转换模块。</li>
+</ul>
+<ul>
+<li>负责清理 socket/timer 等运行时字段、生成 PersistedRoom snapshot、恢复房间运行时字段，以及按节流规则触发持久化写入。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/roomClockTiming.js</code></li>
+<ul>
+<li>房间棋钟纯计算模块。</li>
+</ul>
+<ul>
+<li>负责主时间扣减、读秒周期扣减，以及有效行动后的读秒重置，避免计时规则继续堆在实时房间流程里。</li>
 </ul>
 </ul>
 <ul>
@@ -312,10 +471,16 @@
 <li>用户注册与登录。</li>
 </ul>
 <ul>
+<li>注册界面要求两次密码输入一致；确认密码只用于前端校验，不随 API payload 保存。</li>
+</ul>
+<ul>
 <li>密码使用 <code>bcryptjs</code> 哈希存储。</li>
 </ul>
 <ul>
-<li>JWT 登录态，token 有效期为 14 天。</li>
+<li>JWT 登录态，token 仅保存在当前页面内存中，不写入 <code>localStorage</code>；刷新页面、关闭浏览器或移动端退出后需要重新登录。</li>
+</ul>
+<ul>
+<li>同一账号只允许一个活动登录会话；再次登录已在线账号时，登录接口返回 <code>already_logged_in</code> 冲突，前端确认后以 <code>forceLogin</code> 重试并踢下旧 socket。</li>
 </ul>
 <ul>
 <li>用户状态支持 <code>active</code> / <code>banned</code>。</li>
@@ -337,7 +502,10 @@
 <li>大厅首页布局 A：空想对局作为最大主行动面板；棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
 </ul>
 <ul>
-<li>大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色。</li>
+<li>大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。</li>
+</ul>
+<ul>
+<li><code>public/hotspot-prototype.html</code> 是单页热点原型，用用户提供的 <code>/assets/prototypes/classroom-bg1.png</code> 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。</li>
 </ul>
 <ul>
 <li>大厅顶部标题和副标题来自 <code>GET /api/site-settings</code>；未配置或接口失败时回退到 <code>大厅</code> / <code>SigrikaGo</code>。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。</li>
@@ -377,6 +545,9 @@
 <li>匹配成功后先显示 3 秒匹配成功弹窗；进入房间后处于 <code>opening</code> 开局展示阶段，玩家看到“本局你执黑/白”弹窗，服务端在该阶段暂停棋钟和落子/技能操作。</li>
 </ul>
 <ul>
+<li>匹配成功弹窗倒计时期间仍会接收服务端 <code>room:update</code>。前端会同步刷新匹配过渡状态和一个最新房间 ref，倒计时完成时优先使用该 ref 进入房间，避免服务端已推进到 <code>playing</code> 但客户端仍拿旧 <code>opening</code> 快照，导致棋钟不动、不能落子或开局语音不触发。</li>
+</ul>
+<ul>
 <li>收到匹配成功事件时，前端会自动关闭大厅上已打开的商店、棋舍、排行榜、观战、好友、设置和留言板弹窗，避免弹窗盖住后续对局切换。</li>
 </ul>
 <ul>
@@ -384,6 +555,9 @@
 </ul>
 <ul>
 <li>计时与读秒：房间玩家包含 <code>mainTime</code>、<code>byoYomi</code>、<code>byoYomiPeriods</code> 等内存字段。</li>
+</ul>
+<ul>
+<li>对局者刷新页面、关闭页面或短暂断线后，前端会保存最近玩家房间号并在 Socket 重连时请求 <code>room:resume</code>。如果内存房间仍存在且未结束，服务端会把该 socket 重新绑定到房间并广播当前房间视图；断线期间服务端棋钟继续按真实时间推进，不会暂停。如果房间已结束但仍在内存或可通过该房间号找到 <code>GameRecord.snapshot</code>，前端停留在大厅并恢复结果弹窗；关闭结果弹窗后清理最近房间号。如果服务重启导致内存房间丢失且没有可恢复棋谱，前端会清理最近房间号、回到大厅，并提示“房间已不存在，可能是服务器重启或房间已关闭”。</li>
 </ul>
 <ul>
 <li>玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能超频使用红色强调。除子与超频标签支持悬停说明：除子说明其会在数目时按 <code>+除子*1</code> 计入，超频说明其会在数目时按 <code>-超频*2</code> 扣减。</li>
@@ -410,10 +584,16 @@
 <li>和棋申请，10 秒超时拒绝。</li>
 </ul>
 <ul>
+<li>数子申请、和棋申请与数子结果确认的超时任务统一通过房间 <code>timeoutIds</code> 注册，房间关闭、断线清理和测试清理时会一起取消，避免旧 deadline 定时器在房间生命周期外继续运行。</li>
+</ul>
+<ul>
 <li>结束后保存棋谱，并通过 <code>resultRewardDelta</code> 更新战绩、积分与金币：胜者积分 +20 / 金币 +50，败者积分 -20 / 金币 +20，和棋不更新用户奖励。</li>
 </ul>
 <ul>
-<li>开发测试按钮：<code>test-random-layout</code> 会清空棋盘并生成符合基本气规则的 50 黑 50 白随机布局；<code>test-restore-skill</code> 会恢复当前玩家技能次数。该入口用于本地测试，后续应便于统一移除。</li>
+<li>对局不超过 10 手结束均属于无效局：不会写入 <code>GameRecord</code>，不会出现在对局回放中，也不会增减积分、金币或战绩；服务端向双方发送顶部提示“对局不超过10手结束，对局无效”，前端不弹对局结果弹窗。</li>
+</ul>
+<ul>
+<li>开发测试按钮：<code>test-random-layout</code> 会清空棋盘并生成符合基本气规则的 50 黑 50 白随机布局；<code>test-restore-skill</code> 会恢复当前玩家技能次数；<code>test-enter-byo-yomi</code> 会把点击方主时间直接置为 0 并进入读秒。该入口用于本地测试，后续应便于统一移除。</li>
 </ul>
 <h3>技能与角色</h3>
 <ul>
@@ -446,17 +626,23 @@
 <li><code>random-blast</code>：随机选择棋盘上非一路的已有棋子作为中心，并移除以该棋子为中心的固定 3x3 区域内棋子。</li>
 </ul>
 <ul>
-<li><code>color-illusion-passive</code>：娜波摩被动技“千变万化”。第一次轮到娜波摩玩家时自动进入技能演出，演出结束后该玩家后续落子有 80% 概率在对手视角中显示为对手颜色，真实棋盘规则仍按实际颜色计算；进入数子、结果确认或对局结束后会显示真实棋盘。</li>
+<li><code>color-illusion-passive</code>：娜波摩被动技“千变万化”。第一次轮到娜波摩玩家时自动进入技能演出，演出结束后该玩家后续落子有 80% 概率在对手视角中显示为对手颜色，真实棋盘规则仍按实际颜色计算；数子申请待确认时仍保持伪装，双方同意并进入死子确认/数子阶段、结果确认或对局结束后才显示真实棋盘。</li>
+</ul>
 </ul>
 <ul>
 <li>达妮娅 <code>flip-stone</code> 作用于真实棋子；如果目标点带有娜波摩伪装，反色后会清除该点伪装。</li>
-</ul>
 </ul>
 <ul>
 <li>技能演出流程：服务端先进入 <code>skill-preview</code> 并广播 <code>pendingSkill</code>，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。</li>
 </ul>
 <ul>
+<li>达妮娅目标点泡泡炸裂特效已有预览资产 <code>public/assets/effects/denia-bubble-pop.gif</code>：透明玻璃泡泡生成并膨胀，随后被黑色能量/墨雾填满，短暂出现细密裂纹和蓄力压迫，最终爆散出黑色碎片、烟雾粒子和轻微冲击波并消散。该 GIF 当前仅作为视觉参考，尚未接入技能生效流程。</li>
+</ul>
+<ul>
 <li>开局被动技能不会在 <code>opening</code> 阶段触发；正式进入 <code>playing</code> 后才按延迟规则触发，避免和执色提示/开局语音重叠。</li>
+</ul>
+<ul>
+<li>依赖棋盘已有棋子的技能在场上没有棋子时不可启动：前端技能按钮会变灰，服务端也会在 <code>use-skill</code> action 中二次校验并拒绝。当前包括以棋子为目标的达妮娅 <code>flip-stone</code>，以及需要随机选择现有棋子为中心的猪小仙 <code>random-blast</code>。</li>
 </ul>
 <ul>
 <li>无目标技能不显示落子/目标预览；猪小仙 <code>random-blast</code> 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。</li>
@@ -517,38 +703,77 @@
 <li>观战回放只改变棋盘内容，不改变实时信息区内容（计时、读秒、提子、超频等保持实际对局进程）。</li>
 </ul>
 <ul>
-<li>观战者停在最新手时会自动跟随实时进程；如果手动回退到旧手，则新进程不会强制跳回最新。</li>
+<li>观战弹窗标题显示为“对局列表”。观战者停在最新手时会自动跟随实时进程；如果手动回退到旧手，则新进程不会强制跳回最新。</li>
 </ul>
 <h3>商城与装饰</h3>
 <ul>
-<li>商品支持 <code>character</code> 与 <code>decoration</code> 两类。</li>
+<li>商品支持 <code>character</code>、<code>item</code> 与 <code>decoration</code> 三类。</li>
 </ul>
 <ul>
-<li>商品有原价、折扣、是否可购买、是否展示、排序、描述、图片。</li>
+<li>商品有原价、折扣、是否可购买、是否展示、排序、描述、图片；道具商品额外有目标类型和商店库存。</li>
 </ul>
 <ul>
-<li>玩家商城标题显示为“扎希拉商店”，大厅入口显示为“商店”。商店窗口分为左右两列：左侧窄列为扎希拉接待区，上方是独立聊天气泡，中间展示扎希拉 Q 版立绘，底部显示金币图标加金额的金色标签；右侧宽列为标题、分类选项卡、商品栏和页码。商品区每页固定为 2 行 4 列共 8 个槽位，底部显示页码；商品数超过 8 个时自动增加页码，点击页码切换对应商品栏，切换分类会回到第 1 页且不改变槽位或窗口尺寸。空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。扎希拉资源位于 <code>/assets/zahiya_shop.png</code>，打开商店时聊天气泡从“今天想买些什么？”“刚刚进了一批好货哟~”“欢迎来到扎希拉商店！”中随机展示一句。</li>
+<li>玩家商城大厅入口显示为“商店”。商店窗口分为左右两列：左侧窄列为扎希拉接待区，上方是独立聊天气泡，中间展示扎希拉 Q 版立绘，底部显示“你当前拥有”小字和金币图标加金额的金色标签；聊天气泡不再带下方圆点尾巴，金币标签与立绘保持约 15px 间距。右侧宽列直接从分类选项卡进入商品栏和页码，不再显示大标题。商品区每页仍固定 8 个槽位，但视觉网格会按可用宽高自适应列数，商品区内部独立滚动，页码固定保留在底部且当前页使用浅色高亮；商品网格内容在选项卡和页码之间使用安全居中：高度足够时尽量让第一行商品顶部与选项卡底部、第二行商品底部与页码按钮之间的留白接近，高度不足时回退到顶部对齐，保证滚动条可以覆盖完整商品栏。横屏小高度或窄窗口下会压缩扎希拉立绘、气泡、商品卡片和选项卡间距，避免商品栏和分类选项卡被挤出视口。商品数超过 8 个时自动增加页码，点击页码切换对应商品栏，切换分类会回到第 1 页且不改变槽位数量。空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。扎希拉资源位于 <code>/assets/zahiya_shop.png</code>，打开商店时聊天气泡从“今天想买些什么？”“刚刚进了一批好货哟~”“欢迎来到扎希拉商店！”中随机展示一句。</li>
 </ul>
 <ul>
-<li>商城商品卡片不显示商品描述栏；商品名位于商品图下方居中。商品卡片内部使用固定图片区、名称区、价格区和按钮区，商品图相对放大，商品名与售价使用同级字号并收紧间距，避免窗口尺寸变化时内容被挤出商品栏。</li>
+<li>商城商品卡片按商品图标、商品名、商品介绍、数量/售价、购买按钮自上而下排列；数量或限购信息左对齐，售价右对齐。折扣商品的原价显示在现价数字上方，使用更小的红色删除线并与现价保持紧凑间距；原价作为浮动标注对齐现价数字列，不改变现价和无折扣商品售价的行内位置。购买按钮与卡片底部保留留白。商品卡片使用固定图片区、名称区、介绍区、信息区和按钮区，避免窗口尺寸变化时内容被挤出商品栏。</li>
 </ul>
 <ul>
-<li>购买会扣除用户金币，并写入 <code>ownedCharacters</code> 或 <code>ownedDecorations</code>。</li>
+<li>购买会扣除用户金币，并写入 <code>ownedCharacters</code>、<code>ownedDecorations</code> 或 <code>ownedItems</code>；道具可重复购买并按数量累加。道具 <code>stockQuantity</code> 表示每个用户独立的商店库存上限，不共享全服库存；购买道具会写入用户侧 <code>itemPurchaseCounts</code>，用于计算该用户剩余商店库存。</li>
+</ul>
+<ul>
+<li>商店选项卡包含“道具”，点击后切换到道具商品页；道具对当前用户的剩余商店库存为 0 时仍可展示，但“购买”按钮改为“已售罄”并禁用。</li>
+</ul>
+<ul>
+<li>商店商品槽和仓库道具/角色目标列表会缓存当前分类、页码和拥有角色派生结果；弹窗中的道具图、角色图和使用结果图使用 lazy loading 与 async decoding，避免道具图片或动图增加后挤占对局/弹窗打开时的主线程预算。</li>
+</ul>
+<ul>
+<li>大厅左下工具区新增“仓库”入口，玩家可查看已购道具、数量和说明。自己目标道具可直接使用；角色目标道具会弹出角色选择窗口，展示自己拥有的角色立绘，点击角色后按个消耗道具；若道具有已实现效果，窗口会只保留被选择角色立绘并在下方展示效果文本。使用道具只减少仓库道具数量，不恢复商店库存；短提示和错误统一走页面顶部 toast，不在仓库窗口内额外显示。</li>
+</ul>
+<ul>
+<li>对角色使用道具成功后，页面顶部 toast 显示“对[角色名]成功使用了[道具名]”；使用结果窗口读取接口返回的最新 <code>user.itemEffects</code>，所以达妮娅吃下彩虹豆豆跳跳糖后，结果窗口中的达妮娅立绘会立即显示为彩色 GIF 状态。</li>
+</ul>
+<ul>
+<li>商店购买、商店加载错误、后台管理保存/下架/上传/封禁等操作反馈统一走页面顶部 toast，不在对应弹窗、抽屉或后台编辑区内新增成功/失败文本框。</li>
+</ul>
+<ul>
+<li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。涉及金币、积分或段位变化的事件（包括对局结果、购买、道具效果、后台编辑当前用户等）会按变动项分别立即显示黄底 toast，例如 <code>金币+50</code>、<code>积分+20</code>、<code>段位2段 → 3段</code>。</li>
+</ul>
+<ul>
+<li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.png</code>，介绍为“产地不明的糖果，据说有神秘的效果”。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
+</ul>
+<ul>
+<li>彩虹豆豆跳跳糖对西格莉卡使用后：消耗 1 个道具，用户获得 30 金币，<code>itemEffects.sigrikaCandyDisabled</code> 置为 true；西格莉卡棋舍出战按钮变灰，<code>/api/me/character</code> 与 socket 选角都会避开西格莉卡。如果当前出战是西格莉卡，后端自动随机切换到一名已拥有且可出战的其它角色；没有可替换角色时拒绝使用且不消耗道具。任意角色完成一盘有效对局后清除该状态。</li>
+</ul>
+<ul>
+<li>彩虹豆豆跳跳糖对达妮娅使用后：消耗 1 个道具，<code>itemEffects.deniaRainbowGlow</code> 置为 true；除用户铭牌外，所有展示该用户达妮娅立绘的位置都会把原立绘替换为 <code>/assets/characters/denia_color.gif</code> 彩色动图，包括棋舍、仓库使用结果、对局信息区、技能横幅、排行榜/好友资料等可获得用户效果状态的界面。只有使用达妮娅完成一盘有效对局后清除该状态；服务端会在首个有效结算 <code>room:update</code> 广播前先更新房间内存玩家状态，前端再从房间视图同步当前用户状态，因此返回大厅/棋舍时立绘会恢复为角色原始立绘。</li>
+</ul>
+<ul>
+<li>达妮娅糖果动图不会在所有用户登录时无条件预加载；<code>loginPreloadAssets</code> 只在当前用户已有 <code>deniaRainbowGlow</code> 时加入 <code>/assets/characters/denia_color.gif</code>，避免普通登录路径提前下载/解码较大的动图资源。</li>
+</ul>
+<ul>
+<li>糖果效果只在有效对局结束并保存棋谱的链路清除；不超过 10 手的无效对局不会清除糖果效果。</li>
 </ul>
 <ul>
 <li>内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。</li>
 </ul>
 <ul>
-<li>内置装饰商品会 seed 爪印棋子，价格 500 金币。</li>
+<li>内置装饰商品会 seed 爪印棋子和“耙耙柑和水蜜桃”两套棋子装饰；爪印棋子价格 500 金币，“耙耙柑和水蜜桃”价格 1000 金币。</li>
 </ul>
 <ul>
-<li>爪印棋子使用 image-gen 生成图裁切出的透明 PNG 贴图：<code>paw-stone-black.png</code>、<code>paw-stone-white.png</code> 和 <code>paw-stone-preview.png</code>。</li>
+<li><code>seedBuiltinShopItems</code> 只创建缺失的内置商城商品，不覆盖已经存在的 <code>ShopItem</code>。后台管理保存过的商品名、介绍、图片、售价、库存和上下架状态必须以数据库为准，服务重启或对局写库后不能被内置默认值改回。</li>
+</ul>
+<ul>
+<li>爪印棋子使用 image-gen 生成图裁切出的透明 PNG 贴图：<code>paw-stone-black.png</code>、<code>paw-stone-white.png</code> 和 <code>paw-stone-preview.png</code>。“耙耙柑和水蜜桃”使用用户提供的 512x512 透明 PNG：<code>papagan-peach-stone-black.png</code> 为耙耙柑黑子，<code>papagan-peach-stone-white.png</code> 为水蜜桃白子，<code>papagan-peach-stone-preview.png</code> 为 1024x512 商店预览图。</li>
+</ul>
+<ul>
+<li>后台保存装饰类商城商品时，<code>targetId</code> 校验同时认可数据库 <code>Decoration.slug</code> 与内置 <code>STONE_DECORATIONS</code> 配置，避免只修改内置装饰商品介绍时被误报为 <code>Shop decoration target does not exist</code>。</li>
 </ul>
 <ul>
 <li>玩家购买棋子装饰后会进入棋舍装饰区，可点击应用；空选择表示继续使用默认棋子。</li>
 </ul>
 <ul>
-<li>对局棋盘按棋子颜色找到对应玩家的 <code>selectedStoneDecoration</code>，黑白双方可分别显示各自设置的棋子样式；未设置时保持默认棋子。</li>
+<li>对局棋盘按棋子颜色找到对应玩家的 <code>selectedStoneDecoration</code>，黑白双方可分别显示各自设置的棋子样式；未设置时保持默认棋子。装饰棋子贴图直接替换默认棋子视觉，不附加默认圆形阴影，避免不规则透明 PNG 下方露出圆形光圈。</li>
 </ul>
 <h3>排行榜</h3>
 <ul>
@@ -653,7 +878,13 @@
 <li><code>ownedCharacters</code>: 逗号分隔的角色 slug 字符串，默认包含内置角色。</li>
 </ul>
 <ul>
-<li><code>ownedItems</code>: 逗号分隔字符串；当前代码未看到具体购买/使用逻辑，待确认。</li>
+<li><code>ownedItems</code>: JSON 数量表字符串，例如 <code>{&quot;dream-ticket&quot;:2}</code>；兼容旧逗号分隔字符串读取，API 对外返回 <code>{ itemId, quantity }</code> 数组。</li>
+</ul>
+<ul>
+<li><code>itemPurchaseCounts</code>: JSON 数量表字符串，例如 <code>{&quot;rainbow-bean-candy&quot;:3}</code>；记录每个用户已从商店购买道具的次数，用于计算用户独立的商店库存，不随道具使用而减少。</li>
+</ul>
+<ul>
+<li><code>itemEffects</code>: JSON 状态字符串，当前支持 <code>sigrikaCandyDisabled</code> 与 <code>deniaRainbowGlow</code> 两个彩虹豆豆跳跳糖临时效果。</li>
 </ul>
 <ul>
 <li><code>ownedDecorations</code>: 逗号分隔装饰 slug。</li>
@@ -674,6 +905,9 @@
 </ul>
 <ul>
 <li>同一个 <code>ownerUserId + targetUserId</code> 只有一条记录；好友和黑名单互斥，通过更新 <code>type</code> 覆盖。</li>
+</ul>
+<ul>
+<li>关系写入使用 raw SQL upsert，并显式写入 <code>createdAt</code> / <code>updatedAt</code>，避免开发库通过 Prisma push 建表时 <code>updatedAt</code> 没有数据库默认值而触发 NOT NULL 约束错误。</li>
 </ul>
 <ul>
 <li>已在 <code>prisma/schema.prisma</code> 声明，并通过 <code>202605220001_add_user_relationship</code> migration 固化建表和索引；服务启动时仍保留 <code>ensureSocialSchema</code> 作为开发库兜底。</li>
@@ -821,10 +1055,16 @@
 <li><code>name</code>: 商品名。</li>
 </ul>
 <ul>
-<li><code>category</code>: <code>character</code> 或 <code>decoration</code>。</li>
+<li><code>category</code>: <code>character</code>、<code>item</code> 或 <code>decoration</code>。</li>
 </ul>
 <ul>
-<li><code>targetId</code>: 商品对应角色 slug 或装饰 slug。</li>
+<li><code>targetId</code>: 商品对应角色 slug、道具 slug 或装饰 slug。</li>
+</ul>
+<ul>
+<li><code>itemTargetType</code>: 道具目标类型，<code>self</code> 表示用户自己，<code>character</code> 表示需要选择拥有角色；非道具商品忽略。</li>
+</ul>
+<ul>
+<li><code>stockQuantity</code>: 道具商店库存上限，<code>-1</code> 表示不限量，<code>0</code> 表示对每个用户均售罄，正整数表示每个用户可购买次数；非道具商品忽略。</li>
 </ul>
 <ul>
 <li><code>priceCoins</code>: 原价金币。</li>
@@ -977,7 +1217,7 @@
 <li>注册账号。</li>
 </ul>
 <ul>
-<li>用户名至少 2 位，密码至少 4 位。</li>
+<li>用户名至少 2 位，密码 6-14 位；前端注册表单要求确认密码与密码一致。</li>
 </ul>
 </ul>
 <ul>
@@ -1028,7 +1268,28 @@
 <li>登录后购买商品。</li>
 </ul>
 <ul>
-<li>扣金币并更新拥有角色/装饰。</li>
+<li>扣金币并更新拥有角色、装饰或道具库存；道具对当前用户的剩余商店库存为 0 时不可购买。</li>
+</ul>
+</ul>
+<ul>
+<li><code>GET /api/items/inventory</code></li>
+<ul>
+<li>登录后获取当前用户仓库道具列表。</li>
+</ul>
+<ul>
+<li>返回道具商城信息、目标类型和当前拥有数量。</li>
+</ul>
+</ul>
+<ul>
+<li><code>POST /api/items/:itemId/use</code></li>
+<ul>
+<li>登录后按个使用仓库道具。</li>
+</ul>
+<ul>
+<li><code>self</code> 道具不需要对象；<code>character</code> 道具需要提交已拥有角色 <code>characterId</code>。后端会在校验拥有角色时规范化历史别名，例如旧 <code>danea</code> 会按 canonical <code>denia</code> 识别。</li>
+</ul>
+<ul>
+<li>彩虹豆豆跳跳糖会返回 <code>effectText</code> 和最新 <code>user</code>，并写入对应 <code>itemEffects</code>；同一角色效果未结束时禁止重复使用且不消耗道具。</li>
 </ul>
 </ul>
 <ul>
@@ -1153,7 +1414,7 @@
 <ul>
 <li><code>PATCH /api/admin/users/:id</code></li>
 <ul>
-<li>编辑用户 role、rating、coins、ownedCharacters、selectedCharacter；rank 由 rating 自动派生，不允许单独编辑。</li>
+<li>编辑用户 role、rating、coins、ownedCharacters、ownedItems、selectedCharacter；rank 由 rating 自动派生，不允许单独编辑。</li>
 </ul>
 <ul>
 <li>管理员保存后前端会同步当前登录用户信息，避免后台金币/角色等资产更新后棋舍和商城仍显示旧数据。</li>
@@ -1258,6 +1519,15 @@
 <li>将商品 <code>enabled</code> 设为 false。</li>
 </ul>
 </ul>
+<ul>
+<li>后台“道具管理”</li>
+<ul>
+<li>复用 <code>ShopItem.category = item</code> 的商城商品数据，可管理道具名、slug、图标、介绍、目标类型、商店库存、售价、折扣、展示与购买状态；商店库存为每个用户独立的购买次数上限。</li>
+</ul>
+<ul>
+<li>“用户管理”抽屉展示“拥有道具”文本区，一行一个 <code>道具slug:数量</code>，可通过新增行、改数量或删除行完成用户道具增删改查。</li>
+</ul>
+</ul>
 <h3>Socket.IO 事件</h3>
 <p>鉴权：</p>
 <ul>
@@ -1297,7 +1567,7 @@
 <li>对局动作：<code>move</code>、<code>pass</code>、<code>resign</code>、<code>skill</code>。</li>
 </ul>
 <ul>
-<li>本地测试动作：<code>test-random-layout</code>、<code>test-restore-skill</code>。这两个动作当前走同一 Socket 入口，但命名集中为 <code>test-*</code>，便于后续移除。</li>
+<li>本地测试动作：<code>test-random-layout</code>、<code>test-restore-skill</code>、<code>test-enter-byo-yomi</code>。这些动作当前走同一 Socket 入口，但命名集中为 <code>test-*</code>，便于后续移除。</li>
 </ul>
 </ul>
 <ul>
@@ -1453,7 +1723,7 @@
 <li><code>AdminStatusPill</code>: 后台表格状态标签，位于 <code>src/admin/AdminConsole.jsx</code>。</li>
 </ul>
 <ul>
-<li><code>Toast</code>: 自动消失提示，使用高对比渐变底色突出规则错误、非法操作等短提示。</li>
+<li><code>Toast</code> / <code>ToastStack</code>: 自动消失提示队列，使用高对比渐变底色突出规则错误、非法操作等短提示；成功提示为绿色，金币、积分、段位变动提示为黄底 reward 样式，并由 <code>buildStatChangeToasts</code> 拆成每项一条。队列最多保留最新 5 条，避免高频操作造成页面卡顿。</li>
 </ul>
 <ul>
 <li><code>ConfirmModal</code>: 通用确认弹窗。</li>
@@ -1514,6 +1784,27 @@
 <li><code>lastMarkedAction</code> / <code>canPreviewSkillTarget</code>: 位于 <code>src/shared/boardView.js</code>，用于统一棋盘最后落子/技能标记与技能预览判定。</li>
 </ul>
 <ul>
+<li><code>COLORS</code> / <code>opponent</code>: 位于 <code>src/shared/gameConstants.js</code>，集中维护棋色常量与对手颜色推导；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
+</ul>
+<ul>
+<li><code>createPoints</code> / <code>getPoint</code> / <code>activeNeighbors</code>: 位于 <code>src/shared/gameBoard.js</code>，集中封装棋盘几何和点位访问；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
+</ul>
+<ul>
+<li><code>normalizeSkillConfig</code> / <code>skillRequiresExistingStone</code>: 位于 <code>src/shared/gameSkills.js</code>，集中封装技能配置归一化和棋子依赖判定；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
+</ul>
+<ul>
+<li><code>createResignResult</code> / <code>createTimeoutResult</code> / <code>createDrawResult</code> / <code>resultWithInvalidFlagForGame</code>: 位于 <code>src/shared/gameResults.js</code>，集中封装对局结果 payload 与早期无效局标记；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
+</ul>
+<ul>
+<li><code>formatStones</code>: 位于 <code>src/shared/stoneFormatting.js</code>，集中封装子数整数/分数显示；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
+</ul>
+<ul>
+<li><code>canStartSkill</code>: 位于 <code>src/shared/game.js</code>，前后端共用技能启动前置条件，用于判断棋子目标/棋子依赖技能在当前棋盘状态下是否可用。</li>
+</ul>
+<ul>
+<li><code>rememberPlayerRoom</code> / <code>buildRoomResumeRequest</code> / <code>handleRoomResumePayload</code>: 位于 <code>src/app/resumeSession.js</code>，集中封装前端断线恢复 localStorage 与结果恢复状态编排。</li>
+</ul>
+<ul>
 <li><code>replayRoomAt</code>: 用历史记录重放房间状态；观战实时回放另由 <code>replayGameAt</code> 只派生棋盘进程。</li>
 </ul>
 <ul>
@@ -1559,6 +1850,21 @@
 <ul>
 <li><code>gameResultMetadata</code> / <code>recordWinnerColor</code>: 后端通过 <code>server/gameRecords.js</code> re-export 共享棋谱结构化结果逻辑。</li>
 </ul>
+<ul>
+<li><code>prepareCandyEffectUpdates</code> / <code>candyEffectData</code>: 位于 <code>server/roomItemEffects.js</code>，集中封装有效局后的糖果道具效果清理和持久化更新数据。</li>
+</ul>
+<ul>
+<li><code>applyResultRewardsToRoomUsers</code> / <code>applyUserReward</code>: 位于 <code>server/roomRewards.js</code>，集中封装对局结果奖励写回房间内存用户的逻辑。</li>
+</ul>
+<ul>
+<li><code>persistRoomState</code> / <code>roomPersistenceSnapshot</code> / <code>hydratePersistedRoom</code>: 位于 <code>server/roomStatePersistence.js</code>，集中封装房间快照生成、恢复和节流持久化。</li>
+</ul>
+<ul>
+<li><code>tickPlayerClock</code> / <code>resetByoYomi</code>: 位于 <code>server/roomClockTiming.js</code>，集中封装主时间与读秒周期推进、有效行动后的读秒重置。</li>
+</ul>
+<ul>
+<li><code>resumePayloadForUser</code>: 位于 <code>server/resume.js</code>，封装断线恢复查询顺序：优先查内存未结束房间，其次查仍在内存的已结束房间，最后按最近房间号查持久化棋谱快照。</li>
+</ul>
 <h2>9. 状态管理方式</h2>
 <h3>前端状态</h3>
 <ul>
@@ -1598,7 +1904,7 @@
 </ul>
 </ul>
 <ul>
-<li>登录 token 存在 <code>localStorage</code> 的 <code>sigrika-token</code>。</li>
+<li>登录 token 只存在 React 内存状态中；<code>src/app/sessionState.js</code> 确保页面重新加载时不会从 <code>localStorage</code> 恢复登录态。</li>
 </ul>
 <ul>
 <li>音频设置存在 <code>localStorage</code> 的 <code>sigrika-audio-settings</code>。</li>
@@ -1625,7 +1931,7 @@
 <li><code>server/rooms.js</code> 的 <code>rooms = new Map()</code>。</li>
 </ul>
 <ul>
-<li><code>waitingPlayer</code> 匹配队列。</li>
+<li><code>waitingPlayers</code> 匹配队列，按黑名单关系跳过不兼容候选并保留等待。</li>
 </ul>
 <ul>
 <li>房间计时器、读秒、观战者、聊天、当前棋局状态。</li>
@@ -1718,7 +2024,7 @@
 <li>后台审计已覆盖用户、角色、装饰、商城商品和站点设置的主要增改/禁用操作；后续可继续细化到登录、购买、上传等事件。</li>
 </ul>
 <ul>
-<li>社交模块已增加 <code>server/social.test.js</code> 覆盖好友/黑名单互斥、公开资料统计和公开回放摘要；仍缺少端到端 UI 测试覆盖好友弹窗、对局申请横幅和资料卡回放弹窗。</li>
+<li>社交模块已增加 <code>server/social.test.js</code> 覆盖好友/黑名单互斥、公开资料统计和公开回放摘要；约战请求状态机已拆到 <code>server/duelRequests.js</code>，在线 socket/session 生命周期已拆到 <code>server/onlineSessions.js</code>，并由单元测试覆盖请求发送、拒绝清理、断线过期、强制登出和最终 socket 断开清理。仍缺少端到端 UI 测试覆盖好友弹窗、对局申请横幅和资料卡回放弹窗。</li>
 </ul>
 <ul>
 <li>认证安全能力较基础：</li>
@@ -1733,7 +2039,7 @@
 </ul>
 </ul>
 <ul>
-<li>上传文件只按 MIME 类型和扩展生成文件名，未看到图片内容解码校验，待确认是否足够。</li>
+<li>角色立绘上传先按 MIME 生成安全文件名，落盘后读取文件签名确认 PNG/JPEG/WebP/GIF 内容与 MIME 匹配；不匹配或未知签名会删除该单个上传文件并返回 JSON 错误。</li>
 </ul>
 <ul>
 <li>当前测试覆盖较多规则和后台 helper，但前端交互没有专门的自动化测试。</li>
@@ -1905,7 +2211,7 @@
 <li>BGM 资源配置集中在 <code>MUSIC_TRACKS</code>，按 <code>home</code>、<code>battle</code>、<code>skill</code> 三类管理。</li>
 </ul>
 <ul>
-<li>主界面默认 BGM 使用 <code>hidamari_intro_once.ogg</code> + <code>hidamari_loop.ogg</code>。</li>
+<li>主界面默认 BGM 使用已可无缝循环的单文件曲目 <code>main_bgm.ogg</code>。</li>
 </ul>
 <ul>
 <li>对弈常规 BGM 使用 <code>shanjifu_intro_once.ogg</code> + <code>shanjifu_loop.ogg</code>。</li>
@@ -1936,7 +2242,7 @@
 <li>匹配成功播放 <code>match-success.mp3</code>，同时停止 BGM。</li>
 </ul>
 <ul>
-<li>对局结果弹窗出现时停止 BGM；胜方播放 <code>result-victory.mp3</code>，负方播放 <code>result-defeat.mp3</code>，和棋不播放结果音效。</li>
+<li>对局结果弹窗出现时停止 BGM；胜方播放 <code>result-victory.mp3</code>，负方播放 <code>result-defeat.mp3</code>，和棋不播放结果音效。房间玩家还会按当前用户本局结果触发出战角色的 <code>result-victory</code>、<code>result-defeat</code> 或 <code>result-draw</code> 系统语音；无效局不弹结果弹窗，因此不触发结果音效或结果角色语音。</li>
 </ul>
 <ul>
 <li>普通落子播放 <code>godown_clear.ogg</code>。</li>
@@ -1973,10 +2279,13 @@
 <li>技能语音走 <code>voice</code> 音量通道。</li>
 </ul>
 <ul>
-<li><code>playVoiceSound</code> 使用 Web Audio 播放链：source -&gt; dry/wet reverb mix -&gt; voice gain -&gt; destination。</li>
+<li><code>playVoiceSound</code> 使用 Web Audio 播放链：source -&gt; RMS normalization gain -&gt; dry/wet reverb mix -&gt; voice gain -&gt; destination。</li>
 </ul>
 <ul>
-<li><code>voiceEffects.js</code> 当前预设为轻量空灵混响：<code>boost: 1.35</code>、<code>wet: 0.28</code>、<code>dry: 0.9</code>、<code>reverbSeconds: 1.6</code>、<code>reverbDecay: 2.2</code>、<code>preDelaySeconds: 0.035</code>。</li>
+<li>语音播放开始时会通知 BGM ducking 状态，背景音乐临时压到基础 BGM 音量的 35%；语音结束后约 180ms 平滑恢复，避免角色语音被角色 BGM 盖住。</li>
+</ul>
+<ul>
+<li><code>voiceEffects.js</code> 当前预设为轻量空灵混响：<code>boost: 1.35</code>、<code>wet: 0.28</code>、<code>dry: 0.9</code>、<code>reverbSeconds: 1.6</code>、<code>reverbDecay: 2.2</code>、<code>preDelaySeconds: 0.035</code>，并以 <code>targetRms: 0.12</code>、<code>minNormalizationGain: 0.4</code>、<code>maxNormalizationGain: 2.4</code> 做运行时语音响度一致化。</li>
 </ul>
 <ul>
 <li>如果 Web Audio 或资源加载失败，技能语音会回退到普通 <code>Audio</code> 播放，仍应用 1.35 倍 voice 增益上限。</li>
@@ -2015,6 +2324,12 @@
 <li>Voice playback uses a shared module-level Web Audio context when available; regular voice playback, cached playback, and preload decoding all reuse that context. Future tuning may still need more explicit lifecycle cleanup and browser autoplay handling.</li>
 </ul>
 <ul>
+<li>Background music ducking is runtime-only and follows active voice playback count; it is covered by deterministic helper tests, but not by a browser-level audio graph test.</li>
+</ul>
+<ul>
+<li>Runtime voice loudness normalization uses decoded <code>AudioBuffer</code> RMS statistics and clamps correction gain between 0.4 and 2.4, so authored assets can remain unchanged while character voices play at a closer perceived level.</li>
+</ul>
+<ul>
 <li>Voice reverb now uses a deterministic generated impulse. If authored reverb tails become important, replace it with a static impulse asset.</li>
 </ul>
 <ul>
@@ -2034,6 +2349,38 @@
 </ul>
 <h2>Result Rewards And Room UI</h2>
 <p>This implementation follows <code>docs/superpowers/specs/2026-05-19-result-home-voice-room-design.md</code> and <code>docs/superpowers/plans/2026-05-19-result-home-voice-room.md</code>.</p>
+<h2>2026-05-27 Room Persistence Update</h2>
+<ul>
+<li>Active and finished rooms are now snapshotted to the SQLite <code>PersistedRoom</code> table. The snapshot stores game state, players, clocks, chat, deadlines, close time, and candy-effect settlement state, but does not persist live Socket.IO socket ids or spectators.</li>
+</ul>
+<ul>
+<li>Server startup calls <code>restorePersistedRooms(io)</code> after the socket layer is installed. Restored rooms restart their clock/opening/deadline/close timers, and players can reconnect through the existing <code>room:resume</code> flow.</li>
+</ul>
+<ul>
+<li>When a player socket disconnects, the room clears that player's <code>socketId</code> and records <code>disconnectedAt</code>. If both players are absent from an unfinished room for 5 minutes, the server marks the game as <code>invalid</code> with reason <code>empty-room</code>, skips <code>GameRecord</code> creation, deletes the persisted room, and removes the room from memory.</li>
+</ul>
+<ul>
+<li>Finished rooms keep the existing 5-minute review window. When that timer closes the room, the server emits <code>room:closed</code> with <code>message: &quot;房间因空置5分钟以上而被关闭&quot;</code> so the frontend can show the required top toast before returning to the lobby.</li>
+</ul>
+<ul>
+<li><code>src/main.jsx</code> handles <code>room:closed</code> payloads, clears the remembered room code, resets room UI state, and displays the payload message when present.</li>
+</ul>
+<h2>2026-05-27 Account Session Update</h2>
+<ul>
+<li>Login sessions are tracked in memory by <code>server/loginSessions.js</code>; online socket membership and pending-login cleanup are coordinated by <code>server/onlineSessions.js</code>. JWTs include a <code>sid</code> claim and both HTTP auth and Socket.IO auth reject stale session ids.</li>
+</ul>
+<ul>
+<li>If <code>/api/auth/login</code> receives correct credentials for an account that already has an active session, it returns HTTP 409 with <code>code: &quot;already_logged_in&quot;</code> and the message <code>当前账号已登录了，确定继续登录吗？</code>.</li>
+</ul>
+<ul>
+<li><code>src/auth/AuthScreen.jsx</code> detects that conflict, shows the browser confirmation dialog, and retries login with <code>forceLogin: true</code> only after confirmation.</li>
+</ul>
+<ul>
+<li>Forced login clears the previous session, emits <code>account:logged-out</code> to existing sockets for that user, disconnects them, and then creates a new session for the confirmed login.</li>
+</ul>
+<ul>
+<li>When the final socket for a user disconnects, the matching session id is cleared. Because <code>src/app/sessionState.js</code> starts every page load with an empty token, manual refresh, browser close, and mobile app/browser exit all return to the login screen instead of silently reconnecting.</li>
+</ul>
 <ul>
 <li>Result rewards:</li>
 <ul>
@@ -2067,10 +2414,10 @@
 <li>Narrow utility overflow is contained inside the utility grid instead of expanding the whole page.</li>
 </ul>
 <ul>
-<li>The friend button opens a social modal backed by <code>/api/social</code> with &quot;好友&quot; and &quot;黑名单&quot; tabs. Each list row shows online state, common character portrait, username, rank, rating, and a gear action button. Friend actions are &quot;详细信息&quot;, &quot;密谈&quot;, &quot;对局申请&quot;, and &quot;解除好友&quot;; blacklist actions are &quot;详细信息&quot; and &quot;从黑名单解除&quot;. Clicking a gear action expands a small horizontal action row directly below that user row; clicking the same gear again collapses the row.</li>
+<li>The friend button opens a social modal backed by <code>/api/social</code> with &quot;好友&quot; and &quot;黑名单&quot; tabs. Each list row shows online state, common character portrait, username, rank, rating, and a gear action button. Friend actions are &quot;详细信息&quot;, &quot;密谈&quot;, &quot;对局申请&quot;, and &quot;解除好友&quot;; blacklist actions are &quot;详细信息&quot; and &quot;从黑名单解除&quot;. Clicking a gear action expands a small horizontal action row directly below that user row; clicking the same gear again collapses the row. The tab bar also includes a username search box plus search icon button; usernames are limited to Chinese, English, numbers, and underscores up to 16 characters. A successful search opens the shared profile modal, while missing-user and relationship-action messages use the page-level top toast.</li>
 </ul>
 <ul>
-<li>&quot;详细信息&quot; uses a shared independent modal with common character portrait, username, record, rating, rank, per-character record rows, and a &quot;对局回放&quot; button. Replay rows are loaded lazily only after that button is clicked, displayed in a fixed-height scrollable dialog, and each row can open an individual public replay. The same profile card is reused by the room member popover.</li>
+<li>&quot;详细信息&quot; uses a shared independent modal with common character portrait, username, record, rating, rank, per-character record rows, a &quot;对局回放&quot; button, and bottom-right relationship actions &quot;加为好友&quot; and &quot;加入黑名单&quot;. Relationship actions close the profile modal after success, switch the social list to the corresponding tab, and show a page-level top toast. Replay rows are loaded lazily only after that button is clicked, displayed in a fixed-height scrollable dialog, and each row can open an individual public replay. The same profile card is reused by the room member popover, but room/observer profile cards disable &quot;对局回放&quot; to avoid jumping into replay while inside a live room.</li>
 </ul>
 <ul>
 <li>Profile replay dialogs include the viewed user's username in the title. The dialog shell keeps the title and close button fixed while only the replay list scrolls.</li>
@@ -2079,7 +2426,7 @@
 <li>&quot;解除好友&quot; and &quot;从黑名单解除&quot; use a shared confirmation panel and persist through <code>UserRelationship</code>. Adding a friend automatically removes/overwrites blacklist state for that target, and adding to blacklist overwrites friend state.</li>
 </ul>
 <ul>
-<li>&quot;对局申请&quot; is enabled only for online users who are not currently playing. The server tracks connected sockets and active room players; <code>duel:request</code> delivers a <code>duel:incoming</code> event to the target user, <code>duel:respond</code> accepts/rejects the request, and acceptance creates a direct room through the same match-found/opening flow as normal matchmaking. Timeout or rejection emits a red danger notice to the requester.</li>
+<li>&quot;对局申请&quot; is enabled only for online users who are not currently playing. The server tracks connected sockets and active room players; <code>duel:request</code> first checks whether the target has blacklisted the requester, silently suppressing <code>duel:incoming</code> for that target and sending the requester a normal delayed rejection. Otherwise it delivers <code>duel:incoming</code>, <code>duel:respond</code> accepts/rejects the request, and acceptance creates a direct room through the same match-found/opening flow as normal matchmaking. Timeout or rejection emits a red danger notice to the requester.</li>
 </ul>
 <ul>
 <li>The house rank stat includes a hover help icon explaining that rank is derived from rating, 1000 points is 1-dan, each 100 points changes one rank, and 9-dan is the maximum.</li>
@@ -2095,6 +2442,9 @@
 </ul>
 <ul>
 <li>Denia now has a full AI voice pack under <code>public/assets/voice/denia_*.ogg</code>, covering <code>game-start</code>, <code>skill-cast</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, <code>countdown-10</code> through <code>countdown-1</code>, <code>result-victory</code>, <code>result-defeat</code>, and <code>result-draw</code>.</li>
+</ul>
+<ul>
+<li>Denia countdown voice assets <code>denia_countdown_10.ogg</code> through <code>denia_countdown_1.ogg</code> have had their leading silence trimmed so the spoken number starts in sync with the visible byo-yomi countdown. <code>denia_countdown_1.ogg</code> is trimmed against a stricter perceptual threshold because its original opening included low-level noise before the clearly audible voice.</li>
 </ul>
 <ul>
 <li>Built-in skill voice assets are bridged into each character's <code>systemVoices.skill-cast</code> map at runtime, so skill banners use the same <code>resolveSystemVoice</code> route as other role voices.</li>
@@ -2153,6 +2503,9 @@
 <ul>
 <li>Draw results show no win/loss portrait badge.</li>
 </ul>
+<ul>
+<li>Invalid results show no win/loss portrait badge even when a winner color is present in the result payload.</li>
+</ul>
 </ul>
 <ul>
 <li>Responsive direction:</li>
@@ -2210,7 +2563,7 @@
 <li><code>GameLifecycleModals.jsx</code> owns the matching, match-success countdown, opening color prompt, and result/reward modals. It also exposes pure countdown, color-label, and signed-delta helpers covered by <code>GameLifecycleModals.test.js</code>.</li>
 </ul>
 <ul>
-<li><code>FeedbackModals.jsx</code> owns the generic confirm modal, toast, and direct-duel request banner. Its duel countdown/progress helpers are covered by <code>FeedbackModals.test.js</code>.</li>
+<li><code>FeedbackModals.jsx</code> owns the generic confirm modal, toast stack, and direct-duel request banner. Its duel countdown/progress helpers and toast queue limiting are covered by <code>FeedbackModals.test.js</code>.</li>
 </ul>
 <ul>
 <li><code>SkillBanner.jsx</code> owns the skill burst overlay and skill-cast voice trigger. The helper that prevents duplicate or empty voice playback is covered by <code>SkillBanner.test.js</code>.</li>
@@ -2264,16 +2617,16 @@
 <ul>
 <li>Current remaining frontend debt:</li>
 <ul>
-<li><code>src/main.jsx</code> now mainly owns App-level auth, Socket.IO connection lifecycle, page routing, match/duel events, and modal orchestration. It is still sizable but no longer owns the room UI tree.</li>
+<li><code>src/main.jsx</code> now mainly owns App-level auth, Socket.IO connection creation, page routing, and modal orchestration. It is still sizable but no longer owns the room UI tree; frontend socket event handlers live in <code>src/app/socketHandlers.js</code>, and duel request state lives server-side in <code>server/duelRequests.js</code>.</li>
 </ul>
 <ul>
 <li><code>src/room/RoomScreen.jsx</code> is a better-contained but still dense room container; future extractions can split room sound/effect hooks, replay/spectator projection helpers, and room action handlers.</li>
 </ul>
 <ul>
-<li>Server room view serialization now lives in <code>server/roomView.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, timers, actions, broadcasts, and persistence triggers.</li>
+<li>Server room view serialization now lives in <code>server/roomView.js</code>, item effect cleanup lives in <code>server/roomItemEffects.js</code>, room-user reward application lives in <code>server/roomRewards.js</code>, room snapshot persistence lives in <code>server/roomStatePersistence.js</code>, and clock timing calculation lives in <code>server/roomClockTiming.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, actions, broadcasts, and persistence triggers.</li>
 </ul>
 <ul>
-<li><code>src/admin/AdminConsole.jsx</code>, <code>src/shared/game.js</code>, the remaining real-time flow inside <code>server/rooms.js</code>, and large style files remain high-value follow-up targets.</li>
+<li><code>src/admin/AdminConsole.jsx</code> has started splitting its shell into <code>src/admin/AdminShell.jsx</code>; its tab bodies remain a high-value follow-up target alongside <code>src/shared/game.js</code> 中尚未拆出的规则执行/技能执行/数子段落, the remaining action/scoring flow inside <code>server/rooms.js</code>, and large style files.</li>
 </ul>
 </ul>
 <h2>Recent Home, Shop, And Board UI Adjustments</h2>
@@ -2287,7 +2640,7 @@
 <li>The home player plaque uses a light rank/rating tag with dark text. Admin management uses the same circular icon-plus-title layout and sizing pattern as the home utility buttons.</li>
 </ul>
 <ul>
-<li>The shop keeps its fixed 2 x 4 slot layout but uses shorter item cards so the shop modal stays more compact.</li>
+<li>The shop keeps fixed 8-item pages, but its visual grid now adapts to available width and height; the item area scrolls inside the modal while tabs and pagination stay visible, with a compact landscape layout for short viewports.</li>
 </ul>
 <ul>
 <li>Friend list action buttons expand as a full-width horizontal action row with evenly aligned button columns.</li>
@@ -2331,6 +2684,64 @@
 <ul>
 <li>The first-line board grid stroke was reduced from the heaviest iteration while remaining bolder than internal lines.</li>
 </ul>
+<ul>
+<li>Finished rooms with <code>closesAt</code> now show a red header chip countdown such as <code>关闭倒计时 4:59</code>; the actual closure still comes from the server <code>room:closed</code> event.</li>
+</ul>
+<ul>
+<li>The watch entry now opens <code>WatchModal</code>, a refreshable current-room list backed by <code>GET /api/rooms/watch</code>, instead of asking the user to type a room code. Rows include room code, online participant count, black/white character portrait plus username, move count, and playing/finished status, and clicking a row joins that room as a spectator.</li>
+</ul>
+<ul>
+<li>The watch modal is sized for the full room list table without horizontal scrolling on desktop and keeps enough vertical space for five room rows even when the list is empty. Watch table headings and row cells are centered.</li>
+</ul>
+<ul>
+<li>Spectators leaving a room use the explicit <code>room:leave</code> socket event. The server removes that socket from <code>room.spectators</code>, leaves the Socket.IO room, appends a spectator-leave system message, and broadcasts the updated room so room members and the watch list no longer count that spectator.</li>
+</ul>
+<ul>
+<li>The leaderboard modal keeps the title area and column heading outside the scrolling region. The player rows scroll independently, and a bottom pinned row mirrors the current user's own ranking when that user appears in the leaderboard.</li>
+</ul>
+<ul>
+<li><code>roomView.players[]</code> now carries <code>connected</code> and <code>disconnectedAt</code>. Player disconnects add a system notice and show a centered <code>断线中</code> badge on that player's portrait until the player reconnects or the game finishes; reconnecting appends a reconnect system notice and clears the badge.</li>
+</ul>
+<ul>
+<li>While an opponent is disconnected, player action controls that require opponent confirmation, currently counting and draw requests, are disabled on the client.</li>
+</ul>
+<ul>
+<li>Once a game is finished, room players use the same spectator role as observers in both server room views and frontend effective role handling: the action bar switches to replay/spectator controls, player-only hints/actions are hidden, and leaving the finished room clears the former player's live <code>socketId</code> from the room so watch-list online counts drop correctly.</li>
+</ul>
+<ul>
+<li>The game-start system voice is only played for active player views in <code>playing</code> phase. Spectators and finished-room viewers do not replay historical <code>game-start</code> messages when joining through the watch list.</li>
+</ul>
+<ul>
+<li>User profile cards keep the hero, aggregate stats, &quot;角色战绩&quot; title, and footer actions fixed inside the modal; only the character record rows scroll.</li>
+</ul>
+<ul>
+<li>Login/preload recovery now preserves an unfinished <code>room:resume</code> result. If the socket recovers an active room while assets are still preloading, the preload completion guard does not force the user back to the home screen.</li>
+</ul>
+<h2>Lobby Stats And Blacklist Match Blocking</h2>
+<ul>
+<li>The home user plaque receives live lobby stats from <code>lobby:stats</code> and shows <code>在线人数：[count]</code>; the main match button shows <code>匹配中人数：[count]</code> below its label.</li>
+</ul>
+<ul>
+<li>The backend matchmaking wait state is now a queue instead of a single <code>waitingPlayer</code>. <code>match:join</code> checks both users' blacklist relationships before pairing, skips incompatible candidates, and keeps all skipped candidates waiting for later compatible players.</li>
+</ul>
+<ul>
+<li>Direct duel requests also consult the target user's blacklist. If the target has blacklisted the requester, the target receives no incoming request; the requester receives the normal rejection event after a 3-second delay, matching an ordinary refusal without revealing blacklist state.</li>
+</ul>
+<ul>
+<li>Socket disconnects use a session cleanup grace window. When the last socket for a user disconnects, the account is marked offline and room disconnect handling runs immediately, but the login session is cleared only after 30 minutes unless a new socket for the same session reconnects first. This prevents browser backgrounding, network sleep, and Socket.IO transient reconnects during a game from turning into silent authentication failures and frozen room UI.</li>
+</ul>
+<ul>
+<li>Login conflict checks use the active online-socket index rather than the mere presence of an unexpired grace-window session. A refreshed or closed page loses its in-memory token and must log in again, but if the old socket is already gone the new login is allowed instead of showing a stale &quot;already logged in&quot; conflict.</li>
+</ul>
+<ul>
+<li>If the Node watch server restarts while a page still has a valid JWT in memory, HTTP and Socket.IO auth can adopt that token's <code>sid</code> when no active in-memory session exists for the user. Sessions that were explicitly cleared by logout, forced login, pending-login expiry, or the disconnect grace timer are revoked and cannot be adopted again.</li>
+</ul>
+<ul>
+<li>Restored unfinished rooms mark every persisted player without a live socket as disconnected and append missing <code>disconnect</code> system notices before room timers resume. This keeps reconnect recovery, the centered portrait <code>断线中</code> badge, chat history, and watch-list online counts consistent after server restarts.</li>
+</ul>
+<ul>
+<li>The frontend listens for Socket.IO <code>connect_error</code>. Authentication failures (<code>unauthorized</code> / <code>forbidden</code>) now clear local room/match state, return to the login screen, and show <code>登录已失效，请重新登录</code> instead of leaving the player on a stale board snapshot.</li>
+</ul>
 <h2>Production Deployment Hardening</h2>
 <ul>
 <li>Runtime security helpers live in <code>server/security.js</code>.</li>
@@ -2357,6 +2768,9 @@
 <li>Socket.IO connections install a per-socket event guard that rejects excessive event traffic within a short window.</li>
 </ul>
 <ul>
+<li>Socket.IO connections remain stable while the frontend user object changes. Before <code>match:join</code>, <code>duel:request</code>, and accepted <code>duel:respond</code> create a room, the server refreshes <code>socket.user</code> from the latest database user so the actual room character matches the current selected sortie character rather than the snapshot from initial socket authentication.</li>
+</ul>
+<ul>
 <li>In production, if <code>dist/</code> exists, the Node server can serve the built Vite app and SPA fallback while still keeping <code>/api</code>, <code>/socket.io</code>, and <code>/uploads</code> routed to backend behavior.</li>
 </ul>
 <h2>Login Asset Preloading</h2>
@@ -2373,10 +2787,10 @@
 <li>After a valid token is confirmed, the app enters a <code>preloading</code> view before the home screen.</li>
 </ul>
 <ul>
-<li>Fresh login and stored-token startup both enter <code>preloading</code> before the home screen, preventing the home screen from flashing before assets begin loading.</li>
+<li>Fresh login enters <code>preloading</code> before the home screen, preventing the home screen from flashing before assets begin loading. Stored-token startup is intentionally disabled so refresh and browser restart return to the login screen.</li>
 </ul>
 <ul>
-<li>The preload step fetches core character portraits, stone decoration images, common board/result/match sound effects, default home and battle BGM, and owned character skill voices.</li>
+<li>The preload step fetches core character portraits, Denia candy GIF portrait, stone decoration images, common board/result/match sound effects, default home and battle BGM, and owned character skill voices.</li>
 </ul>
 <ul>
 <li>Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.</li>
@@ -2405,6 +2819,37 @@
 </ul>
 <ul>
 <li>The admin console includes a <code>留言反馈</code> tab that displays submit time, username, and full feedback content with wrapping for longer text.</li>
+</ul>
+<h2>Realtime Performance Notes</h2>
+<ul>
+<li>Room clock ticks no longer use the full <code>room:update</code> payload during normal play. <code>server/rooms.js</code> emits a lightweight <code>room:clock</code> event once per second with <code>roomCode</code>, <code>activeColor</code>, <code>serverNow</code>, and each player's current <code>time</code>.</li>
+</ul>
+<ul>
+<li>Full <code>room:update</code> remains the authoritative synchronization path for match found, room join/resume, moves, skills, chat, phase changes, scoring, draw/counting flows, and timeout transitions.</li>
+</ul>
+<ul>
+<li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators still receive both black and white projections through <code>gameViews</code>, but players receive only their own visible board state.</li>
+</ul>
+<ul>
+<li>The frontend merges <code>room:clock</code> through <code>src/app/roomClock.js</code>, updating only changed player timer objects while preserving the existing <code>room.game</code> object reference.</li>
+</ul>
+<ul>
+<li><code>src/room/Board.jsx</code> is memoized with a board-specific prop comparison so timer-only updates can refresh player clocks without re-rendering the 13x13 board.</li>
+</ul>
+<ul>
+<li><code>src/room/PlayerInfo.jsx</code> is memoized with a player/game-slice comparison so room clock ticks only re-render the player panel whose timer or relevant game slice changed, which is especially important when item effects swap portraits to animated assets.</li>
+</ul>
+<ul>
+<li><code>src/app/roomUserSync.js</code> merges the current user from room payloads by comparing only fields present in the room user payload, rather than stringifying the whole current user. This keeps item/effect synchronization cheap as the local user state gains more client-only fields.</li>
+</ul>
+<ul>
+<li><code>src/shared/gameBoard.js</code> resolves standard board point ids by direct row-major index before falling back to id search. This keeps capture, liberty, territory, skill, and replay logic from repeatedly scanning the full point array on normal 13x13 states; <code>src/shared/game.js</code> re-exports the helper for existing callers.</li>
+</ul>
+<ul>
+<li><code>collectGroup</code> uses a cursor-based breadth-first queue instead of <code>Array.shift()</code>, avoiding repeated array reindexing during liberty/capture checks.</li>
+</ul>
+<ul>
+<li>Dead-stone expansion and territory flood-fill use the same cursor-based queue pattern, reducing extra array churn during scoring and result review.</li>
 </ul>
 </body>
 </html>
