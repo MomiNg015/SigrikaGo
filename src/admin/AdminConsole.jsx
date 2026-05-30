@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Plus, Upload, X } from "lucide-react";
 import {
   buildCharacterDraft,
@@ -18,19 +18,9 @@ import { SKILL_MESSAGE_TIP } from "../shared/skillMessages.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { rankFromRating } from "../shared/ratingRank.js";
 import { adminApi, uploadPortrait } from "../api/client.js";
+import AdminShell from "./AdminShell.jsx";
 
-export default function AdminConsole({ user, token, tab, setTab, onCurrentUserChange, onCharactersChanged, onSiteSettingsChanged, onBack, onOpenReplay }) {
-  const tabs = ["overview", "users", "characters", "shop", "decorations", "settings", "feedback", "audit"];
-  const tabLabels = {
-    overview: "概览",
-    users: "用户管理",
-    characters: "角色管理",
-    shop: "商城管理",
-    decorations: "装饰管理",
-    settings: "系统设置",
-    feedback: "留言反馈",
-    audit: "审计日志"
-  };
+export default function AdminConsole({ user, token, tab, setTab, onCurrentUserChange, onCharactersChanged, onSiteSettingsChanged, onNotice, onBack, onOpenReplay }) {
   const [summary, setSummary] = useState(null);
   const [users, setUsers] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
@@ -41,12 +31,17 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
   const [selectedUser, setSelectedUser] = useState(null);
   const [adminError, setAdminError] = useState("");
 
+  function notify(message, tone = "danger") {
+    if (onNotice) onNotice(message, tone);
+    else setAdminError(message);
+  }
+
   useEffect(() => {
     if (tab !== "overview") return;
     setAdminError("");
     adminApi("/summary", token)
       .then(setSummary)
-      .catch((error) => setAdminError(error.message));
+      .catch((error) => notify(error.message));
   }, [tab, token]);
 
   useEffect(() => {
@@ -70,7 +65,7 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
   }, [tab, token]);
 
   useEffect(() => {
-    if (tab !== "shop") return;
+    if (tab !== "shop" && tab !== "items") return;
     refreshShopItems();
   }, [tab, token]);
 
@@ -89,7 +84,7 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
         setSelectedUser(nextUsers.find((candidate) => candidate.id === nextSelectedId) ?? null);
       }
     } catch (error) {
-      setAdminError(error.message);
+      notify(error.message);
     }
   }
 
@@ -99,7 +94,7 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
       const data = await adminApi("/characters", token);
       setAdminCharacters(data.characters ?? []);
     } catch (error) {
-      setAdminError(error.message);
+      notify(error.message);
     }
   }
 
@@ -109,7 +104,7 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
       const data = await adminApi("/audit-logs", token);
       setAuditLogs(data.auditLogs ?? []);
     } catch (error) {
-      setAdminError(error.message);
+      notify(error.message);
     }
   }
 
@@ -119,7 +114,7 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
       const data = await adminApi("/feedback", token);
       setFeedbackMessages(data.feedbackMessages ?? []);
     } catch (error) {
-      setAdminError(error.message);
+      notify(error.message);
     }
   }
 
@@ -129,7 +124,7 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
       const data = await adminApi("/shop-items", token);
       setShopItems(data.items ?? []);
     } catch (error) {
-      setAdminError(error.message);
+      notify(error.message);
     }
   }
 
@@ -139,62 +134,63 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
       const data = await adminApi("/decorations", token);
       setDecorations(data.decorations ?? []);
     } catch (error) {
-      setAdminError(error.message);
+      notify(error.message);
     }
   }
 
   return (
-    <main className="admin-screen">
-      <aside className="admin-sidebar">
-        <strong>SigrikaGo Admin</strong>
-        {tabs.map((item) => (
-          <button key={item} className={tab === item ? "active" : ""} onClick={() => setTab(item)}>
-            {tabLabels[item]}
-          </button>
-        ))}
-        <button onClick={onBack}>返回大厅</button>
-      </aside>
-      <section className="admin-main">
-        <header><span>{user.username}</span><strong>{tabLabels[tab]}</strong></header>
-        {adminError && <p className="form-error admin-error">{adminError}</p>}
-        {tab === "overview" && <AdminOverview summary={summary} />}
-        {tab === "users" && (
-          <>
-            <AdminUsers users={users} onSelect={setSelectedUser} />
-            {selectedUser && (
-              <UserEditor
-                user={selectedUser}
-                currentUserId={user.id}
-                token={token}
-                onClose={() => setSelectedUser(null)}
-                onRefresh={refreshUsers}
-                onCurrentUserChange={onCurrentUserChange}
-                onOpenReplay={onOpenReplay}
-              />
-            )}
-          </>
-        )}
-        {tab === "characters" && (
-          <AdminCharacters
-            characters={adminCharacters}
-            token={token}
-            onSaved={async () => {
-              await refreshCharacters();
-              await onCharactersChanged();
-            }}
-          />
-        )}
-        {tab === "shop" && (
-          <AdminShopItems items={shopItems} token={token} onSaved={refreshShopItems} onClearError={() => setAdminError("")} />
-        )}
-        {tab === "decorations" && (
-          <AdminDecorations decorations={decorations} token={token} onSaved={refreshDecorations} />
-        )}
-        {tab === "settings" && <AdminSiteSettings token={token} onSaved={onSiteSettingsChanged} />}
-        {tab === "feedback" && <AdminFeedback messages={feedbackMessages} />}
-        {tab === "audit" && <AdminAudit logs={auditLogs} />}
-      </section>
-    </main>
+    <AdminShell user={user} tab={tab} setTab={setTab} onBack={onBack} error={adminError}>
+      {tab === "overview" && <AdminOverview summary={summary} />}
+      {tab === "users" && (
+        <>
+          <AdminUsers users={users} onSelect={setSelectedUser} />
+          {selectedUser && (
+            <UserEditor
+              user={selectedUser}
+              currentUserId={user.id}
+              token={token}
+              onClose={() => setSelectedUser(null)}
+              onRefresh={refreshUsers}
+              onCurrentUserChange={onCurrentUserChange}
+              onNotice={notify}
+              onOpenReplay={onOpenReplay}
+            />
+          )}
+        </>
+      )}
+      {tab === "characters" && (
+        <AdminCharacters
+          characters={adminCharacters}
+          token={token}
+          onSaved={async () => {
+            await refreshCharacters();
+            await onCharactersChanged();
+          }}
+          onNotice={notify}
+        />
+      )}
+      {tab === "shop" && (
+        <AdminShopItems items={shopItems} token={token} onSaved={refreshShopItems} onClearError={() => setAdminError("")} onNotice={notify} />
+      )}
+      {tab === "items" && (
+        <AdminShopItems
+          items={shopItems.filter((item) => item.category === "item")}
+          token={token}
+          onSaved={refreshShopItems}
+          onClearError={() => setAdminError("")}
+          onNotice={notify}
+          fixedCategory="item"
+          title="道具管理"
+          metaSuffix="个道具"
+        />
+      )}
+      {tab === "decorations" && (
+        <AdminDecorations decorations={decorations} token={token} onSaved={refreshDecorations} onNotice={notify} />
+      )}
+      {tab === "settings" && <AdminSiteSettings token={token} onSaved={onSiteSettingsChanged} onNotice={notify} />}
+      {tab === "feedback" && <AdminFeedback messages={feedbackMessages} />}
+      {tab === "audit" && <AdminAudit logs={auditLogs} />}
+    </AdminShell>
   );
 }
 
@@ -212,21 +208,19 @@ function AdminOverview({ summary }) {
   );
 }
 
-function AdminSiteSettings({ token, onSaved }) {
+function AdminSiteSettings({ token, onSaved, onNotice }) {
   const [draft, setDraft] = useState(DEFAULT_SITE_SETTINGS);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
 
   useEffect(() => {
     adminApi("/site-settings", token)
       .then((data) => setDraft({ ...DEFAULT_SITE_SETTINGS, ...(data.settings ?? {}) }))
-      .catch((error) => setMessage(error.message));
-  }, [token]);
+      .catch((error) => onNotice?.(error.message, "danger"));
+  }, [token, onNotice]);
 
   async function saveSettings(event) {
     event.preventDefault();
     setSaving(true);
-    setMessage("");
     try {
       const data = await adminApi("/site-settings", token, {
         method: "PATCH",
@@ -234,9 +228,9 @@ function AdminSiteSettings({ token, onSaved }) {
       });
       setDraft({ ...DEFAULT_SITE_SETTINGS, ...(data.settings ?? {}) });
       onSaved?.(data.settings);
-      setMessage("已保存");
+      onNotice?.("已保存", "success");
     } catch (error) {
-      setMessage(error.message);
+      onNotice?.(error.message, "danger");
     } finally {
       setSaving(false);
     }
@@ -274,7 +268,6 @@ function AdminSiteSettings({ token, onSaved }) {
         </label>
         <div className="inline-actions">
           <button className="primary-action" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</button>
-          {message && <span className="admin-save-message">{message}</span>}
         </div>
       </form>
     </section>
@@ -347,7 +340,7 @@ function AdminUsers({ users, onSelect }) {
   );
 }
 
-function AdminCharacters({ characters, token, onSaved }) {
+function AdminCharacters({ characters, token, onSaved, onNotice }) {
   const [draft, setDraft] = useState(null);
 
   function startNewCharacter() {
@@ -389,6 +382,7 @@ function AdminCharacters({ characters, token, onSaved }) {
             setDraft={setDraft}
             token={token}
             onCancel={() => setDraft(null)}
+            onNotice={onNotice}
             onSaved={async (savedCharacter) => {
               await onSaved();
               if (savedCharacter) setDraft(buildCharacterDraft(savedCharacter));
@@ -405,54 +399,59 @@ function AdminCharacters({ characters, token, onSaved }) {
   );
 }
 
-function AdminShopItems({ items, token, onSaved, onClearError }) {
+function AdminShopItems({ items, token, onSaved, onClearError, onNotice, fixedCategory = "", title = "商城商品", metaSuffix = "个商品" }) {
   const [draft, setDraft] = useState(null);
-  const [message, setMessage] = useState("");
 
   function startNewItem() {
     onClearError();
-    setMessage("");
-    setDraft(emptyShopItemDraft());
+    setDraft({ ...emptyShopItemDraft(), category: fixedCategory || "character" });
   }
 
   function editItem(item) {
     onClearError();
-    setMessage("");
-    setDraft(buildShopItemDraft(item));
+    setDraft({ ...buildShopItemDraft(item), category: fixedCategory || item.category });
   }
 
   async function save(event) {
     event.preventDefault();
     if (!draft) return;
     onClearError();
-    setMessage("");
     const validated = validateShopItemDraft(draft);
     if (!validated.ok) {
-      setMessage(validated.error);
+      onNotice?.(validated.error, "danger");
       return;
     }
-    const id = draft.id;
-    const data = await adminApi(id ? `/shop-items/${id}` : "/shop-items", token, {
-      method: id ? "PATCH" : "POST",
-      body: validated.value
-    });
-    setDraft(buildShopItemDraft(data.item));
-    setMessage("保存成功");
-    await onSaved();
+    try {
+      const id = draft.id;
+      const data = await adminApi(id ? `/shop-items/${id}` : "/shop-items", token, {
+        method: id ? "PATCH" : "POST",
+        body: fixedCategory ? { ...validated.value, category: fixedCategory } : validated.value
+      });
+      setDraft(buildShopItemDraft(data.item));
+      onNotice?.("保存成功", "success");
+      await onSaved();
+    } catch (error) {
+      onNotice?.(error.message, "danger");
+    }
   }
 
   async function disableItem(item) {
-    await adminApi(`/shop-items/${item.id}`, token, { method: "DELETE" });
-    await onSaved();
-    setDraft(null);
+    try {
+      await adminApi(`/shop-items/${item.id}`, token, { method: "DELETE" });
+      await onSaved();
+      setDraft(null);
+      onNotice?.("下架成功", "success");
+    } catch (error) {
+      onNotice?.(error.message, "danger");
+    }
   }
 
   return (
     <section className="admin-list-section">
-      <AdminSectionHeader title="商城商品" meta={`${items.length} 个商品`} actionLabel="新增商品" onAction={startNewItem} />
+      <AdminSectionHeader title={title} meta={`${items.length} ${metaSuffix}`} actionLabel={fixedCategory === "item" ? "新增道具" : "新增商品"} onAction={startNewItem} />
       <div className="admin-table-wrap">
         <table className="admin-table compact">
-          <thead><tr><th>商品</th><th>类别</th><th>目标</th><th>价格</th><th>状态</th><th>操作</th></tr></thead>
+          <thead><tr><th>商品</th><th>类别</th><th>目标</th><th>价格</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
           <tbody>
             {items.map((item) => (
               <tr key={item.id} onClick={() => editItem(item)}>
@@ -460,13 +459,14 @@ function AdminShopItems({ items, token, onSaved, onClearError }) {
                 <td>{shopCategoryLabel(item.category)}</td>
                 <td>{item.targetId}</td>
                 <td>{item.finalPrice}/{item.priceCoins}</td>
+                <td>{item.category === "item" ? formatStockQuantity(item.stockQuantity) : "-"}</td>
                 <td><AdminStatusPill tone={item.enabled ? "green" : "neutral"}>{item.enabled ? "展示" : "隐藏"}</AdminStatusPill></td>
                 <td><button className="admin-row-action" type="button">编辑</button></td>
               </tr>
             ))}
             {items.length === 0 && (
               <tr>
-                <td className="admin-table-empty" colSpan="6">暂无商品</td>
+                <td className="admin-table-empty" colSpan="7">暂无商品</td>
               </tr>
             )}
           </tbody>
@@ -478,16 +478,17 @@ function AdminShopItems({ items, token, onSaved, onClearError }) {
           <form className="admin-character-form" onSubmit={save}>
             <div className="admin-form-heading">
               <div>
-                <h2>{draft.id ? "编辑商品" : "新增商品"}</h2>
+                <h2>{draft.id ? (fixedCategory === "item" ? "编辑道具" : "编辑商品") : (fixedCategory === "item" ? "新增道具" : "新增商品")}</h2>
                 <p className="quiet-text">{draft.id ? draft.name || draft.targetId : "创建新的商城条目"}</p>
               </div>
               <button className="primary-action" type="submit">保存</button>
             </div>
-            {message && <p className={message === "保存成功" ? "admin-success" : "form-error admin-action-error"}>{message}</p>}
             <div className="admin-character-form-grid">
-              <label><AdminFieldLabel text="商品名" tip="商城中显示的商品名称。" /><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></label>
-              <label><AdminFieldLabel text="类别" tip="购买后获得角色或装饰。" /><select value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })}><option value="character">角色</option><option value="decoration">装饰</option></select></label>
-              <label><AdminFieldLabel text="目标标识" tip="角色 slug 或装饰 slug。" /><input value={draft.targetId} onChange={(e) => setDraft({ ...draft, targetId: e.target.value })} /></label>
+              <label><AdminFieldLabel text={fixedCategory === "item" ? "道具名" : "商品名"} tip="商城中显示的商品名称。" /><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></label>
+              <label><AdminFieldLabel text="类别" tip="购买后获得角色、装饰或道具。" /><select value={draft.category} disabled={Boolean(fixedCategory)} onChange={(e) => setDraft({ ...draft, category: e.target.value })}><option value="character">角色</option><option value="item">道具</option><option value="decoration">装饰</option></select></label>
+              <label><AdminFieldLabel text="目标标识" tip="角色 slug、装饰 slug 或道具 slug。" /><input value={draft.targetId} onChange={(e) => setDraft({ ...draft, targetId: e.target.value })} /></label>
+              <label><AdminFieldLabel text="道具目标" tip="自己类道具可直接使用；角色类道具使用时需要选择拥有的角色。" /><select value={draft.itemTargetType} disabled={(fixedCategory || draft.category) !== "item"} onChange={(e) => setDraft({ ...draft, itemTargetType: e.target.value })}><option value="self">用户自己</option><option value="character">拥有角色</option></select></label>
+              <label><AdminFieldLabel text="商店库存" tip="-1 表示不限量，0 表示售罄，正整数表示每个用户可购买次数上限。" /><input type="number" min="-1" value={draft.stockQuantity} onChange={(e) => setDraft({ ...draft, stockQuantity: e.target.value })} /></label>
               <label><AdminFieldLabel text="金币价格" tip="购买所需原价金币。" /><input type="number" value={draft.priceCoins} onChange={(e) => setDraft({ ...draft, priceCoins: e.target.value })} /></label>
               <label><AdminFieldLabel text="折扣" tip="0 到 100 的折扣百分比。" /><input type="number" min="0" max="100" value={draft.discountPercent} onChange={(e) => setDraft({ ...draft, discountPercent: e.target.value })} /></label>
               <label><AdminFieldLabel text="排序" tip="商品显示顺序。" /><input type="number" value={draft.sortOrder} onChange={(e) => setDraft({ ...draft, sortOrder: e.target.value })} /></label>
@@ -507,36 +508,36 @@ function AdminShopItems({ items, token, onSaved, onClearError }) {
   );
 }
 
-function AdminDecorations({ decorations, token, onSaved }) {
+function AdminDecorations({ decorations, token, onSaved, onNotice }) {
   const [draft, setDraft] = useState(null);
-  const [message, setMessage] = useState("");
 
   function startNewDecoration() {
-    setMessage("");
     setDraft(emptyDecorationDraft());
   }
 
   function editDecoration(decoration) {
-    setMessage("");
     setDraft(buildDecorationDraft(decoration));
   }
 
   async function save(event) {
     event.preventDefault();
     if (!draft) return;
-    setMessage("");
     const body = decorationDraftToBody(draft);
     if (!body) {
-      setMessage("请填写装饰标识、名称和正确排序");
+      onNotice?.("请填写装饰标识、名称和正确排序", "danger");
       return;
     }
-    const data = await adminApi(draft.id ? `/decorations/${draft.id}` : "/decorations", token, {
-      method: draft.id ? "PATCH" : "POST",
-      body
-    });
-    setDraft(buildDecorationDraft(data.decoration));
-    setMessage("保存成功");
-    await onSaved();
+    try {
+      const data = await adminApi(draft.id ? `/decorations/${draft.id}` : "/decorations", token, {
+        method: draft.id ? "PATCH" : "POST",
+        body
+      });
+      setDraft(buildDecorationDraft(data.decoration));
+      onNotice?.("保存成功", "success");
+      await onSaved();
+    } catch (error) {
+      onNotice?.(error.message, "danger");
+    }
   }
 
   return (
@@ -574,7 +575,6 @@ function AdminDecorations({ decorations, token, onSaved }) {
               </div>
               <button className="primary-action" type="submit">保存</button>
             </div>
-            {message && <p className={message === "保存成功" ? "admin-success" : "form-error admin-action-error"}>{message}</p>}
             <div className="admin-character-form-grid">
               <label><AdminFieldLabel text="装饰标识" tip="装饰唯一 slug，用于购买后写入用户拥有列表。" /><input value={draft.slug} onChange={(e) => setDraft({ ...draft, slug: e.target.value })} /></label>
               <label><AdminFieldLabel text="装饰名称" tip="棋舍里显示的装饰名称。" /><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></label>
@@ -591,27 +591,15 @@ function AdminDecorations({ decorations, token, onSaved }) {
   );
 }
 
-function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
-  const [actionError, setActionError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const draftKey = draft.dbId || draft.originalSlug || "new-character";
-
-  useEffect(() => {
-    setSuccessMessage("");
-    setActionError("");
-  }, [draftKey]);
 
   function updateDraft(field, value) {
-    setActionError("");
-    setSuccessMessage("");
     setDraft((current) => ({ ...current, [field]: value }));
   }
 
   function updateSkill(field, value) {
-    setActionError("");
-    setSuccessMessage("");
     setDraft((current) => ({
       ...current,
       skill: {
@@ -622,8 +610,6 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
   }
 
   function updateSkillEffect(effectType) {
-    setActionError("");
-    setSuccessMessage("");
     setDraft((current) => ({
       ...current,
       skill: {
@@ -637,8 +623,6 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
   async function handleUpload(file) {
     if (!file) return;
     setUploading(true);
-    setActionError("");
-    setSuccessMessage("");
     try {
       const url = await uploadPortrait(file, token);
       setDraft((current) => ({
@@ -646,8 +630,9 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
         portraitUrl: url,
         portraitSource: "upload"
       }));
+      onNotice?.("上传成功", "success");
     } catch (error) {
-      setActionError(error.message);
+      onNotice?.(error.message, "danger");
     } finally {
       setUploading(false);
     }
@@ -657,23 +642,21 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
     event.preventDefault();
     const body = characterDraftToBody(draft);
     if (!body) {
-      setActionError("排序和使用次数必须是整数；数值超频只能填数字，特殊超频需要填写文本");
+      onNotice?.("排序和使用次数必须是整数；数值超频只能填数字，特殊超频需要填写文本", "danger");
       return;
     }
 
     setSaving(true);
-    setActionError("");
-    setSuccessMessage("");
     try {
       const id = draft.dbId ?? draft.originalSlug;
       const data = await adminApi(id ? `/characters/${id}` : "/characters", token, {
         method: id ? "PATCH" : "POST",
         body
       });
-      setSuccessMessage("保存成功");
+      onNotice?.("保存成功", "success");
       await onSaved(data.character);
     } catch (error) {
-      setActionError(error.message);
+      onNotice?.(error.message, "danger");
     } finally {
       setSaving(false);
     }
@@ -691,8 +674,6 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved }) {
           <button className="primary-action" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</button>
         </div>
       </div>
-      {actionError && <p className="form-error admin-action-error">{actionError}</p>}
-      {successMessage && <p className="admin-success">{successMessage}</p>}
       <div className="admin-character-form-grid">
         <label><AdminFieldLabel text="角色标识" tip="角色的唯一 slug，用于存档、拥有角色和出战角色匹配。" />
           <input value={draft.slug} onChange={(event) => updateDraft("slug", event.target.value)} />
@@ -860,13 +841,12 @@ function AdminAudit({ logs }) {
   );
 }
 
-function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentUserChange, onOpenReplay }) {
+function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentUserChange, onNotice, onOpenReplay }) {
   const [draft, setDraft] = useState(() => buildUserDraft(user));
   const [banReason, setBanReason] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [userReplays, setUserReplays] = useState([]);
   const [loadingReplays, setLoadingReplays] = useState(false);
-  const [actionError, setActionError] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -874,23 +854,21 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
     setBanReason("");
     setNewPassword("");
     setUserReplays([]);
-    setActionError("");
   }, [user]);
 
   function updateDraft(field, value) {
-    setActionError("");
     setDraft((current) => ({ ...current, [field]: value }));
   }
 
   async function runAction(action) {
     setSaving(true);
-    setActionError("");
     try {
       const result = await action();
       if (result?.user?.id === currentUserId) onCurrentUserChange(result.user);
       await onRefresh(user.id);
+      onNotice?.("操作成功", "success");
     } catch (error) {
-      setActionError(error.message);
+      onNotice?.(error.message, "danger");
     } finally {
       setSaving(false);
     }
@@ -900,12 +878,12 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
     event.preventDefault();
     const rating = parseAdminInteger(draft.rating);
     if (rating == null) {
-      setActionError("积分必须是 32-bit signed int 范围内的整数");
+      onNotice?.("积分必须是 32-bit signed int 范围内的整数", "danger");
       return;
     }
     const coins = parseAdminInteger(draft.coins);
     if (coins == null) {
-      setActionError("金币必须是 32-bit signed int 范围内的整数");
+      onNotice?.("金币必须是 32-bit signed int 范围内的整数", "danger");
       return;
     }
     await runAction(() => adminApi(`/users/${draft.id}`, token, {
@@ -915,6 +893,7 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
         rating,
         coins,
         ownedCharacters: draft.ownedCharactersText.split(",").map((item) => item.trim()).filter(Boolean),
+        ownedItems: parseOwnedItemsText(draft.ownedItemsText),
         selectedCharacter: draft.selectedCharacter
       }
     }));
@@ -923,7 +902,7 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
   async function banUser() {
     const reason = banReason.trim();
     if (reason.length < 2) {
-      setActionError("封禁原因至少需要 2 个字符");
+      onNotice?.("封禁原因至少需要 2 个字符", "danger");
       return;
     }
     if (!window.confirm(`确认封禁 ${user.username}？`)) return;
@@ -940,7 +919,7 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
 
   async function resetPassword() {
     if (newPassword.length < 4) {
-      setActionError("新密码至少需要 4 个字符");
+      onNotice?.("新密码至少需要 4 个字符", "danger");
       return;
     }
     if (!window.confirm(`确认重置 ${user.username} 的密码？`)) return;
@@ -955,12 +934,11 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
 
   async function loadUserReplays() {
     setLoadingReplays(true);
-    setActionError("");
     try {
       const data = await adminApi(`/users/${user.id}/replays`, token);
       setUserReplays(data.records ?? []);
     } catch (error) {
-      setActionError(error.message);
+      onNotice?.(error.message, "danger");
     } finally {
       setLoadingReplays(false);
     }
@@ -971,7 +949,6 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
       <button className="close-button" onClick={onClose}><X size={18} /></button>
       <h2>{user.username}</h2>
       <p className="quiet-text">状态 {user.status} · 战绩 {user.wins}胜/{user.losses}负</p>
-      {actionError && <p className="form-error admin-action-error">{actionError}</p>}
       <form className="admin-form" onSubmit={saveUser}>
         <label><AdminFieldLabel text="权限" tip="控制该账号是普通玩家还是管理员。" />
           <select value={draft.role} onChange={(event) => updateDraft("role", event.target.value)}>
@@ -990,6 +967,9 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
         </label>
         <label><AdminFieldLabel text="拥有角色" tip="该用户已解锁的角色 slug，多个角色用英文逗号分隔。" />
           <input value={draft.ownedCharactersText} onChange={(event) => updateDraft("ownedCharactersText", event.target.value)} />
+        </label>
+        <label><AdminFieldLabel text="拥有道具" tip="一行一个道具，格式为 道具slug:数量。数量为 0 或删除该行可移除道具。" />
+          <textarea rows={4} value={draft.ownedItemsText} onChange={(event) => updateDraft("ownedItemsText", event.target.value)} />
         </label>
         <label><AdminFieldLabel text="出战角色" tip="该用户当前默认出战角色的 slug。" />
           <input value={draft.selectedCharacter} onChange={(event) => updateDraft("selectedCharacter", event.target.value)} />
@@ -1016,7 +996,6 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
       <div className="admin-danger-zone">
         <label><AdminFieldLabel text="封禁原因" tip="封禁账号时记录的原因，至少 2 个字符。" />
           <input value={banReason} onChange={(event) => {
-            setActionError("");
             setBanReason(event.target.value);
           }} />
         </label>
@@ -1026,7 +1005,6 @@ function UserEditor({ user, currentUserId, token, onClose, onRefresh, onCurrentU
         </div>
         <label><AdminFieldLabel text="新密码" tip="为该用户重置登录密码，至少 4 个字符。" />
           <input type="password" value={newPassword} onChange={(event) => {
-            setActionError("");
             setNewPassword(event.target.value);
           }} />
         </label>
@@ -1050,8 +1028,28 @@ function buildUserDraft(user) {
     rating: user.rating ?? 0,
     coins: user.coins ?? 0,
     ownedCharactersText: (user.ownedCharacters ?? []).join(", "),
+    ownedItemsText: (user.ownedItems ?? []).map((item) => `${item.itemId}:${item.quantity}`).join("\n"),
     selectedCharacter: user.selectedCharacter ?? ""
   };
+}
+
+function parseOwnedItemsText(value = "") {
+  return String(value)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [itemId, quantity = "1"] = line.split(":");
+      return { itemId: itemId.trim(), quantity: Number(quantity) || 0 };
+    })
+    .filter((item) => item.itemId && item.quantity > 0);
+}
+
+function formatStockQuantity(value) {
+  const quantity = Number(value ?? -1);
+  if (quantity < 0) return "不限量";
+  if (quantity === 0) return "售罄";
+  return `${quantity}/用户`;
 }
 
 function formatDateTime(value) {

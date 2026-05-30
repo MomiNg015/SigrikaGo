@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildAllowedOrigins,
   normalizeChatText,
+  validateProductionDeployment,
   validatePassword,
   validateRoomCode,
   validateUsername
@@ -44,5 +45,35 @@ describe("deployment security helpers", () => {
       "https://www.sigrika.fun",
       "https://admin.sigrika.fun"
     ]));
+  });
+
+  it("accepts production deployment config only when secrets and origins are explicit", () => {
+    expect(validateProductionDeployment({
+      NODE_ENV: "production",
+      JWT_SECRET: "0123456789abcdef0123456789abcdef",
+      PUBLIC_ORIGIN: "https://sigrika.fun"
+    })).toEqual({ ok: true, errors: [] });
+  });
+
+  it("rejects production deployment config with weak secrets or missing origins", () => {
+    const result = validateProductionDeployment({
+      NODE_ENV: "production",
+      JWT_SECRET: "dev-secret"
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toContain("JWT_SECRET must be at least 32 characters in production");
+    expect(result.errors).toContain("At least one production origin must be configured with PUBLIC_ORIGIN, SITE_ORIGIN, or ALLOWED_ORIGINS");
+  });
+
+  it("rejects non-https production origins", () => {
+    expect(validateProductionDeployment({
+      NODE_ENV: "production",
+      JWT_SECRET: "0123456789abcdef0123456789abcdef",
+      PUBLIC_ORIGIN: "http://sigrika.fun"
+    })).toEqual({
+      ok: false,
+      errors: ["Production origins must use https: http://sigrika.fun"]
+    });
   });
 });

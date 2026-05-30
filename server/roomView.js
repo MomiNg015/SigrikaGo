@@ -1,13 +1,17 @@
-import { COLORS, gameViewForColor } from "../src/shared/game.js";
+import { COLORS, GAME_PHASES, gameViewForColor } from "../src/shared/game.js";
 
-export function buildRoomView(room, viewerId) {
+export function buildRoomView(room, viewerId, options = {}) {
+  const gameView = options.gameView ?? gameViewForColor;
   const playerColor = room.players.find((player) => player.user.id === viewerId)?.color ?? null;
   const viewerColor = playerColor ?? COLORS.black;
-  const role = room.players.some((player) => player.user.id === viewerId) ? "player" : "spectator";
-  const view = {
-    black: gameViewForColor(room.game, COLORS.black),
-    white: gameViewForColor(room.game, COLORS.white)
-  };
+  const isFinished = room.game.phase === GAME_PHASES.finished;
+  const role = !isFinished && room.players.some((player) => player.user.id === viewerId) ? "player" : "spectator";
+  const views = role === "spectator"
+    ? {
+        black: gameView(room.game, COLORS.black),
+        white: gameView(room.game, COLORS.white)
+      }
+    : null;
 
   return {
     code: room.code,
@@ -20,14 +24,16 @@ export function buildRoomView(room, viewerId) {
       character: player.character,
       captures: room.game.captures[player.color],
       skillRemovals: room.game.skillRemovals?.[player.color] ?? 0,
-      time: player.time
+      time: player.time,
+      connected: Boolean(player.socketId),
+      disconnectedAt: player.disconnectedAt ?? null
     })),
     spectatorCount: room.spectators.length,
     spectators: room.spectators.map((spectator) => ({
       user: spectator.user
     })),
-    game: role === "spectator" ? view.black : view[viewerColor],
-    gameViews: role === "spectator" ? view : null,
+    game: role === "spectator" ? views.black : gameView(room.game, viewerColor),
+    gameViews: views,
     chat: room.chat,
     openingEndsAt: room.openingEndsAt,
     closesAt: room.closesAt,

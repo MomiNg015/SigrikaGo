@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { BOARD_SOUND_TYPES } from "../shared/boardAudio.js";
-import { BGM_FADE_SECONDS, BGM_START_DELAY_SECONDS, createPlaybackKey, createPlaybackSchedule, createVolumeRamp } from "../shared/audioScheduling.js";
-import { VOICE_EFFECT_SETTINGS, boostedVoiceVolume, createAiryReverbImpulse } from "../shared/voiceEffects.js";
+import { BGM_FADE_SECONDS, BGM_START_DELAY_SECONDS, createDuckedVolume, createPlaybackKey, createPlaybackSchedule, createVolumeRamp } from "../shared/audioScheduling.js";
+import { VOICE_EFFECT_SETTINGS, audioBufferStats, boostedVoiceVolume, createAiryReverbImpulse, voiceNormalizationGain } from "../shared/voiceEffects.js";
 
 export const STONE_SOUND = "/assets/music/godown_clear.ogg";
 export const CAPTURE_SOUND = "/assets/music/go_capture_clear.ogg";
@@ -16,12 +16,18 @@ export const DEFAULT_AUDIO_SETTINGS = {
 
 const voiceBufferCache = new Map();
 const voicePromiseCache = new Map();
+const effectBufferCache = new Map();
+const effectPromiseCache = new Map();
+const backgroundDuckSubscribers = new Set();
 let sharedVoiceContext = null;
+let sharedEffectContext = null;
+let activeVoiceCount = 0;
 
 export function BackgroundMusic({ track, audioSettings }) {
   const playerRef = useRef({
     context: null,
     active: [],
+    baseVolume: 0,
     retry: null,
     generation: 0,
     bufferCache: new Map()
@@ -30,8 +36,17 @@ export function BackgroundMusic({ track, audioSettings }) {
   const trackKey = createPlaybackKey(track);
 
   useEffect(() => {
-    setBackgroundVolume(playerRef.current, volume);
+    setBackgroundBaseVolume(playerRef.current, volume);
   }, [volume]);
+
+  useEffect(() => {
+    const state = playerRef.current;
+    const refresh = () => setBackgroundVolume(state);
+    backgroundDuckSubscribers.add(refresh);
+    return () => {
+      backgroundDuckSubscribers.delete(refresh);
+    };
+  }, []);
 
   useEffect(() => {
     const state = playerRef.current;
@@ -44,7 +59,8 @@ export function BackgroundMusic({ track, audioSettings }) {
 
     const context = getBackgroundAudioContext(state);
     resumeBackgroundContextWithFallback(state);
-    scheduleBackgroundTrack({ state, context, track, volume, generation }).catch(() => {});
+    state.baseVolume = volume;
+    scheduleBackgroundTrack({ state, context, track, generation }).catch(() => {});
 
     return () => {};
   }, [trackKey]);
@@ -60,7 +76,7 @@ function getBackgroundAudioContext(state) {
   return state.context;
 }
 
-async function scheduleBackgroundTrack({ state, context, track, volume, generation }) {
+async function scheduleBackgroundTrack({ state, context, track, generation }) {
   if (!context) return;
   const sources = playbackSources(track.playback);
   const decodedEntries = await Promise.all(
@@ -72,7 +88,7 @@ async function scheduleBackgroundTrack({ state, context, track, volume, generati
   const startAt = context.currentTime + BGM_START_DELAY_SECONDS;
   const schedule = createPlaybackSchedule({ playback: track.playback, buffers, startAt });
   const gain = context.createGain();
-  applyGainRamp(gain.gain, createVolumeRamp({ from: 0, to: volume, startAt }));
+  applyGainRamp(gain.gain, createVolumeRamp({ from: 0, to: currentBackgroundVolume(state), startAt }));
   gain.connect(context.destination);
   fadeOutBackgroundPlayers(state);
 
@@ -103,31 +119,52 @@ async function loadBackgroundBuffer(state, context, src) {
   return buffer;
 }
 
-function resumeBackgroundContextWithFallback(state) {
+export function resumeBackgroundContextWithFallback(state) {
   const context = state.context;
   if (!context || context.state !== "suspended") return;
-  context.resume().catch(() => {
-    if (state.retry) return;
-    state.retry = () => {
-      window.removeEventListener("pointerdown", state.retry);
-      window.removeEventListener("keydown", state.retry);
-      state.retry = null;
-      context.resume().catch(() => {});
-    };
-    window.addEventListener("pointerdown", state.retry, { once: true });
-    window.addEventListener("keydown", state.retry, { once: true });
-  });
+  context.resume()
+    .then(() => {
+      if (context.state === "suspended") installBackgroundResumeRetry(state, context);
+    })
+    .catch(() => installBackgroundResumeRetry(state, context));
 }
 
-function setBackgroundVolume(state, volume) {
+function installBackgroundResumeRetry(state, context) {
+  if (state.retry || typeof window === "undefined") return;
+  state.retry = () => {
+    window.removeEventListener("pointerdown", state.retry);
+    window.removeEventListener("keydown", state.retry);
+    window.removeEventListener("touchstart", state.retry);
+    state.retry = null;
+    context.resume().catch(() => {});
+  };
+  window.addEventListener("pointerdown", state.retry, { once: true });
+  window.addEventListener("keydown", state.retry, { once: true });
+  window.addEventListener("touchstart", state.retry, { once: true });
+}
+
+function setBackgroundBaseVolume(state, volume) {
+  state.baseVolume = volume;
+  setBackgroundVolume(state);
+}
+
+function setBackgroundVolume(state) {
   const context = state.context;
   if (!context) return;
   const now = context.currentTime;
+  const volume = currentBackgroundVolume(state);
   for (const player of state.active) {
     player.gain.gain.cancelScheduledValues(now);
     player.gain.gain.setValueAtTime(player.gain.gain.value, now);
     player.gain.gain.linearRampToValueAtTime(volume, now + 0.12);
   }
+}
+
+function currentBackgroundVolume(state) {
+  return createDuckedVolume({
+    volume: state.baseVolume,
+    activeVoiceCount
+  });
 }
 
 function fadeOutBackgroundPlayers(state) {
@@ -178,6 +215,74 @@ export function audioVolume(settings, channel) {
 export function playEffectSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   const volume = audioVolume(audioSettings, "sfx");
   if (volume <= 0) return;
+  if (!effectBufferCache.has(src)) {
+    preloadEffectSound(src);
+    playEffectSoundFallback(src, volume);
+    return;
+  }
+  playEffectBuffer(src, volume).catch(() => {
+    playEffectSoundFallback(src, volume);
+  });
+}
+
+export function preloadEffectSound(src) {
+  if (!src) return Promise.resolve(null);
+  if (effectBufferCache.has(src)) return Promise.resolve(effectBufferCache.get(src));
+  if (effectPromiseCache.has(src)) return effectPromiseCache.get(src);
+  const context = getEffectAudioContext();
+  if (!context) return Promise.resolve(null);
+  const promise = fetch(src, { cache: "force-cache" })
+    .then((response) => response.arrayBuffer())
+    .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
+    .then((buffer) => {
+      effectBufferCache.set(src, buffer);
+      return buffer;
+    })
+    .catch(() => null)
+    .finally(() => {
+      effectPromiseCache.delete(src);
+    });
+  effectPromiseCache.set(src, promise);
+  return promise;
+}
+
+async function playEffectBuffer(src, volume) {
+  const context = getEffectAudioContext();
+  const buffer = effectBufferCache.get(src);
+  if (!context || !buffer) throw new Error("Effect audio buffer is not ready");
+  if (context.state === "suspended") await context.resume();
+  const source = context.createBufferSource();
+  const gain = context.createGain();
+  source.buffer = buffer;
+  gain.gain.value = volume;
+  source.connect(gain);
+  gain.connect(context.destination);
+  source.start();
+  source.onended = () => {
+    try {
+      source.disconnect();
+      gain.disconnect();
+    } catch {
+      // Audio nodes may already be disconnected by the browser.
+    }
+  };
+}
+
+function getEffectAudioContext() {
+  if (sharedEffectContext && sharedEffectContext.state !== "closed") return sharedEffectContext;
+  if (typeof window === "undefined") return null;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  try {
+    sharedEffectContext = new AudioContextClass();
+  } catch {
+    sharedEffectContext = null;
+    return null;
+  }
+  return sharedEffectContext;
+}
+
+function playEffectSoundFallback(src, volume) {
   const audio = new Audio(src);
   audio.preload = "auto";
   audio.volume = volume;
@@ -258,11 +363,17 @@ async function playVoiceBuffer(buffer, volume) {
   const source = context.createBufferSource();
   source.buffer = buffer;
 
-  const cleanupNodes = connectVoiceSource(context, source, volume);
+  const cleanupNodes = connectVoiceSource(context, source, normalizedVoiceVolume(buffer, volume));
+  beginVoicePlayback();
   source.start();
   source.onended = () => {
+    endVoicePlaybackSoon();
     setTimeout(cleanupNodes, VOICE_EFFECT_SETTINGS.reverbSeconds * 1000 + 250);
   };
+}
+
+function normalizedVoiceVolume(buffer, volume) {
+  return volume * voiceNormalizationGain(audioBufferStats(buffer));
 }
 
 function connectVoiceSource(context, source, volume) {
@@ -303,7 +414,33 @@ function playVoiceSoundFallback(src, volume) {
   const audio = new Audio(src);
   audio.preload = "auto";
   audio.volume = volume;
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    endVoicePlaybackSoon();
+  };
+  audio.addEventListener("play", beginVoicePlayback, { once: true });
+  audio.addEventListener("ended", release, { once: true });
+  audio.addEventListener("pause", release, { once: true });
+  audio.addEventListener("error", release, { once: true });
   audio.play().catch(() => {});
+}
+
+function beginVoicePlayback() {
+  activeVoiceCount += 1;
+  notifyBackgroundDuckSubscribers();
+}
+
+function endVoicePlaybackSoon() {
+  window.setTimeout(() => {
+    activeVoiceCount = Math.max(0, activeVoiceCount - 1);
+    notifyBackgroundDuckSubscribers();
+  }, 180);
+}
+
+function notifyBackgroundDuckSubscribers() {
+  for (const subscriber of backgroundDuckSubscribers) subscriber();
 }
 
 export function playStoneSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
@@ -382,5 +519,8 @@ export function speakText(text, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   utterance.lang = "zh-CN";
   utterance.rate = 1.05;
   utterance.volume = volume;
+  utterance.onstart = beginVoicePlayback;
+  utterance.onend = endVoicePlaybackSoon;
+  utterance.onerror = endVoicePlaybackSoon;
   window.speechSynthesis.speak(utterance);
 }

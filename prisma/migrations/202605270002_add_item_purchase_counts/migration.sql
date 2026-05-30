@@ -1,0 +1,1 @@
+ALTER TABLE "User" ADD COLUMN "itemPurchaseCounts" TEXT NOT NULL DEFAULT '';

@@ -1,0 +1,2 @@
+ALTER TABLE "ShopItem" ADD COLUMN "itemTargetType" TEXT NOT NULL DEFAULT 'self';
+ALTER TABLE "ShopItem" ADD COLUMN "stockQuantity" INTEGER NOT NULL DEFAULT -1;

@@ -1,9 +1,13 @@
 import { Fragment, useEffect, useState } from "react";
-import { Settings, X } from "lucide-react";
+import { Search, Settings, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { CHARACTERS } from "../shared/characters.js";
+import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { ConfirmPanel, UserProfileCard } from "./UserProfileCard.jsx";
+
+const SEARCH_USERNAME_MAX_LENGTH = 16;
+const SEARCH_USERNAME_DISALLOWED = /[^\p{Script=Han}A-Za-z0-9_]/gu;
 
 const STATUS_LABELS = {
   online: "在线",
@@ -11,14 +15,14 @@ const STATUS_LABELS = {
   playing: "对局中"
 };
 
-export default function FriendsModal({ token, socket, characters, onClose, onOpenReplay }) {
+export default function FriendsModal({ token, socket, characters, onNotice, onClose, onOpenReplay }) {
   const [activeTab, setActiveTab] = useState("friends");
   const [actionTarget, setActionTarget] = useState(null);
   const [friends, setFriends] = useState([]);
   const [blacklist, setBlacklist] = useState([]);
   const [profileUser, setProfileUser] = useState(null);
   const [confirmTarget, setConfirmTarget] = useState(null);
-  const [notice, setNotice] = useState(null);
+  const [searchUsername, setSearchUsername] = useState("");
   const [loading, setLoading] = useState(true);
   const rows = activeTab === "friends" ? friends : blacklist;
   const actionRow = actionTarget?.row;
@@ -29,16 +33,10 @@ export default function FriendsModal({ token, socket, characters, onClose, onOpe
 
   useEffect(() => {
     if (!socket) return undefined;
-    const sent = ({ target }) => setNotice({ type: "success", text: `已向${target.username}发送对局申请。` });
-    const rejected = ({ username }) => setNotice({ type: "danger", text: `${username}拒绝了你的对局申请。` });
-    const unavailable = ({ reason }) => setNotice({ type: "danger", text: reason === "playing" ? "对方正在对局中。" : "对方不在线。" });
+    const sent = ({ target }) => notify(`已向${target.username}发送对局申请。`, "success");
     socket.on("duel:sent", sent);
-    socket.on("duel:rejected", rejected);
-    socket.on("duel:unavailable", unavailable);
     return () => {
       socket.off("duel:sent", sent);
-      socket.off("duel:rejected", rejected);
-      socket.off("duel:unavailable", unavailable);
     };
   }, [socket]);
 
@@ -47,13 +45,17 @@ export default function FriendsModal({ token, socket, characters, onClose, onOpe
     setLoading(true);
     try {
       const data = await api("/api/social", { token });
-      setFriends(data.friends ?? []);
-      setBlacklist(data.blacklist ?? []);
+      applySocialData(data);
     } catch (error) {
-      setNotice({ type: "danger", text: error.message });
+      notify(error.message, "danger");
     } finally {
       setLoading(false);
     }
+  }
+
+  function applySocialData(data) {
+    setFriends(data.friends ?? []);
+    setBlacklist(data.blacklist ?? []);
   }
 
   async function openProfile(row) {
@@ -63,16 +65,62 @@ export default function FriendsModal({ token, socket, characters, onClose, onOpe
       const data = await api(`/api/users/${row.id}/profile`, { token });
       setProfileUser(data.profile);
     } catch (error) {
-      setNotice({ type: "danger", text: error.message });
+      notify(error.message, "danger");
     }
+  }
+
+  async function searchProfile() {
+    const username = searchUsername.trim();
+    if (!username) return;
+    if (username.length < 2) {
+      notify("用户名需为 2-16 位", "danger");
+      return;
+    }
+    setActionTarget(null);
+    setConfirmTarget(null);
+    try {
+      const data = await api(`/api/users/search/profile?username=${encodeURIComponent(username)}`, { token });
+      setProfileUser(data.profile);
+    } catch (error) {
+      notify(error.message === "该用户不存在" ? "该用户不存在" : error.message, "danger");
+    }
+  }
+
+  async function addProfileFriend(profile = profileUser) {
+    if (!profile) return;
+    try {
+      const data = await api(`/api/social/friends/${profile.id}`, { method: "POST", token });
+      applySocialData(data);
+      setActiveTab("friends");
+      setProfileUser(null);
+      notify(`已将${profile.username}加为好友。`, "success");
+    } catch (error) {
+      notify(error.message, "danger");
+    }
+  }
+
+  async function addProfileBlacklist(profile = profileUser) {
+    if (!profile) return;
+    try {
+      const data = await api(`/api/social/blacklist/${profile.id}`, { method: "POST", token });
+      applySocialData(data);
+      setActiveTab("blacklist");
+      setProfileUser(null);
+      notify(`已将${profile.username}加入黑名单。`, "success");
+    } catch (error) {
+      notify(error.message, "danger");
+    }
+  }
+
+  function handleSearchInput(value) {
+    setSearchUsername(value.replace(SEARCH_USERNAME_DISALLOWED, "").slice(0, SEARCH_USERNAME_MAX_LENGTH));
   }
 
   async function removeTarget(target = confirmTarget) {
     if (!target) return;
     const path = target.type === "friend" ? "friends" : "blacklist";
     const data = await api(`/api/social/${path}/${target.user.id}`, { method: "DELETE", token });
-    setFriends(data.friends ?? []);
-    setBlacklist(data.blacklist ?? []);
+    applySocialData(data);
     setConfirmTarget(null);
     setActionTarget(null);
   }
@@ -81,6 +129,10 @@ export default function FriendsModal({ token, socket, characters, onClose, onOpe
     if (row.status !== "online") return;
     socket?.emit("duel:request", { targetUserId: row.id });
     setActionTarget(null);
+  }
+
+  function notify(text, tone = "danger") {
+    onNotice?.(text, tone);
   }
 
   function openConfirm(type, user) {
@@ -110,12 +162,25 @@ export default function FriendsModal({ token, socket, characters, onClose, onOpe
     <>
       <div className="modal-backdrop" onClick={onClose}>
         <section className="friends-modal" onClick={(event) => event.stopPropagation()}>
-          <button className="close-button" onClick={onClose}><X size={20} /></button>
-          <div className="friends-tabs" role="tablist" aria-label="好友列表分类">
-            <button className={activeTab === "friends" ? "active" : ""} type="button" onClick={() => setActiveTab("friends")}>好友</button>
-            <button className={activeTab === "blacklist" ? "active" : ""} type="button" onClick={() => setActiveTab("blacklist")}>黑名单</button>
+          <div className="friends-modal-toolbar">
+            <div className="friends-tabs" role="tablist" aria-label="好友列表分类">
+              <button className={activeTab === "friends" ? "active" : ""} type="button" onClick={() => setActiveTab("friends")}>好友</button>
+              <button className={activeTab === "blacklist" ? "active" : ""} type="button" onClick={() => setActiveTab("blacklist")}>黑名单</button>
+            </div>
+            <form className="friend-search" onSubmit={(event) => {
+              event.preventDefault();
+              searchProfile();
+            }}>
+              <input
+                value={searchUsername}
+                maxLength={SEARCH_USERNAME_MAX_LENGTH}
+                placeholder="输入用户名"
+                aria-label="搜索用户名"
+                onChange={(event) => handleSearchInput(event.target.value)}
+              />
+              <button type="submit" title="搜索用户" aria-label="搜索用户"><Search size={18} /></button>
+            </form>
           </div>
-          {notice?.text && <p className={`friend-notice ${notice.type === "danger" ? "danger" : ""}`}>{notice.text}</p>}
           {loading && <p className="quiet-text">加载中...</p>}
           {!loading && (
             <div className="friends-list">
@@ -133,7 +198,7 @@ export default function FriendsModal({ token, socket, characters, onClose, onOpe
                   <Fragment key={row.id}>
                     <article className="friends-row">
                       <span className={`online-status ${row.status}`}>{STATUS_LABELS[row.status]}</span>
-                      <img src={character.portrait} alt={character.name} />
+                      <img src={resolveCandyPortrait(character, row.itemEffects)} alt={character.name} />
                       <strong>{row.username}</strong>
                       <span>{row.rank}</span>
                       <span>{row.rating}分</span>
@@ -168,6 +233,8 @@ export default function FriendsModal({ token, socket, characters, onClose, onOpe
               user={profileUser}
               characters={characters}
               token={token}
+              onAddFriend={addProfileFriend}
+              onAddBlacklist={addProfileBlacklist}
               onOpenReplay={(recordId) => {
                 setProfileUser(null);
                 onOpenReplay?.(recordId);

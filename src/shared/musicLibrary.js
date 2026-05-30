@@ -12,7 +12,7 @@ export const VICTORY_SOUND = "/assets/music/result-victory.mp3";
 export const DEFEAT_SOUND = "/assets/music/result-defeat.mp3";
 export const CHARACTER_SKILL_VOICES = {
   denia: "/assets/voice/denia_skill_cast.ogg",
-  sigrika: "/assets/voice/sigrika_2_no_exclaim.ogg",
+  sigrika: "/assets/voice/sigrika_skill_cast.ogg",
   aemeath: "/assets/voice/aemeath_skill.ogg",
   baconbits: "/assets/voice/baconbits_skill.ogg"
 };
@@ -20,6 +20,7 @@ export const CHARACTER_SKILL_VOICES = {
 export const CHARACTER_SYSTEM_VOICES = {
   denia: {
     [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/denia_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/denia_sortie.ogg",
     [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/denia_byoyomi_start.ogg",
     [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/denia_byoyomi_remaining_2.ogg",
     [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/denia_byoyomi_remaining_1.ogg",
@@ -36,6 +37,26 @@ export const CHARACTER_SYSTEM_VOICES = {
     [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/denia_result_win.ogg",
     [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/denia_result_loss.ogg",
     [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/denia_result_draw.ogg"
+  },
+  sigrika: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/sigrika_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/sigrika_sortie.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/sigrika_byoyomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/sigrika_byoyomi_remaining_2.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/sigrika_byoyomi_remaining_1.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/sigrika_countdown_10.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(9)]: "/assets/voice/sigrika_countdown_9.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(8)]: "/assets/voice/sigrika_countdown_8.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(7)]: "/assets/voice/sigrika_countdown_7.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(6)]: "/assets/voice/sigrika_countdown_6.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(5)]: "/assets/voice/sigrika_countdown_5.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(4)]: "/assets/voice/sigrika_countdown_4.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(3)]: "/assets/voice/sigrika_countdown_3.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(2)]: "/assets/voice/sigrika_countdown_2.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/sigrika_countdown_1.ogg",
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/sigrika_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/sigrika_result_loss.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/sigrika_result_draw.ogg"
   },
   baconbits: {
     [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/baconbits_game_start.ogg",
@@ -62,7 +83,7 @@ export const MUSIC_TRACKS = {
     type: MUSIC_TYPES.home,
     defaultUnlocked: true,
     purchasable: false,
-    playback: introLoop("/assets/music/hidamari_intro_once.ogg", "/assets/music/hidamari_loop.ogg")
+    playback: { mode: "single-loop", src: "/assets/music/main_bgm.ogg", loop: true }
   },
   "battle-default": {
     id: "battle-default",
@@ -136,7 +157,7 @@ export function resolveBackgroundMusic({
   tracks = MUSIC_TRACKS,
   defaults = DEFAULT_MUSIC_SELECTIONS
 } = {}) {
-  if (matchSuccess || resultModalOpen || gamePhase === "finished") return null;
+  if (matchSuccess || resultModalOpen || (view === "room" && gamePhase === "finished")) return null;
 
   if (view === "room" && skillPreview) {
     const skillTrack = findSkillTrack(skillPreview, tracks);

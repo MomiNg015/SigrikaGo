@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Hash, MessageSquareText, PanelRight, Settings } from "lucide-react";
-import { COLORS, GAME_PHASES, gameViewForColor } from "../shared/game.js";
+import { COLORS, GAME_PHASES, canStartSkill, gameViewForColor } from "../shared/game.js";
 import { BOARD_SOUND_TYPES, boardSoundActionAtStep, latestBoardSoundAction } from "../shared/boardAudio.js";
 import { nextCountdownAnnouncement, nextTimeAnnouncement } from "../shared/timeAnnouncements.js";
 import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "../shared/systemVoices.js";
@@ -28,7 +28,8 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   const liveStepRef = useRef(room.game.history.length);
   const isReplay = replayStep !== null;
   const liveStep = room.game.history.length;
-  const isLiveSpectator = room.role === "spectator" && !isReplay;
+  const effectiveRole = effectiveRoomRole(room, isReplay);
+  const isLiveSpectator = effectiveRole === "spectator" && !isReplay;
   const effectiveSpectatorStep = spectatorStep ?? liveStep;
   const boardStep = isReplay ? replayStep : isLiveSpectator ? effectiveSpectatorStep : null;
   const rawBoardGame = boardStep == null || boardStep >= liveStep
@@ -38,7 +39,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     ? gameViewForColor(rawBoardGame, viewColor)
     : rawBoardGame;
   const displayRoom = isReplay ? replayRoomAt(room, replayStep, viewColor) : isLiveSpectator ? { ...room, game: boardGame } : room;
-  const role = isReplay ? "spectator" : displayRoom.role;
+  const role = effectiveRoomRole(displayRoom, isReplay);
   const blackPlayer = displayRoom.players.find((p) => p.color === COLORS.black);
   const whitePlayer = displayRoom.players.find((p) => p.color === COLORS.white);
   const roomGameInfo = blackPlayer && whitePlayer
@@ -54,6 +55,8 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   const scoring = displayRoom.game.scoring;
   const drawRequest = displayRoom.game.drawRequest;
   const hasAnyStones = displayRoom.game.points.some((point) => Boolean(point.stone));
+  const skillAvailable = me ? canStartSkill(displayRoom.game, me.character?.skill ?? me.characterId) : true;
+  const opponentConnected = role !== "player" || opponent?.connected !== false;
   const soundMoveRef = useRef(null);
   const hiddenRevealSoundRef = useRef(null);
   const replayStepSoundRef = useRef(replayStep);
@@ -63,6 +66,15 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
   const skillPreview = displayRoom.game.pendingSkill;
   const canSwitchView = role === "spectator";
+  const [closeCountdownNow, setCloseCountdownNow] = useState(Date.now());
+  const showCloseCountdown = shouldShowRoomCloseCountdown(displayRoom);
+
+  useEffect(() => {
+    if (!showCloseCountdown) return undefined;
+    setCloseCountdownNow(Date.now());
+    const timerId = setInterval(() => setCloseCountdownNow(Date.now()), 1000);
+    return () => clearInterval(timerId);
+  }, [showCloseCountdown, displayRoom.closesAt]);
 
   useEffect(() => {
     if (!isLiveSpectator) {
@@ -170,7 +182,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   }, [activePlayer, characters, isReplay]);
 
   useEffect(() => {
-    if (isReplay) return;
+    if (!shouldPlayGameStartVoice({ isReplay, role, phase: displayRoom.game.phase })) return;
     const gameStartMessage = displayRoom.chat.findLast?.((message) => message.kind === "game-start");
     if (!gameStartMessage || systemVoiceRef.current.gameStart === gameStartMessage.id) return;
     systemVoiceRef.current.gameStart = gameStartMessage.id;
@@ -236,6 +248,11 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
                 <span className="room-info-tag black-side">黑方：{roomGameInfo.black}</span>
                 <span className="room-info-tag white-side">白方：{roomGameInfo.white}</span>
                 <span className="room-info-tag move-count">{roomGameInfo.moves}</span>
+                {showCloseCountdown && (
+                  <span className="room-info-tag close-countdown">
+                    {roomCloseCountdownText(displayRoom.closesAt, closeCountdownNow)}
+                  </span>
+                )}
               </>
             )}
           </p>
@@ -263,7 +280,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
             isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
           />
           {!isReplay && <RoomPeopleList room={displayRoom} user={user} characters={characters} token={token} onOpenReplay={onOpenReplay} />}
-          {!isReplay && !isLiveSpectator && <OperationHint room={displayRoom} user={user} scoring={scoring} drawRequest={drawRequest} />}
+          {!isReplay && role === "player" && <OperationHint room={displayRoom} user={user} scoring={scoring} drawRequest={drawRequest} />}
         </div>
         <div className="board-column">
           <div className="board-stage">
@@ -288,7 +305,9 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
             setPendingSkill={setPendingSkill}
             skillLocked={Boolean(skillPreview)}
             skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
+            skillAvailable={skillAvailable}
             hasAnyStones={hasAnyStones}
+            opponentConnected={opponentConnected}
             scoring={scoring}
             drawRequest={drawRequest}
             drawDeadline={displayRoom.drawDeadline ?? drawRequest?.deadline}
@@ -300,6 +319,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
             showTestTools={SHOW_TEST_TOOLS}
             onTestRandomLayout={() => onGameAction({ type: "test-random-layout" })}
             onTestRestoreSkill={() => onGameAction({ type: "test-restore-skill" })}
+            onTestEnterByoYomi={() => onGameAction({ type: "test-enter-byo-yomi" })}
             onPass={() => onGameAction({ type: "pass" })}
             onCountingRequest={onCountingRequest}
             onCountingRespond={onCountingRespond}
@@ -349,6 +369,26 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       {skillPreview && <SkillBanner banner={skillPreview} characters={characters} audioSettings={audioSettings} />}
     </main>
   );
+}
+
+export function shouldShowRoomCloseCountdown(room) {
+  return room?.game?.phase === GAME_PHASES.finished && Boolean(room.closesAt);
+}
+
+export function effectiveRoomRole(room, isReplay = false) {
+  if (isReplay || room?.game?.phase === GAME_PHASES.finished) return "spectator";
+  return room?.role ?? "spectator";
+}
+
+export function shouldPlayGameStartVoice({ isReplay = false, role = "spectator", phase = "" } = {}) {
+  return !isReplay && role === "player" && phase === GAME_PHASES.playing;
+}
+
+export function roomCloseCountdownText(closesAt, now = Date.now()) {
+  const seconds = Math.max(0, Math.ceil((Number(closesAt) - now) / 1000));
+  const minutes = Math.floor(seconds / 60);
+  const restSeconds = String(seconds % 60).padStart(2, "0");
+  return `关闭倒计时 ${minutes}:${restSeconds}`;
 }
 
 export function roomGameInfoForPlayers(blackPlayer, whitePlayer, moveNumber) {

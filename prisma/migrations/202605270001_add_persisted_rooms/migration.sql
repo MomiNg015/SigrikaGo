@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS "PersistedRoom" (
+  "code" TEXT NOT NULL PRIMARY KEY,
+  "status" TEXT NOT NULL DEFAULT 'active',
+  "snapshot" TEXT NOT NULL,
+  "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS "PersistedRoom_status_idx" ON "PersistedRoom"("status");

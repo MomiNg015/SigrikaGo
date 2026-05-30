@@ -1,4 +1,5 @@
 import { rankFromRating } from "../src/shared/ratingRank.js";
+import { parseItemEffects } from "./itemEffects.js";
 
 export const RELATIONSHIP_TYPES = {
   friend: "friend",
@@ -49,9 +50,10 @@ export async function listSocialUsers({ prisma, userId, statusForUser }) {
 
 export async function setRelationship({ prisma, ownerUserId, targetUserId, type }) {
   assertRelationship(ownerUserId, targetUserId, type);
+  const now = new Date();
   await prisma.$executeRaw`
-    INSERT INTO UserRelationship (id, ownerUserId, targetUserId, type)
-    VALUES (${crypto.randomUUID()}, ${ownerUserId}, ${targetUserId}, ${type})
+    INSERT INTO UserRelationship (id, ownerUserId, targetUserId, type, createdAt, updatedAt)
+    VALUES (${crypto.randomUUID()}, ${ownerUserId}, ${targetUserId}, ${type}, ${now}, ${now})
     ON CONFLICT(ownerUserId, targetUserId)
     DO UPDATE SET type = ${type}, updatedAt = CURRENT_TIMESTAMP
   `;
@@ -63,6 +65,32 @@ export async function deleteRelationship({ prisma, ownerUserId, targetUserId, ty
     DELETE FROM UserRelationship
     WHERE ownerUserId = ${ownerUserId} AND targetUserId = ${targetUserId} AND type = ${type}
   `;
+}
+
+export async function hasBlacklistFromOwner({ prisma, ownerUserId, targetUserId }) {
+  if (!ownerUserId || !targetUserId || ownerUserId === targetUserId) return false;
+  const rows = await prisma.$queryRaw`
+    SELECT id FROM UserRelationship
+    WHERE ownerUserId = ${ownerUserId}
+      AND targetUserId = ${targetUserId}
+      AND type = ${RELATIONSHIP_TYPES.blacklist}
+    LIMIT 1
+  `;
+  return rows.length > 0;
+}
+
+export async function hasBlacklistBetween({ prisma, firstUserId, secondUserId }) {
+  if (!firstUserId || !secondUserId || firstUserId === secondUserId) return false;
+  const rows = await prisma.$queryRaw`
+    SELECT id FROM UserRelationship
+    WHERE type = ${RELATIONSHIP_TYPES.blacklist}
+      AND (
+        (ownerUserId = ${firstUserId} AND targetUserId = ${secondUserId})
+        OR (ownerUserId = ${secondUserId} AND targetUserId = ${firstUserId})
+      )
+    LIMIT 1
+  `;
+  return rows.length > 0;
 }
 
 export async function getUserProfile({ prisma, userId, viewerId, statusForUser }) {
@@ -98,6 +126,15 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser }
     characterStats: characterStats(userId, records),
     relation: viewerId === userId ? "self" : viewerRelation?.[0]?.type ?? ""
   };
+}
+
+export async function getUserProfileByUsername({ prisma, username, viewerId, statusForUser }) {
+  const user = await prisma.user.findFirst({
+    where: { username },
+    select: { id: true }
+  });
+  if (!user) return null;
+  return getUserProfile({ prisma, userId: user.id, viewerId, statusForUser });
 }
 
 export async function getUserReplays({ prisma, userId }) {
@@ -137,7 +174,8 @@ export function publicProfileSelect() {
     username: true,
     rating: true,
     selectedCharacter: true,
-    ownedCharacters: true
+    ownedCharacters: true,
+    itemEffects: true
   };
 }
 
@@ -148,6 +186,7 @@ export function toSocialUser(user, status = "offline") {
     rank: rankFromRating(user.rating),
     rating: user.rating,
     characterId: user.selectedCharacter ?? "sigrika",
+    itemEffects: parseItemEffects(user.itemEffects),
     status
   };
 }

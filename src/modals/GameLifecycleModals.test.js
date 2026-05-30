@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { colorTextForPlayer, formatSignedDelta, secondsSinceStarted, secondsUntilTimestamp } from "./GameLifecycleModals.jsx";
+import { colorTextForPlayer, formatSignedDelta, resultRewardForRoom, resultVoiceEventForRoom, secondsSinceStarted, secondsUntilTimestamp } from "./GameLifecycleModals.jsx";
 import { COLORS } from "../shared/game.js";
 
 describe("GameLifecycleModals helpers", () => {
@@ -19,5 +19,49 @@ describe("GameLifecycleModals helpers", () => {
     expect(formatSignedDelta(20)).toBe("+20");
     expect(formatSignedDelta(0)).toBe("0");
     expect(formatSignedDelta(-20)).toBe("-20");
+  });
+
+  it("shows zero reward deltas for invalid early resign results", () => {
+    const room = {
+      players: [{ user: { id: "u1" }, color: COLORS.black }],
+      game: {
+        winner: {
+          winnerColor: COLORS.black,
+          invalid: true
+        }
+      }
+    };
+
+    expect(resultRewardForRoom(room, { id: "u1" })).toEqual({ rating: 0, coins: 0 });
+  });
+
+  it("selects the result voice event from the current player's outcome", () => {
+    const room = {
+      players: [
+        { user: { id: "u1" }, color: COLORS.black },
+        { user: { id: "u2" }, color: COLORS.white }
+      ],
+      game: {
+        winner: {
+          winnerColor: COLORS.black
+        }
+      }
+    };
+
+    expect(resultVoiceEventForRoom(room, { id: "u1" })).toBe("result-victory");
+    expect(resultVoiceEventForRoom(room, { id: "u2" })).toBe("result-defeat");
+  });
+
+  it("selects draw result voice events but skips invalid early resigns", () => {
+    const room = {
+      players: [{ user: { id: "u1" }, color: COLORS.black }],
+      game: { winner: null }
+    };
+
+    expect(resultVoiceEventForRoom(room, { id: "u1" })).toBe("result-draw");
+    expect(resultVoiceEventForRoom({
+      ...room,
+      game: { winner: { winnerColor: COLORS.black, invalid: true } }
+    }, { id: "u1" })).toBeNull();
   });
 });

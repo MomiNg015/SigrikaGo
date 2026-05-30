@@ -1,8 +1,9 @@
-import { Eye, LogOut, MessageSquareText, Settings, ShoppingBag, Sparkles, Swords, Trophy, UserRound, UsersRound } from "lucide-react";
+import { Archive, Eye, LogOut, MessageSquareText, Settings, ShoppingBag, Sparkles, Swords, Trophy, UserRound, UsersRound } from "lucide-react";
 import { CHARACTERS } from "../shared/characters.js";
+import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 
-export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, onLogout, onStartMatch, onOpenHouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenFriends, onOpenSettings, onOpenMessageBoard, onOpenAdmin }) {
+export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, onLogout, onStartMatch, onOpenHouse, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenFriends, onOpenSettings, onOpenMessageBoard, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
   const plaqueStyle = { "--plaque-color": selectedCharacter.palette ?? "#5d7fe8" };
 
@@ -27,16 +28,19 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
         <p>{siteSettings.homeSubtitle}</p>
         <h1>{siteSettings.homeTitle}</h1>
       </section>
-      <section className="home-player-plaque" aria-label="当前用户铭牌" style={plaqueStyle}>
-        <div className="plaque-avatar">
-          <img src={selectedCharacter.portrait} alt="当前出战角色" />
-        </div>
-        <strong>{user.username}</strong>
-        <div className="plaque-stats">
-          <span>{user.rank}</span>
-          <span>{user.rating}分</span>
-        </div>
-      </section>
+      <div className="home-player-row" style={plaqueStyle}>
+        <section className="home-player-plaque" aria-label="当前用户铭牌">
+          <div className="plaque-avatar">
+            <img src={selectedCharacter.portrait} alt="当前出战角色" />
+          </div>
+          <strong>{user.username}</strong>
+          <div className="plaque-stats">
+            <span>{user.rank}</span>
+            <span>{user.rating}分</span>
+          </div>
+        </section>
+        <span className="plaque-online-tag">在线人数：{Number(lobbyStats.onlineCount ?? 0)}</span>
+      </div>
       <section className="home-grid-featured">
         <section className="home-match-feature">
           <div className="match-feature-copy">
@@ -48,7 +52,8 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
           </div>
           <button className="match-button match-button-large" onClick={onStartMatch}>
             <Sparkles size={24} />
-            开始匹配
+            <span>开始匹配</span>
+            <small>匹配中人数：{Number(lobbyStats.matchmakingCount ?? 0)}</small>
           </button>
         </section>
         <button className="home-entry house-entry house-entry-secondary" onClick={onOpenHouse}>
@@ -56,13 +61,18 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
             <UserRound size={30} />
             <strong>部员手册</strong>
           </div>
-          <img className="entry-portrait" src={selectedCharacter.portrait} alt="出战角色" />
+          <img className="entry-portrait" src={resolveCandyPortrait(selectedCharacter, user.itemEffects)} alt="出战角色" />
         </button>
         <div className="home-utility-grid">
           <button className="home-entry utility-entry shop-entry" onClick={onOpenShop} title="商店">
             <ShoppingBag size={28} />
             <strong>商店</strong>
             <span>角色、物品、装饰即将开放</span>
+          </button>
+          <button className="home-entry utility-entry warehouse-entry" onClick={onOpenWarehouse} title="仓库">
+            <Archive size={28} />
+            <strong>仓库</strong>
+            <span>查看并使用已经获得的道具</span>
           </button>
           <button className="home-entry utility-entry leaderboard-entry" onClick={onOpenLeaderboard} title="排行榜">
             <Trophy size={28} />

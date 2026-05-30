@@ -2,10 +2,19 @@ import { useState } from "react";
 import { MonitorPlay, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { CHARACTERS } from "../shared/characters.js";
+import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { ReplayList } from "./ReplayList.jsx";
 
-export function UserProfileCard({ user, characters, token, onOpenReplay }) {
+export function UserProfileCard({
+  user,
+  characters,
+  token,
+  onOpenReplay,
+  replayDisabled = false,
+  onAddFriend,
+  onAddBlacklist
+}) {
   const mainCharacter = findCharacter(characters, user.characterId) ?? CHARACTERS.sigrika;
   const characterStats = user.characterStats ?? [];
   const [replays, setReplays] = useState([]);
@@ -14,6 +23,7 @@ export function UserProfileCard({ user, characters, token, onOpenReplay }) {
   const [replayError, setReplayError] = useState("");
 
   async function openReplays() {
+    if (replayDisabled) return;
     setShowReplays(true);
     if (replays.length > 0 || loadingReplays) return;
     setLoadingReplays(true);
@@ -31,7 +41,7 @@ export function UserProfileCard({ user, characters, token, onOpenReplay }) {
   return (
     <section className="user-profile-card">
       <div className="profile-resume-hero">
-        <img src={mainCharacter.portrait} alt={mainCharacter.name} />
+        <img src={resolveCandyPortrait(mainCharacter, user.itemEffects)} alt={mainCharacter.name} />
         <div>
           <h3>{user.username}</h3>
           <p>{user.rank} · {user.rating}分</p>
@@ -42,14 +52,14 @@ export function UserProfileCard({ user, characters, token, onOpenReplay }) {
         <span><b>{user.rating}分</b><small>积分</small></span>
         <span><b>{user.rank}</b><small>段位</small></span>
       </div>
-      <div className="profile-resume-section">
+      <div className="profile-resume-section profile-character-section">
         <strong>角色战绩</strong>
         <div className="profile-character-list">
           {characterStats.map((item) => {
             const character = findCharacter(characters, item.characterId) ?? CHARACTERS.sigrika;
             return (
               <div className="profile-character-row" key={item.characterId}>
-                <img src={character.portrait} alt={character.name} />
+                <img src={resolveCandyPortrait(character, user.itemEffects)} alt={character.name} />
                 <span>{character.name}</span>
                 <span>{item.record}</span>
                 <b>{item.winRate}</b>
@@ -60,10 +70,20 @@ export function UserProfileCard({ user, characters, token, onOpenReplay }) {
         </div>
       </div>
       <div className="profile-resume-section">
-        <button className="profile-replay-button" type="button" onClick={openReplays}>
-          <MonitorPlay size={18} />
-          对局回放
-        </button>
+        <div className="profile-footer-actions">
+          <button className="profile-replay-button" type="button" disabled={replayDisabled} onClick={openReplays}>
+            <MonitorPlay size={18} />
+            对局回放
+          </button>
+          <div className="profile-relation-actions">
+            <button type="button" disabled={user.relation === "self" || user.relation === "friend"} onClick={() => onAddFriend?.(user)}>
+              {user.relation === "friend" ? "已是好友" : "加为好友"}
+            </button>
+            <button type="button" disabled={user.relation === "self" || user.relation === "blacklist"} onClick={() => onAddBlacklist?.(user)}>
+              {user.relation === "blacklist" ? "已在黑名单" : "加入黑名单"}
+            </button>
+          </div>
+        </div>
       </div>
       {showReplays && (
         <div className="modal-backdrop profile-modal-backdrop" onClick={() => setShowReplays(false)}>

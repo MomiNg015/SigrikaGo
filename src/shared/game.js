@@ -1,11 +1,61 @@
 import { CHARACTERS } from "./characters.js";
+import {
+  COLORS,
+  opponent
+} from "./gameConstants.js";
+import {
+  BOARD_SIZE,
+  activeNeighbors,
+  createPoints,
+  getPoint,
+  parsePointId,
+  pointId
+} from "./gameBoard.js";
+import {
+  normalizeSkillConfig,
+  skillRequiresExistingStone
+} from "./gameSkills.js";
+import {
+  INVALID_EARLY_RESIGN_NOTICE,
+  MAX_INVALID_GAME_END_MOVE_NUMBER,
+  MIN_VALID_RESIGN_MOVE_NUMBER,
+  createDrawResult,
+  createResignResult,
+  createTimeoutResult,
+  isInvalidGameEnd,
+  resultWithInvalidFlagForGame
+} from "./gameResults.js";
+import { formatStones } from "./stoneFormatting.js";
 
-export const BOARD_SIZE = 13;
+export {
+  COLORS,
+  opponent
+} from "./gameConstants.js";
+export {
+  BOARD_SIZE,
+  activeNeighbors,
+  createPoints,
+  getPoint,
+  parsePointId,
+  pointId
+} from "./gameBoard.js";
+export {
+  normalizeSkillConfig,
+  skillRequiresExistingStone
+} from "./gameSkills.js";
+export {
+  INVALID_EARLY_RESIGN_NOTICE,
+  MAX_INVALID_GAME_END_MOVE_NUMBER,
+  MIN_VALID_RESIGN_MOVE_NUMBER,
+  createDrawResult,
+  createResignResult,
+  createTimeoutResult,
+  isInvalidGameEnd,
+  resultWithInvalidFlagForGame
+} from "./gameResults.js";
+export { formatStones } from "./stoneFormatting.js";
+
 export const KOMI_STONES = 2.75;
-export const COLORS = {
-  black: "black",
-  white: "white"
-};
 export const GAME_PHASES = {
   opening: "opening",
   playing: "playing",
@@ -17,10 +67,6 @@ export const GAME_PHASES = {
   finished: "finished"
 };
 export const HIDDEN_HAND_NOTICE = "发现隐藏手了！";
-
-export function opponent(color) {
-  return color === COLORS.black ? COLORS.white : COLORS.black;
-}
 
 export function createGameState(players = []) {
   return {
@@ -43,54 +89,6 @@ export function createGameState(players = []) {
     suspendedHiddenHands: [],
     winner: null
   };
-}
-
-export function createPoints(size = BOARD_SIZE) {
-  const points = [];
-  for (let y = 0; y < size; y += 1) {
-    for (let x = 0; x < size; x += 1) {
-      points.push({
-        id: pointId(x, y),
-        x,
-        y,
-        valid: true,
-        stone: null,
-        mark: null,
-        neighbors: baseNeighbors(x, y, size)
-      });
-    }
-  }
-  return points;
-}
-
-export function pointId(x, y) {
-  return `${x},${y}`;
-}
-
-export function parsePointId(id) {
-  const [x, y] = id.split(",").map(Number);
-  return { x, y };
-}
-
-function baseNeighbors(x, y, size) {
-  return [
-    [x - 1, y],
-    [x + 1, y],
-    [x, y - 1],
-    [x, y + 1]
-  ]
-    .filter(([nx, ny]) => nx >= 0 && ny >= 0 && nx < size && ny < size)
-    .map(([nx, ny]) => pointId(nx, ny));
-}
-
-export function getPoint(state, id) {
-  return state.points.find((p) => p.id === id);
-}
-
-export function activeNeighbors(state, point) {
-  return point.neighbors
-    .map((id) => getPoint(state, id))
-    .filter((neighbor) => neighbor?.valid);
 }
 
 export function cloneState(state) {
@@ -136,7 +134,12 @@ export function activatePassiveSkill(state, color, skillOrCharacterId) {
 
 export function gameViewForColor(game, viewerColor) {
   const view = cloneState(game);
-  const showColorIllusions = [GAME_PHASES.playing, GAME_PHASES.skillPreview, GAME_PHASES.drawRequested].includes(view.phase);
+  const showColorIllusions = [
+    GAME_PHASES.playing,
+    GAME_PHASES.skillPreview,
+    GAME_PHASES.drawRequested,
+    GAME_PHASES.countingRequested
+  ].includes(view.phase);
   view.points = view.points.map((point) => {
     let nextPoint = point;
     if (nextPoint.hiddenHand && !nextPoint.hiddenHand.exposed && nextPoint.hiddenHand.owner !== viewerColor) {
@@ -303,34 +306,9 @@ export function passMove(state, color) {
 export function resignGame(state, color) {
   const next = cloneState(state);
   next.phase = GAME_PHASES.finished;
-  next.winner = createResignResult(color);
-  return ok(next);
-}
-
-export function createResignResult(resigningColor) {
-  const winnerColor = opponent(resigningColor);
-  return {
-    winnerColor,
-    reason: "resign",
-    text: `${colorName(winnerColor)}\u4e2d\u76d8\u80dc`
-  };
-}
-
-export function createTimeoutResult(timeoutColor) {
-  const winnerColor = opponent(timeoutColor);
-  return {
-    winnerColor,
-    reason: "timeout",
-    text: `${colorName(winnerColor)}\u8d85\u65f6\u80dc`
-  };
-}
-
-export function createDrawResult(reason = "agreement") {
-  return {
-    winnerColor: null,
-    reason,
-    text: "\u548c\u68cb"
-  };
+  const invalid = isInvalidGameEnd(next);
+  next.winner = createResignResult(color, { invalid });
+  return ok(next, invalid ? { notices: [INVALID_EARLY_RESIGN_NOTICE] } : {});
 }
 
 export function useSkill(state, color, skillOrCharacterId, targetId) {
@@ -338,6 +316,7 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
   if (state.turn !== color) return fail("还没有轮到你");
   if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
   const skill = normalizeSkillConfig(skillOrCharacterId);
+  if (!canStartSkill(state, skill)) return fail("场上没有可作用的棋子");
   if (skill?.effectType === "erase-point") {
     return erasePoint(state, color, targetId, {
       skillName: skill.name,
@@ -367,6 +346,12 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
     });
   }
   return fail("未知角色技能");
+}
+
+export function canStartSkill(state, skillOrCharacterId) {
+  const skill = normalizeSkillConfig(skillOrCharacterId);
+  if (!skillRequiresExistingStone(skill)) return true;
+  return state.points.some((point) => point.valid && point.stone);
 }
 
 function clearBoardStones(state) {
@@ -426,104 +411,6 @@ function createPassiveState(players = []) {
 function passiveProbability(skill) {
   const value = Number(skill?.params?.probability ?? 0.8);
   return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0.8;
-}
-
-function targetRuleForEffect(effectType) {
-  if (effectType === "flip-stone") return "stone";
-  if (effectType === "random-blast") return "none";
-  if (effectType === "color-illusion-passive") return "none";
-  return "empty-point";
-}
-
-export function normalizeSkillConfig(skillOrCharacterId) {
-  if (skillOrCharacterId?.effectType) return skillOrCharacterId;
-  if (skillOrCharacterId?.id) {
-    const effectType = skillOrCharacterId.id;
-    return {
-      characterId: skillOrCharacterId.characterId ?? null,
-      effectType,
-      name: skillOrCharacterId.name,
-      uses: skillOrCharacterId.uses ?? (effectType === "color-illusion-passive" ? 0 : 1),
-      freeTurn: Boolean(skillOrCharacterId.freeTurn),
-      costType: skillOrCharacterId.costType ?? "numeric",
-      costValue: String(skillOrCharacterId.costValue ?? skillOrCharacterId.cost ?? 0),
-      systemMessage: skillOrCharacterId.systemMessage,
-      targetRule: targetRuleForEffect(effectType),
-      params: skillOrCharacterId.params ?? {}
-    };
-  }
-  const fallback = CHARACTERS[skillOrCharacterId];
-  if (fallback?.skill?.id === "erase-point") {
-    return {
-      characterId: fallback.id,
-      effectType: "erase-point",
-      name: fallback.skill.name,
-      uses: fallback.skill.uses ?? 1,
-      freeTurn: Boolean(fallback.skill.freeTurn),
-      costType: fallback.skill.costType ?? "numeric",
-      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
-      systemMessage: fallback.skill.systemMessage,
-      targetRule: "empty-point",
-      params: {}
-    };
-  }
-  if (fallback?.skill?.id === "flip-stone") {
-    return {
-      characterId: fallback.id,
-      effectType: "flip-stone",
-      name: fallback.skill.name,
-      uses: fallback.skill.uses ?? 1,
-      freeTurn: Boolean(fallback.skill.freeTurn),
-      costType: fallback.skill.costType ?? "numeric",
-      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
-      systemMessage: fallback.skill.systemMessage,
-      targetRule: "stone",
-      params: {}
-    };
-  }
-  if (fallback?.skill?.id === "hidden-hand") {
-    return {
-      characterId: fallback.id,
-      effectType: "hidden-hand",
-      name: fallback.skill.name,
-      uses: fallback.skill.uses ?? 1,
-      freeTurn: false,
-      costType: fallback.skill.costType ?? "numeric",
-      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
-      systemMessage: fallback.skill.systemMessage,
-      targetRule: "empty-point",
-      params: {}
-    };
-  }
-  if (fallback?.skill?.id === "random-blast") {
-    return {
-      characterId: fallback.id,
-      effectType: "random-blast",
-      name: fallback.skill.name,
-      uses: fallback.skill.uses ?? 1,
-      freeTurn: Boolean(fallback.skill.freeTurn),
-      costType: fallback.skill.costType ?? "numeric",
-      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
-      systemMessage: fallback.skill.systemMessage,
-      targetRule: "none",
-      params: fallback.skill.params ?? { size: 3 }
-    };
-  }
-  if (fallback?.skill?.id === "color-illusion-passive") {
-    return {
-      characterId: fallback.id,
-      effectType: "color-illusion-passive",
-      name: fallback.skill.name,
-      uses: fallback.skill.uses ?? 0,
-      freeTurn: true,
-      costType: fallback.skill.costType ?? "numeric",
-      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
-      systemMessage: fallback.skill.systemMessage,
-      targetRule: "none",
-      params: fallback.skill.params ?? { probability: 0.8 }
-    };
-  }
-  return null;
 }
 
 export function playHiddenHand(state, color, id, options = {}) {
@@ -680,8 +567,8 @@ export function collectGroup(state, startId) {
   const seen = new Set([startId]);
   const queue = [start];
 
-  while (queue.length) {
-    const point = queue.shift();
+  for (let index = 0; index < queue.length; index += 1) {
+    const point = queue[index];
     stones.push(point.id);
     for (const neighbor of activeNeighbors(state, point)) {
       if (!neighbor.stone) {
@@ -927,8 +814,8 @@ function collectPotentialDeadStones(state, group, owner) {
   const seen = new Set(group.stones);
   const queue = [...group.stones];
 
-  while (queue.length) {
-    const current = getPoint(state, queue.shift());
+  for (let index = 0; index < queue.length; index += 1) {
+    const current = getPoint(state, queue[index]);
     if (!current) continue;
     for (const neighbor of activeNeighbors(state, current)) {
       if (seen.has(neighbor.id)) continue;
@@ -970,8 +857,8 @@ function collectTerritoryIgnoringColor(state, startId, neutral, ignoredColor) {
   const borderColors = new Set();
   const seen = new Set([startId]);
   const queue = [getPoint(state, startId)];
-  while (queue.length) {
-    const point = queue.shift();
+  for (let index = 0; index < queue.length; index += 1) {
+    const point = queue[index];
     if (!point?.valid || point.stone || neutral.has(point.id)) continue;
     points.push(point.id);
     for (const neighbor of activeNeighbors(state, point)) {
@@ -1033,35 +920,6 @@ function clearBlastMarkers(state, ownerColor) {
     point.skillEffect = null;
     point.skillEffectOwner = null;
   }
-}
-
-export function formatStones(value) {
-  if (!Number.isFinite(value)) return "0";
-  const sign = value < 0 ? "-" : "";
-  const abs = Math.abs(value);
-  const denominator = 100;
-  const numerator = Math.round(abs * denominator);
-  const whole = Math.floor(numerator / denominator);
-  const remainder = numerator % denominator;
-  if (remainder === 0) return `${sign}${whole}`;
-  const divisor = gcd(remainder, denominator);
-  const fraction = `${remainder / divisor}/${denominator / divisor}`;
-  return whole > 0 ? `${sign}${whole}又${fraction}` : `${sign}${fraction}`;
-}
-
-function gcd(a, b) {
-  let x = Math.abs(a);
-  let y = Math.abs(b);
-  while (y) {
-    const next = x % y;
-    x = y;
-    y = next;
-  }
-  return x || 1;
-}
-
-function colorName(color) {
-  return color === COLORS.black ? "\u9ed1" : "\u767d";
 }
 
 function applySkillCost(state, color, skillOrCharacterId) {

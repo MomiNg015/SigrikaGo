@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { rankFromRating } from "../src/shared/ratingRank.js";
+import { parseItemEffects } from "./itemEffects.js";
+import { parseAssetList, parseCharacterAssetList } from "./userAssets.js";
 
 export const prisma = new PrismaClient();
 
@@ -10,7 +12,7 @@ const RATING_UNLOCKS = [
 ];
 
 export function publicUser(user) {
-  const ownedCharacters = new Set(user.ownedCharacters.split(",").filter(Boolean).map(canonicalCharacterId));
+  const ownedCharacters = new Set(parseCharacterAssetList(user.ownedCharacters));
   for (const characterId of AVAILABLE_CHARACTER_IDS) ownedCharacters.add(characterId);
   for (const unlock of RATING_UNLOCKS) {
     if ((user.rating ?? 0) >= unlock.rating) ownedCharacters.add(unlock.characterId);
@@ -28,7 +30,27 @@ export function publicUser(user) {
     selectedCharacter: canonicalCharacterId(user.selectedCharacter),
     selectedStoneDecoration: user.selectedStoneDecoration ?? "",
     ownedCharacters: [...ownedCharacters],
-    ownedItems: user.ownedItems.split(",").filter(Boolean),
-    ownedDecorations: user.ownedDecorations.split(",").filter(Boolean)
+    ownedItems: publicOwnedItems(user.ownedItems),
+    itemEffects: parseItemEffects(user.itemEffects),
+    ownedDecorations: parseAssetList(user.ownedDecorations)
   };
+}
+
+function publicOwnedItems(value) {
+  const text = String(value ?? "").trim();
+  if (!text) return [];
+  if (text.startsWith("{")) {
+    try {
+      return Object.entries(JSON.parse(text))
+        .map(([itemId, quantity]) => ({ itemId, quantity: Number(quantity) || 0 }))
+        .filter((item) => item.itemId && item.quantity > 0);
+    } catch {
+      return [];
+    }
+  }
+  const counts = {};
+  for (const itemId of text.split(",").map((item) => item.trim()).filter(Boolean)) {
+    counts[itemId] = (counts[itemId] ?? 0) + 1;
+  }
+  return Object.entries(counts).map(([itemId, quantity]) => ({ itemId, quantity }));
 }

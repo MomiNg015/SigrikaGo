@@ -1,4 +1,5 @@
 import { recordWinnerColor } from "./gameRecords.js";
+import { parseItemEffects } from "./itemEffects.js";
 import { rankFromRating } from "../src/shared/ratingRank.js";
 
 export function buildLeaderboard(users = [], records = []) {
@@ -9,6 +10,7 @@ export function buildLeaderboard(users = [], records = []) {
       username: user.username,
       rating: user.rating ?? 1000,
       selectedCharacter: user.selectedCharacter ?? "sigrika",
+      itemEffects: parseItemEffects(user.itemEffects),
       totalGames: 0,
       wins: 0,
       losses: 0,
@@ -29,6 +31,7 @@ export function buildLeaderboard(users = [], records = []) {
       username: row.username,
       rating: row.rating,
       rank: rankFromRating(row.rating),
+      itemEffects: row.itemEffects,
       totalGames: row.totalGames,
       wins: row.wins,
       losses: row.losses,

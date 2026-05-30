@@ -10,12 +10,13 @@ export function assertSafeJwtSecret(jwtSecret, env = process.env.NODE_ENV ?? "de
   }
 }
 
-export function makeAuth({ prisma, jwtSecret }) {
+export function makeAuth({ prisma, jwtSecret, isSessionActive = null }) {
   assertSafeJwtSecret(jwtSecret);
   async function authHttp(req, res, next) {
     try {
       const token = req.headers.authorization?.replace("Bearer ", "");
       const payload = jwt.verify(token, jwtSecret);
+      if (isSessionActive && !(await isSessionActive(payload.sub, payload.sid))) throw new Error("stale session");
       const user = await prisma.user.findUnique({ where: { id: payload.sub } });
       if (!user) throw new Error("missing user");
       if (user.status === USER_STATUS.banned) {
@@ -40,9 +41,13 @@ export function makeAuth({ prisma, jwtSecret }) {
   return { authHttp, requireAdmin };
 }
 
-export function withToken(user, jwtSecret) {
+export function withToken(user, jwtSecret, options = {}) {
+  const payload = {
+    sub: user.id,
+    ...(options.sessionId ? { sid: options.sessionId } : {})
+  };
   return {
-    token: jwt.sign({ sub: user.id }, jwtSecret, { expiresIn: "14d" }),
+    token: jwt.sign(payload, jwtSecret, { expiresIn: "14d" }),
     user: publicUser(user)
   };
 }

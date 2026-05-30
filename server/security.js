@@ -5,9 +5,11 @@ export const PASSWORD_MAX_LENGTH = 14;
 export const USERNAME_MIN_LENGTH = 2;
 export const USERNAME_MAX_LENGTH = 16;
 export const CHAT_MAX_LENGTH = 240;
+export const PRODUCTION_JWT_SECRET_MIN_LENGTH = 32;
 
 const USERNAME_PATTERN = /^[\p{Script=Han}A-Za-z0-9_]+$/u;
 const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/g;
+const DEFAULT_JWT_SECRETS = new Set(["dev-secret", "change-me-in-production"]);
 
 export function validateUsername(input) {
   const value = stripControlChars(String(input ?? "")).trim();
@@ -71,6 +73,45 @@ export function buildAllowedOrigins(env = process.env) {
     origins.add("http://127.0.0.1:3001");
   }
   return origins;
+}
+
+export function validateProductionDeployment(env = process.env) {
+  if (env.NODE_ENV !== "production") return { ok: true, errors: [] };
+
+  const errors = [];
+  const jwtSecret = String(env.JWT_SECRET ?? "");
+  if (jwtSecret.length < PRODUCTION_JWT_SECRET_MIN_LENGTH) {
+    errors.push(`JWT_SECRET must be at least ${PRODUCTION_JWT_SECRET_MIN_LENGTH} characters in production`);
+  }
+  if (DEFAULT_JWT_SECRETS.has(jwtSecret)) {
+    errors.push("JWT_SECRET must be changed before running in production");
+  }
+
+  const origins = [...buildAllowedOrigins(env)];
+  if (origins.length === 0) {
+    errors.push("At least one production origin must be configured with PUBLIC_ORIGIN, SITE_ORIGIN, or ALLOWED_ORIGINS");
+  }
+  for (const origin of origins) {
+    let parsed;
+    try {
+      parsed = new URL(origin);
+    } catch {
+      errors.push(`Production origin is not a valid URL: ${origin}`);
+      continue;
+    }
+    if (parsed.protocol !== "https:") {
+      errors.push(`Production origins must use https: ${origin}`);
+    }
+  }
+
+  return { ok: errors.length === 0, errors };
+}
+
+export function assertProductionDeployment(env = process.env) {
+  const result = validateProductionDeployment(env);
+  if (!result.ok) {
+    throw new Error(`Invalid production deployment configuration:\n${result.errors.join("\n")}`);
+  }
 }
 
 export function corsOriginForRequest(origin, callback, env = process.env) {
