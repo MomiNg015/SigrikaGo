@@ -2,43 +2,39 @@ import { describe, expect, it, vi } from "vitest";
 import { createOnlineSessionManager } from "./onlineSessions.js";
 
 describe("online session manager", () => {
-  it("creates a login response and clears an unused session after the pending window", () => {
-    let pendingCallback;
+  it("creates a login response without requiring a socket to keep the session", async () => {
     const sessions = fakeSessions();
-    const manager = createManager({
-      sessions,
-      setTimer: (callback, delay) => {
-        pendingCallback = callback;
-        return { delay };
-      }
+    const manager = createManager({ sessions });
+
+    const response = await manager.createLoginResponse({ id: "user-1" });
+
+    expect(response).toMatchObject({
+      userId: "user-1",
+      sessionId: "session-user-1",
+      refreshToken: "refresh-user-1"
     });
-
-    const response = manager.createLoginResponse({ id: "user-1" });
-    pendingCallback();
-
-    expect(response).toEqual({ userId: "user-1", sessionId: "session-user-1" });
-    expect(sessions.cleared).toContainEqual(["user-1", "session-user-1"]);
+    expect(sessions.cleared).toEqual([]);
   });
 
-  it("cancels pending login cleanup when the socket connects", () => {
+  it("marks the user online when the socket connects", async () => {
     const clearTimer = vi.fn();
     const manager = createManager({ clearTimer });
 
-    manager.createLoginResponse({ id: "user-1" });
+    await manager.createLoginResponse({ id: "user-1" });
     manager.registerOnlineSocket(fakeSocket("socket-1", "user-1", "session-user-1"));
 
-    expect(clearTimer).toHaveBeenCalledTimes(1);
+    expect(clearTimer).not.toHaveBeenCalled();
     expect(manager.statusForUser("user-1")).toBe("online");
     expect(manager.onlineCount()).toBe(1);
   });
 
-  it("force logs out all sockets for a user and clears the active session", () => {
+  it("force logs out all sockets for a user and clears the active session", async () => {
     const sessions = fakeSessions();
     const socket = fakeSocket("socket-1", "user-1", "session-user-1");
     const manager = createManager({ sessions, sockets: [socket] });
     manager.registerOnlineSocket(socket);
 
-    manager.forceLogoutUser("user-1");
+    await manager.forceLogoutUser("user-1");
 
     expect(sessions.clearUser).toHaveBeenCalledWith("user-1");
     expect(socket.events).toContainEqual({
@@ -48,18 +44,12 @@ describe("online session manager", () => {
     expect(socket.disconnected).toBe(true);
   });
 
-  it("keeps the session during a short disconnect grace window", () => {
-    const timers = [];
+  it("keeps the session when the last socket disconnects", () => {
     const sessions = fakeSessions();
     const onSocketDisconnected = vi.fn();
     const manager = createManager({
       sessions,
-      onSocketDisconnected,
-      setTimer: (callback, delay) => {
-        const timer = { callback, delay };
-        timers.push(timer);
-        return timer;
-      }
+      onSocketDisconnected
     });
     const socket = fakeSocket("socket-1", "user-1", "session-user-1");
     manager.registerOnlineSocket(socket);
@@ -67,31 +57,8 @@ describe("online session manager", () => {
     manager.unregisterOnlineSocket(socket);
 
     expect(sessions.cleared).toEqual([]);
-    expect(timers[0].delay).toBe(10000);
     expect(onSocketDisconnected).toHaveBeenCalledWith(socket);
     expect(manager.statusForUser("user-1")).toBe("offline");
-
-    timers[0].callback();
-
-    expect(sessions.cleared).toContainEqual(["user-1", "session-user-1"]);
-  });
-
-  it("uses a long default disconnect grace window for browser idle reconnects", () => {
-    const timers = [];
-    const manager = createManager({
-      setTimer: (callback, delay) => {
-        const timer = { callback, delay };
-        timers.push(timer);
-        return timer;
-      },
-      useDefaultDisconnectGrace: true
-    });
-    const socket = fakeSocket("socket-1", "user-1", "session-user-1");
-    manager.registerOnlineSocket(socket);
-
-    manager.unregisterOnlineSocket(socket);
-
-    expect(timers[0].delay).toBe(30 * 60 * 1000);
   });
 
   it("cancels pending session cleanup when the user reconnects quickly", () => {
@@ -109,7 +76,7 @@ describe("online session manager", () => {
     manager.unregisterOnlineSocket(socket);
     manager.registerOnlineSocket(nextSocket);
 
-    expect(clearTimer).toHaveBeenCalledTimes(1);
+    expect(clearTimer).not.toHaveBeenCalled();
     expect(sessions.cleared).toEqual([]);
     expect(manager.statusForUser("user-1")).toBe("online");
   });
@@ -131,20 +98,17 @@ function createManager(overrides = {}) {
   return createOnlineSessionManager({
     io: { sockets: { sockets } },
     sessions: overrides.sessions ?? fakeSessions(),
-    signLoginResponse: (user, sessionId) => ({ userId: user.id, sessionId }),
+    signLoginResponse: (user, session) => ({ userId: user.id, sessionId: session.sessionId }),
     isUserInActiveRoom: overrides.isUserInActiveRoom ?? (() => false),
     onSocketDisconnected: overrides.onSocketDisconnected ?? vi.fn(),
-    setTimer: overrides.setTimer ?? (() => "timer-1"),
-    clearTimer: overrides.clearTimer ?? vi.fn(),
-    pendingLoginMs: 120000,
-    ...(overrides.useDefaultDisconnectGrace ? {} : { disconnectedSessionGraceMs: 10000 })
+    clearTimer: overrides.clearTimer ?? vi.fn()
   });
 }
 
 function fakeSessions() {
   return {
     cleared: [],
-    replace: vi.fn((userId) => `session-${userId}`),
+    replace: vi.fn((userId) => ({ sessionId: `session-${userId}`, refreshToken: `refresh-${userId}` })),
     clear: vi.fn(function clear(userId, sessionId) {
       this.cleared.push([userId, sessionId]);
     }),

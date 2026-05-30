@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { GAME_PHASES } from "../src/shared/game.js";
-import { hydratePersistedRoom, persistRoomState, roomPersistenceSnapshot } from "./roomStatePersistence.js";
+import {
+  CURRENT_ROOM_SNAPSHOT_VERSION,
+  hydratePersistedRoom,
+  persistRoomState,
+  roomPersistenceSnapshot
+} from "./roomStatePersistence.js";
 
 describe("room state persistence", () => {
   it("snapshots rooms without socket ids or spectators", () => {
@@ -18,6 +23,7 @@ describe("room state persistence", () => {
     };
 
     expect(roomPersistenceSnapshot(room)).toMatchObject({
+      snapshotVersion: CURRENT_ROOM_SNAPSHOT_VERSION,
       code: "ABCDE",
       players: [{ user: { id: "black" }, socketId: null, disconnectedAt: null }],
       spectators: [],
@@ -52,6 +58,16 @@ describe("room state persistence", () => {
     }, { now: () => 12345 });
 
     expect(room.players[0]).toMatchObject({ socketId: null, disconnectedAt: null });
+  });
+
+  it("rejects future room snapshot versions instead of hydrating incompatible state", () => {
+    expect(() => hydratePersistedRoom({
+      snapshotVersion: CURRENT_ROOM_SNAPSHOT_VERSION + 1,
+      code: "ABCDE",
+      players: [],
+      spectators: [],
+      game: { phase: GAME_PHASES.playing }
+    })).toThrow("Unsupported room snapshot version");
   });
 
   it("throttles persistence unless forced", async () => {

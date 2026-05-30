@@ -6,6 +6,7 @@ import {
   handleRoomResumePayload,
   handleMissingRoomResumePayload,
   rememberPlayerRoom,
+  shouldClearRoomOnReplayExit,
   shouldShowResultModal
 } from "./resumeSession.js";
 
@@ -133,5 +134,18 @@ describe("resume session helpers", () => {
     expect(shouldShowResultModal({ code: "12345", game: { phase: "playing" } }, "")).toBe(false);
     expect(shouldShowResultModal({ code: "12345", game: { phase: "finished", winner: {} } }, "12345")).toBe(false);
     expect(shouldShowResultModal({ code: "12345", game: { phase: "finished", winner: {} } }, "")).toBe(true);
+  });
+
+  test("does not show result modal while viewing a replay", () => {
+    expect(shouldShowResultModal({
+      code: "12345",
+      game: { phase: "finished", winner: {} }
+    }, "", 12)).toBe(false);
+  });
+
+  test("clears the replay room snapshot when exiting a replay", () => {
+    expect(shouldClearRoomOnReplayExit(null)).toBe(false);
+    expect(shouldClearRoomOnReplayExit(0)).toBe(true);
+    expect(shouldClearRoomOnReplayExit(12)).toBe(true);
   });
 });

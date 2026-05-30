@@ -111,7 +111,12 @@ export default function HouseModal({ user, records, characterListView, audioSett
                   disabled={sortieDisabled}
                   onClick={(event) => {
                     event.stopPropagation();
-                    if (!sortieDisabled) onSelectCharacter(characterId);
+                    selectSortieCharacter({
+                      character,
+                      disabled: sortieDisabled,
+                      audioSettings,
+                      onSelectCharacter
+                    });
                   }}
                 >
                   <Flag size={18} />
@@ -248,6 +253,18 @@ export function characterSortieDisabledReason(characterId, itemEffects = {}) {
 
 export function characterCandyPortrait(character = {}, itemEffects = {}) {
   return resolveCandyPortrait(character, itemEffects);
+}
+
+export function selectSortieCharacter({
+  character = {},
+  disabled = false,
+  audioSettings = undefined,
+  playVoice = playSystemVoice,
+  onSelectCharacter = () => {}
+} = {}) {
+  if (disabled) return;
+  playVoice(SYSTEM_VOICE_EVENTS.sortie, { character, audioSettings });
+  onSelectCharacter(canonicalCharacterId(character.id));
 }
 
 export function playerColorForReplayRecord(user = {}, record = {}) {

@@ -9,7 +9,7 @@ describe("initial session state", () => {
 
     expect(initialSessionState(storage)).toEqual({
       token: "",
-      view: "login"
+      view: "preloading"
     });
   });
 

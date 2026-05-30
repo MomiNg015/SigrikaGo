@@ -205,6 +205,9 @@
 <ul>
 <li>提供普通 JSON API、后台 API 和角色立绘上传 helper。</li>
 </ul>
+<ul>
+<li>普通 JSON 请求和角色立绘上传在 access token 过期并收到 401 时，会通过统一 refresh handler 轮换 token 并重试一次；refresh 请求本身不会递归重试。</li>
+</ul>
 </ul>
 <ul>
 <li><code>src/app/resumeSession.js</code></li>
@@ -226,6 +229,9 @@
 <ul>
 <li>合并结果与当前用户内容一致时会保留原对象引用；主 Socket 连接只依赖 token 与用户 id，不会因为糖果效果、金币等资料刷新而重建连接，避免玩家房间 <code>socketId</code> 与前端当前连接脱节。</li>
 </ul>
+<ul>
+<li><code>room:resume</code> 返回的已结束结果快照只用于断线玩家补看结果弹窗，不会把快照中的旧金币、积分、段位或战绩合并回当前登录用户状态。</li>
+</ul>
 </ul>
 <ul>
 <li><code>src/app/socketHandlers.js</code></li>
@@ -234,6 +240,42 @@
 </ul>
 <ul>
 <li>集中安装并处理 <code>match:*</code>、<code>room:*</code>、<code>duel:*</code>、<code>error:toast</code> 和 <code>account:logged-out</code> 事件，把房间恢复、匹配过渡、轻量棋钟、约战提示和账号踢下线的状态变更从 <code>src/main.jsx</code> 中移出，便于单元测试和后续 hook 化。</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/gameSocket.js</code></li>
+<ul>
+<li>Centralizes Socket.IO client creation for the game connection and binds the installed socket handlers with the room resume request builder. <code>src/main.jsx</code> still owns the React lifecycle boundary, but no longer wires the low-level <code>io(...)</code> call directly.</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/AssetPreloadScreen.jsx</code></li>
+<ul>
+<li>Owns the login/startup asset preloading screen UI and progress-bar percentage formatting, keeping this transient screen out of <code>src/main.jsx</code> while preserving the same loading flow.</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/characterCatalog.js</code></li>
+<ul>
+<li>Loads the public character catalog through <code>/api/characters</code>, merges it with built-in fallback characters, and falls back to the local catalog on request failure. This keeps startup preloading and admin-triggered character refresh on the same path.</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/roomNavigation.js</code></li>
+<ul>
+<li>Centralizes the pure navigation decision for leaving the room screen: replay exits clear the replay snapshot without emitting <code>room:leave</code>, while spectator and finished-room review exits emit <code>room:leave</code> before returning home.</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/replayOpening.js</code></li>
+<ul>
+<li>Converts a replay record snapshot into the room-screen state used by normal house replays and admin replays: room snapshot, latest replay step, cleared pending skill, and <code>room</code> view.</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/siteSettingsCatalog.js</code></li>
+<ul>
+<li>Loads public site settings from <code>/api/site-settings</code>, merges them over shared defaults, and falls back to <code>DEFAULT_SITE_SETTINGS</code> when the request fails.</li>
 </ul>
 </ul>
 <ul>
@@ -382,12 +424,33 @@
 </ul>
 </ul>
 <ul>
+<li><code>server/serverLifecycle.js</code></li>
+<ul>
+<li>HTTP server startup and shutdown guardrails.</li>
+</ul>
+<ul>
+<li>Reports <code>EADDRINUSE</code> with a clear port-conflict message instead of leaving the Vite proxy to surface ambiguous <code>ECONNREFUSED</code> / non-JSON errors.</li>
+</ul>
+<ul>
+<li>Handles <code>SIGINT</code> / <code>SIGTERM</code> by closing the HTTP server and disconnecting Prisma, reducing stale dev processes that keep port 3001 occupied during watch restarts.</li>
+</ul>
+</ul>
+<ul>
 <li><code>server/roomItemEffects.js</code></li>
 <ul>
 <li>房间结算时的道具效果处理模块。</li>
 </ul>
 <ul>
 <li>当前负责有效局结束后计算并应用彩虹豆豆跳跳糖清除效果；无效局不会清除糖果效果。</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/userAssets.js</code></li>
+<ul>
+<li>集中封装用户资产 CSV/数组字段的解析、去空、去重、序列化，以及 owned character 的历史别名规范化。</li>
+</ul>
+<ul>
+<li>当前用于公开用户序列化、商城购买角色/装饰和后台用户资产编辑，作为后续迁移到结构化资产表之前的防扩散层。</li>
 </ul>
 </ul>
 <ul>
@@ -406,6 +469,9 @@
 </ul>
 <ul>
 <li>负责清理 socket/timer 等运行时字段、生成 PersistedRoom snapshot、恢复房间运行时字段，以及按节流规则触发持久化写入。</li>
+</ul>
+<ul>
+<li>持久化房间快照写入 <code>snapshotVersion</code>，当前版本为 1；缺少版本的旧快照按 v1 读取，未来高于当前版本的快照会被拒绝恢复，避免不兼容状态进入实时房间。</li>
 </ul>
 </ul>
 <ul>
@@ -477,10 +543,13 @@
 <li>密码使用 <code>bcryptjs</code> 哈希存储。</li>
 </ul>
 <ul>
-<li>JWT 登录态，token 仅保存在当前页面内存中，不写入 <code>localStorage</code>；刷新页面、关闭浏览器或移动端退出后需要重新登录。</li>
+<li>登录态使用短期页面内存 access token + 持久化 refresh cookie：access token 仍只保存在 React 内存中，不写入 <code>localStorage</code>；浏览器保存 <code>HttpOnly</code> refresh cookie，页面刷新、浏览器重开或后端短暂重启后会先调用 <code>/api/auth/refresh</code> 自动恢复登录。</li>
 </ul>
 <ul>
-<li>同一账号只允许一个活动登录会话；再次登录已在线账号时，登录接口返回 <code>already_logged_in</code> 冲突，前端确认后以 <code>forceLogin</code> 重试并踢下旧 socket。</li>
+<li><code>LoginSession</code> 数据库存储当前有效会话、refresh token 哈希、过期时间和撤销时间；Socket 断开只影响在线状态，不再直接撤销登录会话。</li>
+</ul>
+<ul>
+<li>同一账号只允许一个活动登录会话；再次登录已有有效会话的账号时，登录接口返回 <code>already_logged_in</code> 冲突，前端确认后以 <code>forceLogin</code> 重试并踢下旧 socket、撤销旧 refresh session。</li>
 </ul>
 <ul>
 <li>用户状态支持 <code>active</code> / <code>banned</code>。</li>
@@ -557,7 +626,7 @@
 <li>计时与读秒：房间玩家包含 <code>mainTime</code>、<code>byoYomi</code>、<code>byoYomiPeriods</code> 等内存字段。</li>
 </ul>
 <ul>
-<li>对局者刷新页面、关闭页面或短暂断线后，前端会保存最近玩家房间号并在 Socket 重连时请求 <code>room:resume</code>。如果内存房间仍存在且未结束，服务端会把该 socket 重新绑定到房间并广播当前房间视图；断线期间服务端棋钟继续按真实时间推进，不会暂停。如果房间已结束但仍在内存或可通过该房间号找到 <code>GameRecord.snapshot</code>，前端停留在大厅并恢复结果弹窗；关闭结果弹窗后清理最近房间号。如果服务重启导致内存房间丢失且没有可恢复棋谱，前端会清理最近房间号、回到大厅，并提示“房间已不存在，可能是服务器重启或房间已关闭”。</li>
+<li>对局者刷新页面、关闭页面或短暂断线后，前端会保存最近玩家房间号并在 Socket 重连时请求 <code>room:resume</code>。如果内存房间仍存在且未结束，服务端会把该 socket 重新绑定到房间并广播当前房间视图；断线期间服务端棋钟继续按真实时间推进，不会暂停。如果房间已结束但仍在内存或可通过该房间号找到 <code>GameRecord.snapshot</code>，前端停留在大厅并恢复结果弹窗；关闭结果弹窗后清理最近房间号。正常在线收到终局 <code>room:update</code> 的对局者会立即清理最近玩家房间号，因此主界面结果弹窗只用于“对局中断线且终局时未能及时连回”的玩家恢复结果。如果服务重启导致内存房间丢失且没有可恢复棋谱，前端会清理最近房间号、回到大厅，并提示“房间已不存在，可能是服务器重启或房间已关闭”。</li>
 </ul>
 <ul>
 <li>玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能超频使用红色强调。除子与超频标签支持悬停说明：除子说明其会在数目时按 <code>+除子*1</code> 计入，超频说明其会在数目时按 <code>-超频*2</code> 扣减。</li>
@@ -682,7 +751,7 @@
 <li>对局结束后写入 <code>GameRecord</code>。</li>
 </ul>
 <ul>
-<li>棋谱保存房间快照 <code>snapshot</code>。</li>
+<li>棋谱保存房间快照 <code>snapshot</code>；胜负局会先把积分、金币和战绩奖励应用到房间内存玩家，再生成 <code>GameRecord.snapshot</code>，避免断线后恢复结果时展示结算前的旧用户状态。</li>
 </ul>
 <ul>
 <li>用户可看自己的最近 30 条棋谱。</li>
@@ -888,6 +957,29 @@
 </ul>
 <ul>
 <li><code>ownedDecorations</code>: 逗号分隔装饰 slug。</li>
+</ul>
+<ul>
+<li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
+</ul>
+<h3>LoginSession</h3>
+<p>持久化登录会话表，用于 refresh cookie、单账号单会话和服务重启后的登录恢复。</p>
+<ul>
+<li><code>id</code>: session id，会写入 access token 的 <code>sid</code> claim。</li>
+</ul>
+<ul>
+<li><code>userId</code>: 归属用户 id。</li>
+</ul>
+<ul>
+<li><code>refreshTokenHash</code>: refresh token 的 SHA-256 哈希，数据库不保存明文 refresh token。</li>
+</ul>
+<ul>
+<li><code>revokedAt</code>: 撤销时间；主动登出、强制登录或创建新 session 时写入。</li>
+</ul>
+<ul>
+<li><code>expiresAt</code>: refresh session 过期时间。</li>
+</ul>
+<ul>
+<li><code>lastSeenAt</code>: 最近一次 HTTP/Socket 鉴权或 refresh 时间。</li>
 </ul>
 <ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
@@ -1219,6 +1311,9 @@
 <ul>
 <li>用户名至少 2 位，密码 6-14 位；前端注册表单要求确认密码与密码一致。</li>
 </ul>
+<ul>
+<li>成功后创建 <code>LoginSession</code>、设置 refresh cookie，并返回 access token 与公开用户信息。</li>
+</ul>
 </ul>
 <ul>
 <li><code>POST /api/auth/login</code></li>
@@ -1227,6 +1322,24 @@
 </ul>
 <ul>
 <li>被封禁用户返回 403。</li>
+</ul>
+<ul>
+<li>已有有效登录会话时返回 <code>already_logged_in</code> 冲突；<code>forceLogin</code> 会撤销旧 session 并踢下旧 socket。</li>
+</ul>
+</ul>
+<ul>
+<li><code>POST /api/auth/refresh</code></li>
+<ul>
+<li>读取 <code>sigrika_refresh</code> <code>HttpOnly</code> cookie，校验并轮换 <code>LoginSession.refreshTokenHash</code>，返回新的 access token 与公开用户信息。</li>
+</ul>
+<ul>
+<li>refresh 无效、过期或已撤销时清除 cookie 并返回 401。</li>
+</ul>
+</ul>
+<ul>
+<li><code>POST /api/auth/logout</code></li>
+<ul>
+<li>撤销当前 refresh session 和可识别的 access-token session，并清除 refresh cookie。</li>
 </ul>
 </ul>
 <ul>
@@ -1635,13 +1748,19 @@
 <ul>
 <li>登录态使用 JWT：</li>
 <ul>
-<li><code>withToken</code> 签发 <code>{ sub: user.id }</code>，有效期 14 天。</li>
+<li><code>withToken</code> 签发 <code>{ sub: user.id, sid }</code>，有效期 14 天。</li>
 </ul>
 <ul>
 <li>HTTP 请求通过 <code>Authorization: Bearer &lt;token&gt;</code>。</li>
 </ul>
 <ul>
 <li>Socket.IO 通过 <code>handshake.auth.token</code>。</li>
+</ul>
+<ul>
+<li><code>/api/auth/refresh</code> 读取 <code>HttpOnly</code> refresh cookie，校验 <code>LoginSession</code> 后轮换 refresh token 并返回新的 access token。</li>
+</ul>
+<ul>
+<li><code>/api/auth/logout</code> 会撤销 refresh session 并清除 cookie。</li>
 </ul>
 </ul>
 <ul>
@@ -1857,13 +1976,16 @@
 <li><code>applyResultRewardsToRoomUsers</code> / <code>applyUserReward</code>: 位于 <code>server/roomRewards.js</code>，集中封装对局结果奖励写回房间内存用户的逻辑。</li>
 </ul>
 <ul>
-<li><code>persistRoomState</code> / <code>roomPersistenceSnapshot</code> / <code>hydratePersistedRoom</code>: 位于 <code>server/roomStatePersistence.js</code>，集中封装房间快照生成、恢复和节流持久化。</li>
+<li><code>persistRoomState</code> / <code>roomPersistenceSnapshot</code> / <code>hydratePersistedRoom</code>: 位于 <code>server/roomStatePersistence.js</code>，集中封装房间快照生成、恢复、快照版本保护和节流持久化。</li>
 </ul>
 <ul>
 <li><code>tickPlayerClock</code> / <code>resetByoYomi</code>: 位于 <code>server/roomClockTiming.js</code>，集中封装主时间与读秒周期推进、有效行动后的读秒重置。</li>
 </ul>
 <ul>
 <li><code>resumePayloadForUser</code>: 位于 <code>server/resume.js</code>，封装断线恢复查询顺序：优先查内存未结束房间，其次查仍在内存的已结束房间，最后按最近房间号查持久化棋谱快照。</li>
+<ul>
+<li>如果历史 <code>GameRecord.snapshot</code> 损坏无法解析，恢复流程会返回 <code>type: &quot;none&quot;</code>，避免单条坏数据导致重连请求崩溃。</li>
+</ul>
 </ul>
 <h2>9. 状态管理方式</h2>
 <h3>前端状态</h3>
@@ -1904,7 +2026,7 @@
 </ul>
 </ul>
 <ul>
-<li>登录 token 只存在 React 内存状态中；<code>src/app/sessionState.js</code> 确保页面重新加载时不会从 <code>localStorage</code> 恢复登录态。</li>
+<li>登录 access token 只存在 React 内存状态中；<code>src/app/sessionState.js</code> 初始进入 <code>preloading</code>，由 <code>src/main.jsx</code> 调用 <code>/api/auth/refresh</code> 尝试从 <code>HttpOnly</code> refresh cookie 恢复登录。恢复失败才进入登录页。</li>
 </ul>
 <ul>
 <li>音频设置存在 <code>localStorage</code> 的 <code>sigrika-audio-settings</code>。</li>
@@ -1947,69 +2069,28 @@
 </ul>
 </ul>
 <h2>10. 已知技术债</h2>
-<p>以下只列代码中能观察到的事项：</p>
+<p>以下只列代码中能观察到的事项；本轮静态扫描时间为 2026-05-29。当前测试数量较充足，但债务主要集中在实时房间、数据模型规范化、前端大型模块、音频生命周期和缺少浏览器端回归测试。</p>
+<h3>P0 / 部署前优先处理</h3>
 <ul>
-<li>Prisma schema 的中文默认值已增加 <code>server/schemaIntegrity.test.js</code> 防回归检查；<code>docs/system-design.html</code> 已改为由 <code>npm run docs:system-design</code> 从 Markdown 确定性生成，后续如发现乱码应优先确认终端/浏览器编码和源文件 UTF-8 状态。</li>
+<li>实时房间仍以内存 <code>Map</code> 为核心状态，虽然已增加房间持久化快照和断线恢复兜底，但服务重启、多进程或多实例部署时仍存在风险：</li>
+<ul>
+<li>未结束房间的实时状态、技能演出定时器、读秒计时器和 Socket.IO 房间成员关系不能跨进程共享。</li>
 </ul>
 <ul>
-<li>Prisma migrations 目录已开始建立，<code>SiteSetting</code>、<code>selectedStoneDecoration</code>、<code>UserRelationship</code> 等结构已有迁移；后续跨机器协作时需要坚持使用 migration 管理结构变更，避免继续依赖临时 <code>db push</code>。</li>
+<li>技能演出仍依赖 <code>setTimeout</code> 延迟落子/变更效果，进程重启或实例迁移时需要额外的状态恢复/调度设计。</li>
 </ul>
 <ul>
-<li><code>prisma db push</code> 已可同步当前开发库 schema，但 Windows 上 Prisma Client generate 可能因运行中的 Node 后端占用 <code>query_engine-windows.dll.node</code> 而出现 EPERM rename；遇到时需要先停止后端进程再重新运行 <code>npm run prisma:generate</code> 或 <code>npm run prisma:push</code>。</li>
-</ul>
-<ul>
-<li>实时房间在内存中：</li>
-<ul>
-<li>服务重启会丢失未结束房间。</li>
-</ul>
-<ul>
-<li>不支持多进程/多实例横向扩展。</li>
-</ul>
-<ul>
-<li>技能演出依赖 <code>setTimeout</code> 延迟落子/变更效果；进程重启或未来多实例部署时需要额外的状态恢复/调度设计。</li>
+<li>若部署到云服务器并需要横向扩展，应优先引入共享房间状态、Socket.IO adapter、定时任务恢复策略和房间快照版本校验。</li>
 </ul>
 </ul>
 <ul>
-<li>胜负判断已开始使用 <code>winnerColor</code> 结构化字段，但仍需要保留旧 <code>resultText</code> 回退逻辑以兼容历史棋谱。后续应考虑补迁移历史数据。</li>
+<li>认证与会话已经从纯内存 token 发展到 <code>LoginSession</code> + refresh cookie，服务端也已增加生产启动配置体检：</li>
+<ul>
+<li>refresh session 已可撤销，生产环境会拒绝过短或默认 <code>JWT_SECRET</code>，并要求显式 HTTPS origin；部署手册仍需要写清强随机密钥、可信 CORS origin、HTTPS 证书和 cookie <code>Secure</code> 的实际配置方式。</li>
 </ul>
 <ul>
-<li><code>GameRecord</code> 与 <code>User</code>、<code>Character</code> 没有数据库外键关系，依赖字符串逻辑关联。</li>
+<li>当前没有面向登录/刷新/登出全链路的浏览器端回归测试，容易在自动登录、Socket 重连和强制下线交界处回归。</li>
 </ul>
-<ul>
-<li>用户拥有角色/装饰使用 CSV 字符串字段：</li>
-<ul>
-<li>查询和约束能力弱。</li>
-</ul>
-<ul>
-<li>容易产生重复或无效 slug。</li>
-</ul>
-</ul>
-<ul>
-<li>商城后台新增/修改时会校验 <code>targetId</code> 对应角色或装饰存在；数据库层仍没有外键约束，购买时仍依赖字符串拥有列表。</li>
-</ul>
-<ul>
-<li>当前用户资产与战绩存在多处来源：</li>
-<ul>
-<li><code>User.rating</code> 会被对局结果和后台编辑直接更新，<code>/api/me</code> 已改为直接返回该持久化积分。</li>
-</ul>
-<ul>
-<li>棋舍/排行榜的总局、胜负、和棋等统计仍从 <code>GameRecord</code> 派生。</li>
-</ul>
-<ul>
-<li>后续如继续扩展赛季/积分流水，需要决定是否增加结构化积分变更记录。</li>
-</ul>
-</ul>
-<ul>
-<li>前端 <code>src/main.jsx</code> 已先拆出后台管理模块和 API helper，但仍然偏大，仍包含大厅、对局、棋舍、商城、排行榜、设置、回放、音频等组件；后台管理目前集中在 <code>src/admin/AdminConsole.jsx</code>，后续可继续按用户/角色/商城/装饰拆分。</li>
-</ul>
-<ul>
-<li>全局样式入口已拆为多个 <code>src/styles/*.css</code> 分域文件；较大的 <code>room.css</code>、<code>modals.css</code>、<code>commerce-settings.css</code> 仍可继续按组件边界细分。</li>
-</ul>
-<ul>
-<li>技能扩展当前由 <code>effectType</code> 分支实现，<code>paramsJson</code> 已保留但核心规则尚未通用化；<code>random-blast</code> 的完整 3x3、演出延迟、回放重放、棋盘高亮清理等逻辑分散在共享规则、服务端房间和前端棋盘中。</li>
-</ul>
-<ul>
-<li>观战回放目前在前端由实时房间快照和历史重放派生，信息区保持实时、棋盘可回退；该“双状态”模型需要更多自动化测试覆盖，避免未来房间字段变更时出现棋盘/信息区不同步。</li>
 </ul>
 <ul>
 <li>测试用对局按钮已集中在 <code>TestTools</code> 和 <code>test-*</code> action，并已增加环境保护：</li>
@@ -2019,30 +2100,102 @@
 <ul>
 <li>服务端在 <code>NODE_ENV=production</code> 时拒绝 <code>test-*</code> action。</li>
 </ul>
-</ul>
 <ul>
-<li>后台审计已覆盖用户、角色、装饰、商城商品和站点设置的主要增改/禁用操作；后续可继续细化到登录、购买、上传等事件。</li>
-</ul>
-<ul>
-<li>社交模块已增加 <code>server/social.test.js</code> 覆盖好友/黑名单互斥、公开资料统计和公开回放摘要；约战请求状态机已拆到 <code>server/duelRequests.js</code>，在线 socket/session 生命周期已拆到 <code>server/onlineSessions.js</code>，并由单元测试覆盖请求发送、拒绝清理、断线过期、强制登出和最终 socket 断开清理。仍缺少端到端 UI 测试覆盖好友弹窗、对局申请横幅和资料卡回放弹窗。</li>
-</ul>
-<ul>
-<li>认证安全能力较基础：</li>
-<ul>
-<li>无限流。</li>
-</ul>
-<ul>
-<li>JWT 无服务端失效表。</li>
-</ul>
-<ul>
-<li>生产环境已拒绝默认 <code>JWT_SECRET</code>，部署时仍需在环境变量中提供强随机密钥。</li>
+<li>对外部署前仍建议把测试入口移到显式调试面板或管理员开发开关，避免未来新增测试 action 时绕过统一保护。</li>
 </ul>
 </ul>
+<h3>P1 / 近期高价值重构</h3>
 <ul>
-<li>角色立绘上传先按 MIME 生成安全文件名，落盘后读取文件签名确认 PNG/JPEG/WebP/GIF 内容与 MIME 匹配；不匹配或未知签名会删除该单个上传文件并返回 JSON 错误。</li>
+<li>数据模型仍有多处字符串化资产字段：</li>
+<ul>
+<li>用户拥有角色/装饰使用 CSV 字符串字段，查询和约束能力弱，容易产生重复或无效 slug。</li>
 </ul>
 <ul>
-<li>当前测试覆盖较多规则和后台 helper，但前端交互没有专门的自动化测试。</li>
+<li><code>ownedItems</code> 与 <code>itemEffects</code> 使用 JSON 字符串字段，已兼容旧逗号分隔读取，但数据库层无法约束 item id、数量和效果 schema。</li>
+</ul>
+<ul>
+<li>商城后台新增/修改时会校验 <code>targetId</code> 对应角色或装饰存在，购买时仍依赖字符串拥有列表；数据库层没有外键约束。</li>
+</ul>
+<ul>
+<li><code>server/userAssets.js</code> 已集中角色/装饰资产字段的解析、去重和序列化，降低重复逻辑扩散；这只是迁表前的防护层，不替代结构化表。</li>
+</ul>
+<ul>
+<li>后续建议逐步迁移到 <code>UserCharacter</code>、<code>UserDecoration</code>、<code>UserItem</code>、<code>UserItemEffect</code> 等结构化表，并保留一次性数据迁移脚本。</li>
+</ul>
+</ul>
+<ul>
+<li><code>GameRecord</code> 与 <code>User</code>、<code>Character</code> 没有数据库外键关系，依赖字符串逻辑关联。胜负判断已使用 <code>winnerColor</code> 结构化字段，但仍保留旧 <code>resultText</code> 回退逻辑以兼容历史棋谱；后续应补历史记录迁移和快照版本字段。</li>
+</ul>
+<ul>
+<li>当前用户资产与战绩存在多处来源：</li>
+<ul>
+<li><code>User.rating</code> 会被对局结果和后台编辑直接更新，<code>/api/me</code> 已直接返回该持久化积分。</li>
+</ul>
+<ul>
+<li>棋舍/排行榜的总局、胜负、和棋等统计仍从 <code>GameRecord</code> 派生。</li>
+</ul>
+<ul>
+<li>金币、积分、段位 toast 已依赖前端比较前后状态；后续如继续扩展赛季、排行榜、金币流水或补偿发放，需要增加结构化积分/金币变更记录，避免只靠即时响应推断。</li>
+</ul>
+</ul>
+<ul>
+<li>核心源码体量仍偏集中。本轮扫描中，超过 300 行的主要业务文件包括 <code>server/rooms.js</code>、<code>src/admin/AdminConsole.jsx</code>、<code>src/shared/game.js</code>、<code>server/adminRoutes.js</code>、<code>server/index.js</code>、<code>src/main.jsx</code>、<code>src/audio/playback.jsx</code>、<code>src/room/RoomScreen.jsx</code>：</li>
+<ul>
+<li><code>server/rooms.js</code> 已拆出 room view、奖励、持久化和计时 helper，但仍承载实时生命周期、动作分发、Socket 广播、数子/和棋、断线与关闭逻辑。</li>
+</ul>
+<ul>
+<li><code>src/admin/AdminConsole.jsx</code> 已拆出 <code>AdminShell</code>，tab body 仍适合继续按用户、角色、商品、装饰、站点设置拆分。</li>
+</ul>
+<ul>
+<li><code>src/main.jsx</code> 已拆出 API、socket handlers、socket creation helper、character catalog loader、site settings loader、preload screen、room navigation helper、replay opening helper、session helpers，但仍聚合全局弹窗、音频、登录恢复、房间切换和 toast 协调。</li>
+</ul>
+<ul>
+<li><code>src/shared/game.js</code> 仍混合规则执行、技能执行、数子和历史兼容转导，继续拆成规则状态机与技能插件会降低新增角色风险。</li>
+</ul>
+</ul>
+<ul>
+<li>全局样式入口已拆为多个 <code>src/styles/*.css</code> 分域文件，但 <code>room.css</code>、<code>commerce-settings.css</code>、<code>modals.css</code> 仍很大；继续按组件边界细分，或引入明确的 CSS module/组件样式约定，可以降低 UI 微调互相影响的概率。</li>
+</ul>
+<h3>P2 / 稳定性和测试覆盖</h3>
+<ul>
+<li>观战回放、棋谱回放和实时房间共享大量视图组件，但状态来源不同：</li>
+<ul>
+<li>观战回放由实时房间快照和历史重放派生，信息区保持实时、棋盘可回退。</li>
+</ul>
+<ul>
+<li>棋谱回放应禁止结果弹窗、结果语音和对局开始语音，退出后还要清理回放房间快照。</li>
+</ul>
+<ul>
+<li>该“双状态/三入口”模型需要更多自动化测试覆盖，尤其是进入/退出回放、观战加入已结束房间、房间关闭倒计时和 BGM 恢复。</li>
+</ul>
+<ul>
+<li>房间持久化快照已加入版本号护栏，但后续如果变更房间结构，仍需要同步补快照迁移/兼容测试。</li>
+</ul>
+</ul>
+<ul>
+<li>音频播放逻辑仍集中在 <code>src/audio/playback.jsx</code>，同时管理 BGM、棋盘音效、结果音效、技能语音、系统语音、缓存和 Web Audio autoplay 恢复。后续可拆为 BGM、effect、voice、audio cache 四类模块，并补浏览器自动播放策略下的集成测试。</li>
+</ul>
+<ul>
+<li>技能扩展当前由 <code>effectType</code> 分支实现，<code>paramsJson</code> 已保留但核心规则尚未通用化；<code>random-blast</code> 的完整 3x3、演出延迟、回放重放、棋盘高亮清理等逻辑分散在共享规则、服务端房间和前端棋盘中。后续新增角色时应优先抽技能契约，避免继续堆分支。</li>
+</ul>
+<ul>
+<li>社交、约战、黑名单、在线状态已有较多单元测试，但仍缺少端到端 UI 测试覆盖好友弹窗、对局申请横幅、资料卡回放弹窗、观战列表和后台管理关键编辑流。</li>
+</ul>
+<ul>
+<li>后台审计已覆盖用户、角色、装饰、商城商品和站点设置的主要增改/禁用操作；后续可继续细化到登录、刷新、登出、购买、道具使用、上传等事件，方便线上排查“谁改了什么”。</li>
+</ul>
+<h3>P3 / 维护性清理</h3>
+<ul>
+<li>Prisma migrations 目录已开始建立，<code>SiteSetting</code>、<code>selectedStoneDecoration</code>、<code>UserRelationship</code>、<code>LoginSession</code> 等结构已有迁移；后续跨机器协作时需要坚持使用 migration 管理结构变更，避免继续依赖临时 <code>db push</code>。</li>
+</ul>
+<ul>
+<li><code>prisma db push</code> 已可同步当前开发库 schema，但 Windows 上 Prisma Client generate 可能因运行中的 Node 后端占用 <code>query_engine-windows.dll.node</code> 而出现 EPERM rename；遇到时需要先停止后端进程再重新运行 <code>npm run prisma:generate</code> 或 <code>npm run prisma:push</code>。</li>
+</ul>
+<ul>
+<li>Prisma schema 的中文默认值已增加 <code>server/schemaIntegrity.test.js</code> 防回归检查；<code>docs/system-design.html</code> 已改为由 <code>npm run docs:system-design</code> 从 Markdown 确定性生成，后续如发现乱码应优先确认终端/浏览器编码和源文件 UTF-8 状态。</li>
+</ul>
+<ul>
+<li>角色立绘上传先按 MIME 生成安全文件名，落盘后读取文件签名确认 PNG/JPEG/WebP/GIF 内容与 MIME 匹配；不匹配或未知签名会删除该单个上传文件并返回 JSON 错误。后续可继续补上传大小、尺寸、透明通道和动图帧数限制。</li>
 </ul>
 <ul>
 <li><code>docs/system-design.html</code> 是生成产物；修改本文档后运行 <code>npm run docs:system-design</code> 同步 HTML，避免 Markdown 与交付版漂移。</li>
@@ -2226,7 +2379,10 @@
 <li>角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。</li>
 </ul>
 <ul>
-<li>匹配成功倒计时、对局结果弹窗、对局结束阶段会停止 BGM。</li>
+<li>匹配成功倒计时、对局结果弹窗、对局房间的结束阶段会停止 BGM；如果用户从已结束棋谱回放退出到大厅，前端会清空回放房间快照，BGM resolver 以当前 <code>view = home</code> 为准恢复主界面 BGM。</li>
+</ul>
+<ul>
+<li>持久登录自动进入大厅时可能没有用户手势，浏览器会继续挂起 <code>AudioContext</code>；<code>BackgroundMusic</code> 会在 resume 后检查上下文状态，如果仍为 suspended，就注册 pointerdown / keydown / touchstart 一次性重试，保证首次点击、按键或触摸后恢复大厅 BGM。</li>
 </ul>
 <ul>
 <li><code>BackgroundMusic</code> 使用 Web Audio 播放，预解码 intro/loop buffer，并在同一 <code>AudioContext</code> 时间线上调度 intro 到 loop，避免 HTMLAudio 切文件造成明显卡顿。</li>
@@ -2242,7 +2398,7 @@
 <li>匹配成功播放 <code>match-success.mp3</code>，同时停止 BGM。</li>
 </ul>
 <ul>
-<li>对局结果弹窗出现时停止 BGM；胜方播放 <code>result-victory.mp3</code>，负方播放 <code>result-defeat.mp3</code>，和棋不播放结果音效。房间玩家还会按当前用户本局结果触发出战角色的 <code>result-victory</code>、<code>result-defeat</code> 或 <code>result-draw</code> 系统语音；无效局不弹结果弹窗，因此不触发结果音效或结果角色语音。</li>
+<li>对局结果弹窗出现时停止 BGM；胜方播放 <code>result-victory.mp3</code>，负方播放 <code>result-defeat.mp3</code>，和棋不播放结果音效。房间玩家还会按当前用户本局结果触发出战角色的 <code>result-victory</code>、<code>result-defeat</code> 或 <code>result-draw</code> 系统语音；无效局不弹结果弹窗，因此不触发结果音效或结果角色语音。棋谱回放模式不会弹结果弹窗，也不会触发结果音效或结果角色语音。</li>
 </ul>
 <ul>
 <li>普通落子播放 <code>godown_clear.ogg</code>。</li>
@@ -2267,10 +2423,13 @@
 <li>角色技能语音配置集中在 <code>CHARACTER_SKILL_VOICES</code>。</li>
 </ul>
 <ul>
-<li>当前已配置：西格莉卡 <code>sigrika_2_no_exclaim.ogg</code>，爱弥斯 <code>aemeath_skill.ogg</code>，猪小仙 <code>baconbits_skill.ogg</code>。</li>
+<li>当前已配置：西格莉卡技能发动使用 <code>sigrika_skill_cast.ogg</code>，爱弥斯使用 <code>aemeath_skill.ogg</code>，猪小仙使用 <code>baconbits_skill.ogg</code>。</li>
 </ul>
 <ul>
 <li><code>characterVoiceMapForSkill</code> 可将现有技能语音桥接为角色 <code>systemVoices</code> 的 <code>skill-cast</code> 事件映射。</li>
+</ul>
+<ul>
+<li>角色出战按钮会触发 <code>sortie</code> 角色语音事件；当前达妮娅和西格莉卡预留路径分别为 <code>denia_sortie.ogg</code> 与 <code>sigrika_sortie.ogg</code>。</li>
 </ul>
 <ul>
 <li><code>SkillBanner</code> 出现时同步触发技能语音，同一个 banner id 只播放一次。</li>
@@ -2298,7 +2457,7 @@
 <li>当前默认走 TTS 文本；如果角色配置了 <code>systemVoices[event]</code>，则优先播放对应音频。</li>
 </ul>
 <ul>
-<li>已预留事件：<code>game-start</code>、<code>skill-cast</code>、<code>byo-yomi-start</code>、<code>byo-yomi-periods</code>、<code>byo-yomi-period-2</code>、<code>byo-yomi-period-1</code>、<code>byo-yomi-countdown</code>、<code>countdown-N</code>、<code>timeout</code>、<code>result-victory</code>、<code>result-defeat</code>、<code>result-draw</code>、<code>house-detail</code>。</li>
+<li>已预留事件：<code>game-start</code>、<code>skill-cast</code>、<code>sortie</code>、<code>byo-yomi-start</code>、<code>byo-yomi-periods</code>、<code>byo-yomi-period-2</code>、<code>byo-yomi-period-1</code>、<code>byo-yomi-countdown</code>、<code>countdown-N</code>、<code>timeout</code>、<code>result-victory</code>、<code>result-defeat</code>、<code>result-draw</code>、<code>house-detail</code>。</li>
 </ul>
 <ul>
 <li>对局正式开始时，服务端写入 kind 为 <code>game-start</code> 的系统消息，前端据此播放“对局开始”语音。</li>
@@ -2365,21 +2524,27 @@
 <ul>
 <li><code>src/main.jsx</code> handles <code>room:closed</code> payloads, clears the remembered room code, resets room UI state, and displays the payload message when present.</li>
 </ul>
-<h2>2026-05-27 Account Session Update</h2>
+<h2>2026-05-29 Account Session Update</h2>
 <ul>
-<li>Login sessions are tracked in memory by <code>server/loginSessions.js</code>; online socket membership and pending-login cleanup are coordinated by <code>server/onlineSessions.js</code>. JWTs include a <code>sid</code> claim and both HTTP auth and Socket.IO auth reject stale session ids.</li>
+<li>Login sessions are tracked in the <code>LoginSession</code> database table through <code>server/loginSessions.js</code>; online socket membership is coordinated separately by <code>server/onlineSessions.js</code>. JWTs include a <code>sid</code> claim and both HTTP auth and Socket.IO auth reject revoked or expired session ids.</li>
 </ul>
 <ul>
-<li>If <code>/api/auth/login</code> receives correct credentials for an account that already has an active session, it returns HTTP 409 with <code>code: &quot;already_logged_in&quot;</code> and the message <code>当前账号已登录了，确定继续登录吗？</code>.</li>
+<li><code>/api/auth/login</code> and <code>/api/auth/register</code> create a database login session, return an access token, and set a <code>sigrika_refresh</code> <code>HttpOnly</code> cookie. In production the cookie also uses <code>Secure</code>.</li>
+</ul>
+<ul>
+<li><code>/api/auth/refresh</code> reads the refresh cookie, validates and rotates the stored refresh token hash, and returns a fresh access token plus public user payload. <code>src/main.jsx</code> calls this on startup, and <code>src/api/client.js</code> retries one authenticated JSON request or character portrait upload after a successful refresh when an HTTP 401 is encountered.</li>
+</ul>
+<ul>
+<li>If <code>/api/auth/login</code> receives correct credentials for an account that already has an active database session, it returns HTTP 409 with <code>code: &quot;already_logged_in&quot;</code> and the message <code>当前账号已登录了，确定继续登录吗？</code>.</li>
 </ul>
 <ul>
 <li><code>src/auth/AuthScreen.jsx</code> detects that conflict, shows the browser confirmation dialog, and retries login with <code>forceLogin: true</code> only after confirmation.</li>
 </ul>
 <ul>
-<li>Forced login clears the previous session, emits <code>account:logged-out</code> to existing sockets for that user, disconnects them, and then creates a new session for the confirmed login.</li>
+<li>Forced login revokes previous database sessions, emits <code>account:logged-out</code> to existing sockets for that user, disconnects them, and then creates a new session for the confirmed login.</li>
 </ul>
 <ul>
-<li>When the final socket for a user disconnects, the matching session id is cleared. Because <code>src/app/sessionState.js</code> starts every page load with an empty token, manual refresh, browser close, and mobile app/browser exit all return to the login screen instead of silently reconnecting.</li>
+<li>Socket disconnects only change online/offline presence and room disconnect state. They no longer revoke login sessions, so page refreshes, temporary backend restarts, or network hiccups do not force users back to the login screen as long as the refresh cookie remains valid.</li>
 </ul>
 <ul>
 <li>Result rewards:</li>
@@ -2435,16 +2600,19 @@
 <ul>
 <li>Character voice categories:</li>
 <ul>
-<li>Character voice events are explicit: <code>game-start</code>, <code>skill-cast</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, <code>countdown-10</code> through <code>countdown-1</code>, <code>timeout</code>, <code>result-victory</code>, <code>result-defeat</code>, <code>result-draw</code>, and <code>house-detail</code>.</li>
+<li>Character voice events are explicit: <code>game-start</code>, <code>skill-cast</code>, <code>sortie</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, <code>countdown-10</code> through <code>countdown-1</code>, <code>timeout</code>, <code>result-victory</code>, <code>result-defeat</code>, <code>result-draw</code>, and <code>house-detail</code>.</li>
 </ul>
 <ul>
-<li>Recommended upload naming for full character voice packs uses one folder per character, for example <code>C:/codex/musicsour/cVoice/denia/</code>. Prefer OGG files with stable English scene keys: <code>match_start.ogg</code>, <code>skill_cast.ogg</code>, <code>byoyomi_start.ogg</code>, <code>byoyomi_remaining_2.ogg</code>, <code>byoyomi_remaining_1.ogg</code>, <code>countdown_10.ogg</code> through <code>countdown_01.ogg</code>, <code>timeout.ogg</code>, <code>result_win.ogg</code>, <code>result_loss.ogg</code>, <code>result_draw.ogg</code>, and <code>house_detail.ogg</code>. Avoid Chinese characters, spaces, and punctuation in filenames so Windows paths, frontend asset references, and build tooling stay predictable.</li>
+<li>Recommended upload naming for full character voice packs uses one folder per character, for example <code>C:/codex/musicsour/cVoice/denia/</code>. Prefer OGG files with stable English scene keys: <code>match_start.ogg</code>, <code>skill_cast.ogg</code>, <code>sortie.ogg</code>, <code>byoyomi_start.ogg</code>, <code>byoyomi_remaining_2.ogg</code>, <code>byoyomi_remaining_1.ogg</code>, <code>countdown_10.ogg</code> through <code>countdown_01.ogg</code>, <code>timeout.ogg</code>, <code>result_win.ogg</code>, <code>result_loss.ogg</code>, <code>result_draw.ogg</code>, and <code>house_detail.ogg</code>. Avoid Chinese characters, spaces, and punctuation in filenames so Windows paths, frontend asset references, and build tooling stay predictable.</li>
 </ul>
 <ul>
-<li>Denia now has a full AI voice pack under <code>public/assets/voice/denia_*.ogg</code>, covering <code>game-start</code>, <code>skill-cast</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, <code>countdown-10</code> through <code>countdown-1</code>, <code>result-victory</code>, <code>result-defeat</code>, and <code>result-draw</code>.</li>
+<li>Denia now has a full AI voice pack under <code>public/assets/voice/denia_*.ogg</code>, converted from <code>C:/codex/musicsour/cVoice/denia/*.wav</code>. The pack covers <code>game-start</code>, <code>skill-cast</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, <code>countdown-10</code> through <code>countdown-1</code>, <code>result-victory</code>, <code>result-defeat</code>, and <code>result-draw</code>; <code>skill_cast.wav</code> is exported as <code>denia_skill_cast.ogg</code>. The sortie voice slot is reserved as <code>denia_sortie.ogg</code>.</li>
 </ul>
 <ul>
-<li>Denia countdown voice assets <code>denia_countdown_10.ogg</code> through <code>denia_countdown_1.ogg</code> have had their leading silence trimmed so the spoken number starts in sync with the visible byo-yomi countdown. <code>denia_countdown_1.ogg</code> is trimmed against a stricter perceptual threshold because its original opening included low-level noise before the clearly audible voice.</li>
+<li>Denia countdown voice assets <code>denia_countdown_10.ogg</code> through <code>denia_countdown_1.ogg</code> keep the stable countdown event filenames used by the byo-yomi resolver, so refreshed voice packs can replace the existing OGG files without changing event wiring.</li>
+</ul>
+<ul>
+<li>Sigrika now has role voice assets under <code>public/assets/voice/sigrika_*.ogg</code>, converted from <code>C:/codex/musicsour/cVoice/sigrika/*.wav</code>. The pack covers <code>game-start</code>, <code>skill-cast</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, <code>countdown-10</code> through <code>countdown-1</code>, <code>result-victory</code>, <code>result-defeat</code>, and <code>result-draw</code>; <code>skill_cast.wav</code> is exported as <code>sigrika_skill_cast.ogg</code>. The sortie voice slot is reserved as <code>sigrika_sortie.ogg</code>.</li>
 </ul>
 <ul>
 <li>Built-in skill voice assets are bridged into each character's <code>systemVoices.skill-cast</code> map at runtime, so skill banners use the same <code>resolveSystemVoice</code> route as other role voices.</li>
@@ -2547,6 +2715,7 @@
 <ul>
 <li><code>SettingsModal.jsx</code></li>
 </ul>
+</ul>
 <ul>
 <li><code>WatchModal.jsx</code></li>
 </ul>
@@ -2558,10 +2727,12 @@
 </ul>
 <ul>
 <li><code>ShopModal.jsx</code> owns the 扎希拉商店 modal, category tabs, fixed 8-slot item grid, purchase flow, item ownership state, and shop mascot/item preview rendering.</li>
+<ul>
+<li>Its non-component constants and pure helpers live in <code>src/modals/shopModalHelpers.js</code>, so the component module keeps a Fast Refresh-compatible export shape.</li>
+</ul>
 </ul>
 <ul>
 <li><code>GameLifecycleModals.jsx</code> owns the matching, match-success countdown, opening color prompt, and result/reward modals. It also exposes pure countdown, color-label, and signed-delta helpers covered by <code>GameLifecycleModals.test.js</code>.</li>
-</ul>
 <ul>
 <li><code>FeedbackModals.jsx</code> owns the generic confirm modal, toast stack, and direct-duel request banner. Its duel countdown/progress helpers and toast queue limiting are covered by <code>FeedbackModals.test.js</code>.</li>
 </ul>
@@ -2747,6 +2918,12 @@
 <li>Runtime security helpers live in <code>server/security.js</code>.</li>
 </ul>
 <ul>
+<li><code>assertProductionDeployment</code> 在生产环境启动时执行部署配置体检：<code>JWT_SECRET</code> 至少 32 位且不能使用默认值，<code>PUBLIC_ORIGIN</code> / <code>SITE_ORIGIN</code> / <code>ALLOWED_ORIGINS</code> 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。</li>
+</ul>
+<ul>
+<li><code>npm run check:production</code> 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；该脚本默认按生产规则检查，即使调用方忘记设置 <code>NODE_ENV=production</code> 也不会按开发环境误通过。</li>
+</ul>
+<ul>
 <li>Username input is normalized server-side and must be 2-16 characters, limited to Chinese characters, English letters, numbers, and <code>_</code>.</li>
 </ul>
 <ul>
@@ -2829,6 +3006,9 @@
 </ul>
 <ul>
 <li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators still receive both black and white projections through <code>gameViews</code>, but players receive only their own visible board state.</li>
+</ul>
+<ul>
+<li><code>server/serverLifecycle.js</code> guards local development startup/shutdown: occupied port 3001 now gets an explicit <code>EADDRINUSE</code> message, and <code>SIGINT</code> / <code>SIGTERM</code> close the HTTP server plus Prisma before process exit.</li>
 </ul>
 <ul>
 <li>The frontend merges <code>room:clock</code> through <code>src/app/roomClock.js</code>, updating only changed player timer objects while preserving the existing <code>room.game</code> object reference.</li>

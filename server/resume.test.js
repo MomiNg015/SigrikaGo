@@ -58,4 +58,24 @@ describe("resumePayloadForUser", () => {
       room: snapshot
     });
   });
+
+  it("ignores corrupt persisted record snapshots instead of crashing resume", async () => {
+    const payload = await resumePayloadForUser({
+      prisma: {
+        gameRecord: {
+          findFirst: async () => ({
+            id: "record-1",
+            roomCode: "12345",
+            snapshot: "{not-json"
+          })
+        }
+      },
+      userId: "user-1",
+      roomCode: "12345",
+      findRoomForUser: () => null,
+      roomView: () => null
+    });
+
+    expect(payload).toEqual({ type: "none" });
+  });
 });

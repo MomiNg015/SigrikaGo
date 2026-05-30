@@ -11,6 +11,7 @@
     "start": "node server/index.js",
     "test": "vitest run --exclude \"**/.worktrees/**\"",
     "docs:system-design": "node scripts/render-system-design-html.mjs",
+    "check:production": "node scripts/check-production-config.mjs",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push"
   },

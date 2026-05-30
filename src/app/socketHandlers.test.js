@@ -31,6 +31,40 @@ describe("socket handlers", () => {
     expect(deps.setView).not.toHaveBeenCalled();
   });
 
+  it("clears remembered player room when an online client receives the finished room update", () => {
+    const roomView = { code: "12345", role: "player", game: { phase: "finished" }, players: [] };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomUpdate(roomView);
+
+    expect(deps.clearLastRoomCode).toHaveBeenCalledOnce();
+    expect(deps.setRoom).toHaveBeenCalledWith(roomView);
+    expect(deps.setView).toHaveBeenCalledWith("room");
+  });
+
+  it("does not merge stale user stats from a restored result snapshot", () => {
+    const resultRoom = {
+      code: "12345",
+      game: { phase: "finished" },
+      players: [{ user: { id: "user-1", rating: 980, rank: "1段" } }]
+    };
+    const deps = handlerDeps({
+      handleRoomResumePayload: vi.fn((_payload, handlers) => {
+        handlers.setRoom(resultRoom);
+        handlers.setView("home");
+        return true;
+      })
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomResume({ type: "result", room: resultRoom });
+
+    expect(deps.updateUser).not.toHaveBeenCalled();
+    expect(deps.setRoom).toHaveBeenCalledWith(resultRoom);
+    expect(deps.setView).toHaveBeenCalledWith("home");
+  });
+
   it("clears live room state when the server closes a room", () => {
     const deps = handlerDeps();
     const handlers = createSocketHandlers(deps);

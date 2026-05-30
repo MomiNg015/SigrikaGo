@@ -1024,7 +1024,7 @@ async function saveGameRecord(room) {
   const candyEffectUpdates = prepareCandyEffectUpdates(room);
   room.recordSaved = true;
   const resultMetadata = gameResultMetadata(room.game.winner);
-  const recordCreate = prisma.gameRecord.create({
+  const createRecord = () => prisma.gameRecord.create({
     data: {
       roomCode: room.code,
       blackUserId: black.user.id,
@@ -1042,6 +1042,7 @@ async function saveGameRecord(room) {
     }
   });
   if (![COLORS.black, COLORS.white].includes(room.game.winner?.winnerColor)) {
+    const recordCreate = createRecord();
     const operations = [
       recordCreate,
       ...candyEffectUpdates.map(({ player, clear }) => prisma.user.update({
@@ -1058,6 +1059,7 @@ async function saveGameRecord(room) {
   const winnerReward = resultRewardDelta(winner.color, room.game.winner.winnerColor);
   const loserReward = resultRewardDelta(loser.color, room.game.winner.winnerColor);
   applyResultRewardsToRoomUsers(winner, loser, winnerReward, loserReward);
+  const recordCreate = createRecord();
   await prisma.$transaction([
     recordCreate,
     prisma.user.update({

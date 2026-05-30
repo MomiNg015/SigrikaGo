@@ -69,6 +69,9 @@ export function createSocketHandlers({
     roomUpdate: (roomView) => {
       updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
       if (syncPendingMatchRoom(matchSuccessRef, setMatchSuccess, roomView)) return;
+      if (roomView?.role === "player" && roomView?.game?.phase === "finished") {
+        clearLastRoomCode();
+      }
       setRoom(roomView);
       setView("room");
     },
@@ -95,7 +98,9 @@ export function createSocketHandlers({
         setPendingSkill,
         setDismissedResultRoom,
         setRoom: (roomView) => {
-          updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
+          if (payload.type === "room") {
+            updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
+          }
           setRoom(roomView);
         },
         setView

@@ -121,6 +121,17 @@ describe("room game record persistence", () => {
       rating: 980,
       coins: 20
     });
+    const savedSnapshot = JSON.parse(prismaMocks.gameRecordCreate.mock.calls[0][0].data.snapshot);
+    expect(savedSnapshot.players.find((player) => player.user.id === "winner").user).toMatchObject({
+      wins: 1,
+      rating: 1020,
+      coins: 50
+    });
+    expect(savedSnapshot.players.find((player) => player.user.id === "loser").user).toMatchObject({
+      losses: 1,
+      rating: 980,
+      coins: 20
+    });
     expect(prismaMocks.userUpdate).toHaveBeenCalledTimes(2);
     const updatesByUserId = new Map(prismaMocks.userUpdate.mock.calls.map(([operation]) => [operation.where.id, operation]));
     expect(updatesByUserId.get("winner").data).toMatchObject({

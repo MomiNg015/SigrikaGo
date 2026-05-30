@@ -1,6 +1,8 @@
 import { GAME_PHASES } from "../src/shared/game.js";
 import { upsertPersistedRoom } from "./roomPersistence.js";
 
+export const CURRENT_ROOM_SNAPSHOT_VERSION = 1;
+
 export function persistRoomState({
   prisma,
   room,
@@ -21,6 +23,7 @@ export function persistRoomState({
 
 export function roomPersistenceSnapshot(room) {
   return {
+    snapshotVersion: CURRENT_ROOM_SNAPSHOT_VERSION,
     code: room.code,
     players: room.players.map((player) => ({
       ...player,
@@ -42,6 +45,10 @@ export function roomPersistenceSnapshot(room) {
 }
 
 export function hydratePersistedRoom(snapshot, { now = Date.now } = {}) {
+  const snapshotVersion = snapshot.snapshotVersion ?? 1;
+  if (snapshotVersion > CURRENT_ROOM_SNAPSHOT_VERSION) {
+    throw new Error(`Unsupported room snapshot version: ${snapshotVersion}`);
+  }
   const hydratedAt = now();
   const isFinished = snapshot.game?.phase === GAME_PHASES.finished;
   return {

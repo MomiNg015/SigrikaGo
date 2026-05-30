@@ -22,9 +22,16 @@ export async function resumePayloadForUser({ prisma, userId, roomCode = "", find
   });
   if (!record) return { type: "none" };
 
+  let recordRoom;
+  try {
+    recordRoom = JSON.parse(record.snapshot);
+  } catch {
+    return { type: "none" };
+  }
+
   return {
     type: "result",
     recordId: record.id,
-    room: JSON.parse(record.snapshot)
+    room: recordRoom
   };
 }

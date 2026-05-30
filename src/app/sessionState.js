@@ -1,7 +1,7 @@
 export function initialSessionState() {
   return {
     token: "",
-    view: "login"
+    view: "preloading"
   };
 }
 

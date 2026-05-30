@@ -11,10 +11,16 @@ import {
   isShopItemSoldOut,
   pickShopMascotLine,
   SHOP_MASCOT_LINES
-} from "./ShopModal.jsx";
+} from "./shopModalHelpers.js";
 import ShopModal from "./ShopModal.jsx";
 
 describe("ShopModal helpers", () => {
+  it("keeps non-component helpers out of the component module for Fast Refresh", () => {
+    const source = readFileSync(new URL("./ShopModal.jsx", import.meta.url), "utf8");
+
+    expect(source).not.toMatch(/export\s+(const|function)\s+(SHOP_MASCOT_LINES|pickShopMascotLine|buildShopSlots|getShopPageCount)/);
+  });
+
   it("renders the shop as a left mascot column and right product column", () => {
     const html = renderToStaticMarkup(createElement(ShopModal, {
       token: "token",

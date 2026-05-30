@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { rankFromRating } from "../src/shared/ratingRank.js";
 import { parseItemEffects } from "./itemEffects.js";
+import { parseAssetList, parseCharacterAssetList } from "./userAssets.js";
 
 export const prisma = new PrismaClient();
 
@@ -11,7 +12,7 @@ const RATING_UNLOCKS = [
 ];
 
 export function publicUser(user) {
-  const ownedCharacters = new Set(user.ownedCharacters.split(",").filter(Boolean).map(canonicalCharacterId));
+  const ownedCharacters = new Set(parseCharacterAssetList(user.ownedCharacters));
   for (const characterId of AVAILABLE_CHARACTER_IDS) ownedCharacters.add(characterId);
   for (const unlock of RATING_UNLOCKS) {
     if ((user.rating ?? 0) >= unlock.rating) ownedCharacters.add(unlock.characterId);
@@ -31,7 +32,7 @@ export function publicUser(user) {
     ownedCharacters: [...ownedCharacters],
     ownedItems: publicOwnedItems(user.ownedItems),
     itemEffects: parseItemEffects(user.itemEffects),
-    ownedDecorations: user.ownedDecorations.split(",").filter(Boolean)
+    ownedDecorations: parseAssetList(user.ownedDecorations)
   };
 }
 

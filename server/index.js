@@ -13,10 +13,20 @@ import { prisma, publicUser } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
-import { ALREADY_LOGGED_IN_CODE, ALREADY_LOGGED_IN_MESSAGE, createLoginSessionStore } from "./loginSessions.js";
+import {
+  ALREADY_LOGGED_IN_CODE,
+  ALREADY_LOGGED_IN_MESSAGE,
+  buildClearRefreshCookie,
+  buildRefreshCookie,
+  createLoginSessionStore,
+  ensureLoginSessionSchema,
+  parseCookies,
+  REFRESH_COOKIE_NAME
+} from "./loginSessions.js";
 import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
 import { jsonSyntaxErrorHandler } from "./httpErrors.js";
+import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
 import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
 import { listPublicCharacterResponse, listPublicCharacters, seedCharacters } from "./characters.js";
 import { CHARACTERS } from "../src/shared/characters.js";
@@ -31,6 +41,7 @@ import { getPublicSiteSettings } from "./siteSettings.js";
 import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
 import { blockedCharactersForItemEffects } from "./itemEffects.js";
 import {
+  assertProductionDeployment,
   corsOriginForRequest,
   createApiRateLimit,
   createAuthRateLimit,
@@ -81,7 +92,8 @@ const app = express();
 const server = createServer(app);
 const PORT = Number(process.env.PORT ?? 3001);
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret";
-const loginSessions = createLoginSessionStore();
+assertProductionDeployment();
+const loginSessions = createLoginSessionStore({ prisma });
 const { authHttp, requireAdmin } = makeAuth({
   prisma,
   jwtSecret: JWT_SECRET,
@@ -142,6 +154,7 @@ await seedCharacters(prisma);
 await seedBuiltinShopItems(prisma);
 await ensureSocialSchema(prisma);
 await ensureRoomPersistenceSchema(prisma);
+await ensureLoginSessionSchema(prisma);
 await promoteConfiguredAdmins(prisma);
 
 app.get("/api/health", (_req, res) => {
@@ -353,7 +366,7 @@ app.post("/api/auth/register", async (req, res) => {
   try {
     const user = await prisma.user.create({ data: { username, passwordHash } });
     const syncedUser = await syncConfiguredAdmin(user, prisma);
-    res.json(createLoginResponse(syncedUser));
+    await sendLoginResponse(res, syncedUser);
   } catch {
     res.status(409).json({ error: "\u7528\u6237\u540d\u5df2\u5b58\u5728" });
   }
@@ -377,16 +390,51 @@ app.post("/api/auth/login", async (req, res) => {
     res.status(403).json({ error: user.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8d26\u53f7\u5df2\u5c01\u7981" });
     return;
   }
-  if (loginSessions.hasActive(user.id) && isUserOnline(user.id) && !req.body.forceLogin) {
+  if (await loginSessions.hasActive(user.id) && !req.body.forceLogin) {
     res.status(409).json({
       code: ALREADY_LOGGED_IN_CODE,
       error: ALREADY_LOGGED_IN_MESSAGE
     });
     return;
   }
-  if (req.body.forceLogin) forceLogoutUser(user.id);
+  if (req.body.forceLogin) await forceLogoutUser(user.id);
   const syncedUser = await syncConfiguredAdmin(user, prisma);
-  res.json(createLoginResponse(syncedUser));
+  await sendLoginResponse(res, syncedUser);
+});
+
+app.post("/api/auth/refresh", async (req, res) => {
+  const refreshToken = parseCookies(req.headers.cookie)[REFRESH_COOKIE_NAME];
+  const session = await loginSessions.refresh(refreshToken);
+  if (!session) {
+    res.setHeader("Set-Cookie", buildClearRefreshCookie());
+    res.status(401).json({ error: "\u8bf7\u5148\u767b\u5f55" });
+    return;
+  }
+  const user = await prisma.user.findUnique({ where: { id: session.userId } });
+  if (!user || user.status === USER_STATUS.banned) {
+    await loginSessions.clear(session.userId, session.sessionId);
+    res.setHeader("Set-Cookie", buildClearRefreshCookie());
+    res.status(user?.status === USER_STATUS.banned ? 403 : 401).json({
+      error: user?.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8bf7\u5148\u767b\u5f55"
+    });
+    return;
+  }
+  res.setHeader("Set-Cookie", buildRefreshCookie(session.refreshToken));
+  res.json(withToken(await syncConfiguredAdmin(user, prisma), JWT_SECRET, { sessionId: session.sessionId }));
+});
+
+app.post("/api/auth/logout", async (req, res) => {
+  const refreshToken = parseCookies(req.headers.cookie)[REFRESH_COOKIE_NAME];
+  await loginSessions.clearRefreshToken(refreshToken);
+  try {
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    const payload = token ? JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8")) : null;
+    if (payload?.sub && payload?.sid) await loginSessions.clear(payload.sub, payload.sid);
+  } catch {
+    // Logout should succeed even if the access token is malformed or expired.
+  }
+  res.setHeader("Set-Cookie", buildClearRefreshCookie());
+  res.json({ ok: true });
 });
 
 app.get("/api/me", authHttp, async (req, res) => {
@@ -493,7 +541,7 @@ const refreshSocketUser = createSocketUserRefresher({
 onlineSessions = createOnlineSessionManager({
   io,
   sessions: loginSessions,
-  signLoginResponse: (user, sessionId) => withToken(user, JWT_SECRET, { sessionId }),
+  signLoginResponse: (user, session) => withToken(user, JWT_SECRET, { sessionId: session.sessionId }),
   isUserInActiveRoom,
   onSocketDisconnected: (socket) => {
     duelRequests?.expireSocketRequests(socket.id);
@@ -713,12 +761,15 @@ function installSocketRateGuard(socket) {
   });
 }
 
-function createLoginResponse(user) {
-  return onlineSessions.createLoginResponse(user);
+async function sendLoginResponse(res, user) {
+  const response = await onlineSessions.createLoginResponse(user);
+  res.setHeader("Set-Cookie", buildRefreshCookie(response.refreshToken));
+  const { refreshToken, refreshExpiresAt, ...publicResponse } = response;
+  res.json(publicResponse);
 }
 
-function forceLogoutUser(userId) {
-  onlineSessions.forceLogoutUser(userId);
+async function forceLogoutUser(userId) {
+  await onlineSessions.forceLogoutUser(userId);
 }
 
 function registerOnlineSocket(socket) {
@@ -789,6 +840,5 @@ if (process.env.NODE_ENV === "production" && fs.existsSync(distDir)) {
   });
 }
 
-server.listen(PORT, () => {
-  console.log(`SigrikaGo server listening on http://localhost:${PORT}`);
-});
+installServerLifecycle(server, { dependencies: [prisma] });
+startHttpServer(server, { port: PORT });

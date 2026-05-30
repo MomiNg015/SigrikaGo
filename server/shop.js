@@ -1,6 +1,7 @@
 import { publicUser } from "./db.js";
 import { normalizeItemTargetType, parseOwnedItems, serializeOwnedItems } from "./items.js";
 import { RAINBOW_BEAN_CANDY_ID } from "./itemEffects.js";
+import { parseAssetList, parseCharacterAssetList, serializeAssetList } from "./userAssets.js";
 import { STONE_DECORATIONS } from "../src/shared/stoneDecorations.js";
 
 const SHOP_CATEGORIES = new Set(["character", "decoration", "item"]);
@@ -186,15 +187,15 @@ export async function purchaseShopItem({ prisma, userId, itemId }) {
     const price = finalShopPrice(item);
     if (user.coins < price) throw routeError(400, "金币不足");
 
-    const ownedCharacters = listFromCsv(user.ownedCharacters);
-    const ownedDecorations = listFromCsv(user.ownedDecorations);
+    const ownedCharacters = parseCharacterAssetList(user.ownedCharacters);
+    const ownedDecorations = parseAssetList(user.ownedDecorations);
     const data = { coins: user.coins - price };
     if (item.category === "character") {
       if (ownedCharacters.includes(item.targetId)) throw routeError(400, "已拥有该角色");
-      data.ownedCharacters = [...ownedCharacters, item.targetId].join(",");
+      data.ownedCharacters = serializeAssetList([...ownedCharacters, item.targetId]);
     } else if (item.category === "decoration") {
       if (ownedDecorations.includes(item.targetId)) throw routeError(400, "已拥有该装饰");
-      data.ownedDecorations = [...ownedDecorations, item.targetId].join(",");
+      data.ownedDecorations = serializeAssetList([...ownedDecorations, item.targetId]);
     } else if (item.category === "item") {
       const ownedItems = parseOwnedItems(user.ownedItems);
       ownedItems[item.targetId] = (ownedItems[item.targetId] ?? 0) + 1;
@@ -237,10 +238,6 @@ function normalizeCountObject(value = {}) {
       .map(([itemId, quantity]) => [String(itemId).trim(), Math.max(0, Math.floor(Number(quantity) || 0))])
       .filter(([itemId, quantity]) => itemId && quantity > 0)
   );
-}
-
-function listFromCsv(value) {
-  return String(value ?? "").split(",").map((item) => item.trim()).filter(Boolean);
 }
 
 function parseNonNegativeInt(value) {

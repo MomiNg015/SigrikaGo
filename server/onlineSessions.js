@@ -4,10 +4,7 @@ export function createOnlineSessionManager({
   signLoginResponse,
   isUserInActiveRoom,
   onSocketDisconnected = () => {},
-  setTimer = setTimeout,
-  clearTimer = clearTimeout,
-  pendingLoginMs = 2 * 60 * 1000,
-  disconnectedSessionGraceMs = 30 * 60 * 1000
+  clearTimer = clearTimeout
 }) {
   const onlineSockets = new Map();
   const pendingLoginSessionTimers = new Map();
@@ -25,20 +22,20 @@ export function createOnlineSessionManager({
     disconnectedSessionTimers.delete(userId);
   }
 
-  function createLoginResponse(user) {
-    const sessionId = sessions.replace(user.id);
+  async function createLoginResponse(user) {
+    const session = await sessions.replace(user.id);
     clearPendingLogin(user.id);
     clearDisconnectedSessionTimer(user.id);
-    pendingLoginSessionTimers.set(user.id, setTimer(() => {
-      pendingLoginSessionTimers.delete(user.id);
-      if (!onlineSockets.has(user.id)) sessions.clear(user.id, sessionId);
-    }, pendingLoginMs));
-    return signLoginResponse(user, sessionId);
+    return {
+      ...signLoginResponse(user, session),
+      refreshToken: session.refreshToken,
+      refreshExpiresAt: session.expiresAt
+    };
   }
 
-  function forceLogoutUser(userId) {
+  async function forceLogoutUser(userId) {
     const socketIds = [...(onlineSockets.get(userId) ?? [])];
-    sessions.clearUser(userId);
+    await sessions.clearUser(userId);
     clearPendingLogin(userId);
     clearDisconnectedSessionTimer(userId);
     for (const socketId of socketIds) {
@@ -63,12 +60,7 @@ export function createOnlineSessionManager({
     sockets.delete(socket.id);
     if (sockets.size === 0) {
       onlineSockets.delete(socket.user.id);
-      const sessionId = socket.data.sessionId;
       clearDisconnectedSessionTimer(socket.user.id);
-      disconnectedSessionTimers.set(socket.user.id, setTimer(() => {
-        disconnectedSessionTimers.delete(socket.user.id);
-        if (!onlineSockets.has(socket.user.id)) sessions.clear(socket.user.id, sessionId);
-      }, disconnectedSessionGraceMs));
     }
     onSocketDisconnected(socket);
   }

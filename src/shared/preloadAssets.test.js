@@ -32,7 +32,7 @@ describe("deployment preload asset helpers", () => {
     expect(assets.audio).toContain("/assets/music/godown_clear.ogg");
     expect(assets.audio).toContain("/assets/music/main_bgm.ogg");
     expect(assets.audio).toContain("/assets/music/shanjifu_loop.ogg");
-    expect(assets.audio).toContain("/assets/voice/sigrika_2_no_exclaim.ogg");
+    expect(assets.audio).toContain("/assets/voice/sigrika_skill_cast.ogg");
   });
 
   it("preloads the candy portrait only while the active user has the candy effect", () => {

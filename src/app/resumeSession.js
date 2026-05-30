@@ -42,8 +42,13 @@ export function handleMissingRoomResumePayload(payload, currentRoom, handlers) {
   return true;
 }
 
-export function shouldShowResultModal(room, dismissedResultRoom) {
+export function shouldShowResultModal(room, dismissedResultRoom, replayStep = null) {
+  if (replayStep !== null) return false;
   if (!room || room.game?.phase !== "finished") return false;
   if (room.game?.winner?.invalid) return false;
   return dismissedResultRoom !== room.code;
+}
+
+export function shouldClearRoomOnReplayExit(replayStep) {
+  return replayStep !== null;
 }

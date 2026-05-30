@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { io } from "socket.io-client";
-import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
+import { CHARACTERS } from "./shared/characters.js";
 import { latestSkillCharacterId, resolveBackgroundMusic } from "./shared/musicLibrary.js";
 import { deploymentSocketBase, loginPreloadAssets, preloadLoginAssets } from "./shared/preloadAssets.js";
 import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
@@ -20,7 +19,9 @@ import SettingsModal from "./modals/SettingsModal.jsx";
 import WarehouseModal from "./modals/WarehouseModal.jsx";
 import WatchModal from "./modals/WatchModal.jsx";
 import RoomScreen from "./room/RoomScreen.jsx";
-import { adminApi, api } from "./api/client.js";
+import { adminApi, api, configureAuthRefresh } from "./api/client.js";
+import AssetPreloadScreen from "./app/AssetPreloadScreen.jsx";
+import { loadPublicCharacterCatalog } from "./app/characterCatalog.js";
 import {
   buildRoomResumeRequest,
   clearLastRoomCode,
@@ -30,10 +31,14 @@ import {
   shouldShowResultModal
 } from "./app/resumeSession.js";
 import { completePendingMatchRoom, syncPendingMatchRoom } from "./app/matchTransition.js";
+import { connectGameSocket } from "./app/gameSocket.js";
+import { planRoomBackNavigation } from "./app/roomNavigation.js";
+import { replayOpeningState } from "./app/replayOpening.js";
+import { loadPublicSiteSettings } from "./app/siteSettingsCatalog.js";
 import { applyRoomClock } from "./app/roomClock.js";
 import { mergeCurrentUserFromRoom } from "./app/roomUserSync.js";
 import { initialSessionState, shouldFinishPreloadAsHome } from "./app/sessionState.js";
-import { createSocketHandlers, installSocketHandlers } from "./app/socketHandlers.js";
+import { createSocketHandlers } from "./app/socketHandlers.js";
 import { buildStatChangeToasts } from "./app/statChangeToast.js";
 import "./styles.css";
 
@@ -73,8 +78,9 @@ function App() {
   const viewRef = useRef(view);
   const audioSettingsRef = useRef(audioSettings);
   const toastIdRef = useRef(0);
+  const refreshPromiseRef = useRef(null);
   const characterListView = Object.values(characters);
-  const resultModalOpen = shouldShowResultModal(room, dismissedResultRoom);
+  const resultModalOpen = shouldShowResultModal(room, dismissedResultRoom, replayStep);
   const backgroundMusic = resolveBackgroundMusic({
     view,
     skillPreview: room?.game?.pendingSkill,
@@ -126,6 +132,22 @@ function App() {
   useEffect(() => {
     refreshSiteSettings();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    refreshAuthSession({ silent: true })
+      .catch(() => {
+        if (!cancelled) setView("login");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    configureAuthRefresh(() => refreshAuthSession({ silent: true }));
+    return () => configureAuthRefresh(null);
+  }, [updateUser]);
 
   useEffect(() => {
     if (!token) return;
@@ -184,8 +206,10 @@ function App() {
 
   useEffect(() => {
     if (!token || !user) return;
-    const nextSocket = io(SOCKET_BASE, { auth: { token } });
-    installSocketHandlers(nextSocket, createSocketHandlers({
+    const nextSocket = connectGameSocket({
+      socketBase: SOCKET_BASE,
+      token,
+      handlers: createSocketHandlers({
       matchSuccessRef,
       roomRef,
       audioSettingsRef,
@@ -210,7 +234,9 @@ function App() {
       syncPendingMatchRoom,
       applyRoomClock,
       playDoorbellSound
-    }), { buildRoomResumeRequest });
+      }),
+      buildRoomResumeRequest
+    });
     setSocket(nextSocket);
     return () => nextSocket.close();
   }, [token, user?.id]);
@@ -238,33 +264,53 @@ function App() {
   }
 
   async function refreshPublicCharacters() {
-    try {
-      const data = await api("/api/characters", { token });
-      setCharacters(mergeCharacters(data.characters, data.disabledSlugs));
-    } catch {
-      setCharacters(CHARACTERS);
-    }
+    setCharacters(await loadPublicCharacterCatalog({ token }));
   }
 
   async function loadPublicCharacters(authToken) {
-    try {
-      const data = await api("/api/characters", { token: authToken });
-      return mergeCharacters(data.characters, data.disabledSlugs);
-    } catch {
-      return CHARACTERS;
-    }
+    return loadPublicCharacterCatalog({ token: authToken });
   }
 
   async function refreshSiteSettings() {
-    try {
-      const data = await api("/api/site-settings");
-      setSiteSettings({ ...DEFAULT_SITE_SETTINGS, ...(data.settings ?? {}) });
-    } catch {
-      setSiteSettings(DEFAULT_SITE_SETTINGS);
+    setSiteSettings(await loadPublicSiteSettings());
+  }
+
+  async function refreshAuthSession({ silent = false } = {}) {
+    if (!refreshPromiseRef.current) {
+      refreshPromiseRef.current = api("/api/auth/refresh", {
+        method: "POST",
+        skipAuthRefresh: true
+      })
+        .then((data) => {
+          setToken(data.token);
+          updateUser(data.user, { notifyStats: false });
+          return data;
+        })
+        .catch((error) => {
+          if (!silent) showToast(error.message);
+          setToken("");
+          setUser(null);
+          setRoom(null);
+          setMatchStart(null);
+          setMatchSuccess(null);
+          setLobbyStats({ onlineCount: 0, matchmakingCount: 0 });
+          setCharacters(CHARACTERS);
+          setView("login");
+          return null;
+        })
+        .finally(() => {
+          refreshPromiseRef.current = null;
+        });
     }
+    return refreshPromiseRef.current;
   }
 
   function logout() {
+    api("/api/auth/logout", {
+      method: "POST",
+      token,
+      skipAuthRefresh: true
+    }).catch(() => {});
     socket?.close();
     setToken("");
     setUser(null);
@@ -326,21 +372,21 @@ function App() {
 
   async function openReplay(recordId) {
     const data = await api(`/api/replays/${recordId}`, { token });
-    const snapshot = data.record.snapshot;
+    const replayState = replayOpeningState(data);
     closeAllOverlays();
-    setRoom(snapshot);
-    setReplayStep(snapshot.game.history.length);
-    setPendingSkill(false);
-    setView("room");
+    setRoom(replayState.room);
+    setReplayStep(replayState.replayStep);
+    setPendingSkill(replayState.pendingSkill);
+    setView(replayState.view);
   }
 
   async function openAdminReplay(recordId) {
     const data = await adminApi(`/replays/${recordId}`, token);
-    const snapshot = data.record.snapshot;
-    setRoom(snapshot);
-    setReplayStep(snapshot.game.history.length);
-    setPendingSkill(false);
-    setView("room");
+    const replayState = replayOpeningState(data);
+    setRoom(replayState.room);
+    setReplayStep(replayState.replayStep);
+    setPendingSkill(replayState.pendingSkill);
+    setView(replayState.view);
   }
 
   function closeAllOverlays() {
@@ -445,12 +491,15 @@ function App() {
           onOpenSettings={() => setShowSettings(true)}
           onOpenMessageBoard={() => setShowMessageBoard(true)}
           onBack={() => {
-            if ((room.role === "spectator" || room.game?.phase === "finished") && replayStep === null) {
-              socket?.emit("room:leave", { roomCode: room.code });
+            const plan = planRoomBackNavigation({ room, replayStep });
+            if (plan.leaveRoomCode) {
+              socket?.emit("room:leave", { roomCode: plan.leaveRoomCode });
+            }
+            if (plan.clearRoom) {
               setRoom(null);
             }
-            setReplayStep(null);
-            setView("home");
+            setReplayStep(plan.nextReplayStep);
+            setView(plan.nextView);
           }}
           onGameAction={emitGame}
           onCountingRequest={() => socket?.emit("counting:request", { roomCode: room.code })}
@@ -565,21 +614,6 @@ function App() {
         />
       )}
     </div>
-  );
-}
-
-function AssetPreloadScreen({ progress }) {
-  const percent = Math.round(Math.max(0, Math.min(1, progress)) * 100);
-  return (
-    <main className="asset-preload-screen">
-      <section className="asset-preload-panel">
-        <div className="preload-mark" />
-        <p>{"\u8d44\u6e90\u51c6\u5907\u4e2d"}</p>
-        <div className="preload-bar" aria-label={"\u8d44\u6e90\u52a0\u8f7d " + percent + "%"}>
-          <span style={{ width: `${percent}%` }} />
-        </div>
-      </section>
-    </main>
   );
 }
 

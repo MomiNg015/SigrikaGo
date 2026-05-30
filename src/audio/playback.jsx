@@ -119,20 +119,28 @@ async function loadBackgroundBuffer(state, context, src) {
   return buffer;
 }
 
-function resumeBackgroundContextWithFallback(state) {
+export function resumeBackgroundContextWithFallback(state) {
   const context = state.context;
   if (!context || context.state !== "suspended") return;
-  context.resume().catch(() => {
-    if (state.retry) return;
-    state.retry = () => {
-      window.removeEventListener("pointerdown", state.retry);
-      window.removeEventListener("keydown", state.retry);
-      state.retry = null;
-      context.resume().catch(() => {});
-    };
-    window.addEventListener("pointerdown", state.retry, { once: true });
-    window.addEventListener("keydown", state.retry, { once: true });
-  });
+  context.resume()
+    .then(() => {
+      if (context.state === "suspended") installBackgroundResumeRetry(state, context);
+    })
+    .catch(() => installBackgroundResumeRetry(state, context));
+}
+
+function installBackgroundResumeRetry(state, context) {
+  if (state.retry || typeof window === "undefined") return;
+  state.retry = () => {
+    window.removeEventListener("pointerdown", state.retry);
+    window.removeEventListener("keydown", state.retry);
+    window.removeEventListener("touchstart", state.retry);
+    state.retry = null;
+    context.resume().catch(() => {});
+  };
+  window.addEventListener("pointerdown", state.retry, { once: true });
+  window.addEventListener("keydown", state.retry, { once: true });
+  window.addEventListener("touchstart", state.retry, { once: true });
 }
 
 function setBackgroundBaseVolume(state, volume) {

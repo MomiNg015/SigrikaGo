@@ -1,6 +1,7 @@
 export const SYSTEM_VOICE_EVENTS = {
   gameStart: "game-start",
   skillCast: "skill-cast",
+  sortie: "sortie",
   byoYomiStart: "byo-yomi-start",
   byoYomiPeriods: "byo-yomi-periods",
   byoYomiPeriod2: "byo-yomi-period-2",
@@ -16,6 +17,7 @@ export const SYSTEM_VOICE_EVENTS = {
 
 const DEFAULT_SYSTEM_VOICE_TEXT = {
   [SYSTEM_VOICE_EVENTS.gameStart]: "对局开始",
+  [SYSTEM_VOICE_EVENTS.sortie]: "出战",
   [SYSTEM_VOICE_EVENTS.byoYomiStart]: "开始读秒",
   [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "还剩2次读秒",
   [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "还剩1次读秒",

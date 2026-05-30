@@ -16,7 +16,7 @@ export function makeAuth({ prisma, jwtSecret, isSessionActive = null }) {
     try {
       const token = req.headers.authorization?.replace("Bearer ", "");
       const payload = jwt.verify(token, jwtSecret);
-      if (isSessionActive && !isSessionActive(payload.sub, payload.sid)) throw new Error("stale session");
+      if (isSessionActive && !(await isSessionActive(payload.sub, payload.sid))) throw new Error("stale session");
       const user = await prisma.user.findUnique({ where: { id: payload.sub } });
       if (!user) throw new Error("missing user");
       if (user.status === USER_STATUS.banned) {

@@ -6,7 +6,7 @@ import { blockedCharactersForItemEffects } from "./itemEffects.js";
 
 export async function authenticateSocketUser({ token, jwtSecret, prisma, characterSelectionData, isSessionActive = null }) {
   const payload = jwt.verify(token, jwtSecret);
-  if (isSessionActive && !isSessionActive(payload.sub, payload.sid)) throw new Error("unauthorized");
+  if (isSessionActive && !(await isSessionActive(payload.sub, payload.sid))) throw new Error("unauthorized");
   const user = await prisma.user.findUnique({ where: { id: payload.sub } });
   if (!user) throw new Error("unauthorized");
   if (user.status === USER_STATUS.banned) throw new Error("forbidden");

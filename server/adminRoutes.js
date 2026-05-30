@@ -10,6 +10,7 @@ import { listFeedbackMessages } from "./feedback.js";
 import { normalizeOwnedItems, serializeOwnedItems } from "./items.js";
 import { toShopItemPayload, validateDecorationInput, validateShopItemInput } from "./shop.js";
 import { getPublicSiteSettings, updateSiteSettings } from "./siteSettings.js";
+import { serializeAssetList } from "./userAssets.js";
 import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
 
 const EDITABLE_USER_FIELDS = new Set([
@@ -108,11 +109,7 @@ export function sanitizeUserUpdate(body = {}) {
       if (coins != null) data.coins = coins;
     }
     if (key === "ownedCharacters" && Array.isArray(value)) {
-      const ownedCharacters = value
-        .filter((character) => typeof character === "string")
-        .map((character) => character.trim())
-        .filter(Boolean)
-        .join(",");
+      const ownedCharacters = serializeAssetList(value.filter((character) => typeof character === "string"));
       if (ownedCharacters) data.ownedCharacters = ownedCharacters;
     }
     if (key === "ownedItems") {

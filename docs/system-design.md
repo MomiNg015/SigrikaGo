@@ -104,6 +104,7 @@ SigrikaGo/
 - `src/api/client.js`
   - 前端 HTTP 请求封装。
   - 提供普通 JSON API、后台 API 和角色立绘上传 helper。
+  - 普通 JSON 请求和角色立绘上传在 access token 过期并收到 401 时，会通过统一 refresh handler 轮换 token 并重试一次；refresh 请求本身不会递归重试。
 
 - `src/app/resumeSession.js`
   - 前端断线恢复/结果恢复的纯逻辑模块。
@@ -113,11 +114,24 @@ SigrikaGo/
   - 前端房间视图中的当前用户状态同步模块。
   - 当 `match:found`、`room:update` 或结果恢复携带房间玩家 payload 时，会把当前登录用户对应的 `player.user` 合并回全局 `user`，确保糖果效果、金币、出战角色等状态在结算广播后立即刷新。
   - 合并结果与当前用户内容一致时会保留原对象引用；主 Socket 连接只依赖 token 与用户 id，不会因为糖果效果、金币等资料刷新而重建连接，避免玩家房间 `socketId` 与前端当前连接脱节。
+  - `room:resume` 返回的已结束结果快照只用于断线玩家补看结果弹窗，不会把快照中的旧金币、积分、段位或战绩合并回当前登录用户状态。
 
 - `src/app/socketHandlers.js`
   - 前端 Socket.IO 事件处理器模块。
   - 集中安装并处理 `match:*`、`room:*`、`duel:*`、`error:toast` 和 `account:logged-out` 事件，把房间恢复、匹配过渡、轻量棋钟、约战提示和账号踢下线的状态变更从 `src/main.jsx` 中移出，便于单元测试和后续 hook 化。
 
+- `src/app/gameSocket.js`
+  - Centralizes Socket.IO client creation for the game connection and binds the installed socket handlers with the room resume request builder. `src/main.jsx` still owns the React lifecycle boundary, but no longer wires the low-level `io(...)` call directly.
+- `src/app/AssetPreloadScreen.jsx`
+  - Owns the login/startup asset preloading screen UI and progress-bar percentage formatting, keeping this transient screen out of `src/main.jsx` while preserving the same loading flow.
+- `src/app/characterCatalog.js`
+  - Loads the public character catalog through `/api/characters`, merges it with built-in fallback characters, and falls back to the local catalog on request failure. This keeps startup preloading and admin-triggered character refresh on the same path.
+- `src/app/roomNavigation.js`
+  - Centralizes the pure navigation decision for leaving the room screen: replay exits clear the replay snapshot without emitting `room:leave`, while spectator and finished-room review exits emit `room:leave` before returning home.
+- `src/app/replayOpening.js`
+  - Converts a replay record snapshot into the room-screen state used by normal house replays and admin replays: room snapshot, latest replay step, cleared pending skill, and `room` view.
+- `src/app/siteSettingsCatalog.js`
+  - Loads public site settings from `/api/site-settings`, merges them over shared defaults, and falls back to `DEFAULT_SITE_SETTINGS` when the request fails.
 - `src/shared/game.js`
   - 共享的游戏规则引擎。
   - 负责棋盘状态、落子、提子、禁自杀、劫、弃手、认输、技能、隐藏手、死子标记、数子、回放重算等。
@@ -183,9 +197,18 @@ SigrikaGo/
   - 根据 viewerId 判断玩家或观战者身份，生成对应颜色视角的棋盘、双视角观战数据、玩家提子/除子计数、计时、聊天和阶段 deadline。
   - 该模块把 `server/rooms.js` 中纯数据投影逻辑移出实时流程，降低房间广播和棋谱快照代码的耦合。
 
+- `server/serverLifecycle.js`
+  - HTTP server startup and shutdown guardrails.
+  - Reports `EADDRINUSE` with a clear port-conflict message instead of leaving the Vite proxy to surface ambiguous `ECONNREFUSED` / non-JSON errors.
+  - Handles `SIGINT` / `SIGTERM` by closing the HTTP server and disconnecting Prisma, reducing stale dev processes that keep port 3001 occupied during watch restarts.
+
 - `server/roomItemEffects.js`
   - 房间结算时的道具效果处理模块。
   - 当前负责有效局结束后计算并应用彩虹豆豆跳跳糖清除效果；无效局不会清除糖果效果。
+
+- `server/userAssets.js`
+  - 集中封装用户资产 CSV/数组字段的解析、去空、去重、序列化，以及 owned character 的历史别名规范化。
+  - 当前用于公开用户序列化、商城购买角色/装饰和后台用户资产编辑，作为后续迁移到结构化资产表之前的防扩散层。
 
 - `server/roomRewards.js`
   - 房间结算时的内存用户奖励应用模块。
@@ -194,6 +217,7 @@ SigrikaGo/
 - `server/roomStatePersistence.js`
   - 房间内存状态与持久化快照之间的转换模块。
   - 负责清理 socket/timer 等运行时字段、生成 PersistedRoom snapshot、恢复房间运行时字段，以及按节流规则触发持久化写入。
+  - 持久化房间快照写入 `snapshotVersion`，当前版本为 1；缺少版本的旧快照按 v1 读取，未来高于当前版本的快照会被拒绝恢复，避免不兼容状态进入实时房间。
 
 - `server/roomClockTiming.js`
   - 房间棋钟纯计算模块。
@@ -229,8 +253,9 @@ SigrikaGo/
 - 用户注册与登录。
 - 注册界面要求两次密码输入一致；确认密码只用于前端校验，不随 API payload 保存。
 - 密码使用 `bcryptjs` 哈希存储。
-- JWT 登录态，token 仅保存在当前页面内存中，不写入 `localStorage`；刷新页面、关闭浏览器或移动端退出后需要重新登录。
-- 同一账号只允许一个活动登录会话；再次登录已在线账号时，登录接口返回 `already_logged_in` 冲突，前端确认后以 `forceLogin` 重试并踢下旧 socket。
+- 登录态使用短期页面内存 access token + 持久化 refresh cookie：access token 仍只保存在 React 内存中，不写入 `localStorage`；浏览器保存 `HttpOnly` refresh cookie，页面刷新、浏览器重开或后端短暂重启后会先调用 `/api/auth/refresh` 自动恢复登录。
+- `LoginSession` 数据库存储当前有效会话、refresh token 哈希、过期时间和撤销时间；Socket 断开只影响在线状态，不再直接撤销登录会话。
+- 同一账号只允许一个活动登录会话；再次登录已有有效会话的账号时，登录接口返回 `already_logged_in` 冲突，前端确认后以 `forceLogin` 重试并踢下旧 socket、撤销旧 refresh session。
 - 用户状态支持 `active` / `banned`。
 - 管理员可配置、可在启动或登录时自动提升。
 - 用户公开字段序列化会隐藏 `passwordHash`。
@@ -261,7 +286,7 @@ SigrikaGo/
 - 收到匹配成功事件时，前端会自动关闭大厅上已打开的商店、棋舍、排行榜、观战、好友、设置和留言板弹窗，避免弹窗盖住后续对局切换。
 - 开局展示结束后服务端切换到 `playing`，写入 `game-start` 系统消息，前端播放“对局开始”系统语音，并从该时刻开始推进棋钟。
 - 计时与读秒：房间玩家包含 `mainTime`、`byoYomi`、`byoYomiPeriods` 等内存字段。
-- 对局者刷新页面、关闭页面或短暂断线后，前端会保存最近玩家房间号并在 Socket 重连时请求 `room:resume`。如果内存房间仍存在且未结束，服务端会把该 socket 重新绑定到房间并广播当前房间视图；断线期间服务端棋钟继续按真实时间推进，不会暂停。如果房间已结束但仍在内存或可通过该房间号找到 `GameRecord.snapshot`，前端停留在大厅并恢复结果弹窗；关闭结果弹窗后清理最近房间号。如果服务重启导致内存房间丢失且没有可恢复棋谱，前端会清理最近房间号、回到大厅，并提示“房间已不存在，可能是服务器重启或房间已关闭”。
+- 对局者刷新页面、关闭页面或短暂断线后，前端会保存最近玩家房间号并在 Socket 重连时请求 `room:resume`。如果内存房间仍存在且未结束，服务端会把该 socket 重新绑定到房间并广播当前房间视图；断线期间服务端棋钟继续按真实时间推进，不会暂停。如果房间已结束但仍在内存或可通过该房间号找到 `GameRecord.snapshot`，前端停留在大厅并恢复结果弹窗；关闭结果弹窗后清理最近房间号。正常在线收到终局 `room:update` 的对局者会立即清理最近玩家房间号，因此主界面结果弹窗只用于“对局中断线且终局时未能及时连回”的玩家恢复结果。如果服务重启导致内存房间丢失且没有可恢复棋谱，前端会清理最近房间号、回到大厅，并提示“房间已不存在，可能是服务器重启或房间已关闭”。
 - 玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能超频使用红色强调。除子与超频标签支持悬停说明：除子说明其会在数目时按 `+除子*1` 计入，超频说明其会在数目时按 `-超频*2` 扣减。
 - 技能栏支持悬停/点击展开“挂画”式技能说明面板，说明随鼠标移出或再次点击收起。
 - 对手信息区下方显示“房间成员”，固定最多 3 行高度并可滚动；回放模式不显示房间成员区域。对局者用黑/白棋图标标识执色且用户名为红色，观战者为黑色用户名。点击任一行会展开占位操作面板：详细信息、加好友/解除好友、加入黑名单/从黑名单解除、密谈。自己所在行的加好友和黑名单操作禁用；好友关系下加入黑名单按钮禁用。成员行按关系显示背景：自己为淡黄色，好友为浅绿色渐变，黑名单成员为灰色。加好友会自动从黑名单移除目标用户。
@@ -308,7 +333,7 @@ SigrikaGo/
 ### 棋谱与回放
 
 - 对局结束后写入 `GameRecord`。
-- 棋谱保存房间快照 `snapshot`。
+- 棋谱保存房间快照 `snapshot`；胜负局会先把积分、金币和战绩奖励应用到房间内存玩家，再生成 `GameRecord.snapshot`，避免断线后恢复结果时展示结算前的旧用户状态。
 - 用户可看自己的最近 30 条棋谱。
 - 管理员可查看任意用户棋谱与任意棋谱详情。
 - 前端回放通过 `replayRoomAt` 基于历史步骤重放共享规则逻辑。
@@ -393,6 +418,18 @@ SigrikaGo/
 - `itemPurchaseCounts`: JSON 数量表字符串，例如 `{"rainbow-bean-candy":3}`；记录每个用户已从商店购买道具的次数，用于计算用户独立的商店库存，不随道具使用而减少。
 - `itemEffects`: JSON 状态字符串，当前支持 `sigrikaCandyDisabled` 与 `deniaRainbowGlow` 两个彩虹豆豆跳跳糖临时效果。
 - `ownedDecorations`: 逗号分隔装饰 slug。
+- `createdAt`, `updatedAt`: 创建和更新时间。
+
+### LoginSession
+
+持久化登录会话表，用于 refresh cookie、单账号单会话和服务重启后的登录恢复。
+
+- `id`: session id，会写入 access token 的 `sid` claim。
+- `userId`: 归属用户 id。
+- `refreshTokenHash`: refresh token 的 SHA-256 哈希，数据库不保存明文 refresh token。
+- `revokedAt`: 撤销时间；主动登出、强制登录或创建新 session 时写入。
+- `expiresAt`: refresh session 过期时间。
+- `lastSeenAt`: 最近一次 HTTP/Socket 鉴权或 refresh 时间。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 
 ### UserRelationship
@@ -553,10 +590,19 @@ SigrikaGo/
 - `POST /api/auth/register`
   - 注册账号。
   - 用户名至少 2 位，密码 6-14 位；前端注册表单要求确认密码与密码一致。
+  - 成功后创建 `LoginSession`、设置 refresh cookie，并返回 access token 与公开用户信息。
 
 - `POST /api/auth/login`
   - 登录并返回 JWT 与公开用户信息。
   - 被封禁用户返回 403。
+  - 已有有效登录会话时返回 `already_logged_in` 冲突；`forceLogin` 会撤销旧 session 并踢下旧 socket。
+
+- `POST /api/auth/refresh`
+  - 读取 `sigrika_refresh` `HttpOnly` cookie，校验并轮换 `LoginSession.refreshTokenHash`，返回新的 access token 与公开用户信息。
+  - refresh 无效、过期或已撤销时清除 cookie 并返回 401。
+
+- `POST /api/auth/logout`
+  - 撤销当前 refresh session 和可识别的 access-token session，并清除 refresh cookie。
 
 - `GET /api/me`
   - 登录用户信息。
@@ -761,9 +807,11 @@ SigrikaGo/
 ## 7. 权限系统现状
 
 - 登录态使用 JWT：
-  - `withToken` 签发 `{ sub: user.id }`，有效期 14 天。
+  - `withToken` 签发 `{ sub: user.id, sid }`，有效期 14 天。
   - HTTP 请求通过 `Authorization: Bearer <token>`。
   - Socket.IO 通过 `handshake.auth.token`。
+  - `/api/auth/refresh` 读取 `HttpOnly` refresh cookie，校验 `LoginSession` 后轮换 refresh token 并返回新的 access token。
+  - `/api/auth/logout` 会撤销 refresh session 并清除 cookie。
 
 - 用户角色：
   - `player`
@@ -852,9 +900,10 @@ SigrikaGo/
 - `gameResultMetadata` / `recordWinnerColor`: 后端通过 `server/gameRecords.js` re-export 共享棋谱结构化结果逻辑。
 - `prepareCandyEffectUpdates` / `candyEffectData`: 位于 `server/roomItemEffects.js`，集中封装有效局后的糖果道具效果清理和持久化更新数据。
 - `applyResultRewardsToRoomUsers` / `applyUserReward`: 位于 `server/roomRewards.js`，集中封装对局结果奖励写回房间内存用户的逻辑。
-- `persistRoomState` / `roomPersistenceSnapshot` / `hydratePersistedRoom`: 位于 `server/roomStatePersistence.js`，集中封装房间快照生成、恢复和节流持久化。
+- `persistRoomState` / `roomPersistenceSnapshot` / `hydratePersistedRoom`: 位于 `server/roomStatePersistence.js`，集中封装房间快照生成、恢复、快照版本保护和节流持久化。
 - `tickPlayerClock` / `resetByoYomi`: 位于 `server/roomClockTiming.js`，集中封装主时间与读秒周期推进、有效行动后的读秒重置。
 - `resumePayloadForUser`: 位于 `server/resume.js`，封装断线恢复查询顺序：优先查内存未结束房间，其次查仍在内存的已结束房间，最后按最近房间号查持久化棋谱快照。
+  - 如果历史 `GameRecord.snapshot` 损坏无法解析，恢复流程会返回 `type: "none"`，避免单条坏数据导致重连请求崩溃。
 
 ## 9. 状态管理方式
 
@@ -872,7 +921,7 @@ SigrikaGo/
   - `replayRecords`
   - `replayStep`
   - 音频配置
-- 登录 token 只存在 React 内存状态中；`src/app/sessionState.js` 确保页面重新加载时不会从 `localStorage` 恢复登录态。
+- 登录 access token 只存在 React 内存状态中；`src/app/sessionState.js` 初始进入 `preloading`，由 `src/main.jsx` 调用 `/api/auth/refresh` 尝试从 `HttpOnly` refresh cookie 恢复登录。恢复失败才进入登录页。
 - 音频设置存在 `localStorage` 的 `sigrika-audio-settings`。
 - 房间状态由服务端 Socket 广播覆盖到前端 `room`。
 - 对局页 `RoomScreen` 需要从顶层 `App` 接收当前 `token`，再传给房间成员列表等需要调用社交接口的子组件；匹配成功倒计时完成后由同一份房间快照切换到对局页。
@@ -894,58 +943,73 @@ SigrikaGo/
 
 ## 10. 已知技术债
 
-以下只列代码中能观察到的事项：
+以下只列代码中能观察到的事项；本轮静态扫描时间为 2026-05-29。当前测试数量较充足，但债务主要集中在实时房间、数据模型规范化、前端大型模块、音频生命周期和缺少浏览器端回归测试。
 
-- Prisma schema 的中文默认值已增加 `server/schemaIntegrity.test.js` 防回归检查；`docs/system-design.html` 已改为由 `npm run docs:system-design` 从 Markdown 确定性生成，后续如发现乱码应优先确认终端/浏览器编码和源文件 UTF-8 状态。
+### P0 / 部署前优先处理
 
-- Prisma migrations 目录已开始建立，`SiteSetting`、`selectedStoneDecoration`、`UserRelationship` 等结构已有迁移；后续跨机器协作时需要坚持使用 migration 管理结构变更，避免继续依赖临时 `db push`。
+- 实时房间仍以内存 `Map` 为核心状态，虽然已增加房间持久化快照和断线恢复兜底，但服务重启、多进程或多实例部署时仍存在风险：
+  - 未结束房间的实时状态、技能演出定时器、读秒计时器和 Socket.IO 房间成员关系不能跨进程共享。
+  - 技能演出仍依赖 `setTimeout` 延迟落子/变更效果，进程重启或实例迁移时需要额外的状态恢复/调度设计。
+  - 若部署到云服务器并需要横向扩展，应优先引入共享房间状态、Socket.IO adapter、定时任务恢复策略和房间快照版本校验。
 
-- `prisma db push` 已可同步当前开发库 schema，但 Windows 上 Prisma Client generate 可能因运行中的 Node 后端占用 `query_engine-windows.dll.node` 而出现 EPERM rename；遇到时需要先停止后端进程再重新运行 `npm run prisma:generate` 或 `npm run prisma:push`。
-
-- 实时房间在内存中：
-  - 服务重启会丢失未结束房间。
-  - 不支持多进程/多实例横向扩展。
-  - 技能演出依赖 `setTimeout` 延迟落子/变更效果；进程重启或未来多实例部署时需要额外的状态恢复/调度设计。
-
-- 胜负判断已开始使用 `winnerColor` 结构化字段，但仍需要保留旧 `resultText` 回退逻辑以兼容历史棋谱。后续应考虑补迁移历史数据。
-
-- `GameRecord` 与 `User`、`Character` 没有数据库外键关系，依赖字符串逻辑关联。
-
-- 用户拥有角色/装饰使用 CSV 字符串字段：
-  - 查询和约束能力弱。
-  - 容易产生重复或无效 slug。
-
-- 商城后台新增/修改时会校验 `targetId` 对应角色或装饰存在；数据库层仍没有外键约束，购买时仍依赖字符串拥有列表。
-
-- 当前用户资产与战绩存在多处来源：
-  - `User.rating` 会被对局结果和后台编辑直接更新，`/api/me` 已改为直接返回该持久化积分。
-  - 棋舍/排行榜的总局、胜负、和棋等统计仍从 `GameRecord` 派生。
-  - 后续如继续扩展赛季/积分流水，需要决定是否增加结构化积分变更记录。
-
-- 前端 `src/main.jsx` 已先拆出后台管理模块和 API helper，但仍然偏大，仍包含大厅、对局、棋舍、商城、排行榜、设置、回放、音频等组件；后台管理目前集中在 `src/admin/AdminConsole.jsx`，后续可继续按用户/角色/商城/装饰拆分。
-
-- 全局样式入口已拆为多个 `src/styles/*.css` 分域文件；较大的 `room.css`、`modals.css`、`commerce-settings.css` 仍可继续按组件边界细分。
-
-- 技能扩展当前由 `effectType` 分支实现，`paramsJson` 已保留但核心规则尚未通用化；`random-blast` 的完整 3x3、演出延迟、回放重放、棋盘高亮清理等逻辑分散在共享规则、服务端房间和前端棋盘中。
-
-- 观战回放目前在前端由实时房间快照和历史重放派生，信息区保持实时、棋盘可回退；该“双状态”模型需要更多自动化测试覆盖，避免未来房间字段变更时出现棋盘/信息区不同步。
+- 认证与会话已经从纯内存 token 发展到 `LoginSession` + refresh cookie，服务端也已增加生产启动配置体检：
+  - refresh session 已可撤销，生产环境会拒绝过短或默认 `JWT_SECRET`，并要求显式 HTTPS origin；部署手册仍需要写清强随机密钥、可信 CORS origin、HTTPS 证书和 cookie `Secure` 的实际配置方式。
+  - 当前没有面向登录/刷新/登出全链路的浏览器端回归测试，容易在自动登录、Socket 重连和强制下线交界处回归。
 
 - 测试用对局按钮已集中在 `TestTools` 和 `test-*` action，并已增加环境保护：
   - 前端仅在 Vite 开发环境显示按钮。
   - 服务端在 `NODE_ENV=production` 时拒绝 `test-*` action。
+  - 对外部署前仍建议把测试入口移到显式调试面板或管理员开发开关，避免未来新增测试 action 时绕过统一保护。
 
-- 后台审计已覆盖用户、角色、装饰、商城商品和站点设置的主要增改/禁用操作；后续可继续细化到登录、购买、上传等事件。
+### P1 / 近期高价值重构
 
-- 社交模块已增加 `server/social.test.js` 覆盖好友/黑名单互斥、公开资料统计和公开回放摘要；约战请求状态机已拆到 `server/duelRequests.js`，在线 socket/session 生命周期已拆到 `server/onlineSessions.js`，并由单元测试覆盖请求发送、拒绝清理、断线过期、强制登出和最终 socket 断开清理。仍缺少端到端 UI 测试覆盖好友弹窗、对局申请横幅和资料卡回放弹窗。
+- 数据模型仍有多处字符串化资产字段：
+  - 用户拥有角色/装饰使用 CSV 字符串字段，查询和约束能力弱，容易产生重复或无效 slug。
+  - `ownedItems` 与 `itemEffects` 使用 JSON 字符串字段，已兼容旧逗号分隔读取，但数据库层无法约束 item id、数量和效果 schema。
+  - 商城后台新增/修改时会校验 `targetId` 对应角色或装饰存在，购买时仍依赖字符串拥有列表；数据库层没有外键约束。
+  - `server/userAssets.js` 已集中角色/装饰资产字段的解析、去重和序列化，降低重复逻辑扩散；这只是迁表前的防护层，不替代结构化表。
+  - 后续建议逐步迁移到 `UserCharacter`、`UserDecoration`、`UserItem`、`UserItemEffect` 等结构化表，并保留一次性数据迁移脚本。
 
-- 认证安全能力较基础：
-  - 无限流。
-  - JWT 无服务端失效表。
-  - 生产环境已拒绝默认 `JWT_SECRET`，部署时仍需在环境变量中提供强随机密钥。
+- `GameRecord` 与 `User`、`Character` 没有数据库外键关系，依赖字符串逻辑关联。胜负判断已使用 `winnerColor` 结构化字段，但仍保留旧 `resultText` 回退逻辑以兼容历史棋谱；后续应补历史记录迁移和快照版本字段。
 
-- 角色立绘上传先按 MIME 生成安全文件名，落盘后读取文件签名确认 PNG/JPEG/WebP/GIF 内容与 MIME 匹配；不匹配或未知签名会删除该单个上传文件并返回 JSON 错误。
+- 当前用户资产与战绩存在多处来源：
+  - `User.rating` 会被对局结果和后台编辑直接更新，`/api/me` 已直接返回该持久化积分。
+  - 棋舍/排行榜的总局、胜负、和棋等统计仍从 `GameRecord` 派生。
+  - 金币、积分、段位 toast 已依赖前端比较前后状态；后续如继续扩展赛季、排行榜、金币流水或补偿发放，需要增加结构化积分/金币变更记录，避免只靠即时响应推断。
 
-- 当前测试覆盖较多规则和后台 helper，但前端交互没有专门的自动化测试。
+- 核心源码体量仍偏集中。本轮扫描中，超过 300 行的主要业务文件包括 `server/rooms.js`、`src/admin/AdminConsole.jsx`、`src/shared/game.js`、`server/adminRoutes.js`、`server/index.js`、`src/main.jsx`、`src/audio/playback.jsx`、`src/room/RoomScreen.jsx`：
+  - `server/rooms.js` 已拆出 room view、奖励、持久化和计时 helper，但仍承载实时生命周期、动作分发、Socket 广播、数子/和棋、断线与关闭逻辑。
+  - `src/admin/AdminConsole.jsx` 已拆出 `AdminShell`，tab body 仍适合继续按用户、角色、商品、装饰、站点设置拆分。
+  - `src/main.jsx` 已拆出 API、socket handlers、socket creation helper、character catalog loader、site settings loader、preload screen、room navigation helper、replay opening helper、session helpers，但仍聚合全局弹窗、音频、登录恢复、房间切换和 toast 协调。
+  - `src/shared/game.js` 仍混合规则执行、技能执行、数子和历史兼容转导，继续拆成规则状态机与技能插件会降低新增角色风险。
+
+- 全局样式入口已拆为多个 `src/styles/*.css` 分域文件，但 `room.css`、`commerce-settings.css`、`modals.css` 仍很大；继续按组件边界细分，或引入明确的 CSS module/组件样式约定，可以降低 UI 微调互相影响的概率。
+
+### P2 / 稳定性和测试覆盖
+
+- 观战回放、棋谱回放和实时房间共享大量视图组件，但状态来源不同：
+  - 观战回放由实时房间快照和历史重放派生，信息区保持实时、棋盘可回退。
+  - 棋谱回放应禁止结果弹窗、结果语音和对局开始语音，退出后还要清理回放房间快照。
+  - 该“双状态/三入口”模型需要更多自动化测试覆盖，尤其是进入/退出回放、观战加入已结束房间、房间关闭倒计时和 BGM 恢复。
+  - 房间持久化快照已加入版本号护栏，但后续如果变更房间结构，仍需要同步补快照迁移/兼容测试。
+
+- 音频播放逻辑仍集中在 `src/audio/playback.jsx`，同时管理 BGM、棋盘音效、结果音效、技能语音、系统语音、缓存和 Web Audio autoplay 恢复。后续可拆为 BGM、effect、voice、audio cache 四类模块，并补浏览器自动播放策略下的集成测试。
+
+- 技能扩展当前由 `effectType` 分支实现，`paramsJson` 已保留但核心规则尚未通用化；`random-blast` 的完整 3x3、演出延迟、回放重放、棋盘高亮清理等逻辑分散在共享规则、服务端房间和前端棋盘中。后续新增角色时应优先抽技能契约，避免继续堆分支。
+
+- 社交、约战、黑名单、在线状态已有较多单元测试，但仍缺少端到端 UI 测试覆盖好友弹窗、对局申请横幅、资料卡回放弹窗、观战列表和后台管理关键编辑流。
+
+- 后台审计已覆盖用户、角色、装饰、商城商品和站点设置的主要增改/禁用操作；后续可继续细化到登录、刷新、登出、购买、道具使用、上传等事件，方便线上排查“谁改了什么”。
+
+### P3 / 维护性清理
+
+- Prisma migrations 目录已开始建立，`SiteSetting`、`selectedStoneDecoration`、`UserRelationship`、`LoginSession` 等结构已有迁移；后续跨机器协作时需要坚持使用 migration 管理结构变更，避免继续依赖临时 `db push`。
+
+- `prisma db push` 已可同步当前开发库 schema，但 Windows 上 Prisma Client generate 可能因运行中的 Node 后端占用 `query_engine-windows.dll.node` 而出现 EPERM rename；遇到时需要先停止后端进程再重新运行 `npm run prisma:generate` 或 `npm run prisma:push`。
+
+- Prisma schema 的中文默认值已增加 `server/schemaIntegrity.test.js` 防回归检查；`docs/system-design.html` 已改为由 `npm run docs:system-design` 从 Markdown 确定性生成，后续如发现乱码应优先确认终端/浏览器编码和源文件 UTF-8 状态。
+
+- 角色立绘上传先按 MIME 生成安全文件名，落盘后读取文件签名确认 PNG/JPEG/WebP/GIF 内容与 MIME 匹配；不匹配或未知签名会删除该单个上传文件并返回 JSON 错误。后续可继续补上传大小、尺寸、透明通道和动图帧数限制。
 
 - `docs/system-design.html` 是生成产物；修改本文档后运行 `npm run docs:system-design` 同步 HTML，避免 Markdown 与交付版漂移。
 
@@ -1027,7 +1091,8 @@ SigrikaGo/
 - 角色技能 BGM 当前配置：达妮娅使用 canonical `denia-skill-default`（`bgm_*`），西格莉卡使用 `koimoon_132_intro_no_fadein_2p5s.ogg` + `koimoon_132_micro_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`。BGM resolver 会先把历史 `danea` 规范化为 `denia`，再查找角色技能 BGM。
 - BGM 优先级为：角色技能 BGM > 对弈常规 BGM > 主界面 BGM。
 - 角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。
-- 匹配成功倒计时、对局结果弹窗、对局结束阶段会停止 BGM。
+- 匹配成功倒计时、对局结果弹窗、对局房间的结束阶段会停止 BGM；如果用户从已结束棋谱回放退出到大厅，前端会清空回放房间快照，BGM resolver 以当前 `view = home` 为准恢复主界面 BGM。
+- 持久登录自动进入大厅时可能没有用户手势，浏览器会继续挂起 `AudioContext`；`BackgroundMusic` 会在 resume 后检查上下文状态，如果仍为 suspended，就注册 pointerdown / keydown / touchstart 一次性重试，保证首次点击、按键或触摸后恢复大厅 BGM。
 - `BackgroundMusic` 使用 Web Audio 播放，预解码 intro/loop buffer，并在同一 `AudioContext` 时间线上调度 intro 到 loop，避免 HTMLAudio 切文件造成明显卡顿。
 - 音量变化只调节 gain，不改变播放 identity；因此主音量或 BGM 音量调到 0 后再恢复，不会导致 BGM 从头播放。
 - 默认音频设置为 `master: 80`、`bgm: 50`、`sfx: 80`、`voice: 80`，保存于 `localStorage` 的 `sigrika-audio-settings`。
@@ -1035,7 +1100,7 @@ SigrikaGo/
 ### Effects And Replay Audio
 
 - 匹配成功播放 `match-success.mp3`，同时停止 BGM。
-- 对局结果弹窗出现时停止 BGM；胜方播放 `result-victory.mp3`，负方播放 `result-defeat.mp3`，和棋不播放结果音效。房间玩家还会按当前用户本局结果触发出战角色的 `result-victory`、`result-defeat` 或 `result-draw` 系统语音；无效局不弹结果弹窗，因此不触发结果音效或结果角色语音。
+- 对局结果弹窗出现时停止 BGM；胜方播放 `result-victory.mp3`，负方播放 `result-defeat.mp3`，和棋不播放结果音效。房间玩家还会按当前用户本局结果触发出战角色的 `result-victory`、`result-defeat` 或 `result-draw` 系统语音；无效局不弹结果弹窗，因此不触发结果音效或结果角色语音。棋谱回放模式不会弹结果弹窗，也不会触发结果音效或结果角色语音。
 - 普通落子播放 `godown_clear.ogg`。
 - 提子动作播放 `go_capture_clear.ogg`。
 - 隐藏手暴露播放 `hidden_hand_reveal.ogg`；回放下一步遇到带有隐藏手暴露标记的历史动作时也会播放该音效。
@@ -1046,8 +1111,9 @@ SigrikaGo/
 ### Skill Voice
 
 - 角色技能语音配置集中在 `CHARACTER_SKILL_VOICES`。
-- 当前已配置：西格莉卡 `sigrika_2_no_exclaim.ogg`，爱弥斯 `aemeath_skill.ogg`，猪小仙 `baconbits_skill.ogg`。
+- 当前已配置：西格莉卡技能发动使用 `sigrika_skill_cast.ogg`，爱弥斯使用 `aemeath_skill.ogg`，猪小仙使用 `baconbits_skill.ogg`。
 - `characterVoiceMapForSkill` 可将现有技能语音桥接为角色 `systemVoices` 的 `skill-cast` 事件映射。
+- 角色出战按钮会触发 `sortie` 角色语音事件；当前达妮娅和西格莉卡预留路径分别为 `denia_sortie.ogg` 与 `sigrika_sortie.ogg`。
 - `SkillBanner` 出现时同步触发技能语音，同一个 banner id 只播放一次。
 - 技能语音走 `voice` 音量通道。
 - `playVoiceSound` 使用 Web Audio 播放链：source -> RMS normalization gain -> dry/wet reverb mix -> voice gain -> destination。
@@ -1059,7 +1125,7 @@ SigrikaGo/
 
 - 系统语音事件集中在 `src/shared/systemVoices.js`，通过 `resolveSystemVoice` 解析。
 - 当前默认走 TTS 文本；如果角色配置了 `systemVoices[event]`，则优先播放对应音频。
-- 已预留事件：`game-start`、`skill-cast`、`byo-yomi-start`、`byo-yomi-periods`、`byo-yomi-period-2`、`byo-yomi-period-1`、`byo-yomi-countdown`、`countdown-N`、`timeout`、`result-victory`、`result-defeat`、`result-draw`、`house-detail`。
+- 已预留事件：`game-start`、`skill-cast`、`sortie`、`byo-yomi-start`、`byo-yomi-periods`、`byo-yomi-period-2`、`byo-yomi-period-1`、`byo-yomi-countdown`、`countdown-N`、`timeout`、`result-victory`、`result-defeat`、`result-draw`、`house-detail`。
 - 对局正式开始时，服务端写入 kind 为 `game-start` 的系统消息，前端据此播放“对局开始”语音。
 - 进入读秒、剩余读秒次数和超时播报已经接入事件化 resolver；剩余 2/1 次读秒使用显式 `byo-yomi-period-2`、`byo-yomi-period-1` 事件，10 到 1 秒倒计时使用 `countdown-10` 到 `countdown-1` 角色语音事件。
 
@@ -1094,13 +1160,15 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
 - Finished rooms keep the existing 5-minute review window. When that timer closes the room, the server emits `room:closed` with `message: "房间因空置5分钟以上而被关闭"` so the frontend can show the required top toast before returning to the lobby.
 - `src/main.jsx` handles `room:closed` payloads, clears the remembered room code, resets room UI state, and displays the payload message when present.
 
-## 2026-05-27 Account Session Update
+## 2026-05-29 Account Session Update
 
-- Login sessions are tracked in memory by `server/loginSessions.js`; online socket membership and pending-login cleanup are coordinated by `server/onlineSessions.js`. JWTs include a `sid` claim and both HTTP auth and Socket.IO auth reject stale session ids.
-- If `/api/auth/login` receives correct credentials for an account that already has an active session, it returns HTTP 409 with `code: "already_logged_in"` and the message `当前账号已登录了，确定继续登录吗？`.
+- Login sessions are tracked in the `LoginSession` database table through `server/loginSessions.js`; online socket membership is coordinated separately by `server/onlineSessions.js`. JWTs include a `sid` claim and both HTTP auth and Socket.IO auth reject revoked or expired session ids.
+- `/api/auth/login` and `/api/auth/register` create a database login session, return an access token, and set a `sigrika_refresh` `HttpOnly` cookie. In production the cookie also uses `Secure`.
+- `/api/auth/refresh` reads the refresh cookie, validates and rotates the stored refresh token hash, and returns a fresh access token plus public user payload. `src/main.jsx` calls this on startup, and `src/api/client.js` retries one authenticated JSON request or character portrait upload after a successful refresh when an HTTP 401 is encountered.
+- If `/api/auth/login` receives correct credentials for an account that already has an active database session, it returns HTTP 409 with `code: "already_logged_in"` and the message `当前账号已登录了，确定继续登录吗？`.
 - `src/auth/AuthScreen.jsx` detects that conflict, shows the browser confirmation dialog, and retries login with `forceLogin: true` only after confirmation.
-- Forced login clears the previous session, emits `account:logged-out` to existing sockets for that user, disconnects them, and then creates a new session for the confirmed login.
-- When the final socket for a user disconnects, the matching session id is cleared. Because `src/app/sessionState.js` starts every page load with an empty token, manual refresh, browser close, and mobile app/browser exit all return to the login screen instead of silently reconnecting.
+- Forced login revokes previous database sessions, emits `account:logged-out` to existing sockets for that user, disconnects them, and then creates a new session for the confirmed login.
+- Socket disconnects only change online/offline presence and room disconnect state. They no longer revoke login sessions, so page refreshes, temporary backend restarts, or network hiccups do not force users back to the login screen as long as the refresh cookie remains valid.
 
 - Result rewards:
   - The result modal displays the current player's rating and coin deltas.
@@ -1120,10 +1188,11 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
   - "对局申请" is enabled only for online users who are not currently playing. The server tracks connected sockets and active room players; `duel:request` first checks whether the target has blacklisted the requester, silently suppressing `duel:incoming` for that target and sending the requester a normal delayed rejection. Otherwise it delivers `duel:incoming`, `duel:respond` accepts/rejects the request, and acceptance creates a direct room through the same match-found/opening flow as normal matchmaking. Timeout or rejection emits a red danger notice to the requester.
   - The house rank stat includes a hover help icon explaining that rank is derived from rating, 1000 points is 1-dan, each 100 points changes one rank, and 9-dan is the maximum.
 - Character voice categories:
-  - Character voice events are explicit: `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
-  - Recommended upload naming for full character voice packs uses one folder per character, for example `C:/codex/musicsour/cVoice/denia/`. Prefer OGG files with stable English scene keys: `match_start.ogg`, `skill_cast.ogg`, `byoyomi_start.ogg`, `byoyomi_remaining_2.ogg`, `byoyomi_remaining_1.ogg`, `countdown_10.ogg` through `countdown_01.ogg`, `timeout.ogg`, `result_win.ogg`, `result_loss.ogg`, `result_draw.ogg`, and `house_detail.ogg`. Avoid Chinese characters, spaces, and punctuation in filenames so Windows paths, frontend asset references, and build tooling stay predictable.
-  - Denia now has a full AI voice pack under `public/assets/voice/denia_*.ogg`, covering `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`.
-  - Denia countdown voice assets `denia_countdown_10.ogg` through `denia_countdown_1.ogg` have had their leading silence trimmed so the spoken number starts in sync with the visible byo-yomi countdown. `denia_countdown_1.ogg` is trimmed against a stricter perceptual threshold because its original opening included low-level noise before the clearly audible voice.
+  - Character voice events are explicit: `game-start`, `skill-cast`, `sortie`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
+  - Recommended upload naming for full character voice packs uses one folder per character, for example `C:/codex/musicsour/cVoice/denia/`. Prefer OGG files with stable English scene keys: `match_start.ogg`, `skill_cast.ogg`, `sortie.ogg`, `byoyomi_start.ogg`, `byoyomi_remaining_2.ogg`, `byoyomi_remaining_1.ogg`, `countdown_10.ogg` through `countdown_01.ogg`, `timeout.ogg`, `result_win.ogg`, `result_loss.ogg`, `result_draw.ogg`, and `house_detail.ogg`. Avoid Chinese characters, spaces, and punctuation in filenames so Windows paths, frontend asset references, and build tooling stay predictable.
+  - Denia now has a full AI voice pack under `public/assets/voice/denia_*.ogg`, converted from `C:/codex/musicsour/cVoice/denia/*.wav`. The pack covers `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`; `skill_cast.wav` is exported as `denia_skill_cast.ogg`. The sortie voice slot is reserved as `denia_sortie.ogg`.
+  - Denia countdown voice assets `denia_countdown_10.ogg` through `denia_countdown_1.ogg` keep the stable countdown event filenames used by the byo-yomi resolver, so refreshed voice packs can replace the existing OGG files without changing event wiring.
+  - Sigrika now has role voice assets under `public/assets/voice/sigrika_*.ogg`, converted from `C:/codex/musicsour/cVoice/sigrika/*.wav`. The pack covers `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`; `skill_cast.wav` is exported as `sigrika_skill_cast.ogg`. The sortie voice slot is reserved as `sigrika_sortie.ogg`.
   - Built-in skill voice assets are bridged into each character's `systemVoices.skill-cast` map at runtime, so skill banners use the same `resolveSystemVoice` route as other role voices.
   - Baconbits now has role voice assets for `game-start`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, and `timeout`; the period 2 and period 1 events reuse `baconbits_byo_yomi_periods.ogg`.
   - Character detail clicks in the house route through `house-detail`; missing assets stay silent until a character-specific detail voice is configured.
@@ -1162,11 +1231,12 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Low-coupling modal components have been extracted from `src/main.jsx` into `src/modals/`.
   - `MessageBoardModal.jsx`
   - `SettingsModal.jsx`
-  - `WatchModal.jsx`
-  - `LeaderboardModal.jsx`
-  - `HouseModal.jsx` owns the player manual/profile modal, owned character grid, decoration application controls, personal replay dialog, and per-character record dialog.
-  - `ShopModal.jsx` owns the 扎希拉商店 modal, category tabs, fixed 8-slot item grid, purchase flow, item ownership state, and shop mascot/item preview rendering.
-  - `GameLifecycleModals.jsx` owns the matching, match-success countdown, opening color prompt, and result/reward modals. It also exposes pure countdown, color-label, and signed-delta helpers covered by `GameLifecycleModals.test.js`.
+- `WatchModal.jsx`
+- `LeaderboardModal.jsx`
+- `HouseModal.jsx` owns the player manual/profile modal, owned character grid, decoration application controls, personal replay dialog, and per-character record dialog.
+- `ShopModal.jsx` owns the 扎希拉商店 modal, category tabs, fixed 8-slot item grid, purchase flow, item ownership state, and shop mascot/item preview rendering.
+  - Its non-component constants and pure helpers live in `src/modals/shopModalHelpers.js`, so the component module keeps a Fast Refresh-compatible export shape.
+- `GameLifecycleModals.jsx` owns the matching, match-success countdown, opening color prompt, and result/reward modals. It also exposes pure countdown, color-label, and signed-delta helpers covered by `GameLifecycleModals.test.js`.
   - `FeedbackModals.jsx` owns the generic confirm modal, toast stack, and direct-duel request banner. Its duel countdown/progress helpers and toast queue limiting are covered by `FeedbackModals.test.js`.
   - `SkillBanner.jsx` owns the skill burst overlay and skill-cast voice trigger. The helper that prevents duplicate or empty voice playback is covered by `SkillBanner.test.js`.
   - `StoneDecorationPreview.jsx` owns reusable black/white decoration previews for house and shop surfaces.
@@ -1236,6 +1306,8 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 ## Production Deployment Hardening
 
 - Runtime security helpers live in `server/security.js`.
+- `assertProductionDeployment` 在生产环境启动时执行部署配置体检：`JWT_SECRET` 至少 32 位且不能使用默认值，`PUBLIC_ORIGIN` / `SITE_ORIGIN` / `ALLOWED_ORIGINS` 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。
+- `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；该脚本默认按生产规则检查，即使调用方忘记设置 `NODE_ENV=production` 也不会按开发环境误通过。
 - Username input is normalized server-side and must be 2-16 characters, limited to Chinese characters, English letters, numbers, and `_`.
 - Password input is enforced server-side as 6-14 characters. Registration returns the exact validation issue; login returns a generic username/password error for invalid credentials or invalid credential shapes.
 - Chat text is normalized server-side by removing control characters, trimming whitespace, rejecting empty messages, and capping messages at 240 characters.
@@ -1271,6 +1343,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Room clock ticks no longer use the full `room:update` payload during normal play. `server/rooms.js` emits a lightweight `room:clock` event once per second with `roomCode`, `activeColor`, `serverNow`, and each player's current `time`.
 - Full `room:update` remains the authoritative synchronization path for match found, room join/resume, moves, skills, chat, phase changes, scoring, draw/counting flows, and timeout transitions.
 - `server/roomView.js` builds only the needed board projection for player viewers. Spectators still receive both black and white projections through `gameViews`, but players receive only their own visible board state.
+- `server/serverLifecycle.js` guards local development startup/shutdown: occupied port 3001 now gets an explicit `EADDRINUSE` message, and `SIGINT` / `SIGTERM` close the HTTP server plus Prisma before process exit.
 - The frontend merges `room:clock` through `src/app/roomClock.js`, updating only changed player timer objects while preserving the existing `room.game` object reference.
 - `src/room/Board.jsx` is memoized with a board-specific prop comparison so timer-only updates can refresh player clocks without re-rendering the 13x13 board.
 - `src/room/PlayerInfo.jsx` is memoized with a player/game-slice comparison so room clock ticks only re-render the player panel whose timer or relevant game slice changed, which is especially important when item effects swap portraits to animated assets.
