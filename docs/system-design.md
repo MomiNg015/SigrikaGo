@@ -264,7 +264,7 @@ SigrikaGo/
 
 - 登录页品牌标题显示为 `星炬学院围棋部`。
 - 大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。
-- 大厅首页布局 A：空想对局作为最大主行动面板；棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。
+- 大厅首页布局 A：空想对局作为最大主行动面板；该区域使用 `/assets/home/fantasy-match-illustration.png` 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。
 - 大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。
 - `public/hotspot-prototype.html` 是单页热点原型，用用户提供的 `/assets/prototypes/classroom-bg1.png` 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。
 - 大厅顶部标题和副标题来自 `GET /api/site-settings`；未配置或接口失败时回退到 `大厅` / `SigrikaGo`。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。
@@ -1317,6 +1317,8 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Socket.IO connections install a per-socket event guard that rejects excessive event traffic within a short window.
 - Socket.IO connections remain stable while the frontend user object changes. Before `match:join`, `duel:request`, and accepted `duel:respond` create a room, the server refreshes `socket.user` from the latest database user so the actual room character matches the current selected sortie character rather than the snapshot from initial socket authentication.
 - In production, if `dist/` exists, the Node server can serve the built Vite app and SPA fallback while still keeping `/api`, `/socket.io`, and `/uploads` routed to backend behavior.
+- Production uploads use `server/uploadPaths.js` to resolve the persisted upload root. `UPLOAD_DIR` can point to an absolute directory such as `/var/lib/sigrikago/uploads`; when omitted, uploads continue to default to `public/uploads`. Character portrait uploads are stored under `${UPLOAD_DIR}/characters` and remain publicly available through `/uploads/characters/...`.
+- The single-server deployment guide lives in `docs/deployment.md`. It documents required environment variables, SQLite and upload-directory persistence, systemd, Nginx WebSocket proxying, HTTPS, backups, and the update flow.
 
 ## Login Asset Preloading
 

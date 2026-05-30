@@ -568,7 +568,7 @@
 <li>大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。</li>
 </ul>
 <ul>
-<li>大厅首页布局 A：空想对局作为最大主行动面板；棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
+<li>大厅首页布局 A：空想对局作为最大主行动面板；该区域使用 <code>/assets/home/fantasy-match-illustration.png</code> 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
 </ul>
 <ul>
 <li>大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。</li>
@@ -2949,6 +2949,12 @@
 </ul>
 <ul>
 <li>In production, if <code>dist/</code> exists, the Node server can serve the built Vite app and SPA fallback while still keeping <code>/api</code>, <code>/socket.io</code>, and <code>/uploads</code> routed to backend behavior.</li>
+</ul>
+<ul>
+<li>Production uploads use <code>server/uploadPaths.js</code> to resolve the persisted upload root. <code>UPLOAD_DIR</code> can point to an absolute directory such as <code>/var/lib/sigrikago/uploads</code>; when omitted, uploads continue to default to <code>public/uploads</code>. Character portrait uploads are stored under <code>${UPLOAD_DIR}/characters</code> and remain publicly available through <code>/uploads/characters/...</code>.</li>
+</ul>
+<ul>
+<li>The single-server deployment guide lives in <code>docs/deployment.md</code>. It documents required environment variables, SQLite and upload-directory persistence, systemd, Nginx WebSocket proxying, HTTPS, backups, and the update flow.</li>
 </ul>
 <h2>Login Asset Preloading</h2>
 <ul>

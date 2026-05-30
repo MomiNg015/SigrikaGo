@@ -27,6 +27,7 @@ import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
 import { jsonSyntaxErrorHandler } from "./httpErrors.js";
 import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
+import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
 import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
 import { listPublicCharacterResponse, listPublicCharacters, seedCharacters } from "./characters.js";
 import { CHARACTERS } from "../src/shared/characters.js";
@@ -100,7 +101,9 @@ const { authHttp, requireAdmin } = makeAuth({
   isSessionActive: (userId, sessionId) => loginSessions.adopt(userId, sessionId)
 });
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const uploadDir = path.join(__dirname, "..", "public", "uploads", "characters");
+const projectRoot = path.join(__dirname, "..");
+const uploadRoot = resolveUploadRoot({ projectRoot });
+const uploadDir = resolveCharacterUploadDir({ projectRoot });
 const distDir = path.join(__dirname, "..", "dist");
 fs.mkdirSync(uploadDir, { recursive: true });
 const upload = multer({
@@ -144,7 +147,7 @@ app.use(express.json({ limit: "64kb" }));
 app.use(jsonSyntaxErrorHandler);
 app.use("/api/auth", createAuthRateLimit());
 app.use("/api", createApiRateLimit());
-app.use("/uploads", express.static(path.join(__dirname, "..", "public", "uploads")));
+app.use("/uploads", express.static(uploadRoot));
 
 const io = new Server(server, {
   cors: corsOptions
