@@ -305,6 +305,16 @@ describe("HomeScreen", () => {
     expect(matchImageHoverBlock).not.toContain("filter");
   });
 
+  it("hides utility labels when the home stage is compressed", () => {
+    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
+    const compactUtilityQuery = css.match(/@container \(max-width: 1260px\)\s*\{[\s\S]+?\.home-grid-featured > \.home-utility-grid \.utility-entry strong\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
+
+    expect(compactUtilityQuery).toContain(".home-grid-featured > .home-utility-grid .utility-entry strong");
+    expect(compactUtilityQuery).toContain("display: none");
+    expect(compactUtilityQuery).toContain(".home-grid-featured > .home-utility-grid .utility-entry svg");
+    expect(compactUtilityQuery).toContain("width: clamp(24px, 2.4vw, 30px)");
+  });
+
   it("keeps the match image transparent at the PNG border", () => {
     const borderAlpha = readPngBorderAlpha("../../public/assets/home/fantasy-match-entry.png");
 

@@ -1149,6 +1149,21 @@ p {
   font-size: clamp(10px, 0.82vw, 12px);
 }
 
+@container (max-width: 1260px) {
+  .home-grid-featured > .home-utility-grid .utility-entry {
+    gap: 0;
+  }
+
+  .home-grid-featured > .home-utility-grid .utility-entry svg {
+    width: clamp(24px, 2.4vw, 30px);
+    height: clamp(24px, 2.4vw, 30px);
+  }
+
+  .home-grid-featured > .home-utility-grid .utility-entry strong {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) and (orientation: portrait) {
   .home-screen {
     width: calc(100vw - (var(--page-pad) * 2));

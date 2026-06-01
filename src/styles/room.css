@@ -719,12 +719,14 @@
 
 .stone i {
   position: absolute;
-  width: 9px;
-  height: 9px;
+  inset: -3px;
   border-radius: 50%;
-  background: #e5547e;
-  left: calc(50% - 4px);
-  top: calc(50% - 4px);
+  border: 3px solid #e13b4f;
+  background: transparent;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.72),
+    0 0 10px rgba(225, 59, 79, 0.7);
+  pointer-events: none;
 }
 
 .stone b {
