@@ -252,6 +252,8 @@ describe("HomeScreen", () => {
     const manualBlock = css.match(/\.house-manual-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const matchBlock = css.match(/\.match-image-entry\s*\{[^}]+\}/g)?.at(-1) ?? "";
     const imageEntryBlock = css.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const imageShadowBlock = css.match(/\.home-image-entry::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const imageShadowHoverBlock = css.match(/\.home-image-entry:hover::before,\s*\.home-image-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(playerZoneBlock).toContain("background: transparent");
     expect(playerZoneBlock).toContain("border: 0");
@@ -259,9 +261,15 @@ describe("HomeScreen", () => {
     expect(utilityBlock).toContain("border: 0");
     expect(imageEntryBlock).toContain("width: 100%");
     expect(imageEntryBlock).toContain("height: 100%");
+    expect(imageShadowBlock).toContain("background: aqua");
+    expect(imageShadowBlock).toContain("transform: translate3d(10px, 10px, 0)");
+    expect(imageShadowBlock).toContain("mask-image: var(--entry-art)");
+    expect(imageShadowHoverBlock).toContain("opacity: 1");
+    expect(manualBlock).toContain('--entry-art: url("/assets/home/book-entry.png")');
     expect(manualBlock).toContain("aspect-ratio: 782 / 894");
     expect(manualBlock).toContain("height: 66%");
     expect(manualBlock).toContain("width: auto");
+    expect(matchBlock).toContain('--entry-art: url("/assets/home/fantasy-match-entry.png")');
     expect(matchBlock).toContain("aspect-ratio: 2674 / 2023");
     expect(matchBlock).toContain("width: 100%");
     expect(matchBlock).toContain("height: 100%");
