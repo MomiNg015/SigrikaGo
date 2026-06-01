@@ -241,6 +241,14 @@
   background: linear-gradient(135deg, #5d7fe8, #e279ad);
 }
 
+.home-match-feature .match-button-large {
+  width: auto;
+  min-width: clamp(128px, 12vw, 168px);
+  min-height: clamp(42px, 4vw, 52px);
+  padding: 10px 22px;
+  font-size: clamp(15px, 1.25vw, 18px);
+}
+
 .watch-pad {
   display: grid;
   gap: 12px;

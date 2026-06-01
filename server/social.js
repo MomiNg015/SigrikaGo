@@ -1,4 +1,5 @@
 import { rankFromRating } from "../src/shared/ratingRank.js";
+import { GAME_RESULT_REASONS, recordWinnerColor } from "./gameRecords.js";
 import { parseItemEffects } from "./itemEffects.js";
 
 export const RELATIONSHIP_TYPES = {
@@ -108,8 +109,8 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser }
           { whiteUserId: userId }
         ]
       },
-      orderBy: { createdAt: "desc" },
-      take: 30
+      select: profileRecordSelect(),
+      orderBy: { createdAt: "desc" }
     }),
     viewerId && viewerId !== userId
       ? prisma.$queryRaw`
@@ -151,6 +152,7 @@ export async function getUserReplays({ prisma, userId }) {
         { whiteUserId: userId }
       ]
     },
+    select: replaySummarySelect(),
     orderBy: { createdAt: "desc" },
     take: 30
   });
@@ -200,14 +202,18 @@ function assertRelationship(ownerUserId, targetUserId, type) {
 function recordStats(userId, records) {
   return records.reduce((stats, record) => {
     const color = record.blackUserId === userId ? "black" : "white";
-    const won = record.winnerColor === color;
-    const draw = !record.winnerColor;
+    const winner = recordWinnerColor(record);
     stats.total += 1;
-    if (won) stats.wins += 1;
-    else if (draw) stats.draws += 1;
-    else stats.losses += 1;
+    if (winner === color) stats.wins += 1;
+    else if (winner) stats.losses += 1;
+    else if (recordIsDraw(record)) stats.draws += 1;
     return stats;
   }, { total: 0, wins: 0, losses: 0, draws: 0 });
+}
+
+function recordIsDraw(record = {}) {
+  if (record.resultReason === GAME_RESULT_REASONS.agreement) return true;
+  return String(record.resultText ?? "") === "和棋" || String(record.resultText ?? "") === "鍜屾";
 }
 
 function characterStats(userId, records) {
@@ -216,10 +222,11 @@ function characterStats(userId, records) {
     const color = record.blackUserId === userId ? "black" : "white";
     const characterId = color === "black" ? record.blackCharacter : record.whiteCharacter;
     const row = stats.get(characterId) ?? { characterId, wins: 0, losses: 0, draws: 0, total: 0 };
+    const winner = recordWinnerColor(record);
     row.total += 1;
-    if (!record.winnerColor) row.draws += 1;
-    else if (record.winnerColor === color) row.wins += 1;
-    else row.losses += 1;
+    if (winner === color) row.wins += 1;
+    else if (winner) row.losses += 1;
+    else if (recordIsDraw(record)) row.draws += 1;
     stats.set(characterId, row);
   }
   return [...stats.values()].map((row) => ({
@@ -227,6 +234,32 @@ function characterStats(userId, records) {
     record: formatRecord(row),
     winRate: row.total ? `${((row.wins / row.total) * 100).toFixed(1)}%` : "0.0%"
   }));
+}
+
+function profileRecordSelect() {
+  return {
+    blackUserId: true,
+    whiteUserId: true,
+    blackCharacter: true,
+    whiteCharacter: true,
+    winnerColor: true,
+    resultReason: true,
+    resultText: true
+  };
+}
+
+function replaySummarySelect() {
+  return {
+    id: true,
+    roomCode: true,
+    blackName: true,
+    whiteName: true,
+    resultText: true,
+    moveCount: true,
+    blackCharacter: true,
+    whiteCharacter: true,
+    createdAt: true
+  };
 }
 
 function formatRecord(stats) {

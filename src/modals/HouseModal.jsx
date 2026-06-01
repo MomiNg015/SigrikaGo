@@ -150,15 +150,18 @@ export default function HouseModal({ user, records, characterListView, audioSett
             {(user.ownedDecorations ?? []).map((decorationId) => {
               const decoration = getStoneDecoration(decorationId);
               const selected = user.selectedStoneDecoration === decorationId;
+              const decorationLabel = decoration?.name ?? decorationId;
               return (
                 <button
                   className={`owned-decoration-chip ${selected ? "selected" : ""}`}
                   key={decorationId}
                   disabled={selected || applyingDecoration === decorationId}
+                  aria-label={decorationLabel}
+                  aria-pressed={selected}
+                  title={decorationLabel}
                   onClick={() => applyDecoration(decorationId)}
                 >
                   {decoration ? <StoneDecorationPreview decoration={decoration} /> : null}
-                  <span>{decoration?.name ?? decorationId}</span>
                   <strong>{selected ? "使用中" : applyingDecoration === decorationId ? "应用中" : "应用"}</strong>
                 </button>
               );

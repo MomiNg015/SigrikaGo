@@ -277,6 +277,9 @@
 <ul>
 <li>Loads public site settings from <code>/api/site-settings</code>, merges them over shared defaults, and falls back to <code>DEFAULT_SITE_SETTINGS</code> when the request fails.</li>
 </ul>
+<ul>
+<li>Shares the in-flight startup settings request. Login and refresh preloading wait for this loader before switching to <code>home</code>, so the first home render uses the configured title/subtitle instead of briefly showing the default <code>大厅</code> copy.</li>
+</ul>
 </ul>
 <ul>
 <li><code>src/shared/game.js</code></li>
@@ -549,7 +552,7 @@
 <li><code>LoginSession</code> 数据库存储当前有效会话、refresh token 哈希、过期时间和撤销时间；Socket 断开只影响在线状态，不再直接撤销登录会话。</li>
 </ul>
 <ul>
-<li>同一账号只允许一个活动登录会话；再次登录已有有效会话的账号时，登录接口返回 <code>already_logged_in</code> 冲突，前端确认后以 <code>forceLogin</code> 重试并踢下旧 socket、撤销旧 refresh session。</li>
+<li>同一账号只允许一个实时在线连接；再次登录当前仍有在线 Socket 的账号时，登录接口返回 <code>already_logged_in</code> 冲突，前端确认后以 <code>forceLogin</code> 重试并踢下旧 socket、撤销旧 refresh session。数据库中仍有效但没有在线 Socket 的旧 refresh session 不会触发该提示，会被新登录替换，避免开发服务器重启或浏览器异常关闭后误报“该账号已登录”。</li>
 </ul>
 <ul>
 <li>用户状态支持 <code>active</code> / <code>banned</code>。</li>
@@ -568,7 +571,7 @@
 <li>大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。</li>
 </ul>
 <ul>
-<li>大厅首页布局 A：空想对局作为最大主行动面板；该区域使用 <code>/assets/home/fantasy-match-illustration.png</code> 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
+<li>大厅首页布局 A：空想对局作为最大主行动面板；该区域使用 <code>/assets/home/fantasy-match-illustration.png</code> 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。顶部条显示站点标题、副标题“连罗伊人的都爱玩的智力游戏”、在线人数和右侧操作按钮；后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
 </ul>
 <ul>
 <li>大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。</li>
@@ -754,7 +757,7 @@
 <li>棋谱保存房间快照 <code>snapshot</code>；胜负局会先把积分、金币和战绩奖励应用到房间内存玩家，再生成 <code>GameRecord.snapshot</code>，避免断线后恢复结果时展示结算前的旧用户状态。</li>
 </ul>
 <ul>
-<li>用户可看自己的最近 30 条棋谱。</li>
+<li>用户可看自己的全部棋谱摘要；部员手册会用这批完整记录派生总局、胜局、负局和和棋，保证与排行榜同源统计一致。</li>
 </ul>
 <ul>
 <li>管理员可查看任意用户棋谱与任意棋谱详情。</li>
@@ -806,7 +809,7 @@
 <li>商店购买、商店加载错误、后台管理保存/下架/上传/封禁等操作反馈统一走页面顶部 toast，不在对应弹窗、抽屉或后台编辑区内新增成功/失败文本框。</li>
 </ul>
 <ul>
-<li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。涉及金币、积分或段位变化的事件（包括对局结果、购买、道具效果、后台编辑当前用户等）会按变动项分别立即显示黄底 toast，例如 <code>金币+50</code>、<code>积分+20</code>、<code>段位2段 → 3段</code>。</li>
+<li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。涉及金币、积分或段位变化的事件（包括对局结果、购买、道具效果、后台编辑当前用户等）会按变动项分别立即显示 toast；金币增加、积分增加、段位升高使用黄底 reward toast，例如 <code>金币+50</code>、<code>积分+20</code>、<code>段位2段 → 3段</code>，金币扣除、积分扣除、段位降低使用灰底 penalty toast，例如 <code>金币-10</code>、<code>积分-20</code>、<code>段位3段 → 2段</code>。</li>
 </ul>
 <ul>
 <li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.png</code>，介绍为“产地不明的糖果，据说有神秘的效果”。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
@@ -818,7 +821,7 @@
 <li>彩虹豆豆跳跳糖对达妮娅使用后：消耗 1 个道具，<code>itemEffects.deniaRainbowGlow</code> 置为 true；除用户铭牌外，所有展示该用户达妮娅立绘的位置都会把原立绘替换为 <code>/assets/characters/denia_color.gif</code> 彩色动图，包括棋舍、仓库使用结果、对局信息区、技能横幅、排行榜/好友资料等可获得用户效果状态的界面。只有使用达妮娅完成一盘有效对局后清除该状态；服务端会在首个有效结算 <code>room:update</code> 广播前先更新房间内存玩家状态，前端再从房间视图同步当前用户状态，因此返回大厅/棋舍时立绘会恢复为角色原始立绘。</li>
 </ul>
 <ul>
-<li>达妮娅糖果动图不会在所有用户登录时无条件预加载；<code>loginPreloadAssets</code> 只在当前用户已有 <code>deniaRainbowGlow</code> 时加入 <code>/assets/characters/denia_color.gif</code>，避免普通登录路径提前下载/解码较大的动图资源。</li>
+<li>登录后的静态资源预加载会无条件加入达妮娅糖果动图 <code>/assets/characters/denia_color.gif</code>，让用户之后在棋舍、排行榜、好友资料或对局中首次看到彩色达妮娅时不再临时下载；对局回放数据仍保持按需加载。</li>
 </ul>
 <ul>
 <li>糖果效果只在有效对局结束并保存棋谱的链路清除；不超过 10 手的无效对局不会清除糖果效果。</li>
@@ -1449,6 +1452,9 @@
 <ul>
 <li>获取用户资料卡：用户名、战绩、积分、段位、角色战绩和查看者与目标的关系；不随资料卡预取对局回放。</li>
 </ul>
+<ul>
+<li>资料卡中的总战绩和角色战绩从目标用户全部棋谱派生，不受公开回放列表 30 条限制影响；胜负识别与排行榜一样优先使用 <code>winnerColor</code>，旧棋谱回退解析 <code>resultText</code>。</li>
+</ul>
 </ul>
 <ul>
 <li><code>GET /api/users/:id/replays</code></li>
@@ -1459,7 +1465,7 @@
 <ul>
 <li><code>GET /api/replays</code></li>
 <ul>
-<li>获取当前用户最近 30 条棋谱；摘要包含黑白双方使用角色，供回放列表显示角色立绘。</li>
+<li>获取当前用户全部棋谱摘要；摘要包含黑白双方 user id、用户名、使用角色、胜负结果和手数，供部员手册统计和回放列表显示角色立绘。</li>
 </ul>
 </ul>
 <ul>
@@ -2379,7 +2385,7 @@
 <li>角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。</li>
 </ul>
 <ul>
-<li>匹配成功倒计时、对局结果弹窗、对局房间的结束阶段会停止 BGM；如果用户从已结束棋谱回放退出到大厅，前端会清空回放房间快照，BGM resolver 以当前 <code>view = home</code> 为准恢复主界面 BGM。</li>
+<li>匹配成功倒计时、对局结果弹窗、对局房间的结束阶段会停止 BGM；如果用户从已结束棋谱回放退出到大厅，前端会清空回放房间快照，BGM resolver 以当前 <code>view = home</code> 为准恢复主界面 BGM。在线玩家从已结束房间主动退出回大厅时，前端也会把该房间号记为已处理结果，防止房间 5 分钟回收前的残留终局快照继续触发结果弹窗状态并压住大厅 BGM。</li>
 </ul>
 <ul>
 <li>持久登录自动进入大厅时可能没有用户手势，浏览器会继续挂起 <code>AudioContext</code>；<code>BackgroundMusic</code> 会在 resume 后检查上下文状态，如果仍为 suspended，就注册 pointerdown / keydown / touchstart 一次性重试，保证首次点击、按键或触摸后恢复大厅 BGM。</li>
@@ -2535,7 +2541,7 @@
 <li><code>/api/auth/refresh</code> reads the refresh cookie, validates and rotates the stored refresh token hash, and returns a fresh access token plus public user payload. <code>src/main.jsx</code> calls this on startup, and <code>src/api/client.js</code> retries one authenticated JSON request or character portrait upload after a successful refresh when an HTTP 401 is encountered.</li>
 </ul>
 <ul>
-<li>If <code>/api/auth/login</code> receives correct credentials for an account that already has an active database session, it returns HTTP 409 with <code>code: &quot;already_logged_in&quot;</code> and the message <code>当前账号已登录了，确定继续登录吗？</code>.</li>
+<li>If <code>/api/auth/login</code> receives correct credentials for an account that currently has an online Socket, it returns HTTP 409 with <code>code: &quot;already_logged_in&quot;</code> and the message <code>当前账号已登录了，确定继续登录吗？</code>. Persisted refresh sessions without an online Socket do not trigger this prompt and are replaced by the new login.</li>
 </ul>
 <ul>
 <li><code>src/auth/AuthScreen.jsx</code> detects that conflict, shows the browser confirmation dialog, and retries login with <code>forceLogin: true</code> only after confirmation.</li>
@@ -2612,7 +2618,7 @@
 <li>Denia countdown voice assets <code>denia_countdown_10.ogg</code> through <code>denia_countdown_1.ogg</code> keep the stable countdown event filenames used by the byo-yomi resolver, so refreshed voice packs can replace the existing OGG files without changing event wiring.</li>
 </ul>
 <ul>
-<li>Sigrika now has role voice assets under <code>public/assets/voice/sigrika_*.ogg</code>, converted from <code>C:/codex/musicsour/cVoice/sigrika/*.wav</code>. The pack covers <code>game-start</code>, <code>skill-cast</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, <code>countdown-10</code> through <code>countdown-1</code>, <code>result-victory</code>, <code>result-defeat</code>, and <code>result-draw</code>; <code>skill_cast.wav</code> is exported as <code>sigrika_skill_cast.ogg</code>. The sortie voice slot is reserved as <code>sigrika_sortie.ogg</code>.</li>
+<li>Sigrika now has role voice assets under <code>public/assets/voice/sigrika_*.ogg</code>, converted from <code>C:/codex/musicsour/cVoice/sigrika/*.wav</code>. The pack covers <code>game-start</code>, <code>skill-cast</code>, <code>byo-yomi-start</code>, <code>byo-yomi-period-2</code>, <code>byo-yomi-period-1</code>, <code>countdown-10</code> through <code>countdown-1</code>, <code>result-victory</code>, <code>result-defeat</code>, and <code>result-draw</code>; <code>skill_cast.wav</code> is exported as <code>sigrika_skill_cast.ogg</code>, while <code>byoyomi_start.wav</code> and <code>byoyomi_remaining_1.wav</code> refresh <code>sigrika_byoyomi_start.ogg</code> and <code>sigrika_byoyomi_remaining_1.ogg</code>. The sortie voice slot is reserved as <code>sigrika_sortie.ogg</code>.</li>
 </ul>
 <ul>
 <li>Built-in skill voice assets are bridged into each character's <code>systemVoices.skill-cast</code> map at runtime, so skill banners use the same <code>resolveSystemVoice</code> route as other role voices.</li>
@@ -2826,7 +2832,7 @@
 <li>Main-time timer digits use a gray display color, while byo-yomi states keep their warning colors.</li>
 </ul>
 <ul>
-<li>Board grid strokes are heavier overall; first-line grid segments are marked separately and rendered much thicker than internal lines. Skill targeting highlights use a gradient glow instead of a solid outline.</li>
+<li>Board grid strokes are heavier overall; first-line grid segments are marked separately and rendered much thicker than internal lines. Skill targeting highlights use a gradient glow instead of a solid outline. Stones affected by skill states use darker, higher-opacity green/purple halo rings so the effect reads clearly against the wooden board.</li>
 </ul>
 <ul>
 <li>Latest room/home refinements:</li>
@@ -2834,10 +2840,16 @@
 <li>The home player plaque rank/rating chip uses a light background with dark text again, while the admin-only management button remains a green circular icon-plus-title control aligned with the home user plaque.</li>
 </ul>
 <ul>
+<li>The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle <code>连罗伊人的都爱玩的智力游戏</code>, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip shows the site title, <code>Copyright ©KURO GAMES. ALL RIGHTS RESERVED.</code>, and <code>浙ICP备2026035038号</code> as evenly spaced items. The middle stage is an unframed fixed-ratio coordinate surface (<code>1480 / 620</code>) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a <code>1200px</code> minimum, <code>503px</code> minimum height, and <code>1920px</code> maximum width; phone landscape uses a smaller <code>960px</code> by <code>402px</code> minimum stage. The home app shell uses <code>/assets/home/multipurpose-classroom-bg.jpg</code> as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, <code>部员手册</code>, <code>空想对局</code>, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, <code>部员手册</code> is offset slightly right/down from the dock edge, and <code>空想对局</code> is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry's hover/focus popup in the top-right carries both the current matchmaking count and one rule item per line: <code>路数：13路</code>, <code>用时：5分钟30秒3次</code>, and <code>规则：黑贴2又3/4子，中国数子规则</code>, so new users can understand the match format without a persistent lower-left label or another modal. Phone portrait shows a dedicated <code>请横屏使用</code> guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values and no filter/drop-shadow; the match-entry PNG has transparent borders after low-alpha background cleanup, avoiding large transparent-PNG repaint/composite jank and faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow.</li>
+</ul>
+<ul>
 <li>Incoming direct duel requests play a short synthesized doorbell SFX on the effects channel before showing the request banner.</li>
 </ul>
 <ul>
-<li>The house/player manual record stat is clickable and opens a per-character record list for owned characters.</li>
+<li>The house/player manual record stat is clickable and opens a per-character record list for owned characters. Personal manual stats use the full current-user replay summary set, including black/white user ids, while leaderboard stats also use all <code>GameRecord</code> rows, so win/loss totals stay aligned even after a player has more than 30 records or changes username.</li>
+</ul>
+<ul>
+<li>The house/player manual decoration picker renders owned decorations as icon-plus-status buttons with accessible labels and hover titles: decoration names stay out of the visible chip, while <code>应用</code> / <code>应用中</code> / <code>使用中</code> remains visible.</li>
 </ul>
 <ul>
 <li>Player info now separates captures, skill removals (&quot;除子&quot;), and skill cost. Skill removals count opponent stones removed or converted by skills for the side that benefits from the removal/conversion.</li>
@@ -2868,7 +2880,7 @@
 <li>Spectators leaving a room use the explicit <code>room:leave</code> socket event. The server removes that socket from <code>room.spectators</code>, leaves the Socket.IO room, appends a spectator-leave system message, and broadcasts the updated room so room members and the watch list no longer count that spectator.</li>
 </ul>
 <ul>
-<li>The leaderboard modal keeps the title area and column heading outside the scrolling region. The player rows scroll independently, and a bottom pinned row mirrors the current user's own ranking when that user appears in the leaderboard.</li>
+<li>The leaderboard modal keeps the title area and column heading outside the scrolling region. The player rows scroll independently, and a bottom pinned row mirrors the current user's own ranking when that user appears in the leaderboard. The heading and row cells share one CSS grid template, while the heading and pinned row reserve the same end gutter as the scrollable list so Windows scrollbars do not shift the data columns away from their labels.</li>
 </ul>
 <ul>
 <li><code>roomView.players[]</code> now carries <code>connected</code> and <code>disconnectedAt</code>. Player disconnects add a system notice and show a centered <code>断线中</code> badge on that player's portrait until the player reconnects or the game finishes; reconnecting appends a reconnect system notice and clears the badge.</li>
@@ -2954,7 +2966,7 @@
 <li>Production uploads use <code>server/uploadPaths.js</code> to resolve the persisted upload root. <code>UPLOAD_DIR</code> can point to an absolute directory such as <code>/var/lib/sigrikago/uploads</code>; when omitted, uploads continue to default to <code>public/uploads</code>. Character portrait uploads are stored under <code>${UPLOAD_DIR}/characters</code> and remain publicly available through <code>/uploads/characters/...</code>.</li>
 </ul>
 <ul>
-<li>The single-server deployment guide lives in <code>docs/deployment.md</code>. It documents required environment variables, SQLite and upload-directory persistence, systemd, Nginx WebSocket proxying, HTTPS, backups, and the update flow.</li>
+<li>The single-server deployment guide lives in <code>docs/deployment.md</code>. It documents required environment variables, SQLite and upload-directory persistence, systemd, Nginx WebSocket proxying, HTTPS, backups, and the update flow. The guide targets the merged <code>master</code> branch for production checkout.</li>
 </ul>
 <h2>Login Asset Preloading</h2>
 <ul>
@@ -2973,7 +2985,7 @@
 <li>Fresh login enters <code>preloading</code> before the home screen, preventing the home screen from flashing before assets begin loading. Stored-token startup is intentionally disabled so refresh and browser restart return to the login screen.</li>
 </ul>
 <ul>
-<li>The preload step fetches core character portraits, Denia candy GIF portrait, stone decoration images, common board/result/match sound effects, default home and battle BGM, and owned character skill voices.</li>
+<li>The preload step fetches non-replay runtime assets after login: all current character portraits, home and shop imagery including <code>/assets/home/multipurpose-classroom-bg.jpg</code>, Denia candy GIF portrait, stone decoration images, the Denia bubble-effect preview, common board/result/match sound effects, every configured BGM track, every configured character skill voice, and every configured character system voice. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.</li>
 </ul>
 <ul>
 <li>Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.</li>

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { loadPublicSiteSettings } from "./siteSettingsCatalog.js";
+import { createSiteSettingsLoader, loadPublicSiteSettings } from "./siteSettingsCatalog.js";
 
 describe("public site settings loading", () => {
   it("merges API settings over defaults", async () => {
@@ -27,5 +27,21 @@ describe("public site settings loading", () => {
     });
 
     await expect(loadPublicSiteSettings({ apiClient, defaults })).resolves.toBe(defaults);
+  });
+
+  it("shares an in-flight settings request between startup callers", async () => {
+    let resolveRequest;
+    const loadSettings = vi.fn(() => new Promise((resolve) => {
+      resolveRequest = resolve;
+    }));
+    const load = createSiteSettingsLoader({ loadSettings });
+
+    const first = load();
+    const second = load();
+    resolveRequest({ homeTitle: "Remote title" });
+
+    await expect(first).resolves.toEqual({ homeTitle: "Remote title" });
+    await expect(second).resolves.toEqual({ homeTitle: "Remote title" });
+    expect(loadSettings).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats, selectSortieCharacter } from "./HouseModal.jsx";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
+import HouseModal from "./HouseModal.jsx";
 
 describe("deriveCharacterRecordStats", () => {
   const user = {
@@ -74,5 +77,33 @@ describe("deriveCharacterRecordStats", () => {
     });
 
     expect(calls).toEqual([]);
+  });
+
+  it("renders owned decorations with icon and application status in the house manual", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "1段",
+        rating: 1000,
+        coins: 0,
+        ownedCharacters: ["sigrika"],
+        ownedDecorations: ["paw-stone"],
+        selectedCharacter: "sigrika"
+      },
+      records: [],
+      characterListView: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.png", skill: { name: "技能", description: "", cost: 1 } }],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("owned-decoration-chip");
+    expect(html).toContain("aria-label=\"爪印棋子\"");
+    expect(html).not.toContain(">爪印棋子</span>");
+    expect(html).toContain(">应用</strong>");
+    expect(html).not.toContain(">使用中</strong>");
   });
 });

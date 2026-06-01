@@ -26,6 +26,7 @@ import {
 import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
 import { jsonSyntaxErrorHandler } from "./httpErrors.js";
+import { shouldBlockLoginForActiveAccount } from "./loginConflicts.js";
 import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
 import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
 import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
@@ -393,7 +394,11 @@ app.post("/api/auth/login", async (req, res) => {
     res.status(403).json({ error: user.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8d26\u53f7\u5df2\u5c01\u7981" });
     return;
   }
-  if (await loginSessions.hasActive(user.id) && !req.body.forceLogin) {
+  if (shouldBlockLoginForActiveAccount({
+    onlineSessions,
+    userId: user.id,
+    forceLogin: Boolean(req.body.forceLogin)
+  })) {
     res.status(409).json({
       code: ALREADY_LOGGED_IN_CODE,
       error: ALREADY_LOGGED_IN_MESSAGE
@@ -505,13 +510,29 @@ app.get("/api/replays", authHttp, async (req, res) => {
         { whiteUserId: req.user.id }
       ]
     },
-    orderBy: { createdAt: "desc" },
-    take: 30
+    select: {
+      id: true,
+      roomCode: true,
+      blackUserId: true,
+      whiteUserId: true,
+      blackName: true,
+      whiteName: true,
+      resultText: true,
+      winnerColor: true,
+      resultReason: true,
+      moveCount: true,
+      blackCharacter: true,
+      whiteCharacter: true,
+      createdAt: true
+    },
+    orderBy: { createdAt: "desc" }
   });
   res.json({
     records: records.map((record) => ({
       id: record.id,
       roomCode: record.roomCode,
+      blackUserId: record.blackUserId,
+      whiteUserId: record.whiteUserId,
       blackName: record.blackName,
       whiteName: record.whiteName,
       resultText: record.resultText,

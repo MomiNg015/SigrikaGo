@@ -132,6 +132,7 @@ SigrikaGo/
   - Converts a replay record snapshot into the room-screen state used by normal house replays and admin replays: room snapshot, latest replay step, cleared pending skill, and `room` view.
 - `src/app/siteSettingsCatalog.js`
   - Loads public site settings from `/api/site-settings`, merges them over shared defaults, and falls back to `DEFAULT_SITE_SETTINGS` when the request fails.
+  - Shares the in-flight startup settings request. Login and refresh preloading wait for this loader before switching to `home`, so the first home render uses the configured title/subtitle instead of briefly showing the default `大厅` copy.
 - `src/shared/game.js`
   - 共享的游戏规则引擎。
   - 负责棋盘状态、落子、提子、禁自杀、劫、弃手、认输、技能、隐藏手、死子标记、数子、回放重算等。
@@ -255,7 +256,7 @@ SigrikaGo/
 - 密码使用 `bcryptjs` 哈希存储。
 - 登录态使用短期页面内存 access token + 持久化 refresh cookie：access token 仍只保存在 React 内存中，不写入 `localStorage`；浏览器保存 `HttpOnly` refresh cookie，页面刷新、浏览器重开或后端短暂重启后会先调用 `/api/auth/refresh` 自动恢复登录。
 - `LoginSession` 数据库存储当前有效会话、refresh token 哈希、过期时间和撤销时间；Socket 断开只影响在线状态，不再直接撤销登录会话。
-- 同一账号只允许一个活动登录会话；再次登录已有有效会话的账号时，登录接口返回 `already_logged_in` 冲突，前端确认后以 `forceLogin` 重试并踢下旧 socket、撤销旧 refresh session。
+- 同一账号只允许一个实时在线连接；再次登录当前仍有在线 Socket 的账号时，登录接口返回 `already_logged_in` 冲突，前端确认后以 `forceLogin` 重试并踢下旧 socket、撤销旧 refresh session。数据库中仍有效但没有在线 Socket 的旧 refresh session 不会触发该提示，会被新登录替换，避免开发服务器重启或浏览器异常关闭后误报“该账号已登录”。
 - 用户状态支持 `active` / `banned`。
 - 管理员可配置、可在启动或登录时自动提升。
 - 用户公开字段序列化会隐藏 `passwordHash`。
@@ -264,7 +265,7 @@ SigrikaGo/
 
 - 登录页品牌标题显示为 `星炬学院围棋部`。
 - 大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。
-- 大厅首页布局 A：空想对局作为最大主行动面板；该区域使用 `/assets/home/fantasy-match-illustration.png` 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。
+- 大厅首页布局 A：空想对局作为最大主行动面板；该区域使用 `/assets/home/fantasy-match-illustration.png` 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。顶部条显示站点标题、副标题“连罗伊人的都爱玩的智力游戏”、在线人数和右侧操作按钮；后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。
 - 大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。
 - `public/hotspot-prototype.html` 是单页热点原型，用用户提供的 `/assets/prototypes/classroom-bg1.png` 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。
 - 大厅顶部标题和副标题来自 `GET /api/site-settings`；未配置或接口失败时回退到 `大厅` / `SigrikaGo`。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。
@@ -334,7 +335,7 @@ SigrikaGo/
 
 - 对局结束后写入 `GameRecord`。
 - 棋谱保存房间快照 `snapshot`；胜负局会先把积分、金币和战绩奖励应用到房间内存玩家，再生成 `GameRecord.snapshot`，避免断线后恢复结果时展示结算前的旧用户状态。
-- 用户可看自己的最近 30 条棋谱。
+- 用户可看自己的全部棋谱摘要；部员手册会用这批完整记录派生总局、胜局、负局和和棋，保证与排行榜同源统计一致。
 - 管理员可查看任意用户棋谱与任意棋谱详情。
 - 前端回放通过 `replayRoomAt` 基于历史步骤重放共享规则逻辑。
 - 观战者进入房间后默认使用黑方对局视角，包括双方信息区位置；黑白双方信息区立绘左侧提供眼睛图标，可切换黑方/白方视角；下方操作栏切换为图标式回放控制。
@@ -354,11 +355,11 @@ SigrikaGo/
 - 大厅左下工具区新增“仓库”入口，玩家可查看已购道具、数量和说明。自己目标道具可直接使用；角色目标道具会弹出角色选择窗口，展示自己拥有的角色立绘，点击角色后按个消耗道具；若道具有已实现效果，窗口会只保留被选择角色立绘并在下方展示效果文本。使用道具只减少仓库道具数量，不恢复商店库存；短提示和错误统一走页面顶部 toast，不在仓库窗口内额外显示。
 - 对角色使用道具成功后，页面顶部 toast 显示“对[角色名]成功使用了[道具名]”；使用结果窗口读取接口返回的最新 `user.itemEffects`，所以达妮娅吃下彩虹豆豆跳跳糖后，结果窗口中的达妮娅立绘会立即显示为彩色 GIF 状态。
 - 商店购买、商店加载错误、后台管理保存/下架/上传/封禁等操作反馈统一走页面顶部 toast，不在对应弹窗、抽屉或后台编辑区内新增成功/失败文本框。
-- 页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。涉及金币、积分或段位变化的事件（包括对局结果、购买、道具效果、后台编辑当前用户等）会按变动项分别立即显示黄底 toast，例如 `金币+50`、`积分+20`、`段位2段 → 3段`。
+- 页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。涉及金币、积分或段位变化的事件（包括对局结果、购买、道具效果、后台编辑当前用户等）会按变动项分别立即显示 toast；金币增加、积分增加、段位升高使用黄底 reward toast，例如 `金币+50`、`积分+20`、`段位2段 → 3段`，金币扣除、积分扣除、段位降低使用灰底 penalty toast，例如 `金币-10`、`积分-20`、`段位3段 → 2段`。
 - 内置道具“彩虹豆豆跳跳糖”会 seed 为 `item` 商品，商店库存 10、价格 10、图片 `/assets/items/rainbow-bean-candy.png`，介绍为“产地不明的糖果，据说有神秘的效果”。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。
 - 彩虹豆豆跳跳糖对西格莉卡使用后：消耗 1 个道具，用户获得 30 金币，`itemEffects.sigrikaCandyDisabled` 置为 true；西格莉卡棋舍出战按钮变灰，`/api/me/character` 与 socket 选角都会避开西格莉卡。如果当前出战是西格莉卡，后端自动随机切换到一名已拥有且可出战的其它角色；没有可替换角色时拒绝使用且不消耗道具。任意角色完成一盘有效对局后清除该状态。
 - 彩虹豆豆跳跳糖对达妮娅使用后：消耗 1 个道具，`itemEffects.deniaRainbowGlow` 置为 true；除用户铭牌外，所有展示该用户达妮娅立绘的位置都会把原立绘替换为 `/assets/characters/denia_color.gif` 彩色动图，包括棋舍、仓库使用结果、对局信息区、技能横幅、排行榜/好友资料等可获得用户效果状态的界面。只有使用达妮娅完成一盘有效对局后清除该状态；服务端会在首个有效结算 `room:update` 广播前先更新房间内存玩家状态，前端再从房间视图同步当前用户状态，因此返回大厅/棋舍时立绘会恢复为角色原始立绘。
-- 达妮娅糖果动图不会在所有用户登录时无条件预加载；`loginPreloadAssets` 只在当前用户已有 `deniaRainbowGlow` 时加入 `/assets/characters/denia_color.gif`，避免普通登录路径提前下载/解码较大的动图资源。
+- 登录后的静态资源预加载会无条件加入达妮娅糖果动图 `/assets/characters/denia_color.gif`，让用户之后在棋舍、排行榜、好友资料或对局中首次看到彩色达妮娅时不再临时下载；对局回放数据仍保持按需加载。
 - 糖果效果只在有效对局结束并保存棋谱的链路清除；不超过 10 手的无效对局不会清除糖果效果。
 - 内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。
 - 内置装饰商品会 seed 爪印棋子和“耙耙柑和水蜜桃”两套棋子装饰；爪印棋子价格 500 金币，“耙耙柑和水蜜桃”价格 1000 金币。
@@ -653,12 +654,13 @@ SigrikaGo/
 
 - `GET /api/users/:id/profile`
   - 获取用户资料卡：用户名、战绩、积分、段位、角色战绩和查看者与目标的关系；不随资料卡预取对局回放。
+  - 资料卡中的总战绩和角色战绩从目标用户全部棋谱派生，不受公开回放列表 30 条限制影响；胜负识别与排行榜一样优先使用 `winnerColor`，旧棋谱回退解析 `resultText`。
 
 - `GET /api/users/:id/replays`
   - 按需获取目标用户最近 30 条棋谱摘要；资料卡中的“对局回放”按钮点击后调用该接口并弹出回放列表。
 
 - `GET /api/replays`
-  - 获取当前用户最近 30 条棋谱；摘要包含黑白双方使用角色，供回放列表显示角色立绘。
+  - 获取当前用户全部棋谱摘要；摘要包含黑白双方 user id、用户名、使用角色、胜负结果和手数，供部员手册统计和回放列表显示角色立绘。
 
 - `GET /api/replays/:id`
   - 获取指定棋谱详情与快照；用于个人棋舍回放，也用于他人资料卡中的公开回放入口。
@@ -1091,7 +1093,7 @@ SigrikaGo/
 - 角色技能 BGM 当前配置：达妮娅使用 canonical `denia-skill-default`（`bgm_*`），西格莉卡使用 `koimoon_132_intro_no_fadein_2p5s.ogg` + `koimoon_132_micro_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`。BGM resolver 会先把历史 `danea` 规范化为 `denia`，再查找角色技能 BGM。
 - BGM 优先级为：角色技能 BGM > 对弈常规 BGM > 主界面 BGM。
 - 角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。
-- 匹配成功倒计时、对局结果弹窗、对局房间的结束阶段会停止 BGM；如果用户从已结束棋谱回放退出到大厅，前端会清空回放房间快照，BGM resolver 以当前 `view = home` 为准恢复主界面 BGM。
+- 匹配成功倒计时、对局结果弹窗、对局房间的结束阶段会停止 BGM；如果用户从已结束棋谱回放退出到大厅，前端会清空回放房间快照，BGM resolver 以当前 `view = home` 为准恢复主界面 BGM。在线玩家从已结束房间主动退出回大厅时，前端也会把该房间号记为已处理结果，防止房间 5 分钟回收前的残留终局快照继续触发结果弹窗状态并压住大厅 BGM。
 - 持久登录自动进入大厅时可能没有用户手势，浏览器会继续挂起 `AudioContext`；`BackgroundMusic` 会在 resume 后检查上下文状态，如果仍为 suspended，就注册 pointerdown / keydown / touchstart 一次性重试，保证首次点击、按键或触摸后恢复大厅 BGM。
 - `BackgroundMusic` 使用 Web Audio 播放，预解码 intro/loop buffer，并在同一 `AudioContext` 时间线上调度 intro 到 loop，避免 HTMLAudio 切文件造成明显卡顿。
 - 音量变化只调节 gain，不改变播放 identity；因此主音量或 BGM 音量调到 0 后再恢复，不会导致 BGM 从头播放。
@@ -1165,7 +1167,7 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
 - Login sessions are tracked in the `LoginSession` database table through `server/loginSessions.js`; online socket membership is coordinated separately by `server/onlineSessions.js`. JWTs include a `sid` claim and both HTTP auth and Socket.IO auth reject revoked or expired session ids.
 - `/api/auth/login` and `/api/auth/register` create a database login session, return an access token, and set a `sigrika_refresh` `HttpOnly` cookie. In production the cookie also uses `Secure`.
 - `/api/auth/refresh` reads the refresh cookie, validates and rotates the stored refresh token hash, and returns a fresh access token plus public user payload. `src/main.jsx` calls this on startup, and `src/api/client.js` retries one authenticated JSON request or character portrait upload after a successful refresh when an HTTP 401 is encountered.
-- If `/api/auth/login` receives correct credentials for an account that already has an active database session, it returns HTTP 409 with `code: "already_logged_in"` and the message `当前账号已登录了，确定继续登录吗？`.
+- If `/api/auth/login` receives correct credentials for an account that currently has an online Socket, it returns HTTP 409 with `code: "already_logged_in"` and the message `当前账号已登录了，确定继续登录吗？`. Persisted refresh sessions without an online Socket do not trigger this prompt and are replaced by the new login.
 - `src/auth/AuthScreen.jsx` detects that conflict, shows the browser confirmation dialog, and retries login with `forceLogin: true` only after confirmation.
 - Forced login revokes previous database sessions, emits `account:logged-out` to existing sockets for that user, disconnects them, and then creates a new session for the confirmed login.
 - Socket disconnects only change online/offline presence and room disconnect state. They no longer revoke login sessions, so page refreshes, temporary backend restarts, or network hiccups do not force users back to the login screen as long as the refresh cookie remains valid.
@@ -1192,7 +1194,7 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
   - Recommended upload naming for full character voice packs uses one folder per character, for example `C:/codex/musicsour/cVoice/denia/`. Prefer OGG files with stable English scene keys: `match_start.ogg`, `skill_cast.ogg`, `sortie.ogg`, `byoyomi_start.ogg`, `byoyomi_remaining_2.ogg`, `byoyomi_remaining_1.ogg`, `countdown_10.ogg` through `countdown_01.ogg`, `timeout.ogg`, `result_win.ogg`, `result_loss.ogg`, `result_draw.ogg`, and `house_detail.ogg`. Avoid Chinese characters, spaces, and punctuation in filenames so Windows paths, frontend asset references, and build tooling stay predictable.
   - Denia now has a full AI voice pack under `public/assets/voice/denia_*.ogg`, converted from `C:/codex/musicsour/cVoice/denia/*.wav`. The pack covers `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`; `skill_cast.wav` is exported as `denia_skill_cast.ogg`. The sortie voice slot is reserved as `denia_sortie.ogg`.
   - Denia countdown voice assets `denia_countdown_10.ogg` through `denia_countdown_1.ogg` keep the stable countdown event filenames used by the byo-yomi resolver, so refreshed voice packs can replace the existing OGG files without changing event wiring.
-  - Sigrika now has role voice assets under `public/assets/voice/sigrika_*.ogg`, converted from `C:/codex/musicsour/cVoice/sigrika/*.wav`. The pack covers `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`; `skill_cast.wav` is exported as `sigrika_skill_cast.ogg`. The sortie voice slot is reserved as `sigrika_sortie.ogg`.
+  - Sigrika now has role voice assets under `public/assets/voice/sigrika_*.ogg`, converted from `C:/codex/musicsour/cVoice/sigrika/*.wav`. The pack covers `game-start`, `skill-cast`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`; `skill_cast.wav` is exported as `sigrika_skill_cast.ogg`, while `byoyomi_start.wav` and `byoyomi_remaining_1.wav` refresh `sigrika_byoyomi_start.ogg` and `sigrika_byoyomi_remaining_1.ogg`. The sortie voice slot is reserved as `sigrika_sortie.ogg`.
   - Built-in skill voice assets are bridged into each character's `systemVoices.skill-cast` map at runtime, so skill banners use the same `resolveSystemVoice` route as other role voices.
   - Baconbits now has role voice assets for `game-start`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, and `timeout`; the period 2 and period 1 events reuse `baconbits_byo_yomi_periods.ogg`.
   - Character detail clicks in the house route through `house-detail`; missing assets stay silent until a character-specific detail voice is configured.
@@ -1270,11 +1272,13 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - The house stats for rating and coins use the same help-tip pattern as rank: rating explains +20/-20/0 changes; coins explain +50/+20/0 rewards.
 - Counting request is disabled while the board has no stones.
 - Main-time timer digits use a gray display color, while byo-yomi states keep their warning colors.
-- Board grid strokes are heavier overall; first-line grid segments are marked separately and rendered much thicker than internal lines. Skill targeting highlights use a gradient glow instead of a solid outline.
+- Board grid strokes are heavier overall; first-line grid segments are marked separately and rendered much thicker than internal lines. Skill targeting highlights use a gradient glow instead of a solid outline. Stones affected by skill states use darker, higher-opacity green/purple halo rings so the effect reads clearly against the wooden board.
 - Latest room/home refinements:
   - The home player plaque rank/rating chip uses a light background with dark text again, while the admin-only management button remains a green circular icon-plus-title control aligned with the home user plaque.
+  - The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle `连罗伊人的都爱玩的智力游戏`, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip shows the site title, `Copyright ©KURO GAMES. ALL RIGHTS RESERVED.`, and `浙ICP备2026035038号` as evenly spaced items. The middle stage is an unframed fixed-ratio coordinate surface (`1480 / 620`) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a `1200px` minimum, `503px` minimum height, and `1920px` maximum width; phone landscape uses a smaller `960px` by `402px` minimum stage. The home app shell uses `/assets/home/multipurpose-classroom-bg.jpg` as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, `部员手册`, `空想对局`, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, `部员手册` is offset slightly right/down from the dock edge, and `空想对局` is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry's hover/focus popup in the top-right carries both the current matchmaking count and one rule item per line: `路数：13路`, `用时：5分钟30秒3次`, and `规则：黑贴2又3/4子，中国数子规则`, so new users can understand the match format without a persistent lower-left label or another modal. Phone portrait shows a dedicated `请横屏使用` guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values and no filter/drop-shadow; the match-entry PNG has transparent borders after low-alpha background cleanup, avoiding large transparent-PNG repaint/composite jank and faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow.
   - Incoming direct duel requests play a short synthesized doorbell SFX on the effects channel before showing the request banner.
-  - The house/player manual record stat is clickable and opens a per-character record list for owned characters.
+  - The house/player manual record stat is clickable and opens a per-character record list for owned characters. Personal manual stats use the full current-user replay summary set, including black/white user ids, while leaderboard stats also use all `GameRecord` rows, so win/loss totals stay aligned even after a player has more than 30 records or changes username.
+  - The house/player manual decoration picker renders owned decorations as icon-plus-status buttons with accessible labels and hover titles: decoration names stay out of the visible chip, while `应用` / `应用中` / `使用中` remains visible.
   - Player info now separates captures, skill removals ("除子"), and skill cost. Skill removals count opponent stones removed or converted by skills for the side that benefits from the removal/conversion.
   - Skill follow-up cleanup counts stones removed by skill-created no-liberty states as skill removals instead of normal captures, so "提子" remains only ordinary capture count.
 - Room headers include live game context after the room number using separate chips: black player/rank, white player/rank, and current move count.
@@ -1284,7 +1288,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - The watch entry now opens `WatchModal`, a refreshable current-room list backed by `GET /api/rooms/watch`, instead of asking the user to type a room code. Rows include room code, online participant count, black/white character portrait plus username, move count, and playing/finished status, and clicking a row joins that room as a spectator.
 - The watch modal is sized for the full room list table without horizontal scrolling on desktop and keeps enough vertical space for five room rows even when the list is empty. Watch table headings and row cells are centered.
 - Spectators leaving a room use the explicit `room:leave` socket event. The server removes that socket from `room.spectators`, leaves the Socket.IO room, appends a spectator-leave system message, and broadcasts the updated room so room members and the watch list no longer count that spectator.
-- The leaderboard modal keeps the title area and column heading outside the scrolling region. The player rows scroll independently, and a bottom pinned row mirrors the current user's own ranking when that user appears in the leaderboard.
+- The leaderboard modal keeps the title area and column heading outside the scrolling region. The player rows scroll independently, and a bottom pinned row mirrors the current user's own ranking when that user appears in the leaderboard. The heading and row cells share one CSS grid template, while the heading and pinned row reserve the same end gutter as the scrollable list so Windows scrollbars do not shift the data columns away from their labels.
 - `roomView.players[]` now carries `connected` and `disconnectedAt`. Player disconnects add a system notice and show a centered `断线中` badge on that player's portrait until the player reconnects or the game finishes; reconnecting appends a reconnect system notice and clears the badge.
 - While an opponent is disconnected, player action controls that require opponent confirmation, currently counting and draw requests, are disabled on the client.
 - Once a game is finished, room players use the same spectator role as observers in both server room views and frontend effective role handling: the action bar switches to replay/spectator controls, player-only hints/actions are hidden, and leaving the finished room clears the former player's live `socketId` from the room so watch-list online counts drop correctly.
@@ -1318,7 +1322,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Socket.IO connections remain stable while the frontend user object changes. Before `match:join`, `duel:request`, and accepted `duel:respond` create a room, the server refreshes `socket.user` from the latest database user so the actual room character matches the current selected sortie character rather than the snapshot from initial socket authentication.
 - In production, if `dist/` exists, the Node server can serve the built Vite app and SPA fallback while still keeping `/api`, `/socket.io`, and `/uploads` routed to backend behavior.
 - Production uploads use `server/uploadPaths.js` to resolve the persisted upload root. `UPLOAD_DIR` can point to an absolute directory such as `/var/lib/sigrikago/uploads`; when omitted, uploads continue to default to `public/uploads`. Character portrait uploads are stored under `${UPLOAD_DIR}/characters` and remain publicly available through `/uploads/characters/...`.
-- The single-server deployment guide lives in `docs/deployment.md`. It documents required environment variables, SQLite and upload-directory persistence, systemd, Nginx WebSocket proxying, HTTPS, backups, and the update flow.
+- The single-server deployment guide lives in `docs/deployment.md`. It documents required environment variables, SQLite and upload-directory persistence, systemd, Nginx WebSocket proxying, HTTPS, backups, and the update flow. The guide targets the merged `master` branch for production checkout.
 
 ## Login Asset Preloading
 
@@ -1327,7 +1331,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Vite development proxy forwards `/socket.io` websocket traffic to the local backend, keeping the same-origin socket path usable in development and production.
 - After a valid token is confirmed, the app enters a `preloading` view before the home screen.
 - Fresh login enters `preloading` before the home screen, preventing the home screen from flashing before assets begin loading. Stored-token startup is intentionally disabled so refresh and browser restart return to the login screen.
-- The preload step fetches core character portraits, Denia candy GIF portrait, stone decoration images, common board/result/match sound effects, default home and battle BGM, and owned character skill voices.
+- The preload step fetches non-replay runtime assets after login: all current character portraits, home and shop imagery including `/assets/home/multipurpose-classroom-bg.jpg`, Denia candy GIF portrait, stone decoration images, the Denia bubble-effect preview, common board/result/match sound effects, every configured BGM track, every configured character skill voice, and every configured character system voice. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.
 - Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.
 - The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.
 

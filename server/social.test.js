@@ -22,7 +22,78 @@ describe("social profiles and relationships", () => {
         records: [
           record({ id: "r-1", blackUserId: "user-1", whiteUserId: "user-2", winnerColor: "black", blackCharacter: "aemeath" }),
           record({ id: "r-2", blackUserId: "user-2", whiteUserId: "user-1", winnerColor: "black", whiteCharacter: "sigrika" }),
-          record({ id: "r-3", blackUserId: "user-1", whiteUserId: "user-2", winnerColor: null, blackCharacter: "aemeath" })
+          record({ id: "r-3", blackUserId: "user-1", whiteUserId: "user-2", winnerColor: null, resultText: "和棋", blackCharacter: "aemeath" })
+        ]
+      }),
+      userId: "user-1",
+      viewerId: "viewer-1",
+      statusForUser: () => "online"
+    });
+
+    expect(profile.record).toBe("3局 · 1胜1负1和");
+    expect(profile.characterStats).toEqual([
+      { characterId: "aemeath", record: "2局 · 1胜0负1和", winRate: "50.0%" },
+      { characterId: "sigrika", record: "1局 · 0胜1负0和", winRate: "0.0%" }
+    ]);
+  });
+
+  it("derives profile records from all games instead of only the replay-list page", async () => {
+    const records = [
+      ...Array.from({ length: 30 }, (_, index) => record({
+        id: `recent-win-${index}`,
+        blackUserId: "user-1",
+        whiteUserId: `opponent-${index}`,
+        winnerColor: "black",
+        blackCharacter: "aemeath",
+        createdAt: new Date(`2026-05-${String(31 - index).padStart(2, "0")}T12:00:00Z`)
+      })),
+      record({
+        id: "older-loss",
+        blackUserId: "opponent-old",
+        whiteUserId: "user-1",
+        winnerColor: "black",
+        whiteCharacter: "sigrika",
+        createdAt: new Date("2026-04-01T12:00:00Z")
+      })
+    ];
+
+    const profile = await getUserProfile({
+      prisma: socialProfilePrisma({
+        users: [{
+          id: "user-1",
+          username: "moming",
+          rating: 1200,
+          selectedCharacter: "aemeath",
+          ownedCharacters: "sigrika,aemeath"
+        }],
+        records
+      }),
+      userId: "user-1",
+      viewerId: "viewer-1",
+      statusForUser: () => "online"
+    });
+
+    expect(profile.record).toBe("31局 · 30胜1负0和");
+    expect(profile.characterStats).toEqual([
+      { characterId: "aemeath", record: "30局 · 30胜0负0和", winRate: "100.0%" },
+      { characterId: "sigrika", record: "1局 · 0胜1负0和", winRate: "0.0%" }
+    ]);
+  });
+
+  it("uses legacy result text when profile records do not have structured winner colors", async () => {
+    const profile = await getUserProfile({
+      prisma: socialProfilePrisma({
+        users: [{
+          id: "user-1",
+          username: "moming",
+          rating: 1200,
+          selectedCharacter: "aemeath",
+          ownedCharacters: "sigrika,aemeath"
+        }],
+        records: [
+          record({ id: "legacy-win", blackUserId: "user-1", whiteUserId: "user-2", winnerColor: null, resultText: "黑胜3.25子", blackCharacter: "aemeath" }),
+          record({ id: "legacy-loss", blackUserId: "user-2", whiteUserId: "user-1", winnerColor: null, resultText: "黑胜3.25子", whiteCharacter: "sigrika" }),
+          record({ id: "legacy-draw", blackUserId: "user-1", whiteUserId: "user-3", winnerColor: null, resultText: "和棋", blackCharacter: "aemeath" })
         ]
       }),
       userId: "user-1",
@@ -153,10 +224,16 @@ function socialProfilePrisma({ users = [], records = [] }) {
       findMany: async ({ where }) => users.filter((user) => where.id.in.includes(user.id))
     },
     gameRecord: {
-      findMany: async ({ where }) => records.filter((item) => {
-        const targetIds = where.OR.map((condition) => condition.blackUserId ?? condition.whiteUserId);
-        return targetIds.includes(item.blackUserId) || targetIds.includes(item.whiteUserId);
-      })
+      findMany: async ({ where, orderBy, take }) => {
+        let result = records.filter((item) => {
+          const targetIds = where.OR.map((condition) => condition.blackUserId ?? condition.whiteUserId);
+          return targetIds.includes(item.blackUserId) || targetIds.includes(item.whiteUserId);
+        });
+        if (orderBy?.createdAt === "desc") {
+          result = [...result].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        return Number.isInteger(take) ? result.slice(0, take) : result;
+      }
     },
     $queryRaw: async () => []
   };

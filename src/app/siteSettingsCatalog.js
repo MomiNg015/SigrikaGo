@@ -12,3 +12,18 @@ export async function loadPublicSiteSettings({
     return defaults;
   }
 }
+
+export function createSiteSettingsLoader({
+  loadSettings = () => loadPublicSiteSettings()
+} = {}) {
+  let pending = null;
+  return function loadSiteSettings() {
+    if (!pending) {
+      pending = loadSettings()
+        .finally(() => {
+          pending = null;
+        });
+    }
+    return pending;
+  };
+}

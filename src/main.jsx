@@ -34,7 +34,7 @@ import { completePendingMatchRoom, syncPendingMatchRoom } from "./app/matchTrans
 import { connectGameSocket } from "./app/gameSocket.js";
 import { planRoomBackNavigation } from "./app/roomNavigation.js";
 import { replayOpeningState } from "./app/replayOpening.js";
-import { loadPublicSiteSettings } from "./app/siteSettingsCatalog.js";
+import { createSiteSettingsLoader } from "./app/siteSettingsCatalog.js";
 import { applyRoomClock } from "./app/roomClock.js";
 import { mergeCurrentUserFromRoom } from "./app/roomUserSync.js";
 import { initialSessionState, shouldFinishPreloadAsHome } from "./app/sessionState.js";
@@ -79,6 +79,7 @@ function App() {
   const audioSettingsRef = useRef(audioSettings);
   const toastIdRef = useRef(0);
   const refreshPromiseRef = useRef(null);
+  const siteSettingsLoaderRef = useRef(createSiteSettingsLoader());
   const characterListView = Object.values(characters);
   const resultModalOpen = shouldShowResultModal(room, dismissedResultRoom, replayStep);
   const backgroundMusic = resolveBackgroundMusic({
@@ -173,6 +174,7 @@ function App() {
           }
         });
         const elapsed = Date.now() - startedAt;
+        await refreshSiteSettings();
         if (elapsed < 900) await new Promise((resolve) => setTimeout(resolve, 900 - elapsed));
         if (!cancelled && shouldFinishPreloadAsHome({
           view: viewRef.current,
@@ -272,7 +274,9 @@ function App() {
   }
 
   async function refreshSiteSettings() {
-    setSiteSettings(await loadPublicSiteSettings());
+    const nextSettings = await siteSettingsLoaderRef.current();
+    setSiteSettings(nextSettings);
+    return nextSettings;
   }
 
   async function refreshAuthSession({ silent = false } = {}) {
@@ -497,6 +501,9 @@ function App() {
             }
             if (plan.clearRoom) {
               setRoom(null);
+            }
+            if (plan.dismissResultRoomCode) {
+              setDismissedResultRoom(plan.dismissResultRoomCode);
             }
             setReplayStep(plan.nextReplayStep);
             setView(plan.nextView);

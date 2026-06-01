@@ -667,8 +667,9 @@
   box-shadow:
     inset -9px -11px 15px rgba(0, 0, 0, 0.18),
     0 6px 10px rgba(45, 29, 18, 0.28),
-    0 0 0 3px rgba(63, 218, 127, 0.8),
-    0 0 16px rgba(49, 226, 118, 0.9);
+    0 0 0 3px rgba(8, 174, 84, 0.95),
+    0 0 18px rgba(0, 142, 72, 0.96),
+    0 0 30px rgba(20, 232, 108, 0.5);
   animation: hidden-hand-glow 1.35s ease-in-out infinite alternate;
 }
 
@@ -676,8 +677,9 @@
   box-shadow:
     inset -9px -11px 15px rgba(0, 0, 0, 0.18),
     0 6px 10px rgba(45, 29, 18, 0.28),
-    0 0 16px rgba(178, 76, 255, 0.88),
-    0 0 30px rgba(255, 104, 183, 0.34);
+    0 0 0 3px rgba(126, 30, 255, 0.95),
+    0 0 18px rgba(112, 24, 214, 0.96),
+    0 0 34px rgba(235, 48, 170, 0.52);
   animation: flipped-stone-glow 1.35s ease-in-out infinite alternate;
 }
 
@@ -699,19 +701,19 @@
 
 @keyframes hidden-hand-glow {
   from {
-    filter: drop-shadow(0 0 4px rgba(63, 218, 127, 0.65));
+    filter: drop-shadow(0 0 5px rgba(8, 174, 84, 0.82));
   }
   to {
-    filter: drop-shadow(0 0 14px rgba(42, 232, 109, 0.95));
+    filter: drop-shadow(0 0 16px rgba(0, 180, 88, 1));
   }
 }
 
 @keyframes flipped-stone-glow {
   from {
-    filter: drop-shadow(0 0 4px rgba(164, 80, 255, 0.65));
+    filter: drop-shadow(0 0 5px rgba(126, 30, 255, 0.82));
   }
   to {
-    filter: drop-shadow(0 0 14px rgba(188, 92, 255, 0.95));
+    filter: drop-shadow(0 0 16px rgba(124, 30, 230, 1));
   }
 }
 

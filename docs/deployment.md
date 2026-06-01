@@ -54,7 +54,7 @@ sudo chown -R $USER:$USER /opt/sigrikago /var/lib/sigrikago
 ```bash
 git clone https://github.com/MomiNg015/SigrikaGo.git /opt/sigrikago
 cd /opt/sigrikago
-git checkout codex/denia-bubble-gif
+git checkout master
 ```
 
 写入 `.env` 后执行构建和迁移：

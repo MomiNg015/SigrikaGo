@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { readFileSync } from "node:fs";
 import { areBoardPropsEqual } from "./Board.jsx";
 
 describe("areBoardPropsEqual", () => {
@@ -35,6 +36,17 @@ describe("areBoardPropsEqual", () => {
       boardProps({ game, stoneDecorations: { black: "plain", white: "" } }),
       boardProps({ game, stoneDecorations: { black: "paw", white: "" } })
     )).toBe(false);
+  });
+
+  test("uses strong skill-effect halos on affected stones", () => {
+    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const exposedBlock = css.match(/\.exposed-hidden-hand \.stone\s*\{[^}]+\}/)?.[0] ?? "";
+    const flippedBlock = css.match(/\.flipped-stone \.stone\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(exposedBlock).toContain("rgba(8, 174, 84, 0.95)");
+    expect(exposedBlock).toContain("rgba(0, 142, 72, 0.96)");
+    expect(flippedBlock).toContain("rgba(126, 30, 255, 0.95)");
+    expect(flippedBlock).toContain("rgba(112, 24, 214, 0.96)");
   });
 });
 

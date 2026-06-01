@@ -8,6 +8,7 @@ describe("room back navigation plan", () => {
       replayStep: 12
     })).toEqual({
       clearRoom: true,
+      dismissResultRoomCode: "",
       leaveRoomCode: "",
       nextReplayStep: null,
       nextView: "home"
@@ -28,6 +29,7 @@ describe("room back navigation plan", () => {
       replayStep: null
     })).toMatchObject({
       clearRoom: true,
+      dismissResultRoomCode: "98765",
       leaveRoomCode: "98765"
     });
   });
@@ -38,6 +40,7 @@ describe("room back navigation plan", () => {
       replayStep: null
     })).toMatchObject({
       clearRoom: false,
+      dismissResultRoomCode: "",
       leaveRoomCode: ""
     });
   });
