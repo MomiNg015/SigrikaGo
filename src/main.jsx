@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { io } from "socket.io-client";
-import { CHARACTERS, mergeCharacters } from "./shared/characters.js";
+import { CHARACTERS } from "./shared/characters.js";
 import { latestSkillCharacterId, resolveBackgroundMusic } from "./shared/musicLibrary.js";
 import { deploymentSocketBase, loginPreloadAssets, preloadLoginAssets } from "./shared/preloadAssets.js";
 import { DEFAULT_SITE_SETTINGS } from "./shared/siteSettings.js";
@@ -9,7 +8,7 @@ import { BackgroundMusic, DEFAULT_AUDIO_SETTINGS, loadAudioSettings, playDoorbel
 import AdminConsole from "./admin/AdminConsole.jsx";
 import AuthScreen from "./auth/AuthScreen.jsx";
 import HomeScreen from "./home/HomeScreen.jsx";
-import { DuelRequestBanner, Toast } from "./modals/FeedbackModals.jsx";
+import { DuelRequestBanner, ToastStack, limitToastQueue } from "./modals/FeedbackModals.jsx";
 import FriendsModal from "./modals/FriendsModal.jsx";
 import { MatchModal, MatchSuccessModal, ResultModal } from "./modals/GameLifecycleModals.jsx";
 import HouseModal from "./modals/HouseModal.jsx";
@@ -17,32 +16,53 @@ import LeaderboardModal from "./modals/LeaderboardModal.jsx";
 import MessageBoardModal from "./modals/MessageBoardModal.jsx";
 import ShopModal from "./modals/ShopModal.jsx";
 import SettingsModal from "./modals/SettingsModal.jsx";
+import WarehouseModal from "./modals/WarehouseModal.jsx";
 import WatchModal from "./modals/WatchModal.jsx";
 import RoomScreen from "./room/RoomScreen.jsx";
-import { adminApi, api } from "./api/client.js";
+import { adminApi, api, configureAuthRefresh } from "./api/client.js";
+import AssetPreloadScreen from "./app/AssetPreloadScreen.jsx";
+import { loadPublicCharacterCatalog } from "./app/characterCatalog.js";
+import {
+  buildRoomResumeRequest,
+  clearLastRoomCode,
+  handleMissingRoomResumePayload,
+  handleRoomResumePayload,
+  rememberPlayerRoom,
+  shouldShowResultModal
+} from "./app/resumeSession.js";
+import { completePendingMatchRoom, syncPendingMatchRoom } from "./app/matchTransition.js";
+import { connectGameSocket } from "./app/gameSocket.js";
+import { planRoomBackNavigation } from "./app/roomNavigation.js";
+import { replayOpeningState } from "./app/replayOpening.js";
+import { createSiteSettingsLoader } from "./app/siteSettingsCatalog.js";
+import { applyRoomClock } from "./app/roomClock.js";
+import { mergeCurrentUserFromRoom } from "./app/roomUserSync.js";
+import { initialSessionState, shouldFinishPreloadAsHome } from "./app/sessionState.js";
+import { createSocketHandlers } from "./app/socketHandlers.js";
+import { buildStatChangeToasts } from "./app/statChangeToast.js";
 import "./styles.css";
 
 const SOCKET_BASE = deploymentSocketBase();
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("sigrika-token") ?? "");
+  const initialSession = initialSessionState();
+  const [token, setToken] = useState(initialSession.token);
   const [user, setUser] = useState(null);
-  const [view, setView] = useState(token ? "preloading" : "login");
+  const [view, setView] = useState(initialSession.view);
   const [room, setRoom] = useState(null);
   const [socket, setSocket] = useState(null);
-  const [toast, setToast] = useState("");
-  const [toastTone, setToastTone] = useState("danger");
+  const [toasts, setToasts] = useState([]);
   const [matchStart, setMatchStart] = useState(null);
   const [matchSuccess, setMatchSuccess] = useState(null);
   const [showShop, setShowShop] = useState(false);
   const [showHouse, setShowHouse] = useState(false);
+  const [showWarehouse, setShowWarehouse] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
   const [showWatch, setShowWatch] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showMessageBoard, setShowMessageBoard] = useState(false);
   const [audioSettings, setAudioSettings] = useState(loadAudioSettings);
-  const [watchCode, setWatchCode] = useState("");
   const [pendingSkill, setPendingSkill] = useState(false);
   const [replayRecords, setReplayRecords] = useState([]);
   const [replayStep, setReplayStep] = useState(null);
@@ -51,11 +71,17 @@ function App() {
   const [siteSettings, setSiteSettings] = useState(DEFAULT_SITE_SETTINGS);
   const [adminTab, setAdminTab] = useState("overview");
   const [incomingDuel, setIncomingDuel] = useState(null);
+  const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
   const matchSuccessRef = useRef(matchSuccess);
+  const roomRef = useRef(room);
+  const viewRef = useRef(view);
   const audioSettingsRef = useRef(audioSettings);
+  const toastIdRef = useRef(0);
+  const refreshPromiseRef = useRef(null);
+  const siteSettingsLoaderRef = useRef(createSiteSettingsLoader());
   const characterListView = Object.values(characters);
-  const resultModalOpen = room?.game.phase === "finished" && dismissedResultRoom !== room.code;
+  const resultModalOpen = shouldShowResultModal(room, dismissedResultRoom, replayStep);
   const backgroundMusic = resolveBackgroundMusic({
     view,
     skillPreview: room?.game?.pendingSkill,
@@ -67,9 +93,38 @@ function App() {
     ownedMusicIds: user?.ownedMusicIds
   });
 
+  const removeToast = useCallback((toastId) => {
+    setToasts((current) => current.filter((toast) => toast.id !== toastId));
+  }, []);
+
+  const showToast = useCallback((message, tone = "danger") => {
+    if (!message) return;
+    const id = ++toastIdRef.current;
+    setToasts((current) => limitToastQueue([{ id, text: message, tone }, ...current]));
+  }, []);
+
+  const updateUser = useCallback((nextUserOrUpdater, { notifyStats = true } = {}) => {
+    setUser((current) => {
+      const nextUser = typeof nextUserOrUpdater === "function" ? nextUserOrUpdater(current) : nextUserOrUpdater;
+      const notices = notifyStats ? buildStatChangeToasts(current, nextUser) : [];
+      for (const notice of notices) {
+        setTimeout(() => showToast(notice.text, notice.tone), 0);
+      }
+      return nextUser;
+    });
+  }, [showToast]);
+
   useEffect(() => {
     matchSuccessRef.current = matchSuccess;
   }, [matchSuccess]);
+
+  useEffect(() => {
+    roomRef.current = room;
+  }, [room]);
+
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
 
   useEffect(() => {
     audioSettingsRef.current = audioSettings;
@@ -78,6 +133,22 @@ function App() {
   useEffect(() => {
     refreshSiteSettings();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    refreshAuthSession({ silent: true })
+      .catch(() => {
+        if (!cancelled) setView("login");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    configureAuthRefresh(() => refreshAuthSession({ silent: true }));
+    return () => configureAuthRefresh(null);
+  }, [updateUser]);
 
   useEffect(() => {
     if (!token) return;
@@ -95,6 +166,7 @@ function App() {
         await preloadLoginAssets(loginPreloadAssets({
           characters: nextCharacters,
           ownedCharacters: data.user.ownedCharacters,
+          itemEffects: data.user.itemEffects,
           musicSelections: data.user.musicSelections
         }), {
           onProgress: (progress) => {
@@ -102,12 +174,18 @@ function App() {
           }
         });
         const elapsed = Date.now() - startedAt;
+        await refreshSiteSettings();
         if (elapsed < 900) await new Promise((resolve) => setTimeout(resolve, 900 - elapsed));
-        if (!cancelled) setView("home");
+        if (!cancelled && shouldFinishPreloadAsHome({
+          view: viewRef.current,
+          room: roomRef.current,
+          matchSuccess: matchSuccessRef.current
+        })) {
+          setView("home");
+        }
       })
       .catch(() => {
         if (cancelled) return;
-        localStorage.removeItem("sigrika-token");
         socket?.close();
         setToken("");
         setUser(null);
@@ -116,8 +194,10 @@ function App() {
         setMatchSuccess(null);
         setShowShop(false);
         setShowHouse(false);
+        setShowWarehouse(false);
         setShowLeaderboard(false);
         setShowWatch(false);
+        setLobbyStats({ onlineCount: 0, matchmakingCount: 0 });
         setView("login");
         setCharacters(CHARACTERS);
       });
@@ -128,60 +208,40 @@ function App() {
 
   useEffect(() => {
     if (!token || !user) return;
-    const nextSocket = io(SOCKET_BASE, { auth: { token } });
-    nextSocket.on("match:waiting", ({ startedAt }) => setMatchStart(startedAt));
-    nextSocket.on("match:found", (roomView) => {
-      closeAllOverlays();
-      setReplayStep(null);
-      setMatchStart(null);
-      const transition = {
-        room: roomView,
-        startedAt: Date.now()
-      };
-      matchSuccessRef.current = transition;
-      setMatchSuccess(transition);
-    });
-    nextSocket.on("room:update", (roomView) => {
-      if (matchSuccessRef.current) {
-        setMatchSuccess((current) => current ? { ...current, room: roomView } : current);
-        return;
-      }
-      setRoom(roomView);
-      setView("room");
-    });
-    nextSocket.on("room:closed", () => {
-      setRoom(null);
-      setReplayStep(null);
-      setPendingSkill(false);
-      setView("home");
-      showToast("房间已关闭。");
-    });
-    nextSocket.on("error:toast", (message) => {
-      if (String(message).includes("房间不存在")) {
-        setRoom(null);
-        setReplayStep(null);
-        setPendingSkill(false);
-        setMatchSuccess(null);
-        setView("home");
-      }
-      showToast(message);
-    });
-    nextSocket.on("duel:incoming", (request) => {
-      setIncomingDuel(request);
-      playDoorbellSound(audioSettingsRef.current);
-    });
-    nextSocket.on("duel:closed", ({ requestId }) => {
-      setIncomingDuel((current) => current?.requestId === requestId ? null : current);
-    });
-    nextSocket.on("duel:rejected", ({ username }) => {
-      showToast(`${username}拒绝了你的对局申请`);
-    });
-    nextSocket.on("duel:unavailable", ({ reason }) => {
-      showToast(reason === "playing" ? "对方正在对局中。" : "对方不在线。");
+    const nextSocket = connectGameSocket({
+      socketBase: SOCKET_BASE,
+      token,
+      handlers: createSocketHandlers({
+      matchSuccessRef,
+      roomRef,
+      audioSettingsRef,
+      closeAllOverlays,
+      updateUser,
+      setMatchStart,
+      setMatchSuccess,
+      setReplayStep,
+      setRoom,
+      setView,
+      setPendingSkill,
+      setDismissedResultRoom,
+      setIncomingDuel,
+      setToken,
+      setUser,
+      setLobbyStats,
+      showToast,
+      clearLastRoomCode,
+      handleMissingRoomResumePayload,
+      handleRoomResumePayload,
+      mergeCurrentUserFromRoom,
+      syncPendingMatchRoom,
+      applyRoomClock,
+      playDoorbellSound
+      }),
+      buildRoomResumeRequest
     });
     setSocket(nextSocket);
     return () => nextSocket.close();
-  }, [token, user]);
+  }, [token, user?.id]);
 
   useEffect(() => {
     if (!showHouse || !token) return;
@@ -194,8 +254,11 @@ function App() {
     localStorage.setItem("sigrika-audio-settings", JSON.stringify(audioSettings));
   }, [audioSettings]);
 
+  useEffect(() => {
+    rememberPlayerRoom(room);
+  }, [room?.code, room?.role]);
+
   function handleAuth(nextToken, nextUser) {
-    localStorage.setItem("sigrika-token", nextToken);
     setView("preloading");
     setAssetProgress(0);
     setToken(nextToken);
@@ -203,46 +266,63 @@ function App() {
   }
 
   async function refreshPublicCharacters() {
-    try {
-      const data = await api("/api/characters", { token });
-      setCharacters(mergeCharacters(data.characters, data.disabledSlugs));
-    } catch {
-      setCharacters(CHARACTERS);
-    }
+    setCharacters(await loadPublicCharacterCatalog({ token }));
   }
 
   async function loadPublicCharacters(authToken) {
-    try {
-      const data = await api("/api/characters", { token: authToken });
-      return mergeCharacters(data.characters, data.disabledSlugs);
-    } catch {
-      return CHARACTERS;
-    }
+    return loadPublicCharacterCatalog({ token: authToken });
   }
 
   async function refreshSiteSettings() {
-    try {
-      const data = await api("/api/site-settings");
-      setSiteSettings({ ...DEFAULT_SITE_SETTINGS, ...(data.settings ?? {}) });
-    } catch {
-      setSiteSettings(DEFAULT_SITE_SETTINGS);
+    const nextSettings = await siteSettingsLoaderRef.current();
+    setSiteSettings(nextSettings);
+    return nextSettings;
+  }
+
+  async function refreshAuthSession({ silent = false } = {}) {
+    if (!refreshPromiseRef.current) {
+      refreshPromiseRef.current = api("/api/auth/refresh", {
+        method: "POST",
+        skipAuthRefresh: true
+      })
+        .then((data) => {
+          setToken(data.token);
+          updateUser(data.user, { notifyStats: false });
+          return data;
+        })
+        .catch((error) => {
+          if (!silent) showToast(error.message);
+          setToken("");
+          setUser(null);
+          setRoom(null);
+          setMatchStart(null);
+          setMatchSuccess(null);
+          setLobbyStats({ onlineCount: 0, matchmakingCount: 0 });
+          setCharacters(CHARACTERS);
+          setView("login");
+          return null;
+        })
+        .finally(() => {
+          refreshPromiseRef.current = null;
+        });
     }
+    return refreshPromiseRef.current;
   }
 
   function logout() {
-    localStorage.removeItem("sigrika-token");
+    api("/api/auth/logout", {
+      method: "POST",
+      token,
+      skipAuthRefresh: true
+    }).catch(() => {});
     socket?.close();
     setToken("");
     setUser(null);
     setRoom(null);
     setMatchSuccess(null);
+    setLobbyStats({ onlineCount: 0, matchmakingCount: 0 });
     setCharacters(CHARACTERS);
     setView("login");
-  }
-
-  function showToast(message, tone = "danger") {
-    setToastTone(tone);
-    setToast(message);
   }
 
   async function selectCharacter(characterId) {
@@ -251,7 +331,7 @@ function App() {
       token,
       body: { characterId }
     });
-    setUser(data.user);
+    updateUser(data.user);
   }
 
   async function applyStoneDecoration(decorationId) {
@@ -260,7 +340,7 @@ function App() {
       token,
       body: { decorationId }
     });
-    setUser(data.user);
+    updateUser(data.user);
   }
 
   function startMatch() {
@@ -269,9 +349,9 @@ function App() {
     socket?.emit("match:join");
   }
 
-  function joinWatchRoom() {
-    if (watchCode.length !== 5) return;
-    socket?.emit("room:join", { roomCode: watchCode });
+  function joinWatchRoom(roomCode) {
+    if (!roomCode) return;
+    socket?.emit("room:join", { roomCode });
   }
 
   function emitGame(action) {
@@ -296,26 +376,27 @@ function App() {
 
   async function openReplay(recordId) {
     const data = await api(`/api/replays/${recordId}`, { token });
-    const snapshot = data.record.snapshot;
+    const replayState = replayOpeningState(data);
     closeAllOverlays();
-    setRoom(snapshot);
-    setReplayStep(snapshot.game.history.length);
-    setPendingSkill(false);
-    setView("room");
+    setRoom(replayState.room);
+    setReplayStep(replayState.replayStep);
+    setPendingSkill(replayState.pendingSkill);
+    setView(replayState.view);
   }
 
   async function openAdminReplay(recordId) {
     const data = await adminApi(`/replays/${recordId}`, token);
-    const snapshot = data.record.snapshot;
-    setRoom(snapshot);
-    setReplayStep(snapshot.game.history.length);
-    setPendingSkill(false);
-    setView("room");
+    const replayState = replayOpeningState(data);
+    setRoom(replayState.room);
+    setReplayStep(replayState.replayStep);
+    setPendingSkill(replayState.pendingSkill);
+    setView(replayState.view);
   }
 
   function closeAllOverlays() {
     setShowShop(false);
     setShowHouse(false);
+    setShowWarehouse(false);
     setShowLeaderboard(false);
     setShowWatch(false);
     setShowFriends(false);
@@ -326,7 +407,7 @@ function App() {
   return (
     <div className="app-shell">
       <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} />
-      {toast && <Toast text={toast} tone={toastTone} onClose={() => setToast("")} />}
+      <ToastStack toasts={toasts} onClose={removeToast} />
       {incomingDuel && (
         <DuelRequestBanner
           request={incomingDuel}
@@ -351,10 +432,12 @@ function App() {
           user={user}
           characters={characters}
           siteSettings={siteSettings}
+          lobbyStats={lobbyStats}
           onLogout={logout}
           onSelectCharacter={selectCharacter}
           onStartMatch={startMatch}
           onOpenHouse={() => setShowHouse(true)}
+          onOpenWarehouse={() => setShowWarehouse(true)}
           onOpenLeaderboard={() => setShowLeaderboard(true)}
           onOpenWatch={() => setShowWatch(true)}
           onOpenShop={() => setShowShop(true)}
@@ -370,9 +453,10 @@ function App() {
           token={token}
           tab={adminTab}
           setTab={setAdminTab}
-          onCurrentUserChange={setUser}
+          onCurrentUserChange={updateUser}
           onCharactersChanged={refreshPublicCharacters}
           onSiteSettingsChanged={setSiteSettings}
+          onNotice={showToast}
           onBack={() => setView("home")}
           onOpenReplay={openAdminReplay}
         />
@@ -382,10 +466,12 @@ function App() {
           user={user}
           characters={characters}
           siteSettings={siteSettings}
+          lobbyStats={lobbyStats}
           onLogout={logout}
           onSelectCharacter={selectCharacter}
           onStartMatch={startMatch}
           onOpenHouse={() => setShowHouse(true)}
+          onOpenWarehouse={() => setShowWarehouse(true)}
           onOpenLeaderboard={() => setShowLeaderboard(true)}
           onOpenWatch={() => setShowWatch(true)}
           onOpenShop={() => setShowShop(true)}
@@ -409,8 +495,18 @@ function App() {
           onOpenSettings={() => setShowSettings(true)}
           onOpenMessageBoard={() => setShowMessageBoard(true)}
           onBack={() => {
-            setReplayStep(null);
-            setView("home");
+            const plan = planRoomBackNavigation({ room, replayStep });
+            if (plan.leaveRoomCode) {
+              socket?.emit("room:leave", { roomCode: plan.leaveRoomCode });
+            }
+            if (plan.clearRoom) {
+              setRoom(null);
+            }
+            if (plan.dismissResultRoomCode) {
+              setDismissedResultRoom(plan.dismissResultRoomCode);
+            }
+            setReplayStep(plan.nextReplayStep);
+            setView(plan.nextView);
           }}
           onGameAction={emitGame}
           onCountingRequest={() => socket?.emit("counting:request", { roomCode: room.code })}
@@ -428,7 +524,11 @@ function App() {
           user={user}
           characters={characters}
           audioSettings={audioSettings}
-          onClose={() => setDismissedResultRoom(room.code)}
+          onClose={() => {
+            clearLastRoomCode();
+            setDismissedResultRoom(room.code);
+            if (view !== "room") setRoom(null);
+          }}
         />
       )}
       {matchStart && <MatchModal user={user} startedAt={matchStart} onCancel={() => {
@@ -440,7 +540,7 @@ function App() {
           startedAt={matchSuccess.startedAt}
           audioSettings={audioSettings}
           onComplete={() => {
-            setRoom(matchSuccess.room);
+            setRoom(completePendingMatchRoom(matchSuccessRef, matchSuccess.room));
             matchSuccessRef.current = null;
             setMatchSuccess(null);
             setView("room");
@@ -459,22 +559,31 @@ function App() {
           onOpenReplay={openReplay}
         />
       )}
+      {showWarehouse && user && (
+        <WarehouseModal
+          token={token}
+          user={user}
+          characters={characters}
+          onUserChange={updateUser}
+          onNotice={showToast}
+          onClose={() => setShowWarehouse(false)}
+        />
+      )}
       {showLeaderboard && (
         <LeaderboardModal
           token={token}
+          user={user}
           characters={characters}
           onClose={() => setShowLeaderboard(false)}
         />
       )}
       {showWatch && (
         <WatchModal
-          code={watchCode}
-          setCode={setWatchCode}
+          token={token}
+          characters={characters}
           onClose={() => setShowWatch(false)}
-          onJoin={() => {
-            joinWatchRoom();
-            if (watchCode.length === 5) setShowWatch(false);
-          }}
+          onJoinRoom={joinWatchRoom}
+          onNotice={showToast}
         />
       )}
       {showFriends && (
@@ -482,6 +591,7 @@ function App() {
           token={token}
           socket={socket}
           characters={characters}
+          onNotice={showToast}
           onClose={() => setShowFriends(false)}
           onOpenReplay={openReplay}
         />
@@ -490,7 +600,8 @@ function App() {
         <ShopModal
           token={token}
           user={user}
-          onPurchased={(nextUser) => setUser(nextUser)}
+          onPurchased={updateUser}
+          onNotice={showToast}
           onClose={() => setShowShop(false)}
         />
       )}
@@ -505,26 +616,11 @@ function App() {
       {showMessageBoard && (
         <MessageBoardModal
           token={token}
-          onSubmitted={() => showToast("感谢您的反馈！", "success")}
+          onSubmitted={() => showToast("\u611f\u8c22\u60a8\u7684\u53cd\u9988\uff01", "success")}
           onClose={() => setShowMessageBoard(false)}
         />
       )}
     </div>
-  );
-}
-
-function AssetPreloadScreen({ progress }) {
-  const percent = Math.round(Math.max(0, Math.min(1, progress)) * 100);
-  return (
-    <main className="asset-preload-screen">
-      <section className="asset-preload-panel">
-        <div className="preload-mark" />
-        <p>资源准备中</p>
-        <div className="preload-bar" aria-label={`资源加载 ${percent}%`}>
-          <span style={{ width: `${percent}%` }} />
-        </div>
-      </section>
-    </main>
   );
 }
 

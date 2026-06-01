@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
+import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { derivePlayerRecordStats, recordWinnerColor } from "../shared/gameRecords.js";
 import { getStoneDecoration } from "../shared/stoneDecorations.js";
 import { SYSTEM_VOICE_EVENTS } from "../shared/systemVoices.js";
@@ -28,6 +29,7 @@ export default function HouseModal({ user, records, characterListView, audioSett
   const characterRecords = deriveCharacterRecordStats(user, records, characterListView);
   const owned = new Set((user.ownedCharacters ?? []).map(canonicalCharacterId));
   const selectedCharacter = canonicalCharacterId(user.selectedCharacter);
+  const itemEffects = user.itemEffects ?? {};
   const detailOwned = detailCharacter ? owned.has(canonicalCharacterId(detailCharacter.id)) : false;
   const emptySlots = Array.from({ length: Math.max(0, 10 - characterListView.length) }, (_, index) => index);
 
@@ -88,32 +90,42 @@ export default function HouseModal({ user, records, characterListView, audioSett
           />
         </div>
         <div className="character-list">
-          {characterListView.map((character) => (
-            <div
-              className={`character-card portrait-card ${selectedCharacter === canonicalCharacterId(character.id) ? "selected" : ""} ${owned.has(canonicalCharacterId(character.id)) ? "" : "unowned"}`}
-              key={character.id}
-              onClick={() => openCharacterDetail(character)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") openCharacterDetail(character);
-              }}
-            >
-              <button
-                className={`sortie-button ${selectedCharacter === canonicalCharacterId(character.id) ? "selected" : ""}`}
-                title={selectedCharacter === canonicalCharacterId(character.id) ? "出战中" : "设为出战"}
-                disabled={!owned.has(canonicalCharacterId(character.id))}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onSelectCharacter(canonicalCharacterId(character.id));
+          {characterListView.map((character) => {
+            const characterId = canonicalCharacterId(character.id);
+            const disabledReason = characterSortieDisabledReason(characterId, itemEffects);
+            const sortieDisabled = !owned.has(characterId) || Boolean(disabledReason);
+            return (
+              <div
+                className={`character-card portrait-card ${selectedCharacter === characterId ? "selected" : ""} ${owned.has(characterId) ? "" : "unowned"}`}
+                key={character.id}
+                onClick={() => openCharacterDetail(character)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") openCharacterDetail(character);
                 }}
               >
-                <Flag size={18} />
-              </button>
-              <img src={character.portrait} alt={character.name} />
-              <strong>{character.name}</strong>
-            </div>
-          ))}
+                <button
+                  className={`sortie-button ${selectedCharacter === characterId ? "selected" : ""}`}
+                  title={disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}
+                  disabled={sortieDisabled}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    selectSortieCharacter({
+                      character,
+                      disabled: sortieDisabled,
+                      audioSettings,
+                      onSelectCharacter
+                    });
+                  }}
+                >
+                  <Flag size={18} />
+                </button>
+                <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
+                <strong>{character.name}</strong>
+              </div>
+            );
+          })}
           {emptySlots.map((slot) => (
             <div className="character-card portrait-card locked" key={`empty-${slot}`}>
               <button className="sortie-button" disabled title="未获得">
@@ -138,15 +150,18 @@ export default function HouseModal({ user, records, characterListView, audioSett
             {(user.ownedDecorations ?? []).map((decorationId) => {
               const decoration = getStoneDecoration(decorationId);
               const selected = user.selectedStoneDecoration === decorationId;
+              const decorationLabel = decoration?.name ?? decorationId;
               return (
                 <button
                   className={`owned-decoration-chip ${selected ? "selected" : ""}`}
                   key={decorationId}
                   disabled={selected || applyingDecoration === decorationId}
+                  aria-label={decorationLabel}
+                  aria-pressed={selected}
+                  title={decorationLabel}
                   onClick={() => applyDecoration(decorationId)}
                 >
                   {decoration ? <StoneDecorationPreview decoration={decoration} /> : null}
-                  <span>{decoration?.name ?? decorationId}</span>
                   <strong>{selected ? "使用中" : applyingDecoration === decorationId ? "应用中" : "应用"}</strong>
                 </button>
               );
@@ -159,7 +174,7 @@ export default function HouseModal({ user, records, characterListView, audioSett
             <section className={`nested-modal character-detail ${detailOwned ? "" : "unowned"}`} onClick={(event) => event.stopPropagation()}>
               <button className="close-button" onClick={() => setDetailCharacter(null)}><X size={18} /></button>
               <div className="character-detail-art">
-                <img src={detailCharacter.portrait} alt={detailCharacter.name} />
+                <img src={characterCandyPortrait(detailCharacter, itemEffects)} alt={detailCharacter.name} />
               </div>
               <div className="character-detail-copy">
                 <h3>{detailCharacter.name}</h3>
@@ -191,7 +206,7 @@ export default function HouseModal({ user, records, characterListView, audioSett
                 {characterRecords.length === 0 && <p className="quiet-text">暂无角色战绩。</p>}
                 {characterRecords.map((entry) => (
                   <article className="character-record-row" key={entry.character.id}>
-                    <img src={entry.character.portrait} alt={entry.character.name} />
+                    <img src={characterCandyPortrait(entry.character, itemEffects)} alt={entry.character.name} />
                     <strong>{entry.character.name}</strong>
                     <span>{entry.total}局 · {entry.wins}胜{entry.losses}负{entry.draws}和</span>
                     <b>{entry.total > 0 ? `${((entry.wins / entry.total) * 100).toFixed(1)}%` : "0.0%"}</b>
@@ -231,6 +246,28 @@ export function deriveCharacterRecordStats(user = {}, records = [], characters =
     }
   }
   return Array.from(stats.values()).sort((a, b) => b.total - a.total || b.wins - a.wins || a.character.name.localeCompare(b.character.name, "zh-CN"));
+}
+
+export function characterSortieDisabledReason(characterId, itemEffects = {}) {
+  return canonicalCharacterId(characterId) === "sigrika" && itemEffects?.sigrikaCandyDisabled
+    ? "糖果效果中，暂时无法出战"
+    : "";
+}
+
+export function characterCandyPortrait(character = {}, itemEffects = {}) {
+  return resolveCandyPortrait(character, itemEffects);
+}
+
+export function selectSortieCharacter({
+  character = {},
+  disabled = false,
+  audioSettings = undefined,
+  playVoice = playSystemVoice,
+  onSelectCharacter = () => {}
+} = {}) {
+  if (disabled) return;
+  playVoice(SYSTEM_VOICE_EVENTS.sortie, { character, audioSettings });
+  onSelectCharacter(canonicalCharacterId(character.id));
 }
 
 export function playerColorForReplayRecord(user = {}, record = {}) {

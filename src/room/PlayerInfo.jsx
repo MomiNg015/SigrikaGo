@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Eye, Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
+import { canonicalCharacterId } from "../shared/characterAliases.js";
+import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import TimeBar from "./TimeBar.jsx";
 
@@ -9,7 +11,7 @@ export const PLAYER_INFO_TOOLTIPS = {
   overclock: "超频：角色发动技能所造成的代价。数目时-超频*2的数值。"
 };
 
-export default function PlayerInfo({
+function PlayerInfo({
   player,
   game,
   characters,
@@ -28,7 +30,8 @@ export default function PlayerInfo({
   const skillUses = game.skillUses[player.color] ?? 0;
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
-  const resultBadge = isDrawResult ? null : isWinner ? "胜" : game.phase === "finished" ? "负" : null;
+  const resultBadge = resultBadgeForPlayer(player, game, { isWinner, isDrawResult });
+  const disconnectBadge = disconnectBadgeForPlayer(player, game);
   return (
     <aside className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""}`}>
       <div className="portrait-wrap">
@@ -42,7 +45,8 @@ export default function PlayerInfo({
             <Eye size={18} />
           </button>
         )}
-        <img src={character.portrait} alt={character.name} />
+        <img src={playerCandyPortrait(character, player)} alt={character.name} />
+        {disconnectBadge && <span className="disconnect-badge">{disconnectBadge}</span>}
         {resultBadge && <span className={`result-badge ${resultBadge === "胜" ? "win" : "loss"}`}>{resultBadge}</span>}
       </div>
       <div className="player-meta">
@@ -90,5 +94,66 @@ export default function PlayerInfo({
         </div>
       </div>
     </aside>
+  );
+}
+
+export default memo(PlayerInfo, arePlayerInfoPropsEqual);
+
+export function arePlayerInfoPropsEqual(previous, next) {
+  const color = previous.player?.color ?? next.player?.color;
+  return playerInfoSliceEqual(previous.player, next.player)
+    && previous.characters === next.characters
+    && previous.align === next.align
+    && previous.viewColor === next.viewColor
+    && previous.canSwitchView === next.canSwitchView
+    && previous.onViewColor === next.onViewColor
+    && previous.isWinner === next.isWinner
+    && previous.isActiveTurn === next.isActiveTurn
+    && previous.isDrawResult === next.isDrawResult
+    && previous.isSkillTargeting === next.isSkillTargeting
+    && gamePlayerSliceEqual(previous.game, next.game, color);
+}
+
+function playerInfoSliceEqual(previousPlayer, nextPlayer) {
+  if (previousPlayer === nextPlayer) return true;
+  return previousPlayer?.color === nextPlayer?.color
+    && previousPlayer?.characterId === nextPlayer?.characterId
+    && previousPlayer?.character === nextPlayer?.character
+    && previousPlayer?.user === nextPlayer?.user
+    && previousPlayer?.captures === nextPlayer?.captures
+    && previousPlayer?.skillRemovals === nextPlayer?.skillRemovals
+    && previousPlayer?.connected === nextPlayer?.connected
+    && previousPlayer?.disconnectedAt === nextPlayer?.disconnectedAt
+    && previousPlayer?.time?.main === nextPlayer?.time?.main
+    && previousPlayer?.time?.byoYomi === nextPlayer?.time?.byoYomi
+    && previousPlayer?.time?.periodRemaining === nextPlayer?.time?.periodRemaining
+    && previousPlayer?.time?.periods === nextPlayer?.time?.periods;
+}
+
+function gamePlayerSliceEqual(previousGame, nextGame, color) {
+  if (previousGame === nextGame) return true;
+  return previousGame?.phase === nextGame?.phase
+    && previousGame?.turn === nextGame?.turn
+    && previousGame?.winner === nextGame?.winner
+    && previousGame?.skillUses?.[color] === nextGame?.skillUses?.[color]
+    && previousGame?.skillCosts?.[color] === nextGame?.skillCosts?.[color]
+    && previousGame?.skillRemovals?.[color] === nextGame?.skillRemovals?.[color];
+}
+
+export function resultBadgeForPlayer(player, game, { isWinner = false, isDrawResult = false } = {}) {
+  if (!player || isDrawResult || game.winner?.invalid) return null;
+  if (isWinner) return "胜";
+  return game.phase === "finished" ? "负" : null;
+}
+
+export function disconnectBadgeForPlayer(player, game) {
+  if (!player || game?.phase === "finished") return null;
+  return player.connected === false && player.disconnectedAt ? "断线中" : null;
+}
+
+export function playerCandyPortrait(character = {}, player = {}) {
+  return resolveCandyPortrait(
+    { ...character, id: canonicalCharacterId(player.characterId ?? character.id) },
+    player.user?.itemEffects
   );
 }

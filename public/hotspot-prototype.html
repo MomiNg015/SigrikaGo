@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>大厅热点原型</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      background: #15121b;
+      color: #2f241f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 24%, rgba(255, 242, 224, 0.2), transparent 32%),
+        #17131d;
+    }
+
+    .stage {
+      position: relative;
+      width: min(100vw, calc(100vh * 1672 / 941));
+      aspect-ratio: 1672 / 941;
+      overflow: hidden;
+      background: #231c26 url("/assets/prototypes/classroom-bg1.png") center / 100% 100% no-repeat;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+    }
+
+    .hotspot {
+      position: absolute;
+      min-width: 7.2%;
+      min-height: 6.2%;
+      display: grid;
+      place-items: center;
+      padding: 0.6% 1.1%;
+      border: 0;
+      border-radius: 12px;
+      background: rgba(162, 222, 250, 0.94);
+      color: #3c2519;
+      font-size: clamp(16px, 2.35vw, 42px);
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 1.05;
+      text-align: center;
+      cursor: pointer;
+      filter: drop-shadow(0 7px 12px rgba(36, 30, 46, 0.22));
+      transition: transform 150ms ease, background 150ms ease, filter 150ms ease;
+    }
+
+    .hotspot::after {
+      content: "";
+      position: absolute;
+      width: 22%;
+      height: 30%;
+      background: inherit;
+      clip-path: polygon(0 50%, 100% 0, 100% 100%);
+    }
+
+    .hotspot:hover,
+    .hotspot:focus-visible {
+      background: rgba(185, 235, 255, 0.98);
+      transform: translateY(-2px) scale(1.02);
+      filter: drop-shadow(0 10px 16px rgba(36, 30, 46, 0.26));
+      outline: 3px solid rgba(255, 255, 255, 0.86);
+      outline-offset: 2px;
+    }
+
+    .vertical {
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      min-width: 4.6%;
+      min-height: 16%;
+    }
+
+    .tail-left::after {
+      left: -17%;
+      top: 40%;
+    }
+
+    .tail-right::after {
+      right: -17%;
+      top: 40%;
+      transform: rotate(180deg);
+    }
+
+    .tail-bottom::after {
+      left: 32%;
+      bottom: -24%;
+      transform: rotate(90deg);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 32px;
+      z-index: 4;
+      min-width: min(320px, calc(100vw - 40px));
+      padding: 14px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.46);
+      border-radius: 12px;
+      background: rgba(255, 252, 247, 0.94);
+      color: #34253c;
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+      box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 14px);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .sr-note {
+      position: fixed;
+      left: -999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" aria-label="大厅热点原型">
+    <button class="hotspot vertical tail-left" style="left: 9.4%; top: 8.2%;" data-name="排行榜">排行榜</button>
+    <button class="hotspot vertical tail-left" style="left: 34.8%; top: 11.8%;" data-name="留言">留言</button>
+    <button class="hotspot tail-bottom" style="left: 47.3%; top: 9.5%; width: 10.2%; height: 6.8%;" data-name="游戏">游戏</button>
+    <button class="hotspot vertical tail-right" style="left: 68.4%; top: 10.5%;" data-name="登出">登出</button>
+    <button class="hotspot tail-bottom" style="left: 8.8%; top: 74.2%; width: 15.6%; height: 9.3%;" data-name="部员手册">部员手册</button>
+    <button class="hotspot tail-bottom" style="left: 49.6%; top: 58.2%; width: 10.2%; height: 7.6%;" data-name="匹配">匹配</button>
+  </main>
+  <p class="sr-note" aria-live="polite" id="live-region"></p>
+  <div class="toast" role="status" aria-live="polite" id="toast">已点击</div>
+  <script>
+    const toast = document.querySelector("#toast");
+    const liveRegion = document.querySelector("#live-region");
+    let toastTimer = 0;
+
+    function showToast(name) {
+      const text = `已点击：${name}`;
+      toast.textContent = text;
+      liveRegion.textContent = text;
+      toast.classList.add("show");
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1500);
+    }
+
+    document.querySelectorAll(".hotspot").forEach((button) => {
+      button.addEventListener("click", () => showToast(button.dataset.name));
+    });
+  </script>
+</body>
+</html>

@@ -2,9 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { MonitorPlay, Swords } from "lucide-react";
 import { MATCH_SUCCESS_SOUND, resolveResultSound } from "../shared/musicLibrary.js";
 import { COLORS } from "../shared/game.js";
+import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { resultRewardDelta } from "../shared/resultRewards.js";
 import { playEffectSound } from "../audio/playback.jsx";
+import { playSystemVoice } from "../audio/systemVoicePlayback.js";
+import { SYSTEM_VOICE_EVENTS } from "../shared/systemVoices.js";
 
 export function MatchModal({ user, startedAt, onCancel, characters }) {
   const [now, setNow] = useState(Date.now());
@@ -18,7 +21,7 @@ export function MatchModal({ user, startedAt, onCancel, characters }) {
   return (
     <div className="modal-backdrop" onClick={onCancel}>
       <section className="small-modal" onClick={(event) => event.stopPropagation()}>
-        <img className="match-portrait" src={character.portrait} alt={character.name} />
+        <img className="match-portrait" src={resolveCandyPortrait(character, user?.itemEffects)} alt={character.name} />
         <h2>匹配中</h2>
         <p>{secondsSinceStarted(startedAt, now)} 秒</p>
         <button onClick={onCancel}>取消匹配</button>
@@ -84,9 +87,11 @@ export function ResultModal({ room, user, characters, audioSettings, onClose }) 
   const isDraw = !winnerColor;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
   const character = findCharacter(characters, winner?.character ?? winner?.characterId);
-  const currentPlayer = room.players.find((player) => player.user?.id === user?.id);
-  const reward = currentPlayer ? resultRewardDelta(currentPlayer.color, winnerColor) : null;
+  const currentPlayer = resultPlayerForRoom(room, user);
+  const voiceCharacter = findCharacter(characters, currentPlayer?.character ?? currentPlayer?.characterId);
+  const reward = resultRewardForRoom(room, user);
   const playedResultSoundRef = useRef(false);
+  const playedResultVoiceRef = useRef(false);
 
   useEffect(() => {
     if (playedResultSoundRef.current) return;
@@ -96,12 +101,23 @@ export function ResultModal({ room, user, characters, audioSettings, onClose }) 
     playEffectSound(sound, audioSettings);
   }, [room, user, audioSettings]);
 
+  useEffect(() => {
+    if (playedResultVoiceRef.current) return;
+    const event = resultVoiceEventForRoom(room, user);
+    if (!event) return;
+    playedResultVoiceRef.current = true;
+    playSystemVoice(event, {
+      character: voiceCharacter,
+      audioSettings
+    });
+  }, [room, user, voiceCharacter, audioSettings]);
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <section className={`result-modal ${winnerColor === COLORS.black ? "black-win" : ""} ${isDraw ? "draw-result" : ""}`} onClick={(event) => event.stopPropagation()}>
         {!isDraw && (
           <div className="result-winner">
-            <img src={character.portrait} alt={character.name} />
+            <img src={resolveCandyPortrait(character, winner?.user?.itemEffects)} alt={character.name} />
             <strong>{winner?.user.username}</strong>
           </div>
         )}
@@ -137,4 +153,25 @@ export function secondsUntilTimestamp(timestamp, now) {
 
 export function formatSignedDelta(value) {
   return value > 0 ? `+${value}` : String(value);
+}
+
+export function resultRewardForRoom(room, user) {
+  const currentPlayer = resultPlayerForRoom(room, user);
+  if (!currentPlayer) return null;
+  if (room.game.winner?.invalid) return { rating: 0, coins: 0 };
+  const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
+  return resultRewardDelta(currentPlayer.color, winnerColor);
+}
+
+export function resultPlayerForRoom(room, user) {
+  return room.players.find((player) => player.user?.id === user?.id) ?? null;
+}
+
+export function resultVoiceEventForRoom(room, user) {
+  if (room.game.winner?.invalid) return null;
+  const currentPlayer = resultPlayerForRoom(room, user);
+  if (!currentPlayer) return null;
+  const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
+  if (!winnerColor) return SYSTEM_VOICE_EVENTS.resultDraw;
+  return currentPlayer.color === winnerColor ? SYSTEM_VOICE_EVENTS.resultVictory : SYSTEM_VOICE_EVENTS.resultDefeat;
 }

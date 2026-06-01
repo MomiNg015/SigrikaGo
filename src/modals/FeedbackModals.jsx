@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
   return (
@@ -16,12 +16,38 @@ export function ConfirmModal({ title, message, confirmText, onConfirm, onCancel 
 }
 
 export function Toast({ text, tone = "danger", onClose }) {
+  const onCloseRef = useRef(onClose);
+
   useEffect(() => {
-    const id = setTimeout(onClose, 3000);
-    return () => clearTimeout(id);
+    onCloseRef.current = onClose;
   }, [onClose]);
 
+  useEffect(() => {
+    const id = setTimeout(() => onCloseRef.current(), 3000);
+    return () => clearTimeout(id);
+  }, []);
+
   return <div className={`toast ${tone}`}>{text}</div>;
+}
+
+export function ToastStack({ toasts, onClose }) {
+  if (!toasts.length) return null;
+  return (
+    <div className="toast-stack" aria-live="polite" aria-atomic="false">
+      {toasts.map((toast) => (
+        <Toast
+          key={toast.id}
+          text={toast.text}
+          tone={toast.tone}
+          onClose={() => onClose(toast.id)}
+        />
+      ))}
+    </div>
+  );
+}
+
+export function limitToastQueue(toasts, maxToasts = 5) {
+  return toasts.slice(0, maxToasts);
 }
 
 export function DuelRequestBanner({ request, onAccept, onReject, onTimeout }) {

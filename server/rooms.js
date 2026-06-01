@@ -1,7 +1,9 @@
 import {
   COLORS,
   GAME_PHASES,
+  INVALID_EARLY_RESIGN_NOTICE,
   activatePassiveSkill,
+  canStartSkill,
   createDrawResult,
   createGameState,
   createScoringState,
@@ -16,6 +18,7 @@ import {
   prepareScoringState,
   randomLayout,
   resetDeadMarks,
+  resultWithInvalidFlagForGame,
   restoreSkillUse,
   restoreSuspendedHiddenHands,
   resignGame,
@@ -28,15 +31,24 @@ import { CHARACTERS } from "../src/shared/characters.js";
 import { resultRewardDelta } from "../src/shared/resultRewards.js";
 import { prisma } from "./db.js";
 import { gameResultMetadata } from "./gameRecords.js";
+import { resetByoYomi, tickPlayerClock } from "./roomClockTiming.js";
+import { candyEffectData, prepareCandyEffectUpdates } from "./roomItemEffects.js";
+import { deletePersistedRoom, listPersistedRooms } from "./roomPersistence.js";
+import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
+import { applyResultRewardsToRoomUsers } from "./roomRewards.js";
 import { buildRoomView } from "./roomView.js";
 import { normalizeChatText, validatePointId, validateRoomCode } from "./security.js";
 
 const rooms = new Map();
-let waitingPlayer = null;
-const TEST_ACTIONS = new Set(["test-random-layout", "test-restore-skill"]);
+let waitingPlayers = [];
+const TEST_ACTIONS = new Set(["test-random-layout", "test-restore-skill", "test-enter-byo-yomi"]);
 const MATCH_SUCCESS_DELAY_MS = 3000;
 const OPENING_NOTICE_DELAY_MS = 3000;
 const INITIAL_PASSIVE_SKILL_DELAY_MS = 3000;
+const ROOM_CLOSE_DELAY_MS = 5 * 60 * 1000;
+const EMPTY_ACTIVE_ROOM_CLOSE_MS = 5 * 60 * 1000;
+const ROOM_PERSIST_THROTTLE_MS = 5000;
+const EMPTY_ROOM_CLOSED_TOAST = "房间因空置5分钟以上而被关闭";
 
 export function getRoom(roomCode) {
   return rooms.get(roomCode);
@@ -46,8 +58,25 @@ export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
 }
 
+export function listWatchRooms() {
+  return [...rooms.values()].map((room) => ({
+    code: room.code,
+    onlineCount: onlineParticipantCount(room),
+    moveNumber: room.game.moveNumber,
+    status: room.game.phase === GAME_PHASES.finished ? "finished" : "playing",
+    closesAt: room.closesAt ?? null,
+    black: watchPlayerSummary(room, COLORS.black),
+    white: watchPlayerSummary(room, COLORS.white)
+  }));
+}
+
 export function isUserInActiveRoom(userId) {
   return listActiveRooms().some((room) => room.players.some((player) => player.user.id === userId));
+}
+
+export function findRoomForUser(userId, roomCode = "") {
+  const candidates = roomCode ? [rooms.get(roomCode)] : [...rooms.values()];
+  return candidates.find((room) => room?.players.some((player) => player.user.id === userId)) ?? null;
 }
 
 export function clearRoomsForTest() {
@@ -55,15 +84,59 @@ export function clearRoomsForTest() {
     clearRoomTimers(room);
   }
   rooms.clear();
-  waitingPlayer = null;
+  waitingPlayers = [];
 }
 
-export function joinMatchmaking(player, io) {
-  if (waitingPlayer && waitingPlayer.user.id !== player.user.id) {
-    const first = waitingPlayer;
-    waitingPlayer = null;
+export async function restorePersistedRooms(io) {
+  const rows = await listPersistedRooms(prisma);
+  const restored = [];
+  for (const row of rows) {
+    try {
+      const room = hydratePersistedRoom(JSON.parse(row.snapshot));
+      if (!room?.code) continue;
+      ensureRestoredDisconnectedNotices(room);
+      rooms.set(room.code, room);
+      restored.push(room);
+      if (resumeRoomTimers(room, io) !== false) persistRoom(room, { force: true });
+    } catch (error) {
+      console.error(`Failed to restore room ${row.code}`, error);
+    }
+  }
+  return restored;
+}
+
+function ensureRestoredDisconnectedNotices(room) {
+  if (room.game.phase === GAME_PHASES.finished) return;
+  for (const player of room.players) {
+    if (player.socketId || !player.disconnectedAt) continue;
+    const username = player.user?.username ?? "";
+    const alreadyAnnounced = room.chat.some((message) => (
+      message.kind === "disconnect"
+      && message.text?.includes(username)
+      && message.text?.includes("断线中")
+    ));
+    if (!alreadyAnnounced) appendSystem(room, `${username}断线中。`, { kind: "disconnect" });
+  }
+}
+
+export function listWaitingPlayers() {
+  return [...waitingPlayers];
+}
+
+export function matchmakingCount() {
+  return waitingPlayers.length;
+}
+
+export function joinMatchmaking(player, io, { canPair = () => true } = {}) {
+  waitingPlayers = waitingPlayers.filter((candidate) => (
+    candidate.user.id !== player.user.id && candidate.socketId !== player.socketId
+  ));
+  const opponentIndex = waitingPlayers.findIndex((candidate) => canPair(candidate, player));
+  if (opponentIndex >= 0) {
+    const [first] = waitingPlayers.splice(opponentIndex, 1);
     const room = createRoom(first, player);
     rooms.set(room.code, room);
+    persistRoom(room, { force: true });
     startGameClock(room, io);
     scheduleGameStart(room, io);
     io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
@@ -72,12 +145,12 @@ export function joinMatchmaking(player, io) {
     broadcastRoom(io, room);
     return room;
   }
-  waitingPlayer = player;
+  waitingPlayers.push(player);
   return null;
 }
 
 export function leaveMatchmaking(userId) {
-  if (waitingPlayer?.user.id === userId) waitingPlayer = null;
+  waitingPlayers = waitingPlayers.filter((player) => player.user.id !== userId);
 }
 
 export function attachSocketToRoom(roomCode, socket, user) {
@@ -87,24 +160,76 @@ export function attachSocketToRoom(roomCode, socket, user) {
   if (!room) return null;
   const player = room.players.find((p) => p.user.id === user.id);
   if (player) {
+    const shouldAnnounceReconnect = !player.socketId
+      && player.disconnectedAt
+      && room.game.phase !== GAME_PHASES.finished;
     player.socketId = socket.id;
+    player.disconnectedAt = null;
+    clearEmptyRoomClose(room);
+    if (shouldAnnounceReconnect) {
+      appendSystem(room, `${player.user.username}已重新连接。`, { kind: "reconnect" });
+    }
   } else if (!room.spectators.some((p) => p.user.id === user.id)) {
     room.spectators.push({ user, socketId: socket.id });
     appendSystem(room, `${user.username}进入了观战席。`);
   }
-  socket.join(roomCode);
+  socket.join(validatedRoomCode.value);
+  persistRoom(room, { force: true });
   return room;
 }
 
-export function detachSocket(socketId) {
-  if (waitingPlayer?.socketId === socketId) waitingPlayer = null;
+export function detachSocket(socketId, io = null) {
+  waitingPlayers = waitingPlayers.filter((player) => player.socketId !== socketId);
   const changedRooms = [];
   for (const room of rooms.values()) {
+    let changed = false;
+    for (const player of room.players) {
+      if (player.socketId === socketId) {
+        player.socketId = null;
+        player.disconnectedAt = Date.now();
+        if (room.game.phase !== GAME_PHASES.finished) {
+          appendSystem(room, `${player.user.username}断线中。`, { kind: "disconnect" });
+        }
+        changed = true;
+      }
+    }
     const before = room.spectators.length;
     room.spectators = room.spectators.filter((s) => s.socketId !== socketId);
-    if (room.spectators.length !== before) changedRooms.push(room);
+    if (room.spectators.length !== before) changed = true;
+    if (changed) {
+      if (io) scheduleEmptyActiveRoomClose(room, io);
+      persistRoom(room, { force: true });
+      changedRooms.push(room);
+    }
   }
   return changedRooms;
+}
+
+export function leaveRoom(roomCode, userId, socketId = "") {
+  const validatedRoomCode = validateRoomCode(roomCode);
+  if (!validatedRoomCode.ok) return null;
+  const room = rooms.get(validatedRoomCode.value);
+  if (!room) return null;
+  const finishedPlayer = room.game.phase === GAME_PHASES.finished
+    ? room.players.find((candidate) => (
+        candidate.user.id === userId && (!socketId || candidate.socketId === socketId)
+      ))
+    : null;
+  if (finishedPlayer) {
+    finishedPlayer.socketId = null;
+    finishedPlayer.disconnectedAt = null;
+    appendSystem(room, `${finishedPlayer.user.username}离开了观战席。`, { kind: "spectator-leave" });
+    persistRoom(room, { force: true });
+    return room;
+  }
+  const spectator = room.spectators.find((candidate) => (
+    candidate.user.id === userId && (!socketId || candidate.socketId === socketId)
+  ));
+  if (!spectator) return null;
+  room.spectators = room.spectators.filter((candidate) => candidate !== spectator);
+  appendSystem(room, `${spectator.user.username}离开了观战席。`, { kind: "spectator-leave" });
+  persistRoom(room, { force: true });
+  return room;
 }
 
 export function createDirectRoom(first, second, io) {
@@ -112,6 +237,7 @@ export function createDirectRoom(first, second, io) {
   leaveMatchmaking(second.user.id);
   const room = createRoom(first, second);
   rooms.set(room.code, room);
+  persistRoom(room, { force: true });
   startGameClock(room, io);
   scheduleGameStart(room, io);
   appendSystem(room, "对局申请已同意，3秒后进入空想对局。");
@@ -136,8 +262,18 @@ export function handleGameAction(roomCode, userId, action, io) {
     return { ok: false, error: "测试工具仅开发环境可用" };
   }
 
+  if (action.type === "test-enter-byo-yomi") {
+    if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "对局当前不能进入读秒" };
+    player.time.main = 0;
+    resetByoYomi(player);
+    const label = player.color === COLORS.black ? "黑" : "白";
+    appendSystem(room, `测试工具：${label}方已进入读秒。`);
+    return { ok: true, room };
+  }
+
   if (action.type === "skill") {
     const skillConfig = player.character?.skill ?? player.characterId;
+    if (!canStartSkill(room.game, skillConfig)) return { ok: false, error: "场上没有可作用的棋子" };
     const skillTargetId = skillUsesConfirmationPoint(skillConfig) ? null : action.pointId;
     const result = useSkill(room.game, player.color, skillConfig, skillTargetId);
     if (!result.ok) return result;
@@ -152,6 +288,7 @@ export function handleGameAction(roomCode, userId, action, io) {
       characterId: character.id ?? player.characterId,
       character: player.character ?? null,
       characterName: character.name,
+      itemEffects: player.user.itemEffects ?? {},
       skillName: skill.name
     };
     room.game = {
@@ -185,6 +322,9 @@ export function handleGameAction(roomCode, userId, action, io) {
 
   room.game = result.state;
   appendNotices(room, result.notices);
+  if (action.type === "resign" && room.game.winner?.invalid) {
+    broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);
+  }
   if (!action.type.startsWith("test-")) resetByoYomi(player);
   const label = player.color === COLORS.black ? "黑" : "白";
   if (action.type === "pass") appendSystem(room, `${label}方弃一手。`);
@@ -216,17 +356,7 @@ export function requestCounting(roomCode, userId, io) {
   room.game.scoring.requestedBy = userId;
   room.countingDeadline = Date.now() + 30000;
   appendSystem(room, `${player.user.username}申请数子。`);
-  setTimeout(() => {
-    const latest = rooms.get(code);
-    if (latest?.game.phase === GAME_PHASES.countingRequested && latest.countingDeadline && Date.now() >= latest.countingDeadline) {
-      restoreSuspendedHiddenHands(latest.game);
-      latest.game.phase = GAME_PHASES.playing;
-      latest.game.scoring = null;
-      latest.countingDeadline = null;
-      appendSystem(latest, "数子申请超时，视为不同意数子。");
-      broadcastRoom(io, latest);
-    }
-  }, 30000);
+  scheduleCountingTimeout(room, io);
   return { ok: true, room };
 }
 
@@ -273,16 +403,7 @@ export function requestDraw(roomCode, userId, io) {
   };
   room.drawDeadline = Date.now() + 10000;
   appendSystem(room, `${player.user.username}申请和棋。`);
-  setTimeout(() => {
-    const latest = rooms.get(code);
-    if (latest?.game.phase === GAME_PHASES.drawRequested && latest.drawDeadline && Date.now() >= latest.drawDeadline) {
-      latest.game.phase = GAME_PHASES.playing;
-      latest.game.drawRequest = null;
-      latest.drawDeadline = null;
-      appendSystem(latest, "和棋申请超时，对局继续。");
-      broadcastRoom(io, latest);
-    }
-  }, 10000);
+  scheduleDrawTimeout(room, io);
   return { ok: true, room };
 }
 
@@ -306,7 +427,8 @@ export function respondDraw(roomCode, userId, accepted, io) {
 
   room.game.phase = GAME_PHASES.finished;
   room.game.drawRequest = null;
-  room.game.winner = createDrawResult("agreement");
+  room.game.winner = resultWithInvalidFlagForGame(room.game, createDrawResult("agreement"));
+  if (room.game.winner?.invalid) broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);
   room.drawDeadline = null;
   appendSystem(room, "双方同意和棋，对局结束。");
   scheduleRoomClose(roomCode, io);
@@ -360,7 +482,8 @@ export function handleScoringAction(roomCode, userId, action, io) {
     room.game.scoring.resultAcceptedBy = [...accepted];
     if (room.game.scoring.resultAcceptedBy.length === 2) {
       room.game.phase = GAME_PHASES.finished;
-      room.game.winner = room.game.scoring.result;
+      room.game.winner = resultWithInvalidFlagForGame(room.game, room.game.scoring.result);
+      if (room.game.winner?.invalid) broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);
       appendNotices(room, exposeHiddenHands(room.game));
       appendSystem(room, `对局结束，${room.game.scoring.result.text}。`);
       scheduleRoomClose(roomCode, io);
@@ -397,16 +520,60 @@ export function addChat(roomCode, user, text) {
 }
 
 export function broadcastRoom(io, room) {
+  persistRoom(room, { force: true });
   for (const player of room.players) {
-    io.to(player.socketId).emit("room:update", roomView(room, player.user.id));
+    if (player.socketId) io.to(player.socketId).emit("room:update", roomView(room, player.user.id));
   }
   for (const spectator of room.spectators) {
-    io.to(spectator.socketId).emit("room:update", roomView(room, spectator.user.id));
+    if (spectator.socketId) io.to(spectator.socketId).emit("room:update", roomView(room, spectator.user.id));
   }
+}
+
+function broadcastRoomClock(io, room) {
+  const payload = roomClockPayload(room);
+  persistRoom(room);
+  for (const participant of [...room.players, ...room.spectators]) {
+    if (participant.socketId) io.to(participant.socketId).emit("room:clock", payload);
+  }
+}
+
+function roomClockPayload(room) {
+  return {
+    roomCode: room.code,
+    activeColor: room.game.turn,
+    serverNow: Date.now(),
+    players: room.players.map((player) => ({
+      color: player.color,
+      time: { ...player.time }
+    }))
+  };
 }
 
 export function roomView(room, viewerId) {
   return buildRoomView(room, viewerId);
+}
+
+function onlineParticipantCount(room) {
+  return room.players.filter((player) => player.socketId).length
+    + room.spectators.filter((spectator) => spectator.socketId).length;
+}
+
+function watchPlayerSummary(room, color) {
+  const player = room.players.find((candidate) => candidate.color === color);
+  if (!player) return null;
+  return {
+    user: player.user,
+    characterId: player.characterId,
+    character: player.character,
+    connected: Boolean(player.socketId),
+    disconnectedAt: player.disconnectedAt ?? null
+  };
+}
+
+function broadcastToast(io, room, text) {
+  for (const participant of [...room.players, ...room.spectators]) {
+    if (participant.socketId) io.to(participant.socketId).emit("error:toast", text);
+  }
 }
 
 function validateActionPoint(action) {
@@ -452,6 +619,7 @@ function toRoomPlayer(player, color) {
   return {
     user: player.user,
     socketId: player.socketId,
+    disconnectedAt: null,
     color,
     characterId: player.user.selectedCharacter,
     character: player.user.characterConfig ?? null,
@@ -503,6 +671,7 @@ function maybeStartPassiveSkill(room, io) {
     characterId: player.character?.id ?? player.characterId,
     character: player.character ?? null,
     characterName: player.character?.name ?? CHARACTERS[player.characterId]?.name,
+    itemEffects: player.user.itemEffects ?? {},
     skillName: skill.name
   };
   room.game = {
@@ -547,6 +716,35 @@ function scheduleInitialPassiveSkill(room, io) {
     if (!latest || latest.game.phase !== GAME_PHASES.playing) return;
     if (startInitialPassiveSkillNow(latest, io)) broadcastRoom(io, latest);
   }, INITIAL_PASSIVE_SKILL_DELAY_MS);
+}
+
+function scheduleCountingTimeout(room, io) {
+  const delay = Math.max(0, (room.countingDeadline ?? Date.now()) - Date.now());
+  scheduleRoomTimeout(room, () => {
+    const latest = rooms.get(room.code);
+    if (latest?.game.phase === GAME_PHASES.countingRequested && latest.countingDeadline && Date.now() >= latest.countingDeadline) {
+      restoreSuspendedHiddenHands(latest.game);
+      latest.game.phase = GAME_PHASES.playing;
+      latest.game.scoring = null;
+      latest.countingDeadline = null;
+      appendSystem(latest, "数子申请超时，视为不同意数子。");
+      broadcastRoom(io, latest);
+    }
+  }, delay);
+}
+
+function scheduleDrawTimeout(room, io) {
+  const delay = Math.max(0, (room.drawDeadline ?? Date.now()) - Date.now());
+  scheduleRoomTimeout(room, () => {
+    const latest = rooms.get(room.code);
+    if (latest?.game.phase === GAME_PHASES.drawRequested && latest.drawDeadline && Date.now() >= latest.drawDeadline) {
+      latest.game.phase = GAME_PHASES.playing;
+      latest.game.drawRequest = null;
+      latest.drawDeadline = null;
+      appendSystem(latest, "和棋申请超时，对局继续。");
+      broadcastRoom(io, latest);
+    }
+  }, delay);
 }
 
 export function startInitialPassiveSkillNow(room, io) {
@@ -651,6 +849,11 @@ function startGameClock(room, io) {
       room.lastTick = Date.now();
       return;
     }
+    if (arePlayersDisconnected(room)) {
+      room.lastTick = Date.now();
+      scheduleEmptyActiveRoomClose(room, io);
+      return;
+    }
     const now = Date.now();
     const elapsed = Math.max(1, Math.floor((now - room.lastTick) / 1000));
     if (elapsed <= 0) return;
@@ -660,41 +863,23 @@ function startGameClock(room, io) {
     tickPlayerClock(active, elapsed);
     if (active.time.main <= 0 && active.time.periods <= 0) {
       room.game.phase = GAME_PHASES.finished;
-      room.game.winner = createTimeoutResult(active.color);
+      room.game.winner = resultWithInvalidFlagForGame(room.game, createTimeoutResult(active.color));
+      if (room.game.winner?.invalid) broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);
       appendSystem(room, `${active.user.username}超时，对局结束。`);
       scheduleRoomClose(room.code, io);
+      broadcastRoom(io, room);
+      return;
     }
-    broadcastRoom(io, room);
+    broadcastRoomClock(io, room);
   }, 1000);
 }
 
-function tickPlayerClock(player, elapsed) {
-  let remaining = elapsed;
-  if (player.time.main > 0) {
-    const used = Math.min(player.time.main, remaining);
-    player.time.main -= used;
-    remaining -= used;
-  }
-  while (remaining > 0 && player.time.main <= 0 && player.time.periods > 0) {
-    const used = Math.min(player.time.periodRemaining, remaining);
-    player.time.periodRemaining -= used;
-    remaining -= used;
-    if (player.time.periodRemaining <= 0) {
-      player.time.periods -= 1;
-      player.time.periodRemaining = player.time.byoYomi;
-    }
-  }
-}
-
-function resetByoYomi(player) {
-  if (player.time.main <= 0 && player.time.periods > 0) {
-    player.time.periodRemaining = player.time.byoYomi;
-  }
-}
-
-function scheduleResultReviewTimeout(roomCode, io) {
-  setTimeout(() => {
-    const latest = rooms.get(roomCode);
+function scheduleResultReviewTimeout(roomOrCode, io) {
+  const room = typeof roomOrCode === "string" ? rooms.get(roomOrCode) : roomOrCode;
+  if (!room) return;
+  const delay = Math.max(0, (room.game.scoring?.resultDeadline ?? Date.now()) - Date.now());
+  scheduleRoomTimeout(room, () => {
+    const latest = rooms.get(room.code);
     const deadline = latest?.game.scoring?.resultDeadline;
     if (latest?.game.phase === GAME_PHASES.resultReview && deadline && Date.now() >= deadline) {
       latest.game.phase = GAME_PHASES.playing;
@@ -702,32 +887,144 @@ function scheduleResultReviewTimeout(roomCode, io) {
       appendSystem(latest, "数子结果确认超时，对局继续。");
       broadcastRoom(io, latest);
     }
-  }, 30000);
+  }, delay);
 }
 
 function scheduleRoomClose(roomCode, io) {
   const room = rooms.get(roomCode);
-  if (!room || room.closesAt) return;
-  saveGameRecord(room).catch((error) => {
-    console.error("Failed to save game record", error);
+  if (!room) return;
+  if (!room.recordSaved) {
+    prepareCandyEffectUpdates(room);
+    saveGameRecord(room).catch((error) => {
+      console.error("Failed to save game record", error);
+    });
+  }
+  if (!room.closesAt) {
+    room.closesAt = Date.now() + ROOM_CLOSE_DELAY_MS;
+  }
+  persistRoom(room, { force: true });
+  scheduleRoomTimeout(room, () => {
+    closeRoom(roomCode, io, { message: EMPTY_ROOM_CLOSED_TOAST });
+  }, Math.max(0, room.closesAt - Date.now()));
+}
+
+function closeRoom(roomCode, io, { message = "" } = {}) {
+  const room = rooms.get(roomCode);
+  if (!room) return;
+  clearRoomTimers(room);
+  for (const participant of [...room.players, ...room.spectators]) {
+    if (participant.socketId) io.to(participant.socketId).emit("room:closed", message ? { message } : {});
+  }
+  rooms.delete(roomCode);
+  deletePersistedRoom(prisma, roomCode).catch((error) => {
+    console.error("Failed to delete persisted room", error);
   });
-  room.closesAt = Date.now() + 5 * 60 * 1000;
-  setTimeout(() => {
-    const latest = rooms.get(roomCode);
-    if (latest?.timerId) clearInterval(latest.timerId);
-    io.to(roomCode).emit("room:closed");
-    rooms.delete(roomCode);
-  }, 5 * 60 * 1000);
+}
+
+function scheduleEmptyActiveRoomClose(room, io) {
+  if (!room || room.game.phase === GAME_PHASES.finished) return;
+  if (!arePlayersDisconnected(room)) {
+    clearEmptyRoomClose(room);
+    return;
+  }
+  room.emptySince ??= Date.now();
+  if (room.emptyTimerId) return;
+  const delay = Math.max(0, room.emptySince + EMPTY_ACTIVE_ROOM_CLOSE_MS - Date.now());
+  room.emptyTimerId = scheduleRoomTimeout(room, () => {
+    room.emptyTimerId = null;
+    const latest = rooms.get(room.code);
+    if (!latest || latest.game.phase === GAME_PHASES.finished || !arePlayersDisconnected(latest)) return;
+    latest.game.phase = GAME_PHASES.finished;
+    latest.game.winner = {
+      winnerColor: null,
+      reason: "empty-room",
+      text: "对局无效",
+      invalid: true,
+      invalidReason: "empty-room"
+    };
+    latest.recordSaved = true;
+    appendSystem(latest, "双方离开房间超过5分钟，对局无效。");
+    persistRoom(latest, { force: true });
+    closeRoom(latest.code, io);
+  }, delay);
+  persistRoom(room, { force: true });
+}
+
+function clearEmptyRoomClose(room) {
+  room.emptySince = null;
+  if (room.emptyTimerId) {
+    clearTimeout(room.emptyTimerId);
+    room.timeoutIds = (room.timeoutIds ?? []).filter((id) => id !== room.emptyTimerId);
+    room.emptyTimerId = null;
+  }
+}
+
+function arePlayersDisconnected(room) {
+  return room.players.length > 0 && room.players.every((player) => !player.socketId);
+}
+
+function persistRoom(room, { force = false } = {}) {
+  persistRoomState({
+    prisma,
+    room,
+    force,
+    throttleMs: ROOM_PERSIST_THROTTLE_MS,
+    onError: (error) => {
+      console.error("Failed to persist room", error);
+    }
+  });
+}
+
+function resumeRoomTimers(room, io) {
+  if (room.game.phase === GAME_PHASES.finished) {
+    if (room.closesAt && room.closesAt <= Date.now()) {
+      closeRoom(room.code, io, { message: EMPTY_ROOM_CLOSED_TOAST });
+      return false;
+    }
+    scheduleRoomClose(room.code, io);
+    return true;
+  }
+  if (room.game.phase === GAME_PHASES.opening) {
+    startGameClock(room, io);
+    if (room.openingEndsAt <= Date.now()) completeRoomOpening(room, io);
+    else scheduleGameStart(room, io);
+  } else {
+    if (room.game.phase === GAME_PHASES.skillPreview) {
+      room.game.phase = GAME_PHASES.playing;
+      room.game.pendingSkill = null;
+    }
+    startGameClock(room, io);
+    schedulePendingRoomDeadlines(room, io);
+    scheduleEmptyActiveRoomClose(room, io);
+  }
+  return true;
+}
+
+function schedulePendingRoomDeadlines(room, io) {
+  if (room.game.phase === GAME_PHASES.countingRequested && room.countingDeadline) {
+    scheduleCountingTimeout(room, io);
+  }
+  if (room.game.phase === GAME_PHASES.drawRequested && room.drawDeadline) {
+    scheduleDrawTimeout(room, io);
+  }
+  if (room.game.phase === GAME_PHASES.resultReview && room.game.scoring?.resultDeadline) {
+    scheduleResultReviewTimeout(room.code, io);
+  }
 }
 
 async function saveGameRecord(room) {
   if (room.recordSaved || room.game.phase !== GAME_PHASES.finished) return;
+  if (room.game.winner?.invalid) {
+    room.recordSaved = true;
+    return;
+  }
   const black = room.players.find((player) => player.color === COLORS.black);
   const white = room.players.find((player) => player.color === COLORS.white);
   if (!black || !white) return;
+  const candyEffectUpdates = prepareCandyEffectUpdates(room);
   room.recordSaved = true;
   const resultMetadata = gameResultMetadata(room.game.winner);
-  const recordCreate = prisma.gameRecord.create({
+  const createRecord = () => prisma.gameRecord.create({
     data: {
       roomCode: room.code,
       blackUserId: black.user.id,
@@ -745,13 +1042,24 @@ async function saveGameRecord(room) {
     }
   });
   if (![COLORS.black, COLORS.white].includes(room.game.winner?.winnerColor)) {
-    await recordCreate;
+    const recordCreate = createRecord();
+    const operations = [
+      recordCreate,
+      ...candyEffectUpdates.map(({ player, clear }) => prisma.user.update({
+        where: { id: player.user.id },
+        data: { itemEffects: clear.itemEffects }
+      }))
+    ];
+    if (operations.length > 1) await prisma.$transaction(operations);
+    else await recordCreate;
     return;
   }
   const winner = room.game.winner.winnerColor === COLORS.black ? black : white;
   const loser = winner.color === COLORS.black ? white : black;
   const winnerReward = resultRewardDelta(winner.color, room.game.winner.winnerColor);
   const loserReward = resultRewardDelta(loser.color, room.game.winner.winnerColor);
+  applyResultRewardsToRoomUsers(winner, loser, winnerReward, loserReward);
+  const recordCreate = createRecord();
   await prisma.$transaction([
     recordCreate,
     prisma.user.update({
@@ -759,7 +1067,8 @@ async function saveGameRecord(room) {
       data: {
         wins: { increment: 1 },
         rating: { increment: winnerReward.rating },
-        coins: { increment: winnerReward.coins }
+        coins: { increment: winnerReward.coins },
+        ...candyEffectData(winner, candyEffectUpdates)
       }
     }),
     prisma.user.update({
@@ -767,7 +1076,8 @@ async function saveGameRecord(room) {
       data: {
         losses: { increment: 1 },
         rating: { increment: loserReward.rating },
-        coins: { increment: loserReward.coins }
+        coins: { increment: loserReward.coins },
+        ...candyEffectData(loser, candyEffectUpdates)
       }
     })
   ]);

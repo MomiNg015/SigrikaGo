@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { CHARACTER_SKILL_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
+import { CHARACTER_SKILL_VOICES, CHARACTER_SYSTEM_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
+import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { deploymentSocketBase, loginPreloadAssets, playbackAssetSources } from "./preloadAssets.js";
 
 describe("deployment preload asset helpers", () => {
@@ -14,7 +15,7 @@ describe("deployment preload asset helpers", () => {
     ]);
   });
 
-  it("preloads core images, effects, default music, and owned character voices", () => {
+  it("preloads core images, effects, all runtime music, and character voices after login", () => {
     const assets = loginPreloadAssets({
       characters: {
         sigrika: { portrait: "/assets/sigrika_centered.png" },
@@ -22,14 +23,40 @@ describe("deployment preload asset helpers", () => {
       },
       ownedCharacters: ["sigrika"],
       tracks: MUSIC_TRACKS,
-      skillVoices: CHARACTER_SKILL_VOICES
+      skillVoices: CHARACTER_SKILL_VOICES,
+      systemVoices: CHARACTER_SYSTEM_VOICES
     });
 
     expect(assets.images).toContain("/assets/sigrika_centered.png");
     expect(assets.images).toContain("/assets/Aemeath_centered.png");
+    expect(assets.images).toContain("/assets/home/fantasy-match-entry.png");
+    expect(assets.images).toContain("/assets/home/book-entry.png");
+    expect(assets.images).toContain("/assets/home/multipurpose-classroom-bg.jpg");
+    expect(assets.images).toContain("/assets/zahiya_shop.png");
+    expect(assets.images).toContain("/assets/items/rainbow-bean-candy.png");
+    expect(assets.images).toContain("/assets/effects/denia-bubble-pop.gif");
+    expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
     expect(assets.audio).toContain("/assets/music/godown_clear.ogg");
-    expect(assets.audio).toContain("/assets/music/hidamari_intro_once.ogg");
+    expect(assets.audio).toContain("/assets/music/main_bgm.ogg");
     expect(assets.audio).toContain("/assets/music/shanjifu_loop.ogg");
-    expect(assets.audio).toContain("/assets/voice/sigrika_2_no_exclaim.ogg");
+    expect(assets.audio).toContain("/assets/music/bgm_intro_once.ogg");
+    expect(assets.audio).toContain("/assets/music/koimoon_132_micro_loop.ogg");
+    expect(assets.audio).toContain("/assets/music/busizhe_loop.ogg");
+    expect(assets.audio).toContain("/assets/voice/sigrika_skill_cast.ogg");
+    expect(assets.audio).toContain("/assets/voice/denia_skill_cast.ogg");
+    expect(assets.audio).toContain("/assets/voice/baconbits_skill.ogg");
+    expect(assets.audio).toContain("/assets/voice/sigrika_countdown_10.ogg");
+  });
+
+  it("preloads the candy portrait even before the active user has the candy effect", () => {
+    const assets = loginPreloadAssets({
+      characters: {
+        denia: { portrait: "/assets/Danea_centered.png" }
+      },
+      itemEffects: {}
+    });
+
+    expect(assets.images).toContain("/assets/Danea_centered.png");
+    expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
   });
 });

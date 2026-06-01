@@ -4,6 +4,7 @@ import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "./systemVoices.js";
 describe("system voices", () => {
   it("exposes explicit system voice event keys for character voice maps", () => {
     expect(SYSTEM_VOICE_EVENTS.skillCast).toBe("skill-cast");
+    expect(SYSTEM_VOICE_EVENTS.sortie).toBe("sortie");
     expect(SYSTEM_VOICE_EVENTS.byoYomiPeriod2).toBe("byo-yomi-period-2");
     expect(SYSTEM_VOICE_EVENTS.byoYomiPeriod1).toBe("byo-yomi-period-1");
     expect(SYSTEM_VOICE_EVENTS.houseDetail).toBe("house-detail");

@@ -6,12 +6,14 @@ import {
 import {
   banUser,
   createAdminRouter,
+  detectImageMimeFromBuffer,
   requireUserUpdateData,
   resetUserPassword,
   sanitizeUserUpdate,
   serializeAudit,
   unbanUser,
-  updateUserProfile
+  updateUserProfile,
+  validatePortraitUpload
 } from "./adminRoutes.js";
 
 describe("admin route helpers", () => {
@@ -412,6 +414,23 @@ describe("admin character routes", () => {
     expect(response.status).toBe(413);
     expect(response.body).toEqual({ error: "Portrait file must be 3MB or smaller" });
   });
+
+  it("detects image MIME types from file signatures", () => {
+    expect(detectImageMimeFromBuffer(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))).toBe("image/png");
+    expect(detectImageMimeFromBuffer(Buffer.from([0xff, 0xd8, 0xff, 0xdb]))).toBe("image/jpeg");
+    expect(detectImageMimeFromBuffer(Buffer.from("GIF89a"))).toBe("image/gif");
+    expect(detectImageMimeFromBuffer(Buffer.from("RIFFxxxxWEBP"))).toBe("image/webp");
+  });
+
+  it("rejects portrait uploads whose content does not match the declared MIME type", async () => {
+    await expect(validatePortraitUpload({
+      file: { mimetype: "image/png", path: "portrait.png" },
+      readFile: async () => Buffer.from("GIF89a")
+    })).rejects.toMatchObject({
+      status: 400,
+      message: "Portrait file content does not match image type"
+    });
+  });
 });
 
 describe("admin shop and decoration routes", () => {
@@ -555,6 +574,62 @@ describe("admin shop and decoration routes", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({ error: "Shop character target does not exist" });
+  });
+
+  it("updates a built-in decoration shop item even when it is not in the admin decoration table", async () => {
+    const calls = [];
+    const response = await requestAdminRoute({
+      decoration: {
+        findUnique: async () => null
+      },
+      shopItem: {
+        findMany: async () => []
+      },
+      $transaction: async (callback) => callback({
+        shopItem: {
+          findUnique: async () => ({
+            id: "shop-1",
+            name: "Old Paw Stone",
+            category: "decoration",
+            targetId: "paw-stone",
+            priceCoins: 500,
+            discountPercent: 0,
+            purchasable: true,
+            enabled: true,
+            sortOrder: 1,
+            description: "old",
+            imageUrl: "/assets/decorations/paw-stone-preview.png"
+          }),
+          update: async ({ data }) => {
+            calls.push(["tx.shopItem.update", data]);
+            return { id: "shop-1", ...data };
+          }
+        },
+        adminAuditLog: {
+          create: async () => {
+            calls.push(["tx.adminAuditLog.create"]);
+          }
+        }
+      })
+    }, "/shop-items/shop-1", {
+      method: "PATCH",
+      body: {
+        name: "Paw Stone",
+        category: "decoration",
+        targetId: "paw-stone",
+        priceCoins: 500,
+        discountPercent: 0,
+        purchasable: true,
+        enabled: true,
+        sortOrder: 1,
+        description: "new description",
+        imageUrl: "/assets/decorations/paw-stone-preview.png"
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.item.description).toBe("new description");
+    expect(calls).toContainEqual(["tx.shopItem.update", expect.objectContaining({ targetId: "paw-stone" })]);
   });
 });
 

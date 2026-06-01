@@ -113,6 +113,28 @@
   color: #121217;
 }
 
+.disconnect-badge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  display: inline-grid;
+  place-items: center;
+  min-width: 74px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 2px solid #d91528;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #d91528;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+  box-shadow: 0 8px 20px rgba(85, 12, 24, 0.14);
+}
+
 .viewpoint-button {
   position: absolute;
   left: 0;
@@ -632,7 +654,7 @@
 .black .stone.decorated-stone,
 .white .stone.decorated-stone {
   background: center / 100% 100% no-repeat var(--stone-decoration-image);
-  box-shadow: 0 4px 8px rgba(45, 29, 18, 0.24);
+  box-shadow: none;
 }
 
 .hidden-hand .stone {
@@ -645,8 +667,9 @@
   box-shadow:
     inset -9px -11px 15px rgba(0, 0, 0, 0.18),
     0 6px 10px rgba(45, 29, 18, 0.28),
-    0 0 0 3px rgba(63, 218, 127, 0.8),
-    0 0 16px rgba(49, 226, 118, 0.9);
+    0 0 0 3px rgba(8, 174, 84, 0.95),
+    0 0 18px rgba(0, 142, 72, 0.96),
+    0 0 30px rgba(20, 232, 108, 0.5);
   animation: hidden-hand-glow 1.35s ease-in-out infinite alternate;
 }
 
@@ -654,8 +677,9 @@
   box-shadow:
     inset -9px -11px 15px rgba(0, 0, 0, 0.18),
     0 6px 10px rgba(45, 29, 18, 0.28),
-    0 0 16px rgba(178, 76, 255, 0.88),
-    0 0 30px rgba(255, 104, 183, 0.34);
+    0 0 0 3px rgba(126, 30, 255, 0.95),
+    0 0 18px rgba(112, 24, 214, 0.96),
+    0 0 34px rgba(235, 48, 170, 0.52);
   animation: flipped-stone-glow 1.35s ease-in-out infinite alternate;
 }
 
@@ -677,19 +701,19 @@
 
 @keyframes hidden-hand-glow {
   from {
-    filter: drop-shadow(0 0 4px rgba(63, 218, 127, 0.65));
+    filter: drop-shadow(0 0 5px rgba(8, 174, 84, 0.82));
   }
   to {
-    filter: drop-shadow(0 0 14px rgba(42, 232, 109, 0.95));
+    filter: drop-shadow(0 0 16px rgba(0, 180, 88, 1));
   }
 }
 
 @keyframes flipped-stone-glow {
   from {
-    filter: drop-shadow(0 0 4px rgba(164, 80, 255, 0.65));
+    filter: drop-shadow(0 0 5px rgba(126, 30, 255, 0.82));
   }
   to {
-    filter: drop-shadow(0 0 14px rgba(188, 92, 255, 0.95));
+    filter: drop-shadow(0 0 16px rgba(124, 30, 230, 1));
   }
 }
 
@@ -1132,9 +1156,18 @@
   color: #6f6874;
 }
 
+.room-person.disconnected {
+  background: #eee9ef;
+  color: #958897;
+}
+
 .room-person.player .room-person-name {
   color: #d92f42;
   font-weight: 900;
+}
+
+.room-person.player.disconnected .room-person-name {
+  color: #9a879d;
 }
 
 .room-person.spectator .room-person-name {

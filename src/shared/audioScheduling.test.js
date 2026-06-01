@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BGM_FADE_SECONDS, createPlaybackKey, createPlaybackSchedule, createVolumeRamp } from "./audioScheduling.js";
+import { BGM_FADE_SECONDS, createDuckedVolume, createPlaybackKey, createPlaybackSchedule, createVolumeRamp } from "./audioScheduling.js";
 
 describe("background audio scheduling", () => {
   it("schedules intro and loop on one audio timeline without waiting for ended events", () => {
@@ -56,5 +56,10 @@ describe("background audio scheduling", () => {
     };
 
     expect(createPlaybackKey({ id: "home", playback }, 0)).toBe(createPlaybackKey({ id: "home", playback }, 0.72));
+  });
+
+  it("ducks background music while voice playback is active", () => {
+    expect(createDuckedVolume({ volume: 0.5, activeVoiceCount: 1 })).toBeCloseTo(0.175);
+    expect(createDuckedVolume({ volume: 0.5, activeVoiceCount: 0 })).toBeCloseTo(0.5);
   });
 });

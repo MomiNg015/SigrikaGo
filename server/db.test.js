@@ -18,6 +18,7 @@ describe("publicUser", () => {
       selectedStoneDecoration: "paw-stone",
       ownedCharacters: "sigrika,danea",
       ownedItems: "",
+      itemEffects: JSON.stringify({ sigrikaCandyDisabled: true }),
       ownedDecorations: ""
     };
 
@@ -35,6 +36,7 @@ describe("publicUser", () => {
       selectedStoneDecoration: "paw-stone",
       ownedCharacters: ["sigrika", "denia", "aemeath"],
       ownedItems: [],
+      itemEffects: { sigrikaCandyDisabled: true },
       ownedDecorations: []
     });
     expect(publicUser(user).ownedCharacters).not.toContain("baconbits");
@@ -56,6 +58,7 @@ describe("publicUser", () => {
       selectedStoneDecoration: "",
       ownedCharacters: "sigrika",
       ownedItems: "",
+      itemEffects: "",
       ownedDecorations: ""
     };
 

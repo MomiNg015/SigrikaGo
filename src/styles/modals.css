@@ -14,6 +14,7 @@
 .small-modal,
 .shop-modal,
 .house-modal,
+.warehouse-modal,
 .leaderboard-modal,
 .friends-modal,
 .confirm-modal,
@@ -28,6 +29,7 @@
 .small-modal,
 .shop-modal,
 .house-modal,
+.warehouse-modal,
 .leaderboard-modal,
 .friends-modal,
 .settings-modal {
@@ -361,8 +363,9 @@
   background: rgba(248, 242, 250, 0.34);
 }
 
-.user-profile-modal {
-  overflow: auto;
+.user-profile-modal,
+.room-floating-modal.user-profile-modal {
+  overflow: hidden;
 }
 
 .confirm-inline-modal {
@@ -374,7 +377,10 @@
 
 .user-profile-card {
   display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 14px;
+  max-height: min(492px, calc(70vh - 28px));
+  min-height: 0;
 }
 
 .profile-resume-hero {
@@ -436,9 +442,17 @@
   min-width: 0;
 }
 
+.profile-character-section {
+  min-height: 0;
+}
+
 .profile-character-list {
   display: grid;
+  align-content: start;
   gap: 6px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .profile-character-row {
@@ -477,6 +491,37 @@
 }
 
 .profile-replay-button:disabled {
+  background: #ebe6ed;
+  color: #9a909d;
+  cursor: not-allowed;
+}
+
+.profile-footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.profile-relation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.profile-relation-actions button {
+  min-height: 38px;
+  border: 1px solid #d7cae0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff7fb, #f3f8ff);
+  color: #4f3d55;
+  font-weight: 900;
+  padding: 8px 12px;
+}
+
+.profile-relation-actions button:disabled {
   background: #ebe6ed;
   color: #9a909d;
   cursor: not-allowed;

@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { BOARD_SIZE, COLORS } from "../shared/game.js";
 import { lastMarkedAction } from "../shared/boardView.js";
 import { stoneDecorationImage } from "../shared/stoneDecorations.js";
@@ -9,7 +10,7 @@ import {
   isStarPoint
 } from "./roomView.js";
 
-export default function Board({
+function Board({
   game,
   showCoords,
   showMoves,
@@ -21,15 +22,18 @@ export default function Board({
   onNeutral
 }) {
   const markedAction = lastMarkedAction(game.history);
-  const moveNumbers = new Map(game.history.filter((entry) => entry.type === "move").map((entry) => [entry.id, entry.moveNumber]));
-  const labels = Array.from({ length: BOARD_SIZE }, (_, index) => coordLetter(index));
-  const rows = Array.from({ length: BOARD_SIZE }, (_, index) => BOARD_SIZE - index);
-  const lines = buildBoardLines(game.points);
+  const moveNumbers = useMemo(
+    () => new Map(game.history.filter((entry) => entry.type === "move").map((entry) => [entry.id, entry.moveNumber])),
+    [game.history]
+  );
+  const labels = useMemo(() => Array.from({ length: BOARD_SIZE }, (_, index) => coordLetter(index)), []);
+  const rows = useMemo(() => Array.from({ length: BOARD_SIZE }, (_, index) => BOARD_SIZE - index), []);
+  const lines = useMemo(() => buildBoardLines(game.points), [game.points]);
   const showScoringMarks = ["marking-dead", "result-review", "finished"].includes(game.phase);
-  const territoryOwner = new Map([
+  const territoryOwner = useMemo(() => new Map([
     ...(showScoringMarks ? game.scoring?.territory?.black ?? [] : []).map((id) => [id, COLORS.black]),
     ...(showScoringMarks ? game.scoring?.territory?.white ?? [] : []).map((id) => [id, COLORS.white])
-  ]);
+  ]), [game.scoring?.territory?.black, game.scoring?.territory?.white, showScoringMarks]);
   const deadStoneOwners = showScoringMarks ? game.scoring?.deadStoneOwners ?? {} : {};
   return (
     <div className={`board-wrap ${pendingSkill ? "targeting" : ""}`}>
@@ -100,3 +104,26 @@ export default function Board({
     </div>
   );
 }
+
+export function areBoardPropsEqual(previous, next) {
+  return previous.game === next.game
+    && previous.showCoords === next.showCoords
+    && previous.showMoves === next.showMoves
+    && previous.pendingSkill === next.pendingSkill
+    && samePreviewPlayer(previous.previewPlayer, next.previewPlayer)
+    && Boolean(previous.onScoringPoint) === Boolean(next.onScoringPoint)
+    && sameStoneDecorations(previous.stoneDecorations, next.stoneDecorations);
+}
+
+function sameStoneDecorations(previous = {}, next = {}) {
+  return previous.black === next.black && previous.white === next.white;
+}
+
+function samePreviewPlayer(previous, next) {
+  if (!previous || !next) return previous === next;
+  return previous.color === next.color
+    && previous.characterId === next.characterId
+    && previous.character?.skill === next.character?.skill;
+}
+
+export default memo(Board, areBoardPropsEqual);

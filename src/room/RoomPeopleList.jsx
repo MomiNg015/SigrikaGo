@@ -56,6 +56,14 @@ export default function RoomPeopleList({ room, user, characters, token, onOpenRe
     setActiveId("");
   }
 
+  async function addProfileBlacklist(profile) {
+    if (!profile) return;
+    const data = await api(`/api/social/blacklist/${profile.id}`, { method: "POST", token });
+    setFriendIds(new Set((data.friends ?? []).map((row) => row.id)));
+    setBlacklistIds(new Set((data.blacklist ?? []).map((row) => row.id)));
+    setProfileUser({ ...profile, relation: "blacklist" });
+  }
+
   function confirmFriendRemoval(person) {
     setActiveId("");
     setProfileUser(null);
@@ -67,6 +75,14 @@ export default function RoomPeopleList({ room, user, characters, token, onOpenRe
     setFriendIds(new Set((data.friends ?? []).map((row) => row.id)));
     setBlacklistIds(new Set((data.blacklist ?? []).map((row) => row.id)));
     setActiveId("");
+  }
+
+  async function addProfileFriend(profile) {
+    if (!profile) return;
+    const data = await api(`/api/social/friends/${profile.id}`, { method: "POST", token });
+    setFriendIds(new Set((data.friends ?? []).map((row) => row.id)));
+    setBlacklistIds(new Set((data.blacklist ?? []).map((row) => row.id)));
+    setProfileUser({ ...profile, relation: "friend" });
   }
 
   async function removeFriend(person) {
@@ -87,9 +103,10 @@ export default function RoomPeopleList({ room, user, characters, token, onOpenRe
           const isFriend = friendIds.has(person.userId);
           const isBlocked = blacklistIds.has(person.userId);
           const relationClass = isSelf ? "self" : isBlocked ? "blocked" : isFriend ? "friend" : "";
+          const connectionClass = person.role === "player" && person.connected === false ? "disconnected" : "";
           return (
             <div className="room-person-wrap" key={person.id}>
-              <button className={`room-person ${person.role} ${relationClass}`} type="button" onClick={() => setActiveId((id) => id === person.id ? "" : person.id)}>
+              <button className={`room-person ${person.role} ${relationClass} ${connectionClass}`} type="button" onClick={() => setActiveId((id) => id === person.id ? "" : person.id)}>
                 <span className="room-person-name">
                   {person.color && <i className={`room-color-dot ${person.color}`} aria-label={person.color === COLORS.black ? "执黑" : "执白"} />}
                   {person.username}
@@ -121,6 +138,9 @@ export default function RoomPeopleList({ room, user, characters, token, onOpenRe
               user={profileUser}
               characters={characters}
               token={token}
+              replayDisabled
+              onAddFriend={addProfileFriend}
+              onAddBlacklist={addProfileBlacklist}
               onOpenReplay={(recordId) => {
                 setProfileUser(null);
                 onOpenReplay?.(recordId);

@@ -13,17 +13,37 @@ import { prisma, publicUser } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
+import {
+  ALREADY_LOGGED_IN_CODE,
+  ALREADY_LOGGED_IN_MESSAGE,
+  buildClearRefreshCookie,
+  buildRefreshCookie,
+  createLoginSessionStore,
+  ensureLoginSessionSchema,
+  parseCookies,
+  REFRESH_COOKIE_NAME
+} from "./loginSessions.js";
+import { createDuelRequestManager } from "./duelRequests.js";
+import { createOnlineSessionManager } from "./onlineSessions.js";
+import { jsonSyntaxErrorHandler } from "./httpErrors.js";
+import { shouldBlockLoginForActiveAccount } from "./loginConflicts.js";
+import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
+import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
+import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
 import { listPublicCharacterResponse, listPublicCharacters, seedCharacters } from "./characters.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
-import { authenticateSocketUser } from "./socketAuth.js";
+import { createSocketUserRefresher } from "./socketAuth.js";
 import { createFeedbackMessage } from "./feedback.js";
 import { buildLeaderboard } from "./leaderboard.js";
 import { publicUserWithRecordStats } from "./userProfile.js";
 import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
+import { listItemInventory, useInventoryItem } from "./items.js";
 import { getPublicSiteSettings } from "./siteSettings.js";
 import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
+import { blockedCharactersForItemEffects } from "./itemEffects.js";
 import {
+  assertProductionDeployment,
   corsOriginForRequest,
   createApiRateLimit,
   createAuthRateLimit,
@@ -37,23 +57,33 @@ import {
   broadcastRoom,
   createDirectRoom,
   detachSocket,
+  findRoomForUser,
   getRoom,
   handleGameAction,
   handleScoringAction,
   isUserInActiveRoom,
   joinMatchmaking,
+  leaveRoom,
   leaveMatchmaking,
+  listWaitingPlayers,
+  listWatchRooms,
+  matchmakingCount,
   requestCounting,
   requestDraw,
+  restorePersistedRooms,
   respondCounting,
   respondDraw,
   roomView
 } from "./rooms.js";
+import { resumePayloadForUser } from "./resume.js";
 import {
   deleteRelationship,
   ensureSocialSchema,
   getUserProfile,
+  getUserProfileByUsername,
   getUserReplays,
+  hasBlacklistBetween,
+  hasBlacklistFromOwner,
   listSocialUsers,
   RELATIONSHIP_TYPES,
   setRelationship,
@@ -64,9 +94,17 @@ const app = express();
 const server = createServer(app);
 const PORT = Number(process.env.PORT ?? 3001);
 const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret";
-const { authHttp, requireAdmin } = makeAuth({ prisma, jwtSecret: JWT_SECRET });
+assertProductionDeployment();
+const loginSessions = createLoginSessionStore({ prisma });
+const { authHttp, requireAdmin } = makeAuth({
+  prisma,
+  jwtSecret: JWT_SECRET,
+  isSessionActive: (userId, sessionId) => loginSessions.adopt(userId, sessionId)
+});
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const uploadDir = path.join(__dirname, "..", "public", "uploads", "characters");
+const projectRoot = path.join(__dirname, "..");
+const uploadRoot = resolveUploadRoot({ projectRoot });
+const uploadDir = resolveCharacterUploadDir({ projectRoot });
 const distDir = path.join(__dirname, "..", "dist");
 fs.mkdirSync(uploadDir, { recursive: true });
 const upload = multer({
@@ -107,9 +145,10 @@ app.use(helmet({
 }));
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "64kb" }));
+app.use(jsonSyntaxErrorHandler);
 app.use("/api/auth", createAuthRateLimit());
 app.use("/api", createApiRateLimit());
-app.use("/uploads", express.static(path.join(__dirname, "..", "public", "uploads")));
+app.use("/uploads", express.static(uploadRoot));
 
 const io = new Server(server, {
   cors: corsOptions
@@ -118,6 +157,8 @@ const io = new Server(server, {
 await seedCharacters(prisma);
 await seedBuiltinShopItems(prisma);
 await ensureSocialSchema(prisma);
+await ensureRoomPersistenceSchema(prisma);
+await ensureLoginSessionSchema(prisma);
 await promoteConfiguredAdmins(prisma);
 
 app.get("/api/health", (_req, res) => {
@@ -128,11 +169,11 @@ app.get("/api/characters", async (_req, res) => {
   res.json(await listPublicCharacterResponse(prisma));
 });
 
-app.get("/api/shop", authHttp, async (_req, res) => {
-  res.json(await listShopItems(prisma));
+app.get("/api/shop", authHttp, async (req, res) => {
+  res.json(await listShopItems(prisma, req.user.id));
 });
-const onlineSockets = new Map();
-const pendingDuelRequests = new Map();
+let onlineSessions;
+let duelRequests;
 
 app.get("/api/site-settings", async (_req, res) => {
   res.json({ settings: await getPublicSiteSettings(prisma) });
@@ -146,7 +187,7 @@ app.post("/api/feedback", authHttp, async (req, res) => {
       content: req.body.content
     }));
   } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "反馈提交失败" });
+    res.status(error.status ?? 500).json({ error: error.message ?? "鍙嶉鎻愪氦澶辫触" });
   }
 });
 
@@ -157,7 +198,8 @@ app.get("/api/leaderboard", authHttp, async (_req, res) => {
         id: true,
         username: true,
         rating: true,
-        selectedCharacter: true
+        selectedCharacter: true,
+        itemEffects: true
       }
     }),
     prisma.gameRecord.findMany({
@@ -173,6 +215,10 @@ app.get("/api/leaderboard", authHttp, async (_req, res) => {
     })
   ]);
   res.json({ players: buildLeaderboard(users, records) });
+});
+
+app.get("/api/rooms/watch", authHttp, async (_req, res) => {
+  res.json({ rooms: listWatchRooms() });
 });
 
 app.get("/api/social", authHttp, async (req, res) => {
@@ -193,7 +239,7 @@ app.post("/api/social/friends/:targetId", authHttp, async (req, res) => {
     });
     res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
   } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
+    res.status(error.status ?? 500).json({ error: error.message ?? "鎿嶄綔澶辫触" });
   }
 });
 
@@ -217,7 +263,7 @@ app.post("/api/social/blacklist/:targetId", authHttp, async (req, res) => {
     });
     res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
   } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
+    res.status(error.status ?? 500).json({ error: error.message ?? "鎿嶄綔澶辫触" });
   }
 });
 
@@ -231,6 +277,25 @@ app.delete("/api/social/blacklist/:targetId", authHttp, async (req, res) => {
   res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
 });
 
+app.get("/api/users/search/profile", authHttp, async (req, res) => {
+  const usernameResult = validateUsername(req.query.username);
+  if (!usernameResult.ok) {
+    res.status(400).json({ error: usernameResult.error });
+    return;
+  }
+  const profile = await getUserProfileByUsername({
+    prisma,
+    username: usernameResult.value,
+    viewerId: req.user.id,
+    statusForUser
+  });
+  if (!profile) {
+    res.status(404).json({ error: "\u8be5\u7528\u6237\u4e0d\u5b58\u5728" });
+    return;
+  }
+  res.json({ profile });
+});
+
 app.get("/api/users/:id/profile", authHttp, async (req, res) => {
   const profile = await getUserProfile({
     prisma,
@@ -239,7 +304,7 @@ app.get("/api/users/:id/profile", authHttp, async (req, res) => {
     statusForUser
   });
   if (!profile) {
-    res.status(404).json({ error: "用户不存在" });
+    res.status(404).json({ error: "\u7528\u6237\u4e0d\u5b58\u5728" });
     return;
   }
   res.json({ profile });
@@ -251,7 +316,7 @@ app.get("/api/users/:id/replays", async (req, res) => {
     userId: req.params.id
   });
   if (!records) {
-    res.status(404).json({ error: "用户不存在" });
+    res.status(404).json({ error: "\u7528\u6237\u4e0d\u5b58\u5728" });
     return;
   }
   res.json({ records });
@@ -261,7 +326,28 @@ app.post("/api/shop/:id/purchase", authHttp, async (req, res) => {
   try {
     res.json(await purchaseShopItem({ prisma, userId: req.user.id, itemId: req.params.id }));
   } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "购买失败" });
+    res.status(error.status ?? 500).json({ error: error.message ?? "璐拱澶辫触" });
+  }
+});
+
+app.get("/api/items/inventory", authHttp, async (req, res) => {
+  try {
+    res.json(await listItemInventory({ prisma, userId: req.user.id }));
+  } catch (error) {
+    res.status(error.status ?? 500).json({ error: error.message ?? "\u8bfb\u53d6\u4ed3\u5e93\u5931\u8d25" });
+  }
+});
+
+app.post("/api/items/:itemId/use", authHttp, async (req, res) => {
+  try {
+    res.json(await useInventoryItem({
+      prisma,
+      userId: req.user.id,
+      itemId: req.params.itemId,
+      characterId: req.body.characterId
+    }));
+  } catch (error) {
+    res.status(error.status ?? 500).json({ error: error.message ?? "浣跨敤閬撳叿澶辫触" });
   }
 });
 
@@ -284,9 +370,9 @@ app.post("/api/auth/register", async (req, res) => {
   try {
     const user = await prisma.user.create({ data: { username, passwordHash } });
     const syncedUser = await syncConfiguredAdmin(user, prisma);
-    res.json(withToken(syncedUser, JWT_SECRET));
+    await sendLoginResponse(res, syncedUser);
   } catch {
-    res.status(409).json({ error: "用户名已存在" });
+    res.status(409).json({ error: "\u7528\u6237\u540d\u5df2\u5b58\u5728" });
   }
 });
 
@@ -294,38 +380,99 @@ app.post("/api/auth/login", async (req, res) => {
   const usernameResult = validateUsername(req.body.username);
   const passwordResult = validatePassword(req.body.password);
   if (!usernameResult.ok || !passwordResult.ok) {
-    res.status(401).json({ error: "用户名或密码错误" });
+    res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
     return;
   }
   const username = usernameResult.value;
   const password = passwordResult.value;
   const user = await prisma.user.findUnique({ where: { username } });
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-    res.status(401).json({ error: "用户名或密码错误" });
+    res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
     return;
   }
   if (user.status === USER_STATUS.banned) {
-    res.status(403).json({ error: user.banReason ? `账号已封禁：${user.banReason}` : "账号已封禁" });
+    res.status(403).json({ error: user.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8d26\u53f7\u5df2\u5c01\u7981" });
     return;
   }
+  if (shouldBlockLoginForActiveAccount({
+    onlineSessions,
+    userId: user.id,
+    forceLogin: Boolean(req.body.forceLogin)
+  })) {
+    res.status(409).json({
+      code: ALREADY_LOGGED_IN_CODE,
+      error: ALREADY_LOGGED_IN_MESSAGE
+    });
+    return;
+  }
+  if (req.body.forceLogin) await forceLogoutUser(user.id);
   const syncedUser = await syncConfiguredAdmin(user, prisma);
-  res.json(withToken(syncedUser, JWT_SECRET));
+  await sendLoginResponse(res, syncedUser);
+});
+
+app.post("/api/auth/refresh", async (req, res) => {
+  const refreshToken = parseCookies(req.headers.cookie)[REFRESH_COOKIE_NAME];
+  const session = await loginSessions.refresh(refreshToken);
+  if (!session) {
+    res.setHeader("Set-Cookie", buildClearRefreshCookie());
+    res.status(401).json({ error: "\u8bf7\u5148\u767b\u5f55" });
+    return;
+  }
+  const user = await prisma.user.findUnique({ where: { id: session.userId } });
+  if (!user || user.status === USER_STATUS.banned) {
+    await loginSessions.clear(session.userId, session.sessionId);
+    res.setHeader("Set-Cookie", buildClearRefreshCookie());
+    res.status(user?.status === USER_STATUS.banned ? 403 : 401).json({
+      error: user?.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8bf7\u5148\u767b\u5f55"
+    });
+    return;
+  }
+  res.setHeader("Set-Cookie", buildRefreshCookie(session.refreshToken));
+  res.json(withToken(await syncConfiguredAdmin(user, prisma), JWT_SECRET, { sessionId: session.sessionId }));
+});
+
+app.post("/api/auth/logout", async (req, res) => {
+  const refreshToken = parseCookies(req.headers.cookie)[REFRESH_COOKIE_NAME];
+  await loginSessions.clearRefreshToken(refreshToken);
+  try {
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    const payload = token ? JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8")) : null;
+    if (payload?.sub && payload?.sid) await loginSessions.clear(payload.sub, payload.sid);
+  } catch {
+    // Logout should succeed even if the access token is malformed or expired.
+  }
+  res.setHeader("Set-Cookie", buildClearRefreshCookie());
+  res.json({ ok: true });
 });
 
 app.get("/api/me", authHttp, async (req, res) => {
   res.json({ user: await publicUserWithHistory(req.user) });
 });
 
+app.get("/api/me/resume", authHttp, async (req, res) => {
+  res.json(await resumePayloadForUser({
+    prisma,
+    userId: req.user.id,
+    roomCode: validateOptionalRoomCode(req.query.roomCode),
+    findRoomForUser,
+    roomView
+  }));
+});
+
 app.post("/api/me/character", authHttp, async (req, res) => {
   const characterId = String(req.body.characterId ?? "");
   const publicProfile = publicUser(req.user);
+  if (blockedCharactersForItemEffects(publicProfile.itemEffects).has(characterId)) {
+    res.status(403).json({ error: "\u7cd6\u679c\u6548\u679c\u4e2d\uff0c\u6682\u65f6\u65e0\u6cd5\u51fa\u6218" });
+    return;
+  }
   if (!publicProfile.ownedCharacters.includes(characterId)) {
-    res.status(403).json({ error: "尚未获得该角色" });
+    res.status(403).json({ error: "\u5c1a\u672a\u83b7\u5f97\u8be5\u89d2\u8272" });
     return;
   }
   const { characters, disabledSlugs } = await characterSelectionData();
   if (!characters[characterId] && (disabledSlugs.has(characterId) || !CHARACTERS[characterId])) {
-    res.status(400).json({ error: "未知角色" });
+    res.status(400).json({ error: "\u89d2\u8272\u4e0d\u5b58\u5728" });
     return;
   }
   const user = await prisma.user.update({
@@ -339,12 +486,12 @@ app.post("/api/me/decoration", authHttp, async (req, res) => {
   const decorationId = String(req.body.decorationId ?? "").trim();
   if (decorationId) {
     if (!getStoneDecoration(decorationId)) {
-      res.status(400).json({ error: "未知棋子装饰" });
+      res.status(400).json({ error: "\u88c5\u9970\u4e0d\u5b58\u5728" });
       return;
     }
     const ownedDecorations = publicUser(req.user).ownedDecorations;
     if (!ownedDecorations.includes(decorationId)) {
-      res.status(403).json({ error: "尚未获得该装饰" });
+      res.status(403).json({ error: "\u5c1a\u672a\u83b7\u5f97\u8be5\u88c5\u9970" });
       return;
     }
   }
@@ -363,13 +510,29 @@ app.get("/api/replays", authHttp, async (req, res) => {
         { whiteUserId: req.user.id }
       ]
     },
-    orderBy: { createdAt: "desc" },
-    take: 30
+    select: {
+      id: true,
+      roomCode: true,
+      blackUserId: true,
+      whiteUserId: true,
+      blackName: true,
+      whiteName: true,
+      resultText: true,
+      winnerColor: true,
+      resultReason: true,
+      moveCount: true,
+      blackCharacter: true,
+      whiteCharacter: true,
+      createdAt: true
+    },
+    orderBy: { createdAt: "desc" }
   });
   res.json({
     records: records.map((record) => ({
       id: record.id,
       roomCode: record.roomCode,
+      blackUserId: record.blackUserId,
+      whiteUserId: record.whiteUserId,
       blackName: record.blackName,
       whiteName: record.whiteName,
       resultText: record.resultText,
@@ -386,20 +549,57 @@ app.get("/api/replays", authHttp, async (req, res) => {
 app.get("/api/replays/:id", authHttp, async (req, res) => {
   const record = await prisma.gameRecord.findUnique({ where: { id: req.params.id } });
   if (!record) {
-    res.status(404).json({ error: "棋谱不存在" });
+    res.status(404).json({ error: "\u68cb\u8c31\u4e0d\u5b58\u5728" });
     return;
   }
   res.json({ record: { ...record, snapshot: JSON.parse(record.snapshot) } });
 });
 
+const refreshSocketUser = createSocketUserRefresher({
+  jwtSecret: JWT_SECRET,
+  prisma,
+  characterSelectionData,
+  isSessionActive: (userId, sessionId) => loginSessions.adopt(userId, sessionId)
+});
+
+onlineSessions = createOnlineSessionManager({
+  io,
+  sessions: loginSessions,
+  signLoginResponse: (user, session) => withToken(user, JWT_SECRET, { sessionId: session.sessionId }),
+  isUserInActiveRoom,
+  onSocketDisconnected: (socket) => {
+    duelRequests?.expireSocketRequests(socket.id);
+  }
+});
+duelRequests = createDuelRequestManager({
+  io,
+  isUserInActiveRoom,
+  firstOnlineSocket,
+  statusForUser,
+  toSocialUser,
+  createDirectRoom,
+  refreshSocketUser,
+  isDuelBlocked: (requesterId, targetId) => hasBlacklistFromOwner({
+    prisma,
+    ownerUserId: targetId,
+    targetUserId: requesterId
+  })
+});
+
+function lobbyStats() {
+  return {
+    onlineCount: onlineSessions?.onlineCount?.() ?? 0,
+    matchmakingCount: matchmakingCount()
+  };
+}
+
+function broadcastLobbyStats() {
+  io.emit("lobby:stats", lobbyStats());
+}
+
 io.use(async (socket, next) => {
   try {
-    socket.user = await authenticateSocketUser({
-      token: socket.handshake.auth?.token,
-      jwtSecret: JWT_SECRET,
-      prisma,
-      characterSelectionData
-    });
+    await refreshSocketUser(socket);
     next();
   } catch (error) {
     next(new Error(error.message === "forbidden" ? "forbidden" : "unauthorized"));
@@ -410,15 +610,38 @@ io.on("connection", (socket) => {
   installSocketRateGuard(socket);
   registerOnlineSocket(socket);
   socket.emit("me", socket.user);
+  socket.emit("lobby:stats", lobbyStats());
+  broadcastLobbyStats();
 
-  socket.on("match:join", () => {
-    const room = joinMatchmaking({ user: socket.user, socketId: socket.id }, io);
-    if (!room) socket.emit("match:waiting", { startedAt: Date.now() });
+  socket.on("match:join", async () => {
+    try {
+      await refreshSocketUser(socket);
+      const blockedCandidateIds = new Set();
+      for (const candidate of listWaitingPlayers()) {
+        if (await hasBlacklistBetween({
+          prisma,
+          firstUserId: socket.user.id,
+          secondUserId: candidate.user.id
+        })) {
+          blockedCandidateIds.add(candidate.user.id);
+        }
+      }
+      const room = joinMatchmaking(
+        { user: socket.user, socketId: socket.id },
+        io,
+        { canPair: (candidate) => !blockedCandidateIds.has(candidate.user.id) }
+      );
+      if (!room) socket.emit("match:waiting", { startedAt: Date.now() });
+      broadcastLobbyStats();
+    } catch (error) {
+      socket.emit("error:toast", "鐧诲綍鐘舵€佸凡澶辨晥锛岃閲嶆柊鐧诲綍");
+    }
   });
 
   socket.on("match:leave", () => {
     leaveMatchmaking(socket.user.id);
     socket.emit("match:left");
+    broadcastLobbyStats();
   });
 
   socket.on("room:join", ({ roomCode } = {}) => {
@@ -429,11 +652,38 @@ io.on("connection", (socket) => {
     }
     const room = attachSocketToRoom(validatedRoomCode.value, socket, socket.user);
     if (!room) {
-      socket.emit("error:toast", "房间不存在或已经关闭");
+      socket.emit("error:toast", "鎴块棿涓嶅瓨鍦ㄦ垨宸茬粡鍏抽棴");
       return;
     }
     socket.emit("room:update", roomView(room, socket.user.id));
     broadcastRoom(io, room);
+  });
+
+  socket.on("room:leave", ({ roomCode } = {}) => {
+    const room = leaveRoom(roomCode, socket.user.id, socket.id);
+    if (!room) return;
+    socket.leave(room.code);
+    socket.emit("room:left", { roomCode: room.code });
+    broadcastRoom(io, room);
+  });
+
+  socket.on("room:resume", async ({ roomCode } = {}) => {
+    const payload = await resumePayloadForUser({
+      prisma,
+      userId: socket.user.id,
+      roomCode: validateOptionalRoomCode(roomCode),
+      findRoomForUser,
+      roomView
+    });
+    if (payload.type === "room") {
+      const room = attachSocketToRoom(payload.room.code, socket, socket.user);
+      if (room) {
+        socket.emit("room:update", roomView(room, socket.user.id));
+        broadcastRoom(io, room);
+        return;
+      }
+    }
+    socket.emit("room:resume", payload);
   });
 
   socket.on("game:action", (payload = {}) => {
@@ -477,24 +727,44 @@ io.on("connection", (socket) => {
     if (room) broadcastRoom(io, room);
   });
 
-  socket.on("duel:request", ({ targetUserId } = {}) => {
-    handleDuelRequest(socket, String(targetUserId ?? ""));
+  socket.on("duel:request", async ({ targetUserId } = {}) => {
+    try {
+      await refreshSocketUser(socket);
+      await duelRequests.handleRequest(socket, String(targetUserId ?? ""));
+    } catch (error) {
+      socket.emit("error:toast", "鐧诲綍鐘舵€佸凡澶辨晥锛岃閲嶆柊鐧诲綍");
+    }
   });
 
-  socket.on("duel:respond", ({ requestId, accepted } = {}) => {
-    handleDuelResponse(socket, String(requestId ?? ""), Boolean(accepted));
+  socket.on("duel:respond", async ({ requestId, accepted } = {}) => {
+    try {
+      await refreshSocketUser(socket);
+      await duelRequests.handleResponse(socket, String(requestId ?? ""), Boolean(accepted));
+      broadcastLobbyStats();
+    } catch (error) {
+      socket.emit("error:toast", "鐧诲綍鐘舵€佸凡澶辨晥锛岃閲嶆柊鐧诲綍");
+    }
   });
 
   socket.on("disconnect", () => {
     unregisterOnlineSocket(socket);
-    for (const room of detachSocket(socket.id)) {
+    for (const room of detachSocket(socket.id, io)) {
       broadcastRoom(io, room);
     }
+    broadcastLobbyStats();
   });
 });
 
+await restorePersistedRooms(io);
+
 function sendResult(socket, result) {
   if (!result.ok) socket.emit("error:toast", result.error);
+}
+
+function validateOptionalRoomCode(roomCode) {
+  if (!roomCode) return "";
+  const result = validateRoomCode(String(roomCode));
+  return result.ok ? result.value : "";
 }
 
 function installSocketRateGuard(socket) {
@@ -508,118 +778,42 @@ function installSocketRateGuard(socket) {
     }
     guard.count += 1;
     if (guard.count > 120) {
-      socket.emit("error:toast", "操作过于频繁，请稍后再试");
+      socket.emit("error:toast", "鎿嶄綔杩囦簬棰戠箒锛岃绋嶅悗鍐嶈瘯");
       return;
     }
     next();
   });
 }
 
+async function sendLoginResponse(res, user) {
+  const response = await onlineSessions.createLoginResponse(user);
+  res.setHeader("Set-Cookie", buildRefreshCookie(response.refreshToken));
+  const { refreshToken, refreshExpiresAt, ...publicResponse } = response;
+  res.json(publicResponse);
+}
+
+async function forceLogoutUser(userId) {
+  await onlineSessions.forceLogoutUser(userId);
+}
+
 function registerOnlineSocket(socket) {
-  const sockets = onlineSockets.get(socket.user.id) ?? new Set();
-  sockets.add(socket.id);
-  onlineSockets.set(socket.user.id, sockets);
+  onlineSessions.registerOnlineSocket(socket);
 }
 
 function unregisterOnlineSocket(socket) {
-  const sockets = onlineSockets.get(socket.user.id);
-  if (!sockets) return;
-  sockets.delete(socket.id);
-  if (sockets.size === 0) onlineSockets.delete(socket.user.id);
-  for (const [requestId, request] of pendingDuelRequests) {
-    if (request.fromSocketId === socket.id || request.targetSocketId === socket.id) expireDuelRequest(requestId);
-  }
+  onlineSessions.unregisterOnlineSocket(socket);
 }
 
 function statusForUser(userId) {
-  if (isUserInActiveRoom(userId)) return "playing";
-  return onlineSockets.has(userId) ? "online" : "offline";
+  return onlineSessions.statusForUser(userId);
 }
 
 function firstOnlineSocket(userId) {
-  const socketId = onlineSockets.get(userId)?.values().next().value;
-  return socketId ? io.sockets.sockets.get(socketId) : null;
+  return onlineSessions.firstOnlineSocket(userId);
 }
 
-function handleDuelRequest(socket, targetUserId) {
-  if (!targetUserId || targetUserId === socket.user.id) {
-    socket.emit("error:toast", "不能向自己申请对局");
-    return;
-  }
-  if (isUserInActiveRoom(socket.user.id)) {
-    socket.emit("error:toast", "你正在对局中，无法申请对局。");
-    return;
-  }
-  if (isUserInActiveRoom(targetUserId)) {
-    socket.emit("duel:unavailable", { targetUserId, reason: "playing" });
-    socket.emit("error:toast", "对方正在对局中。");
-    return;
-  }
-  const targetSocket = firstOnlineSocket(targetUserId);
-  if (!targetSocket) {
-    socket.emit("duel:unavailable", { targetUserId, reason: "offline" });
-    socket.emit("error:toast", "对方不在线。");
-    return;
-  }
-  const requestId = crypto.randomUUID();
-  const expiresAt = Date.now() + 20000;
-  const request = {
-    id: requestId,
-    fromSocketId: socket.id,
-    targetSocketId: targetSocket.id,
-    fromUser: socket.user,
-    targetUser: targetSocket.user,
-    timerId: setTimeout(() => expireDuelRequest(requestId), 20000)
-  };
-  pendingDuelRequests.set(requestId, request);
-  targetSocket.emit("duel:incoming", {
-    requestId,
-    expiresAt,
-    from: toSocialUser(socket.user, statusForUser(socket.user.id))
-  });
-  socket.emit("duel:sent", {
-    requestId,
-    target: toSocialUser(targetSocket.user, statusForUser(targetSocket.user.id)),
-    expiresAt
-  });
-}
-
-function handleDuelResponse(socket, requestId, accepted) {
-  const request = pendingDuelRequests.get(requestId);
-  if (!request || request.targetSocketId !== socket.id) return;
-  pendingDuelRequests.delete(requestId);
-  clearTimeout(request.timerId);
-  const fromSocket = io.sockets.sockets.get(request.fromSocketId);
-  if (!fromSocket) return;
-  if (!accepted) {
-    fromSocket.emit("duel:rejected", { requestId, username: socket.user.username });
-    socket.emit("duel:closed", { requestId });
-    return;
-  }
-  if (isUserInActiveRoom(fromSocket.user.id) || isUserInActiveRoom(socket.user.id)) {
-    fromSocket.emit("duel:rejected", { requestId, username: socket.user.username, reason: "playing" });
-    socket.emit("duel:closed", { requestId });
-    return;
-  }
-  createDirectRoom(
-    { user: fromSocket.user, socketId: fromSocket.id },
-    { user: socket.user, socketId: socket.id },
-    io
-  );
-  socket.emit("duel:closed", { requestId });
-}
-
-function expireDuelRequest(requestId) {
-  const request = pendingDuelRequests.get(requestId);
-  if (!request) return;
-  pendingDuelRequests.delete(requestId);
-  clearTimeout(request.timerId);
-  io.to(request.fromSocketId).emit("duel:rejected", {
-    requestId,
-    username: request.targetUser.username,
-    reason: "timeout"
-  });
-  io.to(request.targetSocketId).emit("duel:closed", { requestId });
+function isUserOnline(userId) {
+  return onlineSessions?.hasOnlineUser?.(userId) ?? false;
 }
 
 async function characterMap() {
@@ -670,6 +864,5 @@ if (process.env.NODE_ENV === "production" && fs.existsSync(distDir)) {
   });
 }
 
-server.listen(PORT, () => {
-  console.log(`SigrikaGo server listening on http://localhost:${PORT}`);
-});
+installServerLifecycle(server, { dependencies: [prisma] });
+startHttpServer(server, { port: PORT });

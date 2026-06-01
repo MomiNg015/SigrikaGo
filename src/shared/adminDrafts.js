@@ -96,6 +96,8 @@ export function emptyShopItemDraft() {
     name: "",
     category: "character",
     targetId: "",
+    itemTargetType: "self",
+    stockQuantity: -1,
     priceCoins: 100,
     discountPercent: 0,
     purchasable: true,
@@ -114,12 +116,14 @@ export function validateShopItemDraft(draft) {
   const priceCoins = parseAdminInteger(draft.priceCoins);
   const discountPercent = parseAdminInteger(draft.discountPercent);
   const sortOrder = parseAdminInteger(draft.sortOrder);
+  const stockQuantity = parseAdminInteger(draft.stockQuantity);
   const errors = [];
   if (!draft.name.trim()) errors.push("商品名");
   if (!draft.targetId.trim()) errors.push("目标标识");
   if (priceCoins == null || priceCoins < 0) errors.push("金币价格必须是 0 或更大的整数");
   if (discountPercent == null || discountPercent < 0 || discountPercent > 100) errors.push("折扣必须是 0 到 100 的整数");
   if (sortOrder == null) errors.push("排序必须是整数");
+  if (stockQuantity == null || stockQuantity < -1) errors.push("库存必须是 -1 或 0 以上整数");
   if (errors.length) {
     return { ok: false, error: `请检查：${errors.join("、")}` };
   }
@@ -129,6 +133,8 @@ export function validateShopItemDraft(draft) {
       name: draft.name.trim(),
       category: draft.category,
       targetId: draft.targetId.trim(),
+      itemTargetType: draft.itemTargetType === "character" ? "character" : "self",
+      stockQuantity,
       priceCoins,
       discountPercent,
       purchasable: Boolean(draft.purchasable),
@@ -162,7 +168,9 @@ export function decorationDraftToBody(draft) {
 }
 
 export function shopCategoryLabel(category) {
-  return category === "decoration" ? "装饰" : "角色";
+  if (category === "decoration") return "装饰";
+  if (category === "item") return "道具";
+  return "角色";
 }
 
 export function targetRuleForEffect(effectType) {

@@ -4,11 +4,41 @@ export const VOICE_EFFECT_SETTINGS = {
   dry: 0.9,
   reverbSeconds: 1.6,
   reverbDecay: 2.2,
-  preDelaySeconds: 0.035
+  preDelaySeconds: 0.035,
+  targetRms: 0.12,
+  minNormalizationGain: 0.4,
+  maxNormalizationGain: 2.4
 };
 
 export function boostedVoiceVolume(volume, settings = VOICE_EFFECT_SETTINGS) {
   return Math.max(0, Math.min(1, volume * settings.boost));
+}
+
+export function voiceNormalizationGain(stats, settings = VOICE_EFFECT_SETTINGS) {
+  if (!stats?.rms || stats.rms <= 0) return 1;
+  const unclamped = settings.targetRms / stats.rms;
+  return Math.max(settings.minNormalizationGain, Math.min(settings.maxNormalizationGain, unclamped));
+}
+
+export function audioBufferStats(buffer) {
+  if (!buffer?.numberOfChannels || !buffer?.length) return null;
+  let sumSquares = 0;
+  let sampleCount = 0;
+  let peak = 0;
+  for (let channel = 0; channel < buffer.numberOfChannels; channel += 1) {
+    const data = buffer.getChannelData(channel);
+    for (let i = 0; i < data.length; i += 1) {
+      const sample = data[i];
+      sumSquares += sample * sample;
+      peak = Math.max(peak, Math.abs(sample));
+      sampleCount += 1;
+    }
+  }
+  if (sampleCount === 0) return null;
+  return {
+    rms: Math.sqrt(sumSquares / sampleCount),
+    peak
+  };
 }
 
 export function deterministicReverbSample(index, length, channel, settings = VOICE_EFFECT_SETTINGS) {

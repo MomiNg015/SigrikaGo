@@ -1,17 +1,35 @@
 import {
   CAPTURE_SOUND,
   HIDDEN_HAND_REVEAL_SOUND,
+  preloadEffectSound,
   STONE_SOUND
 } from "../audio/playback.jsx";
 import {
+  CHARACTER_SYSTEM_VOICES,
   CHARACTER_SKILL_VOICES,
-  DEFAULT_MUSIC_SELECTIONS,
   MATCH_SUCCESS_SOUND,
   MUSIC_TRACKS,
   VICTORY_SOUND,
   DEFEAT_SOUND
 } from "./musicLibrary.js";
+import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { STONE_DECORATIONS } from "./stoneDecorations.js";
+
+const HOME_IMAGE_ASSETS = [
+  "/assets/home/book-entry.png",
+  "/assets/home/fantasy-match-entry.png",
+  "/assets/home/multipurpose-classroom-bg.jpg"
+];
+
+const SHOP_IMAGE_ASSETS = [
+  "/assets/zahiya_shop.png",
+  "/assets/items/rainbow-bean-candy.png"
+];
+
+const EFFECT_IMAGE_ASSETS = [
+  DENIA_CANDY_PORTRAIT,
+  "/assets/effects/denia-bubble-pop.gif"
+];
 
 export function deploymentSocketBase(locationLike = globalThis.location) {
   return locationLike?.origin ?? "";
@@ -25,13 +43,15 @@ export function playbackAssetSources(playback) {
 
 export function loginPreloadAssets({
   characters = {},
-  ownedCharacters = [],
   tracks = MUSIC_TRACKS,
   skillVoices = CHARACTER_SKILL_VOICES,
-  musicSelections = DEFAULT_MUSIC_SELECTIONS
+  systemVoices = CHARACTER_SYSTEM_VOICES
 } = {}) {
   const images = compactUnique([
     ...Object.values(characters).map((character) => character?.portrait),
+    ...HOME_IMAGE_ASSETS,
+    ...SHOP_IMAGE_ASSETS,
+    ...EFFECT_IMAGE_ASSETS,
     ...Object.values(STONE_DECORATIONS).flatMap((decoration) => [
       decoration.previewImageUrl,
       decoration.images?.black,
@@ -39,12 +59,6 @@ export function loginPreloadAssets({
     ])
   ]);
 
-  const defaultTracks = compactUnique([
-    musicSelections.home,
-    musicSelections.battle,
-    DEFAULT_MUSIC_SELECTIONS.home,
-    DEFAULT_MUSIC_SELECTIONS.battle
-  ]);
   const audio = compactUnique([
     STONE_SOUND,
     CAPTURE_SOUND,
@@ -52,8 +66,9 @@ export function loginPreloadAssets({
     MATCH_SUCCESS_SOUND,
     VICTORY_SOUND,
     DEFEAT_SOUND,
-    ...defaultTracks.flatMap((trackId) => playbackAssetSources(tracks[trackId]?.playback)),
-    ...ownedCharacters.map((characterId) => skillVoices[characterId])
+    ...Object.values(tracks).flatMap((track) => playbackAssetSources(track?.playback)),
+    ...Object.values(skillVoices),
+    ...Object.values(systemVoices).flatMap((voiceMap) => Object.values(voiceMap ?? {}))
   ]);
 
   return { images, audio };
@@ -62,9 +77,10 @@ export function loginPreloadAssets({
 export async function preloadLoginAssets(assets, { onProgress = () => {} } = {}) {
   const images = assets?.images ?? [];
   const audio = assets?.audio ?? [];
+  const decodedEffects = new Set([STONE_SOUND, CAPTURE_SOUND, HIDDEN_HAND_REVEAL_SOUND]);
   const tasks = [
     ...images.map((src) => () => preloadImage(src)),
-    ...audio.map((src) => () => preloadFetch(src))
+    ...audio.map((src) => () => decodedEffects.has(src) ? preloadEffectSound(src) : preloadFetch(src))
   ];
   if (tasks.length === 0) {
     onProgress(1);

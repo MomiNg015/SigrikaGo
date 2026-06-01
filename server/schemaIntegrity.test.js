@@ -39,4 +39,17 @@ describe("Prisma schema integrity", () => {
     expect(existsSync(migrationPath)).toBe(true);
     expect(readFileSync(migrationPath, "utf8")).toContain("CREATE TABLE IF NOT EXISTS \"FeedbackMessage\"");
   });
+
+  it("tracks persisted rooms through a migration", () => {
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202605270001_add_persisted_rooms",
+      "migration.sql"
+    );
+
+    expect(existsSync(migrationPath)).toBe(true);
+    expect(readFileSync(migrationPath, "utf8")).toContain("CREATE TABLE IF NOT EXISTS \"PersistedRoom\"");
+  });
 });

@@ -6,9 +6,17 @@
   }
 
   .home-grid-featured {
-    grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.45fr);
-    overflow-x: auto;
-    padding-bottom: 4px;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .home-grid-featured > .home-utility-grid {
+    grid-template-columns: repeat(5, minmax(44px, 1fr));
+  }
+
+  .home-grid-featured > .home-utility-grid .utility-entry {
+    width: clamp(44px, 5.6vw, 58px);
+    height: clamp(44px, 5.6vw, 58px);
   }
 
   .room-screen {
@@ -92,31 +100,6 @@
 
   .admin-grid {
     grid-template-columns: 1fr;
-  }
-
-  .home-grid-featured {
-    grid-template-columns: minmax(300px, 1fr);
-    grid-template-areas:
-      "match"
-      "house"
-      "utilities";
-    overflow-x: visible;
-  }
-
-  .home-match-feature {
-    min-height: 280px;
-  }
-
-  .home-utility-grid {
-    grid-template-columns: repeat(4, 72px);
-    justify-content: end;
-    overflow: visible;
-    padding-bottom: 0;
-  }
-
-  .utility-entry {
-    width: 72px;
-    height: 72px;
   }
 
   .admin-main {
