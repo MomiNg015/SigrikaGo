@@ -25,6 +25,8 @@ export function createSocketHandlers({
   playDoorbellSound,
   now = () => Date.now()
 }) {
+  let shouldAudioBaselineNextLiveSnapshot = false;
+
   function clearRoomUiState() {
     setRoom(null);
     setReplayStep(null);
@@ -47,6 +49,9 @@ export function createSocketHandlers({
   }
 
   return {
+    socketReconnect: () => {
+      shouldAudioBaselineNextLiveSnapshot = true;
+    },
     matchWaiting: ({ startedAt }) => setMatchStart(startedAt),
     lobbyStats: (stats = {}) => {
       setLobbyStats({
@@ -69,10 +74,14 @@ export function createSocketHandlers({
     roomUpdate: (roomView) => {
       updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
       if (syncPendingMatchRoom(matchSuccessRef, setMatchSuccess, roomView)) return;
+      const nextRoomView = shouldAudioBaselineNextLiveSnapshot && shouldMarkRoomAudioBaseline(roomView)
+        ? { ...roomView, __audioResumeBaseline: true }
+        : roomView;
+      shouldAudioBaselineNextLiveSnapshot = false;
       if (roomView?.role === "player" && roomView?.game?.phase === "finished") {
         clearLastRoomCode();
       }
-      setRoom(roomView);
+      setRoom(nextRoomView);
       setView("room");
     },
     roomClock: (clock) => {
@@ -80,6 +89,7 @@ export function createSocketHandlers({
       setRoom((current) => applyRoomClock(current, clock));
     },
     roomResume: (payload) => {
+      shouldAudioBaselineNextLiveSnapshot = false;
       if (handleMissingRoomResumePayload(payload, roomRef.current, {
         clearLastRoomCode,
         setMatchStart,
@@ -156,7 +166,7 @@ export function createSocketHandlers({
   };
 }
 
-export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest }) {
+export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest, onSocketReconnect = () => {} } = {}) {
   socket.on("match:waiting", handlers.matchWaiting);
   socket.on("lobby:stats", handlers.lobbyStats);
   socket.on("match:found", handlers.matchFound);
@@ -164,6 +174,8 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
   socket.on("room:clock", handlers.roomClock);
   socket.on("room:resume", handlers.roomResume);
   socket.on("connect", () => {
+    handlers.socketReconnect?.();
+    onSocketReconnect();
     socket.emit("room:resume", buildRoomResumeRequest());
   });
   socket.on("room:closed", handlers.roomClosed);
@@ -174,4 +186,8 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
   socket.on("duel:unavailable", handlers.duelUnavailable);
   socket.on("connect_error", handlers.connectError);
   socket.on("account:logged-out", handlers.accountLoggedOut);
+}
+
+function shouldMarkRoomAudioBaseline(roomView) {
+  return roomView?.role === "player" && roomView?.game?.phase === "playing";
 }

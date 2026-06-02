@@ -39,8 +39,8 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(characterSortieDisabledReason("sigrika", itemEffects)).toBe("糖果效果中，暂时无法出战");
     expect(characterSortieDisabledReason("denia", itemEffects)).toBe("");
-    expect(characterCandyPortrait({ id: "denia", portrait: "/assets/Danea_centered.png" }, itemEffects)).toBe(DENIA_CANDY_PORTRAIT);
-    expect(characterCandyPortrait({ id: "sigrika", portrait: "/assets/sigrika_centered.png" }, itemEffects)).toBe("/assets/sigrika_centered.png");
+    expect(characterCandyPortrait({ id: "denia", portrait: "/assets/Danea_centered.webp" }, itemEffects)).toBe(DENIA_CANDY_PORTRAIT);
+    expect(characterCandyPortrait({ id: "sigrika", portrait: "/assets/sigrika_centered.webp" }, itemEffects)).toBe("/assets/sigrika_centered.webp");
   });
 
   it("plays the selected character sortie voice before selecting the character", () => {
@@ -92,7 +92,7 @@ describe("deriveCharacterRecordStats", () => {
         selectedCharacter: "sigrika"
       },
       records: [],
-      characterListView: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.png", skill: { name: "技能", description: "", cost: 1 } }],
+      characterListView: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } }],
       audioSettings: {},
       onClose: () => {},
       onSelectCharacter: () => {},

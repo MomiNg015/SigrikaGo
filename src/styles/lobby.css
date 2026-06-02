@@ -417,3 +417,53 @@
   background: #fff0f3;
   color: #c92a3d;
 }
+
+@media (max-width: 560px) {
+  .small-modal.watch-list-modal {
+    width: calc(100vw - 16px);
+    min-height: 0;
+    max-height: calc(100dvh - 16px);
+    grid-template-rows: auto minmax(220px, 1fr) auto auto;
+    gap: 10px;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .watch-list-header {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .watch-list-header h2 {
+    font-size: 18px;
+  }
+
+  .watch-list-actions {
+    flex: 0 0 auto;
+  }
+
+  .watch-room-table {
+    min-width: 0;
+    min-height: 220px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+
+  .watch-room-head,
+  .watch-room-row {
+    min-width: 680px;
+    grid-template-columns: 70px 70px minmax(130px, 1fr) minmax(130px, 1fr) 72px 76px;
+    gap: 6px;
+  }
+
+  .watch-room-row {
+    min-height: 50px;
+    padding: 6px 8px;
+  }
+
+  .watch-player-cell img {
+    width: 36px;
+    height: 30px;
+  }
+}

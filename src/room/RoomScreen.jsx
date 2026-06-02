@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Children, isValidElement, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Hash, MessageSquareText, PanelRight, Settings } from "lucide-react";
 import { COLORS, GAME_PHASES, canStartSkill, gameViewForColor } from "../shared/game.js";
 import { BOARD_SOUND_TYPES, boardSoundActionAtStep, latestBoardSoundAction } from "../shared/boardAudio.js";
@@ -9,20 +9,24 @@ import { playSystemVoice } from "../audio/systemVoicePlayback.js";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import { OpeningModal } from "../modals/GameLifecycleModals.jsx";
 import SkillBanner from "../modals/SkillBanner.jsx";
+import { nextPointConfirmation, shouldUsePointConfirmation } from "./mobilePointConfirmation.js";
+import { applyRoomAudioBaseline, buildRoomAudioBaseline, shouldSeedRoomAudioBaseline } from "./roomAudioBaseline.js";
 import ActionBar from "./ActionBar.jsx";
 import Board from "./Board.jsx";
 import ChatBox from "./ChatBox.jsx";
 import OperationHint from "./OperationHint.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
 import RoomPeopleList from "./RoomPeopleList.jsx";
-import { replayGameAt, replayRoomAt, stoneDecorationsForRoom, voiceCharacterForPlayer } from "./roomView.js";
+import { canPreviewPoint, replayGameAt, replayRoomAt, stoneDecorationsForRoom, voiceCharacterForPlayer } from "./roomView.js";
 
 const SHOW_TEST_TOOLS = import.meta.env.DEV;
+export const MOBILE_ROOM_MEDIA_QUERY = "(max-width: 900px), (pointer: coarse)";
 
 export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay }) {
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [pointConfirmation, setPointConfirmation] = useState(null);
   const [spectatorStep, setSpectatorStep] = useState(null);
   const [viewColor, setViewColor] = useState(COLORS.black);
   const liveStepRef = useRef(room.game.history.length);
@@ -63,11 +67,30 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   const voiceRef = useRef({});
   const preloadedCountdownRef = useRef("");
   const systemVoiceRef = useRef({});
+  const seededAudioBaselineRef = useRef("");
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
   const skillPreview = displayRoom.game.pendingSkill;
   const canSwitchView = role === "spectator";
   const [closeCountdownNow, setCloseCountdownNow] = useState(Date.now());
   const showCloseCountdown = shouldShowRoomCloseCountdown(displayRoom);
+  const useMobileLayout = useMobileRoomLayout();
+
+  useEffect(() => {
+    setPointConfirmation(null);
+  }, [room.code, displayRoom.game.turn, displayRoom.game.phase, pendingSkill, skillPreview, isReplay]);
+
+  useLayoutEffect(() => {
+    if (!shouldSeedRoomAudioBaseline(room)) return;
+    const baselineKey = `${room.code}:${room.game.history.length}:${room.chat?.length ?? 0}`;
+    if (seededAudioBaselineRef.current === baselineKey) return;
+    seededAudioBaselineRef.current = baselineKey;
+    applyRoomAudioBaseline({
+      soundMoveRef,
+      hiddenRevealSoundRef,
+      voiceRef,
+      systemVoiceRef
+    }, buildRoomAudioBaseline(room));
+  }, [room]);
 
   useEffect(() => {
     if (!showCloseCountdown) return undefined;
@@ -192,18 +215,35 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     });
   }, [displayRoom.chat, isReplay, me, characters, audioSettings]);
 
-  function handlePoint(point) {
+  function handlePoint(point, eventMeta = {}) {
     if (isReplay) return;
     if (skillPreview) return;
     if (displayRoom.game.phase === "marking-dead") return handleScoringPoint(point);
     if (displayRoom.game.phase !== GAME_PHASES.playing) return;
     if (role !== "player") return;
+    const actionType = pendingSkill ? "skill" : "move";
+    if (!canConfirmPointAction({ point, actionType })) {
+      setPointConfirmation(null);
+      return;
+    }
+    if (shouldUsePointConfirmation(eventMeta)) {
+      const confirmation = nextPointConfirmation(pointConfirmation, { pointId: point.id, actionType });
+      setPointConfirmation(confirmation.next);
+      if (!confirmation.confirmed) return;
+    } else {
+      setPointConfirmation(null);
+    }
     if (pendingSkill) {
       setPendingSkill(false);
       onGameAction({ type: "skill", pointId: point.id });
       return;
     }
     onGameAction({ type: "move", pointId: point.id });
+  }
+
+  function canConfirmPointAction({ point, actionType }) {
+    if (actionType === "skill") return canPreviewPoint(displayRoom.game, me, point, true, false);
+    return Boolean(point?.valid && !point.stone);
   }
 
   function handleScoringPoint(point) {
@@ -237,10 +277,13 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     onBack();
   }
 
+  const Layout = useMobileLayout ? MobileRoomLayout : DesktopRoomLayout;
+  const battleLayoutClassName = useMobileLayout ? "mobile-battle-layout" : "battle-layout";
+
   return (
-    <main className="room-screen">
+    <Layout>
       <header className="room-header">
-        <div>
+        <div className="room-title-stack">
           <p className="room-title-line">
             <span className="room-code-label">房间号 {room.code}</span>
             {roomGameInfo && (
@@ -248,14 +291,14 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
                 <span className="room-info-tag black-side">黑方：{roomGameInfo.black}</span>
                 <span className="room-info-tag white-side">白方：{roomGameInfo.white}</span>
                 <span className="room-info-tag move-count">{roomGameInfo.moves}</span>
-                {showCloseCountdown && (
-                  <span className="room-info-tag close-countdown">
-                    {roomCloseCountdownText(displayRoom.closesAt, closeCountdownNow)}
-                  </span>
-                )}
               </>
             )}
           </p>
+          {showCloseCountdown && (
+            <span className="room-info-tag close-countdown">
+              {roomCloseCountdownText(displayRoom.closesAt, closeCountdownNow)}
+            </span>
+          )}
           {isReplay && <h1>棋谱回放</h1>}
         </div>
         <div className="room-toggles">
@@ -265,7 +308,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
           <button className={showCoords ? "toggle active" : "toggle"} onClick={() => setShowCoords(!showCoords)} title="显示坐标"><PanelRight size={16} /></button>
         </div>
       </header>
-      <section className="battle-layout">
+      <section className={battleLayoutClassName}>
         <div className="opponent-side">
           <PlayerInfo
             player={opponent}
@@ -289,6 +332,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
               showCoords={showCoords}
               showMoves={showMoves}
               pendingSkill={pendingSkill}
+              pointConfirmation={pointConfirmation}
               previewPlayer={role === "player" ? me : null}
               stoneDecorations={stoneDecorationsForRoom(displayRoom)}
               onPoint={handlePoint}
@@ -367,8 +411,109 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         <OpeningModal room={displayRoom} player={me} />
       )}
       {skillPreview && <SkillBanner banner={skillPreview} characters={characters} audioSettings={audioSettings} />}
+    </Layout>
+  );
+}
+
+function DesktopRoomLayout({ children }) {
+  return <main className="room-screen desktop-room-screen">{children}</main>;
+}
+
+function MobileRoomLayout({ children }) {
+  const [activeMobilePanel, setActiveMobilePanel] = useState("actions");
+  const childList = Children.toArray(children);
+  const header = childList.find((child) => isElementWithClass(child, "room-header"));
+  const battle = childList.find((child) => isElementWithClass(child, "mobile-battle-layout"));
+  const overlays = childList.filter((child) => child !== header && child !== battle);
+  const battleChildren = Children.toArray(battle?.props?.children);
+  const opponentSide = battleChildren.find((child) => isElementWithClass(child, "opponent-side"));
+  const boardColumn = battleChildren.find((child) => isElementWithClass(child, "board-column"));
+  const roomSide = battleChildren.find((child) => isElementWithClass(child, "room-side"));
+  const opponentChildren = Children.toArray(opponentSide?.props?.children).filter(Boolean);
+  const boardChildren = Children.toArray(boardColumn?.props?.children).filter(Boolean);
+  const roomChildren = Children.toArray(roomSide?.props?.children).filter(Boolean);
+  const opponentInfo = opponentChildren.find((child) => isComponentElement(child, PlayerInfo));
+  const membersPanel = opponentChildren.find((child) => isComponentElement(child, RoomPeopleList));
+  const boardPanel = boardChildren.filter((child) => !isComponentElement(child, ActionBar));
+  const actionPanel = boardChildren.find((child) => isComponentElement(child, ActionBar));
+  const selfInfo = roomChildren.find((child) => isComponentElement(child, PlayerInfo));
+  const chatPanel = roomChildren.find((child) => isComponentElement(child, ChatBox));
+  const panels = [
+    actionPanel && { id: "actions", label: "操作", content: <div className="mobile-action-panel">{actionPanel}</div> },
+    membersPanel && { id: "members", label: "成员", content: membersPanel },
+    chatPanel && { id: "chat", label: "聊天", content: chatPanel }
+  ].filter(Boolean);
+  const selectedPanel = panels.find((panel) => panel.id === activeMobilePanel) ?? panels[0];
+
+  return (
+    <main className="room-screen mobile-room-screen">
+      {header}
+      <section className="mobile-room-viewport mobile-battle-layout">
+        <div className="mobile-player-slot mobile-opponent-slot opponent-side">{opponentInfo}</div>
+        <div className="mobile-board-viewport mobile-board-slot board-column">{boardPanel}</div>
+        <div className="mobile-player-slot mobile-self-slot room-side">{selfInfo}</div>
+        {selectedPanel && (
+          <section className="mobile-room-dock mobile-room-tabs" aria-label="对局功能">
+            <div className="mobile-tab-list" role="tablist">
+              {panels.map((panel) => (
+                <button
+                  key={panel.id}
+                  type="button"
+                  className={panel.id === selectedPanel.id ? "mobile-tab-button active" : "mobile-tab-button"}
+                  role="tab"
+                  aria-selected={panel.id === selectedPanel.id}
+                  aria-controls={`mobile-room-panel-${panel.id}`}
+                  id={`mobile-room-tab-${panel.id}`}
+                  onClick={() => setActiveMobilePanel(panel.id)}
+                >
+                  {panel.label}
+                </button>
+              ))}
+            </div>
+            <div
+              className="mobile-tab-panel"
+              role="tabpanel"
+              id={`mobile-room-panel-${selectedPanel.id}`}
+              aria-labelledby={`mobile-room-tab-${selectedPanel.id}`}
+            >
+              {selectedPanel.content}
+            </div>
+          </section>
+        )}
+      </section>
+      {overlays}
     </main>
   );
+}
+
+function isElementWithClass(element, className) {
+  return isValidElement(element) && String(element.props?.className ?? "").split(/\s+/).includes(className);
+}
+
+function isComponentElement(element, component) {
+  return isValidElement(element) && element.type === component;
+}
+
+export function useMobileRoomLayout() {
+  const [matches, setMatches] = useState(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
+    return window.matchMedia(MOBILE_ROOM_MEDIA_QUERY).matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return undefined;
+    const media = window.matchMedia(MOBILE_ROOM_MEDIA_QUERY);
+    const update = () => setMatches(media.matches);
+    update();
+    if (typeof media.addEventListener === "function") media.addEventListener("change", update);
+    else media.addListener?.(update);
+    return () => {
+      if (typeof media.removeEventListener === "function") media.removeEventListener("change", update);
+      else media.removeListener?.(update);
+    };
+  }, []);
+
+  return matches;
 }
 
 export function shouldShowRoomCloseCountdown(room) {

@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useRef } from "react";
 import { BOARD_SIZE, COLORS } from "../shared/game.js";
 import { lastMarkedAction } from "../shared/boardView.js";
 import { stoneDecorationImage } from "../shared/stoneDecorations.js";
@@ -15,12 +15,14 @@ function Board({
   showCoords,
   showMoves,
   pendingSkill,
+  pointConfirmation,
   previewPlayer,
   stoneDecorations = {},
   onPoint,
   onScoringPoint,
   onNeutral
 }) {
+  const pointerTypeRef = useRef("");
   const markedAction = lastMarkedAction(game.history);
   const moveNumbers = useMemo(
     () => new Map(game.history.filter((entry) => entry.type === "move").map((entry) => [entry.id, entry.moveNumber])),
@@ -61,19 +63,24 @@ function Board({
           const skillEffectClass = point.skillEffect ?? "";
           const previewClass = canPreviewPoint(game, previewPlayer, point, pendingSkill, Boolean(onScoringPoint)) ? "previewable" : "";
           const decorationImage = point.stone ? stoneDecorationImage(stoneDecorations[point.stone], point.stone) : null;
+          const confirmClass = pointConfirmation?.pointId === point.id ? "touch-confirming" : "";
           return (
             <button
               key={point.id}
-              className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${previewClass} ${isStarPoint(point.x, point.y) ? "star" : ""}`}
+              className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${previewClass} ${confirmClass} ${isStarPoint(point.x, point.y) ? "star" : ""}`}
               style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
               onPointerDown={(event) => {
+                pointerTypeRef.current = event.pointerType;
                 if (!onScoringPoint) return;
                 event.preventDefault();
                 event.stopPropagation();
                 onScoringPoint(point);
               }}
               onClick={() => {
-                if (!onScoringPoint) onPoint(point);
+                if (!onScoringPoint) {
+                  onPoint(point, { pointerType: pointerTypeRef.current });
+                  pointerTypeRef.current = "";
+                }
               }}
               onContextMenu={(event) => {
                 event.preventDefault();
@@ -95,6 +102,7 @@ function Board({
               {deadOwner && <span className={`dead-mark ${deadOwner}`} aria-label={`${deadOwner} dead-stone mark`} />}
               {showScoringMarks && game.scoring?.neutralPoints?.includes(point.id) && <span className="neutral-mark" aria-label="neutral point" />}
               {point.skillEffect === "blast-marker" && <span className="skill-effect-marker blast" aria-hidden="true" />}
+              {confirmClass && <span className="touch-confirm-marker" aria-hidden="true" />}
             </button>
           );
         })}
@@ -110,9 +118,15 @@ export function areBoardPropsEqual(previous, next) {
     && previous.showCoords === next.showCoords
     && previous.showMoves === next.showMoves
     && previous.pendingSkill === next.pendingSkill
+    && samePointConfirmation(previous.pointConfirmation, next.pointConfirmation)
     && samePreviewPlayer(previous.previewPlayer, next.previewPlayer)
     && Boolean(previous.onScoringPoint) === Boolean(next.onScoringPoint)
     && sameStoneDecorations(previous.stoneDecorations, next.stoneDecorations);
+}
+
+function samePointConfirmation(previous, next) {
+  if (!previous || !next) return previous === next;
+  return previous.pointId === next.pointId && previous.actionType === next.actionType;
 }
 
 function sameStoneDecorations(previous = {}, next = {}) {

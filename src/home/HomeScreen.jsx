@@ -48,12 +48,12 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
           </section>
 
           <button className="home-image-entry house-manual-entry" onClick={onOpenHouse} aria-label="部员手册">
-            <img src="/assets/home/book-entry.png" alt="部员手册" decoding="async" />
+            <img src="/assets/home/book-entry.webp" alt="部员手册" decoding="async" />
           </button>
 
           <section className="home-match-feature" aria-label="空想对局入口">
             <button className="home-image-entry match-image-entry" onClick={onStartMatch} aria-describedby="matchmaking-count-popup">
-              <img src="/assets/home/fantasy-match-entry.png" alt="空想对局" decoding="async" />
+              <img src="/assets/home/fantasy-match-entry.webp" alt="空想对局" decoding="async" />
             </button>
             <div id="matchmaking-count-popup" className="matchmaking-popup" role="status" aria-label="匹配状态、规则与用时">
               <span>当前匹配人数：{matchmakingCount}</span>

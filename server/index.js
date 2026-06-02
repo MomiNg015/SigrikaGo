@@ -39,7 +39,7 @@ import { buildLeaderboard } from "./leaderboard.js";
 import { publicUserWithRecordStats } from "./userProfile.js";
 import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
 import { listItemInventory, useInventoryItem } from "./items.js";
-import { getPublicSiteSettings } from "./siteSettings.js";
+import { ensureDefaultSiteSettings, getPublicSiteSettings } from "./siteSettings.js";
 import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
 import { blockedCharactersForItemEffects } from "./itemEffects.js";
 import {
@@ -156,6 +156,7 @@ const io = new Server(server, {
 
 await seedCharacters(prisma);
 await seedBuiltinShopItems(prisma);
+await ensureDefaultSiteSettings(prisma);
 await ensureSocialSchema(prisma);
 await ensureRoomPersistenceSchema(prisma);
 await ensureLoginSessionSchema(prisma);

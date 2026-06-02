@@ -14,8 +14,8 @@ describe("WarehouseModal candy feedback", () => {
       token: "token",
       user: { ownedCharacters: ["sigrika", "denia"] },
       characters: {
-        sigrika: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.png" },
-        denia: { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.png" }
+        sigrika: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
+        denia: { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp" }
       },
       initialTargetState: targetState,
       onUserChange: () => {},
@@ -54,7 +54,7 @@ describe("WarehouseModal candy feedback", () => {
       token: "token",
       user: { ownedCharacters: ["denia"], itemEffects: { deniaRainbowGlow: true } },
       characters: {
-        denia: { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.png" }
+        denia: { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp" }
       },
       initialTargetState: {
         item: { itemId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖" },
@@ -67,7 +67,7 @@ describe("WarehouseModal candy feedback", () => {
       onClose: () => {}
     }));
 
-    expect(html).toContain("/assets/characters/denia_color.gif");
-    expect(html).not.toContain("/assets/Danea_centered.png");
+    expect(html).toContain("/assets/characters/denia_color.webp");
+    expect(html).not.toContain("/assets/Danea_centered.webp");
   });
 });

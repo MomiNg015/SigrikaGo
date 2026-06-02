@@ -537,7 +537,7 @@ describe("admin shop and decoration routes", () => {
         enabled: true,
         sortOrder: 1,
         description: "解锁角色",
-        imageUrl: "/assets/Danea_centered.png"
+        imageUrl: "/assets/Danea_centered.webp"
       }
     });
 
@@ -598,7 +598,7 @@ describe("admin shop and decoration routes", () => {
             enabled: true,
             sortOrder: 1,
             description: "old",
-            imageUrl: "/assets/decorations/paw-stone-preview.png"
+            imageUrl: "/assets/decorations/paw-stone-preview.webp"
           }),
           update: async ({ data }) => {
             calls.push(["tx.shopItem.update", data]);
@@ -623,7 +623,7 @@ describe("admin shop and decoration routes", () => {
         enabled: true,
         sortOrder: 1,
         description: "new description",
-        imageUrl: "/assets/decorations/paw-stone-preview.png"
+        imageUrl: "/assets/decorations/paw-stone-preview.webp"
       }
     });
 

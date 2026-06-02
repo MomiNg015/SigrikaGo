@@ -15,6 +15,16 @@ export async function getPublicSiteSettings(prisma) {
   return rowsToSettings(rows);
 }
 
+export async function ensureDefaultSiteSettings(prisma) {
+  for (const [key, value] of Object.entries(DEFAULT_SITE_SETTINGS)) {
+    await prisma.siteSetting.upsert({
+      where: { key },
+      create: { key, value },
+      update: {}
+    });
+  }
+}
+
 export async function updateSiteSettings({ prisma, adminUser, body }) {
   const nextSettings = sanitizeSiteSettings(body);
   return prisma.$transaction(async (tx) => {

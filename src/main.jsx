@@ -73,6 +73,7 @@ function App() {
   const [incomingDuel, setIncomingDuel] = useState(null);
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
+  const [audioResumeSignal, setAudioResumeSignal] = useState(0);
   const matchSuccessRef = useRef(matchSuccess);
   const roomRef = useRef(room);
   const viewRef = useRef(view);
@@ -212,32 +213,33 @@ function App() {
       socketBase: SOCKET_BASE,
       token,
       handlers: createSocketHandlers({
-      matchSuccessRef,
-      roomRef,
-      audioSettingsRef,
-      closeAllOverlays,
-      updateUser,
-      setMatchStart,
-      setMatchSuccess,
-      setReplayStep,
-      setRoom,
-      setView,
-      setPendingSkill,
-      setDismissedResultRoom,
-      setIncomingDuel,
-      setToken,
-      setUser,
-      setLobbyStats,
-      showToast,
-      clearLastRoomCode,
-      handleMissingRoomResumePayload,
-      handleRoomResumePayload,
-      mergeCurrentUserFromRoom,
-      syncPendingMatchRoom,
-      applyRoomClock,
-      playDoorbellSound
+        matchSuccessRef,
+        roomRef,
+        audioSettingsRef,
+        closeAllOverlays,
+        updateUser,
+        setMatchStart,
+        setMatchSuccess,
+        setReplayStep,
+        setRoom,
+        setView,
+        setPendingSkill,
+        setDismissedResultRoom,
+        setIncomingDuel,
+        setToken,
+        setUser,
+        setLobbyStats,
+        showToast,
+        clearLastRoomCode,
+        handleMissingRoomResumePayload,
+        handleRoomResumePayload,
+        mergeCurrentUserFromRoom,
+        syncPendingMatchRoom,
+        applyRoomClock,
+        playDoorbellSound
       }),
-      buildRoomResumeRequest
+      buildRoomResumeRequest,
+      onSocketReconnect: () => setAudioResumeSignal((value) => value + 1)
     });
     setSocket(nextSocket);
     return () => nextSocket.close();
@@ -406,7 +408,7 @@ function App() {
 
   return (
     <div className="app-shell">
-      <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} />
+      <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} resumeSignal={audioResumeSignal} />
       <ToastStack toasts={toasts} onClose={removeToast} />
       {incomingDuel && (
         <DuelRequestBanner

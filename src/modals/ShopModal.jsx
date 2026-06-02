@@ -85,7 +85,7 @@ export default function ShopModal({ token, user, onPurchased, onNotice, onClose 
           <aside className="shop-sidebar" aria-label="扎希拉接待区">
             <div className="shop-mascot-bubble" aria-live="polite">{mascotLine}</div>
             <div className="shop-mascot-slot" aria-label="扎希拉立绘">
-              <img src="/assets/zahiya_shop.png" alt="扎希拉" decoding="async" />
+              <img src="/assets/zahiya_shop.webp" alt="扎希拉" decoding="async" />
             </div>
             <div className="shop-wallet-wrap">
               <span>你当前拥有</span>

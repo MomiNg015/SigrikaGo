@@ -35,19 +35,19 @@ describe("PlayerInfo labels", () => {
 
   it("swaps Denia portraits to the candy gif while the effect is active", () => {
     expect(playerCandyPortrait(
-      { id: "denia", portrait: "/assets/Danea_centered.png" },
+      { id: "denia", portrait: "/assets/Danea_centered.webp" },
       {
         characterId: "denia",
         user: { itemEffects: { deniaRainbowGlow: true } }
       }
     )).toBe(DENIA_CANDY_PORTRAIT);
     expect(playerCandyPortrait(
-      { id: "sigrika", portrait: "/assets/sigrika_centered.png" },
+      { id: "sigrika", portrait: "/assets/sigrika_centered.webp" },
       {
         characterId: "sigrika",
         user: { itemEffects: { deniaRainbowGlow: true } }
       }
-    )).toBe("/assets/sigrika_centered.png");
+    )).toBe("/assets/sigrika_centered.webp");
   });
 
   it("skips rerendering unchanged player panels during unrelated clock updates", () => {

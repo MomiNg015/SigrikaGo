@@ -12,6 +12,109 @@
   padding-bottom: 0;
 }
 
+.mobile-battle-layout {
+  display: grid;
+  grid-template-areas:
+    "opponent"
+    "board"
+    "self"
+    "tabs";
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: center;
+  gap: 10px;
+  align-items: start;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: visible;
+  padding-bottom: 0;
+}
+
+.mobile-battle-layout .opponent-side {
+  grid-area: opponent;
+}
+
+.mobile-battle-layout .board-column {
+  grid-area: board;
+}
+
+.mobile-battle-layout .room-side {
+  grid-area: self;
+}
+
+.mobile-room-tabs {
+  grid-area: tabs;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(128, 102, 142, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 30px rgba(42, 32, 48, 0.1);
+  backdrop-filter: blur(14px) saturate(1.08);
+}
+
+.mobile-tab-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 5px;
+  border-bottom: 1px solid rgba(128, 102, 142, 0.1);
+}
+
+.mobile-tab-button {
+  min-height: 34px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #5d5067;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mobile-tab-button.active {
+  border-color: rgba(93, 127, 232, 0.26);
+  background: rgba(240, 245, 255, 0.9);
+  color: #384c92;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.mobile-tab-panel {
+  min-height: 0;
+  max-height: 172px;
+  overflow: auto;
+  padding: 8px;
+}
+
+.mobile-room-screen .action-bar {
+  position: static;
+  bottom: auto;
+  z-index: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.mobile-room-screen .mobile-tab-panel .operation-hint,
+.mobile-room-screen .mobile-tab-panel .room-people,
+.mobile-room-screen .mobile-tab-panel .chat-box {
+  display: block;
+  margin: 0 0 8px;
+  padding: 9px;
+  box-shadow: none;
+}
+
+.mobile-room-screen .mobile-tab-panel .chat-box {
+  overflow: visible;
+}
+
+.mobile-room-screen .mobile-tab-panel .chat-log {
+  height: 96px;
+  min-height: 80px;
+}
+
 .board-column,
 .room-side {
   min-height: 0;
@@ -566,6 +669,7 @@
   grid-template-columns: repeat(var(--size), 1fr);
   grid-template-rows: repeat(var(--size), 1fr);
   background: transparent;
+  touch-action: none;
 }
 
 .point {
@@ -595,6 +699,17 @@
 
 .point.previewable:hover::before {
   opacity: 1;
+}
+
+.point.touch-confirming::before {
+  display: block;
+  opacity: 1;
+  border-radius: 50%;
+  border: 3px solid #22d3ee;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.58),
+    0 0 18px rgba(34, 211, 238, 0.72);
 }
 
 .board-wrap.targeting .point::before {
@@ -726,6 +841,20 @@
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.72),
     0 0 10px rgba(225, 59, 79, 0.7);
+  pointer-events: none;
+}
+
+.touch-confirm-marker {
+  position: absolute;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  border: 3px solid #22d3ee;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.58),
+    0 0 16px rgba(34, 211, 238, 0.66);
+  z-index: 5;
   pointer-events: none;
 }
 
@@ -901,6 +1030,17 @@
 .action-bar {
   margin: 0;
   justify-content: center;
+}
+
+.action-bar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-label {
+  white-space: nowrap;
 }
 
 .decision-bar {
@@ -1374,4 +1514,18 @@
   grid-template-columns: minmax(0, 1fr) clamp(42px, 4vw, 48px);
   gap: clamp(6px, 0.8vw, 8px);
   margin-top: clamp(8px, 1vw, 10px);
+}
+
+@media (max-width: 560px) {
+  .room-floating-modal.user-profile-modal {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 10px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .room-floating-modal.confirm-inline-modal {
+    width: calc(100vw - 24px);
+  }
 }

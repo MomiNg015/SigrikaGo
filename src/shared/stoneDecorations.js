@@ -5,10 +5,10 @@ export const STONE_DECORATIONS = {
     description: "圆润棋面上带有爪印图案的黑白棋子。",
     category: "stone",
     priceCoins: 500,
-    previewImageUrl: "/assets/decorations/paw-stone-preview.png",
+    previewImageUrl: "/assets/decorations/paw-stone-preview.webp",
     images: {
-      black: "/assets/decorations/paw-stone-black.png",
-      white: "/assets/decorations/paw-stone-white.png"
+      black: "/assets/decorations/paw-stone-black.webp",
+      white: "/assets/decorations/paw-stone-white.webp"
     }
   },
   "papagan-peach-stone": {
@@ -17,10 +17,10 @@ export const STONE_DECORATIONS = {
     description: "黑子使用耙耙柑造型，白子使用水蜜桃造型的果味棋子套装。",
     category: "stone",
     priceCoins: 1000,
-    previewImageUrl: "/assets/decorations/papagan-peach-stone-preview.png",
+    previewImageUrl: "/assets/decorations/papagan-peach-stone-preview.webp",
     images: {
-      black: "/assets/decorations/papagan-peach-stone-black.png",
-      white: "/assets/decorations/papagan-peach-stone-white.png"
+      black: "/assets/decorations/papagan-peach-stone-black.webp",
+      white: "/assets/decorations/papagan-peach-stone-white.webp"
     }
   }
 };

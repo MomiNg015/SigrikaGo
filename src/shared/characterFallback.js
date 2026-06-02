@@ -5,7 +5,7 @@ export const FALLBACK_CHARACTERS = {
     id: "sigrika",
     name: "西格莉卡",
     palette: "#ff9b4d",
-    portrait: "/assets/sigrika_centered.png",
+    portrait: "/assets/sigrika_centered.webp",
     skill: {
       id: "erase-point",
       name: "星辉符文",
@@ -22,7 +22,7 @@ export const FALLBACK_CHARACTERS = {
     id: "danea",
     name: "达妮娅",
     palette: "#f2a4d8",
-    portrait: "/assets/Danea_centered.png",
+    portrait: "/assets/Danea_centered.webp",
     skill: {
       id: "flip-stone",
       name: "染秽",
@@ -38,7 +38,7 @@ export const FALLBACK_CHARACTERS = {
     id: "aemeath",
     name: "爱弥斯",
     palette: "#67d9e8",
-    portrait: "/assets/Aemeath_centered.png",
+    portrait: "/assets/Aemeath_centered.webp",
     skill: {
       id: "hidden-hand",
       name: "小爱出击",
@@ -55,7 +55,7 @@ export const FALLBACK_CHARACTERS = {
     id: "baconbits",
     name: "猪小仙",
     palette: "#f59ab2",
-    portrait: "/assets/baconbits.png",
+    portrait: "/assets/baconbits.webp",
     acquisitionMethod: "商城购买",
     skill: {
       id: "random-blast",
@@ -74,7 +74,7 @@ export const FALLBACK_CHARACTERS = {
     id: "nabomo",
     name: "娜波摩",
     palette: "#8fb4f7",
-    portrait: "/assets/nabomo.png",
+    portrait: "/assets/nabomo.webp",
     acquisitionMethod: "积分达到1400分时自动获得",
     skill: {
       id: "color-illusion-passive",

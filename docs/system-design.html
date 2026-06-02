@@ -60,7 +60,10 @@
 <li><code>public/assets/go-board-13-clean-3d-1.png</code> through <code>public/assets/go-board-13-clean-3d-4.png</code> are cleaner transparent 13-line Go board candidates with straight grid lines, no gray construction strokes, five star points, no stones, and a simple 3D board thickness for the same home screen button.</li>
 </ul>
 <ul>
-<li><code>public/assets/effects/denia-bubble-pop.gif</code> is a 256x256 transparent GIF preview for the planned Denia target-point skill effect. It runs for 2 seconds: 0.0-0.5s glass bubble generation, 0.5-1.2s black ink/energy fill, 1.2-1.5s crack and pressure buildup, and 1.5-2.0s burst into black shards, smoke particles, glass flecks, and a light shock ring.</li>
+<li><code>public/assets/effects/denia-bubble-pop.webp</code> is a 256x256 transparent GIF preview for the planned Denia target-point skill effect. It runs for 2 seconds: 0.0-0.5s glass bubble generation, 0.5-1.2s black ink/energy fill, 1.2-1.5s crack and pressure buildup, and 1.5-2.0s burst into black shards, smoke particles, glass flecks, and a light shock ring.</li>
+</ul>
+<ul>
+<li>Runtime image references use WebP assets for the current public image set, including home entry art, classroom backgrounds, character portraits, shop/item images, stone decorations, and animated effect previews. The original PNG/JPG/GIF files are left in place as source/reference assets and to avoid bulk deletion; production code and preload lists should point at the <code>.webp</code> variants.</li>
 </ul>
 <h1>SigrikaGo System Design</h1>
 <p>本文档基于当前代码库静态分析生成，目标是方便后续维护者和 AI 继续接手。未在代码中确认的内容会标注为“待确认”。</p>
@@ -571,13 +574,13 @@
 <li>大厅入口：棋舍、空想对局、观战、排行榜、商城、后台管理（管理员可见）。</li>
 </ul>
 <ul>
-<li>大厅首页布局 A：空想对局作为最大主行动面板；该区域使用 <code>/assets/home/fantasy-match-illustration.png</code> 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。顶部条显示站点标题、副标题“连罗伊人的都爱玩的智力游戏”、在线人数和右侧操作按钮；后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
+<li>大厅首页布局 A：空想对局作为最大主行动面板；该区域使用 <code>/assets/home/fantasy-match-illustration.webp</code> 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。顶部条显示站点标题、副标题“连罗伊人的都爱玩的智力游戏”、在线人数和右侧操作按钮；后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
 </ul>
 <ul>
 <li>大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，空想对局主面板位于右侧。空想对局上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。</li>
 </ul>
 <ul>
-<li><code>public/hotspot-prototype.html</code> 是单页热点原型，用用户提供的 <code>/assets/prototypes/classroom-bg1.png</code> 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。</li>
+<li><code>public/hotspot-prototype.html</code> 是单页热点原型，用用户提供的 <code>/assets/prototypes/classroom-bg1.webp</code> 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。</li>
 </ul>
 <ul>
 <li>大厅顶部标题和副标题来自 <code>GET /api/site-settings</code>；未配置或接口失败时回退到 <code>大厅</code> / <code>SigrikaGo</code>。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。</li>
@@ -708,7 +711,7 @@
 <li>技能演出流程：服务端先进入 <code>skill-preview</code> 并广播 <code>pendingSkill</code>，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。</li>
 </ul>
 <ul>
-<li>达妮娅目标点泡泡炸裂特效已有预览资产 <code>public/assets/effects/denia-bubble-pop.gif</code>：透明玻璃泡泡生成并膨胀，随后被黑色能量/墨雾填满，短暂出现细密裂纹和蓄力压迫，最终爆散出黑色碎片、烟雾粒子和轻微冲击波并消散。该 GIF 当前仅作为视觉参考，尚未接入技能生效流程。</li>
+<li>达妮娅目标点泡泡炸裂特效已有预览资产 <code>public/assets/effects/denia-bubble-pop.webp</code>：透明玻璃泡泡生成并膨胀，随后被黑色能量/墨雾填满，短暂出现细密裂纹和蓄力压迫，最终爆散出黑色碎片、烟雾粒子和轻微冲击波并消散。该 GIF 当前仅作为视觉参考，尚未接入技能生效流程。</li>
 </ul>
 <ul>
 <li>开局被动技能不会在 <code>opening</code> 阶段触发；正式进入 <code>playing</code> 后才按延迟规则触发，避免和执色提示/开局语音重叠。</li>
@@ -785,7 +788,7 @@
 <li>商品有原价、折扣、是否可购买、是否展示、排序、描述、图片；道具商品额外有目标类型和商店库存。</li>
 </ul>
 <ul>
-<li>玩家商城大厅入口显示为“商店”。商店窗口分为左右两列：左侧窄列为扎希拉接待区，上方是独立聊天气泡，中间展示扎希拉 Q 版立绘，底部显示“你当前拥有”小字和金币图标加金额的金色标签；聊天气泡不再带下方圆点尾巴，金币标签与立绘保持约 15px 间距。右侧宽列直接从分类选项卡进入商品栏和页码，不再显示大标题。商品区每页仍固定 8 个槽位，但视觉网格会按可用宽高自适应列数，商品区内部独立滚动，页码固定保留在底部且当前页使用浅色高亮；商品网格内容在选项卡和页码之间使用安全居中：高度足够时尽量让第一行商品顶部与选项卡底部、第二行商品底部与页码按钮之间的留白接近，高度不足时回退到顶部对齐，保证滚动条可以覆盖完整商品栏。横屏小高度或窄窗口下会压缩扎希拉立绘、气泡、商品卡片和选项卡间距，避免商品栏和分类选项卡被挤出视口。商品数超过 8 个时自动增加页码，点击页码切换对应商品栏，切换分类会回到第 1 页且不改变槽位数量。空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。扎希拉资源位于 <code>/assets/zahiya_shop.png</code>，打开商店时聊天气泡从“今天想买些什么？”“刚刚进了一批好货哟~”“欢迎来到扎希拉商店！”中随机展示一句。</li>
+<li>玩家商城大厅入口显示为“商店”。商店窗口分为左右两列：左侧窄列为扎希拉接待区，上方是独立聊天气泡，中间展示扎希拉 Q 版立绘，底部显示“你当前拥有”小字和金币图标加金额的金色标签；聊天气泡不再带下方圆点尾巴，金币标签与立绘保持约 15px 间距。右侧宽列直接从分类选项卡进入商品栏和页码，不再显示大标题。商品区每页仍固定 8 个槽位，但视觉网格会按可用宽高自适应列数，商品区内部独立滚动，页码固定保留在底部且当前页使用浅色高亮；商品网格内容在选项卡和页码之间使用安全居中：高度足够时尽量让第一行商品顶部与选项卡底部、第二行商品底部与页码按钮之间的留白接近，高度不足时回退到顶部对齐，保证滚动条可以覆盖完整商品栏。横屏小高度或窄窗口下会压缩扎希拉立绘、气泡、商品卡片和选项卡间距，避免商品栏和分类选项卡被挤出视口。商品数超过 8 个时自动增加页码，点击页码切换对应商品栏，切换分类会回到第 1 页且不改变槽位数量。空槽显示“暂未上架”，可购买槽使用简明浅色渐变，已拥有槽使用浅绿色渐变。扎希拉资源位于 <code>/assets/zahiya_shop.webp</code>，打开商店时聊天气泡从“今天想买些什么？”“刚刚进了一批好货哟~”“欢迎来到扎希拉商店！”中随机展示一句。</li>
 </ul>
 <ul>
 <li>商城商品卡片按商品图标、商品名、商品介绍、数量/售价、购买按钮自上而下排列；数量或限购信息左对齐，售价右对齐。折扣商品的原价显示在现价数字上方，使用更小的红色删除线并与现价保持紧凑间距；原价作为浮动标注对齐现价数字列，不改变现价和无折扣商品售价的行内位置。购买按钮与卡片底部保留留白。商品卡片使用固定图片区、名称区、介绍区、信息区和按钮区，避免窗口尺寸变化时内容被挤出商品栏。</li>
@@ -812,16 +815,16 @@
 <li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。涉及金币、积分或段位变化的事件（包括对局结果、购买、道具效果、后台编辑当前用户等）会按变动项分别立即显示 toast；金币增加、积分增加、段位升高使用黄底 reward toast，例如 <code>金币+50</code>、<code>积分+20</code>、<code>段位2段 → 3段</code>，金币扣除、积分扣除、段位降低使用灰底 penalty toast，例如 <code>金币-10</code>、<code>积分-20</code>、<code>段位3段 → 2段</code>。</li>
 </ul>
 <ul>
-<li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.png</code>，介绍为“产地不明的糖果，据说有神秘的效果”。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
+<li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.webp</code>，介绍为“产地不明的糖果，据说有神秘的效果”。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
 </ul>
 <ul>
 <li>彩虹豆豆跳跳糖对西格莉卡使用后：消耗 1 个道具，用户获得 30 金币，<code>itemEffects.sigrikaCandyDisabled</code> 置为 true；西格莉卡棋舍出战按钮变灰，<code>/api/me/character</code> 与 socket 选角都会避开西格莉卡。如果当前出战是西格莉卡，后端自动随机切换到一名已拥有且可出战的其它角色；没有可替换角色时拒绝使用且不消耗道具。任意角色完成一盘有效对局后清除该状态。</li>
 </ul>
 <ul>
-<li>彩虹豆豆跳跳糖对达妮娅使用后：消耗 1 个道具，<code>itemEffects.deniaRainbowGlow</code> 置为 true；除用户铭牌外，所有展示该用户达妮娅立绘的位置都会把原立绘替换为 <code>/assets/characters/denia_color.gif</code> 彩色动图，包括棋舍、仓库使用结果、对局信息区、技能横幅、排行榜/好友资料等可获得用户效果状态的界面。只有使用达妮娅完成一盘有效对局后清除该状态；服务端会在首个有效结算 <code>room:update</code> 广播前先更新房间内存玩家状态，前端再从房间视图同步当前用户状态，因此返回大厅/棋舍时立绘会恢复为角色原始立绘。</li>
+<li>彩虹豆豆跳跳糖对达妮娅使用后：消耗 1 个道具，<code>itemEffects.deniaRainbowGlow</code> 置为 true；除用户铭牌外，所有展示该用户达妮娅立绘的位置都会把原立绘替换为 <code>/assets/characters/denia_color.webp</code> 彩色动图，包括棋舍、仓库使用结果、对局信息区、技能横幅、排行榜/好友资料等可获得用户效果状态的界面。只有使用达妮娅完成一盘有效对局后清除该状态；服务端会在首个有效结算 <code>room:update</code> 广播前先更新房间内存玩家状态，前端再从房间视图同步当前用户状态，因此返回大厅/棋舍时立绘会恢复为角色原始立绘。</li>
 </ul>
 <ul>
-<li>登录后的静态资源预加载会无条件加入达妮娅糖果动图 <code>/assets/characters/denia_color.gif</code>，让用户之后在棋舍、排行榜、好友资料或对局中首次看到彩色达妮娅时不再临时下载；对局回放数据仍保持按需加载。</li>
+<li>登录后的静态资源预加载会无条件加入达妮娅糖果动图 <code>/assets/characters/denia_color.webp</code>，让用户之后在棋舍、排行榜、好友资料或对局中首次看到彩色达妮娅时不再临时下载；对局回放数据仍保持按需加载。</li>
 </ul>
 <ul>
 <li>糖果效果只在有效对局结束并保存棋谱的链路清除；不超过 10 手的无效对局不会清除糖果效果。</li>
@@ -836,7 +839,7 @@
 <li><code>seedBuiltinShopItems</code> 只创建缺失的内置商城商品，不覆盖已经存在的 <code>ShopItem</code>。后台管理保存过的商品名、介绍、图片、售价、库存和上下架状态必须以数据库为准，服务重启或对局写库后不能被内置默认值改回。</li>
 </ul>
 <ul>
-<li>爪印棋子使用 image-gen 生成图裁切出的透明 PNG 贴图：<code>paw-stone-black.png</code>、<code>paw-stone-white.png</code> 和 <code>paw-stone-preview.png</code>。“耙耙柑和水蜜桃”使用用户提供的 512x512 透明 PNG：<code>papagan-peach-stone-black.png</code> 为耙耙柑黑子，<code>papagan-peach-stone-white.png</code> 为水蜜桃白子，<code>papagan-peach-stone-preview.png</code> 为 1024x512 商店预览图。</li>
+<li>爪印棋子使用 image-gen 生成图裁切出的透明 PNG 贴图：<code>paw-stone-black.webp</code>、<code>paw-stone-white.webp</code> 和 <code>paw-stone-preview.webp</code>。“耙耙柑和水蜜桃”使用用户提供的 512x512 透明 PNG：<code>papagan-peach-stone-black.webp</code> 为耙耙柑黑子，<code>papagan-peach-stone-white.webp</code> 为水蜜桃白子，<code>papagan-peach-stone-preview.webp</code> 为 1024x512 商店预览图。</li>
 </ul>
 <ul>
 <li>后台保存装饰类商城商品时，<code>targetId</code> 校验同时认可数据库 <code>Decoration.slug</code> 与内置 <code>STONE_DECORATIONS</code> 配置，避免只修改内置装饰商品介绍时被误报为 <code>Shop decoration target does not exist</code>。</li>
@@ -2840,7 +2843,7 @@
 <li>The home player plaque rank/rating chip uses a light background with dark text again, while the admin-only management button remains a green circular icon-plus-title control aligned with the home user plaque.</li>
 </ul>
 <ul>
-<li>The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle <code>连罗伊人的都爱玩的智力游戏</code>, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip shows the site title, <code>Copyright ©KURO GAMES. ALL RIGHTS RESERVED.</code>, and <code>浙ICP备2026035038号</code> as evenly spaced items. The middle stage is an unframed fixed-ratio coordinate surface (<code>1480 / 620</code>) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a <code>1200px</code> minimum, <code>503px</code> minimum height, and <code>1920px</code> maximum width; phone landscape uses a smaller <code>960px</code> by <code>402px</code> minimum stage. The home app shell uses <code>/assets/home/multipurpose-classroom-bg.jpg</code> as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, <code>部员手册</code>, <code>空想对局</code>, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, <code>部员手册</code> is offset slightly right/down from the dock edge, and <code>空想对局</code> is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry's hover/focus popup in the top-right carries both the current matchmaking count and one rule item per line: <code>路数：13路</code>, <code>用时：5分钟30秒3次</code>, and <code>规则：黑贴2又3/4子，中国数子规则</code>, so new users can understand the match format without a persistent lower-left label or another modal. Phone portrait shows a dedicated <code>请横屏使用</code> guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values, while a masked <code>::before</code> layer uses the same PNG alpha channel to show a solid aqua shadow translated down and right; this avoids large transparent-PNG filter/drop-shadow repaint costs while keeping the requested shadow look. The match-entry PNG has transparent borders after low-alpha background cleanup, avoiding faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow, and when the home stage compresses below the utility-label comfort threshold, utility buttons hide their visible text and keep only the icon inside the circular target.</li>
+<li>The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle <code>连罗伊人的都爱玩的智力游戏</code>, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip shows the site title, <code>Copyright ©KURO GAMES. ALL RIGHTS RESERVED.</code>, and <code>浙ICP备2026035038号</code> as evenly spaced items. The middle stage is an unframed fixed-ratio coordinate surface (<code>1480 / 620</code>) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a <code>1200px</code> minimum, <code>503px</code> minimum height, and <code>1920px</code> maximum width; phone landscape uses a smaller <code>960px</code> by <code>402px</code> minimum stage. The home app shell uses <code>/assets/home/multipurpose-classroom-bg.webp</code> as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, <code>部员手册</code>, <code>空想对局</code>, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, <code>部员手册</code> is offset slightly right/down from the dock edge, and <code>空想对局</code> is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry's hover/focus popup in the top-right carries both the current matchmaking count and one rule item per line: <code>路数：13路</code>, <code>用时：5分钟30秒3次</code>, and <code>规则：黑贴2又3/4子，中国数子规则</code>, so new users can understand the match format without a persistent lower-left label or another modal. Phone portrait shows a dedicated <code>请横屏使用</code> guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values, while a masked <code>::before</code> layer uses the same PNG alpha channel to show a solid aqua shadow translated down and right; this avoids large transparent-PNG filter/drop-shadow repaint costs while keeping the requested shadow look. The match-entry PNG has transparent borders after low-alpha background cleanup, avoiding faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow, and when the home stage compresses below the utility-label comfort threshold, utility buttons hide their visible text and keep only the icon inside the circular target.</li>
 </ul>
 <ul>
 <li>Incoming direct duel requests play a short synthesized doorbell SFX on the effects channel before showing the request banner.</li>
@@ -2985,7 +2988,7 @@
 <li>Fresh login enters <code>preloading</code> before the home screen, preventing the home screen from flashing before assets begin loading. Stored-token startup is intentionally disabled so refresh and browser restart return to the login screen.</li>
 </ul>
 <ul>
-<li>The preload step fetches non-replay runtime assets after login: all current character portraits, home and shop imagery including <code>/assets/home/multipurpose-classroom-bg.jpg</code>, Denia candy GIF portrait, stone decoration images, the Denia bubble-effect preview, common board/result/match sound effects, every configured BGM track, every configured character skill voice, and every configured character system voice. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.</li>
+<li>The preload step fetches non-replay runtime assets after login: all current character portraits, home and shop imagery including <code>/assets/home/multipurpose-classroom-bg.webp</code>, Denia candy GIF portrait, stone decoration images, the Denia bubble-effect preview, common board/result/match sound effects, every configured BGM track, every configured character skill voice, and every configured character system voice. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.</li>
 </ul>
 <ul>
 <li>Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.</li>

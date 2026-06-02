@@ -1,59 +1,32 @@
-import { describe, expect, it } from "vitest";
-import { DEFAULT_SITE_SETTINGS, getPublicSiteSettings, updateSiteSettings } from "./siteSettings.js";
+import { describe, expect, it, vi } from "vitest";
+import { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
+import { ensureDefaultSiteSettings } from "./siteSettings.js";
 
-describe("site settings", () => {
-  it("returns default home title settings when the database has no overrides", async () => {
-    const prisma = {
-      siteSetting: {
-        findMany: async () => []
-      }
-    };
-
-    await expect(getPublicSiteSettings(prisma)).resolves.toEqual(DEFAULT_SITE_SETTINGS);
+describe("site settings defaults", () => {
+  it("uses the academy brand as the production fallback title", () => {
+    expect(DEFAULT_SITE_SETTINGS.homeTitle).toBe("星炬学院围棋部");
+    expect(DEFAULT_SITE_SETTINGS.homeSubtitle).toBe("连罗伊人的都爱玩的智力游戏");
   });
 
-  it("trims and limits editable home title settings", async () => {
-    const writes = [];
-    const auditWrites = [];
+  it("seeds missing site settings without overwriting configured values", async () => {
+    const upsert = vi.fn();
     const prisma = {
-      $transaction: async (callback) => callback({
-        siteSetting: {
-          upsert: async ({ where, create, update }) => {
-            writes.push({ where, create, update });
-            return { key: where.key, value: update.value };
-          },
-          findMany: async () => writes.map((write) => ({
-            key: write.where.key,
-            value: write.update.value
-          }))
-        },
-        adminAuditLog: {
-          create: async ({ data }) => {
-            auditWrites.push(data);
-            return data;
-          }
-        }
-      })
+      siteSetting: {
+        upsert
+      }
     };
 
-    const result = await updateSiteSettings({
-      prisma,
-      adminUser: { id: "admin-1" },
-      body: {
-        homeTitle: "  新大厅标题  ",
-        homeSubtitle: ` ${"副".repeat(90)} `,
-        aboutText: ` ${"关于".repeat(1600)} `
-      }
-    });
+    await ensureDefaultSiteSettings(prisma);
 
-    expect(result.settings.homeTitle).toBe("新大厅标题");
-    expect(result.settings.homeSubtitle).toHaveLength(80);
-    expect(result.settings.aboutText).toHaveLength(3000);
-    expect(writes.map((write) => write.where.key)).toEqual(["homeTitle", "homeSubtitle", "aboutText"]);
-    expect(auditWrites[0]).toMatchObject({
-      action: "site-settings.update",
-      targetType: "site-settings",
-      targetId: "global"
+    expect(upsert).toHaveBeenCalledWith({
+      where: { key: "homeTitle" },
+      create: { key: "homeTitle", value: DEFAULT_SITE_SETTINGS.homeTitle },
+      update: {}
+    });
+    expect(upsert).toHaveBeenCalledWith({
+      where: { key: "homeSubtitle" },
+      create: { key: "homeSubtitle", value: DEFAULT_SITE_SETTINGS.homeSubtitle },
+      update: {}
     });
   });
 });

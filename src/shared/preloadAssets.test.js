@@ -18,8 +18,8 @@ describe("deployment preload asset helpers", () => {
   it("preloads core images, effects, all runtime music, and character voices after login", () => {
     const assets = loginPreloadAssets({
       characters: {
-        sigrika: { portrait: "/assets/sigrika_centered.png" },
-        aemeath: { portrait: "/assets/Aemeath_centered.png" }
+        sigrika: { portrait: "/assets/sigrika_centered.webp" },
+        aemeath: { portrait: "/assets/Aemeath_centered.webp" }
       },
       ownedCharacters: ["sigrika"],
       tracks: MUSIC_TRACKS,
@@ -27,14 +27,14 @@ describe("deployment preload asset helpers", () => {
       systemVoices: CHARACTER_SYSTEM_VOICES
     });
 
-    expect(assets.images).toContain("/assets/sigrika_centered.png");
-    expect(assets.images).toContain("/assets/Aemeath_centered.png");
-    expect(assets.images).toContain("/assets/home/fantasy-match-entry.png");
-    expect(assets.images).toContain("/assets/home/book-entry.png");
-    expect(assets.images).toContain("/assets/home/multipurpose-classroom-bg.jpg");
-    expect(assets.images).toContain("/assets/zahiya_shop.png");
-    expect(assets.images).toContain("/assets/items/rainbow-bean-candy.png");
-    expect(assets.images).toContain("/assets/effects/denia-bubble-pop.gif");
+    expect(assets.images).toContain("/assets/sigrika_centered.webp");
+    expect(assets.images).toContain("/assets/Aemeath_centered.webp");
+    expect(assets.images).toContain("/assets/home/fantasy-match-entry.webp");
+    expect(assets.images).toContain("/assets/home/book-entry.webp");
+    expect(assets.images).toContain("/assets/home/multipurpose-classroom-bg.webp");
+    expect(assets.images).toContain("/assets/zahiya_shop.webp");
+    expect(assets.images).toContain("/assets/items/rainbow-bean-candy.webp");
+    expect(assets.images).toContain("/assets/effects/denia-bubble-pop.webp");
     expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
     expect(assets.audio).toContain("/assets/music/godown_clear.ogg");
     expect(assets.audio).toContain("/assets/music/main_bgm.ogg");
@@ -51,12 +51,12 @@ describe("deployment preload asset helpers", () => {
   it("preloads the candy portrait even before the active user has the candy effect", () => {
     const assets = loginPreloadAssets({
       characters: {
-        denia: { portrait: "/assets/Danea_centered.png" }
+        denia: { portrait: "/assets/Danea_centered.webp" }
       },
       itemEffects: {}
     });
 
-    expect(assets.images).toContain("/assets/Danea_centered.png");
+    expect(assets.images).toContain("/assets/Danea_centered.webp");
     expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
   });
 });

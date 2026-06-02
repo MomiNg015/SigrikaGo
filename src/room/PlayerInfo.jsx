@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Eye, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
@@ -33,18 +33,20 @@ function PlayerInfo({
   const resultBadge = resultBadgeForPlayer(player, game, { isWinner, isDrawResult });
   const disconnectBadge = disconnectBadgeForPlayer(player, game);
   return (
-    <aside className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""}`}>
+    <aside
+      className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${canSwitchView ? "switchable-view" : ""} ${canSwitchView && viewColor === player.color ? "view-selected" : ""}`}
+      onClick={canSwitchView ? () => onViewColor?.(player.color) : undefined}
+      role={canSwitchView ? "button" : undefined}
+      tabIndex={canSwitchView ? 0 : undefined}
+      aria-pressed={canSwitchView ? viewColor === player.color : undefined}
+      onKeyDown={canSwitchView ? (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onViewColor?.(player.color);
+        }
+      } : undefined}
+    >
       <div className="portrait-wrap">
-        {canSwitchView && (
-          <button
-            className={`viewpoint-button ${viewColor === player.color ? "active" : ""}`}
-            type="button"
-            title={`切换到${player.color === COLORS.black ? "黑方" : "白方"}视角`}
-            onClick={() => onViewColor?.(player.color)}
-          >
-            <Eye size={18} />
-          </button>
-        )}
         <img src={playerCandyPortrait(character, player)} alt={character.name} />
         {disconnectBadge && <span className="disconnect-badge">{disconnectBadge}</span>}
         {resultBadge && <span className={`result-badge ${resultBadge === "胜" ? "win" : "loss"}`}>{resultBadge}</span>}

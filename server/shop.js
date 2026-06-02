@@ -16,7 +16,7 @@ const BUILTIN_SHOP_ITEMS = [
     enabled: true,
     sortOrder: 100,
     description: "获得角色猪小仙。",
-    imageUrl: "/assets/baconbits.png"
+    imageUrl: "/assets/baconbits.webp"
   },
   {
     name: "彩虹豆豆跳跳糖",
@@ -30,7 +30,7 @@ const BUILTIN_SHOP_ITEMS = [
     enabled: true,
     sortOrder: 150,
     description: "产地不明的糖果，据说有神秘的效果",
-    imageUrl: "/assets/items/rainbow-bean-candy.png"
+    imageUrl: "/assets/items/rainbow-bean-candy.webp"
   },
   ...Object.values(STONE_DECORATIONS).map((decoration, index) => ({
     name: decoration.name,

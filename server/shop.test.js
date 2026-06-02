@@ -16,7 +16,7 @@ describe("shop", () => {
           enabled: true,
           sortOrder: 1,
           description: "解锁角色",
-          imageUrl: "/assets/Danea_centered.png"
+          imageUrl: "/assets/Danea_centered.webp"
         }]
       }
     });
@@ -226,7 +226,7 @@ describe("shop", () => {
         category: "character",
         targetId: "baconbits",
         priceCoins: 9999,
-        imageUrl: "/assets/baconbits.png"
+        imageUrl: "/assets/baconbits.webp"
       })
     ]);
   });
@@ -253,7 +253,7 @@ describe("shop", () => {
         category: "decoration",
         targetId: "paw-stone",
         priceCoins: 500,
-        imageUrl: "/assets/decorations/paw-stone-preview.png"
+        imageUrl: "/assets/decorations/paw-stone-preview.webp"
       })
     ]);
   });
@@ -280,7 +280,7 @@ describe("shop", () => {
         category: "decoration",
         targetId: "papagan-peach-stone",
         priceCoins: 1000,
-        imageUrl: "/assets/decorations/papagan-peach-stone-preview.png"
+        imageUrl: "/assets/decorations/papagan-peach-stone-preview.webp"
       })
     ]);
   });
@@ -310,7 +310,7 @@ describe("shop", () => {
         stockQuantity: 10,
         priceCoins: 10,
         description: "产地不明的糖果，据说有神秘的效果",
-        imageUrl: "/assets/items/rainbow-bean-candy.png"
+        imageUrl: "/assets/items/rainbow-bean-candy.webp"
       })
     ]);
   });

@@ -1,0 +1,451 @@
+/* Mobile-only modal sheets */
+
+.modal-backdrop {
+  align-items: start;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 760px), (max-height: 520px) {
+  .modal-backdrop {
+    --mobile-modal-max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      calc(8px + env(safe-area-inset-right))
+      calc(8px + env(safe-area-inset-bottom))
+      calc(8px + env(safe-area-inset-left));
+    place-items: start center;
+    align-items: start;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .settings-modal,
+  .message-board-modal,
+  .confirm-modal,
+  .result-modal,
+  .room-floating-modal {
+    width: min(100%, calc(100vw - 16px));
+    max-height: var(--mobile-modal-max-height);
+    overflow: hidden;
+  }
+
+  .leaderboard-modal,
+  .friends-modal,
+  .house-modal,
+  .warehouse-modal,
+  .shop-modal,
+  .settings-modal,
+  .message-board-modal {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .leaderboard-table,
+  .friends-list,
+  .house-layout,
+  .warehouse-grid,
+  .shop-grid,
+  .settings-body,
+  .message-board-body {
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .leaderboard-table,
+  .replay-table,
+  .watch-room-table {
+    overflow-x: auto;
+  }
+
+  .settings-modal,
+  .message-board-modal {
+    max-height: var(--mobile-modal-max-height);
+  }
+}
+
+@media (max-width: 560px) {
+  .shop-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .house-modal,
+  .warehouse-modal,
+  .settings-modal,
+  .message-board-modal,
+  .small-modal.watch-list-modal,
+  .room-floating-modal.user-profile-modal,
+  .profile-replay-dialog {
+    width: calc(100vw - 16px);
+    max-height: var(--mobile-modal-max-height);
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .shop-layout {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .shop-grid,
+  .leaderboard-table,
+  .friends-list,
+  .house-layout,
+  .warehouse-grid,
+  .watch-room-table,
+  .profile-replay-list-scroll {
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .leaderboard-table,
+  .replay-table,
+  .watch-room-table {
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .watch-room-head,
+  .watch-room-row {
+    --watch-room-grid-columns: 74px 72px minmax(150px, 1fr) minmax(150px, 1fr) 56px 80px;
+    display: grid;
+    min-width: 680px;
+    grid-template-columns: var(--watch-room-grid-columns);
+    align-items: center;
+  }
+
+  .watch-room-head {
+    padding: 0 8px;
+  }
+
+  .watch-room-head > span,
+  .watch-room-row > span {
+    min-width: 0;
+    width: 100%;
+    justify-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .watch-player-cell {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .replay-table-heading,
+  .replay-table-row,
+  .replay-table.compact .replay-table-heading,
+  .replay-table.compact .replay-table-row {
+    min-width: 560px;
+  }
+
+  .room-floating-modal.user-profile-modal {
+    max-height: var(--mobile-modal-max-height);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .profile-replay-dialog {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shop-modal button,
+  .leaderboard-modal button,
+  .friends-modal button,
+  .house-modal button,
+  .warehouse-modal button,
+  .settings-modal button,
+  .message-board-modal button,
+  .room-floating-modal button,
+  .small-modal button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .small-modal .watch-room-row {
+    display: grid;
+  }
+
+  .shop-modal .close-button {
+    top: 10px;
+    right: 10px;
+  }
+
+  .shop-sidebar {
+    min-width: 0;
+  }
+
+  .shop-wallet-wrap {
+    min-width: 0;
+    max-width: calc(100% - 54px);
+    margin-right: 54px;
+    padding-right: 0;
+  }
+
+  .shop-wallet {
+    justify-content: center;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .shop-item .stone-decoration-preview {
+    width: 100%;
+    height: 42px;
+    gap: 6px;
+    justify-self: center;
+    align-self: center;
+  }
+
+  .shop-item .stone-decoration-preview.large span {
+    width: 26px;
+  }
+
+  .shop-item > strong {
+    overflow-wrap: anywhere;
+  }
+
+  .shop-item .primary-action {
+    justify-content: center;
+  }
+
+  .leaderboard-table {
+    overflow-x: auto;
+  }
+
+  .leaderboard-list {
+    overflow-y: auto;
+    overflow-x: visible;
+  }
+
+  .leaderboard-heading,
+  .leaderboard-row,
+  .leaderboard-current {
+    min-width: 680px;
+  }
+
+  .leaderboard-row img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .friends-modal {
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .friends-modal-toolbar {
+    min-width: 0;
+  }
+
+  .friends-list {
+    width: 100%;
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
+  .friends-list-heading,
+  .friends-row,
+  .friend-action-row {
+    min-width: 560px;
+  }
+
+  .friend-action-row {
+    overflow-x: auto;
+    justify-content: start;
+  }
+
+  .friend-gear-button {
+    justify-self: center;
+  }
+
+  .house-modal {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    align-content: stretch;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .house-modal .house-header {
+    min-width: 0;
+    margin-bottom: 0;
+    padding-right: 40px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .house-modal .house-header h2 {
+    min-width: 0;
+    font-size: 18px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .house-modal .replay-open-button {
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding: 6px 9px;
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  .house-modal .profile-grid {
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .house-modal .stat {
+    min-width: 0;
+    padding: 7px 8px;
+    font-size: 12px;
+  }
+
+  .house-modal .stat > span,
+  .house-modal .stat strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .house-modal .character-list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(74px, 1fr));
+    grid-auto-rows: 0;
+    gap: 5px;
+    min-width: 0;
+    height: min(172px, 26dvh);
+    margin-top: 0;
+    overflow: hidden;
+  }
+
+  .house-modal .character-card.portrait-card {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 4px;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) 28px;
+    align-items: stretch;
+    justify-items: center;
+    gap: 3px;
+  }
+
+  .house-modal .character-card.portrait-card img {
+    order: 1;
+    width: 100%;
+    max-height: 34px;
+    object-fit: contain;
+  }
+
+  .house-modal .character-card.locked .locked-portrait {
+    order: 1;
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .house-modal .character-card.portrait-card strong {
+    display: none;
+  }
+
+  .house-modal .sortie-button {
+    order: 2;
+    position: static;
+    width: 100%;
+    min-width: 0;
+    height: 28px;
+    min-height: 28px;
+    transform: none;
+    border-radius: 8px;
+  }
+
+  .house-modal .sortie-button svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .house-modal .owned-decoration-section {
+    min-width: 0;
+    min-height: 0;
+    margin-top: 0;
+    overflow: auto;
+    padding-top: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .house-modal .owned-decoration-header {
+    gap: 6px;
+    margin-bottom: 6px;
+    padding-right: 0;
+    flex-wrap: nowrap;
+  }
+
+  .house-modal .owned-decoration-header h3 {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 15px;
+  }
+
+  .house-modal .owned-decoration-header .compact-action {
+    flex: 0 1 auto;
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .house-modal .owned-decoration-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .house-modal .owned-decoration-chip {
+    width: 100%;
+    min-width: 0;
+    min-height: 54px;
+    padding: 5px;
+  }
+
+  .house-modal .owned-decoration-chip .stone-decoration-preview {
+    width: 50px;
+    height: 26px;
+  }
+
+  .house-modal .owned-decoration-chip strong {
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop *,
+  .modal-backdrop *::before,
+  .modal-backdrop *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

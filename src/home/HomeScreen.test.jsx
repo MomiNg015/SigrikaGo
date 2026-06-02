@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { readFileSync } from "node:fs";
-import { inflateSync } from "node:zlib";
+import { readFileSync, statSync } from "node:fs";
 import HomeScreen from "./HomeScreen.jsx";
 import { CHARACTERS } from "../shared/characters.js";
 
@@ -33,68 +32,9 @@ function renderHome(overrides = {}) {
   }));
 }
 
-function readPngBorderAlpha(path) {
+function isWebp(path) {
   const bytes = readFileSync(new URL(path, import.meta.url));
-  let offset = 8;
-  let width = 0;
-  let height = 0;
-  const idat = [];
-
-  while (offset < bytes.length) {
-    const length = bytes.readUInt32BE(offset);
-    const type = bytes.toString("ascii", offset + 4, offset + 8);
-    const dataStart = offset + 8;
-    const dataEnd = dataStart + length;
-    if (type === "IHDR") {
-      width = bytes.readUInt32BE(dataStart);
-      height = bytes.readUInt32BE(dataStart + 4);
-      expect(bytes[dataStart + 8]).toBe(8);
-      expect(bytes[dataStart + 9]).toBe(6);
-    } else if (type === "IDAT") {
-      idat.push(bytes.subarray(dataStart, dataEnd));
-    } else if (type === "IEND") {
-      break;
-    }
-    offset = dataEnd + 4;
-  }
-
-  const inflated = inflateSync(Buffer.concat(idat));
-  const stride = width * 4;
-  const rows = [];
-  let sourceOffset = 0;
-
-  for (let y = 0; y < height; y += 1) {
-    const filter = inflated[sourceOffset];
-    sourceOffset += 1;
-    const row = Buffer.from(inflated.subarray(sourceOffset, sourceOffset + stride));
-    sourceOffset += stride;
-    const prev = rows[y - 1];
-    for (let x = 0; x < stride; x += 1) {
-      const left = x >= 4 ? row[x - 4] : 0;
-      const up = prev ? prev[x] : 0;
-      const upLeft = prev && x >= 4 ? prev[x - 4] : 0;
-      if (filter === 1) row[x] = (row[x] + left) & 255;
-      else if (filter === 2) row[x] = (row[x] + up) & 255;
-      else if (filter === 3) row[x] = (row[x] + Math.floor((left + up) / 2)) & 255;
-      else if (filter === 4) {
-        const p = left + up - upLeft;
-        const pa = Math.abs(p - left);
-        const pb = Math.abs(p - up);
-        const pc = Math.abs(p - upLeft);
-        row[x] = (row[x] + (pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft)) & 255;
-      }
-    }
-    rows.push(row);
-  }
-
-  const alphas = [];
-  for (let x = 0; x < width; x += 1) {
-    alphas.push(rows[0][x * 4 + 3], rows[height - 1][x * 4 + 3]);
-  }
-  for (let y = 0; y < height; y += 1) {
-    alphas.push(rows[y][3], rows[y][(width - 1) * 4 + 3]);
-  }
-  return alphas;
+  return bytes.toString("ascii", 0, 4) === "RIFF" && bytes.toString("ascii", 8, 12) === "WEBP";
 }
 
 describe("HomeScreen", () => {
@@ -122,9 +62,9 @@ describe("HomeScreen", () => {
 
     expect(html).toContain('class="home-grid-featured home-stage"');
     expect(html).toContain('class="home-image-entry match-image-entry"');
-    expect(html).toContain('src="/assets/home/fantasy-match-entry.png"');
+    expect(html).toContain('src="/assets/home/fantasy-match-entry.webp"');
     expect(html).toContain('class="home-image-entry house-manual-entry"');
-    expect(html).toContain('src="/assets/home/book-entry.png"');
+    expect(html).toContain('src="/assets/home/book-entry.webp"');
     expect(html).toContain("当前匹配人数：3");
     expect(html).not.toContain("<h2>空想对局</h2>");
   });
@@ -180,7 +120,7 @@ describe("HomeScreen", () => {
     expect(imageEntryBlock).toContain("contain: layout paint style");
     expect(imageEntryBlock).not.toContain("will-change");
     expect(appShellHomeBlock).toContain("background: #f4f3f6");
-    expect(appShellHomeBeforeBlock).toContain("background-image: url(\"/assets/home/multipurpose-classroom-bg.jpg\")");
+    expect(appShellHomeBeforeBlock).toContain("background-image: url(\"/assets/home/multipurpose-classroom-bg.webp\")");
     expect(appShellHomeBeforeBlock).toContain("filter: blur(14px) saturate(0.95)");
   });
 
@@ -265,11 +205,11 @@ describe("HomeScreen", () => {
     expect(imageShadowBlock).toContain("transform: translate3d(10px, 10px, 0)");
     expect(imageShadowBlock).toContain("mask-image: var(--entry-art)");
     expect(imageShadowHoverBlock).toContain("opacity: 1");
-    expect(manualBlock).toContain('--entry-art: url("/assets/home/book-entry.png")');
+    expect(manualBlock).toContain('--entry-art: url("/assets/home/book-entry.webp")');
     expect(manualBlock).toContain("aspect-ratio: 782 / 894");
     expect(manualBlock).toContain("height: 66%");
     expect(manualBlock).toContain("width: auto");
-    expect(matchBlock).toContain('--entry-art: url("/assets/home/fantasy-match-entry.png")');
+    expect(matchBlock).toContain('--entry-art: url("/assets/home/fantasy-match-entry.webp")');
     expect(matchBlock).toContain("aspect-ratio: 2674 / 2023");
     expect(matchBlock).toContain("width: 100%");
     expect(matchBlock).toContain("height: 100%");
@@ -315,10 +255,12 @@ describe("HomeScreen", () => {
     expect(compactUtilityQuery).toContain("width: clamp(24px, 2.4vw, 30px)");
   });
 
-  it("keeps the match image transparent at the PNG border", () => {
-    const borderAlpha = readPngBorderAlpha("../../public/assets/home/fantasy-match-entry.png");
+  it("uses a compact WebP match image instead of the source PNG", () => {
+    const webpUrl = new URL("../../public/assets/home/fantasy-match-entry.webp", import.meta.url);
+    const pngUrl = new URL("../../public/assets/home/fantasy-match-entry.png", import.meta.url);
 
-    expect(Math.max(...borderAlpha)).toBe(0);
+    expect(isWebp("../../public/assets/home/fantasy-match-entry.webp")).toBe(true);
+    expect(statSync(webpUrl).size).toBeLessThan(statSync(pngUrl).size / 8);
   });
 
   it("gives non-image buttons a shared hover target cue", () => {

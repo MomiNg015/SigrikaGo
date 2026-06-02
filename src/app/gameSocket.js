@@ -7,9 +7,10 @@ export function connectGameSocket({
   token,
   handlers,
   installHandlers = installSocketHandlers,
-  buildRoomResumeRequest
+  buildRoomResumeRequest,
+  onSocketReconnect
 }) {
   const socket = ioClient(socketBase, { auth: { token } });
-  installHandlers(socket, handlers, { buildRoomResumeRequest });
+  installHandlers(socket, handlers, { buildRoomResumeRequest, onSocketReconnect });
   return socket;
 }

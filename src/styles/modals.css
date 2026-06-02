@@ -7,7 +7,10 @@
   backdrop-filter: blur(9px);
   display: grid;
   place-items: center;
+  align-items: start;
   padding: var(--page-pad);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
   z-index: 10;
 }
 
@@ -754,4 +757,107 @@
 @keyframes match-hop {
   0%, 100% { transform: translateY(0); }
   45% { transform: translateY(-12px); }
+}
+
+@media (max-width: 560px) {
+  .nested-modal {
+    inset: 8px;
+    padding: 14px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .character-detail {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-content: start;
+  }
+
+  .character-detail-art {
+    min-height: 150px;
+  }
+
+  .character-detail-art img {
+    width: min(180px, 64vw);
+    height: 150px;
+  }
+
+  .character-detail-copy {
+    text-align: center;
+  }
+
+  .character-detail-copy h3 {
+    font-size: 22px;
+  }
+
+  .character-detail-copy p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .profile-replay-dialog {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+  }
+
+  .profile-replay-list-scroll {
+    overflow: auto;
+  }
+
+  .replay-dialog {
+    max-height: calc(100dvh - 16px);
+  }
+
+  .replay-table {
+    min-width: 0;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .replay-table-heading,
+  .replay-table-row,
+  .replay-table.compact .replay-table-heading,
+  .replay-table.compact .replay-table-row {
+    min-width: 560px;
+    grid-template-columns: 72px minmax(96px, 1fr) minmax(96px, 1fr) minmax(74px, 0.8fr) 48px;
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .replay-table-row {
+    min-height: 48px;
+    padding: 6px 8px;
+  }
+
+  .profile-resume-hero {
+    grid-template-columns: 82px 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .profile-resume-hero img {
+    width: 78px;
+    height: 70px;
+  }
+
+  .profile-resume-hero h3 {
+    font-size: 20px;
+  }
+
+  .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .profile-character-row {
+    grid-template-columns: 42px minmax(64px, 1fr) minmax(82px, 1fr) 52px;
+    gap: 5px;
+    padding: 6px;
+    font-size: 11px;
+  }
+
+  .profile-character-row img {
+    width: 40px;
+    height: 34px;
+  }
 }

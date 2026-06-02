@@ -18,13 +18,16 @@ export function buildRoomResumeRequest(storage = localStorage) {
 
 export function handleRoomResumePayload(payload, handlers) {
   if (!["result", "room"].includes(payload?.type) || !payload.room) return false;
+  const room = payload.type === "room"
+    ? { ...payload.room, __audioResumeBaseline: true }
+    : payload.room;
   handlers.closeAllOverlays();
   handlers.setMatchStart(null);
   handlers.setMatchSuccess(null);
   handlers.setReplayStep(null);
   handlers.setPendingSkill(false);
   handlers.setDismissedResultRoom("");
-  handlers.setRoom(payload.room);
+  handlers.setRoom(room);
   handlers.setView(payload.type === "room" ? "room" : "home");
   return true;
 }

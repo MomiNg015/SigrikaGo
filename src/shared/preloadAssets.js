@@ -16,19 +16,19 @@ import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { STONE_DECORATIONS } from "./stoneDecorations.js";
 
 const HOME_IMAGE_ASSETS = [
-  "/assets/home/book-entry.png",
-  "/assets/home/fantasy-match-entry.png",
-  "/assets/home/multipurpose-classroom-bg.jpg"
+  "/assets/home/book-entry.webp",
+  "/assets/home/fantasy-match-entry.webp",
+  "/assets/home/multipurpose-classroom-bg.webp"
 ];
 
 const SHOP_IMAGE_ASSETS = [
-  "/assets/zahiya_shop.png",
-  "/assets/items/rainbow-bean-candy.png"
+  "/assets/zahiya_shop.webp",
+  "/assets/items/rainbow-bean-candy.webp"
 ];
 
 const EFFECT_IMAGE_ASSETS = [
   DENIA_CANDY_PORTRAIT,
-  "/assets/effects/denia-bubble-pop.gif"
+  "/assets/effects/denia-bubble-pop.webp"
 ];
 
 export function deploymentSocketBase(locationLike = globalThis.location) {

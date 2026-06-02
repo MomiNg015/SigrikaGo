@@ -1,6 +1,9 @@
 import {
+  Calculator,
   DoorOpen,
   Flag,
+  Hand,
+  Handshake,
   MonitorPlay,
   RotateCcw,
   Shuffle,
@@ -66,7 +69,7 @@ export default function ActionBar({
         <button title="跳到最新一手" onClick={() => onReplayStep?.(replayMax)} disabled={!onReplayStep || replayStep >= replayMax}>
           <SkipForward size={20} />
         </button>
-        <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
+        <button className="exit-action" onClick={onBack}><DoorOpen size={18} /><span className="action-label">退出房间</span></button>
       </nav>
     );
   }
@@ -96,17 +99,27 @@ export default function ActionBar({
   }
   return (
     <nav className="action-bar">
-      <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>弃一手</button>
-      <button onClick={onCountingRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, hasAnyStones, opponentConnected })}>申请数子</button>
+      <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>
+        <Hand size={18} />
+        <span className="action-label">弃一手</span>
+      </button>
+      <button onClick={onCountingRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, hasAnyStones, opponentConnected })}>
+        <Calculator size={18} />
+        <span className="action-label">申请数子</span>
+      </button>
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
         onClick={() => setPendingSkill(!pendingSkill)}
         disabled={!me || phase !== "playing" || !isMyTurn || skillLocked || skillUses <= 0 || !skillAvailable}
       >
-        <Sparkles size={20} />技能 · {skillUses}
+        <Sparkles size={20} />
+        <span className="action-label">技能 · {skillUses}</span>
       </button>
-      <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, opponentConnected })}>申请和棋</button>
-      <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} />认输</button>
+      <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, opponentConnected })}>
+        <Handshake size={18} />
+        <span className="action-label">申请和棋</span>
+      </button>
+      <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label">认输</span></button>
       {showTestTools && (
         <TestTools
           disabled={phase !== "playing" || skillLocked || !me}
@@ -115,7 +128,7 @@ export default function ActionBar({
           onEnterByoYomi={onTestEnterByoYomi}
         />
       )}
-      <button className="exit-action" onClick={onBack}><DoorOpen size={18} />退出房间</button>
+      <button className="exit-action" onClick={onBack}><DoorOpen size={18} /><span className="action-label">退出房间</span></button>
     </nav>
   );
 }
@@ -193,7 +206,7 @@ function DecisionBar({ phase, userId, scoring, drawRequest, drawDeadline, counti
   if (phase === GAME_PHASES.resultReview && scoring) {
     const accepted = hasParticipant && scoring.resultAcceptedBy?.includes(userId);
     return (
-      <nav className={`action-bar decision-bar ${!hasParticipant || accepted ? "waiting" : ""}`} aria-live="polite">
+      <nav className={`action-bar decision-bar result-review-decision ${!hasParticipant || accepted ? "waiting" : ""}`} aria-live="polite">
         <div className="decision-copy">
           <strong>{scoring.result?.text ?? "结果确认"}</strong>
           <span>请核对数子计算过程，确认无误后同意结果。</span>

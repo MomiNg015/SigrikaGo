@@ -23,13 +23,14 @@ let sharedVoiceContext = null;
 let sharedEffectContext = null;
 let activeVoiceCount = 0;
 
-export function BackgroundMusic({ track, audioSettings }) {
+export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
   const playerRef = useRef({
     context: null,
     active: [],
     baseVolume: 0,
     retry: null,
     generation: 0,
+    currentTrack: null,
     bufferCache: new Map()
   });
   const volume = audioVolume(audioSettings, "bgm");
@@ -48,11 +49,18 @@ export function BackgroundMusic({ track, audioSettings }) {
     };
   }, []);
 
+  useEffect(() => installBackgroundResumeTriggers(playerRef.current), []);
+
+  useEffect(() => {
+    recoverBackgroundPlayback(playerRef.current);
+  }, [resumeSignal]);
+
   useEffect(() => {
     const state = playerRef.current;
     state.generation += 1;
     const generation = state.generation;
     if (!track) {
+      state.currentTrack = null;
       fadeOutBackgroundPlayers(state);
       return () => {};
     }
@@ -60,12 +68,23 @@ export function BackgroundMusic({ track, audioSettings }) {
     const context = getBackgroundAudioContext(state);
     resumeBackgroundContextWithFallback(state);
     state.baseVolume = volume;
+    state.currentTrack = track;
     scheduleBackgroundTrack({ state, context, track, generation }).catch(() => {});
 
     return () => {};
   }, [trackKey]);
 
   return null;
+}
+
+function recoverBackgroundPlayback(state) {
+  resumeBackgroundContextWithFallback(state);
+  if (!state.currentTrack) return;
+  const context = getBackgroundAudioContext(state);
+  if (!context) return;
+  state.generation += 1;
+  const generation = state.generation;
+  scheduleBackgroundTrack({ state, context, track: state.currentTrack, generation }).catch(() => {});
 }
 
 function getBackgroundAudioContext(state) {
@@ -127,6 +146,32 @@ export function resumeBackgroundContextWithFallback(state) {
       if (context.state === "suspended") installBackgroundResumeRetry(state, context);
     })
     .catch(() => installBackgroundResumeRetry(state, context));
+}
+
+export function installBackgroundResumeTriggers(state) {
+  if (typeof window === "undefined") return () => {};
+  const doc = typeof document === "undefined" ? null : document;
+  const retry = () => resumeBackgroundContextWithFallback(state);
+  const retryWhenVisible = () => {
+    if (doc?.visibilityState === "hidden") return;
+    retry();
+  };
+  window.addEventListener("pageshow", retry);
+  window.addEventListener("focus", retry);
+  window.addEventListener("online", retry);
+  window.addEventListener("pointerdown", retry);
+  window.addEventListener("touchstart", retry);
+  window.addEventListener("keydown", retry);
+  doc?.addEventListener?.("visibilitychange", retryWhenVisible);
+  return () => {
+    window.removeEventListener("pageshow", retry);
+    window.removeEventListener("focus", retry);
+    window.removeEventListener("online", retry);
+    window.removeEventListener("pointerdown", retry);
+    window.removeEventListener("touchstart", retry);
+    window.removeEventListener("keydown", retry);
+    doc?.removeEventListener?.("visibilitychange", retryWhenVisible);
+  };
 }
 
 function installBackgroundResumeRetry(state, context) {

@@ -1,0 +1,646 @@
+/* Mobile-only room layout */
+
+@media (max-width: 900px) {
+  .mobile-room-screen {
+    --mobile-room-edge-gap: 8px;
+    --mobile-room-dock-panel-height: clamp(82px, 16dvh, 132px);
+    --mobile-room-board-size: min(calc(100vw - 18px), calc(100dvh - 286px), 430px);
+    width: 100vw;
+    min-width: 0;
+    height: 100dvh;
+    min-height: 0;
+    padding:
+      calc(6px + env(safe-area-inset-top))
+      calc(6px + env(safe-area-inset-right))
+      calc(6px + env(safe-area-inset-bottom))
+      calc(6px + env(safe-area-inset-left));
+    gap: var(--mobile-room-edge-gap);
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .room-header {
+    min-height: 0;
+    padding: 5px 8px;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .mobile-room-screen .room-title-stack {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .mobile-room-screen .room-title-line {
+    gap: 5px;
+    font-size: 11px;
+    line-height: 1.2;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .room-title-line strong,
+  .mobile-room-screen .room-title-line span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-room-screen .room-info-tag.black-side,
+  .mobile-room-screen .room-info-tag.white-side {
+    display: none;
+  }
+
+  .mobile-room-screen .room-code-label,
+  .mobile-room-screen .room-info-tag.move-count {
+    min-height: 24px;
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  .mobile-room-screen .room-info-tag.close-countdown {
+    display: block;
+    width: max-content;
+    min-height: 20px;
+    padding: 2px 8px;
+    font-size: 10px;
+    line-height: 1.3;
+  }
+
+  .mobile-room-screen .room-toggles {
+    gap: 5px;
+    flex-wrap: nowrap;
+  }
+
+  .mobile-room-screen .room-toggles .toggle {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    justify-content: center;
+    gap: 0;
+    line-height: 0;
+  }
+
+  .mobile-room-screen .room-toggles .toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    grid-template-areas:
+      "opponent"
+      "board"
+      "self"
+      "dock";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: var(--mobile-room-edge-gap);
+    overflow: hidden;
+    align-content: stretch;
+  }
+
+  .mobile-room-screen .mobile-room-viewport .opponent-side {
+    grid-area: opponent;
+  }
+
+  .mobile-room-screen .mobile-room-viewport .board-column {
+    grid-area: board;
+  }
+
+  .mobile-room-screen .mobile-room-viewport .room-side {
+    grid-area: self;
+  }
+
+  .mobile-room-screen .mobile-room-dock {
+    grid-area: dock;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(128, 102, 142, 0.14);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 12px 30px rgba(42, 32, 48, 0.1);
+    backdrop-filter: blur(14px) saturate(1.08);
+  }
+
+  .mobile-player-slot,
+  .mobile-board-viewport {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .mobile-board-viewport {
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .player-info {
+    box-sizing: border-box;
+    min-height: 44px;
+    max-height: 96px;
+    min-width: 0;
+    overflow: visible;
+    position: relative;
+    z-index: 4;
+    grid-template-columns: clamp(44px, 8vw, 62px) minmax(0, 1fr) minmax(128px, auto);
+    grid-template-rows: minmax(0, 42px) minmax(0, 32px);
+    grid-template-areas:
+      "portrait meta time"
+      "portrait captures skill";
+    align-items: center;
+    gap: 4px 8px;
+    padding: 6px 8px;
+  }
+
+  .mobile-room-screen .player-info img {
+    height: clamp(42px, 8vw, 62px);
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .mobile-room-screen .timer-label {
+    display: none;
+  }
+
+  .mobile-room-screen .digital-timer {
+    min-height: 28px;
+    display: grid;
+    grid-template-areas: "digits track";
+    grid-template-columns: auto minmax(64px, 1fr);
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+  }
+
+  .mobile-room-screen .timer-digits {
+    grid-area: digits;
+    min-height: 0;
+  }
+
+  .mobile-room-screen .timer-track {
+    grid-area: track;
+    height: 6px;
+    margin-top: 0;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: var(--mobile-room-board-size);
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .mobile-room-screen .board-wrap {
+    width: min(100%, var(--mobile-room-board-size));
+    min-width: 0;
+    padding: clamp(8px, 2.4vw, 14px);
+    grid-template-columns: 16px 1fr 16px;
+    grid-template-rows: 16px 1fr 16px;
+  }
+
+  .mobile-room-screen .coord-row,
+  .mobile-room-screen .coord-col {
+    font-size: 11px;
+  }
+
+  .mobile-room-screen .mobile-tab-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 5px;
+  }
+
+  .mobile-room-screen .mobile-tab-button {
+    min-height: 44px;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .mobile-room-screen .mobile-tab-list .mobile-tab-button {
+    min-height: 44px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    min-height: 0;
+    max-height: var(--mobile-room-dock-panel-height);
+    overflow: auto;
+    padding: 7px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-room-screen #mobile-room-panel-actions {
+    overflow: visible;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .test-tools {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar {
+    position: static;
+    bottom: auto;
+    z-index: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar .action-label {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .skill-action {
+    width: 100%;
+    min-width: 0;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-bar {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .room-people,
+  .mobile-room-screen .mobile-tab-panel .chat-box {
+    display: block;
+    margin: 0;
+    padding: 9px;
+    box-shadow: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .chat-log {
+    height: min(96px, calc(var(--mobile-room-dock-panel-height) - 54px));
+    min-height: 64px;
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .mobile-room-screen {
+    --mobile-room-board-size: min(calc(100vw - 16px), calc(100dvh - 346px), 352px);
+    --mobile-room-dock-panel-height: min(104px, 15dvh);
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    grid-template-areas:
+      "opponent"
+      "board"
+      "self"
+      "dock";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(56px, auto) minmax(0, 1fr) minmax(56px, auto) auto;
+    gap: 6px;
+  }
+
+  .mobile-room-screen .mobile-player-slot {
+    min-width: 0;
+    min-height: 0;
+    overflow: visible;
+    z-index: 4;
+  }
+
+  .mobile-room-screen .player-info {
+    min-height: 56px;
+    max-height: 72px;
+    overflow: visible;
+    grid-template-columns: 36px minmax(0, 0.8fr) minmax(96px, 1fr);
+    grid-template-rows: minmax(0, 32px) minmax(0, 26px);
+    grid-template-areas:
+      "portrait meta time"
+      "captures captures skill";
+    align-items: center;
+    padding: 4px 6px;
+    gap: 2px 5px;
+  }
+
+  .mobile-room-screen .portrait-wrap {
+    align-self: center;
+  }
+
+  .mobile-room-screen .room-toggles .toggle {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .mobile-room-screen .room-title-stack {
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .room-info-tag.close-countdown {
+    display: block;
+  }
+
+  .mobile-room-screen .player-info img {
+    height: 36px;
+  }
+
+  .mobile-room-screen .result-badge {
+    width: 18px;
+    height: 18px;
+    right: 1px;
+    bottom: 1px;
+    font-size: 10px;
+    line-height: 18px;
+    border-width: 1px;
+  }
+
+  .mobile-room-screen .player-meta {
+    align-content: center;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 1px 3px;
+  }
+
+  .mobile-room-screen .name-button {
+    grid-column: 1 / -1;
+    max-width: 8ch;
+    font-size: 10.5px;
+    line-height: 1;
+  }
+
+  .mobile-room-screen .rank-tag,
+  .mobile-room-screen .rating-tag {
+    min-width: 0;
+    min-height: 17px;
+    padding: 2px 5px;
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .color-badge {
+    width: 12px;
+    height: 12px;
+  }
+
+  .mobile-room-screen .timer-primary {
+    min-width: 3.2ch;
+    font-size: 16px;
+  }
+
+  .mobile-room-screen .timer-periods {
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .captures {
+    align-self: center;
+    gap: 2px;
+  }
+
+  .mobile-room-screen .captures span {
+    min-height: 18px;
+    padding: 1px 3px;
+    font-size: 10px;
+    gap: 2px;
+  }
+
+  .mobile-room-screen .captures strong {
+    font-size: 9px;
+  }
+
+  .mobile-room-screen .captures .info-stat::after {
+    left: auto;
+    right: 0;
+    bottom: calc(100% + 4px);
+    max-width: min(192px, calc(100vw - 32px));
+    padding: 6px 8px;
+    font-size: 10px;
+    line-height: 1.35;
+    transform: translateY(4px);
+    z-index: 50;
+  }
+
+  .mobile-room-screen .skill-chip {
+    min-height: 22px;
+    padding: 2px 6px;
+    gap: 3px;
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .skill-detail-panel {
+    display: block;
+    top: auto;
+    bottom: calc(100% + 6px);
+    left: auto;
+    right: 0;
+    width: min(220px, calc(100vw - 24px));
+    max-width: min(220px, calc(100vw - 24px));
+    padding: 7px 9px;
+    border: 1px solid rgba(130, 105, 149, 0.22);
+    border-radius: 8px;
+    font-size: 10.5px;
+    line-height: 1.38;
+    transform: translateY(6px) scale(0.96);
+    transform-origin: bottom right;
+    z-index: 60;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: var(--mobile-room-board-size);
+  }
+
+  .mobile-room-screen .mobile-room-dock {
+    grid-area: dock;
+    max-height: calc(var(--mobile-room-dock-panel-height) + 58px);
+  }
+
+  .mobile-room-screen .mobile-tab-button {
+    min-height: 44px;
+    padding: 4px 7px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    max-height: var(--mobile-room-dock-panel-height);
+    overflow: auto;
+    padding: 5px;
+  }
+
+  .mobile-room-screen #mobile-room-panel-actions {
+    overflow: visible;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar {
+    grid-auto-rows: 44px;
+    align-items: stretch;
+    overflow: visible;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar button {
+    min-height: 44px;
+    height: 44px;
+    padding: 4px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar .action-label {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .skill-action {
+    min-width: 0;
+    grid-column: 2;
+  }
+
+  .mobile-room-screen .decision-bar.result-review-decision {
+    max-height: var(--mobile-room-dock-panel-height);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .decision-bar.result-review-decision .decision-copy {
+    min-height: 0;
+    overflow: auto;
+    padding-right: 2px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-room-screen .decision-bar.result-review-decision .decision-actions {
+    position: sticky;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding-top: 5px;
+    background: rgba(255, 255, 255, 0.92);
+  }
+}
+
+@media (max-width: 340px) and (orientation: portrait) {
+  .mobile-room-screen {
+    --mobile-room-board-size: min(calc(100vw - 16px), calc(100dvh - 370px), 320px);
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .mobile-room-screen {
+    --mobile-room-dock-panel-height: 58px;
+    --mobile-room-board-size: min(100%, calc(100dvh - 132px), calc(100vw - 232px));
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    grid-template-areas:
+      "opponent board self"
+      "dock dock dock";
+    grid-template-columns: minmax(96px, 0.52fr) minmax(220px, 1.36fr) minmax(96px, 0.52fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 5px;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: min(100%, calc(100dvh - 132px), calc(100vw - 232px));
+  }
+
+  .mobile-room-screen .player-info {
+    grid-template-columns: 1fr;
+    grid-template-areas: "meta" "portrait" "time" "captures" "skill";
+    grid-template-rows: auto minmax(40px, 1fr) auto auto auto;
+    height: 100%;
+    min-height: 0;
+    padding: 5px;
+    gap: 3px;
+    align-content: stretch;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .player-info img {
+    height: min(54px, 17dvh);
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .mobile-room-screen .player-meta {
+    grid-template-columns: 1fr;
+    justify-content: center;
+    justify-items: center;
+    text-align: center;
+    gap: 3px;
+  }
+
+  .mobile-room-screen .color-badge {
+    display: none;
+  }
+
+  .mobile-room-screen .skill-detail-panel {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-room-dock {
+    max-height: 96px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    max-height: var(--mobile-room-dock-panel-height);
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 520px) {
+  .mobile-room-screen {
+    --mobile-room-dock-panel-height: 52px;
+    --mobile-room-board-size: min(100%, calc(100dvh - 170px), calc(100vw - 232px));
+    height: 100dvh;
+    padding: 4px;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    grid-template-areas:
+      "opponent board self"
+      "dock dock dock";
+    grid-template-columns: minmax(96px, 0.52fr) minmax(220px, 1.36fr) minmax(96px, 0.52fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: min(100%, calc(100dvh - 170px), calc(100vw - 232px));
+  }
+
+  .mobile-room-screen .player-info {
+    grid-template-areas: "meta" "portrait" "time" "captures" "skill";
+  }
+
+  .mobile-room-screen .mobile-tab-button {
+    min-height: 44px;
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-room-screen *,
+  .mobile-room-screen *::before,
+  .mobile-room-screen *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

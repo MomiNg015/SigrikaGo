@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createSocketHandlers } from "./socketHandlers.js";
+import { createSocketHandlers, installSocketHandlers } from "./socketHandlers.js";
 
 describe("socket handlers", () => {
   it("handles match found by closing overlays, syncing the user, and storing the transition", () => {
@@ -29,6 +29,30 @@ describe("socket handlers", () => {
     expect(deps.updateUser).toHaveBeenCalledOnce();
     expect(deps.setRoom).not.toHaveBeenCalled();
     expect(deps.setView).not.toHaveBeenCalled();
+  });
+
+  it("marks the first live player room snapshot after reconnect for audio baselining", () => {
+    const roomView = { code: "12345", role: "player", game: { phase: "playing" }, players: [] };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.socketReconnect();
+    handlers.roomUpdate(roomView);
+
+    expect(deps.setRoom).toHaveBeenCalledWith({
+      ...roomView,
+      __audioResumeBaseline: true
+    });
+  });
+
+  it("does not mark normal room updates as audio resumes", () => {
+    const roomView = { code: "12345", role: "player", game: { phase: "playing" }, players: [] };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomUpdate(roomView);
+
+    expect(deps.setRoom).toHaveBeenCalledWith(roomView);
   });
 
   it("clears remembered player room when an online client receives the finished room update", () => {
@@ -125,6 +149,44 @@ describe("socket handlers", () => {
     expect(deps.setView).toHaveBeenCalledWith("login");
     expect(deps.showToast).toHaveBeenCalledWith("登录已失效，请重新登录");
   });
+  it("notifies audio recovery when the socket reconnects", () => {
+    const listeners = new Map();
+    const socket = {
+      on: vi.fn((event, callback) => listeners.set(event, callback)),
+      emit: vi.fn()
+    };
+    const deps = handlerDeps();
+
+    installSocketHandlers(socket, createSocketHandlers(deps), {
+      buildRoomResumeRequest: () => ({ roomCode: "12345" }),
+      onSocketReconnect: deps.onSocketReconnect
+    });
+    listeners.get("connect")();
+
+    expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
+    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+  });
+
+  it("routes socket reconnects through room audio snapshot baselining before resume", () => {
+    const listeners = new Map();
+    const socket = {
+      on: vi.fn((event, callback) => listeners.set(event, callback)),
+      emit: vi.fn()
+    };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    installSocketHandlers(socket, handlers, {
+      buildRoomResumeRequest: () => ({ roomCode: "12345" }),
+      onSocketReconnect: deps.onSocketReconnect
+    });
+    listeners.get("connect")();
+    handlers.roomUpdate({ code: "12345", role: "player", game: { phase: "playing" }, players: [] });
+
+    expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
+    expect(deps.setRoom).toHaveBeenCalledWith(expect.objectContaining({ __audioResumeBaseline: true }));
+    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+  });
 });
 
 function handlerDeps(overrides = {}) {
@@ -153,6 +215,7 @@ function handlerDeps(overrides = {}) {
     syncPendingMatchRoom: vi.fn(() => false),
     applyRoomClock: vi.fn((room) => room),
     playDoorbellSound: vi.fn(),
+    onSocketReconnect: vi.fn(),
     now: () => 1000,
     ...overrides
   };

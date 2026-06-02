@@ -78,7 +78,10 @@ describe("resume session helpers", () => {
     expect(handlers.setReplayStep).toHaveBeenCalledWith(null);
     expect(handlers.setPendingSkill).toHaveBeenCalledWith(false);
     expect(handlers.setDismissedResultRoom).toHaveBeenCalledWith("");
-    expect(handlers.setRoom).toHaveBeenCalledWith(payload.room);
+    expect(handlers.setRoom).toHaveBeenCalledWith({
+      ...payload.room,
+      __audioResumeBaseline: true
+    });
     expect(handlers.setView).toHaveBeenCalledWith("room");
   });
 
