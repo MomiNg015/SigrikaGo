@@ -104,13 +104,16 @@
   color: #4a3736 !important;
   font-weight: 500 !important;
 }
-/* 将详情面板里的“技能名：”、“获得途径：”等引导标签加粗高亮为樱花粉，制造清晰的视觉对比 */
+/* 将详情面板里的“技能名：”、“获得途径：”等引导标签及重要加粗元素重写为深玫瑰红，制造极佳的视觉对比度 */
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal h2,
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal h3,
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal h4,
 .app-shell.player-theme-enabled.theme-bright-school .detail-label,
-.app-shell.player-theme-enabled.theme-bright-school span[class*="label"] {
-  color: #ff6f86 !important;
+.app-shell.player-theme-enabled.theme-bright-school span[class*="label"],
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row span,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row strong:first-child,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .acquisition-method strong {
+  color: #c84b6f !important;
   font-weight: 900 !important;
 }
 

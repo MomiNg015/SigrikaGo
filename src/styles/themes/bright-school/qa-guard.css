@@ -399,12 +399,21 @@
   object-fit: contain !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-decoration .shop-item > img,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-decoration .stone-decoration-preview {
-  border: 0 !important;
-  background: transparent !important;
-  padding: 0 !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .stone-decoration-preview {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 76px !important;
+  padding: 8px !important;
+  margin: 0 auto 6px !important;
+  background: #fff6dd !important;
+  border: 2px dashed rgba(61, 43, 37, 0.56) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
+
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row {
@@ -447,10 +456,11 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid.top-stats-bar .stat strong {
-  display: inline !important;
-  white-space: nowrap !important;
-  word-break: keep-all !important;
+  display: block !important;
+  white-space: normal !important;
+  word-break: break-word !important;
 }
+
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section {
   padding: 22px !important;
