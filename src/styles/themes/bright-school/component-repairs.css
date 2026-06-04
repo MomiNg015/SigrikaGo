@@ -483,13 +483,20 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap {
   background:
     linear-gradient(90deg, rgba(94, 60, 20, 0.07), transparent 18%, rgba(255, 245, 202, 0.18) 34%, transparent 58%, rgba(92, 56, 17, 0.07)),
-    repeating-linear-gradient(94deg, rgba(101, 62, 19, 0.12) 0 1px, transparent 1px 10px),
-    repeating-linear-gradient(7deg, rgba(255, 238, 183, 0.18) 0 2px, transparent 2px 22px),
     #d8c48c !important;
   border: 3px solid var(--bright-border) !important;
   border-radius: 14px !important;
   box-shadow: inset 0 0 0 2px rgba(255, 250, 240, 0.55), 5px 5px 0 rgba(74, 55, 54, 0.85) !important;
 }
+
+/* 消除落子点白棋和黑棋的灰色正方形嵌套边框污染 */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .point.white,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .point.black {
+  box-shadow: none !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .coord-row,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .coord-col {
@@ -539,8 +546,10 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-lines line {
-  stroke: rgba(74, 55, 54, 0.56) !important;
+  stroke: #4a3736 !important;
+  stroke-width: 0.8 !important;
 }
+
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-action,
