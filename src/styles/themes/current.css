@@ -1,4 +1,4 @@
-﻿.app-shell.player-theme-enabled.theme-current {
+.app-shell.player-theme-enabled.theme-current {
   --hud-bg-deep: rgba(3, 12, 20, 0.8);
   --hud-panel-deep: rgba(5, 15, 22, 0.95);
   --hud-cyan: var(--theme-accent-2);
@@ -212,4 +212,33 @@
 .app-shell.player-theme-enabled.theme-current *::-webkit-scrollbar-thumb {
   background: var(--theme-accent-2, #00ffbe) !important;
   box-shadow: 0 0 8px var(--theme-accent-2) !important;
+}
+
+/* Hardcore Sci-Fi HUD aesthetics polish */
+.app-shell.player-theme-enabled.theme-current::after {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99 !important;
+  pointer-events: none !important;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%) !important;
+  background-size: 100% 4px !important;
+  opacity: 0.45 !important;
+}
+
+.app-shell.player-theme-enabled.theme-current :where(
+  .home-grid-featured > .home-utility-grid .utility-entry,
+  .action-bar button,
+  .decision-actions button
+) {
+  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.22s ease !important;
+}
+
+.app-shell.player-theme-enabled.theme-current :where(
+  .home-grid-featured > .home-utility-grid .utility-entry,
+  .action-bar button:not(:disabled),
+  .decision-actions button:not(:disabled)
+):hover {
+  transform: translateY(-2px) scale(1.025) !important;
+  box-shadow: 0 0 24px rgba(0, 255, 190, 0.35), 0 0 15px rgba(255, 118, 163, 0.2) !important;
 }

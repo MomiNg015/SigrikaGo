@@ -532,3 +532,59 @@
   color: var(--bright-ink) !important;
   box-shadow: none !important;
 }
+
+/* Notebook Sticky Washi Tape & Binder Ring Deco */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -12px !important;
+  left: 45px !important;
+  width: 80px !important;
+  height: 24px !important;
+  background: repeating-linear-gradient(45deg, rgba(255, 158, 187, 0.28) 0 4px, transparent 4px 8px), #bfe8dd !important;
+  border: 1px dashed rgba(61, 43, 37, 0.3) !important;
+  transform: rotate(-3deg) !important;
+  box-shadow: 2px 2px 5px rgba(61, 43, 37, 0.08) !important;
+  z-index: 9 !important;
+  opacity: 0.9 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-box::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -12px !important;
+  right: 40px !important;
+  width: 72px !important;
+  height: 22px !important;
+  background: repeating-linear-gradient(-45deg, rgba(154, 211, 222, 0.28) 0 4px, transparent 4px 8px), #ffe0ec !important;
+  border: 1px dashed rgba(61, 43, 37, 0.3) !important;
+  transform: rotate(4deg) !important;
+  box-shadow: 2px 2px 5px rgba(61, 43, 37, 0.08) !important;
+  z-index: 9 !important;
+  opacity: 0.9 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 15px !important;
+  left: -8px !important;
+  width: 14px !important;
+  height: 80% !important;
+  background-image: radial-gradient(circle, #3d2b25 35%, transparent 40%) !important;
+  background-size: 14px 22px !important;
+  z-index: 5 !important;
+}
+
+/* 趣味立体糖果棋子（白子立体奶油糖，黑子浓醇巧克力） */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .black .stone {
+  background: radial-gradient(circle at 30% 25%, #5a3c36 0%, #301f1c 70%, #1e1210 100%) !important;
+  box-shadow: inset -3px -4px 6px rgba(0, 0, 0, 0.45), 0 5px 8px rgba(61, 43, 37, 0.3) !important;
+  border: 2px solid var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .white .stone {
+  background: radial-gradient(circle at 35% 25%, #ffffff 0%, #fffbf0 45%, #fff1cc 85%, #ffdca8 100%) !important;
+  box-shadow: inset -2px -3px 5px rgba(61, 43, 37, 0.15), 0 5px 8px rgba(61, 43, 37, 0.3) !important;
+  border: 2px solid var(--bright-border) !important;
+}

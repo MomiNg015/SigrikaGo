@@ -504,3 +504,62 @@
   color: #403847 !important;
   box-shadow: none !important;
 }
+
+/* Professional UI design additions for Original Theme */
+.app-shell.player-theme-enabled.theme-original :where(
+  .auth-panel,
+  .asset-preload-panel,
+  .home-top-strip,
+  .home-player-plaque,
+  .room-header,
+  .player-info,
+  .chat-box,
+  .room-people,
+  .operation-hint,
+  .board-stage,
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .nested-modal,
+  .message-board-modal,
+  .room-floating-modal
+) {
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 40px rgba(77, 62, 91, 0.1) !important;
+}
+
+/* 素雅原版木质棋盘 */
+.app-shell.player-theme-enabled.theme-original .board-wrap {
+  background:
+    linear-gradient(90deg, rgba(140, 110, 80, 0.04), transparent 15%, rgba(255, 250, 230, 0.12) 34%, transparent 58%, rgba(130, 100, 70, 0.04)),
+    repeating-linear-gradient(90deg, rgba(80, 60, 45, 0.06) 0 1px, transparent 1px 16px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px 18px),
+    #ebdcb2 !important;
+  border: 1px solid rgba(138, 112, 154, 0.24) !important;
+  border-radius: 12px !important;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45), 0 14px 36px rgba(72, 44, 86, 0.12) !important;
+}
+
+.app-shell.player-theme-enabled.theme-original .board-lines line {
+  stroke: rgba(45, 30, 15, 0.5) !important;
+  stroke-width: 0.68 !important;
+}
+
+/* 立体云子黑白子 */
+.app-shell.player-theme-enabled.theme-original .black .stone {
+  background: radial-gradient(circle at 30% 25%, #3a383d 0%, #0c0b0e 75%, #000000 100%) !important;
+  box-shadow: inset -3px -4px 8px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(45, 29, 18, 0.35) !important;
+}
+
+.app-shell.player-theme-enabled.theme-original .white .stone {
+  background: radial-gradient(circle at 35% 25%, #ffffff 0%, #f6f5f7 35%, #e1e2e6 80%, #cfd2d8 100%) !important;
+  box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(45, 29, 18, 0.28), 0 0 0 1px rgba(128, 102, 142, 0.18) !important;
+}

@@ -810,6 +810,35 @@
   box-shadow: inset 0 -3px 0 rgba(61, 43, 37, 0.18), 0 0 0 2px rgba(61, 43, 37, 0.5) !important;
 }
 
+/* Sticker Curl Hover Animation for bright school cards */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .home-image-entry,
+  .shop-item,
+  .warehouse-item,
+  .character-card,
+  .record-card,
+  .leaderboard-row,
+  .friend-row,
+  .watch-room-row
+) {
+  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.22s ease !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .home-image-entry,
+  .shop-item,
+  .warehouse-item,
+  .character-card,
+  .record-card,
+  .leaderboard-row,
+  .friend-row,
+  .watch-room-row
+):hover {
+  transform: translateY(-5px) rotate(-1deg) scale(1.02) !important;
+  box-shadow: 8px 10px 0 rgba(61, 43, 37, 0.85), 0 12px 24px rgba(255, 158, 187, 0.16) !important;
+}
+
+
 @media (prefers-reduced-motion: reduce) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::before,
