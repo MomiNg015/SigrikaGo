@@ -22,18 +22,14 @@ describe("ActionBar helpers", () => {
     expect(source).toContain("<Handshake size={18}");
   });
 
-  it("marks result review decisions so mobile can scroll the scoring calculation above the action buttons", () => {
+  it("keeps timed opponent decisions out of the action bar", () => {
     const source = readFileSync(new URL("./ActionBar.jsx", import.meta.url), "utf8");
-    const mobileCss = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
-    const portraitMedia = mediaBlock(mobileCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
 
-    expect(source).toContain("result-review-decision");
-    expect(portraitMedia).toContain(".mobile-room-screen .decision-bar.result-review-decision");
-    expect(portraitMedia).toContain("grid-template-rows: minmax(0, 1fr) auto");
-    expect(portraitMedia).toContain(".mobile-room-screen .decision-bar.result-review-decision .decision-copy");
-    expect(portraitMedia).toContain("overflow: auto");
-    expect(portraitMedia).toContain(".mobile-room-screen .decision-bar.result-review-decision .decision-actions");
-    expect(portraitMedia).toContain("position: sticky");
+    const decisionGate = source.slice(source.indexOf("const hasDecision"), source.indexOf("if (hasDecision)"));
+    expect(decisionGate).toContain("GAME_PHASES.markingDead");
+    expect(decisionGate).not.toContain("GAME_PHASES.drawRequested");
+    expect(decisionGate).not.toContain("GAME_PHASES.countingRequested");
+    expect(decisionGate).not.toContain("GAME_PHASES.resultReview");
   });
 });
 

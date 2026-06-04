@@ -1,24 +1,33 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { api } from "../api/client.js";
 import { COLORS } from "../shared/game.js";
+import { useSocialRelations } from "../social/useSocialRelations.js";
 import { roomPeople } from "./roomView.js";
 import { ConfirmPanel, UserProfileCard } from "../modals/UserProfileCard.jsx";
 
 export default function RoomPeopleList({ room, user, characters, token, onOpenReplay }) {
   const [activeId, setActiveId] = useState("");
-  const [friendIds, setFriendIds] = useState(new Set());
-  const [blacklistIds, setBlacklistIds] = useState(new Set());
   const [profileUser, setProfileUser] = useState(null);
   const [confirmTarget, setConfirmTarget] = useState(null);
   const [error, setError] = useState("");
   const panelRef = useRef(null);
   const people = useMemo(() => roomPeople(room), [room]);
+  const {
+    blacklistIds,
+    friendIds,
+    loadProfile,
+    refreshSocial,
+    updateBlacklist,
+    updateFriend
+  } = useSocialRelations({
+    token,
+    onError: (apiError) => setError(apiError.message)
+  });
 
   useEffect(() => {
     if (!token) return;
-    refreshRelations();
-  }, [token]);
+    refreshSocial();
+  }, [refreshSocial, token]);
 
   useEffect(() => {
     if (!activeId) return;
@@ -29,18 +38,11 @@ export default function RoomPeopleList({ room, user, characters, token, onOpenRe
     return () => document.removeEventListener("pointerdown", close);
   }, [activeId]);
 
-  async function refreshRelations() {
-    const data = await api("/api/social", { token });
-    setFriendIds(new Set((data.friends ?? []).map((row) => row.id)));
-    setBlacklistIds(new Set((data.blacklist ?? []).map((row) => row.id)));
-  }
-
   async function openProfile(person) {
     setActiveId("");
     setConfirmTarget(null);
     try {
-      const data = await api(`/api/users/${person.userId}/profile`, { token });
-      setProfileUser(data.profile);
+      setProfileUser(await loadProfile(person.userId));
     } catch (apiError) {
       setError(apiError.message);
     }
@@ -50,17 +52,13 @@ export default function RoomPeopleList({ room, user, characters, token, onOpenRe
     if (friendIds.has(person.userId)) return;
     const blocked = blacklistIds.has(person.userId);
     const method = blocked ? "DELETE" : "POST";
-    const data = await api(`/api/social/blacklist/${person.userId}`, { method, token });
-    setFriendIds(new Set((data.friends ?? []).map((row) => row.id)));
-    setBlacklistIds(new Set((data.blacklist ?? []).map((row) => row.id)));
+    await updateBlacklist(person.userId, method);
     setActiveId("");
   }
 
   async function addProfileBlacklist(profile) {
     if (!profile) return;
-    const data = await api(`/api/social/blacklist/${profile.id}`, { method: "POST", token });
-    setFriendIds(new Set((data.friends ?? []).map((row) => row.id)));
-    setBlacklistIds(new Set((data.blacklist ?? []).map((row) => row.id)));
+    await updateBlacklist(profile.id, "POST");
     setProfileUser({ ...profile, relation: "blacklist" });
   }
 
@@ -71,24 +69,18 @@ export default function RoomPeopleList({ room, user, characters, token, onOpenRe
   }
 
   async function addFriend(person) {
-    const data = await api(`/api/social/friends/${person.userId}`, { method: "POST", token });
-    setFriendIds(new Set((data.friends ?? []).map((row) => row.id)));
-    setBlacklistIds(new Set((data.blacklist ?? []).map((row) => row.id)));
+    await updateFriend(person.userId, "POST");
     setActiveId("");
   }
 
   async function addProfileFriend(profile) {
     if (!profile) return;
-    const data = await api(`/api/social/friends/${profile.id}`, { method: "POST", token });
-    setFriendIds(new Set((data.friends ?? []).map((row) => row.id)));
-    setBlacklistIds(new Set((data.blacklist ?? []).map((row) => row.id)));
+    await updateFriend(profile.id, "POST");
     setProfileUser({ ...profile, relation: "friend" });
   }
 
   async function removeFriend(person) {
-    const data = await api(`/api/social/friends/${person.userId}`, { method: "DELETE", token });
-    setFriendIds(new Set((data.friends ?? []).map((row) => row.id)));
-    setBlacklistIds(new Set((data.blacklist ?? []).map((row) => row.id)));
+    await updateFriend(person.userId, "DELETE");
     setConfirmTarget(null);
     setActiveId("");
   }

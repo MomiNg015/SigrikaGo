@@ -1,0 +1,34 @@
+/* New player theme template.
+   Copy this file to src/styles/themes/<theme-id>.css and import it after isolation.css in themes.css.
+   Replace theme-example with the class emitted by visualThemeClassName(), for example theme-bright-school. */
+
+.app-shell.player-theme-enabled.theme-example {
+  --theme-bg: #ffffff;
+  --theme-surface: #ffffff;
+  --theme-text: #222222;
+  --theme-border: #222222;
+  color: var(--theme-text) !important;
+  background: var(--theme-bg) !important;
+}
+
+.app-shell.player-theme-enabled.theme-example :where(
+  .auth-panel,
+  .home-top-strip,
+  .home-player-plaque,
+  .home-image-entry,
+  .room-header,
+  .player-info,
+  .board-stage,
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .settings-modal,
+  .nested-modal
+) {
+  background: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-border) !important;
+}

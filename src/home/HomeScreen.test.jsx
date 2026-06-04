@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync, statSync } from "node:fs";
@@ -38,221 +38,36 @@ function isWebp(path) {
 }
 
 describe("HomeScreen", () => {
-  it("renders brand subtitle and online count in the top strip", () => {
+  it("renders the lobby as a Startorch tactical terminal shell", () => {
     const html = renderHome();
-    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
-    const onlineTagBlock = css.match(/\.home-online-tag\s*\{[^}]+\}/)?.[0] ?? "";
+    const css = readFileSync(new URL("../styles/home-terminal.css", import.meta.url), "utf8");
+    const appShellBlock = css.match(/\.app-shell:has\(\.home-screen\)\s*\{[^}]+\}/)?.[0] ?? "";
+    const appShellBeforeBlock = css.match(/\.app-shell:has\(\.home-screen\)::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const appShellAfterBlock = css.match(/\.app-shell:has\(\.home-screen\)::after\s*\{[^}]+\}/)?.[0] ?? "";
+    const screenBlock = css.match(/\.home-screen\s*\{[^}]+\}/g)?.find((block) => block.includes("--home-terminal-bg")) ?? "";
 
+    expect(html).toContain('class="home-screen home-terminal-screen"');
+    expect(html).not.toContain("home-terminal-status");
+    expect(html).not.toContain("SYSTEM: ACTIVE // IN_LOBBY");
     expect(html).toContain("home-brand-title");
     expect(html).toContain("home-brand-subtitle");
     expect(html).toContain("连罗伊人的都爱玩的智力游戏");
     expect(html).toContain("home-online-tag");
-    expect(html).toContain("home-player-row");
-    expect(html).toContain("home-player-plaque");
-    expect(html.indexOf("home-top-brand")).toBeLessThan(html.indexOf("home-online-tag"));
-    expect(html.indexOf("home-online-tag")).toBeLessThan(html.indexOf("topbar-actions"));
-    expect(html).not.toContain("plaque-online-tag");
     expect(html).toContain("在线人数：2");
-    expect(onlineTagBlock).toContain("border: 1px solid rgba(128, 102, 142, 0.16)");
-    expect(onlineTagBlock).toContain("background: rgba(247, 247, 249, 0.88)");
-  });
-
-  it("uses image buttons for the match and house manual primary entries", () => {
-    const html = renderHome();
-
-    expect(html).toContain('class="home-grid-featured home-stage"');
-    expect(html).toContain('class="home-image-entry match-image-entry"');
-    expect(html).toContain('src="/assets/home/fantasy-match-entry.webp"');
-    expect(html).toContain('class="home-image-entry house-manual-entry"');
-    expect(html).toContain('src="/assets/home/book-entry.webp"');
-    expect(html).toContain("当前匹配人数：3");
-    expect(html).not.toContain("<h2>空想对局</h2>");
-  });
-
-  it("shows concise match rules and time settings inside the hover popup", () => {
-    const html = renderHome();
-    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
-    const popupBlock = css.match(/\.matchmaking-popup\s*\{[^}]+\}/)?.[0] ?? "";
-    const popupLineBlock = css.match(/\.matchmaking-popup span\s*\{[^}]+\}/)?.[0] ?? "";
-
-    expect(html).not.toContain('class="match-rule-card"');
-    expect(html).toContain('id="matchmaking-count-popup"');
-    expect(html).toContain("路数：13路");
-    expect(html).toContain("用时：5分钟30秒3次");
-    expect(html).toContain("规则：黑贴2又3/4子，中国数子规则");
-    expect(html.indexOf("当前匹配人数：3")).toBeLessThan(html.indexOf("路数：13路"));
-    expect(html.indexOf("路数：13路")).toBeLessThan(html.indexOf("用时：5分钟30秒3次"));
-    expect(html.indexOf("用时：5分钟30秒3次")).toBeLessThan(html.indexOf("规则：黑贴2又3/4子，中国数子规则"));
-    expect(popupBlock).toContain("position: absolute");
-    expect(popupBlock).toContain("display: grid");
-    expect(popupBlock).toContain("backdrop-filter: blur(14px)");
-    expect(popupLineBlock).toContain("display: block");
-  });
-
-  it("renders separate top and footer chrome around the home layout", () => {
-    const html = renderHome();
-
-    expect(html).toContain("home-top-strip");
-    expect(html).toContain("home-main-panel");
-    expect(html).toContain("home-footer-strip");
-    expect(html).toContain("Copyright ©KURO GAMES. ALL RIGHTS RESERVED.");
-    expect(html).toContain("浙ICP备2026035038号");
-    expect(html).toContain("home-orientation-guard");
-    expect(html).toContain("请横屏使用");
-    expect(html).not.toContain("home-title-lockup");
-  });
-
-  it("keeps primary image entries stable inside one bounded stage", () => {
-    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
-    const stageBlock = css.match(/\.home-grid-featured\s*\{[^}]+\}/g)?.at(-1) ?? "";
-    const matchFeatureBlock = css.match(/\.home-match-feature\s*\{[^}]+\}/g)?.at(-1) ?? "";
-    const imageEntryBlock = css.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
-    const appShellHomeBlock = css.match(/\.app-shell:has\(\.home-screen\)\s*\{[^}]+\}/)?.[0] ?? "";
-    const appShellHomeBeforeBlock = css.match(/\.app-shell:has\(\.home-screen\)::before\s*\{[^}]+\}/)?.[0] ?? "";
-
-    expect(stageBlock).toContain("aspect-ratio: 1480 / 620");
-    expect(stageBlock).toContain("width: 100%");
-    expect(stageBlock).toContain("display: block");
-    expect(matchFeatureBlock).toContain("position: absolute");
-    expect(matchFeatureBlock).toContain("overflow: visible");
-    expect(imageEntryBlock).toContain("transition: none");
-    expect(imageEntryBlock).not.toContain("filter");
-    expect(imageEntryBlock).toContain("contain: layout paint style");
-    expect(imageEntryBlock).not.toContain("will-change");
-    expect(appShellHomeBlock).toContain("background: #f4f3f6");
-    expect(appShellHomeBeforeBlock).toContain("background-image: url(\"/assets/home/multipurpose-classroom-bg.webp\")");
-    expect(appShellHomeBeforeBlock).toContain("filter: blur(14px) saturate(0.95)");
-  });
-
-  it("uses one game-menu coordinate stage with absolute zones", () => {
-    const html = renderHome();
-    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
-    const homeScreenBlock = css.match(/\.home-screen\s*\{[^}]+\}/g)?.find((block) => block.includes("--home-stage-min-w")) ?? "";
-    const mainPanelBlock = css.match(/\.home-main-panel\s*\{[^}]+\}/)?.[0] ?? "";
-    const featuredBlock = css.match(/\.home-grid-featured\s*\{[^}]+\}/g)?.at(-1) ?? "";
-    const playerZoneBlock = css.match(/\.home-player-zone\s*\{[^}]+\}/)?.[0] ?? "";
-    const playerRowBlock = css.match(/\.home-player-zone \.home-player-row\s*\{[^}]+\}/)?.[0] ?? "";
-    const playerPlaqueBlock = css.match(/\.home-player-zone \.home-player-plaque\s*\{[^}]+\}/)?.[0] ?? "";
-    const playerStatsBlock = css.match(/\.home-player-zone \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
-    const playerAvatarBlock = css.match(/\.home-player-zone \.plaque-avatar\s*\{[^}]+\}/)?.[0] ?? "";
-    const playerAvatarImageBlock = css.match(/\.home-player-zone \.plaque-avatar img\s*\{[^}]+\}/)?.[0] ?? "";
-    const manualBlock = css.match(/\.house-manual-entry\s*\{[^}]+\}/)?.[0] ?? "";
-    const utilityBlock = css.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/)?.[0] ?? "";
-    const matchFeatureBlock = css.match(/\.home-match-feature\s*\{[^}]+\}/g)?.at(-1) ?? "";
-
-    expect(html.indexOf("home-player-zone")).toBeLessThan(html.indexOf("house-manual-entry"));
-    expect(html.indexOf("house-manual-entry")).toBeLessThan(html.indexOf("home-match-feature"));
-    expect(html.indexOf("home-match-feature")).toBeLessThan(html.indexOf("home-utility-grid"));
-    expect(homeScreenBlock).toContain("--home-stage-min-w: 1200px");
-    expect(homeScreenBlock).toContain("--home-stage-min-h: 503px");
-    expect(homeScreenBlock).toContain("--home-stage-max-w: 1920px");
-    expect(homeScreenBlock).toContain("width: clamp(var(--home-stage-min-w), calc(100vw - (var(--page-pad) * 2)), var(--home-stage-max-w))");
-    expect(homeScreenBlock).toContain("min-height: 100dvh");
-    expect(homeScreenBlock).toContain("height: auto");
-    expect(homeScreenBlock).toContain("overflow: visible");
-    expect(mainPanelBlock).toContain("container-type: inline-size");
-    expect(mainPanelBlock).toContain("grid-template-rows: minmax(0, 1fr)");
-    expect(mainPanelBlock).toContain("place-items: start center");
-    expect(mainPanelBlock).toContain("overflow: visible");
-    expect(mainPanelBlock).toContain("min-height: var(--home-stage-min-h)");
-    expect(featuredBlock).toContain("aspect-ratio: 1480 / 620");
-    expect(featuredBlock).toContain("min-width: var(--home-stage-min-w)");
-    expect(featuredBlock).toContain("min-height: var(--home-stage-min-h)");
-    expect(featuredBlock).toContain("max-width: var(--home-stage-max-w)");
-    expect(featuredBlock).toContain("position: relative");
-    expect(featuredBlock).toContain("display: block");
-    expect(playerZoneBlock).toContain("position: absolute");
-    expect(playerZoneBlock).toContain("left: 2%");
-    expect(playerZoneBlock).toContain("top: 0");
-    expect(playerZoneBlock).toContain("width: 36%");
-    expect(playerRowBlock).toContain("width: min(470px, 100%)");
-    expect(playerRowBlock).toContain("gap: 12px");
-    expect(playerPlaqueBlock).toContain("min-height: 62px");
-    expect(playerPlaqueBlock).toContain("grid-template-columns: 54px minmax(0, 1fr) auto");
-    expect(playerPlaqueBlock).toContain("gap: 13px");
-    expect(playerStatsBlock).toContain("display: inline-flex");
-    expect(playerStatsBlock).toContain("white-space: nowrap");
-    expect(playerAvatarBlock).toContain("width: 54px");
-    expect(playerAvatarImageBlock).toContain("width: 51px");
-    expect(manualBlock).toContain("position: absolute");
-    expect(manualBlock).toContain("left: calc(2% + 50px)");
-    expect(manualBlock).toContain("top: calc(15% + 5px)");
-    expect(matchFeatureBlock).toContain("position: absolute");
-    expect(matchFeatureBlock).toContain("left: 40%");
-    expect(matchFeatureBlock).toContain("top: calc(4% - 6px)");
-    expect(utilityBlock).toContain("position: absolute");
-    expect(utilityBlock).toContain("left: 2%");
-    expect(utilityBlock).toContain("bottom: 1.5%");
-  });
-
-  it("keeps middle zones unframed and makes image targets cover the visible artwork box", () => {
-    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
-    const playerZoneBlock = css.match(/\.home-player-zone\s*\{[^}]+\}/)?.[0] ?? "";
-    const utilityBlock = css.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/)?.[0] ?? "";
-    const manualBlock = css.match(/\.house-manual-entry\s*\{[^}]+\}/)?.[0] ?? "";
-    const matchBlock = css.match(/\.match-image-entry\s*\{[^}]+\}/g)?.at(-1) ?? "";
-    const imageEntryBlock = css.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
-    const imageShadowBlock = css.match(/\.home-image-entry::before\s*\{[^}]+\}/)?.[0] ?? "";
-    const imageShadowHoverBlock = css.match(/\.home-image-entry:hover::before,\s*\.home-image-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
-
-    expect(playerZoneBlock).toContain("background: transparent");
-    expect(playerZoneBlock).toContain("border: 0");
-    expect(utilityBlock).toContain("background: transparent");
-    expect(utilityBlock).toContain("border: 0");
-    expect(imageEntryBlock).toContain("width: 100%");
-    expect(imageEntryBlock).toContain("height: 100%");
-    expect(imageShadowBlock).toContain("background: aqua");
-    expect(imageShadowBlock).toContain("transform: translate3d(10px, 10px, 0)");
-    expect(imageShadowBlock).toContain("mask-image: var(--entry-art)");
-    expect(imageShadowHoverBlock).toContain("opacity: 1");
-    expect(manualBlock).toContain('--entry-art: url("/assets/home/book-entry.webp")');
-    expect(manualBlock).toContain("aspect-ratio: 782 / 894");
-    expect(manualBlock).toContain("height: 66%");
-    expect(manualBlock).toContain("width: auto");
-    expect(matchBlock).toContain('--entry-art: url("/assets/home/fantasy-match-entry.webp")');
-    expect(matchBlock).toContain("aspect-ratio: 2674 / 2023");
-    expect(matchBlock).toContain("width: 100%");
-    expect(matchBlock).toContain("height: 100%");
-  });
-
-  it("keeps utility dock large enough on compact desktop viewports", () => {
-    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
-    const matchFeatureBlock = css.match(/\.home-match-feature\s*\{[^}]+\}/g)?.at(-1) ?? "";
-    const utilityBlock = css.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/)?.[0] ?? "";
-    const utilityEntryBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
-    const imageHoverBlock = css.match(/\.home-image-entry:hover,\s*\.home-image-entry:focus-visible\s*\{[^}]+\}/)?.[0] ?? "";
-    const imageBlock = css.match(/\.home-image-entry img\s*\{[^}]+\}/)?.[0] ?? "";
-    const manualImageHoverBlock = css.match(/\.house-manual-entry:hover img,\s*\.house-manual-entry:focus-visible img\s*\{[^}]+\}/)?.[0] ?? "";
-    const matchImageHoverBlock = css.match(/\.match-image-entry:hover img,\s*\.match-image-entry:focus-visible img\s*\{[^}]+\}/)?.[0] ?? "";
-
-    expect(matchFeatureBlock).toContain("left: 40%");
-    expect(matchFeatureBlock).toContain("width: 52.5%");
-    expect(matchFeatureBlock).toContain("aspect-ratio: 2674 / 2023");
-    expect(matchFeatureBlock).toContain("height: auto");
-    expect(utilityBlock).toContain("grid-template-columns: repeat(5, minmax(0, 1fr))");
-    expect(utilityBlock).toContain("gap: clamp(8px, 0.9vw, 16px)");
-    expect(utilityEntryBlock).toContain("width: clamp(54px, 5.1cqw, 78px)");
-    expect(utilityEntryBlock).toContain("height: clamp(54px, 5.1cqw, 78px)");
-    expect(utilityEntryBlock).toContain("box-shadow: none");
-    expect(imageHoverBlock).not.toContain("filter");
-    expect(imageHoverBlock).not.toContain("drop-shadow");
-    expect(imageHoverBlock).not.toContain("rotate");
-    expect(imageHoverBlock).not.toContain("translateY");
-    expect(imageBlock).toContain("transition: transform");
-    expect(manualImageHoverBlock).toContain("translate3d(0, -3px, 0) rotate(-1.4deg)");
-    expect(matchImageHoverBlock).toContain("translate3d(0, -4px, 0) rotate(1.2deg)");
-    expect(manualImageHoverBlock).not.toContain("filter");
-    expect(matchImageHoverBlock).not.toContain("filter");
-  });
-
-  it("hides utility labels when the home stage is compressed", () => {
-    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
-    const compactUtilityQuery = css.match(/@container \(max-width: 1260px\)\s*\{[\s\S]+?\.home-grid-featured > \.home-utility-grid \.utility-entry strong\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
-
-    expect(compactUtilityQuery).toContain(".home-grid-featured > .home-utility-grid .utility-entry strong");
-    expect(compactUtilityQuery).toContain("display: none");
-    expect(compactUtilityQuery).toContain(".home-grid-featured > .home-utility-grid .utility-entry svg");
-    expect(compactUtilityQuery).toContain("width: clamp(24px, 2.4vw, 30px)");
+    expect(html).toContain("home-lobby-status");
+    expect(html).toContain("LOBBY_ROOM (•̀ᴗ•́)و");
+    expect(appShellBlock).toContain("overflow-x: hidden");
+    expect(appShellBlock).toContain("background: #04080c");
+    expect(appShellBeforeBlock).toContain('background-image: url("/assets/home/multipurpose-classroom-bg.webp")');
+    expect(appShellBeforeBlock).toContain("background-size: cover");
+    expect(appShellBeforeBlock).toContain("background-position: center");
+    expect(appShellBeforeBlock).not.toContain("filter: blur");
+    expect(appShellAfterBlock).toContain("background-size: 100% 4px");
+    expect(appShellAfterBlock).toContain("repeating-linear-gradient");
+    expect(screenBlock).toContain("--home-terminal-bg: rgba(10, 22, 30, 0.75)");
+    expect(screenBlock).toContain("--home-terminal-cyan: #00ffbe");
+    expect(screenBlock).toContain("--home-terminal-blue: #00bfff");
+    expect(screenBlock).toContain("min-width: 1180px");
   });
 
   it("uses a compact WebP match image instead of the source PNG", () => {
@@ -263,40 +78,89 @@ describe("HomeScreen", () => {
     expect(statSync(webpUrl).size).toBeLessThan(statSync(pngUrl).size / 8);
   });
 
-  it("gives non-image buttons a shared hover target cue", () => {
-    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
-    const sharedTransitionBlock = css.match(/\.primary-action,[\s\S]+?\.toggle\s*\{[^}]+\}/)?.[0] ?? "";
-    const sharedHoverBlock = css.match(/:is\(\.primary-action,[\s\S]+?\.toggle\):not\(\.home-image-entry\):not\(:disabled\):hover,[\s\S]+?\{[^}]+\}/)?.[0] ?? "";
+  it("renders hologram entry pods without changing the primary click targets", () => {
+    const html = renderHome();
+    const css = readFileSync(new URL("../styles/home-terminal.css", import.meta.url), "utf8");
+    const stageBlock = css.match(/\.home-grid-featured\s*\{[^}]+\}/g)?.find((block) => block.includes("minmax(240px, 0.72fr)")) ?? "";
+    const imageEntryBlock = css.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const hoverBlock = css.match(/\.home-image-entry:hover,[\s\S]+?\.home-image-entry:focus-visible\s*\{[^}]+\}/)?.[0] ?? "";
+    const tacticalTextBlock = css.match(/\.home-image-entry::after\s*\{[^}]+\}/)?.[0] ?? "";
+    const manualBlock = css.match(/\.house-manual-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const matchBlock = css.match(/\.match-image-entry\s*\{[^}]+\}/g)?.find((block) => block.includes("border-color: rgba(0, 191, 255, 0.32)")) ?? "";
 
-    expect(sharedTransitionBlock).toContain("transition: transform");
-    expect(sharedHoverBlock).toContain("transform: translateY(-2px)");
-    expect(sharedHoverBlock).toContain("outline: 2px solid rgba(93, 127, 232, 0.42)");
-    expect(sharedHoverBlock).toContain("outline-offset: 3px");
-    expect(sharedHoverBlock).toContain("filter: brightness(1.04) saturate(1.04)");
-    expect(sharedHoverBlock).not.toContain(".home-image-entry:hover");
+    expect(html).toContain('class="home-grid-featured home-stage home-terminal-stage"');
+    expect(html).toContain('class="home-image-entry house-manual-entry hologram-entry"');
+    expect(html).toContain('class="home-image-entry match-image-entry hologram-entry"');
+    expect(html).toContain('src="/assets/home/book-entry.webp"');
+    expect(html).toContain('src="/assets/home/fantasy-match-entry.webp"');
+    expect(html).toContain("当前匹配人数：3");
+    expect(stageBlock).toContain("grid-template-columns: minmax(240px, 0.72fr) minmax(360px, 1.28fr)");
+    expect(stageBlock).toContain("overflow: visible");
+    expect(imageEntryBlock).toContain("background: rgba(10, 28, 38, 0.52)");
+    expect(imageEntryBlock).toContain("border: 1px solid rgba(0, 255, 190, 0.28)");
+    expect(imageEntryBlock).toContain("clip-path: polygon");
+    expect(imageEntryBlock).toContain("transition: transform 260ms");
+    expect(hoverBlock).toContain("transform: translateY(-10px)");
+    expect(hoverBlock).toContain("border-color: var(--home-terminal-cyan)");
+    expect(tacticalTextBlock).toContain("content: attr(data-hud)");
+    expect(html).toContain('data-hud="DIARY_LOG (｡•̀ᴗ- )✧"');
+    expect(html).toContain('data-hud="MATCH_READY!! ✦"');
+    expect(matchBlock).toContain("border-color: rgba(0, 191, 255, 0.32)");
   });
 
-  it("uses the original wide stage dimensions and a portrait phone guard", () => {
-    const css = readFileSync(new URL("../styles/base.css", import.meta.url), "utf8");
-    const screenBlock = css.match(/\.home-screen\s*\{[^}]+\}/g)?.find((block) => block.includes("--home-stage-min-w")) ?? "";
-    const mainPanelBlock = css.match(/\.home-main-panel\s*\{[^}]+\}/)?.[0] ?? "";
-    const orientationBlock = css.match(/\.home-orientation-guard\s*\{[^}]+\}/)?.[0] ?? "";
-    const portraitMedia = css.match(/@media \(max-width: 900px\) and \(orientation: portrait\)\s*\{[\s\S]+?\.home-orientation-guard\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
-    const landscapeMedia = css.match(/@media \(max-width: 900px\) and \(orientation: landscape\)\s*\{[\s\S]+?\.home-screen\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
+  it("uses a tactical ID card and skewed navigation cards", () => {
+    const html = renderHome();
+    const css = readFileSync(new URL("../styles/home-terminal.css", import.meta.url), "utf8");
+    const plaqueBlock = css.match(/\.home-player-zone \.home-player-plaque\s*\{[^}]+\}/)?.[0] ?? "";
+    const statsBlock = css.match(/\.home-player-zone \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
+    const utilityBlock = css.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/g)?.find((block) => block.includes("grid-template-columns: 1fr")) ?? "";
+    const utilityEntryBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const utilityTextBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}/)?.[0] ?? "";
+    const utilityHoverBeforeBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry:hover::before,[\s\S]+?\.utility-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
 
-    expect(screenBlock).toContain("--home-stage-min-w: 1200px");
-    expect(screenBlock).toContain("--home-stage-min-h: 503px");
-    expect(screenBlock).toContain("--home-stage-max-w: 1920px");
-    expect(screenBlock).toContain("width: clamp(var(--home-stage-min-w), calc(100vw - (var(--page-pad) * 2)), var(--home-stage-max-w))");
-    expect(mainPanelBlock).toContain("min-height: var(--home-stage-min-h)");
-    expect(mainPanelBlock).toContain("overflow: visible");
-    expect(orientationBlock).toContain("display: none");
-    expect(portraitMedia).toContain(".home-main-panel");
-    expect(portraitMedia).toContain("display: none");
-    expect(portraitMedia).toContain(".home-orientation-guard");
-    expect(portraitMedia).toContain("display: grid");
-    expect(portraitMedia).toContain("width: calc(100vw - (var(--page-pad) * 2))");
-    expect(landscapeMedia).toContain("--home-stage-min-w: 960px");
-    expect(landscapeMedia).toContain("--home-stage-min-h: 402px");
+    expect(html).toContain("home-player-row tactical-id-row");
+    expect(html).toContain("home-player-plaque tactical-id-card");
+    expect(html).toContain("home-utility-grid tactical-nav-grid");
+    expect(html).not.toContain("角色、物品、装饰即将开放");
+    expect(html).not.toContain("查看并使用已经获得的道具");
+    expect(html).not.toContain("积分、胜负与常用角色");
+    expect(html).not.toContain("输入5位房间号进入观战席");
+    expect(html).not.toContain("好友与黑名单");
+    expect(plaqueBlock).toContain("background: rgba(10, 22, 30, 0.75)");
+    expect(plaqueBlock).toContain("border: 1px solid var(--home-terminal-blue)");
+    expect(plaqueBlock).toContain("clip-path: polygon");
+    expect(plaqueBlock).toContain("box-shadow");
+    expect(statsBlock).toContain("font-family: ui-monospace");
+    expect(utilityBlock).toContain("grid-template-columns: 1fr");
+    expect(utilityEntryBlock).toContain("grid-template-columns: 28px minmax(0, 1fr)");
+    expect(utilityEntryBlock).toContain("transform: skewX(-15deg)");
+    expect(utilityEntryBlock).toContain("border-left: 4px solid var(--home-terminal-cyan)");
+    expect(utilityEntryBlock).toContain("clip-path: polygon");
+    expect(css).toContain(".home-grid-featured > .home-utility-grid .utility-entry strong {\n  display: block");
+    expect(utilityTextBlock).toContain("transform: skewX(15deg)");
+    expect(utilityHoverBeforeBlock).toContain("animation: home-nav-flow");
+  });
+
+  it("keeps the HUD footer minimal and rewrites the mobile lobby layout", () => {
+    const html = renderHome();
+    const css = readFileSync(new URL("../styles/home-terminal.css", import.meta.url), "utf8");
+    const footerBlock = css.match(/\.home-footer-strip\s*\{[^}]+\}/)?.[0] ?? "";
+    const footerSpanBlock = css.match(/\.home-footer-strip span\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileMedia = css.match(/@media \(max-width: 768px\)\s*\{[\s\S]+?\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
+
+    expect(html).toContain("Copyright ©KURO GAMES. ALL RIGHTS RESERVED.");
+    expect(html).toContain("浙ICP备2026035038号");
+    expect(html).toContain("请横屏使用");
+    expect(footerBlock).toContain("position: fixed");
+    expect(footerBlock).toContain("right: clamp(12px, 2vw, 24px)");
+    expect(footerBlock).toContain("bottom: clamp(8px, 1.4vw, 16px)");
+    expect(footerBlock).toContain("font-family: ui-monospace");
+    expect(footerBlock).toContain("opacity: 0.4");
+    expect(footerSpanBlock).toContain("white-space: nowrap");
+    expect(mobileMedia).toContain(".home-grid-featured");
+    expect(mobileMedia).toContain("grid-template-columns: 1fr");
+    expect(mobileMedia).toContain(".home-grid-featured > .home-utility-grid");
+    expect(mobileMedia).toContain("grid-template-columns: repeat(2, minmax(0, 1fr))");
+    expect(mobileMedia).toContain("transform: none");
   });
 });

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
-import { resolveCandyPortrait } from "../shared/candyPortraits.js";
-import { findCharacter } from "../shared/characterDisplay.js";
+import LeaderboardRow, { leaderboardRankClass } from "./leaderboard/LeaderboardRow.jsx";
 
 export default function LeaderboardModal({ token, user, characters, onClose }) {
   const [players, setPlayers] = useState([]);
@@ -88,23 +87,4 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
   );
 }
 
-function LeaderboardRow({ player, rank, characters, highlight = false, pinned = false }) {
-  const character = findCharacter(characters, player.commonCharacter);
-  const winRate = player.totalGames > 0 ? `${((player.wins / player.totalGames) * 100).toFixed(1)}%` : "0.0%";
-  return (
-    <article className={`leaderboard-row ${highlight ? "current-user" : ""} ${pinned ? "pinned" : ""}`}>
-      <strong className="leaderboard-rank">#{rank}</strong>
-      <img src={resolveCandyPortrait(character, player.itemEffects)} alt={character.name} />
-      <div className="leaderboard-player">
-        <strong>{player.username}</strong>
-        <span>{character.name}</span>
-      </div>
-      <span>{player.rank}</span>
-      <b>{player.rating}</b>
-      <span>{player.totalGames}</span>
-      <span>{player.wins}</span>
-      <span>{player.losses}</span>
-      <span>{winRate}</span>
-    </article>
-  );
-}
+export { leaderboardRankClass } from "./leaderboard/LeaderboardRow.jsx";

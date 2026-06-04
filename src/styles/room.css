@@ -1150,6 +1150,107 @@
   animation: shrink linear forwards;
 }
 
+.room-request-toast {
+  position: fixed;
+  left: 50%;
+  top: max(76px, calc(env(safe-area-inset-top) + 72px));
+  z-index: 80;
+  width: min(540px, calc(100vw - 28px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 44px 15px 16px;
+  border: 1px solid rgba(113, 96, 130, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 46px rgba(54, 38, 68, 0.2);
+  color: #33283b;
+  transform: translateX(-50%);
+  animation: duel-request-drop 220ms ease-out;
+}
+
+.room-request-toast.passive {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.room-request-toast-copy {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.room-request-toast-copy strong {
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.room-request-toast-copy p {
+  margin: 0;
+  color: #6d5d73;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.room-request-toast-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.room-request-toast-actions button {
+  min-height: 36px;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 13px;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.room-request-toast-actions .agree {
+  background: #3ca66a;
+}
+
+.room-request-toast-actions .reject {
+  background: #d94a62;
+}
+
+.room-request-toast-actions button:disabled {
+  background: #b9b2c0;
+  color: #ffffff;
+  cursor: not-allowed;
+}
+
+.room-request-toast-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(235, 230, 240, 0.86);
+  color: #6a586f;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.room-request-toast-progress {
+  overflow: hidden;
+  width: min(260px, 100%);
+  height: 5px;
+  border-radius: 999px;
+  background: #e8e0ec;
+}
+
+.room-request-toast-progress span {
+  display: block;
+  height: 100%;
+  background: #5d7fe8;
+  animation: shrink linear forwards;
+}
+
 .decision-waiting {
   min-height: 42px;
   display: inline-flex;

@@ -65,6 +65,36 @@
 <ul>
 <li>Runtime image references use WebP assets for the current public image set, including home entry art, classroom backgrounds, character portraits, shop/item images, stone decorations, and animated effect previews. The original PNG/JPG/GIF files are left in place as source/reference assets and to avoid bulk deletion; production code and preload lists should point at the <code>.webp</code> variants.</li>
 </ul>
+<ul>
+<li>Player-facing visual theme CSS is split by skin for external UI iteration. <code>src/styles/themes.css</code> remains the final global theme entrypoint imported after the HUD layer, but now delegates to <code>src/styles/themes/shared.css</code>, <code>isolation.css</code>, <code>current.css</code>, <code>original.css</code>, and <code>bright-school.css</code>. JSX remains shared across themes; the three skins are isolated by <code>.theme-current</code>, <code>.theme-original</code>, and <code>.theme-bright-school</code> selectors so designers can edit one theme file without copying React state, click handlers, routes, socket flows, or API bindings.</li>
+</ul>
+<ul>
+<li>Player-facing theme isolation is centralized in <code>src/styles/themes/isolation.css</code>, imported after <code>shared.css</code> and before all concrete theme files. The isolation layer targets <code>.app-shell.player-theme-enabled:not(.theme-current)</code> so the existing HUD stack remains the Current skin, while Original, Bright School, and future skins begin from a neutral player-only canvas with HUD clip paths, skew transforms, neon shadows, backdrop filters, and decorative pseudo-elements cleared. New skins should add their file after <code>isolation.css</code> in <code>src/styles/themes.css</code>, stay scoped to their own <code>.theme-*</code> class, and avoid editing JSX solely for visual style.</li>
+</ul>
+<ul>
+<li>Theme authoring notes live in <code>src/styles/themes/README.md</code>, and <code>_new-theme-template.css</code> is a copyable starter for new player skins. Bright School is now organized as an import-only entry file plus layered files under <code>src/styles/themes/bright-school/</code>: <code>base.css</code>, <code>contrast-purge.css</code>, <code>gallery-polish.css</code>, <code>specificity-overrides.css</code>, <code>radical-purge.css</code>, <code>firewall.css</code>, <code>component-repairs.css</code>, and <code>qa-guard.css</code>. Routine visual iteration should happen in <code>component-repairs.css</code>; systemic safety fixes should happen in <code>qa-guard.css</code>.</li>
+</ul>
+<ul>
+<li>Documentation text that may contain Chinese should be updated through <code>apply_patch</code> or <code>npm run docs:utf8 -- ...</code> instead of PowerShell <code>Set-Content</code> / <code>Out-File</code>. <code>scripts/write-utf8-doc.mjs</code> reads and writes UTF-8 through Node, verifies the write round trip, and fails if Unicode replacement characters are introduced; <code>docs/systemDesignHtml.test.js</code> also guards the generated Markdown/HTML pair against replacement-character encoding damage.</li>
+</ul>
+<ul>
+<li>The Current HUD and Bright School theme files can accept external designer addenda as append-only CSS blocks at the end of <code>src/styles/themes/current.css</code> and <code>src/styles/themes/bright-school.css</code>. These addenda must stay scoped to <code>.theme-current</code> or <code>.theme-bright-school</code> selectors so they do not affect the Original theme or admin views.</li>
+</ul>
+<ul>
+<li>Bright School now ends with an anti-tech-bleed purge layer. The main source of visual mixing is not <code>current.css</code>; it is the shared HUD/base layers (<code>hud-components.css</code>, <code>home-terminal.css</code>, <code>room-terminal.css</code>, <code>commerce-settings.css</code>, and <code>room-terminal.css</code>) that define neon shadows, clipped corners, skew transforms, and pseudo-element labels before the theme layer. The Bright School addendum clears those inherited HUD artifacts with late <code>.theme-bright-school</code> scoped rules for icon buttons, utility entries, handbook/detail rows, board/player pseudo-elements, timers, skill chips, and action bars.</li>
+</ul>
+<ul>
+<li>Bright School has a final firewall layer in <code>src/styles/themes/bright-school/firewall.css</code>. It uses duplicated <code>.theme-bright-school.theme-bright-school</code> specificity and generic scoped selectors for common nested surfaces (<code>panel</code>, <code>card</code>, <code>row</code>, <code>tag</code>, <code>chip</code>, <code>slot</code>, <code>dock</code>, etc.) so missed inner components still reset HUD neon, cut corners, skew transforms, backdrop filters, and decorative pseudo-elements. The firewall must stay scoped to player-facing Bright School views and must not mention <code>.theme-current</code>, <code>.theme-original</code>, or unscoped component selectors.</li>
+</ul>
+<ul>
+<li>A Bright School component repair layer follows the generic firewall in <code>src/styles/themes/bright-school/component-repairs.css</code>. It restores intentional notebook details after the broad reset, including the shop receptionist panel and mascot overflow, paper-style scrollbars, shop item image mounts, decoration-category cleanup, warehouse target selection grid, lobby title and online tags, current-user ranking row, watch-empty states, friend-search inputs, owned-decoration spacing, character-detail contrast and portrait shadow, room-code labels, board point colors, and pastel skill gradients. Browser comment blue outlines are inspection overlays, not theme styling, and should not be treated as CSS evidence.</li>
+</ul>
+<ul>
+<li>Bright School ends with a UI/UX Pro Max audit guard in <code>src/styles/themes/bright-school/qa-guard.css</code>. This final scoped layer hardens the skin against future style pollution by enforcing border-box sizing, horizontal overflow clipping, font smoothing, tabular numeric rendering, visible focus rings, 44px touch targets, stable scroll gutters, modal max-size constraints, responsive shop grids, paper-textured lobby/room backgrounds, scrapbook home entry notes, contained shop mascot art, readable character-detail labels, and mobile-safe board sizing. The guard remains scoped to <code>.theme-bright-school.theme-bright-school</code> and intentionally avoids Current, Original, and admin selectors.</li>
+</ul>
+<ul>
+<li>The tail of <code>bright-school/qa-guard.css</code> also contains a calmer visual refinement layer for routine polish. It centralizes Bright School color/depth tokens, softens heavy hard shadows, keeps pink surfaces paired with dark brown text, limits prominent scrollbars to real scroll containers, removes noisy inner paper grids from text-heavy surfaces, softens character-art sticker shadows, standardizes hover/active motion, preserves white-stone readability on the board, and honors <code>prefers-reduced-motion</code>.</li>
+</ul>
 <h1>SigrikaGo System Design</h1>
 <p>本文档基于当前代码库静态分析生成，目标是方便后续维护者和 AI 继续接手。未在代码中确认的内容会标注为“待确认”。</p>
 <h2>1. 项目目录结构说明</h2>
@@ -185,7 +215,10 @@
 <li>后台管理界面模块。</li>
 </ul>
 <ul>
-<li>包含概览、用户、角色、商城、装饰、系统设置、审计日志等后台组件。</li>
+<li>作为后台管理的数据路由容器，负责按 tab 拉取数据、维护选中用户编辑抽屉、转发保存/刷新回调和显示后台错误。</li>
+</ul>
+<ul>
+<li>具体 tab 已拆到 <code>src/admin/AdminOverview.jsx</code>、<code>AdminUsers.jsx</code>、<code>AdminCharacters.jsx</code>、<code>AdminShopItems.jsx</code>、<code>AdminDecorations.jsx</code>、<code>AdminSiteSettings.jsx</code>、<code>AdminFeedback.jsx</code>、<code>AdminAudit.jsx</code>；共享后台展示零件和 helper 位于 <code>adminComponents.jsx</code>、<code>adminFormatters.js</code>、<code>adminUserDrafts.js</code>。</li>
 </ul>
 <ul>
 <li>该模块已从 <code>src/main.jsx</code> 拆出，且顶部侧栏/标题外壳已下沉到 <code>src/admin/AdminShell.jsx</code>；内部 tab 内容仍可继续按业务域拆分。</li>
@@ -255,6 +288,30 @@
 <li><code>src/app/AssetPreloadScreen.jsx</code></li>
 <ul>
 <li>Owns the login/startup asset preloading screen UI and progress-bar percentage formatting, keeping this transient screen out of <code>src/main.jsx</code> while preserving the same loading flow.</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/AppRoutes.jsx</code></li>
+<ul>
+<li>Owns top-level route rendering for login, preload, home, admin fallback, admin console, and room screens. <code>src/main.jsx</code> still owns state and side effects, while route-specific JSX and room back-navigation wiring live here.</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/AppOverlays.jsx</code></li>
+<ul>
+<li>Owns global overlays and transient UI: toast stack, duel request banner, result/match lifecycle modals, house/shop/warehouse/leaderboard/watch/friends/settings/message-board modals. This keeps <code>src/main.jsx</code> focused on application state, socket/auth/preload effects, and cross-cutting action handlers.</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/useAuthSession.js</code></li>
+<ul>
+<li>Owns startup refresh-cookie session recovery and the shared HTTP auth-refresh retry hook from <code>src/api/client.js</code>. It keeps the refresh promise, login reset fallback, token update, and silent startup refresh outside <code>src/main.jsx</code>.</li>
+</ul>
+</ul>
+<ul>
+<li><code>src/app/useStartupPreload.js</code></li>
+<ul>
+<li>Owns the post-token <code>/api/me</code> confirmation, public character catalog load, login asset preload, minimum preload duration, site-settings refresh, and home-screen finish guard. Replay data stays lazy-loaded.</li>
 </ul>
 </ul>
 <ul>
@@ -1842,13 +1899,13 @@
 <h3>前端公共组件</h3>
 <p>当前公共组件已从 <code>src/main.jsx</code> 按页面域逐步拆出，后台管理组件位于 <code>src/admin/AdminConsole.jsx</code>，对局页容器位于 <code>src/room/RoomScreen.jsx</code>：</p>
 <ul>
-<li><code>AdminFieldLabel</code>: 带 title 提示的后台字段标签，位于 <code>src/admin/AdminConsole.jsx</code>。</li>
+<li><code>AdminFieldLabel</code>: 带 title 提示的后台字段标签，位于 <code>src/admin/adminComponents.jsx</code>。</li>
 </ul>
 <ul>
-<li><code>AdminSectionHeader</code>: 后台列表页标题、数量和主操作按钮，位于 <code>src/admin/AdminConsole.jsx</code>。</li>
+<li><code>AdminSectionHeader</code>: 后台列表页标题、数量和主操作按钮，位于 <code>src/admin/adminComponents.jsx</code>。</li>
 </ul>
 <ul>
-<li><code>AdminStatusPill</code>: 后台表格状态标签，位于 <code>src/admin/AdminConsole.jsx</code>。</li>
+<li><code>AdminStatusPill</code>: 后台表格状态标签，位于 <code>src/admin/adminComponents.jsx</code>。</li>
 </ul>
 <ul>
 <li><code>Toast</code> / <code>ToastStack</code>: 自动消失提示队列，使用高对比渐变底色突出规则错误、非法操作等短提示；成功提示为绿色，金币、积分、段位变动提示为黄底 reward 样式，并由 <code>buildStatChangeToasts</code> 拆成每项一条。队列最多保留最新 5 条，避免高频操作造成页面卡顿。</li>
@@ -2153,10 +2210,10 @@
 <li><code>server/rooms.js</code> 已拆出 room view、奖励、持久化和计时 helper，但仍承载实时生命周期、动作分发、Socket 广播、数子/和棋、断线与关闭逻辑。</li>
 </ul>
 <ul>
-<li><code>src/admin/AdminConsole.jsx</code> 已拆出 <code>AdminShell</code>，tab body 仍适合继续按用户、角色、商品、装饰、站点设置拆分。</li>
+<li><code>src/admin/AdminConsole.jsx</code> 已拆出 <code>AdminShell</code> 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。</li>
 </ul>
 <ul>
-<li><code>src/main.jsx</code> 已拆出 API、socket handlers、socket creation helper、character catalog loader、site settings loader、preload screen、room navigation helper、replay opening helper、session helpers，但仍聚合全局弹窗、音频、登录恢复、房间切换和 toast 协调。</li>
+<li><code>src/main.jsx</code> 已拆出 API、socket handlers、socket creation helper、character catalog loader、site settings loader、preload screen、top-level routes、global overlays、room navigation helper、replay opening helper、session helpers、登录恢复 hook 和启动预加载 hook；后续可继续把全局 action handlers 与音频/主题设置编排迁入独立 hook 或 controller。</li>
 </ul>
 <ul>
 <li><code>src/shared/game.js</code> 仍混合规则执行、技能执行、数子和历史兼容转导，继续拆成规则状态机与技能插件会降低新增角色风险。</li>

@@ -1,0 +1,359 @@
+import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) {
+    return "";
+  }
+  seen.add(key);
+
+  const css = readFileSync(url, "utf8");
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
+    return readCssWithImports(new URL(importPath, url), seen);
+  });
+}
+
+const hudCss = readFileSync(new URL("./hud-components.css", import.meta.url), "utf8");
+const themeEntryCss = readFileSync(new URL("./themes.css", import.meta.url), "utf8");
+const themesCss = [
+  readCssWithImports(new URL("./themes.css", import.meta.url)),
+].join("\n");
+const stylesCss = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+
+describe("component-level HUD refinements", () => {
+  it("loads after all existing responsive and modal styles", () => {
+    expect(stylesCss).toContain('@import "./styles/hud-components.css";');
+    expect(stylesCss.trim().endsWith('@import "./styles/themes.css";')).toBe(true);
+    expect(themeEntryCss).toContain('@import "./themes/shared.css";');
+    expect(themeEntryCss).toContain('@import "./themes/isolation.css";');
+    expect(themeEntryCss).toContain('@import "./themes/current.css";');
+    expect(themeEntryCss).toContain('@import "./themes/original.css";');
+    expect(themeEntryCss).toContain('@import "./themes/bright-school.css";');
+    expect(stylesCss.indexOf('@import "./styles/mobile-modals.css";')).toBeLessThan(
+      stylesCss.indexOf('@import "./styles/hud-components.css";')
+    );
+    expect(stylesCss.indexOf('@import "./styles/hud-components.css";')).toBeLessThan(
+      stylesCss.indexOf('@import "./styles/themes.css";')
+    );
+    expect(themeEntryCss.indexOf('@import "./themes/shared.css";')).toBeLessThan(
+      themeEntryCss.indexOf('@import "./themes/isolation.css";')
+    );
+    expect(themeEntryCss.indexOf('@import "./themes/isolation.css";')).toBeLessThan(
+      themeEntryCss.indexOf('@import "./themes/current.css";')
+    );
+    expect(themeEntryCss.indexOf('@import "./themes/isolation.css";')).toBeLessThan(
+      themeEntryCss.indexOf('@import "./themes/original.css";')
+    );
+    expect(themeEntryCss.indexOf('@import "./themes/isolation.css";')).toBeLessThan(
+      themeEntryCss.indexOf('@import "./themes/bright-school.css";')
+    );
+  });
+
+  it("rewrites native scrollbars and input surfaces globally", () => {
+    expect(hudCss).toContain("*::-webkit-scrollbar");
+    expect(hudCss).toContain("width: 4px");
+    expect(hudCss).toContain("*::-webkit-scrollbar-track");
+    expect(hudCss).toContain("background: rgba(0, 0, 0, 0.3)");
+    expect(hudCss).toContain("*::-webkit-scrollbar-thumb");
+    expect(hudCss).toContain("background: var(--hud-cyan)");
+    expect(hudCss).toContain("box-shadow: 0 0 8px var(--hud-cyan)");
+    expect(hudCss).toContain("textarea");
+    expect(hudCss).toContain(".message-board-modal textarea");
+    expect(hudCss).toContain("background: var(--hud-bg-deep) !important");
+    expect(hudCss).toContain("border: 1px solid rgba(0, 255, 190, 0.4) !important");
+    expect(hudCss).toContain("outline: none !important");
+    expect(hudCss).toContain("border-color: var(--hud-cyan) !important");
+  });
+
+  it("fixes contrast for settings, auth, lock, decoration, and owned surfaces", () => {
+    expect(hudCss).toContain("html,\nbody");
+    expect(hudCss).toContain(".app-shell");
+    expect(hudCss).toContain("#03070a");
+    expect(hudCss).toContain(".settings-modal-content");
+    expect(hudCss).toContain(".about-panel-block");
+    expect(hudCss).toContain('div[class*="setting"]');
+    expect(hudCss).toContain("background: rgba(6, 18, 26, 0.95) !important");
+    expect(hudCss).toContain(".about-panel-block p");
+    expect(hudCss).toContain("color: #00ffbe !important");
+    expect(hudCss).toContain(".audio-slider-item");
+    expect(hudCss).toContain(".login-card-container");
+    expect(hudCss).toContain(".register-card-container");
+    expect(hudCss).toContain("border: 2px solid #00ffbe !important");
+    expect(hudCss).toContain(".login-submit-btn");
+    expect(hudCss).toContain('button[class*="enter-btn"]');
+    expect(hudCss).toContain("color: #030a10 !important");
+    expect(hudCss).toContain(".lock-character-card");
+    expect(hudCss).toContain("color: #ff4e64 !important");
+    expect(hudCss).toContain(".decoration-applied-box");
+    expect(hudCss).toContain(".store-owned-tag");
+  });
+
+  it("adds the anime pop-tech palette, stickers, soft tabs, and character projection effects", () => {
+    expect(hudCss).toContain("--hud-pink: #ff76a3");
+    expect(hudCss).toContain("--hud-jelly-bg");
+    expect(hudCss).toContain(".home-lobby-status");
+    expect(hudCss).toContain(".house-manual-entry.hologram-entry::before");
+    expect(hudCss).toContain("content: attr(data-hud)");
+    expect(hudCss).toContain("linear-gradient(var(--hud-pink) 0 0) left 10px top 20px");
+    expect(hudCss).toContain(".match-image-entry.hologram-entry::before");
+    expect(hudCss).toContain("poptech-star-twinkle");
+    expect(hudCss).toContain(".match-image-entry.hologram-entry::after");
+    expect(hudCss).toContain("radial-gradient(ellipse at center, rgba(255, 118, 163, 0.34)");
+    expect(hudCss).toContain(".shop-tabs button.active::before");
+    expect(hudCss).toContain("background: var(--hud-pink)");
+    expect(hudCss).toContain("transform: scale(1.03)");
+  });
+
+  it("adds member handbook archive readability overrides", () => {
+    expect(hudCss).toContain(".top-stats-bar .stat > span");
+    expect(hudCss).toContain("font-size: 11px !important");
+    expect(hudCss).toContain(".top-stats-bar .stat strong");
+    expect(hudCss).toContain('font-family: "Chakra Petch", "Courier New", monospace !important');
+    expect(hudCss).toContain("font-size: 22px !important");
+    expect(hudCss).toContain("text-shadow: 0 0 8px rgba(0, 255, 190, 0.4)");
+    expect(hudCss).toContain(".character-grid-container");
+    expect(hudCss).toContain("border-right: none !important");
+    expect(hudCss).toContain(".character-grid-container::-webkit-scrollbar");
+    expect(hudCss).toContain("width: 3px");
+    expect(hudCss).toContain(".decorations-section");
+    expect(hudCss).toContain("background: rgba(5, 12, 19, 0.75) !important");
+    expect(hudCss).toContain("border: 1px dashed rgba(0, 255, 190, 0.3) !important");
+    expect(hudCss).toContain(".character-details-modal");
+    expect(hudCss).toContain("background: rgba(4, 9, 14, 0.98) !important");
+    expect(hudCss).toContain(".character-details-modal .skill-title-row strong");
+    expect(hudCss).toContain(".character-details-modal .acquisition-method strong");
+    expect(hudCss).toContain("font-weight: bold !important");
+  });
+
+  it("turns the home art entries into transparent hologram projections", () => {
+    const entryBlock = hudCss.match(/\.home-image-entry\.hologram-entry,[\s\S]+?\.home-image-entry\.hologram-entry:focus-visible\s*\{[^}]+\}/)?.[0] ?? "";
+    const platformBlock = hudCss.match(/\.home-image-entry\.hologram-entry::after\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(entryBlock).toContain("border: 0 !important");
+    expect(entryBlock).toContain("background: transparent !important");
+    expect(entryBlock).toContain("box-shadow: none !important");
+    expect(entryBlock).toContain("clip-path: none");
+    expect(platformBlock).toContain('content: ""');
+    expect(platformBlock).toContain("height: 20px");
+    expect(platformBlock).toContain("linear-gradient(to top, rgba(0, 255, 190, 0.1), transparent)");
+    expect(platformBlock).toContain("clip-path: polygon(12% 0, 88% 0, 100% 100%, 0 100%)");
+    expect(platformBlock).toContain("transform: skewX(-14deg)");
+  });
+
+  it("upgrades character detail and sortie labels without JSX behavior changes", () => {
+    expect(hudCss).toContain(".deploy-tag,");
+    expect(hudCss).toContain(".character-card.portrait-card:not(.is-deployed):not(.locked)::after");
+    expect(hudCss).toContain('content: "READY (｡•̀ᴗ-)✧"');
+    expect(hudCss).toContain("background: transparent !important");
+    expect(hudCss).toContain("clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%)");
+    expect(hudCss).toContain(".character-detail,");
+    expect(hudCss).toContain("rgba(5, 15, 22, 0.95)");
+    expect(hudCss).toContain(".character-detail .close-button::before");
+    expect(hudCss).toContain(".character-detail .close-button::after");
+    expect(hudCss).toContain("background: var(--hud-cyan)");
+  });
+
+  it("hardens shop, warehouse, and friends nested controls", () => {
+    expect(hudCss).toContain(".shop-pagination button");
+    expect(hudCss).toContain("border-radius: 0 !important");
+    expect(hudCss).toContain("clip-path: none !important");
+    expect(hudCss).toContain(".shop-pagination button.active::before");
+    expect(hudCss).toContain("left top / 10px 2px no-repeat");
+    expect(hudCss).toContain(".shop-item.owned::before");
+    expect(hudCss).toContain('content: "已拥有"');
+    expect(hudCss).toContain("transform: skewX(-15deg)");
+    expect(hudCss).toContain(".warehouse-item,");
+    expect(hudCss).toContain("rgba(5, 15, 22, 0.78) !important");
+    expect(hudCss).toContain(".friend-action-row");
+    expect(hudCss).toContain("background: rgba(10, 25, 30, 0.9) !important");
+    expect(hudCss).toContain(".friend-action-row button");
+    expect(hudCss).toContain("padding: 8px 16px");
+    expect(hudCss).toContain("color: #ffffff !important");
+  });
+
+  it("loads the player theme layer after HUD styles and restores original surfaces", () => {
+    expect(stylesCss.trim().endsWith('@import "./styles/themes.css";')).toBe(true);
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-current");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-original");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school");
+    expect(themesCss).toContain("--theme-bg: #fff8fb");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-original .auth-panel");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-original .home-top-strip");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-original .room-header");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-original .shop-item");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-original .leaderboard-row");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-original .board-stage");
+    expect(themesCss).toContain("clip-path: none !important");
+    expect(themesCss).toContain("backdrop-filter: none !important");
+  });
+
+  it("provides a reusable non-current theme isolation layer for future skins", () => {
+    expect(themesCss).toContain("Player theme isolation layer.");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled:not(.theme-current)");
+    expect(themesCss).toContain("--theme-isolation-bg");
+    expect(themesCss).toContain(":where(\n  .auth-panel");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled:not(.theme-current) :where(\n  .home-terminal-screen");
+    expect(themesCss).toContain("content: none !important");
+    expect(themesCss).toContain("clip-path: none !important");
+    expect(themesCss).toContain("backdrop-filter: none !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled:not(.theme-current) :where(\n  button");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled:not(.theme-current) :where(\n  input:not([type=\"checkbox\"]):not([type=\"radio\"]):not([type=\"range\"]):not([type=\"color\"])");
+
+    const isolationCss = readFileSync(new URL("./themes/isolation.css", import.meta.url), "utf8");
+    expect(isolationCss).not.toContain("theme-bright-school");
+    expect(isolationCss).not.toContain("theme-original");
+    expect(isolationCss).not.toContain("admin-theme-isolated");
+    expect(isolationCss).not.toContain("\n.shop-item");
+    expect(isolationCss).not.toContain("\n.player-info");
+  });
+
+  it("adds a scoped Bright School theme without leaking into other themes", () => {
+    expect(themesCss).toContain("--theme-bg: #fffbf2");
+    expect(themesCss).toContain("--theme-paper-grid");
+    expect(themesCss).toContain("--theme-border: #4a3736");
+    expect(themesCss).toContain("--theme-radius: 16px");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .home-image-entry");
+    expect(themesCss).toContain("border: 3px solid #4a3736 !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry");
+    expect(themesCss).toContain("transform: scale(1.05) translateY(-3px) !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .player-info");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .chat-box");
+    expect(themesCss).toContain("background-size: 15px 15px !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .character-grid-container");
+    expect(themesCss).toContain("border-right: none !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .decorations-section");
+    expect(themesCss).toContain("border: 2px dashed #4a3736 !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .character-details-modal");
+    expect(themesCss).toContain("background: #ffffff !important");
+    expect(themesCss).toContain("color: #ff9ebb !important");
+  });
+
+  it("adds a high-specificity Bright School contrast purge", () => {
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school");
+    expect(themesCss).toContain("color: #3d2b25 !important");
+    expect(themesCss).toContain("font-weight: bold !important");
+    expect(themesCss).toContain("text-shadow: none !important");
+    expect(themesCss).toContain("border: 3px solid #3d2b25 !important");
+    expect(themesCss).toContain("box-shadow: 4px 4px 0 #3d2b25 !important");
+    expect(themesCss).toContain("input::placeholder");
+    expect(themesCss).toContain("background-color: #fff0f6 !important");
+    expect(themesCss).toContain("border: 2px dashed #3d2b25 !important");
+    expect(themesCss).toContain("border-right: none !important");
+    expect(themesCss).toContain(".theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:nth-child(2n)");
+    expect(themesCss).toContain("background: #ffffff !important");
+    expect(themesCss).toContain(".theme-bright-school.theme-bright-school .settings-tabs button.active");
+    expect(themesCss).toContain("background: #ff9ebb !important");
+  });
+
+  it("adds static-gallery parity polish for all player themes", () => {
+    expect(themesCss).toContain("/* Static gallery parity polish.");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-current:has(.home-screen)");
+    expect(themesCss).toContain('url("/assets/home/multipurpose-classroom-bg.webp") center / cover fixed');
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-current .home-grid-featured > .home-utility-grid .utility-entry");
+    expect(themesCss).toContain("background: linear-gradient(90deg, #00ffbe, #ff76a3) !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-original:has(.home-screen)");
+    expect(themesCss).toContain("background: linear-gradient(135deg, #fff8fb, #edf7ff 50%, #fffaf1) !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-original .profile-grid .stat");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .home-image-entry");
+    expect(themesCss).toContain("filter: drop-shadow(0 14px 20px rgba(61, 43, 37, 0.22)) !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover");
+    expect(themesCss).toContain("background-size: 15px 15px !important");
+  });
+
+  it("keeps the Bright School purge layer scoped against tech-HUD bleed-through", () => {
+    expect(themesCss).toContain("BRIGHT SCHOOL THEME - RADICAL CONTRAST & PURGE LAYER");
+    expect(themesCss).toContain("Bright School final firewall.");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .home-top-strip .icon-button");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .utility-entry > *");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .board-stage::before");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .player-info::before");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .action-bar button::before");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.home-screen)::before");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .small-modal::before");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry::before");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip::after");
+    expect(themesCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school [class*="panel"]');
+    expect(themesCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school [class*="card"]::before');
+    expect(themesCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school [class*="dock"]::after');
+    expect(themesCss).toContain("content: none !important");
+    expect(themesCss).toContain("backdrop-filter: none !important");
+    expect(themesCss).toContain("transform: none !important");
+    expect(themesCss).toContain("clip-path: none !important");
+    expect(themesCss).toContain("--bright-shadow: 4px 4px 0 #3d2b25");
+    expect(themesCss).toContain("box-shadow: 3px 3px 0px #4a3736 !important");
+
+    const finalFirewall = themesCss.slice(themesCss.indexOf("Bright School final firewall."));
+    expect(finalFirewall).not.toContain("theme-current");
+    expect(finalFirewall).not.toContain("theme-original");
+    expect(finalFirewall).not.toContain("\n.shop-item");
+    expect(finalFirewall).not.toContain("\n.player-info");
+  });
+
+  it("restores Bright School component details after the generic firewall", () => {
+    expect(themesCss).toContain("Bright School component repair layer.");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::-webkit-scrollbar-thumb");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > img");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-decoration .stone-decoration-preview");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid");
+    expect(themesCss).toContain("grid-template-columns: repeat(5, minmax(0, 1fr)) !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-art img");
+    expect(themesCss).toContain("filter: drop-shadow(16px 18px 0 rgba(31, 22, 18, 0.32)) !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .point:not(.black):not(.white):not(.erased)::after");
+    expect(themesCss).toContain("background: rgba(222, 234, 202, 0.84) !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip");
+    expect(themesCss).toContain("background: linear-gradient(135deg, #ffe0ec, #d9f1eb 48%, #fff6dd) !important");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-code-label");
+  });
+
+  it("adds a Bright School UI/UX audit guard for clarity, overflow, and future skins", () => {
+    expect(themesCss).toContain("Bright School UI/UX Pro Max audit layer.");
+    expect(themesCss).toContain("box-sizing: border-box !important");
+    expect(themesCss).toContain("-webkit-font-smoothing: antialiased !important");
+    expect(themesCss).toContain("text-rendering: optimizeLegibility !important");
+    expect(themesCss).toContain("overflow-x: clip !important");
+    expect(themesCss).toContain("@supports not (overflow: clip)");
+    expect(themesCss).toContain("touch-action: manipulation !important");
+    expect(themesCss).toContain("min-height: 44px !important");
+    expect(themesCss).toContain("outline: 3px solid #ff9ebb !important");
+    expect(themesCss).toContain("scrollbar-gutter: stable both-edges !important");
+    expect(themesCss).toContain("font-variant-numeric: tabular-nums !important");
+    expect(themesCss).toContain("grid-template-columns: minmax(170px, 220px) minmax(0, 1fr) !important");
+    expect(themesCss).toContain("grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important");
+    expect(themesCss).toContain("width: min(var(--board-size), 92vw) !important");
+    expect(themesCss).toContain("background: #ffdfeb !important");
+    expect(themesCss).toContain("@media (max-width: 800px)");
+
+    const auditLayer = themesCss.slice(themesCss.indexOf("Bright School UI/UX Pro Max audit layer."));
+    expect(auditLayer).not.toContain("theme-current");
+    expect(auditLayer).not.toContain("theme-original");
+    expect(auditLayer).not.toContain("admin-theme-isolated");
+    expect(auditLayer).not.toContain("\n.shop-item");
+    expect(auditLayer).not.toContain("\n.player-info");
+  });
+
+  it("adds a calmer Bright School visual refinement pass", () => {
+    expect(themesCss).toContain("Bright School visual refinement layer.");
+    expect(themesCss).toContain("--bright-shadow-soft: 4px 5px 0 rgba(61, 43, 37, 0.82)");
+    expect(themesCss).toContain("--bright-shadow-lift: 7px 8px 0 rgba(61, 43, 37, 0.86), 0 14px 28px rgba(255, 158, 187, 0.2)");
+    expect(themesCss).toContain("background: var(--bright-pink) !important");
+    expect(themesCss).toContain("color: var(--bright-ink) !important");
+    expect(themesCss).toContain("background-image: none !important");
+    expect(themesCss).toContain("scrollbar-color: rgba(213, 140, 171, 0.9) transparent !important");
+    expect(themesCss).toContain("filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.2)) drop-shadow(0 10px 18px rgba(255, 158, 187, 0.2)) !important");
+    expect(themesCss).toContain("transition:\n    transform 160ms ease-out");
+    expect(themesCss).toContain("transform: translateY(-2px) scale(1.02) !important");
+    expect(themesCss).toContain("transform: translateY(1px) scale(0.98) !important");
+    expect(themesCss).toContain("#edf0d7");
+    expect(themesCss).toContain("@media (prefers-reduced-motion: reduce)");
+
+    const visualRefinement = themesCss.slice(themesCss.indexOf("Bright School visual refinement layer."));
+    expect(visualRefinement).not.toContain("theme-current");
+    expect(visualRefinement).not.toContain("theme-original");
+    expect(visualRefinement).not.toContain("admin-theme-isolated");
+  });
+});

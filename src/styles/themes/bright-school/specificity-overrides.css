@@ -1,0 +1,145 @@
+/* ==========================================================================
+   BRIGHT SCHOOL THEME - HIGHER SPECIFICITY OVERRIDES (明亮校园风高权重覆盖层)
+   ========================================================================== */
+
+/* 1. 彻底清空可能残留的旧发光特效与背景滤镜 */
+.app-shell.player-theme-enabled.theme-bright-school,
+.app-shell.player-theme-enabled.theme-bright-school * {
+  text-shadow: none !important;
+  box-shadow: none; /* 先清除默认，下方统一对容器施加手账硬阴影 */
+}
+
+/* 2. 强制覆盖所有通用弹窗、面板、Header 基础骨架的外观 */
+.app-shell.player-theme-enabled.theme-bright-school .auth-panel,
+.app-shell.player-theme-enabled.theme-bright-school .asset-preload-panel,
+.app-shell.player-theme-enabled.theme-bright-school .home-top-strip,
+.app-shell.player-theme-enabled.theme-bright-school .home-player-plaque,
+.app-shell.player-theme-enabled.theme-bright-school .room-header,
+.app-shell.player-theme-enabled.theme-bright-school .player-info,
+.app-shell.player-theme-enabled.theme-bright-school .chat-box,
+.app-shell.player-theme-enabled.theme-bright-school .room-people,
+.app-shell.player-theme-enabled.theme-bright-school .operation-hint,
+.app-shell.player-theme-enabled.theme-bright-school .small-modal,
+.app-shell.player-theme-enabled.theme-bright-school .shop-modal,
+.app-shell.player-theme-enabled.theme-bright-school .house-modal,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-modal,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-modal,
+.app-shell.player-theme-enabled.theme-bright-school .friends-modal,
+.app-shell.player-theme-enabled.theme-bright-school .confirm-modal,
+.app-shell.player-theme-enabled.theme-bright-school .result-modal,
+.app-shell.player-theme-enabled.theme-bright-school .settings-modal,
+.app-shell.player-theme-enabled.theme-bright-school .nested-modal {
+  background-color: #fffbf2 !important;
+  background-image: var(--theme-paper-grid) !important;
+  background-size: 20px 20px !important;
+  border: 3px solid #4a3736 !important;
+  border-radius: 16px !important;
+  box-shadow: 5px 5px 0px #4a3736 !important;
+  color: #4a3736 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 3. 强行清洗被 hud-components 锁死的所有输入框、文本域与留言板大白块 */
+.app-shell.player-theme-enabled.theme-bright-school input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+.app-shell.player-theme-enabled.theme-bright-school textarea,
+.app-shell.player-theme-enabled.theme-bright-school .message-board-modal textarea,
+.app-shell.player-theme-enabled.theme-bright-school .friend-search input {
+  background: #ffffff !important;
+  color: #4a3736 !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 10px !important;
+  box-shadow: 3px 3px 0px #4a3736 !important;
+  padding: 10px 14px !important;
+  outline: none !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school input:focus,
+.app-shell.player-theme-enabled.theme-bright-school textarea:focus {
+  border-color: #ff9ebb !important;
+  box-shadow: 3px 3px 0px #4a3736, 0 0 8px rgba(255, 158, 187, 0.4) !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school input::placeholder,
+.app-shell.player-theme-enabled.theme-bright-school textarea::placeholder {
+  color: rgba(74, 55, 54, 0.42) !important;
+}
+
+/* 4. 强行清洗系统设置面板、音量滑动条残留的科技风大黑块 */
+.app-shell.player-theme-enabled.theme-bright-school .settings-modal-content,
+.app-shell.player-theme-enabled.theme-bright-school .about-panel-block,
+.app-shell.player-theme-enabled.theme-bright-school div[class*="about"],
+.app-shell.player-theme-enabled.theme-bright-school div[class*="setting"] {
+  background-color: #fffbf2 !important;
+  background-image: var(--theme-paper-grid) !important;
+  background-size: 20px 20px !important;
+  color: #4a3736 !important;
+  border-radius: 12px !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .about-panel-block text,
+.app-shell.player-theme-enabled.theme-bright-school .about-panel-block p,
+.app-shell.player-theme-enabled.theme-bright-school div[class*="about"] p {
+  color: #4a3736 !important;
+  text-shadow: none !important;
+  font-weight: bold !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school div[class*="volume-row"],
+.app-shell.player-theme-enabled.theme-bright-school .audio-slider-item {
+  background: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  color: #4a3736 !important;
+  box-shadow: 3px 3px 0px #4a3736 !important;
+  border-radius: 8px !important;
+}
+
+/* 5. 解决部员手册二级窗口【角色详情】看不清技能名与途径的问题 */
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal,
+.app-shell.player-theme-enabled.theme-bright-school div[class*="details-modal"] {
+  background: #ffffff !important;
+  color: #4a3736 !important;
+  border: 3px solid #4a3736 !important;
+  box-shadow: 5px 5px 0px #4a3736 !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal p,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal span,
+.app-shell.player-theme-enabled.theme-bright-school .skill-description-text {
+  color: #4a3736 !important;
+  font-weight: 500 !important;
+}
+/* 将详情面板里的“技能名：”、“获得途径：”等引导标签加粗高亮为樱花粉，制造清晰的视觉对比 */
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal h2,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal h3,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal h4,
+.app-shell.player-theme-enabled.theme-bright-school .detail-label,
+.app-shell.player-theme-enabled.theme-bright-school span[class*="label"] {
+  color: #ff6f86 !important;
+  font-weight: 900 !important;
+}
+
+/* 6. 按钮组件样式标准化修正（剔除任何发光继承，落实贴纸按键质感） */
+.app-shell.player-theme-enabled.theme-bright-school .primary-action,
+.app-shell.player-theme-enabled.theme-bright-school .login-submit-btn,
+.app-shell.player-theme-enabled.theme-bright-school .skill-action,
+.app-shell.player-theme-enabled.theme-bright-school .settings-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school .shop-tabs button.active {
+  background: #ff9ebb !important;
+  color: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  box-shadow: 3px 3px 0px #4a3736 !important;
+  border-radius: 12px !important;
+  font-weight: 900 !important;
+}
+
+/* 7. 自定义极细巧克力色调手账滚动条，洗掉原生大灰条 */
+.app-shell.player-theme-enabled.theme-bright-school *::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school *::-webkit-scrollbar-track {
+  background: rgba(74, 55, 54, 0.04) !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school *::-webkit-scrollbar-thumb {
+  background: #ff9ebb !important;
+  border-radius: 10px !important;
+  border: 1px solid #4a3736 !important;
+}
+
+/* Gemini bright school anti-tech-bleed purge addendum. */

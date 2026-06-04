@@ -38,6 +38,20 @@ describe("ShopModal helpers", () => {
     expect(html).not.toContain("shop-header-display");
   });
 
+  it("adds category hooks for tactical rarity glow styling", () => {
+    const source = readFileSync(new URL("./shop/ShopItemCard.jsx", import.meta.url), "utf8");
+    const html = renderToStaticMarkup(createElement(ShopModal, {
+      token: "token",
+      user: { coins: 90610, ownedCharacters: [], ownedDecorations: [] },
+      onPurchased: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("shop-category-character");
+    expect(source).toContain("store-owned-tag");
+    expect(source).toContain("shop-item-empty terminal-locked-slot");
+  });
+
   it("keeps a stable 8-slot grid for the active category", () => {
     const items = [
       { id: "character-1", category: "character" },
@@ -129,5 +143,16 @@ describe("ShopModal helpers", () => {
     expect(originalPriceBlock).toContain("right: 0");
     expect(originalPriceBlock).toContain("color: #df3f4f");
     expect(originalPriceBlock).toContain("font-size: 12px");
+  });
+
+  it("defines the shared Startorch tactical terminal modal system", () => {
+    const modalCss = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8");
+
+    expect(modalCss).toContain("--terminal-bg: rgba(12, 22, 29, 0.85)");
+    expect(modalCss).toContain("--terminal-cyan: #00ffbe");
+    expect(modalCss).toContain("--terminal-blue: #00bfff");
+    expect(modalCss).toContain("--terminal-text: #e0f7f4");
+    expect(modalCss).toContain("backdrop-filter: blur(12px)");
+    expect(modalCss).toContain("clip-path: polygon");
   });
 });

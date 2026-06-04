@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+import { leaderboardRankClass } from "./LeaderboardModal.jsx";
 
 describe("LeaderboardModal layout", () => {
+  it("exposes tactical rank classes for top-three leaderboard badges", () => {
+    expect(leaderboardRankClass(1)).toBe("top-rank rank-1");
+    expect(leaderboardRankClass(2)).toBe("top-rank rank-2");
+    expect(leaderboardRankClass(3)).toBe("top-rank rank-3");
+    expect(leaderboardRankClass(4)).toBe("");
+  });
+
   it("keeps column headings aligned with scrollable player rows", () => {
     const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
     const tableBlock = css.match(/\.leaderboard-table\s*\{[^}]+\}/)?.[0] ?? "";

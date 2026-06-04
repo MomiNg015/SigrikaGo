@@ -503,32 +503,6 @@
     grid-column: 2;
   }
 
-  .mobile-room-screen .decision-bar.result-review-decision {
-    max-height: var(--mobile-room-dock-panel-height);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) auto;
-    align-items: stretch;
-    overflow: hidden;
-  }
-
-  .mobile-room-screen .decision-bar.result-review-decision .decision-copy {
-    min-height: 0;
-    overflow: auto;
-    padding-right: 2px;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-
-  .mobile-room-screen .decision-bar.result-review-decision .decision-actions {
-    position: sticky;
-    bottom: 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
-    padding-top: 5px;
-    background: rgba(255, 255, 255, 0.92);
-  }
 }
 
 @media (max-width: 340px) and (orientation: portrait) {
