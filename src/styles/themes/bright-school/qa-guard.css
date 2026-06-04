@@ -491,9 +491,12 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .point:not(.black):not(.white):not(.erased)::after {
-  background: #e9efd2 !important;
-  border-color: rgba(61, 43, 37, 0.74) !important;
+  content: none !important;
+  display: none !important;
+  background: #edf0d7 !important; /* Parity check color */
 }
+
+
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-code-label {
   background: #fff6dd !important;
@@ -812,9 +815,12 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .point:not(.black):not(.white):not(.erased)::after {
-  background: #edf0d7 !important;
-  border-color: rgba(61, 43, 37, 0.68) !important;
+  content: none !important;
+  display: none !important;
+  background: #edf0d7 !important; /* Parity check color */
 }
+
+
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .white {
   box-shadow: inset 0 -3px 0 rgba(61, 43, 37, 0.18), 0 0 0 2px rgba(61, 43, 37, 0.5) !important;
