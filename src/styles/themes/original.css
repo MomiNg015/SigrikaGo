@@ -554,12 +554,12 @@
 }
 
 /* 立体云子黑白子 */
-.app-shell.player-theme-enabled.theme-original .black .stone {
+.app-shell.player-theme-enabled.theme-original .black .stone:not(.decorated-stone) {
   background: radial-gradient(circle at 30% 25%, #3a383d 0%, #0c0b0e 75%, #000000 100%) !important;
   box-shadow: inset -3px -4px 8px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(45, 29, 18, 0.35) !important;
 }
 
-.app-shell.player-theme-enabled.theme-original .white .stone {
+.app-shell.player-theme-enabled.theme-original .white .stone:not(.decorated-stone) {
   background: radial-gradient(circle at 35% 25%, #ffffff 0%, #f6f5f7 35%, #e1e2e6 80%, #cfd2d8 100%) !important;
   box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(45, 29, 18, 0.28), 0 0 0 1px rgba(128, 102, 142, 0.18) !important;
 }
