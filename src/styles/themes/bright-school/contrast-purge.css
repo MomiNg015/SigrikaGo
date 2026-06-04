@@ -60,7 +60,8 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .audio-slider-item,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="about"],
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="setting"],
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="volume-row"] {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="volume-row"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-bar {
   background-color: #ffffff !important;
   background-image: none !important;
   color: #3d2b25 !important;
@@ -95,7 +96,9 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .login-submit-btn,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-action,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button[class*="enter-btn"],
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="submit-btn"] {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="submit-btn"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-bar button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .exit-action {
   background-color: #ffffff !important;
   background-image: none !important;
   color: #3d2b25 !important;

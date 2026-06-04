@@ -1,4 +1,4 @@
-﻿/* Original style restore pass */
+/* Original style restore pass */
 .app-shell.player-theme-enabled.theme-original {
   background:
     linear-gradient(135deg, rgba(255, 232, 238, 0.9), rgba(238, 247, 255, 0.96)),
@@ -445,4 +445,62 @@
   border: 1px solid rgba(138, 112, 154, 0.28) !important;
   border-radius: 12px !important;
   box-shadow: inset 0 2px 8px rgba(77, 62, 91, 0.05) !important;
+}
+
+/* Replay bar and action extensions */
+.app-shell.player-theme-enabled.theme-original .replay-bar {
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #403847 !important;
+  border: 1px solid rgba(138, 112, 154, 0.24) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 18px 46px rgba(77, 62, 91, 0.16) !important;
+  clip-path: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-original .replay-bar button,
+.app-shell.player-theme-enabled.theme-original .action-bar .exit-action {
+  background: #ffffff !important;
+  color: #403847 !important;
+  border: 1px solid rgba(138, 112, 154, 0.24) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 10px 24px rgba(77, 62, 91, 0.12) !important;
+  clip-path: none !important;
+  text-shadow: none !important;
+  font-weight: 800 !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-original .replay-bar button:not(:disabled):hover,
+.app-shell.player-theme-enabled.theme-original .replay-bar button:not(:disabled):focus-visible,
+.app-shell.player-theme-enabled.theme-original .action-bar .exit-action:not(:disabled):hover,
+.app-shell.player-theme-enabled.theme-original .action-bar .exit-action:not(:disabled):focus-visible {
+  transform: translateY(-2px) !important;
+  border-color: rgba(93, 127, 232, 0.28) !important;
+  box-shadow: 0 12px 30px rgba(77, 62, 91, 0.15) !important;
+}
+
+.app-shell.player-theme-enabled.theme-original .replay-step-indicator {
+  background: #ffffff !important;
+  border: 1px solid rgba(138, 112, 154, 0.22) !important;
+  border-radius: 14px !important;
+  color: #403847 !important;
+  box-shadow: 0 8px 20px rgba(77, 62, 91, 0.08) !important;
+}
+
+/* Timer and text clarity overrides */
+.app-shell.player-theme-enabled.theme-original .timer-label,
+.app-shell.player-theme-enabled.theme-original .timer-periods {
+  color: #2d2430 !important;
+  text-shadow: none !important;
+}
+
+/* Skill notification style adjustments */
+.app-shell.player-theme-enabled.theme-original .chat-log .system.skill {
+  background: linear-gradient(90deg, rgba(93, 127, 232, 0.08), rgba(58, 160, 111, 0.08)) !important;
+  border: 1px dashed rgba(138, 112, 154, 0.22) !important;
+  border-radius: 8px !important;
+  color: #403847 !important;
+  box-shadow: none !important;
 }

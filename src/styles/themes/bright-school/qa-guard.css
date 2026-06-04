@@ -157,7 +157,9 @@
   .leaderboard-row > span,
   .leaderboard-row strong,
   .shop-price,
-  .price
+  .price,
+  .timer-label,
+  .timer-periods
 ) {
   font-family: "Arial Rounded MT Bold", "Nunito", "Microsoft YaHei UI", system-ui, sans-serif !important;
   font-variant-numeric: tabular-nums !important;

@@ -63,7 +63,8 @@
   .message-board-modal,
   .nested-modal,
   .character-target-modal,
-  .room-floating-modal
+  .room-floating-modal,
+  .replay-bar
 ) {
   background-color: var(--theme-isolation-bg) !important;
   color: var(--theme-isolation-text) !important;
@@ -117,7 +118,8 @@
   .skill-chip,
   .action-bar button,
   .decision-actions button,
-  .replay-bar button
+  .replay-bar button,
+  .exit-action
 )::before,
 .app-shell.player-theme-enabled:not(.theme-current) :where(
   .home-terminal-screen,
@@ -158,7 +160,8 @@
   .skill-chip,
   .action-bar button,
   .decision-actions button,
-  .replay-bar button
+  .replay-bar button,
+  .exit-action
 )::after {
   content: none !important;
   display: none !important;
@@ -184,7 +187,9 @@
   .shop-pagination button,
   .settings-tabs button,
   .shop-tabs button,
-  .friends-tabs button
+  .friends-tabs button,
+  .replay-bar button,
+  .exit-action
 ) {
   clip-path: none !important;
   filter: none !important;
@@ -202,7 +207,9 @@
   .home-lobby-status,
   .rank-tag,
   .rating-tag,
-  .meta-tag
+  .meta-tag,
+  .timer-label,
+  .timer-periods
 ) {
   color: var(--theme-isolation-text) !important;
   text-shadow: none !important;

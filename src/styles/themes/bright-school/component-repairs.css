@@ -523,3 +523,12 @@
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 }
+
+/* Skill notification style adjustments for notebook theme */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-log .system.skill {
+  background: linear-gradient(90deg, rgba(255, 158, 187, 0.15), rgba(154, 211, 222, 0.15)) !important;
+  border: 2px dashed var(--bright-border) !important;
+  border-radius: 10px !important;
+  color: var(--bright-ink) !important;
+  box-shadow: none !important;
+}
