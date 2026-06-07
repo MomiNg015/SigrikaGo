@@ -1,0 +1,227 @@
+/* Bright School isolation layer.
+   The single player skin starts from a neutral canvas so terminal-only rules from
+   base/home-terminal/room-terminal/hud-components cannot bleed into it. */
+.app-shell.player-theme-enabled.theme-bright-school {
+  --theme-isolation-bg: var(--theme-panel-bg, #ffffff);
+  --theme-isolation-text: var(--theme-text, #2d2430);
+  --theme-isolation-border: var(--theme-border, rgba(128, 102, 142, 0.2));
+  --theme-isolation-radius: var(--theme-radius, 8px);
+  --theme-isolation-shadow: var(--theme-glow, 0 18px 48px rgba(72, 44, 86, 0.12));
+  color: var(--theme-isolation-text);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school,
+.app-shell.player-theme-enabled.theme-bright-school :where(
+  .auth-screen,
+  .asset-preload-screen,
+  .home-screen,
+  .room-screen,
+  .modal-backdrop,
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .nested-modal,
+  .room-floating-modal,
+  .character-target-modal
+) {
+  color: var(--theme-isolation-text) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school :where(
+  .auth-panel,
+  .asset-preload-panel,
+  .home-top-strip,
+  .home-player-plaque,
+  .home-image-entry,
+  .utility-entry,
+  .room-header,
+  .player-info,
+  .chat-box,
+  .chat-log,
+  .room-people,
+  .operation-hint,
+  .decision-bar,
+  .action-bar,
+  .test-tools,
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .message-board-modal,
+  .nested-modal,
+  .character-target-modal,
+  .room-floating-modal,
+  .replay-bar
+) {
+  background-color: var(--theme-isolation-bg) !important;
+  color: var(--theme-isolation-text) !important;
+  border-color: var(--theme-isolation-border) !important;
+  border-radius: var(--theme-isolation-radius) !important;
+  box-shadow: var(--theme-isolation-shadow) !important;
+  clip-path: none !important;
+  transform: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school :where(
+  .home-terminal-screen,
+  .home-terminal-main,
+  .home-stage,
+  .battle-layout,
+  .board-column,
+  .board-stage,
+  .modal-backdrop,
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .message-board-modal,
+  .nested-modal,
+  .character-target-modal,
+  .room-floating-modal,
+  .home-top-strip,
+  .home-player-plaque,
+  .home-image-entry,
+  .utility-entry,
+  .shop-sidebar,
+  .shop-mascot-bubble,
+  .shop-item,
+  .warehouse-item,
+  .leaderboard-row,
+  .leaderboard-current,
+  .friend-row,
+  .watch-room-row,
+  .character-card,
+  .character-detail,
+  .player-info,
+  .skill-chip,
+  .action-bar button,
+  .decision-actions button,
+  .replay-bar button,
+  .exit-action
+)::before,
+.app-shell.player-theme-enabled.theme-bright-school :where(
+  .home-terminal-screen,
+  .home-terminal-main,
+  .home-stage,
+  .battle-layout,
+  .board-column,
+  .board-stage,
+  .modal-backdrop,
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .message-board-modal,
+  .nested-modal,
+  .character-target-modal,
+  .room-floating-modal,
+  .home-top-strip,
+  .home-player-plaque,
+  .home-image-entry,
+  .utility-entry,
+  .shop-sidebar,
+  .shop-mascot-bubble,
+  .shop-item,
+  .warehouse-item,
+  .leaderboard-row,
+  .leaderboard-current,
+  .friend-row,
+  .watch-room-row,
+  .character-card,
+  .character-detail,
+  .player-info,
+  .skill-chip,
+  .action-bar button,
+  .decision-actions button,
+  .replay-bar button,
+  .exit-action
+)::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school :where(
+  button,
+  input,
+  textarea,
+  select,
+  .icon-button,
+  .theme-choice-button,
+  .primary-action,
+  .login-submit-btn,
+  .skill-action,
+  .skill-chip,
+  .shop-pagination button,
+  .settings-tabs button,
+  .shop-tabs button,
+  .friends-tabs button,
+  .replay-bar button,
+  .exit-action
+) {
+  clip-path: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school :where(
+  .home-brand-title,
+  .timer-primary,
+  .timer-digits,
+  .clock-digits,
+  .top-stats-bar .stat strong,
+  .room-code-label,
+  .home-online-tag,
+  .home-lobby-status,
+  .rank-tag,
+  .rating-tag,
+  .meta-tag,
+  .timer-label,
+  .timer-periods
+) {
+  color: var(--theme-isolation-text) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  textarea,
+  select
+) {
+  background: var(--theme-isolation-bg) !important;
+  color: var(--theme-isolation-text) !important;
+  border-color: var(--theme-isolation-border) !important;
+  box-shadow: none !important;
+  outline-color: var(--theme-isolation-border) !important;
+}

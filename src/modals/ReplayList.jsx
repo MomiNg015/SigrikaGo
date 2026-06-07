@@ -1,6 +1,8 @@
 import { findCharacter } from "../shared/characterDisplay.js";
+import { COLORS } from "../shared/game.js";
+import { recordWinnerColor } from "../shared/gameRecords.js";
 
-export function ReplayList({ records = [], characters, onOpenReplay, compact = false }) {
+export function ReplayList({ records = [], characters, onOpenReplay, compact = false, currentUser = null }) {
   if (records.length === 0) return <p className="quiet-text">暂无已结束的对局记录。</p>;
 
   return (
@@ -12,15 +14,18 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
         <span>结果</span>
         <span>手数</span>
       </div>
-      {records.map((record) => (
-        <button className="replay-table-row" key={record.id} type="button" onClick={() => onOpenReplay?.(record.id)}>
+      {records.map((record) => {
+        const outcome = replayOutcomeForUser(record, currentUser);
+        return (
+        <button className={`replay-table-row ${outcome ? `outcome-${outcome}` : ""}`} key={record.id} type="button" onClick={() => onOpenReplay?.(record.id)}>
           <span>{formatReplayTime(record.createdAt)}</span>
           <ReplayPlayer name={record.blackName} characterId={record.blackCharacter} characters={characters} />
           <ReplayPlayer name={record.whiteName} characterId={record.whiteCharacter} characters={characters} />
           <span>{record.resultText}</span>
           <span>{record.moveCount}手</span>
         </button>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -44,4 +49,22 @@ function formatReplayTime(value) {
     minute: "2-digit",
     hour12: false
   });
+}
+
+export function replayOutcomeForUser(record = {}, user = null) {
+  const playerColor = replayColorForUser(record, user);
+  if (!playerColor) return "";
+  const winnerColor = recordWinnerColor(record);
+  if (!winnerColor) return "draw";
+  return winnerColor === playerColor ? "win" : "loss";
+}
+
+function replayColorForUser(record, user) {
+  const userId = user?.id == null ? "" : String(user.id);
+  const username = user?.username ?? "";
+  if (userId && String(record.blackUserId ?? "") === userId) return COLORS.black;
+  if (userId && String(record.whiteUserId ?? "") === userId) return COLORS.white;
+  if (username && record.blackName === username) return COLORS.black;
+  if (username && record.whiteName === username) return COLORS.white;
+  return "";
 }

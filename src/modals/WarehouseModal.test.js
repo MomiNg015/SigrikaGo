@@ -70,4 +70,26 @@ describe("WarehouseModal candy feedback", () => {
     expect(html).toContain("/assets/characters/denia_color.webp");
     expect(html).not.toContain("/assets/Danea_centered.webp");
   });
+
+  it("adds terminal item category hooks for inventory card glow styling", () => {
+    const html = renderToStaticMarkup(createElement(WarehouseModal, {
+      token: "token",
+      user: { ownedCharacters: ["sigrika"] },
+      characters: {
+        sigrika: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" }
+      },
+      initialTargetState: {
+        item: { itemId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖", targetType: "character" },
+        characterId: "sigrika",
+        effectText: "糖果效果已同步。",
+        itemEffects: {}
+      },
+      onUserChange: () => {},
+      onNotice: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("warehouse-effect-result");
+    expect(html).toContain("warehouse-item-category-character");
+  });
 });

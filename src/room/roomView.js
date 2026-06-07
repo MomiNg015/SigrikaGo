@@ -71,28 +71,28 @@ export function buildBoardLines(points) {
   const lines = [];
   const center = (value) => ((value + 0.5) / BOARD_SIZE) * 100;
 
-  for (const point of points) {
-    if (!point.valid) continue;
-    const right = `${point.x + 1},${point.y}`;
-    if (point.x < BOARD_SIZE - 1 && valid.has(right)) {
+  for (let y = 0; y < BOARD_SIZE; y += 1) {
+    for (const run of validRuns((x) => valid.has(`${x},${y}`))) {
       lines.push({
-        key: `${point.id}-h`,
-        x1: center(point.x),
-        y1: center(point.y),
-        x2: center(point.x + 1),
-        y2: center(point.y),
-        edge: point.y === 0 || point.y === BOARD_SIZE - 1
+        key: `row-${y}-${run.start}-${run.end}`,
+        x1: center(run.start),
+        y1: center(y),
+        x2: center(run.end),
+        y2: center(y),
+        edge: y === 0 || y === BOARD_SIZE - 1
       });
     }
-    const down = `${point.x},${point.y + 1}`;
-    if (point.y < BOARD_SIZE - 1 && valid.has(down)) {
+  }
+
+  for (let x = 0; x < BOARD_SIZE; x += 1) {
+    for (const run of validRuns((y) => valid.has(`${x},${y}`))) {
       lines.push({
-        key: `${point.id}-v`,
-        x1: center(point.x),
-        y1: center(point.y),
-        x2: center(point.x),
-        y2: center(point.y + 1),
-        edge: point.x === 0 || point.x === BOARD_SIZE - 1
+        key: `col-${x}-${run.start}-${run.end}`,
+        x1: center(x),
+        y1: center(run.start),
+        x2: center(x),
+        y2: center(run.end),
+        edge: x === 0 || x === BOARD_SIZE - 1
       });
     }
   }
@@ -100,8 +100,35 @@ export function buildBoardLines(points) {
   return lines;
 }
 
+function validRuns(isValid) {
+  const runs = [];
+  let start = null;
+
+  for (let index = 0; index < BOARD_SIZE; index += 1) {
+    if (isValid(index)) {
+      if (start === null) start = index;
+      continue;
+    }
+    if (start !== null && index - start > 1) {
+      runs.push({ start, end: index - 1 });
+    }
+    start = null;
+  }
+
+  if (start !== null && BOARD_SIZE - start > 1) {
+    runs.push({ start, end: BOARD_SIZE - 1 });
+  }
+
+  return runs;
+}
+
 export function replayRoomAt(room, step, viewColor = COLORS.black) {
   const game = replayGameAt(room, step);
+  const replayGame = {
+    ...game,
+    phase: room.game.phase === GAME_PHASES.finished ? GAME_PHASES.finished : game.phase,
+    winner: room.game.winner ?? game.winner
+  };
   const replayPlayers = room.players.map((player) => ({
     ...player,
     captures: 0,
@@ -118,8 +145,8 @@ export function replayRoomAt(room, step, viewColor = COLORS.black) {
     ...room,
     role: "spectator",
     players: replayPlayers,
-    game: gameViewForColor(game, viewColor),
-    chat: room.chat.filter((message) => message.moveNumber <= game.moveNumber)
+    game: gameViewForColor(replayGame, viewColor),
+    chat: (room.chat ?? []).filter((message) => message.moveNumber <= game.moveNumber)
   };
 }
 

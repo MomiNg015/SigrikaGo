@@ -1,8 +1,11 @@
 import { RefreshCw, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api } from "../api/client.js";
-import { findCharacter } from "../shared/characterDisplay.js";
-import { resolveCandyPortrait } from "../shared/candyPortraits.js";
+import WatchRoomRow, {
+  joinWatchRoomFromList,
+  statusTextForWatchRoom,
+  watchRoomRowKey
+} from "./watch/WatchRoomRow.jsx";
 
 export default function WatchModal({ token, characters, onJoinRoom, onNotice, onClose }) {
   const [rooms, setRooms] = useState([]);
@@ -53,20 +56,13 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
             <span>状态</span>
           </div>
           {rooms.map((room) => (
-            <button
-              className="watch-room-row"
+            <WatchRoomRow
               key={watchRoomRowKey(room)}
-              type="button"
-              role="row"
-              onClick={() => joinWatchRoomFromList(room, { emitJoin: onJoinRoom, onClose })}
-            >
-              <span className="watch-code-cell">{room.code}</span>
-              <span>{room.onlineCount}</span>
-              <WatchPlayerCell player={room.black} characters={characters} />
-              <WatchPlayerCell player={room.white} characters={characters} />
-              <span>{room.moveNumber}</span>
-              <span className={`watch-status ${room.status}`}>{statusTextForWatchRoom(room)}</span>
-            </button>
+              room={room}
+              characters={characters}
+              onJoinRoom={onJoinRoom}
+              onClose={onClose}
+            />
           ))}
         </div>
         {!loading && rooms.length === 0 && <p className="watch-empty">当前没有可观战房间</p>}
@@ -77,28 +73,4 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
   );
 }
 
-function WatchPlayerCell({ player, characters }) {
-  if (!player) return <span className="watch-player-cell empty">-</span>;
-  const character = findCharacter(characters, player.character ?? player.characterId);
-  return (
-    <span className={`watch-player-cell ${player.connected ? "" : "disconnected"}`}>
-      <img src={resolveCandyPortrait(character, player.user?.itemEffects)} alt={character.name} />
-      <span>{player.user?.username ?? "-"}</span>
-    </span>
-  );
-}
-
-export function statusTextForWatchRoom(room) {
-  return room?.status === "finished" ? "已结束" : "对局中";
-}
-
-export function watchRoomRowKey(room) {
-  return String(room?.code ?? "");
-}
-
-export function joinWatchRoomFromList(room, { emitJoin, onClose } = {}) {
-  if (!room?.code) return false;
-  emitJoin?.(room.code);
-  onClose?.();
-  return true;
-}
+export { joinWatchRoomFromList, statusTextForWatchRoom, watchRoomRowKey };

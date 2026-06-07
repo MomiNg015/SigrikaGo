@@ -1,8 +1,139 @@
 import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
+import { CHARACTERS } from "../shared/characters.js";
+import { COLORS, createGameState } from "../shared/game.js";
 import { effectiveRoomRole, roomCloseCountdownText, roomGameInfoForPlayers, shouldPlayGameStartVoice, shouldShowRoomCloseCountdown } from "./RoomScreen.jsx";
+import RoomScreen from "./RoomScreen.jsx";
 
 describe("RoomScreen helpers", () => {
+  it("renders a replay room snapshot in spectator view", () => {
+    const players = [
+      {
+        color: COLORS.black,
+        user: { id: "black", username: "black", rank: "1段", rating: 1000 },
+        characterId: "sigrika",
+        character: CHARACTERS.sigrika,
+        captures: 0,
+        skillRemovals: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+      },
+      {
+        color: COLORS.white,
+        user: { id: "white", username: "white", rank: "1段", rating: 1000 },
+        characterId: "denia",
+        character: CHARACTERS.denia,
+        captures: 0,
+        skillRemovals: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+      }
+    ];
+    const game = createGameState(players);
+    const html = renderToStaticMarkup(createElement(RoomScreen, {
+      room: {
+        code: "12345",
+        role: "player",
+        players,
+        spectators: [],
+        spectatorCount: 0,
+        chat: [],
+        game
+      },
+      user: players[0].user,
+      token: "token",
+      characters: CHARACTERS,
+      replayStep: 0,
+      setReplayStep: () => {},
+      pendingSkill: false,
+      setPendingSkill: () => {},
+      audioSettings: { master: 0, bgm: 0, sfx: 0, voice: 0 },
+      onOpenSettings: () => {},
+      onOpenMessageBoard: () => {},
+      onBack: () => {},
+      onGameAction: () => {},
+      onCountingRequest: () => {},
+      onCountingRespond: () => {},
+      onDrawRequest: () => {},
+      onDrawRespond: () => {},
+      onScoringAction: () => {},
+      onChat: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("board");
+    expect(html).toContain("replay-step-indicator");
+  });
+
+  it("renders the skill banner while the room carries a pending skill preview", () => {
+    const players = [
+      {
+        color: COLORS.black,
+        user: { id: "black", username: "black", rank: "1段", rating: 1000 },
+        characterId: "sigrika",
+        character: CHARACTERS.sigrika,
+        captures: 0,
+        skillRemovals: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+      },
+      {
+        color: COLORS.white,
+        user: { id: "white", username: "white", rank: "1段", rating: 1000 },
+        characterId: "denia",
+        character: CHARACTERS.denia,
+        captures: 0,
+        skillRemovals: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+      }
+    ];
+    const game = createGameState(players);
+    game.phase = "skill-preview";
+    game.pendingSkill = {
+      id: "skill-preview-1",
+      color: COLORS.black,
+      username: "black",
+      characterId: "sigrika",
+      character: CHARACTERS.sigrika,
+      characterName: CHARACTERS.sigrika.name,
+      itemEffects: {},
+      skillName: CHARACTERS.sigrika.skill.name
+    };
+
+    const html = renderToStaticMarkup(createElement(RoomScreen, {
+      room: {
+        code: "12345",
+        role: "player",
+        players,
+        spectators: [],
+        spectatorCount: 0,
+        chat: [],
+        game
+      },
+      user: players[0].user,
+      token: "token",
+      characters: CHARACTERS,
+      replayStep: null,
+      setReplayStep: () => {},
+      pendingSkill: false,
+      setPendingSkill: () => {},
+      audioSettings: { master: 0, bgm: 0, sfx: 0, voice: 0 },
+      onOpenSettings: () => {},
+      onOpenMessageBoard: () => {},
+      onBack: () => {},
+      onGameAction: () => {},
+      onCountingRequest: () => {},
+      onCountingRespond: () => {},
+      onDrawRequest: () => {},
+      onDrawRespond: () => {},
+      onScoringAction: () => {},
+      onChat: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("skill-burst");
+    expect(html).toContain(CHARACTERS.sigrika.skill.name);
+  });
+
   it("formats room header game information", () => {
     const blackPlayer = { user: { username: "moming", rank: "9段" } };
     const whitePlayer = { user: { username: "露露米", rank: "2段" } };
@@ -42,7 +173,7 @@ describe("RoomScreen helpers", () => {
   });
 
   it("seeds resumed room audio baseline before passive room audio effects", () => {
-    const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const source = readFileSync(new URL("./audio/useRoomAudioEffects.js", import.meta.url), "utf8");
 
     expect(source).toContain("useLayoutEffect");
     expect(source).toContain("shouldSeedRoomAudioBaseline(room)");
@@ -79,16 +210,19 @@ describe("RoomScreen helpers", () => {
 
   it("uses extra-compact portrait room cards without pushing the board offscreen", () => {
     const css = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
     const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const headerSource = readFileSync(new URL("./header/RoomHeader.jsx", import.meta.url), "utf8");
+    const layoutSource = readFileSync(new URL("./layout/RoomLayouts.jsx", import.meta.url), "utf8");
     const playerInfoSource = readFileSync(new URL("./PlayerInfo.jsx", import.meta.url), "utf8");
     const portraitMedia = mediaBlock(css, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
 
-    expect(source).toContain("className=\"room-title-stack\"");
-    expect(source).toContain("className=\"mobile-room-viewport mobile-battle-layout\"");
-    expect(source).toContain("className=\"mobile-board-viewport mobile-board-slot board-column\"");
-    expect(source).toContain("className=\"mobile-room-dock mobile-room-tabs\"");
-    expect(source).toContain("className=\"mobile-action-panel\"");
-    expect(source).not.toContain("content: <>{hintPanel}{actionPanel}</>");
+    expect(headerSource).toContain("className=\"room-title-stack\"");
+    expect(layoutSource).toContain("className=\"mobile-room-viewport mobile-battle-layout\"");
+    expect(layoutSource).toContain("className=\"mobile-board-viewport mobile-board-slot board-column\"");
+    expect(layoutSource).toContain("className=\"mobile-room-dock mobile-room-tabs\"");
+    expect(layoutSource).toContain("className=\"mobile-action-panel\"");
+    expect(layoutSource).not.toContain("content: <>{hintPanel}{actionPanel}</>");
     expect(portraitMedia).toContain(".mobile-room-screen .player-info");
     expect(portraitMedia).toContain("min-height: 56px");
     expect(portraitMedia).toContain("overflow: visible");
@@ -140,8 +274,9 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain("width: 18px");
     expect(portraitMedia).toContain("right: 1px");
     expect(portraitMedia).toContain("bottom: 1px");
-    expect(portraitMedia).toContain(".mobile-room-screen .decision-bar.result-review-decision");
-    expect(portraitMedia).toContain("max-height: var(--mobile-room-dock-panel-height)");
+    expect(source).toContain("useTimedRoomRequestToast");
+    expect(source).toContain("TimedRoomRequestToast");
+    expect(roomCss).toContain(".room-request-toast");
   });
 
   it("keeps touch point confirmation visual-only on mobile", () => {
@@ -163,16 +298,17 @@ describe("RoomScreen helpers", () => {
 
   it("separates desktop and mobile room layout shells", () => {
     const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const layoutSource = readFileSync(new URL("./layout/RoomLayouts.jsx", import.meta.url), "utf8");
     const stylesEntry = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
     const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8")
       + readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
 
     expect(source).toContain("useMobileRoomLayout");
-    expect(source).toContain("function DesktopRoomLayout");
-    expect(source).toContain("function MobileRoomLayout");
-    expect(source).toContain("desktop-room-screen");
-    expect(source).toContain("mobile-room-screen");
-    expect(source).toContain("mobile-room-viewport");
+    expect(source).toContain("DesktopRoomLayout");
+    expect(source).toContain("MobileRoomLayout");
+    expect(layoutSource).toContain("desktop-room-screen");
+    expect(layoutSource).toContain("mobile-room-screen");
+    expect(layoutSource).toContain("mobile-room-viewport");
     expect(source).toContain("mobile-battle-layout");
     expect(stylesEntry.indexOf("./styles/responsive.css")).toBeLessThan(stylesEntry.indexOf("./styles/mobile-room.css"));
     expect(css).toContain(".mobile-battle-layout");
@@ -180,18 +316,18 @@ describe("RoomScreen helpers", () => {
   });
 
   it("collapses low-priority mobile room tools into a shared tab dock", () => {
-    const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const layoutSource = readFileSync(new URL("./layout/RoomLayouts.jsx", import.meta.url), "utf8");
     const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8")
       + readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
 
-    expect(source).toContain("activeMobilePanel");
-    expect(source).toContain("mobile-room-dock");
-    expect(source).toContain("mobile-room-tabs");
-    expect(source).toContain("mobile-tab-list");
-    expect(source).toContain("mobile-tab-panel");
-    expect(source).toContain("actionPanel");
-    expect(source).toContain("membersPanel");
-    expect(source).toContain("chatPanel");
+    expect(layoutSource).toContain("activeMobilePanel");
+    expect(layoutSource).toContain("mobile-room-dock");
+    expect(layoutSource).toContain("mobile-room-tabs");
+    expect(layoutSource).toContain("mobile-tab-list");
+    expect(layoutSource).toContain("mobile-tab-panel");
+    expect(layoutSource).toContain("actionPanel");
+    expect(layoutSource).toContain("membersPanel");
+    expect(layoutSource).toContain("chatPanel");
     expect(css).toContain("grid-area: dock");
     expect(css).toContain(".mobile-room-screen .action-bar");
     expect(css).toContain("position: static");
@@ -203,6 +339,61 @@ describe("RoomScreen helpers", () => {
     expect(css).toContain("\"dock\"");
     expect(css).toContain("\"opponent board self\"");
     expect(css).toContain("\"dock dock dock\"");
+  });
+
+  it("turns room chat into an anchored popover button", () => {
+    const chatSource = readFileSync(new URL("./ChatBox.jsx", import.meta.url), "utf8");
+    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+
+    expect(chatSource).toContain("chat-toggle-button");
+    expect(chatSource).toContain("aria-expanded={isOpen}");
+    expect(chatSource).toContain("aria-controls={panelId}");
+    expect(chatSource).toContain("document.addEventListener(\"pointerdown\", handlePointerDown)");
+    expect(chatSource).toContain("document.addEventListener(\"keydown\", handleKeyDown)");
+    expect(chatSource).toContain("event.key === \"Escape\"");
+    expect(chatSource).toContain("setIsOpen(false)");
+    expect(chatSource).toContain("className=\"chat-box chat-popover\"");
+    expect(chatSource).toContain("const trimmedText = text.trim()");
+    expect(roomCss).toContain(".chat-widget");
+    expect(roomCss).toContain(".chat-toggle-button");
+    expect(roomCss).toContain(".chat-popover");
+    expect(roomCss).toContain("bottom: calc(100% + 10px)");
+    expect(roomCss).toContain("transform-origin: right bottom");
+    expect(roomCss).toContain("@keyframes chat-popover-open");
+    expect(brightSchoolCss).toContain(".chat-toggle-button");
+    expect(brightSchoolCss).toContain(".chat-popover");
+  });
+
+  it("applies the Startorch battlefield terminal skin after mobile room styles", () => {
+    const stylesEntry = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    const terminalCss = readFileSync(new URL("../styles/room-terminal.css", import.meta.url), "utf8");
+    const defensiveMedia = mediaBlock(terminalCss, "@media (max-width: 800px)");
+
+    expect(stylesEntry.indexOf("./styles/mobile-room.css")).toBeLessThan(stylesEntry.indexOf("./styles/room-terminal.css"));
+    expect(terminalCss).toContain("--battle-bg: #03070a");
+    expect(terminalCss).toContain(".app-shell:has(.room-screen)");
+    expect(terminalCss).toContain("radial-gradient(circle at 50% 42%");
+    expect(terminalCss).toContain(".player-info.self");
+    expect(terminalCss).toContain("--side-glow: var(--battle-cyan)");
+    expect(terminalCss).toContain(".player-info.opponent");
+    expect(terminalCss).toContain("--side-glow: var(--battle-red)");
+    expect(terminalCss).toContain(".timer-track span");
+    expect(terminalCss).toContain("transition: width 0.25s linear");
+    expect(terminalCss).toContain(".board-stage");
+    expect(terminalCss).toContain("2px solid rgba(0, 255, 190, 0.4)");
+    expect(terminalCss).toContain(".action-bar button");
+    expect(terminalCss).toContain("transform: skewX(-10deg)");
+    expect(defensiveMedia).toContain(".mobile-room-screen .mobile-room-viewport");
+    expect(defensiveMedia).toContain("grid-template-rows: 75px minmax(0, 1fr) 75px auto");
+    expect(defensiveMedia).toContain(".mobile-room-screen .mobile-opponent-slot");
+    expect(defensiveMedia).toContain("order: -1");
+    expect(defensiveMedia).toContain(".mobile-room-screen .captures");
+    expect(defensiveMedia).toContain("display: none");
+    expect(defensiveMedia).toContain(".mobile-room-screen .board-stage");
+    expect(defensiveMedia).toContain("max-width: 92vw");
+    expect(defensiveMedia).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
+    expect(defensiveMedia).toContain("transform: none");
   });
 
   it("keeps short landscape mobile rooms within the viewport", () => {
@@ -228,4 +419,15 @@ function mediaBlock(css, marker) {
   if (start < 0) return "";
   const next = css.indexOf("\n@media", start + 1);
   return css.slice(start, next >= 0 ? next : undefined);
+}
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readFileSync(url, "utf8");
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) =>
+    readCssWithImports(new URL(importPath, url), seen),
+  );
 }

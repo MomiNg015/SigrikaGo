@@ -45,6 +45,72 @@ model LoginSession {
   @@index([expiresAt])
 }
 
+model UserCharacter {
+  id            String   @id @default(cuid())
+  userId        String
+  characterSlug String
+  source        String   @default("legacy")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, characterSlug])
+  @@index([characterSlug])
+}
+
+model UserDecoration {
+  id             String   @id @default(cuid())
+  userId         String
+  decorationSlug String
+  source         String   @default("legacy")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([userId, decorationSlug])
+  @@index([decorationSlug])
+}
+
+model UserItem {
+  id        String   @id @default(cuid())
+  userId    String
+  itemId    String
+  quantity  Int      @default(0)
+  source    String   @default("legacy")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, itemId])
+  @@index([itemId])
+}
+
+model UserItemEffect {
+  id          String   @id @default(cuid())
+  userId      String
+  effectKey   String
+  effectValue String   @default("true")
+  source      String   @default("legacy")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, effectKey])
+  @@index([effectKey])
+}
+
+model UserProgressLedger {
+  id          String   @id @default(cuid())
+  userId      String
+  metric      String
+  delta       Int
+  beforeValue Int?
+  afterValue  Int?
+  reason      String   @default("")
+  refType     String   @default("")
+  refId       String   @default("")
+  createdAt   DateTime @default(now())
+
+  @@index([userId, metric, createdAt])
+  @@index([refType, refId])
+}
+
 model UserRelationship {
   id           String   @id @default(cuid())
   ownerUserId  String

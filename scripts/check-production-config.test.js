@@ -64,4 +64,27 @@ describe("production config check script", () => {
     expect(error?.status).toBe(1);
     expect(String(error?.stderr)).toContain("JWT_SECRET must be at least 32 characters in production");
   });
+
+  it("rejects enabled test actions in production checks", () => {
+    let error;
+    try {
+      execFileSync(process.execPath, [scriptPath], {
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          NODE_ENV: "production",
+          JWT_SECRET: "0123456789abcdef0123456789abcdef",
+          PUBLIC_ORIGIN: "https://sigrika.fun",
+          ENABLE_TEST_ACTIONS: "true"
+        },
+        encoding: "utf8",
+        stdio: "pipe"
+      });
+    } catch (caught) {
+      error = caught;
+    }
+
+    expect(error?.status).toBe(1);
+    expect(String(error?.stderr)).toContain("ENABLE_TEST_ACTIONS must not be enabled in production");
+  });
 });

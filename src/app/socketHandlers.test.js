@@ -103,6 +103,19 @@ describe("socket handlers", () => {
     expect(deps.showToast).toHaveBeenCalledWith("closed");
   });
 
+  it("marks a closed finished player room as dismissed so the result modal does not reopen", () => {
+    const deps = handlerDeps({
+      roomRef: { current: { code: "12345", role: "player", game: { phase: "finished" } } }
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomClosed({ roomCode: "12345", reason: "finished-room-close" });
+
+    expect(deps.setDismissedResultRoom).toHaveBeenCalledWith("12345");
+    expect(deps.showToast).not.toHaveBeenCalled();
+    expect(deps.setView).toHaveBeenCalledWith("home");
+  });
+
   it("resets app state after account logout", () => {
     const deps = handlerDeps();
     const handlers = createSocketHandlers(deps);
@@ -149,6 +162,22 @@ describe("socket handlers", () => {
     expect(deps.setView).toHaveBeenCalledWith("login");
     expect(deps.showToast).toHaveBeenCalledWith("登录已失效，请重新登录");
   });
+
+  it("shows readable fallback messages for user-visible socket failures", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomClosed({});
+    handlers.duelRejected({ username: "alice" });
+    handlers.duelUnavailable({ reason: "offline" });
+    handlers.accountLoggedOut({});
+
+    expect(deps.showToast).toHaveBeenCalledWith("房间已关闭");
+    expect(deps.showToast).toHaveBeenCalledWith("alice拒绝了你的对局申请");
+    expect(deps.showToast).toHaveBeenCalledWith("对方不在线。");
+    expect(deps.showToast).toHaveBeenCalledWith("账号已在其他地方登录");
+  });
+
   it("notifies audio recovery when the socket reconnects", () => {
     const listeners = new Map();
     const socket = {

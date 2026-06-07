@@ -86,6 +86,9 @@ export function validateProductionDeployment(env = process.env) {
   if (DEFAULT_JWT_SECRETS.has(jwtSecret)) {
     errors.push("JWT_SECRET must be changed before running in production");
   }
+  if (debugTestActionsEnabled(env)) {
+    errors.push("ENABLE_TEST_ACTIONS must not be enabled in production");
+  }
 
   const origins = [...buildAllowedOrigins(env)];
   if (origins.length === 0) {
@@ -105,6 +108,14 @@ export function validateProductionDeployment(env = process.env) {
   }
 
   return { ok: errors.length === 0, errors };
+}
+
+export function debugTestActionsEnabled(env = process.env) {
+  return ["1", "true", "yes", "on"].includes(String(env.ENABLE_TEST_ACTIONS ?? "").trim().toLowerCase());
+}
+
+export function canUseDebugTestActions(env = process.env) {
+  return env.NODE_ENV !== "production" && debugTestActionsEnabled(env);
 }
 
 export function assertProductionDeployment(env = process.env) {

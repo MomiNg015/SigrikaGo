@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import AuthScreen from "./AuthScreen.jsx";
 import { authSubmitText, isAlreadyLoggedInError, validateAuthSubmit } from "./AuthScreen.jsx";
 
 describe("AuthScreen submit validation", () => {
@@ -30,8 +33,19 @@ describe("AuthScreen submit validation", () => {
     expect(isAlreadyLoggedInError({ status: 401, code: "already_logged_in" })).toBe(false);
   });
 
-  it("uses the go club copy for login submit", () => {
-    expect(authSubmitText("login")).toBe("\u8fdb\u5165\u56f4\u68cb\u90e8");
+  it("uses the pop-tech connection copy for login submit", () => {
+    expect(authSubmitText("login")).toBe("START CONNECTION!! ⮞");
     expect(authSubmitText("register")).toBe("\u521b\u5efa\u8d26\u53f7");
+  });
+
+  it("renders tactical terminal class hooks without changing the auth form", () => {
+    const html = renderToStaticMarkup(createElement(AuthScreen, { onAuth: () => {} }));
+
+    expect(html).toContain("login-card-container");
+    expect(html).toContain("login-title-text");
+    expect(html).toContain("login-submit-btn");
+    expect(html).toContain("terminal-enter-btn");
+    expect(html).toContain("autoComplete=\"username\"");
+    expect(html).toContain("type=\"password\"");
   });
 });

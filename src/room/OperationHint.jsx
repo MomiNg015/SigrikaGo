@@ -12,6 +12,10 @@ export default function OperationHint({ room, user, scoring, drawRequest }) {
   let text = "";
   let requiresMyAction = false;
 
+  if ([GAME_PHASES.drawRequested, GAME_PHASES.countingRequested, GAME_PHASES.resultReview].includes(phase)) {
+    return null;
+  }
+
   if (phase === GAME_PHASES.drawRequested && drawRequest) {
     title = "和棋申请";
     text = isDrawRequester ? "已发送和棋申请，等待对方在行动区确认。" : "对方申请和棋，请在行动区选择同意或不同意。";

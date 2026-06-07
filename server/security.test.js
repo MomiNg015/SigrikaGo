@@ -58,12 +58,14 @@ describe("deployment security helpers", () => {
   it("rejects production deployment config with weak secrets or missing origins", () => {
     const result = validateProductionDeployment({
       NODE_ENV: "production",
-      JWT_SECRET: "dev-secret"
+      JWT_SECRET: "dev-secret",
+      ENABLE_TEST_ACTIONS: "true"
     });
 
     expect(result.ok).toBe(false);
     expect(result.errors).toContain("JWT_SECRET must be at least 32 characters in production");
     expect(result.errors).toContain("At least one production origin must be configured with PUBLIC_ORIGIN, SITE_ORIGIN, or ALLOWED_ORIGINS");
+    expect(result.errors).toContain("ENABLE_TEST_ACTIONS must not be enabled in production");
   });
 
   it("rejects non-https production origins", () => {

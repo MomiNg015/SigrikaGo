@@ -1,0 +1,91 @@
+import { useAccountActions } from "./useAccountActions.js";
+import { useMatchActions } from "./useMatchActions.js";
+import { useOverlayActions } from "./useOverlayActions.js";
+import { useReplayActions } from "./useReplayActions.js";
+
+export function useAppActions({
+  matchSuccess,
+  matchSuccessRef,
+  room,
+  socket,
+  token,
+  updateUser,
+  view,
+  setAssetProgress,
+  setCharacters,
+  setDismissedResultRoom,
+  setLobbyStats,
+  setMatchStart,
+  setMatchSuccess,
+  setPendingSkill,
+  setReplayStep,
+  setRoom,
+  setShowFriends,
+  setShowHouse,
+  setShowLeaderboard,
+  setShowMessageBoard,
+  setShowSettings,
+  setShowShop,
+  setShowWarehouse,
+  setShowWatch,
+  setToken,
+  setUser,
+  setView
+}) {
+  const overlayActions = useOverlayActions({
+    room,
+    view,
+    setDismissedResultRoom,
+    setRoom,
+    setShowFriends,
+    setShowHouse,
+    setShowLeaderboard,
+    setShowMessageBoard,
+    setShowSettings,
+    setShowShop,
+    setShowWarehouse,
+    setShowWatch
+  });
+
+  const accountActions = useAccountActions({
+    socket,
+    token,
+    updateUser,
+    setAssetProgress,
+    setCharacters,
+    setLobbyStats,
+    setMatchSuccess,
+    setRoom,
+    setToken,
+    setUser,
+    setView
+  });
+
+  const matchActions = useMatchActions({
+    matchSuccess,
+    matchSuccessRef,
+    room,
+    socket,
+    setMatchStart,
+    setMatchSuccess,
+    setRoom,
+    setView
+  });
+
+  const replayActions = useReplayActions({
+    closeAllOverlays: overlayActions.closeAllOverlays,
+    token,
+    setCharacters,
+    setPendingSkill,
+    setReplayStep,
+    setRoom,
+    setView
+  });
+
+  return {
+    ...accountActions,
+    ...matchActions,
+    ...overlayActions,
+    ...replayActions
+  };
+}

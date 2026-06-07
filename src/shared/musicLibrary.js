@@ -13,8 +13,9 @@ export const DEFEAT_SOUND = "/assets/music/result-defeat.mp3";
 export const CHARACTER_SKILL_VOICES = {
   denia: "/assets/voice/denia_skill_cast.ogg",
   sigrika: "/assets/voice/sigrika_skill_cast.ogg",
-  aemeath: "/assets/voice/aemeath_skill.ogg",
-  baconbits: "/assets/voice/baconbits_skill.ogg"
+  aemeath: "/assets/voice/aemeath_skill_cast.ogg",
+  nabomo: "/assets/voice/nabomo_skill_cast.ogg",
+  baconbits: "/assets/voice/baconbits_skill_cast.ogg"
 };
 
 export const CHARACTER_SYSTEM_VOICES = {
@@ -58,12 +59,54 @@ export const CHARACTER_SYSTEM_VOICES = {
     [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/sigrika_result_loss.ogg",
     [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/sigrika_result_draw.ogg"
   },
+  aemeath: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/aemeath_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/aemeath_sortie.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/aemeath_byoyomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/aemeath_byoyomi_remaining_2.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/aemeath_byoyomi_remaining_1.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/aemeath_countdown_10.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(9)]: "/assets/voice/aemeath_countdown_9.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(8)]: "/assets/voice/aemeath_countdown_8.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(7)]: "/assets/voice/aemeath_countdown_7.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(6)]: "/assets/voice/aemeath_countdown_6.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(5)]: "/assets/voice/aemeath_countdown_5.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(4)]: "/assets/voice/aemeath_countdown_4.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(3)]: "/assets/voice/aemeath_countdown_3.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(2)]: "/assets/voice/aemeath_countdown_2.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/aemeath_countdown_1.ogg",
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/aemeath_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/aemeath_result_loss.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/aemeath_result_draw.ogg"
+  },
+  nabomo: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/nabomo_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/nabomo_sortie.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/nabomo_byoyomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/nabomo_byoyomi_remaining_2.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/nabomo_byoyomi_remaining_1.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/nabomo_countdown_10.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(9)]: "/assets/voice/nabomo_countdown_9.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(8)]: "/assets/voice/nabomo_countdown_8.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(7)]: "/assets/voice/nabomo_countdown_7.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(6)]: "/assets/voice/nabomo_countdown_6.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(5)]: "/assets/voice/nabomo_countdown_5.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(4)]: "/assets/voice/nabomo_countdown_4.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(3)]: "/assets/voice/nabomo_countdown_3.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(2)]: "/assets/voice/nabomo_countdown_2.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/nabomo_countdown_1.ogg",
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/nabomo_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/nabomo_result_loss.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/nabomo_result_draw.ogg"
+  },
   baconbits: {
     [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/baconbits_game_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/baconbits_sortie.ogg",
     [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/baconbits_byo_yomi_start.ogg",
     [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/baconbits_byo_yomi_periods.ogg",
     [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/baconbits_byo_yomi_periods.ogg",
-    [SYSTEM_VOICE_EVENTS.timeout]: "/assets/voice/baconbits_timeout.ogg"
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/baconbits_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/baconbits_result_loss.ogg"
   }
 };
 

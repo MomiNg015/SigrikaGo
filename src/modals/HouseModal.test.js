@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
 import { characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats, selectSortieCharacter } from "./HouseModal.jsx";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import HouseModal from "./HouseModal.jsx";
@@ -101,9 +102,66 @@ describe("deriveCharacterRecordStats", () => {
     }));
 
     expect(html).toContain("owned-decoration-chip");
+    expect(html).toContain("decoration-applied-box");
+    expect(html).toContain("decorations-section");
     expect(html).toContain("aria-label=\"爪印棋子\"");
     expect(html).not.toContain(">爪印棋子</span>");
     expect(html).toContain(">应用</strong>");
     expect(html).not.toContain(">使用中</strong>");
+  });
+
+  it("marks the selected sortie character and locked slots for tactical terminal styling", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "1段",
+        rating: 1000,
+        coins: 0,
+        ownedCharacters: ["sigrika"],
+        ownedDecorations: [],
+        selectedCharacter: "sigrika"
+      },
+      records: [],
+      characterListView: [{
+        id: "sigrika",
+        name: "西格莉卡",
+        portrait: "/assets/sigrika_centered.webp",
+        skill: { name: "技能", description: "", cost: 1 }
+      }],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("is-deployed");
+    expect(html).toContain("class=\"deploy-tag\"");
+    expect(html).toContain("[出战中]");
+    expect(html).toContain("lock-character-card");
+    expect(html).toContain("lock-text-title");
+    expect(html).toContain("character-grid-container");
+    expect(html).toContain("top-stats-bar");
+    expect(html).toContain("LOADING... (x_x)");
+    expect(html).toContain("LOCK / LOADING... (x_x)");
+  });
+
+  it("keeps nested character detail dialogs as viewport overlays above the house manual", () => {
+    const css = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8");
+    const nestedSource = readFileSync(new URL("./house/HouseNestedDialogs.jsx", import.meta.url), "utf8");
+    const nestedBackdropBlock = css.match(/\.nested-modal-backdrop\s*\{[^}]+\}/g)?.at(-1) ?? "";
+    const nestedModalBlock = css.match(/\.nested-modal-backdrop \.nested-modal\s*\{[^}]+\}/)?.[0] ?? "";
+    const closeButtonBlock = css.match(/\.modal-backdrop \.close-button,\s*\.nested-modal-backdrop \.close-button\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(nestedSource).toContain("character-details-modal");
+    expect(nestedBackdropBlock).toContain("position: fixed");
+    expect(nestedBackdropBlock).toContain("inset: 0");
+    expect(nestedBackdropBlock).toContain("z-index: 80");
+    expect(nestedBackdropBlock).toContain("place-items: center");
+    expect(nestedModalBlock).toContain("position: relative");
+    expect(nestedModalBlock).toContain("max-height: min(760px, calc(100dvh - 32px))");
+    expect(closeButtonBlock).toContain("z-index: 20");
+    expect(closeButtonBlock).toContain("pointer-events: auto");
   });
 });

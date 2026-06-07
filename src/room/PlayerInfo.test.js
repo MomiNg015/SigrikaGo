@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { arePlayerInfoPropsEqual, disconnectBadgeForPlayer, playerCandyPortrait, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer } from "./PlayerInfo.jsx";
 import { COLORS } from "../shared/game.js";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
@@ -26,6 +27,23 @@ describe("PlayerInfo labels", () => {
     expect(resultBadgeForPlayer({ color: COLORS.white }, game)).toBeNull();
   });
 
+  it("shows win loss and draw portrait badges for valid finished games", () => {
+    const finished = { phase: "finished", winner: { winnerColor: COLORS.black } };
+
+    expect(resultBadgeForPlayer({ color: COLORS.black }, finished, { isWinner: true })).toEqual({
+      label: "胜",
+      tone: "win"
+    });
+    expect(resultBadgeForPlayer({ color: COLORS.white }, finished)).toEqual({
+      label: "负",
+      tone: "loss"
+    });
+    expect(resultBadgeForPlayer({ color: COLORS.white }, { phase: "finished", winner: { winnerColor: null } }, { isDrawResult: true })).toEqual({
+      label: "和",
+      tone: "draw"
+    });
+  });
+
   it("shows disconnect badge only before a game has a result", () => {
     const disconnected = { connected: false, disconnectedAt: 123 };
     expect(disconnectBadgeForPlayer(disconnected, { phase: "playing" })).toBe("断线中");
@@ -48,6 +66,43 @@ describe("PlayerInfo labels", () => {
         user: { itemEffects: { deniaRainbowGlow: true } }
       }
     )).toBe("/assets/sigrika_centered.webp");
+  });
+
+  it("keeps overclock text red and timer tracks state-colored across themes", () => {
+    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const themesCss = readFileSync(new URL("../styles/themes.css", import.meta.url), "utf8");
+    const themeComponentsCss = readFileSync(new URL("../styles/themes/theme-components.css", import.meta.url), "utf8");
+    const sharedCss = readFileSync(new URL("../styles/themes/shared.css", import.meta.url), "utf8");
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+
+    expect(roomCss).toContain("--timer-track-fill: linear-gradient(90deg, #5d7fe8, #69c3ff)");
+    expect(roomCss).toContain(".timer.warning-byo-yomi");
+    expect(roomCss).toContain("--timer-track-fill: linear-gradient(90deg, #ff3f3f, #c8173b)");
+    expect(roomCss).toContain(".timer.final-byo-yomi");
+    expect(roomCss).toContain("--timer-track-fill: linear-gradient(90deg, #ff3434, #ffbd2e, #42d66b, #3a8cff, #b44dff)");
+    expect(roomCss).toContain(".captures .cost-stat strong");
+    expect(roomCss).toContain("color: #d93645 !important");
+    expect(roomCss).toContain(".result-badge.draw");
+    expect(roomCss).toContain("--skill-chip-accent");
+    expect(roomCss).toContain(".skill-chip.spent");
+    expect(roomCss).toContain(".timer.byo-yomi .timer-primary");
+    expect(themesCss).toContain('@import "./themes/theme-components.css";');
+    expect(themeComponentsCss).toContain(".app-shell.player-theme-enabled .skill-chip.spent");
+    expect(themeComponentsCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .skill-chip");
+    expect(themeComponentsCss).toContain("var(--skill-chip-accent");
+    expect(themeComponentsCss).toContain("linear-gradient(135deg, #ece7e3, #d8d7d6 52%, #f5f1ea) padding-box");
+    expect(themeComponentsCss).toContain(".app-shell.player-theme-enabled .result-badge.win");
+    expect(themeComponentsCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .result-badge.win");
+    expect(themeComponentsCss).toContain("color: #d91528 !important");
+    expect(themeComponentsCss).toContain("border-color: #d91528 !important");
+    expect(themeComponentsCss).toContain(".app-shell.player-theme-enabled .result-badge.loss");
+    expect(themeComponentsCss).toContain("color: #121217 !important");
+    expect(themeComponentsCss).toContain(".app-shell.player-theme-enabled .result-badge.draw");
+    expect(themeComponentsCss).toContain("color: #138a46 !important");
+    expect(sharedCss).toContain("background: var(--timer-track-fill");
+    expect(brightSchoolCss).toContain(".timer-track span");
+    expect(brightSchoolCss).toContain("background: var(--timer-track-fill");
+    expect(brightSchoolCss).toContain(".captures .cost-stat");
   });
 
   it("skips rerendering unchanged player panels during unrelated clock updates", () => {
@@ -80,6 +135,17 @@ describe("PlayerInfo labels", () => {
     )).toBe(false);
   });
 });
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readFileSync(url, "utf8");
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
+    return readCssWithImports(new URL(importPath, url), seen);
+  });
+}
 
 function playerInfoProps(overrides = {}) {
   return {

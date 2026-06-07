@@ -16,6 +16,10 @@ import {
   skillRequiresExistingStone
 } from "./gameSkills.js";
 import {
+  executeRegisteredSkill,
+  skillConsumesTurn
+} from "./gameSkillRegistry.js";
+import {
   INVALID_EARLY_RESIGN_NOTICE,
   MAX_INVALID_GAME_END_MOVE_NUMBER,
   MIN_VALID_RESIGN_MOVE_NUMBER,
@@ -317,36 +321,37 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
   if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
   const skill = normalizeSkillConfig(skillOrCharacterId);
   if (!canStartSkill(state, skill)) return fail("场上没有可作用的棋子");
-  if (skill?.effectType === "erase-point") {
-    return erasePoint(state, color, targetId, {
-      skillName: skill.name,
-      consumesTurn: !skill.freeTurn,
-      skill
-    });
-  }
-  if (skill?.effectType === "flip-stone") {
-    return flipStone(state, color, targetId, {
-      skillName: skill.name,
-      consumesTurn: !skill.freeTurn,
-      skill
-    });
-  }
-  if (skill?.effectType === "hidden-hand") {
-    return playHiddenHand(state, color, targetId, {
-      skillName: skill.name,
-      characterId: skill.characterId ?? "aemeath",
-      skill
-    });
-  }
-  if (skill?.effectType === "random-blast") {
-    return randomBlast(state, color, {
-      skillName: skill.name,
-      consumesTurn: !skill.freeTurn,
-      skill
-    });
-  }
-  return fail("未知角色技能");
+  return executeRegisteredSkill({
+    state,
+    color,
+    targetId,
+    skill,
+    handlers: ACTIVE_SKILL_HANDLERS
+  }) ?? fail("未知角色技能");
 }
+
+const ACTIVE_SKILL_HANDLERS = {
+  "erase-point": ({ state, color, targetId, skill }) => erasePoint(state, color, targetId, {
+    skillName: skill.name,
+    consumesTurn: skillConsumesTurn(skill),
+    skill
+  }),
+  "flip-stone": ({ state, color, targetId, skill }) => flipStone(state, color, targetId, {
+    skillName: skill.name,
+    consumesTurn: skillConsumesTurn(skill),
+    skill
+  }),
+  "hidden-hand": ({ state, color, targetId, skill }) => playHiddenHand(state, color, targetId, {
+    skillName: skill.name,
+    characterId: skill.characterId ?? "aemeath",
+    skill
+  }),
+  "random-blast": ({ state, color, skill }) => randomBlast(state, color, {
+    skillName: skill.name,
+    consumesTurn: skillConsumesTurn(skill),
+    skill
+  })
+};
 
 export function canStartSkill(state, skillOrCharacterId) {
   const skill = normalizeSkillConfig(skillOrCharacterId);

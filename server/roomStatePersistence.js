@@ -38,6 +38,7 @@ export function roomPersistenceSnapshot(room) {
     emptySince: room.emptySince,
     countingDeadline: room.countingDeadline,
     drawDeadline: room.drawDeadline,
+    pendingSkillResolution: room.pendingSkillResolution ?? null,
     lastTick: room.lastTick,
     recordSaved: room.recordSaved,
     candyEffectUpdates: room.candyEffectUpdates ?? null

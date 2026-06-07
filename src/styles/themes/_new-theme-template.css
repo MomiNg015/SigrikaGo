@@ -1,0 +1,62 @@
+/* New player theme template.
+   1. Add the theme id in src/app/visualTheme.js.
+   2. Copy this file to src/styles/themes/<theme-id>.css, or create an import-only
+      folder entry like bright-school.css when the skin needs multiple layers.
+   3. Import the entry from src/styles/themes.css with visualThemeCssImportPath(<theme-id>).
+   4. Replace theme-example with the class emitted by visualThemeClassName(), for example theme-bright-school.
+   5. Keep layer intent clear: tokens -> base surfaces -> component overrides -> mobile safety.
+   6. Run src/app/visualTheme.test.js and src/styles/themeContract.test.js before visual polish. */
+
+/* tokens */
+.app-shell.player-theme-enabled.theme-example {
+  --theme-bg: #ffffff;
+  --theme-surface: #ffffff;
+  --theme-text: #222222;
+  --theme-border: #222222;
+  color: var(--theme-text) !important;
+  background: var(--theme-bg) !important;
+}
+
+/* base surfaces */
+.app-shell.player-theme-enabled.theme-example :where(
+  .auth-panel,
+  .home-top-strip,
+  .home-player-plaque,
+  .home-image-entry,
+  .room-header,
+  .player-info,
+  .board-stage,
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .settings-modal,
+  .nested-modal
+) {
+  background: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-border) !important;
+}
+
+/* component overrides */
+.app-shell.player-theme-enabled.theme-example .theme-choice-button.active {
+  border-color: var(--theme-border) !important;
+}
+
+/* mobile safety */
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled.theme-example :where(
+    .small-modal,
+    .shop-modal,
+    .house-modal,
+    .warehouse-modal,
+    .leaderboard-modal,
+    .friends-modal,
+    .settings-modal,
+    .nested-modal
+  ) {
+    max-width: calc(100vw - 24px) !important;
+  }
+}

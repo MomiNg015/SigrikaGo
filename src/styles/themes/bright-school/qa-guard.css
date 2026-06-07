@@ -1,0 +1,9 @@
+/* Bright School QA guard compatibility entry.
+   Keep this file import-only; focused late layers live beside it. */
+@import "./quality-base.css";
+@import "./commerce.css";
+@import "./home.css";
+@import "./room.css";
+@import "./modals.css";
+@import "./mobile.css";
+@import "./effects.css";

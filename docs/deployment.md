@@ -15,7 +15,7 @@ npm run check:production
 npm test
 ```
 
-`npm run check:production` 会检查生产环境中的 `JWT_SECRET` 和站点 origin。生产 origin 必须使用 HTTPS。
+`npm run check:production` 会检查生产环境中的 `JWT_SECRET`、站点 origin 和调试开关。生产 origin 必须使用 HTTPS，且不能启用测试工具 action。
 
 ## 环境变量
 
@@ -29,6 +29,7 @@ JWT_SECRET="replace-with-at-least-32-random-characters"
 PUBLIC_ORIGIN="https://go.example.com"
 ADMIN_USERNAMES="moming"
 UPLOAD_DIR="/var/lib/sigrikago/uploads"
+ENABLE_TEST_ACTIONS="false"
 ```
 
 字段说明：
@@ -38,6 +39,16 @@ UPLOAD_DIR="/var/lib/sigrikago/uploads"
 - `PUBLIC_ORIGIN`: 用户访问站点的 HTTPS 地址，例如 `https://go.example.com`。
 - `ADMIN_USERNAMES`: 逗号分隔的管理员用户名。服务启动时会把这些用户名提升为管理员。
 - `UPLOAD_DIR`: 用户上传资源的持久化根目录。角色立绘上传会保存到 `${UPLOAD_DIR}/characters`，并通过 `/uploads/characters/...` 对外访问。
+- `ENABLE_TEST_ACTIONS`: 仅本地开发调试可设为 `true`。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
+
+开发环境若需要显示对局测试按钮，需要同时设置客户端与服务端开关：
+
+```env
+ENABLE_TEST_ACTIONS="true"
+VITE_ENABLE_TEST_TOOLS="true"
+```
+
+不要把这两个开关带到生产 `.env`。
 
 ## 服务器目录
 
@@ -66,6 +77,8 @@ npx prisma migrate deploy
 npm run build
 npm run check:production
 ```
+
+当前用户资产仍保留旧 CSV/JSON 字段作为运行时读写来源，但 schema 已准备结构化资产表和进度流水表。生产迁移时必须先执行 `npx prisma migrate deploy`，后续切换读写路径前再单独运行数据回填脚本，不要在业务进程启动期间临时迁移用户资产。
 
 ## systemd 服务
 

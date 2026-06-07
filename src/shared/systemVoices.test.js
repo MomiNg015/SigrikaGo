@@ -43,6 +43,19 @@ describe("system voices", () => {
     });
   });
 
+  it("does not resolve timeout to a character audio asset or TTS text", () => {
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.timeout, {
+      character: {
+        systemVoices: {
+          [SYSTEM_VOICE_EVENTS.timeout]: "/assets/voice/timeout.ogg"
+        }
+      }
+    })).toEqual({
+      type: "tts",
+      text: ""
+    });
+  });
+
   it("resolves explicit countdown events as TTS seconds", () => {
     expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.countdown(7))).toEqual({
       type: "tts",

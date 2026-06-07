@@ -270,11 +270,15 @@ describe("background music library", () => {
   });
 
   it("uses the configured Aemeath skill voice", () => {
-    expect(resolveSkillVoice({ characterId: "aemeath" })).toBe("/assets/voice/aemeath_skill.ogg");
+    expect(resolveSkillVoice({ characterId: "aemeath" })).toBe("/assets/voice/aemeath_skill_cast.ogg");
+  });
+
+  it("uses the configured Nabomo skill voice", () => {
+    expect(resolveSkillVoice({ characterId: "nabomo" })).toBe("/assets/voice/nabomo_skill_cast.ogg");
   });
 
   it("uses the configured Baconbits skill voice", () => {
-    expect(resolveSkillVoice({ characterId: "baconbits" })).toBe("/assets/voice/baconbits_skill.ogg");
+    expect(resolveSkillVoice({ characterId: "baconbits" })).toBe("/assets/voice/baconbits_skill_cast.ogg");
   });
 
   it("uses the configured Denia skill voice", () => {
@@ -303,11 +307,14 @@ describe("background music library", () => {
   it("includes Baconbits character system voices", () => {
     expect(CHARACTER_SYSTEM_VOICES.baconbits).toMatchObject({
       "game-start": "/assets/voice/baconbits_game_start.ogg",
+      sortie: "/assets/voice/baconbits_sortie.ogg",
       "byo-yomi-start": "/assets/voice/baconbits_byo_yomi_start.ogg",
       "byo-yomi-period-2": "/assets/voice/baconbits_byo_yomi_periods.ogg",
       "byo-yomi-period-1": "/assets/voice/baconbits_byo_yomi_periods.ogg",
-      timeout: "/assets/voice/baconbits_timeout.ogg"
+      "result-victory": "/assets/voice/baconbits_result_win.ogg",
+      "result-defeat": "/assets/voice/baconbits_result_loss.ogg"
     });
+    expect(CHARACTER_SYSTEM_VOICES.baconbits).not.toHaveProperty("timeout");
   });
 
   it("includes Denia character system voices", () => {
@@ -348,14 +355,63 @@ describe("background music library", () => {
     });
   });
 
+  it("includes Aemeath character system voices", () => {
+    expect(CHARACTER_SYSTEM_VOICES.aemeath).toMatchObject({
+      "game-start": "/assets/voice/aemeath_match_start.ogg",
+      sortie: "/assets/voice/aemeath_sortie.ogg",
+      "byo-yomi-start": "/assets/voice/aemeath_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/aemeath_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/aemeath_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/aemeath_countdown_10.ogg",
+      "countdown-9": "/assets/voice/aemeath_countdown_9.ogg",
+      "countdown-8": "/assets/voice/aemeath_countdown_8.ogg",
+      "countdown-7": "/assets/voice/aemeath_countdown_7.ogg",
+      "countdown-6": "/assets/voice/aemeath_countdown_6.ogg",
+      "countdown-5": "/assets/voice/aemeath_countdown_5.ogg",
+      "countdown-4": "/assets/voice/aemeath_countdown_4.ogg",
+      "countdown-3": "/assets/voice/aemeath_countdown_3.ogg",
+      "countdown-2": "/assets/voice/aemeath_countdown_2.ogg",
+      "countdown-1": "/assets/voice/aemeath_countdown_1.ogg",
+      "result-victory": "/assets/voice/aemeath_result_win.ogg",
+      "result-defeat": "/assets/voice/aemeath_result_loss.ogg",
+      "result-draw": "/assets/voice/aemeath_result_draw.ogg"
+    });
+  });
+
+  it("includes Nabomo character system voices", () => {
+    expect(CHARACTER_SYSTEM_VOICES.nabomo).toMatchObject({
+      "game-start": "/assets/voice/nabomo_match_start.ogg",
+      sortie: "/assets/voice/nabomo_sortie.ogg",
+      "byo-yomi-start": "/assets/voice/nabomo_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/nabomo_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/nabomo_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/nabomo_countdown_10.ogg",
+      "countdown-9": "/assets/voice/nabomo_countdown_9.ogg",
+      "countdown-8": "/assets/voice/nabomo_countdown_8.ogg",
+      "countdown-7": "/assets/voice/nabomo_countdown_7.ogg",
+      "countdown-6": "/assets/voice/nabomo_countdown_6.ogg",
+      "countdown-5": "/assets/voice/nabomo_countdown_5.ogg",
+      "countdown-4": "/assets/voice/nabomo_countdown_4.ogg",
+      "countdown-3": "/assets/voice/nabomo_countdown_3.ogg",
+      "countdown-2": "/assets/voice/nabomo_countdown_2.ogg",
+      "countdown-1": "/assets/voice/nabomo_countdown_1.ogg",
+      "result-victory": "/assets/voice/nabomo_result_win.ogg",
+      "result-defeat": "/assets/voice/nabomo_result_loss.ogg",
+      "result-draw": "/assets/voice/nabomo_result_draw.ogg"
+    });
+  });
+
   it("merges Baconbits system voices with the skill voice bridge", () => {
     expect(characterVoiceMapForSkill().baconbits).toMatchObject({
       "game-start": "/assets/voice/baconbits_game_start.ogg",
+      sortie: "/assets/voice/baconbits_sortie.ogg",
       "byo-yomi-start": "/assets/voice/baconbits_byo_yomi_start.ogg",
       "byo-yomi-period-2": "/assets/voice/baconbits_byo_yomi_periods.ogg",
       "byo-yomi-period-1": "/assets/voice/baconbits_byo_yomi_periods.ogg",
-      timeout: "/assets/voice/baconbits_timeout.ogg",
-      "skill-cast": "/assets/voice/baconbits_skill.ogg"
+      "result-victory": "/assets/voice/baconbits_result_win.ogg",
+      "result-defeat": "/assets/voice/baconbits_result_loss.ogg",
+      "skill-cast": "/assets/voice/baconbits_skill_cast.ogg"
     });
+    expect(characterVoiceMapForSkill().baconbits).not.toHaveProperty("timeout");
   });
 });

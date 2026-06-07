@@ -117,9 +117,18 @@ export function createSocketHandlers({
       });
     },
     roomClosed: (payload = {}) => {
+      const currentRoom = roomRef.current;
+      const closedRoomCode = payload.roomCode || currentRoom?.code || "";
+      const isFinishedPlayerRoom = currentRoom?.role === "player"
+        && currentRoom?.game?.phase === "finished"
+        && (!payload.roomCode || payload.roomCode === currentRoom.code);
+      if (isFinishedPlayerRoom && closedRoomCode) {
+        setDismissedResultRoom(closedRoomCode);
+      }
       clearLastRoomCode();
       clearRoomUiState();
       setView("home");
+      if (isFinishedPlayerRoom && payload.reason === "finished-room-close") return;
       showToast(payload.message || "房间已关闭");
     },
     errorToast: (message) => {

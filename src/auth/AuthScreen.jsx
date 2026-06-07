@@ -43,12 +43,12 @@ export default function AuthScreen({ onAuth }) {
 
   return (
     <main className="auth-screen">
-      <section className="auth-panel">
+      <section className={`auth-panel login-card-container ${mode === "register" ? "register-card-container" : ""}`}>
         <div className="brand-lockup">
           <img src={CHARACTERS.sigrika.portrait} alt="\u897f\u683c\u8389\u5361" />
           <div>
             <p>SigrikaGo</p>
-            <h1>{"\u661f\u70ac\u5b66\u9662\u56f4\u68cb\u90e8"}</h1>
+            <h1 className="login-title-text">{"\u661f\u70ac\u5b66\u9662\u56f4\u68cb\u90e8"}</h1>
           </div>
         </div>
         <form onSubmit={submit} className="auth-form">
@@ -62,7 +62,7 @@ export default function AuthScreen({ onAuth }) {
             <label>{"\u786e\u8ba4\u5bc6\u7801"}<input type="password" minLength={6} maxLength={14} autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} /></label>
           )}
           {error && <p className="form-error">{error}</p>}
-          <button className="primary-action" type="submit">{authSubmitText(mode)}</button>
+          <button className="primary-action login-submit-btn terminal-enter-btn" type="submit">{authSubmitText(mode)}</button>
         </form>
       </section>
     </main>
@@ -77,7 +77,7 @@ export function validateAuthSubmit({ mode, password, confirmPassword }) {
 }
 
 export function authSubmitText(mode) {
-  return mode === "login" ? "\u8fdb\u5165\u56f4\u68cb\u90e8" : "\u521b\u5efa\u8d26\u53f7";
+  return mode === "login" ? "START CONNECTION!! ⮞" : "\u521b\u5efa\u8d26\u53f7";
 }
 
 export function isAlreadyLoggedInError(error) {

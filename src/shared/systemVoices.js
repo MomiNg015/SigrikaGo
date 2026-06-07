@@ -21,7 +21,6 @@ const DEFAULT_SYSTEM_VOICE_TEXT = {
   [SYSTEM_VOICE_EVENTS.byoYomiStart]: "开始读秒",
   [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "还剩2次读秒",
   [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "还剩1次读秒",
-  [SYSTEM_VOICE_EVENTS.timeout]: "超时",
   [SYSTEM_VOICE_EVENTS.resultVictory]: "对局胜利",
   [SYSTEM_VOICE_EVENTS.resultDefeat]: "对局失败",
   [SYSTEM_VOICE_EVENTS.resultDraw]: "和棋"
@@ -39,6 +38,9 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
   if (countdownMatch) {
     const text = countdownText(Number(countdownMatch[2]));
     if (!text) return { type: "tts", text: "" };
+  }
+  if (event === SYSTEM_VOICE_EVENTS.timeout) {
+    return { type: "tts", text: "" };
   }
   const characterVoice = character?.systemVoices?.[event];
   if (characterVoice) return { type: "audio", src: characterVoice };
