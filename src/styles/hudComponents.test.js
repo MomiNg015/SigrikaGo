@@ -8,18 +8,22 @@ function readCssWithImports(url, seen = new Set()) {
   }
   seen.add(key);
 
-  const css = readFileSync(url, "utf8");
+  const css = normalizeCss(readFileSync(url, "utf8"));
   return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
     return readCssWithImports(new URL(importPath, url), seen);
   });
 }
 
-const hudCss = readFileSync(new URL("./hud-components.css", import.meta.url), "utf8");
-const themeEntryCss = readFileSync(new URL("./themes.css", import.meta.url), "utf8");
+function normalizeCss(css) {
+  return css.replace(/\r\n/g, "\n");
+}
+
+const hudCss = normalizeCss(readFileSync(new URL("./hud-components.css", import.meta.url), "utf8"));
+const themeEntryCss = normalizeCss(readFileSync(new URL("./themes.css", import.meta.url), "utf8"));
 const themesCss = [
   readCssWithImports(new URL("./themes.css", import.meta.url)),
 ].join("\n");
-const stylesCss = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+const stylesCss = normalizeCss(readFileSync(new URL("../styles.css", import.meta.url), "utf8"));
 
 describe("component-level HUD refinements", () => {
   it("keeps the skill burst banner visible above theme overlays", () => {
