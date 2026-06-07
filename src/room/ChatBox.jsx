@@ -1,41 +1,89 @@
-import { useEffect, useRef, useState } from "react";
-import { MessageCircle, Send } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import { MessageCircle, Send, X } from "lucide-react";
 import { CHARACTERS } from "../shared/characters.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { formatMessageTime } from "./roomView.js";
 
 export default function ChatBox({ room, onChat, readonly = false }) {
+  const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState("");
+  const panelId = useId();
+  const widgetRef = useRef(null);
   const logRef = useRef(null);
+  const chatCount = room.chat.length;
 
   useEffect(() => {
     if (!logRef.current) return;
     logRef.current.scrollTop = logRef.current.scrollHeight;
-  }, [room.chat.length]);
+  }, [chatCount, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    function handlePointerDown(event) {
+      if (!widgetRef.current || widgetRef.current.contains(event.target)) return;
+      setIsOpen(false);
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") setIsOpen(false);
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  function submitChat(event) {
+    event.preventDefault();
+    const trimmedText = text.trim();
+    if (!trimmedText) return;
+    onChat(trimmedText);
+    setText("");
+  }
 
   return (
-    <section className="chat-box">
-      <header><MessageCircle size={18} />对局聊天</header>
-      <div className="chat-log" ref={logRef}>
-        {room.chat.map((message) => (
-          <p key={message.id} className={`${message.type} ${message.kind ?? ""}`}>
-            <span>[{message.moveNumber}手 {formatMessageTime(message.createdAt)}]</span>
-            {message.type === "chat" && <strong>{chatName(message, room)}：</strong>}
-            {message.text}
-          </p>
-        ))}
-      </div>
-      {!readonly && (
-        <form onSubmit={(event) => {
-          event.preventDefault();
-          onChat(text);
-          setText("");
-        }}>
-          <input value={text} onChange={(event) => setText(event.target.value)} placeholder="输入聊天内容" />
-          <button><Send size={18} /></button>
-        </form>
+    <div className={isOpen ? "chat-widget open" : "chat-widget"} ref={widgetRef}>
+      <button
+        type="button"
+        className="chat-toggle-button"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        <MessageCircle size={18} />
+        <span>对局聊天</span>
+        <strong>{chatCount}</strong>
+      </button>
+      {isOpen && (
+        <section className="chat-box chat-popover" id={panelId}>
+          <header>
+            <span><MessageCircle size={18} />对局聊天</span>
+            <button type="button" className="chat-close-button" aria-label="关闭对局聊天" onClick={() => setIsOpen(false)}>
+              <X size={17} />
+            </button>
+          </header>
+          <div className="chat-log" ref={logRef}>
+            {room.chat.map((message) => (
+              <p key={message.id} className={`${message.type} ${message.kind ?? ""}`}>
+                <span>[{message.moveNumber}手 {formatMessageTime(message.createdAt)}]</span>
+                {message.type === "chat" && <strong>{chatName(message, room)}：</strong>}
+                {message.text}
+              </p>
+            ))}
+          </div>
+          {!readonly && (
+            <form onSubmit={submitChat}>
+              <input value={text} onChange={(event) => setText(event.target.value)} placeholder="输入聊天内容" />
+              <button type="submit" aria-label="发送聊天消息"><Send size={18} /></button>
+            </form>
+          )}
+        </section>
       )}
-    </section>
+    </div>
   );
 }
 

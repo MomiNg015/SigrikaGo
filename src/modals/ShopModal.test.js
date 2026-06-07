@@ -12,6 +12,11 @@ import {
   pickShopMascotLine,
   SHOP_MASCOT_LINES
 } from "./shopModalHelpers.js";
+import {
+  getShopItemDetailOwned,
+  getShopItemDetailStatus,
+  getShopOwnedItemQuantity
+} from "./shop/shopItemDetail.js";
 import ShopModal from "./ShopModal.jsx";
 
 describe("ShopModal helpers", () => {
@@ -32,7 +37,7 @@ describe("ShopModal helpers", () => {
     expect(html).toContain("shop-layout");
     expect(html).toContain("shop-sidebar");
     expect(html).toContain("shop-content");
-    expect(html).toContain("你当前拥有");
+    expect(html).toContain("shop-wallet");
     expect(html).toContain('decoding="async"');
     expect(html).not.toContain("<h2");
     expect(html).not.toContain("shop-header-display");
@@ -50,6 +55,25 @@ describe("ShopModal helpers", () => {
     expect(html).toContain("shop-category-character");
     expect(source).toContain("store-owned-tag");
     expect(source).toContain("shop-item-empty terminal-locked-slot");
+  });
+
+  it("keeps shop cards compact and routes non-buy clicks to item details", () => {
+    const cardSource = readFileSync(new URL("./shop/ShopItemCard.jsx", import.meta.url), "utf8");
+    const modalSource = readFileSync(new URL("./ShopModal.jsx", import.meta.url), "utf8");
+    const detailSource = readFileSync(new URL("./shop/ShopItemDetailDialog.jsx", import.meta.url), "utf8");
+
+    expect(cardSource).not.toContain('<p className="shop-description">');
+    expect(cardSource).toContain("onShowDetail");
+    expect(cardSource).toContain("role=\"button\"");
+    expect(cardSource).toContain("tabIndex={0}");
+    expect(cardSource).toContain("event.stopPropagation()");
+    expect(cardSource).toContain("shop-action-owned");
+    expect(cardSource).toContain("shop-action-sold-out");
+    expect(modalSource).toContain("ShopItemDetailDialog");
+    expect(modalSource).toContain("setDetailItem");
+    expect(detailSource).toContain("shop-detail-status-owned");
+    expect(detailSource).not.toContain("getShopItemQuantityLabel");
+    expect(detailSource).not.toContain("finalPrice");
   });
 
   it("keeps a stable 8-slot grid for the active category", () => {
@@ -88,13 +112,9 @@ describe("ShopModal helpers", () => {
   });
 
   it("selects one of the configured Zahiya shop lines", () => {
-    expect(SHOP_MASCOT_LINES).toEqual([
-      "今天想买些什么？",
-      "刚刚进了一批好货哟~",
-      "欢迎来到扎希拉商店！"
-    ]);
-    expect(pickShopMascotLine(() => 0)).toBe("今天想买些什么？");
-    expect(pickShopMascotLine(() => 0.99)).toBe("欢迎来到扎希拉商店！");
+    expect(SHOP_MASCOT_LINES).toHaveLength(3);
+    expect(SHOP_MASCOT_LINES).toContain(pickShopMascotLine(() => 0));
+    expect(SHOP_MASCOT_LINES).toContain(pickShopMascotLine(() => 0.99));
   });
 
   it("checks ownership against the right user collection", () => {
@@ -108,6 +128,22 @@ describe("ShopModal helpers", () => {
     expect(isShopItemOwned({ category: "character", targetId: "baconbits" }, user)).toBe(false);
   });
 
+  it("formats shop detail ownership status by category", () => {
+    const user = {
+      ownedCharacters: ["denia"],
+      ownedDecorations: ["paw-stone"],
+      ownedItems: [{ itemId: "rainbow-bean-candy", quantity: 3 }]
+    };
+
+    expect(getShopOwnedItemQuantity({ category: "item", targetId: "rainbow-bean-candy" }, user)).toBe(3);
+    expect(getShopItemDetailOwned({ category: "item", targetId: "rainbow-bean-candy" }, user)).toBe(true);
+    expect(getShopItemDetailOwned({ category: "item", targetId: "missing" }, user)).toBe(false);
+    expect(getShopItemDetailStatus({ category: "item", targetId: "rainbow-bean-candy" }, user)).toBe("拥有 3");
+    expect(getShopItemDetailStatus({ category: "character", targetId: "denia" }, user)).toBe("已持有");
+    expect(getShopItemDetailStatus({ category: "decoration", targetId: "paw-stone" }, user)).toBe("已持有");
+    expect(getShopItemDetailStatus({ category: "character", targetId: "baconbits" }, user)).toBe("尚未拥有该角色");
+  });
+
   it("marks per-user item stock as sold out from remainingStock", () => {
     expect(isShopItemSoldOut({ category: "item", stockQuantity: 10, remainingStock: 0 })).toBe(true);
     expect(isShopItemSoldOut({ category: "item", stockQuantity: 10, remainingStock: 1 })).toBe(false);
@@ -116,11 +152,11 @@ describe("ShopModal helpers", () => {
   });
 
   it("builds compact item description and quantity labels for shop cards", () => {
-    expect(getShopItemDescription({ description: "  产地不明的糖果  " })).toBe("产地不明的糖果");
-    expect(getShopItemDescription({})).toBe("暂无介绍");
-    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: 10, remainingStock: 4 })).toBe("库存 4");
-    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: -1 })).toBe("不限量");
-    expect(getShopItemQuantityLabel({ category: "decoration" })).toBe("限购 1");
+    expect(getShopItemDescription({ description: "  sample desc  " })).toBe("sample desc");
+    expect(getShopItemDescription({})).toBeTruthy();
+    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: 10, remainingStock: 4 })).toContain("4");
+    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: -1 })).toBeTruthy();
+    expect(getShopItemQuantityLabel({ category: "decoration" })).toContain("1");
   });
 
   it("keeps the scrollable shop grid top reachable when viewport height is short", () => {

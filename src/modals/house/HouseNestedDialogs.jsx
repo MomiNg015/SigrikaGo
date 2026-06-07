@@ -25,13 +25,13 @@ export function CharacterDetailDialog({ character, detailOwned, itemEffects, onC
   );
 }
 
-export function HouseReplayDialog({ characterListView, records, onClose, onOpenReplay }) {
+export function HouseReplayDialog({ characterListView, records, currentUser, onClose, onOpenReplay }) {
   return (
     <div className="nested-modal-backdrop" onClick={onClose}>
       <section className="nested-modal replay-dialog" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={onClose}><X size={18} /></button>
         <h3>对局回放</h3>
-        <ReplayList records={records} characters={characterListView} onOpenReplay={onOpenReplay} />
+        <ReplayList records={records} characters={characterListView} currentUser={currentUser} onOpenReplay={onOpenReplay} />
       </section>
     </div>
   );

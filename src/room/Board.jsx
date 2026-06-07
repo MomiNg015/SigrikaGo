@@ -63,6 +63,14 @@ function Board({
           const skillEffectClass = point.skillEffect ?? "";
           const previewClass = canPreviewPoint(game, previewPlayer, point, pendingSkill, Boolean(onScoringPoint)) ? "previewable" : "";
           const decorationImage = point.stone ? stoneDecorationImage(stoneDecorations[point.stone], point.stone) : null;
+          const stoneOffset = point.stone ? stoneOffsetForPoint(point) : null;
+          const stoneStyle = point.stone
+            ? {
+                "--stone-offset-x": `${stoneOffset.x}px`,
+                "--stone-offset-y": `${stoneOffset.y}px`,
+                ...(decorationImage ? { "--stone-decoration-image": `url("${decorationImage}")` } : {})
+              }
+            : undefined;
           const confirmClass = pointConfirmation?.pointId === point.id ? "touch-confirming" : "";
           return (
             <button
@@ -91,7 +99,7 @@ function Board({
               {point.stone && (
                 <span
                   className={`stone ${decorationImage ? "decorated-stone" : ""}`}
-                  style={decorationImage ? { "--stone-decoration-image": `url("${decorationImage}")` } : undefined}
+                  style={stoneStyle}
                 >
                   {markedAction?.id === point.id && <i />}
                   {showMoves && moveNumbers.has(point.id) && <b>{moveNumbers.get(point.id)}</b>}
@@ -122,6 +130,29 @@ export function areBoardPropsEqual(previous, next) {
     && samePreviewPlayer(previous.previewPlayer, next.previewPlayer)
     && Boolean(previous.onScoringPoint) === Boolean(next.onScoringPoint)
     && sameStoneDecorations(previous.stoneDecorations, next.stoneDecorations);
+}
+
+export function stoneOffsetForPoint(point) {
+  const directions = [
+    { x: -1, y: -1 },
+    { x: 0, y: -1 },
+    { x: 1, y: -1 },
+    { x: -1, y: 0 },
+    { x: 1, y: 0 },
+    { x: -1, y: 1 },
+    { x: 0, y: 1 },
+    { x: 1, y: 1 }
+  ];
+  const index = stableHash(`${point.id}:${point.stone ?? ""}`) % directions.length;
+  return directions[index];
+}
+
+function stableHash(value) {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+  return hash;
 }
 
 function samePointConfirmation(previous, next) {

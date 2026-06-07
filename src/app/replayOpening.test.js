@@ -10,8 +10,14 @@ describe("replay opening state", () => {
       }
     };
 
-    expect(replayOpeningState({ record: { snapshot } })).toEqual({
-      room: snapshot,
+    expect(replayOpeningState({ record: { snapshot } })).toMatchObject({
+      room: {
+        code: "12345",
+        game: {
+          history: [{ move: 1 }, { move: 2 }],
+          phase: "finished"
+        }
+      },
       replayStep: 2,
       pendingSkill: false,
       view: "room"
@@ -24,6 +30,29 @@ describe("replay opening state", () => {
     expect(replayOpeningState({ record: { snapshot } })).toMatchObject({
       room: snapshot,
       replayStep: 0
+    });
+  });
+
+  it("hydrates replay snapshots with the record result for portrait badges", () => {
+    const snapshot = {
+      code: "13579",
+      game: {
+        history: [{ move: 1 }]
+      }
+    };
+
+    expect(replayOpeningState({
+      record: {
+        snapshot,
+        winnerColor: "white",
+        resultText: "白中盘胜"
+      }
+    }).room.game).toMatchObject({
+      phase: "finished",
+      winner: {
+        winnerColor: "white",
+        text: "白中盘胜"
+      }
     });
   });
 });

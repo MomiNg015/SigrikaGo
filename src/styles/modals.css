@@ -184,7 +184,7 @@
   position: fixed;
   left: 50%;
   top: 45%;
-  z-index: 30;
+  z-index: 120;
   width: min(720px, calc(100vw - 32px));
   min-height: 138px;
   transform: translate(-50%, -50%);
@@ -237,6 +237,15 @@
 @keyframes skill-burst-color {
   0% { background-position: 0% 50%; }
   100% { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled .skill-burst,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-burst {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) !important;
+  }
 }
 
 .replay-list {
@@ -296,6 +305,21 @@
   border-radius: 8px;
   background: #ffffff;
   color: #2d2430;
+}
+
+.replay-table-row.outcome-win {
+  border-color: #bce8ca;
+  background: linear-gradient(135deg, #ecfff1, #f7fff9);
+}
+
+.replay-table-row.outcome-loss {
+  border-color: #d8d8de;
+  background: linear-gradient(135deg, #f1f2f4, #fafafa);
+}
+
+.replay-table-row.outcome-draw {
+  border-color: #ecd179;
+  background: linear-gradient(135deg, #fff4bd, #fffbe7);
 }
 
 .replay-player-cell {
@@ -1172,4 +1196,34 @@
 .profile-resume-hero img,
 .warehouse-effect-result img {
   filter: drop-shadow(0 0 18px rgba(0, 255, 190, 0.26)) drop-shadow(0 16px 24px rgba(0, 0, 0, 0.34));
+}
+
+.replay-table-row.outcome-win {
+  border-color: #9fd8ac !important;
+  background: #e8f7ea !important;
+  color: #1f5130 !important;
+}
+
+.replay-table-row.outcome-win span {
+  color: #1f5130 !important;
+}
+
+.replay-table-row.outcome-loss {
+  border-color: #cfcfd4 !important;
+  background: #eeeeef !important;
+  color: #3f4248 !important;
+}
+
+.replay-table-row.outcome-loss span {
+  color: #3f4248 !important;
+}
+
+.replay-table-row.outcome-draw {
+  border-color: #ead487 !important;
+  background: #fff6cf !important;
+  color: #5b4820 !important;
+}
+
+.replay-table-row.outcome-draw span {
+  color: #5b4820 !important;
 }

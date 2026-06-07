@@ -138,7 +138,7 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(html).toContain("is-deployed");
     expect(html).toContain("class=\"deploy-tag\"");
-    expect(html).toContain("[DEPLOYED]");
+    expect(html).toContain("[出战中]");
     expect(html).toContain("lock-character-card");
     expect(html).toContain("lock-text-title");
     expect(html).toContain("character-grid-container");

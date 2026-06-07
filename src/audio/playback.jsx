@@ -1,27 +1,25 @@
 import { useEffect, useRef } from "react";
 import { BOARD_SOUND_TYPES } from "../shared/boardAudio.js";
-import { BGM_FADE_SECONDS, BGM_START_DELAY_SECONDS, createDuckedVolume, createPlaybackKey, createPlaybackSchedule, createVolumeRamp } from "../shared/audioScheduling.js";
+import { BGM_FADE_SECONDS, BGM_START_DELAY_SECONDS, createPlaybackKey, createPlaybackSchedule, createVolumeRamp } from "../shared/audioScheduling.js";
 import { VOICE_EFFECT_SETTINGS, audioBufferStats, boostedVoiceVolume, createAiryReverbImpulse, voiceNormalizationGain } from "../shared/voiceEffects.js";
+import { DEFAULT_AUDIO_SETTINGS, audioVolume } from "./audioSettings.js";
+import { browserAudioContextClass } from "./audioRuntime.js";
+import { beginVoicePlayback, currentDuckedBackgroundVolume, endVoicePlaybackSoon, subscribeBackgroundDuck } from "./backgroundDucking.js";
+
+export { DEFAULT_AUDIO_SETTINGS, audioVolume, loadAudioSettings } from "./audioSettings.js";
+export { playCountdownBeep, playDoorbellSound } from "./proceduralSounds.js";
 
 export const STONE_SOUND = "/assets/music/godown_clear.ogg";
 export const CAPTURE_SOUND = "/assets/music/go_capture_clear.ogg";
 export const HIDDEN_HAND_REVEAL_SOUND = "/assets/music/hidden_hand_reveal.ogg";
 
-export const DEFAULT_AUDIO_SETTINGS = {
-  master: 80,
-  bgm: 50,
-  sfx: 80,
-  voice: 80
-};
-
 const voiceBufferCache = new Map();
 const voicePromiseCache = new Map();
 const effectBufferCache = new Map();
 const effectPromiseCache = new Map();
-const backgroundDuckSubscribers = new Set();
 let sharedVoiceContext = null;
 let sharedEffectContext = null;
-let activeVoiceCount = 0;
+let activeVoicePlayback = null;
 
 export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
   const playerRef = useRef({
@@ -43,10 +41,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
   useEffect(() => {
     const state = playerRef.current;
     const refresh = () => setBackgroundVolume(state);
-    backgroundDuckSubscribers.add(refresh);
-    return () => {
-      backgroundDuckSubscribers.delete(refresh);
-    };
+    return subscribeBackgroundDuck(refresh);
   }, []);
 
   useEffect(() => installBackgroundResumeTriggers(playerRef.current), []);
@@ -89,7 +84,7 @@ function recoverBackgroundPlayback(state) {
 
 function getBackgroundAudioContext(state) {
   if (state.context) return state.context;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const AudioContextClass = browserAudioContextClass();
   if (!AudioContextClass) return null;
   state.context = new AudioContextClass();
   return state.context;
@@ -206,10 +201,7 @@ function setBackgroundVolume(state) {
 }
 
 function currentBackgroundVolume(state) {
-  return createDuckedVolume({
-    volume: state.baseVolume,
-    activeVoiceCount
-  });
+  return currentDuckedBackgroundVolume(state.baseVolume);
 }
 
 function fadeOutBackgroundPlayers(state) {
@@ -240,21 +232,6 @@ function applyGainRamp(param, ramp) {
     if (event.type === "set") param.setValueAtTime(event.value, event.time);
     if (event.type === "linear") param.linearRampToValueAtTime(event.value, event.time);
   }
-}
-
-export function loadAudioSettings() {
-  try {
-    return {
-      ...DEFAULT_AUDIO_SETTINGS,
-      ...JSON.parse(localStorage.getItem("sigrika-audio-settings") ?? "{}")
-    };
-  } catch {
-    return DEFAULT_AUDIO_SETTINGS;
-  }
-}
-
-export function audioVolume(settings, channel) {
-  return Math.max(0, Math.min(1, ((settings?.master ?? DEFAULT_AUDIO_SETTINGS.master) / 100) * ((settings?.[channel] ?? 100) / 100)));
 }
 
 export function playEffectSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS) {
@@ -315,8 +292,7 @@ async function playEffectBuffer(src, volume) {
 
 function getEffectAudioContext() {
   if (sharedEffectContext && sharedEffectContext.state !== "closed") return sharedEffectContext;
-  if (typeof window === "undefined") return null;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const AudioContextClass = browserAudioContextClass();
   if (!AudioContextClass) return null;
   try {
     sharedEffectContext = new AudioContextClass();
@@ -378,8 +354,7 @@ export function playPreloadedVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTI
 
 function getVoiceAudioContext() {
   if (sharedVoiceContext && sharedVoiceContext.state !== "closed") return sharedVoiceContext;
-  if (typeof window === "undefined") return null;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const AudioContextClass = browserAudioContextClass();
   if (!AudioContextClass) return null;
   try {
     sharedVoiceContext = new AudioContextClass();
@@ -409,12 +384,28 @@ async function playVoiceBuffer(buffer, volume) {
   source.buffer = buffer;
 
   const cleanupNodes = connectVoiceSource(context, source, normalizedVoiceVolume(buffer, volume));
-  beginVoicePlayback();
-  source.start();
-  source.onended = () => {
+  let released = false;
+  const voiceHandle = {
+    stop: () => {
+      try {
+        source.stop();
+      } catch {
+        // The source may already be stopped by the browser.
+      }
+    }
+  };
+  const release = () => {
+    if (released) return;
+    released = true;
+    if (activeVoicePlayback === voiceHandle) activeVoicePlayback = null;
     endVoicePlaybackSoon();
     setTimeout(cleanupNodes, VOICE_EFFECT_SETTINGS.reverbSeconds * 1000 + 250);
   };
+  stopActiveVoicePlayback();
+  activeVoicePlayback = voiceHandle;
+  beginVoicePlayback();
+  source.start();
+  source.onended = release;
 }
 
 function normalizedVoiceVolume(buffer, volume) {
@@ -456,13 +447,19 @@ function connectVoiceSource(context, source, volume) {
 }
 
 function playVoiceSoundFallback(src, volume) {
+  stopActiveVoicePlayback();
   const audio = new Audio(src);
   audio.preload = "auto";
   audio.volume = volume;
+  const voiceHandle = {
+    stop: () => audio.pause()
+  };
+  activeVoicePlayback = voiceHandle;
   let released = false;
   const release = () => {
     if (released) return;
     released = true;
+    if (activeVoicePlayback === voiceHandle) activeVoicePlayback = null;
     endVoicePlaybackSoon();
   };
   audio.addEventListener("play", beginVoicePlayback, { once: true });
@@ -472,20 +469,15 @@ function playVoiceSoundFallback(src, volume) {
   audio.play().catch(() => {});
 }
 
-function beginVoicePlayback() {
-  activeVoiceCount += 1;
-  notifyBackgroundDuckSubscribers();
-}
-
-function endVoicePlaybackSoon() {
-  window.setTimeout(() => {
-    activeVoiceCount = Math.max(0, activeVoiceCount - 1);
-    notifyBackgroundDuckSubscribers();
-  }, 180);
-}
-
-function notifyBackgroundDuckSubscribers() {
-  for (const subscriber of backgroundDuckSubscribers) subscriber();
+function stopActiveVoicePlayback() {
+  const active = activeVoicePlayback;
+  if (!active) return;
+  activeVoicePlayback = null;
+  try {
+    active.stop();
+  } catch {
+    // Some browser playback objects can only be stopped once.
+  }
 }
 
 export function playStoneSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
@@ -509,56 +501,12 @@ export function playBoardSound(boardSoundAction, audioSettings = DEFAULT_AUDIO_S
   playStoneSound(audioSettings);
 }
 
-export function playCountdownBeep(second, audioSettings = DEFAULT_AUDIO_SETTINGS) {
-  const volume = audioVolume(audioSettings, "sfx");
-  if (volume <= 0) return;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return;
-  const context = new AudioContextClass();
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
-  oscillator.type = second <= 3 ? "square" : "sine";
-  oscillator.frequency.setValueAtTime(second <= 3 ? 880 : 620, context.currentTime);
-  gain.gain.setValueAtTime(0.001, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime((second <= 3 ? 0.2 : 0.13) * volume, context.currentTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.11);
-  oscillator.connect(gain);
-  gain.connect(context.destination);
-  oscillator.start();
-  oscillator.stop(context.currentTime + 0.12);
-}
-
-export function playDoorbellSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
-  const volume = audioVolume(audioSettings, "sfx");
-  if (volume <= 0) return;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return;
-  const context = new AudioContextClass();
-  if (context.state === "suspended") context.resume().catch(() => {});
-  const tones = [
-    { at: 0, frequency: 784, length: 0.18 },
-    { at: 0.16, frequency: 1046.5, length: 0.28 }
-  ];
-  for (const tone of tones) {
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    const start = context.currentTime + tone.at;
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(tone.frequency, start);
-    gain.gain.setValueAtTime(0.001, start);
-    gain.gain.exponentialRampToValueAtTime(0.2 * volume, start + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, start + tone.length);
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start(start);
-    oscillator.stop(start + tone.length + 0.04);
-  }
-}
-
 export function speakText(text, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   const volume = audioVolume(audioSettings, "voice");
   if (volume <= 0) return;
+  if (typeof window === "undefined") return;
   if (!("speechSynthesis" in window)) return;
+  stopActiveVoicePlayback();
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "zh-CN";

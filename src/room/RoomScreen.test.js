@@ -1,8 +1,139 @@
 import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
+import { CHARACTERS } from "../shared/characters.js";
+import { COLORS, createGameState } from "../shared/game.js";
 import { effectiveRoomRole, roomCloseCountdownText, roomGameInfoForPlayers, shouldPlayGameStartVoice, shouldShowRoomCloseCountdown } from "./RoomScreen.jsx";
+import RoomScreen from "./RoomScreen.jsx";
 
 describe("RoomScreen helpers", () => {
+  it("renders a replay room snapshot in spectator view", () => {
+    const players = [
+      {
+        color: COLORS.black,
+        user: { id: "black", username: "black", rank: "1段", rating: 1000 },
+        characterId: "sigrika",
+        character: CHARACTERS.sigrika,
+        captures: 0,
+        skillRemovals: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+      },
+      {
+        color: COLORS.white,
+        user: { id: "white", username: "white", rank: "1段", rating: 1000 },
+        characterId: "denia",
+        character: CHARACTERS.denia,
+        captures: 0,
+        skillRemovals: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+      }
+    ];
+    const game = createGameState(players);
+    const html = renderToStaticMarkup(createElement(RoomScreen, {
+      room: {
+        code: "12345",
+        role: "player",
+        players,
+        spectators: [],
+        spectatorCount: 0,
+        chat: [],
+        game
+      },
+      user: players[0].user,
+      token: "token",
+      characters: CHARACTERS,
+      replayStep: 0,
+      setReplayStep: () => {},
+      pendingSkill: false,
+      setPendingSkill: () => {},
+      audioSettings: { master: 0, bgm: 0, sfx: 0, voice: 0 },
+      onOpenSettings: () => {},
+      onOpenMessageBoard: () => {},
+      onBack: () => {},
+      onGameAction: () => {},
+      onCountingRequest: () => {},
+      onCountingRespond: () => {},
+      onDrawRequest: () => {},
+      onDrawRespond: () => {},
+      onScoringAction: () => {},
+      onChat: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("board");
+    expect(html).toContain("replay-step-indicator");
+  });
+
+  it("renders the skill banner while the room carries a pending skill preview", () => {
+    const players = [
+      {
+        color: COLORS.black,
+        user: { id: "black", username: "black", rank: "1段", rating: 1000 },
+        characterId: "sigrika",
+        character: CHARACTERS.sigrika,
+        captures: 0,
+        skillRemovals: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+      },
+      {
+        color: COLORS.white,
+        user: { id: "white", username: "white", rank: "1段", rating: 1000 },
+        characterId: "denia",
+        character: CHARACTERS.denia,
+        captures: 0,
+        skillRemovals: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+      }
+    ];
+    const game = createGameState(players);
+    game.phase = "skill-preview";
+    game.pendingSkill = {
+      id: "skill-preview-1",
+      color: COLORS.black,
+      username: "black",
+      characterId: "sigrika",
+      character: CHARACTERS.sigrika,
+      characterName: CHARACTERS.sigrika.name,
+      itemEffects: {},
+      skillName: CHARACTERS.sigrika.skill.name
+    };
+
+    const html = renderToStaticMarkup(createElement(RoomScreen, {
+      room: {
+        code: "12345",
+        role: "player",
+        players,
+        spectators: [],
+        spectatorCount: 0,
+        chat: [],
+        game
+      },
+      user: players[0].user,
+      token: "token",
+      characters: CHARACTERS,
+      replayStep: null,
+      setReplayStep: () => {},
+      pendingSkill: false,
+      setPendingSkill: () => {},
+      audioSettings: { master: 0, bgm: 0, sfx: 0, voice: 0 },
+      onOpenSettings: () => {},
+      onOpenMessageBoard: () => {},
+      onBack: () => {},
+      onGameAction: () => {},
+      onCountingRequest: () => {},
+      onCountingRespond: () => {},
+      onDrawRequest: () => {},
+      onDrawRespond: () => {},
+      onScoringAction: () => {},
+      onChat: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("skill-burst");
+    expect(html).toContain(CHARACTERS.sigrika.skill.name);
+  });
+
   it("formats room header game information", () => {
     const blackPlayer = { user: { username: "moming", rank: "9段" } };
     const whitePlayer = { user: { username: "露露米", rank: "2段" } };
@@ -210,6 +341,30 @@ describe("RoomScreen helpers", () => {
     expect(css).toContain("\"dock dock dock\"");
   });
 
+  it("turns room chat into an anchored popover button", () => {
+    const chatSource = readFileSync(new URL("./ChatBox.jsx", import.meta.url), "utf8");
+    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+
+    expect(chatSource).toContain("chat-toggle-button");
+    expect(chatSource).toContain("aria-expanded={isOpen}");
+    expect(chatSource).toContain("aria-controls={panelId}");
+    expect(chatSource).toContain("document.addEventListener(\"pointerdown\", handlePointerDown)");
+    expect(chatSource).toContain("document.addEventListener(\"keydown\", handleKeyDown)");
+    expect(chatSource).toContain("event.key === \"Escape\"");
+    expect(chatSource).toContain("setIsOpen(false)");
+    expect(chatSource).toContain("className=\"chat-box chat-popover\"");
+    expect(chatSource).toContain("const trimmedText = text.trim()");
+    expect(roomCss).toContain(".chat-widget");
+    expect(roomCss).toContain(".chat-toggle-button");
+    expect(roomCss).toContain(".chat-popover");
+    expect(roomCss).toContain("bottom: calc(100% + 10px)");
+    expect(roomCss).toContain("transform-origin: right bottom");
+    expect(roomCss).toContain("@keyframes chat-popover-open");
+    expect(brightSchoolCss).toContain(".chat-toggle-button");
+    expect(brightSchoolCss).toContain(".chat-popover");
+  });
+
   it("applies the Startorch battlefield terminal skin after mobile room styles", () => {
     const stylesEntry = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
     const terminalCss = readFileSync(new URL("../styles/room-terminal.css", import.meta.url), "utf8");
@@ -264,4 +419,15 @@ function mediaBlock(css, marker) {
   if (start < 0) return "";
   const next = css.indexOf("\n@media", start + 1);
   return css.slice(start, next >= 0 ? next : undefined);
+}
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readFileSync(url, "utf8");
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) =>
+    readCssWithImports(new URL(importPath, url), seen),
+  );
 }

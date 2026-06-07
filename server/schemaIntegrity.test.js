@@ -52,4 +52,27 @@ describe("Prisma schema integrity", () => {
     expect(existsSync(migrationPath)).toBe(true);
     expect(readFileSync(migrationPath, "utf8")).toContain("CREATE TABLE IF NOT EXISTS \"PersistedRoom\"");
   });
+
+  it("tracks structured user assets and progress ledgers through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606050001_add_structured_user_assets",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    for (const modelName of [
+      "UserCharacter",
+      "UserDecoration",
+      "UserItem",
+      "UserItemEffect",
+      "UserProgressLedger"
+    ]) {
+      expect(schema).toContain(`model ${modelName}`);
+      expect(migration).toContain(`CREATE TABLE IF NOT EXISTS "${modelName}"`);
+    }
+  });
 });

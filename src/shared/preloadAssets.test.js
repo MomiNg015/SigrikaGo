@@ -44,7 +44,9 @@ describe("deployment preload asset helpers", () => {
     expect(assets.audio).toContain("/assets/music/busizhe_loop.ogg");
     expect(assets.audio).toContain("/assets/voice/sigrika_skill_cast.ogg");
     expect(assets.audio).toContain("/assets/voice/denia_skill_cast.ogg");
-    expect(assets.audio).toContain("/assets/voice/baconbits_skill.ogg");
+    expect(assets.audio).toContain("/assets/voice/baconbits_skill_cast.ogg");
+    expect(assets.audio).toContain("/assets/voice/baconbits_result_win.ogg");
+    expect(assets.audio).toContain("/assets/voice/baconbits_result_loss.ogg");
     expect(assets.audio).toContain("/assets/voice/sigrika_countdown_10.ogg");
   });
 

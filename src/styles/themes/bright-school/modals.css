@@ -1,0 +1,276 @@
+/* Bright School handbook decoration and roster cleanup layer. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.unowned {
+  background: linear-gradient(135deg, #eee9e2, #ddd7cf) !important;
+  color: #746a62 !important;
+  border: 3px dashed rgba(61, 43, 37, 0.48) !important;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.36) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked .sortie-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.unowned .sortie-button {
+  display: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked :where(strong, small, span),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.unowned :where(strong, small, span) {
+  color: #746a62 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .deploy-tag {
+  background: #dff5df !important;
+  color: #235534 !important;
+  border: 2px solid #235534 !important;
+  border-radius: 999px !important;
+  box-shadow: 2px 2px 0 rgba(35, 85, 52, 0.62) !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section {
+  background: transparent !important;
+  color: #3d2b25 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 14px 0 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list {
+  background: transparent !important;
+  color: #3d2b25 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header {
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-reset-action {
+  width: 38px !important;
+  min-width: 38px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  border-radius: 999px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip {
+  background: #fffaf0 !important;
+  color: #3d2b25 !important;
+  border: 2px solid #3d2b25 !important;
+  border-radius: 14px !important;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.56) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip.selected {
+  background: #dff5df !important;
+  color: #235534 !important;
+  border-color: #235534 !important;
+  box-shadow: 2px 3px 0 rgba(35, 85, 52, 0.52) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip.selected strong {
+  color: #235534 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip .stone-decoration-preview {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip .stone-decoration-preview span {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Bright School final surface cleanup for handbook/settings/lobby comments. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list::after {
+  background: transparent !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section {
+  padding: 10px 0 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header {
+  min-height: 28px !important;
+  margin: 0 0 10px !important;
+  padding: 0 !important;
+  gap: 8px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header h3 {
+  line-height: 28px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-reset-action {
+  width: 28px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 !important;
+  border: 2px solid #3d2b25 !important;
+  border-radius: 10px !important;
+  box-shadow: 1px 2px 0 rgba(61, 43, 37, 0.56) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-reset-action svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 2.6 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .deploy-tag {
+  min-height: 24px !important;
+  padding: 4px 10px !important;
+  font-size: 13px !important;
+  letter-spacing: 0.02em !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-panel.settings-modal-content {
+  background: transparent !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-panel.settings-modal-content::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-panel.settings-modal-content::after {
+  display: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-portrait {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  filter:
+    drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.2))
+    drop-shadow(0 10px 18px rgba(255, 158, 187, 0.24)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+  background:
+    radial-gradient(circle at 16% 45%, rgba(255, 158, 187, 0.45), transparent 34%),
+    linear-gradient(135deg, #ffe5ee 0%, #fff4d8 48%, #dff5df 100%) !important;
+  color: #3d2b25 !important;
+  border-color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-header .quiet-text {
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  color: #6a554d !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Bright School targeted fixes for stage transparency and decoration wrappers. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel.home-terminal-main,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel.home-terminal-main::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel.home-terminal-main::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel .home-stage,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel .home-stage::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel .home-stage::after {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-header,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-list {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-header::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-header::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-list::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-list::after {
+  display: none !important;
+  content: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-header {
+  margin: 0 0 8px !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-list {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-portrait {
+  animation: match-hop 0.9s ease-in-out infinite !important;
+  transform-origin: 50% 82% !important;
+  will-change: transform !important;
+}

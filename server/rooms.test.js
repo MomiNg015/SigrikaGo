@@ -25,6 +25,7 @@ vi.mock("./db.js", () => ({
 
 import {
   attachSocketToRoom,
+  broadcastRoom,
   clearRoomsForTest,
   clearRoomTimers,
   completeRoomOpening,
@@ -348,6 +349,32 @@ describe("rooms character integration", () => {
     expect(room.chat.at(-1).text).toContain("target D-10");
   });
 
+  test("broadcasts a pending skill preview before resolving the skill", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    joinMatchmaking({ user: user("preview-black", "sigrika"), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("preview-white", "sigrika"), socketId: "socket-b" }, io);
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+    io.messages = [];
+
+    const black = room.players.find((player) => player.color === COLORS.black);
+    const result = handleGameAction(room.code, black.user.id, { type: "skill", pointId: pointId(3, 3) }, io);
+    expect(result.ok).toBe(true);
+    broadcastRoom(io, room);
+
+    const previewUpdate = io.messages.find((message) => (
+      message.socketId === "socket-a"
+      && message.event === "room:update"
+      && message.payload?.game?.pendingSkill
+    ));
+    expect(previewUpdate?.payload.game.pendingSkill).toMatchObject({
+      id: expect.any(String),
+      characterId: "sigrika",
+      skillName: CHARACTERS.sigrika.skill.name
+    });
+  });
+
   test("renders targetColor from the targeted stone before a skill mutates it", () => {
     const characterConfig = {
       id: "danea",
@@ -425,6 +452,9 @@ describe("rooms removable test tools", () => {
   });
 
   test("handles random layout and skill restore actions", () => {
+    const originalEnableTestActions = process.env.ENABLE_TEST_ACTIONS;
+    process.env.ENABLE_TEST_ACTIONS = "true";
+    try {
     const characterConfig = {
       id: "aemeath",
       name: "Aemeath",
@@ -459,9 +489,16 @@ describe("rooms removable test tools", () => {
     expect(layoutResult.ok).toBe(true);
     expect(room.game.points.filter((point) => point.stone === COLORS.black)).toHaveLength(50);
     expect(room.game.points.filter((point) => point.stone === COLORS.white)).toHaveLength(50);
+    } finally {
+      if (originalEnableTestActions === undefined) delete process.env.ENABLE_TEST_ACTIONS;
+      else process.env.ENABLE_TEST_ACTIONS = originalEnableTestActions;
+    }
   });
 
   test("test tool can force the acting player into byo-yomi", () => {
+    const originalEnableTestActions = process.env.ENABLE_TEST_ACTIONS;
+    process.env.ENABLE_TEST_ACTIONS = "true";
+    try {
     const io = fakeIo();
     joinMatchmaking({ user: user("test-alice", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("test-bob", "sigrika"), socketId: "socket-b" }, io);
@@ -478,11 +515,17 @@ describe("rooms removable test tools", () => {
     expect(white.time.main).toBe(0);
     expect(white.time.periodRemaining).toBe(white.time.byoYomi);
     expect(room.chat.at(-1).text).toContain("测试工具");
+    } finally {
+      if (originalEnableTestActions === undefined) delete process.env.ENABLE_TEST_ACTIONS;
+      else process.env.ENABLE_TEST_ACTIONS = originalEnableTestActions;
+    }
   });
 
-  test("rejects removable test tool actions in production", () => {
+  test("rejects removable test tool actions unless explicitly enabled", () => {
     const originalNodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = "production";
+    const originalEnableTestActions = process.env.ENABLE_TEST_ACTIONS;
+    process.env.NODE_ENV = "development";
+    delete process.env.ENABLE_TEST_ACTIONS;
     try {
       const io = fakeIo();
       joinMatchmaking({ user: user("test-alice", "aemeath"), socketId: "socket-a" }, io);
@@ -498,6 +541,33 @@ describe("rooms removable test tools", () => {
     } finally {
       if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
       else process.env.NODE_ENV = originalNodeEnv;
+      if (originalEnableTestActions === undefined) delete process.env.ENABLE_TEST_ACTIONS;
+      else process.env.ENABLE_TEST_ACTIONS = originalEnableTestActions;
+    }
+  });
+
+  test("rejects removable test tool actions in production", () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+    const originalEnableTestActions = process.env.ENABLE_TEST_ACTIONS;
+    process.env.NODE_ENV = "production";
+    process.env.ENABLE_TEST_ACTIONS = "true";
+    try {
+      const io = fakeIo();
+      joinMatchmaking({ user: user("test-alice", "aemeath"), socketId: "socket-a" }, io);
+      const room = joinMatchmaking({ user: user("test-bob", "aemeath"), socketId: "socket-b" }, io);
+      completeRoomOpening(room, io);
+      clearRoomTimers(room);
+
+      const black = room.players.find((player) => player.color === COLORS.black);
+      const result = handleGameAction(room.code, black.user.id, { type: "test-enter-byo-yomi" }, io);
+
+      expect(result.ok).toBe(false);
+      expect(result.error).toBe("测试工具仅开发环境可用");
+    } finally {
+      if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = originalNodeEnv;
+      if (originalEnableTestActions === undefined) delete process.env.ENABLE_TEST_ACTIONS;
+      else process.env.ENABLE_TEST_ACTIONS = originalEnableTestActions;
     }
   });
 
@@ -783,6 +853,70 @@ describe("room participants view", () => {
     expect(restored.chat.at(-1)).toMatchObject({ kind: "reconnect" });
   });
 
+  test("resumes pending skill resolution after persisted room restore", async () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    joinMatchmaking({ user: user("skill-restore-black", "sigrika"), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("skill-restore-white", "sigrika"), socketId: "socket-b" }, io);
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+
+    const black = room.players.find((player) => player.color === COLORS.black);
+    const targetId = pointId(3, 3);
+    expect(handleGameAction(room.code, black.user.id, { type: "skill", pointId: targetId }, io).ok).toBe(true);
+    broadcastRoom(io, room);
+    const snapshot = prismaMocks.executeRaw.mock.calls.findLast((call) => call[1] === room.code && typeof call[3] === "string")?.[3];
+    expect(snapshot).toBeTruthy();
+
+    clearRoomsForTest();
+    prismaMocks.queryRaw.mockResolvedValue([{ code: room.code, status: "active", snapshot }]);
+    await restorePersistedRooms(io);
+    const restored = findRoomForUser("skill-restore-black", room.code);
+
+    expect(restored.game.phase).toBe(GAME_PHASES.skillPreview);
+    vi.advanceTimersByTime(2000);
+
+    expect(restored.game.phase).toBe(GAME_PHASES.playing);
+    expect(getPoint(restored.game, targetId).valid).toBe(false);
+    expect(restored.game.history.at(-1)).toMatchObject({ type: "skill", id: targetId });
+  });
+
+  test("resumes pending passive skill resolution after persisted room restore", async () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    joinMatchmaking({ user: user("passive-restore-black", "nabomo", CHARACTERS.nabomo), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("passive-restore-white", "sigrika", CHARACTERS.sigrika), socketId: "socket-b" }, io);
+    Math.random.mockRestore();
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+
+    expect(startInitialPassiveSkillNow(room, io)).toBe(true);
+    broadcastRoom(io, room);
+    const snapshot = prismaMocks.executeRaw.mock.calls.findLast((call) => call[1] === room.code && typeof call[3] === "string")?.[3];
+    expect(snapshot).toBeTruthy();
+
+    clearRoomsForTest();
+    prismaMocks.queryRaw.mockResolvedValue([{ code: room.code, status: "active", snapshot }]);
+    await restorePersistedRooms(io);
+    const restored = findRoomForUser("passive-restore-black", room.code);
+
+    expect(restored.game.phase).toBe(GAME_PHASES.skillPreview);
+    vi.advanceTimersByTime(2000);
+
+    const nabomo = restored.players.find((player) => player.characterId === "nabomo");
+    expect(restored.game.phase).toBe(GAME_PHASES.playing);
+    expect(restored.game.passives[nabomo.color].colorIllusion).toMatchObject({
+      active: true,
+      triggered: true
+    });
+    expect(restored.game.history.at(-1)).toMatchObject({
+      type: "skill",
+      effectType: "color-illusion-passive",
+      color: nabomo.color
+    });
+  });
+
   test("closes active rooms as invalid after both players are absent for five minutes", () => {
     vi.useFakeTimers();
     const io = fakeIo();
@@ -804,7 +938,7 @@ describe("room participants view", () => {
     expect(prismaMocks.gameRecordCreate).not.toHaveBeenCalled();
   });
 
-  test("sends a toast payload when finished rooms close after five minutes", () => {
+  test("keeps finished rooms open while participants are connected and closes them silently after they leave", () => {
     vi.useFakeTimers();
     const io = fakeIo();
     joinMatchmaking({ user: user("close-black", "sigrika"), socketId: "socket-a" }, io);
@@ -817,11 +951,14 @@ describe("room participants view", () => {
     expect(result.ok).toBe(true);
     vi.advanceTimersByTime(5 * 60 * 1000);
 
-    expect(io.messages.some((message) => (
-      message.socketId === "socket-a"
-      && message.event === "room:closed"
-      && message.payload?.message === "房间因空置5分钟以上而被关闭"
-    ))).toBe(true);
+    expect(findRoomForUser("close-black", room.code)).toBe(room);
+    expect(io.messages.some((message) => message.event === "room:closed")).toBe(false);
+
+    detachSocket("socket-a", io);
+    detachSocket("socket-b", io);
+    vi.advanceTimersByTime(5 * 60 * 1000);
+
+    expect(io.messages.some((message) => message.event === "room:closed")).toBe(false);
     expect(findRoomForUser("close-black", room.code)).toBeNull();
   });
 });

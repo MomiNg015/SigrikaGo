@@ -49,7 +49,7 @@ function PlayerInfo({
       <div className="portrait-wrap">
         <img src={playerCandyPortrait(character, player)} alt={character.name} />
         {disconnectBadge && <span className="disconnect-badge">{disconnectBadge}</span>}
-        {resultBadge && <span className={`result-badge ${resultBadge === "胜" ? "win" : "loss"}`}>{resultBadge}</span>}
+        {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       </div>
       <div className="player-meta">
         <button className="name-button">{player.user.username}</button>
@@ -83,6 +83,7 @@ function PlayerInfo({
       >
         <button
           className={`skill-chip ${skillUses <= 0 ? "spent" : ""} ${isSkillTargeting ? "targeting" : ""}`}
+          style={skillChipStyle(character)}
           type="button"
           onClick={() => setSkillDetailOpen((open) => !open)}
           onFocus={() => setSkillDetailOpen(true)}
@@ -143,9 +144,10 @@ function gamePlayerSliceEqual(previousGame, nextGame, color) {
 }
 
 export function resultBadgeForPlayer(player, game, { isWinner = false, isDrawResult = false } = {}) {
-  if (!player || isDrawResult || game.winner?.invalid) return null;
-  if (isWinner) return "胜";
-  return game.phase === "finished" ? "负" : null;
+  if (!player || game.winner?.invalid) return null;
+  if (isDrawResult) return { label: "和", tone: "draw" };
+  if (isWinner) return { label: "胜", tone: "win" };
+  return game.phase === "finished" ? { label: "负", tone: "loss" } : null;
 }
 
 export function disconnectBadgeForPlayer(player, game) {
@@ -158,4 +160,10 @@ export function playerCandyPortrait(character = {}, player = {}) {
     { ...character, id: canonicalCharacterId(player.characterId ?? character.id) },
     player.user?.itemEffects
   );
+}
+
+function skillChipStyle(character = {}) {
+  return {
+    "--skill-chip-accent": character.palette || "#ff9b4d"
+  };
 }

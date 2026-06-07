@@ -38,7 +38,6 @@ export default function AppOverlays({
   setShowShop,
   setShowWarehouse,
   setShowWatch,
-  setVisualEffect,
   setVisualTheme,
   showFriends,
   showHouse,
@@ -55,7 +54,6 @@ export default function AppOverlays({
   toasts,
   updateUser,
   user,
-  visualEffect,
   visualTheme
 }) {
   return (
@@ -167,8 +165,6 @@ export default function AppOverlays({
           setAudioSettings={setAudioSettings}
           visualTheme={visualTheme}
           setVisualTheme={setVisualTheme}
-          visualEffect={visualEffect}
-          setVisualEffect={setVisualEffect}
           onClose={() => setShowSettings(false)}
         />
       )}

@@ -94,6 +94,7 @@ export default function HouseModal({ user, records, characterListView, audioSett
           <HouseReplayDialog
             characterListView={characterListView}
             records={records}
+            currentUser={user}
             onClose={() => setShowReplays(false)}
             onOpenReplay={onOpenReplay}
           />

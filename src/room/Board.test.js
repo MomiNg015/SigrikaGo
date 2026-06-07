@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
-import { areBoardPropsEqual } from "./Board.jsx";
+import { areBoardPropsEqual, stoneOffsetForPoint } from "./Board.jsx";
 
 describe("areBoardPropsEqual", () => {
   test("keeps the board memoized when only handler references change", () => {
@@ -59,6 +59,78 @@ describe("areBoardPropsEqual", () => {
     expect(latestMoveBlock).not.toContain("width: 9px");
     expect(latestMoveBlock).not.toContain("height: 9px");
   });
+
+  test("uses stable one-pixel directional stone offsets for a hand-placed board feel", () => {
+    const point = { id: "3,10", x: 3, y: 10, stone: "black" };
+    const first = stoneOffsetForPoint(point);
+    const second = stoneOffsetForPoint({ ...point });
+    const differentStone = stoneOffsetForPoint({ ...point, stone: "white" });
+
+    expect(first).toEqual(second);
+    expect(first).not.toEqual({ x: 0, y: 0 });
+    expect(Math.abs(first.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(first.y)).toBeLessThanOrEqual(1);
+    expect(Math.abs(first.x) || Math.abs(first.y)).toBeGreaterThanOrEqual(1);
+    expect(differentStone).not.toEqual(first);
+  });
+
+  test("keeps board grid strokes uniform with first-line strokes at 2.5x across themes", () => {
+    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const brightSchoolCss = readFileSync(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url), "utf8");
+
+    expect(readStrokeWidth(roomCss, ".board-lines line")).toBe(0.64);
+    expect(readStrokeWidth(roomCss, ".board-lines line.edge-line")).toBe(1.6);
+    expect(readStrokeWidth(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-lines line")).toBe(0.8);
+    expect(readStrokeWidth(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-lines line.edge-line")).toBe(2);
+    expect(roomCss.match(/\.board-lines line\s*\{[^}]+\}/)?.[0] ?? "").toContain("stroke-linecap: square");
+    expect(roomCss.match(/\.board-lines line\s*\{[^}]+\}/)?.[0] ?? "").toContain("shape-rendering: geometricPrecision");
+  });
+
+  test("bright school keeps board stones square and centered on intersections", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const boardPointBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.point\s*\{[^}]+\}/)?.[0] ?? "";
+    const boardStoneBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.stone\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(css).not.toMatch(/\.theme-bright-school\.theme-bright-school \.white\s*\{/);
+    expect(boardPointBlock).toContain("min-width: 0");
+    expect(boardPointBlock).toContain("min-height: 0");
+    expect(boardPointBlock).toContain("aspect-ratio: 1 / 1");
+    expect(boardStoneBlock).toContain("aspect-ratio: 1 / 1");
+    expect(boardStoneBlock).toContain("left: 50%");
+    expect(boardStoneBlock).toContain("top: 50%");
+    expect(boardStoneBlock).toContain("var(--stone-offset-x, 0px)");
+    expect(boardStoneBlock).toContain("var(--stone-offset-y, 0px)");
+  });
+
+  test("bright school keeps skill targeting glow separate from star-point dots", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const targetingBlock = css.slice(css.indexOf("Bright School skill targeting repair."));
+
+    expect(targetingBlock).toContain(".board-wrap.targeting");
+    expect(targetingBlock).toContain("--bright-school-board-targeting-shadow-0");
+    expect(targetingBlock).toContain("--bright-school-board-targeting-shadow-50");
+    expect(targetingBlock).toContain("--bright-school-board-targeting-shadow-100");
+    expect(targetingBlock).toContain("box-shadow:");
+    expect(targetingBlock).toContain("animation: bright-school-board-targeting-glow 1.15s linear infinite !important");
+    expect(targetingBlock).toContain("animation: bright-school-board-targeting-aura 1.15s linear infinite !important");
+    expect(targetingBlock).toContain("@keyframes bright-school-board-targeting-glow");
+    expect(targetingBlock).toContain("@keyframes bright-school-board-targeting-aura");
+    expect(targetingBlock).toContain(".board .point.star:not(.black):not(.white):not(.erased)::after");
+    expect(targetingBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(targetingBlock).toContain(".board-wrap.targeting .point.previewable::before");
+    expect(targetingBlock).toContain(".board .point.star:not(.black):not(.white):not(.erased)::before");
+    expect(targetingBlock).toContain("content: none !important");
+  });
+
+  test("bright school keeps scoring markers centered on board intersections", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const scoringBlock = css.slice(css.indexOf("Bright School board scoring mark repair."));
+
+    expect(scoringBlock).toContain(".board :is(.territory-mark, .dead-mark, .neutral-mark)");
+    expect(scoringBlock).toContain("left: 50% !important");
+    expect(scoringBlock).toContain("top: 50% !important");
+    expect(scoringBlock).toContain("transform: translate(-50%, -50%) !important");
+  });
 });
 
 function boardProps(overrides = {}) {
@@ -74,4 +146,24 @@ function boardProps(overrides = {}) {
     onNeutral: () => {},
     ...overrides
   };
+}
+
+function readStrokeWidth(css, selector) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const block = css.match(new RegExp(`${escapedSelector}\\s*\\{[^}]+\\}`))?.[0] ?? "";
+  const value = block.match(/stroke-width:\s*([0-9.]+)/)?.[1];
+
+  expect(value).toBeTruthy();
+  return Number(value);
+}
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readFileSync(url, "utf8");
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
+    return readCssWithImports(new URL(importPath, url), seen);
+  });
 }

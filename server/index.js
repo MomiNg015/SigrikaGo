@@ -188,7 +188,7 @@ app.post("/api/feedback", authHttp, async (req, res) => {
       content: req.body.content
     }));
   } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "鍙嶉鎻愪氦澶辫触" });
+    res.status(error.status ?? 500).json({ error: error.message ?? "反馈提交失败" });
   }
 });
 
@@ -240,7 +240,7 @@ app.post("/api/social/friends/:targetId", authHttp, async (req, res) => {
     });
     res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
   } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "鎿嶄綔澶辫触" });
+    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
   }
 });
 
@@ -264,7 +264,7 @@ app.post("/api/social/blacklist/:targetId", authHttp, async (req, res) => {
     });
     res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
   } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "鎿嶄綔澶辫触" });
+    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
   }
 });
 
@@ -327,7 +327,7 @@ app.post("/api/shop/:id/purchase", authHttp, async (req, res) => {
   try {
     res.json(await purchaseShopItem({ prisma, userId: req.user.id, itemId: req.params.id }));
   } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "璐拱澶辫触" });
+    res.status(error.status ?? 500).json({ error: error.message ?? "购买失败" });
   }
 });
 
@@ -348,7 +348,7 @@ app.post("/api/items/:itemId/use", authHttp, async (req, res) => {
       characterId: req.body.characterId
     }));
   } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "浣跨敤閬撳叿澶辫触" });
+    res.status(error.status ?? 500).json({ error: error.message ?? "使用道具失败" });
   }
 });
 
@@ -635,7 +635,7 @@ io.on("connection", (socket) => {
       if (!room) socket.emit("match:waiting", { startedAt: Date.now() });
       broadcastLobbyStats();
     } catch (error) {
-      socket.emit("error:toast", "鐧诲綍鐘舵€佸凡澶辨晥锛岃閲嶆柊鐧诲綍");
+      socket.emit("error:toast", "登录状态已失效，请重新登录");
     }
   });
 
@@ -653,7 +653,7 @@ io.on("connection", (socket) => {
     }
     const room = attachSocketToRoom(validatedRoomCode.value, socket, socket.user);
     if (!room) {
-      socket.emit("error:toast", "鎴块棿涓嶅瓨鍦ㄦ垨宸茬粡鍏抽棴");
+      socket.emit("error:toast", "房间不存在或已经关闭");
       return;
     }
     socket.emit("room:update", roomView(room, socket.user.id));
@@ -733,7 +733,7 @@ io.on("connection", (socket) => {
       await refreshSocketUser(socket);
       await duelRequests.handleRequest(socket, String(targetUserId ?? ""));
     } catch (error) {
-      socket.emit("error:toast", "鐧诲綍鐘舵€佸凡澶辨晥锛岃閲嶆柊鐧诲綍");
+      socket.emit("error:toast", "登录状态已失效，请重新登录");
     }
   });
 
@@ -743,7 +743,7 @@ io.on("connection", (socket) => {
       await duelRequests.handleResponse(socket, String(requestId ?? ""), Boolean(accepted));
       broadcastLobbyStats();
     } catch (error) {
-      socket.emit("error:toast", "鐧诲綍鐘舵€佸凡澶辨晥锛岃閲嶆柊鐧诲綍");
+      socket.emit("error:toast", "登录状态已失效，请重新登录");
     }
   });
 

@@ -1,12 +1,7 @@
 import { useState } from "react";
-import { Bell, Info, Mic2, Music, Palette, Sparkles, Volume2, X } from "lucide-react";
+import { Bell, Info, Mic2, Music, Palette, Volume2, X } from "lucide-react";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
-import {
-  DEFAULT_VISUAL_EFFECT,
-  DEFAULT_VISUAL_THEME,
-  VISUAL_EFFECT_LEVELS,
-  VISUAL_THEMES
-} from "../app/visualTheme.js";
+import { DEFAULT_VISUAL_THEME, VISUAL_THEMES } from "../app/visualTheme.js";
 
 export default function SettingsModal({
   siteSettings = DEFAULT_SITE_SETTINGS,
@@ -14,8 +9,6 @@ export default function SettingsModal({
   setAudioSettings,
   visualTheme = DEFAULT_VISUAL_THEME,
   setVisualTheme = () => {},
-  visualEffect = DEFAULT_VISUAL_EFFECT,
-  setVisualEffect = () => {},
   onClose
 }) {
   const [tab, setTab] = useState("audio");
@@ -70,22 +63,6 @@ export default function SettingsModal({
                   >
                     <strong>{theme.name}</strong>
                     <span>{theme.description}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="theme-choice-group">
-              <span className="theme-choice-heading"><Sparkles size={14} />{"\u7279\u6548\u5f3a\u5ea6"}</span>
-              <div className="theme-choice-grid">
-                {VISUAL_EFFECT_LEVELS.map((effect) => (
-                  <button
-                    type="button"
-                    key={effect.id}
-                    className={`theme-choice-button ${visualEffect === effect.id ? "active" : ""}`}
-                    onClick={() => setVisualEffect(effect.id)}
-                  >
-                    <strong>{effect.name}</strong>
-                    <span>{effect.description}</span>
                   </button>
                 ))}
               </div>

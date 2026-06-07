@@ -94,7 +94,7 @@ export function UserProfileCard({
               {loadingReplays && <p className="quiet-text">加载中...</p>}
               {replayError && <p className="room-people-error">{replayError}</p>}
               {!loadingReplays && !replayError && (
-                <ReplayList records={replays} characters={characters} onOpenReplay={onOpenReplay} />
+                <ReplayList records={replays} characters={characters} currentUser={user} onOpenReplay={onOpenReplay} />
               )}
             </div>
           </section>

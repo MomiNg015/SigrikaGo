@@ -37,7 +37,12 @@ import { deletePersistedRoom, listPersistedRooms } from "./roomPersistence.js";
 import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
 import { applyResultRewardsToRoomUsers } from "./roomRewards.js";
 import { buildRoomView } from "./roomView.js";
-import { normalizeChatText, validatePointId, validateRoomCode } from "./security.js";
+import {
+  canSchedulePendingSkillResolution,
+  createPendingSkillResolution,
+  pendingSkillResolutionDelay
+} from "./roomSkillResolution.js";
+import { canUseDebugTestActions, normalizeChatText, validatePointId, validateRoomCode } from "./security.js";
 
 const rooms = new Map();
 let waitingPlayers = [];
@@ -258,7 +263,7 @@ export function handleGameAction(roomCode, userId, action, io) {
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能操作棋局" };
   if (room.game.pendingSkill) return { ok: false, error: "技能演出中" };
-  if (TEST_ACTIONS.has(action.type) && process.env.NODE_ENV === "production") {
+  if (TEST_ACTIONS.has(action.type) && !canUseDebugTestActions(process.env)) {
     return { ok: false, error: "测试工具仅开发环境可用" };
   }
 
@@ -291,23 +296,19 @@ export function handleGameAction(roomCode, userId, action, io) {
       itemEffects: player.user.itemEffects ?? {},
       skillName: skill.name
     };
+    room.pendingSkillResolution = createPendingSkillResolution({
+      pendingSkillId: pendingSkill.id,
+      game: result.state,
+      notices: result.notices ?? [],
+      playerColor: player.color
+    });
     room.game = {
       ...room.game,
       phase: GAME_PHASES.skillPreview,
       pendingSkill
     };
     appendSystem(room, skillNotice, { kind: "skill" });
-    scheduleRoomTimeout(room, () => {
-      const latest = rooms.get(code);
-      if (!latest || latest.game.pendingSkill?.id !== pendingSkill.id) return;
-      result.state.pendingSkill = null;
-      latest.game = result.state;
-      resetByoYomi(player);
-      appendNotices(latest, result.notices);
-      if (latest.game.phase === GAME_PHASES.finished) scheduleRoomClose(roomCode, io);
-      else maybeStartPassiveSkill(latest, io);
-      broadcastRoom(io, latest);
-    }, 2000);
+    schedulePendingSkillResolution(room, io);
     return { ok: true, room };
   }
 
@@ -674,20 +675,49 @@ function maybeStartPassiveSkill(room, io) {
     itemEffects: player.user.itemEffects ?? {},
     skillName: skill.name
   };
+  const result = activatePassiveSkill(room.game, player.color, skill);
+  if (!result.ok) return false;
+  room.pendingSkillResolution = createPendingSkillResolution({
+    pendingSkillId: pendingSkill.id,
+    game: result.state,
+    notices: result.notices ?? [],
+    playerColor: player.color
+  });
   room.game = {
     ...room.game,
     phase: GAME_PHASES.skillPreview,
     pendingSkill
   };
   appendSystem(room, describeSkillUse(room, player, null), { kind: "skill" });
+  schedulePendingSkillResolution(room, io);
+  return true;
+}
+
+function schedulePendingSkillResolution(room, io) {
+  const resolution = room.pendingSkillResolution;
+  if (!canSchedulePendingSkillResolution(resolution)) return false;
+  const delay = pendingSkillResolutionDelay(resolution);
   scheduleRoomTimeout(room, () => {
-    const latest = rooms.get(room.code);
-    if (!latest || latest.game.pendingSkill?.id !== pendingSkill.id) return;
-    const result = activatePassiveSkill(latest.game, player.color, skill);
-    if (!result.ok) return;
-    latest.game = result.state;
-    broadcastRoom(io, latest);
-  }, 2000);
+    completePendingSkillResolution(room.code, resolution.pendingSkillId, io);
+  }, delay);
+  return true;
+}
+
+function completePendingSkillResolution(roomCode, pendingSkillId, io) {
+  const latest = rooms.get(roomCode);
+  if (!latest || latest.game.pendingSkill?.id !== pendingSkillId) return false;
+  const resolution = latest.pendingSkillResolution;
+  if (!resolution?.game) return false;
+  const resolvedGame = structuredClone(resolution.game);
+  resolvedGame.pendingSkill = null;
+  latest.pendingSkillResolution = null;
+  latest.game = resolvedGame;
+  const player = latest.players.find((candidate) => candidate.color === resolution.playerColor);
+  if (player) resetByoYomi(player);
+  appendNotices(latest, resolution.notices ?? []);
+  if (latest.game.phase === GAME_PHASES.finished) scheduleRoomClose(roomCode, io);
+  else maybeStartPassiveSkill(latest, io);
+  broadcastRoom(io, latest);
   return true;
 }
 
@@ -904,16 +934,33 @@ function scheduleRoomClose(roomCode, io) {
   }
   persistRoom(room, { force: true });
   scheduleRoomTimeout(room, () => {
-    closeRoom(roomCode, io, { message: EMPTY_ROOM_CLOSED_TOAST });
+    const latest = rooms.get(roomCode);
+    if (!latest) return;
+    if (hasConnectedRoomParticipant(latest)) {
+      latest.closesAt = Date.now() + ROOM_CLOSE_DELAY_MS;
+      persistRoom(latest, { force: true });
+      scheduleRoomClose(roomCode, io);
+      return;
+    }
+    closeRoom(roomCode, io, { reason: "finished-room-close" });
   }, Math.max(0, room.closesAt - Date.now()));
 }
 
-function closeRoom(roomCode, io, { message = "" } = {}) {
+function hasConnectedRoomParticipant(room) {
+  return [...room.players, ...room.spectators].some((participant) => participant.socketId);
+}
+
+function closeRoom(roomCode, io, { message = "", reason = "" } = {}) {
   const room = rooms.get(roomCode);
   if (!room) return;
   clearRoomTimers(room);
+  const payload = {
+    ...(message ? { message } : {}),
+    ...(reason ? { reason } : {}),
+    roomCode
+  };
   for (const participant of [...room.players, ...room.spectators]) {
-    if (participant.socketId) io.to(participant.socketId).emit("room:closed", message ? { message } : {});
+    if (participant.socketId) io.to(participant.socketId).emit("room:closed", payload);
   }
   rooms.delete(roomCode);
   deletePersistedRoom(prisma, roomCode).catch((error) => {
@@ -978,7 +1025,7 @@ function persistRoom(room, { force = false } = {}) {
 function resumeRoomTimers(room, io) {
   if (room.game.phase === GAME_PHASES.finished) {
     if (room.closesAt && room.closesAt <= Date.now()) {
-      closeRoom(room.code, io, { message: EMPTY_ROOM_CLOSED_TOAST });
+      closeRoom(room.code, io, { reason: "finished-room-close" });
       return false;
     }
     scheduleRoomClose(room.code, io);
@@ -990,8 +1037,10 @@ function resumeRoomTimers(room, io) {
     else scheduleGameStart(room, io);
   } else {
     if (room.game.phase === GAME_PHASES.skillPreview) {
-      room.game.phase = GAME_PHASES.playing;
-      room.game.pendingSkill = null;
+      if (!schedulePendingSkillResolution(room, io)) {
+        room.game.phase = GAME_PHASES.playing;
+        room.game.pendingSkill = null;
+      }
     }
     startGameClock(room, io);
     schedulePendingRoomDeadlines(room, io);

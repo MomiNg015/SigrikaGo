@@ -1,10 +1,13 @@
 import { X } from "lucide-react";
+import { useState } from "react";
 import ShopItemCard from "./shop/ShopItemCard.jsx";
+import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
 import ShopSidebar from "./shop/ShopSidebar.jsx";
 import ShopTabs from "./shop/ShopTabs.jsx";
 import { useShopCatalog } from "./shop/useShopCatalog.js";
 
 export default function ShopModal({ token, user, onPurchased, onNotice, onClose }) {
+  const [detailItem, setDetailItem] = useState(null);
   const {
     activeCategory,
     activePage,
@@ -37,6 +40,7 @@ export default function ShopModal({ token, user, onPurchased, onNotice, onClose 
                   purchasingId={purchasingId}
                   user={user}
                   onBuy={buyItem}
+                  onShowDetail={setDetailItem}
                 />
               ))}
             </div>
@@ -54,6 +58,7 @@ export default function ShopModal({ token, user, onPurchased, onNotice, onClose 
             </div>
           </div>
         </div>
+        <ShopItemDetailDialog item={detailItem} user={user} onClose={() => setDetailItem(null)} />
       </section>
     </div>
   );

@@ -103,8 +103,8 @@ describe("HomeScreen", () => {
     expect(hoverBlock).toContain("transform: translateY(-10px)");
     expect(hoverBlock).toContain("border-color: var(--home-terminal-cyan)");
     expect(tacticalTextBlock).toContain("content: attr(data-hud)");
-    expect(html).toContain('data-hud="DIARY_LOG (｡•̀ᴗ- )✧"');
-    expect(html).toContain('data-hud="MATCH_READY!! ✦"');
+    expect(html).toContain('data-hud="部员手册"');
+    expect(html).toContain('data-hud="匹配对局"');
     expect(matchBlock).toContain("border-color: rgba(0, 191, 255, 0.32)");
   });
 

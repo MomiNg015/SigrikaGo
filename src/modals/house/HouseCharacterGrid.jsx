@@ -47,16 +47,13 @@ export default function HouseCharacterGrid({
               <Flag size={18} />
             </button>
             <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
-            {selectedCharacter === characterId && <span className="deploy-tag">[DEPLOYED]</span>}
+            {selectedCharacter === characterId && <span className="deploy-tag">[出战中]</span>}
             <strong>{character.name}</strong>
           </div>
         );
       })}
       {emptySlots.map((slot) => (
         <div className="character-card portrait-card locked lock-character-card" key={`empty-${slot}`}>
-          <button className="sortie-button" disabled title="未获得">
-            <Flag size={18} />
-          </button>
           <span className="locked-portrait lock-text-title">LOCK</span>
           <strong>LOADING... (x_x)</strong>
           <small>LOCK / LOADING... (x_x)</small>

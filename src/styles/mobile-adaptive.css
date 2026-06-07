@@ -1,0 +1,680 @@
+/* Final mobile adaptation pass for 320px-768px devices. */
+
+@media (max-width: 768px) {
+  html,
+  body,
+  #root,
+  .app-shell {
+    max-width: 100vw;
+    overflow-x: clip;
+  }
+
+  .app-shell {
+    min-height: 100dvh;
+  }
+
+  img,
+  svg,
+  canvas,
+  video {
+    max-width: 100%;
+  }
+
+  input,
+  select,
+  textarea {
+    min-width: 0;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  button,
+  [role="button"],
+  .primary-action,
+  .secondary-action,
+  .danger-action,
+  .match-button,
+  .icon-button,
+  .close-button,
+  .toggle,
+  .mobile-tab-button,
+  .shop-tabs button,
+  .settings-tabs button,
+  .friends-tabs button,
+  .shop-pagination button,
+  .replay-open-button,
+  .friend-gear-button,
+  .friend-action-row button,
+  .duel-request-actions button,
+  .room-request-toast-actions button,
+  .room-request-toast-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .auth-screen,
+  .home-screen,
+  .room-screen,
+  .admin-screen {
+    width: min(100%, calc(100vw - 16px));
+    max-width: calc(100vw - 16px);
+    min-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .topbar,
+  .room-header,
+  .admin-main header,
+  .admin-section-header,
+  .house-header,
+  .warehouse-header,
+  .leaderboard-header,
+  .friends-modal-toolbar,
+  .owned-decoration-header,
+  .shop-header {
+    min-width: 0;
+  }
+
+  .topbar-actions,
+  .room-toggles,
+  .inline-actions,
+  .confirm-actions,
+  .decision-actions,
+  .profile-footer-actions,
+  .profile-relation-actions {
+    gap: 8px;
+  }
+
+  .room-toggles {
+    flex-wrap: nowrap;
+  }
+
+  .room-toggles .toggle,
+  .home-top-strip .topbar-actions .icon-button,
+  .home-top-strip .admin-nav-action {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+
+  .modal-backdrop {
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      calc(8px + env(safe-area-inset-right))
+      calc(8px + env(safe-area-inset-bottom))
+      calc(8px + env(safe-area-inset-left));
+    overflow-x: hidden;
+  }
+
+  .small-modal,
+  .confirm-modal,
+  .result-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .settings-modal,
+  .message-board-modal,
+  .room-floating-modal,
+  .character-target-modal,
+  .profile-replay-dialog,
+  .shop-item-detail-modal {
+    width: min(100%, calc(100vw - 16px));
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .small-modal,
+  .confirm-modal,
+  .settings-modal,
+  .message-board-modal,
+  .room-floating-modal,
+  .character-target-modal,
+  .profile-replay-dialog,
+  .shop-item-detail-modal {
+    padding: 14px;
+  }
+
+  .settings-tabs,
+  .friends-tabs,
+  .shop-tabs,
+  .shop-pagination {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    gap: 6px;
+  }
+
+  .settings-tabs button,
+  .friends-tabs button,
+  .shop-tabs button,
+  .shop-pagination button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  .settings-body,
+  .settings-panel,
+  .message-board-body,
+  .house-layout,
+  .owned-decoration-section,
+  .warehouse-grid,
+  .leaderboard-table,
+  .friends-list,
+  .watch-room-table,
+  .profile-replay-list-scroll {
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .message-board-modal {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 10px;
+  }
+
+  .message-board-modal textarea {
+    min-height: min(180px, 36dvh);
+    resize: vertical;
+  }
+
+  .result-modal,
+  .shop-item-detail-modal,
+  .character-detail,
+  .profile-resume-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .result-modal {
+    gap: 12px;
+    text-align: center;
+  }
+
+  .result-winner img {
+    width: min(136px, 40vw);
+    height: min(136px, 40vw);
+  }
+
+  .result-rewards,
+  .profile-resume-stats,
+  .profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shop-modal {
+    height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    display: grid;
+  }
+
+  .shop-layout {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .shop-sidebar {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    grid-template-rows: auto;
+    align-items: center;
+    justify-items: stretch;
+    gap: 8px;
+    padding: 8px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(226, 207, 231, 0.55);
+    overflow: hidden;
+  }
+
+  .shop-mascot-bubble {
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .shop-mascot-slot {
+    width: 52px;
+    height: 58px;
+    margin: 0;
+  }
+
+  .shop-wallet-wrap {
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    justify-items: end;
+  }
+
+  .shop-wallet {
+    max-width: 100%;
+    min-height: 44px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .shop-content {
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .shop-grid {
+    min-height: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(204px, auto);
+    gap: 8px;
+    align-content: start;
+    overflow: auto;
+    padding-right: 2px;
+  }
+
+  .shop-item {
+    min-width: 0;
+    min-height: 204px;
+    height: auto;
+    grid-template-rows: 58px minmax(32px, auto) minmax(40px, 1fr) 44px;
+    gap: 6px;
+    padding: 9px;
+  }
+
+  .shop-item img,
+  .shop-item > svg,
+  .shop-item .stone-decoration-preview {
+    height: 58px;
+  }
+
+  .shop-item > strong,
+  .shop-price,
+  .shop-price b {
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  .shop-description,
+  .shop-card-meta > span {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .shop-card-meta {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .shop-item .primary-action {
+    min-height: 44px;
+    padding: 8px 7px;
+  }
+
+  .shop-item-detail-modal {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: auto;
+  }
+
+  .shop-detail-art {
+    min-height: 160px;
+  }
+
+  .shop-detail-copy p {
+    min-height: 0;
+    font-size: 14px;
+  }
+
+  .leaderboard-modal,
+  .friends-modal,
+  .house-modal,
+  .warehouse-modal,
+  .settings-modal {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .leaderboard-table,
+  .friends-list,
+  .watch-room-table,
+  .replay-table {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .leaderboard-heading,
+  .leaderboard-row,
+  .leaderboard-current,
+  .friends-list-heading,
+  .friends-row,
+  .friend-action-row,
+  .watch-room-head,
+  .watch-room-row,
+  .replay-table-heading,
+  .replay-table-row {
+    min-width: min(680px, 178vw);
+  }
+
+  .friends-modal-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .friend-search {
+    width: 100%;
+    min-height: 48px;
+    grid-template-columns: minmax(0, 1fr) 44px;
+  }
+
+  .friend-search input,
+  .friend-search button,
+  .friend-gear-button,
+  .friend-action-row button {
+    min-height: 44px;
+    height: auto;
+  }
+
+  .friend-search button,
+  .friend-gear-button {
+    width: 44px;
+  }
+
+  .house-modal .character-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(128px, auto);
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .owned-decoration-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
+  }
+
+  .owned-decoration-chip {
+    width: 100%;
+    min-height: 64px;
+  }
+
+  .warehouse-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .warehouse-item {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+
+  .warehouse-item .primary-action {
+    justify-self: stretch;
+  }
+
+  .duel-request-banner,
+  .room-request-toast {
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px 44px 16px 12px;
+    top: max(10px, calc(env(safe-area-inset-top) + 10px));
+  }
+
+  .duel-request-actions,
+  .room-request-toast-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .mobile-room-screen {
+    --mobile-room-edge-gap: 6px;
+    --mobile-room-board-size: min(calc(100vw - 18px), calc(100dvh - 292px), 390px);
+    --mobile-room-dock-panel-height: clamp(104px, 17dvh, 138px);
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    min-height: 0;
+    margin: 0;
+    padding:
+      calc(6px + env(safe-area-inset-top))
+      calc(6px + env(safe-area-inset-right))
+      calc(6px + env(safe-area-inset-bottom))
+      calc(6px + env(safe-area-inset-left));
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .room-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .mobile-room-screen .room-title-line {
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .room-code-label,
+  .mobile-room-screen .room-info-tag.move-count,
+  .mobile-room-screen .room-info-tag.close-countdown {
+    min-height: 28px;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .mobile-room-screen .room-toggles {
+    display: grid;
+    grid-template-columns: repeat(2, 44px);
+    gap: 6px;
+    justify-content: end;
+  }
+
+  .mobile-room-screen .room-toggles .toggle {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-rows: minmax(62px, auto) minmax(0, 1fr) minmax(62px, auto) auto;
+    gap: var(--mobile-room-edge-gap);
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-board-viewport {
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .player-info {
+    min-height: 62px;
+    max-height: 84px;
+    grid-template-columns: 40px minmax(0, 1fr) minmax(104px, 0.95fr);
+    grid-template-rows: minmax(0, 34px) minmax(0, 28px);
+    grid-template-areas:
+      "portrait meta time"
+      "captures captures skill";
+    padding: 5px 6px;
+    gap: 3px 5px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .player-info img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .mobile-room-screen .player-meta {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .mobile-room-screen .name-button {
+    max-width: 100%;
+    font-size: 11px;
+  }
+
+  .mobile-room-screen .digital-timer {
+    min-width: 0;
+    min-height: 36px;
+    grid-template-columns: auto minmax(38px, 1fr);
+    padding: 4px 5px;
+  }
+
+  .mobile-room-screen .timer-primary {
+    min-width: 3.3ch;
+    font-size: 19px;
+  }
+
+  .mobile-room-screen .timer-track {
+    min-width: 38px;
+  }
+
+  .mobile-room-screen .captures {
+    min-width: 0;
+    gap: 3px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .captures span {
+    min-width: 0;
+    min-height: 22px;
+    padding: 2px 4px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .mobile-room-screen .skill-chip {
+    min-height: 28px;
+    padding: 3px 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: var(--mobile-room-board-size);
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .mobile-room-screen .board-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: clamp(8px, 2.3vw, 12px);
+    grid-template-columns: 15px minmax(0, 1fr) 15px;
+    grid-template-rows: 15px minmax(0, 1fr) 15px;
+  }
+
+  .mobile-room-screen .mobile-room-dock {
+    flex: 0 0 auto;
+    max-height: calc(var(--mobile-room-dock-panel-height) + 58px);
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    max-height: var(--mobile-room-dock-panel-height);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar {
+    grid-auto-rows: 44px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar button {
+    min-height: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .mobile-room-screen {
+    --mobile-room-edge-gap: 5px;
+    --mobile-room-dock-panel-height: 58px;
+    --mobile-room-board-size: min(100%, calc(100dvh - 126px), calc(100vw - 232px));
+    width: 100vw;
+    height: 100dvh;
+    max-width: 100vw;
+    min-height: 0;
+    padding:
+      calc(4px + env(safe-area-inset-top))
+      calc(4px + env(safe-area-inset-right))
+      calc(4px + env(safe-area-inset-bottom))
+      calc(4px + env(safe-area-inset-left));
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    grid-template-areas:
+      "opponent board self"
+      "dock dock dock";
+    grid-template-columns: minmax(94px, 0.5fr) minmax(220px, 1.45fr) minmax(94px, 0.5fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: var(--mobile-room-edge-gap);
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: var(--mobile-room-board-size);
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .mobile-room-screen .player-info {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-room-dock {
+    max-height: 100px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    max-height: var(--mobile-room-dock-panel-height);
+  }
+}
+
+@media (max-width: 360px) and (orientation: portrait) {
+  .mobile-room-screen {
+    --mobile-room-board-size: min(calc(100vw - 16px), calc(100dvh - 316px), 336px);
+  }
+
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-rewards,
+  .profile-resume-stats,
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}

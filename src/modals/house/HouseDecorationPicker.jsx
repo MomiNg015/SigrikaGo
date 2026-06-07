@@ -1,3 +1,4 @@
+import { RotateCcw } from "lucide-react";
 import { getStoneDecoration } from "../../shared/stoneDecorations.js";
 import StoneDecorationPreview from "../StoneDecorationPreview.jsx";
 
@@ -13,8 +14,14 @@ export default function HouseDecorationPicker({
       <div className="owned-decoration-header">
         <h3>装饰</h3>
         {selectedStoneDecoration && (
-          <button className="secondary-action compact-action" disabled={applyingDecoration === "default"} onClick={() => onApplyDecoration("")}>
-            恢复初始装饰
+          <button
+            className="secondary-action compact-action decoration-reset-action"
+            disabled={applyingDecoration === "default"}
+            onClick={() => onApplyDecoration("")}
+            aria-label="恢复初始装饰"
+            title="恢复初始装饰"
+          >
+            <RotateCcw size={18} />
           </button>
         )}
       </div>

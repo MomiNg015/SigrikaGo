@@ -23,10 +23,11 @@ describe("SettingsModal terminal style hooks", () => {
 
     expect(source).toContain('tab === "theme"');
     expect(source).toContain("VISUAL_THEMES.map");
-    expect(source).toContain("VISUAL_EFFECT_LEVELS.map");
     expect(source).toContain("theme-choice-button");
     expect(source).toContain("onClick={() => setVisualTheme(theme.id)}");
-    expect(source).toContain("onClick={() => setVisualEffect(effect.id)}");
     expect(source).toContain("onChange={(event) => setAudioSettings");
+    expect(source).not.toContain("VISUAL_EFFECT_LEVELS");
+    expect(source).not.toContain("setVisualEffect");
+    expect(source).not.toContain("visualEffect");
   });
 });

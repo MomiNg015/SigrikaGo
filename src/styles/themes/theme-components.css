@@ -1,0 +1,130 @@
+/* Shared player-theme component states.
+   Keep this layer theme-agnostic so future skins inherit stable game semantics. */
+.app-shell.player-theme-enabled .timer.byo-yomi .timer-primary {
+  color: #df2f2f !important;
+  text-shadow: 0 0 8px rgba(255, 82, 82, 0.36) !important;
+}
+
+.app-shell.player-theme-enabled .result-badge.win {
+  color: #d91528 !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: #d91528 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .result-badge.win {
+  color: #d91528 !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: #d91528 !important;
+}
+
+.app-shell.player-theme-enabled .result-badge.loss {
+  color: #121217 !important;
+}
+
+.app-shell.player-theme-enabled .result-badge.draw {
+  color: #138a46 !important;
+}
+
+.app-shell.player-theme-enabled .skill-chip,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .skill-chip {
+  background:
+    linear-gradient(105deg, color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 42%, #fff3d8), color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 30%, #fffaf0), color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 36%, #e8f7ff)) padding-box,
+    linear-gradient(105deg, color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 90%, #7a4f19), color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 76%, #ff4f9a), color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 66%, #18b889)) border-box !important;
+  color: #2f2233 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78), 0 8px 20px color-mix(in srgb, var(--skill-chip-accent, #ff9b4d) 24%, transparent) !important;
+}
+
+.app-shell.player-theme-enabled .skill-chip.spent,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip.spent,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .skill-chip.spent {
+  background:
+    linear-gradient(135deg, #ece7e3, #d8d7d6 52%, #f5f1ea) padding-box,
+    linear-gradient(135deg, #8d858c, #c4bfc5, #77737a) border-box !important;
+  color: #5f5962 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62), 0 5px 10px rgba(58, 50, 60, 0.1) !important;
+}
+
+.app-shell.player-theme-enabled .replay-table-row.outcome-win,
+.app-shell.player-theme-enabled .replay-table-row.outcome-win:hover,
+.app-shell.player-theme-enabled .replay-table-row.outcome-win:focus-visible {
+  border-color: #9fd8ac !important;
+  background: #e8f7ea !important;
+  color: #1f5130 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-win,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-win:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-win:focus-visible {
+  border-color: #9fd8ac !important;
+  background: #e8f7ea !important;
+  color: #1f5130 !important;
+}
+
+.app-shell.player-theme-enabled .replay-table-row.outcome-win span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-win:hover span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-win:focus-visible span {
+  color: #1f5130 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-win span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-win:hover span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-win:focus-visible span {
+  color: #1f5130 !important;
+}
+
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss,
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss:hover,
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss:focus-visible {
+  border-color: #cfcfd4 !important;
+  background: #eeeeef !important;
+  color: #3f4248 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss:focus-visible {
+  border-color: #cfcfd4 !important;
+  background: #eeeeef !important;
+  color: #3f4248 !important;
+}
+
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss:hover span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss:focus-visible span {
+  color: #3f4248 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss:hover span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss:focus-visible span {
+  color: #3f4248 !important;
+}
+
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw,
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw:hover,
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw:focus-visible {
+  border-color: #ead487 !important;
+  background: #fff6cf !important;
+  color: #5b4820 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw:focus-visible {
+  border-color: #ead487 !important;
+  background: #fff6cf !important;
+  color: #5b4820 !important;
+}
+
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw:hover span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-draw:focus-visible span {
+  color: #5b4820 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw:hover span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw:focus-visible span {
+  color: #5b4820 !important;
+}

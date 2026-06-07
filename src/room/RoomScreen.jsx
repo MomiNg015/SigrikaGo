@@ -3,15 +3,9 @@ import { GAME_PHASES } from "../shared/game.js";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import { OpeningModal } from "../modals/GameLifecycleModals.jsx";
 import SkillBanner from "../modals/SkillBanner.jsx";
-import ActionBar from "./ActionBar.jsx";
-import Board from "./Board.jsx";
-import ChatBox from "./ChatBox.jsx";
-import OperationHint from "./OperationHint.jsx";
-import PlayerInfo from "./PlayerInfo.jsx";
-import RoomPeopleList from "./RoomPeopleList.jsx";
-import { stoneDecorationsForRoom } from "./roomView.js";
 import { useRoomPointActions } from "./actions/useRoomPointActions.js";
 import { useRoomAudioEffects } from "./audio/useRoomAudioEffects.js";
+import RoomBattleStage from "./RoomBattleStage.jsx";
 import RoomHeader from "./header/RoomHeader.jsx";
 import { DesktopRoomLayout, MOBILE_ROOM_MEDIA_QUERY, MobileRoomLayout, useMobileRoomLayout } from "./layout/RoomLayouts.jsx";
 import TimedRoomRequestToast from "./requestToasts/TimedRoomRequestToast.jsx";
@@ -25,7 +19,6 @@ import {
 } from "./roomState.js";
 import { useRoomBoardView } from "./view/useRoomBoardView.js";
 
-const SHOW_TEST_TOOLS = import.meta.env.DEV;
 export { MOBILE_ROOM_MEDIA_QUERY };
 
 export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay }) {
@@ -144,92 +137,49 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         onToggleCoords={() => setShowCoords(!showCoords)}
         onToggleMoves={() => setShowMoves(!showMoves)}
       />
-      <section className={battleLayoutClassName}>
-        <div className="opponent-side">
-          <PlayerInfo
-            player={opponent}
-            game={displayRoom.game}
-            characters={characters}
-            align="opponent"
-            viewColor={viewColor}
-            canSwitchView={canSwitchView}
-            onViewColor={setViewColor}
-            isWinner={displayRoom.game.phase === "finished" && opponent?.color === winnerColor}
-            isActiveTurn={displayRoom.game.phase === "playing" && opponent?.color === displayRoom.game.turn}
-            isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
-          />
-          {!isReplay && <RoomPeopleList room={displayRoom} user={user} characters={characters} token={token} onOpenReplay={onOpenReplay} />}
-          {!isReplay && role === "player" && <OperationHint room={displayRoom} user={user} scoring={scoring} drawRequest={drawRequest} />}
-        </div>
-        <div className="board-column">
-          <div className="board-stage">
-            <Board
-              game={displayRoom.game}
-              showCoords={showCoords}
-              showMoves={showMoves}
-              pendingSkill={pendingSkill}
-              pointConfirmation={pointConfirmation}
-              previewPlayer={role === "player" ? me : null}
-              stoneDecorations={stoneDecorationsForRoom(displayRoom)}
-              onPoint={handlePoint}
-              onScoringPoint={displayRoom.game.phase === "marking-dead" ? handleScoringPoint : null}
-              onNeutral={(id) => onScoringAction({ type: "mark-neutral", pointId: id })}
-            />
-          </div>
-          <ActionBar
-            role={role}
-            phase={displayRoom.game.phase}
-            me={me}
-            isMyTurn={Boolean(me && displayRoom.game.turn === me.color)}
-            pendingSkill={pendingSkill}
-            setPendingSkill={setPendingSkill}
-            skillLocked={Boolean(skillPreview)}
-            skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
-            skillAvailable={skillAvailable}
-            hasAnyStones={hasAnyStones}
-            opponentConnected={opponentConnected}
-            scoring={scoring}
-            drawRequest={drawRequest}
-            drawDeadline={displayRoom.drawDeadline ?? drawRequest?.deadline}
-            countingDeadline={displayRoom.countingDeadline ?? scoring?.deadline}
-            resultDeadline={displayRoom.resultDeadline ?? scoring?.resultDeadline}
-            replayStep={boardStep ?? liveStep}
-            replayMax={liveStep}
-            onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
-            showTestTools={SHOW_TEST_TOOLS}
-            onTestRandomLayout={() => onGameAction({ type: "test-random-layout" })}
-            onTestRestoreSkill={() => onGameAction({ type: "test-restore-skill" })}
-            onTestEnterByoYomi={() => onGameAction({ type: "test-enter-byo-yomi" })}
-            onPass={() => onGameAction({ type: "pass" })}
-            onCountingRequest={onCountingRequest}
-            onCountingRespond={onCountingRespond}
-            onDrawRequest={onDrawRequest}
-            onDrawRespond={onDrawRespond}
-            onConfirmScoring={() => onScoringAction({ type: "confirm-dead" })}
-            onResetScoring={() => onScoringAction({ type: "reset-dead" })}
-            onAcceptResult={() => onScoringAction({ type: "accept-result" })}
-            onRejectResult={() => onScoringAction({ type: "reject-result" })}
-            onResign={requestResignConfirm}
-            onBack={requestExitConfirm}
-          />
-        </div>
-        <div className="room-side">
-          <PlayerInfo
-            player={me ?? displayRoom.players[0]}
-            game={displayRoom.game}
-            characters={characters}
-            align="self"
-            viewColor={viewColor}
-            canSwitchView={canSwitchView}
-            onViewColor={setViewColor}
-            isWinner={displayRoom.game.phase === "finished" && (me ?? displayRoom.players[0])?.color === winnerColor}
-            isActiveTurn={displayRoom.game.phase === "playing" && (me ?? displayRoom.players[0])?.color === displayRoom.game.turn}
-            isDrawResult={displayRoom.game.phase === "finished" && !winnerColor}
-            isSkillTargeting={Boolean(pendingSkill && role === "player")}
-          />
-          <ChatBox room={displayRoom} onChat={onChat} readonly={isReplay} />
-        </div>
-      </section>
+      <RoomBattleStage
+        battleLayoutClassName={battleLayoutClassName}
+        boardStep={boardStep}
+        canSwitchView={canSwitchView}
+        characters={characters}
+        displayRoom={displayRoom}
+        drawRequest={drawRequest}
+        handlePoint={handlePoint}
+        handleScoringPoint={handleScoringPoint}
+        hasAnyStones={hasAnyStones}
+        isLiveSpectator={isLiveSpectator}
+        isReplay={isReplay}
+        liveStep={liveStep}
+        me={me}
+        onBack={requestExitConfirm}
+        onChat={onChat}
+        onCountingRequest={onCountingRequest}
+        onCountingRespond={onCountingRespond}
+        onDrawRequest={onDrawRequest}
+        onDrawRespond={onDrawRespond}
+        onGameAction={onGameAction}
+        onOpenReplay={onOpenReplay}
+        onResign={requestResignConfirm}
+        onScoringAction={onScoringAction}
+        opponent={opponent}
+        opponentConnected={opponentConnected}
+        pendingSkill={pendingSkill}
+        pointConfirmation={pointConfirmation}
+        role={role}
+        scoring={scoring}
+        setPendingSkill={setPendingSkill}
+        setReplayStep={setReplayStep}
+        setSpectatorStep={setSpectatorStep}
+        setViewColor={setViewColor}
+        showCoords={showCoords}
+        showMoves={showMoves}
+        skillAvailable={skillAvailable}
+        skillPreview={skillPreview}
+        token={token}
+        user={user}
+        viewColor={viewColor}
+        winnerColor={winnerColor}
+      />
       {roomRequestToast && (
         <TimedRoomRequestToast
           toast={roomRequestToast}

@@ -1,68 +1,5 @@
-﻿/* Player-facing visual theme foundation. Admin views intentionally opt out. */
+/* Player-facing Bright School theme foundation. Admin views intentionally opt out. */
 .app-shell.player-theme-enabled {
-  --theme-bg: #08131f;
-  --theme-bg-image: none;
-  --theme-panel-bg: rgba(12, 22, 29, 0.82);
-  --theme-panel-strong: rgba(5, 15, 22, 0.95);
-  --theme-text: #f7fffd;
-  --theme-muted: rgba(224, 247, 244, 0.72);
-  --theme-accent: #ff76a3;
-  --theme-accent-2: #00ffbe;
-  --theme-blue: #00bfff;
-  --theme-danger: #ff4e64;
-  --theme-border: rgba(0, 255, 190, 0.42);
-  --theme-border-soft: rgba(255, 118, 163, 0.32);
-  --theme-radius: 12px;
-  --theme-cut-corner: 14px;
-  --theme-blur: blur(12px);
-  --theme-glow: 0 0 20px rgba(0, 255, 190, 0.18), 0 0 26px rgba(255, 118, 163, 0.12);
-  --theme-inner-glow: inset 0 0 18px rgba(0, 255, 190, 0.08);
-  --theme-text-glow: 0 0 8px rgba(0, 255, 190, 0.32), 0 0 10px rgba(255, 118, 163, 0.18);
-  --theme-scanline-opacity: 0.16;
-  --theme-noise-opacity: 0.08;
-  --theme-motion-scale: 1;
-  --theme-transition: 180ms ease;
-  color: var(--theme-text);
-}
-
-.app-shell.player-theme-enabled.theme-current {
-  --theme-bg: #08131f;
-  --theme-panel-bg: rgba(16, 29, 42, 0.78);
-  --theme-panel-strong: rgba(8, 19, 30, 0.94);
-  --theme-accent: #ff76a3;
-  --theme-accent-2: #00ffbe;
-  --theme-blue: #7ed7ff;
-  --theme-border: rgba(255, 118, 163, 0.42);
-  --theme-border-soft: rgba(0, 255, 190, 0.34);
-  --theme-glow: 0 0 22px rgba(255, 118, 163, 0.2), 0 0 26px rgba(0, 255, 190, 0.14);
-  --theme-text-glow: 0 0 8px rgba(255, 118, 163, 0.28), 0 0 8px rgba(0, 255, 190, 0.24);
-}
-
-.app-shell.player-theme-enabled.theme-original {
-  --theme-bg: #fff8fb;
-  --theme-panel-bg: rgba(255, 255, 255, 0.86);
-  --theme-panel-strong: rgba(255, 255, 255, 0.94);
-  --theme-text: #2d2430;
-  --theme-muted: #8a6b8f;
-  --theme-accent: #5d7fe8;
-  --theme-accent-2: #3aa06f;
-  --theme-blue: #5d7fe8;
-  --theme-danger: #d94862;
-  --theme-border: rgba(128, 102, 142, 0.16);
-  --theme-border-soft: rgba(128, 102, 142, 0.14);
-  --theme-radius: 8px;
-  --theme-cut-corner: 0;
-  --theme-blur: none;
-  --theme-glow: 0 20px 60px rgba(72, 44, 86, 0.12);
-  --theme-inner-glow: none;
-  --theme-text-glow: none;
-  --theme-scanline-opacity: 0;
-  --theme-noise-opacity: 0;
-  --theme-motion-scale: 0;
-  color: var(--theme-text);
-}
-
-.app-shell.player-theme-enabled.theme-bright-school {
   --theme-bg: #fffbf2;
   --theme-paper-grid:
     linear-gradient(rgba(154, 211, 222, 0.18) 1px, transparent 1px),
@@ -86,18 +23,8 @@
   --theme-scanline-opacity: 0;
   --theme-noise-opacity: 0;
   --theme-motion-scale: 1;
+  --theme-transition: 180ms ease;
   color: var(--theme-text);
-}
-
-.app-shell.player-theme-enabled.effect-low {
-  --theme-blur: none;
-  --theme-glow: 0 8px 22px rgba(0, 0, 0, 0.24);
-  --theme-inner-glow: none;
-  --theme-text-glow: none;
-  --theme-scanline-opacity: 0.04;
-  --theme-noise-opacity: 0.02;
-  --theme-motion-scale: 0;
-  --theme-transition: 0ms linear;
 }
 
 .app-shell.admin-theme-isolated {
@@ -192,8 +119,8 @@
 }
 
 /* Theme-wide wiring for player pages. These selectors intentionally sit after
-   the current HUD files so the user can switch between the active skin and the
-   original lighter presentation without changing component logic. */
+   the HUD files so Bright School can stay the default player skin without
+   changing component logic. */
 .app-shell.player-theme-enabled {
   background:
     radial-gradient(circle at 20% 8%, color-mix(in srgb, var(--theme-accent) 18%, transparent), transparent 36%),
@@ -295,21 +222,11 @@
 
 .app-shell.player-theme-enabled .preload-bar span,
 .app-shell.player-theme-enabled .timer-track span {
-  background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--theme-accent) 45%, transparent);
+  background: var(--timer-track-fill, linear-gradient(90deg, var(--theme-accent), var(--theme-accent-2)));
+  box-shadow: var(--timer-track-glow, 0 0 10px color-mix(in srgb, var(--theme-accent) 45%, transparent));
 }
 
 .app-shell.player-theme-enabled .board-stage {
   border-color: var(--theme-border);
   box-shadow: var(--theme-glow);
 }
-
-
-.app-shell.player-theme-enabled.effect-low *,
-.app-shell.player-theme-enabled.effect-low *::before,
-.app-shell.player-theme-enabled.effect-low *::after {
-  animation-duration: 0.001ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0ms !important;
-}
-

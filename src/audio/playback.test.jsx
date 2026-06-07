@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
-import { installBackgroundResumeTriggers, resumeBackgroundContextWithFallback } from "./playback.jsx";
+import {
+  installBackgroundResumeTriggers,
+  playCountdownBeep,
+  playDoorbellSound,
+  playVoiceSound,
+  resumeBackgroundContextWithFallback,
+  speakText
+} from "./playback.jsx";
 
 describe("background music resume fallback", () => {
   afterEach(() => {
@@ -97,5 +104,38 @@ describe("background music resume fallback", () => {
     expect(source).toContain("recoverBackgroundPlayback(playerRef.current)");
     expect(source).toContain("scheduleBackgroundTrack({ state, context, track: state.currentTrack");
     expect(source).toContain("}, [resumeSignal]);");
+  });
+
+  it("ignores procedural browser sounds when audio browser APIs are unavailable", () => {
+    expect(() => playCountdownBeep(3)).not.toThrow();
+    expect(() => playDoorbellSound()).not.toThrow();
+    expect(() => speakText("超时")).not.toThrow();
+  });
+
+  it("stops the previous voice fallback when a new voice starts", async () => {
+    const played = [];
+    class FakeAudio {
+      constructor(src) {
+        this.src = src;
+        this.pause = vi.fn();
+        this.addEventListener = vi.fn();
+        played.push(this);
+      }
+
+      play() {
+        return Promise.resolve();
+      }
+    }
+    vi.stubGlobal("Audio", FakeAudio);
+    vi.stubGlobal("window", { setTimeout: vi.fn((callback) => callback()) });
+
+    playVoiceSound("/assets/voice/one.ogg");
+    await Promise.resolve();
+    playVoiceSound("/assets/voice/two.ogg");
+    await Promise.resolve();
+
+    expect(played).toHaveLength(2);
+    expect(played[0].pause).toHaveBeenCalledOnce();
+    expect(played[1].pause).not.toHaveBeenCalled();
   });
 });
