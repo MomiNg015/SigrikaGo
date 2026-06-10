@@ -81,6 +81,10 @@ describe("PlayerInfo labels", () => {
     expect(roomCss).toContain(".timer.final-byo-yomi");
     expect(roomCss).toContain("--timer-track-fill: linear-gradient(90deg, #ff3434, #ffbd2e, #42d66b, #3a8cff, #b44dff)");
     expect(roomCss).toContain(".captures .cost-stat strong");
+    const metaTagBlock = cssBlock(roomCss, ".meta-tag");
+    expect(metaTagBlock).toContain("display: inline-flex");
+    expect(metaTagBlock).toContain("align-items: center");
+    expect(metaTagBlock).toContain("justify-content: center");
     expect(roomCss).toContain("color: #d93645 !important");
     expect(roomCss).toContain(".result-badge.draw");
     expect(roomCss).toContain("--skill-chip-accent");
@@ -115,7 +119,7 @@ describe("PlayerInfo labels", () => {
     expect(playerInfoSource).toContain("black-portrait");
     expect(playerInfoSource).toContain("white-portrait");
     expect(componentRepairsCss).toContain(".player-info .portrait-wrap.black-portrait");
-    expect(componentRepairsCss).toContain("background: #2a2a2d !important");
+    expect(componentRepairsCss).toContain("background: #2b2b2b !important");
     expect(componentRepairsCss).toContain(".player-info .portrait-wrap.white-portrait");
     expect(componentRepairsCss).toContain("background: #ffffff !important");
     expect(finalRoomPortraitImageBlock).toContain("filter: none !important");
@@ -161,6 +165,14 @@ function readCssWithImports(url, seen = new Set()) {
   return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
     return readCssWithImports(new URL(importPath, url), seen);
   });
+}
+
+function cssBlock(css, selector) {
+  const index = css.indexOf(`${selector} {`);
+  if (index === -1) return "";
+  const start = css.indexOf("{", index);
+  const end = css.indexOf("}", start);
+  return css.slice(start + 1, end);
 }
 
 function playerInfoProps(overrides = {}) {

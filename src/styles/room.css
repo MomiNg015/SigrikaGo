@@ -288,6 +288,9 @@
 
 .meta-tag {
   min-width: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 4px 8px;
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(246, 240, 252, 0.88));

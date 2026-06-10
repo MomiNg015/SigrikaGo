@@ -10,7 +10,7 @@ export default function ChatBox({ room, onChat, readonly = false, trailingAction
   const panelId = useId();
   const widgetRef = useRef(null);
   const logRef = useRef(null);
-  const chatCount = room.chat.length;
+  const chatCount = playerChatCount(room.chat);
 
   useEffect(() => {
     if (!logRef.current) return;
@@ -86,6 +86,10 @@ export default function ChatBox({ room, onChat, readonly = false, trailingAction
       )}
     </div>
   );
+}
+
+export function playerChatCount(messages = []) {
+  return messages.filter((message) => message?.type === "chat").length;
 }
 
 function chatName(message, room) {
