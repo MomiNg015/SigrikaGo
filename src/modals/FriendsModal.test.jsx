@@ -20,9 +20,9 @@ describe("FriendsModal mobile layout", () => {
   });
 
   it("uses compact mobile friend cards instead of a horizontally scrolling table", () => {
-    const css = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8");
-    const adaptiveCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
-    const brightSchoolMobileCss = readFileSync(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
+    const css = readText(new URL("../styles/mobile-modals.css", import.meta.url));
+    const adaptiveCss = readText(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const brightSchoolMobileCss = readText(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
     const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
     const adaptivePhoneMedia = mediaBlock(adaptiveCss, "@media (max-width: 768px)");
 
@@ -54,4 +54,8 @@ function mediaBlock(css, marker) {
   if (start < 0) return "";
   const next = css.indexOf("\n@media", start + 1);
   return css.slice(start, next >= 0 ? next : undefined);
+}
+
+function readText(url) {
+  return readFileSync(url, "utf8").replace(/\r\n/g, "\n");
 }

@@ -173,8 +173,8 @@ describe("RoomScreen helpers", () => {
   });
 
   it("routes pass through a confirmation dialog before sending the game action", () => {
-    const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
-    const battleSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("function requestPassConfirm()");
     expect(source).toContain("onConfirm: () => onGameAction({ type: \"pass\" })");
@@ -184,7 +184,7 @@ describe("RoomScreen helpers", () => {
   });
 
   it("seeds resumed room audio baseline before passive room audio effects", () => {
-    const source = readFileSync(new URL("./audio/useRoomAudioEffects.js", import.meta.url), "utf8");
+    const source = readText(new URL("./audio/useRoomAudioEffects.js", import.meta.url), "utf8");
 
     expect(source).toContain("useLayoutEffect");
     expect(source).toContain("shouldSeedRoomAudioBaseline(room)");
@@ -192,7 +192,7 @@ describe("RoomScreen helpers", () => {
   });
 
   it("keeps the board primary while preserving player portraits on mobile", () => {
-    const css = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const css = readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
     const compactMedia = mediaBlock(css, "@media (max-width: 900px)");
     const landscapeMedia = mediaBlock(css, "@media (max-width: 900px) and (orientation: landscape)");
 
@@ -220,12 +220,12 @@ describe("RoomScreen helpers", () => {
   });
 
   it("uses extra-compact portrait room cards without pushing the board offscreen", () => {
-    const css = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
-    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
-    const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
-    const headerSource = readFileSync(new URL("./header/RoomHeader.jsx", import.meta.url), "utf8");
-    const battleSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
-    const playerInfoSource = readFileSync(new URL("./PlayerInfo.jsx", import.meta.url), "utf8");
+    const css = readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const roomCss = readText(new URL("../styles/room.css", import.meta.url), "utf8");
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const headerSource = readText(new URL("./header/RoomHeader.jsx", import.meta.url), "utf8");
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+    const playerInfoSource = readText(new URL("./PlayerInfo.jsx", import.meta.url), "utf8");
     const portraitMedia = mediaBlock(css, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
 
     expect(headerSource).toContain("className=\"room-title-stack\"");
@@ -313,16 +313,16 @@ describe("RoomScreen helpers", () => {
   });
 
   it("keeps touch point confirmation visual-only on mobile", () => {
-    const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
-    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const roomCss = readText(new URL("../styles/room.css", import.meta.url), "utf8");
 
     expect(source).not.toContain("touch-confirm-hint");
     expect(roomCss).toContain(".touch-confirm-marker");
   });
 
   it("keeps mobile dead-stone decisions compact and readable", () => {
-    const mobileRoomCss = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
-    const brightMobileCss = readFileSync(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
+    const mobileRoomCss = readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const brightMobileCss = readText(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
     const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
     const brightPortraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
 
@@ -339,9 +339,9 @@ describe("RoomScreen helpers", () => {
   });
 
   it("passes no-target skill board confirmation from the room view into point actions", () => {
-    const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
-    const boardViewSource = readFileSync(new URL("./view/useRoomBoardView.js", import.meta.url), "utf8");
-    const pointActionsSource = readFileSync(new URL("./actions/useRoomPointActions.js", import.meta.url), "utf8");
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const boardViewSource = readText(new URL("./view/useRoomBoardView.js", import.meta.url), "utf8");
+    const pointActionsSource = readText(new URL("./actions/useRoomPointActions.js", import.meta.url), "utf8");
 
     expect(boardViewSource).toContain("skillUsesBoardConfirmation(skillConfig)");
     expect(source).toContain("skillUsesBoardConfirmation,");
@@ -350,7 +350,7 @@ describe("RoomScreen helpers", () => {
   });
 
   it("keeps extra-narrow portrait rooms from overlapping the player cards", () => {
-    const css = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const css = readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
     const narrowPortraitMedia = mediaBlock(css, "@media (max-width: 340px) and (orientation: portrait)");
 
     expect(narrowPortraitMedia).toContain(".mobile-room-screen");
@@ -360,12 +360,12 @@ describe("RoomScreen helpers", () => {
   });
 
   it("separates desktop and mobile room layout shells", () => {
-    const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
-    const battleSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
-    const layoutSource = readFileSync(new URL("./layout/RoomLayouts.jsx", import.meta.url), "utf8");
-    const stylesEntry = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
-    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8")
-      + readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+    const layoutSource = readText(new URL("./layout/RoomLayouts.jsx", import.meta.url), "utf8");
+    const stylesEntry = readText(new URL("../styles.css", import.meta.url), "utf8");
+    const css = readText(new URL("../styles/room.css", import.meta.url), "utf8")
+      + readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
 
     expect(source).toContain("useMobileRoomLayout");
     expect(source).toContain("DesktopRoomLayout");
@@ -380,8 +380,8 @@ describe("RoomScreen helpers", () => {
   });
 
   it("renders the mobile dock inside the battle stage instead of extracting composite children", () => {
-    const battleSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
-    const layoutSource = readFileSync(new URL("./layout/RoomLayouts.jsx", import.meta.url), "utf8");
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+    const layoutSource = readText(new URL("./layout/RoomLayouts.jsx", import.meta.url), "utf8");
 
     expect(battleSource).toContain("mobile-room-dock mobile-room-tabs");
     expect(battleSource).toContain("mobile-tab-panel");
@@ -389,9 +389,9 @@ describe("RoomScreen helpers", () => {
   });
 
   it("collapses low-priority mobile room tools into a shared tab dock", () => {
-    const battleSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
-    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8")
-      + readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+    const css = readText(new URL("../styles/room.css", import.meta.url), "utf8")
+      + readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
 
     expect(battleSource).toContain("activeMobilePanel");
     expect(battleSource).toContain("mobile-room-dock");
@@ -416,12 +416,12 @@ describe("RoomScreen helpers", () => {
   });
 
   it("keeps audited mobile room controls visible and avoids tiny landscape boards", () => {
-    const battleSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
-    const actionSource = readFileSync(new URL("./ActionBar.jsx", import.meta.url), "utf8");
-    const mobileRoomCss = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
-    const mobileAdaptiveCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
-    const brightMobileCss = readFileSync(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
-    const brightRoomCss = readFileSync(new URL("../styles/themes/bright-school/room.css", import.meta.url), "utf8");
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+    const actionSource = readText(new URL("./ActionBar.jsx", import.meta.url), "utf8");
+    const mobileRoomCss = readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const mobileAdaptiveCss = readText(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const brightMobileCss = readText(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
+    const brightRoomCss = readText(new URL("../styles/themes/bright-school/room.css", import.meta.url), "utf8");
     const portraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
     const landscapeMedia = mediaBlock(mobileRoomCss, "@media (max-width: 900px) and (orientation: landscape)");
 
@@ -495,9 +495,9 @@ describe("RoomScreen helpers", () => {
   });
 
   it("keeps mobile player info strips balanced and flat in Bright School", () => {
-    const mobileRoomCss = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
-    const mobileAdaptiveCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
-    const brightMobileCss = readFileSync(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
+    const mobileRoomCss = readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const mobileAdaptiveCss = readText(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const brightMobileCss = readText(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
     const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
     const brightPortraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
 
@@ -521,8 +521,8 @@ describe("RoomScreen helpers", () => {
   });
 
   it("centers mobile replay move counts without extra icon offset", () => {
-    const mobileRoomCss = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
-    const mobileAdaptiveCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const mobileRoomCss = readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const mobileAdaptiveCss = readText(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
     const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
 
     expect(portraitMedia).toContain(".mobile-room-screen .replay-step-indicator");
@@ -535,8 +535,8 @@ describe("RoomScreen helpers", () => {
   });
 
   it("turns room chat into an anchored popover button", () => {
-    const chatSource = readFileSync(new URL("./ChatBox.jsx", import.meta.url), "utf8");
-    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const chatSource = readText(new URL("./ChatBox.jsx", import.meta.url), "utf8");
+    const roomCss = readText(new URL("../styles/room.css", import.meta.url), "utf8");
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
 
     expect(chatSource).toContain("chat-toggle-button");
@@ -561,8 +561,8 @@ describe("RoomScreen helpers", () => {
   });
 
   it("anchors room member actions from the clicked point toward the upper right", () => {
-    const peopleSource = readFileSync(new URL("./RoomPeopleList.jsx", import.meta.url), "utf8");
-    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const peopleSource = readText(new URL("./RoomPeopleList.jsx", import.meta.url), "utf8");
+    const roomCss = readText(new URL("../styles/room.css", import.meta.url), "utf8");
     const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
 
     expect(peopleSource).toContain("openPersonMenu(person.id, event)");
@@ -589,7 +589,7 @@ describe("RoomScreen helpers", () => {
   });
 
   it("keeps result modal centered and compact", () => {
-    const modalCss = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8");
+    const modalCss = readText(new URL("../styles/modals.css", import.meta.url), "utf8");
     const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
 
     expect(modalCss).toContain(".modal-backdrop:has(.result-modal)");
@@ -601,8 +601,8 @@ describe("RoomScreen helpers", () => {
   });
 
   it("applies the Startorch battlefield terminal skin after mobile room styles", () => {
-    const stylesEntry = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
-    const terminalCss = readFileSync(new URL("../styles/room-terminal.css", import.meta.url), "utf8");
+    const stylesEntry = readText(new URL("../styles.css", import.meta.url), "utf8");
+    const terminalCss = readText(new URL("../styles/room-terminal.css", import.meta.url), "utf8");
     const defensiveMedia = mediaBlock(terminalCss, "@media (max-width: 800px)");
 
     expect(stylesEntry.indexOf("./styles/mobile-room.css")).toBeLessThan(stylesEntry.indexOf("./styles/room-terminal.css"));
@@ -632,7 +632,7 @@ describe("RoomScreen helpers", () => {
   });
 
   it("keeps short landscape mobile rooms within the viewport", () => {
-    const css = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const css = readText(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
     const shortLandscapeMedia = mediaBlock(css, "@media (max-width: 900px) and (orientation: landscape) and (max-height: 520px)");
 
     expect(shortLandscapeMedia).toContain(".mobile-room-screen");
@@ -649,6 +649,10 @@ describe("RoomScreen helpers", () => {
   });
 });
 
+function readText(url) {
+  return readFileSync(url, "utf8").replace(/\r\n/g, "\n");
+}
+
 function mediaBlock(css, marker) {
   const start = css.indexOf(marker);
   if (start < 0) return "";
@@ -661,7 +665,7 @@ function readCssWithImports(url, seen = new Set()) {
   if (seen.has(key)) return "";
   seen.add(key);
 
-  const css = readFileSync(url, "utf8");
+  const css = readText(url, "utf8");
   return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) =>
     readCssWithImports(new URL(importPath, url), seen),
   );

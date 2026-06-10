@@ -54,6 +54,9 @@
 <body>
 <h2>UI Asset Notes</h2>
 <ul>
+<li>Static CSS and HTML contract tests normalize CRLF to LF before exact string assertions. This keeps the Windows working-tree checkout from failing layout-contract tests solely because Git rewrote line endings while preserving the same CSS and generated document content.</li>
+</ul>
+<ul>
 <li>Shop tabs layout is unified to a single row across both desktop and mobile views under the Bright School theme and general commerce layout. By declaring <code>.shop-tabs</code> with <code>grid-template-columns: repeat(4, minmax(0, 1fr))</code> and separating it from mobile adaptive <code>auto-fit</code> styles, all four store categories (characters, items, decorations, music) sit on one line without wrapping to a second row.</li>
 </ul>
 <ul>

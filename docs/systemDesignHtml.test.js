@@ -5,10 +5,10 @@ import { appendAfter, readUtf8Document, writeUtf8Document } from "../scripts/wri
 
 describe("system design html", () => {
   it("stays generated from the markdown source", async () => {
-    const markdown = await readFile("docs/system-design.md", "utf8");
-    const html = await readFile("docs/system-design.html", "utf8");
+    const markdown = normalizeNewlines(await readFile("docs/system-design.md", "utf8"));
+    const html = normalizeNewlines(await readFile("docs/system-design.html", "utf8"));
 
-    expect(html).toBe(renderSystemDesignHtml(markdown));
+    expect(html).toBe(normalizeNewlines(renderSystemDesignHtml(markdown)));
   });
 
   it("keeps generated docs free of replacement-character encoding damage", async () => {
@@ -36,3 +36,7 @@ describe("system design html", () => {
     }
   });
 });
+
+function normalizeNewlines(text) {
+  return text.replace(/\r\n/g, "\n");
+}
