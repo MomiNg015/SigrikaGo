@@ -40,9 +40,13 @@ export default function FriendsList({
             <article className="friends-row">
               <span className={`online-status ${row.status}`}>{STATUS_LABELS[row.status]}</span>
               <img src={resolveCandyPortrait(character, row.itemEffects)} alt={character.name} />
-              <strong>{row.username}</strong>
-              <span>{row.rank}</span>
-              <span>{row.rating}分</span>
+              <div className="friend-main">
+                <strong className="friend-username">{row.username}</strong>
+                <div className="friend-stats">
+                  <span className="friend-rank">{row.rank}</span>
+                  <span className="friend-rating">{row.rating}分</span>
+                </div>
+              </div>
               <div className="friend-actions-cell">
                 <button
                   className="friend-gear-button"

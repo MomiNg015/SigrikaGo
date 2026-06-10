@@ -37,22 +37,49 @@ describe("WatchModal helpers", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
+  it("uses compact mobile watch cards instead of a horizontally scrolling table", () => {
+    const css = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8");
+    const adaptiveCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const brightSchoolMobileCss = readFileSync(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
+    const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
+    const adaptivePhoneMedia = mediaBlock(adaptiveCss, "@media (max-width: 768px)");
+
+    expect(phoneModalMedia).toContain(".watch-room-table");
+    expect(phoneModalMedia).toContain("overflow-x: hidden");
+    expect(phoneModalMedia).toContain(".watch-room-head");
+    expect(phoneModalMedia).toContain("display: none");
+    expect(phoneModalMedia).toContain(".watch-room-row");
+    expect(phoneModalMedia).toContain("grid-template-areas:");
+    expect(phoneModalMedia).toContain("\"code status\"");
+    expect(phoneModalMedia).toContain("\"black black\"");
+    expect(phoneModalMedia).toContain("\"white white\"");
+    expect(phoneModalMedia).not.toContain("min-width: 680px");
+    expect(phoneModalMedia).not.toContain("--watch-room-grid-columns");
+    expect(phoneModalMedia).toContain(".watch-list-modal .inline-close");
+    expect(phoneModalMedia).toContain("position: static");
+    expect(adaptivePhoneMedia).toContain(".watch-room-table");
+    expect(adaptivePhoneMedia).toContain("overflow-x: hidden");
+    expect(adaptivePhoneMedia).toContain(".watch-room-row");
+    expect(adaptivePhoneMedia).toContain("min-width: 0");
+    expect(brightSchoolMobileCss).toContain(".watch-room-table {\n    overflow-x: hidden !important;");
+    expect(brightSchoolMobileCss).toContain(".watch-room-row {\n    min-width: 0 !important;");
+  });
+
   it("keeps watch list headers and rows on the same mobile columns", () => {
     const css = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8");
     const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
 
-    expect(phoneModalMedia).toContain("--watch-room-grid-columns");
-    expect(phoneModalMedia).toContain(".watch-room-head");
     expect(phoneModalMedia).toContain("padding: 0 8px");
-    expect(phoneModalMedia).toContain(".watch-room-head,");
     expect(phoneModalMedia).toContain(".watch-room-row");
     expect(phoneModalMedia).toContain("display: grid");
     expect(phoneModalMedia).toContain(".small-modal .watch-room-row");
-    expect(phoneModalMedia).toContain("grid-template-columns: var(--watch-room-grid-columns)");
+    expect(phoneModalMedia).toContain("grid-template-columns: minmax(0, 1fr) auto");
     expect(phoneModalMedia).toContain(".watch-player-cell");
     expect(phoneModalMedia).toContain("min-width: 0");
     expect(phoneModalMedia).toContain("justify-self: stretch");
     expect(phoneModalMedia).toContain("justify-content: center");
+    expect(phoneModalMedia).toContain(".watch-list-modal .inline-close");
+    expect(phoneModalMedia).toContain("position: static");
   });
 });
 

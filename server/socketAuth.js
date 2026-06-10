@@ -1,13 +1,16 @@
 import jwt from "jsonwebtoken";
 import { USER_STATUS } from "./adminConfig.js";
-import { publicUser } from "./db.js";
+import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { blockedCharactersForItemEffects } from "./itemEffects.js";
 
 export async function authenticateSocketUser({ token, jwtSecret, prisma, characterSelectionData, isSessionActive = null }) {
   const payload = jwt.verify(token, jwtSecret);
   if (isSessionActive && !(await isSessionActive(payload.sub, payload.sid))) throw new Error("unauthorized");
-  const user = await prisma.user.findUnique({ where: { id: payload.sub } });
+  const user = await prisma.user.findUnique({
+    where: { id: payload.sub },
+    include: USER_ASSET_RELATION_INCLUDE
+  });
   if (!user) throw new Error("unauthorized");
   if (user.status === USER_STATUS.banned) throw new Error("forbidden");
 

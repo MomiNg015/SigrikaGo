@@ -1,6 +1,5 @@
 import {
   Calculator,
-  DoorOpen,
   Flag,
   Hand,
   Handshake,
@@ -74,11 +73,11 @@ export default function ActionBar({
     <nav className="action-bar">
       <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>
         <Hand size={18} />
-        <span className="action-label">弃一手</span>
+        <span className="action-label mobile-action-button-label">弃手</span>
       </button>
       <button onClick={onCountingRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, hasAnyStones, opponentConnected })}>
         <Calculator size={18} />
-        <span className="action-label">申请数子</span>
+        <span className="action-label mobile-action-button-label">数子</span>
       </button>
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
@@ -86,13 +85,13 @@ export default function ActionBar({
         disabled={!me || phase !== "playing" || !isMyTurn || skillLocked || skillUses <= 0 || !skillAvailable}
       >
         <Sparkles size={20} />
-        <span className="action-label">技能 · {skillUses}</span>
+        <span className="action-label mobile-action-button-label">技能 · {skillUses}</span>
       </button>
       <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, opponentConnected })}>
         <Handshake size={18} />
-        <span className="action-label">申请和棋</span>
+        <span className="action-label mobile-action-button-label">和棋</span>
       </button>
-      <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label">认输</span></button>
+      <button onClick={onResign} disabled={phase === "finished" || skillLocked}><Flag size={18} /><span className="action-label mobile-action-button-label">认输</span></button>
       {showTestTools && (
         <TestTools
           disabled={phase !== "playing" || skillLocked || !me}
@@ -101,7 +100,6 @@ export default function ActionBar({
           onEnterByoYomi={onTestEnterByoYomi}
         />
       )}
-      <button className="exit-action" onClick={onBack}><DoorOpen size={18} /><span className="action-label">退出房间</span></button>
     </nav>
   );
 }

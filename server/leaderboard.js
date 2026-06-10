@@ -1,16 +1,17 @@
 import { recordWinnerColor } from "./gameRecords.js";
-import { parseItemEffects } from "./itemEffects.js";
+import { publicUser } from "./db.js";
 import { rankFromRating } from "../src/shared/ratingRank.js";
 
 export function buildLeaderboard(users = [], records = []) {
   const rows = new Map();
   for (const user of users) {
+    const profile = publicUser(user);
     rows.set(user.id, {
-      id: user.id,
-      username: user.username,
-      rating: user.rating ?? 1000,
-      selectedCharacter: user.selectedCharacter ?? "sigrika",
-      itemEffects: parseItemEffects(user.itemEffects),
+      id: profile.id,
+      username: profile.username,
+      rating: profile.rating ?? 1000,
+      selectedCharacter: profile.selectedCharacter ?? "sigrika",
+      itemEffects: profile.itemEffects,
       totalGames: 0,
       wins: 0,
       losses: 0,

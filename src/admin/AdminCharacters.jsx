@@ -159,6 +159,9 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
         <label><AdminFieldLabel text="角色名称" tip="显示在棋舍、对局资料和技能演出中的角色名。" />
           <input value={draft.name} onChange={(event) => updateDraft("name", event.target.value)} />
         </label>
+        <label className="wide-field"><AdminFieldLabel text="角色描述" tip="展示在棋舍角色详情里，位于获得途径下方的角色介绍文本。" />
+          <textarea value={draft.description} onChange={(event) => updateDraft("description", event.target.value)} />
+        </label>
         <label><AdminFieldLabel text="立绘地址" tip="角色立绘图片地址，可以是资源路径或上传后生成的路径。" />
           <input value={draft.portraitUrl} onChange={(event) => updateDraft("portraitUrl", event.target.value)} />
         </label>

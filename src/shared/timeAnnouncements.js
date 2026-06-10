@@ -6,7 +6,7 @@ export function nextTimeAnnouncement({ previous, current } = {}) {
     return { type: "voice", event: SYSTEM_VOICE_EVENTS.byoYomiStart, text: "开始读秒" };
   }
   if (typeof previous.periods === "number" && current.periods < previous.periods) {
-    if (current.periods <= 0) return { type: "voice", event: SYSTEM_VOICE_EVENTS.timeout, text: "超时" };
+    if (current.periods <= 0) return null;
     const event = current.periods === 2
       ? SYSTEM_VOICE_EVENTS.byoYomiPeriod2
       : current.periods === 1

@@ -77,7 +77,7 @@ export function validateAuthSubmit({ mode, password, confirmPassword }) {
 }
 
 export function authSubmitText(mode) {
-  return mode === "login" ? "START CONNECTION!! ⮞" : "\u521b\u5efa\u8d26\u53f7";
+  return mode === "login" ? "START CONNECTION!! >" : "\u521b\u5efa\u8d26\u53f7";
 }
 
 export function isAlreadyLoggedInError(error) {

@@ -78,4 +78,16 @@ describe("deployment security helpers", () => {
       errors: ["Production origins must use https: http://sigrika.fun"]
     });
   });
+
+  it("rejects explicit multi-instance production settings until room state is shared", () => {
+    const result = validateProductionDeployment({
+      NODE_ENV: "production",
+      JWT_SECRET: "0123456789abcdef0123456789abcdef",
+      PUBLIC_ORIGIN: "https://sigrika.fun",
+      WEB_CONCURRENCY: "2"
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toContain("Production must run a single Node instance until room state and Socket.IO are shared");
+  });
 });

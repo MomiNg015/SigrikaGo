@@ -3,11 +3,11 @@ import { nextCountdownAnnouncement, nextTimeAnnouncement } from "./timeAnnouncem
 import { SYSTEM_VOICE_EVENTS } from "./systemVoices.js";
 
 describe("time announcements", () => {
-  it("announces timeout instead of zero byo-yomi periods", () => {
+  it("does not announce timeout when byo-yomi periods hit zero", () => {
     expect(nextTimeAnnouncement({
       previous: { main: 0, periods: 1 },
       current: { main: 0, periods: 0, periodRemaining: 30 }
-    })).toMatchObject({ type: "voice", event: SYSTEM_VOICE_EVENTS.timeout, text: "超时" });
+    })).toBeNull();
   });
 
   it("announces explicit byo-yomi period 2 event before timeout", () => {

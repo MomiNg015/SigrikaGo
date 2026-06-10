@@ -69,4 +69,27 @@ describe("leaderboard", () => {
       }
     ]);
   });
+
+  it("prefers structured item effects over legacy strings", () => {
+    const users = [{
+      id: "u1",
+      username: "alice",
+      rating: 1040,
+      selectedCharacter: "denia",
+      itemEffects: JSON.stringify({ legacyEffect: true }),
+      userItemEffects: [
+        { effectKey: "deniaRainbowGlow", effectValue: "true" },
+        { effectKey: "inactive", effectValue: "false" }
+      ]
+    }];
+    const records = [{
+      blackUserId: "u1",
+      whiteUserId: "u2",
+      blackCharacter: "denia",
+      whiteCharacter: "sigrika",
+      resultText: "黑中盘胜"
+    }];
+
+    expect(buildLeaderboard(users, records)[0].itemEffects).toEqual({ deniaRainbowGlow: true });
+  });
 });

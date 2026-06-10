@@ -23,6 +23,7 @@ import {
   restoreSkillUse,
   resignGame,
   scoreGame,
+  suspendUnexposedHiddenHands,
   activatePassiveSkill,
   gameViewForColor,
   useSkill
@@ -150,14 +151,14 @@ describe("SigrikaGo rules", () => {
     expect(result.state.ko).toBe(pointId(1, 0));
   });
 
-  it("enters counting after two consecutive passes", () => {
+  it("keeps playing after two consecutive passes until players request counting", () => {
     let state = createGameState();
     state = passMove(state, COLORS.black).state;
     state = passMove(state, COLORS.white).state;
 
-    expect(state.phase).toBe("counting-requested");
-    expect(state.scoring).toBeTruthy();
-    expect(state.scoring.territory).toEqual({ black: [], white: [] });
+    expect(state.phase).toBe("playing");
+    expect(state.scoring).toBeNull();
+    expect(state.passes).toBe(2);
   });
 
   it("erases an empty intersection and disconnects neighbors", () => {
@@ -684,14 +685,13 @@ describe("SigrikaGo rules", () => {
   it("temporarily removes unexposed hidden hands when counting starts", () => {
     let state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
     state = useSkill(state, COLORS.black, "aemeath", pointId(3, 3)).state;
-    state = passMove(state, COLORS.white).state;
+    state.phase = GAME_PHASES.countingRequested;
+    suspendUnexposedHiddenHands(state);
+    state.scoring = prepareScoringState(state);
 
-    const result = passMove(state, COLORS.black);
-
-    expect(result.ok).toBe(true);
-    expect(result.state.phase).toBe("counting-requested");
-    expect(getPoint(result.state, pointId(3, 3)).stone).toBe(null);
-    expect(result.state.suspendedHiddenHands).toEqual([
+    expect(state.phase).toBe("counting-requested");
+    expect(getPoint(state, pointId(3, 3)).stone).toBe(null);
+    expect(state.suspendedHiddenHands).toEqual([
       { id: pointId(3, 3), color: COLORS.black }
     ]);
   });

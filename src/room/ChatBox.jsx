@@ -4,7 +4,7 @@ import { CHARACTERS } from "../shared/characters.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { formatMessageTime } from "./roomView.js";
 
-export default function ChatBox({ room, onChat, readonly = false }) {
+export default function ChatBox({ room, onChat, readonly = false, trailingAction = null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState("");
   const panelId = useId();
@@ -58,6 +58,7 @@ export default function ChatBox({ room, onChat, readonly = false }) {
         <span>对局聊天</span>
         <strong>{chatCount}</strong>
       </button>
+      {trailingAction}
       {isOpen && (
         <section className="chat-box chat-popover" id={panelId}>
           <header>

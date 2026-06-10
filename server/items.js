@@ -7,45 +7,20 @@ import {
   serializeItemEffects,
   SIGRIKA_CANDY_EFFECT_TEXT
 } from "./itemEffects.js";
+import {
+  normalizeOwnedItemCounts,
+  parseOwnedItemCounts,
+  serializeOwnedItemCounts,
+  syncStructuredUserAssets
+} from "./userAssets.js";
 
 export { parseItemEffects } from "./itemEffects.js";
 
 export const ITEM_TARGET_TYPES = new Set(["self", "character"]);
 
-export function parseOwnedItems(value) {
-  const text = String(value ?? "").trim();
-  if (!text) return {};
-  if (text.startsWith("{")) {
-    try {
-      const parsed = JSON.parse(text);
-      return normalizeOwnedItems(parsed);
-    } catch {
-      return {};
-    }
-  }
-  const counts = {};
-  for (const itemId of text.split(",").map((item) => item.trim()).filter(Boolean)) {
-    counts[itemId] = (counts[itemId] ?? 0) + 1;
-  }
-  return counts;
-}
-
-export function normalizeOwnedItems(value) {
-  const entries = Array.isArray(value)
-    ? value.map((item) => [item?.itemId ?? item?.targetId ?? item?.id, item?.quantity])
-    : Object.entries(value ?? {});
-  const counts = {};
-  for (const [rawId, rawQuantity] of entries) {
-    const itemId = String(rawId ?? "").trim();
-    const quantity = parseNonNegativeInt(rawQuantity);
-    if (itemId && quantity > 0) counts[itemId] = quantity;
-  }
-  return counts;
-}
-
-export function serializeOwnedItems(value) {
-  return JSON.stringify(normalizeOwnedItems(value));
-}
+export const parseOwnedItems = parseOwnedItemCounts;
+export const normalizeOwnedItems = normalizeOwnedItemCounts;
+export const serializeOwnedItems = serializeOwnedItemCounts;
 
 export function ownedItemsToPublic(value) {
   return Object.entries(parseOwnedItems(value)).map(([itemId, quantity]) => ({ itemId, quantity }));
@@ -89,6 +64,7 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
         ...effect.data
       }
     });
+    await syncStructuredUserAssets(tx, updated);
     return {
       user: publicUser(updated),
       items: await inventoryPayload(tx, updated),
@@ -141,12 +117,6 @@ async function inventoryPayload(prisma, user) {
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
   });
   return items.map((item) => toItemPayload(item, counts[item.targetId] ?? 0));
-}
-
-function parseNonNegativeInt(value) {
-  if (typeof value === "number") return Number.isSafeInteger(value) && value >= 0 ? value : 0;
-  if (typeof value === "string" && /^\d+$/.test(value.trim())) return Number(value);
-  return 0;
 }
 
 function resolveItemEffect({ item, user, characterId }) {

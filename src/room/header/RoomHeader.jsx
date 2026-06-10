@@ -1,4 +1,5 @@
-import { Hash, MessageSquareText, PanelRight, Settings } from "lucide-react";
+import { useState } from "react";
+import { DoorOpen, Hash, Menu, MessageSquareText, PanelRight, Settings } from "lucide-react";
 import { roomCloseCountdownText } from "../roomState.js";
 
 export default function RoomHeader({
@@ -11,9 +12,16 @@ export default function RoomHeader({
   showMoves,
   onOpenMessageBoard,
   onOpenSettings,
+  onBack,
   onToggleCoords,
   onToggleMoves
 }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const closeMobileMenu = (action) => () => {
+    setMobileMenuOpen(false);
+    action?.();
+  };
+
   return (
     <header className="room-header">
       <div className="room-title-stack">
@@ -39,6 +47,47 @@ export default function RoomHeader({
         <button className="toggle" onClick={onOpenSettings} title="设置"><Settings size={16} /></button>
         <button className={showMoves ? "toggle active" : "toggle"} onClick={onToggleMoves} title="显示手数"><Hash size={16} /></button>
         <button className={showCoords ? "toggle active" : "toggle"} onClick={onToggleCoords} title="显示坐标"><PanelRight size={16} /></button>
+      </div>
+      {onBack && (
+        <button
+          className="toggle room-mobile-exit"
+          type="button"
+          aria-label="退出房间"
+          title="退出房间"
+          onClick={onBack}
+        >
+          <DoorOpen size={18} />
+        </button>
+      )}
+      <div className={`room-mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
+        <button
+          className="toggle room-mobile-menu-toggle"
+          type="button"
+          aria-expanded={mobileMenuOpen}
+          aria-controls="room-mobile-menu-panel"
+          title="选项"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+        >
+          <Menu size={18} />
+        </button>
+        <div className="room-mobile-menu-panel" id="room-mobile-menu-panel" aria-hidden={!mobileMenuOpen}>
+          <button type="button" onClick={closeMobileMenu(onOpenMessageBoard)}>
+            <MessageSquareText size={17} />
+            <span>留言</span>
+          </button>
+          <button type="button" onClick={closeMobileMenu(onOpenSettings)}>
+            <Settings size={17} />
+            <span>设置</span>
+          </button>
+          <button className={showMoves ? "active" : ""} type="button" onClick={closeMobileMenu(onToggleMoves)}>
+            <Hash size={17} />
+            <span>手数</span>
+          </button>
+          <button className={showCoords ? "active" : ""} type="button" onClick={closeMobileMenu(onToggleCoords)}>
+            <PanelRight size={17} />
+            <span>坐标</span>
+          </button>
+        </div>
       </div>
     </header>
   );

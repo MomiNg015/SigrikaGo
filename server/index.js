@@ -9,7 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import multer from "multer";
 import { Server } from "socket.io";
-import { prisma, publicUser } from "./db.js";
+import { prisma, publicUser, USER_ASSET_RELATION_INCLUDE, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
@@ -42,6 +42,7 @@ import { listItemInventory, useInventoryItem } from "./items.js";
 import { ensureDefaultSiteSettings, getPublicSiteSettings } from "./siteSettings.js";
 import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
 import { blockedCharactersForItemEffects } from "./itemEffects.js";
+import { selectUserSkillMusic } from "./musicSelection.js";
 import {
   assertProductionDeployment,
   corsOriginForRequest,
@@ -200,7 +201,8 @@ app.get("/api/leaderboard", authHttp, async (_req, res) => {
         username: true,
         rating: true,
         selectedCharacter: true,
-        itemEffects: true
+        itemEffects: true,
+        ...USER_ASSET_RELATION_SELECT
       }
     }),
     prisma.gameRecord.findMany({
@@ -386,7 +388,10 @@ app.post("/api/auth/login", async (req, res) => {
   }
   const username = usernameResult.value;
   const password = passwordResult.value;
-  const user = await prisma.user.findUnique({ where: { username } });
+  const user = await prisma.user.findUnique({
+    where: { username },
+    include: USER_ASSET_RELATION_INCLUDE
+  });
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
     res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
     return;
@@ -419,7 +424,10 @@ app.post("/api/auth/refresh", async (req, res) => {
     res.status(401).json({ error: "\u8bf7\u5148\u767b\u5f55" });
     return;
   }
-  const user = await prisma.user.findUnique({ where: { id: session.userId } });
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    include: USER_ASSET_RELATION_INCLUDE
+  });
   if (!user || user.status === USER_STATUS.banned) {
     await loginSessions.clear(session.userId, session.sessionId);
     res.setHeader("Set-Cookie", buildClearRefreshCookie());
@@ -501,6 +509,23 @@ app.post("/api/me/decoration", authHttp, async (req, res) => {
     data: { selectedStoneDecoration: decorationId }
   });
   res.json({ user: publicUser(user) });
+});
+
+app.post("/api/me/music-selection", authHttp, async (req, res) => {
+  try {
+    res.json(await selectUserSkillMusic({
+      prisma,
+      user: req.user,
+      characterId: req.body.characterId,
+      trackId: req.body.trackId
+    }));
+  } catch (error) {
+    if (error.status) {
+      res.status(error.status).json({ error: error.message });
+      return;
+    }
+    throw error;
+  }
 });
 
 app.get("/api/replays", authHttp, async (req, res) => {

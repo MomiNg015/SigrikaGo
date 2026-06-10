@@ -154,6 +154,15 @@ export const MUSIC_TRACKS = {
     purchasable: false,
     playback: introLoop("/assets/music/koimoon_132_intro_no_fadein_2p5s.ogg", "/assets/music/koimoon_132_micro_loop.ogg")
   },
+  "sigrika-skill-dream": {
+    id: "sigrika-skill-dream",
+    name: "Sigrika Dream BGM",
+    type: MUSIC_TYPES.skill,
+    characterId: "sigrika",
+    defaultUnlocked: false,
+    purchasable: true,
+    playback: introLoop("/assets/music/koimoon_132_intro_no_fadein_2p5s.ogg", "/assets/music/koimoon_132_micro_loop.ogg")
+  },
   "aemeath-skill-default": {
     id: "aemeath-skill-default",
     name: "Aemeath Skill BGM",
@@ -185,8 +194,75 @@ export const MUSIC_TRACKS = {
 
 export const DEFAULT_MUSIC_SELECTIONS = {
   home: "home-default",
-  battle: "battle-default"
+  battle: "battle-default",
+  skill: {}
 };
+
+export function parseMusicIds(value) {
+  if (Array.isArray(value)) return normalizeMusicIds(value);
+  const text = String(value ?? "").trim();
+  if (!text) return [];
+  if (text.startsWith("[")) {
+    try {
+      return normalizeMusicIds(JSON.parse(text));
+    } catch {
+      return [];
+    }
+  }
+  return normalizeMusicIds(text.split(","));
+}
+
+export function serializeMusicIds(value = []) {
+  return JSON.stringify(normalizeMusicIds(value));
+}
+
+export function parseMusicSelections(value) {
+  const raw = typeof value === "string" ? parseJsonObject(value) : value;
+  const selections = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+  return normalizeMusicSelections(selections);
+}
+
+export function serializeMusicSelections(value = {}) {
+  return JSON.stringify(normalizeMusicSelections(value));
+}
+
+export function ownedMusicIdsWithDefaults(value = [], tracks = MUSIC_TRACKS) {
+  const owned = new Set(parseMusicIds(value));
+  for (const track of Object.values(tracks)) {
+    if (track.defaultUnlocked) owned.add(track.id);
+  }
+  return [...owned];
+}
+
+export function skillMusicOptionsForCharacter({ characterId, ownedMusicIds = null, tracks = MUSIC_TRACKS } = {}) {
+  const normalizedCharacterId = canonicalCharacterId(characterId);
+  if (!normalizedCharacterId) return [];
+  return Object.values(tracks).filter((track) => (
+    isUsableTrack(track, MUSIC_TYPES.skill, ownedMusicIds)
+    && canonicalCharacterId(track.characterId) === normalizedCharacterId
+  ));
+}
+
+export function resolveSkillMusicTrack({
+  characterId,
+  selections = {},
+  ownedMusicIds = null,
+  tracks = MUSIC_TRACKS
+} = {}) {
+  const normalizedCharacterId = canonicalCharacterId(characterId);
+  if (!normalizedCharacterId) return null;
+  const normalizedSelections = parseMusicSelections(selections);
+  const selectedId = normalizedSelections.skill?.[normalizedCharacterId];
+  const selectedTrack = selectedId ? tracks[selectedId] : null;
+  if (
+    isUsableTrack(selectedTrack, MUSIC_TYPES.skill, ownedMusicIds)
+    && canonicalCharacterId(selectedTrack.characterId) === normalizedCharacterId
+  ) {
+    return selectedTrack;
+  }
+
+  return skillMusicOptionsForCharacter({ characterId: normalizedCharacterId, ownedMusicIds, tracks })[0] ?? null;
+}
 
 export function resolveBackgroundMusic({
   view,
@@ -203,12 +279,12 @@ export function resolveBackgroundMusic({
   if (matchSuccess || resultModalOpen || (view === "room" && gamePhase === "finished")) return null;
 
   if (view === "room" && skillPreview) {
-    const skillTrack = findSkillTrack(skillPreview, tracks);
+    const skillTrack = findSkillTrack(skillPreview, tracks, selections, ownedMusicIds);
     if (skillTrack) return skillTrack;
   }
 
   if (view === "room" && gamePhase !== "finished" && latestSkillCharacterId) {
-    const skillTrack = findSkillTrack({ characterId: latestSkillCharacterId }, tracks);
+    const skillTrack = findSkillTrack({ characterId: latestSkillCharacterId }, tracks, selections, ownedMusicIds);
     if (skillTrack) return skillTrack;
   }
 
@@ -263,12 +339,10 @@ export function characterVoiceMapForSkill(voices = CHARACTER_SKILL_VOICES, syste
   );
 }
 
-function findSkillTrack(skillPreview, tracks) {
+function findSkillTrack(skillPreview, tracks, selections = {}, ownedMusicIds = null) {
   const characterId = canonicalCharacterId(skillPreview?.characterId ?? skillPreview?.character?.id);
   if (!characterId) return null;
-  return Object.values(tracks).find((track) => (
-    track.type === MUSIC_TYPES.skill && canonicalCharacterId(track.characterId) === characterId
-  )) ?? null;
+  return resolveSkillMusicTrack({ characterId, selections, ownedMusicIds, tracks });
 }
 
 function resolveTypedTrack(type, selectedId, ownedMusicIds, tracks, defaultId) {
@@ -292,4 +366,37 @@ function hasPlayableSource(track) {
     return Boolean(track.playback.introSrc && track.playback.loopSrc);
   }
   return Boolean(track.playback?.src);
+}
+
+function normalizeMusicIds(value = []) {
+  return [...new Set(
+    value
+      .map((item) => String(item ?? "").trim())
+      .filter(Boolean)
+  )];
+}
+
+function normalizeMusicSelections(value = {}) {
+  const skill = value.skill && typeof value.skill === "object" && !Array.isArray(value.skill)
+    ? Object.fromEntries(
+      Object.entries(value.skill)
+        .map(([characterId, trackId]) => [canonicalCharacterId(characterId), String(trackId ?? "").trim()])
+        .filter(([characterId, trackId]) => characterId && trackId)
+    )
+    : {};
+  return {
+    ...(typeof value.home === "string" && value.home.trim() ? { home: value.home.trim() } : {}),
+    ...(typeof value.battle === "string" && value.battle.trim() ? { battle: value.battle.trim() } : {}),
+    skill
+  };
+}
+
+function parseJsonObject(value) {
+  const text = String(value ?? "").trim();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {};
+  }
 }

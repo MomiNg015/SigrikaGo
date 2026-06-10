@@ -17,7 +17,7 @@ import {
 import HouseProfileStats from "./house/HouseProfileStats.jsx";
 import { deriveCharacterRecordStats } from "./house/houseStats.js";
 
-export default function HouseModal({ user, records, characterListView, audioSettings, onClose, onSelectCharacter, onApplyDecoration, onOpenReplay }) {
+export default function HouseModal({ user, records, characterListView, audioSettings, onClose, onSelectCharacter, onSelectCharacterMusic, onApplyDecoration, onOpenReplay }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
   const [showReplays, setShowReplays] = useState(false);
   const [showCharacterRecords, setShowCharacterRecords] = useState(false);
@@ -87,6 +87,9 @@ export default function HouseModal({ user, records, characterListView, audioSett
             character={detailCharacter}
             detailOwned={detailOwned}
             itemEffects={itemEffects}
+            user={user}
+            audioSettings={audioSettings}
+            onSelectCharacterMusic={onSelectCharacterMusic}
             onClose={() => setDetailCharacter(null)}
           />
         )}

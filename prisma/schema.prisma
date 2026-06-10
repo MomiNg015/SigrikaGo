@@ -27,8 +27,14 @@ model User {
   itemPurchaseCounts String   @default("")
   itemEffects        String   @default("")
   ownedDecorations   String   @default("")
+  ownedMusicIds      String   @default("")
+  musicSelections    String   @default("{}")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  userCharacters     UserCharacter[]
+  userDecorations    UserDecoration[]
+  userItems          UserItem[]
+  userItemEffects    UserItemEffect[]
 }
 
 model LoginSession {
@@ -52,6 +58,7 @@ model UserCharacter {
   source        String   @default("legacy")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, characterSlug])
   @@index([characterSlug])
@@ -64,6 +71,7 @@ model UserDecoration {
   source         String   @default("legacy")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, decorationSlug])
   @@index([decorationSlug])
@@ -77,6 +85,7 @@ model UserItem {
   source    String   @default("legacy")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, itemId])
   @@index([itemId])
@@ -90,6 +99,7 @@ model UserItemEffect {
   source      String   @default("legacy")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, effectKey])
   @@index([effectKey])
@@ -146,6 +156,7 @@ model Character {
   id             String          @id @default(cuid())
   slug           String          @unique
   name           String
+  description    String          @default("")
   portraitUrl    String
   portraitSource String          @default("url")
   acquisitionMethod String       @default("")

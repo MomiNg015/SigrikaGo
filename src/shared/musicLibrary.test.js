@@ -7,9 +7,12 @@ import {
   MUSIC_TRACKS,
   VICTORY_SOUND,
   latestSkillCharacterId,
+  ownedMusicIdsWithDefaults,
+  resolveSkillMusicTrack,
   resolveBackgroundMusic,
   resolveResultSound,
-  resolveSkillVoice
+  resolveSkillVoice,
+  skillMusicOptionsForCharacter
 } from "./musicLibrary.js";
 
 describe("background music library", () => {
@@ -185,6 +188,87 @@ describe("background music library", () => {
     });
 
     expect(track.id).toBe("denia-skill-default");
+  });
+
+  it("lets an owned character skill music selection override the default", () => {
+    const tracks = {
+      ...MUSIC_TRACKS,
+      "denia-skill-alt": {
+        id: "denia-skill-alt",
+        name: "Denia Alt",
+        type: "skill",
+        characterId: "denia",
+        defaultUnlocked: false,
+        purchasable: true,
+        playback: { mode: "single-loop", src: "/assets/music/denia-alt.ogg", loop: true }
+      }
+    };
+
+    const track = resolveBackgroundMusic({
+      view: "room",
+      skillPreview: { characterId: "denia" },
+      selections: { skill: { denia: "denia-skill-alt" } },
+      ownedMusicIds: ["denia-skill-alt"],
+      tracks
+    });
+
+    expect(track.id).toBe("denia-skill-alt");
+  });
+
+  it("falls back when selected skill music is not owned or belongs to another character", () => {
+    const tracks = {
+      ...MUSIC_TRACKS,
+      "sigrika-skill-alt": {
+        id: "sigrika-skill-alt",
+        name: "Sigrika Alt",
+        type: "skill",
+        characterId: "sigrika",
+        defaultUnlocked: false,
+        purchasable: true,
+        playback: { mode: "single-loop", src: "/assets/music/sigrika-alt.ogg", loop: true }
+      }
+    };
+
+    expect(resolveSkillMusicTrack({
+      characterId: "denia",
+      selections: { skill: { denia: "sigrika-skill-alt" } },
+      ownedMusicIds: ["sigrika-skill-alt"],
+      tracks
+    }).id).toBe("denia-skill-default");
+
+    expect(resolveSkillMusicTrack({
+      characterId: "sigrika",
+      selections: { skill: { sigrika: "sigrika-skill-alt" } },
+      ownedMusicIds: [],
+      tracks
+    }).id).toBe("sigrika-skill-default");
+  });
+
+  it("lists only owned or default-unlocked skill music for a character", () => {
+    const tracks = {
+      ...MUSIC_TRACKS,
+      "denia-skill-alt": {
+        id: "denia-skill-alt",
+        name: "Denia Alt",
+        type: "skill",
+        characterId: "denia",
+        defaultUnlocked: false,
+        purchasable: true,
+        playback: { mode: "single-loop", src: "/assets/music/denia-alt.ogg", loop: true }
+      }
+    };
+
+    expect(skillMusicOptionsForCharacter({
+      characterId: "denia",
+      ownedMusicIds: ownedMusicIdsWithDefaults(["denia-skill-alt"], tracks),
+      tracks
+    }).map((track) => track.id)).toContain("denia-skill-alt");
+
+    expect(skillMusicOptionsForCharacter({
+      characterId: "sigrika",
+      ownedMusicIds: ["denia-skill-alt"],
+      tracks
+    }).map((track) => track.id)).toEqual(["sigrika-skill-default"]);
   });
 
   it("stops background music after the game is finished", () => {

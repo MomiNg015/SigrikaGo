@@ -12,6 +12,8 @@ describe("ActionBar helpers", () => {
 
   it("pairs player actions with compactable icon labels", () => {
     const source = readFileSync(new URL("./ActionBar.jsx", import.meta.url), "utf8");
+    const battleStageSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+    const replaySource = readFileSync(new URL("./actionBar/ReplayActionBar.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("Hand");
     expect(source).toContain("Calculator");
@@ -20,6 +22,16 @@ describe("ActionBar helpers", () => {
     expect(source).toContain("<Hand size={18}");
     expect(source).toContain("<Calculator size={18}");
     expect(source).toContain("<Handshake size={18}");
+    expect(source).toContain(">弃手</span>");
+    expect(source).toContain(">数子</span>");
+    expect(source).toContain(">和棋</span>");
+    expect(source).not.toContain(">弃一手</span>");
+    expect(source).not.toContain(">申请数子</span>");
+    expect(source).not.toContain(">申请和棋</span>");
+    expect(source).not.toContain("className=\"exit-action\"");
+    expect(replaySource).toContain("className=\"action-bar replay-bar\"");
+    expect(battleStageSource).toContain("trailingAction={");
+    expect(battleStageSource).toContain("className=\"chat-exit-action exit-action\"");
   });
 
   it("keeps timed opponent decisions out of the action bar", () => {

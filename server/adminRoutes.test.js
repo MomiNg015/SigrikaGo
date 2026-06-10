@@ -131,10 +131,39 @@ describe("admin route helpers", () => {
       "transaction",
       "tx.user.findUnique",
       "tx.user.update",
+      ["tx.userProgressLedger.create", expect.objectContaining({
+        metric: "rating",
+        delta: 150,
+        beforeValue: 1000,
+        afterValue: 1150,
+        reason: "admin.update"
+      })],
       "tx.adminAuditLog.create"
     ]);
     expect(auditWrites[0].action).toBe("user.update");
     expect(auditWrites[0].targetId).toBe("user-1");
+  });
+
+  it("syncs structured asset rows after admin asset edits", async () => {
+    const { prisma, calls } = transactionPrisma();
+
+    await updateUserProfile({
+      prisma,
+      adminUser: { id: "admin-1" },
+      userId: "user-1",
+      body: {
+        ownedCharacters: ["sigrika", "danea"],
+        ownedItems: [{ itemId: "rainbow-candy", quantity: 2 }]
+      }
+    });
+
+    expect(calls).toContainEqual(["tx.userCharacter.upsert", expect.objectContaining({
+      where: { userId_characterSlug: { userId: "user-1", characterSlug: "denia" } }
+    })]);
+    expect(calls).toContainEqual(["tx.userItem.upsert", expect.objectContaining({
+      where: { userId_itemId: { userId: "user-1", itemId: "rainbow-candy" } },
+      update: { quantity: 2, source: "legacy" }
+    })]);
   });
 
   it("bans users and audit logs in the same transaction", async () => {
@@ -678,6 +707,36 @@ function transactionPrisma(options = {}) {
       create: async ({ data }) => {
         calls.push("tx.adminAuditLog.create");
         auditWrites.push(data);
+        return data;
+      }
+    },
+    userCharacter: {
+      upsert: async (input) => {
+        calls.push(["tx.userCharacter.upsert", input]);
+        return input.create;
+      }
+    },
+    userDecoration: {
+      upsert: async (input) => {
+        calls.push(["tx.userDecoration.upsert", input]);
+        return input.create;
+      }
+    },
+    userItem: {
+      upsert: async (input) => {
+        calls.push(["tx.userItem.upsert", input]);
+        return input.create;
+      }
+    },
+    userItemEffect: {
+      upsert: async (input) => {
+        calls.push(["tx.userItemEffect.upsert", input]);
+        return input.create;
+      }
+    },
+    userProgressLedger: {
+      create: async ({ data }) => {
+        calls.push(["tx.userProgressLedger.create", data]);
         return data;
       }
     }

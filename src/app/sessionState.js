@@ -5,6 +5,6 @@ export function initialSessionState() {
   };
 }
 
-export function shouldFinishPreloadAsHome({ view, room, matchSuccess }) {
-  return view === "preloading" && !room && !matchSuccess;
+export function shouldFinishPreloadAsHome({ room, matchSuccess }) {
+  return !room && !matchSuccess;
 }

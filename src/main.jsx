@@ -129,6 +129,7 @@ function App() {
     requestDraw,
     respondDraw,
     selectCharacter,
+    selectCharacterMusic,
     startMatch
   } = useAppActions({
     matchSuccess,
@@ -257,6 +258,7 @@ function App() {
         resultModalOpen={resultModalOpen}
         room={room}
         selectCharacter={selectCharacter}
+        selectCharacterMusic={selectCharacterMusic}
         setAudioSettings={setAudioSettings}
         setIncomingDuel={setIncomingDuel}
         setShowFriends={setShowFriends}

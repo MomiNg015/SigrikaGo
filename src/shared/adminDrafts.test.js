@@ -23,12 +23,14 @@ describe("admin draft helpers", () => {
       id: "danea",
       dbId: "character-1",
       name: "Danea",
+      description: "Moonlit tactician",
       portrait: "/assets/danea.png",
       acquisitionMethod: "商城购买",
       skill: { effectType: "flip-stone", params: { radius: 1 } }
     });
 
     expect(draft.slug).toBe("danea");
+    expect(draft.description).toBe("Moonlit tactician");
     expect(draft.acquisitionMethod).toBe("商城购买");
     expect(draft.skill.targetRule).toBe("stone");
     expect(draft.skill.paramsJson).toBe("{\"radius\":1}");
@@ -40,6 +42,7 @@ describe("admin draft helpers", () => {
       ...emptyCharacterDraft(),
       slug: "new-character",
       name: "New Character",
+      description: "New character description",
       portraitUrl: "/assets/new.png",
       acquisitionMethod: "商城购买",
       sortOrder: "2",
@@ -53,6 +56,7 @@ describe("admin draft helpers", () => {
     };
 
     expect(characterDraftToBody(draft).skill.costValue).toBe("3");
+    expect(characterDraftToBody(draft).description).toBe("New character description");
     expect(characterDraftToBody(draft).acquisitionMethod).toBe("商城购买");
     expect(characterDraftToBody({ ...draft, skill: { ...draft.skill, uses: "10" } })).toBeNull();
     expect(characterDraftToBody({ ...draft, skill: { ...draft.skill, costValue: "three" } })).toBeNull();

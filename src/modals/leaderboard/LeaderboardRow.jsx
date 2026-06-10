@@ -11,10 +11,10 @@ export default function LeaderboardRow({ player, rank, characters, highlight = f
   return (
     <article className={`leaderboard-row ${leaderboardRankClass(rank)} ${highlight ? "current-user" : ""} ${pinned ? "pinned" : ""}`} data-rank={rank}>
       <strong className="leaderboard-rank">#{rank}</strong>
-      <img src={resolveCandyPortrait(character, player.itemEffects)} alt={character.name} />
+      <img src={resolveCandyPortrait(character, player.itemEffects)} alt={`${player.username}头像`} />
       <div className="leaderboard-player">
         <strong>{player.username}</strong>
-        <span>{character.name}</span>
+        <span>{player.rank}</span>
       </div>
       <span>{player.rank}</span>
       <b>{player.rating}</b>

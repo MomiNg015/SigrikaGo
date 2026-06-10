@@ -134,6 +134,11 @@
   white-space: nowrap;
 }
 
+.friend-main,
+.friend-stats {
+  display: contents;
+}
+
 .friends-row span {
   color: #6f5f75;
   font-weight: 800;

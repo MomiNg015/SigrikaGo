@@ -103,6 +103,16 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     });
   }
 
+  function requestPassConfirm() {
+    if (displayRoom.game.phase !== "playing") return;
+    setConfirmAction({
+      title: "确认弃手",
+      message: "是否弃一手",
+      confirmText: "弃手",
+      onConfirm: () => onGameAction({ type: "pass" })
+    });
+  }
+
   function requestExitConfirm() {
     if (displayRoom.game.phase !== "finished" && role === "player") {
       setConfirmAction({
@@ -134,6 +144,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         showMoves={showMoves}
         onOpenMessageBoard={onOpenMessageBoard}
         onOpenSettings={onOpenSettings}
+        onBack={requestExitConfirm}
         onToggleCoords={() => setShowCoords(!showCoords)}
         onToggleMoves={() => setShowMoves(!showMoves)}
       />
@@ -159,6 +170,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         onDrawRespond={onDrawRespond}
         onGameAction={onGameAction}
         onOpenReplay={onOpenReplay}
+        onPass={requestPassConfirm}
         onResign={requestResignConfirm}
         onScoringAction={onScoringAction}
         opponent={opponent}

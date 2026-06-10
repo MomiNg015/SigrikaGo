@@ -89,6 +89,9 @@ export function validateProductionDeployment(env = process.env) {
   if (debugTestActionsEnabled(env)) {
     errors.push("ENABLE_TEST_ACTIONS must not be enabled in production");
   }
+  if (multiInstanceDeploymentRequested(env)) {
+    errors.push("Production must run a single Node instance until room state and Socket.IO are shared");
+  }
 
   const origins = [...buildAllowedOrigins(env)];
   if (origins.length === 0) {
@@ -112,6 +115,13 @@ export function validateProductionDeployment(env = process.env) {
 
 export function debugTestActionsEnabled(env = process.env) {
   return ["1", "true", "yes", "on"].includes(String(env.ENABLE_TEST_ACTIONS ?? "").trim().toLowerCase());
+}
+
+export function multiInstanceDeploymentRequested(env = process.env) {
+  const numericFlags = [env.WEB_CONCURRENCY, env.PM2_INSTANCES, env.INSTANCES, env.NODE_CLUSTER_WORKERS];
+  if (numericFlags.some((value) => Number(String(value ?? "").trim()) > 1)) return true;
+  const nodeAppInstance = String(env.NODE_APP_INSTANCE ?? "").trim();
+  return nodeAppInstance !== "" && nodeAppInstance !== "0";
 }
 
 export function canUseDebugTestActions(env = process.env) {

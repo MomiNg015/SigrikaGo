@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SigrikaGo Static Frontend Style Gallery</title>
+  <style>
+    :root {
+      --bg: #07121a;
+      --panel: rgba(12, 22, 29, 0.86);
+      --panel-strong: rgba(5, 15, 22, 0.96);
+      --text: #f7fffd;
+      --muted: rgba(205, 244, 239, 0.72);
+      --line: #00ffbe;
+      --blue: #00bfff;
+      --pink: #ff76a3;
+      --gold: #ffb84d;
+      --danger: #ff4e64;
+      --radius: 8px;
+      --clip: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+      --shadow: 0 0 24px rgba(255, 118, 163, 0.16), 0 0 30px rgba(0, 255, 190, 0.12), inset 0 0 18px rgba(0, 255, 190, 0.06);
+      --font: Inter, "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      --mono: "Chakra Petch", "Courier New", monospace;
+    }
+
+    body[data-theme="original"] {
+      --bg: #fff8fb;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-strong: #ffffff;
+      --text: #403847;
+      --muted: #756f7d;
+      --line: #8ac5ff;
+      --blue: #5ea4f4;
+      --pink: #ff9cc4;
+      --gold: #ef9f38;
+      --danger: #d44f66;
+      --radius: 18px;
+      --clip: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      --shadow: 0 18px 46px rgba(77, 62, 91, 0.16);
+    }
+
+    body[data-theme="bright"] {
+      --bg: #fffbf2;
+      --panel: #ffffff;
+      --panel-strong: #fffdf8;
+      --text: #3d2b25;
+      --muted: rgba(61, 43, 37, 0.72);
+      --line: #3d2b25;
+      --blue: #9ad3de;
+      --pink: #ff9ebb;
+      --gold: #f6c453;
+      --danger: #d94b62;
+      --radius: 16px;
+      --clip: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      --shadow: 4px 4px 0 #3d2b25;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 1180px;
+      color: var(--text);
+      font-family: var(--font);
+      background:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 100% 4px,
+        radial-gradient(circle at 70% 15%, rgba(0, 255, 190, 0.13), transparent 32%),
+        linear-gradient(rgba(3, 7, 10, 0.3), rgba(3, 7, 10, 0.84)),
+        url("../public/assets/home/multipurpose-classroom-bg.webp") center / cover fixed,
+        var(--bg);
+      overflow-x: hidden;
+    }
+    body[data-theme="original"] {
+      background: linear-gradient(135deg, #fff8fb, #edf7ff 50%, #fffaf1);
+    }
+    body[data-theme="bright"] {
+      background:
+        linear-gradient(rgba(154, 211, 222, 0.22) 1px, transparent 1px) 0 0 / 20px 20px,
+        linear-gradient(90deg, rgba(154, 211, 222, 0.22) 1px, transparent 1px) 0 0 / 20px 20px,
+        #fffbf2;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .shell { padding: 24px; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      border: 1px solid color-mix(in srgb, var(--line), transparent 32%);
+      border-radius: var(--radius);
+      clip-path: var(--clip);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    body[data-theme="bright"] .topbar {
+      border: 3px solid #3d2b25;
+      color: #3d2b25;
+      text-shadow: none;
+      font-weight: 700;
+    }
+    .title-block h1 {
+      margin: 0;
+      color: var(--line);
+      font-size: 26px;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 12px color-mix(in srgb, var(--line), transparent 42%);
+    }
+    body[data-theme="bright"] .title-block h1 { color: #3d2b25; text-shadow: none; }
+    .title-block p { margin: 6px 0 0; color: var(--muted); }
+    .switcher { display: flex; gap: 10px; }
+    .switcher button {
+      min-width: 126px;
+      padding: 10px 14px;
+      border: 1px solid color-mix(in srgb, var(--line), transparent 20%);
+      border-radius: var(--radius);
+      clip-path: var(--clip);
+      background: rgba(0, 0, 0, 0.16);
+      color: var(--text);
+      font-weight: 900;
+    }
+    .switcher button.active {
+      background: linear-gradient(90deg, var(--line), var(--pink));
+      color: #071018;
+      box-shadow: var(--shadow);
+    }
+    body[data-theme="bright"] .switcher button,
+    body[data-theme="bright"] .switcher button.active {
+      background: #ffffff;
+      color: #3d2b25;
+      border: 3px solid #3d2b25;
+      box-shadow: 3px 3px 0 #3d2b25;
+      text-shadow: none;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 34px 0 14px;
+      color: var(--line);
+      font: 900 15px/1 var(--mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .section-title::before {
+      content: "";
+      width: 42px;
+      height: 3px;
+      background: var(--line);
+      box-shadow: 0 0 10px var(--line);
+    }
+    body[data-theme="bright"] .section-title { color: #3d2b25; }
+    body[data-theme="bright"] .section-title::before { background: #3d2b25; box-shadow: none; }
+
+    .panel,
+    .modal,
+    .card,
+    .player-panel,
+    .goban-shell {
+      position: relative;
+      border: 1px solid color-mix(in srgb, var(--line), transparent 35%);
+      border-radius: var(--radius);
+      clip-path: var(--clip);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .panel { padding: 22px; }
+    .modal { min-height: 260px; padding: 20px; overflow: hidden; }
+    .card { padding: 14px; }
+    body[data-theme="bright"] .panel,
+    body[data-theme="bright"] .modal,
+    body[data-theme="bright"] .card,
+    body[data-theme="bright"] .player-panel,
+    body[data-theme="bright"] .goban-shell {
+      border: 3px solid #3d2b25;
+      background: #ffffff;
+      color: #3d2b25;
+      text-shadow: none;
+      font-weight: 700;
+      box-shadow: 4px 4px 0 #3d2b25;
+    }
+    .panel::after,
+    .modal::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 100% 4px;
+      opacity: 0.55;
+    }
+    body[data-theme="original"] .panel::after,
+    body[data-theme="bright"] .panel::after,
+    body[data-theme="original"] .modal::after,
+    body[data-theme="bright"] .modal::after { display: none; }
+
+    .field {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid color-mix(in srgb, var(--line), transparent 42%);
+      border-radius: calc(var(--radius) + 4px);
+      background: rgba(3, 12, 20, 0.82);
+      color: var(--text);
+      outline: none;
+    }
+    body[data-theme="original"] .field,
+    body[data-theme="bright"] .field { background: #ffffff; color: var(--text); }
+    body[data-theme="bright"] .field { border: 3px solid #3d2b25; color: #3d2b25; font-weight: 700; }
+    .primary-btn,
+    .ghost-btn {
+      padding: 11px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      clip-path: var(--clip);
+      background: linear-gradient(90deg, var(--line), var(--pink));
+      color: #071018;
+      font-weight: 900;
+    }
+    .ghost-btn { background: transparent; color: var(--text); }
+    body[data-theme="bright"] .primary-btn,
+    body[data-theme="bright"] .ghost-btn {
+      background: #ffffff;
+      color: #3d2b25;
+      border: 3px solid #3d2b25;
+      box-shadow: 3px 3px 0 #3d2b25;
+      text-shadow: none;
+    }
+    h2, h3 { margin-top: 0; }
+    h2 { color: var(--line); }
+    body[data-theme="bright"] h2 { color: #3d2b25; text-shadow: none; }
+    .muted { color: var(--muted); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+
+    .auth-preview { min-height: 360px; display: grid; place-items: center; }
+    .auth-card { width: 390px; display: grid; gap: 14px; }
+    .loading-preview { min-height: 230px; display: grid; place-items: center; text-align: center; }
+    .spinner {
+      width: 74px;
+      height: 74px;
+      margin: 0 auto 18px;
+      border: 4px solid color-mix(in srgb, var(--line), transparent 74%);
+      border-top-color: var(--pink);
+      border-radius: 50%;
+      animation: spin 1.15s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .bar {
+      height: 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .bar span {
+      display: block;
+      width: 68%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--line), var(--pink));
+    }
+
+    .lobby-preview {
+      min-height: 570px;
+      background:
+        linear-gradient(rgba(0,0,0,.24), rgba(0,0,0,.4)),
+        url("../public/assets/home/multipurpose-classroom-bg.webp") center / cover;
+    }
+    body[data-theme="original"] .lobby-preview,
+    body[data-theme="bright"] .lobby-preview { background: var(--panel); }
+    .lobby-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 34px;
+    }
+    .brand { display: flex; align-items: baseline; gap: 18px; }
+    .brand strong {
+      color: var(--line);
+      font-size: 24px;
+      text-shadow: 0 0 12px var(--line);
+    }
+    body[data-theme="bright"] .brand strong { color: #3d2b25; text-shadow: none; }
+    .top-actions { display: flex; gap: 12px; }
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      clip-path: var(--clip);
+      background: transparent;
+      color: var(--line);
+      font-weight: 900;
+    }
+    body[data-theme="bright"] .icon-btn { border: 3px solid #3d2b25; color: #3d2b25; background: #fff; box-shadow: 2px 2px 0 #3d2b25; }
+    .lobby-stage {
+      display: grid;
+      grid-template-columns: 360px 1fr 1.15fr;
+      gap: 32px;
+      align-items: center;
+    }
+    .id-card {
+      display: grid;
+      grid-template-columns: 74px 1fr 120px;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 54px;
+      padding: 14px;
+    }
+    .avatar {
+      width: 68px;
+      height: 68px;
+      object-fit: cover;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.12);
+    }
+    body[data-theme="bright"] .avatar { border: 3px solid #3d2b25; }
+    .nav-stack { display: grid; gap: 12px; }
+    .utility-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      border: 1px solid color-mix(in srgb, var(--line), transparent 25%);
+      background: rgba(3, 34, 50, 0.64);
+      clip-path: polygon(18px 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
+      font-weight: 900;
+    }
+    body[data-theme="original"] .utility-card {
+      clip-path: none;
+      border-radius: 999px;
+      background: #ffffff;
+      color: var(--text);
+    }
+    body[data-theme="bright"] .utility-card {
+      clip-path: none;
+      background: #ffffff;
+      color: #3d2b25;
+      border: 3px solid #3d2b25;
+      border-radius: 16px;
+      box-shadow: 4px 4px 0 #3d2b25;
+    }
+    .art-entry {
+      position: relative;
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+    }
+    .art-entry img {
+      max-width: 88%;
+      max-height: 260px;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 24px rgba(0,0,0,.4));
+    }
+    body[data-theme="bright"] .art-entry {
+      background: #ffffff;
+      border: 3px solid #3d2b25;
+      border-radius: 16px;
+      box-shadow: 4px 4px 0 #3d2b25;
+    }
+    .art-entry::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 18px;
+      bottom: 16px;
+      color: var(--line);
+      font: 900 12px var(--mono);
+    }
+    body[data-theme="bright"] .art-entry::after { color: #3d2b25; }
+
+    .battle-preview {
+      display: grid;
+      grid-template-columns: 260px 1fr 260px;
+      gap: 20px;
+      align-items: start;
+      background: radial-gradient(circle at 50% 20%, rgba(0, 255, 190, 0.1), transparent 42%), #03070a;
+    }
+    body[data-theme="original"] .battle-preview,
+    body[data-theme="bright"] .battle-preview { background: var(--panel); }
+    .player-panel {
+      padding: 16px;
+      border-color: var(--line);
+    }
+    .player-panel.enemy { border-color: var(--danger); }
+    .player-head { display: flex; align-items: center; gap: 12px; }
+    .badge-line {
+      display: inline-block;
+      margin: 10px 6px 0 0;
+      padding: 4px 8px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-family: var(--mono);
+    }
+    .timer { margin-top: 18px; color: var(--line); font: 900 34px/1 var(--mono); }
+    .enemy .timer { color: var(--danger); }
+    .skill { width: 100%; margin-top: 14px; }
+    .goban-shell { padding: 20px; background: rgba(5,20,26,.82); }
+    .goban {
+      position: relative;
+      width: min(520px, 100%);
+      aspect-ratio: 1;
+      margin: auto;
+      border: 8px solid #8b5b2e;
+      background:
+        radial-gradient(circle, #17100c 0 5px, transparent 6px) 50% 50% / 33.33% 33.33%,
+        linear-gradient(#6d4726 2px, transparent 2px) 0 0 / 8.33% 8.33%,
+        linear-gradient(90deg, #6d4726 2px, transparent 2px) 0 0 / 8.33% 8.33%,
+        #e2b66f;
+    }
+    .stone {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      box-shadow: 0 4px 8px rgba(0,0,0,.35);
+    }
+    .black { background: radial-gradient(circle at 35% 30%, #777, #080808 65%); }
+    .white { background: radial-gradient(circle at 35% 30%, #ffffff, #dddddd 70%); }
+    .dock { margin-top: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+    .modal-board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .modal.wide { grid-column: span 2; }
+    .close {
+      position: absolute;
+      right: 14px;
+      top: 12px;
+      z-index: 3;
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--line);
+      font-weight: 900;
+    }
+    body[data-theme="bright"] .close { border: 3px solid #3d2b25; color: #3d2b25; background: #ffffff; }
+    .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+    .stat,
+    .row {
+      padding: 12px;
+      border: 1px solid color-mix(in srgb, var(--line), transparent 40%);
+      border-radius: calc(var(--radius) + 2px);
+      background: rgba(255,255,255,.04);
+    }
+    body[data-theme="bright"] .stat,
+    body[data-theme="bright"] .row {
+      background: #ffffff;
+      border: 3px solid #3d2b25;
+      color: #3d2b25;
+      box-shadow: 3px 3px 0 #3d2b25;
+    }
+    .stat span { display: block; color: var(--muted); font-size: 11px; }
+    .stat strong { color: var(--line); font: 900 22px/1.2 var(--mono); }
+    body[data-theme="bright"] .stat strong { color: #3d2b25; }
+    .character-grid,
+    .item-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .portrait {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      color: var(--pink);
+      font: 900 11px var(--mono);
+    }
+    .shop-layout { display: grid; grid-template-columns: 170px 1fr; gap: 16px; }
+    .shop-girl { min-height: 280px; display: grid; place-items: end center; overflow: visible; }
+    .shop-girl img { width: 150px; transform: translateY(12px); filter: drop-shadow(0 12px 18px rgba(0,0,0,.25)); }
+    .ranking .row,
+    .friends .row,
+    .watch-list .row { display: grid; grid-template-columns: 70px 1fr 110px; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .rank-medal { color: var(--gold); font: 900 18px var(--mono); }
+    textarea.field { min-height: 110px; resize: vertical; }
+
+    .mobile-frame {
+      width: 390px;
+      min-height: 640px;
+      margin: auto;
+      padding: 18px;
+      border: 8px solid color-mix(in srgb, var(--line), transparent 15%);
+      border-radius: 34px;
+      background: rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    body[data-theme="bright"] .mobile-frame { border-color: #3d2b25; background: #fff; }
+    .mobile-room { display: grid; gap: 12px; }
+    .mobile-room .player-panel { min-height: 75px; padding: 10px; }
+    .mobile-room .goban-shell { padding: 10px; }
+    .mobile-room .dock { grid-template-columns: repeat(3, 1fr); }
+  </style>
+</head>
+<body data-theme="current">
+  <main class="shell">
+    <header class="topbar">
+      <div class="title-block">
+        <h1>SigrikaGo Static Frontend Style Gallery</h1>
+        <p>Standalone mock data page for UI review. It shows major screens, windows, and selectable visual themes.</p>
+      </div>
+      <nav class="switcher" aria-label="Theme switcher">
+        <button class="active" data-set-theme="current">Current HUD</button>
+        <button data-set-theme="original">Original</button>
+        <button data-set-theme="bright">Bright School</button>
+      </nav>
+    </header>
+
+    <h2 class="section-title">01 Auth And Preload</h2>
+    <section class="grid-2">
+      <div class="panel auth-preview">
+        <div class="panel auth-card">
+          <h2>Startorch Go Club</h2>
+          <input class="field" value="demo_student" aria-label="username" />
+          <input class="field" value="password" type="password" aria-label="password" />
+          <button class="primary-btn">START CONNECTION!!</button>
+          <p class="muted">Login/register card, form fields, and primary action.</p>
+        </div>
+      </div>
+      <div class="panel loading-preview">
+        <div>
+          <div class="spinner"></div>
+          <h2>Asset Sync</h2>
+          <p class="muted">Characters, shop items, board sounds, BGM, and system voices are preloading.</p>
+          <div class="bar"><span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="section-title">02 Lobby / Main Dashboard</h2>
+    <section class="panel lobby-preview">
+      <div class="lobby-top">
+        <div class="brand"><strong>Startorch Go Club</strong><span>Lobby Room Active</span></div>
+        <div class="top-actions"><button class="icon-btn">MSG</button><button class="icon-btn">SET</button><button class="icon-btn">OUT</button></div>
+      </div>
+      <div class="lobby-stage">
+        <aside>
+          <div class="panel id-card">
+            <img class="avatar" src="../public/assets/characters/denia_color.webp" alt="avatar" />
+            <strong>Player_demo</strong>
+            <span class="badge-line">2 Dan<br />1020 pts</span>
+          </div>
+          <nav class="nav-stack">
+            <div class="utility-card">SHOP</div>
+            <div class="utility-card">WAREHOUSE</div>
+            <div class="utility-card">RANKING</div>
+            <div class="utility-card">WATCH</div>
+            <div class="utility-card">FRIENDS</div>
+          </nav>
+        </aside>
+        <button class="art-entry" data-label="DIARY_LOG"><img src="../public/assets/home/book-entry.webp" alt="member handbook" /></button>
+        <button class="art-entry" data-label="MATCH_READY"><img src="../public/assets/home/fantasy-match-entry.webp" alt="fantasy match" /></button>
+      </div>
+    </section>
+
+    <h2 class="section-title">03 Room / Battle Field</h2>
+    <section class="panel battle-preview">
+      <aside class="player-panel enemy">
+        <div class="player-head"><img class="avatar" src="../public/assets/characters/denia_color.webp" alt="" /><strong>Opponent: Hina</strong></div>
+        <span class="badge-line">3 Dan</span><span class="badge-line">1180 pts</span>
+        <div class="timer">04:28</div><div class="bar"><span style="width:78%"></span></div>
+        <button class="primary-btn skill">Bubble Dream</button>
+      </aside>
+      <div>
+        <div class="goban-shell">
+          <div class="goban">
+            <span class="stone black" style="left:18%;top:22%"></span>
+            <span class="stone white" style="left:42%;top:40%"></span>
+            <span class="stone black" style="left:58%;top:55%"></span>
+            <span class="stone white" style="left:70%;top:30%"></span>
+          </div>
+        </div>
+        <div class="dock"><button class="ghost-btn">Pass</button><button class="ghost-btn">Resign</button><button class="ghost-btn">Count</button><button class="ghost-btn">Replay</button></div>
+      </div>
+      <aside class="player-panel">
+        <div class="player-head"><img class="avatar" src="../public/assets/characters/denia_color.webp" alt="" /><strong>You: Player_demo</strong></div>
+        <span class="badge-line">2 Dan</span><span class="badge-line">1020 pts</span>
+        <div class="timer">05:12</div><div class="bar"><span style="width:92%"></span></div>
+        <button class="primary-btn skill">Starlight Rune</button>
+      </aside>
+    </section>
+
+    <h2 class="section-title">04 Modal And Window States</h2>
+    <section class="modal-board">
+      <article class="modal wide">
+        <button class="close">X</button>
+        <h2>Member Handbook</h2>
+        <div class="stats">
+          <div class="stat"><span>Rank</span><strong>2</strong></div>
+          <div class="stat"><span>Rating</span><strong>1020</strong></div>
+          <div class="stat"><span>Games</span><strong>36</strong></div>
+          <div class="stat"><span>Win Rate</span><strong>61%</strong></div>
+          <div class="stat"><span>Captures</span><strong>94</strong></div>
+        </div>
+        <div class="character-grid">
+          <div class="card"><img class="portrait" src="../public/assets/characters/denia_color.webp" alt="" /><h3>Sigrika</h3><span class="tag">DEPLOYED</span><p>Skill: Starlight Rune</p></div>
+          <div class="card"><img class="portrait" src="../public/assets/characters/denia_color.webp" alt="" /><h3>Denia</h3><span class="tag">READY</span><p>Skill: Bubble Dream</p></div>
+          <div class="card"><h3>LOCK</h3><p>LOADING... (x_x)</p></div>
+        </div>
+      </article>
+
+      <article class="modal">
+        <button class="close">X</button>
+        <h2>Character Details</h2>
+        <div class="card">
+          <img class="portrait" src="../public/assets/characters/denia_color.webp" alt="" />
+          <h3>Sigrika</h3>
+          <p><strong>Skill:</strong> Bubble Dream</p>
+          <p><strong>Source:</strong> Starter gift</p>
+          <p>A cute academy club member with holographic tactical tricks.</p>
+        </div>
+      </article>
+
+      <article class="modal">
+        <button class="close">X</button>
+        <h2>Shop</h2>
+        <div class="shop-layout">
+          <div class="card shop-girl"><img src="../public/assets/characters/denia_color.webp" alt="shop keeper" /></div>
+          <div class="item-grid">
+            <div class="card"><h3>Rainbow Candy</h3><span class="tag">ITEM</span><p>Owned</p></div>
+            <div class="card"><h3>Pink Nameplate</h3><span class="tag">DECOR</span><p>120 coins</p></div>
+            <div class="card"><h3>Character File</h3><span class="tag">CHAR</span><p>Coming soon</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="modal">
+        <button class="close">X</button>
+        <h2>Warehouse</h2>
+        <div class="item-grid">
+          <div class="card"><h3>Rainbow Candy</h3><span class="tag">x2</span><p>Use on target character.</p></div>
+          <div class="card"><h3>Stone Skin</h3><span class="tag">DECOR</span><p>Equipped</p></div>
+          <div class="card"><h3>Archive Ticket</h3><span class="tag">LOCK</span><p>Data not loaded.</p></div>
+        </div>
+      </article>
+
+      <article class="modal">
+        <button class="close">X</button>
+        <h2>Leaderboard</h2>
+        <div class="ranking">
+          <div class="row"><span class="rank-medal">V 1</span><strong>Hoshino</strong><span>1820</span></div>
+          <div class="row"><span class="rank-medal">V 2</span><strong>Roi</strong><span>1690</span></div>
+          <div class="row"><span class="rank-medal">V 3</span><strong>Player_demo</strong><span>1520</span></div>
+        </div>
+      </article>
+
+      <article class="modal">
+        <button class="close">X</button>
+        <h2>Watch Rooms</h2>
+        <div class="watch-list">
+          <div class="row"><span>#13852</span><strong>Roi vs Momo</strong><button class="ghost-btn">Watch</button></div>
+          <div class="row"><span>#24601</span><strong>Hina vs Sora</strong><button class="ghost-btn">Watch</button></div>
+          <div class="row"><span>#33081</span><strong>Archive Match</strong><button class="ghost-btn">Replay</button></div>
+        </div>
+      </article>
+
+      <article class="modal">
+        <button class="close">X</button>
+        <h2>Friends</h2>
+        <div class="friends">
+          <div class="row"><span>Online</span><strong>Momo</strong><button class="ghost-btn">Chat</button></div>
+          <div class="row"><span>Offline</span><strong>Ari</strong><button class="ghost-btn">Profile</button></div>
+          <div class="row"><span>Blocked</span><strong>Unknown</strong><button class="ghost-btn">Remove</button></div>
+        </div>
+      </article>
+
+      <article class="modal">
+        <button class="close">X</button>
+        <h2>Settings / Feedback</h2>
+        <div class="grid-3">
+          <button class="ghost-btn">Audio</button><button class="primary-btn">Interface</button><button class="ghost-btn">About</button>
+        </div>
+        <textarea class="field" placeholder="Feedback...">Please improve the hierarchy of character cards and inventory slots.</textarea>
+        <button class="primary-btn">Submit Feedback</button>
+      </article>
+
+      <article class="modal">
+        <button class="close">X</button>
+        <h2>Confirm / Result</h2>
+        <p>Are you sure you want to resign? This will end the current match.</p>
+        <div class="grid-3"><button class="ghost-btn">Cancel</button><button class="primary-btn">Confirm</button><button class="ghost-btn">Replay</button></div>
+        <div class="card"><h3>Victory</h3><p>Rating +18, coins +30.</p></div>
+      </article>
+    </section>
+
+    <h2 class="section-title">05 Mobile Room Snapshot</h2>
+    <section class="panel">
+      <div class="mobile-frame">
+        <div class="mobile-room">
+          <aside class="player-panel enemy"><div class="player-head"><img class="avatar" src="../public/assets/characters/denia_color.webp" alt="" /><strong>Opponent</strong><span class="timer">04:28</span></div></aside>
+          <div class="goban-shell"><div class="goban"><span class="stone black" style="left:20%;top:22%"></span><span class="stone white" style="left:52%;top:48%"></span></div></div>
+          <aside class="player-panel"><div class="player-head"><img class="avatar" src="../public/assets/characters/denia_color.webp" alt="" /><strong>You</strong><span class="timer">05:12</span></div></aside>
+          <div class="dock"><button class="ghost-btn">Pass</button><button class="ghost-btn">Resign</button><button class="ghost-btn">Count</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const buttons = Array.from(document.querySelectorAll("[data-set-theme]"));
+    function setTheme(theme) {
+      document.body.dataset.theme = theme;
+      buttons.forEach((button) => button.classList.toggle("active", button.dataset.setTheme === theme));
+    }
+    buttons.forEach((button) => button.addEventListener("click", () => setTheme(button.dataset.setTheme)));
+  </script>
+</body>
+</html>

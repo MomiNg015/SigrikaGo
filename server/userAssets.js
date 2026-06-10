@@ -23,6 +23,41 @@ export function serializeAssetList(value, options = {}) {
   return parseAssetList(value, options).join(",");
 }
 
+export function parseOwnedItemCounts(value) {
+  const text = String(value ?? "").trim();
+  if (Array.isArray(value)) return normalizeOwnedItemCounts(value);
+  if (!text) return {};
+  if (text.startsWith("{")) {
+    try {
+      return normalizeOwnedItemCounts(JSON.parse(text));
+    } catch {
+      return {};
+    }
+  }
+  const counts = {};
+  for (const itemId of text.split(",").map((item) => item.trim()).filter(Boolean)) {
+    counts[itemId] = (counts[itemId] ?? 0) + 1;
+  }
+  return counts;
+}
+
+export function normalizeOwnedItemCounts(value) {
+  const entries = Array.isArray(value)
+    ? value.map((item) => [item?.itemId ?? item?.targetId ?? item?.id, item?.quantity])
+    : Object.entries(value ?? {});
+  const counts = {};
+  for (const [rawId, rawQuantity] of entries) {
+    const itemId = String(rawId ?? "").trim();
+    const quantity = parseNonNegativeInt(rawQuantity);
+    if (itemId && quantity > 0) counts[itemId] = quantity;
+  }
+  return counts;
+}
+
+export function serializeOwnedItemCounts(value) {
+  return JSON.stringify(normalizeOwnedItemCounts(value));
+}
+
 export function legacyUserAssetsToStructuredRows(user) {
   const userId = String(user?.id ?? "").trim();
   if (!userId) {
@@ -44,7 +79,7 @@ export function legacyUserAssetsToStructuredRows(user) {
       decorationSlug,
       source: "legacy"
     })),
-    items: Object.entries(parseLegacyItemCounts(user.ownedItems)).map(([itemId, quantity]) => ({
+    items: Object.entries(parseOwnedItemCounts(user.ownedItems)).map(([itemId, quantity]) => ({
       userId,
       itemId,
       quantity,
@@ -59,49 +94,107 @@ export function legacyUserAssetsToStructuredRows(user) {
   };
 }
 
-function parseLegacyItemCounts(value) {
-  const text = String(value ?? "").trim();
-  if (!text) return {};
-  if (text.startsWith("{")) {
-    try {
-      return normalizeCountMap(JSON.parse(text));
-    } catch {
-      return {};
-    }
-  }
-  const counts = {};
-  for (const itemId of text.split(",").map((item) => item.trim()).filter(Boolean)) {
-    counts[itemId] = (counts[itemId] ?? 0) + 1;
-  }
-  return counts;
+export async function syncStructuredUserAssets(prisma, user) {
+  if (!prisma || !user?.id) return;
+  const operations = structuredUserAssetSyncOperations(prisma, user);
+  if (operations.length === 0) return;
+  await Promise.all(operations);
 }
 
-function normalizeCountMap(value) {
-  const entries = Array.isArray(value)
-    ? value.map((item) => [item?.itemId ?? item?.targetId ?? item?.id, item?.quantity])
-    : Object.entries(value ?? {});
-  const counts = {};
-  for (const [rawId, rawQuantity] of entries) {
-    const itemId = String(rawId ?? "").trim();
-    const quantity = parseNonNegativeInt(rawQuantity);
-    if (itemId && quantity > 0) counts[itemId] = quantity;
-  }
-  return counts;
+export function structuredUserAssetSyncOperations(prisma, user) {
+  if (!prisma || !user?.id) return [];
+  const rows = legacyUserAssetsToStructuredRows(user);
+  return [
+    prisma.userCharacter?.deleteMany?.({
+      where: {
+        userId: String(user.id),
+        characterSlug: { notIn: rows.characters.map((row) => row.characterSlug) }
+      }
+    }),
+    prisma.userDecoration?.deleteMany?.({
+      where: {
+        userId: String(user.id),
+        decorationSlug: { notIn: rows.decorations.map((row) => row.decorationSlug) }
+      }
+    }),
+    prisma.userItem?.deleteMany?.({
+      where: {
+        userId: String(user.id),
+        itemId: { notIn: rows.items.map((row) => row.itemId) }
+      }
+    }),
+    prisma.userItemEffect?.deleteMany?.({
+      where: {
+        userId: String(user.id),
+        effectKey: { notIn: rows.itemEffects.map((row) => row.effectKey) }
+      }
+    }),
+    ...rows.characters.map((row) => prisma.userCharacter?.upsert?.({
+      where: { userId_characterSlug: { userId: row.userId, characterSlug: row.characterSlug } },
+      create: row,
+      update: { source: row.source }
+    })),
+    ...rows.decorations.map((row) => prisma.userDecoration?.upsert?.({
+      where: { userId_decorationSlug: { userId: row.userId, decorationSlug: row.decorationSlug } },
+      create: row,
+      update: { source: row.source }
+    })),
+    ...rows.items.map((row) => prisma.userItem?.upsert?.({
+      where: { userId_itemId: { userId: row.userId, itemId: row.itemId } },
+      create: row,
+      update: { quantity: row.quantity, source: row.source }
+    })),
+    ...rows.itemEffects.map((row) => prisma.userItemEffect?.upsert?.({
+      where: { userId_effectKey: { userId: row.userId, effectKey: row.effectKey } },
+      create: row,
+      update: { effectValue: row.effectValue, source: row.source }
+    }))
+  ].filter(Boolean);
+}
+
+export function structuredUserItemEffectSyncOperations(prisma, user) {
+  if (!prisma || !user?.id) return [];
+  const userId = String(user.id);
+  const rows = Object.entries(parseLegacyItemEffects(user.itemEffects)).map(([effectKey, effectValue]) => ({
+    userId,
+    effectKey,
+    effectValue,
+    source: "legacy"
+  }));
+  return [
+    prisma.userItemEffect?.deleteMany?.({
+      where: {
+        userId,
+        effectKey: { notIn: rows.map((row) => row.effectKey) }
+      }
+    }),
+    ...rows.map((row) => prisma.userItemEffect?.upsert?.({
+      where: { userId_effectKey: { userId: row.userId, effectKey: row.effectKey } },
+      create: row,
+      update: { effectValue: row.effectValue, source: row.source }
+    }))
+  ].filter(Boolean);
 }
 
 function parseLegacyItemEffects(value) {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return normalizeItemEffectsMap(value);
+  }
   const text = String(value ?? "").trim();
   if (!text || !text.startsWith("{")) return {};
   try {
-    const parsed = JSON.parse(text);
-    return Object.fromEntries(
-      Object.entries(parsed ?? {})
-        .filter(([key, value]) => key && value !== false && value != null)
-        .map(([key, value]) => [key, typeof value === "string" ? value : JSON.stringify(value)])
-    );
+    return normalizeItemEffectsMap(JSON.parse(text));
   } catch {
     return {};
   }
+}
+
+function normalizeItemEffectsMap(value) {
+  return Object.fromEntries(
+    Object.entries(value ?? {})
+      .filter(([key, value]) => key && value !== false && value != null)
+      .map(([key, value]) => [key, typeof value === "string" ? value : JSON.stringify(value)])
+  );
 }
 
 function parseNonNegativeInt(value) {

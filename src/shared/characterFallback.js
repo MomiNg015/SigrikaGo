@@ -4,6 +4,7 @@ export const FALLBACK_CHARACTERS = {
   sigrika: {
     id: "sigrika",
     name: "西格莉卡",
+    description: "星辉社团的符文棋手，擅长用精准的星光符号改写棋盘节奏。",
     palette: "#ff9b4d",
     portrait: "/assets/sigrika_centered.webp",
     skill: {
@@ -21,6 +22,7 @@ export const FALLBACK_CHARACTERS = {
   danea: {
     id: "danea",
     name: "达妮娅",
+    description: "月色与泡影之间的术师，能把棋子的立场悄然翻转。",
     palette: "#f2a4d8",
     portrait: "/assets/Danea_centered.webp",
     skill: {
@@ -37,6 +39,7 @@ export const FALLBACK_CHARACTERS = {
   aemeath: {
     id: "aemeath",
     name: "爱弥斯",
+    description: "活泼的电子幽灵伙伴，最喜欢用出其不意的隐藏手扰乱对局。",
     palette: "#67d9e8",
     portrait: "/assets/Aemeath_centered.webp",
     skill: {
@@ -54,6 +57,7 @@ export const FALLBACK_CHARACTERS = {
   baconbits: {
     id: "baconbits",
     name: "猪小仙",
+    description: "看似悠闲的爆破型棋手，常用一场热闹的爆炸打开局面。",
     palette: "#f59ab2",
     portrait: "/assets/baconbits.webp",
     acquisitionMethod: "商城购买",
@@ -73,6 +77,7 @@ export const FALLBACK_CHARACTERS = {
   nabomo: {
     id: "nabomo",
     name: "娜波摩",
+    description: "擅长伪装与错觉的幻色棋手，会让对手眼中的棋盘变得难以捉摸。",
     palette: "#8fb4f7",
     portrait: "/assets/nabomo.webp",
     acquisitionMethod: "积分达到1400分时自动获得",

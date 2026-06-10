@@ -49,11 +49,15 @@ describe("areBoardPropsEqual", () => {
     expect(flippedBlock).toContain("rgba(112, 24, 214, 0.96)");
   });
 
-  test("marks the latest move with a red stone outline instead of a center dot", () => {
+  test("marks the latest move with a circular red stone outline instead of a center dot", () => {
     const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
     const latestMoveBlock = css.match(/\.stone i\s*\{[^}]+\}/)?.[0] ?? "";
 
-    expect(latestMoveBlock).toContain("inset: -3px");
+    expect(latestMoveBlock).toContain("left: 50%");
+    expect(latestMoveBlock).toContain("top: 50%");
+    expect(latestMoveBlock).toContain("width: calc(100% + 6px)");
+    expect(latestMoveBlock).toContain("aspect-ratio: 1 / 1");
+    expect(latestMoveBlock).toContain("transform: translate(-50%, -50%)");
     expect(latestMoveBlock).toContain("border: 3px solid #e13b4f");
     expect(latestMoveBlock).toContain("background: transparent");
     expect(latestMoveBlock).not.toContain("width: 9px");

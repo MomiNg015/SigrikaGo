@@ -50,12 +50,26 @@ describe("shop", () => {
       purchasable: true,
       enabled: true
     };
-    const prisma = transactionShopPrisma(user, item);
+    const updates = [];
+    const prisma = transactionShopPrisma(user, item, updates);
 
     const response = await purchaseShopItem({ prisma, userId: user.id, itemId: item.id });
 
     expect(response.user.coins).toBe(30);
     expect(response.user.ownedCharacters).toContain("denia");
+    expect(updates).toContainEqual(["userProgressLedger.create", {
+      userId: user.id,
+      metric: "coins",
+      delta: -90,
+      beforeValue: 120,
+      afterValue: 30,
+      reason: "shop.purchase",
+      refType: "shopItem",
+      refId: item.id
+    }]);
+    expect(updates).toContainEqual(["userCharacter.upsert", expect.objectContaining({
+      where: { userId_characterSlug: { userId: user.id, characterSlug: "denia" } }
+    })]);
   });
 
   it("deducts coins and grants a purchased decoration", async () => {
@@ -90,6 +104,109 @@ describe("shop", () => {
 
     expect(response.user.coins).toBe(40);
     expect(response.user.ownedDecorations).toContain("moon-frame");
+  });
+
+  it("deducts coins and grants a purchased music track", async () => {
+    const user = {
+      id: "user-1",
+      username: "moming",
+      role: "player",
+      status: "active",
+      rank: "2?",
+      rating: 1000,
+      wins: 0,
+      losses: 0,
+      coins: 120,
+      selectedCharacter: "sigrika",
+      ownedCharacters: "sigrika",
+      ownedItems: "",
+      ownedMusicIds: "",
+      ownedDecorations: ""
+    };
+    const item = {
+      id: "shop-1",
+      name: "Sigrika Dream BGM",
+      category: "music",
+      targetId: "sigrika-skill-dream",
+      priceCoins: 80,
+      discountPercent: 0,
+      purchasable: true,
+      enabled: true
+    };
+    const updates = [];
+    const prisma = transactionShopPrisma(user, item, updates);
+
+    const response = await purchaseShopItem({ prisma, userId: user.id, itemId: item.id });
+
+    expect(response.user.coins).toBe(40);
+    expect(response.user.ownedMusicIds).toContain("sigrika-skill-dream");
+    expect(updates).toContainEqual(["user.update", expect.objectContaining({
+      ownedMusicIds: JSON.stringify(["sigrika-skill-dream"])
+    })]);
+  });
+
+  it("rejects music purchase when the track does not exist", async () => {
+    const user = {
+      id: "user-1",
+      username: "moming",
+      role: "player",
+      status: "active",
+      rank: "2?",
+      rating: 1000,
+      wins: 0,
+      losses: 0,
+      coins: 120,
+      selectedCharacter: "sigrika",
+      ownedCharacters: "sigrika",
+      ownedItems: "",
+      ownedMusicIds: "",
+      ownedDecorations: ""
+    };
+    const item = {
+      id: "shop-1",
+      name: "Missing BGM",
+      category: "music",
+      targetId: "custom-missing",
+      priceCoins: 80,
+      discountPercent: 0,
+      purchasable: true,
+      enabled: true
+    };
+    const prisma = transactionShopPrisma(user, item);
+
+    await expect(purchaseShopItem({ prisma, userId: user.id, itemId: item.id })).rejects.toMatchObject({ status: 400 });
+  });
+
+  it("rejects music purchase when the track is already default unlocked", async () => {
+    const user = {
+      id: "user-1",
+      username: "moming",
+      role: "player",
+      status: "active",
+      rank: "2?",
+      rating: 1000,
+      wins: 0,
+      losses: 0,
+      coins: 120,
+      selectedCharacter: "sigrika",
+      ownedCharacters: "sigrika",
+      ownedItems: "",
+      ownedMusicIds: "",
+      ownedDecorations: ""
+    };
+    const item = {
+      id: "shop-1",
+      name: "Default BGM",
+      category: "music",
+      targetId: "sigrika-skill-default",
+      priceCoins: 80,
+      discountPercent: 0,
+      purchasable: true,
+      enabled: true
+    };
+    const prisma = transactionShopPrisma(user, item);
+
+    await expect(purchaseShopItem({ prisma, userId: user.id, itemId: item.id })).rejects.toMatchObject({ status: 400 });
   });
 
   it("lists item stock remaining for the current user without changing global stock", async () => {
@@ -364,6 +481,36 @@ function transactionShopPrisma(user, item, updates = []) {
         update: async ({ data }) => {
           updates.push(["shopItem.update", data]);
           return { ...item, ...data };
+        }
+      },
+      userCharacter: {
+        upsert: async (query) => {
+          updates.push(["userCharacter.upsert", query]);
+          return query.create;
+        }
+      },
+      userDecoration: {
+        upsert: async (query) => {
+          updates.push(["userDecoration.upsert", query]);
+          return query.create;
+        }
+      },
+      userItem: {
+        upsert: async (query) => {
+          updates.push(["userItem.upsert", query]);
+          return query.create;
+        }
+      },
+      userItemEffect: {
+        upsert: async (query) => {
+          updates.push(["userItemEffect.upsert", query]);
+          return query.create;
+        }
+      },
+      userProgressLedger: {
+        create: async ({ data }) => {
+          updates.push(["userProgressLedger.create", data]);
+          return data;
         }
       }
     })

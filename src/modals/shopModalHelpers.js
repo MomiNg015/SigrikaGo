@@ -31,6 +31,7 @@ export function buildShopSlots(items = [], activeCategory = "character", page = 
 export function isShopItemOwned(item = {}, user = {}) {
   if (item.category === "character") return Boolean(user?.ownedCharacters?.includes(item.targetId));
   if (item.category === "decoration") return Boolean(user?.ownedDecorations?.includes(item.targetId));
+  if (item.category === "music") return Boolean(user?.ownedMusicIds?.includes(item.targetId));
   return false;
 }
 

@@ -2,7 +2,7 @@ import { DoorOpen, MonitorPlay, SkipBack, SkipForward, StepBack, StepForward } f
 
 export default function ReplayActionBar({ replayStep = 0, replayMax = 0, onReplayStep, onBack }) {
   return (
-    <nav className="action-bar">
+    <nav className="action-bar replay-bar">
       <button title="回到第 0 手" onClick={() => onReplayStep?.(0)} disabled={!onReplayStep || replayStep <= 0}>
         <SkipBack size={20} />
       </button>

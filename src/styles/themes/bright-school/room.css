@@ -23,12 +23,16 @@
   text-underline-offset: 4px !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap img {
+  filter: none !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side {
   background: #1f1714 !important;
   background-image: none !important;
   color: #ffffff !important;
   border: 3px solid #1f1714 !important;
-  box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.72) !important;
+  box-shadow: none !important;
   clip-path: none !important;
 }
 
@@ -41,7 +45,7 @@
   background-image: none !important;
   color: #1f1714 !important;
   border: 3px solid #1f1714 !important;
-  box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.72) !important;
+  box-shadow: none !important;
   clip-path: none !important;
 }
 
@@ -64,4 +68,31 @@
   box-shadow: none !important;
   border-radius: 0 !important;
   clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen :where(
+  .room-code-label,
+  .room-info-tag,
+  .toggle,
+  .room-mobile-exit,
+  .room-mobile-menu-toggle,
+  .room-mobile-menu-panel button,
+  .mobile-tab-button,
+  .action-bar button,
+  .decision-actions button,
+  .replay-bar button,
+  .chat-toggle-button,
+  .chat-exit-action,
+  .name-button,
+  .rank-tag,
+  .rating-tag,
+  .captures span,
+  .digital-timer,
+  .timer-track,
+  .timer-track span,
+  .skill-chip
+) {
+  box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
 }

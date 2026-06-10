@@ -135,6 +135,10 @@
   gap: 9px;
 }
 
+.home-mobile-menu {
+  display: none;
+}
+
 .home-top-strip .icon-button,
 .home-top-strip .admin-nav-action {
   width: 40px;
@@ -384,6 +388,11 @@
 .home-image-entry:focus-visible::after {
   opacity: 1;
   animation: home-hud-blink 1s step-end infinite;
+}
+
+.match-image-entry:hover::after,
+.match-image-entry:focus-visible::after {
+  animation: none;
 }
 
 .home-image-entry:hover img,

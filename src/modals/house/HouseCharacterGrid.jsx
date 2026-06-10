@@ -47,7 +47,6 @@ export default function HouseCharacterGrid({
               <Flag size={18} />
             </button>
             <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
-            {selectedCharacter === characterId && <span className="deploy-tag">[出战中]</span>}
             <strong>{character.name}</strong>
           </div>
         );

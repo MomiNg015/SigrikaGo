@@ -3,8 +3,23 @@ import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { rankFromRating } from "../src/shared/ratingRank.js";
 import { parseItemEffects } from "./itemEffects.js";
 import { parseAssetList, parseCharacterAssetList } from "./userAssets.js";
+import { ownedMusicIdsWithDefaults, parseMusicSelections } from "../src/shared/musicLibrary.js";
 
 export const prisma = new PrismaClient();
+
+export const USER_ASSET_RELATION_INCLUDE = {
+  userCharacters: true,
+  userDecorations: true,
+  userItems: true,
+  userItemEffects: true
+};
+
+export const USER_ASSET_RELATION_SELECT = {
+  userCharacters: { select: { characterSlug: true } },
+  userDecorations: { select: { decorationSlug: true } },
+  userItems: { select: { itemId: true, quantity: true } },
+  userItemEffects: { select: { effectKey: true, effectValue: true } }
+};
 
 const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia", "aemeath"];
 const RATING_UNLOCKS = [
@@ -12,7 +27,7 @@ const RATING_UNLOCKS = [
 ];
 
 export function publicUser(user) {
-  const ownedCharacters = new Set(parseCharacterAssetList(user.ownedCharacters));
+  const ownedCharacters = new Set(publicOwnedCharacters(user));
   for (const characterId of AVAILABLE_CHARACTER_IDS) ownedCharacters.add(characterId);
   for (const unlock of RATING_UNLOCKS) {
     if ((user.rating ?? 0) >= unlock.rating) ownedCharacters.add(unlock.characterId);
@@ -30,13 +45,63 @@ export function publicUser(user) {
     selectedCharacter: canonicalCharacterId(user.selectedCharacter),
     selectedStoneDecoration: user.selectedStoneDecoration ?? "",
     ownedCharacters: [...ownedCharacters],
-    ownedItems: publicOwnedItems(user.ownedItems),
-    itemEffects: parseItemEffects(user.itemEffects),
-    ownedDecorations: parseAssetList(user.ownedDecorations)
+    ownedItems: publicOwnedItems(user),
+    itemEffects: publicItemEffects(user),
+    ownedDecorations: publicOwnedDecorations(user),
+    ownedMusicIds: ownedMusicIdsWithDefaults(user.ownedMusicIds),
+    musicSelections: parseMusicSelections(user.musicSelections)
   };
 }
 
-function publicOwnedItems(value) {
+function publicOwnedCharacters(user) {
+  const owned = new Set(parseCharacterAssetList(user.ownedCharacters));
+  if (Array.isArray(user.userCharacters)) {
+    for (const entry of user.userCharacters) {
+      const characterId = canonicalCharacterId(entry.characterSlug);
+      if (characterId) owned.add(characterId);
+    }
+  }
+  return [...owned];
+}
+
+function publicOwnedDecorations(user) {
+  const owned = new Set(parseAssetList(user.ownedDecorations));
+  if (Array.isArray(user.userDecorations)) {
+    for (const entry of user.userDecorations) {
+      const decorationId = String(entry.decorationSlug ?? "").trim();
+      if (decorationId) owned.add(decorationId);
+    }
+  }
+  return [...owned];
+}
+
+function publicOwnedItems(user) {
+  const counts = Object.fromEntries(
+    publicOwnedItemsFromLegacy(user.ownedItems).map((item) => [item.itemId, item.quantity])
+  );
+  if (Array.isArray(user.userItems)) {
+    for (const entry of user.userItems) {
+      const itemId = String(entry.itemId ?? "").trim();
+      const quantity = Number(entry.quantity) || 0;
+      if (itemId && quantity > 0) counts[itemId] = Math.max(counts[itemId] ?? 0, quantity);
+    }
+  }
+  return Object.entries(counts).map(([itemId, quantity]) => ({ itemId, quantity }));
+}
+
+function publicItemEffects(user) {
+  const effects = parseItemEffects(user.itemEffects);
+  if (Array.isArray(user.userItemEffects)) {
+    for (const entry of user.userItemEffects) {
+      const key = String(entry.effectKey ?? "").trim();
+      const value = parseStructuredEffectValue(entry.effectValue);
+      if (key && value !== false && value != null) effects[key] = value;
+    }
+  }
+  return effects;
+}
+
+function publicOwnedItemsFromLegacy(value) {
   const text = String(value ?? "").trim();
   if (!text) return [];
   if (text.startsWith("{")) {
@@ -53,4 +118,14 @@ function publicOwnedItems(value) {
     counts[itemId] = (counts[itemId] ?? 0) + 1;
   }
   return Object.entries(counts).map(([itemId, quantity]) => ({ itemId, quantity }));
+}
+
+function parseStructuredEffectValue(value) {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
 }

@@ -76,9 +76,9 @@ describe("ReplayList", () => {
     expect(finalWinRule).toBeGreaterThan(terminalRowRule);
     expect(css).toContain(".replay-table-row.outcome-loss");
     expect(css).toContain(".replay-table-row.outcome-win span");
-    expect(css).toContain("background: #e8f7ea !important");
-    expect(css).toContain("background: #eeeeef !important");
-    expect(css).toContain("background: #fff6cf !important");
+    expect(css).toContain("background: linear-gradient(135deg, #dff9e7, #f2fff5) !important");
+    expect(css).toContain("background: linear-gradient(135deg, #ececef, #f8f8f8) !important");
+    expect(css).toContain("background: linear-gradient(135deg, #fff4bd, #fffbe7) !important");
   });
 
   it("keeps outcome colors above theme button hover and focus states", () => {
@@ -98,8 +98,43 @@ describe("ReplayList", () => {
     expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-win");
     expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss");
     expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-draw");
-    expect(css).toContain("background: #e8f7ea !important");
-    expect(css).toContain("background: #eeeeef !important");
-    expect(css).toContain("background: #fff6cf !important");
+    expect(css).toContain("background: linear-gradient(135deg, #dff9e7, #f2fff5) !important");
+    expect(css).toContain("background: linear-gradient(135deg, #ececef, #f8f8f8) !important");
+    expect(css).toContain("background: linear-gradient(135deg, #fff4bd, #fffbe7) !important");
+  });
+
+  it("uses mobile replay cards instead of relying on a bottom horizontal scrollbar", () => {
+    const css = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8");
+    const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
+    const finalMobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+
+    expect(phoneModalMedia).toContain(".replay-table");
+    expect(phoneModalMedia).toContain("overflow-x: hidden");
+    expect(phoneModalMedia).toContain(".replay-table-heading");
+    expect(phoneModalMedia).toContain("display: none");
+    expect(phoneModalMedia).toContain(".replay-table-row");
+    expect(phoneModalMedia).toContain("grid-template-areas:");
+    expect(phoneModalMedia).toContain(".replay-table-row > span:nth-child");
+    expect(phoneModalMedia).toContain(".replay-player-cell");
+    expect(finalMobileCss).toContain(".nested-modal.replay-dialog");
+    expect(finalMobileCss).toContain("grid-template-rows: auto minmax(0, 1fr) !important");
+    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table");
+    expect(finalMobileCss).toContain("overflow-y: auto !important");
+    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row");
+    expect(finalMobileCss).toContain("min-height: 94px !important");
+    expect(finalMobileCss).toContain('"time moves result"');
+    expect(finalMobileCss).toContain('"black black white" !important');
+    expect(finalMobileCss).toContain("grid-template-rows: auto minmax(26px, auto) !important");
+    expect(finalMobileCss).toContain("justify-self: center !important");
+    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-player-cell img");
+    expect(finalMobileCss).toContain("height: 22px !important");
+    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-player-cell b");
   });
 });
+
+function mediaBlock(css, marker) {
+  const start = css.indexOf(marker);
+  if (start < 0) return "";
+  const next = css.indexOf("\n@media", start + 1);
+  return css.slice(start, next >= 0 ? next : undefined);
+}

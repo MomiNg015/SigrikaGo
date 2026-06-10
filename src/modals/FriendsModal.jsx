@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { X } from "lucide-react";
 import { api } from "../api/client.js";
 import { useSocialRelations } from "../social/useSocialRelations.js";
 import FriendsList from "./friends/FriendsList.jsx";
@@ -130,6 +131,9 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
     <>
       <div className="modal-backdrop" onClick={onClose}>
         <section className="friends-modal" onClick={(event) => event.stopPropagation()}>
+          <button className="close-button friends-modal-close" type="button" onClick={onClose} aria-label="关闭好友窗口">
+            <X size={20} />
+          </button>
           <FriendsToolbar
             activeTab={activeTab}
             searchUsername={searchUsername}

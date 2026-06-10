@@ -9,10 +9,13 @@
     "dev:server": "node --watch-path=server --watch-path=src/shared server/index.js",
     "build": "vite build",
     "start": "node server/index.js",
-    "test": "vitest run --exclude \"**/.worktrees/**\"",
+    "test": "vitest run --exclude \"**/.worktrees/**\" --exclude \"tests/e2e/**\"",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "docs:system-design": "node scripts/render-system-design-html.mjs",
     "docs:utf8": "node scripts/write-utf8-doc.mjs",
     "check:production": "node scripts/check-production-config.mjs",
+    "backfill:user-assets": "node scripts/backfill-structured-user-assets.mjs",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push"
   },
@@ -36,5 +39,8 @@
     "socket.io-client": "^4.8.1",
     "vite": "^6.3.5",
     "vitest": "^3.1.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
   }
 }

@@ -6,6 +6,7 @@ import { listPublicCharacterResponse, toCharacterPayload, validateCharacterInput
 const validInput = {
   slug: "star-rune",
   name: "星辰符文师",
+  description: "A precise rune caster.",
   palette: "#ff9b4d",
   portraitUrl: "/assets/sigrika_centered.webp",
   skill: {
@@ -49,6 +50,7 @@ describe("character admin helpers", () => {
       id: "character-db-1",
       slug: "danea",
       name: "Danea",
+      description: "A moonlit tactician.",
       portraitUrl: "/uploads/characters/danea.png",
       portraitSource: "upload",
       acquisitionMethod: "商城购买",
@@ -58,6 +60,7 @@ describe("character admin helpers", () => {
     });
 
     expect(payload.portraitSource).toBe("upload");
+    expect(payload.description).toBe("A moonlit tactician.");
     expect(payload.acquisitionMethod).toBe("商城购买");
   });
 
@@ -92,6 +95,7 @@ describe("character admin helpers", () => {
     const result = validateCharacterInput(validInput);
 
     expect(result.ok).toBe(true);
+    expect(result.value.description).toBe("A precise rune caster.");
     expect(result.value.skill.effectType).toBe("erase-point");
     expect(result.value.skill.targetRule).toBe("empty-point");
     expect(result.value.skill.costType).toBe("numeric");

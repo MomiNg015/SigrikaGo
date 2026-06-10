@@ -6,7 +6,10 @@ const prismaMocks = vi.hoisted(() => ({
   executeRaw: vi.fn(),
   queryRaw: vi.fn(),
   transaction: vi.fn(),
-  userUpdate: vi.fn()
+  userUpdate: vi.fn(),
+  userItemEffectDeleteMany: vi.fn(),
+  userItemEffectUpsert: vi.fn(),
+  userProgressLedgerCreate: vi.fn()
 }));
 
 vi.mock("./db.js", () => ({
@@ -16,6 +19,13 @@ vi.mock("./db.js", () => ({
     },
     user: {
       update: prismaMocks.userUpdate
+    },
+    userItemEffect: {
+      deleteMany: prismaMocks.userItemEffectDeleteMany,
+      upsert: prismaMocks.userItemEffectUpsert
+    },
+    userProgressLedger: {
+      create: prismaMocks.userProgressLedgerCreate
     },
     $executeRaw: prismaMocks.executeRaw,
     $queryRaw: prismaMocks.queryRaw,
@@ -56,6 +66,12 @@ beforeEach(() => {
   prismaMocks.queryRaw.mockResolvedValue([]);
   prismaMocks.userUpdate.mockReset();
   prismaMocks.userUpdate.mockImplementation((operation) => Promise.resolve(operation));
+  prismaMocks.userItemEffectDeleteMany.mockReset();
+  prismaMocks.userItemEffectDeleteMany.mockImplementation((operation) => Promise.resolve(operation));
+  prismaMocks.userItemEffectUpsert.mockReset();
+  prismaMocks.userItemEffectUpsert.mockImplementation((operation) => Promise.resolve(operation));
+  prismaMocks.userProgressLedgerCreate.mockReset();
+  prismaMocks.userProgressLedgerCreate.mockImplementation((operation) => Promise.resolve(operation));
   prismaMocks.transaction.mockReset();
   prismaMocks.transaction.mockImplementation((operations) => Promise.all(operations));
 });
@@ -145,6 +161,22 @@ describe("room game record persistence", () => {
       rating: { increment: -20 },
       coins: { increment: 20 }
     });
+    expect(prismaMocks.userProgressLedgerCreate).toHaveBeenCalledWith({ data: expect.objectContaining({
+      userId: "winner",
+      metric: "coins",
+      delta: 50,
+      reason: "game.result",
+      refType: "room",
+      refId: room.code
+    }) });
+    expect(prismaMocks.userProgressLedgerCreate).toHaveBeenCalledWith({ data: expect.objectContaining({
+      userId: "loser",
+      metric: "rating",
+      delta: -20,
+      reason: "game.result",
+      refType: "room",
+      refId: room.code
+    }) });
   });
 
   test("clears rainbow candy effects after matching valid games", () => {
@@ -177,6 +209,18 @@ describe("room game record persistence", () => {
     const updatesByUserId = new Map(prismaMocks.userUpdate.mock.calls.map(([operation]) => [operation.where.id, operation]));
     expect(updatesByUserId.get("sigrika-candy").data.itemEffects).toBe("{}");
     expect(updatesByUserId.get("denia-candy").data.itemEffects).toBe("{}");
+    expect(prismaMocks.userItemEffectDeleteMany).toHaveBeenCalledWith({
+      where: {
+        userId: "sigrika-candy",
+        effectKey: { notIn: [] }
+      }
+    });
+    expect(prismaMocks.userItemEffectDeleteMany).toHaveBeenCalledWith({
+      where: {
+        userId: "denia-candy",
+        effectKey: { notIn: [] }
+      }
+    });
   });
 
   test("keeps rainbow candy effects after invalid games", async () => {

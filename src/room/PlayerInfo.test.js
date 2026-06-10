@@ -105,6 +105,22 @@ describe("PlayerInfo labels", () => {
     expect(brightSchoolCss).toContain(".captures .cost-stat");
   });
 
+  it("colors room portrait backgrounds by the player's stone color in Bright School", () => {
+    const playerInfoSource = readFileSync(new URL("./PlayerInfo.jsx", import.meta.url), "utf8");
+    const componentRepairsCss = readFileSync(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url), "utf8");
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const roomPortraitImageBlocks = brightSchoolCss.match(/\.player-info \.portrait-wrap img\s*\{[^}]+\}/g) ?? [];
+    const finalRoomPortraitImageBlock = roomPortraitImageBlocks.at(-1) ?? "";
+
+    expect(playerInfoSource).toContain("black-portrait");
+    expect(playerInfoSource).toContain("white-portrait");
+    expect(componentRepairsCss).toContain(".player-info .portrait-wrap.black-portrait");
+    expect(componentRepairsCss).toContain("background: #2a2a2d !important");
+    expect(componentRepairsCss).toContain(".player-info .portrait-wrap.white-portrait");
+    expect(componentRepairsCss).toContain("background: #ffffff !important");
+    expect(finalRoomPortraitImageBlock).toContain("filter: none !important");
+  });
+
   it("skips rerendering unchanged player panels during unrelated clock updates", () => {
     const game = {
       phase: "playing",

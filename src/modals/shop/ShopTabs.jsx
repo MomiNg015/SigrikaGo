@@ -1,7 +1,8 @@
 export const SHOP_CATEGORIES = [
   ["character", "角色"],
   ["item", "道具"],
-  ["decoration", "装饰"]
+  ["decoration", "装饰"],
+  ["music", "音乐"]
 ];
 
 export default function ShopTabs({ activeCategory, onCategoryChange }) {

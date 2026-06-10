@@ -10,3 +10,5 @@ dev-server.*.log
 .tmp/
 
 dev-client.*.log
+playwright-report/
+test-results/

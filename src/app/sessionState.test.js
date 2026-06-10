@@ -18,4 +18,8 @@ describe("initial session state", () => {
     expect(shouldFinishPreloadAsHome({ view: "room", room: { code: "12345" }, matchSuccess: null })).toBe(false);
     expect(shouldFinishPreloadAsHome({ view: "preloading", room: null, matchSuccess: { room: { code: "12345" } } })).toBe(false);
   });
+
+  it("finishes fresh login preload even if the view ref still has the previous login value", () => {
+    expect(shouldFinishPreloadAsHome({ view: "login", room: null, matchSuccess: null })).toBe(true);
+  });
 });

@@ -9,7 +9,7 @@ describe("character fallback", () => {
 
   it("merges API characters over fallback fields without losing required display data", () => {
     const merged = mergeCharacters([
-      { id: "sigrika", name: "", skill: { name: "API Skill" } },
+      { id: "sigrika", name: "", description: "API character description", skill: { name: "API Skill" } },
       { id: "custom", name: "Custom", skill: null },
       null,
       { name: "missing id" }
@@ -17,6 +17,7 @@ describe("character fallback", () => {
 
     expect(Object.keys(merged)).toEqual(expect.arrayContaining(["sigrika", "denia", "custom"]));
     expect(merged.sigrika.name).toBe(CHARACTERS.sigrika.name);
+    expect(merged.sigrika.description).toBe("API character description");
     expect(merged.sigrika.portrait).toBe(CHARACTERS.sigrika.portrait);
     expect(merged.sigrika.skill.name).toBe("API Skill");
     expect(merged.sigrika.skill.description).toBe(CHARACTERS.sigrika.skill.description);

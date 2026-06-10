@@ -318,6 +318,14 @@
   box-shadow: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.black-portrait {
+  background: #2a2a2d !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.white-portrait {
+  background: #ffffff !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap img {
   background: transparent !important;
   border: 0 !important;
@@ -392,6 +400,28 @@
   border: 2px solid var(--bright-border) !important;
   border-radius: 14px !important;
   box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
+  background: #fff6dd !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 999px !important;
+  min-height: 32px !important;
+  padding: 3px 8px !important;
+  box-shadow: 2px 2px 0 var(--bright-border) !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle {
+  background: #ffdfeb !important;
+  border: 2px solid var(--bright-border) !important;
+  box-shadow: 1px 1px 0 var(--bright-border) !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select {
+  color: var(--bright-ink) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p,
@@ -605,11 +635,15 @@
   max-width: 100% !important;
   overflow: visible !important;
   z-index: 24 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-toggle-button {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-toggle-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-exit-action {
   min-height: 46px !important;
-  min-width: 132px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -623,6 +657,14 @@
   box-shadow: 3px 3px 0 var(--bright-border) !important;
   clip-path: none !important;
   transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-toggle-button {
+  min-width: 132px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-exit-action {
+  min-width: 112px !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-toggle-button strong {

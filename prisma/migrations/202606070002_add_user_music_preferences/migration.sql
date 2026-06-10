@@ -1,0 +1,2 @@
+ALTER TABLE "User" ADD COLUMN "ownedMusicIds" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "User" ADD COLUMN "musicSelections" TEXT NOT NULL DEFAULT '{}';

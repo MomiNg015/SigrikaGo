@@ -66,5 +66,14 @@ export function useAccountActions({
     updateUser(data.user);
   }, [token, updateUser]);
 
-  return { applyStoneDecoration, handleAuth, logout, selectCharacter };
+  const selectCharacterMusic = useCallback(async ({ characterId, trackId }) => {
+    const data = await api("/api/me/music-selection", {
+      method: "POST",
+      token,
+      body: { characterId, trackId }
+    });
+    updateUser(data.user);
+  }, [token, updateUser]);
+
+  return { applyStoneDecoration, handleAuth, logout, selectCharacter, selectCharacterMusic };
 }

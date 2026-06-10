@@ -5,13 +5,19 @@ import { Router } from "express";
 import { USER_ROLES, USER_STATUS } from "./adminConfig.js";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 import { toCharacterPayload, validateCharacterInput } from "./characters.js";
-import { publicUser } from "./db.js";
+import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { listFeedbackMessages } from "./feedback.js";
 import { normalizeOwnedItems, serializeOwnedItems } from "./items.js";
 import { toShopItemPayload, validateDecorationInput, validateShopItemInput } from "./shop.js";
 import { getPublicSiteSettings, updateSiteSettings } from "./siteSettings.js";
-import { serializeAssetList } from "./userAssets.js";
+import { serializeAssetList, syncStructuredUserAssets } from "./userAssets.js";
 import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
+import { MUSIC_TRACKS } from "../src/shared/musicLibrary.js";
+import {
+  PROGRESS_METRICS,
+  PROGRESS_REASONS,
+  progressLedgerCreateOperations
+} from "./userProgressLedger.js";
 
 const EDITABLE_USER_FIELDS = new Set([
   "role",
@@ -128,6 +134,39 @@ export function requireUserUpdateData(data) {
   throw routeError(400, "没有可更新字段");
 }
 
+function shouldSyncStructuredAssets(data) {
+  return Object.hasOwn(data, "ownedCharacters") || Object.hasOwn(data, "ownedItems") || Object.hasOwn(data, "ownedDecorations");
+}
+
+function adminProgressLedgerEntries(before, after, data) {
+  const entries = [];
+  if (Object.hasOwn(data, "coins")) {
+    entries.push({
+      userId: after.id,
+      metric: PROGRESS_METRICS.coins,
+      delta: Number(after.coins ?? 0) - Number(before.coins ?? 0),
+      beforeValue: before.coins,
+      afterValue: after.coins,
+      reason: PROGRESS_REASONS.adminUpdate,
+      refType: "adminUser",
+      refId: ""
+    });
+  }
+  if (Object.hasOwn(data, "rating")) {
+    entries.push({
+      userId: after.id,
+      metric: PROGRESS_METRICS.rating,
+      delta: Number(after.rating ?? 0) - Number(before.rating ?? 0),
+      beforeValue: before.rating,
+      afterValue: after.rating,
+      reason: PROGRESS_REASONS.adminUpdate,
+      refType: "adminUser",
+      refId: ""
+    });
+  }
+  return entries;
+}
+
 export async function updateUserProfile({ prisma, adminUser, userId, body }) {
   const data = requireUserUpdateData(sanitizeUserUpdate(body));
   const user = await prisma.$transaction(async (tx) => {
@@ -140,6 +179,13 @@ export async function updateUserProfile({ prisma, adminUser, userId, body }) {
       where: { id: userId },
       data
     });
+    if (shouldSyncStructuredAssets(data)) {
+      await syncStructuredUserAssets(tx, after);
+    }
+    await Promise.all(progressLedgerCreateOperations(tx, adminProgressLedgerEntries(before, after, data).map((entry) => ({
+      ...entry,
+      refId: adminUser?.id ?? ""
+    }))));
     await writeAudit(tx, adminUser, "user.update", userId, publicUser(before), publicUser(after));
     return after;
   });
@@ -254,13 +300,17 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
   router.get("/users", async (_req, res) => {
     const users = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
-      take: 200
+      take: 200,
+      include: USER_ASSET_RELATION_INCLUDE
     });
     res.json({ users: users.map(publicUser) });
   });
 
   router.get("/users/:id", async (req, res) => {
-    const user = await prisma.user.findUnique({ where: { id: req.params.id } });
+    const user = await prisma.user.findUnique({
+      where: { id: req.params.id },
+      include: USER_ASSET_RELATION_INCLUDE
+    });
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
@@ -670,6 +720,7 @@ function characterCreateData(input) {
   return {
     slug: input.slug,
     name: input.name,
+    description: input.description,
     portraitUrl: input.portraitUrl,
     portraitSource: input.portraitSource,
     acquisitionMethod: input.acquisitionMethod,
@@ -686,6 +737,7 @@ function characterUpdateData(input) {
   return {
     slug: input.slug,
     name: input.name,
+    description: input.description,
     portraitUrl: input.portraitUrl,
     portraitSource: input.portraitSource,
     acquisitionMethod: input.acquisitionMethod,
@@ -781,6 +833,7 @@ function characterRecordToInput(record) {
   return {
     slug: record.slug,
     name: record.name,
+    description: record.description ?? "",
     portraitUrl: record.portraitUrl,
     portraitSource: record.portraitSource,
     acquisitionMethod: record.acquisitionMethod ?? "",
@@ -855,6 +908,10 @@ async function assertShopTargetExists(prisma, item) {
     if (!decoration && !getStoneDecoration(item.targetId)) {
       throw routeError(400, "Shop decoration target does not exist");
     }
+    return;
+  }
+  if (item.category === "music") {
+    if (!MUSIC_TRACKS[item.targetId]) throw routeError(400, "Shop music target does not exist");
   }
 }
 

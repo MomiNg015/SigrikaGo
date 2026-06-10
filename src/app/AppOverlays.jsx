@@ -28,6 +28,7 @@ export default function AppOverlays({
   resultModalOpen,
   room,
   selectCharacter,
+  selectCharacterMusic,
   setAudioSettings,
   setIncomingDuel,
   setShowFriends,
@@ -108,6 +109,7 @@ export default function AppOverlays({
           audioSettings={audioSettings}
           onClose={() => setShowHouse(false)}
           onSelectCharacter={selectCharacter}
+          onSelectCharacterMusic={selectCharacterMusic}
           onApplyDecoration={applyStoneDecoration}
           onOpenReplay={openReplay}
         />

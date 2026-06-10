@@ -1,6 +1,6 @@
 import { rankFromRating } from "../src/shared/ratingRank.js";
 import { GAME_RESULT_REASONS, recordWinnerColor } from "./gameRecords.js";
-import { parseItemEffects } from "./itemEffects.js";
+import { publicUser, USER_ASSET_RELATION_SELECT } from "./db.js";
 
 export const RELATIONSHIP_TYPES = {
   friend: "friend",
@@ -177,18 +177,20 @@ export function publicProfileSelect() {
     rating: true,
     selectedCharacter: true,
     ownedCharacters: true,
-    itemEffects: true
+    itemEffects: true,
+    ...USER_ASSET_RELATION_SELECT
   };
 }
 
 export function toSocialUser(user, status = "offline") {
+  const profile = publicUser(user);
   return {
-    id: user.id,
-    username: user.username,
-    rank: rankFromRating(user.rating),
-    rating: user.rating,
-    characterId: user.selectedCharacter ?? "sigrika",
-    itemEffects: parseItemEffects(user.itemEffects),
+    id: profile.id,
+    username: profile.username,
+    rank: rankFromRating(profile.rating),
+    rating: profile.rating,
+    characterId: profile.selectedCharacter ?? "sigrika",
+    itemEffects: profile.itemEffects,
     status
   };
 }

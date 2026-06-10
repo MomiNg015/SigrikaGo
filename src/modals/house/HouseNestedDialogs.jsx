@@ -1,9 +1,21 @@
 import { X } from "lucide-react";
+import { CharacterMusicPreview } from "../../audio/CharacterMusicPreview.jsx";
+import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../shared/musicLibrary.js";
 import { ReplayList } from "../ReplayList.jsx";
 import { characterCandyPortrait } from "./houseStats.js";
 
-export function CharacterDetailDialog({ character, detailOwned, itemEffects, onClose }) {
+export function CharacterDetailDialog({ character, detailOwned, itemEffects, user, audioSettings, onSelectCharacterMusic, onClose }) {
   if (!character) return null;
+  const musicOptions = skillMusicOptionsForCharacter({
+    characterId: character.id,
+    ownedMusicIds: user?.ownedMusicIds
+  });
+  const currentMusicTrack = resolveSkillMusicTrack({
+    characterId: character.id,
+    selections: user?.musicSelections,
+    ownedMusicIds: user?.ownedMusicIds
+  });
+  const handleMusicChange = (trackId) => onSelectCharacterMusic?.({ characterId: character.id, trackId });
   return (
     <div className="nested-modal-backdrop" onClick={onClose}>
       <section className={`nested-modal character-detail character-details-modal ${detailOwned ? "" : "unowned"}`} onClick={(event) => event.stopPropagation()}>
@@ -12,13 +24,22 @@ export function CharacterDetailDialog({ character, detailOwned, itemEffects, onC
           <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
         </div>
         <div className="character-detail-copy">
-          <h3>{character.name}</h3>
+          <div className="character-detail-heading">
+            <h3>{character.name}</h3>
+            <CharacterMusicPreview
+              track={currentMusicTrack}
+              options={musicOptions}
+              audioSettings={audioSettings}
+              onTrackChange={handleMusicChange}
+            />
+          </div>
           <div className="skill-title-row">
             <strong>{character.skill.name}</strong>
             <span className="skill-cost-badge">超频 {formatSkillCost(character.skill)}</span>
           </div>
           <p>{character.skill.description}</p>
           <p className="acquisition-method"><strong>获得途径</strong>{character.acquisitionMethod || "初始可用"}</p>
+          <p className="character-description">{character.description || "暂无角色描述"}</p>
         </div>
       </section>
     </div>

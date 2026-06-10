@@ -12,6 +12,7 @@ export function findCharacter(characters, characterOrId) {
       ...fallback,
       ...characterOrId,
       id: characterId,
+      description: String(characterOrId.description ?? "").trim() || fallback.description || "",
       acquisitionMethod: characterOrId.acquisitionMethod ?? fallback.acquisitionMethod ?? "",
       skill: {
         ...fallback.skill,

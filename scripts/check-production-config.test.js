@@ -87,4 +87,27 @@ describe("production config check script", () => {
     expect(error?.status).toBe(1);
     expect(String(error?.stderr)).toContain("ENABLE_TEST_ACTIONS must not be enabled in production");
   });
+
+  it("rejects explicit multi-instance production checks", () => {
+    let error;
+    try {
+      execFileSync(process.execPath, [scriptPath], {
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          NODE_ENV: "production",
+          JWT_SECRET: "0123456789abcdef0123456789abcdef",
+          PUBLIC_ORIGIN: "https://sigrika.fun",
+          WEB_CONCURRENCY: "2"
+        },
+        encoding: "utf8",
+        stdio: "pipe"
+      });
+    } catch (caught) {
+      error = caught;
+    }
+
+    expect(error?.status).toBe(1);
+    expect(String(error?.stderr)).toContain("Production must run a single Node instance");
+  });
 });

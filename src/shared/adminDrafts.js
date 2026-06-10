@@ -6,6 +6,7 @@ export function emptyCharacterDraft() {
     originalSlug: "",
     slug: "",
     name: "",
+    description: "",
     portraitUrl: "",
     portraitSource: "url",
     acquisitionMethod: "",
@@ -35,6 +36,7 @@ export function buildCharacterDraft(character) {
     originalSlug: character.id ?? "",
     slug: character.id ?? "",
     name: character.name ?? "",
+    description: character.description ?? "",
     portraitUrl: character.portrait ?? "",
     portraitSource: character.portraitSource ?? "url",
     acquisitionMethod: character.acquisitionMethod ?? "",
@@ -68,6 +70,7 @@ export function characterDraftToBody(draft) {
   return {
     slug: draft.slug.trim(),
     name: draft.name.trim(),
+    description: String(draft.description ?? "").trim(),
     portraitUrl: draft.portraitUrl.trim(),
     portraitSource: draft.portraitSource,
     acquisitionMethod: String(draft.acquisitionMethod ?? "").trim(),
@@ -168,6 +171,7 @@ export function decorationDraftToBody(draft) {
 }
 
 export function shopCategoryLabel(category) {
+  if (category === "music") return "闊充箰";
   if (category === "decoration") return "装饰";
   if (category === "item") return "道具";
   return "角色";

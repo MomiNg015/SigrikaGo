@@ -1,10 +1,11 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats, selectSortieCharacter } from "./HouseModal.jsx";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import HouseModal from "./HouseModal.jsx";
+import { CharacterDetailDialog } from "./house/HouseNestedDialogs.jsx";
 
 describe("deriveCharacterRecordStats", () => {
   const user = {
@@ -137,14 +138,45 @@ describe("deriveCharacterRecordStats", () => {
     }));
 
     expect(html).toContain("is-deployed");
-    expect(html).toContain("class=\"deploy-tag\"");
-    expect(html).toContain("[出战中]");
+    expect(html).not.toContain("deploy-tag");
     expect(html).toContain("lock-character-card");
     expect(html).toContain("lock-text-title");
     expect(html).toContain("character-grid-container");
     expect(html).toContain("top-stats-bar");
     expect(html).toContain("LOADING... (x_x)");
     expect(html).toContain("LOCK / LOADING... (x_x)");
+  });
+
+  it("renders Baconbits as owned and sortie-capable when public user owns it", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "3段",
+        rating: 1160,
+        coins: 1070,
+        ownedCharacters: ["sigrika", "denia", "aemeath", "baconbits"],
+        ownedDecorations: [],
+        selectedCharacter: "aemeath"
+      },
+      records: [],
+      characterListView: [{
+        id: "baconbits",
+        name: "猪小仙",
+        portrait: "/assets/baconbits.webp",
+        skill: { name: "猪小仙爆炸", description: "", cost: 0 }
+      }],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("猪小仙");
+    expect(html).not.toContain("unowned");
+    expect(html).toContain("title=\"设为出战\"");
+    expect(html).not.toContain("disabled=\"\"");
   });
 
   it("keeps nested character detail dialogs as viewport overlays above the house manual", () => {
@@ -163,5 +195,109 @@ describe("deriveCharacterRecordStats", () => {
     expect(nestedModalBlock).toContain("max-height: min(760px, calc(100dvh - 32px))");
     expect(closeButtonBlock).toContain("z-index: 20");
     expect(closeButtonBlock).toContain("pointer-events: auto");
+  });
+
+  it("renders character descriptions in the character detail dialog", () => {
+    const styles = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8");
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "sigrika",
+        name: "西格莉卡",
+        portrait: "/assets/sigrika_centered.webp",
+        acquisitionMethod: "初始获得",
+        description: "来自星辉社团的棋手。",
+        skill: { name: "星辉符文", description: "抹除交叉点。", cost: 3 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("character-description");
+    expect(html).not.toMatch(/class="character-description"><strong>/);
+    expect(html).toContain("来自星辉社团的棋手。");
+    expect(styles).toMatch(/\.character-description\s*\{[^}]*font-style:\s*italic;/s);
+  });
+  it("renders the character skill BGM player in the detail heading", () => {
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "sigrika",
+        name: "Sigrika",
+        portrait: "/assets/sigrika_centered.webp",
+        skill: { name: "Skill", description: "Erase a point.", cost: 3 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      user: { ownedMusicIds: ["sigrika-skill-default"], musicSelections: { skill: {} } },
+      audioSettings: {},
+      onSelectCharacterMusic: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("character-detail-heading");
+    expect(html).toContain("character-music-player");
+    expect(html).toContain("Sigrika Skill BGM");
+    expect(html).not.toContain("character-music-select");
+  });
+
+  it("keeps the Bright School mobile house manual internally scrollable", () => {
+    const css = readFileSync(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
+    const finalMobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+
+    expect(css).toContain(".house-modal");
+    expect(css).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto !important");
+    expect(css).toContain(".house-modal .profile-grid.top-stats-bar");
+    expect(css).toContain(".house-modal .stat strong");
+    expect(css).toContain("white-space: nowrap !important");
+    expect(css).toContain(".house-modal .character-card.portrait-card > strong");
+    expect(css).toContain(".house-modal .character-card.portrait-card > strong {");
+    expect(css).toContain("display: none !important");
+    expect(css).toContain(".house-modal .stat-tip");
+    expect(css).toContain("position: fixed !important");
+    expect(css).toContain("transform: none !important");
+    expect(css).toContain("overflow-wrap: anywhere !important");
+    expect(css).toContain("grid-template-rows: none !important");
+    expect(css).toContain("grid-auto-rows: 112px !important");
+    expect(css).toContain("overflow-y: auto !important");
+    expect(css).toContain(".character-card.portrait-card .lock-text-title");
+    expect(css).toContain("box-sizing: border-box !important");
+    expect(css).toContain(".house-modal .owned-decoration-section");
+    expect(css).toContain("grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important");
+    expect(css).toContain(".house-modal .owned-decoration-chip strong");
+    expect(css).toContain(".character-detail-art img");
+    expect(css).toContain("filter: none !important");
+    expect(css).toContain("max-height: min(128px, 20dvh) !important");
+    expect(finalMobileCss).toContain(".profile-grid.top-stats-bar .stat strong");
+    expect(finalMobileCss).toContain("white-space: nowrap !important");
+    expect(finalMobileCss).toContain("word-break: normal !important");
+    expect(finalMobileCss).toContain(".character-card.portrait-card.is-deployed");
+    expect(finalMobileCss).toContain("#4f9b69");
+    expect(finalMobileCss).toContain("repeat(auto-fill, minmax(58px, 70px)) !important");
+    expect(finalMobileCss).toContain(".house-modal .deploy-tag");
+    expect(finalMobileCss).toContain("display: none !important");
+  });
+
+  it("shows a selector when the user owns multiple skill BGM tracks for the character", () => {
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "sigrika",
+        name: "Sigrika",
+        portrait: "/assets/sigrika_centered.webp",
+        skill: { name: "Skill", description: "Erase a point.", cost: 3 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      user: {
+        ownedMusicIds: ["sigrika-skill-default", "sigrika-skill-dream"],
+        musicSelections: { skill: { sigrika: "sigrika-skill-dream" } }
+      },
+      audioSettings: {},
+      onSelectCharacterMusic: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("character-music-select");
+    expect(html).toContain("Sigrika Skill BGM");
+    expect(html).toContain("Sigrika Dream BGM");
   });
 });

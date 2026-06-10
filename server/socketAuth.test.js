@@ -63,6 +63,7 @@ describe("socket authentication", () => {
   });
 
   it("refreshes a connected socket user from the latest database character before matchmaking", async () => {
+    const queries = [];
     const socket = {
       handshake: { auth: { token: jwt.sign({ sub: "user-1" }, "secret") } },
       user: {
@@ -75,7 +76,9 @@ describe("socket authentication", () => {
       jwtSecret: "secret",
       prisma: {
         user: {
-          findUnique: async () => ({
+          findUnique: async (query) => {
+            queries.push(query);
+            return {
             id: "user-1",
             username: "fresh-player",
             role: "player",
@@ -90,7 +93,8 @@ describe("socket authentication", () => {
             ownedItems: "",
             itemEffects: "",
             ownedDecorations: ""
-          })
+            };
+          }
         }
       },
       characterSelectionData: async () => ({ characters: {}, disabledSlugs: new Set() })
@@ -100,6 +104,12 @@ describe("socket authentication", () => {
 
     expect(refreshed.selectedCharacter).toBe("denia");
     expect(socket.user.selectedCharacter).toBe("denia");
+    expect(queries[0].include).toMatchObject({
+      userCharacters: true,
+      userDecorations: true,
+      userItems: true,
+      userItemEffects: true
+    });
   });
 
   it("rejects stale login sessions", async () => {

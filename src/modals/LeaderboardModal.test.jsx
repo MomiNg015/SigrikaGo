@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+import { renderToStaticMarkup } from "react-dom/server";
 import { leaderboardRankClass } from "./LeaderboardModal.jsx";
+import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
 
 describe("LeaderboardModal layout", () => {
   it("exposes tactical rank classes for top-three leaderboard badges", () => {
@@ -8,6 +10,37 @@ describe("LeaderboardModal layout", () => {
     expect(leaderboardRankClass(2)).toBe("top-rank rank-2");
     expect(leaderboardRankClass(3)).toBe("top-rank rank-3");
     expect(leaderboardRankClass(4)).toBe("");
+  });
+
+  it("shows player rank below the username instead of the character name", () => {
+    const markup = renderToStaticMarkup(
+      <LeaderboardRow
+        rank={2}
+        characters={{
+          sigrika: {
+            id: "sigrika",
+            name: "西格莉卡",
+            portrait: "/assets/characters/sigrika.webp"
+          }
+        }}
+        player={{
+          id: "u1",
+          username: "露露米",
+          commonCharacter: "sigrika",
+          rank: "3段",
+          rating: 1160,
+          totalGames: 32,
+          wins: 15,
+          losses: 17,
+          itemEffects: {}
+        }}
+      />
+    );
+
+    expect(markup).toContain("露露米");
+    expect(markup).toContain("3段");
+    expect(markup).not.toContain(">西格莉卡<");
+    expect(markup).not.toContain("alt=\"西格莉卡\"");
   });
 
   it("keeps column headings aligned with scrollable player rows", () => {
@@ -57,6 +90,10 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain("grid-template-columns: 1fr");
     expect(phoneModalMedia).toContain(".leaderboard-modal");
     expect(phoneModalMedia).toContain(".leaderboard-table");
+    expect(phoneModalMedia).toContain(".leaderboard-heading");
+    expect(phoneModalMedia).toContain("display: none");
+    expect(phoneModalMedia).toContain(".leaderboard-row");
+    expect(phoneModalMedia).toContain("grid-template-areas:");
     expect(phoneModalMedia).toContain(".friends-modal");
     expect(phoneModalMedia).toContain(".friends-list");
     expect(phoneModalMedia).toContain(".house-modal");
@@ -72,18 +109,20 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain("overflow-x: auto");
   });
 
-  it("keeps the leaderboard table in its desktop column model on phones and scrolls it horizontally", () => {
+  it("turns the leaderboard into mobile cards instead of a horizontally clipped table", () => {
     const modalCss = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8");
+    const finalMobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
     const phoneModalMedia = mediaBlock(modalCss, "@media (max-width: 560px)");
 
     expect(phoneModalMedia).toContain(".leaderboard-modal");
     expect(phoneModalMedia).toContain(".leaderboard-table");
-    expect(phoneModalMedia).toContain("overflow-x: auto");
+    expect(phoneModalMedia).toContain("overflow-x: hidden");
     expect(phoneModalMedia).toContain(".leaderboard-heading,");
     expect(phoneModalMedia).toContain(".leaderboard-row");
-    expect(phoneModalMedia).toContain("min-width: 680px");
-    expect(phoneModalMedia).not.toContain("grid-template-areas:");
-    expect(phoneModalMedia).not.toContain(".leaderboard-row > span:nth-of-type");
+    expect(phoneModalMedia).toContain("min-width: 0");
+    expect(phoneModalMedia).toContain("grid-template-areas:");
+    expect(phoneModalMedia).toContain(".leaderboard-row > span:nth-of-type");
+    expect(phoneModalMedia).toContain(".leaderboard-current .leaderboard-row");
     expect(phoneModalMedia).toContain(".friends-modal");
     expect(phoneModalMedia).toContain("grid-template-rows: auto minmax(0, 1fr)");
     expect(phoneModalMedia).toContain(".friends-list");
@@ -92,6 +131,11 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain("overflow-x: auto");
     expect(phoneModalMedia).toContain(".friends-modal button");
     expect(phoneModalMedia).toContain("justify-content: center");
+    expect(finalMobileCss).toContain(".leaderboard-row.top-rank .leaderboard-rank");
+    expect(finalMobileCss).toContain("border-radius: 50% !important");
+    expect(finalMobileCss).toContain("clip-path: none !important");
+    expect(finalMobileCss).toContain(".leaderboard-current .leaderboard-row");
+    expect(finalMobileCss).toContain("grid-template-columns: 42px 38px minmax(0, 1fr) auto !important");
   });
 });
 

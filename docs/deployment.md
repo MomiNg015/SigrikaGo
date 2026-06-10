@@ -15,7 +15,7 @@ npm run check:production
 npm test
 ```
 
-`npm run check:production` 会检查生产环境中的 `JWT_SECRET`、站点 origin 和调试开关。生产 origin 必须使用 HTTPS，且不能启用测试工具 action。
+`npm run check:production` 会检查生产环境中的 `JWT_SECRET`、站点 origin、调试开关和显式多实例配置。生产 origin 必须使用 HTTPS，不能启用测试工具 action；在房间状态和 Socket.IO 适配器改为共享之前，也不能配置 `WEB_CONCURRENCY`、`PM2_INSTANCES` 等多实例参数大于 1。
 
 ## 环境变量
 

@@ -167,6 +167,44 @@ describe("ShopModal helpers", () => {
     expect(shopGridBlock).toContain("align-content: safe center");
   });
 
+  it("keeps Bright School mobile decoration shop cards self-contained", () => {
+    const css = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+
+    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid");
+    expect(css).toContain("grid-auto-rows: minmax(216px, auto) !important");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item");
+    expect(css).toContain("display: flex !important");
+    expect(css).toContain("overflow: hidden !important");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .primary-action");
+    expect(css).toContain("margin-top: auto !important");
+    expect(css).toContain("align-self: stretch !important");
+  });
+
+  it("keeps Bright School mobile character shop cards self-contained", () => {
+    const css = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+
+    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid");
+    expect(css).toContain("grid-auto-rows: minmax(216px, auto) !important");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item");
+    expect(css).toContain("flex-direction: column !important");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item).shop-item > img");
+    expect(css).toContain(".shop-content.shop-category-character .shop-category-character.shop-item > img");
+    expect(css).toContain("height: 52px !important");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .primary-action");
+    expect(css).toContain("margin-top: auto !important");
+  });
+
+  it("keeps Bright School mobile item shop cards aligned with decoration cards", () => {
+    const css = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+
+    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid");
+    expect(css).toContain(".shop-category-item.shop-item > svg");
+    expect(css).toContain(".shop-content.shop-category-item .shop-category-item.shop-item > svg");
+    expect(css).toContain("max-height: 52px !important");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .shop-card-meta");
+    expect(css).toContain("min-height: 30px !important");
+  });
+
   it("styles discounted original prices as a compact line above the current price", () => {
     const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
     const shopPriceBlock = css.match(/\.shop-price\s*\{[^}]+\}/)?.[0] ?? "";

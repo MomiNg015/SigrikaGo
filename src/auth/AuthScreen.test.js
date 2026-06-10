@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
 import AuthScreen from "./AuthScreen.jsx";
 import { authSubmitText, isAlreadyLoggedInError, validateAuthSubmit } from "./AuthScreen.jsx";
 
@@ -34,7 +35,7 @@ describe("AuthScreen submit validation", () => {
   });
 
   it("uses the pop-tech connection copy for login submit", () => {
-    expect(authSubmitText("login")).toBe("START CONNECTION!! ⮞");
+    expect(authSubmitText("login")).toBe("START CONNECTION!! >");
     expect(authSubmitText("register")).toBe("\u521b\u5efa\u8d26\u53f7");
   });
 
@@ -47,5 +48,17 @@ describe("AuthScreen submit validation", () => {
     expect(html).toContain("terminal-enter-btn");
     expect(html).toContain("autoComplete=\"username\"");
     expect(html).toContain("type=\"password\"");
+  });
+
+  it("keeps the Bright School mobile auth title single-line without tinted blocks", () => {
+    const css = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+
+    expect(css).toContain(".auth-panel .brand-lockup");
+    expect(css).toContain("background: transparent !important");
+    expect(css).toContain("background-image: none !important");
+    expect(css).toContain(".auth-panel .segmented");
+    expect(css).toContain(".login-title-text");
+    expect(css).toContain("font-size: clamp(22px, 6.7vw, 30px) !important");
+    expect(css).toContain("white-space: nowrap !important");
   });
 });

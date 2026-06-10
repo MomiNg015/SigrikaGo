@@ -1,10 +1,23 @@
 import { publicUser } from "./db.js";
-import { normalizeItemTargetType, parseOwnedItems, serializeOwnedItems } from "./items.js";
+import { normalizeItemTargetType } from "./items.js";
 import { RAINBOW_BEAN_CANDY_ID } from "./itemEffects.js";
-import { parseAssetList, parseCharacterAssetList, serializeAssetList } from "./userAssets.js";
+import {
+  parseAssetList,
+  parseCharacterAssetList,
+  parseOwnedItemCounts,
+  serializeAssetList,
+  serializeOwnedItemCounts,
+  syncStructuredUserAssets
+} from "./userAssets.js";
+import {
+  PROGRESS_METRICS,
+  PROGRESS_REASONS,
+  progressLedgerCreateOperation
+} from "./userProgressLedger.js";
 import { STONE_DECORATIONS } from "../src/shared/stoneDecorations.js";
+import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
 
-const SHOP_CATEGORIES = new Set(["character", "decoration", "item"]);
+const SHOP_CATEGORIES = new Set(["character", "decoration", "item", "music"]);
 const BUILTIN_SHOP_ITEMS = [
   {
     name: "猪小仙",
@@ -91,7 +104,7 @@ export function validateShopItemInput(input = {}) {
   const enabled = input.enabled ?? true;
 
   if (!name) errors.push("name is required");
-  if (!SHOP_CATEGORIES.has(category)) errors.push("category must be character, decoration, or item");
+  if (!SHOP_CATEGORIES.has(category)) errors.push("category must be character, decoration, item, or music");
   if (!targetId) errors.push("targetId is required");
   if (stockQuantity == null) errors.push("stockQuantity must be -1 or a non-negative integer");
   if (priceCoins == null) errors.push("priceCoins must be a non-negative integer");
@@ -189,6 +202,7 @@ export async function purchaseShopItem({ prisma, userId, itemId }) {
 
     const ownedCharacters = parseCharacterAssetList(user.ownedCharacters);
     const ownedDecorations = parseAssetList(user.ownedDecorations);
+    const ownedMusicIds = parseMusicIds(user.ownedMusicIds);
     const data = { coins: user.coins - price };
     if (item.category === "character") {
       if (ownedCharacters.includes(item.targetId)) throw routeError(400, "已拥有该角色");
@@ -196,17 +210,34 @@ export async function purchaseShopItem({ prisma, userId, itemId }) {
     } else if (item.category === "decoration") {
       if (ownedDecorations.includes(item.targetId)) throw routeError(400, "已拥有该装饰");
       data.ownedDecorations = serializeAssetList([...ownedDecorations, item.targetId]);
+    } else if (item.category === "music") {
+      if (!MUSIC_TRACKS[item.targetId]) throw routeError(400, "音乐不存在");
+      if (ownedMusicIds.includes(item.targetId) || MUSIC_TRACKS[item.targetId].defaultUnlocked) {
+        throw routeError(400, "已拥有该音乐");
+      }
+      data.ownedMusicIds = serializeMusicIds([...ownedMusicIds, item.targetId]);
     } else if (item.category === "item") {
-      const ownedItems = parseOwnedItems(user.ownedItems);
+      const ownedItems = parseOwnedItemCounts(user.ownedItems);
       ownedItems[item.targetId] = (ownedItems[item.targetId] ?? 0) + 1;
       itemPurchaseCounts[item.targetId] = purchasedCount + 1;
-      data.ownedItems = serializeOwnedItems(ownedItems);
+      data.ownedItems = serializeOwnedItemCounts(ownedItems);
       data.itemPurchaseCounts = serializeItemPurchaseCounts(itemPurchaseCounts);
     } else {
       throw routeError(400, "未知商品类别");
     }
 
     const updated = await tx.user.update({ where: { id: user.id }, data });
+    await progressLedgerCreateOperation(tx, {
+      userId: user.id,
+      metric: PROGRESS_METRICS.coins,
+      delta: -price,
+      beforeValue: user.coins,
+      afterValue: updated.coins,
+      reason: PROGRESS_REASONS.shopPurchase,
+      refType: "shopItem",
+      refId: item.id
+    });
+    await syncStructuredUserAssets(tx, updated);
     return { user: publicUser(updated), item: toShopItemPayload(item, itemPurchaseCounts) };
   });
 }

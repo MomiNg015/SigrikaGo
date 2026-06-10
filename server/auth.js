@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { publicUser } from "./db.js";
+import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { USER_ROLES, USER_STATUS } from "./adminConfig.js";
 
 const DEFAULT_JWT_SECRETS = new Set(["dev-secret", "change-me-in-production"]);
@@ -17,7 +17,10 @@ export function makeAuth({ prisma, jwtSecret, isSessionActive = null }) {
       const token = req.headers.authorization?.replace("Bearer ", "");
       const payload = jwt.verify(token, jwtSecret);
       if (isSessionActive && !(await isSessionActive(payload.sub, payload.sid))) throw new Error("stale session");
-      const user = await prisma.user.findUnique({ where: { id: payload.sub } });
+      const user = await prisma.user.findUnique({
+        where: { id: payload.sub },
+        include: USER_ASSET_RELATION_INCLUDE
+      });
       if (!user) throw new Error("missing user");
       if (user.status === USER_STATUS.banned) {
         res.status(403).json({ error: user.banReason ? `账号已封禁：${user.banReason}` : "账号已封禁" });

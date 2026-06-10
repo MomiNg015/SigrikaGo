@@ -4,49 +4,50 @@ import {
   INVALID_EARLY_RESIGN_NOTICE,
   activatePassiveSkill,
   canStartSkill,
-  createDrawResult,
   createGameState,
-  createScoringState,
   createTimeoutResult,
   exposeHiddenHands,
   getPoint,
-  markDeadGroup,
   opponent,
   parsePointId,
-  passMove,
-  playMove,
-  prepareScoringState,
-  randomLayout,
-  resetDeadMarks,
   resultWithInvalidFlagForGame,
-  restoreSkillUse,
   restoreSuspendedHiddenHands,
-  resignGame,
-  scoreGame,
-  suspendUnexposedHiddenHands,
-  toggleNeutralPoint,
   useSkill
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { resultRewardDelta } from "../src/shared/resultRewards.js";
 import { prisma } from "./db.js";
 import { gameResultMetadata } from "./gameRecords.js";
+import { applyStandardGameAction } from "./roomGameActions.js";
 import { resetByoYomi, tickPlayerClock } from "./roomClockTiming.js";
 import { candyEffectData, prepareCandyEffectUpdates } from "./roomItemEffects.js";
+import { structuredUserItemEffectSyncOperations } from "./userAssets.js";
+import {
+  PROGRESS_METRICS,
+  PROGRESS_REASONS,
+  progressLedgerCreateOperations
+} from "./userProgressLedger.js";
 import { deletePersistedRoom, listPersistedRooms } from "./roomPersistence.js";
 import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
 import { applyResultRewardsToRoomUsers } from "./roomRewards.js";
+import {
+  applyCountingRequest,
+  applyCountingResponse,
+  applyDrawRequest,
+  applyDrawResponse,
+  applyScoringAction
+} from "./roomScoringFlow.js";
+import { handleRoomTestAction, isRoomTestAction } from "./roomTestActions.js";
 import { buildRoomView } from "./roomView.js";
 import {
   canSchedulePendingSkillResolution,
   createPendingSkillResolution,
   pendingSkillResolutionDelay
 } from "./roomSkillResolution.js";
-import { canUseDebugTestActions, normalizeChatText, validatePointId, validateRoomCode } from "./security.js";
+import { normalizeChatText, validatePointId, validateRoomCode } from "./security.js";
 
 const rooms = new Map();
 let waitingPlayers = [];
-const TEST_ACTIONS = new Set(["test-random-layout", "test-restore-skill", "test-enter-byo-yomi"]);
 const MATCH_SUCCESS_DELAY_MS = 3000;
 const OPENING_NOTICE_DELAY_MS = 3000;
 const INITIAL_PASSIVE_SKILL_DELAY_MS = 3000;
@@ -263,16 +264,15 @@ export function handleGameAction(roomCode, userId, action, io) {
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能操作棋局" };
   if (room.game.pendingSkill) return { ok: false, error: "技能演出中" };
-  if (TEST_ACTIONS.has(action.type) && !canUseDebugTestActions(process.env)) {
-    return { ok: false, error: "测试工具仅开发环境可用" };
-  }
-
-  if (action.type === "test-enter-byo-yomi") {
-    if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "对局当前不能进入读秒" };
-    player.time.main = 0;
-    resetByoYomi(player);
-    const label = player.color === COLORS.black ? "黑" : "白";
-    appendSystem(room, `测试工具：${label}方已进入读秒。`);
+  if (isRoomTestAction(action)) {
+    const testAction = handleRoomTestAction({ action, player, room });
+    if (!testAction.ok) return testAction;
+    if (testAction.systemMessage) appendSystem(room, testAction.systemMessage);
+    if (!testAction.result) return { ok: true, room };
+    const result = testAction.result;
+    if (!result.ok) return result;
+    room.game = result.state;
+    appendNotices(room, result.notices);
     return { ok: true, room };
   }
 
@@ -312,33 +312,18 @@ export function handleGameAction(roomCode, userId, action, io) {
     return { ok: true, room };
   }
 
-  let result;
-  if (action.type === "move") result = playMove(room.game, player.color, action.pointId);
-  if (action.type === "pass") result = passMove(room.game, player.color);
-  if (action.type === "resign") result = resignGame(room.game, player.color);
-  if (action.type === "test-random-layout") result = randomLayout(room.game, { black: 50, white: 50 });
-  if (action.type === "test-restore-skill") result = restoreSkillUse(room.game, player.color);
-  if (!result) return { ok: false, error: "未知操作" };
-  if (!result.ok) return result;
-
-  room.game = result.state;
-  appendNotices(room, result.notices);
-  if (action.type === "resign" && room.game.winner?.invalid) {
-    broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);
-  }
-  if (!action.type.startsWith("test-")) resetByoYomi(player);
-  const label = player.color === COLORS.black ? "黑" : "白";
-  if (action.type === "pass") appendSystem(room, `${label}方弃一手。`);
-  if (action.type === "resign") appendSystem(room, `${label}方认输。`);
-  if (action.type === "test-random-layout") appendSystem(room, "测试工具：已生成随机布局。");
-  if (action.type === "test-restore-skill") appendSystem(room, `测试工具：${label}方已恢复技能次数。`);
-  if (room.game.phase === GAME_PHASES.finished) {
-    appendNotices(room, exposeHiddenHands(room.game));
-    scheduleRoomClose(roomCode, io);
-  } else {
-    maybeStartPassiveSkill(room, io);
-  }
-  return { ok: true, room };
+  return applyStandardGameAction({
+    room,
+    player,
+    action,
+    io,
+    appendSystem,
+    appendNotices,
+    broadcastToast,
+    resetByoYomi,
+    scheduleRoomClose,
+    maybeStartPassiveSkill
+  });
 }
 
 export function requestCounting(roomCode, userId, io) {
@@ -351,14 +336,14 @@ export function requestCounting(roomCode, userId, io) {
   if (!player) return { ok: false, error: "观战者不能申请数子" };
   if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请数子" };
 
-  room.game.phase = GAME_PHASES.countingRequested;
-  suspendUnexposedHiddenHands(room.game);
-  room.game.scoring = prepareScoringState(room.game, createScoringState());
-  room.game.scoring.requestedBy = userId;
-  room.countingDeadline = Date.now() + 30000;
-  appendSystem(room, `${player.user.username}申请数子。`);
-  scheduleCountingTimeout(room, io);
-  return { ok: true, room };
+  return applyCountingRequest({
+    room,
+    player,
+    userId,
+    appendSystem,
+    scheduleCountingTimeout,
+    io
+  });
 }
 
 export function respondCounting(roomCode, userId, accepted) {
@@ -369,22 +354,8 @@ export function respondCounting(roomCode, userId, accepted) {
   if (room.game.phase !== GAME_PHASES.countingRequested) return { ok: false, error: "当前没有数子申请" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能确认数子" };
-  if (room.game.scoring?.requestedBy === userId) return { ok: false, error: "需要等待对方确认" };
 
-  if (!accepted) {
-    restoreSuspendedHiddenHands(room.game);
-    room.game.phase = GAME_PHASES.playing;
-    room.game.scoring = null;
-    room.countingDeadline = null;
-    appendSystem(room, "数子申请被拒绝，对局继续。");
-    return { ok: true, room };
-  }
-  room.game.phase = GAME_PHASES.markingDead;
-  room.game.scoring = prepareScoringState(room.game, room.game.scoring);
-  room.game.scoring.acceptedBy = userId;
-  room.countingDeadline = null;
-  appendSystem(room, "双方同意数子，进入死子确认。");
-  return { ok: true, room };
+  return applyCountingResponse({ room, player, userId, accepted, appendSystem });
 }
 
 export function requestDraw(roomCode, userId, io) {
@@ -397,15 +368,14 @@ export function requestDraw(roomCode, userId, io) {
   if (!player) return { ok: false, error: "观战者不能申请和棋" };
   if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请和棋" };
 
-  room.game.phase = GAME_PHASES.drawRequested;
-  room.game.drawRequest = {
-    requestedBy: userId,
-    requestedColor: player.color
-  };
-  room.drawDeadline = Date.now() + 10000;
-  appendSystem(room, `${player.user.username}申请和棋。`);
-  scheduleDrawTimeout(room, io);
-  return { ok: true, room };
+  return applyDrawRequest({
+    room,
+    player,
+    userId,
+    appendSystem,
+    scheduleDrawTimeout,
+    io
+  });
 }
 
 export function respondDraw(roomCode, userId, accepted, io) {
@@ -416,24 +386,17 @@ export function respondDraw(roomCode, userId, accepted, io) {
   if (room.game.phase !== GAME_PHASES.drawRequested) return { ok: false, error: "当前没有和棋申请" };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能确认和棋" };
-  if (room.game.drawRequest?.requestedBy === userId) return { ok: false, error: "需要等待对方确认" };
 
-  if (!accepted) {
-    room.game.phase = GAME_PHASES.playing;
-    room.game.drawRequest = null;
-    room.drawDeadline = null;
-    appendSystem(room, `${player.user.username}不同意和棋，对局继续。`);
-    return { ok: true, room };
-  }
-
-  room.game.phase = GAME_PHASES.finished;
-  room.game.drawRequest = null;
-  room.game.winner = resultWithInvalidFlagForGame(room.game, createDrawResult("agreement"));
-  if (room.game.winner?.invalid) broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);
-  room.drawDeadline = null;
-  appendSystem(room, "双方同意和棋，对局结束。");
-  scheduleRoomClose(roomCode, io);
-  return { ok: true, room };
+  return applyDrawResponse({
+    room,
+    player,
+    userId,
+    accepted,
+    appendSystem,
+    broadcastToast,
+    scheduleRoomClose,
+    io
+  });
 }
 
 export function handleScoringAction(roomCode, userId, action, io) {
@@ -453,52 +416,18 @@ export function handleScoringAction(roomCode, userId, action, io) {
     if (room.game.phase !== GAME_PHASES.resultReview) return { ok: false, error: "当前不在结果确认阶段" };
   }
 
-  let result = { ok: true, state: room.game };
-  if (action.type === "mark-dead") result = markDeadGroup(room.game, action.pointId, player.color);
-  if (action.type === "mark-neutral") result = toggleNeutralPoint(room.game, action.pointId);
-  if (action.type === "reset-dead") result = resetDeadMarks(room.game);
-  if (!result.ok) return result;
-  room.game = result.state;
-
-  if (action.type === "reset-dead") appendSystem(room, `${player.user.username}重新确认死子。`);
-
-  if (action.type === "confirm-dead") {
-    const confirmed = new Set(room.game.scoring.confirmedBy);
-    confirmed.add(userId);
-    room.game.scoring.confirmedBy = [...confirmed];
-    appendSystem(room, `${player.user.username}确认死子。`);
-    if (room.game.scoring.confirmedBy.length === 2) {
-      const score = scoreGame(room.game);
-      room.game.phase = GAME_PHASES.resultReview;
-      room.game.scoring.result = score;
-      room.game.scoring.resultDeadline = Date.now() + 30000;
-      appendSystem(room, `数子结果：${score.text}。`);
-      scheduleResultReviewTimeout(roomCode, io);
-    }
-  }
-
-  if (action.type === "accept-result") {
-    const accepted = new Set(room.game.scoring.resultAcceptedBy);
-    accepted.add(userId);
-    room.game.scoring.resultAcceptedBy = [...accepted];
-    if (room.game.scoring.resultAcceptedBy.length === 2) {
-      room.game.phase = GAME_PHASES.finished;
-      room.game.winner = resultWithInvalidFlagForGame(room.game, room.game.scoring.result);
-      if (room.game.winner?.invalid) broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);
-      appendNotices(room, exposeHiddenHands(room.game));
-      appendSystem(room, `对局结束，${room.game.scoring.result.text}。`);
-      scheduleRoomClose(roomCode, io);
-    }
-  }
-
-  if (action.type === "reject-result") {
-    restoreSuspendedHiddenHands(room.game);
-    room.game.phase = GAME_PHASES.playing;
-    room.game.scoring = null;
-    appendSystem(room, `${player.user.username}不同意结果，对局继续。`);
-  }
-
-  return { ok: true, room };
+  return applyScoringAction({
+    room,
+    player,
+    userId,
+    action,
+    appendSystem,
+    appendNotices,
+    broadcastToast,
+    scheduleResultReviewTimeout,
+    scheduleRoomClose,
+    io
+  });
 }
 
 export function addChat(roomCode, user, text) {
@@ -1071,6 +1000,9 @@ async function saveGameRecord(room) {
   const white = room.players.find((player) => player.color === COLORS.white);
   if (!black || !white) return;
   const candyEffectUpdates = prepareCandyEffectUpdates(room);
+  const candyEffectAssetOperations = () => candyEffectUpdates.flatMap(({ player }) => (
+    structuredUserItemEffectSyncOperations(prisma, player.user)
+  ));
   room.recordSaved = true;
   const resultMetadata = gameResultMetadata(room.game.winner);
   const createRecord = () => prisma.gameRecord.create({
@@ -1097,7 +1029,8 @@ async function saveGameRecord(room) {
       ...candyEffectUpdates.map(({ player, clear }) => prisma.user.update({
         where: { id: player.user.id },
         data: { itemEffects: clear.itemEffects }
-      }))
+      })),
+      ...candyEffectAssetOperations()
     ];
     if (operations.length > 1) await prisma.$transaction(operations);
     else await recordCreate;
@@ -1105,6 +1038,8 @@ async function saveGameRecord(room) {
   }
   const winner = room.game.winner.winnerColor === COLORS.black ? black : white;
   const loser = winner.color === COLORS.black ? white : black;
+  const winnerBefore = { rating: winner.user.rating, coins: winner.user.coins };
+  const loserBefore = { rating: loser.user.rating, coins: loser.user.coins };
   const winnerReward = resultRewardDelta(winner.color, room.game.winner.winnerColor);
   const loserReward = resultRewardDelta(loser.color, room.game.winner.winnerColor);
   applyResultRewardsToRoomUsers(winner, loser, winnerReward, loserReward);
@@ -1128,6 +1063,36 @@ async function saveGameRecord(room) {
         coins: { increment: loserReward.coins },
         ...candyEffectData(loser, candyEffectUpdates)
       }
-    })
+    }),
+    ...progressLedgerCreateOperations(prisma, [
+      ...gameResultProgressEntries(winner, winnerBefore, room.code),
+      ...gameResultProgressEntries(loser, loserBefore, room.code)
+    ]),
+    ...candyEffectAssetOperations()
   ]);
+}
+
+function gameResultProgressEntries(player, before, roomCode) {
+  return [
+    {
+      userId: player.user.id,
+      metric: PROGRESS_METRICS.rating,
+      delta: Number(player.user.rating ?? 0) - Number(before.rating ?? 0),
+      beforeValue: before.rating,
+      afterValue: player.user.rating,
+      reason: PROGRESS_REASONS.gameResult,
+      refType: "room",
+      refId: roomCode
+    },
+    {
+      userId: player.user.id,
+      metric: PROGRESS_METRICS.coins,
+      delta: Number(player.user.coins ?? 0) - Number(before.coins ?? 0),
+      beforeValue: before.coins,
+      afterValue: player.user.coins,
+      reason: PROGRESS_REASONS.gameResult,
+      refType: "room",
+      refId: roomCode
+    }
+  ];
 }

@@ -3,7 +3,11 @@ import {
   legacyUserAssetsToStructuredRows,
   parseAssetList,
   parseCharacterAssetList,
-  serializeAssetList
+  parseOwnedItemCounts,
+  serializeAssetList,
+  serializeOwnedItemCounts,
+  structuredUserItemEffectSyncOperations,
+  syncStructuredUserAssets
 } from "./userAssets.js";
 
 describe("user asset list helpers", () => {
@@ -21,6 +25,32 @@ describe("user asset list helpers", () => {
 
   it("serializes user asset lists consistently", () => {
     expect(serializeAssetList([" peach ", "paw", "peach"])).toBe("peach,paw");
+  });
+
+  it("normalizes owned item counts from legacy strings and public arrays", () => {
+    expect(parseOwnedItemCounts("dream-ticket,dream-ticket, rainbow-bean-candy")).toEqual({
+      "dream-ticket": 2,
+      "rainbow-bean-candy": 1
+    });
+    expect(parseOwnedItemCounts([
+      { itemId: "dream-ticket", quantity: "3" },
+      { targetId: "rainbow-bean-candy", quantity: 1 },
+      { id: "empty", quantity: 0 }
+    ])).toEqual({
+      "dream-ticket": 3,
+      "rainbow-bean-candy": 1
+    });
+  });
+
+  it("serializes owned item counts consistently", () => {
+    expect(serializeOwnedItemCounts({
+      "dream-ticket": "2",
+      empty: 0,
+      "rainbow-bean-candy": 1
+    })).toBe(JSON.stringify({
+      "dream-ticket": 2,
+      "rainbow-bean-candy": 1
+    }));
   });
 
   it("projects legacy user asset fields into structured migration rows", () => {
@@ -47,5 +77,102 @@ describe("user asset list helpers", () => {
         { userId: "user-1", effectKey: "note", effectValue: "manual", source: "legacy" }
       ]
     });
+  });
+
+  it("upserts structured asset rows from legacy user fields", async () => {
+    const calls = [];
+    const prisma = {
+      userCharacter: { upsert: async (query) => calls.push(["character", query]) },
+      userDecoration: { upsert: async (query) => calls.push(["decoration", query]) },
+      userItem: { upsert: async (query) => calls.push(["item", query]) },
+      userItemEffect: { upsert: async (query) => calls.push(["effect", query]) }
+    };
+
+    await syncStructuredUserAssets(prisma, {
+      id: "user-1",
+      ownedCharacters: "danea,sigrika",
+      ownedDecorations: "paw-stone",
+      ownedItems: JSON.stringify({ "dream-ticket": 2 }),
+      itemEffects: JSON.stringify({ deniaRainbowGlow: true })
+    });
+
+    expect(calls).toContainEqual(["character", expect.objectContaining({
+      where: { userId_characterSlug: { userId: "user-1", characterSlug: "denia" } },
+      create: { userId: "user-1", characterSlug: "denia", source: "legacy" },
+      update: { source: "legacy" }
+    })]);
+    expect(calls).toContainEqual(["decoration", expect.objectContaining({
+      where: { userId_decorationSlug: { userId: "user-1", decorationSlug: "paw-stone" } }
+    })]);
+    expect(calls).toContainEqual(["item", expect.objectContaining({
+      where: { userId_itemId: { userId: "user-1", itemId: "dream-ticket" } },
+      update: { quantity: 2, source: "legacy" }
+    })]);
+    expect(calls).toContainEqual(["effect", expect.objectContaining({
+      where: { userId_effectKey: { userId: "user-1", effectKey: "deniaRainbowGlow" } },
+      create: { userId: "user-1", effectKey: "deniaRainbowGlow", effectValue: "true", source: "legacy" }
+    })]);
+  });
+
+  it("deletes structured asset rows that are absent from legacy fields", async () => {
+    const calls = [];
+    const prisma = {
+      userCharacter: {
+        deleteMany: async (query) => calls.push(["character.deleteMany", query])
+      },
+      userItem: {
+        deleteMany: async (query) => calls.push(["item.deleteMany", query])
+      },
+      userItemEffect: {
+        deleteMany: async (query) => calls.push(["effect.deleteMany", query])
+      }
+    };
+
+    await syncStructuredUserAssets(prisma, {
+      id: "user-1",
+      ownedCharacters: "sigrika",
+      ownedItems: "{}",
+      itemEffects: "{}"
+    });
+
+    expect(calls).toContainEqual(["character.deleteMany", {
+      where: { userId: "user-1", characterSlug: { notIn: ["sigrika"] } }
+    }]);
+    expect(calls).toContainEqual(["item.deleteMany", {
+      where: { userId: "user-1", itemId: { notIn: [] } }
+    }]);
+    expect(calls).toContainEqual(["effect.deleteMany", {
+      where: { userId: "user-1", effectKey: { notIn: [] } }
+    }]);
+  });
+
+  it("builds item effect sync operations from room public user effect objects", () => {
+    const calls = [];
+    const prisma = {
+      userItemEffect: {
+        deleteMany: (query) => {
+          calls.push(["effect.deleteMany", query]);
+          return query;
+        },
+        upsert: (query) => {
+          calls.push(["effect.upsert", query]);
+          return query;
+        }
+      }
+    };
+
+    const operations = structuredUserItemEffectSyncOperations(prisma, {
+      id: "user-1",
+      itemEffects: { deniaRainbowGlow: true }
+    });
+
+    expect(operations).toHaveLength(2);
+    expect(calls).toContainEqual(["effect.deleteMany", {
+      where: { userId: "user-1", effectKey: { notIn: ["deniaRainbowGlow"] } }
+    }]);
+    expect(calls).toContainEqual(["effect.upsert", expect.objectContaining({
+      where: { userId_effectKey: { userId: "user-1", effectKey: "deniaRainbowGlow" } },
+      create: { userId: "user-1", effectKey: "deniaRainbowGlow", effectValue: "true", source: "legacy" }
+    })]);
   });
 });

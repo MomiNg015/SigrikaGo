@@ -46,7 +46,7 @@ function PlayerInfo({
         }
       } : undefined}
     >
-      <div className="portrait-wrap">
+      <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"}`}>
         <img src={playerCandyPortrait(character, player)} alt={character.name} />
         {disconnectBadge && <span className="disconnect-badge">{disconnectBadge}</span>}
         {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}

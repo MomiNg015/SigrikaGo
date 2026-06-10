@@ -78,6 +78,7 @@ describe("items", () => {
   });
 
   it("uses rainbow candy on Denia by enabling the rainbow glow effect", async () => {
+    const structuredWrites = [];
     const response = await useInventoryItem({
       userId: "user-1",
       itemId: "rainbow-bean-candy",
@@ -86,12 +87,22 @@ describe("items", () => {
         ownedCharacters: "sigrika,denia",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
         targetId: "rainbow-bean-candy",
-        itemTargetType: "character"
+        itemTargetType: "character",
+        structuredWrites
       })
     });
 
     expect(response.effectText).toContain("突然全身发出了彩虹光");
     expect(response.user.itemEffects).toMatchObject({ deniaRainbowGlow: true });
+    expect(structuredWrites).toContainEqual(["userItem.deleteMany", expect.objectContaining({
+      where: {
+        userId: "user-1",
+        itemId: { notIn: [] }
+      }
+    })]);
+    expect(structuredWrites).toContainEqual(["userItemEffect.upsert", expect.objectContaining({
+      where: { userId_effectKey: { userId: "user-1", effectKey: "deniaRainbowGlow" } }
+    })]);
   });
 
   it("accepts legacy Danea ownership when using candy on canonical Denia", async () => {
@@ -155,7 +166,8 @@ function inventoryPrisma({
   selectedCharacter = "sigrika",
   targetId = "dream-ticket",
   itemTargetType = "self",
-  updates = []
+  updates = [],
+  structuredWrites = []
 } = {}) {
   const user = {
     id: "user-1",
@@ -202,6 +214,34 @@ function inventoryPrisma({
     shopItem: {
       findFirst: async () => item,
       findMany: async () => [item]
+    },
+    userCharacter: {
+      upsert: async (input) => {
+        structuredWrites.push(["userCharacter.upsert", input]);
+        return input.create;
+      }
+    },
+    userDecoration: {
+      upsert: async (input) => {
+        structuredWrites.push(["userDecoration.upsert", input]);
+        return input.create;
+      }
+    },
+    userItem: {
+      deleteMany: async (input) => {
+        structuredWrites.push(["userItem.deleteMany", input]);
+        return { count: 0 };
+      },
+      upsert: async (input) => {
+        structuredWrites.push(["userItem.upsert", input]);
+        return input.create;
+      }
+    },
+    userItemEffect: {
+      upsert: async (input) => {
+        structuredWrites.push(["userItemEffect.upsert", input]);
+        return input.create;
+      }
     }
   };
   return {

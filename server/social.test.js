@@ -178,6 +178,30 @@ describe("social profiles and relationships", () => {
     expect(result.blacklist[0]).toMatchObject({ username: "blocked", rank: "1级", status: "offline" });
   });
 
+  it("prefers structured item effects for social users", async () => {
+    const profile = await getUserProfile({
+      prisma: socialProfilePrisma({
+        users: [{
+          id: "target-1",
+          username: "denia-fan",
+          rating: 1200,
+          selectedCharacter: "denia",
+          ownedCharacters: "denia",
+          itemEffects: JSON.stringify({ legacyEffect: true }),
+          userItemEffects: [
+            { effectKey: "deniaRainbowGlow", effectValue: "true" },
+            { effectKey: "inactive", effectValue: "false" }
+          ]
+        }]
+      }),
+      userId: "target-1",
+      viewerId: "viewer-1",
+      statusForUser: () => "online"
+    });
+
+    expect(profile.itemEffects).toEqual({ deniaRainbowGlow: true });
+  });
+
   it("returns replay summaries for any target user without viewer context", async () => {
     const records = await getUserReplays({
       prisma: socialProfilePrisma({

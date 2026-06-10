@@ -2,9 +2,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import {
   installBackgroundResumeTriggers,
+  pauseBackgroundPlayback,
   playCountdownBeep,
   playDoorbellSound,
   playVoiceSound,
+  recoverBackgroundPlayback,
   resumeBackgroundContextWithFallback,
   speakText
 } from "./playback.jsx";
@@ -97,13 +99,39 @@ describe("background music resume fallback", () => {
     expect(context.resume).toHaveBeenCalledTimes(4);
   });
 
-  it("reschedules the active background track when the socket reconnect signal changes", () => {
-    const source = readFileSync(new URL("./playback.jsx", import.meta.url), "utf8");
+  it("keeps the active background track when the socket reconnect signal changes", () => {
+    const source = readFileSync(new URL("./backgroundMusic.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("state.currentTrack = track");
     expect(source).toContain("recoverBackgroundPlayback(playerRef.current)");
-    expect(source).toContain("scheduleBackgroundTrack({ state, context, track: state.currentTrack");
+    expect(source).toContain("if (state.active.length > 0) return;");
     expect(source).toContain("}, [resumeSignal]);");
+  });
+
+  it("does not reschedule active background music on reconnect recovery", () => {
+    const state = {
+      context: { state: "running", resume: vi.fn(() => Promise.resolve()) },
+      active: [{ gain: null, sources: [] }],
+      currentTrack: { id: "main", playback: { mode: "single", src: "/assets/music/main.ogg", loop: true } },
+      generation: 7,
+      retry: null,
+      bufferCache: new Map()
+    };
+
+    recoverBackgroundPlayback(state);
+
+    expect(state.generation).toBe(7);
+  });
+
+  it("suspends background music playback while character music preview is active", () => {
+    const context = {
+      state: "running",
+      suspend: vi.fn(() => Promise.resolve())
+    };
+
+    pauseBackgroundPlayback({ context });
+
+    expect(context.suspend).toHaveBeenCalledTimes(1);
   });
 
   it("ignores procedural browser sounds when audio browser APIs are unavailable", () => {

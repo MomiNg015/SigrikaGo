@@ -22,6 +22,7 @@ export function validateCharacterInput(input = {}) {
 
   const slug = String(input.slug ?? "").trim();
   const name = String(input.name ?? "").trim();
+  const characterDescription = String(input.description ?? "").trim();
   const portraitUrl = String(input.portraitUrl ?? input.portrait ?? "").trim();
   const portraitSource = String(input.portraitSource ?? "url").trim();
   const acquisitionMethod = String(input.acquisitionMethod ?? "").trim();
@@ -88,6 +89,7 @@ export function validateCharacterInput(input = {}) {
     value: {
       slug,
       name,
+      description: characterDescription,
       portraitUrl,
       portraitSource,
       acquisitionMethod,
@@ -134,6 +136,7 @@ export function toCharacterPayload(record) {
     id: record.slug,
     dbId: record.id,
     name: record.name,
+    description: record.description ?? "",
     palette: record.palette,
     portrait: record.portraitUrl,
     portraitSource: record.portraitSource,
@@ -157,6 +160,7 @@ export async function seedCharacters(prisma) {
       data: {
         slug: character.id,
         name: character.name,
+        description: character.description ?? "",
         portraitUrl: character.portrait,
         acquisitionMethod: character.acquisitionMethod ?? "",
         palette: character.palette,

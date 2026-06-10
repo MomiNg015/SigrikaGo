@@ -59,6 +59,9 @@ describe("HomeScreen", () => {
     expect(html).toContain("home-online-tag");
     expect(html).toContain("在线人数：2");
     expect(html).toContain("home-lobby-status");
+    expect(html).toContain("home-mobile-menu");
+    expect(html).toContain("home-mobile-menu-toggle");
+    expect(html).toContain("home-mobile-menu-panel");
     expect(html).toContain("LOBBY_ROOM (•̀ᴗ•́)و");
     expect(appShellBlock).toContain("overflow-x: hidden");
     expect(appShellBlock).toContain("background: #04080c");
@@ -106,6 +109,7 @@ describe("HomeScreen", () => {
     expect(imageEntryBlock).toContain("transition: transform 260ms");
     expect(hoverBlock).toContain("transform: translateY(-10px)");
     expect(hoverBlock).toContain("border-color: var(--home-terminal-cyan)");
+    expect(css).toContain(".match-image-entry:hover::after,\n.match-image-entry:focus-visible::after {\n  animation: none;");
     expect(tacticalTextBlock).toContain("content: attr(data-hud)");
     expect(html).toContain('data-hud="部员手册"');
     expect(html).toContain('data-hud="匹配对局"');
@@ -166,5 +170,28 @@ describe("HomeScreen", () => {
     expect(mobileMedia).toContain(".home-grid-featured > .home-utility-grid");
     expect(mobileMedia).toContain("grid-template-columns: repeat(2, minmax(0, 1fr))");
     expect(mobileMedia).toContain("transform: none");
+
+    const brightMobileCss = readTextFixture("../styles/themes/bright-school/mobile.css");
+    expect(brightMobileCss).toContain(".home-lobby-status");
+    expect(brightMobileCss).toContain("display: none !important");
+    expect(brightMobileCss).toContain(".home-mobile-menu");
+    expect(brightMobileCss).toContain(".home-mobile-menu-panel");
+    expect(brightMobileCss).toContain(".topbar-actions > .icon-button");
+    expect(brightMobileCss).toContain("padding: 12px 12px 48px !important");
+    expect(brightMobileCss).toContain("bottom: 10px !important");
+    expect(brightMobileCss).toContain("max-width: calc(100% - 28px) !important");
+    expect(brightMobileCss).toContain("font-family: \"Arial Rounded MT Bold\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", system-ui, sans-serif !important");
+
+    const finalMobileCss = readTextFixture("../styles/mobile-adaptive.css");
+    expect(finalMobileCss).toContain(":has(.modal-backdrop) .home-mobile-menu");
+    expect(finalMobileCss).toContain("pointer-events: none !important");
+    expect(finalMobileCss).toContain(".home-brand-title");
+    expect(finalMobileCss).toContain("font-size: clamp(22px, 6.7vw, 32px) !important");
+    expect(finalMobileCss).toContain("text-overflow: clip !important");
+    expect(finalMobileCss).toContain(".home-footer-strip");
+    expect(finalMobileCss).toContain("position: static !important");
+    expect(finalMobileCss).toContain(".leaderboard-header h2");
+    expect(finalMobileCss).toContain(".owned-decoration-header h3");
+    expect(finalMobileCss).toContain("white-space: nowrap !important");
   });
 });
