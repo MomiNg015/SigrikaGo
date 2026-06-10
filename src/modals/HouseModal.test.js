@@ -289,12 +289,14 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("position: fixed !important");
     expect(css).toContain("transform: none !important");
     expect(css).toContain("overflow-wrap: anywhere !important");
+    expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
     expect(css).toContain("grid-template-rows: none !important");
-    expect(css).toContain("grid-auto-rows: 112px !important");
+    expect(css).toContain("grid-auto-rows: 88px !important");
     expect(css).toContain("overflow-y: auto !important");
     expect(css).toContain(".character-card.portrait-card .lock-text-title");
     expect(css).toContain("box-sizing: border-box !important");
     expect(css).toContain(".house-modal .owned-decoration-section");
+    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important");
     expect(css).toContain(".house-modal .owned-decoration-chip strong");
     expect(css).toContain(".character-record-dialog");
@@ -309,6 +311,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("word-break: normal !important");
     expect(finalMobileCss).toContain(".character-card.portrait-card.is-deployed");
     expect(finalMobileCss).toContain("#4f9b69");
+    expect(finalMobileCss).toContain(".house-modal .character-list");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain("grid-auto-rows: 88px !important");
     expect(finalMobileCss).toContain("repeat(auto-fill, minmax(58px, 70px)) !important");
     expect(finalMobileCss).toContain(".house-modal .deploy-tag");
     expect(finalMobileCss).toContain("display: none !important");

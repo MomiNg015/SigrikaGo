@@ -763,6 +763,27 @@
   }
 }
 
+@media (pointer: coarse) {
+  .app-shell.player-theme-enabled .house-modal .character-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: 88px !important;
+    max-height: min(184px, 46dvh) !important;
+    height: auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell.player-theme-enabled .house-modal .character-card.portrait-card {
+    height: 88px !important;
+    padding: 6px !important;
+  }
+
+  .app-shell.player-theme-enabled .house-modal .character-card.portrait-card img {
+    max-height: 44px !important;
+  }
+}
+
 @keyframes mobile-backdrop-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -1481,6 +1502,11 @@
     grid-template-columns: repeat(auto-fill, minmax(58px, 70px)) !important;
     justify-content: start !important;
     align-content: start !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .character-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-auto-rows: 88px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip {
