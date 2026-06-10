@@ -371,6 +371,20 @@
   padding: 9px 13px;
 }
 
+.resume-modal {
+  width: min(620px, 100%);
+  display: grid;
+  gap: 16px;
+}
+
+.resume-modal .profile-grid.top-stats-bar {
+  margin-top: 4px;
+}
+
+.resume-header {
+  justify-content: space-between;
+}
+
 .nested-modal {
   position: absolute;
   inset: 54px 22px 22px;

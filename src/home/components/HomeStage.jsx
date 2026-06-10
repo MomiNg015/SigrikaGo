@@ -8,6 +8,7 @@ export default function HomeStage({
   user,
   onOpenFriends,
   onOpenHouse,
+  onOpenResume,
   onOpenLeaderboard,
   onOpenShop,
   onOpenWarehouse,
@@ -16,7 +17,7 @@ export default function HomeStage({
 }) {
   return (
     <section className="home-grid-featured home-stage home-terminal-stage">
-      <PlayerPlaque character={selectedCharacter} user={user} />
+      <PlayerPlaque character={selectedCharacter} user={user} onOpenResume={onOpenResume} />
       <HouseManualEntry onOpenHouse={onOpenHouse} />
       <MatchEntry matchmakingCount={matchmakingCount} onStartMatch={onStartMatch} />
       <HomeUtilityDock

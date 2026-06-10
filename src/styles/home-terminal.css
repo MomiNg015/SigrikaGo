@@ -224,6 +224,9 @@
 .home-player-zone .home-player-plaque {
   width: 100%;
   min-height: 82px;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
   grid-template-columns: 62px minmax(0, 1fr) auto;
   gap: 14px;
   padding: 10px 18px 10px 10px;
@@ -357,6 +360,11 @@
   height: 100%;
   object-fit: contain;
   transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), filter 180ms ease;
+}
+
+.home-player-zone .home-player-plaque:focus-visible {
+  outline: 3px solid rgba(0, 191, 255, 0.52);
+  outline-offset: 3px;
 }
 
 .home-image-entry:hover,

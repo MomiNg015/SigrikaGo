@@ -37,6 +37,7 @@ export default function AppRoutes({
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
+  setShowResume,
   setShowSettings,
   setShowShop,
   setShowWarehouse,
@@ -60,6 +61,7 @@ export default function AppRoutes({
       onSelectCharacter={selectCharacter}
       onStartMatch={startMatch}
       onOpenHouse={() => setShowHouse(true)}
+      onOpenResume={() => setShowResume(true)}
       onOpenWarehouse={() => setShowWarehouse(true)}
       onOpenLeaderboard={() => setShowLeaderboard(true)}
       onOpenWatch={() => setShowWatch(true)}

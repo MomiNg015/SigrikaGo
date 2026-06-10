@@ -4,7 +4,7 @@ import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
 
-export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, onLogout, onStartMatch, onOpenHouse, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenFriends, onOpenSettings, onOpenMessageBoard, onOpenAdmin }) {
+export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, onLogout, onStartMatch, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenFriends, onOpenSettings, onOpenMessageBoard, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
   const onlineCount = Number(lobbyStats.onlineCount ?? 0);
   const matchmakingCount = Number(lobbyStats.matchmakingCount ?? 0);
@@ -28,6 +28,7 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
           user={user}
           onOpenFriends={onOpenFriends}
           onOpenHouse={onOpenHouse}
+          onOpenResume={onOpenResume}
           onOpenLeaderboard={onOpenLeaderboard}
           onOpenShop={onOpenShop}
           onOpenWarehouse={onOpenWarehouse}

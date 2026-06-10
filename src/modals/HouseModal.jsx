@@ -1,30 +1,16 @@
 import { useState } from "react";
-import {
-  MonitorPlay,
-  X
-} from "lucide-react";
+import { X } from "lucide-react";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
-import { derivePlayerRecordStats } from "../shared/gameRecords.js";
 import { SYSTEM_VOICE_EVENTS } from "../shared/systemVoices.js";
 import { playSystemVoice } from "../audio/systemVoicePlayback.js";
 import HouseCharacterGrid from "./house/HouseCharacterGrid.jsx";
 import HouseDecorationPicker from "./house/HouseDecorationPicker.jsx";
-import {
-  CharacterDetailDialog,
-  CharacterRecordsDialog,
-  HouseReplayDialog
-} from "./house/HouseNestedDialogs.jsx";
-import HouseProfileStats from "./house/HouseProfileStats.jsx";
-import { deriveCharacterRecordStats } from "./house/houseStats.js";
+import { CharacterDetailDialog } from "./house/HouseNestedDialogs.jsx";
 
-export default function HouseModal({ user, records, characterListView, audioSettings, onClose, onSelectCharacter, onSelectCharacterMusic, onApplyDecoration, onOpenReplay }) {
+export default function HouseModal({ user, characterListView, audioSettings, onClose, onSelectCharacter, onSelectCharacterMusic, onApplyDecoration }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
-  const [showReplays, setShowReplays] = useState(false);
-  const [showCharacterRecords, setShowCharacterRecords] = useState(false);
   const [applyingDecoration, setApplyingDecoration] = useState("");
   const [decorationError, setDecorationError] = useState("");
-  const stats = derivePlayerRecordStats(user, records);
-  const characterRecords = deriveCharacterRecordStats(user, records, characterListView);
   const owned = new Set((user.ownedCharacters ?? []).map(canonicalCharacterId));
   const selectedCharacter = canonicalCharacterId(user.selectedCharacter);
   const itemEffects = user.itemEffects ?? {};
@@ -56,16 +42,7 @@ export default function HouseModal({ user, records, characterListView, audioSett
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <header className="house-header">
           <h2>部员手册</h2>
-          <button className="replay-open-button" onClick={() => setShowReplays(true)}>
-            <MonitorPlay size={18} />对局回放
-          </button>
         </header>
-        <HouseProfileStats
-          coins={user.coins}
-          rank={user.rank}
-          stats={stats}
-          onOpenCharacterRecords={() => setShowCharacterRecords(true)}
-        />
         <HouseCharacterGrid
           audioSettings={audioSettings}
           characters={characterListView}
@@ -91,22 +68,6 @@ export default function HouseModal({ user, records, characterListView, audioSett
             audioSettings={audioSettings}
             onSelectCharacterMusic={onSelectCharacterMusic}
             onClose={() => setDetailCharacter(null)}
-          />
-        )}
-        {showReplays && (
-          <HouseReplayDialog
-            characterListView={characterListView}
-            records={records}
-            currentUser={user}
-            onClose={() => setShowReplays(false)}
-            onOpenReplay={onOpenReplay}
-          />
-        )}
-        {showCharacterRecords && (
-          <CharacterRecordsDialog
-            characterRecords={characterRecords}
-            itemEffects={itemEffects}
-            onClose={() => setShowCharacterRecords(false)}
           />
         )}
       </section>

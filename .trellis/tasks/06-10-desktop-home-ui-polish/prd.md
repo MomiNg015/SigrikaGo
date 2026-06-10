@@ -7,6 +7,10 @@ Improve the desktop Bright School home screen so the player plaque, manual entry
 ## Requirements
 
 * On wide desktop layouts, the current user's name must not collide with or visually touch the avatar/portrait area in the player plaque.
+* The current-user plaque must be clickable and open a modal titled `履历`.
+* Move replay access, overall battle record, rank, and coins from `部员手册` into the new `履历` modal.
+* Keep `部员手册` focused on character selection/details and decoration selection only.
+* Apply the `履历`/manual split consistently on desktop and mobile.
 * The `部员手册` sticker label on the desktop home stage must use the same rounded interface font family as nearby controls, not the mono HUD font.
 * Remove the visible `LOBBY_ROOM (•̀ᴗ•́)و` status pill from the home header.
 * Keep the existing mobile header menu and mobile home layout behavior intact.
@@ -17,6 +21,9 @@ Improve the desktop Bright School home screen so the player plaque, manual entry
 * [ ] At a desktop viewport around `1468x674`, the player plaque has clear horizontal separation between avatar and username text.
 * [ ] The manual entry label renders with the project's rounded UI font stack and remains on one line.
 * [ ] The home header no longer renders `.home-lobby-status` or `LOBBY_ROOM`.
+* [ ] Clicking the current-user plaque opens `履历`.
+* [ ] `履历` contains battle record, rank, coins, character record access, and replay access.
+* [ ] `部员手册` no longer renders replay, battle record, rank, or coins.
 * [ ] Existing home screen tests are updated to match the new contract.
 * [ ] `docs/system-design.md` and generated system-design HTML are updated.
 

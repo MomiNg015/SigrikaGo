@@ -45,7 +45,7 @@
 - Mobile replay cards place the move count in the top metadata row between the date/time and result text, while the black and white player cells stay on the second row. The desktop replay table keeps its normal column layout.
 - Bright School lobby canvas cleanup now lives in `bright-school/home.css` and targets the exact `main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage` chain. This removes residual solid panel fills and pseudo-element paper backgrounds from the main lobby stage while leaving the individual scrapbook entries, navigation buttons, and player plaque styling intact. The same file owns the current-user student ID plaque, paperclip clamps, and translucent campus panel.
 - Bright School portrait mobile fit is handled by `bright-school/mobile.css`. This layer turns the home lobby into a single-column scroll page, removes the hanging-ID absolute positioning on phones, keeps the match and house-manual image entries inside fixed mobile-height cards, keeps all player-facing modal windows within `100dvh`, assigns internal scroll regions to shop/warehouse/house/leaderboard/friends/settings/message/watch/profile content, and preserves 44px touch targets without changing modal JSX. The house manual uses a fixed mobile grid shell (`header`, stats, internally scrolling character roster, bounded decoration picker) so roster cards and decoration chips cannot grow beneath the modal frame; stat help tooltips wrap inside the viewport instead of increasing horizontal scroll width. The same layer also owns Bright School mobile room layout: the room shell is fixed to `100dvh`, the header and player strips are compressed, the board size is calculated from remaining viewport space, and the tab dock reserves enough height for both operation hints and labeled game-action buttons instead of clipping the bottom row.
-- Bright School mobile lobby and utility windows have an additional compact pass for 393px-wide phones: the home header collapses message/settings/admin/logout actions behind a single options menu, hides the lobby debug status, and keeps the brand/online tag in a stable grid. The opened home options menu uses a fixed icon column plus `max-content` text column, with `white-space: nowrap` and `word-break: keep-all`, so the 留言/设置/退出 labels never split across lines. House stats stay on one line, small character cards may hide names to preserve avatar and sortie controls, decoration selection uses icon-sized chips, and character detail art removes mobile drop shadows. The nested character-record dialog is clamped to `min(420px, calc(100vw - 20px))`, uses an internally scrolling record list, and renders each row as compact avatar/name/record/rate columns; the record text keeps `white-space: nowrap` and `word-break: keep-all` so strings like `29胜25负4和` do not split. Leaderboard, replay, friends, and watch lists switch from wide horizontal tables to mobile cards; leaderboard cards use tighter rank/avatar/identity/score lanes, keep rating as the main right-side number, and stack a compact win-rate pill with explicit win/loss/draw chips (`胜/负/和`) in the same metrics lane, while "我的排名" mirrors the same compact row rhythm instead of becoming a sparse panel. The mobile leaderboard grid uses `minmax(0, 1fr) auto` rows so the scrollable list takes remaining space and the pinned current-user block shrinks to its label plus card instead of inheriting the old 220px desktop table row. The friends sheet has its own visible close button, and watch-list inline close buttons opt out of the global absolute close positioning. The Bright School phone layer now keeps friend and watch lists outside the old wide-table overflow group, while a final Bright School mobile guard in `mobile-adaptive.css` sits after the theme imports to protect the single-line stats rule, character/decoration shop cards, mobile title text, circular top-three leaderboard badges, compact pinned ranking cards, and small decoration picker chips from older desktop theme repairs. The same guard lowers the home options menu behind active modal backdrops so it cannot cover modal close buttons.
+- Bright School mobile lobby and utility windows have an additional compact pass for 393px-wide phones: the home header collapses message/settings/admin/logout actions behind a single options menu, hides the lobby debug status, and keeps the brand/online tag in a stable grid. The opened home options menu uses a fixed icon column plus `max-content` text column, with `white-space: nowrap` and `word-break: keep-all`, so the 留言/设置/退出 labels never split across lines. Resume stats stay on one line, small character cards in the manual may hide names to preserve avatar and sortie controls, decoration selection uses icon-sized chips, and character detail art removes mobile drop shadows. The nested character-record dialog is clamped to `min(420px, calc(100vw - 20px))`, uses an internally scrolling record list, and renders each row as compact avatar/name/record/rate columns; the record text keeps `white-space: nowrap` and `word-break: keep-all` so strings like `29胜25负4和` do not split. Leaderboard, replay, friends, and watch lists switch from wide horizontal tables to mobile cards; leaderboard cards use tighter rank/avatar/identity/score lanes, keep rating as the main right-side number, and stack a compact win-rate pill with explicit win/loss/draw chips (`胜/负/和`) in the same metrics lane, while "我的排名" mirrors the same compact row rhythm instead of becoming a sparse panel. The mobile leaderboard grid uses `minmax(0, 1fr) auto` rows so the scrollable list takes remaining space and the pinned current-user block shrinks to its label plus card instead of inheriting the old 220px desktop table row. The friends sheet has its own visible close button, and watch-list inline close buttons opt out of the global absolute close positioning. The Bright School phone layer now keeps friend and watch lists outside the old wide-table overflow group, while a final Bright School mobile guard in `mobile-adaptive.css` sits after the theme imports to protect the single-line stats rule, character/decoration shop cards, mobile title text, circular top-three leaderboard badges, compact pinned ranking cards, and small decoration picker chips from older desktop theme repairs. The same guard lowers the home options menu behind active modal backdrops so it cannot cover modal close buttons.
 - Mobile friend rows show status, portrait, a centered username/stat text group, and the gear action in one compact row; rank and rating sit directly below the username inside that centered group. Desktop social rows keep the table-like column layout through `display: contents` on the mobile grouping wrappers.
 
 # SigrikaGo System Design
@@ -95,7 +95,7 @@ SigrikaGo/
     admin/
       AdminConsole.jsx         # 后台管理界面与后台 CRUD 组件
     home/
-      HomeScreen.jsx           # 大厅首页布局、匹配入口、棋舍入口和工具入口
+      HomeScreen.jsx           # 大厅首页布局、匹配入口、履历/部员手册入口和工具入口
     room/
       RoomScreen.jsx           # 对局页容器，编排棋盘、玩家信息、聊天、房间成员、行动区和房间级音效
     styles.css                 # CSS 入口文件，按域导入 styles/*.css
@@ -134,7 +134,7 @@ SigrikaGo/
 
 - `src/home/HomeScreen.jsx`
   - 大厅首页展示组件。
-  - 负责大厅标题/副标题、匹配主入口、棋舍入口、观战/排行榜/商城/后台管理工具入口。
+  - 负责大厅标题/副标题、匹配主入口、履历/部员手册入口、观战/排行榜/商城/后台管理工具入口。
 
 - `src/room/RoomScreen.jsx`
   - 对局页容器组件。
@@ -365,14 +365,14 @@ SigrikaGo/
 ### 大厅与个人空间
 
 - 登录页品牌标题显示为 `星炬学院围棋部`。
-- 大厅入口：棋舍、星炬对弈、观战、排行榜、商城、后台管理（管理员可见）。
-- 大厅首页布局 A：星炬对弈作为最大主行动面板；该区域使用 `/assets/home/fantasy-match-illustration.webp` 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。顶部条显示站点标题、副标题“连罗伊人的都爱玩的智力游戏”、在线人数和右侧操作按钮；后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。
-- 大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，星炬对弈主面板位于右侧。星炬对弈上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。
+- 大厅入口：履历、部员手册、星炬对弈、观战、排行榜、商城、后台管理（管理员可见）。
+- 大厅首页布局 A：星炬对弈作为最大主行动面板；该区域使用 `/assets/home/fantasy-match-illustration.webp` 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。当前用户铭牌作为履历入口展示出战角色、用户名、段位和积分；部员手册作为角色/装饰入口；商店、排行榜、观战、好友以中等图标按钮呈现。顶部条显示站点标题、副标题“连罗伊人的都爱玩的智力游戏”、在线人数和右侧操作按钮；后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。
+- 大厅主内容区尽量靠近窗口垂直中部；履历铭牌、部员手册和工具按钮位于左侧，星炬对弈主面板位于右侧。星炬对弈上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。
 - `public/hotspot-prototype.html` 是单页热点原型，用用户提供的 `/assets/prototypes/classroom-bg1.webp` 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。
 - 大厅顶部标题和副标题来自 `GET /api/site-settings`；未配置或接口失败时回退到 `大厅` / `SigrikaGo`。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。
 - 大厅与对局页右上操作区共用同一个留言板入口。留言板当前为前端占位弹窗，输入框默认提示“Bug、问题反馈和意见都可以在这里提交哦”，包含提交按钮，提交暂不落库。
-- 棋舍展示用户战绩、积分、拥有角色、出战角色。
-- 棋舍标题右侧可查看个人对局回放；回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。回放列表会按当前查看用户在该局的结果给整行着色：胜利为浅绿色，失败为灰色，和棋为浅黄色；公共用户资料里的回放列表按被查看用户计算，个人棋舍按当前用户计算。装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。战绩、积分、段位、金币统计项带对应小图标。
+- 首页当前用户铭牌是可点击入口，打开名为“履历”的窗口；履历集中展示用户战绩、积分、段位、金币，并提供角色战绩与个人对局回放入口。回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。回放列表会按当前查看用户在该局的结果给整行着色：胜利为浅绿色，失败为灰色，和棋为浅黄色；公共用户资料里的回放列表按被查看用户计算，个人履历按当前用户计算。
+- 部员手册只保留角色选择、角色详情和装饰选择，不再承载战绩、段位、金币或对局回放。装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。
 - 设置弹窗支持音量配置，并保存在 `localStorage`；关于页展示后台可编辑的站点长文本。
 
 ### 对局
@@ -385,7 +385,7 @@ SigrikaGo/
 - 对局聊天和系统消息；若聊天发送者是本局对局者，聊天名后追加 `[出战角色名字]`。
 - 匹配成功后先显示 3 秒匹配成功弹窗；进入房间后处于 `opening` 开局展示阶段，玩家看到“本局你执黑/白”弹窗，服务端在该阶段暂停棋钟和落子/技能操作。
 - 匹配成功弹窗倒计时期间仍会接收服务端 `room:update`。前端会同步刷新匹配过渡状态和一个最新房间 ref，倒计时完成时优先使用该 ref 进入房间，避免服务端已推进到 `playing` 但客户端仍拿旧 `opening` 快照，导致棋钟不动、不能落子或开局语音不触发。
-- 收到匹配成功事件时，前端会自动关闭大厅上已打开的商店、棋舍、排行榜、观战、好友、设置和留言板弹窗，避免弹窗盖住后续对局切换。
+- 收到匹配成功事件时，前端会自动关闭大厅上已打开的商店、部员手册、履历、排行榜、观战、好友、设置和留言板弹窗，避免弹窗盖住后续对局切换。
 - 开局展示结束后服务端切换到 `playing`，写入 `game-start` 系统消息，前端播放“对局开始”系统语音，并从该时刻开始推进棋钟。
 - 计时与读秒：房间玩家包含 `mainTime`、`byoYomi`、`byoYomiPeriods` 等内存字段。
 - 对局者刷新页面、关闭页面或短暂断线后，前端会保存最近玩家房间号并在 Socket 重连时请求 `room:resume`。如果内存房间仍存在且未结束，服务端会把该 socket 重新绑定到房间并广播当前房间视图；断线期间服务端棋钟继续按真实时间推进，不会暂停。如果房间已结束但仍在内存或可通过该房间号找到 `GameRecord.snapshot`，前端停留在大厅并恢复结果弹窗；关闭结果弹窗后清理最近房间号。正常在线收到终局 `room:update` 的对局者会立即清理最近玩家房间号，因此主界面结果弹窗只用于“对局中断线且终局时未能及时连回”的玩家恢复结果。如果服务重启导致内存房间丢失且没有可恢复棋谱，前端会清理最近房间号、回到大厅，并提示“房间已不存在，可能是服务器重启或房间已关闭”。
@@ -445,7 +445,7 @@ SigrikaGo/
 
 - 对局结束后写入 `GameRecord`。
 - 棋谱保存房间快照 `snapshot`；胜负局会先把积分、金币和战绩奖励应用到房间内存玩家，再生成 `GameRecord.snapshot`，避免断线后恢复结果时展示结算前的旧用户状态。
-- 用户可看自己的全部棋谱摘要；部员手册会用这批完整记录派生总局、胜局、负局和和棋，保证与排行榜同源统计一致。
+- 用户可看自己的全部棋谱摘要；履历会用这批完整记录派生总局、胜局、负局和和棋，保证与排行榜同源统计一致。
 - 管理员可查看任意用户棋谱与任意棋谱详情。
 - 前端回放通过 `replayRoomAt` 基于历史步骤重放共享规则逻辑。
 - `replayRoomAt` 会容忍旧版或不完整 `GameRecord.snapshot` 缺少 `chat` 数组；缺失时按空聊天记录处理，避免点击回放详情后因渲染期异常导致白屏。
@@ -491,7 +491,7 @@ SigrikaGo/
 - 从棋谱统计总对局数、胜局数、负局数、和棋数。
 - 最后一列展示胜率，按 `胜局数 / 总对局数 * 100%` 计算并保留 1 位小数；所有列内容居中显示。用户名和常用角色名限制在各自列宽内，过长时使用省略号。
 - “常用角色”按棋谱中该用户使用次数最多的角色计算。
-- 棋舍中的积分显示使用 `User.rating` 持久化值；总局、胜负、和棋仍由棋谱统计，避免后台积分编辑或对局结算后与棋舍显示不同步。
+- 履历中的积分显示使用 `User.rating` 持久化值；总局、胜负、和棋仍由棋谱统计，避免后台积分编辑或对局结算后与履历显示不同步。
 
 ### 后台管理
 
@@ -779,10 +779,10 @@ SigrikaGo/
   - 按需获取目标用户最近 30 条棋谱摘要；资料卡中的“对局回放”按钮点击后调用该接口并弹出回放列表。
 
 - `GET /api/replays`
-  - 获取当前用户全部棋谱摘要；摘要包含黑白双方 user id、用户名、使用角色、胜负结果和手数，供部员手册统计和回放列表显示角色立绘。
+  - 获取当前用户全部棋谱摘要；摘要包含黑白双方 user id、用户名、使用角色、胜负结果和手数，供履历统计和回放列表显示角色立绘。
 
 - `GET /api/replays/:id`
-  - 获取指定棋谱详情与快照；用于个人棋舍回放，也用于他人资料卡中的公开回放入口。
+  - 获取指定棋谱详情与快照；用于个人履历回放，也用于他人资料卡中的公开回放入口。
 
 ### 后台 HTTP API
 
@@ -1416,12 +1416,12 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 
 ## Recent Home, Shop, And Board UI Adjustments
 
-- The former home/house entry is now presented to players as “部员手册”; the underlying profile, character, decoration, and personal replay functions are unchanged.
+- The former home/house entry is now split into a clickable player plaque that opens “履历” for profile stats/replays and a “部员手册” entry for character and decoration management.
 - The home match description is “13路，数子规则，黑贴2又3/4子，用时5分钟30秒3次”.
 - The home player plaque uses a light rank/rating tag with dark text. Admin management uses the same circular icon-plus-title layout and sizing pattern as the home utility buttons.
 - The shop keeps fixed 8-item pages, but its visual grid now adapts to available width and height; the item area scrolls inside the modal while tabs and pagination stay visible, with a compact landscape layout for short viewports.
 - Friend list action buttons expand as a full-width horizontal action row with evenly aligned button columns.
-- The house stats for rating and coins use the same help-tip pattern as rank: rating explains +20/-20/0 changes; coins explain +50/+20/0 rewards.
+- The resume stats for rating and coins use the same help-tip pattern as rank: rating explains +20/-20/0 changes; coins explain +50/+20/0 rewards.
 - Counting request is disabled while the board has no stones.
 - Main-time timer digits use a gray display color, while byo-yomi states keep their warning colors.
 - Board grid strokes use continuous SVG row/column runs with square line caps and geometric precision rendering so internal lines do not appear as uneven stitched segments, and first-line corners stay visually connected. The fixed contrast rule remains shared across themes: all ordinary grid runs share one stroke width, and first-line grid runs render at exactly 2.5x that width. Skill targeting highlights use a gradient glow instead of a solid outline. Stones affected by skill states use darker, higher-opacity green/purple halo rings so the effect reads clearly against the wooden board.
@@ -1429,6 +1429,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
   - The home player plaque rank/rating chip uses a light background with dark text again, while the admin-only management button remains a green circular icon-plus-title control aligned with the home user plaque.
   - The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle `连罗伊人的都爱玩的智力游戏`, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip shows the site title, `Copyright ©KURO GAMES. ALL RIGHTS RESERVED.`, and `浙ICP备2026035038号` as evenly spaced items. The middle stage is an unframed fixed-ratio coordinate surface (`1480 / 620`) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a `1200px` minimum, `503px` minimum height, and `1920px` maximum width; phone landscape uses a smaller `960px` by `402px` minimum stage. The home app shell uses `/assets/home/multipurpose-classroom-bg.webp` as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, `部员手册`, `星炬对弈`, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, `部员手册` is offset slightly right/down from the dock edge, and `星炬对弈` is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry's hover/focus popup in the top-right carries both the current matchmaking count and one rule item per line: `路数：13路`, `用时：5分钟30秒3次`, and `规则：黑贴2又3/4子，中国数子规则`, so new users can understand the match format without a persistent lower-left label or another modal. Phone portrait shows a dedicated `请横屏使用` guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values, while a masked `::before` layer uses the same PNG alpha channel to show a solid aqua shadow translated down and right; this avoids large transparent-PNG filter/drop-shadow repaint costs while keeping the requested shadow look. The match-entry PNG has transparent borders after low-alpha background cleanup, avoiding faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow, and when the home stage compresses below the utility-label comfort threshold, utility buttons hide their visible text and keep only the icon inside the circular target.
   - Desktop Bright School home polish removes the former `LOBBY_ROOM` debug/status pill from the top strip, keeps the current-user plaque on an explicit avatar/name/stats grid so the username cannot run into the portrait at wide sizes, and overrides the `部员手册` sticker label back to the rounded UI font stack with nowrap text for consistency with the rest of the interface.
+  - The home current-user plaque now opens the cross-device `履历` modal. `履历` owns personal record, rank, coins, character-record access, and replay access, while `部员手册` is reduced to character deployment/details plus stone decoration selection on both desktop and mobile.
   - Incoming direct duel requests play a short synthesized doorbell SFX on the effects channel before showing the request banner.
 - The house/player manual record stat is clickable and opens a per-character record list for owned characters. Personal manual stats use the full current-user replay summary set, including black/white user ids, while leaderboard stats also use all `GameRecord` rows, so win/loss totals stay aligned even after a player has more than 30 records or changes username. On mobile, the per-character record list is a viewport-contained nested dialog with a scrollable list; each record row keeps the total/win/loss/draw text on one line.
   - The house/player manual decoration picker renders owned decorations as icon-plus-status buttons with accessible labels and hover titles: decoration names stay out of the visible chip, while `应用` / `应用中` / `使用中` remains visible.

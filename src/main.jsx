@@ -35,6 +35,7 @@ function App() {
   const [showShop, setShowShop] = useState(false);
   const [showHouse, setShowHouse] = useState(false);
   const [showWarehouse, setShowWarehouse] = useState(false);
+  const [showResume, setShowResume] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
   const [showWatch, setShowWatch] = useState(false);
@@ -152,6 +153,7 @@ function App() {
     setShowHouse,
     setShowLeaderboard,
     setShowMessageBoard,
+    setShowResume,
     setShowSettings,
     setShowShop,
     setShowWarehouse,
@@ -186,7 +188,7 @@ function App() {
     userId: user?.id
   });
 
-  useReplayRecords({ showHouse, showToast, token, setReplayRecords });
+  useReplayRecords({ enabled: showHouse || showResume, showToast, token, setReplayRecords });
 
   useAudioSettingsPersistence(audioSettings);
   useRoomMemory(room);
@@ -226,6 +228,7 @@ function App() {
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
+        setShowResume={setShowResume}
         setShowSettings={setShowSettings}
         setShowShop={setShowShop}
         setShowWarehouse={setShowWarehouse}
@@ -265,6 +268,7 @@ function App() {
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
+        setShowResume={setShowResume}
         setShowSettings={setShowSettings}
         setShowShop={setShowShop}
         setShowWarehouse={setShowWarehouse}
@@ -274,6 +278,7 @@ function App() {
         showHouse={showHouse}
         showLeaderboard={showLeaderboard}
         showMessageBoard={showMessageBoard}
+        showResume={showResume}
         showSettings={showSettings}
         showShop={showShop}
         showToast={showToast}

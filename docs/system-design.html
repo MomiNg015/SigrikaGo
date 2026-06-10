@@ -189,7 +189,7 @@
 <li>Bright School portrait mobile fit is handled by <code>bright-school/mobile.css</code>. This layer turns the home lobby into a single-column scroll page, removes the hanging-ID absolute positioning on phones, keeps the match and house-manual image entries inside fixed mobile-height cards, keeps all player-facing modal windows within <code>100dvh</code>, assigns internal scroll regions to shop/warehouse/house/leaderboard/friends/settings/message/watch/profile content, and preserves 44px touch targets without changing modal JSX. The house manual uses a fixed mobile grid shell (<code>header</code>, stats, internally scrolling character roster, bounded decoration picker) so roster cards and decoration chips cannot grow beneath the modal frame; stat help tooltips wrap inside the viewport instead of increasing horizontal scroll width. The same layer also owns Bright School mobile room layout: the room shell is fixed to <code>100dvh</code>, the header and player strips are compressed, the board size is calculated from remaining viewport space, and the tab dock reserves enough height for both operation hints and labeled game-action buttons instead of clipping the bottom row.</li>
 </ul>
 <ul>
-<li>Bright School mobile lobby and utility windows have an additional compact pass for 393px-wide phones: the home header collapses message/settings/admin/logout actions behind a single options menu, hides the lobby debug status, and keeps the brand/online tag in a stable grid. The opened home options menu uses a fixed icon column plus <code>max-content</code> text column, with <code>white-space: nowrap</code> and <code>word-break: keep-all</code>, so the 留言/设置/退出 labels never split across lines. House stats stay on one line, small character cards may hide names to preserve avatar and sortie controls, decoration selection uses icon-sized chips, and character detail art removes mobile drop shadows. The nested character-record dialog is clamped to <code>min(420px, calc(100vw - 20px))</code>, uses an internally scrolling record list, and renders each row as compact avatar/name/record/rate columns; the record text keeps <code>white-space: nowrap</code> and <code>word-break: keep-all</code> so strings like <code>29胜25负4和</code> do not split. Leaderboard, replay, friends, and watch lists switch from wide horizontal tables to mobile cards; leaderboard cards use tighter rank/avatar/identity/score lanes, keep rating as the main right-side number, and stack a compact win-rate pill with explicit win/loss/draw chips (<code>胜/负/和</code>) in the same metrics lane, while &quot;我的排名&quot; mirrors the same compact row rhythm instead of becoming a sparse panel. The mobile leaderboard grid uses <code>minmax(0, 1fr) auto</code> rows so the scrollable list takes remaining space and the pinned current-user block shrinks to its label plus card instead of inheriting the old 220px desktop table row. The friends sheet has its own visible close button, and watch-list inline close buttons opt out of the global absolute close positioning. The Bright School phone layer now keeps friend and watch lists outside the old wide-table overflow group, while a final Bright School mobile guard in <code>mobile-adaptive.css</code> sits after the theme imports to protect the single-line stats rule, character/decoration shop cards, mobile title text, circular top-three leaderboard badges, compact pinned ranking cards, and small decoration picker chips from older desktop theme repairs. The same guard lowers the home options menu behind active modal backdrops so it cannot cover modal close buttons.</li>
+<li>Bright School mobile lobby and utility windows have an additional compact pass for 393px-wide phones: the home header collapses message/settings/admin/logout actions behind a single options menu, hides the lobby debug status, and keeps the brand/online tag in a stable grid. The opened home options menu uses a fixed icon column plus <code>max-content</code> text column, with <code>white-space: nowrap</code> and <code>word-break: keep-all</code>, so the 留言/设置/退出 labels never split across lines. Resume stats stay on one line, small character cards in the manual may hide names to preserve avatar and sortie controls, decoration selection uses icon-sized chips, and character detail art removes mobile drop shadows. The nested character-record dialog is clamped to <code>min(420px, calc(100vw - 20px))</code>, uses an internally scrolling record list, and renders each row as compact avatar/name/record/rate columns; the record text keeps <code>white-space: nowrap</code> and <code>word-break: keep-all</code> so strings like <code>29胜25负4和</code> do not split. Leaderboard, replay, friends, and watch lists switch from wide horizontal tables to mobile cards; leaderboard cards use tighter rank/avatar/identity/score lanes, keep rating as the main right-side number, and stack a compact win-rate pill with explicit win/loss/draw chips (<code>胜/负/和</code>) in the same metrics lane, while &quot;我的排名&quot; mirrors the same compact row rhythm instead of becoming a sparse panel. The mobile leaderboard grid uses <code>minmax(0, 1fr) auto</code> rows so the scrollable list takes remaining space and the pinned current-user block shrinks to its label plus card instead of inheriting the old 220px desktop table row. The friends sheet has its own visible close button, and watch-list inline close buttons opt out of the global absolute close positioning. The Bright School phone layer now keeps friend and watch lists outside the old wide-table overflow group, while a final Bright School mobile guard in <code>mobile-adaptive.css</code> sits after the theme imports to protect the single-line stats rule, character/decoration shop cards, mobile title text, circular top-three leaderboard badges, compact pinned ranking cards, and small decoration picker chips from older desktop theme repairs. The same guard lowers the home options menu behind active modal backdrops so it cannot cover modal close buttons.</li>
 </ul>
 <ul>
 <li>Mobile friend rows show status, portrait, a centered username/stat text group, and the gear action in one compact row; rank and rating sit directly below the username inside that centered group. Desktop social rows keep the table-like column layout through <code>display: contents</code> on the mobile grouping wrappers.</li>
@@ -237,7 +237,7 @@
     admin/
       AdminConsole.jsx         # 后台管理界面与后台 CRUD 组件
     home/
-      HomeScreen.jsx           # 大厅首页布局、匹配入口、棋舍入口和工具入口
+      HomeScreen.jsx           # 大厅首页布局、匹配入口、履历/部员手册入口和工具入口
     room/
       RoomScreen.jsx           # 对局页容器，编排棋盘、玩家信息、聊天、房间成员、行动区和房间级音效
     styles.css                 # CSS 入口文件，按域导入 styles/*.css
@@ -298,7 +298,7 @@
 <li>大厅首页展示组件。</li>
 </ul>
 <ul>
-<li>负责大厅标题/副标题、匹配主入口、棋舍入口、观战/排行榜/商城/后台管理工具入口。</li>
+<li>负责大厅标题/副标题、匹配主入口、履历/部员手册入口、观战/排行榜/商城/后台管理工具入口。</li>
 </ul>
 </ul>
 <ul>
@@ -846,13 +846,13 @@
 <li>登录页品牌标题显示为 <code>星炬学院围棋部</code>。</li>
 </ul>
 <ul>
-<li>大厅入口：棋舍、星炬对弈、观战、排行榜、商城、后台管理（管理员可见）。</li>
+<li>大厅入口：履历、部员手册、星炬对弈、观战、排行榜、商城、后台管理（管理员可见）。</li>
 </ul>
 <ul>
-<li>大厅首页布局 A：星炬对弈作为最大主行动面板；该区域使用 <code>/assets/home/fantasy-match-illustration.webp</code> 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。棋舍作为带出战角色与用户段位/积分的次级入口；商店、排行榜、观战、好友以中等图标按钮呈现。顶部条显示站点标题、副标题“连罗伊人的都爱玩的智力游戏”、在线人数和右侧操作按钮；后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
+<li>大厅首页布局 A：星炬对弈作为最大主行动面板；该区域使用 <code>/assets/home/fantasy-match-illustration.webp</code> 透明 PNG 插图作为主体，插图顶部与左侧部员手册区域顶部对齐，不显示原先标题、说明文字、边框或卡片背景，只在插图下方保留较小的“开始匹配”按钮。当前用户铭牌作为履历入口展示出战角色、用户名、段位和积分；部员手册作为角色/装饰入口；商店、排行榜、观战、好友以中等图标按钮呈现。顶部条显示站点标题、副标题“连罗伊人的都爱玩的智力游戏”、在线人数和右侧操作按钮；后台管理仅管理员可见，放在右上设置按钮下方，使用与大厅工具按钮一致的圆形尺寸并显示“后台管理”文字。</li>
 </ul>
 <ul>
-<li>大厅主内容区尽量靠近窗口垂直中部；棋舍和工具按钮位于左侧，星炬对弈主面板位于右侧。星炬对弈上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。</li>
+<li>大厅主内容区尽量靠近窗口垂直中部；履历铭牌、部员手册和工具按钮位于左侧，星炬对弈主面板位于右侧。星炬对弈上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。</li>
 </ul>
 <ul>
 <li><code>public/hotspot-prototype.html</code> 是单页热点原型，用用户提供的 <code>/assets/prototypes/classroom-bg1.webp</code> 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。</li>
@@ -864,10 +864,10 @@
 <li>大厅与对局页右上操作区共用同一个留言板入口。留言板当前为前端占位弹窗，输入框默认提示“Bug、问题反馈和意见都可以在这里提交哦”，包含提交按钮，提交暂不落库。</li>
 </ul>
 <ul>
-<li>棋舍展示用户战绩、积分、拥有角色、出战角色。</li>
+<li>首页当前用户铭牌是可点击入口，打开名为“履历”的窗口；履历集中展示用户战绩、积分、段位、金币，并提供角色战绩与个人对局回放入口。回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。回放列表会按当前查看用户在该局的结果给整行着色：胜利为浅绿色，失败为灰色，和棋为浅黄色；公共用户资料里的回放列表按被查看用户计算，个人履历按当前用户计算。</li>
 </ul>
 <ul>
-<li>棋舍标题右侧可查看个人对局回放；回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。回放列表会按当前查看用户在该局的结果给整行着色：胜利为浅绿色，失败为灰色，和棋为浅黄色；公共用户资料里的回放列表按被查看用户计算，个人棋舍按当前用户计算。装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。战绩、积分、段位、金币统计项带对应小图标。</li>
+<li>部员手册只保留角色选择、角色详情和装饰选择，不再承载战绩、段位、金币或对局回放。装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。</li>
 </ul>
 <ul>
 <li>设置弹窗支持音量配置，并保存在 <code>localStorage</code>；关于页展示后台可编辑的站点长文本。</li>
@@ -898,7 +898,7 @@
 <li>匹配成功弹窗倒计时期间仍会接收服务端 <code>room:update</code>。前端会同步刷新匹配过渡状态和一个最新房间 ref，倒计时完成时优先使用该 ref 进入房间，避免服务端已推进到 <code>playing</code> 但客户端仍拿旧 <code>opening</code> 快照，导致棋钟不动、不能落子或开局语音不触发。</li>
 </ul>
 <ul>
-<li>收到匹配成功事件时，前端会自动关闭大厅上已打开的商店、棋舍、排行榜、观战、好友、设置和留言板弹窗，避免弹窗盖住后续对局切换。</li>
+<li>收到匹配成功事件时，前端会自动关闭大厅上已打开的商店、部员手册、履历、排行榜、观战、好友、设置和留言板弹窗，避免弹窗盖住后续对局切换。</li>
 </ul>
 <ul>
 <li>开局展示结束后服务端切换到 <code>playing</code>，写入 <code>game-start</code> 系统消息，前端播放“对局开始”系统语音，并从该时刻开始推进棋钟。</li>
@@ -1062,7 +1062,7 @@
 <li>棋谱保存房间快照 <code>snapshot</code>；胜负局会先把积分、金币和战绩奖励应用到房间内存玩家，再生成 <code>GameRecord.snapshot</code>，避免断线后恢复结果时展示结算前的旧用户状态。</li>
 </ul>
 <ul>
-<li>用户可看自己的全部棋谱摘要；部员手册会用这批完整记录派生总局、胜局、负局和和棋，保证与排行榜同源统计一致。</li>
+<li>用户可看自己的全部棋谱摘要；履历会用这批完整记录派生总局、胜局、负局和和棋，保证与排行榜同源统计一致。</li>
 </ul>
 <ul>
 <li>管理员可查看任意用户棋谱与任意棋谱详情。</li>
@@ -1184,7 +1184,7 @@
 <li>“常用角色”按棋谱中该用户使用次数最多的角色计算。</li>
 </ul>
 <ul>
-<li>棋舍中的积分显示使用 <code>User.rating</code> 持久化值；总局、胜负、和棋仍由棋谱统计，避免后台积分编辑或对局结算后与棋舍显示不同步。</li>
+<li>履历中的积分显示使用 <code>User.rating</code> 持久化值；总局、胜负、和棋仍由棋谱统计，避免后台积分编辑或对局结算后与履历显示不同步。</li>
 </ul>
 <h3>后台管理</h3>
 <ul>
@@ -1791,13 +1791,13 @@
 <ul>
 <li><code>GET /api/replays</code></li>
 <ul>
-<li>获取当前用户全部棋谱摘要；摘要包含黑白双方 user id、用户名、使用角色、胜负结果和手数，供部员手册统计和回放列表显示角色立绘。</li>
+<li>获取当前用户全部棋谱摘要；摘要包含黑白双方 user id、用户名、使用角色、胜负结果和手数，供履历统计和回放列表显示角色立绘。</li>
 </ul>
 </ul>
 <ul>
 <li><code>GET /api/replays/:id</code></li>
 <ul>
-<li>获取指定棋谱详情与快照；用于个人棋舍回放，也用于他人资料卡中的公开回放入口。</li>
+<li>获取指定棋谱详情与快照；用于个人履历回放，也用于他人资料卡中的公开回放入口。</li>
 </ul>
 </ul>
 <h3>后台 HTTP API</h3>
@@ -3230,7 +3230,7 @@
 </ul>
 <h2>Recent Home, Shop, And Board UI Adjustments</h2>
 <ul>
-<li>The former home/house entry is now presented to players as “部员手册”; the underlying profile, character, decoration, and personal replay functions are unchanged.</li>
+<li>The former home/house entry is now split into a clickable player plaque that opens “履历” for profile stats/replays and a “部员手册” entry for character and decoration management.</li>
 </ul>
 <ul>
 <li>The home match description is “13路，数子规则，黑贴2又3/4子，用时5分钟30秒3次”.</li>
@@ -3245,7 +3245,7 @@
 <li>Friend list action buttons expand as a full-width horizontal action row with evenly aligned button columns.</li>
 </ul>
 <ul>
-<li>The house stats for rating and coins use the same help-tip pattern as rank: rating explains +20/-20/0 changes; coins explain +50/+20/0 rewards.</li>
+<li>The resume stats for rating and coins use the same help-tip pattern as rank: rating explains +20/-20/0 changes; coins explain +50/+20/0 rewards.</li>
 </ul>
 <ul>
 <li>Counting request is disabled while the board has no stones.</li>
@@ -3266,6 +3266,9 @@
 </ul>
 <ul>
 <li>Desktop Bright School home polish removes the former <code>LOBBY_ROOM</code> debug/status pill from the top strip, keeps the current-user plaque on an explicit avatar/name/stats grid so the username cannot run into the portrait at wide sizes, and overrides the <code>部员手册</code> sticker label back to the rounded UI font stack with nowrap text for consistency with the rest of the interface.</li>
+</ul>
+<ul>
+<li>The home current-user plaque now opens the cross-device <code>履历</code> modal. <code>履历</code> owns personal record, rank, coins, character-record access, and replay access, while <code>部员手册</code> is reduced to character deployment/details plus stone decoration selection on both desktop and mobile.</li>
 </ul>
 <ul>
 <li>Incoming direct duel requests play a short synthesized doorbell SFX on the effects channel before showing the request banner.</li>

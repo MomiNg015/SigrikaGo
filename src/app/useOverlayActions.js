@@ -10,6 +10,7 @@ export function useOverlayActions({
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
+  setShowResume,
   setShowSettings,
   setShowShop,
   setShowWarehouse,
@@ -18,6 +19,7 @@ export function useOverlayActions({
   const closeAllOverlays = useCallback(() => {
     setShowShop(false);
     setShowHouse(false);
+    setShowResume(false);
     setShowWarehouse(false);
     setShowLeaderboard(false);
     setShowWatch(false);
@@ -29,6 +31,7 @@ export function useOverlayActions({
     setShowHouse,
     setShowLeaderboard,
     setShowMessageBoard,
+    setShowResume,
     setShowSettings,
     setShowShop,
     setShowWarehouse,

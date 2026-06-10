@@ -128,6 +128,7 @@ describe("HomeScreen", () => {
 
     expect(html).toContain("home-player-row tactical-id-row");
     expect(html).toContain("home-player-plaque tactical-id-card");
+    expect(html).toContain('aria-label="打开履历"');
     expect(html).toContain("home-utility-grid tactical-nav-grid");
     expect(html).not.toContain("角色、物品、装饰即将开放");
     expect(html).not.toContain("查看并使用已经获得的道具");

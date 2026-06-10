@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { api } from "../api/client.js";
 
-export function useReplayRecords({ showHouse, showToast, token, setReplayRecords }) {
+export function useReplayRecords({ enabled, showHouse, showToast, token, setReplayRecords }) {
   useEffect(() => {
-    if (!showHouse || !token) return;
+    const shouldLoad = enabled ?? showHouse;
+    if (!shouldLoad || !token) return;
     api("/api/replays", { token })
       .then((data) => setReplayRecords(data.records))
       .catch((error) => showToast(error.message));
-  }, [showHouse, showToast, token, setReplayRecords]);
+  }, [enabled, showHouse, showToast, token, setReplayRecords]);
 }

@@ -4,6 +4,7 @@ import { MatchModal, MatchSuccessModal, ResultModal } from "../modals/GameLifecy
 import HouseModal from "../modals/HouseModal.jsx";
 import LeaderboardModal from "../modals/LeaderboardModal.jsx";
 import MessageBoardModal from "../modals/MessageBoardModal.jsx";
+import ResumeModal from "../modals/ResumeModal.jsx";
 import SettingsModal from "../modals/SettingsModal.jsx";
 import ShopModal from "../modals/ShopModal.jsx";
 import WarehouseModal from "../modals/WarehouseModal.jsx";
@@ -35,6 +36,7 @@ export default function AppOverlays({
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
+  setShowResume,
   setShowSettings,
   setShowShop,
   setShowWarehouse,
@@ -44,6 +46,7 @@ export default function AppOverlays({
   showHouse,
   showLeaderboard,
   showMessageBoard,
+  showResume,
   showSettings,
   showShop,
   showToast,
@@ -111,6 +114,14 @@ export default function AppOverlays({
           onSelectCharacter={selectCharacter}
           onSelectCharacterMusic={selectCharacterMusic}
           onApplyDecoration={applyStoneDecoration}
+        />
+      )}
+      {showResume && user && (
+        <ResumeModal
+          user={user}
+          records={replayRecords}
+          characterListView={characterListView}
+          onClose={() => setShowResume(false)}
           onOpenReplay={openReplay}
         />
       )}

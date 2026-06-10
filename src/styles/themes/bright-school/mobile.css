@@ -966,6 +966,10 @@
     overflow: hidden !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {
+    grid-template-rows: auto minmax(0, auto) !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .profile-grid.top-stats-bar {
     flex: 0 0 auto !important;
     min-width: 0 !important;

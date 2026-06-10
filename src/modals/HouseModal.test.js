@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats, selectSortieCharacter } from "./HouseModal.jsx";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import HouseModal from "./HouseModal.jsx";
+import ResumeModal from "./ResumeModal.jsx";
 import { CharacterDetailDialog } from "./house/HouseNestedDialogs.jsx";
 
 describe("deriveCharacterRecordStats", () => {
@@ -111,7 +112,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain(">使用中</strong>");
   });
 
-  it("marks the selected sortie character and locked slots for tactical terminal styling", () => {
+  it("keeps the house manual focused on character and decoration management", () => {
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
         id: 1,
@@ -142,9 +143,40 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("lock-character-card");
     expect(html).toContain("lock-text-title");
     expect(html).toContain("character-grid-container");
-    expect(html).toContain("top-stats-bar");
+    expect(html).not.toContain("top-stats-bar");
+    expect(html).not.toContain("对局回放");
+    expect(html).not.toContain("战绩");
+    expect(html).not.toContain("金币");
     expect(html).toContain("LOADING... (x_x)");
     expect(html).toContain("LOCK / LOADING... (x_x)");
+  });
+
+  it("renders replay access and profile stats in the resume modal", () => {
+    const html = renderToStaticMarkup(createElement(ResumeModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "3段",
+        rating: 1160,
+        coins: 1070,
+        ownedCharacters: ["sigrika"],
+        itemEffects: {}
+      },
+      records: [
+        { blackUserId: 1, blackCharacter: "sigrika", winnerColor: "black" },
+        { whiteUserId: 1, whiteCharacter: "sigrika", winnerColor: "black" }
+      ],
+      characterListView: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } }],
+      onClose: () => {},
+      onOpenReplay: () => {}
+    }));
+
+    expect(html).toContain("<h2>履历</h2>");
+    expect(html).toContain("top-stats-bar");
+    expect(html).toContain("对局回放");
+    expect(html).toContain("战绩");
+    expect(html).toContain("段位");
+    expect(html).toContain("金币");
   });
 
   it("renders Baconbits as owned and sortie-capable when public user owns it", () => {
@@ -246,6 +278,7 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(css).toContain(".house-modal");
     expect(css).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto !important");
+    expect(css).toContain(".resume-modal");
     expect(css).toContain(".house-modal .profile-grid.top-stats-bar");
     expect(css).toContain(".house-modal .stat strong");
     expect(css).toContain("white-space: nowrap !important");
