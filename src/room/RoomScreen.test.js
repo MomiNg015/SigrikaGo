@@ -248,6 +248,7 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain("min-height: 58px");
     expect(portraitMedia).toContain("overflow: hidden");
     expect(portraitMedia).toContain("grid-template-areas:");
+    expect(portraitMedia).toContain("grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr)");
     expect(portraitMedia).toContain("\"portrait meta time\"");
     expect(portraitMedia).toContain("\"portrait captures skill\"");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-player-slot");
@@ -491,6 +492,20 @@ describe("RoomScreen helpers", () => {
     expect(landscapeMedia).toContain("display: none");
     expect(landscapeMedia).toContain("grid-template-columns: repeat(5, minmax(0, 1fr))");
     expect(landscapeMedia).toContain("grid-auto-rows: 44px");
+  });
+
+  it("keeps mobile player info strips balanced and flat in Bright School", () => {
+    const mobileRoomCss = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const mobileAdaptiveCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const brightMobileCss = readFileSync(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
+    const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
+    const brightPortraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
+
+    expect(portraitMedia).toContain("grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr)");
+    expect(mobileAdaptiveCss).toContain("grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr)");
+    expect(brightPortraitMedia).toContain("grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr) !important");
+    expect(brightPortraitMedia).toContain("box-shadow: none !important");
+    expect(brightPortraitMedia).not.toContain("box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.48) !important");
   });
 
   it("turns room chat into an anchored popover button", () => {

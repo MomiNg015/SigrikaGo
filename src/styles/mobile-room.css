@@ -518,7 +518,7 @@
     height: 100%;
     max-height: var(--mobile-room-player-strip-height);
     overflow: hidden;
-    grid-template-columns: 38px minmax(0, 0.9fr) minmax(102px, 1fr);
+    grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr);
     grid-template-rows: minmax(0, 32px) minmax(0, 26px);
     grid-template-areas:
       "portrait meta time"

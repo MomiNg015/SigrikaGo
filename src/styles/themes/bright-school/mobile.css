@@ -1341,7 +1341,7 @@
     max-height: var(--mobile-room-player-strip-height) !important;
     padding: 4px 7px !important;
     display: grid !important;
-    grid-template-columns: 38px minmax(0, 0.95fr) minmax(104px, 1fr) !important;
+    grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr) !important;
     grid-template-rows: minmax(0, 31px) minmax(0, 25px) !important;
     grid-template-areas:
       "portrait meta time"
@@ -1351,7 +1351,7 @@
     overflow: hidden !important;
     border-width: 2px !important;
     border-radius: 16px !important;
-    box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.48) !important;
+    box-shadow: none !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .portrait-wrap {
