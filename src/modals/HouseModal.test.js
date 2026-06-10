@@ -264,6 +264,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain(".house-modal .owned-decoration-section");
     expect(css).toContain("grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important");
     expect(css).toContain(".house-modal .owned-decoration-chip strong");
+    expect(css).toContain(".character-record-dialog");
+    expect(css).toContain("width: min(420px, calc(100vw - 20px)) !important");
+    expect(css).toContain(".character-record-row span");
+    expect(css).toContain("word-break: keep-all !important");
     expect(css).toContain(".character-detail-art img");
     expect(css).toContain("filter: none !important");
     expect(css).toContain("max-height: min(128px, 20dvh) !important");
@@ -275,6 +279,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("repeat(auto-fill, minmax(58px, 70px)) !important");
     expect(finalMobileCss).toContain(".house-modal .deploy-tag");
     expect(finalMobileCss).toContain("display: none !important");
+    expect(finalMobileCss).toContain(".character-record-row");
+    expect(finalMobileCss).toContain("grid-template-columns: 46px minmax(58px, 0.82fr) max-content minmax(48px, auto) !important");
+    expect(finalMobileCss).toContain("overflow-wrap: normal !important");
   });
 
   it("shows a selector when the user owns multiple skill BGM tracks for the character", () => {

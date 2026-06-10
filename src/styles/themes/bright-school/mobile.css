@@ -460,6 +460,7 @@
     .message-list,
     .watch-room-table,
     .profile-replay-list-scroll,
+    .character-record-list,
     .character-grid-container,
     .character-detail-body,
     .about-panel
@@ -1687,6 +1688,74 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .skill-action {
     grid-column: auto !important;
     grid-row: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-dialog {
+    width: min(420px, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px) !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 10px !important;
+    padding: 14px 10px 10px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-dialog h3 {
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding-right: 52px !important;
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-list {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    display: grid !important;
+    align-content: start !important;
+    gap: 8px !important;
+    margin-top: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-right: 2px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: 46px minmax(58px, 0.82fr) max-content minmax(48px, auto) !important;
+    gap: 6px !important;
+    align-items: center !important;
+    padding: 8px !important;
+    font-size: clamp(11px, 2.9vw, 13px) !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row img {
+    width: 42px !important;
+    height: 38px !important;
+    object-fit: contain !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row strong {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row span {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row b {
+    justify-self: end !important;
+    white-space: nowrap !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
