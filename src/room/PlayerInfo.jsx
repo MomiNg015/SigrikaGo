@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
@@ -25,6 +25,17 @@ function PlayerInfo({
   isSkillTargeting = false
 }) {
   const [skillDetailOpen, setSkillDetailOpen] = useState(false);
+  const [tapTooltip, setTapTooltip] = useState(null);
+  useEffect(() => {
+    if (!tapTooltip) return undefined;
+    const closeTooltip = (event) => {
+      if (event.target?.closest?.("[data-mobile-tooltip-trigger]")) return;
+      if (event.target?.closest?.(".mobile-tap-tooltip")) return;
+      setTapTooltip(null);
+    };
+    document.addEventListener("pointerdown", closeTooltip);
+    return () => document.removeEventListener("pointerdown", closeTooltip);
+  }, [tapTooltip]);
   if (!player) return <aside className="player-info empty" />;
   const character = findCharacter(characters, player.character ?? player.characterId);
   const skillUses = game.skillUses[player.color] ?? 0;
@@ -63,16 +74,24 @@ function PlayerInfo({
         <span
           className="info-stat removal-stat"
           data-tooltip={PLAYER_INFO_TOOLTIPS.skillRemovals}
+          data-mobile-tooltip-trigger
           tabIndex={0}
           title={PLAYER_INFO_TOOLTIPS.skillRemovals}
+          role="button"
+          onClick={(event) => openTapTooltip(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip)}
+          onKeyDown={(event) => openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip)}
         >
           <strong>除子</strong>{skillRemovals}
         </span>
         <span
           className="info-stat cost-stat"
           data-tooltip={PLAYER_INFO_TOOLTIPS.overclock}
+          data-mobile-tooltip-trigger
           tabIndex={0}
           title={PLAYER_INFO_TOOLTIPS.overclock}
+          role="button"
+          onClick={(event) => openTapTooltip(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip)}
+          onKeyDown={(event) => openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip)}
         >
           <strong>超频</strong>{skillCost}
         </span>
@@ -85,7 +104,19 @@ function PlayerInfo({
           className={`skill-chip ${skillUses <= 0 ? "spent" : ""} ${isSkillTargeting ? "targeting" : ""}`}
           style={skillChipStyle(character)}
           type="button"
-          onClick={() => setSkillDetailOpen((open) => !open)}
+          data-mobile-tooltip-trigger
+          onClick={(event) => {
+            if (openTapTooltip(event, skillTooltipText(character), setTapTooltip)) {
+              setSkillDetailOpen(false);
+              return;
+            }
+            setSkillDetailOpen((open) => !open);
+          }}
+          onKeyDown={(event) => {
+            if (openTapTooltipFromKeyboard(event, skillTooltipText(character), setTapTooltip)) {
+              setSkillDetailOpen(false);
+            }
+          }}
           onFocus={() => setSkillDetailOpen(true)}
           onMouseEnter={() => setSkillDetailOpen(true)}
         >
@@ -96,6 +127,16 @@ function PlayerInfo({
           {character.skill.description || "暂无技能说明。"}
         </div>
       </div>
+      {tapTooltip && (
+        <div
+          className="mobile-tap-tooltip"
+          style={{ "--tooltip-x": `${tapTooltip.x}px`, "--tooltip-y": `${tapTooltip.y}px` }}
+          data-placement={tapTooltip.placement}
+          role="tooltip"
+        >
+          {tapTooltip.text}
+        </div>
+      )}
     </aside>
   );
 }
@@ -167,3 +208,58 @@ function skillChipStyle(character = {}) {
     "--skill-chip-accent": character.palette || "#ff9b4d"
   };
 }
+
+function skillTooltipText(character = {}) {
+  return character.skill?.description || "暂无技能说明。";
+}
+
+export function isMobileTooltipInput() {
+  return globalThis.matchMedia?.("(pointer: coarse), (max-width: 900px)")?.matches ?? false;
+}
+
+export function tooltipPointFromEvent(event, viewport = globalThis) {
+  const width = viewport.innerWidth ?? 0;
+  const height = viewport.innerHeight ?? 0;
+  const horizontalInset = Math.min(TOOLTIP_HALF_WIDTH + TOOLTIP_VIEWPORT_MARGIN, Math.max(TOOLTIP_VIEWPORT_MARGIN, width / 2));
+  const verticalInset = TOOLTIP_VIEWPORT_MARGIN;
+  const rawY = event.clientY ?? 0;
+  const placement = rawY < TOOLTIP_TOP_FLIP_THRESHOLD ? "below" : "above";
+  return {
+    x: clamp(event.clientX ?? 0, horizontalInset, Math.max(horizontalInset, width - horizontalInset)),
+    y: clamp(rawY, verticalInset, Math.max(verticalInset, height - verticalInset)),
+    placement
+  };
+}
+
+function openTapTooltip(event, text, setTapTooltip) {
+  if (!isMobileTooltipInput()) return false;
+  event.preventDefault();
+  event.stopPropagation();
+  setTapTooltip({ ...tooltipPointFromEvent(event), text });
+  return true;
+}
+
+function openTapTooltipFromKeyboard(event, text, setTapTooltip) {
+  if (event.key !== "Enter" && event.key !== " ") return false;
+  if (!isMobileTooltipInput()) return false;
+  event.preventDefault();
+  event.stopPropagation();
+  const rect = event.currentTarget.getBoundingClientRect();
+  setTapTooltip({
+    ...tooltipPointFromEvent({
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2
+    }),
+    text
+  });
+  return true;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+const TOOLTIP_MAX_WIDTH = 232;
+const TOOLTIP_HALF_WIDTH = TOOLTIP_MAX_WIDTH / 2;
+const TOOLTIP_VIEWPORT_MARGIN = 16;
+const TOOLTIP_TOP_FLIP_THRESHOLD = 120;

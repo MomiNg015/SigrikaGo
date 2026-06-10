@@ -577,6 +577,70 @@
   opacity: 1;
 }
 
+.mobile-tap-tooltip {
+  display: none;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  .mobile-room-screen .captures .info-stat::after {
+    content: none;
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-tap-tooltip {
+    position: fixed;
+    left: var(--tooltip-x);
+    top: var(--tooltip-y);
+    z-index: 90;
+    display: block;
+    width: max-content;
+    max-width: min(232px, calc(100vw - 32px));
+    max-height: min(38dvh, calc(100dvh - 32px));
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 8px 10px;
+    border: 1px solid rgba(130, 105, 149, 0.24);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.97);
+    color: #3d3244;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.42;
+    text-align: left;
+    box-shadow: 0 12px 26px rgba(39, 30, 45, 0.18);
+    pointer-events: auto;
+    transform: translate(-50%, calc(-100% - 10px));
+    animation: mobile-tap-tooltip-in 140ms ease-out;
+  }
+
+  .mobile-room-screen .mobile-tap-tooltip[data-placement="below"] {
+    transform: translate(-50%, 10px);
+    animation-name: mobile-tap-tooltip-in-below;
+  }
+}
+
+@keyframes mobile-tap-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 4px)) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 10px)) scale(1);
+  }
+}
+
+@keyframes mobile-tap-tooltip-in-below {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 10px) scale(1);
+  }
+}
+
 .color-badge {
   width: clamp(22px, 2.2vw, 26px);
   height: clamp(22px, 2.2vw, 26px);

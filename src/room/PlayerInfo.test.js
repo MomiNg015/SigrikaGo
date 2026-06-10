@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { arePlayerInfoPropsEqual, disconnectBadgeForPlayer, playerCandyPortrait, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer } from "./PlayerInfo.jsx";
+import { arePlayerInfoPropsEqual, disconnectBadgeForPlayer, playerCandyPortrait, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer, tooltipPointFromEvent } from "./PlayerInfo.jsx";
 import { COLORS } from "../shared/game.js";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 
@@ -15,6 +15,24 @@ describe("PlayerInfo labels", () => {
     expect(PLAYER_INFO_TOOLTIPS.overclock).toBe(
       "超频：角色发动技能所造成的代价。数目时-超频*2的数值。"
     );
+  });
+
+  it("anchors mobile tap explanations to the tapped point within the viewport", () => {
+    expect(tooltipPointFromEvent({ clientX: 188, clientY: 126 }, { innerWidth: 375, innerHeight: 667 })).toEqual({
+      x: 188,
+      y: 126,
+      placement: "above"
+    });
+    expect(tooltipPointFromEvent({ clientX: 2, clientY: 800 }, { innerWidth: 375, innerHeight: 667 })).toEqual({
+      x: 132,
+      y: 651,
+      placement: "above"
+    });
+    expect(tooltipPointFromEvent({ clientX: 370, clientY: 20 }, { innerWidth: 375, innerHeight: 667 })).toEqual({
+      x: 243,
+      y: 20,
+      placement: "below"
+    });
   });
 
   it("does not show win/loss portrait badges for invalid finished games", () => {
@@ -81,6 +99,14 @@ describe("PlayerInfo labels", () => {
     expect(roomCss).toContain(".timer.final-byo-yomi");
     expect(roomCss).toContain("--timer-track-fill: linear-gradient(90deg, #ff3434, #ffbd2e, #42d66b, #3a8cff, #b44dff)");
     expect(roomCss).toContain(".captures .cost-stat strong");
+    expect(roomCss).toContain(".mobile-tap-tooltip");
+    expect(roomCss).toContain("left: var(--tooltip-x)");
+    expect(roomCss).toContain("top: var(--tooltip-y)");
+    expect(roomCss).toContain("max-height: min(38dvh, calc(100dvh - 32px))");
+    expect(roomCss).toContain("overflow: auto");
+    expect(roomCss).toContain('[data-placement="below"]');
+    expect(roomCss).toContain(".mobile-room-screen .captures .info-stat::after");
+    expect(roomCss).toContain("content: none");
     const metaTagBlock = cssBlock(roomCss, ".meta-tag");
     expect(metaTagBlock).toContain("display: inline-flex");
     expect(metaTagBlock).toContain("align-items: center");
@@ -116,6 +142,10 @@ describe("PlayerInfo labels", () => {
     const roomPortraitImageBlocks = brightSchoolCss.match(/\.player-info \.portrait-wrap img\s*\{[^}]+\}/g) ?? [];
     const finalRoomPortraitImageBlock = roomPortraitImageBlocks.at(-1) ?? "";
 
+    expect(playerInfoSource).toContain("data-mobile-tooltip-trigger");
+    expect(playerInfoSource).toContain("openTapTooltip(event, PLAYER_INFO_TOOLTIPS.skillRemovals");
+    expect(playerInfoSource).toContain("openTapTooltip(event, PLAYER_INFO_TOOLTIPS.overclock");
+    expect(playerInfoSource).toContain("openTapTooltip(event, skillTooltipText(character)");
     expect(playerInfoSource).toContain("black-portrait");
     expect(playerInfoSource).toContain("white-portrait");
     expect(componentRepairsCss).toContain(".player-info .portrait-wrap.black-portrait");
