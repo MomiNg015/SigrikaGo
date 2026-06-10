@@ -593,7 +593,8 @@
     top: var(--tooltip-y);
     z-index: 90;
     display: block;
-    width: max-content;
+    box-sizing: border-box;
+    width: min(232px, calc(100vw - 32px));
     max-width: min(232px, calc(100vw - 32px));
     max-height: min(38dvh, calc(100dvh - 32px));
     overflow: auto;
@@ -607,6 +608,9 @@
     font-weight: 800;
     line-height: 1.42;
     text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     box-shadow: 0 12px 26px rgba(39, 30, 45, 0.18);
     pointer-events: auto;
     transform: translate(-50%, calc(-100% - 10px));

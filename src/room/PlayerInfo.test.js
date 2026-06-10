@@ -100,10 +100,15 @@ describe("PlayerInfo labels", () => {
     expect(roomCss).toContain("--timer-track-fill: linear-gradient(90deg, #ff3434, #ffbd2e, #42d66b, #3a8cff, #b44dff)");
     expect(roomCss).toContain(".captures .cost-stat strong");
     expect(roomCss).toContain(".mobile-tap-tooltip");
+    expect(roomCss).toContain("box-sizing: border-box");
+    expect(roomCss).toContain("width: min(232px, calc(100vw - 32px))");
     expect(roomCss).toContain("left: var(--tooltip-x)");
     expect(roomCss).toContain("top: var(--tooltip-y)");
     expect(roomCss).toContain("max-height: min(38dvh, calc(100dvh - 32px))");
     expect(roomCss).toContain("overflow: auto");
+    expect(roomCss).toContain("white-space: normal");
+    expect(roomCss).toContain("overflow-wrap: anywhere");
+    expect(roomCss).toContain("word-break: break-word");
     expect(roomCss).toContain('[data-placement="below"]');
     expect(roomCss).toContain(".mobile-room-screen .captures .info-stat::after");
     expect(roomCss).toContain("content: none");
