@@ -8,9 +8,9 @@ export function HouseManualEntry({ onOpenHouse }) {
 
 export function MatchEntry({ matchmakingCount, onStartMatch }) {
   return (
-    <section className="home-match-feature" aria-label="空想对局入口">
+    <section className="home-match-feature" aria-label="星炬对弈入口">
       <button className="home-image-entry match-image-entry hologram-entry" data-hud="匹配对局" onClick={onStartMatch} aria-describedby="matchmaking-count-popup">
-        <img src="/assets/home/fantasy-match-entry.webp" alt="空想对局" decoding="async" />
+        <img src="/assets/home/fantasy-match-entry.webp" alt="星炬对弈" decoding="async" />
       </button>
       <div id="matchmaking-count-popup" className="matchmaking-popup" role="status" aria-label="匹配状态、规则与用时">
         <span>当前匹配人数：{matchmakingCount}</span>

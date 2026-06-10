@@ -148,7 +148,7 @@ export function joinMatchmaking(player, io, { canPair = () => true } = {}) {
     scheduleGameStart(room, io);
     io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
     io.to(player.socketId).emit("match:found", roomView(room, player.user.id));
-    appendSystem(room, "匹配成功，3秒后进入空想对局。");
+    appendSystem(room, "匹配成功，3秒后进入星炬对弈。");
     broadcastRoom(io, room);
     return room;
   }
@@ -247,7 +247,7 @@ export function createDirectRoom(first, second, io) {
   persistRoom(room, { force: true });
   startGameClock(room, io);
   scheduleGameStart(room, io);
-  appendSystem(room, "对局申请已同意，3秒后进入空想对局。");
+  appendSystem(room, "对局申请已同意，3秒后进入星炬对弈。");
   io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
   io.to(second.socketId).emit("match:found", roomView(room, second.user.id));
   broadcastRoom(io, room);

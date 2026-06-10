@@ -5,7 +5,7 @@
 Implement a focused UI and audio-system upgrade for the next SigrikaGo iteration:
 
 - Show rating and coin changes in the game result modal.
-- Make the home screen visually prioritize "空想对局", with "棋舍" as a secondary character/profile entry.
+- Make the home screen visually prioritize "星炬对弈", with "棋舍" as a secondary character/profile entry.
 - Clarify character voice event categories and prepare countdown voice playback for per-second files.
 - Restyle room clocks as nixie/digital displays.
 - Replace the room action bar with request/scoring decision controls when the game phase requires it.
@@ -18,7 +18,7 @@ Implement a focused UI and audio-system upgrade for the next SigrikaGo iteration
 
 Use layout option A:
 
-- "空想对局" is the largest, primary home action.
+- "星炬对弈" is the largest, primary home action.
 - "棋舍" is smaller and secondary, but still includes the selected character portrait/profile signal.
 - "商城", "观战", "排行榜", and "后台管理" are medium icon buttons.
 - Desktop and tablet keep the same layout and shrink down to a minimum viable width.
@@ -90,7 +90,7 @@ Refactor `HomeScreen` markup just enough to support the selected hierarchy:
 
 - Primary match panel:
   - large visual surface
-  - clear "空想对局" label
+  - clear "星炬对弈" label
   - prominent start-match button
   - brief rules summary
 - Secondary house panel:

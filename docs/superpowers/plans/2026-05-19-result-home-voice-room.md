@@ -581,7 +581,7 @@ In `src/main.jsx`, restructure `HomeScreen` section:
 
 ```jsx
 <section className="home-grid home-grid-featured">
-  <Panel title="空想对局" icon={<Swords />}>
+  <Panel title="星炬对弈" icon={<Swords />}>
     <div className="home-match-feature">
       <button className="match-button match-button-large" onClick={onStartMatch}>
         <Sparkles size={22} />
@@ -1017,7 +1017,7 @@ In `docs/system-design.md`, replace the "Next UI And Voice Design" future wordin
 - Finished games display current-player reward deltas in the result modal.
 - Rating deltas are win +20, loss -20, draw 0.
 - Coin deltas are win +50, loss +20, draw 0; decisive games persist those coin increments server-side.
-- Home screen prioritizes "空想对局" as the primary action and keeps "棋舍" as a secondary character/profile entry.
+- Home screen prioritizes "星炬对弈" as the primary action and keeps "棋舍" as a secondary character/profile entry.
 - Player timers use a digital display; byo-yomi periods render as smaller leading-zero counters such as 03, 02, and 01.
 - Request and scoring phases replace the board action area with the relevant decision controls.
 - Finished decisive games mark winner/loser portraits with circular 胜/负 badges.
