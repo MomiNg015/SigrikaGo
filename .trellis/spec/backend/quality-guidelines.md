@@ -32,7 +32,27 @@ Questions to answer:
 
 <!-- Patterns that must always be used -->
 
-(To be filled by the team)
+### Leaderboard API Contract
+
+`GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:
+
+- `id`, `username`, `rating`, `rank`, `itemEffects`
+- `totalGames`, `wins`, `losses`, `draws`
+- `commonCharacter`
+
+`draws` is a first-class response field, not a frontend-only derived value. `buildLeaderboard()` increments it when `recordWinnerColor(record)` returns no winner, and tests should assert draw counts alongside wins and losses.
+
+Wrong:
+
+```js
+return { totalGames: row.totalGames, wins: row.wins, losses: row.losses };
+```
+
+Correct:
+
+```js
+return { totalGames: row.totalGames, wins: row.wins, losses: row.losses, draws: row.draws };
+```
 
 ---
 
@@ -40,7 +60,7 @@ Questions to answer:
 
 <!-- What level of testing is expected -->
 
-(To be filled by the team)
+- Leaderboard changes should update `server/leaderboard.test.js` with base win/loss/draw cases, including at least one draw record.
 
 ---
 

@@ -43,6 +43,7 @@ describe("leaderboard", () => {
         totalGames: 1,
         wins: 0,
         losses: 0,
+        draws: 1,
         commonCharacter: "aemeath"
       },
       {
@@ -54,6 +55,7 @@ describe("leaderboard", () => {
         totalGames: 3,
         wins: 2,
         losses: 0,
+        draws: 1,
         commonCharacter: "danea"
       },
       {
@@ -65,6 +67,7 @@ describe("leaderboard", () => {
         totalGames: 2,
         wins: 0,
         losses: 2,
+        draws: 0,
         commonCharacter: "sigrika"
       }
     ]);

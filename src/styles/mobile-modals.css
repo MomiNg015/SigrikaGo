@@ -408,19 +408,20 @@
     display: grid;
     grid-template-areas:
       "rank avatar player score"
+      "rank avatar player record"
       "rank avatar player rate";
-    grid-template-columns: 42px 38px minmax(0, 1fr) minmax(58px, auto);
-    gap: 4px 8px;
+    grid-template-columns: 34px 34px minmax(0, 1fr) minmax(96px, auto);
+    gap: 4px 7px;
     align-items: center;
-    min-height: 66px;
-    padding: 8px 10px;
+    min-height: 72px;
+    padding: 8px;
     text-align: left;
   }
 
   .leaderboard-row img {
     grid-area: avatar;
-    width: 34px;
-    height: 40px;
+    width: 32px;
+    height: 36px;
   }
 
   .leaderboard-rank {
@@ -453,10 +454,10 @@
   .leaderboard-row > span:nth-of-type(5) {
     grid-area: rate;
     justify-self: end;
-    padding: 2px 6px;
+    padding: 1px 6px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.64);
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.15;
     white-space: nowrap;
   }
@@ -485,6 +486,37 @@
     content: "胜率 ";
   }
 
+  .leaderboard-row > span:nth-of-type(5) {
+    align-self: center;
+  }
+
+  .leaderboard-mobile-record {
+    grid-area: record;
+    align-self: center;
+    justify-self: end;
+    display: inline-grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 3px;
+    max-width: 100%;
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .leaderboard-mobile-record span {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.56);
+  }
+
+  .leaderboard-mobile-record strong {
+    font-size: 10px;
+    font-weight: 900;
+  }
+
   .leaderboard-current {
     min-width: 0;
     display: grid;
@@ -494,7 +526,7 @@
 
   .leaderboard-current .leaderboard-row {
     min-width: 0;
-    min-height: 68px;
+    min-height: 62px;
   }
 
   .friends-modal {

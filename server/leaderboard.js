@@ -15,6 +15,7 @@ export function buildLeaderboard(users = [], records = []) {
       totalGames: 0,
       wins: 0,
       losses: 0,
+      draws: 0,
       characterCounts: new Map()
     });
   }
@@ -36,6 +37,7 @@ export function buildLeaderboard(users = [], records = []) {
       totalGames: row.totalGames,
       wins: row.wins,
       losses: row.losses,
+      draws: row.draws,
       commonCharacter: mostUsedCharacter(row.characterCounts) ?? row.selectedCharacter
     }))
     .sort((a, b) => b.rating - a.rating || b.wins - a.wins || a.username.localeCompare(b.username));
@@ -46,6 +48,7 @@ function addGame(row, characterId, winnerColor, playerColor) {
   row.totalGames += 1;
   if (winnerColor === playerColor) row.wins += 1;
   else if (winnerColor) row.losses += 1;
+  else row.draws += 1;
   if (characterId) {
     row.characterCounts.set(characterId, (row.characterCounts.get(characterId) ?? 0) + 1);
   }

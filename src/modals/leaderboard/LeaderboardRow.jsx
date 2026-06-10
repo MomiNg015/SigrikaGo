@@ -8,6 +8,7 @@ export function leaderboardRankClass(rank) {
 export default function LeaderboardRow({ player, rank, characters, highlight = false, pinned = false }) {
   const character = findCharacter(characters, player.commonCharacter);
   const winRate = player.totalGames > 0 ? `${((player.wins / player.totalGames) * 100).toFixed(1)}%` : "0.0%";
+  const draws = player.draws ?? Math.max(0, (player.totalGames ?? 0) - (player.wins ?? 0) - (player.losses ?? 0));
   return (
     <article className={`leaderboard-row ${leaderboardRankClass(rank)} ${highlight ? "current-user" : ""} ${pinned ? "pinned" : ""}`} data-rank={rank}>
       <strong className="leaderboard-rank">#{rank}</strong>
@@ -18,6 +19,11 @@ export default function LeaderboardRow({ player, rank, characters, highlight = f
       </div>
       <span>{player.rank}</span>
       <b>{player.rating}</b>
+      <div className="leaderboard-mobile-record" aria-label={`战绩 胜${player.wins} 负${player.losses} 和${draws}`}>
+        <span><strong>胜</strong>{player.wins}</span>
+        <span><strong>负</strong>{player.losses}</span>
+        <span><strong>和</strong>{draws}</span>
+      </div>
       <span>{player.totalGames}</span>
       <span>{player.wins}</span>
       <span>{player.losses}</span>

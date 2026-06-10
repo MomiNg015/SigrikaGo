@@ -1438,20 +1438,21 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row {
-    min-height: 66px !important;
+    min-height: 72px !important;
     grid-template-areas:
       "rank avatar player score"
+      "rank avatar player record"
       "rank avatar player rate" !important;
-    grid-template-columns: 42px 38px minmax(0, 1fr) minmax(58px, auto) !important;
-    gap: 4px 8px !important;
+    grid-template-columns: 34px 34px minmax(0, 1fr) minmax(96px, auto) !important;
+    gap: 4px 7px !important;
     align-items: center !important;
-    padding: 8px 10px !important;
+    padding: 8px !important;
     text-align: left !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row img {
-    width: 34px !important;
-    height: 40px !important;
+    width: 32px !important;
+    height: 36px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-rank {
@@ -1472,12 +1473,39 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row > span:nth-of-type(5) {
     grid-area: rate !important;
-    align-self: start !important;
-    padding: 2px 6px !important;
+    align-self: center !important;
+    padding: 1px 6px !important;
     border-radius: 999px !important;
     background: rgba(255, 255, 255, 0.64) !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
     line-height: 1.15 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-mobile-record {
+    grid-area: record !important;
+    align-self: center !important;
+    justify-self: end !important;
+    display: inline-grid !important;
+    grid-template-columns: repeat(3, auto) !important;
+    gap: 3px !important;
+    max-width: 100% !important;
+    font-size: 11px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-mobile-record span {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+    padding: 2px 4px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.56) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-mobile-record strong {
+    font-size: 10px !important;
+    font-weight: 900 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.top-rank .leaderboard-rank,
@@ -1504,12 +1532,12 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
-    min-height: 68px !important;
+    min-height: 72px !important;
     width: 100% !important;
     min-width: 0 !important;
-    grid-template-columns: 42px 38px minmax(0, 1fr) minmax(58px, auto) !important;
-    gap: 4px 8px !important;
-    padding: 8px 10px !important;
+    grid-template-columns: 34px 34px minmax(0, 1fr) minmax(96px, auto) !important;
+    gap: 4px 7px !important;
+    padding: 8px !important;
     border-width: 2px !important;
     border-radius: 16px !important;
     box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.44) !important;

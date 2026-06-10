@@ -442,6 +442,10 @@
   font-size: 20px;
 }
 
+.leaderboard-mobile-record {
+  display: none;
+}
+
 .owned-decoration-section {
   margin-top: 18px;
 }
