@@ -45,6 +45,37 @@ describe("socket handlers", () => {
     });
   });
 
+  it("keeps duplicate reconnect room snapshots audio-baselined until a new room event arrives", () => {
+    const roomView = {
+      code: "12345",
+      role: "player",
+      game: { phase: "playing", history: [{ type: "move" }] },
+      chat: [{ id: "start", kind: "game-start" }],
+      players: []
+    };
+    const nextRoomView = {
+      ...roomView,
+      game: { phase: "playing", history: [{ type: "move" }, { type: "move" }] }
+    };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.socketReconnect();
+    handlers.roomUpdate(roomView);
+    handlers.roomUpdate(roomView);
+    handlers.roomUpdate(nextRoomView);
+
+    expect(deps.setRoom).toHaveBeenNthCalledWith(1, {
+      ...roomView,
+      __audioResumeBaseline: true
+    });
+    expect(deps.setRoom).toHaveBeenNthCalledWith(2, {
+      ...roomView,
+      __audioResumeBaseline: true
+    });
+    expect(deps.setRoom).toHaveBeenNthCalledWith(3, nextRoomView);
+  });
+
   it("does not mark normal room updates as audio resumes", () => {
     const roomView = { code: "12345", role: "player", game: { phase: "playing" }, players: [] };
     const deps = handlerDeps();

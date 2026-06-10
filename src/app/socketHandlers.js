@@ -26,6 +26,7 @@ export function createSocketHandlers({
   now = () => Date.now()
 }) {
   let shouldAudioBaselineNextLiveSnapshot = false;
+  let audioBaselineSnapshotKey = "";
 
   function clearRoomUiState() {
     setRoom(null);
@@ -74,10 +75,12 @@ export function createSocketHandlers({
     roomUpdate: (roomView) => {
       updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
       if (syncPendingMatchRoom(matchSuccessRef, setMatchSuccess, roomView)) return;
-      const nextRoomView = shouldAudioBaselineNextLiveSnapshot && shouldMarkRoomAudioBaseline(roomView)
-        ? { ...roomView, __audioResumeBaseline: true }
-        : roomView;
+      const nextAudioBaselineSnapshotKey = roomAudioBaselineSnapshotKey(roomView);
+      const shouldApplyAudioBaseline = shouldMarkRoomAudioBaseline(roomView)
+        && (shouldAudioBaselineNextLiveSnapshot || nextAudioBaselineSnapshotKey === audioBaselineSnapshotKey);
+      const nextRoomView = shouldApplyAudioBaseline ? { ...roomView, __audioResumeBaseline: true } : roomView;
       shouldAudioBaselineNextLiveSnapshot = false;
+      audioBaselineSnapshotKey = shouldApplyAudioBaseline ? nextAudioBaselineSnapshotKey : "";
       if (roomView?.role === "player" && roomView?.game?.phase === "finished") {
         clearLastRoomCode();
       }
@@ -199,4 +202,13 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
 
 function shouldMarkRoomAudioBaseline(roomView) {
   return roomView?.role === "player" && roomView?.game?.phase === "playing";
+}
+
+function roomAudioBaselineSnapshotKey(roomView) {
+  if (!roomView?.code) return "";
+  return [
+    roomView.code,
+    roomView.game?.history?.length ?? 0,
+    roomView.chat?.length ?? 0
+  ].join(":");
 }

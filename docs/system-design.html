@@ -3320,7 +3320,7 @@
 <li>Once a game is finished, room players use the same spectator role as observers in both server room views and frontend effective role handling: the action bar switches to replay/spectator controls, player-only hints/actions are hidden, and leaving the finished room clears the former player's live <code>socketId</code> from the room so watch-list online counts drop correctly.</li>
 </ul>
 <ul>
-<li>The game-start system voice is only played for active player views in <code>playing</code> phase. Spectators and finished-room viewers do not replay historical <code>game-start</code> messages when joining through the watch list.</li>
+<li>The game-start system voice is only played for active player views in <code>playing</code> phase. Spectators and finished-room viewers do not replay historical <code>game-start</code> messages when joining through the watch list. Socket reconnects mark the next live player room snapshot with <code>__audioResumeBaseline</code>, and duplicate reconnect snapshots with the same room/history/chat key keep that marker so the server's immediate <code>room:update</code> plus <code>broadcastRoom</code> pair cannot overwrite the baseline before <code>RoomScreen</code> mounts and accidentally replay old <code>game-start</code> chat.</li>
 </ul>
 <ul>
 <li>User profile cards keep the hero, aggregate stats, &quot;角色战绩&quot; title, and footer actions fixed inside the modal; only the character record rows scroll.</li>
