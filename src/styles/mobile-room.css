@@ -406,10 +406,6 @@
     gap: 4px;
   }
 
-  .mobile-room-screen .mobile-tab-panel .action-bar button:has(.action-label) {
-    grid-template-rows: 18px 1fr;
-  }
-
   .mobile-room-screen .mobile-tab-panel .action-bar .exit-action {
     display: none;
   }
