@@ -488,9 +488,9 @@
 
 @media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
   .mobile-room-screen {
-    --mobile-room-board-size: min(calc(100vw - 18px), calc(100dvh - 374px), 352px);
+    --mobile-room-board-size: min(calc(100vw - 18px), calc(100dvh - 386px), 352px);
     --mobile-room-dock-panel-height: clamp(106px, 16dvh, 134px);
-    --mobile-room-player-strip-height: clamp(58px, 8.6dvh, 68px);
+    --mobile-room-player-strip-height: clamp(64px, 8.8dvh, 74px);
     height: 100dvh;
     overflow: hidden;
   }
@@ -514,18 +514,18 @@
   }
 
   .mobile-room-screen .player-info {
-    min-height: 58px;
+    min-height: 64px;
     height: 100%;
     max-height: var(--mobile-room-player-strip-height);
     overflow: hidden;
-    grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr);
-    grid-template-rows: minmax(0, 32px) minmax(0, 26px);
+    grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr);
+    grid-template-rows: minmax(0, 30px) minmax(0, 26px);
     grid-template-areas:
       "portrait meta time"
       "portrait captures skill";
     align-items: center;
-    padding: 4px 6px;
-    gap: 2px 5px;
+    padding: 5px 7px;
+    gap: 4px 6px;
   }
 
   .mobile-room-screen .portrait-wrap {
@@ -566,8 +566,8 @@
   }
 
   .mobile-room-screen .player-info img {
-    width: 38px;
-    height: 38px;
+    width: 46px;
+    height: 46px;
   }
 
   .mobile-room-screen .result-badge {
@@ -583,13 +583,14 @@
   .mobile-room-screen .player-meta {
     align-content: center;
     grid-template-columns: minmax(0, 1fr) auto auto;
-    gap: 1px 3px;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0 4px;
   }
 
   .mobile-room-screen .name-button {
-    grid-column: 1 / -1;
+    grid-column: 1;
     max-width: 100%;
-    font-size: 10.5px;
+    font-size: 12.5px;
     line-height: 1;
   }
 
@@ -602,8 +603,12 @@
   }
 
   .mobile-room-screen .color-badge {
-    width: 12px;
-    height: 12px;
+    display: none;
+  }
+
+  .mobile-room-screen .digital-timer {
+    min-height: 30px;
+    padding: 2px 6px;
   }
 
   .mobile-room-screen .timer-primary {
@@ -650,6 +655,15 @@
     padding: 2px 6px;
     gap: 3px;
     font-size: 10px;
+  }
+
+  .mobile-room-screen .replay-step-indicator {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .mobile-room-screen .replay-step-indicator svg {
+    display: none;
   }
 
   .mobile-room-screen .skill-detail-panel {

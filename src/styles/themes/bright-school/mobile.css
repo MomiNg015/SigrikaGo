@@ -1135,9 +1135,9 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen {
     --mobile-room-edge-gap: 6px;
-    --mobile-room-board-size: min(calc(100vw - 24px), calc(100dvh - 374px), 356px);
+    --mobile-room-board-size: min(calc(100vw - 24px), calc(100dvh - 386px), 356px);
     --mobile-room-dock-panel-height: clamp(112px, 17dvh, 150px);
-    --mobile-room-player-strip-height: clamp(58px, 8.6dvh, 68px);
+    --mobile-room-player-strip-height: clamp(64px, 8.8dvh, 74px);
     width: 100vw !important;
     height: 100dvh !important;
     min-width: 0 !important;
@@ -1337,16 +1337,16 @@
     width: 100% !important;
     min-width: 0 !important;
     height: 100% !important;
-    min-height: 58px !important;
+    min-height: 64px !important;
     max-height: var(--mobile-room-player-strip-height) !important;
-    padding: 4px 7px !important;
+    padding: 5px 7px !important;
     display: grid !important;
-    grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr) !important;
-    grid-template-rows: minmax(0, 31px) minmax(0, 25px) !important;
+    grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr) !important;
+    grid-template-rows: minmax(0, 30px) minmax(0, 26px) !important;
     grid-template-areas:
       "portrait meta time"
       "portrait captures skill" !important;
-    gap: 2px 6px !important;
+    gap: 4px 6px !important;
     align-items: center !important;
     overflow: hidden !important;
     border-width: 2px !important;
@@ -1361,8 +1361,8 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info img {
-    width: 38px !important;
-    height: 38px !important;
+    width: 46px !important;
+    height: 46px !important;
     object-fit: contain !important;
   }
 
@@ -1371,15 +1371,16 @@
     min-width: 0 !important;
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) auto auto !important;
-    gap: 2px 4px !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    gap: 0 4px !important;
     align-items: center !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .name-button {
-    grid-column: 1 / -1 !important;
+    grid-column: 1 !important;
     min-width: 0 !important;
     max-width: 100% !important;
-    font-size: 11px !important;
+    font-size: 12.5px !important;
     line-height: 1.05 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
@@ -1394,11 +1395,15 @@
     border-width: 1px !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .color-badge {
+    display: none !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .digital-timer {
     grid-area: time !important;
     min-width: 0 !important;
-    min-height: 34px !important;
-    padding: 3px 6px !important;
+    min-height: 30px !important;
+    padding: 2px 6px !important;
     grid-template-columns: auto minmax(38px, 1fr) !important;
     gap: 6px !important;
     border-width: 2px !important;
@@ -1442,7 +1447,7 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .skill-chip {
     width: 100% !important;
     min-width: 0 !important;
-    min-height: 22px !important;
+    min-height: 24px !important;
     padding: 2px 6px !important;
     font-size: 10px !important;
     justify-content: center !important;

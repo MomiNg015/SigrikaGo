@@ -243,12 +243,12 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).toContain("className=\"mobile-action-panel\"");
     expect(battleSource).not.toContain("content: <>{hintPanel}{actionPanel}</>");
     expect(portraitMedia).toContain(".mobile-room-screen .player-info");
-    expect(portraitMedia).toContain("--mobile-room-player-strip-height: clamp(58px, 8.6dvh, 68px)");
+    expect(portraitMedia).toContain("--mobile-room-player-strip-height: clamp(64px, 8.8dvh, 74px)");
     expect(portraitMedia).toContain("grid-template-rows: minmax(0, var(--mobile-room-player-strip-height)) minmax(0, 1fr) minmax(0, var(--mobile-room-player-strip-height)) auto");
-    expect(portraitMedia).toContain("min-height: 58px");
+    expect(portraitMedia).toContain("min-height: 64px");
     expect(portraitMedia).toContain("overflow: hidden");
     expect(portraitMedia).toContain("grid-template-areas:");
-    expect(portraitMedia).toContain("grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr)");
+    expect(portraitMedia).toContain("grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr)");
     expect(portraitMedia).toContain("\"portrait meta time\"");
     expect(portraitMedia).toContain("\"portrait captures skill\"");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-player-slot");
@@ -283,7 +283,7 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain("min-height: 40px");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .action-bar button");
     expect(portraitMedia).toContain(".mobile-room-screen .color-badge");
-    expect(portraitMedia).toContain("width: 12px");
+    expect(portraitMedia).toContain("display: none");
     expect(portraitMedia).toContain(".mobile-room-screen .skill-detail-panel");
     expect(portraitMedia).toContain("bottom: calc(100% + 6px)");
     expect(portraitMedia).toContain(".mobile-room-screen .captures .info-stat::after");
@@ -428,7 +428,7 @@ describe("RoomScreen helpers", () => {
     expect(actionSource).toContain("mobile-action-button-label");
     expect(battleSource).toContain("aria-label={panel.label}");
     expect(portraitMedia).toContain("--mobile-room-dock-panel-height: clamp(112px, 17dvh, 150px)");
-    expect(portraitMedia).toContain("--mobile-room-player-strip-height: clamp(58px, 8.6dvh, 68px)");
+    expect(portraitMedia).toContain("--mobile-room-player-strip-height: clamp(64px, 8.8dvh, 74px)");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-action-panel");
     expect(portraitMedia).toContain("display: grid !important");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .action-bar .action-label");
@@ -501,11 +501,37 @@ describe("RoomScreen helpers", () => {
     const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
     const brightPortraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
 
-    expect(portraitMedia).toContain("grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr)");
-    expect(mobileAdaptiveCss).toContain("grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr)");
-    expect(brightPortraitMedia).toContain("grid-template-columns: 38px minmax(0, 1fr) minmax(118px, 0.72fr) !important");
+    expect(portraitMedia).toContain("grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr)");
+    expect(portraitMedia).toContain("grid-template-rows: minmax(0, 30px) minmax(0, 26px)");
+    expect(portraitMedia).toContain(".mobile-room-screen .player-meta");
+    expect(portraitMedia).toContain("grid-template-rows: minmax(0, 1fr)");
+    expect(portraitMedia).toContain(".mobile-room-screen .name-button");
+    expect(portraitMedia).toContain("grid-column: 1");
+    expect(portraitMedia).toContain("font-size: 12.5px");
+    expect(portraitMedia).toContain(".mobile-room-screen .color-badge");
+    expect(portraitMedia).toContain("display: none");
+    expect(portraitMedia).toContain("width: 46px");
+    expect(portraitMedia).toContain("height: 46px");
+    expect(portraitMedia).toContain("min-height: 30px");
+    expect(mobileAdaptiveCss).toContain("grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr)");
+    expect(brightPortraitMedia).toContain("grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr) !important");
+    expect(brightPortraitMedia).toContain("grid-template-rows: minmax(0, 30px) minmax(0, 26px) !important");
     expect(brightPortraitMedia).toContain("box-shadow: none !important");
     expect(brightPortraitMedia).not.toContain("box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.48) !important");
+  });
+
+  it("centers mobile replay move counts without extra icon offset", () => {
+    const mobileRoomCss = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const mobileAdaptiveCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
+
+    expect(portraitMedia).toContain(".mobile-room-screen .replay-step-indicator");
+    expect(portraitMedia).toContain("justify-content: center");
+    expect(portraitMedia).toContain("text-align: center");
+    expect(portraitMedia).toContain(".mobile-room-screen .replay-step-indicator svg");
+    expect(portraitMedia).toContain("display: none");
+    expect(mobileAdaptiveCss).toContain("#mobile-room-panel-actions .replay-step-indicator");
+    expect(mobileAdaptiveCss).toContain("justify-content: center !important");
   });
 
   it("turns room chat into an anchored popover button", () => {
