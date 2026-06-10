@@ -1107,6 +1107,14 @@
     pointer-events: none !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-mobile-menu-panel button {
+    grid-template-columns: 22px max-content !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
     .home-brand-title,
     .home-brand-subtitle,

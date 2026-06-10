@@ -176,6 +176,8 @@ describe("HomeScreen", () => {
     expect(brightMobileCss).toContain("display: none !important");
     expect(brightMobileCss).toContain(".home-mobile-menu");
     expect(brightMobileCss).toContain(".home-mobile-menu-panel");
+    expect(brightMobileCss).toContain("grid-template-columns: 22px max-content !important");
+    expect(brightMobileCss).toContain("word-break: keep-all !important");
     expect(brightMobileCss).toContain(".topbar-actions > .icon-button");
     expect(brightMobileCss).toContain("padding: 12px 12px 48px !important");
     expect(brightMobileCss).toContain("bottom: 10px !important");
@@ -185,6 +187,8 @@ describe("HomeScreen", () => {
     const finalMobileCss = readTextFixture("../styles/mobile-adaptive.css");
     expect(finalMobileCss).toContain(":has(.modal-backdrop) .home-mobile-menu");
     expect(finalMobileCss).toContain("pointer-events: none !important");
+    expect(finalMobileCss).toContain(".home-mobile-menu-panel button");
+    expect(finalMobileCss).toContain("white-space: nowrap !important");
     expect(finalMobileCss).toContain(".home-brand-title");
     expect(finalMobileCss).toContain("font-size: clamp(22px, 6.7vw, 32px) !important");
     expect(finalMobileCss).toContain("text-overflow: clip !important");
