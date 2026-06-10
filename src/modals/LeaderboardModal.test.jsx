@@ -119,6 +119,7 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain(".leaderboard-modal");
     expect(phoneModalMedia).toContain(".leaderboard-table");
     expect(phoneModalMedia).toContain("overflow-x: hidden");
+    expect(phoneModalMedia).toContain("grid-template-rows: minmax(0, 1fr) auto");
     expect(phoneModalMedia).toContain(".leaderboard-heading,");
     expect(phoneModalMedia).toContain(".leaderboard-row");
     expect(phoneModalMedia).toContain("min-width: 0");
@@ -131,6 +132,7 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain(".leaderboard-row > span:nth-of-type");
     expect(phoneModalMedia).toContain(".leaderboard-mobile-record");
     expect(phoneModalMedia).toContain(".leaderboard-current .leaderboard-row");
+    expect(phoneModalMedia).toContain("align-content: start");
     expect(phoneModalMedia).toContain("min-height: 72px");
     expect(phoneModalMedia).toContain(".friends-modal");
     expect(phoneModalMedia).toContain("grid-template-rows: auto minmax(0, 1fr)");
@@ -143,6 +145,7 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain(".leaderboard-row.top-rank .leaderboard-rank");
     expect(finalMobileCss).toContain("border-radius: 50% !important");
     expect(finalMobileCss).toContain("clip-path: none !important");
+    expect(finalMobileCss).toContain("grid-template-rows: minmax(0, 1fr) auto !important");
     expect(finalMobileCss).toContain('"rank avatar player score"');
     expect(finalMobileCss).toContain('"rank avatar player record"');
     expect(finalMobileCss).toContain('"rank avatar player rate"');
@@ -151,6 +154,7 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain(".leaderboard-mobile-record");
     expect(finalMobileCss).toContain("border-radius: 999px !important");
     expect(finalMobileCss).toContain(".leaderboard-current .leaderboard-row");
+    expect(finalMobileCss).toContain("align-content: start !important");
     expect(finalMobileCss).toContain("min-height: 72px !important");
   });
 });

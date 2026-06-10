@@ -1431,6 +1431,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-table {
     gap: 10px !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-list {
@@ -1524,8 +1525,10 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current {
     width: 100% !important;
     min-width: 0 !important;
-    gap: 7px !important;
-    padding: 8px 0 0 !important;
+    grid-template-rows: auto auto !important;
+    align-content: start !important;
+    gap: 4px !important;
+    padding: 4px 0 0 !important;
     background: transparent !important;
     border: 0 !important;
     box-shadow: none !important;

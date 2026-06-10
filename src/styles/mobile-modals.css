@@ -383,6 +383,7 @@
     overflow-x: hidden;
     overflow-y: auto;
     display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
     gap: 8px;
   }
 
@@ -520,13 +521,15 @@
   .leaderboard-current {
     min-width: 0;
     display: grid;
+    grid-template-rows: auto auto;
+    align-content: start;
     gap: 7px;
-    padding-top: 8px;
+    padding-top: 4px;
   }
 
   .leaderboard-current .leaderboard-row {
     min-width: 0;
-    min-height: 62px;
+    min-height: 72px;
   }
 
   .friends-modal {

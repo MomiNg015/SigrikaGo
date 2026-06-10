@@ -972,6 +972,7 @@
     overflow-x: hidden !important;
     overflow-y: auto !important;
     display: grid !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
     gap: 8px !important;
   }
 
@@ -1081,7 +1082,10 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current {
     min-width: 0 !important;
     display: grid !important;
-    gap: 6px !important;
+    grid-template-rows: auto auto !important;
+    align-content: start !important;
+    gap: 4px !important;
+    padding-top: 4px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
