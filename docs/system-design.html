@@ -989,7 +989,7 @@
 <li>技能目标确认态由前端 <code>pendingSkill</code> 驱动：<code>ActionBar</code> 给技能按钮添加 <code>.active</code>，<code>Board</code> 给棋盘容器添加 <code>.board-wrap.targeting</code> 并给可用目标点添加 <code>.previewable</code>。Bright School 的最后 CSS 层必须保留技能按钮与棋盘外圈的彩色动画发光，并让星位点使用独立 <code>::after</code> 居中显示；旧的星位 <code>::before</code> 必须显式关闭，避免和目标预览光圈使用的 <code>::before</code> 冲突并产生虚假星位。</li>
 </ul>
 <ul>
-<li>数目/死子确认阶段的棋盘标记由 <code>territory-mark</code>、<code>dead-mark</code>、<code>neutral-mark</code> 挂在对应 <code>.point</code> 内。Bright School 的通用 <code>button &gt; * { transform: none !important; }</code> 会影响棋盘点按钮的直接子元素，因此最终层必须为这些标记恢复 <code>left/top: 50%</code> 与 <code>transform: translate(-50%, -50%) !important</code>，确保 X 点和死子圈始终落在交叉点中心。</li>
+<li>数目/死子确认阶段的棋盘标记由 <code>territory-mark</code>、<code>dead-mark</code>、<code>neutral-mark</code> 挂在对应 <code>.point</code> 内。<code>territory-mark.black/white</code> 用对应颜色的 <code>×</code> 表示黑/白领地，<code>dead-mark.black/white</code> 只用对应颜色的圆圈表示白/黑死子归属，不能继承领地 <code>×</code> 的伪元素。Bright School 的通用 <code>button &gt; * { transform: none !important; }</code> 会影响棋盘点按钮的直接子元素，因此最终层必须为这些标记恢复 <code>left/top: 50%</code> 与 <code>transform: translate(-50%, -50%) !important</code>，确保 X 点和死子圈始终落在交叉点中心。</li>
 </ul>
 <ul>
 <li>Bright School 棋盘相关的最终补丁要优先降低 CSS 熵：技能按钮/棋盘外圈发光的关键帧使用局部 CSS 变量复用三段视觉状态，静态兜底阴影留在元素本体，动态彩色光晕放到透明 <code>::after</code> 层，避免与旧主题里的 <code>box-shadow !important</code> 覆盖链互相抵消；数目/死子标记使用单个 <code>:is(.territory-mark, .dead-mark, .neutral-mark)</code> 选择器共享交叉点居中规则。后续新增棋盘修复应先扩展这些局部令牌或共享选择器，避免在文件尾部继续堆叠等价的散装覆盖。</li>

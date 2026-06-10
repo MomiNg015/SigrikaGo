@@ -134,6 +134,26 @@ describe("areBoardPropsEqual", () => {
     expect(scoringBlock).toContain("left: 50% !important");
     expect(scoringBlock).toContain("top: 50% !important");
     expect(scoringBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(scoringBlock).toContain(".board :is(.territory-mark.black, .dead-mark.black)");
+    expect(scoringBlock).toContain(".board :is(.territory-mark.white, .dead-mark.white)");
+  });
+
+  test("uses owner-colored crosses for territory and owner-colored circles for dead stones", () => {
+    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const crossBaseBlock = css.match(/\.territory-mark::before,[\s\S]*?\.neutral-mark::after\s*\{[^}]+\}/)?.[0] ?? "";
+    const deadCircleBlock = css.match(/\.dead-mark\.black,[\s\S]*?\.dead-mark\.white\s*\{[^}]+\}/)?.[0] ?? "";
+    const deadBarsBlock = css.match(/\.dead-mark::before,[\s\S]*?\.dead-mark::after\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(crossBaseBlock).toContain(".territory-mark::before");
+    expect(crossBaseBlock).toContain(".territory-mark::after");
+    expect(crossBaseBlock).not.toContain(".dead-mark::before");
+    expect(crossBaseBlock).not.toContain(".dead-mark::after");
+    expect(css).toContain(".territory-mark.black");
+    expect(css).toContain(".territory-mark.white");
+    expect(deadCircleBlock).toContain(".dead-mark.black");
+    expect(deadCircleBlock).toContain(".dead-mark.white");
+    expect(deadCircleBlock).toContain("border: 2px solid currentColor");
+    expect(deadBarsBlock).toContain("content: none");
   });
 });
 

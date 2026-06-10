@@ -418,7 +418,7 @@ SigrikaGo/
 - 达妮娅 `flip-stone` 作用于真实棋子；如果目标点带有娜波摩伪装，反色后会清除该点伪装。
 - 技能演出流程：服务端先进入 `skill-preview` 并广播 `pendingSkill`，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。
 - 技能目标确认态由前端 `pendingSkill` 驱动：`ActionBar` 给技能按钮添加 `.active`，`Board` 给棋盘容器添加 `.board-wrap.targeting` 并给可用目标点添加 `.previewable`。Bright School 的最后 CSS 层必须保留技能按钮与棋盘外圈的彩色动画发光，并让星位点使用独立 `::after` 居中显示；旧的星位 `::before` 必须显式关闭，避免和目标预览光圈使用的 `::before` 冲突并产生虚假星位。
-- 数目/死子确认阶段的棋盘标记由 `territory-mark`、`dead-mark`、`neutral-mark` 挂在对应 `.point` 内。Bright School 的通用 `button > * { transform: none !important; }` 会影响棋盘点按钮的直接子元素，因此最终层必须为这些标记恢复 `left/top: 50%` 与 `transform: translate(-50%, -50%) !important`，确保 X 点和死子圈始终落在交叉点中心。
+- 数目/死子确认阶段的棋盘标记由 `territory-mark`、`dead-mark`、`neutral-mark` 挂在对应 `.point` 内。`territory-mark.black/white` 用对应颜色的 `×` 表示黑/白领地，`dead-mark.black/white` 只用对应颜色的圆圈表示白/黑死子归属，不能继承领地 `×` 的伪元素。Bright School 的通用 `button > * { transform: none !important; }` 会影响棋盘点按钮的直接子元素，因此最终层必须为这些标记恢复 `left/top: 50%` 与 `transform: translate(-50%, -50%) !important`，确保 X 点和死子圈始终落在交叉点中心。
 - Bright School 棋盘相关的最终补丁要优先降低 CSS 熵：技能按钮/棋盘外圈发光的关键帧使用局部 CSS 变量复用三段视觉状态，静态兜底阴影留在元素本体，动态彩色光晕放到透明 `::after` 层，避免与旧主题里的 `box-shadow !important` 覆盖链互相抵消；数目/死子标记使用单个 `:is(.territory-mark, .dead-mark, .neutral-mark)` 选择器共享交叉点居中规则。后续新增棋盘修复应先扩展这些局部令牌或共享选择器，避免在文件尾部继续堆叠等价的散装覆盖。
 - 技能释放横幅由 `SkillBanner` + `.skill-burst` 渲染为房间级 fixed 浮层；它的可见性必须由 `pendingSkill` 挂载状态保证，浏览器 `prefers-reduced-motion` 只关闭动效，不应把横幅压到透明终点。
 - 达妮娅目标点泡泡炸裂特效已有预览资产 `public/assets/effects/denia-bubble-pop.webp`：透明玻璃泡泡生成并膨胀，随后被黑色能量/墨雾填满，短暂出现细密裂纹和蓄力压迫，最终爆散出黑色碎片、烟雾粒子和轻微冲击波并消散。该 GIF 当前仅作为视觉参考，尚未接入技能生效流程。

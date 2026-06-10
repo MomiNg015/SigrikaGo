@@ -972,8 +972,6 @@
 
 .territory-mark::before,
 .territory-mark::after,
-.dead-mark::before,
-.dead-mark::after,
 .neutral-mark::before,
 .neutral-mark::after {
   content: "";
@@ -988,13 +986,11 @@
 }
 
 .territory-mark::before,
-.dead-mark::before,
 .neutral-mark::before {
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .territory-mark::after,
-.dead-mark::after,
 .neutral-mark::after {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
@@ -1028,6 +1024,12 @@
 .dead-mark.white {
   background: rgba(255, 255, 255, 0.36);
   border: 2px solid currentColor;
+}
+
+.dead-mark::before,
+.dead-mark::after {
+  content: none;
+  display: none;
 }
 
 .neutral-mark {
