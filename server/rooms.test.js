@@ -1005,4 +1005,38 @@ describe("room participants view", () => {
     expect(io.messages.some((message) => message.event === "room:closed")).toBe(false);
     expect(findRoomForUser("close-black", room.code)).toBeNull();
   });
+
+  test("closes invalid finished rooms within thirty seconds even while participants are connected", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    joinMatchmaking({ user: user("invalid-close-black", "sigrika"), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("invalid-close-white", "sigrika"), socketId: "socket-b" }, io);
+    completeRoomOpening(room, io);
+    room.game.moveNumber = 10;
+
+    const white = room.players.find((player) => player.color === COLORS.white);
+    const closeScheduledAt = Date.now();
+    const result = handleGameAction(room.code, white.user.id, { type: "resign" }, io);
+
+    expect(result.ok).toBe(true);
+    expect(room.game.winner).toMatchObject({ invalid: true });
+    expect(room.closesAt - closeScheduledAt).toBe(30 * 1000);
+    vi.advanceTimersByTime(30 * 1000 - 1);
+    expect(findRoomForUser("invalid-close-black", room.code)).toBe(room);
+
+    vi.advanceTimersByTime(1);
+
+    expect(findRoomForUser("invalid-close-black", room.code)).toBeNull();
+    expect(io.messages.filter((message) => message.event === "room:closed")).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        socketId: "socket-a",
+        payload: expect.objectContaining({ reason: "finished-room-close", roomCode: room.code })
+      }),
+      expect.objectContaining({
+        socketId: "socket-b",
+        payload: expect.objectContaining({ reason: "finished-room-close", roomCode: room.code })
+      })
+    ]));
+    expect(prismaMocks.gameRecordCreate).not.toHaveBeenCalled();
+  });
 });
