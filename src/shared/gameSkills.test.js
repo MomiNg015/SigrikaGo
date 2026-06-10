@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeSkillConfig, skillRequiresExistingStone } from "./gameSkills.js";
+import { normalizeSkillConfig, skillRequiresExistingStone, skillUsesBoardConfirmation } from "./gameSkills.js";
 
 describe("game skill configuration", () => {
   it("normalizes character ids into executable skill configs", () => {
@@ -21,5 +21,12 @@ describe("game skill configuration", () => {
     expect(skillRequiresExistingStone("danea")).toBe(true);
     expect(skillRequiresExistingStone("baconbits")).toBe(true);
     expect(skillRequiresExistingStone("aemeath")).toBe(false);
+  });
+
+  it("identifies no-target skills that use the board click as release confirmation", () => {
+    expect(skillUsesBoardConfirmation("baconbits")).toBe(true);
+    expect(skillUsesBoardConfirmation({ effectType: "random-blast", targetRule: "none" })).toBe(true);
+    expect(skillUsesBoardConfirmation("danea")).toBe(false);
+    expect(skillUsesBoardConfirmation("sigrika")).toBe(false);
   });
 });

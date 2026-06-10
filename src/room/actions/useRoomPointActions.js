@@ -10,6 +10,7 @@ export function useRoomPointActions({
   pendingSkill,
   role,
   setPendingSkill,
+  skillUsesBoardConfirmation = false,
   skillPreview,
   onGameAction,
   onScoringAction
@@ -27,7 +28,7 @@ export function useRoomPointActions({
     if (displayRoom.game.phase !== GAME_PHASES.playing) return;
     if (role !== "player") return;
     const actionType = pendingSkill ? "skill" : "move";
-    if (!canConfirmPointAction({ point, actionType })) {
+    if (!canConfirmPointAction({ point, actionType, canConfirmSkillPoint, me, skillUsesBoardConfirmation })) {
       setPointConfirmation(null);
       return;
     }
@@ -46,11 +47,6 @@ export function useRoomPointActions({
     onGameAction({ type: "move", pointId: point.id });
   }
 
-  function canConfirmPointAction({ point, actionType }) {
-    if (actionType === "skill") return canConfirmSkillPoint(point, me);
-    return Boolean(point?.valid && !point.stone);
-  }
-
   function handleScoringPoint(point) {
     if (point.stone) onScoringAction({ type: "mark-dead", pointId: point.id });
     else if (point.valid) onScoringAction({ type: "mark-neutral", pointId: point.id });
@@ -61,4 +57,18 @@ export function useRoomPointActions({
     handleScoringPoint,
     pointConfirmation
   };
+}
+
+export function canConfirmPointAction({
+  point,
+  actionType,
+  canConfirmSkillPoint = () => false,
+  me = null,
+  skillUsesBoardConfirmation = false
+}) {
+  if (actionType === "skill") {
+    if (skillUsesBoardConfirmation) return Boolean(point?.valid);
+    return canConfirmSkillPoint(point, me);
+  }
+  return Boolean(point?.valid && !point.stone);
 }

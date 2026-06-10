@@ -319,6 +319,17 @@ describe("RoomScreen helpers", () => {
     expect(roomCss).toContain(".touch-confirm-marker");
   });
 
+  it("passes no-target skill board confirmation from the room view into point actions", () => {
+    const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const boardViewSource = readFileSync(new URL("./view/useRoomBoardView.js", import.meta.url), "utf8");
+    const pointActionsSource = readFileSync(new URL("./actions/useRoomPointActions.js", import.meta.url), "utf8");
+
+    expect(boardViewSource).toContain("skillUsesBoardConfirmation(skillConfig)");
+    expect(source).toContain("skillUsesBoardConfirmation,");
+    expect(source).toContain("useRoomPointActions({");
+    expect(pointActionsSource).toContain("if (skillUsesBoardConfirmation) return Boolean(point?.valid)");
+  });
+
   it("keeps extra-narrow portrait rooms from overlapping the player cards", () => {
     const css = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
     const narrowPortraitMedia = mediaBlock(css, "@media (max-width: 340px) and (orientation: portrait)");

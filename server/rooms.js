@@ -12,6 +12,7 @@ import {
   parsePointId,
   resultWithInvalidFlagForGame,
   restoreSuspendedHiddenHands,
+  skillUsesBoardConfirmation,
   useSkill
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
@@ -279,7 +280,7 @@ export function handleGameAction(roomCode, userId, action, io) {
   if (action.type === "skill") {
     const skillConfig = player.character?.skill ?? player.characterId;
     if (!canStartSkill(room.game, skillConfig)) return { ok: false, error: "场上没有可作用的棋子" };
-    const skillTargetId = skillUsesConfirmationPoint(skillConfig) ? null : action.pointId;
+    const skillTargetId = skillUsesBoardConfirmation(skillConfig) ? null : action.pointId;
     const result = useSkill(room.game, player.color, skillConfig, skillTargetId);
     if (!result.ok) return result;
     const skillNotice = describeSkillUse(room, player, skillTargetId);
@@ -764,14 +765,6 @@ function describeSkillUse(room, player, targetId) {
     return `${fixed}。落下了电子幽灵般的一手，应该不会被发现吧...`;
   }
   return `${fixed}。`;
-}
-
-function skillUsesConfirmationPoint(skillConfig) {
-  const skill = typeof skillConfig === "string"
-    ? CHARACTERS[skillConfig]?.skill
-    : skillConfig;
-  const effectType = skill?.effectType ?? skill?.id;
-  return effectType === "random-blast";
 }
 
 function renderSkillMessage(template, values) {

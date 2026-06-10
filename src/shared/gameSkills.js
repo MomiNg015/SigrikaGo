@@ -106,3 +106,9 @@ export function skillRequiresExistingStone(skillOrCharacterId) {
   const targetRule = skill?.targetRule ?? targetRuleForEffect(effectType);
   return targetRule === "stone" || effectType === "random-blast";
 }
+
+export function skillUsesBoardConfirmation(skillOrCharacterId) {
+  const skill = normalizeSkillConfig(skillOrCharacterId);
+  const effectType = skill?.effectType ?? skill?.id;
+  return effectType === "random-blast";
+}

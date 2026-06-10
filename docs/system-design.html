@@ -1007,7 +1007,7 @@
 <li>依赖棋盘已有棋子的技能在场上没有棋子时不可启动：前端技能按钮会变灰，服务端也会在 <code>use-skill</code> action 中二次校验并拒绝。当前包括以棋子为目标的达妮娅 <code>flip-stone</code>，以及需要随机选择现有棋子为中心的猪小仙 <code>random-blast</code>。</li>
 </ul>
 <ul>
-<li>无目标技能不显示落子/目标预览；猪小仙 <code>random-blast</code> 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。</li>
+<li>无目标技能不显示落子/目标预览；猪小仙 <code>random-blast</code> 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。前端必须把 <code>canPreviewSkillTarget</code> 的目标预览判定和 <code>skillUsesBoardConfirmation</code> 的棋盘确认判定分开：前者保持 <code>false</code>，后者允许合法棋盘点触发 <code>use-skill</code>。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。</li>
 </ul>
 <ul>
 <li>技能可配置：</li>
@@ -2232,7 +2232,7 @@
 <li><code>createScoringState</code> / <code>prepareScoringState</code> / <code>markDeadGroup</code> / <code>toggleNeutralPoint</code> / <code>resetDeadMarks</code> / <code>scoreGame</code>: 位于 <code>src/shared/gameScoring.js</code>，集中封装数子阶段状态和终局计分；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
 </ul>
 <ul>
-<li><code>normalizeSkillConfig</code> / <code>skillRequiresExistingStone</code>: 位于 <code>src/shared/gameSkills.js</code>，集中封装技能配置归一化和棋子依赖判定；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
+<li><code>normalizeSkillConfig</code> / <code>skillRequiresExistingStone</code> / <code>skillUsesBoardConfirmation</code>: 位于 <code>src/shared/gameSkills.js</code>，集中封装技能配置归一化、棋子依赖判定和确认式无目标技能判定；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
 </ul>
 <ul>
 <li><code>executeRegisteredSkill</code> / <code>skillConsumesTurn</code>: 位于 <code>src/shared/gameSkillRegistry.js</code>，集中封装主动技能 <code>effectType</code> 到执行 handler 的分发与回合消耗判定。</li>

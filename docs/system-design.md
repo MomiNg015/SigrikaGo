@@ -424,7 +424,7 @@ SigrikaGo/
 - 达妮娅目标点泡泡炸裂特效已有预览资产 `public/assets/effects/denia-bubble-pop.webp`：透明玻璃泡泡生成并膨胀，随后被黑色能量/墨雾填满，短暂出现细密裂纹和蓄力压迫，最终爆散出黑色碎片、烟雾粒子和轻微冲击波并消散。该 GIF 当前仅作为视觉参考，尚未接入技能生效流程。
 - 开局被动技能不会在 `opening` 阶段触发；正式进入 `playing` 后才按延迟规则触发，避免和执色提示/开局语音重叠。
 - 依赖棋盘已有棋子的技能在场上没有棋子时不可启动：前端技能按钮会变灰，服务端也会在 `use-skill` action 中二次校验并拒绝。当前包括以棋子为目标的达妮娅 `flip-stone`，以及需要随机选择现有棋子为中心的猪小仙 `random-blast`。
-- 无目标技能不显示落子/目标预览；猪小仙 `random-blast` 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。
+- 无目标技能不显示落子/目标预览；猪小仙 `random-blast` 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。前端必须把 `canPreviewSkillTarget` 的目标预览判定和 `skillUsesBoardConfirmation` 的棋盘确认判定分开：前者保持 `false`，后者允许合法棋盘点触发 `use-skill`。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。
 - 技能可配置：
   - 使用次数 `uses`
   - 是否不消耗回合 `freeTurn`
@@ -993,7 +993,7 @@ SigrikaGo/
 - `createPoints` / `getPoint` / `activeNeighbors`: 位于 `src/shared/gameBoard.js`，集中封装棋盘几何和点位访问；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `collectGroup`: 位于 `src/shared/gameGroups.js`，集中封装棋子连通块和气的遍历；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `createScoringState` / `prepareScoringState` / `markDeadGroup` / `toggleNeutralPoint` / `resetDeadMarks` / `scoreGame`: 位于 `src/shared/gameScoring.js`，集中封装数子阶段状态和终局计分；`src/shared/game.js` 保持同名转导以兼容既有调用方。
-- `normalizeSkillConfig` / `skillRequiresExistingStone`: 位于 `src/shared/gameSkills.js`，集中封装技能配置归一化和棋子依赖判定；`src/shared/game.js` 保持同名转导以兼容既有调用方。
+- `normalizeSkillConfig` / `skillRequiresExistingStone` / `skillUsesBoardConfirmation`: 位于 `src/shared/gameSkills.js`，集中封装技能配置归一化、棋子依赖判定和确认式无目标技能判定；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `executeRegisteredSkill` / `skillConsumesTurn`: 位于 `src/shared/gameSkillRegistry.js`，集中封装主动技能 `effectType` 到执行 handler 的分发与回合消耗判定。
 - `ACTIVE_SKILL_HANDLERS` / `executeActiveSkillHandler`: 位于 `src/shared/gameSkillHandlers.js`，集中维护当前具体主动技能 handler；`src/shared/game.js` 保留规则状态和兼容转导，新增主动技能应优先扩展 handler/registry 契约。
 - `createResignResult` / `createTimeoutResult` / `createDrawResult` / `resultWithInvalidFlagForGame`: 位于 `src/shared/gameResults.js`，集中封装对局结果 payload 与早期无效局标记；`src/shared/game.js` 保持同名转导以兼容既有调用方。

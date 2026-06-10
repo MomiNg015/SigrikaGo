@@ -91,6 +91,16 @@ npm test -- src/room/RoomScreen.test.js src/room/ActionBar.test.js
 
 For broader confidence after shared CSS changes, also run `npm test` and `npm run build`.
 
+### Skill targeting contracts
+
+Keep visual target preview separate from board-click release confirmation. No-target active skills such as Baconbits `random-blast` must keep `canPreviewSkillTarget` false so the board does not show a fake target marker, but `skillUsesBoardConfirmation` must still let a valid board point confirm and send the skill action. Do not reuse the preview helper as the only click-eligibility gate for skills.
+
+Before finishing skill targeting changes, run:
+
+```bash
+npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.test.js src/room/RoomScreen.test.js src/shared/boardView.test.js
+```
+
 ---
 
 ## Code Review Checklist

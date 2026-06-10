@@ -13,7 +13,8 @@ import {
 } from "./gameBoard.js";
 import {
   normalizeSkillConfig,
-  skillRequiresExistingStone
+  skillRequiresExistingStone,
+  skillUsesBoardConfirmation
 } from "./gameSkills.js";
 import { executeActiveSkillHandler } from "./gameSkillHandlers.js";
 import { collectGroup } from "./gameGroups.js";
@@ -52,7 +53,8 @@ export {
 } from "./gameBoard.js";
 export {
   normalizeSkillConfig,
-  skillRequiresExistingStone
+  skillRequiresExistingStone,
+  skillUsesBoardConfirmation
 } from "./gameSkills.js";
 export {
   INVALID_EARLY_RESIGN_NOTICE,
