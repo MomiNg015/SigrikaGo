@@ -405,6 +405,9 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain("display: block !important");
     expect(portraitMedia).toContain("font-size: 10px !important");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .action-bar button");
+    expect(portraitMedia).toContain("border: 0 !important");
+    expect(portraitMedia).toContain("box-shadow: none !important");
+    expect(portraitMedia).toContain("background: transparent !important");
     expect(portraitMedia).toContain("grid-template-rows: 1fr !important");
     expect(portraitMedia).toContain("button:has(.action-label)");
     expect(portraitMedia).toContain("max-height: 42px !important");
