@@ -47,6 +47,18 @@ describe("FriendsModal mobile layout", () => {
     expect(brightSchoolMobileCss).toContain(".friends-list,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-table {\n    overflow-x: hidden !important;");
     expect(brightSchoolMobileCss).toContain(".friends-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-row {\n    min-width: 0 !important;");
   });
+
+  it("keeps desktop friend search clear of the close button", () => {
+    const commerceCss = readText(new URL("../styles/commerce-settings.css", import.meta.url));
+    const brightSchoolRepairCss = readText(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    const desktopCommerceBlock = mediaBlock(commerceCss, "@media (min-width: 769px)");
+    const desktopBrightSchoolBlock = mediaBlock(brightSchoolRepairCss, "@media (min-width: 769px)");
+
+    expect(desktopCommerceBlock).toContain(".friends-modal-toolbar");
+    expect(desktopCommerceBlock).toContain("padding-right: 64px");
+    expect(desktopBrightSchoolBlock).toContain(".friends-modal .friends-modal-toolbar");
+    expect(desktopBrightSchoolBlock).toContain("padding-right: 68px !important");
+  });
 });
 
 function mediaBlock(css, marker) {

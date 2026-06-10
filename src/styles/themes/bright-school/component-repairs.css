@@ -348,6 +348,12 @@
   padding: 10px 16px !important;
 }
 
+@media (min-width: 769px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-modal .friends-modal-toolbar {
+    padding-right: 68px !important;
+  }
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section {
   padding: 18px !important;
