@@ -2108,7 +2108,7 @@
 .warehouse-character-grid button {
   min-height: 160px;
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: 1fr auto auto;
   gap: 8px;
   align-items: end;
   justify-items: center;
@@ -2116,6 +2116,37 @@
   border-radius: 8px;
   background: #ffffff;
   padding: 10px;
+}
+
+.warehouse-character-grid button.warehouse-target-disabled {
+  cursor: not-allowed;
+  border-color: rgba(110, 118, 122, 0.28);
+  background: linear-gradient(135deg, #f1f2f0, #e3e6e4);
+  color: #6f7476;
+  box-shadow: none;
+  filter: grayscale(0.8) saturate(0.35);
+  opacity: 0.72;
+}
+
+.warehouse-character-grid button.warehouse-target-disabled img {
+  filter: grayscale(1) saturate(0.2) contrast(0.85);
+  opacity: 0.66;
+}
+
+.warehouse-character-grid button.warehouse-target-disabled span {
+  color: #555d61;
+}
+
+.warehouse-character-grid button small {
+  min-height: 22px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(89, 97, 101, 0.12);
+  color: #596165;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .warehouse-character-grid img {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import WarehouseModal, { warehouseTargetState } from "./WarehouseModal.jsx";
+import WarehouseTargetModal, { warehouseCharacterTargetAvailability } from "./warehouse/WarehouseTargetModal.jsx";
 
 describe("WarehouseModal candy feedback", () => {
   it("keeps the used character centered with the effect text after item use", () => {
@@ -91,5 +92,45 @@ describe("WarehouseModal candy feedback", () => {
 
     expect(html).toContain("warehouse-effect-result");
     expect(html).toContain("warehouse-item-category-character");
+  });
+
+  it("disables character targets that are already affected or have no item effect", () => {
+    const item = { itemId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖", targetType: "character" };
+    const characters = {
+      denia: { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp" },
+      sigrika: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
+      momo: { id: "momo", name: "莫名", portrait: "/assets/momo.webp" }
+    };
+
+    expect(warehouseCharacterTargetAvailability({
+      character: characters.denia,
+      item,
+      itemEffects: { deniaRainbowGlow: true }
+    })).toEqual({ disabled: true, reason: "效果中" });
+    expect(warehouseCharacterTargetAvailability({
+      character: characters.momo,
+      item,
+      itemEffects: {}
+    })).toEqual({ disabled: true, reason: "无效果" });
+    expect(warehouseCharacterTargetAvailability({
+      character: characters.sigrika,
+      item,
+      itemEffects: {}
+    })).toEqual({ disabled: false, reason: "" });
+
+    const html = renderToStaticMarkup(createElement(WarehouseTargetModal, {
+      characters,
+      ownedCharacters: [characters.denia, characters.sigrika, characters.momo],
+      targetItem: item,
+      targetResult: null,
+      user: { itemEffects: { deniaRainbowGlow: true } },
+      onClose: () => {},
+      onUseItem: () => {}
+    }));
+
+    expect(html.match(/warehouse-target-disabled/g)).toHaveLength(2);
+    expect(html.match(/disabled=""/g)).toHaveLength(2);
+    expect(html).toContain("效果中");
+    expect(html).toContain("无效果");
   });
 });

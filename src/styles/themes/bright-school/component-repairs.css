@@ -496,6 +496,27 @@
   padding: 10px !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button.warehouse-target-disabled {
+  background: linear-gradient(135deg, #f2f0eb, #dde2df) !important;
+  border-color: rgba(61, 43, 37, 0.44) !important;
+  color: #6d6864 !important;
+  box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.36) !important;
+  filter: grayscale(0.9) saturate(0.35) !important;
+  opacity: 0.72 !important;
+  cursor: not-allowed !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button.warehouse-target-disabled img {
+  filter: grayscale(1) saturate(0.2) contrast(0.86) !important;
+  opacity: 0.62 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button.warehouse-target-disabled small {
+  background: rgba(61, 43, 37, 0.12) !important;
+  color: #5c5753 !important;
+  border: 1px solid rgba(61, 43, 37, 0.22) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid img {
   width: 100% !important;
   height: 96px !important;
