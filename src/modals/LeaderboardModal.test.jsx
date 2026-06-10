@@ -121,8 +121,13 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain(".leaderboard-row");
     expect(phoneModalMedia).toContain("min-width: 0");
     expect(phoneModalMedia).toContain("grid-template-areas:");
+    expect(phoneModalMedia).toContain('"rank avatar player score"');
+    expect(phoneModalMedia).toContain('"rank avatar player rate"');
+    expect(phoneModalMedia).toContain("grid-template-columns: 42px 38px minmax(0, 1fr) minmax(58px, auto)");
+    expect(phoneModalMedia).toContain("text-align: left");
     expect(phoneModalMedia).toContain(".leaderboard-row > span:nth-of-type");
     expect(phoneModalMedia).toContain(".leaderboard-current .leaderboard-row");
+    expect(phoneModalMedia).toContain("min-height: 68px");
     expect(phoneModalMedia).toContain(".friends-modal");
     expect(phoneModalMedia).toContain("grid-template-rows: auto minmax(0, 1fr)");
     expect(phoneModalMedia).toContain(".friends-list");
@@ -134,8 +139,13 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain(".leaderboard-row.top-rank .leaderboard-rank");
     expect(finalMobileCss).toContain("border-radius: 50% !important");
     expect(finalMobileCss).toContain("clip-path: none !important");
+    expect(finalMobileCss).toContain('"rank avatar player score"');
+    expect(finalMobileCss).toContain('"rank avatar player rate"');
+    expect(finalMobileCss).toContain("grid-template-columns: 42px 38px minmax(0, 1fr) minmax(58px, auto) !important");
+    expect(finalMobileCss).toContain(".leaderboard-row > span:nth-of-type(5)");
+    expect(finalMobileCss).toContain("border-radius: 999px !important");
     expect(finalMobileCss).toContain(".leaderboard-current .leaderboard-row");
-    expect(finalMobileCss).toContain("grid-template-columns: 42px 38px minmax(0, 1fr) auto !important");
+    expect(finalMobileCss).toContain("min-height: 68px !important");
   });
 });
 

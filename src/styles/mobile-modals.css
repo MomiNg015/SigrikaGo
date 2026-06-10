@@ -407,30 +407,33 @@
     width: 100%;
     display: grid;
     grid-template-areas:
-      "rank avatar player rating"
-      "rank avatar player stats";
-    grid-template-columns: 42px 42px minmax(0, 1fr) auto;
-    gap: 5px 8px;
+      "rank avatar player score"
+      "rank avatar player rate";
+    grid-template-columns: 42px 38px minmax(0, 1fr) minmax(58px, auto);
+    gap: 4px 8px;
     align-items: center;
-    padding: 9px 10px;
+    min-height: 66px;
+    padding: 8px 10px;
+    text-align: left;
   }
 
   .leaderboard-row img {
     grid-area: avatar;
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 40px;
   }
 
   .leaderboard-rank {
     grid-area: rank;
-    align-self: stretch;
-    display: grid;
-    place-items: center;
+    align-self: center;
+    justify-self: center;
   }
 
   .leaderboard-player {
     grid-area: player;
     min-width: 0;
+    justify-items: start;
+    text-align: left;
   }
 
   .leaderboard-row > span:nth-of-type(1) {
@@ -438,18 +441,23 @@
   }
 
   .leaderboard-row > b {
-    grid-area: rating;
+    grid-area: score;
     justify-self: end;
     white-space: nowrap;
+    line-height: 1;
   }
 
   .leaderboard-row > span:nth-of-type(2),
   .leaderboard-row > span:nth-of-type(3),
   .leaderboard-row > span:nth-of-type(4),
   .leaderboard-row > span:nth-of-type(5) {
-    grid-area: stats;
+    grid-area: rate;
     justify-self: end;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.64);
     font-size: 12px;
+    line-height: 1.15;
     white-space: nowrap;
   }
 
@@ -480,11 +488,13 @@
   .leaderboard-current {
     min-width: 0;
     display: grid;
-    gap: 6px;
+    gap: 7px;
+    padding-top: 8px;
   }
 
   .leaderboard-current .leaderboard-row {
     min-width: 0;
+    min-height: 68px;
   }
 
   .friends-modal {

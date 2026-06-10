@@ -1429,6 +1429,57 @@
     overflow-x: hidden !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-table {
+    gap: 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-list {
+    gap: 7px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row {
+    min-height: 66px !important;
+    grid-template-areas:
+      "rank avatar player score"
+      "rank avatar player rate" !important;
+    grid-template-columns: 42px 38px minmax(0, 1fr) minmax(58px, auto) !important;
+    gap: 4px 8px !important;
+    align-items: center !important;
+    padding: 8px 10px !important;
+    text-align: left !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row img {
+    width: 34px !important;
+    height: 40px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-rank {
+    align-self: center !important;
+    justify-self: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player {
+    justify-items: start !important;
+    text-align: left !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row > b {
+    grid-area: score !important;
+    align-self: end !important;
+    line-height: 1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row > span:nth-of-type(5) {
+    grid-area: rate !important;
+    align-self: start !important;
+    padding: 2px 6px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.64) !important;
+    font-size: 12px !important;
+    line-height: 1.15 !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.top-rank .leaderboard-rank,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-1 .leaderboard-rank,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-2 .leaderboard-rank,
@@ -1445,6 +1496,7 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current {
     width: 100% !important;
     min-width: 0 !important;
+    gap: 7px !important;
     padding: 8px 0 0 !important;
     background: transparent !important;
     border: 0 !important;
@@ -1452,12 +1504,12 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
-    min-height: 78px !important;
+    min-height: 68px !important;
     width: 100% !important;
     min-width: 0 !important;
-    grid-template-columns: 42px 38px minmax(0, 1fr) auto !important;
-    gap: 5px 8px !important;
-    padding: 10px 12px !important;
+    grid-template-columns: 42px 38px minmax(0, 1fr) minmax(58px, auto) !important;
+    gap: 4px 8px !important;
+    padding: 8px 10px !important;
     border-width: 2px !important;
     border-radius: 16px !important;
     box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.44) !important;
