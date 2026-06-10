@@ -1351,6 +1351,7 @@ This implementation follows `docs/superpowers/specs/2026-05-19-result-home-voice
 - Room action area:
   - Normal play shows regular action buttons below the board.
   - Draw requests, counting requests, dead-stone marking, and result review render in the main board action area through phase-aware `DecisionBar` controls.
+  - Mobile dead-stone confirmation keeps `decision-bar` separate from the normal action-button grid: the copy column shows the title plus a two-line clamped hint, and `decision-actions` uses two equal-width confirm/reset buttons. `mobile-room.css`, `mobile-adaptive.css`, and Bright School mobile overrides must preserve this special layout so 375px/393px portrait docks do not stack the confirmation buttons awkwardly.
   - Decision controls are participant-safe: missing/non-player local state sees an informational waiting state instead of active buttons.
   - Request and result-review decision bars include countdown/progress visuals.
   - Text-only operation hints render below the opponent info area, to the left of the main board action area.

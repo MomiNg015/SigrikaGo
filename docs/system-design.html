@@ -3055,6 +3055,9 @@
 <li>Draw requests, counting requests, dead-stone marking, and result review render in the main board action area through phase-aware <code>DecisionBar</code> controls.</li>
 </ul>
 <ul>
+<li>Mobile dead-stone confirmation keeps <code>decision-bar</code> separate from the normal action-button grid: the copy column shows the title plus a two-line clamped hint, and <code>decision-actions</code> uses two equal-width confirm/reset buttons. <code>mobile-room.css</code>, <code>mobile-adaptive.css</code>, and Bright School mobile overrides must preserve this special layout so 375px/393px portrait docks do not stack the confirmation buttons awkwardly.</li>
+</ul>
+<ul>
 <li>Decision controls are participant-safe: missing/non-player local state sees an informational waiting state instead of active buttons.</li>
 </ul>
 <ul>

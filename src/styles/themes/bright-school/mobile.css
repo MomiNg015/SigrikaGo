@@ -1572,6 +1572,48 @@
     border-radius: 12px !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .decision-bar {
+    grid-template-columns: minmax(0, 1fr) minmax(128px, 0.72fr) !important;
+    grid-auto-rows: auto !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-height: 0 !important;
+    padding: 6px 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .decision-copy {
+    gap: 2px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .decision-copy strong {
+    font-size: 13px !important;
+    line-height: 1.1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .decision-copy span {
+    display: -webkit-box !important;
+    overflow: hidden !important;
+    font-size: 10.5px !important;
+    line-height: 1.22 !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .decision-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    width: 100% !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .decision-actions button {
+    min-height: 42px !important;
+    height: auto !important;
+    padding: 5px 4px !important;
+    font-size: 11px !important;
+    line-height: 1.12 !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .action-bar button:has(.action-label) {
     grid-template-rows: 18px 1fr !important;
   }

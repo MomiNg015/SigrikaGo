@@ -319,6 +319,24 @@ describe("RoomScreen helpers", () => {
     expect(roomCss).toContain(".touch-confirm-marker");
   });
 
+  it("keeps mobile dead-stone decisions compact and readable", () => {
+    const mobileRoomCss = readFileSync(new URL("../styles/mobile-room.css", import.meta.url), "utf8");
+    const brightMobileCss = readFileSync(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
+    const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
+    const brightPortraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
+
+    expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .decision-bar");
+    expect(portraitMedia).toContain("grid-template-columns: minmax(0, 1fr) minmax(128px, 0.72fr)");
+    expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .decision-actions");
+    expect(portraitMedia).toContain("grid-template-columns: repeat(2, minmax(0, 1fr))");
+    expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .decision-copy span");
+    expect(portraitMedia).toContain("-webkit-line-clamp: 2");
+    expect(brightPortraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .decision-bar");
+    expect(brightPortraitMedia).toContain("grid-template-columns: minmax(0, 1fr) minmax(128px, 0.72fr) !important");
+    expect(brightPortraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .decision-actions button");
+    expect(brightPortraitMedia).toContain("min-height: 42px !important");
+  });
+
   it("passes no-target skill board confirmation from the room view into point actions", () => {
     const source = readFileSync(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
     const boardViewSource = readFileSync(new URL("./view/useRoomBoardView.js", import.meta.url), "utf8");

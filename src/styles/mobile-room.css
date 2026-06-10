@@ -431,8 +431,45 @@
   }
 
   .mobile-room-screen .mobile-tab-panel .decision-bar {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(128px, 0.72fr);
+    align-items: center;
+    gap: 6px;
+    min-height: 0;
+    padding: 6px 8px;
     width: 100%;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy {
+    gap: 2px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy strong {
+    font-size: 13px;
+    line-height: 1.1;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy span {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 10.5px;
+    line-height: 1.22;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    width: 100%;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-actions button {
+    min-height: 42px;
+    height: auto;
+    padding: 5px 4px;
+    font-size: 11px;
+    line-height: 1.12;
   }
 
   .mobile-room-screen .mobile-tab-panel .room-people,
@@ -669,6 +706,48 @@
     min-height: 46px;
     height: 46px;
     padding: 4px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-bar {
+    grid-template-columns: minmax(0, 1fr) minmax(128px, 0.72fr);
+    grid-auto-rows: auto;
+    align-items: center;
+    gap: 6px;
+    min-height: 0;
+    padding: 6px 8px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy {
+    gap: 2px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy strong {
+    font-size: 13px;
+    line-height: 1.1;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy span {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 10.5px;
+    line-height: 1.22;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    width: 100%;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-actions button {
+    min-height: 42px;
+    height: auto;
+    padding: 5px 4px;
+    font-size: 11px;
+    line-height: 1.12;
   }
 
   .mobile-room-screen #mobile-room-panel-actions .operation-hint {
