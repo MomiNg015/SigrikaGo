@@ -58,11 +58,11 @@ describe("HomeScreen", () => {
     expect(html).toContain("连罗伊人的都爱玩的智力游戏");
     expect(html).toContain("home-online-tag");
     expect(html).toContain("在线人数：2");
-    expect(html).toContain("home-lobby-status");
     expect(html).toContain("home-mobile-menu");
     expect(html).toContain("home-mobile-menu-toggle");
     expect(html).toContain("home-mobile-menu-panel");
-    expect(html).toContain("LOBBY_ROOM (•̀ᴗ•́)و");
+    expect(html).not.toContain("home-lobby-status");
+    expect(html).not.toContain("LOBBY_ROOM");
     expect(appShellBlock).toContain("overflow-x: hidden");
     expect(appShellBlock).toContain("background: #04080c");
     expect(appShellBeforeBlock).toContain('background-image: url("/assets/home/multipurpose-classroom-bg.webp")');
@@ -172,8 +172,6 @@ describe("HomeScreen", () => {
     expect(mobileMedia).toContain("transform: none");
 
     const brightMobileCss = readTextFixture("../styles/themes/bright-school/mobile.css");
-    expect(brightMobileCss).toContain(".home-lobby-status");
-    expect(brightMobileCss).toContain("display: none !important");
     expect(brightMobileCss).toContain(".home-mobile-menu");
     expect(brightMobileCss).toContain(".home-mobile-menu-panel");
     expect(brightMobileCss).toContain("grid-template-columns: 22px max-content !important");

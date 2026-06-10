@@ -23,7 +23,6 @@ export default function HomeHeader({
         <span className="home-brand-subtitle">连罗伊人的都爱玩的智力游戏</span>
       </div>
       <span className="home-online-tag">在线人数：{onlineCount}</span>
-      <span className="home-lobby-status">LOBBY_ROOM (•̀ᴗ•́)و</span>
       <div className="topbar-actions">
         <button className="icon-button" title="留言板" onClick={onOpenMessageBoard}><MessageSquareText size={20} /></button>
         <button className="icon-button" title="设置" onClick={onOpenSettings}><Settings size={20} /></button>

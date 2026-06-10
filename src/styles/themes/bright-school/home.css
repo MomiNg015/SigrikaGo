@@ -146,6 +146,10 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+  display: grid !important;
+  grid-template-columns: 76px minmax(120px, 1fr) 94px !important;
+  column-gap: 20px !important;
+  align-items: center !important;
   position: relative !important;
   min-height: 108px !important;
   padding: 20px 18px 16px 26px !important;
@@ -233,10 +237,14 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card strong {
   align-self: center !important;
   min-width: 0 !important;
+  padding-left: 4px !important;
   color: #3d2b25 !important;
   font-size: clamp(24px, 2.6vw, 32px) !important;
   font-weight: 900 !important;
   line-height: 1.08 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.72) !important;
 }
 
@@ -260,6 +268,18 @@
   font-weight: 900 !important;
   line-height: 1.18 !important;
   letter-spacing: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before {
+  color: #3d2b25 !important;
+  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.76) !important;
 }
 
 @media (max-width: 700px) {
@@ -300,6 +320,8 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+    grid-template-columns: 64px minmax(84px, 1fr) 78px !important;
+    column-gap: 14px !important;
     min-height: 96px !important;
     padding: 18px 14px 14px 24px !important;
   }

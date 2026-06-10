@@ -109,7 +109,6 @@ describe("component-level HUD refinements", () => {
   it("adds the anime pop-tech palette, stickers, soft tabs, and character projection effects", () => {
     expect(hudCss).toContain("--hud-pink: #ff76a3");
     expect(hudCss).toContain("--hud-jelly-bg");
-    expect(hudCss).toContain(".home-lobby-status");
     expect(hudCss).toContain(".house-manual-entry.hologram-entry::before");
     expect(hudCss).toContain("content: attr(data-hud)");
     expect(hudCss).toContain("linear-gradient(var(--hud-pink) 0 0) left 10px top 20px");
@@ -414,6 +413,11 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("border-bottom-color: transparent !important");
     expect(plaquePolish).toContain("transform: rotate(-8deg) !important");
     expect(plaquePolish).toContain("transform: rotate(8deg) !important");
+    expect(plaquePolish).toContain("grid-template-columns: 76px minmax(120px, 1fr) 94px !important");
+    expect(plaquePolish).toContain("column-gap: 20px !important");
+    expect(plaquePolish).toContain("white-space: nowrap !important");
+    expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before");
+    expect(plaquePolish).toContain('font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
   });
 
   it("keeps Bright School stage transparent and preserves match motion", () => {
