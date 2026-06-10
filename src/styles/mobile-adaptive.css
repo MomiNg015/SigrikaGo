@@ -145,12 +145,19 @@
 
   .settings-tabs,
   .friends-tabs,
-  .shop-tabs,
   .shop-pagination {
     min-width: 0;
     width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    gap: 6px;
+  }
+
+  .shop-tabs {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
   }
 
@@ -1470,7 +1477,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-list {
     grid-template-columns: repeat(auto-fill, minmax(58px, 70px)) !important;
-    justify-content: center !important;
+    justify-content: start !important;
     align-content: start !important;
   }
 
@@ -1478,7 +1485,7 @@
     width: 70px !important;
     max-width: 70px !important;
     min-height: 54px !important;
-    justify-self: center !important;
+    justify-self: start !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .deploy-tag {

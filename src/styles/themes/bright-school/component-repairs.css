@@ -372,7 +372,7 @@
   background: #fff6dd !important;
   border: 2px solid var(--bright-border) !important;
   border-radius: 14px !important;
-  box-shadow: 2px 2px 0 var(--bright-border) !important;
+  box-shadow: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail {
@@ -615,7 +615,7 @@
 
 @media (max-width: 900px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(auto-fit, minmax(calc((100% - 36px) / 4), 1fr)) !important;
   }
 }
 

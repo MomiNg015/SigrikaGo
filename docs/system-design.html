@@ -54,6 +54,18 @@
 <body>
 <h2>UI Asset Notes</h2>
 <ul>
+<li>Shop tabs layout is unified to a single row across both desktop and mobile views under the Bright School theme and general commerce layout. By declaring <code>.shop-tabs</code> with <code>grid-template-columns: repeat(4, minmax(0, 1fr))</code> and separating it from mobile adaptive <code>auto-fit</code> styles, all four store categories (characters, items, decorations, music) sit on one line without wrapping to a second row.</li>
+</ul>
+<ul>
+<li>Shop item cards on mobile views display meta text in three vertical rows: name on row one, limit/stock on row two, and price on row three. Cards use flex column direction with <code>min-height: 220px</code> and <code>height: auto</code> to prevent squeeze under different viewport heights. In addition, the metadata wrapper <code>.shop-card-meta</code> is set to <code>display: contents</code> so its children participate directly in card alignment flow, and font sizes of the name and price are scaled up for visual emphasis.</li>
+</ul>
+<ul>
+<li>Warehouse items layout on mobile views is optimized to align to the top of the container instead of stretching. By applying <code>align-content: start</code> to <code>.warehouse-grid</code> under the Bright School mobile theme and general commerce layout, individual items stack neatly from top to bottom even if there is only one item present.</li>
+</ul>
+<ul>
+<li>Warehouse target selection card grid layout on mobile views displays characters on a dynamic grid with up to four columns per row, shrinking and expanding cards automatically using the formula <code>repeat(auto-fit, minmax(calc((100% - 36px) / 4), 1fr))</code>. Cards utilize flex column direction to place portraits on top of centered names, and portraits scale responsively using flex-grow with height zero, preventing overlap or text clipping on small viewports.</li>
+</ul>
+<ul>
 <li>Browser tabs use <code>/assets/sigrika_centered.png</code> as the site favicon so the Sigrika portrait appears beside the <code>SigrikaGo</code> page title.</li>
 </ul>
 <ul>

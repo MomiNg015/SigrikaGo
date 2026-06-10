@@ -387,6 +387,20 @@
   filter: grayscale(0.75);
 }
 
+.watch-side-label {
+  flex: 0 0 auto;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.watch-player-cell.black .watch-side-label {
+  color: #2d2430;
+}
+
+.watch-player-cell.white .watch-side-label {
+  color: #9a879d;
+}
+
 .watch-status {
   width: max-content;
   padding: 5px 9px;

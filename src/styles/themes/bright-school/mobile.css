@@ -589,7 +589,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs {
     width: 100% !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 5px !important;
   }
 
@@ -608,10 +608,52 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item {
     min-width: 0 !important;
-    min-height: 190px !important;
+    min-height: 220px !important;
+    height: auto !important;
     padding: 10px !important;
     border-width: 2px !important;
     border-radius: 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-meta {
+    display: contents !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > strong {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+    text-align: center !important;
+    margin: 6px 0 3px 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > span {
+    font-size: 11px !important;
+    color: #8fa0dd !important;
+    text-align: center !important;
+    margin: 2px 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .shop-price {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    text-align: center !important;
+    margin: 3px 0 6px 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 4px !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .shop-price b {
+    font-size: 15px !important;
+    font-weight: 900 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > img,
@@ -717,7 +759,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs {
     width: 100% !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 5px !important;
   }
 
@@ -736,10 +778,52 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item {
     min-width: 0 !important;
-    min-height: 190px !important;
+    min-height: 220px !important;
+    height: auto !important;
     padding: 10px !important;
     border-width: 2px !important;
     border-radius: 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-meta {
+    display: contents !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > strong {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+    text-align: center !important;
+    margin: 6px 0 3px 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > span {
+    font-size: 11px !important;
+    color: #8fa0dd !important;
+    text-align: center !important;
+    margin: 2px 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .shop-price {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    text-align: center !important;
+    margin: 3px 0 6px 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 4px !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .shop-price b {
+    font-size: 15px !important;
+    font-weight: 900 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > img,
@@ -780,6 +864,7 @@
     display: grid !important;
     grid-template-columns: 1fr !important;
     gap: 8px !important;
+    align-content: start !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item {
@@ -1090,6 +1175,29 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-row {
     min-width: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-row {
+    grid-template-areas:
+      "code status"
+      "black white"
+      "meta meta" !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 4px 8px !important;
+    padding: 8px 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-player-cell {
+    gap: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-player-cell img {
+    width: 28px !important;
+    height: 22px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-side-label {
+    font-size: 11px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row {
@@ -2237,5 +2345,36 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .chat-toggle-button {
     margin-left: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(calc((100% - 36px) / 4), 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button {
+    min-width: 0 !important;
+    aspect-ratio: 0.78 !important;
+    padding: 8px 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid img {
+    width: 100% !important;
+    height: 0 !important;
+    flex: 1 1 auto !important;
+    object-fit: contain !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid span {
+    flex: 0 0 auto !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    margin-top: 4px !important;
   }
 }

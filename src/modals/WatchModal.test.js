@@ -51,8 +51,8 @@ describe("WatchModal helpers", () => {
     expect(phoneModalMedia).toContain(".watch-room-row");
     expect(phoneModalMedia).toContain("grid-template-areas:");
     expect(phoneModalMedia).toContain("\"code status\"");
-    expect(phoneModalMedia).toContain("\"black black\"");
-    expect(phoneModalMedia).toContain("\"white white\"");
+    expect(phoneModalMedia).toContain("\"black white\"");
+    expect(phoneModalMedia).not.toContain("\"black black\"");
     expect(phoneModalMedia).not.toContain("min-width: 680px");
     expect(phoneModalMedia).not.toContain("--watch-room-grid-columns");
     expect(phoneModalMedia).toContain(".watch-list-modal .inline-close");
@@ -73,7 +73,7 @@ describe("WatchModal helpers", () => {
     expect(phoneModalMedia).toContain(".watch-room-row");
     expect(phoneModalMedia).toContain("display: grid");
     expect(phoneModalMedia).toContain(".small-modal .watch-room-row");
-    expect(phoneModalMedia).toContain("grid-template-columns: minmax(0, 1fr) auto");
+    expect(phoneModalMedia).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)");
     expect(phoneModalMedia).toContain(".watch-player-cell");
     expect(phoneModalMedia).toContain("min-width: 0");
     expect(phoneModalMedia).toContain("justify-self: stretch");
