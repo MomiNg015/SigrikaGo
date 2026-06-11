@@ -132,6 +132,7 @@ describe("HomeScreen", () => {
     const brightHomeCss = readTextFixture("../styles/themes/bright-school/home.css");
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
 
     expect(html).toContain("home-player-row tactical-id-row");
     expect(html).toContain("home-player-plaque tactical-id-card");
@@ -156,6 +157,9 @@ describe("HomeScreen", () => {
     expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(116px, 1fr) minmax(164px, max-content)");
     expect(brightStatsBlock).toContain("min-width: 164px");
     expect(brightStatsBlock).toContain("box-sizing: border-box");
+    expect(brightShortHeightMedia).toContain("max-height: calc(100dvh - 128px)");
+    expect(brightShortHeightMedia).toContain("height: clamp(220px, 36dvh, 286px)");
+    expect(brightShortHeightMedia).toContain("height: clamp(270px, 50dvh, 356px)");
     expect(utilityBlock).toContain("grid-template-columns: 1fr");
     expect(utilityEntryBlock).toContain("grid-template-columns: 28px minmax(0, 1fr)");
     expect(utilityEntryBlock).toContain("transform: skewX(-15deg)");

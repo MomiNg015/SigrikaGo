@@ -78,6 +78,9 @@
 <li>Bright School desktop plaques must reserve a right-side grid column at least as wide as the two-row mode stat panel (<code>164px</code> currently); otherwise the plaque's clipped student-ID card frame cuts off rating text such as <code>1160分</code>.</li>
 </ul>
 <ul>
+<li>Bright School desktop lobby has a short-height safety pass for <code>max-height: 760px</code>: the main panel margins/padding, stage top padding, manual entry, and match entry scale from <code>dvh</code> so the handbook and match images stay inside the visible desktop viewport instead of spilling below the fold.</li>
+</ul>
+<ul>
 <li>Server startup calls <code>ensureGameModeSchema(prisma)</code> before auth routes are used. It creates <code>UserModeStats</code>, adds <code>GameRecord.mode</code> when an older SQLite dev database is still on the pre-mode schema, and backfills each existing user into the <code>spark</code> stats bucket so login/profile reads can include <code>modeStats</code> safely after pulling the branch.</li>
 </ul>
 <ul>

@@ -303,6 +303,33 @@
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.76) !important;
 }
 
+@media (min-width: 701px) and (max-height: 760px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main {
+    margin-top: clamp(8px, 1.3dvh, 14px) !important;
+    margin-bottom: clamp(8px, 1.3dvh, 14px) !important;
+    padding-top: clamp(16px, 2.8dvh, 24px) !important;
+    padding-bottom: clamp(16px, 2.8dvh, 24px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
+    padding-top: clamp(50px, 8dvh, 70px) !important;
+    max-height: calc(100dvh - 128px) !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone {
+    top: clamp(-64px, -8dvh, -48px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
+    height: clamp(220px, 36dvh, 286px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry {
+    height: clamp(270px, 50dvh, 356px) !important;
+  }
+}
+
 @media (max-width: 700px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main {
     margin: 14px 12px 18px !important;
