@@ -11,6 +11,10 @@ function renderHome(overrides = {}) {
       username: "shop-test",
       rank: "2段",
       rating: 1000,
+      modeStats: {
+        spark: { rating: 1260, wins: 3, losses: 1, draws: 0 },
+        standard: { rating: 920, wins: 1, losses: 2, draws: 0 }
+      },
       selectedCharacter: "sigrika",
       role: "player",
       ...overrides.user
@@ -100,7 +104,9 @@ describe("HomeScreen", () => {
     expect(html).toContain('class="home-image-entry match-image-entry hologram-entry"');
     expect(html).toContain('src="/assets/home/book-entry.webp"');
     expect(html).toContain('src="/assets/home/fantasy-match-entry.webp"');
-    expect(html).toContain("当前匹配人数：3");
+    expect(html).not.toContain("matchmaking-popup");
+    expect(html).not.toContain("当前匹配人数：3");
+    expect(html).not.toContain("aria-describedby=\"matchmaking-count-popup\"");
     expect(stageBlock).toContain("grid-template-columns: minmax(240px, 0.72fr) minmax(360px, 1.28fr)");
     expect(stageBlock).toContain("overflow: visible");
     expect(imageEntryBlock).toContain("background: rgba(10, 28, 38, 0.52)");
@@ -110,6 +116,7 @@ describe("HomeScreen", () => {
     expect(hoverBlock).toContain("transform: translateY(-10px)");
     expect(hoverBlock).toContain("border-color: var(--home-terminal-cyan)");
     expect(css).toContain(".match-image-entry:hover::after,\n.match-image-entry:focus-visible::after {\n  animation: none;");
+    expect(css).not.toContain(".matchmaking-popup");
     expect(tacticalTextBlock).toContain("content: attr(data-hud)");
     expect(html).toContain('data-hud="部员手册"');
     expect(html).toContain('data-hud="匹配对局"');
@@ -125,10 +132,18 @@ describe("HomeScreen", () => {
     const utilityEntryBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityTextBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityHoverBeforeBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry:hover::before,[\s\S]+?\.utility-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightHomeCss = readTextFixture("../styles/themes/bright-school/home.css");
+    const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
 
     expect(html).toContain("home-player-row tactical-id-row");
     expect(html).toContain("home-player-plaque tactical-id-card");
     expect(html).toContain('aria-label="打开履历"');
+    expect(html).toContain("plaque-mode-stat plaque-mode-stat-spark");
+    expect(html).toContain("plaque-mode-stat plaque-mode-stat-standard");
+    expect(html).toContain("1260分");
+    expect(html).toContain("920分");
     expect(html).toContain("home-utility-grid tactical-nav-grid");
     expect(html).not.toContain("角色、物品、装饰即将开放");
     expect(html).not.toContain("查看并使用已经获得的道具");
@@ -140,6 +155,14 @@ describe("HomeScreen", () => {
     expect(plaqueBlock).toContain("clip-path: polygon");
     expect(plaqueBlock).toContain("box-shadow");
     expect(statsBlock).toContain("font-family: ui-monospace");
+    expect(statsBlock).toContain("min-width: 154px");
+    expect(css).toContain(".home-player-zone .plaque-mode-stat");
+    expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(116px, 1fr) minmax(164px, max-content)");
+    expect(brightStatsBlock).toContain("min-width: 164px");
+    expect(brightStatsBlock).toContain("box-sizing: border-box");
+    expect(brightShortHeightMedia).toContain("max-height: calc(100dvh - 128px)");
+    expect(brightShortHeightMedia).toContain("height: clamp(220px, 36dvh, 286px)");
+    expect(brightShortHeightMedia).toContain("height: clamp(270px, 50dvh, 356px)");
     expect(utilityBlock).toContain("grid-template-columns: 1fr");
     expect(utilityEntryBlock).toContain("grid-template-columns: 28px minmax(0, 1fr)");
     expect(utilityEntryBlock).toContain("transform: skewX(-15deg)");
@@ -196,5 +219,15 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".leaderboard-header h2");
     expect(finalMobileCss).toContain(".owned-decoration-header h3");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
+  });
+
+  it("keeps match mode cancel actions separated from mode choices", () => {
+    const modalCss = readTextFixture("../styles/modals.css");
+    const finalMobileCss = readTextFixture("../styles/mobile-adaptive.css");
+
+    expect(modalCss).toContain(".match-mode-modal .match-mode-options + .secondary-action");
+    expect(modalCss).toContain("margin-top: 12px;");
+    expect(finalMobileCss).toContain(".match-mode-modal .match-mode-options + .secondary-action");
+    expect(finalMobileCss).toContain("margin-top: 14px !important;");
   });
 });

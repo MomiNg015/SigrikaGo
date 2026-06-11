@@ -54,6 +54,39 @@
 <body>
 <h2>UI Asset Notes</h2>
 <ul>
+<li>Game modes are now explicit shared runtime configuration. <code>spark</code> (<code>星炬对弈</code>) stays first and keeps the 13-line, skill-enabled rule set with black komi 2.75; <code>standard</code> (<code>标准对弈</code>) is second and uses a 19-line no-skill Go board with black komi 3.75. Frontend and backend should read titles, rule copy, board size, komi, skill enablement, time controls, and mode ordering from <code>src/shared/gameModes.js</code> instead of hard-coding mode facts.</li>
+</ul>
+<ul>
+<li>Matchmaking, friend duels, room snapshots, persisted rooms, replay records, watch lists, leaderboards, and profile/history surfaces carry a <code>mode</code> field. Match queues are isolated by mode, lobby stats expose per-mode waiting counts, friend duel requests include the requested mode, and old/missing record modes normalize to <code>spark</code> for legacy data.</li>
+</ul>
+<ul>
+<li>Standard-mode room UI keeps player cosmetics such as selected character portraits and stone decorations, but directly removes skill gameplay affordances: no action-bar skill button, no player skill chips, no skill name display, no removal/overclock counters, and no overclock terms in scoring breakdowns. The rules layer also rejects skill and passive-skill execution in standard mode.</li>
+</ul>
+<ul>
+<li>Room board coordinates and action validation are size-aware. The backend validates move/scoring <code>pointId</code> values against the active room game's <code>size</code>, and the board coordinate labels use the same <code>--size</code> grid as the rendered intersections so 13-line and 19-line boards stay aligned.</li>
+</ul>
+<ul>
+<li>Mode-specific competitive stats live in <code>UserModeStats</code> with one row per user and mode. Existing <code>User.rating</code>, <code>wins</code>, and <code>losses</code> remain star-mode compatibility mirrors during this migration, while standard rating/rank/records are read from <code>UserModeStats</code>; coins remain a global account asset.</li>
+</ul>
+<ul>
+<li>Room snapshots can carry mode-specific player display stats. Frontend room-entry syncs (<code>match:found</code>, <code>room:update</code>, and live <code>room:resume</code>) merge the current player's snapshot into the global user state, but current-user updates never generate coins, rating, or rank-change toasts. Entering spark or standard rooms is a context switch, not a reward/rating event.</li>
+</ul>
+<ul>
+<li>The home player plaque shows two compact rank/rating rows: spark mode first, standard mode second. Each time the app enters the home view it silently refreshes <code>/api/me</code> so the plaque reflects post-game mode stats after leaving a finished room.</li>
+</ul>
+<ul>
+<li>Bright School desktop plaques must reserve a right-side grid column at least as wide as the two-row mode stat panel (<code>164px</code> currently); otherwise the plaque's clipped student-ID card frame cuts off rating text such as <code>1160分</code>.</li>
+</ul>
+<ul>
+<li>Bright School desktop lobby has a short-height safety pass for <code>max-height: 760px</code>: the main panel margins/padding, stage top padding, manual entry, and match entry scale from <code>dvh</code> so the handbook and match images stay inside the visible desktop viewport instead of spilling below the fold.</li>
+</ul>
+<ul>
+<li>Server startup calls <code>ensureGameModeSchema(prisma)</code> before auth routes are used. It creates <code>UserModeStats</code>, adds <code>GameRecord.mode</code> when an older SQLite dev database is still on the pre-mode schema, and backfills each existing user into the <code>spark</code> stats bucket so login/profile reads can include <code>modeStats</code> safely after pulling the branch.</li>
+</ul>
+<ul>
+<li>Desktop and mobile mode switchers use a two-option order (<code>星炬对弈</code>, then <code>标准对弈</code>) for home matchmaking, leaderboard, watch list, and resume/history surfaces. Mode controls should keep 44px-plus touch targets, stable two-column segmented tabs or vertical option buttons, and Bright School visual consistency without introducing separate visual themes.</li>
+</ul>
+<ul>
 <li>Static CSS and HTML contract tests normalize CRLF to LF before exact string assertions. This keeps the Windows working-tree checkout from failing layout-contract tests solely because Git rewrote line endings while preserving the same CSS and generated document content.</li>
 </ul>
 <ul>
@@ -78,7 +111,7 @@
 <li>Bright School portrait mobile keeps only the bottom handbook label outside the artwork; the handbook image itself is not covered by an extra centered text box.</li>
 </ul>
 <ul>
-<li>The home match image entry no longer runs the blinking HUD-label animation on hover/focus; it keeps the label visible without opacity flashing.</li>
+<li>The home match image entry no longer opens a hover/focus rule popup; users get mode, player-count, and rule details from the click-open mode picker instead.</li>
 </ul>
 <ul>
 <li><code>public/assets/go-board-13-ui-1.png</code> through <code>public/assets/go-board-13-ui-4.png</code> are transparent PNG candidates for the home screen fantasy match button. They are generated as exact 13-line Go boards with five star points and no stones, with restrained hand-drawn tech doodle decoration around the board.</li>
@@ -421,7 +454,7 @@
 <ul>
 <li><code>src/app/useCurrentUser.js</code></li>
 <ul>
-<li>Owns the current-user state updater and stat-change toast generation. This keeps reward/rating/rank notification logic out of <code>src/main.jsx</code>.</li>
+<li>Owns the current-user state updater. Current-user updates do not generate coins, rating, or rank-change toasts; game rewards stay visible in dedicated result UI and refreshed profile/plaque data.</li>
 </ul>
 </ul>
 <ul>
@@ -855,6 +888,9 @@
 <li>大厅主内容区尽量靠近窗口垂直中部；履历铭牌、部员手册和工具按钮位于左侧，星炬对弈主面板位于右侧。星炬对弈上方显示横向用户铭牌：出战角色头像、用户名、段位和积分，铭牌背景使用出战角色代表色；在线人数作为独立浅色标签放在铭牌右侧，不放入铭牌内部。</li>
 </ul>
 <ul>
+<li>首页匹配入口和好友约战入口共用对弈模式选择弹窗；模式按钮始终按星炬对弈、标准对弈排序，取消按钮必须与模式选项组保持明确垂直间距，桌面端和移动端都不能贴近最后一个模式按钮。</li>
+</ul>
+<ul>
 <li><code>public/hotspot-prototype.html</code> 是单页热点原型，用用户提供的 <code>/assets/prototypes/classroom-bg1.webp</code> 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。</li>
 </ul>
 <ul>
@@ -864,10 +900,10 @@
 <li>大厅与对局页右上操作区共用同一个留言板入口。留言板当前为前端占位弹窗，输入框默认提示“Bug、问题反馈和意见都可以在这里提交哦”，包含提交按钮，提交暂不落库。</li>
 </ul>
 <ul>
-<li>首页当前用户铭牌是可点击入口，打开名为“履历”的窗口；履历集中展示用户战绩、积分、段位、金币，并提供角色战绩与个人对局回放入口。回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。回放列表会按当前查看用户在该局的结果给整行着色：胜利为浅绿色，失败为灰色，和棋为浅黄色；公共用户资料里的回放列表按被查看用户计算，个人履历按当前用户计算。</li>
+<li>首页当前用户铭牌是可点击入口，打开名为“履历”的窗口；履历集中展示用户战绩、积分、段位、金币，并提供角色战绩与个人对局回放入口。桌面端和移动端都在履历右上角、关闭按钮左侧显示与商店一致的金币胶囊，模式选项卡下方、战绩统计上方提供“对局回放”入口；所有模式选项卡的当前项必须有明确背景色区分，默认选中的星炬对弈也必须立即显示选中背景，星炬对弈始终排在标准对弈前。回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。回放列表会按当前查看用户在该局的结果给整行着色：胜利为浅绿色，失败为灰色，和棋为浅黄色；公共用户资料里的回放列表按被查看用户计算，个人履历按当前用户计算。</li>
 </ul>
 <ul>
-<li>部员手册只保留角色选择、角色详情和装饰选择，不再承载战绩、段位、金币或对局回放。装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。</li>
+<li>部员手册只保留角色选择、角色详情和装饰选择，不再承载战绩、段位、金币或对局回放。角色卡会在桌面端和移动端通用展示当前角色正在承受的道具效果图标；例如西格莉卡的糖果禁用效果和达妮娅的彩虹糖果效果都会在对应角色卡左上角显示彩虹豆豆跳跳糖图标。装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。</li>
 </ul>
 <ul>
 <li>设置弹窗支持音量配置，并保存在 <code>localStorage</code>；关于页展示后台可编辑的站点长文本。</li>
@@ -1086,7 +1122,7 @@
 <li>观战回放只改变棋盘内容，不改变实时信息区内容（计时、读秒、提子、超频等保持实际对局进程）。</li>
 </ul>
 <ul>
-<li>观战弹窗标题显示为“对局列表”。观战者停在最新手时会自动跟随实时进程；如果手动回退到旧手，则新进程不会强制跳回最新。</li>
+<li>观战弹窗标题显示为“对局列表”。模式切换固定为星炬对弈在前、标准对弈在后，并在列表上方以紧凑分段控件呈现；房间列表区域独立伸缩/滚动，避免桌面短高度或移动端下把模式切换撑成大面板。观战者停在最新手时会自动跟随实时进程；如果手动回退到旧手，则新进程不会强制跳回最新。</li>
 </ul>
 <h3>商城与装饰</h3>
 <ul>
@@ -1120,7 +1156,7 @@
 <li>商店购买、商店加载错误、后台管理保存/下架/上传/封禁等操作反馈统一走页面顶部 toast，不在对应弹窗、抽屉或后台编辑区内新增成功/失败文本框。</li>
 </ul>
 <ul>
-<li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。涉及金币、积分或段位变化的事件（包括对局结果、购买、道具效果、后台编辑当前用户等）会按变动项分别立即显示 toast；金币增加、积分增加、段位升高使用黄底 reward toast，例如 <code>金币+50</code>、<code>积分+20</code>、<code>段位2段 → 3段</code>，金币扣除、积分扣除、段位降低使用灰底 penalty toast，例如 <code>金币-10</code>、<code>积分-20</code>、<code>段位3段 → 2段</code>。</li>
+<li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。toast 只用于普通错误、操作反馈和成功提示，不再自动弹出金币、积分或段位增减；对局收益继续在结果弹窗中展示，回到大厅后由 <code>/api/me</code> 刷新的铭牌统计体现最新段位积分。</li>
 </ul>
 <ul>
 <li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.webp</code>，介绍为“产地不明的糖果，据说有神秘的效果”。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
@@ -2174,7 +2210,7 @@
 <li><code>AdminStatusPill</code>: 后台表格状态标签，位于 <code>src/admin/adminComponents.jsx</code>。</li>
 </ul>
 <ul>
-<li><code>Toast</code> / <code>ToastStack</code>: 自动消失提示队列，使用高对比渐变底色突出规则错误、非法操作等短提示；成功提示为绿色，金币、积分、段位变动提示为黄底 reward 样式，并由 <code>buildStatChangeToasts</code> 拆成每项一条。队列最多保留最新 5 条，避免高频操作造成页面卡顿。</li>
+<li><code>Toast</code> / <code>ToastStack</code>: 自动消失提示队列，使用高对比渐变底色突出规则错误、非法操作等短提示；成功提示为绿色。金币、积分、段位变化不再走 toast 队列，避免回房间、回大厅或模式统计刷新时出现误导性数值提示。队列最多保留最新 5 条，避免高频操作造成页面卡顿。</li>
 </ul>
 <ul>
 <li><code>ConfirmModal</code>: 通用确认弹窗。</li>
@@ -2488,7 +2524,7 @@
 <li>棋舍/排行榜的总局、胜负、和棋等统计仍从 <code>GameRecord</code> 派生。</li>
 </ul>
 <ul>
-<li>金币、积分、段位 toast 已依赖前端比较前后状态；<code>UserProgressLedger</code> 已作为结构化流水表落入 schema/migration，商城购买写入 <code>coins</code> 支出流水（<code>shop.purchase</code>），对局结算写入 <code>coins</code> / <code>rating</code> 流水（<code>game.result</code>），后台金币/积分调整写入 <code>admin.update</code> 流水。后续如继续扩展赛季、排行榜或补偿发放，应继续复用该流水入口。</li>
+<li>金币、积分、段位不再由前端比较前后状态弹出 toast；<code>UserProgressLedger</code> 已作为结构化流水表落入 schema/migration，商城购买写入 <code>coins</code> 支出流水（<code>shop.purchase</code>），对局结算写入 <code>coins</code> / <code>rating</code> 流水（<code>game.result</code>），后台金币/积分调整写入 <code>admin.update</code> 流水。后续如继续扩展赛季、排行榜或补偿发放，应继续复用该流水入口，并在专用界面展示变化。</li>
 </ul>
 </ul>
 <ul>
@@ -3207,7 +3243,7 @@
 <li><code>Board.jsx</code> marks first-line board grid runs with <code>edge-line</code>; CSS keeps every non-edge grid run at one uniform stroke width and renders every first-line run exactly 2.5x that width in the Bright School theme.</li>
 </ul>
 <ul>
-<li>Board stones use deterministic visual jitter for a more physical game feel: each stone gets stable <code>--stone-offset-x/y</code> values in one random 1px direction from the intersection, while the underlying <code>.point</code> button, game logic, scoring marks, and target previews remain centered on the original intersection.</li>
+<li>Board stones use deterministic visual jitter for a more physical game feel: each stone gets stable <code>--stone-offset-x/y</code> values in one random direction from the intersection. Spark mode keeps a maximum 1px offset; standard mode uses a maximum 0.5px offset on both desktop and mobile because 19-line stones are smaller. The underlying <code>.point</code> button, game logic, scoring marks, and target previews remain centered on the original intersection.</li>
 </ul>
 <ul>
 <li><code>OperationHint.jsx</code> owns phase-aware text hints and compact scoring breakdown display under the opponent-side panel.</li>
@@ -3262,7 +3298,7 @@
 <li>The home player plaque rank/rating chip uses a light background with dark text again, while the admin-only management button remains a green circular icon-plus-title control aligned with the home user plaque.</li>
 </ul>
 <ul>
-<li>The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle <code>连罗伊人的都爱玩的智力游戏</code>, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip shows the site title, <code>Copyright ©KURO GAMES. ALL RIGHTS RESERVED.</code>, and <code>浙ICP备2026035038号</code> as evenly spaced items. The middle stage is an unframed fixed-ratio coordinate surface (<code>1480 / 620</code>) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a <code>1200px</code> minimum, <code>503px</code> minimum height, and <code>1920px</code> maximum width; phone landscape uses a smaller <code>960px</code> by <code>402px</code> minimum stage. The home app shell uses <code>/assets/home/multipurpose-classroom-bg.webp</code> as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, <code>部员手册</code>, <code>星炬对弈</code>, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, <code>部员手册</code> is offset slightly right/down from the dock edge, and <code>星炬对弈</code> is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry's hover/focus popup in the top-right carries both the current matchmaking count and one rule item per line: <code>路数：13路</code>, <code>用时：5分钟30秒3次</code>, and <code>规则：黑贴2又3/4子，中国数子规则</code>, so new users can understand the match format without a persistent lower-left label or another modal. Phone portrait shows a dedicated <code>请横屏使用</code> guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values, while a masked <code>::before</code> layer uses the same PNG alpha channel to show a solid aqua shadow translated down and right; this avoids large transparent-PNG filter/drop-shadow repaint costs while keeping the requested shadow look. The match-entry PNG has transparent borders after low-alpha background cleanup, avoiding faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow, and when the home stage compresses below the utility-label comfort threshold, utility buttons hide their visible text and keep only the icon inside the circular target.</li>
+<li>The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle <code>连罗伊人的都爱玩的智力游戏</code>, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip shows the site title, <code>Copyright ©KURO GAMES. ALL RIGHTS RESERVED.</code>, and <code>浙ICP备2026035038号</code> as evenly spaced items. The middle stage is an unframed fixed-ratio coordinate surface (<code>1480 / 620</code>) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a <code>1200px</code> minimum, <code>503px</code> minimum height, and <code>1920px</code> maximum width; phone landscape uses a smaller <code>960px</code> by <code>402px</code> minimum stage. The home app shell uses <code>/assets/home/multipurpose-classroom-bg.webp</code> as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, <code>部员手册</code>, <code>星炬对弈</code>, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, <code>部员手册</code> is offset slightly right/down from the dock edge, and <code>星炬对弈</code> is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry no longer renders a hover/focus text popup; mode titles, rule copy, and current matchmaking counts live in the click-open mode picker. Phone portrait shows a dedicated <code>请横屏使用</code> guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values, while a masked <code>::before</code> layer uses the same PNG alpha channel to show a solid aqua shadow translated down and right; this avoids large transparent-PNG filter/drop-shadow repaint costs while keeping the requested shadow look. The match-entry PNG has transparent borders after low-alpha background cleanup, avoiding faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow, and when the home stage compresses below the utility-label comfort threshold, utility buttons hide their visible text and keep only the icon inside the circular target.</li>
 </ul>
 <ul>
 <li>Desktop Bright School home polish removes the former <code>LOBBY_ROOM</code> debug/status pill from the top strip, keeps the current-user plaque on an explicit avatar/name/stats grid so the username cannot run into the portrait at wide sizes, and overrides the <code>部员手册</code> sticker label back to the rounded UI font stack with nowrap text for consistency with the rest of the interface.</li>

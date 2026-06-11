@@ -212,6 +212,19 @@
   box-shadow: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button[aria-selected="true"] {
+  background: #ff9ebb !important;
+  color: #3d2b25 !important;
+  border-color: #3d2b25 !important;
+  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.72) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button.active svg,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button[aria-selected="true"] svg {
+  color: #3d2b25 !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) {
   place-items: center !important;
   align-items: center !important;

@@ -7,6 +7,7 @@ const prismaMocks = vi.hoisted(() => ({
   queryRaw: vi.fn(),
   transaction: vi.fn(),
   userUpdate: vi.fn(),
+  userModeStatsUpsert: vi.fn(),
   userItemEffectDeleteMany: vi.fn(),
   userItemEffectUpsert: vi.fn(),
   userProgressLedgerCreate: vi.fn()
@@ -19,6 +20,9 @@ vi.mock("./db.js", () => ({
     },
     user: {
       update: prismaMocks.userUpdate
+    },
+    userModeStats: {
+      upsert: prismaMocks.userModeStatsUpsert
     },
     userItemEffect: {
       deleteMany: prismaMocks.userItemEffectDeleteMany,
@@ -47,6 +51,7 @@ import {
   leaveRoom,
   listWaitingPlayers,
   listWatchRooms,
+  matchmakingCountsByMode,
   matchmakingCount,
   requestCounting,
   requestDraw,
@@ -66,6 +71,8 @@ beforeEach(() => {
   prismaMocks.queryRaw.mockResolvedValue([]);
   prismaMocks.userUpdate.mockReset();
   prismaMocks.userUpdate.mockImplementation((operation) => Promise.resolve(operation));
+  prismaMocks.userModeStatsUpsert.mockReset();
+  prismaMocks.userModeStatsUpsert.mockImplementation((operation) => Promise.resolve(operation));
   prismaMocks.userItemEffectDeleteMany.mockReset();
   prismaMocks.userItemEffectDeleteMany.mockImplementation((operation) => Promise.resolve(operation));
   prismaMocks.userItemEffectUpsert.mockReset();
@@ -179,6 +186,39 @@ describe("room game record persistence", () => {
     }) });
   });
 
+  test("keeps matchmaking queues isolated by game mode", () => {
+    const io = fakeIo();
+    const firstRoom = joinMatchmaking({ user: user("standard-a", "sigrika"), socketId: "socket-a", mode: "standard" }, io);
+    const secondRoom = joinMatchmaking({ user: user("spark-a", "sigrika"), socketId: "socket-b", mode: "spark" }, io);
+
+    expect(firstRoom).toBeNull();
+    expect(secondRoom).toBeNull();
+    expect(matchmakingCount()).toBe(2);
+    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 1 });
+
+    const matched = joinMatchmaking({ user: user("standard-b", "denia"), socketId: "socket-c", mode: "standard" }, io);
+
+    expect(matched).toBeTruthy();
+    expect(matched.mode).toBe("standard");
+    expect(matched.game.mode).toBe("standard");
+    expect(matched.game.size).toBe(19);
+    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 0 });
+  });
+
+  test("accepts standard mode moves on the full 19-line board", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    joinMatchmaking({ user: user("standard-black", "sigrika"), socketId: "socket-a", mode: "standard" }, io);
+    const room = joinMatchmaking({ user: user("standard-white", "denia"), socketId: "socket-b", mode: "standard" }, io);
+    completeRoomOpening(room, io);
+
+    const black = room.players.find((player) => player.color === COLORS.black);
+    const result = handleGameAction(room.code, black.user.id, { type: "move", pointId: pointId(18, 18) }, io);
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.room.game, pointId(18, 18)).stone).toBe(COLORS.black);
+  });
+
   test("clears rainbow candy effects after matching valid games", () => {
     vi.useFakeTimers();
     const io = fakeIo();
@@ -245,7 +285,7 @@ describe("room game record persistence", () => {
     expect(prismaMocks.userUpdate).not.toHaveBeenCalled();
   });
 
-  test("persists draw records without updating user rewards", () => {
+  test("persists draw records with mode draw stats without updating user rewards", () => {
     vi.useFakeTimers();
     const io = fakeIo();
     joinMatchmaking({ user: user("draw-alice", "sigrika"), socketId: "socket-a" }, io);
@@ -261,7 +301,13 @@ describe("room game record persistence", () => {
     expect(result.ok).toBe(true);
     expect(prismaMocks.gameRecordCreate).toHaveBeenCalledTimes(1);
     expect(prismaMocks.userUpdate).not.toHaveBeenCalled();
-    expect(prismaMocks.transaction).not.toHaveBeenCalled();
+    expect(prismaMocks.userModeStatsUpsert).toHaveBeenCalledTimes(2);
+    expect(prismaMocks.userModeStatsUpsert).toHaveBeenCalledWith(expect.objectContaining({
+      where: { userId_mode: { userId: "draw-alice", mode: "spark" } },
+      create: expect.objectContaining({ draws: 1 }),
+      update: expect.objectContaining({ draws: { increment: 1 } })
+    }));
+    expect(prismaMocks.transaction).toHaveBeenCalledTimes(1);
   });
 
   test("treats draws through move 10 as invalid games without records or rewards", async () => {

@@ -716,7 +716,7 @@
 .coord-row {
   grid-column: 2;
   display: grid;
-  grid-template-columns: repeat(13, 1fr);
+  grid-template-columns: repeat(var(--size), minmax(0, 1fr));
   align-items: center;
   text-align: center;
 }
@@ -732,9 +732,15 @@
 .coord-col {
   grid-row: 2;
   display: grid;
-  grid-template-rows: repeat(13, 1fr);
+  grid-template-rows: repeat(var(--size), minmax(0, 1fr));
   align-items: center;
   text-align: center;
+}
+
+.board-wrap[data-board-size="19"] .coord-row,
+.board-wrap[data-board-size="19"] .coord-col {
+  font-size: clamp(10px, 1vw, 14px);
+  font-weight: 700;
 }
 
 .coord-left {

@@ -2,7 +2,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
-import { characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats, selectSortieCharacter } from "./HouseModal.jsx";
+import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisabledReason, deriveCharacterRecordStats, selectSortieCharacter } from "./HouseModal.jsx";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import HouseModal from "./HouseModal.jsx";
 import ResumeModal from "./ResumeModal.jsx";
@@ -44,6 +44,53 @@ describe("deriveCharacterRecordStats", () => {
     expect(characterSortieDisabledReason("denia", itemEffects)).toBe("");
     expect(characterCandyPortrait({ id: "denia", portrait: "/assets/Danea_centered.webp" }, itemEffects)).toBe(DENIA_CANDY_PORTRAIT);
     expect(characterCandyPortrait({ id: "sigrika", portrait: "/assets/sigrika_centered.webp" }, itemEffects)).toBe("/assets/sigrika_centered.webp");
+  });
+
+  it("marks house character cards with active item effect icons", () => {
+    const itemEffects = {
+      sigrikaCandyDisabled: true,
+      deniaRainbowGlow: true
+    };
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "1段",
+        rating: 1000,
+        coins: 0,
+        ownedCharacters: ["sigrika", "denia"],
+        ownedDecorations: [],
+        selectedCharacter: "denia",
+        itemEffects
+      },
+      records: [],
+      characterListView: [
+        { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp", skill: { name: "技能", description: "", cost: 1 } }
+      ],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {}
+    }));
+
+    expect(activeCharacterItemEffects("sigrika", itemEffects)).toEqual([
+      expect.objectContaining({
+        effectKey: "sigrikaCandyDisabled",
+        icon: "/assets/items/rainbow-bean-candy.webp"
+      })
+    ]);
+    expect(activeCharacterItemEffects("denia", itemEffects)).toEqual([
+      expect.objectContaining({
+        effectKey: "deniaRainbowGlow",
+        icon: "/assets/items/rainbow-bean-candy.webp"
+      })
+    ]);
+    expect(activeCharacterItemEffects("aemeath", itemEffects)).toEqual([]);
+    expect(html.match(/class="character-item-effect-icon"/g)).toHaveLength(2);
+    expect(html).toContain("src=\"/assets/items/rainbow-bean-candy.webp\"");
+    expect(html).toContain("alt=\"彩虹豆豆跳跳糖效果中\"");
+    expect(html).toContain("title=\"彩虹豆豆跳跳糖效果中\"");
   });
 
   it("plays the selected character sortie voice before selecting the character", () => {
@@ -172,7 +219,10 @@ describe("deriveCharacterRecordStats", () => {
     }));
 
     expect(html).toContain("<h2>履历</h2>");
+    expect(html.indexOf("mode-tabs")).toBeLessThan(html.indexOf("resume-replay-action"));
+    expect(html.indexOf("resume-replay-action")).toBeLessThan(html.indexOf("top-stats-bar"));
     expect(html).toContain("top-stats-bar");
+    expect(html).toContain("resume-wallet");
     expect(html).toContain("对局回放");
     expect(html).toContain("战绩");
     expect(html).toContain("段位");
@@ -280,6 +330,18 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto !important");
     expect(css).toContain(".resume-modal");
     expect(css).toContain(".house-modal .profile-grid.top-stats-bar");
+    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
+    expect(readFileSync(new URL("../styles/themes/bright-school/modals.css", import.meta.url), "utf8")).toContain(".mode-tabs button[aria-selected=\"true\"]");
+    expect(readFileSync(new URL("../styles/themes/bright-school/modals.css", import.meta.url), "utf8")).toContain("background: #ff9ebb !important");
+    expect(readFileSync(new URL("../styles/lobby.css", import.meta.url), "utf8")).toContain(".character-item-effect-badges");
+    expect(readFileSync(new URL("../styles/lobby.css", import.meta.url), "utf8")).toContain(".character-item-effect-icon");
+    expect(readFileSync(new URL("../styles/lobby.css", import.meta.url), "utf8")).toContain(".character-card .character-item-effect-icon");
+    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain(".house-modal .character-item-effect-icon");
+    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain(".house-modal .character-card.portrait-card .character-item-effect-icon");
+    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain("width: 24px;");
+    expect(readFileSync(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url), "utf8")).toContain(".character-item-effect-icon");
+    expect(css).toContain(".house-modal .character-item-effect-icon");
     expect(css).toContain(".house-modal .stat strong");
     expect(css).toContain("white-space: nowrap !important");
     expect(css).toContain(".house-modal .character-card.portrait-card > strong");
@@ -309,6 +371,12 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain(".profile-grid.top-stats-bar .stat strong");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
     expect(finalMobileCss).toContain("word-break: normal !important");
+    expect(finalMobileCss).toContain(".resume-header-actions .close-button");
+    expect(finalMobileCss).toContain("position: static !important");
+    expect(finalMobileCss).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
+    expect(finalMobileCss).toContain("background: #ff9ebb !important");
     expect(finalMobileCss).toContain(".character-card.portrait-card.is-deployed");
     expect(finalMobileCss).toContain("#4f9b69");
     expect(finalMobileCss).toContain(".house-modal .character-list");

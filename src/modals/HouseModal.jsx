@@ -76,6 +76,7 @@ export default function HouseModal({ user, characterListView, audioSettings, onC
 }
 
 export {
+  activeCharacterItemEffects,
   characterCandyPortrait,
   characterSortieDisabledReason,
   deriveCharacterRecordStats,

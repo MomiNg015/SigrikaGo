@@ -15,6 +15,7 @@ export function buildRoomView(room, viewerId, options = {}) {
 
   return {
     code: room.code,
+    mode: room.mode ?? room.game?.mode ?? "spark",
     viewerId,
     role,
     players: room.players.map((player) => ({

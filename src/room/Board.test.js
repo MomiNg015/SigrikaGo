@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { createPoints } from "../shared/game.js";
+import Board from "./Board.jsx";
 import { areBoardPropsEqual, stoneOffsetForPoint } from "./Board.jsx";
 
 describe("areBoardPropsEqual", () => {
@@ -76,6 +80,44 @@ describe("areBoardPropsEqual", () => {
     expect(Math.abs(first.y)).toBeLessThanOrEqual(1);
     expect(Math.abs(first.x) || Math.abs(first.y)).toBeGreaterThanOrEqual(1);
     expect(differentStone).not.toEqual(first);
+  });
+
+  test("caps standard mode stone offsets at half a pixel", () => {
+    const point = { id: "3,10", x: 3, y: 10, stone: "black" };
+    const first = stoneOffsetForPoint(point, "standard");
+    const second = stoneOffsetForPoint({ ...point }, "standard");
+    const spark = stoneOffsetForPoint(point, "spark");
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        mode: "standard",
+        size: 19,
+        points: [{ ...point, valid: true }],
+        history: []
+      }
+    })));
+
+    expect(first).toEqual(second);
+    expect(Math.abs(first.x)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(first.y)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(first.x) || Math.abs(first.y)).toBeGreaterThanOrEqual(0.5);
+    expect(first).toEqual({ x: spark.x * 0.5, y: spark.y * 0.5 });
+    expect(markup).toContain("--stone-offset-x:");
+    expect(markup).toContain("0.5px");
+  });
+
+  test("uses the game board size for coordinate grids", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: { phase: "playing", size: 19, points: createPoints(19), history: [] }
+    })));
+    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+
+    expect(markup).toContain('data-board-size="19"');
+    expect(markup).toContain("--size:19");
+    expect(markup).toContain("T");
+    expect(css).toContain("grid-template-columns: repeat(var(--size), minmax(0, 1fr));");
+    expect(css).toContain("grid-template-rows: repeat(var(--size), minmax(0, 1fr));");
+    expect(css).toContain('.board-wrap[data-board-size="19"] .coord-row');
   });
 
   test("keeps board grid strokes uniform with first-line strokes at 2.5x across themes", () => {

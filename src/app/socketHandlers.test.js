@@ -13,6 +13,7 @@ describe("socket handlers", () => {
     expect(deps.setReplayStep).toHaveBeenCalledWith(null);
     expect(deps.setMatchStart).toHaveBeenCalledWith(null);
     expect(deps.updateUser).toHaveBeenCalledOnce();
+    expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function));
     expect(deps.matchSuccessRef.current).toMatchObject({ room: roomView });
     expect(deps.setMatchSuccess).toHaveBeenCalledWith(deps.matchSuccessRef.current);
   });
@@ -27,8 +28,28 @@ describe("socket handlers", () => {
     handlers.roomUpdate(roomView);
 
     expect(deps.updateUser).toHaveBeenCalledOnce();
+    expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function));
     expect(deps.setRoom).not.toHaveBeenCalled();
     expect(deps.setView).not.toHaveBeenCalled();
+  });
+
+  it("syncs user stats silently when restoring a live room", () => {
+    const roomView = { code: "12345", players: [] };
+    const deps = handlerDeps({
+      handleRoomResumePayload: vi.fn((_payload, handlers) => {
+        handlers.setRoom(roomView);
+        handlers.setView("room");
+        return true;
+      })
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomResume({ type: "room", room: roomView });
+
+    expect(deps.updateUser).toHaveBeenCalledOnce();
+    expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function));
+    expect(deps.setRoom).toHaveBeenCalledWith(roomView);
+    expect(deps.setView).toHaveBeenCalledWith("room");
   });
 
   it("marks the first live player room snapshot after reconnect for audio baselining", () => {
@@ -161,7 +182,11 @@ describe("socket handlers", () => {
     expect(deps.setMatchSuccess).toHaveBeenCalledWith(null);
     expect(deps.setReplayStep).toHaveBeenCalledWith(null);
     expect(deps.setPendingSkill).toHaveBeenCalledWith(false);
-    expect(deps.setLobbyStats).toHaveBeenCalledWith({ onlineCount: 0, matchmakingCount: 0 });
+    expect(deps.setLobbyStats).toHaveBeenCalledWith({
+      onlineCount: 0,
+      matchmakingCount: 0,
+      matchmakingCounts: { spark: 0, standard: 0 }
+    });
     expect(deps.closeAllOverlays).toHaveBeenCalledOnce();
     expect(deps.setView).toHaveBeenCalledWith("login");
     expect(deps.showToast).toHaveBeenCalledWith("bye");
@@ -173,7 +198,11 @@ describe("socket handlers", () => {
 
     handlers.lobbyStats({ onlineCount: 3, matchmakingCount: 2 });
 
-    expect(deps.setLobbyStats).toHaveBeenCalledWith({ onlineCount: 3, matchmakingCount: 2 });
+    expect(deps.setLobbyStats).toHaveBeenCalledWith({
+      onlineCount: 3,
+      matchmakingCount: 2,
+      matchmakingCounts: { spark: 2, standard: 0 }
+    });
   });
 
   it("returns to login when socket authentication fails during reconnect", () => {

@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
 import LeaderboardRow, { leaderboardRankClass } from "./leaderboard/LeaderboardRow.jsx";
+import { modeOrderedEntries } from "../shared/gameModes.js";
 
 export default function LeaderboardModal({ token, user, characters, onClose }) {
+  const [mode, setMode] = useState("spark");
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -15,7 +17,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
     let alive = true;
     setLoading(true);
     setError("");
-    api("/api/leaderboard", { token })
+    api(`/api/leaderboard?mode=${encodeURIComponent(mode)}`, { token })
       .then((data) => {
         if (alive) setPlayers(data.players ?? []);
       })
@@ -28,7 +30,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
     return () => {
       alive = false;
     };
-  }, [token]);
+  }, [token, mode]);
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -41,6 +43,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
             <p className="quiet-text">至少完成一盘对局的注册用户</p>
           </div>
         </header>
+        <ModeTabs mode={mode} onModeChange={setMode} />
         {loading && <p className="quiet-text">加载中...</p>}
         {error && <p className="form-error admin-action-error">{error}</p>}
         {!loading && !error && players.length === 0 && <p className="quiet-text">暂无上榜用户。</p>}
@@ -88,3 +91,22 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
 }
 
 export { leaderboardRankClass } from "./leaderboard/LeaderboardRow.jsx";
+
+function ModeTabs({ mode, onModeChange }) {
+  return (
+    <div className="mode-tabs" role="tablist" aria-label="对弈模式">
+      {modeOrderedEntries().map((entry) => (
+        <button
+          key={entry.id}
+          type="button"
+          role="tab"
+          aria-selected={mode === entry.id}
+          className={mode === entry.id ? "active" : ""}
+          onClick={() => onModeChange(entry.id)}
+        >
+          {entry.title}
+        </button>
+      ))}
+    </div>
+  );
+}

@@ -110,6 +110,7 @@ export default function RoomBattleStage({
       pendingSkill={pendingSkill}
       setPendingSkill={setPendingSkill}
       skillLocked={Boolean(skillPreview)}
+      skillEnabled={displayRoom.game.skillEnabled !== false}
       skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
       skillAvailable={skillAvailable}
       hasAnyStones={hasAnyStones}

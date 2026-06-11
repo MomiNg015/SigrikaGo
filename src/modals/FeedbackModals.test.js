@@ -28,11 +28,12 @@ describe("FeedbackModals helpers", () => {
     ]);
   });
 
-  it("styles penalty toasts with a gray background", () => {
+  it("keeps toast styling focused on general notices and success feedback", () => {
     const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
-    const penaltyBlock = css.match(/\.toast\.penalty\s*\{[^}]+\}/)?.[0] ?? "";
+    const successBlock = css.match(/\.toast\.success\s*\{[^}]+\}/)?.[0] ?? "";
 
-    expect(penaltyBlock).toContain("background: linear-gradient(135deg, #8d9099, #5f636d)");
-    expect(penaltyBlock).toContain("color: #ffffff");
+    expect(successBlock).toContain("background: linear-gradient(135deg, #48b978, #23985f)");
+    expect(css).not.toContain(".toast.reward");
+    expect(css).not.toContain(".toast.penalty");
   });
 });

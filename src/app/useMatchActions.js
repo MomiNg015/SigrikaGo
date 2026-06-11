@@ -11,10 +11,10 @@ export function useMatchActions({
   setRoom,
   setView
 }) {
-  const startMatch = useCallback(() => {
+  const startMatch = useCallback((mode = "spark") => {
     setMatchSuccess(null);
-    setMatchStart(Date.now());
-    socket?.emit("match:join");
+    setMatchStart({ startedAt: Date.now(), mode });
+    socket?.emit("match:join", { mode });
   }, [setMatchStart, setMatchSuccess, socket]);
 
   const cancelMatch = useCallback(() => {

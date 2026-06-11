@@ -1,5 +1,5 @@
 import { memo, useMemo, useRef } from "react";
-import { BOARD_SIZE, COLORS } from "../shared/game.js";
+import { COLORS } from "../shared/game.js";
 import { lastMarkedAction } from "../shared/boardView.js";
 import { stoneDecorationImage } from "../shared/stoneDecorations.js";
 import {
@@ -23,13 +23,14 @@ function Board({
   onNeutral
 }) {
   const pointerTypeRef = useRef("");
+  const boardSize = game.size ?? 13;
   const markedAction = lastMarkedAction(game.history);
   const moveNumbers = useMemo(
     () => new Map(game.history.filter((entry) => entry.type === "move").map((entry) => [entry.id, entry.moveNumber])),
     [game.history]
   );
-  const labels = useMemo(() => Array.from({ length: BOARD_SIZE }, (_, index) => coordLetter(index)), []);
-  const rows = useMemo(() => Array.from({ length: BOARD_SIZE }, (_, index) => BOARD_SIZE - index), []);
+  const labels = useMemo(() => Array.from({ length: boardSize }, (_, index) => coordLetter(index)), [boardSize]);
+  const rows = useMemo(() => Array.from({ length: boardSize }, (_, index) => boardSize - index), [boardSize]);
   const lines = useMemo(() => buildBoardLines(game.points), [game.points]);
   const showScoringMarks = ["marking-dead", "result-review", "finished"].includes(game.phase);
   const territoryOwner = useMemo(() => new Map([
@@ -38,10 +39,10 @@ function Board({
   ]), [game.scoring?.territory?.black, game.scoring?.territory?.white, showScoringMarks]);
   const deadStoneOwners = showScoringMarks ? game.scoring?.deadStoneOwners ?? {} : {};
   return (
-    <div className={`board-wrap ${pendingSkill ? "targeting" : ""}`}>
+    <div className={`board-wrap ${pendingSkill ? "targeting" : ""}`} data-board-size={boardSize} style={{ "--size": boardSize }}>
       {showCoords && <div className="coord-row coord-top">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
       {showCoords && <div className="coord-col coord-left">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
-      <div className="board" style={{ "--size": BOARD_SIZE }}>
+      <div className="board">
         <svg className="board-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           {lines.map((line) => (
             <line
@@ -63,7 +64,7 @@ function Board({
           const skillEffectClass = point.skillEffect ?? "";
           const previewClass = canPreviewPoint(game, previewPlayer, point, pendingSkill, Boolean(onScoringPoint)) ? "previewable" : "";
           const decorationImage = point.stone ? stoneDecorationImage(stoneDecorations[point.stone], point.stone) : null;
-          const stoneOffset = point.stone ? stoneOffsetForPoint(point) : null;
+          const stoneOffset = point.stone ? stoneOffsetForPoint(point, game.mode) : null;
           const stoneStyle = point.stone
             ? {
                 "--stone-offset-x": `${stoneOffset.x}px`,
@@ -75,7 +76,7 @@ function Board({
           return (
             <button
               key={point.id}
-              className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${previewClass} ${confirmClass} ${isStarPoint(point.x, point.y) ? "star" : ""}`}
+              className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${previewClass} ${confirmClass} ${isStarPoint(point.x, point.y, boardSize) ? "star" : ""}`}
               style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
               onPointerDown={(event) => {
                 pointerTypeRef.current = event.pointerType;
@@ -94,7 +95,7 @@ function Board({
                 event.preventDefault();
                 if (game.phase === "marking-dead") onNeutral(point.id);
               }}
-              title={coordLabel(point.x, point.y)}
+              title={coordLabel(point.x, point.y, boardSize)}
             >
               {point.stone && (
                 <span
@@ -132,7 +133,8 @@ export function areBoardPropsEqual(previous, next) {
     && sameStoneDecorations(previous.stoneDecorations, next.stoneDecorations);
 }
 
-export function stoneOffsetForPoint(point) {
+export function stoneOffsetForPoint(point, mode = "spark") {
+  const maxOffset = mode === "standard" ? 0.5 : 1;
   const directions = [
     { x: -1, y: -1 },
     { x: 0, y: -1 },
@@ -144,7 +146,10 @@ export function stoneOffsetForPoint(point) {
     { x: 1, y: 1 }
   ];
   const index = stableHash(`${point.id}:${point.stone ?? ""}`) % directions.length;
-  return directions[index];
+  return {
+    x: directions[index].x * maxOffset,
+    y: directions[index].y * maxOffset
+  };
 }
 
 function stableHash(value) {

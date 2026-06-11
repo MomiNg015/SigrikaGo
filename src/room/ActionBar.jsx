@@ -19,6 +19,7 @@ export default function ActionBar({
   pendingSkill,
   setPendingSkill,
   skillLocked = false,
+  skillEnabled = true,
   skillUses,
   skillAvailable = true,
   hasAnyStones = true,
@@ -79,6 +80,7 @@ export default function ActionBar({
         <Calculator size={18} />
         <span className="action-label mobile-action-button-label">数子</span>
       </button>
+      {skillEnabled && (
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
         onClick={() => setPendingSkill(!pendingSkill)}
@@ -87,6 +89,7 @@ export default function ActionBar({
         <Sparkles size={20} />
         <span className="action-label mobile-action-button-label">技能 · {skillUses}</span>
       </button>
+      )}
       <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, opponentConnected })}>
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>

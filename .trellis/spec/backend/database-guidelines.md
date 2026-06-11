@@ -32,7 +32,59 @@ Questions to answer:
 
 <!-- How to create and run migrations -->
 
-(To be filled by the team)
+### Scenario: Game Mode Persistence
+
+#### 1. Scope / Trigger
+- Trigger: any feature that adds or changes a playable game mode, ranking bucket, replay filter, matchmaking queue, or room result contract.
+- This is a cross-layer contract because the value is written by matchmaking/duel room creation, stored on game records, exposed through API filters, and rendered by frontend tabs.
+
+#### 2. Signatures
+- `GameRecord.mode String @default("spark")`
+- `UserModeStats { userId, mode, rating, wins, losses, draws }` with unique `(userId, mode)`
+- `ensureGameModeSchema(prisma)` must run during server startup before auth/profile routes can read users with `modeStats`.
+- Runtime mode ids must come from `src/shared/gameModes.js`, not duplicated string lists.
+
+#### 3. Contracts
+- Accepted mode ids: `spark`, `standard`. Unknown or missing ids normalize to `spark`.
+- `spark` mirrors legacy `User.rating`, `User.wins`, and `User.losses` for backward compatibility.
+- `standard` keeps rating and record data in `UserModeStats`; do not write standard wins/losses/rating into legacy `User` fields.
+- `GameRecord.mode` must be written for every saved room result, including draw records.
+- Older SQLite development databases must be upgraded in place at startup: create `UserModeStats`, add `GameRecord.mode`, and backfill one `spark` row per existing user before login/profile reads include `modeStats`.
+
+#### 4. Validation & Error Matrix
+- Missing mode in old data -> treat as `spark`.
+- Missing `UserModeStats` table or `GameRecord.mode` column in a dev SQLite database -> `ensureGameModeSchema` creates/backfills them at startup; login must not fail before a manual migration command runs.
+- Invalid mode from socket/API input -> normalize to `spark`.
+- Result is invalid before the record threshold -> no `GameRecord`, no `UserModeStats`, no reward writes.
+- Result is a draw after the threshold -> create the record and increment mode `draws`, but do not apply rating or coin rewards.
+
+#### 5. Good/Base/Bad Cases
+- Good: `joinMatchmaking({ mode: "standard" })` only pairs with standard queued players and saves records as `standard`.
+- Base: old records without `mode` still appear in spark-only history and leaderboard views.
+- Bad: leaderboard filters by mode but room persistence saves all records as `spark`.
+
+#### 6. Tests Required
+- Shared mode config normalization and ordering.
+- Matchmaking queue isolation by mode.
+- Game record persistence includes `mode`.
+- Startup schema guard creates missing mode tables/columns and backfills legacy spark data.
+- Mode-specific leaderboard/profile/history filters.
+- Draw persistence increments `UserModeStats.draws` without reward writes.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+prisma.gameRecord.create({ data: { roomCode, blackUserId, whiteUserId } });
+```
+
+Correct:
+
+```js
+const mode = normalizeGameModeId(room.mode ?? room.game.mode);
+prisma.gameRecord.create({ data: { roomCode, blackUserId, whiteUserId, mode } });
+```
 
 ---
 

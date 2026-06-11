@@ -2,6 +2,7 @@ import { COLORS, opponent } from "./gameConstants.js";
 import { activeNeighbors, getPoint } from "./gameBoard.js";
 import { collectGroup } from "./gameGroups.js";
 import { formatStones } from "./stoneFormatting.js";
+import { gameModeById, gameModeSkillEnabled } from "./gameModes.js";
 
 export const KOMI_STONES = 2.75;
 
@@ -91,6 +92,7 @@ export function resetDeadMarks(state) {
 }
 
 export function scoreGame(state) {
+  const mode = gameModeById(state.mode);
   const dead = new Set(state.scoring?.deadStones ?? []);
   const neutral = new Set(state.scoring?.neutralPoints ?? []);
   const board = structuredClone(state);
@@ -114,8 +116,9 @@ export function scoreGame(state) {
   const whiteSkillCost = numericSkillCost(state, COLORS.white);
   const blackRaw = blackStones + blackTerritory;
   const whiteRaw = whiteStones + whiteTerritory;
-  const black = blackRaw - KOMI_STONES - blackSkillCost + whiteSkillCost;
-  const white = whiteRaw + KOMI_STONES - whiteSkillCost + blackSkillCost;
+  const komi = mode.komi ?? KOMI_STONES;
+  const black = blackRaw - komi - blackSkillCost + whiteSkillCost;
+  const white = whiteRaw + komi - whiteSkillCost + blackSkillCost;
   const marginValue = black - white;
   const margin = Math.abs(marginValue) / 2;
   const winnerColor = marginValue > 0 ? COLORS.black : COLORS.white;
@@ -138,19 +141,20 @@ export function scoreGame(state) {
     margin,
     marginValue,
     formula: {
+      skillEnabled: gameModeSkillEnabled(state.mode),
       black: {
         stones: blackStones,
         territory: blackTerritory,
-        komi: -KOMI_STONES,
-        ownSkillCost: -blackSkillCost,
+        komi: -komi,
+        ownSkillCost: blackSkillCost ? -blackSkillCost : 0,
         opponentSkillCost: whiteSkillCost,
         total: black
       },
       white: {
         stones: whiteStones,
         territory: whiteTerritory,
-        komi: KOMI_STONES,
-        ownSkillCost: -whiteSkillCost,
+        komi,
+        ownSkillCost: whiteSkillCost ? -whiteSkillCost : 0,
         opponentSkillCost: blackSkillCost,
         total: white
       },
@@ -263,6 +267,7 @@ function collectTerritoryIgnoringColor(state, startId, neutral, ignoredColor) {
 }
 
 function numericSkillCost(state, color) {
+  if (!gameModeSkillEnabled(state.mode)) return 0;
   return state.skillCosts?.[color] ?? 0;
 }
 

@@ -65,6 +65,18 @@ describe("WatchModal helpers", () => {
     expect(brightSchoolMobileCss).toContain(".watch-room-row {\n    min-width: 0 !important;");
   });
 
+  it("keeps watch mode tabs compact above the room table", () => {
+    const css = readText(new URL("../styles/lobby.css", import.meta.url));
+
+    expect(css).toContain("grid-template-rows: auto auto minmax(318px, 1fr) auto auto;");
+    expect(css).toContain(".watch-list-modal .mode-tabs");
+    expect(css).toContain("grid-template-columns: repeat(2, max-content);");
+    expect(css).toContain("min-height: 44px;");
+    expect(css).toContain("grid-template-rows: auto auto minmax(220px, 1fr) auto auto;");
+    expect(css).toContain("grid-template-columns: repeat(2, minmax(0, 1fr));");
+    expect(css).toContain("min-height: 40px;");
+  });
+
   it("keeps watch list headers and rows on the same mobile columns", () => {
     const css = readText(new URL("../styles/mobile-modals.css", import.meta.url));
     const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");

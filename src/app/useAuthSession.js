@@ -45,7 +45,7 @@ export function useAuthSession({
       })
         .then((data) => {
           setToken(data.token);
-          updateUser(data.user, { notifyStats: false });
+          updateUser(data.user);
           return data;
         })
         .catch((error) => {

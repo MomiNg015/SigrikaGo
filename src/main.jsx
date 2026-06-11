@@ -14,6 +14,7 @@ import { useBackgroundMusicTrack } from "./app/useBackgroundMusicTrack.js";
 import { useAppShellTheme } from "./app/useAppShellTheme.js";
 import { useCurrentUser } from "./app/useCurrentUser.js";
 import { useGameSocketConnection } from "./app/useGameSocketConnection.js";
+import { useHomeUserRefresh } from "./app/useHomeUserRefresh.js";
 import { useReplayRecords } from "./app/useReplayRecords.js";
 import { useRoomMemory } from "./app/useRoomMemory.js";
 import { useSiteSettingsState } from "./app/useSiteSettingsState.js";
@@ -53,7 +54,7 @@ function App() {
   const [assetProgress, setAssetProgress] = useState(0);
   const [audioResumeSignal, setAudioResumeSignal] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
-  const { setUser, updateUser, user } = useCurrentUser(showToast);
+  const { setUser, updateUser, user } = useCurrentUser();
   const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState();
   const { audioSettingsRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
     audioSettings,
@@ -189,6 +190,7 @@ function App() {
   });
 
   useReplayRecords({ enabled: showHouse || showResume, showToast, token, setReplayRecords });
+  useHomeUserRefresh({ token, updateUser, user, view });
 
   useAudioSettingsPersistence(audioSettings);
   useRoomMemory(room);

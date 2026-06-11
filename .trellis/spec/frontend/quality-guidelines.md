@@ -50,6 +50,7 @@ Required assertion points:
 - Mobile replay step indicators should center the numeric move text horizontally. Hide decorative replay icons in the compact replay counter if they offset the `current/max` text.
 - Player info keeps the portrait/result badge column present across both rows (`"portrait meta time"` / `"portrait captures skill"`) and hides overflow inside the strip instead of spilling over the board.
 - The board stage keeps `aspect-ratio: 1`, is centered in the board viewport, and sizes from `--mobile-room-board-size`.
+- Board stone visual jitter is mode-aware. Spark mode stones may use up to 1px deterministic offset, but standard 19-line stones must use a maximum 0.5px offset on both desktop and mobile; the logic should live in the board offset helper so all responsive layouts share the same values.
 - The bottom dock has a capped panel height; operation hints inside `#mobile-room-panel-actions` must be bounded so action controls remain reachable on 375px/393px portrait screens.
 - Collapsed mobile chat badges should count only player-authored chat messages (`type === "chat"`), not system notices or skill/disconnect messages.
 - Mobile leaderboard rows should be compact cards rather than cramped tables. Use rank/avatar/player/score lanes, left-align the username/rank block, show rating as the primary right-side value, and use a right metrics lane with explicit win/loss/draw chips above a small win-rate stat. Give the metrics lane its own `record` and `rate` grid rows instead of stacking both elements in the same grid area, and make the pinned current-user row follow the same rhythm instead of becoming a large separate panel. When the mobile heading is hidden, the table grid must use `grid-template-rows: minmax(0, 1fr) auto` so the pinned row is auto-height; do not keep the desktop `minmax(220px, 1fr)` row because it creates an empty "我的排名" panel.
@@ -99,6 +100,67 @@ npm test -- src/room/RoomScreen.test.js src/room/ActionBar.test.js
 ```
 
 For broader confidence after shared CSS changes, also run `npm test` and `npm run build`.
+
+### Modal and Tab Visual State Contracts
+
+When adding or restyling modal tabs, including game-mode tabs in resume, leaderboard, replay, or watch-list surfaces, keep selected state visually explicit in both base CSS and the active theme override.
+
+Required assertion points:
+
+- Tab buttons with `.active`, `aria-selected="true"`, or equivalent selected state must have a distinct background color, not only a border or text-color change.
+- Theme layers that globally reset `button` backgrounds, especially Bright School rules with `!important`, must include matching selected-tab overrides after the reset.
+- Mobile modal fixes that must survive Bright School and shared responsive rules should also be mirrored in the final `mobile-adaptive.css` safety layer, because it is imported after theme files.
+- Moving a modal action between header/body sections should be covered by a static markup order assertion when the order matters to the user workflow.
+- Match-mode picker cancel actions must keep explicit vertical spacing from the mode option group in base CSS and the final mobile safety layer, so the escape action never visually attaches to the last mode option on desktop or mobile.
+- Home image entries should not expose rules or matchmaking status through hover/focus text popups. Keep those details in click-open modals or mode pickers so desktop hover and mobile touch behavior stay consistent.
+
+Wrong:
+
+```css
+.app-shell.theme-bright-school button {
+  background: var(--bright-sheet) !important;
+}
+```
+
+This can erase the selected background of generic `.mode-tabs` in resume, leaderboard, and watch-list modals.
+
+Correct:
+
+```css
+.app-shell.theme-bright-school .mode-tabs button[aria-selected="true"] {
+  background: #ff9ebb !important;
+}
+```
+
+### Character Item Effect Badge Contracts
+
+When a character-specific item effect is active in `user.itemEffects`, the house manual character card should render the item's icon as a small badge on the corresponding character card across desktop and mobile.
+
+Required assertion points:
+
+- Derive card badges from `itemEffects` in a shared helper, rather than duplicating checks in JSX.
+- Badge metadata must include the real item icon path, an accessible `alt`, and a `title` matching the item effect.
+- Badge CSS must use selectors specific enough to beat generic `.character-card img` portrait sizing and Bright School mobile portrait overrides.
+- Mobile badge dimensions should remain compact and stable; add assertions for the mobile selector and size when changing character-card layout.
+
+Wrong:
+
+```css
+.character-item-effect-icon {
+  width: 24px;
+}
+```
+
+This can be overridden by `.character-card img` and stretch the badge to portrait size.
+
+Correct:
+
+```css
+.house-modal .character-card.portrait-card .character-item-effect-icon {
+  width: 24px;
+  height: 24px;
+}
+```
 
 ### Skill targeting contracts
 

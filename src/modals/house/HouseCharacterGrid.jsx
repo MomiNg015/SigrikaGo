@@ -1,6 +1,6 @@
 import { Flag } from "lucide-react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
-import { characterCandyPortrait, characterSortieDisabledReason, selectSortieCharacter } from "./houseStats.js";
+import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisabledReason, selectSortieCharacter } from "./houseStats.js";
 
 export default function HouseCharacterGrid({
   audioSettings,
@@ -18,6 +18,7 @@ export default function HouseCharacterGrid({
       {characters.map((character) => {
         const characterId = canonicalCharacterId(character.id);
         const disabledReason = characterSortieDisabledReason(characterId, itemEffects);
+        const itemEffectBadges = activeCharacterItemEffects(characterId, itemEffects);
         const sortieDisabled = !owned.has(characterId) || Boolean(disabledReason);
         return (
           <div
@@ -46,6 +47,21 @@ export default function HouseCharacterGrid({
             >
               <Flag size={18} />
             </button>
+            {itemEffectBadges.length > 0 && (
+              <div className="character-item-effect-badges" aria-label={`${character.name}道具效果`}>
+                {itemEffectBadges.map((effect) => (
+                  <img
+                    key={`${characterId}-${effect.effectKey}`}
+                    className="character-item-effect-icon"
+                    src={effect.icon}
+                    alt={effect.label}
+                    title={effect.label}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ))}
+              </div>
+            )}
             <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
             <strong>{character.name}</strong>
           </div>

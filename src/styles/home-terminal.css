@@ -262,16 +262,32 @@
 }
 
 .home-player-zone .plaque-stats {
-  min-width: 108px;
+  min-width: 154px;
   display: grid;
   gap: 3px;
-  padding: 8px 10px;
+  padding: 8px 9px;
   border: 1px solid rgba(0, 255, 190, 0.28);
   border-radius: 0;
   background: rgba(0, 255, 190, 0.07);
   color: var(--home-terminal-text);
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   font-size: 12px;
+}
+
+.home-player-zone .plaque-mode-stat {
+  grid-template-columns: 34px minmax(32px, max-content) minmax(46px, max-content);
+  gap: 6px;
+  justify-content: start;
+}
+
+.home-player-zone .plaque-mode-name {
+  color: var(--home-terminal-cyan);
+  font-size: 11px;
+}
+
+.home-player-zone .plaque-mode-rank,
+.home-player-zone .plaque-mode-rating {
+  color: var(--home-terminal-text);
 }
 
 .home-match-feature {
@@ -411,22 +427,6 @@
 .match-image-entry:focus-visible img {
   transform: none;
   filter: drop-shadow(0 0 18px rgba(0, 255, 190, 0.24));
-}
-
-.matchmaking-popup {
-  right: clamp(12px, 1.8vw, 28px);
-  top: clamp(12px, 1.8vw, 28px);
-  border: 1px solid rgba(0, 191, 255, 0.38);
-  border-radius: 0;
-  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-  background: rgba(7, 18, 26, 0.76);
-  color: var(--home-terminal-text);
-  box-shadow:
-    0 0 18px rgba(0, 191, 255, 0.18),
-    inset 0 0 18px rgba(0, 191, 255, 0.1);
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 .home-grid-featured > .home-utility-grid {

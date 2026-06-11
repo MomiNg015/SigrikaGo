@@ -163,7 +163,12 @@
   .home-player-zone .plaque-stats {
     min-width: 0;
     padding: 6px 8px;
-    font-size: 12px;
+    font-size: 11px;
+  }
+
+  .home-player-zone .plaque-mode-stat {
+    grid-template-columns: 28px max-content max-content;
+    gap: 4px;
   }
 
   .house-manual-entry {

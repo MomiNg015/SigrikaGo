@@ -6,6 +6,7 @@ import {
   activatePassiveSkill,
   createGameState,
   gameViewForColor,
+  isStarPoint as sharedIsStarPoint,
   passMove,
   playMove,
   randomBlast,
@@ -58,41 +59,42 @@ export function roomPeople(room) {
   return [...players, ...spectators];
 }
 
-export function coordLabel(x, y) {
-  return `${coordLetter(x)}${BOARD_SIZE - y}`;
+export function coordLabel(x, y, size = BOARD_SIZE) {
+  return `${coordLetter(x)}${size - y}`;
 }
 
 export function coordLetter(x) {
-  return "ABCDEFGHJKLMN"[x];
+  return "ABCDEFGHJKLMNOPQRST"[x] ?? String(x + 1);
 }
 
 export function buildBoardLines(points) {
+  const size = boardSizeFromPoints(points);
   const valid = new Set(points.filter((point) => point.valid).map((point) => point.id));
   const lines = [];
-  const center = (value) => ((value + 0.5) / BOARD_SIZE) * 100;
+  const center = (value) => ((value + 0.5) / size) * 100;
 
-  for (let y = 0; y < BOARD_SIZE; y += 1) {
-    for (const run of validRuns((x) => valid.has(`${x},${y}`))) {
+  for (let y = 0; y < size; y += 1) {
+    for (const run of validRuns((x) => valid.has(`${x},${y}`), size)) {
       lines.push({
         key: `row-${y}-${run.start}-${run.end}`,
         x1: center(run.start),
         y1: center(y),
         x2: center(run.end),
         y2: center(y),
-        edge: y === 0 || y === BOARD_SIZE - 1
+        edge: y === 0 || y === size - 1
       });
     }
   }
 
-  for (let x = 0; x < BOARD_SIZE; x += 1) {
-    for (const run of validRuns((y) => valid.has(`${x},${y}`))) {
+  for (let x = 0; x < size; x += 1) {
+    for (const run of validRuns((y) => valid.has(`${x},${y}`), size)) {
       lines.push({
         key: `col-${x}-${run.start}-${run.end}`,
         x1: center(x),
         y1: center(run.start),
         x2: center(x),
         y2: center(run.end),
-        edge: x === 0 || x === BOARD_SIZE - 1
+        edge: x === 0 || x === size - 1
       });
     }
   }
@@ -100,11 +102,11 @@ export function buildBoardLines(points) {
   return lines;
 }
 
-function validRuns(isValid) {
+function validRuns(isValid, size = BOARD_SIZE) {
   const runs = [];
   let start = null;
 
-  for (let index = 0; index < BOARD_SIZE; index += 1) {
+  for (let index = 0; index < size; index += 1) {
     if (isValid(index)) {
       if (start === null) start = index;
       continue;
@@ -115,8 +117,8 @@ function validRuns(isValid) {
     start = null;
   }
 
-  if (start !== null && BOARD_SIZE - start > 1) {
-    runs.push({ start, end: BOARD_SIZE - 1 });
+  if (start !== null && size - start > 1) {
+    runs.push({ start, end: size - 1 });
   }
 
   return runs;
@@ -151,7 +153,7 @@ export function replayRoomAt(room, step, viewColor = COLORS.black) {
 }
 
 export function replayGameAt(room, step) {
-  let game = createGameState(room.game.players);
+  let game = createGameState(room.game.players, { mode: room.game.mode ?? room.mode });
   for (const entry of room.game.history.slice(0, step)) {
     let result = null;
     if (entry.type === "move") result = playMove(game, entry.color, entry.id, {
@@ -180,7 +182,12 @@ export function replayGameAt(room, step) {
 }
 
 export function isStarPoint(x, y) {
-  return ((x === 3 || x === 9) && (y === 3 || y === 9)) || (x === 6 && y === 6);
+  return sharedIsStarPoint(x, y, arguments[2] ?? BOARD_SIZE);
+}
+
+function boardSizeFromPoints(points = []) {
+  const max = points.reduce((size, point) => Math.max(size, point.x ?? 0, point.y ?? 0), 0);
+  return max + 1 || BOARD_SIZE;
 }
 
 export function signedStoneTerm(value, label) {

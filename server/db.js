@@ -11,15 +11,49 @@ export const USER_ASSET_RELATION_INCLUDE = {
   userCharacters: true,
   userDecorations: true,
   userItems: true,
-  userItemEffects: true
+  userItemEffects: true,
+  modeStats: true
 };
 
 export const USER_ASSET_RELATION_SELECT = {
   userCharacters: { select: { characterSlug: true } },
   userDecorations: { select: { decorationSlug: true } },
   userItems: { select: { itemId: true, quantity: true } },
-  userItemEffects: { select: { effectKey: true, effectValue: true } }
+  userItemEffects: { select: { effectKey: true, effectValue: true } },
+  modeStats: { select: { mode: true, rating: true, wins: true, losses: true, draws: true } }
 };
+
+export async function ensureGameModeSchema(client = prisma) {
+  if (!client?.$executeRawUnsafe || !client?.$queryRawUnsafe) return;
+  await client.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "UserModeStats" (
+      "id" TEXT NOT NULL PRIMARY KEY,
+      "userId" TEXT NOT NULL,
+      "mode" TEXT NOT NULL,
+      "rating" INTEGER NOT NULL DEFAULT 1000,
+      "wins" INTEGER NOT NULL DEFAULT 0,
+      "losses" INTEGER NOT NULL DEFAULT 0,
+      "draws" INTEGER NOT NULL DEFAULT 0,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "UserModeStats_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    )
+  `);
+  await client.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "UserModeStats_userId_mode_key" ON "UserModeStats"("userId", "mode")`);
+  await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "UserModeStats_mode_rating_idx" ON "UserModeStats"("mode", "rating")`);
+
+  const gameRecordColumns = await client.$queryRawUnsafe(`PRAGMA table_info("GameRecord")`);
+  const hasGameRecordMode = gameRecordColumns.some((column) => column.name === "mode");
+  if (!hasGameRecordMode) {
+    await client.$executeRawUnsafe(`ALTER TABLE "GameRecord" ADD COLUMN "mode" TEXT NOT NULL DEFAULT 'spark'`);
+  }
+  await client.$executeRawUnsafe(`UPDATE "GameRecord" SET "mode" = 'spark' WHERE "mode" IS NULL OR "mode" = ''`);
+  await client.$executeRawUnsafe(`
+    INSERT OR IGNORE INTO "UserModeStats" ("id", "userId", "mode", "rating", "wins", "losses", "draws", "createdAt", "updatedAt")
+    SELECT "id" || ':spark', "id", 'spark', "rating", "wins", "losses", 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+    FROM "User"
+  `);
+}
 
 const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia", "aemeath"];
 const RATING_UNLOCKS = [
@@ -41,6 +75,7 @@ export function publicUser(user) {
     rating: user.rating,
     wins: user.wins,
     losses: user.losses,
+    modeStats: publicModeStats(user),
     coins: user.coins,
     selectedCharacter: canonicalCharacterId(user.selectedCharacter),
     selectedStoneDecoration: user.selectedStoneDecoration ?? "",
@@ -51,6 +86,34 @@ export function publicUser(user) {
     ownedMusicIds: ownedMusicIdsWithDefaults(user.ownedMusicIds),
     musicSelections: parseMusicSelections(user.musicSelections)
   };
+}
+
+function publicModeStats(user) {
+  const rows = Array.isArray(user.modeStats) ? user.modeStats : [];
+  const stats = {
+    spark: {
+      rating: Number(user.rating ?? 1000),
+      wins: Number(user.wins ?? 0),
+      losses: Number(user.losses ?? 0),
+      draws: 0
+    },
+    standard: {
+      rating: 1000,
+      wins: 0,
+      losses: 0,
+      draws: 0
+    }
+  };
+  for (const row of rows) {
+    if (!stats[row.mode]) continue;
+    stats[row.mode] = {
+      rating: Number(row.rating ?? stats[row.mode].rating),
+      wins: Number(row.wins ?? 0),
+      losses: Number(row.losses ?? 0),
+      draws: Number(row.draws ?? 0)
+    };
+  }
+  return stats;
 }
 
 function publicOwnedCharacters(user) {

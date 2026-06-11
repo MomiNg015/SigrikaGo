@@ -41,6 +41,7 @@ function PlayerInfo({
   const skillUses = game.skillUses[player.color] ?? 0;
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
+  const skillEnabled = game.skillEnabled !== false;
   const resultBadge = resultBadgeForPlayer(player, game, { isWinner, isDrawResult });
   const disconnectBadge = disconnectBadgeForPlayer(player, game);
   return (
@@ -71,7 +72,7 @@ function PlayerInfo({
       <TimeBar time={player.time} />
       <div className="captures">
         <span><strong>提子</strong>{player.captures}</span>
-        <span
+        {skillEnabled && <span
           className="info-stat removal-stat"
           data-tooltip={PLAYER_INFO_TOOLTIPS.skillRemovals}
           data-mobile-tooltip-trigger
@@ -82,8 +83,8 @@ function PlayerInfo({
           onKeyDown={(event) => openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip)}
         >
           <strong>除子</strong>{skillRemovals}
-        </span>
-        <span
+        </span>}
+        {skillEnabled && <span
           className="info-stat cost-stat"
           data-tooltip={PLAYER_INFO_TOOLTIPS.overclock}
           data-mobile-tooltip-trigger
@@ -94,9 +95,9 @@ function PlayerInfo({
           onKeyDown={(event) => openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip)}
         >
           <strong>超频</strong>{skillCost}
-        </span>
+        </span>}
       </div>
-      <div
+      {skillEnabled && <div
         className={`skill-chip-wrap ${skillDetailOpen ? "open" : ""}`}
         onMouseLeave={() => setSkillDetailOpen(false)}
       >
@@ -126,7 +127,7 @@ function PlayerInfo({
         <div className="skill-detail-panel" aria-hidden={!skillDetailOpen}>
           {character.skill.description || "暂无技能说明。"}
         </div>
-      </div>
+      </div>}
       {tapTooltip && (
         <div
           className="mobile-tap-tooltip"

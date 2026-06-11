@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { MonitorPlay, X } from "lucide-react";
+import { CircleDollarSign, MonitorPlay, X } from "lucide-react";
 import { derivePlayerRecordStats } from "../shared/gameRecords.js";
+import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
+import { rankFromRating } from "../shared/ratingRank.js";
 import {
   CharacterRecordsDialog,
   HouseReplayDialog
@@ -9,33 +11,45 @@ import HouseProfileStats from "./house/HouseProfileStats.jsx";
 import { deriveCharacterRecordStats } from "./house/houseStats.js";
 
 export default function ResumeModal({ user, records, characterListView, onClose, onOpenReplay }) {
+  const [mode, setMode] = useState("spark");
   const [showReplays, setShowReplays] = useState(false);
   const [showCharacterRecords, setShowCharacterRecords] = useState(false);
-  const stats = derivePlayerRecordStats(user, records);
-  const characterRecords = deriveCharacterRecordStats(user, records, characterListView);
+  const modeRecords = records.filter((record) => normalizeGameModeId(record.mode) === mode);
+  const modeUser = userForMode(user, mode);
+  const stats = derivePlayerRecordStats(modeUser, modeRecords);
+  const characterRecords = deriveCharacterRecordStats(modeUser, modeRecords, characterListView);
   const itemEffects = user.itemEffects ?? {};
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <section className="house-modal resume-modal" onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" onClick={onClose}><X size={20} /></button>
         <header className="house-header resume-header">
           <h2>履历</h2>
-          <button className="replay-open-button" onClick={() => setShowReplays(true)}>
-            <MonitorPlay size={18} />对局回放
-          </button>
+          <div className="resume-header-actions">
+            <p
+              className="shop-wallet resume-wallet"
+              title="金币：每胜一局+50，负一局+20，和棋或无效对局不获得金币。"
+            >
+              <CircleDollarSign size={18} />
+              {user.coins}
+            </p>
+            <button className="close-button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
+          </div>
         </header>
+        <ModeTabs mode={mode} onModeChange={setMode} />
+        <button className="replay-open-button resume-replay-action" onClick={() => setShowReplays(true)}>
+          <MonitorPlay size={18} />对局回放
+        </button>
         <HouseProfileStats
-          coins={user.coins}
-          rank={user.rank}
+          rank={modeUser.rank}
           stats={stats}
           onOpenCharacterRecords={() => setShowCharacterRecords(true)}
         />
         {showReplays && (
           <HouseReplayDialog
             characterListView={characterListView}
-            records={records}
-            currentUser={user}
+            records={modeRecords}
+            currentUser={modeUser}
             onClose={() => setShowReplays(false)}
             onOpenReplay={onOpenReplay}
           />
@@ -48,6 +62,37 @@ export default function ResumeModal({ user, records, characterListView, onClose,
           />
         )}
       </section>
+    </div>
+  );
+}
+
+function userForMode(user, mode) {
+  const stats = user.modeStats?.[mode];
+  if (!stats) return user;
+  return {
+    ...user,
+    rating: stats.rating,
+    rank: rankFromRating(stats.rating),
+    wins: stats.wins,
+    losses: stats.losses
+  };
+}
+
+function ModeTabs({ mode, onModeChange }) {
+  return (
+    <div className="mode-tabs" role="tablist" aria-label="对弈模式">
+      {modeOrderedEntries().map((entry) => (
+        <button
+          key={entry.id}
+          type="button"
+          role="tab"
+          aria-selected={mode === entry.id}
+          className={mode === entry.id ? "active" : ""}
+          onClick={() => onModeChange(entry.id)}
+        >
+          {entry.title}
+        </button>
+      ))}
     </div>
   );
 }
