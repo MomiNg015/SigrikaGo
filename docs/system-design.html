@@ -63,6 +63,9 @@
 <li>Standard-mode room UI keeps player cosmetics such as selected character portraits and stone decorations, but directly removes skill gameplay affordances: no action-bar skill button, no player skill chips, no skill name display, no removal/overclock counters, and no overclock terms in scoring breakdowns. The rules layer also rejects skill and passive-skill execution in standard mode.</li>
 </ul>
 <ul>
+<li>Room board coordinates and action validation are size-aware. The backend validates move/scoring <code>pointId</code> values against the active room game's <code>size</code>, and the board coordinate labels use the same <code>--size</code> grid as the rendered intersections so 13-line and 19-line boards stay aligned.</li>
+</ul>
+<ul>
 <li>Mode-specific competitive stats live in <code>UserModeStats</code> with one row per user and mode. Existing <code>User.rating</code>, <code>wins</code>, and <code>losses</code> remain star-mode compatibility mirrors during this migration, while standard rating/rank/records are read from <code>UserModeStats</code>; coins remain a global account asset.</li>
 </ul>
 <ul>

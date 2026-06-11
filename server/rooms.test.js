@@ -205,6 +205,20 @@ describe("room game record persistence", () => {
     expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 0 });
   });
 
+  test("accepts standard mode moves on the full 19-line board", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    joinMatchmaking({ user: user("standard-black", "sigrika"), socketId: "socket-a", mode: "standard" }, io);
+    const room = joinMatchmaking({ user: user("standard-white", "denia"), socketId: "socket-b", mode: "standard" }, io);
+    completeRoomOpening(room, io);
+
+    const black = room.players.find((player) => player.color === COLORS.black);
+    const result = handleGameAction(room.code, black.user.id, { type: "move", pointId: pointId(18, 18) }, io);
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.room.game, pointId(18, 18)).stone).toBe(COLORS.black);
+  });
+
   test("clears rainbow candy effects after matching valid games", () => {
     vi.useFakeTimers();
     const io = fakeIo();

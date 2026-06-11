@@ -275,10 +275,10 @@ export function handleGameAction(roomCode, userId, action, io) {
   const validatedRoomCode = validateRoomCode(roomCode);
   if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
   const code = validatedRoomCode.value;
-  const validationError = validateActionPoint(action);
-  if (validationError) return { ok: false, error: validationError };
   const room = rooms.get(code);
   if (!room) return { ok: false, error: "房间不存在" };
+  const validationError = validateActionPoint(action, room.game.size);
+  if (validationError) return { ok: false, error: validationError };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能操作棋局" };
   if (room.game.pendingSkill) return { ok: false, error: "技能演出中" };
@@ -420,10 +420,10 @@ export function respondDraw(roomCode, userId, accepted, io) {
 export function handleScoringAction(roomCode, userId, action, io) {
   const validatedRoomCode = validateRoomCode(roomCode);
   if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
-  const validationError = validateActionPoint(action);
-  if (validationError) return { ok: false, error: validationError };
   const room = rooms.get(validatedRoomCode.value);
   if (!room) return { ok: false, error: "房间不存在" };
+  const validationError = validateActionPoint(action, room.game.size);
+  if (validationError) return { ok: false, error: validationError };
   const player = room.players.find((p) => p.user.id === userId);
   if (!player) return { ok: false, error: "观战者不能确认数子" };
 
@@ -524,10 +524,10 @@ function broadcastToast(io, room, text) {
   }
 }
 
-function validateActionPoint(action) {
+function validateActionPoint(action, boardSize) {
   if (!action || typeof action !== "object") return "未知操作";
   if (action.pointId == null) return null;
-  const point = validatePointId(action.pointId);
+  const point = validatePointId(action.pointId, boardSize);
   return point.ok ? null : point.error;
 }
 

@@ -39,10 +39,10 @@ function Board({
   ]), [game.scoring?.territory?.black, game.scoring?.territory?.white, showScoringMarks]);
   const deadStoneOwners = showScoringMarks ? game.scoring?.deadStoneOwners ?? {} : {};
   return (
-    <div className={`board-wrap ${pendingSkill ? "targeting" : ""}`}>
+    <div className={`board-wrap ${pendingSkill ? "targeting" : ""}`} data-board-size={boardSize} style={{ "--size": boardSize }}>
       {showCoords && <div className="coord-row coord-top">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
       {showCoords && <div className="coord-col coord-left">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
-      <div className="board" style={{ "--size": boardSize }}>
+      <div className="board">
         <svg className="board-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           {lines.map((line) => (
             <line

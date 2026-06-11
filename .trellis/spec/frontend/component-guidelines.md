@@ -43,6 +43,7 @@ Questions to answer:
 - UI mode ids are `spark` and `standard`.
 - Mode option order must use `modeOrderedEntries()` so `spark` appears before `standard`.
 - Room controls receive `game.skillEnabled !== false` or equivalent normalized mode state.
+- Board components receive `game.size` and expose it as `--size` on the shared board wrapper so intersections, labels, star points, and click targets use one board-size source.
 
 #### 3. Contracts
 - Home match entry opens a two-option modal before emitting `match:join`.
@@ -50,22 +51,26 @@ Questions to answer:
 - Mode tabs are required for leaderboard, watch list, and record/history views.
 - Standard room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels.
 - Standard scoring copy must omit overclock/skill-cost descriptions and use black komi `3.75`.
+- Coordinate labels must grid with `repeat(var(--size), minmax(0, 1fr))`; do not leave coordinate rows or columns hard-coded to 13 tracks.
 
 #### 4. Validation & Error Matrix
 - Missing `game.mode` -> render as `spark`.
 - Missing `game.skillEnabled` -> assume skills enabled for legacy rooms.
 - `standard` with accidental skill state -> UI must still hide skill controls when `skillEnabled === false`.
+- Standard board actions on points such as `18,18` must be accepted by the backend because point validation uses the room game's size, not the legacy 13-line default.
 - Mobile mode controls -> keep 44px-plus touch targets and avoid compressing Chinese labels into wrapped fragments.
 
 #### 5. Good/Base/Bad Cases
 - Good: `ActionBar` receives `skillEnabled={displayRoom.game.skillEnabled !== false}` and conditionally renders the skill button.
 - Base: old replay snapshots with no mode continue through spark defaults.
 - Bad: checking only `mode === "standard"` in one component while another component uses a separate hard-coded board size or komi.
+- Bad: rendering a 19-line board while `.coord-row` still uses `repeat(13, 1fr)`, which makes labels drift away from intersections.
 
 #### 6. Tests Required
 - Home mode picker renders both modes and counts.
 - Match/join socket payload includes selected mode.
 - Standard room state renders 19-line board star points and no skill UI.
+- Standard room accepts moves at the 19-line edge and Board CSS tests assert coordinate rows/columns use `var(--size)`.
 - Leaderboard/watch/history fetches or filters by selected mode.
 - Friend duel request payload and incoming banner include mode.
 

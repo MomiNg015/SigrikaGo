@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { createPoints } from "../shared/game.js";
+import Board from "./Board.jsx";
 import { areBoardPropsEqual, stoneOffsetForPoint } from "./Board.jsx";
 
 describe("areBoardPropsEqual", () => {
@@ -76,6 +80,20 @@ describe("areBoardPropsEqual", () => {
     expect(Math.abs(first.y)).toBeLessThanOrEqual(1);
     expect(Math.abs(first.x) || Math.abs(first.y)).toBeGreaterThanOrEqual(1);
     expect(differentStone).not.toEqual(first);
+  });
+
+  test("uses the game board size for coordinate grids", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: { phase: "playing", size: 19, points: createPoints(19), history: [] }
+    })));
+    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+
+    expect(markup).toContain('data-board-size="19"');
+    expect(markup).toContain("--size:19");
+    expect(markup).toContain("T");
+    expect(css).toContain("grid-template-columns: repeat(var(--size), minmax(0, 1fr));");
+    expect(css).toContain("grid-template-rows: repeat(var(--size), minmax(0, 1fr));");
+    expect(css).toContain('.board-wrap[data-board-size="19"] .coord-row');
   });
 
   test("keeps board grid strokes uniform with first-line strokes at 2.5x across themes", () => {
