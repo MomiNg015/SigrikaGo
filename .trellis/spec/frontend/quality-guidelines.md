@@ -108,6 +108,7 @@ Required assertion points:
 
 - Tab buttons with `.active`, `aria-selected="true"`, or equivalent selected state must have a distinct background color, not only a border or text-color change.
 - Theme layers that globally reset `button` backgrounds, especially Bright School rules with `!important`, must include matching selected-tab overrides after the reset.
+- Mobile modal fixes that must survive Bright School and shared responsive rules should also be mirrored in the final `mobile-adaptive.css` safety layer, because it is imported after theme files.
 - Moving a modal action between header/body sections should be covered by a static markup order assertion when the order matters to the user workflow.
 
 Wrong:

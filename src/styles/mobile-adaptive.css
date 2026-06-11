@@ -1823,6 +1823,40 @@
 }
 
 @media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions {
+    min-width: max-content !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions .close-button {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    flex: 0 0 auto !important;
+    transform: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-wallet {
+    flex: 0 0 auto !important;
+    max-width: 92px !important;
+    margin: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-grid.top-stats-bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button.active,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button[aria-selected="true"] {
+    background: #ff9ebb !important;
+    color: #3d2b25 !important;
+    border-color: #3d2b25 !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open {
     z-index: 9 !important;
   }

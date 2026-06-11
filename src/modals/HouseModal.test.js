@@ -316,6 +316,12 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain(".profile-grid.top-stats-bar .stat strong");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
     expect(finalMobileCss).toContain("word-break: normal !important");
+    expect(finalMobileCss).toContain(".resume-header-actions .close-button");
+    expect(finalMobileCss).toContain("position: static !important");
+    expect(finalMobileCss).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
+    expect(finalMobileCss).toContain("background: #ff9ebb !important");
     expect(finalMobileCss).toContain(".character-card.portrait-card.is-deployed");
     expect(finalMobileCss).toContain("#4f9b69");
     expect(finalMobileCss).toContain(".house-modal .character-list");
