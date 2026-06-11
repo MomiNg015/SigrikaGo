@@ -182,11 +182,39 @@
   opacity: 0.58;
 }
 
+.character-item-effect-badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100% - 64px);
+  pointer-events: none;
+}
+
+.character-item-effect-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  padding: 3px;
+  border: 1px solid rgba(188, 132, 25, 0.28);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 248, 199, 0.96), rgba(246, 207, 106, 0.92));
+  box-shadow: 0 7px 14px rgba(173, 128, 28, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
 .character-card img {
   width: 104px;
   height: 82px;
   object-fit: contain;
   justify-self: center;
+}
+
+.character-card .character-item-effect-icon {
+  width: 30px;
+  height: 30px;
 }
 
 .sortie-button {

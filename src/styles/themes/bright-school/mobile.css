@@ -1066,6 +1066,19 @@
     object-fit: contain !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .character-item-effect-badges {
+    top: 4px !important;
+    left: 4px !important;
+    z-index: 4 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .character-item-effect-icon {
+    width: 24px !important;
+    height: 24px !important;
+    max-height: 24px !important;
+    padding: 2px !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card strong,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card small,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked small,

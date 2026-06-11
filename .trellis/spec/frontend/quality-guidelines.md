@@ -129,6 +129,36 @@ Correct:
 }
 ```
 
+### Character Item Effect Badge Contracts
+
+When a character-specific item effect is active in `user.itemEffects`, the house manual character card should render the item's icon as a small badge on the corresponding character card across desktop and mobile.
+
+Required assertion points:
+
+- Derive card badges from `itemEffects` in a shared helper, rather than duplicating checks in JSX.
+- Badge metadata must include the real item icon path, an accessible `alt`, and a `title` matching the item effect.
+- Badge CSS must use selectors specific enough to beat generic `.character-card img` portrait sizing and Bright School mobile portrait overrides.
+- Mobile badge dimensions should remain compact and stable; add assertions for the mobile selector and size when changing character-card layout.
+
+Wrong:
+
+```css
+.character-item-effect-icon {
+  width: 24px;
+}
+```
+
+This can be overridden by `.character-card img` and stretch the badge to portrait size.
+
+Correct:
+
+```css
+.house-modal .character-card.portrait-card .character-item-effect-icon {
+  width: 24px;
+  height: 24px;
+}
+```
+
 ### Skill targeting contracts
 
 Keep visual target preview separate from board-click release confirmation. No-target active skills such as Baconbits `random-blast` must keep `canPreviewSkillTarget` false so the board does not show a fake target marker, but `skillUsesBoardConfirmation` must still let a valid board point confirm and send the skill action. Do not reuse the preview helper as the only click-eligibility gate for skills.

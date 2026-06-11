@@ -776,6 +776,24 @@
     object-fit: contain;
   }
 
+  .house-modal .character-item-effect-badges {
+    top: 4px;
+    left: 4px;
+    max-width: calc(100% - 12px);
+  }
+
+  .house-modal .character-item-effect-icon {
+    width: 24px;
+    height: 24px;
+    padding: 2px;
+  }
+
+  .house-modal .character-card.portrait-card .character-item-effect-icon {
+    width: 24px;
+    height: 24px;
+    max-height: 24px;
+  }
+
   .house-modal .character-card.locked .locked-portrait {
     order: 1;
     width: 34px;
