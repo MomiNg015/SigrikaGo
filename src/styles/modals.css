@@ -371,6 +371,29 @@
   padding: 9px 13px;
 }
 
+.resume-header-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.resume-header-actions .close-button {
+  position: static;
+  flex: 0 0 auto;
+}
+
+.resume-wallet {
+  flex: 0 0 auto;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.resume-replay-action {
+  justify-self: start;
+  margin-top: -4px;
+}
+
 .match-mode-modal {
   width: min(520px, calc(100vw - 32px));
   gap: 16px;
@@ -452,6 +475,7 @@
 }
 
 .resume-modal .profile-grid.top-stats-bar {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 4px;
 }
 

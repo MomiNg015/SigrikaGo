@@ -172,7 +172,10 @@ describe("deriveCharacterRecordStats", () => {
     }));
 
     expect(html).toContain("<h2>履历</h2>");
+    expect(html.indexOf("mode-tabs")).toBeLessThan(html.indexOf("resume-replay-action"));
+    expect(html.indexOf("resume-replay-action")).toBeLessThan(html.indexOf("top-stats-bar"));
     expect(html).toContain("top-stats-bar");
+    expect(html).toContain("resume-wallet");
     expect(html).toContain("对局回放");
     expect(html).toContain("战绩");
     expect(html).toContain("段位");
@@ -280,6 +283,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto !important");
     expect(css).toContain(".resume-modal");
     expect(css).toContain(".house-modal .profile-grid.top-stats-bar");
+    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
+    expect(readFileSync(new URL("../styles/themes/bright-school/modals.css", import.meta.url), "utf8")).toContain(".mode-tabs button[aria-selected=\"true\"]");
+    expect(readFileSync(new URL("../styles/themes/bright-school/modals.css", import.meta.url), "utf8")).toContain("background: #ff9ebb !important");
     expect(css).toContain(".house-modal .stat strong");
     expect(css).toContain("white-space: nowrap !important");
     expect(css).toContain(".house-modal .character-card.portrait-card > strong");

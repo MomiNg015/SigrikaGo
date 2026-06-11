@@ -100,6 +100,34 @@ npm test -- src/room/RoomScreen.test.js src/room/ActionBar.test.js
 
 For broader confidence after shared CSS changes, also run `npm test` and `npm run build`.
 
+### Modal and Tab Visual State Contracts
+
+When adding or restyling modal tabs, including game-mode tabs in resume, leaderboard, replay, or watch-list surfaces, keep selected state visually explicit in both base CSS and the active theme override.
+
+Required assertion points:
+
+- Tab buttons with `.active`, `aria-selected="true"`, or equivalent selected state must have a distinct background color, not only a border or text-color change.
+- Theme layers that globally reset `button` backgrounds, especially Bright School rules with `!important`, must include matching selected-tab overrides after the reset.
+- Moving a modal action between header/body sections should be covered by a static markup order assertion when the order matters to the user workflow.
+
+Wrong:
+
+```css
+.app-shell.theme-bright-school button {
+  background: var(--bright-sheet) !important;
+}
+```
+
+This can erase the selected background of generic `.mode-tabs` in resume, leaderboard, and watch-list modals.
+
+Correct:
+
+```css
+.app-shell.theme-bright-school .mode-tabs button[aria-selected="true"] {
+  background: #ff9ebb !important;
+}
+```
+
 ### Skill targeting contracts
 
 Keep visual target preview separate from board-click release confirmation. No-target active skills such as Baconbits `random-blast` must keep `canPreviewSkillTarget` false so the board does not show a fake target marker, but `skillUsesBoardConfirmation` must still let a valid board point confirm and send the skill action. Do not reuse the preview helper as the only click-eligibility gate for skills.

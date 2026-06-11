@@ -1,6 +1,6 @@
-import { ChartNoAxesColumn, CircleDollarSign, HelpCircle, Star, Trophy } from "lucide-react";
+import { ChartNoAxesColumn, HelpCircle, Star, Trophy } from "lucide-react";
 
-export default function HouseProfileStats({ coins, stats, rank, onOpenCharacterRecords }) {
+export default function HouseProfileStats({ stats, rank, onOpenCharacterRecords }) {
   return (
     <div className="profile-grid top-stats-bar">
       <Stat
@@ -20,12 +20,6 @@ export default function HouseProfileStats({ coins, stats, rank, onOpenCharacterR
         value={rank}
         icon={<Trophy size={16} />}
         tip="段位由积分决定。积分1000分为1段，每+/-100分升/降一段，最高为9段。"
-      />
-      <Stat
-        label="金币"
-        value={coins}
-        icon={<CircleDollarSign size={16} />}
-        tip="金币：每胜一局+50，负一局+20，和棋或无效对局不获得金币。"
       />
     </div>
   );

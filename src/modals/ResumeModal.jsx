@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MonitorPlay, X } from "lucide-react";
+import { CircleDollarSign, MonitorPlay, X } from "lucide-react";
 import { derivePlayerRecordStats } from "../shared/gameRecords.js";
 import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
 import { rankFromRating } from "../shared/ratingRank.js";
@@ -23,16 +23,24 @@ export default function ResumeModal({ user, records, characterListView, onClose,
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <section className="house-modal resume-modal" onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" onClick={onClose}><X size={20} /></button>
         <header className="house-header resume-header">
           <h2>履历</h2>
-          <button className="replay-open-button" onClick={() => setShowReplays(true)}>
-            <MonitorPlay size={18} />对局回放
-          </button>
+          <div className="resume-header-actions">
+            <p
+              className="shop-wallet resume-wallet"
+              title="金币：每胜一局+50，负一局+20，和棋或无效对局不获得金币。"
+            >
+              <CircleDollarSign size={18} />
+              {user.coins}
+            </p>
+            <button className="close-button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
+          </div>
         </header>
         <ModeTabs mode={mode} onModeChange={setMode} />
+        <button className="replay-open-button resume-replay-action" onClick={() => setShowReplays(true)}>
+          <MonitorPlay size={18} />对局回放
+        </button>
         <HouseProfileStats
-          coins={user.coins}
           rank={modeUser.rank}
           stats={stats}
           onOpenCharacterRecords={() => setShowCharacterRecords(true)}
