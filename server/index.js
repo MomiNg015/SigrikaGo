@@ -9,7 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import multer from "multer";
 import { Server } from "socket.io";
-import { prisma, publicUser, USER_ASSET_RELATION_INCLUDE, USER_ASSET_RELATION_SELECT } from "./db.js";
+import { ensureGameModeSchema, prisma, publicUser, USER_ASSET_RELATION_INCLUDE, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
@@ -163,6 +163,7 @@ await ensureDefaultSiteSettings(prisma);
 await ensureSocialSchema(prisma);
 await ensureRoomPersistenceSchema(prisma);
 await ensureLoginSessionSchema(prisma);
+await ensureGameModeSchema(prisma);
 await promoteConfiguredAdmins(prisma);
 
 app.get("/api/health", (_req, res) => {

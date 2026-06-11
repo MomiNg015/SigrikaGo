@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { publicUser } from "./db.js";
+import { describe, expect, it, vi } from "vitest";
+import { ensureGameModeSchema, publicUser } from "./db.js";
 
 describe("publicUser", () => {
   it("exposes safe role and status fields without password hash", () => {
@@ -115,5 +115,26 @@ describe("publicUser", () => {
     ]);
     expect(payload.itemEffects).toEqual({ sigrikaCandyDisabled: true, deniaRainbowGlow: true });
     expect(payload.ownedDecorations).toEqual(["legacy-decoration", "paw-stone"]);
+  });
+});
+
+describe("ensureGameModeSchema", () => {
+  it("creates mode stats storage and backfills legacy spark data", async () => {
+    const executeRawUnsafe = vi.fn();
+    const queryRawUnsafe = vi.fn().mockResolvedValue([
+      { name: "id" },
+      { name: "roomCode" }
+    ]);
+    const client = {
+      $executeRawUnsafe: executeRawUnsafe,
+      $queryRawUnsafe: queryRawUnsafe
+    };
+
+    await ensureGameModeSchema(client);
+
+    expect(queryRawUnsafe).toHaveBeenCalledWith('PRAGMA table_info("GameRecord")');
+    expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS "UserModeStats"'));
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "GameRecord" ADD COLUMN "mode" TEXT NOT NULL DEFAULT \'spark\'');
+    expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('INSERT OR IGNORE INTO "UserModeStats"'));
   });
 });

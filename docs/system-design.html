@@ -66,6 +66,9 @@
 <li>Mode-specific competitive stats live in <code>UserModeStats</code> with one row per user and mode. Existing <code>User.rating</code>, <code>wins</code>, and <code>losses</code> remain star-mode compatibility mirrors during this migration, while standard rating/rank/records are read from <code>UserModeStats</code>; coins remain a global account asset.</li>
 </ul>
 <ul>
+<li>Server startup calls <code>ensureGameModeSchema(prisma)</code> before auth routes are used. It creates <code>UserModeStats</code>, adds <code>GameRecord.mode</code> when an older SQLite dev database is still on the pre-mode schema, and backfills each existing user into the <code>spark</code> stats bucket so login/profile reads can include <code>modeStats</code> safely after pulling the branch.</li>
+</ul>
+<ul>
 <li>Desktop and mobile mode switchers use a two-option order (<code>星炬对弈</code>, then <code>标准对弈</code>) for home matchmaking, leaderboard, watch list, and resume/history surfaces. Mode controls should keep 44px-plus touch targets, stable two-column segmented tabs or vertical option buttons, and Bright School visual consistency without introducing separate visual themes.</li>
 </ul>
 <ul>
