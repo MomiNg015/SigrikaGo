@@ -135,15 +135,6 @@
   filter: drop-shadow(6px 8px 0 rgba(74, 55, 54, 0.18)) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .matchmaking-popup {
-  background: #fffaf0 !important;
-  color: var(--bright-ink) !important;
-  border: 3px solid var(--bright-border) !important;
-  border-radius: 16px !important;
-  box-shadow: 4px 4px 0 var(--bright-border) !important;
-  clip-path: none !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
   min-width: 190px !important;
   overflow: visible !important;

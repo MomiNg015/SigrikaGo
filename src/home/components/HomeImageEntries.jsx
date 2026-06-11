@@ -6,18 +6,12 @@ export function HouseManualEntry({ onOpenHouse }) {
   );
 }
 
-export function MatchEntry({ matchmakingCount, onStartMatch }) {
+export function MatchEntry({ onStartMatch }) {
   return (
     <section className="home-match-feature" aria-label="星炬对弈入口">
-      <button className="home-image-entry match-image-entry hologram-entry" data-hud="匹配对局" onClick={onStartMatch} aria-describedby="matchmaking-count-popup">
+      <button className="home-image-entry match-image-entry hologram-entry" data-hud="匹配对局" onClick={onStartMatch} aria-label="星炬对弈">
         <img src="/assets/home/fantasy-match-entry.webp" alt="星炬对弈" decoding="async" />
       </button>
-      <div id="matchmaking-count-popup" className="matchmaking-popup" role="status" aria-label="匹配状态、规则与用时">
-        <span>当前匹配人数：{matchmakingCount}</span>
-        <span>路数：13路</span>
-        <span>用时：5分钟30秒3次</span>
-        <span>规则：黑贴2又3/4子，中国数子规则</span>
-      </div>
     </section>
   );
 }

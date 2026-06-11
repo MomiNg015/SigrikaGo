@@ -1103,40 +1103,6 @@ p {
   transform: translate3d(0, -4px, 0) rotate(1.2deg);
 }
 
-.matchmaking-popup {
-  position: absolute;
-  right: clamp(16px, 3vw, 42px);
-  top: clamp(8px, 1.4vw, 18px);
-  z-index: 2;
-  display: grid;
-  gap: 4px;
-  padding: 10px 12px;
-  border: 1px solid rgba(128, 102, 142, 0.18);
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(244, 249, 255, 0.64));
-  backdrop-filter: blur(14px);
-  color: #4f3d55;
-  box-shadow: 0 14px 34px rgba(72, 44, 86, 0.14);
-  font-size: 13px;
-  font-weight: 900;
-  line-height: 1.25;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(6px);
-  transition: opacity 160ms ease, transform 160ms ease;
-}
-
-.matchmaking-popup span {
-  display: block;
-  white-space: nowrap;
-}
-
-.home-match-feature:hover .matchmaking-popup,
-.match-image-entry:focus-visible + .matchmaking-popup {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .home-grid-featured > .home-utility-grid {
   position: absolute;
   left: 2%;

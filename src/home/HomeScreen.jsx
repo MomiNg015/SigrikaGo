@@ -29,7 +29,6 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
 
       <section className="home-main-panel home-terminal-main">
         <HomeStage
-          matchmakingCount={matchmakingCounts.spark + matchmakingCounts.standard}
           selectedCharacter={selectedCharacter}
           user={user}
           onOpenFriends={onOpenFriends}

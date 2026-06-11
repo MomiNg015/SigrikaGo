@@ -429,22 +429,6 @@
   filter: drop-shadow(0 0 18px rgba(0, 255, 190, 0.24));
 }
 
-.matchmaking-popup {
-  right: clamp(12px, 1.8vw, 28px);
-  top: clamp(12px, 1.8vw, 28px);
-  border: 1px solid rgba(0, 191, 255, 0.38);
-  border-radius: 0;
-  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-  background: rgba(7, 18, 26, 0.76);
-  color: var(--home-terminal-text);
-  box-shadow:
-    0 0 18px rgba(0, 191, 255, 0.18),
-    inset 0 0 18px rgba(0, 191, 255, 0.1);
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
 .home-grid-featured > .home-utility-grid {
   grid-area: nav;
   width: min(420px, 100%);

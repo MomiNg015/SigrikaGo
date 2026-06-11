@@ -104,7 +104,9 @@ describe("HomeScreen", () => {
     expect(html).toContain('class="home-image-entry match-image-entry hologram-entry"');
     expect(html).toContain('src="/assets/home/book-entry.webp"');
     expect(html).toContain('src="/assets/home/fantasy-match-entry.webp"');
-    expect(html).toContain("当前匹配人数：3");
+    expect(html).not.toContain("matchmaking-popup");
+    expect(html).not.toContain("当前匹配人数：3");
+    expect(html).not.toContain("aria-describedby=\"matchmaking-count-popup\"");
     expect(stageBlock).toContain("grid-template-columns: minmax(240px, 0.72fr) minmax(360px, 1.28fr)");
     expect(stageBlock).toContain("overflow: visible");
     expect(imageEntryBlock).toContain("background: rgba(10, 28, 38, 0.52)");
@@ -114,6 +116,7 @@ describe("HomeScreen", () => {
     expect(hoverBlock).toContain("transform: translateY(-10px)");
     expect(hoverBlock).toContain("border-color: var(--home-terminal-cyan)");
     expect(css).toContain(".match-image-entry:hover::after,\n.match-image-entry:focus-visible::after {\n  animation: none;");
+    expect(css).not.toContain(".matchmaking-popup");
     expect(tacticalTextBlock).toContain("content: attr(data-hud)");
     expect(html).toContain('data-hud="部员手册"');
     expect(html).toContain('data-hud="匹配对局"');
