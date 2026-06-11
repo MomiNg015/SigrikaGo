@@ -129,6 +129,9 @@ describe("HomeScreen", () => {
     const utilityEntryBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityTextBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityHoverBeforeBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry:hover::before,[\s\S]+?\.utility-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightHomeCss = readTextFixture("../styles/themes/bright-school/home.css");
+    const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(html).toContain("home-player-row tactical-id-row");
     expect(html).toContain("home-player-plaque tactical-id-card");
@@ -150,6 +153,9 @@ describe("HomeScreen", () => {
     expect(statsBlock).toContain("font-family: ui-monospace");
     expect(statsBlock).toContain("min-width: 154px");
     expect(css).toContain(".home-player-zone .plaque-mode-stat");
+    expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(116px, 1fr) minmax(164px, max-content)");
+    expect(brightStatsBlock).toContain("min-width: 164px");
+    expect(brightStatsBlock).toContain("box-sizing: border-box");
     expect(utilityBlock).toContain("grid-template-columns: 1fr");
     expect(utilityEntryBlock).toContain("grid-template-columns: 28px minmax(0, 1fr)");
     expect(utilityEntryBlock).toContain("transform: skewX(-15deg)");

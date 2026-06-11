@@ -147,8 +147,8 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
   display: grid !important;
-  grid-template-columns: 76px minmax(120px, 1fr) 94px !important;
-  column-gap: 20px !important;
+  grid-template-columns: 76px minmax(116px, 1fr) minmax(164px, max-content) !important;
+  column-gap: 16px !important;
   align-items: center !important;
   cursor: pointer !important;
   font: inherit !important;
@@ -253,6 +253,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats {
   min-width: 164px !important;
+  box-sizing: border-box !important;
   padding: 12px 12px 10px !important;
   gap: 3px !important;
   align-self: stretch !important;
