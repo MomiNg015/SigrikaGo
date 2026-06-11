@@ -64,7 +64,7 @@ function Board({
           const skillEffectClass = point.skillEffect ?? "";
           const previewClass = canPreviewPoint(game, previewPlayer, point, pendingSkill, Boolean(onScoringPoint)) ? "previewable" : "";
           const decorationImage = point.stone ? stoneDecorationImage(stoneDecorations[point.stone], point.stone) : null;
-          const stoneOffset = point.stone ? stoneOffsetForPoint(point) : null;
+          const stoneOffset = point.stone ? stoneOffsetForPoint(point, game.mode) : null;
           const stoneStyle = point.stone
             ? {
                 "--stone-offset-x": `${stoneOffset.x}px`,
@@ -133,7 +133,8 @@ export function areBoardPropsEqual(previous, next) {
     && sameStoneDecorations(previous.stoneDecorations, next.stoneDecorations);
 }
 
-export function stoneOffsetForPoint(point) {
+export function stoneOffsetForPoint(point, mode = "spark") {
+  const maxOffset = mode === "standard" ? 0.5 : 1;
   const directions = [
     { x: -1, y: -1 },
     { x: 0, y: -1 },
@@ -145,7 +146,10 @@ export function stoneOffsetForPoint(point) {
     { x: 1, y: 1 }
   ];
   const index = stableHash(`${point.id}:${point.stone ?? ""}`) % directions.length;
-  return directions[index];
+  return {
+    x: directions[index].x * maxOffset,
+    y: directions[index].y * maxOffset
+  };
 }
 
 function stableHash(value) {

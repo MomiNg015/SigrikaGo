@@ -3240,7 +3240,7 @@
 <li><code>Board.jsx</code> marks first-line board grid runs with <code>edge-line</code>; CSS keeps every non-edge grid run at one uniform stroke width and renders every first-line run exactly 2.5x that width in the Bright School theme.</li>
 </ul>
 <ul>
-<li>Board stones use deterministic visual jitter for a more physical game feel: each stone gets stable <code>--stone-offset-x/y</code> values in one random 1px direction from the intersection, while the underlying <code>.point</code> button, game logic, scoring marks, and target previews remain centered on the original intersection.</li>
+<li>Board stones use deterministic visual jitter for a more physical game feel: each stone gets stable <code>--stone-offset-x/y</code> values in one random direction from the intersection. Spark mode keeps a maximum 1px offset; standard mode uses a maximum 0.5px offset on both desktop and mobile because 19-line stones are smaller. The underlying <code>.point</code> button, game logic, scoring marks, and target previews remain centered on the original intersection.</li>
 </ul>
 <ul>
 <li><code>OperationHint.jsx</code> owns phase-aware text hints and compact scoring breakdown display under the opponent-side panel.</li>
