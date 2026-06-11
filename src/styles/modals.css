@@ -405,6 +405,10 @@
   width: 100%;
 }
 
+.match-mode-modal .match-mode-options + .secondary-action {
+  margin-top: 12px;
+}
+
 .match-mode-option {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

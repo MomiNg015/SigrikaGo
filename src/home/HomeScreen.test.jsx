@@ -217,4 +217,14 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".owned-decoration-header h3");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
   });
+
+  it("keeps match mode cancel actions separated from mode choices", () => {
+    const modalCss = readTextFixture("../styles/modals.css");
+    const finalMobileCss = readTextFixture("../styles/mobile-adaptive.css");
+
+    expect(modalCss).toContain(".match-mode-modal .match-mode-options + .secondary-action");
+    expect(modalCss).toContain("margin-top: 12px;");
+    expect(finalMobileCss).toContain(".match-mode-modal .match-mode-options + .secondary-action");
+    expect(finalMobileCss).toContain("margin-top: 14px !important;");
+  });
 });

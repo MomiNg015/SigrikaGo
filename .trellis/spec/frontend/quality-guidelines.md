@@ -111,6 +111,7 @@ Required assertion points:
 - Theme layers that globally reset `button` backgrounds, especially Bright School rules with `!important`, must include matching selected-tab overrides after the reset.
 - Mobile modal fixes that must survive Bright School and shared responsive rules should also be mirrored in the final `mobile-adaptive.css` safety layer, because it is imported after theme files.
 - Moving a modal action between header/body sections should be covered by a static markup order assertion when the order matters to the user workflow.
+- Match-mode picker cancel actions must keep explicit vertical spacing from the mode option group in base CSS and the final mobile safety layer, so the escape action never visually attaches to the last mode option on desktop or mobile.
 
 Wrong:
 
