@@ -69,6 +69,9 @@
 <li>Mode-specific competitive stats live in <code>UserModeStats</code> with one row per user and mode. Existing <code>User.rating</code>, <code>wins</code>, and <code>losses</code> remain star-mode compatibility mirrors during this migration, while standard rating/rank/records are read from <code>UserModeStats</code>; coins remain a global account asset.</li>
 </ul>
 <ul>
+<li>Room snapshots can carry mode-specific player display stats. Frontend room-entry syncs (<code>match:found</code>, <code>room:update</code>, and live <code>room:resume</code>) merge the current player's snapshot into the global user state with <code>notifyStats: false</code>; entering spark or standard rooms is a context switch, not a reward/rating event, so it must not show coins, rating, or rank-change toasts.</li>
+</ul>
+<ul>
 <li>Server startup calls <code>ensureGameModeSchema(prisma)</code> before auth routes are used. It creates <code>UserModeStats</code>, adds <code>GameRecord.mode</code> when an older SQLite dev database is still on the pre-mode schema, and backfills each existing user into the <code>spark</code> stats bucket so login/profile reads can include <code>modeStats</code> safely after pulling the branch.</li>
 </ul>
 <ul>
