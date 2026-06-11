@@ -13,7 +13,7 @@ describe("socket handlers", () => {
     expect(deps.setReplayStep).toHaveBeenCalledWith(null);
     expect(deps.setMatchStart).toHaveBeenCalledWith(null);
     expect(deps.updateUser).toHaveBeenCalledOnce();
-    expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function), { notifyStats: false });
+    expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function));
     expect(deps.matchSuccessRef.current).toMatchObject({ room: roomView });
     expect(deps.setMatchSuccess).toHaveBeenCalledWith(deps.matchSuccessRef.current);
   });
@@ -28,7 +28,7 @@ describe("socket handlers", () => {
     handlers.roomUpdate(roomView);
 
     expect(deps.updateUser).toHaveBeenCalledOnce();
-    expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function), { notifyStats: false });
+    expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function));
     expect(deps.setRoom).not.toHaveBeenCalled();
     expect(deps.setView).not.toHaveBeenCalled();
   });
@@ -47,7 +47,7 @@ describe("socket handlers", () => {
     handlers.roomResume({ type: "room", room: roomView });
 
     expect(deps.updateUser).toHaveBeenCalledOnce();
-    expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function), { notifyStats: false });
+    expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function));
     expect(deps.setRoom).toHaveBeenCalledWith(roomView);
     expect(deps.setView).toHaveBeenCalledWith("room");
   });

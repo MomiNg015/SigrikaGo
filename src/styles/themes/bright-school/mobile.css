@@ -265,13 +265,23 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats {
-    min-width: 70px !important;
+    min-width: 136px !important;
     padding: 9px 8px !important;
     border-width: 2px !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats span {
-    font-size: 15px !important;
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-stat {
+    grid-template-columns: 32px max-content max-content !important;
+    gap: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-name {
+    font-size: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rank,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rating {
+    font-size: 13px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature,

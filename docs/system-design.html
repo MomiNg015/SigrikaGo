@@ -69,7 +69,10 @@
 <li>Mode-specific competitive stats live in <code>UserModeStats</code> with one row per user and mode. Existing <code>User.rating</code>, <code>wins</code>, and <code>losses</code> remain star-mode compatibility mirrors during this migration, while standard rating/rank/records are read from <code>UserModeStats</code>; coins remain a global account asset.</li>
 </ul>
 <ul>
-<li>Room snapshots can carry mode-specific player display stats. Frontend room-entry syncs (<code>match:found</code>, <code>room:update</code>, and live <code>room:resume</code>) merge the current player's snapshot into the global user state with <code>notifyStats: false</code>; entering spark or standard rooms is a context switch, not a reward/rating event, so it must not show coins, rating, or rank-change toasts.</li>
+<li>Room snapshots can carry mode-specific player display stats. Frontend room-entry syncs (<code>match:found</code>, <code>room:update</code>, and live <code>room:resume</code>) merge the current player's snapshot into the global user state, but current-user updates never generate coins, rating, or rank-change toasts. Entering spark or standard rooms is a context switch, not a reward/rating event.</li>
+</ul>
+<ul>
+<li>The home player plaque shows two compact rank/rating rows: spark mode first, standard mode second. Each time the app enters the home view it silently refreshes <code>/api/me</code> so the plaque reflects post-game mode stats after leaving a finished room.</li>
 </ul>
 <ul>
 <li>Server startup calls <code>ensureGameModeSchema(prisma)</code> before auth routes are used. It creates <code>UserModeStats</code>, adds <code>GameRecord.mode</code> when an older SQLite dev database is still on the pre-mode schema, and backfills each existing user into the <code>spark</code> stats bucket so login/profile reads can include <code>modeStats</code> safely after pulling the branch.</li>
@@ -445,7 +448,7 @@
 <ul>
 <li><code>src/app/useCurrentUser.js</code></li>
 <ul>
-<li>Owns the current-user state updater and stat-change toast generation. This keeps reward/rating/rank notification logic out of <code>src/main.jsx</code>.</li>
+<li>Owns the current-user state updater. Current-user updates do not generate coins, rating, or rank-change toasts; game rewards stay visible in dedicated result UI and refreshed profile/plaque data.</li>
 </ul>
 </ul>
 <ul>
@@ -1144,7 +1147,7 @@
 <li>商店购买、商店加载错误、后台管理保存/下架/上传/封禁等操作反馈统一走页面顶部 toast，不在对应弹窗、抽屉或后台编辑区内新增成功/失败文本框。</li>
 </ul>
 <ul>
-<li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。涉及金币、积分或段位变化的事件（包括对局结果、购买、道具效果、后台编辑当前用户等）会按变动项分别立即显示 toast；金币增加、积分增加、段位升高使用黄底 reward toast，例如 <code>金币+50</code>、<code>积分+20</code>、<code>段位2段 → 3段</code>，金币扣除、积分扣除、段位降低使用灰底 penalty toast，例如 <code>金币-10</code>、<code>积分-20</code>、<code>段位3段 → 2段</code>。</li>
+<li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。toast 只用于普通错误、操作反馈和成功提示，不再自动弹出金币、积分或段位增减；对局收益继续在结果弹窗中展示，回到大厅后由 <code>/api/me</code> 刷新的铭牌统计体现最新段位积分。</li>
 </ul>
 <ul>
 <li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.webp</code>，介绍为“产地不明的糖果，据说有神秘的效果”。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
@@ -2198,7 +2201,7 @@
 <li><code>AdminStatusPill</code>: 后台表格状态标签，位于 <code>src/admin/adminComponents.jsx</code>。</li>
 </ul>
 <ul>
-<li><code>Toast</code> / <code>ToastStack</code>: 自动消失提示队列，使用高对比渐变底色突出规则错误、非法操作等短提示；成功提示为绿色，金币、积分、段位变动提示为黄底 reward 样式，并由 <code>buildStatChangeToasts</code> 拆成每项一条。队列最多保留最新 5 条，避免高频操作造成页面卡顿。</li>
+<li><code>Toast</code> / <code>ToastStack</code>: 自动消失提示队列，使用高对比渐变底色突出规则错误、非法操作等短提示；成功提示为绿色。金币、积分、段位变化不再走 toast 队列，避免回房间、回大厅或模式统计刷新时出现误导性数值提示。队列最多保留最新 5 条，避免高频操作造成页面卡顿。</li>
 </ul>
 <ul>
 <li><code>ConfirmModal</code>: 通用确认弹窗。</li>
@@ -2512,7 +2515,7 @@
 <li>棋舍/排行榜的总局、胜负、和棋等统计仍从 <code>GameRecord</code> 派生。</li>
 </ul>
 <ul>
-<li>金币、积分、段位 toast 已依赖前端比较前后状态；<code>UserProgressLedger</code> 已作为结构化流水表落入 schema/migration，商城购买写入 <code>coins</code> 支出流水（<code>shop.purchase</code>），对局结算写入 <code>coins</code> / <code>rating</code> 流水（<code>game.result</code>），后台金币/积分调整写入 <code>admin.update</code> 流水。后续如继续扩展赛季、排行榜或补偿发放，应继续复用该流水入口。</li>
+<li>金币、积分、段位不再由前端比较前后状态弹出 toast；<code>UserProgressLedger</code> 已作为结构化流水表落入 schema/migration，商城购买写入 <code>coins</code> 支出流水（<code>shop.purchase</code>），对局结算写入 <code>coins</code> / <code>rating</code> 流水（<code>game.result</code>），后台金币/积分调整写入 <code>admin.update</code> 流水。后续如继续扩展赛季、排行榜或补偿发放，应继续复用该流水入口，并在专用界面展示变化。</li>
 </ul>
 </ul>
 <ul>

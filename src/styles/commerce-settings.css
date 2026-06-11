@@ -2231,20 +2231,6 @@
   box-shadow: 0 16px 36px rgba(35, 152, 95, 0.28);
 }
 
-.toast.reward {
-  background: linear-gradient(135deg, #ffe892, #ffc947);
-  color: #5f4300;
-  border-color: rgba(153, 106, 0, 0.18);
-  box-shadow: 0 16px 36px rgba(199, 140, 0, 0.3);
-}
-
-.toast.penalty {
-  background: linear-gradient(135deg, #8d9099, #5f636d);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.28);
-  box-shadow: 0 16px 36px rgba(76, 80, 90, 0.28);
-}
-
 @keyframes toast-fade {
   0%, 72% {
     opacity: 1;

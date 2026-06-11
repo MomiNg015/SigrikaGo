@@ -68,7 +68,7 @@ export function createSocketHandlers({
       closeAllOverlays();
       setReplayStep(null);
       setMatchStart(null);
-      updateUser((current) => mergeCurrentUserFromRoom(current, roomView), { notifyStats: false });
+      updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
       const transition = {
         room: roomView,
         startedAt: now()
@@ -77,7 +77,7 @@ export function createSocketHandlers({
       setMatchSuccess(transition);
     },
     roomUpdate: (roomView) => {
-      updateUser((current) => mergeCurrentUserFromRoom(current, roomView), { notifyStats: false });
+      updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
       if (syncPendingMatchRoom(matchSuccessRef, setMatchSuccess, roomView)) return;
       const nextAudioBaselineSnapshotKey = roomAudioBaselineSnapshotKey(roomView);
       const shouldApplyAudioBaseline = shouldMarkRoomAudioBaseline(roomView)
@@ -116,7 +116,7 @@ export function createSocketHandlers({
         setDismissedResultRoom,
         setRoom: (roomView) => {
           if (payload.type === "room") {
-            updateUser((current) => mergeCurrentUserFromRoom(current, roomView), { notifyStats: false });
+            updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
           }
           setRoom(roomView);
         },

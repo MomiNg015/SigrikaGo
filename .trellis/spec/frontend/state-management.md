@@ -12,7 +12,7 @@ Most app-wide state is still owned by `src/main.jsx` and passed into extracted a
 
 ## State Categories
 
-- Current account state lives behind `useCurrentUser`; use its `updateUser` callback instead of writing directly to the `user` setter when changes may trigger user-facing stat notifications.
+- Current account state lives behind `useCurrentUser`; use its `updateUser` callback instead of writing directly to the `user` setter so account changes stay centralized.
 - Room state is server state delivered by socket snapshots and projected into `RoomScreen`.
 - Overlay and toast state are app shell state owned by `AppOverlays` and `useToastQueue`.
 
@@ -27,13 +27,14 @@ Most app-wide state is still owned by `src/main.jsx` and passed into extracted a
 - The room player payload may include mode-specific display stats from the active room mode.
 
 #### 2. Signatures
-- `updateUser(nextUserOrUpdater, { notifyStats = true } = {})`
+- `updateUser(nextUserOrUpdater)`
 - `mergeCurrentUserFromRoom(currentUser, roomView)`
 
 #### 3. Contracts
 - Keep using `mergeCurrentUserFromRoom(currentUser, roomView)` when the current player's room snapshot carries fresh account-visible fields such as coins, item effects, cosmetics, or character state.
-- Pass `{ notifyStats: false }` to `updateUser` for room-entry and room-snapshot syncs.
-- A player entering a spark or standard room is a context switch, not a settlement event. Do not show coins, rating, or rank-change toasts from these snapshots.
+- `updateUser` must not generate coins, rating, or rank-change toasts. Numeric rewards can be shown in dedicated result UI, not as automatic account-diff toasts.
+- A player entering a spark or standard room is a context switch, not a settlement event.
+- When the app enters `home`, refresh `/api/me` once and write the response through `updateUser` so the lobby plaque reflects post-game mode stats.
 - Finished result resume snapshots (`payload.type === "result"`) must not merge stale player stats into the current user.
 
 #### 4. Validation & Error Matrix
@@ -41,14 +42,16 @@ Most app-wide state is still owned by `src/main.jsx` and passed into extracted a
 - `room:update` -> sync user silently before applying pending transition or entering the room view.
 - live `room:resume` -> sync user silently only when `payload.type === "room"`.
 - result `room:resume` -> restore result UI without calling `updateUser`.
+- `home` view entry -> request `/api/me`; success updates current user, failure stays silent because auth retry/reset is owned by the API client/session layer.
 
 #### 5. Good/Base/Bad Cases
-- Good: `updateUser((current) => mergeCurrentUserFromRoom(current, roomView), { notifyStats: false })`.
+- Good: `updateUser((current) => mergeCurrentUserFromRoom(current, roomView))` updates state without automatic stat toasts.
 - Base: a legacy spark room with no mode-specific stat difference still syncs without visible stat toasts.
-- Bad: calling `updateUser((current) => mergeCurrentUserFromRoom(current, roomView))` from a room socket event, because switching between spark and standard stats can look like a rating/rank change.
+- Bad: reintroducing a previous/next user diff that emits `金币+`, `积分+`, or `段位...` toasts from generic account updates.
 
 #### 6. Tests Required
-- Socket handler tests must assert that room-entry syncs call `updateUser` with `{ notifyStats: false }`.
+- Socket handler tests must assert that room-entry syncs still call `updateUser`.
+- Home refresh tests must assert that only authenticated home views request a user refresh.
 - Result resume tests must assert that stale result snapshots do not call `updateUser`.
 
 #### 7. Wrong vs Correct
@@ -56,13 +59,15 @@ Most app-wide state is still owned by `src/main.jsx` and passed into extracted a
 Wrong:
 
 ```js
-updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
+if (current.rating !== nextUser.rating) {
+  showToast(`积分${nextUser.rating - current.rating}`);
+}
 ```
 
 Correct:
 
 ```js
-updateUser((current) => mergeCurrentUserFromRoom(current, roomView), { notifyStats: false });
+updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 ```
 
 ---

@@ -49,6 +49,7 @@ Questions to answer:
 - Home match entry opens a two-option modal before emitting `match:join`.
 - Duel requests open the same two-option choice before emitting `duel:request`; incoming request UI must show the selected mode title and rules text.
 - Mode tabs are required for leaderboard, watch list, and record/history views.
+- Home player plaques render two compact mode stat rows from `modeOrderedEntries()`: spark rank/rating first, standard rank/rating second. Do not collapse them back into a single global rank/rating pair.
 - Standard room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels.
 - Standard scoring copy must omit overclock/skill-cost descriptions and use black komi `3.75`.
 - Coordinate labels must grid with `repeat(var(--size), minmax(0, 1fr))`; do not leave coordinate rows or columns hard-coded to 13 tracks.
@@ -72,6 +73,7 @@ Questions to answer:
 - Standard room state renders 19-line board star points and no skill UI.
 - Standard room accepts moves at the 19-line edge and Board CSS tests assert coordinate rows/columns use `var(--size)`.
 - Leaderboard/watch/history fetches or filters by selected mode.
+- Home plaque tests assert both `plaque-mode-stat-spark` and `plaque-mode-stat-standard` render with mode-specific ratings.
 - Friend duel request payload and incoming banner include mode.
 
 #### 7. Wrong vs Correct

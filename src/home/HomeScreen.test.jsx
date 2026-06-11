@@ -11,6 +11,10 @@ function renderHome(overrides = {}) {
       username: "shop-test",
       rank: "2段",
       rating: 1000,
+      modeStats: {
+        spark: { rating: 1260, wins: 3, losses: 1, draws: 0 },
+        standard: { rating: 920, wins: 1, losses: 2, draws: 0 }
+      },
       selectedCharacter: "sigrika",
       role: "player",
       ...overrides.user
@@ -129,6 +133,10 @@ describe("HomeScreen", () => {
     expect(html).toContain("home-player-row tactical-id-row");
     expect(html).toContain("home-player-plaque tactical-id-card");
     expect(html).toContain('aria-label="打开履历"');
+    expect(html).toContain("plaque-mode-stat plaque-mode-stat-spark");
+    expect(html).toContain("plaque-mode-stat plaque-mode-stat-standard");
+    expect(html).toContain("1260分");
+    expect(html).toContain("920分");
     expect(html).toContain("home-utility-grid tactical-nav-grid");
     expect(html).not.toContain("角色、物品、装饰即将开放");
     expect(html).not.toContain("查看并使用已经获得的道具");
@@ -140,6 +148,8 @@ describe("HomeScreen", () => {
     expect(plaqueBlock).toContain("clip-path: polygon");
     expect(plaqueBlock).toContain("box-shadow");
     expect(statsBlock).toContain("font-family: ui-monospace");
+    expect(statsBlock).toContain("min-width: 154px");
+    expect(css).toContain(".home-player-zone .plaque-mode-stat");
     expect(utilityBlock).toContain("grid-template-columns: 1fr");
     expect(utilityEntryBlock).toContain("grid-template-columns: 28px minmax(0, 1fr)");
     expect(utilityEntryBlock).toContain("transform: skewX(-15deg)");

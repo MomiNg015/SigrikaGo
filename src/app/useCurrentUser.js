@@ -1,19 +1,13 @@
 import { useCallback, useState } from "react";
-import { buildStatChangeToasts } from "./statChangeToast.js";
 
-export function useCurrentUser(showToast) {
+export function useCurrentUser() {
   const [user, setUser] = useState(null);
 
-  const updateUser = useCallback((nextUserOrUpdater, { notifyStats = true } = {}) => {
+  const updateUser = useCallback((nextUserOrUpdater) => {
     setUser((current) => {
-      const nextUser = typeof nextUserOrUpdater === "function" ? nextUserOrUpdater(current) : nextUserOrUpdater;
-      const notices = notifyStats ? buildStatChangeToasts(current, nextUser) : [];
-      for (const notice of notices) {
-        setTimeout(() => showToast(notice.text, notice.tone), 0);
-      }
-      return nextUser;
+      return typeof nextUserOrUpdater === "function" ? nextUserOrUpdater(current) : nextUserOrUpdater;
     });
-  }, [showToast]);
+  }, []);
 
   return { setUser, updateUser, user };
 }

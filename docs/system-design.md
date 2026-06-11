@@ -5,7 +5,8 @@
 - Standard-mode room UI keeps player cosmetics such as selected character portraits and stone decorations, but directly removes skill gameplay affordances: no action-bar skill button, no player skill chips, no skill name display, no removal/overclock counters, and no overclock terms in scoring breakdowns. The rules layer also rejects skill and passive-skill execution in standard mode.
 - Room board coordinates and action validation are size-aware. The backend validates move/scoring `pointId` values against the active room game's `size`, and the board coordinate labels use the same `--size` grid as the rendered intersections so 13-line and 19-line boards stay aligned.
 - Mode-specific competitive stats live in `UserModeStats` with one row per user and mode. Existing `User.rating`, `wins`, and `losses` remain star-mode compatibility mirrors during this migration, while standard rating/rank/records are read from `UserModeStats`; coins remain a global account asset.
-- Room snapshots can carry mode-specific player display stats. Frontend room-entry syncs (`match:found`, `room:update`, and live `room:resume`) merge the current player's snapshot into the global user state with `notifyStats: false`; entering spark or standard rooms is a context switch, not a reward/rating event, so it must not show coins, rating, or rank-change toasts.
+- Room snapshots can carry mode-specific player display stats. Frontend room-entry syncs (`match:found`, `room:update`, and live `room:resume`) merge the current player's snapshot into the global user state, but current-user updates never generate coins, rating, or rank-change toasts. Entering spark or standard rooms is a context switch, not a reward/rating event.
+- The home player plaque shows two compact rank/rating rows: spark mode first, standard mode second. Each time the app enters the home view it silently refreshes `/api/me` so the plaque reflects post-game mode stats after leaving a finished room.
 - Server startup calls `ensureGameModeSchema(prisma)` before auth routes are used. It creates `UserModeStats`, adds `GameRecord.mode` when an older SQLite dev database is still on the pre-mode schema, and backfills each existing user into the `spark` stats bucket so login/profile reads can include `modeStats` safely after pulling the branch.
 - Desktop and mobile mode switchers use a two-option order (`星炬对弈`, then `标准对弈`) for home matchmaking, leaderboard, watch list, and resume/history surfaces. Mode controls should keep 44px-plus touch targets, stable two-column segmented tabs or vertical option buttons, and Bright School visual consistency without introducing separate visual themes.
 - Static CSS and HTML contract tests normalize CRLF to LF before exact string assertions. This keeps the Windows working-tree checkout from failing layout-contract tests solely because Git rewrote line endings while preserving the same CSS and generated document content.
@@ -191,7 +192,7 @@ SigrikaGo/
 - `src/app/useAppActions.js`
   - Composes app-level action hooks without owning behavior itself. Account, match/room, replay, and overlay actions live in `useAccountActions.js`, `useMatchActions.js`, `useReplayActions.js`, and `useOverlayActions.js`.
 - `src/app/useCurrentUser.js`
-  - Owns the current-user state updater and stat-change toast generation. This keeps reward/rating/rank notification logic out of `src/main.jsx`.
+  - Owns the current-user state updater. Current-user updates do not generate coins, rating, or rank-change toasts; game rewards stay visible in dedicated result UI and refreshed profile/plaque data.
 - `src/app/useSiteSettingsState.js`
   - Owns public site-settings state, the shared startup loader, and initial refresh. `src/main.jsx` receives only `siteSettings`, `setSiteSettings`, and `refreshSiteSettings`.
 - `src/app/useSyncedRefs.js`
@@ -475,7 +476,7 @@ SigrikaGo/
 - 大厅左下工具区新增“仓库”入口，玩家可查看已购道具、数量和说明。自己目标道具可直接使用；角色目标道具会弹出角色选择窗口，展示自己拥有的角色立绘；处于该道具效果中的角色显示“效果中”并置灰禁用，对该道具无实际效果的角色显示“无效果”并置灰禁用，其余可用角色点击后按个消耗道具；若道具有已实现效果，窗口会只保留被选择角色立绘并在下方展示效果文本。使用道具只减少仓库道具数量，不恢复商店库存；短提示和错误统一走页面顶部 toast，不在仓库窗口内额外显示。
 - 对角色使用道具成功后，页面顶部 toast 显示“对[角色名]成功使用了[道具名]”；使用结果窗口读取接口返回的最新 `user.itemEffects`，所以达妮娅吃下彩虹豆豆跳跳糖后，结果窗口中的达妮娅立绘会立即显示为彩色 GIF 状态。
 - 商店购买、商店加载错误、后台管理保存/下架/上传/封禁等操作反馈统一走页面顶部 toast，不在对应弹窗、抽屉或后台编辑区内新增成功/失败文本框。
-- 页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。涉及金币、积分或段位变化的事件（包括对局结果、购买、道具效果、后台编辑当前用户等）会按变动项分别立即显示 toast；金币增加、积分增加、段位升高使用黄底 reward toast，例如 `金币+50`、`积分+20`、`段位2段 → 3段`，金币扣除、积分扣除、段位降低使用灰底 penalty toast，例如 `金币-10`、`积分-20`、`段位3段 → 2段`。
+- 页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。toast 只用于普通错误、操作反馈和成功提示，不再自动弹出金币、积分或段位增减；对局收益继续在结果弹窗中展示，回到大厅后由 `/api/me` 刷新的铭牌统计体现最新段位积分。
 - 内置道具“彩虹豆豆跳跳糖”会 seed 为 `item` 商品，商店库存 10、价格 10、图片 `/assets/items/rainbow-bean-candy.webp`，介绍为“产地不明的糖果，据说有神秘的效果”。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。
 - 彩虹豆豆跳跳糖对西格莉卡使用后：消耗 1 个道具，用户获得 30 金币，`itemEffects.sigrikaCandyDisabled` 置为 true；西格莉卡棋舍出战按钮变灰，`/api/me/character` 与 socket 选角都会避开西格莉卡。如果当前出战是西格莉卡，后端自动随机切换到一名已拥有且可出战的其它角色；没有可替换角色时拒绝使用且不消耗道具。任意角色完成一盘有效对局后清除该状态。
 - 彩虹豆豆跳跳糖对达妮娅使用后：消耗 1 个道具，`itemEffects.deniaRainbowGlow` 置为 true；除用户铭牌外，所有展示该用户达妮娅立绘的位置都会把原立绘替换为 `/assets/characters/denia_color.webp` 彩色动图，包括棋舍、仓库使用结果、对局信息区、技能横幅、排行榜/好友资料等可获得用户效果状态的界面。只有使用达妮娅完成一盘有效对局后清除该状态；服务端会在首个有效结算 `room:update` 广播前先更新房间内存玩家状态，前端再从房间视图同步当前用户状态，因此返回大厅/棋舍时立绘会恢复为角色原始立绘。
@@ -979,7 +980,7 @@ SigrikaGo/
 - `AdminFieldLabel`: 带 title 提示的后台字段标签，位于 `src/admin/adminComponents.jsx`。
 - `AdminSectionHeader`: 后台列表页标题、数量和主操作按钮，位于 `src/admin/adminComponents.jsx`。
 - `AdminStatusPill`: 后台表格状态标签，位于 `src/admin/adminComponents.jsx`。
-- `Toast` / `ToastStack`: 自动消失提示队列，使用高对比渐变底色突出规则错误、非法操作等短提示；成功提示为绿色，金币、积分、段位变动提示为黄底 reward 样式，并由 `buildStatChangeToasts` 拆成每项一条。队列最多保留最新 5 条，避免高频操作造成页面卡顿。
+- `Toast` / `ToastStack`: 自动消失提示队列，使用高对比渐变底色突出规则错误、非法操作等短提示；成功提示为绿色。金币、积分、段位变化不再走 toast 队列，避免回房间、回大厅或模式统计刷新时出现误导性数值提示。队列最多保留最新 5 条，避免高频操作造成页面卡顿。
 - `ConfirmModal`: 通用确认弹窗。
 - `WatchPad`: 观战房间号输入。
 - `ReplayBar`: 回放进度控制。
@@ -1111,7 +1112,7 @@ SigrikaGo/
 - 当前用户资产与战绩存在多处来源：
   - `User.rating` 会被对局结果和后台编辑直接更新，`/api/me` 已直接返回该持久化积分。
   - 棋舍/排行榜的总局、胜负、和棋等统计仍从 `GameRecord` 派生。
-  - 金币、积分、段位 toast 已依赖前端比较前后状态；`UserProgressLedger` 已作为结构化流水表落入 schema/migration，商城购买写入 `coins` 支出流水（`shop.purchase`），对局结算写入 `coins` / `rating` 流水（`game.result`），后台金币/积分调整写入 `admin.update` 流水。后续如继续扩展赛季、排行榜或补偿发放，应继续复用该流水入口。
+  - 金币、积分、段位不再由前端比较前后状态弹出 toast；`UserProgressLedger` 已作为结构化流水表落入 schema/migration，商城购买写入 `coins` 支出流水（`shop.purchase`），对局结算写入 `coins` / `rating` 流水（`game.result`），后台金币/积分调整写入 `admin.update` 流水。后续如继续扩展赛季、排行榜或补偿发放，应继续复用该流水入口，并在专用界面展示变化。
 
 - 核心源码体量仍偏集中。本轮扫描中，超过 300 行的主要业务文件包括 `server/rooms.js`、`src/shared/game.js`、`server/adminRoutes.js`、`server/index.js`、`src/audio/playback.jsx`：
   - `server/rooms.js` 已拆出 room view、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、Socket 广播、断线恢复与关闭调度。
