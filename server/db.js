@@ -11,14 +11,16 @@ export const USER_ASSET_RELATION_INCLUDE = {
   userCharacters: true,
   userDecorations: true,
   userItems: true,
-  userItemEffects: true
+  userItemEffects: true,
+  modeStats: true
 };
 
 export const USER_ASSET_RELATION_SELECT = {
   userCharacters: { select: { characterSlug: true } },
   userDecorations: { select: { decorationSlug: true } },
   userItems: { select: { itemId: true, quantity: true } },
-  userItemEffects: { select: { effectKey: true, effectValue: true } }
+  userItemEffects: { select: { effectKey: true, effectValue: true } },
+  modeStats: { select: { mode: true, rating: true, wins: true, losses: true, draws: true } }
 };
 
 const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia", "aemeath"];
@@ -41,6 +43,7 @@ export function publicUser(user) {
     rating: user.rating,
     wins: user.wins,
     losses: user.losses,
+    modeStats: publicModeStats(user),
     coins: user.coins,
     selectedCharacter: canonicalCharacterId(user.selectedCharacter),
     selectedStoneDecoration: user.selectedStoneDecoration ?? "",
@@ -51,6 +54,34 @@ export function publicUser(user) {
     ownedMusicIds: ownedMusicIdsWithDefaults(user.ownedMusicIds),
     musicSelections: parseMusicSelections(user.musicSelections)
   };
+}
+
+function publicModeStats(user) {
+  const rows = Array.isArray(user.modeStats) ? user.modeStats : [];
+  const stats = {
+    spark: {
+      rating: Number(user.rating ?? 1000),
+      wins: Number(user.wins ?? 0),
+      losses: Number(user.losses ?? 0),
+      draws: 0
+    },
+    standard: {
+      rating: 1000,
+      wins: 0,
+      losses: 0,
+      draws: 0
+    }
+  };
+  for (const row of rows) {
+    if (!stats[row.mode]) continue;
+    stats[row.mode] = {
+      rating: Number(row.rating ?? stats[row.mode].rating),
+      wins: Number(row.wins ?? 0),
+      losses: Number(row.losses ?? 0),
+      draws: Number(row.draws ?? 0)
+    };
+  }
+  return stats;
 }
 
 function publicOwnedCharacters(user) {

@@ -95,4 +95,66 @@ describe("leaderboard", () => {
 
     expect(buildLeaderboard(users, records)[0].itemEffects).toEqual({ deniaRainbowGlow: true });
   });
+
+  it("filters records and rating by mode-specific stats", () => {
+    const users = [
+      {
+        id: "u1",
+        username: "alice",
+        rating: 1040,
+        selectedCharacter: "sigrika",
+        modeStats: [
+          { mode: "spark", rating: 1040, wins: 2, losses: 1, draws: 0 },
+          { mode: "standard", rating: 1120, wins: 1, losses: 0, draws: 0 }
+        ]
+      },
+      {
+        id: "u2",
+        username: "bob",
+        rating: 980,
+        selectedCharacter: "denia",
+        modeStats: [
+          { mode: "spark", rating: 980, wins: 1, losses: 2, draws: 0 },
+          { mode: "standard", rating: 960, wins: 0, losses: 1, draws: 0 }
+        ]
+      }
+    ];
+    const records = [
+      {
+        mode: "spark",
+        blackUserId: "u1",
+        whiteUserId: "u2",
+        blackCharacter: "sigrika",
+        whiteCharacter: "denia",
+        winnerColor: "black"
+      },
+      {
+        mode: "standard",
+        blackUserId: "u1",
+        whiteUserId: "u2",
+        blackCharacter: "sigrika",
+        whiteCharacter: "denia",
+        winnerColor: "black"
+      }
+    ];
+
+    expect(buildLeaderboard(users, records, { mode: "standard" })).toEqual([
+      expect.objectContaining({
+        id: "u1",
+        rating: 1120,
+        totalGames: 1,
+        wins: 1,
+        losses: 0,
+        draws: 0
+      }),
+      expect.objectContaining({
+        id: "u2",
+        rating: 960,
+        totalGames: 1,
+        wins: 0,
+        losses: 1,
+        draws: 0
+      })
+    ]);
+  });
 });

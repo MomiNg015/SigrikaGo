@@ -16,7 +16,7 @@ export function createDuelRequestManager({
 }) {
   const pending = new Map();
 
-  async function handleRequest(socket, targetUserId) {
+  async function handleRequest(socket, targetUserId, mode = "spark") {
     if (!targetUserId || targetUserId === socket.user.id) {
       socket.emit("error:toast", "不能向自己申请对局");
       return;
@@ -50,17 +50,20 @@ export function createDuelRequestManager({
       targetSocketId: targetSocket.id,
       fromUser: socket.user,
       targetUser: targetSocket.user,
+      mode,
       timerId: setTimer(() => expireRequest(requestId), expiresMs)
     };
     pending.set(requestId, request);
     targetSocket.emit("duel:incoming", {
       requestId,
       expiresAt,
+      mode,
       from: toSocialUser(socket.user, statusForUser(socket.user.id))
     });
     socket.emit("duel:sent", {
       requestId,
       target: toSocialUser(targetSocket.user, statusForUser(targetSocket.user.id)),
+      mode,
       expiresAt
     });
   }
@@ -87,7 +90,8 @@ export function createDuelRequestManager({
     createDirectRoom(
       { user: fromSocket.user, socketId: fromSocket.id },
       { user: socket.user, socketId: socket.id },
-      io
+      io,
+      request.mode
     );
     socket.emit("duel:closed", { requestId });
   }

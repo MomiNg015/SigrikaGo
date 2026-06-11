@@ -1,6 +1,7 @@
 import { RefreshCw, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api } from "../api/client.js";
+import { modeOrderedEntries } from "../shared/gameModes.js";
 import WatchRoomRow, {
   joinWatchRoomFromList,
   statusTextForWatchRoom,
@@ -8,6 +9,7 @@ import WatchRoomRow, {
 } from "./watch/WatchRoomRow.jsx";
 
 export default function WatchModal({ token, characters, onJoinRoom, onNotice, onClose }) {
+  const [mode, setMode] = useState("spark");
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,7 +19,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
     setLoading(true);
     setError("");
     try {
-      const data = await api("/api/rooms/watch", { token });
+      const data = await api(`/api/rooms/watch?mode=${encodeURIComponent(mode)}`, { token });
       setRooms(data.rooms ?? []);
     } catch (loadError) {
       const message = loadError.message || "观战列表加载失败";
@@ -30,7 +32,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
 
   useEffect(() => {
     loadRooms();
-  }, [token]);
+  }, [token, mode]);
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -46,6 +48,7 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
             </button>
           </div>
         </div>
+        <ModeTabs mode={mode} onModeChange={setMode} />
         <div className="watch-room-table" role="table">
           <div className="watch-room-head" role="row">
             <span>房间号</span>
@@ -74,3 +77,22 @@ export default function WatchModal({ token, characters, onJoinRoom, onNotice, on
 }
 
 export { joinWatchRoomFromList, statusTextForWatchRoom, watchRoomRowKey };
+
+function ModeTabs({ mode, onModeChange }) {
+  return (
+    <div className="mode-tabs" role="tablist" aria-label="对弈模式">
+      {modeOrderedEntries().map((entry) => (
+        <button
+          key={entry.id}
+          type="button"
+          role="tab"
+          aria-selected={mode === entry.id}
+          className={mode === entry.id ? "active" : ""}
+          onClick={() => onModeChange(entry.id)}
+        >
+          {entry.title}
+        </button>
+      ))}
+    </div>
+  );
+}

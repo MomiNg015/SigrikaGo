@@ -92,7 +92,8 @@ export default function AppOverlays({
       {matchStart && (
         <MatchModal
           user={user}
-          startedAt={matchStart}
+          startedAt={matchStart.startedAt ?? matchStart}
+          mode={matchStart.mode ?? "spark"}
           onCancel={onMatchCancel}
           characters={characters}
         />

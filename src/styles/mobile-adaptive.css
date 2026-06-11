@@ -1,6 +1,27 @@
 /* Final mobile adaptation pass for 320px-768px devices. */
 
 @media (max-width: 768px) {
+  .match-mode-modal {
+    width: min(420px, calc(100vw - 20px)) !important;
+  }
+
+  .match-mode-option {
+    min-height: 72px !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+
+  .match-mode-copy small {
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .match-mode-count {
+    min-width: 54px !important;
+  }
+
   html,
   body,
   #root,

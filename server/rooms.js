@@ -16,6 +16,8 @@ import {
   useSkill
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
+import { GAME_MODE_IDS, gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
+import { rankFromRating } from "../src/shared/ratingRank.js";
 import { resultRewardDelta } from "../src/shared/resultRewards.js";
 import { prisma } from "./db.js";
 import { gameResultMetadata } from "./gameRecords.js";
@@ -69,6 +71,7 @@ export function listActiveRooms() {
 export function listWatchRooms() {
   return [...rooms.values()].map((room) => ({
     code: room.code,
+    mode: room.mode ?? room.game.mode ?? "spark",
     onlineCount: onlineParticipantCount(room),
     moveNumber: room.game.moveNumber,
     status: room.game.phase === GAME_PHASES.finished ? "finished" : "playing",
@@ -135,14 +138,26 @@ export function matchmakingCount() {
   return waitingPlayers.length;
 }
 
+export function matchmakingCountsByMode() {
+  const counts = Object.fromEntries(GAME_MODE_IDS.map((mode) => [mode, 0]));
+  for (const player of waitingPlayers) {
+    counts[normalizeGameModeId(player.mode)] += 1;
+  }
+  return counts;
+}
+
 export function joinMatchmaking(player, io, { canPair = () => true } = {}) {
+  const mode = normalizeGameModeId(player.mode);
+  const queuedPlayer = { ...player, mode };
   waitingPlayers = waitingPlayers.filter((candidate) => (
     candidate.user.id !== player.user.id && candidate.socketId !== player.socketId
   ));
-  const opponentIndex = waitingPlayers.findIndex((candidate) => canPair(candidate, player));
+  const opponentIndex = waitingPlayers.findIndex((candidate) => (
+    normalizeGameModeId(candidate.mode) === mode && canPair(candidate, queuedPlayer)
+  ));
   if (opponentIndex >= 0) {
     const [first] = waitingPlayers.splice(opponentIndex, 1);
-    const room = createRoom(first, player);
+    const room = createRoom(first, queuedPlayer, mode);
     rooms.set(room.code, room);
     persistRoom(room, { force: true });
     startGameClock(room, io);
@@ -153,7 +168,7 @@ export function joinMatchmaking(player, io, { canPair = () => true } = {}) {
     broadcastRoom(io, room);
     return room;
   }
-  waitingPlayers.push(player);
+  waitingPlayers.push(queuedPlayer);
   return null;
 }
 
@@ -240,10 +255,11 @@ export function leaveRoom(roomCode, userId, socketId = "") {
   return room;
 }
 
-export function createDirectRoom(first, second, io) {
+export function createDirectRoom(first, second, io, modeInput = "spark") {
+  const mode = normalizeGameModeId(modeInput);
   leaveMatchmaking(first.user.id);
   leaveMatchmaking(second.user.id);
-  const room = createRoom(first, second);
+  const room = createRoom({ ...first, mode }, { ...second, mode }, mode);
   rooms.set(room.code, room);
   persistRoom(room, { force: true });
   startGameClock(room, io);
@@ -515,11 +531,12 @@ function validateActionPoint(action) {
   return point.ok ? null : point.error;
 }
 
-function createRoom(first, second) {
+function createRoom(first, second, modeInput = first.mode ?? second.mode ?? "spark") {
+  const mode = normalizeGameModeId(modeInput);
   const blackFirst = Math.random() >= 0.5;
   const players = [
-    toRoomPlayer(blackFirst ? first : second, COLORS.black),
-    toRoomPlayer(blackFirst ? second : first, COLORS.white)
+    toRoomPlayer(blackFirst ? first : second, COLORS.black, mode),
+    toRoomPlayer(blackFirst ? second : first, COLORS.white, mode)
   ];
   const createdAt = Date.now();
   const game = createGameState(players.map((p) => ({
@@ -527,10 +544,11 @@ function createRoom(first, second) {
     color: p.color,
     characterId: p.characterId,
     character: p.character
-  })));
+  })), { mode });
   game.phase = GAME_PHASES.opening;
   return {
     code: randomRoomCode(),
+    mode,
     players,
     spectators: [],
     game,
@@ -547,9 +565,9 @@ function createRoom(first, second) {
   };
 }
 
-function toRoomPlayer(player, color) {
+function toRoomPlayer(player, color, mode = "spark") {
   return {
-    user: player.user,
+    user: userForRoomMode(player.user, mode),
     socketId: player.socketId,
     disconnectedAt: null,
     color,
@@ -561,6 +579,32 @@ function toRoomPlayer(player, color) {
       periodRemaining: 30,
       periods: 3
     }
+  };
+}
+
+function userForRoomMode(user, mode) {
+  const normalizedMode = normalizeGameModeId(mode);
+  const stats = modeStatsForUser(user, normalizedMode);
+  return {
+    ...user,
+    rating: stats.rating,
+    rank: rankFromRating(stats.rating),
+    wins: stats.wins,
+    losses: stats.losses
+  };
+}
+
+function modeStatsForUser(user, mode) {
+  const stats = user?.modeStats?.[mode] ?? (
+    Array.isArray(user?.modeStats)
+      ? user.modeStats.find((entry) => normalizeGameModeId(entry.mode) === mode)
+      : null
+  );
+  return {
+    rating: Number(stats?.rating ?? (mode === "spark" ? user?.rating : 1000) ?? 1000),
+    wins: Number(stats?.wins ?? (mode === "spark" ? user?.wins : 0) ?? 0),
+    losses: Number(stats?.losses ?? (mode === "spark" ? user?.losses : 0) ?? 0),
+    draws: Number(stats?.draws ?? 0)
   };
 }
 
@@ -1018,14 +1062,20 @@ async function saveGameRecord(room) {
       winnerColor: resultMetadata.winnerColor,
       resultReason: resultMetadata.resultReason,
       moveCount: room.game.moveNumber,
+      mode: room.mode ?? room.game.mode ?? "spark",
       snapshot: JSON.stringify(roomView(room, black.user.id)),
       snapshotVersion: 1
     }
   });
+  const mode = normalizeGameModeId(room.mode ?? room.game.mode);
   if (![COLORS.black, COLORS.white].includes(room.game.winner?.winnerColor)) {
+    applyDrawResultToRoomUser(black, mode);
+    applyDrawResultToRoomUser(white, mode);
     const recordCreate = createRecord();
     const operations = [
       recordCreate,
+      prisma.userModeStats.upsert(modeStatsUpsertOperation(black, mode, { drawsDelta: 1 })),
+      prisma.userModeStats.upsert(modeStatsUpsertOperation(white, mode, { drawsDelta: 1 })),
       ...candyEffectUpdates.map(({ player, clear }) => prisma.user.update({
         where: { id: player.user.id },
         data: { itemEffects: clear.itemEffects }
@@ -1042,15 +1092,25 @@ async function saveGameRecord(room) {
   const loserBefore = { rating: loser.user.rating, coins: loser.user.coins };
   const winnerReward = resultRewardDelta(winner.color, room.game.winner.winnerColor);
   const loserReward = resultRewardDelta(loser.color, room.game.winner.winnerColor);
-  applyResultRewardsToRoomUsers(winner, loser, winnerReward, loserReward);
+  applyResultRewardsToRoomUsers(winner, loser, winnerReward, loserReward, { mode });
   const recordCreate = createRecord();
   await prisma.$transaction([
     recordCreate,
+    prisma.userModeStats.upsert(modeStatsUpsertOperation(winner, mode, {
+      ratingDelta: winnerReward.rating,
+      winsDelta: 1
+    })),
+    prisma.userModeStats.upsert(modeStatsUpsertOperation(loser, mode, {
+      ratingDelta: loserReward.rating,
+      lossesDelta: 1
+    })),
     prisma.user.update({
       where: { id: winner.user.id },
       data: {
-        wins: { increment: 1 },
-        rating: { increment: winnerReward.rating },
+        ...(mode === "spark" ? {
+          wins: { increment: 1 },
+          rating: { increment: winnerReward.rating }
+        } : {}),
         coins: { increment: winnerReward.coins },
         ...candyEffectData(winner, candyEffectUpdates)
       }
@@ -1058,8 +1118,10 @@ async function saveGameRecord(room) {
     prisma.user.update({
       where: { id: loser.user.id },
       data: {
-        losses: { increment: 1 },
-        rating: { increment: loserReward.rating },
+        ...(mode === "spark" ? {
+          losses: { increment: 1 },
+          rating: { increment: loserReward.rating }
+        } : {}),
         coins: { increment: loserReward.coins },
         ...candyEffectData(loser, candyEffectUpdates)
       }
@@ -1070,6 +1132,45 @@ async function saveGameRecord(room) {
     ]),
     ...candyEffectAssetOperations()
   ]);
+}
+
+function applyDrawResultToRoomUser(player, mode) {
+  const currentStats = modeStatsForUser(player.user, mode);
+  player.user = {
+    ...player.user,
+    modeStats: {
+      ...(player.user.modeStats ?? {}),
+      [mode]: {
+        ...currentStats,
+        draws: Number(currentStats.draws ?? 0) + 1
+      }
+    }
+  };
+}
+
+function modeStatsUpsertOperation(player, mode, { ratingDelta = 0, winsDelta = 0, lossesDelta = 0, drawsDelta = 0 } = {}) {
+  return {
+    where: {
+      userId_mode: {
+        userId: player.user.id,
+        mode
+      }
+    },
+    create: {
+      userId: player.user.id,
+      mode,
+      rating: Number(player.user.modeStats?.[mode]?.rating ?? player.user.rating ?? 1000),
+      wins: Math.max(0, Number(player.user.modeStats?.[mode]?.wins ?? player.user.wins ?? 0)),
+      losses: Math.max(0, Number(player.user.modeStats?.[mode]?.losses ?? player.user.losses ?? 0)),
+      draws: Math.max(0, Number(player.user.modeStats?.[mode]?.draws ?? 0))
+    },
+    update: {
+      rating: { increment: ratingDelta },
+      ...(winsDelta ? { wins: { increment: winsDelta } } : {}),
+      ...(lossesDelta ? { losses: { increment: lossesDelta } } : {}),
+      ...(drawsDelta ? { draws: { increment: drawsDelta } } : {})
+    }
+  };
 }
 
 function gameResultProgressEntries(player, before, roomCode) {

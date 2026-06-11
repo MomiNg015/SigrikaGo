@@ -97,6 +97,19 @@ describe("SigrikaGo rules", () => {
     expect(getPoint(createGameState(), null)).toBeUndefined();
   });
 
+  it("creates standard mode games on a 19-line board with no skill uses", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "sigrika" },
+      { color: COLORS.white, characterId: "denia" }
+    ], { mode: "standard" });
+
+    expect(state.mode).toBe("standard");
+    expect(state.size).toBe(19);
+    expect(state.points).toHaveLength(19 * 19);
+    expect(state.skillUses).toEqual({ black: 0, white: 0 });
+    expect(state.skillEnabled).toBe(false);
+  });
+
   it("collects connected groups without shifting queue arrays", () => {
     expect(collectGroup.toString()).not.toContain(".shift(");
   });
@@ -721,6 +734,40 @@ describe("SigrikaGo rules", () => {
     expect(result.marginValue).toBe(-5.5);
     expect(result.margin).toBe(2.75);
     expect(result.text).toBe("白胜2又3/4子");
+  });
+
+  it("scores standard mode with black komi of 3.75 stones and no skill costs", () => {
+    const state = createGameState([], { mode: "standard" });
+    forceStone(state, 0, 0, COLORS.black);
+    forceStone(state, 18, 18, COLORS.white);
+    state.skillCosts.black = 5;
+    state.skillCosts.white = 2;
+    state.scoring = prepareScoringState(state);
+
+    const result = scoreGame(state);
+
+    expect(result.blackAfterKomi).toBe(-2.75);
+    expect(result.whiteAfterKomi).toBe(4.75);
+    expect(result.blackSkillCost).toBe(0);
+    expect(result.whiteSkillCost).toBe(0);
+    expect(result.formula.black).toMatchObject({
+      stones: 1,
+      territory: 0,
+      komi: -3.75,
+      ownSkillCost: 0,
+      opponentSkillCost: 0,
+      total: -2.75
+    });
+    expect(result.formula.white).toMatchObject({
+      stones: 1,
+      territory: 0,
+      komi: 3.75,
+      ownSkillCost: 0,
+      opponentSkillCost: 0,
+      total: 4.75
+    });
+    expect(result.marginValue).toBe(-7.5);
+    expect(result.margin).toBe(3.75);
   });
 
   it("subtracts numeric skill cost before deciding the scoring winner", () => {

@@ -25,6 +25,7 @@ export function roomPersistenceSnapshot(room) {
   return {
     snapshotVersion: CURRENT_ROOM_SNAPSHOT_VERSION,
     code: room.code,
+    mode: room.mode ?? room.game?.mode ?? "spark",
     players: room.players.map((player) => ({
       ...player,
       socketId: null

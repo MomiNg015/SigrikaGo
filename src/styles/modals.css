@@ -371,6 +371,80 @@
   padding: 9px 13px;
 }
 
+.match-mode-modal {
+  width: min(520px, calc(100vw - 32px));
+  gap: 16px;
+}
+
+.match-mode-options {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.match-mode-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  min-height: 76px;
+  width: 100%;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.match-mode-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.match-mode-copy strong {
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.match-mode-copy small,
+.match-mode-count small {
+  color: var(--muted-text, #68707a);
+  line-height: 1.35;
+}
+
+.match-mode-count {
+  display: grid;
+  justify-items: center;
+  min-width: 64px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(30, 40, 48, 0.12);
+}
+
+.match-mode-count b {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.2rem;
+}
+
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 8px 0 14px;
+}
+
+.mode-tabs button {
+  min-height: 44px;
+  border-radius: 8px;
+}
+
+.mode-tabs button.active,
+.mode-tabs button[aria-selected="true"] {
+  background: #1f6f5b;
+  color: #fff;
+  border-color: #1f6f5b;
+}
+
 .resume-modal {
   width: min(620px, 100%);
   display: grid;

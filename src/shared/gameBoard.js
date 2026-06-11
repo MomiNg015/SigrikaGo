@@ -54,3 +54,22 @@ export function activeNeighbors(state, point) {
     .map((id) => getPoint(state, id))
     .filter((neighbor) => neighbor?.valid);
 }
+
+export function isStarPoint(x, y, size = BOARD_SIZE) {
+  const stars = starPointCoordinates(size);
+  return stars.some(([starX, starY]) => x === starX && y === starY);
+}
+
+export function starPointCoordinates(size = BOARD_SIZE) {
+  if (size === 19) return starGrid([3, 9, 15]);
+  if (size === 13) return [[3, 3], [9, 3], [6, 6], [3, 9], [9, 9]];
+  const low = size >= 13 ? 3 : 2;
+  const high = size - 1 - low;
+  const center = Math.floor(size / 2);
+  if (low >= high) return [[center, center]];
+  return [[low, low], [high, low], [center, center], [low, high], [high, high]];
+}
+
+function starGrid(values) {
+  return values.flatMap((y) => values.map((x) => [x, y]));
+}

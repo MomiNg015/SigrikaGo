@@ -54,6 +54,21 @@
 <body>
 <h2>UI Asset Notes</h2>
 <ul>
+<li>Game modes are now explicit shared runtime configuration. <code>spark</code> (<code>星炬对弈</code>) stays first and keeps the 13-line, skill-enabled rule set with black komi 2.75; <code>standard</code> (<code>标准对弈</code>) is second and uses a 19-line no-skill Go board with black komi 3.75. Frontend and backend should read titles, rule copy, board size, komi, skill enablement, time controls, and mode ordering from <code>src/shared/gameModes.js</code> instead of hard-coding mode facts.</li>
+</ul>
+<ul>
+<li>Matchmaking, friend duels, room snapshots, persisted rooms, replay records, watch lists, leaderboards, and profile/history surfaces carry a <code>mode</code> field. Match queues are isolated by mode, lobby stats expose per-mode waiting counts, friend duel requests include the requested mode, and old/missing record modes normalize to <code>spark</code> for legacy data.</li>
+</ul>
+<ul>
+<li>Standard-mode room UI keeps player cosmetics such as selected character portraits and stone decorations, but directly removes skill gameplay affordances: no action-bar skill button, no player skill chips, no skill name display, no removal/overclock counters, and no overclock terms in scoring breakdowns. The rules layer also rejects skill and passive-skill execution in standard mode.</li>
+</ul>
+<ul>
+<li>Mode-specific competitive stats live in <code>UserModeStats</code> with one row per user and mode. Existing <code>User.rating</code>, <code>wins</code>, and <code>losses</code> remain star-mode compatibility mirrors during this migration, while standard rating/rank/records are read from <code>UserModeStats</code>; coins remain a global account asset.</li>
+</ul>
+<ul>
+<li>Desktop and mobile mode switchers use a two-option order (<code>星炬对弈</code>, then <code>标准对弈</code>) for home matchmaking, leaderboard, watch list, and resume/history surfaces. Mode controls should keep 44px-plus touch targets, stable two-column segmented tabs or vertical option buttons, and Bright School visual consistency without introducing separate visual themes.</li>
+</ul>
+<ul>
 <li>Static CSS and HTML contract tests normalize CRLF to LF before exact string assertions. This keeps the Windows working-tree checkout from failing layout-contract tests solely because Git rewrote line endings while preserving the same CSS and generated document content.</li>
 </ul>
 <ul>

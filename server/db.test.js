@@ -13,6 +13,10 @@ describe("publicUser", () => {
       rating: 1000,
       wins: 1,
       losses: 2,
+      modeStats: {
+        spark: { rating: 1000, wins: 1, losses: 2, draws: 0 },
+        standard: { rating: 1000, wins: 0, losses: 0, draws: 0 }
+      },
       coins: 300,
       selectedCharacter: "sigrika",
       selectedStoneDecoration: "paw-stone",
@@ -31,6 +35,10 @@ describe("publicUser", () => {
       rating: 1000,
       wins: 1,
       losses: 2,
+      modeStats: {
+        spark: { rating: 1000, wins: 1, losses: 2, draws: 0 },
+        standard: { rating: 1000, wins: 0, losses: 0, draws: 0 }
+      },
       coins: 300,
       selectedCharacter: "sigrika",
       selectedStoneDecoration: "paw-stone",

@@ -8,9 +8,11 @@ import {
   activeNeighbors,
   createPoints,
   getPoint,
+  isStarPoint,
   parsePointId,
   pointId
 } from "./gameBoard.js";
+import { gameModeById, gameModeSkillEnabled } from "./gameModes.js";
 import {
   normalizeSkillConfig,
   skillRequiresExistingStone,
@@ -48,6 +50,7 @@ export {
   activeNeighbors,
   createPoints,
   getPoint,
+  isStarPoint,
   parsePointId,
   pointId
 } from "./gameBoard.js";
@@ -79,10 +82,13 @@ export const GAME_PHASES = {
 };
 export const HIDDEN_HAND_NOTICE = "发现隐藏手了！";
 
-export function createGameState(players = []) {
+export function createGameState(players = [], options = {}) {
+  const mode = gameModeById(options.mode);
   return {
-    size: BOARD_SIZE,
-    points: createPoints(),
+    mode: mode.id,
+    skillEnabled: mode.skillEnabled,
+    size: mode.boardSize,
+    points: createPoints(mode.boardSize),
     turn: COLORS.black,
     moveNumber: 0,
     passes: 0,
@@ -91,10 +97,10 @@ export function createGameState(players = []) {
     ko: null,
     history: [],
     players,
-    skillUses: Object.fromEntries(players.map((p) => [p.color, configuredSkillUses(p)])),
+    skillUses: Object.fromEntries(players.map((p) => [p.color, configuredSkillUses(p, mode)])),
     skillCosts: { black: 0, white: 0 },
     skillCostNotes: [],
-    passives: createPassiveState(players),
+    passives: createPassiveState(players, mode),
     phase: GAME_PHASES.playing,
     scoring: null,
     suspendedHiddenHands: [],
@@ -111,6 +117,7 @@ export function playMove(state, color, id, options = {}) {
 }
 
 export function activatePassiveSkill(state, color, skillOrCharacterId) {
+  if (!gameModeSkillEnabled(state.mode)) return fail("标准对弈不能发动技能");
   if (![GAME_PHASES.playing, GAME_PHASES.skillPreview].includes(state.phase)) return fail("当前不能发动被动技能");
   const skill = normalizeSkillConfig(skillOrCharacterId);
   if (skill?.effectType !== "color-illusion-passive") return fail("不是可发动的被动技能");
@@ -318,6 +325,7 @@ export function resignGame(state, color) {
 }
 
 export function useSkill(state, color, skillOrCharacterId, targetId) {
+  if (!gameModeSkillEnabled(state.mode)) return fail("标准对弈不能使用技能");
   if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能使用技能");
   if (state.turn !== color) return fail("还没有轮到你");
   if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
@@ -333,6 +341,7 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
 
 
 export function canStartSkill(state, skillOrCharacterId) {
+  if (!gameModeSkillEnabled(state.mode)) return false;
   const skill = normalizeSkillConfig(skillOrCharacterId);
   if (!skillRequiresExistingStone(skill)) return true;
   return state.points.some((point) => point.valid && point.stone);
@@ -371,12 +380,14 @@ function shuffle(items) {
   return next;
 }
 
-function configuredSkillUses(player) {
+function configuredSkillUses(player, mode = gameModeById()) {
+  if (!mode.skillEnabled) return 0;
   const skill = normalizeSkillConfig(player?.character?.skill ?? player?.skill ?? player?.characterId);
   return Number.isInteger(skill?.uses) ? skill.uses : 1;
 }
 
-function createPassiveState(players = []) {
+function createPassiveState(players = [], mode = gameModeById()) {
+  if (!mode.skillEnabled) return {};
   return Object.fromEntries(players
     .map((player) => {
       const skill = normalizeSkillConfig(player?.character?.skill ?? player?.skill ?? player?.characterId);

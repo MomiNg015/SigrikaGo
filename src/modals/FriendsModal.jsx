@@ -12,6 +12,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
   const [actionTarget, setActionTarget] = useState(null);
   const [profileUser, setProfileUser] = useState(null);
   const [confirmTarget, setConfirmTarget] = useState(null);
+  const [duelModeTarget, setDuelModeTarget] = useState(null);
   const [searchUsername, setSearchUsername] = useState("");
   const [loading, setLoading] = useState(true);
   const {
@@ -113,8 +114,14 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
 
   function requestMatch(row) {
     if (row.status !== "online") return;
-    socket?.emit("duel:request", { targetUserId: row.id });
+    setDuelModeTarget(row);
     setActionTarget(null);
+  }
+
+  function requestMatchMode(mode) {
+    if (!duelModeTarget) return;
+    socket?.emit("duel:request", { targetUserId: duelModeTarget.id, mode });
+    setDuelModeTarget(null);
   }
 
   function notify(text, tone = "danger") {
@@ -157,12 +164,15 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
       <FriendsOverlays
         characters={characters}
         confirmTarget={confirmTarget}
+        duelModeTarget={duelModeTarget}
         profileUser={profileUser}
         token={token}
         onAddBlacklist={addProfileBlacklist}
         onAddFriend={addProfileFriend}
         onCloseConfirm={() => setConfirmTarget(null)}
+        onCloseDuelMode={() => setDuelModeTarget(null)}
         onCloseProfile={() => setProfileUser(null)}
+        onRequestMatchMode={requestMatchMode}
         onOpenReplay={(recordId) => {
           setProfileUser(null);
           onOpenReplay?.(recordId);

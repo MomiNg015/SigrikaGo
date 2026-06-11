@@ -161,7 +161,11 @@ describe("socket handlers", () => {
     expect(deps.setMatchSuccess).toHaveBeenCalledWith(null);
     expect(deps.setReplayStep).toHaveBeenCalledWith(null);
     expect(deps.setPendingSkill).toHaveBeenCalledWith(false);
-    expect(deps.setLobbyStats).toHaveBeenCalledWith({ onlineCount: 0, matchmakingCount: 0 });
+    expect(deps.setLobbyStats).toHaveBeenCalledWith({
+      onlineCount: 0,
+      matchmakingCount: 0,
+      matchmakingCounts: { spark: 0, standard: 0 }
+    });
     expect(deps.closeAllOverlays).toHaveBeenCalledOnce();
     expect(deps.setView).toHaveBeenCalledWith("login");
     expect(deps.showToast).toHaveBeenCalledWith("bye");
@@ -173,7 +177,11 @@ describe("socket handlers", () => {
 
     handlers.lobbyStats({ onlineCount: 3, matchmakingCount: 2 });
 
-    expect(deps.setLobbyStats).toHaveBeenCalledWith({ onlineCount: 3, matchmakingCount: 2 });
+    expect(deps.setLobbyStats).toHaveBeenCalledWith({
+      onlineCount: 3,
+      matchmakingCount: 2,
+      matchmakingCounts: { spark: 2, standard: 0 }
+    });
   });
 
   it("returns to login when socket authentication fails during reconnect", () => {

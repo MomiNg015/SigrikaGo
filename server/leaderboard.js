@@ -1,15 +1,18 @@
 import { recordWinnerColor } from "./gameRecords.js";
 import { publicUser } from "./db.js";
 import { rankFromRating } from "../src/shared/ratingRank.js";
+import { normalizeGameModeId } from "../src/shared/gameModes.js";
 
-export function buildLeaderboard(users = [], records = []) {
+export function buildLeaderboard(users = [], records = [], options = {}) {
+  const mode = normalizeGameModeId(options.mode);
   const rows = new Map();
   for (const user of users) {
     const profile = publicUser(user);
+    const stats = modeStatsForUser(user, mode);
     rows.set(user.id, {
       id: profile.id,
       username: profile.username,
-      rating: profile.rating ?? 1000,
+      rating: stats.rating,
       selectedCharacter: profile.selectedCharacter ?? "sigrika",
       itemEffects: profile.itemEffects,
       totalGames: 0,
@@ -21,6 +24,7 @@ export function buildLeaderboard(users = [], records = []) {
   }
 
   for (const record of records) {
+    if (normalizeGameModeId(record.mode) !== mode) continue;
     const winnerColor = recordWinnerColor(record);
     addGame(rows.get(record.blackUserId), record.blackCharacter, winnerColor, "black");
     addGame(rows.get(record.whiteUserId), record.whiteCharacter, winnerColor, "white");
@@ -41,6 +45,15 @@ export function buildLeaderboard(users = [], records = []) {
       commonCharacter: mostUsedCharacter(row.characterCounts) ?? row.selectedCharacter
     }))
     .sort((a, b) => b.rating - a.rating || b.wins - a.wins || a.username.localeCompare(b.username));
+}
+
+function modeStatsForUser(user, mode) {
+  const stats = Array.isArray(user.modeStats)
+    ? user.modeStats.find((entry) => normalizeGameModeId(entry.mode) === mode)
+    : null;
+  return {
+    rating: Number(stats?.rating ?? user.rating ?? 1000)
+  };
 }
 
 function addGame(row, characterId, winnerColor, playerColor) {

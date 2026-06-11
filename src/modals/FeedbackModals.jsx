@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { gameModeById } from "../shared/gameModes.js";
 
 export function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
   return (
@@ -52,6 +53,7 @@ export function limitToastQueue(toasts, maxToasts = 5) {
 
 export function DuelRequestBanner({ request, onAccept, onReject, onTimeout }) {
   const [seconds, setSeconds] = useState(secondsUntilDuelRequestExpires(request.expiresAt, Date.now()));
+  const gameMode = gameModeById(request.mode);
 
   useEffect(() => {
     setSeconds(secondsUntilDuelRequestExpires(request.expiresAt, Date.now()));
@@ -69,7 +71,8 @@ export function DuelRequestBanner({ request, onAccept, onReject, onTimeout }) {
   return (
     <div className="duel-request-banner">
       <div>
-        <strong>{request.from.username}向你申请对局</strong>
+        <strong>{request.from.username}向你申请{gameMode.title}</strong>
+        <small>{gameMode.rulesText}</small>
         <span>{request.from.rank} · {request.from.rating}分</span>
       </div>
       <div className="duel-request-actions">

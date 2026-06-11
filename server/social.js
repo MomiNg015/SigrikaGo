@@ -1,6 +1,7 @@
 import { rankFromRating } from "../src/shared/ratingRank.js";
 import { GAME_RESULT_REASONS, recordWinnerColor } from "./gameRecords.js";
 import { publicUser, USER_ASSET_RELATION_SELECT } from "./db.js";
+import { normalizeGameModeId } from "../src/shared/gameModes.js";
 
 export const RELATIONSHIP_TYPES = {
   friend: "friend",
@@ -94,7 +95,8 @@ export async function hasBlacklistBetween({ prisma, firstUserId, secondUserId })
   return rows.length > 0;
 }
 
-export async function getUserProfile({ prisma, userId, viewerId, statusForUser }) {
+export async function getUserProfile({ prisma, userId, viewerId, statusForUser, mode: modeInput = "spark" }) {
+  const mode = normalizeGameModeId(modeInput);
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: publicProfileSelect()
@@ -104,6 +106,7 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser }
   const [records, viewerRelation] = await Promise.all([
     prisma.gameRecord.findMany({
       where: {
+        mode,
         OR: [
           { blackUserId: userId },
           { whiteUserId: userId }
@@ -129,16 +132,17 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser }
   };
 }
 
-export async function getUserProfileByUsername({ prisma, username, viewerId, statusForUser }) {
+export async function getUserProfileByUsername({ prisma, username, viewerId, statusForUser, mode = "spark" }) {
   const user = await prisma.user.findFirst({
     where: { username },
     select: { id: true }
   });
   if (!user) return null;
-  return getUserProfile({ prisma, userId: user.id, viewerId, statusForUser });
+  return getUserProfile({ prisma, userId: user.id, viewerId, statusForUser, mode });
 }
 
-export async function getUserReplays({ prisma, userId }) {
+export async function getUserReplays({ prisma, userId, mode: modeInput = "spark" }) {
+  const mode = normalizeGameModeId(modeInput);
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { id: true }
@@ -147,6 +151,7 @@ export async function getUserReplays({ prisma, userId }) {
 
   const records = await prisma.gameRecord.findMany({
     where: {
+      mode,
       OR: [
         { blackUserId: userId },
         { whiteUserId: userId }
@@ -166,6 +171,7 @@ export async function getUserReplays({ prisma, userId }) {
     moveCount: record.moveCount,
     blackCharacter: record.blackCharacter,
     whiteCharacter: record.whiteCharacter,
+    mode: record.mode ?? "spark",
     createdAt: record.createdAt
   }));
 }
@@ -246,7 +252,8 @@ function profileRecordSelect() {
     whiteCharacter: true,
     winnerColor: true,
     resultReason: true,
-    resultText: true
+    resultText: true,
+    mode: true
   };
 }
 
@@ -260,6 +267,7 @@ function replaySummarySelect() {
     moveCount: true,
     blackCharacter: true,
     whiteCharacter: true,
+    mode: true,
     createdAt: true
   };
 }

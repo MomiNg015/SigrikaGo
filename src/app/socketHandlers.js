@@ -43,7 +43,7 @@ export function createSocketHandlers({
     setMatchSuccess(null);
     setReplayStep(null);
     setPendingSkill(false);
-    setLobbyStats({ onlineCount: 0, matchmakingCount: 0 });
+    setLobbyStats({ onlineCount: 0, matchmakingCount: 0, matchmakingCounts: { spark: 0, standard: 0 } });
     closeAllOverlays();
     setView("login");
     showToast(message);
@@ -53,11 +53,15 @@ export function createSocketHandlers({
     socketReconnect: () => {
       shouldAudioBaselineNextLiveSnapshot = true;
     },
-    matchWaiting: ({ startedAt }) => setMatchStart(startedAt),
+    matchWaiting: ({ startedAt, mode = "spark" }) => setMatchStart({ startedAt, mode }),
     lobbyStats: (stats = {}) => {
       setLobbyStats({
         onlineCount: Number(stats.onlineCount ?? 0),
-        matchmakingCount: Number(stats.matchmakingCount ?? 0)
+        matchmakingCount: Number(stats.matchmakingCount ?? 0),
+        matchmakingCounts: {
+          spark: Number(stats.matchmakingCounts?.spark ?? stats.matchmakingCount ?? 0),
+          standard: Number(stats.matchmakingCounts?.standard ?? 0)
+        }
       });
     },
     matchFound: (roomView) => {
@@ -170,7 +174,7 @@ export function createSocketHandlers({
       setMatchSuccess(null);
       setReplayStep(null);
       setPendingSkill(false);
-      setLobbyStats({ onlineCount: 0, matchmakingCount: 0 });
+      setLobbyStats({ onlineCount: 0, matchmakingCount: 0, matchmakingCounts: { spark: 0, standard: 0 } });
       closeAllOverlays();
       setView("login");
       showToast(message || "账号已在其他地方登录");

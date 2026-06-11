@@ -36,6 +36,7 @@ import { resolveSelectedCharacter } from "./characterSelection.js";
 import { createSocketUserRefresher } from "./socketAuth.js";
 import { createFeedbackMessage } from "./feedback.js";
 import { buildLeaderboard } from "./leaderboard.js";
+import { normalizeGameModeId } from "../src/shared/gameModes.js";
 import { publicUserWithRecordStats } from "./userProfile.js";
 import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
 import { listItemInventory, useInventoryItem } from "./items.js";
@@ -68,6 +69,7 @@ import {
   leaveMatchmaking,
   listWaitingPlayers,
   listWatchRooms,
+  matchmakingCountsByMode,
   matchmakingCount,
   requestCounting,
   requestDraw,
@@ -193,7 +195,8 @@ app.post("/api/feedback", authHttp, async (req, res) => {
   }
 });
 
-app.get("/api/leaderboard", authHttp, async (_req, res) => {
+app.get("/api/leaderboard", authHttp, async (req, res) => {
+  const mode = normalizeGameModeId(req.query.mode);
   const [users, records] = await Promise.all([
     prisma.user.findMany({
       select: {
@@ -206,6 +209,7 @@ app.get("/api/leaderboard", authHttp, async (_req, res) => {
       }
     }),
     prisma.gameRecord.findMany({
+      where: { mode },
       select: {
         blackUserId: true,
         whiteUserId: true,
@@ -213,15 +217,17 @@ app.get("/api/leaderboard", authHttp, async (_req, res) => {
         whiteCharacter: true,
         winnerColor: true,
         resultReason: true,
-        resultText: true
+        resultText: true,
+        mode: true
       }
     })
   ]);
-  res.json({ players: buildLeaderboard(users, records) });
+  res.json({ players: buildLeaderboard(users, records, { mode }) });
 });
 
-app.get("/api/rooms/watch", authHttp, async (_req, res) => {
-  res.json({ rooms: listWatchRooms() });
+app.get("/api/rooms/watch", authHttp, async (req, res) => {
+  const mode = normalizeGameModeId(req.query.mode);
+  res.json({ rooms: listWatchRooms().filter((room) => normalizeGameModeId(room.mode) === mode) });
 });
 
 app.get("/api/social", authHttp, async (req, res) => {
@@ -290,7 +296,8 @@ app.get("/api/users/search/profile", authHttp, async (req, res) => {
     prisma,
     username: usernameResult.value,
     viewerId: req.user.id,
-    statusForUser
+    statusForUser,
+    mode: normalizeGameModeId(req.query.mode)
   });
   if (!profile) {
     res.status(404).json({ error: "\u8be5\u7528\u6237\u4e0d\u5b58\u5728" });
@@ -304,7 +311,8 @@ app.get("/api/users/:id/profile", authHttp, async (req, res) => {
     prisma,
     userId: req.params.id,
     viewerId: req.user.id,
-    statusForUser
+    statusForUser,
+    mode: normalizeGameModeId(req.query.mode)
   });
   if (!profile) {
     res.status(404).json({ error: "\u7528\u6237\u4e0d\u5b58\u5728" });
@@ -316,7 +324,8 @@ app.get("/api/users/:id/profile", authHttp, async (req, res) => {
 app.get("/api/users/:id/replays", async (req, res) => {
   const records = await getUserReplays({
     prisma,
-    userId: req.params.id
+    userId: req.params.id,
+    mode: normalizeGameModeId(req.query.mode)
   });
   if (!records) {
     res.status(404).json({ error: "\u7528\u6237\u4e0d\u5b58\u5728" });
@@ -547,6 +556,7 @@ app.get("/api/replays", authHttp, async (req, res) => {
       winnerColor: true,
       resultReason: true,
       moveCount: true,
+      mode: true,
       blackCharacter: true,
       whiteCharacter: true,
       createdAt: true
@@ -565,6 +575,7 @@ app.get("/api/replays", authHttp, async (req, res) => {
       winnerColor: record.winnerColor,
       resultReason: record.resultReason,
       moveCount: record.moveCount,
+      mode: record.mode ?? "spark",
       blackCharacter: record.blackCharacter,
       whiteCharacter: record.whiteCharacter,
       createdAt: record.createdAt
@@ -613,9 +624,11 @@ duelRequests = createDuelRequestManager({
 });
 
 function lobbyStats() {
+  const matchmakingCounts = matchmakingCountsByMode();
   return {
     onlineCount: onlineSessions?.onlineCount?.() ?? 0,
-    matchmakingCount: matchmakingCount()
+    matchmakingCount: matchmakingCount(),
+    matchmakingCounts
   };
 }
 
@@ -639,8 +652,9 @@ io.on("connection", (socket) => {
   socket.emit("lobby:stats", lobbyStats());
   broadcastLobbyStats();
 
-  socket.on("match:join", async () => {
+  socket.on("match:join", async ({ mode: modeInput } = {}) => {
     try {
+      const mode = normalizeGameModeId(modeInput);
       await refreshSocketUser(socket);
       const blockedCandidateIds = new Set();
       for (const candidate of listWaitingPlayers()) {
@@ -653,11 +667,11 @@ io.on("connection", (socket) => {
         }
       }
       const room = joinMatchmaking(
-        { user: socket.user, socketId: socket.id },
+        { user: socket.user, socketId: socket.id, mode },
         io,
         { canPair: (candidate) => !blockedCandidateIds.has(candidate.user.id) }
       );
-      if (!room) socket.emit("match:waiting", { startedAt: Date.now() });
+      if (!room) socket.emit("match:waiting", { startedAt: Date.now(), mode });
       broadcastLobbyStats();
     } catch (error) {
       socket.emit("error:toast", "登录状态已失效，请重新登录");
@@ -753,10 +767,10 @@ io.on("connection", (socket) => {
     if (room) broadcastRoom(io, room);
   });
 
-  socket.on("duel:request", async ({ targetUserId } = {}) => {
+  socket.on("duel:request", async ({ targetUserId, mode: modeInput } = {}) => {
     try {
       await refreshSocketUser(socket);
-      await duelRequests.handleRequest(socket, String(targetUserId ?? ""));
+      await duelRequests.handleRequest(socket, String(targetUserId ?? ""), normalizeGameModeId(modeInput));
     } catch (error) {
       socket.emit("error:toast", "登录状态已失效，请重新登录");
     }
