@@ -309,6 +309,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomRuntime.test.js` for persistence option wiring, default force behavior, full-room broadcast persistence injection, and room toast forwarding.
 * Updated `docs/system-design.md` and backend quality guidelines for the room runtime contract.
 
+### Batch 31 Completed
+
+* Added `server/authRoutes.js` as the `/api/auth/*` HTTP route boundary for register, login, refresh, and logout handlers.
+* Updated `server/index.js` to mount the auth router after shared login/session managers are available instead of owning auth handler bodies.
+* Added `server/authRoutes.test.js` for registration login responses, active-session conflicts, force-login eviction, refresh cookie clearing/rotation, and logout cleanup.
+* Updated `docs/system-design.md` and backend quality guidelines for the auth HTTP route contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

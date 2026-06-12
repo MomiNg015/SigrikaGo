@@ -1,5 +1,4 @@
 import "dotenv/config";
-import bcrypt from "bcryptjs";
 import cors from "cors";
 import express from "express";
 import fs from "node:fs";
@@ -11,22 +10,13 @@ import multer from "multer";
 import { Server } from "socket.io";
 import { ensureGameModeSchema, prisma, publicUser, USER_ASSET_RELATION_INCLUDE, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
-import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
+import { promoteConfiguredAdmins } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
-import {
-  ALREADY_LOGGED_IN_CODE,
-  ALREADY_LOGGED_IN_MESSAGE,
-  buildClearRefreshCookie,
-  buildRefreshCookie,
-  createLoginSessionStore,
-  ensureLoginSessionSchema,
-  parseCookies,
-  REFRESH_COOKIE_NAME
-} from "./loginSessions.js";
+import { createAuthRouter } from "./authRoutes.js";
+import { createLoginSessionStore, ensureLoginSessionSchema } from "./loginSessions.js";
 import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
 import { jsonSyntaxErrorHandler } from "./httpErrors.js";
-import { shouldBlockLoginForActiveAccount } from "./loginConflicts.js";
 import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
 import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
 import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
@@ -49,7 +39,6 @@ import {
   corsOriginForRequest,
   createApiRateLimit,
   createAuthRateLimit,
-  validatePassword,
   validateRoomCode,
   validateUsername
 } from "./security.js";
@@ -366,104 +355,6 @@ app.post("/api/items/:itemId/use", authHttp, async (req, res) => {
 
 app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
 
-app.post("/api/auth/register", async (req, res) => {
-  const usernameResult = validateUsername(req.body.username);
-  const passwordResult = validatePassword(req.body.password);
-  if (!usernameResult.ok) {
-    res.status(400).json({ error: usernameResult.error });
-    return;
-  }
-  if (!passwordResult.ok) {
-    res.status(400).json({ error: passwordResult.error });
-    return;
-  }
-  const username = usernameResult.value;
-  const password = passwordResult.value;
-  const passwordHash = await bcrypt.hash(password, 10);
-  try {
-    const user = await prisma.user.create({ data: { username, passwordHash } });
-    const syncedUser = await syncConfiguredAdmin(user, prisma);
-    await sendLoginResponse(res, syncedUser);
-  } catch {
-    res.status(409).json({ error: "\u7528\u6237\u540d\u5df2\u5b58\u5728" });
-  }
-});
-
-app.post("/api/auth/login", async (req, res) => {
-  const usernameResult = validateUsername(req.body.username);
-  const passwordResult = validatePassword(req.body.password);
-  if (!usernameResult.ok || !passwordResult.ok) {
-    res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
-    return;
-  }
-  const username = usernameResult.value;
-  const password = passwordResult.value;
-  const user = await prisma.user.findUnique({
-    where: { username },
-    include: USER_ASSET_RELATION_INCLUDE
-  });
-  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-    res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
-    return;
-  }
-  if (user.status === USER_STATUS.banned) {
-    res.status(403).json({ error: user.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8d26\u53f7\u5df2\u5c01\u7981" });
-    return;
-  }
-  if (shouldBlockLoginForActiveAccount({
-    onlineSessions,
-    userId: user.id,
-    forceLogin: Boolean(req.body.forceLogin)
-  })) {
-    res.status(409).json({
-      code: ALREADY_LOGGED_IN_CODE,
-      error: ALREADY_LOGGED_IN_MESSAGE
-    });
-    return;
-  }
-  if (req.body.forceLogin) await forceLogoutUser(user.id);
-  const syncedUser = await syncConfiguredAdmin(user, prisma);
-  await sendLoginResponse(res, syncedUser);
-});
-
-app.post("/api/auth/refresh", async (req, res) => {
-  const refreshToken = parseCookies(req.headers.cookie)[REFRESH_COOKIE_NAME];
-  const session = await loginSessions.refresh(refreshToken);
-  if (!session) {
-    res.setHeader("Set-Cookie", buildClearRefreshCookie());
-    res.status(401).json({ error: "\u8bf7\u5148\u767b\u5f55" });
-    return;
-  }
-  const user = await prisma.user.findUnique({
-    where: { id: session.userId },
-    include: USER_ASSET_RELATION_INCLUDE
-  });
-  if (!user || user.status === USER_STATUS.banned) {
-    await loginSessions.clear(session.userId, session.sessionId);
-    res.setHeader("Set-Cookie", buildClearRefreshCookie());
-    res.status(user?.status === USER_STATUS.banned ? 403 : 401).json({
-      error: user?.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8bf7\u5148\u767b\u5f55"
-    });
-    return;
-  }
-  res.setHeader("Set-Cookie", buildRefreshCookie(session.refreshToken));
-  res.json(withToken(await syncConfiguredAdmin(user, prisma), JWT_SECRET, { sessionId: session.sessionId }));
-});
-
-app.post("/api/auth/logout", async (req, res) => {
-  const refreshToken = parseCookies(req.headers.cookie)[REFRESH_COOKIE_NAME];
-  await loginSessions.clearRefreshToken(refreshToken);
-  try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    const payload = token ? JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8")) : null;
-    if (payload?.sub && payload?.sid) await loginSessions.clear(payload.sub, payload.sid);
-  } catch {
-    // Logout should succeed even if the access token is malformed or expired.
-  }
-  res.setHeader("Set-Cookie", buildClearRefreshCookie());
-  res.json({ ok: true });
-});
-
 app.get("/api/me", authHttp, async (req, res) => {
   res.json({ user: await publicUserWithHistory(req.user) });
 });
@@ -623,6 +514,13 @@ duelRequests = createDuelRequestManager({
     targetUserId: requesterId
   })
 });
+
+app.use("/api/auth", createAuthRouter({
+  prisma,
+  jwtSecret: JWT_SECRET,
+  loginSessions,
+  onlineSessions
+}));
 
 function lobbyStats() {
   const matchmakingCounts = matchmakingCountsByMode();
@@ -824,17 +722,6 @@ function installSocketRateGuard(socket) {
     }
     next();
   });
-}
-
-async function sendLoginResponse(res, user) {
-  const response = await onlineSessions.createLoginResponse(user);
-  res.setHeader("Set-Cookie", buildRefreshCookie(response.refreshToken));
-  const { refreshToken, refreshExpiresAt, ...publicResponse } = response;
-  res.json(publicResponse);
-}
-
-async function forceLogoutUser(userId) {
-  await onlineSessions.forceLogoutUser(userId);
 }
 
 function registerOnlineSocket(socket) {

@@ -32,6 +32,35 @@ Questions to answer:
 
 <!-- Patterns that must always be used -->
 
+### Auth HTTP Boundary Contract
+
+`server/authRoutes.js` owns the `/api/auth/*` HTTP request handlers:
+
+- `createAuthRouter(deps)` mounts register, login, refresh, and logout routes.
+- `createAuthRouteHandlers(deps)` exposes the same handlers for focused unit tests without starting the full server.
+- Registration validates username and password, hashes the password, syncs configured admin promotion, and returns the same login response shape as login.
+- Login validates credentials, rejects banned users, returns the `already_logged_in` conflict response for active online sockets, and lets `forceLogin` evict the previous session through `onlineSessions.forceLogoutUser()`.
+- Refresh reads the `sigrika_refresh` cookie through the login-session helpers, rotates valid refresh cookies, clears invalid/banned sessions, and signs the access-token response with the injected JWT secret.
+- Logout clears the refresh token and best-effort clears the access-token session while still succeeding for malformed or expired access tokens.
+
+`server/index.js` should create shared dependencies such as `loginSessions`, `onlineSessions`, `prisma`, and `JWT_SECRET`, then mount this router. It should not duplicate auth handler bodies, cookie parsing, active-account conflict responses, or logout token parsing.
+
+Wrong:
+
+```js
+app.post("/api/auth/login", async (req, res) => {
+  // credential checks, cookie writes, session eviction
+});
+```
+
+Correct:
+
+```js
+app.use("/api/auth", createAuthRouter({ prisma, jwtSecret, loginSessions, onlineSessions }));
+```
+
+Tests touching auth route status codes, cookie rotation/clearing, forced login, refresh-session recovery, or logout cleanup should update `server/authRoutes.test.js`; lower-level session storage behavior should stay in `server/loginSessions.test.js`.
+
 ### Room Broadcast Boundary Contract
 
 `server/roomBroadcasts.js` owns the Socket.IO delivery mechanics for room-level events:

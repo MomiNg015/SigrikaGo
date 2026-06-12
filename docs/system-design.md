@@ -275,8 +275,13 @@ SigrikaGo/
 - `server/index.js`
   - Express HTTP API 与 Socket.IO 入口。
   - 初始化内置角色 seed、提升配置管理员。
-  - 注册公开 API、登录/注册 API、用户 API、棋谱 API、排行榜 API，并挂载 `/api/admin`。
+  - 注册公开 API、用户 API、棋谱 API、排行榜 API，并挂载 `/api/auth` 与 `/api/admin`。
   - JSON body 解析错误会通过统一错误处理中间件返回 JSON，避免前端 API helper 因 Express 默认 HTML 错误页显示“接口返回格式不是 JSON”。
+
+- `server/authRoutes.js`
+  - Auth HTTP route boundary.
+  - Owns `/api/auth/register`, `/api/auth/login`, `/api/auth/refresh`, and `/api/auth/logout` request handlers, including credential validation, refresh-cookie rotation/clearing, active-account conflict response, force-login session eviction, and malformed-token-tolerant logout cleanup.
+  - `server/index.js` creates the shared login/session managers and mounts `/api/auth` after `onlineSessions` is available; tests touching auth route status codes, cookie behavior, forced login, refresh-session recovery, or logout cleanup should update `server/authRoutes.test.js`.
 
 - `server/duelRequests.js`
   - 好友/社交对局申请状态机。
