@@ -528,6 +528,35 @@ const restored = resumeRoomTimers(room, io);
 
 Tests touching restore-time phase branching, expired close windows, opening deadline decisions, invalid pending-skill fallback, or active deadline scheduling should update `server/roomRestoreLifecycle.test.js`; persisted-room integration can remain in `server/rooms.test.js`.
 
+### Room Persistence Restore Lifecycle Boundary Contract
+
+`server/roomPersistenceRestoreLifecycle.js` owns persisted-room restore orchestration:
+
+- `createRoomPersistenceRestoreLifecycle(deps)` returns `restorePersistedRooms(io)`.
+- `restorePersistedRooms()` reads rows through injected `listPersistedRooms()`, parses each row snapshot, hydrates it through `hydratePersistedRoom()`, skips hydrated rows without a room `code`, appends restored disconnect notices, registers the room in `rooms`, invokes `resumeRoomTimers(room, io)`, and force-persists rooms whose resume result is not `false`.
+- A row that throws during JSON parse, hydration, notice append, timer resume, or persistence should be logged through `onError(message, error)` and must not abort later rows.
+- The returned array contains restored rooms that had a room code, including rooms that are immediately closed by restore-time timer decisions; skipped/failed rows are omitted.
+
+`server/rooms.js` should provide dependencies and expose the compatibility entry point, but it should not duplicate persisted-row iteration, parse/hydrate/register sequencing, bad-row isolation, or force-persist-after-resume behavior.
+
+Wrong:
+
+```js
+for (const row of await listPersistedRooms(prisma)) {
+  const room = hydratePersistedRoom(JSON.parse(row.snapshot));
+  rooms.set(room.code, room);
+}
+```
+
+Correct:
+
+```js
+const restoreLifecycle = createRoomPersistenceRestoreLifecycle(deps);
+export const { restorePersistedRooms } = restoreLifecycle;
+```
+
+Tests touching persisted-row iteration, bad snapshot isolation, no-code skips, registration, timer resume handoff, or post-resume force persistence should update `server/roomPersistenceRestoreLifecycle.test.js`; end-to-end restart behavior can remain in `server/rooms.test.js`.
+
 ### Room Deadline Scheduler Boundary Contract
 
 `server/roomDeadlineScheduler.js` owns room deadline timer scheduling and timeout transitions:

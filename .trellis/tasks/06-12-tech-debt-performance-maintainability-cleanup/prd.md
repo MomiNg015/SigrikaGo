@@ -288,6 +288,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomQueries.test.js` for finished-room filtering, watch-room payload shape, mode fallback, participant summary delegation, active-room membership, and specific/global user-room lookup.
 * Updated `docs/system-design.md` and backend quality guidelines for the room queries contract.
 
+### Batch 28 Completed
+
+* Added `server/roomPersistenceRestoreLifecycle.js` as the persisted-room restore orchestration boundary.
+* Updated `server/rooms.js` to delegate persisted-row loading, snapshot parsing/hydration, restored disconnect notices, in-memory registration, restore-time timer handoff, force persistence, and bad-row isolation to the restore orchestration module.
+* Added `server/roomPersistenceRestoreLifecycle.test.js` for normal restore registration, no-code skips, no-persist close-on-restore behavior, and continuing past bad persisted rows.
+* Updated `docs/system-design.md` and backend quality guidelines for the persisted-room restore lifecycle contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

@@ -2,7 +2,7 @@ import { GAME_PHASES } from "../src/shared/game.js";
 import { prisma } from "./db.js";
 import { resetByoYomi } from "./roomClockTiming.js";
 import { prepareCandyEffectUpdates } from "./roomItemEffects.js";
-import { listPersistedRooms, deletePersistedRoom as deletePersistedRoomState } from "./roomPersistence.js";
+import { deletePersistedRoom as deletePersistedRoomState, listPersistedRooms } from "./roomPersistence.js";
 import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
 import {
   broadcastRoom as broadcastRoomUpdate,
@@ -43,6 +43,7 @@ import { createRoomCreationLifecycle } from "./roomCreationLifecycle.js";
 import { createRoomActionLifecycle } from "./roomActionLifecycle.js";
 import { createRoomChatLifecycle } from "./roomChatLifecycle.js";
 import { createRoomQueries } from "./roomQueries.js";
+import { createRoomPersistenceRestoreLifecycle } from "./roomPersistenceRestoreLifecycle.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -208,6 +209,15 @@ export const {
   isUserInActiveRoom,
   findRoomForUser
 } = roomQueries;
+const roomPersistenceRestoreLifecycle = createRoomPersistenceRestoreLifecycle({
+  rooms,
+  listPersistedRooms: () => listPersistedRooms(prisma),
+  hydratePersistedRoom,
+  ensureRestoredDisconnectedNotices,
+  resumeRoomTimers,
+  persistRoom
+});
+export const { restorePersistedRooms } = roomPersistenceRestoreLifecycle;
 
 export function clearRoomsForTest() {
   for (const room of rooms.values()) {
@@ -215,24 +225,6 @@ export function clearRoomsForTest() {
   }
   rooms.clear();
   matchmakingQueue.clear();
-}
-
-export async function restorePersistedRooms(io) {
-  const rows = await listPersistedRooms(prisma);
-  const restored = [];
-  for (const row of rows) {
-    try {
-      const room = hydratePersistedRoom(JSON.parse(row.snapshot));
-      if (!room?.code) continue;
-      ensureRestoredDisconnectedNotices(room);
-      rooms.set(room.code, room);
-      restored.push(room);
-      if (resumeRoomTimers(room, io) !== false) persistRoom(room, { force: true });
-    } catch (error) {
-      console.error(`Failed to restore room ${row.code}`, error);
-    }
-  }
-  return restored;
 }
 
 export function listWaitingPlayers() {
