@@ -104,3 +104,36 @@ Fixed gacha admin prize editor visibility and clarity: wider responsive drawer, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: Gacha admin UI polish
+
+**Date**: 2026-06-12
+**Task**: Gacha admin UI polish
+**Branch**: `codex/standard-game-mode`
+
+### Summary
+
+Polished the admin gacha prize editor into a clearer operations-console layout with resource previews, grouped controls, visible units, responsive drawer behavior, updated tests, and synced system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1ae019d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
