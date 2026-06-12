@@ -281,6 +281,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomChatLifecycle.test.js` for invalid room-code short-circuiting, invalid text handling, missing rooms, and successful normalized chat append behavior.
 * Updated `docs/system-design.md` and backend quality guidelines for the room chat lifecycle contract.
 
+### Batch 27 Completed
+
+* Added `server/roomQueries.js` as the room read-model/query boundary.
+* Updated `server/rooms.js` to delegate active-room filtering, watch-room projection, active membership checks, and user-to-room lookup while keeping ownership of the in-memory room map.
+* Added `server/roomQueries.test.js` for finished-room filtering, watch-room payload shape, mode fallback, participant summary delegation, active-room membership, and specific/global user-room lookup.
+* Updated `docs/system-design.md` and backend quality guidelines for the room queries contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

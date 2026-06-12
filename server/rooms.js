@@ -1,7 +1,4 @@
-import {
-  COLORS,
-  GAME_PHASES
-} from "../src/shared/game.js";
+import { GAME_PHASES } from "../src/shared/game.js";
 import { prisma } from "./db.js";
 import { resetByoYomi } from "./roomClockTiming.js";
 import { prepareCandyEffectUpdates } from "./roomItemEffects.js";
@@ -23,9 +20,7 @@ import {
 } from "./roomTimers.js";
 import {
   arePlayersDisconnected,
-  hasConnectedRoomParticipant,
-  onlineParticipantCount,
-  watchPlayerSummary
+  hasConnectedRoomParticipant
 } from "./roomPresence.js";
 import { createRoomMatchmakingQueue } from "./roomMatchmakingQueue.js";
 import {
@@ -47,6 +42,7 @@ import { createRoomRequestLifecycle } from "./roomRequestLifecycle.js";
 import { createRoomCreationLifecycle } from "./roomCreationLifecycle.js";
 import { createRoomActionLifecycle } from "./roomActionLifecycle.js";
 import { createRoomChatLifecycle } from "./roomChatLifecycle.js";
+import { createRoomQueries } from "./roomQueries.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -205,32 +201,13 @@ const roomChatLifecycle = createRoomChatLifecycle({
   normalizeChatText
 });
 export const { addChat } = roomChatLifecycle;
-
-export function listActiveRooms() {
-  return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
-}
-
-export function listWatchRooms() {
-  return [...rooms.values()].map((room) => ({
-    code: room.code,
-    mode: room.mode ?? room.game.mode ?? "spark",
-    onlineCount: onlineParticipantCount(room),
-    moveNumber: room.game.moveNumber,
-    status: room.game.phase === GAME_PHASES.finished ? "finished" : "playing",
-    closesAt: room.closesAt ?? null,
-    black: watchPlayerSummary(room, COLORS.black),
-    white: watchPlayerSummary(room, COLORS.white)
-  }));
-}
-
-export function isUserInActiveRoom(userId) {
-  return listActiveRooms().some((room) => room.players.some((player) => player.user.id === userId));
-}
-
-export function findRoomForUser(userId, roomCode = "") {
-  const candidates = roomCode ? [rooms.get(roomCode)] : [...rooms.values()];
-  return candidates.find((room) => room?.players.some((player) => player.user.id === userId)) ?? null;
-}
+const roomQueries = createRoomQueries({ rooms });
+export const {
+  listActiveRooms,
+  listWatchRooms,
+  isUserInActiveRoom,
+  findRoomForUser
+} = roomQueries;
 
 export function clearRoomsForTest() {
   for (const room of rooms.values()) {

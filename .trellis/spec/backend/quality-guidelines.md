@@ -415,6 +415,34 @@ export const { addChat } = roomChatLifecycle;
 
 Tests touching chat entry validation order, message shape, move-number capture, id/timestamp injection, or no-op cases should update `server/roomChatLifecycle.test.js`; socket delivery behavior can remain in `server/rooms.test.js` or socket integration tests.
 
+### Room Queries Boundary Contract
+
+`server/roomQueries.js` owns room read-model projection and lookup helpers:
+
+- `createRoomQueries({ rooms, onlineParticipantCount, watchPlayerSummary })` returns `listActiveRooms`, `listWatchRooms`, `isUserInActiveRoom`, and `findRoomForUser`.
+- `listActiveRooms()` returns in-memory rooms whose `room.game.phase` is not `finished`.
+- `listWatchRooms()` projects each room to `{ code, mode, onlineCount, moveNumber, status, closesAt, black, white }`, using `room.mode ?? room.game.mode ?? "spark"` and delegating participant counts/player summaries to `server/roomPresence.js`.
+- `isUserInActiveRoom(userId)` must use active-room filtering so finished rooms do not block matchmaking or lobby actions.
+- `findRoomForUser(userId, roomCode)` searches either a specific room code or all rooms and returns `null` when no player match exists.
+
+`server/rooms.js` should keep the shared room map, but it should not duplicate watch-list projection shape, active-room filtering, online-count calculation, or user-room lookup behavior.
+
+Wrong:
+
+```js
+const onlineCount = room.players.filter((player) => player.socketId).length;
+return { code: room.code, onlineCount };
+```
+
+Correct:
+
+```js
+const roomQueries = createRoomQueries({ rooms });
+export const { listWatchRooms } = roomQueries;
+```
+
+Tests touching active-room filtering, watch-room payload shape, mode fallback, participant summary delegation, or user-room lookup should update `server/roomQueries.test.js`; API/socket callers can keep integration tests around their event wiring.
+
 ### Room Request Lifecycle Boundary Contract
 
 `server/roomRequestLifecycle.js` owns counting, draw, and scoring request entry validation:
