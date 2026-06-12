@@ -45,6 +45,9 @@ describe("AdminGachaPools", () => {
     const source = readFileSync(new URL("./AdminGachaPools.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("admin-gacha-resource-select");
+    expect(source).toContain("admin-gacha-prize-resource");
+    expect(source).toContain("admin-gacha-prize-thumb");
+    expect(source).toContain("admin-gacha-featured-toggle");
     expect(source).toContain("resourceCatalogs");
     expect(source).toContain("prizeOptionsForType");
     expect(source).not.toContain('placeholder="资源ID"');
@@ -75,6 +78,9 @@ describe("AdminGachaPools", () => {
 
     expect(source).toContain(".admin-gacha-board");
     expect(source).toContain(".admin-gacha-prize-row");
+    expect(source).toContain(".admin-gacha-prize-editor-head");
+    expect(source).toContain(".admin-gacha-prize-thumb");
+    expect(source).toContain(".admin-gacha-featured-toggle");
   });
 
   it("keeps the gacha editor drawer wide and internally responsive", () => {
@@ -84,7 +90,8 @@ describe("AdminGachaPools", () => {
     expect(source).toContain("width: min(1040px, calc(100vw - 32px))");
     expect(source).toContain("@media (max-width: 860px)");
     expect(source).toContain(".admin-gacha-prize-row");
-    expect(source).toContain("grid-template-columns: repeat(2, minmax(0, 1fr))");
+    expect(source).toContain("grid-template-columns: minmax(340px, 1.45fr) minmax(260px, 1fr) 92px 70px");
+    expect(source).toContain("grid-template-columns: 1fr");
   });
 
   it("includes built-in stone decorations in decoration prize options", () => {

@@ -92,6 +92,15 @@ function selectedPrizeOption(type, targetId, resourceCatalogs) {
   return prizeOptionsForType(type, resourceCatalogs).find((option) => option.value === targetId) ?? null;
 }
 
+function prizePreviewFor(prize, resourceCatalogs) {
+  const selected = selectedPrizeOption(prize.type, prize.targetId, resourceCatalogs);
+  return {
+    imageUrl: selected?.imageUrl || prize.imageUrl || "",
+    name: selected?.name || prize.name || COIN_PRIZE_OPTION.name,
+    fallback: gachaTypeLabel(prize.type).slice(0, 1)
+  };
+}
+
 export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, onSaved, onNotice }) {
   const [draft, setDraft] = useState(null);
 
@@ -210,43 +219,71 @@ export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, o
               <label className="wide-field"><AdminFieldLabel text="描述" tip="后台备注和未来展示文案。" /><textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></label>
             </div>
             <div className="admin-gacha-prize-list">
-              {draft.prizes.map((prize, index) => (
-                <div className="admin-gacha-prize-row" key={index}>
-                  <select value={prize.type} onChange={(e) => updatePrizeType(index, e.target.value)}>
-                    <option value="character">角色</option>
-                    <option value="decoration">装饰</option>
-                    <option value="item">道具</option>
-                    <option value="music">音乐</option>
-                    <option value="coins">金币</option>
-                  </select>
-                  {prize.type === "coins" ? (
-                    <span className="admin-gacha-resource-select admin-gacha-resource-static">{COIN_PRIZE_OPTION.name}</span>
-                  ) : (
-                    <select
-                      className="admin-gacha-resource-select"
-                      value={selectedPrizeOption(prize.type, prize.targetId, resourceCatalogs)?.value ?? ""}
-                      onChange={(e) => updatePrizeResource(index, prize.type, e.target.value)}
-                    >
-                      <option value="">请选择资源</option>
-                      {prizeOptionsForType(prize.type, resourceCatalogs).map((option) => (
-                        <option key={option.value} value={option.value}>{option.name}</option>
-                      ))}
-                    </select>
-                  )}
-                  <label className="admin-gacha-number-field">
-                    <span>数量</span>
-                    <input type="number" min="1" value={prize.quantity} onChange={(e) => updatePrize(index, { quantity: e.target.value })} />
-                    <b>{prizeQuantityUnit(prize.type)}</b>
-                  </label>
-                  <label className="admin-gacha-number-field" title="10000 = 100%">
-                    <span>概率</span>
-                    <input type="number" min="0" max="10000" value={prize.probabilityBasisPoints} onChange={(e) => updatePrize(index, { probabilityBasisPoints: e.target.value })} />
-                    <b>/10000</b>
-                  </label>
-                  <label><input type="radio" checked={Number(draft.featuredPrizeIndex) === index} onChange={() => setDraft({ ...draft, featuredPrizeIndex: index })} /> 大奖</label>
-                  <span>{gachaTypeLabel(prize.type)}</span>
+              <div className="admin-gacha-prize-editor-head">
+                <div>
+                  <h3>奖项配置</h3>
+                  <p>从当前游戏资源中选择奖品；概率按基点填写，10000 = 100%。</p>
                 </div>
-              ))}
+                <span>数量和概率均带单位</span>
+              </div>
+              {draft.prizes.map((prize, index) => {
+                const preview = prizePreviewFor(prize, resourceCatalogs);
+                return (
+                  <div className="admin-gacha-prize-row" key={index}>
+                    <div className="admin-gacha-prize-resource">
+                      <span className="admin-gacha-prize-thumb" aria-hidden="true">
+                        {preview.imageUrl ? <img src={preview.imageUrl} alt="" /> : <span>{preview.fallback}</span>}
+                      </span>
+                      <div className="admin-gacha-prize-controls">
+                        <label>
+                          <span>类型</span>
+                          <select value={prize.type} onChange={(e) => updatePrizeType(index, e.target.value)}>
+                            <option value="character">角色</option>
+                            <option value="decoration">装饰</option>
+                            <option value="item">道具</option>
+                            <option value="music">音乐</option>
+                            <option value="coins">金币</option>
+                          </select>
+                        </label>
+                        <label>
+                          <span>资源</span>
+                          {prize.type === "coins" ? (
+                            <span className="admin-gacha-resource-select admin-gacha-resource-static">{COIN_PRIZE_OPTION.name}</span>
+                          ) : (
+                            <select
+                              className="admin-gacha-resource-select"
+                              value={selectedPrizeOption(prize.type, prize.targetId, resourceCatalogs)?.value ?? ""}
+                              onChange={(e) => updatePrizeResource(index, prize.type, e.target.value)}
+                            >
+                              <option value="">请选择资源</option>
+                              {prizeOptionsForType(prize.type, resourceCatalogs).map((option) => (
+                                <option key={option.value} value={option.value}>{option.name}</option>
+                              ))}
+                            </select>
+                          )}
+                        </label>
+                      </div>
+                    </div>
+                    <div className="admin-gacha-prize-metrics">
+                      <label className="admin-gacha-number-field">
+                        <span>数量</span>
+                        <input type="number" min="1" value={prize.quantity} onChange={(e) => updatePrize(index, { quantity: e.target.value })} />
+                        <b>{prizeQuantityUnit(prize.type)}</b>
+                      </label>
+                      <label className="admin-gacha-number-field" title="10000 = 100%">
+                        <span>概率</span>
+                        <input type="number" min="0" max="10000" value={prize.probabilityBasisPoints} onChange={(e) => updatePrize(index, { probabilityBasisPoints: e.target.value })} />
+                        <b>/10000</b>
+                      </label>
+                    </div>
+                    <label className="admin-gacha-featured-toggle">
+                      <input type="radio" checked={Number(draft.featuredPrizeIndex) === index} onChange={() => setDraft({ ...draft, featuredPrizeIndex: index })} />
+                      <span>大奖</span>
+                    </label>
+                    <span className="admin-gacha-type-badge">{gachaTypeLabel(prize.type)}</span>
+                  </div>
+                );
+              })}
               <button className="secondary-action" type="button" onClick={() => setDraft({ ...draft, prizes: [...draft.prizes, { ...emptyGachaPrizeDraft(), ...prizePatchForType("character", resourceCatalogs) }] })}>
                 <Plus size={16} /> 添加奖项
               </button>
