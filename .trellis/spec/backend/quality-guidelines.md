@@ -226,6 +226,36 @@ const room = createRoom(first, second, { modeInput: mode, isCodeTaken });
 
 Tests touching initial room shape, room-player shape, mode projection, or code collision behavior should update `server/roomFactory.test.js`.
 
+### Room Creation Lifecycle Boundary Contract
+
+`server/roomCreationLifecycle.js` owns post-match and direct-duel room creation orchestration:
+
+- `createRoomCreationLifecycle(deps)` returns `joinMatchmaking(player, io, { canPair })` and `createDirectRoom(first, second, io, modeInput)`.
+- `joinMatchmaking()` delegates waiting-player state to `matchmakingQueue.join()`, returns `null` when no match is available, and only creates a room when the queue returns a matched opponent/player pair.
+- `createDirectRoom()` normalizes the requested mode, removes both users from matchmaking, creates the room, and shares the same post-creation registration path as matchmaking.
+- The shared registration path stores the room in `rooms`, force-persists the initial snapshot, starts the game clock, schedules opening completion, emits `match:found` to both sockets with viewer-specific `roomView()` payloads, appends the creation system notice, and broadcasts the initial room snapshot.
+
+`server/rooms.js` should route socket events and expose compatibility exports, but it should not duplicate matched-room registration, forced initial persistence, clock startup, opening scheduling, or `match:found` delivery.
+
+Wrong:
+
+```js
+rooms.set(room.code, room);
+persistRoom(room, { force: true });
+startGameClock(room, io);
+scheduleGameStart(room, io);
+io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
+```
+
+Correct:
+
+```js
+const roomCreationLifecycle = createRoomCreationLifecycle(deps);
+export const { joinMatchmaking, createDirectRoom } = roomCreationLifecycle;
+```
+
+Tests touching matched matchmaking creation, direct duel creation, initial persistence, match-found payloads, or creation notices should update `server/roomCreationLifecycle.test.js`; socket-event routing can remain in `server/rooms.test.js`.
+
 ### Room Skill Message Boundary Contract
 
 `server/roomSkillMessages.js` owns skill system-message formatting:

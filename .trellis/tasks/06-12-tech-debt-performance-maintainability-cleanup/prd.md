@@ -257,6 +257,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Updated `server/rooms.js` to delegate counting requests/responses, draw requests/responses, scoring action room/player lookup, phase precondition checks, scoring point validation, and dispatch into `server/roomScoringFlow.js` to the request lifecycle boundary.
 * Kept standard game action routing, skill action routing, chat mutation, and broadcast/persistence wrappers in `server/rooms.js`.
 * Added `server/roomRequestLifecycle.test.js` for invalid room-code handling, counting request dispatch, draw response phase checks, accepted draw close scheduling, scoring point validation, and result-review phase checks.
+
+### Batch 24 Completed
+
+* Added `server/roomCreationLifecycle.js` as the room creation orchestration boundary.
+* Updated `server/rooms.js` to delegate matched matchmaking room creation and direct duel room creation, including initial room registration, forced persistence, clock startup, opening scheduling, `match:found` delivery, creation notices, and initial room broadcast.
+* Kept queue status/list helpers, matchmaking leave cleanup, socket event routing, action routing, and room map ownership in `server/rooms.js`.
+* Added `server/roomCreationLifecycle.test.js` for unmatched joins, matched matchmaking creation side effects, direct-room mode normalization, matchmaking cleanup, emitted match payloads, and creation broadcasts.
+* Updated `docs/system-design.md` and backend quality guidelines for the room creation lifecycle contract.
 * Updated `docs/system-design.md` and backend quality guidelines for the room request lifecycle contract.
 
 ### Later Batches

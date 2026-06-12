@@ -32,7 +32,6 @@ import {
   watchPlayerSummary
 } from "./roomPresence.js";
 import { createRoomMatchmakingQueue } from "./roomMatchmakingQueue.js";
-import { createRoom } from "./roomFactory.js";
 import {
   createRoomSkillLifecycle
 } from "./roomSkillResolution.js";
@@ -49,6 +48,7 @@ import { createRoomClockLifecycle } from "./roomClockLifecycle.js";
 import { createRoomRestoreLifecycle } from "./roomRestoreLifecycle.js";
 import { createRoomConnectionLifecycle } from "./roomConnectionLifecycle.js";
 import { createRoomRequestLifecycle } from "./roomRequestLifecycle.js";
+import { createRoomCreationLifecycle } from "./roomCreationLifecycle.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -174,6 +174,21 @@ export const {
   respondDraw,
   handleScoringAction
 } = roomRequestLifecycle;
+const roomCreationLifecycle = createRoomCreationLifecycle({
+  rooms,
+  matchmakingQueue,
+  isRoomCodeTaken,
+  persistRoom,
+  startGameClock,
+  scheduleGameStart,
+  roomView,
+  appendSystem,
+  broadcastRoom
+});
+export const {
+  joinMatchmaking,
+  createDirectRoom
+} = roomCreationLifecycle;
 
 export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
@@ -239,50 +254,12 @@ export function matchmakingCountsByMode() {
   return matchmakingQueue.countsByMode();
 }
 
-export function joinMatchmaking(player, io, { canPair = () => true } = {}) {
-  const match = matchmakingQueue.join(player, { canPair });
-  if (match.matched) {
-    const first = match.opponent;
-    const room = createRoom(first, match.player, {
-      modeInput: match.mode,
-      isCodeTaken: isRoomCodeTaken
-    });
-    rooms.set(room.code, room);
-    persistRoom(room, { force: true });
-    startGameClock(room, io);
-    scheduleGameStart(room, io);
-    io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
-    io.to(player.socketId).emit("match:found", roomView(room, player.user.id));
-    appendSystem(room, "匹配成功，3秒后进入星炬对弈。");
-    broadcastRoom(io, room);
-    return room;
-  }
-  return null;
-}
 
 export function leaveMatchmaking(userId) {
   matchmakingQueue.removeUser(userId);
 }
 
 
-export function createDirectRoom(first, second, io, modeInput = "spark") {
-  const mode = normalizeGameModeId(modeInput);
-  leaveMatchmaking(first.user.id);
-  leaveMatchmaking(second.user.id);
-  const room = createRoom({ ...first, mode }, { ...second, mode }, {
-    modeInput: mode,
-    isCodeTaken: isRoomCodeTaken
-  });
-  rooms.set(room.code, room);
-  persistRoom(room, { force: true });
-  startGameClock(room, io);
-  scheduleGameStart(room, io);
-  appendSystem(room, "对局申请已同意，3秒后进入星炬对弈。");
-  io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
-  io.to(second.socketId).emit("match:found", roomView(room, second.user.id));
-  broadcastRoom(io, room);
-  return room;
-}
 
 export function handleGameAction(roomCode, userId, action, io) {
   const validatedRoomCode = validateRoomCode(roomCode);
