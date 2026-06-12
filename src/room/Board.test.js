@@ -120,6 +120,47 @@ describe("areBoardPropsEqual", () => {
     expect(css).toContain('.board-wrap[data-board-size="19"] .coord-row');
   });
 
+  test("renders a non-interactive board effects layer without replacing point buttons", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "skill-preview",
+        size: 13,
+        points: createPoints(13),
+        history: [],
+        pendingSkill: {
+          id: "skill-1",
+          effectType: "erase-point",
+          targetId: "6,6",
+          affectedPointIds: ["6,6"]
+        }
+      }
+    })));
+
+    expect(markup).toContain("board-effects-layer");
+    expect(markup).toContain('data-effect-type="erase-point"');
+    expect(markup).toContain("<button");
+    expect(markup).toContain('class="point');
+  });
+
+  test("renders Nabomo passive fog as a board ambient layer without replacing points", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: createPoints(13),
+        history: [],
+        passives: {
+          black: { colorIllusion: { active: true, triggered: true, probability: 0.8 } }
+        }
+      }
+    })));
+
+    expect(markup).toContain("board-ambient-layer");
+    expect(markup).toContain('data-ambient-effect="color-illusion-fog"');
+    expect(markup).toContain("<button");
+    expect(markup).toContain('class="point');
+  });
+
   test("keeps board grid strokes uniform with first-line strokes at 2.5x across themes", () => {
     const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
     const brightSchoolCss = readFileSync(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url), "utf8");

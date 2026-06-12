@@ -1,4 +1,10 @@
-export const SKILL_PREVIEW_DELAY_MS = 2000;
+export {
+  SKILL_BANNER_DURATION_MS,
+  SKILL_BOARD_EFFECT_DURATION_MS,
+  SKILL_PREVIEW_DELAY_MS
+} from "../src/shared/skillPresentation.js";
+
+import { SKILL_PREVIEW_DELAY_MS } from "../src/shared/skillPresentation.js";
 
 export function createPendingSkillResolution({
   pendingSkillId,

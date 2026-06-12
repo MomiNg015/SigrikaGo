@@ -1,6 +1,5 @@
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
 import { modeOrderedEntries } from "../../shared/gameModes.js";
-import { rankFromRating } from "../../shared/ratingRank.js";
 
 export default function PlayerPlaque({ character, user, onOpenResume }) {
   const plaqueStyle = { "--plaque-color": character.palette ?? "#5d7fe8" };
@@ -37,7 +36,7 @@ function plaqueModeStats(user, mode) {
   const rating = normalizeRating(stats?.rating ?? fallbackRating);
   return {
     rating,
-    rank: rankFromRating(rating)
+    rank: stats?.rank ?? user.rank ?? "3段",
   };
 }
 

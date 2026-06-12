@@ -484,14 +484,33 @@ p {
 
 .icon-button,
 .close-button {
-  width: 42px;
-  height: 42px;
   display: grid;
   place-items: center;
   border: 0;
   border-radius: 8px;
   background: #fff;
   color: #4f3d55;
+}
+
+.icon-button {
+  width: 42px;
+  height: 42px;
+}
+
+.close-button {
+  --modal-close-size: 44px;
+  --modal-close-inset: 12px;
+  width: var(--modal-close-size);
+  min-width: var(--modal-close-size);
+  height: var(--modal-close-size);
+  min-height: var(--modal-close-size);
+  padding: 0;
+  line-height: 1;
+}
+
+.close-button svg {
+  width: 20px;
+  height: 20px;
 }
 
 .icon-button.admin-top-action {
@@ -588,7 +607,6 @@ p {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  white-space: nowrap;
   line-height: 1.2;
 }
 
@@ -600,6 +618,47 @@ p {
 .plaque-mode-rank,
 .plaque-mode-rating {
   font-variant-numeric: tabular-nums;
+}
+
+.plaque-mode-results {
+  grid-column: 1 / -1;
+  justify-content: center;
+}
+
+.recent-result-markers {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.recent-result-marker,
+.recent-result-empty {
+  display: inline-grid;
+  min-width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 8px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.recent-result-marker-win {
+  background: #def7e7;
+  color: #16663a;
+}
+
+.recent-result-marker-loss {
+  background: #ffe0e2;
+  color: #9b1c24;
+}
+
+.recent-result-empty {
+  background: #f0e8f4;
+  color: #7d6a82;
 }
 
 .plaque-online-tag {
@@ -1234,4 +1293,46 @@ p {
 
 .message-board-modal .primary-action {
   justify-self: end;
+}
+
+.ui-unavailable-shake {
+  animation: ui-unavailable-shake var(--ui-unavailable-shake-duration, 1063ms) ease-in-out;
+}
+
+@keyframes ui-unavailable-shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  12%,
+  36%,
+  60%,
+  84% {
+    translate: -5px 0;
+  }
+
+  24%,
+  48%,
+  72% {
+    translate: 5px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-unavailable-shake {
+    animation: ui-unavailable-pulse var(--ui-unavailable-shake-duration, 1063ms) ease-in-out;
+  }
+
+  @keyframes ui-unavailable-pulse {
+    0%,
+    100% {
+      filter: none;
+    }
+
+    35%,
+    65% {
+      filter: brightness(1.12);
+    }
+  }
 }

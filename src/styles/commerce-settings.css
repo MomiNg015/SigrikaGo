@@ -894,6 +894,10 @@
   white-space: nowrap;
 }
 
+.shop-card-meta-price-only {
+  justify-content: center;
+}
+
 .shop-price {
   position: relative;
   display: inline-grid;
@@ -909,6 +913,11 @@
   font-size: 18px;
   text-align: right;
   white-space: nowrap;
+}
+
+.shop-card-meta-price-only .shop-price {
+  justify-content: center;
+  text-align: center;
 }
 
 .shop-price-number-wrap {
@@ -2195,8 +2204,8 @@
 
 .close-button {
   position: absolute;
-  right: 12px;
-  top: 12px;
+  right: var(--modal-close-inset, 12px);
+  top: var(--modal-close-inset, 12px);
 }
 
 .toast-stack {

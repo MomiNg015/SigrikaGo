@@ -4,7 +4,14 @@ import { CHARACTERS } from "../shared/characters.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { formatMessageTime } from "./roomView.js";
 
-export default function ChatBox({ room, onChat, readonly = false, trailingAction = null }) {
+export default function ChatBox({
+  room,
+  onChat,
+  readonly = false,
+  trailingAction = null,
+  floatingLayerZ,
+  onFloatingLayerRequest
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState("");
   const panelId = useId();
@@ -46,13 +53,23 @@ export default function ChatBox({ room, onChat, readonly = false, trailingAction
   }
 
   return (
-    <div className={isOpen ? "chat-widget open" : "chat-widget"} ref={widgetRef}>
+    <div
+      className={isOpen ? "chat-widget open" : "chat-widget"}
+      ref={widgetRef}
+      style={floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : undefined}
+      onPointerDownCapture={() => {
+        if (isOpen) onFloatingLayerRequest?.();
+      }}
+    >
       <button
         type="button"
         className="chat-toggle-button"
         aria-expanded={isOpen}
         aria-controls={panelId}
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => {
+          onFloatingLayerRequest?.();
+          setIsOpen((current) => !current);
+        }}
       >
         <MessageCircle size={18} />
         <span>对局聊天</span>

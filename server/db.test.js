@@ -9,13 +9,13 @@ describe("publicUser", () => {
       passwordHash: "secret",
       role: "admin",
       status: "active",
-      rank: "stored-rank",
+      rank: "3段",
       rating: 1000,
       wins: 1,
       losses: 2,
       modeStats: {
-        spark: { rating: 1000, wins: 1, losses: 2, draws: 0 },
-        standard: { rating: 1000, wins: 0, losses: 0, draws: 0 }
+        spark: { rating: 1000, rank: "3段", recentResults: "win,loss", wins: 1, losses: 2, draws: 0 },
+        standard: { rating: 1000, rank: "4段", recentResults: "", wins: 0, losses: 0, draws: 0 }
       },
       coins: 300,
       selectedCharacter: "sigrika",
@@ -31,13 +31,13 @@ describe("publicUser", () => {
       username: "admin",
       role: "admin",
       status: "active",
-      rank: "2段",
+      rank: "3段",
       rating: 1000,
       wins: 1,
       losses: 2,
       modeStats: {
-        spark: { rating: 1000, wins: 1, losses: 2, draws: 0 },
-        standard: { rating: 1000, wins: 0, losses: 0, draws: 0 }
+        spark: { rating: 1000, rank: "3段", recentResults: ["win", "loss"], wins: 1, losses: 2, draws: 0 },
+        standard: { rating: 1000, rank: "4段", recentResults: [], wins: 0, losses: 0, draws: 0 }
       },
       coins: 300,
       selectedCharacter: "sigrika",
@@ -132,8 +132,11 @@ describe("ensureGameModeSchema", () => {
 
     await ensureGameModeSchema(client);
 
+    expect(queryRawUnsafe).toHaveBeenCalledWith('PRAGMA table_info("UserModeStats")');
     expect(queryRawUnsafe).toHaveBeenCalledWith('PRAGMA table_info("GameRecord")');
     expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS "UserModeStats"'));
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "UserModeStats" ADD COLUMN "rank" TEXT NOT NULL DEFAULT \'3段\'');
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "UserModeStats" ADD COLUMN "recentResults" TEXT NOT NULL DEFAULT \'\'');
     expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "GameRecord" ADD COLUMN "mode" TEXT NOT NULL DEFAULT \'spark\'');
     expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('INSERT OR IGNORE INTO "UserModeStats"'));
   });

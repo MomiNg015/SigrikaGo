@@ -126,7 +126,7 @@ describe("admin route helpers", () => {
     });
 
     expect(result.user.rating).toBe(1150);
-    expect(result.user.rank).toBe("3段");
+    expect(result.user.rank).toBe("18级");
     expect(calls).toEqual([
       "transaction",
       "tx.user.findUnique",

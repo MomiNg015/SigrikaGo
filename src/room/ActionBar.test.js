@@ -30,8 +30,10 @@ describe("ActionBar helpers", () => {
     expect(source).not.toContain(">申请和棋</span>");
     expect(source).not.toContain("className=\"exit-action\"");
     expect(replaySource).toContain("className=\"action-bar replay-bar\"");
-    expect(battleStageSource).toContain("trailingAction={");
-    expect(battleStageSource).toContain("className=\"chat-exit-action exit-action\"");
+    expect(replaySource).not.toContain("DoorOpen");
+    expect(replaySource).not.toContain("className=\"exit-action\"");
+    expect(battleStageSource).not.toContain("trailingAction={");
+    expect(battleStageSource).not.toContain("className=\"chat-exit-action exit-action\"");
   });
 
   it("keeps timed opponent decisions out of the action bar", () => {

@@ -3,7 +3,7 @@ import { Archive, Eye, ShoppingBag, Trophy, UsersRound } from "lucide-react";
 export default function HomeUtilityDock({ onOpenFriends, onOpenLeaderboard, onOpenShop, onOpenWarehouse, onOpenWatch }) {
   return (
     <div className="home-utility-grid tactical-nav-grid">
-      <button className="home-entry utility-entry shop-entry" onClick={onOpenShop} title="商店">
+      <button className="home-entry utility-entry shop-entry" data-ui-sound="none" onClick={onOpenShop} title="商店">
         <ShoppingBag size={28} />
         <strong>商店</strong>
       </button>

@@ -1,7 +1,7 @@
 import { recordWinnerColor } from "./gameRecords.js";
 import { publicUser } from "./db.js";
-import { rankFromRating } from "../src/shared/ratingRank.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
+import { DEFAULT_RANK, normalizeRank } from "../src/shared/rankProgression.js";
 
 export function buildLeaderboard(users = [], records = [], options = {}) {
   const mode = normalizeGameModeId(options.mode);
@@ -13,6 +13,7 @@ export function buildLeaderboard(users = [], records = [], options = {}) {
       id: profile.id,
       username: profile.username,
       rating: stats.rating,
+      rank: stats.rank,
       selectedCharacter: profile.selectedCharacter ?? "sigrika",
       itemEffects: profile.itemEffects,
       totalGames: 0,
@@ -36,7 +37,7 @@ export function buildLeaderboard(users = [], records = [], options = {}) {
       id: row.id,
       username: row.username,
       rating: row.rating,
-      rank: rankFromRating(row.rating),
+      rank: row.rank,
       itemEffects: row.itemEffects,
       totalGames: row.totalGames,
       wins: row.wins,
@@ -50,9 +51,10 @@ export function buildLeaderboard(users = [], records = [], options = {}) {
 function modeStatsForUser(user, mode) {
   const stats = Array.isArray(user.modeStats)
     ? user.modeStats.find((entry) => normalizeGameModeId(entry.mode) === mode)
-    : null;
+    : user.modeStats?.[mode] ?? null;
   return {
-    rating: Number(stats?.rating ?? user.rating ?? 1000)
+    rating: Number(stats?.rating ?? user.rating ?? 1000),
+    rank: normalizeRank(stats?.rank ?? (mode === "spark" ? user.rank : DEFAULT_RANK))
   };
 }
 

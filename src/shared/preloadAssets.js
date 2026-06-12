@@ -2,7 +2,14 @@ import {
   CAPTURE_SOUND,
   HIDDEN_HAND_REVEAL_SOUND,
   preloadEffectSound,
-  STONE_SOUND
+  STONE_SOUND,
+  UI_CLOSE_WINDOW_SOUND,
+  UI_CONFIRM_SOUND,
+  UI_DETAIL_OPEN_SOUND,
+  UI_HOUSE_OPEN_SOUND,
+  UI_MATCH_OPEN_SOUND,
+  UI_SHOP_OPEN_SOUND,
+  UI_UNAVAILABLE_SOUND
 } from "../audio/playback.jsx";
 import {
   CHARACTER_SYSTEM_VOICES,
@@ -63,6 +70,13 @@ export function loginPreloadAssets({
     STONE_SOUND,
     CAPTURE_SOUND,
     HIDDEN_HAND_REVEAL_SOUND,
+    UI_CLOSE_WINDOW_SOUND,
+    UI_CONFIRM_SOUND,
+    UI_DETAIL_OPEN_SOUND,
+    UI_HOUSE_OPEN_SOUND,
+    UI_MATCH_OPEN_SOUND,
+    UI_SHOP_OPEN_SOUND,
+    UI_UNAVAILABLE_SOUND,
     MATCH_SUCCESS_SOUND,
     VICTORY_SOUND,
     DEFEAT_SOUND,
@@ -77,7 +91,18 @@ export function loginPreloadAssets({
 export async function preloadLoginAssets(assets, { onProgress = () => {} } = {}) {
   const images = assets?.images ?? [];
   const audio = assets?.audio ?? [];
-  const decodedEffects = new Set([STONE_SOUND, CAPTURE_SOUND, HIDDEN_HAND_REVEAL_SOUND]);
+  const decodedEffects = new Set([
+    STONE_SOUND,
+    CAPTURE_SOUND,
+    HIDDEN_HAND_REVEAL_SOUND,
+    UI_CLOSE_WINDOW_SOUND,
+    UI_CONFIRM_SOUND,
+    UI_DETAIL_OPEN_SOUND,
+    UI_HOUSE_OPEN_SOUND,
+    UI_MATCH_OPEN_SOUND,
+    UI_SHOP_OPEN_SOUND,
+    UI_UNAVAILABLE_SOUND
+  ]);
   const tasks = [
     ...images.map((src) => () => preloadImage(src)),
     ...audio.map((src) => () => decodedEffects.has(src) ? preloadEffectSound(src) : preloadFetch(src))

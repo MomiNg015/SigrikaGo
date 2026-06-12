@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ActionBar from "./ActionBar.jsx";
 import Board from "./Board.jsx";
 import ChatBox from "./ChatBox.jsx";
-import { DoorOpen } from "lucide-react";
 import OperationHint from "./OperationHint.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
 import RoomPeopleList from "./RoomPeopleList.jsx";
 import { stoneDecorationsForRoom } from "./roomView.js";
 
 const SHOW_TEST_TOOLS = import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === "true";
+const ROOM_FLOATING_LAYER_BASE_Z = 90;
 
 export default function RoomBattleStage({
   battleLayoutClassName,
+  audioSettings,
   boardStep,
   canSwitchView,
   characters,
@@ -55,6 +56,14 @@ export default function RoomBattleStage({
   winnerColor
 }) {
   const [activeMobilePanel, setActiveMobilePanel] = useState("actions");
+  const layerCounterRef = useRef(ROOM_FLOATING_LAYER_BASE_Z);
+  const [floatingLayers, setFloatingLayers] = useState({});
+  const bringFloatingLayerToFront = useCallback((layerId) => {
+    if (!layerId) return;
+    const nextZ = layerCounterRef.current + 1;
+    layerCounterRef.current = nextZ;
+    setFloatingLayers((current) => ({ ...current, [layerId]: nextZ }));
+  }, []);
   const selfPlayer = me ?? displayRoom.players[0];
   const isPlaying = displayRoom.game.phase === "playing";
   const isFinished = displayRoom.game.phase === "finished";
@@ -71,6 +80,9 @@ export default function RoomBattleStage({
       isWinner={isFinished && opponent?.color === winnerColor}
       isActiveTurn={isPlaying && opponent?.color === displayRoom.game.turn}
       isDrawResult={isFinished && !winnerColor}
+      floatingLayerId={`skill-${opponent?.color ?? "opponent"}`}
+      floatingLayerZ={floatingLayers[`skill-${opponent?.color ?? "opponent"}`]}
+      onFloatingLayerRequest={bringFloatingLayerToFront}
     />
   );
   const membersPanel = !isReplay && (
@@ -80,6 +92,8 @@ export default function RoomBattleStage({
       characters={characters}
       token={token}
       onOpenReplay={onOpenReplay}
+      floatingLayerZ={floatingLayers.members}
+      onFloatingLayerRequest={() => bringFloatingLayerToFront("members")}
     />
   );
   const hintPanel = !isReplay && role === "player" && (
@@ -92,6 +106,7 @@ export default function RoomBattleStage({
         showCoords={showCoords}
         showMoves={showMoves}
         pendingSkill={pendingSkill}
+        audioSettings={audioSettings}
         pointConfirmation={pointConfirmation}
         previewPlayer={role === "player" ? me : null}
         stoneDecorations={stoneDecorationsForRoom(displayRoom)}
@@ -137,7 +152,6 @@ export default function RoomBattleStage({
       onAcceptResult={() => onScoringAction({ type: "accept-result" })}
       onRejectResult={() => onScoringAction({ type: "reject-result" })}
       onResign={onResign}
-      onBack={onBack}
     />
   );
   const selfInfo = (
@@ -153,6 +167,9 @@ export default function RoomBattleStage({
       isActiveTurn={isPlaying && selfPlayer?.color === displayRoom.game.turn}
       isDrawResult={isFinished && !winnerColor}
       isSkillTargeting={Boolean(pendingSkill && role === "player")}
+      floatingLayerId={`skill-${selfPlayer?.color ?? "self"}`}
+      floatingLayerZ={floatingLayers[`skill-${selfPlayer?.color ?? "self"}`]}
+      onFloatingLayerRequest={bringFloatingLayerToFront}
     />
   );
   const chatPanel = (
@@ -160,12 +177,8 @@ export default function RoomBattleStage({
       room={displayRoom}
       onChat={onChat}
       readonly={isReplay}
-      trailingAction={isMobileBattleLayout ? null : (
-        <button type="button" className="chat-exit-action exit-action" onClick={onBack}>
-          <DoorOpen size={18} />
-          <span>退出房间</span>
-        </button>
-      )}
+      floatingLayerZ={floatingLayers.chat}
+      onFloatingLayerRequest={() => bringFloatingLayerToFront("chat")}
     />
   );
 

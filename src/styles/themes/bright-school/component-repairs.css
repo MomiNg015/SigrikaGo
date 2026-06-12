@@ -663,7 +663,7 @@
   width: fit-content !important;
   max-width: 100% !important;
   overflow: visible !important;
-  z-index: 24 !important;
+  z-index: var(--room-floating-z, 24) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: flex-end !important;

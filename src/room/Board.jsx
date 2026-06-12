@@ -2,6 +2,8 @@ import { memo, useMemo, useRef } from "react";
 import { COLORS } from "../shared/game.js";
 import { lastMarkedAction } from "../shared/boardView.js";
 import { stoneDecorationImage } from "../shared/stoneDecorations.js";
+import BoardAmbientEffects, { hasColorIllusionFog } from "./BoardAmbientEffects.jsx";
+import BoardSkillEffects from "./BoardSkillEffects.jsx";
 import {
   buildBoardLines,
   canPreviewPoint,
@@ -15,6 +17,7 @@ function Board({
   showCoords,
   showMoves,
   pendingSkill,
+  audioSettings,
   pointConfirmation,
   previewPlayer,
   stoneDecorations = {},
@@ -43,6 +46,7 @@ function Board({
       {showCoords && <div className="coord-row coord-top">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
       {showCoords && <div className="coord-col coord-left">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
       <div className="board">
+        <BoardAmbientEffects active={hasColorIllusionFog(game)} />
         <svg className="board-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           {lines.map((line) => (
             <line
@@ -55,6 +59,7 @@ function Board({
             />
           ))}
         </svg>
+        <BoardSkillEffects boardSize={boardSize} pendingSkill={game.pendingSkill} audioSettings={audioSettings} />
         {game.points.map((point) => {
           const emptyTerritoryOwner = !point.stone ? territoryOwner.get(point.id) : null;
           const deadOwner = point.stone ? deadStoneOwners[point.id] : null;
@@ -127,6 +132,7 @@ export function areBoardPropsEqual(previous, next) {
     && previous.showCoords === next.showCoords
     && previous.showMoves === next.showMoves
     && previous.pendingSkill === next.pendingSkill
+    && previous.audioSettings === next.audioSettings
     && samePointConfirmation(previous.pointConfirmation, next.pointConfirmation)
     && samePreviewPlayer(previous.previewPlayer, next.previewPlayer)
     && Boolean(previous.onScoringPoint) === Boolean(next.onScoringPoint)

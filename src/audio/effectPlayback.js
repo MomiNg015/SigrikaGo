@@ -5,6 +5,14 @@ import { browserAudioContextClass } from "./audioRuntime.js";
 export const STONE_SOUND = "/assets/music/godown_clear.ogg";
 export const CAPTURE_SOUND = "/assets/music/go_capture_clear.ogg";
 export const HIDDEN_HAND_REVEAL_SOUND = "/assets/music/hidden_hand_reveal.ogg";
+export const UI_CLOSE_WINDOW_SOUND = "/assets/music/ui_close_window.ogg";
+export const UI_CONFIRM_SOUND = "/assets/music/ui_confirm.ogg";
+export const UI_DETAIL_OPEN_SOUND = "/assets/music/ui_detail_open.ogg";
+export const UI_HOUSE_OPEN_SOUND = "/assets/music/ui_house_open.ogg";
+export const UI_MATCH_OPEN_SOUND = "/assets/music/ui_match_open.ogg";
+export const UI_SHOP_OPEN_SOUND = "/assets/music/ui_shop_open.ogg";
+export const UI_UNAVAILABLE_SOUND = "/assets/music/ui_unavailable.ogg";
+export const UI_UNAVAILABLE_SHAKE_MS = 1063;
 
 const effectBufferCache = new Map();
 const effectPromiseCache = new Map();
@@ -106,4 +114,32 @@ export function playBoardSound(boardSoundAction, audioSettings = DEFAULT_AUDIO_S
     return;
   }
   playStoneSound(audioSettings);
+}
+
+export function playUiConfirmSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_CONFIRM_SOUND, audioSettings);
+}
+
+export function playUiCloseWindowSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_CLOSE_WINDOW_SOUND, audioSettings);
+}
+
+export function playUiDetailOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_DETAIL_OPEN_SOUND, audioSettings);
+}
+
+export function playUiHouseOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_HOUSE_OPEN_SOUND, audioSettings);
+}
+
+export function playUiMatchOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_MATCH_OPEN_SOUND, audioSettings);
+}
+
+export function playUiShopOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_SHOP_OPEN_SOUND, audioSettings);
+}
+
+export function playUiUnavailableSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_UNAVAILABLE_SOUND, audioSettings);
 }

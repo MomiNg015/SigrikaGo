@@ -165,8 +165,22 @@ describe("social profiles and relationships", () => {
         ],
         user: {
           findMany: async () => [
-            { id: "target-1", username: "friend", rating: 1200, selectedCharacter: "sigrika", ownedCharacters: "sigrika" },
-            { id: "target-2", username: "blocked", rating: 800, selectedCharacter: "danea", ownedCharacters: "danea" }
+            {
+              id: "target-1",
+              username: "friend",
+              rating: 1200,
+              selectedCharacter: "sigrika",
+              ownedCharacters: "sigrika",
+              modeStats: [{ mode: "spark", rating: 1200, rank: "4段", recentResults: "win,loss", wins: 0, losses: 0, draws: 0 }]
+            },
+            {
+              id: "target-2",
+              username: "blocked",
+              rating: 800,
+              selectedCharacter: "danea",
+              ownedCharacters: "danea",
+              modeStats: [{ mode: "spark", rating: 800, rank: "1级", recentResults: "", wins: 0, losses: 0, draws: 0 }]
+            }
           ]
         }
       },
@@ -174,8 +188,8 @@ describe("social profiles and relationships", () => {
       statusForUser: (id) => id === "target-1" ? "online" : "offline"
     });
 
-    expect(result.friends[0]).toMatchObject({ username: "friend", rank: "4段", status: "online" });
-    expect(result.blacklist[0]).toMatchObject({ username: "blocked", rank: "1级", status: "offline" });
+    expect(result.friends[0]).toMatchObject({ username: "friend", rank: "4段", recentResults: ["win", "loss"], status: "online" });
+    expect(result.blacklist[0]).toMatchObject({ username: "blocked", rank: "1级", recentResults: [], status: "offline" });
   });
 
   it("prefers structured item effects for social users", async () => {
@@ -234,7 +248,7 @@ describe("social profiles and relationships", () => {
     expect(profile).toMatchObject({
       id: "target-1",
       username: "露露米",
-      rank: "2段",
+      rank: "3段",
       status: "offline"
     });
   });

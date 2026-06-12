@@ -431,7 +431,7 @@ export function erasePoint(state, color, id, options = {}) {
   next.skillUses[color] -= 1;
   applySkillCost(next, color, options.skill ?? "sigrika");
   next.ko = null;
-  next.history.push({ type: "skill", skill: "星辰符文", color, id, moveNumber: next.moveNumber });
+  next.history.push({ type: "skill", skill: "星辰符文", effectType: "erase-point", color, id, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
   return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false, "skillRemovals"));
 }

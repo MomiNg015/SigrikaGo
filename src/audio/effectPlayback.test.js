@@ -5,7 +5,15 @@ import {
   HIDDEN_HAND_REVEAL_SOUND,
   playBoardSound,
   playEffectSound,
-  STONE_SOUND
+  STONE_SOUND,
+  UI_CLOSE_WINDOW_SOUND,
+  UI_CONFIRM_SOUND,
+  UI_DETAIL_OPEN_SOUND,
+  UI_HOUSE_OPEN_SOUND,
+  UI_MATCH_OPEN_SOUND,
+  UI_SHOP_OPEN_SOUND,
+  UI_UNAVAILABLE_SHAKE_MS,
+  UI_UNAVAILABLE_SOUND
 } from "./effectPlayback.js";
 
 describe("effect playback", () => {
@@ -37,5 +45,16 @@ describe("effect playback", () => {
       CAPTURE_SOUND,
       HIDDEN_HAND_REVEAL_SOUND
     ]);
+  });
+
+  it("exposes stable UI interaction effect assets", () => {
+    expect(UI_CONFIRM_SOUND).toBe("/assets/music/ui_confirm.ogg");
+    expect(UI_CLOSE_WINDOW_SOUND).toBe("/assets/music/ui_close_window.ogg");
+    expect(UI_DETAIL_OPEN_SOUND).toBe("/assets/music/ui_detail_open.ogg");
+    expect(UI_HOUSE_OPEN_SOUND).toBe("/assets/music/ui_house_open.ogg");
+    expect(UI_MATCH_OPEN_SOUND).toBe("/assets/music/ui_match_open.ogg");
+    expect(UI_SHOP_OPEN_SOUND).toBe("/assets/music/ui_shop_open.ogg");
+    expect(UI_UNAVAILABLE_SOUND).toBe("/assets/music/ui_unavailable.ogg");
+    expect(UI_UNAVAILABLE_SHAKE_MS).toBe(1063);
   });
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import { SYSTEM_VOICE_EVENTS } from "../shared/systemVoices.js";
+import { playUiDetailOpenSound } from "../audio/playback.jsx";
 import { playSystemVoice } from "../audio/systemVoicePlayback.js";
 import HouseCharacterGrid from "./house/HouseCharacterGrid.jsx";
 import HouseDecorationPicker from "./house/HouseDecorationPicker.jsx";
@@ -18,6 +19,7 @@ export default function HouseModal({ user, characterListView, audioSettings, onC
 
   function openCharacterDetail(character) {
     setDetailCharacter(character);
+    playUiDetailOpenSound(audioSettings);
     playSystemVoice(SYSTEM_VOICE_EVENTS.houseDetail, {
       character,
       audioSettings

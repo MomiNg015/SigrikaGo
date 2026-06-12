@@ -49,7 +49,7 @@ Questions to answer:
 - Home match entry opens a two-option modal before emitting `match:join`.
 - Duel requests open the same two-option choice before emitting `duel:request`; incoming request UI must show the selected mode title and rules text.
 - Mode tabs are required for leaderboard, watch list, and record/history views.
-- Home player plaques render two compact mode stat rows from `modeOrderedEntries()`: spark rank/rating first, standard rank/rating second. Do not collapse them back into a single global rank/rating pair.
+- Home player plaques render two compact mode stat rows from `modeOrderedEntries()`: spark rank/rating first, standard rank/rating second. Do not collapse them back into a single global rank/rating pair, and do not show recent-result markers on the plaque.
 - Standard room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels.
 - Standard scoring copy must omit overclock/skill-cost descriptions and use black komi `3.75`.
 - Coordinate labels must grid with `repeat(var(--size), minmax(0, 1fr))`; do not leave coordinate rows or columns hard-coded to 13 tracks.
@@ -73,7 +73,7 @@ Questions to answer:
 - Standard room state renders 19-line board star points and no skill UI.
 - Standard room accepts moves at the 19-line edge and Board CSS tests assert coordinate rows/columns use `var(--size)`.
 - Leaderboard/watch/history fetches or filters by selected mode.
-- Home plaque tests assert both `plaque-mode-stat-spark` and `plaque-mode-stat-standard` render with mode-specific ratings.
+- Home plaque tests assert both `plaque-mode-stat-spark` and `plaque-mode-stat-standard` render with mode-specific ratings and stored ranks, while recent result markers stay limited to profile/history detail surfaces.
 - Friend duel request payload and incoming banner include mode.
 
 #### 7. Wrong vs Correct
@@ -93,6 +93,73 @@ Correct:
     <small>{config.rulesText}</small>
   </button>
 ))}
+```
+
+### Scenario: Board Skill Presentation Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to active skill preview payloads, room board rendering, skill banners, or board animation layers.
+- The board skill presentation spans backend room snapshots, shared timing constants, React board markup, PixiJS canvas effects, ambient board effects, and SFX timing.
+
+#### 2. Signatures
+- `game.pendingSkill`: `{ id, characterId, skillName, effectType, targetId, affectedPointIds, markedPointIds, removed, removedByColor, resolvesAt, bannerDurationMs, boardEffectDurationMs }`.
+- `BoardSkillEffects`: receives `boardSize={game.size}`, `pendingSkill={game.pendingSkill}`, and optional `audioSettings`.
+- `BoardAmbientEffects`: receives derived passive state such as active Nabomo color illusion fog and renders non-interactive ongoing board ambience.
+- `playSkillEffectSound(effectType, cue, audioSettings)`: presentation-only SFX helper for `start` and `impact` animation cues.
+- `boardPointCenter(pointId, { boardSize, width, height })`: maps a board point id to a pixel center in the current board viewport.
+
+#### 3. Contracts
+- `Board` keeps DOM/SVG as the interaction source of truth; PixiJS is presentation-only.
+- The effects canvas and ambient layers must use `pointer-events: none` and must not replace point buttons, scoring marks, move numbers, coordinates, or skill targeting classes.
+- Board effects start after `bannerDurationMs`, not when the banner first appears.
+- Aemeath `hidden-hand` is a full-board effect: green electronic data streams move from the board edge toward the center, flash with white light, then dissipate outward/away without depending on a point-local impact.
+- Nabomo `color-illusion-passive` has ongoing low-opacity black/gray cloud ambience while any color illusion passive is active; render it as separate feathered cloud shapes, not as a full rectangular board tint, and keep stones/intersections readable.
+- Board SFX must be scheduled from the same board effect timeline, use the existing `sfx` volume channel, and clean up timers with the Pixi overlay.
+- The backend must derive animation metadata from the already-resolved skill action, not by recomputing skill rules.
+- `prefers-reduced-motion: reduce` must use a short static hit effect without fly-in, scale bursts, explosions, board shake, or explosive SFX.
+
+#### 4. Validation & Error Matrix
+- Missing `pendingSkill` -> render no effect but keep the board usable.
+- Missing `targetId` -> skip the Pixi effect safely.
+- Unknown `effectType` -> keep the overlay inert and preserve the normal skill preview/result flow.
+- Muted `sfx` channel -> do not create WebAudio contexts or play board skill SFX.
+- Unmounted board / route change during a skill effect -> clear scheduled SFX timers before they fire.
+- Active Nabomo passive fog -> board clicks, touch confirmation, score marking, coordinates, and move numbers remain available because the fog is presentation-only.
+- Visible square fog boundary -> invalid; the ambient layer must use feathered cloud shapes/masks so it reads as black cloud rather than a rectangular overlay.
+- Standard mode with no skills -> no pending skill effect should appear.
+- Restored room with `resolvesAt` in the past -> backend resolves immediately through existing pending-skill scheduling.
+
+#### 5. Good/Base/Bad Cases
+- Good: Sigrika erase, Danea flip, Aemeath hidden-hand, and Baconbits blast all route from `effectType` supplied by the room snapshot.
+- Good: Danea flip visually reads as transparent bubble formation, purple-black corruption, then pop/flash before the final stone color appears.
+- Good: Nabomo fog is driven by active passive state and continues after the passive activation banner/effect has resolved.
+- Base: legacy replay skill entries without new visual metadata still replay through the rules layer.
+- Bad: using `canPreviewSkillTarget` as the random-blast click eligibility gate; no-target skills must keep preview false while board confirmation remains allowed.
+- Bad: calculating the random-blast center on the frontend instead of using backend `pendingSkill.targetId`.
+
+#### 6. Tests Required
+- Backend tests assert `pendingSkill` metadata for erase-point, flip-stone, and random-blast.
+- Shared rules tests assert `erase-point` history includes `effectType`.
+- Board tests assert the effects layer renders without removing point buttons.
+- Effects tests assert coordinate mapping for 13-line and 19-line boards and reduced-motion timing.
+- Ambient tests assert active color illusion fog is pointer-transparent and renders without removing board buttons.
+- SFX tests assert stable cue points and muted settings avoiding AudioContext creation.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<canvas className="board" onClick={handlePoint} />
+```
+
+Correct:
+
+```jsx
+<div className="board">
+  <BoardSkillEffects boardSize={game.size} pendingSkill={game.pendingSkill} audioSettings={audioSettings} />
+  {game.points.map((point) => <button key={point.id} className="point" />)}
+</div>
 ```
 
 ---

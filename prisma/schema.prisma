@@ -15,7 +15,7 @@ model User {
   status             String   @default("active")
   banReason          String?
   bannedAt           DateTime?
-  rank               String   @default("2段")
+  rank               String   @default("3段")
   rating             Int      @default(1000)
   wins               Int      @default(0)
   losses             Int      @default(0)
@@ -43,6 +43,8 @@ model UserModeStats {
   userId    String
   mode      String
   rating    Int      @default(1000)
+  rank      String   @default("3段")
+  recentResults String @default("")
   wins      Int      @default(0)
   losses    Int      @default(0)
   draws     Int      @default(0)

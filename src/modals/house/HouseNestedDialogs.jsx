@@ -58,23 +58,33 @@ export function HouseReplayDialog({ characterListView, records, currentUser, onC
   );
 }
 
+export function CharacterRecordsPanel({ characterRecords, itemEffects }) {
+  return (
+    <div className="character-record-list">
+      {characterRecords.length === 0 && <p className="quiet-text">暂无角色战绩。</p>}
+      {characterRecords.map((entry) => (
+        <article className="character-record-row" key={entry.character.id}>
+          <img src={characterCandyPortrait(entry.character, itemEffects)} alt={entry.character.name} />
+          <strong>{entry.character.name}</strong>
+          <span className="character-record-summary">
+            <span className="character-record-total">{entry.total}局</span>
+            <span className="character-record-separator"> · </span>
+            <span className="character-record-breakdown">{entry.wins}胜{entry.losses}负{entry.draws}和</span>
+          </span>
+          <b>{entry.total > 0 ? `${((entry.wins / entry.total) * 100).toFixed(1)}%` : "0.0%"}</b>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 export function CharacterRecordsDialog({ characterRecords, itemEffects, onClose }) {
   return (
     <div className="nested-modal-backdrop" onClick={onClose}>
       <section className="nested-modal character-record-dialog" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={onClose}><X size={18} /></button>
         <h3>角色战绩</h3>
-        <div className="character-record-list">
-          {characterRecords.length === 0 && <p className="quiet-text">暂无角色战绩。</p>}
-          {characterRecords.map((entry) => (
-            <article className="character-record-row" key={entry.character.id}>
-              <img src={characterCandyPortrait(entry.character, itemEffects)} alt={entry.character.name} />
-              <strong>{entry.character.name}</strong>
-              <span>{entry.total}局 · {entry.wins}胜{entry.losses}负{entry.draws}和</span>
-              <b>{entry.total > 0 ? `${((entry.wins / entry.total) * 100).toFixed(1)}%` : "0.0%"}</b>
-            </article>
-          ))}
-        </div>
+        <CharacterRecordsPanel characterRecords={characterRecords} itemEffects={itemEffects} />
       </section>
     </div>
   );

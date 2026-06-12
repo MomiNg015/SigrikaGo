@@ -1,4 +1,3 @@
-import { rankFromRating } from "../src/shared/ratingRank.js";
 import { GAME_RESULT_REASONS, recordWinnerColor } from "./gameRecords.js";
 import { publicUser, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
@@ -125,7 +124,7 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
   ]);
 
   return {
-    ...toSocialUser(user, statusForUser?.(user.id) ?? "offline"),
+    ...toSocialUser(user, statusForUser?.(user.id) ?? "offline", mode),
     record: formatRecord(recordStats(userId, records)),
     characterStats: characterStats(userId, records),
     relation: viewerId === userId ? "self" : viewerRelation?.[0]?.type ?? ""
@@ -188,13 +187,15 @@ export function publicProfileSelect() {
   };
 }
 
-export function toSocialUser(user, status = "offline") {
+export function toSocialUser(user, status = "offline", mode = "spark") {
   const profile = publicUser(user);
+  const modeStats = profile.modeStats?.[normalizeGameModeId(mode)] ?? profile.modeStats?.spark;
   return {
     id: profile.id,
     username: profile.username,
-    rank: rankFromRating(profile.rating),
-    rating: profile.rating,
+    rank: modeStats?.rank ?? profile.rank,
+    rating: modeStats?.rating ?? profile.rating,
+    recentResults: modeStats?.recentResults ?? [],
     characterId: profile.selectedCharacter ?? "sigrika",
     itemEffects: profile.itemEffects,
     status

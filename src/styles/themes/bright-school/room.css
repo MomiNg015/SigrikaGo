@@ -1,4 +1,55 @@
 /* Bright School room replay/battle readability fixes. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto auto !important;
+  align-items: center !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-toggles {
+  justify-self: end !important;
+  justify-content: flex-end !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-mobile-exit {
+  justify-self: end !important;
+  border: 2px solid #4a3736 !important;
+  box-shadow: 3px 3px 0 #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-mobile-exit {
+  background: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
+  background-color: #eaf8ff !important;
+  background-image: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
+  border-color: #7dbfe6 !important;
+  color: #225a78 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures span {
+  min-height: 36px !important;
+  box-sizing: border-box !important;
+  align-items: center !important;
+  padding-block: 6px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-step-indicator {
+  display: inline-grid !important;
+  place-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info {
+  overflow: visible !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip-wrap {
+  z-index: var(--room-floating-z, 60) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-detail-panel {
+  z-index: var(--room-floating-z, 80) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .name-button {
   min-height: 0 !important;
   padding: 0 !important;

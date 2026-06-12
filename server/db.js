@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
-import { rankFromRating } from "../src/shared/ratingRank.js";
+import { DEFAULT_RANK, normalizeRank, parseRecentResults } from "../src/shared/rankProgression.js";
 import { parseItemEffects } from "./itemEffects.js";
 import { parseAssetList, parseCharacterAssetList } from "./userAssets.js";
 import { ownedMusicIdsWithDefaults, parseMusicSelections } from "../src/shared/musicLibrary.js";
@@ -20,7 +20,7 @@ export const USER_ASSET_RELATION_SELECT = {
   userDecorations: { select: { decorationSlug: true } },
   userItems: { select: { itemId: true, quantity: true } },
   userItemEffects: { select: { effectKey: true, effectValue: true } },
-  modeStats: { select: { mode: true, rating: true, wins: true, losses: true, draws: true } }
+  modeStats: { select: { mode: true, rating: true, rank: true, recentResults: true, wins: true, losses: true, draws: true } }
 };
 
 export async function ensureGameModeSchema(client = prisma) {
@@ -31,6 +31,8 @@ export async function ensureGameModeSchema(client = prisma) {
       "userId" TEXT NOT NULL,
       "mode" TEXT NOT NULL,
       "rating" INTEGER NOT NULL DEFAULT 1000,
+      "rank" TEXT NOT NULL DEFAULT '3段',
+      "recentResults" TEXT NOT NULL DEFAULT '',
       "wins" INTEGER NOT NULL DEFAULT 0,
       "losses" INTEGER NOT NULL DEFAULT 0,
       "draws" INTEGER NOT NULL DEFAULT 0,
@@ -41,6 +43,40 @@ export async function ensureGameModeSchema(client = prisma) {
   `);
   await client.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "UserModeStats_userId_mode_key" ON "UserModeStats"("userId", "mode")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "UserModeStats_mode_rating_idx" ON "UserModeStats"("mode", "rating")`);
+
+  const modeStatsColumns = await client.$queryRawUnsafe(`PRAGMA table_info("UserModeStats")`);
+  const hasModeRank = modeStatsColumns.some((column) => column.name === "rank");
+  if (!hasModeRank) {
+    await client.$executeRawUnsafe(`ALTER TABLE "UserModeStats" ADD COLUMN "rank" TEXT NOT NULL DEFAULT '3段'`);
+    await client.$executeRawUnsafe(`
+      UPDATE "UserModeStats"
+      SET "rank" = CASE
+        WHEN "rating" >= 1700 THEN '9段'
+        WHEN "rating" >= 1600 THEN '8段'
+        WHEN "rating" >= 1500 THEN '7段'
+        WHEN "rating" >= 1400 THEN '6段'
+        WHEN "rating" >= 1300 THEN '5段'
+        WHEN "rating" >= 1200 THEN '4段'
+        WHEN "rating" >= 1100 THEN '3段'
+        WHEN "rating" >= 1000 THEN '2段'
+        WHEN "rating" >= 900 THEN '1段'
+        WHEN "rating" >= 800 THEN '1级'
+        WHEN "rating" >= 700 THEN '2级'
+        WHEN "rating" >= 600 THEN '3级'
+        WHEN "rating" >= 500 THEN '4级'
+        WHEN "rating" >= 400 THEN '5级'
+        WHEN "rating" >= 300 THEN '6级'
+        WHEN "rating" >= 200 THEN '7级'
+        WHEN "rating" >= 100 THEN '8级'
+        WHEN "rating" >= 0 THEN '9级'
+        ELSE '10级'
+      END
+    `);
+  }
+  const hasRecentResults = modeStatsColumns.some((column) => column.name === "recentResults");
+  if (!hasRecentResults) {
+    await client.$executeRawUnsafe(`ALTER TABLE "UserModeStats" ADD COLUMN "recentResults" TEXT NOT NULL DEFAULT ''`);
+  }
 
   const gameRecordColumns = await client.$queryRawUnsafe(`PRAGMA table_info("GameRecord")`);
   const hasGameRecordMode = gameRecordColumns.some((column) => column.name === "mode");
@@ -71,7 +107,7 @@ export function publicUser(user) {
     username: user.username,
     role: user.role ?? "player",
     status: user.status ?? "active",
-    rank: rankFromRating(user.rating),
+    rank: publicUserRank(user),
     rating: user.rating,
     wins: user.wins,
     losses: user.losses,
@@ -89,16 +125,20 @@ export function publicUser(user) {
 }
 
 function publicModeStats(user) {
-  const rows = Array.isArray(user.modeStats) ? user.modeStats : [];
+  const rows = modeStatsRows(user.modeStats);
   const stats = {
     spark: {
       rating: Number(user.rating ?? 1000),
+      rank: normalizeRank(user.rank ?? DEFAULT_RANK),
+      recentResults: [],
       wins: Number(user.wins ?? 0),
       losses: Number(user.losses ?? 0),
       draws: 0
     },
     standard: {
       rating: 1000,
+      rank: DEFAULT_RANK,
+      recentResults: [],
       wins: 0,
       losses: 0,
       draws: 0
@@ -108,12 +148,25 @@ function publicModeStats(user) {
     if (!stats[row.mode]) continue;
     stats[row.mode] = {
       rating: Number(row.rating ?? stats[row.mode].rating),
+      rank: normalizeRank(row.rank ?? stats[row.mode].rank),
+      recentResults: parseRecentResults(row.recentResults),
       wins: Number(row.wins ?? 0),
       losses: Number(row.losses ?? 0),
       draws: Number(row.draws ?? 0)
     };
   }
   return stats;
+}
+
+function publicUserRank(user) {
+  const spark = modeStatsRows(user.modeStats).find((row) => row.mode === "spark");
+  return normalizeRank(spark?.rank ?? user.rank ?? DEFAULT_RANK);
+}
+
+function modeStatsRows(modeStats) {
+  if (Array.isArray(modeStats)) return modeStats;
+  if (!modeStats || typeof modeStats !== "object") return [];
+  return Object.entries(modeStats).map(([mode, stats]) => ({ mode, ...(stats ?? {}) }));
 }
 
 function publicOwnedCharacters(user) {

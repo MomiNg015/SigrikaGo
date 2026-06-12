@@ -27,6 +27,7 @@ export default function HouseCharacterGrid({
             onClick={() => onOpenCharacterDetail(character)}
             role="button"
             tabIndex={0}
+            data-ui-sound="none"
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") onOpenCharacterDetail(character);
             }}
@@ -34,6 +35,7 @@ export default function HouseCharacterGrid({
             <button
               className={`sortie-button ${selectedCharacter === characterId ? "selected" : ""}`}
               title={disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}
+              data-ui-sound="confirm"
               disabled={sortieDisabled}
               onClick={(event) => {
                 event.stopPropagation();

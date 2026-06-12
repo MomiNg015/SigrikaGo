@@ -291,6 +291,11 @@ describe("SigrikaGo rules", () => {
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(6, 6)).valid).toBe(false);
     expect(result.state.turn).toBe(COLORS.black);
+    expect(result.state.history.at(-1)).toMatchObject({
+      type: "skill",
+      effectType: "erase-point",
+      id: pointId(6, 6)
+    });
   });
 
   it("activates Nabomo passive and disguises later stones only for the opponent view", () => {

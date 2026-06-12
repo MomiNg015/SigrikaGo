@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Board skill presentation contract for BoardSkillEffects, pendingSkill metadata, timing, and non-interactive Pixi overlay."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Board skill SFX now belongs to the same presentation timeline and must clean up timers with the Pixi overlay."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Aemeath hidden-hand uses a full-board data-stream effect, while Nabomo color illusion uses a persistent pointer-transparent ambient fog layer."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Nabomo fog must render as feathered cloud shapes instead of a rectangular board tint, while staying light and pointer-transparent."}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "Room state remains server snapshot state; animation metadata is consumed from game.pendingSkill without local rule recomputation."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Skill targeting and mobile battle layout checks apply because the board rendering surface changed."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Feature spans backend skill resolution, shared timing constants, and frontend presentation."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Shared timing constants and board coordinate mapping were checked for reuse rather than duplicating values."}

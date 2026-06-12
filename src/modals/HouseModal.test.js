@@ -6,7 +6,8 @@ import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisa
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import HouseModal from "./HouseModal.jsx";
 import ResumeModal from "./ResumeModal.jsx";
-import { CharacterDetailDialog } from "./house/HouseNestedDialogs.jsx";
+import { CharacterDetailDialog, CharacterRecordsDialog } from "./house/HouseNestedDialogs.jsx";
+import { splitRecordSummary, UserProfileCard } from "./UserProfileCard.jsx";
 
 describe("deriveCharacterRecordStats", () => {
   const user = {
@@ -44,6 +45,51 @@ describe("deriveCharacterRecordStats", () => {
     expect(characterSortieDisabledReason("denia", itemEffects)).toBe("");
     expect(characterCandyPortrait({ id: "denia", portrait: "/assets/Danea_centered.webp" }, itemEffects)).toBe(DENIA_CANDY_PORTRAIT);
     expect(characterCandyPortrait({ id: "sigrika", portrait: "/assets/sigrika_centered.webp" }, itemEffects)).toBe("/assets/sigrika_centered.webp");
+  });
+
+  it("splits profile record text into total games and result counts", () => {
+    expect(splitRecordSummary("29局 · 15胜10负4和")).toEqual({
+      total: "29局",
+      breakdown: "15胜10负4和"
+    });
+    expect(splitRecordSummary("29局15胜10负4和")).toEqual({
+      total: "29局",
+      breakdown: "15胜10负4和"
+    });
+  });
+
+  it("renders mobile-safe two-line record markup for profile and character records", () => {
+    const profileHtml = renderToStaticMarkup(createElement(UserProfileCard, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "3段",
+        rating: 1160,
+        record: "29局 · 15胜10负4和",
+        characterId: "sigrika",
+        characterStats: []
+      },
+      characters: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" }],
+      token: "token"
+    }));
+    const recordHtml = renderToStaticMarkup(createElement(CharacterRecordsDialog, {
+      characterRecords: [{
+        character: { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" },
+        total: 29,
+        wins: 15,
+        losses: 10,
+        draws: 4
+      }],
+      itemEffects: {},
+      onClose: () => {}
+    }));
+
+    expect(profileHtml).toContain("profile-record-lines");
+    expect(profileHtml).toContain("profile-record-total");
+    expect(profileHtml).toContain("profile-record-breakdown");
+    expect(recordHtml).toContain("character-record-summary");
+    expect(recordHtml).toContain("character-record-total");
+    expect(recordHtml).toContain("character-record-breakdown");
   });
 
   it("marks house character cards with active item effect icons", () => {
@@ -226,7 +272,38 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("对局回放");
     expect(html).toContain("战绩");
     expect(html).toContain("段位");
+    expect(html).toContain("profile-record-lines");
+    expect(html).toContain("profile-record-total");
+    expect(html).toContain("profile-record-breakdown");
+    expect(html).toContain("resume-character-records");
+    expect(html).toContain("角色战绩");
+    expect(html).toContain("character-record-list");
+    expect(html).toContain("character-record-row");
+    expect(html).not.toContain("character-record-dialog");
     expect(html).toContain("金币");
+
+    const modalCss = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8").replace(/\r\n/g, "\n");
+    const mobileModalCss = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8").replace(/\r\n/g, "\n");
+    const finalMobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8").replace(/\r\n/g, "\n");
+    const resumeSource = readFileSync(new URL("./ResumeModal.jsx", import.meta.url), "utf8");
+    expect(modalCss).toContain(".modal-backdrop .resume-header-actions .close-button");
+    expect(modalCss).toContain(".modal-backdrop .resume-header-actions .resume-wallet");
+    expect(modalCss).toContain("grid-template-columns: minmax(0, 1fr) max-content;");
+    expect(modalCss).toContain(".resume-header-actions {\n  margin-left: 0;\n  position: absolute;");
+    expect(modalCss).toContain("right: 0;");
+    expect(modalCss).toContain("min-height: var(--modal-close-size, 44px);");
+    expect(modalCss).toContain("padding-right: clamp(136px, 22vw, 168px);");
+    expect(modalCss).toContain(".resume-character-records");
+    expect(modalCss).toContain(".resume-character-records .character-record-list");
+    expect(modalCss).toContain("max-height: min(220px, 30dvh);");
+    expect(mobileModalCss).toContain(".resume-header-actions .close-button");
+    expect(mobileModalCss).toContain("min-height: var(--modal-close-size, 44px);");
+    expect(finalMobileCss).toContain(".resume-character-records");
+    expect(finalMobileCss).toContain(".resume-header-actions {\n    position: absolute !important;");
+    expect(finalMobileCss).toContain("right: 0 !important");
+    expect(finalMobileCss).toContain("justify-self: auto !important");
+    expect(resumeSource).not.toContain("showCharacterRecords");
+    expect(resumeSource).not.toContain("CharacterRecordsDialog");
   });
 
   it("renders Baconbits as owned and sortie-capable when public user owns it", () => {
@@ -275,6 +352,11 @@ describe("deriveCharacterRecordStats", () => {
     expect(nestedBackdropBlock).toContain("place-items: center");
     expect(nestedModalBlock).toContain("position: relative");
     expect(nestedModalBlock).toContain("max-height: min(760px, calc(100dvh - 32px))");
+    expect(closeButtonBlock).toContain("position: absolute");
+    expect(closeButtonBlock).toContain("top: var(--modal-close-inset, 12px)");
+    expect(closeButtonBlock).toContain("right: var(--modal-close-inset, 12px)");
+    expect(closeButtonBlock).toContain("width: var(--modal-close-size, 44px)");
+    expect(closeButtonBlock).toContain("height: var(--modal-close-size, 44px)");
     expect(closeButtonBlock).toContain("z-index: 20");
     expect(closeButtonBlock).toContain("pointer-events: auto");
   });
@@ -351,6 +433,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("position: fixed !important");
     expect(css).toContain("transform: none !important");
     expect(css).toContain("overflow-wrap: anywhere !important");
+    expect(css).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(css).toContain("grid-template-columns: 1fr !important");
+    expect(css).toContain(".resume-modal .profile-resume-stats");
     expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
     expect(css).toContain("grid-template-rows: none !important");
     expect(css).toContain("grid-auto-rows: 88px !important");
@@ -358,12 +443,19 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain(".character-card.portrait-card .lock-text-title");
     expect(css).toContain("box-sizing: border-box !important");
     expect(css).toContain(".house-modal .owned-decoration-section");
+    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain("grid-template-columns: 1fr;");
+    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain(".resume-modal .profile-resume-stats");
     expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important");
     expect(css).toContain(".house-modal .owned-decoration-chip strong");
     expect(css).toContain(".character-record-dialog");
     expect(css).toContain("width: min(420px, calc(100vw - 20px)) !important");
     expect(css).toContain(".character-record-row span");
+    expect(css).toContain(".profile-record-lines");
+    expect(css).toContain(".character-record-summary");
+    expect(css).toContain(".profile-record-separator");
+    expect(css).toContain(".character-record-separator");
     expect(css).toContain("word-break: keep-all !important");
     expect(css).toContain(".character-detail-art img");
     expect(css).toContain("filter: none !important");
@@ -374,7 +466,15 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain(".resume-header-actions .close-button");
     expect(finalMobileCss).toContain("position: static !important");
     expect(finalMobileCss).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(finalMobileCss).toContain("grid-template-columns: 1fr !important");
+    expect(finalMobileCss).toContain(".resume-modal .profile-resume-stats");
     expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
+    expect(finalMobileCss).toContain(".resume-modal .profile-rank-results");
+    expect(finalMobileCss).toContain(".resume-character-records");
+    expect(finalMobileCss).toContain(".resume-character-records .character-record-list");
+    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain(".profile-rank-results::before");
+    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain("border: 2px solid #3d2b25");
+    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain("box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.2)");
     expect(finalMobileCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
     expect(finalMobileCss).toContain("background: #ff9ebb !important");
     expect(finalMobileCss).toContain(".character-card.portrait-card.is-deployed");
@@ -387,6 +487,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("display: none !important");
     expect(finalMobileCss).toContain(".character-record-row");
     expect(finalMobileCss).toContain("grid-template-columns: 46px minmax(58px, 0.82fr) max-content minmax(48px, auto) !important");
+    expect(finalMobileCss).toContain(".profile-record-lines");
+    expect(finalMobileCss).toContain(".character-record-summary");
+    expect(finalMobileCss).toContain(".profile-record-separator");
+    expect(finalMobileCss).toContain(".character-record-separator");
     expect(finalMobileCss).toContain("overflow-wrap: normal !important");
   });
 

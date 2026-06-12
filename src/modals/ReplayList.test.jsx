@@ -110,8 +110,11 @@ describe("ReplayList", () => {
 
     expect(phoneModalMedia).toContain(".replay-table");
     expect(phoneModalMedia).toContain("overflow-x: hidden");
+    expect(phoneModalMedia).toContain("grid-auto-rows: auto");
+    expect(phoneModalMedia).toContain("align-content: start");
     expect(phoneModalMedia).toContain(".replay-table-heading");
     expect(phoneModalMedia).toContain("display: none");
+    expect(phoneModalMedia).toContain("min-width: 0");
     expect(phoneModalMedia).toContain(".replay-table-row");
     expect(phoneModalMedia).toContain("grid-template-areas:");
     expect(phoneModalMedia).toContain(".replay-table-row > span:nth-child");
@@ -119,7 +122,14 @@ describe("ReplayList", () => {
     expect(finalMobileCss).toContain(".nested-modal.replay-dialog");
     expect(finalMobileCss).toContain("grid-template-rows: auto minmax(0, 1fr) !important");
     expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table");
+    expect(finalMobileCss).toContain(".profile-replay-dialog .replay-table");
+    expect(finalMobileCss).toContain("grid-template-rows: none !important");
+    expect(finalMobileCss).toContain("grid-auto-rows: auto !important");
+    expect(finalMobileCss).toContain("align-content: start !important");
     expect(finalMobileCss).toContain("overflow-y: auto !important");
+    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-heading");
+    expect(finalMobileCss).toContain(".profile-replay-dialog .replay-table-heading");
+    expect(finalMobileCss).toContain("display: none !important");
     expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row");
     expect(finalMobileCss).toContain("min-height: 94px !important");
     expect(finalMobileCss).toContain('"time moves result"');

@@ -152,6 +152,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       />
       <RoomBattleStage
         battleLayoutClassName={battleLayoutClassName}
+        audioSettings={audioSettings}
         boardStep={boardStep}
         canSwitchView={canSwitchView}
         characters={characters}

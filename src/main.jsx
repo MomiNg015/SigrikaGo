@@ -5,6 +5,7 @@ import { deploymentSocketBase } from "./shared/preloadAssets.js";
 import { BackgroundMusic, loadAudioSettings } from "./audio/playback.jsx";
 import AppOverlays from "./app/AppOverlays.jsx";
 import AppRoutes from "./app/AppRoutes.jsx";
+import InteractionFeedback from "./app/InteractionFeedback.jsx";
 import { shouldShowResultModal } from "./app/resumeSession.js";
 import { initialSessionState } from "./app/sessionState.js";
 import { useAppActions } from "./app/useAppActions.js";
@@ -198,6 +199,7 @@ function App() {
   return (
     <div className={appShellClassName}>
       <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} resumeSignal={audioResumeSignal} />
+      <InteractionFeedback audioSettings={audioSettings} />
       <AppRoutes
         adminTab={adminTab}
         assetProgress={assetProgress}

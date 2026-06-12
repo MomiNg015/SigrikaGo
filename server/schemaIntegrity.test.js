@@ -9,7 +9,8 @@ describe("Prisma schema integrity", () => {
   it("keeps Chinese defaults readable and aligned with rating defaults", () => {
     const schema = readFileSync(schemaPath, "utf8");
 
-    expect(schema).toContain('rank               String   @default("2段")');
+    expect(schema).toContain('rank               String   @default("3段")');
+    expect(schema).toContain('recentResults String @default("")');
     expect(schema).toContain('@default("{fromColor}{player}使用了{character}的“{skill}”技能，目标是{point}。")');
     expect(schema).not.toMatch(/[�绾鈥]/);
   });

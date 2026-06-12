@@ -37,6 +37,13 @@ describe("deployment preload asset helpers", () => {
     expect(assets.images).toContain("/assets/effects/denia-bubble-pop.webp");
     expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
     expect(assets.audio).toContain("/assets/music/godown_clear.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_close_window.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_confirm.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_detail_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_house_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_match_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_shop_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_unavailable.ogg");
     expect(assets.audio).toContain("/assets/music/main_bgm.ogg");
     expect(assets.audio).toContain("/assets/music/shanjifu_loop.ogg");
     expect(assets.audio).toContain("/assets/music/bgm_intro_once.ogg");

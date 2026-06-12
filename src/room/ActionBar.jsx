@@ -45,8 +45,7 @@ export default function ActionBar({
   onResetScoring,
   onAcceptResult,
   onRejectResult,
-  onResign,
-  onBack
+  onResign
 }) {
   if (role === "spectator") {
     return (
@@ -54,7 +53,6 @@ export default function ActionBar({
         replayStep={replayStep}
         replayMax={replayMax}
         onReplayStep={onReplayStep}
-        onBack={onBack}
       />
     );
   }

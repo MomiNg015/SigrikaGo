@@ -1,5 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
+  SKILL_BOARD_EFFECT_DURATION_MS,
+  SKILL_BANNER_DURATION_MS,
   SKILL_PREVIEW_DELAY_MS,
   createPendingSkillResolution,
   pendingSkillResolutionDelay,
@@ -25,6 +27,14 @@ describe("room skill resolution helpers", () => {
       playerColor: "black"
     });
     expect(JSON.parse(JSON.stringify(resolution))).toEqual(resolution);
+  });
+
+  test("keeps the preview window long enough for the banner and board effect", () => {
+    expect(SKILL_BANNER_DURATION_MS).toBe(2000);
+    expect(SKILL_BOARD_EFFECT_DURATION_MS).toBe(1800);
+    expect(SKILL_PREVIEW_DELAY_MS).toBeGreaterThanOrEqual(
+      SKILL_BANNER_DURATION_MS + SKILL_BOARD_EFFECT_DURATION_MS
+    );
   });
 
   test("calculates remaining delay for restored pending skill snapshots", () => {

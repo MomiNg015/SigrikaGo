@@ -57,6 +57,7 @@ describe("WatchModal helpers", () => {
     expect(phoneModalMedia).not.toContain("--watch-room-grid-columns");
     expect(phoneModalMedia).toContain(".watch-list-modal .inline-close");
     expect(phoneModalMedia).toContain("position: static");
+    expect(phoneModalMedia).toContain("width: var(--modal-close-size, 44px)");
     expect(adaptivePhoneMedia).toContain(".watch-room-table");
     expect(adaptivePhoneMedia).toContain("overflow-x: hidden");
     expect(adaptivePhoneMedia).toContain(".watch-room-row");
@@ -67,8 +68,14 @@ describe("WatchModal helpers", () => {
 
   it("keeps watch mode tabs compact above the room table", () => {
     const css = readText(new URL("../styles/lobby.css", import.meta.url));
+    const modalCss = readText(new URL("../styles/modals.css", import.meta.url));
 
     expect(css).toContain("grid-template-rows: auto auto minmax(318px, 1fr) auto auto;");
+    expect(css).toContain(".watch-list-actions .icon-button,\n.watch-list-actions .inline-close");
+    expect(css).toContain("width: var(--modal-close-size, 44px);");
+    expect(modalCss).toContain(".modal-backdrop .watch-list-actions .close-button");
+    expect(modalCss).toContain("position: static;");
+    expect(modalCss).toContain(".modal-backdrop .watch-list-actions .icon-button");
     expect(css).toContain(".watch-list-modal .mode-tabs");
     expect(css).toContain("grid-template-columns: repeat(2, max-content);");
     expect(css).toContain("min-height: 44px;");
@@ -92,6 +99,8 @@ describe("WatchModal helpers", () => {
     expect(phoneModalMedia).toContain("justify-content: center");
     expect(phoneModalMedia).toContain(".watch-list-modal .inline-close");
     expect(phoneModalMedia).toContain("position: static");
+    expect(phoneModalMedia).toContain("width: var(--modal-close-size, 44px)");
+    expect(phoneModalMedia).toContain("height: var(--modal-close-size, 44px)");
   });
 });
 

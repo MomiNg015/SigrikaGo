@@ -438,7 +438,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
   .plaque-stats,
-  .profile-resume-stats span,
+  .profile-resume-stats > span,
   .warehouse-item span,
   .shop-wallet,
   .timer-value,
@@ -452,7 +452,7 @@
   gap: 14px !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats span {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span {
   min-height: 78px !important;
   padding: 14px 18px !important;
   display: flex !important;

@@ -321,16 +321,29 @@
 
 .watch-list-header h2 {
   margin: 0;
+  min-width: 0;
 }
 
 .watch-list-actions {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  flex: 0 0 auto;
+  min-width: max-content;
 }
 
 .watch-list-actions .inline-close {
   position: static;
+  flex: 0 0 auto;
+}
+
+.watch-list-actions .icon-button,
+.watch-list-actions .inline-close {
+  width: var(--modal-close-size, 44px);
+  min-width: var(--modal-close-size, 44px);
+  height: var(--modal-close-size, 44px);
+  min-height: var(--modal-close-size, 44px);
 }
 
 .watch-list-modal .mode-tabs {

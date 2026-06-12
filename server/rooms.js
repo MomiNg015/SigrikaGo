@@ -17,7 +17,7 @@ import {
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { GAME_MODE_IDS, gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
-import { rankFromRating } from "../src/shared/ratingRank.js";
+import { DEFAULT_RANK, normalizeRank, parseRecentResults, serializeRecentResults } from "../src/shared/rankProgression.js";
 import { resultRewardDelta } from "../src/shared/resultRewards.js";
 import { prisma } from "./db.js";
 import { gameResultMetadata } from "./gameRecords.js";
@@ -43,6 +43,8 @@ import {
 import { handleRoomTestAction, isRoomTestAction } from "./roomTestActions.js";
 import { buildRoomView } from "./roomView.js";
 import {
+  SKILL_BANNER_DURATION_MS,
+  SKILL_BOARD_EFFECT_DURATION_MS,
   canSchedulePendingSkillResolution,
   createPendingSkillResolution,
   pendingSkillResolutionDelay
@@ -304,21 +306,21 @@ export function handleGameAction(roomCode, userId, action, io) {
 
     const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
     const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
-    const pendingSkill = {
-      id: crypto.randomUUID(),
-      color: player.color,
-      username: player.user.username,
-      characterId: character.id ?? player.characterId,
-      character: player.character ?? null,
-      characterName: character.name,
-      itemEffects: player.user.itemEffects ?? {},
-      skillName: skill.name
-    };
+    const pendingSkillId = crypto.randomUUID();
     room.pendingSkillResolution = createPendingSkillResolution({
-      pendingSkillId: pendingSkill.id,
+      pendingSkillId,
       game: result.state,
       notices: result.notices ?? [],
       playerColor: player.color
+    });
+    const pendingSkill = buildPendingSkillPreview({
+      pendingSkillId,
+      player,
+      character,
+      skill,
+      requestedTargetId: skillTargetId,
+      resolvedGame: result.state,
+      resolvesAt: room.pendingSkillResolution.resolvesAt
     });
     room.game = {
       ...room.game,
@@ -588,7 +590,7 @@ function userForRoomMode(user, mode) {
   return {
     ...user,
     rating: stats.rating,
-    rank: rankFromRating(stats.rating),
+    rank: stats.rank,
     wins: stats.wins,
     losses: stats.losses
   };
@@ -602,6 +604,8 @@ function modeStatsForUser(user, mode) {
   );
   return {
     rating: Number(stats?.rating ?? (mode === "spark" ? user?.rating : 1000) ?? 1000),
+    rank: normalizeRank(stats?.rank ?? (mode === "spark" ? user?.rank : DEFAULT_RANK)),
+    recentResults: parseRecentResults(stats?.recentResults),
     wins: Number(stats?.wins ?? (mode === "spark" ? user?.wins : 0) ?? 0),
     losses: Number(stats?.losses ?? (mode === "spark" ? user?.losses : 0) ?? 0),
     draws: Number(stats?.draws ?? 0)
@@ -640,23 +644,24 @@ function maybeStartPassiveSkill(room, io) {
   const effectType = skill?.effectType ?? skill?.id;
   if (effectType !== "color-illusion-passive") return false;
   if (room.game.passives?.[player.color]?.colorIllusion?.triggered) return false;
-  const pendingSkill = {
-    id: crypto.randomUUID(),
-    color: player.color,
-    username: player.user.username,
-    characterId: player.character?.id ?? player.characterId,
-    character: player.character ?? null,
-    characterName: player.character?.name ?? CHARACTERS[player.characterId]?.name,
-    itemEffects: player.user.itemEffects ?? {},
-    skillName: skill.name
-  };
+  const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.nabomo;
+  const pendingSkillId = crypto.randomUUID();
   const result = activatePassiveSkill(room.game, player.color, skill);
   if (!result.ok) return false;
   room.pendingSkillResolution = createPendingSkillResolution({
-    pendingSkillId: pendingSkill.id,
+    pendingSkillId,
     game: result.state,
     notices: result.notices ?? [],
     playerColor: player.color
+  });
+  const pendingSkill = buildPendingSkillPreview({
+    pendingSkillId,
+    player,
+    character,
+    skill,
+    requestedTargetId: null,
+    resolvedGame: result.state,
+    resolvesAt: room.pendingSkillResolution.resolvesAt
   });
   room.game = {
     ...room.game,
@@ -666,6 +671,47 @@ function maybeStartPassiveSkill(room, io) {
   appendSystem(room, describeSkillUse(room, player, null), { kind: "skill" });
   schedulePendingSkillResolution(room, io);
   return true;
+}
+
+function buildPendingSkillPreview({
+  pendingSkillId,
+  player,
+  character,
+  skill,
+  requestedTargetId,
+  resolvedGame,
+  resolvesAt
+}) {
+  const skillAction = [...(resolvedGame.history ?? [])].reverse().find((entry) => entry.type === "skill");
+  const effectType = skillAction?.effectType ?? skill?.effectType ?? skill?.id ?? "";
+  const targetId = skillAction?.id ?? requestedTargetId ?? null;
+  const markedPointIds = Array.isArray(skillAction?.marked) ? skillAction.marked : [];
+  const affectedPointIds = affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds });
+
+  return {
+    id: pendingSkillId,
+    color: player.color,
+    username: player.user.username,
+    characterId: character.id ?? player.characterId,
+    character: player.character ?? null,
+    characterName: character.name,
+    itemEffects: player.user.itemEffects ?? {},
+    skillName: skill.name,
+    effectType,
+    targetId,
+    affectedPointIds,
+    markedPointIds,
+    removed: skillAction?.removed ?? 0,
+    removedByColor: skillAction?.removedByColor ?? null,
+    resolvesAt,
+    bannerDurationMs: SKILL_BANNER_DURATION_MS,
+    boardEffectDurationMs: SKILL_BOARD_EFFECT_DURATION_MS
+  };
+}
+
+function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds }) {
+  if (effectType === "random-blast") return markedPointIds;
+  return targetId ? [targetId] : [];
 }
 
 function schedulePendingSkillResolution(room, io) {
@@ -1109,7 +1155,8 @@ async function saveGameRecord(room) {
       data: {
         ...(mode === "spark" ? {
           wins: { increment: 1 },
-          rating: { increment: winnerReward.rating }
+          rating: { increment: winnerReward.rating },
+          rank: winner.user.rank
         } : {}),
         coins: { increment: winnerReward.coins },
         ...candyEffectData(winner, candyEffectUpdates)
@@ -1120,7 +1167,8 @@ async function saveGameRecord(room) {
       data: {
         ...(mode === "spark" ? {
           losses: { increment: 1 },
-          rating: { increment: loserReward.rating }
+          rating: { increment: loserReward.rating },
+          rank: loser.user.rank
         } : {}),
         coins: { increment: loserReward.coins },
         ...candyEffectData(loser, candyEffectUpdates)
@@ -1160,12 +1208,16 @@ function modeStatsUpsertOperation(player, mode, { ratingDelta = 0, winsDelta = 0
       userId: player.user.id,
       mode,
       rating: Number(player.user.modeStats?.[mode]?.rating ?? player.user.rating ?? 1000),
+      rank: normalizeRank(player.user.modeStats?.[mode]?.rank ?? player.user.rank ?? DEFAULT_RANK),
+      recentResults: serializeRecentResults(player.user.modeStats?.[mode]?.recentResults),
       wins: Math.max(0, Number(player.user.modeStats?.[mode]?.wins ?? player.user.wins ?? 0)),
       losses: Math.max(0, Number(player.user.modeStats?.[mode]?.losses ?? player.user.losses ?? 0)),
       draws: Math.max(0, Number(player.user.modeStats?.[mode]?.draws ?? 0))
     },
     update: {
       rating: { increment: ratingDelta },
+      rank: normalizeRank(player.user.modeStats?.[mode]?.rank ?? player.user.rank ?? DEFAULT_RANK),
+      recentResults: serializeRecentResults(player.user.modeStats?.[mode]?.recentResults),
       ...(winsDelta ? { wins: { increment: winsDelta } } : {}),
       ...(lossesDelta ? { losses: { increment: lossesDelta } } : {}),
       ...(drawsDelta ? { draws: { increment: drawsDelta } } : {})
