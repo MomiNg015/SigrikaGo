@@ -236,3 +236,36 @@ Hid native number input spinner controls in shared base CSS while preserving num
 ### Next Steps
 
 - None - task complete
+
+
+## Session 8: Polish gacha ten-pull results
+
+**Date**: 2026-06-12
+**Task**: Polish gacha ten-pull results
+**Branch**: `codex/standard-game-mode`
+
+### Summary
+
+Updated gacha ten-pull result cards to use a desktop 2x5 grid, player-facing reward names, reward images, and a local coin-bag asset; copied prize display metadata into immediate draw rewards; updated tests, system design docs, and frontend code-spec.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bb9aaf9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
