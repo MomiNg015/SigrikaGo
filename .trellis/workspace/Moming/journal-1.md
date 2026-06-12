@@ -71,3 +71,36 @@ Added configurable gacha pools with player draw flow, duplicate conversions, cha
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: Gacha admin prize editor polish
+
+**Date**: 2026-06-12
+**Task**: Gacha admin prize editor polish
+**Branch**: `codex/standard-game-mode`
+
+### Summary
+
+Fixed gacha admin prize editor visibility and clarity: wider responsive drawer, labeled quantity/probability inputs with units, built-in stone decorations included in decoration prize options, tests and system design docs updated.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `415a07b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
