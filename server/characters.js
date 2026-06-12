@@ -1,14 +1,8 @@
 import { CHARACTERS } from "../src/shared/characters.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import { isSkillEffectType, skillEffectTargetRule, skillEffectTypeMessage } from "../src/shared/skillEffectCatalog.js";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 
-const EFFECT_TARGET_RULES = {
-  "erase-point": "empty-point",
-  "flip-stone": "stone",
-  "hidden-hand": "empty-point",
-  "random-blast": "none",
-  "color-illusion-passive": "none"
-};
 const COST_TYPES = new Set(["numeric", "special"]);
 
 export function validateCharacterInput(input = {}) {
@@ -53,10 +47,10 @@ export function validateCharacterInput(input = {}) {
   if (!["url", "upload"].includes(portraitSource)) {
     errors.push("portraitSource must be url or upload");
   }
-  if (!Object.hasOwn(EFFECT_TARGET_RULES, effectType)) {
-    errors.push("effectType must be erase-point, flip-stone, hidden-hand, random-blast, or color-illusion-passive");
+  if (!isSkillEffectType(effectType)) {
+    errors.push(`effectType must be ${skillEffectTypeMessage()}`);
   }
-  if (EFFECT_TARGET_RULES[effectType] && targetRule !== EFFECT_TARGET_RULES[effectType]) {
+  if (isSkillEffectType(effectType) && targetRule !== skillEffectTargetRule(effectType)) {
     errors.push("目标规则与技能类型不匹配");
   }
   if (!Number.isInteger(uses) || uses < 0 || uses > 9) {
@@ -254,7 +248,7 @@ export async function listPublicCharacterResponse(prisma) {
 }
 
 function targetRuleForEffect(effectType) {
-  return EFFECT_TARGET_RULES[effectType] ?? "stone";
+  return skillEffectTargetRule(effectType, "stone");
 }
 
 function numericCost(skill) {

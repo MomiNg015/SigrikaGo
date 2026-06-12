@@ -1,4 +1,5 @@
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
+import { skillEffectTargetRule } from "./skillEffectCatalog.js";
 
 export function emptyCharacterDraft() {
   return {
@@ -178,10 +179,7 @@ export function shopCategoryLabel(category) {
 }
 
 export function targetRuleForEffect(effectType) {
-  if (effectType === "flip-stone") return "stone";
-  if (effectType === "random-blast") return "none";
-  if (effectType === "color-illusion-passive") return "none";
-  return "empty-point";
+  return skillEffectTargetRule(effectType, "empty-point");
 }
 
 export function parseAdminInteger(value) {

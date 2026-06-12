@@ -103,6 +103,7 @@ Correct:
 
 #### 2. Signatures
 - `game.pendingSkill`: `{ id, characterId, skillName, effectType, targetId, affectedPointIds, markedPointIds, removed, removedByColor, resolvesAt, bannerDurationMs, boardEffectDurationMs }`.
+- `SKILL_EFFECT_CATALOG`: shared `effectType` metadata in `src/shared/skillEffectCatalog.js`, including admin labels, default target rules, active/passive classification, board-effect availability, and sound cue timing.
 - `BoardSkillEffects`: receives `boardSize={game.size}`, `pendingSkill={game.pendingSkill}`, and optional `audioSettings`.
 - `BoardAmbientEffects`: receives derived passive state such as active Nabomo color illusion fog and renders non-interactive ongoing board ambience.
 - `playSkillEffectSound(effectType, cue, audioSettings)`: presentation-only SFX helper for `start` and `impact` animation cues.
@@ -116,6 +117,7 @@ Correct:
 - Nabomo `color-illusion-passive` has ongoing low-opacity black/gray cloud ambience while any color illusion passive is active; render it as separate feathered cloud shapes, not as a full rectangular board tint, and keep stones/intersections readable.
 - Board SFX must be scheduled from the same board effect timeline, use the existing `sfx` volume channel, and clean up timers with the Pixi overlay.
 - The backend must derive animation metadata from the already-resolved skill action, not by recomputing skill rules.
+- Admin character options, backend character validation, skill normalization, board target preview, active skill type lists, server fallback skill config, and board skill SFX cue timing must read shared effect metadata from `src/shared/skillEffectCatalog.js` instead of each keeping a local `effectType -> targetRule/label/cue` table.
 - `prefers-reduced-motion: reduce` must use a short static hit effect without fly-in, scale bursts, explosions, board shake, or explosive SFX.
 
 #### 4. Validation & Error Matrix
@@ -131,6 +133,7 @@ Correct:
 
 #### 5. Good/Base/Bad Cases
 - Good: Sigrika erase, Danea flip, Aemeath hidden-hand, and Baconbits blast all route from `effectType` supplied by the room snapshot.
+- Good: adding a new effect starts by extending `SKILL_EFFECT_CATALOG`, then wiring concrete rule handlers, server preview metadata, board animation, and tests.
 - Good: Danea flip visually reads as transparent bubble formation, purple-black corruption, then pop/flash before the final stone color appears.
 - Good: Nabomo fog is driven by active passive state and continues after the passive activation banner/effect has resolved.
 - Base: legacy replay skill entries without new visual metadata still replay through the rules layer.
@@ -144,6 +147,7 @@ Correct:
 - Effects tests assert coordinate mapping for 13-line and 19-line boards and reduced-motion timing.
 - Ambient tests assert active color illusion fog is pointer-transparent and renders without removing board buttons.
 - SFX tests assert stable cue points and muted settings avoiding AudioContext creation.
+- Catalog tests assert effect type order, admin options, default target rules, active effect lists, and SFX cues.
 
 #### 7. Wrong vs Correct
 

@@ -1,5 +1,6 @@
 import { DEFAULT_AUDIO_SETTINGS, audioVolume } from "./audioSettings.js";
 import { browserAudioContextClass } from "./audioRuntime.js";
+import { skillEffectSoundCues as catalogSkillEffectSoundCues } from "../shared/skillEffectCatalog.js";
 
 const SKILL_EFFECT_SOUND_TYPES = {
   start: "start",
@@ -33,11 +34,7 @@ export function playSkillEffectSound(effectType, cue, audioSettings = DEFAULT_AU
 }
 
 export function skillEffectSoundCues(effectType) {
-  if (effectType === "erase-point") return { startAt: 0.08, impactAt: 0.48 };
-  if (effectType === "flip-stone") return { startAt: 0.04, impactAt: 0.6 };
-  if (effectType === "random-blast") return { startAt: 0.06, impactAt: 0.56 };
-  if (effectType === "hidden-hand") return { startAt: 0.04, impactAt: 0.52 };
-  return { startAt: 0, impactAt: 0 };
+  return catalogSkillEffectSoundCues(effectType);
 }
 
 function getSkillEffectAudioContext() {

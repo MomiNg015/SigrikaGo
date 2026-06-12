@@ -2286,6 +2286,9 @@
 <li><code>lastMarkedAction</code> / <code>canPreviewSkillTarget</code>: 位于 <code>src/shared/boardView.js</code>，用于统一棋盘最后落子/技能标记与技能预览判定。</li>
 </ul>
 <ul>
+<li><code>SKILL_EFFECT_CATALOG</code> / <code>skillEffectTargetRule</code> / <code>skillEffectSoundCues</code>: 位于 <code>src/shared/skillEffectCatalog.js</code>，集中维护技能 <code>effectType</code> 的管理端标签、默认目标规则、主动/被动分类、棋盘演出标记和音效 cue。管理端角色表单、服务端角色校验、技能归一化、目标预览和技能音效都应从该 catalog 读取这些元数据。</li>
+</ul>
+<ul>
 <li><code>COLORS</code> / <code>opponent</code>: 位于 <code>src/shared/gameConstants.js</code>，集中维护棋色常量与对手颜色推导；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
 </ul>
 <ul>

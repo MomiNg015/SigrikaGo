@@ -7,6 +7,7 @@ import {
   emptyCharacterDraft,
   targetRuleForEffect
 } from "../shared/adminDrafts.js";
+import { SKILL_EFFECT_OPTIONS } from "../shared/skillEffectCatalog.js";
 import { SKILL_MESSAGE_TIP } from "../shared/skillMessages.js";
 import { AdminFieldLabel } from "./adminComponents.jsx";
 
@@ -201,11 +202,9 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
       <div className="admin-character-form-grid">
         <label><AdminFieldLabel text="技能效果" tip="决定技能实际执行的规则类型。" />
           <select value={draft.skill.effectType} onChange={(event) => updateSkillEffect(event.target.value)}>
-            <option value="erase-point">抹除交叉点</option>
-            <option value="flip-stone">棋子反色</option>
-            <option value="hidden-hand">隐藏手</option>
-            <option value="random-blast">随机爆炸</option>
-            <option value="color-illusion-passive">被动伪装</option>
+            {SKILL_EFFECT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
           </select>
         </label>
         <label><AdminFieldLabel text="技能名" tip="展示给玩家看的技能名称。" />

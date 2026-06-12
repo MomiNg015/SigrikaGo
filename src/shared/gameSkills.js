@@ -1,12 +1,6 @@
 import { CHARACTERS } from "./characters.js";
 import { canonicalCharacterId } from "./characterAliases.js";
-
-function targetRuleForEffect(effectType) {
-  if (effectType === "flip-stone") return "stone";
-  if (effectType === "random-blast") return "none";
-  if (effectType === "color-illusion-passive") return "none";
-  return "empty-point";
-}
+import { skillEffectTargetRule } from "./skillEffectCatalog.js";
 
 export function normalizeSkillConfig(skillOrCharacterId) {
   if (skillOrCharacterId?.effectType) return skillOrCharacterId;
@@ -21,7 +15,7 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       costType: skillOrCharacterId.costType ?? "numeric",
       costValue: String(skillOrCharacterId.costValue ?? skillOrCharacterId.cost ?? 0),
       systemMessage: skillOrCharacterId.systemMessage,
-      targetRule: targetRuleForEffect(effectType),
+      targetRule: skillEffectTargetRule(effectType, "empty-point"),
       params: skillOrCharacterId.params ?? {}
     };
   }
@@ -103,7 +97,7 @@ export function normalizeSkillConfig(skillOrCharacterId) {
 export function skillRequiresExistingStone(skillOrCharacterId) {
   const skill = normalizeSkillConfig(skillOrCharacterId);
   const effectType = skill?.effectType ?? skill?.id;
-  const targetRule = skill?.targetRule ?? targetRuleForEffect(effectType);
+  const targetRule = skill?.targetRule ?? skillEffectTargetRule(effectType, "empty-point");
   return targetRule === "stone" || effectType === "random-blast";
 }
 
