@@ -52,6 +52,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Concrete board skill animation implementations are behind a renderer registry instead of living inside the React host component.
 * [x] Board skill SFX cue scheduling and timer cleanup are isolated from the React/Pixi host component.
 * [x] Vite production build splits React, Socket.IO client, and lazy Pixi runtime chunks so the entry JS no longer triggers the previous large-chunk warning.
+* [x] Room-level Socket.IO broadcast delivery is isolated from `server/rooms.js` behind a dedicated backend boundary.
 
 ## Definition of Done
 
@@ -132,6 +133,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `scripts/viteBuildConfig.test.js` to lock manual chunk routing and prevent a catch-all vendor chunk from reintroducing circular chunk warnings.
 * Verified `npm run build` no longer emits the previous large chunk warning; the entry JS is split into smaller runtime chunks and Pixi remains lazy.
 * Updated `docs/system-design.md` and frontend quality guidelines for the build chunking contract.
+
+### Batch 9 Completed
+
+* Added `server/roomBroadcasts.js` as the room-level Socket.IO delivery boundary for `room:update`, `room:clock`, `error:toast`, and `room:closed`.
+* Kept `server/rooms.js` compatible by preserving its `broadcastRoom` and `roomView` exports while delegating participant iteration, viewer-specific room views, clock payloads, and close/toast emits.
+* Added `server/roomBroadcasts.test.js` for connected-participant filtering, room update persistence timing, lightweight clock payload cloning, toast delivery, and close delivery.
+* Updated `docs/system-design.md` and backend quality guidelines for the room broadcast boundary contract.
 
 ### Later Batches
 

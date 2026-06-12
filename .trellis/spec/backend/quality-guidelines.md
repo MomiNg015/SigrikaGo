@@ -32,6 +32,33 @@ Questions to answer:
 
 <!-- Patterns that must always be used -->
 
+### Room Broadcast Boundary Contract
+
+`server/roomBroadcasts.js` owns the Socket.IO delivery mechanics for room-level events:
+
+- `broadcastRoom(io, room, { persistRoom })` emits viewer-specific `room:update` payloads and force-persists the room before delivery.
+- `broadcastRoomClock(io, room, { persistRoom })` emits lightweight `room:clock` payloads and uses throttled persistence.
+- `broadcastToast(io, room, text)` and `emitRoomClosed(io, room, payload)` emit only to connected room participants.
+- `roomView(room, viewerId)` remains the compatibility wrapper for `buildRoomView()`.
+
+`server/rooms.js` should decide **when** a lifecycle event needs broadcasting, but it should not duplicate participant iteration, event names, clock payload shape, or viewer-specific room view emission.
+
+Wrong:
+
+```js
+for (const participant of [...room.players, ...room.spectators]) {
+  io.to(participant.socketId).emit("room:update", buildRoomView(room, participant.user.id));
+}
+```
+
+Correct:
+
+```js
+broadcastRoom(io, room);
+```
+
+Tests touching this boundary should update `server/roomBroadcasts.test.js` for payload shape, connected-participant filtering, and persistence timing.
+
 ### Leaderboard API Contract
 
 `GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:

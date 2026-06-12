@@ -41,7 +41,13 @@ import {
   applyScoringAction
 } from "./roomScoringFlow.js";
 import { handleRoomTestAction, isRoomTestAction } from "./roomTestActions.js";
-import { buildRoomView } from "./roomView.js";
+import {
+  broadcastRoom as broadcastRoomUpdate,
+  broadcastRoomClock,
+  broadcastToast as broadcastRoomToast,
+  emitRoomClosed,
+  roomView
+} from "./roomBroadcasts.js";
 import {
   SKILL_BANNER_DURATION_MS,
   SKILL_BOARD_EFFECT_DURATION_MS,
@@ -50,6 +56,8 @@ import {
   pendingSkillResolutionDelay
 } from "./roomSkillResolution.js";
 import { normalizeChatText, validatePointId, validateRoomCode } from "./security.js";
+
+export { roomView };
 
 const rooms = new Map();
 let waitingPlayers = [];
@@ -470,37 +478,7 @@ export function addChat(roomCode, user, text) {
 }
 
 export function broadcastRoom(io, room) {
-  persistRoom(room, { force: true });
-  for (const player of room.players) {
-    if (player.socketId) io.to(player.socketId).emit("room:update", roomView(room, player.user.id));
-  }
-  for (const spectator of room.spectators) {
-    if (spectator.socketId) io.to(spectator.socketId).emit("room:update", roomView(room, spectator.user.id));
-  }
-}
-
-function broadcastRoomClock(io, room) {
-  const payload = roomClockPayload(room);
-  persistRoom(room);
-  for (const participant of [...room.players, ...room.spectators]) {
-    if (participant.socketId) io.to(participant.socketId).emit("room:clock", payload);
-  }
-}
-
-function roomClockPayload(room) {
-  return {
-    roomCode: room.code,
-    activeColor: room.game.turn,
-    serverNow: Date.now(),
-    players: room.players.map((player) => ({
-      color: player.color,
-      time: { ...player.time }
-    }))
-  };
-}
-
-export function roomView(room, viewerId) {
-  return buildRoomView(room, viewerId);
+  broadcastRoomUpdate(io, room, { persistRoom });
 }
 
 function onlineParticipantCount(room) {
@@ -521,9 +499,7 @@ function watchPlayerSummary(room, color) {
 }
 
 function broadcastToast(io, room, text) {
-  for (const participant of [...room.players, ...room.spectators]) {
-    if (participant.socketId) io.to(participant.socketId).emit("error:toast", text);
-  }
+  broadcastRoomToast(io, room, text);
 }
 
 function validateActionPoint(action, boardSize) {
@@ -978,9 +954,7 @@ function closeRoom(roomCode, io, { message = "", reason = "" } = {}) {
     ...(reason ? { reason } : {}),
     roomCode
   };
-  for (const participant of [...room.players, ...room.spectators]) {
-    if (participant.socketId) io.to(participant.socketId).emit("room:closed", payload);
-  }
+  emitRoomClosed(io, room, payload);
   rooms.delete(roomCode);
   deletePersistedRoom(prisma, roomCode).catch((error) => {
     console.error("Failed to delete persisted room", error);
