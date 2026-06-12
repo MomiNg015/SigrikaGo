@@ -98,6 +98,38 @@ app.use("/api", authHttp, createPlayerRouter({
 
 Tests touching player self-service HTTP behavior should update `server/playerRoutes.test.js`; lower-level character resolution should stay in `server/characterSelection.test.js`, resume payload behavior in `server/resume.test.js`, and music selection rules in `server/musicSelection.test.js`.
 
+### Public/Lobby HTTP Boundary Contract
+
+`server/publicRoutes.js` owns public catalog and lobby HTTP handlers:
+
+- `GET /api/health`
+- `GET /api/characters`
+- `GET /api/shop`
+- `GET /api/site-settings`
+- `POST /api/feedback`
+- `GET /api/leaderboard`
+- `GET /api/rooms/watch`
+
+The router accepts `authHttp` and mounts it only on authenticated lobby routes. `GET /api/health`, `GET /api/characters`, and `GET /api/site-settings` are public; shop catalog, feedback, leaderboard, and watch-list routes require the current user.
+
+`server/index.js` should create shared dependencies such as `prisma`, `authHttp`, and `listWatchRooms`, then mount `createPublicRouter()`. It should not duplicate public character/site-setting response shapes, shop catalog user-id binding, feedback error shaping, leaderboard query projection, or watch-room mode filtering.
+
+Wrong:
+
+```js
+app.get("/api/leaderboard", authHttp, async (req, res) => {
+  const users = await prisma.user.findMany({ select: { id: true } });
+});
+```
+
+Correct:
+
+```js
+app.use("/api", createPublicRouter({ prisma, authHttp, listWatchRooms }));
+```
+
+Tests touching public/lobby route status codes, auth/public route mounting, feedback route errors, leaderboard query shape, or watch-list filtering should update `server/publicRoutes.test.js`; lower-level leaderboard, feedback, shop, character, and site-settings behavior should stay in their domain tests.
+
 ### Personal Replay HTTP Boundary Contract
 
 `server/replayRoutes.js` owns personal replay HTTP handlers:

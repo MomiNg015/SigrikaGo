@@ -91,6 +91,7 @@ SigrikaGo/
     auth.js                    # HTTP JWT 鉴权与管理员中间件
     authRoutes.js              # /api/auth HTTP route boundary
     playerRoutes.js            # /api/me player HTTP route boundary
+    publicRoutes.js            # public/lobby HTTP route boundary
     replayRoutes.js            # /api/replays player replay HTTP route boundary
     socialRoutes.js            # /api/social and public user profile HTTP route boundary
     socketAuth.js              # Socket.IO JWT 鉴权与角色解析
@@ -292,6 +293,11 @@ SigrikaGo/
   - Player HTTP route boundary for `/api/me`, `/api/me/resume`, `/api/me/character`, `/api/me/decoration`, and `/api/me/music-selection`.
   - Owns player profile/history enrichment, resume room-code normalization, character/decor selection validation, and skill-music selection error shaping.
   - Exports `createCharacterSelectionData()` and `validateOptionalRoomCode()` so Socket.IO auth/resume can share the same character availability and optional-room-code contracts without duplicating helper logic in `server/index.js`.
+
+- `server/publicRoutes.js`
+  - Public/lobby HTTP route boundary for `/api/health`, `/api/characters`, `/api/shop`, `/api/site-settings`, `/api/feedback`, `/api/leaderboard`, and `/api/rooms/watch`.
+  - Owns the mixed public/authenticated route mounting contract: health, characters, and site settings are public; shop catalog, feedback, leaderboard, and watch-list routes are authenticated.
+  - Keeps leaderboard query projection, feedback error shaping, shop catalog user id binding, and watch-room mode filtering outside `server/index.js`.
 
 - `server/replayRoutes.js`
   - Personal replay HTTP route boundary for `/api/replays` and `/api/replays/:id`.
@@ -1240,7 +1246,7 @@ SigrikaGo/
 - 核心源码体量仍偏集中。本轮扫描中，超过 300 行的主要业务文件包括 `server/rooms.js`、`src/shared/game.js`、`server/adminRoutes.js`、`server/index.js`、`src/audio/playback.jsx`：
   - `server/rooms.js` 已拆出 room view、广播边界、presence 状态、匹配队列、房间创建工厂、技能消息、timer 账本、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、断线恢复与关闭调度。
   - `server/adminRoutes.js` 已拆出认证路由、后台用户管理写操作、后台装饰/商城商品写操作、后台角色/技能写操作、后台审计写入和路由错误对象；后续后台优化应优先继续拆上传/站点设置/只读查询子域，而不是把新后台写操作继续塞回路由文件。
-  - `server/index.js` 已拆出 auth、player `/api/me*`、personal replay `/api/replays*`、social/profile、admin、room runtime adapter 等边界；后续入口文件优化应继续迁移公开列表、商城/道具、反馈、排行榜和观战只读 API，让 `index.js` 保持启动编排与 Socket.IO 事件注册职责。
+  - `server/index.js` 已拆出 auth、player `/api/me*`、public/lobby、personal replay `/api/replays*`、social/profile、admin、room runtime adapter 等边界；后续入口文件优化应继续迁移商城购买、道具库存/使用等少量剩余 HTTP API，让 `index.js` 保持启动编排与 Socket.IO 事件注册职责。
   - `src/admin/AdminConsole.jsx` 已拆出 `AdminShell` 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。
   - `src/main.jsx` 已拆出 API、socket handlers、socket creation helper、character catalog loader、site settings loader、preload screen、top-level routes、global overlays、room navigation helper、replay opening helper、session helpers、登录恢复 hook、启动预加载 hook、全局 action hook、主题/音频/站点设置/用户/toast/ref 同步 hooks；后续主要保持入口文件只做装配。
   - `src/shared/gameSkillRegistry.js` 已抽出主动技能 `effectType` 分发和回合消耗判定，`src/shared/gameGroups.js` / `src/shared/gameScoring.js` 已抽出连通块与数子计分；`src/shared/game.js` 仍保留规则执行、技能入口和历史兼容转导，后续可继续收窄主动技能契约与回放兼容包装，降低新增角色风险。

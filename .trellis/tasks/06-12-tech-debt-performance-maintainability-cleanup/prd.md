@@ -353,6 +353,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/socialRoutes.test.js` for relationship refresh responses, error handling, username validation, mode normalization, public replay lookup, and auth/public route mounting.
 * Updated `docs/system-design.md` and backend quality guidelines for the social HTTP route contract.
 
+### Batch 37 Completed
+
+* Added `server/publicRoutes.js` as the public/lobby HTTP boundary for health, public characters, shop catalog, site settings, feedback, leaderboard, and watch-list routes.
+* Updated `server/index.js` to mount the public router while keeping only remaining commerce mutation and item inventory handlers inline for later extraction.
+* Added `server/publicRoutes.test.js` for public/authenticated route mounting, catalog helper delegation, shop user binding, feedback error shaping, leaderboard query shape, and watch-list mode filtering.
+* Updated `docs/system-design.md` and backend quality guidelines for the public/lobby HTTP route contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

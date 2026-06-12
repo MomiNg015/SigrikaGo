@@ -8,12 +8,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import multer from "multer";
 import { Server } from "socket.io";
-import { ensureGameModeSchema, prisma, USER_ASSET_RELATION_INCLUDE, USER_ASSET_RELATION_SELECT } from "./db.js";
+import { ensureGameModeSchema, prisma, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
 import { createAuthRouter } from "./authRoutes.js";
 import { createPlayerRouter, createCharacterSelectionData, validateOptionalRoomCode } from "./playerRoutes.js";
+import { createPublicRouter } from "./publicRoutes.js";
 import { createReplayRouter } from "./replayRoutes.js";
 import { createSocialRouter } from "./socialRoutes.js";
 import { createLoginSessionStore, ensureLoginSessionSchema } from "./loginSessions.js";
@@ -23,15 +24,13 @@ import { jsonSyntaxErrorHandler } from "./httpErrors.js";
 import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
 import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
 import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
-import { listPublicCharacterResponse, seedCharacters } from "./characters.js";
+import { seedCharacters } from "./characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { createSocketUserRefresher } from "./socketAuth.js";
-import { createFeedbackMessage } from "./feedback.js";
-import { buildLeaderboard } from "./leaderboard.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
-import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
+import { purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
 import { listItemInventory, useInventoryItem } from "./items.js";
-import { ensureDefaultSiteSettings, getPublicSiteSettings } from "./siteSettings.js";
+import { ensureDefaultSiteSettings } from "./siteSettings.js";
 import {
   assertProductionDeployment,
   corsOriginForRequest,
@@ -145,70 +144,10 @@ await ensureLoginSessionSchema(prisma);
 await ensureGameModeSchema(prisma);
 await promoteConfiguredAdmins(prisma);
 
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true });
-});
-
-app.get("/api/characters", async (_req, res) => {
-  res.json(await listPublicCharacterResponse(prisma));
-});
-
-app.get("/api/shop", authHttp, async (req, res) => {
-  res.json(await listShopItems(prisma, req.user.id));
-});
 let onlineSessions;
 let duelRequests;
 
-app.get("/api/site-settings", async (_req, res) => {
-  res.json({ settings: await getPublicSiteSettings(prisma) });
-});
-
-app.post("/api/feedback", authHttp, async (req, res) => {
-  try {
-    res.json(await createFeedbackMessage({
-      prisma,
-      user: req.user,
-      content: req.body.content
-    }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "反馈提交失败" });
-  }
-});
-
-app.get("/api/leaderboard", authHttp, async (req, res) => {
-  const mode = normalizeGameModeId(req.query.mode);
-  const [users, records] = await Promise.all([
-    prisma.user.findMany({
-      select: {
-        id: true,
-        username: true,
-        rating: true,
-        selectedCharacter: true,
-        itemEffects: true,
-        ...USER_ASSET_RELATION_SELECT
-      }
-    }),
-    prisma.gameRecord.findMany({
-      where: { mode },
-      select: {
-        blackUserId: true,
-        whiteUserId: true,
-        blackCharacter: true,
-        whiteCharacter: true,
-        winnerColor: true,
-        resultReason: true,
-        resultText: true,
-        mode: true
-      }
-    })
-  ]);
-  res.json({ players: buildLeaderboard(users, records, { mode }) });
-});
-
-app.get("/api/rooms/watch", authHttp, async (req, res) => {
-  const mode = normalizeGameModeId(req.query.mode);
-  res.json({ rooms: listWatchRooms().filter((room) => normalizeGameModeId(room.mode) === mode) });
-});
+app.use("/api", createPublicRouter({ prisma, authHttp, listWatchRooms }));
 
 app.use("/api", createSocialRouter({ prisma, authHttp, statusForUser }));
 
