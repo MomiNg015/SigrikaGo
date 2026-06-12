@@ -38,3 +38,36 @@
 ### Next Steps
 
 - None - task complete
+
+
+## Session 2: Configurable gacha system
+
+**Date**: 2026-06-12
+**Task**: Configurable gacha system
+**Branch**: `codex/standard-game-mode`
+
+### Summary
+
+Added configurable gacha pools with player draw flow, duplicate conversions, chain badges, admin resource selection, backend target validation, tests, and system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `94a09e1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
