@@ -117,6 +117,32 @@ const item = await updateShopItem({ prisma, adminUser: req.user, itemId: req.par
 
 Tests touching admin decoration/shop item create/update/disable, shop target validation, or catalog audit payloads should update `server/adminRoutes.test.js` or a focused `server/adminCatalogManagement.test.js`; player-facing purchase behavior should stay in `server/shop.test.js`.
 
+### Admin Character Management Boundary Contract
+
+`server/adminCharacterManagement.js` owns admin-side character and skill write operations:
+
+- `createCharacter()`, `updateCharacter()`, and `disableCharacter()` own character persistence, skill creation/upsert payloads, and `character.*` audit writes.
+- `updateCharacter()` owns compatibility merging from older top-level skill fields such as `skillName`, `skillDescription`, `uses`, `freeTurn`, `targetRule`, `paramsJson`, `costType`, `costValue`, `systemMessage`, and `skillEnabled`.
+- `toAdminCharacterPayload(record)` owns admin-facing character payload projection, including disabled skills, default skill system messages, skill cost compatibility fields, and `paramsJson`.
+- Character audit payloads should use public character payload projection so admin route responses and audit JSON stay consistent.
+
+`server/adminRoutes.js` should own HTTP concerns such as route validation and response wrapping, then delegate character mutations and admin character payload projection to this boundary. It should not duplicate skill upsert shape, legacy skill-field merging, admin character payload compatibility, or character audit writes.
+
+Wrong:
+
+```js
+const after = await prisma.character.update({ where: { id }, data: { skill: { upsert: { update: req.body.skill } } } });
+```
+
+Correct:
+
+```js
+const character = await updateCharacter({ prisma, adminUser: req.user, characterId: req.params.id, body: req.body });
+res.json({ character: toAdminCharacterPayload(character) });
+```
+
+Tests touching admin character create/update/disable, legacy skill field compatibility, skill upsert payloads, or admin character payload projection should update `server/adminRoutes.test.js` or a focused `server/adminCharacterManagement.test.js`; public character validation and payload rules should stay in `server/characters.test.js`.
+
 ### Room Broadcast Boundary Contract
 
 `server/roomBroadcasts.js` owns the Socket.IO delivery mechanics for room-level events:

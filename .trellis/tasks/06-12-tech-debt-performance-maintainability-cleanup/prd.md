@@ -330,6 +330,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Kept route-level body validation and response shaping in `server/adminRoutes.js` while catalog transactions and audit payloads live in the new module.
 * Updated `docs/system-design.md` and backend quality guidelines for the admin catalog-management contract.
 
+### Batch 34 Completed
+
+* Added `server/adminCharacterManagement.js` as the admin-side character and skill mutation boundary.
+* Updated `server/adminRoutes.js` to delegate character create/update/disable, skill upsert payload construction, legacy top-level skill field compatibility, and admin character payload projection to the character boundary.
+* Kept route-level character body validation and upload handling in `server/adminRoutes.js`.
+* Updated `docs/system-design.md` and backend quality guidelines for the admin character-management contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.
