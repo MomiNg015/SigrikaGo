@@ -219,6 +219,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomResultPersistence.test.js` for invalid-result no-op persistence, draw mode-stat mutation, mode-stat upsert shape, and progress ledger payloads.
 * Updated `docs/system-design.md` and backend quality guidelines for the room result persistence contract.
 
+### Batch 19 Completed
+
+* Expanded `server/roomSkillResolution.js` from pending-resolution math into the skill preview lifecycle boundary.
+* Updated `server/rooms.js` to delegate active skill preview start, passive skill preview start, pending skill resolution scheduling, pending preview payload metadata, and completion side effects to the skill lifecycle boundary.
+* Kept action routing, opening completion, restored-room timer resume, and room persistence triggers in `server/rooms.js`.
+* Added `server/roomSkillResolution.test.js` coverage for pending preview metadata and scheduled resolution completion side effects.
+* Updated `docs/system-design.md` and backend quality guidelines for the room skill resolution contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

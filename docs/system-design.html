@@ -863,10 +863,10 @@
 <ul>
 <li><code>server/roomSkillResolution.js</code></li>
 <ul>
-<li>技能演出延迟结算的纯数据 helper。</li>
+<li>Room skill preview lifecycle boundary.</li>
 </ul>
 <ul>
-<li>负责生成可持久化的 <code>pendingSkillResolution</code> 快照、计算恢复后的剩余结算延迟，以及判断快照是否具备重新调度条件；真实定时器、广播和回合推进仍由 <code>server/rooms.js</code> 负责。技能预览总时长来自 <code>src/shared/skillPresentation.js</code>，覆盖技能横幅展示和随后棋盘 PixiJS 演出。</li>
+<li>Owns active-skill preview start, passive-skill preview start, <code>pendingSkillResolution</code> snapshot creation, restored delay calculation, pending-resolution scheduling, preview payload metadata, and completion after the preview delay. <code>server/rooms.js</code> decides when room actions/opening/restore paths call this boundary, while skill preview mutation, notice append, byo-yomi reset, finished-room close handoff, and broadcast-after-resolution stay centralized here. Skill preview timing comes from <code>src/shared/skillPresentation.js</code>, covering the banner and board effect animation windows.</li>
 </ul>
 </ul>
 <ul>
@@ -3363,7 +3363,7 @@
 <li><code>src/room/RoomScreen.jsx</code> now delegates the three-column battle tree to <code>src/room/RoomBattleStage.jsx</code>; future room work can focus on replay/spectator projection helpers and smaller room-state hooks rather than moving raw JSX.</li>
 </ul>
 <ul>
-<li>Server room view serialization now lives in <code>server/roomView.js</code>, socket broadcast delivery lives in <code>server/roomBroadcasts.js</code>, participant/online-state queries live in <code>server/roomPresence.js</code>, matchmaking queue state lives in <code>server/roomMatchmakingQueue.js</code>, room initial-state creation and user mode projection live in <code>server/roomFactory.js</code>, skill system-message formatting lives in <code>server/roomSkillMessages.js</code>, generic system message mutation lives in <code>server/roomSystemMessages.js</code>, room action point validation lives in <code>server/roomActionValidation.js</code>, room close/empty-room lifecycle lives in <code>server/roomCloseLifecycle.js</code>, room deadline scheduling lives in <code>server/roomDeadlineScheduler.js</code>, room result persistence lives in <code>server/roomResultPersistence.js</code>, room timer bookkeeping lives in <code>server/roomTimers.js</code>, item effect cleanup lives in <code>server/roomItemEffects.js</code>, room-user reward application lives in <code>server/roomRewards.js</code>, room snapshot persistence lives in <code>server/roomStatePersistence.js</code>, pending skill resolution snapshot math lives in <code>server/roomSkillResolution.js</code>, clock timing calculation lives in <code>server/roomClockTiming.js</code>, standard move/pass/resign side effects live in <code>server/roomGameActions.js</code>, and counting/draw/scoring room mutations live in <code>server/roomScoringFlow.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, skill actions, and persistence triggers.</li>
+<li>Server room view serialization now lives in <code>server/roomView.js</code>, socket broadcast delivery lives in <code>server/roomBroadcasts.js</code>, participant/online-state queries live in <code>server/roomPresence.js</code>, matchmaking queue state lives in <code>server/roomMatchmakingQueue.js</code>, room initial-state creation and user mode projection live in <code>server/roomFactory.js</code>, skill system-message formatting lives in <code>server/roomSkillMessages.js</code>, generic system message mutation lives in <code>server/roomSystemMessages.js</code>, room action point validation lives in <code>server/roomActionValidation.js</code>, room close/empty-room lifecycle lives in <code>server/roomCloseLifecycle.js</code>, room deadline scheduling lives in <code>server/roomDeadlineScheduler.js</code>, room result persistence lives in <code>server/roomResultPersistence.js</code>, room timer bookkeeping lives in <code>server/roomTimers.js</code>, item effect cleanup lives in <code>server/roomItemEffects.js</code>, room-user reward application lives in <code>server/roomRewards.js</code>, room snapshot persistence lives in <code>server/roomStatePersistence.js</code>, skill preview lifecycle and pending skill resolution live in <code>server/roomSkillResolution.js</code>, clock timing calculation lives in <code>server/roomClockTiming.js</code>, standard move/pass/resign side effects live in <code>server/roomGameActions.js</code>, and counting/draw/scoring room mutations live in <code>server/roomScoringFlow.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, action routing, and persistence triggers.</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> has split its shell and major tab bodies; high-value follow-up targets are now the remaining skill contract/replay compatibility wrappers inside <code>src/shared/game.js</code>, the real-time lifecycle/broadcast boundary inside <code>server/rooms.js</code>, and the remaining voice/cache subdomains in <code>src/audio/playback.jsx</code>.</li>
@@ -3675,6 +3675,9 @@
 </ul>
 <ul>
 <li><code>server/roomResultPersistence.js</code> is the backend room result persistence boundary. Finished-room record creation, invalid-result record skipping, draw mode-stat increments, decisive reward application, user stat writes, progress ledger entries, and item-effect cleanup operations live there so room lifecycle code only triggers result saving.</li>
+</ul>
+<ul>
+<li><code>server/roomSkillResolution.js</code> is the backend skill-preview lifecycle boundary. Active/passive skill preview setup, persisted <code>pendingSkillResolution</code> snapshots, restored preview delay scheduling, preview payload metadata, and resolution completion side effects live there so new skill effects do not add more timing and preview-state branching to <code>server/rooms.js</code>.</li>
 </ul>
 <ul>
 <li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators still receive both black and white projections through <code>gameViews</code>, but players receive only their own visible board state.</li>

@@ -191,6 +191,34 @@ appendSystem(room, describeSkillUse(room, player, targetId), { kind: "skill" });
 
 Tests touching skill message text, placeholders, point labels, or stone labels should update `server/roomSkillMessages.test.js`; room flow tests can assert that a skill message was appended.
 
+### Room Skill Resolution Boundary Contract
+
+`server/roomSkillResolution.js` owns skill-preview lifecycle and pending skill resolution:
+
+- `createRoomSkillLifecycle(deps)` returns `startActiveSkill`, `maybeStartPassiveSkill`, `schedulePendingSkillResolution`, and `completePendingSkillResolution`.
+- `startActiveSkill({ room, player, action, io })` validates active skill availability, chooses board-confirmation targets, applies the shared `useSkill()` result, creates `room.pendingSkillResolution`, moves the room into `skillPreview`, appends the skill system message, and schedules preview completion.
+- `maybeStartPassiveSkill(room, io)` owns color-illusion passive preview start and returns false when the current room state cannot start a passive preview.
+- `schedulePendingSkillResolution(room, io)` owns restored pending-skill delay calculation and timer scheduling.
+- `completePendingSkillResolution(roomCode, pendingSkillId, io)` owns replacing the preview state with the resolved game snapshot, clearing `pendingSkillResolution`, resetting byo-yomi for the acting player, appending notices, handing off finished games to room close scheduling, chaining passive skills, and broadcasting the resolved room.
+- `buildPendingSkillPreview()` owns pending-skill payload fields consumed by the frontend animation layer: skill identity, target id, affected point ids, marked point ids, removed counts, item effects, and banner/board-effect durations.
+
+`server/rooms.js` should decide **when** an action/opening/restore path reaches skill-preview logic, but it should not hand-build pending-skill payloads, directly mutate `pendingSkillResolution`, or duplicate preview completion behavior.
+
+Wrong:
+
+```js
+room.pendingSkillResolution = { pendingSkillId, game: result.state };
+room.game = { ...room.game, phase: GAME_PHASES.skillPreview, pendingSkill };
+```
+
+Correct:
+
+```js
+return startActiveSkill({ room, player, action, io });
+```
+
+Tests touching preview payload metadata, delay math, scheduling, or completion side effects should update `server/roomSkillResolution.test.js`; end-to-end active/passive skill flow should remain covered by `server/rooms.test.js`.
+
 ### Room System Message Boundary Contract
 
 `server/roomSystemMessages.js` owns room chat-log mutation for generic system messages:

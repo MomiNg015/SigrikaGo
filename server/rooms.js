@@ -2,16 +2,10 @@ import {
   COLORS,
   GAME_PHASES,
   INVALID_EARLY_RESIGN_NOTICE,
-  activatePassiveSkill,
-  canStartSkill,
   createTimeoutResult,
   exposeHiddenHands,
-  getPoint,
   resultWithInvalidFlagForGame,
-  skillUsesBoardConfirmation,
-  useSkill
 } from "../src/shared/game.js";
-import { CHARACTERS } from "../src/shared/characters.js";
 import { gameModeById } from "../src/shared/gameModes.js";
 import { prisma } from "./db.js";
 import { applyStandardGameAction } from "./roomGameActions.js";
@@ -50,13 +44,8 @@ import {
 import { createRoomMatchmakingQueue } from "./roomMatchmakingQueue.js";
 import { createRoom } from "./roomFactory.js";
 import {
-  SKILL_BANNER_DURATION_MS,
-  SKILL_BOARD_EFFECT_DURATION_MS,
-  canSchedulePendingSkillResolution,
-  createPendingSkillResolution,
-  pendingSkillResolutionDelay
+  createRoomSkillLifecycle
 } from "./roomSkillResolution.js";
-import { describeSkillUse } from "./roomSkillMessages.js";
 import {
   appendNotices,
   appendSystem,
@@ -120,6 +109,20 @@ const {
   scheduleResultReviewTimeout,
   schedulePendingRoomDeadlines
 } = roomDeadlineScheduler;
+const roomSkillLifecycle = createRoomSkillLifecycle({
+  rooms,
+  scheduleRoomTimeout,
+  appendSystem,
+  appendNotices,
+  resetByoYomi,
+  scheduleRoomClose,
+  broadcastRoom,
+});
+const {
+  startActiveSkill,
+  maybeStartPassiveSkill,
+  schedulePendingSkillResolution
+} = roomSkillLifecycle;
 
 export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
@@ -332,39 +335,7 @@ export function handleGameAction(roomCode, userId, action, io) {
   }
 
   if (action.type === "skill") {
-    const skillConfig = player.character?.skill ?? player.characterId;
-    if (!canStartSkill(room.game, skillConfig)) return { ok: false, error: "场上没有可作用的棋子" };
-    const skillTargetId = skillUsesBoardConfirmation(skillConfig) ? null : action.pointId;
-    const result = useSkill(room.game, player.color, skillConfig, skillTargetId);
-    if (!result.ok) return result;
-    const skillNotice = describeSkillUse(room, player, skillTargetId);
-
-    const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
-    const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
-    const pendingSkillId = crypto.randomUUID();
-    room.pendingSkillResolution = createPendingSkillResolution({
-      pendingSkillId,
-      game: result.state,
-      notices: result.notices ?? [],
-      playerColor: player.color
-    });
-    const pendingSkill = buildPendingSkillPreview({
-      pendingSkillId,
-      player,
-      character,
-      skill,
-      requestedTargetId: skillTargetId,
-      resolvedGame: result.state,
-      resolvesAt: room.pendingSkillResolution.resolvesAt
-    });
-    room.game = {
-      ...room.game,
-      phase: GAME_PHASES.skillPreview,
-      pendingSkill
-    };
-    appendSystem(room, skillNotice, { kind: "skill" });
-    schedulePendingSkillResolution(room, io);
-    return { ok: true, room };
+    return startActiveSkill({ room, player, action, io });
   }
 
   return applyStandardGameAction({
@@ -510,111 +481,6 @@ export function broadcastRoom(io, room) {
 
 function broadcastToast(io, room, text) {
   broadcastRoomToast(io, room, text);
-}
-
-function maybeStartPassiveSkill(room, io) {
-  if (room.game.phase !== GAME_PHASES.playing || room.game.pendingSkill) return false;
-  const player = room.players.find((candidate) => candidate.color === room.game.turn);
-  const skill = player?.character?.skill ?? CHARACTERS[player?.characterId]?.skill;
-  const effectType = skill?.effectType ?? skill?.id;
-  if (effectType !== "color-illusion-passive") return false;
-  if (room.game.passives?.[player.color]?.colorIllusion?.triggered) return false;
-  const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.nabomo;
-  const pendingSkillId = crypto.randomUUID();
-  const result = activatePassiveSkill(room.game, player.color, skill);
-  if (!result.ok) return false;
-  room.pendingSkillResolution = createPendingSkillResolution({
-    pendingSkillId,
-    game: result.state,
-    notices: result.notices ?? [],
-    playerColor: player.color
-  });
-  const pendingSkill = buildPendingSkillPreview({
-    pendingSkillId,
-    player,
-    character,
-    skill,
-    requestedTargetId: null,
-    resolvedGame: result.state,
-    resolvesAt: room.pendingSkillResolution.resolvesAt
-  });
-  room.game = {
-    ...room.game,
-    phase: GAME_PHASES.skillPreview,
-    pendingSkill
-  };
-  appendSystem(room, describeSkillUse(room, player, null), { kind: "skill" });
-  schedulePendingSkillResolution(room, io);
-  return true;
-}
-
-function buildPendingSkillPreview({
-  pendingSkillId,
-  player,
-  character,
-  skill,
-  requestedTargetId,
-  resolvedGame,
-  resolvesAt
-}) {
-  const skillAction = [...(resolvedGame.history ?? [])].reverse().find((entry) => entry.type === "skill");
-  const effectType = skillAction?.effectType ?? skill?.effectType ?? skill?.id ?? "";
-  const targetId = skillAction?.id ?? requestedTargetId ?? null;
-  const markedPointIds = Array.isArray(skillAction?.marked) ? skillAction.marked : [];
-  const affectedPointIds = affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds });
-
-  return {
-    id: pendingSkillId,
-    color: player.color,
-    username: player.user.username,
-    characterId: character.id ?? player.characterId,
-    character: player.character ?? null,
-    characterName: character.name,
-    itemEffects: player.user.itemEffects ?? {},
-    skillName: skill.name,
-    effectType,
-    targetId,
-    affectedPointIds,
-    markedPointIds,
-    removed: skillAction?.removed ?? 0,
-    removedByColor: skillAction?.removedByColor ?? null,
-    resolvesAt,
-    bannerDurationMs: SKILL_BANNER_DURATION_MS,
-    boardEffectDurationMs: SKILL_BOARD_EFFECT_DURATION_MS
-  };
-}
-
-function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds }) {
-  if (effectType === "random-blast") return markedPointIds;
-  return targetId ? [targetId] : [];
-}
-
-function schedulePendingSkillResolution(room, io) {
-  const resolution = room.pendingSkillResolution;
-  if (!canSchedulePendingSkillResolution(resolution)) return false;
-  const delay = pendingSkillResolutionDelay(resolution);
-  scheduleRoomTimeout(room, () => {
-    completePendingSkillResolution(room.code, resolution.pendingSkillId, io);
-  }, delay);
-  return true;
-}
-
-function completePendingSkillResolution(roomCode, pendingSkillId, io) {
-  const latest = rooms.get(roomCode);
-  if (!latest || latest.game.pendingSkill?.id !== pendingSkillId) return false;
-  const resolution = latest.pendingSkillResolution;
-  if (!resolution?.game) return false;
-  const resolvedGame = structuredClone(resolution.game);
-  resolvedGame.pendingSkill = null;
-  latest.pendingSkillResolution = null;
-  latest.game = resolvedGame;
-  const player = latest.players.find((candidate) => candidate.color === resolution.playerColor);
-  if (player) resetByoYomi(player);
-  appendNotices(latest, resolution.notices ?? []);
-  if (latest.game.phase === GAME_PHASES.finished) scheduleRoomClose(roomCode, io);
-  else maybeStartPassiveSkill(latest, io);
-  broadcastRoom(io, latest);
-  return true;
 }
 
 export function completeRoomOpening(room, io) {
