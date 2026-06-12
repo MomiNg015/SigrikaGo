@@ -61,6 +61,35 @@ app.use("/api/auth", createAuthRouter({ prisma, jwtSecret, loginSessions, online
 
 Tests touching auth route status codes, cookie rotation/clearing, forced login, refresh-session recovery, or logout cleanup should update `server/authRoutes.test.js`; lower-level session storage behavior should stay in `server/loginSessions.test.js`.
 
+### Admin User Management Boundary Contract
+
+`server/adminUserManagement.js` owns admin-side user write operations:
+
+- `sanitizeUserUpdate(body)` accepts only editable user fields and normalizes ratings, coins, owned characters, owned items, selected character, and role values.
+- `requireUserUpdateData(data)` is the shared empty-update guard for user edit routes.
+- `updateUserProfile()` owns profile updates, structured asset synchronization, progress ledger entries for admin rating/coin changes, last-active-admin protection, and `user.update` audit writes.
+- `banUser()` and `unbanUser()` own status transitions, ban metadata, last-active-admin protection for bans, and corresponding audit writes.
+- `resetUserPassword()` owns bcrypt hashing inside the same transaction as the `user.reset-password` audit write, without leaking password material into audit JSON.
+- User-target audit JSON serialization and low-level `AdminAuditLog` writes live in `server/adminAudit.js`.
+
+`server/adminRoutes.js` should validate route-only concerns such as path params and minimum password/reason length, then delegate user mutations to this boundary. It should not duplicate user-field sanitization, structured asset sync decisions, progress-ledger composition, password hashing, or last-admin checks.
+
+Wrong:
+
+```js
+router.patch("/users/:id", async (req, res) => {
+  await prisma.user.update({ where: { id: req.params.id }, data: req.body });
+});
+```
+
+Correct:
+
+```js
+res.json(await updateUserProfile({ prisma, adminUser: req.user, userId: req.params.id, body: req.body }));
+```
+
+Tests touching admin user edit sanitization, ban/unban, password reset, asset sync, progress ledger writes, or admin user audit entries should update `server/adminRoutes.test.js` or a focused `server/adminUserManagement.test.js`; route wiring tests can remain in `server/adminRoutes.test.js`.
+
 ### Room Broadcast Boundary Contract
 
 `server/roomBroadcasts.js` owns the Socket.IO delivery mechanics for room-level events:

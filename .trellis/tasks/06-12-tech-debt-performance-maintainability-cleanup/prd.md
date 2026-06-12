@@ -316,6 +316,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/authRoutes.test.js` for registration login responses, active-session conflicts, force-login eviction, refresh cookie clearing/rotation, and logout cleanup.
 * Updated `docs/system-design.md` and backend quality guidelines for the auth HTTP route contract.
 
+### Batch 32 Completed
+
+* Added `server/adminUserManagement.js` as the admin-side user mutation boundary for user edit sanitization, profile updates, ban/unban, password reset, structured asset sync, progress ledger entries, and last-active-admin protection.
+* Added `server/adminAudit.js` and `server/adminRouteErrors.js` for shared admin audit writes and route error construction.
+* Updated `server/adminRoutes.js` to delegate user write operations and audit serialization to the extracted modules while preserving existing compatibility exports.
+* Updated `docs/system-design.md` and backend quality guidelines for the admin user-management contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.
