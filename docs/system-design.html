@@ -768,6 +768,18 @@
 </ul>
 </ul>
 <ul>
+<li><code>server/roomSkillMessages.js</code></li>
+<ul>
+<li>房间技能系统消息边界模块。</li>
+</ul>
+<ul>
+<li>集中维护技能使用文案、模板占位符替换、棋盘坐标格式化和棋子颜色标签；<code>server/rooms.js</code> 只在技能进入预览或被动技能触发时追加系统消息。</li>
+</ul>
+<ul>
+<li>后续如果扩展角色技能文案、国际化、回放显示或技能消息模板，应优先扩展该模块，避免把展示文案重新散入实时房间流程。</li>
+</ul>
+</ul>
+<ul>
 <li><code>server/roomTimers.js</code></li>
 <ul>
 <li>房间计时器账本模块。</li>
@@ -2596,7 +2608,7 @@
 <ul>
 <li>核心源码体量仍偏集中。本轮扫描中，超过 300 行的主要业务文件包括 <code>server/rooms.js</code>、<code>src/shared/game.js</code>、<code>server/adminRoutes.js</code>、<code>server/index.js</code>、<code>src/audio/playback.jsx</code>：</li>
 <ul>
-<li><code>server/rooms.js</code> 已拆出 room view、广播边界、presence 状态、匹配队列、timer 账本、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、断线恢复与关闭调度。</li>
+<li><code>server/rooms.js</code> 已拆出 room view、广播边界、presence 状态、匹配队列、技能消息、timer 账本、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、断线恢复与关闭调度。</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> 已拆出 <code>AdminShell</code> 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。</li>
@@ -3339,7 +3351,7 @@
 <li><code>src/room/RoomScreen.jsx</code> now delegates the three-column battle tree to <code>src/room/RoomBattleStage.jsx</code>; future room work can focus on replay/spectator projection helpers and smaller room-state hooks rather than moving raw JSX.</li>
 </ul>
 <ul>
-<li>Server room view serialization now lives in <code>server/roomView.js</code>, socket broadcast delivery lives in <code>server/roomBroadcasts.js</code>, participant/online-state queries live in <code>server/roomPresence.js</code>, matchmaking queue state lives in <code>server/roomMatchmakingQueue.js</code>, room timer bookkeeping lives in <code>server/roomTimers.js</code>, item effect cleanup lives in <code>server/roomItemEffects.js</code>, room-user reward application lives in <code>server/roomRewards.js</code>, room snapshot persistence lives in <code>server/roomStatePersistence.js</code>, pending skill resolution snapshot math lives in <code>server/roomSkillResolution.js</code>, clock timing calculation lives in <code>server/roomClockTiming.js</code>, standard move/pass/resign side effects live in <code>server/roomGameActions.js</code>, and counting/draw/scoring room mutations live in <code>server/roomScoringFlow.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, skill actions, and persistence triggers.</li>
+<li>Server room view serialization now lives in <code>server/roomView.js</code>, socket broadcast delivery lives in <code>server/roomBroadcasts.js</code>, participant/online-state queries live in <code>server/roomPresence.js</code>, matchmaking queue state lives in <code>server/roomMatchmakingQueue.js</code>, skill system-message formatting lives in <code>server/roomSkillMessages.js</code>, room timer bookkeeping lives in <code>server/roomTimers.js</code>, item effect cleanup lives in <code>server/roomItemEffects.js</code>, room-user reward application lives in <code>server/roomRewards.js</code>, room snapshot persistence lives in <code>server/roomStatePersistence.js</code>, pending skill resolution snapshot math lives in <code>server/roomSkillResolution.js</code>, clock timing calculation lives in <code>server/roomClockTiming.js</code>, standard move/pass/resign side effects live in <code>server/roomGameActions.js</code>, and counting/draw/scoring room mutations live in <code>server/roomScoringFlow.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, skill actions, and persistence triggers.</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> has split its shell and major tab bodies; high-value follow-up targets are now the remaining skill contract/replay compatibility wrappers inside <code>src/shared/game.js</code>, the real-time lifecycle/broadcast boundary inside <code>server/rooms.js</code>, and the remaining voice/cache subdomains in <code>src/audio/playback.jsx</code>.</li>
@@ -3627,6 +3639,9 @@
 </ul>
 <ul>
 <li><code>server/roomMatchmakingQueue.js</code> is the backend matchmaking queue boundary for waiting-player state. Matchmaking joins, leaves, disconnect cleanup, per-mode counts, and custom <code>canPair</code> filters go through this module, while room creation and match-success delivery stay in <code>server/rooms.js</code>.</li>
+</ul>
+<ul>
+<li><code>server/roomSkillMessages.js</code> is the backend skill-message formatting boundary. Skill use notices, custom <code>systemMessage</code> template replacement, point labels, and stone labels live there so room lifecycle code does not own display-string rules.</li>
 </ul>
 <ul>
 <li><code>server/roomTimers.js</code> is the backend timer bookkeeping boundary for room intervals and tracked timeouts. Room lifecycle code should schedule through this module so timeout ids are removed after firing and cleared consistently during room shutdown or empty-room cancellation.</li>

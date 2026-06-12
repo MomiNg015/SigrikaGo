@@ -140,6 +140,31 @@ const match = matchmakingQueue.join(player, { canPair });
 
 Tests touching queue state, mode isolation, deduplication, or `canPair` behavior should update `server/roomMatchmakingQueue.test.js`; end-to-end room creation behavior should stay in `server/rooms.test.js`.
 
+### Room Skill Message Boundary Contract
+
+`server/roomSkillMessages.js` owns skill system-message formatting:
+
+- `describeSkillUse(room, player, targetId)` builds the user-facing skill notice for active and passive skill previews.
+- `renderSkillMessage(template, values)` replaces supported placeholders: `{player}`, `{character}`, `{skill}`, `{point}`, `{fromColor}`, `{toColor}`, `{targetColor}`, and `{color}`.
+- `formatPointLabel(pointId)` formats board coordinates with the project coordinate labels.
+- `stoneLabel(color)` formats `black`, `white`, or unknown stones for messages.
+
+`server/rooms.js` should decide **when** to append a skill system message, but it should not own skill display strings, coordinate labels, or template replacement rules.
+
+Wrong:
+
+```js
+appendSystem(room, `${player.user.username} used ${skill.name}`, { kind: "skill" });
+```
+
+Correct:
+
+```js
+appendSystem(room, describeSkillUse(room, player, targetId), { kind: "skill" });
+```
+
+Tests touching skill message text, placeholders, point labels, or stone labels should update `server/roomSkillMessages.test.js`; room flow tests can assert that a skill message was appended.
+
 ### Leaderboard API Contract
 
 `GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:

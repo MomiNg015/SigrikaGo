@@ -56,6 +56,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Room interval/timeout bookkeeping is isolated from `server/rooms.js` behind a dedicated backend timer boundary.
 * [x] Shared room participant and online-state queries are isolated behind a backend presence boundary.
 * [x] Matchmaking waiting-player queue state is isolated behind a dedicated backend queue boundary.
+* [x] Skill system-message formatting is isolated from `server/rooms.js` behind a dedicated backend message boundary.
 
 ## Definition of Done
 
@@ -164,6 +165,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Updated `server/rooms.js` to delegate queue listing, counts, per-mode counts, join deduplication, same-mode matching, leave cleanup, and socket disconnect cleanup to the queue boundary while keeping room creation and match delivery in the room lifecycle module.
 * Added `server/roomMatchmakingQueue.test.js` for mode counts, same-mode matching, deduplication, custom `canPair` filtering, user/socket removal, and queue clearing.
 * Updated `docs/system-design.md` and backend quality guidelines for the room matchmaking queue boundary contract.
+
+### Batch 13 Completed
+
+* Added `server/roomSkillMessages.js` as the skill system-message formatting boundary.
+* Updated `server/rooms.js` to delegate skill use notices, custom skill message template replacement, point labels, and stone labels to the message boundary while keeping append timing in the room lifecycle module.
+* Added `server/roomSkillMessages.test.js` for point labels, stone labels, template replacement, custom skill messages, flip-stone target-color text, and hidden-hand fallback text.
+* Updated `docs/system-design.md` and backend quality guidelines for the room skill message boundary contract.
 
 ### Later Batches
 
