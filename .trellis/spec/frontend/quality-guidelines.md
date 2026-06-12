@@ -38,6 +38,125 @@ Questions to answer:
 
 ## Testing Requirements
 
+### Startup preload and handoff check contracts
+
+#### 1. Scope / Trigger
+- Trigger: any change to login/startup preload behavior, runtime asset manifests, or project handoff verification commands.
+- Startup preload is user-visible performance infrastructure; it must keep first-screen assets prioritized without forcing every optional BGM/voice/shop asset to block home entry.
+
+#### 2. Signatures
+- `loginPreloadAssets()` returns grouped assets: `criticalImages`, `deferredImages`, `images`, `criticalAudio`, `deferredAudio`, and `audio`.
+- `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress })` waits for critical groups, starts deferred groups in the background, and caps concurrent loaders.
+- `npm run check` is the local handoff gate and should run unit tests, Vite build, production config validation with explicit sample env, and `docs:system-design`.
+- `npm run check:production` remains the strict production-env validator and must not silently inject sample secrets or origins.
+
+#### 3. Contracts
+- Critical images include character portraits and home entry/background imagery needed for the first home render.
+- Critical audio includes common board/UI effect sounds that are decoded for immediate interaction feedback.
+- Deferred media includes shop/effect previews, stone decoration images, result/match sounds, BGM tracks, character skill voices, and system voices.
+- Preload progress represents critical preload completion; deferred assets must not keep users trapped on the preload screen.
+- Preload failures remain non-blocking for both critical and deferred groups.
+- The grouped asset API must keep `images` and `audio` flattened arrays for compatibility with tests and existing callers.
+
+#### 4. Validation & Error Matrix
+- Missing grouped fields but legacy `images`/`audio` provided -> treat all legacy assets as critical.
+- Empty critical groups -> call `onProgress(1)` and still start deferred work if present.
+- Invalid or zero concurrency -> fall back to one worker.
+- Loader rejection -> swallow the failure and continue remaining preload work.
+- Production env missing real secrets/origins -> `npm run check:production` fails; `npm run check` may use explicit sample env for local validation.
+
+#### 5. Good/Base/Bad Cases
+- Good: Login reaches home after current portraits, home art, and UI/board SFX are ready while BGM and voice assets keep loading in the background.
+- Base: Older tests or helpers that pass only `images` and `audio` still work.
+- Bad: Awaiting every configured music and voice file before home entry.
+- Bad: Making `check:production` pass by mutating production defaults instead of keeping sample env limited to the aggregate `check` command.
+
+#### 6. Tests Required
+- Asset grouping tests must assert representative first-screen assets are critical and representative music/voice/shop assets are deferred.
+- Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
+- Script contract tests must assert `npm run check` includes tests, build, production config validation, docs generation, and explicit sample production env.
+- Run `npm run check` before handoff when changing preload or verification commands.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await Promise.all([...images, ...audio].map(preloadEverything));
+```
+
+This blocks the home screen on optional music, voice, shop, and effect-preview assets.
+
+Correct:
+
+```js
+await preloadLoginAssets(loginPreloadAssets({ characters }), { onProgress });
+```
+
+`preloadLoginAssets` waits for critical groups and starts deferred groups with a concurrency cap.
+
+### Board point and interaction feedback performance contracts
+
+#### 1. Scope / Trigger
+- Trigger: any change to `src/room/Board.jsx` point rendering, point event handling, scoring/neutral point interactions, or `src/app/InteractionFeedback.jsx` unavailable feedback animation.
+- These paths sit on high-frequency user interactions; they must reduce unnecessary renders and avoid layout-thrashing reads without freezing current event behavior.
+
+#### 2. Signatures
+- `arePointButtonPropsEqual(previous, next)` is the point-level React memo comparator for board intersections.
+- Point buttons receive stable refs such as `handlersRef` and `pointerTypeRef`; visible state and capability booleans remain ordinary props.
+- `triggerUnavailableShake(target)` restarts `ui-unavailable-shake` without reading layout metrics such as `offsetWidth`.
+
+#### 3. Contracts
+- Point memo comparison may ignore event function identity only when the rendered button reads the latest handlers through a stable ref object.
+- Comparator inputs must include visible point state, board size, marker/decoration classes, move number state, scoring mark state, and interaction capability flags such as `hasScoringPoint`.
+- Do not rely on `game` object identity inside a point button; derive per-point display props in `Board` and pass only the point's slice.
+- Unavailable feedback may remove and re-add the shake class on the next animation frame; it must not force a synchronous layout read to restart CSS animation.
+- Neutral point marking remains phase-gated by an explicit capability prop such as `canMarkNeutral`.
+
+#### 4. Validation & Error Matrix
+- Handler function changes but the same stable handler ref is passed -> point button may stay memoized and must still call the latest handler from `handlersRef.current`.
+- Scoring handler availability changes -> point button must re-render because pointer/click semantics change.
+- Point stone, mark, decoration, move number, preview class, or confirmation class changes -> point button must re-render.
+- Browser lacks `requestAnimationFrame` -> unavailable feedback may fall back to a timer instead of forcing layout.
+
+#### 5. Good/Base/Bad Cases
+- Good: A timer tick or parent handler recreation does not re-render all board intersections, while a new click handler stored in `handlersRef.current` is still used.
+- Base: A changed point object for one intersection re-renders that point and preserves other memoized points.
+- Bad: Ignoring handler identity while the point button directly closes over stale `onPoint`, `onScoringPoint`, or `onNeutral` props.
+- Bad: Restarting disabled feedback by reading `target.offsetWidth`.
+
+#### 6. Tests Required
+- Board comparator tests must assert handler-ref content changes stay memoized and visible/capability changes re-render.
+- Interaction feedback tests must assert source behavior does not use `offsetWidth` and uses an async restart mechanism such as `requestAnimationFrame`.
+- Run targeted tests for `src/room/Board.test.js` and `src/app/InteractionFeedback.test.js`, then run the project `check` gate before handoff.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+const MemoPointButton = memo(PointButton, () => true);
+
+function PointButton({ onPoint, point }) {
+  return <button onClick={() => onPoint(point)} />;
+}
+```
+
+This can keep a stale click closure after the parent changes game interaction behavior.
+
+Correct:
+
+```jsx
+const handlersRef = useRef({ onPoint });
+handlersRef.current = { onPoint };
+
+function PointButton({ handlersRef, point }) {
+  return <button onClick={() => handlersRef.current.onPoint(point)} />;
+}
+```
+
+The memoized button avoids handler-identity churn while still calling the latest handler.
+
 ### CSS Contract Ownership
 
 When a visual contract is asserted by static CSS tests, keep one source test responsible for exact sizing values and let broader theme tests assert presence/scope instead of duplicating the same literals.

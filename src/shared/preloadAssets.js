@@ -54,9 +54,11 @@ export function loginPreloadAssets({
   skillVoices = CHARACTER_SKILL_VOICES,
   systemVoices = CHARACTER_SYSTEM_VOICES
 } = {}) {
-  const images = compactUnique([
+  const criticalImages = compactUnique([
     ...Object.values(characters).map((character) => character?.portrait),
-    ...HOME_IMAGE_ASSETS,
+    ...HOME_IMAGE_ASSETS
+  ]);
+  const deferredImages = compactUnique([
     ...SHOP_IMAGE_ASSETS,
     ...EFFECT_IMAGE_ASSETS,
     ...Object.values(STONE_DECORATIONS).flatMap((decoration) => [
@@ -65,8 +67,9 @@ export function loginPreloadAssets({
       decoration.images?.white
     ])
   ]);
+  const images = compactUnique([...criticalImages, ...deferredImages]);
 
-  const audio = compactUnique([
+  const criticalAudio = compactUnique([
     STONE_SOUND,
     CAPTURE_SOUND,
     HIDDEN_HAND_REVEAL_SOUND,
@@ -76,7 +79,9 @@ export function loginPreloadAssets({
     UI_HOUSE_OPEN_SOUND,
     UI_MATCH_OPEN_SOUND,
     UI_SHOP_OPEN_SOUND,
-    UI_UNAVAILABLE_SOUND,
+    UI_UNAVAILABLE_SOUND
+  ]);
+  const deferredAudio = compactUnique([
     MATCH_SUCCESS_SOUND,
     VICTORY_SOUND,
     DEFEAT_SOUND,
@@ -84,13 +89,19 @@ export function loginPreloadAssets({
     ...Object.values(skillVoices),
     ...Object.values(systemVoices).flatMap((voiceMap) => Object.values(voiceMap ?? {}))
   ]);
+  const audio = compactUnique([...criticalAudio, ...deferredAudio]);
 
-  return { images, audio };
+  return { criticalImages, deferredImages, images, criticalAudio, deferredAudio, audio };
 }
 
-export async function preloadLoginAssets(assets, { onProgress = () => {} } = {}) {
-  const images = assets?.images ?? [];
-  const audio = assets?.audio ?? [];
+export async function preloadLoginAssets(assets, {
+  concurrency = 6,
+  loadAudio = preloadFetch,
+  loadEffectAudio = preloadEffectSound,
+  loadImage = preloadImage,
+  onProgress = () => {}
+} = {}) {
+  const groups = normalizePreloadAssetGroups(assets);
   const decodedEffects = new Set([
     STONE_SOUND,
     CAPTURE_SOUND,
@@ -103,20 +114,31 @@ export async function preloadLoginAssets(assets, { onProgress = () => {} } = {})
     UI_SHOP_OPEN_SOUND,
     UI_UNAVAILABLE_SOUND
   ]);
-  const tasks = [
-    ...images.map((src) => () => preloadImage(src)),
-    ...audio.map((src) => () => decodedEffects.has(src) ? preloadEffectSound(src) : preloadFetch(src))
-  ];
-  if (tasks.length === 0) {
+  const criticalTasks = createPreloadTasks(groups.criticalImages, groups.criticalAudio, {
+    decodedEffects,
+    loadAudio,
+    loadEffectAudio,
+    loadImage
+  });
+  const deferredTasks = createPreloadTasks(groups.deferredImages, groups.deferredAudio, {
+    decodedEffects,
+    loadAudio,
+    loadEffectAudio,
+    loadImage
+  });
+  if (criticalTasks.length === 0) {
     onProgress(1);
-    return;
+  } else {
+    let completed = 0;
+    await runPreloadTasks(criticalTasks, {
+      concurrency,
+      onComplete: () => {
+        completed += 1;
+        onProgress(completed / criticalTasks.length);
+      }
+    });
   }
-  let completed = 0;
-  await Promise.all(tasks.map(async (task) => {
-    await task().catch(() => null);
-    completed += 1;
-    onProgress(completed / tasks.length);
-  }));
+  void runPreloadTasks(deferredTasks, { concurrency });
 }
 
 function preloadImage(src) {
@@ -142,4 +164,46 @@ async function preloadFetch(src) {
 
 function compactUnique(values) {
   return [...new Set(values.filter(Boolean))];
+}
+
+function normalizePreloadAssetGroups(assets = {}) {
+  const hasGroupedAssets = Array.isArray(assets.criticalImages)
+    || Array.isArray(assets.deferredImages)
+    || Array.isArray(assets.criticalAudio)
+    || Array.isArray(assets.deferredAudio);
+  if (!hasGroupedAssets) {
+    return {
+      criticalImages: compactUnique(assets.images ?? []),
+      deferredImages: [],
+      criticalAudio: compactUnique(assets.audio ?? []),
+      deferredAudio: []
+    };
+  }
+  return {
+    criticalImages: compactUnique(assets.criticalImages ?? []),
+    deferredImages: compactUnique(assets.deferredImages ?? []),
+    criticalAudio: compactUnique(assets.criticalAudio ?? []),
+    deferredAudio: compactUnique(assets.deferredAudio ?? [])
+  };
+}
+
+function createPreloadTasks(images, audio, { decodedEffects, loadAudio, loadEffectAudio, loadImage }) {
+  return [
+    ...images.map((src) => () => loadImage(src)),
+    ...audio.map((src) => () => decodedEffects.has(src) ? loadEffectAudio(src) : loadAudio(src))
+  ];
+}
+
+async function runPreloadTasks(tasks, { concurrency = 6, onComplete = () => {} } = {}) {
+  if (tasks.length === 0) return;
+  const workerCount = Math.max(1, Math.min(Number(concurrency) || 1, tasks.length));
+  let nextIndex = 0;
+  await Promise.all(Array.from({ length: workerCount }, async () => {
+    while (nextIndex < tasks.length) {
+      const task = tasks[nextIndex];
+      nextIndex += 1;
+      await task().catch(() => null);
+      onComplete();
+    }
+  }));
 }

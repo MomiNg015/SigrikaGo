@@ -4,7 +4,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createPoints } from "../shared/game.js";
 import Board from "./Board.jsx";
-import { areBoardPropsEqual, stoneOffsetForPoint } from "./Board.jsx";
+import { areBoardPropsEqual, arePointButtonPropsEqual, stoneOffsetForPoint } from "./Board.jsx";
 
 describe("areBoardPropsEqual", () => {
   test("keeps the board memoized when only handler references change", () => {
@@ -240,6 +240,36 @@ describe("areBoardPropsEqual", () => {
   });
 });
 
+describe("arePointButtonPropsEqual", () => {
+  test("keeps a board point memoized when only handler ref contents change", () => {
+    const point = { id: "3,4", x: 3, y: 4, valid: true, stone: null };
+    const pointerTypeRef = { current: "" };
+    const handlersRef = { current: { onPoint: () => "before", onNeutral: () => {}, onScoringPoint: null } };
+    const previous = pointButtonProps({ point, pointerTypeRef, handlersRef });
+    handlersRef.current = { onPoint: () => "after", onNeutral: () => {}, onScoringPoint: null };
+    const next = pointButtonProps({ point, pointerTypeRef, handlersRef });
+
+    expect(arePointButtonPropsEqual(previous, next)).toBe(true);
+  });
+
+  test("rerenders a board point when visible point state changes", () => {
+    const point = { id: "3,4", x: 3, y: 4, valid: true, stone: null };
+
+    expect(arePointButtonPropsEqual(
+      pointButtonProps({ point }),
+      pointButtonProps({ point: { ...point, stone: "black" } })
+    )).toBe(false);
+    expect(arePointButtonPropsEqual(
+      pointButtonProps({ point, showMoves: false }),
+      pointButtonProps({ point, showMoves: true })
+    )).toBe(false);
+    expect(arePointButtonPropsEqual(
+      pointButtonProps({ point, hasScoringPoint: false }),
+      pointButtonProps({ point, hasScoringPoint: true })
+    )).toBe(false);
+  });
+});
+
 function boardProps(overrides = {}) {
   return {
     game: { phase: "playing", points: [], history: [] },
@@ -251,6 +281,29 @@ function boardProps(overrides = {}) {
     onPoint: () => {},
     onScoringPoint: null,
     onNeutral: () => {},
+    ...overrides
+  };
+}
+
+function pointButtonProps(overrides = {}) {
+  return {
+    boardSize: 13,
+    confirmClass: "",
+    deadOwner: null,
+    decorationImage: null,
+    emptyTerritoryOwner: null,
+    gameMode: "spark",
+    handlersRef: { current: { onPoint: () => {}, onScoringPoint: null, onNeutral: () => {} } },
+    hasScoringPoint: false,
+    isStar: false,
+    markedActionId: "",
+    moveNumber: null,
+    neutralMarked: false,
+    point: { id: "0,0", x: 0, y: 0, valid: true, stone: null },
+    pointerTypeRef: { current: "" },
+    previewClass: "",
+    showMoves: false,
+    showScoringMarks: false,
     ...overrides
   };
 }

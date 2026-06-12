@@ -39,4 +39,11 @@ describe("InteractionFeedback", () => {
     expect(houseGridSource).toContain("data-ui-sound=\"confirm\"");
     expect(homeDockSource).toContain("data-ui-sound=\"none\"");
   });
+
+  it("restarts unavailable feedback without forcing synchronous layout", () => {
+    const source = readFileSync(new URL("./InteractionFeedback.jsx", import.meta.url), "utf8");
+
+    expect(source).not.toContain("offsetWidth");
+    expect(source).toContain("requestAnimationFrame");
+  });
 });

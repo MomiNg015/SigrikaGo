@@ -100,11 +100,20 @@ function shouldSuppressConfirmSound(target) {
 function triggerUnavailableShake(target) {
   target.classList.remove("ui-unavailable-shake");
   target.style.setProperty("--ui-unavailable-shake-duration", `${UI_UNAVAILABLE_SHAKE_MS}ms`);
-  void target.offsetWidth;
-  target.classList.add("ui-unavailable-shake");
+  scheduleAnimationFrame(() => {
+    target.classList.add("ui-unavailable-shake");
+  });
   window.setTimeout(() => {
     target.classList.remove("ui-unavailable-shake");
   }, UI_UNAVAILABLE_SHAKE_MS);
+}
+
+function scheduleAnimationFrame(callback) {
+  if (typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(callback);
+    return;
+  }
+  window.setTimeout(callback, 0);
 }
 
 function closestElement(target, selector) {

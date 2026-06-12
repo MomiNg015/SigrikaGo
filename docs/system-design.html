@@ -2799,7 +2799,7 @@
 <li>Owns fixed SFX asset constants, effect preloading/decoded cache, effect Web Audio playback, HTMLAudio fallback, no-browser no-op protection, and board sound routing for stone/capture/hidden-hand reveal effects. It also owns UI interaction SFX constants for <code>ui_confirm.ogg</code>, <code>ui_close_window.ogg</code>, <code>ui_house_open.ogg</code>, <code>ui_match_open.ogg</code>, <code>ui_detail_open.ogg</code>, <code>ui_shop_open.ogg</code>, and <code>ui_unavailable.ogg</code>. <code>src/audio/playback.jsx</code> keeps compatibility re-exports for existing callers.</li>
 </ul>
 <ul>
-<li><code>src/app/InteractionFeedback.jsx</code> installs document-level interaction feedback: enabled button-like controls play the confirm SFX, disabled/locked controls play the unavailable SFX, and the unavailable target receives a <code>ui-unavailable-shake</code> animation whose duration matches <code>ui_unavailable.ogg</code>. Specialized interactions can set <code>data-ui-sound=&quot;none&quot;</code> to avoid double-playing the generic confirm cue. Room board interactions, player-info panels, the room title/info stack, and replay control bars are quiet zones for generic confirm SFX so normal moves, high-frequency info taps, and replay stepping do not fire UI prompt sounds; replay disabled buttons can still fire the unavailable SFX.</li>
+<li><code>src/app/InteractionFeedback.jsx</code> installs document-level interaction feedback: enabled button-like controls play the confirm SFX, disabled/locked controls play the unavailable SFX, and the unavailable target receives a <code>ui-unavailable-shake</code> animation whose duration matches <code>ui_unavailable.ogg</code>. The unavailable animation restarts by removing the class and re-adding it on the next animation frame, avoiding synchronous layout reads on high-frequency disabled taps. Specialized interactions can set <code>data-ui-sound=&quot;none&quot;</code> to avoid double-playing the generic confirm cue. Room board interactions, player-info panels, the room title/info stack, and replay control bars are quiet zones for generic confirm SFX so normal moves, high-frequency info taps, and replay stepping do not fire UI prompt sounds; replay disabled buttons can still fire the unavailable SFX.</li>
 </ul>
 </ul>
 <ul>
@@ -3264,6 +3264,9 @@
 <li><code>Board.jsx</code> owns board grid rendering, coordinate labels, stones, move numbers, scoring marks, skill effect markers, decorated stone images, the latest-move red stone outline, and board point events. The latest-move outline is centered on the stone as an independent square/circular marker so decorated stone art cannot stretch it into an oval.</li>
 </ul>
 <ul>
+<li><code>Board.jsx</code> renders intersections through memoized point buttons. <code>arePointButtonPropsEqual()</code> compares only visible point state, point identity, pointer-handler refs, and interaction capability flags; event functions are read through a stable <code>handlersRef</code> so room parent renders can update click behavior without forcing every board point to re-render.</li>
+</ul>
+<ul>
 <li><code>Board.jsx</code> renders board grid strokes from <code>buildBoardLines()</code>, which emits continuous row/column runs instead of one segment per cell. This avoids uneven internal stroke joins and keeps first-line corners connected; invalid intersections still split only the affected row/column run.</li>
 </ul>
 <ul>
@@ -3433,6 +3436,9 @@
 <li><code>npm run check:production</code> 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；该脚本默认按生产规则检查，即使调用方忘记设置 <code>NODE_ENV=production</code> 也不会按开发环境误通过。</li>
 </ul>
 <ul>
+<li><code>npm run check</code> 是当前交付前的聚合质量入口，会顺序运行单元测试、Vite build、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。</li>
+</ul>
+<ul>
 <li>Username input is normalized server-side and must be 2-16 characters, limited to Chinese characters, English letters, numbers, and <code>_</code>.</li>
 </ul>
 <ul>
@@ -3482,7 +3488,7 @@
 <li>Fresh login enters <code>preloading</code> before the home screen, preventing the home screen from flashing before assets begin loading. Stored-token startup is intentionally disabled so refresh and browser restart return to the login screen.</li>
 </ul>
 <ul>
-<li>The preload step fetches non-replay runtime assets after login: all current character portraits, home and shop imagery including <code>/assets/home/multipurpose-classroom-bg.webp</code>, Denia candy GIF portrait, stone decoration images, the Denia bubble-effect preview, common board/result/match/UI interaction sound effects, every configured BGM track, every configured character skill voice, and every configured character system voice. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.</li>
+<li>The preload step fetches non-replay runtime assets after login, but it is now split by startup criticality. Critical preload waits for current character portraits, home entry/background imagery, and common board/UI effect sounds before the app can leave the preload screen. Shop imagery, candy/effect previews, stone decoration images, result/match sounds, configured BGM tracks, character skill voices, and system voices stay in the same asset manifest but load as deferred background work with a concurrency cap so first entry to the home screen is not blocked by the full music/voice library. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.</li>
 </ul>
 <ul>
 <li>Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.</li>
@@ -3569,7 +3575,7 @@
 <li>The frontend merges <code>room:clock</code> through <code>src/app/roomClock.js</code>, updating only changed player timer objects while preserving the existing <code>room.game</code> object reference.</li>
 </ul>
 <ul>
-<li><code>src/room/Board.jsx</code> is memoized with a board-specific prop comparison so timer-only updates can refresh player clocks without re-rendering the 13x13 board.</li>
+<li><code>src/room/Board.jsx</code> is memoized with a board-specific prop comparison so timer-only updates can refresh player clocks without re-rendering the board, and individual point buttons are memoized so local confirmation, marker, decoration, and scoring changes update only the affected intersections on 13-line and 19-line boards.</li>
 </ul>
 <ul>
 <li><code>src/room/PlayerInfo.jsx</code> is memoized with a player/game-slice comparison so room clock ticks only re-render the player panel whose timer or relevant game slice changed, which is especially important when item effects swap portraits to animated assets.</li>

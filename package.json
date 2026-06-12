@@ -8,6 +8,7 @@
     "dev:client": "vite --host 0.0.0.0",
     "dev:server": "node --watch-path=server --watch-path=src/shared server/index.js",
     "build": "vite build",
+    "check": "npm test && npm run build && node -e \"process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')\" && npm run docs:system-design",
     "start": "node server/index.js",
     "test": "vitest run --exclude \"**/.worktrees/**\" --exclude \"tests/e2e/**\"",
     "test:e2e": "playwright test",
