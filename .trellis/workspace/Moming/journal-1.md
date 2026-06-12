@@ -170,3 +170,36 @@ Fixed gacha admin featured prize selection so the selected prize can be cleared,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 6: Multiple gacha featured prizes
+
+**Date**: 2026-06-12
+**Task**: Multiple gacha featured prizes
+**Branch**: `codex/standard-game-mode`
+
+### Summary
+
+Added multi-select featured prize support for gacha pools across admin drafts, API validation, persistence, player/admin payloads, and player display; updated schema, migration, tests, specs, and system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0341f75` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
