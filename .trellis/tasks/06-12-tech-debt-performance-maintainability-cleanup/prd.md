@@ -56,6 +56,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Room interval/timeout bookkeeping is isolated from `server/rooms.js` behind a dedicated backend timer boundary.
 * [x] Shared room participant and online-state queries are isolated behind a backend presence boundary.
 * [x] Matchmaking waiting-player queue state is isolated behind a dedicated backend queue boundary.
+* [x] Initial room object creation and mode-specific room-user projection are isolated behind a backend factory boundary.
 * [x] Skill system-message formatting is isolated from `server/rooms.js` behind a dedicated backend message boundary.
 
 ## Definition of Done
@@ -172,6 +173,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Updated `server/rooms.js` to delegate skill use notices, custom skill message template replacement, point labels, and stone labels to the message boundary while keeping append timing in the room lifecycle module.
 * Added `server/roomSkillMessages.test.js` for point labels, stone labels, template replacement, custom skill messages, flip-stone target-color text, and hidden-hand fallback text.
 * Updated `docs/system-design.md` and backend quality guidelines for the room skill message boundary contract.
+
+### Batch 14 Completed
+
+* Added `server/roomFactory.js` as the initial room object and room-player construction boundary.
+* Updated `server/rooms.js` to delegate room code generation, black/white assignment, opening game state creation, initial timer/deadline fields, initial clock fields, and mode-specific user projection to the factory boundary.
+* Added `server/roomFactory.test.js` for deterministic room creation, player color assignment, mode stats projection, standard mode defaults, room-player shape, and room code collision retry.
+* Updated `docs/system-design.md` and backend quality guidelines for the room factory boundary contract.
 
 ### Later Batches
 

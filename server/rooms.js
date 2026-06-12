@@ -4,7 +4,6 @@ import {
   INVALID_EARLY_RESIGN_NOTICE,
   activatePassiveSkill,
   canStartSkill,
-  createGameState,
   createTimeoutResult,
   exposeHiddenHands,
   getPoint,
@@ -15,7 +14,7 @@ import {
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
-import { DEFAULT_RANK, normalizeRank, parseRecentResults, serializeRecentResults } from "../src/shared/rankProgression.js";
+import { DEFAULT_RANK, normalizeRank, serializeRecentResults } from "../src/shared/rankProgression.js";
 import { resultRewardDelta } from "../src/shared/resultRewards.js";
 import { prisma } from "./db.js";
 import { gameResultMetadata } from "./gameRecords.js";
@@ -60,6 +59,7 @@ import {
   watchPlayerSummary
 } from "./roomPresence.js";
 import { createRoomMatchmakingQueue } from "./roomMatchmakingQueue.js";
+import { createRoom, modeStatsForUser } from "./roomFactory.js";
 import {
   SKILL_BANNER_DURATION_MS,
   SKILL_BOARD_EFFECT_DURATION_MS,
@@ -75,8 +75,6 @@ export { clearRoomTimers };
 
 const rooms = new Map();
 const matchmakingQueue = createRoomMatchmakingQueue();
-const MATCH_SUCCESS_DELAY_MS = 3000;
-const OPENING_NOTICE_DELAY_MS = 3000;
 const INITIAL_PASSIVE_SKILL_DELAY_MS = 3000;
 const ROOM_CLOSE_DELAY_MS = 5 * 60 * 1000;
 const INVALID_ROOM_CLOSE_DELAY_MS = 30 * 1000;
@@ -86,6 +84,10 @@ const EMPTY_ROOM_CLOSED_TOAST = "房间因空置5分钟以上而被关闭";
 
 export function getRoom(roomCode) {
   return rooms.get(roomCode);
+}
+
+function isRoomCodeTaken(roomCode) {
+  return rooms.has(roomCode);
 }
 
 export function listActiveRooms() {
@@ -170,7 +172,10 @@ export function joinMatchmaking(player, io, { canPair = () => true } = {}) {
   const match = matchmakingQueue.join(player, { canPair });
   if (match.matched) {
     const first = match.opponent;
-    const room = createRoom(first, match.player, match.mode);
+    const room = createRoom(first, match.player, {
+      modeInput: match.mode,
+      isCodeTaken: isRoomCodeTaken
+    });
     rooms.set(room.code, room);
     persistRoom(room, { force: true });
     startGameClock(room, io);
@@ -271,7 +276,10 @@ export function createDirectRoom(first, second, io, modeInput = "spark") {
   const mode = normalizeGameModeId(modeInput);
   leaveMatchmaking(first.user.id);
   leaveMatchmaking(second.user.id);
-  const room = createRoom({ ...first, mode }, { ...second, mode }, mode);
+  const room = createRoom({ ...first, mode }, { ...second, mode }, {
+    modeInput: mode,
+    isCodeTaken: isRoomCodeTaken
+  });
   rooms.set(room.code, room);
   persistRoom(room, { force: true });
   startGameClock(room, io);
@@ -492,93 +500,6 @@ function validateActionPoint(action, boardSize) {
   if (action.pointId == null) return null;
   const point = validatePointId(action.pointId, boardSize);
   return point.ok ? null : point.error;
-}
-
-function createRoom(first, second, modeInput = first.mode ?? second.mode ?? "spark") {
-  const mode = normalizeGameModeId(modeInput);
-  const blackFirst = Math.random() >= 0.5;
-  const players = [
-    toRoomPlayer(blackFirst ? first : second, COLORS.black, mode),
-    toRoomPlayer(blackFirst ? second : first, COLORS.white, mode)
-  ];
-  const createdAt = Date.now();
-  const game = createGameState(players.map((p) => ({
-    userId: p.user.id,
-    color: p.color,
-    characterId: p.characterId,
-    character: p.character
-  })), { mode });
-  game.phase = GAME_PHASES.opening;
-  return {
-    code: randomRoomCode(),
-    mode,
-    players,
-    spectators: [],
-    game,
-    chat: [],
-    createdAt,
-    openingEndsAt: createdAt + MATCH_SUCCESS_DELAY_MS + OPENING_NOTICE_DELAY_MS,
-    closesAt: null,
-    countingDeadline: null,
-    drawDeadline: null,
-    timerId: null,
-    timeoutIds: [],
-    lastTick: Date.now(),
-    recordSaved: false
-  };
-}
-
-function toRoomPlayer(player, color, mode = "spark") {
-  return {
-    user: userForRoomMode(player.user, mode),
-    socketId: player.socketId,
-    disconnectedAt: null,
-    color,
-    characterId: player.user.selectedCharacter,
-    character: player.user.characterConfig ?? null,
-    time: {
-      main: 5 * 60,
-      byoYomi: 30,
-      periodRemaining: 30,
-      periods: 3
-    }
-  };
-}
-
-function userForRoomMode(user, mode) {
-  const normalizedMode = normalizeGameModeId(mode);
-  const stats = modeStatsForUser(user, normalizedMode);
-  return {
-    ...user,
-    rating: stats.rating,
-    rank: stats.rank,
-    wins: stats.wins,
-    losses: stats.losses
-  };
-}
-
-function modeStatsForUser(user, mode) {
-  const stats = user?.modeStats?.[mode] ?? (
-    Array.isArray(user?.modeStats)
-      ? user.modeStats.find((entry) => normalizeGameModeId(entry.mode) === mode)
-      : null
-  );
-  return {
-    rating: Number(stats?.rating ?? (mode === "spark" ? user?.rating : 1000) ?? 1000),
-    rank: normalizeRank(stats?.rank ?? (mode === "spark" ? user?.rank : DEFAULT_RANK)),
-    recentResults: parseRecentResults(stats?.recentResults),
-    wins: Number(stats?.wins ?? (mode === "spark" ? user?.wins : 0) ?? 0),
-    losses: Number(stats?.losses ?? (mode === "spark" ? user?.losses : 0) ?? 0),
-    draws: Number(stats?.draws ?? 0)
-  };
-}
-
-function randomRoomCode() {
-  let code = "";
-  do {
-    code = String(Math.floor(10000 + Math.random() * 90000));
-  } while (rooms.has(code));
-  return code;
 }
 
 function appendSystem(room, text, options = {}) {
