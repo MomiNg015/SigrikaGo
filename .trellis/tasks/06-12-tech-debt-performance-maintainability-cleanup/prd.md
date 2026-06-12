@@ -345,6 +345,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Updated `server/index.js` to mount player and replay routers while keeping shared startup/session/socket composition in the entry file.
 * Updated `docs/system-design.md` and backend quality guidelines for the player and replay HTTP route contracts.
 
+### Batch 36 Completed
+
+* Added `server/socialRoutes.js` as the social/profile HTTP boundary for social lists, friend/blacklist mutations, authenticated profile lookup, profile search, and public user replay lookup.
+* Updated `server/index.js` to mount the social router while keeping Socket.IO-only blacklist checks in the entry composition.
+* Removed the duplicate optional-room-code helper left in `server/index.js`; Socket.IO resume now uses the shared export from `server/playerRoutes.js`.
+* Added `server/socialRoutes.test.js` for relationship refresh responses, error handling, username validation, mode normalization, public replay lookup, and auth/public route mounting.
+* Updated `docs/system-design.md` and backend quality guidelines for the social HTTP route contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

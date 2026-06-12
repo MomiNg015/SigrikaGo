@@ -262,6 +262,7 @@
     authRoutes.js              # /api/auth HTTP route boundary
     playerRoutes.js            # /api/me player HTTP route boundary
     replayRoutes.js            # /api/replays player replay HTTP route boundary
+    socialRoutes.js            # /api/social and public user profile HTTP route boundary
     socketAuth.js              # Socket.IO JWT 鉴权与角色解析
     adminConfig.js             # 管理员用户名配置与角色提升
     adminRoutes.js             # /api/admin 后台管理路由
@@ -702,6 +703,18 @@
 </ul>
 <ul>
 <li>Owns personal replay query shape, legacy mode fallback, player id response fields, and replay snapshot JSON parsing. Tests touching this route should update <code>server/replayRoutes.test.js</code> instead of matching route text inside <code>server/index.js</code>.</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/socialRoutes.js</code></li>
+<ul>
+<li>Social/profile HTTP route boundary for <code>/api/social</code>, friend/blacklist mutations, <code>/api/users/search/profile</code>, <code>/api/users/:id/profile</code>, and public <code>/api/users/:id/replays</code>.</li>
+</ul>
+<ul>
+<li>Owns relationship route error shaping, social list refresh responses, username validation before profile search, profile mode normalization, and the public replay-list handler that intentionally stays outside auth middleware.</li>
+</ul>
+<ul>
+<li><code>server/index.js</code> mounts the router with <code>authHttp</code> and shared <code>statusForUser</code>; Socket.IO duel blocking still imports blacklist helpers directly from <code>server/social.js</code>.</li>
 </ul>
 </ul>
 <ul>
@@ -2800,7 +2813,7 @@
 <li><code>server/adminRoutes.js</code> 已拆出认证路由、后台用户管理写操作、后台装饰/商城商品写操作、后台角色/技能写操作、后台审计写入和路由错误对象；后续后台优化应优先继续拆上传/站点设置/只读查询子域，而不是把新后台写操作继续塞回路由文件。</li>
 </ul>
 <ul>
-<li><code>server/index.js</code> 已拆出 auth、player <code>/api/me*</code>、personal replay <code>/api/replays*</code>、admin、room runtime adapter 等边界；后续入口文件优化应继续迁移公开列表、商城/道具、社交资料、反馈、排行榜和观战只读 API，让 <code>index.js</code> 保持启动编排与 Socket.IO 事件注册职责。</li>
+<li><code>server/index.js</code> 已拆出 auth、player <code>/api/me*</code>、personal replay <code>/api/replays*</code>、social/profile、admin、room runtime adapter 等边界；后续入口文件优化应继续迁移公开列表、商城/道具、反馈、排行榜和观战只读 API，让 <code>index.js</code> 保持启动编排与 Socket.IO 事件注册职责。</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> 已拆出 <code>AdminShell</code> 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。</li>

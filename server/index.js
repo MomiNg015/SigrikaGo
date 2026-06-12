@@ -15,6 +15,7 @@ import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
 import { createAuthRouter } from "./authRoutes.js";
 import { createPlayerRouter, createCharacterSelectionData, validateOptionalRoomCode } from "./playerRoutes.js";
 import { createReplayRouter } from "./replayRoutes.js";
+import { createSocialRouter } from "./socialRoutes.js";
 import { createLoginSessionStore, ensureLoginSessionSchema } from "./loginSessions.js";
 import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
@@ -36,8 +37,7 @@ import {
   corsOriginForRequest,
   createApiRateLimit,
   createAuthRateLimit,
-  validateRoomCode,
-  validateUsername
+  validateRoomCode
 } from "./security.js";
 import {
   addChat,
@@ -65,16 +65,9 @@ import {
   roomView
 } from "./rooms.js";
 import {
-  deleteRelationship,
   ensureSocialSchema,
-  getUserProfile,
-  getUserProfileByUsername,
-  getUserReplays,
   hasBlacklistBetween,
   hasBlacklistFromOwner,
-  listSocialUsers,
-  RELATIONSHIP_TYPES,
-  setRelationship,
   toSocialUser
 } from "./social.js";
 import { resumePayloadForUser } from "./resume.js";
@@ -217,109 +210,7 @@ app.get("/api/rooms/watch", authHttp, async (req, res) => {
   res.json({ rooms: listWatchRooms().filter((room) => normalizeGameModeId(room.mode) === mode) });
 });
 
-app.get("/api/social", authHttp, async (req, res) => {
-  res.json(await listSocialUsers({
-    prisma,
-    userId: req.user.id,
-    statusForUser
-  }));
-});
-
-app.post("/api/social/friends/:targetId", authHttp, async (req, res) => {
-  try {
-    await setRelationship({
-      prisma,
-      ownerUserId: req.user.id,
-      targetUserId: req.params.targetId,
-      type: RELATIONSHIP_TYPES.friend
-    });
-    res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
-  }
-});
-
-app.delete("/api/social/friends/:targetId", authHttp, async (req, res) => {
-  await deleteRelationship({
-    prisma,
-    ownerUserId: req.user.id,
-    targetUserId: req.params.targetId,
-    type: RELATIONSHIP_TYPES.friend
-  });
-  res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
-});
-
-app.post("/api/social/blacklist/:targetId", authHttp, async (req, res) => {
-  try {
-    await setRelationship({
-      prisma,
-      ownerUserId: req.user.id,
-      targetUserId: req.params.targetId,
-      type: RELATIONSHIP_TYPES.blacklist
-    });
-    res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
-  }
-});
-
-app.delete("/api/social/blacklist/:targetId", authHttp, async (req, res) => {
-  await deleteRelationship({
-    prisma,
-    ownerUserId: req.user.id,
-    targetUserId: req.params.targetId,
-    type: RELATIONSHIP_TYPES.blacklist
-  });
-  res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
-});
-
-app.get("/api/users/search/profile", authHttp, async (req, res) => {
-  const usernameResult = validateUsername(req.query.username);
-  if (!usernameResult.ok) {
-    res.status(400).json({ error: usernameResult.error });
-    return;
-  }
-  const profile = await getUserProfileByUsername({
-    prisma,
-    username: usernameResult.value,
-    viewerId: req.user.id,
-    statusForUser,
-    mode: normalizeGameModeId(req.query.mode)
-  });
-  if (!profile) {
-    res.status(404).json({ error: "\u8be5\u7528\u6237\u4e0d\u5b58\u5728" });
-    return;
-  }
-  res.json({ profile });
-});
-
-app.get("/api/users/:id/profile", authHttp, async (req, res) => {
-  const profile = await getUserProfile({
-    prisma,
-    userId: req.params.id,
-    viewerId: req.user.id,
-    statusForUser,
-    mode: normalizeGameModeId(req.query.mode)
-  });
-  if (!profile) {
-    res.status(404).json({ error: "\u7528\u6237\u4e0d\u5b58\u5728" });
-    return;
-  }
-  res.json({ profile });
-});
-
-app.get("/api/users/:id/replays", async (req, res) => {
-  const records = await getUserReplays({
-    prisma,
-    userId: req.params.id,
-    mode: normalizeGameModeId(req.query.mode)
-  });
-  if (!records) {
-    res.status(404).json({ error: "\u7528\u6237\u4e0d\u5b58\u5728" });
-    return;
-  }
-  res.json({ records });
-});
+app.use("/api", createSocialRouter({ prisma, authHttp, statusForUser }));
 
 app.post("/api/shop/:id/purchase", authHttp, async (req, res) => {
   try {
@@ -574,12 +465,6 @@ await restorePersistedRooms(io);
 
 function sendResult(socket, result) {
   if (!result.ok) socket.emit("error:toast", result.error);
-}
-
-function validateOptionalRoomCode(roomCode) {
-  if (!roomCode) return "";
-  const result = validateRoomCode(String(roomCode));
-  return result.ok ? result.value : "";
 }
 
 function installSocketRateGuard(socket) {

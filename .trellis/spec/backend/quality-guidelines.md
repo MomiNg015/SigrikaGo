@@ -111,6 +111,39 @@ It owns personal replay query shape, player id response fields, legacy `mode ?? 
 
 Tests touching personal replay route status codes, query fields, mode fallback, or snapshot parsing should update `server/replayRoutes.test.js`.
 
+### Social HTTP Boundary Contract
+
+`server/socialRoutes.js` owns social and public-profile HTTP handlers:
+
+- `GET /api/social`
+- `POST /api/social/friends/:targetId`
+- `DELETE /api/social/friends/:targetId`
+- `POST /api/social/blacklist/:targetId`
+- `DELETE /api/social/blacklist/:targetId`
+- `GET /api/users/search/profile`
+- `GET /api/users/:id/profile`
+- `GET /api/users/:id/replays`
+
+The router accepts `authHttp` and mounts it only on authenticated social/profile routes. `GET /api/users/:id/replays` is intentionally public and must remain a single-handler route unless the product requirement changes.
+
+`server/index.js` should create shared dependencies such as `prisma`, `authHttp`, and `statusForUser`, then mount `createSocialRouter()`. It should not duplicate relationship mutation handlers, social-list refresh response shaping, username validation for profile search, mode normalization for profile/replay handlers, or public replay not-found responses.
+
+Wrong:
+
+```js
+app.post("/api/social/friends/:targetId", authHttp, async (req, res) => {
+  await setRelationship({ prisma, ownerUserId: req.user.id, targetUserId: req.params.targetId });
+});
+```
+
+Correct:
+
+```js
+app.use("/api", createSocialRouter({ prisma, authHttp, statusForUser }));
+```
+
+Tests touching social route status codes, auth/public route mounting, relationship response refreshes, username validation, mode normalization, or user replay route responses should update `server/socialRoutes.test.js`; lower-level profile and relationship query behavior should stay in `server/social.test.js`.
+
 ### Admin User Management Boundary Contract
 
 `server/adminUserManagement.js` owns admin-side user write operations:
