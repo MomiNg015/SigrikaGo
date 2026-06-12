@@ -59,6 +59,35 @@ broadcastRoom(io, room);
 
 Tests touching this boundary should update `server/roomBroadcasts.test.js` for payload shape, connected-participant filtering, and persistence timing.
 
+### Room Runtime Boundary Contract
+
+`server/roomRuntime.js` owns the runtime callback adapters shared by room lifecycle modules:
+
+- `createRoomRuntime(deps)` returns `persistRoom(room, options)`, `broadcastRoom(io, room)`, and `broadcastToast(io, room, text)`.
+- `persistRoom()` delegates to `persistRoomState({ prisma, room, force, throttleMs, onError })` and defaults `force` to false.
+- `broadcastRoom()` delegates to `server/roomBroadcasts.js` with the runtime `persistRoom` callback so full room snapshots keep forced persistence behavior centralized.
+- `broadcastToast()` forwards room toast delivery to the broadcast boundary without duplicating participant iteration.
+
+`server/rooms.js` should compose this runtime once and inject the returned callbacks into lifecycles, but it should not duplicate persistence throttling options, broadcast persistence injection, or toast forwarding wrappers.
+
+Wrong:
+
+```js
+function broadcastRoom(io, room) {
+  broadcastRoomUpdate(io, room, { persistRoom });
+}
+```
+
+Correct:
+
+```js
+const roomRuntime = createRoomRuntime(deps);
+const { persistRoom, broadcastToast } = roomRuntime;
+export const { broadcastRoom } = roomRuntime;
+```
+
+Tests touching persistence option wiring, default force behavior, full-room broadcast persistence injection, or toast forwarding should update `server/roomRuntime.test.js`; payload-level broadcast tests should stay in `server/roomBroadcasts.test.js`.
+
 ### Room Timer Boundary Contract
 
 `server/roomTimers.js` owns room timer bookkeeping:

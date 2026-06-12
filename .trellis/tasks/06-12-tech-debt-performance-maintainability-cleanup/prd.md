@@ -302,6 +302,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomOpeningLifecycle.test.js` for opening completion, non-opening no-op behavior, and direct initial passive-skill trigger delegation.
 * Updated `docs/system-design.md` and backend quality guidelines for the room opening lifecycle contract.
 
+### Batch 30 Completed
+
+* Added `server/roomRuntime.js` as the runtime persistence/broadcast adapter boundary.
+* Updated `server/rooms.js` to compose shared `persistRoom`, `broadcastRoom`, and `broadcastToast` callbacks through the runtime adapter instead of defining local wrapper functions.
+* Added `server/roomRuntime.test.js` for persistence option wiring, default force behavior, full-room broadcast persistence injection, and room toast forwarding.
+* Updated `docs/system-design.md` and backend quality guidelines for the room runtime contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

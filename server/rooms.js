@@ -44,6 +44,7 @@ import { createRoomChatLifecycle } from "./roomChatLifecycle.js";
 import { createRoomQueries } from "./roomQueries.js";
 import { createRoomPersistenceRestoreLifecycle } from "./roomPersistenceRestoreLifecycle.js";
 import { createRoomOpeningLifecycle } from "./roomOpeningLifecycle.js";
+import { createRoomRuntime } from "./roomRuntime.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -52,6 +53,18 @@ export { clearRoomTimers };
 const rooms = new Map();
 const matchmakingQueue = createRoomMatchmakingQueue();
 const ROOM_PERSIST_THROTTLE_MS = 5000;
+const roomRuntime = createRoomRuntime({
+  prisma,
+  persistRoomState,
+  broadcastRoomUpdate,
+  broadcastRoomToast,
+  throttleMs: ROOM_PERSIST_THROTTLE_MS
+});
+const {
+  persistRoom,
+  broadcastToast
+} = roomRuntime;
+export const { broadcastRoom } = roomRuntime;
 
 export function getRoom(roomCode) {
   return rooms.get(roomCode);
@@ -252,30 +265,10 @@ export function leaveMatchmaking(userId) {
 
 
 
-export function broadcastRoom(io, room) {
-  broadcastRoomUpdate(io, room, { persistRoom });
-}
-
-function broadcastToast(io, room, text) {
-  broadcastRoomToast(io, room, text);
-}
-
 export function completeRoomOpening(room, io) {
   return roomOpeningLifecycle.completeRoomOpening(room, io);
 }
 
 export function startInitialPassiveSkillNow(room, io) {
   return roomOpeningLifecycle.startInitialPassiveSkillNow(room, io);
-}
-
-function persistRoom(room, { force = false } = {}) {
-  persistRoomState({
-    prisma,
-    room,
-    force,
-    throttleMs: ROOM_PERSIST_THROTTLE_MS,
-    onError: (error) => {
-      console.error("Failed to persist room", error);
-    }
-  });
 }
