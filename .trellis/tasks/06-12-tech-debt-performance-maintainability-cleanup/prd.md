@@ -61,6 +61,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Generic room system-message appends and restored disconnect notice deduplication are isolated behind a backend message-log boundary.
 * [x] Room action point-target validation is isolated from `server/rooms.js` behind a dedicated backend validation boundary.
 * [x] Finished-room close scheduling and empty-active-room invalidation are isolated from `server/rooms.js` behind a backend close lifecycle boundary.
+* [x] Opening, passive-skill, counting, draw, and result-review deadline scheduling are isolated from `server/rooms.js` behind a backend deadline scheduler boundary.
 
 ## Definition of Done
 
@@ -200,6 +201,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Kept room lifecycle decisions in `server/rooms.js` while injecting persistence, timer, broadcast, record-save, and presence dependencies into the close lifecycle module for focused tests.
 * Added `server/roomCloseLifecycle.test.js` for close delays, unsaved record save trigger, participant-based close extension, final close payload/deletion, empty-room invalidation, and empty-room timeout cancellation.
 * Updated `docs/system-design.md` and backend quality guidelines for the room close lifecycle contract.
+
+### Batch 17 Completed
+
+* Added `server/roomDeadlineScheduler.js` as the room deadline timer scheduling boundary.
+* Updated `server/rooms.js` to delegate opening completion scheduling, initial passive-skill scheduling, counting timeout, draw timeout, result-review timeout, and restored pending deadline scheduling to the deadline scheduler boundary.
+* Kept actual room phase entry decisions and clock ticking in `server/rooms.js`, while deadline delay math and timeout reset rules live behind injected room lookup, timer, broadcast, and lifecycle callbacks.
+* Added `server/roomDeadlineScheduler.test.js` for opening delay, passive-skill delay, counting timeout, draw timeout, result-review timeout, and restored pending-deadline selection.
+* Updated `docs/system-design.md` and backend quality guidelines for the room deadline scheduler contract.
 
 ### Later Batches
 

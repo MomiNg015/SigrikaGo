@@ -8,7 +8,6 @@ import {
   exposeHiddenHands,
   getPoint,
   resultWithInvalidFlagForGame,
-  restoreSuspendedHiddenHands,
   skillUsesBoardConfirmation,
   useSkill
 } from "../src/shared/game.js";
@@ -75,6 +74,7 @@ import {
 } from "./roomSystemMessages.js";
 import { validateActionPoint } from "./roomActionValidation.js";
 import { createRoomCloseLifecycle } from "./roomCloseLifecycle.js";
+import { createRoomDeadlineScheduler } from "./roomDeadlineScheduler.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -82,7 +82,6 @@ export { clearRoomTimers };
 
 const rooms = new Map();
 const matchmakingQueue = createRoomMatchmakingQueue();
-const INITIAL_PASSIVE_SKILL_DELAY_MS = 3000;
 const ROOM_PERSIST_THROTTLE_MS = 5000;
 const EMPTY_ROOM_CLOSED_TOAST = "房间因空置5分钟以上而被关闭";
 
@@ -114,6 +113,22 @@ const {
   scheduleEmptyActiveRoomClose,
   clearEmptyRoomClose
 } = roomCloseLifecycle;
+const roomDeadlineScheduler = createRoomDeadlineScheduler({
+  rooms,
+  scheduleRoomTimeout,
+  appendSystem,
+  broadcastRoom,
+  completeRoomOpening,
+  startInitialPassiveSkillNow
+});
+const {
+  scheduleGameStart,
+  scheduleInitialPassiveSkill,
+  scheduleCountingTimeout,
+  scheduleDrawTimeout,
+  scheduleResultReviewTimeout,
+  schedulePendingRoomDeadlines
+} = roomDeadlineScheduler;
 
 export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
@@ -611,15 +626,6 @@ function completePendingSkillResolution(roomCode, pendingSkillId, io) {
   return true;
 }
 
-function scheduleGameStart(room, io) {
-  const delay = Math.max(0, room.openingEndsAt - Date.now());
-  scheduleRoomTimeout(room, () => {
-    const latest = rooms.get(room.code);
-    if (!latest) return;
-    completeRoomOpening(latest, io);
-  }, delay);
-}
-
 export function completeRoomOpening(room, io) {
   if (room.game.phase !== GAME_PHASES.opening) return false;
   room.game.phase = GAME_PHASES.playing;
@@ -628,43 +634,6 @@ export function completeRoomOpening(room, io) {
   broadcastRoom(io, room);
   scheduleInitialPassiveSkill(room, io);
   return true;
-}
-
-function scheduleInitialPassiveSkill(room, io) {
-  scheduleRoomTimeout(room, () => {
-    const latest = rooms.get(room.code);
-    if (!latest || latest.game.phase !== GAME_PHASES.playing) return;
-    if (startInitialPassiveSkillNow(latest, io)) broadcastRoom(io, latest);
-  }, INITIAL_PASSIVE_SKILL_DELAY_MS);
-}
-
-function scheduleCountingTimeout(room, io) {
-  const delay = Math.max(0, (room.countingDeadline ?? Date.now()) - Date.now());
-  scheduleRoomTimeout(room, () => {
-    const latest = rooms.get(room.code);
-    if (latest?.game.phase === GAME_PHASES.countingRequested && latest.countingDeadline && Date.now() >= latest.countingDeadline) {
-      restoreSuspendedHiddenHands(latest.game);
-      latest.game.phase = GAME_PHASES.playing;
-      latest.game.scoring = null;
-      latest.countingDeadline = null;
-      appendSystem(latest, "数子申请超时，视为不同意数子。");
-      broadcastRoom(io, latest);
-    }
-  }, delay);
-}
-
-function scheduleDrawTimeout(room, io) {
-  const delay = Math.max(0, (room.drawDeadline ?? Date.now()) - Date.now());
-  scheduleRoomTimeout(room, () => {
-    const latest = rooms.get(room.code);
-    if (latest?.game.phase === GAME_PHASES.drawRequested && latest.drawDeadline && Date.now() >= latest.drawDeadline) {
-      latest.game.phase = GAME_PHASES.playing;
-      latest.game.drawRequest = null;
-      latest.drawDeadline = null;
-      appendSystem(latest, "和棋申请超时，对局继续。");
-      broadcastRoom(io, latest);
-    }
-  }, delay);
 }
 
 export function startInitialPassiveSkillNow(room, io) {
@@ -707,22 +676,6 @@ function startGameClock(room, io) {
   }, 1000);
 }
 
-function scheduleResultReviewTimeout(roomOrCode, io) {
-  const room = typeof roomOrCode === "string" ? rooms.get(roomOrCode) : roomOrCode;
-  if (!room) return;
-  const delay = Math.max(0, (room.game.scoring?.resultDeadline ?? Date.now()) - Date.now());
-  scheduleRoomTimeout(room, () => {
-    const latest = rooms.get(room.code);
-    const deadline = latest?.game.scoring?.resultDeadline;
-    if (latest?.game.phase === GAME_PHASES.resultReview && deadline && Date.now() >= deadline) {
-      latest.game.phase = GAME_PHASES.playing;
-      latest.game.scoring = null;
-      appendSystem(latest, "数子结果确认超时，对局继续。");
-      broadcastRoom(io, latest);
-    }
-  }, delay);
-}
-
 function persistRoom(room, { force = false } = {}) {
   persistRoomState({
     prisma,
@@ -760,18 +713,6 @@ function resumeRoomTimers(room, io) {
     scheduleEmptyActiveRoomClose(room, io);
   }
   return true;
-}
-
-function schedulePendingRoomDeadlines(room, io) {
-  if (room.game.phase === GAME_PHASES.countingRequested && room.countingDeadline) {
-    scheduleCountingTimeout(room, io);
-  }
-  if (room.game.phase === GAME_PHASES.drawRequested && room.drawDeadline) {
-    scheduleDrawTimeout(room, io);
-  }
-  if (room.game.phase === GAME_PHASES.resultReview && room.game.scoring?.resultDeadline) {
-    scheduleResultReviewTimeout(room.code, io);
-  }
 }
 
 async function saveGameRecord(room) {

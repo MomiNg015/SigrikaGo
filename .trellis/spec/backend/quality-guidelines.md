@@ -268,6 +268,37 @@ scheduleEmptyActiveRoomClose(room, io);
 
 Tests touching close delays, close payloads, persisted deletion, empty-room invalidation, or empty-room timeout cancellation should update `server/roomCloseLifecycle.test.js`; end-to-end room flow tests can remain in `server/rooms.test.js`.
 
+### Room Deadline Scheduler Boundary Contract
+
+`server/roomDeadlineScheduler.js` owns room deadline timer scheduling and timeout transitions:
+
+- `createRoomDeadlineScheduler(deps)` returns `scheduleGameStart`, `scheduleInitialPassiveSkill`, `scheduleCountingTimeout`, `scheduleDrawTimeout`, `scheduleResultReviewTimeout`, and `schedulePendingRoomDeadlines`.
+- `scheduleGameStart(room, io)` schedules opening completion from `room.openingEndsAt`.
+- `scheduleInitialPassiveSkill(room, io)` schedules the first passive-skill attempt after `INITIAL_PASSIVE_SKILL_DELAY_MS` and broadcasts only when a passive skill actually starts.
+- `scheduleCountingTimeout(room, io)` restores suspended hidden hands, clears scoring/counting state, appends the counting-timeout system message, and broadcasts when the counting deadline expires.
+- `scheduleDrawTimeout(room, io)` clears draw-request state, appends the draw-timeout system message, and broadcasts when the draw deadline expires.
+- `scheduleResultReviewTimeout(roomOrCode, io)` clears result-review scoring state, appends the result-review timeout system message, and broadcasts when the result deadline expires.
+- `schedulePendingRoomDeadlines(room, io)` resumes only the deadline timer matching the room's current phase.
+
+`server/rooms.js` should decide **when** room state enters these phases, but it should not duplicate deadline delay math, timeout state-reset rules, or restored-room deadline scheduling.
+
+Wrong:
+
+```js
+scheduleRoomTimeout(room, () => {
+  room.game.phase = GAME_PHASES.playing;
+  room.drawDeadline = null;
+}, room.drawDeadline - Date.now());
+```
+
+Correct:
+
+```js
+scheduleDrawTimeout(room, io);
+```
+
+Tests touching opening delay, passive-skill delay, timeout state resets, timeout messages, or restored pending deadlines should update `server/roomDeadlineScheduler.test.js`; end-to-end phase behavior can remain in `server/rooms.test.js`.
+
 ### Leaderboard API Contract
 
 `GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:
