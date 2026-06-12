@@ -1,6 +1,6 @@
 import { CircleDollarSign, Gem, History, List, Sparkles, X } from "lucide-react";
 import { useState } from "react";
-import { buildGachaRewardLabel, formatGachaDateRange, formatGachaRemaining, gachaPrizeTypeLabel } from "./gacha/gachaHelpers.js";
+import { buildGachaRewardDisplay, formatGachaDateRange, formatGachaRemaining, gachaPrizeTypeLabel } from "./gacha/gachaHelpers.js";
 import { useGachaCatalog } from "./gacha/useGachaCatalog.js";
 
 export default function GachaModal({ token, user, initialPools = [], onUserChange, onNotice, onClose }) {
@@ -170,19 +170,29 @@ function GachaHistoryPanel({ records, onClose }) {
   );
 }
 
-function GachaResultDialog({ result, onClose }) {
+export function GachaResultDialog({ result, onClose }) {
+  const rewards = result.rewards ?? [];
+  const isTenPull = rewards.length === 10;
   return (
     <div className="nested-modal-backdrop gacha-result-backdrop" onClick={onClose}>
       <section className="nested-modal gacha-result-dialog" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" onClick={onClose}><X size={18} /></button>
         <h2>本次获得</h2>
-        <div className="gacha-result-grid">
-          {(result.rewards ?? []).map((reward, index) => (
-            <article className="gacha-result-card" key={`${reward.prizeId}-${index}`}>
-              <span className="gacha-result-orb" />
-              <strong>{buildGachaRewardLabel(reward)}</strong>
-            </article>
-          ))}
+        <div className={`gacha-result-grid ${isTenPull ? "ten-pull" : ""}`}>
+          {rewards.map((reward, index) => {
+            const display = buildGachaRewardDisplay(reward);
+            return (
+              <article className="gacha-result-card" key={`${reward.prizeId}-${index}`}>
+                <span className="gacha-result-image">
+                  {display.imageUrl
+                    ? <img src={display.imageUrl} alt={display.name} decoding="async" />
+                    : <b aria-hidden="true">{display.fallback}</b>}
+                </span>
+                <strong>{display.name}</strong>
+                {display.detail && <small>{display.detail}</small>}
+              </article>
+            );
+          })}
         </div>
       </section>
     </div>

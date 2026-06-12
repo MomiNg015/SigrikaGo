@@ -1,3 +1,5 @@
+export const GACHA_COIN_BAG_IMAGE = "/assets/items/gacha-coin-bag.svg";
+
 export function selectInitialGachaPool(pools = []) {
   return pools.find(Boolean) ?? null;
 }
@@ -21,12 +23,24 @@ export function formatGachaRemaining(remainingMs) {
 }
 
 export function buildGachaRewardLabel(reward = {}) {
+  const display = buildGachaRewardDisplay(reward);
+  return display.detail ? `${display.name} ${display.detail}` : display.name;
+}
+
+export function buildGachaRewardDisplay(reward = {}) {
   const quantity = Number(reward.quantity ?? 1);
-  if (reward.type === "coins") return `${quantity} coins`;
-  if (reward.type === "item") return `${reward.targetId || reward.name || "item"} x${quantity}`;
-  if (reward.chainAdded > 0) return `${reward.targetId || reward.name || "character"} +${reward.chainAdded} chain`;
-  if (reward.blueGemsAdded > 0) return `${reward.targetId || reward.name || reward.type} -> ${reward.blueGemsAdded} gems`;
-  return `${reward.name || reward.targetId || reward.type} x${quantity}`;
+  const typeLabel = gachaPrizeTypeLabel(reward.type);
+  const name = reward.type === "coins"
+    ? "金币"
+    : String(reward.name || "").trim() || typeLabel;
+  const imageUrl = reward.type === "coins" ? GACHA_COIN_BAG_IMAGE : String(reward.imageUrl || "").trim();
+  const fallback = reward.type === "coins" ? "" : typeLabel.slice(0, 1);
+  return {
+    name,
+    imageUrl,
+    fallback,
+    detail: gachaRewardDetail(reward, quantity)
+  };
 }
 
 export function gachaPrizeTypeLabel(type) {
@@ -46,4 +60,12 @@ function formatDate(value) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}/${month}/${day}`;
+}
+
+function gachaRewardDetail(reward, quantity) {
+  if (reward.type === "coins") return `${quantity} 金币`;
+  if (Number(reward.chainAdded) > 0) return `角色链 +${Number(reward.chainAdded)}`;
+  if (Number(reward.blueGemsAdded) > 0) return `转换 ${Number(reward.blueGemsAdded)} 蓝宝石`;
+  if (quantity > 1) return `x${quantity}`;
+  return "";
 }

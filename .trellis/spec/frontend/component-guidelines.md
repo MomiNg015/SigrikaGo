@@ -247,6 +247,61 @@ const nextFeaturedPrizeIndexes = currentIndexes.includes(clickedIndex)
 const featuredPrizes = featuredPrizeIds.map((id) => prizes.find((prize) => prize.id === id)).filter(Boolean);
 ```
 
+### Scenario: Gacha Result Reward Display Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to gacha draw response payloads, `GachaResultDialog`, gacha reward label helpers, or reward result CSS.
+- The draw result is a cross-layer display contract: backend settlement chooses a `GachaPrize`, the immediate response carries display metadata, and the frontend result dialog renders the visual card.
+
+#### 2. Signatures
+- Immediate draw reward payload: `{ prizeId, type, targetId, quantity, unlockedQuantity, duplicateQuantity, blueGemsAdded, chainAdded, coinsAdded, name, imageUrl }`.
+- `buildGachaRewardDisplay(reward)`: returns `{ name, imageUrl, fallback, detail }`.
+- `GACHA_COIN_BAG_IMAGE`: local image path used for coin rewards.
+- `GachaResultDialog({ result, onClose })`: adds `.ten-pull` to `.gacha-result-grid` when `result.rewards.length === 10`.
+
+#### 3. Contracts
+- Backend draw settlement must copy `prize.name` and `prize.imageUrl` into immediate reward responses; the frontend should not infer player-facing names from `targetId`.
+- Coin rewards ignore empty prize images and always render `GACHA_COIN_BAG_IMAGE`.
+- Non-coin rewards prefer `reward.name`; when no name exists, fall back to `gachaPrizeTypeLabel(type)`, not raw target ids.
+- Reward details preserve quantities and conversions: coins show `<n> 金币`, item stacks show `x<n>`, character duplicates show `角色链 +<n>`, and decoration/music duplicates show `转换 <n> 蓝宝石`.
+- Desktop ten-pull result grids use five columns so ten rewards produce two rows; smaller viewports may keep adaptive columns.
+
+#### 4. Validation & Error Matrix
+- Missing `name` on a non-coin reward -> show the localized type label.
+- Missing `imageUrl` on a non-coin reward -> show the type fallback glyph.
+- Coin reward with empty `imageUrl` -> still show the coin-bag image.
+- Ten rewards -> add `.ten-pull`; any other count -> keep adaptive grid.
+
+#### 5. Good/Base/Bad Cases
+- Good: a reward for `rainbow-bean-candy` with `name: "彩虹豆豆跳跳糖"` renders that name and `x3`.
+- Base: a legacy reward with no image renders a compact localized fallback instead of breaking layout.
+- Bad: rendering `${targetId} x${quantity}` in result cards, because it leaks internal ids such as `rainbow-bean-candy`.
+- Bad: using a generic orb for every reward image after `imageUrl` is available.
+
+#### 6. Tests Required
+- Gacha helper tests assert coin-bag image selection, player-facing names, details, and no target-id-first labels.
+- `GachaResultDialog` markup tests assert `.ten-pull`, reward images, names, and details.
+- CSS contract tests assert `.gacha-result-grid.ten-pull` uses five columns on desktop.
+- Backend gacha draw tests assert immediate rewards include copied `name` and `imageUrl`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<span className="gacha-result-orb" />
+<strong>{reward.targetId} x{reward.quantity}</strong>
+```
+
+Correct:
+
+```jsx
+const display = buildGachaRewardDisplay(reward);
+<img src={display.imageUrl} alt={display.name} />
+<strong>{display.name}</strong>
+{display.detail && <small>{display.detail}</small>}
+```
+
 ---
 
 ## Styling Patterns

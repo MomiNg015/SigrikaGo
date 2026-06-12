@@ -233,7 +233,9 @@ function settlePrize(state, prize, drawIndex) {
     duplicateQuantity: 0,
     blueGemsAdded: 0,
     chainAdded: 0,
-    coinsAdded: 0
+    coinsAdded: 0,
+    name: prize.name ?? "",
+    imageUrl: prize.imageUrl ?? ""
   };
 
   if (type === GACHA_REWARD_TYPES.coins) {

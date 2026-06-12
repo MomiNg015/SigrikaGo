@@ -110,7 +110,9 @@ describe("gacha domain", () => {
         targetId: "denia",
         quantity: 3,
         probabilityBasisPoints: 10000,
-        enabled: true
+        enabled: true,
+        name: "Danea",
+        imageUrl: "/assets/Danea_centered.webp"
       }]
     });
     const calls = [];
@@ -131,7 +133,9 @@ describe("gacha domain", () => {
       targetId: "denia",
       quantity: 3,
       duplicateQuantity: 3,
-      chainAdded: 3
+      chainAdded: 3,
+      name: "Danea",
+      imageUrl: "/assets/Danea_centered.webp"
     })]);
     expect(calls).toContainEqual(["user.update", expect.objectContaining({ coins: 130 })]);
     expect(calls).toContainEqual(["userCharacter.upsert", expect.objectContaining({
