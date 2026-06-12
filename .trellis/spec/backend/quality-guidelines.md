@@ -299,6 +299,32 @@ scheduleDrawTimeout(room, io);
 
 Tests touching opening delay, passive-skill delay, timeout state resets, timeout messages, or restored pending deadlines should update `server/roomDeadlineScheduler.test.js`; end-to-end phase behavior can remain in `server/rooms.test.js`.
 
+### Room Result Persistence Boundary Contract
+
+`server/roomResultPersistence.js` owns finished-room result persistence:
+
+- `saveGameRecord({ prisma, room })` is the only room result persistence entry point.
+- Invalid finished rooms set `room.recordSaved = true` and do not create `GameRecord`, mode-stat, reward, ledger, or item-effect operations.
+- Valid draws create a `GameRecord`, increment both players' mode `draws`, update in-room mode stats, and do not apply rating/coin rewards.
+- Decisive results create a `GameRecord`, apply room-user rewards, upsert winner/loser mode stats, update user rating/win/loss/coin fields where appropriate, create progress ledger entries, and include item-effect cleanup operations.
+- `modeStatsUpsertOperation()`, `applyDrawResultToRoomUser()`, and `gameResultProgressEntries()` keep the operation-shape helpers testable outside the realtime room lifecycle.
+
+`server/rooms.js` should decide **when** a finished room needs saving, but it should not own `GameRecord` payload shape, mode-stat upsert shape, reward transaction composition, or progress ledger payloads.
+
+Wrong:
+
+```js
+prisma.gameRecord.create({ data: { roomCode: room.code } });
+```
+
+Correct:
+
+```js
+await saveGameRecord({ prisma, room });
+```
+
+Tests touching result persistence helpers, invalid-result skipping, draw stat updates, or progress ledger payloads should update `server/roomResultPersistence.test.js`; integrated winner/loser reward persistence should remain covered by `server/rooms.test.js`.
+
 ### Leaderboard API Contract
 
 `GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:

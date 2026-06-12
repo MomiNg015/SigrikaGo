@@ -62,6 +62,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Room action point-target validation is isolated from `server/rooms.js` behind a dedicated backend validation boundary.
 * [x] Finished-room close scheduling and empty-active-room invalidation are isolated from `server/rooms.js` behind a backend close lifecycle boundary.
 * [x] Opening, passive-skill, counting, draw, and result-review deadline scheduling are isolated from `server/rooms.js` behind a backend deadline scheduler boundary.
+* [x] Finished-room result persistence is isolated from `server/rooms.js` behind a backend result persistence boundary.
 
 ## Definition of Done
 
@@ -209,6 +210,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Kept actual room phase entry decisions and clock ticking in `server/rooms.js`, while deadline delay math and timeout reset rules live behind injected room lookup, timer, broadcast, and lifecycle callbacks.
 * Added `server/roomDeadlineScheduler.test.js` for opening delay, passive-skill delay, counting timeout, draw timeout, result-review timeout, and restored pending-deadline selection.
 * Updated `docs/system-design.md` and backend quality guidelines for the room deadline scheduler contract.
+
+### Batch 18 Completed
+
+* Added `server/roomResultPersistence.js` as the finished-room result persistence boundary.
+* Updated `server/rooms.js` to delegate invalid-result skipping, `GameRecord` creation, draw mode-stat increments, decisive reward writes, mode-stat upserts, progress ledger entries, and item-effect cleanup operation composition to the result persistence boundary.
+* Kept close lifecycle timing in `server/rooms.js` / `server/roomCloseLifecycle.js`, with result saving injected as a persistence callback.
+* Added `server/roomResultPersistence.test.js` for invalid-result no-op persistence, draw mode-stat mutation, mode-stat upsert shape, and progress ledger payloads.
+* Updated `docs/system-design.md` and backend quality guidelines for the room result persistence contract.
 
 ### Later Batches
 
