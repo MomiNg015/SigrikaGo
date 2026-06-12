@@ -46,6 +46,7 @@ import { createRoomConnectionLifecycle } from "./roomConnectionLifecycle.js";
 import { createRoomRequestLifecycle } from "./roomRequestLifecycle.js";
 import { createRoomCreationLifecycle } from "./roomCreationLifecycle.js";
 import { createRoomActionLifecycle } from "./roomActionLifecycle.js";
+import { createRoomChatLifecycle } from "./roomChatLifecycle.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -198,6 +199,12 @@ const roomActionLifecycle = createRoomActionLifecycle({
   maybeStartPassiveSkill
 });
 export const { handleGameAction } = roomActionLifecycle;
+const roomChatLifecycle = createRoomChatLifecycle({
+  rooms,
+  validateRoomCode,
+  normalizeChatText
+});
+export const { addChat } = roomChatLifecycle;
 
 export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
@@ -269,25 +276,6 @@ export function leaveMatchmaking(userId) {
 }
 
 
-
-export function addChat(roomCode, user, text) {
-  const validatedRoomCode = validateRoomCode(roomCode);
-  if (!validatedRoomCode.ok) return null;
-  const normalizedText = normalizeChatText(text);
-  if (!normalizedText.ok) return null;
-  const room = rooms.get(validatedRoomCode.value);
-  if (!room) return null;
-  room.chat.push({
-    id: crypto.randomUUID(),
-    type: "chat",
-    userId: user.id,
-    username: user.username,
-    moveNumber: room.game.moveNumber,
-    text: normalizedText.value,
-    createdAt: Date.now()
-  });
-  return room;
-}
 
 export function broadcastRoom(io, room) {
   broadcastRoomUpdate(io, room, { persistRoom });

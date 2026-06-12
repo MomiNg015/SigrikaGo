@@ -388,6 +388,33 @@ export const { handleGameAction } = roomActionLifecycle;
 
 Tests touching gameplay action entry validation order, test-action dispatch, skill dispatch, or standard-action dependency wiring should update `server/roomActionLifecycle.test.js`; action-result rule behavior should stay in the focused rule modules.
 
+### Room Chat Lifecycle Boundary Contract
+
+`server/roomChatLifecycle.js` owns room chat entry mutation:
+
+- `createRoomChatLifecycle(deps)` returns `addChat(roomCode, user, text)`.
+- `addChat()` validates the room code before normalizing text, normalizes text through `normalizeChatText()`, looks up the room, appends the canonical chat message object, and returns the changed room.
+- Chat message shape is `{ id, type: "chat", userId, username, moveNumber, text, createdAt }`.
+- `moveNumber` is captured from `room.game.moveNumber` at send time; `id` and `createdAt` come from injectable `randomUUID` and `now` dependencies for deterministic tests.
+- Invalid room codes, invalid text, and missing rooms return `null` without mutating chat.
+
+`server/rooms.js` should expose the chat entry point for socket/API routing, but it should not duplicate text normalization order, chat payload shape, message id creation, or move-number capture.
+
+Wrong:
+
+```js
+room.chat.push({ type: "chat", text, createdAt: Date.now() });
+```
+
+Correct:
+
+```js
+const roomChatLifecycle = createRoomChatLifecycle(deps);
+export const { addChat } = roomChatLifecycle;
+```
+
+Tests touching chat entry validation order, message shape, move-number capture, id/timestamp injection, or no-op cases should update `server/roomChatLifecycle.test.js`; socket delivery behavior can remain in `server/rooms.test.js` or socket integration tests.
+
 ### Room Request Lifecycle Boundary Contract
 
 `server/roomRequestLifecycle.js` owns counting, draw, and scoring request entry validation:

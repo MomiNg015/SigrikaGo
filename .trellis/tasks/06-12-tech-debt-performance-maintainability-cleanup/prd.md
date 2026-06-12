@@ -273,7 +273,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Removed stale `rooms.js` imports/constants left behind by earlier lifecycle extractions.
 * Added `server/roomActionLifecycle.test.js` for validation ordering, test-action state application, skill dispatch, and standard-action dependency wiring.
 * Updated `docs/system-design.md` and backend quality guidelines for the room action lifecycle contract.
-* Updated `docs/system-design.md` and backend quality guidelines for the room request lifecycle contract.
+
+### Batch 26 Completed
+
+* Added `server/roomChatLifecycle.js` as the room chat entry mutation boundary.
+* Updated `server/rooms.js` to delegate room-code validation, text normalization, room lookup, chat message shape, message id creation, move-number capture, and timestamps to the chat lifecycle.
+* Added `server/roomChatLifecycle.test.js` for invalid room-code short-circuiting, invalid text handling, missing rooms, and successful normalized chat append behavior.
+* Updated `docs/system-design.md` and backend quality guidelines for the room chat lifecycle contract.
 
 ### Later Batches
 
