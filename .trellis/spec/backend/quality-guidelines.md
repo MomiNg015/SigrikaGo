@@ -61,6 +61,56 @@ app.use("/api/auth", createAuthRouter({ prisma, jwtSecret, loginSessions, online
 
 Tests touching auth route status codes, cookie rotation/clearing, forced login, refresh-session recovery, or logout cleanup should update `server/authRoutes.test.js`; lower-level session storage behavior should stay in `server/loginSessions.test.js`.
 
+### Player HTTP Boundary Contract
+
+`server/playerRoutes.js` owns authenticated player self-service HTTP handlers:
+
+- `GET /api/me`
+- `GET /api/me/resume`
+- `POST /api/me/character`
+- `POST /api/me/decoration`
+- `POST /api/me/music-selection`
+
+It also owns `createCharacterSelectionData()` and `validateOptionalRoomCode()` so HTTP resume, Socket.IO resume, and Socket.IO auth share the same character availability and optional-room-code behavior.
+
+`server/index.js` should create shared dependencies such as `prisma`, `findRoomForUser`, `roomView`, and the `characterSelectionData` closure, then mount this router. It should not duplicate player profile/history enrichment, character/decor ownership checks, blocked-character checks, music-selection error shaping, or optional room-code normalization.
+
+Wrong:
+
+```js
+app.post("/api/me/character", authHttp, async (req, res) => {
+  const characterId = String(req.body.characterId ?? "");
+  // ...
+});
+```
+
+Correct:
+
+```js
+const characterSelectionData = createCharacterSelectionData({ prisma });
+app.use("/api", authHttp, createPlayerRouter({
+  prisma,
+  findRoomForUser,
+  roomView,
+  characterSelectionData
+}));
+```
+
+Tests touching player self-service HTTP behavior should update `server/playerRoutes.test.js`; lower-level character resolution should stay in `server/characterSelection.test.js`, resume payload behavior in `server/resume.test.js`, and music selection rules in `server/musicSelection.test.js`.
+
+### Personal Replay HTTP Boundary Contract
+
+`server/replayRoutes.js` owns personal replay HTTP handlers:
+
+- `GET /api/replays`
+- `GET /api/replays/:id`
+
+It owns personal replay query shape, player id response fields, legacy `mode ?? "spark"` fallback, and snapshot JSON parsing. Tests should call `createReplayRouteHandlers()` directly instead of matching route source text inside `server/index.js`.
+
+`server/index.js` should mount the replay router with shared auth and `prisma`; it should not duplicate personal replay query projection or snapshot parsing.
+
+Tests touching personal replay route status codes, query fields, mode fallback, or snapshot parsing should update `server/replayRoutes.test.js`.
+
 ### Admin User Management Boundary Contract
 
 `server/adminUserManagement.js` owns admin-side user write operations:

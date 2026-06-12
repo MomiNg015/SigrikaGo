@@ -337,6 +337,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Kept route-level character body validation and upload handling in `server/adminRoutes.js`.
 * Updated `docs/system-design.md` and backend quality guidelines for the admin character-management contract.
 
+### Batch 35 Completed
+
+* Added `server/playerRoutes.js` as the authenticated player self-service HTTP boundary for `/api/me`, resume, character selection, decoration selection, and skill music selection.
+* Exported shared player route helpers for character selection data and optional room-code normalization so Socket.IO auth/resume and HTTP resume use the same contracts without keeping helper bodies in `server/index.js`.
+* Added `server/replayRoutes.js` as the personal replay HTTP boundary for replay list/detail handlers and replaced brittle source-text route tests with handler-level tests.
+* Updated `server/index.js` to mount player and replay routers while keeping shared startup/session/socket composition in the entry file.
+* Updated `docs/system-design.md` and backend quality guidelines for the player and replay HTTP route contracts.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

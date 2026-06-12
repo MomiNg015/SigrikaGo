@@ -259,6 +259,9 @@
     rooms.js                   # 实时房间、匹配、对局流程、计时、棋谱保存
     roomView.js                # 房间视图序列化，按玩家/观战者生成可见棋盘和计数信息
     auth.js                    # HTTP JWT 鉴权与管理员中间件
+    authRoutes.js              # /api/auth HTTP route boundary
+    playerRoutes.js            # /api/me player HTTP route boundary
+    replayRoutes.js            # /api/replays player replay HTTP route boundary
     socketAuth.js              # Socket.IO JWT 鉴权与角色解析
     adminConfig.js             # 管理员用户名配置与角色提升
     adminRoutes.js             # /api/admin 后台管理路由
@@ -664,6 +667,9 @@
 <ul>
 <li>JSON body 解析错误会通过统一错误处理中间件返回 JSON，避免前端 API helper 因 Express 默认 HTML 错误页显示“接口返回格式不是 JSON”。</li>
 </ul>
+<ul>
+<li>Owns shared startup composition for HTTP routers and Socket.IO managers; player <code>/api/me*</code>, personal replay <code>/api/replays*</code>, auth, and admin handler bodies live in route modules instead of the entry file.</li>
+</ul>
 </ul>
 <ul>
 <li><code>server/authRoutes.js</code></li>
@@ -675,6 +681,27 @@
 </ul>
 <ul>
 <li><code>server/index.js</code> creates the shared login/session managers and mounts <code>/api/auth</code> after <code>onlineSessions</code> is available; tests touching auth route status codes, cookie behavior, forced login, refresh-session recovery, or logout cleanup should update <code>server/authRoutes.test.js</code>.</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/playerRoutes.js</code></li>
+<ul>
+<li>Player HTTP route boundary for <code>/api/me</code>, <code>/api/me/resume</code>, <code>/api/me/character</code>, <code>/api/me/decoration</code>, and <code>/api/me/music-selection</code>.</li>
+</ul>
+<ul>
+<li>Owns player profile/history enrichment, resume room-code normalization, character/decor selection validation, and skill-music selection error shaping.</li>
+</ul>
+<ul>
+<li>Exports <code>createCharacterSelectionData()</code> and <code>validateOptionalRoomCode()</code> so Socket.IO auth/resume can share the same character availability and optional-room-code contracts without duplicating helper logic in <code>server/index.js</code>.</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/replayRoutes.js</code></li>
+<ul>
+<li>Personal replay HTTP route boundary for <code>/api/replays</code> and <code>/api/replays/:id</code>.</li>
+</ul>
+<ul>
+<li>Owns personal replay query shape, legacy mode fallback, player id response fields, and replay snapshot JSON parsing. Tests touching this route should update <code>server/replayRoutes.test.js</code> instead of matching route text inside <code>server/index.js</code>.</li>
 </ul>
 </ul>
 <ul>
@@ -2771,6 +2798,9 @@
 </ul>
 <ul>
 <li><code>server/adminRoutes.js</code> 已拆出认证路由、后台用户管理写操作、后台装饰/商城商品写操作、后台角色/技能写操作、后台审计写入和路由错误对象；后续后台优化应优先继续拆上传/站点设置/只读查询子域，而不是把新后台写操作继续塞回路由文件。</li>
+</ul>
+<ul>
+<li><code>server/index.js</code> 已拆出 auth、player <code>/api/me*</code>、personal replay <code>/api/replays*</code>、admin、room runtime adapter 等边界；后续入口文件优化应继续迁移公开列表、商城/道具、社交资料、反馈、排行榜和观战只读 API，让 <code>index.js</code> 保持启动编排与 Socket.IO 事件注册职责。</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> 已拆出 <code>AdminShell</code> 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。</li>
