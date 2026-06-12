@@ -295,6 +295,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomPersistenceRestoreLifecycle.test.js` for normal restore registration, no-code skips, no-persist close-on-restore behavior, and continuing past bad persisted rows.
 * Updated `docs/system-design.md` and backend quality guidelines for the persisted-room restore lifecycle contract.
 
+### Batch 29 Completed
+
+* Added `server/roomOpeningLifecycle.js` as the room opening transition boundary.
+* Updated `server/rooms.js` to delegate opening-to-playing phase mutation, game-start notice append, `lastTick` refresh, full room broadcast, and initial passive-skill trigger handoff to the opening lifecycle while preserving existing exported wrappers.
+* Added `server/roomOpeningLifecycle.test.js` for opening completion, non-opening no-op behavior, and direct initial passive-skill trigger delegation.
+* Updated `docs/system-design.md` and backend quality guidelines for the room opening lifecycle contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

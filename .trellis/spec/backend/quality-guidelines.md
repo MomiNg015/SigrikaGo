@@ -557,6 +557,33 @@ export const { restorePersistedRooms } = restoreLifecycle;
 
 Tests touching persisted-row iteration, bad snapshot isolation, no-code skips, registration, timer resume handoff, or post-resume force persistence should update `server/roomPersistenceRestoreLifecycle.test.js`; end-to-end restart behavior can remain in `server/rooms.test.js`.
 
+### Room Opening Lifecycle Boundary Contract
+
+`server/roomOpeningLifecycle.js` owns the room opening transition:
+
+- `createRoomOpeningLifecycle(deps)` returns `completeRoomOpening(room, io)` and `startInitialPassiveSkillNow(room, io)`.
+- `completeRoomOpening()` returns false unless the room is in `opening` phase.
+- For opening rooms, it switches `room.game.phase` to `playing`, refreshes `room.lastTick`, appends the `game-start` system notice, broadcasts the full room, schedules the initial passive-skill attempt, and returns true.
+- `startInitialPassiveSkillNow()` delegates to `maybeStartPassiveSkill(room, io)` so tests and restore paths can trigger the same passive-skill entry point.
+
+`server/rooms.js` should expose compatibility wrappers for deadline/restore callers, but it should not duplicate opening phase mutation, game-start notice shape, last-tick refresh, broadcast timing, or initial passive-skill handoff.
+
+Wrong:
+
+```js
+room.game.phase = GAME_PHASES.playing;
+appendSystem(room, "game started");
+broadcastRoom(io, room);
+```
+
+Correct:
+
+```js
+return roomOpeningLifecycle.completeRoomOpening(room, io);
+```
+
+Tests touching opening completion, non-opening no-ops, game-start notices, broadcast timing, last-tick refresh, or initial passive-skill handoff should update `server/roomOpeningLifecycle.test.js`; deadline/restore scheduling can remain in their focused lifecycle tests.
+
 ### Room Deadline Scheduler Boundary Contract
 
 `server/roomDeadlineScheduler.js` owns room deadline timer scheduling and timeout transitions:

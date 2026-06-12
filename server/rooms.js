@@ -1,4 +1,3 @@
-import { GAME_PHASES } from "../src/shared/game.js";
 import { prisma } from "./db.js";
 import { resetByoYomi } from "./roomClockTiming.js";
 import { prepareCandyEffectUpdates } from "./roomItemEffects.js";
@@ -44,6 +43,7 @@ import { createRoomActionLifecycle } from "./roomActionLifecycle.js";
 import { createRoomChatLifecycle } from "./roomChatLifecycle.js";
 import { createRoomQueries } from "./roomQueries.js";
 import { createRoomPersistenceRestoreLifecycle } from "./roomPersistenceRestoreLifecycle.js";
+import { createRoomOpeningLifecycle } from "./roomOpeningLifecycle.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -111,6 +111,12 @@ const {
   maybeStartPassiveSkill,
   schedulePendingSkillResolution
 } = roomSkillLifecycle;
+const roomOpeningLifecycle = createRoomOpeningLifecycle({
+  appendSystem,
+  broadcastRoom,
+  scheduleInitialPassiveSkill,
+  maybeStartPassiveSkill
+});
 const roomClockLifecycle = createRoomClockLifecycle({
   rooms,
   scheduleRoomInterval,
@@ -255,17 +261,11 @@ function broadcastToast(io, room, text) {
 }
 
 export function completeRoomOpening(room, io) {
-  if (room.game.phase !== GAME_PHASES.opening) return false;
-  room.game.phase = GAME_PHASES.playing;
-  room.lastTick = Date.now();
-  appendSystem(room, "对局开始。", { kind: "game-start" });
-  broadcastRoom(io, room);
-  scheduleInitialPassiveSkill(room, io);
-  return true;
+  return roomOpeningLifecycle.completeRoomOpening(room, io);
 }
 
 export function startInitialPassiveSkillNow(room, io) {
-  return maybeStartPassiveSkill(room, io);
+  return roomOpeningLifecycle.startInitialPassiveSkillNow(room, io);
 }
 
 function persistRoom(room, { force = false } = {}) {
