@@ -323,6 +323,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Updated `server/adminRoutes.js` to delegate user write operations and audit serialization to the extracted modules while preserving existing compatibility exports.
 * Updated `docs/system-design.md` and backend quality guidelines for the admin user-management contract.
 
+### Batch 33 Completed
+
+* Added `server/adminCatalogManagement.js` as the admin-side decoration and shop item mutation boundary.
+* Updated `server/adminRoutes.js` to delegate decoration create/update/disable, shop item create/update/disable, and shop target existence checks to the catalog boundary.
+* Kept route-level body validation and response shaping in `server/adminRoutes.js` while catalog transactions and audit payloads live in the new module.
+* Updated `docs/system-design.md` and backend quality guidelines for the admin catalog-management contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

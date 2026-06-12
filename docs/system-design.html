@@ -995,7 +995,7 @@
 <li>后台管理路由。</li>
 </ul>
 <ul>
-<li>管理角色、技能、装饰、商城商品、站点设置、上传、审计日志、任意用户棋谱查看，并把用户管理写操作委托给 <code>server/adminUserManagement.js</code>。</li>
+<li>管理角色、技能、站点设置、上传、审计日志、任意用户棋谱查看，并把用户管理写操作委托给 <code>server/adminUserManagement.js</code>，把装饰/商城商品写操作委托给 <code>server/adminCatalogManagement.js</code>。</li>
 </ul>
 </ul>
 <ul>
@@ -1005,6 +1005,15 @@
 </ul>
 <ul>
 <li>Owns admin-side user update sanitization, required-update validation, profile edits, ban/unban, password reset, structured asset sync, progress ledger writes, last-active-admin protection, and user-target audit entries.</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/adminCatalogManagement.js</code></li>
+<ul>
+<li>Admin catalog mutation boundary.</li>
+</ul>
+<ul>
+<li>Owns admin-side decoration create/update/disable, shop item create/update/disable, shop target existence validation for character/decoration/music items, and decoration/shop-item audit entries.</li>
 </ul>
 </ul>
 <ul>
@@ -2752,7 +2761,7 @@
 <li><code>server/rooms.js</code> 已拆出 room view、广播边界、presence 状态、匹配队列、房间创建工厂、技能消息、timer 账本、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、断线恢复与关闭调度。</li>
 </ul>
 <ul>
-<li><code>server/adminRoutes.js</code> 已拆出认证路由、后台用户管理写操作、后台审计写入和路由错误对象；后续后台优化应优先继续拆角色/装饰/商城商品子域，而不是把新后台写操作继续塞回路由文件。</li>
+<li><code>server/adminRoutes.js</code> 已拆出认证路由、后台用户管理写操作、后台装饰/商城商品写操作、后台审计写入和路由错误对象；后续后台优化应优先继续拆角色/技能子域，而不是把新后台写操作继续塞回路由文件。</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> 已拆出 <code>AdminShell</code> 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。</li>

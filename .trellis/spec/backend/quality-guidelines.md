@@ -90,6 +90,33 @@ res.json(await updateUserProfile({ prisma, adminUser: req.user, userId: req.para
 
 Tests touching admin user edit sanitization, ban/unban, password reset, asset sync, progress ledger writes, or admin user audit entries should update `server/adminRoutes.test.js` or a focused `server/adminUserManagement.test.js`; route wiring tests can remain in `server/adminRoutes.test.js`.
 
+### Admin Catalog Management Boundary Contract
+
+`server/adminCatalogManagement.js` owns admin-side catalog write operations for decorations and shop items:
+
+- `createDecoration()`, `updateDecoration()`, and `disableDecoration()` own decoration persistence and `decoration.*` audit writes.
+- `createShopItem()`, `updateShopItem()`, and `disableShopItem()` own shop item persistence and `shop-item.*` audit writes.
+- `assertShopTargetExists(prisma, item)` validates shop targets for character, decoration, and music catalog entries, including built-in stone decorations and music defaults.
+- Shop item audit payloads should use `toShopItemPayload()` so route responses and audit JSON stay consistent.
+
+`server/adminRoutes.js` should own HTTP concerns such as body validation and response shape, then delegate catalog mutations and target validation to this boundary. It should not duplicate decoration/shop item transactions, target-existence checks, or catalog audit writes.
+
+Wrong:
+
+```js
+const item = await prisma.shopItem.update({ where: { id }, data: input });
+await writeAudit(prisma, req.user, "shop-item.update", item.id, before, item, "shop-item");
+```
+
+Correct:
+
+```js
+await assertShopTargetExists(prisma, validated.value);
+const item = await updateShopItem({ prisma, adminUser: req.user, itemId: req.params.id, input: validated.value });
+```
+
+Tests touching admin decoration/shop item create/update/disable, shop target validation, or catalog audit payloads should update `server/adminRoutes.test.js` or a focused `server/adminCatalogManagement.test.js`; player-facing purchase behavior should stay in `server/shop.test.js`.
+
 ### Room Broadcast Boundary Contract
 
 `server/roomBroadcasts.js` owns the Socket.IO delivery mechanics for room-level events:
