@@ -367,6 +367,12 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/commerceRoutes.test.js` for purchase, inventory, item-use request forwarding, error response shaping, and route table registration.
 * Updated `docs/system-design.md` and backend quality guidelines for the commerce HTTP route contract.
 
+### Batch 39 Completed
+
+* Fixed login/register/refresh/logout route ordering after HTTP route extraction by mounting `/api/auth` before broad authenticated `/api` routers.
+* Added `server/authRouteOrder.test.js` to prevent `app.use("/api", authHttp, ...)` from intercepting `/api/auth/*` and returning `请先登录`.
+* Updated `docs/system-design.md` and backend quality guidelines with the auth-before-broad-api-router invariant.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

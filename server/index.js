@@ -150,18 +150,7 @@ let duelRequests;
 app.use("/api", createPublicRouter({ prisma, authHttp, listWatchRooms }));
 
 app.use("/api", createSocialRouter({ prisma, authHttp, statusForUser }));
-
-app.use("/api", authHttp, createCommerceRouter({ prisma }));
-
-app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
 const characterSelectionData = createCharacterSelectionData({ prisma });
-app.use("/api", authHttp, createPlayerRouter({
-  prisma,
-  findRoomForUser,
-  roomView,
-  characterSelectionData
-}));
-app.use("/api", authHttp, createReplayRouter({ prisma }));
 
 const refreshSocketUser = createSocketUserRefresher({
   jwtSecret: JWT_SECRET,
@@ -200,6 +189,17 @@ app.use("/api/auth", createAuthRouter({
   loginSessions,
   onlineSessions
 }));
+
+app.use("/api", authHttp, createCommerceRouter({ prisma }));
+
+app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
+app.use("/api", authHttp, createPlayerRouter({
+  prisma,
+  findRoomForUser,
+  roomView,
+  characterSelectionData
+}));
+app.use("/api", authHttp, createReplayRouter({ prisma }));
 
 function lobbyStats() {
   const matchmakingCounts = matchmakingCountsByMode();

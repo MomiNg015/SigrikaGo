@@ -289,6 +289,7 @@ SigrikaGo/
   - Auth HTTP route boundary.
   - Owns `/api/auth/register`, `/api/auth/login`, `/api/auth/refresh`, and `/api/auth/logout` request handlers, including credential validation, refresh-cookie rotation/clearing, active-account conflict response, force-login session eviction, and malformed-token-tolerant logout cleanup.
   - `server/index.js` creates the shared login/session managers and mounts `/api/auth` after `onlineSessions` is available; tests touching auth route status codes, cookie behavior, forced login, refresh-session recovery, or logout cleanup should update `server/authRoutes.test.js`.
+  - `/api/auth` must be mounted before broad authenticated `/api` routers. Otherwise login/register/refresh/logout can be intercepted by `authHttp` and return `请先登录` before the auth handlers run.
 
 - `server/commerceRoutes.js`
   - Authenticated commerce HTTP route boundary for `/api/shop/:id/purchase`, `/api/items/inventory`, and `/api/items/:itemId/use`.

@@ -45,6 +45,8 @@ Questions to answer:
 
 `server/index.js` should create shared dependencies such as `loginSessions`, `onlineSessions`, `prisma`, and `JWT_SECRET`, then mount this router. It should not duplicate auth handler bodies, cookie parsing, active-account conflict responses, or logout token parsing.
 
+`/api/auth` must be mounted before broad authenticated `/api` routers such as commerce, admin, player, and replay routes. If `app.use("/api", authHttp, ...)` appears before the auth router, login/register/refresh/logout requests will be intercepted by `authHttp` and return `请先登录` before the auth handlers run. `server/authRouteOrder.test.js` locks this ordering.
+
 Wrong:
 
 ```js

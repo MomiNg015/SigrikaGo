@@ -685,6 +685,9 @@
 <ul>
 <li><code>server/index.js</code> creates the shared login/session managers and mounts <code>/api/auth</code> after <code>onlineSessions</code> is available; tests touching auth route status codes, cookie behavior, forced login, refresh-session recovery, or logout cleanup should update <code>server/authRoutes.test.js</code>.</li>
 </ul>
+<ul>
+<li><code>/api/auth</code> must be mounted before broad authenticated <code>/api</code> routers. Otherwise login/register/refresh/logout can be intercepted by <code>authHttp</code> and return <code>请先登录</code> before the auth handlers run.</li>
+</ul>
 </ul>
 <ul>
 <li><code>server/commerceRoutes.js</code></li>
