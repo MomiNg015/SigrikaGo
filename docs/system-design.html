@@ -3442,6 +3442,9 @@
 <li><code>npm run check</code> 是当前交付前的聚合质量入口，会顺序运行单元测试、Vite build、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。</li>
 </ul>
 <ul>
+<li>Vite production build uses explicit manual chunks in <code>vite.config.js</code>: React runtime code goes to <code>react-vendor</code>, Socket.IO client runtime goes to <code>realtime-vendor</code>, and the skill-animation Pixi runtime goes to the lazy <code>pixi-vendor</code> chunk. The entry JS stays below the default warning target, while the larger Pixi chunk is an intentional lazy/prewarmed exception guarded by <code>scripts/viteBuildConfig.test.js</code>.</li>
+</ul>
+<ul>
 <li>Username input is normalized server-side and must be 2-16 characters, limited to Chinese characters, English letters, numbers, and <code>_</code>.</li>
 </ul>
 <ul>

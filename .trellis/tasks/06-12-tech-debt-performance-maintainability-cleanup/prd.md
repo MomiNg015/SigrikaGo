@@ -51,6 +51,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Skill-enabled boards prewarm Pixi during idle time and reuse the same module promise for the first skill animation.
 * [x] Concrete board skill animation implementations are behind a renderer registry instead of living inside the React host component.
 * [x] Board skill SFX cue scheduling and timer cleanup are isolated from the React/Pixi host component.
+* [x] Vite production build splits React, Socket.IO client, and lazy Pixi runtime chunks so the entry JS no longer triggers the previous large-chunk warning.
 
 ## Definition of Done
 
@@ -123,6 +124,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Updated `BoardSkillEffects` to delegate SFX timer creation and clearing, keeping the React host focused on overlay lifecycle.
 * Added scheduler tests for catalog cue timing, reduced-motion suppression, and cleanup of scheduled timer ids.
 * Updated `docs/system-design.md` and frontend component guidelines for the board skill SFX scheduler contract.
+
+### Batch 8 Completed
+
+* Added Vite manual chunks for React, Socket.IO client runtime, and lazy Pixi runtime in `vite.config.js`.
+* Set the production build chunk warning limit to document the intentionally lazy/prewarmed Pixi chunk while keeping entry JS split below the default warning target.
+* Added `scripts/viteBuildConfig.test.js` to lock manual chunk routing and prevent a catch-all vendor chunk from reintroducing circular chunk warnings.
+* Verified `npm run build` no longer emits the previous large chunk warning; the entry JS is split into smaller runtime chunks and Pixi remains lazy.
+* Updated `docs/system-design.md` and frontend quality guidelines for the build chunking contract.
 
 ### Later Batches
 

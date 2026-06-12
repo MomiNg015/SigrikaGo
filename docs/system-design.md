@@ -1492,6 +1492,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - `assertProductionDeployment` 在生产环境启动时执行部署配置体检：`JWT_SECRET` 至少 32 位且不能使用默认值，`PUBLIC_ORIGIN` / `SITE_ORIGIN` / `ALLOWED_ORIGINS` 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。
 - `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；该脚本默认按生产规则检查，即使调用方忘记设置 `NODE_ENV=production` 也不会按开发环境误通过。
 - `npm run check` 是当前交付前的聚合质量入口，会顺序运行单元测试、Vite build、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。
+- Vite production build uses explicit manual chunks in `vite.config.js`: React runtime code goes to `react-vendor`, Socket.IO client runtime goes to `realtime-vendor`, and the skill-animation Pixi runtime goes to the lazy `pixi-vendor` chunk. The entry JS stays below the default warning target, while the larger Pixi chunk is an intentional lazy/prewarmed exception guarded by `scripts/viteBuildConfig.test.js`.
 - Username input is normalized server-side and must be 2-16 characters, limited to Chinese characters, English letters, numbers, and `_`.
 - Password input is enforced server-side as 6-14 characters. Registration returns the exact validation issue; login returns a generic username/password error for invalid credentials or invalid credential shapes.
 - Chat text is normalized server-side by removing control characters, trimming whitespace, rejecting empty messages, and capping messages at 240 characters.

@@ -38,10 +38,10 @@ Questions to answer:
 
 ## Testing Requirements
 
-### Startup preload and handoff check contracts
+### Startup preload, build chunking, and handoff check contracts
 
 #### 1. Scope / Trigger
-- Trigger: any change to login/startup preload behavior, runtime asset manifests, or project handoff verification commands.
+- Trigger: any change to login/startup preload behavior, runtime asset manifests, Vite build chunking, or project handoff verification commands.
 - Startup preload is user-visible performance infrastructure; it must keep first-screen assets prioritized without forcing every optional BGM/voice/shop asset to block home entry.
 
 #### 2. Signatures
@@ -49,6 +49,7 @@ Questions to answer:
 - `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress })` waits for critical groups, starts deferred groups in the background, and caps concurrent loaders.
 - `npm run check` is the local handoff gate and should run unit tests, Vite build, production config validation with explicit sample env, and `docs:system-design`.
 - `npm run check:production` remains the strict production-env validator and must not silently inject sample secrets or origins.
+- `vite.config.js` manually chunks React, Socket.IO client code, and Pixi into `react-vendor`, `realtime-vendor`, and `pixi-vendor` respectively. Do not add a catch-all `vendor` chunk unless the build is checked for circular chunk warnings.
 
 #### 3. Contracts
 - Critical images include character portraits and home entry/background imagery needed for the first home render.
@@ -57,6 +58,7 @@ Questions to answer:
 - Preload progress represents critical preload completion; deferred assets must not keep users trapped on the preload screen.
 - Preload failures remain non-blocking for both critical and deferred groups.
 - The grouped asset API must keep `images` and `audio` flattened arrays for compatibility with tests and existing callers.
+- Production entry JS should stay split from heavy runtime libraries. The Pixi chunk may be larger than Vite's default 500 KB warning because it is lazy-loaded and prewarmed only for skill-enabled boards; the configured warning limit should remain a documented exception, not a way to hide a growing entry chunk.
 
 #### 4. Validation & Error Matrix
 - Missing grouped fields but legacy `images`/`audio` provided -> treat all legacy assets as critical.
@@ -67,6 +69,7 @@ Questions to answer:
 
 #### 5. Good/Base/Bad Cases
 - Good: Login reaches home after current portraits, home art, and UI/board SFX are ready while BGM and voice assets keep loading in the background.
+- Good: React and Socket.IO runtime code are cached in stable vendor chunks, while Pixi stays in a lazy `pixi-vendor` chunk outside the initial room entry path.
 - Base: Older tests or helpers that pass only `images` and `audio` still work.
 - Bad: Awaiting every configured music and voice file before home entry.
 - Bad: Making `check:production` pass by mutating production defaults instead of keeping sample env limited to the aggregate `check` command.
@@ -75,6 +78,7 @@ Questions to answer:
 - Asset grouping tests must assert representative first-screen assets are critical and representative music/voice/shop assets are deferred.
 - Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
 - Script contract tests must assert `npm run check` includes tests, build, production config validation, docs generation, and explicit sample production env.
+- Vite build config tests must assert manual chunk grouping, the absence of a catch-all vendor chunk, and the intentional Pixi warning limit.
 - Run `npm run check` before handoff when changing preload or verification commands.
 
 #### 7. Wrong vs Correct
