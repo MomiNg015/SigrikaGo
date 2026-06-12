@@ -251,6 +251,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomConnectionLifecycle.test.js` for player reconnects, idempotent spectator joins, disconnect cleanup, finished-room disconnect notice suppression, explicit spectator leave, and finished-player leave cleanup.
 * Updated `docs/system-design.md` and backend quality guidelines for the room connection lifecycle contract.
 
+### Batch 23 Completed
+
+* Added `server/roomRequestLifecycle.js` as the counting/draw/scoring request entry boundary.
+* Updated `server/rooms.js` to delegate counting requests/responses, draw requests/responses, scoring action room/player lookup, phase precondition checks, scoring point validation, and dispatch into `server/roomScoringFlow.js` to the request lifecycle boundary.
+* Kept standard game action routing, skill action routing, chat mutation, and broadcast/persistence wrappers in `server/rooms.js`.
+* Added `server/roomRequestLifecycle.test.js` for invalid room-code handling, counting request dispatch, draw response phase checks, accepted draw close scheduling, scoring point validation, and result-review phase checks.
+* Updated `docs/system-design.md` and backend quality guidelines for the room request lifecycle contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

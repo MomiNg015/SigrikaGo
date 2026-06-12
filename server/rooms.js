@@ -10,13 +10,6 @@ import { resetByoYomi } from "./roomClockTiming.js";
 import { prepareCandyEffectUpdates } from "./roomItemEffects.js";
 import { listPersistedRooms, deletePersistedRoom as deletePersistedRoomState } from "./roomPersistence.js";
 import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
-import {
-  applyCountingRequest,
-  applyCountingResponse,
-  applyDrawRequest,
-  applyDrawResponse,
-  applyScoringAction
-} from "./roomScoringFlow.js";
 import { handleRoomTestAction, isRoomTestAction } from "./roomTestActions.js";
 import {
   broadcastRoom as broadcastRoomUpdate,
@@ -55,6 +48,7 @@ import { saveGameRecord as persistGameRecord } from "./roomResultPersistence.js"
 import { createRoomClockLifecycle } from "./roomClockLifecycle.js";
 import { createRoomRestoreLifecycle } from "./roomRestoreLifecycle.js";
 import { createRoomConnectionLifecycle } from "./roomConnectionLifecycle.js";
+import { createRoomRequestLifecycle } from "./roomRequestLifecycle.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -161,6 +155,25 @@ export const {
   detachSocket,
   leaveRoom
 } = roomConnectionLifecycle;
+const roomRequestLifecycle = createRoomRequestLifecycle({
+  rooms,
+  validateRoomCode,
+  validateActionPoint,
+  appendSystem,
+  appendNotices,
+  broadcastToast,
+  scheduleCountingTimeout,
+  scheduleDrawTimeout,
+  scheduleResultReviewTimeout,
+  scheduleRoomClose
+});
+export const {
+  requestCounting,
+  respondCounting,
+  requestDraw,
+  respondDraw,
+  handleScoringAction
+} = roomRequestLifecycle;
 
 export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
@@ -312,109 +325,6 @@ export function handleGameAction(roomCode, userId, action, io) {
   });
 }
 
-export function requestCounting(roomCode, userId, io) {
-  const validatedRoomCode = validateRoomCode(roomCode);
-  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
-  const code = validatedRoomCode.value;
-  const room = rooms.get(code);
-  if (!room) return { ok: false, error: "房间不存在" };
-  const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能申请数子" };
-  if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请数子" };
-
-  return applyCountingRequest({
-    room,
-    player,
-    userId,
-    appendSystem,
-    scheduleCountingTimeout,
-    io
-  });
-}
-
-export function respondCounting(roomCode, userId, accepted) {
-  const validatedRoomCode = validateRoomCode(roomCode);
-  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
-  const room = rooms.get(validatedRoomCode.value);
-  if (!room) return { ok: false, error: "房间不存在" };
-  if (room.game.phase !== GAME_PHASES.countingRequested) return { ok: false, error: "当前没有数子申请" };
-  const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能确认数子" };
-
-  return applyCountingResponse({ room, player, userId, accepted, appendSystem });
-}
-
-export function requestDraw(roomCode, userId, io) {
-  const validatedRoomCode = validateRoomCode(roomCode);
-  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
-  const code = validatedRoomCode.value;
-  const room = rooms.get(code);
-  if (!room) return { ok: false, error: "房间不存在" };
-  const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能申请和棋" };
-  if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请和棋" };
-
-  return applyDrawRequest({
-    room,
-    player,
-    userId,
-    appendSystem,
-    scheduleDrawTimeout,
-    io
-  });
-}
-
-export function respondDraw(roomCode, userId, accepted, io) {
-  const validatedRoomCode = validateRoomCode(roomCode);
-  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
-  const room = rooms.get(validatedRoomCode.value);
-  if (!room) return { ok: false, error: "房间不存在" };
-  if (room.game.phase !== GAME_PHASES.drawRequested) return { ok: false, error: "当前没有和棋申请" };
-  const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能确认和棋" };
-
-  return applyDrawResponse({
-    room,
-    player,
-    userId,
-    accepted,
-    appendSystem,
-    broadcastToast,
-    scheduleRoomClose,
-    io
-  });
-}
-
-export function handleScoringAction(roomCode, userId, action, io) {
-  const validatedRoomCode = validateRoomCode(roomCode);
-  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
-  const room = rooms.get(validatedRoomCode.value);
-  if (!room) return { ok: false, error: "房间不存在" };
-  const validationError = validateActionPoint(action, room.game.size);
-  if (validationError) return { ok: false, error: validationError };
-  const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能确认数子" };
-
-  if (["mark-dead", "mark-neutral", "reset-dead", "confirm-dead"].includes(action.type)) {
-    if (room.game.phase !== GAME_PHASES.markingDead) return { ok: false, error: "当前不在死子确认阶段" };
-  }
-  if (["accept-result", "reject-result"].includes(action.type)) {
-    if (room.game.phase !== GAME_PHASES.resultReview) return { ok: false, error: "当前不在结果确认阶段" };
-  }
-
-  return applyScoringAction({
-    room,
-    player,
-    userId,
-    action,
-    appendSystem,
-    appendNotices,
-    broadcastToast,
-    scheduleResultReviewTimeout,
-    scheduleRoomClose,
-    io
-  });
-}
 
 export function addChat(roomCode, user, text) {
   const validatedRoomCode = validateRoomCode(roomCode);

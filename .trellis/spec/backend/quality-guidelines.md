@@ -329,6 +329,35 @@ if (validationError) return { error: validationError };
 
 Tests touching room action point validation should update `server/roomActionValidation.test.js`; flow-specific action results can stay in `server/rooms.test.js`.
 
+### Room Request Lifecycle Boundary Contract
+
+`server/roomRequestLifecycle.js` owns counting, draw, and scoring request entry validation:
+
+- `createRoomRequestLifecycle(deps)` returns `requestCounting`, `respondCounting`, `requestDraw`, `respondDraw`, and `handleScoringAction`.
+- Each entry point validates the room code through `validateRoomCode()`, looks up the room, verifies the actor is a player, checks phase preconditions, and then delegates mutation to `server/roomScoringFlow.js`.
+- `handleScoringAction()` also delegates point-target validation to `validateActionPoint(action, room.game.size)` before scoring phase checks.
+- Counting requests are allowed only from `playing`; counting responses are allowed only from `countingRequested`.
+- Draw requests are allowed only from `playing`; draw responses are allowed only from `drawRequested`.
+- Dead-stone marking actions require `markingDead`; result accept/reject actions require `resultReview`.
+
+`server/rooms.js` should route socket/API events to these entry points, but it should not duplicate room/player lookup, phase checks, or scoring point validation for counting/draw/scoring flows.
+
+Wrong:
+
+```js
+const room = rooms.get(roomCode);
+if (room.game.phase !== GAME_PHASES.drawRequested) return { ok: false };
+return applyDrawResponse({ room, player, accepted });
+```
+
+Correct:
+
+```js
+return respondDraw(roomCode, userId, accepted, io);
+```
+
+Tests touching counting/draw/scoring entry validation, phase preconditions, player lookup, or dispatch into scoring flow should update `server/roomRequestLifecycle.test.js`; full room flow regressions can remain in `server/rooms.test.js`.
+
 ### Room Close Lifecycle Boundary Contract
 
 `server/roomCloseLifecycle.js` owns room close and empty-active-room lifecycle behavior:
