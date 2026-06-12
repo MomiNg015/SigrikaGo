@@ -181,7 +181,8 @@ describe("ensureGachaSchema", () => {
     const executeRawUnsafe = vi.fn();
     const queryRawUnsafe = vi.fn()
       .mockResolvedValueOnce([{ name: "id" }, { name: "coins" }])
-      .mockResolvedValueOnce([{ name: "id" }, { name: "characterSlug" }]);
+      .mockResolvedValueOnce([{ name: "id" }, { name: "characterSlug" }])
+      .mockResolvedValueOnce([{ name: "id" }, { name: "featuredPrizeId" }]);
     const client = {
       $executeRawUnsafe: executeRawUnsafe,
       $queryRawUnsafe: queryRawUnsafe
@@ -194,6 +195,7 @@ describe("ensureGachaSchema", () => {
     expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "User" ADD COLUMN "blueGems" INTEGER NOT NULL DEFAULT 0');
     expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "UserCharacter" ADD COLUMN "chainCount" INTEGER NOT NULL DEFAULT 0');
     expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS "GachaPool"'));
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "GachaPool" ADD COLUMN "featuredPrizeIds" TEXT');
     expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS "GachaDrawReward"'));
   });
 });

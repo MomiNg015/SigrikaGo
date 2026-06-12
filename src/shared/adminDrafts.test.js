@@ -127,6 +127,7 @@ describe("admin draft helpers", () => {
   it("allows gacha pool drafts without a featured prize", () => {
     const emptyDraft = emptyGachaPoolDraft();
     expect(emptyDraft.featuredPrizeIndex).toBeNull();
+    expect(emptyDraft.featuredPrizeIndexes).toEqual([]);
 
     const draft = buildGachaPoolDraft({
       ...emptyDraft,
@@ -140,6 +141,26 @@ describe("admin draft helpers", () => {
     const body = gachaPoolDraftToBody(draft);
 
     expect(draft.featuredPrizeIndex).toBeNull();
+    expect(draft.featuredPrizeIndexes).toEqual([]);
     expect(body.featuredPrizeIndex).toBeNull();
+    expect(body.featuredPrizeIndexes).toEqual([]);
+  });
+
+  it("serializes multiple gacha featured prize indexes", () => {
+    const draft = buildGachaPoolDraft({
+      name: "Prize Board",
+      featuredPrizeIds: ["prize-1", "prize-3"],
+      prizes: [
+        { id: "prize-1", type: "character", targetId: "denia", quantity: "1", probabilityBasisPoints: "5000", enabled: true, name: "Danea" },
+        { id: "prize-2", type: "coins", targetId: "", quantity: "60", probabilityBasisPoints: "3000", enabled: true, name: "Coins" },
+        { id: "prize-3", type: "decoration", targetId: "paw-stone", quantity: "1", probabilityBasisPoints: "2000", enabled: true, name: "Paw" }
+      ]
+    });
+
+    const body = gachaPoolDraftToBody(draft);
+
+    expect(draft.featuredPrizeIndexes).toEqual([0, 2]);
+    expect(body.featuredPrizeIndexes).toEqual([0, 2]);
+    expect(body.featuredPrizeIndex).toBe(0);
   });
 });

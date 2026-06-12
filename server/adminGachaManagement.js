@@ -40,10 +40,9 @@ export function validateGachaPoolInput(input = {}) {
   const probability = validatePrizeProbabilityTotal(valuePrizes);
   if (enabled && !probability.ok) errors.push(probability.error);
 
-  const featuredPrizeIndex = input.featuredPrizeIndex == null || input.featuredPrizeIndex === ""
-    ? null
-    : parseIntValue(input.featuredPrizeIndex);
-  if (featuredPrizeIndex != null && (featuredPrizeIndex < 0 || featuredPrizeIndex >= valuePrizes.length)) {
+  const featuredPrizeIndexes = normalizeFeaturedPrizeIndexes(input);
+  const featuredPrizeIndex = featuredPrizeIndexes[0] ?? null;
+  if (featuredPrizeIndexes.some((index) => index < 0 || index >= valuePrizes.length)) {
     errors.push("featuredPrizeIndex must reference a prize");
   }
 
@@ -63,7 +62,8 @@ export function validateGachaPoolInput(input = {}) {
         sortOrder
       },
       prizes: valuePrizes,
-      featuredPrizeIndex
+      featuredPrizeIndex,
+      featuredPrizeIndexes
     }
   };
 }
@@ -113,10 +113,8 @@ export async function createGachaPool({ prisma, adminUser, input }) {
         data: { ...prize, poolId: pool.id }
       }));
     }
-    const featuredPrize = input.featuredPrizeIndex == null ? null : createdPrizes[input.featuredPrizeIndex] ?? null;
-    const afterPatch = featuredPrize
-      ? await tx.gachaPool.update({ where: { id: pool.id }, data: { featuredPrizeId: featuredPrize.id } })
-      : pool;
+    const featuredPrizeData = featuredPrizePersistenceData(input.featuredPrizeIndexes, createdPrizes);
+    const afterPatch = await tx.gachaPool.update({ where: { id: pool.id }, data: featuredPrizeData });
     const after = { ...pool, ...afterPatch };
     const payload = toAdminGachaPoolPayload({ ...after, prizes: createdPrizes });
     await writeAudit(tx, adminUser, "gacha-pool.create", after.id, null, payload, "gacha-pool");
@@ -131,7 +129,7 @@ export async function updateGachaPool({ prisma, adminUser, poolId, input }) {
     await tx.gachaPrize.deleteMany?.({ where: { poolId } });
     const updatedPool = await tx.gachaPool.update({
       where: { id: poolId },
-      data: { ...input.pool, featuredPrizeId: null }
+      data: { ...input.pool, featuredPrizeId: null, featuredPrizeIds: null }
     });
     const createdPrizes = [];
     for (const prize of input.prizes) {
@@ -139,10 +137,8 @@ export async function updateGachaPool({ prisma, adminUser, poolId, input }) {
         data: { ...prize, poolId }
       }));
     }
-    const featuredPrize = input.featuredPrizeIndex == null ? null : createdPrizes[input.featuredPrizeIndex] ?? null;
-    const afterPatch = featuredPrize
-      ? await tx.gachaPool.update({ where: { id: poolId }, data: { featuredPrizeId: featuredPrize.id } })
-      : updatedPool;
+    const featuredPrizeData = featuredPrizePersistenceData(input.featuredPrizeIndexes, createdPrizes);
+    const afterPatch = await tx.gachaPool.update({ where: { id: poolId }, data: featuredPrizeData });
     const after = { ...updatedPool, ...afterPatch };
     const payload = toAdminGachaPoolPayload({ ...after, prizes: createdPrizes });
     await writeAudit(
@@ -174,6 +170,7 @@ export function toAdminGachaPoolPayload(pool) {
     ...toGachaPoolPayload(pool),
     enabled: Boolean(pool.enabled),
     featuredPrizeId: pool.featuredPrizeId ?? null,
+    featuredPrizeIds: featuredPrizeIdsFromPool(pool),
     sortOrder: pool.sortOrder ?? 0,
     prizes: (pool.prizes ?? []).map((prize) => ({
       id: prize.id,
@@ -244,4 +241,43 @@ function parseIntValue(value) {
   const number = Number(value);
   if (!Number.isInteger(number) || number < -2147483648 || number > 2147483647) return null;
   return number;
+}
+
+function normalizeFeaturedPrizeIndexes(input = {}) {
+  const rawIndexes = Array.isArray(input.featuredPrizeIndexes)
+    ? input.featuredPrizeIndexes
+    : (input.featuredPrizeIndex == null || input.featuredPrizeIndex === "" ? [] : [input.featuredPrizeIndex]);
+  const indexes = [];
+  for (const rawIndex of rawIndexes) {
+    const index = parseIntValue(rawIndex);
+    if (index == null || indexes.includes(index)) continue;
+    indexes.push(index);
+  }
+  return indexes;
+}
+
+function featuredPrizePersistenceData(featuredPrizeIndexes = [], prizes = []) {
+  const ids = featuredPrizeIndexes
+    .map((index) => prizes[index]?.id)
+    .map((id) => String(id ?? "").trim())
+    .filter(Boolean);
+  return {
+    featuredPrizeId: ids[0] ?? null,
+    featuredPrizeIds: ids.length ? JSON.stringify(ids) : null
+  };
+}
+
+function featuredPrizeIdsFromPool(pool = {}) {
+  if (typeof pool.featuredPrizeIds === "string" && pool.featuredPrizeIds.trim()) {
+    try {
+      const parsed = JSON.parse(pool.featuredPrizeIds);
+      if (Array.isArray(parsed)) return parsed.map((id) => String(id ?? "").trim()).filter(Boolean);
+    } catch {
+      return pool.featuredPrizeIds.split(",").map((id) => id.trim()).filter(Boolean);
+    }
+  }
+  if (Array.isArray(pool.featuredPrizeIds)) {
+    return pool.featuredPrizeIds.map((id) => String(id ?? "").trim()).filter(Boolean);
+  }
+  return pool.featuredPrizeId ? [pool.featuredPrizeId] : [];
 }

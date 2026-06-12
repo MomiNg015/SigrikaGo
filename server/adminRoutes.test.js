@@ -663,7 +663,7 @@ describe("admin shop and decoration routes", () => {
 });
 
 describe("admin gacha routes", () => {
-  it("creates gacha pools with custom prices, prizes, and a featured prize", async () => {
+  it("creates gacha pools with custom prices, prizes, and featured prizes", async () => {
     const calls = [];
     const response = await requestAdminRoute({
       character: {
@@ -704,7 +704,7 @@ describe("admin gacha routes", () => {
         singleDrawPrice: 60,
         tenDrawPrice: 560,
         sortOrder: 2,
-        featuredPrizeIndex: 0,
+        featuredPrizeIndexes: [0, 1],
         prizes: [
           { type: "character", targetId: "denia", quantity: 1, probabilityBasisPoints: 7000, enabled: true, name: "Danea", imageUrl: "/assets/Danea_centered.webp" },
           { type: "coins", targetId: "", quantity: 60, probabilityBasisPoints: 3000, enabled: true, name: "Coins", imageUrl: "" }
@@ -718,7 +718,8 @@ describe("admin gacha routes", () => {
       name: "Summer Capsules",
       singleDrawPrice: 60,
       tenDrawPrice: 560,
-      featuredPrizeId: "prize-1"
+      featuredPrizeId: "prize-1",
+      featuredPrizeIds: ["prize-1", "prize-2"]
     });
     expect(calls).toContainEqual(["tx.gachaPool.create", expect.objectContaining({
       name: "Summer Capsules",
@@ -731,6 +732,10 @@ describe("admin gacha routes", () => {
       targetId: "denia",
       probabilityBasisPoints: 7000
     })]);
+    expect(calls).toContainEqual(["tx.gachaPool.update", { id: "pool-1" }, {
+      featuredPrizeId: "prize-1",
+      featuredPrizeIds: "[\"prize-1\",\"prize-2\"]"
+    }]);
     expect(calls).toContainEqual(["tx.adminAuditLog.create", expect.objectContaining({
       action: "gacha-pool.create",
       targetType: "gacha-pool"

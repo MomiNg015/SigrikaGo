@@ -56,7 +56,7 @@ describe("AdminGachaPools", () => {
     expect(source).not.toContain('placeholder="名称"');
   });
 
-  it("builds valid API payloads with configurable prices and featured prize index", () => {
+  it("builds valid API payloads with configurable prices and featured prize indexes", () => {
     const draft = {
       ...buildGachaPoolDraft({
       ...emptyGachaPoolDraft(),
@@ -67,7 +67,7 @@ describe("AdminGachaPools", () => {
         { type: "coins", targetId: "", quantity: "60", probabilityBasisPoints: "10000", enabled: true, name: "Coins" }
       ]
       }),
-      featuredPrizeIndex: 0
+      featuredPrizeIndexes: [0]
     };
 
     const body = gachaPoolDraftToBody(draft);
@@ -75,6 +75,7 @@ describe("AdminGachaPools", () => {
     expect(body.singleDrawPrice).toBe(50);
     expect(body.tenDrawPrice).toBe(500);
     expect(body.featuredPrizeIndex).toBe(0);
+    expect(body.featuredPrizeIndexes).toEqual([0]);
     expect(body.prizes[0]).toMatchObject({ type: "coins", quantity: 60, probabilityBasisPoints: 10000 });
   });
 

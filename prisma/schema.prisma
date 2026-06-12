@@ -97,6 +97,7 @@ model GachaPool {
   singleDrawPrice Int      @default(50)
   tenDrawPrice    Int      @default(500)
   featuredPrizeId String?
+  featuredPrizeIds String?
   sortOrder       Int      @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

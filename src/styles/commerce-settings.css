@@ -47,6 +47,30 @@
   object-fit: contain;
 }
 
+.gacha-ticket-tab .gacha-featured-stack {
+  grid-row: span 2;
+}
+
+.gacha-featured-stack {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 38px;
+  align-items: center;
+  justify-content: start;
+  min-width: 62px;
+}
+
+.gacha-featured-stack img {
+  width: 62px;
+  height: 68px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 8px rgba(42, 31, 18, 0.16));
+}
+
+.gacha-featured-stack img + img {
+  margin-left: -26px;
+}
+
 .gacha-ticket-tab span,
 .gacha-ticket-tab small {
   min-width: 0;
@@ -152,6 +176,15 @@
   width: 110px;
   height: 110px;
   object-fit: contain;
+}
+
+.gacha-featured-prize .gacha-featured-stack.large {
+  grid-auto-columns: 64px;
+  min-width: 110px;
+}
+
+.gacha-featured-prize .gacha-featured-stack.large img + img {
+  margin-left: -46px;
 }
 
 .gacha-featured-prize span,

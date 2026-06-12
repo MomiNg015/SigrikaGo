@@ -101,6 +101,23 @@ function prizePreviewFor(prize, resourceCatalogs) {
   };
 }
 
+function featuredPrizeIndexesForDraft(draft = {}) {
+  if (Array.isArray(draft.featuredPrizeIndexes)) return draft.featuredPrizeIndexes.map((index) => Number(index));
+  return draft.featuredPrizeIndex == null ? [] : [Number(draft.featuredPrizeIndex)];
+}
+
+function isFeaturedPrize(draft, index) {
+  return featuredPrizeIndexesForDraft(draft).includes(index);
+}
+
+function featuredPrizeLabel(pool) {
+  const names = (pool.featuredPrizes ?? [])
+    .map((prize) => prize?.name || prize?.targetId || prize?.id)
+    .filter(Boolean);
+  if (names.length) return names.join("、");
+  return pool.featuredPrize?.name ?? pool.featuredPrizeId ?? "-";
+}
+
 export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, onSaved, onNotice }) {
   const [draft, setDraft] = useState(null);
 
@@ -133,10 +150,17 @@ export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, o
   }
 
   function toggleFeaturedPrize(index) {
-    setDraft((current) => ({
-      ...current,
-      featuredPrizeIndex: Number(current.featuredPrizeIndex) === index ? null : index
-    }));
+    setDraft((current) => {
+      const currentIndexes = featuredPrizeIndexesForDraft(current);
+      const nextIndexes = currentIndexes.includes(index)
+        ? currentIndexes.filter((currentIndex) => currentIndex !== index)
+        : [...currentIndexes, index];
+      return {
+        ...current,
+        featuredPrizeIndex: nextIndexes[0] ?? null,
+        featuredPrizeIndexes: nextIndexes
+      };
+    });
   }
 
   async function save(event) {
@@ -183,7 +207,7 @@ export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, o
                 <td>{pool.name}</td>
                 <td>{pool.openDateRange}</td>
                 <td>{pool.singleDrawPrice} / {pool.tenDrawPrice}</td>
-                <td>{pool.featuredPrize?.name ?? pool.featuredPrizeId ?? "-"}</td>
+                <td>{featuredPrizeLabel(pool)}</td>
                 <td>
                   <div className="admin-gacha-prize-list admin-gacha-prize-summary">
                     {(pool.prizes ?? []).slice(0, 3).map((prize) => (
@@ -286,7 +310,7 @@ export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, o
                     <button
                       className="admin-gacha-featured-toggle"
                       type="button"
-                      aria-pressed={Number(draft.featuredPrizeIndex) === index}
+                      aria-pressed={isFeaturedPrize(draft, index)}
                       onClick={() => toggleFeaturedPrize(index)}
                     >
                       <span>大奖</span>

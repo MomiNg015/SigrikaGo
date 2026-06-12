@@ -38,7 +38,7 @@ export default function GachaModal({ token, user, initialPools = [], onUserChang
               role="tab"
               onClick={() => setActivePoolId(pool.id)}
             >
-              <img src={pool.featuredPrize?.imageUrl || "/assets/items/rainbow-bean-candy.webp"} alt="" decoding="async" />
+              <FeaturedPrizeImages prizes={featuredPrizesForPool(pool)} />
               <span>{pool.name}</span>
               <small>{formatGachaDateRange(pool)}</small>
             </button>
@@ -60,10 +60,10 @@ export default function GachaModal({ token, user, initialPools = [], onUserChang
                   <div className="gacha-slot" />
                 </div>
                 <div className="gacha-featured-prize">
-                  <img src={activePool.featuredPrize?.imageUrl || "/assets/items/rainbow-bean-candy.webp"} alt={activePool.featuredPrize?.name ?? activePool.name} decoding="async" />
+                  <FeaturedPrizeImages prizes={featuredPrizesForPool(activePool)} large />
                   <div>
                     <span>Featured</span>
-                    <strong>{activePool.featuredPrize?.name || activePool.name}</strong>
+                    <strong>{featuredPrizeNames(activePool) || activePool.name}</strong>
                     <small>{formatGachaRemaining(activePool.remainingMs)}</small>
                   </div>
                 </div>
@@ -96,6 +96,35 @@ export default function GachaModal({ token, user, initialPools = [], onUserChang
         {result && <GachaResultDialog result={result} onClose={() => setResult(null)} />}
       </section>
     </div>
+  );
+}
+
+function featuredPrizesForPool(pool = {}) {
+  const prizes = Array.isArray(pool.featuredPrizes) && pool.featuredPrizes.length
+    ? pool.featuredPrizes
+    : (pool.featuredPrize ? [pool.featuredPrize] : []);
+  return prizes.length ? prizes : [{ name: pool.name, imageUrl: "/assets/items/rainbow-bean-candy.webp" }];
+}
+
+function featuredPrizeNames(pool = {}) {
+  return featuredPrizesForPool(pool)
+    .map((prize) => prize?.name || prize?.targetId)
+    .filter(Boolean)
+    .join("、");
+}
+
+function FeaturedPrizeImages({ prizes, large = false }) {
+  return (
+    <span className={`gacha-featured-stack ${large ? "large" : ""}`} aria-hidden="true">
+      {prizes.slice(0, 3).map((prize, index) => (
+        <img
+          key={`${prize?.id ?? prize?.name ?? "featured"}-${index}`}
+          src={prize?.imageUrl || "/assets/items/rainbow-bean-candy.webp"}
+          alt=""
+          decoding="async"
+        />
+      ))}
+    </span>
   );
 }
 

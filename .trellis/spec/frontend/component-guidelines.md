@@ -181,44 +181,51 @@ Correct:
 
 ---
 
-### Scenario: Gacha Admin Featured Prize Contract
+### Scenario: Gacha Admin Featured Prizes Contract
 
 #### 1. Scope / Trigger
 - Trigger: any change to gacha admin prize editing, gacha pool draft serialization, admin gacha API payloads, or player/admin gacha pool payload projection.
-- Featured prizes are a cross-layer display hint, not a required prize rule. Draw odds and reward settlement must not depend on a featured prize existing.
+- Featured prizes are cross-layer display hints, not required prize rules. Draw odds and reward settlement must not depend on any featured prize existing.
 
 #### 2. Signatures
-- `emptyGachaPoolDraft().featuredPrizeIndex`: `null | number`.
-- `buildGachaPoolDraft(pool).featuredPrizeIndex`: index of `pool.featuredPrizeId` in `pool.prizes`, or `null` when no stored featured prize exists.
-- `gachaPoolDraftToBody(draft).featuredPrizeIndex`: `null | number`.
-- Admin API input `featuredPrizeIndex`: `null | number`; `null` means clear or keep no `featuredPrizeId`.
-- Gacha pool payload `featuredPrize`: `null | GachaPrizePayload`.
+- `emptyGachaPoolDraft().featuredPrizeIndexes`: `number[]`, default `[]`.
+- `emptyGachaPoolDraft().featuredPrizeIndex`: `null | number`, legacy first-featured compatibility field.
+- `buildGachaPoolDraft(pool).featuredPrizeIndexes`: indexes of `pool.featuredPrizeIds` / `pool.featuredPrizes` in `pool.prizes`, falling back to legacy `pool.featuredPrizeId`.
+- `gachaPoolDraftToBody(draft).featuredPrizeIndexes`: `number[]`; `featuredPrizeIndex` remains `indexes[0] ?? null`.
+- Admin API input `featuredPrizeIndexes`: `number[]`; empty array means clear or keep no featured prizes. `featuredPrizeIndex` is accepted only as a legacy single-value fallback.
+- Gacha pool payload `featuredPrizes`: `GachaPrizePayload[]`; `featuredPrize` remains the first item or `null` for older display surfaces.
 
 #### 3. Contracts
-- The admin "大奖" control is a toggle, not a required radio group: clicking the selected prize clears the featured selection.
+- The admin "大奖" control is an independent toggle per prize row, not a required radio group: clicking a selected prize removes only that prize from the featured list.
 - New drafts must not silently preselect prize index `0`.
-- Draft serialization may send `featuredPrizeIndex: null`.
-- Backend validation must accept `null` and must reject only non-null indexes outside the prize array.
-- Create/update persistence must store `featuredPrizeId: null` when `featuredPrizeIndex` is null.
-- Player/admin pool payload projection must not invent the first prize as `featuredPrize` when `featuredPrizeId` is null.
+- Draft serialization sends `featuredPrizeIndexes: []` when no featured prize is selected.
+- Backend validation must accept an empty array and must reject only indexes outside the prize array.
+- Create/update persistence must store all selected prize ids in `featuredPrizeIds` JSON and mirror the first selected id in legacy `featuredPrizeId`; when the array is empty both fields are `null`.
+- Player/admin pool payload projection must not invent the first prize as `featuredPrize` or `featuredPrizes[0]` when no featured id is stored.
 
 #### 4. Validation & Error Matrix
-- `featuredPrizeIndex === null` -> valid, no featured prize.
-- `featuredPrizeIndex === ""` -> normalize to null.
-- `featuredPrizeIndex < 0` -> invalid.
-- `featuredPrizeIndex >= prizes.length` -> invalid.
-- `featuredPrizeId` missing from loaded pool -> edit draft shows no selected featured prize.
+- `featuredPrizeIndexes === []` -> valid, no featured prizes.
+- `featuredPrizeIndexes` omitted and `featuredPrizeIndex === null` -> normalize to `[]`.
+- Any featured index `< 0` -> invalid.
+- Any featured index `>= prizes.length` -> invalid.
+- Duplicate featured indexes -> normalize to one instance, preserving order.
+- `featuredPrizeIds` missing from loaded pool but `featuredPrizeId` exists -> edit draft shows that one legacy featured prize selected.
+- Stored featured ids missing from loaded prizes -> ignore missing ids without selecting another prize.
 
 #### 5. Good/Base/Bad Cases
-- Good: an admin clicks the selected "大奖" button again, saves, and subsequent payloads expose `featuredPrizeId: null` and `featuredPrize: null`.
-- Base: an existing pool with a valid `featuredPrizeId` still shows that prize selected in the editor.
+- Good: an admin toggles two "大奖" buttons, saves, and subsequent payloads expose both prize payloads in `featuredPrizes` while `featuredPrize` points to the first selected prize.
+- Good: an admin clicks all selected "大奖" buttons again, saves, and subsequent payloads expose `featuredPrizeIds: []`, `featuredPrizeId: null`, `featuredPrizes: []`, and `featuredPrize: null`.
+- Base: an existing pool with only a valid `featuredPrizeId` still shows that prize selected in the editor.
 - Bad: using `featuredPrizeIndex ?? 0`, `Math.max(0, findIndex(...))`, or `prizes[0]` fallback for featured prize display.
+- Bad: treating the "大奖" button as radio semantics where selecting one prize clears every other selected featured prize.
 
 #### 6. Tests Required
-- Draft helper tests assert empty and loaded no-featured pools keep `featuredPrizeIndex` null.
-- Admin component/source tests assert the featured control is toggleable rather than a required radio.
-- Admin management tests assert `featuredPrizeIndex: null` validates.
-- Gacha payload tests assert `featuredPrize` stays null when `featuredPrizeId` is null.
+- Draft helper tests assert empty and loaded no-featured pools keep `featuredPrizeIndexes: []`.
+- Draft helper tests assert multiple stored featured ids serialize as multiple indexes and preserve `featuredPrizeIndex` as the first index.
+- Admin component/source tests assert the featured control toggles membership rather than replacing the selected prize.
+- Admin management tests assert `featuredPrizeIndexes: []` and multiple indexes validate.
+- Gacha payload tests assert `featuredPrizes` returns every stored featured prize and remains empty when no featured id is stored.
+- Schema tests assert `GachaPool.featuredPrizeIds` exists in Prisma schema, migration SQL, and startup schema guard.
 
 #### 7. Wrong vs Correct
 
@@ -226,14 +233,18 @@ Wrong:
 
 ```js
 const featuredPrizeIndex = parseIntValue(input.featuredPrizeIndex ?? 0);
+const nextFeaturedPrizeIndexes = [clickedIndex];
 const featuredPrize = prizes.find((prize) => prize.id === pool.featuredPrizeId) ?? prizes[0] ?? null;
 ```
 
 Correct:
 
 ```js
-const featuredPrizeIndex = input.featuredPrizeIndex == null ? null : parseIntValue(input.featuredPrizeIndex);
-const featuredPrize = prizes.find((prize) => prize.id === pool.featuredPrizeId) ?? null;
+const featuredPrizeIndexes = Array.isArray(input.featuredPrizeIndexes) ? input.featuredPrizeIndexes : [];
+const nextFeaturedPrizeIndexes = currentIndexes.includes(clickedIndex)
+  ? currentIndexes.filter((index) => index !== clickedIndex)
+  : [...currentIndexes, clickedIndex];
+const featuredPrizes = featuredPrizeIds.map((id) => prizes.find((prize) => prize.id === id)).filter(Boolean);
 ```
 
 ---

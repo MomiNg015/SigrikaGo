@@ -113,11 +113,16 @@ export async function ensureGachaSchema(client = prisma) {
       "singleDrawPrice" INTEGER NOT NULL DEFAULT 50,
       "tenDrawPrice" INTEGER NOT NULL DEFAULT 500,
       "featuredPrizeId" TEXT,
+      "featuredPrizeIds" TEXT,
       "sortOrder" INTEGER NOT NULL DEFAULT 0,
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  const gachaPoolColumns = await client.$queryRawUnsafe(`PRAGMA table_info("GachaPool")`);
+  if (!gachaPoolColumns.some((column) => column.name === "featuredPrizeIds")) {
+    await client.$executeRawUnsafe(`ALTER TABLE "GachaPool" ADD COLUMN "featuredPrizeIds" TEXT`);
+  }
   await client.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "GachaPrize" (
       "id" TEXT NOT NULL PRIMARY KEY,

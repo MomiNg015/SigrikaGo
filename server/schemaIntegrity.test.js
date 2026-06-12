@@ -90,6 +90,8 @@ describe("Prisma schema integrity", () => {
 
     expect(schema).toContain("blueGems");
     expect(schema).toContain("chainCount");
+    expect(schema).toContain("featuredPrizeIds");
+    expect(migration).toContain('"featuredPrizeIds" TEXT');
     for (const modelName of [
       "GachaPool",
       "GachaPrize",

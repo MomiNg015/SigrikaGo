@@ -91,6 +91,64 @@ prisma.gameRecord.create({ data: { roomCode, blackUserId, whiteUserId, mode } })
 
 ---
 
+### Scenario: Gacha Featured Prize Persistence
+
+#### 1. Scope / Trigger
+- Trigger: any change to gacha pool schema, admin gacha save flow, player/admin gacha payload projection, or startup schema guards.
+- Featured prizes are display metadata stored on `GachaPool`; they must not affect draw probability or reward settlement.
+
+#### 2. Signatures
+- `GachaPool.featuredPrizeIds String?`: JSON string array of `GachaPrize.id` values.
+- `GachaPool.featuredPrizeId String?`: legacy first-featured compatibility mirror.
+- `ensureGachaSchema(prisma)` must create `featuredPrizeIds` on fresh SQLite databases and add it to older dev databases with `ALTER TABLE "GachaPool" ADD COLUMN "featuredPrizeIds" TEXT`.
+
+#### 3. Contracts
+- Create/update gacha pool mutations recreate prize rows, then persist featured ids after the new prize ids exist.
+- `featuredPrizeIds` stores every selected featured prize id in admin selection order.
+- `featuredPrizeId` mirrors `featuredPrizeIds[0] ?? null` for older readers.
+- Empty featured selection stores both `featuredPrizeIds: null` and `featuredPrizeId: null`.
+- Payload projection may read `featuredPrizeIds`; if missing, it may fall back to legacy `featuredPrizeId`.
+
+#### 4. Validation & Error Matrix
+- `featuredPrizeIndexes: []` -> valid, store no featured ids.
+- Any featured index outside the submitted prize array -> reject before writing.
+- Stored JSON parse failure -> ignore the malformed list or fall back to comma splitting; do not invent `prizes[0]`.
+- Missing `featuredPrizeIds` column in an older dev database -> startup guard adds it before gacha routes use Prisma models.
+
+#### 5. Good/Base/Bad Cases
+- Good: two selected admin prize rows persist as `featuredPrizeIds: "[\"prize-a\",\"prize-b\"]"` and `featuredPrizeId: "prize-a"`.
+- Base: older pools with only `featuredPrizeId` still expose a one-item `featuredPrizes` array.
+- Bad: storing only the first selected featured prize and dropping the rest.
+- Bad: deriving featured prizes from array position after persistence, because prize ids change when admin updates recreate prize rows.
+
+#### 6. Tests Required
+- Admin management tests assert multiple featured indexes validate.
+- Gacha payload tests assert `featuredPrizes` returns all stored featured ids and keeps `featuredPrize` as the first item.
+- Schema integrity tests assert Prisma schema and migration SQL include `featuredPrizeIds`.
+- Startup schema tests assert `ensureGachaSchema()` adds `featuredPrizeIds` to old `GachaPool` tables.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await tx.gachaPool.update({ data: { featuredPrizeId: createdPrizes[input.featuredPrizeIndex]?.id ?? null } });
+```
+
+Correct:
+
+```js
+const ids = featuredPrizeIndexes.map((index) => createdPrizes[index]?.id).filter(Boolean);
+await tx.gachaPool.update({
+  data: {
+    featuredPrizeId: ids[0] ?? null,
+    featuredPrizeIds: ids.length ? JSON.stringify(ids) : null
+  }
+});
+```
+
+---
+
 ## Naming Conventions
 
 <!-- Table names, column names, index names -->

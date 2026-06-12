@@ -177,7 +177,10 @@ export async function listGachaDrawHistory({ prisma, userId }) {
 
 export function toGachaPoolPayload(pool, now = new Date()) {
   const prizes = pool.prizes ?? [];
-  const featuredPrize = prizes.find((prize) => prize.id === pool.featuredPrizeId) ?? null;
+  const featuredPrizes = featuredPrizeIdsFromPool(pool)
+    .map((id) => prizes.find((prize) => prize.id === id))
+    .filter(Boolean);
+  const featuredPrize = featuredPrizes[0] ?? null;
   return {
     id: pool.id,
     name: pool.name,
@@ -190,6 +193,7 @@ export function toGachaPoolPayload(pool, now = new Date()) {
     singleDrawPrice: normalizedPositiveInt(pool.singleDrawPrice),
     tenDrawPrice: normalizedPositiveInt(pool.tenDrawPrice),
     featuredPrize: featuredPrize ? toPrizePayload(featuredPrize) : null,
+    featuredPrizes: featuredPrizes.map(toPrizePayload),
     prizes: prizes.filter((prize) => prize.enabled !== false).map(toPrizePayload)
   };
 }
@@ -373,6 +377,22 @@ function formatDatePart(value) {
 function remainingOpenMs(pool, now) {
   if (pool.permanent || !pool.endsAt) return null;
   return Math.max(0, new Date(pool.endsAt).getTime() - new Date(now).getTime());
+}
+
+function featuredPrizeIdsFromPool(pool = {}) {
+  const ids = [];
+  if (typeof pool.featuredPrizeIds === "string" && pool.featuredPrizeIds.trim()) {
+    try {
+      const parsed = JSON.parse(pool.featuredPrizeIds);
+      if (Array.isArray(parsed)) ids.push(...parsed);
+    } catch {
+      ids.push(...pool.featuredPrizeIds.split(","));
+    }
+  } else if (Array.isArray(pool.featuredPrizeIds)) {
+    ids.push(...pool.featuredPrizeIds);
+  }
+  if (!ids.length && pool.featuredPrizeId) ids.push(pool.featuredPrizeId);
+  return [...new Set(ids.map((id) => String(id ?? "").trim()).filter(Boolean))];
 }
 
 function normalizedPositiveInt(value) {

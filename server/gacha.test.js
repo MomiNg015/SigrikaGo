@@ -76,6 +76,24 @@ describe("gacha domain", () => {
     const payload = toGachaPoolPayload(poolFixture({ featuredPrizeId: null }));
 
     expect(payload.featuredPrize).toBeNull();
+    expect(payload.featuredPrizes).toEqual([]);
+  });
+
+  it("projects multiple featured prizes while keeping the first prize compatible", () => {
+    const payload = toGachaPoolPayload(poolFixture({
+      featuredPrizeId: "prize-character",
+      featuredPrizeIds: JSON.stringify(["prize-character", "prize-coins"]),
+      prizes: [
+        { id: "prize-character", type: "character", targetId: "denia", quantity: 1, probabilityBasisPoints: 7000, enabled: true, name: "Danea" },
+        { id: "prize-coins", type: "coins", targetId: "", quantity: 60, probabilityBasisPoints: 3000, enabled: true, name: "Coins" }
+      ]
+    }));
+
+    expect(payload.featuredPrize).toMatchObject({ id: "prize-character", name: "Danea" });
+    expect(payload.featuredPrizes).toEqual([
+      expect.objectContaining({ id: "prize-character" }),
+      expect.objectContaining({ id: "prize-coins" })
+    ]);
   });
 
   it("uses pool-specific draw prices and adds chains for duplicate character quantities", async () => {

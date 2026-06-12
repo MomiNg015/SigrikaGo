@@ -45,6 +45,27 @@ describe("GachaModal", () => {
     expect(html).toContain("gacha-capsule");
   });
 
+  it("renders multiple featured prizes as a stacked prize group", () => {
+    const html = renderToStaticMarkup(createElement(GachaModal, {
+      token: "token",
+      user: { coins: 900, blueGems: 2 },
+      initialPools: [{
+        ...pools[0],
+        featuredPrize: { name: "Danea", imageUrl: "/assets/Danea_centered.webp" },
+        featuredPrizes: [
+          { id: "p1", name: "Danea", imageUrl: "/assets/Danea_centered.webp" },
+          { id: "p2", name: "Coins", imageUrl: "/assets/items/rainbow-bean-candy.webp" }
+        ]
+      }],
+      onUserChange: () => {},
+      onNotice: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("gacha-featured-stack");
+    expect(html).toContain("Danea、Coins");
+  });
+
   it("keeps gacha helpers deterministic and readable", () => {
     expect(selectInitialGachaPool(pools)?.id).toBe("summer");
     expect(formatGachaDateRange({ permanent: true })).toBe("permanent");
@@ -61,6 +82,7 @@ describe("GachaModal", () => {
     expect(css).toContain("@keyframes gacha-capsule-roll");
     expect(css).toContain("@keyframes gacha-drum-spin");
     expect(css).toContain(".gacha-result-card");
+    expect(css).toContain(".gacha-featured-stack");
     expect(brightSchoolCss).toContain("Bright School gacha machine polish layer.");
     expect(brightSchoolCss).toContain(".gacha-ticket-tab");
   });

@@ -142,6 +142,7 @@ export function emptyGachaPoolDraft() {
     singleDrawPrice: 50,
     tenDrawPrice: 500,
     featuredPrizeIndex: null,
+    featuredPrizeIndexes: [],
     sortOrder: 0,
     prizes: [emptyGachaPrizeDraft()]
   };
@@ -153,13 +154,16 @@ export function buildGachaPoolDraft(pool = {}) {
     ...prize,
     sortOrder: prize.sortOrder ?? index
   }));
-  const featuredPrizeIndex = prizes.findIndex((prize) => prize.id && prize.id === pool.featuredPrizeId);
+  const featuredPrizeIndexes = featuredPrizeIdsFromPool(pool)
+    .map((id) => prizes.findIndex((prize) => prize.id && prize.id === id))
+    .filter((index, position, indexes) => index >= 0 && indexes.indexOf(index) === position);
   return {
     ...emptyGachaPoolDraft(),
     ...pool,
     startsAt: toInputDateTime(pool.startsAt),
     endsAt: toInputDateTime(pool.endsAt),
-    featuredPrizeIndex: featuredPrizeIndex >= 0 ? featuredPrizeIndex : null,
+    featuredPrizeIndex: featuredPrizeIndexes[0] ?? null,
+    featuredPrizeIndexes,
     prizes
   };
 }
@@ -168,9 +172,8 @@ export function gachaPoolDraftToBody(draft) {
   const singleDrawPrice = parseAdminInteger(draft.singleDrawPrice);
   const tenDrawPrice = parseAdminInteger(draft.tenDrawPrice);
   const sortOrder = parseAdminInteger(draft.sortOrder);
-  const featuredPrizeIndex = draft.featuredPrizeIndex == null || draft.featuredPrizeIndex === ""
-    ? null
-    : parseAdminInteger(draft.featuredPrizeIndex);
+  const featuredPrizeIndexes = normalizeFeaturedPrizeIndexes(draft);
+  const featuredPrizeIndex = featuredPrizeIndexes[0] ?? null;
   const errors = [];
   if (!String(draft.name ?? "").trim()) errors.push("扭蛋池名称");
   if (singleDrawPrice == null || singleDrawPrice <= 0) errors.push("单抽价格必须是正整数");
@@ -178,7 +181,7 @@ export function gachaPoolDraftToBody(draft) {
   if (sortOrder == null) errors.push("排序必须是整数");
   const prizes = (draft.prizes ?? []).map((prize, index) => gachaPrizeDraftToBody(prize, index, errors)).filter(Boolean);
   if (!prizes.length) errors.push("至少一个奖项");
-  if (featuredPrizeIndex != null && (featuredPrizeIndex < 0 || featuredPrizeIndex >= prizes.length)) errors.push("大奖索引无效");
+  if (featuredPrizeIndexes.some((index) => index < 0 || index >= prizes.length)) errors.push("大奖索引无效");
   if (errors.length) return null;
   return {
     name: String(draft.name).trim(),
@@ -191,6 +194,7 @@ export function gachaPoolDraftToBody(draft) {
     tenDrawPrice,
     sortOrder,
     featuredPrizeIndex,
+    featuredPrizeIndexes,
     prizes
   };
 }
@@ -296,6 +300,38 @@ function toInputDateTime(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
   return date.toISOString().slice(0, 16);
+}
+
+function featuredPrizeIdsFromPool(pool = {}) {
+  const ids = [];
+  if (Array.isArray(pool.featuredPrizeIds)) {
+    ids.push(...pool.featuredPrizeIds);
+  } else if (typeof pool.featuredPrizeIds === "string" && pool.featuredPrizeIds.trim()) {
+    try {
+      const parsed = JSON.parse(pool.featuredPrizeIds);
+      if (Array.isArray(parsed)) ids.push(...parsed);
+    } catch {
+      ids.push(...pool.featuredPrizeIds.split(","));
+    }
+  }
+  if (Array.isArray(pool.featuredPrizes)) {
+    ids.push(...pool.featuredPrizes.map((prize) => prize?.id));
+  }
+  if (pool.featuredPrizeId) ids.push(pool.featuredPrizeId);
+  return [...new Set(ids.map((id) => String(id ?? "").trim()).filter(Boolean))];
+}
+
+function normalizeFeaturedPrizeIndexes(draft = {}) {
+  const rawIndexes = Array.isArray(draft.featuredPrizeIndexes)
+    ? draft.featuredPrizeIndexes
+    : (draft.featuredPrizeIndex == null || draft.featuredPrizeIndex === "" ? [] : [draft.featuredPrizeIndex]);
+  const indexes = [];
+  for (const rawIndex of rawIndexes) {
+    const index = parseAdminInteger(rawIndex);
+    if (index == null || indexes.includes(index)) continue;
+    indexes.push(index);
+  }
+  return indexes;
 }
 
 export function parseAdminInteger(value) {

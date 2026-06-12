@@ -17,5 +17,25 @@ describe("admin gacha management", () => {
 
     expect(result.ok).toBe(true);
     expect(result.value.featuredPrizeIndex).toBeNull();
+    expect(result.value.featuredPrizeIndexes).toEqual([]);
+  });
+
+  it("accepts multiple featured prize indexes", () => {
+    const result = validateGachaPoolInput({
+      name: "Multi Featured Pool",
+      enabled: true,
+      permanent: true,
+      singleDrawPrice: 50,
+      tenDrawPrice: 500,
+      featuredPrizeIndexes: [0, 1],
+      prizes: [
+        { type: "character", targetId: "denia", quantity: 1, probabilityBasisPoints: 5000, enabled: true, name: "Danea" },
+        { type: "coins", targetId: "", quantity: 60, probabilityBasisPoints: 5000, enabled: true, name: "Coins" }
+      ]
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.featuredPrizeIndexes).toEqual([0, 1]);
+    expect(result.value.featuredPrizeIndex).toBe(0);
   });
 });
