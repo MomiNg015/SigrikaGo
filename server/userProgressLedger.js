@@ -6,6 +6,7 @@ export const PROGRESS_METRICS = {
 export const PROGRESS_REASONS = {
   adminUpdate: "admin.update",
   gameResult: "game.result",
+  gachaDraw: "gacha.draw",
   shopPurchase: "shop.purchase"
 };
 

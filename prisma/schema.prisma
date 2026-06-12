@@ -20,6 +20,7 @@ model User {
   wins               Int      @default(0)
   losses             Int      @default(0)
   coins              Int      @default(300)
+  blueGems           Int      @default(0)
   selectedCharacter  String   @default("sigrika")
   selectedStoneDecoration String @default("")
   ownedCharacters    String   @default("sigrika,danea,aemeath")
@@ -36,6 +37,7 @@ model User {
   userItems          UserItem[]
   userItemEffects    UserItemEffect[]
   modeStats          UserModeStats[]
+  gachaDraws         GachaDraw[]
 }
 
 model UserModeStats {
@@ -74,6 +76,7 @@ model UserCharacter {
   id            String   @id @default(cuid())
   userId        String
   characterSlug String
+  chainCount    Int      @default(0)
   source        String   @default("legacy")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -81,6 +84,85 @@ model UserCharacter {
 
   @@unique([userId, characterSlug])
   @@index([characterSlug])
+}
+
+model GachaPool {
+  id              String   @id @default(cuid())
+  name            String
+  description     String   @default("")
+  enabled         Boolean  @default(true)
+  permanent       Boolean  @default(false)
+  startsAt        DateTime?
+  endsAt          DateTime?
+  singleDrawPrice Int      @default(50)
+  tenDrawPrice    Int      @default(500)
+  featuredPrizeId String?
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  prizes          GachaPrize[]
+  draws           GachaDraw[]
+
+  @@index([enabled, sortOrder])
+  @@index([startsAt, endsAt])
+}
+
+model GachaPrize {
+  id                     String   @id @default(cuid())
+  poolId                 String
+  type                   String
+  targetId               String   @default("")
+  quantity               Int      @default(1)
+  probabilityBasisPoints Int
+  enabled                Boolean  @default(true)
+  name                   String   @default("")
+  imageUrl               String   @default("")
+  sortOrder              Int      @default(0)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  pool                   GachaPool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+  rewards                GachaDrawReward[]
+
+  @@index([poolId, enabled, sortOrder])
+  @@index([type, targetId])
+}
+
+model GachaDraw {
+  id        String   @id @default(cuid())
+  userId    String
+  poolId    String
+  drawCount Int
+  coinCost  Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pool      GachaPool @relation(fields: [poolId], references: [id], onDelete: Restrict)
+  rewards   GachaDrawReward[]
+
+  @@index([userId, createdAt])
+  @@index([poolId, createdAt])
+}
+
+model GachaDrawReward {
+  id                String   @id @default(cuid())
+  drawId            String
+  poolId            String
+  prizeId           String?
+  drawIndex         Int
+  type              String
+  targetId          String   @default("")
+  quantity          Int
+  unlockedQuantity  Int      @default(0)
+  duplicateQuantity Int      @default(0)
+  blueGemsAdded     Int      @default(0)
+  chainAdded        Int      @default(0)
+  coinsAdded        Int      @default(0)
+  createdAt         DateTime @default(now())
+  draw              GachaDraw @relation(fields: [drawId], references: [id], onDelete: Cascade)
+  prize             GachaPrize? @relation(fields: [prizeId], references: [id], onDelete: SetNull)
+
+  @@index([drawId, drawIndex])
+  @@index([poolId, createdAt])
+  @@index([type, targetId])
 }
 
 model UserDecoration {

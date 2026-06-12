@@ -31,6 +31,14 @@ import {
   toAdminCharacterPayload,
   updateCharacter
 } from "./adminCharacterManagement.js";
+import {
+  assertGachaPrizeTargetsExist,
+  createGachaPool,
+  disableGachaPool,
+  listAdminGachaPools,
+  updateGachaPool,
+  validateGachaPoolInput
+} from "./adminGachaManagement.js";
 
 export { serializeAudit } from "./adminAudit.js";
 export {
@@ -356,6 +364,54 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
     try {
       const item = await disableShopItem({ prisma, adminUser: req.user, itemId: req.params.id });
       res.json({ item: toShopItemPayload(item) });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/gacha-pools", async (_req, res) => {
+    res.json(await listAdminGachaPools({ prisma }));
+  });
+
+  router.post("/gacha-pools", async (req, res) => {
+    const validated = validateGachaPoolInput(req.body);
+    if (!validated.ok) {
+      res.status(400).json({ error: validated.error });
+      return;
+    }
+    try {
+      await assertGachaPrizeTargetsExist(prisma, validated.value);
+      const pool = await createGachaPool({ prisma, adminUser: req.user, input: validated.value });
+      res.json({ pool });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/gacha-pools/:id", async (req, res) => {
+    const validated = validateGachaPoolInput(req.body);
+    if (!validated.ok) {
+      res.status(400).json({ error: validated.error });
+      return;
+    }
+    try {
+      await assertGachaPrizeTargetsExist(prisma, validated.value);
+      const pool = await updateGachaPool({
+        prisma,
+        adminUser: req.user,
+        poolId: req.params.id,
+        input: validated.value
+      });
+      res.json({ pool });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/gacha-pools/:id", async (req, res) => {
+    try {
+      const pool = await disableGachaPool({ prisma, adminUser: req.user, poolId: req.params.id });
+      res.json({ pool });
     } catch (error) {
       sendRouteError(res, error);
     }

@@ -593,3 +593,65 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.admin-gacha-board .admin-table td {
+  vertical-align: middle;
+}
+
+.admin-gacha-form {
+  max-width: 1040px;
+}
+
+.admin-gacha-prize-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.admin-gacha-prize-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 0;
+}
+
+.admin-gacha-prize-summary span {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(93, 127, 232, 0.1);
+  color: #3d4f91;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-gacha-prize-row {
+  display: grid;
+  grid-template-columns: 120px minmax(180px, 1.4fr) 80px 110px 78px 64px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.admin-gacha-prize-row input,
+.admin-gacha-prize-row select {
+  min-width: 0;
+}
+
+.admin-gacha-resource-select {
+  min-width: 0;
+}
+
+.admin-gacha-resource-static {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid rgba(128, 102, 142, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 251, 238, 0.72);
+  color: #5f4b25;
+  font-size: 13px;
+  font-weight: 800;
+}

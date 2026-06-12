@@ -876,3 +876,46 @@ div[class*="lock"] p {
   color: #00bfff !important;
   text-shadow: 0 0 8px rgba(0, 191, 255, 0.34);
 }
+.character-chain-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 3;
+  min-width: 24px;
+  max-width: calc(100% - 8px);
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 6px;
+  border: 2px solid #5f4712;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fff7ad, #ffc83d);
+  color: #5f4712;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(95, 71, 18, 0.18);
+  pointer-events: none;
+}
+
+.plaque-avatar,
+.portrait-wrap,
+.match-portrait-wrap,
+.result-winner-portrait-wrap,
+.profile-chain-portrait {
+  position: relative;
+}
+
+.match-portrait-wrap,
+.result-winner-portrait-wrap,
+.profile-chain-portrait {
+  display: inline-grid;
+  place-items: center;
+}
+
+.profile-chain-portrait.small .character-chain-badge {
+  transform: scale(0.82);
+  transform-origin: top right;
+}

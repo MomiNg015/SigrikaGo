@@ -1,4 +1,4 @@
-import { CircleDollarSign } from "lucide-react";
+import { CircleDollarSign, Gem } from "lucide-react";
 
 export default function ShopSidebar({ mascotLine, user }) {
   return (
@@ -10,6 +10,7 @@ export default function ShopSidebar({ mascotLine, user }) {
       <div className="shop-wallet-wrap">
         <span>你当前拥有</span>
         <p className="shop-wallet"><CircleDollarSign size={18} />{user?.coins ?? 0}</p>
+        <p className="shop-wallet blue-gem-wallet"><Gem size={18} />{user?.blueGems ?? 0}</p>
       </div>
     </aside>
   );

@@ -1,5 +1,6 @@
 import { Flag } from "lucide-react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
+import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisabledReason, selectSortieCharacter } from "./houseStats.js";
 
 export default function HouseCharacterGrid({
@@ -8,6 +9,7 @@ export default function HouseCharacterGrid({
   itemEffects,
   owned,
   selectedCharacter,
+  user,
   onOpenCharacterDetail,
   onSelectCharacter
 }) {
@@ -65,6 +67,7 @@ export default function HouseCharacterGrid({
               </div>
             )}
             <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
+            <CharacterChainBadge user={user} characterId={characterId} />
             <strong>{character.name}</strong>
           </div>
         );

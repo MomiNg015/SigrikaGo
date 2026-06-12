@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
+import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import TimeBar from "./TimeBar.jsx";
@@ -65,6 +66,7 @@ function PlayerInfo({
     >
       <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"}`}>
         <img src={playerCandyPortrait(character, player)} alt={character.name} />
+        <CharacterChainBadge user={player.user} characterId={character.id} />
         {disconnectBadge && <span className="disconnect-badge">{disconnectBadge}</span>}
         {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       </div>

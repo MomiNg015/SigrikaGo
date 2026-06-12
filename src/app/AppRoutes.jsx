@@ -35,6 +35,7 @@ export default function AppRoutes({
   setReplayStep,
   setRoom,
   setShowFriends,
+  setShowGacha,
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
@@ -73,6 +74,10 @@ export default function AppRoutes({
       onOpenShop={() => {
         playUiShopOpenSound(audioSettings);
         setShowShop(true);
+      }}
+      onOpenGacha={() => {
+        playUiShopOpenSound(audioSettings);
+        setShowGacha(true);
       }}
       onOpenFriends={() => setShowFriends(true)}
       onOpenSettings={() => setShowSettings(true)}

@@ -5,6 +5,7 @@ import AdminAudit from "./AdminAudit.jsx";
 import AdminCharacters from "./AdminCharacters.jsx";
 import AdminDecorations from "./AdminDecorations.jsx";
 import AdminFeedback from "./AdminFeedback.jsx";
+import AdminGachaPools from "./AdminGachaPools.jsx";
 import AdminOverview from "./AdminOverview.jsx";
 import AdminShopItems from "./AdminShopItems.jsx";
 import AdminSiteSettings from "./AdminSiteSettings.jsx";
@@ -18,6 +19,7 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
   const [feedbackMessages, setFeedbackMessages] = useState([]);
   const [shopItems, setShopItems] = useState([]);
   const [decorations, setDecorations] = useState([]);
+  const [gachaPools, setGachaPools] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [adminError, setAdminError] = useState("");
 
@@ -62,6 +64,11 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
   useEffect(() => {
     if (tab !== "decorations") return;
     refreshDecorations();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "gacha") return;
+    refreshGachaContext();
   }, [tab, token]);
 
   async function refreshUsers(nextSelectedId = selectedUser?.id) {
@@ -128,6 +135,25 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
     }
   }
 
+  async function refreshGachaPools() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/gacha-pools", token);
+      setGachaPools(data.pools ?? []);
+    } catch (error) {
+      notify(error.message);
+    }
+  }
+
+  async function refreshGachaContext() {
+    await Promise.all([
+      refreshGachaPools(),
+      refreshCharacters(),
+      refreshDecorations(),
+      refreshShopItems()
+    ]);
+  }
+
   return (
     <AdminShell user={user} tab={tab} setTab={setTab} onBack={onBack} error={adminError}>
       {tab === "overview" && <AdminOverview summary={summary} />}
@@ -176,6 +202,19 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
       )}
       {tab === "decorations" && (
         <AdminDecorations decorations={decorations} token={token} onSaved={refreshDecorations} onNotice={notify} />
+      )}
+      {tab === "gacha" && (
+        <AdminGachaPools
+          pools={gachaPools}
+          token={token}
+          resourceCatalogs={{
+            characters: adminCharacters,
+            decorations,
+            items: shopItems.filter((item) => item.category === "item")
+          }}
+          onSaved={refreshGachaContext}
+          onNotice={notify}
+        />
       )}
       {tab === "settings" && <AdminSiteSettings token={token} onSaved={onSiteSettingsChanged} onNotice={notify} />}
       {tab === "feedback" && <AdminFeedback messages={feedbackMessages} />}

@@ -116,6 +116,91 @@ export function buildShopItemDraft(item) {
   return { ...emptyShopItemDraft(), ...item };
 }
 
+export function emptyGachaPrizeDraft() {
+  return {
+    id: "",
+    type: "character",
+    targetId: "",
+    quantity: 1,
+    probabilityBasisPoints: 10000,
+    enabled: true,
+    name: "",
+    imageUrl: "",
+    sortOrder: 0
+  };
+}
+
+export function emptyGachaPoolDraft() {
+  return {
+    id: "",
+    name: "",
+    description: "",
+    enabled: true,
+    permanent: true,
+    startsAt: "",
+    endsAt: "",
+    singleDrawPrice: 50,
+    tenDrawPrice: 500,
+    featuredPrizeIndex: 0,
+    sortOrder: 0,
+    prizes: [emptyGachaPrizeDraft()]
+  };
+}
+
+export function buildGachaPoolDraft(pool = {}) {
+  const prizes = (pool.prizes?.length ? pool.prizes : [emptyGachaPrizeDraft()]).map((prize, index) => ({
+    ...emptyGachaPrizeDraft(),
+    ...prize,
+    sortOrder: prize.sortOrder ?? index
+  }));
+  const featuredPrizeIndex = Math.max(0, prizes.findIndex((prize) => prize.id && prize.id === pool.featuredPrizeId));
+  return {
+    ...emptyGachaPoolDraft(),
+    ...pool,
+    startsAt: toInputDateTime(pool.startsAt),
+    endsAt: toInputDateTime(pool.endsAt),
+    featuredPrizeIndex,
+    prizes
+  };
+}
+
+export function gachaPoolDraftToBody(draft) {
+  const singleDrawPrice = parseAdminInteger(draft.singleDrawPrice);
+  const tenDrawPrice = parseAdminInteger(draft.tenDrawPrice);
+  const sortOrder = parseAdminInteger(draft.sortOrder);
+  const featuredPrizeIndex = parseAdminInteger(draft.featuredPrizeIndex);
+  const errors = [];
+  if (!String(draft.name ?? "").trim()) errors.push("扭蛋池名称");
+  if (singleDrawPrice == null || singleDrawPrice <= 0) errors.push("单抽价格必须是正整数");
+  if (tenDrawPrice == null || tenDrawPrice <= 0) errors.push("十连价格必须是正整数");
+  if (sortOrder == null) errors.push("排序必须是整数");
+  const prizes = (draft.prizes ?? []).map((prize, index) => gachaPrizeDraftToBody(prize, index, errors)).filter(Boolean);
+  if (!prizes.length) errors.push("至少一个奖项");
+  if (featuredPrizeIndex == null || featuredPrizeIndex < 0 || featuredPrizeIndex >= prizes.length) errors.push("大奖索引无效");
+  if (errors.length) return null;
+  return {
+    name: String(draft.name).trim(),
+    description: String(draft.description ?? "").trim(),
+    enabled: Boolean(draft.enabled),
+    permanent: Boolean(draft.permanent),
+    startsAt: draft.permanent ? null : draft.startsAt,
+    endsAt: draft.permanent ? null : draft.endsAt,
+    singleDrawPrice,
+    tenDrawPrice,
+    sortOrder,
+    featuredPrizeIndex,
+    prizes
+  };
+}
+
+export function gachaTypeLabel(type) {
+  if (type === "decoration") return "装饰";
+  if (type === "item") return "道具";
+  if (type === "music") return "音乐";
+  if (type === "coins") return "金币";
+  return "角色";
+}
+
 export function validateShopItemDraft(draft) {
   const priceCoins = parseAdminInteger(draft.priceCoins);
   const discountPercent = parseAdminInteger(draft.discountPercent);
@@ -180,6 +265,35 @@ export function shopCategoryLabel(category) {
 
 export function targetRuleForEffect(effectType) {
   return skillEffectTargetRule(effectType, "empty-point");
+}
+
+function gachaPrizeDraftToBody(prize, index, errors) {
+  const quantity = parseAdminInteger(prize.quantity);
+  const probabilityBasisPoints = parseAdminInteger(prize.probabilityBasisPoints);
+  const sortOrder = parseAdminInteger(prize.sortOrder ?? index);
+  if (!["character", "decoration", "item", "music", "coins"].includes(prize.type)) errors.push("奖项类型无效");
+  if (prize.type !== "coins" && !String(prize.targetId ?? "").trim()) errors.push("奖项资源标识");
+  if (quantity == null || quantity <= 0) errors.push("奖项数量必须是正整数");
+  if (probabilityBasisPoints == null || probabilityBasisPoints < 0 || probabilityBasisPoints > 10000) errors.push("概率必须是 0-10000");
+  if (sortOrder == null) errors.push("奖项排序必须是整数");
+  if (errors.length) return null;
+  return {
+    type: prize.type,
+    targetId: prize.type === "coins" ? "" : String(prize.targetId).trim(),
+    quantity,
+    probabilityBasisPoints,
+    enabled: Boolean(prize.enabled),
+    name: String(prize.name ?? "").trim(),
+    imageUrl: String(prize.imageUrl ?? "").trim(),
+    sortOrder
+  };
+}
+
+function toInputDateTime(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 16);
 }
 
 export function parseAdminInteger(value) {

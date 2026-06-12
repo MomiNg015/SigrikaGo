@@ -260,4 +260,17 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".match-mode-modal .match-mode-options + .secondary-action");
     expect(finalMobileCss).toContain("margin-top: 14px !important;");
   });
+
+  it("passes a gacha entry through the home utility dock", () => {
+    const source = readFileSync(new URL("./components/HomeUtilityDock.jsx", import.meta.url), "utf8");
+    const stageSource = readFileSync(new URL("./components/HomeStage.jsx", import.meta.url), "utf8");
+    const routeSource = readFileSync(new URL("../app/AppRoutes.jsx", import.meta.url), "utf8");
+    const overlaySource = readFileSync(new URL("../app/AppOverlays.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("gacha-entry");
+    expect(source).toContain("onOpenGacha");
+    expect(stageSource).toContain("onOpenGacha");
+    expect(routeSource).toContain("setShowGacha(true)");
+    expect(overlaySource).toContain("GachaModal");
+  });
 });

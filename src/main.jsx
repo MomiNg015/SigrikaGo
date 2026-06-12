@@ -35,6 +35,7 @@ function App() {
   const [matchStart, setMatchStart] = useState(null);
   const [matchSuccess, setMatchSuccess] = useState(null);
   const [showShop, setShowShop] = useState(false);
+  const [showGacha, setShowGacha] = useState(false);
   const [showHouse, setShowHouse] = useState(false);
   const [showWarehouse, setShowWarehouse] = useState(false);
   const [showResume, setShowResume] = useState(false);
@@ -152,6 +153,7 @@ function App() {
     setReplayStep,
     setRoom,
     setShowFriends,
+    setShowGacha,
     setShowHouse,
     setShowLeaderboard,
     setShowMessageBoard,
@@ -229,6 +231,7 @@ function App() {
         setReplayStep={setReplayStep}
         setRoom={setRoom}
         setShowFriends={setShowFriends}
+        setShowGacha={setShowGacha}
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
@@ -269,6 +272,7 @@ function App() {
         setAudioSettings={setAudioSettings}
         setIncomingDuel={setIncomingDuel}
         setShowFriends={setShowFriends}
+        setShowGacha={setShowGacha}
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
@@ -279,6 +283,7 @@ function App() {
         setShowWatch={setShowWatch}
         setVisualTheme={setVisualTheme}
         showFriends={showFriends}
+        showGacha={showGacha}
         showHouse={showHouse}
         showLeaderboard={showLeaderboard}
         showMessageBoard={showMessageBoard}

@@ -6,6 +6,7 @@ import LeaderboardModal from "../modals/LeaderboardModal.jsx";
 import MessageBoardModal from "../modals/MessageBoardModal.jsx";
 import ResumeModal from "../modals/ResumeModal.jsx";
 import SettingsModal from "../modals/SettingsModal.jsx";
+import GachaModal from "../modals/GachaModal.jsx";
 import ShopModal from "../modals/ShopModal.jsx";
 import WarehouseModal from "../modals/WarehouseModal.jsx";
 import WatchModal from "../modals/WatchModal.jsx";
@@ -33,6 +34,7 @@ export default function AppOverlays({
   setAudioSettings,
   setIncomingDuel,
   setShowFriends,
+  setShowGacha,
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
@@ -43,6 +45,7 @@ export default function AppOverlays({
   setShowWatch,
   setVisualTheme,
   showFriends,
+  showGacha,
   showHouse,
   showLeaderboard,
   showMessageBoard,
@@ -170,6 +173,15 @@ export default function AppOverlays({
           onPurchased={updateUser}
           onNotice={showToast}
           onClose={() => setShowShop(false)}
+        />
+      )}
+      {showGacha && (
+        <GachaModal
+          token={token}
+          user={user}
+          onUserChange={updateUser}
+          onNotice={showToast}
+          onClose={() => setShowGacha(false)}
         />
       )}
       {showSettings && (

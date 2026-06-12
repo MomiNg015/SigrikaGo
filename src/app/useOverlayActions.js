@@ -7,6 +7,7 @@ export function useOverlayActions({
   setDismissedResultRoom,
   setRoom,
   setShowFriends,
+  setShowGacha,
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
@@ -24,10 +25,12 @@ export function useOverlayActions({
     setShowLeaderboard(false);
     setShowWatch(false);
     setShowFriends(false);
+    setShowGacha(false);
     setShowSettings(false);
     setShowMessageBoard(false);
   }, [
     setShowFriends,
+    setShowGacha,
     setShowHouse,
     setShowLeaderboard,
     setShowMessageBoard,

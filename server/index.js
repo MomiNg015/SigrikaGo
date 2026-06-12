@@ -8,12 +8,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import multer from "multer";
 import { Server } from "socket.io";
-import { ensureGameModeSchema, prisma, USER_ASSET_RELATION_INCLUDE } from "./db.js";
+import { ensureGachaSchema, ensureGameModeSchema, prisma, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
 import { createAuthRouter } from "./authRoutes.js";
 import { createCommerceRouter } from "./commerceRoutes.js";
+import { createGachaRouter } from "./gachaRoutes.js";
 import { createPlayerRouter, createCharacterSelectionData, validateOptionalRoomCode } from "./playerRoutes.js";
 import { createPublicRouter } from "./publicRoutes.js";
 import { createReplayRouter } from "./replayRoutes.js";
@@ -142,6 +143,7 @@ await ensureSocialSchema(prisma);
 await ensureRoomPersistenceSchema(prisma);
 await ensureLoginSessionSchema(prisma);
 await ensureGameModeSchema(prisma);
+await ensureGachaSchema(prisma);
 await promoteConfiguredAdmins(prisma);
 
 let onlineSessions;
@@ -191,6 +193,7 @@ app.use("/api/auth", createAuthRouter({
 }));
 
 app.use("/api", authHttp, createCommerceRouter({ prisma }));
+app.use("/api", authHttp, createGachaRouter({ prisma }));
 
 app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
 app.use("/api", authHttp, createPlayerRouter({

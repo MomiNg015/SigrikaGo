@@ -3,6 +3,7 @@ import { MonitorPlay, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { CHARACTERS } from "../shared/characters.js";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
+import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import { findCharacter } from "../shared/characterDisplay.js";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import { ReplayList } from "./ReplayList.jsx";
@@ -43,7 +44,10 @@ export function UserProfileCard({
   return (
     <section className="user-profile-card">
       <div className="profile-resume-hero">
-        <img src={resolveCandyPortrait(mainCharacter, user.itemEffects)} alt={mainCharacter.name} />
+        <span className="profile-chain-portrait">
+          <img src={resolveCandyPortrait(mainCharacter, user.itemEffects)} alt={mainCharacter.name} />
+          <CharacterChainBadge user={user} characterId={mainCharacter.id} />
+        </span>
         <div>
           <h3>{user.username}</h3>
           <p>{user.rank} · {user.rating}分</p>
@@ -69,7 +73,10 @@ export function UserProfileCard({
             const character = findCharacter(characters, item.characterId) ?? CHARACTERS.sigrika;
             return (
               <div className="profile-character-row" key={item.characterId}>
-                <img src={resolveCandyPortrait(character, user.itemEffects)} alt={character.name} />
+                <span className="profile-chain-portrait small">
+                  <img src={resolveCandyPortrait(character, user.itemEffects)} alt={character.name} />
+                  <CharacterChainBadge user={user} characterId={character.id} />
+                </span>
                 <span>{character.name}</span>
                 <span>{item.record}</span>
                 <b>{item.winRate}</b>

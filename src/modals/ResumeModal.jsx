@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircleDollarSign, MonitorPlay, X } from "lucide-react";
+import { CircleDollarSign, Gem, MonitorPlay, X } from "lucide-react";
 import { derivePlayerRecordStats } from "../shared/gameRecords.js";
 import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
 import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
@@ -27,6 +27,10 @@ export default function ResumeModal({ user, records, characterListView, onClose,
             >
               <CircleDollarSign size={18} />
               {user.coins}
+            </p>
+            <p className="shop-wallet resume-wallet blue-gem-wallet" title="蓝色宝石">
+              <Gem size={18} />
+              {user.blueGems ?? 0}
             </p>
             <button className="close-button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
           </div>

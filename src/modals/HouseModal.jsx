@@ -51,6 +51,7 @@ export default function HouseModal({ user, characterListView, audioSettings, onC
           itemEffects={itemEffects}
           owned={owned}
           selectedCharacter={selectedCharacter}
+          user={user}
           onOpenCharacterDetail={openCharacterDetail}
           onSelectCharacter={onSelectCharacter}
         />

@@ -76,4 +76,28 @@ describe("Prisma schema integrity", () => {
       expect(migration).toContain(`CREATE TABLE IF NOT EXISTS "${modelName}"`);
     }
   });
+
+  it("tracks gacha pools, rewards, blue gems, and character chains through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606120002_add_gacha_system",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    expect(schema).toContain("blueGems");
+    expect(schema).toContain("chainCount");
+    for (const modelName of [
+      "GachaPool",
+      "GachaPrize",
+      "GachaDraw",
+      "GachaDrawReward"
+    ]) {
+      expect(schema).toContain(`model ${modelName}`);
+      expect(migration).toContain(`CREATE TABLE IF NOT EXISTS "${modelName}"`);
+    }
+  });
 });
