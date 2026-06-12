@@ -70,4 +70,15 @@ describe("BoardSkillEffects", () => {
     expect(markup).toContain('data-effect-type="flip-stone"');
     expect(markup).toContain("aria-hidden=\"true\"");
   });
+
+  test("supports disabling idle Pixi prewarm for no-skill boards", () => {
+    const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
+      boardSize: 19,
+      prewarm: false,
+      pendingSkill: null
+    }));
+
+    expect(markup).toContain("board-effects-layer");
+    expect(markup).not.toContain("prewarm");
+  });
 });

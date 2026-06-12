@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { playSkillEffectSound, skillEffectSoundCues } from "../audio/skillEffectSounds.js";
 import { skillEffectTiming, SKILL_EFFECT_REDUCED_MOTION_MS } from "../shared/skillPresentation.js";
+import { loadPixiModule, schedulePixiPrewarm } from "./pixiPrewarm.js";
 
 export { SKILL_EFFECT_REDUCED_MOTION_MS };
 
@@ -29,11 +30,13 @@ export function effectTimingForPendingSkill(pendingSkill, options = {}) {
   };
 }
 
-export default function BoardSkillEffects({ boardSize = 13, pendingSkill = null, audioSettings = undefined }) {
+export default function BoardSkillEffects({ boardSize = 13, pendingSkill = null, audioSettings = undefined, prewarm = true }) {
   const hostRef = useRef(null);
   const playedEffectIdRef = useRef("");
   const effectType = pendingSkill?.effectType ?? "";
   const targetId = pendingSkill?.targetId ?? "";
+
+  useEffect(() => schedulePixiPrewarm({ enabled: prewarm }), [prewarm]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -74,7 +77,7 @@ function mountPixiEffect({ host, boardSize, pendingSkill, durationMs, reducedMot
   let timeoutId = 0;
   let soundTimers = [];
 
-  import("pixi.js").then(async (pixi) => {
+  loadPixiModule().then(async (pixi) => {
     if (!active) return;
     const { Application } = pixi;
     app = new Application();

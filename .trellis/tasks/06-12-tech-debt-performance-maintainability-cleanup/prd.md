@@ -48,6 +48,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Full `room:update` snapshots are structurally shared before entering React state.
 * [x] Duplicate room snapshots can return the current room reference, and unchanged point/player entries keep stable references.
 * [x] Skill effect metadata has a shared catalog used by admin options, validation, targeting, active effect lists, and SFX cues.
+* [x] Skill-enabled boards prewarm Pixi during idle time and reuse the same module promise for the first skill animation.
 
 ## Definition of Done
 
@@ -98,10 +99,18 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added catalog and server registry tests to lock effect ordering, target rules, admin options, validation messages, active effect lists, and sound cues.
 * Updated `docs/system-design.md` and frontend component guidelines for the skill effect catalog contract.
 
+### Batch 5 Completed
+
+* Added `src/room/pixiPrewarm.js` to schedule idle Pixi module loading and share the loaded promise with live board skill effects.
+* Updated `BoardSkillEffects` to use `loadPixiModule()` for actual animations and to schedule prewarm without blocking board render.
+* Passed `prewarm={game.skillEnabled !== false}` from `Board`, so standard no-skill boards do not load Pixi early.
+* Added targeted tests for prewarm cancellation, shared import promises, board-effect rendering, and the skill-enabled prewarm prop contract.
+* Updated `docs/system-design.md` and frontend component guidelines for the Pixi prewarm contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.
-* Prewarm Pixi for skill-enabled rooms and split board effect implementations behind a registry.
+* Split board effect implementations behind a registry when adding new effects.
 * Continue migrating concrete skill preview/animation implementations behind the catalog when adding new effects.
 * Move room updates toward reducer/patch semantics.
 * Gradually shrink global CSS override layers by assigning ownership to component-level style contracts.

@@ -105,6 +105,7 @@ Correct:
 - `game.pendingSkill`: `{ id, characterId, skillName, effectType, targetId, affectedPointIds, markedPointIds, removed, removedByColor, resolvesAt, bannerDurationMs, boardEffectDurationMs }`.
 - `SKILL_EFFECT_CATALOG`: shared `effectType` metadata in `src/shared/skillEffectCatalog.js`, including admin labels, default target rules, active/passive classification, board-effect availability, and sound cue timing.
 - `BoardSkillEffects`: receives `boardSize={game.size}`, `pendingSkill={game.pendingSkill}`, and optional `audioSettings`.
+- `schedulePixiPrewarm({ enabled })` and `loadPixiModule()` live in `src/room/pixiPrewarm.js`; both prewarm and live board effects must share the same Pixi import promise.
 - `BoardAmbientEffects`: receives derived passive state such as active Nabomo color illusion fog and renders non-interactive ongoing board ambience.
 - `playSkillEffectSound(effectType, cue, audioSettings)`: presentation-only SFX helper for `start` and `impact` animation cues.
 - `boardPointCenter(pointId, { boardSize, width, height })`: maps a board point id to a pixel center in the current board viewport.
@@ -113,6 +114,7 @@ Correct:
 - `Board` keeps DOM/SVG as the interaction source of truth; PixiJS is presentation-only.
 - The effects canvas and ambient layers must use `pointer-events: none` and must not replace point buttons, scoring marks, move numbers, coordinates, or skill targeting classes.
 - Board effects start after `bannerDurationMs`, not when the banner first appears.
+- Skill-enabled boards may schedule idle Pixi prewarm after the board mounts, but this prewarm must not block board rendering, preload screens, room entry, or standard no-skill rooms.
 - Aemeath `hidden-hand` is a full-board effect: green electronic data streams move from the board edge toward the center, flash with white light, then dissipate outward/away without depending on a point-local impact.
 - Nabomo `color-illusion-passive` has ongoing low-opacity black/gray cloud ambience while any color illusion passive is active; render it as separate feathered cloud shapes, not as a full rectangular board tint, and keep stones/intersections readable.
 - Board SFX must be scheduled from the same board effect timeline, use the existing `sfx` volume channel, and clean up timers with the Pixi overlay.
@@ -122,6 +124,7 @@ Correct:
 
 #### 4. Validation & Error Matrix
 - Missing `pendingSkill` -> render no effect but keep the board usable.
+- `game.skillEnabled === false` -> render the inert effects layer but pass `prewarm={false}` so standard boards do not load Pixi early.
 - Missing `targetId` -> skip the Pixi effect safely.
 - Unknown `effectType` -> keep the overlay inert and preserve the normal skill preview/result flow.
 - Muted `sfx` channel -> do not create WebAudio contexts or play board skill SFX.
@@ -133,6 +136,7 @@ Correct:
 
 #### 5. Good/Base/Bad Cases
 - Good: Sigrika erase, Danea flip, Aemeath hidden-hand, and Baconbits blast all route from `effectType` supplied by the room snapshot.
+- Good: a skill-enabled room prewarms Pixi during browser idle time, and the first actual skill effect reuses that module promise instead of issuing a second dynamic import.
 - Good: adding a new effect starts by extending `SKILL_EFFECT_CATALOG`, then wiring concrete rule handlers, server preview metadata, board animation, and tests.
 - Good: Danea flip visually reads as transparent bubble formation, purple-black corruption, then pop/flash before the final stone color appears.
 - Good: Nabomo fog is driven by active passive state and continues after the passive activation banner/effect has resolved.
@@ -145,6 +149,7 @@ Correct:
 - Shared rules tests assert `erase-point` history includes `effectType`.
 - Board tests assert the effects layer renders without removing point buttons.
 - Effects tests assert coordinate mapping for 13-line and 19-line boards and reduced-motion timing.
+- Pixi prewarm tests assert disabled mode does not schedule loading, cancellation prevents idle imports, and prewarm/live effect loading share one promise.
 - Ambient tests assert active color illusion fog is pointer-transparent and renders without removing board buttons.
 - SFX tests assert stable cue points and muted settings avoiding AudioContext creation.
 - Catalog tests assert effect type order, admin options, default target rules, active effect lists, and SFX cues.

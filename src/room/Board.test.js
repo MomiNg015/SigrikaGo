@@ -142,6 +142,12 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain('class="point');
   });
 
+  test("prewarms Pixi only for skill-enabled boards", () => {
+    const source = readFileSync(new URL("./Board.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("prewarm={game.skillEnabled !== false}");
+  });
+
   test("renders Nabomo passive fog as a board ambient layer without replacing points", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {

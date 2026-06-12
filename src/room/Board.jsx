@@ -61,7 +61,12 @@ function Board({
             />
           ))}
         </svg>
-        <BoardSkillEffects boardSize={boardSize} pendingSkill={game.pendingSkill} audioSettings={audioSettings} />
+        <BoardSkillEffects
+          boardSize={boardSize}
+          pendingSkill={game.pendingSkill}
+          audioSettings={audioSettings}
+          prewarm={game.skillEnabled !== false}
+        />
         {game.points.map((point) => {
           const emptyTerritoryOwner = !point.stone ? territoryOwner.get(point.id) : null;
           const deadOwner = point.stone ? deadStoneOwners[point.id] : null;
