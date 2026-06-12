@@ -111,6 +111,9 @@
 <li>Static CSS and HTML contract tests normalize CRLF to LF before exact string assertions. This keeps the Windows working-tree checkout from failing layout-contract tests solely because Git rewrote line endings while preserving the same CSS and generated document content.</li>
 </ul>
 <ul>
+<li>Shared base control CSS keeps numeric inputs as <code>type=&quot;number&quot;</code> for validation and mobile numeric keyboards, but hides native browser spinner buttons with <code>appearance: textfield</code> and WebKit spin-button resets. Admin gacha quantity/probability fields therefore rely on explicit unit labels instead of browser <code>+1/-1</code> controls.</li>
+</ul>
+<ul>
 <li>Bright School home player plaque layout contracts should stay anchored to <code>src/styles/themes/bright-school/home.css</code> and <code>src/home/HomeScreen.test.jsx</code>. Broader HUD/theme tests may assert that the paperclip polish layer and scoped plaque rule exist, but should not keep a second stale copy of the plaque grid sizing because the stats column width already lives with the home plaque source contract. The same CSS contract ownership rule is captured in <code>.trellis/spec/frontend/quality-guidelines.md</code>.</li>
 </ul>
 <ul>

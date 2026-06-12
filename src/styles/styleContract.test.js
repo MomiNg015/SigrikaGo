@@ -70,6 +70,16 @@ describe("root CSS entry contract", () => {
     expect(cssImports(themeEntry).at(-1)).toBe("./mobile-adaptive.css");
   });
 
+  it("hides native number input spinner controls while preserving number inputs", () => {
+    const baseCss = readFileSync(new URL("./base.css", import.meta.url), "utf8");
+
+    expect(baseCss).toContain('input[type="number"]');
+    expect(baseCss).toContain("appearance: textfield");
+    expect(baseCss).toContain('input[type="number"]::-webkit-outer-spin-button');
+    expect(baseCss).toContain('input[type="number"]::-webkit-inner-spin-button');
+    expect(baseCss).toContain("-webkit-appearance: none");
+  });
+
   it("keeps the mobile interaction safety layer touch friendly", () => {
     const mobileCss = readFileSync(new URL("./mobile-adaptive.css", import.meta.url), "utf8");
 

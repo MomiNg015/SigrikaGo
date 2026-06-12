@@ -191,6 +191,39 @@ expect(themesCss).toContain(".home-player-row.tactical-id-row::before");
 
 The feature-level test still owns the exact layout, while the broader guard confirms the themed selector and paperclip polish remain present.
 
+### Native number input spinner contract
+
+When using numeric form controls, keep the markup as `type="number"` so browser validation, min/max constraints, and mobile numeric keyboards still work, but hide the native `+1/-1` spinner UI in shared base CSS.
+
+Required assertion points:
+
+- `src/styles/base.css` should own the global spinner reset, not per-component CSS.
+- Keep `input[type="number"] { appearance: textfield; -moz-appearance: textfield; }` for standard/Firefox behavior.
+- Keep both `input[type="number"]::-webkit-outer-spin-button` and `input[type="number"]::-webkit-inner-spin-button` with `-webkit-appearance: none` for Chromium/WebKit.
+- Static coverage belongs in `src/styles/styleContract.test.js` so style entry refactors cannot drop the contract.
+
+Wrong:
+
+```jsx
+<input type="text" inputMode="numeric" value={quantity} />
+```
+
+This loses native numeric validation and min/max semantics just to remove the spinner.
+
+Correct:
+
+```css
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+```
+
 ### Mobile battle layout contracts
 
 When changing the mobile room or battle layout, update static layout tests in `src/room/RoomScreen.test.js` to lock the CSS contracts that keep the board playable.
