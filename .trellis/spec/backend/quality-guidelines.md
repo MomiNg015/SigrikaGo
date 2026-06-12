@@ -328,6 +328,35 @@ scheduleEmptyActiveRoomClose(room, io);
 
 Tests touching close delays, close payloads, persisted deletion, empty-room invalidation, or empty-room timeout cancellation should update `server/roomCloseLifecycle.test.js`; end-to-end room flow tests can remain in `server/rooms.test.js`.
 
+### Room Restore Lifecycle Boundary Contract
+
+`server/roomRestoreLifecycle.js` owns restored-room timer resume decisions after persisted room hydration:
+
+- `createRoomRestoreLifecycle(deps)` returns `resumeRoomTimers(room, io)`.
+- Finished rooms with expired `closesAt` close immediately through `closeRoom(room.code, io, { reason: "finished-room-close" })` and return false so callers skip persistence.
+- Finished rooms whose close window is still active delegate to `scheduleRoomClose(room.code, io)`.
+- Opening rooms always start the game clock; if `openingEndsAt` has elapsed they call `completeRoomOpening(room, io)`, otherwise they delegate to `scheduleGameStart(room, io)`.
+- Restored `skillPreview` rooms first call `schedulePendingSkillResolution(room, io)`. If the pending skill snapshot is no longer schedulable, the room falls back to `playing` and clears `game.pendingSkill`.
+- Active rooms start the game clock, resume phase-specific deadlines through `schedulePendingRoomDeadlines(room, io)`, and schedule empty-room close handling.
+
+`server/rooms.js` should hydrate and register persisted rooms, but it should not duplicate restore-time branching for finished/opening/skill-preview/active phases.
+
+Wrong:
+
+```js
+if (room.game.phase === GAME_PHASES.skillPreview) {
+  room.game.phase = GAME_PHASES.playing;
+}
+```
+
+Correct:
+
+```js
+const restored = resumeRoomTimers(room, io);
+```
+
+Tests touching restore-time phase branching, expired close windows, opening deadline decisions, invalid pending-skill fallback, or active deadline scheduling should update `server/roomRestoreLifecycle.test.js`; persisted-room integration can remain in `server/rooms.test.js`.
+
 ### Room Deadline Scheduler Boundary Contract
 
 `server/roomDeadlineScheduler.js` owns room deadline timer scheduling and timeout transitions:

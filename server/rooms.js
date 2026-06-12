@@ -53,6 +53,7 @@ import { createRoomCloseLifecycle } from "./roomCloseLifecycle.js";
 import { createRoomDeadlineScheduler } from "./roomDeadlineScheduler.js";
 import { saveGameRecord as persistGameRecord } from "./roomResultPersistence.js";
 import { createRoomClockLifecycle } from "./roomClockLifecycle.js";
+import { createRoomRestoreLifecycle } from "./roomRestoreLifecycle.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -61,7 +62,7 @@ export { clearRoomTimers };
 const rooms = new Map();
 const matchmakingQueue = createRoomMatchmakingQueue();
 const ROOM_PERSIST_THROTTLE_MS = 5000;
-const EMPTY_ROOM_CLOSED_TOAST = "房间因空置5分钟以上而被关闭";
+const EMPTY_ROOM_CLOSED_TOAST = "鎴块棿鍥犵┖缃?鍒嗛挓浠ヤ笂鑰岃鍏抽棴";
 
 export function getRoom(roomCode) {
   return rooms.get(roomCode);
@@ -134,6 +135,17 @@ const roomClockLifecycle = createRoomClockLifecycle({
   scheduleRoomClose
 });
 const { startGameClock } = roomClockLifecycle;
+const roomRestoreLifecycle = createRoomRestoreLifecycle({
+  closeRoom,
+  scheduleRoomClose,
+  startGameClock,
+  completeRoomOpening,
+  scheduleGameStart,
+  schedulePendingSkillResolution,
+  schedulePendingRoomDeadlines,
+  scheduleEmptyActiveRoomClose
+});
+const { resumeRoomTimers } = roomRestoreLifecycle;
 
 export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
@@ -213,7 +225,7 @@ export function joinMatchmaking(player, io, { canPair = () => true } = {}) {
     scheduleGameStart(room, io);
     io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
     io.to(player.socketId).emit("match:found", roomView(room, player.user.id));
-    appendSystem(room, "匹配成功，3秒后进入星炬对弈。");
+    appendSystem(room, "鍖归厤鎴愬姛锛?绉掑悗杩涘叆鏄熺偓瀵瑰紙銆?);
     broadcastRoom(io, room);
     return room;
   }
@@ -238,11 +250,11 @@ export function attachSocketToRoom(roomCode, socket, user) {
     player.disconnectedAt = null;
     clearEmptyRoomClose(room);
     if (shouldAnnounceReconnect) {
-      appendSystem(room, `${player.user.username}已重新连接。`, { kind: "reconnect" });
+      appendSystem(room, `${player.user.username}宸查噸鏂拌繛鎺ャ€俙, { kind: "reconnect" });
     }
   } else if (!room.spectators.some((p) => p.user.id === user.id)) {
     room.spectators.push({ user, socketId: socket.id });
-    appendSystem(room, `${user.username}进入了观战席。`);
+    appendSystem(room, `${user.username}杩涘叆浜嗚鎴樺腑銆俙);
   }
   socket.join(validatedRoomCode.value);
   persistRoom(room, { force: true });
@@ -259,7 +271,7 @@ export function detachSocket(socketId, io = null) {
         player.socketId = null;
         player.disconnectedAt = Date.now();
         if (room.game.phase !== GAME_PHASES.finished) {
-          appendSystem(room, `${player.user.username}断线中。`, { kind: "disconnect" });
+          appendSystem(room, `${player.user.username}鏂嚎涓€俙, { kind: "disconnect" });
         }
         changed = true;
       }
@@ -289,7 +301,7 @@ export function leaveRoom(roomCode, userId, socketId = "") {
   if (finishedPlayer) {
     finishedPlayer.socketId = null;
     finishedPlayer.disconnectedAt = null;
-    appendSystem(room, `${finishedPlayer.user.username}离开了观战席。`, { kind: "spectator-leave" });
+    appendSystem(room, `${finishedPlayer.user.username}绂诲紑浜嗚鎴樺腑銆俙, { kind: "spectator-leave" });
     persistRoom(room, { force: true });
     return room;
   }
@@ -298,7 +310,7 @@ export function leaveRoom(roomCode, userId, socketId = "") {
   ));
   if (!spectator) return null;
   room.spectators = room.spectators.filter((candidate) => candidate !== spectator);
-  appendSystem(room, `${spectator.user.username}离开了观战席。`, { kind: "spectator-leave" });
+  appendSystem(room, `${spectator.user.username}绂诲紑浜嗚鎴樺腑銆俙, { kind: "spectator-leave" });
   persistRoom(room, { force: true });
   return room;
 }
@@ -315,7 +327,7 @@ export function createDirectRoom(first, second, io, modeInput = "spark") {
   persistRoom(room, { force: true });
   startGameClock(room, io);
   scheduleGameStart(room, io);
-  appendSystem(room, "对局申请已同意，3秒后进入星炬对弈。");
+  appendSystem(room, "瀵瑰眬鐢宠宸插悓鎰忥紝3绉掑悗杩涘叆鏄熺偓瀵瑰紙銆?);
   io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
   io.to(second.socketId).emit("match:found", roomView(room, second.user.id));
   broadcastRoom(io, room);
@@ -327,12 +339,12 @@ export function handleGameAction(roomCode, userId, action, io) {
   if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
   const code = validatedRoomCode.value;
   const room = rooms.get(code);
-  if (!room) return { ok: false, error: "房间不存在" };
+  if (!room) return { ok: false, error: "鎴块棿涓嶅瓨鍦? };
   const validationError = validateActionPoint(action, room.game.size);
   if (validationError) return { ok: false, error: validationError };
   const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能操作棋局" };
-  if (room.game.pendingSkill) return { ok: false, error: "技能演出中" };
+  if (!player) return { ok: false, error: "瑙傛垬鑰呬笉鑳芥搷浣滄灞€" };
+  if (room.game.pendingSkill) return { ok: false, error: "鎶€鑳芥紨鍑轰腑" };
   if (isRoomTestAction(action)) {
     const testAction = handleRoomTestAction({ action, player, room });
     if (!testAction.ok) return testAction;
@@ -362,16 +374,15 @@ export function handleGameAction(roomCode, userId, action, io) {
     maybeStartPassiveSkill
   });
 }
-
 export function requestCounting(roomCode, userId, io) {
   const validatedRoomCode = validateRoomCode(roomCode);
   if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
   const code = validatedRoomCode.value;
   const room = rooms.get(code);
-  if (!room) return { ok: false, error: "房间不存在" };
+  if (!room) return { ok: false, error: "鎴块棿涓嶅瓨鍦? };
   const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能申请数子" };
-  if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请数子" };
+  if (!player) return { ok: false, error: "瑙傛垬鑰呬笉鑳界敵璇锋暟瀛? };
+  if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "褰撳墠涓嶈兘鐢宠鏁板瓙" };
 
   return applyCountingRequest({
     room,
@@ -382,15 +393,14 @@ export function requestCounting(roomCode, userId, io) {
     io
   });
 }
-
 export function respondCounting(roomCode, userId, accepted) {
   const validatedRoomCode = validateRoomCode(roomCode);
   if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
   const room = rooms.get(validatedRoomCode.value);
-  if (!room) return { ok: false, error: "房间不存在" };
-  if (room.game.phase !== GAME_PHASES.countingRequested) return { ok: false, error: "当前没有数子申请" };
+  if (!room) return { ok: false, error: "鎴块棿涓嶅瓨鍦? };
+  if (room.game.phase !== GAME_PHASES.countingRequested) return { ok: false, error: "褰撳墠娌℃湁鏁板瓙鐢宠" };
   const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能确认数子" };
+  if (!player) return { ok: false, error: "瑙傛垬鑰呬笉鑳界‘璁ゆ暟瀛? };
 
   return applyCountingResponse({ room, player, userId, accepted, appendSystem });
 }
@@ -400,10 +410,10 @@ export function requestDraw(roomCode, userId, io) {
   if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
   const code = validatedRoomCode.value;
   const room = rooms.get(code);
-  if (!room) return { ok: false, error: "房间不存在" };
+  if (!room) return { ok: false, error: "鎴块棿涓嶅瓨鍦? };
   const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能申请和棋" };
-  if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请和棋" };
+  if (!player) return { ok: false, error: "瑙傛垬鑰呬笉鑳界敵璇峰拰妫? };
+  if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "褰撳墠涓嶈兘鐢宠鍜屾" };
 
   return applyDrawRequest({
     room,
@@ -419,10 +429,10 @@ export function respondDraw(roomCode, userId, accepted, io) {
   const validatedRoomCode = validateRoomCode(roomCode);
   if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
   const room = rooms.get(validatedRoomCode.value);
-  if (!room) return { ok: false, error: "房间不存在" };
-  if (room.game.phase !== GAME_PHASES.drawRequested) return { ok: false, error: "当前没有和棋申请" };
+  if (!room) return { ok: false, error: "鎴块棿涓嶅瓨鍦? };
+  if (room.game.phase !== GAME_PHASES.drawRequested) return { ok: false, error: "褰撳墠娌℃湁鍜屾鐢宠" };
   const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能确认和棋" };
+  if (!player) return { ok: false, error: "瑙傛垬鑰呬笉鑳界‘璁ゅ拰妫? };
 
   return applyDrawResponse({
     room,
@@ -440,17 +450,17 @@ export function handleScoringAction(roomCode, userId, action, io) {
   const validatedRoomCode = validateRoomCode(roomCode);
   if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
   const room = rooms.get(validatedRoomCode.value);
-  if (!room) return { ok: false, error: "房间不存在" };
+  if (!room) return { ok: false, error: "鎴块棿涓嶅瓨鍦? };
   const validationError = validateActionPoint(action, room.game.size);
   if (validationError) return { ok: false, error: validationError };
   const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能确认数子" };
+  if (!player) return { ok: false, error: "瑙傛垬鑰呬笉鑳界‘璁ゆ暟瀛? };
 
   if (["mark-dead", "mark-neutral", "reset-dead", "confirm-dead"].includes(action.type)) {
-    if (room.game.phase !== GAME_PHASES.markingDead) return { ok: false, error: "当前不在死子确认阶段" };
+    if (room.game.phase !== GAME_PHASES.markingDead) return { ok: false, error: "褰撳墠涓嶅湪姝诲瓙纭闃舵" };
   }
   if (["accept-result", "reject-result"].includes(action.type)) {
-    if (room.game.phase !== GAME_PHASES.resultReview) return { ok: false, error: "当前不在结果确认阶段" };
+    if (room.game.phase !== GAME_PHASES.resultReview) return { ok: false, error: "褰撳墠涓嶅湪缁撴灉纭闃舵" };
   }
 
   return applyScoringAction({
@@ -498,7 +508,7 @@ export function completeRoomOpening(room, io) {
   if (room.game.phase !== GAME_PHASES.opening) return false;
   room.game.phase = GAME_PHASES.playing;
   room.lastTick = Date.now();
-  appendSystem(room, "对局开始。", { kind: "game-start" });
+  appendSystem(room, "瀵瑰眬寮€濮嬨€?, { kind: "game-start" });
   broadcastRoom(io, room);
   scheduleInitialPassiveSkill(room, io);
   return true;
@@ -518,31 +528,4 @@ function persistRoom(room, { force = false } = {}) {
       console.error("Failed to persist room", error);
     }
   });
-}
-
-function resumeRoomTimers(room, io) {
-  if (room.game.phase === GAME_PHASES.finished) {
-    if (room.closesAt && room.closesAt <= Date.now()) {
-      closeRoom(room.code, io, { reason: "finished-room-close" });
-      return false;
-    }
-    scheduleRoomClose(room.code, io);
-    return true;
-  }
-  if (room.game.phase === GAME_PHASES.opening) {
-    startGameClock(room, io);
-    if (room.openingEndsAt <= Date.now()) completeRoomOpening(room, io);
-    else scheduleGameStart(room, io);
-  } else {
-    if (room.game.phase === GAME_PHASES.skillPreview) {
-      if (!schedulePendingSkillResolution(room, io)) {
-        room.game.phase = GAME_PHASES.playing;
-        room.game.pendingSkill = null;
-      }
-    }
-    startGameClock(room, io);
-    schedulePendingRoomDeadlines(room, io);
-    scheduleEmptyActiveRoomClose(room, io);
-  }
-  return true;
 }

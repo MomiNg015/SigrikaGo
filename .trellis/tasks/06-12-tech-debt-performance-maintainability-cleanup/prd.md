@@ -235,6 +235,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomClockLifecycle.test.js` for lightweight clock broadcasts, removed-room interval cleanup, disconnected-room handoff, and timeout finish broadcasts.
 * Updated `docs/system-design.md` and backend quality guidelines for the room clock lifecycle contract.
 
+### Batch 21 Completed
+
+* Added `server/roomRestoreLifecycle.js` as the restored-room timer resume boundary.
+* Updated `server/rooms.js` to delegate finished-room close-window recovery, opening deadline recovery, restored pending skill preview recovery, active deadline scheduling, and empty-room close scheduling to the restore lifecycle boundary.
+* Kept persisted room listing, snapshot hydration, restored-room registration, and forced post-restore persistence in `server/rooms.js`.
+* Added `server/roomRestoreLifecycle.test.js` for expired finished rooms, rescheduled finished rooms, opening recovery, pending skill preview recovery, invalid pending-skill fallback, and active deadline scheduling.
+* Updated `docs/system-design.md` and backend quality guidelines for the room restore lifecycle contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.
