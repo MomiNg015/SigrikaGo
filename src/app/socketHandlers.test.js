@@ -60,7 +60,7 @@ describe("socket handlers", () => {
     handlers.socketReconnect();
     handlers.roomUpdate(roomView);
 
-    expect(deps.setRoom).toHaveBeenCalledWith({
+    expect(roomSetterResult(deps)).toEqual({
       ...roomView,
       __audioResumeBaseline: true
     });
@@ -86,15 +86,16 @@ describe("socket handlers", () => {
     handlers.roomUpdate(roomView);
     handlers.roomUpdate(nextRoomView);
 
-    expect(deps.setRoom).toHaveBeenNthCalledWith(1, {
+    expect(roomSetterResult(deps, 1)).toEqual({
       ...roomView,
       __audioResumeBaseline: true
     });
-    expect(deps.setRoom).toHaveBeenNthCalledWith(2, {
+    expect(roomSetterResult(deps, 2, roomSetterResult(deps, 1))).toBe(roomSetterResult(deps, 1));
+    expect(roomSetterResult(deps, 2, roomSetterResult(deps, 1))).toEqual({
       ...roomView,
       __audioResumeBaseline: true
     });
-    expect(deps.setRoom).toHaveBeenNthCalledWith(3, nextRoomView);
+    expect(roomSetterResult(deps, 3, roomSetterResult(deps, 2, roomSetterResult(deps, 1)))).toEqual(nextRoomView);
   });
 
   it("does not mark normal room updates as audio resumes", () => {
@@ -104,7 +105,7 @@ describe("socket handlers", () => {
 
     handlers.roomUpdate(roomView);
 
-    expect(deps.setRoom).toHaveBeenCalledWith(roomView);
+    expect(roomSetterResult(deps)).toBe(roomView);
   });
 
   it("clears remembered player room when an online client receives the finished room update", () => {
@@ -115,7 +116,7 @@ describe("socket handlers", () => {
     handlers.roomUpdate(roomView);
 
     expect(deps.clearLastRoomCode).toHaveBeenCalledOnce();
-    expect(deps.setRoom).toHaveBeenCalledWith(roomView);
+    expect(roomSetterResult(deps)).toBe(roomView);
     expect(deps.setView).toHaveBeenCalledWith("room");
   });
 
@@ -273,10 +274,15 @@ describe("socket handlers", () => {
     handlers.roomUpdate({ code: "12345", role: "player", game: { phase: "playing" }, players: [] });
 
     expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
-    expect(deps.setRoom).toHaveBeenCalledWith(expect.objectContaining({ __audioResumeBaseline: true }));
+    expect(roomSetterResult(deps)).toEqual(expect.objectContaining({ __audioResumeBaseline: true }));
     expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
   });
 });
+
+function roomSetterResult(deps, callNumber = 1, currentRoom = null) {
+  const argument = deps.setRoom.mock.calls[callNumber - 1]?.[0];
+  return typeof argument === "function" ? argument(currentRoom) : argument;
+}
 
 function handlerDeps(overrides = {}) {
   return {

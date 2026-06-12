@@ -3572,6 +3572,9 @@
 <li><code>server/serverLifecycle.js</code> guards local development startup/shutdown: occupied port 3001 now gets an explicit <code>EADDRINUSE</code> message, and <code>SIGINT</code> / <code>SIGTERM</code> close the HTTP server plus Prisma before process exit.</li>
 </ul>
 <ul>
+<li>The frontend applies full <code>room:update</code> snapshots through <code>src/app/roomSnapshot.js</code>. Same-room snapshots are structurally shared before entering React state, so duplicate snapshots can return the current room object and unchanged <code>game.points</code>, player entries, chat messages, and nested view data keep their existing references.</li>
+</ul>
+<ul>
 <li>The frontend merges <code>room:clock</code> through <code>src/app/roomClock.js</code>, updating only changed player timer objects while preserving the existing <code>room.game</code> object reference.</li>
 </ul>
 <ul>

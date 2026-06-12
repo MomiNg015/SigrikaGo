@@ -45,6 +45,8 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Interaction feedback restarts unavailable shake animation without a forced layout read.
 * [x] Board points use point-level memoization with stable handler refs so parent handler churn does not re-render every intersection.
 * [x] Regression tests cover the unavailable feedback restart contract and board point comparator behavior.
+* [x] Full `room:update` snapshots are structurally shared before entering React state.
+* [x] Duplicate room snapshots can return the current room reference, and unchanged point/player entries keep stable references.
 
 ## Definition of Done
 
@@ -80,9 +82,17 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added targeted tests in `src/app/InteractionFeedback.test.js` and `src/room/Board.test.js`.
 * Updated `docs/system-design.md` and frontend quality guidelines for the new maintenance contracts.
 
+### Batch 3 Completed
+
+* Added `src/app/roomSnapshot.js` to structurally share same-room socket snapshots.
+* Updated `room:update` handling in `src/app/socketHandlers.js` to use a functional room state setter with `applyRoomSnapshot`.
+* Preserved reconnect audio-baseline behavior while allowing duplicate snapshots to reuse the current room object.
+* Added targeted tests in `src/app/roomSnapshot.test.js` and updated socket handler tests for the functional setter.
+* Updated `docs/system-design.md` and frontend state-management guidelines for the room snapshot sharing contract.
+
 ### Later Batches
 
-* Reduce room render fan-out beyond board point memoization.
+* Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.
 * Prewarm Pixi for skill-enabled rooms and split board effect implementations behind a registry.
 * Introduce `skillEffectCatalog` as a cross-layer contract.
 * Move room updates toward reducer/patch semantics.
