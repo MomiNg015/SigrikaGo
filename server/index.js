@@ -13,6 +13,7 @@ import { makeAuth, withToken } from "./auth.js";
 import { promoteConfiguredAdmins } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
 import { createAuthRouter } from "./authRoutes.js";
+import { createCommerceRouter } from "./commerceRoutes.js";
 import { createPlayerRouter, createCharacterSelectionData, validateOptionalRoomCode } from "./playerRoutes.js";
 import { createPublicRouter } from "./publicRoutes.js";
 import { createReplayRouter } from "./replayRoutes.js";
@@ -28,8 +29,7 @@ import { seedCharacters } from "./characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { createSocketUserRefresher } from "./socketAuth.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
-import { purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
-import { listItemInventory, useInventoryItem } from "./items.js";
+import { seedBuiltinShopItems } from "./shop.js";
 import { ensureDefaultSiteSettings } from "./siteSettings.js";
 import {
   assertProductionDeployment,
@@ -151,34 +151,7 @@ app.use("/api", createPublicRouter({ prisma, authHttp, listWatchRooms }));
 
 app.use("/api", createSocialRouter({ prisma, authHttp, statusForUser }));
 
-app.post("/api/shop/:id/purchase", authHttp, async (req, res) => {
-  try {
-    res.json(await purchaseShopItem({ prisma, userId: req.user.id, itemId: req.params.id }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "购买失败" });
-  }
-});
-
-app.get("/api/items/inventory", authHttp, async (req, res) => {
-  try {
-    res.json(await listItemInventory({ prisma, userId: req.user.id }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "\u8bfb\u53d6\u4ed3\u5e93\u5931\u8d25" });
-  }
-});
-
-app.post("/api/items/:itemId/use", authHttp, async (req, res) => {
-  try {
-    res.json(await useInventoryItem({
-      prisma,
-      userId: req.user.id,
-      itemId: req.params.itemId,
-      characterId: req.body.characterId
-    }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "使用道具失败" });
-  }
-});
+app.use("/api", authHttp, createCommerceRouter({ prisma }));
 
 app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
 const characterSelectionData = createCharacterSelectionData({ prisma });

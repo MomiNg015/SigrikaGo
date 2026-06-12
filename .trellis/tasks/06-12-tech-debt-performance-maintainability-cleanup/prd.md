@@ -360,6 +360,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/publicRoutes.test.js` for public/authenticated route mounting, catalog helper delegation, shop user binding, feedback error shaping, leaderboard query shape, and watch-list mode filtering.
 * Updated `docs/system-design.md` and backend quality guidelines for the public/lobby HTTP route contract.
 
+### Batch 38 Completed
+
+* Added `server/commerceRoutes.js` as the authenticated commerce HTTP boundary for shop purchases, item inventory, and item usage.
+* Updated `server/index.js` to mount the commerce router behind `authHttp`, removing the remaining inline HTTP handler bodies from the entry file.
+* Added `server/commerceRoutes.test.js` for purchase, inventory, item-use request forwarding, error response shaping, and route table registration.
+* Updated `docs/system-design.md` and backend quality guidelines for the commerce HTTP route contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

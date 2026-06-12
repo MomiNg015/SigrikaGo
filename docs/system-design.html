@@ -260,6 +260,7 @@
     roomView.js                # 房间视图序列化，按玩家/观战者生成可见棋盘和计数信息
     auth.js                    # HTTP JWT 鉴权与管理员中间件
     authRoutes.js              # /api/auth HTTP route boundary
+    commerceRoutes.js          # authenticated shop purchase and item inventory route boundary
     playerRoutes.js            # /api/me player HTTP route boundary
     publicRoutes.js            # public/lobby HTTP route boundary
     replayRoutes.js            # /api/replays player replay HTTP route boundary
@@ -683,6 +684,18 @@
 </ul>
 <ul>
 <li><code>server/index.js</code> creates the shared login/session managers and mounts <code>/api/auth</code> after <code>onlineSessions</code> is available; tests touching auth route status codes, cookie behavior, forced login, refresh-session recovery, or logout cleanup should update <code>server/authRoutes.test.js</code>.</li>
+</ul>
+</ul>
+<ul>
+<li><code>server/commerceRoutes.js</code></li>
+<ul>
+<li>Authenticated commerce HTTP route boundary for <code>/api/shop/:id/purchase</code>, <code>/api/items/inventory</code>, and <code>/api/items/:itemId/use</code>.</li>
+</ul>
+<ul>
+<li>Owns route-level user id binding, item id/character id forwarding, and purchase/inventory/use error response shaping.</li>
+</ul>
+<ul>
+<li>Domain behavior remains in <code>server/shop.js</code> and <code>server/items.js</code>; <code>server/index.js</code> mounts this router behind <code>authHttp</code>.</li>
 </ul>
 </ul>
 <ul>
@@ -2826,7 +2839,7 @@
 <li><code>server/adminRoutes.js</code> 已拆出认证路由、后台用户管理写操作、后台装饰/商城商品写操作、后台角色/技能写操作、后台审计写入和路由错误对象；后续后台优化应优先继续拆上传/站点设置/只读查询子域，而不是把新后台写操作继续塞回路由文件。</li>
 </ul>
 <ul>
-<li><code>server/index.js</code> 已拆出 auth、player <code>/api/me*</code>、public/lobby、personal replay <code>/api/replays*</code>、social/profile、admin、room runtime adapter 等边界；后续入口文件优化应继续迁移商城购买、道具库存/使用等少量剩余 HTTP API，让 <code>index.js</code> 保持启动编排与 Socket.IO 事件注册职责。</li>
+<li><code>server/index.js</code> 已拆出 auth、commerce、player <code>/api/me*</code>、public/lobby、personal replay <code>/api/replays*</code>、social/profile、admin、room runtime adapter 等边界；后续入口文件优化应保持 HTTP handler body 不回流到入口文件，让 <code>index.js</code> 专注启动编排与 Socket.IO 事件注册职责。</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> 已拆出 <code>AdminShell</code> 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。</li>

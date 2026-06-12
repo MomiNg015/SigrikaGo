@@ -61,6 +61,32 @@ app.use("/api/auth", createAuthRouter({ prisma, jwtSecret, loginSessions, online
 
 Tests touching auth route status codes, cookie rotation/clearing, forced login, refresh-session recovery, or logout cleanup should update `server/authRoutes.test.js`; lower-level session storage behavior should stay in `server/loginSessions.test.js`.
 
+### Commerce HTTP Boundary Contract
+
+`server/commerceRoutes.js` owns authenticated commerce HTTP handlers:
+
+- `POST /api/shop/:id/purchase`
+- `GET /api/items/inventory`
+- `POST /api/items/:itemId/use`
+
+`server/index.js` should mount this router behind `authHttp`. It should not duplicate purchase, inventory, or item-use handler bodies, route-level user id binding, request param forwarding, or route error response shaping.
+
+Wrong:
+
+```js
+app.post("/api/items/:itemId/use", authHttp, async (req, res) => {
+  res.json(await useInventoryItem({ prisma, userId: req.user.id }));
+});
+```
+
+Correct:
+
+```js
+app.use("/api", authHttp, createCommerceRouter({ prisma }));
+```
+
+Tests touching commerce route status codes, request param forwarding, or route error shaping should update `server/commerceRoutes.test.js`; purchase and item domain behavior should stay in `server/shop.test.js` and `server/items.test.js`.
+
 ### Player HTTP Boundary Contract
 
 `server/playerRoutes.js` owns authenticated player self-service HTTP handlers:
