@@ -59,6 +59,34 @@ broadcastRoom(io, room);
 
 Tests touching this boundary should update `server/roomBroadcasts.test.js` for payload shape, connected-participant filtering, and persistence timing.
 
+### Room Timer Boundary Contract
+
+`server/roomTimers.js` owns room timer bookkeeping:
+
+- `scheduleRoomInterval(room, callback, delay)` assigns `room.timerId` and returns it.
+- `clearRoomInterval(room)` clears the active interval without changing the stored id, preserving existing room snapshot shape.
+- `scheduleRoomTimeout(room, callback, delay)` appends the timeout id to `room.timeoutIds` and removes it before invoking the callback.
+- `clearRoomTimeout(room, id)` clears one tracked timeout and removes it from `room.timeoutIds`.
+- `clearRoomTimers(room)` clears the room interval and every tracked timeout, then resets `room.timeoutIds` to `[]`.
+
+`server/rooms.js` should decide **when** to schedule opening, skill preview, counting, draw, result-review, close, and empty-room deadlines, but it should not hand-edit `timeoutIds` or call raw timer APIs for room lifecycle timers.
+
+Wrong:
+
+```js
+const id = setTimeout(callback, delay);
+room.timeoutIds.push(id);
+room.timeoutIds = room.timeoutIds.filter((candidate) => candidate !== id);
+```
+
+Correct:
+
+```js
+scheduleRoomTimeout(room, callback, delay);
+```
+
+Tests touching timer bookkeeping should update `server/roomTimers.test.js`; room lifecycle behavior can remain in `server/rooms.test.js`.
+
 ### Leaderboard API Contract
 
 `GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:

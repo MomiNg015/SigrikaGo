@@ -744,6 +744,18 @@
 </ul>
 </ul>
 <ul>
+<li><code>server/roomTimers.js</code></li>
+<ul>
+<li>房间计时器账本模块。</li>
+</ul>
+<ul>
+<li>集中维护 <code>timerId</code>、<code>timeoutIds</code> 的 interval/timeout 注册、自动移除和主动清理，供开局倒计时、技能预览结算、数子/和棋/结果确认 deadline、房间关闭和空房关闭调度复用。</li>
+</ul>
+<ul>
+<li><code>server/rooms.js</code> 保留“何时调度”的业务判断，避免后续新增延迟流程时重复手写 <code>setTimeout</code> / <code>clearTimeout</code> / <code>timeoutIds</code> 清理逻辑。</li>
+</ul>
+</ul>
+<ul>
 <li><code>server/serverLifecycle.js</code></li>
 <ul>
 <li>HTTP server startup and shutdown guardrails.</li>
@@ -2560,7 +2572,7 @@
 <ul>
 <li>核心源码体量仍偏集中。本轮扫描中，超过 300 行的主要业务文件包括 <code>server/rooms.js</code>、<code>src/shared/game.js</code>、<code>server/adminRoutes.js</code>、<code>server/index.js</code>、<code>src/audio/playback.jsx</code>：</li>
 <ul>
-<li><code>server/rooms.js</code> 已拆出 room view、广播边界、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、断线恢复与关闭调度。</li>
+<li><code>server/rooms.js</code> 已拆出 room view、广播边界、timer 账本、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、断线恢复与关闭调度。</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> 已拆出 <code>AdminShell</code> 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。</li>
@@ -3303,7 +3315,7 @@
 <li><code>src/room/RoomScreen.jsx</code> now delegates the three-column battle tree to <code>src/room/RoomBattleStage.jsx</code>; future room work can focus on replay/spectator projection helpers and smaller room-state hooks rather than moving raw JSX.</li>
 </ul>
 <ul>
-<li>Server room view serialization now lives in <code>server/roomView.js</code>, socket broadcast delivery lives in <code>server/roomBroadcasts.js</code>, item effect cleanup lives in <code>server/roomItemEffects.js</code>, room-user reward application lives in <code>server/roomRewards.js</code>, room snapshot persistence lives in <code>server/roomStatePersistence.js</code>, pending skill resolution snapshot math lives in <code>server/roomSkillResolution.js</code>, clock timing calculation lives in <code>server/roomClockTiming.js</code>, standard move/pass/resign side effects live in <code>server/roomGameActions.js</code>, and counting/draw/scoring room mutations live in <code>server/roomScoringFlow.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, skill actions, and persistence triggers.</li>
+<li>Server room view serialization now lives in <code>server/roomView.js</code>, socket broadcast delivery lives in <code>server/roomBroadcasts.js</code>, room timer bookkeeping lives in <code>server/roomTimers.js</code>, item effect cleanup lives in <code>server/roomItemEffects.js</code>, room-user reward application lives in <code>server/roomRewards.js</code>, room snapshot persistence lives in <code>server/roomStatePersistence.js</code>, pending skill resolution snapshot math lives in <code>server/roomSkillResolution.js</code>, clock timing calculation lives in <code>server/roomClockTiming.js</code>, standard move/pass/resign side effects live in <code>server/roomGameActions.js</code>, and counting/draw/scoring room mutations live in <code>server/roomScoringFlow.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, skill actions, and persistence triggers.</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> has split its shell and major tab bodies; high-value follow-up targets are now the remaining skill contract/replay compatibility wrappers inside <code>src/shared/game.js</code>, the real-time lifecycle/broadcast boundary inside <code>server/rooms.js</code>, and the remaining voice/cache subdomains in <code>src/audio/playback.jsx</code>.</li>
@@ -3585,6 +3597,9 @@
 </ul>
 <ul>
 <li><code>server/roomBroadcasts.js</code> is the single backend emit boundary for room snapshot updates, lightweight clock updates, room toasts, and close events. It skips disconnected participants, calls room persistence with the same forced/throttled timing as before, and keeps viewer-specific room view generation centralized for future patch-event work.</li>
+</ul>
+<ul>
+<li><code>server/roomTimers.js</code> is the backend timer bookkeeping boundary for room intervals and tracked timeouts. Room lifecycle code should schedule through this module so timeout ids are removed after firing and cleared consistently during room shutdown or empty-room cancellation.</li>
 </ul>
 <ul>
 <li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators still receive both black and white projections through <code>gameViews</code>, but players receive only their own visible board state.</li>

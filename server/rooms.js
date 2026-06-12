@@ -49,6 +49,13 @@ import {
   roomView
 } from "./roomBroadcasts.js";
 import {
+  clearRoomInterval,
+  clearRoomTimers,
+  clearRoomTimeout,
+  scheduleRoomInterval,
+  scheduleRoomTimeout
+} from "./roomTimers.js";
+import {
   SKILL_BANNER_DURATION_MS,
   SKILL_BOARD_EFFECT_DURATION_MS,
   canSchedulePendingSkillResolution,
@@ -58,6 +65,7 @@ import {
 import { normalizeChatText, validatePointId, validateRoomCode } from "./security.js";
 
 export { roomView };
+export { clearRoomTimers };
 
 const rooms = new Map();
 let waitingPlayers = [];
@@ -778,24 +786,6 @@ export function startInitialPassiveSkillNow(room, io) {
   return maybeStartPassiveSkill(room, io);
 }
 
-function scheduleRoomTimeout(room, callback, delay) {
-  const id = setTimeout(() => {
-    room.timeoutIds = (room.timeoutIds ?? []).filter((candidate) => candidate !== id);
-    callback();
-  }, delay);
-  room.timeoutIds ??= [];
-  room.timeoutIds.push(id);
-  return id;
-}
-
-export function clearRoomTimers(room) {
-  if (room.timerId) clearInterval(room.timerId);
-  for (const id of room.timeoutIds ?? []) {
-    clearTimeout(id);
-  }
-  room.timeoutIds = [];
-}
-
 function describeSkillUse(room, player, targetId) {
   const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
   const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
@@ -859,9 +849,9 @@ function stoneLabel(color) {
 
 function startGameClock(room, io) {
   room.lastTick = Date.now();
-  room.timerId = setInterval(() => {
+  scheduleRoomInterval(room, () => {
     if (!rooms.has(room.code)) {
-      clearInterval(room.timerId);
+      clearRoomInterval(room);
       return;
     }
     if (room.game.phase !== GAME_PHASES.playing) {
@@ -993,8 +983,7 @@ function scheduleEmptyActiveRoomClose(room, io) {
 function clearEmptyRoomClose(room) {
   room.emptySince = null;
   if (room.emptyTimerId) {
-    clearTimeout(room.emptyTimerId);
-    room.timeoutIds = (room.timeoutIds ?? []).filter((id) => id !== room.emptyTimerId);
+    clearRoomTimeout(room, room.emptyTimerId);
     room.emptyTimerId = null;
   }
 }

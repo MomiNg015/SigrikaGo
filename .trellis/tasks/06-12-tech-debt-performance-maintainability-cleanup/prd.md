@@ -53,6 +53,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Board skill SFX cue scheduling and timer cleanup are isolated from the React/Pixi host component.
 * [x] Vite production build splits React, Socket.IO client, and lazy Pixi runtime chunks so the entry JS no longer triggers the previous large-chunk warning.
 * [x] Room-level Socket.IO broadcast delivery is isolated from `server/rooms.js` behind a dedicated backend boundary.
+* [x] Room interval/timeout bookkeeping is isolated from `server/rooms.js` behind a dedicated backend timer boundary.
 
 ## Definition of Done
 
@@ -140,6 +141,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Kept `server/rooms.js` compatible by preserving its `broadcastRoom` and `roomView` exports while delegating participant iteration, viewer-specific room views, clock payloads, and close/toast emits.
 * Added `server/roomBroadcasts.test.js` for connected-participant filtering, room update persistence timing, lightweight clock payload cloning, toast delivery, and close delivery.
 * Updated `docs/system-design.md` and backend quality guidelines for the room broadcast boundary contract.
+
+### Batch 10 Completed
+
+* Added `server/roomTimers.js` as the room interval/timeout bookkeeping boundary for tracked room lifecycle timers.
+* Kept `server/rooms.js` compatible by preserving its `clearRoomTimers` export while delegating `timerId`, `timeoutIds`, interval clearing, timeout registration, timeout auto-removal, and single-timeout cancellation.
+* Added `server/roomTimers.test.js` for timeout registration/removal, single-timeout cancellation, interval clearing, and full room timer cleanup.
+* Updated `docs/system-design.md` and backend quality guidelines for the room timer boundary contract.
 
 ### Later Batches
 
