@@ -359,6 +359,35 @@ if (validationError) return { error: validationError };
 
 Tests touching room action point validation should update `server/roomActionValidation.test.js`; flow-specific action results can stay in `server/rooms.test.js`.
 
+### Room Action Lifecycle Boundary Contract
+
+`server/roomActionLifecycle.js` owns gameplay action entry routing:
+
+- `createRoomActionLifecycle(deps)` returns `handleGameAction(roomCode, userId, action, io)`.
+- `handleGameAction()` validates the room code, looks up the room, delegates point-target validation to `validateActionPoint(action, room.game.size)`, verifies the actor is a room player, and rejects new actions while `room.game.pendingSkill` is active.
+- Test actions go through `isRoomTestAction()` / `handleRoomTestAction()`, append optional test system messages, apply returned game state, and append returned notices.
+- Skill actions delegate to `startActiveSkill({ room, player, action, io })`.
+- Standard move/pass/resign actions delegate to `applyStandardGameAction()` with the injected room lifecycle dependencies.
+
+`server/rooms.js` should expose the action entry point for socket/API routing, but it should not duplicate action validation order, test-action state application, skill routing, or standard-action dependency wiring.
+
+Wrong:
+
+```js
+const room = rooms.get(code);
+if (action.type === "skill") return startActiveSkill({ room, player, action, io });
+return applyStandardGameAction({ room, player, action, io, appendSystem });
+```
+
+Correct:
+
+```js
+const roomActionLifecycle = createRoomActionLifecycle(deps);
+export const { handleGameAction } = roomActionLifecycle;
+```
+
+Tests touching gameplay action entry validation order, test-action dispatch, skill dispatch, or standard-action dependency wiring should update `server/roomActionLifecycle.test.js`; action-result rule behavior should stay in the focused rule modules.
+
 ### Room Request Lifecycle Boundary Contract
 
 `server/roomRequestLifecycle.js` owns counting, draw, and scoring request entry validation:

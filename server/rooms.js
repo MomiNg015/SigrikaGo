@@ -1,16 +1,12 @@
 import {
   COLORS,
-  GAME_PHASES,
-  exposeHiddenHands
+  GAME_PHASES
 } from "../src/shared/game.js";
-import { gameModeById } from "../src/shared/gameModes.js";
 import { prisma } from "./db.js";
-import { applyStandardGameAction } from "./roomGameActions.js";
 import { resetByoYomi } from "./roomClockTiming.js";
 import { prepareCandyEffectUpdates } from "./roomItemEffects.js";
 import { listPersistedRooms, deletePersistedRoom as deletePersistedRoomState } from "./roomPersistence.js";
 import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
-import { handleRoomTestAction, isRoomTestAction } from "./roomTestActions.js";
 import {
   broadcastRoom as broadcastRoomUpdate,
   broadcastRoomClock,
@@ -49,6 +45,7 @@ import { createRoomRestoreLifecycle } from "./roomRestoreLifecycle.js";
 import { createRoomConnectionLifecycle } from "./roomConnectionLifecycle.js";
 import { createRoomRequestLifecycle } from "./roomRequestLifecycle.js";
 import { createRoomCreationLifecycle } from "./roomCreationLifecycle.js";
+import { createRoomActionLifecycle } from "./roomActionLifecycle.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -57,7 +54,6 @@ export { clearRoomTimers };
 const rooms = new Map();
 const matchmakingQueue = createRoomMatchmakingQueue();
 const ROOM_PERSIST_THROTTLE_MS = 5000;
-const EMPTY_ROOM_CLOSED_TOAST = "房间因空置5分钟以上而被关闭";
 
 export function getRoom(roomCode) {
   return rooms.get(roomCode);
@@ -189,6 +185,19 @@ export const {
   joinMatchmaking,
   createDirectRoom
 } = roomCreationLifecycle;
+const roomActionLifecycle = createRoomActionLifecycle({
+  rooms,
+  validateRoomCode,
+  validateActionPoint,
+  appendSystem,
+  appendNotices,
+  startActiveSkill,
+  broadcastToast,
+  resetByoYomi,
+  scheduleRoomClose,
+  maybeStartPassiveSkill
+});
+export const { handleGameAction } = roomActionLifecycle;
 
 export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
@@ -259,48 +268,6 @@ export function leaveMatchmaking(userId) {
   matchmakingQueue.removeUser(userId);
 }
 
-
-
-export function handleGameAction(roomCode, userId, action, io) {
-  const validatedRoomCode = validateRoomCode(roomCode);
-  if (!validatedRoomCode.ok) return { ok: false, error: validatedRoomCode.error };
-  const code = validatedRoomCode.value;
-  const room = rooms.get(code);
-  if (!room) return { ok: false, error: "房间不存在" };
-  const validationError = validateActionPoint(action, room.game.size);
-  if (validationError) return { ok: false, error: validationError };
-  const player = room.players.find((p) => p.user.id === userId);
-  if (!player) return { ok: false, error: "观战者不能操作棋局" };
-  if (room.game.pendingSkill) return { ok: false, error: "技能演出中" };
-  if (isRoomTestAction(action)) {
-    const testAction = handleRoomTestAction({ action, player, room });
-    if (!testAction.ok) return testAction;
-    if (testAction.systemMessage) appendSystem(room, testAction.systemMessage);
-    if (!testAction.result) return { ok: true, room };
-    const result = testAction.result;
-    if (!result.ok) return result;
-    room.game = result.state;
-    appendNotices(room, result.notices);
-    return { ok: true, room };
-  }
-
-  if (action.type === "skill") {
-    return startActiveSkill({ room, player, action, io });
-  }
-
-  return applyStandardGameAction({
-    room,
-    player,
-    action,
-    io,
-    appendSystem,
-    appendNotices,
-    broadcastToast,
-    resetByoYomi,
-    scheduleRoomClose,
-    maybeStartPassiveSkill
-  });
-}
 
 
 export function addChat(roomCode, user, text) {

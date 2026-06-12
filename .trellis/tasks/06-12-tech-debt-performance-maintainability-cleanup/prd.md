@@ -265,6 +265,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Kept queue status/list helpers, matchmaking leave cleanup, socket event routing, action routing, and room map ownership in `server/rooms.js`.
 * Added `server/roomCreationLifecycle.test.js` for unmatched joins, matched matchmaking creation side effects, direct-room mode normalization, matchmaking cleanup, emitted match payloads, and creation broadcasts.
 * Updated `docs/system-design.md` and backend quality guidelines for the room creation lifecycle contract.
+
+### Batch 25 Completed
+
+* Added `server/roomActionLifecycle.js` as the gameplay action entry routing boundary.
+* Updated `server/rooms.js` to delegate room-code validation, room lookup, point validation, player lookup, pending-skill rejection, test-action dispatch, skill-action dispatch, and standard action dependency wiring to the action lifecycle.
+* Removed stale `rooms.js` imports/constants left behind by earlier lifecycle extractions.
+* Added `server/roomActionLifecycle.test.js` for validation ordering, test-action state application, skill dispatch, and standard-action dependency wiring.
+* Updated `docs/system-design.md` and backend quality guidelines for the room action lifecycle contract.
 * Updated `docs/system-design.md` and backend quality guidelines for the room request lifecycle contract.
 
 ### Later Batches
