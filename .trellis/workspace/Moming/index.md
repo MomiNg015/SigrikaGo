@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 6
+- **Total Sessions**: 7
 - **Last Active**: 2026-06-12
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~205 | Active |
+| `journal-1.md` | ~238 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 7 | 2026-06-12 | Hide number input spinners | `5aa04a3` | `codex/standard-game-mode` |
 | 6 | 2026-06-12 | Multiple gacha featured prizes | `0341f75` | `codex/standard-game-mode` |
 | 5 | 2026-06-12 | Gacha featured prize toggle fix | `b231db4` | `codex/standard-game-mode` |
 | 4 | 2026-06-12 | Gacha admin UI polish | `1ae019d` | `codex/standard-game-mode` |

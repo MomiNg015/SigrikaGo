@@ -203,3 +203,36 @@ Added multi-select featured prize support for gacha pools across admin drafts, A
 ### Next Steps
 
 - None - task complete
+
+
+## Session 7: Hide number input spinners
+
+**Date**: 2026-06-12
+**Task**: Hide number input spinners
+**Branch**: `codex/standard-game-mode`
+
+### Summary
+
+Hid native number input spinner controls in shared base CSS while preserving number input semantics; added CSS contract coverage and updated docs/specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5aa04a3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
