@@ -87,6 +87,33 @@ scheduleRoomTimeout(room, callback, delay);
 
 Tests touching timer bookkeeping should update `server/roomTimers.test.js`; room lifecycle behavior can remain in `server/rooms.test.js`.
 
+### Room Presence Boundary Contract
+
+`server/roomPresence.js` owns shared participant and connection-state queries:
+
+- `roomParticipants(room)` returns players first, then spectators.
+- `onlineParticipantCount(room)` counts connected players and spectators.
+- `hasConnectedRoomParticipant(room)` returns whether any player or spectator is connected.
+- `arePlayersDisconnected(room)` returns true only when the room has players and every player is disconnected; spectators do not keep an active game alive.
+- `watchPlayerSummary(room, color)` builds the watch-list summary for a player color.
+
+Room broadcasting, watch-room summaries, finished-room close extension, and empty-active-room closure should reuse these helpers instead of reimplementing players/spectators iteration.
+
+Wrong:
+
+```js
+const online = room.players.filter((player) => player.socketId).length
+  + room.spectators.filter((spectator) => spectator.socketId).length;
+```
+
+Correct:
+
+```js
+const online = onlineParticipantCount(room);
+```
+
+Tests touching participant-state rules should update `server/roomPresence.test.js`; workflow-specific behavior should stay in `server/rooms.test.js`.
+
 ### Leaderboard API Contract
 
 `GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:

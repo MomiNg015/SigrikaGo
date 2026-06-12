@@ -1,8 +1,7 @@
 import { buildRoomView } from "./roomView.js";
+import { roomParticipants } from "./roomPresence.js";
 
-export function roomParticipants(room) {
-  return [...(room?.players ?? []), ...(room?.spectators ?? [])];
-}
+export { roomParticipants };
 
 export function roomView(room, viewerId) {
   return buildRoomView(room, viewerId);

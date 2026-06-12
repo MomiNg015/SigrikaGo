@@ -54,6 +54,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Vite production build splits React, Socket.IO client, and lazy Pixi runtime chunks so the entry JS no longer triggers the previous large-chunk warning.
 * [x] Room-level Socket.IO broadcast delivery is isolated from `server/rooms.js` behind a dedicated backend boundary.
 * [x] Room interval/timeout bookkeeping is isolated from `server/rooms.js` behind a dedicated backend timer boundary.
+* [x] Shared room participant and online-state queries are isolated behind a backend presence boundary.
 
 ## Definition of Done
 
@@ -148,6 +149,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Kept `server/rooms.js` compatible by preserving its `clearRoomTimers` export while delegating `timerId`, `timeoutIds`, interval clearing, timeout registration, timeout auto-removal, and single-timeout cancellation.
 * Added `server/roomTimers.test.js` for timeout registration/removal, single-timeout cancellation, interval clearing, and full room timer cleanup.
 * Updated `docs/system-design.md` and backend quality guidelines for the room timer boundary contract.
+
+### Batch 11 Completed
+
+* Added `server/roomPresence.js` as the shared room participant and connection-state boundary.
+* Updated `server/roomBroadcasts.js` and `server/rooms.js` to reuse the presence boundary for participant ordering, online counts, watch summaries, connected-participant checks, and all-players-disconnected checks.
+* Added `server/roomPresence.test.js` for participant ordering, online counts, connected participant detection, all-player disconnect behavior, and watch summaries.
+* Updated `docs/system-design.md` and backend quality guidelines for the room presence boundary contract.
 
 ### Later Batches
 

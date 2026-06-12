@@ -56,6 +56,12 @@ import {
   scheduleRoomTimeout
 } from "./roomTimers.js";
 import {
+  arePlayersDisconnected,
+  hasConnectedRoomParticipant,
+  onlineParticipantCount,
+  watchPlayerSummary
+} from "./roomPresence.js";
+import {
   SKILL_BANNER_DURATION_MS,
   SKILL_BOARD_EFFECT_DURATION_MS,
   canSchedulePendingSkillResolution,
@@ -489,23 +495,6 @@ export function broadcastRoom(io, room) {
   broadcastRoomUpdate(io, room, { persistRoom });
 }
 
-function onlineParticipantCount(room) {
-  return room.players.filter((player) => player.socketId).length
-    + room.spectators.filter((spectator) => spectator.socketId).length;
-}
-
-function watchPlayerSummary(room, color) {
-  const player = room.players.find((candidate) => candidate.color === color);
-  if (!player) return null;
-  return {
-    user: player.user,
-    characterId: player.characterId,
-    character: player.character,
-    connected: Boolean(player.socketId),
-    disconnectedAt: player.disconnectedAt ?? null
-  };
-}
-
 function broadcastToast(io, room, text) {
   broadcastRoomToast(io, room, text);
 }
@@ -931,10 +920,6 @@ function roomCloseDelay(room) {
   return room?.game?.winner?.invalid ? INVALID_ROOM_CLOSE_DELAY_MS : ROOM_CLOSE_DELAY_MS;
 }
 
-function hasConnectedRoomParticipant(room) {
-  return [...room.players, ...room.spectators].some((participant) => participant.socketId);
-}
-
 function closeRoom(roomCode, io, { message = "", reason = "" } = {}) {
   const room = rooms.get(roomCode);
   if (!room) return;
@@ -986,10 +971,6 @@ function clearEmptyRoomClose(room) {
     clearRoomTimeout(room, room.emptyTimerId);
     room.emptyTimerId = null;
   }
-}
-
-function arePlayersDisconnected(room) {
-  return room.players.length > 0 && room.players.every((player) => !player.socketId);
 }
 
 function persistRoom(room, { force = false } = {}) {
