@@ -241,6 +241,33 @@ if (validationError) return { error: validationError };
 
 Tests touching room action point validation should update `server/roomActionValidation.test.js`; flow-specific action results can stay in `server/rooms.test.js`.
 
+### Room Close Lifecycle Boundary Contract
+
+`server/roomCloseLifecycle.js` owns room close and empty-active-room lifecycle behavior:
+
+- `createRoomCloseLifecycle(deps)` returns `scheduleRoomClose`, `closeRoom`, `scheduleEmptyActiveRoomClose`, and `clearEmptyRoomClose`.
+- `scheduleRoomClose(roomCode, io)` schedules finished-room cleanup, triggers unsaved record persistence through injected callbacks, force-persists `closesAt`, extends valid finished rooms while participants remain connected, and closes with `{ reason: "finished-room-close", roomCode }`.
+- `closeRoom(roomCode, io, options)` clears room timers, emits `room:closed`, removes the room from memory, and triggers persisted-room deletion.
+- `scheduleEmptyActiveRoomClose(room, io)` marks unfinished rooms invalid after all players are disconnected for five minutes, appends the invalid-room system message, persists the invalid state, and closes the room without creating a game record.
+- `clearEmptyRoomClose(room)` cancels the tracked empty-room timeout and clears `emptySince` / `emptyTimerId`.
+
+`server/rooms.js` should decide **when** a room reaches a close path, but it should not duplicate close payload shape, close-delay rules, persisted deletion, or empty-room invalidation state.
+
+Wrong:
+
+```js
+room.game.winner = { invalid: true, reason: "empty-room" };
+rooms.delete(room.code);
+```
+
+Correct:
+
+```js
+scheduleEmptyActiveRoomClose(room, io);
+```
+
+Tests touching close delays, close payloads, persisted deletion, empty-room invalidation, or empty-room timeout cancellation should update `server/roomCloseLifecycle.test.js`; end-to-end room flow tests can remain in `server/rooms.test.js`.
+
 ### Leaderboard API Contract
 
 `GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:

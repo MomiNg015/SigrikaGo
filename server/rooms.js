@@ -27,7 +27,7 @@ import {
   PROGRESS_REASONS,
   progressLedgerCreateOperations
 } from "./userProgressLedger.js";
-import { deletePersistedRoom, listPersistedRooms } from "./roomPersistence.js";
+import { listPersistedRooms, deletePersistedRoom as deletePersistedRoomState } from "./roomPersistence.js";
 import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
 import { applyResultRewardsToRoomUsers } from "./roomRewards.js";
 import {
@@ -74,6 +74,7 @@ import {
   ensureRestoredDisconnectedNotices
 } from "./roomSystemMessages.js";
 import { validateActionPoint } from "./roomActionValidation.js";
+import { createRoomCloseLifecycle } from "./roomCloseLifecycle.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -82,9 +83,6 @@ export { clearRoomTimers };
 const rooms = new Map();
 const matchmakingQueue = createRoomMatchmakingQueue();
 const INITIAL_PASSIVE_SKILL_DELAY_MS = 3000;
-const ROOM_CLOSE_DELAY_MS = 5 * 60 * 1000;
-const INVALID_ROOM_CLOSE_DELAY_MS = 30 * 1000;
-const EMPTY_ACTIVE_ROOM_CLOSE_MS = 5 * 60 * 1000;
 const ROOM_PERSIST_THROTTLE_MS = 5000;
 const EMPTY_ROOM_CLOSED_TOAST = "房间因空置5分钟以上而被关闭";
 
@@ -95,6 +93,27 @@ export function getRoom(roomCode) {
 function isRoomCodeTaken(roomCode) {
   return rooms.has(roomCode);
 }
+
+const roomCloseLifecycle = createRoomCloseLifecycle({
+  rooms,
+  clearRoomTimers,
+  clearRoomTimeout,
+  scheduleRoomTimeout,
+  hasConnectedRoomParticipant,
+  arePlayersDisconnected,
+  emitRoomClosed,
+  deletePersistedRoom: (roomCode) => deletePersistedRoomState(prisma, roomCode),
+  persistRoom,
+  appendSystem,
+  saveGameRecord,
+  prepareCloseState: prepareCandyEffectUpdates
+});
+const {
+  scheduleRoomClose,
+  closeRoom,
+  scheduleEmptyActiveRoomClose,
+  clearEmptyRoomClose
+} = roomCloseLifecycle;
 
 export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
@@ -702,91 +721,6 @@ function scheduleResultReviewTimeout(roomOrCode, io) {
       broadcastRoom(io, latest);
     }
   }, delay);
-}
-
-function scheduleRoomClose(roomCode, io) {
-  const room = rooms.get(roomCode);
-  if (!room) return;
-  if (!room.recordSaved) {
-    prepareCandyEffectUpdates(room);
-    saveGameRecord(room).catch((error) => {
-      console.error("Failed to save game record", error);
-    });
-  }
-  const closeDelay = roomCloseDelay(room);
-  const nextClosesAt = Date.now() + closeDelay;
-  if (!room.closesAt || (room.game.winner?.invalid && room.closesAt > nextClosesAt)) {
-    room.closesAt = nextClosesAt;
-  }
-  persistRoom(room, { force: true });
-  scheduleRoomTimeout(room, () => {
-    const latest = rooms.get(roomCode);
-    if (!latest) return;
-    if (!latest.game.winner?.invalid && hasConnectedRoomParticipant(latest)) {
-      latest.closesAt = Date.now() + roomCloseDelay(latest);
-      persistRoom(latest, { force: true });
-      scheduleRoomClose(roomCode, io);
-      return;
-    }
-    closeRoom(roomCode, io, { reason: "finished-room-close" });
-  }, Math.max(0, room.closesAt - Date.now()));
-}
-
-function roomCloseDelay(room) {
-  return room?.game?.winner?.invalid ? INVALID_ROOM_CLOSE_DELAY_MS : ROOM_CLOSE_DELAY_MS;
-}
-
-function closeRoom(roomCode, io, { message = "", reason = "" } = {}) {
-  const room = rooms.get(roomCode);
-  if (!room) return;
-  clearRoomTimers(room);
-  const payload = {
-    ...(message ? { message } : {}),
-    ...(reason ? { reason } : {}),
-    roomCode
-  };
-  emitRoomClosed(io, room, payload);
-  rooms.delete(roomCode);
-  deletePersistedRoom(prisma, roomCode).catch((error) => {
-    console.error("Failed to delete persisted room", error);
-  });
-}
-
-function scheduleEmptyActiveRoomClose(room, io) {
-  if (!room || room.game.phase === GAME_PHASES.finished) return;
-  if (!arePlayersDisconnected(room)) {
-    clearEmptyRoomClose(room);
-    return;
-  }
-  room.emptySince ??= Date.now();
-  if (room.emptyTimerId) return;
-  const delay = Math.max(0, room.emptySince + EMPTY_ACTIVE_ROOM_CLOSE_MS - Date.now());
-  room.emptyTimerId = scheduleRoomTimeout(room, () => {
-    room.emptyTimerId = null;
-    const latest = rooms.get(room.code);
-    if (!latest || latest.game.phase === GAME_PHASES.finished || !arePlayersDisconnected(latest)) return;
-    latest.game.phase = GAME_PHASES.finished;
-    latest.game.winner = {
-      winnerColor: null,
-      reason: "empty-room",
-      text: "对局无效",
-      invalid: true,
-      invalidReason: "empty-room"
-    };
-    latest.recordSaved = true;
-    appendSystem(latest, "双方离开房间超过5分钟，对局无效。");
-    persistRoom(latest, { force: true });
-    closeRoom(latest.code, io);
-  }, delay);
-  persistRoom(room, { force: true });
-}
-
-function clearEmptyRoomClose(room) {
-  room.emptySince = null;
-  if (room.emptyTimerId) {
-    clearRoomTimeout(room, room.emptyTimerId);
-    room.emptyTimerId = null;
-  }
 }
 
 function persistRoom(room, { force = false } = {}) {

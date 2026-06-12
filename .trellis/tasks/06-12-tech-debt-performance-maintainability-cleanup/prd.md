@@ -60,6 +60,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Skill system-message formatting is isolated from `server/rooms.js` behind a dedicated backend message boundary.
 * [x] Generic room system-message appends and restored disconnect notice deduplication are isolated behind a backend message-log boundary.
 * [x] Room action point-target validation is isolated from `server/rooms.js` behind a dedicated backend validation boundary.
+* [x] Finished-room close scheduling and empty-active-room invalidation are isolated from `server/rooms.js` behind a backend close lifecycle boundary.
 
 ## Definition of Done
 
@@ -191,6 +192,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Updated game-action and standard-action entry points to reuse the validation boundary instead of importing point validation directly.
 * Added targeted tests for system message shape, restored disconnect notices, notice-list appends, and room action point validation.
 * Updated `docs/system-design.md` and backend quality guidelines for the new message-log and action-validation contracts.
+
+### Batch 16 Completed
+
+* Added `server/roomCloseLifecycle.js` as the finished-room and empty-active-room close lifecycle boundary.
+* Updated `server/rooms.js` to delegate close scheduling, connected-participant close extension, `room:closed` payload construction, persisted-room deletion, empty-room invalidation, and empty-room close cancellation to the close lifecycle boundary.
+* Kept room lifecycle decisions in `server/rooms.js` while injecting persistence, timer, broadcast, record-save, and presence dependencies into the close lifecycle module for focused tests.
+* Added `server/roomCloseLifecycle.test.js` for close delays, unsaved record save trigger, participant-based close extension, final close payload/deletion, empty-room invalidation, and empty-room timeout cancellation.
+* Updated `docs/system-design.md` and backend quality guidelines for the room close lifecycle contract.
 
 ### Later Batches
 
