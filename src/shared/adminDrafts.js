@@ -141,7 +141,7 @@ export function emptyGachaPoolDraft() {
     endsAt: "",
     singleDrawPrice: 50,
     tenDrawPrice: 500,
-    featuredPrizeIndex: 0,
+    featuredPrizeIndex: null,
     sortOrder: 0,
     prizes: [emptyGachaPrizeDraft()]
   };
@@ -153,13 +153,13 @@ export function buildGachaPoolDraft(pool = {}) {
     ...prize,
     sortOrder: prize.sortOrder ?? index
   }));
-  const featuredPrizeIndex = Math.max(0, prizes.findIndex((prize) => prize.id && prize.id === pool.featuredPrizeId));
+  const featuredPrizeIndex = prizes.findIndex((prize) => prize.id && prize.id === pool.featuredPrizeId);
   return {
     ...emptyGachaPoolDraft(),
     ...pool,
     startsAt: toInputDateTime(pool.startsAt),
     endsAt: toInputDateTime(pool.endsAt),
-    featuredPrizeIndex,
+    featuredPrizeIndex: featuredPrizeIndex >= 0 ? featuredPrizeIndex : null,
     prizes
   };
 }
@@ -168,7 +168,9 @@ export function gachaPoolDraftToBody(draft) {
   const singleDrawPrice = parseAdminInteger(draft.singleDrawPrice);
   const tenDrawPrice = parseAdminInteger(draft.tenDrawPrice);
   const sortOrder = parseAdminInteger(draft.sortOrder);
-  const featuredPrizeIndex = parseAdminInteger(draft.featuredPrizeIndex);
+  const featuredPrizeIndex = draft.featuredPrizeIndex == null || draft.featuredPrizeIndex === ""
+    ? null
+    : parseAdminInteger(draft.featuredPrizeIndex);
   const errors = [];
   if (!String(draft.name ?? "").trim()) errors.push("扭蛋池名称");
   if (singleDrawPrice == null || singleDrawPrice <= 0) errors.push("单抽价格必须是正整数");
@@ -176,7 +178,7 @@ export function gachaPoolDraftToBody(draft) {
   if (sortOrder == null) errors.push("排序必须是整数");
   const prizes = (draft.prizes ?? []).map((prize, index) => gachaPrizeDraftToBody(prize, index, errors)).filter(Boolean);
   if (!prizes.length) errors.push("至少一个奖项");
-  if (featuredPrizeIndex == null || featuredPrizeIndex < 0 || featuredPrizeIndex >= prizes.length) errors.push("大奖索引无效");
+  if (featuredPrizeIndex != null && (featuredPrizeIndex < 0 || featuredPrizeIndex >= prizes.length)) errors.push("大奖索引无效");
   if (errors.length) return null;
   return {
     name: String(draft.name).trim(),

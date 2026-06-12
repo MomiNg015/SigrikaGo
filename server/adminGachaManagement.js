@@ -40,8 +40,10 @@ export function validateGachaPoolInput(input = {}) {
   const probability = validatePrizeProbabilityTotal(valuePrizes);
   if (enabled && !probability.ok) errors.push(probability.error);
 
-  const featuredPrizeIndex = parseIntValue(input.featuredPrizeIndex ?? 0);
-  if (featuredPrizeIndex == null || featuredPrizeIndex < 0 || featuredPrizeIndex >= valuePrizes.length) {
+  const featuredPrizeIndex = input.featuredPrizeIndex == null || input.featuredPrizeIndex === ""
+    ? null
+    : parseIntValue(input.featuredPrizeIndex);
+  if (featuredPrizeIndex != null && (featuredPrizeIndex < 0 || featuredPrizeIndex >= valuePrizes.length)) {
     errors.push("featuredPrizeIndex must reference a prize");
   }
 
@@ -111,7 +113,7 @@ export async function createGachaPool({ prisma, adminUser, input }) {
         data: { ...prize, poolId: pool.id }
       }));
     }
-    const featuredPrize = createdPrizes[input.featuredPrizeIndex] ?? createdPrizes[0] ?? null;
+    const featuredPrize = input.featuredPrizeIndex == null ? null : createdPrizes[input.featuredPrizeIndex] ?? null;
     const afterPatch = featuredPrize
       ? await tx.gachaPool.update({ where: { id: pool.id }, data: { featuredPrizeId: featuredPrize.id } })
       : pool;
@@ -137,7 +139,7 @@ export async function updateGachaPool({ prisma, adminUser, poolId, input }) {
         data: { ...prize, poolId }
       }));
     }
-    const featuredPrize = createdPrizes[input.featuredPrizeIndex] ?? createdPrizes[0] ?? null;
+    const featuredPrize = input.featuredPrizeIndex == null ? null : createdPrizes[input.featuredPrizeIndex] ?? null;
     const afterPatch = featuredPrize
       ? await tx.gachaPool.update({ where: { id: poolId }, data: { featuredPrizeId: featuredPrize.id } })
       : updatedPool;

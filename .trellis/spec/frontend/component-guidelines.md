@@ -181,6 +181,63 @@ Correct:
 
 ---
 
+### Scenario: Gacha Admin Featured Prize Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to gacha admin prize editing, gacha pool draft serialization, admin gacha API payloads, or player/admin gacha pool payload projection.
+- Featured prizes are a cross-layer display hint, not a required prize rule. Draw odds and reward settlement must not depend on a featured prize existing.
+
+#### 2. Signatures
+- `emptyGachaPoolDraft().featuredPrizeIndex`: `null | number`.
+- `buildGachaPoolDraft(pool).featuredPrizeIndex`: index of `pool.featuredPrizeId` in `pool.prizes`, or `null` when no stored featured prize exists.
+- `gachaPoolDraftToBody(draft).featuredPrizeIndex`: `null | number`.
+- Admin API input `featuredPrizeIndex`: `null | number`; `null` means clear or keep no `featuredPrizeId`.
+- Gacha pool payload `featuredPrize`: `null | GachaPrizePayload`.
+
+#### 3. Contracts
+- The admin "大奖" control is a toggle, not a required radio group: clicking the selected prize clears the featured selection.
+- New drafts must not silently preselect prize index `0`.
+- Draft serialization may send `featuredPrizeIndex: null`.
+- Backend validation must accept `null` and must reject only non-null indexes outside the prize array.
+- Create/update persistence must store `featuredPrizeId: null` when `featuredPrizeIndex` is null.
+- Player/admin pool payload projection must not invent the first prize as `featuredPrize` when `featuredPrizeId` is null.
+
+#### 4. Validation & Error Matrix
+- `featuredPrizeIndex === null` -> valid, no featured prize.
+- `featuredPrizeIndex === ""` -> normalize to null.
+- `featuredPrizeIndex < 0` -> invalid.
+- `featuredPrizeIndex >= prizes.length` -> invalid.
+- `featuredPrizeId` missing from loaded pool -> edit draft shows no selected featured prize.
+
+#### 5. Good/Base/Bad Cases
+- Good: an admin clicks the selected "大奖" button again, saves, and subsequent payloads expose `featuredPrizeId: null` and `featuredPrize: null`.
+- Base: an existing pool with a valid `featuredPrizeId` still shows that prize selected in the editor.
+- Bad: using `featuredPrizeIndex ?? 0`, `Math.max(0, findIndex(...))`, or `prizes[0]` fallback for featured prize display.
+
+#### 6. Tests Required
+- Draft helper tests assert empty and loaded no-featured pools keep `featuredPrizeIndex` null.
+- Admin component/source tests assert the featured control is toggleable rather than a required radio.
+- Admin management tests assert `featuredPrizeIndex: null` validates.
+- Gacha payload tests assert `featuredPrize` stays null when `featuredPrizeId` is null.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const featuredPrizeIndex = parseIntValue(input.featuredPrizeIndex ?? 0);
+const featuredPrize = prizes.find((prize) => prize.id === pool.featuredPrizeId) ?? prizes[0] ?? null;
+```
+
+Correct:
+
+```js
+const featuredPrizeIndex = input.featuredPrizeIndex == null ? null : parseIntValue(input.featuredPrizeIndex);
+const featuredPrize = prizes.find((prize) => prize.id === pool.featuredPrizeId) ?? null;
+```
+
+---
+
 ## Styling Patterns
 
 <!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->

@@ -817,10 +817,11 @@
   cursor: pointer;
 }
 
-.admin-gacha-featured-toggle input {
-  width: 16px;
-  height: 16px;
-  accent-color: #c9822d;
+.admin-gacha-featured-toggle[aria-pressed="true"] {
+  border-color: rgba(201, 130, 45, 0.58);
+  background: rgba(255, 239, 194, 0.94);
+  color: #5f3f0f;
+  box-shadow: 0 0 0 3px rgba(201, 130, 45, 0.12);
 }
 
 .admin-gacha-type-badge {

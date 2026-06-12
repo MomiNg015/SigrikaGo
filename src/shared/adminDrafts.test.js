@@ -3,10 +3,13 @@ import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
 import {
   buildCharacterDraft,
   buildDecorationDraft,
+  buildGachaPoolDraft,
   buildShopItemDraft,
   characterDraftToBody,
   decorationDraftToBody,
   emptyCharacterDraft,
+  emptyGachaPoolDraft,
+  gachaPoolDraftToBody,
   parseAdminInteger,
   shopCategoryLabel,
   targetRuleForEffect,
@@ -119,5 +122,24 @@ describe("admin draft helpers", () => {
     expect(parseAdminInteger("42")).toBe(42);
     expect(parseAdminInteger("1.5")).toBeNull();
     expect(parseAdminInteger("2147483648")).toBeNull();
+  });
+
+  it("allows gacha pool drafts without a featured prize", () => {
+    const emptyDraft = emptyGachaPoolDraft();
+    expect(emptyDraft.featuredPrizeIndex).toBeNull();
+
+    const draft = buildGachaPoolDraft({
+      ...emptyDraft,
+      name: "Prize Board",
+      featuredPrizeId: null,
+      prizes: [
+        { id: "prize-1", type: "coins", targetId: "", quantity: "60", probabilityBasisPoints: "10000", enabled: true, name: "Coins" }
+      ]
+    });
+
+    const body = gachaPoolDraftToBody(draft);
+
+    expect(draft.featuredPrizeIndex).toBeNull();
+    expect(body.featuredPrizeIndex).toBeNull();
   });
 });

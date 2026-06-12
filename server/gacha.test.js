@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   executeGachaDraw,
   listOpenGachaPools,
+  toGachaPoolPayload,
   validatePrizeProbabilityTotal
 } from "./gacha.js";
 
@@ -69,6 +70,12 @@ describe("gacha domain", () => {
         imageUrl: "/assets/Danea_centered.webp"
       }
     });
+  });
+
+  it("does not invent a featured prize when the pool has none", () => {
+    const payload = toGachaPoolPayload(poolFixture({ featuredPrizeId: null }));
+
+    expect(payload.featuredPrize).toBeNull();
   });
 
   it("uses pool-specific draw prices and adds chains for duplicate character quantities", async () => {

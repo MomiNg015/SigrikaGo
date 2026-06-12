@@ -48,6 +48,8 @@ describe("AdminGachaPools", () => {
     expect(source).toContain("admin-gacha-prize-resource");
     expect(source).toContain("admin-gacha-prize-thumb");
     expect(source).toContain("admin-gacha-featured-toggle");
+    expect(source).toContain("aria-pressed");
+    expect(source).toContain("toggleFeaturedPrize");
     expect(source).toContain("resourceCatalogs");
     expect(source).toContain("prizeOptionsForType");
     expect(source).not.toContain('placeholder="资源ID"');
@@ -55,7 +57,8 @@ describe("AdminGachaPools", () => {
   });
 
   it("builds valid API payloads with configurable prices and featured prize index", () => {
-    const draft = buildGachaPoolDraft({
+    const draft = {
+      ...buildGachaPoolDraft({
       ...emptyGachaPoolDraft(),
       name: "Prize Board",
       singleDrawPrice: "50",
@@ -63,7 +66,9 @@ describe("AdminGachaPools", () => {
       prizes: [
         { type: "coins", targetId: "", quantity: "60", probabilityBasisPoints: "10000", enabled: true, name: "Coins" }
       ]
-    });
+      }),
+      featuredPrizeIndex: 0
+    };
 
     const body = gachaPoolDraftToBody(draft);
 

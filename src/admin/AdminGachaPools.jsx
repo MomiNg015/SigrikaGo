@@ -132,6 +132,13 @@ export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, o
     updatePrize(index, prizePatchForOption(option));
   }
 
+  function toggleFeaturedPrize(index) {
+    setDraft((current) => ({
+      ...current,
+      featuredPrizeIndex: Number(current.featuredPrizeIndex) === index ? null : index
+    }));
+  }
+
   async function save(event) {
     event.preventDefault();
     const body = gachaPoolDraftToBody(draft);
@@ -276,10 +283,14 @@ export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, o
                         <b>/10000</b>
                       </label>
                     </div>
-                    <label className="admin-gacha-featured-toggle">
-                      <input type="radio" checked={Number(draft.featuredPrizeIndex) === index} onChange={() => setDraft({ ...draft, featuredPrizeIndex: index })} />
+                    <button
+                      className="admin-gacha-featured-toggle"
+                      type="button"
+                      aria-pressed={Number(draft.featuredPrizeIndex) === index}
+                      onClick={() => toggleFeaturedPrize(index)}
+                    >
                       <span>大奖</span>
-                    </label>
+                    </button>
                     <span className="admin-gacha-type-badge">{gachaTypeLabel(prize.type)}</span>
                   </div>
                 );

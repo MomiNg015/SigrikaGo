@@ -177,7 +177,7 @@ export async function listGachaDrawHistory({ prisma, userId }) {
 
 export function toGachaPoolPayload(pool, now = new Date()) {
   const prizes = pool.prizes ?? [];
-  const featuredPrize = prizes.find((prize) => prize.id === pool.featuredPrizeId) ?? prizes[0] ?? null;
+  const featuredPrize = prizes.find((prize) => prize.id === pool.featuredPrizeId) ?? null;
   return {
     id: pool.id,
     name: pool.name,
