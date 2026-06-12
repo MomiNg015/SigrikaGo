@@ -68,7 +68,13 @@ import {
   pendingSkillResolutionDelay
 } from "./roomSkillResolution.js";
 import { describeSkillUse } from "./roomSkillMessages.js";
-import { normalizeChatText, validatePointId, validateRoomCode } from "./security.js";
+import {
+  appendNotices,
+  appendSystem,
+  ensureRestoredDisconnectedNotices
+} from "./roomSystemMessages.js";
+import { validateActionPoint } from "./roomActionValidation.js";
+import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
 export { clearRoomTimers };
@@ -140,20 +146,6 @@ export async function restorePersistedRooms(io) {
     }
   }
   return restored;
-}
-
-function ensureRestoredDisconnectedNotices(room) {
-  if (room.game.phase === GAME_PHASES.finished) return;
-  for (const player of room.players) {
-    if (player.socketId || !player.disconnectedAt) continue;
-    const username = player.user?.username ?? "";
-    const alreadyAnnounced = room.chat.some((message) => (
-      message.kind === "disconnect"
-      && message.text?.includes(username)
-      && message.text?.includes("断线中")
-    ));
-    if (!alreadyAnnounced) appendSystem(room, `${username}断线中。`, { kind: "disconnect" });
-  }
 }
 
 export function listWaitingPlayers() {
@@ -493,30 +485,6 @@ export function broadcastRoom(io, room) {
 
 function broadcastToast(io, room, text) {
   broadcastRoomToast(io, room, text);
-}
-
-function validateActionPoint(action, boardSize) {
-  if (!action || typeof action !== "object") return "未知操作";
-  if (action.pointId == null) return null;
-  const point = validatePointId(action.pointId, boardSize);
-  return point.ok ? null : point.error;
-}
-
-function appendSystem(room, text, options = {}) {
-  room.chat.push({
-    id: crypto.randomUUID(),
-    type: "system",
-    kind: options.kind ?? null,
-    moveNumber: room.game.moveNumber,
-    text,
-    createdAt: Date.now()
-  });
-}
-
-function appendNotices(room, notices = []) {
-  for (const text of notices) {
-    appendSystem(room, text);
-  }
 }
 
 function maybeStartPassiveSkill(room, io) {

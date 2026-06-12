@@ -58,6 +58,8 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Matchmaking waiting-player queue state is isolated behind a dedicated backend queue boundary.
 * [x] Initial room object creation and mode-specific room-user projection are isolated behind a backend factory boundary.
 * [x] Skill system-message formatting is isolated from `server/rooms.js` behind a dedicated backend message boundary.
+* [x] Generic room system-message appends and restored disconnect notice deduplication are isolated behind a backend message-log boundary.
+* [x] Room action point-target validation is isolated from `server/rooms.js` behind a dedicated backend validation boundary.
 
 ## Definition of Done
 
@@ -180,6 +182,15 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Updated `server/rooms.js` to delegate room code generation, black/white assignment, opening game state creation, initial timer/deadline fields, initial clock fields, and mode-specific user projection to the factory boundary.
 * Added `server/roomFactory.test.js` for deterministic room creation, player color assignment, mode stats projection, standard mode defaults, room-player shape, and room code collision retry.
 * Updated `docs/system-design.md` and backend quality guidelines for the room factory boundary contract.
+
+### Batch 15 Completed
+
+* Added `server/roomSystemMessages.js` as the generic room system-message mutation boundary.
+* Updated `server/rooms.js` to delegate system message object construction, notice-list appends, and restored disconnect notice deduplication to the message-log boundary.
+* Added `server/roomActionValidation.js` as the room action point-target validation boundary.
+* Updated game-action and standard-action entry points to reuse the validation boundary instead of importing point validation directly.
+* Added targeted tests for system message shape, restored disconnect notices, notice-list appends, and room action point validation.
+* Updated `docs/system-design.md` and backend quality guidelines for the new message-log and action-validation contracts.
 
 ### Later Batches
 

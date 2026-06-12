@@ -191,6 +191,56 @@ appendSystem(room, describeSkillUse(room, player, targetId), { kind: "skill" });
 
 Tests touching skill message text, placeholders, point labels, or stone labels should update `server/roomSkillMessages.test.js`; room flow tests can assert that a skill message was appended.
 
+### Room System Message Boundary Contract
+
+`server/roomSystemMessages.js` owns room chat-log mutation for generic system messages:
+
+- `appendSystem(room, text, options)` appends the canonical system message object, including id, type, kind, current move number, text, and timestamp.
+- `appendNotices(room, notices)` appends a list of system notices with the same object shape.
+- `ensureRestoredDisconnectedNotices(room)` appends missing disconnect notices for persisted unfinished rooms without duplicating existing disconnect messages.
+
+`server/rooms.js` and room flow helpers should decide **when** a notice is needed, but they should not duplicate the system message object shape or restored-disconnect deduplication rules.
+
+Wrong:
+
+```js
+room.chat.push({ type: "system", text, createdAt: Date.now() });
+```
+
+Correct:
+
+```js
+appendSystem(room, text, { kind: "disconnect" });
+```
+
+Tests touching generic system-message shape, notice-list appends, or restored disconnect notices should update `server/roomSystemMessages.test.js`.
+
+### Room Action Validation Boundary Contract
+
+`server/roomActionValidation.js` owns room action point-target validation:
+
+- `validateActionPoint(action, boardSize)` rejects missing/non-object actions as `"未知操作"`.
+- Actions without `pointId` are allowed so non-point actions such as pass/resign can continue through their own handlers.
+- Actions with `pointId` must delegate to `validatePointId()` from `server/security.js` and return its error text unchanged.
+
+Room action handlers should call this boundary before mutating room/game state instead of importing point validators directly.
+
+Wrong:
+
+```js
+const point = validatePointId(action.pointId, room.game.size);
+if (!point.ok) return point.error;
+```
+
+Correct:
+
+```js
+const validationError = validateActionPoint(action, room.game.size);
+if (validationError) return { error: validationError };
+```
+
+Tests touching room action point validation should update `server/roomActionValidation.test.js`; flow-specific action results can stay in `server/rooms.test.js`.
+
 ### Leaderboard API Contract
 
 `GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:
