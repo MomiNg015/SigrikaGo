@@ -1,8 +1,11 @@
 import { useEffect, useRef } from "react";
-import { playSkillEffectSound, skillEffectSoundCues } from "../audio/skillEffectSounds.js";
 import { skillEffectTiming, SKILL_EFFECT_REDUCED_MOTION_MS } from "../shared/skillPresentation.js";
 import { playRegisteredBoardSkillEffect } from "./boardSkillEffectRegistry.js";
 import { boardPointCenter } from "./boardSkillEffectGeometry.js";
+import {
+  clearBoardSkillEffectSoundTimers,
+  scheduleBoardSkillEffectSounds
+} from "./boardSkillEffectSoundScheduler.js";
 import { loadPixiModule, schedulePixiPrewarm } from "./pixiPrewarm.js";
 
 export { SKILL_EFFECT_REDUCED_MOTION_MS };
@@ -86,10 +89,10 @@ function mountPixiEffect({ host, boardSize, pendingSkill, durationMs, reducedMot
     }
     host.replaceChildren(app.canvas);
     app.canvas.className = "board-effects-canvas";
-    soundTimers = scheduleSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings });
+    soundTimers = scheduleBoardSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings });
     playRegisteredBoardSkillEffect({ app, pixi, host, boardSize, pendingSkill, durationMs, reducedMotion });
     timeoutId = window.setTimeout(() => {
-      soundTimers.forEach((timerId) => window.clearTimeout(timerId));
+      clearBoardSkillEffectSoundTimers(soundTimers);
       app?.destroy(true, { children: true });
       host.replaceChildren();
       app = null;
@@ -101,23 +104,8 @@ function mountPixiEffect({ host, boardSize, pendingSkill, durationMs, reducedMot
   return () => {
     active = false;
     window.clearTimeout(timeoutId);
-    soundTimers.forEach((timerId) => window.clearTimeout(timerId));
+    clearBoardSkillEffectSoundTimers(soundTimers);
     app?.destroy(true, { children: true });
     host.replaceChildren();
   };
-}
-
-function scheduleSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings }) {
-  if (reducedMotion || !pendingSkill?.effectType) return [];
-  const cues = skillEffectSoundCues(pendingSkill.effectType);
-  return [
-    window.setTimeout(
-      () => playSkillEffectSound(pendingSkill.effectType, "start", audioSettings),
-      Math.max(0, cues.startAt * durationMs)
-    ),
-    window.setTimeout(
-      () => playSkillEffectSound(pendingSkill.effectType, "impact", audioSettings),
-      Math.max(0, cues.impactAt * durationMs)
-    )
-  ];
 }

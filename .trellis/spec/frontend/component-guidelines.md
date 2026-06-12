@@ -109,6 +109,7 @@ Correct:
 - `BOARD_SKILL_EFFECT_RENDERERS` and `playRegisteredBoardSkillEffect()` live in `src/room/boardSkillEffectRegistry.js`; concrete Pixi board animations must register by `effectType` there instead of growing `BoardSkillEffects.jsx`.
 - `boardPointCenter()` and `pointCenterForHost()` live in `src/room/boardSkillEffectGeometry.js` so component tests and animation renderers share one board-size-aware coordinate contract.
 - `BoardAmbientEffects`: receives derived passive state such as active Nabomo color illusion fog and renders non-interactive ongoing board ambience.
+- `scheduleBoardSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings })` and `clearBoardSkillEffectSoundTimers(timerIds)` live in `src/room/boardSkillEffectSoundScheduler.js`; the React host should call these helpers instead of manually mapping cue timers.
 - `playSkillEffectSound(effectType, cue, audioSettings)`: presentation-only SFX helper for `start` and `impact` animation cues.
 - `boardPointCenter(pointId, { boardSize, width, height })`: maps a board point id to a pixel center in the current board viewport.
 
@@ -120,6 +121,7 @@ Correct:
 - Aemeath `hidden-hand` is a full-board effect: green electronic data streams move from the board edge toward the center, flash with white light, then dissipate outward/away without depending on a point-local impact.
 - Nabomo `color-illusion-passive` has ongoing low-opacity black/gray cloud ambience while any color illusion passive is active; render it as separate feathered cloud shapes, not as a full rectangular board tint, and keep stones/intersections readable.
 - Board SFX must be scheduled from the same board effect timeline, use the existing `sfx` volume channel, and clean up timers with the Pixi overlay.
+- Board SFX timer mapping and cleanup belong in `boardSkillEffectSoundScheduler.js`; `BoardSkillEffects.jsx` should not duplicate cue math or timer iteration.
 - The backend must derive animation metadata from the already-resolved skill action, not by recomputing skill rules.
 - Admin character options, backend character validation, skill normalization, board target preview, active skill type lists, server fallback skill config, and board skill SFX cue timing must read shared effect metadata from `src/shared/skillEffectCatalog.js` instead of each keeping a local `effectType -> targetRule/label/cue` table.
 - Every catalog entry with `boardEffect: true` must have a matching `BOARD_SKILL_EFFECT_RENDERERS` entry; unknown effect types should no-op without touching the Pixi stage.
@@ -157,6 +159,7 @@ Correct:
 - Pixi prewarm tests assert disabled mode does not schedule loading, cancellation prevents idle imports, and prewarm/live effect loading share one promise.
 - Ambient tests assert active color illusion fog is pointer-transparent and renders without removing board buttons.
 - SFX tests assert stable cue points and muted settings avoiding AudioContext creation.
+- Scheduler tests assert catalog cue timing, reduced-motion suppression, and timer cleanup.
 - Catalog tests assert effect type order, admin options, default target rules, active effect lists, and SFX cues.
 
 #### 7. Wrong vs Correct

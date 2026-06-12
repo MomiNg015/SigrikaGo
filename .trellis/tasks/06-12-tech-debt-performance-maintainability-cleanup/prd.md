@@ -50,6 +50,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Skill effect metadata has a shared catalog used by admin options, validation, targeting, active effect lists, and SFX cues.
 * [x] Skill-enabled boards prewarm Pixi during idle time and reuse the same module promise for the first skill animation.
 * [x] Concrete board skill animation implementations are behind a renderer registry instead of living inside the React host component.
+* [x] Board skill SFX cue scheduling and timer cleanup are isolated from the React/Pixi host component.
 
 ## Definition of Done
 
@@ -115,6 +116,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Kept `BoardSkillEffects` focused on host markup, Pixi lifecycle, timing, SFX scheduling, and prewarm wiring.
 * Added registry tests that lock catalog board-effect coverage, full-board hidden-hand metadata, and unknown-effect no-op behavior.
 * Updated `docs/system-design.md` and frontend component guidelines for the board effect registry contract.
+
+### Batch 7 Completed
+
+* Added `src/room/boardSkillEffectSoundScheduler.js` to own board skill SFX cue timer scheduling and cleanup.
+* Updated `BoardSkillEffects` to delegate SFX timer creation and clearing, keeping the React host focused on overlay lifecycle.
+* Added scheduler tests for catalog cue timing, reduced-motion suppression, and cleanup of scheduled timer ids.
+* Updated `docs/system-design.md` and frontend component guidelines for the board skill SFX scheduler contract.
 
 ### Later Batches
 
