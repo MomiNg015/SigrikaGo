@@ -49,6 +49,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Duplicate room snapshots can return the current room reference, and unchanged point/player entries keep stable references.
 * [x] Skill effect metadata has a shared catalog used by admin options, validation, targeting, active effect lists, and SFX cues.
 * [x] Skill-enabled boards prewarm Pixi during idle time and reuse the same module promise for the first skill animation.
+* [x] Concrete board skill animation implementations are behind a renderer registry instead of living inside the React host component.
 
 ## Definition of Done
 
@@ -107,10 +108,17 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added targeted tests for prewarm cancellation, shared import promises, board-effect rendering, and the skill-enabled prewarm prop contract.
 * Updated `docs/system-design.md` and frontend component guidelines for the Pixi prewarm contract.
 
+### Batch 6 Completed
+
+* Added `src/room/boardSkillEffectRegistry.js` as the board skill animation registry and moved concrete Pixi renderers out of `BoardSkillEffects.jsx`.
+* Added `src/room/boardSkillEffectGeometry.js` so React tests and Pixi renderers share the same board-size-aware coordinate helpers.
+* Kept `BoardSkillEffects` focused on host markup, Pixi lifecycle, timing, SFX scheduling, and prewarm wiring.
+* Added registry tests that lock catalog board-effect coverage, full-board hidden-hand metadata, and unknown-effect no-op behavior.
+* Updated `docs/system-design.md` and frontend component guidelines for the board effect registry contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.
-* Split board effect implementations behind a registry when adding new effects.
 * Continue migrating concrete skill preview/animation implementations behind the catalog when adding new effects.
 * Move room updates toward reducer/patch semantics.
 * Gradually shrink global CSS override layers by assigning ownership to component-level style contracts.
