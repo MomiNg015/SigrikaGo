@@ -87,6 +87,38 @@ scheduleRoomTimeout(room, callback, delay);
 
 Tests touching timer bookkeeping should update `server/roomTimers.test.js`; room lifecycle behavior can remain in `server/rooms.test.js`.
 
+### Room Clock Lifecycle Boundary Contract
+
+`server/roomClockLifecycle.js` owns the per-room game clock interval behavior:
+
+- `createRoomClockLifecycle(deps)` returns `startGameClock(room, io)`.
+- `startGameClock()` sets `room.lastTick`, registers the 1-second interval through `scheduleRoomInterval()`, and owns the interval callback.
+- If a room has already left the in-memory room map, it clears the room interval.
+- If the room is not in `playing` phase, it refreshes `lastTick` without ticking a player clock.
+- If all players are disconnected, it refreshes `lastTick` and delegates to `scheduleEmptyActiveRoomClose()`.
+- During active play, it deducts elapsed seconds from the active player via `tickPlayerClock()`.
+- When the active player times out, it marks the game finished, computes the timeout winner, emits the invalid early-result toast when needed, appends the timeout system message, schedules room close, and broadcasts the full room.
+- Otherwise it emits only `broadcastRoomClock()` so normal per-second ticks avoid full room snapshots.
+
+`server/rooms.js` should decide **when** a room clock starts or resumes, but it should not own the interval callback, timeout finish mutation, or clock-vs-room broadcast decision.
+
+Wrong:
+
+```js
+scheduleRoomInterval(room, () => {
+  tickPlayerClock(active, elapsed);
+  broadcastRoom(io, room);
+}, 1000);
+```
+
+Correct:
+
+```js
+startGameClock(room, io);
+```
+
+Tests touching clock interval branching, timeout finish behavior, disconnected-player handoff, or clock broadcast choice should update `server/roomClockLifecycle.test.js`; end-to-end opening/restore behavior can remain in `server/rooms.test.js`.
+
 ### Room Presence Boundary Contract
 
 `server/roomPresence.js` owns shared participant and connection-state queries:

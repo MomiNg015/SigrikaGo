@@ -1,15 +1,12 @@
 import {
   COLORS,
   GAME_PHASES,
-  INVALID_EARLY_RESIGN_NOTICE,
-  createTimeoutResult,
-  exposeHiddenHands,
-  resultWithInvalidFlagForGame,
+  exposeHiddenHands
 } from "../src/shared/game.js";
 import { gameModeById } from "../src/shared/gameModes.js";
 import { prisma } from "./db.js";
 import { applyStandardGameAction } from "./roomGameActions.js";
-import { resetByoYomi, tickPlayerClock } from "./roomClockTiming.js";
+import { resetByoYomi } from "./roomClockTiming.js";
 import { prepareCandyEffectUpdates } from "./roomItemEffects.js";
 import { listPersistedRooms, deletePersistedRoom as deletePersistedRoomState } from "./roomPersistence.js";
 import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
@@ -55,6 +52,7 @@ import { validateActionPoint } from "./roomActionValidation.js";
 import { createRoomCloseLifecycle } from "./roomCloseLifecycle.js";
 import { createRoomDeadlineScheduler } from "./roomDeadlineScheduler.js";
 import { saveGameRecord as persistGameRecord } from "./roomResultPersistence.js";
+import { createRoomClockLifecycle } from "./roomClockLifecycle.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
@@ -116,13 +114,26 @@ const roomSkillLifecycle = createRoomSkillLifecycle({
   appendNotices,
   resetByoYomi,
   scheduleRoomClose,
-  broadcastRoom,
+  broadcastRoom
 });
 const {
   startActiveSkill,
   maybeStartPassiveSkill,
   schedulePendingSkillResolution
 } = roomSkillLifecycle;
+const roomClockLifecycle = createRoomClockLifecycle({
+  rooms,
+  scheduleRoomInterval,
+  clearRoomInterval,
+  arePlayersDisconnected,
+  scheduleEmptyActiveRoomClose,
+  broadcastRoomClock,
+  broadcastRoom,
+  broadcastToast,
+  appendSystem,
+  scheduleRoomClose
+});
+const { startGameClock } = roomClockLifecycle;
 
 export function listActiveRooms() {
   return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
@@ -495,42 +506,6 @@ export function completeRoomOpening(room, io) {
 
 export function startInitialPassiveSkillNow(room, io) {
   return maybeStartPassiveSkill(room, io);
-}
-
-function startGameClock(room, io) {
-  room.lastTick = Date.now();
-  scheduleRoomInterval(room, () => {
-    if (!rooms.has(room.code)) {
-      clearRoomInterval(room);
-      return;
-    }
-    if (room.game.phase !== GAME_PHASES.playing) {
-      room.lastTick = Date.now();
-      return;
-    }
-    if (arePlayersDisconnected(room)) {
-      room.lastTick = Date.now();
-      scheduleEmptyActiveRoomClose(room, io);
-      return;
-    }
-    const now = Date.now();
-    const elapsed = Math.max(1, Math.floor((now - room.lastTick) / 1000));
-    if (elapsed <= 0) return;
-    room.lastTick = now;
-    const active = room.players.find((p) => p.color === room.game.turn);
-    if (!active) return;
-    tickPlayerClock(active, elapsed);
-    if (active.time.main <= 0 && active.time.periods <= 0) {
-      room.game.phase = GAME_PHASES.finished;
-      room.game.winner = resultWithInvalidFlagForGame(room.game, createTimeoutResult(active.color));
-      if (room.game.winner?.invalid) broadcastToast(io, room, INVALID_EARLY_RESIGN_NOTICE);
-      appendSystem(room, `${active.user.username}超时，对局结束。`);
-      scheduleRoomClose(room.code, io);
-      broadcastRoom(io, room);
-      return;
-    }
-    broadcastRoomClock(io, room);
-  }, 1000);
 }
 
 function persistRoom(room, { force = false } = {}) {

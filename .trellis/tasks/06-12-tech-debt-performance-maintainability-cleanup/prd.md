@@ -227,6 +227,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomSkillResolution.test.js` coverage for pending preview metadata and scheduled resolution completion side effects.
 * Updated `docs/system-design.md` and backend quality guidelines for the room skill resolution contract.
 
+### Batch 20 Completed
+
+* Added `server/roomClockLifecycle.js` as the per-room clock tick lifecycle boundary.
+* Updated `server/rooms.js` to delegate playing-phase interval callbacks, disconnected-player empty-room scheduling handoff, timeout finish mutation, and clock-vs-room broadcast choice to the clock lifecycle boundary.
+* Kept room creation, opening completion, restore-time clock start decisions, and persistence triggers in `server/rooms.js`.
+* Added `server/roomClockLifecycle.test.js` for lightweight clock broadcasts, removed-room interval cleanup, disconnected-room handoff, and timeout finish broadcasts.
+* Updated `docs/system-design.md` and backend quality guidelines for the room clock lifecycle contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.

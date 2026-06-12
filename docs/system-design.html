@@ -870,6 +870,15 @@
 </ul>
 </ul>
 <ul>
+<li><code>server/roomClockLifecycle.js</code></li>
+<ul>
+<li>Room clock tick lifecycle boundary.</li>
+</ul>
+<ul>
+<li>Owns the per-room interval callback for playing-phase clocks: clearing intervals for rooms no longer in memory, pausing ticks outside playing phase, handing fully disconnected games to empty-room close scheduling, deducting active-player time, finishing timeout games, and choosing lightweight <code>room:clock</code> versus full <code>room:update</code> broadcasts.</li>
+</ul>
+</ul>
+<ul>
 <li><code>server/roomClockTiming.js</code></li>
 <ul>
 <li>房间棋钟纯计算模块。</li>
@@ -3363,7 +3372,7 @@
 <li><code>src/room/RoomScreen.jsx</code> now delegates the three-column battle tree to <code>src/room/RoomBattleStage.jsx</code>; future room work can focus on replay/spectator projection helpers and smaller room-state hooks rather than moving raw JSX.</li>
 </ul>
 <ul>
-<li>Server room view serialization now lives in <code>server/roomView.js</code>, socket broadcast delivery lives in <code>server/roomBroadcasts.js</code>, participant/online-state queries live in <code>server/roomPresence.js</code>, matchmaking queue state lives in <code>server/roomMatchmakingQueue.js</code>, room initial-state creation and user mode projection live in <code>server/roomFactory.js</code>, skill system-message formatting lives in <code>server/roomSkillMessages.js</code>, generic system message mutation lives in <code>server/roomSystemMessages.js</code>, room action point validation lives in <code>server/roomActionValidation.js</code>, room close/empty-room lifecycle lives in <code>server/roomCloseLifecycle.js</code>, room deadline scheduling lives in <code>server/roomDeadlineScheduler.js</code>, room result persistence lives in <code>server/roomResultPersistence.js</code>, room timer bookkeeping lives in <code>server/roomTimers.js</code>, item effect cleanup lives in <code>server/roomItemEffects.js</code>, room-user reward application lives in <code>server/roomRewards.js</code>, room snapshot persistence lives in <code>server/roomStatePersistence.js</code>, skill preview lifecycle and pending skill resolution live in <code>server/roomSkillResolution.js</code>, clock timing calculation lives in <code>server/roomClockTiming.js</code>, standard move/pass/resign side effects live in <code>server/roomGameActions.js</code>, and counting/draw/scoring room mutations live in <code>server/roomScoringFlow.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, action routing, and persistence triggers.</li>
+<li>Server room view serialization now lives in <code>server/roomView.js</code>, socket broadcast delivery lives in <code>server/roomBroadcasts.js</code>, participant/online-state queries live in <code>server/roomPresence.js</code>, matchmaking queue state lives in <code>server/roomMatchmakingQueue.js</code>, room initial-state creation and user mode projection live in <code>server/roomFactory.js</code>, skill system-message formatting lives in <code>server/roomSkillMessages.js</code>, generic system message mutation lives in <code>server/roomSystemMessages.js</code>, room action point validation lives in <code>server/roomActionValidation.js</code>, room close/empty-room lifecycle lives in <code>server/roomCloseLifecycle.js</code>, room deadline scheduling lives in <code>server/roomDeadlineScheduler.js</code>, room result persistence lives in <code>server/roomResultPersistence.js</code>, room timer bookkeeping lives in <code>server/roomTimers.js</code>, item effect cleanup lives in <code>server/roomItemEffects.js</code>, room-user reward application lives in <code>server/roomRewards.js</code>, room snapshot persistence lives in <code>server/roomStatePersistence.js</code>, skill preview lifecycle and pending skill resolution live in <code>server/roomSkillResolution.js</code>, per-room clock tick lifecycle lives in <code>server/roomClockLifecycle.js</code>, clock timing calculation lives in <code>server/roomClockTiming.js</code>, standard move/pass/resign side effects live in <code>server/roomGameActions.js</code>, and counting/draw/scoring room mutations live in <code>server/roomScoringFlow.js</code>, so <code>server/rooms.js</code> can focus more narrowly on real-time room lifecycle, action routing, and persistence triggers.</li>
 </ul>
 <ul>
 <li><code>src/admin/AdminConsole.jsx</code> has split its shell and major tab bodies; high-value follow-up targets are now the remaining skill contract/replay compatibility wrappers inside <code>src/shared/game.js</code>, the real-time lifecycle/broadcast boundary inside <code>server/rooms.js</code>, and the remaining voice/cache subdomains in <code>src/audio/playback.jsx</code>.</li>
@@ -3678,6 +3687,9 @@
 </ul>
 <ul>
 <li><code>server/roomSkillResolution.js</code> is the backend skill-preview lifecycle boundary. Active/passive skill preview setup, persisted <code>pendingSkillResolution</code> snapshots, restored preview delay scheduling, preview payload metadata, and resolution completion side effects live there so new skill effects do not add more timing and preview-state branching to <code>server/rooms.js</code>.</li>
+</ul>
+<ul>
+<li><code>server/roomClockLifecycle.js</code> is the backend per-room clock tick boundary. Playing-phase tick handling, disconnected-player empty-room scheduling, timeout finish handling, and the choice between lightweight <code>room:clock</code> and full room broadcasts live there so future clock-throttling or patch-broadcast work has one server-side entry point.</li>
 </ul>
 <ul>
 <li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators still receive both black and white projections through <code>gameViews</code>, but players receive only their own visible board state.</li>
