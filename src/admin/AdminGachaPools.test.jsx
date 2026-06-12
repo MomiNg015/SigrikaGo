@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
-import AdminGachaPools from "./AdminGachaPools.jsx";
+import AdminGachaPools, { prizeOptionsForType } from "./AdminGachaPools.jsx";
 import { ADMIN_TABS, ADMIN_TAB_LABELS } from "./AdminShell.jsx";
 import {
   buildGachaPoolDraft,
@@ -75,5 +75,36 @@ describe("AdminGachaPools", () => {
 
     expect(source).toContain(".admin-gacha-board");
     expect(source).toContain(".admin-gacha-prize-row");
+  });
+
+  it("keeps the gacha editor drawer wide and internally responsive", () => {
+    const source = readFileSync(new URL("../styles/admin.css", import.meta.url), "utf8");
+
+    expect(source).toContain(".admin-gacha-board .admin-crud-drawer");
+    expect(source).toContain("width: min(1040px, calc(100vw - 32px))");
+    expect(source).toContain("@media (max-width: 860px)");
+    expect(source).toContain(".admin-gacha-prize-row");
+    expect(source).toContain("grid-template-columns: repeat(2, minmax(0, 1fr))");
+  });
+
+  it("includes built-in stone decorations in decoration prize options", () => {
+    const options = prizeOptionsForType("decoration", {
+      decorations: [{ slug: "codex-deco", name: "Codex Deco", imageUrl: "/codex.webp" }]
+    });
+
+    expect(options.map((option) => option.value)).toEqual(expect.arrayContaining([
+      "paw-stone",
+      "papagan-peach-stone",
+      "codex-deco"
+    ]));
+  });
+
+  it("labels gacha prize number fields with units", () => {
+    const source = readFileSync(new URL("./AdminGachaPools.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("admin-gacha-number-field");
+    expect(source).toContain("数量");
+    expect(source).toContain("概率");
+    expect(source).toContain("/10000");
   });
 });

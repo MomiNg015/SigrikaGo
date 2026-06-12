@@ -9,6 +9,7 @@ import {
   gachaTypeLabel
 } from "../shared/adminDrafts.js";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
+import { STONE_DECORATIONS } from "../shared/stoneDecorations.js";
 import { AdminFieldLabel, AdminSectionHeader, AdminStatusPill } from "./adminComponents.jsx";
 
 const COIN_PRIZE_OPTION = { value: "", name: "金币奖励", imageUrl: "" };
@@ -22,11 +23,17 @@ export function prizeOptionsForType(type, resourceCatalogs = {}) {
     })).filter((option) => option.value);
   }
   if (type === "decoration") {
-    return (resourceCatalogs.decorations ?? []).map((decoration) => ({
+    const builtInDecorations = Object.values(STONE_DECORATIONS).map((decoration) => ({
+      value: decoration.id,
+      name: decoration.name ?? decoration.id,
+      imageUrl: decoration.previewImageUrl ?? ""
+    }));
+    const adminDecorations = (resourceCatalogs.decorations ?? []).map((decoration) => ({
       value: decoration.slug ?? decoration.id ?? "",
       name: decoration.name ?? decoration.slug ?? decoration.id ?? "",
       imageUrl: decoration.imageUrl ?? decoration.previewUrl ?? ""
     })).filter((option) => option.value);
+    return uniquePrizeOptions([...builtInDecorations, ...adminDecorations]);
   }
   if (type === "item") {
     return (resourceCatalogs.items ?? []).map((item) => ({
@@ -43,6 +50,19 @@ export function prizeOptionsForType(type, resourceCatalogs = {}) {
     }));
   }
   return [];
+}
+
+function uniquePrizeOptions(options) {
+  const seen = new Set();
+  return options.filter((option) => {
+    if (!option.value || seen.has(option.value)) return false;
+    seen.add(option.value);
+    return true;
+  });
+}
+
+function prizeQuantityUnit(type) {
+  return type === "coins" ? "金币" : "个";
 }
 
 function prizePatchForOption(option) {
@@ -213,8 +233,16 @@ export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, o
                       ))}
                     </select>
                   )}
-                  <input type="number" min="1" value={prize.quantity} onChange={(e) => updatePrize(index, { quantity: e.target.value })} />
-                  <input type="number" min="0" max="10000" value={prize.probabilityBasisPoints} onChange={(e) => updatePrize(index, { probabilityBasisPoints: e.target.value })} />
+                  <label className="admin-gacha-number-field">
+                    <span>数量</span>
+                    <input type="number" min="1" value={prize.quantity} onChange={(e) => updatePrize(index, { quantity: e.target.value })} />
+                    <b>{prizeQuantityUnit(prize.type)}</b>
+                  </label>
+                  <label className="admin-gacha-number-field" title="10000 = 100%">
+                    <span>概率</span>
+                    <input type="number" min="0" max="10000" value={prize.probabilityBasisPoints} onChange={(e) => updatePrize(index, { probabilityBasisPoints: e.target.value })} />
+                    <b>/10000</b>
+                  </label>
                   <label><input type="radio" checked={Number(draft.featuredPrizeIndex) === index} onChange={() => setDraft({ ...draft, featuredPrizeIndex: index })} /> 大奖</label>
                   <span>{gachaTypeLabel(prize.type)}</span>
                 </div>
