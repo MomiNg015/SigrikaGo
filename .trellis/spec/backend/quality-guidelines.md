@@ -114,6 +114,32 @@ const online = onlineParticipantCount(room);
 
 Tests touching participant-state rules should update `server/roomPresence.test.js`; workflow-specific behavior should stay in `server/rooms.test.js`.
 
+### Room Matchmaking Queue Boundary Contract
+
+`server/roomMatchmakingQueue.js` owns waiting-player queue state:
+
+- `createRoomMatchmakingQueue()` returns an isolated queue instance.
+- `join(player, { canPair })` normalizes `player.mode`, deduplicates by `user.id` and `socketId`, matches only same-mode compatible queued players, and removes the matched opponent from the queue.
+- `list()`, `count()`, and `countsByMode()` expose read-only queue snapshots for API/status surfaces.
+- `removeUser(userId)`, `removeSocket(socketId)`, and `clear()` own queue cleanup for leave, disconnect, and tests.
+
+`server/rooms.js` should decide what happens after a match is found: room creation, persistence, clock startup, opening schedule, and `match:found` / `room:update` delivery. It should not hand-edit the waiting queue array.
+
+Wrong:
+
+```js
+waitingPlayers = waitingPlayers.filter((candidate) => candidate.user.id !== player.user.id);
+waitingPlayers.push({ ...player, mode });
+```
+
+Correct:
+
+```js
+const match = matchmakingQueue.join(player, { canPair });
+```
+
+Tests touching queue state, mode isolation, deduplication, or `canPair` behavior should update `server/roomMatchmakingQueue.test.js`; end-to-end room creation behavior should stay in `server/rooms.test.js`.
+
 ### Leaderboard API Contract
 
 `GET /api/leaderboard` returns users who have at least one completed game. Each player row must include:

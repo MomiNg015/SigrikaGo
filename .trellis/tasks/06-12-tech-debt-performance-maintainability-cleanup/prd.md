@@ -55,6 +55,7 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * [x] Room-level Socket.IO broadcast delivery is isolated from `server/rooms.js` behind a dedicated backend boundary.
 * [x] Room interval/timeout bookkeeping is isolated from `server/rooms.js` behind a dedicated backend timer boundary.
 * [x] Shared room participant and online-state queries are isolated behind a backend presence boundary.
+* [x] Matchmaking waiting-player queue state is isolated behind a dedicated backend queue boundary.
 
 ## Definition of Done
 
@@ -156,6 +157,13 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Updated `server/roomBroadcasts.js` and `server/rooms.js` to reuse the presence boundary for participant ordering, online counts, watch summaries, connected-participant checks, and all-players-disconnected checks.
 * Added `server/roomPresence.test.js` for participant ordering, online counts, connected participant detection, all-player disconnect behavior, and watch summaries.
 * Updated `docs/system-design.md` and backend quality guidelines for the room presence boundary contract.
+
+### Batch 12 Completed
+
+* Added `server/roomMatchmakingQueue.js` as the waiting-player queue boundary for matchmaking state.
+* Updated `server/rooms.js` to delegate queue listing, counts, per-mode counts, join deduplication, same-mode matching, leave cleanup, and socket disconnect cleanup to the queue boundary while keeping room creation and match delivery in the room lifecycle module.
+* Added `server/roomMatchmakingQueue.test.js` for mode counts, same-mode matching, deduplication, custom `canPair` filtering, user/socket removal, and queue clearing.
+* Updated `docs/system-design.md` and backend quality guidelines for the room matchmaking queue boundary contract.
 
 ### Later Batches
 

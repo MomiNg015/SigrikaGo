@@ -16,7 +16,7 @@ import {
   useSkill
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
-import { GAME_MODE_IDS, gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
+import { gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
 import { DEFAULT_RANK, normalizeRank, parseRecentResults, serializeRecentResults } from "../src/shared/rankProgression.js";
 import { resultRewardDelta } from "../src/shared/resultRewards.js";
 import { prisma } from "./db.js";
@@ -61,6 +61,7 @@ import {
   onlineParticipantCount,
   watchPlayerSummary
 } from "./roomPresence.js";
+import { createRoomMatchmakingQueue } from "./roomMatchmakingQueue.js";
 import {
   SKILL_BANNER_DURATION_MS,
   SKILL_BOARD_EFFECT_DURATION_MS,
@@ -74,7 +75,7 @@ export { roomView };
 export { clearRoomTimers };
 
 const rooms = new Map();
-let waitingPlayers = [];
+const matchmakingQueue = createRoomMatchmakingQueue();
 const MATCH_SUCCESS_DELAY_MS = 3000;
 const OPENING_NOTICE_DELAY_MS = 3000;
 const INITIAL_PASSIVE_SKILL_DELAY_MS = 3000;
@@ -119,7 +120,7 @@ export function clearRoomsForTest() {
     clearRoomTimers(room);
   }
   rooms.clear();
-  waitingPlayers = [];
+  matchmakingQueue.clear();
 }
 
 export async function restorePersistedRooms(io) {
@@ -155,33 +156,22 @@ function ensureRestoredDisconnectedNotices(room) {
 }
 
 export function listWaitingPlayers() {
-  return [...waitingPlayers];
+  return matchmakingQueue.list();
 }
 
 export function matchmakingCount() {
-  return waitingPlayers.length;
+  return matchmakingQueue.count();
 }
 
 export function matchmakingCountsByMode() {
-  const counts = Object.fromEntries(GAME_MODE_IDS.map((mode) => [mode, 0]));
-  for (const player of waitingPlayers) {
-    counts[normalizeGameModeId(player.mode)] += 1;
-  }
-  return counts;
+  return matchmakingQueue.countsByMode();
 }
 
 export function joinMatchmaking(player, io, { canPair = () => true } = {}) {
-  const mode = normalizeGameModeId(player.mode);
-  const queuedPlayer = { ...player, mode };
-  waitingPlayers = waitingPlayers.filter((candidate) => (
-    candidate.user.id !== player.user.id && candidate.socketId !== player.socketId
-  ));
-  const opponentIndex = waitingPlayers.findIndex((candidate) => (
-    normalizeGameModeId(candidate.mode) === mode && canPair(candidate, queuedPlayer)
-  ));
-  if (opponentIndex >= 0) {
-    const [first] = waitingPlayers.splice(opponentIndex, 1);
-    const room = createRoom(first, queuedPlayer, mode);
+  const match = matchmakingQueue.join(player, { canPair });
+  if (match.matched) {
+    const first = match.opponent;
+    const room = createRoom(first, match.player, match.mode);
     rooms.set(room.code, room);
     persistRoom(room, { force: true });
     startGameClock(room, io);
@@ -192,12 +182,11 @@ export function joinMatchmaking(player, io, { canPair = () => true } = {}) {
     broadcastRoom(io, room);
     return room;
   }
-  waitingPlayers.push(queuedPlayer);
   return null;
 }
 
 export function leaveMatchmaking(userId) {
-  waitingPlayers = waitingPlayers.filter((player) => player.user.id !== userId);
+  matchmakingQueue.removeUser(userId);
 }
 
 export function attachSocketToRoom(roomCode, socket, user) {
@@ -226,7 +215,7 @@ export function attachSocketToRoom(roomCode, socket, user) {
 }
 
 export function detachSocket(socketId, io = null) {
-  waitingPlayers = waitingPlayers.filter((player) => player.socketId !== socketId);
+  matchmakingQueue.removeSocket(socketId);
   const changedRooms = [];
   for (const room of rooms.values()) {
     let changed = false;

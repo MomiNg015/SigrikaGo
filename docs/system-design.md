@@ -317,6 +317,11 @@ SigrikaGo/
   - 集中维护 players/spectators 合并顺序、在线人数、是否还有连接参与者、双方玩家是否全断线、观战列表玩家摘要；广播、观战列表、完成房间延迟关闭和空房关闭调度共用这些判断。
   - 后续如果扩展观战权限、重连状态、房间 patch 推送或多席位参与者，应优先扩展该模块，避免各流程重复理解参与者结构。
 
+- `server/roomMatchmakingQueue.js`
+  - 房间匹配队列边界模块。
+  - 集中维护等待队列状态、按用户/Socket 去重、按模式计数、离队清理、断线清理和 `canPair` 自定义配对筛选；`server/rooms.js` 保留匹配成功后的房间创建、计时器启动和 Socket 广播。
+  - 后续如果扩展段位匹配、好友黑名单、等待超时或多模式队列，应优先扩展该模块，而不是让 `server/rooms.js` 直接操作等待数组。
+
 - `server/roomTimers.js`
   - 房间计时器账本模块。
   - 集中维护 `timerId`、`timeoutIds` 的 interval/timeout 注册、自动移除和主动清理，供开局倒计时、技能预览结算、数子/和棋/结果确认 deadline、房间关闭和空房关闭调度复用。
@@ -1139,7 +1144,7 @@ SigrikaGo/
   - 金币、积分、段位不再由前端比较前后状态弹出 toast；`UserProgressLedger` 已作为结构化流水表落入 schema/migration，商城购买写入 `coins` 支出流水（`shop.purchase`），对局结算写入 `coins` / `rating` 流水（`game.result`），后台金币/积分调整写入 `admin.update` 流水。后续如继续扩展赛季、排行榜或补偿发放，应继续复用该流水入口，并在专用界面展示变化。
 
 - 核心源码体量仍偏集中。本轮扫描中，超过 300 行的主要业务文件包括 `server/rooms.js`、`src/shared/game.js`、`server/adminRoutes.js`、`server/index.js`、`src/audio/playback.jsx`：
-  - `server/rooms.js` 已拆出 room view、广播边界、presence 状态、timer 账本、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、断线恢复与关闭调度。
+  - `server/rooms.js` 已拆出 room view、广播边界、presence 状态、匹配队列、timer 账本、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、断线恢复与关闭调度。
   - `src/admin/AdminConsole.jsx` 已拆出 `AdminShell` 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。
   - `src/main.jsx` 已拆出 API、socket handlers、socket creation helper、character catalog loader、site settings loader、preload screen、top-level routes、global overlays、room navigation helper、replay opening helper、session helpers、登录恢复 hook、启动预加载 hook、全局 action hook、主题/音频/站点设置/用户/toast/ref 同步 hooks；后续主要保持入口文件只做装配。
   - `src/shared/gameSkillRegistry.js` 已抽出主动技能 `effectType` 分发和回合消耗判定，`src/shared/gameGroups.js` / `src/shared/gameScoring.js` 已抽出连通块与数子计分；`src/shared/game.js` 仍保留规则执行、技能入口和历史兼容转导，后续可继续收窄主动技能契约与回放兼容包装，降低新增角色风险。
@@ -1449,7 +1454,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Current remaining frontend debt:
   - `src/main.jsx` now mainly owns App-level state assembly and passes props into extracted routes, overlays, action hooks, socket hooks, preload hooks, theme/audio hooks, and persistence hooks.
   - `src/room/RoomScreen.jsx` now delegates the three-column battle tree to `src/room/RoomBattleStage.jsx`; future room work can focus on replay/spectator projection helpers and smaller room-state hooks rather than moving raw JSX.
-  - Server room view serialization now lives in `server/roomView.js`, socket broadcast delivery lives in `server/roomBroadcasts.js`, participant/online-state queries live in `server/roomPresence.js`, room timer bookkeeping lives in `server/roomTimers.js`, item effect cleanup lives in `server/roomItemEffects.js`, room-user reward application lives in `server/roomRewards.js`, room snapshot persistence lives in `server/roomStatePersistence.js`, pending skill resolution snapshot math lives in `server/roomSkillResolution.js`, clock timing calculation lives in `server/roomClockTiming.js`, standard move/pass/resign side effects live in `server/roomGameActions.js`, and counting/draw/scoring room mutations live in `server/roomScoringFlow.js`, so `server/rooms.js` can focus more narrowly on real-time room lifecycle, skill actions, and persistence triggers.
+  - Server room view serialization now lives in `server/roomView.js`, socket broadcast delivery lives in `server/roomBroadcasts.js`, participant/online-state queries live in `server/roomPresence.js`, matchmaking queue state lives in `server/roomMatchmakingQueue.js`, room timer bookkeeping lives in `server/roomTimers.js`, item effect cleanup lives in `server/roomItemEffects.js`, room-user reward application lives in `server/roomRewards.js`, room snapshot persistence lives in `server/roomStatePersistence.js`, pending skill resolution snapshot math lives in `server/roomSkillResolution.js`, clock timing calculation lives in `server/roomClockTiming.js`, standard move/pass/resign side effects live in `server/roomGameActions.js`, and counting/draw/scoring room mutations live in `server/roomScoringFlow.js`, so `server/rooms.js` can focus more narrowly on real-time room lifecycle, skill actions, and persistence triggers.
   - `src/admin/AdminConsole.jsx` has split its shell and major tab bodies; high-value follow-up targets are now the remaining skill contract/replay compatibility wrappers inside `src/shared/game.js`, the real-time lifecycle/broadcast boundary inside `server/rooms.js`, and the remaining voice/cache subdomains in `src/audio/playback.jsx`.
 
 ## Recent Home, Shop, And Board UI Adjustments
@@ -1562,6 +1567,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Full `room:update` remains the authoritative synchronization path for match found, room join/resume, moves, skills, chat, phase changes, scoring, draw/counting flows, and timeout transitions.
 - `server/roomBroadcasts.js` is the single backend emit boundary for room snapshot updates, lightweight clock updates, room toasts, and close events. It skips disconnected participants, calls room persistence with the same forced/throttled timing as before, and keeps viewer-specific room view generation centralized for future patch-event work.
 - `server/roomPresence.js` is the backend participant-state boundary for players plus spectators. Room broadcasting, watch-room summaries, finished-room close extension, and empty-active-room closure all use it for connected-participant and all-players-disconnected decisions.
+- `server/roomMatchmakingQueue.js` is the backend matchmaking queue boundary for waiting-player state. Matchmaking joins, leaves, disconnect cleanup, per-mode counts, and custom `canPair` filters go through this module, while room creation and match-success delivery stay in `server/rooms.js`.
 - `server/roomTimers.js` is the backend timer bookkeeping boundary for room intervals and tracked timeouts. Room lifecycle code should schedule through this module so timeout ids are removed after firing and cleared consistently during room shutdown or empty-room cancellation.
 - `server/roomView.js` builds only the needed board projection for player viewers. Spectators still receive both black and white projections through `gameViews`, but players receive only their own visible board state.
 - `server/serverLifecycle.js` guards local development startup/shutdown: occupied port 3001 now gets an explicit `EADDRINUSE` message, and `SIGINT` / `SIGTERM` close the HTTP server plus Prisma before process exit.
