@@ -146,6 +146,34 @@ const online = onlineParticipantCount(room);
 
 Tests touching participant-state rules should update `server/roomPresence.test.js`; workflow-specific behavior should stay in `server/rooms.test.js`.
 
+### Room Connection Lifecycle Boundary Contract
+
+`server/roomConnectionLifecycle.js` owns room socket connection-state mutation:
+
+- `createRoomConnectionLifecycle(deps)` returns `attachSocketToRoom`, `detachSocket`, and `leaveRoom`.
+- `attachSocketToRoom(roomCode, socket, user)` validates the room code, reconnects existing players, clears empty-room close state, appends reconnect notices for active disconnected players, adds first-time spectators, joins the socket room, and force-persists changed room state.
+- Spectator attach is idempotent by `user.id`; duplicate spectator joins should not append duplicate spectators or duplicate join notices.
+- `detachSocket(socketId, io)` removes the socket from matchmaking, disconnects matching players, timestamps `disconnectedAt`, appends disconnect notices only for unfinished rooms, removes matching spectators, schedules empty-room close when `io` is provided, force-persists changed rooms, and returns changed rooms.
+- `leaveRoom(roomCode, userId, socketId)` handles explicit spectator leave and finished-player leave-as-spectator cleanup, appends `spectator-leave` notices, and force-persists changed room state.
+
+`server/rooms.js` should decide which socket event calls this boundary, but it should not duplicate player/spectator socket mutation, reconnect/disconnect notice rules, or forced persistence after connection-state changes.
+
+Wrong:
+
+```js
+player.socketId = null;
+player.disconnectedAt = Date.now();
+room.spectators = room.spectators.filter((spectator) => spectator.socketId !== socketId);
+```
+
+Correct:
+
+```js
+detachSocket(socketId, io);
+```
+
+Tests touching player reconnects, spectator joins/leaves, socket disconnect cleanup, finished-player leave behavior, or connection-state persistence should update `server/roomConnectionLifecycle.test.js`; socket-event integration can remain in `server/rooms.test.js`.
+
 ### Room Matchmaking Queue Boundary Contract
 
 `server/roomMatchmakingQueue.js` owns waiting-player queue state:

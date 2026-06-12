@@ -243,6 +243,14 @@ Reduce near-term interaction jank and make future feature work cheaper by addres
 * Added `server/roomRestoreLifecycle.test.js` for expired finished rooms, rescheduled finished rooms, opening recovery, pending skill preview recovery, invalid pending-skill fallback, and active deadline scheduling.
 * Updated `docs/system-design.md` and backend quality guidelines for the room restore lifecycle contract.
 
+### Batch 22 Completed
+
+* Added `server/roomConnectionLifecycle.js` as the room socket connection-state boundary.
+* Updated `server/rooms.js` to delegate player reconnects, spectator joins, socket disconnect cleanup, spectator leave, finished-player leave-as-spectator cleanup, empty-room close handoff, and forced connection-state persistence to the connection lifecycle boundary.
+* Kept socket event routing, matchmaking room creation, action routing, and room persistence implementation in `server/rooms.js`.
+* Added `server/roomConnectionLifecycle.test.js` for player reconnects, idempotent spectator joins, disconnect cleanup, finished-room disconnect notice suppression, explicit spectator leave, and finished-player leave cleanup.
+* Updated `docs/system-design.md` and backend quality guidelines for the room connection lifecycle contract.
+
 ### Later Batches
 
 * Reduce room render fan-out beyond client-side structural sharing, such as protocol-level room patch events if profiling shows enough benefit.
