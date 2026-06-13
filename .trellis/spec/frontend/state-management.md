@@ -22,6 +22,62 @@ Most app-wide state is still owned by `src/app/App.jsx` and passed into extracte
 
 ## Server State
 
+### Scenario: Startup Preload User And Catalog Wiring
+
+#### 1. Scope / Trigger
+- Trigger: changing login completion, startup preload, authenticated catalog loading, or any setter passed from `App.jsx` into `useStartupPreload()`.
+- Startup preload is the bridge from a valid token to the home shell; failures here can silently reset the session to the login screen.
+
+#### 2. Signatures
+- `useStartupPreload({ token, setUser, setCharacters, setMusicTracks, setView, ... })`
+- `loadPublicCharacterCatalog({ token })`
+- `loadMusicTrackCatalog({ token })`
+- `shouldFinishPreloadAsHome({ view, room, matchSuccess })`
+
+#### 3. Contracts
+- `App.jsx` must pass every setter that `useStartupPreload()` destructures and invokes.
+- When authenticated preload succeeds, it must refresh `/api/me`, public characters, and merged music tracks before finishing at `home`.
+- `setMusicTracks(nextMusicTracks)` is required after `loadMusicTrackCatalog()` so post-login music labels use the merged catalog.
+- The catch path may reset to login only for real preload failures; missing setter wiring is a code bug and must be covered by tests.
+- Do not add new preload side effects without updating both the hook call in `App.jsx` and a wiring/regression test.
+
+#### 4. Validation & Error Matrix
+- Valid token and all preload requests succeed -> set user/catalogs and finish at `home`.
+- Missing token -> no preload work.
+- `/api/me` or catalog request fails -> close socket, clear session state, and return to `login`.
+- Missing `setMusicTracks` or another invoked setter -> invalid implementation; tests should fail before runtime.
+
+#### 5. Good/Base/Bad Cases
+- Good: `App.jsx` passes `setMusicTracks` alongside `setCharacters` to `useStartupPreload()`.
+- Base: a fresh login preloads default music names when the admin has no display-name overrides.
+- Bad: adding `setFoo(nextFoo)` inside `useStartupPreload()` without passing `setFoo` from `App.jsx`, causing a post-login TypeError that is swallowed by the preload catch path.
+
+#### 6. Tests Required
+- App startup preload wiring tests assert the `useStartupPreload()` call includes invoked catalog setters such as `setMusicTracks`.
+- Session/preload tests assert fresh login can finish as home even when the previous ref view is `login`.
+- API client tests should still cover auth refresh behavior when preload requests receive 401.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+useStartupPreload({
+  setCharacters,
+  token
+});
+```
+
+Correct:
+
+```jsx
+useStartupPreload({
+  setCharacters,
+  setMusicTracks,
+  token
+});
+```
+
 ### Scenario: Room Snapshot User Sync
 
 #### 1. Scope / Trigger

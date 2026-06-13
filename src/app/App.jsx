@@ -138,6 +138,7 @@ export default function App() {
     setLobbyStats,
     setMatchStart,
     setMatchSuccess,
+    setMusicTracks,
     setRoom,
     setShowHouse,
     setShowLeaderboard,
