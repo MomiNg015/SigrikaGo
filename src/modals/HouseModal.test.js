@@ -139,6 +139,35 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("title=\"彩虹豆豆跳跳糖效果中\"");
   });
 
+  it("renders character chain badges in the house manual character grid", () => {
+    const html = renderToStaticMarkup(createElement(HouseModal, {
+      user: {
+        id: 1,
+        username: "moming",
+        rank: "1段",
+        rating: 1000,
+        coins: 0,
+        ownedCharacters: ["sigrika", "denia"],
+        ownedDecorations: [],
+        selectedCharacter: "denia",
+        characterChains: { denia: 3 },
+        itemEffects: {}
+      },
+      records: [],
+      characterListView: [
+        { id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } },
+        { id: "denia", name: "达妮娅", portrait: "/assets/Danea_centered.webp", skill: { name: "技能", description: "", cost: 1 } }
+      ],
+      audioSettings: {},
+      onClose: () => {},
+      onSelectCharacter: () => {},
+      onApplyDecoration: () => {}
+    }));
+
+    expect(html).toContain("character-chain-badge");
+    expect(html.match(/class="character-chain-badge"/g)).toHaveLength(1);
+  });
+
   it("plays the selected character sortie voice before selecting the character", () => {
     const calls = [];
     const character = {

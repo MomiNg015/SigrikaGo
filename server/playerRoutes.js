@@ -1,5 +1,5 @@
 import express from "express";
-import { publicUser } from "./db.js";
+import { USER_ASSET_RELATION_INCLUDE, publicUser } from "./db.js";
 import { listPublicCharacters } from "./characters.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
@@ -98,7 +98,8 @@ export function createPlayerRouteHandlers({
     }
     const user = await prisma.user.update({
       where: { id: req.user.id },
-      data: { selectedCharacter: characterId }
+      data: { selectedCharacter: characterId },
+      include: USER_ASSET_RELATION_INCLUDE
     });
     res.json({ user: publicUserFn(user) });
   }
@@ -118,7 +119,8 @@ export function createPlayerRouteHandlers({
     }
     const user = await prisma.user.update({
       where: { id: req.user.id },
-      data: { selectedStoneDecoration: decorationId }
+      data: { selectedStoneDecoration: decorationId },
+      include: USER_ASSET_RELATION_INCLUDE
     });
     res.json({ user: publicUserFn(user) });
   }
