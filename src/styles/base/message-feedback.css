@@ -1,0 +1,73 @@
+.message-board-modal {
+  width: min(460px, calc(100vw - (var(--page-pad) * 2)));
+  display: grid;
+  gap: 14px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
+  padding: 24px;
+}
+
+.message-board-modal h2 {
+  margin: 0;
+}
+
+.message-board-modal textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.message-board-counter {
+  margin-top: -8px;
+  color: #7d6a82;
+  font-size: 13px;
+  text-align: right;
+}
+
+.message-board-modal .primary-action {
+  justify-self: end;
+}
+
+.ui-unavailable-shake {
+  animation: ui-unavailable-shake var(--ui-unavailable-shake-duration, 1063ms) ease-in-out;
+}
+
+@keyframes ui-unavailable-shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  12%,
+  36%,
+  60%,
+  84% {
+    translate: -5px 0;
+  }
+
+  24%,
+  48%,
+  72% {
+    translate: 5px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-unavailable-shake {
+    animation: ui-unavailable-pulse var(--ui-unavailable-shake-duration, 1063ms) ease-in-out;
+  }
+
+  @keyframes ui-unavailable-pulse {
+    0%,
+    100% {
+      filter: none;
+    }
+
+    35%,
+    65% {
+      filter: brightness(1.12);
+    }
+  }
+}

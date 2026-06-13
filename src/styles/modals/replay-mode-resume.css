@@ -1,0 +1,327 @@
+/* Replay lists, mode picker, resume header, and embedded character records. */
+.replay-list {
+  margin-top: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.replay-list h3 {
+  margin: 0;
+}
+
+.replay-item {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #fff;
+  color: #2d2430;
+  padding: 12px;
+}
+
+.replay-item span {
+  color: #7d6a82;
+}
+
+.replay-table {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+  min-width: min(720px, 100%);
+}
+
+.replay-table-heading,
+.replay-table-row {
+  display: grid;
+  grid-template-columns: 108px minmax(130px, 1.15fr) minmax(130px, 1.15fr) minmax(110px, 0.9fr) 64px;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.replay-table-heading {
+  padding: 0 10px;
+  color: #7d6a82;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.replay-table-row {
+  min-height: 54px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #2d2430;
+}
+
+.replay-table-row.outcome-win {
+  border-color: #bce8ca;
+  background: linear-gradient(135deg, #ecfff1, #f7fff9);
+}
+
+.replay-table-row.outcome-loss {
+  border-color: #d8d8de;
+  background: linear-gradient(135deg, #f1f2f4, #fafafa);
+}
+
+.replay-table-row.outcome-draw {
+  border-color: #ecd179;
+  background: linear-gradient(135deg, #fff4bd, #fffbe7);
+}
+
+.replay-player-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  gap: 6px;
+}
+
+.replay-player-cell img {
+  width: 34px;
+  height: 30px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.replay-player-cell b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.replay-table.compact {
+  min-width: 0;
+}
+
+.replay-table.compact .replay-table-heading,
+.replay-table.compact .replay-table-row {
+  grid-template-columns: 84px minmax(92px, 1fr) minmax(92px, 1fr) minmax(86px, 0.8fr) 52px;
+  font-size: 12px;
+}
+
+.replay-open-button {
+  margin-top: 16px;
+  border: 1px solid #d7cae0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: #ffffff;
+  color: #4f3d55;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.house-header .replay-open-button {
+  margin-top: 0;
+  padding: 9px 13px;
+}
+
+.resume-header-actions {
+  margin-left: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  justify-self: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+  min-width: max-content;
+}
+
+.resume-header-actions .close-button {
+  position: static;
+  flex: 0 0 auto;
+}
+
+.resume-wallet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-height: var(--modal-close-size, 44px);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.resume-replay-action {
+  justify-self: start;
+  margin-top: -4px;
+}
+
+.match-mode-modal {
+  width: min(520px, calc(100vw - 32px));
+  gap: 16px;
+}
+
+.match-mode-options {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.match-mode-modal .match-mode-options + .secondary-action {
+  margin-top: 12px;
+}
+
+.match-mode-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  min-height: 76px;
+  width: 100%;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.match-mode-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.match-mode-copy strong {
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.match-mode-copy small,
+.match-mode-count small {
+  color: var(--muted-text, #68707a);
+  line-height: 1.35;
+}
+
+.match-mode-count {
+  display: grid;
+  justify-items: center;
+  min-width: 64px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(30, 40, 48, 0.12);
+}
+
+.match-mode-count b {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.2rem;
+}
+
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 8px 0 14px;
+}
+
+.mode-tabs button {
+  min-height: 44px;
+  border-radius: 8px;
+}
+
+.mode-tabs button.active,
+.mode-tabs button[aria-selected="true"] {
+  background: #1f6f5b;
+  color: #fff;
+  border-color: #1f6f5b;
+}
+
+.resume-modal {
+  width: min(620px, 100%);
+  display: grid;
+  gap: 16px;
+}
+
+.resume-modal .profile-grid.top-stats-bar {
+  grid-template-columns: 1fr;
+  margin-top: 4px;
+}
+
+.resume-header {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  justify-content: stretch;
+  gap: 12px;
+  padding-right: 0;
+  min-height: var(--modal-close-size, 44px);
+}
+
+.resume-header h2 {
+  min-width: 0;
+  padding-right: clamp(136px, 22vw, 168px);
+}
+
+.resume-character-records {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 2px solid #3d2b25;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 247, 230, 0.76)),
+    repeating-linear-gradient(0deg, transparent 0 15px, rgba(118, 177, 193, 0.12) 15px 16px);
+  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.18);
+}
+
+.resume-character-records > strong {
+  color: #3d2b25;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.resume-character-records .character-record-list {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  max-height: min(220px, 30dvh);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+.resume-character-records .character-record-row {
+  display: grid;
+  grid-template-columns: 46px minmax(84px, 1fr) minmax(112px, auto) minmax(52px, auto);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 2px solid rgba(61, 43, 37, 0.72);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.resume-character-records .character-record-row img {
+  width: 42px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.resume-character-records .character-record-row strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resume-character-records .character-record-summary,
+.resume-character-records .character-record-row b {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.resume-character-records .character-record-row b {
+  justify-self: end;
+}

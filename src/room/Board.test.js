@@ -43,7 +43,7 @@ describe("areBoardPropsEqual", () => {
   });
 
   test("uses strong skill-effect halos on affected stones", () => {
-    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const exposedBlock = css.match(/\.exposed-hidden-hand \.stone\s*\{[^}]+\}/)?.[0] ?? "";
     const flippedBlock = css.match(/\.flipped-stone \.stone\s*\{[^}]+\}/)?.[0] ?? "";
 
@@ -54,7 +54,7 @@ describe("areBoardPropsEqual", () => {
   });
 
   test("marks the latest move with a circular red stone outline instead of a center dot", () => {
-    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const latestMoveBlock = css.match(/\.stone i\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(latestMoveBlock).toContain("left: 50%");
@@ -110,7 +110,7 @@ describe("areBoardPropsEqual", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: { phase: "playing", size: 19, points: createPoints(19), history: [] }
     })));
-    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
 
     expect(markup).toContain('data-board-size="19"');
     expect(markup).toContain("--size:19");
@@ -168,8 +168,8 @@ describe("areBoardPropsEqual", () => {
   });
 
   test("keeps board grid strokes uniform with first-line strokes at 2.5x across themes", () => {
-    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
-    const brightSchoolCss = readFileSync(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url), "utf8");
+    const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
 
     expect(readStrokeWidth(roomCss, ".board-lines line")).toBe(0.64);
     expect(readStrokeWidth(roomCss, ".board-lines line.edge-line")).toBe(1.6);
@@ -228,7 +228,7 @@ describe("areBoardPropsEqual", () => {
   });
 
   test("uses owner-colored crosses for territory and owner-colored circles for dead stones", () => {
-    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const crossBaseBlock = css.match(/\.territory-mark::before,[\s\S]*?\.neutral-mark::after\s*\{[^}]+\}/)?.[0] ?? "";
     const deadCircleBlock = css.match(/\.dead-mark\.black,[\s\S]*?\.dead-mark\.white\s*\{[^}]+\}/)?.[0] ?? "";
     const deadBarsBlock = css.match(/\.dead-mark::before,[\s\S]*?\.dead-mark::after\s*\{[^}]+\}/)?.[0] ?? "";

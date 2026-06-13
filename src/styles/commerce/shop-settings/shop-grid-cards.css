@@ -1,0 +1,214 @@
+.shop-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-auto-rows: 284px;
+  gap: 12px;
+  align-content: safe center;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+
+.shop-item {
+  display: grid;
+  grid-template-rows: 88px minmax(28px, auto) 1fr 38px;
+  gap: 9px;
+  align-content: stretch;
+  justify-items: stretch;
+  min-width: 0;
+  overflow: hidden;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(226, 207, 231, 0.9);
+  background:
+    radial-gradient(circle at 24% 14%, rgba(255, 255, 255, 0.92), transparent 28%),
+    linear-gradient(145deg, #fff2f8, #edf6ff 58%, #fff7df);
+  min-height: 0;
+  height: 284px;
+  box-shadow: 0 10px 20px rgba(86, 61, 110, 0.08);
+}
+
+.shop-item > strong {
+  align-self: center;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 18px;
+  text-align: center;
+  line-height: 1.22;
+  overflow-wrap: anywhere;
+}
+
+.shop-item.owned {
+  background: linear-gradient(145deg, #f1fbef, #dcf0df);
+  border-color: #c7e2c8;
+  color: #506b54;
+  box-shadow: none;
+}
+
+.shop-item-empty {
+  align-content: center;
+  justify-items: center;
+  grid-template-rows: auto auto;
+  text-align: center;
+  color: #8c8790;
+  background: #eeeeef;
+  border-color: #d6d6d9;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+
+.shop-item-empty svg {
+  color: #aaa6ad;
+}
+
+.shop-item img {
+  width: 100%;
+  height: 76px;
+  object-fit: contain;
+  min-width: 0;
+}
+
+.stone-decoration-preview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.stone-decoration-preview.large {
+  width: 100%;
+  height: 76px;
+  gap: 12px;
+}
+
+.stone-decoration-preview span {
+  width: 30px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: center / 100% 100% no-repeat var(--preview-stone-image);
+}
+
+.stone-decoration-preview.large span {
+  width: 68px;
+}
+
+.shop-item svg {
+  justify-self: center;
+  width: 56px;
+  height: 56px;
+  color: #5d7fe8;
+}
+
+.shop-description {
+  min-width: 0;
+  margin: 0;
+  color: #746877;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: left;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.shop-card-meta {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  align-self: center;
+  grid-row: 3;
+}
+
+.shop-card-meta > span {
+  flex: 0 0 auto;
+  color: #7c7080;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.shop-card-meta-price-only {
+  justify-content: center;
+}
+
+.shop-price {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: minmax(0, auto) auto;
+  justify-content: flex-end;
+  column-gap: 4px;
+  align-items: baseline;
+  align-self: center;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  color: #4f3d55;
+  font-size: 18px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.shop-card-meta-price-only .shop-price {
+  justify-content: center;
+  text-align: center;
+}
+
+.shop-price-number-wrap {
+  position: relative;
+  min-width: 0;
+  display: inline-grid;
+  justify-items: end;
+  align-items: baseline;
+}
+
+.shop-original-price {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 1px);
+  color: #df3f4f;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.shop-price b {
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.shop-price-unit {
+  justify-self: start;
+}
+
+.shop-item .primary-action {
+  grid-row: 4;
+  align-self: end;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.shop-item .primary-action.shop-action-owned {
+  background: #dff5df;
+  color: #235534;
+  border-color: rgba(35, 85, 52, 0.36);
+}
+
+.shop-item .primary-action.shop-action-sold-out {
+  background: #dedede;
+  color: #6f6f6f;
+  border-color: rgba(90, 90, 90, 0.28);
+}
+
+.shop-item[role="button"] {
+  cursor: pointer;
+}
+
+.shop-item[role="button"]:focus-visible {
+  outline: 3px solid rgba(0, 191, 255, 0.7);
+  outline-offset: 3px;
+}

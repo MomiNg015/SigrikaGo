@@ -1,0 +1,67 @@
+@media (max-width: 760px), (max-height: 520px) {
+  .modal-backdrop {
+    --mobile-modal-max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      calc(8px + env(safe-area-inset-right))
+      calc(8px + env(safe-area-inset-bottom))
+      calc(8px + env(safe-area-inset-left));
+    place-items: start center;
+    align-items: start;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .small-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .settings-modal,
+  .message-board-modal,
+  .confirm-modal,
+  .result-modal,
+  .room-floating-modal {
+    width: min(100%, calc(100vw - 16px));
+    max-height: var(--mobile-modal-max-height);
+    overflow: hidden;
+  }
+
+  .leaderboard-modal,
+  .friends-modal,
+  .house-modal,
+  .warehouse-modal,
+  .shop-modal,
+  .settings-modal,
+  .message-board-modal {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .leaderboard-table,
+  .friends-list,
+  .house-layout,
+  .warehouse-grid,
+  .shop-grid,
+  .settings-body,
+  .message-board-body {
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .leaderboard-table,
+  .replay-table,
+  .watch-room-table {
+    overflow-x: auto;
+  }
+
+  .settings-modal,
+  .message-board-modal {
+    max-height: var(--mobile-modal-max-height);
+  }
+
+}

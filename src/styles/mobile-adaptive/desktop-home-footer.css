@@ -1,0 +1,15 @@
+/* Desktop Bright School home footer safety layer. */
+@media (min-width: 769px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen.home-terminal-screen > .home-footer-strip {
+    position: fixed !important;
+    right: clamp(12px, 2vw, 24px) !important;
+    bottom: clamp(8px, 1.4vw, 16px) !important;
+    left: auto !important;
+    top: auto !important;
+    z-index: 3 !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    margin: 0 !important;
+    pointer-events: none !important;
+  }
+}

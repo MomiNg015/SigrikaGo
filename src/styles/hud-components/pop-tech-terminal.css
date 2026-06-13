@@ -1,0 +1,302 @@
+/* Anime pop-tech soft terminal pass */
+:root {
+  --hud-pink: #ff76a3;
+  --hud-pink-soft: rgba(255, 118, 163, 0.26);
+  --hud-cyan-soft: rgba(0, 255, 190, 0.22);
+  --hud-jelly-bg: rgba(255, 255, 255, 0.12);
+  --hud-pop-text: #fff9fd;
+}
+
+.small-modal,
+.shop-modal,
+.house-modal,
+.warehouse-modal,
+.leaderboard-modal,
+.friends-modal,
+.confirm-modal,
+.result-modal,
+.settings-modal,
+.message-board-modal,
+.nested-modal,
+.character-target-modal,
+.room-floating-modal,
+.shop-item,
+.warehouse-item,
+.character-card.portrait-card,
+.friends-row,
+.leaderboard-row,
+.watch-room-row,
+.profile-character-row,
+.character-record-row,
+.volume-row,
+.audio-slider-item,
+.login-card-container {
+  border-color: rgba(255, 118, 163, 0.38) !important;
+  border-radius: 12px !important;
+  clip-path: polygon(14px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 10px 100%, 0 calc(100% - 10px), 0 14px) !important;
+  box-shadow:
+    0 0 18px rgba(255, 118, 163, 0.16),
+    0 0 26px rgba(0, 255, 190, 0.12),
+    inset 0 0 18px rgba(255, 255, 255, 0.05) !important;
+}
+
+.small-modal::after,
+.shop-modal::after,
+.house-modal::after,
+.warehouse-modal::after,
+.leaderboard-modal::after,
+.friends-modal::after,
+.confirm-modal::after,
+.result-modal::after,
+.settings-modal::after,
+.message-board-modal::after,
+.nested-modal::after,
+.character-target-modal::after,
+.room-floating-modal::after {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--hud-pink), var(--hud-cyan), var(--hud-pink), transparent);
+  box-shadow:
+    0 0 14px rgba(255, 118, 163, 0.55),
+    0 0 20px rgba(0, 255, 190, 0.32);
+}
+
+.small-modal h2,
+.shop-modal h2,
+.house-modal h2,
+.warehouse-modal h2,
+.leaderboard-modal h2,
+.friends-modal h2,
+.settings-modal h2,
+.message-board-modal h2,
+.home-brand-title,
+.login-title-text {
+  color: #ffffff !important;
+  text-shadow:
+    0 0 8px rgba(255, 118, 163, 0.55),
+    0 0 14px rgba(0, 255, 190, 0.32) !important;
+}
+
+button,
+.primary-action,
+.secondary-action,
+.danger-action,
+.icon-button,
+.close-button,
+.utility-entry,
+.shop-tabs button,
+.friends-tabs button,
+.settings-tabs button,
+.shop-pagination button {
+  transition:
+    transform 180ms cubic-bezier(0.22, 1.2, 0.36, 1),
+    filter 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease !important;
+}
+
+button:not(:disabled):hover,
+button:not(:disabled):focus-visible,
+.utility-entry:not(:disabled):hover,
+.utility-entry:not(:disabled):focus-visible {
+  transform: scale(1.03);
+  filter: saturate(1.12) brightness(1.08);
+}
+
+.home-lobby-status {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border: 1px solid rgba(255, 118, 163, 0.48);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 118, 163, 0.16), rgba(0, 255, 190, 0.08));
+  color: #fff8fc;
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(255, 118, 163, 0.6);
+  box-shadow: 0 0 14px rgba(255, 118, 163, 0.18), inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.house-manual-entry.hologram-entry::before {
+  content: attr(data-hud);
+  position: absolute;
+  inset: -18px -12px -12px;
+  z-index: 3;
+  opacity: 1;
+  display: block;
+  padding-top: 0;
+  color: #fff8fc;
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-shadow:
+    0 0 8px rgba(255, 118, 163, 0.72),
+    0 0 14px rgba(0, 255, 190, 0.28);
+  background:
+    linear-gradient(var(--hud-pink) 0 0) left 10px top 20px / 22px 3px no-repeat,
+    linear-gradient(var(--hud-pink) 0 0) left 10px top 20px / 3px 22px no-repeat,
+    linear-gradient(var(--hud-pink) 0 0) right 10px top 20px / 22px 3px no-repeat,
+    linear-gradient(var(--hud-pink) 0 0) right 10px top 20px / 3px 22px no-repeat,
+    linear-gradient(var(--hud-pink) 0 0) left 10px bottom 10px / 22px 3px no-repeat,
+    linear-gradient(var(--hud-pink) 0 0) left 10px bottom 10px / 3px 22px no-repeat,
+    linear-gradient(var(--hud-pink) 0 0) right 10px bottom 10px / 22px 3px no-repeat,
+    linear-gradient(var(--hud-pink) 0 0) right 10px bottom 10px / 3px 22px no-repeat;
+  filter: drop-shadow(0 0 8px rgba(255, 118, 163, 0.65));
+  pointer-events: none;
+}
+
+.house-manual-entry.hologram-entry::after {
+  left: 20%;
+  right: 20%;
+  bottom: 8px;
+  height: 18px;
+  border-radius: 999px;
+  clip-path: none;
+  background: radial-gradient(ellipse at center, rgba(255, 118, 163, 0.28), rgba(0, 255, 190, 0.08) 54%, transparent 72%);
+  box-shadow: 0 0 18px rgba(255, 118, 163, 0.24);
+  transform: none;
+}
+
+.match-image-entry.hologram-entry::before {
+  content: "✦  ✧  ✦";
+  position: absolute;
+  inset: 4% 8% auto auto;
+  z-index: 3;
+  width: 42%;
+  min-height: 46px;
+  opacity: 0.9;
+  color: var(--hud-pink);
+  background:
+    radial-gradient(circle at 8% 84%, var(--hud-pink) 0 2px, transparent 3px),
+    radial-gradient(circle at 64% 18%, #ffffff 0 1px, transparent 2px),
+    radial-gradient(circle at 92% 70%, var(--hud-cyan) 0 2px, transparent 3px);
+  font-size: 16px;
+  letter-spacing: 0.46em;
+  text-shadow:
+    0 0 8px rgba(255, 118, 163, 0.72),
+    0 0 14px rgba(0, 255, 190, 0.32);
+  animation: poptech-star-twinkle 1.35s steps(2, end) infinite;
+  pointer-events: none;
+}
+
+.match-image-entry.hologram-entry::after {
+  left: 18%;
+  right: 16%;
+  bottom: 9%;
+  height: 52px;
+  border-radius: 999px;
+  clip-path: none;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 118, 163, 0.34), rgba(255, 118, 163, 0.13) 38%, rgba(0, 255, 190, 0.08) 58%, transparent 74%);
+  box-shadow:
+    0 0 26px rgba(255, 118, 163, 0.32),
+    0 0 22px rgba(0, 255, 190, 0.18);
+  transform: none;
+}
+
+.character-card.locked strong,
+.character-card.locked small,
+.lock-text-title,
+div[class*="lock"] span,
+div[class*="lock"] p {
+  color: #ff9fbd !important;
+  text-shadow: 0 0 8px rgba(255, 118, 163, 0.45);
+}
+
+.deploy-tag,
+.character-card.portrait-card:not(.is-deployed):not(.locked)::after {
+  border-color: rgba(255, 118, 163, 0.56);
+  border-radius: 999px;
+  clip-path: none;
+  background: rgba(255, 118, 163, 0.08) !important;
+  text-shadow:
+    0 0 8px rgba(255, 118, 163, 0.45),
+    0 0 10px rgba(0, 255, 190, 0.24);
+}
+
+.character-card.portrait-card:not(.is-deployed):not(.locked)::after {
+  content: "READY (｡•̀ᴗ-)✧";
+  color: rgba(255, 220, 233, 0.82);
+}
+
+.shop-tabs,
+.friends-tabs,
+.settings-tabs {
+  gap: 8px;
+  border: 1px solid rgba(255, 118, 163, 0.32) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(135deg, rgba(255, 118, 163, 0.1), rgba(0, 255, 190, 0.08)),
+    rgba(255, 255, 255, 0.1) !important;
+  box-shadow:
+    0 0 16px rgba(255, 118, 163, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+
+.shop-tabs button,
+.friends-tabs button,
+.settings-tabs button {
+  position: relative;
+  border: 1px solid rgba(255, 118, 163, 0.26) !important;
+  border-radius: 12px !important;
+  clip-path: none !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff8fc !important;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.06) !important;
+}
+
+.shop-tabs button.active,
+.friends-tabs button.active,
+.settings-tabs button.active {
+  border-color: rgba(255, 118, 163, 0.72) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 118, 163, 0.24), rgba(0, 255, 190, 0.12)),
+    rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 0 16px rgba(255, 118, 163, 0.24),
+    inset 0 0 12px rgba(255, 255, 255, 0.08) !important;
+}
+
+.shop-tabs button.active::before,
+.friends-tabs button.active::before,
+.settings-tabs button.active::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--hud-pink);
+  box-shadow:
+    0 0 10px rgba(255, 118, 163, 0.84),
+    0 0 16px rgba(0, 255, 190, 0.24);
+  transform: translateX(-50%);
+}
+
+.login-submit-btn,
+.primary-action {
+  background: linear-gradient(135deg, var(--hud-pink), var(--hud-cyan)) !important;
+  color: #061016 !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 0 18px rgba(255, 118, 163, 0.36),
+    0 0 16px rgba(0, 255, 190, 0.26) !important;
+}
+
+@keyframes poptech-star-twinkle {
+  0%, 100% {
+    opacity: 0.92;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.48;
+    transform: translateY(-2px) scale(1.04);
+  }
+}

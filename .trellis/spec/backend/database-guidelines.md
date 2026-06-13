@@ -149,6 +149,72 @@ await tx.gachaPool.update({
 
 ---
 
+### Scenario: Music Track Display Name Settings
+
+#### 1. Scope / Trigger
+- Trigger: any change to music track display names, admin music management, music prize payloads, shop music labels, or startup schema guards for music settings.
+- This is a cross-layer contract because static audio configuration, database overrides, public/admin APIs, audit logging, and frontend music selectors all share the same track id namespace.
+
+#### 2. Signatures
+- `MusicTrackSetting { id, displayName, createdAt, updatedAt }`
+- `id` must match an existing static `MUSIC_TRACKS` key from `src/shared/musicLibrary.js`.
+- `ensureMusicTrackSettingsSchema(prisma)` must run during server startup before public or admin music track routes are used.
+- Music list helpers should return the static track payload plus `defaultName` and the effective display `name`.
+
+#### 3. Contracts
+- `MUSIC_TRACKS` remains the source of truth for playable track ids, type, character binding, unlock flags, purchase flags, playback mode, and audio paths.
+- `MusicTrackSetting` stores only display-name overrides. It must not create tracks or change audio behavior.
+- Blank, missing, or whitespace-only `displayName` values fall back to the static `track.name`.
+- Public `GET /api/music-tracks` is available to authenticated players so gameplay, shop, and gacha displays share the same effective names.
+- Admin `GET /api/admin/music-tracks` and `PATCH /api/admin/music-tracks/:id` must use the same merge helper as the public route.
+- Admin updates must write a `music-track.update` audit entry.
+
+#### 4. Validation & Error Matrix
+- Unknown track id -> reject before writing a database row.
+- Missing `MusicTrackSetting` table in an older SQLite development database -> startup guard creates it in place.
+- Missing Prisma delegate in a narrow unit test mock -> list helpers may fall back to static names, but update helpers still require the delegate.
+- Overlong display names -> normalize to the accepted display-name length before persistence.
+- Empty display name -> valid, stores an empty override and renders the static default name.
+
+#### 5. Good/Base/Bad Cases
+- Good: editing `main-home` to `Lobby Theme` changes the shown name while keeping the original `src`, `loop`, and `type` fields.
+- Base: no row exists for a track, so API payload returns `name: track.name` and `defaultName: track.name`.
+- Bad: admin PATCH accepts a new id and creates a playable track that is not in `MUSIC_TRACKS`.
+- Bad: frontend dropdowns import `MUSIC_TRACKS` directly after the merged catalog has already been loaded.
+
+#### 6. Tests Required
+- Schema guard creates the table and remains idempotent.
+- Public/admin list routes merge static defaults with stored overrides.
+- Admin PATCH rejects unknown ids, accepts valid display names, and writes audit logs.
+- Music resolver helper preserves playback configuration while replacing only the effective display name.
+- Admin tab rendering and save flow refresh the list after a successful update.
+- Gacha music prize options and character BGM selectors use the injected merged catalog.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await prisma.musicTrackSetting.upsert({ where: { id: req.params.id }, data: req.body });
+```
+
+Correct:
+
+```js
+if (!MUSIC_TRACKS[trackId]) {
+  throw routeError(404, "TRACK_NOT_FOUND", "Music track not found.");
+}
+
+const displayName = normalizeDisplayName(body.displayName);
+await prisma.musicTrackSetting.upsert({
+  where: { id: trackId },
+  create: { id: trackId, displayName },
+  update: { displayName }
+});
+```
+
+---
+
 ## Naming Conventions
 
 <!-- Table names, column names, index names -->

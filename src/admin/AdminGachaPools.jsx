@@ -43,7 +43,7 @@ export function prizeOptionsForType(type, resourceCatalogs = {}) {
     })).filter((option) => option.value);
   }
   if (type === "music") {
-    return Object.values(MUSIC_TRACKS).map((track) => ({
+    return Object.values(resourceCatalogs.musicTracks ?? MUSIC_TRACKS).map((track) => ({
       value: track.id,
       name: track.name,
       imageUrl: track.imageUrl ?? ""

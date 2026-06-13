@@ -1,0 +1,16 @@
+/* Very narrow portrait phone fallback rules. */
+@media (max-width: 360px) and (orientation: portrait) {
+  .mobile-room-screen {
+    --mobile-room-board-size: min(calc(100vw - 16px), calc(100dvh - 316px), 336px);
+  }
+
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-rewards,
+  .profile-resume-stats,
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -8,6 +8,7 @@ import HouseModal from "./HouseModal.jsx";
 import ResumeModal from "./ResumeModal.jsx";
 import { CharacterDetailDialog, CharacterRecordsDialog } from "./house/HouseNestedDialogs.jsx";
 import { splitRecordSummary, UserProfileCard } from "./UserProfileCard.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("deriveCharacterRecordStats", () => {
   const user = {
@@ -311,9 +312,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain("character-record-dialog");
     expect(html).toContain("金币");
 
-    const modalCss = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8").replace(/\r\n/g, "\n");
-    const mobileModalCss = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8").replace(/\r\n/g, "\n");
-    const finalMobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8").replace(/\r\n/g, "\n");
+    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const mobileModalCss = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const resumeSource = readFileSync(new URL("./ResumeModal.jsx", import.meta.url), "utf8");
     expect(modalCss).toContain(".modal-backdrop .resume-header-actions .close-button");
     expect(modalCss).toContain(".modal-backdrop .resume-header-actions .resume-wallet");
@@ -368,7 +369,7 @@ describe("deriveCharacterRecordStats", () => {
   });
 
   it("keeps nested character detail dialogs as viewport overlays above the house manual", () => {
-    const css = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const nestedSource = readFileSync(new URL("./house/HouseNestedDialogs.jsx", import.meta.url), "utf8");
     const nestedBackdropBlock = css.match(/\.nested-modal-backdrop\s*\{[^}]+\}/g)?.at(-1) ?? "";
     const nestedModalBlock = css.match(/\.nested-modal-backdrop \.nested-modal\s*\{[^}]+\}/)?.[0] ?? "";
@@ -391,7 +392,7 @@ describe("deriveCharacterRecordStats", () => {
   });
 
   it("renders character descriptions in the character detail dialog", () => {
-    const styles = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8");
+    const styles = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
       character: {
         id: "sigrika",
@@ -434,24 +435,26 @@ describe("deriveCharacterRecordStats", () => {
   });
 
   it("keeps the Bright School mobile house manual internally scrollable", () => {
-    const css = readFileSync(new URL("../styles/themes/bright-school/mobile.css", import.meta.url), "utf8");
-    const finalMobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(css).toContain(".house-modal");
     expect(css).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto !important");
     expect(css).toContain(".resume-modal");
     expect(css).toContain(".house-modal .profile-grid.top-stats-bar");
-    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain(".resume-modal .profile-grid.top-stats-bar");
-    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
+    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+
+    expect(modalCss).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(modalCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(readFileSync(new URL("../styles/themes/bright-school/modals.css", import.meta.url), "utf8")).toContain(".mode-tabs button[aria-selected=\"true\"]");
     expect(readFileSync(new URL("../styles/themes/bright-school/modals.css", import.meta.url), "utf8")).toContain("background: #ff9ebb !important");
     expect(readFileSync(new URL("../styles/lobby.css", import.meta.url), "utf8")).toContain(".character-item-effect-badges");
     expect(readFileSync(new URL("../styles/lobby.css", import.meta.url), "utf8")).toContain(".character-item-effect-icon");
     expect(readFileSync(new URL("../styles/lobby.css", import.meta.url), "utf8")).toContain(".character-card .character-item-effect-icon");
-    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain(".house-modal .character-item-effect-icon");
-    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain(".house-modal .character-card.portrait-card .character-item-effect-icon");
-    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain("width: 24px;");
-    expect(readFileSync(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url), "utf8")).toContain(".character-item-effect-icon");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-item-effect-icon");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-card.portrait-card .character-item-effect-icon");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("width: 24px;");
+    expect(readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url))).toContain(".character-item-effect-icon");
     expect(css).toContain(".house-modal .character-item-effect-icon");
     expect(css).toContain(".house-modal .stat strong");
     expect(css).toContain("white-space: nowrap !important");
@@ -472,10 +475,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain(".character-card.portrait-card .lock-text-title");
     expect(css).toContain("box-sizing: border-box !important");
     expect(css).toContain(".house-modal .owned-decoration-section");
-    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain(".resume-modal .profile-grid.top-stats-bar");
-    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain("grid-template-columns: 1fr;");
-    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain(".resume-modal .profile-resume-stats");
-    expect(readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8")).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("grid-template-columns: 1fr;");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".resume-modal .profile-resume-stats");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important");
     expect(css).toContain(".house-modal .owned-decoration-chip strong");
     expect(css).toContain(".character-record-dialog");
@@ -501,9 +504,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain(".resume-modal .profile-rank-results");
     expect(finalMobileCss).toContain(".resume-character-records");
     expect(finalMobileCss).toContain(".resume-character-records .character-record-list");
-    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain(".profile-rank-results::before");
-    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain("border: 2px solid #3d2b25");
-    expect(readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8")).toContain("box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.2)");
+    expect(modalCss).toContain(".profile-rank-results::before");
+    expect(modalCss).toContain("border: 2px solid #3d2b25");
+    expect(modalCss).toContain("box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.2)");
     expect(finalMobileCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
     expect(finalMobileCss).toContain("background: #ff9ebb !important");
     expect(finalMobileCss).toContain(".character-card.portrait-card.is-deployed");

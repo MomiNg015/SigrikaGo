@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync, statSync } from "node:fs";
 import HomeScreen from "./HomeScreen.jsx";
 import { CHARACTERS } from "../shared/characters.js";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 function renderHome(overrides = {}) {
   return renderToStaticMarkup(createElement(HomeScreen, {
@@ -43,6 +44,10 @@ function isWebp(path) {
 
 function readTextFixture(path) {
   return readFileSync(new URL(path, import.meta.url), "utf8").replace(/\r\n/g, "\n");
+}
+
+function readCssFixture(path) {
+  return readCssWithImports(new URL(path, import.meta.url));
 }
 
 describe("HomeScreen", () => {
@@ -138,7 +143,7 @@ describe("HomeScreen", () => {
     const utilityEntryBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityTextBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityHoverBeforeBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry:hover::before,[\s\S]+?\.utility-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
-    const brightHomeCss = readTextFixture("../styles/themes/bright-school/home.css");
+    const brightHomeCss = readCssFixture("../styles/themes/bright-school/home.css");
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
@@ -214,7 +219,7 @@ describe("HomeScreen", () => {
     expect(mobileMedia).toContain("grid-template-columns: repeat(2, minmax(0, 1fr))");
     expect(mobileMedia).toContain("transform: none");
 
-    const brightMobileCss = readTextFixture("../styles/themes/bright-school/mobile.css");
+    const brightMobileCss = readCssFixture("../styles/themes/bright-school/mobile.css");
     expect(brightMobileCss).toContain(".home-mobile-menu");
     expect(brightMobileCss).toContain(".home-mobile-menu-panel");
     expect(brightMobileCss).toContain("grid-template-columns: 22px max-content !important");
@@ -225,7 +230,7 @@ describe("HomeScreen", () => {
     expect(brightMobileCss).toContain("max-width: calc(100% - 28px) !important");
     expect(brightMobileCss).toContain("font-family: \"Arial Rounded MT Bold\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", system-ui, sans-serif !important");
 
-    const finalMobileCss = readTextFixture("../styles/mobile-adaptive.css");
+    const finalMobileCss = readCssFixture("../styles/mobile-adaptive.css");
     expect(finalMobileCss).toContain(":has(.modal-backdrop) .home-mobile-menu");
     expect(finalMobileCss).toContain("pointer-events: none !important");
     expect(finalMobileCss).toContain(".home-mobile-menu-panel button");
@@ -252,8 +257,8 @@ describe("HomeScreen", () => {
   });
 
   it("keeps match mode cancel actions separated from mode choices", () => {
-    const modalCss = readTextFixture("../styles/modals.css");
-    const finalMobileCss = readTextFixture("../styles/mobile-adaptive.css");
+    const modalCss = readCssFixture("../styles/modals.css");
+    const finalMobileCss = readCssFixture("../styles/mobile-adaptive.css");
 
     expect(modalCss).toContain(".match-mode-modal .match-mode-options + .secondary-action");
     expect(modalCss).toContain("margin-top: 12px;");

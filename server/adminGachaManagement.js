@@ -3,6 +3,7 @@ import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
 import { MUSIC_TRACKS } from "../src/shared/musicLibrary.js";
 import { routeError } from "./adminRouteErrors.js";
 import { writeAudit } from "./adminAudit.js";
+import { listMusicTrackMap } from "./musicTracks.js";
 
 const GACHA_TYPES = new Set(Object.values(GACHA_REWARD_TYPES));
 
@@ -69,11 +70,14 @@ export function validateGachaPoolInput(input = {}) {
 }
 
 export async function listAdminGachaPools({ prisma }) {
-  const pools = await prisma.gachaPool.findMany({
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-    include: { prizes: true }
-  });
-  return { pools: pools.map((pool) => toAdminGachaPoolPayload(pool)) };
+  const [pools, musicTracks] = await Promise.all([
+    prisma.gachaPool.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      include: { prizes: true }
+    }),
+    listMusicTrackMap({ prisma })
+  ]);
+  return { pools: pools.map((pool) => toAdminGachaPoolPayload(pool, { musicTracks })) };
 }
 
 export async function assertGachaPrizeTargetsExist(prisma, input) {
@@ -165,9 +169,9 @@ export async function disableGachaPool({ prisma, adminUser, poolId }) {
   });
 }
 
-export function toAdminGachaPoolPayload(pool) {
+export function toAdminGachaPoolPayload(pool, { musicTracks = null } = {}) {
   return {
-    ...toGachaPoolPayload(pool),
+    ...toGachaPoolPayload(pool, new Date(), { musicTracks }),
     enabled: Boolean(pool.enabled),
     featuredPrizeId: pool.featuredPrizeId ?? null,
     featuredPrizeIds: featuredPrizeIdsFromPool(pool),
@@ -180,7 +184,7 @@ export function toAdminGachaPoolPayload(pool) {
       probabilityBasisPoints: prize.probabilityBasisPoints,
       probabilityPercent: prize.probabilityBasisPoints / 100,
       enabled: prize.enabled,
-      name: prize.name ?? "",
+      name: (prize.type === GACHA_REWARD_TYPES.music ? musicTracks?.[prize.targetId]?.name : "") || prize.name || "",
       imageUrl: prize.imageUrl ?? "",
       sortOrder: prize.sortOrder ?? 0
     }))

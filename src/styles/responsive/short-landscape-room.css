@@ -1,0 +1,182 @@
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 520px) {
+  .mobile-room-screen {
+    width: 100vw;
+    height: 100dvh;
+    min-height: 0;
+    padding: 4px;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .room-header {
+    min-height: 0;
+    padding: 4px 8px;
+    align-items: center;
+  }
+
+  .mobile-room-screen .room-title-line {
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .mobile-room-screen .room-toggles .toggle {
+    width: 34px;
+    height: 34px;
+  }
+
+  .mobile-room-screen .mobile-battle-layout {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-areas:
+      "opponent board self"
+      "tabs tabs tabs";
+    grid-template-columns: minmax(96px, 0.52fr) minmax(220px, 1.36fr) minmax(96px, 0.52fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-opponent-slot,
+  .mobile-room-screen .mobile-board-slot,
+  .mobile-room-screen .mobile-self-slot {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-board-slot {
+    align-self: center;
+    justify-content: center;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: min(100%, calc(100dvh - 104px), calc(100vw - 224px));
+    min-width: 0;
+  }
+
+  .mobile-room-screen .board-wrap {
+    padding: clamp(12px, 3dvh, 18px);
+    grid-template-columns: 18px 1fr 18px;
+    grid-template-rows: 18px 1fr 18px;
+  }
+
+  .mobile-room-screen .coord-row,
+  .mobile-room-screen .coord-col {
+    font-size: 11px;
+  }
+
+  .mobile-room-screen .player-info {
+    grid-template-columns: 1fr;
+    grid-template-areas: "meta" "portrait" "time" "captures" "skill";
+    grid-template-rows: auto minmax(40px, 1fr) auto auto auto;
+    height: 100%;
+    min-height: 0;
+    padding: 5px;
+    gap: 3px;
+    align-content: stretch;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .player-info img {
+    height: min(54px, 17dvh);
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .mobile-room-screen .player-meta {
+    grid-template-columns: 1fr;
+    justify-content: center;
+    justify-items: center;
+    text-align: center;
+    gap: 3px;
+  }
+
+  .mobile-room-screen .meta-tag {
+    min-width: 0;
+    max-width: 100%;
+    padding: 4px 6px;
+  }
+
+  .mobile-room-screen .name-button {
+    max-width: 10ch;
+    text-align: center;
+  }
+
+  .mobile-room-screen .color-badge {
+    display: none;
+  }
+
+  .mobile-room-screen .digital-timer {
+    min-height: 40px;
+    padding: 4px;
+    gap: 2px;
+  }
+
+  .mobile-room-screen .timer-label {
+    min-height: 10px;
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .timer-digits {
+    min-height: 22px;
+    gap: 3px;
+  }
+
+  .mobile-room-screen .timer-primary {
+    font-size: clamp(19px, 6dvh, 26px);
+  }
+
+  .mobile-room-screen .timer-periods {
+    font-size: 12px;
+  }
+
+  .mobile-room-screen .timer-track {
+    height: 5px;
+    margin-top: 3px;
+  }
+
+  .mobile-room-screen .captures {
+    justify-content: center;
+    gap: 3px;
+    font-size: 11px;
+  }
+
+  .mobile-room-screen .captures span {
+    padding: 3px 4px;
+    gap: 2px;
+  }
+
+  .mobile-room-screen .skill-chip {
+    min-height: 30px;
+    padding: 0 4px;
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .mobile-room-screen .skill-detail-panel {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-room-tabs {
+    max-height: 54px;
+    padding: 4px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-tab-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .mobile-room-screen .mobile-tab-button {
+    min-height: 28px;
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    max-height: 18px;
+    padding: 3px 4px;
+    overflow: auto;
+  }
+}

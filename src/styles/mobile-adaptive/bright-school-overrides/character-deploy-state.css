@@ -1,0 +1,8 @@
+/* Bright School final mobile/tablet override cleanup. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.is-deployed,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.selected.is-deployed {
+  background:
+    linear-gradient(135deg, rgba(226, 255, 228, 0.96), rgba(246, 255, 241, 0.98)) padding-box !important;
+  border-color: #4f9b69 !important;
+  box-shadow: 4px 4px 0 rgba(61, 43, 37, 0.42) !important;
+}

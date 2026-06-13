@@ -194,7 +194,7 @@ describe("ShopModal helpers", () => {
   });
 
   it("keeps the scrollable shop grid top reachable when viewport height is short", () => {
-    const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const shopGridBlock = css.match(/\.shop-grid\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(shopGridBlock).toContain("overflow: auto");
@@ -202,7 +202,7 @@ describe("ShopModal helpers", () => {
   });
 
   it("keeps Bright School mobile decoration shop cards self-contained", () => {
-    const css = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid");
     expect(css).toContain("grid-auto-rows: minmax(216px, auto) !important");
@@ -215,7 +215,7 @@ describe("ShopModal helpers", () => {
   });
 
   it("keeps Bright School mobile character shop cards self-contained", () => {
-    const css = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid");
     expect(css).toContain("grid-auto-rows: minmax(216px, auto) !important");
@@ -229,7 +229,7 @@ describe("ShopModal helpers", () => {
   });
 
   it("keeps Bright School mobile item shop cards aligned with decoration cards", () => {
-    const css = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid");
     expect(css).toContain(".shop-category-item.shop-item > svg");
@@ -240,8 +240,8 @@ describe("ShopModal helpers", () => {
   });
 
   it("centers character and decoration prices after removing the visible limit row", () => {
-    const commerceCss = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
-    const mobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const priceOnlyBlock = commerceCss.match(/\.shop-card-meta-price-only\s*\{[^}]+\}/)?.[0] ?? "";
     const priceOnlyPriceBlock = commerceCss.match(/\.shop-card-meta-price-only \.shop-price\s*\{[^}]+\}/)?.[0] ?? "";
 
@@ -252,7 +252,7 @@ describe("ShopModal helpers", () => {
   });
 
   it("styles discounted original prices as a compact line above the current price", () => {
-    const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const shopPriceBlock = css.match(/\.shop-price\s*\{[^}]+\}/)?.[0] ?? "";
     const priceNumberWrapBlock = css.match(/\.shop-price-number-wrap\s*\{[^}]+\}/)?.[0] ?? "";
     const originalPriceBlock = css.match(/\.shop-original-price\s*\{[^}]+\}/)?.[0] ?? "";
@@ -266,7 +266,7 @@ describe("ShopModal helpers", () => {
   });
 
   it("defines the shared Startorch tactical terminal modal system", () => {
-    const modalCss = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8");
+    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
 
     expect(modalCss).toContain("--terminal-bg: rgba(12, 22, 29, 0.85)");
     expect(modalCss).toContain("--terminal-cyan: #00ffbe");
@@ -276,3 +276,14 @@ describe("ShopModal helpers", () => {
     expect(modalCss).toContain("clip-path: polygon");
   });
 });
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readFileSync(url, "utf8");
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
+    return readCssWithImports(new URL(importPath, url), seen);
+  });
+}

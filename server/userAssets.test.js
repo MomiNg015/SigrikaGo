@@ -4,6 +4,7 @@ import {
   parseAssetList,
   parseCharacterAssetList,
   parseOwnedItemCounts,
+  publicUserAssets,
   serializeAssetList,
   serializeOwnedItemCounts,
   structuredUserItemEffectSyncOperations,
@@ -174,5 +175,47 @@ describe("user asset list helpers", () => {
       where: { userId_effectKey: { userId: "user-1", effectKey: "deniaRainbowGlow" } },
       create: { userId: "user-1", effectKey: "deniaRainbowGlow", effectValue: "true", source: "legacy" }
     })]);
+  });
+
+  it("projects public assets from legacy fields and structured relations", () => {
+    expect(publicUserAssets({
+      rating: 1400,
+      selectedCharacter: "danea",
+      selectedStoneDecoration: "paw-stone",
+      ownedCharacters: "baconbits,danea",
+      ownedItems: JSON.stringify({ "dream-ticket": 1, "legacy-item": 9 }),
+      itemEffects: JSON.stringify({ sigrikaCandyDisabled: true }),
+      ownedDecorations: "legacy-decoration",
+      userCharacters: [
+        { characterSlug: "denia", chainCount: 2 },
+        { characterSlug: "aemeath", chainCount: "3" }
+      ],
+      userItems: [
+        { itemId: "dream-ticket", quantity: 3 },
+        { itemId: "empty", quantity: 0 }
+      ],
+      userItemEffects: [
+        { effectKey: "deniaRainbowGlow", effectValue: "true" },
+        { effectKey: "inactive", effectValue: "false" }
+      ],
+      userDecorations: [{ decorationSlug: "paw-stone" }]
+    })).toEqual({
+      selectedCharacter: "denia",
+      selectedStoneDecoration: "paw-stone",
+      ownedCharacters: ["baconbits", "denia", "aemeath", "sigrika", "nabomo"],
+      ownedItems: [
+        { itemId: "dream-ticket", quantity: 3 },
+        { itemId: "legacy-item", quantity: 9 }
+      ],
+      characterChains: {
+        denia: 2,
+        aemeath: 3
+      },
+      itemEffects: {
+        sigrikaCandyDisabled: true,
+        deniaRainbowGlow: true
+      },
+      ownedDecorations: ["legacy-decoration", "paw-stone"]
+    });
   });
 });

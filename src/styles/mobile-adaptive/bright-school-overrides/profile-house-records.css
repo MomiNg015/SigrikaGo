@@ -1,0 +1,127 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid.top-stats-bar .stat strong,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat strong {
+    display: block !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    font-size: clamp(11px, 3.35vw, 15px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-list {
+    grid-template-columns: repeat(auto-fill, minmax(58px, 70px)) !important;
+    justify-content: start !important;
+    align-content: start !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .character-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-auto-rows: 88px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip {
+    width: 70px !important;
+    max-width: 70px !important;
+    min-height: 54px !important;
+    justify-self: start !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .deploy-tag {
+    display: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-dialog {
+    width: min(420px, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px) !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 10px !important;
+    padding: 14px 10px 10px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-dialog h3 {
+    margin: 0 !important;
+    padding-right: 52px !important;
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-list {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    display: grid !important;
+    align-content: start !important;
+    gap: 8px !important;
+    margin-top: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-right: 2px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: 46px minmax(58px, 0.82fr) max-content minmax(48px, auto) !important;
+    gap: 6px !important;
+    align-items: center !important;
+    padding: 8px !important;
+    font-size: clamp(11px, 2.9vw, 13px) !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row img {
+    width: 42px !important;
+    height: 38px !important;
+    object-fit: contain !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row strong {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row span {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-lines,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-summary {
+    display: grid !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-separator,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-separator {
+    display: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-total,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-breakdown,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-total,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-breakdown {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row b {
+    justify-self: end !important;
+    white-space: nowrap !important;
+  }
+}

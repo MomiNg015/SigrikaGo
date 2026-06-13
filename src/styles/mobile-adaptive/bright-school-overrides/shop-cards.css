@@ -1,0 +1,77 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid {
+    grid-auto-rows: minmax(216px, auto) !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 216px !important;
+    height: auto !important;
+    padding: 10px !important;
+    gap: 7px !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item).shop-item > img,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-item.shop-item > svg {
+    flex: 0 0 52px !important;
+    width: 100% !important;
+    height: 52px !important;
+    max-height: 52px !important;
+    object-fit: contain !important;
+    margin: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content.shop-category-character .shop-category-character.shop-item > img,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content.shop-category-item .shop-category-item.shop-item > img,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content.shop-category-item .shop-category-item.shop-item > svg {
+    flex-basis: 52px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+    margin: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item > strong {
+    flex: 0 0 auto !important;
+    min-height: 20px !important;
+    line-height: 1.1 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .shop-card-meta {
+    flex: 0 0 auto !important;
+    min-height: 30px !important;
+    align-items: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-decoration).shop-item .shop-card-meta-price-only {
+    justify-content: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-decoration).shop-item .shop-card-meta-price-only .shop-price {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .primary-action {
+    flex: 0 0 42px !important;
+    width: 100% !important;
+    min-height: 42px !important;
+    margin-top: auto !important;
+    align-self: stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-decoration.shop-item .stone-decoration-preview {
+    flex: 0 0 52px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+    padding: 4px !important;
+  }
+}

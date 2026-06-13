@@ -233,6 +233,33 @@ res.json(await updateUserProfile({ prisma, adminUser: req.user, userId: req.para
 
 Tests touching admin user edit sanitization, ban/unban, password reset, asset sync, progress ledger writes, or admin user audit entries should update `server/adminRoutes.test.js` or a focused `server/adminUserManagement.test.js`; route wiring tests can remain in `server/adminRoutes.test.js`.
 
+### User Asset Compatibility Boundary Contract
+
+`server/userAssets.js` owns compatibility between legacy user asset fields and structured user asset relations:
+
+- Legacy parsers and serializers for `ownedCharacters`, `ownedDecorations`, `ownedItems`, and `itemEffects` live in this module.
+- `syncStructuredUserAssets()` and `structuredUserAssetSyncOperations()` replace-sync legacy asset fields into `UserCharacter`, `UserDecoration`, `UserItem`, and `UserItemEffect`.
+- `structuredUserItemEffectSyncOperations()` is the narrow effect-only sync path for room result cleanup, where room public users may not carry complete character or inventory fields.
+- `publicUserAssets(user)` is the public projection boundary for selected character, selected stone decoration, owned characters, owned decorations, owned item counts, character chain counts, and item effects. It merges legacy fields with loaded structured relations so `publicUser()` and route responses do not duplicate compatibility rules.
+- Rating-based and built-in character unlocks are applied inside this asset projection so the public account payload has one ownership source of truth during the migration.
+
+`server/db.js` should compose the public user payload and delegate asset compatibility to `publicUserAssets()`. It should not duplicate legacy item parsing, structured relation merging, chain-count projection, item-effect parsing, or built-in/rating unlock rules.
+
+Wrong:
+
+```js
+const ownedCharacters = new Set(parseCharacterAssetList(user.ownedCharacters));
+for (const entry of user.userCharacters ?? []) ownedCharacters.add(entry.characterSlug);
+```
+
+Correct:
+
+```js
+const payload = { ...baseUserFields, ...publicUserAssets(user) };
+```
+
+Tests touching user asset parsing, legacy-to-structured sync, public asset projection, item effect merge behavior, or character chain projection should update `server/userAssets.test.js`; top-level public user payload tests can remain in `server/db.test.js`.
+
 ### Admin Catalog Management Boundary Contract
 
 `server/adminCatalogManagement.js` owns admin-side catalog write operations for decorations and shop items:
@@ -923,6 +950,314 @@ await saveGameRecord({ prisma, room });
 ```
 
 Tests touching result persistence helpers, invalid-result skipping, draw stat updates, or progress ledger payloads should update `server/roomResultPersistence.test.js`; integrated winner/loser reward persistence should remain covered by `server/rooms.test.js`.
+
+### Server Startup Data Boundary Contract
+
+`server/serverStartup.js` owns startup data and schema initialization order:
+
+- `initializeServerData({ prisma })` runs built-in character seed, built-in shop seed, default site settings, social schema guard, room persistence schema guard, login-session schema guard, game-mode schema guard, gacha schema guard, and configured-admin promotion.
+- `server/index.js` should call this boundary once after HTTP middleware and Socket.IO server creation are configured, but before route/socket handlers depend on seeded data or compatibility tables.
+- New startup-time seeders or schema guards should be added to `initializeServerData()` and covered by `server/serverStartup.test.js` so ordering stays explicit.
+
+Wrong:
+
+```js
+await seedCharacters(prisma);
+await ensureGachaSchema(prisma);
+await promoteConfiguredAdmins(prisma);
+```
+
+Correct:
+
+```js
+await initializeServerData({ prisma });
+```
+
+Tests touching startup initializer ordering should update `server/serverStartup.test.js`; schema behavior itself should remain in the focused schema/domain tests.
+
+### Socket Guard Boundary Contract
+
+`server/socketGuards.js` owns Socket.IO connection-level guard middleware:
+
+- `installSocketRateGuard(socket)` initializes `socket.data.rateGuard` and installs a Socket.IO packet middleware with `socket.use()`.
+- The guard allows up to 120 events inside a 10-second window, resets the count after the window elapses, and emits `error:toast` without calling `next()` after the limit is exceeded.
+- `server/index.js` should call this boundary during `io.on("connection")`, but it should not duplicate rate-window constants, counter reset logic, or limit rejection behavior.
+
+Wrong:
+
+```js
+socket.use((_packet, next) => {
+  socket.data.count += 1;
+  if (socket.data.count > 120) return;
+  next();
+});
+```
+
+Correct:
+
+```js
+installSocketRateGuard(socket);
+```
+
+Tests touching Socket.IO event rate limiting should update `server/socketGuards.test.js`; business socket event behavior should remain in route, room, or lifecycle tests.
+
+### Socket Event Registration Boundary Contract
+
+`server/socketEvents.js` owns the per-connection Socket.IO event registration suite:
+
+- `registerSocketEvents(socket, deps)` installs the rate guard and registers matchmaking, room connection/resume, gameplay, chat, direct-duel, and disconnect event groups for one authenticated socket.
+- The module is an orchestration boundary only; event-specific behavior must remain in `server/socketMatchEvents.js`, `server/socketRoomEvents.js`, `server/socketGameEvents.js`, `server/socketChatEvents.js`, `server/socketDuelEvents.js`, and `server/socketDisconnectEvents.js`.
+- `server/index.js` should register online presence and initial `me` / `lobby:stats` emissions, then call this boundary once with shared dependencies. It should not import every socket event group or duplicate rate-guard installation.
+- New Socket.IO event groups should be added to `registerSocketEvents()` with a focused `server/socket*Events.js` module and a matching focused test file.
+
+Wrong:
+
+```js
+io.on("connection", (socket) => {
+  installSocketRateGuard(socket);
+  registerMatchSocketEvents(socket, deps);
+  registerRoomSocketEvents(socket, deps);
+});
+```
+
+Correct:
+
+```js
+io.on("connection", (socket) => {
+  registerSocketEvents(socket, deps);
+});
+```
+
+Tests touching the connection-level event registration suite should update `server/socketEvents.test.js`; event behavior tests should stay in the focused `server/socket*Events.test.js` files.
+
+### Socket Match Event Boundary Contract
+
+`server/socketMatchEvents.js` owns the Socket.IO matchmaking event registration:
+
+- `registerMatchSocketEvents(socket, deps)` registers `match:join` and `match:leave` handlers for one authenticated socket.
+- `match:join` normalizes the requested mode, refreshes `socket.user` before queueing, filters waiting candidates through `hasBlacklistBetween()`, delegates queue/room creation to `joinMatchmaking()`, emits `match:waiting` only when no room is created, and broadcasts lobby stats after the success path.
+- `match:leave` delegates queue cleanup to `leaveMatchmaking()`, emits `match:left`, and broadcasts lobby stats.
+- `server/index.js` should pass shared dependencies into this boundary during `io.on("connection")`, but it should not duplicate candidate blacklist filtering, match waiting payloads, or lobby-stat refresh timing.
+
+Wrong:
+
+```js
+socket.on("match:join", async () => {
+  const room = joinMatchmaking({ user: socket.user, socketId: socket.id }, io);
+  if (!room) socket.emit("match:waiting", { startedAt: Date.now() });
+});
+```
+
+Correct:
+
+```js
+registerMatchSocketEvents(socket, {
+  io,
+  prisma,
+  refreshSocketUser,
+  listWaitingPlayers,
+  hasBlacklistBetween,
+  joinMatchmaking,
+  leaveMatchmaking,
+  broadcastLobbyStats,
+  normalizeGameModeId
+});
+```
+
+Tests touching matchmaking Socket.IO event registration, auth refresh before queueing, blacklist candidate filtering, waiting payload timing, or leave-event lobby refresh should update `server/socketMatchEvents.test.js`; queue behavior should stay in `server/roomMatchmakingQueue.test.js` and matched-room creation behavior in `server/roomCreationLifecycle.test.js`.
+
+### Socket Room Event Boundary Contract
+
+`server/socketRoomEvents.js` owns Socket.IO room connection and resume event registration:
+
+- `registerRoomSocketEvents(socket, deps)` registers `room:join`, `room:leave`, and `room:resume` handlers for one authenticated socket.
+- `room:join` validates the room code, delegates room attachment to `attachSocketToRoom()`, emits the viewer-specific `room:update`, and broadcasts the changed room through `broadcastRoom()`. Missing or closed rooms emit the existing room-unavailable toast.
+- `room:leave` delegates room mutation to `leaveRoom()`, leaves the Socket.IO room only when a room changed, emits `room:left`, and broadcasts the changed room.
+- `room:resume` delegates resume payload selection to `resumePayloadForUser()`, uses `validateOptionalRoomCode()` for optional room-code normalization, reattaches resumable rooms through `attachSocketToRoom()`, and otherwise emits the original `room:resume` payload.
+- `server/index.js` should pass shared dependencies into this boundary during `io.on("connection")`, but it should not duplicate room-code validation, room attachment, resume payload branching, Socket.IO room leave calls, or post-change broadcast timing.
+
+Wrong:
+
+```js
+socket.on("room:join", ({ roomCode }) => {
+  const room = attachSocketToRoom(roomCode, socket, socket.user);
+  socket.emit("room:update", roomView(room, socket.user.id));
+});
+```
+
+Correct:
+
+```js
+registerRoomSocketEvents(socket, {
+  io,
+  prisma,
+  validateRoomCode,
+  validateOptionalRoomCode,
+  attachSocketToRoom,
+  leaveRoom,
+  findRoomForUser,
+  resumePayloadForUser,
+  roomView,
+  broadcastRoom
+});
+```
+
+Tests touching Socket.IO room join/leave/resume event registration, room-code error forwarding, attach failures, viewer-specific update emission, resume fallback payloads, or post-change broadcasts should update `server/socketRoomEvents.test.js`; room connection mutation behavior should stay in `server/roomConnectionLifecycle.test.js` and resume payload behavior in `server/resume.test.js`.
+
+### Socket Game Event Boundary Contract
+
+`server/socketGameEvents.js` owns Socket.IO gameplay, counting, draw, and scoring event registration:
+
+- `registerGameSocketEvents(socket, deps)` registers `game:action`, `counting:request`, `counting:respond`, `draw:request`, `draw:respond`, and `scoring:action` handlers for one authenticated socket.
+- Each handler forwards the current `socket.user.id`, room code, action/accepted payload, and `io` dependency to the matching room lifecycle entry point.
+- Failed lifecycle results emit `error:toast` with `result.error`; successful lifecycle results broadcast the changed room through `broadcastRoom(io, result.room)`.
+- `server/index.js` should pass shared lifecycle dependencies into this boundary during `io.on("connection")`, but it should not duplicate result error emission, success broadcast checks, or per-event lifecycle argument wiring.
+
+Wrong:
+
+```js
+socket.on("game:action", (payload = {}) => {
+  const result = handleGameAction(payload.roomCode, socket.user.id, payload.action, io);
+  if (!result.ok) socket.emit("error:toast", result.error);
+});
+```
+
+Correct:
+
+```js
+registerGameSocketEvents(socket, {
+  io,
+  handleGameAction,
+  requestCounting,
+  respondCounting,
+  requestDraw,
+  respondDraw,
+  handleScoringAction,
+  broadcastRoom
+});
+```
+
+Tests touching Socket.IO game/counting/draw/scoring event registration, lifecycle argument wiring, result error toasts, or success-room broadcasts should update `server/socketGameEvents.test.js`; gameplay rules should stay in `server/roomActionLifecycle.test.js`, counting/draw/scoring entry validation in `server/roomRequestLifecycle.test.js`, and lower-level game rule modules.
+
+### Socket Chat Event Boundary Contract
+
+`server/socketChatEvents.js` owns Socket.IO room chat event registration:
+
+- `registerChatSocketEvents(socket, deps)` registers `chat:send` for one authenticated socket.
+- The handler forwards `roomCode`, current `socket.user`, and text to `addChat()`.
+- When `addChat()` returns a changed room, the handler broadcasts it through `broadcastRoom(io, room)`; null results are intentionally silent because room-code, text, and missing-room rejection already live in `server/roomChatLifecycle.js`.
+- `server/index.js` should pass shared chat and broadcast dependencies into this boundary during `io.on("connection")`, but it should not duplicate chat mutation calls or post-chat broadcast checks.
+
+Wrong:
+
+```js
+socket.on("chat:send", ({ roomCode, text } = {}) => {
+  const room = addChat(roomCode, socket.user, text);
+  if (room) broadcastRoom(io, room);
+});
+```
+
+Correct:
+
+```js
+registerChatSocketEvents(socket, {
+  io,
+  addChat,
+  broadcastRoom
+});
+```
+
+Tests touching Socket.IO chat event registration, chat payload forwarding, or post-chat broadcast behavior should update `server/socketChatEvents.test.js`; chat text normalization and chat message mutation rules should stay in `server/roomChatLifecycle.test.js`.
+
+### Socket Duel Event Boundary Contract
+
+`server/socketDuelEvents.js` owns Socket.IO direct-duel event registration:
+
+- `registerDuelSocketEvents(socket, deps)` registers `duel:request` and `duel:respond` handlers for one authenticated socket.
+- Both handlers refresh `socket.user` before delegating so direct-duel room creation uses the latest selected character and user state.
+- `duel:request` string-normalizes `targetUserId`, normalizes the requested game mode through `normalizeGameModeId()`, and delegates to `duelRequests.handleRequest()`.
+- `duel:respond` string-normalizes `requestId`, coerces `accepted` to boolean, delegates to `duelRequests.handleResponse()`, and broadcasts lobby stats after a successful response path.
+- Refresh or duel-manager failures emit the existing auth-expired `error:toast`; failed responses do not broadcast lobby stats.
+- `server/index.js` should pass shared duel, auth-refresh, mode-normalization, and lobby-stat dependencies into this boundary during `io.on("connection")`, but it should not duplicate direct-duel payload coercion, auth-refresh timing, failure toast handling, or lobby-stat refresh timing.
+
+Wrong:
+
+```js
+socket.on("duel:request", async ({ targetUserId, mode }) => {
+  await duelRequests.handleRequest(socket, targetUserId, mode);
+});
+```
+
+Correct:
+
+```js
+registerDuelSocketEvents(socket, {
+  refreshSocketUser,
+  duelRequests,
+  normalizeGameModeId,
+  broadcastLobbyStats
+});
+```
+
+Tests touching Socket.IO duel event registration, refresh-before-delegate behavior, payload coercion, auth-expired toasts, or successful response lobby refreshes should update `server/socketDuelEvents.test.js`; request lifecycle behavior should stay in `server/duelRequests.test.js`.
+
+### Socket Disconnect Event Boundary Contract
+
+`server/socketDisconnectEvents.js` owns Socket.IO disconnect cleanup registration:
+
+- `registerDisconnectSocketEvents(socket, deps)` registers the `disconnect` handler for one authenticated socket.
+- The handler unregisters the online socket, delegates room/matchmaking cleanup to `detachSocket(socket.id, io)`, broadcasts every changed room returned by `detachSocket()`, and refreshes lobby stats after cleanup.
+- Lobby stats are refreshed even when no room changed so online-presence counts remain current.
+- `server/index.js` should pass shared online-session, room-detach, room-broadcast, and lobby-stat dependencies into this boundary during `io.on("connection")`, but it should not duplicate disconnect cleanup order, detach result iteration, or lobby-stat refresh timing.
+
+Wrong:
+
+```js
+socket.on("disconnect", () => {
+  onlineSessions.unregisterOnlineSocket(socket);
+  detachSocket(socket.id, io);
+});
+```
+
+Correct:
+
+```js
+registerDisconnectSocketEvents(socket, {
+  io,
+  unregisterOnlineSocket,
+  detachSocket,
+  broadcastRoom,
+  broadcastLobbyStats
+});
+```
+
+Tests touching Socket.IO disconnect event registration, cleanup ordering, changed-room broadcasts, or lobby refresh behavior should update `server/socketDisconnectEvents.test.js`; room connection mutation behavior should stay in `server/roomConnectionLifecycle.test.js`.
+
+### Production Static Asset Boundary Contract
+
+`server/staticAssets.js` owns production Vite asset hosting and SPA fallback:
+
+- `installProductionStaticAssets(app, { distDir })` mounts nothing unless `NODE_ENV === "production"` and `distDir` exists.
+- When active, it mounts the built Vite directory with a short default cache and adds a one-year immutable `Cache-Control` header for hashed chunk/asset filenames, including Vite dash-style names such as `index-abcdef12.js`.
+- The SPA fallback must exclude `/api`, `/socket.io`, and `/uploads` so backend APIs, Socket.IO transport, and uploaded assets keep their existing routes.
+- `server/index.js` should provide the `distDir` and call this boundary once near the end of route/socket setup; it should not duplicate production checks, cache-header regexes, or fallback route patterns.
+
+Wrong:
+
+```js
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(distDir));
+  app.get("*", sendIndex);
+}
+```
+
+Correct:
+
+```js
+installProductionStaticAssets(app, { distDir });
+```
+
+Tests touching production asset mounting, SPA fallback exclusions, or immutable cache headers should update `server/staticAssets.test.js`.
 
 ### Leaderboard API Contract
 

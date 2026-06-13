@@ -25,7 +25,7 @@ function cssBlockForSelector(css, selector) {
   return end < 0 ? "" : css.slice(start, end + 1);
 }
 
-const hudCss = normalizeCss(readFileSync(new URL("./hud-components.css", import.meta.url), "utf8"));
+const hudCss = readCssWithImports(new URL("./hud-components.css", import.meta.url));
 const themeEntryCss = normalizeCss(readFileSync(new URL("./themes.css", import.meta.url), "utf8"));
 const themesCss = [
   readCssWithImports(new URL("./themes.css", import.meta.url)),
@@ -34,7 +34,7 @@ const stylesCss = normalizeCss(readFileSync(new URL("../styles.css", import.meta
 
 describe("component-level HUD refinements", () => {
   it("keeps the skill burst banner visible above theme overlays", () => {
-    const modalsCss = readFileSync(new URL("./modals.css", import.meta.url), "utf8");
+    const modalsCss = readCssWithImports(new URL("./modals.css", import.meta.url));
 
     expect(modalsCss).toContain(".skill-burst {");
     expect(modalsCss).toContain("z-index: 120");

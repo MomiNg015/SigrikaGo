@@ -1,0 +1,16 @@
+.app-shell.player-theme-enabled.theme-bright-school .utility-entry::before,
+.app-shell.player-theme-enabled.theme-bright-school .utility-entry::after,
+.app-shell.player-theme-enabled.theme-bright-school .player-info::before,
+.app-shell.player-theme-enabled.theme-bright-school .shop-item::before,
+.app-shell.player-theme-enabled.theme-bright-school .shop-item::after,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-item::before,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-item::after,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-row::before,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-row::after,
+.app-shell.player-theme-enabled.theme-bright-school .friend-row::before,
+.app-shell.player-theme-enabled.theme-bright-school .friend-row::after,
+.app-shell.player-theme-enabled.theme-bright-school .watch-room-row::before,
+.app-shell.player-theme-enabled.theme-bright-school .watch-room-row::after {
+  content: none !important;
+  display: none !important;
+}

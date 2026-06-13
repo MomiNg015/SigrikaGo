@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { CHARACTER_SKILL_VOICES, CHARACTER_SYSTEM_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
 import { deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadLoginAssets } from "./preloadAssets.js";
 
 describe("deployment preload asset helpers", () => {
@@ -68,6 +69,26 @@ describe("deployment preload asset helpers", () => {
     expect(assets.audio).toContain("/assets/voice/baconbits_result_win.ogg");
     expect(assets.audio).toContain("/assets/voice/baconbits_result_loss.ogg");
     expect(assets.audio).toContain("/assets/voice/sigrika_countdown_10.ogg");
+  });
+
+  it("derives static image preload groups from the runtime asset registry", () => {
+    const assets = loginPreloadAssets();
+
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
+    expect(assets.deferredImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
+    expect(assets.deferredImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
+  });
+
+  it("derives critical interaction audio from the runtime asset registry", () => {
+    const assets = loginPreloadAssets();
+
+    expect(assets.criticalAudio).toEqual(expect.arrayContaining(RUNTIME_AUDIO_ASSETS.interaction));
+  });
+
+  it("keeps the runtime asset registry independent from playback implementations", () => {
+    const registrySource = fs.readFileSync(path.resolve("src/shared/assetRegistry.js"), "utf8");
+
+    expect(registrySource).not.toContain("../audio/");
   });
 
   it("preloads the candy portrait even before the active user has the candy effect", () => {

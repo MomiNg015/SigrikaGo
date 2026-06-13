@@ -6,7 +6,7 @@ import ShopSidebar from "./shop/ShopSidebar.jsx";
 import ShopTabs from "./shop/ShopTabs.jsx";
 import { useShopCatalog } from "./shop/useShopCatalog.js";
 
-export default function ShopModal({ token, user, onPurchased, onNotice, onClose }) {
+export default function ShopModal({ token, user, musicTracks, onPurchased, onNotice, onClose }) {
   const [detailItem, setDetailItem] = useState(null);
   const {
     activeCategory,
@@ -19,7 +19,7 @@ export default function ShopModal({ token, user, onPurchased, onNotice, onClose 
     selectCategory,
     setActivePage,
     shopSlots
-  } = useShopCatalog({ token, user, onNotice, onPurchased });
+  } = useShopCatalog({ token, user, musicTracks, onNotice, onPurchased });
 
   return (
     <div className="modal-backdrop" onClick={onClose}>

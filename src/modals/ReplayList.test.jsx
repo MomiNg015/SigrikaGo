@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { ReplayList, replayOutcomeForUser } from "./ReplayList.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("ReplayList", () => {
   const characters = {
@@ -69,7 +70,7 @@ describe("ReplayList", () => {
   });
 
   it("keeps replay outcome row colors in the final modal style layer", () => {
-    const css = readFileSync(new URL("../styles/modals.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const finalWinRule = css.lastIndexOf(".replay-table-row.outcome-win");
     const terminalRowRule = css.lastIndexOf(".replay-item,\n.replay-table-row");
 
@@ -104,9 +105,9 @@ describe("ReplayList", () => {
   });
 
   it("uses mobile replay cards instead of relying on a bottom horizontal scrollbar", () => {
-    const css = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
     const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
-    const finalMobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(phoneModalMedia).toContain(".replay-table");
     expect(phoneModalMedia).toContain("overflow-x: hidden");
@@ -143,8 +144,12 @@ describe("ReplayList", () => {
 });
 
 function mediaBlock(css, marker) {
-  const start = css.indexOf(marker);
-  if (start < 0) return "";
-  const next = css.indexOf("\n@media", start + 1);
-  return css.slice(start, next >= 0 ? next : undefined);
+  const blocks = [];
+  let start = css.indexOf(marker);
+  while (start >= 0) {
+    const next = css.indexOf("\n@media", start + 1);
+    blocks.push(css.slice(start, next >= 0 ? next : undefined));
+    start = css.indexOf(marker, start + marker.length);
+  }
+  return blocks.join("\n");
 }

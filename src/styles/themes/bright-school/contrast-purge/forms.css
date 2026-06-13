@@ -1,0 +1,30 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school input,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school textarea,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school select {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 12px !important;
+  box-shadow: inset 2px 2px 0 rgba(61, 43, 37, 0.1) !important;
+  caret-color: #3d2b25 !important;
+  outline: none !important;
+  font-weight: bold !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school input::placeholder,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school textarea::placeholder {
+  color: rgba(61, 43, 37, 0.68) !important;
+  font-weight: bold !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school input:focus,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school textarea:focus,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school select:focus {
+  background-color: #ffffff !important;
+  color: #3d2b25 !important;
+  border-color: #3d2b25 !important;
+  box-shadow: 0 0 0 4px rgba(255, 158, 187, 0.4), inset 2px 2px 0 rgba(61, 43, 37, 0.1) !important;
+}

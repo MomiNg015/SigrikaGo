@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { statusTextForWatchRoom, watchRoomRowKey, joinWatchRoomFromList } from "./WatchModal.jsx";
 import WatchModal from "./WatchModal.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("WatchModal helpers", () => {
   it("labels the watch modal as the match list", () => {
@@ -38,9 +39,9 @@ describe("WatchModal helpers", () => {
   });
 
   it("uses compact mobile watch cards instead of a horizontally scrolling table", () => {
-    const css = readText(new URL("../styles/mobile-modals.css", import.meta.url));
-    const adaptiveCss = readText(new URL("../styles/mobile-adaptive.css", import.meta.url));
-    const brightSchoolMobileCss = readText(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
+    const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
+    const adaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
     const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
     const adaptivePhoneMedia = mediaBlock(adaptiveCss, "@media (max-width: 768px)");
 
@@ -68,7 +69,7 @@ describe("WatchModal helpers", () => {
 
   it("keeps watch mode tabs compact above the room table", () => {
     const css = readText(new URL("../styles/lobby.css", import.meta.url));
-    const modalCss = readText(new URL("../styles/modals.css", import.meta.url));
+    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
 
     expect(css).toContain("grid-template-rows: auto auto minmax(318px, 1fr) auto auto;");
     expect(css).toContain(".watch-list-actions .icon-button,\n.watch-list-actions .inline-close");
@@ -85,7 +86,7 @@ describe("WatchModal helpers", () => {
   });
 
   it("keeps watch list headers and rows on the same mobile columns", () => {
-    const css = readText(new URL("../styles/mobile-modals.css", import.meta.url));
+    const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
     const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
 
     expect(phoneModalMedia).toContain("padding: 0 8px");
@@ -105,10 +106,14 @@ describe("WatchModal helpers", () => {
 });
 
 function mediaBlock(css, marker) {
-  const start = css.indexOf(marker);
-  if (start < 0) return "";
-  const next = css.indexOf("\n@media", start + 1);
-  return css.slice(start, next >= 0 ? next : undefined);
+  const blocks = [];
+  let start = css.indexOf(marker);
+  while (start >= 0) {
+    const next = css.indexOf("\n@media", start + 1);
+    blocks.push(css.slice(start, next >= 0 ? next : undefined));
+    start = css.indexOf(marker, start + marker.length);
+  }
+  return blocks.join("\n");
 }
 
 function readText(url) {

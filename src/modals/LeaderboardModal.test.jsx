@@ -46,7 +46,7 @@ describe("LeaderboardModal layout", () => {
   });
 
   it("keeps column headings aligned with scrollable player rows", () => {
-    const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const tableBlock = css.match(/\.leaderboard-table\s*\{[^}]+\}/)?.[0] ?? "";
     const headingRowBlock = css.match(/\.leaderboard-heading,\s*\.leaderboard-row\s*\{[^}]+\}/)?.[0] ?? "";
     const headingBlock = css.match(/\.leaderboard-heading\s*\{[^}]+\}/)?.[0] ?? "";
@@ -62,8 +62,8 @@ describe("LeaderboardModal layout", () => {
   });
 
   it("keeps leaderboard and shared modals scrollable on phone-sized browsers", () => {
-    const commerceCss = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
-    const modalCss = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8");
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const modalCss = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
     const stylesEntry = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
     const backdropBlock = modalCss.match(/\.modal-backdrop\s*\{[^}]+\}/)?.[0] ?? "";
     const mobileModalMedia = mediaBlock(modalCss, "@media (max-width: 760px), (max-height: 520px)");
@@ -84,7 +84,7 @@ describe("LeaderboardModal layout", () => {
   });
 
   it("adapts all lobby utility windows for narrow mobile browsers", () => {
-    const modalCss = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8");
+    const modalCss = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
     const phoneModalMedia = mediaBlock(modalCss, "@media (max-width: 560px)");
 
     expect(phoneModalMedia).toContain(".shop-modal");
@@ -112,8 +112,8 @@ describe("LeaderboardModal layout", () => {
   });
 
   it("turns the leaderboard into mobile cards instead of a horizontally clipped table", () => {
-    const modalCss = readFileSync(new URL("../styles/mobile-modals.css", import.meta.url), "utf8");
-    const finalMobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const modalCss = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const phoneModalMedia = mediaBlock(modalCss, "@media (max-width: 560px)");
 
     expect(phoneModalMedia).toContain(".leaderboard-modal");
@@ -160,8 +160,23 @@ describe("LeaderboardModal layout", () => {
 });
 
 function mediaBlock(css, marker) {
-  const start = css.indexOf(marker);
-  if (start < 0) return "";
-  const next = css.indexOf("\n@media", start + 1);
-  return css.slice(start, next >= 0 ? next : undefined);
+  const blocks = [];
+  let start = css.indexOf(marker);
+  while (start >= 0) {
+    const next = css.indexOf("\n@media", start + 1);
+    blocks.push(css.slice(start, next >= 0 ? next : undefined));
+    start = css.indexOf(marker, start + marker.length);
+  }
+  return blocks.join("\n");
+}
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readFileSync(url, "utf8");
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
+    return readCssWithImports(new URL(importPath, url), seen);
+  });
 }

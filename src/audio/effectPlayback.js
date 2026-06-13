@@ -1,17 +1,31 @@
 import { BOARD_SOUND_TYPES } from "../shared/boardAudio.js";
+import {
+  CAPTURE_SOUND,
+  HIDDEN_HAND_REVEAL_SOUND,
+  STONE_SOUND,
+  UI_CLOSE_WINDOW_SOUND,
+  UI_CONFIRM_SOUND,
+  UI_DETAIL_OPEN_SOUND,
+  UI_HOUSE_OPEN_SOUND,
+  UI_MATCH_OPEN_SOUND,
+  UI_SHOP_OPEN_SOUND,
+  UI_UNAVAILABLE_SOUND
+} from "../shared/audioAssets.js";
 import { DEFAULT_AUDIO_SETTINGS, audioVolume } from "./audioSettings.js";
 import { browserAudioContextClass } from "./audioRuntime.js";
 
-export const STONE_SOUND = "/assets/music/godown_clear.ogg";
-export const CAPTURE_SOUND = "/assets/music/go_capture_clear.ogg";
-export const HIDDEN_HAND_REVEAL_SOUND = "/assets/music/hidden_hand_reveal.ogg";
-export const UI_CLOSE_WINDOW_SOUND = "/assets/music/ui_close_window.ogg";
-export const UI_CONFIRM_SOUND = "/assets/music/ui_confirm.ogg";
-export const UI_DETAIL_OPEN_SOUND = "/assets/music/ui_detail_open.ogg";
-export const UI_HOUSE_OPEN_SOUND = "/assets/music/ui_house_open.ogg";
-export const UI_MATCH_OPEN_SOUND = "/assets/music/ui_match_open.ogg";
-export const UI_SHOP_OPEN_SOUND = "/assets/music/ui_shop_open.ogg";
-export const UI_UNAVAILABLE_SOUND = "/assets/music/ui_unavailable.ogg";
+export {
+  CAPTURE_SOUND,
+  HIDDEN_HAND_REVEAL_SOUND,
+  STONE_SOUND,
+  UI_CLOSE_WINDOW_SOUND,
+  UI_CONFIRM_SOUND,
+  UI_DETAIL_OPEN_SOUND,
+  UI_HOUSE_OPEN_SOUND,
+  UI_MATCH_OPEN_SOUND,
+  UI_SHOP_OPEN_SOUND,
+  UI_UNAVAILABLE_SOUND
+};
 export const UI_UNAVAILABLE_SHAKE_MS = 1063;
 
 const effectBufferCache = new Map();

@@ -1,0 +1,87 @@
+@media (max-width: 560px) {
+  .replay-table-heading,
+  .replay-table-row,
+  .replay-table.compact .replay-table-heading,
+  .replay-table.compact .replay-table-row {
+    min-width: 560px;
+  }
+
+  .replay-table {
+    display: grid;
+    grid-auto-rows: auto;
+    gap: 8px;
+    align-content: start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 0;
+  }
+
+  .replay-table-heading {
+    display: none;
+    min-width: 0;
+  }
+
+  .replay-table-row,
+  .replay-table.compact .replay-table-row {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+      "time moves result"
+      "black black white";
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 6px 10px;
+    align-items: center;
+    justify-items: stretch;
+    padding: 9px 10px;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .replay-table-row > span:nth-child(1) {
+    grid-area: time;
+    font-size: 12px;
+    opacity: 0.88;
+  }
+
+  .replay-table-row > .replay-player-cell:nth-child(2) {
+    grid-area: black;
+  }
+
+  .replay-table-row > .replay-player-cell:nth-child(3) {
+    grid-area: white;
+  }
+
+  .replay-table-row > span:nth-child(4) {
+    grid-area: result;
+    justify-self: end;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .replay-table-row > span:nth-child(5) {
+    grid-area: moves;
+    justify-self: center;
+    font-size: 12px;
+    opacity: 0.82;
+    white-space: nowrap;
+  }
+
+  .replay-player-cell {
+    min-width: 0;
+    display: inline-grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .room-floating-modal.user-profile-modal {
+    max-height: var(--mobile-modal-max-height);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .profile-replay-dialog {
+    display: flex;
+    flex-direction: column;
+  }
+}

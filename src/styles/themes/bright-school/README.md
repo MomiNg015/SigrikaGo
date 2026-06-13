@@ -10,13 +10,25 @@ Use duplicated specificity only for late override layers:
 
 Layer order:
 
-1. `base.css` - core cream paper visual language and broad component styling.
-2. `contrast-purge.css` - early readability cleanup from the first Bright School pass.
+1. `base.css` - import-only core cream paper entry delegating root paper, broad panels, home, room/chat/board, forms/cards, preload, and scrollbar rules to `base/`.
+2. `contrast-purge.css` - import-only early readability cleanup from the first Bright School pass.
 3. `gallery-polish.css` - static gallery parity and visible hand-drawn polish.
 4. `specificity-overrides.css` - higher specificity fixes for inherited base/HUD CSS.
 5. `radical-purge.css` - stronger de-tech cleanup for obvious HUD bleed-through.
-6. `firewall.css` - generic scoped reset for missed nested surfaces.
-7. `component-repairs.css` - intentional notebook details restored after the firewall.
+6. `firewall.css` - import-only anti-HUD bleed reset entry for missed nested surfaces.
+7. `component-repairs.css` - import-only entry for intentional notebook details restored after the firewall.
 8. `qa-guard.css` - final UI/UX guard for overflow, clarity, focus, touch targets, and mobile safety.
 
-For frequent visual iteration, edit `component-repairs.css` first. For systemic safety fixes, edit `qa-guard.css`. Avoid changing React class names for theme-only work.
+Focused import-only entries:
+
+- `base.css` delegates early Bright School foundation rules to `base/`.
+- `contrast-purge.css` delegates emergency readability reset groups to `contrast-purge/`.
+- `commerce.css` delegates player-facing commerce overlays to `commerce/`.
+- `home.css` delegates Bright School lobby canvas, panel, player card, student ID, manual label, and responsive lobby rules to `home/`.
+- `mobile.css` delegates portrait mobile layout and interaction fixes to `mobile/`.
+- `mobile/room.css` delegates portrait battle-room rules to `mobile/room/`.
+- `component-repairs.css` delegates late component repair rules to `component-repairs/`.
+- `quality-base.css` delegates UI/UX audit and visual refinement rules to `quality-base/`.
+- `firewall.css` delegates anti-HUD bleed resets to `firewall/`.
+
+For frequent visual iteration, edit the focused file under `component-repairs/` that owns the surface. Keep `component-repairs.css` import-only. For systemic safety fixes, edit `qa-guard.css`. Avoid changing React class names for theme-only work.

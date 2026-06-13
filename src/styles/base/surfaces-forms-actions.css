@@ -1,0 +1,168 @@
+.auth-panel,
+.panel,
+.small-modal,
+.shop-modal,
+.chat-box,
+.player-info {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(72, 44, 86, 0.12);
+}
+
+.auth-panel {
+  width: min(440px, 100%);
+  padding: 26px;
+}
+
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-lockup img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.brand-lockup p,
+.topbar p,
+.room-header p {
+  margin: 0 0 4px;
+  color: #8a6b8f;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+.auth-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 6px;
+  color: #6b596d;
+}
+
+.auth-form input,
+.chat-box input {
+  border: 1px solid #ddcfe2;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: white;
+  outline: none;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 8px;
+  background: #f2e9f5;
+}
+
+.segmented button,
+.toggle {
+  border: 0;
+  border-radius: 7px;
+  padding: 10px;
+  background: transparent;
+  color: #68536e;
+}
+
+.segmented .active,
+.toggle.active {
+  background: #ffffff;
+  color: #2d2430;
+  box-shadow: 0 6px 18px rgba(82, 61, 90, 0.12);
+}
+
+.primary-action,
+.secondary-action,
+.match-button,
+.action-bar button,
+.chat-box button,
+.watch-pad button,
+.danger-action {
+  border: 0;
+  border-radius: 8px;
+  padding: var(--control-pad-y) var(--control-pad-x);
+  background: #5d7fe8;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.primary-action,
+.secondary-action,
+.match-button,
+.action-bar button,
+.chat-box button,
+.watch-pad button,
+.danger-action,
+.icon-button,
+.close-button,
+.utility-entry,
+.segmented button,
+.toggle {
+  transition: transform 160ms ease, filter 160ms ease, outline-color 160ms ease, background-color 160ms ease;
+}
+
+:is(.primary-action,
+.secondary-action,
+.match-button,
+.action-bar button,
+.chat-box button,
+.watch-pad button,
+.danger-action,
+.icon-button,
+.close-button,
+.utility-entry,
+.segmented button,
+.toggle):not(.home-image-entry):not(:disabled):hover,
+:is(.primary-action,
+.secondary-action,
+.match-button,
+.action-bar button,
+.chat-box button,
+.watch-pad button,
+.danger-action,
+.icon-button,
+.close-button,
+.utility-entry,
+.segmented button,
+.toggle):not(.home-image-entry):not(:disabled):focus-visible {
+  transform: translateY(-2px);
+  outline: 2px solid rgba(93, 127, 232, 0.42);
+  outline-offset: 3px;
+  filter: brightness(1.04) saturate(1.04);
+}
+
+.secondary-action,
+.action-bar button {
+  background: #ffffff;
+  color: #4f3d55;
+  border: 1px solid #dfd0e5;
+}
+
+.form-error {
+  color: #b63d52;
+  margin: 0;
+}
+
+.admin-success {
+  color: #20724a;
+  margin: 0;
+  font-weight: 800;
+}

@@ -1,0 +1,118 @@
+@media (max-width: 620px) {
+  .auth-screen,
+  .home-screen,
+  .room-screen,
+  .admin-screen {
+    width: calc(100vw - 18px);
+    padding: 12px 0;
+  }
+
+  .topbar,
+  .room-header {
+    align-items: flex-start;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .board-wrap {
+    min-width: 0;
+    width: min(100%, calc(100vw - 24px));
+    padding: 10px;
+    grid-template-columns: 22px 1fr 22px;
+    grid-template-rows: 22px 1fr 22px;
+  }
+
+  .home-grid-featured {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "player"
+      "match"
+      "manual"
+      "utility";
+  }
+
+  .home-match-feature {
+    justify-self: center;
+    max-width: 100%;
+  }
+
+  .home-grid-featured > .home-utility-grid {
+    justify-self: center;
+  }
+
+  .action-bar {
+    justify-content: stretch;
+  }
+
+  .action-bar button {
+    flex: 1 1 42%;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-main {
+    padding: 14px;
+  }
+
+  .admin-drawer {
+    inset: 9px;
+    width: auto;
+  }
+
+  .admin-crud-drawer {
+    inset: 9px;
+    width: auto;
+    padding: 18px;
+  }
+
+  .admin-crud-drawer .admin-character-form {
+    padding-right: 0;
+  }
+
+  .admin-form-heading {
+    display: grid;
+  }
+
+  .admin-form-heading .inline-actions {
+    width: 100%;
+  }
+
+  .admin-form-heading .inline-actions button {
+    flex: 1 1 0;
+  }
+
+  .admin-character-editor {
+    padding: 12px;
+  }
+
+  .admin-character-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide-field {
+    grid-column: auto;
+  }
+
+  .skill-burst {
+    grid-template-columns: 100px 1fr;
+    min-height: 112px;
+    padding: 14px 18px;
+  }
+
+  .skill-burst img {
+    width: 96px;
+    height: 88px;
+  }
+
+  .volume-row {
+    grid-template-columns: 1fr;
+  }
+
+  .volume-row strong {
+    text-align: left;
+  }
+}

@@ -1,0 +1,100 @@
+# 后端、HTTP API 与实时房间
+
+本文记录 Express、Socket.IO、房间生命周期、HTTP 路由边界和生产部署相关设计。新增 API、Socket 事件、房间生命周期模块或部署行为时优先更新本分篇。
+
+## 当前结论
+
+- `server/index.js` 负责 HTTP 与 Socket.IO 入口组合；启动数据与 schema 初始化顺序已收口到 `server/serverStartup.js`，具体 HTTP 领域逻辑已逐步拆到 `*Routes.js` 和领域模块，Socket 连接事件套件已由 `server/socketEvents.js` 统一装配，匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战和断线清理行为继续由对应 `server/socket*Events.js` 分组模块维护。
+- 房间实时逻辑由 `server/rooms.js` 组合多个生命周期边界，广播、时钟、持久化、恢复、请求和动作处理已有独立模块。
+- 普通对局秒级时钟走轻量 `room:clock`，关键状态变化仍走完整 `room:update`。
+
+## API 与实时事件
+
+## Production Deployment Hardening
+
+- Runtime security helpers live in `server/security.js`.
+- `assertProductionDeployment` 在生产环境启动时执行部署配置体检：`JWT_SECRET` 至少 32 位且不能使用默认值，`PUBLIC_ORIGIN` / `SITE_ORIGIN` / `ALLOWED_ORIGINS` 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。
+- `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；该脚本默认按生产规则检查，即使调用方忘记设置 `NODE_ENV=production` 也不会按开发环境误通过。
+- `npm run check` 是当前交付前的聚合质量入口，会顺序运行单元测试、Vite build、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。
+- Vite production build uses explicit manual chunks in `vite.config.js`: React runtime code goes to `react-vendor`, Socket.IO client runtime goes to `realtime-vendor`, and the skill-animation Pixi runtime goes to the lazy `pixi-vendor` chunk. The entry JS stays below the default warning target, while the larger Pixi chunk is an intentional lazy/prewarmed exception guarded by `scripts/viteBuildConfig.test.js`.
+- Username input is normalized server-side and must be 2-16 characters, limited to Chinese characters, English letters, numbers, and `_`.
+- Password input is enforced server-side as 6-14 characters. Registration returns the exact validation issue; login returns a generic username/password error for invalid credentials or invalid credential shapes.
+- Chat text is normalized server-side by removing control characters, trimming whitespace, rejecting empty messages, and capping messages at 240 characters.
+- Room codes accepted by Socket.IO room operations must be exactly five digits. Board point payloads must be `x,y` coordinates within the 13x13 board.
+- Express now uses `helmet` security headers, a 64 KB JSON body limit, auth-specific rate limiting, and general `/api` rate limiting.
+- HTTP CORS and Socket.IO CORS use the same origin allowlist. Production origins come from `PUBLIC_ORIGIN`, `SITE_ORIGIN`, and comma-separated `ALLOWED_ORIGINS`; development additionally allows localhost ports used by Vite and the local server.
+- Socket.IO connections call `server/socketEvents.js` once after online presence and initial lobby emissions. That boundary installs the `server/socketGuards.js` per-socket event guard and registers the focused event groups. The guard rejects excessive event traffic within a 10-second window before business event handlers run. `server/socketMatchEvents.js` owns `match:join` / `match:leave` registration, including refreshed user data, blacklist candidate filtering, waiting payloads, queue cleanup, and lobby-stat refreshes. `server/socketRoomEvents.js` owns `room:join` / `room:leave` / `room:resume`, including room-code validation, room attach/leave calls, viewer-specific updates, resume fallback payloads, and room broadcasts. `server/socketGameEvents.js` owns `game:action` plus counting/draw/scoring event registration, forwarding lifecycle results into error toasts or success-room broadcasts. `server/socketChatEvents.js` owns `chat:send`, delegating chat mutation to the room chat lifecycle and broadcasting only changed rooms. `server/socketDuelEvents.js` owns `duel:request` / `duel:respond`, including refresh-before-delegate behavior, payload coercion, auth-expired toast handling, and successful-response lobby stat refresh. `server/socketDisconnectEvents.js` owns `disconnect` cleanup, including online-session unregister, room detach, changed-room broadcasts, and lobby-stat refresh.
+- Socket.IO connections remain stable while the frontend user object changes. Before `match:join`, `duel:request`, and accepted `duel:respond` create a room, the server refreshes `socket.user` from the latest database user so the actual room character matches the current selected sortie character rather than the snapshot from initial socket authentication.
+- In production, `server/staticAssets.js` serves the built Vite app and SPA fallback when `dist/` exists, while still keeping `/api`, `/socket.io`, and `/uploads` routed to backend behavior. Hashed Vite assets, including dash-style chunk names, receive one-year immutable caching; other built assets keep the shorter static middleware cache.
+- Production uploads use `server/uploadPaths.js` to resolve the persisted upload root. `UPLOAD_DIR` can point to an absolute directory such as `/var/lib/sigrikago/uploads`; when omitted, uploads continue to default to `public/uploads`. Character portrait uploads are stored under `${UPLOAD_DIR}/characters` and remain publicly available through `/uploads/characters/...`.
+- The single-server deployment guide lives in `docs/deployment.md`. It documents required environment variables, SQLite and upload-directory persistence, systemd, Nginx WebSocket proxying, HTTPS, backups, and the update flow. The guide targets the merged `master` branch for production checkout.
+
+## 2026-05-29 Account Session Update
+
+- Login sessions are tracked in the `LoginSession` database table through `server/loginSessions.js`; online socket membership is coordinated separately by `server/onlineSessions.js`. JWTs include a `sid` claim and both HTTP auth and Socket.IO auth reject revoked or expired session ids.
+- `/api/auth/login` and `/api/auth/register` create a database login session, return an access token, and set a `sigrika_refresh` `HttpOnly` cookie. In production the cookie also uses `Secure`.
+- `/api/auth/refresh` reads the refresh cookie, validates and rotates the stored refresh token hash, and returns a fresh access token plus public user payload. `src/main.jsx` calls this on startup, and `src/api/client.js` retries one authenticated JSON request or character portrait upload after a successful refresh when an HTTP 401 is encountered.
+- If `/api/auth/login` receives correct credentials for an account that currently has an online Socket, it returns HTTP 409 with `code: "already_logged_in"` and the message `当前账号已登录了，确定继续登录吗？`. Persisted refresh sessions without an online Socket do not trigger this prompt and are replaced by the new login.
+- `src/auth/AuthScreen.jsx` detects that conflict, shows the browser confirmation dialog, and retries login with `forceLogin: true` only after confirmation.
+- Forced login revokes previous database sessions, emits `account:logged-out` to existing sockets for that user, disconnects them, and then creates a new session for the confirmed login.
+- Socket disconnects only change online/offline presence and room disconnect state. They no longer revoke login sessions, so page refreshes, temporary backend restarts, or network hiccups do not force users back to the login screen as long as the refresh cookie remains valid.
+
+- Result rewards:
+  - The result modal displays the current player's rating and coin deltas.
+  - Rating deltas are win `+20`, loss `-20`, draw `0`.
+  - Coin deltas are win `+50`, loss `+20`, draw `0`.
+  - Decisive game persistence uses `resultRewardDelta`; winner records gain coins and rating, loser records gain consolation coins and lose rating. Draws remain record-only for rewards.
+- Home layout:
+  - The home screen prioritizes "星炬对弈" as the largest primary action.
+  - "棋舍" is a secondary profile/character entry with the selected portrait vertically centered beside player info.
+  - 大厅标题与副标题独立于右上角操作区，居中显示在中上方；副标题和标题保持错位排版并使用更大的字号填充顶部视觉空间。
+  - "商店", "排行榜", "观战", and "好友" are compact circular utility icon buttons anchored under the house card; each button shows only icon plus title. Admin management is available only to admins and appears as a labeled circular button below the top-right settings button, right-aligned with the logout/settings action stack.
+  - Narrow utility overflow is contained inside the utility grid instead of expanding the whole page.
+  - The friend button opens a social modal backed by `/api/social` with "好友" and "黑名单" tabs. Each list row shows online state, common character portrait, username, rank, rating, and a gear action button. Friend actions are "详细信息", "密谈", "对局申请", and "解除好友"; blacklist actions are "详细信息" and "从黑名单解除". Clicking a gear action expands a small horizontal action row directly below that user row; clicking the same gear again collapses the row. The tab bar also includes a username search box plus search icon button; usernames are limited to Chinese, English, numbers, and underscores up to 16 characters. On desktop, the toolbar reserves a right-side close-button safe area so the search submit button cannot collide with the modal close control. A successful search opens the shared profile modal, while missing-user and relationship-action messages use the page-level top toast.
+  - "详细信息" uses a shared independent modal with common character portrait, username, record, rating, rank, per-character record rows, a "对局回放" button, and bottom-right relationship actions "加为好友" and "加入黑名单". Relationship actions close the profile modal after success, switch the social list to the corresponding tab, and show a page-level top toast. Replay rows are loaded lazily only after that button is clicked, displayed in a fixed-height scrollable dialog, and each row can open an individual public replay. The same profile card is reused by the room member popover, but room/observer profile cards disable "对局回放" to avoid jumping into replay while inside a live room.
+  - Profile replay dialogs include the viewed user's username in the title. The dialog shell keeps the title and close button fixed while only the replay list scrolls.
+  - "解除好友" and "从黑名单解除" use a shared confirmation panel and persist through `UserRelationship`. Adding a friend automatically removes/overwrites blacklist state for that target, and adding to blacklist overwrites friend state.
+  - "对局申请" is enabled only for online users who are not currently playing. The server tracks connected sockets and active room players; `duel:request` first checks whether the target has blacklisted the requester, silently suppressing `duel:incoming` for that target and sending the requester a normal delayed rejection. Otherwise it delivers `duel:incoming`, `duel:respond` accepts/rejects the request, and acceptance creates a direct room through the same match-found/opening flow as normal matchmaking. Timeout or rejection emits a red danger notice to the requester.
+  - The house rank stat includes a hover help icon explaining that rank is derived from rating, 1000 points is 1-dan, each 100 points changes one rank, and 9-dan is the maximum.
+- Character voice categories:
+  - Character voice events are explicit: `game-start`, `skill-cast`, `sortie`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `timeout`, `result-victory`, `result-defeat`, `result-draw`, and `house-detail`.
+  - Recommended upload naming for full character voice packs uses one folder per character, for example `C:/codex/musicsour/cVoice/denia/`. Prefer OGG files with stable English scene keys: `match_start.ogg`, `skill_cast.ogg`, `sortie.ogg`, `byoyomi_start.ogg`, `byoyomi_remaining_2.ogg`, `byoyomi_remaining_1.ogg`, `countdown_10.ogg` through `countdown_01.ogg`, `result_win.ogg`, `result_loss.ogg`, `result_draw.ogg`, and `house_detail.ogg`. Avoid Chinese characters, spaces, and punctuation in filenames so Windows paths, frontend asset references, and build tooling stay predictable; `timeout.ogg` is no longer part of the expected pack because timeout has no standalone audio.
+  - Denia now has a full AI voice pack under `public/assets/voice/denia_*.ogg`, converted from `C:/codex/musicsour/cVoice/denia/*.wav`. The pack covers `game-start`, `skill-cast`, `sortie`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`; `skill_cast.wav` is exported as `denia_skill_cast.ogg`, and `sortie.wav` is exported as `denia_sortie.ogg`.
+  - Denia countdown voice assets `denia_countdown_10.ogg` through `denia_countdown_1.ogg` keep the stable countdown event filenames used by the byo-yomi resolver, so refreshed voice packs can replace the existing OGG files without changing event wiring.
+  - Sigrika now has role voice assets under `public/assets/voice/sigrika_*.ogg`, converted from `C:/codex/musicsour/cVoice/sigrika/*.wav`. The pack covers `game-start`, `skill-cast`, `sortie`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`; `skill_cast.wav` is exported as `sigrika_skill_cast.ogg`, `sortie.wav` is exported as `sigrika_sortie.ogg`, while `byoyomi_start.wav` and `byoyomi_remaining_1.wav` refresh `sigrika_byoyomi_start.ogg` and `sigrika_byoyomi_remaining_1.ogg`.
+  - Aemeath now has role voice assets under `public/assets/voice/aemeath_*.ogg`, converted from `C:/codex/musicsour/cVoice/aemeath/*.wav`. The pack covers `game-start`, `skill-cast`, `sortie`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`; `skill_cast.wav` is exported as `aemeath_skill_cast.ogg`.
+  - Nabomo now has role voice assets under `public/assets/voice/nabomo_*.ogg`, converted from `C:/codex/musicsour/cVoice/nabomo/*.wav`. The pack covers `game-start`, `skill-cast`, `sortie`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `countdown-10` through `countdown-1`, `result-victory`, `result-defeat`, and `result-draw`; `skill_cast.wav` is exported as `nabomo_skill_cast.ogg`.
+  - Built-in skill voice assets are bridged into each character's `systemVoices.skill-cast` map at runtime, so skill banners use the same `resolveSystemVoice` route as other role voices.
+  - Baconbits now has role voice assets for `game-start`, `skill-cast`, `sortie`, `byo-yomi-start`, `byo-yomi-period-2`, `byo-yomi-period-1`, `result-victory`, `result-defeat`, and `timeout`; `skill_cast.wav` is exported as `baconbits_skill_cast.ogg`, `sortie.ogg` is exported as `baconbits_sortie.ogg`, `result_win.ogg` is exported as `baconbits_result_win.ogg`, `result_loss.wav` is exported as `baconbits_result_loss.ogg`, and the period 2 and period 1 events reuse `baconbits_byo_yomi_periods.ogg`.
+  - Character detail clicks in the house route through `house-detail`; missing assets stay silent until a character-specific detail voice is configured.
+  - Countdown voice uses 10 second-specific events, with invalid countdown event names rejected before character audio override.
+  - Missing character voice assets fall back to generic voice/TTS according to `resolveSystemVoice`.
+- Room time display:
+  - Player timers render a digital/nixie-style label, primary time/seconds, and smaller leading-zero byo-yomi period counter.
+  - The timer panel uses a light background with subtle state accents instead of a dark display block.
+  - Timer progress bars use shared state variables across themes: blue during main time, red when byo-yomi has 3 or 2 periods left, and a multicolor fill on the final byo-yomi period.
+  - The compact `30s × 3` style is no longer used in the player info timer.
+- Room action area:
+  - Normal play shows regular action buttons below the board.
+  - Draw requests, counting requests, dead-stone marking, and result review render in the main board action area through phase-aware `DecisionBar` controls.
+  - Mobile dead-stone confirmation keeps `decision-bar` separate from the normal action-button grid: the copy column shows the title plus a two-line clamped hint, and `decision-actions` uses two equal-width confirm/reset buttons. `mobile-room.css`, `mobile-adaptive.css`, and Bright School mobile overrides must preserve this special layout so 375px/393px portrait docks do not stack the confirmation buttons awkwardly.
+  - Decision controls are participant-safe: missing/non-player local state sees an informational waiting state instead of active buttons.
+  - Request and result-review decision bars include countdown/progress visuals.
+  - Text-only operation hints render below the opponent info area, to the left of the main board action area.
+  - Scoring result review shows a formatted calculation breakdown. Black result is `black stones + territory - komi - own skill cost + opponent skill cost`; white result is `white stones + territory + komi - own skill cost + opponent skill cost`. The raw difference is `black result - white result`; the displayed winning margin is `abs(raw difference) / 2`, formatted as whole/fraction stones.
+- Finished-game portrait badges:
+  - Decisive finished games show transparent outline badges overlapping the portrait lower-right: red text/red ring for "胜", black text/black ring for "负".
+  - Draw results show no win/loss portrait badge.
+  - Invalid results show no win/loss portrait badge even when a winner color is present in the result payload.
+- Responsive direction:
+  - The room player/board/side layout keeps its three-column structure across desktop and tablet widths; opponent and self info columns use the same width.
+  - Narrow room screens use practical column minimums and controlled horizontal scrolling instead of switching to a stacked layout.
+  - Tablet/mobile overrides do not reshape room player cards, preserving the vertical portrait, digital timer, and action hierarchy inside the fixed three-column room layout.
+
+## 2026-05-27 Room Persistence Update
+
+- Active and finished rooms are now snapshotted to the SQLite `PersistedRoom` table. The snapshot stores game state, players, clocks, chat, deadlines, close time, and candy-effect settlement state, but does not persist live Socket.IO socket ids or spectators.
+- Server startup calls `restorePersistedRooms(io)` after the socket layer is installed. Restored rooms restart their clock/opening/deadline/close timers, and players can reconnect through the existing `room:resume` flow.
+- When a player socket disconnects, the room clears that player's `socketId` and records `disconnectedAt`. If both players are absent from an unfinished room for 5 minutes, the server marks the game as `invalid` with reason `empty-room`, skips `GameRecord` creation, deletes the persisted room, and removes the room from memory.
+- Finished rooms keep the existing 5-minute review window. When the timer fires while any player or spectator socket is still attached, the server extends `closesAt` instead of closing the room. Only empty finished rooms are deleted.
+- `src/main.jsx` handles `room:closed` payloads, clears the remembered room code, resets room UI state, and displays the payload message when present. Finished-room cleanup payloads carry `reason: "finished-room-close"` plus `roomCode`; player clients mark that result as dismissed and stay silent so the result modal does not reopen during cleanup.

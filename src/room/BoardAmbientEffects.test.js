@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import BoardAmbientEffects, { hasColorIllusionFog } from "./BoardAmbientEffects.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("BoardAmbientEffects", () => {
   test("detects active Nabomo color illusion fog from passive state", () => {
@@ -26,7 +27,7 @@ describe("BoardAmbientEffects", () => {
   });
 
   test("keeps the color illusion fog light, feathered, and pointer transparent", () => {
-    const css = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const layerBlock = css.match(/\.board-ambient-layer\s*\{[^}]+\}/)?.[0] ?? "";
     const cloudBlock = css.match(/\.fog-cloud\s*\{[^}]+\}/)?.[0] ?? "";
 

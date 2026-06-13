@@ -8,7 +8,7 @@ import HouseCharacterGrid from "./house/HouseCharacterGrid.jsx";
 import HouseDecorationPicker from "./house/HouseDecorationPicker.jsx";
 import { CharacterDetailDialog } from "./house/HouseNestedDialogs.jsx";
 
-export default function HouseModal({ user, characterListView, audioSettings, onClose, onSelectCharacter, onSelectCharacterMusic, onApplyDecoration }) {
+export default function HouseModal({ user, characterListView, audioSettings, musicTracks, onClose, onSelectCharacter, onSelectCharacterMusic, onApplyDecoration }) {
   const [detailCharacter, setDetailCharacter] = useState(null);
   const [applyingDecoration, setApplyingDecoration] = useState("");
   const [decorationError, setDecorationError] = useState("");
@@ -69,6 +69,7 @@ export default function HouseModal({ user, characterListView, audioSettings, onC
             itemEffects={itemEffects}
             user={user}
             audioSettings={audioSettings}
+            musicTracks={musicTracks}
             onSelectCharacterMusic={onSelectCharacterMusic}
             onClose={() => setDetailCharacter(null)}
           />

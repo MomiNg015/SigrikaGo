@@ -20,9 +20,9 @@ describe("FriendsModal mobile layout", () => {
   });
 
   it("uses compact mobile friend cards instead of a horizontally scrolling table", () => {
-    const css = readText(new URL("../styles/mobile-modals.css", import.meta.url));
-    const adaptiveCss = readText(new URL("../styles/mobile-adaptive.css", import.meta.url));
-    const brightSchoolMobileCss = readText(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
+    const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
+    const adaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
     const phoneModalMedia = mediaBlock(css, "@media (max-width: 560px)");
     const adaptivePhoneMedia = mediaBlock(adaptiveCss, "@media (max-width: 768px)");
 
@@ -49,8 +49,8 @@ describe("FriendsModal mobile layout", () => {
   });
 
   it("keeps desktop friend search clear of the close button", () => {
-    const commerceCss = readText(new URL("../styles/commerce-settings.css", import.meta.url));
-    const brightSchoolRepairCss = readText(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const brightSchoolRepairCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     const desktopCommerceBlock = mediaBlock(commerceCss, "@media (min-width: 769px)");
     const desktopBrightSchoolBlock = mediaBlock(brightSchoolRepairCss, "@media (min-width: 769px)");
 
@@ -62,12 +62,27 @@ describe("FriendsModal mobile layout", () => {
 });
 
 function mediaBlock(css, marker) {
-  const start = css.indexOf(marker);
-  if (start < 0) return "";
-  const next = css.indexOf("\n@media", start + 1);
-  return css.slice(start, next >= 0 ? next : undefined);
+  const blocks = [];
+  let start = css.indexOf(marker);
+  while (start >= 0) {
+    const next = css.indexOf("\n@media", start + 1);
+    blocks.push(css.slice(start, next >= 0 ? next : undefined));
+    start = css.indexOf(marker, start + marker.length);
+  }
+  return blocks.join("\n");
 }
 
 function readText(url) {
   return readFileSync(url, "utf8").replace(/\r\n/g, "\n");
+}
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readText(url);
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
+    return readCssWithImports(new URL(importPath, url), seen);
+  });
 }

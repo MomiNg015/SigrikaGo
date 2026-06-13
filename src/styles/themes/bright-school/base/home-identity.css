@@ -1,0 +1,46 @@
+.app-shell.player-theme-enabled.theme-bright-school .home-top-strip {
+  min-height: auto !important;
+  padding: 12px 18px !important;
+  border-bottom: 3px solid #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .home-brand-title,
+.app-shell.player-theme-enabled.theme-bright-school .home-player-plaque strong,
+.app-shell.player-theme-enabled.theme-bright-school .timer-primary,
+.app-shell.player-theme-enabled.theme-bright-school .timer-digits,
+.app-shell.player-theme-enabled.theme-bright-school .clock-digits,
+.app-shell.player-theme-enabled.theme-bright-school .top-stats-bar .stat strong,
+.app-shell.player-theme-enabled.theme-bright-school .stat strong {
+  color: #4a3736 !important;
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif !important;
+  font-size: clamp(22px, 2.2vw, 34px) !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .home-brand-subtitle,
+.app-shell.player-theme-enabled.theme-bright-school .home-online-tag,
+.app-shell.player-theme-enabled.theme-bright-school .home-lobby-status,
+.app-shell.player-theme-enabled.theme-bright-school .plaque-stats,
+.app-shell.player-theme-enabled.theme-bright-school .captures,
+.app-shell.player-theme-enabled.theme-bright-school .meta-tag,
+.app-shell.player-theme-enabled.theme-bright-school .top-stats-bar .stat > span {
+  color: rgba(74, 55, 54, 0.68) !important;
+  opacity: 1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .home-lobby-status {
+  display: inline-flex !important;
+  padding: 5px 12px;
+  border: 2px solid #4a3736;
+  border-radius: 999px;
+  background: #ff9ebb;
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .home-player-plaque {
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  transform: none !important;
+}

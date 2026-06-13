@@ -1,0 +1,76 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
+  border: 3px solid var(--bright-border) !important;
+  box-shadow: 4px 4px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-empty,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .quiet-text {
+  background: #fffaf0 !important;
+  color: var(--bright-ink) !important;
+  border: 2px dashed var(--bright-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  padding: 14px 18px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero {
+  background: #fff6dd !important;
+  color: var(--bright-ink) !important;
+  border: 3px solid var(--bright-border) !important;
+  border-radius: 18px !important;
+  box-shadow: 5px 5px 0 var(--bright-border) !important;
+  clip-path: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero img,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .portrait-wrap {
+  background: radial-gradient(circle at 50% 58%, rgba(255, 158, 187, 0.28), rgba(255, 250, 240, 0.86) 66%) !important;
+  border: 2px dashed rgba(74, 55, 54, 0.42) !important;
+  border-radius: 16px !important;
+  clip-path: none !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.black-portrait {
+  background: #2b2b2b !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.white-portrait {
+  background: #ffffff !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap img {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  filter: drop-shadow(8px 10px 0 rgba(74, 55, 54, 0.18)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-search,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-modal-toolbar {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-search input {
+  border-width: 2px !important;
+  border-radius: 999px !important;
+  box-shadow: 2px 2px 0 var(--bright-border) !important;
+  padding: 10px 16px !important;
+}
+
+@media (min-width: 769px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-modal .friends-modal-toolbar {
+    padding-right: 68px !important;
+  }
+}

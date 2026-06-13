@@ -1,0 +1,136 @@
+/* Live room shell, desktop header, and mobile tab scaffolding. */
+/* Live room, board, actions, chat */
+
+.battle-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, var(--right-panel)) minmax(430px, var(--board-size)) minmax(220px, var(--right-panel));
+  justify-content: center;
+  gap: var(--fluid-gap);
+  align-items: start;
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+  padding-bottom: 0;
+}
+
+.mobile-battle-layout {
+  display: grid;
+  grid-template-areas:
+    "opponent"
+    "board"
+    "self"
+    "tabs";
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: center;
+  gap: 10px;
+  align-items: start;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: visible;
+  padding-bottom: 0;
+}
+
+.mobile-battle-layout .opponent-side {
+  grid-area: opponent;
+}
+
+.mobile-battle-layout .board-column {
+  grid-area: board;
+}
+
+.mobile-battle-layout .room-side {
+  grid-area: self;
+}
+
+.desktop-room-screen .room-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+}
+
+.room-title-stack {
+  min-width: 0;
+}
+
+.desktop-room-screen .room-toggles {
+  justify-self: end;
+  justify-content: flex-end;
+}
+
+.desktop-room-screen .room-mobile-exit {
+  justify-self: end;
+}
+
+.mobile-room-tabs {
+  grid-area: tabs;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(128, 102, 142, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 30px rgba(42, 32, 48, 0.1);
+  backdrop-filter: blur(14px) saturate(1.08);
+}
+
+.mobile-tab-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 5px;
+  border-bottom: 1px solid rgba(128, 102, 142, 0.1);
+}
+
+.mobile-tab-button {
+  min-height: 34px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #5d5067;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mobile-tab-button.active {
+  border-color: rgba(93, 127, 232, 0.26);
+  background: rgba(240, 245, 255, 0.9);
+  color: #384c92;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.mobile-tab-panel {
+  min-height: 0;
+  max-height: 172px;
+  overflow: auto;
+  padding: 8px;
+}
+
+.mobile-room-screen .action-bar {
+  position: static;
+  bottom: auto;
+  z-index: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.mobile-room-screen .mobile-tab-panel .operation-hint,
+.mobile-room-screen .mobile-tab-panel .room-people,
+.mobile-room-screen .mobile-tab-panel .chat-box {
+  display: block;
+  margin: 0 0 8px;
+  padding: 9px;
+  box-shadow: none;
+}
+
+.mobile-room-screen .mobile-tab-panel .chat-box {
+  overflow: visible;
+}
+
+.mobile-room-screen .mobile-tab-panel .chat-log {
+  height: 96px;
+  min-height: 80px;
+}

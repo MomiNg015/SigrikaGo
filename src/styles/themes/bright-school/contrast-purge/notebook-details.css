@@ -1,0 +1,47 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-log,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-details-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-details-modal .character-detail-copy {
+  background-color: #ffffff !important;
+  background-image:
+    linear-gradient(rgba(154, 211, 222, 0.26) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 211, 222, 0.26) 1px, transparent 1px) !important;
+  background-size: 15px 15px !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 16px !important;
+  box-shadow: 4px 4px 0 #3d2b25 !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="decor"] {
+  background-color: #fffdf8 !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 2px dashed #3d2b25 !important;
+  border-radius: 16px !important;
+  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.2) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .lock-character-card,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="lock"] {
+  background-color: #fff0f6 !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 3px dashed #3d2b25 !important;
+  border-radius: 16px !important;
+  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.24) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .lock-text-title,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="lock"] span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="lock"] p {
+  color: #3d2b25 !important;
+  font-weight: 900 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}

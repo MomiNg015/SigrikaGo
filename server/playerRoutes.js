@@ -6,6 +6,7 @@ import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
 import { blockedCharactersForItemEffects } from "./itemEffects.js";
 import { resumePayloadForUser } from "./resume.js";
 import { selectUserSkillMusic } from "./musicSelection.js";
+import { listMusicTrackSettings } from "./musicTracks.js";
 import { validateRoomCode } from "./security.js";
 import { publicUserWithRecordStats } from "./userProfile.js";
 
@@ -142,8 +143,13 @@ export function createPlayerRouteHandlers({
     }
   }
 
+  async function listMusicTracks(_req, res) {
+    res.json(await listMusicTrackSettings({ prisma }));
+  }
+
   return {
     getMe,
+    listMusicTracks,
     resume,
     updateCharacter,
     updateDecoration,
@@ -156,6 +162,7 @@ export function createPlayerRouter(deps) {
   const router = express.Router();
   const handlers = createPlayerRouteHandlers(deps);
   router.get("/me", handlers.getMe);
+  router.get("/music-tracks", handlers.listMusicTracks);
   router.get("/me/resume", handlers.resume);
   router.post("/me/character", handlers.updateCharacter);
   router.post("/me/decoration", handlers.updateDecoration);

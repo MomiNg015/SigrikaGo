@@ -1,0 +1,20 @@
+/* Mobile resume/profile record line safety rules. */
+@media (max-width: 768px) {
+  .resume-modal .profile-resume-stats,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .resume-modal .profile-record-lines,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-record-lines {
+    display: grid !important;
+    gap: 2px !important;
+    white-space: normal !important;
+  }
+
+  .resume-modal .profile-record-separator,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-record-separator {
+    display: none !important;
+  }
+}

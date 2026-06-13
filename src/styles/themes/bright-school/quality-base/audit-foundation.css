@@ -1,0 +1,228 @@
+/* Bright School UI/UX Pro Max audit layer.
+   Final scoped guard for box model, overflow, text clarity, and future theme safety. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school * ,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::after {
+  box-sizing: border-box !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+  min-width: min(100%, 320px) !important;
+  overflow-x: clip !important;
+  background-color: #fffbf2 !important;
+  color: #3d2b25 !important;
+  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+}
+
+@supports not (overflow: clip) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+    overflow-x: hidden !important;
+  }
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .home-screen,
+  .room-screen,
+  .auth-screen,
+  .asset-preload-screen,
+  .modal-backdrop,
+  .nested-backdrop,
+  .nested-modal-backdrop
+) {
+  max-width: 100% !important;
+  overflow-x: clip !important;
+  color: #3d2b25 !important;
+  background-color: transparent !important;
+}
+
+@supports not (overflow: clip) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .home-screen,
+    .room-screen,
+    .auth-screen,
+    .asset-preload-screen,
+    .modal-backdrop,
+    .nested-backdrop,
+    .nested-modal-backdrop
+  ) {
+    overflow-x: hidden !important;
+  }
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .home-screen,
+  .room-screen,
+  .auth-screen,
+  .asset-preload-screen
+) {
+  background:
+    linear-gradient(rgba(127, 187, 213, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(127, 187, 213, 0.16) 1px, transparent 1px),
+    radial-gradient(circle at 12% 14%, rgba(255, 158, 187, 0.18), transparent 24%),
+    radial-gradient(circle at 88% 18%, rgba(148, 219, 211, 0.2), transparent 26%),
+    #fffbf2 !important;
+  background-size: 18px 18px, 18px 18px, auto, auto, auto !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .home-main-panel,
+  .home-terminal-main,
+  .home-stage,
+  .battle-layout,
+  .board-column,
+  .shop-layout,
+  .shop-content,
+  .warehouse-layout,
+  .friends-modal-toolbar,
+  .leaderboard-table,
+  .profile-grid,
+  .character-grid-container
+) {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  img,
+  svg,
+  canvas,
+  video
+) {
+  max-width: 100% !important;
+  height: auto;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  p,
+  span,
+  small,
+  label,
+  strong,
+  em,
+  li,
+  dt,
+  dd,
+  th,
+  td,
+  button,
+  input,
+  textarea,
+  select,
+  a
+) {
+  text-shadow: none !important;
+  letter-spacing: 0 !important;
+  -webkit-text-stroke: 0 !important;
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  [role="button"]
+) {
+  min-height: 44px !important;
+  touch-action: manipulation !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 3px solid #ff9ebb !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 5px rgba(255, 158, 187, 0.22), 3px 3px 0 #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .plaque-stats,
+  .stat strong,
+  .rank-score,
+  .score,
+  .coins,
+  .timer,
+  .time-value,
+  .room-code-label,
+  .leaderboard-row > span,
+  .leaderboard-row strong,
+  .shop-price,
+  .price,
+  .timer-label,
+  .timer-periods
+) {
+  font-family: "Arial Rounded MT Bold", "Nunito", "Microsoft YaHei UI", system-ui, sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" 1, "liga" 1 !important;
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .muted,
+  .quiet-text,
+  .watch-empty,
+  .shop-description,
+  .item-description,
+  .friend-meta,
+  .rank-meta,
+  .profile-meta
+) {
+  color: #5a4740 !important;
+  opacity: 1 !important;
+  line-height: 1.45 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .modal-backdrop,
+  .nested-backdrop,
+  .nested-modal-backdrop
+) {
+  padding: clamp(12px, 3vw, 28px) !important;
+  overscroll-behavior: contain !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .small-modal,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .nested-modal,
+  .room-floating-modal,
+  .shop-modal,
+  .warehouse-modal,
+  .house-modal,
+  .leaderboard-modal,
+  .friends-modal
+) {
+  width: min(1120px, calc(100vw - 32px)) !important;
+  max-width: calc(100vw - 32px) !important;
+  max-height: min(88dvh, 820px) !important;
+  overflow: hidden auto !important;
+  scrollbar-gutter: stable both-edges !important;
+  overscroll-behavior: contain !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .shop-grid,
+  .warehouse-grid,
+  .leaderboard-list,
+  .friends-list,
+  .message-list,
+  .chat-log,
+  .character-grid-container,
+  .room-member-list
+) {
+  scrollbar-gutter: stable both-edges !important;
+  overscroll-behavior: contain !important;
+  overflow-x: clip !important;
+}

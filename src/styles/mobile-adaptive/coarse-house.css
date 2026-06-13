@@ -1,0 +1,21 @@
+/* Coarse-pointer house manual card density rules. */
+@media (pointer: coarse) {
+  .app-shell.player-theme-enabled .house-modal .character-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: 88px !important;
+    max-height: min(184px, 46dvh) !important;
+    height: auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell.player-theme-enabled .house-modal .character-card.portrait-card {
+    height: 88px !important;
+    padding: 6px !important;
+  }
+
+  .app-shell.player-theme-enabled .house-modal .character-card.portrait-card img {
+    max-height: 44px !important;
+  }
+}

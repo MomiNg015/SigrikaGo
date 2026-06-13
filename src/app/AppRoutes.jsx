@@ -23,6 +23,7 @@ export default function AppRoutes({
   onOpenAdminReplay,
   onOpenReplay,
   onRefreshCharacters,
+  onRefreshMusicTracks,
   onSiteSettingsChanged,
   onToast,
   pendingSkill,
@@ -51,7 +52,8 @@ export default function AppRoutes({
   token,
   updateUser,
   user,
-  view
+  view,
+  musicTracks
 }) {
   const homeScreen = user && (
     <HomeScreen
@@ -97,8 +99,10 @@ export default function AppRoutes({
           token={token}
           tab={adminTab}
           setTab={setAdminTab}
+          musicTracks={musicTracks}
           onCurrentUserChange={updateUser}
           onCharactersChanged={onRefreshCharacters}
+          onMusicTracksChanged={onRefreshMusicTracks}
           onSiteSettingsChanged={onSiteSettingsChanged}
           onNotice={onToast}
           onBack={() => setView("home")}

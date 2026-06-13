@@ -1,16 +1,4 @@
-import {
-  CAPTURE_SOUND,
-  HIDDEN_HAND_REVEAL_SOUND,
-  preloadEffectSound,
-  STONE_SOUND,
-  UI_CLOSE_WINDOW_SOUND,
-  UI_CONFIRM_SOUND,
-  UI_DETAIL_OPEN_SOUND,
-  UI_HOUSE_OPEN_SOUND,
-  UI_MATCH_OPEN_SOUND,
-  UI_SHOP_OPEN_SOUND,
-  UI_UNAVAILABLE_SOUND
-} from "../audio/playback.jsx";
+import { preloadEffectSound } from "../audio/playback.jsx";
 import {
   CHARACTER_SYSTEM_VOICES,
   CHARACTER_SKILL_VOICES,
@@ -19,24 +7,8 @@ import {
   VICTORY_SOUND,
   DEFEAT_SOUND
 } from "./musicLibrary.js";
-import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
 import { STONE_DECORATIONS } from "./stoneDecorations.js";
-
-const HOME_IMAGE_ASSETS = [
-  "/assets/home/book-entry.webp",
-  "/assets/home/fantasy-match-entry.webp",
-  "/assets/home/multipurpose-classroom-bg.webp"
-];
-
-const SHOP_IMAGE_ASSETS = [
-  "/assets/zahiya_shop.webp",
-  "/assets/items/rainbow-bean-candy.webp"
-];
-
-const EFFECT_IMAGE_ASSETS = [
-  DENIA_CANDY_PORTRAIT,
-  "/assets/effects/denia-bubble-pop.webp"
-];
 
 export function deploymentSocketBase(locationLike = globalThis.location) {
   return locationLike?.origin ?? "";
@@ -56,11 +28,11 @@ export function loginPreloadAssets({
 } = {}) {
   const criticalImages = compactUnique([
     ...Object.values(characters).map((character) => character?.portrait),
-    ...HOME_IMAGE_ASSETS
+    ...RUNTIME_IMAGE_ASSETS.home
   ]);
   const deferredImages = compactUnique([
-    ...SHOP_IMAGE_ASSETS,
-    ...EFFECT_IMAGE_ASSETS,
+    ...RUNTIME_IMAGE_ASSETS.shop,
+    ...RUNTIME_IMAGE_ASSETS.effects,
     ...Object.values(STONE_DECORATIONS).flatMap((decoration) => [
       decoration.previewImageUrl,
       decoration.images?.black,
@@ -69,18 +41,7 @@ export function loginPreloadAssets({
   ]);
   const images = compactUnique([...criticalImages, ...deferredImages]);
 
-  const criticalAudio = compactUnique([
-    STONE_SOUND,
-    CAPTURE_SOUND,
-    HIDDEN_HAND_REVEAL_SOUND,
-    UI_CLOSE_WINDOW_SOUND,
-    UI_CONFIRM_SOUND,
-    UI_DETAIL_OPEN_SOUND,
-    UI_HOUSE_OPEN_SOUND,
-    UI_MATCH_OPEN_SOUND,
-    UI_SHOP_OPEN_SOUND,
-    UI_UNAVAILABLE_SOUND
-  ]);
+  const criticalAudio = compactUnique(RUNTIME_AUDIO_ASSETS.interaction);
   const deferredAudio = compactUnique([
     MATCH_SUCCESS_SOUND,
     VICTORY_SOUND,
@@ -102,18 +63,7 @@ export async function preloadLoginAssets(assets, {
   onProgress = () => {}
 } = {}) {
   const groups = normalizePreloadAssetGroups(assets);
-  const decodedEffects = new Set([
-    STONE_SOUND,
-    CAPTURE_SOUND,
-    HIDDEN_HAND_REVEAL_SOUND,
-    UI_CLOSE_WINDOW_SOUND,
-    UI_CONFIRM_SOUND,
-    UI_DETAIL_OPEN_SOUND,
-    UI_HOUSE_OPEN_SOUND,
-    UI_MATCH_OPEN_SOUND,
-    UI_SHOP_OPEN_SOUND,
-    UI_UNAVAILABLE_SOUND
-  ]);
+  const decodedEffects = new Set(RUNTIME_AUDIO_ASSETS.interaction);
   const criticalTasks = createPreloadTasks(groups.criticalImages, groups.criticalAudio, {
     decodedEffects,
     loadAudio,

@@ -1,6 +1,6 @@
 import React from "react";
 
-export const ADMIN_TABS = ["overview", "users", "characters", "shop", "items", "decorations", "gacha", "settings", "feedback", "audit"];
+export const ADMIN_TABS = ["overview", "users", "characters", "shop", "items", "decorations", "music", "gacha", "settings", "feedback", "audit"];
 
 export const ADMIN_TAB_LABELS = {
   overview: "概览",
@@ -9,6 +9,7 @@ export const ADMIN_TAB_LABELS = {
   shop: "商城管理",
   items: "道具管理",
   decorations: "装饰管理",
+  music: "音乐管理",
   gacha: "扭蛋管理",
   settings: "系统设置",
   feedback: "留言反馈",

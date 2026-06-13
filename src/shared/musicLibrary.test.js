@@ -5,6 +5,7 @@ import {
   DEFEAT_SOUND,
   MATCH_SUCCESS_SOUND,
   MUSIC_TRACKS,
+  musicTracksWithDisplayNames,
   VICTORY_SOUND,
   latestSkillCharacterId,
   ownedMusicIdsWithDefaults,
@@ -188,6 +189,16 @@ describe("background music library", () => {
     });
 
     expect(track.id).toBe("denia-skill-default");
+  });
+
+  it("applies display-name overrides without changing playback metadata", () => {
+    const tracks = musicTracksWithDisplayNames(MUSIC_TRACKS, {
+      "home-default": "星炬大厅"
+    });
+
+    expect(tracks["home-default"].name).toBe("星炬大厅");
+    expect(tracks["home-default"].defaultName).toBe("Default Home BGM");
+    expect(tracks["home-default"].playback).toBe(MUSIC_TRACKS["home-default"].playback);
   });
 
   it("lets an owned character skill music selection override the default", () => {

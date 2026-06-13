@@ -812,6 +812,65 @@ describe("admin gacha routes", () => {
   });
 });
 
+describe("admin music track routes", () => {
+  it("lists and updates music display names", async () => {
+    const auditWrites = [];
+    const store = new Map([["home-default", { id: "home-default", displayName: "星炬大厅" }]]);
+    const response = await requestAdminRoute({
+      musicTrackSetting: {
+        findMany: async () => [...store.values()]
+      },
+      $transaction: async (callback) => callback({
+        musicTrackSetting: {
+          findUnique: async ({ where }) => store.get(where.id) ?? null,
+          upsert: async ({ where, create, update }) => {
+            const record = { ...create, ...update, id: where.id };
+            store.set(where.id, record);
+            return record;
+          }
+        },
+        adminAuditLog: {
+          create: async ({ data }) => {
+            auditWrites.push(data);
+            return data;
+          }
+        }
+      })
+    }, "/music-tracks/home-default", {
+      method: "PATCH",
+      body: { displayName: "新大厅音乐" }
+    });
+    const listResponse = await requestAdminRoute({
+      musicTrackSetting: {
+        findMany: async () => [...store.values()]
+      }
+    }, "/music-tracks", { method: "GET" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.track).toMatchObject({
+      id: "home-default",
+      name: "新大厅音乐",
+      defaultName: "Default Home BGM"
+    });
+    expect(listResponse.body.tracks.some((track) => track.id === "home-default" && track.name === "新大厅音乐")).toBe(true);
+    expect(auditWrites[0]).toMatchObject({
+      action: "music-track.update",
+      targetType: "music-track",
+      targetId: "home-default"
+    });
+  });
+
+  it("rejects updates for unknown music tracks", async () => {
+    const response = await requestAdminRoute({}, "/music-tracks/missing-track", {
+      method: "PATCH",
+      body: { displayName: "Missing" }
+    });
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: "Music track not found" });
+  });
+});
+
 function userFixture() {
   return {
     id: "user-1",

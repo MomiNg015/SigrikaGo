@@ -39,6 +39,7 @@ import {
   updateGachaPool,
   validateGachaPoolInput
 } from "./adminGachaManagement.js";
+import { listMusicTrackSettings, updateMusicTrackSetting } from "./musicTracks.js";
 
 export { serializeAudit } from "./adminAudit.js";
 export {
@@ -323,6 +324,23 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
     });
     res.json({ items: items.map(toShopItemPayload) });
+  });
+
+  router.get("/music-tracks", async (_req, res) => {
+    res.json(await listMusicTrackSettings({ prisma }));
+  });
+
+  router.patch("/music-tracks/:id", async (req, res) => {
+    try {
+      res.json(await updateMusicTrackSetting({
+        prisma,
+        adminUser: req.user,
+        trackId: req.params.id,
+        body: req.body
+      }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
   });
 
   router.post("/shop-items", async (req, res) => {

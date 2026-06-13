@@ -1,0 +1,13 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school p,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school strong,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school em,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school small,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school label,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school h1,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school h2,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school h3,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school h4 {
+  color: var(--bright-ink) !important;
+  text-shadow: none !important;
+}

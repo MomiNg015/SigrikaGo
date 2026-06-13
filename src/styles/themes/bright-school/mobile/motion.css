@@ -1,0 +1,48 @@
+/* Bright School portrait mobile motion and reduced-motion fallbacks. */
+@keyframes bright-mobile-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes bright-mobile-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) and (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    button,
+    [role="button"],
+    a,
+    .home-image-entry,
+    .utility-entry,
+    .character-card,
+    .shop-item,
+    .warehouse-item,
+    .owned-decoration-chip,
+    .replay-table-row,
+    .friends-row,
+    .watch-room-row,
+    .mobile-tab-button,
+    .point
+  ):active,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.touch-confirming {
+    transform: none !important;
+  }
+}

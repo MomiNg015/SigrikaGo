@@ -1,0 +1,36 @@
+/* Bright School theme: cream notebook paper, polaroids, stationery stickers. */
+.app-shell.player-theme-enabled.theme-bright-school {
+  background-color: #fffbf2 !important;
+  background-image: var(--theme-paper-grid) !important;
+  background-size: 20px 20px !important;
+  color: #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school:has(.auth-screen),
+.app-shell.player-theme-enabled.theme-bright-school:has(.home-screen),
+.app-shell.player-theme-enabled.theme-bright-school:has(.room-screen) {
+  background-color: #fffbf2 !important;
+  background-image: var(--theme-paper-grid) !important;
+  background-size: 20px 20px !important;
+  overflow-x: hidden;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school:has(.home-screen)::before,
+.app-shell.player-theme-enabled.theme-bright-school:has(.home-screen)::after,
+.app-shell.player-theme-enabled.theme-bright-school:has(.room-screen)::before,
+.app-shell.player-theme-enabled.theme-bright-school:has(.room-screen)::after,
+.app-shell.player-theme-enabled.theme-bright-school .home-terminal-screen::before,
+.app-shell.player-theme-enabled.theme-bright-school .home-terminal-screen::after,
+.app-shell.player-theme-enabled.theme-bright-school .modal-backdrop::before,
+.app-shell.player-theme-enabled.theme-bright-school .modal-backdrop::after,
+.app-shell.player-theme-enabled.theme-bright-school .settings-modal::before,
+.app-shell.player-theme-enabled.theme-bright-school .settings-modal::after {
+  content: none !important;
+  display: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school,
+.app-shell.player-theme-enabled.theme-bright-school * {
+  color: #4a3736;
+  text-shadow: none !important;
+}

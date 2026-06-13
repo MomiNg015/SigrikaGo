@@ -29,7 +29,7 @@ describe("FeedbackModals helpers", () => {
   });
 
   it("keeps toast styling focused on general notices and success feedback", () => {
-    const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const successBlock = css.match(/\.toast\.success\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(successBlock).toContain("background: linear-gradient(135deg, #48b978, #23985f)");
@@ -37,3 +37,14 @@ describe("FeedbackModals helpers", () => {
     expect(css).not.toContain(".toast.penalty");
   });
 });
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readFileSync(url, "utf8");
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
+    return readCssWithImports(new URL(importPath, url), seen);
+  });
+}

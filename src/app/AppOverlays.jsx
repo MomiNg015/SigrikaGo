@@ -20,6 +20,7 @@ export default function AppOverlays({
   joinWatchRoom,
   matchStart,
   matchSuccess,
+  musicTracks,
   onMatchCancel,
   onMatchSuccessComplete,
   onMessageSubmitted,
@@ -114,6 +115,7 @@ export default function AppOverlays({
           records={replayRecords}
           characterListView={characterListView}
           audioSettings={audioSettings}
+          musicTracks={musicTracks}
           onClose={() => setShowHouse(false)}
           onSelectCharacter={selectCharacter}
           onSelectCharacterMusic={selectCharacterMusic}
@@ -173,6 +175,7 @@ export default function AppOverlays({
           onPurchased={updateUser}
           onNotice={showToast}
           onClose={() => setShowShop(false)}
+          musicTracks={musicTracks}
         />
       )}
       {showGacha && (

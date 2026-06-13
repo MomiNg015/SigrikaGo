@@ -1,0 +1,120 @@
+/* Member handbook archive readability pass */
+.top-stats-bar {
+  align-items: stretch;
+}
+
+.top-stats-bar .stat > span {
+  color: rgba(224, 247, 244, 0.7) !important;
+  font-size: 11px !important;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-shadow: none;
+}
+
+.top-stats-bar .stat strong {
+  color: #00ffbe !important;
+  font-family: "Chakra Petch", "Courier New", monospace !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  line-height: 1.05;
+  text-shadow: 0 0 8px rgba(0, 255, 190, 0.4);
+}
+
+.top-stats-bar .stat:nth-child(odd) strong {
+  color: #ffffff !important;
+  text-shadow:
+    0 0 8px rgba(0, 255, 190, 0.34),
+    0 0 10px rgba(255, 118, 163, 0.2);
+}
+
+.character-grid-container {
+  border-right: none !important;
+  box-shadow: none !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 190, 0.4) transparent;
+}
+
+.character-grid-container::before,
+.character-grid-container::after {
+  box-shadow: none !important;
+  border-right: none !important;
+}
+
+.character-grid-container::-webkit-scrollbar {
+  width: 3px;
+  background: transparent;
+}
+
+.character-grid-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.character-grid-container::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(0, 255, 190, 0.4);
+  box-shadow: none;
+}
+
+.decorations-section {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px dashed rgba(0, 255, 190, 0.3) !important;
+  border-radius: 12px !important;
+  background: rgba(5, 12, 19, 0.75) !important;
+  color: #ffffff !important;
+  box-shadow:
+    inset 0 0 18px rgba(0, 255, 190, 0.08),
+    0 0 18px rgba(255, 118, 163, 0.08) !important;
+}
+
+.decorations-section h3,
+.decorations-section strong,
+.decorations-section p,
+.decorations-section button,
+.decorations-section .owned-decoration-chip {
+  color: #ffffff !important;
+}
+
+.decorations-section .owned-decoration-chip {
+  border: 1px solid rgba(255, 118, 163, 0.34) !important;
+  background:
+    radial-gradient(circle at 50% 0, rgba(255, 118, 163, 0.16), transparent 46%),
+    rgba(8, 22, 31, 0.74) !important;
+}
+
+.character-details-modal,
+.character-details-modal .character-detail-copy {
+  background: rgba(4, 9, 14, 0.98) !important;
+  color: #ffffff !important;
+}
+
+.character-details-modal .character-detail-copy {
+  padding: 18px;
+  border: 1px solid rgba(0, 191, 255, 0.28);
+  border-radius: 12px;
+  box-shadow: inset 0 0 18px rgba(0, 255, 190, 0.08);
+}
+
+.character-details-modal .skill-title-row strong,
+.character-details-modal .skill-cost-badge,
+.character-details-modal .acquisition-method,
+.character-details-modal .acquisition-method strong,
+.character-details-modal .character-detail-copy p {
+  color: #ffffff !important;
+  font-weight: bold !important;
+}
+
+.character-details-modal .skill-title-row strong,
+.character-details-modal .acquisition-method strong {
+  border-color: rgba(255, 118, 163, 0.52) !important;
+  background: rgba(255, 118, 163, 0.12) !important;
+  color: #ff9fbd !important;
+  text-shadow: 0 0 8px rgba(255, 118, 163, 0.34);
+}
+
+.character-details-modal .skill-cost-badge {
+  border-color: rgba(0, 191, 255, 0.46) !important;
+  background: rgba(0, 191, 255, 0.12) !important;
+  color: #00bfff !important;
+  text-shadow: 0 0 8px rgba(0, 191, 255, 0.34);
+}

@@ -1,0 +1,94 @@
+@media (max-width: 560px) {
+  .shop-modal button,
+  .leaderboard-modal button,
+  .friends-modal button,
+  .house-modal button,
+  .warehouse-modal button,
+  .settings-modal button,
+  .message-board-modal button,
+  .room-floating-modal button,
+  .small-modal button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .small-modal .watch-room-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .shop-modal .close-button {
+    top: var(--modal-close-inset, 12px);
+    right: var(--modal-close-inset, 12px);
+  }
+
+  .shop-sidebar {
+    min-width: 0;
+  }
+
+  .shop-wallet-wrap {
+    min-width: 0;
+    max-width: calc(100% - 54px);
+    margin-right: 54px;
+    padding-right: 0;
+  }
+
+  .shop-wallet {
+    justify-content: center;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .shop-item .stone-decoration-preview {
+    width: 100%;
+    height: 42px;
+    gap: 6px;
+    justify-self: center;
+    align-self: center;
+  }
+
+  .shop-item .stone-decoration-preview.large span {
+    width: 26px;
+  }
+
+  .shop-item > strong {
+    overflow-wrap: anywhere;
+  }
+
+  .shop-item .primary-action {
+    justify-content: center;
+  }
+
+  .shop-content.shop-category-decoration .shop-grid {
+    grid-auto-rows: minmax(158px, auto);
+    gap: 8px;
+  }
+
+  .shop-category-decoration.shop-item {
+    min-height: 158px;
+    height: auto;
+    grid-template-rows: 46px auto minmax(24px, auto) 40px;
+    gap: 5px;
+    padding: 9px;
+  }
+
+  .shop-category-decoration.shop-item .stone-decoration-preview {
+    height: 44px;
+    padding: 2px 4px;
+  }
+
+  .shop-category-decoration.shop-item .shop-card-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .shop-category-decoration.shop-item .primary-action {
+    min-height: 40px;
+    padding: 6px 8px;
+  }
+}
