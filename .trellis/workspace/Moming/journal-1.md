@@ -335,3 +335,36 @@ Implemented achievement domain persistence, admin achievement management, player
 ### Next Steps
 
 - None - task complete
+
+
+## Session 11: 修复成就系统启动报错
+
+**Date**: 2026-06-13
+**Task**: 修复成就系统启动报错
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Fixed startup ordering so achievement schema guard adds source columns before character and shop seed queries; verified tests, build, docs generation, and alternate-port backend startup.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b0c56b2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
