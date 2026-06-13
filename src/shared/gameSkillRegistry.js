@@ -1,9 +1,4 @@
-export const ACTIVE_SKILL_EFFECT_TYPES = Object.freeze([
-  "erase-point",
-  "flip-stone",
-  "hidden-hand",
-  "random-blast"
-]);
+export { ACTIVE_SKILL_EFFECT_TYPES } from "./skillEffectCatalog.js";
 
 export function skillConsumesTurn(skill) {
   return !skill?.freeTurn;

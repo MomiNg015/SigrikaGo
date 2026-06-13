@@ -227,8 +227,8 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
     width: 100% !important;
     min-height: 92px !important;
-    grid-template-columns: 58px minmax(0, 1fr) minmax(70px, auto) !important;
-    gap: 10px !important;
+    grid-template-columns: clamp(50px, 14vw, 58px) minmax(0, 1fr) minmax(106px, clamp(112px, 33vw, 132px)) !important;
+    gap: clamp(7px, 2.3vw, 10px) !important;
     padding: 18px 12px 12px 22px !important;
     border-width: 2px !important;
     border-radius: 16px !important;
@@ -265,14 +265,15 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats {
-    min-width: 136px !important;
-    padding: 9px 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: clamp(7px, 2.1vw, 9px) clamp(6px, 2vw, 8px) !important;
     border-width: 2px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-stat {
-    grid-template-columns: 32px max-content max-content !important;
-    gap: 4px !important;
+    grid-template-columns: minmax(24px, 0.72fr) minmax(28px, max-content) minmax(36px, 1fr) !important;
+    gap: clamp(3px, 1vw, 4px) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-name {
@@ -485,12 +486,12 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .close-button {
     position: absolute !important;
-    top: 10px !important;
-    right: 10px !important;
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    top: var(--modal-close-inset, 12px) !important;
+    right: var(--modal-close-inset, 12px) !important;
+    width: var(--modal-close-size, 44px) !important;
+    min-width: var(--modal-close-size, 44px) !important;
+    height: var(--modal-close-size, 44px) !important;
+    min-height: var(--modal-close-size, 44px) !important;
     z-index: 20 !important;
   }
 
@@ -982,17 +983,34 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .profile-grid.top-stats-bar {
     flex: 0 0 auto !important;
+    grid-template-columns: 1fr !important;
     min-width: 0 !important;
     min-height: 0 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 8px !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats span,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-grid.top-stats-bar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-rank-results {
+    grid-column: 1 / -1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid .stat {
     min-height: 64px !important;
     padding: 10px !important;
@@ -1292,8 +1310,8 @@
     position: static !important;
     top: auto !important;
     right: auto !important;
-    width: 44px !important;
-    height: 44px !important;
+    width: var(--modal-close-size, 44px) !important;
+    height: var(--modal-close-size, 44px) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-table,
@@ -1305,9 +1323,21 @@
     gap: 8px !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table {
+    grid-template-rows: none !important;
+    grid-auto-rows: auto !important;
+    align-content: start !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-heading,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-heading {
     display: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-heading,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table-heading {
+    min-width: 0 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-list {
@@ -2074,6 +2104,28 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row span {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-lines,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-summary {
+    display: grid !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-separator,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-separator {
+    display: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-total,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-breakdown,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-total,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-breakdown {
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;

@@ -18,6 +18,7 @@ import {
   getShopOwnedItemQuantity
 } from "./shop/shopItemDetail.js";
 import ShopModal from "./ShopModal.jsx";
+import ShopItemCard from "./shop/ShopItemCard.jsx";
 
 describe("ShopModal helpers", () => {
   it("keeps non-component helpers out of the component module for Fast Refresh", () => {
@@ -74,6 +75,39 @@ describe("ShopModal helpers", () => {
     expect(detailSource).toContain("shop-detail-status-owned");
     expect(detailSource).not.toContain("getShopItemQuantityLabel");
     expect(detailSource).not.toContain("finalPrice");
+  });
+
+  it("hides purchase-limit text and centers prices for character and decoration cards", () => {
+    const baseItem = {
+      id: "test-card",
+      name: "测试商品",
+      priceCoins: 100,
+      finalPrice: 100,
+      discountPercent: 0,
+      purchasable: true
+    };
+    const renderCard = (category) => renderToStaticMarkup(createElement(ShopItemCard, {
+      item: {
+        ...baseItem,
+        id: `test-${category}`,
+        category,
+        targetId: category === "decoration" ? "paw-stone" : "sigrika"
+      },
+      index: 0,
+      activeCategory: category,
+      purchasingId: "",
+      user: { coins: 200, ownedCharacters: [], ownedDecorations: [] },
+      onBuy: () => {},
+      onShowDetail: () => {}
+    }));
+
+    const characterHtml = renderCard("character");
+    const decorationHtml = renderCard("decoration");
+
+    expect(characterHtml).not.toContain("限购");
+    expect(decorationHtml).not.toContain("限购");
+    expect(characterHtml).toContain("shop-card-meta-price-only");
+    expect(decorationHtml).toContain("shop-card-meta-price-only");
   });
 
   it("keeps a stable 8-slot grid for the active category", () => {
@@ -203,6 +237,18 @@ describe("ShopModal helpers", () => {
     expect(css).toContain("max-height: 52px !important");
     expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .shop-card-meta");
     expect(css).toContain("min-height: 30px !important");
+  });
+
+  it("centers character and decoration prices after removing the visible limit row", () => {
+    const commerceCss = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
+    const mobileCss = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const priceOnlyBlock = commerceCss.match(/\.shop-card-meta-price-only\s*\{[^}]+\}/)?.[0] ?? "";
+    const priceOnlyPriceBlock = commerceCss.match(/\.shop-card-meta-price-only \.shop-price\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(priceOnlyBlock).toContain("justify-content: center");
+    expect(priceOnlyPriceBlock).toContain("text-align: center");
+    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-decoration).shop-item .shop-card-meta-price-only");
+    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-decoration).shop-item .shop-card-meta-price-only .shop-price");
   });
 
   it("styles discounted original prices as a compact line above the current price", () => {

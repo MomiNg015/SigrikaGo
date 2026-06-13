@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { rankFromRating } from "../src/shared/ratingRank.js";
 import { applyResultRewardsToRoomUsers, applyUserReward } from "./roomRewards.js";
 
 describe("room rewards", () => {
@@ -8,7 +7,10 @@ describe("room rewards", () => {
       wins: 2,
       losses: 3,
       rating: 1000,
-      rank: rankFromRating(1000),
+      rank: "3段",
+      modeStats: {
+        spark: { rating: 1000, rank: "3段", recentResults: ["win", "loss"], wins: 2, losses: 3, draws: 0 }
+      },
       coins: 10
     };
 
@@ -16,7 +18,10 @@ describe("room rewards", () => {
       wins: 3,
       losses: 3,
       rating: 1020,
-      rank: rankFromRating(1020),
+      rank: "3段",
+      modeStats: {
+        spark: expect.objectContaining({ recentResults: ["win", "loss", "win"] })
+      },
       coins: 60
     });
   });
@@ -34,5 +39,32 @@ describe("room rewards", () => {
 
     expect(winner.user).toMatchObject({ wins: 1, rating: 1020, coins: 50 });
     expect(loser.user).toMatchObject({ losses: 1, rating: 980, coins: 20 });
+  });
+
+  it("promotes and clears the recent window after the seventh win", () => {
+    const user = {
+      wins: 6,
+      losses: 1,
+      rating: 1000,
+      rank: "3段",
+      modeStats: {
+        spark: {
+          rating: 1000,
+          rank: "3段",
+          recentResults: ["win", "win", "loss", "win", "win", "win", "win"],
+          wins: 6,
+          losses: 1,
+          draws: 0
+        }
+      },
+      coins: 0
+    };
+
+    expect(applyUserReward(user, { rating: 20, coins: 50 }, { wins: 1 })).toMatchObject({
+      rank: "4段",
+      modeStats: {
+        spark: expect.objectContaining({ rank: "4段", recentResults: [] })
+      }
+    });
   });
 });

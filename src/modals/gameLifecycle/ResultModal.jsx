@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { playEffectSound } from "../../audio/playback.jsx";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
+import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { COLORS } from "../../shared/game.js";
 import { resolveResultSound } from "../../shared/musicLibrary.js";
@@ -47,7 +48,10 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
       <section className={`result-modal ${winnerColor === COLORS.black ? "black-win" : ""} ${isDraw ? "draw-result" : ""}`} onClick={(event) => event.stopPropagation()}>
         {!isDraw && (
           <div className="result-winner">
-            <img src={resolveCandyPortrait(character, winner?.user?.itemEffects)} alt={character.name} />
+            <span className="result-winner-portrait-wrap">
+              <img src={resolveCandyPortrait(character, winner?.user?.itemEffects)} alt={character.name} />
+              <CharacterChainBadge user={winner?.user} characterId={character.id} />
+            </span>
             <strong>{winner?.user.username}</strong>
           </div>
         )}

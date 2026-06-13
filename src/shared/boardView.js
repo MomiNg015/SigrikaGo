@@ -1,3 +1,5 @@
+import { skillEffectTargetRule } from "./skillEffectCatalog.js";
+
 export function lastMarkedAction(history = []) {
   return [...history].reverse().find((entry) => (
     entry.type === "move" || entry.effectType === "flip-stone"
@@ -22,10 +24,5 @@ function canTargetPointByRule(targetRule, point) {
 }
 
 function targetRuleForEffect(effectType, fallbackRule = null) {
-  if (effectType === "random-blast") return "none";
-  if (fallbackRule) return fallbackRule;
-  if (effectType === "flip-stone") return "stone";
-  if (effectType === "color-illusion-passive") return "none";
-  if (effectType === "erase-point" || effectType === "hidden-hand") return "empty-point";
-  return "none";
+  return skillEffectTargetRule(effectType, fallbackRule);
 }

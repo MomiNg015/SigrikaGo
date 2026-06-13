@@ -5,7 +5,15 @@ import { useSocialRelations } from "../social/useSocialRelations.js";
 import { roomPeople } from "./roomView.js";
 import { ConfirmPanel, UserProfileCard } from "../modals/UserProfileCard.jsx";
 
-export default function RoomPeopleList({ room, user, characters, token, onOpenReplay }) {
+export default function RoomPeopleList({
+  room,
+  user,
+  characters,
+  token,
+  onOpenReplay,
+  floatingLayerZ,
+  onFloatingLayerRequest
+}) {
   const [activeMenu, setActiveMenu] = useState(null);
   const [profileUser, setProfileUser] = useState(null);
   const [confirmTarget, setConfirmTarget] = useState(null);
@@ -39,6 +47,7 @@ export default function RoomPeopleList({ room, user, characters, token, onOpenRe
   }, [activeMenu]);
 
   function openPersonMenu(personId, event) {
+    onFloatingLayerRequest?.();
     setActiveMenu((current) => {
       if (current?.id === personId) return null;
       const width = 284;
@@ -125,8 +134,10 @@ export default function RoomPeopleList({ room, user, characters, token, onOpenRe
                   className="room-person-popover"
                   style={{
                     "--room-person-popover-x": `${activeMenu.x}px`,
-                    "--room-person-popover-y": `${activeMenu.y}px`
+                    "--room-person-popover-y": `${activeMenu.y}px`,
+                    ...(floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : {})
                   }}
+                  onPointerDownCapture={onFloatingLayerRequest}
                 >
                   <button type="button" onClick={() => openProfile(person)}>详细信息</button>
                   <button type="button" disabled={isSelf} onClick={() => isFriend ? confirmFriendRemoval(person) : addFriend(person)}>

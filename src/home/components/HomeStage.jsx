@@ -6,6 +6,7 @@ export default function HomeStage({
   selectedCharacter,
   user,
   onOpenFriends,
+  onOpenGacha,
   onOpenHouse,
   onOpenResume,
   onOpenLeaderboard,
@@ -21,6 +22,7 @@ export default function HomeStage({
       <MatchEntry onStartMatch={onStartMatch} />
       <HomeUtilityDock
         onOpenFriends={onOpenFriends}
+        onOpenGacha={onOpenGacha}
         onOpenLeaderboard={onOpenLeaderboard}
         onOpenShop={onOpenShop}
         onOpenWarehouse={onOpenWarehouse}

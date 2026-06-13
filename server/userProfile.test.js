@@ -33,6 +33,6 @@ describe("public user profile stats", () => {
     expect(profile.losses).toBe(1);
     expect(profile.draws).toBe(1);
     expect(profile.rating).toBe(960);
-    expect(profile.rank).toBe("1段");
+    expect(profile.rank).toBe("3段");
   });
 });

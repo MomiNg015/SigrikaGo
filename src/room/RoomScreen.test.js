@@ -298,7 +298,6 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain(".mobile-room-screen #mobile-room-panel-actions .operation-hint");
     expect(portraitMedia).toContain("max-height: 42px");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .action-bar .action-label");
-    expect(css).toContain(".mobile-room-screen .mobile-tab-panel .action-bar .exit-action");
     expect(css).toContain("place-items: center");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-tab-panel .skill-action");
     expect(portraitMedia).toContain("min-width: 0");
@@ -401,7 +400,8 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).toContain("actionPanel");
     expect(battleSource).toContain("membersPanel");
     expect(battleSource).toContain("chatPanel");
-    expect(battleSource).toContain("trailingAction={isMobileBattleLayout ? null : (");
+    expect(battleSource).not.toContain("trailingAction={");
+    expect(battleSource).not.toContain("chat-exit-action exit-action");
     expect(css).toContain("grid-area: dock");
     expect(css).toContain(".mobile-room-screen .action-bar");
     expect(css).toContain("position: static");
@@ -461,8 +461,8 @@ describe("RoomScreen helpers", () => {
     expect(mobileAdaptiveCss).toContain("border: 0 !important");
     expect(mobileAdaptiveCss).toContain("background: transparent !important");
     expect(mobileAdaptiveCss).toContain(".message-board-modal > .close-button");
-    expect(mobileAdaptiveCss).toContain("right: 10px !important");
-    expect(mobileAdaptiveCss).toContain("z-index: 9 !important");
+    expect(mobileAdaptiveCss).toContain("right: var(--modal-close-inset, 12px) !important");
+    expect(mobileAdaptiveCss).toContain("z-index: 20 !important");
     expect(mobileAdaptiveCss).toContain("text-shadow: none !important");
     expect(brightMobileCss).toContain(".room-mobile-menu-toggle");
     expect(brightMobileCss).toContain(".captures span");
@@ -542,6 +542,8 @@ describe("RoomScreen helpers", () => {
     expect(chatSource).toContain("chat-toggle-button");
     expect(chatSource).toContain("aria-expanded={isOpen}");
     expect(chatSource).toContain("aria-controls={panelId}");
+    expect(chatSource).toContain("onFloatingLayerRequest");
+    expect(chatSource).toContain("--room-floating-z");
     expect(chatSource).toContain("document.addEventListener(\"pointerdown\", handlePointerDown)");
     expect(chatSource).toContain("document.addEventListener(\"keydown\", handleKeyDown)");
     expect(chatSource).toContain("event.key === \"Escape\"");
@@ -568,12 +570,15 @@ describe("RoomScreen helpers", () => {
     expect(peopleSource).toContain("openPersonMenu(person.id, event)");
     expect(peopleSource).toContain("event.clientX");
     expect(peopleSource).toContain("event.clientY");
+    expect(peopleSource).toContain("onFloatingLayerRequest?.()");
+    expect(peopleSource).toContain("--room-floating-z");
     expect(peopleSource).toContain("--room-person-popover-x");
     expect(peopleSource).toContain("--room-person-popover-y");
     expect(peopleSource).toContain("<button type=\"button\" disabled>密谈</button>");
     expect(roomCss).toContain("position: fixed");
     expect(roomCss).toContain("left: var(--room-person-popover-x)");
     expect(roomCss).toContain("top: var(--room-person-popover-y)");
+    expect(roomCss).toContain("z-index: var(--room-floating-z, 140)");
     expect(roomCss).toContain("transform: translate(8px, calc(-100% - 8px))");
     expect(roomCss).toContain("linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(238, 247, 255, 0.86))");
     expect(roomCss).toContain("border: 1px solid rgba(126, 102, 144, 0.18)");
@@ -581,6 +586,7 @@ describe("RoomScreen helpers", () => {
     expect(roomCss).toContain(".room-person-popover button:disabled");
     expect(roomCss).toContain("background: linear-gradient(135deg, #ececef, #d9d9dd)");
     expect(brightSchoolModalCss).toContain(".room-person-popover");
+    expect(brightSchoolModalCss).toContain("z-index: var(--room-floating-z, 140) !important");
     expect(brightSchoolModalCss).toContain("border: 3px solid #3d2b25 !important");
     expect(brightSchoolModalCss).toContain("var(--theme-paper-grid)");
     expect(brightSchoolModalCss).toContain("box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.72)");
@@ -646,6 +652,40 @@ describe("RoomScreen helpers", () => {
     expect(shortLandscapeMedia).toContain("calc(100dvh - 112px)");
     expect(shortLandscapeMedia).toContain(".mobile-room-screen .player-info");
     expect(shortLandscapeMedia).toContain("grid-template-areas: \"meta\" \"time\" \"captures\"");
+  });
+
+  it("keeps desktop room controls aligned and overlays above side controls", () => {
+    const roomCss = readText(new URL("../styles/room.css", import.meta.url));
+    const brightRoomCss = readText(new URL("../styles/themes/bright-school/room.css", import.meta.url));
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url));
+
+    expect(battleSource).not.toContain("chat-exit-action exit-action");
+    expect(battleSource).toContain("bringFloatingLayerToFront");
+    expect(battleSource).toContain("floatingLayerZ={floatingLayers.chat}");
+    expect(battleSource).toContain("floatingLayerZ={floatingLayers.members}");
+    expect(roomCss).toContain(".desktop-room-screen .room-header");
+    expect(roomCss).toContain("grid-template-columns: minmax(0, 1fr) auto auto");
+    expect(roomCss).toContain(".desktop-room-screen .room-toggles");
+    expect(roomCss).toContain("justify-self: end");
+    expect(roomCss).toContain(".room-mobile-exit {\n  background: linear-gradient(135deg, #eaf8ff, #d5efff)");
+    expect(roomCss).toContain("min-height: 34px");
+    expect(roomCss).toContain(".skill-chip-wrap {\n  position: relative;\n  overflow: visible;\n  z-index: var(--room-floating-z, 60);");
+    expect(roomCss).toContain(".skill-detail-panel");
+    expect(roomCss).toContain("z-index: var(--room-floating-z, 80)");
+    expect(roomCss).toContain("z-index: var(--room-floating-z, 20)");
+    expect(roomCss).toContain("z-index: var(--room-floating-z, 24)");
+    expect(roomCss).toContain("justify-content: center");
+    expect(roomCss).toContain("text-align: center");
+
+    expect(brightRoomCss).toContain(".desktop-room-screen .room-header");
+    expect(brightRoomCss).toContain("grid-template-columns: minmax(0, 1fr) auto auto !important");
+    expect(brightRoomCss).toContain("box-shadow: 3px 3px 0 #4a3736 !important");
+    expect(brightRoomCss).toContain("background-image: linear-gradient(135deg, #eaf8ff, #d5efff) !important");
+    expect(brightRoomCss).toContain("min-height: 36px !important");
+    expect(brightRoomCss).toContain(".replay-step-indicator");
+    expect(brightRoomCss).toContain("place-items: center !important");
+    expect(brightRoomCss).toContain(".skill-detail-panel");
+    expect(brightRoomCss).toContain("z-index: var(--room-floating-z, 80) !important");
   });
 });
 

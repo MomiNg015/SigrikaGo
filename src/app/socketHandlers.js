@@ -1,3 +1,5 @@
+import { applyRoomSnapshot } from "./roomSnapshot.js";
+
 export function createSocketHandlers({
   matchSuccessRef,
   roomRef,
@@ -88,7 +90,7 @@ export function createSocketHandlers({
       if (roomView?.role === "player" && roomView?.game?.phase === "finished") {
         clearLastRoomCode();
       }
-      setRoom(nextRoomView);
+      setRoom((current) => applyRoomSnapshot(current, nextRoomView));
       setView("room");
     },
     roomClock: (clock) => {

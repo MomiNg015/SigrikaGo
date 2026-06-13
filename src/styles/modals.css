@@ -16,6 +16,7 @@
 
 .small-modal,
 .shop-modal,
+.gacha-modal,
 .house-modal,
 .warehouse-modal,
 .leaderboard-modal,
@@ -31,6 +32,7 @@
 
 .small-modal,
 .shop-modal,
+.gacha-modal,
 .house-modal,
 .warehouse-modal,
 .leaderboard-modal,
@@ -372,10 +374,17 @@
 }
 
 .resume-header-actions {
-  margin-left: auto;
+  margin-left: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  justify-self: auto;
   display: inline-flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
+  flex: 0 0 auto;
+  min-width: max-content;
 }
 
 .resume-header-actions .close-button {
@@ -384,7 +393,11 @@
 }
 
 .resume-wallet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
+  min-height: var(--modal-close-size, 44px);
   margin: 0;
   white-space: nowrap;
 }
@@ -479,12 +492,89 @@
 }
 
 .resume-modal .profile-grid.top-stats-bar {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   margin-top: 4px;
 }
 
 .resume-header {
-  justify-content: space-between;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  justify-content: stretch;
+  gap: 12px;
+  padding-right: 0;
+  min-height: var(--modal-close-size, 44px);
+}
+
+.resume-header h2 {
+  min-width: 0;
+  padding-right: clamp(136px, 22vw, 168px);
+}
+
+.resume-character-records {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 2px solid #3d2b25;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 247, 230, 0.76)),
+    repeating-linear-gradient(0deg, transparent 0 15px, rgba(118, 177, 193, 0.12) 15px 16px);
+  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.18);
+}
+
+.resume-character-records > strong {
+  color: #3d2b25;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.resume-character-records .character-record-list {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  max-height: min(220px, 30dvh);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+.resume-character-records .character-record-row {
+  display: grid;
+  grid-template-columns: 46px minmax(84px, 1fr) minmax(112px, auto) minmax(52px, auto);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 2px solid rgba(61, 43, 37, 0.72);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.resume-character-records .character-record-row img {
+  width: 42px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.resume-character-records .character-record-row strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resume-character-records .character-record-summary,
+.resume-character-records .character-record-row b {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.resume-character-records .character-record-row b {
+  justify-self: end;
 }
 
 .nested-modal {
@@ -566,7 +656,7 @@
   gap: 10px;
 }
 
-.profile-resume-stats span {
+.profile-resume-stats > span {
   display: grid;
   gap: 4px;
   padding: 11px;
@@ -574,9 +664,59 @@
   background: #f8f1fa;
 }
 
+.profile-record-lines {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0 4px;
+  min-width: 0;
+}
+
+.profile-record-lines span {
+  min-width: 0;
+}
+
 .profile-resume-stats small {
   color: #7d6a82;
   font-weight: 800;
+}
+
+.profile-rank-results {
+  position: relative;
+  width: 100%;
+  min-height: 54px;
+  box-sizing: border-box;
+  justify-content: center;
+  padding: 11px 14px;
+  border: 2px solid #3d2b25;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255, 250, 235, 0.96), rgba(255, 241, 248, 0.96)),
+    repeating-linear-gradient(0deg, rgba(139, 102, 88, 0.07) 0 1px, transparent 1px 12px);
+  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.2);
+  overflow: hidden;
+}
+
+.profile-rank-results::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px dashed rgba(61, 43, 37, 0.22);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.profile-rank-results .recent-result-marker,
+.profile-rank-results .recent-result-empty {
+  position: relative;
+  z-index: 1;
+  border: 2px solid rgba(61, 43, 37, 0.82);
+  box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.2);
+}
+
+.profile-rank-results .recent-result-empty {
+  min-width: 48px;
+  background: #fff9ef;
+  color: #5d4a44;
 }
 
 .profile-resume-section {
@@ -1265,8 +1405,45 @@
 
 .modal-backdrop .close-button,
 .nested-modal-backdrop .close-button {
+  position: absolute;
+  top: var(--modal-close-inset, 12px);
+  right: var(--modal-close-inset, 12px);
+  width: var(--modal-close-size, 44px);
+  min-width: var(--modal-close-size, 44px);
+  height: var(--modal-close-size, 44px);
+  min-height: var(--modal-close-size, 44px);
   z-index: 20;
   pointer-events: auto;
+}
+
+.modal-backdrop .watch-list-actions .close-button,
+.modal-backdrop .resume-header-actions .close-button {
+  position: static;
+  inset: auto;
+  flex: 0 0 auto;
+  transform: none;
+}
+
+.modal-backdrop .watch-list-actions,
+.modal-backdrop .resume-header-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  min-width: max-content;
+}
+
+.modal-backdrop .watch-list-actions .icon-button,
+.modal-backdrop .watch-list-actions .close-button,
+.modal-backdrop .resume-header-actions .close-button {
+  width: var(--modal-close-size, 44px);
+  min-width: var(--modal-close-size, 44px);
+  height: var(--modal-close-size, 44px);
+  min-height: var(--modal-close-size, 44px);
+}
+
+.modal-backdrop .resume-header-actions .resume-wallet {
+  min-height: var(--modal-close-size, 44px);
 }
 
 .close-button:hover,
@@ -1331,7 +1508,7 @@
 .replay-item,
 .replay-table-row,
 .profile-resume-hero,
-.profile-resume-stats span,
+.profile-resume-stats > span,
 .profile-character-row,
 .character-record-row,
 .warehouse-effect-result p {

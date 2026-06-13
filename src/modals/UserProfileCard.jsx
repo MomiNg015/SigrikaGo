@@ -3,7 +3,9 @@ import { MonitorPlay, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { CHARACTERS } from "../shared/characters.js";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
+import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import { findCharacter } from "../shared/characterDisplay.js";
+import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import { ReplayList } from "./ReplayList.jsx";
 
 export function UserProfileCard({
@@ -21,6 +23,7 @@ export function UserProfileCard({
   const [showReplays, setShowReplays] = useState(false);
   const [loadingReplays, setLoadingReplays] = useState(false);
   const [replayError, setReplayError] = useState("");
+  const recordSummary = splitRecordSummary(user.record);
 
   async function openReplays() {
     if (replayDisabled) return;
@@ -41,17 +44,28 @@ export function UserProfileCard({
   return (
     <section className="user-profile-card">
       <div className="profile-resume-hero">
-        <img src={resolveCandyPortrait(mainCharacter, user.itemEffects)} alt={mainCharacter.name} />
+        <span className="profile-chain-portrait">
+          <img src={resolveCandyPortrait(mainCharacter, user.itemEffects)} alt={mainCharacter.name} />
+          <CharacterChainBadge user={user} characterId={mainCharacter.id} />
+        </span>
         <div>
           <h3>{user.username}</h3>
           <p>{user.rank} · {user.rating}分</p>
         </div>
       </div>
       <div className="profile-resume-stats">
-        <span><b>{user.record ?? "0局 · 0胜0负0和"}</b><small>战绩</small></span>
+        <span className="profile-record-stat">
+          <b className="profile-record-lines">
+            <span className="profile-record-total">{recordSummary.total}</span>
+            <span className="profile-record-separator"> · </span>
+            <span className="profile-record-breakdown">{recordSummary.breakdown}</span>
+          </b>
+          <small>战绩</small>
+        </span>
         <span><b>{user.rating}分</b><small>积分</small></span>
         <span><b>{user.rank}</b><small>段位</small></span>
       </div>
+      <RecentResultMarkers results={user.recentResults} className="profile-rank-results" />
       <div className="profile-resume-section profile-character-section">
         <strong>角色战绩</strong>
         <div className="profile-character-list">
@@ -59,7 +73,10 @@ export function UserProfileCard({
             const character = findCharacter(characters, item.characterId) ?? CHARACTERS.sigrika;
             return (
               <div className="profile-character-row" key={item.characterId}>
-                <img src={resolveCandyPortrait(character, user.itemEffects)} alt={character.name} />
+                <span className="profile-chain-portrait small">
+                  <img src={resolveCandyPortrait(character, user.itemEffects)} alt={character.name} />
+                  <CharacterChainBadge user={user} characterId={character.id} />
+                </span>
                 <span>{character.name}</span>
                 <span>{item.record}</span>
                 <b>{item.winRate}</b>
@@ -102,6 +119,20 @@ export function UserProfileCard({
       )}
     </section>
   );
+}
+
+export function splitRecordSummary(record = "0局 · 0胜0负0和") {
+  const fallback = "0局 · 0胜0负0和";
+  const normalized = String(record || fallback).trim();
+  const [total, ...rest] = normalized.split(/\s*·\s*/);
+  if (rest.length > 0) return { total, breakdown: rest.join(" · ") };
+
+  const compactMatch = normalized.match(/^(\d+\s*局)\s*(.+)$/u);
+  if (compactMatch) {
+    return { total: compactMatch[1], breakdown: compactMatch[2] };
+  }
+
+  return { total: normalized, breakdown: "0胜0负0和" };
 }
 
 export function ConfirmPanel({ message, confirmText = "确定", cancelText = "返回", onConfirm, onCancel }) {

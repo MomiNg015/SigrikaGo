@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { adminApi } from "../api/client.js";
 import { parseAdminInteger } from "../shared/adminDrafts.js";
-import { rankFromRating } from "../shared/ratingRank.js";
 import { AdminFieldLabel, AdminSectionHeader, AdminStatusPill } from "./adminComponents.jsx";
 import { formatDateTime } from "./adminFormatters.js";
 import { buildUserDraft, parseOwnedItemsText } from "./adminUserDrafts.js";
@@ -165,8 +164,8 @@ export function UserEditor({ user, currentUserId, token, onClose, onRefresh, onC
             <option value="admin">管理员</option>
           </select>
         </label>
-        <label><AdminFieldLabel text="段位" tip="段位由积分自动换算，显示在大厅、对局信息和个人棋舍中。" />
-          <input value={rankFromRating(draft.rating)} readOnly />
+        <label><AdminFieldLabel text="段位" tip="段位按最近10盘胜负独立升降，不再由积分自动换算。" />
+          <input value={draft.rank} readOnly />
         </label>
         <label><AdminFieldLabel text="积分" tip="用户的匹配积分，必须是整数。" />
           <input type="number" value={draft.rating} onChange={(event) => updateDraft("rating", event.target.value)} />

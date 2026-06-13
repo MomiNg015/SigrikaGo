@@ -5,6 +5,7 @@ import { deploymentSocketBase } from "./shared/preloadAssets.js";
 import { BackgroundMusic, loadAudioSettings } from "./audio/playback.jsx";
 import AppOverlays from "./app/AppOverlays.jsx";
 import AppRoutes from "./app/AppRoutes.jsx";
+import InteractionFeedback from "./app/InteractionFeedback.jsx";
 import { shouldShowResultModal } from "./app/resumeSession.js";
 import { initialSessionState } from "./app/sessionState.js";
 import { useAppActions } from "./app/useAppActions.js";
@@ -34,6 +35,7 @@ function App() {
   const [matchStart, setMatchStart] = useState(null);
   const [matchSuccess, setMatchSuccess] = useState(null);
   const [showShop, setShowShop] = useState(false);
+  const [showGacha, setShowGacha] = useState(false);
   const [showHouse, setShowHouse] = useState(false);
   const [showWarehouse, setShowWarehouse] = useState(false);
   const [showResume, setShowResume] = useState(false);
@@ -151,6 +153,7 @@ function App() {
     setReplayStep,
     setRoom,
     setShowFriends,
+    setShowGacha,
     setShowHouse,
     setShowLeaderboard,
     setShowMessageBoard,
@@ -198,6 +201,7 @@ function App() {
   return (
     <div className={appShellClassName}>
       <BackgroundMusic track={backgroundMusic} audioSettings={audioSettings} resumeSignal={audioResumeSignal} />
+      <InteractionFeedback audioSettings={audioSettings} />
       <AppRoutes
         adminTab={adminTab}
         assetProgress={assetProgress}
@@ -227,6 +231,7 @@ function App() {
         setReplayStep={setReplayStep}
         setRoom={setRoom}
         setShowFriends={setShowFriends}
+        setShowGacha={setShowGacha}
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
@@ -267,6 +272,7 @@ function App() {
         setAudioSettings={setAudioSettings}
         setIncomingDuel={setIncomingDuel}
         setShowFriends={setShowFriends}
+        setShowGacha={setShowGacha}
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
@@ -277,6 +283,7 @@ function App() {
         setShowWatch={setShowWatch}
         setVisualTheme={setVisualTheme}
         showFriends={showFriends}
+        showGacha={showGacha}
         showHouse={showHouse}
         showLeaderboard={showLeaderboard}
         showMessageBoard={showMessageBoard}

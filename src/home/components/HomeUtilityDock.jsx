@@ -1,9 +1,13 @@
-import { Archive, Eye, ShoppingBag, Trophy, UsersRound } from "lucide-react";
+import { Archive, CircleDotDashed, Eye, ShoppingBag, Trophy, UsersRound } from "lucide-react";
 
-export default function HomeUtilityDock({ onOpenFriends, onOpenLeaderboard, onOpenShop, onOpenWarehouse, onOpenWatch }) {
+export default function HomeUtilityDock({ onOpenFriends, onOpenGacha, onOpenLeaderboard, onOpenShop, onOpenWarehouse, onOpenWatch }) {
   return (
     <div className="home-utility-grid tactical-nav-grid">
-      <button className="home-entry utility-entry shop-entry" onClick={onOpenShop} title="商店">
+      <button className="home-entry utility-entry gacha-entry" onClick={onOpenGacha} title="扭蛋">
+        <CircleDotDashed size={28} />
+        <strong>扭蛋</strong>
+      </button>
+      <button className="home-entry utility-entry shop-entry" data-ui-sound="none" onClick={onOpenShop} title="商店">
         <ShoppingBag size={28} />
         <strong>商店</strong>
       </button>

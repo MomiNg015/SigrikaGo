@@ -1,5 +1,6 @@
 import { Flag } from "lucide-react";
 import { canonicalCharacterId } from "../../shared/characterAliases.js";
+import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisabledReason, selectSortieCharacter } from "./houseStats.js";
 
 export default function HouseCharacterGrid({
@@ -8,6 +9,7 @@ export default function HouseCharacterGrid({
   itemEffects,
   owned,
   selectedCharacter,
+  user,
   onOpenCharacterDetail,
   onSelectCharacter
 }) {
@@ -27,6 +29,7 @@ export default function HouseCharacterGrid({
             onClick={() => onOpenCharacterDetail(character)}
             role="button"
             tabIndex={0}
+            data-ui-sound="none"
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") onOpenCharacterDetail(character);
             }}
@@ -34,6 +37,7 @@ export default function HouseCharacterGrid({
             <button
               className={`sortie-button ${selectedCharacter === characterId ? "selected" : ""}`}
               title={disabledReason || (selectedCharacter === characterId ? "出战中" : "设为出战")}
+              data-ui-sound="confirm"
               disabled={sortieDisabled}
               onClick={(event) => {
                 event.stopPropagation();
@@ -63,6 +67,7 @@ export default function HouseCharacterGrid({
               </div>
             )}
             <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
+            <CharacterChainBadge user={user} characterId={characterId} />
             <strong>{character.name}</strong>
           </div>
         );

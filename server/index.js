@@ -1,5 +1,4 @@
 import "dotenv/config";
-import bcrypt from "bcryptjs";
 import cors from "cors";
 import express from "express";
 import fs from "node:fs";
@@ -9,49 +8,36 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import multer from "multer";
 import { Server } from "socket.io";
-import { ensureGameModeSchema, prisma, publicUser, USER_ASSET_RELATION_INCLUDE, USER_ASSET_RELATION_SELECT } from "./db.js";
+import { ensureGachaSchema, ensureGameModeSchema, prisma, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
-import { promoteConfiguredAdmins, syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
+import { promoteConfiguredAdmins } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
-import {
-  ALREADY_LOGGED_IN_CODE,
-  ALREADY_LOGGED_IN_MESSAGE,
-  buildClearRefreshCookie,
-  buildRefreshCookie,
-  createLoginSessionStore,
-  ensureLoginSessionSchema,
-  parseCookies,
-  REFRESH_COOKIE_NAME
-} from "./loginSessions.js";
+import { createAuthRouter } from "./authRoutes.js";
+import { createCommerceRouter } from "./commerceRoutes.js";
+import { createGachaRouter } from "./gachaRoutes.js";
+import { createPlayerRouter, createCharacterSelectionData, validateOptionalRoomCode } from "./playerRoutes.js";
+import { createPublicRouter } from "./publicRoutes.js";
+import { createReplayRouter } from "./replayRoutes.js";
+import { createSocialRouter } from "./socialRoutes.js";
+import { createLoginSessionStore, ensureLoginSessionSchema } from "./loginSessions.js";
 import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
 import { jsonSyntaxErrorHandler } from "./httpErrors.js";
-import { shouldBlockLoginForActiveAccount } from "./loginConflicts.js";
 import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
 import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
 import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
-import { listPublicCharacterResponse, listPublicCharacters, seedCharacters } from "./characters.js";
-import { CHARACTERS } from "../src/shared/characters.js";
+import { seedCharacters } from "./characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { createSocketUserRefresher } from "./socketAuth.js";
-import { createFeedbackMessage } from "./feedback.js";
-import { buildLeaderboard } from "./leaderboard.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
-import { publicUserWithRecordStats } from "./userProfile.js";
-import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
-import { listItemInventory, useInventoryItem } from "./items.js";
-import { ensureDefaultSiteSettings, getPublicSiteSettings } from "./siteSettings.js";
-import { getStoneDecoration } from "../src/shared/stoneDecorations.js";
-import { blockedCharactersForItemEffects } from "./itemEffects.js";
-import { selectUserSkillMusic } from "./musicSelection.js";
+import { seedBuiltinShopItems } from "./shop.js";
+import { ensureDefaultSiteSettings } from "./siteSettings.js";
 import {
   assertProductionDeployment,
   corsOriginForRequest,
   createApiRateLimit,
   createAuthRateLimit,
-  validatePassword,
-  validateRoomCode,
-  validateUsername
+  validateRoomCode
 } from "./security.js";
 import {
   addChat,
@@ -78,20 +64,13 @@ import {
   respondDraw,
   roomView
 } from "./rooms.js";
-import { resumePayloadForUser } from "./resume.js";
 import {
-  deleteRelationship,
   ensureSocialSchema,
-  getUserProfile,
-  getUserProfileByUsername,
-  getUserReplays,
   hasBlacklistBetween,
   hasBlacklistFromOwner,
-  listSocialUsers,
-  RELATIONSHIP_TYPES,
-  setRelationship,
   toSocialUser
 } from "./social.js";
+import { resumePayloadForUser } from "./resume.js";
 
 const app = express();
 const server = createServer(app);
@@ -164,434 +143,16 @@ await ensureSocialSchema(prisma);
 await ensureRoomPersistenceSchema(prisma);
 await ensureLoginSessionSchema(prisma);
 await ensureGameModeSchema(prisma);
+await ensureGachaSchema(prisma);
 await promoteConfiguredAdmins(prisma);
 
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true });
-});
-
-app.get("/api/characters", async (_req, res) => {
-  res.json(await listPublicCharacterResponse(prisma));
-});
-
-app.get("/api/shop", authHttp, async (req, res) => {
-  res.json(await listShopItems(prisma, req.user.id));
-});
 let onlineSessions;
 let duelRequests;
 
-app.get("/api/site-settings", async (_req, res) => {
-  res.json({ settings: await getPublicSiteSettings(prisma) });
-});
+app.use("/api", createPublicRouter({ prisma, authHttp, listWatchRooms }));
 
-app.post("/api/feedback", authHttp, async (req, res) => {
-  try {
-    res.json(await createFeedbackMessage({
-      prisma,
-      user: req.user,
-      content: req.body.content
-    }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "反馈提交失败" });
-  }
-});
-
-app.get("/api/leaderboard", authHttp, async (req, res) => {
-  const mode = normalizeGameModeId(req.query.mode);
-  const [users, records] = await Promise.all([
-    prisma.user.findMany({
-      select: {
-        id: true,
-        username: true,
-        rating: true,
-        selectedCharacter: true,
-        itemEffects: true,
-        ...USER_ASSET_RELATION_SELECT
-      }
-    }),
-    prisma.gameRecord.findMany({
-      where: { mode },
-      select: {
-        blackUserId: true,
-        whiteUserId: true,
-        blackCharacter: true,
-        whiteCharacter: true,
-        winnerColor: true,
-        resultReason: true,
-        resultText: true,
-        mode: true
-      }
-    })
-  ]);
-  res.json({ players: buildLeaderboard(users, records, { mode }) });
-});
-
-app.get("/api/rooms/watch", authHttp, async (req, res) => {
-  const mode = normalizeGameModeId(req.query.mode);
-  res.json({ rooms: listWatchRooms().filter((room) => normalizeGameModeId(room.mode) === mode) });
-});
-
-app.get("/api/social", authHttp, async (req, res) => {
-  res.json(await listSocialUsers({
-    prisma,
-    userId: req.user.id,
-    statusForUser
-  }));
-});
-
-app.post("/api/social/friends/:targetId", authHttp, async (req, res) => {
-  try {
-    await setRelationship({
-      prisma,
-      ownerUserId: req.user.id,
-      targetUserId: req.params.targetId,
-      type: RELATIONSHIP_TYPES.friend
-    });
-    res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
-  }
-});
-
-app.delete("/api/social/friends/:targetId", authHttp, async (req, res) => {
-  await deleteRelationship({
-    prisma,
-    ownerUserId: req.user.id,
-    targetUserId: req.params.targetId,
-    type: RELATIONSHIP_TYPES.friend
-  });
-  res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
-});
-
-app.post("/api/social/blacklist/:targetId", authHttp, async (req, res) => {
-  try {
-    await setRelationship({
-      prisma,
-      ownerUserId: req.user.id,
-      targetUserId: req.params.targetId,
-      type: RELATIONSHIP_TYPES.blacklist
-    });
-    res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "操作失败" });
-  }
-});
-
-app.delete("/api/social/blacklist/:targetId", authHttp, async (req, res) => {
-  await deleteRelationship({
-    prisma,
-    ownerUserId: req.user.id,
-    targetUserId: req.params.targetId,
-    type: RELATIONSHIP_TYPES.blacklist
-  });
-  res.json(await listSocialUsers({ prisma, userId: req.user.id, statusForUser }));
-});
-
-app.get("/api/users/search/profile", authHttp, async (req, res) => {
-  const usernameResult = validateUsername(req.query.username);
-  if (!usernameResult.ok) {
-    res.status(400).json({ error: usernameResult.error });
-    return;
-  }
-  const profile = await getUserProfileByUsername({
-    prisma,
-    username: usernameResult.value,
-    viewerId: req.user.id,
-    statusForUser,
-    mode: normalizeGameModeId(req.query.mode)
-  });
-  if (!profile) {
-    res.status(404).json({ error: "\u8be5\u7528\u6237\u4e0d\u5b58\u5728" });
-    return;
-  }
-  res.json({ profile });
-});
-
-app.get("/api/users/:id/profile", authHttp, async (req, res) => {
-  const profile = await getUserProfile({
-    prisma,
-    userId: req.params.id,
-    viewerId: req.user.id,
-    statusForUser,
-    mode: normalizeGameModeId(req.query.mode)
-  });
-  if (!profile) {
-    res.status(404).json({ error: "\u7528\u6237\u4e0d\u5b58\u5728" });
-    return;
-  }
-  res.json({ profile });
-});
-
-app.get("/api/users/:id/replays", async (req, res) => {
-  const records = await getUserReplays({
-    prisma,
-    userId: req.params.id,
-    mode: normalizeGameModeId(req.query.mode)
-  });
-  if (!records) {
-    res.status(404).json({ error: "\u7528\u6237\u4e0d\u5b58\u5728" });
-    return;
-  }
-  res.json({ records });
-});
-
-app.post("/api/shop/:id/purchase", authHttp, async (req, res) => {
-  try {
-    res.json(await purchaseShopItem({ prisma, userId: req.user.id, itemId: req.params.id }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "购买失败" });
-  }
-});
-
-app.get("/api/items/inventory", authHttp, async (req, res) => {
-  try {
-    res.json(await listItemInventory({ prisma, userId: req.user.id }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "\u8bfb\u53d6\u4ed3\u5e93\u5931\u8d25" });
-  }
-});
-
-app.post("/api/items/:itemId/use", authHttp, async (req, res) => {
-  try {
-    res.json(await useInventoryItem({
-      prisma,
-      userId: req.user.id,
-      itemId: req.params.itemId,
-      characterId: req.body.characterId
-    }));
-  } catch (error) {
-    res.status(error.status ?? 500).json({ error: error.message ?? "使用道具失败" });
-  }
-});
-
-app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
-
-app.post("/api/auth/register", async (req, res) => {
-  const usernameResult = validateUsername(req.body.username);
-  const passwordResult = validatePassword(req.body.password);
-  if (!usernameResult.ok) {
-    res.status(400).json({ error: usernameResult.error });
-    return;
-  }
-  if (!passwordResult.ok) {
-    res.status(400).json({ error: passwordResult.error });
-    return;
-  }
-  const username = usernameResult.value;
-  const password = passwordResult.value;
-  const passwordHash = await bcrypt.hash(password, 10);
-  try {
-    const user = await prisma.user.create({ data: { username, passwordHash } });
-    const syncedUser = await syncConfiguredAdmin(user, prisma);
-    await sendLoginResponse(res, syncedUser);
-  } catch {
-    res.status(409).json({ error: "\u7528\u6237\u540d\u5df2\u5b58\u5728" });
-  }
-});
-
-app.post("/api/auth/login", async (req, res) => {
-  const usernameResult = validateUsername(req.body.username);
-  const passwordResult = validatePassword(req.body.password);
-  if (!usernameResult.ok || !passwordResult.ok) {
-    res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
-    return;
-  }
-  const username = usernameResult.value;
-  const password = passwordResult.value;
-  const user = await prisma.user.findUnique({
-    where: { username },
-    include: USER_ASSET_RELATION_INCLUDE
-  });
-  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-    res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
-    return;
-  }
-  if (user.status === USER_STATUS.banned) {
-    res.status(403).json({ error: user.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8d26\u53f7\u5df2\u5c01\u7981" });
-    return;
-  }
-  if (shouldBlockLoginForActiveAccount({
-    onlineSessions,
-    userId: user.id,
-    forceLogin: Boolean(req.body.forceLogin)
-  })) {
-    res.status(409).json({
-      code: ALREADY_LOGGED_IN_CODE,
-      error: ALREADY_LOGGED_IN_MESSAGE
-    });
-    return;
-  }
-  if (req.body.forceLogin) await forceLogoutUser(user.id);
-  const syncedUser = await syncConfiguredAdmin(user, prisma);
-  await sendLoginResponse(res, syncedUser);
-});
-
-app.post("/api/auth/refresh", async (req, res) => {
-  const refreshToken = parseCookies(req.headers.cookie)[REFRESH_COOKIE_NAME];
-  const session = await loginSessions.refresh(refreshToken);
-  if (!session) {
-    res.setHeader("Set-Cookie", buildClearRefreshCookie());
-    res.status(401).json({ error: "\u8bf7\u5148\u767b\u5f55" });
-    return;
-  }
-  const user = await prisma.user.findUnique({
-    where: { id: session.userId },
-    include: USER_ASSET_RELATION_INCLUDE
-  });
-  if (!user || user.status === USER_STATUS.banned) {
-    await loginSessions.clear(session.userId, session.sessionId);
-    res.setHeader("Set-Cookie", buildClearRefreshCookie());
-    res.status(user?.status === USER_STATUS.banned ? 403 : 401).json({
-      error: user?.banReason ? `\u8d26\u53f7\u5df2\u5c01\u7981\uff1a${user.banReason}` : "\u8bf7\u5148\u767b\u5f55"
-    });
-    return;
-  }
-  res.setHeader("Set-Cookie", buildRefreshCookie(session.refreshToken));
-  res.json(withToken(await syncConfiguredAdmin(user, prisma), JWT_SECRET, { sessionId: session.sessionId }));
-});
-
-app.post("/api/auth/logout", async (req, res) => {
-  const refreshToken = parseCookies(req.headers.cookie)[REFRESH_COOKIE_NAME];
-  await loginSessions.clearRefreshToken(refreshToken);
-  try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    const payload = token ? JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8")) : null;
-    if (payload?.sub && payload?.sid) await loginSessions.clear(payload.sub, payload.sid);
-  } catch {
-    // Logout should succeed even if the access token is malformed or expired.
-  }
-  res.setHeader("Set-Cookie", buildClearRefreshCookie());
-  res.json({ ok: true });
-});
-
-app.get("/api/me", authHttp, async (req, res) => {
-  res.json({ user: await publicUserWithHistory(req.user) });
-});
-
-app.get("/api/me/resume", authHttp, async (req, res) => {
-  res.json(await resumePayloadForUser({
-    prisma,
-    userId: req.user.id,
-    roomCode: validateOptionalRoomCode(req.query.roomCode),
-    findRoomForUser,
-    roomView
-  }));
-});
-
-app.post("/api/me/character", authHttp, async (req, res) => {
-  const characterId = String(req.body.characterId ?? "");
-  const publicProfile = publicUser(req.user);
-  if (blockedCharactersForItemEffects(publicProfile.itemEffects).has(characterId)) {
-    res.status(403).json({ error: "\u7cd6\u679c\u6548\u679c\u4e2d\uff0c\u6682\u65f6\u65e0\u6cd5\u51fa\u6218" });
-    return;
-  }
-  if (!publicProfile.ownedCharacters.includes(characterId)) {
-    res.status(403).json({ error: "\u5c1a\u672a\u83b7\u5f97\u8be5\u89d2\u8272" });
-    return;
-  }
-  const { characters, disabledSlugs } = await characterSelectionData();
-  if (!characters[characterId] && (disabledSlugs.has(characterId) || !CHARACTERS[characterId])) {
-    res.status(400).json({ error: "\u89d2\u8272\u4e0d\u5b58\u5728" });
-    return;
-  }
-  const user = await prisma.user.update({
-    where: { id: req.user.id },
-    data: { selectedCharacter: characterId }
-  });
-  res.json({ user: publicUser(user) });
-});
-
-app.post("/api/me/decoration", authHttp, async (req, res) => {
-  const decorationId = String(req.body.decorationId ?? "").trim();
-  if (decorationId) {
-    if (!getStoneDecoration(decorationId)) {
-      res.status(400).json({ error: "\u88c5\u9970\u4e0d\u5b58\u5728" });
-      return;
-    }
-    const ownedDecorations = publicUser(req.user).ownedDecorations;
-    if (!ownedDecorations.includes(decorationId)) {
-      res.status(403).json({ error: "\u5c1a\u672a\u83b7\u5f97\u8be5\u88c5\u9970" });
-      return;
-    }
-  }
-  const user = await prisma.user.update({
-    where: { id: req.user.id },
-    data: { selectedStoneDecoration: decorationId }
-  });
-  res.json({ user: publicUser(user) });
-});
-
-app.post("/api/me/music-selection", authHttp, async (req, res) => {
-  try {
-    res.json(await selectUserSkillMusic({
-      prisma,
-      user: req.user,
-      characterId: req.body.characterId,
-      trackId: req.body.trackId
-    }));
-  } catch (error) {
-    if (error.status) {
-      res.status(error.status).json({ error: error.message });
-      return;
-    }
-    throw error;
-  }
-});
-
-app.get("/api/replays", authHttp, async (req, res) => {
-  const records = await prisma.gameRecord.findMany({
-    where: {
-      OR: [
-        { blackUserId: req.user.id },
-        { whiteUserId: req.user.id }
-      ]
-    },
-    select: {
-      id: true,
-      roomCode: true,
-      blackUserId: true,
-      whiteUserId: true,
-      blackName: true,
-      whiteName: true,
-      resultText: true,
-      winnerColor: true,
-      resultReason: true,
-      moveCount: true,
-      mode: true,
-      blackCharacter: true,
-      whiteCharacter: true,
-      createdAt: true
-    },
-    orderBy: { createdAt: "desc" }
-  });
-  res.json({
-    records: records.map((record) => ({
-      id: record.id,
-      roomCode: record.roomCode,
-      blackUserId: record.blackUserId,
-      whiteUserId: record.whiteUserId,
-      blackName: record.blackName,
-      whiteName: record.whiteName,
-      resultText: record.resultText,
-      winnerColor: record.winnerColor,
-      resultReason: record.resultReason,
-      moveCount: record.moveCount,
-      mode: record.mode ?? "spark",
-      blackCharacter: record.blackCharacter,
-      whiteCharacter: record.whiteCharacter,
-      createdAt: record.createdAt
-    }))
-  });
-});
-
-app.get("/api/replays/:id", authHttp, async (req, res) => {
-  const record = await prisma.gameRecord.findUnique({ where: { id: req.params.id } });
-  if (!record) {
-    res.status(404).json({ error: "\u68cb\u8c31\u4e0d\u5b58\u5728" });
-    return;
-  }
-  res.json({ record: { ...record, snapshot: JSON.parse(record.snapshot) } });
-});
+app.use("/api", createSocialRouter({ prisma, authHttp, statusForUser }));
+const characterSelectionData = createCharacterSelectionData({ prisma });
 
 const refreshSocketUser = createSocketUserRefresher({
   jwtSecret: JWT_SECRET,
@@ -623,6 +184,25 @@ duelRequests = createDuelRequestManager({
     targetUserId: requesterId
   })
 });
+
+app.use("/api/auth", createAuthRouter({
+  prisma,
+  jwtSecret: JWT_SECRET,
+  loginSessions,
+  onlineSessions
+}));
+
+app.use("/api", authHttp, createCommerceRouter({ prisma }));
+app.use("/api", authHttp, createGachaRouter({ prisma }));
+
+app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
+app.use("/api", authHttp, createPlayerRouter({
+  prisma,
+  findRoomForUser,
+  roomView,
+  characterSelectionData
+}));
+app.use("/api", authHttp, createReplayRouter({ prisma }));
 
 function lobbyStats() {
   const matchmakingCounts = matchmakingCountsByMode();
@@ -802,12 +382,6 @@ function sendResult(socket, result) {
   if (!result.ok) socket.emit("error:toast", result.error);
 }
 
-function validateOptionalRoomCode(roomCode) {
-  if (!roomCode) return "";
-  const result = validateRoomCode(String(roomCode));
-  return result.ok ? result.value : "";
-}
-
 function installSocketRateGuard(socket) {
   socket.data.rateGuard = { startedAt: Date.now(), count: 0 };
   socket.use((_packet, next) => {
@@ -824,17 +398,6 @@ function installSocketRateGuard(socket) {
     }
     next();
   });
-}
-
-async function sendLoginResponse(res, user) {
-  const response = await onlineSessions.createLoginResponse(user);
-  res.setHeader("Set-Cookie", buildRefreshCookie(response.refreshToken));
-  const { refreshToken, refreshExpiresAt, ...publicResponse } = response;
-  res.json(publicResponse);
-}
-
-async function forceLogoutUser(userId) {
-  await onlineSessions.forceLogoutUser(userId);
 }
 
 function registerOnlineSocket(socket) {
@@ -855,40 +418,6 @@ function firstOnlineSocket(userId) {
 
 function isUserOnline(userId) {
   return onlineSessions?.hasOnlineUser?.(userId) ?? false;
-}
-
-async function characterMap() {
-  const list = await listPublicCharacters(prisma);
-  return Object.fromEntries(list.map((character) => [character.id, character]));
-}
-
-async function characterSelectionData() {
-  const [characters, records] = await Promise.all([
-    characterMap(),
-    prisma.character.findMany({ select: { slug: true, enabled: true } })
-  ]);
-  return {
-    characters,
-    disabledSlugs: new Set(records.filter((record) => !record.enabled).map((record) => record.slug))
-  };
-}
-
-async function publicUserWithHistory(user) {
-  const records = await prisma.gameRecord.findMany({
-    where: {
-      OR: [
-        { blackUserId: user.id },
-        { whiteUserId: user.id }
-      ]
-    },
-    select: {
-      blackUserId: true,
-      whiteUserId: true,
-      winnerColor: true,
-      resultText: true
-    }
-  });
-  return publicUserWithRecordStats(user, records);
 }
 
 if (process.env.NODE_ENV === "production" && fs.existsSync(distDir)) {

@@ -4,16 +4,25 @@
 - Matchmaking, friend duels, room snapshots, persisted rooms, replay records, watch lists, leaderboards, and profile/history surfaces carry a `mode` field. Match queues are isolated by mode, lobby stats expose per-mode waiting counts, friend duel requests include the requested mode, and old/missing record modes normalize to `spark` for legacy data.
 - Standard-mode room UI keeps player cosmetics such as selected character portraits and stone decorations, but directly removes skill gameplay affordances: no action-bar skill button, no player skill chips, no skill name display, no removal/overclock counters, and no overclock terms in scoring breakdowns. The rules layer also rejects skill and passive-skill execution in standard mode.
 - Room board coordinates and action validation are size-aware. The backend validates move/scoring `pointId` values against the active room game's `size`, and the board coordinate labels use the same `--size` grid as the rendered intersections so 13-line and 19-line boards stay aligned.
-- Mode-specific competitive stats live in `UserModeStats` with one row per user and mode. Existing `User.rating`, `wins`, and `losses` remain star-mode compatibility mirrors during this migration, while standard rating/rank/records are read from `UserModeStats`; coins remain a global account asset.
+- Spark skill presentation uses a hybrid board renderer: `Board` keeps the React DOM/SVG grid, buttons, coordinates, stones, scoring marks, and click handling as the source of interaction truth, while `BoardSkillEffects` mounts a `pointer-events: none` PixiJS canvas overlay for character skill animations and `BoardAmbientEffects` renders ongoing passive ambience. Skill-enabled boards schedule an idle `pixi.js` prewarm through `src/room/pixiPrewarm.js`, and the eventual skill animation reuses the same module promise; standard no-skill boards skip this prewarm. Concrete Pixi animation implementations live behind `src/room/boardSkillEffectRegistry.js`, with shared board geometry in `src/room/boardSkillEffectGeometry.js`, so adding a board-capable effect extends the catalog and registry instead of growing the React host component. Skill preview metadata comes from the already-resolved backend skill action (`effectType`, `targetId`, affected/marked points, removal counts, and `resolvesAt`), so the animation layer never recomputes or changes game rules. The shared `src/shared/skillPresentation.js` timing contract keeps the 2s skill banner first, then starts the board effect, with reduced-motion users receiving a short static hit effect. Full-motion effects are staged as anticipation, impact, and afterglow/residue phases so visual polish stays in the presentation layer without changing board state timing. Aemeath `hidden-hand` uses a full-board green/white electronic data-stream sweep, while Nabomo `color-illusion-passive` uses low-opacity feathered black/gray cloud shapes for the duration of the active passive, avoiding any visible rectangular overlay edge. Board skill SFX are scheduled from the same frontend timeline through `src/room/boardSkillEffectSoundScheduler.js` and the existing `sfx` audio channel; they are cleaned up with the overlay and are suppressed for reduced-motion board effects.
+- Mode-specific competitive stats live in `UserModeStats` with one row per user and mode. Each row owns `rating`, `rank`, `recentResults`, `wins`, `losses`, and `draws`; `recentResults` stores the current rank-cycle decisive results from old to new. Existing `User.rating`, `rank`, `wins`, and `losses` remain spark-mode compatibility mirrors during this migration, while standard rating/rank/records are read from `UserModeStats`; coins remain a global account asset.
+- The gacha system is a first-class reward subsystem separate from shop purchases. `GachaPool`, `GachaPrize`, `GachaDraw`, and `GachaDrawReward` store configurable pools, probability prizes, draw headers, and reward details; `User.blueGems` stores duplicate-conversion currency, and `UserCharacter.chainCount` stores duplicate-character chain count. `ensureGachaSchema()` upgrades older SQLite development databases by adding missing currency/chain columns, the multi-featured-prize `GachaPool.featuredPrizeIds` JSON field, and the gacha tables before authenticated routes can read them. Player-facing pool queries return only enabled pools that are open at request time through the authenticated gacha route boundary, while admin management reads all pools through `/api/admin/gacha-pools`. Admin create/update/delete operations live in `adminGachaManagement.js`, validate custom single/ten draw prices, permanent or dated open windows, featured prize selections, enabled prize probability totals, and selected prize targets against existing characters, decorations, item shop entries, or music tracks before persisting, then audit each pool change as `gacha-pool.*`. Each pool owns its open window or permanent-open flag, custom single/ten draw prices, zero or more featured prizes stored in `featuredPrizeIds`, a legacy first-featured mirror in `featuredPrizeId`, and enabled prizes whose probabilities must total 100%. Draw execution is transactional: validate pool availability and probability totals, deduct the configured coin price, settle rewards with prize `name`/`imageUrl` copied into the immediate response, persist draw/reward history, and write progress ledger entries. Unique rewards unlock the first missing character/decoration/music unit; duplicate decorations/music convert to blue gems, duplicate characters increase character chain count, and item/coin prizes add their configured quantity. Player history reads return recent persisted draws with pool name, cost, count, timestamp, and reward conversion details.
+- The home utility dock exposes a gacha entry that opens `GachaModal`. The player modal uses a Bright School compatible school-club capsule-machine layout: left-side ticket tabs show each open pool name, featured prize image stack, and date range; the main panel shows the featured prize group, remaining time, prize/history round buttons, coin/blue-gem wallet, and configurable single/ten draw buttons. Draws play a CSS capsule-machine motion before showing a nested result dialog; ten-pull results use a desktop 2-by-5 reward grid, each reward card shows the prize image plus player-facing display name/details, and coin rewards use the local `/assets/items/gacha-coin-bag.svg` image. `AdminGachaPools` adds the admin "gacha" tab for pool price, schedule, featured prizes, and prize probability editing, with compact prize-probability summaries in the pool list. Prize rows select from the current admin-loaded resource catalogs rather than free-form item names or ids; choosing a resource copies its target id, display name, and image into the saved prize payload.
+- The gacha admin editor uses a wider viewport-clamped CRUD drawer than ordinary admin forms because each prize row contains type, resource, quantity, probability, featured flag, and label controls. The prize editor is styled as a compact operations-console list: a header explains probability basis points, each row shows a resource preview thumbnail or type fallback, grouped type/resource selectors, grouped quantity/probability unit fields, a distinct featured-prize toggle, and a type badge. The featured-prize control is a multi-toggle, not a required radio group: each row can be independently marked as a grand prize, clicking a selected row removes only that row from `featuredPrizeIndexes`, and clearing all toggles stores `featuredPrizeIds: null` plus `featuredPrizeId: null` instead of inventing the first prize as a fallback. Pool payloads expose `featuredPrizes` as the full array and keep `featuredPrize` as the first featured item for older display surfaces. Below medium widths, prize rows collapse to one column so no field or bottom action is hidden outside the drawer.
+- Gacha admin prize rows label numeric inputs inline: quantity uses `个` or `金币` depending on prize type, and probability is entered as basis points with `/10000` shown beside the field. Decoration prize options merge the two built-in stone decorations from `STONE_DECORATIONS` with admin-created decorations so administrators can select all currently available decoration resources. Gacha admin CSS stays scoped under `.admin-gacha-board` / `.admin-gacha-*` so Bright School player-facing theme layers do not bleed into the admin console.
+- Character duplicate rewards increment `UserCharacter.chainCount`; public user payloads expose `characterChains`, and `CharacterChainBadge` overlays the chain count on portrait surfaces. Counts from 1 to 5 render as yellow five-point stars; counts above 5 collapse to `★×n` so compact portrait cards do not overflow.
+- Blue gems are a wallet currency surfaced alongside coins in shop and resume UI. They are currently earned from duplicate decoration/music gacha rewards and reserved for future shop use.
 - Room snapshots can carry mode-specific player display stats. Frontend room-entry syncs (`match:found`, `room:update`, and live `room:resume`) merge the current player's snapshot into the global user state, but current-user updates never generate coins, rating, or rank-change toasts. Entering spark or standard rooms is a context switch, not a reward/rating event.
-- The home player plaque shows two compact rank/rating rows: spark mode first, standard mode second. Each time the app enters the home view it silently refreshes `/api/me` so the plaque reflects post-game mode stats after leaving a finished room.
+- The home player plaque shows two compact rank/rating rows: spark mode first, standard mode second. It does not show recent-result markers; those stay in profile/history detail surfaces. Each time the app enters the home view it silently refreshes `/api/me` so the plaque reflects post-game mode stats after leaving a finished room.
 - Bright School desktop plaques must reserve a right-side grid column at least as wide as the two-row mode stat panel (`164px` currently); otherwise the plaque's clipped student-ID card frame cuts off rating text such as `1160分`.
 - Bright School desktop lobby has a short-height safety pass for `max-height: 760px`: the main panel margins/padding, stage top padding, manual entry, and match entry scale from `dvh` so the handbook and match images stay inside the visible desktop viewport instead of spilling below the fold.
-- Server startup calls `ensureGameModeSchema(prisma)` before auth routes are used. It creates `UserModeStats`, adds `GameRecord.mode` when an older SQLite dev database is still on the pre-mode schema, and backfills each existing user into the `spark` stats bucket so login/profile reads can include `modeStats` safely after pulling the branch.
+- Server startup calls `ensureGameModeSchema(prisma)` before auth routes are used. It creates `UserModeStats`, adds `GameRecord.mode`, `UserModeStats.rank`, and `UserModeStats.recentResults` when an older SQLite dev database is still on the pre-mode schema, and backfills each existing user into the `spark` stats bucket so login/profile reads can include `modeStats` safely after pulling the branch.
 - Desktop and mobile mode switchers use a two-option order (`星炬对弈`, then `标准对弈`) for home matchmaking, leaderboard, watch list, and resume/history surfaces. Mode controls should keep 44px-plus touch targets, stable two-column segmented tabs or vertical option buttons, and Bright School visual consistency without introducing separate visual themes.
 - Static CSS and HTML contract tests normalize CRLF to LF before exact string assertions. This keeps the Windows working-tree checkout from failing layout-contract tests solely because Git rewrote line endings while preserving the same CSS and generated document content.
+- Shared base control CSS keeps numeric inputs as `type="number"` for validation and mobile numeric keyboards, but hides native browser spinner buttons with `appearance: textfield` and WebKit spin-button resets. Admin gacha quantity/probability fields therefore rely on explicit unit labels instead of browser `+1/-1` controls.
+- Bright School home player plaque layout contracts should stay anchored to `src/styles/themes/bright-school/home.css` and `src/home/HomeScreen.test.jsx`. Broader HUD/theme tests may assert that the paperclip polish layer and scoped plaque rule exist, but should not keep a second stale copy of the plaque grid sizing because the stats column width already lives with the home plaque source contract. The same CSS contract ownership rule is captured in `.trellis/spec/frontend/quality-guidelines.md`.
 - Shop tabs layout is unified to a single row across both desktop and mobile views under the Bright School theme and general commerce layout. By declaring `.shop-tabs` with `grid-template-columns: repeat(4, minmax(0, 1fr))` and separating it from mobile adaptive `auto-fit` styles, all four store categories (characters, items, decorations, music) sit on one line without wrapping to a second row.
-- Shop item cards on mobile views display meta text in three vertical rows: name on row one, limit/stock on row two, and price on row three. Cards use flex column direction with `min-height: 220px` and `height: auto` to prevent squeeze under different viewport heights. In addition, the metadata wrapper `.shop-card-meta` is set to `display: contents` so its children participate directly in card alignment flow, and font sizes of the name and price are scaled up for visual emphasis.
+- Shop item cards on mobile views display meta text in compact vertical rows: name first, optional stock text for consumable items, and price below it. Character and decoration cards no longer show purchase-limit wording, so their `.shop-card-meta-price-only` state centers the price horizontally on both desktop and mobile. Cards use flex column direction with `min-height: 220px` and `height: auto` to prevent squeeze under different viewport heights. In addition, the metadata wrapper `.shop-card-meta` is set to `display: contents` in the mobile layout so its children participate directly in card alignment flow, and font sizes of the name and price are scaled up for visual emphasis.
 - Warehouse items layout on mobile views is optimized to align to the top of the container instead of stretching. By applying `align-content: start` to `.warehouse-grid` under the Bright School mobile theme and general commerce layout, individual items stack neatly from top to bottom even if there is only one item present.
 - Warehouse target selection card grid layout on mobile views displays characters on a dynamic grid with up to four columns per row, shrinking and expanding cards automatically using the formula `repeat(auto-fit, minmax(calc((100% - 36px) / 4), 1fr))`. Cards utilize flex column direction to place portraits on top of centered names, and portraits scale responsively using flex-grow with height zero, preventing overlap or text clipping on small viewports.
 - Browser tabs use `/assets/sigrika_centered.png` as the site favicon so the Sigrika portrait appears beside the `SigrikaGo` page title.
@@ -48,15 +57,16 @@
 - Mobile room exit is also a header-level icon button on phones, placed immediately to the left of the integrated options menu. The replay action dock hides its old text exit button on mobile, and dock buttons center their icon/text content inside fixed touch targets.
 - Mobile room chat removes the separate in-panel exit-room button; the chat trigger aligns to the right side of the chat panel, while desktop chat still keeps the trailing exit action. Mobile room header option menus stay on the room UI layer instead of floating above active modal overlays, while message-board close buttons keep the normal shared modal close-button stacking. Bright School mobile room controls explicitly remove box shadows, drop shadows, and text shadows from room header tags, player labels/chips, timers, capture chips, dock tabs, action/replay buttons, menu buttons, chat controls, and skill chips so the battle screen reads flatter and less visually heavy; board point buttons and stone/current-move visuals remain owned by board styles. Replay/action buttons default to a single centered icon row on mobile and only switch to icon-plus-label rows when an action label is present.
 - Bright School mobile action docks keep the individual action button borders, but the integrated action-bar container itself has no outer border, outline, shadow, filter, or background treatment so the button row reads as separate touch targets instead of one framed panel.
-- A final Bright School mobile guard in `mobile-adaptive.css` uses higher-specificity room selectors for controls that older Bright School layers also mark `!important`: capture/dead/overclock chips, timer fills, spent skill chips, replay controls, action buttons, chat controls, and the mobile menu. The same guard lets the chat popover escape the dock panel while open, raises the open room options menu above player strips but below modal backdrops, and fixes the message-board close button to the modal panel's top-right corner without the hard notebook shadow.
+- A final Bright School mobile guard in `mobile-adaptive.css` uses higher-specificity room selectors for controls that older Bright School layers also mark `!important`: capture/dead/overclock chips, timer fills, spent skill chips, replay controls, action buttons, chat controls, and the mobile menu. The same guard lets the chat popover escape the dock panel while open, raises the open room options menu above player strips but below modal backdrops, and keeps the message-board close button on the shared modal close-button top-right contract without the hard notebook shadow.
 - Replay controls render with an explicit `action-bar replay-bar` class so the mobile guard can target replay-only chrome. On Bright School mobile, the replay control strip, replay buttons, and `replay-step-indicator` remove their panel background, border, outline, and shadow instead of inheriting the hard notebook frame used by generic action bars. Compact mobile replay counters hide the decorative replay icon and center the `current/max` hand text so the number reads balanced inside its touch cell.
 - Mobile battle rooms use a fixed full-screen game-console layout on phones: the room shell stays at `100dvh`, player strips use a bounded `--mobile-room-player-strip-height`, the board stage keeps a square `aspect-ratio: 1` inside the remaining center viewport, and the bottom dock uses compact tabs plus a capped operation hint so actions, members, and chat stay reachable without covering the board. Portrait player strips keep a larger fixed avatar column, a flexible identity/capture column, and a bounded timer/skill column with visible row gaps so names, rank/rating, captures, clocks, and skill chips read as three balanced zones. Mobile identity metadata stays on one row with the larger username on the left and rank/rating tags on the right; rank/rating pills use inline-flex centering so their text remains vertically centered in tight mobile strips. Bright School mirrors the shared mobile contract with tighter 375px/393px portrait variables and flat player cards, preserving portrait/result badges, names, rank/rating, captures, timers, timer tracks, skill chips, and action labels while preventing normal play controls from overlapping board points.
 - Trellis frontend quality guidelines now capture the same mobile battle layout contract in `.trellis/spec/frontend/quality-guidelines.md`: future mobile room work should assert bounded player strips, square board stages, capped docks, and Bright School parity in `src/room/RoomScreen.test.js` before shipping.
 - Replay list rows use the viewed/current user's result state for final coloring across themes: user win rows are light green, user loss rows are gray, and draw rows are pale yellow. Room portrait result badges keep the winner badge red in both text and border so victory is visually distinct from loss/draw. Bright School has generic high-specificity `button` and `span` protection rules in its firewall/QA layers, so `src/styles/themes/theme-components.css` carries Bright School-scoped final selectors for replay rows and winner badges after the generic outcome rules; this prevents the theme reset from masking outcome backgrounds or forcing the `胜` text back to the default ink color.
 - Mobile replay cards place the move count in the top metadata row between the date/time and result text, while the black and white player cells stay on the second row. The desktop replay table keeps its normal column layout.
+- Mobile replay lists in both personal profile/history dialogs and nested house dialogs are ordinary auto-row card flows: the heading is hidden, rows use `grid-auto-rows: auto` with `align-content: start`, and the list must not inherit the leaderboard's pinned-footer `grid-template-rows: minmax(0, 1fr) auto` contract.
 - Bright School lobby canvas cleanup now lives in `bright-school/home.css` and targets the exact `main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage` chain. This removes residual solid panel fills and pseudo-element paper backgrounds from the main lobby stage while leaving the individual scrapbook entries, navigation buttons, and player plaque styling intact. The same file owns the current-user student ID plaque, paperclip clamps, and translucent campus panel.
 - Bright School portrait mobile fit is handled by `bright-school/mobile.css`. This layer turns the home lobby into a single-column scroll page, removes the hanging-ID absolute positioning on phones, keeps the match and house-manual image entries inside fixed mobile-height cards, keeps all player-facing modal windows within `100dvh`, assigns internal scroll regions to shop/warehouse/house/leaderboard/friends/settings/message/watch/profile content, and preserves 44px touch targets without changing modal JSX. The house manual uses a fixed mobile grid shell (`header`, stats, internally scrolling character roster, bounded decoration picker) so roster cards and decoration chips cannot grow beneath the modal frame; stat help tooltips wrap inside the viewport instead of increasing horizontal scroll width. The same layer also owns Bright School mobile room layout: the room shell is fixed to `100dvh`, the header and player strips are compressed, the board size is calculated from remaining viewport space, and the tab dock reserves enough height for both operation hints and labeled game-action buttons instead of clipping the bottom row.
-- Bright School mobile lobby and utility windows have an additional compact pass for 393px-wide phones: the home header collapses message/settings/admin/logout actions behind a single options menu, hides the lobby debug status, and keeps the brand/online tag in a stable grid. The opened home options menu uses a fixed icon column plus `max-content` text column, with `white-space: nowrap` and `word-break: keep-all`, so the 留言/设置/退出 labels never split across lines. Resume stats stay on one line, the manual character list uses three compact cards per row to leave vertical room for decoration display, decoration selection uses icon-sized chips, and character detail art removes mobile drop shadows. The nested character-record dialog is clamped to `min(420px, calc(100vw - 20px))`, uses an internally scrolling record list, and renders each row as compact avatar/name/record/rate columns; the record text keeps `white-space: nowrap` and `word-break: keep-all` so strings like `29胜25负4和` do not split. Leaderboard, replay, friends, and watch lists switch from wide horizontal tables to mobile cards; leaderboard cards use tighter rank/avatar/identity/score lanes, keep rating as the main right-side number, and stack a compact win-rate pill with explicit win/loss/draw chips (`胜/负/和`) in the same metrics lane, while "我的排名" mirrors the same compact row rhythm instead of becoming a sparse panel. The mobile leaderboard grid uses `minmax(0, 1fr) auto` rows so the scrollable list takes remaining space and the pinned current-user block shrinks to its label plus card instead of inheriting the old 220px desktop table row. The friends sheet has its own visible close button, and watch-list inline close buttons opt out of the global absolute close positioning. The Bright School phone layer now keeps friend and watch lists outside the old wide-table overflow group, while a final Bright School mobile guard in `mobile-adaptive.css` sits after the theme imports to protect the single-line stats rule, character/decoration shop cards, mobile title text, circular top-three leaderboard badges, compact pinned ranking cards, and small decoration picker chips from older desktop theme repairs. The same guard lowers the home options menu behind active modal backdrops so it cannot cover modal close buttons.
+- Bright School mobile lobby and utility windows have an additional compact pass for 393px-wide phones: the home header collapses message/settings/admin/logout actions behind a single options menu, hides the lobby debug status, and keeps the brand/online tag in a stable grid. The opened home options menu uses a fixed icon column plus `max-content` text column, with `white-space: nowrap` and `word-break: keep-all`, so the 留言/设置/退出 labels never split across lines. Resume stats stay on one line except for record summaries: profile record cards and character-record rows split total games onto the first line and win/loss/draw counts onto the second line, hiding the desktop separator on mobile so both pieces remain fully visible. The `履历` modal embeds selected-mode character records below the recent-result marker row as `.resume-character-records`, reusing the same compact row structure instead of opening the old nested character-record dialog from the stat card. The manual character list uses three compact cards per row to leave vertical room for decoration display, decoration selection uses icon-sized chips, and character detail art removes mobile drop shadows. Character record lists use internally scrolling rows with compact avatar/name/record/rate columns; the record text keeps `white-space: nowrap` and `word-break: keep-all` so strings like `29胜25负4和` do not split. Leaderboard, replay, friends, and watch lists switch from wide horizontal tables to mobile cards; leaderboard cards use tighter rank/avatar/identity/score lanes, keep rating as the main right-side number, and stack a compact win-rate pill with explicit win/loss/draw chips (`胜/负/和`) in the same metrics lane, while "我的排名" mirrors the same compact row rhythm instead of becoming a sparse panel. The mobile leaderboard grid uses `minmax(0, 1fr) auto` rows so the scrollable list takes remaining space and the pinned current-user block shrinks to its label plus card instead of inheriting the old 220px desktop table row. Modal close buttons use one shared 44px size and 12px top-right inset across base, mobile, and Bright School layers. Toolbar close buttons, such as the watch-list close beside refresh, stay in the header action row as the rightmost same-size control so they do not cover sibling buttons; resume close buttons likewise stay grouped with the coin capsule, but the whole resume action group is absolutely anchored to the header's top-right corner on desktop and mobile. The resume title reserves right-side space with a responsive padding so the fixed action group cannot overlap the heading. Bright School player plaques now keep the stats panel in a bounded, shrinkable column and right-align rating text so mid-width desktop layouts do not clip the rank/rating panel while the name takes the remaining space; the phone plaque uses `clamp()`-bounded avatar and stats columns instead of a fixed 146px stats panel. The base home stage no longer forces a fixed 1180px minimum width. Between 701px and 1180px desktop width, or in low-height desktop windows, a final Bright School guard in `mobile-adaptive.css` switches the home stage to named grid areas (`player`, `manual`, `utility`, `match`) and resets the scrapbook entries to static positioning; below the narrower fallback threshold it becomes a single-column scroll layout. The Bright School phone layer now keeps friend and watch lists outside the old wide-table overflow group, while the final guard sits after the theme imports to protect the single-line stats rule, character/decoration shop cards, mobile title text, circular top-three leaderboard badges, compact pinned ranking cards, and small decoration picker chips from older desktop theme repairs. The same guard lowers the home options menu behind active modal backdrops so it cannot cover modal close buttons.
 - Mobile friend rows show status, portrait, a centered username/stat text group, and the gear action in one compact row; rank and rating sit directly below the username inside that centered group. Desktop social rows keep the table-like column layout through `display: contents` on the mobile grouping wrappers.
 
 # SigrikaGo System Design
@@ -86,6 +96,12 @@ SigrikaGo/
     rooms.js                   # 实时房间、匹配、对局流程、计时、棋谱保存
     roomView.js                # 房间视图序列化，按玩家/观战者生成可见棋盘和计数信息
     auth.js                    # HTTP JWT 鉴权与管理员中间件
+    authRoutes.js              # /api/auth HTTP route boundary
+    commerceRoutes.js          # authenticated shop purchase and item inventory route boundary
+    playerRoutes.js            # /api/me player HTTP route boundary
+    publicRoutes.js            # public/lobby HTTP route boundary
+    replayRoutes.js            # /api/replays player replay HTTP route boundary
+    socialRoutes.js            # /api/social and public user profile HTTP route boundary
     socketAuth.js              # Socket.IO JWT 鉴权与角色解析
     adminConfig.js             # 管理员用户名配置与角色提升
     adminRoutes.js             # /api/admin 后台管理路由
@@ -272,8 +288,39 @@ SigrikaGo/
 - `server/index.js`
   - Express HTTP API 与 Socket.IO 入口。
   - 初始化内置角色 seed、提升配置管理员。
-  - 注册公开 API、登录/注册 API、用户 API、棋谱 API、排行榜 API，并挂载 `/api/admin`。
+  - 注册公开 API、用户 API、棋谱 API、排行榜 API，并挂载 `/api/auth` 与 `/api/admin`。
   - JSON body 解析错误会通过统一错误处理中间件返回 JSON，避免前端 API helper 因 Express 默认 HTML 错误页显示“接口返回格式不是 JSON”。
+  - Owns shared startup composition for HTTP routers and Socket.IO managers; player `/api/me*`, personal replay `/api/replays*`, auth, and admin handler bodies live in route modules instead of the entry file.
+
+- `server/authRoutes.js`
+  - Auth HTTP route boundary.
+  - Owns `/api/auth/register`, `/api/auth/login`, `/api/auth/refresh`, and `/api/auth/logout` request handlers, including credential validation, refresh-cookie rotation/clearing, active-account conflict response, force-login session eviction, and malformed-token-tolerant logout cleanup.
+  - `server/index.js` creates the shared login/session managers and mounts `/api/auth` after `onlineSessions` is available; tests touching auth route status codes, cookie behavior, forced login, refresh-session recovery, or logout cleanup should update `server/authRoutes.test.js`.
+  - `/api/auth` must be mounted before broad authenticated `/api` routers. Otherwise login/register/refresh/logout can be intercepted by `authHttp` and return `请先登录` before the auth handlers run.
+
+- `server/commerceRoutes.js`
+  - Authenticated commerce HTTP route boundary for `/api/shop/:id/purchase`, `/api/items/inventory`, and `/api/items/:itemId/use`.
+  - Owns route-level user id binding, item id/character id forwarding, and purchase/inventory/use error response shaping.
+  - Domain behavior remains in `server/shop.js` and `server/items.js`; `server/index.js` mounts this router behind `authHttp`.
+
+- `server/playerRoutes.js`
+  - Player HTTP route boundary for `/api/me`, `/api/me/resume`, `/api/me/character`, `/api/me/decoration`, and `/api/me/music-selection`.
+  - Owns player profile/history enrichment, resume room-code normalization, character/decor selection validation, and skill-music selection error shaping.
+  - Exports `createCharacterSelectionData()` and `validateOptionalRoomCode()` so Socket.IO auth/resume can share the same character availability and optional-room-code contracts without duplicating helper logic in `server/index.js`.
+
+- `server/publicRoutes.js`
+  - Public/lobby HTTP route boundary for `/api/health`, `/api/characters`, `/api/shop`, `/api/site-settings`, `/api/feedback`, `/api/leaderboard`, and `/api/rooms/watch`.
+  - Owns the mixed public/authenticated route mounting contract: health, characters, and site settings are public; shop catalog, feedback, leaderboard, and watch-list routes are authenticated.
+  - Keeps leaderboard query projection, feedback error shaping, shop catalog user id binding, and watch-room mode filtering outside `server/index.js`.
+
+- `server/replayRoutes.js`
+  - Personal replay HTTP route boundary for `/api/replays` and `/api/replays/:id`.
+  - Owns personal replay query shape, legacy mode fallback, player id response fields, and replay snapshot JSON parsing. Tests touching this route should update `server/replayRoutes.test.js` instead of matching route text inside `server/index.js`.
+
+- `server/socialRoutes.js`
+  - Social/profile HTTP route boundary for `/api/social`, friend/blacklist mutations, `/api/users/search/profile`, `/api/users/:id/profile`, and public `/api/users/:id/replays`.
+  - Owns relationship route error shaping, social list refresh responses, username validation before profile search, profile mode normalization, and the public replay-list handler that intentionally stays outside auth middleware.
+  - `server/index.js` mounts the router with `authHttp` and shared `statusForUser`; Socket.IO duel blocking still imports blacklist helpers directly from `server/social.js`.
 
 - `server/duelRequests.js`
   - 好友/社交对局申请状态机。
@@ -304,6 +351,40 @@ SigrikaGo/
   - 根据 viewerId 判断玩家或观战者身份，生成对应颜色视角的棋盘、双视角观战数据、玩家提子/除子计数、计时、聊天和阶段 deadline。
   - 该模块把 `server/rooms.js` 中纯数据投影逻辑移出实时流程，降低房间广播和棋谱快照代码的耦合。
 
+- `server/roomBroadcasts.js`
+  - 房间 Socket 广播边界模块。
+  - 集中维护 `room:update`、`room:clock`、`error:toast`、`room:closed` 的参与者遍历、viewer-specific room view 分发、轻量棋钟 payload 和持久化回调时机；`server/rooms.js` 保留“何时广播”的生命周期判断。
+  - 后续如果把完整 `room:update` 迁移为 patch/reducer 事件，应优先在该模块收敛协议分发，而不是把 Socket emit 逻辑重新散回房间生命周期代码。
+
+- `server/roomRuntime.js`
+  - Room runtime adapter boundary.
+  - Owns the shared runtime callbacks that wire room state persistence into room broadcasts: throttled/forced `persistRoom`, full room snapshot broadcast, and room toast forwarding.
+
+- `server/roomPresence.js`
+  - 房间参与者和在线状态边界模块。
+  - 集中维护 players/spectators 合并顺序、在线人数、是否还有连接参与者、双方玩家是否全断线、观战列表玩家摘要；广播、观战列表、完成房间延迟关闭和空房关闭调度共用这些判断。
+  - 后续如果扩展观战权限、重连状态、房间 patch 推送或多席位参与者，应优先扩展该模块，避免各流程重复理解参与者结构。
+
+- `server/roomMatchmakingQueue.js`
+  - 房间匹配队列边界模块。
+  - 集中维护等待队列状态、按用户/Socket 去重、按模式计数、离队清理、断线清理和 `canPair` 自定义配对筛选；`server/rooms.js` 保留匹配成功后的房间创建、计时器启动和 Socket 广播。
+  - 后续如果扩展段位匹配、好友黑名单、等待超时或多模式队列，应优先扩展该模块，而不是让 `server/rooms.js` 直接操作等待数组。
+
+- `server/roomFactory.js`
+  - 房间初始结构和玩家模式投影工厂。
+  - 集中维护随机房号生成、黑白方随机分配、开局阶段初始状态、初始棋钟、开局倒计时字段、房间玩家结构，以及按模式把 `UserModeStats` 投影到对局内用户字段。
+  - 后续如果扩展房间初始字段、更多模式、初始时间规则或房号生成策略，应优先扩展该模块，避免 `server/rooms.js` 重新承担房间对象组装细节。
+
+- `server/roomSkillMessages.js`
+  - 房间技能系统消息边界模块。
+  - 集中维护技能使用文案、模板占位符替换、棋盘坐标格式化和棋子颜色标签；`server/rooms.js` 只在技能进入预览或被动技能触发时追加系统消息。
+  - 后续如果扩展角色技能文案、国际化、回放显示或技能消息模板，应优先扩展该模块，避免把展示文案重新散入实时房间流程。
+
+- `server/roomTimers.js`
+  - 房间计时器账本模块。
+  - 集中维护 `timerId`、`timeoutIds` 的 interval/timeout 注册、自动移除和主动清理，供开局倒计时、技能预览结算、数子/和棋/结果确认 deadline、房间关闭和空房关闭调度复用。
+  - `server/rooms.js` 保留“何时调度”的业务判断，避免后续新增延迟流程时重复手写 `setTimeout` / `clearTimeout` / `timeoutIds` 清理逻辑。
+
 - `server/serverLifecycle.js`
   - HTTP server startup and shutdown guardrails.
   - Reports `EADDRINUSE` with a clear port-conflict message instead of leaving the Vite proxy to surface ambiguous `ECONNREFUSED` / non-JSON errors.
@@ -329,8 +410,48 @@ SigrikaGo/
   - 持久化房间快照写入 `snapshotVersion`，当前版本为 1；缺少版本的旧快照按 v1 读取，未来高于当前版本的快照会被拒绝恢复，避免不兼容状态进入实时房间。
 
 - `server/roomSkillResolution.js`
-  - 技能演出延迟结算的纯数据 helper。
-  - 负责生成可持久化的 `pendingSkillResolution` 快照、计算恢复后的剩余结算延迟，以及判断快照是否具备重新调度条件；真实定时器、广播和回合推进仍由 `server/rooms.js` 负责。
+  - Room skill preview lifecycle boundary.
+  - Owns active-skill preview start, passive-skill preview start, `pendingSkillResolution` snapshot creation, restored delay calculation, pending-resolution scheduling, preview payload metadata, and completion after the preview delay. `server/rooms.js` decides when room actions/opening/restore paths call this boundary, while skill preview mutation, notice append, byo-yomi reset, finished-room close handoff, and broadcast-after-resolution stay centralized here. Skill preview timing comes from `src/shared/skillPresentation.js`, covering the banner and board effect animation windows.
+
+- `server/roomClockLifecycle.js`
+  - Room clock tick lifecycle boundary.
+  - Owns the per-room interval callback for playing-phase clocks: clearing intervals for rooms no longer in memory, pausing ticks outside playing phase, handing fully disconnected games to empty-room close scheduling, deducting active-player time, finishing timeout games, and choosing lightweight `room:clock` versus full `room:update` broadcasts.
+
+- `server/roomRestoreLifecycle.js`
+  - Restored room timer lifecycle boundary.
+  - Owns post-hydration timer resume decisions for finished rooms, opening rooms, pending skill previews, active room deadlines, and empty-room close scheduling. `server/rooms.js` hydrates and registers persisted rooms, then delegates restore-time scheduling to this boundary.
+
+- `server/roomPersistenceRestoreLifecycle.js`
+  - Persisted room restore orchestration boundary.
+  - Owns loading persisted room rows, parsing snapshots, hydrating rooms, appending restored disconnect notices, registering restored rooms in memory, invoking restored timer resume decisions, force-persisting resumable rooms, and logging bad persisted rows without aborting later rows.
+
+- `server/roomOpeningLifecycle.js`
+  - Room opening transition lifecycle boundary.
+  - Owns opening-to-playing transition, game-start system notice, last-tick refresh, first full-room broadcast after opening, and initial passive-skill trigger handoff.
+
+- `server/roomConnectionLifecycle.js`
+  - Room socket connection lifecycle boundary.
+  - Owns attaching player sockets, spectator joins, player disconnect state, spectator socket cleanup, explicit spectator leave, finished-player leave-as-spectator handling, reconnect notices, disconnect notices, empty-room close handoff, and forced room persistence after connection-state changes.
+
+- `server/roomRequestLifecycle.js`
+  - Room request/action entry lifecycle boundary.
+  - Owns room-code validation, room lookup, player lookup, phase precondition checks, point-target validation for scoring actions, and delegation into `server/roomScoringFlow.js` for counting, draw, and scoring mutations.
+
+- `server/roomCreationLifecycle.js`
+  - Room creation lifecycle boundary.
+  - Owns matched-matchmaking room creation and direct-duel room creation orchestration: direct-room mode normalization, matchmaking cleanup, room registration, forced initial persistence, game clock startup, opening schedule, `match:found` delivery, creation system notices, and initial room broadcast.
+
+- `server/roomActionLifecycle.js`
+  - Room gameplay action entry lifecycle boundary.
+  - Owns game-action room-code validation, room lookup, point-target validation, player lookup, pending-skill guard, test-action dispatch, skill-action dispatch, and standard move/pass/resign delegation.
+
+- `server/roomChatLifecycle.js`
+  - Room chat entry lifecycle boundary.
+  - Owns chat room-code validation, text normalization, room lookup, chat message shape, message ids, move-number capture, and message timestamps.
+
+- `server/roomQueries.js`
+  - Room read-model/query boundary.
+  - Owns active-room filtering, watch-room projection, user active-room membership checks, and user-to-room lookup while reusing `server/roomPresence.js` for online counts and watch player summaries.
 
 - `server/roomClockTiming.js`
   - 房间棋钟纯计算模块。
@@ -338,7 +459,23 @@ SigrikaGo/
 
 - `server/adminRoutes.js`
   - 后台管理路由。
-  - 管理用户、封禁/解封、重置密码、角色、技能、装饰、商城商品、站点设置、上传、审计日志、任意用户棋谱查看。
+  - 管理站点设置、上传、审计日志、任意用户棋谱查看，并把用户管理写操作委托给 `server/adminUserManagement.js`，把装饰/商城商品写操作委托给 `server/adminCatalogManagement.js`，把角色/技能写操作委托给 `server/adminCharacterManagement.js`。
+
+- `server/adminCharacterManagement.js`
+  - Admin character mutation boundary.
+  - Owns admin-side character create/update/disable, character skill upsert payload construction, legacy top-level skill field compatibility, admin character response payload projection, and character-target audit entries.
+
+- `server/adminUserManagement.js`
+  - Admin user-management mutation boundary.
+  - Owns admin-side user update sanitization, required-update validation, profile edits, ban/unban, password reset, structured asset sync, progress ledger writes, last-active-admin protection, and user-target audit entries.
+
+- `server/adminCatalogManagement.js`
+  - Admin catalog mutation boundary.
+  - Owns admin-side decoration create/update/disable, shop item create/update/disable, shop target existence validation for character/decoration/music items, and decoration/shop-item audit entries.
+
+- `server/adminAudit.js` / `server/adminRouteErrors.js`
+  - Shared admin route support modules.
+  - `adminAudit.js` owns audit JSON serialization and `AdminAuditLog` writes; `adminRouteErrors.js` owns route error object creation shared by admin routes and user-management mutations.
 
 - `server/siteSettings.js`
   - 站点公开配置读取和后台更新逻辑。
@@ -383,7 +520,7 @@ SigrikaGo/
 - `public/hotspot-prototype.html` 是单页热点原型，用用户提供的 `/assets/prototypes/classroom-bg1.webp` 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。
 - 大厅顶部标题和副标题来自 `GET /api/site-settings`；未配置或接口失败时回退到 `大厅` / `SigrikaGo`。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。
 - 大厅与对局页右上操作区共用同一个留言板入口。留言板当前为前端占位弹窗，输入框默认提示“Bug、问题反馈和意见都可以在这里提交哦”，包含提交按钮，提交暂不落库。
-- 首页当前用户铭牌是可点击入口，打开名为“履历”的窗口；履历集中展示用户战绩、积分、段位、金币，并提供角色战绩与个人对局回放入口。桌面端和移动端都在履历右上角、关闭按钮左侧显示与商店一致的金币胶囊，模式选项卡下方、战绩统计上方提供“对局回放”入口；所有模式选项卡的当前项必须有明确背景色区分，默认选中的星炬对弈也必须立即显示选中背景，星炬对弈始终排在标准对弈前。回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。回放列表会按当前查看用户在该局的结果给整行着色：胜利为浅绿色，失败为灰色，和棋为浅黄色；公共用户资料里的回放列表按被查看用户计算，个人履历按当前用户计算。
+- 首页当前用户铭牌是可点击入口，打开名为“履历”的窗口；履历集中展示用户战绩、积分、段位、金币，并在战绩/积分/段位下方展示当前模式的最近胜负标记。桌面端和移动端都在履历右上角、关闭按钮左侧显示与商店一致的金币胶囊，模式选项卡下方、战绩统计上方提供“对局回放”入口；所有模式选项卡的当前项必须有明确背景色区分，默认选中的星炬对弈也必须立即显示选中背景，星炬对弈始终排在标准对弈前。回放列表使用表格布局展示完整年份时间、黑方用户名与角色立绘、白方用户名与角色立绘、结果和手数，点击某行进入该局回放。回放列表会按当前查看用户在该局的结果给整行着色：胜利为浅绿色，失败为灰色，和棋为浅黄色；公共用户资料里的回放列表按被查看用户计算，个人履历按当前用户计算。
 - 部员手册只保留角色选择、角色详情和装饰选择，不再承载战绩、段位、金币或对局回放。角色卡会在桌面端和移动端通用展示当前角色正在承受的道具效果图标；例如西格莉卡的糖果禁用效果和达妮娅的彩虹糖果效果都会在对应角色卡左上角显示彩虹豆豆跳跳糖图标。装饰区标题显示为“装饰”，标题右侧可恢复初始装饰。
 - 设置弹窗支持音量配置，并保存在 `localStorage`；关于页展示后台可编辑的站点长文本。
 
@@ -414,7 +551,7 @@ SigrikaGo/
 - 数子流程：申请、接受/拒绝、标记死子、标记单官/中立点、确认死子、结果确认、拒绝后继续。
 - 和棋申请，10 秒超时拒绝。
 - 数子申请、和棋申请与数子结果确认的超时任务统一通过房间 `timeoutIds` 注册，房间关闭、断线清理和测试清理时会一起取消，避免旧 deadline 定时器在房间生命周期外继续运行。
-- 结束后保存棋谱，并通过 `resultRewardDelta` 更新战绩、积分与金币：胜者积分 +20 / 金币 +50，败者积分 -20 / 金币 +20，和棋不更新用户奖励。
+- 结束后保存棋谱，并通过 `resultRewardDelta` 更新战绩、积分与金币：胜者积分 +20 / 金币 +50，败者积分 -20 / 金币 +20，和棋不更新用户奖励。段位不再由积分派生；每个模式独立统计当前 rank-cycle 最近最多 10 盘胜负，胜 7 盘升段/级、负 8 盘降段/级，最高 9段、最低 18级，升降级触发后清空该模式的最近胜负窗口重新记录。
 - 对局不超过 10 手结束均属于无效局：不会写入 `GameRecord`，不会出现在对局回放中，也不会增减积分、金币或战绩；服务端向双方发送顶部提示“对局不超过10手结束，对局无效”，前端不弹对局结果弹窗。无效局结束后 `closesAt` 固定为 30 秒内，倒计时到点即使双方仍在线也发送 `room:closed` 并关闭房间；有效结束局仍保留 5 分钟复盘窗口，并在仍有人连接时顺延。
 - 开发测试按钮：`test-random-layout` 会清空棋盘并生成符合基本气规则的 50 黑 50 白随机布局；`test-restore-skill` 会恢复当前玩家技能次数；`test-enter-byo-yomi` 会把点击方主时间直接置为 0 并进入读秒。该入口用于本地测试，后续应便于统一移除。
 - 房间测试动作入口已经下沉到 `server/roomTestActions.js`：`server/rooms.js` 只识别 `isRoomTestAction()` 并应用返回结果，具体动作、系统消息和非生产环境开关校验集中在该模块，避免测试工具继续散落在实时房间主流程里。
@@ -499,16 +636,16 @@ SigrikaGo/
 - API 为 `GET /api/leaderboard`。
 - 仅展示至少完成过一盘对局的用户。
 - 按 `rating` 降序排序。
-- 每行展示段位，段位由 `rankFromRating(rating)` 派生，和大厅/棋舍/对局信息保持一致。
+- 每行展示 `UserModeStats.rank` 中存储的模式段位；排行榜仍按当前模式 `rating` 降序排序，但段位不再由积分实时派生。
 - 从棋谱统计总对局数、胜局数、负局数、和棋数。
 - 最后一列展示胜率，按 `胜局数 / 总对局数 * 100%` 计算并保留 1 位小数；所有列内容居中显示。用户名和常用角色名限制在各自列宽内，过长时使用省略号。
 - “常用角色”按棋谱中该用户使用次数最多的角色计算。
-- 履历中的积分显示使用 `User.rating` 持久化值；总局、胜负、和棋仍由棋谱统计，避免后台积分编辑或对局结算后与履历显示不同步。
+- 履历中的积分显示使用当前模式持久化 `rating`；总局、胜负、和棋仍由棋谱统计，避免后台积分编辑或对局结算后与履历显示不同步。最近胜负标记读取当前模式 `recentResults`，从左到右表示从老到新的胜负，绿色为胜、红色为负；该区域使用与当前界面一致的纸张描边背景，而不在首页铭牌上展示。移动端履历中 `.profile-grid.top-stats-bar` 外层固定为单列，让最近胜负标记始终位于战绩/积分/段位统计卡下方；内层 `.profile-resume-stats` 在桌面端和移动端都保持战绩/积分/段位三卡同一行，只有战绩卡内部在移动端把总局数和胜负和拆成上下两行。
 
 ### 后台管理
 
 - 概览：用户数、封禁用户数、启用角色数、棋谱数、最近审计日志。
-- 用户管理：列表、状态标签、右侧抽屉编辑角色、积分、金币、拥有角色、出战角色；段位由积分自动换算只读展示；支持封禁、解封、重置密码、查看用户棋谱。
+- 用户管理：列表、状态标签、右侧抽屉编辑角色、积分、金币、拥有角色、出战角色；段位按存储值只读展示，不再由积分自动换算；支持封禁、解封、重置密码、查看用户棋谱。
 - 角色管理：左侧角色列表、右侧编辑面板，支持新增/编辑/禁用角色、配置技能系统。
 - 角色立绘上传：支持 png/jpeg/webp/gif，大小限制 3MB。
 - 商城管理：列表主视图，新增/编辑商品在右侧抽屉中完成，支持下架商品。
@@ -531,8 +668,10 @@ SigrikaGo/
 - `status`: 用户状态，当前代码使用 `active` / `banned`。
 - `banReason`: 封禁原因，可空。
 - `bannedAt`: 封禁时间，可空。
-- `rank`: 兼容旧数据的持久化字段，schema 默认值为 `2段`，与默认 `rating = 1000` 的段位派生结果保持一致；前端和 API 展示值不直接读取该字段，而是通过 `rating` 自动换算。
-- `rating`: 积分，默认 1000，允许为负数。段位规则：`[900, 1000)` 为 1段，之后每 100 分升 1段，1700 分及以上封顶为 9段；`[800, 900)` 为 1级，之后每低 100 分级位加 1，`[0, 100)` 为 9级，小于 0 分为 10级。
+- `rank`: spark 兼容字段，schema 默认值为 `3段`；公开展示优先读取当前模式 `UserModeStats.rank`，spark 结算会同步该字段。
+- `rating`: 积分，默认 1000，允许为负数。积分继续用于积分榜排序、奖励流水和积分解锁，但不再决定段位。
+- `UserModeStats.rank`: 模式独立段位，新用户/新模式默认 `3段`，最高 `9段`，最低 `18级`。
+- `UserModeStats.recentResults`: 模式独立升降级窗口，CSV 存储 `win/loss`，最多 10 个，从老到新；和棋不进入窗口，升降级触发后写回空字符串。
 - `wins`: 胜局数，默认 0。
 - `losses`: 负局数，默认 0。
 - `coins`: 金币，默认 300。
@@ -784,7 +923,7 @@ SigrikaGo/
   - 从黑名单移除目标用户。
 
 - `GET /api/users/:id/profile`
-  - 获取用户资料卡：用户名、战绩、积分、段位、角色战绩和查看者与目标的关系；不随资料卡预取对局回放。
+  - 获取用户资料卡：用户名、战绩、积分、段位、最近胜负、角色战绩和查看者与目标的关系；不随资料卡预取对局回放。
   - 资料卡中的总战绩和角色战绩从目标用户全部棋谱派生，不受公开回放列表 30 条限制影响；胜负识别与排行榜一样优先使用 `winnerColor`，旧棋谱回退解析 `resultText`。
 
 - `GET /api/users/:id/replays`
@@ -1006,6 +1145,7 @@ SigrikaGo/
 - `validateShopItemDraft` / `decorationDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台商城/装饰表单校验。
 - `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题、副标题和设置关于文本默认值。
 - `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定。
+- `SKILL_EFFECT_CATALOG` / `skillEffectTargetRule` / `skillEffectSoundCues`: 位于 `src/shared/skillEffectCatalog.js`，集中维护技能 `effectType` 的管理端标签、默认目标规则、主动/被动分类、棋盘演出标记和音效 cue。管理端角色表单、服务端角色校验、技能归一化、目标预览和技能音效都应从该 catalog 读取这些元数据。
 - `COLORS` / `opponent`: 位于 `src/shared/gameConstants.js`，集中维护棋色常量与对手颜色推导；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `createPoints` / `getPoint` / `activeNeighbors`: 位于 `src/shared/gameBoard.js`，集中封装棋盘几何和点位访问；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `collectGroup`: 位于 `src/shared/gameGroups.js`，集中封装棋子连通块和气的遍历；`src/shared/game.js` 保持同名转导以兼容既有调用方。
@@ -1022,8 +1162,8 @@ SigrikaGo/
 
 ### 后端通用逻辑
 
-- `publicUser`: 用户公开字段白名单，并通过 `rankFromRating` 将积分转换为段位/级位。
-- `rankFromRating`: 位于 `src/shared/ratingRank.js`，前后端共用的积分到段位/级位换算逻辑。
+- `publicUser`: 用户公开字段白名单，并返回模式级 `modeStats.{spark,standard}`，其中包含 `rating/rank/recentResults/wins/losses/draws`。
+- `applyRankProgression`: 位于 `src/shared/rankProgression.js`，前后端共用的段位升降级规则。胜负局会更新当前模式窗口，胜 7 盘升段/级、负 8 盘降段/级，并在触发后清空窗口。
 - `makeAuth`: HTTP 鉴权与管理员中间件。
 - `validateCharacterInput`: 角色/技能输入校验。
 - `toCharacterPayload`: 角色公开 payload。
@@ -1118,7 +1258,9 @@ SigrikaGo/
   - 金币、积分、段位不再由前端比较前后状态弹出 toast；`UserProgressLedger` 已作为结构化流水表落入 schema/migration，商城购买写入 `coins` 支出流水（`shop.purchase`），对局结算写入 `coins` / `rating` 流水（`game.result`），后台金币/积分调整写入 `admin.update` 流水。后续如继续扩展赛季、排行榜或补偿发放，应继续复用该流水入口，并在专用界面展示变化。
 
 - 核心源码体量仍偏集中。本轮扫描中，超过 300 行的主要业务文件包括 `server/rooms.js`、`src/shared/game.js`、`server/adminRoutes.js`、`server/index.js`、`src/audio/playback.jsx`：
-  - `server/rooms.js` 已拆出 room view、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、Socket 广播、断线恢复与关闭调度。
+  - `server/rooms.js` 已拆出 room view、广播边界、presence 状态、匹配队列、房间创建工厂、技能消息、timer 账本、奖励、持久化、计时、标准动作副作用和数子/和棋/确认死子流程；剩余高风险职责主要是实时生命周期、技能动作分发、断线恢复与关闭调度。
+  - `server/adminRoutes.js` 已拆出认证路由、后台用户管理写操作、后台装饰/商城商品写操作、后台角色/技能写操作、后台审计写入和路由错误对象；后续后台优化应优先继续拆上传/站点设置/只读查询子域，而不是把新后台写操作继续塞回路由文件。
+  - `server/index.js` 已拆出 auth、commerce、player `/api/me*`、public/lobby、personal replay `/api/replays*`、social/profile、admin、room runtime adapter 等边界；后续入口文件优化应保持 HTTP handler body 不回流到入口文件，让 `index.js` 专注启动编排与 Socket.IO 事件注册职责。
   - `src/admin/AdminConsole.jsx` 已拆出 `AdminShell` 和主要 tab body；后续后台优化应优先在对应 tab 文件内推进，避免重新集中到控制台容器。
   - `src/main.jsx` 已拆出 API、socket handlers、socket creation helper、character catalog loader、site settings loader、preload screen、top-level routes、global overlays、room navigation helper、replay opening helper、session helpers、登录恢复 hook、启动预加载 hook、全局 action hook、主题/音频/站点设置/用户/toast/ref 同步 hooks；后续主要保持入口文件只做装配。
   - `src/shared/gameSkillRegistry.js` 已抽出主动技能 `effectType` 分发和回合消耗判定，`src/shared/gameGroups.js` / `src/shared/gameScoring.js` 已抽出连通块与数子计分；`src/shared/game.js` 仍保留规则执行、技能入口和历史兼容转导，后续可继续收窄主动技能契约与回放兼容包装，降低新增角色风险。
@@ -1234,7 +1376,8 @@ SigrikaGo/
 - `src/audio/backgroundMusic.jsx`
   - Owns the React `BackgroundMusic` component, BGM Web Audio scheduling, intro-to-loop timing, decoded BGM buffer cache, autoplay resume fallback, and reconnect recovery guard. `src/audio/playback.jsx` keeps compatibility re-exports for existing callers.
 - `src/audio/effectPlayback.js`
-  - Owns fixed SFX asset constants, effect preloading/decoded cache, effect Web Audio playback, HTMLAudio fallback, no-browser no-op protection, and board sound routing for stone/capture/hidden-hand reveal effects. `src/audio/playback.jsx` keeps compatibility re-exports for existing callers.
+  - Owns fixed SFX asset constants, effect preloading/decoded cache, effect Web Audio playback, HTMLAudio fallback, no-browser no-op protection, and board sound routing for stone/capture/hidden-hand reveal effects. It also owns UI interaction SFX constants for `ui_confirm.ogg`, `ui_close_window.ogg`, `ui_house_open.ogg`, `ui_match_open.ogg`, `ui_detail_open.ogg`, `ui_shop_open.ogg`, and `ui_unavailable.ogg`. `src/audio/playback.jsx` keeps compatibility re-exports for existing callers.
+  - `src/app/InteractionFeedback.jsx` installs document-level interaction feedback: enabled button-like controls play the confirm SFX, disabled/locked controls play the unavailable SFX, and the unavailable target receives a `ui-unavailable-shake` animation whose duration matches `ui_unavailable.ogg`. The unavailable animation restarts by removing the class and re-adding it on the next animation frame, avoiding synchronous layout reads on high-frequency disabled taps. Specialized interactions can set `data-ui-sound="none"` to avoid double-playing the generic confirm cue. Room board interactions, player-info panels, the room title/info stack, and replay control bars are quiet zones for generic confirm SFX so normal moves, high-frequency info taps, and replay stepping do not fire UI prompt sounds; replay disabled buttons can still fire the unavailable SFX.
 - `src/audio/playback.jsx`
   - Owns voice playback, preloaded voice buffers, TTS, and compatibility re-exports for the split audio modules.
 
@@ -1265,6 +1408,9 @@ SigrikaGo/
 - 隐藏手暴露播放 `hidden_hand_reveal.ogg`；回放下一步遇到带有隐藏手暴露标记的历史动作时也会播放该音效。
 - `boardAudio.js` 根据历史记录中的当前棋盘动作判断落子音或提子音；回放界面点击“下一手”时也会按该步历史播放对应音效，弃手不会重复播放上一手棋盘音效。
 - 落子、提子、隐藏手暴露、匹配成功和结果音效均走 `sfx` 音量通道。
+- 可用交互提示音 `ui_confirm.ogg`、关闭窗口提示音 `ui_close_window.ogg`、部员手册打开提示音 `ui_house_open.ogg`、匹配对局打开提示音 `ui_match_open.ogg`、部员手册角色详情提示音 `ui_detail_open.ogg`、商店打开提示音 `ui_shop_open.ogg`、不可用交互提示音 `ui_unavailable.ogg` 也走 `sfx` 音量通道；`.close-button` / `.inline-close` 和 `data-ui-sound="close"` 控件使用关闭窗口提示音并抑制通用确认音，部员手册入口、匹配对局入口、角色详情和商店打开使用专属提示音并抑制通用确认音，不可用按钮/卡片同时触发同等时长的 `ui-unavailable-shake` 动画。对弈界面的棋盘落子、玩家信息区、房间标题/信息区和回放控制区点击不触发通用 UI 提示音；回放控制区的不可用按钮仍可触发不可用提示音。
+- 星炬棋盘技能特效的程序化音效由 `src/room/boardSkillEffectSoundScheduler.js` 按 catalog cue 点调度，并由 `src/audio/skillEffectSounds.js` 负责真正发声；这些音效只读 `audioSettings.sfx`，不参与服务端结算，也不会在 reduced-motion 棋盘演出中播放爆炸/飞入类音效。`src/room/pixiPrewarm.js` 在技能可用棋盘空闲时预热 `pixi.js`，真实演出时复用同一个加载 promise，避免首个技能把模块加载成本集中到动画开始时。
+- 娜波摩被动雾层由 `BoardAmbientEffects` 根据 `game.passives.*.colorIllusion.active` 派生，使用多个羽化的黑灰 CSS 云团而不是整块矩形半透明贴层，并保持 `pointer-events: none`，因此不会影响落子、触控确认、数子标记或观战/回放棋盘读取。
 - 读秒 10 到 1 秒倒计时通过 `playSystemVoice(countdown-N)` 播放角色语音或 TTS；超时只作为结算状态，不播放系统音频、角色语音或“还剩0次读秒”。
 
 ### Skill Voice
@@ -1411,11 +1557,12 @@ This update reduces the highest-payoff frontend coupling without changing user-f
   - `RoomScreen.jsx` owns room-level derived state, replay/spectator projection, room header game info, per-room sound effects, skill/opening modals, and layout composition for the full battle screen.
   - `TimeBar.jsx` owns the player timer/digital display panel. It exposes `main-time`, `warning-byo-yomi`, and `final-byo-yomi` state classes so all themes can share the same timer-track color contract: main time is blue, byo-yomi with 3 or 2 periods left is red, and the final remaining period is multicolor.
   - `ChatBox.jsx` owns the room chat anchor button, optional trailing room-side action, left/up popover, scroll-to-bottom behavior, outside-click/Escape collapse behavior, and chat submission UI. The collapsed chat badge counts only player chat messages (`type === "chat"`) so system notices, skill notices, disconnect notices, and other non-player messages do not inflate the visible count. The desktop room keeps chat as a compact side-column tool group with the room exit button immediately to the chat button's right so the board action bar only contains game actions; opening chat renders the history/input panel from the tool group's bottom-right anchor. Mobile dock chat uses the same component and lets the popover overflow the dock instead of increasing the board layout height.
-  - `PlayerInfo.jsx` owns player portrait, rank/rating tags, timer, captures/cost display, result badge, desktop skill detail popover, and mobile tap explanations for removal/overclock/skill labels. The mobile tap tooltip is anchored near the tap point, uses a fixed viewport-contained width with normal wrapping and emergency word breaks, clamps horizontally by its maximum width, flips below the tap near the top edge, and caps height with internal scrolling so explanation content cannot leave the viewport. The overclock/cost counter uses `cost-stat` and is forced to red text across themes, including broad theme reset layers.
-  - `RoomPeopleList.jsx` owns the fixed-height room member list and member action popover. Clicking a member records the click coordinates and opens a fixed-position action panel from that point toward the upper right, matching the room chat popover behavior instead of expanding inside the scrollable member list. The popover uses a light theme-matched paper/backdrop panel behind the action buttons, while unavailable actions, including self-targeted social actions and the currently unimplemented private-chat action, must be real disabled buttons and render as gray across themes.
+  - `PlayerInfo.jsx` owns player portrait, rank/rating tags, timer, captures/cost display, result badge, desktop skill detail popover, and mobile tap explanations for removal/overclock/skill labels. The mobile tap tooltip is anchored near the tap point, uses a fixed viewport-contained width with normal wrapping and emergency word breaks, clamps horizontally by its maximum width, flips below the tap near the top edge, and caps height with internal scrolling so explanation content cannot leave the viewport. The overclock/cost counter uses `cost-stat` and is forced to red text across themes, including broad theme reset layers. Skill detail panels and stat hover/click tooltips consume the desktop room floating-layer z-index variable, so the most recently hovered, focused, or clicked player tip can rise above chat and member popovers instead of relying on a fixed z-index.
+  - `RoomPeopleList.jsx` owns the fixed-height room member list and member action popover. Clicking a member records the click coordinates and opens a fixed-position action panel from that point toward the upper right, matching the room chat popover behavior instead of expanding inside the scrollable member list. The popover uses the shared room floating-layer z-index variable in both base CSS and Bright School theme overrides, so whichever of chat, skill tips, stat tips, or member actions was opened/interacted with last renders in front. It uses a light theme-matched paper/backdrop panel behind the action buttons, while unavailable actions, including self-targeted social actions and the currently unimplemented private-chat action, must be real disabled buttons and render as gray across themes.
   - `ActionBar.jsx` owns spectator replay controls, normal player actions, test tool buttons, and phase-aware decision bars.
   - `ScoringBreakdown.jsx` owns the formatted counting formula/result breakdown used by hints and result-review controls.
   - `Board.jsx` owns board grid rendering, coordinate labels, stones, move numbers, scoring marks, skill effect markers, decorated stone images, the latest-move red stone outline, and board point events. The latest-move outline is centered on the stone as an independent square/circular marker so decorated stone art cannot stretch it into an oval.
+  - `Board.jsx` renders intersections through memoized point buttons. `arePointButtonPropsEqual()` compares only visible point state, point identity, pointer-handler refs, and interaction capability flags; event functions are read through a stable `handlersRef` so room parent renders can update click behavior without forcing every board point to re-render.
   - `Board.jsx` renders board grid strokes from `buildBoardLines()`, which emits continuous row/column runs instead of one segment per cell. This avoids uneven internal stroke joins and keeps first-line corners connected; invalid intersections still split only the affected row/column run.
   - `Board.jsx` marks first-line board grid runs with `edge-line`; CSS keeps every non-edge grid run at one uniform stroke width and renders every first-line run exactly 2.5x that width in the Bright School theme.
   - Board stones use deterministic visual jitter for a more physical game feel: each stone gets stable `--stone-offset-x/y` values in one random direction from the intersection. Spark mode keeps a maximum 1px offset; standard mode uses a maximum 0.5px offset on both desktop and mobile because 19-line stones are smaller. The underlying `.point` button, game logic, scoring marks, and target previews remain centered on the original intersection.
@@ -1423,7 +1570,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Current remaining frontend debt:
   - `src/main.jsx` now mainly owns App-level state assembly and passes props into extracted routes, overlays, action hooks, socket hooks, preload hooks, theme/audio hooks, and persistence hooks.
   - `src/room/RoomScreen.jsx` now delegates the three-column battle tree to `src/room/RoomBattleStage.jsx`; future room work can focus on replay/spectator projection helpers and smaller room-state hooks rather than moving raw JSX.
-  - Server room view serialization now lives in `server/roomView.js`, item effect cleanup lives in `server/roomItemEffects.js`, room-user reward application lives in `server/roomRewards.js`, room snapshot persistence lives in `server/roomStatePersistence.js`, pending skill resolution snapshot math lives in `server/roomSkillResolution.js`, clock timing calculation lives in `server/roomClockTiming.js`, standard move/pass/resign side effects live in `server/roomGameActions.js`, and counting/draw/scoring room mutations live in `server/roomScoringFlow.js`, so `server/rooms.js` can focus more narrowly on real-time room lifecycle, skill actions, broadcasts, and persistence triggers.
+  - Server room view serialization now lives in `server/roomView.js`, socket broadcast delivery lives in `server/roomBroadcasts.js`, room runtime persistence/broadcast adapters live in `server/roomRuntime.js`, participant/online-state queries live in `server/roomPresence.js`, matchmaking queue state lives in `server/roomMatchmakingQueue.js`, room initial-state creation and user mode projection live in `server/roomFactory.js`, skill system-message formatting lives in `server/roomSkillMessages.js`, generic system message mutation lives in `server/roomSystemMessages.js`, room action point validation lives in `server/roomActionValidation.js`, room close/empty-room lifecycle lives in `server/roomCloseLifecycle.js`, room deadline scheduling lives in `server/roomDeadlineScheduler.js`, room result persistence lives in `server/roomResultPersistence.js`, room timer bookkeeping lives in `server/roomTimers.js`, item effect cleanup lives in `server/roomItemEffects.js`, room-user reward application lives in `server/roomRewards.js`, room snapshot persistence lives in `server/roomStatePersistence.js`, persisted-room restore orchestration lives in `server/roomPersistenceRestoreLifecycle.js`, room opening transition lives in `server/roomOpeningLifecycle.js`, skill preview lifecycle and pending skill resolution live in `server/roomSkillResolution.js`, per-room clock tick lifecycle lives in `server/roomClockLifecycle.js`, restored-room timer resume decisions live in `server/roomRestoreLifecycle.js`, room socket connection lifecycle lives in `server/roomConnectionLifecycle.js`, counting/draw/scoring request entry validation lives in `server/roomRequestLifecycle.js`, room creation orchestration lives in `server/roomCreationLifecycle.js`, gameplay action entry routing lives in `server/roomActionLifecycle.js`, chat entry mutation lives in `server/roomChatLifecycle.js`, room read-model projection lives in `server/roomQueries.js`, clock timing calculation lives in `server/roomClockTiming.js`, standard move/pass/resign side effects live in `server/roomGameActions.js`, and counting/draw/scoring room mutations live in `server/roomScoringFlow.js`, so `server/rooms.js` can focus more narrowly on real-time room lifecycle, action routing, and persistence triggers.
   - `src/admin/AdminConsole.jsx` has split its shell and major tab bodies; high-value follow-up targets are now the remaining skill contract/replay compatibility wrappers inside `src/shared/game.js`, the real-time lifecycle/broadcast boundary inside `server/rooms.js`, and the remaining voice/cache subdomains in `src/audio/playback.jsx`.
 
 ## Recent Home, Shop, And Board UI Adjustments
@@ -1438,10 +1585,12 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Main-time timer digits use a gray display color, while byo-yomi states keep their warning colors.
 - Board grid strokes use continuous SVG row/column runs with square line caps and geometric precision rendering so internal lines do not appear as uneven stitched segments, and first-line corners stay visually connected. The fixed contrast rule remains shared across themes: all ordinary grid runs share one stroke width, and first-line grid runs render at exactly 2.5x that width. Skill targeting highlights use a gradient glow instead of a solid outline. Stones affected by skill states use darker, higher-opacity green/purple halo rings so the effect reads clearly against the wooden board.
 - Latest room/home refinements:
+  - Desktop home footer text is protected by the final theme safety layer as a viewport-fixed HUD element at the lower-right corner, so it stays at the bottom of the desktop window while the lobby stage scrolls on shorter heights. The mobile Bright School footer remains part of normal document flow below the lobby content.
+  - Desktop room headers keep the message/settings/move/coordinate controls in a right-aligned control group before the room-exit button, rather than floating around the middle of the header. Room exit buttons use a shared light-blue treatment on desktop and mobile; in the Bright School desktop header, the exit button keeps the same dark outline shadow as the adjacent room control buttons. Duplicate exit buttons beside desktop chat and inside the replay bar are removed so the header remains the single desktop room-leave entry. Replay step counters center their `current/max` text, desktop chat popovers, skill detail panels, stat hover/click tips, and room member action popovers share a dynamic room floating-layer stack where the latest interaction renders in front, and the capture/removal/overclock chips share a stable height.
   - The home player plaque rank/rating chip uses a light background with dark text again, while the admin-only management button remains a green circular icon-plus-title control aligned with the home user plaque.
   - The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle `连罗伊人的都爱玩的智力游戏`, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip shows the site title, `Copyright ©KURO GAMES. ALL RIGHTS RESERVED.`, and `浙ICP备2026035038号` as evenly spaced items. The middle stage is an unframed fixed-ratio coordinate surface (`1480 / 620`) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a `1200px` minimum, `503px` minimum height, and `1920px` maximum width; phone landscape uses a smaller `960px` by `402px` minimum stage. The home app shell uses `/assets/home/multipurpose-classroom-bg.webp` as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, `部员手册`, `星炬对弈`, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, `部员手册` is offset slightly right/down from the dock edge, and `星炬对弈` is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry no longer renders a hover/focus text popup; mode titles, rule copy, and current matchmaking counts live in the click-open mode picker. Phone portrait shows a dedicated `请横屏使用` guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values, while a masked `::before` layer uses the same PNG alpha channel to show a solid aqua shadow translated down and right; this avoids large transparent-PNG filter/drop-shadow repaint costs while keeping the requested shadow look. The match-entry PNG has transparent borders after low-alpha background cleanup, avoiding faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow, and when the home stage compresses below the utility-label comfort threshold, utility buttons hide their visible text and keep only the icon inside the circular target.
   - Desktop Bright School home polish removes the former `LOBBY_ROOM` debug/status pill from the top strip, keeps the current-user plaque on an explicit avatar/name/stats grid so the username cannot run into the portrait at wide sizes, and overrides the `部员手册` sticker label back to the rounded UI font stack with nowrap text for consistency with the rest of the interface.
-  - The home current-user plaque now opens the cross-device `履历` modal. `履历` owns personal record, rank, coins, character-record access, and replay access, while `部员手册` is reduced to character deployment/details plus stone decoration selection on both desktop and mobile.
+  - The home current-user plaque now opens the cross-device `履历` modal. `履历` owns personal record, rank, coins, embedded selected-mode character records, recent ten-game results, and replay access, while `部员手册` is reduced to character deployment/details plus stone decoration selection on both desktop and mobile.
   - Incoming direct duel requests play a short synthesized doorbell SFX on the effects channel before showing the request banner.
 - The house/player manual record stat is clickable and opens a per-character record list for owned characters. Personal manual stats use the full current-user replay summary set, including black/white user ids, while leaderboard stats also use all `GameRecord` rows, so win/loss totals stay aligned even after a player has more than 30 records or changes username. On mobile, the per-character record list is a viewport-contained nested dialog with a scrollable list; each record row keeps the total/win/loss/draw text on one line.
   - The house/player manual decoration picker renders owned decorations as icon-plus-status buttons with accessible labels and hover titles: decoration names stay out of the visible chip, while `应用` / `应用中` / `使用中` remains visible.
@@ -1478,6 +1627,8 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Runtime security helpers live in `server/security.js`.
 - `assertProductionDeployment` 在生产环境启动时执行部署配置体检：`JWT_SECRET` 至少 32 位且不能使用默认值，`PUBLIC_ORIGIN` / `SITE_ORIGIN` / `ALLOWED_ORIGINS` 至少配置一个生产域名，且所有生产 origin 必须使用 HTTPS。配置不合格时服务端会在启动阶段抛出明确错误，避免带着弱配置上线。
 - `npm run check:production` 可在部署脚本或 CI 中单独运行同一套生产配置体检，不需要先启动完整服务器或连接数据库；该脚本默认按生产规则检查，即使调用方忘记设置 `NODE_ENV=production` 也不会按开发环境误通过。
+- `npm run check` 是当前交付前的聚合质量入口，会顺序运行单元测试、Vite build、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。
+- Vite production build uses explicit manual chunks in `vite.config.js`: React runtime code goes to `react-vendor`, Socket.IO client runtime goes to `realtime-vendor`, and the skill-animation Pixi runtime goes to the lazy `pixi-vendor` chunk. The entry JS stays below the default warning target, while the larger Pixi chunk is an intentional lazy/prewarmed exception guarded by `scripts/viteBuildConfig.test.js`.
 - Username input is normalized server-side and must be 2-16 characters, limited to Chinese characters, English letters, numbers, and `_`.
 - Password input is enforced server-side as 6-14 characters. Registration returns the exact validation issue; login returns a generic username/password error for invalid credentials or invalid credential shapes.
 - Chat text is normalized server-side by removing control characters, trimming whitespace, rejecting empty messages, and capping messages at 240 characters.
@@ -1497,7 +1648,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Vite development proxy forwards `/socket.io` websocket traffic to the local backend, keeping the same-origin socket path usable in development and production.
 - After a valid token is confirmed, the app enters a `preloading` view before the home screen.
 - Fresh login enters `preloading` before the home screen, preventing the home screen from flashing before assets begin loading. Stored-token startup is intentionally disabled so refresh and browser restart return to the login screen.
-- The preload step fetches non-replay runtime assets after login: all current character portraits, home and shop imagery including `/assets/home/multipurpose-classroom-bg.webp`, Denia candy GIF portrait, stone decoration images, the Denia bubble-effect preview, common board/result/match sound effects, every configured BGM track, every configured character skill voice, and every configured character system voice. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.
+- The preload step fetches non-replay runtime assets after login, but it is now split by startup criticality. Critical preload waits for current character portraits, home entry/background imagery, and common board/UI effect sounds before the app can leave the preload screen. Shop imagery, candy/effect previews, stone decoration images, result/match sounds, configured BGM tracks, character skill voices, and system voices stay in the same asset manifest but load as deferred background work with a concurrency cap so first entry to the home screen is not blocked by the full music/voice library. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.
 - Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.
 - The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.
 
@@ -1530,10 +1681,34 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 
 - Room clock ticks no longer use the full `room:update` payload during normal play. `server/rooms.js` emits a lightweight `room:clock` event once per second with `roomCode`, `activeColor`, `serverNow`, and each player's current `time`.
 - Full `room:update` remains the authoritative synchronization path for match found, room join/resume, moves, skills, chat, phase changes, scoring, draw/counting flows, and timeout transitions.
+- `server/roomBroadcasts.js` is the single backend emit boundary for room snapshot updates, lightweight clock updates, room toasts, and close events. It skips disconnected participants, calls room persistence with the same forced/throttled timing as before, and keeps viewer-specific room view generation centralized for future patch-event work.
+- `server/roomRuntime.js` is the backend room runtime adapter boundary. It wires `server/roomStatePersistence.js` into `server/roomBroadcasts.js`, centralizing forced/throttled persistence callbacks, full-room broadcast persistence injection, and room toast forwarding outside the lifecycle composition module.
+- `server/roomPresence.js` is the backend participant-state boundary for players plus spectators. Room broadcasting, watch-room summaries, finished-room close extension, and empty-active-room closure all use it for connected-participant and all-players-disconnected decisions.
+- `server/roomMatchmakingQueue.js` is the backend matchmaking queue boundary for waiting-player state. Matchmaking joins, leaves, disconnect cleanup, per-mode counts, and custom `canPair` filters go through this module, while room creation and match-success delivery stay in `server/rooms.js`.
+- `server/roomFactory.js` is the backend room creation boundary. Initial room shape, random room code generation, player color assignment, mode-specific room-user projection, opening phase, and initial clock fields live there.
+- `server/roomSkillMessages.js` is the backend skill-message formatting boundary. Skill use notices, custom `systemMessage` template replacement, point labels, and stone labels live there so room lifecycle code does not own display-string rules.
+- `server/roomTimers.js` is the backend timer bookkeeping boundary for room intervals and tracked timeouts. Room lifecycle code should schedule through this module so timeout ids are removed after firing and cleared consistently during room shutdown or empty-room cancellation.
+- `server/roomSystemMessages.js` is the backend room chat-log mutation boundary for system messages. Generic system notices, notice-list appends, and restored disconnect notices live there so room lifecycle code can decide when notices occur without owning message object shape or reconnect-recovery text deduplication.
+- `server/roomActionValidation.js` is the backend room action point-validation boundary. Room action handlers delegate point-target validation there, while the module forwards board coordinate errors from `server/security.js` unchanged.
+- `server/roomCloseLifecycle.js` is the backend room close lifecycle boundary. Finished-room close scheduling, invalid-room short close delay, connected-participant close extension, `room:closed` payload construction, persisted-room deletion trigger, empty-active-room invalidation, and empty-room close cancellation live there behind injected persistence/timer/broadcast dependencies.
+- `server/roomDeadlineScheduler.js` is the backend room deadline scheduling boundary. Opening delay, initial passive skill delay, counting-request timeout, draw-request timeout, result-review timeout, and restored pending-deadline scheduling live there behind injected room lookup, timer, broadcast, and lifecycle callbacks.
+- `server/roomResultPersistence.js` is the backend room result persistence boundary. Finished-room record creation, invalid-result record skipping, draw mode-stat increments, decisive reward application, user stat writes, progress ledger entries, and item-effect cleanup operations live there so room lifecycle code only triggers result saving.
+- `server/roomSkillResolution.js` is the backend skill-preview lifecycle boundary. Active/passive skill preview setup, persisted `pendingSkillResolution` snapshots, restored preview delay scheduling, preview payload metadata, and resolution completion side effects live there so new skill effects do not add more timing and preview-state branching to `server/rooms.js`.
+- `server/roomClockLifecycle.js` is the backend per-room clock tick boundary. Playing-phase tick handling, disconnected-player empty-room scheduling, timeout finish handling, and the choice between lightweight `room:clock` and full room broadcasts live there so future clock-throttling or patch-broadcast work has one server-side entry point.
+- `server/roomRestoreLifecycle.js` is the backend restored-room timer resume boundary. Finished-room close windows, opening deadlines, restored pending skill previews, active room deadlines, and empty-room close scheduling are selected there so process-restart recovery has one auditable scheduling entry point.
+- `server/roomPersistenceRestoreLifecycle.js` is the backend persisted-room restore orchestration boundary. Loading persisted rows, parsing/hydrating snapshots, adding restored disconnect notices, registering rooms, invoking restore-time timer decisions, force-persisting resumable rooms, and continuing past bad rows now live outside `server/rooms.js`.
+- `server/roomOpeningLifecycle.js` is the backend opening transition boundary. Opening completion now centralizes the transition to `playing`, game-start notice, `lastTick` refresh, full room broadcast, and initial passive-skill scheduling handoff.
+- `server/roomConnectionLifecycle.js` is the backend room connection-state boundary. Player reconnects, spectator joins/leaves, socket disconnect cleanup, empty-room close handoff, and forced room persistence after connection changes live there so reconnect recovery and watch-room online counts stay consistent without adding more socket-state branching to `server/rooms.js`.
+- `server/roomRequestLifecycle.js` is the backend counting/draw/scoring request entry boundary. Room-code validation, room/player lookup, phase precondition checks, scoring point validation, and delegation into `server/roomScoringFlow.js` live there so future request types can share one validation and dispatch shape.
+- `server/roomCreationLifecycle.js` is the backend room creation orchestration boundary. Matched matchmaking joins and direct duel acceptance now share room registration, initial forced persistence, clock startup, opening scheduling, `match:found` delivery, creation notices, and initial full-room broadcast in one place.
+- `server/roomActionLifecycle.js` is the backend gameplay action entry boundary. Game actions now share room-code validation, room lookup, point validation, player lookup, pending-skill rejection, test-action dispatch, skill-action dispatch, and standard action delegation in one focused module.
+- `server/roomChatLifecycle.js` is the backend room chat entry boundary. Chat sends now share room-code validation, text normalization, room lookup, message id creation, current move-number capture, and chat payload shape in one focused module.
+- `server/roomQueries.js` is the backend room read-model boundary. Active-room lists, watch-room summaries, active membership checks, and user room lookup now share one projection module while participant counts and player summaries continue to come from `server/roomPresence.js`.
 - `server/roomView.js` builds only the needed board projection for player viewers. Spectators still receive both black and white projections through `gameViews`, but players receive only their own visible board state.
 - `server/serverLifecycle.js` guards local development startup/shutdown: occupied port 3001 now gets an explicit `EADDRINUSE` message, and `SIGINT` / `SIGTERM` close the HTTP server plus Prisma before process exit.
+- The frontend applies full `room:update` snapshots through `src/app/roomSnapshot.js`. Same-room snapshots are structurally shared before entering React state, so duplicate snapshots can return the current room object and unchanged `game.points`, player entries, chat messages, and nested view data keep their existing references.
 - The frontend merges `room:clock` through `src/app/roomClock.js`, updating only changed player timer objects while preserving the existing `room.game` object reference.
-- `src/room/Board.jsx` is memoized with a board-specific prop comparison so timer-only updates can refresh player clocks without re-rendering the 13x13 board.
+- `src/room/Board.jsx` is memoized with a board-specific prop comparison so timer-only updates can refresh player clocks without re-rendering the board, and individual point buttons are memoized so local confirmation, marker, decoration, and scoring changes update only the affected intersections on 13-line and 19-line boards.
 - `src/room/PlayerInfo.jsx` is memoized with a player/game-slice comparison so room clock ticks only re-render the player panel whose timer or relevant game slice changed, which is especially important when item effects swap portraits to animated assets.
 - `src/app/roomUserSync.js` merges the current user from room payloads by comparing only fields present in the room user payload, rather than stringifying the whole current user. This keeps item/effect synchronization cheap as the local user state gains more client-only fields.
 - `src/shared/gameBoard.js` resolves standard board point ids by direct row-major index before falling back to id search. This keeps capture, liberty, territory, skill, and replay logic from repeatedly scanning the full point array on normal 13x13 states; `src/shared/game.js` re-exports the helper for existing callers.

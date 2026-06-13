@@ -49,7 +49,7 @@ Questions to answer:
 - Home match entry opens a two-option modal before emitting `match:join`.
 - Duel requests open the same two-option choice before emitting `duel:request`; incoming request UI must show the selected mode title and rules text.
 - Mode tabs are required for leaderboard, watch list, and record/history views.
-- Home player plaques render two compact mode stat rows from `modeOrderedEntries()`: spark rank/rating first, standard rank/rating second. Do not collapse them back into a single global rank/rating pair.
+- Home player plaques render two compact mode stat rows from `modeOrderedEntries()`: spark rank/rating first, standard rank/rating second. Do not collapse them back into a single global rank/rating pair, and do not show recent-result markers on the plaque.
 - Standard room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels.
 - Standard scoring copy must omit overclock/skill-cost descriptions and use black komi `3.75`.
 - Coordinate labels must grid with `repeat(var(--size), minmax(0, 1fr))`; do not leave coordinate rows or columns hard-coded to 13 tracks.
@@ -73,7 +73,7 @@ Questions to answer:
 - Standard room state renders 19-line board star points and no skill UI.
 - Standard room accepts moves at the 19-line edge and Board CSS tests assert coordinate rows/columns use `var(--size)`.
 - Leaderboard/watch/history fetches or filters by selected mode.
-- Home plaque tests assert both `plaque-mode-stat-spark` and `plaque-mode-stat-standard` render with mode-specific ratings.
+- Home plaque tests assert both `plaque-mode-stat-spark` and `plaque-mode-stat-standard` render with mode-specific ratings and stored ranks, while recent result markers stay limited to profile/history detail surfaces.
 - Friend duel request payload and incoming banner include mode.
 
 #### 7. Wrong vs Correct
@@ -93,6 +93,213 @@ Correct:
     <small>{config.rulesText}</small>
   </button>
 ))}
+```
+
+### Scenario: Board Skill Presentation Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to active skill preview payloads, room board rendering, skill banners, or board animation layers.
+- The board skill presentation spans backend room snapshots, shared timing constants, React board markup, PixiJS canvas effects, ambient board effects, and SFX timing.
+
+#### 2. Signatures
+- `game.pendingSkill`: `{ id, characterId, skillName, effectType, targetId, affectedPointIds, markedPointIds, removed, removedByColor, resolvesAt, bannerDurationMs, boardEffectDurationMs }`.
+- `SKILL_EFFECT_CATALOG`: shared `effectType` metadata in `src/shared/skillEffectCatalog.js`, including admin labels, default target rules, active/passive classification, board-effect availability, and sound cue timing.
+- `BoardSkillEffects`: receives `boardSize={game.size}`, `pendingSkill={game.pendingSkill}`, and optional `audioSettings`.
+- `schedulePixiPrewarm({ enabled })` and `loadPixiModule()` live in `src/room/pixiPrewarm.js`; both prewarm and live board effects must share the same Pixi import promise.
+- `BOARD_SKILL_EFFECT_RENDERERS` and `playRegisteredBoardSkillEffect()` live in `src/room/boardSkillEffectRegistry.js`; concrete Pixi board animations must register by `effectType` there instead of growing `BoardSkillEffects.jsx`.
+- `boardPointCenter()` and `pointCenterForHost()` live in `src/room/boardSkillEffectGeometry.js` so component tests and animation renderers share one board-size-aware coordinate contract.
+- `BoardAmbientEffects`: receives derived passive state such as active Nabomo color illusion fog and renders non-interactive ongoing board ambience.
+- `scheduleBoardSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings })` and `clearBoardSkillEffectSoundTimers(timerIds)` live in `src/room/boardSkillEffectSoundScheduler.js`; the React host should call these helpers instead of manually mapping cue timers.
+- `playSkillEffectSound(effectType, cue, audioSettings)`: presentation-only SFX helper for `start` and `impact` animation cues.
+- `boardPointCenter(pointId, { boardSize, width, height })`: maps a board point id to a pixel center in the current board viewport.
+
+#### 3. Contracts
+- `Board` keeps DOM/SVG as the interaction source of truth; PixiJS is presentation-only.
+- The effects canvas and ambient layers must use `pointer-events: none` and must not replace point buttons, scoring marks, move numbers, coordinates, or skill targeting classes.
+- Board effects start after `bannerDurationMs`, not when the banner first appears.
+- Skill-enabled boards may schedule idle Pixi prewarm after the board mounts, but this prewarm must not block board rendering, preload screens, room entry, or standard no-skill rooms.
+- Aemeath `hidden-hand` is a full-board effect: green electronic data streams move from the board edge toward the center, flash with white light, then dissipate outward/away without depending on a point-local impact.
+- Nabomo `color-illusion-passive` has ongoing low-opacity black/gray cloud ambience while any color illusion passive is active; render it as separate feathered cloud shapes, not as a full rectangular board tint, and keep stones/intersections readable.
+- Board SFX must be scheduled from the same board effect timeline, use the existing `sfx` volume channel, and clean up timers with the Pixi overlay.
+- Board SFX timer mapping and cleanup belong in `boardSkillEffectSoundScheduler.js`; `BoardSkillEffects.jsx` should not duplicate cue math or timer iteration.
+- The backend must derive animation metadata from the already-resolved skill action, not by recomputing skill rules.
+- Admin character options, backend character validation, skill normalization, board target preview, active skill type lists, server fallback skill config, and board skill SFX cue timing must read shared effect metadata from `src/shared/skillEffectCatalog.js` instead of each keeping a local `effectType -> targetRule/label/cue` table.
+- Every catalog entry with `boardEffect: true` must have a matching `BOARD_SKILL_EFFECT_RENDERERS` entry; unknown effect types should no-op without touching the Pixi stage.
+- `prefers-reduced-motion: reduce` must use a short static hit effect without fly-in, scale bursts, explosions, board shake, or explosive SFX.
+
+#### 4. Validation & Error Matrix
+- Missing `pendingSkill` -> render no effect but keep the board usable.
+- `game.skillEnabled === false` -> render the inert effects layer but pass `prewarm={false}` so standard boards do not load Pixi early.
+- Missing `targetId` -> skip the Pixi effect safely.
+- Unknown `effectType` -> keep the overlay inert and preserve the normal skill preview/result flow.
+- Muted `sfx` channel -> do not create WebAudio contexts or play board skill SFX.
+- Unmounted board / route change during a skill effect -> clear scheduled SFX timers before they fire.
+- Active Nabomo passive fog -> board clicks, touch confirmation, score marking, coordinates, and move numbers remain available because the fog is presentation-only.
+- Visible square fog boundary -> invalid; the ambient layer must use feathered cloud shapes/masks so it reads as black cloud rather than a rectangular overlay.
+- Standard mode with no skills -> no pending skill effect should appear.
+- Restored room with `resolvesAt` in the past -> backend resolves immediately through existing pending-skill scheduling.
+
+#### 5. Good/Base/Bad Cases
+- Good: Sigrika erase, Danea flip, Aemeath hidden-hand, and Baconbits blast all route from `effectType` supplied by the room snapshot.
+- Good: a skill-enabled room prewarms Pixi during browser idle time, and the first actual skill effect reuses that module promise instead of issuing a second dynamic import.
+- Good: adding a new effect starts by extending `SKILL_EFFECT_CATALOG`, then wiring concrete rule handlers, server preview metadata, board animation, and tests.
+- Good: adding a new board animation updates `BOARD_SKILL_EFFECT_RENDERERS` and its registry test, while `BoardSkillEffects.jsx` remains the lifecycle host.
+- Good: Danea flip visually reads as transparent bubble formation, purple-black corruption, then pop/flash before the final stone color appears.
+- Good: Nabomo fog is driven by active passive state and continues after the passive activation banner/effect has resolved.
+- Base: legacy replay skill entries without new visual metadata still replay through the rules layer.
+- Bad: using `canPreviewSkillTarget` as the random-blast click eligibility gate; no-target skills must keep preview false while board confirmation remains allowed.
+- Bad: calculating the random-blast center on the frontend instead of using backend `pendingSkill.targetId`.
+
+#### 6. Tests Required
+- Backend tests assert `pendingSkill` metadata for erase-point, flip-stone, and random-blast.
+- Shared rules tests assert `erase-point` history includes `effectType`.
+- Board tests assert the effects layer renders without removing point buttons.
+- Effects tests assert coordinate mapping for 13-line and 19-line boards and reduced-motion timing.
+- Registry tests assert every catalog `boardEffect` type has a renderer and unknown effect types no-op safely.
+- Pixi prewarm tests assert disabled mode does not schedule loading, cancellation prevents idle imports, and prewarm/live effect loading share one promise.
+- Ambient tests assert active color illusion fog is pointer-transparent and renders without removing board buttons.
+- SFX tests assert stable cue points and muted settings avoiding AudioContext creation.
+- Scheduler tests assert catalog cue timing, reduced-motion suppression, and timer cleanup.
+- Catalog tests assert effect type order, admin options, default target rules, active effect lists, and SFX cues.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<canvas className="board" onClick={handlePoint} />
+```
+
+Correct:
+
+```jsx
+<div className="board">
+  <BoardSkillEffects boardSize={game.size} pendingSkill={game.pendingSkill} audioSettings={audioSettings} />
+  {game.points.map((point) => <button key={point.id} className="point" />)}
+</div>
+```
+
+---
+
+### Scenario: Gacha Admin Featured Prizes Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to gacha admin prize editing, gacha pool draft serialization, admin gacha API payloads, or player/admin gacha pool payload projection.
+- Featured prizes are cross-layer display hints, not required prize rules. Draw odds and reward settlement must not depend on any featured prize existing.
+
+#### 2. Signatures
+- `emptyGachaPoolDraft().featuredPrizeIndexes`: `number[]`, default `[]`.
+- `emptyGachaPoolDraft().featuredPrizeIndex`: `null | number`, legacy first-featured compatibility field.
+- `buildGachaPoolDraft(pool).featuredPrizeIndexes`: indexes of `pool.featuredPrizeIds` / `pool.featuredPrizes` in `pool.prizes`, falling back to legacy `pool.featuredPrizeId`.
+- `gachaPoolDraftToBody(draft).featuredPrizeIndexes`: `number[]`; `featuredPrizeIndex` remains `indexes[0] ?? null`.
+- Admin API input `featuredPrizeIndexes`: `number[]`; empty array means clear or keep no featured prizes. `featuredPrizeIndex` is accepted only as a legacy single-value fallback.
+- Gacha pool payload `featuredPrizes`: `GachaPrizePayload[]`; `featuredPrize` remains the first item or `null` for older display surfaces.
+
+#### 3. Contracts
+- The admin "大奖" control is an independent toggle per prize row, not a required radio group: clicking a selected prize removes only that prize from the featured list.
+- New drafts must not silently preselect prize index `0`.
+- Draft serialization sends `featuredPrizeIndexes: []` when no featured prize is selected.
+- Backend validation must accept an empty array and must reject only indexes outside the prize array.
+- Create/update persistence must store all selected prize ids in `featuredPrizeIds` JSON and mirror the first selected id in legacy `featuredPrizeId`; when the array is empty both fields are `null`.
+- Player/admin pool payload projection must not invent the first prize as `featuredPrize` or `featuredPrizes[0]` when no featured id is stored.
+
+#### 4. Validation & Error Matrix
+- `featuredPrizeIndexes === []` -> valid, no featured prizes.
+- `featuredPrizeIndexes` omitted and `featuredPrizeIndex === null` -> normalize to `[]`.
+- Any featured index `< 0` -> invalid.
+- Any featured index `>= prizes.length` -> invalid.
+- Duplicate featured indexes -> normalize to one instance, preserving order.
+- `featuredPrizeIds` missing from loaded pool but `featuredPrizeId` exists -> edit draft shows that one legacy featured prize selected.
+- Stored featured ids missing from loaded prizes -> ignore missing ids without selecting another prize.
+
+#### 5. Good/Base/Bad Cases
+- Good: an admin toggles two "大奖" buttons, saves, and subsequent payloads expose both prize payloads in `featuredPrizes` while `featuredPrize` points to the first selected prize.
+- Good: an admin clicks all selected "大奖" buttons again, saves, and subsequent payloads expose `featuredPrizeIds: []`, `featuredPrizeId: null`, `featuredPrizes: []`, and `featuredPrize: null`.
+- Base: an existing pool with only a valid `featuredPrizeId` still shows that prize selected in the editor.
+- Bad: using `featuredPrizeIndex ?? 0`, `Math.max(0, findIndex(...))`, or `prizes[0]` fallback for featured prize display.
+- Bad: treating the "大奖" button as radio semantics where selecting one prize clears every other selected featured prize.
+
+#### 6. Tests Required
+- Draft helper tests assert empty and loaded no-featured pools keep `featuredPrizeIndexes: []`.
+- Draft helper tests assert multiple stored featured ids serialize as multiple indexes and preserve `featuredPrizeIndex` as the first index.
+- Admin component/source tests assert the featured control toggles membership rather than replacing the selected prize.
+- Admin management tests assert `featuredPrizeIndexes: []` and multiple indexes validate.
+- Gacha payload tests assert `featuredPrizes` returns every stored featured prize and remains empty when no featured id is stored.
+- Schema tests assert `GachaPool.featuredPrizeIds` exists in Prisma schema, migration SQL, and startup schema guard.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const featuredPrizeIndex = parseIntValue(input.featuredPrizeIndex ?? 0);
+const nextFeaturedPrizeIndexes = [clickedIndex];
+const featuredPrize = prizes.find((prize) => prize.id === pool.featuredPrizeId) ?? prizes[0] ?? null;
+```
+
+Correct:
+
+```js
+const featuredPrizeIndexes = Array.isArray(input.featuredPrizeIndexes) ? input.featuredPrizeIndexes : [];
+const nextFeaturedPrizeIndexes = currentIndexes.includes(clickedIndex)
+  ? currentIndexes.filter((index) => index !== clickedIndex)
+  : [...currentIndexes, clickedIndex];
+const featuredPrizes = featuredPrizeIds.map((id) => prizes.find((prize) => prize.id === id)).filter(Boolean);
+```
+
+### Scenario: Gacha Result Reward Display Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to gacha draw response payloads, `GachaResultDialog`, gacha reward label helpers, or reward result CSS.
+- The draw result is a cross-layer display contract: backend settlement chooses a `GachaPrize`, the immediate response carries display metadata, and the frontend result dialog renders the visual card.
+
+#### 2. Signatures
+- Immediate draw reward payload: `{ prizeId, type, targetId, quantity, unlockedQuantity, duplicateQuantity, blueGemsAdded, chainAdded, coinsAdded, name, imageUrl }`.
+- `buildGachaRewardDisplay(reward)`: returns `{ name, imageUrl, fallback, detail }`.
+- `GACHA_COIN_BAG_IMAGE`: local image path used for coin rewards.
+- `GachaResultDialog({ result, onClose })`: adds `.ten-pull` to `.gacha-result-grid` when `result.rewards.length === 10`.
+
+#### 3. Contracts
+- Backend draw settlement must copy `prize.name` and `prize.imageUrl` into immediate reward responses; the frontend should not infer player-facing names from `targetId`.
+- Coin rewards ignore empty prize images and always render `GACHA_COIN_BAG_IMAGE`.
+- Non-coin rewards prefer `reward.name`; when no name exists, fall back to `gachaPrizeTypeLabel(type)`, not raw target ids.
+- Reward details preserve quantities and conversions: coins show `<n> 金币`, item stacks show `x<n>`, character duplicates show `角色链 +<n>`, and decoration/music duplicates show `转换 <n> 蓝宝石`.
+- Desktop ten-pull result grids use five columns so ten rewards produce two rows; smaller viewports may keep adaptive columns.
+
+#### 4. Validation & Error Matrix
+- Missing `name` on a non-coin reward -> show the localized type label.
+- Missing `imageUrl` on a non-coin reward -> show the type fallback glyph.
+- Coin reward with empty `imageUrl` -> still show the coin-bag image.
+- Ten rewards -> add `.ten-pull`; any other count -> keep adaptive grid.
+
+#### 5. Good/Base/Bad Cases
+- Good: a reward for `rainbow-bean-candy` with `name: "彩虹豆豆跳跳糖"` renders that name and `x3`.
+- Base: a legacy reward with no image renders a compact localized fallback instead of breaking layout.
+- Bad: rendering `${targetId} x${quantity}` in result cards, because it leaks internal ids such as `rainbow-bean-candy`.
+- Bad: using a generic orb for every reward image after `imageUrl` is available.
+
+#### 6. Tests Required
+- Gacha helper tests assert coin-bag image selection, player-facing names, details, and no target-id-first labels.
+- `GachaResultDialog` markup tests assert `.ten-pull`, reward images, names, and details.
+- CSS contract tests assert `.gacha-result-grid.ten-pull` uses five columns on desktop.
+- Backend gacha draw tests assert immediate rewards include copied `name` and `imageUrl`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<span className="gacha-result-orb" />
+<strong>{reward.targetId} x{reward.quantity}</strong>
+```
+
+Correct:
+
+```jsx
+const display = buildGachaRewardDisplay(reward);
+<img src={display.imageUrl} alt={display.name} />
+<strong>{display.name}</strong>
+{display.detail && <small>{display.detail}</small>}
 ```
 
 ---

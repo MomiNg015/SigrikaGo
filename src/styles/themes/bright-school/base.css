@@ -87,8 +87,10 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .close-button {
-  width: 36px;
-  height: 36px;
+  width: var(--modal-close-size, 44px);
+  min-width: var(--modal-close-size, 44px);
+  height: var(--modal-close-size, 44px);
+  min-height: var(--modal-close-size, 44px);
   border: 3px solid #4a3736 !important;
   border-radius: 999px !important;
   background: #ff9ebb !important;

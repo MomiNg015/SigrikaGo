@@ -17,9 +17,24 @@ export {
   playBoardSound,
   playCaptureSound,
   playEffectSound,
+  playUiCloseWindowSound,
+  playUiConfirmSound,
+  playUiDetailOpenSound,
+  playUiHouseOpenSound,
+  playUiMatchOpenSound,
+  playUiShopOpenSound,
+  playUiUnavailableSound,
   playStoneSound,
   preloadEffectSound,
-  STONE_SOUND
+  STONE_SOUND,
+  UI_CLOSE_WINDOW_SOUND,
+  UI_CONFIRM_SOUND,
+  UI_DETAIL_OPEN_SOUND,
+  UI_HOUSE_OPEN_SOUND,
+  UI_MATCH_OPEN_SOUND,
+  UI_SHOP_OPEN_SOUND,
+  UI_UNAVAILABLE_SHAKE_MS,
+  UI_UNAVAILABLE_SOUND
 } from "./effectPlayback.js";
 export { playCountdownBeep, playDoorbellSound } from "./proceduralSounds.js";
 

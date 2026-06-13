@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
+import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import TimeBar from "./TimeBar.jsx";
@@ -22,7 +23,10 @@ function PlayerInfo({
   isWinner = false,
   isActiveTurn = false,
   isDrawResult = false,
-  isSkillTargeting = false
+  isSkillTargeting = false,
+  floatingLayerId,
+  floatingLayerZ,
+  onFloatingLayerRequest
 }) {
   const [skillDetailOpen, setSkillDetailOpen] = useState(false);
   const [tapTooltip, setTapTooltip] = useState(null);
@@ -44,9 +48,11 @@ function PlayerInfo({
   const skillEnabled = game.skillEnabled !== false;
   const resultBadge = resultBadgeForPlayer(player, game, { isWinner, isDrawResult });
   const disconnectBadge = disconnectBadgeForPlayer(player, game);
+  const requestFloatingLayer = () => onFloatingLayerRequest?.(floatingLayerId);
   return (
     <aside
       className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${canSwitchView ? "switchable-view" : ""} ${canSwitchView && viewColor === player.color ? "view-selected" : ""}`}
+      style={floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : undefined}
       onClick={canSwitchView ? () => onViewColor?.(player.color) : undefined}
       role={canSwitchView ? "button" : undefined}
       tabIndex={canSwitchView ? 0 : undefined}
@@ -60,6 +66,7 @@ function PlayerInfo({
     >
       <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"}`}>
         <img src={playerCandyPortrait(character, player)} alt={character.name} />
+        <CharacterChainBadge user={player.user} characterId={character.id} />
         {disconnectBadge && <span className="disconnect-badge">{disconnectBadge}</span>}
         {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       </div>
@@ -79,8 +86,16 @@ function PlayerInfo({
           tabIndex={0}
           title={PLAYER_INFO_TOOLTIPS.skillRemovals}
           role="button"
-          onClick={(event) => openTapTooltip(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip)}
-          onKeyDown={(event) => openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip)}
+          onMouseEnter={requestFloatingLayer}
+          onFocus={requestFloatingLayer}
+          onClick={(event) => {
+            requestFloatingLayer();
+            openTapTooltip(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip);
+          }}
+          onKeyDown={(event) => {
+            requestFloatingLayer();
+            openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip);
+          }}
         >
           <strong>除子</strong>{skillRemovals}
         </span>}
@@ -91,8 +106,16 @@ function PlayerInfo({
           tabIndex={0}
           title={PLAYER_INFO_TOOLTIPS.overclock}
           role="button"
-          onClick={(event) => openTapTooltip(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip)}
-          onKeyDown={(event) => openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip)}
+          onMouseEnter={requestFloatingLayer}
+          onFocus={requestFloatingLayer}
+          onClick={(event) => {
+            requestFloatingLayer();
+            openTapTooltip(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip);
+          }}
+          onKeyDown={(event) => {
+            requestFloatingLayer();
+            openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip);
+          }}
         >
           <strong>超频</strong>{skillCost}
         </span>}
@@ -100,6 +123,7 @@ function PlayerInfo({
       {skillEnabled && <div
         className={`skill-chip-wrap ${skillDetailOpen ? "open" : ""}`}
         onMouseLeave={() => setSkillDetailOpen(false)}
+        onPointerDownCapture={requestFloatingLayer}
       >
         <button
           className={`skill-chip ${skillUses <= 0 ? "spent" : ""} ${isSkillTargeting ? "targeting" : ""}`}
@@ -107,6 +131,7 @@ function PlayerInfo({
           type="button"
           data-mobile-tooltip-trigger
           onClick={(event) => {
+            requestFloatingLayer();
             if (openTapTooltip(event, skillTooltipText(character), setTapTooltip)) {
               setSkillDetailOpen(false);
               return;
@@ -114,12 +139,19 @@ function PlayerInfo({
             setSkillDetailOpen((open) => !open);
           }}
           onKeyDown={(event) => {
+            requestFloatingLayer();
             if (openTapTooltipFromKeyboard(event, skillTooltipText(character), setTapTooltip)) {
               setSkillDetailOpen(false);
             }
           }}
-          onFocus={() => setSkillDetailOpen(true)}
-          onMouseEnter={() => setSkillDetailOpen(true)}
+          onFocus={() => {
+            requestFloatingLayer();
+            setSkillDetailOpen(true);
+          }}
+          onMouseEnter={() => {
+            requestFloatingLayer();
+            setSkillDetailOpen(true);
+          }}
         >
           <Sparkles size={16} />
           {character.skill.name} · {skillUses}
@@ -131,7 +163,11 @@ function PlayerInfo({
       {tapTooltip && (
         <div
           className="mobile-tap-tooltip"
-          style={{ "--tooltip-x": `${tapTooltip.x}px`, "--tooltip-y": `${tapTooltip.y}px` }}
+          style={{
+            "--tooltip-x": `${tapTooltip.x}px`,
+            "--tooltip-y": `${tapTooltip.y}px`,
+            ...(floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : {})
+          }}
           data-placement={tapTooltip.placement}
           role="tooltip"
         >
@@ -156,6 +192,9 @@ export function arePlayerInfoPropsEqual(previous, next) {
     && previous.isActiveTurn === next.isActiveTurn
     && previous.isDrawResult === next.isDrawResult
     && previous.isSkillTargeting === next.isSkillTargeting
+    && previous.floatingLayerId === next.floatingLayerId
+    && previous.floatingLayerZ === next.floatingLayerZ
+    && previous.onFloatingLayerRequest === next.onFloatingLayerRequest
     && gamePlayerSliceEqual(previous.game, next.game, color);
 }
 

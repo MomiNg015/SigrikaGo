@@ -18,6 +18,13 @@ function normalizeCss(css) {
   return css.replace(/\r\n/g, "\n");
 }
 
+function cssBlockForSelector(css, selector) {
+  const start = css.indexOf(selector);
+  if (start < 0) return "";
+  const end = css.indexOf("}", start);
+  return end < 0 ? "" : css.slice(start, end + 1);
+}
+
 const hudCss = normalizeCss(readFileSync(new URL("./hud-components.css", import.meta.url), "utf8"));
 const themeEntryCss = normalizeCss(readFileSync(new URL("./themes.css", import.meta.url), "utf8"));
 const themesCss = [
@@ -357,7 +364,7 @@ describe("component-level HUD refinements", () => {
   it("unifies Bright School cute typography and repairs warehouse/profile text blocks", () => {
     expect(themesCss).toContain("Bright School cute typography and warehouse/profile repair layer.");
     expect(themesCss).toContain('"Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
-    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats span");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span");
     expect(themesCss).toContain("clip-path: none !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header .quiet-text");
     expect(themesCss).toContain("background: transparent !important");
@@ -404,6 +411,10 @@ describe("component-level HUD refinements", () => {
 
   it("pins the Bright School home player plaque with paperclips instead of ropes", () => {
     const plaquePolish = themesCss.slice(themesCss.indexOf("Bright School lobby material polish for browser comments."));
+    const plaqueBlock = cssBlockForSelector(
+      plaquePolish,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card"
+    );
 
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone::before");
     expect(plaquePolish).toContain("content: none !important");
@@ -413,9 +424,9 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("border-bottom-color: transparent !important");
     expect(plaquePolish).toContain("transform: rotate(-8deg) !important");
     expect(plaquePolish).toContain("transform: rotate(8deg) !important");
-    expect(plaquePolish).toContain("grid-template-columns: 76px minmax(120px, 1fr) 94px !important");
-    expect(plaquePolish).toContain("column-gap: 20px !important");
-    expect(plaquePolish).toContain("white-space: nowrap !important");
+    expect(plaqueBlock).toContain("grid-template-columns: 76px minmax(0, 1fr) minmax(150px, 154px) !important");
+    expect(plaqueBlock).toContain("column-gap: 16px !important");
+    expect(plaqueBlock).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before");
     expect(plaquePolish).toContain('font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
   });

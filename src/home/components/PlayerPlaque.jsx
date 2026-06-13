@@ -1,6 +1,6 @@
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
+import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import { modeOrderedEntries } from "../../shared/gameModes.js";
-import { rankFromRating } from "../../shared/ratingRank.js";
 
 export default function PlayerPlaque({ character, user, onOpenResume }) {
   const plaqueStyle = { "--plaque-color": character.palette ?? "#5d7fe8" };
@@ -11,6 +11,7 @@ export default function PlayerPlaque({ character, user, onOpenResume }) {
         <button className="home-player-plaque tactical-id-card" type="button" onClick={onOpenResume} aria-label="打开履历">
           <span className="plaque-avatar">
             <img src={resolveCandyPortrait(character, user.itemEffects)} alt="当前出战角色" />
+            <CharacterChainBadge user={user} characterId={character.id} />
           </span>
           <strong>{user.username}</strong>
           <span className="plaque-stats" aria-label="对弈模式段位积分">
@@ -37,7 +38,7 @@ function plaqueModeStats(user, mode) {
   const rating = normalizeRating(stats?.rating ?? fallbackRating);
   return {
     rating,
-    rank: rankFromRating(rating)
+    rank: stats?.rank ?? user.rank ?? "3段",
   };
 }
 

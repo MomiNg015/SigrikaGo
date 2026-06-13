@@ -2,6 +2,7 @@ import AdminConsole from "../admin/AdminConsole.jsx";
 import AuthScreen from "../auth/AuthScreen.jsx";
 import HomeScreen from "../home/HomeScreen.jsx";
 import RoomScreen from "../room/RoomScreen.jsx";
+import { playUiHouseOpenSound, playUiMatchOpenSound, playUiShopOpenSound } from "../audio/playback.jsx";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
 import { planRoomBackNavigation } from "./roomNavigation.js";
 
@@ -34,6 +35,7 @@ export default function AppRoutes({
   setReplayStep,
   setRoom,
   setShowFriends,
+  setShowGacha,
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
@@ -60,12 +62,23 @@ export default function AppRoutes({
       onLogout={logout}
       onSelectCharacter={selectCharacter}
       onStartMatch={startMatch}
-      onOpenHouse={() => setShowHouse(true)}
+      onOpenMatch={() => playUiMatchOpenSound(audioSettings)}
+      onOpenHouse={() => {
+        playUiHouseOpenSound(audioSettings);
+        setShowHouse(true);
+      }}
       onOpenResume={() => setShowResume(true)}
       onOpenWarehouse={() => setShowWarehouse(true)}
       onOpenLeaderboard={() => setShowLeaderboard(true)}
       onOpenWatch={() => setShowWatch(true)}
-      onOpenShop={() => setShowShop(true)}
+      onOpenShop={() => {
+        playUiShopOpenSound(audioSettings);
+        setShowShop(true);
+      }}
+      onOpenGacha={() => {
+        playUiShopOpenSound(audioSettings);
+        setShowGacha(true);
+      }}
       onOpenFriends={() => setShowFriends(true)}
       onOpenSettings={() => setShowSettings(true)}
       onOpenMessageBoard={() => setShowMessageBoard(true)}

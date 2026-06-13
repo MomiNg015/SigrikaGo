@@ -1,7 +1,9 @@
+import fs from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { CHARACTER_SKILL_VOICES, CHARACTER_SYSTEM_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
-import { deploymentSocketBase, loginPreloadAssets, playbackAssetSources } from "./preloadAssets.js";
+import { deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadLoginAssets } from "./preloadAssets.js";
 
 describe("deployment preload asset helpers", () => {
   it("uses same-origin socket connections in the browser", () => {
@@ -15,7 +17,7 @@ describe("deployment preload asset helpers", () => {
     ]);
   });
 
-  it("preloads core images, effects, all runtime music, and character voices after login", () => {
+  it("groups first-screen assets separately from deferred runtime media after login", () => {
     const assets = loginPreloadAssets({
       characters: {
         sigrika: { portrait: "/assets/sigrika_centered.webp" },
@@ -29,19 +31,37 @@ describe("deployment preload asset helpers", () => {
 
     expect(assets.images).toContain("/assets/sigrika_centered.webp");
     expect(assets.images).toContain("/assets/Aemeath_centered.webp");
+    expect(assets.criticalImages).toContain("/assets/sigrika_centered.webp");
+    expect(assets.criticalImages).toContain("/assets/Aemeath_centered.webp");
     expect(assets.images).toContain("/assets/home/fantasy-match-entry.webp");
     expect(assets.images).toContain("/assets/home/book-entry.webp");
     expect(assets.images).toContain("/assets/home/multipurpose-classroom-bg.webp");
+    expect(assets.criticalImages).toContain("/assets/home/fantasy-match-entry.webp");
+    expect(assets.criticalImages).toContain("/assets/home/book-entry.webp");
+    expect(assets.criticalImages).toContain("/assets/home/multipurpose-classroom-bg.webp");
     expect(assets.images).toContain("/assets/zahiya_shop.webp");
     expect(assets.images).toContain("/assets/items/rainbow-bean-candy.webp");
+    expect(assets.deferredImages).toContain("/assets/zahiya_shop.webp");
+    expect(assets.deferredImages).toContain("/assets/items/rainbow-bean-candy.webp");
     expect(assets.images).toContain("/assets/effects/denia-bubble-pop.webp");
     expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
     expect(assets.audio).toContain("/assets/music/godown_clear.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_close_window.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_confirm.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_detail_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_house_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_match_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_shop_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_unavailable.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/godown_clear.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/ui_confirm.ogg");
     expect(assets.audio).toContain("/assets/music/main_bgm.ogg");
     expect(assets.audio).toContain("/assets/music/shanjifu_loop.ogg");
     expect(assets.audio).toContain("/assets/music/bgm_intro_once.ogg");
     expect(assets.audio).toContain("/assets/music/koimoon_132_micro_loop.ogg");
     expect(assets.audio).toContain("/assets/music/busizhe_loop.ogg");
+    expect(assets.deferredAudio).toContain("/assets/music/main_bgm.ogg");
+    expect(assets.deferredAudio).toContain("/assets/music/shanjifu_loop.ogg");
     expect(assets.audio).toContain("/assets/voice/sigrika_skill_cast.ogg");
     expect(assets.audio).toContain("/assets/voice/denia_skill_cast.ogg");
     expect(assets.audio).toContain("/assets/voice/baconbits_skill_cast.ogg");
@@ -60,5 +80,57 @@ describe("deployment preload asset helpers", () => {
 
     expect(assets.images).toContain("/assets/Danea_centered.webp");
     expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
+  });
+
+  it("resolves after critical assets and defers non-critical media with a concurrency limit", async () => {
+    const events = [];
+    let activeDeferred = 0;
+    let maxDeferred = 0;
+    const deferredCompletions = [];
+    const deferredPromise = new Promise((resolve) => deferredCompletions.push(resolve));
+    const load = async (src) => {
+      events.push(`start:${src}`);
+      if (src.startsWith("deferred")) {
+        activeDeferred += 1;
+        maxDeferred = Math.max(maxDeferred, activeDeferred);
+        await deferredPromise;
+        activeDeferred -= 1;
+      }
+      events.push(`done:${src}`);
+      return src;
+    };
+
+    await preloadLoginAssets({
+      criticalImages: ["critical-image"],
+      criticalAudio: ["critical-audio"],
+      deferredImages: ["deferred-image-1", "deferred-image-2"],
+      deferredAudio: ["deferred-audio-1", "deferred-audio-2"]
+    }, {
+      concurrency: 1,
+      loadImage: load,
+      loadAudio: load,
+      loadEffectAudio: load
+    });
+
+    expect(events).toEqual([
+      "start:critical-image",
+      "done:critical-image",
+      "start:critical-audio",
+      "done:critical-audio",
+      "start:deferred-image-1"
+    ]);
+    expect(maxDeferred).toBe(1);
+    deferredCompletions.forEach((resolve) => resolve());
+  });
+
+  it("keeps the project check command as the core handoff gate", () => {
+    const packageJson = JSON.parse(fs.readFileSync(path.resolve("package.json"), "utf8"));
+
+    expect(packageJson.scripts.check).toContain("npm test && npm run build");
+    expect(packageJson.scripts.check).toContain("scripts/check-production-config.mjs");
+    expect(packageJson.scripts.check).toContain("JWT_SECRET");
+    expect(packageJson.scripts.check).toContain("PUBLIC_ORIGIN");
+    expect(packageJson.scripts.check).toContain("npm run docs:system-design");
+    expect(packageJson.scripts["check:production"]).toBe("node scripts/check-production-config.mjs");
   });
 });

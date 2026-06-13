@@ -1,16 +1,10 @@
 import { CHARACTERS } from "../src/shared/characters.js";
+import { skillEffectTargetRule } from "../src/shared/skillEffectCatalog.js";
 
 export function skillConfigForCharacter(character) {
   if (character?.skill?.effectType) return character.skill;
   const fallback = CHARACTERS[character?.id ?? character];
   if (!fallback) return null;
-  const targetRule = fallback.skill.id === "flip-stone"
-    ? "stone"
-    : fallback.skill.id === "random-blast"
-      ? "none"
-      : fallback.skill.id === "color-illusion-passive"
-        ? "none"
-        : "empty-point";
   return {
     effectType: fallback.skill.id,
     name: fallback.skill.name,
@@ -19,7 +13,7 @@ export function skillConfigForCharacter(character) {
     costType: fallback.skill.costType ?? "numeric",
     costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
     systemMessage: fallback.skill.systemMessage,
-    targetRule,
+    targetRule: skillEffectTargetRule(fallback.skill.id, "empty-point"),
     params: fallback.skill.params ?? {}
   };
 }

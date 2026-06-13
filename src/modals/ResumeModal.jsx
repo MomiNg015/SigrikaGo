@@ -1,19 +1,14 @@
 import { useState } from "react";
-import { CircleDollarSign, MonitorPlay, X } from "lucide-react";
+import { CircleDollarSign, Gem, MonitorPlay, X } from "lucide-react";
 import { derivePlayerRecordStats } from "../shared/gameRecords.js";
 import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
-import { rankFromRating } from "../shared/ratingRank.js";
-import {
-  CharacterRecordsDialog,
-  HouseReplayDialog
-} from "./house/HouseNestedDialogs.jsx";
+import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
 import HouseProfileStats from "./house/HouseProfileStats.jsx";
 import { deriveCharacterRecordStats } from "./house/houseStats.js";
 
 export default function ResumeModal({ user, records, characterListView, onClose, onOpenReplay }) {
   const [mode, setMode] = useState("spark");
   const [showReplays, setShowReplays] = useState(false);
-  const [showCharacterRecords, setShowCharacterRecords] = useState(false);
   const modeRecords = records.filter((record) => normalizeGameModeId(record.mode) === mode);
   const modeUser = userForMode(user, mode);
   const stats = derivePlayerRecordStats(modeUser, modeRecords);
@@ -33,6 +28,10 @@ export default function ResumeModal({ user, records, characterListView, onClose,
               <CircleDollarSign size={18} />
               {user.coins}
             </p>
+            <p className="shop-wallet resume-wallet blue-gem-wallet" title="蓝色宝石">
+              <Gem size={18} />
+              {user.blueGems ?? 0}
+            </p>
             <button className="close-button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
           </div>
         </header>
@@ -43,7 +42,9 @@ export default function ResumeModal({ user, records, characterListView, onClose,
         <HouseProfileStats
           rank={modeUser.rank}
           stats={stats}
-          onOpenCharacterRecords={() => setShowCharacterRecords(true)}
+          recentResults={modeUser.recentResults}
+          characterRecords={characterRecords}
+          itemEffects={itemEffects}
         />
         {showReplays && (
           <HouseReplayDialog
@@ -52,13 +53,6 @@ export default function ResumeModal({ user, records, characterListView, onClose,
             currentUser={modeUser}
             onClose={() => setShowReplays(false)}
             onOpenReplay={onOpenReplay}
-          />
-        )}
-        {showCharacterRecords && (
-          <CharacterRecordsDialog
-            characterRecords={characterRecords}
-            itemEffects={itemEffects}
-            onClose={() => setShowCharacterRecords(false)}
           />
         )}
       </section>
@@ -72,7 +66,8 @@ function userForMode(user, mode) {
   return {
     ...user,
     rating: stats.rating,
-    rank: rankFromRating(stats.rating),
+    rank: stats.rank ?? user.rank ?? "3段",
+    recentResults: stats.recentResults ?? [],
     wins: stats.wins,
     losses: stats.losses
   };

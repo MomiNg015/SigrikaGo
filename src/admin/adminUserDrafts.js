@@ -2,6 +2,7 @@ export function buildUserDraft(user) {
   return {
     id: user.id,
     role: user.role ?? "player",
+    rank: user.rank ?? "3段",
     rating: user.rating ?? 0,
     coins: user.coins ?? 0,
     ownedCharactersText: (user.ownedCharacters ?? []).join(", "),

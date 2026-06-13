@@ -188,6 +188,10 @@ describe("PlayerInfo labels", () => {
       playerInfoProps({ player, game }),
       playerInfoProps({ player: { ...player, connected: false, disconnectedAt: 123 }, game })
     )).toBe(false);
+    expect(arePlayerInfoPropsEqual(
+      playerInfoProps({ player, game, floatingLayerZ: 91 }),
+      playerInfoProps({ player, game, floatingLayerZ: 92 })
+    )).toBe(false);
   });
 });
 

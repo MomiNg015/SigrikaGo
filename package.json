@@ -8,6 +8,7 @@
     "dev:client": "vite --host 0.0.0.0",
     "dev:server": "node --watch-path=server --watch-path=src/shared server/index.js",
     "build": "vite build",
+    "check": "npm test && npm run build && node -e \"process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')\" && npm run docs:system-design",
     "start": "node server/index.js",
     "test": "vitest run --exclude \"**/.worktrees/**\" --exclude \"tests/e2e/**\"",
     "test:e2e": "playwright test",
@@ -20,6 +21,7 @@
     "prisma:push": "prisma db push"
   },
   "dependencies": {
+    "@pixi/react": "^8.0.5",
     "@prisma/client": "6.8.2",
     "@vitejs/plugin-react": "^4.4.1",
     "bcryptjs": "^3.0.2",
@@ -32,6 +34,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.511.0",
     "multer": "^2.1.1",
+    "pixi.js": "^8.19.0",
     "prisma": "6.8.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

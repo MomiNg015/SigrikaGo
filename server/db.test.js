@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ensureGameModeSchema, publicUser } from "./db.js";
+import { ensureGachaSchema, ensureGameModeSchema, publicUser } from "./db.js";
 
 describe("publicUser", () => {
   it("exposes safe role and status fields without password hash", () => {
@@ -9,13 +9,13 @@ describe("publicUser", () => {
       passwordHash: "secret",
       role: "admin",
       status: "active",
-      rank: "stored-rank",
+      rank: "3段",
       rating: 1000,
       wins: 1,
       losses: 2,
       modeStats: {
-        spark: { rating: 1000, wins: 1, losses: 2, draws: 0 },
-        standard: { rating: 1000, wins: 0, losses: 0, draws: 0 }
+        spark: { rating: 1000, rank: "3段", recentResults: "win,loss", wins: 1, losses: 2, draws: 0 },
+        standard: { rating: 1000, rank: "4段", recentResults: "", wins: 0, losses: 0, draws: 0 }
       },
       coins: 300,
       selectedCharacter: "sigrika",
@@ -31,19 +31,21 @@ describe("publicUser", () => {
       username: "admin",
       role: "admin",
       status: "active",
-      rank: "2段",
+      rank: "3段",
       rating: 1000,
       wins: 1,
       losses: 2,
       modeStats: {
-        spark: { rating: 1000, wins: 1, losses: 2, draws: 0 },
-        standard: { rating: 1000, wins: 0, losses: 0, draws: 0 }
+        spark: { rating: 1000, rank: "3段", recentResults: ["win", "loss"], wins: 1, losses: 2, draws: 0 },
+        standard: { rating: 1000, rank: "4段", recentResults: [], wins: 0, losses: 0, draws: 0 }
       },
       coins: 300,
+      blueGems: 0,
       selectedCharacter: "sigrika",
       selectedStoneDecoration: "paw-stone",
       ownedCharacters: ["sigrika", "denia", "aemeath"],
       ownedItems: [],
+      characterChains: {},
       itemEffects: { sigrikaCandyDisabled: true },
       ownedDecorations: [],
       ownedMusicIds: [
@@ -116,6 +118,38 @@ describe("publicUser", () => {
     expect(payload.itemEffects).toEqual({ sigrikaCandyDisabled: true, deniaRainbowGlow: true });
     expect(payload.ownedDecorations).toEqual(["legacy-decoration", "paw-stone"]);
   });
+
+  it("exposes blue gems and character chain counts", () => {
+    const user = {
+      id: "u1",
+      username: "player",
+      role: "player",
+      status: "active",
+      rating: 1000,
+      wins: 0,
+      losses: 0,
+      coins: 0,
+      blueGems: 7,
+      selectedCharacter: "sigrika",
+      selectedStoneDecoration: "",
+      ownedCharacters: "sigrika,denia",
+      ownedItems: "",
+      itemEffects: "",
+      ownedDecorations: "",
+      userCharacters: [
+        { characterSlug: "sigrika", chainCount: 2 },
+        { characterSlug: "denia", chainCount: 6 }
+      ]
+    };
+
+    expect(publicUser(user)).toMatchObject({
+      blueGems: 7,
+      characterChains: {
+        sigrika: 2,
+        denia: 6
+      }
+    });
+  });
 });
 
 describe("ensureGameModeSchema", () => {
@@ -132,9 +166,36 @@ describe("ensureGameModeSchema", () => {
 
     await ensureGameModeSchema(client);
 
+    expect(queryRawUnsafe).toHaveBeenCalledWith('PRAGMA table_info("UserModeStats")');
     expect(queryRawUnsafe).toHaveBeenCalledWith('PRAGMA table_info("GameRecord")');
     expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS "UserModeStats"'));
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "UserModeStats" ADD COLUMN "rank" TEXT NOT NULL DEFAULT \'3段\'');
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "UserModeStats" ADD COLUMN "recentResults" TEXT NOT NULL DEFAULT \'\'');
     expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "GameRecord" ADD COLUMN "mode" TEXT NOT NULL DEFAULT \'spark\'');
     expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('INSERT OR IGNORE INTO "UserModeStats"'));
+  });
+});
+
+describe("ensureGachaSchema", () => {
+  it("creates gacha storage and backfills account currency columns for old dev databases", async () => {
+    const executeRawUnsafe = vi.fn();
+    const queryRawUnsafe = vi.fn()
+      .mockResolvedValueOnce([{ name: "id" }, { name: "coins" }])
+      .mockResolvedValueOnce([{ name: "id" }, { name: "characterSlug" }])
+      .mockResolvedValueOnce([{ name: "id" }, { name: "featuredPrizeId" }]);
+    const client = {
+      $executeRawUnsafe: executeRawUnsafe,
+      $queryRawUnsafe: queryRawUnsafe
+    };
+
+    await ensureGachaSchema(client);
+
+    expect(queryRawUnsafe).toHaveBeenCalledWith('PRAGMA table_info("User")');
+    expect(queryRawUnsafe).toHaveBeenCalledWith('PRAGMA table_info("UserCharacter")');
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "User" ADD COLUMN "blueGems" INTEGER NOT NULL DEFAULT 0');
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "UserCharacter" ADD COLUMN "chainCount" INTEGER NOT NULL DEFAULT 0');
+    expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS "GachaPool"'));
+    expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "GachaPool" ADD COLUMN "featuredPrizeIds" TEXT');
+    expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('CREATE TABLE IF NOT EXISTS "GachaDrawReward"'));
   });
 });

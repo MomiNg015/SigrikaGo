@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Implementation followed the board skill presentation contract and updated it with the new Pixi overlay pattern."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Skill effect sound cues were added as presentation-only SFX aligned to animation start and impact moments."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Added BoardAmbientEffects for persistent passive board ambience without interfering with DOM board operations."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Refined Nabomo fog into independent masked cloud shapes to remove the visible square overlay boundary."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Skill targeting behavior stayed separate from visual preview and board confirmation."}
+{"file": "docs/system-design.md", "reason": "Project AGENTS requires system design docs to be synchronized with every update."}

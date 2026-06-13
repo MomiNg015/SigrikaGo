@@ -22,6 +22,7 @@ export default function ShopItemCard({ item, index, activeCategory, purchasingId
   const soldOut = isShopItemSoldOut(item);
   const disabled = owned || soldOut || !item.purchasable || tooExpensive || purchasingId === item.id;
   const actionStateClass = owned ? "shop-action-owned" : soldOut ? "shop-action-sold-out" : "";
+  const showQuantityLabel = item.category !== "character" && item.category !== "decoration";
   const openDetail = () => onShowDetail?.(item);
   const openDetailFromKeyboard = (event) => {
     if (event.target !== event.currentTarget) return;
@@ -49,8 +50,8 @@ export default function ShopItemCard({ item, index, activeCategory, purchasingId
         ? <StoneDecorationPreview decoration={getStoneDecoration(item.targetId)} label={item.name} large />
         : item.imageUrl ? <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" /> : item.category === "item" ? <Package /> : <ShoppingBag />}
       <strong>{item.name}</strong>
-      <div className="shop-card-meta">
-        <span>{getShopItemQuantityLabel(item)}</span>
+      <div className={`shop-card-meta ${showQuantityLabel ? "" : "shop-card-meta-price-only"}`}>
+        {showQuantityLabel && <span>{getShopItemQuantityLabel(item)}</span>}
         <p className="shop-price">
           <span className="shop-price-number-wrap">
             {item.discountPercent > 0 && <s className="shop-original-price">{item.priceCoins}</s>}

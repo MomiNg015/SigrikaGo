@@ -9,7 +9,8 @@ describe("Prisma schema integrity", () => {
   it("keeps Chinese defaults readable and aligned with rating defaults", () => {
     const schema = readFileSync(schemaPath, "utf8");
 
-    expect(schema).toContain('rank               String   @default("2段")');
+    expect(schema).toContain('rank               String   @default("3段")');
+    expect(schema).toContain('recentResults String @default("")');
     expect(schema).toContain('@default("{fromColor}{player}使用了{character}的“{skill}”技能，目标是{point}。")');
     expect(schema).not.toMatch(/[�绾鈥]/);
   });
@@ -70,6 +71,32 @@ describe("Prisma schema integrity", () => {
       "UserItem",
       "UserItemEffect",
       "UserProgressLedger"
+    ]) {
+      expect(schema).toContain(`model ${modelName}`);
+      expect(migration).toContain(`CREATE TABLE IF NOT EXISTS "${modelName}"`);
+    }
+  });
+
+  it("tracks gacha pools, rewards, blue gems, and character chains through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606120002_add_gacha_system",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    expect(schema).toContain("blueGems");
+    expect(schema).toContain("chainCount");
+    expect(schema).toContain("featuredPrizeIds");
+    expect(migration).toContain('"featuredPrizeIds" TEXT');
+    for (const modelName of [
+      "GachaPool",
+      "GachaPrize",
+      "GachaDraw",
+      "GachaDrawReward"
     ]) {
       expect(schema).toContain(`model ${modelName}`);
       expect(migration).toContain(`CREATE TABLE IF NOT EXISTS "${modelName}"`);

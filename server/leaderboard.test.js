@@ -38,7 +38,7 @@ describe("leaderboard", () => {
         id: "u3",
         username: "cora",
         rating: 1080,
-        rank: "2段",
+        rank: "3段",
         itemEffects: {},
         totalGames: 1,
         wins: 0,
@@ -50,7 +50,7 @@ describe("leaderboard", () => {
         id: "u1",
         username: "alice",
         rating: 1040,
-        rank: "2段",
+        rank: "3段",
         itemEffects: {},
         totalGames: 3,
         wins: 2,
@@ -62,7 +62,7 @@ describe("leaderboard", () => {
         id: "u2",
         username: "bob",
         rating: 1000,
-        rank: "2段",
+        rank: "3段",
         itemEffects: {},
         totalGames: 2,
         wins: 0,
@@ -104,8 +104,8 @@ describe("leaderboard", () => {
         rating: 1040,
         selectedCharacter: "sigrika",
         modeStats: [
-          { mode: "spark", rating: 1040, wins: 2, losses: 1, draws: 0 },
-          { mode: "standard", rating: 1120, wins: 1, losses: 0, draws: 0 }
+          { mode: "spark", rating: 1040, rank: "3段", wins: 2, losses: 1, draws: 0 },
+          { mode: "standard", rating: 1120, rank: "4段", wins: 1, losses: 0, draws: 0 }
         ]
       },
       {
@@ -114,8 +114,8 @@ describe("leaderboard", () => {
         rating: 980,
         selectedCharacter: "denia",
         modeStats: [
-          { mode: "spark", rating: 980, wins: 1, losses: 2, draws: 0 },
-          { mode: "standard", rating: 960, wins: 0, losses: 1, draws: 0 }
+          { mode: "spark", rating: 980, rank: "3段", wins: 1, losses: 2, draws: 0 },
+          { mode: "standard", rating: 960, rank: "2段", wins: 0, losses: 1, draws: 0 }
         ]
       }
     ];
@@ -142,6 +142,7 @@ describe("leaderboard", () => {
       expect.objectContaining({
         id: "u1",
         rating: 1120,
+        rank: "4段",
         totalGames: 1,
         wins: 1,
         losses: 0,
@@ -150,6 +151,7 @@ describe("leaderboard", () => {
       expect.objectContaining({
         id: "u2",
         rating: 960,
+        rank: "2段",
         totalGames: 1,
         wins: 0,
         losses: 1,

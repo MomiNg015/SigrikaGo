@@ -126,7 +126,7 @@ describe("admin route helpers", () => {
     });
 
     expect(result.user.rating).toBe(1150);
-    expect(result.user.rank).toBe("3段");
+    expect(result.user.rank).toBe("18级");
     expect(calls).toEqual([
       "transaction",
       "tx.user.findUnique",
@@ -659,6 +659,156 @@ describe("admin shop and decoration routes", () => {
     expect(response.status).toBe(200);
     expect(response.body.item.description).toBe("new description");
     expect(calls).toContainEqual(["tx.shopItem.update", expect.objectContaining({ targetId: "paw-stone" })]);
+  });
+});
+
+describe("admin gacha routes", () => {
+  it("creates gacha pools with custom prices, prizes, and featured prizes", async () => {
+    const calls = [];
+    const response = await requestAdminRoute({
+      character: {
+        findUnique: async () => ({ slug: "denia" })
+      },
+      $transaction: async (callback) => callback({
+        gachaPool: {
+          create: async ({ data }) => {
+            calls.push(["tx.gachaPool.create", data]);
+            return { id: "pool-1", ...data, createdAt: new Date("2026-06-12T00:00:00Z") };
+          },
+          update: async ({ where, data }) => {
+            calls.push(["tx.gachaPool.update", where, data]);
+            return { id: where.id, name: "Summer Capsules", ...data };
+          }
+        },
+        gachaPrize: {
+          create: async ({ data }) => {
+            const id = `prize-${calls.filter(([type]) => type === "tx.gachaPrize.create").length + 1}`;
+            calls.push(["tx.gachaPrize.create", data]);
+            return { id, ...data };
+          }
+        },
+        adminAuditLog: {
+          create: async ({ data }) => {
+            calls.push(["tx.adminAuditLog.create", data]);
+            return data;
+          }
+        }
+      })
+    }, "/gacha-pools", {
+      method: "POST",
+      body: {
+        name: "Summer Capsules",
+        description: "limited pool",
+        permanent: true,
+        enabled: true,
+        singleDrawPrice: 60,
+        tenDrawPrice: 560,
+        sortOrder: 2,
+        featuredPrizeIndexes: [0, 1],
+        prizes: [
+          { type: "character", targetId: "denia", quantity: 1, probabilityBasisPoints: 7000, enabled: true, name: "Danea", imageUrl: "/assets/Danea_centered.webp" },
+          { type: "coins", targetId: "", quantity: 60, probabilityBasisPoints: 3000, enabled: true, name: "Coins", imageUrl: "" }
+        ]
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.pool).toMatchObject({
+      id: "pool-1",
+      name: "Summer Capsules",
+      singleDrawPrice: 60,
+      tenDrawPrice: 560,
+      featuredPrizeId: "prize-1",
+      featuredPrizeIds: ["prize-1", "prize-2"]
+    });
+    expect(calls).toContainEqual(["tx.gachaPool.create", expect.objectContaining({
+      name: "Summer Capsules",
+      singleDrawPrice: 60,
+      tenDrawPrice: 560
+    })]);
+    expect(calls).toContainEqual(["tx.gachaPrize.create", expect.objectContaining({
+      poolId: "pool-1",
+      type: "character",
+      targetId: "denia",
+      probabilityBasisPoints: 7000
+    })]);
+    expect(calls).toContainEqual(["tx.gachaPool.update", { id: "pool-1" }, {
+      featuredPrizeId: "prize-1",
+      featuredPrizeIds: "[\"prize-1\",\"prize-2\"]"
+    }]);
+    expect(calls).toContainEqual(["tx.adminAuditLog.create", expect.objectContaining({
+      action: "gacha-pool.create",
+      targetType: "gacha-pool"
+    })]);
+  });
+
+  it("rejects enabled gacha pools whose prize probability total is not 100 percent", async () => {
+    const response = await requestAdminRoute({}, "/gacha-pools", {
+      method: "POST",
+      body: {
+        name: "Broken Capsules",
+        permanent: true,
+        enabled: true,
+        singleDrawPrice: 50,
+        tenDrawPrice: 500,
+        prizes: [
+          { type: "coins", targetId: "", quantity: 60, probabilityBasisPoints: 9000, enabled: true }
+        ]
+      }
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: "enabled prize probabilities must total 100%" });
+  });
+
+  it("rejects gacha prizes whose selected resource does not exist", async () => {
+    const response = await requestAdminRoute({
+      character: {
+        findUnique: async () => null
+      }
+    }, "/gacha-pools", {
+      method: "POST",
+      body: {
+        name: "Broken Target Capsules",
+        permanent: true,
+        enabled: true,
+        singleDrawPrice: 50,
+        tenDrawPrice: 500,
+        prizes: [
+          { type: "character", targetId: "missing-character", quantity: 1, probabilityBasisPoints: 10000, enabled: true }
+        ]
+      }
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: "Gacha character target does not exist" });
+  });
+
+  it("lists all gacha pools for admins, including closed or disabled pools", async () => {
+    const response = await requestAdminRoute({
+      gachaPool: {
+        findMany: async () => [{
+          id: "pool-1",
+          name: "Closed Capsules",
+          enabled: false,
+          permanent: false,
+          startsAt: new Date("2026-05-01T00:00:00Z"),
+          endsAt: new Date("2026-05-31T00:00:00Z"),
+          singleDrawPrice: 50,
+          tenDrawPrice: 500,
+          featuredPrizeId: "prize-1",
+          prizes: [{ id: "prize-1", type: "coins", targetId: "", quantity: 60, probabilityBasisPoints: 10000, enabled: true }]
+        }]
+      }
+    }, "/gacha-pools", { method: "GET" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.pools).toHaveLength(1);
+    expect(response.body.pools[0]).toMatchObject({
+      id: "pool-1",
+      enabled: false,
+      prizes: [expect.objectContaining({ probabilityBasisPoints: 10000 })]
+    });
   });
 });
 

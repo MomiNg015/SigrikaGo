@@ -1,5 +1,20 @@
 /* Final mobile adaptation pass for 320px-768px devices. */
 
+@media (min-width: 769px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen.home-terminal-screen > .home-footer-strip {
+    position: fixed !important;
+    right: clamp(12px, 2vw, 24px) !important;
+    bottom: clamp(8px, 1.4vw, 16px) !important;
+    left: auto !important;
+    top: auto !important;
+    z-index: 3 !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    margin: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
 @media (max-width: 768px) {
   .match-mode-modal {
     width: min(420px, calc(100vw - 20px)) !important;
@@ -1198,6 +1213,26 @@
   }
 }
 
+@media (max-width: 768px) {
+  .resume-modal .profile-resume-stats,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .resume-modal .profile-record-lines,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-record-lines {
+    display: grid !important;
+    gap: 2px !important;
+    white-space: normal !important;
+  }
+
+  .resume-modal .profile-record-separator,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-record-separator {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) and (orientation: landscape) {
   .mobile-room-screen {
     --mobile-room-edge-gap: 5px;
@@ -1416,13 +1451,25 @@
     overflow: hidden !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table {
     min-height: 0 !important;
     max-height: none !important;
+    display: grid !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: auto !important;
+    gap: 8px !important;
+    align-content: start !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     overscroll-behavior: contain !important;
     -webkit-overflow-scrolling: touch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-heading,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table-heading {
+    display: none !important;
+    min-width: 0 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-row,
@@ -1607,6 +1654,28 @@
     overflow-wrap: normal !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-lines,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-summary {
+    display: grid !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-separator,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-separator {
+    display: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-total,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-breakdown,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-total,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-breakdown {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row b {
     justify-self: end !important;
     white-space: nowrap !important;
@@ -1662,6 +1731,15 @@
     flex: 0 0 auto !important;
     min-height: 30px !important;
     align-items: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-decoration).shop-item .shop-card-meta-price-only {
+    justify-content: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-decoration).shop-item .shop-card-meta-price-only .shop-price {
+    justify-content: center !important;
+    text-align: center !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .primary-action {
@@ -1826,11 +1904,120 @@
   }
 }
 
+@media (min-width: 701px) and (max-width: 1180px), (min-width: 701px) and (max-height: 640px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen.home-terminal-screen {
+    min-width: 0 !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main {
+    width: min(100%, calc(100vw - 24px)) !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: clamp(8px, 1.6dvh, 16px) auto clamp(12px, 2dvh, 22px) !important;
+    padding: clamp(16px, 2.6vw, 24px) !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
+    display: grid !important;
+    grid-template-areas:
+      "player manual"
+      "utility manual"
+      "match match" !important;
+    grid-template-columns: minmax(230px, 0.86fr) minmax(300px, 1.14fr) !important;
+    grid-template-rows: auto auto minmax(170px, auto) !important;
+    gap: clamp(10px, 1.9vw, 18px) !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: clamp(24px, 4dvh, 44px) 0 0 !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    transform: none !important;
+    justify-self: stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone {
+    grid-area: player !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
+    grid-area: utility !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: clamp(8px, 1.4vw, 12px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
+    grid-area: manual !important;
+    height: clamp(250px, 48dvh, 420px) !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature {
+    grid-area: match !important;
+    height: clamp(170px, 30dvh, 250px) !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+    grid-template-columns: clamp(52px, 7vw, 62px) minmax(0, 1fr) minmax(112px, clamp(116px, 34%, 136px)) !important;
+    column-gap: clamp(8px, 1.2vw, 12px) !important;
+    min-height: 90px !important;
+    padding: 16px 12px 12px 22px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats {
+    min-width: 0 !important;
+    padding: 8px 7px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-stat {
+    grid-template-columns: minmax(25px, 0.72fr) minmax(26px, max-content) minmax(36px, 1fr) !important;
+    gap: 4px !important;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 860px), (min-width: 701px) and (max-height: 560px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
+    grid-template-areas:
+      "player"
+      "manual"
+      "utility"
+      "match" !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
+    height: clamp(240px, 46dvh, 360px) !important;
+  }
+}
+
 @media (max-width: 768px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
     min-width: max-content !important;
     display: inline-flex !important;
     align-items: center !important;
+    justify-content: flex-end !important;
+    justify-self: auto !important;
     gap: 8px !important;
   }
 
@@ -1851,7 +2038,40 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-grid.top-stats-bar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-stats {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-rank-results {
+    grid-column: 1 / -1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records {
+    grid-column: 1 / -1 !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    border-radius: 16px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-list {
+    max-height: min(180px, 28dvh) !important;
+    gap: 7px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row {
+    grid-template-columns: 42px minmax(58px, 0.82fr) max-content minmax(48px, auto) !important;
+    gap: 6px !important;
+    padding: 8px !important;
+    font-size: clamp(11px, 2.9vw, 13px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row img {
+    width: 38px !important;
+    height: 34px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button.active,
@@ -1944,15 +2164,15 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .message-board-modal > .close-button {
     position: absolute !important;
-    top: 10px !important;
-    right: 10px !important;
+    top: var(--modal-close-inset, 12px) !important;
+    right: var(--modal-close-inset, 12px) !important;
     left: auto !important;
     bottom: auto !important;
     transform: none !important;
     box-shadow: none !important;
     filter: none !important;
     text-shadow: none !important;
-    z-index: 3 !important;
+    z-index: 20 !important;
   }
 
   /* Lock app shell scrolling when inside the mobile battle room */

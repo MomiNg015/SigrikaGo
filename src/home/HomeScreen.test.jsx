@@ -12,8 +12,8 @@ function renderHome(overrides = {}) {
       rank: "2段",
       rating: 1000,
       modeStats: {
-        spark: { rating: 1260, wins: 3, losses: 1, draws: 0 },
-        standard: { rating: 920, wins: 1, losses: 2, draws: 0 }
+        spark: { rating: 1260, rank: "4段", recentResults: ["win", "loss"], wins: 3, losses: 1, draws: 0 },
+        standard: { rating: 920, rank: "3段", recentResults: ["loss"], wins: 1, losses: 2, draws: 0 }
       },
       selectedCharacter: "sigrika",
       role: "player",
@@ -78,7 +78,7 @@ describe("HomeScreen", () => {
     expect(screenBlock).toContain("--home-terminal-bg: rgba(10, 22, 30, 0.75)");
     expect(screenBlock).toContain("--home-terminal-cyan: #00ffbe");
     expect(screenBlock).toContain("--home-terminal-blue: #00bfff");
-    expect(screenBlock).toContain("min-width: 1180px");
+    expect(screenBlock).toContain("min-width: 0");
   });
 
   it("uses a compact WebP match image instead of the source PNG", () => {
@@ -93,6 +93,7 @@ describe("HomeScreen", () => {
     const html = renderHome();
     const css = readTextFixture("../styles/home-terminal.css");
     const stageBlock = css.match(/\.home-grid-featured\s*\{[^}]+\}/g)?.find((block) => block.includes("minmax(240px, 0.72fr)")) ?? "";
+    const narrowDesktopMedia = css.match(/@media \(min-width: 769px\) and \(max-width: 1180px\)\s*\{[\s\S]+?\.home-player-zone \.plaque-stats\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
     const imageEntryBlock = css.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const hoverBlock = css.match(/\.home-image-entry:hover,[\s\S]+?\.home-image-entry:focus-visible\s*\{[^}]+\}/)?.[0] ?? "";
     const tacticalTextBlock = css.match(/\.home-image-entry::after\s*\{[^}]+\}/)?.[0] ?? "";
@@ -108,6 +109,11 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("当前匹配人数：3");
     expect(html).not.toContain("aria-describedby=\"matchmaking-count-popup\"");
     expect(stageBlock).toContain("grid-template-columns: minmax(240px, 0.72fr) minmax(360px, 1.28fr)");
+    expect(stageBlock).toContain("min-width: 0");
+    expect(narrowDesktopMedia).toContain(".home-grid-featured");
+    expect(narrowDesktopMedia).toContain("grid-template-columns: minmax(220px, 0.82fr) minmax(300px, 1.18fr)");
+    expect(narrowDesktopMedia).toContain(".home-player-zone .plaque-stats");
+    expect(narrowDesktopMedia).toContain("min-width: 0");
     expect(stageBlock).toContain("overflow: visible");
     expect(imageEntryBlock).toContain("background: rgba(10, 28, 38, 0.52)");
     expect(imageEntryBlock).toContain("border: 1px solid rgba(0, 255, 190, 0.28)");
@@ -126,8 +132,8 @@ describe("HomeScreen", () => {
   it("uses a tactical ID card and skewed navigation cards", () => {
     const html = renderHome();
     const css = readTextFixture("../styles/home-terminal.css");
-    const plaqueBlock = css.match(/\.home-player-zone \.home-player-plaque\s*\{[^}]+\}/)?.[0] ?? "";
-    const statsBlock = css.match(/\.home-player-zone \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
+    const plaqueBlock = css.match(/\.home-player-zone \.home-player-plaque\s*\{[^}]+\}/g)?.find((block) => block.includes("background: rgba(10, 22, 30, 0.75)")) ?? "";
+    const statsBlock = css.match(/\.home-player-zone \.plaque-stats\s*\{[^}]+\}/g)?.find((block) => block.includes("font-family: ui-monospace")) ?? "";
     const utilityBlock = css.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/g)?.find((block) => block.includes("grid-template-columns: 1fr")) ?? "";
     const utilityEntryBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityTextBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}/)?.[0] ?? "";
@@ -136,6 +142,7 @@ describe("HomeScreen", () => {
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
+    const brightNarrowDesktopMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-width: 1180px\)\s*\{[\s\S]+?@media \(max-width: 700px\)/)?.[0] ?? "";
 
     expect(html).toContain("home-player-row tactical-id-row");
     expect(html).toContain("home-player-plaque tactical-id-card");
@@ -144,6 +151,9 @@ describe("HomeScreen", () => {
     expect(html).toContain("plaque-mode-stat plaque-mode-stat-standard");
     expect(html).toContain("1260分");
     expect(html).toContain("920分");
+    expect(html).not.toContain("plaque-mode-results");
+    expect(html).not.toContain("recent-result-marker");
+    expect(html).not.toContain("recent-result-empty");
     expect(html).toContain("home-utility-grid tactical-nav-grid");
     expect(html).not.toContain("角色、物品、装饰即将开放");
     expect(html).not.toContain("查看并使用已经获得的道具");
@@ -157,12 +167,21 @@ describe("HomeScreen", () => {
     expect(statsBlock).toContain("font-family: ui-monospace");
     expect(statsBlock).toContain("min-width: 154px");
     expect(css).toContain(".home-player-zone .plaque-mode-stat");
-    expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(116px, 1fr) minmax(164px, max-content)");
-    expect(brightStatsBlock).toContain("min-width: 164px");
+    expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(0, 1fr) minmax(150px, 154px)");
+    expect(brightPlaqueBlock).toContain("overflow: hidden");
+    expect(brightStatsBlock).toContain("width: 100%");
+    expect(brightStatsBlock).toContain("min-width: 0");
     expect(brightStatsBlock).toContain("box-sizing: border-box");
+    expect(brightHomeCss).toContain("grid-template-columns: 34px minmax(30px, max-content) minmax(44px, 1fr)");
+    expect(brightHomeCss).toContain(".plaque-mode-rating");
+    expect(brightHomeCss).toContain("justify-self: end");
     expect(brightShortHeightMedia).toContain("max-height: calc(100dvh - 128px)");
     expect(brightShortHeightMedia).toContain("height: clamp(220px, 36dvh, 286px)");
     expect(brightShortHeightMedia).toContain("height: clamp(270px, 50dvh, 356px)");
+    expect(brightNarrowDesktopMedia).toContain("width: clamp(318px, 36vw, 386px)");
+    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(0, 1fr) minmax(112px, clamp(118px, 34%, 136px))");
+    expect(brightNarrowDesktopMedia).toContain("font-size: clamp(20px, 2.1vw, 24px)");
+    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: minmax(26px, 0.72fr) minmax(26px, max-content) minmax(36px, 1fr)");
     expect(utilityBlock).toContain("grid-template-columns: 1fr");
     expect(utilityEntryBlock).toContain("grid-template-columns: 28px minmax(0, 1fr)");
     expect(utilityEntryBlock).toContain("transform: skewX(-15deg)");
@@ -214,11 +233,22 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".home-brand-title");
     expect(finalMobileCss).toContain("font-size: clamp(22px, 6.7vw, 32px) !important");
     expect(finalMobileCss).toContain("text-overflow: clip !important");
+    expect(finalMobileCss).toContain("@media (min-width: 769px)");
+    expect(finalMobileCss).toContain(".home-screen.home-terminal-screen > .home-footer-strip");
+    expect(finalMobileCss).toContain("position: fixed !important");
+    expect(finalMobileCss).toContain("bottom: clamp(8px, 1.4vw, 16px) !important");
+    expect(finalMobileCss).toContain("pointer-events: none !important");
     expect(finalMobileCss).toContain(".home-footer-strip");
     expect(finalMobileCss).toContain("position: static !important");
     expect(finalMobileCss).toContain(".leaderboard-header h2");
     expect(finalMobileCss).toContain(".owned-decoration-header h3");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
+    expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 1180px), (min-width: 701px) and (max-height: 640px)");
+    expect(finalMobileCss).toContain("grid-template-areas:");
+    expect(finalMobileCss).toContain("\"player manual\"");
+    expect(finalMobileCss).toContain(".home-player-zone,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry");
+    expect(finalMobileCss).toContain("position: static !important");
+    expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 860px), (min-width: 701px) and (max-height: 560px)");
   });
 
   it("keeps match mode cancel actions separated from mode choices", () => {
@@ -229,5 +259,18 @@ describe("HomeScreen", () => {
     expect(modalCss).toContain("margin-top: 12px;");
     expect(finalMobileCss).toContain(".match-mode-modal .match-mode-options + .secondary-action");
     expect(finalMobileCss).toContain("margin-top: 14px !important;");
+  });
+
+  it("passes a gacha entry through the home utility dock", () => {
+    const source = readFileSync(new URL("./components/HomeUtilityDock.jsx", import.meta.url), "utf8");
+    const stageSource = readFileSync(new URL("./components/HomeStage.jsx", import.meta.url), "utf8");
+    const routeSource = readFileSync(new URL("../app/AppRoutes.jsx", import.meta.url), "utf8");
+    const overlaySource = readFileSync(new URL("../app/AppOverlays.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("gacha-entry");
+    expect(source).toContain("onOpenGacha");
+    expect(stageSource).toContain("onOpenGacha");
+    expect(routeSource).toContain("setShowGacha(true)");
+    expect(overlaySource).toContain("GachaModal");
   });
 });

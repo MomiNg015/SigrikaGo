@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
+import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { gameModeById } from "../../shared/gameModes.js";
 import { secondsSinceStarted } from "./lifecycleHelpers.js";
@@ -17,7 +18,10 @@ export default function MatchModal({ user, startedAt, mode = "spark", onCancel, 
   return (
     <div className="modal-backdrop" onClick={onCancel}>
       <section className="small-modal" onClick={(event) => event.stopPropagation()}>
-        <img className="match-portrait" src={resolveCandyPortrait(character, user?.itemEffects)} alt={character.name} />
+        <span className="match-portrait-wrap">
+          <img className="match-portrait" src={resolveCandyPortrait(character, user?.itemEffects)} alt={character.name} />
+          <CharacterChainBadge user={user} characterId={character.id} />
+        </span>
         <h2>{gameMode.title}匹配中</h2>
         <p className="quiet-text">{gameMode.rulesText}</p>
         <p>{secondsSinceStarted(startedAt, now)} 秒</p>

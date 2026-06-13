@@ -127,8 +127,8 @@
     position: static;
     top: auto;
     right: auto;
-    width: 44px;
-    height: 44px;
+    width: var(--modal-close-size, 44px);
+    height: var(--modal-close-size, 44px);
   }
 
   .watch-room-head {
@@ -232,7 +232,9 @@
 
   .replay-table {
     display: grid;
+    grid-auto-rows: auto;
     gap: 8px;
+    align-content: start;
     overflow-x: hidden;
     overflow-y: auto;
     padding-bottom: 0;
@@ -240,6 +242,7 @@
 
   .replay-table-heading {
     display: none;
+    min-width: 0;
   }
 
   .replay-table-row,
@@ -327,8 +330,8 @@
   }
 
   .shop-modal .close-button {
-    top: 10px;
-    right: 10px;
+    top: var(--modal-close-inset, 12px);
+    right: var(--modal-close-inset, 12px);
   }
 
   .shop-sidebar {
@@ -560,8 +563,8 @@
   }
 
   .friends-modal .friends-modal-close {
-    top: 10px;
-    right: 10px;
+    top: var(--modal-close-inset, 12px);
+    right: var(--modal-close-inset, 12px);
   }
 
   .friends-modal-toolbar {
@@ -705,8 +708,13 @@
     gap: 6px;
   }
 
+  .resume-header-actions .close-button {
+    position: static;
+    flex: 0 0 auto;
+  }
+
   .resume-wallet {
-    min-height: 34px;
+    min-height: var(--modal-close-size, 44px);
     padding: 6px 10px;
     font-size: 12px;
   }
@@ -726,7 +734,22 @@
   }
 
   .resume-modal .profile-grid.top-stats-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .resume-modal .profile-resume-stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .resume-modal .profile-record-lines {
+    display: grid;
+    gap: 2px;
+    white-space: normal;
+  }
+
+  .resume-modal .profile-record-separator {
+    display: none;
   }
 
   .house-modal .stat {

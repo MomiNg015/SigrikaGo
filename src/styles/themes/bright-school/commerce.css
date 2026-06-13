@@ -1,3 +1,45 @@
+/* Bright School gacha machine polish layer. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-modal {
+  background: #fffaf0 !important;
+  border: 4px solid #3d2b25 !important;
+  border-radius: 22px !important;
+  box-shadow: 8px 9px 0 rgba(61, 43, 37, 0.86), 0 18px 34px rgba(61, 43, 37, 0.16) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-ticket-tab {
+  background: #fff3d5 !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 18px !important;
+  box-shadow: 4px 4px 0 rgba(61, 43, 37, 0.62) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-ticket-tab.active {
+  background: #ffdfeb !important;
+  transform: translateX(4px) rotate(-1deg) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-featured-stage,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-control-panel {
+  border: 3px solid #3d2b25 !important;
+  border-radius: 18px !important;
+  box-shadow: 5px 5px 0 rgba(61, 43, 37, 0.58) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-drum,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-slot,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-capsule {
+  border-color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-wallet span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-round-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .gacha-draw-actions .primary-action {
+  border: 3px solid #3d2b25 !important;
+  border-radius: 999px !important;
+  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.72) !important;
+}
+
 /* Bright School shop modal polish layer. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout {
   grid-template-columns: minmax(210px, 260px) minmax(0, 1fr) !important;
@@ -438,7 +480,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
   .plaque-stats,
-  .profile-resume-stats span,
+  .profile-resume-stats > span,
   .warehouse-item span,
   .shop-wallet,
   .timer-value,
@@ -452,7 +494,7 @@
   gap: 14px !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats span {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span {
   min-height: 78px !important;
   padding: 14px 18px !important;
   display: flex !important;

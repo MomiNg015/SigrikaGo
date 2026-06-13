@@ -4,7 +4,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createPoints } from "../shared/game.js";
 import Board from "./Board.jsx";
-import { areBoardPropsEqual, stoneOffsetForPoint } from "./Board.jsx";
+import { areBoardPropsEqual, arePointButtonPropsEqual, stoneOffsetForPoint } from "./Board.jsx";
 
 describe("areBoardPropsEqual", () => {
   test("keeps the board memoized when only handler references change", () => {
@@ -120,6 +120,53 @@ describe("areBoardPropsEqual", () => {
     expect(css).toContain('.board-wrap[data-board-size="19"] .coord-row');
   });
 
+  test("renders a non-interactive board effects layer without replacing point buttons", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "skill-preview",
+        size: 13,
+        points: createPoints(13),
+        history: [],
+        pendingSkill: {
+          id: "skill-1",
+          effectType: "erase-point",
+          targetId: "6,6",
+          affectedPointIds: ["6,6"]
+        }
+      }
+    })));
+
+    expect(markup).toContain("board-effects-layer");
+    expect(markup).toContain('data-effect-type="erase-point"');
+    expect(markup).toContain("<button");
+    expect(markup).toContain('class="point');
+  });
+
+  test("prewarms Pixi only for skill-enabled boards", () => {
+    const source = readFileSync(new URL("./Board.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("prewarm={game.skillEnabled !== false}");
+  });
+
+  test("renders Nabomo passive fog as a board ambient layer without replacing points", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: createPoints(13),
+        history: [],
+        passives: {
+          black: { colorIllusion: { active: true, triggered: true, probability: 0.8 } }
+        }
+      }
+    })));
+
+    expect(markup).toContain("board-ambient-layer");
+    expect(markup).toContain('data-ambient-effect="color-illusion-fog"');
+    expect(markup).toContain("<button");
+    expect(markup).toContain('class="point');
+  });
+
   test("keeps board grid strokes uniform with first-line strokes at 2.5x across themes", () => {
     const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
     const brightSchoolCss = readFileSync(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url), "utf8");
@@ -199,6 +246,36 @@ describe("areBoardPropsEqual", () => {
   });
 });
 
+describe("arePointButtonPropsEqual", () => {
+  test("keeps a board point memoized when only handler ref contents change", () => {
+    const point = { id: "3,4", x: 3, y: 4, valid: true, stone: null };
+    const pointerTypeRef = { current: "" };
+    const handlersRef = { current: { onPoint: () => "before", onNeutral: () => {}, onScoringPoint: null } };
+    const previous = pointButtonProps({ point, pointerTypeRef, handlersRef });
+    handlersRef.current = { onPoint: () => "after", onNeutral: () => {}, onScoringPoint: null };
+    const next = pointButtonProps({ point, pointerTypeRef, handlersRef });
+
+    expect(arePointButtonPropsEqual(previous, next)).toBe(true);
+  });
+
+  test("rerenders a board point when visible point state changes", () => {
+    const point = { id: "3,4", x: 3, y: 4, valid: true, stone: null };
+
+    expect(arePointButtonPropsEqual(
+      pointButtonProps({ point }),
+      pointButtonProps({ point: { ...point, stone: "black" } })
+    )).toBe(false);
+    expect(arePointButtonPropsEqual(
+      pointButtonProps({ point, showMoves: false }),
+      pointButtonProps({ point, showMoves: true })
+    )).toBe(false);
+    expect(arePointButtonPropsEqual(
+      pointButtonProps({ point, hasScoringPoint: false }),
+      pointButtonProps({ point, hasScoringPoint: true })
+    )).toBe(false);
+  });
+});
+
 function boardProps(overrides = {}) {
   return {
     game: { phase: "playing", points: [], history: [] },
@@ -210,6 +287,29 @@ function boardProps(overrides = {}) {
     onPoint: () => {},
     onScoringPoint: null,
     onNeutral: () => {},
+    ...overrides
+  };
+}
+
+function pointButtonProps(overrides = {}) {
+  return {
+    boardSize: 13,
+    confirmClass: "",
+    deadOwner: null,
+    decorationImage: null,
+    emptyTerritoryOwner: null,
+    gameMode: "spark",
+    handlersRef: { current: { onPoint: () => {}, onScoringPoint: null, onNeutral: () => {} } },
+    hasScoringPoint: false,
+    isStar: false,
+    markedActionId: "",
+    moveNumber: null,
+    neutralMarked: false,
+    point: { id: "0,0", x: 0, y: 0, valid: true, stone: null },
+    pointerTypeRef: { current: "" },
+    previewClass: "",
+    showMoves: false,
+    showScoringMarks: false,
     ...overrides
   };
 }

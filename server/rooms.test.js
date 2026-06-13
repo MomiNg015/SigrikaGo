@@ -61,6 +61,7 @@ import {
   roomView,
   startInitialPassiveSkillNow
 } from "./rooms.js";
+import { SKILL_PREVIEW_DELAY_MS } from "./roomSkillResolution.js";
 
 beforeEach(() => {
   prismaMocks.gameRecordCreate.mockReset();
@@ -113,6 +114,10 @@ function user(id, selectedCharacter, characterConfig = null) {
     ownedItems: [],
     ownedDecorations: []
   };
+}
+
+function opponentColor(color) {
+  return color === COLORS.black ? COLORS.white : COLORS.black;
 }
 
 describe("room game record persistence", () => {
@@ -461,7 +466,100 @@ describe("rooms character integration", () => {
     expect(previewUpdate?.payload.game.pendingSkill).toMatchObject({
       id: expect.any(String),
       characterId: "sigrika",
-      skillName: CHARACTERS.sigrika.skill.name
+      skillName: CHARACTERS.sigrika.skill.name,
+      effectType: "erase-point",
+      targetId: pointId(3, 3),
+      affectedPointIds: [pointId(3, 3)],
+      markedPointIds: [],
+      resolvesAt: expect.any(Number)
+    });
+    expect(previewUpdate?.payload.game.pendingSkill.resolvesAt).toBeGreaterThan(Date.now());
+    expect(room.pendingSkillResolution.resolvesAt).toBe(previewUpdate?.payload.game.pendingSkill.resolvesAt);
+  });
+
+  test("adds flip-stone animation metadata to pending skill previews", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    const characterConfig = { ...CHARACTERS.danea, id: "denia" };
+    joinMatchmaking({ user: user("flip-black", "denia", characterConfig), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("flip-white", "sigrika"), socketId: "socket-b" }, io);
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+
+    const black = room.players.find((player) => player.user.id === "flip-black");
+    const targetId = pointId(4, 4);
+    room.game.turn = black.color;
+    getPoint(room.game, targetId).stone = opponentColor(black.color);
+    const result = handleGameAction(room.code, black.user.id, { type: "skill", pointId: targetId }, io);
+
+    expect(result.ok).toBe(true);
+    expect(room.game.pendingSkill).toMatchObject({
+      characterId: "denia",
+      effectType: "flip-stone",
+      targetId,
+      affectedPointIds: [targetId],
+      markedPointIds: []
+    });
+  });
+
+  test("adds random-blast center and area metadata to pending skill previews", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    joinMatchmaking({ user: user("blast-black", "baconbits"), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("blast-white", "sigrika"), socketId: "socket-b" }, io);
+    Math.random.mockRestore();
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+
+    const black = room.players.find((player) => player.color === COLORS.black);
+    room.game.turn = black.color;
+    getPoint(room.game, pointId(4, 4)).stone = COLORS.black;
+
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    const result = handleGameAction(room.code, black.user.id, { type: "skill", pointId: pointId(12, 12) }, io);
+    Math.random.mockRestore();
+
+    expect(result.ok).toBe(true);
+    expect(room.game.pendingSkill).toMatchObject({
+      characterId: "baconbits",
+      effectType: "random-blast",
+      targetId: pointId(4, 4),
+      affectedPointIds: expect.arrayContaining([pointId(4, 4), pointId(5, 5)]),
+      markedPointIds: expect.arrayContaining([pointId(4, 4), pointId(5, 5)]),
+      removed: 1,
+      removedByColor: { black: 1, white: 0 }
+    });
+  });
+
+  test("adds hidden-hand data stream metadata to pending skill previews", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    const characterConfig = {
+      ...CHARACTERS.aemeath,
+      skill: {
+        ...CHARACTERS.aemeath.skill,
+        effectType: "hidden-hand",
+        targetRule: "empty-point"
+      }
+    };
+    joinMatchmaking({ user: user("hidden-black", "aemeath", characterConfig), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("hidden-white", "sigrika"), socketId: "socket-b" }, io);
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+
+    const black = room.players.find((player) => player.user.id === "hidden-black");
+    const targetId = pointId(5, 5);
+    room.game.turn = black.color;
+    const result = handleGameAction(room.code, black.user.id, { type: "skill", pointId: targetId }, io);
+
+    expect(result.ok).toBe(true);
+    expect(room.game.pendingSkill).toMatchObject({
+      characterId: "aemeath",
+      effectType: "hidden-hand",
+      targetId,
+      affectedPointIds: [targetId],
+      markedPointIds: []
     });
   });
 
@@ -524,7 +622,7 @@ describe("rooms character integration", () => {
     expect(room.game.history).toHaveLength(0);
     expect(room.chat.at(-1).text).toContain("无目标");
 
-    vi.advanceTimersByTime(2000);
+    vi.advanceTimersByTime(SKILL_PREVIEW_DELAY_MS);
 
     expect(room.game.history.at(-1)).toMatchObject({
       effectType: "random-blast",
@@ -964,7 +1062,7 @@ describe("room participants view", () => {
     const restored = findRoomForUser("skill-restore-black", room.code);
 
     expect(restored.game.phase).toBe(GAME_PHASES.skillPreview);
-    vi.advanceTimersByTime(2000);
+    vi.advanceTimersByTime(SKILL_PREVIEW_DELAY_MS);
 
     expect(restored.game.phase).toBe(GAME_PHASES.playing);
     expect(getPoint(restored.game, targetId).valid).toBe(false);
@@ -992,7 +1090,7 @@ describe("room participants view", () => {
     const restored = findRoomForUser("passive-restore-black", room.code);
 
     expect(restored.game.phase).toBe(GAME_PHASES.skillPreview);
-    vi.advanceTimersByTime(2000);
+    vi.advanceTimersByTime(SKILL_PREVIEW_DELAY_MS);
 
     const nabomo = restored.players.find((player) => player.characterId === "nabomo");
     expect(restored.game.phase).toBe(GAME_PHASES.playing);
