@@ -27,7 +27,7 @@ export default function GachaModal({ token, user, initialPools = [], onUserChang
 
   return (
     <div className="modal-backdrop gacha-backdrop" onClick={onClose}>
-      <section className={`gacha-modal gacha-festival-scheme ${drawing ? "drawing" : ""}`} onClick={(event) => event.stopPropagation()}>
+      <section className={`gacha-modal ${drawing ? "drawing" : ""}`} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" onClick={onClose}><X size={20} /></button>
         <aside className="gacha-pool-tabs" role="tablist" aria-label="扭蛋池">
           {pools.map((pool) => (
@@ -51,11 +51,6 @@ export default function GachaModal({ token, user, initialPools = [], onUserChang
           {activePool && (
             <>
               <div className="gacha-featured-stage">
-                <div className="gacha-festival-marquee">
-                  <span>扭蛋祭</span>
-                  <strong>{activePool.name}</strong>
-                  <small>{formatGachaRemaining(activePool.remainingMs)}</small>
-                </div>
                 <div className="gacha-machine" aria-hidden="true">
                   <div className="gacha-drum">
                     <span className="gacha-capsule cap-a" />
@@ -67,7 +62,7 @@ export default function GachaModal({ token, user, initialPools = [], onUserChang
                 <div className="gacha-featured-prize">
                   <FeaturedPrizeImages prizes={featuredPrizesForPool(activePool)} large />
                   <div>
-                    <span>本期大奖</span>
+                    <span>Featured</span>
                     <strong>{featuredPrizeNames(activePool) || activePool.name}</strong>
                     <small>{formatGachaRemaining(activePool.remainingMs)}</small>
                   </div>

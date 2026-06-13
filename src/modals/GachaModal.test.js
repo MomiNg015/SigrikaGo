@@ -38,17 +38,13 @@ describe("GachaModal", () => {
     }));
 
     expect(html).toContain("gacha-modal");
-    expect(html).toContain("gacha-festival-scheme");
     expect(html).toContain("gacha-pool-tabs");
     expect(html).toContain("gacha-featured-stage");
-    expect(html).toContain("gacha-festival-marquee");
     expect(html).toContain("gacha-wallet");
     expect(html).toContain("gacha-round-button");
     expect(html).toContain("gacha-draw-actions");
     expect(html).toContain("gacha-machine");
     expect(html).toContain("gacha-capsule");
-    expect(html).toContain("扭蛋祭");
-    expect(html).toContain("本期大奖");
   });
 
   it("renders multiple featured prizes as a stacked prize group", () => {
@@ -128,28 +124,17 @@ describe("GachaModal", () => {
     expect(html).not.toContain("rainbow-bean-candy x3");
   });
 
-  it("defines the scheme C festival capsule machine animation hooks", () => {
+  it("defines the school-club capsule machine animation hooks", () => {
     const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
     const brightSchoolCss = readFileSync(new URL("../styles/themes/bright-school/commerce.css", import.meta.url), "utf8");
 
-    expect(css).toContain(".gacha-modal.gacha-festival-scheme");
-    expect(css).toContain(".gacha-modal.gacha-festival-scheme > :not(.close-button)");
-    expect(css).toContain(".gacha-festival-marquee");
     expect(css).toContain("@keyframes gacha-capsule-roll");
     expect(css).toContain("@keyframes gacha-drum-spin");
     expect(css).toContain(".gacha-result-card");
     expect(css).toContain(".gacha-result-grid.ten-pull");
     expect(css).toContain("grid-template-columns: repeat(5, minmax(0, 1fr))");
-    expect(css).toContain("@media screen and (max-width: 768px)");
-    expect(css).toContain("grid-auto-flow: column");
-    expect(css).toContain("position: sticky");
     expect(css).toContain(".gacha-result-image img");
     expect(css).toContain(".gacha-featured-stack");
-    const closeButtonBlock = css.slice(
-      css.indexOf(".gacha-modal.gacha-festival-scheme .close-button"),
-      css.indexOf(".gacha-festival-scheme .gacha-pool-tabs")
-    );
-    expect(closeButtonBlock).toContain("position: absolute");
     expect(brightSchoolCss).toContain("Bright School gacha machine polish layer.");
     expect(brightSchoolCss).toContain(".gacha-ticket-tab");
   });
