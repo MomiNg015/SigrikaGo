@@ -401,3 +401,36 @@ Fixed login preload rollback by passing setMusicTracks into useStartupPreload, a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 13: 修复首页资源请求循环限流
+
+**Date**: 2026-06-13
+**Task**: 修复首页资源请求循环限流
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Fixed repeated /api/me refresh caused by unstable achievement unlock callback, preventing rate-limit symptoms in member manual and shop catalog flows; added an App regression test and frontend state spec note.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8e63888` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

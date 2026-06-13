@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 12
+- **Total Sessions**: 13
 - **Last Active**: 2026-06-13
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~403 | Active |
+| `journal-1.md` | ~436 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 13 | 2026-06-13 | 修复首页资源请求循环限流 | `8e63888` | `codex/gacha-scheme-c-ui` |
 | 12 | 2026-06-13 | 修复登录后回退登录页 | `1787e85` | `codex/gacha-scheme-c-ui` |
 | 11 | 2026-06-13 | 修复成就系统启动报错 | `b0c56b2` | `codex/gacha-scheme-c-ui` |
 | 10 | 2026-06-13 | 成就系统与个性化装备 | `92be79e` | `codex/gacha-scheme-c-ui` |
