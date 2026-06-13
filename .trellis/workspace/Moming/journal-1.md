@@ -269,3 +269,36 @@ Updated gacha ten-pull result cards to use a desktop 2x5 grid, player-facing rew
 ### Next Steps
 
 - None - task complete
+
+
+## Session 9: Fix house manual chain badge switching
+
+**Date**: 2026-06-13
+**Task**: Fix house manual chain badge switching
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Fixed the member manual chain badge disappearing after switching sortie character by returning user asset relations from player account mutation routes; added regression coverage for player route payloads and HouseModal chain badge rendering; synced system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `78b1374` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
