@@ -89,7 +89,7 @@
 - `portraitSource`: `url` 或 `upload`。
 - `palette`: 代表色。
 - `acquisitionMethod`: 获得途径纯文本，显示在棋舍角色详情中。
-- `description`: 角色描述纯文本，显示在棋舍角色详情的获得途径下方，以斜体正文展示且不额外显示字段标签，可由后台角色管理编辑；空值会回退到内置角色默认描述。
+- `description`: 角色描述纯文本，显示在棋舍角色详情的获得途径下方，以紫色斜体正文展示且不额外显示字段标签，可由后台角色管理编辑；空值会回退到内置角色默认描述。
 - `enabled`: 是否启用。
 - `sortOrder`: 排序。
 - `skill`: 一对一 `CharacterSkill`。

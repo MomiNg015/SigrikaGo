@@ -84,6 +84,9 @@
   box-shadow: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy .character-description {
+  color: #7b3fa0 !important;
+}
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-title-row strong,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .acquisition-method strong,

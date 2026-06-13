@@ -2530,7 +2530,7 @@
 <li><code>acquisitionMethod</code>: 获得途径纯文本，显示在棋舍角色详情中。</li>
 </ul>
 <ul>
-<li><code>description</code>: 角色描述纯文本，显示在棋舍角色详情的获得途径下方，以斜体正文展示且不额外显示字段标签，可由后台角色管理编辑；空值会回退到内置角色默认描述。</li>
+<li><code>description</code>: 角色描述纯文本，显示在棋舍角色详情的获得途径下方，以紫色斜体正文展示且不额外显示字段标签，可由后台角色管理编辑；空值会回退到内置角色默认描述。</li>
 </ul>
 <ul>
 <li><code>enabled</code>: 是否启用。</li>
@@ -2987,7 +2987,7 @@
 <li>角色详情弹窗右上角包含独立的角色 BGM 预览播放器。播放器显示当前曲名，支持播放/暂停并保留 intro/loop 进度；当该用户拥有同一角色的多首技能 BGM 时显示下拉选择，切换后通过 <code>/api/me/music-selection</code> 持久化并同步影响后续对局 BGM。</li>
 </ul>
 <ul>
-<li>角色 BGM 预览播放期间会向全局 <code>BackgroundMusic</code> 发出暂停请求，暂停大厅/对局背景 BGM 的 Web Audio context；预览暂停、切歌或关闭详情弹窗时释放该请求并恢复原 BGM 进度，避免双 BGM 叠播或大厅 BGM 从头重启。</li>
+<li>角色 BGM 预览播放期间会向全局 <code>BackgroundMusic</code> 发出暂停请求；背景 BGM 会停止当前 source、保存 offset，并在预览暂停、切歌或关闭详情弹窗释放请求后按 offset 重新调度，从原进度恢复，避免双 BGM 叠播或大厅 BGM 从头重启。</li>
 </ul>
 <ul>
 <li>主界面默认 BGM 使用已可无缝循环的单文件曲目 <code>main_bgm.ogg</code>。</li>

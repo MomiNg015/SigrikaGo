@@ -17,8 +17,28 @@ describe("background audio scheduling", () => {
     });
 
     expect(schedule).toEqual([
-      { src: "/intro.ogg", startAt: 10, loop: false },
-      { src: "/loop.ogg", startAt: 17.25, loop: true }
+      { src: "/intro.ogg", startAt: 10, offset: 0, loop: false },
+      { src: "/loop.ogg", startAt: 17.25, offset: 0, loop: true }
+    ]);
+  });
+
+  it("resumes intro-loop tracks from the loop offset", () => {
+    const schedule = createPlaybackSchedule({
+      playback: {
+        mode: "intro-loop",
+        introSrc: "/intro.ogg",
+        loopSrc: "/loop.ogg"
+      },
+      buffers: {
+        "/intro.ogg": { duration: 7.25 },
+        "/loop.ogg": { duration: 12.5 }
+      },
+      startAt: 10,
+      offset: 22
+    });
+
+    expect(schedule).toEqual([
+      { src: "/loop.ogg", startAt: 10, offset: 2.25, loop: true }
     ]);
   });
 
@@ -36,7 +56,26 @@ describe("background audio scheduling", () => {
     });
 
     expect(schedule).toEqual([
-      { src: "/battle.ogg", startAt: 4, loop: true }
+      { src: "/battle.ogg", startAt: 4, offset: 0, loop: true }
+    ]);
+  });
+
+  it("wraps single loop track resume offsets", () => {
+    const schedule = createPlaybackSchedule({
+      playback: {
+        mode: "single-loop",
+        src: "/battle.ogg",
+        loop: true
+      },
+      buffers: {
+        "/battle.ogg": { duration: 30 }
+      },
+      startAt: 4,
+      offset: 74
+    });
+
+    expect(schedule).toEqual([
+      { src: "/battle.ogg", startAt: 4, offset: 14, loop: true }
     ]);
   });
 

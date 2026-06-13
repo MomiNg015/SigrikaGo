@@ -106,7 +106,7 @@ export async function playPreview({ state, track, volume }) {
   gain.connect(context.destination);
   const sources = schedulePreviewSources({ context, playback: track.playback, buffers, startAt, offset: state.offset, destination: gain });
   state.active = { gain, sources };
-  state.startedAt = context.currentTime;
+  state.startedAt = startAt;
   return true;
 }
 

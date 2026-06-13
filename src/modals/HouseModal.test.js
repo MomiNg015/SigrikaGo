@@ -393,6 +393,8 @@ describe("deriveCharacterRecordStats", () => {
 
   it("renders character descriptions in the character detail dialog", () => {
     const styles = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const brightSchoolStyles = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url))
+      + readCssWithImports(new URL("../styles/themes/bright-school/specificity-overrides.css", import.meta.url));
     const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
       character: {
         id: "sigrika",
@@ -411,6 +413,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toMatch(/class="character-description"><strong>/);
     expect(html).toContain("来自星辉社团的棋手。");
     expect(styles).toMatch(/\.character-description\s*\{[^}]*font-style:\s*italic;/s);
+    expect(styles).toMatch(/\.character-description\s*\{[^}]*color:\s*#7b3fa0;/s);
+    expect(brightSchoolStyles).toContain(".character-details-modal .character-description");
+    expect(brightSchoolStyles).toContain(".character-detail-copy .character-description");
+    expect(brightSchoolStyles).toContain("color: #7b3fa0 !important");
   });
   it("renders the character skill BGM player in the detail heading", () => {
     const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {

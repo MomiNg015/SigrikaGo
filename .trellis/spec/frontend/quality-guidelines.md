@@ -203,6 +203,41 @@ Required assertion points:
 - Feature tests that need concrete CSS, such as gacha modal coverage, should read the CSS import tree instead of asserting that rules live directly in the entry file.
 - New top-level CSS domains should start as import-only entries with an explicit directory and a style contract test update.
 
+### Web Audio Pause/Resume Contracts
+
+When changing background music, character BGM previews, or shared playback schedules, preserve user-visible playback position across pause/resume.
+
+Required assertion points:
+
+- `src/shared/audioScheduling.js` owns offset-aware schedule calculation for single-loop and intro-loop tracks; callers should pass `offset` into `createPlaybackSchedule()` instead of duplicating modulo math.
+- Character BGM preview pause should update its state offset from `context.currentTime - startedAt`, keep that offset through the next play click, and reset only when the selected track id changes.
+- Background music paused by a preview should stop current sources, save offset, and reschedule from that offset when the pause request count returns to zero. Do not rely only on `AudioContext.suspend()` if the visible contract is "continue from where it paused".
+- `startedAt` should be the scheduled audio start time, not the context time before `BGM_START_DELAY_SECONDS`, so short pause/resume cycles do not accumulate artificial delay.
+- Volume changes may adjust gain ramps, but must not change playback identity or reset offsets.
+
+Wrong:
+
+```js
+context.suspend();
+scheduleBackgroundTrack({ state, track });
+```
+
+This can resume by creating a fresh source at the beginning of the track.
+
+Correct:
+
+```js
+state.offset += Math.max(0, context.currentTime - state.startedAt);
+stopBackgroundPlayers(state);
+scheduleBackgroundTrack({ state, track, offset: state.offset });
+```
+
+Before finishing audio pause/resume changes, run:
+
+```bash
+npm test -- src/shared/audioScheduling.test.js src/audio/CharacterMusicPreview.test.jsx src/audio/playback.test.jsx
+```
+
 ### Native number input spinner contract
 
 When using numeric form controls, keep the markup as `type="number"` so browser validation, min/max constraints, and mobile numeric keyboards still work, but hide the native `+1/-1` spinner UI in shared base CSS.

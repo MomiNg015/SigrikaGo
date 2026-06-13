@@ -123,15 +123,24 @@ describe("background music resume fallback", () => {
     expect(state.generation).toBe(7);
   });
 
-  it("suspends background music playback while character music preview is active", () => {
-    const context = {
-      state: "running",
-      suspend: vi.fn(() => Promise.resolve())
+  it("stores the background music offset while character music preview is active", () => {
+    const stopped = [];
+    const context = { currentTime: 31 };
+    const state = {
+      context,
+      active: [{
+        gain: { disconnect: vi.fn() },
+        sources: [{ stop: () => stopped.push("source") }]
+      }],
+      offset: 6,
+      startedAt: 21
     };
 
-    pauseBackgroundPlayback({ context });
+    pauseBackgroundPlayback(state);
 
-    expect(context.suspend).toHaveBeenCalledTimes(1);
+    expect(state.offset).toBe(16);
+    expect(state.active).toEqual([]);
+    expect(stopped).toEqual(["source"]);
   });
 
   it("ignores procedural browser sounds when audio browser APIs are unavailable", () => {
