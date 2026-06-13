@@ -368,3 +368,36 @@ Fixed startup ordering so achievement schema guard adds source columns before ch
 ### Next Steps
 
 - None - task complete
+
+
+## Session 12: 修复登录后回退登录页
+
+**Date**: 2026-06-13
+**Task**: 修复登录后回退登录页
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Fixed login preload rollback by passing setMusicTracks into useStartupPreload, added wiring regression coverage, and captured the startup preload setter contract in frontend state spec.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1787e85` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
