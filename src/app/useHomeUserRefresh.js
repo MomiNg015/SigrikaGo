@@ -5,7 +5,7 @@ export function shouldRefreshHomeUser({ token, user, view }) {
   return view === "home" && Boolean(token && user?.id);
 }
 
-export function useHomeUserRefresh({ token, updateUser, user, view }) {
+export function useHomeUserRefresh({ onAchievementUnlocks, token, updateUser, user, view }) {
   const refreshSequenceRef = useRef(0);
 
   useEffect(() => {
@@ -17,11 +17,12 @@ export function useHomeUserRefresh({ token, updateUser, user, view }) {
       .then((data) => {
         if (cancelled || sequence !== refreshSequenceRef.current) return;
         updateUser(data.user);
+        onAchievementUnlocks?.(data.achievementUnlocks ?? []);
       })
       .catch(() => {});
 
     return () => {
       cancelled = true;
     };
-  }, [token, updateUser, user?.id, view]);
+  }, [onAchievementUnlocks, token, updateUser, user?.id, view]);
 }

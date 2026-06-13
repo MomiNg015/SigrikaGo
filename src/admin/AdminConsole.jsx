@@ -2,6 +2,7 @@
 import { adminApi } from "../api/client.js";
 import AdminShell from "./AdminShell.jsx";
 import AdminAudit from "./AdminAudit.jsx";
+import AdminAchievements from "./AdminAchievements.jsx";
 import AdminCharacters from "./AdminCharacters.jsx";
 import AdminDecorations from "./AdminDecorations.jsx";
 import AdminFeedback from "./AdminFeedback.jsx";
@@ -21,6 +22,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   const [shopItems, setShopItems] = useState([]);
   const [decorations, setDecorations] = useState([]);
   const [gachaPools, setGachaPools] = useState([]);
+  const [achievementData, setAchievementData] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [adminError, setAdminError] = useState("");
 
@@ -75,6 +77,11 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   useEffect(() => {
     if (tab !== "gacha") return;
     refreshGachaContext();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "achievements") return;
+    refreshAchievements();
   }, [tab, token]);
 
   async function refreshUsers(nextSelectedId = selectedUser?.id) {
@@ -170,6 +177,16 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
     ]);
   }
 
+  async function refreshAchievements() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/achievements", token);
+      setAchievementData(data);
+    } catch (error) {
+      notify(error.message);
+    }
+  }
+
   return (
     <AdminShell user={user} tab={tab} setTab={setTab} onBack={onBack} error={adminError}>
       {tab === "overview" && <AdminOverview summary={summary} />}
@@ -233,6 +250,14 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
             musicTracks
           }}
           onSaved={refreshGachaContext}
+          onNotice={notify}
+        />
+      )}
+      {tab === "achievements" && (
+        <AdminAchievements
+          data={achievementData}
+          token={token}
+          onSaved={refreshAchievements}
           onNotice={notify}
         />
       )}

@@ -33,6 +33,21 @@
     gap: 6px;
   }
 
+  .resume-title-actions {
+    gap: 5px;
+    padding-right: clamp(116px, 34vw, 138px);
+  }
+
+  .resume-title-actions h2 {
+    flex: 1 1 100%;
+  }
+
+  .resume-mini-action {
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
   .resume-header-actions .close-button {
     position: static;
     flex: 0 0 auto;
@@ -220,5 +235,56 @@
 
   .house-modal .owned-decoration-chip strong {
     font-size: 11px;
+  }
+
+  .achievement-modal,
+  .personalization-modal {
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 10px;
+    overflow: auto;
+  }
+
+  .achievement-tabs {
+    gap: 6px;
+  }
+
+  .achievement-tabs button {
+    min-height: 36px;
+    font-size: 12px;
+  }
+
+  .achievement-heading {
+    display: none;
+  }
+
+  .achievement-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+    padding: 10px;
+  }
+
+  .achievement-row strong {
+    font-size: 15px;
+  }
+
+  .achievement-row p,
+  .achievement-row time {
+    font-size: 13px;
+  }
+
+  .personalization-preview,
+  .personalization-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .personalization-preview {
+    gap: 8px;
+  }
+
+  .personalization-section button {
+    grid-template-columns: 30px minmax(0, 1fr);
+    min-height: 42px;
   }
 }

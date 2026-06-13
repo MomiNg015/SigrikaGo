@@ -76,6 +76,7 @@ function characterCreateData(input) {
     portraitUrl: input.portraitUrl,
     portraitSource: input.portraitSource,
     acquisitionMethod: input.acquisitionMethod,
+    source: input.source,
     palette: input.palette,
     enabled: input.enabled,
     sortOrder: input.sortOrder,
@@ -93,6 +94,7 @@ function characterUpdateData(input) {
     portraitUrl: input.portraitUrl,
     portraitSource: input.portraitSource,
     acquisitionMethod: input.acquisitionMethod,
+    source: input.source,
     palette: input.palette,
     enabled: input.enabled,
     sortOrder: input.sortOrder,
@@ -144,6 +146,7 @@ export function toAdminCharacterPayload(record) {
   return {
     ...payload,
     sortOrder: record.sortOrder,
+    source: record.source ?? "default",
     skill
   };
 }
@@ -189,6 +192,7 @@ function characterRecordToInput(record) {
     portraitUrl: record.portraitUrl,
     portraitSource: record.portraitSource,
     acquisitionMethod: record.acquisitionMethod ?? "",
+    source: record.source ?? "default",
     palette: record.palette,
     enabled: record.enabled,
     sortOrder: record.sortOrder,

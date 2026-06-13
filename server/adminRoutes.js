@@ -1,6 +1,15 @@
 import crypto from "node:crypto";
 import { readFile, unlink } from "node:fs/promises";
 import { Router } from "express";
+import {
+  createAchievement,
+  createRewardAsset,
+  disableAchievement,
+  disableRewardAsset,
+  listAdminAchievements,
+  updateAchievement,
+  updateRewardAsset
+} from "./achievements.js";
 import { USER_STATUS } from "./adminConfig.js";
 import { validateCharacterInput } from "./characters.js";
 import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
@@ -338,6 +347,71 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
         trackId: req.params.id,
         body: req.body
       }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/achievements", async (_req, res) => {
+    try {
+      res.json(await listAdminAchievements({ prisma }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.post("/achievements", async (req, res) => {
+    try {
+      res.json(await createAchievement({ prisma, adminUser: req.user, body: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/achievements/:id", async (req, res) => {
+    try {
+      res.json(await updateAchievement({ prisma, adminUser: req.user, achievementId: req.params.id, body: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/achievements/:id", async (req, res) => {
+    try {
+      res.json(await disableAchievement({ prisma, adminUser: req.user, achievementId: req.params.id }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.post("/achievement-reward-assets", async (req, res) => {
+    try {
+      res.json(await createRewardAsset({ prisma, adminUser: req.user, body: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/achievement-reward-assets", async (_req, res) => {
+    try {
+      const data = await listAdminAchievements({ prisma });
+      res.json({ rewardAssets: data.rewardAssets, rewardTypes: data.rewardTypes });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/achievement-reward-assets/:id", async (req, res) => {
+    try {
+      res.json(await updateRewardAsset({ prisma, adminUser: req.user, rewardAssetId: req.params.id, body: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/achievement-reward-assets/:id", async (req, res) => {
+    try {
+      res.json(await disableRewardAsset({ prisma, adminUser: req.user, rewardAssetId: req.params.id }));
     } catch (error) {
       sendRouteError(res, error);
     }

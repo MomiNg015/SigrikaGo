@@ -86,7 +86,8 @@ export function toShopItemPayload(item, purchaseCounts = {}) {
     enabled: item.enabled,
     sortOrder: item.sortOrder ?? 0,
     description: item.description ?? "",
-    imageUrl: item.imageUrl ?? ""
+    imageUrl: item.imageUrl ?? "",
+    source: item.source ?? "default"
   };
 }
 
@@ -102,6 +103,7 @@ export function validateShopItemInput(input = {}) {
   const sortOrder = parseIntValue(input.sortOrder ?? 0);
   const purchasable = input.purchasable ?? true;
   const enabled = input.enabled ?? true;
+  const source = normalizeSource(input.source);
 
   if (!name) errors.push("name is required");
   if (!SHOP_CATEGORIES.has(category)) errors.push("category must be character, decoration, item, or music");
@@ -128,7 +130,8 @@ export function validateShopItemInput(input = {}) {
       enabled,
       sortOrder,
       description: String(input.description ?? "").trim(),
-      imageUrl: String(input.imageUrl ?? "").trim()
+      imageUrl: String(input.imageUrl ?? "").trim(),
+      source
     }
   };
 }
@@ -139,6 +142,7 @@ export function validateDecorationInput(input = {}) {
   const name = String(input.name ?? "").trim();
   const sortOrder = parseIntValue(input.sortOrder ?? 0);
   const enabled = input.enabled ?? true;
+  const source = normalizeSource(input.source);
   if (!/^[a-z0-9-]{2,40}$/.test(slug)) errors.push("slug must contain lowercase letters, numbers, or hyphens and be 2-40 characters");
   if (!name) errors.push("name is required");
   if (sortOrder == null) errors.push("sortOrder must be an integer");
@@ -151,6 +155,7 @@ export function validateDecorationInput(input = {}) {
       name,
       description: String(input.description ?? "").trim(),
       imageUrl: String(input.imageUrl ?? "").trim(),
+      source,
       enabled,
       sortOrder
     }
@@ -285,6 +290,10 @@ function parseIntValue(value) {
   if (typeof value === "number") return Number.isSafeInteger(value) ? value : null;
   if (typeof value === "string" && /^-?\d+$/.test(value.trim())) return Number(value);
   return null;
+}
+
+function normalizeSource(value) {
+  return String(value ?? "default").trim() === "achievement" ? "achievement" : "default";
 }
 
 function routeError(status, message) {

@@ -215,3 +215,11 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - The preload step fetches non-replay runtime assets after login, but it is now split by startup criticality. Critical preload waits for current character portraits, home entry/background imagery, and common board/UI effect sounds before the app can leave the preload screen. Shop imagery, candy/effect previews, stone decoration images, result/match sounds, configured BGM tracks, character skill voices, and system voices stay in the same asset manifest but load as deferred background work with a concurrency cap so first entry to the home screen is not blocked by the full music/voice library. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.
 - Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.
 - The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.
+
+## Achievement And Personalization Frontend
+
+- `src/app/useOverlayState.js` 将 `achievements` 和 `personalization` 纳入应用级弹窗契约；`AppOverlays` 在履历弹窗之外挂载 `AchievementModal` 与 `PersonalizationModal`，并把履历标题区的“成就”“个性化”按钮作为入口。
+- `AchievementModal` 通过 `/api/achievements` 读取玩家成就列表，按“未达成 / 已达成 / 全部”三种 tab 过滤。桌面端使用四列表格语义呈现成就名、内容、奖励和达成时间；移动端 CSS 将同一行降级为单列卡片，未达成使用灰底，已达成使用浅黄底。
+- `PersonalizationModal` 通过 `/api/me/achievement-equipment` 读取可装备的成就奖励资产，并允许装备称号、徽章和用户名背景。桌面端为三列装备区，移动端改为竖向分区；保存后回写当前 `user.achievementEquipment`。
+- 商城、抽卡、仓库使用道具和首页 `/api/me` 刷新都会消费响应里的 `achievementUnlocks`，逐条触发 `achievement` tone toast；toast 样式仍由现有 `ToastStack` 队列统一管理。
+- 后台 `AdminConsole` 新增 `achievements` tab，`AdminAchievements` 使用“成就列表 / 奖励资产”双视图管理 `/api/admin/achievements` 与 `/api/admin/achievement-reward-assets`。

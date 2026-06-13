@@ -166,3 +166,11 @@
 - `key`: 主键。当前使用 `homeTitle`、`homeSubtitle` 与 `aboutText`。
 - `value`: 配置值字符串。
 - `createdAt`, `updatedAt`: 创建和更新时间。
+
+## Achievement Domain
+
+- `AchievementRewardAsset` 定义成就奖励资产，字段包括 `type`、`name`、`description`、`imageUrl`、`text`、`targetType`、`targetId`、`amount`、`enabled`、`deletedAt` 和 `sortOrder`。奖励类型支持 `currency`、`title`、`badge`、`nameplate`、`character`、`decoration`、`item`、`music`；称号、徽章和用户名背景只作为个性化装备资产，角色/装饰/道具奖励必须指向 `source = "achievement"` 的限定资源。
+- `Achievement` 定义成就目标，使用唯一 `key`、显示 `name`、`content`、`conditionType` 和 JSON 字符串 `conditionParams` 描述判定规则，并可关联一个 `AchievementRewardAsset`。`enabled=false` 或 `deletedAt` 表示后台下线，历史 `UserAchievement` 不删除。
+- `UserAchievement` 记录用户已达成状态，包含 `achievedAt` 与 `rewardGrantedAt`，并以 `userId + achievementId` 保证幂等。`AchievementCounter` 保存上线后计数型指标，如购买次数、抽卡次数、登录天数或触发事件累计；可从历史数据回溯的对局、胜场、角色胜率、拥有资产数量等由 `server/achievements.js` 实时聚合。
+- `UserAchievementEquipment` 保存用户当前装备的 `titleAssetId`、`badgeAssetId` 和 `nameplateAssetId`。更新装备时只允许选择该用户已达成成就解锁的对应类型奖励资产。
+- `ensureAchievementSchema` 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 `Character`、`Decoration`、`ShopItem` 添加 `source` 字段；`server/serverStartup.js` 在音乐设置 schema guard 后执行该 guard。

@@ -63,6 +63,7 @@ export function useGachaCatalog({ token, initialPools = [], user, onNotice, onUs
         setWallet({ coins: data.user.coins ?? 0, blueGems: data.user.blueGems ?? 0 });
         onUserChange?.(data.user);
       }
+      notifyAchievementUnlocks(data.achievementUnlocks, onNotice);
       refreshHistory();
     } catch (error) {
       onNotice?.(error.message, "danger");
@@ -85,4 +86,10 @@ export function useGachaCatalog({ token, initialPools = [], user, onNotice, onUs
     setResult,
     wallet
   };
+}
+
+function notifyAchievementUnlocks(unlocks = [], onNotice) {
+  for (const unlock of unlocks) {
+    onNotice?.(`达成成就：${unlock.name}`, "achievement");
+  }
 }

@@ -56,6 +56,7 @@ export function useWarehouseInventory({
         setTargetItem(null);
         onNotice?.(`成功使用了${item.name}`, "success");
       }
+      notifyAchievementUnlocks(data.achievementUnlocks, onNotice);
     } catch (apiError) {
       onNotice?.(apiError.message, "danger");
     } finally {
@@ -83,4 +84,10 @@ export function useWarehouseInventory({
     useItem,
     usingItemId
   };
+}
+
+function notifyAchievementUnlocks(unlocks = [], onNotice) {
+  for (const unlock of unlocks) {
+    onNotice?.(`达成成就：${unlock.name}`, "achievement");
+  }
 }

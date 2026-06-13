@@ -45,6 +45,8 @@ export default function App() {
     showHouse,
     showWarehouse,
     showResume,
+    showAchievements,
+    showPersonalization,
     showLeaderboard,
     showFriends,
     showWatch,
@@ -55,6 +57,8 @@ export default function App() {
     setShowHouse,
     setShowWarehouse,
     setShowResume,
+    setShowAchievements,
+    setShowPersonalization,
     setShowLeaderboard,
     setShowFriends,
     setShowWatch,
@@ -82,6 +86,11 @@ export default function App() {
   const [assetProgress, setAssetProgress] = useState(0);
   const [audioResumeSignal, setAudioResumeSignal] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
+  const showAchievementUnlocks = (unlocks = []) => {
+    for (const unlock of unlocks) {
+      showToast(`达成成就：${unlock.name}`, "achievement");
+    }
+  };
   const { setUser, updateUser, user } = useCurrentUser();
   const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState();
   const { audioSettingsRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
@@ -226,7 +235,7 @@ export default function App() {
   });
 
   useReplayRecords({ enabled: showHouse || showResume, showToast, token, setReplayRecords });
-  useHomeUserRefresh({ token, updateUser, user, view });
+  useHomeUserRefresh({ onAchievementUnlocks: showAchievementUnlocks, token, updateUser, user, view });
 
   useAudioSettingsPersistence(audioSettings);
   useRoomMemory(room);
@@ -270,6 +279,8 @@ export default function App() {
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
         setShowResume={setShowResume}
+        setShowAchievements={setShowAchievements}
+        setShowPersonalization={setShowPersonalization}
         setShowSettings={setShowSettings}
         setShowShop={setShowShop}
         setShowWarehouse={setShowWarehouse}
@@ -313,6 +324,8 @@ export default function App() {
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
         setShowResume={setShowResume}
+        setShowAchievements={setShowAchievements}
+        setShowPersonalization={setShowPersonalization}
         setShowSettings={setShowSettings}
         setShowShop={setShowShop}
         setShowWarehouse={setShowWarehouse}
@@ -324,6 +337,8 @@ export default function App() {
         showLeaderboard={showLeaderboard}
         showMessageBoard={showMessageBoard}
         showResume={showResume}
+        showAchievements={showAchievements}
+        showPersonalization={showPersonalization}
         showSettings={showSettings}
         showShop={showShop}
         showToast={showToast}

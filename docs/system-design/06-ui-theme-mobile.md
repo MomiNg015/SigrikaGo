@@ -38,3 +38,10 @@
 - House replay cards on narrow phones use a bounded three-row grid with fixed 22px player portraits and single-line player names, so date/result/player/move-count content stays inside each colored row at 375px width.
 - Mobile shop cards now share one compact internal contract across character, item, and decoration categories: preview, name, stock/price, and purchase button stay inside the card with the action pinned to the bottom.
 - Key responsive breakpoints are `768px` for the general mobile adaptation layer, `768px + portrait` for phone/narrow tablet vertical layouts, `768px + landscape` for short wide devices, and `360px` for the smallest phone fallback. Existing project breakpoints at `900px`, `760px`, `620px`, and `560px` remain in place; the final mobile layer only resolves conflicts and enforces mobile usability guarantees.
+
+## Achievement And Personalization UI
+
+- 成就与个性化窗口沿用 Bright School / 纸张 scrapbook 视觉：`house-modal` 外壳、8px 控件圆角、纸张边框、柔和浅色背景和现有 modal close-button 契约，不引入新的品牌视觉。
+- 成就筛选 tab 使用三等分按钮，桌面端列表保持表格列对齐；`unachieved` 行使用灰色背景，`achieved` 行使用浅黄色背景。560px 以下隐藏表头并将每条成就变成单列卡片，避免奖励和达成时间列挤压。
+- 个性化窗口桌面端使用预览区加三列装备面板，称号、徽章、用户名背景分别独立选择；560px 以下改为单列面板，按钮保持 42px 以上高度和内部省略号，保证移动端可点选。
+- `toast.achievement` 使用金橙色高亮渐变和更强阴影，作为成就达成反馈；普通成功/错误 toast 样式不变。

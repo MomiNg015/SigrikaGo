@@ -1,4 +1,10 @@
 import express from "express";
+import {
+  getAchievementEquipment,
+  listAchievementsForUser,
+  publicUserWithAchievementEquipment,
+  updateAchievementEquipment
+} from "./achievements.js";
 import { USER_ASSET_RELATION_INCLUDE, publicUser } from "./db.js";
 import { listPublicCharacters } from "./characters.js";
 import { CHARACTERS } from "../src/shared/characters.js";
@@ -47,7 +53,11 @@ export function createPlayerRouteHandlers({
   selectSkillMusic = selectUserSkillMusic,
   stoneDecorationForId = getStoneDecoration,
   blockedCharactersForEffects = blockedCharactersForItemEffects,
-  statsForUser = publicUserWithRecordStats
+  statsForUser = publicUserWithRecordStats,
+  listAchievementsForUserFn = listAchievementsForUser,
+  getAchievementEquipmentFn = getAchievementEquipment,
+  updateAchievementEquipmentFn = updateAchievementEquipment,
+  publicUserWithAchievementEquipmentFn = publicUserWithAchievementEquipment
 }) {
   async function publicUserWithHistory(user) {
     const records = await prisma.gameRecord.findMany({
@@ -68,7 +78,23 @@ export function createPlayerRouteHandlers({
   }
 
   async function getMe(req, res) {
-    res.json({ user: await publicUserWithHistory(req.user) });
+    const [user, achievementUnlocks] = await Promise.all([
+      publicUserWithAchievementEquipmentFn({ prisma, user: req.user }),
+      listAchievementsForUserFn({ prisma, userId: req.user.id }).then((data) => data.unlocks ?? [])
+    ]);
+    res.json({ user, achievementUnlocks });
+  }
+
+  async function listAchievements(req, res) {
+    res.json(await listAchievementsForUserFn({ prisma, userId: req.user.id }));
+  }
+
+  async function getEquipment(req, res) {
+    res.json(await getAchievementEquipmentFn({ prisma, userId: req.user.id }));
+  }
+
+  async function updateEquipment(req, res) {
+    res.json(await updateAchievementEquipmentFn({ prisma, userId: req.user.id, body: req.body }));
   }
 
   async function resume(req, res) {
@@ -149,10 +175,13 @@ export function createPlayerRouteHandlers({
 
   return {
     getMe,
+    getEquipment,
+    listAchievements,
     listMusicTracks,
     resume,
     updateCharacter,
     updateDecoration,
+    updateEquipment,
     updateMusicSelection,
     publicUserWithHistory
   };
@@ -162,8 +191,11 @@ export function createPlayerRouter(deps) {
   const router = express.Router();
   const handlers = createPlayerRouteHandlers(deps);
   router.get("/me", handlers.getMe);
+  router.get("/achievements", handlers.listAchievements);
   router.get("/music-tracks", handlers.listMusicTracks);
   router.get("/me/resume", handlers.resume);
+  router.get("/me/achievement-equipment", handlers.getEquipment);
+  router.patch("/me/achievement-equipment", handlers.updateEquipment);
   router.post("/me/character", handlers.updateCharacter);
   router.post("/me/decoration", handlers.updateDecoration);
   router.post("/me/music-selection", handlers.updateMusicSelection);

@@ -169,6 +169,61 @@ Correct:
 const { showShop, setShowShop, showGacha, setShowGacha } = useOverlayState();
 ```
 
+### Scenario: Achievement And Personalization Overlay State
+
+#### 1. Scope / Trigger
+- Trigger: adding or changing achievement windows, personalization/equipment windows, achievement unlock toasts, or player API refresh handling.
+- Achievement overlays are app shell modals opened from the resume profile surface; achieved state and equipped reward data are server state, not separate local profile stores.
+
+#### 2. Signatures
+- `useOverlayState()` returns `showAchievements`, `setShowAchievements`, `showPersonalization`, and `setShowPersonalization`.
+- `AppOverlays` renders `AchievementModal` and `PersonalizationModal` from those flags.
+- Player API responses may include `achievementUnlocks: AchievementUnlockPayload[]`.
+- `showAchievementUnlocks(unlocks)` emits visible `achievement` tone toast messages and ignores non-arrays/empty arrays.
+
+#### 3. Contracts
+- Resume/profile entry buttons should open achievements and personalization by toggling overlay state, not by navigating away from the home shell.
+- `AchievementModal` must fetch `GET /api/achievements` when opened and keep filter tabs local to the modal (`unachieved`, `achieved`, `all`).
+- `PersonalizationModal` must fetch `GET /api/me/achievement-equipment`, patch only changed equipment slots, and write returned user/equipment data through `updateUser`.
+- Home `/api/me` refresh should consume any returned `achievementUnlocks` before or alongside updating current user state.
+- Shop purchase, gacha draw, and warehouse item-use hooks should display backend-returned `achievementUnlocks` immediately after successful mutations.
+- Do not duplicate achievement evaluation rules in the frontend; the frontend only displays list/equipment/unlock payloads returned by the API.
+
+#### 4. Validation & Error Matrix
+- Achievement modal opens with no achievements -> render an empty state inside the modal.
+- `achievementUnlocks` omitted -> no toast and no error.
+- `achievementUnlocks: []` -> no toast and no error.
+- Personalization patch rejects a slot -> keep the modal open and show the route-provided error message.
+- User closes either overlay -> local filter/selection state can reset on next open, but app-level overlay keys must close cleanly through `closeAllOverlays()`.
+
+#### 5. Good/Base/Bad Cases
+- Good: a gacha response with two unlocks calls the shared toast helper twice with `tone: "achievement"`.
+- Base: a player opens the achievement modal before unlocking anything and sees all enabled achievements as unachieved rows/cards.
+- Bad: a frontend hook increments achievement counters locally or infers unlocks from button clicks.
+- Bad: adding `const [showAchievements, setShowAchievements] = useState(false)` directly in `App.jsx`.
+
+#### 6. Tests Required
+- `src/app/useOverlayState.test.js` must include achievement and personalization keys in default and close-all projections.
+- Modal/component tests should assert achievement tabs, achieved/unachieved row classes, equipment slot validation messaging, and save refresh behavior when practical.
+- Commerce/gacha/warehouse hook tests must assert returned unlocks are passed to the achievement toast helper.
+- App overlay/source tests should be updated when the achievement/personalization prop boundary changes.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+const unlocked = localDrawCount >= achievement.targetCount;
+setShowAchievementToast(unlocked);
+```
+
+Correct:
+
+```jsx
+const result = await apiPost("/api/gacha/draw", body);
+showAchievementUnlocks(result.achievementUnlocks);
+```
+
 ### Scenario: Room Session State
 
 #### 1. Scope / Trigger

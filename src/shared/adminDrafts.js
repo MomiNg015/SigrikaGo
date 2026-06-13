@@ -11,6 +11,7 @@ export function emptyCharacterDraft() {
     portraitUrl: "",
     portraitSource: "url",
     acquisitionMethod: "",
+    source: "default",
     palette: "#5d7fe8",
     enabled: true,
     sortOrder: 0,
@@ -41,6 +42,7 @@ export function buildCharacterDraft(character) {
     portraitUrl: character.portrait ?? "",
     portraitSource: character.portraitSource ?? "url",
     acquisitionMethod: character.acquisitionMethod ?? "",
+    source: character.source ?? "default",
     palette: character.palette ?? "#5d7fe8",
     enabled: character.enabled ?? true,
     sortOrder: character.sortOrder ?? 0,
@@ -75,6 +77,7 @@ export function characterDraftToBody(draft) {
     portraitUrl: draft.portraitUrl.trim(),
     portraitSource: draft.portraitSource,
     acquisitionMethod: String(draft.acquisitionMethod ?? "").trim(),
+    source: draft.source === "achievement" ? "achievement" : "default",
     palette: draft.palette,
     enabled: Boolean(draft.enabled),
     sortOrder,
@@ -108,7 +111,8 @@ export function emptyShopItemDraft() {
     enabled: true,
     sortOrder: 0,
     description: "",
-    imageUrl: ""
+    imageUrl: "",
+    source: "default"
   };
 }
 
@@ -236,13 +240,14 @@ export function validateShopItemDraft(draft) {
       enabled: Boolean(draft.enabled),
       sortOrder,
       description: draft.description.trim(),
-      imageUrl: draft.imageUrl.trim()
+      imageUrl: draft.imageUrl.trim(),
+      source: draft.source === "achievement" ? "achievement" : "default"
     }
   };
 }
 
 export function emptyDecorationDraft() {
-  return { id: "", slug: "", name: "", description: "", imageUrl: "", enabled: true, sortOrder: 0 };
+  return { id: "", slug: "", name: "", description: "", imageUrl: "", source: "default", enabled: true, sortOrder: 0 };
 }
 
 export function buildDecorationDraft(decoration) {
@@ -257,6 +262,7 @@ export function decorationDraftToBody(draft) {
     name: draft.name.trim(),
     description: draft.description.trim(),
     imageUrl: draft.imageUrl.trim(),
+    source: draft.source === "achievement" ? "achievement" : "default",
     enabled: Boolean(draft.enabled),
     sortOrder
   };

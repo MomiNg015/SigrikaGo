@@ -18,6 +18,7 @@ describe("server startup", () => {
     const ensureGameModeSchema = task("ensureGameModeSchema");
     const ensureGachaSchema = task("ensureGachaSchema");
     const ensureMusicTrackSettingsSchema = task("ensureMusicTrackSettingsSchema");
+    const ensureAchievementSchema = task("ensureAchievementSchema");
     const promoteConfiguredAdmins = task("promoteConfiguredAdmins");
 
     await initializeServerData({
@@ -31,6 +32,7 @@ describe("server startup", () => {
       ensureGameModeSchema,
       ensureGachaSchema,
       ensureMusicTrackSettingsSchema,
+      ensureAchievementSchema,
       promoteConfiguredAdmins
     });
 
@@ -44,6 +46,7 @@ describe("server startup", () => {
       "ensureGameModeSchema",
       "ensureGachaSchema",
       "ensureMusicTrackSettingsSchema",
+      "ensureAchievementSchema",
       "promoteConfiguredAdmins"
     ]);
   });

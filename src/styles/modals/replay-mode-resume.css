@@ -258,7 +258,219 @@
 
 .resume-header h2 {
   min-width: 0;
+}
+
+.resume-title-actions {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
   padding-right: clamp(136px, 22vw, 168px);
+}
+
+.resume-title-actions h2 {
+  padding-right: 0;
+}
+
+.resume-mini-action {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(61, 43, 37, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 250, 238, 0.9);
+  color: #4f3d55;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.achievement-modal,
+.personalization-modal {
+  width: min(860px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+}
+
+.achievement-header {
+  padding-right: 46px;
+}
+
+.achievement-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.achievement-tabs button {
+  min-height: 42px;
+  border-radius: 8px;
+}
+
+.achievement-tabs button.active,
+.achievement-tabs button[aria-selected="true"] {
+  background: #1f6f5b;
+  border-color: #1f6f5b;
+  color: #fff;
+}
+
+.achievement-list {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.achievement-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.95fr) minmax(180px, 1.45fr) minmax(150px, 1fr) minmax(150px, 0.9fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 2px solid rgba(61, 43, 37, 0.22);
+  border-radius: 8px;
+  color: #35283a;
+}
+
+.achievement-heading {
+  min-height: 36px;
+  background: rgba(255, 255, 255, 0.52);
+  color: #6b596d;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.achievement-row.unachieved {
+  background: linear-gradient(135deg, #f0f1ef, #fbfbf9);
+  color: #636466;
+}
+
+.achievement-row.achieved {
+  background: linear-gradient(135deg, #fff1b8, #fff9df);
+  border-color: rgba(198, 150, 48, 0.38);
+}
+
+.achievement-row strong,
+.achievement-row p,
+.achievement-row time {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.achievement-reward-cell {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+}
+
+.achievement-reward-cell img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.achievement-empty {
+  margin: 0;
+  padding: 22px;
+  border: 1px dashed rgba(61, 43, 37, 0.24);
+  border-radius: 8px;
+  color: #6b596d;
+  text-align: center;
+}
+
+.personalization-preview {
+  display: grid;
+  grid-template-columns: minmax(140px, auto) minmax(0, 1fr) minmax(140px, auto);
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 2px solid rgba(61, 43, 37, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 244, 204, 0.86), rgba(244, 251, 247, 0.88)),
+    repeating-linear-gradient(0deg, transparent 0 15px, rgba(118, 177, 193, 0.12) 15px 16px);
+}
+
+.profile-nameplate-preview,
+.personalization-preview p {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 7px 10px;
+  font-weight: 900;
+}
+
+.personalization-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.personalization-section {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-width: 0;
+}
+
+.personalization-section h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: #3d2b25;
+  font-size: 16px;
+}
+
+.personalization-section button {
+  min-height: 46px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(61, 43, 37, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.74);
+  color: #4f3d55;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.personalization-section button.selected {
+  border-color: #1f6f5b;
+  background: #ecfff6;
+  color: #1f6f5b;
+  box-shadow: 0 0 0 3px rgba(31, 111, 91, 0.12);
+}
+
+.personalization-section button img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.personalization-section button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 900;
+}
+
+.personalization-section p {
+  margin: 0;
+  color: #7d6a82;
 }
 
 .resume-character-records {

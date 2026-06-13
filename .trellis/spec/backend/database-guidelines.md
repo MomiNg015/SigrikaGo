@@ -215,6 +215,72 @@ await prisma.musicTrackSetting.upsert({
 
 ---
 
+### Scenario: Achievement Persistence And Personalization Equipment
+
+#### 1. Scope / Trigger
+- Trigger: any change to achievements, achievement reward assets, player achievement equipment, reward-source resources, commerce/gacha achievement unlocks, or startup schema guards for achievement tables.
+- This is a cross-layer contract because admin CRUD defines goals, backend domain evaluation grants rewards, player APIs expose achieved state, and frontend profile overlays render/equip achievement rewards.
+
+#### 2. Signatures
+- `Achievement { id, key, name, description, conditionType, conditionParams, rewardAssetId?, isEnabled, createdAt, updatedAt }`
+- `AchievementRewardAsset { id, type, name, description?, imageUrl?, textValue?, sourceType?, sourceId?, currencyType?, amount?, isEnabled, createdAt, updatedAt }`
+- `UserAchievement { id, userId, achievementId, achievedAt, rewardGrantedAt? }` with unique `(userId, achievementId)`.
+- `AchievementCounter { id, userId, type, value }` with unique `(userId, type)`.
+- `UserAchievementEquipment { userId, titleAssetId?, badgeAssetId?, nameplateAssetId?, updatedAt }`
+- `ensureAchievementSchema(prisma)` must run during startup before player/admin achievement routes or public profile payloads use these models.
+
+#### 3. Contracts
+- Static gameplay/resource data remains authoritative unless an enabled achievement reward asset points at a `source=achievement` resource.
+- Resource reward assets of type `character`, `decoration`, and `item` must only target records with `source === "achievement"`; they must not silently grant default/shop resources.
+- Reward grants must be idempotent: an already achieved row with `rewardGrantedAt` set must not grant currency/assets again.
+- Player `GET /api/achievements` returns all enabled achievements merged with the current user's `isAchieved`, `achievedAt`, and reward display payload, plus only the unlocks newly achieved during that request.
+- Player `GET/PATCH /api/me/achievement-equipment` may equip only unlocked enabled reward assets whose type matches the slot (`title`, `badge`, `nameplate`).
+- Public profile payloads may expose compact equipped achievement asset ids/display data, but must not include every achievement or counter row.
+- Commerce/gacha/item-use responses should include `achievementUnlocks` only when at least one achievement was newly achieved.
+
+#### 4. Validation & Error Matrix
+- Unknown admin achievement id -> `404 ACHIEVEMENT_NOT_FOUND`.
+- Unknown reward asset id on achievement create/update -> reject before writing the achievement.
+- Unknown or disabled equipment asset -> reject equipment update.
+- Equipment asset not unlocked by the user -> reject equipment update.
+- Equipment asset type does not match the slot -> reject equipment update.
+- Missing achievement tables in an older SQLite database -> startup guard creates them in place.
+- Narrow unit-test Prisma mocks with no achievement delegates -> stats/evaluation helpers should return empty unlocks or zero stats instead of crashing unrelated route tests.
+
+#### 5. Good/Base/Bad Cases
+- Good: using a rainbow bean candy on Denia evaluates the trigger event, creates one `UserAchievement`, grants its reward once, and returns one unlock toast payload.
+- Base: a player with no achievements receives enabled achievements with `isAchieved: false`, empty `achievedAt`, and zero stats.
+- Bad: adding an achievement by writing a `UserAchievement` row directly without running reward grant logic.
+- Bad: letting a badge slot equip a `title` asset or an asset the user has not unlocked.
+
+#### 6. Tests Required
+- Schema guard tests assert tables/indexes/source columns are created and the guard is idempotent.
+- Admin route/domain tests assert unknown track/resource ids and disabled assets are rejected and audit actions are written.
+- Player list tests assert enabled achievements merge default state, achieved state, reward display, and new unlocks.
+- Equipment tests assert locked, disabled, wrong-type, and valid unlocked assets.
+- Commerce/gacha/item-use tests assert `achievementUnlocks` appears only when new achievements unlock.
+- Public profile/social tests assert only compact equipment/stat fields are exposed.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await prisma.userAchievement.create({ data: { userId, achievementId } });
+await grantAchievementReward(prisma, userId, rewardAsset);
+```
+
+Correct:
+
+```js
+const unlocks = await evaluateAchievementsForUser({ prisma, userId, triggerEvent });
+if (unlocks.length) {
+  res.json({ ...payload, achievementUnlocks: unlocks });
+}
+```
+
+---
+
 ## Naming Conventions
 
 <!-- Table names, column names, index names -->

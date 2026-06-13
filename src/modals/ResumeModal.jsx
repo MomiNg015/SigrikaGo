@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { CircleDollarSign, Gem, MonitorPlay, X } from "lucide-react";
+import { Award, CircleDollarSign, Gem, MonitorPlay, Palette, X } from "lucide-react";
 import { derivePlayerRecordStats } from "../shared/gameRecords.js";
 import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
 import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
 import HouseProfileStats from "./house/HouseProfileStats.jsx";
 import { deriveCharacterRecordStats } from "./house/houseStats.js";
 
-export default function ResumeModal({ user, records, characterListView, onClose, onOpenReplay }) {
+export default function ResumeModal({ user, records, characterListView, onClose, onOpenAchievements, onOpenPersonalization, onOpenReplay }) {
   const [mode, setMode] = useState("spark");
   const [showReplays, setShowReplays] = useState(false);
   const modeRecords = records.filter((record) => normalizeGameModeId(record.mode) === mode);
@@ -19,7 +19,15 @@ export default function ResumeModal({ user, records, characterListView, onClose,
     <div className="modal-backdrop" onClick={onClose}>
       <section className="house-modal resume-modal" onClick={(event) => event.stopPropagation()}>
         <header className="house-header resume-header">
-          <h2>履历</h2>
+          <div className="resume-title-actions">
+            <h2>履历</h2>
+            <button type="button" className="resume-mini-action" onClick={onOpenAchievements}>
+              <Award size={16} />成就
+            </button>
+            <button type="button" className="resume-mini-action" onClick={onOpenPersonalization}>
+              <Palette size={16} />个性化
+            </button>
+          </div>
           <div className="resume-header-actions">
             <p
               className="shop-wallet resume-wallet"

@@ -92,6 +92,13 @@
 <ul>
 <li>后台“音乐管理”只维护 <code>MUSIC_TRACKS</code> 静态曲目的显示名覆盖值；<code>MusicTrackSetting</code> 不改变轨道 id、类型、角色绑定或音频文件，玩家侧 <code>/api/music-tracks</code>、角色 BGM 选择、商城音乐展示和抽卡音乐奖项显示会使用合并后的曲目名称。</li>
 </ul>
+<h2>Achievement And Personalization Note</h2>
+<ul>
+<li>成就系统以 <code>Achievement</code>、<code>AchievementRewardAsset</code>、<code>UserAchievement</code>、<code>AchievementCounter</code> 和 <code>UserAchievementEquipment</code> 为核心模型；启动时 <code>ensureAchievementSchema</code> 会为旧 SQLite 自动补表，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 补 <code>source</code> 字段。玩家侧 <code>/api/achievements</code> 返回合并后的成就列表与本次新解锁成就，<code>/api/me/achievement-equipment</code> 读写称号、徽章和用户名背景装备；后台 <code>/api/admin/achievements</code> 和 <code>/api/admin/achievement-reward-assets</code> 管理成就与奖励资产并写审计日志。</li>
+</ul>
+<ul>
+<li>履历弹窗新增“成就”和“个性化”入口；成就窗口在桌面端用表格，在移动端用卡片列表，并按“未达成 / 已达成 / 全部”筛选；个性化窗口桌面端按称号、徽章、用户名背景三列装备，移动端改为竖向分区。商城购买、抽卡和仓库道具使用会消费后端返回的 <code>achievementUnlocks</code>，以 <code>achievement</code> tone 的醒目 toast 告知玩家达成的成就。</li>
+</ul>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
 <p>本文记录 SigrikaGo 的整体目录、核心模块和已实现能力。入口文档只保留阅读导航；具体维护时优先更新本分篇或其它对应分篇。</p>
@@ -2073,6 +2080,22 @@
 <ul>
 <li>The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.</li>
 </ul>
+<h2>Achievement And Personalization Frontend</h2>
+<ul>
+<li><code>src/app/useOverlayState.js</code> 将 <code>achievements</code> 和 <code>personalization</code> 纳入应用级弹窗契约；<code>AppOverlays</code> 在履历弹窗之外挂载 <code>AchievementModal</code> 与 <code>PersonalizationModal</code>，并把履历标题区的“成就”“个性化”按钮作为入口。</li>
+</ul>
+<ul>
+<li><code>AchievementModal</code> 通过 <code>/api/achievements</code> 读取玩家成就列表，按“未达成 / 已达成 / 全部”三种 tab 过滤。桌面端使用四列表格语义呈现成就名、内容、奖励和达成时间；移动端 CSS 将同一行降级为单列卡片，未达成使用灰底，已达成使用浅黄底。</li>
+</ul>
+<ul>
+<li><code>PersonalizationModal</code> 通过 <code>/api/me/achievement-equipment</code> 读取可装备的成就奖励资产，并允许装备称号、徽章和用户名背景。桌面端为三列装备区，移动端改为竖向分区；保存后回写当前 <code>user.achievementEquipment</code>。</li>
+</ul>
+<ul>
+<li>商城、抽卡、仓库使用道具和首页 <code>/api/me</code> 刷新都会消费响应里的 <code>achievementUnlocks</code>，逐条触发 <code>achievement</code> tone toast；toast 样式仍由现有 <code>ToastStack</code> 队列统一管理。</li>
+</ul>
+<ul>
+<li>后台 <code>AdminConsole</code> 新增 <code>achievements</code> tab，<code>AdminAchievements</code> 使用“成就列表 / 奖励资产”双视图管理 <code>/api/admin/achievements</code> 与 <code>/api/admin/achievement-reward-assets</code>。</li>
+</ul>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
 <p>本文记录 Express、Socket.IO、房间生命周期、HTTP 路由边界和生产部署相关设计。新增 API、Socket 事件、房间生命周期模块或部署行为时优先更新本分篇。</p>
@@ -2672,6 +2695,22 @@
 <ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
+<h2>Achievement Domain</h2>
+<ul>
+<li><code>AchievementRewardAsset</code> 定义成就奖励资产，字段包括 <code>type</code>、<code>name</code>、<code>description</code>、<code>imageUrl</code>、<code>text</code>、<code>targetType</code>、<code>targetId</code>、<code>amount</code>、<code>enabled</code>、<code>deletedAt</code> 和 <code>sortOrder</code>。奖励类型支持 <code>currency</code>、<code>title</code>、<code>badge</code>、<code>nameplate</code>、<code>character</code>、<code>decoration</code>、<code>item</code>、<code>music</code>；称号、徽章和用户名背景只作为个性化装备资产，角色/装饰/道具奖励必须指向 <code>source = &quot;achievement&quot;</code> 的限定资源。</li>
+</ul>
+<ul>
+<li><code>Achievement</code> 定义成就目标，使用唯一 <code>key</code>、显示 <code>name</code>、<code>content</code>、<code>conditionType</code> 和 JSON 字符串 <code>conditionParams</code> 描述判定规则，并可关联一个 <code>AchievementRewardAsset</code>。<code>enabled=false</code> 或 <code>deletedAt</code> 表示后台下线，历史 <code>UserAchievement</code> 不删除。</li>
+</ul>
+<ul>
+<li><code>UserAchievement</code> 记录用户已达成状态，包含 <code>achievedAt</code> 与 <code>rewardGrantedAt</code>，并以 <code>userId + achievementId</code> 保证幂等。<code>AchievementCounter</code> 保存上线后计数型指标，如购买次数、抽卡次数、登录天数或触发事件累计；可从历史数据回溯的对局、胜场、角色胜率、拥有资产数量等由 <code>server/achievements.js</code> 实时聚合。</li>
+</ul>
+<ul>
+<li><code>UserAchievementEquipment</code> 保存用户当前装备的 <code>titleAssetId</code>、<code>badgeAssetId</code> 和 <code>nameplateAssetId</code>。更新装备时只允许选择该用户已达成成就解锁的对应类型奖励资产。</li>
+</ul>
+<ul>
+<li><code>ensureAchievementSchema</code> 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 添加 <code>source</code> 字段；<code>server/serverStartup.js</code> 在音乐设置 schema guard 后执行该 guard。</li>
+</ul>
 <p>---</p>
 <h1>资源、音频与启动预加载</h1>
 <p>本文记录图片、音乐、音效、语音、WebP 资产、启动预加载和资源扩展约束。新增角色资源、音乐语音、特效素材、预加载策略或资源路径时优先更新本分篇。</p>
@@ -3236,6 +3275,19 @@
 </ul>
 <ul>
 <li>Key responsive breakpoints are <code>768px</code> for the general mobile adaptation layer, <code>768px + portrait</code> for phone/narrow tablet vertical layouts, <code>768px + landscape</code> for short wide devices, and <code>360px</code> for the smallest phone fallback. Existing project breakpoints at <code>900px</code>, <code>760px</code>, <code>620px</code>, and <code>560px</code> remain in place; the final mobile layer only resolves conflicts and enforces mobile usability guarantees.</li>
+</ul>
+<h2>Achievement And Personalization UI</h2>
+<ul>
+<li>成就与个性化窗口沿用 Bright School / 纸张 scrapbook 视觉：<code>house-modal</code> 外壳、8px 控件圆角、纸张边框、柔和浅色背景和现有 modal close-button 契约，不引入新的品牌视觉。</li>
+</ul>
+<ul>
+<li>成就筛选 tab 使用三等分按钮，桌面端列表保持表格列对齐；<code>unachieved</code> 行使用灰色背景，<code>achieved</code> 行使用浅黄色背景。560px 以下隐藏表头并将每条成就变成单列卡片，避免奖励和达成时间列挤压。</li>
+</ul>
+<ul>
+<li>个性化窗口桌面端使用预览区加三列装备面板，称号、徽章、用户名背景分别独立选择；560px 以下改为单列面板，按钮保持 42px 以上高度和内部省略号，保证移动端可点选。</li>
+</ul>
+<ul>
+<li><code>toast.achievement</code> 使用金橙色高亮渐变和更强阴影，作为成就达成反馈；普通成功/错误 toast 样式不变。</li>
 </ul>
 <p>---</p>
 <h1>性能、技术债与扩展路线</h1>

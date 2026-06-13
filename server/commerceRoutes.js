@@ -1,20 +1,30 @@
 import express from "express";
+import {
+  ACHIEVEMENT_TRIGGER_EVENTS,
+  evaluateAchievementsForUser,
+  incrementAchievementCounter
+} from "./achievements.js";
 import { listItemInventory, useInventoryItem } from "./items.js";
 import { purchaseShopItem } from "./shop.js";
 
 export function createCommerceRouteHandlers({
   prisma,
+  evaluateAchievementsForUserFn = evaluateAchievementsForUser,
+  incrementAchievementCounterFn = incrementAchievementCounter,
   listItemInventoryFn = listItemInventory,
   purchaseShopItemFn = purchaseShopItem,
   useInventoryItemFn = useInventoryItem
 }) {
   async function purchase(req, res) {
     try {
-      res.json(await purchaseShopItemFn({
+      const result = await purchaseShopItemFn({
         prisma,
         userId: req.user.id,
         itemId: req.params.id
-      }));
+      });
+      await incrementAchievementCounterFn({ prisma, userId: req.user.id, metric: "purchase_count" });
+      const achievementUnlocks = await evaluateAchievementsForUserFn({ prisma, userId: req.user.id });
+      res.json(withAchievementUnlocks(result, achievementUnlocks));
     } catch (error) {
       res.status(error.status ?? 500).json({ error: error.message ?? "\u8d2d\u4e70\u5931\u8d25" });
     }
@@ -30,12 +40,17 @@ export function createCommerceRouteHandlers({
 
   async function useItem(req, res) {
     try {
-      res.json(await useInventoryItemFn({
+      const result = await useInventoryItemFn({
         prisma,
         userId: req.user.id,
         itemId: req.params.itemId,
         characterId: req.body.characterId
-      }));
+      });
+      const triggerEvent = result.item?.targetId === "rainbow-bean-candy" && result.target?.characterId === "denia"
+        ? ACHIEVEMENT_TRIGGER_EVENTS.deniaRainbowBeanCandy
+        : "";
+      const achievementUnlocks = await evaluateAchievementsForUserFn({ prisma, userId: req.user.id, triggerEvent });
+      res.json(withAchievementUnlocks(result, achievementUnlocks));
     } catch (error) {
       res.status(error.status ?? 500).json({ error: error.message ?? "\u4f7f\u7528\u9053\u5177\u5931\u8d25" });
     }
@@ -46,6 +61,10 @@ export function createCommerceRouteHandlers({
     inventory,
     useItem
   };
+}
+
+function withAchievementUnlocks(result, achievementUnlocks = []) {
+  return achievementUnlocks.length ? { ...result, achievementUnlocks } : result;
 }
 
 export function createCommerceRouter(deps) {

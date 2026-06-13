@@ -49,6 +49,7 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
         setItems((current) => current.map((shopItem) => shopItem.id === data.item.id ? data.item : shopItem));
       }
       onNotice?.(`已购买${item.name}`, "success");
+      notifyAchievementUnlocks(data.achievementUnlocks, onNotice);
     } catch (apiError) {
       onNotice?.(apiError.message, "danger");
     } finally {
@@ -81,6 +82,12 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
     setActivePage,
     shopSlots
   };
+}
+
+function notifyAchievementUnlocks(unlocks = [], onNotice) {
+  for (const unlock of unlocks) {
+    onNotice?.(`达成成就：${unlock.name}`, "achievement");
+  }
 }
 
 function applyMusicItemNames(items, musicTracks = {}) {
