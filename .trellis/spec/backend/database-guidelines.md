@@ -228,6 +228,7 @@ await prisma.musicTrackSetting.upsert({
 - `AchievementCounter { id, userId, type, value }` with unique `(userId, type)`.
 - `UserAchievementEquipment { userId, titleAssetId?, badgeAssetId?, nameplateAssetId?, updatedAt }`
 - `ensureAchievementSchema(prisma)` must run during startup before player/admin achievement routes or public profile payloads use these models.
+- Because it adds `Character.source`, `Decoration.source`, and `ShopItem.source` to older SQLite databases, it must also run before any seed task or query that reads those Prisma models.
 
 #### 3. Contracts
 - Static gameplay/resource data remains authoritative unless an enabled achievement reward asset points at a `source=achievement` resource.
@@ -245,6 +246,7 @@ await prisma.musicTrackSetting.upsert({
 - Equipment asset not unlocked by the user -> reject equipment update.
 - Equipment asset type does not match the slot -> reject equipment update.
 - Missing achievement tables in an older SQLite database -> startup guard creates them in place.
+- Missing `source` columns in an older SQLite database -> startup guard must add them before `seedCharacters()` or shop seed/query code runs.
 - Narrow unit-test Prisma mocks with no achievement delegates -> stats/evaluation helpers should return empty unlocks or zero stats instead of crashing unrelated route tests.
 
 #### 5. Good/Base/Bad Cases
@@ -255,6 +257,7 @@ await prisma.musicTrackSetting.upsert({
 
 #### 6. Tests Required
 - Schema guard tests assert tables/indexes/source columns are created and the guard is idempotent.
+- Server startup tests assert `ensureAchievementSchema()` runs before `seedCharacters()` and `seedBuiltinShopItems()`.
 - Admin route/domain tests assert unknown track/resource ids and disabled assets are rejected and audit actions are written.
 - Player list tests assert enabled achievements merge default state, achieved state, reward display, and new unlocks.
 - Equipment tests assert locked, disabled, wrong-type, and valid unlocked assets.

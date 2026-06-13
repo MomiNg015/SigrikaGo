@@ -94,7 +94,7 @@
 </ul>
 <h2>Achievement And Personalization Note</h2>
 <ul>
-<li>成就系统以 <code>Achievement</code>、<code>AchievementRewardAsset</code>、<code>UserAchievement</code>、<code>AchievementCounter</code> 和 <code>UserAchievementEquipment</code> 为核心模型；启动时 <code>ensureAchievementSchema</code> 会为旧 SQLite 自动补表，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 补 <code>source</code> 字段。玩家侧 <code>/api/achievements</code> 返回合并后的成就列表与本次新解锁成就，<code>/api/me/achievement-equipment</code> 读写称号、徽章和用户名背景装备；后台 <code>/api/admin/achievements</code> 和 <code>/api/admin/achievement-reward-assets</code> 管理成就与奖励资产并写审计日志。</li>
+<li>成就系统以 <code>Achievement</code>、<code>AchievementRewardAsset</code>、<code>UserAchievement</code>、<code>AchievementCounter</code> 和 <code>UserAchievementEquipment</code> 为核心模型；启动时 <code>ensureAchievementSchema</code> 会先于角色/商店种子任务运行，为旧 SQLite 自动补表，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 补 <code>source</code> 字段。玩家侧 <code>/api/achievements</code> 返回合并后的成就列表与本次新解锁成就，<code>/api/me/achievement-equipment</code> 读写称号、徽章和用户名背景装备；后台 <code>/api/admin/achievements</code> 和 <code>/api/admin/achievement-reward-assets</code> 管理成就与奖励资产并写审计日志。</li>
 </ul>
 <ul>
 <li>履历弹窗新增“成就”和“个性化”入口；成就窗口在桌面端用表格，在移动端用卡片列表，并按“未达成 / 已达成 / 全部”筛选；个性化窗口桌面端按称号、徽章、用户名背景三列装备，移动端改为竖向分区。商城购买、抽卡和仓库道具使用会消费后端返回的 <code>achievementUnlocks</code>，以 <code>achievement</code> tone 的醒目 toast 告知玩家达成的成就。</li>
@@ -2709,7 +2709,7 @@
 <li><code>UserAchievementEquipment</code> 保存用户当前装备的 <code>titleAssetId</code>、<code>badgeAssetId</code> 和 <code>nameplateAssetId</code>。更新装备时只允许选择该用户已达成成就解锁的对应类型奖励资产。</li>
 </ul>
 <ul>
-<li><code>ensureAchievementSchema</code> 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 添加 <code>source</code> 字段；<code>server/serverStartup.js</code> 在音乐设置 schema guard 后执行该 guard。</li>
+<li><code>ensureAchievementSchema</code> 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 添加 <code>source</code> 字段；<code>server/serverStartup.js</code> 会在角色与商店种子任务之前执行该 guard，避免 Prisma 在旧库缺少 <code>source</code> 列时先读取这些模型。</li>
 </ul>
 <p>---</p>
 <h1>资源、音频与启动预加载</h1>

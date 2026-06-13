@@ -37,6 +37,7 @@ describe("server startup", () => {
     });
 
     expect(calls).toEqual([
+      "ensureAchievementSchema",
       "seedCharacters",
       "seedBuiltinShopItems",
       "ensureDefaultSiteSettings",
@@ -46,7 +47,6 @@ describe("server startup", () => {
       "ensureGameModeSchema",
       "ensureGachaSchema",
       "ensureMusicTrackSettingsSchema",
-      "ensureAchievementSchema",
       "promoteConfiguredAdmins"
     ]);
   });

@@ -23,6 +23,7 @@ export async function initializeServerData({
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
   promoteConfiguredAdmins: promoteConfiguredAdminsTask = promoteConfiguredAdmins
 }) {
+  await ensureAchievementSchemaTask(prisma);
   await seedCharactersTask(prisma);
   await seedBuiltinShopItemsTask(prisma);
   await ensureDefaultSiteSettingsTask(prisma);
@@ -32,6 +33,5 @@ export async function initializeServerData({
   await ensureGameModeSchemaTask(prisma);
   await ensureGachaSchemaTask(prisma);
   await ensureMusicTrackSettingsSchemaTask(prisma);
-  await ensureAchievementSchemaTask(prisma);
   await promoteConfiguredAdminsTask(prisma);
 }
