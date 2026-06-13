@@ -269,3 +269,36 @@ Updated gacha ten-pull result cards to use a desktop 2x5 grid, player-facing rew
 ### Next Steps
 
 - None - task complete
+
+
+## Session 9: Gacha Scheme C responsive UI
+
+**Date**: 2026-06-13
+**Task**: Gacha Scheme C responsive UI
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Implemented the selected Scheme C school-festival candy-capsule gacha modal for desktop and mobile, added CSS/markup tests, browser-checked the responsive layout, and synced system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c341ba3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
