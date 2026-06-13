@@ -302,3 +302,36 @@ Fixed the member manual chain badge disappearing after switching sortie characte
 ### Next Steps
 
 - None - task complete
+
+
+## Session 10: 成就系统与个性化装备
+
+**Date**: 2026-06-13
+**Task**: 成就系统与个性化装备
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Implemented achievement domain persistence, admin achievement management, player achievement and personalization modals, unlock toasts, docs, and Trellis code-spec updates.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `92be79e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

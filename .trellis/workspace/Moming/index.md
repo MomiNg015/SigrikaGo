@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 9
+- **Total Sessions**: 10
 - **Last Active**: 2026-06-13
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~304 | Active |
+| `journal-1.md` | ~337 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 10 | 2026-06-13 | 成就系统与个性化装备 | `92be79e` | `codex/gacha-scheme-c-ui` |
 | 9 | 2026-06-13 | Fix house manual chain badge switching | `78b1374` | `codex/gacha-scheme-c-ui` |
 | 8 | 2026-06-12 | Polish gacha ten-pull results | `bb9aaf9` | `codex/standard-game-mode` |
 | 7 | 2026-06-12 | Hide number input spinners | `5aa04a3` | `codex/standard-game-mode` |
