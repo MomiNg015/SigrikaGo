@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { CHARACTERS } from "../shared/characters.js";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { deploymentSocketBase } from "../shared/preloadAssets.js";
@@ -86,11 +86,11 @@ export default function App() {
   const [assetProgress, setAssetProgress] = useState(0);
   const [audioResumeSignal, setAudioResumeSignal] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
-  const showAchievementUnlocks = (unlocks = []) => {
+  const showAchievementUnlocks = useCallback((unlocks = []) => {
     for (const unlock of unlocks) {
       showToast(`达成成就：${unlock.name}`, "achievement");
     }
-  };
+  }, [showToast]);
   const { setUser, updateUser, user } = useCurrentUser();
   const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState();
   const { audioSettingsRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
