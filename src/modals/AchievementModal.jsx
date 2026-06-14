@@ -3,7 +3,7 @@ import { Award, X } from "lucide-react";
 import { api } from "../api/client.js";
 
 const FILTERS = [
-  { id: "unachieved", label: "未达成" },
+  { id: "unachieved", label: "未完成" },
   { id: "achieved", label: "已达成" },
   { id: "all", label: "全部" }
 ];

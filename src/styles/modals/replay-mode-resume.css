@@ -311,9 +311,10 @@
 
 .achievement-tabs button.active,
 .achievement-tabs button[aria-selected="true"] {
-  background: #1f6f5b;
-  border-color: #1f6f5b;
-  color: #fff;
+  background: #ff9ebb;
+  border-color: #3d2b25;
+  color: #3d2b25;
+  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.42);
 }
 
 .achievement-list {

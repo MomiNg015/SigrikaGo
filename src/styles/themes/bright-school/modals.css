@@ -213,7 +213,9 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button.active,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button[aria-selected="true"] {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button[aria-selected="true"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-tabs button[aria-selected="true"] {
   background: #ff9ebb !important;
   color: #3d2b25 !important;
   border-color: #3d2b25 !important;
