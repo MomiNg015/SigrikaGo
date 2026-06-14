@@ -812,6 +812,114 @@ describe("admin gacha routes", () => {
   });
 });
 
+describe("admin achievement routes", () => {
+  it("updates only editable achievement fields and writes audit", async () => {
+    const achievementUpdates = [];
+    const auditWrites = [];
+    const rewardAsset = {
+      id: "reward-1",
+      type: "title",
+      name: "Reward",
+      enabled: true,
+      deletedAt: null,
+      sortOrder: 0
+    };
+    const achievement = {
+      id: "ach-1",
+      key: "first-win",
+      name: "Old Name",
+      content: "Old content",
+      conditionType: "wins",
+      conditionParams: "{\"value\":1}",
+      rewardAssetId: "",
+      rewardAsset: null,
+      enabled: true,
+      deletedAt: null,
+      sortOrder: 1,
+      _count: { userAchievements: 2 }
+    };
+    const response = await requestAdminRoute({
+      achievementRewardAsset: {
+        findUnique: async ({ where }) => (where.id === rewardAsset.id ? rewardAsset : null)
+      },
+      $transaction: async (callback) => callback({
+        achievement: {
+          findUnique: async () => achievement,
+          update: async ({ data }) => {
+            achievementUpdates.push(data);
+            return {
+              ...achievement,
+              ...data,
+              rewardAssetId: data.rewardAssetId,
+              rewardAsset,
+              _count: achievement._count
+            };
+          }
+        },
+        adminAuditLog: {
+          create: async ({ data }) => {
+            auditWrites.push(data);
+            return data;
+          }
+        }
+      })
+    }, "/achievements/ach-1", {
+      method: "PATCH",
+      body: {
+        name: "New Name",
+        content: "New content",
+        rewardAssetId: "reward-1",
+        sortOrder: 7
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.achievement).toMatchObject({
+      id: "ach-1",
+      name: "New Name",
+      content: "New content",
+      rewardAssetId: "reward-1",
+      sortOrder: 7
+    });
+    expect(achievementUpdates).toEqual([{
+      name: "New Name",
+      content: "New content",
+      rewardAssetId: "reward-1",
+      sortOrder: 7
+    }]);
+    expect(auditWrites[0]).toMatchObject({
+      action: "achievement.update",
+      targetType: "achievement",
+      targetId: "ach-1"
+    });
+  });
+
+  it("rejects code-managed achievement fields in admin updates", async () => {
+    const response = await requestAdminRoute({}, "/achievements/ach-1", {
+      method: "PATCH",
+      body: { conditionType: "wins" }
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain("conditionType");
+  });
+
+  it("rejects direct achievement creation and deletion", async () => {
+    const createResponse = await requestAdminRoute({}, "/achievements", {
+      method: "POST",
+      body: { key: "new-achievement" }
+    });
+    const deleteResponse = await requestAdminRoute({}, "/achievements/ach-1", {
+      method: "DELETE"
+    });
+
+    expect(createResponse.status).toBe(405);
+    expect(createResponse.body).toEqual({ error: "Achievement creation is code-managed" });
+    expect(deleteResponse.status).toBe(405);
+    expect(deleteResponse.body).toEqual({ error: "Achievement deletion is code-managed" });
+  });
+});
+
 describe("admin music track routes", () => {
   it("lists and updates music display names", async () => {
     const auditWrites = [];

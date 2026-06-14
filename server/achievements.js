@@ -28,6 +28,32 @@ export const ACHIEVEMENT_TRIGGER_EVENTS = {
   deniaRainbowBeanCandy: "denia-rainbow-bean-candy"
 };
 
+const DENIA_RAINBOW_BEAN_CANDY_REWARD_ID = "reward-denia-rainbow-bean-candy-coins";
+const BUILTIN_ACHIEVEMENT_REWARD_ASSETS = [{
+  id: DENIA_RAINBOW_BEAN_CANDY_REWARD_ID,
+  type: ACHIEVEMENT_REWARD_TYPES.currency,
+  name: "你给我吃了什么！？奖励",
+  description: "请达妮娅吃了彩虹豆豆跳跳糖",
+  imageUrl: "",
+  text: "100 金币",
+  targetType: "coins",
+  targetId: "",
+  amount: 100,
+  enabled: true,
+  sortOrder: 100
+}];
+const BUILTIN_ACHIEVEMENTS = [{
+  id: "achievement-denia-rainbow-bean-candy",
+  key: "denia-rainbow-bean-candy",
+  name: "你给我吃了什么！？",
+  content: "请达妮娅吃了彩虹豆豆跳跳糖",
+  conditionType: "trigger_event",
+  conditionParams: JSON.stringify({ event: ACHIEVEMENT_TRIGGER_EVENTS.deniaRainbowBeanCandy }),
+  rewardAssetId: DENIA_RAINBOW_BEAN_CANDY_REWARD_ID,
+  enabled: true,
+  sortOrder: 100
+}];
+
 const REWARD_TYPES = new Set(Object.values(ACHIEVEMENT_REWARD_TYPES));
 const EQUIPMENT_FIELDS = {
   title: "titleAssetId",
@@ -118,6 +144,20 @@ export async function ensureAchievementSchema(client) {
   await client.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "AchievementCounter_userId_metric_targetId_key" ON "AchievementCounter"("userId", "metric", "targetId")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "AchievementCounter_metric_targetId_idx" ON "AchievementCounter"("metric", "targetId")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "AchievementRewardAsset_type_enabled_sortOrder_idx" ON "AchievementRewardAsset"("type", "enabled", "sortOrder")`);
+}
+
+export async function seedBuiltinAchievements(prisma) {
+  if (!prisma?.achievementRewardAsset?.findUnique || !prisma?.achievement?.findUnique) return;
+  for (const asset of BUILTIN_ACHIEVEMENT_REWARD_ASSETS) {
+    const existing = await prisma.achievementRewardAsset.findUnique({ where: { id: asset.id } });
+    if (existing) continue;
+    await prisma.achievementRewardAsset.create({ data: asset });
+  }
+  for (const achievement of BUILTIN_ACHIEVEMENTS) {
+    const existing = await prisma.achievement.findUnique({ where: { key: achievement.key } });
+    if (existing) continue;
+    await prisma.achievement.create({ data: achievement });
+  }
 }
 
 export async function listAchievementsForUser({ prisma, userId }) {
@@ -287,7 +327,7 @@ export async function createAchievement({ prisma, adminUser, body }) {
 }
 
 export async function updateAchievement({ prisma, adminUser, achievementId, body }) {
-  const input = validateAchievementInput(body, { partial: true });
+  const input = validateAchievementEditableInput(body);
   if (Object.hasOwn(input, "rewardAssetId")) await assertAchievementRewardExists(prisma, input.rewardAssetId);
   return prisma.$transaction(async (tx) => {
     const before = await tx.achievement.findUnique({ where: { id: achievementId }, include: { rewardAsset: true } });
@@ -597,6 +637,25 @@ function validateAchievementInput(body = {}, { partial = false } = {}) {
   }
   if (!partial || Object.hasOwn(body, "enabled")) output.enabled = body.enabled !== false;
   if (!partial || Object.hasOwn(body, "sortOrder")) output.sortOrder = parseIntValue(body.sortOrder ?? 0);
+  return output;
+}
+
+function validateAchievementEditableInput(body = {}) {
+  const output = {};
+  const editableFields = new Set(["name", "content", "rewardAssetId", "sortOrder"]);
+  for (const field of Object.keys(body ?? {})) {
+    if (!editableFields.has(field)) throw routeError(400, `${field} is code-managed`);
+  }
+  for (const field of ["name", "content"]) {
+    if (Object.hasOwn(body, field)) {
+      const value = String(body[field] ?? "").trim();
+      if (!value) throw routeError(400, `${field} is required`);
+      output[field] = value.slice(0, field === "content" ? 240 : 80);
+    }
+  }
+  if (Object.hasOwn(body, "rewardAssetId")) output.rewardAssetId = String(body.rewardAssetId ?? "").trim() || null;
+  if (Object.hasOwn(body, "sortOrder")) output.sortOrder = parseIntValue(body.sortOrder ?? 0);
+  if (!Object.keys(output).length) throw routeError(400, "No editable achievement fields");
   return output;
 }
 

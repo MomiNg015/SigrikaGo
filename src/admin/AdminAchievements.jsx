@@ -1,17 +1,6 @@
 import { useMemo, useState } from "react";
 import { adminApi } from "../api/client.js";
 
-const DEFAULT_CONDITION = { value: 1 };
-const EMPTY_ACHIEVEMENT = {
-  key: "",
-  name: "",
-  content: "",
-  conditionType: "total_games",
-  conditionParams: DEFAULT_CONDITION,
-  rewardAssetId: "",
-  enabled: true,
-  sortOrder: 0
-};
 const EMPTY_REWARD = {
   type: "currency",
   name: "",
@@ -31,17 +20,15 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
   const [draftReward, setDraftReward] = useState(null);
   const rewardAssets = data?.rewardAssets ?? [];
   const achievements = data?.achievements ?? [];
-  const rewardOptions = useMemo(() => rewardAssets.filter((asset) => asset.enabled && !asset.deletedAt), [rewardAssets]);
+  const rewardOptions = useMemo(() => rewardAssets.filter((asset) => !asset.deletedAt), [rewardAssets]);
 
   async function saveAchievement(event) {
     event.preventDefault();
-    const payload = {
-      ...draftAchievement,
-      conditionParams: normalizeJsonLike(draftAchievement.conditionParams)
-    };
     try {
-      if (payload.id) await adminApi(`/achievements/${payload.id}`, token, { method: "PATCH", body: payload });
-      else await adminApi("/achievements", token, { method: "POST", body: payload });
+      await adminApi(`/achievements/${draftAchievement.id}`, token, {
+        method: "PATCH",
+        body: editableAchievementPayload(draftAchievement)
+      });
       setDraftAchievement(null);
       await onSaved();
       onNotice?.("成就已保存", "success");
@@ -58,16 +45,6 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
       setDraftReward(null);
       await onSaved();
       onNotice?.("奖励资产已保存", "success");
-    } catch (error) {
-      onNotice?.(error.message);
-    }
-  }
-
-  async function disableAchievement(achievement) {
-    try {
-      await adminApi(`/achievements/${achievement.id}`, token, { method: "DELETE" });
-      await onSaved();
-      onNotice?.("成就已下线", "success");
     } catch (error) {
       onNotice?.(error.message);
     }
@@ -97,30 +74,26 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
       </div>
 
       {view === "achievements" && (
-        <>
-          <button className="admin-add-button" type="button" onClick={() => setDraftAchievement({ ...EMPTY_ACHIEVEMENT })}>新增成就</button>
-          <div className="admin-table-wrap">
-            <table className="admin-table compact">
-              <thead><tr><th>Key</th><th>成就名</th><th>条件</th><th>奖励</th><th>状态</th><th>达成人数</th><th>操作</th></tr></thead>
-              <tbody>
-                {achievements.map((achievement) => (
-                  <tr key={achievement.id}>
-                    <td>{achievement.key}</td>
-                    <td>{achievement.name}</td>
-                    <td>{achievement.conditionType}</td>
-                    <td>{achievement.reward?.name || "无"}</td>
-                    <td><span className={`admin-status-pill ${achievement.enabled ? "green" : "red"}`}>{achievement.enabled ? "启用" : "下线"}</span></td>
-                    <td>{achievement.achievedCount ?? 0}</td>
-                    <td>
-                      <button className="admin-row-action" type="button" onClick={() => setDraftAchievement(achievementToDraft(achievement))}>编辑</button>
-                      <button className="admin-row-action" type="button" onClick={() => disableAchievement(achievement)}>下线</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
+        <div className="admin-table-wrap">
+          <table className="admin-table compact">
+            <thead><tr><th>Key</th><th>成就名</th><th>条件</th><th>奖励</th><th>状态</th><th>达成人数</th><th>操作</th></tr></thead>
+            <tbody>
+              {achievements.map((achievement) => (
+                <tr key={achievement.id}>
+                  <td>{achievement.key}</td>
+                  <td>{achievement.name}</td>
+                  <td>{achievement.conditionType}</td>
+                  <td>{achievement.reward?.name || "无"}</td>
+                  <td><span className={`admin-status-pill ${achievement.enabled ? "green" : "red"}`}>{achievement.enabled ? "启用" : "下线"}</span></td>
+                  <td>{achievement.achievedCount ?? 0}</td>
+                  <td>
+                    <button className="admin-row-action" type="button" onClick={() => setDraftAchievement(achievementToDraft(achievement))}>编辑</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {view === "rewards" && (
@@ -153,21 +126,19 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
         <div className="admin-crud-drawer">
           <form className="admin-character-form" onSubmit={saveAchievement}>
             <div className="admin-form-heading">
-              <h2>{draftAchievement.id ? "编辑成就" : "新增成就"}</h2>
+              <h2>编辑成就</h2>
               <button type="button" className="close-button" onClick={() => setDraftAchievement(null)}>×</button>
             </div>
             <div className="admin-character-form-grid">
-              <label>Key<input value={draftAchievement.key} onChange={(e) => setDraftAchievement({ ...draftAchievement, key: e.target.value })} /></label>
+              <label>Key<input value={draftAchievement.key} readOnly /></label>
+              <label>条件类型<input value={draftAchievement.conditionType} readOnly /></label>
               <label>排序<input type="number" value={draftAchievement.sortOrder} onChange={(e) => setDraftAchievement({ ...draftAchievement, sortOrder: Number(e.target.value) })} /></label>
               <label>成就名<input value={draftAchievement.name} onChange={(e) => setDraftAchievement({ ...draftAchievement, name: e.target.value })} /></label>
-              <label>条件类型<input value={draftAchievement.conditionType} onChange={(e) => setDraftAchievement({ ...draftAchievement, conditionType: e.target.value })} /></label>
               <label className="wide-field">成就内容<textarea value={draftAchievement.content} onChange={(e) => setDraftAchievement({ ...draftAchievement, content: e.target.value })} /></label>
-              <label className="wide-field">条件参数 JSON<textarea value={jsonText(draftAchievement.conditionParams)} onChange={(e) => setDraftAchievement({ ...draftAchievement, conditionParams: e.target.value })} /></label>
               <label>奖励资产<select value={draftAchievement.rewardAssetId} onChange={(e) => setDraftAchievement({ ...draftAchievement, rewardAssetId: e.target.value })}>
                 <option value="">无奖励</option>
                 {rewardOptions.map((asset) => <option key={asset.id} value={asset.id}>{asset.name}</option>)}
               </select></label>
-              <label className="admin-checkbox"><input type="checkbox" checked={draftAchievement.enabled} onChange={(e) => setDraftAchievement({ ...draftAchievement, enabled: e.target.checked })} />启用</label>
             </div>
             <button className="primary-action" type="submit">保存成就</button>
           </form>
@@ -203,22 +174,21 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
 
 function achievementToDraft(achievement) {
   return {
-    ...achievement,
-    conditionParams: achievement.conditionParams ?? DEFAULT_CONDITION,
-    rewardAssetId: achievement.rewardAssetId ?? ""
+    id: achievement.id,
+    key: achievement.key,
+    name: achievement.name,
+    content: achievement.content,
+    conditionType: achievement.conditionType,
+    rewardAssetId: achievement.rewardAssetId ?? "",
+    sortOrder: achievement.sortOrder ?? 0
   };
 }
 
-function jsonText(value) {
-  if (typeof value === "string") return value;
-  return JSON.stringify(value ?? {}, null, 2);
-}
-
-function normalizeJsonLike(value) {
-  if (typeof value === "object" && value && !Array.isArray(value)) return value;
-  try {
-    return JSON.parse(String(value || "{}"));
-  } catch {
-    return {};
-  }
+function editableAchievementPayload(draft) {
+  return {
+    name: draft.name,
+    content: draft.content,
+    rewardAssetId: draft.rewardAssetId,
+    sortOrder: draft.sortOrder
+  };
 }

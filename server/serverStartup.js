@@ -1,5 +1,5 @@
 import { promoteConfiguredAdmins } from "./adminConfig.js";
-import { ensureAchievementSchema } from "./achievements.js";
+import { ensureAchievementSchema, seedBuiltinAchievements } from "./achievements.js";
 import { seedCharacters } from "./characters.js";
 import { ensureGachaSchema, ensureGameModeSchema } from "./db.js";
 import { ensureLoginSessionSchema } from "./loginSessions.js";
@@ -21,9 +21,11 @@ export async function initializeServerData({
   ensureGachaSchema: ensureGachaSchemaTask = ensureGachaSchema,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
+  seedBuiltinAchievements: seedBuiltinAchievementsTask = seedBuiltinAchievements,
   promoteConfiguredAdmins: promoteConfiguredAdminsTask = promoteConfiguredAdmins
 }) {
   await ensureAchievementSchemaTask(prisma);
+  await seedBuiltinAchievementsTask(prisma);
   await seedCharactersTask(prisma);
   await seedBuiltinShopItemsTask(prisma);
   await ensureDefaultSiteSettingsTask(prisma);

@@ -219,7 +219,7 @@ await prisma.musicTrackSetting.upsert({
 
 #### 1. Scope / Trigger
 - Trigger: any change to achievements, achievement reward assets, player achievement equipment, reward-source resources, commerce/gacha achievement unlocks, or startup schema guards for achievement tables.
-- This is a cross-layer contract because admin CRUD defines goals, backend domain evaluation grants rewards, player APIs expose achieved state, and frontend profile overlays render/equip achievement rewards.
+- This is a cross-layer contract because code/seeded achievement definitions drive backend domain evaluation, admin edits only display/reward/sort metadata, player APIs expose achieved state, and frontend profile overlays render/equip achievement rewards.
 
 #### 2. Signatures
 - `Achievement { id, key, name, description, conditionType, conditionParams, rewardAssetId?, isEnabled, createdAt, updatedAt }`
@@ -228,10 +228,13 @@ await prisma.musicTrackSetting.upsert({
 - `AchievementCounter { id, userId, type, value }` with unique `(userId, type)`.
 - `UserAchievementEquipment { userId, titleAssetId?, badgeAssetId?, nameplateAssetId?, updatedAt }`
 - `ensureAchievementSchema(prisma)` must run during startup before player/admin achievement routes or public profile payloads use these models.
+- `seedBuiltinAchievements(prisma)` runs after `ensureAchievementSchema(prisma)` and creates missing code-owned achievements/reward assets without overwriting existing rows.
 - Because it adds `Character.source`, `Decoration.source`, and `ShopItem.source` to older SQLite databases, it must also run before any seed task or query that reads those Prisma models.
 
 #### 3. Contracts
 - Static gameplay/resource data remains authoritative unless an enabled achievement reward asset points at a `source=achievement` resource.
+- Achievement goals are code-owned: admin HTTP routes must not create/delete achievements or mutate `key`, `conditionType`, `conditionParams`, `enabled`, or `deletedAt`; admin PATCH may only update `name`, `content`, `rewardAssetId`, and `sortOrder`.
+- Built-in trigger-event achievements should be seeded as missing-only rows so startup does not overwrite later admin display/reward/sort edits.
 - Resource reward assets of type `character`, `decoration`, and `item` must only target records with `source === "achievement"`; they must not silently grant default/shop resources.
 - Reward grants must be idempotent: an already achieved row with `rewardGrantedAt` set must not grant currency/assets again.
 - Player `GET /api/achievements` returns all enabled achievements merged with the current user's `isAchieved`, `achievedAt`, and reward display payload, plus only the unlocks newly achieved during that request.
@@ -241,7 +244,9 @@ await prisma.musicTrackSetting.upsert({
 
 #### 4. Validation & Error Matrix
 - Unknown admin achievement id -> `404 ACHIEVEMENT_NOT_FOUND`.
-- Unknown reward asset id on achievement create/update -> reject before writing the achievement.
+- Direct admin achievement create/delete -> `405` because achievement goals are code-managed.
+- Code-owned field in admin achievement update -> reject before writing the achievement.
+- Unknown reward asset id on achievement update -> reject before writing the achievement.
 - Unknown or disabled equipment asset -> reject equipment update.
 - Equipment asset not unlocked by the user -> reject equipment update.
 - Equipment asset type does not match the slot -> reject equipment update.
@@ -251,6 +256,7 @@ await prisma.musicTrackSetting.upsert({
 
 #### 5. Good/Base/Bad Cases
 - Good: using a rainbow bean candy on Denia evaluates the trigger event, creates one `UserAchievement`, grants its reward once, and returns one unlock toast payload.
+- Good: the built-in `denia-rainbow-bean-candy` achievement unlocks only when `ACHIEVEMENT_TRIGGER_EVENTS.deniaRainbowBeanCandy` is passed after the achievement exists, not when the player merely opens the achievement list later.
 - Base: a player with no achievements receives enabled achievements with `isAchieved: false`, empty `achievedAt`, and zero stats.
 - Bad: adding an achievement by writing a `UserAchievement` row directly without running reward grant logic.
 - Bad: letting a badge slot equip a `title` asset or an asset the user has not unlocked.

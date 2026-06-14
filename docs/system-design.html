@@ -94,7 +94,10 @@
 </ul>
 <h2>Achievement And Personalization Note</h2>
 <ul>
-<li>成就系统以 <code>Achievement</code>、<code>AchievementRewardAsset</code>、<code>UserAchievement</code>、<code>AchievementCounter</code> 和 <code>UserAchievementEquipment</code> 为核心模型；启动时 <code>ensureAchievementSchema</code> 会先于角色/商店种子任务运行，为旧 SQLite 自动补表，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 补 <code>source</code> 字段。玩家侧 <code>/api/achievements</code> 返回合并后的成就列表与本次新解锁成就，<code>/api/me/achievement-equipment</code> 读写称号、徽章和用户名背景装备；后台 <code>/api/admin/achievements</code> 和 <code>/api/admin/achievement-reward-assets</code> 管理成就与奖励资产并写审计日志。</li>
+<li>成就系统以 <code>Achievement</code>、<code>AchievementRewardAsset</code>、<code>UserAchievement</code>、<code>AchievementCounter</code> 和 <code>UserAchievementEquipment</code> 为核心模型；启动时 <code>ensureAchievementSchema</code> 会先于角色/商店种子任务运行，为旧 SQLite 自动补表，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 补 <code>source</code> 字段。玩家侧 <code>/api/achievements</code> 返回合并后的成就列表与本次新解锁成就，<code>/api/me/achievement-equipment</code> 读写称号、徽章和用户名背景装备；成就目标本体由代码/种子维护，后台 <code>/api/admin/achievements</code> 只允许修改成就名、成就内容、奖励资产和排序，<code>/api/admin/achievement-reward-assets</code> 继续管理奖励资产并写审计日志。</li>
+</ul>
+<ul>
+<li>内置成就“你给我吃了什么！？”由 <code>seedBuiltinAchievements</code> 在启动时按需创建，监听新增后的 <code>denia-rainbow-bean-candy</code> 道具使用事件；玩家请达妮娅吃彩虹豆豆跳跳糖后解锁并获得 100 金币，不回溯统计成就上线前发生过的使用记录。</li>
 </ul>
 <ul>
 <li>履历弹窗新增“成就”和“个性化”入口；成就窗口在桌面端用表格，在移动端用卡片列表，并按“未达成 / 已达成 / 全部”筛选；个性化窗口桌面端按称号、徽章、用户名背景三列装备，移动端改为竖向分区。商城购买、抽卡和仓库道具使用会消费后端返回的 <code>achievementUnlocks</code>，以 <code>achievement</code> tone 的醒目 toast 告知玩家达成的成就。</li>
@@ -2094,7 +2097,7 @@
 <li>商城、抽卡、仓库使用道具和首页 <code>/api/me</code> 刷新都会消费响应里的 <code>achievementUnlocks</code>，逐条触发 <code>achievement</code> tone toast；toast 样式仍由现有 <code>ToastStack</code> 队列统一管理。</li>
 </ul>
 <ul>
-<li>后台 <code>AdminConsole</code> 新增 <code>achievements</code> tab，<code>AdminAchievements</code> 使用“成就列表 / 奖励资产”双视图管理 <code>/api/admin/achievements</code> 与 <code>/api/admin/achievement-reward-assets</code>。</li>
+<li>后台 <code>AdminConsole</code> 新增 <code>achievements</code> tab，<code>AdminAchievements</code> 使用“成就列表 / 奖励资产”双视图；成就列表只编辑既有成就的成就名、成就内容、奖励资产和排序，不提供新增或下线成就入口，奖励资产视图继续管理 <code>/api/admin/achievement-reward-assets</code>。</li>
 </ul>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
@@ -2700,7 +2703,10 @@
 <li><code>AchievementRewardAsset</code> 定义成就奖励资产，字段包括 <code>type</code>、<code>name</code>、<code>description</code>、<code>imageUrl</code>、<code>text</code>、<code>targetType</code>、<code>targetId</code>、<code>amount</code>、<code>enabled</code>、<code>deletedAt</code> 和 <code>sortOrder</code>。奖励类型支持 <code>currency</code>、<code>title</code>、<code>badge</code>、<code>nameplate</code>、<code>character</code>、<code>decoration</code>、<code>item</code>、<code>music</code>；称号、徽章和用户名背景只作为个性化装备资产，角色/装饰/道具奖励必须指向 <code>source = &quot;achievement&quot;</code> 的限定资源。</li>
 </ul>
 <ul>
-<li><code>Achievement</code> 定义成就目标，使用唯一 <code>key</code>、显示 <code>name</code>、<code>content</code>、<code>conditionType</code> 和 JSON 字符串 <code>conditionParams</code> 描述判定规则，并可关联一个 <code>AchievementRewardAsset</code>。<code>enabled=false</code> 或 <code>deletedAt</code> 表示后台下线，历史 <code>UserAchievement</code> 不删除。</li>
+<li><code>Achievement</code> 定义成就目标，使用唯一 <code>key</code>、显示 <code>name</code>、<code>content</code>、<code>conditionType</code> 和 JSON 字符串 <code>conditionParams</code> 描述判定规则，并可关联一个 <code>AchievementRewardAsset</code>。<code>key</code>、<code>conditionType</code>、<code>conditionParams</code>、<code>enabled</code> 和 <code>deletedAt</code> 属于代码/种子维护的目标逻辑，后台只允许修改 <code>name</code>、<code>content</code>、<code>rewardAssetId</code> 和 <code>sortOrder</code>；历史 <code>UserAchievement</code> 不删除。</li>
+</ul>
+<ul>
+<li><code>seedBuiltinAchievements</code> 在 <code>ensureAchievementSchema</code> 之后运行，只在缺失时创建内置成就与奖励资产，避免启动时覆盖后台后续对成就名、描述、奖励和排序的编辑；当前内置事件成就 <code>denia-rainbow-bean-candy</code> 仅在新增后收到对应触发事件时解锁，奖励 100 金币。</li>
 </ul>
 <ul>
 <li><code>UserAchievement</code> 记录用户已达成状态，包含 <code>achievedAt</code> 与 <code>rewardGrantedAt</code>，并以 <code>userId + achievementId</code> 保证幂等。<code>AchievementCounter</code> 保存上线后计数型指标，如购买次数、抽卡次数、登录天数或触发事件累计；可从历史数据回溯的对局、胜场、角色胜率、拥有资产数量等由 <code>server/achievements.js</code> 实时聚合。</li>

@@ -2,9 +2,7 @@ import crypto from "node:crypto";
 import { readFile, unlink } from "node:fs/promises";
 import { Router } from "express";
 import {
-  createAchievement,
   createRewardAsset,
-  disableAchievement,
   disableRewardAsset,
   listAdminAchievements,
   updateAchievement,
@@ -360,12 +358,8 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
     }
   });
 
-  router.post("/achievements", async (req, res) => {
-    try {
-      res.json(await createAchievement({ prisma, adminUser: req.user, body: req.body }));
-    } catch (error) {
-      sendRouteError(res, error);
-    }
+  router.post("/achievements", async (_req, res) => {
+    res.status(405).json({ error: "Achievement creation is code-managed" });
   });
 
   router.patch("/achievements/:id", async (req, res) => {
@@ -376,12 +370,8 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
     }
   });
 
-  router.delete("/achievements/:id", async (req, res) => {
-    try {
-      res.json(await disableAchievement({ prisma, adminUser: req.user, achievementId: req.params.id }));
-    } catch (error) {
-      sendRouteError(res, error);
-    }
+  router.delete("/achievements/:id", async (_req, res) => {
+    res.status(405).json({ error: "Achievement deletion is code-managed" });
   });
 
   router.post("/achievement-reward-assets", async (req, res) => {

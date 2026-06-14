@@ -35,5 +35,6 @@
 
 ## Achievement And Personalization Note
 
-- 成就系统以 `Achievement`、`AchievementRewardAsset`、`UserAchievement`、`AchievementCounter` 和 `UserAchievementEquipment` 为核心模型；启动时 `ensureAchievementSchema` 会先于角色/商店种子任务运行，为旧 SQLite 自动补表，并为 `Character`、`Decoration`、`ShopItem` 补 `source` 字段。玩家侧 `/api/achievements` 返回合并后的成就列表与本次新解锁成就，`/api/me/achievement-equipment` 读写称号、徽章和用户名背景装备；后台 `/api/admin/achievements` 和 `/api/admin/achievement-reward-assets` 管理成就与奖励资产并写审计日志。
+- 成就系统以 `Achievement`、`AchievementRewardAsset`、`UserAchievement`、`AchievementCounter` 和 `UserAchievementEquipment` 为核心模型；启动时 `ensureAchievementSchema` 会先于角色/商店种子任务运行，为旧 SQLite 自动补表，并为 `Character`、`Decoration`、`ShopItem` 补 `source` 字段。玩家侧 `/api/achievements` 返回合并后的成就列表与本次新解锁成就，`/api/me/achievement-equipment` 读写称号、徽章和用户名背景装备；成就目标本体由代码/种子维护，后台 `/api/admin/achievements` 只允许修改成就名、成就内容、奖励资产和排序，`/api/admin/achievement-reward-assets` 继续管理奖励资产并写审计日志。
+- 内置成就“你给我吃了什么！？”由 `seedBuiltinAchievements` 在启动时按需创建，监听新增后的 `denia-rainbow-bean-candy` 道具使用事件；玩家请达妮娅吃彩虹豆豆跳跳糖后解锁并获得 100 金币，不回溯统计成就上线前发生过的使用记录。
 - 履历弹窗新增“成就”和“个性化”入口；成就窗口在桌面端用表格，在移动端用卡片列表，并按“未达成 / 已达成 / 全部”筛选；个性化窗口桌面端按称号、徽章、用户名背景三列装备，移动端改为竖向分区。商城购买、抽卡和仓库道具使用会消费后端返回的 `achievementUnlocks`，以 `achievement` tone 的醒目 toast 告知玩家达成的成就。

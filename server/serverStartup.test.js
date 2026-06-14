@@ -19,6 +19,7 @@ describe("server startup", () => {
     const ensureGachaSchema = task("ensureGachaSchema");
     const ensureMusicTrackSettingsSchema = task("ensureMusicTrackSettingsSchema");
     const ensureAchievementSchema = task("ensureAchievementSchema");
+    const seedBuiltinAchievements = task("seedBuiltinAchievements");
     const promoteConfiguredAdmins = task("promoteConfiguredAdmins");
 
     await initializeServerData({
@@ -33,11 +34,13 @@ describe("server startup", () => {
       ensureGachaSchema,
       ensureMusicTrackSettingsSchema,
       ensureAchievementSchema,
+      seedBuiltinAchievements,
       promoteConfiguredAdmins
     });
 
     expect(calls).toEqual([
       "ensureAchievementSchema",
+      "seedBuiltinAchievements",
       "seedCharacters",
       "seedBuiltinShopItems",
       "ensureDefaultSiteSettings",
