@@ -20,6 +20,7 @@ export function validateCharacterInput(input = {}) {
   const portraitUrl = String(input.portraitUrl ?? input.portrait ?? "").trim();
   const portraitSource = String(input.portraitSource ?? "url").trim();
   const acquisitionMethod = String(input.acquisitionMethod ?? "").trim();
+  const source = normalizeSource(input.source);
   const palette = String(input.palette ?? "#5d7fe8").trim();
   const effectType = String(skillInput.effectType ?? "").trim();
   const skillName = String(skillInput.name ?? "").trim();
@@ -87,6 +88,7 @@ export function validateCharacterInput(input = {}) {
       portraitUrl,
       portraitSource,
       acquisitionMethod,
+      source,
       palette,
       enabled,
       sortOrder,
@@ -135,6 +137,7 @@ export function toCharacterPayload(record) {
     portrait: record.portraitUrl,
     portraitSource: record.portraitSource,
     acquisitionMethod: record.acquisitionMethod ?? "",
+    source: record.source ?? "default",
     enabled: record.enabled,
     skill
   };
@@ -267,4 +270,8 @@ function parseParams(paramsJson) {
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function normalizeSource(value) {
+  return String(value ?? "default").trim() === "achievement" ? "achievement" : "default";
 }

@@ -1,0 +1,140 @@
+/* Final phone/tablet touch feedback, scroll, and sheet animation rules. */
+@media (max-width: 768px) {
+  .duel-request-banner,
+  .room-request-toast {
+    position: fixed !important;
+    z-index: 99999 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 10px !important;
+    padding: 12px 44px 16px 12px !important;
+    top: max(10px, calc(env(safe-area-inset-top) + 10px)) !important;
+  }
+
+  .duel-request-actions,
+  .room-request-toast-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  button,
+  [role="button"],
+  a,
+  .primary-action,
+  .secondary-action,
+  .danger-action,
+  .match-button,
+  .icon-button,
+  .close-button,
+  .toggle,
+  .mobile-tab-button,
+  .shop-tabs button,
+  .settings-tabs button,
+  .friends-tabs button,
+  .shop-pagination button,
+  .home-image-entry,
+  .home-player-plaque,
+  .utility-entry,
+  .character-card,
+  .shop-item,
+  .warehouse-item,
+  .owned-decoration-chip,
+  .replay-table-row,
+  .friends-row,
+  .watch-room-row {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition:
+      transform var(--mobile-tap-duration) var(--mobile-tap-ease),
+      filter var(--mobile-tap-duration) var(--mobile-tap-ease),
+      box-shadow var(--mobile-tap-duration) var(--mobile-tap-ease),
+      background-color var(--mobile-tap-duration) var(--mobile-tap-ease),
+      border-color var(--mobile-tap-duration) var(--mobile-tap-ease);
+  }
+
+  button:active:not(:disabled),
+  [role="button"]:active,
+  a:active,
+  .primary-action:active:not(:disabled),
+  .secondary-action:active:not(:disabled),
+  .danger-action:active:not(:disabled),
+  .match-button:active,
+  .icon-button:active:not(:disabled),
+  .close-button:active:not(:disabled),
+  .toggle:active:not(:disabled),
+  .mobile-tab-button:active:not(:disabled),
+  .home-image-entry:active,
+  .home-player-plaque:active,
+  .utility-entry:active,
+  .character-card:active,
+  .shop-item:active,
+  .warehouse-item:active,
+  .owned-decoration-chip:active,
+  .replay-table-row:active,
+  .friends-row:active,
+  .watch-room-row:active {
+    transform: translateY(1px) scale(var(--mobile-press-scale));
+    filter: brightness(0.985) saturate(1.04);
+  }
+
+  .board,
+  .board-wrap,
+  .point {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .point {
+    touch-action: none;
+    transition:
+      transform var(--mobile-tap-duration) var(--mobile-tap-ease),
+      filter var(--mobile-tap-duration) var(--mobile-tap-ease);
+  }
+
+  .point.previewable:active,
+  .point.touch-confirming {
+    transform: scale(0.94);
+    filter: brightness(1.04) saturate(1.08);
+  }
+
+  .settings-body,
+  .settings-panel,
+  .message-board-body,
+  .house-layout,
+  .owned-decoration-section,
+  .warehouse-grid,
+  .leaderboard-table,
+  .friends-list,
+  .watch-room-table,
+  .profile-replay-list-scroll,
+  .shop-grid,
+  .mobile-tab-panel,
+  .character-list {
+    scroll-behavior: smooth;
+  }
+
+  .modal-backdrop {
+    animation: mobile-backdrop-in 180ms ease-out;
+  }
+
+  .small-modal,
+  .confirm-modal,
+  .result-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .settings-modal,
+  .message-board-modal,
+  .room-floating-modal,
+  .character-target-modal,
+  .profile-replay-dialog,
+  .shop-item-detail-modal {
+    transform-origin: center bottom;
+    animation: mobile-sheet-in var(--mobile-sheet-duration) var(--mobile-tap-ease);
+  }
+}

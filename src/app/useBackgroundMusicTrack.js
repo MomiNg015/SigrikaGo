@@ -1,6 +1,6 @@
 import { latestSkillCharacterId, resolveBackgroundMusic } from "../shared/musicLibrary.js";
 
-export function useBackgroundMusicTrack({ matchSuccess, resultModalOpen, room, user, view }) {
+export function useBackgroundMusicTrack({ matchSuccess, musicTracks, resultModalOpen, room, user, view }) {
   return resolveBackgroundMusic({
     view,
     skillPreview: room?.game?.pendingSkill,
@@ -9,6 +9,7 @@ export function useBackgroundMusicTrack({ matchSuccess, resultModalOpen, room, u
     matchSuccess: Boolean(matchSuccess),
     resultModalOpen,
     selections: user?.musicSelections,
-    ownedMusicIds: user?.ownedMusicIds
+    ownedMusicIds: user?.ownedMusicIds,
+    tracks: musicTracks
   });
 }

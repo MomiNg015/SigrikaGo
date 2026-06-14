@@ -838,6 +838,43 @@
   white-space: nowrap;
 }
 
+.admin-achievement-board {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-achievement-switch {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.admin-achievement-switch button {
+  min-height: 38px;
+  border: 1px solid #dfd0e5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4f3d55;
+  padding: 8px 12px;
+  font-weight: 800;
+}
+
+.admin-achievement-switch button.active {
+  background: #eef4ff;
+  border-color: #9eb2ee;
+  color: #314676;
+}
+
+.admin-achievement-board .admin-row-action + .admin-row-action {
+  margin-left: 6px;
+}
+
+.admin-achievement-board .admin-add-button {
+  justify-self: start;
+  width: auto;
+  padding: 0 16px;
+}
+
 @media (max-width: 860px) {
   .admin-gacha-board .admin-crud-drawer {
     inset: 12px;
@@ -856,6 +893,11 @@
 
   .admin-gacha-prize-editor-head {
     align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-achievement-board .admin-section-header {
+    align-items: stretch;
     flex-direction: column;
   }
 }

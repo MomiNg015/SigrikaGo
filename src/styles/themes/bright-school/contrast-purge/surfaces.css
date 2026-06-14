@@ -1,0 +1,52 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .asset-preload-panel,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .utility-entry,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-header,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-log,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-people,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .operation-hint,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-stage,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .small-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .confirm-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .result-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .message-board-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-floating-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal-content,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .about-panel-block,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-panel,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .audio-slider-item,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="about"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="setting"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="volume-row"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-bar {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 16px !important;
+  box-shadow: 4px 4px 0 #3d2b25 !important;
+  clip-path: none !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
+  background-color: transparent !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}

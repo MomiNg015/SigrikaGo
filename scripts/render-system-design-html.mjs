@@ -3,10 +3,32 @@ import { pathToFileURL } from "node:url";
 
 const sourcePath = new URL("../docs/system-design.md", import.meta.url);
 const outputPath = new URL("../docs/system-design.html", import.meta.url);
+const sourcePartPaths = [
+  sourcePath,
+  new URL("../docs/system-design/01-project-overview.md", import.meta.url),
+  new URL("../docs/system-design/02-frontend-architecture.md", import.meta.url),
+  new URL("../docs/system-design/03-backend-realtime-api.md", import.meta.url),
+  new URL("../docs/system-design/04-data-model-and-domain.md", import.meta.url),
+  new URL("../docs/system-design/05-assets-audio-preload.md", import.meta.url),
+  new URL("../docs/system-design/06-ui-theme-mobile.md", import.meta.url),
+  new URL("../docs/system-design/07-performance-tech-debt.md", import.meta.url),
+  new URL("../docs/system-design/08-workflow-and-history.md", import.meta.url)
+];
+
+export const SYSTEM_DESIGN_SOURCE_PATHS = sourcePartPaths;
 
 if (isDirectRun()) {
-  const markdown = await readFile(sourcePath, "utf8");
+  const markdown = await readSystemDesignMarkdown();
   await writeFile(outputPath, renderSystemDesignHtml(markdown), "utf8");
+}
+
+export async function readSystemDesignMarkdown() {
+  const parts = await Promise.all(sourcePartPaths.map((path) => readFile(path, "utf8")));
+  return parts
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join("\n\n---\n\n")
+    .concat("\n");
 }
 
 export function renderSystemDesignHtml(markdown) {

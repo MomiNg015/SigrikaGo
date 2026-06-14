@@ -1,0 +1,137 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.modal-backdrop) .home-mobile-menu {
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.modal-backdrop) .home-mobile-menu-panel {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-mobile-menu-panel button {
+    grid-template-columns: 22px max-content !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .home-brand-title,
+    .home-brand-subtitle,
+    .home-online-tag,
+    .house-header h2,
+    .leaderboard-header h2,
+    .leaderboard-header .quiet-text,
+    .shop-tabs button,
+    .settings-modal h2,
+    .small-modal h2,
+    .nested-modal h2,
+    .owned-decoration-header h3,
+    .leaderboard-current-label
+  ) {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    line-height: 1.08 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-subtitle,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-header h2,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-header h2,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-header .quiet-text,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal h2,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .small-modal h2,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal h2,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header h3,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current-label {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup {
+    display: grid !important;
+    grid-template-columns: clamp(62px, 18vw, 84px) minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 10px !important;
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup img {
+    width: clamp(62px, 18vw, 84px) !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup > div {
+    min-width: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup p,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .login-title-text {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .login-title-text {
+    font-size: clamp(22px, 6.7vw, 30px) !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .segmented {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-brand {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title {
+    font-size: clamp(22px, 6.7vw, 32px) !important;
+    line-height: 0.98 !important;
+    letter-spacing: 0 !important;
+    text-overflow: clip !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-subtitle {
+    font-size: clamp(11px, 3.2vw, 14px) !important;
+    text-overflow: clip !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-footer-strip {
+    position: static !important;
+    inset: auto !important;
+    z-index: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    opacity: 0.72 !important;
+    pointer-events: auto !important;
+    justify-items: center !important;
+    text-align: center !important;
+  }
+}

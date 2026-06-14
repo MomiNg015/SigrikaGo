@@ -1,0 +1,149 @@
+@media (max-width: 560px) {
+  .shop-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .house-modal,
+  .warehouse-modal,
+  .settings-modal,
+  .message-board-modal,
+  .small-modal.watch-list-modal,
+  .room-floating-modal.user-profile-modal,
+  .profile-replay-dialog {
+    width: calc(100vw - 16px);
+    max-height: var(--mobile-modal-max-height);
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .shop-layout {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .shop-grid,
+  .leaderboard-table,
+  .friends-list,
+  .house-layout,
+  .warehouse-grid,
+  .watch-room-table,
+  .profile-replay-list-scroll {
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .leaderboard-table,
+  .replay-table {
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .watch-room-table {
+    overflow-x: hidden !important;
+    overflow-y: auto;
+    display: grid;
+    gap: 8px;
+    padding-bottom: 0;
+  }
+
+  .watch-list-modal .inline-close {
+    position: static;
+    top: auto;
+    right: auto;
+    width: var(--modal-close-size, 44px);
+    height: var(--modal-close-size, 44px);
+  }
+
+  .watch-room-head {
+    display: none;
+    padding: 0 8px;
+  }
+
+  .watch-room-row {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+      "code status"
+      "black white"
+      "meta meta";
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4px 8px;
+    align-items: center;
+    justify-items: stretch;
+    padding: 8px 10px;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .watch-room-row > span {
+    min-width: 0;
+    width: 100%;
+    justify-self: stretch;
+    display: flex;
+    align-items: center;
+  }
+
+  .watch-room-row > span:nth-child(1) {
+    grid-area: code;
+    font-weight: 900;
+  }
+
+  .watch-room-row > .watch-online-cell,
+  .watch-room-row > .watch-move-cell {
+    grid-area: meta;
+    width: max-content;
+    max-width: 100%;
+    font-size: 11px;
+    opacity: 0.72;
+  }
+
+  .watch-room-row > .watch-online-cell::before {
+    content: "人数 ";
+  }
+
+  .watch-room-row > .watch-move-cell {
+    justify-self: end;
+  }
+
+  .watch-room-row > .watch-move-cell::before {
+    content: "手数 ";
+  }
+
+  .watch-room-row > .watch-player-cell:nth-child(3) {
+    grid-area: black;
+  }
+
+  .watch-room-row > .watch-player-cell:nth-child(4) {
+    grid-area: white;
+  }
+
+  .watch-room-row > span:nth-child(6) {
+    grid-area: status;
+    justify-self: end;
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .watch-player-cell {
+    min-width: 0;
+    width: 100%;
+    justify-self: stretch;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .watch-player-cell img {
+    width: 28px;
+    height: 22px;
+  }
+
+  .watch-player-cell span {
+    font-size: 13px;
+  }
+
+  .watch-side-label {
+    font-size: 11px;
+  }
+}

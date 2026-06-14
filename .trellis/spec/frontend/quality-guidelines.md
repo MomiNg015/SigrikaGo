@@ -191,6 +191,53 @@ expect(themesCss).toContain(".home-player-row.tactical-id-row::before");
 
 The feature-level test still owns the exact layout, while the broader guard confirms the themed selector and paperclip polish remain present.
 
+### CSS Domain Entry Ownership
+
+Large top-level CSS files should become import-only domain entries before they accumulate unrelated feature rules. `src/styles/base.css` owns shared foundation import order and delegates concrete rules to `src/styles/base/`; `src/styles/room.css` owns live-room import order and delegates concrete rules to `src/styles/room/`; `src/styles/room-terminal.css` owns the Startorch battlefield terminal skin import order and delegates concrete rules to `src/styles/room-terminal/`; `src/styles/modals.css` owns shared modal import order and delegates concrete rules to `src/styles/modals/`; `src/styles/mobile-modals.css` owns mobile modal safety order and delegates concrete rules to `src/styles/mobile-modals/`; `src/styles/commerce-settings.css` owns the commerce/social/warehouse import order and delegates concrete rules to `src/styles/commerce/`; `src/styles/commerce/shop-settings.css` owns the shared shop/settings/mobile commerce sub-entry order and delegates concrete rules to `src/styles/commerce/shop-settings/`; `src/styles/responsive.css` owns shared breakpoint order and delegates concrete rules to `src/styles/responsive/`; `src/styles/mobile-room.css` owns shared mobile battle-room order and delegates concrete rules to `src/styles/mobile-room/`; `src/styles/hud-components.css` owns shared HUD compatibility order and delegates concrete rules to `src/styles/hud-components/`; `src/styles/themes/bright-school/base.css` owns early Bright School foundation order and delegates concrete rules to `src/styles/themes/bright-school/base/`; `src/styles/themes/bright-school/contrast-purge.css` owns early Bright School emergency readability reset order and delegates concrete rules to `src/styles/themes/bright-school/contrast-purge/`; `src/styles/themes/bright-school/home.css` owns Bright School lobby import order and delegates concrete rules to `src/styles/themes/bright-school/home/`; `src/styles/themes/bright-school/commerce.css` does the same for Bright School commerce overlays through `src/styles/themes/bright-school/commerce/`; `src/styles/themes/bright-school/mobile.css` owns Bright School portrait mobile order and delegates concrete rules to `src/styles/themes/bright-school/mobile/`; `src/styles/themes/bright-school/mobile/room.css` owns Bright School portrait battle-room order and delegates concrete rules to `src/styles/themes/bright-school/mobile/room/`; `src/styles/themes/bright-school/component-repairs.css` owns late Bright School component repair order and delegates concrete rules to `src/styles/themes/bright-school/component-repairs/`; `src/styles/themes/bright-school/quality-base.css` owns Bright School audit/refinement order and delegates concrete rules to `src/styles/themes/bright-school/quality-base/`; `src/styles/themes/bright-school/firewall.css` owns anti-HUD bleed reset order and delegates concrete rules to `src/styles/themes/bright-school/firewall/`; `src/styles/mobile-adaptive.css` owns final mobile safety-layer order and delegates concrete rules to `src/styles/mobile-adaptive/`; `src/styles/mobile-adaptive/bright-school-overrides.css` owns the final Bright School mobile guard order and delegates concrete rules to `src/styles/mobile-adaptive/bright-school-overrides/`.
+
+Required assertion points:
+
+- `src/styles/styleContract.test.js` owns the allowed nested style directories and the `base.css` / `room.css` / `room-terminal.css` / `modals.css` / `mobile-modals.css` / `commerce-settings.css` / `commerce/shop-settings.css` / `responsive.css` / `mobile-room.css` / `hud-components.css` import order.
+- `src/styles/styleContract.test.js` also owns the `mobile-adaptive.css` import order and the nested `bright-school-overrides.css` import order because these entries are the final safety layers after theme imports.
+- `src/styles/themeContract.test.js` owns the Bright School base, contrast-purge, home, commerce, mobile, mobile room, component repair, quality-base, and firewall import order.
+- Feature tests that need concrete CSS, such as gacha modal coverage, should read the CSS import tree instead of asserting that rules live directly in the entry file.
+- New top-level CSS domains should start as import-only entries with an explicit directory and a style contract test update.
+
+### Web Audio Pause/Resume Contracts
+
+When changing background music, character BGM previews, or shared playback schedules, preserve user-visible playback position across pause/resume.
+
+Required assertion points:
+
+- `src/shared/audioScheduling.js` owns offset-aware schedule calculation for single-loop and intro-loop tracks; callers should pass `offset` into `createPlaybackSchedule()` instead of duplicating modulo math.
+- Character BGM preview pause should update its state offset from `context.currentTime - startedAt`, keep that offset through the next play click, and reset only when the selected track id changes.
+- Background music paused by a preview should stop current sources, save offset, and reschedule from that offset when the pause request count returns to zero. Do not rely only on `AudioContext.suspend()` if the visible contract is "continue from where it paused".
+- `startedAt` should be the scheduled audio start time, not the context time before `BGM_START_DELAY_SECONDS`, so short pause/resume cycles do not accumulate artificial delay.
+- Volume changes may adjust gain ramps, but must not change playback identity or reset offsets.
+
+Wrong:
+
+```js
+context.suspend();
+scheduleBackgroundTrack({ state, track });
+```
+
+This can resume by creating a fresh source at the beginning of the track.
+
+Correct:
+
+```js
+state.offset += Math.max(0, context.currentTime - state.startedAt);
+stopBackgroundPlayers(state);
+scheduleBackgroundTrack({ state, track, offset: state.offset });
+```
+
+Before finishing audio pause/resume changes, run:
+
+```bash
+npm test -- src/shared/audioScheduling.test.js src/audio/CharacterMusicPreview.test.jsx src/audio/playback.test.jsx
+```
+
 ### Native number input spinner contract
 
 When using numeric form controls, keep the markup as `type="number"` so browser validation, min/max constraints, and mobile numeric keyboards still work, but hide the native `+1/-1` spinner UI in shared base CSS.

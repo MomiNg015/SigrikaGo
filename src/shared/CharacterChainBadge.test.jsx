@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 import CharacterChainBadge, { chainCountForCharacter } from "./CharacterChainBadge.jsx";
 
 describe("CharacterChainBadge", () => {
@@ -22,7 +23,7 @@ describe("CharacterChainBadge", () => {
     const homeSource = readFileSync(new URL("../home/components/PlayerPlaque.jsx", import.meta.url), "utf8");
     const houseSource = readFileSync(new URL("../modals/house/HouseCharacterGrid.jsx", import.meta.url), "utf8");
     const roomSource = readFileSync(new URL("../room/PlayerInfo.jsx", import.meta.url), "utf8");
-    const css = readFileSync(new URL("../styles/hud-components.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/hud-components.css", import.meta.url));
 
     expect(homeSource).toContain("CharacterChainBadge");
     expect(houseSource).toContain("CharacterChainBadge");

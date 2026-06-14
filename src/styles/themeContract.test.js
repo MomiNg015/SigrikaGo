@@ -56,6 +56,168 @@ describe("player theme CSS contract", () => {
     expect(qaGuardEntry).not.toContain(".app-shell.player-theme-enabled.theme-bright-school");
   });
 
+  it("keeps Bright School commerce as an import-only domain entry", () => {
+    const commerceEntry = readFileSync(new URL("./themes/bright-school/commerce.css", import.meta.url), "utf8");
+
+    expect(cssImports(commerceEntry)).toEqual([
+      "./commerce/gacha.css",
+      "./commerce/shop.css",
+      "./commerce/warehouse-profile.css"
+    ]);
+    expect(commerceEntry).not.toContain(".gacha-modal {");
+    expect(commerceEntry).not.toContain(".shop-layout {");
+    expect(commerceEntry).not.toContain(".warehouse-grid {");
+  });
+
+  it("keeps Bright School base as an import-only foundation entry", () => {
+    const brightBaseEntry = readFileSync(new URL("./themes/bright-school/base.css", import.meta.url), "utf8");
+
+    expect(cssImports(brightBaseEntry)).toEqual([
+      "./base/paper-root.css",
+      "./base/panels-modals.css",
+      "./base/home-identity.css",
+      "./base/home-gallery.css",
+      "./base/pseudo-cleanup.css",
+      "./base/room-chat-board.css",
+      "./base/forms-content-cards.css",
+      "./base/preload-scrollbars.css"
+    ]);
+    expect(brightBaseEntry).not.toContain(".app-shell.player-theme-enabled.theme-bright-school {");
+    expect(brightBaseEntry).not.toContain(".home-image-entry {");
+    expect(brightBaseEntry).not.toContain(".board-stage {");
+  });
+
+  it("keeps Bright School contrast purge as an import-only readability entry", () => {
+    const contrastPurgeEntry = readFileSync(new URL("./themes/bright-school/contrast-purge.css", import.meta.url), "utf8");
+
+    expect(cssImports(contrastPurgeEntry)).toEqual([
+      "./contrast-purge/root-shell.css",
+      "./contrast-purge/surfaces.css",
+      "./contrast-purge/controls.css",
+      "./contrast-purge/forms.css",
+      "./contrast-purge/cards-badges.css",
+      "./contrast-purge/notebook-details.css",
+      "./contrast-purge/meters-friend-scroll.css",
+      "./contrast-purge/home-utility-tabs.css"
+    ]);
+    expect(contrastPurgeEntry).not.toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school,");
+    expect(contrastPurgeEntry).not.toContain(".timer-track");
+    expect(contrastPurgeEntry).not.toContain(".home-grid-featured > .home-utility-grid .utility-entry");
+  });
+
+  it("keeps Bright School home as an import-only lobby entry", () => {
+    const brightHomeEntry = readFileSync(new URL("./themes/bright-school/home.css", import.meta.url), "utf8");
+
+    expect(cssImports(brightHomeEntry)).toEqual([
+      "./home/canvas-purge.css",
+      "./home/main-panel-material.css",
+      "./home/player-zone-clips.css",
+      "./home/student-id-card.css",
+      "./home/manual-entry-label.css",
+      "./home/short-height.css",
+      "./home/narrow-desktop.css",
+      "./home/mobile-compact.css"
+    ]);
+    expect(brightHomeEntry).not.toContain(".home-player-plaque.tactical-id-card {");
+    expect(brightHomeEntry).not.toContain(".home-main-panel.home-terminal-main");
+    expect(brightHomeEntry).not.toContain("@media (min-width: 701px)");
+  });
+
+  it("keeps Bright School mobile as an import-only domain entry", () => {
+    const mobileEntry = readFileSync(new URL("./themes/bright-school/mobile.css", import.meta.url), "utf8");
+
+    expect(cssImports(mobileEntry)).toEqual([
+      "./mobile/home-shell.css",
+      "./mobile/modal-shell.css",
+      "./mobile/commerce-warehouse.css",
+      "./mobile/house-profile.css",
+      "./mobile/lists-settings.css",
+      "./mobile/room.css",
+      "./mobile/motion.css",
+      "./mobile/final-fixes.css"
+    ]);
+    expect(mobileEntry).not.toContain(".home-screen {");
+    expect(mobileEntry).not.toContain(".mobile-room-screen {");
+    expect(mobileEntry).not.toContain("@keyframes bright-mobile-sheet-in");
+  });
+
+  it("keeps Bright School mobile room as an import-only portrait battle entry", () => {
+    const mobileRoomEntry = readFileSync(new URL("./themes/bright-school/mobile/room.css", import.meta.url), "utf8");
+
+    expect(cssImports(mobileRoomEntry)).toEqual([
+      "./room/shell-header-menu.css",
+      "./room/viewport-player-strips.css",
+      "./room/board-stage.css",
+      "./room/dock-actions.css",
+      "./room/record-dialogs.css",
+      "./room/touch-board-feedback.css",
+      "./room/modal-sheets.css",
+      "./room/flat-controls.css"
+    ]);
+    expect(mobileRoomEntry).not.toContain(".mobile-room-screen {");
+    expect(mobileRoomEntry).not.toContain(".player-info {");
+    expect(mobileRoomEntry).not.toContain(".mobile-room-dock {");
+    expect(mobileRoomEntry).not.toContain(".character-record-dialog {");
+  });
+
+  it("keeps Bright School component repairs as an import-only domain entry", () => {
+    const componentRepairsEntry = readFileSync(new URL("./themes/bright-school/component-repairs.css", import.meta.url), "utf8");
+
+    expect(cssImports(componentRepairsEntry)).toEqual([
+      "./component-repairs/foundation-home.css",
+      "./component-repairs/shop.css",
+      "./component-repairs/lists-profile.css",
+      "./component-repairs/warehouse-character.css",
+      "./component-repairs/room-board.css",
+      "./component-repairs/chat.css",
+      "./component-repairs/notebook-polish.css"
+    ]);
+    expect(componentRepairsEntry).not.toContain(".home-top-strip {");
+    expect(componentRepairsEntry).not.toContain(".shop-sidebar {");
+    expect(componentRepairsEntry).not.toContain(".board-stage {");
+    expect(componentRepairsEntry).not.toContain(".chat-widget {");
+  });
+
+  it("keeps Bright School quality base as an import-only audit and refinement entry", () => {
+    const qualityBaseEntry = readFileSync(new URL("./themes/bright-school/quality-base.css", import.meta.url), "utf8");
+
+    expect(cssImports(qualityBaseEntry)).toEqual([
+      "./quality-base/audit-foundation.css",
+      "./quality-base/audit-home.css",
+      "./quality-base/audit-commerce.css",
+      "./quality-base/audit-profile-modals.css",
+      "./quality-base/audit-room.css",
+      "./quality-base/audit-compact.css",
+      "./quality-base/refinement-foundation.css",
+      "./quality-base/refinement-controls.css",
+      "./quality-base/refinement-board.css",
+      "./quality-base/sticker-motion.css"
+    ]);
+    expect(qualityBaseEntry).not.toContain(".home-top-strip {");
+    expect(qualityBaseEntry).not.toContain(".shop-layout {");
+    expect(qualityBaseEntry).not.toContain(".board-wrap {");
+    expect(qualityBaseEntry).not.toContain(".home-image-entry:hover");
+  });
+
+  it("keeps Bright School firewall as an import-only anti-HUD bleed entry", () => {
+    const firewallEntry = readFileSync(new URL("./themes/bright-school/firewall.css", import.meta.url), "utf8");
+
+    expect(cssImports(firewallEntry)).toEqual([
+      "./firewall/root-surfaces.css",
+      "./firewall/explicit-surfaces.css",
+      "./firewall/explicit-pseudo-elements.css",
+      "./firewall/controls-forms.css",
+      "./firewall/semantic-badges.css",
+      "./firewall/generic-surfaces.css",
+      "./firewall/generic-pseudo-elements.css",
+      "./firewall/typography.css"
+    ]);
+    expect(firewallEntry).not.toContain(".auth-panel,");
+    expect(firewallEntry).not.toContain("[class*=\"panel\"]");
+    expect(firewallEntry).not.toContain("button,");
+    expect(firewallEntry).not.toContain("p,");
+  });
+
   it("keeps volatile room and replay semantics in the final theme tree", () => {
     const themeCss = readCssWithImports(new URL("./themes.css", import.meta.url));
 

@@ -1,0 +1,184 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section {
+  padding: 18px !important;
+  gap: 16px !important;
+  background: #fffaf0 !important;
+  border: 2px dashed var(--bright-border) !important;
+  border-radius: 18px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-header {
+  margin-bottom: 10px !important;
+  padding-bottom: 12px !important;
+  border-bottom: 2px dashed rgba(74, 55, 54, 0.36) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list {
+  gap: 14px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip {
+  padding: 10px !important;
+  background: #fff6dd !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail {
+  background: #fffaf0 !important;
+  color: var(--bright-ink) !important;
+  border: 3px solid var(--bright-border) !important;
+  border-radius: 18px !important;
+  box-shadow: 6px 6px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-art,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-art img {
+  background: #fff6dd !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-art img {
+  filter: drop-shadow(16px 18px 0 rgba(31, 22, 18, 0.32)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy {
+  background: #ffffff !important;
+  color: var(--bright-ink) !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
+  background: #fff6dd !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 999px !important;
+  min-height: 32px !important;
+  padding: 3px 8px !important;
+  box-shadow: 2px 2px 0 var(--bright-border) !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle {
+  background: #ffdfeb !important;
+  border: 2px solid var(--bright-border) !important;
+  box-shadow: 1px 1px 0 var(--bright-border) !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select {
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-title-row,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .acquisition-method {
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy .character-description {
+  color: #7b3fa0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-title-row strong,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .acquisition-method strong,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy strong {
+  color: var(--bright-ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid.top-stats-bar .stat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  min-height: 86px !important;
+  padding: 10px 6px !important;
+  text-align: center !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid.top-stats-bar .stat strong {
+  display: block !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  font-size: clamp(16px, 1.8vw, 22px) !important;
+  line-height: 1.2 !important;
+  margin-top: 4px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-item-effect-icon {
+  background: linear-gradient(135deg, #fff8c7, #f6cf6a 42%, #d89b2b 100%) !important;
+  border: 2px solid #3d2b25 !important;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.58), inset 0 2px 0 rgba(255, 255, 255, 0.7) !important;
+  filter: none !important;
+}
+
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 80 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(61, 43, 37, 0.22) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-target-modal {
+  width: min(760px, 92vw) !important;
+  max-height: min(560px, 84vh) !important;
+  overflow: auto !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button {
+  min-width: 0 !important;
+  aspect-ratio: 0.78 !important;
+  padding: 10px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button.warehouse-target-disabled {
+  background: linear-gradient(135deg, #f2f0eb, #dde2df) !important;
+  border-color: rgba(61, 43, 37, 0.44) !important;
+  color: #6d6864 !important;
+  box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.36) !important;
+  filter: grayscale(0.9) saturate(0.35) !important;
+  opacity: 0.72 !important;
+  cursor: not-allowed !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button.warehouse-target-disabled img {
+  filter: grayscale(1) saturate(0.2) contrast(0.86) !important;
+  opacity: 0.62 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button.warehouse-target-disabled small {
+  background: rgba(61, 43, 37, 0.12) !important;
+  color: #5c5753 !important;
+  border: 1px solid rgba(61, 43, 37, 0.22) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid img {
+  width: 100% !important;
+  height: 96px !important;
+  object-fit: contain !important;
+}

@@ -1,0 +1,80 @@
+.settings-modal {
+  width: min(560px, calc(100vw - (var(--page-pad) * 2)));
+  text-align: left;
+}
+
+.settings-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 5px;
+  border-radius: 8px;
+  background: #f2e9f5;
+  margin-bottom: 16px;
+}
+
+.settings-tabs button {
+  border: 0;
+  border-radius: 7px;
+  padding: 10px 14px;
+  background: transparent;
+  color: #65516b;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-tabs button.active {
+  background: #fff;
+  color: #2d2430;
+  box-shadow: 0 6px 18px rgba(82, 61, 90, 0.12);
+}
+
+.settings-panel {
+  min-height: 230px;
+  display: grid;
+  gap: 14px;
+}
+
+.about-panel {
+  border: 1px dashed #e0d2e5;
+  border-radius: 8px;
+  background: #fbf7fd;
+  min-height: 230px;
+  max-height: min(48vh, 420px);
+  align-content: start;
+  overflow: auto;
+  padding: 14px;
+  white-space: pre-wrap;
+  line-height: 1.8;
+  color: #4f3d55;
+}
+
+.about-panel p {
+  margin: 0;
+}
+
+.volume-row {
+  display: grid;
+  grid-template-columns: 104px 1fr 42px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fbf7fd;
+}
+
+.volume-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #4f3d55;
+  font-weight: 800;
+}
+
+.volume-row input {
+  width: 100%;
+}
+
+.volume-row strong {
+  text-align: right;
+}

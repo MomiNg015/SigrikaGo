@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 8
-- **Last Active**: 2026-06-12
+- **Total Sessions**: 14
+- **Last Active**: 2026-06-14
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~271 | Active |
+| `journal-1.md` | ~469 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,12 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 14 | 2026-06-14 | 角色详情说明颜色与音乐暂停续播 | `0135941` | `codex/gacha-scheme-c-ui` |
+| 13 | 2026-06-13 | 修复首页资源请求循环限流 | `8e63888` | `codex/gacha-scheme-c-ui` |
+| 12 | 2026-06-13 | 修复登录后回退登录页 | `1787e85` | `codex/gacha-scheme-c-ui` |
+| 11 | 2026-06-13 | 修复成就系统启动报错 | `b0c56b2` | `codex/gacha-scheme-c-ui` |
+| 10 | 2026-06-13 | 成就系统与个性化装备 | `92be79e` | `codex/gacha-scheme-c-ui` |
+| 9 | 2026-06-13 | Fix house manual chain badge switching | `78b1374` | `codex/gacha-scheme-c-ui` |
 | 8 | 2026-06-12 | Polish gacha ten-pull results | `bb9aaf9` | `codex/standard-game-mode` |
 | 7 | 2026-06-12 | Hide number input spinners | `5aa04a3` | `codex/standard-game-mode` |
 | 6 | 2026-06-12 | Multiple gacha featured prizes | `0341f75` | `codex/standard-game-mode` |

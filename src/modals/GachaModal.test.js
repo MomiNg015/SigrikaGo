@@ -125,8 +125,9 @@ describe("GachaModal", () => {
   });
 
   it("defines the school-club capsule machine animation hooks", () => {
-    const css = readFileSync(new URL("../styles/commerce-settings.css", import.meta.url), "utf8");
-    const brightSchoolCss = readFileSync(new URL("../styles/themes/bright-school/commerce.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/commerce.css", import.meta.url));
+    const mobileAdaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(css).toContain("@keyframes gacha-capsule-roll");
     expect(css).toContain("@keyframes gacha-drum-spin");
@@ -137,5 +138,21 @@ describe("GachaModal", () => {
     expect(css).toContain(".gacha-featured-stack");
     expect(brightSchoolCss).toContain("Bright School gacha machine polish layer.");
     expect(brightSchoolCss).toContain(".gacha-ticket-tab");
+    expect(mobileAdaptiveCss).toContain(".gacha-modal");
+    expect(mobileAdaptiveCss).toContain(".gacha-pool-tabs");
+    expect(mobileAdaptiveCss).toContain(".gacha-main");
+    expect(mobileAdaptiveCss).toContain(".gacha-draw-actions");
+    expect(brightSchoolCss).toContain("Bright School mobile gacha counter layout.");
   });
 });
+
+function readCssWithImports(url, seen = new Set()) {
+  const key = url.href;
+  if (seen.has(key)) return "";
+  seen.add(key);
+
+  const css = readFileSync(url, "utf8");
+  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
+    return readCssWithImports(new URL(importPath, url), seen);
+  });
+}

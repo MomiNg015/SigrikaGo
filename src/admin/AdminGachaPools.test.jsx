@@ -112,6 +112,18 @@ describe("AdminGachaPools", () => {
     ]));
   });
 
+  it("uses injected music display names in music prize options", () => {
+    const options = prizeOptionsForType("music", {
+      musicTracks: {
+        "home-default": { id: "home-default", name: "星炬大厅" }
+      }
+    });
+
+    expect(options).toEqual([
+      { value: "home-default", name: "星炬大厅", imageUrl: "" }
+    ]);
+  });
+
   it("labels gacha prize number fields with units", () => {
     const source = readFileSync(new URL("./AdminGachaPools.jsx", import.meta.url), "utf8");
 

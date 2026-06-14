@@ -1,0 +1,39 @@
+/* Bright School portrait mobile room flat controls. */
+@media (max-width: 760px) and (orientation: portrait) {
+  /* Bright School mobile room flat controls - remove box/drop/text shadows */
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen :where(
+    .room-header,
+    .room-code-label,
+    .room-info-tag,
+    .toggle,
+    .room-mobile-exit,
+    .room-mobile-menu-toggle,
+    .room-mobile-menu-panel,
+    .room-mobile-menu-panel button,
+    .player-info,
+    .name-button,
+    .rank-tag,
+    .rating-tag,
+    .captures span,
+    .digital-timer,
+    .timer-track,
+    .timer-track span,
+    .mobile-tab-button,
+    .mobile-tab-panel,
+    .action-bar button,
+    .decision-bar,
+    .decision-actions button,
+    .replay-bar,
+    .replay-bar button,
+    .operation-hint,
+    .replay-step-indicator,
+    .chat-toggle-button,
+    .chat-exit-action,
+    .chat-box,
+    .skill-chip
+  ) {
+    box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+  }
+}

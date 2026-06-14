@@ -1,0 +1,309 @@
+/* Warehouse, item-effect target dialogs, and toast stack. */
+.warehouse-modal {
+  width: min(760px, calc(100vw - (var(--page-pad) * 2)));
+  max-height: calc(100vh - (var(--page-pad) * 2));
+  overflow: auto;
+  display: grid;
+  gap: 16px;
+  text-align: left;
+}
+
+.warehouse-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.warehouse-header h2 {
+  margin: 0;
+}
+
+.warehouse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.warehouse-item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(115, 141, 205, 0.24);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f7fbff, #fff8ed);
+  min-width: 0;
+}
+
+.warehouse-item img,
+.warehouse-item > svg {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  color: #277f92;
+}
+
+.warehouse-item div {
+  min-width: 0;
+}
+
+.warehouse-item strong,
+.warehouse-item p {
+  overflow-wrap: anywhere;
+}
+
+.warehouse-item p {
+  margin: 4px 0;
+  color: #6b5a70;
+  line-height: 1.35;
+}
+
+.warehouse-item span {
+  font-weight: 800;
+  color: #277f92;
+}
+
+.warehouse-item .primary-action {
+  grid-column: 1 / -1;
+  justify-self: end;
+}
+
+.warehouse-empty {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  color: #776a7d;
+  border: 1px dashed #d5dce9;
+  border-radius: 8px;
+}
+
+.nested-backdrop {
+  z-index: 12;
+}
+
+.character-target-modal {
+  position: relative;
+  width: min(560px, calc(100vw - 32px));
+  padding: 22px;
+  border-radius: 8px;
+  background: #fffafd;
+  border: 1px solid rgba(128, 102, 142, 0.18);
+  box-shadow: 0 24px 80px rgba(58, 39, 70, 0.2);
+}
+
+.character-target-modal h2 {
+  margin: 0 0 14px;
+}
+
+.warehouse-character-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.warehouse-character-grid button {
+  min-height: 160px;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: 8px;
+  align-items: end;
+  justify-items: center;
+  border: 1px solid rgba(128, 102, 142, 0.18);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.warehouse-character-grid button.warehouse-target-disabled {
+  cursor: not-allowed;
+  border-color: rgba(110, 118, 122, 0.28);
+  background: linear-gradient(135deg, #f1f2f0, #e3e6e4);
+  color: #6f7476;
+  box-shadow: none;
+  filter: grayscale(0.8) saturate(0.35);
+  opacity: 0.72;
+}
+
+.warehouse-character-grid button.warehouse-target-disabled img {
+  filter: grayscale(1) saturate(0.2) contrast(0.85);
+  opacity: 0.66;
+}
+
+.warehouse-character-grid button.warehouse-target-disabled span {
+  color: #555d61;
+}
+
+.warehouse-character-grid button small {
+  min-height: 22px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(89, 97, 101, 0.12);
+  color: #596165;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.warehouse-character-grid img {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+}
+
+.warehouse-effect-result {
+  min-height: 300px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.warehouse-effect-result img {
+  width: min(220px, 60vw);
+  height: 220px;
+  object-fit: contain;
+}
+
+.warehouse-effect-result strong {
+  font-size: 20px;
+  color: #4f3d55;
+}
+
+.warehouse-effect-result p {
+  width: min(440px, 100%);
+  margin: 0;
+  padding: 12px;
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #5f4f63;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.close-button {
+  position: absolute;
+  right: var(--modal-close-inset, 12px);
+  top: var(--modal-close-inset, 12px);
+}
+
+.toast-stack {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  background: linear-gradient(135deg, #ff6b75, #e23f68);
+  color: #fff;
+  padding: 13px 18px;
+  border-radius: 8px;
+  max-width: min(520px, calc(100vw - 32px));
+  box-shadow: 0 16px 36px rgba(196, 48, 86, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  font-weight: 900;
+  text-align: center;
+  pointer-events: auto;
+  animation: toast-fade 3s ease forwards;
+}
+
+.toast.success {
+  background: linear-gradient(135deg, #48b978, #23985f);
+  box-shadow: 0 16px 36px rgba(35, 152, 95, 0.28);
+}
+
+.toast.achievement {
+  background:
+    linear-gradient(135deg, #f6c946, #f08d38 52%, #d95e63);
+  color: #3d2b25;
+  border-color: rgba(255, 255, 255, 0.76);
+  box-shadow:
+    0 18px 44px rgba(214, 126, 38, 0.34),
+    0 0 0 4px rgba(255, 245, 203, 0.42);
+  font-size: 16px;
+}
+
+@keyframes toast-fade {
+  0%, 72% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (max-width: 560px) {
+  .warehouse-modal {
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 10px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .warehouse-header {
+    min-width: 0;
+    gap: 8px;
+    padding-right: 34px;
+    flex-wrap: wrap;
+  }
+
+  .warehouse-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .warehouse-item {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 8px;
+    padding: 9px;
+  }
+
+  .warehouse-item img,
+  .warehouse-item > svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  .character-target-modal {
+    width: calc(100vw - 18px);
+    max-height: calc(100dvh - 18px);
+    padding: 14px;
+    overflow: auto;
+  }
+
+  .warehouse-character-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .warehouse-character-grid button {
+    min-height: 128px;
+  }
+
+  .warehouse-character-grid img {
+    height: 88px;
+  }
+
+  .warehouse-effect-result {
+    min-height: 0;
+  }
+
+  .warehouse-effect-result img {
+    width: min(150px, 54vw);
+    height: 150px;
+  }
+}

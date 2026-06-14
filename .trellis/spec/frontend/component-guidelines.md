@@ -302,6 +302,70 @@ const display = buildGachaRewardDisplay(reward);
 {display.detail && <small>{display.detail}</small>}
 ```
 
+### Scenario: Player Gacha Modal Responsive Layout Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to player-facing `GachaModal` markup or CSS, including pool tabs, featured stage, wallet/action controls, nested prize/history dialogs, result grids, or Bright School theme overrides.
+- This contract does not cover the admin gacha pool editor.
+
+#### 2. Signatures
+- `GachaModal` keeps the existing class surface: `.gacha-modal`, `.gacha-pool-tabs`, `.gacha-ticket-tab`, `.gacha-main`, `.gacha-featured-stage`, `.gacha-control-panel`, `.gacha-wallet`, `.gacha-round-actions`, `.gacha-draw-actions`.
+- Base layout lives in `src/styles/commerce-settings.css`.
+- Bright School polish lives in `src/styles/themes/bright-school/commerce.css`.
+- Final phone/tablet survival rules live in `src/styles/mobile-adaptive.css`, which is imported after theme files.
+
+#### 3. Contracts
+- Desktop gacha UI is a capsule-counter composition: pool tickets in a compact rail, machine/featured prize as the primary stage, and wallet/prize/history/draw controls in a separate action panel.
+- Mobile gacha UI must use one modal column inside the safe-area viewport, with pool tickets as a horizontal top scroller and draw controls reachable without horizontal scrolling.
+- Mobile `.gacha-main` must collapse to one column; do not leave desktop side-panel columns active below 768px.
+- Nested prize/history/result dialogs must scroll internally on mobile.
+- Desktop ten-pull result grids stay five columns; mobile ten-pull result grids may collapse to compact two-column cards.
+- Bright School `!important` overrides must be paired with equal-or-later mobile rules in `mobile-adaptive.css` when they affect gacha layout.
+
+#### 4. Validation & Error Matrix
+- No open pools -> the modal may show empty/loading text, but the pool rail and main area must not create horizontal overflow.
+- 393px portrait viewport -> `documentElement.scrollWidth` should not exceed `clientWidth`.
+- Ten rewards -> desktop `.gacha-result-grid.ten-pull` uses five columns; mobile uses the final mobile override.
+- Bright School active -> themed borders/shadows may change, but mobile column layout, touch target sizes, and internal scrolling remain intact.
+
+#### 5. Good/Base/Bad Cases
+- Good: mobile gacha rules in `mobile-adaptive.css` use `.gacha-modal`, `.gacha-pool-tabs`, `.gacha-main`, and `.gacha-draw-actions` so the final layer owns small-screen survival.
+- Good: Bright School theme reduces heavy gacha shadows on mobile while the final mobile layer controls sizing and grid structure.
+- Base: an empty gacha pool list still renders a bounded modal with no horizontal page scroll.
+- Bad: only editing `themes/bright-school/commerce.css` for mobile layout; the later `mobile-adaptive.css` layer can still override or drift.
+- Bad: keeping `grid-template-columns: minmax(0, 1fr) minmax(242px, 310px)` active on phone widths.
+
+#### 6. Tests Required
+- `GachaModal.test.js` should assert the gacha CSS hooks, desktop ten-pull five-column rule, final mobile gacha selectors, and Bright School mobile gacha marker.
+- Run `npm test -- src/modals/GachaModal.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js` after changing gacha modal CSS.
+- Run `npm run check` before handoff when system docs or broad CSS layers changed.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```css
+@media (max-width: 768px) {
+  .theme-bright-school .gacha-main {
+    grid-template-columns: 1fr !important;
+  }
+}
+```
+
+This keeps mobile survival in the theme layer only.
+
+Correct:
+
+```css
+@media (max-width: 768px) {
+  .gacha-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+```
+
+Place the final mobile contract in `mobile-adaptive.css`, then let theme CSS adjust only visual treatment such as borders and shadows.
+
 ---
 
 ## Styling Patterns

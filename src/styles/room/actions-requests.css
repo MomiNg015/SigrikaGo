@@ -1,0 +1,330 @@
+/* Room toggles, action bars, scoring decisions, request toasts, and replay step controls. */
+.room-toggles,
+.action-bar,
+.inline-actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.8vw, 8px);
+  flex-wrap: wrap;
+}
+
+.room-mobile-menu {
+  display: none;
+}
+
+.room-mobile-exit {
+  display: none;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #dfd0e5;
+}
+
+.action-bar {
+  margin: 0;
+  justify-content: center;
+}
+
+.action-bar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-label {
+  white-space: nowrap;
+}
+
+.decision-bar {
+  width: var(--board-size);
+  max-width: 100%;
+  min-height: 58px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border: 1px solid rgba(128, 102, 142, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 10px 24px rgba(75, 58, 88, 0.08);
+}
+
+.decision-bar.waiting {
+  background: rgba(248, 249, 255, 0.9);
+  border-color: rgba(130, 151, 215, 0.24);
+}
+
+.decision-copy {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  flex: 1 1 420px;
+  color: #4d4256;
+}
+
+.decision-copy strong {
+  color: #2f2735;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.decision-copy span {
+  color: #74657a;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.scoring-breakdown {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.scoring-breakdown.compact {
+  gap: 4px;
+  margin-top: 7px;
+}
+
+.scoring-line {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid rgba(128, 102, 142, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
+  color: #5f5066;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.scoring-line strong {
+  color: #3c3143;
+  font-size: 12px;
+}
+
+.scoring-line span {
+  color: #74657a;
+  overflow-wrap: anywhere;
+}
+
+.scoring-line b {
+  color: #2f2735;
+  font-size: 12px;
+}
+
+.scoring-line.result {
+  border-color: rgba(226, 121, 173, 0.24);
+  background: rgba(255, 246, 251, 0.72);
+}
+
+.decision-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.decision-progress {
+  overflow: hidden;
+  width: min(280px, 100%);
+  height: 7px;
+  border-radius: 999px;
+  background: #eaddea;
+}
+
+.decision-progress span {
+  display: block;
+  height: 100%;
+  background: #e279ad;
+  animation: shrink linear forwards;
+}
+
+.room-request-toast {
+  position: fixed;
+  left: 50%;
+  top: max(76px, calc(env(safe-area-inset-top) + 72px));
+  z-index: 80;
+  width: min(540px, calc(100vw - 28px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 44px 15px 16px;
+  border: 1px solid rgba(113, 96, 130, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 46px rgba(54, 38, 68, 0.2);
+  color: #33283b;
+  transform: translateX(-50%);
+  animation: duel-request-drop 220ms ease-out;
+}
+
+.room-request-toast.passive {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.room-request-toast-copy {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.room-request-toast-copy strong {
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.room-request-toast-copy p {
+  margin: 0;
+  color: #6d5d73;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.room-request-toast-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.room-request-toast-actions button {
+  min-height: 36px;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 13px;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.room-request-toast-actions .agree {
+  background: #3ca66a;
+}
+
+.room-request-toast-actions .reject {
+  background: #d94a62;
+}
+
+.room-request-toast-actions button:disabled {
+  background: #b9b2c0;
+  color: #ffffff;
+  cursor: not-allowed;
+}
+
+.room-request-toast-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(235, 230, 240, 0.86);
+  color: #6a586f;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.room-request-toast-progress {
+  overflow: hidden;
+  width: min(260px, 100%);
+  height: 5px;
+  border-radius: 999px;
+  background: #e8e0ec;
+}
+
+.room-request-toast-progress span {
+  display: block;
+  height: 100%;
+  background: #5d7fe8;
+  animation: shrink linear forwards;
+}
+
+.decision-waiting {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: #edf2ff;
+  border: 1px solid rgba(130, 151, 215, 0.28);
+  color: #61709d;
+  font-weight: 900;
+}
+
+.action-bar button.active {
+  background: #fff3d7;
+  border-color: #e5b853;
+}
+
+.action-bar .skill-action {
+  min-width: clamp(112px, 11vw, 132px);
+  background: linear-gradient(135deg, #ffb02e, #ff5f9c);
+  color: #fff;
+  border-color: transparent;
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(226, 105, 76, 0.28);
+}
+
+.action-bar .skill-action.active {
+  background: linear-gradient(135deg, #ffcf4d, #e74492);
+  animation: target-rainbow 1.2s linear infinite;
+}
+
+.room-mobile-exit {
+  background: linear-gradient(135deg, #eaf8ff, #d5efff);
+  border-color: #8bc8ec;
+  color: #225a78;
+  box-shadow: 0 6px 16px rgba(83, 173, 221, 0.16);
+}
+
+.test-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px dashed rgba(126, 102, 144, 0.32);
+}
+
+.test-tools button {
+  min-height: 42px;
+  padding: 0 12px;
+  background: #fff9ef;
+  border-color: rgba(206, 152, 62, 0.36);
+  color: #765229;
+  font-weight: 800;
+}
+
+.replay-step-indicator {
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(154, 132, 166, 0.24);
+  color: #5d5066;
+  font-weight: 900;
+}
+
+.action-bar .skill-action.spent,
+.action-bar .skill-action:disabled,
+.action-bar button:disabled {
+  background: #d6cfd9;
+  color: #7d7282;
+  border-color: #cfc6d2;
+  box-shadow: none;
+  cursor: not-allowed;
+}

@@ -1,0 +1,120 @@
+@media (max-width: 560px) {
+  .friends-modal {
+    min-height: 0;
+    position: relative;
+    grid-template-rows: auto minmax(0, 1fr);
+    padding-top: 52px;
+  }
+
+  .friends-modal .friends-modal-close {
+    top: var(--modal-close-inset, 12px);
+    right: var(--modal-close-inset, 12px);
+  }
+
+  .friends-modal-toolbar {
+    min-width: 0;
+  }
+
+  .friends-list {
+    width: 100%;
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: hidden !important;
+    display: grid;
+    gap: 8px;
+  }
+
+  .friends-list-heading {
+    display: none;
+  }
+
+  .friends-row {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+      "status avatar info action";
+    grid-template-columns: auto 32px minmax(0, 1fr) 44px;
+    gap: 4px 6px;
+    align-items: center;
+    padding: 10px;
+    white-space: nowrap;
+  }
+
+  .friends-row .online-status {
+    grid-area: status;
+    justify-self: start;
+    min-width: 0;
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .friends-row img {
+    grid-area: avatar;
+    width: 32px;
+    height: 32px;
+  }
+
+  .friends-row > .friend-main {
+    grid-area: info;
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+    align-content: center;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .friends-row .friend-username {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .friends-row .friend-stats {
+    min-width: 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .friends-row .friend-rank {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .friends-row .friend-rating {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .friends-row .friend-actions-cell {
+    grid-area: action;
+    justify-self: end;
+  }
+
+  .friend-action-row {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    gap: 6px;
+    overflow-x: hidden;
+    justify-content: stretch;
+  }
+
+  .friend-gear-button {
+    justify-self: center;
+  }
+
+  .friends-list .quiet-text {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 14px 10px;
+    text-align: center;
+  }
+}

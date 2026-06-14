@@ -1,0 +1,83 @@
+/* Shop, settings, profile, and compact commerce responsive rules. */
+.house-header,
+.owned-decoration-header,
+.shop-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.house-header {
+  justify-content: flex-start;
+  padding-right: 44px;
+  margin-bottom: 18px;
+}
+
+.house-header h2,
+.owned-decoration-header h3,
+.shop-header h2,
+.shop-wallet {
+  margin: 0;
+}
+
+.owned-decoration-header {
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+
+.compact-action {
+  min-height: 0;
+  padding: 7px 11px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.owned-decoration-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.owned-decoration-chip {
+  width: 72px;
+  min-height: 64px;
+  padding: 7px;
+  border-radius: 8px;
+  border: 1px solid #ddebe9;
+  background: #eef6f5;
+  color: #315d60;
+  font-weight: 800;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.owned-decoration-chip:disabled {
+  cursor: default;
+}
+
+.owned-decoration-chip.selected {
+  border-color: #5d7fe8;
+  background: #eef3ff;
+  color: #435fb9;
+}
+
+.owned-decoration-chip img {
+  width: 52px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.owned-decoration-chip .stone-decoration-preview {
+  width: 58px;
+  height: 32px;
+}
+
+.owned-decoration-chip strong {
+  font-size: 12px;
+  line-height: 1;
+}

@@ -1,0 +1,105 @@
+@media (max-width: 900px) and (orientation: landscape) {
+  .mobile-room-screen {
+    --mobile-room-dock-panel-height: 44px;
+    --mobile-room-board-size: min(54dvw, calc(100dvh - 112px), 330px);
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    grid-template-areas:
+      "opponent board self"
+      "dock dock dock";
+    grid-template-columns: minmax(128px, 0.72fr) minmax(280px, 1.4fr) minmax(128px, 0.72fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 5px;
+  }
+
+  .mobile-room-screen .board-stage {
+    width: var(--mobile-room-board-size);
+    aspect-ratio: 1;
+  }
+
+  .mobile-room-screen .player-info {
+    grid-template-columns: 1fr;
+    grid-template-areas: "meta" "time" "captures";
+    grid-template-rows: auto auto auto;
+    height: 100%;
+    min-height: 0;
+    padding: 5px;
+    gap: 3px;
+    align-content: stretch;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .player-info img {
+    display: none;
+  }
+
+  .mobile-room-screen .player-meta {
+    grid-template-columns: 1fr;
+    justify-content: center;
+    justify-items: center;
+    text-align: center;
+    gap: 3px;
+  }
+
+  .mobile-room-screen .color-badge {
+    display: none;
+  }
+
+  .mobile-room-screen .rank-tag,
+  .mobile-room-screen .rating-tag,
+  .mobile-room-screen .captures {
+    display: none;
+  }
+
+  .mobile-room-screen .name-button {
+    max-width: 100%;
+    min-height: 24px;
+    font-size: 11px;
+    line-height: 1.05;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-room-screen .digital-timer {
+    min-height: 36px;
+    padding: 4px 6px;
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-room-screen .skill-detail-panel,
+  .mobile-room-screen .skill-chip-wrap {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-room-dock {
+    max-height: 96px;
+    transform: translateY(-8px);
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    max-height: var(--mobile-room-dock-panel-height);
+    padding: 0;
+    overflow: hidden !important;
+  }
+
+  .mobile-room-screen .mobile-action-panel {
+    display: block;
+  }
+
+  .mobile-room-screen #mobile-room-panel-actions .operation-hint {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-rows: 44px;
+    gap: 5px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .skill-action {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}

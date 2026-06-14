@@ -1,0 +1,116 @@
+/* Base layout, shared controls, home entries */
+
+:root {
+  color: #2d2430;
+  background: #fff8fb;
+  font-family: Inter, "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  letter-spacing: 0;
+  --page-pad: clamp(10px, 1.6vw, 24px);
+  --fluid-gap: clamp(10px, 1.35vw, 18px);
+  --board-size: clamp(430px, 50vw, 620px);
+  --left-panel: clamp(160px, 18vw, 220px);
+  --right-panel: clamp(220px, 22vw, 280px);
+  --side-portrait: clamp(112px, 13vw, 170px);
+  --control-pad-y: clamp(9px, 0.95vw, 12px);
+  --control-pad-x: clamp(10px, 1.1vw, 14px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  touch-action: manipulation;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(255, 232, 238, 0.9), rgba(238, 247, 255, 0.96)),
+    #fff8fb;
+}
+
+.app-shell:has(.home-screen) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #f4f3f6;
+}
+
+.app-shell:has(.home-screen)::before {
+  content: "";
+  position: fixed;
+  inset: -24px;
+  z-index: -2;
+  background-image: url("/assets/home/multipurpose-classroom-bg.webp");
+  background-size: cover;
+  background-position: center;
+  filter: blur(14px) saturate(0.95);
+  transform: scale(1.04);
+}
+
+.app-shell:has(.home-screen)::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(135deg, rgba(255, 244, 250, 0.42), rgba(235, 246, 255, 0.4)),
+    rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+}
+
+.auth-screen,
+.home-screen,
+.room-screen,
+.admin-screen {
+  width: min(1280px, calc(100vw - (var(--page-pad) * 2)));
+  margin: 0 auto;
+  padding: var(--page-pad) 0;
+}
+
+.home-screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1vw, 14px);
+  overflow: visible;
+}
+
+.auth-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}

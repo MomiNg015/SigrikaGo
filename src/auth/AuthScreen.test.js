@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import AuthScreen from "./AuthScreen.jsx";
 import { authSubmitText, isAlreadyLoggedInError, validateAuthSubmit } from "./AuthScreen.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("AuthScreen submit validation", () => {
   it("allows login without a password confirmation", () => {
@@ -51,7 +52,7 @@ describe("AuthScreen submit validation", () => {
   });
 
   it("keeps the Bright School mobile auth title single-line without tinted blocks", () => {
-    const css = readFileSync(new URL("../styles/mobile-adaptive.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(css).toContain(".auth-panel .brand-lockup");
     expect(css).toContain("background: transparent !important");

@@ -1,0 +1,136 @@
+.board-stage {
+  width: calc(var(--board-size) + clamp(18px, 2vw, 34px));
+  max-width: 100%;
+  padding: clamp(9px, 1vw, 16px);
+  border: 2px solid rgba(0, 255, 190, 0.4);
+  border-radius: 0;
+  clip-path: var(--battle-cut);
+  background:
+    linear-gradient(135deg, rgba(0, 255, 190, 0.1), transparent 44%, rgba(0, 191, 255, 0.08)),
+    rgba(4, 17, 22, 0.74);
+  box-shadow:
+    inset 0 0 28px rgba(0, 255, 190, 0.12),
+    0 0 36px rgba(0, 255, 190, 0.18),
+    0 28px 70px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.board-stage::before {
+  content: "[HOLO BREAKWATER // BOARD LOCK]";
+  position: absolute;
+  top: 5px;
+  left: 18px;
+  z-index: 2;
+  color: rgba(0, 255, 190, 0.72);
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+
+.board-wrap {
+  border-radius: 4px;
+  box-shadow:
+    inset 0 0 0 2px rgba(106, 73, 27, 0.22),
+    0 0 0 1px rgba(255, 224, 155, 0.2),
+    0 18px 54px rgba(0, 0, 0, 0.34);
+}
+
+.action-bar {
+  width: min(100%, calc(var(--board-size) + 54px));
+  padding: 8px;
+  border: 1px solid rgba(0, 191, 255, 0.32);
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  background: rgba(4, 17, 22, 0.74);
+  box-shadow: inset 0 0 20px rgba(0, 191, 255, 0.09), 0 0 28px rgba(0, 191, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.action-bar button,
+.decision-actions button,
+.replay-bar button {
+  position: relative;
+  min-height: 42px;
+  border-radius: 0;
+  border: 1px solid rgba(0, 255, 190, 0.36);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  background: rgba(3, 16, 22, 0.75);
+  color: var(--battle-text);
+  transform: skewX(-10deg);
+  overflow: hidden;
+  box-shadow: inset 0 0 12px rgba(0, 255, 190, 0.08);
+}
+
+.action-bar button > *,
+.decision-actions button > *,
+.replay-bar button > * {
+  transform: skewX(10deg);
+}
+
+.action-bar button::before,
+.decision-actions button::before,
+.replay-bar button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 190, 0.24), rgba(0, 191, 255, 0.28), transparent);
+  transform: translateX(-110%);
+  transition: transform 220ms ease;
+  pointer-events: none;
+}
+
+.action-bar button:not(:disabled):hover,
+.action-bar button:not(:disabled):focus-visible,
+.decision-actions button:not(:disabled):hover,
+.decision-actions button:not(:disabled):focus-visible {
+  border-color: var(--battle-cyan);
+  color: #ffffff;
+  box-shadow:
+    inset 0 0 18px rgba(0, 255, 190, 0.18),
+    0 0 18px rgba(0, 255, 190, 0.24);
+}
+
+.action-bar button:not(:disabled):hover::before,
+.action-bar button:not(:disabled):focus-visible::before,
+.decision-actions button:not(:disabled):hover::before,
+.decision-actions button:not(:disabled):focus-visible::before {
+  transform: translateX(110%);
+}
+
+.action-bar .skill-action,
+.action-bar .skill-action.active {
+  border-color: rgba(255, 180, 84, 0.72);
+  background:
+    linear-gradient(105deg, rgba(255, 180, 84, 0.9), rgba(255, 61, 87, 0.88), rgba(0, 191, 255, 0.82));
+  color: #ffffff;
+  box-shadow:
+    0 0 22px rgba(255, 180, 84, 0.32),
+    0 0 30px rgba(255, 61, 87, 0.18);
+}
+
+.action-bar .skill-action.active {
+  animation: room-skill-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.action-bar .exit-action {
+  border-color: rgba(0, 191, 255, 0.42);
+  background: rgba(7, 19, 28, 0.82);
+  color: #bdefff;
+}
+
+.action-bar button:disabled,
+.action-bar .skill-action:disabled,
+.action-bar .skill-action.spent {
+  border-color: rgba(126, 147, 154, 0.28);
+  background: rgba(33, 43, 48, 0.72);
+  color: rgba(224, 247, 244, 0.4);
+  transform: skewX(-10deg);
+}
+
+@keyframes room-skill-pulse {
+  from { filter: saturate(1) brightness(1); }
+  to { filter: saturate(1.25) brightness(1.12); }
+}

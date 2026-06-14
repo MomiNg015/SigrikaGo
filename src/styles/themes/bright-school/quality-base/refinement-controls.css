@@ -1,0 +1,69 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
+  box-shadow: 7px 8px 0 rgba(61, 43, 37, 0.78), 0 14px 26px rgba(61, 43, 37, 0.1) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible {
+  transform: translateY(-6px) rotate(-0.35deg) scale(1.01) !important;
+  box-shadow: var(--bright-shadow-lift) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .home-image-entry img,
+  .character-detail-art img,
+  .profile-resume-hero img,
+  .portrait-wrap img,
+  .shop-mascot-slot img
+) {
+  filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.2)) drop-shadow(0 10px 18px rgba(255, 158, 187, 0.2)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .home-grid-featured > .home-utility-grid .utility-entry,
+  .action-bar button,
+  .decision-actions button,
+  .settings-tabs button,
+  .shop-tabs button,
+  .theme-choice-button,
+  .shop-pagination button,
+  .skill-chip,
+  .skill-action,
+  .icon-button
+) {
+  transition:
+    transform 160ms ease-out,
+    box-shadow 160ms ease-out,
+    background-color 160ms ease-out,
+    border-color 160ms ease-out !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .home-grid-featured > .home-utility-grid .utility-entry,
+  .action-bar button,
+  .decision-actions button,
+  .settings-tabs button,
+  .shop-tabs button,
+  .theme-choice-button,
+  .shop-pagination button,
+  .skill-chip,
+  .skill-action,
+  .icon-button
+):hover {
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .home-grid-featured > .home-utility-grid .utility-entry,
+  .action-bar button,
+  .decision-actions button,
+  .settings-tabs button,
+  .shop-tabs button,
+  .theme-choice-button,
+  .shop-pagination button,
+  .skill-chip,
+  .skill-action,
+  .icon-button
+):active {
+  transform: translateY(1px) scale(0.98) !important;
+  box-shadow: 1px 1px 0 rgba(61, 43, 37, 0.72) !important;
+}

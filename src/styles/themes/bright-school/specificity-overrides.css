@@ -104,6 +104,9 @@
   color: #4a3736 !important;
   font-weight: 500 !important;
 }
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .character-description {
+  color: #7b3fa0 !important;
+}
 /* 将详情面板里的“技能名：”、“获得途径：”等引导标签及重要加粗元素重写为深玫瑰红，制造极佳的视觉对比度 */
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal h2,
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal h3,

@@ -1,0 +1,85 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout {
+  display: grid !important;
+  grid-template-columns: minmax(170px, 220px) minmax(0, 1fr) !important;
+  gap: 22px !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  background: #fff6dd !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 18px !important;
+  box-shadow: 5px 5px 0 #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
+  margin: 12px !important;
+  color: #3d2b25 !important;
+  background: #ffdfeb !important;
+  border: 2px solid #3d2b25 !important;
+  border-radius: 999px !important;
+  box-shadow: 2px 2px 0 #3d2b25 !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  background: radial-gradient(circle at 50% 60%, rgba(255, 158, 187, 0.22), rgba(255, 250, 240, 0.86) 68%) !important;
+  border-top: 2px dashed rgba(61, 43, 37, 0.36) !important;
+  border-bottom: 2px dashed rgba(61, 43, 37, 0.36) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img {
+  display: block !important;
+  width: min(100%, 180px) !important;
+  max-height: 210px !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+  filter: drop-shadow(10px 12px 0 rgba(61, 43, 37, 0.18)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+  gap: 14px !important;
+  padding-right: 8px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item {
+  min-width: 0 !important;
+  background: #fffaf0 !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 18px !important;
+  box-shadow: 4px 4px 0 #3d2b25 !important;
+  overflow: hidden !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > img,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item > img,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .item-icon,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .item-preview {
+  padding: 8px !important;
+  background: #fff6dd !important;
+  border: 2px dashed rgba(61, 43, 37, 0.56) !important;
+  border-radius: 14px !important;
+  object-fit: contain !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .stone-decoration-preview {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 76px !important;
+  padding: 8px !important;
+  margin: 0 auto 6px !important;
+  background: #fff6dd !important;
+  border: 2px dashed rgba(61, 43, 37, 0.56) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}

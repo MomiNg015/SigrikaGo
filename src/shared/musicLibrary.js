@@ -198,6 +198,21 @@ export const DEFAULT_MUSIC_SELECTIONS = {
   skill: {}
 };
 
+export function musicTracksWithDisplayNames(tracks = MUSIC_TRACKS, displayNames = {}) {
+  const entries = Object.entries(tracks ?? {}).map(([id, track]) => {
+    const displayName = String(displayNames?.[id] ?? "").trim();
+    return [
+      id,
+      {
+        ...track,
+        defaultName: track.defaultName ?? track.name,
+        name: displayName || track.name
+      }
+    ];
+  });
+  return Object.fromEntries(entries);
+}
+
 export function parseMusicIds(value) {
   if (Array.isArray(value)) return normalizeMusicIds(value);
   const text = String(value ?? "").trim();

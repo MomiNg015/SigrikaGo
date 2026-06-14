@@ -1,0 +1,153 @@
+/* Bright School portrait mobile late compatibility fixes. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track span {
+  background: var(--timer-track-fill, #ff9ebb) !important;
+  border: 0 !important;
+  box-shadow: var(--timer-track-glow, none) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures .cost-stat,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures .cost-stat strong {
+  color: #d93645 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before {
+  transform: rotate(-8deg) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::after {
+  transform: rotate(8deg) !important;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
+    padding: 12px 12px 48px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry::before {
+    left: 50% !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: 10px !important;
+    width: auto !important;
+    max-width: calc(100% - 28px) !important;
+    min-width: min(126px, calc(100% - 28px)) !important;
+    min-height: 34px !important;
+    box-sizing: border-box !important;
+    padding: 6px 16px !important;
+    font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap !important;
+    transform: translateX(-50%) rotate(-1deg) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry::before {
+    min-width: min(132px, calc(100% - 28px)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry img {
+    min-height: 0 !important;
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen :where(
+    .room-header,
+    .room-code-label,
+    .room-info-tag,
+    .toggle,
+    .room-mobile-exit,
+    .room-mobile-menu-toggle,
+    .room-mobile-menu-panel,
+    .room-mobile-menu-panel button,
+    .mobile-room-dock,
+    .mobile-tab-button,
+    .mobile-tab-panel,
+    .mobile-tab-panel .action-bar button,
+    .action-bar button,
+    .decision-bar,
+    .decision-actions button,
+    .replay-bar,
+    .replay-bar button,
+    .mobile-action-panel,
+    .operation-hint,
+    .room-people,
+    .room-person,
+    .player-info,
+    .portrait-wrap,
+    .name-button,
+    .color-badge,
+    .rank-tag,
+    .rating-tag,
+    .captures span,
+    .info-stat,
+    .digital-timer,
+    .timer-track,
+    .timer-track span,
+    .skill-chip,
+    .chat-widget,
+    .chat-toggle-button,
+    .chat-exit-action,
+    .chat-popover,
+    .chat-box,
+    .chat-close-button
+  ) {
+    box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .chat-widget {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .chat-toggle-button {
+    margin-left: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(calc((100% - 36px) / 4), 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button {
+    min-width: 0 !important;
+    aspect-ratio: 0.78 !important;
+    padding: 8px 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid img {
+    width: 100% !important;
+    height: 0 !important;
+    flex: 1 1 auto !important;
+    object-fit: contain !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid span {
+    flex: 0 0 auto !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    margin-top: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid small {
+    flex: 0 0 auto !important;
+    max-width: 100% !important;
+    margin-top: 2px !important;
+    padding: 2px 6px !important;
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+  }
+}

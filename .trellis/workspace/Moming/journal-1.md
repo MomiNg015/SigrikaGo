@@ -269,3 +269,201 @@ Updated gacha ten-pull result cards to use a desktop 2x5 grid, player-facing rew
 ### Next Steps
 
 - None - task complete
+
+
+## Session 9: Fix house manual chain badge switching
+
+**Date**: 2026-06-13
+**Task**: Fix house manual chain badge switching
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Fixed the member manual chain badge disappearing after switching sortie character by returning user asset relations from player account mutation routes; added regression coverage for player route payloads and HouseModal chain badge rendering; synced system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `78b1374` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 10: 成就系统与个性化装备
+
+**Date**: 2026-06-13
+**Task**: 成就系统与个性化装备
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Implemented achievement domain persistence, admin achievement management, player achievement and personalization modals, unlock toasts, docs, and Trellis code-spec updates.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `92be79e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 11: 修复成就系统启动报错
+
+**Date**: 2026-06-13
+**Task**: 修复成就系统启动报错
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Fixed startup ordering so achievement schema guard adds source columns before character and shop seed queries; verified tests, build, docs generation, and alternate-port backend startup.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b0c56b2` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 12: 修复登录后回退登录页
+
+**Date**: 2026-06-13
+**Task**: 修复登录后回退登录页
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Fixed login preload rollback by passing setMusicTracks into useStartupPreload, added wiring regression coverage, and captured the startup preload setter contract in frontend state spec.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1787e85` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 13: 修复首页资源请求循环限流
+
+**Date**: 2026-06-13
+**Task**: 修复首页资源请求循环限流
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Fixed repeated /api/me refresh caused by unstable achievement unlock callback, preventing rate-limit symptoms in member manual and shop catalog flows; added an App regression test and frontend state spec note.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8e63888` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 14: 角色详情说明颜色与音乐暂停续播
+
+**Date**: 2026-06-14
+**Task**: 角色详情说明颜色与音乐暂停续播
+**Branch**: `codex/gacha-scheme-c-ui`
+
+### Summary
+
+Changed character detail description styling to purple italic across base and Bright School layers; preserved character preview and background BGM playback offsets across pause/resume; updated audio scheduling tests and system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0135941` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

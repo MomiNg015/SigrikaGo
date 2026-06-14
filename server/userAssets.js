@@ -1,4 +1,10 @@
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import { parseItemEffects } from "./itemEffects.js";
+
+const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia", "aemeath"];
+const RATING_UNLOCKS = [
+  { characterId: "nabomo", rating: 1400 }
+];
 
 export function parseAssetList(value, { normalize = (item) => item } = {}) {
   const rawItems = Array.isArray(value)
@@ -91,6 +97,23 @@ export function legacyUserAssetsToStructuredRows(user) {
       effectValue,
       source: "legacy"
     }))
+  };
+}
+
+export function publicUserAssets(user) {
+  const ownedCharacters = new Set(publicOwnedCharacters(user));
+  for (const characterId of AVAILABLE_CHARACTER_IDS) ownedCharacters.add(characterId);
+  for (const unlock of RATING_UNLOCKS) {
+    if ((user?.rating ?? 0) >= unlock.rating) ownedCharacters.add(unlock.characterId);
+  }
+  return {
+    selectedCharacter: canonicalCharacterId(user?.selectedCharacter),
+    selectedStoneDecoration: user?.selectedStoneDecoration ?? "",
+    ownedCharacters: [...ownedCharacters],
+    ownedItems: publicOwnedItems(user),
+    characterChains: publicCharacterChains(user),
+    itemEffects: publicItemEffects(user),
+    ownedDecorations: publicOwnedDecorations(user)
   };
 }
 
@@ -189,12 +212,80 @@ function parseLegacyItemEffects(value) {
   }
 }
 
+function publicOwnedCharacters(user) {
+  const owned = new Set(parseCharacterAssetList(user?.ownedCharacters));
+  if (Array.isArray(user?.userCharacters)) {
+    for (const entry of user.userCharacters) {
+      const characterId = canonicalCharacterId(entry.characterSlug);
+      if (characterId) owned.add(characterId);
+    }
+  }
+  return [...owned];
+}
+
+function publicCharacterChains(user) {
+  const chains = {};
+  for (const entry of user?.userCharacters ?? []) {
+    const characterId = canonicalCharacterId(entry.characterSlug);
+    const chainCount = Number(entry.chainCount ?? 0);
+    if (characterId && Number.isFinite(chainCount) && chainCount > 0) {
+      chains[characterId] = Math.floor(chainCount);
+    }
+  }
+  return chains;
+}
+
+function publicOwnedDecorations(user) {
+  const owned = new Set(parseAssetList(user?.ownedDecorations));
+  if (Array.isArray(user?.userDecorations)) {
+    for (const entry of user.userDecorations) {
+      const decorationId = String(entry.decorationSlug ?? "").trim();
+      if (decorationId) owned.add(decorationId);
+    }
+  }
+  return [...owned];
+}
+
+function publicOwnedItems(user) {
+  const counts = parseOwnedItemCounts(user?.ownedItems);
+  if (Array.isArray(user?.userItems)) {
+    for (const entry of user.userItems) {
+      const itemId = String(entry.itemId ?? "").trim();
+      const quantity = parseNonNegativeInt(entry.quantity);
+      if (itemId && quantity > 0) counts[itemId] = Math.max(counts[itemId] ?? 0, quantity);
+    }
+  }
+  return Object.entries(counts).map(([itemId, quantity]) => ({ itemId, quantity }));
+}
+
+function publicItemEffects(user) {
+  const effects = parseItemEffects(user?.itemEffects);
+  if (Array.isArray(user?.userItemEffects)) {
+    for (const entry of user.userItemEffects) {
+      const key = String(entry.effectKey ?? "").trim();
+      const value = parseStructuredEffectValue(entry.effectValue);
+      if (key && value !== false && value != null) effects[key] = value;
+    }
+  }
+  return effects;
+}
+
 function normalizeItemEffectsMap(value) {
   return Object.fromEntries(
     Object.entries(value ?? {})
       .filter(([key, value]) => key && value !== false && value != null)
       .map(([key, value]) => [key, typeof value === "string" ? value : JSON.stringify(value)])
   );
+}
+
+function parseStructuredEffectValue(value) {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
 }
 
 function parseNonNegativeInt(value) {

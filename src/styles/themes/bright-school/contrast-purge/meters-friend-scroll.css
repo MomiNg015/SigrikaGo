@@ -1,0 +1,44 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-bar,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-bar span {
+  background-color: #ff9ebb !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 2px solid #3d2b25 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row button {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 12px !important;
+  padding: 10px 16px !important;
+  box-shadow: 3px 3px 0 #3d2b25 !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-grid-container,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-list {
+  border-right: none !important;
+  box-shadow: none !important;
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-grid-container::-webkit-scrollbar,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-list::-webkit-scrollbar {
+  width: 3px !important;
+  background-color: transparent !important;
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-grid-container::-webkit-scrollbar-thumb,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-list::-webkit-scrollbar-thumb {
+  background-color: #9ad3de !important;
+  color: #3d2b25 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}

@@ -8,9 +8,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import multer from "multer";
 import { Server } from "socket.io";
-import { ensureGachaSchema, ensureGameModeSchema, prisma, USER_ASSET_RELATION_INCLUDE } from "./db.js";
+import { prisma, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { makeAuth, withToken } from "./auth.js";
-import { promoteConfiguredAdmins } from "./adminConfig.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
 import { createAuthRouter } from "./authRoutes.js";
 import { createCommerceRouter } from "./commerceRoutes.js";
@@ -19,19 +18,18 @@ import { createPlayerRouter, createCharacterSelectionData, validateOptionalRoomC
 import { createPublicRouter } from "./publicRoutes.js";
 import { createReplayRouter } from "./replayRoutes.js";
 import { createSocialRouter } from "./socialRoutes.js";
-import { createLoginSessionStore, ensureLoginSessionSchema } from "./loginSessions.js";
+import { createLoginSessionStore } from "./loginSessions.js";
 import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
 import { jsonSyntaxErrorHandler } from "./httpErrors.js";
 import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
+import { initializeServerData } from "./serverStartup.js";
 import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
-import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
-import { seedCharacters } from "./characters.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
+import { installProductionStaticAssets } from "./staticAssets.js";
 import { createSocketUserRefresher } from "./socketAuth.js";
+import { registerSocketEvents } from "./socketEvents.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
-import { seedBuiltinShopItems } from "./shop.js";
-import { ensureDefaultSiteSettings } from "./siteSettings.js";
 import {
   assertProductionDeployment,
   corsOriginForRequest,
@@ -65,7 +63,6 @@ import {
   roomView
 } from "./rooms.js";
 import {
-  ensureSocialSchema,
   hasBlacklistBetween,
   hasBlacklistFromOwner,
   toSocialUser
@@ -136,15 +133,7 @@ const io = new Server(server, {
   cors: corsOptions
 });
 
-await seedCharacters(prisma);
-await seedBuiltinShopItems(prisma);
-await ensureDefaultSiteSettings(prisma);
-await ensureSocialSchema(prisma);
-await ensureRoomPersistenceSchema(prisma);
-await ensureLoginSessionSchema(prisma);
-await ensureGameModeSchema(prisma);
-await ensureGachaSchema(prisma);
-await promoteConfiguredAdmins(prisma);
+await initializeServerData({ prisma });
 
 let onlineSessions;
 let duelRequests;
@@ -227,178 +216,43 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  installSocketRateGuard(socket);
   registerOnlineSocket(socket);
   socket.emit("me", socket.user);
   socket.emit("lobby:stats", lobbyStats());
   broadcastLobbyStats();
 
-  socket.on("match:join", async ({ mode: modeInput } = {}) => {
-    try {
-      const mode = normalizeGameModeId(modeInput);
-      await refreshSocketUser(socket);
-      const blockedCandidateIds = new Set();
-      for (const candidate of listWaitingPlayers()) {
-        if (await hasBlacklistBetween({
-          prisma,
-          firstUserId: socket.user.id,
-          secondUserId: candidate.user.id
-        })) {
-          blockedCandidateIds.add(candidate.user.id);
-        }
-      }
-      const room = joinMatchmaking(
-        { user: socket.user, socketId: socket.id, mode },
-        io,
-        { canPair: (candidate) => !blockedCandidateIds.has(candidate.user.id) }
-      );
-      if (!room) socket.emit("match:waiting", { startedAt: Date.now(), mode });
-      broadcastLobbyStats();
-    } catch (error) {
-      socket.emit("error:toast", "登录状态已失效，请重新登录");
-    }
-  });
-
-  socket.on("match:leave", () => {
-    leaveMatchmaking(socket.user.id);
-    socket.emit("match:left");
-    broadcastLobbyStats();
-  });
-
-  socket.on("room:join", ({ roomCode } = {}) => {
-    const validatedRoomCode = validateRoomCode(roomCode);
-    if (!validatedRoomCode.ok) {
-      socket.emit("error:toast", validatedRoomCode.error);
-      return;
-    }
-    const room = attachSocketToRoom(validatedRoomCode.value, socket, socket.user);
-    if (!room) {
-      socket.emit("error:toast", "房间不存在或已经关闭");
-      return;
-    }
-    socket.emit("room:update", roomView(room, socket.user.id));
-    broadcastRoom(io, room);
-  });
-
-  socket.on("room:leave", ({ roomCode } = {}) => {
-    const room = leaveRoom(roomCode, socket.user.id, socket.id);
-    if (!room) return;
-    socket.leave(room.code);
-    socket.emit("room:left", { roomCode: room.code });
-    broadcastRoom(io, room);
-  });
-
-  socket.on("room:resume", async ({ roomCode } = {}) => {
-    const payload = await resumePayloadForUser({
-      prisma,
-      userId: socket.user.id,
-      roomCode: validateOptionalRoomCode(roomCode),
-      findRoomForUser,
-      roomView
-    });
-    if (payload.type === "room") {
-      const room = attachSocketToRoom(payload.room.code, socket, socket.user);
-      if (room) {
-        socket.emit("room:update", roomView(room, socket.user.id));
-        broadcastRoom(io, room);
-        return;
-      }
-    }
-    socket.emit("room:resume", payload);
-  });
-
-  socket.on("game:action", (payload = {}) => {
-    const result = handleGameAction(payload.roomCode, socket.user.id, payload.action, io);
-    sendResult(socket, result);
-    if (result.ok) broadcastRoom(io, result.room);
-  });
-
-  socket.on("counting:request", ({ roomCode } = {}) => {
-    const result = requestCounting(roomCode, socket.user.id, io);
-    sendResult(socket, result);
-    if (result.ok) broadcastRoom(io, result.room);
-  });
-
-  socket.on("counting:respond", ({ roomCode, accepted } = {}) => {
-    const result = respondCounting(roomCode, socket.user.id, accepted);
-    sendResult(socket, result);
-    if (result.ok) broadcastRoom(io, result.room);
-  });
-
-  socket.on("draw:request", ({ roomCode } = {}) => {
-    const result = requestDraw(roomCode, socket.user.id, io);
-    sendResult(socket, result);
-    if (result.ok) broadcastRoom(io, result.room);
-  });
-
-  socket.on("draw:respond", ({ roomCode, accepted } = {}) => {
-    const result = respondDraw(roomCode, socket.user.id, accepted, io);
-    sendResult(socket, result);
-    if (result.ok) broadcastRoom(io, result.room);
-  });
-
-  socket.on("scoring:action", (payload = {}) => {
-    const result = handleScoringAction(payload.roomCode, socket.user.id, payload.action, io);
-    sendResult(socket, result);
-    if (result.ok) broadcastRoom(io, result.room);
-  });
-
-  socket.on("chat:send", ({ roomCode, text } = {}) => {
-    const room = addChat(roomCode, socket.user, text);
-    if (room) broadcastRoom(io, room);
-  });
-
-  socket.on("duel:request", async ({ targetUserId, mode: modeInput } = {}) => {
-    try {
-      await refreshSocketUser(socket);
-      await duelRequests.handleRequest(socket, String(targetUserId ?? ""), normalizeGameModeId(modeInput));
-    } catch (error) {
-      socket.emit("error:toast", "登录状态已失效，请重新登录");
-    }
-  });
-
-  socket.on("duel:respond", async ({ requestId, accepted } = {}) => {
-    try {
-      await refreshSocketUser(socket);
-      await duelRequests.handleResponse(socket, String(requestId ?? ""), Boolean(accepted));
-      broadcastLobbyStats();
-    } catch (error) {
-      socket.emit("error:toast", "登录状态已失效，请重新登录");
-    }
-  });
-
-  socket.on("disconnect", () => {
-    unregisterOnlineSocket(socket);
-    for (const room of detachSocket(socket.id, io)) {
-      broadcastRoom(io, room);
-    }
-    broadcastLobbyStats();
+  registerSocketEvents(socket, {
+    io,
+    prisma,
+    refreshSocketUser,
+    listWaitingPlayers,
+    hasBlacklistBetween,
+    joinMatchmaking,
+    leaveMatchmaking,
+    broadcastLobbyStats,
+    normalizeGameModeId,
+    validateRoomCode,
+    validateOptionalRoomCode,
+    attachSocketToRoom,
+    leaveRoom,
+    findRoomForUser,
+    resumePayloadForUser,
+    roomView,
+    handleGameAction,
+    requestCounting,
+    respondCounting,
+    requestDraw,
+    respondDraw,
+    handleScoringAction,
+    addChat,
+    duelRequests,
+    unregisterOnlineSocket,
+    detachSocket,
+    broadcastRoom
   });
 });
 
 await restorePersistedRooms(io);
-
-function sendResult(socket, result) {
-  if (!result.ok) socket.emit("error:toast", result.error);
-}
-
-function installSocketRateGuard(socket) {
-  socket.data.rateGuard = { startedAt: Date.now(), count: 0 };
-  socket.use((_packet, next) => {
-    const guard = socket.data.rateGuard;
-    const now = Date.now();
-    if (now - guard.startedAt > 10000) {
-      guard.startedAt = now;
-      guard.count = 0;
-    }
-    guard.count += 1;
-    if (guard.count > 120) {
-      socket.emit("error:toast", "鎿嶄綔杩囦簬棰戠箒锛岃绋嶅悗鍐嶈瘯");
-      return;
-    }
-    next();
-  });
-}
 
 function registerOnlineSocket(socket) {
   onlineSessions.registerOnlineSocket(socket);
@@ -420,19 +274,7 @@ function isUserOnline(userId) {
   return onlineSessions?.hasOnlineUser?.(userId) ?? false;
 }
 
-if (process.env.NODE_ENV === "production" && fs.existsSync(distDir)) {
-  app.use(express.static(distDir, {
-    maxAge: "1h",
-    setHeaders: (res, filePath) => {
-      if (/\.[a-f0-9]{8,}\./i.test(filePath)) {
-        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-      }
-    }
-  }));
-  app.get(/^(?!\/api|\/socket\.io|\/uploads).*/, (_req, res) => {
-    res.sendFile(path.join(distDir, "index.html"));
-  });
-}
+installProductionStaticAssets(app, { distDir });
 
 installServerLifecycle(server, { dependencies: [prisma] });
 startHttpServer(server, { port: PORT });

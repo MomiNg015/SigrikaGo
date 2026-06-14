@@ -1,0 +1,103 @@
+.app-shell.player-theme-enabled.theme-bright-school input,
+.app-shell.player-theme-enabled.theme-bright-school textarea,
+.app-shell.player-theme-enabled.theme-bright-school select {
+  background: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 12px !important;
+  color: #4a3736 !important;
+  box-shadow: inset 0 2px 8px rgba(74, 55, 54, 0.05) !important;
+  caret-color: #4a3736;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school input:focus,
+.app-shell.player-theme-enabled.theme-bright-school textarea:focus,
+.app-shell.player-theme-enabled.theme-bright-school select:focus {
+  border-color: #ff9ebb !important;
+  box-shadow: 0 0 0 3px rgba(255, 158, 187, 0.28), inset 0 2px 8px rgba(74, 55, 54, 0.05) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .settings-panel,
+.app-shell.player-theme-enabled.theme-bright-school .about-panel-block,
+.app-shell.player-theme-enabled.theme-bright-school .profile-grid .stat,
+.app-shell.player-theme-enabled.theme-bright-school .character-card,
+.app-shell.player-theme-enabled.theme-bright-school .record-card,
+.app-shell.player-theme-enabled.theme-bright-school .shop-item,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-item,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-row,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-heading,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-current,
+.app-shell.player-theme-enabled.theme-bright-school .friend-row,
+.app-shell.player-theme-enabled.theme-bright-school .watch-room-row,
+.app-shell.player-theme-enabled.theme-bright-school .message-card,
+.app-shell.player-theme-enabled.theme-bright-school .room-info-tag,
+.app-shell.player-theme-enabled.theme-bright-school .meta-tag,
+.app-shell.player-theme-enabled.theme-bright-school .rank-tag,
+.app-shell.player-theme-enabled.theme-bright-school .rating-tag,
+.app-shell.player-theme-enabled.theme-bright-school .color-badge,
+.app-shell.player-theme-enabled.theme-bright-school .captures span {
+  background: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 12px !important;
+  color: #4a3736 !important;
+  box-shadow: 2px 2px 0 rgba(74, 55, 54, 0.18) !important;
+  clip-path: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .top-stats-bar .stat {
+  text-align: center;
+  box-shadow: 2px 2px 0 #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .character-grid-container,
+.app-shell.player-theme-enabled.theme-bright-school .character-list {
+  border-right: none !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .decorations-section,
+.app-shell.player-theme-enabled.theme-bright-school .decoration-applied-box {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: 2px dashed #4a3736 !important;
+  border-radius: 14px !important;
+  color: #4a3736 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .character-detail-copy {
+  background: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 12px !important;
+  color: #4a3736 !important;
+  box-shadow: 3px 3px 0 #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row strong,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .acquisition-method,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .acquisition-method strong,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .character-detail-copy p {
+  color: #4a3736 !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row span,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row strong:first-child,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .acquisition-method strong {
+  color: #ff9ebb !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .deploy-tag,
+.app-shell.player-theme-enabled.theme-bright-school .store-owned-tag,
+.app-shell.player-theme-enabled.theme-bright-school .owned-strip,
+.app-shell.player-theme-enabled.theme-bright-school .skill-cost-badge,
+.app-shell.player-theme-enabled.theme-bright-school .shop-category-badge,
+.app-shell.player-theme-enabled.theme-bright-school .rank-badge,
+.app-shell.player-theme-enabled.theme-bright-school .top-rank .rank-position {
+  background: #fff9ed !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 999px !important;
+  color: #4a3736 !important;
+  box-shadow: 2px 2px 0 #4a3736 !important;
+  clip-path: none !important;
+  transform: none !important;
+}

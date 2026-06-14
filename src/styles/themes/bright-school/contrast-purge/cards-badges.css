@@ -1,0 +1,37 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid .stat,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .record-card,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-heading,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-row,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-row,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .message-card,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-message,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .meta-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .rank-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .rating-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .color-badge,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .deploy-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .store-owned-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-strip,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-cost-badge,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-badge,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .rank-badge,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .top-rank .rank-position,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .digital-timer,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .classroom-clock {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 14px !important;
+  box-shadow: 3px 3px 0 #3d2b25 !important;
+  clip-path: none !important;
+  text-shadow: none !important;
+}

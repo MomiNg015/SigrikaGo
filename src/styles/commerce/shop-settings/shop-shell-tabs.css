@@ -1,0 +1,140 @@
+.shop-modal {
+  width: min(1080px, calc(100vw - (var(--page-pad) * 2)));
+  height: min(760px, calc(100dvh - (var(--page-pad) * 2)));
+  text-align: left;
+  overflow: hidden;
+}
+
+.shop-layout {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 20px;
+  height: 100%;
+  min-height: 0;
+}
+
+.shop-sidebar {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  align-content: safe center;
+  align-items: center;
+  justify-items: center;
+  gap: 0;
+  padding: 16px 8px 22px;
+  border-right: 1px solid rgba(226, 207, 231, 0.9);
+}
+
+.shop-content {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  padding: 8px 0 4px;
+  overflow: hidden;
+}
+
+.shop-wallet {
+  width: fit-content;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff3a8, #f4c552);
+  border: 1px solid rgba(188, 132, 25, 0.22);
+  color: #65450c;
+  font-weight: 800;
+  margin-top: 15px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 7px 16px rgba(173, 128, 28, 0.12);
+}
+
+.shop-wallet-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  margin-top: 15px;
+}
+
+.shop-wallet-wrap > span {
+  color: #7b6b80;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.shop-wallet-wrap .shop-wallet {
+  margin-top: 0;
+}
+
+.shop-mascot-bubble {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 166px);
+  min-height: 42px;
+  margin-bottom: 5px;
+  padding: 10px 13px;
+  border: 2px solid #34253c;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #34253c;
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 10px 22px rgba(69, 48, 80, 0.12);
+}
+
+.shop-mascot-bubble::before,
+.shop-mascot-bubble::after {
+  display: none;
+}
+
+.shop-mascot-slot {
+  width: 172px;
+  height: 250px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  display: grid;
+  place-items: center;
+}
+
+.shop-mascot-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.shop-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+  width: min(420px, 100%);
+  margin-bottom: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fffdfd, #f2eef5);
+  border: 1px solid #ead8ef;
+  box-shadow: inset 0 -1px 0 rgba(122, 88, 148, 0.06);
+}
+
+.shop-tabs button {
+  min-width: 0;
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 12px;
+  background: transparent;
+  color: #755c7c;
+  font-weight: 900;
+  box-shadow: none;
+}
+
+.shop-tabs button.active {
+  background: linear-gradient(180deg, #ffffff, #e8f0ff);
+  color: #34253c;
+  box-shadow: 0 4px 10px rgba(112, 91, 155, 0.12);
+}

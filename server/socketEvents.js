@@ -1,0 +1,68 @@
+import { registerChatSocketEvents } from "./socketChatEvents.js";
+import { registerDisconnectSocketEvents } from "./socketDisconnectEvents.js";
+import { registerDuelSocketEvents } from "./socketDuelEvents.js";
+import { registerGameSocketEvents } from "./socketGameEvents.js";
+import { installSocketRateGuard } from "./socketGuards.js";
+import { registerMatchSocketEvents } from "./socketMatchEvents.js";
+import { registerRoomSocketEvents } from "./socketRoomEvents.js";
+
+export function registerSocketEvents(socket, deps) {
+  installSocketRateGuard(socket);
+
+  registerMatchSocketEvents(socket, {
+    io: deps.io,
+    prisma: deps.prisma,
+    refreshSocketUser: deps.refreshSocketUser,
+    listWaitingPlayers: deps.listWaitingPlayers,
+    hasBlacklistBetween: deps.hasBlacklistBetween,
+    joinMatchmaking: deps.joinMatchmaking,
+    leaveMatchmaking: deps.leaveMatchmaking,
+    broadcastLobbyStats: deps.broadcastLobbyStats,
+    normalizeGameModeId: deps.normalizeGameModeId
+  });
+
+  registerRoomSocketEvents(socket, {
+    io: deps.io,
+    prisma: deps.prisma,
+    validateRoomCode: deps.validateRoomCode,
+    validateOptionalRoomCode: deps.validateOptionalRoomCode,
+    attachSocketToRoom: deps.attachSocketToRoom,
+    leaveRoom: deps.leaveRoom,
+    findRoomForUser: deps.findRoomForUser,
+    resumePayloadForUser: deps.resumePayloadForUser,
+    roomView: deps.roomView,
+    broadcastRoom: deps.broadcastRoom
+  });
+
+  registerGameSocketEvents(socket, {
+    io: deps.io,
+    handleGameAction: deps.handleGameAction,
+    requestCounting: deps.requestCounting,
+    respondCounting: deps.respondCounting,
+    requestDraw: deps.requestDraw,
+    respondDraw: deps.respondDraw,
+    handleScoringAction: deps.handleScoringAction,
+    broadcastRoom: deps.broadcastRoom
+  });
+
+  registerChatSocketEvents(socket, {
+    io: deps.io,
+    addChat: deps.addChat,
+    broadcastRoom: deps.broadcastRoom
+  });
+
+  registerDuelSocketEvents(socket, {
+    refreshSocketUser: deps.refreshSocketUser,
+    duelRequests: deps.duelRequests,
+    normalizeGameModeId: deps.normalizeGameModeId,
+    broadcastLobbyStats: deps.broadcastLobbyStats
+  });
+
+  registerDisconnectSocketEvents(socket, {
+    io: deps.io,
+    unregisterOnlineSocket: deps.unregisterOnlineSocket,
+    detachSocket: deps.detachSocket,
+    broadcastRoom: deps.broadcastRoom,
+    broadcastLobbyStats: deps.broadcastLobbyStats
+  });
+}

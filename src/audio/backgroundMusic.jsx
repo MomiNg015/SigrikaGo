@@ -20,6 +20,8 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
     generation: 0,
     currentTrack: null,
     bufferCache: new Map(),
+    offset: 0,
+    startedAt: 0,
     pauseRequested: false
   });
   const volume = audioVolume(audioSettings, "bgm");
@@ -44,6 +46,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
       pauseBackgroundPlayback(state);
     } else {
       resumeBackgroundContextWithFallback(state);
+      recoverBackgroundPlayback(state);
     }
   }), []);
 
@@ -57,6 +60,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
     const generation = state.generation;
     if (!track) {
       state.currentTrack = null;
+      state.offset = 0;
       fadeOutBackgroundPlayers(state);
       return () => {};
     }
@@ -65,6 +69,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
     resumeBackgroundContextWithFallback(state);
     state.baseVolume = volume;
     state.currentTrack = track;
+    state.offset = 0;
     scheduleBackgroundTrack({ state, context, track, generation }).catch(() => {});
 
     return () => {};
@@ -103,7 +108,7 @@ async function scheduleBackgroundTrack({ state, context, track, generation }) {
 
   const buffers = Object.fromEntries(decodedEntries);
   const startAt = context.currentTime + BGM_START_DELAY_SECONDS;
-  const schedule = createPlaybackSchedule({ playback: track.playback, buffers, startAt });
+  const schedule = createPlaybackSchedule({ playback: track.playback, buffers, startAt, offset: state.offset });
   const gain = context.createGain();
   applyGainRamp(gain.gain, createVolumeRamp({ from: 0, to: currentBackgroundVolume(state), startAt }));
   gain.connect(context.destination);
@@ -115,10 +120,11 @@ async function scheduleBackgroundTrack({ state, context, track, generation }) {
     source.buffer = buffers[event.src];
     source.loop = event.loop;
     source.connect(gain);
-    source.start(event.startAt);
+    source.start(event.startAt, event.offset ?? 0);
     sourcesToStop.push(source);
   }
 
+  state.startedAt = startAt;
   state.active.push({ gain, sources: sourcesToStop });
 }
 
@@ -149,9 +155,9 @@ export function resumeBackgroundContextWithFallback(state) {
 
 export function pauseBackgroundPlayback(state) {
   const context = state.context;
-  if (!context || context.state !== "running") return;
-  const result = context.suspend?.();
-  result?.catch?.(() => {});
+  if (!context || state.active.length === 0) return;
+  state.offset += Math.max(0, context.currentTime - state.startedAt);
+  stopBackgroundPlayers(state);
 }
 
 export function installBackgroundResumeTriggers(state) {
@@ -234,6 +240,25 @@ function fadeOutBackgroundPlayers(state) {
       } catch {
         // The source may already have ended naturally.
       }
+    }
+  }
+}
+
+function stopBackgroundPlayers(state) {
+  const previous = state.active;
+  state.active = [];
+  for (const player of previous) {
+    for (const source of player.sources) {
+      try {
+        source.stop();
+      } catch {
+        // The source may already have ended naturally.
+      }
+    }
+    try {
+      player.gain.disconnect();
+    } catch {
+      // Already disconnected.
     }
   }
 }

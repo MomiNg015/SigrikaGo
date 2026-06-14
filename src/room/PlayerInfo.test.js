@@ -87,7 +87,7 @@ describe("PlayerInfo labels", () => {
   });
 
   it("keeps overclock text red and timer tracks state-colored across themes", () => {
-    const roomCss = readFileSync(new URL("../styles/room.css", import.meta.url), "utf8");
+    const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const themesCss = readFileSync(new URL("../styles/themes.css", import.meta.url), "utf8");
     const themeComponentsCss = readFileSync(new URL("../styles/themes/theme-components.css", import.meta.url), "utf8");
     const sharedCss = readFileSync(new URL("../styles/themes/shared.css", import.meta.url), "utf8");
@@ -142,7 +142,7 @@ describe("PlayerInfo labels", () => {
 
   it("colors room portrait backgrounds by the player's stone color in Bright School", () => {
     const playerInfoSource = readFileSync(new URL("./PlayerInfo.jsx", import.meta.url), "utf8");
-    const componentRepairsCss = readFileSync(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url), "utf8");
+    const componentRepairsCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
     const roomPortraitImageBlocks = brightSchoolCss.match(/\.player-info \.portrait-wrap img\s*\{[^}]+\}/g) ?? [];
     const finalRoomPortraitImageBlock = roomPortraitImageBlocks.at(-1) ?? "";

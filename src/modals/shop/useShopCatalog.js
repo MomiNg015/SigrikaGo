@@ -6,7 +6,7 @@ import {
   pickShopMascotLine
 } from "../shopModalHelpers.js";
 
-export function useShopCatalog({ token, user, onNotice, onPurchased }) {
+export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("character");
@@ -27,7 +27,7 @@ export function useShopCatalog({ token, user, onNotice, onPurchased }) {
     setLoading(true);
     api("/api/shop", { token })
       .then((data) => {
-        if (alive) setItems(data.items ?? []);
+        if (alive) setItems(applyMusicItemNames(data.items ?? [], musicTracks));
       })
       .catch((apiError) => {
         if (alive) onNotice?.(apiError.message, "danger");
@@ -38,7 +38,7 @@ export function useShopCatalog({ token, user, onNotice, onPurchased }) {
     return () => {
       alive = false;
     };
-  }, [token, user, onNotice]);
+  }, [token, user, musicTracks, onNotice]);
 
   async function buyItem(item) {
     setPurchasingId(item.id);
@@ -49,6 +49,7 @@ export function useShopCatalog({ token, user, onNotice, onPurchased }) {
         setItems((current) => current.map((shopItem) => shopItem.id === data.item.id ? data.item : shopItem));
       }
       onNotice?.(`已购买${item.name}`, "success");
+      notifyAchievementUnlocks(data.achievementUnlocks, onNotice);
     } catch (apiError) {
       onNotice?.(apiError.message, "danger");
     } finally {
@@ -81,4 +82,18 @@ export function useShopCatalog({ token, user, onNotice, onPurchased }) {
     setActivePage,
     shopSlots
   };
+}
+
+function notifyAchievementUnlocks(unlocks = [], onNotice) {
+  for (const unlock of unlocks) {
+    onNotice?.(`达成成就：${unlock.name}`, "achievement");
+  }
+}
+
+function applyMusicItemNames(items, musicTracks = {}) {
+  return items.map((item) => {
+    if (item.category !== "music") return item;
+    const trackName = musicTracks?.[item.targetId]?.name;
+    return trackName ? { ...item, name: trackName } : item;
+  });
 }

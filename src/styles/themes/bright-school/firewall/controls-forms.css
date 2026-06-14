@@ -1,0 +1,72 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .icon-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .admin-nav-action,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-toggles .toggle,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-tabs button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-tabs button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .theme-choice-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-pagination button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .action-bar button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decision-actions button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-bar button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .primary-action,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .login-submit-btn,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-action {
+  background: var(--bright-sheet) !important;
+  color: var(--bright-ink) !important;
+  border: 3px solid var(--bright-border) !important;
+  border-radius: 14px !important;
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
+  clip-path: none !important;
+  transform: none !important;
+  filter: none !important;
+  font-style: normal !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button > *,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .utility-entry > *,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .action-bar button > *,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decision-actions button > *,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-bar button > * {
+  transform: none !important;
+  clip-path: none !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .theme-choice-button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .theme-choice-button[aria-pressed="true"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-pagination button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .primary-action,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .login-submit-btn,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-action {
+  background: var(--bright-pink) !important;
+  color: var(--bright-ink) !important;
+  border-color: var(--bright-border) !important;
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
+  transform: translateY(-1px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school textarea,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school select {
+  background: var(--bright-sheet) !important;
+  color: var(--bright-ink) !important;
+  border: 3px solid var(--bright-border) !important;
+  border-radius: 12px !important;
+  box-shadow: inset 2px 2px 0 rgba(61, 43, 37, 0.1) !important;
+  outline: none !important;
+  caret-color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school input::placeholder,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school textarea::placeholder {
+  color: var(--bright-ink-soft) !important;
+}

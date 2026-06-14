@@ -1,0 +1,47 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap {
+  background:
+    linear-gradient(90deg, rgba(94, 60, 20, 0.05), transparent 18%, rgba(255, 245, 202, 0.16) 34%, transparent 58%, rgba(92, 56, 17, 0.05)),
+    #dccd97 !important;
+}
+
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .point:not(.black):not(.white):not(.erased)::after {
+  content: none !important;
+  display: none !important;
+  background: #edf0d7 !important; /* Parity check color */
+}
+
+
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point.white,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point.black {
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: visible !important;
+  touch-action: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .stone {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 92% !important;
+  height: 92% !important;
+  max-width: none !important;
+  max-height: none !important;
+  aspect-ratio: 1 / 1 !important;
+  transform: translate(calc(-50% + var(--stone-offset-x, 0px)), calc(-50% + var(--stone-offset-y, 0px))) !important;
+  border-radius: 50% !important;
+  object-fit: contain !important;
+}

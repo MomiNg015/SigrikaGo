@@ -3,6 +3,7 @@ import { parseAssetList, parseCharacterAssetList, parseOwnedItemCounts, serializ
 import { PROGRESS_METRICS, PROGRESS_REASONS, progressLedgerCreateOperation } from "./userProgressLedger.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
+import { listMusicTrackMap } from "./musicTracks.js";
 
 const GACHA_DRAW_COUNTS = new Set([1, 10]);
 const PROBABILITY_TOTAL_BASIS_POINTS = 10000;
@@ -30,13 +31,14 @@ export function validatePrizeProbabilityTotal(prizes = []) {
 }
 
 export async function listOpenGachaPools({ prisma, userId, now = new Date() }) {
-  const [user, pools] = await Promise.all([
+  const [user, pools, musicTracks] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId } }),
     prisma.gachaPool.findMany({
       where: { enabled: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
       include: { prizes: true }
-    })
+    }),
+    listMusicTrackMap({ prisma })
   ]);
   if (!user) throw routeError(404, "User not found");
   return {
@@ -46,7 +48,7 @@ export async function listOpenGachaPools({ prisma, userId, now = new Date() }) {
     },
     pools: pools
       .filter((pool) => isPoolOpen(pool, now))
-      .map((pool) => toGachaPoolPayload(pool, now))
+      .map((pool) => toGachaPoolPayload(pool, now, { musicTracks }))
   };
 }
 
@@ -74,12 +76,13 @@ export async function executeGachaDraw({ prisma, userId, poolId, count, now = ne
     if (normalizedInt(user.coins) < coinCost) throw routeError(400, "Not enough coins");
 
     const state = mutableUserAssetState(user);
+    const musicTracks = await listMusicTrackMap({ prisma: tx });
     state.coins -= coinCost;
 
     const rewards = [];
     for (let index = 0; index < drawCount; index += 1) {
       const prize = pickPrize(enabledPrizes, random);
-      rewards.push(settlePrize(state, prize, index + 1));
+      rewards.push(settlePrize(state, prize, index + 1, musicTracks));
     }
 
     const userUpdate = {
@@ -175,7 +178,7 @@ export async function listGachaDrawHistory({ prisma, userId }) {
   };
 }
 
-export function toGachaPoolPayload(pool, now = new Date()) {
+export function toGachaPoolPayload(pool, now = new Date(), { musicTracks = null } = {}) {
   const prizes = pool.prizes ?? [];
   const featuredPrizes = featuredPrizeIdsFromPool(pool)
     .map((id) => prizes.find((prize) => prize.id === id))
@@ -192,9 +195,9 @@ export function toGachaPoolPayload(pool, now = new Date()) {
     remainingMs: remainingOpenMs(pool, now),
     singleDrawPrice: normalizedPositiveInt(pool.singleDrawPrice),
     tenDrawPrice: normalizedPositiveInt(pool.tenDrawPrice),
-    featuredPrize: featuredPrize ? toPrizePayload(featuredPrize) : null,
-    featuredPrizes: featuredPrizes.map(toPrizePayload),
-    prizes: prizes.filter((prize) => prize.enabled !== false).map(toPrizePayload)
+    featuredPrize: featuredPrize ? toPrizePayload(featuredPrize, musicTracks) : null,
+    featuredPrizes: featuredPrizes.map((prize) => toPrizePayload(prize, musicTracks)),
+    prizes: prizes.filter((prize) => prize.enabled !== false).map((prize) => toPrizePayload(prize, musicTracks))
   };
 }
 
@@ -219,7 +222,7 @@ function mutableUserAssetState(user) {
   };
 }
 
-function settlePrize(state, prize, drawIndex) {
+function settlePrize(state, prize, drawIndex, musicTracks = null) {
   const type = String(prize.type ?? "").trim();
   const targetId = String(prize.targetId ?? "").trim();
   const quantity = Math.max(1, normalizedPositiveInt(prize.quantity));
@@ -234,7 +237,7 @@ function settlePrize(state, prize, drawIndex) {
     blueGemsAdded: 0,
     chainAdded: 0,
     coinsAdded: 0,
-    name: prize.name ?? "",
+    name: (type === GACHA_REWARD_TYPES.music ? musicTracks?.[targetId]?.name : "") || prize.name || "",
     imageUrl: prize.imageUrl ?? ""
   };
 
@@ -349,7 +352,10 @@ function characterChainMap(user) {
   return chains;
 }
 
-function toPrizePayload(prize) {
+function toPrizePayload(prize, musicTracks = null) {
+  const musicName = prize.type === GACHA_REWARD_TYPES.music
+    ? musicTracks?.[prize.targetId]?.name
+    : "";
   return {
     id: prize.id,
     type: prize.type,
@@ -357,7 +363,7 @@ function toPrizePayload(prize) {
     quantity: normalizedPositiveInt(prize.quantity),
     probabilityBasisPoints: normalizedPositiveInt(prize.probabilityBasisPoints),
     probabilityPercent: normalizedPositiveInt(prize.probabilityBasisPoints) / 100,
-    name: prize.name ?? "",
+    name: musicName || prize.name || "",
     imageUrl: prize.imageUrl ?? ""
   };
 }

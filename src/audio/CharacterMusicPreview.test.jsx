@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { schedulePreviewSources } from "./CharacterMusicPreview.jsx";
+import { pausePreview, schedulePreviewSources } from "./CharacterMusicPreview.jsx";
 
 describe("character music preview scheduling", () => {
   it("resumes intro-loop playback from the intro offset", () => {
@@ -39,6 +39,25 @@ describe("character music preview scheduling", () => {
     expect(sources).toHaveLength(1);
     expect(sources[0].loop).toBe(true);
     expect(sources[0].started).toEqual({ startAt: 10, offset: 2 });
+  });
+
+  it("stores the elapsed preview offset when paused", () => {
+    const stopped = [];
+    const state = {
+      active: {
+        gain: { disconnect() {} },
+        sources: [{ stop: () => stopped.push("source") }]
+      },
+      context: { currentTime: 18 },
+      offset: 4,
+      startedAt: 11
+    };
+
+    pausePreview(state);
+
+    expect(state.offset).toBe(11);
+    expect(state.active).toBeNull();
+    expect(stopped).toEqual(["source"]);
   });
 });
 

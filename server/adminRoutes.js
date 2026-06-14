@@ -1,6 +1,13 @@
 import crypto from "node:crypto";
 import { readFile, unlink } from "node:fs/promises";
 import { Router } from "express";
+import {
+  createRewardAsset,
+  disableRewardAsset,
+  listAdminAchievements,
+  updateAchievement,
+  updateRewardAsset
+} from "./achievements.js";
 import { USER_STATUS } from "./adminConfig.js";
 import { validateCharacterInput } from "./characters.js";
 import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
@@ -39,6 +46,7 @@ import {
   updateGachaPool,
   validateGachaPoolInput
 } from "./adminGachaManagement.js";
+import { listMusicTrackSettings, updateMusicTrackSetting } from "./musicTracks.js";
 
 export { serializeAudit } from "./adminAudit.js";
 export {
@@ -323,6 +331,80 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
     });
     res.json({ items: items.map(toShopItemPayload) });
+  });
+
+  router.get("/music-tracks", async (_req, res) => {
+    res.json(await listMusicTrackSettings({ prisma }));
+  });
+
+  router.patch("/music-tracks/:id", async (req, res) => {
+    try {
+      res.json(await updateMusicTrackSetting({
+        prisma,
+        adminUser: req.user,
+        trackId: req.params.id,
+        body: req.body
+      }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/achievements", async (_req, res) => {
+    try {
+      res.json(await listAdminAchievements({ prisma }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.post("/achievements", async (_req, res) => {
+    res.status(405).json({ error: "Achievement creation is code-managed" });
+  });
+
+  router.patch("/achievements/:id", async (req, res) => {
+    try {
+      res.json(await updateAchievement({ prisma, adminUser: req.user, achievementId: req.params.id, body: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/achievements/:id", async (_req, res) => {
+    res.status(405).json({ error: "Achievement deletion is code-managed" });
+  });
+
+  router.post("/achievement-reward-assets", async (req, res) => {
+    try {
+      res.json(await createRewardAsset({ prisma, adminUser: req.user, body: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/achievement-reward-assets", async (_req, res) => {
+    try {
+      const data = await listAdminAchievements({ prisma });
+      res.json({ rewardAssets: data.rewardAssets, rewardTypes: data.rewardTypes });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/achievement-reward-assets/:id", async (req, res) => {
+    try {
+      res.json(await updateRewardAsset({ prisma, adminUser: req.user, rewardAssetId: req.params.id, body: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/achievement-reward-assets/:id", async (req, res) => {
+    try {
+      res.json(await disableRewardAsset({ prisma, adminUser: req.user, rewardAssetId: req.params.id }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
   });
 
   router.post("/shop-items", async (req, res) => {

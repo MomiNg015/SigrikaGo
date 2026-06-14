@@ -106,4 +106,49 @@ describe("player route helpers", () => {
     expect(res.body).toEqual({ error: "\u7cd6\u679c\u6548\u679c\u4e2d\uff0c\u6682\u65f6\u65e0\u6cd5\u51fa\u6218" });
     expect(updatedUsers).toEqual([]);
   });
+
+  it("returns character chain counts after selecting a sortie character", async () => {
+    const handlers = createPlayerRouteHandlers({
+      prisma: {
+        gameRecord: { findMany: async () => [] },
+        user: {
+          update: async ({ data, include }) => ({
+            id: "user-1",
+            username: "moming",
+            rating: 1000,
+            wins: 0,
+            losses: 0,
+            coins: 0,
+            selectedCharacter: data.selectedCharacter,
+            ownedCharacters: "sigrika,denia",
+            userCharacters: include?.userCharacters
+              ? [{ characterSlug: "denia", chainCount: 3 }]
+              : []
+          })
+        }
+      },
+      findRoomForUser: () => null,
+      roomView: () => ({}),
+      characterSelectionData: async () => ({
+        characters: { denia: { id: "denia" } },
+        disabledSlugs: new Set()
+      })
+    });
+    const res = createResponse();
+
+    await handlers.updateCharacter({
+      user: {
+        id: "user-1",
+        selectedCharacter: "sigrika",
+        rating: 1000,
+        ownedCharacters: "sigrika,denia",
+        userCharacters: [{ characterSlug: "denia", chainCount: 3 }]
+      },
+      body: { characterId: "denia" }
+    }, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.user.selectedCharacter).toBe("denia");
+    expect(res.body.user.characterChains).toEqual({ denia: 3 });
+  });
 });

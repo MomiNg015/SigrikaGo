@@ -1,0 +1,163 @@
+/* Bright School visual refinement layer.
+   A calmer scrapbook pass after the safety guard: unified tokens, softer depth,
+   readable pink surfaces, and lighter motion. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+  --bright-paper: #fffbf2;
+  --bright-sheet: #fffaf0;
+  --bright-sheet-clean: #ffffff;
+  --bright-cream: #fff6dd;
+  --bright-ink: #3d2b25;
+  --bright-border: #3d2b25;
+  --bright-muted: #6a554d;
+  --bright-pink: #ff9ebb;
+  --bright-pink-soft: #ffdfeb;
+  --bright-blue: #9ad3de;
+  --bright-mint: #bfe8dd;
+  --bright-shadow-soft: 4px 5px 0 rgba(61, 43, 37, 0.82);
+  --bright-shadow-lift: 7px 8px 0 rgba(61, 43, 37, 0.86), 0 14px 28px rgba(255, 158, 187, 0.2);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .shop-modal,
+  .warehouse-modal,
+  .house-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .settings-modal,
+  .small-modal,
+  .room-floating-modal,
+  .home-player-plaque,
+  .room-header,
+  .board-stage,
+  .chat-box
+) {
+  border: 3px solid var(--bright-border) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--bright-shadow-soft) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .shop-item,
+  .warehouse-item,
+  .character-card,
+  .record-card,
+  .leaderboard-row,
+  .friend-row,
+  .watch-room-row,
+  .message-card,
+  .chat-message,
+  .profile-grid .stat,
+  .owned-decoration-chip,
+  .theme-choice-button
+) {
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.64) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .deploy-tag,
+  .store-owned-tag,
+  .owned-strip,
+  .skill-cost-badge,
+  .shop-category-badge,
+  .rank-badge,
+  .top-rank .rank-position,
+  .room-code-label,
+  .home-online-tag,
+  .meta-tag,
+  .rank-tag,
+  .rating-tag,
+  .color-badge
+) {
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 999px !important;
+  box-shadow: 1px 2px 0 rgba(61, 43, 37, 0.56) !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .settings-tabs button.active,
+  .shop-tabs button.active,
+  .theme-choice-button.active,
+  .primary-action,
+  .login-submit-btn,
+  .shop-pagination button.active,
+  .skill-title-row strong,
+  .acquisition-method strong,
+  .store-owned-tag,
+  .owned-strip
+) {
+  background: var(--bright-pink) !important;
+  color: var(--bright-ink) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .character-detail-copy,
+  .character-detail-copy p,
+  .acquisition-method,
+  .skill-title-row,
+  .profile-resume-hero,
+  .watch-empty,
+  .quiet-text,
+  .shop-description,
+  .item-description
+) {
+  background-image: none !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .shop-grid,
+  .warehouse-grid,
+  .leaderboard-table,
+  .friends-list,
+  .chat-log,
+  .message-list,
+  .character-grid-container
+) {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(213, 140, 171, 0.9) transparent !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .shop-grid,
+  .warehouse-grid,
+  .leaderboard-table,
+  .friends-list,
+  .chat-log,
+  .message-list,
+  .character-grid-container
+)::-webkit-scrollbar {
+  width: 7px !important;
+  height: 7px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .shop-grid,
+  .warehouse-grid,
+  .leaderboard-table,
+  .friends-list,
+  .chat-log,
+  .message-list,
+  .character-grid-container
+)::-webkit-scrollbar-track {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .shop-grid,
+  .warehouse-grid,
+  .leaderboard-table,
+  .friends-list,
+  .chat-log,
+  .message-list,
+  .character-grid-container
+)::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--bright-pink), var(--bright-blue)) !important;
+  border: 2px solid var(--bright-sheet-clean) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 0 0 1px rgba(61, 43, 37, 0.42) !important;
+}

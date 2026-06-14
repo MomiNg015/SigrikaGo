@@ -2,16 +2,18 @@
 import { adminApi } from "../api/client.js";
 import AdminShell from "./AdminShell.jsx";
 import AdminAudit from "./AdminAudit.jsx";
+import AdminAchievements from "./AdminAchievements.jsx";
 import AdminCharacters from "./AdminCharacters.jsx";
 import AdminDecorations from "./AdminDecorations.jsx";
 import AdminFeedback from "./AdminFeedback.jsx";
 import AdminGachaPools from "./AdminGachaPools.jsx";
+import AdminMusicTracks from "./AdminMusicTracks.jsx";
 import AdminOverview from "./AdminOverview.jsx";
 import AdminShopItems from "./AdminShopItems.jsx";
 import AdminSiteSettings from "./AdminSiteSettings.jsx";
 import AdminUsers, { UserEditor } from "./AdminUsers.jsx";
 
-export default function AdminConsole({ user, token, tab, setTab, onCurrentUserChange, onCharactersChanged, onSiteSettingsChanged, onNotice, onBack, onOpenReplay }) {
+export default function AdminConsole({ user, token, tab, setTab, musicTracks, onCurrentUserChange, onCharactersChanged, onMusicTracksChanged, onSiteSettingsChanged, onNotice, onBack, onOpenReplay }) {
   const [summary, setSummary] = useState(null);
   const [users, setUsers] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
@@ -20,6 +22,7 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
   const [shopItems, setShopItems] = useState([]);
   const [decorations, setDecorations] = useState([]);
   const [gachaPools, setGachaPools] = useState([]);
+  const [achievementData, setAchievementData] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [adminError, setAdminError] = useState("");
 
@@ -67,8 +70,18 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
   }, [tab, token]);
 
   useEffect(() => {
+    if (tab !== "music") return;
+    refreshMusicTracks();
+  }, [tab, token]);
+
+  useEffect(() => {
     if (tab !== "gacha") return;
     refreshGachaContext();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "achievements") return;
+    refreshAchievements();
   }, [tab, token]);
 
   async function refreshUsers(nextSelectedId = selectedUser?.id) {
@@ -135,6 +148,15 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
     }
   }
 
+  async function refreshMusicTracks() {
+    setAdminError("");
+    try {
+      await onMusicTracksChanged?.();
+    } catch (error) {
+      notify(error.message);
+    }
+  }
+
   async function refreshGachaPools() {
     setAdminError("");
     try {
@@ -150,8 +172,19 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
       refreshGachaPools(),
       refreshCharacters(),
       refreshDecorations(),
-      refreshShopItems()
+      refreshShopItems(),
+      refreshMusicTracks()
     ]);
+  }
+
+  async function refreshAchievements() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/achievements", token);
+      setAchievementData(data);
+    } catch (error) {
+      notify(error.message);
+    }
   }
 
   return (
@@ -203,6 +236,9 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
       {tab === "decorations" && (
         <AdminDecorations decorations={decorations} token={token} onSaved={refreshDecorations} onNotice={notify} />
       )}
+      {tab === "music" && (
+        <AdminMusicTracks tracks={musicTracks} token={token} onSaved={refreshMusicTracks} onNotice={notify} />
+      )}
       {tab === "gacha" && (
         <AdminGachaPools
           pools={gachaPools}
@@ -210,9 +246,18 @@ export default function AdminConsole({ user, token, tab, setTab, onCurrentUserCh
           resourceCatalogs={{
             characters: adminCharacters,
             decorations,
-            items: shopItems.filter((item) => item.category === "item")
+            items: shopItems.filter((item) => item.category === "item"),
+            musicTracks
           }}
           onSaved={refreshGachaContext}
+          onNotice={notify}
+        />
+      )}
+      {tab === "achievements" && (
+        <AdminAchievements
+          data={achievementData}
+          token={token}
+          onSaved={refreshAchievements}
           onNotice={notify}
         />
       )}

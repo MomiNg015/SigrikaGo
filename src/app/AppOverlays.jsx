@@ -1,9 +1,11 @@
 import { DuelRequestBanner, ToastStack } from "../modals/FeedbackModals.jsx";
+import AchievementModal from "../modals/AchievementModal.jsx";
 import FriendsModal from "../modals/FriendsModal.jsx";
 import { MatchModal, MatchSuccessModal, ResultModal } from "../modals/GameLifecycleModals.jsx";
 import HouseModal from "../modals/HouseModal.jsx";
 import LeaderboardModal from "../modals/LeaderboardModal.jsx";
 import MessageBoardModal from "../modals/MessageBoardModal.jsx";
+import PersonalizationModal from "../modals/PersonalizationModal.jsx";
 import ResumeModal from "../modals/ResumeModal.jsx";
 import SettingsModal from "../modals/SettingsModal.jsx";
 import GachaModal from "../modals/GachaModal.jsx";
@@ -20,6 +22,7 @@ export default function AppOverlays({
   joinWatchRoom,
   matchStart,
   matchSuccess,
+  musicTracks,
   onMatchCancel,
   onMatchSuccessComplete,
   onMessageSubmitted,
@@ -33,11 +36,13 @@ export default function AppOverlays({
   selectCharacterMusic,
   setAudioSettings,
   setIncomingDuel,
+  setShowAchievements,
   setShowFriends,
   setShowGacha,
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
+  setShowPersonalization,
   setShowResume,
   setShowSettings,
   setShowShop,
@@ -46,9 +51,11 @@ export default function AppOverlays({
   setVisualTheme,
   showFriends,
   showGacha,
+  showAchievements,
   showHouse,
   showLeaderboard,
   showMessageBoard,
+  showPersonalization,
   showResume,
   showSettings,
   showShop,
@@ -114,6 +121,7 @@ export default function AppOverlays({
           records={replayRecords}
           characterListView={characterListView}
           audioSettings={audioSettings}
+          musicTracks={musicTracks}
           onClose={() => setShowHouse(false)}
           onSelectCharacter={selectCharacter}
           onSelectCharacterMusic={selectCharacterMusic}
@@ -126,7 +134,25 @@ export default function AppOverlays({
           records={replayRecords}
           characterListView={characterListView}
           onClose={() => setShowResume(false)}
+          onOpenAchievements={() => setShowAchievements(true)}
+          onOpenPersonalization={() => setShowPersonalization(true)}
           onOpenReplay={openReplay}
+        />
+      )}
+      {showAchievements && user && (
+        <AchievementModal
+          token={token}
+          onClose={() => setShowAchievements(false)}
+          onNotice={showToast}
+        />
+      )}
+      {showPersonalization && user && (
+        <PersonalizationModal
+          token={token}
+          user={user}
+          onClose={() => setShowPersonalization(false)}
+          onNotice={showToast}
+          onUserChange={updateUser}
         />
       )}
       {showWarehouse && user && (
@@ -173,6 +199,7 @@ export default function AppOverlays({
           onPurchased={updateUser}
           onNotice={showToast}
           onClose={() => setShowShop(false)}
+          musicTracks={musicTracks}
         />
       )}
       {showGacha && (

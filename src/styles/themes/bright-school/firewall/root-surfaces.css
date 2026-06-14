@@ -1,0 +1,50 @@
+/* Bright School final firewall.
+   Root cause: shared HUD layers define unscoped neon, cut-corner, skew, and
+   pseudo-element rules before themes.css. Keep this final block last so the
+   notebook skin wins without touching React markup or other themes. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+  --bright-paper: #fffbf2;
+  --bright-sheet: #ffffff;
+  --bright-ink: #3d2b25;
+  --bright-ink-soft: rgba(61, 43, 37, 0.7);
+  --bright-border: #3d2b25;
+  --bright-pink: #ff9ebb;
+  --bright-blue: #9ad3de;
+  --bright-shadow: 4px 4px 0 #3d2b25;
+  background-color: var(--bright-paper) !important;
+  color: var(--bright-ink) !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.auth-screen),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.asset-preload-screen),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.home-screen),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.room-screen) {
+  background-color: var(--bright-paper) !important;
+  background-image:
+    linear-gradient(rgba(154, 211, 222, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 211, 222, 0.2) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.auth-screen)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.auth-screen)::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.home-screen)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.home-screen)::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.room-screen)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.room-screen)::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-terminal-screen::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-terminal-screen::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  filter: none !important;
+  opacity: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::after {
+  text-shadow: none !important;
+}

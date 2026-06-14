@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { api } from "../api/client.js";
 import { loginPreloadAssets, preloadLoginAssets } from "../shared/preloadAssets.js";
 import { loadPublicCharacterCatalog } from "./characterCatalog.js";
+import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
 import { shouldFinishPreloadAsHome } from "./sessionState.js";
 
 export function useStartupPreload({
@@ -14,6 +15,7 @@ export function useStartupPreload({
   setLobbyStats,
   setMatchStart,
   setMatchSuccess,
+  setMusicTracks,
   setRoom,
   setShowHouse,
   setShowLeaderboard,
@@ -36,9 +38,13 @@ export function useStartupPreload({
         setUser(data.user);
         setView("preloading");
         setAssetProgress(0);
-        const nextCharacters = await loadPublicCharacterCatalog({ token });
+        const [nextCharacters, nextMusicTracks] = await Promise.all([
+          loadPublicCharacterCatalog({ token }),
+          loadMusicTrackCatalog({ token })
+        ]);
         if (cancelled) return;
         setCharacters(nextCharacters);
+        setMusicTracks(nextMusicTracks);
         const startedAt = Date.now();
         await preloadLoginAssets(loginPreloadAssets({
           characters: nextCharacters,
@@ -91,6 +97,7 @@ export function useStartupPreload({
     setLobbyStats,
     setMatchStart,
     setMatchSuccess,
+    setMusicTracks,
     setRoom,
     setShowHouse,
     setShowLeaderboard,

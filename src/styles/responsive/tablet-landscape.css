@@ -1,0 +1,61 @@
+@media (max-width: 900px) and (orientation: landscape) {
+  .home-grid-featured {
+    grid-template-columns: minmax(0, 0.56fr) minmax(0, 1fr);
+    grid-template-areas:
+      "player match"
+      "manual match"
+      "utility match";
+  }
+
+  .house-manual-entry {
+    width: min(76%, 230px);
+  }
+
+  .home-match-feature {
+    max-height: calc(100dvh - 102px);
+  }
+
+  .battle-layout {
+    grid-template-areas: "opponent board self";
+    grid-template-columns: clamp(84px, 17vw, 128px) minmax(280px, 1fr) clamp(84px, 17vw, 128px);
+    align-items: stretch;
+  }
+
+  .mobile-battle-layout {
+    grid-template-areas:
+      "opponent board self"
+      "tabs tabs tabs";
+    grid-template-columns: clamp(88px, 17vw, 128px) minmax(260px, 1fr) clamp(88px, 17vw, 128px);
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
+  }
+
+  .opponent-side {
+    grid-area: opponent;
+    order: 0;
+  }
+
+  .board-column {
+    grid-area: board;
+    order: 0;
+  }
+
+  .room-side {
+    grid-area: self;
+    order: 0;
+  }
+
+  .battle-layout .board-stage,
+  .mobile-battle-layout .board-stage {
+    width: min(100%, calc(100dvh - 92px));
+    min-width: 280px;
+  }
+
+  .mobile-room-screen .mobile-room-tabs {
+    max-height: 116px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    max-height: 64px;
+  }
+}

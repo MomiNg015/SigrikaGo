@@ -1,0 +1,7 @@
+/* Mobile-only modal sheets */
+
+.modal-backdrop {
+  align-items: start;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}

@@ -1,0 +1,74 @@
+.room-header {
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 255, 190, 0.32);
+  border-bottom-color: rgba(0, 255, 190, 0.7);
+  border-radius: 0;
+  clip-path: var(--battle-cut);
+  background:
+    linear-gradient(90deg, rgba(0, 255, 190, 0.12), transparent 36%, rgba(0, 191, 255, 0.08)),
+    rgba(4, 15, 20, 0.72);
+  box-shadow:
+    inset 0 0 22px rgba(0, 255, 190, 0.08),
+    0 0 30px rgba(0, 191, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.room-title-line,
+.room-title-stack h1 {
+  color: var(--battle-text);
+  text-shadow: 0 0 12px rgba(0, 255, 190, 0.38);
+}
+
+.room-code-label,
+.room-info-tag {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  border-color: rgba(0, 191, 255, 0.42);
+  background: rgba(6, 22, 30, 0.78);
+  color: var(--battle-text);
+  font-family: "Consolas", "Courier New", monospace;
+  box-shadow: inset 0 0 12px rgba(0, 191, 255, 0.12);
+}
+
+.room-info-tag.black-side {
+  border-color: rgba(0, 255, 190, 0.45);
+  background: rgba(2, 16, 18, 0.84);
+  color: #cafff4;
+}
+
+.room-info-tag.white-side {
+  border-color: rgba(255, 61, 87, 0.45);
+  background: rgba(30, 8, 14, 0.78);
+  color: #ffd9df;
+}
+
+.room-info-tag.move-count {
+  border-color: rgba(255, 180, 84, 0.48);
+  background: rgba(35, 22, 7, 0.76);
+  color: #ffe1ae;
+}
+
+.room-toggles .toggle {
+  border: 1px solid rgba(0, 255, 190, 0.42);
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  background: rgba(5, 21, 28, 0.68);
+  color: var(--battle-cyan);
+  box-shadow: inset 0 0 10px rgba(0, 255, 190, 0.1);
+}
+
+.room-toggles .toggle.active,
+.room-toggles .toggle:hover,
+.room-toggles .toggle:focus-visible {
+  background: rgba(0, 255, 190, 0.12);
+  color: #ffffff;
+  box-shadow:
+    inset 0 0 16px rgba(0, 255, 190, 0.22),
+    0 0 16px rgba(0, 255, 190, 0.28);
+}
+
+.battle-layout {
+  grid-template-columns: minmax(230px, 280px) minmax(460px, calc(var(--board-size) + 34px)) minmax(230px, 280px);
+  gap: clamp(12px, 1.55vw, 22px);
+}

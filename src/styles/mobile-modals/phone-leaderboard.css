@@ -1,0 +1,154 @@
+@media (max-width: 560px) {
+  .leaderboard-table {
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .leaderboard-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: grid;
+    gap: 8px;
+  }
+
+  .leaderboard-heading {
+    display: none;
+  }
+
+  .leaderboard-heading,
+  .leaderboard-row {
+    min-width: 0;
+  }
+
+  .leaderboard-row {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+      "rank avatar player score"
+      "rank avatar player record"
+      "rank avatar player rate";
+    grid-template-columns: 34px 34px minmax(0, 1fr) minmax(96px, auto);
+    gap: 4px 7px;
+    align-items: center;
+    min-height: 72px;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .leaderboard-row img {
+    grid-area: avatar;
+    width: 32px;
+    height: 36px;
+  }
+
+  .leaderboard-rank {
+    grid-area: rank;
+    align-self: center;
+    justify-self: center;
+  }
+
+  .leaderboard-player {
+    grid-area: player;
+    min-width: 0;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .leaderboard-row > span:nth-of-type(1) {
+    display: none;
+  }
+
+  .leaderboard-row > b {
+    grid-area: score;
+    justify-self: end;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .leaderboard-row > span:nth-of-type(2),
+  .leaderboard-row > span:nth-of-type(3),
+  .leaderboard-row > span:nth-of-type(4),
+  .leaderboard-row > span:nth-of-type(5) {
+    grid-area: rate;
+    justify-self: end;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.64);
+    font-size: 11px;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .leaderboard-row > span:nth-of-type(2)::before {
+    content: "总 ";
+  }
+
+  .leaderboard-row > span:nth-of-type(3)::before {
+    content: "胜 ";
+  }
+
+  .leaderboard-row > span:nth-of-type(4)::before {
+    content: "负 ";
+  }
+
+  .leaderboard-row > span:nth-of-type(2),
+  .leaderboard-row > span:nth-of-type(3),
+  .leaderboard-row > span:nth-of-type(4) {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .leaderboard-row > span:nth-of-type(5)::before {
+    content: "胜率 ";
+  }
+
+  .leaderboard-row > span:nth-of-type(5) {
+    align-self: center;
+  }
+
+  .leaderboard-mobile-record {
+    grid-area: record;
+    align-self: center;
+    justify-self: end;
+    display: inline-grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 3px;
+    max-width: 100%;
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .leaderboard-mobile-record span {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.56);
+  }
+
+  .leaderboard-mobile-record strong {
+    font-size: 10px;
+    font-weight: 900;
+  }
+
+  .leaderboard-current {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: auto auto;
+    align-content: start;
+    gap: 7px;
+    padding-top: 4px;
+  }
+
+  .leaderboard-current .leaderboard-row {
+    min-width: 0;
+    min-height: 72px;
+  }
+}

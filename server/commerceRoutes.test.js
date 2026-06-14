@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { ACHIEVEMENT_TRIGGER_EVENTS } from "./achievements.js";
 import { createCommerceRouteHandlers, createCommerceRouter } from "./commerceRoutes.js";
 
 function createResponse() {
@@ -102,6 +103,36 @@ describe("commerce route handlers", () => {
       characterId: "denia"
     });
     expect(res.body).toEqual({ ok: true });
+  });
+
+  it("passes the Denia rainbow bean candy achievement trigger after successful item use", async () => {
+    let achievementArgs = null;
+    const handlers = createCommerceRouteHandlers({
+      prisma: {},
+      useInventoryItemFn: async () => ({
+        ok: true,
+        item: { targetId: "rainbow-bean-candy" },
+        target: { characterId: "denia" }
+      }),
+      evaluateAchievementsForUserFn: async (args) => {
+        achievementArgs = args;
+        return [{ id: "achievement-denia-rainbow-bean-candy" }];
+      }
+    });
+    const res = createResponse();
+
+    await handlers.useItem({
+      user: { id: "user-1" },
+      params: { itemId: "rainbow-bean-candy" },
+      body: { characterId: "denia" }
+    }, res);
+
+    expect(achievementArgs).toEqual({
+      prisma: {},
+      userId: "user-1",
+      triggerEvent: ACHIEVEMENT_TRIGGER_EVENTS.deniaRainbowBeanCandy
+    });
+    expect(res.body.achievementUnlocks).toEqual([{ id: "achievement-denia-rainbow-bean-candy" }]);
   });
 
   it("mounts all commerce routes behind the index-level auth middleware", () => {

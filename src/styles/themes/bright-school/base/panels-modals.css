@@ -1,0 +1,62 @@
+.app-shell.player-theme-enabled.theme-bright-school .auth-panel,
+.app-shell.player-theme-enabled.theme-bright-school .asset-preload-panel,
+.app-shell.player-theme-enabled.theme-bright-school .home-top-strip,
+.app-shell.player-theme-enabled.theme-bright-school .home-player-plaque,
+.app-shell.player-theme-enabled.theme-bright-school .room-header,
+.app-shell.player-theme-enabled.theme-bright-school .player-info,
+.app-shell.player-theme-enabled.theme-bright-school .chat-box,
+.app-shell.player-theme-enabled.theme-bright-school .room-people,
+.app-shell.player-theme-enabled.theme-bright-school .operation-hint,
+.app-shell.player-theme-enabled.theme-bright-school .small-modal,
+.app-shell.player-theme-enabled.theme-bright-school .shop-modal,
+.app-shell.player-theme-enabled.theme-bright-school .house-modal,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-modal,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-modal,
+.app-shell.player-theme-enabled.theme-bright-school .friends-modal,
+.app-shell.player-theme-enabled.theme-bright-school .confirm-modal,
+.app-shell.player-theme-enabled.theme-bright-school .result-modal,
+.app-shell.player-theme-enabled.theme-bright-school .settings-modal,
+.app-shell.player-theme-enabled.theme-bright-school .nested-modal {
+  background: #ffffff !important;
+  border: 3px solid #4a3736 !important;
+  border-radius: 16px !important;
+  box-shadow: 5px 5px 0 #4a3736 !important;
+  clip-path: none !important;
+  color: #4a3736 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .auth-panel,
+.app-shell.player-theme-enabled.theme-bright-school .settings-modal,
+.app-shell.player-theme-enabled.theme-bright-school .small-modal,
+.app-shell.player-theme-enabled.theme-bright-school .shop-modal,
+.app-shell.player-theme-enabled.theme-bright-school .house-modal,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-modal,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-modal,
+.app-shell.player-theme-enabled.theme-bright-school .friends-modal,
+.app-shell.player-theme-enabled.theme-bright-school .confirm-modal,
+.app-shell.player-theme-enabled.theme-bright-school .result-modal,
+.app-shell.player-theme-enabled.theme-bright-school .nested-modal {
+  background-color: #fffbf2 !important;
+  background-image: var(--theme-paper-grid) !important;
+  background-size: 20px 20px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .modal-backdrop {
+  background: rgba(74, 55, 54, 0.38) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .close-button {
+  width: var(--modal-close-size, 44px);
+  min-width: var(--modal-close-size, 44px);
+  height: var(--modal-close-size, 44px);
+  min-height: var(--modal-close-size, 44px);
+  border: 3px solid #4a3736 !important;
+  border-radius: 999px !important;
+  background: #ff9ebb !important;
+  color: #4a3736 !important;
+  box-shadow: 2px 2px 0 #4a3736 !important;
+}

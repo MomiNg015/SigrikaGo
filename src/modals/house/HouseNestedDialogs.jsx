@@ -4,16 +4,18 @@ import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../sha
 import { ReplayList } from "../ReplayList.jsx";
 import { characterCandyPortrait } from "./houseStats.js";
 
-export function CharacterDetailDialog({ character, detailOwned, itemEffects, user, audioSettings, onSelectCharacterMusic, onClose }) {
+export function CharacterDetailDialog({ character, detailOwned, itemEffects, user, audioSettings, musicTracks, onSelectCharacterMusic, onClose }) {
   if (!character) return null;
   const musicOptions = skillMusicOptionsForCharacter({
     characterId: character.id,
-    ownedMusicIds: user?.ownedMusicIds
+    ownedMusicIds: user?.ownedMusicIds,
+    tracks: musicTracks
   });
   const currentMusicTrack = resolveSkillMusicTrack({
     characterId: character.id,
     selections: user?.musicSelections,
-    ownedMusicIds: user?.ownedMusicIds
+    ownedMusicIds: user?.ownedMusicIds,
+    tracks: musicTracks
   });
   const handleMusicChange = (trackId) => onSelectCharacterMusic?.({ characterId: character.id, trackId });
   return (

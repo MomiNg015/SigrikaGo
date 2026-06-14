@@ -1,4 +1,5 @@
 import { GAME_RESULT_REASONS, recordWinnerColor } from "./gameRecords.js";
+import { achievementStatsForUser } from "./achievements.js";
 import { publicUser, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 
@@ -102,7 +103,7 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
   });
   if (!user) return null;
 
-  const [records, viewerRelation] = await Promise.all([
+  const [records, viewerRelation, achievementStats] = await Promise.all([
     prisma.gameRecord.findMany({
       where: {
         mode,
@@ -121,10 +122,13 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
           LIMIT 1
         `
       : []
+    ,
+    achievementStatsForUser({ prisma, userId })
   ]);
 
   return {
     ...toSocialUser(user, statusForUser?.(user.id) ?? "offline", mode),
+    achievementStats,
     record: formatRecord(recordStats(userId, records)),
     characterStats: characterStats(userId, records),
     relation: viewerId === userId ? "self" : viewerRelation?.[0]?.type ?? ""
@@ -183,6 +187,7 @@ export function publicProfileSelect() {
     selectedCharacter: true,
     ownedCharacters: true,
     itemEffects: true,
+    achievementEquipment: true,
     ...USER_ASSET_RELATION_SELECT
   };
 }
@@ -198,6 +203,11 @@ export function toSocialUser(user, status = "offline", mode = "spark") {
     recentResults: modeStats?.recentResults ?? [],
     characterId: profile.selectedCharacter ?? "sigrika",
     itemEffects: profile.itemEffects,
+    achievementEquipment: {
+      titleAssetId: user.achievementEquipment?.titleAssetId ?? "",
+      badgeAssetId: user.achievementEquipment?.badgeAssetId ?? "",
+      nameplateAssetId: user.achievementEquipment?.nameplateAssetId ?? ""
+    },
     status
   };
 }
