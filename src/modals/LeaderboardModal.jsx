@@ -9,7 +9,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const currentUserIndex = players.findIndex((player) => player.id === user?.id);
+  const currentUserIndex = players.findIndex((player) => isLeaderboardCurrentUser(player, user));
   const currentUserRank = currentUserIndex >= 0 ? currentUserIndex + 1 : null;
   const currentUserPlayer = currentUserRank ? players[currentUserIndex] : null;
 
@@ -67,7 +67,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
                   player={player}
                   rank={index + 1}
                   characters={characters}
-                  highlight={player.id === user?.id}
+                  highlight={isLeaderboardCurrentUser(player, user)}
                 />
               ))}
             </div>
@@ -91,6 +91,12 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
 }
 
 export { leaderboardRankClass } from "./leaderboard/LeaderboardRow.jsx";
+
+export function isLeaderboardCurrentUser(player, user) {
+  if (!player || !user) return false;
+  if (player.id != null && user.id != null && String(player.id) === String(user.id)) return true;
+  return Boolean(player.username && user.username && player.username === user.username);
+}
 
 function ModeTabs({ mode, onModeChange }) {
   return (

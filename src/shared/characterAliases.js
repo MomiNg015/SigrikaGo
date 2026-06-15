@@ -1,6 +1,4 @@
-export const CHARACTER_ALIASES = {
-  danea: "denia"
-};
+export const CHARACTER_ALIASES = {};
 
 export function canonicalCharacterId(characterId) {
   const id = String(characterId ?? "").trim();

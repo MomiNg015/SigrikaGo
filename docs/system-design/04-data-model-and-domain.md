@@ -17,7 +17,7 @@
 用户账号与资产/战绩。
 
 - `id`: 主键 cuid。
-- `username`: 唯一用户名。
+- `username`: 唯一用户名。注册/用户搜索校验只允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 10 个半角字符宽度，等价于最多 5 个中日韩字符或 10 个半角字符。
 - `passwordHash`: bcrypt 哈希密码。
 - `role`: 用户角色，当前代码使用 `player` / `admin`。
 - `status`: 用户状态，当前代码使用 `active` / `banned`。
@@ -32,7 +32,7 @@
 - `coins`: 金币，默认 300。
 - `selectedCharacter`: 出战角色 slug，默认 `sigrika`。
 - `selectedStoneDecoration`: 当前应用的棋子装饰 slug，空字符串表示默认棋子样式。
-- `ownedCharacters`: 逗号分隔的角色 slug 字符串，默认包含内置角色。
+- `ownedCharacters`: 逗号分隔的角色 slug 字符串，默认包含内置角色并使用 canonical `denia`。启动清理会把旧达妮娅 slug `danea`/`denea` 迁移到 `denia`。
 - `ownedItems`: JSON 数量表字符串，例如 `{"dream-ticket":2}`；兼容旧逗号分隔字符串读取，API 对外返回 `{ itemId, quantity }` 数组。
 - `itemPurchaseCounts`: JSON 数量表字符串，例如 `{"rainbow-bean-candy":3}`；记录每个用户已从商店购买道具的次数，用于计算用户独立的商店库存，不随道具使用而减少。
 - `itemEffects`: JSON 状态字符串，当前支持 `sigrikaCandyDisabled` 与 `deniaRainbowGlow` 两个彩虹豆豆跳跳糖临时效果。
@@ -172,6 +172,8 @@
 - `AchievementRewardAsset` 定义成就奖励资产，字段包括 `type`、`name`、`description`、`imageUrl`、`text`、`targetType`、`targetId`、`amount`、`enabled`、`deletedAt` 和 `sortOrder`。奖励类型支持 `currency`、`title`、`badge`、`nameplate`、`character`、`decoration`、`item`、`music`；称号、徽章和用户名背景只作为个性化装备资产，角色/装饰/道具奖励必须指向 `source = "achievement"` 的限定资源。
 - `Achievement` 定义成就目标，使用唯一 `key`、显示 `name`、`content`、`conditionType` 和 JSON 字符串 `conditionParams` 描述判定规则，并可关联一个 `AchievementRewardAsset`。`key`、`conditionType`、`conditionParams`、`enabled` 和 `deletedAt` 属于代码/种子维护的目标逻辑，后台只允许修改 `name`、`content`、`rewardAssetId` 和 `sortOrder`；历史 `UserAchievement` 不删除。
 - `seedBuiltinAchievements` 在 `ensureAchievementSchema` 之后运行，只在缺失时创建内置成就与奖励资产，避免启动时覆盖后台后续对成就名、描述、奖励和排序的编辑；当前内置事件成就 `denia-rainbow-bean-candy` 仅在新增后收到对应触发事件时解锁，奖励 100 金币。
+- 内置成就还包括 `sigrika-spark-100-wins`，通过 `mode_character_wins` 条件统计指定模式与角色的胜场，当前配置为西格莉卡在 `spark` 模式 100 胜，奖励 `/assets/achievements/semantic-nameplate.png` 用户名背景；启动 seed 会为管理员补齐所有内置成就的 `UserAchievement`，并设置 `rewardGrantedAt`，保证管理员默认可装备新增奖励。
 - `UserAchievement` 记录用户已达成状态，包含 `achievedAt` 与 `rewardGrantedAt`，并以 `userId + achievementId` 保证幂等。`AchievementCounter` 保存上线后计数型指标，如购买次数、抽卡次数、登录天数或触发事件累计；可从历史数据回溯的对局、胜场、角色胜率、拥有资产数量等由 `server/achievements.js` 实时聚合。
 - `UserAchievementEquipment` 保存用户当前装备的 `titleAssetId`、`badgeAssetId` 和 `nameplateAssetId`。更新装备时只允许选择该用户已达成成就解锁的对应类型奖励资产。
+- 用户资料与装备接口除返回 `achievementEquipment` id 外，还会返回当前槽位对应的 `achievementEquipmentAssets` / `equipmentAssets`，让前端无需再次查表即可渲染称号、徽章和用户名背景图片。`attachAchievementEquipmentAssetsToUsers` 用于批量装饰用户列表，socket 登录用户、排行榜用户和社交用户列表/资料都走这条路径，确保任何拿到完整用户对象的用户名展示点具备同一套个性化资产。
 - `ensureAchievementSchema` 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 `Character`、`Decoration`、`ShopItem` 添加 `source` 字段；`server/serverStartup.js` 会在角色与商店种子任务之前执行该 guard，避免 Prisma 在旧库缺少 `source` 列时先读取这些模型。

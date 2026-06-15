@@ -1,5 +1,6 @@
 import { CHARACTERS } from "../src/shared/characters.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import { isLegacyDeniaSlug } from "./legacyDeniaCleanup.js";
 import { isSkillEffectType, skillEffectTargetRule, skillEffectTypeMessage } from "../src/shared/skillEffectCatalog.js";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 
@@ -229,6 +230,7 @@ export async function listPublicCharacterResponse(prisma) {
   const seenCharacters = new Set();
   const publicCharacters = [];
   for (const record of characters) {
+    if (isLegacyDeniaSlug(record.slug)) continue;
     const characterId = canonicalCharacterId(record.slug);
     if (record.slug !== characterId && canonicalApiIds.has(characterId)) continue;
     if (seenCharacters.has(characterId)) continue;
@@ -239,6 +241,7 @@ export async function listPublicCharacterResponse(prisma) {
   const disabledSlugs = [];
   const seenDisabled = new Set();
   for (const record of records) {
+    if (isLegacyDeniaSlug(record.slug)) continue;
     const characterId = canonicalCharacterId(record.slug);
     if (record.enabled || enabledCanonical.has(characterId) || seenDisabled.has(characterId)) continue;
     seenDisabled.add(characterId);

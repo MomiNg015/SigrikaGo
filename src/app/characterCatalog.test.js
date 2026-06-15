@@ -5,7 +5,7 @@ describe("public character catalog loading", () => {
   it("loads and merges public characters from the API", async () => {
     const apiClient = vi.fn(async () => ({
       characters: [{ id: "sigrika", name: "Custom Sigrika", portrait: "/custom.png" }],
-      disabledSlugs: ["danea"]
+      disabledSlugs: ["denia"]
     }));
 
     const catalog = await loadPublicCharacterCatalog({ apiClient, token: "token-1" });

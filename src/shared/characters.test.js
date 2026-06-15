@@ -4,7 +4,7 @@ import { CHARACTERS, characterList, mergeCharacters } from "./characters.js";
 describe("character fallback", () => {
   it("keeps built-in characters available before API load", () => {
     expect(characterList.map((character) => character.id)).toContain("sigrika");
-    expect(characterList.map((character) => character.id)).toContain("danea");
+    expect(characterList.map((character) => character.id)).toContain("denia");
   });
 
   it("merges API characters over fallback fields without losing required display data", () => {
@@ -37,13 +37,13 @@ describe("character fallback", () => {
     expect(merged.denia).toBeDefined();
   });
 
-  it("merges legacy character aliases into their canonical built-in slot", () => {
+  it("keeps legacy character ids separate from the canonical built-in slot", () => {
     const merged = mergeCharacters([
       { id: "danea", name: "旧达妮娅", skill: { name: "Old Skill" } },
       { id: "denia", name: "达妮娅", skill: { name: "Canonical Skill" } }
     ]);
 
-    expect(Object.keys(merged)).not.toContain("danea");
+    expect(Object.keys(merged)).toContain("danea");
     expect(merged.denia.name).toBe("达妮娅");
     expect(merged.denia.skill.name).toBe("Canonical Skill");
   });

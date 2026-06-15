@@ -219,7 +219,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 ## Achievement And Personalization Frontend
 
 - `src/app/useOverlayState.js` 将 `achievements` 和 `personalization` 纳入应用级弹窗契约；`AppOverlays` 在履历弹窗之外挂载 `AchievementModal` 与 `PersonalizationModal`，并把履历标题区的“成就”“个性化”按钮作为入口。
-- `AchievementModal` 通过 `/api/achievements` 读取玩家成就列表，按“未达成 / 已达成 / 全部”三种 tab 过滤。桌面端使用四列表格语义呈现成就名、内容、奖励和达成时间；移动端 CSS 将同一行降级为单列卡片，未达成使用灰底，已达成使用浅黄底。
-- `PersonalizationModal` 通过 `/api/me/achievement-equipment` 读取可装备的成就奖励资产，并允许装备称号、徽章和用户名背景。桌面端为三列装备区，移动端改为竖向分区；保存后回写当前 `user.achievementEquipment`。
+- `AchievementModal` 通过 `/api/achievements` 读取玩家成就列表，按“未达成 / 已达成 / 全部”三种 tab 过滤。桌面端使用三列表格语义呈现成就名、内容和奖励；移动端 CSS 将同一行降级为单列卡片，未达成使用灰底，已达成使用浅黄底。达成时间不作为常驻列展示，玩家点击已达成的成就行时，前端在点击位置显示达成时间浮窗。
+- `PersonalizationModal` 通过 `/api/me/achievement-equipment` 读取可装备的成就奖励资产，并允许装备称号、徽章和用户名背景。桌面端为三列装备区，移动端改为竖向分区；保存后回写当前 `user.achievementEquipment`。弹窗内预览区使用共享 `UserIdentity` 组合草稿装备，作为保存前试穿效果；装备按钮用粉红色标出当前已保存生效项，用浅绿色标出草稿中正在试穿但尚未保存的项。
 - 商城、抽卡、仓库使用道具和首页 `/api/me` 刷新都会消费响应里的 `achievementUnlocks`，逐条触发 `achievement` tone toast；toast 样式仍由现有 `ToastStack` 队列统一管理。
 - 后台 `AdminConsole` 新增 `achievements` tab，`AdminAchievements` 使用“成就列表 / 奖励资产”双视图；成就列表只编辑既有成就的成就名、成就内容、奖励资产和排序，不提供新增或下线成就入口，奖励资产视图继续管理 `/api/admin/achievement-reward-assets`。

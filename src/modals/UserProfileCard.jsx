@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { MonitorPlay, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChartNoAxesColumn, MonitorPlay, Star, Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { CHARACTERS } from "../shared/characters.js";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
+import UserIdentity from "../shared/UserIdentity.jsx";
 import { findCharacter } from "../shared/characterDisplay.js";
+import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import { ReplayList } from "./ReplayList.jsx";
 
@@ -17,13 +19,46 @@ export function UserProfileCard({
   onAddFriend,
   onAddBlacklist
 }) {
-  const mainCharacter = findCharacter(characters, user.characterId) ?? CHARACTERS.sigrika;
-  const characterStats = user.characterStats ?? [];
+  const [mode, setMode] = useState(normalizeGameModeId(user.mode));
+  const [profileUser, setProfileUser] = useState({ ...user, mode: normalizeGameModeId(user.mode) });
+  const mainCharacter = findCharacter(characters, profileUser.characterId) ?? CHARACTERS.sigrika;
+  const characterStats = profileUser.characterStats ?? [];
   const [replays, setReplays] = useState([]);
   const [showReplays, setShowReplays] = useState(false);
   const [loadingReplays, setLoadingReplays] = useState(false);
   const [replayError, setReplayError] = useState("");
-  const recordSummary = splitRecordSummary(user.record);
+  const [profileError, setProfileError] = useState("");
+  const [loadingProfileMode, setLoadingProfileMode] = useState(false);
+  const recordSummary = splitRecordSummary(profileUser.record);
+
+  useEffect(() => {
+    const nextMode = normalizeGameModeId(user.mode);
+    setProfileUser({ ...user, mode: nextMode });
+    setMode(nextMode);
+    setProfileError("");
+    setReplays([]);
+  }, [user]);
+
+  async function changeMode(nextMode) {
+    const normalizedMode = normalizeGameModeId(nextMode);
+    if (normalizedMode === mode || loadingProfileMode) return;
+    const previousMode = mode;
+    setMode(normalizedMode);
+    setReplays([]);
+    setReplayError("");
+    setProfileError("");
+    if (!token || !profileUser.id) return;
+    setLoadingProfileMode(true);
+    try {
+      const data = await api(`/api/users/${profileUser.id}/profile?mode=${encodeURIComponent(normalizedMode)}`, { token });
+      setProfileUser({ ...(data.profile ?? profileUser), mode: normalizedMode });
+    } catch (error) {
+      setMode(previousMode);
+      setProfileError(error.message);
+    } finally {
+      setLoadingProfileMode(false);
+    }
+  }
 
   async function openReplays() {
     if (replayDisabled) return;
@@ -32,7 +67,7 @@ export function UserProfileCard({
     setLoadingReplays(true);
     setReplayError("");
     try {
-      const data = await api(`/api/users/${user.id}/replays`, { token });
+      const data = await api(`/api/users/${profileUser.id}/replays?mode=${encodeURIComponent(mode)}`, { token });
       setReplays(data.records ?? []);
     } catch (error) {
       setReplayError(error.message);
@@ -45,27 +80,44 @@ export function UserProfileCard({
     <section className="user-profile-card">
       <div className="profile-resume-hero">
         <span className="profile-chain-portrait">
-          <img src={resolveCandyPortrait(mainCharacter, user.itemEffects)} alt={mainCharacter.name} />
-          <CharacterChainBadge user={user} characterId={mainCharacter.id} />
+          <img src={resolveCandyPortrait(mainCharacter, profileUser.itemEffects)} alt={mainCharacter.name} />
+          <CharacterChainBadge user={profileUser} characterId={mainCharacter.id} />
         </span>
         <div>
-          <h3>{user.username}</h3>
-          <p>{user.rank} · {user.rating}分</p>
+          <h3>
+            <UserIdentity user={profileUser} />
+          </h3>
         </div>
       </div>
+      <div className="mode-tabs profile-mode-tabs" role="tablist" aria-label="对弈模式">
+        {modeOrderedEntries().map((entry) => (
+          <button
+            key={entry.id}
+            type="button"
+            role="tab"
+            aria-selected={mode === entry.id}
+            className={mode === entry.id ? "active" : ""}
+            disabled={loadingProfileMode && mode !== entry.id}
+            onClick={() => changeMode(entry.id)}
+          >
+            {entry.title}
+          </button>
+        ))}
+      </div>
+      {profileError && <p className="room-people-error">{profileError}</p>}
       <div className="profile-resume-stats">
         <span className="profile-record-stat">
+          <small><ChartNoAxesColumn size={16} />战绩</small>
           <b className="profile-record-lines">
             <span className="profile-record-total">{recordSummary.total}</span>
             <span className="profile-record-separator"> · </span>
             <span className="profile-record-breakdown">{recordSummary.breakdown}</span>
           </b>
-          <small>战绩</small>
         </span>
-        <span><b>{user.rating}分</b><small>积分</small></span>
-        <span><b>{user.rank}</b><small>段位</small></span>
+        <span><small><Star size={16} />积分</small><b>{profileUser.rating}分</b></span>
+        <span><small><Trophy size={16} />段位</small><b>{profileUser.rank}</b></span>
       </div>
-      <RecentResultMarkers results={user.recentResults} className="profile-rank-results" />
+      <RecentResultMarkers results={profileUser.recentResults} className="profile-rank-results" />
       <div className="profile-resume-section profile-character-section">
         <strong>角色战绩</strong>
         <div className="profile-character-list">
@@ -74,8 +126,8 @@ export function UserProfileCard({
             return (
               <div className="profile-character-row" key={item.characterId}>
                 <span className="profile-chain-portrait small">
-                  <img src={resolveCandyPortrait(character, user.itemEffects)} alt={character.name} />
-                  <CharacterChainBadge user={user} characterId={character.id} />
+                  <img src={resolveCandyPortrait(character, profileUser.itemEffects)} alt={character.name} />
+                  <CharacterChainBadge user={profileUser} characterId={character.id} />
                 </span>
                 <span>{character.name}</span>
                 <span>{item.record}</span>
@@ -93,11 +145,11 @@ export function UserProfileCard({
             对局回放
           </button>
           <div className="profile-relation-actions">
-            <button type="button" disabled={user.relation === "self" || user.relation === "friend"} onClick={() => onAddFriend?.(user)}>
-              {user.relation === "friend" ? "已是好友" : "加为好友"}
+            <button type="button" disabled={profileUser.relation === "self" || profileUser.relation === "friend"} onClick={() => onAddFriend?.(profileUser)}>
+              {profileUser.relation === "friend" ? "已是好友" : "加为好友"}
             </button>
-            <button type="button" disabled={user.relation === "self" || user.relation === "blacklist"} onClick={() => onAddBlacklist?.(user)}>
-              {user.relation === "blacklist" ? "已在黑名单" : "加入黑名单"}
+            <button type="button" disabled={profileUser.relation === "self" || profileUser.relation === "blacklist"} onClick={() => onAddBlacklist?.(profileUser)}>
+              {profileUser.relation === "blacklist" ? "已在黑名单" : "加入黑名单"}
             </button>
           </div>
         </div>
@@ -106,12 +158,12 @@ export function UserProfileCard({
         <div className="modal-backdrop profile-modal-backdrop" onClick={() => setShowReplays(false)}>
           <section className="room-floating-modal replay-dialog profile-replay-dialog" onClick={(event) => event.stopPropagation()}>
             <button className="close-button" onClick={() => setShowReplays(false)}><X size={18} /></button>
-            <h3>{user.username} 的对局回放</h3>
+            <h3><UserIdentity user={profileUser} compact showNameplate={false} /> 的对局回放</h3>
             <div className="profile-replay-list-scroll">
               {loadingReplays && <p className="quiet-text">加载中...</p>}
               {replayError && <p className="room-people-error">{replayError}</p>}
               {!loadingReplays && !replayError && (
-                <ReplayList records={replays} characters={characters} currentUser={user} onOpenReplay={onOpenReplay} />
+                <ReplayList records={replays} characters={characters} currentUser={profileUser} onOpenReplay={onOpenReplay} />
               )}
             </div>
           </section>

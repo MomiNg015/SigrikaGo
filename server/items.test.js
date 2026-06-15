@@ -105,13 +105,13 @@ describe("items", () => {
     })]);
   });
 
-  it("accepts legacy Danea ownership when using candy on canonical Denia", async () => {
+  it("requires canonical Denia ownership when using candy on canonical Denia", async () => {
     const response = await useInventoryItem({
       userId: "user-1",
       itemId: "rainbow-bean-candy",
       characterId: "denia",
       prisma: inventoryPrisma({
-        ownedCharacters: "sigrika,danea",
+        ownedCharacters: "sigrika,denia",
         ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
         targetId: "rainbow-bean-candy",
         itemTargetType: "character"

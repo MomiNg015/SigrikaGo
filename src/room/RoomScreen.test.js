@@ -498,9 +498,11 @@ describe("RoomScreen helpers", () => {
     const mobileRoomCss = readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
     const mobileAdaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const brightMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
+    const chainBadgeSource = readText(new URL("../shared/CharacterChainBadge.jsx", import.meta.url), "utf8");
     const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
     const brightPortraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
 
+    expect(chainBadgeSource).toContain("data-chain-count={count}");
     expect(portraitMedia).toContain("grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr)");
     expect(portraitMedia).toContain("grid-template-rows: minmax(0, 30px) minmax(0, 26px)");
     expect(portraitMedia).toContain(".mobile-room-screen .player-meta");
@@ -512,10 +514,16 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain("display: none");
     expect(portraitMedia).toContain("width: 46px");
     expect(portraitMedia).toContain("height: 46px");
+    expect(portraitMedia).toContain(".mobile-room-screen .portrait-wrap .character-chain-badge");
+    expect(portraitMedia).toContain("font-size: 0");
+    expect(portraitMedia).toContain("content: attr(data-chain-count)");
     expect(portraitMedia).toContain("min-height: 30px");
     expect(mobileAdaptiveCss).toContain("grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr)");
     expect(brightPortraitMedia).toContain("grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr) !important");
     expect(brightPortraitMedia).toContain("grid-template-rows: minmax(0, 30px) minmax(0, 26px) !important");
+    expect(brightPortraitMedia).toContain(".portrait-wrap .character-chain-badge");
+    expect(brightPortraitMedia).toContain("font-size: 0 !important");
+    expect(brightPortraitMedia).toContain("content: attr(data-chain-count)");
     expect(brightPortraitMedia).toContain("box-shadow: none !important");
     expect(brightPortraitMedia).not.toContain("box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.48) !important");
   });
@@ -656,13 +664,17 @@ describe("RoomScreen helpers", () => {
 
   it("keeps desktop room controls aligned and overlays above side controls", () => {
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const brightRoomCss = readText(new URL("../styles/themes/bright-school/room.css", import.meta.url));
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url));
+    const modalBackdropZ = cssZIndexForSelector(modalCss, ".modal-backdrop");
 
     expect(battleSource).not.toContain("chat-exit-action exit-action");
     expect(battleSource).toContain("bringFloatingLayerToFront");
     expect(battleSource).toContain("floatingLayerZ={floatingLayers.chat}");
     expect(battleSource).toContain("floatingLayerZ={floatingLayers.members}");
+    expect(modalBackdropZ).toBeGreaterThan(140);
+    expect(modalBackdropZ).toBeGreaterThan(90);
     expect(roomCss).toContain(".desktop-room-screen .room-header");
     expect(roomCss).toContain("grid-template-columns: minmax(0, 1fr) auto auto");
     expect(roomCss).toContain(".desktop-room-screen .room-toggles");
@@ -713,4 +725,14 @@ function readCssWithImports(url, seen = new Set()) {
   return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) =>
     readCssWithImports(new URL(importPath, url), seen),
   );
+}
+
+function cssZIndexForSelector(css, selector) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const matches = [...css.matchAll(new RegExp(`${escapedSelector}\\s*\\{([^}]+)\\}`, "g"))];
+  const values = matches
+    .map((match) => match[1].match(/z-index:\s*(\d+)/)?.[1])
+    .filter(Boolean)
+    .map(Number);
+  return values.at(-1) ?? 0;
 }

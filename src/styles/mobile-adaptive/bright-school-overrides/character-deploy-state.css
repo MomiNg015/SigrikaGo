@@ -6,3 +6,12 @@
   border-color: #4f9b69 !important;
   box-shadow: 4px 4px 0 rgba(61, 43, 37, 0.42) !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.is-deployed .sortie-button.selected,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card.is-deployed .sortie-button.selected:disabled {
+  background: #ff9ebb !important;
+  color: #3d2b25 !important;
+  border: 2px solid #3d2b25 !important;
+  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.72) !important;
+  opacity: 1 !important;
+}

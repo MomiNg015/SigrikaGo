@@ -98,11 +98,11 @@
 
 - BGM 资源配置集中在 `MUSIC_TRACKS`，按 `home`、`battle`、`skill` 三类管理。
 - 用户音乐库存与选择使用 `User.ownedMusicIds` 和 `User.musicSelections` 持久化；公开用户信息会自动并入 `defaultUnlocked` 曲目。角色技能 BGM 选择保存在 `musicSelections.skill[characterId]`，对局中技能预览和最近技能角色 BGM 都优先使用该选择，未拥有或角色不匹配时回退默认曲目。
-- 角色详情弹窗右上角包含独立的角色 BGM 预览播放器。播放器显示当前曲名，支持播放/暂停并保留 intro/loop 进度；当该用户拥有同一角色的多首技能 BGM 时显示下拉选择，切换后通过 `/api/me/music-selection` 持久化并同步影响后续对局 BGM。
+- 角色详情弹窗右上角包含独立的角色 BGM 预览播放器。播放器显示当前曲名，左侧播放/暂停按钮与播放器胶囊连为一体，支持播放/暂停并保留 intro/loop 进度；当该用户拥有同一角色的多首技能 BGM 时显示下拉选择，切换后通过 `/api/me/music-selection` 持久化并同步影响后续对局 BGM。
 - 角色 BGM 预览播放期间会向全局 `BackgroundMusic` 发出暂停请求；背景 BGM 会停止当前 source、保存 offset，并在预览暂停、切歌或关闭详情弹窗释放请求后按 offset 重新调度，从原进度恢复，避免双 BGM 叠播或大厅 BGM 从头重启。
 - 主界面默认 BGM 使用已可无缝循环的单文件曲目 `main_bgm.ogg`。
 - 对弈常规 BGM 使用 `shanjifu_intro_once.ogg` + `shanjifu_loop.ogg`。
-- 角色技能 BGM 当前配置：达妮娅使用 canonical `denia-skill-default`（`bgm_*`），西格莉卡使用 `koimoon_132_intro_no_fadein_2p5s.ogg` + `koimoon_132_micro_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`。BGM resolver 会先把历史 `danea` 规范化为 `denia`，再查找角色技能 BGM。
+- 角色技能 BGM 当前配置：达妮娅使用 canonical `denia-skill-default`（`bgm_*`），西格莉卡使用 `koimoon_132_intro_no_fadein_2p5s.ogg` + `koimoon_132_micro_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical `denia` 查找达妮娅技能 BGM。
 - BGM 优先级为：角色技能 BGM > 对弈常规 BGM > 主界面 BGM。
 - 角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。
 - 匹配成功倒计时、对局结果弹窗、对局房间的结束阶段会停止 BGM；如果用户从已结束棋谱回放退出到大厅，前端会清空回放房间快照，BGM resolver 以当前 `view = home` 为准恢复主界面 BGM。在线玩家从已结束房间主动退出回大厅时，前端也会把该房间号记为已处理结果，防止房间 5 分钟回收前的残留终局快照继续触发结果弹窗状态并压住大厅 BGM。

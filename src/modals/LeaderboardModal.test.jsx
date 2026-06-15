@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { leaderboardRankClass } from "./LeaderboardModal.jsx";
+import { isLeaderboardCurrentUser, leaderboardRankClass } from "./LeaderboardModal.jsx";
 import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
 
 describe("LeaderboardModal layout", () => {
@@ -10,6 +10,12 @@ describe("LeaderboardModal layout", () => {
     expect(leaderboardRankClass(2)).toBe("top-rank rank-2");
     expect(leaderboardRankClass(3)).toBe("top-rank rank-3");
     expect(leaderboardRankClass(4)).toBe("");
+  });
+
+  it("matches the current leaderboard user across id shape and username fallback", () => {
+    expect(isLeaderboardCurrentUser({ id: 7, username: "moming" }, { id: "7", username: "other" })).toBe(true);
+    expect(isLeaderboardCurrentUser({ id: null, username: "moming" }, { id: "u1", username: "moming" })).toBe(true);
+    expect(isLeaderboardCurrentUser({ id: 8, username: "moming" }, { id: 7, username: "other" })).toBe(false);
   });
 
   it("shows player rank below the username instead of the character name", () => {
@@ -43,6 +49,42 @@ describe("LeaderboardModal layout", () => {
     expect(markup).toContain("战绩 胜15 负17 和0");
     expect(markup).not.toContain(">西格莉卡<");
     expect(markup).not.toContain("alt=\"西格莉卡\"");
+  });
+
+  it("marks current-user leaderboard rows for distinct green treatment", () => {
+    const markup = renderToStaticMarkup(
+      <LeaderboardRow
+        rank={5}
+        characters={{}}
+        player={{
+          id: "u1",
+          username: "moming",
+          commonCharacter: "sigrika",
+          rank: "9段",
+          rating: 1900,
+          totalGames: 32,
+          wins: 15,
+          losses: 17,
+          draws: 0,
+          itemEffects: {}
+        }}
+        highlight
+        pinned
+      />
+    );
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(markup).toContain("leaderboard-row");
+    expect(markup).toContain("current-user");
+    expect(markup).toContain("pinned");
+    expect(brightSchoolCss).toContain(".leaderboard-row.current-user");
+    expect(brightSchoolCss).toContain(".leaderboard-current .leaderboard-row");
+    expect(brightSchoolCss).toContain("#73b79f");
+    expect(brightSchoolCss).toContain("#dff5df");
+    expect(finalMobileCss).toContain(".leaderboard-row.current-user");
+    expect(finalMobileCss).toContain(".leaderboard-current .leaderboard-row");
+    expect(finalMobileCss).toContain("linear-gradient(135deg, rgba(226, 255, 228, 0.96), rgba(246, 255, 241, 0.98))");
   });
 
   it("keeps column headings aligned with scrollable player rows", () => {
@@ -149,13 +191,27 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain('"rank avatar player score"');
     expect(finalMobileCss).toContain('"rank avatar player record"');
     expect(finalMobileCss).toContain('"rank avatar player rate"');
-    expect(finalMobileCss).toContain("grid-template-columns: 34px 34px minmax(0, 1fr) minmax(96px, auto) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: 30px 42px minmax(0, 1fr) minmax(96px, auto) !important");
+    expect(finalMobileCss).toContain("padding: 8px 8px 8px 0 !important");
+    expect(finalMobileCss).toContain("width: 40px !important");
+    expect(finalMobileCss).toContain("height: 44px !important");
+    expect(finalMobileCss).toContain(".leaderboard-player .user-identity");
+    expect(finalMobileCss).toContain("justify-items: center !important");
+    expect(finalMobileCss).toContain("justify-content: center !important");
+    expect(finalMobileCss).toContain(".leaderboard-player .user-identity.compact .user-identity-name");
+    expect(finalMobileCss).toContain("font-size: var(--user-identity-fit-font-size, 1em) !important");
+    expect(finalMobileCss).toContain("text-overflow: clip !important");
+    expect(finalMobileCss).toContain(".leaderboard-player > span");
+    expect(finalMobileCss).toContain("width: auto !important");
+    expect(finalMobileCss).toContain("margin-left: 0 !important");
     expect(finalMobileCss).toContain(".leaderboard-row > span:nth-of-type(5)");
     expect(finalMobileCss).toContain(".leaderboard-mobile-record");
     expect(finalMobileCss).toContain("border-radius: 999px !important");
     expect(finalMobileCss).toContain(".leaderboard-current .leaderboard-row");
     expect(finalMobileCss).toContain("align-content: start !important");
     expect(finalMobileCss).toContain("min-height: 72px !important");
+    expect(finalMobileCss).toContain("width: 34px !important");
+    expect(finalMobileCss).toContain("font-size: 17px !important");
   });
 });
 

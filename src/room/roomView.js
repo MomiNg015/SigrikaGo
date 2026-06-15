@@ -45,6 +45,8 @@ export function roomPeople(room) {
     username: player.user.username,
     rank: player.user.rank,
     rating: player.user.rating,
+    achievementEquipment: player.user.achievementEquipment ?? null,
+    achievementEquipmentAssets: player.user.achievementEquipmentAssets ?? null,
     connected: player.connected
   }));
   const spectators = (room.spectators ?? []).map((spectator) => ({
@@ -54,7 +56,9 @@ export function roomPeople(room) {
     color: null,
     username: spectator.user.username,
     rank: spectator.user.rank,
-    rating: spectator.user.rating
+    rating: spectator.user.rating,
+    achievementEquipment: spectator.user.achievementEquipment ?? null,
+    achievementEquipmentAssets: spectator.user.achievementEquipmentAssets ?? null
   }));
   return [...players, ...spectators];
 }

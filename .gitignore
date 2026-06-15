@@ -8,6 +8,8 @@ dev-server.*.log
 .superpowers/
 .worktrees/
 .tmp/
+.codex-temp/
+*.db.backup-*
 
 dev-client.*.log
 playwright-report/

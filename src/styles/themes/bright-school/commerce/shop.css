@@ -112,6 +112,16 @@
   stroke-width: 2.5 !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet.blue-gem-wallet {
+  background: linear-gradient(135deg, #dffbff 0%, #7fd6f2 48%, #2d9fd0 100%) !important;
+  border-color: #2380b5 !important;
+  color: #0e4f7a !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet.blue-gem-wallet svg {
+  color: #0e4f7a !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content.shop-category-decoration,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content.shop-category-decoration .shop-grid {
   background: transparent !important;

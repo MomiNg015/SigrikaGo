@@ -36,6 +36,92 @@
     display: none !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    padding-inline: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-resume-stats > span {
+    display: grid !important;
+    grid-template-rows: auto auto !important;
+    align-content: center !important;
+    align-items: center !important;
+    justify-content: center !important;
+    justify-items: center !important;
+    min-width: 0 !important;
+    min-height: 78px !important;
+    padding: 8px 6px !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-resume-stats > span > small {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    line-height: 1.1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-resume-stats > span > b {
+    display: grid !important;
+    align-content: center !important;
+    justify-content: center !important;
+    justify-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    line-height: 1.08 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-record-lines {
+    gap: 1px !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-record-total,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-record-breakdown {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-align: center !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-record-total {
+    font-size: clamp(17px, 5.1vw, 20px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-record-breakdown {
+    font-size: clamp(11px, 3.05vw, 13px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-replay-button {
+    background: #e4f6f0 !important;
+    background-image: none !important;
+    border-color: #73b79f !important;
+    color: #245b4f !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-relation-actions button:disabled {
+    background: linear-gradient(135deg, #ececef, #d9d9dd) !important;
+    background-image: linear-gradient(135deg, #ececef, #d9d9dd) !important;
+    border-color: #9b969d !important;
+    color: #817b84 !important;
+    box-shadow: 1px 2px 0 rgba(91, 84, 94, 0.42) !important;
+    opacity: 0.78 !important;
+    cursor: not-allowed !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-dialog {
     width: min(420px, calc(100vw - 20px)) !important;
     max-width: calc(100vw - 20px) !important;
@@ -123,5 +209,45 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row b {
     justify-self: end !important;
     white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row {
+    grid-template-columns: 38px minmax(54px, 0.58fr) minmax(120px, 1fr) minmax(42px, 0.42fr) !important;
+    align-items: center !important;
+    min-height: 48px !important;
+    padding-block: 6px !important;
+    overflow: visible !important;
+    line-height: 1.1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row img {
+    align-self: center !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row strong,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-summary,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row b {
+    align-self: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-summary {
+    display: block !important;
+    gap: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-separator {
+    display: inline !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-total,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-breakdown {
+    display: inline !important;
   }
 }

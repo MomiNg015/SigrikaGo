@@ -6,7 +6,7 @@ const DEFAULT_CHARACTER_SYSTEM_VOICES = characterVoiceMapForSkill();
 
 export function findCharacter(characters, characterOrId) {
   const characterId = canonicalCharacterId(typeof characterOrId === "string" ? characterOrId : characterOrId?.id);
-  const fallback = CHARACTERS[characterId] ?? (characterId === "denia" ? CHARACTERS.danea : null) ?? CHARACTERS.sigrika;
+  const fallback = CHARACTERS[characterId] ?? CHARACTERS.sigrika;
   if (characterOrId && typeof characterOrId === "object") {
     return withCharacterSystemVoices({
       ...fallback,

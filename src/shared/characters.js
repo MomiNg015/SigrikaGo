@@ -24,7 +24,7 @@ export function mergeCharacters(apiCharacters = [], disabledSlugs = []) {
     const characterId = canonicalCharacterId(raw.id);
     if (disabled.has(characterId)) continue;
     if (raw.id !== characterId && canonicalApiIds.has(characterId)) continue;
-    const fallback = CHARACTERS[raw.id] ?? CHARACTERS[characterId] ?? (characterId === "denia" ? CHARACTERS.danea : null) ?? CHARACTERS.sigrika;
+    const fallback = CHARACTERS[raw.id] ?? CHARACTERS[characterId] ?? CHARACTERS.sigrika;
     merged[characterId] = {
       ...fallback,
       ...raw,

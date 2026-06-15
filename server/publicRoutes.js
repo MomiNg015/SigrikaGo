@@ -4,6 +4,7 @@ import { USER_ASSET_RELATION_SELECT } from "./db.js";
 import { listPublicCharacterResponse } from "./characters.js";
 import { createFeedbackMessage } from "./feedback.js";
 import { buildLeaderboard } from "./leaderboard.js";
+import { attachAchievementEquipmentAssetsToUsers } from "./achievements.js";
 import { listShopItems } from "./shop.js";
 import { getPublicSiteSettings } from "./siteSettings.js";
 
@@ -72,7 +73,8 @@ export function createPublicRouteHandlers({
         }
       })
     ]);
-    res.json({ players: buildLeaderboardFn(users, records, { mode }) });
+    const decoratedUsers = await attachAchievementEquipmentAssetsToUsers(prisma, users);
+    res.json({ players: buildLeaderboardFn(decoratedUsers, records, { mode }) });
   }
 
   async function watchRooms(req, res) {

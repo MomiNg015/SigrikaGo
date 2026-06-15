@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { USER_STATUS } from "./adminConfig.js";
 import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
+import { attachAchievementEquipmentAssetsToUsers } from "./achievements.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
 import { blockedCharactersForItemEffects } from "./itemEffects.js";
 
@@ -14,7 +15,12 @@ export async function authenticateSocketUser({ token, jwtSecret, prisma, charact
   if (!user) throw new Error("unauthorized");
   if (user.status === USER_STATUS.banned) throw new Error("forbidden");
 
-  const socketUser = publicUser(user);
+  const [decoratedUser] = await attachAchievementEquipmentAssetsToUsers(prisma, [user]);
+  const socketUser = {
+    ...publicUser(decoratedUser ?? user),
+    achievementEquipment: decoratedUser?.achievementEquipment,
+    achievementEquipmentAssets: decoratedUser?.achievementEquipmentAssets
+  };
   const { characters, disabledSlugs } = await characterSelectionData();
   const selected = resolveSelectedCharacter(
     socketUser.selectedCharacter,

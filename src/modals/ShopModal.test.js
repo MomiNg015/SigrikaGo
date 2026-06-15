@@ -19,6 +19,7 @@ import {
 } from "./shop/shopItemDetail.js";
 import ShopModal from "./ShopModal.jsx";
 import ShopItemCard from "./shop/ShopItemCard.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("ShopModal helpers", () => {
   it("keeps non-component helpers out of the component module for Fast Refresh", () => {
@@ -42,6 +43,20 @@ describe("ShopModal helpers", () => {
     expect(html).toContain('decoding="async"');
     expect(html).not.toContain("<h2");
     expect(html).not.toContain("shop-header-display");
+  });
+
+  it("keeps the shop blue-gem wallet visually aligned with the resume blue-gem capsule", () => {
+    const baseShopCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const brightSchoolShopCss = readCssWithImports(new URL("../styles/themes/bright-school/commerce.css", import.meta.url));
+    const mobileAdaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const resumeGradient = "linear-gradient(135deg, #dffbff 0%, #7fd6f2 48%, #2d9fd0 100%)";
+
+    expect(baseShopCss).toContain(".shop-wallet.blue-gem-wallet");
+    expect(baseShopCss).toContain(`background: ${resumeGradient} !important;`);
+    expect(brightSchoolShopCss).toContain(".shop-wallet.blue-gem-wallet");
+    expect(brightSchoolShopCss).toContain(`background: ${resumeGradient} !important;`);
+    expect(brightSchoolShopCss).toContain(".shop-wallet.blue-gem-wallet svg");
+    expect(mobileAdaptiveCss).toContain(".shop-wallet.blue-gem-wallet svg");
   });
 
   it("adds category hooks for tactical rarity glow styling", () => {

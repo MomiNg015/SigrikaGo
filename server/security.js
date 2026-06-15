@@ -3,23 +3,29 @@ import rateLimit from "express-rate-limit";
 export const PASSWORD_MIN_LENGTH = 6;
 export const PASSWORD_MAX_LENGTH = 14;
 export const USERNAME_MIN_LENGTH = 2;
-export const USERNAME_MAX_LENGTH = 16;
+export const USERNAME_MAX_WIDTH = 10;
+export const USERNAME_MAX_LENGTH = USERNAME_MAX_WIDTH;
 export const CHAT_MAX_LENGTH = 240;
 export const PRODUCTION_JWT_SECRET_MIN_LENGTH = 32;
 
-const USERNAME_PATTERN = /^[\p{Script=Han}A-Za-z0-9_]+$/u;
+const USERNAME_PATTERN = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}A-Za-z0-9_]+$/u;
+const CJK_USERNAME_CHAR = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]$/u;
 const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/g;
 const DEFAULT_JWT_SECRETS = new Set(["dev-secret", "change-me-in-production"]);
 
 export function validateUsername(input) {
   const value = stripControlChars(String(input ?? "")).trim();
-  if (value.length < USERNAME_MIN_LENGTH || value.length > USERNAME_MAX_LENGTH) {
-    return { ok: false, error: `用户名需为 ${USERNAME_MIN_LENGTH}-${USERNAME_MAX_LENGTH} 位` };
+  if (value.length < USERNAME_MIN_LENGTH || usernameDisplayWidth(value) > USERNAME_MAX_WIDTH) {
+    return { ok: false, error: `\u7528\u6237\u540d\u9700\u4e3a ${USERNAME_MIN_LENGTH}-${USERNAME_MAX_WIDTH} \u4e2a\u534a\u89d2\u5b57\u7b26\u5bbd\u5ea6\uff0c\u6700\u591a 5 \u4e2a\u4e2d\u6587/\u65e5\u6587/\u97e9\u6587\u5b57\u6216 10 \u4e2a\u534a\u89d2\u82f1\u6587/\u6570\u5b57/\u4e0b\u5212\u7ebf` };
   }
   if (!USERNAME_PATTERN.test(value)) {
-    return { ok: false, error: "用户名仅支持中文、英文、数字和下划线" };
+    return { ok: false, error: "\u7528\u6237\u540d\u4ec5\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf" };
   }
   return { ok: true, value };
+}
+
+export function usernameDisplayWidth(value) {
+  return [...String(value ?? "")].reduce((width, char) => width + (CJK_USERNAME_CHAR.test(char) ? 2 : 1), 0);
 }
 
 export function validatePassword(input) {

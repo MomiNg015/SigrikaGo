@@ -114,7 +114,21 @@ describe("public and lobby route handlers", () => {
     await handlers.leaderboard({ query: { mode: "standard" } }, res);
 
     expect(recordQuery.where).toEqual({ mode: "mode:standard" });
-    expect(leaderboardArgs).toEqual([users, records, { mode: "mode:standard" }]);
+    expect(leaderboardArgs).toEqual([[
+      {
+        id: "user-1",
+        achievementEquipment: {
+          titleAssetId: "",
+          badgeAssetId: "",
+          nameplateAssetId: ""
+        },
+        achievementEquipmentAssets: {
+          title: null,
+          badge: null,
+          nameplate: null
+        }
+      }
+    ], records, { mode: "mode:standard" }]);
     expect(res.body).toEqual({ players: [{ id: "ranked-1" }] });
   });
 

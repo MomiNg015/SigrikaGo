@@ -344,9 +344,9 @@ describe("character admin helpers", () => {
           if (query.where?.enabled === true) {
             return [{
               id: "character-db-1",
-              slug: "danea",
-              name: "Danea",
-              portraitUrl: "/assets/danea.png",
+              slug: "denia",
+              name: "Denia",
+              portraitUrl: "/assets/denia.png",
               portraitSource: "url",
               palette: "#6ab7ff",
               enabled: true,
@@ -355,7 +355,7 @@ describe("character admin helpers", () => {
           }
           return [
             { slug: "sigrika", enabled: false },
-            { slug: "danea", enabled: true }
+            { slug: "denia", enabled: true }
           ];
         }
       }
@@ -365,7 +365,7 @@ describe("character admin helpers", () => {
     expect(response.disabledSlugs).toEqual(["sigrika"]);
   });
 
-  it("deduplicates legacy character aliases in the public character response", async () => {
+  it("omits legacy Denia rows from the public character response", async () => {
     const response = await listPublicCharacterResponse({
       character: {
         findMany: async (query) => {

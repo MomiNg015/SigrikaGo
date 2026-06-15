@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { gameModeById } from "../shared/gameModes.js";
+import UserIdentity from "../shared/UserIdentity.jsx";
 
 export function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
   return (
@@ -71,7 +72,9 @@ export function DuelRequestBanner({ request, onAccept, onReject, onTimeout }) {
   return (
     <div className="duel-request-banner">
       <div>
-        <strong>{request.from.username}向你申请{gameMode.title}</strong>
+        <strong>
+          <UserIdentity user={request.from} compact />向你申请{gameMode.title}
+        </strong>
         <small>{gameMode.rulesText}</small>
         <span>{request.from.rank} · {request.from.rating}分</span>
       </div>

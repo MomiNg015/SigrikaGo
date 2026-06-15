@@ -3,6 +3,7 @@ import { ensureAchievementSchema, seedBuiltinAchievements } from "./achievements
 import { seedCharacters } from "./characters.js";
 import { ensureGachaSchema, ensureGameModeSchema } from "./db.js";
 import { ensureLoginSessionSchema } from "./loginSessions.js";
+import { cleanupLegacyDeniaCharacterData } from "./legacyDeniaCleanup.js";
 import { ensureMusicTrackSettingsSchema } from "./musicTracks.js";
 import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
 import { seedBuiltinShopItems } from "./shop.js";
@@ -22,10 +23,12 @@ export async function initializeServerData({
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
   seedBuiltinAchievements: seedBuiltinAchievementsTask = seedBuiltinAchievements,
+  cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask = cleanupLegacyDeniaCharacterData,
   promoteConfiguredAdmins: promoteConfiguredAdminsTask = promoteConfiguredAdmins
 }) {
   await ensureAchievementSchemaTask(prisma);
   await seedBuiltinAchievementsTask(prisma);
+  await cleanupLegacyDeniaCharacterDataTask(prisma);
   await seedCharactersTask(prisma);
   await seedBuiltinShopItemsTask(prisma);
   await ensureDefaultSiteSettingsTask(prisma);

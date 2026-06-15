@@ -186,25 +186,25 @@ describe("SigrikaGo rules", () => {
     expect(result.state.turn).toBe(COLORS.black);
   });
 
-  it("flips a stone with Danea skill", () => {
+  it("flips a stone with Denia skill", () => {
     const state = createGameState([{ color: COLORS.black }]);
     forceStone(state, 4, 4, COLORS.white);
 
-    const result = useSkill(state, COLORS.black, "danea", pointId(4, 4));
+    const result = useSkill(state, COLORS.black, "denia", pointId(4, 4));
 
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(4, 4)).stone).toBe(COLORS.black);
     expect(result.state.skillUses.black).toBe(0);
     expect(result.state.skillCosts.black).toBe(3);
     expect(result.state.turn).toBe(COLORS.white);
-    expect(result.state.history.at(-1).skill).toBe(CHARACTERS.danea.skill.name);
+    expect(result.state.history.at(-1).skill).toBe(CHARACTERS.denia.skill.name);
   });
 
   it("counts skill removals for the player who gains an opponent stone through flip skills", () => {
     const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
     forceStone(state, 4, 4, COLORS.white);
 
-    const result = useSkill(state, COLORS.black, "danea", pointId(4, 4));
+    const result = useSkill(state, COLORS.black, "denia", pointId(4, 4));
 
     expect(result.ok).toBe(true);
     expect(result.state.skillRemovals.black).toBe(1);
@@ -221,7 +221,7 @@ describe("SigrikaGo rules", () => {
     forceStone(state, 2, 2, COLORS.black);
     forceStone(state, 1, 3, COLORS.black);
 
-    const result = useSkill(state, COLORS.black, "danea", pointId(1, 1));
+    const result = useSkill(state, COLORS.black, "denia", pointId(1, 1));
 
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(1, 2)).stone).toBe(null);
@@ -233,7 +233,7 @@ describe("SigrikaGo rules", () => {
     const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
     forceStone(state, 4, 4, COLORS.black);
 
-    const result = useSkill(state, COLORS.black, "danea", pointId(4, 4));
+    const result = useSkill(state, COLORS.black, "denia", pointId(4, 4));
 
     expect(result.ok).toBe(true);
     expect(result.state.skillRemovals.black).toBe(0);
@@ -363,10 +363,10 @@ describe("SigrikaGo rules", () => {
     expect(getPoint(gameViewForColor(markingDead, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.black);
   });
 
-  it("lets Danea flip the real stone and clear Nabomo disguise on the target", () => {
+  it("lets Denia flip the real stone and clear Nabomo disguise on the target", () => {
     const state = createGameState([
       { color: COLORS.black, characterId: "nabomo", character: CHARACTERS.nabomo },
-      { color: COLORS.white, characterId: "danea", character: CHARACTERS.danea }
+      { color: COLORS.white, characterId: "denia", character: CHARACTERS.denia }
     ]);
     const passive = activatePassiveSkill(state, COLORS.black, CHARACTERS.nabomo.skill).state;
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.1);
@@ -375,8 +375,8 @@ describe("SigrikaGo rules", () => {
     game.turn = COLORS.white;
 
     const result = flipStone(game, COLORS.white, pointId(3, 3), {
-      skill: CHARACTERS.danea.skill,
-      skillName: CHARACTERS.danea.skill.name,
+      skill: CHARACTERS.denia.skill,
+      skillName: CHARACTERS.denia.skill.name,
       consumesTurn: false
     });
 

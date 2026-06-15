@@ -56,7 +56,7 @@ export default function AuthScreen({ onAuth }) {
             <button type="button" className={mode === "login" ? "active" : ""} onClick={() => switchMode("login")}>{"\u767b\u5f55"}</button>
             <button type="button" className={mode === "register" ? "active" : ""} onClick={() => switchMode("register")}>{"\u6ce8\u518c"}</button>
           </div>
-          <label>{"\u7528\u6237\u540d"}<input value={username} maxLength={16} autoComplete="username" onChange={(event) => setUsername(event.target.value)} /></label>
+          <label>{"\u7528\u6237\u540d"}<input value={username} maxLength={10} autoComplete="username" onChange={(event) => setUsername(truncateUsernameInput(event.target.value))} /></label>
           <label>{"\u5bc6\u7801"}<input type="password" minLength={6} maxLength={14} autoComplete={mode === "login" ? "current-password" : "new-password"} value={password} onChange={(event) => setPassword(event.target.value)} /></label>
           {mode === "register" && (
             <label>{"\u786e\u8ba4\u5bc6\u7801"}<input type="password" minLength={6} maxLength={14} autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} /></label>
@@ -67,6 +67,20 @@ export default function AuthScreen({ onAuth }) {
       </section>
     </main>
   );
+}
+
+const CJK_USERNAME_CHAR = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]$/u;
+
+export function truncateUsernameInput(value = "", maxWidth = 10) {
+  let width = 0;
+  let result = "";
+  for (const char of String(value)) {
+    const nextWidth = width + (CJK_USERNAME_CHAR.test(char) ? 2 : 1);
+    if (nextWidth > maxWidth) break;
+    width = nextWidth;
+    result += char;
+  }
+  return result;
 }
 
 export function validateAuthSubmit({ mode, password, confirmPassword }) {

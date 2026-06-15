@@ -3,6 +3,7 @@ import { Settings } from "lucide-react";
 import { CHARACTERS } from "../../shared/characters.js";
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
 import { findCharacter } from "../../shared/characterDisplay.js";
+import UserIdentity from "../../shared/UserIdentity.jsx";
 
 const STATUS_LABELS = {
   online: "在线",
@@ -41,7 +42,9 @@ export default function FriendsList({
               <span className={`online-status ${row.status}`}>{STATUS_LABELS[row.status]}</span>
               <img src={resolveCandyPortrait(character, row.itemEffects)} alt={character.name} />
               <div className="friend-main">
-                <strong className="friend-username">{row.username}</strong>
+                <strong className="friend-username">
+                  <UserIdentity user={row} compact />
+                </strong>
                 <div className="friend-stats">
                   <span className="friend-rank">{row.rank}</span>
                   <span className="friend-rating">{row.rating}分</span>

@@ -94,6 +94,16 @@ describe("root CSS entry contract", () => {
     expect(baseCss).toContain("-webkit-appearance: none");
   });
 
+  it("keeps selected tab and toggle buttons visually pressed in the shared base layer", () => {
+    const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
+
+    expect(baseCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
+    expect(baseCss).toContain(".achievement-tabs button[aria-selected=\"true\"]");
+    expect(baseCss).toContain(".mobile-tab-button.active");
+    expect(baseCss).toContain("transform: translateY(1px) scale(0.985)");
+    expect(baseCss).toContain("inset 0 2px 5px rgba(45, 36, 48, 0.16)");
+  });
+
   it("keeps base.css as an import-only shared foundation entry", () => {
     const baseEntry = readFileSync(new URL("./base.css", import.meta.url), "utf8");
 
@@ -267,7 +277,8 @@ describe("root CSS entry contract", () => {
       "./hud-components/narrow-hud-tweaks.css",
       "./hud-components/pop-tech-terminal.css",
       "./hud-components/handbook-readability.css",
-      "./hud-components/character-chain-badge.css"
+      "./hud-components/character-chain-badge.css",
+      "./hud-components/user-identity.css"
     ]);
     expect(hudEntry).not.toContain(".app-shell {");
     expect(hudEntry).not.toContain(".shop-tabs button.active");

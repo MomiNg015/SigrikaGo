@@ -36,14 +36,15 @@
   }
 
   .character-music-player {
-    width: 100%;
+    width: min(172px, 100%);
     max-width: 100%;
     justify-content: flex-start;
+    justify-self: center;
   }
 
   .character-music-name,
   .character-music-select {
-    max-width: 100%;
+    max-width: 132px;
   }
 
   .character-detail-copy p {

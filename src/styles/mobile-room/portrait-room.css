@@ -82,6 +82,33 @@
     height: 46px;
   }
 
+  .mobile-room-screen .portrait-wrap .character-chain-badge {
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: -4px;
+    min-width: 20px;
+    min-height: 14px;
+    max-width: 38px;
+    padding: 1px 4px;
+    border-width: 1px;
+    font-size: 0;
+    transform: translateX(-50%);
+  }
+
+  .mobile-room-screen .portrait-wrap .character-chain-badge::before {
+    content: "★";
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .mobile-room-screen .portrait-wrap .character-chain-badge::after {
+    content: attr(data-chain-count);
+    margin-left: 1px;
+    font-size: 9px;
+    line-height: 1;
+  }
+
   .mobile-room-screen .result-badge {
     width: 18px;
     height: 18px;

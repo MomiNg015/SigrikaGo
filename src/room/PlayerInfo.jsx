@@ -3,6 +3,7 @@ import { Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
+import UserIdentity from "../shared/UserIdentity.jsx";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import TimeBar from "./TimeBar.jsx";
@@ -71,7 +72,9 @@ function PlayerInfo({
         {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       </div>
       <div className="player-meta">
-        <button className="name-button">{player.user.username}</button>
+        <button className="name-button">
+          <UserIdentity user={player.user} compact />
+        </button>
         <span className="meta-tag rank-tag">{player.user.rank}</span>
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
         <span className="meta-tag rating-tag">{player.user.rating}分</span>

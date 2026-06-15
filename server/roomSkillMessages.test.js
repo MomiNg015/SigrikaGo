@@ -95,10 +95,10 @@ describe("roomSkillMessages", () => {
 
   test("describes flip-stone messages from the target stone before mutation", () => {
     const character = {
-      ...CHARACTERS.danea,
+      ...CHARACTERS.denia,
       id: "denia",
       skill: {
-        ...CHARACTERS.danea.skill,
+        ...CHARACTERS.denia.skill,
         effectType: "flip-stone",
         systemMessage: null
       }

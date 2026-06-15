@@ -145,6 +145,11 @@ describe("HomeScreen", () => {
     const utilityHoverBeforeBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry:hover::before,[\s\S]+?\.utility-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
     const brightHomeCss = readCssFixture("../styles/themes/bright-school/home.css");
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPlaqueStrongBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card > strong\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPlaqueNameBlocks = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name\s*\{[^}]+\}/g) ?? [];
+    const brightPlaqueNameMaxBlock = brightPlaqueNameBlocks.find((block) => block.includes("max-width: none")) ?? "";
+    const brightPlaqueNameSizingBlock = brightPlaqueNameBlocks.find((block) => block.includes("width: max-content")) ?? "";
+    const brightPlaqueNameOverflowBlock = brightPlaqueNameBlocks.find((block) => block.includes("overflow: visible")) ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
     const brightNarrowDesktopMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-width: 1180px\)\s*\{[\s\S]+?@media \(max-width: 700px\)/)?.[0] ?? "";
@@ -172,8 +177,15 @@ describe("HomeScreen", () => {
     expect(statsBlock).toContain("font-family: ui-monospace");
     expect(statsBlock).toContain("min-width: 154px");
     expect(css).toContain(".home-player-zone .plaque-mode-stat");
-    expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(0, 1fr) minmax(150px, 154px)");
+    expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(96px, 1fr) minmax(136px, 150px)");
     expect(brightPlaqueBlock).toContain("overflow: hidden");
+    expect(brightPlaqueStrongBlock).toContain("overflow: visible");
+    expect(brightPlaqueStrongBlock).toContain("text-overflow: clip");
+    expect(brightPlaqueNameMaxBlock).toContain("max-width: none");
+    expect(brightPlaqueNameSizingBlock).toContain("width: max-content");
+    expect(brightPlaqueNameSizingBlock).toContain("flex: 0 0 auto");
+    expect(brightPlaqueNameOverflowBlock).toContain("overflow: visible");
+    expect(brightPlaqueNameOverflowBlock).toContain("text-overflow: clip");
     expect(brightStatsBlock).toContain("width: 100%");
     expect(brightStatsBlock).toContain("min-width: 0");
     expect(brightStatsBlock).toContain("box-sizing: border-box");
@@ -184,7 +196,7 @@ describe("HomeScreen", () => {
     expect(brightShortHeightMedia).toContain("height: clamp(220px, 36dvh, 286px)");
     expect(brightShortHeightMedia).toContain("height: clamp(270px, 50dvh, 356px)");
     expect(brightNarrowDesktopMedia).toContain("width: clamp(318px, 36vw, 386px)");
-    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(0, 1fr) minmax(112px, clamp(118px, 34%, 136px))");
+    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(88px, 1fr) minmax(108px, clamp(112px, 31%, 128px))");
     expect(brightNarrowDesktopMedia).toContain("font-size: clamp(20px, 2.1vw, 24px)");
     expect(brightNarrowDesktopMedia).toContain("grid-template-columns: minmax(26px, 0.72fr) minmax(26px, max-content) minmax(36px, 1fr)");
     expect(utilityBlock).toContain("grid-template-columns: 1fr");
@@ -195,6 +207,32 @@ describe("HomeScreen", () => {
     expect(css).toContain(".home-grid-featured > .home-utility-grid .utility-entry strong {\n  display: block");
     expect(utilityTextBlock).toContain("transform: skewX(15deg)");
     expect(utilityHoverBeforeBlock).toContain("animation: home-nav-flow");
+  });
+
+  it("renders equipped achievement nameplates on the player identity tag", () => {
+    const html = renderHome({
+      user: {
+        achievementEquipment: {
+          titleAssetId: "",
+          badgeAssetId: "",
+          nameplateAssetId: "reward-sigrika-spark-100-wins-nameplate"
+        },
+        achievementEquipmentAssets: {
+          title: null,
+          badge: null,
+          nameplate: {
+            id: "reward-sigrika-spark-100-wins-nameplate",
+            type: "nameplate",
+            imageUrl: "/assets/achievements/semantic-nameplate.png"
+          }
+        }
+      }
+    });
+
+    expect(html).not.toContain("plaque-nameplate-bg");
+    expect(html).toContain("user-identity has-nameplate");
+    expect(html).toContain("user-identity-name-tag");
+    expect(html).toContain("background-image:url(/assets/achievements/semantic-nameplate.png)");
   });
 
   it("keeps the HUD footer minimal and rewrites the mobile lobby layout", () => {

@@ -556,7 +556,7 @@ SigrikaGo/
 
 ### 技能与角色
 
-- 内置角色 fallback：`sigrika`、`denia`、`aemeath`、`baconbits`、`nabomo`。历史数据中可能仍存在旧别名 `danea`；公共角色列表、前端合并、用户公开资料和出战角色解析会将其规范化为 `denia`，避免部员手册中重复出现两个达妮娅。若数据库中同时存在启用的 canonical `denia` 和禁用的旧 `danea`，出战角色解析以启用的 `denia` 公开角色为准，不让旧禁用别名覆盖当前可用角色。
+- 内置角色 fallback：`sigrika`、`denia`、`aemeath`、`baconbits`、`nabomo`。旧达妮娅 slug `danea`/`denea` 不再作为兼容别名参与前端合并、用户公开资料或出战角色解析；启动时 `cleanupLegacyDeniaCharacterData` 会在角色 seed 前把用户选角/拥有权迁移到 canonical `denia`，删除旧角色行，删除引用旧 slug 的对局记录，并把角色商品、抽卡奖项和成就奖励目标改写为 `denia`。公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在部员手册。
 - DB 角色会覆盖/合并内置角色。
 - 所有存在的角色都会出现在棋舍角色列表；未拥有角色以灰色状态展示，可查看信息但不可出战。
 - 角色信息包含 `acquisitionMethod`/“获得途径”和 `description` 纯文本，可由后台维护；棋舍角色详情会在获得途径下方直接以斜体展示角色描述正文，数据库为空时前端回退到内置角色默认描述。

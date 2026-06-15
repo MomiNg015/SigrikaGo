@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import AuthScreen from "./AuthScreen.jsx";
-import { authSubmitText, isAlreadyLoggedInError, validateAuthSubmit } from "./AuthScreen.jsx";
+import { authSubmitText, isAlreadyLoggedInError, truncateUsernameInput, validateAuthSubmit } from "./AuthScreen.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("AuthScreen submit validation", () => {
@@ -40,6 +40,12 @@ describe("AuthScreen submit validation", () => {
     expect(authSubmitText("register")).toBe("\u521b\u5efa\u8d26\u53f7");
   });
 
+  it("truncates username input by CJK and half-width display width", () => {
+    expect(truncateUsernameInput("一二三四五六")).toBe("一二三四五");
+    expect(truncateUsernameInput("Alice_12345")).toBe("Alice_1234");
+    expect(truncateUsernameInput("露露A_12345")).toBe("露露A_1234");
+  });
+
   it("renders tactical terminal class hooks without changing the auth form", () => {
     const html = renderToStaticMarkup(createElement(AuthScreen, { onAuth: () => {} }));
 
@@ -48,6 +54,7 @@ describe("AuthScreen submit validation", () => {
     expect(html).toContain("login-submit-btn");
     expect(html).toContain("terminal-enter-btn");
     expect(html).toContain("autoComplete=\"username\"");
+    expect(html).toContain("maxLength=\"10\"");
     expect(html).toContain("type=\"password\"");
   });
 

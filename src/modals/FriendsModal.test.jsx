@@ -3,8 +3,16 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import FriendsModal from "./FriendsModal.jsx";
+import { normalizeFriendSearchInput } from "./friends/friendSearch.js";
 
 describe("FriendsModal mobile layout", () => {
+  it("normalizes friend search names with the same width budget as registration", () => {
+    expect(normalizeFriendSearchInput("一二三四五六")).toBe("一二三四五");
+    expect(normalizeFriendSearchInput("Alice_12345")).toBe("Alice_1234");
+    expect(normalizeFriendSearchInput("露露A_12345")).toBe("露露A_1234");
+    expect(normalizeFriendSearchInput("bad<script>")).toBe("badscript");
+  });
+
   it("renders an explicit close button in the main friends sheet", () => {
     const html = renderToStaticMarkup(createElement(FriendsModal, {
       token: "token",

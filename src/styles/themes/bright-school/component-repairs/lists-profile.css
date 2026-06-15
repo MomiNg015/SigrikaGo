@@ -5,8 +5,29 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
-  border: 3px solid var(--bright-border) !important;
-  box-shadow: 4px 4px 0 var(--bright-border) !important;
+  background:
+    linear-gradient(135deg, rgba(226, 255, 228, 0.96), rgba(246, 255, 241, 0.98)) padding-box !important;
+  border-color: #73b79f !important;
+  color: #245b4f !important;
+  box-shadow: 4px 4px 0 rgba(61, 43, 37, 0.42) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user {
+  background:
+    linear-gradient(135deg, rgba(226, 255, 228, 0.96), rgba(246, 255, 241, 0.98)) padding-box !important;
+  border-color: #73b79f !important;
+  color: #245b4f !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank {
+  background: #dff5df !important;
+  border-color: #73b79f !important;
+  color: #245b4f !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
+  border: 3px solid #73b79f !important;
+  box-shadow: 4px 4px 0 rgba(61, 43, 37, 0.42) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-empty,

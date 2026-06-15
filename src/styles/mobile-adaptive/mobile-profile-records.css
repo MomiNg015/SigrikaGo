@@ -1,5 +1,200 @@
 /* Mobile resume/profile record line safety rules. */
 @media (max-width: 768px) {
+  .user-profile-card {
+    grid-template-rows: auto auto auto auto minmax(0, 1fr) auto !important;
+    gap: 10px !important;
+    max-height: calc(100dvh - 72px) !important;
+    padding: 2px 8px 8px !important;
+    overflow-x: visible !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .user-profile-card .profile-resume-hero {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    gap: 8px !important;
+    padding: 12px 12px 14px !important;
+    text-align: center !important;
+  }
+
+  .user-profile-card .profile-resume-hero .profile-chain-portrait {
+    justify-self: center !important;
+  }
+
+  .user-profile-card .profile-resume-hero h3 {
+    max-width: 100% !important;
+    margin: 0 !important;
+    font-size: clamp(20px, 6vw, 25px) !important;
+    line-height: 1.18 !important;
+  }
+
+  .user-profile-card .profile-mode-tabs {
+    margin: 0 !important;
+    gap: 6px !important;
+  }
+
+  .user-profile-card .profile-mode-tabs button {
+    min-height: 40px !important;
+    padding: 6px 8px !important;
+    white-space: nowrap !important;
+  }
+
+  .user-profile-card .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    padding: 0 2px 4px !important;
+  }
+
+  .user-profile-card .profile-resume-stats > span {
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    align-items: center !important;
+    justify-items: center !important;
+    min-height: 78px !important;
+    padding: 10px 8px !important;
+    border: 2px solid #3d2b25 !important;
+    border-radius: 18px !important;
+    background: linear-gradient(135deg, #fff8e5, #ffdfeb) !important;
+    box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.56) !important;
+    text-align: center !important;
+  }
+
+  .user-profile-card .profile-resume-stats > span > small {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+    font-size: clamp(11px, 3vw, 13px) !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+  }
+
+  .user-profile-card .profile-resume-stats > span > b {
+    display: grid !important;
+    justify-items: center !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: clamp(15px, 4.6vw, 19px) !important;
+    line-height: 1.12 !important;
+    text-align: center !important;
+  }
+
+  .user-profile-card .profile-record-lines {
+    display: grid !important;
+    justify-items: center !important;
+    gap: 1px !important;
+    white-space: normal !important;
+  }
+
+  .user-profile-card .profile-record-total,
+  .user-profile-card .profile-record-breakdown {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-align: center !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .user-profile-card .profile-record-breakdown {
+    font-size: clamp(12px, 3.45vw, 16px) !important;
+  }
+
+  .user-profile-card .profile-record-separator {
+    display: none !important;
+  }
+
+  .user-profile-card .profile-rank-results {
+    min-height: 44px !important;
+    margin: 0 2px !important;
+    padding: 8px 10px !important;
+  }
+
+  .user-profile-card .profile-character-section {
+    min-height: 0 !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  .user-profile-card .profile-character-list {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-right: 2px !important;
+  }
+
+  .user-profile-card .profile-character-row {
+    grid-template-columns: 38px minmax(48px, 0.72fr) minmax(0, 1.18fr) minmax(40px, 0.52fr) !important;
+    gap: 6px !important;
+    margin: 0 2px 4px !important;
+    padding: 8px !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 4px) !important;
+    box-sizing: border-box !important;
+    font-size: clamp(10px, 2.72vw, 12px) !important;
+  }
+
+  .user-profile-card .profile-character-row > * {
+    min-width: 0 !important;
+  }
+
+  .user-profile-card .profile-character-row > span:nth-child(2) {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .user-profile-card .profile-character-row > span:nth-child(3),
+  .user-profile-card .profile-character-row > b {
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .user-profile-card .profile-character-row > b {
+    justify-self: end !important;
+  }
+
+  .user-profile-card .profile-footer-actions {
+    display: grid !important;
+    grid-template-columns: max-content minmax(0, max-content) !important;
+    align-items: end !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 0 2px 2px !important;
+  }
+
+  .user-profile-card .profile-relation-actions {
+    justify-self: end !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+  }
+
+  .user-profile-card .profile-replay-button,
+  .user-profile-card .profile-relation-actions button {
+    min-width: 0 !important;
+    min-height: 44px !important;
+    padding: 8px 9px !important;
+    white-space: nowrap !important;
+    font-size: clamp(13px, 3.6vw, 15px) !important;
+  }
+
+  .user-profile-card .profile-replay-button {
+    background: #e4f6f0 !important;
+    border-color: #73b79f !important;
+    color: #245b4f !important;
+  }
+
   .resume-modal .profile-resume-stats,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-stats {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;

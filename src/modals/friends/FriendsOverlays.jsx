@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { ConfirmPanel, UserProfileCard } from "../UserProfileCard.jsx";
 import { modeOrderedEntries } from "../../shared/gameModes.js";
+import UserIdentity from "../../shared/UserIdentity.jsx";
 
 export default function FriendsOverlays({
   characters,
@@ -38,7 +39,11 @@ export default function FriendsOverlays({
         <div className="modal-backdrop profile-modal-backdrop" onClick={onCloseConfirm}>
           <section className="room-floating-modal confirm-inline-modal" onClick={(event) => event.stopPropagation()}>
             <ConfirmPanel
-              message={confirmTarget.type === "friend" ? `确定解除${confirmTarget.user.username}好友吗？` : `确定将${confirmTarget.user.username}从黑名单解除吗？`}
+              message={confirmTarget.type === "friend" ? (
+                <>确定解除<UserIdentity user={confirmTarget.user} compact />好友吗？</>
+              ) : (
+                <>确定将<UserIdentity user={confirmTarget.user} compact />从黑名单解除吗？</>
+              )}
               onConfirm={onRemoveTarget}
               onCancel={onCloseConfirm}
             />
@@ -49,7 +54,7 @@ export default function FriendsOverlays({
         <div className="modal-backdrop profile-modal-backdrop" onClick={onCloseDuelMode}>
           <section className="room-floating-modal match-mode-modal" onClick={(event) => event.stopPropagation()}>
             <h2>选择对弈模式</h2>
-            <p className="quiet-text">向 {duelModeTarget.username} 发起对局申请</p>
+            <p className="quiet-text">向 <UserIdentity user={duelModeTarget} compact /> 发起对局申请</p>
             <div className="match-mode-options">
               {modeOrderedEntries().map((mode) => (
                 <button className="match-mode-option" type="button" key={mode.id} onClick={() => onRequestMatchMode(mode.id)}>

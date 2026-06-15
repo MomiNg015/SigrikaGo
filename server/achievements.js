@@ -29,6 +29,7 @@ export const ACHIEVEMENT_TRIGGER_EVENTS = {
 };
 
 const DENIA_RAINBOW_BEAN_CANDY_REWARD_ID = "reward-denia-rainbow-bean-candy-coins";
+const SIGRIKA_SPARK_100_WINS_REWARD_ID = "reward-sigrika-spark-100-wins-nameplate";
 const BUILTIN_ACHIEVEMENT_REWARD_ASSETS = [{
   id: DENIA_RAINBOW_BEAN_CANDY_REWARD_ID,
   type: ACHIEVEMENT_REWARD_TYPES.currency,
@@ -41,6 +42,18 @@ const BUILTIN_ACHIEVEMENT_REWARD_ASSETS = [{
   amount: 100,
   enabled: true,
   sortOrder: 100
+}, {
+  id: SIGRIKA_SPARK_100_WINS_REWARD_ID,
+  type: ACHIEVEMENT_REWARD_TYPES.nameplate,
+  name: "点亮语义！",
+  description: "使用西格莉卡在星炬对弈中获得100胜",
+  imageUrl: "/assets/achievements/semantic-nameplate.png",
+  text: "用户名背景",
+  targetType: "",
+  targetId: "",
+  amount: 0,
+  enabled: true,
+  sortOrder: 110
 }];
 const BUILTIN_ACHIEVEMENTS = [{
   id: "achievement-denia-rainbow-bean-candy",
@@ -52,6 +65,16 @@ const BUILTIN_ACHIEVEMENTS = [{
   rewardAssetId: DENIA_RAINBOW_BEAN_CANDY_REWARD_ID,
   enabled: true,
   sortOrder: 100
+}, {
+  id: "achievement-sigrika-spark-100-wins",
+  key: "sigrika-spark-100-wins",
+  name: "点亮语义！",
+  content: "使用西格莉卡在星炬对弈中获得100胜",
+  conditionType: "mode_character_wins",
+  conditionParams: JSON.stringify({ mode: "spark", characterId: "sigrika", value: 100 }),
+  rewardAssetId: SIGRIKA_SPARK_100_WINS_REWARD_ID,
+  enabled: true,
+  sortOrder: 110
 }];
 
 const REWARD_TYPES = new Set(Object.values(ACHIEVEMENT_REWARD_TYPES));
@@ -153,10 +176,47 @@ export async function seedBuiltinAchievements(prisma) {
     if (existing) continue;
     await prisma.achievementRewardAsset.create({ data: asset });
   }
+  const seededAchievements = [];
   for (const achievement of BUILTIN_ACHIEVEMENTS) {
     const existing = await prisma.achievement.findUnique({ where: { key: achievement.key } });
-    if (existing) continue;
-    await prisma.achievement.create({ data: achievement });
+    if (existing) {
+      seededAchievements.push(existing);
+      continue;
+    }
+    const created = await prisma.achievement.create({ data: achievement });
+    seededAchievements.push(created ?? achievement);
+  }
+  await grantBuiltinAchievementsToAdmins(prisma, seededAchievements);
+}
+
+async function grantBuiltinAchievementsToAdmins(prisma, achievements) {
+  if (!achievements.length || !prisma?.user?.findMany || !prisma?.userAchievement?.findUnique || !prisma?.userAchievement?.create) return;
+  const admins = await prisma.user.findMany({
+    where: { role: "admin" },
+    select: { id: true }
+  });
+  if (!admins.length) return;
+  const achievedAt = new Date();
+  for (const admin of admins) {
+    for (const achievement of achievements) {
+      const existing = await prisma.userAchievement.findUnique({
+        where: {
+          userId_achievementId: {
+            userId: admin.id,
+            achievementId: achievement.id
+          }
+        }
+      });
+      if (existing) continue;
+      await prisma.userAchievement.create({
+        data: {
+          userId: admin.id,
+          achievementId: achievement.id,
+          achievedAt,
+          rewardGrantedAt: achievedAt
+        }
+      });
+    }
   }
 }
 
@@ -268,10 +328,51 @@ export async function getAchievementEquipment({ prisma, userId }) {
     readEquipment(prisma, userId),
     unlockedEquipmentAssets(prisma, userId)
   ]);
+  const normalizedEquipment = normalizeEquipment(equipment);
   return {
-    equipment: normalizeEquipment(equipment),
+    equipment: normalizedEquipment,
+    equipmentAssets: selectedEquipmentAssets(rewardAssets, normalizedEquipment),
     assets: rewardAssets.map(toRewardAssetPayload)
   };
+}
+
+export async function attachAchievementEquipmentAssetsToUsers(prisma, users = []) {
+  if (!Array.isArray(users) || users.length === 0) return users;
+  const userIds = [...new Set(users.map((user) => user?.id).filter(Boolean))];
+  if (!userIds.length) return users;
+
+  const existingEquipment = new Map(users
+    .filter((user) => user?.id)
+    .map((user) => [user.id, normalizeEquipment(user.achievementEquipment)]));
+
+  if (prisma?.userAchievementEquipment?.findMany) {
+    const rows = await prisma.userAchievementEquipment.findMany({ where: { userId: { in: userIds } } });
+    for (const row of rows) existingEquipment.set(row.userId, normalizeEquipment(row));
+  }
+
+  const assetIds = [...new Set([...existingEquipment.values()]
+    .flatMap((equipment) => Object.values(equipment))
+    .filter(Boolean))];
+  let assets = [];
+  if (assetIds.length && prisma?.achievementRewardAsset?.findMany) {
+    assets = await prisma.achievementRewardAsset.findMany({
+      where: {
+        id: { in: assetIds },
+        enabled: true,
+        deletedAt: null
+      }
+    });
+  }
+
+  return users.map((user) => {
+    if (!user?.id) return user;
+    const equipment = existingEquipment.get(user.id) ?? normalizeEquipment(null);
+    return {
+      ...user,
+      achievementEquipment: equipment,
+      achievementEquipmentAssets: selectedEquipmentAssets(assets, equipment)
+    };
+  });
 }
 
 export async function updateAchievementEquipment({ prisma, userId, body }) {
@@ -290,8 +391,10 @@ export async function updateAchievementEquipment({ prisma, userId, body }) {
     create: { userId, ...next },
     update: next
   });
+  const normalizedEquipment = normalizeEquipment(equipment);
   return {
-    equipment: normalizeEquipment(equipment),
+    equipment: normalizedEquipment,
+    equipmentAssets: selectedEquipmentAssets(assets, normalizedEquipment),
     assets: assets.map(toRewardAssetPayload)
   };
 }
@@ -483,7 +586,11 @@ function buildMetricContext({ user, counters, gameRecords, triggerEvent }) {
     totalGames: gameRecords.length,
     wins: gameRecords.filter((record) => didUserWinRecord(record, user.id)).length,
     modeStats,
-    characterStats: characterStatsForRecords(gameRecords, user.id)
+    characterStats: characterStatsForRecords(gameRecords, user.id),
+    modeCharacterStats: (mode) => characterStatsForRecords(
+      gameRecords.filter((record) => (record.mode ?? "spark") === mode),
+      user.id
+    )
   };
 }
 
@@ -524,6 +631,11 @@ function isAchievementMet(achievement, context) {
     }
     case "character_wins": {
       const stats = context.characterStats[canonicalCharacterId(params.characterId)] ?? { wins: 0 };
+      return stats.wins >= threshold;
+    }
+    case "mode_character_wins": {
+      const mode = String(params.mode ?? "spark");
+      const stats = context.modeCharacterStats(mode)[canonicalCharacterId(params.characterId)] ?? { wins: 0 };
       return stats.wins >= threshold;
     }
     case "character_win_rate": {
@@ -725,6 +837,7 @@ function achievementConditionTypes() {
     "gacha_draws",
     "character_games",
     "character_wins",
+    "mode_character_wins",
     "character_win_rate",
     "trigger_event",
     "item_effect"
@@ -758,6 +871,14 @@ function normalizeEquipment(equipment) {
   };
 }
 
+function selectedEquipmentAssets(assets, equipment) {
+  const byId = new Map(assets.map((asset) => [asset.id, asset]));
+  return Object.fromEntries(Object.entries(EQUIPMENT_FIELDS).map(([type, field]) => {
+    const asset = byId.get(equipment[field]);
+    return [type, asset ? toRewardAssetPayload(asset) : null];
+  }));
+}
+
 function parseJsonObject(value) {
   if (!value) return {};
   if (typeof value === "object" && !Array.isArray(value)) return value;
@@ -783,13 +904,16 @@ async function addColumnIfMissing(client, table, name, definition) {
 }
 
 export async function publicUserWithAchievementEquipment({ prisma, user }) {
-  const [equipment, stats] = await Promise.all([
-    readEquipment(prisma, user.id),
+  const [decoratedUsers, stats] = await Promise.all([
+    attachAchievementEquipmentAssetsToUsers(prisma, [user]),
     achievementStatsForUser({ prisma, userId: user.id })
   ]);
+  const decoratedUser = decoratedUsers[0] ?? user;
+  const normalizedEquipment = normalizeEquipment(decoratedUser.achievementEquipment);
   return {
-    ...publicUser(user),
-    achievementEquipment: normalizeEquipment(equipment),
+    ...publicUser(decoratedUser),
+    achievementEquipment: normalizedEquipment,
+    achievementEquipmentAssets: decoratedUser.achievementEquipmentAssets ?? selectedEquipmentAssets([], normalizedEquipment),
     achievementStats: stats
   };
 }

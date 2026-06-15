@@ -152,7 +152,7 @@ describe("admin route helpers", () => {
       adminUser: { id: "admin-1" },
       userId: "user-1",
       body: {
-        ownedCharacters: ["sigrika", "danea"],
+        ownedCharacters: ["sigrika", "denia"],
         ownedItems: [{ itemId: "rainbow-candy", quantity: 2 }]
       }
     });

@@ -3,7 +3,9 @@ import {
   ACHIEVEMENT_TRIGGER_EVENTS,
   ensureAchievementSchema,
   evaluateAchievementsForUser,
+  attachAchievementEquipmentAssetsToUsers,
   listAchievementsForUser,
+  publicUserWithAchievementEquipment,
   seedBuiltinAchievements,
   updateAchievementEquipment
 } from "./achievements.js";
@@ -69,7 +71,7 @@ describe("achievements", () => {
     });
   });
 
-  it("seeds the Denia rainbow bean candy achievement without overwriting existing records", async () => {
+  it("seeds built-in achievements without overwriting existing records", async () => {
     const rewardCreates = [];
     const achievementCreates = [];
     const prisma = {
@@ -91,30 +93,95 @@ describe("achievements", () => {
 
     await seedBuiltinAchievements(prisma);
 
-    expect(rewardCreates[0]).toMatchObject({
-      id: "reward-denia-rainbow-bean-candy-coins",
-      type: "currency",
-      targetType: "coins",
-      amount: 100
-    });
-    expect(achievementCreates[0]).toMatchObject({
-      id: "achievement-denia-rainbow-bean-candy",
-      key: "denia-rainbow-bean-candy",
-      name: "你给我吃了什么！？",
-      content: "请达妮娅吃了彩虹豆豆跳跳糖",
-      conditionType: "trigger_event",
-      rewardAssetId: "reward-denia-rainbow-bean-candy-coins"
-    });
-    expect(JSON.parse(achievementCreates[0].conditionParams)).toEqual({
+    expect(rewardCreates).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        id: "reward-denia-rainbow-bean-candy-coins",
+        type: "currency",
+        targetType: "coins",
+        amount: 100
+      }),
+      expect.objectContaining({
+        id: "reward-sigrika-spark-100-wins-nameplate",
+        type: "nameplate",
+        imageUrl: "/assets/achievements/semantic-nameplate.png",
+        text: "用户名背景"
+      })
+    ]));
+    expect(achievementCreates).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        id: "achievement-denia-rainbow-bean-candy",
+        key: "denia-rainbow-bean-candy",
+        conditionType: "trigger_event",
+        rewardAssetId: "reward-denia-rainbow-bean-candy-coins"
+      }),
+      expect.objectContaining({
+        id: "achievement-sigrika-spark-100-wins",
+        key: "sigrika-spark-100-wins",
+        name: "点亮语义！",
+        content: "使用西格莉卡在星炬对弈中获得100胜",
+        conditionType: "mode_character_wins",
+        rewardAssetId: "reward-sigrika-spark-100-wins-nameplate"
+      })
+    ]));
+    expect(JSON.parse(achievementCreates.find((achievement) => achievement.key === "denia-rainbow-bean-candy").conditionParams)).toEqual({
       event: ACHIEVEMENT_TRIGGER_EVENTS.deniaRainbowBeanCandy
     });
+    expect(JSON.parse(achievementCreates.find((achievement) => achievement.key === "sigrika-spark-100-wins").conditionParams)).toEqual({
+      mode: "spark",
+      characterId: "sigrika",
+      value: 100
+    });
 
-    prisma.achievementRewardAsset.findUnique.mockResolvedValueOnce(rewardCreates[0]);
-    prisma.achievement.findUnique.mockResolvedValueOnce(achievementCreates[0]);
+    prisma.achievementRewardAsset.findUnique.mockImplementation(async ({ where }) => (
+      rewardCreates.find((asset) => asset.id === where.id) ?? null
+    ));
+    prisma.achievement.findUnique.mockImplementation(async ({ where }) => (
+      achievementCreates.find((achievement) => achievement.key === where.key) ?? null
+    ));
     await seedBuiltinAchievements(prisma);
 
-    expect(prisma.achievementRewardAsset.create).toHaveBeenCalledTimes(1);
-    expect(prisma.achievement.create).toHaveBeenCalledTimes(1);
+    expect(prisma.achievementRewardAsset.create).toHaveBeenCalledTimes(2);
+    expect(prisma.achievement.create).toHaveBeenCalledTimes(2);
+  });
+
+  it("marks built-in achievements as achieved for admins by default", async () => {
+    const userAchievementCreates = [];
+    const prisma = {
+      achievementRewardAsset: {
+        findUnique: vi.fn(async () => null),
+        create: vi.fn(async ({ data }) => data)
+      },
+      achievement: {
+        findUnique: vi.fn(async () => null),
+        create: vi.fn(async ({ data }) => data)
+      },
+      user: {
+        findMany: vi.fn(async () => [{ id: "admin-1" }])
+      },
+      userAchievement: {
+        findUnique: vi.fn(async () => null),
+        create: vi.fn(async ({ data }) => {
+          userAchievementCreates.push(data);
+          return { id: `ua-${userAchievementCreates.length}`, ...data };
+        })
+      }
+    };
+
+    await seedBuiltinAchievements(prisma);
+
+    expect(userAchievementCreates).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        userId: "admin-1",
+        achievementId: "achievement-denia-rainbow-bean-candy"
+      }),
+      expect.objectContaining({
+        userId: "admin-1",
+        achievementId: "achievement-sigrika-spark-100-wins"
+      })
+    ]));
+    expect(userAchievementCreates).toHaveLength(2);
+    expect(userAchievementCreates[0].achievedAt).toBeInstanceOf(Date);
+    expect(userAchievementCreates[0].rewardGrantedAt).toBe(userAchievementCreates[0].achievedAt);
   });
 
   it("unlocks Denia rainbow bean candy only from the new trigger event and grants 100 coins", async () => {
@@ -184,6 +251,77 @@ describe("achievements", () => {
     expect(rewardGrantUpdates[0]).toHaveProperty("rewardGrantedAt");
   });
 
+  it("unlocks the Sigrika spark 100 wins nameplate only from spark wins", async () => {
+    const achievement = sigrikaSpark100WinsAchievement();
+    const userAchievementCreates = [];
+    const rewardGrantUpdates = [];
+    let gameRecords = [
+      ...sparkWins(99),
+      {
+        blackUserId: "user-1",
+        whiteUserId: "op-standard",
+        blackCharacter: "sigrika",
+        whiteCharacter: "denia",
+        winnerColor: "black",
+        mode: "standard",
+        resultText: ""
+      }
+    ];
+    const prisma = {
+      user: {
+        findUnique: vi.fn(async () => baseUser())
+      },
+      achievement: {
+        findMany: vi.fn(async () => [achievement])
+      },
+      userAchievement: {
+        findMany: vi.fn(async () => []),
+        create: vi.fn(async ({ data }) => {
+          const row = { id: "ua-sigrika", ...data, achievedAt: new Date("2026-06-14T01:00:00.000Z") };
+          userAchievementCreates.push(row);
+          return row;
+        })
+      },
+      achievementCounter: {
+        findMany: vi.fn(async () => [])
+      },
+      gameRecord: {
+        findMany: vi.fn(async () => gameRecords)
+      },
+      $transaction: async (callback) => callback({
+        userAchievement: {
+          findUnique: async () => userAchievementCreates[0],
+          update: async ({ data }) => {
+            rewardGrantUpdates.push(data);
+            return { ...userAchievementCreates[0], ...data };
+          }
+        },
+        user: {
+          findUnique: async () => baseUser(),
+          update: vi.fn()
+        }
+      })
+    };
+
+    const before = await evaluateAchievementsForUser({ prisma, userId: "user-1" });
+    gameRecords = sparkWins(100);
+    const after = await evaluateAchievementsForUser({ prisma, userId: "user-1" });
+
+    expect(before).toEqual([]);
+    expect(after).toHaveLength(1);
+    expect(after[0]).toMatchObject({
+      key: "sigrika-spark-100-wins",
+      name: "点亮语义！",
+      reward: {
+        type: "nameplate",
+        imageUrl: "/assets/achievements/semantic-nameplate.png",
+        text: "用户名背景"
+      }
+    });
+    expect(userAchievementCreates).toHaveLength(1);
+    expect(rewardGrantUpdates[0]).toHaveProperty("rewardGrantedAt");
+  });
+
   it("rejects equipment assets the user has not unlocked", async () => {
     const prisma = {
       userAchievement: {
@@ -198,6 +336,97 @@ describe("achievements", () => {
     })).rejects.toMatchObject({
       status: 400,
       message: "title asset is not unlocked"
+    });
+  });
+
+  it("returns selected nameplate asset payloads after equipment updates", async () => {
+    const prisma = {
+      userAchievement: {
+        findMany: vi.fn(async () => [{
+          achievement: {
+            rewardAsset: semanticNameplateAsset()
+          }
+        }])
+      },
+      userAchievementEquipment: {
+        upsert: vi.fn(async ({ create, update }) => ({ ...create, ...update }))
+      }
+    };
+
+    const result = await updateAchievementEquipment({
+      prisma,
+      userId: "user-1",
+      body: { nameplateAssetId: "reward-sigrika-spark-100-wins-nameplate" }
+    });
+
+    expect(result.equipment).toMatchObject({
+      nameplateAssetId: "reward-sigrika-spark-100-wins-nameplate"
+    });
+    expect(result.equipmentAssets.nameplate).toMatchObject({
+      id: "reward-sigrika-spark-100-wins-nameplate",
+      type: "nameplate",
+      imageUrl: "/assets/achievements/semantic-nameplate.png"
+    });
+  });
+
+  it("includes selected nameplate asset display data in public user payloads", async () => {
+    const prisma = {
+      userAchievementEquipment: {
+        findMany: vi.fn(async () => [{
+          userId: "user-1",
+          titleAssetId: "",
+          badgeAssetId: "",
+          nameplateAssetId: "reward-sigrika-spark-100-wins-nameplate"
+        }])
+      },
+      achievement: {
+        count: vi.fn(async () => 2)
+      },
+      userAchievement: {
+        count: vi.fn(async () => 1)
+      },
+      achievementRewardAsset: {
+        findMany: vi.fn(async () => [semanticNameplateAsset()])
+      }
+    };
+
+    const result = await publicUserWithAchievementEquipment({ prisma, user: baseUser() });
+
+    expect(result.achievementEquipment).toMatchObject({
+      nameplateAssetId: "reward-sigrika-spark-100-wins-nameplate"
+    });
+    expect(result.achievementEquipmentAssets.nameplate).toMatchObject({
+      id: "reward-sigrika-spark-100-wins-nameplate",
+      imageUrl: "/assets/achievements/semantic-nameplate.png"
+    });
+  });
+
+  it("decorates user lists with selected achievement equipment assets", async () => {
+    const prisma = {
+      userAchievementEquipment: {
+        findMany: vi.fn(async () => [{
+          userId: "user-2",
+          titleAssetId: "",
+          badgeAssetId: "",
+          nameplateAssetId: "reward-sigrika-spark-100-wins-nameplate"
+        }])
+      },
+      achievementRewardAsset: {
+        findMany: vi.fn(async () => [semanticNameplateAsset()])
+      }
+    };
+
+    const users = await attachAchievementEquipmentAssetsToUsers(prisma, [
+      { id: "user-1", username: "Alice" },
+      { id: "user-2", username: "Moming" }
+    ]);
+
+    expect(users[0].achievementEquipmentAssets.nameplate).toBeNull();
+    expect(users[1].achievementEquipment).toMatchObject({
+      nameplateAssetId: "reward-sigrika-spark-100-wins-nameplate"
+    });
+    expect(users[1].achievementEquipmentAssets.nameplate).toMatchObject({
+      id: "reward-sigrika-spark-100-wins-nameplate"
     });
   });
 });
@@ -248,6 +477,64 @@ function deniaRainbowBeanCandyAchievement() {
       sortOrder: 100
     }
   };
+}
+
+function sigrikaSpark100WinsAchievement() {
+  return {
+    id: "achievement-sigrika-spark-100-wins",
+    key: "sigrika-spark-100-wins",
+    name: "点亮语义！",
+    content: "使用西格莉卡在星炬对弈中获得100胜",
+    conditionType: "mode_character_wins",
+    conditionParams: JSON.stringify({ mode: "spark", characterId: "sigrika", value: 100 }),
+    rewardAssetId: "reward-sigrika-spark-100-wins-nameplate",
+    enabled: true,
+    deletedAt: null,
+    sortOrder: 110,
+    rewardAsset: {
+      id: "reward-sigrika-spark-100-wins-nameplate",
+      type: "nameplate",
+      name: "点亮语义！",
+      description: "使用西格莉卡在星炬对弈中获得100胜",
+      imageUrl: "/assets/achievements/semantic-nameplate.png",
+      text: "用户名背景",
+      targetType: "",
+      targetId: "",
+      amount: 0,
+      enabled: true,
+      deletedAt: null,
+      sortOrder: 110
+    }
+  };
+}
+
+function semanticNameplateAsset() {
+  return {
+    id: "reward-sigrika-spark-100-wins-nameplate",
+    type: "nameplate",
+    name: "点亮语义！",
+    description: "使用西格莉卡在星炬对弈中获得100胜",
+    imageUrl: "/assets/achievements/semantic-nameplate.png",
+    text: "用户名背景",
+    targetType: "",
+    targetId: "",
+    amount: 0,
+    enabled: true,
+    deletedAt: null,
+    sortOrder: 110
+  };
+}
+
+function sparkWins(count) {
+  return Array.from({ length: count }, (_, index) => ({
+    blackUserId: "user-1",
+    whiteUserId: `op-${index}`,
+    blackCharacter: "sigrika",
+    whiteCharacter: "denia",
+    winnerColor: "black",
+    mode: "spark",
+    resultText: ""
+  }));
 }
 
 function sampleAchievement() {

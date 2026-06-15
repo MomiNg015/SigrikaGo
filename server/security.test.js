@@ -5,7 +5,8 @@ import {
   validateProductionDeployment,
   validatePassword,
   validateRoomCode,
-  validateUsername
+  validateUsername,
+  usernameDisplayWidth
 } from "./security.js";
 
 describe("deployment security helpers", () => {
@@ -21,6 +22,17 @@ describe("deployment security helpers", () => {
     expect(validateUsername("a").ok).toBe(false);
     expect(validateUsername("name<script>").ok).toBe(false);
     expect(validateUsername("very-very-very-long-name").ok).toBe(false);
+  });
+
+  it("limits usernames by CJK and half-width display width", () => {
+    expect(usernameDisplayWidth("露露A_1234")).toBe(10);
+    expect(validateUsername("露露A_1234")).toEqual({ ok: true, value: "露露A_1234" });
+    expect(validateUsername("露露Alice_1").ok).toBe(false);
+    expect(validateUsername("一二三四五").ok).toBe(true);
+    expect(validateUsername("一二三四五六").ok).toBe(false);
+    expect(validateUsername("Alice_1234").ok).toBe(true);
+    expect(validateUsername("Alice_12345").ok).toBe(false);
+    expect(validateUsername("かなカナ한").ok).toBe(true);
   });
 
   it("normalizes chat text without allowing control characters or unbounded length", () => {

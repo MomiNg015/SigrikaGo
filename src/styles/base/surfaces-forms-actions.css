@@ -149,6 +149,33 @@ p {
   filter: brightness(1.04) saturate(1.04);
 }
 
+:is(
+  .segmented .active,
+  .toggle.active,
+  .mode-tabs button.active,
+  .mode-tabs button[aria-selected="true"],
+  .achievement-tabs button.active,
+  .achievement-tabs button[aria-selected="true"],
+  .settings-tabs button.active,
+  .shop-tabs button.active,
+  .friends-tabs button.active,
+  .shop-pagination button.active,
+  .theme-choice-button.active,
+  .theme-choice-button[aria-pressed="true"],
+  .gacha-ticket-tab.active,
+  .mobile-tab-button.active,
+  .room-mobile-menu-panel button.active,
+  .room-toggles .toggle.active,
+  .sortie-button.selected,
+  .viewpoint-button.active
+):not(:disabled) {
+  transform: translateY(1px) scale(0.985);
+  box-shadow:
+    inset 0 2px 5px rgba(45, 36, 48, 0.16),
+    0 1px 3px rgba(45, 36, 48, 0.1);
+  filter: brightness(0.985) saturate(1.03);
+}
+
 .secondary-action,
 .action-bar button {
   background: #ffffff;

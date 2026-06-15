@@ -3,8 +3,8 @@ import { normalizeSkillConfig, skillRequiresExistingStone, skillUsesBoardConfirm
 
 describe("game skill configuration", () => {
   it("normalizes character ids into executable skill configs", () => {
-    expect(normalizeSkillConfig("danea")).toMatchObject({
-      characterId: "danea",
+    expect(normalizeSkillConfig("denia")).toMatchObject({
+      characterId: "denia",
       effectType: "flip-stone",
       targetRule: "stone",
       uses: 1
@@ -18,7 +18,7 @@ describe("game skill configuration", () => {
   });
 
   it("identifies skills that need an existing board stone before they can start", () => {
-    expect(skillRequiresExistingStone("danea")).toBe(true);
+    expect(skillRequiresExistingStone("denia")).toBe(true);
     expect(skillRequiresExistingStone("baconbits")).toBe(true);
     expect(skillRequiresExistingStone("aemeath")).toBe(false);
   });
@@ -26,7 +26,7 @@ describe("game skill configuration", () => {
   it("identifies no-target skills that use the board click as release confirmation", () => {
     expect(skillUsesBoardConfirmation("baconbits")).toBe(true);
     expect(skillUsesBoardConfirmation({ effectType: "random-blast", targetRule: "none" })).toBe(true);
-    expect(skillUsesBoardConfirmation("danea")).toBe(false);
+    expect(skillUsesBoardConfirmation("denia")).toBe(false);
     expect(skillUsesBoardConfirmation("sigrika")).toBe(false);
   });
 });

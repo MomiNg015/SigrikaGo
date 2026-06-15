@@ -19,8 +19,8 @@ export const FALLBACK_CHARACTERS = {
       freeTurn: true
     }
   },
-  danea: {
-    id: "danea",
+  denia: {
+    id: "denia",
     name: "达妮娅",
     description: "月色与泡影之间的术师，能把棋子的立场悄然翻转。",
     palette: "#f2a4d8",

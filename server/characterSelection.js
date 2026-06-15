@@ -12,7 +12,7 @@ export function resolveSelectedCharacter(selectedCharacter, dbCharacters = {}, d
       characterConfig: dbCharacters[selected]
     };
   }
-  const fallback = CHARACTERS[selected] ?? (selected === "denia" ? CHARACTERS.danea : null);
+  const fallback = CHARACTERS[selected];
   if (!blocked.has(selected) && !disabled.has(selected) && (!owned || owned.has(selected)) && fallback) {
     return {
       characterId: selected,

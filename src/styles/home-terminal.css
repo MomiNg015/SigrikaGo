@@ -262,6 +262,7 @@
 .home-player-zone .home-player-plaque {
   width: 100%;
   min-height: 82px;
+  position: relative;
   cursor: pointer;
   font: inherit;
   text-align: left;
@@ -276,6 +277,14 @@
     0 0 22px rgba(0, 191, 255, 0.22),
     inset 0 0 18px rgba(0, 191, 255, 0.16);
   color: #ffffff;
+  overflow: hidden;
+}
+
+.home-player-zone .plaque-avatar,
+.home-player-zone .home-player-plaque > strong,
+.home-player-zone .plaque-stats {
+  position: relative;
+  z-index: 1;
 }
 
 .home-player-zone .plaque-avatar {
@@ -297,6 +306,30 @@
   font-size: clamp(17px, 1.4vw, 22px);
   letter-spacing: 0.04em;
   text-shadow: 0 0 12px rgba(224, 247, 244, 0.5);
+}
+
+.home-player-zone .home-player-plaque > strong {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.home-player-zone .home-player-plaque .user-identity,
+.home-player-zone .home-player-plaque .user-identity-main,
+.home-player-zone .home-player-plaque .user-identity-name-tag,
+.home-player-zone .home-player-plaque .user-identity-name {
+  max-width: none;
+}
+
+.home-player-zone .home-player-plaque .user-identity-main,
+.home-player-zone .home-player-plaque .user-identity-name-tag,
+.home-player-zone .home-player-plaque .user-identity-name {
+  width: max-content;
+  flex: 0 0 auto;
+}
+
+.home-player-zone .home-player-plaque .user-identity-name {
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .home-player-zone .plaque-stats {

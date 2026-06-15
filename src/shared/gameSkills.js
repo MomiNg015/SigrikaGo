@@ -20,7 +20,7 @@ export function normalizeSkillConfig(skillOrCharacterId) {
     };
   }
   const characterId = canonicalCharacterId(skillOrCharacterId);
-  const fallback = CHARACTERS[characterId] ?? (characterId === "denia" ? CHARACTERS.danea : null);
+  const fallback = CHARACTERS[characterId];
   if (fallback?.skill?.id === "erase-point") {
     return {
       characterId: fallback.id,

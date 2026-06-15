@@ -228,18 +228,19 @@ await prisma.musicTrackSetting.upsert({
 - `AchievementCounter { id, userId, type, value }` with unique `(userId, type)`.
 - `UserAchievementEquipment { userId, titleAssetId?, badgeAssetId?, nameplateAssetId?, updatedAt }`
 - `ensureAchievementSchema(prisma)` must run during startup before player/admin achievement routes or public profile payloads use these models.
-- `seedBuiltinAchievements(prisma)` runs after `ensureAchievementSchema(prisma)` and creates missing code-owned achievements/reward assets without overwriting existing rows.
+- `seedBuiltinAchievements(prisma)` runs after `ensureAchievementSchema(prisma)` and creates missing code-owned achievements/reward assets without overwriting existing rows. It also creates missing `UserAchievement` rows for admin users for every built-in achievement, with `rewardGrantedAt` set, so newly added built-in achievement cosmetics are immediately available to admins.
 - Because it adds `Character.source`, `Decoration.source`, and `ShopItem.source` to older SQLite databases, it must also run before any seed task or query that reads those Prisma models.
 
 #### 3. Contracts
 - Static gameplay/resource data remains authoritative unless an enabled achievement reward asset points at a `source=achievement` resource.
 - Achievement goals are code-owned: admin HTTP routes must not create/delete achievements or mutate `key`, `conditionType`, `conditionParams`, `enabled`, or `deletedAt`; admin PATCH may only update `name`, `content`, `rewardAssetId`, and `sortOrder`.
 - Built-in trigger-event achievements should be seeded as missing-only rows so startup does not overwrite later admin display/reward/sort edits.
+- Mode-and-character achievements should use a reusable condition type such as `mode_character_wins` with JSON params `{ "mode": "spark", "characterId": "sigrika", "value": 100 }` instead of hard-coding a one-off evaluator branch.
 - Resource reward assets of type `character`, `decoration`, and `item` must only target records with `source === "achievement"`; they must not silently grant default/shop resources.
 - Reward grants must be idempotent: an already achieved row with `rewardGrantedAt` set must not grant currency/assets again.
 - Player `GET /api/achievements` returns all enabled achievements merged with the current user's `isAchieved`, `achievedAt`, and reward display payload, plus only the unlocks newly achieved during that request.
 - Player `GET/PATCH /api/me/achievement-equipment` may equip only unlocked enabled reward assets whose type matches the slot (`title`, `badge`, `nameplate`).
-- Public profile payloads may expose compact equipped achievement asset ids/display data, but must not include every achievement or counter row.
+- Public profile payloads may expose compact equipped achievement asset ids/display data, but must not include every achievement or counter row. When a UI needs to render equipped cosmetics immediately, return both the equipment id fields and the selected reward asset payloads (`achievementEquipmentAssets` / `equipmentAssets`) so the frontend does not have to re-query name, text, or `imageUrl`.
 - Commerce/gacha/item-use responses should include `achievementUnlocks` only when at least one achievement was newly achieved.
 
 #### 4. Validation & Error Matrix
@@ -286,6 +287,60 @@ const unlocks = await evaluateAchievementsForUser({ prisma, userId, triggerEvent
 if (unlocks.length) {
   res.json({ ...payload, achievementUnlocks: unlocks });
 }
+```
+
+---
+
+### Scenario: Legacy Character Slug Cleanup
+
+#### 1. Scope / Trigger
+- Trigger: any change that retires, renames, or canonicalizes a persisted character slug.
+- This is a startup data contract because character slugs exist in static fallbacks, Prisma defaults, user legacy fields, structured user assets, catalog targets, reward targets, and game-record snapshots.
+
+#### 2. Signatures
+- `cleanupLegacyDeniaCharacterData(prisma)` runs from `initializeServerData()` after achievement schema/seed work and before `seedCharacters()`.
+- Legacy Denia slugs are `danea` and `denea`; canonical Denia slug is `denia`.
+- `User.ownedCharacters` default must use canonical slugs only, for example `sigrika,denia,aemeath`.
+
+#### 3. Contracts
+- Retired character slugs should be handled by an idempotent startup cleanup instead of long-lived frontend/backend alias mapping.
+- Cleanup must preserve correct canonical access where appropriate: legacy user `selectedCharacter`, `ownedCharacters`, and `UserCharacter` rows migrate to the canonical slug.
+- Cleanup may delete historical records only when the product decision explicitly allows it; for retired Denia slugs, `GameRecord` rows with either color set to a legacy slug are deleted.
+- Catalog and reward targets that point at the retired character should be rewritten to the canonical slug rather than left as broken ids.
+- Public character listing must defensively omit retired slugs so a stale database row cannot reappear in player-facing catalogs.
+
+#### 4. Validation & Error Matrix
+- No legacy rows exist -> cleanup is a no-op and startup continues.
+- User owns both legacy and canonical rows -> keep one canonical `UserCharacter` row with the maximum known `chainCount`.
+- User legacy CSV contains both old spellings and canonical slug -> serialize one canonical slug.
+- Old `Character` row exists with a cascading `CharacterSkill` -> deleting the character row removes the skill through the model relation.
+- Narrow unit-test Prisma mocks omit optional delegates -> cleanup should skip missing operations or perform only available deletes.
+
+#### 5. Good/Base/Bad Cases
+- Good: startup migrates `ownedCharacters: "sigrika,danea"` to `"sigrika,denia"` and deletes `GameRecord` rows where `blackCharacter` or `whiteCharacter` is `danea`.
+- Base: a clean database with only `denia` changes nothing.
+- Bad: keeping `danea -> denia` in shared alias code forever, because stale API rows can keep surfacing a duplicate character.
+- Bad: deleting legacy ownership without granting canonical `denia` when the intent is to preserve access.
+
+#### 6. Tests Required
+- Focused cleanup tests cover slug normalization, user field migration, structured row merge, catalog target rewrites, game-record deletion, character deletion, and narrow mocks.
+- Server startup tests assert cleanup runs before `seedCharacters()`.
+- Shared character and selection tests assert canonical `denia` is the built-in fallback and retired slugs do not resolve through static alias paths.
+- Public character tests assert retired slugs are omitted from `/api/characters`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+export const CHARACTER_ALIASES = { danea: "denia" };
+```
+
+Correct:
+
+```js
+await cleanupLegacyDeniaCharacterData(prisma);
+await seedCharacters(prisma);
 ```
 
 ---

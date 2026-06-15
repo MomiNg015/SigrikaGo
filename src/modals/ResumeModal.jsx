@@ -19,12 +19,12 @@ export default function ResumeModal({ user, records, characterListView, onClose,
     <div className="modal-backdrop" onClick={onClose}>
       <section className="house-modal resume-modal" onClick={(event) => event.stopPropagation()}>
         <header className="house-header resume-header">
+          <h2>履历</h2>
           <div className="resume-title-actions">
-            <h2>履历</h2>
-            <button type="button" className="resume-mini-action" onClick={onOpenAchievements}>
+            <button type="button" className="resume-mini-action achievement-entry-action" onClick={onOpenAchievements}>
               <Award size={16} />成就
             </button>
-            <button type="button" className="resume-mini-action" onClick={onOpenPersonalization}>
+            <button type="button" className="resume-mini-action personalization-entry-action" onClick={onOpenPersonalization}>
               <Palette size={16} />个性化
             </button>
           </div>
@@ -40,8 +40,8 @@ export default function ResumeModal({ user, records, characterListView, onClose,
               <Gem size={18} />
               {user.blueGems ?? 0}
             </p>
-            <button className="close-button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
           </div>
+          <button className="close-button resume-close-button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
         </header>
         <ModeTabs mode={mode} onModeChange={setMode} />
         <button className="replay-open-button resume-replay-action" onClick={() => setShowReplays(true)}>

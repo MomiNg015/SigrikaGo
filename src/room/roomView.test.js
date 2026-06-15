@@ -36,7 +36,9 @@ describe("roomView helpers", () => {
         color: COLORS.black,
         username: "black-player",
         rank: "9段",
-        rating: 2020
+        rating: 2020,
+        achievementEquipment: null,
+        achievementEquipmentAssets: null
       },
       {
         id: "player-white-user-white",
@@ -45,7 +47,9 @@ describe("roomView helpers", () => {
         color: COLORS.white,
         username: "white-player",
         rank: "3段",
-        rating: 1160
+        rating: 1160,
+        achievementEquipment: null,
+        achievementEquipmentAssets: null
       },
       {
         id: "spectator-watcher",
@@ -54,7 +58,9 @@ describe("roomView helpers", () => {
         color: null,
         username: "watcher-name",
         rank: "1级",
-        rating: 850
+        rating: 850,
+        achievementEquipment: null,
+        achievementEquipmentAssets: null
       }
     ]);
   });

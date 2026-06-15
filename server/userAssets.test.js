@@ -20,8 +20,8 @@ describe("user asset list helpers", () => {
     expect(parseAssetList([" sigrika ", "", "sigrika", "denia"])).toEqual(["sigrika", "denia"]);
   });
 
-  it("normalizes character aliases while parsing owned characters", () => {
-    expect(parseCharacterAssetList("danea, denia, sigrika")).toEqual(["denia", "sigrika"]);
+  it("parses character ownership without resurrecting removed aliases", () => {
+    expect(parseCharacterAssetList("danea, denia, sigrika")).toEqual(["danea", "denia", "sigrika"]);
   });
 
   it("serializes user asset lists consistently", () => {
@@ -57,7 +57,7 @@ describe("user asset list helpers", () => {
   it("projects legacy user asset fields into structured migration rows", () => {
     expect(legacyUserAssetsToStructuredRows({
       id: "user-1",
-      ownedCharacters: "danea,denia,sigrika",
+      ownedCharacters: "denia,sigrika",
       ownedDecorations: " paw, paw, peach ",
       ownedItems: JSON.stringify({ "dream-ticket": 2, empty: 0 }),
       itemEffects: JSON.stringify({ deniaRainbowGlow: true, inactive: false, note: "manual" })
@@ -91,7 +91,7 @@ describe("user asset list helpers", () => {
 
     await syncStructuredUserAssets(prisma, {
       id: "user-1",
-      ownedCharacters: "danea,sigrika",
+      ownedCharacters: "denia,sigrika",
       ownedDecorations: "paw-stone",
       ownedItems: JSON.stringify({ "dream-ticket": 2 }),
       itemEffects: JSON.stringify({ deniaRainbowGlow: true })
@@ -180,9 +180,9 @@ describe("user asset list helpers", () => {
   it("projects public assets from legacy fields and structured relations", () => {
     expect(publicUserAssets({
       rating: 1400,
-      selectedCharacter: "danea",
+      selectedCharacter: "denia",
       selectedStoneDecoration: "paw-stone",
-      ownedCharacters: "baconbits,danea",
+      ownedCharacters: "baconbits,denia",
       ownedItems: JSON.stringify({ "dream-ticket": 1, "legacy-item": 9 }),
       itemEffects: JSON.stringify({ sigrikaCandyDisabled: true }),
       ownedDecorations: "legacy-decoration",

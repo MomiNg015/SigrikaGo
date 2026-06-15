@@ -424,9 +424,15 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("border-bottom-color: transparent !important");
     expect(plaquePolish).toContain("transform: rotate(-8deg) !important");
     expect(plaquePolish).toContain("transform: rotate(8deg) !important");
-    expect(plaqueBlock).toContain("grid-template-columns: 76px minmax(0, 1fr) minmax(150px, 154px) !important");
-    expect(plaqueBlock).toContain("column-gap: 16px !important");
+    expect(plaqueBlock).toContain("grid-template-columns: 76px minmax(96px, 1fr) minmax(136px, 150px) !important");
+    expect(plaqueBlock).toContain("column-gap: 14px !important");
     expect(plaqueBlock).toContain("overflow: hidden !important");
+    expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card > strong");
+    expect(plaquePolish).toContain("overflow: visible !important");
+    expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name");
+    expect(plaquePolish).toContain("width: max-content !important");
+    expect(plaquePolish).toContain("flex: 0 0 auto !important");
+    expect(plaquePolish).toContain("text-overflow: clip !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before");
     expect(plaquePolish).toContain('font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
   });
@@ -454,6 +460,38 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-row");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap .coord-col::after");
     expect(themesCss).toContain("background-color: transparent !important");
+  });
+
+  it("loads shared user identity cosmetics for username surfaces", () => {
+    expect(hudCss).toContain(".user-identity.has-nameplate");
+    expect(hudCss).toContain("--user-identity-name-tag-max-width: 10em");
+    expect(hudCss).toContain("--user-identity-name-tag-padding-x: 0.72em");
+    expect(hudCss).toContain("width: auto");
+    expect(hudCss).toContain("max-width: var(--user-identity-name-tag-max-width)");
+    expect(hudCss).toContain("box-sizing: content-box");
+    expect(hudCss).toContain("border: 0");
+    expect(hudCss).toContain("background-color: transparent");
+    expect(hudCss).toContain("background-image: none");
+    expect(hudCss).toContain("box-shadow: none");
+    expect(hudCss).toContain("background-position: left center");
+    expect(hudCss).toContain("background-size: 100% 100%");
+    expect(hudCss).toContain(".user-identity-name-tag");
+    expect(hudCss).toContain(".leaderboard-player .user-identity {\n  justify-self: center");
+    expect(hudCss).toContain(".leaderboard-player .user-identity-main {\n  justify-content: center");
+    expect(hudCss).toContain(".leaderboard-player .user-identity-name-tag");
+    expect(hudCss).toContain("@media (max-width: 768px)");
+    expect(hudCss).toContain("--user-identity-name-tag-max-width: 8.5em");
+    expect(hudCss).toContain("--user-identity-name-tag-padding-x: 0.52em");
+    expect(hudCss).toContain(".user-identity.compact.has-nameplate");
+    expect(hudCss).toContain("--user-identity-name-tag-min-height: 1.95em");
+    expect(hudCss).toContain("--user-identity-name-tag-max-width: 8em");
+    expect(hudCss).toContain("--user-identity-name-tag-padding-x: 0.46em");
+    expect(hudCss).toContain(".mobile-room-screen .name-button .user-identity.has-nameplate");
+    expect(hudCss).toContain("--user-identity-name-tag-max-width: 7.5em");
+    expect(hudCss).toContain(".name-button .user-identity:not(.has-nameplate)");
+    expect(hudCss).toContain(".user-identity-emblem");
+    expect(hudCss).toContain(".leaderboard-player .user-identity");
+    expect(hudCss).toContain(".friend-main .user-identity");
   });
 
   it("keeps the Bright School lobby canvas free of solid panel fills", () => {
@@ -511,6 +549,15 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain("transition:\n    transform 160ms ease-out");
     expect(themesCss).toContain("transform: translateY(-2px) scale(1.02) !important");
     expect(themesCss).toContain("transform: translateY(1px) scale(0.98) !important");
+    expect(themesCss).toContain("Bright School selected control press depth.");
+    expect(themesCss).toContain("Bright School skill targeting repair.");
+    expect(themesCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
+    expect(themesCss).toContain(".achievement-tabs button[aria-selected=\"true\"]");
+    expect(themesCss).toContain(".shop-tabs button.active:not(:disabled)");
+    expect(themesCss).toContain(".friends-tabs button.active:not(:disabled)");
+    expect(themesCss).toContain(".mobile-tab-button.active");
+    expect(themesCss).toContain("transform: translateY(4px) scale(0.97) !important");
+    expect(themesCss).toContain("inset 3px 3px 0 rgba(61, 43, 37, 0.24)");
     expect(themesCss).toContain("#edf0d7");
     expect(themesCss).toContain("@media (prefers-reduced-motion: reduce)");
 

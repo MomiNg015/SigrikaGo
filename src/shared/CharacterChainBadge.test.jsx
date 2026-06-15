@@ -18,8 +18,8 @@ describe("CharacterChainBadge", () => {
     }))).toContain("★×6");
   });
 
-  it("normalizes aliased character ids and adds portrait display hooks", () => {
-    expect(chainCountForCharacter({ characterChains: { denia: 2 } }, "danea")).toBe(2);
+  it("reads canonical character ids and adds portrait display hooks", () => {
+    expect(chainCountForCharacter({ characterChains: { denia: 2 } }, "denia")).toBe(2);
     const homeSource = readFileSync(new URL("../home/components/PlayerPlaque.jsx", import.meta.url), "utf8");
     const houseSource = readFileSync(new URL("../modals/house/HouseCharacterGrid.jsx", import.meta.url), "utf8");
     const roomSource = readFileSync(new URL("../room/PlayerInfo.jsx", import.meta.url), "utf8");

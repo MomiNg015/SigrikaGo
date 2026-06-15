@@ -1,5 +1,6 @@
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
+import UserIdentity from "../../shared/UserIdentity.jsx";
 
 export default function WatchRoomRow({ room, characters, onJoinRoom, onClose }) {
   return (
@@ -27,7 +28,7 @@ function WatchPlayerCell({ player, characters, side }) {
     <span className={`watch-player-cell ${side} ${player.connected ? "" : "disconnected"}`}>
       <span className="watch-side-label">{side === "black" ? "●" : "○"}</span>
       <img src={resolveCandyPortrait(character, player.user?.itemEffects)} alt={character.name} />
-      <span>{player.user?.username ?? "-"}</span>
+      <UserIdentity user={player.user} compact />
     </span>
   );
 }

@@ -8,10 +8,42 @@ const FILTERS = [
   { id: "all", label: "全部" }
 ];
 
+const ACHIEVEMENT_POPOVER_MAX_WIDTH = 260;
+const ACHIEVEMENT_POPOVER_MARGIN = 14;
+const ACHIEVEMENT_POPOVER_MIN_TOP = 58;
+
+export function achievementTimePopoverPosition({
+  clientX,
+  clientY,
+  viewportWidth = globalThis.window?.innerWidth ?? 0,
+  viewportHeight = globalThis.window?.innerHeight ?? 0
+}) {
+  const safeWidth = Math.max(0, viewportWidth);
+  const safeHeight = Math.max(0, viewportHeight);
+  const halfWidth = Math.min(
+    ACHIEVEMENT_POPOVER_MAX_WIDTH / 2,
+    Math.max(0, (safeWidth - ACHIEVEMENT_POPOVER_MARGIN * 2) / 2)
+  );
+  const minLeft = ACHIEVEMENT_POPOVER_MARGIN + halfWidth;
+  const maxLeft = Math.max(minLeft, safeWidth - ACHIEVEMENT_POPOVER_MARGIN - halfWidth);
+  const minTop = Math.min(ACHIEVEMENT_POPOVER_MIN_TOP, Math.max(ACHIEVEMENT_POPOVER_MARGIN, safeHeight - ACHIEVEMENT_POPOVER_MARGIN));
+  const maxTop = Math.max(minTop, safeHeight - ACHIEVEMENT_POPOVER_MARGIN);
+
+  return {
+    left: clamp(clientX, minLeft, maxLeft),
+    top: clamp(clientY, minTop, maxTop)
+  };
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
 export default function AchievementModal({ token, onClose, onNotice }) {
   const [filter, setFilter] = useState("unachieved");
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [timePopover, setTimePopover] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,6 +71,44 @@ export default function AchievementModal({ token, onClose, onNotice }) {
     return true;
   }), [achievements, filter]);
 
+  function selectFilter(nextFilter) {
+    setFilter(nextFilter);
+    setTimePopover(null);
+  }
+
+  function showAchievementTime(event, achievement) {
+    if (!achievement.achieved || !achievement.achievedAt) {
+      setTimePopover(null);
+      return;
+    }
+    const { left, top } = achievementTimePopoverPosition({
+      clientX: event.clientX,
+      clientY: event.clientY
+    });
+    setTimePopover({
+      id: achievement.id,
+      left,
+      top,
+      value: formatDateTime(achievement.achievedAt)
+    });
+  }
+
+  function showAchievementTimeFromKeyboard(event, achievement) {
+    if ((event.key !== "Enter" && event.key !== " ") || !achievement.achieved || !achievement.achievedAt) return;
+    event.preventDefault();
+    const rect = event.currentTarget.getBoundingClientRect();
+    const { left, top } = achievementTimePopoverPosition({
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2
+    });
+    setTimePopover({
+      id: achievement.id,
+      left,
+      top,
+      value: formatDateTime(achievement.achievedAt)
+    });
+  }
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <section className="house-modal achievement-modal" onClick={(event) => event.stopPropagation()}>
@@ -54,7 +124,7 @@ export default function AchievementModal({ token, onClose, onNotice }) {
               role="tab"
               aria-selected={filter === item.id}
               className={filter === item.id ? "active" : ""}
-              onClick={() => setFilter(item.id)}
+              onClick={() => selectFilter(item.id)}
             >
               {item.label}
             </button>
@@ -65,19 +135,37 @@ export default function AchievementModal({ token, onClose, onNotice }) {
             <span>成就名</span>
             <span>成就内容</span>
             <span>成就奖励</span>
-            <span>达成时间</span>
           </div>
           {loading && <p className="achievement-empty">读取成就中...</p>}
           {!loading && filtered.length === 0 && <p className="achievement-empty">这里暂时没有成就。</p>}
           {!loading && filtered.map((achievement) => (
-            <article key={achievement.id} className={`achievement-row ${achievement.achieved ? "achieved" : "unachieved"}`}>
+            <article
+              key={achievement.id}
+              className={`achievement-row ${achievement.achieved ? "achieved" : "unachieved"}`}
+              onClick={(event) => showAchievementTime(event, achievement)}
+              role={achievement.achieved && achievement.achievedAt ? "button" : undefined}
+              tabIndex={achievement.achieved && achievement.achievedAt ? 0 : undefined}
+              onKeyDown={(event) => showAchievementTimeFromKeyboard(event, achievement)}
+            >
               <strong>{achievement.name}</strong>
               <p>{achievement.content}</p>
               <RewardCell reward={achievement.reward} />
-              <time>{achievement.achievedAt ? formatDateTime(achievement.achievedAt) : ""}</time>
             </article>
           ))}
         </div>
+        {timePopover && (
+          <div
+            className="achievement-time-popover"
+            role="status"
+            style={{
+              left: `${timePopover.left}px`,
+              top: `${timePopover.top}px`
+            }}
+          >
+            <span>达成时间</span>
+            <time>{timePopover.value}</time>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -1,5 +1,6 @@
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
 import { findCharacter } from "../../shared/characterDisplay.js";
+import UserIdentity from "../../shared/UserIdentity.jsx";
 
 export function leaderboardRankClass(rank) {
   return rank >= 1 && rank <= 3 ? `top-rank rank-${rank}` : "";
@@ -14,7 +15,9 @@ export default function LeaderboardRow({ player, rank, characters, highlight = f
       <strong className="leaderboard-rank">#{rank}</strong>
       <img src={resolveCandyPortrait(character, player.itemEffects)} alt={`${player.username}头像`} />
       <div className="leaderboard-player">
-        <strong>{player.username}</strong>
+        <strong>
+          <UserIdentity user={player} compact />
+        </strong>
         <span>{player.rank}</span>
       </div>
       <span>{player.rank}</span>

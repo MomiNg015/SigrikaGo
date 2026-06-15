@@ -3,6 +3,7 @@ import { playEffectSound } from "../../audio/playback.jsx";
 import { playSystemVoice } from "../../audio/systemVoicePlayback.js";
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
+import UserIdentity from "../../shared/UserIdentity.jsx";
 import { findCharacter } from "../../shared/characterDisplay.js";
 import { COLORS } from "../../shared/game.js";
 import { resolveResultSound } from "../../shared/musicLibrary.js";
@@ -52,7 +53,9 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
               <img src={resolveCandyPortrait(character, winner?.user?.itemEffects)} alt={character.name} />
               <CharacterChainBadge user={winner?.user} characterId={character.id} />
             </span>
-            <strong>{winner?.user.username}</strong>
+            <strong>
+              <UserIdentity user={winner?.user} />
+            </strong>
           </div>
         )}
         <div className="result-summary">

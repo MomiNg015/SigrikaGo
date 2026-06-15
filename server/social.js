@@ -1,5 +1,5 @@
 import { GAME_RESULT_REASONS, recordWinnerColor } from "./gameRecords.js";
-import { achievementStatsForUser } from "./achievements.js";
+import { achievementStatsForUser, attachAchievementEquipmentAssetsToUsers } from "./achievements.js";
 import { publicUser, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 
@@ -38,7 +38,8 @@ export async function listSocialUsers({ prisma, userId, statusForUser }) {
         select: publicProfileSelect()
       })
     : [];
-  const userMap = new Map(users.map((user) => [user.id, user]));
+  const decoratedUsers = await attachAchievementEquipmentAssetsToUsers(prisma, users);
+  const userMap = new Map(decoratedUsers.map((user) => [user.id, user]));
   const toEntry = (relationship) => {
     const user = userMap.get(relationship.targetUserId);
     return user ? toSocialUser(user, statusForUser?.(user.id) ?? "offline") : null;
@@ -103,7 +104,8 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
   });
   if (!user) return null;
 
-  const [records, viewerRelation, achievementStats] = await Promise.all([
+  const [decoratedUsers, records, viewerRelation, achievementStats] = await Promise.all([
+    attachAchievementEquipmentAssetsToUsers(prisma, [user]),
     prisma.gameRecord.findMany({
       where: {
         mode,
@@ -125,9 +127,10 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
     ,
     achievementStatsForUser({ prisma, userId })
   ]);
+  const decoratedUser = decoratedUsers[0] ?? user;
 
   return {
-    ...toSocialUser(user, statusForUser?.(user.id) ?? "offline", mode),
+    ...toSocialUser(decoratedUser, statusForUser?.(decoratedUser.id) ?? "offline", mode),
     achievementStats,
     record: formatRecord(recordStats(userId, records)),
     characterStats: characterStats(userId, records),
@@ -207,6 +210,11 @@ export function toSocialUser(user, status = "offline", mode = "spark") {
       titleAssetId: user.achievementEquipment?.titleAssetId ?? "",
       badgeAssetId: user.achievementEquipment?.badgeAssetId ?? "",
       nameplateAssetId: user.achievementEquipment?.nameplateAssetId ?? ""
+    },
+    achievementEquipmentAssets: user.achievementEquipmentAssets ?? {
+      title: null,
+      badge: null,
+      nameplate: null
     },
     status
   };

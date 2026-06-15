@@ -20,6 +20,8 @@
 
 .user-profile-modal,
 .room-floating-modal.user-profile-modal {
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(760px, calc(100dvh - 32px));
   overflow: hidden;
 }
 
@@ -32,9 +34,9 @@
 
 .user-profile-card {
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto;
   gap: 14px;
-  max-height: min(492px, calc(70vh - 28px));
+  max-height: min(680px, calc(100dvh - 76px));
   min-height: 0;
 }
 
@@ -66,10 +68,8 @@
   font-size: 28px;
 }
 
-.profile-resume-hero p {
+.profile-mode-tabs {
   margin: 0;
-  color: #5f5066;
-  font-weight: 800;
 }
 
 .profile-resume-stats {
@@ -84,6 +84,17 @@
   padding: 11px;
   border-radius: 8px;
   background: #f8f1fa;
+}
+
+.profile-resume-stats > span > small {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.profile-resume-stats > span > b {
+  font-size: 1.15rem;
+  line-height: 1.2;
 }
 
 .profile-record-lines {
@@ -127,10 +138,25 @@
   pointer-events: none;
 }
 
+.profile-rank-results::after {
+  content: "显示最近十盘的战绩";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  color: rgba(61, 43, 37, 0.16);
+  font-size: clamp(13px, 2.4vw, 18px);
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 .profile-rank-results .recent-result-marker,
 .profile-rank-results .recent-result-empty {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   border: 2px solid rgba(61, 43, 37, 0.82);
   box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.2);
 }
@@ -149,6 +175,7 @@
 
 .profile-character-section {
   min-height: 0;
+  overflow: hidden;
 }
 
 .profile-character-list {
@@ -156,7 +183,9 @@
   align-content: start;
   gap: 6px;
   min-height: 0;
+  max-height: min(260px, 34dvh);
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
 }
 
@@ -187,10 +216,10 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #d7cae0;
+  border: 1px solid #73b79f;
   border-radius: 8px;
-  background: #ffffff;
-  color: #4f3d55;
+  background: #e4f6f0;
+  color: #245b4f;
   font-weight: 900;
   padding: 8px 12px;
 }

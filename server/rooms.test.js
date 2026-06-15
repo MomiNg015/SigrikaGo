@@ -480,7 +480,7 @@ describe("rooms character integration", () => {
   test("adds flip-stone animation metadata to pending skill previews", () => {
     vi.useFakeTimers();
     const io = fakeIo();
-    const characterConfig = { ...CHARACTERS.danea, id: "denia" };
+    const characterConfig = { ...CHARACTERS.denia, id: "denia" };
     joinMatchmaking({ user: user("flip-black", "denia", characterConfig), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("flip-white", "sigrika"), socketId: "socket-b" }, io);
     completeRoomOpening(room, io);
@@ -565,8 +565,8 @@ describe("rooms character integration", () => {
 
   test("renders targetColor from the targeted stone before a skill mutates it", () => {
     const characterConfig = {
-      id: "danea",
-      name: "Admin Danea",
+      id: "denia",
+      name: "Admin Denia",
       portrait: "/custom.png",
       palette: "#123456",
       skill: {
@@ -582,8 +582,8 @@ describe("rooms character integration", () => {
       }
     };
     const io = fakeIo();
-    joinMatchmaking({ user: user("alice", "danea", characterConfig), socketId: "socket-a" }, io);
-    const room = joinMatchmaking({ user: user("bob", "danea", characterConfig), socketId: "socket-b" }, io);
+    joinMatchmaking({ user: user("alice", "denia", characterConfig), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("bob", "denia", characterConfig), socketId: "socket-b" }, io);
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -899,7 +899,7 @@ describe("room participants view", () => {
     const io = fakeIo();
     vi.spyOn(Math, "random").mockReturnValue(0.99);
     joinMatchmaking({ user: user("black-player", "sigrika"), socketId: "socket-a" }, io);
-    const room = joinMatchmaking({ user: user("white-player", "danea"), socketId: "socket-b" }, io);
+    const room = joinMatchmaking({ user: user("white-player", "denia"), socketId: "socket-b" }, io);
     Math.random.mockRestore();
 
     const spectator = { ...user("watcher", "aemeath"), username: "watcher-name", rank: "3段", rating: 1160 };

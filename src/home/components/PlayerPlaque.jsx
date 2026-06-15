@@ -1,5 +1,6 @@
 import { resolveCandyPortrait } from "../../shared/candyPortraits.js";
 import CharacterChainBadge from "../../shared/CharacterChainBadge.jsx";
+import UserIdentity from "../../shared/UserIdentity.jsx";
 import { modeOrderedEntries } from "../../shared/gameModes.js";
 
 export default function PlayerPlaque({ character, user, onOpenResume }) {
@@ -13,7 +14,9 @@ export default function PlayerPlaque({ character, user, onOpenResume }) {
             <img src={resolveCandyPortrait(character, user.itemEffects)} alt="当前出战角色" />
             <CharacterChainBadge user={user} characterId={character.id} />
           </span>
-          <strong>{user.username}</strong>
+          <strong>
+            <UserIdentity user={user} />
+          </strong>
           <span className="plaque-stats" aria-label="对弈模式段位积分">
             {modeOrderedEntries().map((mode) => {
               const stats = plaqueModeStats(user, mode.id);

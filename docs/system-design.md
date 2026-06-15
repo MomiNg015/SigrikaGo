@@ -29,12 +29,34 @@
 - 发现乱码时先确认源文件是否含 `Unicode replacement character` 或常见 mojibake 片段，再区分终端显示问题和文件内容损坏。
 - 修改 Markdown 后运行 `npm run docs:system-design`；涉及脚本或编码规则时运行 `npm test -- docs/systemDesignHtml.test.js`。
 
+## Modal Layering Note
+
+- Shared `.modal-backdrop` stacks above room `--room-floating-z` surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.
+- Mobile room portraits render character-chain badges as compact star/count pills near the portrait edge, rather than full repeated-star badges over the character art.
+- Bright School portrait phone polish that must outlive theme overrides is centralized in the final `src/styles/mobile-adaptive/bright-school-portrait.css` layer, including home player plaque nameplate fitting, compact character-chain portrait badges, the two-row resume header, internally scrolling resume character records, and shop wallet single-line/blue-gem capsule treatment.
+- Resume character records in the final Bright School mobile layers reuse the detailed user profile character-list rhythm: the outer section stays lightweight, while compact four-column rows carry avatar, name, record, and win rate without clipping. The embedded resume list keeps total games and win/loss/draw on one line, while separate nested record dialogs may still use their two-line compact record treatment.
+- Mobile user profile stat cards center their label and value content inside each card; the record card keeps total games and win/loss/draw as compact centered lines sized to stay within the card.
+- Mobile user profile footer actions reuse the resume replay button's green treatment for "对局回放"; relationship actions that are already effective, such as "已是好友" or "已在黑名单", keep their native disabled semantics and render as gray inactive controls in the final Bright School mobile layer.
+- Mobile leaderboard rows use a compact card grid with no extra left list inset, smaller rank badges, larger character portraits, and a centered username/rank stack so the rank label shares the same vertical center axis as the username/nameplate. Compact leaderboard `UserIdentity` names provide a fit font-size token so legacy/generated usernames shrink before they would fall back to clipped ellipses. Leaderboard rows representing the current user, including the pinned "my ranking" row, use a light green surface on desktop and mobile so they remain visually distinct from ordinary leaderboard entries.
+- Selected tab-like controls and selected option buttons share a pressed visual contract across desktop and mobile: active/aria-selected/aria-pressed states shorten the drop shadow, shift down slightly, and add an inset shadow so the selected control reads as physically pressed rather than merely highlighted.
+- Achievement and personalization modal headers keep their close button in the same grid row as the title on desktop and mobile; the final Bright School mobile layer repeats this contract so global absolute close-button rules cannot push nested modal close controls onto the divider line.
+- Desktop resume headers reserve separate right-aligned grid columns for the coin/gem wallet group and close button, preventing the global absolute close-button rule from colliding with currency capsules.
+- Mobile resume headers use a final high-specificity Bright School override so the close button stays in the first-row right slot and the wallet group stays inside a shrinkable second-row right slot; when width is tight, coin and blue-gem capsules wrap as whole controls instead of overflowing past the modal edge.
+- Desktop resume modals keep the outer window fixed inside the viewport with hidden outer overflow; embedded character records own the vertical scroll region. Desktop user profile detail modals likewise give the character-record list a bounded scroll area, and character detail headers reserve right-side space so the compact BGM player cannot collide with the close button.
+- Resume and user profile recent-result rows render a low-contrast "显示最近十盘的战绩" watermark inside `.profile-rank-results`; result chips stay above that text so win/loss markers remain the primary readable layer on desktop and mobile.
+- Personalization sections now expose one "style picker" entry per equipment category. Each picker opens a nested modal containing default plus unlocked decorations, closes immediately after selection, and updates the local try-on preview while the existing save action remains the only persistence step.
+
 ## Music Management Note
 
 - 后台“音乐管理”只维护 `MUSIC_TRACKS` 静态曲目的显示名覆盖值；`MusicTrackSetting` 不改变轨道 id、类型、角色绑定或音频文件，玩家侧 `/api/music-tracks`、角色 BGM 选择、商城音乐展示和抽卡音乐奖项显示会使用合并后的曲目名称。
 
 ## Achievement And Personalization Note
 
+- 用户名注册/搜索校验允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 10 个半角字符宽度，等价于最多 5 个中日韩字符或 10 个半角字符。
 - 成就系统以 `Achievement`、`AchievementRewardAsset`、`UserAchievement`、`AchievementCounter` 和 `UserAchievementEquipment` 为核心模型；启动时 `ensureAchievementSchema` 会先于角色/商店种子任务运行，为旧 SQLite 自动补表，并为 `Character`、`Decoration`、`ShopItem` 补 `source` 字段。玩家侧 `/api/achievements` 返回合并后的成就列表与本次新解锁成就，`/api/me/achievement-equipment` 读写称号、徽章和用户名背景装备；成就目标本体由代码/种子维护，后台 `/api/admin/achievements` 只允许修改成就名、成就内容、奖励资产和排序，`/api/admin/achievement-reward-assets` 继续管理奖励资产并写审计日志。
+- `/api/me`、`GET/PATCH /api/me/achievement-equipment` 会同时返回 `achievementEquipment` 装备 id 与 `achievementEquipmentAssets` / `equipmentAssets` 奖励资产显示数据；socket 登录用户、排行榜和社交用户列表/资料也会批量附加 `achievementEquipmentAssets`。前端通过共享 `UserIdentity` 在对弈玩家名、房间成员、排行榜、好友/黑名单、资料卡、观战列表和结算赢家名等完整用户展示点渲染称号、徽章和用户名背景。
+- 用户名背景由 `UserIdentity` 的用户名标签承载：标签宽度随用户名内容和内边距自适应，默认无边框且背景透明，装备 nameplate 后只替换同一标签的背景图；父容器仍只负责标签整体居中或左对齐。桌面端和移动端分别设置最大宽度与内边距保护，避免旧长用户名撑破列表或对局布局。nameplate PNG 应先用 `scripts/pngTrim.mjs` 按 alpha 边界裁掉透明空边，避免上传图的空画布造成视觉偏移。
 - 内置成就“你给我吃了什么！？”由 `seedBuiltinAchievements` 在启动时按需创建，监听新增后的 `denia-rainbow-bean-candy` 道具使用事件；玩家请达妮娅吃彩虹豆豆跳跳糖后解锁并获得 100 金币，不回溯统计成就上线前发生过的使用记录。
-- 履历弹窗新增“成就”和“个性化”入口；成就窗口在桌面端用表格，在移动端用卡片列表，并按“未达成 / 已达成 / 全部”筛选；个性化窗口桌面端按称号、徽章、用户名背景三列装备，移动端改为竖向分区。商城购买、抽卡和仓库道具使用会消费后端返回的 `achievementUnlocks`，以 `achievement` tone 的醒目 toast 告知玩家达成的成就。
+- 新增内置成就“点亮语义！”使用 `mode_character_wins` 条件统计玩家使用西格莉卡在 `spark`（星炬对弈）模式的胜场，达到 100 胜后解锁 `/assets/achievements/semantic-nameplate.png` 用户名背景；`seedBuiltinAchievements` 会让管理员默认达成所有内置成就并标记奖励已发放。
+- 启动初始化会在角色 seed 前运行 `cleanupLegacyDeniaCharacterData`：旧达妮娅 slug `danea`/`denea` 的用户选角和拥有权会迁移到 canonical `denia`，旧角色行会删除，引用旧 slug 的对局记录会删除，角色商品/抽卡/成就奖励目标会改写为 `denia`；公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在前台。
+- 履历弹窗新增“成就”和“个性化”入口；入口按钮、模式 tab、回放入口和蓝宝石钱包使用不同柔和底色区分。成就窗口在桌面端用三列表格，在移动端用卡片列表，并按“未达成 / 已达成 / 全部”筛选；达成时间不占列表列宽，点击已达成成就行会从点击位置附近弹出固定定位时间浮窗，并受视口边界约束。商店蓝钻钱包复用履历蓝宝石钱包的渐变、边框和文字/图标色，桌面与移动主题层都显式保持一致。个性化窗口桌面端按称号、徽章、用户名背景三列装备，移动端改为竖向分区；预览区用共享 `UserIdentity` 展示保存前试穿效果，粉红按钮表示当前已保存生效，浅绿色按钮表示正在试穿但尚未保存。部员手册中当前出战角色的出战按钮也复用粉红选中视觉，角色卡本体继续使用浅绿色出战状态底色。商城购买、抽卡和仓库道具使用会消费后端返回的 `achievementUnlocks`，以 `achievement` tone 的醒目 toast 告知玩家达成的成就。

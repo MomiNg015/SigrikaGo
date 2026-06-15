@@ -1,0 +1,223 @@
+.user-identity {
+  --user-identity-name-tag-min-height: 2.18em;
+  --user-identity-name-tag-max-width: 10em;
+  --user-identity-name-tag-padding-x: 0.72em;
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  align-items: center;
+  justify-items: start;
+  max-width: 100%;
+  min-width: 0;
+  padding: 2px 8px;
+  border-radius: 8px;
+  line-height: 1.08;
+  vertical-align: middle;
+}
+
+.user-identity.has-nameplate {
+  color: #3f2b25;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.user-identity-name-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: content-box;
+  width: auto;
+  max-width: var(--user-identity-name-tag-max-width);
+  min-height: var(--user-identity-name-tag-min-height);
+  min-width: 0;
+  padding: 0 var(--user-identity-name-tag-padding-x);
+  border: 0;
+  border-radius: 999px;
+  background-color: transparent;
+  background-image: none;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.user-identity-title,
+.user-identity-main {
+  min-width: 0;
+}
+
+.user-identity-title {
+  justify-self: start;
+  max-width: 100%;
+  color: #7d4d00;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-identity-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  width: 100%;
+}
+
+.user-identity-name {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-identity-emblem {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(112, 69, 26, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #7d4d00;
+  font-size: 10px;
+  font-weight: 900;
+  box-shadow: 0 1px 4px rgba(118, 69, 25, 0.14);
+}
+
+.user-identity-emblem img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: inherit;
+}
+
+.user-identity.compact {
+  padding: 1px 6px;
+}
+
+.user-identity.compact.has-nameplate {
+  --user-identity-name-tag-min-height: 2.05em;
+}
+
+.user-identity.compact .user-identity-title {
+  font-size: 9px;
+}
+
+.user-identity.compact .user-identity-emblem {
+  width: 16px;
+  height: 16px;
+  font-size: 9px;
+}
+
+.name-button .user-identity:not(.has-nameplate),
+.room-person-name .user-identity:not(.has-nameplate),
+.leaderboard-player .user-identity:not(.has-nameplate),
+.friend-main .user-identity:not(.has-nameplate),
+.watch-player-cell .user-identity:not(.has-nameplate),
+.result-winner .user-identity:not(.has-nameplate) {
+  width: auto;
+}
+
+.leaderboard-player .user-identity,
+.friend-main .user-identity,
+.watch-player-cell .user-identity,
+.room-person-name .user-identity,
+.result-winner .user-identity {
+  width: auto;
+}
+
+.leaderboard-player .user-identity {
+  justify-self: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.leaderboard-player .user-identity-main {
+  justify-content: center;
+}
+
+.leaderboard-player .user-identity-title {
+  justify-self: center;
+}
+
+.leaderboard-player .user-identity-main,
+.friend-main .user-identity-main,
+.watch-player-cell .user-identity-main,
+.room-person-name .user-identity-main,
+.result-winner .user-identity-main {
+  width: auto;
+  max-width: none;
+}
+
+.leaderboard-player .user-identity-name-tag,
+.friend-main .user-identity-name-tag,
+.watch-player-cell .user-identity-name-tag,
+.room-person-name .user-identity-name-tag,
+.result-winner .user-identity-name-tag {
+  max-width: var(--user-identity-name-tag-max-width);
+}
+
+.name-button .user-identity-name,
+.room-person-name .user-identity-name,
+.leaderboard-player .user-identity-name,
+.friend-main .user-identity-name,
+.watch-player-cell .user-identity-name {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .user-identity {
+    --user-identity-name-tag-min-height: 2.05em;
+    --user-identity-name-tag-max-width: 8.5em;
+    --user-identity-name-tag-padding-x: 0.52em;
+    padding: 2px 6px;
+  }
+
+  .user-identity.has-nameplate {
+    max-width: 100%;
+  }
+
+  .user-identity-title {
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .user-identity-main {
+    gap: 3px;
+  }
+
+  .user-identity-emblem {
+    width: 15px;
+    height: 15px;
+    font-size: 8px;
+  }
+
+  .user-identity.compact {
+    padding: 1px 5px;
+  }
+
+  .user-identity.compact.has-nameplate {
+    --user-identity-name-tag-min-height: 1.95em;
+  }
+
+  .user-identity.compact {
+    --user-identity-name-tag-max-width: 8em;
+    --user-identity-name-tag-padding-x: 0.46em;
+  }
+
+  .user-identity.compact .user-identity-emblem {
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+  }
+
+  .mobile-room-screen .name-button .user-identity.has-nameplate,
+  .mobile-room-screen .room-person-name .user-identity.has-nameplate {
+    --user-identity-name-tag-max-width: 7.5em;
+  }
+}

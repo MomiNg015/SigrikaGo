@@ -20,7 +20,7 @@ describe("publicUser", () => {
       coins: 300,
       selectedCharacter: "sigrika",
       selectedStoneDecoration: "paw-stone",
-      ownedCharacters: "sigrika,danea",
+      ownedCharacters: "sigrika,denia",
       ownedItems: "",
       itemEffects: JSON.stringify({ sigrikaCandyDisabled: true }),
       ownedDecorations: ""

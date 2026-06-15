@@ -36,7 +36,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
-    grid-template-columns: clamp(52px, 13.5vw, 64px) minmax(0, 1fr) minmax(108px, clamp(112px, 33vw, 136px)) !important;
+    grid-template-columns: clamp(52px, 13.5vw, 64px) minmax(76px, 1fr) minmax(96px, clamp(104px, 30vw, 124px)) !important;
     column-gap: clamp(8px, 2.6vw, 14px) !important;
     min-height: 96px !important;
     padding: 18px clamp(10px, 2.6vw, 14px) 14px clamp(18px, 4.8vw, 24px) !important;

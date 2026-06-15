@@ -23,7 +23,7 @@ model User {
   blueGems           Int      @default(0)
   selectedCharacter  String   @default("sigrika")
   selectedStoneDecoration String @default("")
-  ownedCharacters    String   @default("sigrika,danea,aemeath")
+  ownedCharacters    String   @default("sigrika,denia,aemeath")
   ownedItems         String   @default("")
   itemPurchaseCounts String   @default("")
   itemEffects        String   @default("")

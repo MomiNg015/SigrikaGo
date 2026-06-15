@@ -203,6 +203,40 @@ Required assertion points:
 - Feature tests that need concrete CSS, such as gacha modal coverage, should read the CSS import tree instead of asserting that rules live directly in the entry file.
 - New top-level CSS domains should start as import-only entries with an explicit directory and a style contract test update.
 
+### UserIdentity Nameplate Background Contract
+
+Achievement nameplate backgrounds are skins for an auto-sized username tag, not a separate floating layer. `src/shared/UserIdentity.jsx` should render one `.user-identity-name-tag` around `.user-identity-name`; when an equipped nameplate image exists, apply it as that tag's `backgroundImage`. The tag width follows the username text plus padding, keeps transparent default styling and no border, and uses responsive max-width/padding variables so legacy long names cannot break mobile or leaderboard layouts. Parent surfaces such as room player panels and leaderboard cells center or align the whole tag.
+
+Nameplate PNG assets should still be alpha-trimmed before use. Transparent canvas padding changes the apparent center of the art even when the tag model is stable. Use `node scripts/pngTrim.mjs <input.png> [output.png]` for 8-bit RGBA PNG nameplates before wiring them into `AchievementRewardAsset.imageUrl`.
+
+Required assertion points:
+
+- `src/styles/hudComponents.test.js` should assert that the username tag uses `width: auto`, transparent borderless default styling, responsive max-width/padding variables, and that leaderboard `UserIdentity` remains centered without reintroducing a fixed tag width.
+- Home player plaques should render nameplates through the nested `UserIdentity` tag, not a full-card plaque background layer. Bright School player plaque grids should keep a nonzero minimum username column so stats panels cannot collapse short names into ellipses, and plaque-scoped `UserIdentity` text must override list-style `text-overflow: ellipsis` so ordinary usernames render in full.
+- `scripts/pngTrim.test.js` should cover alpha-bound trimming before relying on the helper for checked-in nameplate assets.
+
+Wrong:
+
+```css
+.user-identity.has-nameplate {
+  width: calc(10em + 24px);
+}
+```
+
+This changes what the parent layout centers.
+
+Correct:
+
+```css
+.user-identity-name-tag {
+  box-sizing: content-box;
+  width: auto;
+  max-width: var(--user-identity-name-tag-max-width);
+  padding-inline: var(--user-identity-name-tag-padding-x);
+  background-size: 100% 100%;
+}
+```
+
 ### Web Audio Pause/Resume Contracts
 
 When changing background music, character BGM previews, or shared playback schedules, preserve user-visible playback position across pause/resume.
@@ -346,6 +380,8 @@ Required assertion points:
 - Do not duplicate room exit actions beside desktop chat when the header or replay/action bar already provides an exit path.
 - Replay step counters should center their `current/max` text and any icon content.
 - Desktop room floating panels, including chat popovers, skill detail panels, hover/click stat tooltips, and room member action popovers, must use the shared `--room-floating-z` contract instead of fixed cross-surface z-index values. Opening, hovering, focusing, or clicking one of these panels should bring that surface to the front.
+- Shared modal backdrops must stack above room `--room-floating-z` surfaces, including the member popover fallback of `140`, so request and confirmation modals dim skill chips, chat controls, and member popovers together.
+- Mobile room portrait strips must collapse character-chain badges to compact star/count pills using `data-chain-count`; do not reuse the full desktop repeated-star badge over small portraits.
 - Keep player cards and skill wrappers overflow-visible so dynamically raised skill panels can escape the side panel without clipping.
 - Room member action popovers must keep their fixed-position anchor variables and use `--room-floating-z` in both base CSS and Bright School theme overrides.
 - Capture/removal/overclock chips should share stable heights so skill-only counters do not look shorter or taller than captures.
@@ -358,6 +394,7 @@ Required assertion points:
 
 - Tab buttons with `.active`, `aria-selected="true"`, or equivalent selected state must have a distinct background color, not only a border or text-color change.
 - Theme layers that globally reset `button` backgrounds, especially Bright School rules with `!important`, must include matching selected-tab overrides after the reset.
+- Personalization equipment buttons have two different visual states: `.equipped` is the saved, currently effective asset and should use the same pink selected background as achievement/resume tabs; `.trying` is a draft try-on state that has not been saved and should use a light green background. If the draft matches the saved asset, show the saved `.equipped` treatment rather than green.
 - Mobile modal fixes that must survive Bright School and shared responsive rules should also be mirrored in the final `mobile-adaptive.css` safety layer, because it is imported after theme files.
 - Moving a modal action between header/body sections should be covered by a static markup order assertion when the order matters to the user workflow.
 - Match-mode picker cancel actions must keep explicit vertical spacing from the mode option group in base CSS and the final mobile safety layer, so the escape action never visually attaches to the last mode option on desktop or mobile.

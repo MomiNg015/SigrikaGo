@@ -4,6 +4,7 @@ import { COLORS } from "../shared/game.js";
 import { useSocialRelations } from "../social/useSocialRelations.js";
 import { roomPeople } from "./roomView.js";
 import { ConfirmPanel, UserProfileCard } from "../modals/UserProfileCard.jsx";
+import UserIdentity from "../shared/UserIdentity.jsx";
 
 export default function RoomPeopleList({
   room,
@@ -124,7 +125,7 @@ export default function RoomPeopleList({
               <button className={`room-person ${person.role} ${relationClass} ${connectionClass}`} type="button" onClick={(event) => openPersonMenu(person.id, event)}>
                 <span className="room-person-name">
                   {person.color && <i className={`room-color-dot ${person.color}`} aria-label={person.color === COLORS.black ? "执黑" : "执白"} />}
-                  {person.username}
+                  <UserIdentity user={person} compact />
                 </span>
                 <span>{person.rank}</span>
                 <span>{person.rating}分</span>
@@ -176,7 +177,7 @@ export default function RoomPeopleList({
         <div className="modal-backdrop room-overlay-backdrop" onClick={() => setConfirmTarget(null)}>
           <section className="room-floating-modal confirm-inline-modal" onClick={(event) => event.stopPropagation()}>
             <ConfirmPanel
-              message={`确定解除${confirmTarget.user.username}好友吗？`}
+              message={<>确定解除<UserIdentity user={confirmTarget.user} compact />好友吗？</>}
               onConfirm={() => removeFriend(confirmTarget.user)}
               onCancel={() => setConfirmTarget(null)}
             />

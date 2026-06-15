@@ -404,3 +404,27 @@
 .replay-table-row.outcome-draw span {
   color: #5b4820 !important;
 }
+
+.resume-title-actions .achievement-entry-action {
+  background: linear-gradient(135deg, rgba(255, 158, 187, 0.28), rgba(255, 228, 238, 0.18));
+  border-color: rgba(255, 158, 187, 0.72);
+  color: #ffe8f0;
+}
+
+.resume-title-actions .personalization-entry-action {
+  background: linear-gradient(135deg, rgba(157, 216, 255, 0.28), rgba(213, 241, 255, 0.16));
+  border-color: rgba(130, 197, 240, 0.72);
+  color: #dff4ff;
+}
+
+.resume-wallet.blue-gem-wallet {
+  background: linear-gradient(135deg, #dffbff 0%, #7fd6f2 48%, #2d9fd0 100%);
+  border-color: #2380b5;
+  color: #0e4f7a;
+}
+
+.resume-replay-action {
+  background: linear-gradient(135deg, rgba(0, 255, 190, 0.18), rgba(183, 255, 69, 0.08));
+  border-color: rgba(0, 255, 190, 0.56);
+  color: #d9fff5;
+}
