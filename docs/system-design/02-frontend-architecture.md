@@ -53,9 +53,9 @@
 - `createResignResult` / `createTimeoutResult` / `createDrawResult` / `resultWithInvalidFlagForGame`: 位于 `src/shared/gameResults.js`，集中封装对局结果 payload 与早期无效局标记；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `formatStones`: 位于 `src/shared/stoneFormatting.js`，集中封装子数整数/分数显示；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `canStartSkill`: 位于 `src/shared/game.js`，前后端共用技能启动前置条件，用于判断棋子目标/棋子依赖技能在当前棋盘状态下是否可用。
-- `rememberPlayerRoom` / `buildRoomResumeRequest` / `handleRoomResumePayload`: 位于 `src/app/resumeSession.js`，集中封装前端断线恢复 localStorage 与结果恢复状态编排。
+- `rememberPlayerRoom` / `buildRoomResumeRequest` / `handleRoomResumePayload` / `dismissedResultRoomAfterResume`: 位于 `src/app/resumeSession.js`，集中封装前端断线恢复 localStorage 与结果恢复状态编排；已被用户关闭过的同房间有效结果在后续 `room:resume` 中保持 dismissed，不会重复打开结果弹窗。
 - `useOverlayState` / `OVERLAY_STATE_KEYS`: 位于 `src/app/useOverlayState.js`，集中维护商店、抽卡、棋舍、仓库、履历、排行榜、好友、观战、设置和留言板等应用级弹窗可见性，避免 `App.jsx` 继续堆叠成组 `useState(false)`。
-- `useRoomSessionState` / `roomSessionView`: 位于 `src/app/useRoomSessionState.js`，集中维护 `room`、`pendingSkill`、`replayStep`、`dismissedResultRoom` 和派生的 `resultModalOpen`，避免结果弹窗可见性在路由、覆盖层和背景音乐间重复计算。
+- `useRoomSessionState` / `roomSessionView`: 位于 `src/app/useRoomSessionState.js`，集中维护 `room`、`pendingSkill`、`replayStep`、`dismissedResultRoom` 和派生的 `resultModalOpen`，避免结果弹窗可见性在路由、覆盖层和背景音乐间重复计算；对局者关闭某一房间结果后，该房间号会作为去重哨兵阻止同一有效结果再次显示。
 - `useMatchSessionState` / `matchSessionView`: 位于 `src/app/useMatchSessionState.js`，集中维护 `matchStart`、`matchSuccess` 和派生的匹配等待/过渡标记，避免匹配弹窗、socket 同步和背景音乐各自维护过渡状态。
 - `replayRoomAt`: 用历史记录重放房间状态；观战实时回放另由 `replayGameAt` 只派生棋盘进程。
 - 音频相关：`loadAudioSettings`、`playStoneSound`、`playSystemVoice` 路由、`preloadVoiceSound`、`playPreloadedVoiceSound`、`speakText`。

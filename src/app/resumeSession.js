@@ -26,10 +26,18 @@ export function handleRoomResumePayload(payload, handlers) {
   handlers.setMatchSuccess(null);
   handlers.setReplayStep(null);
   handlers.setPendingSkill(false);
-  handlers.setDismissedResultRoom("");
+  handlers.setDismissedResultRoom((current) => dismissedResultRoomAfterResume(payload, current));
   handlers.setRoom(room);
   handlers.setView(payload.type === "room" ? "room" : "home");
   return true;
+}
+
+export function dismissedResultRoomAfterResume(payload, currentDismissedResultRoom = "") {
+  const roomCode = payload?.room?.code ?? "";
+  if (payload?.type === "result" && roomCode && currentDismissedResultRoom === roomCode) {
+    return currentDismissedResultRoom;
+  }
+  return "";
 }
 
 export function handleMissingRoomResumePayload(payload, currentRoom, handlers) {

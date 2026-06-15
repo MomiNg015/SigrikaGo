@@ -218,4 +218,25 @@ describe("user asset list helpers", () => {
       ownedDecorations: ["legacy-decoration", "paw-stone"]
     });
   });
+
+  it("unlocks Lynae for players at 5 dan in spark mode", () => {
+    expect(publicUserAssets({
+      rank: "4段",
+      ownedCharacters: "sigrika",
+      modeStats: [{ mode: "spark", rank: "5段" }]
+    }).ownedCharacters).toContain("lynae");
+    expect(publicUserAssets({
+      rank: "4段",
+      ownedCharacters: "sigrika",
+      modeStats: [{ mode: "spark", rank: "4段" }]
+    }).ownedCharacters).not.toContain("lynae");
+  });
+
+  it("unlocks Lynae for admins regardless of rank", () => {
+    expect(publicUserAssets({
+      role: "admin",
+      rank: "18级",
+      ownedCharacters: "sigrika"
+    }).ownedCharacters).toContain("lynae");
+  });
 });

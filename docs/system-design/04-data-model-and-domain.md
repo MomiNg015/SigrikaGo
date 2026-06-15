@@ -101,7 +101,7 @@
 
 - `id`: 主键 cuid。
 - `characterId`: 关联 `Character.id`，唯一。
-- `effectType`: 技能实际效果类型，当前支持 `erase-point`、`flip-stone`、`hidden-hand`、`random-blast`、`color-illusion-passive`。
+- `effectType`: 技能实际效果类型，当前支持 `erase-point`、`flip-stone`、`hidden-hand`、`random-blast`、`spray-stone`、`color-illusion-passive`。
 - `name`: 技能名。
 - `description`: 技能描述。
 - `uses`: 每局使用次数。
@@ -113,6 +113,10 @@
 - `systemMessage`: 技能系统消息模板。
 - `enabled`: 是否启用；公开角色 payload 会过滤禁用技能，后台角色表单可独立控制角色启用与技能启用。
 - `createdAt`, `updatedAt`: 创建和更新时间。
+
+### Neutral Stones
+
+`src/shared/gameConstants.js` 维护命名中立棋子类型，当前内置 `spray`，由琳奈 `spray-stone` 技能生成。中立棋子不是黑白任一方，但同名中立棋子属于同一阵营并按围棋气规则连接；不同阵营之间互相阻断气和领地。黑/白棋子转化为喷涂棋子时立即给对手 `skillRemovals +1`，中立棋子被提、被爆破、被死子标记或在技能后无气清理时不提供黑白除子。数子阶段中立棋子不计入黑白子数，可作为边界参与空点归属；被中立棋子或多阵营共同围住的空点保持中立。
 
 ### Decoration
 

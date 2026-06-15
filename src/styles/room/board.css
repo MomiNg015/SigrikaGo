@@ -302,12 +302,14 @@
 
 .point.black::after,
 .point.white::after,
+.point.spray::after,
 .point.erased::after {
   display: none;
 }
 
 .point.black::before,
 .point.white::before,
+.point.spray::before,
 .point.erased::before {
   display: none;
 }
@@ -337,6 +339,20 @@
   background:
     repeating-linear-gradient(18deg, rgba(160, 166, 174, 0.14) 0 2px, transparent 2px 8px),
     radial-gradient(circle at 34% 26%, #ffffff, #d9dce2 78%);
+}
+
+.spray .stone {
+  --spray-stone-fallback:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.92), rgba(141, 246, 236, 0.72) 22%, transparent 33%),
+    conic-gradient(from 210deg, #34e2c4, #8d7cff, #ff7eb6, #ffd15d, #34e2c4);
+  background:
+    center / 100% 100% no-repeat url("/assets/stones/spray-stone.webp"),
+    var(--spray-stone-fallback);
+  box-shadow:
+    inset -7px -10px 14px rgba(31, 24, 56, 0.28),
+    inset 7px 8px 14px rgba(255, 255, 255, 0.22),
+    0 6px 10px rgba(45, 29, 18, 0.24),
+    0 0 12px rgba(68, 220, 196, 0.34);
 }
 
 .black .stone.decorated-stone,

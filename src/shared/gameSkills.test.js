@@ -15,11 +15,18 @@ describe("game skill configuration", () => {
       targetRule: "none",
       params: { size: 3 }
     });
+    expect(normalizeSkillConfig("lynae")).toMatchObject({
+      characterId: "lynae",
+      effectType: "spray-stone",
+      targetRule: "stone",
+      costValue: "4"
+    });
   });
 
   it("identifies skills that need an existing board stone before they can start", () => {
     expect(skillRequiresExistingStone("denia")).toBe(true);
     expect(skillRequiresExistingStone("baconbits")).toBe(true);
+    expect(skillRequiresExistingStone("lynae")).toBe(true);
     expect(skillRequiresExistingStone("aemeath")).toBe(false);
   });
 

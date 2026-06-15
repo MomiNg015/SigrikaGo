@@ -58,13 +58,16 @@
 <p>1. <a href="./system-design/01-project-overview.md">项目总览与功能边界</a> 2. <a href="./system-design/02-frontend-architecture.md">前端架构与状态边界</a> 3. <a href="./system-design/03-backend-realtime-api.md">后端、HTTP API 与实时房间</a> 4. <a href="./system-design/04-data-model-and-domain.md">数据模型与领域系统</a> 5. <a href="./system-design/05-assets-audio-preload.md">资源、音频与启动预加载</a> 6. <a href="./system-design/06-ui-theme-mobile.md">UI 主题、移动端与交互体验</a> 7. <a href="./system-design/07-performance-tech-debt.md">性能、技术债与扩展路线</a> 8. <a href="./system-design/08-workflow-and-history.md">工作流、文档规则与历史记录</a></p>
 <h2>当前架构摘要</h2>
 <ul>
-<li>前端使用 React 19、Vite 和 Socket.IO client；<code>src/main.jsx</code> 只负责浏览器挂载，应用组合根在 <code>src/app/App.jsx</code>，业务状态逐步下沉到 <code>src/app/*</code> hooks 和独立视图组件，应用级弹窗可见性集中在 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态集中在 <code>src/app/useRoomSessionState.js</code>，匹配等待/成功过渡状态集中在 <code>src/app/useMatchSessionState.js</code>。</li>
+<li>前端使用 React 19、Vite 和 Socket.IO client；<code>src/main.jsx</code> 只负责浏览器挂载，应用组合根在 <code>src/app/App.jsx</code>，业务状态逐步下沉到 <code>src/app/*</code> hooks 和独立视图组件，应用级弹窗可见性集中在 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态集中在 <code>src/app/useRoomSessionState.js</code>，已关闭结果不会因 <code>room:resume</code> 再弹，匹配等待/成功过渡状态集中在 <code>src/app/useMatchSessionState.js</code>。</li>
 </ul>
 <ul>
 <li>后端使用 Express、Socket.IO、Prisma 和 SQLite；<code>server/index.js</code> 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 <code>server/serverStartup.js</code>，Socket 连接事件套件由 <code>server/socketEvents.js</code> 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 <code>server/socket*Events.js</code> 模块，生产静态托管收口在 <code>server/staticAssets.js</code>，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块。</li>
 </ul>
 <ul>
 <li>对局模式由 <code>src/shared/gameModes.js</code> 统一配置，前后端共享模式顺序、棋盘大小、贴目、技能开关和时间控制。</li>
+</ul>
+<ul>
+<li>对局规则支持黑白棋子与命名中立棋子并存；中立棋子按同名阵营连接、阻断领地并参与气/提子判定，但不归属黑白除子。</li>
 </ul>
 <ul>
 <li>玩家资源包含角色、装饰、道具、音乐、抽卡奖励、蓝宝石和金币；结构化关系表与旧字符串字段仍处在兼容迁移期，legacy 解析、结构化同步和公开资产合并规则集中在 <code>server/userAssets.js</code>。</li>
@@ -96,7 +99,7 @@
 <li>Mobile room portraits render character-chain badges as compact star/count pills near the portrait edge, rather than full repeated-star badges over the character art.</li>
 </ul>
 <ul>
-<li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer, including home player plaque nameplate fitting, compact character-chain portrait badges, the two-row resume header, internally scrolling resume character records, and shop wallet single-line/blue-gem capsule treatment. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
+<li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer, including home player plaque nameplate fitting, centered container-sized plaque mode stats, compact character-chain portrait badges, the two-row resume header, internally scrolling resume character records, and shop wallet single-line/blue-gem capsule treatment. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
 </ul>
 <ul>
 <li>Resume character records in the final Bright School mobile layers reuse the detailed user profile character-list rhythm: the outer section stays lightweight, while compact four-column rows carry avatar, name, record, and win rate without clipping. The embedded resume list keeps total games and win/loss/draw on one line, while separate nested record dialogs may still use their two-line compact record treatment.</li>
@@ -364,7 +367,7 @@
 <li>前端断线恢复/结果恢复的纯逻辑模块。</li>
 </ul>
 <ul>
-<li>集中维护最近玩家房间号的 localStorage key、恢复请求 payload，以及已结束房间恢复为结果弹窗时需要触发的状态变更。</li>
+<li>集中维护最近玩家房间号的 localStorage key、恢复请求 payload，以及已结束房间恢复为结果弹窗时需要触发的状态变更；如果同一房间结果已经被对局者关闭，后续 <code>room:resume</code> 必须保留 dismissed 状态，避免有效对局结果弹窗重复出现。</li>
 </ul>
 </ul>
 <ul>
@@ -1300,7 +1303,7 @@
 <li>计时与读秒：房间玩家包含 <code>mainTime</code>、<code>byoYomi</code>、<code>byoYomiPeriods</code> 等内存字段。</li>
 </ul>
 <ul>
-<li>对局者刷新页面、关闭页面或短暂断线后，前端会保存最近玩家房间号并在 Socket 重连时请求 <code>room:resume</code>。如果内存房间仍存在且未结束，服务端会把该 socket 重新绑定到房间并广播当前房间视图；断线期间服务端棋钟继续按真实时间推进，不会暂停。如果房间已结束但仍在内存或可通过该房间号找到 <code>GameRecord.snapshot</code>，前端停留在大厅并恢复结果弹窗；关闭结果弹窗后清理最近房间号。正常在线收到终局 <code>room:update</code> 的对局者会立即清理最近玩家房间号，因此主界面结果弹窗只用于“对局中断线且终局时未能及时连回”的玩家恢复结果。如果服务重启导致内存房间丢失且没有可恢复棋谱，前端会清理最近房间号、回到大厅，并提示“房间已不存在，可能是服务器重启或房间已关闭”。</li>
+<li>对局者刷新页面、关闭页面或短暂断线后，前端会保存最近玩家房间号并在 Socket 重连时请求 <code>room:resume</code>。如果内存房间仍存在且未结束，服务端会把该 socket 重新绑定到房间并广播当前房间视图；断线期间服务端棋钟继续按真实时间推进，不会暂停。如果房间已结束但仍在内存或可通过该房间号找到 <code>GameRecord.snapshot</code>，前端停留在大厅并恢复结果弹窗；关闭结果弹窗后清理最近房间号。正常在线收到终局 <code>room:update</code> 的对局者会立即清理最近玩家房间号，因此主界面结果弹窗只用于“对局中断线且终局时未能及时连回”的玩家恢复结果。同一个有效对局结果被对局者关闭后，即使后续 WebSocket 重连再次收到该房间的 <code>room:resume</code> 结果 payload，也必须保持已关闭状态，不能再次弹出结果弹窗。如果服务重启导致内存房间丢失且没有可恢复棋谱，前端会清理最近房间号、回到大厅，并提示“房间已不存在，可能是服务器重启或房间已关闭”。</li>
 </ul>
 <ul>
 <li>玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能超频使用红色强调。除子与超频标签支持桌面悬停说明和移动端点按说明：除子说明其会在数目时按 <code>+除子*1</code> 计入，超频说明其会在数目时按 <code>-超频*2</code> 扣减。移动端的除子、超频、技能说明从点击位置生成浮层，但浮层使用固定的视口内宽度和强制换行，定位会按浮层最大宽度和视口边距夹取，顶部空间不足时改为向下展开，并用最大高度和内部滚动保证内容不溢出画面外。</li>
@@ -1355,7 +1358,7 @@
 </ul>
 <h3>技能与角色</h3>
 <ul>
-<li>内置角色 fallback：<code>sigrika</code>、<code>denia</code>、<code>aemeath</code>、<code>baconbits</code>、<code>nabomo</code>。旧达妮娅 slug <code>danea</code>/<code>denea</code> 不再作为兼容别名参与前端合并、用户公开资料或出战角色解析；启动时 <code>cleanupLegacyDeniaCharacterData</code> 会在角色 seed 前把用户选角/拥有权迁移到 canonical <code>denia</code>，删除旧角色行，删除引用旧 slug 的对局记录，并把角色商品、抽卡奖项和成就奖励目标改写为 <code>denia</code>。公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在部员手册。</li>
+<li>内置角色 fallback：<code>sigrika</code>、<code>denia</code>、<code>aemeath</code>、<code>baconbits</code>、<code>nabomo</code>、<code>lynae</code>。旧达妮娅 slug <code>danea</code>/<code>denea</code> 不再作为兼容别名参与前端合并、用户公开资料或出战角色解析；启动时 <code>cleanupLegacyDeniaCharacterData</code> 会在角色 seed 前把用户选角/拥有权迁移到 canonical <code>denia</code>，删除旧角色行，删除引用旧 slug 的对局记录，并把角色商品、抽卡奖项和成就奖励目标改写为 <code>denia</code>。公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在部员手册。</li>
 </ul>
 <ul>
 <li>DB 角色会覆盖/合并内置角色。</li>
@@ -1367,7 +1370,7 @@
 <li>角色信息包含 <code>acquisitionMethod</code>/“获得途径”和 <code>description</code> 纯文本，可由后台维护；棋舍角色详情会在获得途径下方直接以斜体展示角色描述正文，数据库为空时前端回退到内置角色默认描述。</li>
 </ul>
 <ul>
-<li>娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 <code>User.rating</code> 自动补充 <code>nabomo</code> 到已拥有角色列表。</li>
+<li>娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 <code>User.rating</code> 自动补充 <code>nabomo</code> 到已拥有角色列表。琳奈的获得途径为星炬模式首次升上 5 段自动获得；公开用户序列化时会根据星炬 <code>modeStats.rank</code>（缺省时回退 <code>User.rank</code>）自动补充 <code>lynae</code>，管理员用户不受段位限制直接拥有。</li>
 </ul>
 <ul>
 <li>技能类型：</li>
@@ -1384,11 +1387,17 @@
 <li><code>random-blast</code>：随机选择棋盘上非一路的已有棋子作为中心，并移除以该棋子为中心的固定 3x3 区域内棋子。</li>
 </ul>
 <ul>
+<li><code>spray-stone</code>：琳奈主动技“流光溢彩”。指定一枚非喷涂、非隐藏手棋子，并同时从棋盘上另一枚非喷涂、非隐藏手棋子中随机选一枚，转化为命名中立阵营“喷涂棋子”；如果没有随机候选，只转化指定棋子。黑/白棋转化为喷涂棋子时按来源颜色立即给对方 <code>skillRemovals +1</code>，其它中立棋子转化不给黑白除子；转化后按气规则反复清理无气棋群直到稳定，清理黑白棋群按正常归属计除子，清理中立棋群不计除子。</li>
+</ul>
+<ul>
 <li><code>color-illusion-passive</code>：娜波摩被动技“千变万化”。第一次轮到娜波摩玩家时自动进入技能演出，演出结束后该玩家后续落子有 80% 概率在对手视角中显示为对手颜色，真实棋盘规则仍按实际颜色计算；数子申请待确认时仍保持伪装，双方同意并进入死子确认/数子阶段、结果确认或对局结束后才显示真实棋盘。</li>
 </ul>
 </ul>
 <ul>
-<li>达妮娅 <code>flip-stone</code> 作用于真实棋子；如果目标点带有娜波摩伪装，反色后会清除该点伪装。</li>
+<li>中立棋子由 <code>src/shared/gameConstants.js</code> 统一命名；同名中立棋子互相连接，不属于黑白双方，可被普通落子、猪小仙 <code>random-blast</code> 和死子标记移除，但中立棋子被移除不提供黑白除子。数子时中立棋子不计黑白子数，会作为边界参与空点归属判定；被喷涂棋子或多阵营共同围住的空点保持中立。</li>
+</ul>
+<ul>
+<li>达妮娅 <code>flip-stone</code> 作用于真实黑/白棋子，不能反色喷涂棋子或其它中立棋子；如果目标点带有娜波摩伪装，反色后会清除该点伪装。</li>
 </ul>
 <ul>
 <li>技能演出流程：服务端先进入 <code>skill-preview</code> 并广播 <code>pendingSkill</code>，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。</li>
@@ -1412,7 +1421,7 @@
 <li>开局被动技能不会在 <code>opening</code> 阶段触发；正式进入 <code>playing</code> 后才按延迟规则触发，避免和执色提示/开局语音重叠。</li>
 </ul>
 <ul>
-<li>依赖棋盘已有棋子的技能在场上没有棋子时不可启动：前端技能按钮会变灰，服务端也会在 <code>use-skill</code> action 中二次校验并拒绝。当前包括以棋子为目标的达妮娅 <code>flip-stone</code>，以及需要随机选择现有棋子为中心的猪小仙 <code>random-blast</code>。</li>
+<li>依赖棋盘已有棋子的技能在场上没有可用目标时不可启动：前端技能按钮会变灰，服务端也会在 <code>use-skill</code> action 中二次校验并拒绝。当前包括以黑白棋子为目标的达妮娅 <code>flip-stone</code>、需要随机选择现有棋子为中心的猪小仙 <code>random-blast</code>，以及以非喷涂、非隐藏手棋子为目标的琳奈 <code>spray-stone</code>。</li>
 </ul>
 <ul>
 <li>无目标技能不显示落子/目标预览；猪小仙 <code>random-blast</code> 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。前端必须把 <code>canPreviewSkillTarget</code> 的目标预览判定和 <code>skillUsesBoardConfirmation</code> 的棋盘确认判定分开：前者保持 <code>false</code>，后者允许合法棋盘点触发 <code>use-skill</code>。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。</li>
@@ -1725,13 +1734,13 @@
 <li><code>canStartSkill</code>: 位于 <code>src/shared/game.js</code>，前后端共用技能启动前置条件，用于判断棋子目标/棋子依赖技能在当前棋盘状态下是否可用。</li>
 </ul>
 <ul>
-<li><code>rememberPlayerRoom</code> / <code>buildRoomResumeRequest</code> / <code>handleRoomResumePayload</code>: 位于 <code>src/app/resumeSession.js</code>，集中封装前端断线恢复 localStorage 与结果恢复状态编排。</li>
+<li><code>rememberPlayerRoom</code> / <code>buildRoomResumeRequest</code> / <code>handleRoomResumePayload</code> / <code>dismissedResultRoomAfterResume</code>: 位于 <code>src/app/resumeSession.js</code>，集中封装前端断线恢复 localStorage 与结果恢复状态编排；已被用户关闭过的同房间有效结果在后续 <code>room:resume</code> 中保持 dismissed，不会重复打开结果弹窗。</li>
 </ul>
 <ul>
 <li><code>useOverlayState</code> / <code>OVERLAY_STATE_KEYS</code>: 位于 <code>src/app/useOverlayState.js</code>，集中维护商店、抽卡、棋舍、仓库、履历、排行榜、好友、观战、设置和留言板等应用级弹窗可见性，避免 <code>App.jsx</code> 继续堆叠成组 <code>useState(false)</code>。</li>
 </ul>
 <ul>
-<li><code>useRoomSessionState</code> / <code>roomSessionView</code>: 位于 <code>src/app/useRoomSessionState.js</code>，集中维护 <code>room</code>、<code>pendingSkill</code>、<code>replayStep</code>、<code>dismissedResultRoom</code> 和派生的 <code>resultModalOpen</code>，避免结果弹窗可见性在路由、覆盖层和背景音乐间重复计算。</li>
+<li><code>useRoomSessionState</code> / <code>roomSessionView</code>: 位于 <code>src/app/useRoomSessionState.js</code>，集中维护 <code>room</code>、<code>pendingSkill</code>、<code>replayStep</code>、<code>dismissedResultRoom</code> 和派生的 <code>resultModalOpen</code>，避免结果弹窗可见性在路由、覆盖层和背景音乐间重复计算；对局者关闭某一房间结果后，该房间号会作为去重哨兵阻止同一有效结果再次显示。</li>
 </ul>
 <ul>
 <li><code>useMatchSessionState</code> / <code>matchSessionView</code>: 位于 <code>src/app/useMatchSessionState.js</code>，集中维护 <code>matchStart</code>、<code>matchSuccess</code> 和派生的匹配等待/过渡标记，避免匹配弹窗、socket 同步和背景音乐各自维护过渡状态。</li>
@@ -2614,7 +2623,7 @@
 <li><code>characterId</code>: 关联 <code>Character.id</code>，唯一。</li>
 </ul>
 <ul>
-<li><code>effectType</code>: 技能实际效果类型，当前支持 <code>erase-point</code>、<code>flip-stone</code>、<code>hidden-hand</code>、<code>random-blast</code>、<code>color-illusion-passive</code>。</li>
+<li><code>effectType</code>: 技能实际效果类型，当前支持 <code>erase-point</code>、<code>flip-stone</code>、<code>hidden-hand</code>、<code>random-blast</code>、<code>spray-stone</code>、<code>color-illusion-passive</code>。</li>
 </ul>
 <ul>
 <li><code>name</code>: 技能名。</li>
@@ -2649,6 +2658,8 @@
 <ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
+<h3>Neutral Stones</h3>
+<p><code>src/shared/gameConstants.js</code> 维护命名中立棋子类型，当前内置 <code>spray</code>，由琳奈 <code>spray-stone</code> 技能生成。中立棋子不是黑白任一方，但同名中立棋子属于同一阵营并按围棋气规则连接；不同阵营之间互相阻断气和领地。黑/白棋子转化为喷涂棋子时立即给对手 <code>skillRemovals +1</code>，中立棋子被提、被爆破、被死子标记或在技能后无气清理时不提供黑白除子。数子阶段中立棋子不计入黑白子数，可作为边界参与空点归属；被中立棋子或多阵营共同围住的空点保持中立。</p>
 <h3>Decoration</h3>
 <p>装饰配置。</p>
 <ul>
@@ -2840,7 +2851,7 @@
 <li>The home player plaque shows two compact rank/rating rows: spark mode first, standard mode second. It does not show recent-result markers; those stay in profile/history detail surfaces. Each time the app enters the home view it silently refreshes <code>/api/me</code> so the plaque reflects post-game mode stats after leaving a finished room.</li>
 </ul>
 <ul>
-<li>Bright School desktop plaques must reserve a right-side grid column at least as wide as the two-row mode stat panel (<code>164px</code> currently); otherwise the plaque's clipped student-ID card frame cuts off rating text such as <code>1160分</code>.</li>
+<li>Bright School desktop and mobile plaques keep the two-row mode stat panel in a shrinkable right-side grid column. The panel uses container-sized text and centered three-column mode/rank/rating rows so rating text such as <code>1160分</code> remains inside the clipped student-ID card frame instead of relying on a fixed wide column.</li>
 </ul>
 <ul>
 <li>Bright School desktop lobby has a short-height safety pass for <code>max-height: 760px</code>: the main panel margins/padding, stage top padding, manual entry, and match entry scale from <code>dvh</code> so the handbook and match images stay inside the visible desktop viewport instead of spilling below the fold.</li>
@@ -2996,7 +3007,7 @@
 <li>Bright School portrait mobile fit is handled by the import-only <code>bright-school/mobile.css</code> entry and its <code>bright-school/mobile/</code> subfiles. This layer turns the home lobby into a single-column scroll page, removes the hanging-ID absolute positioning on phones, keeps the match and house-manual image entries inside fixed mobile-height cards, keeps all player-facing modal windows within <code>100dvh</code>, assigns internal scroll regions to shop/warehouse/house/leaderboard/friends/settings/message/watch/profile content, and preserves 44px touch targets without changing modal JSX. The house manual uses a fixed mobile grid shell (<code>header</code>, stats, internally scrolling character roster, bounded decoration picker) so roster cards and decoration chips cannot grow beneath the modal frame; stat help tooltips wrap inside the viewport instead of increasing horizontal scroll width. The same layer also owns Bright School mobile room layout: the room shell is fixed to <code>100dvh</code>, the header and player strips are compressed, the board size is calculated from remaining viewport space, and the tab dock reserves enough height for both operation hints and labeled game-action buttons instead of clipping the bottom row.</li>
 </ul>
 <ul>
-<li>Bright School mobile lobby and utility windows have an additional compact pass for 393px-wide phones: the home header collapses message/settings/admin/logout actions behind a single options menu, hides the lobby debug status, and keeps the brand/online tag in a stable grid. The opened home options menu uses a fixed icon column plus <code>max-content</code> text column, with <code>white-space: nowrap</code> and <code>word-break: keep-all</code>, so the 留言/设置/退出 labels never split across lines. Resume stats stay on one line except for record summaries: profile record cards and character-record rows split total games onto the first line and win/loss/draw counts onto the second line, hiding the desktop separator on mobile so both pieces remain fully visible. The <code>履历</code> modal embeds selected-mode character records below the recent-result marker row as <code>.resume-character-records</code>, reusing the same compact row structure instead of opening the old nested character-record dialog from the stat card. The manual character list uses three compact cards per row to leave vertical room for decoration display, decoration selection uses icon-sized chips, and character detail art removes mobile drop shadows. Character record lists use internally scrolling rows with compact avatar/name/record/rate columns; the record text keeps <code>white-space: nowrap</code> and <code>word-break: keep-all</code> so strings like <code>29胜25负4和</code> do not split. Leaderboard, replay, friends, and watch lists switch from wide horizontal tables to mobile cards; leaderboard cards use tighter rank/avatar/identity/score lanes, keep rating as the main right-side number, and stack a compact win-rate pill with explicit win/loss/draw chips (<code>胜/负/和</code>) in the same metrics lane, while &quot;我的排名&quot; mirrors the same compact row rhythm instead of becoming a sparse panel. The mobile leaderboard grid uses <code>minmax(0, 1fr) auto</code> rows so the scrollable list takes remaining space and the pinned current-user block shrinks to its label plus card instead of inheriting the old 220px desktop table row. Modal close buttons use one shared 44px size and 12px top-right inset across base, mobile, and Bright School layers. Toolbar close buttons, such as the watch-list close beside refresh, stay in the header action row as the rightmost same-size control so they do not cover sibling buttons; resume close buttons likewise stay grouped with the coin capsule, but the whole resume action group is absolutely anchored to the header's top-right corner on desktop and mobile. The resume title reserves right-side space with a responsive padding so the fixed action group cannot overlap the heading. Bright School player plaques now keep the stats panel in a bounded, shrinkable column and right-align rating text so mid-width desktop layouts do not clip the rank/rating panel while the name takes the remaining space; the phone plaque uses <code>clamp()</code>-bounded avatar and stats columns instead of a fixed 146px stats panel. The base home stage no longer forces a fixed 1180px minimum width. Between 701px and 1180px desktop width, or in low-height desktop windows, a final Bright School guard in <code>mobile-adaptive.css</code> switches the home stage to named grid areas (<code>player</code>, <code>manual</code>, <code>utility</code>, <code>match</code>) and resets the scrapbook entries to static positioning; below the narrower fallback threshold it becomes a single-column scroll layout. The Bright School phone layer now keeps friend and watch lists outside the old wide-table overflow group, while the final guard sits after the theme imports to protect the single-line stats rule, character/decoration shop cards, mobile title text, circular top-three leaderboard badges, compact pinned ranking cards, and small decoration picker chips from older desktop theme repairs. The same guard lowers the home options menu behind active modal backdrops so it cannot cover modal close buttons.</li>
+<li>Bright School mobile lobby and utility windows have an additional compact pass for 393px-wide phones: the home header collapses message/settings/admin/logout actions behind a single options menu, hides the lobby debug status, and keeps the brand/online tag in a stable grid. The opened home options menu uses a fixed icon column plus <code>max-content</code> text column, with <code>white-space: nowrap</code> and <code>word-break: keep-all</code>, so the 留言/设置/退出 labels never split across lines. Resume stats stay on one line except for record summaries: profile record cards and character-record rows split total games onto the first line and win/loss/draw counts onto the second line, hiding the desktop separator on mobile so both pieces remain fully visible. The <code>履历</code> modal embeds selected-mode character records below the recent-result marker row as <code>.resume-character-records</code>, reusing the same compact row structure instead of opening the old nested character-record dialog from the stat card. The manual character list uses three compact cards per row to leave vertical room for decoration display, decoration selection uses icon-sized chips, and character detail art removes mobile drop shadows. Character record lists use internally scrolling rows with compact avatar/name/record/rate columns; the record text keeps <code>white-space: nowrap</code> and <code>word-break: keep-all</code> so strings like <code>29胜25负4和</code> do not split. Leaderboard, replay, friends, and watch lists switch from wide horizontal tables to mobile cards; leaderboard cards use tighter rank/avatar/identity/score lanes, keep rating as the main right-side number, and stack a compact win-rate pill with explicit win/loss/draw chips (<code>胜/负/和</code>) in the same metrics lane, while &quot;我的排名&quot; mirrors the same compact row rhythm instead of becoming a sparse panel. The mobile leaderboard grid uses <code>minmax(0, 1fr) auto</code> rows so the scrollable list takes remaining space and the pinned current-user block shrinks to its label plus card instead of inheriting the old 220px desktop table row. Modal close buttons use one shared 44px size and 12px top-right inset across base, mobile, and Bright School layers. Toolbar close buttons, such as the watch-list close beside refresh, stay in the header action row as the rightmost same-size control so they do not cover sibling buttons; resume close buttons likewise stay grouped with the coin capsule, but the whole resume action group is absolutely anchored to the header's top-right corner on desktop and mobile. The resume title reserves right-side space with a responsive padding so the fixed action group cannot overlap the heading. Bright School player plaques now keep the stats panel in a bounded, shrinkable column; mode, rank, and rating cells are centered and sized from the stats panel container so desktop and phone layouts do not clip the rank/rating text while the name takes the remaining space. The base home stage no longer forces a fixed 1180px minimum width. Between 701px and 1180px desktop width, or in low-height desktop windows, a final Bright School guard in <code>mobile-adaptive.css</code> switches the home stage to named grid areas (<code>player</code>, <code>manual</code>, <code>utility</code>, <code>match</code>) and resets the scrapbook entries to static positioning; below the narrower fallback threshold it becomes a single-column scroll layout. The Bright School phone layer now keeps friend and watch lists outside the old wide-table overflow group, while the final guard sits after the theme imports to protect the single-line stats rule, character/decoration shop cards, mobile title text, circular top-three leaderboard badges, compact pinned ranking cards, and small decoration picker chips from older desktop theme repairs. The same guard lowers the home options menu behind active modal backdrops so it cannot cover modal close buttons.</li>
 </ul>
 <ul>
 <li>Mobile friend rows show status, portrait, a centered username/stat text group, and the gear action in one compact row; rank and rating sit directly below the username inside that centered group. Desktop social rows keep the table-like column layout through <code>display: contents</code> on the mobile grouping wrappers.</li>
@@ -3343,6 +3354,9 @@
 </ul>
 <ul>
 <li>Bright School portrait home/profile/shop fixes that must survive theme overrides live in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer. The home player plaque reserves a non-collapsing middle column for <code>UserIdentity</code>, keeps equipped nameplates visible inside the username tag, and shrinks character-chain badges to portrait-corner pills so they do not cover most of the character art. The resume header uses a two-row grid on phones: title plus close button on the first row, achievement/personalization shortcuts left on the second row, and coin/gem wallets right on the second row. The final portrait rule repeats the desktop-level resume header selectors so desktop grid-column assignments cannot hide the mobile close button; its wallet slot is shrinkable and lets coin/gem capsules wrap as whole controls when space is tight instead of overflowing past the modal edge. Embedded resume character records use an internally scrolling list with taller rows instead of compressing avatars and text. Bright School shop wallets may wrap only as whole capsules; coin and blue-gem counters stay single-line when room allows, and the shop blue-gem capsule reuses the resume blue-gem gradient.</li>
+</ul>
+<ul>
+<li>Bright School home player plaque stats are centered inside the stats panel on desktop and mobile: the stats panel declares an inline-size container, each mode row uses three shrinkable centered columns for mode/rank/rating, and the text uses container query units so ratings stay inside the plaque when the stage or phone width changes.</li>
 </ul>
 <ul>
 <li>Resume character records in the final Bright School mobile layers mirror the detailed user profile character-record list: the section shell remains lightweight, and each compact row owns the avatar/name/record/rate four-column reading structure. The embedded resume list keeps total games and win/loss/draw on one line with centered row content; standalone nested record dialogs can keep the two-line compact record treatment.</li>

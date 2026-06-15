@@ -387,6 +387,16 @@ describe("SigrikaGo rules", () => {
     expect(getPoint(gameViewForColor(result.state, COLORS.white), pointId(3, 3)).stone).toBe(COLORS.white);
   });
 
+  it("rejects Denia flip on spray stones", () => {
+    const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    forceStone(state, 4, 4, "spray");
+
+    const result = useSkill(state, COLORS.black, "denia", pointId(4, 4));
+
+    expect(result.ok).toBe(false);
+    expect(getPoint(state, pointId(4, 4)).stone).toBe("spray");
+  });
+
   it("adds configured numeric skill costs when a dynamic skill is used", () => {
     const state = createGameState([{ color: COLORS.black }]);
     state.turn = COLORS.black;
@@ -497,6 +507,116 @@ describe("SigrikaGo rules", () => {
     expect(result.state.moveNumber).toBe(0);
   });
 
+  it("uses Lynae spray skill to transform the target and one random eligible stone simultaneously", () => {
+    const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    forceStone(state, 4, 4, COLORS.white);
+    forceStone(state, 5, 4, COLORS.black);
+    const originalRandom = Math.random;
+    Math.random = () => 0;
+
+    try {
+      const result = useSkill(
+        state,
+        COLORS.black,
+        {
+          effectType: "spray-stone",
+          name: "流光溢彩",
+          uses: 1,
+          freeTurn: false,
+          targetRule: "stone",
+          costType: "numeric",
+          costValue: "4",
+          params: {}
+        },
+        pointId(4, 4)
+      );
+
+      expect(result.ok).toBe(true);
+      expect(getPoint(result.state, pointId(4, 4)).stone).toBe("spray");
+      expect(getPoint(result.state, pointId(5, 4)).stone).toBe("spray");
+      expect(result.state.skillRemovals.black).toBe(1);
+      expect(result.state.skillRemovals.white).toBe(1);
+      expect(result.state.skillCosts.black).toBe(4);
+      expect(result.state.turn).toBe(COLORS.white);
+      expect(result.state.ko).toBeNull();
+      expect(result.state.history.at(-1)).toMatchObject({
+        type: "skill",
+        effectType: "spray-stone",
+        id: pointId(4, 4),
+        randomTargetId: pointId(5, 4)
+      });
+    } finally {
+      Math.random = originalRandom;
+    }
+  });
+
+  it("lets Lynae spray skill resolve with only the selected eligible target", () => {
+    const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    forceStone(state, 4, 4, COLORS.black);
+    forceStone(state, 5, 4, "spray");
+    getPoint(state, pointId(6, 4)).stone = COLORS.white;
+    getPoint(state, pointId(6, 4)).hiddenHand = {
+      owner: COLORS.white,
+      exposed: false,
+      effect: "hidden-hand"
+    };
+
+    const result = useSkill(
+      state,
+      COLORS.black,
+      {
+        effectType: "spray-stone",
+        name: "流光溢彩",
+        uses: 1,
+        freeTurn: false,
+        targetRule: "stone",
+        costType: "numeric",
+        costValue: "4",
+        params: {}
+      },
+      pointId(4, 4)
+    );
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(4, 4)).stone).toBe("spray");
+    expect(getPoint(result.state, pointId(5, 4)).stone).toBe("spray");
+    expect(getPoint(result.state, pointId(6, 4)).stone).toBe(COLORS.white);
+    expect(result.state.skillRemovals.black).toBe(0);
+    expect(result.state.skillRemovals.white).toBe(1);
+    expect(result.state.history.at(-1).randomTargetId).toBeNull();
+  });
+
+  it("lets ordinary moves capture spray stones without capture credit", () => {
+    const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    forceStone(state, 1, 1, "spray");
+    forceStone(state, 0, 1, COLORS.black);
+    forceStone(state, 2, 1, COLORS.black);
+    forceStone(state, 1, 0, COLORS.black);
+    state.turn = COLORS.black;
+
+    const result = playMove(state, COLORS.black, pointId(1, 2));
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(1, 1)).stone).toBeNull();
+    expect(result.state.captures.black).toBe(0);
+  });
+
+  it("scores spray stones as neutral boundaries and neutral dead stones as no-credit removals", () => {
+    const state = createGameState();
+    forceStone(state, 0, 1, "spray");
+    forceStone(state, 1, 0, "spray");
+    state.scoring = prepareScoringState(state);
+
+    const withSpray = scoreGame(state);
+    expect(withSpray.blackTerritory).toBe(0);
+    expect(withSpray.whiteTerritory).toBe(0);
+
+    const marked = markDeadGroup(state, pointId(0, 1));
+    expect(marked.ok).toBe(true);
+    expect(marked.state.scoring.deadStones).toContain(pointId(0, 1));
+    expect(marked.state.scoring.deadStoneOwners[pointId(0, 1)]).toBeUndefined();
+  });
+
   it("uses configured random blast skill to remove stones in a random 3x3 area without consuming the turn", () => {
     const state = createGameState([{ color: COLORS.black }]);
     state.turn = COLORS.black;
@@ -545,6 +665,33 @@ describe("SigrikaGo rules", () => {
       expect(getPoint(moveResult.state, pointId(4, 4)).stone).toBe(COLORS.black);
       expect(getPoint(moveResult.state, pointId(4, 4)).skillEffect).toBeNull();
       expect(getPoint(moveResult.state, pointId(5, 4)).skillEffect).toBeNull();
+    } finally {
+      Math.random = originalRandom;
+    }
+  });
+
+  it("lets random blast remove spray stones without awarding black or white removals", () => {
+    const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    state.turn = COLORS.black;
+    forceStone(state, 4, 4, "spray");
+    forceStone(state, 5, 4, COLORS.white);
+    const originalRandom = Math.random;
+    Math.random = () => 0;
+
+    try {
+      const result = randomBlast(state, COLORS.black, {
+        skill: {
+          params: { size: 3 },
+          costType: "numeric",
+          costValue: "0"
+        }
+      });
+
+      expect(result.ok).toBe(true);
+      expect(getPoint(result.state, pointId(4, 4)).stone).toBeNull();
+      expect(getPoint(result.state, pointId(5, 4)).stone).toBeNull();
+      expect(result.state.skillRemovals.black).toBe(1);
+      expect(result.state.skillRemovals.white).toBe(0);
     } finally {
       Math.random = originalRandom;
     }

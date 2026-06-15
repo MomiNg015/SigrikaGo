@@ -27,6 +27,13 @@ export const SKILL_EFFECT_CATALOG = {
     boardEffect: true,
     soundCues: { startAt: 0.06, impactAt: 0.56 }
   },
+  "spray-stone": {
+    label: "流光溢彩",
+    targetRule: "stone",
+    active: true,
+    boardEffect: true,
+    soundCues: { startAt: 0.04, impactAt: 0.58 }
+  },
   "color-illusion-passive": {
     label: "被动伪装",
     targetRule: "none",

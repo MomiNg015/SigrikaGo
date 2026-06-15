@@ -77,6 +77,20 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       params: fallback.skill.params ?? { size: 3 }
     };
   }
+  if (fallback?.skill?.id === "spray-stone") {
+    return {
+      characterId: fallback.id,
+      effectType: "spray-stone",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: Boolean(fallback.skill.freeTurn),
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+      systemMessage: fallback.skill.systemMessage,
+      targetRule: "stone",
+      params: fallback.skill.params ?? {}
+    };
+  }
   if (fallback?.skill?.id === "color-illusion-passive") {
     return {
       characterId: fallback.id,
