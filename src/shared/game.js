@@ -1,6 +1,10 @@
 import { CHARACTERS } from "./characters.js";
 import {
   COLORS,
+  NEUTRAL_STONES,
+  canSprayTransformStone,
+  captureCreditOwner,
+  isPlayerColor,
   opponent
 } from "./gameConstants.js";
 import {
@@ -43,6 +47,10 @@ export {
 
 export {
   COLORS,
+  NEUTRAL_STONES,
+  canSprayTransformStone,
+  captureCreditOwner,
+  isPlayerColor,
   opponent
 } from "./gameConstants.js";
 export {
@@ -255,10 +263,14 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
   applyColorIllusion(next, color, point, colorIllusion);
 
   const removed = [];
+  let creditedCaptures = 0;
   for (const neighbor of activeNeighbors(next, point)) {
-    if (neighbor.stone === opponent(color)) {
+    if (neighbor.stone && neighbor.stone !== color) {
       const group = collectGroup(next, neighbor.id);
-      if (group.liberties.size === 0) removed.push(...group.stones);
+      if (group.liberties.size === 0) {
+        removed.push(...group.stones);
+        if (captureCreditOwner(group.color) === color) creditedCaptures += group.stones.length;
+      }
     }
   }
 
@@ -268,7 +280,7 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
   if (ownGroup.liberties.size === 0) return fail("禁自杀");
   const notices = revealCapturingHiddenHands(next, ownGroup, removed, color);
 
-  next.captures[color] += removed.length;
+  next.captures[color] += creditedCaptures;
   next.ko = removed.length === 1 && ownGroup.stones.length === 1 && ownGroup.liberties.size === 1
     ? removed[0]
     : null;
@@ -343,6 +355,9 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
 export function canStartSkill(state, skillOrCharacterId) {
   if (!gameModeSkillEnabled(state.mode)) return false;
   const skill = normalizeSkillConfig(skillOrCharacterId);
+  if (skill?.effectType === "spray-stone") {
+    return state.points.some((point) => canSprayTransformStone(point));
+  }
   if (!skillRequiresExistingStone(skill)) return true;
   return state.points.some((point) => point.valid && point.stone);
 }
@@ -440,6 +455,7 @@ export function flipStone(state, color, id, options = {}) {
   const next = cloneState(state);
   const point = getPoint(next, id);
   if (!point?.valid || !point.stone) return fail("必须指定棋盘上的棋子");
+  if (!isPlayerColor(point.stone)) return fail("只能反色黑白棋子");
   const originalColor = point.stone;
   const removalOwner = opponent(originalColor);
   point.stone = opponent(point.stone);
@@ -453,6 +469,57 @@ export function flipStone(state, color, id, options = {}) {
   next.history.push({ type: "skill", skill: "染秽", effectType: "flip-stone", color, id, skillRemovalOwner: removalOwner, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
   return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? true, "skillRemovals"));
+}
+
+export function sprayStone(state, color, id, options = {}) {
+  const next = cloneState(state);
+  const target = getPoint(next, id);
+  if (!canSprayTransformStone(target)) return fail("必须指定非喷涂、非隐藏的棋子");
+
+  const candidates = next.points.filter((point) => point.id !== id && canSprayTransformStone(point));
+  const randomTarget = candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : null;
+  const transformed = [];
+  const immediateRemovals = [];
+  next.skillRemovals ??= { black: 0, white: 0 };
+
+  for (const point of [target, randomTarget].filter(Boolean)) {
+    const from = point.stone;
+    const owner = captureCreditOwner(from);
+    if (owner) {
+      next.skillRemovals[owner] = (next.skillRemovals[owner] ?? 0) + 1;
+      immediateRemovals.push({ id: point.id, from, owner });
+    }
+    point.stone = NEUTRAL_STONES.spray;
+    point.colorIllusion = null;
+    point.hiddenHand = null;
+    point.skillEffect = "spray-stone";
+    transformed.push({ id: point.id, from, to: NEUTRAL_STONES.spray });
+  }
+
+  next.skillUses[color] -= 1;
+  applySkillCost(next, color, options.skill ?? "lynae");
+  next.ko = null;
+  const cleanupRemovals = [];
+  next.history.push({
+    type: "skill",
+    effectType: "spray-stone",
+    skill: options.skillName ?? "流光溢彩",
+    color,
+    id,
+    randomTargetId: randomTarget?.id ?? null,
+    transformed,
+    immediateRemovals,
+    cleanupRemovals,
+    moveNumber: next.moveNumber
+  });
+
+  return ok(resolveCapturesAfterMutation(
+    next,
+    color,
+    options.consumesTurn ?? true,
+    "skillRemovals",
+    cleanupRemovals
+  ));
 }
 
 export function randomBlast(state, color, options = {}) {
@@ -525,7 +592,7 @@ function clampBlastCenter(value, boardSize, radius) {
   return Math.min(max, Math.max(min, value));
 }
 
-function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true, counter = "captures") {
+function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true, counter = "captures", cleanupSink = null) {
   let changed = true;
   while (changed) {
     changed = false;
@@ -535,12 +602,15 @@ function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true, co
       const group = collectGroup(state, point.id);
       group.stones.forEach((stone) => visited.add(stone));
       if (group.liberties.size === 0) {
-        const removalOwner = opponent(point.stone);
+        const removalOwner = captureCreditOwner(group.color);
         for (const stone of group.stones) clearStone(state, stone);
+        cleanupSink?.push?.({ color: group.color, stones: [...group.stones], owner: removalOwner });
         if (counter === "skillRemovals") {
           state.skillRemovals ??= { black: 0, white: 0 };
-          state.skillRemovals[removalOwner] = (state.skillRemovals[removalOwner] ?? 0) + group.stones.length;
-        } else {
+          if (removalOwner) {
+            state.skillRemovals[removalOwner] = (state.skillRemovals[removalOwner] ?? 0) + group.stones.length;
+          }
+        } else if (removalOwner) {
           state.captures[removalOwner] += group.stones.length;
         }
         changed = true;

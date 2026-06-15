@@ -355,6 +355,39 @@ function playBaconbitsBlast({ app, pixi, host, boardSize, pendingSkill, target, 
   });
 }
 
+function playSprayStone({ app, pixi, target, durationMs }) {
+  const wash = new pixi.Graphics();
+  const sparkle = new pixi.Graphics();
+  app.stage.addChild(wash, sparkle);
+  const colors = [0x34e2c4, 0x8d7cff, 0xff7eb6, 0xffd15d];
+  const startedAt = performance.now();
+
+  app.ticker.add(() => {
+    const progress = clamp01((performance.now() - startedAt) / durationMs);
+    const bloom = easeOutCubic(Math.min(progress / 0.72, 1));
+    const fade = 1 - progress;
+    wash.clear();
+    sparkle.clear();
+    for (let index = 0; index < colors.length; index += 1) {
+      const angle = progress * Math.PI * 2 + index * Math.PI / 2;
+      const radius = 12 + bloom * (26 + index * 4);
+      wash.circle(target.x + Math.cos(angle) * 4, target.y + Math.sin(angle) * 4, radius)
+        .stroke({ width: 3, color: colors[index], alpha: 0.34 * fade });
+    }
+    for (let index = 0; index < 10; index += 1) {
+      const angle = (Math.PI * 2 * index) / 10 + progress * 1.4;
+      const distance = 12 + bloom * (18 + (index % 3) * 6);
+      sparkle.star(
+        target.x + Math.cos(angle) * distance,
+        target.y + Math.sin(angle) * distance,
+        4,
+        4 + (index % 2),
+        1.5
+      ).fill({ color: colors[index % colors.length], alpha: 0.52 * fade });
+    }
+  });
+}
+
 function drawCracks(graphics, target, progress) {
   const cracks = [
     { angle: -0.25, length: 24 },
@@ -403,5 +436,6 @@ export const BOARD_SKILL_EFFECT_RENDERERS = Object.freeze({
     play: playDataStreamHiddenHand,
     playReducedMotion: playReducedMotionBoardSweep
   }),
-  "random-blast": Object.freeze({ play: playBaconbitsBlast })
+  "random-blast": Object.freeze({ play: playBaconbitsBlast }),
+  "spray-stone": Object.freeze({ play: playSprayStone })
 });

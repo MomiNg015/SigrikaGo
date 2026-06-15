@@ -11,7 +11,8 @@ describe("game skill handlers", () => {
       "erase-point",
       "flip-stone",
       "hidden-hand",
-      "random-blast"
+      "random-blast",
+      "spray-stone"
     ]);
   });
 

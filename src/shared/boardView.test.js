@@ -94,4 +94,38 @@ describe("board view helpers", () => {
       point: { valid: true, stone: COLORS.white }
     })).toBe(false);
   });
+
+  it("previews Lynae spray targets only for non-spray visible stones", () => {
+    const game = {
+      phase: GAME_PHASES.playing,
+      turn: COLORS.black,
+      skillUses: { black: 1 }
+    };
+    const player = {
+      color: COLORS.black,
+      character: {
+        skill: { effectType: "spray-stone", targetRule: "stone" }
+      }
+    };
+
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: { valid: true, stone: COLORS.white }
+    })).toBe(true);
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: { valid: true, stone: "spray" }
+    })).toBe(false);
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: {
+        valid: true,
+        stone: COLORS.white,
+        hiddenHand: { owner: COLORS.white, exposed: false, effect: "hidden-hand" }
+      }
+    })).toBe(false);
+  });
 });

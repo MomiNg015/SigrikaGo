@@ -1,4 +1,4 @@
-import { COLORS, opponent } from "./gameConstants.js";
+import { COLORS, captureCreditOwner, isPlayerColor } from "./gameConstants.js";
 import { activeNeighbors, getPoint } from "./gameBoard.js";
 import { collectGroup } from "./gameGroups.js";
 import { formatStones } from "./stoneFormatting.js";
@@ -39,16 +39,17 @@ export function markDeadGroup(state, id, markerColor = null) {
   const next = structuredClone(state);
   if (!next.scoring) next.scoring = prepareScoringState(next);
   const group = collectGroup(next, id);
+  if (markerColor && !isPlayerColor(group.color)) markerColor = null;
   if (!group.stones.length) return fail("请选择棋子");
   if (markerColor && group.color !== markerColor) return fail("只能标记自己颜色的死子");
 
   const dead = new Set(next.scoring.deadStones ?? []);
   const owners = { ...(next.scoring.deadStoneOwners ?? {}) };
   const clickedGroupAlreadyMarked = group.stones.every((stone) => dead.has(stone));
-  const owner = opponent(group.color);
+  const owner = captureCreditOwner(group.color);
   const stonesToUpdate = clickedGroupAlreadyMarked
     ? group.stones
-    : collectPotentialDeadStones(next, group, owner);
+    : owner ? collectPotentialDeadStones(next, group, owner) : group.stones;
 
   for (const stone of stonesToUpdate) {
     if (clickedGroupAlreadyMarked) {
@@ -56,7 +57,7 @@ export function markDeadGroup(state, id, markerColor = null) {
       delete owners[stone];
     } else {
       dead.add(stone);
-      owners[stone] = owner;
+      if (owner) owners[stone] = owner;
     }
   }
 
@@ -180,7 +181,7 @@ function computeTerritoryMarks(state, neutral) {
     area.points.forEach((areaId) => visited.add(areaId));
     if (area.borderColors.size === 1) {
       const [owner] = area.borderColors;
-      territory[owner].push(...area.points);
+      if (isPlayerColor(owner)) territory[owner].push(...area.points);
     }
   }
   return territory;

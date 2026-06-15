@@ -3,6 +3,7 @@ import {
   LAST_ROOM_CODE_KEY,
   buildRoomResumeRequest,
   clearLastRoomCode,
+  dismissedResultRoomAfterResume,
   handleRoomResumePayload,
   handleMissingRoomResumePayload,
   rememberPlayerRoom,
@@ -53,9 +54,27 @@ describe("resume session helpers", () => {
     expect(handlers.setMatchSuccess).toHaveBeenCalledWith(null);
     expect(handlers.setReplayStep).toHaveBeenCalledWith(null);
     expect(handlers.setPendingSkill).toHaveBeenCalledWith(false);
-    expect(handlers.setDismissedResultRoom).toHaveBeenCalledWith("");
+    expect(handlers.setDismissedResultRoom).toHaveBeenCalledWith(expect.any(Function));
+    expect(handlers.setDismissedResultRoom.mock.calls[0][0]("")).toBe("");
     expect(handlers.setRoom).toHaveBeenCalledWith(payload.room);
     expect(handlers.setView).toHaveBeenCalledWith("home");
+  });
+
+  test("keeps dismissed finished result rooms dismissed across resume", () => {
+    expect(dismissedResultRoomAfterResume(
+      { type: "result", room: { code: "67890", game: { phase: "finished" } } },
+      "67890"
+    )).toBe("67890");
+
+    expect(dismissedResultRoomAfterResume(
+      { type: "result", room: { code: "67890", game: { phase: "finished" } } },
+      "12345"
+    )).toBe("");
+
+    expect(dismissedResultRoomAfterResume(
+      { type: "room", room: { code: "67890", game: { phase: "playing" } } },
+      "67890"
+    )).toBe("");
   });
 
   test("handles unfinished room resume as direct room recovery", () => {
@@ -77,7 +96,8 @@ describe("resume session helpers", () => {
     expect(handlers.setMatchSuccess).toHaveBeenCalledWith(null);
     expect(handlers.setReplayStep).toHaveBeenCalledWith(null);
     expect(handlers.setPendingSkill).toHaveBeenCalledWith(false);
-    expect(handlers.setDismissedResultRoom).toHaveBeenCalledWith("");
+    expect(handlers.setDismissedResultRoom).toHaveBeenCalledWith(expect.any(Function));
+    expect(handlers.setDismissedResultRoom.mock.calls[0][0]("54321")).toBe("");
     expect(handlers.setRoom).toHaveBeenCalledWith({
       ...payload.room,
       __audioResumeBaseline: true

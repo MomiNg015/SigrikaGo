@@ -74,6 +74,24 @@ export const FALLBACK_CHARACTERS = {
       params: { size: 3 }
     }
   },
+  lynae: {
+    id: "lynae",
+    name: "琳奈",
+    description: "以流光颜料改写棋子阵营的幻彩棋手，让棋盘边界在一瞬间变得难以预测。",
+    palette: "#38d7c2",
+    portrait: "/assets/characters/lynae_centered.webp",
+    acquisitionMethod: "首次升上5段自动获得（管理员可以直接拥有）",
+    skill: {
+      id: "spray-stone",
+      name: "流光溢彩",
+      uses: 1,
+      cost: 4,
+      costType: "numeric",
+      costValue: "4",
+      systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
+      description: "指定棋盘上一枚非喷涂、非隐藏手的棋子，在其变成喷涂棋子的同时，随机将棋盘上另一枚非喷涂、非隐藏手的棋子也变成喷涂棋子；若不存在另一枚可随机转换的棋子，则只转换指定棋子。超频2。"
+    }
+  },
   nabomo: {
     id: "nabomo",
     name: "娜波摩",

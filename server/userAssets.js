@@ -1,9 +1,13 @@
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import { DEFAULT_RANK, normalizeRank } from "../src/shared/rankProgression.js";
 import { parseItemEffects } from "./itemEffects.js";
 
 const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia", "aemeath"];
 const RATING_UNLOCKS = [
   { characterId: "nabomo", rating: 1400 }
+];
+const RANK_UNLOCKS = [
+  { characterId: "lynae", rankStep: 5 }
 ];
 
 export function parseAssetList(value, { normalize = (item) => item } = {}) {
@@ -105,6 +109,14 @@ export function publicUserAssets(user) {
   for (const characterId of AVAILABLE_CHARACTER_IDS) ownedCharacters.add(characterId);
   for (const unlock of RATING_UNLOCKS) {
     if ((user?.rating ?? 0) >= unlock.rating) ownedCharacters.add(unlock.characterId);
+  }
+  if (user?.role === "admin") {
+    for (const unlock of RANK_UNLOCKS) ownedCharacters.add(unlock.characterId);
+  } else {
+    const userRankStep = publicUserRankStep(user);
+    for (const unlock of RANK_UNLOCKS) {
+      if (userRankStep >= unlock.rankStep) ownedCharacters.add(unlock.characterId);
+    }
   }
   return {
     selectedCharacter: canonicalCharacterId(user?.selectedCharacter),
@@ -221,6 +233,26 @@ function publicOwnedCharacters(user) {
     }
   }
   return [...owned];
+}
+
+function publicUserRankStep(user) {
+  const sparkStats = modeStatsRows(user?.modeStats).find((row) => row.mode === "spark");
+  return rankToStep(normalizeRank(sparkStats?.rank ?? user?.rank ?? DEFAULT_RANK));
+}
+
+function rankToStep(rank) {
+  const value = String(rank ?? "").trim();
+  const danMatch = value.match(/^(\d+)段$/u);
+  if (danMatch) return Number(danMatch[1]);
+  const kyuMatch = value.match(/^(\d+)级$/u);
+  if (kyuMatch) return -Number(kyuMatch[1]);
+  return 3;
+}
+
+function modeStatsRows(modeStats) {
+  if (Array.isArray(modeStats)) return modeStats;
+  if (!modeStats || typeof modeStats !== "object") return [];
+  return Object.entries(modeStats).map(([mode, stats]) => ({ mode, ...(stats ?? {}) }));
 }
 
 function publicCharacterChains(user) {

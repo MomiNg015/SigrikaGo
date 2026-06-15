@@ -5,6 +5,16 @@ describe("character fallback", () => {
   it("keeps built-in characters available before API load", () => {
     expect(characterList.map((character) => character.id)).toContain("sigrika");
     expect(characterList.map((character) => character.id)).toContain("denia");
+    expect(CHARACTERS.lynae).toMatchObject({
+      id: "lynae",
+      name: "琳奈",
+      portrait: "/assets/characters/lynae_centered.webp",
+      skill: {
+        id: "spray-stone",
+        name: "流光溢彩",
+        costValue: "4"
+      }
+    });
   });
 
   it("merges API characters over fallback fields without losing required display data", () => {

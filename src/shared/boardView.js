@@ -1,4 +1,5 @@
 import { skillEffectTargetRule } from "./skillEffectCatalog.js";
+import { canSprayTransformStone } from "./gameConstants.js";
 
 export function lastMarkedAction(history = []) {
   return [...history].reverse().find((entry) => (
@@ -17,6 +18,7 @@ export function canPreviewSkillTarget({ game, player, point, fallbackCharacters 
 }
 
 function canTargetPointByRule(targetRule, point) {
+  if (targetRule === "spray-stone") return canSprayTransformStone(point);
   if (targetRule === "stone") return Boolean(point.stone);
   if (targetRule === "empty-point") return !point.stone;
   if (targetRule === "any-point") return true;
@@ -24,5 +26,6 @@ function canTargetPointByRule(targetRule, point) {
 }
 
 function targetRuleForEffect(effectType, fallbackRule = null) {
+  if (effectType === "spray-stone") return "spray-stone";
   return skillEffectTargetRule(effectType, fallbackRule);
 }

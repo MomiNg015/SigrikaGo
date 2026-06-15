@@ -1,5 +1,5 @@
 import { memo, useMemo, useRef } from "react";
-import { COLORS } from "../shared/game.js";
+import { COLORS, isPlayerColor } from "../shared/game.js";
 import { lastMarkedAction } from "../shared/boardView.js";
 import { stoneDecorationImage } from "../shared/stoneDecorations.js";
 import BoardAmbientEffects, { hasColorIllusionFog } from "./BoardAmbientEffects.jsx";
@@ -71,7 +71,7 @@ function Board({
           const emptyTerritoryOwner = !point.stone ? territoryOwner.get(point.id) : null;
           const deadOwner = point.stone ? deadStoneOwners[point.id] : null;
           const previewClass = canPreviewPoint(game, previewPlayer, point, pendingSkill, Boolean(onScoringPoint)) ? "previewable" : "";
-          const decorationImage = point.stone ? stoneDecorationImage(stoneDecorations[point.stone], point.stone) : null;
+          const decorationImage = isPlayerColor(point.stone) ? stoneDecorationImage(stoneDecorations[point.stone], point.stone) : null;
           const confirmClass = pointConfirmation?.pointId === point.id ? "touch-confirming" : "";
           return (
             <MemoPointButton

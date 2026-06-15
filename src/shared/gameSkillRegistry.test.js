@@ -12,7 +12,8 @@ describe("game skill registry", () => {
       "erase-point",
       "flip-stone",
       "hidden-hand",
-      "random-blast"
+      "random-blast",
+      "spray-stone"
     ]);
   });
 

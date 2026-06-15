@@ -82,6 +82,24 @@ describe("areBoardPropsEqual", () => {
     expect(differentStone).not.toEqual(first);
   });
 
+  test("renders spray stones with an independent non-decorated visual contract", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: [{ id: "3,3", x: 3, y: 3, valid: true, stone: "spray" }],
+        history: []
+      },
+      stoneDecorations: { black: "paw", white: "paw", spray: "paw" }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup).toContain('class="point  spray');
+    expect(markup).not.toContain("decorated-stone");
+    expect(css).toContain(".spray .stone");
+    expect(css).toContain("--spray-stone-fallback");
+  });
+
   test("caps standard mode stone offsets at half a pixel", () => {
     const point = { id: "3,10", x: 3, y: 10, stone: "black" };
     const first = stoneOffsetForPoint(point, "standard");

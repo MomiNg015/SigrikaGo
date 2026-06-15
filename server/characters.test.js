@@ -126,6 +126,31 @@ describe("character admin helpers", () => {
     expect(result.value.skill.targetRule).toBe("none");
   });
 
+  it("accepts Lynae spray skills targeting stones", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      slug: "lynae",
+      name: "琳奈",
+      portraitUrl: "/assets/characters/lynae_centered.webp",
+      skill: {
+        effectType: "spray-stone",
+        name: "流光溢彩",
+        description: "Transform the selected stone and one random eligible stone into spray stones.",
+        uses: 1,
+        freeTurn: false,
+        targetRule: "stone",
+        paramsJson: "{}",
+        costType: "numeric",
+        costValue: "4"
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.skill.effectType).toBe("spray-stone");
+    expect(result.value.skill.targetRule).toBe("stone");
+    expect(result.value.skill.costValue).toBe("4");
+  });
+
   it("uses the shared default system message when no custom message is provided", () => {
     const result = validateCharacterInput(validInput);
 
