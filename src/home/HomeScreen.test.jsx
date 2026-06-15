@@ -287,6 +287,10 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".owned-decoration-header h3");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
     expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 1180px), (min-width: 701px) and (max-height: 640px)");
+    expect(finalMobileCss).toContain("@media (min-width: 701px)");
+    expect(finalMobileCss).toContain(".home-image-entry > img");
+    expect(finalMobileCss).toContain("box-sizing: border-box !important");
+    expect(finalMobileCss).toContain("max-height: 100% !important");
     expect(finalMobileCss).toContain("grid-template-areas:");
     expect(finalMobileCss).toContain("\"player manual\"");
     expect(finalMobileCss).toContain(".home-player-zone,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry");
