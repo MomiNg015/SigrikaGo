@@ -1,0 +1,29 @@
+@media (max-width: 620px) {
+  .home-grid-featured {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "player"
+      "match"
+      "manual"
+      "utility";
+  }
+
+  .home-top-strip {
+    grid-template-areas:
+      "brand actions"
+      "online actions";
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .home-online-tag {
+    justify-self: start;
+  }
+
+  .home-match-feature {
+    max-width: min(100%, 430px);
+  }
+
+  .home-grid-featured > .home-utility-grid {
+    width: 100%;
+  }
+}

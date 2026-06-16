@@ -12,5 +12,5 @@ Rules for future CSS work:
 
 - Add new player themes through `themes.css` and `src/styles/themes/`, not directly in `styles.css`.
 - Split large domain files by moving rules into a clearly named top-level domain file only when it belongs in the root order.
-- If a split creates nested CSS, keep it under an approved import entry directory such as `src/styles/base/`, `src/styles/room/`, `src/styles/modals/`, `src/styles/commerce/`, `src/styles/responsive/`, `src/styles/mobile-room/`, `src/styles/hud-components/`, `src/styles/mobile-adaptive/`, or `src/styles/themes/`, and update the contract test with the import order.
+- If a split creates nested CSS, keep it under an approved import entry directory such as `src/styles/base/`, `src/styles/room/`, `src/styles/modals/`, `src/styles/commerce/`, `src/styles/home-terminal/`, `src/styles/mobile-home/`, `src/styles/responsive/`, `src/styles/mobile-room/`, `src/styles/hud-components/`, `src/styles/mobile-adaptive/`, or `src/styles/themes/`, and update the contract test with the import order.
 - Run `npm test -- src/styles/styleContract.test.js src/styles/themeContract.test.js` after changing CSS entry files.

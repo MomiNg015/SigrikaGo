@@ -17,13 +17,31 @@ import {
   pointId
 } from "./gameBoard.js";
 import { gameModeById, gameModeSkillEnabled } from "./gameModes.js";
+import { GAME_PHASES } from "./gamePhases.js";
 import {
   normalizeSkillConfig,
   skillRequiresExistingStone,
   skillUsesBoardConfirmation
 } from "./gameSkills.js";
 import { executeActiveSkillHandler } from "./gameSkillHandlers.js";
+import {
+  erasePoint,
+  flipStone,
+  randomBlast,
+  rowSlash,
+  sprayStone
+} from "./gameSkillActions.js";
+import { cloneState } from "./gameSkillState.js";
+import {
+  HIDDEN_HAND_NOTICE,
+  exposeHiddenHands,
+  playHiddenHand,
+  playMove,
+  restoreSuspendedHiddenHands,
+  suspendUnexposedHiddenHands
+} from "./gameStoneActions.js";
 import { collectGroup } from "./gameGroups.js";
+import { fail, ok } from "./gameActionResult.js";
 import {
   INVALID_EARLY_RESIGN_NOTICE,
   MAX_INVALID_GAME_END_MOVE_NUMBER,
@@ -34,6 +52,7 @@ import {
   isInvalidGameEnd,
   resultWithInvalidFlagForGame
 } from "./gameResults.js";
+
 export { collectGroup } from "./gameGroups.js";
 export {
   KOMI_STONES,
@@ -44,7 +63,6 @@ export {
   scoreGame,
   toggleNeutralPoint
 } from "./gameScoring.js";
-
 export {
   COLORS,
   NEUTRAL_STONES,
@@ -62,11 +80,28 @@ export {
   parsePointId,
   pointId
 } from "./gameBoard.js";
+export { GAME_PHASES } from "./gamePhases.js";
 export {
   normalizeSkillConfig,
   skillRequiresExistingStone,
   skillUsesBoardConfirmation
 } from "./gameSkills.js";
+export {
+  erasePoint,
+  flipStone,
+  randomBlast,
+  rowSlash,
+  sprayStone
+} from "./gameSkillActions.js";
+export { cloneState } from "./gameSkillState.js";
+export {
+  HIDDEN_HAND_NOTICE,
+  exposeHiddenHands,
+  playHiddenHand,
+  playMove,
+  restoreSuspendedHiddenHands,
+  suspendUnexposedHiddenHands
+} from "./gameStoneActions.js";
 export {
   INVALID_EARLY_RESIGN_NOTICE,
   MAX_INVALID_GAME_END_MOVE_NUMBER,
@@ -78,17 +113,6 @@ export {
   resultWithInvalidFlagForGame
 } from "./gameResults.js";
 export { formatStones } from "./stoneFormatting.js";
-export const GAME_PHASES = {
-  opening: "opening",
-  playing: "playing",
-  countingRequested: "counting-requested",
-  markingDead: "marking-dead",
-  resultReview: "result-review",
-  drawRequested: "draw-requested",
-  skillPreview: "skill-preview",
-  finished: "finished"
-};
-export const HIDDEN_HAND_NOTICE = "发现隐藏手了！";
 
 export function createGameState(players = [], options = {}) {
   const mode = gameModeById(options.mode);
@@ -115,14 +139,6 @@ export function createGameState(players = [], options = {}) {
     rowEffects: [],
     winner: null
   };
-}
-
-export function cloneState(state) {
-  return structuredClone(state);
-}
-
-export function playMove(state, color, id, options = {}) {
-  return placeStone(state, color, id, { hidden: false, colorIllusion: options.colorIllusion });
 }
 
 export function activatePassiveSkill(state, color, skillOrCharacterId) {
@@ -238,85 +254,6 @@ export function restoreSkillUse(state, color) {
   return ok(next);
 }
 
-function placeStone(state, color, id, { hidden, skill = null, colorIllusion = undefined }) {
-  if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能落子");
-  if (state.turn !== color) return fail("还没有轮到你");
-  const next = cloneState(state);
-  const point = getPoint(next, id);
-  if (!point?.valid) return fail("该交叉点不可落子");
-  if (point.stone) {
-    if (!hidden && isUnexposedOpponentHiddenHand(point, color)) {
-      revealHiddenHand(point);
-      return ok(next, { notices: [HIDDEN_HAND_NOTICE] });
-    }
-    return fail("该交叉点已有棋子");
-  }
-  if (next.ko === id) return fail("此处为劫禁着点");
-
-  point.stone = color;
-  if (hidden) {
-    point.hiddenHand = {
-      owner: color,
-      exposed: false,
-      effect: "hidden-hand"
-    };
-  }
-  applyColorIllusion(next, color, point, colorIllusion);
-
-  const removed = [];
-  let creditedCaptures = 0;
-  for (const neighbor of activeNeighbors(next, point)) {
-    if (neighbor.stone && neighbor.stone !== color) {
-      const group = collectGroup(next, neighbor.id);
-      if (group.liberties.size === 0) {
-        removed.push(...group.stones);
-        if (captureCreditOwner(group.color) === color) creditedCaptures += group.stones.length;
-      }
-    }
-  }
-
-  for (const stone of removed) clearStone(next, stone);
-
-  const ownGroup = collectGroup(next, id);
-  if (ownGroup.liberties.size === 0) return fail("禁自杀");
-  const notices = revealCapturingHiddenHands(next, ownGroup, removed, color);
-
-  next.captures[color] += creditedCaptures;
-  next.ko = removed.length === 1 && ownGroup.stones.length === 1 && ownGroup.liberties.size === 1
-    ? removed[0]
-    : null;
-  clearOwnedBoardMarkers(next, color);
-  next.turn = opponent(color);
-  next.passes = 0;
-  next.moveNumber += 1;
-  const hiddenHandRevealed = notices.includes(HIDDEN_HAND_NOTICE);
-  next.history.push(hidden
-    ? { type: "skill", skill: "小爱出击", color, id, captures: removed, hiddenHandRevealed, moveNumber: next.moveNumber }
-    : { type: "move", color, id, captures: removed, colorIllusion: point.colorIllusion ?? null, hiddenHandRevealed, moveNumber: next.moveNumber });
-  if (hidden) {
-    next.skillUses[color] -= 1;
-    applySkillCost(next, color, skill ?? "aemeath");
-  }
-  return ok(next, { notices });
-}
-
-function applyColorIllusion(state, color, point, override) {
-  if (override !== undefined) {
-    point.colorIllusion = override ? structuredClone(override) : null;
-    return;
-  }
-  const passive = state.passives?.[color]?.colorIllusion;
-  if (!passive?.active || Math.random() >= passive.probability) {
-    point.colorIllusion = null;
-    return;
-  }
-  point.colorIllusion = {
-    owner: color,
-    visibleAs: opponent(color),
-    effect: "color-illusion-passive"
-  };
-}
-
 export function passMove(state, color) {
   if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能弃一手");
   if (state.turn !== color) return fail("还没有轮到你");
@@ -351,7 +288,6 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
     skill
   }) ?? fail("未知角色技能");
 }
-
 
 export function canStartSkill(state, skillOrCharacterId) {
   if (!gameModeSkillEnabled(state.mode)) return false;
@@ -423,397 +359,4 @@ function createPassiveState(players = [], mode = gameModeById()) {
 function passiveProbability(skill) {
   const value = Number(skill?.params?.probability ?? 0.8);
   return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0.8;
-}
-
-export function playHiddenHand(state, color, id, options = {}) {
-  const result = placeStone(state, color, id, { hidden: true, skill: options.skill ?? options.characterId ?? "aemeath" });
-  if (result.ok && options.skillName) {
-    result.state.history[result.state.history.length - 1].skill = options.skillName;
-  }
-  return result;
-}
-
-export function erasePoint(state, color, id, options = {}) {
-  const next = cloneState(state);
-  const point = getPoint(next, id);
-  if (!point?.valid) return fail("该交叉点已不可用");
-  if (point.stone) return fail("只能抹除空交叉点");
-  point.valid = false;
-  point.mark = null;
-  point.skillEffect = "erased-point";
-  point.neighbors = [];
-  for (const other of next.points) {
-    other.neighbors = other.neighbors.filter((neighborId) => neighborId !== id);
-  }
-  next.skillUses[color] -= 1;
-  applySkillCost(next, color, options.skill ?? "sigrika");
-  next.ko = null;
-  next.history.push({ type: "skill", skill: "星辰符文", effectType: "erase-point", color, id, moveNumber: next.moveNumber });
-  if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
-  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false, "skillRemovals"));
-}
-
-export function flipStone(state, color, id, options = {}) {
-  const next = cloneState(state);
-  const point = getPoint(next, id);
-  if (!point?.valid || !point.stone) return fail("必须指定棋盘上的棋子");
-  if (!isPlayerColor(point.stone)) return fail("只能反色黑白棋子");
-  const originalColor = point.stone;
-  const removalOwner = opponent(originalColor);
-  point.stone = opponent(point.stone);
-  point.colorIllusion = null;
-  point.skillEffect = "flipped-stone";
-  next.skillRemovals ??= { black: 0, white: 0 };
-  next.skillRemovals[removalOwner] = (next.skillRemovals[removalOwner] ?? 0) + 1;
-  next.skillUses[color] -= 1;
-  applySkillCost(next, color, options.skill ?? "denia");
-  next.ko = null;
-  next.history.push({ type: "skill", skill: "染秽", effectType: "flip-stone", color, id, skillRemovalOwner: removalOwner, moveNumber: next.moveNumber });
-  if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
-  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? true, "skillRemovals"));
-}
-
-export function sprayStone(state, color, id, options = {}) {
-  const next = cloneState(state);
-  const target = getPoint(next, id);
-  if (!canSprayTransformStone(target)) return fail("必须指定非喷涂、非隐藏的棋子");
-
-  const candidates = next.points.filter((point) => point.id !== id && canSprayTransformStone(point));
-  const randomTarget = candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : null;
-  const transformed = [];
-  const immediateRemovals = [];
-  next.skillRemovals ??= { black: 0, white: 0 };
-
-  for (const point of [target, randomTarget].filter(Boolean)) {
-    const from = point.stone;
-    const owner = captureCreditOwner(from);
-    if (owner) {
-      next.skillRemovals[owner] = (next.skillRemovals[owner] ?? 0) + 1;
-      immediateRemovals.push({ id: point.id, from, owner });
-    }
-    point.stone = NEUTRAL_STONES.spray;
-    point.colorIllusion = null;
-    point.hiddenHand = null;
-    point.skillEffect = "spray-stone";
-    transformed.push({ id: point.id, from, to: NEUTRAL_STONES.spray });
-  }
-
-  next.skillUses[color] -= 1;
-  applySkillCost(next, color, options.skill ?? "lynae");
-  next.ko = null;
-  const cleanupRemovals = [];
-  next.history.push({
-    type: "skill",
-    effectType: "spray-stone",
-    skill: options.skillName ?? "流光溢彩",
-    color,
-    id,
-    randomTargetId: randomTarget?.id ?? null,
-    transformed,
-    immediateRemovals,
-    cleanupRemovals,
-    moveNumber: next.moveNumber
-  });
-
-  return ok(resolveCapturesAfterMutation(
-    next,
-    color,
-    options.consumesTurn ?? true,
-    "skillRemovals",
-    cleanupRemovals
-  ));
-}
-
-export function rowSlash(state, color, id, options = {}) {
-  const next = cloneState(state);
-  const target = getPoint(next, id);
-  if (!target?.valid) return fail("蹇呴』鎸囧畾鏈夋晥浜ゅ弶鐐?");
-
-  const row = target.y;
-  const removedByColor = {};
-  const directRemovals = [];
-  next.skillRemovals ??= { black: 0, white: 0 };
-
-  for (const point of next.points) {
-    if (!point.valid || point.y !== row || !point.stone) continue;
-    const from = point.stone;
-    removedByColor[from] = (removedByColor[from] ?? 0) + 1;
-    const owner = captureCreditOwner(from);
-    if (owner) {
-      next.skillRemovals[owner] = (next.skillRemovals[owner] ?? 0) + 1;
-    }
-    directRemovals.push({ id: point.id, from, owner });
-    clearStone(next, point.id);
-  }
-
-  const directRemoved = directRemovals.length;
-  const overclockAdded = directRemoved * 2;
-  next.skillUses[color] -= 1;
-  applySkillCost(next, color, options.skill ?? "qiuyuan");
-  applyExtraSkillCost(next, color, overclockAdded, {
-    characterId: options.skill?.characterId ?? "qiuyuan",
-    reason: "row-slash-direct-removals"
-  });
-  next.ko = null;
-  next.rowEffects = [
-    ...(next.rowEffects ?? []).filter((effect) => effect.owner !== color),
-    { effectType: "row-slash", owner: color, y: row, id }
-  ];
-  const cleanupRemovals = [];
-  next.history.push({
-    type: "skill",
-    effectType: "row-slash",
-    skill: options.skillName ?? "一斩足矣",
-    color,
-    id,
-    row,
-    directRemoved,
-    overclockAdded,
-    removed: directRemoved,
-    removedByColor,
-    directRemovals,
-    cleanupRemovals,
-    moveNumber: next.moveNumber
-  });
-
-  const resolved = resolveCapturesAfterMutation(
-    next,
-    color,
-    options.consumesTurn ?? true,
-    "skillRemovals",
-    cleanupRemovals
-  );
-  if (options.consumesTurn ?? true) resolved.passes = 0;
-  return ok(resolved);
-}
-
-export function randomBlast(state, color, options = {}) {
-  const next = cloneState(state);
-  const size = Math.max(1, Number(options.skill?.params?.size ?? 3) || 3);
-  const radius = Math.floor(size / 2);
-  const center = options.centerId ? parsePointId(options.centerId) : null;
-  const randomCenter = center ? null : randomBlastStoneCenter(next, radius);
-  if (!center && !randomCenter) return fail("棋盘上没有可作为技能中心的棋子");
-  const centerX = center ? clampBlastCenter(center.x, next.size, radius) : randomCenter.x;
-  const centerY = center ? clampBlastCenter(center.y, next.size, radius) : randomCenter.y;
-  let removed = 0;
-  const removedByColor = { black: 0, white: 0 };
-  const marked = [];
-
-  for (let y = centerY - radius; y <= centerY + radius; y += 1) {
-    for (let x = centerX - radius; x <= centerX + radius; x += 1) {
-      if (x < 0 || y < 0 || x >= next.size || y >= next.size) continue;
-      const point = getPoint(next, pointId(x, y));
-      if (!point?.valid) continue;
-      if (point.stone) {
-        removedByColor[point.stone] = (removedByColor[point.stone] ?? 0) + 1;
-        clearStone(next, point.id);
-        removed += 1;
-      }
-      point.skillEffect = "blast-marker";
-      point.skillEffectOwner = color;
-      marked.push(point.id);
-    }
-  }
-
-  next.skillUses[color] -= 1;
-  next.skillRemovals ??= { black: 0, white: 0 };
-  next.skillRemovals.black = (next.skillRemovals.black ?? 0) + (removedByColor.white ?? 0);
-  next.skillRemovals.white = (next.skillRemovals.white ?? 0) + (removedByColor.black ?? 0);
-  applySkillCost(next, color, options.skill ?? "baconbits");
-  next.ko = null;
-  next.history.push({
-    type: "skill",
-    effectType: "random-blast",
-    skill: options.skillName ?? "猪小仙爆炸",
-    color,
-    id: pointId(centerX, centerY),
-    removed,
-    removedByColor,
-    marked,
-    moveNumber: next.moveNumber
-  });
-  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false, "skillRemovals"));
-}
-
-function randomBlastStoneCenter(state, radius) {
-  const min = radius;
-  const max = state.size - radius - 1;
-  const candidates = state.points.filter((point) => {
-    if (!point.valid || !point.stone) return false;
-    const { x, y } = parsePointId(point.id);
-    if (x <= 0 || y <= 0 || x >= state.size - 1 || y >= state.size - 1) return false;
-    return x >= min && x <= max && y >= min && y <= max;
-  });
-  if (!candidates.length) return null;
-  const point = candidates[Math.floor(Math.random() * candidates.length)];
-  return parsePointId(point.id);
-}
-
-function clampBlastCenter(value, boardSize, radius) {
-  const min = radius;
-  const max = boardSize - radius - 1;
-  if (min > max) return Math.floor(boardSize / 2);
-  return Math.min(max, Math.max(min, value));
-}
-
-function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true, counter = "captures", cleanupSink = null) {
-  let changed = true;
-  while (changed) {
-    changed = false;
-    const visited = new Set();
-    for (const point of state.points) {
-      if (!point.valid || !point.stone || visited.has(point.id)) continue;
-      const group = collectGroup(state, point.id);
-      group.stones.forEach((stone) => visited.add(stone));
-      if (group.liberties.size === 0) {
-        const removalOwner = captureCreditOwner(group.color);
-        for (const stone of group.stones) clearStone(state, stone);
-        cleanupSink?.push?.({ color: group.color, stones: [...group.stones], owner: removalOwner });
-        if (counter === "skillRemovals") {
-          state.skillRemovals ??= { black: 0, white: 0 };
-          if (removalOwner) {
-            state.skillRemovals[removalOwner] = (state.skillRemovals[removalOwner] ?? 0) + group.stones.length;
-          }
-        } else if (removalOwner) {
-          state.captures[removalOwner] += group.stones.length;
-        }
-        changed = true;
-      }
-    }
-  }
-  if (consumesTurn) {
-    state.turn = opponent(actorColor);
-    state.moveNumber += 1;
-  }
-  return state;
-}
-
-export function suspendUnexposedHiddenHands(state) {
-  const suspended = state.suspendedHiddenHands ?? [];
-  for (const point of state.points) {
-    if (!point.stone || !point.hiddenHand || point.hiddenHand.exposed) continue;
-    suspended.push({ id: point.id, color: point.stone });
-    point.stone = null;
-    point.hiddenHand = null;
-  }
-  state.suspendedHiddenHands = suspended;
-  return state;
-}
-
-export function restoreSuspendedHiddenHands(state) {
-  for (const hidden of state.suspendedHiddenHands ?? []) {
-    const point = getPoint(state, hidden.id);
-    if (!point?.valid || point.stone) continue;
-    point.stone = hidden.color;
-    point.hiddenHand = {
-      owner: hidden.color,
-      exposed: false,
-      effect: "hidden-hand"
-    };
-  }
-  state.suspendedHiddenHands = [];
-  return state;
-}
-
-export function exposeHiddenHands(state) {
-  restoreSuspendedHiddenHands(state);
-  let revealed = false;
-  for (const point of state.points) {
-    if (point.hiddenHand && revealHiddenHand(point)) revealed = true;
-  }
-  return revealed ? [HIDDEN_HAND_NOTICE] : [];
-}
-
-function isUnexposedOpponentHiddenHand(point, color) {
-  return point.hiddenHand && !point.hiddenHand.exposed && point.hiddenHand.owner !== color;
-}
-
-function revealHiddenHand(point) {
-  if (!point.hiddenHand || point.hiddenHand.exposed) return false;
-  point.hiddenHand.exposed = true;
-  return true;
-}
-
-function revealCapturingHiddenHands(state, ownGroup, removed, color) {
-  if (removed.length === 0) return [];
-  let revealed = false;
-  for (const stone of ownGroup.stones) {
-    const point = getPoint(state, stone);
-    if (point?.hiddenHand && revealHiddenHand(point)) revealed = true;
-  }
-  for (const removedId of removed) {
-    const removedPoint = getPoint(state, removedId);
-    if (!removedPoint) continue;
-    for (const neighbor of activeNeighbors(state, removedPoint)) {
-      if (neighbor.stone === color && neighbor.hiddenHand && revealHiddenHand(neighbor)) revealed = true;
-    }
-  }
-  return revealed ? [HIDDEN_HAND_NOTICE] : [];
-}
-
-function clearStone(state, id) {
-  const point = getPoint(state, id);
-  if (!point) return;
-  point.stone = null;
-  point.hiddenHand = null;
-  point.colorIllusion = null;
-}
-
-function clearOwnedBoardMarkers(state, ownerColor) {
-  for (const point of state.points) {
-    if (point.skillEffect !== "blast-marker") continue;
-    if (point.skillEffectOwner !== ownerColor) continue;
-    point.skillEffect = null;
-    point.skillEffectOwner = null;
-  }
-  state.rowEffects = (state.rowEffects ?? []).filter((effect) => effect.owner !== ownerColor);
-}
-
-function applySkillCost(state, color, skillOrCharacterId) {
-  const skill = typeof skillOrCharacterId === "string"
-    ? CHARACTERS[skillOrCharacterId]?.skill
-    : skillOrCharacterId;
-  const costType = skill?.costType ?? "numeric";
-  const costValue = String(skill?.costValue ?? skill?.cost ?? 0);
-  if (costType === "numeric") {
-    const cost = Number(costValue);
-    state.skillCosts = state.skillCosts ?? { black: 0, white: 0 };
-    if (Number.isFinite(cost)) {
-      state.skillCosts[color] = (state.skillCosts[color] ?? 0) + cost;
-    }
-  }
-  state.skillCostNotes = state.skillCostNotes ?? [];
-  state.skillCostNotes.push({
-    color,
-    characterId: typeof skillOrCharacterId === "string" ? skillOrCharacterId : skill?.characterId ?? null,
-    costType,
-    costValue
-  });
-}
-
-function applyExtraSkillCost(state, color, cost, { characterId = null, reason = "" } = {}) {
-  if (!Number.isFinite(cost) || cost <= 0) return;
-  state.skillCosts = state.skillCosts ?? { black: 0, white: 0 };
-  state.skillCosts[color] = (state.skillCosts[color] ?? 0) + cost;
-  state.skillCostNotes = state.skillCostNotes ?? [];
-  state.skillCostNotes.push({
-    color,
-    characterId,
-    costType: "numeric",
-    costValue: String(cost),
-    reason
-  });
-}
-
-function numericSkillCost(state, color) {
-  return state.skillCosts?.[color] ?? 0;
-}
-
-function ok(state, extra = {}) {
-  return { ok: true, state, ...extra };
-}
-
-function fail(error) {
-  return { ok: false, error };
 }

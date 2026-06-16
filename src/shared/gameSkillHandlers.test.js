@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { COLORS, createGameState, pointId } from "./game.js";
 import {
   ACTIVE_SKILL_HANDLERS,
@@ -15,6 +16,12 @@ describe("game skill handlers", () => {
       "row-slash",
       "spray-stone"
     ]);
+  });
+
+  it("does not depend on the core game module for concrete skill actions", () => {
+    const source = readFileSync(new URL("./gameSkillHandlers.js", import.meta.url), "utf8");
+
+    expect(source).not.toMatch(/from "\.\/game\.js"/);
   });
 
   it("dispatches through the active skill handler registry", () => {

@@ -1,4 +1,5 @@
-import { erasePoint, flipStone, playHiddenHand, randomBlast, rowSlash, sprayStone } from "./game.js";
+import { erasePoint, flipStone, randomBlast, rowSlash, sprayStone } from "./gameSkillActions.js";
+import { playHiddenHand } from "./gameStoneActions.js";
 import { executeRegisteredSkill, skillConsumesTurn } from "./gameSkillRegistry.js";
 
 export const ACTIVE_SKILL_HANDLERS = {

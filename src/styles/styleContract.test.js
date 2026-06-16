@@ -29,8 +29,10 @@ const SECONDARY_ENTRY_STYLE_FILES = new Set(["mobile-adaptive.css"]);
 const DOMAIN_STYLE_DIRECTORIES = new Set([
   "base",
   "commerce",
+  "home-terminal",
   "hud-components",
   "mobile-adaptive",
+  "mobile-home",
   "mobile-modals",
   "mobile-room",
   "modals",
@@ -250,6 +252,19 @@ describe("root CSS entry contract", () => {
     expect(mobileRoomEntry).not.toContain(".mobile-tab-panel .action-bar");
   });
 
+  it("keeps mobile-home.css as an import-only mobile lobby entry", () => {
+    const mobileHomeEntry = readFileSync(new URL("./mobile-home.css", import.meta.url), "utf8");
+
+    expect(cssImports(mobileHomeEntry)).toEqual([
+      "./mobile-home/base-portrait.css",
+      "./mobile-home/narrow-phone.css",
+      "./mobile-home/landscape.css"
+    ]);
+    expect(mobileHomeEntry).not.toContain(".app-shell:has(.home-screen)");
+    expect(mobileHomeEntry).not.toContain(".home-grid-featured");
+    expect(mobileHomeEntry).not.toContain("@media (max-width: 900px)");
+  });
+
   it("keeps mobile-modals.css as an import-only mobile modal entry", () => {
     const mobileModalsEntry = readFileSync(new URL("./mobile-modals.css", import.meta.url), "utf8");
 
@@ -316,6 +331,22 @@ describe("root CSS entry contract", () => {
     expect(roomTerminalEntry).not.toContain(".app-shell:has(.room-screen)");
     expect(roomTerminalEntry).not.toContain(".player-info.self");
     expect(roomTerminalEntry).not.toContain(".mobile-room-screen .mobile-room-viewport");
+  });
+
+  it("keeps home-terminal.css as an import-only lobby skin entry", () => {
+    const homeTerminalEntry = readFileSync(new URL("./home-terminal.css", import.meta.url), "utf8");
+
+    expect(cssImports(homeTerminalEntry)).toEqual([
+      "./home-terminal/shell-background.css",
+      "./home-terminal/top-strip.css",
+      "./home-terminal/layout-player.css",
+      "./home-terminal/entries.css",
+      "./home-terminal/utility-footer-motion.css",
+      "./home-terminal/mobile.css"
+    ]);
+    expect(homeTerminalEntry).not.toContain(".app-shell:has(.home-screen)");
+    expect(homeTerminalEntry).not.toContain(".home-player-zone");
+    expect(homeTerminalEntry).not.toContain("@media (max-width: 768px)");
   });
 
   it("keeps modals.css as an import-only domain entry", () => {

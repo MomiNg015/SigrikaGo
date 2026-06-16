@@ -42,10 +42,6 @@ function isWebp(path) {
   return bytes.toString("ascii", 0, 4) === "RIFF" && bytes.toString("ascii", 8, 12) === "WEBP";
 }
 
-function readTextFixture(path) {
-  return readFileSync(new URL(path, import.meta.url), "utf8").replace(/\r\n/g, "\n");
-}
-
 function readCssFixture(path) {
   return readCssWithImports(new URL(path, import.meta.url));
 }
@@ -53,7 +49,7 @@ function readCssFixture(path) {
 describe("HomeScreen", () => {
   it("renders the lobby as a Startorch tactical terminal shell", () => {
     const html = renderHome();
-    const css = readTextFixture("../styles/home-terminal.css");
+    const css = readCssFixture("../styles/home-terminal.css");
     const appShellBlock = css.match(/\.app-shell:has\(\.home-screen\)\s*\{[^}]+\}/)?.[0] ?? "";
     const appShellBeforeBlock = css.match(/\.app-shell:has\(\.home-screen\)::before\s*\{[^}]+\}/)?.[0] ?? "";
     const appShellAfterBlock = css.match(/\.app-shell:has\(\.home-screen\)::after\s*\{[^}]+\}/)?.[0] ?? "";
@@ -96,7 +92,7 @@ describe("HomeScreen", () => {
 
   it("renders hologram entry pods without changing the primary click targets", () => {
     const html = renderHome();
-    const css = readTextFixture("../styles/home-terminal.css");
+    const css = readCssFixture("../styles/home-terminal.css");
     const stageBlock = css.match(/\.home-grid-featured\s*\{[^}]+\}/g)?.find((block) => block.includes("minmax(240px, 0.72fr)")) ?? "";
     const narrowDesktopMedia = css.match(/@media \(min-width: 769px\) and \(max-width: 1180px\)\s*\{[\s\S]+?\.home-player-zone \.plaque-stats\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
     const imageEntryBlock = css.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
@@ -136,7 +132,7 @@ describe("HomeScreen", () => {
 
   it("uses a tactical ID card and skewed navigation cards", () => {
     const html = renderHome();
-    const css = readTextFixture("../styles/home-terminal.css");
+    const css = readCssFixture("../styles/home-terminal.css");
     const plaqueBlock = css.match(/\.home-player-zone \.home-player-plaque\s*\{[^}]+\}/g)?.find((block) => block.includes("background: rgba(10, 22, 30, 0.75)")) ?? "";
     const statsBlock = css.match(/\.home-player-zone \.plaque-stats\s*\{[^}]+\}/g)?.find((block) => block.includes("font-family: ui-monospace")) ?? "";
     const utilityBlock = css.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/g)?.find((block) => block.includes("grid-template-columns: 1fr")) ?? "";
@@ -240,7 +236,7 @@ describe("HomeScreen", () => {
 
   it("keeps the HUD footer minimal and rewrites the mobile lobby layout", () => {
     const html = renderHome();
-    const css = readTextFixture("../styles/home-terminal.css");
+    const css = readCssFixture("../styles/home-terminal.css");
     const footerBlock = css.match(/\.home-footer-strip\s*\{[^}]+\}/)?.[0] ?? "";
     const footerSpanBlock = css.match(/\.home-footer-strip span\s*\{[^}]+\}/)?.[0] ?? "";
     const mobileMedia = css.match(/@media \(max-width: 768px\)\s*\{[\s\S]+?\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";

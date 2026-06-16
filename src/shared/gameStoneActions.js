@@ -1,0 +1,167 @@
+import { GAME_PHASES } from "./gamePhases.js";
+import { activeNeighbors, getPoint } from "./gameBoard.js";
+import { captureCreditOwner, opponent } from "./gameConstants.js";
+import { collectGroup } from "./gameGroups.js";
+import { fail, ok } from "./gameActionResult.js";
+import {
+  applySkillCost,
+  clearOwnedBoardMarkers,
+  clearStone,
+  cloneState
+} from "./gameSkillState.js";
+
+export const HIDDEN_HAND_NOTICE = "发现隐藏手了！";
+
+export function playMove(state, color, id, options = {}) {
+  return placeStone(state, color, id, { hidden: false, colorIllusion: options.colorIllusion });
+}
+
+export function playHiddenHand(state, color, id, options = {}) {
+  const result = placeStone(state, color, id, { hidden: true, skill: options.skill ?? options.characterId ?? "aemeath" });
+  if (result.ok && options.skillName) {
+    result.state.history[result.state.history.length - 1].skill = options.skillName;
+  }
+  return result;
+}
+
+function placeStone(state, color, id, { hidden, skill = null, colorIllusion = undefined }) {
+  if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能落子");
+  if (state.turn !== color) return fail("还没有轮到你");
+  const next = cloneState(state);
+  const point = getPoint(next, id);
+  if (!point?.valid) return fail("该交叉点不可落子");
+  if (point.stone) {
+    if (!hidden && isUnexposedOpponentHiddenHand(point, color)) {
+      revealHiddenHand(point);
+      return ok(next, { notices: [HIDDEN_HAND_NOTICE] });
+    }
+    return fail("该交叉点已有棋子");
+  }
+  if (next.ko === id) return fail("此处为劫禁着点");
+
+  point.stone = color;
+  if (hidden) {
+    point.hiddenHand = {
+      owner: color,
+      exposed: false,
+      effect: "hidden-hand"
+    };
+  }
+  applyColorIllusion(next, color, point, colorIllusion);
+
+  const removed = [];
+  let creditedCaptures = 0;
+  for (const neighbor of activeNeighbors(next, point)) {
+    if (neighbor.stone && neighbor.stone !== color) {
+      const group = collectGroup(next, neighbor.id);
+      if (group.liberties.size === 0) {
+        removed.push(...group.stones);
+        if (captureCreditOwner(group.color) === color) creditedCaptures += group.stones.length;
+      }
+    }
+  }
+
+  for (const stone of removed) clearStone(next, stone);
+
+  const ownGroup = collectGroup(next, id);
+  if (ownGroup.liberties.size === 0) return fail("禁自杀");
+  const notices = revealCapturingHiddenHands(next, ownGroup, removed, color);
+
+  next.captures[color] += creditedCaptures;
+  next.ko = removed.length === 1 && ownGroup.stones.length === 1 && ownGroup.liberties.size === 1
+    ? removed[0]
+    : null;
+  clearOwnedBoardMarkers(next, color);
+  next.turn = opponent(color);
+  next.passes = 0;
+  next.moveNumber += 1;
+  const hiddenHandRevealed = notices.includes(HIDDEN_HAND_NOTICE);
+  next.history.push(hidden
+    ? { type: "skill", skill: "小爱出击", color, id, captures: removed, hiddenHandRevealed, moveNumber: next.moveNumber }
+    : { type: "move", color, id, captures: removed, colorIllusion: point.colorIllusion ?? null, hiddenHandRevealed, moveNumber: next.moveNumber });
+  if (hidden) {
+    next.skillUses[color] -= 1;
+    applySkillCost(next, color, skill ?? "aemeath");
+  }
+  return ok(next, { notices });
+}
+
+function applyColorIllusion(state, color, point, override) {
+  if (override !== undefined) {
+    point.colorIllusion = override ? structuredClone(override) : null;
+    return;
+  }
+  const passive = state.passives?.[color]?.colorIllusion;
+  if (!passive?.active || Math.random() >= passive.probability) {
+    point.colorIllusion = null;
+    return;
+  }
+  point.colorIllusion = {
+    owner: color,
+    visibleAs: opponent(color),
+    effect: "color-illusion-passive"
+  };
+}
+
+export function exposeHiddenHands(state) {
+  restoreSuspendedHiddenHands(state);
+  let revealed = false;
+  for (const point of state.points) {
+    if (point.hiddenHand && revealHiddenHand(point)) revealed = true;
+  }
+  return revealed ? [HIDDEN_HAND_NOTICE] : [];
+}
+
+export function suspendUnexposedHiddenHands(state) {
+  const suspended = state.suspendedHiddenHands ?? [];
+  for (const point of state.points) {
+    if (!point.stone || !point.hiddenHand || point.hiddenHand.exposed) continue;
+    suspended.push({ id: point.id, color: point.stone });
+    point.stone = null;
+    point.hiddenHand = null;
+  }
+  state.suspendedHiddenHands = suspended;
+  return state;
+}
+
+export function restoreSuspendedHiddenHands(state) {
+  for (const hidden of state.suspendedHiddenHands ?? []) {
+    const point = getPoint(state, hidden.id);
+    if (!point?.valid || point.stone) continue;
+    point.stone = hidden.color;
+    point.hiddenHand = {
+      owner: hidden.color,
+      exposed: false,
+      effect: "hidden-hand"
+    };
+  }
+  state.suspendedHiddenHands = [];
+  return state;
+}
+
+function isUnexposedOpponentHiddenHand(point, color) {
+  return point.hiddenHand && !point.hiddenHand.exposed && point.hiddenHand.owner !== color;
+}
+
+function revealHiddenHand(point) {
+  if (!point.hiddenHand || point.hiddenHand.exposed) return false;
+  point.hiddenHand.exposed = true;
+  return true;
+}
+
+function revealCapturingHiddenHands(state, ownGroup, removed, color) {
+  if (removed.length === 0) return [];
+  let revealed = false;
+  for (const stone of ownGroup.stones) {
+    const point = getPoint(state, stone);
+    if (point?.hiddenHand && revealHiddenHand(point)) revealed = true;
+  }
+  for (const removedId of removed) {
+    const removedPoint = getPoint(state, removedId);
+    if (!removedPoint) continue;
+    for (const neighbor of activeNeighbors(state, removedPoint)) {
+      if (neighbor.stone === color && neighbor.hiddenHand && revealHiddenHand(neighbor)) revealed = true;
+    }
+  }
+  return revealed ? [HIDDEN_HAND_NOTICE] : [];
+}

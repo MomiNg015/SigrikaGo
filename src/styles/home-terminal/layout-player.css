@@ -1,0 +1,188 @@
+.home-main-panel {
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  container-type: inline-size;
+}
+
+.home-grid-featured {
+  width: min(100%, 1500px);
+  max-width: 1500px;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: auto;
+  display: grid;
+  grid-template-areas:
+    "player entries"
+    "nav entries";
+  grid-template-columns: minmax(240px, 0.72fr) minmax(360px, 1.28fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(18px, 3vw, 54px);
+  align-items: center;
+  overflow: visible;
+}
+
+@media (min-width: 769px) and (max-width: 1180px) {
+  .home-screen {
+    padding-inline: clamp(12px, 2vw, 20px);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .home-grid-featured {
+    width: 100%;
+    grid-template-columns: minmax(220px, 0.82fr) minmax(300px, 1.18fr);
+    gap: clamp(12px, 2.1vw, 28px);
+  }
+
+  .home-player-zone {
+    width: min(100%, 380px);
+  }
+
+  .home-player-zone .home-player-plaque {
+    grid-template-columns: 54px minmax(0, 1fr) minmax(116px, 34%);
+    gap: 10px;
+    padding: 10px 12px 10px 10px;
+  }
+
+  .home-player-zone .plaque-avatar {
+    width: 54px;
+    height: 54px;
+  }
+
+  .home-player-zone .plaque-avatar img {
+    width: 52px;
+    height: 52px;
+  }
+
+  .home-player-zone .plaque-stats {
+    min-width: 0;
+  }
+}
+
+.home-player-zone,
+.house-manual-entry,
+.home-match-feature,
+.home-grid-featured > .home-utility-grid {
+  position: static;
+  left: auto;
+  top: auto;
+  right: auto;
+  bottom: auto;
+}
+
+.home-player-zone {
+  grid-area: player;
+  width: min(420px, 100%);
+  height: auto;
+  overflow: visible;
+}
+
+.home-player-zone .home-player-row {
+  width: 100%;
+  max-width: none;
+  gap: 0;
+}
+
+.home-player-zone .home-player-plaque {
+  width: 100%;
+  min-height: 82px;
+  position: relative;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  grid-template-columns: 62px minmax(0, 1fr) auto;
+  gap: 14px;
+  padding: 10px 18px 10px 10px;
+  background: rgba(10, 22, 30, 0.75);
+  border: 1px solid var(--home-terminal-blue);
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+  box-shadow:
+    0 0 22px rgba(0, 191, 255, 0.22),
+    inset 0 0 18px rgba(0, 191, 255, 0.16);
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.home-player-zone .plaque-avatar,
+.home-player-zone .home-player-plaque > strong,
+.home-player-zone .plaque-stats {
+  position: relative;
+  z-index: 1;
+}
+
+.home-player-zone .plaque-avatar {
+  width: 62px;
+  height: 62px;
+  border: 1px solid var(--home-terminal-blue);
+  border-radius: 0;
+  background: rgba(0, 191, 255, 0.08);
+  box-shadow: 0 0 12px rgba(0, 191, 255, 0.34);
+}
+
+.home-player-zone .plaque-avatar img {
+  width: 60px;
+  height: 60px;
+}
+
+.home-player-zone .home-player-plaque strong {
+  color: #ffffff;
+  font-size: clamp(17px, 1.4vw, 22px);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 12px rgba(224, 247, 244, 0.5);
+}
+
+.home-player-zone .home-player-plaque > strong {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.home-player-zone .home-player-plaque .user-identity,
+.home-player-zone .home-player-plaque .user-identity-main,
+.home-player-zone .home-player-plaque .user-identity-name-tag,
+.home-player-zone .home-player-plaque .user-identity-name {
+  max-width: none;
+}
+
+.home-player-zone .home-player-plaque .user-identity-main,
+.home-player-zone .home-player-plaque .user-identity-name-tag,
+.home-player-zone .home-player-plaque .user-identity-name {
+  width: max-content;
+  flex: 0 0 auto;
+}
+
+.home-player-zone .home-player-plaque .user-identity-name {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.home-player-zone .plaque-stats {
+  min-width: 154px;
+  display: grid;
+  gap: 3px;
+  padding: 8px 9px;
+  border: 1px solid rgba(0, 255, 190, 0.28);
+  border-radius: 0;
+  background: rgba(0, 255, 190, 0.07);
+  color: var(--home-terminal-text);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+.home-player-zone .plaque-mode-stat {
+  grid-template-columns: 34px minmax(32px, max-content) minmax(46px, max-content);
+  gap: 6px;
+  justify-content: start;
+}
+
+.home-player-zone .plaque-mode-name {
+  color: var(--home-terminal-cyan);
+  font-size: 11px;
+}
+
+.home-player-zone .plaque-mode-rank,
+.home-player-zone .plaque-mode-rating {
+  color: var(--home-terminal-text);
+}
