@@ -181,10 +181,16 @@ function computeTerritoryMarks(state, neutral) {
     area.points.forEach((areaId) => visited.add(areaId));
     if (area.borderColors.size === 1) {
       const [owner] = area.borderColors;
-      if (isPlayerColor(owner)) territory[owner].push(...area.points);
+      if (isPlayerColor(owner)) {
+        territory[owner].push(...area.points.filter((areaId) => !isProtocolBannedForOwner(getPoint(state, areaId), owner)));
+      }
     }
   }
   return territory;
+}
+
+function isProtocolBannedForOwner(point, owner) {
+  return Boolean(point?.protocolBan?.bannedColor === owner);
 }
 
 function computeScoringTerritory(state) {

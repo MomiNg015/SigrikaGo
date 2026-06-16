@@ -185,7 +185,7 @@ SigrikaGo/
   - Owns the post-token `/api/me` confirmation, public character catalog load, login asset preload, minimum preload duration, site-settings refresh, and home-screen finish guard. Replay data stays lazy-loaded.
   - The preload completion guard only blocks the home transition when an active room or pending match-success room has already been recovered. It does not depend on the previous view ref, so a fresh login cannot remain on the 100% preload screen because the ref still contains `login`.
 - `src/app/characterCatalog.js`
-  - Loads the public character catalog through `/api/characters`, merges it with built-in fallback characters, and falls back to the local catalog on request failure. This keeps startup preloading and admin-triggered character refresh on the same path.
+  - Loads the public character catalog through `/api/characters`, merges it with built-in fallback characters, and falls back to the local catalog on request failure. This keeps startup preloading and admin-triggered character refresh on the same path. The public catalog carries admin-managed `sortOrder`, and App-level character list views must derive display order through `characterListFromCatalog` instead of raw object insertion order.
 - `src/app/roomNavigation.js`
   - Centralizes the pure navigation decision for leaving the room screen: replay exits clear the replay snapshot without emitting `room:leave`, while spectator and finished-room review exits emit `room:leave` before returning home.
 - `src/app/replayOpening.js`
@@ -233,6 +233,7 @@ SigrikaGo/
 - `src/shared/characters.js` 与 `src/shared/characterFallback.js`
   - 定义内置角色 fallback。
   - 将后端 DB 角色与内置角色合并。
+  - `characterListFromCatalog` sorts display lists by public character `sortOrder`; fallback-only characters keep builtin order after explicitly sorted records, so the member manual does not lose admin order.
 
 - `src/styles.css`
   - CSS 入口文件，当前按 `styles/base.css`、`admin.css`、`lobby.css`、`room.css`、`modals.css`、`commerce-settings.css`、`responsive.css` 分域导入；其中 `base.css` 是 import-only 入口，具体全局基础、预加载、控件、顶栏、主页和反馈规则拆到 `styles/base/`，`room.css` 是 import-only 入口，具体房间布局、玩家计时、棋盘、操作、成员浮层和聊天规则拆到 `styles/room/`，`modals.css` 是 import-only 入口，具体共享弹窗、结果/技能、履历/回放、用户资料、角色详情、手机适配和终端视觉系统拆到 `styles/modals/`。
@@ -557,8 +558,9 @@ SigrikaGo/
 
 ### 技能与角色
 
-- 内置角色 fallback：`sigrika`、`denia`、`aemeath`、`baconbits`、`nabomo`、`lynae`。旧达妮娅 slug `danea`/`denea` 不再作为兼容别名参与前端合并、用户公开资料或出战角色解析；启动时 `cleanupLegacyDeniaCharacterData` 会在角色 seed 前把用户选角/拥有权迁移到 canonical `denia`，删除旧角色行，删除引用旧 slug 的对局记录，并把角色商品、抽卡奖项和成就奖励目标改写为 `denia`。公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在部员手册。
+- 内置角色 fallback：`sigrika`、`denia`、`aemeath`、`baconbits`、`nabomo`、`lynae`、`qiuyuan`、`mornye`、`changli`、`chisa`。旧达妮娅 slug `danea`/`denea` 不再作为兼容别名参与前端合并、用户公开资料或出战角色解析；启动时 `cleanupLegacyDeniaCharacterData` 会在角色 seed 前把用户选角/拥有权迁移到 canonical `denia`，删除旧角色行，删除引用旧 slug 的对局记录，并把角色商品、抽卡奖项和成就奖励目标改写为 `denia`。公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在部员手册。
 - DB 角色会覆盖/合并内置角色。
+- Character `sortOrder` is admin-managed persistent order. `seedCharacters` only assigns builtin default order when creating missing rows, and must not overwrite existing character order on server restart.
 - 所有存在的角色都会出现在棋舍角色列表；未拥有角色以灰色状态展示，可查看信息但不可出战。
 - 角色信息包含 `acquisitionMethod`/“获得途径”和 `description` 纯文本，可由后台维护；棋舍角色详情会在获得途径下方直接以斜体展示角色描述正文，数据库为空时前端回退到内置角色默认描述。
 - 娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 `User.rating` 自动补充 `nabomo` 到已拥有角色列表。琳奈的获得途径为星炬模式首次升上 5 段自动获得；公开用户序列化时会根据星炬 `modeStats.rank`（缺省时回退 `User.rank`）自动补充 `lynae`，管理员用户不受段位限制直接拥有。
@@ -566,9 +568,11 @@ SigrikaGo/
   - `erase-point`：抹除空交叉点，点位不可落子且不参与数子。
   - `flip-stone`：反转目标棋子颜色。
   - `hidden-hand`：隐藏手，未暴露前对对方隐藏。
+  - `protocol-takeover`：莫宁主动技“协议接管”。指定一个有效、空置、未被协议标记的交叉点，写入对手禁入协议；该空点阻止被禁方普通落子和空点/任意点指定类技能目标，不阻止该点已有棋子被石子目标技能指定，也不改变气、提子、劫或棋子归属。协议点为空时不计入被禁方领地，但仍作为空区域连通的一部分，避免污染同一区域内其它空点归属；协议标记会随棋子翻转、横斩移除、随机爆破和普通提子保留，只有交叉点被抹除时清除。
   - `random-blast`：随机选择棋盘上非一路的已有棋子作为中心，并移除以该棋子为中心的固定 3x3 区域内棋子。
   - `spray-stone`：琳奈主动技“流光溢彩”。指定一枚非喷涂、非隐藏手棋子，并同时从棋盘上另一枚非喷涂、非隐藏手棋子中随机选一枚，转化为命名中立阵营“喷涂棋子”；如果没有随机候选，只转化指定棋子。黑/白棋转化为喷涂棋子时按来源颜色立即给对方 `skillRemovals +1`，其它中立棋子转化不给黑白除子；转化后按气规则反复清理无气棋群直到稳定，清理黑白棋群按正常归属计除子，清理中立棋群不计除子。
   - `color-illusion-passive`：娜波摩被动技“千变万化”。第一次轮到娜波摩玩家时自动进入技能演出，演出结束后该玩家后续落子有 80% 概率在对手视角中显示为对手颜色，真实棋盘规则仍按实际颜色计算；数子申请待确认时仍保持伪装，双方同意并进入死子确认/数子阶段、结果确认或对局结束后才显示真实棋盘。
+  - `liberty-purge`: Chisa active skill "????". The target rule is `legal-move-point`: the server first applies a normal legal move, including ko, protocol ban, and suicide checks, then removes every group with exactly one liberty from a single board snapshot. Removed non-friendly stones add overclock, removed friendly stones subtract overclock, and the final extra overclock is clamped at zero. Removed points are recorded in `libertyPurgeMarks` / `removalMarkIds` and rendered as red crosses until the opponent's next real turn ends. Targeting an opponent unexposed hidden hand only reveals it and does not spend the skill, switch turns, or enter skill preview.
 - 中立棋子由 `src/shared/gameConstants.js` 统一命名；同名中立棋子互相连接，不属于黑白双方，可被普通落子、猪小仙 `random-blast` 和死子标记移除，但中立棋子被移除不提供黑白除子。数子时中立棋子不计黑白子数，会作为边界参与空点归属判定；被喷涂棋子或多阵营共同围住的空点保持中立。
 - 达妮娅 `flip-stone` 作用于真实黑/白棋子，不能反色喷涂棋子或其它中立棋子；如果目标点带有娜波摩伪装，反色后会清除该点伪装。
 - 技能演出流程：服务端先进入 `skill-preview` 并广播 `pendingSkill`，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。
@@ -580,6 +584,7 @@ SigrikaGo/
 - 开局被动技能不会在 `opening` 阶段触发；正式进入 `playing` 后才按延迟规则触发，避免和执色提示/开局语音重叠。
 - 依赖棋盘已有棋子的技能在场上没有可用目标时不可启动：前端技能按钮会变灰，服务端也会在 `use-skill` action 中二次校验并拒绝。当前包括以黑白棋子为目标的达妮娅 `flip-stone`、需要随机选择现有棋子为中心的猪小仙 `random-blast`，以及以非喷涂、非隐藏手棋子为目标的琳奈 `spray-stone`。
 - 无目标技能不显示落子/目标预览；猪小仙 `random-blast` 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。前端必须把 `canPreviewSkillTarget` 的目标预览判定和 `skillUsesBoardConfirmation` 的棋盘确认判定分开：前者保持 `false`，后者允许合法棋盘点触发 `use-skill`。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。
+- ChangLi (`changli`) `double-move`: server resolution writes public `game.extraTurn` state. Each successful ordinary move decrements the remaining opportunity, pass follows the normal pass flow and clears `extraTurn`, counting/draw requests are blocked while `extraTurn` is active, and restored ChangLi skill previews resolve directly into the double-move state without replaying presentation.
 - 技能可配置：
   - 使用次数 `uses`
   - 是否不消耗回合 `freeTurn`

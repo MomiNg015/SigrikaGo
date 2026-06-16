@@ -145,6 +145,7 @@ export default function AppRoutes({
           onScoringAction={emitScoring}
           onChat={(text) => socket?.emit("chat:send", { roomCode: room.code, text })}
           onOpenReplay={onOpenReplay}
+          onToast={onToast}
         />
       )}
     </>

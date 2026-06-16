@@ -110,6 +110,66 @@ export const FALLBACK_CHARACTERS = {
       description: "指定棋盘上一枚棋子或交叉点，移除其所在行的所有棋子。每移除一枚棋子，超频+2。发动技能会消耗本回合。"
     }
   },
+  mornye: {
+    id: "mornye",
+    name: "莫宁",
+    description: "以科学家的冷静视角接管棋盘协议，在关键交叉点写入只针对对手的禁入规则。",
+    palette: "#8aa0ff",
+    portrait: "/assets/characters/mornye.png",
+    acquisitionMethod: "招募获得",
+    skill: {
+      id: "protocol-takeover",
+      name: "协议接管",
+      uses: 1,
+      cost: 2,
+      costType: "numeric",
+      costValue: "2",
+      systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
+      description: "指定棋盘一处空置交叉点，将其变为对方的禁入点。该点为空时，对方不能在此落子，也不能把该空点作为技能目标；该点不计入对方领地。超频2，发动技能不会消耗本回合。",
+      freeTurn: true
+    }
+  },
+  changli: {
+    id: "changli",
+    name: "长离",
+    englishName: "ChangLi",
+    description: "古风围棋高手，擅长在对手亮出手段后谋定后动，以连续两手重塑棋局。",
+    palette: "#e96c7d",
+    portrait: "/assets/characters/changli.png",
+    acquisitionMethod: "招募获得",
+    skill: {
+      id: "double-move",
+      name: "谋定后动",
+      uses: 1,
+      cost: 3,
+      costType: "numeric",
+      costValue: "3",
+      systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
+      description: "发动后，本回合最多可以连续下 2 手。每一手均按普通落子规则逐手结算，也可以选择弃一手结束行动。该技能只有在对手成功发动过主动技能后才能发动。超频 3，发动技能不会消耗本回合。",
+      freeTurn: true,
+      params: { moves: 2 }
+    }
+  },
+  chisa: {
+    id: "chisa",
+    name: "千咲",
+    englishName: "Chisa",
+    description: "黑发红眸的女子高中生棋手，会在合法落子后拨断棋盘上濒临断气的棋块。",
+    palette: "#d74255",
+    portrait: "/assets/characters/chisa.png",
+    acquisitionMethod: "招募获得",
+    skill: {
+      id: "liberty-purge",
+      name: "虚湮解弦",
+      uses: 1,
+      cost: 0,
+      costType: "numeric",
+      costValue: "0",
+      systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
+      description: "指定一个有效交叉点落子，然后，移除场上所有仅剩1口气的棋块。每移除一颗非己方棋子，超频+1；每移除一颗己方棋子，超频-1。",
+      freeTurn: false
+    }
+  },
   nabomo: {
     id: "nabomo",
     name: "娜波摩",

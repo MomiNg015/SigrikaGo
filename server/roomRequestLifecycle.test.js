@@ -33,6 +33,22 @@ describe("room request lifecycle", () => {
     expect(appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("black"));
   });
 
+  test("rejects counting and draw requests during ChangLi extra turn", () => {
+    const room = testRoom({
+      game: {
+        phase: GAME_PHASES.playing,
+        extraTurn: { effectType: "double-move", owner: "black", remaining: 1, used: 1 }
+      }
+    });
+    const lifecycle = createLifecycle({
+      rooms: new Map([[room.code, room]])
+    });
+
+    expect(lifecycle.requestCounting(room.code, "black", "io")).toMatchObject({ ok: false });
+    expect(lifecycle.requestDraw(room.code, "black", "io")).toMatchObject({ ok: false });
+    expect(room.game.phase).toBe(GAME_PHASES.playing);
+  });
+
   test("rejects draw responses when the room is not waiting for a draw response", () => {
     const room = testRoom({ game: { phase: GAME_PHASES.playing } });
     const lifecycle = createLifecycle({

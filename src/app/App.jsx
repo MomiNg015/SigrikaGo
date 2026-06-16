@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { CHARACTERS } from "../shared/characters.js";
+import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { deploymentSocketBase } from "../shared/preloadAssets.js";
 import { BackgroundMusic, loadAudioSettings } from "../audio/playback.jsx";
@@ -99,7 +99,7 @@ export default function App() {
     room,
     view
   });
-  const characterListView = Object.values(characters);
+  const characterListView = characterListFromCatalog(characters);
   const backgroundMusic = useBackgroundMusicTrack({
     view,
     room,

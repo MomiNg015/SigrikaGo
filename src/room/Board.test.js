@@ -100,6 +100,69 @@ describe("areBoardPropsEqual", () => {
     expect(css).toContain("--spray-stone-fallback");
   });
 
+  test("renders protocol ban markers as pointer-transparent point overlays", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: [{
+          id: "3,3",
+          x: 3,
+          y: 3,
+          valid: true,
+          stone: "black",
+          protocolBan: { owner: "black", bannedColor: "white", effect: "protocol-takeover" }
+        }],
+        history: []
+      }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup).toContain("protocol-ban-mark white");
+    expect(markup).toContain('aria-label="white protocol ban"');
+    expect(css).toContain(".protocol-ban-mark");
+    expect(css).toContain("pointer-events: none");
+    expect(css).toContain("rotate(45deg)");
+  });
+
+  test("renders Chisa removal marks as independent red cross overlays", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: [{
+          id: "3,3",
+          x: 3,
+          y: 3,
+          valid: true,
+          stone: null,
+          protocolBan: { owner: "black", bannedColor: "white", effect: "protocol-takeover" }
+        }],
+        history: [],
+        libertyPurgeMarks: [{
+          effectType: "liberty-purge",
+          owner: "black",
+          clearAfterColor: "white",
+          pointIds: ["3,3"]
+        }]
+      }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup).toContain("protocol-ban-mark white");
+    expect(markup).toContain("liberty-purge-removal-mark");
+    expect(markup).toContain('aria-label="liberty purge removal"');
+    expect(css).toContain(".liberty-purge-removal-mark");
+    const removalBlock = css.match(/\.liberty-purge-removal-mark\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(removalBlock).toContain("left: 50%");
+    expect(removalBlock).toContain("top: 50%");
+    expect(removalBlock).toContain("transform: translate(-50%, -50%)");
+    expect(removalBlock).not.toContain("rotate(45deg)");
+    expect(removalBlock).toContain("#ff1733");
+    expect(css).toContain("pointer-events: none");
+  });
+
   test("caps standard mode stone offsets at half a pixel", () => {
     const point = { id: "3,10", x: 3, y: 10, stone: "black" };
     const first = stoneOffsetForPoint(point, "standard");
@@ -359,6 +422,29 @@ describe("areBoardPropsEqual", () => {
     expect(scoringBlock).toContain(".board :is(.territory-mark.white, .dead-mark.white)");
   });
 
+  test("bright school keeps protocol markers centered and rotated on board intersections", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const protocolBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.protocol-ban-mark\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(protocolBlock).toContain("left: 50% !important");
+    expect(protocolBlock).toContain("top: 50% !important");
+    expect(protocolBlock).toContain("transform: translate(-50%, -50%) rotate(45deg) !important");
+    expect(protocolBlock).toContain("pointer-events: none !important");
+  });
+
+  test("bright school keeps Chisa removal crosses centered and saturated red", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const removalBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.liberty-purge-removal-mark\s*\{[^}]+\}/)?.[0] ?? "";
+    const removalBarsBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.liberty-purge-removal-mark::before,[\s\S]*?\.theme-bright-school\.theme-bright-school \.board \.liberty-purge-removal-mark::after\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(removalBlock).toContain("left: 50% !important");
+    expect(removalBlock).toContain("top: 50% !important");
+    expect(removalBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(removalBlock).toContain("color: #ff1733 !important");
+    expect(removalBarsBlock).toContain("height: 5px !important");
+    expect(removalBarsBlock).toContain("background: currentColor !important");
+  });
+
   test("uses owner-colored crosses for territory and owner-colored circles for dead stones", () => {
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const crossBaseBlock = css.match(/\.territory-mark::before,[\s\S]*?\.neutral-mark::after\s*\{[^}]+\}/)?.[0] ?? "";
@@ -405,6 +491,10 @@ describe("arePointButtonPropsEqual", () => {
       pointButtonProps({ point, hasScoringPoint: false }),
       pointButtonProps({ point, hasScoringPoint: true })
     )).toBe(false);
+    expect(arePointButtonPropsEqual(
+      pointButtonProps({ point, libertyPurgeMarked: false }),
+      pointButtonProps({ point, libertyPurgeMarked: true })
+    )).toBe(false);
   });
 });
 
@@ -434,6 +524,7 @@ function pointButtonProps(overrides = {}) {
     handlersRef: { current: { onPoint: () => {}, onScoringPoint: null, onNeutral: () => {} } },
     hasScoringPoint: false,
     isStar: false,
+    libertyPurgeMarked: false,
     markedActionId: "",
     moveNumber: null,
     neutralMarked: false,

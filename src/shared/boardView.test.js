@@ -109,6 +109,45 @@ describe("board view helpers", () => {
     })).toBe(false);
   });
 
+  it("previews Chisa targets only on ordinary legal move candidates", () => {
+    const game = {
+      phase: GAME_PHASES.playing,
+      turn: COLORS.black,
+      skillUses: { black: 1 },
+      ko: "6,6"
+    };
+    const player = {
+      color: COLORS.black,
+      character: { skill: { effectType: "liberty-purge", targetRule: "legal-move-point" } }
+    };
+
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: { id: "3,3", valid: true, stone: null }
+    })).toBe(true);
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: { id: "4,4", valid: true, stone: COLORS.white }
+    })).toBe(false);
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: { id: "6,6", valid: true, stone: null }
+    })).toBe(false);
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: {
+        id: "7,7",
+        valid: true,
+        stone: null,
+        protocolBan: { owner: COLORS.white, bannedColor: COLORS.black, effect: "protocol-takeover" }
+      }
+    })).toBe(false);
+  });
+
   it("does not preview Baconbits random blast targets", () => {
     const game = {
       phase: GAME_PHASES.playing,
@@ -155,5 +194,36 @@ describe("board view helpers", () => {
         hiddenHand: { owner: COLORS.white, exposed: false, effect: "hidden-hand" }
       }
     })).toBe(false);
+  });
+
+  it("hides empty protocol-banned points from the banned player's target preview only while empty", () => {
+    const game = {
+      phase: GAME_PHASES.playing,
+      turn: COLORS.white,
+      skillUses: { white: 1 }
+    };
+    const protocolPoint = {
+      valid: true,
+      stone: null,
+      protocolBan: { owner: COLORS.black, bannedColor: COLORS.white, effect: "protocol-takeover" }
+    };
+
+    expect(canPreviewSkillTarget({
+      game,
+      player: { color: COLORS.white, character: { skill: { effectType: "hidden-hand" } } },
+      point: protocolPoint
+    })).toBe(false);
+
+    expect(canPreviewSkillTarget({
+      game: { ...game, turn: COLORS.black, skillUses: { black: 1 } },
+      player: { color: COLORS.black, character: { skill: { effectType: "hidden-hand" } } },
+      point: protocolPoint
+    })).toBe(true);
+
+    expect(canPreviewSkillTarget({
+      game,
+      player: { color: COLORS.white, character: { skill: { effectType: "flip-stone", targetRule: "stone" } } },
+      point: { ...protocolPoint, stone: COLORS.black }
+    })).toBe(true);
   });
 });

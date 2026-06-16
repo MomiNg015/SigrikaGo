@@ -41,7 +41,7 @@ export function applyStandardGameAction({
   if (room.game.phase === GAME_PHASES.finished) {
     appendNotices(room, exposeHiddenHands(room.game));
     scheduleRoomClose(room.code, io);
-  } else {
+  } else if (!room.game.extraTurn) {
     maybeStartPassiveSkill(room, io);
   }
   return { ok: true, room };

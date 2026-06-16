@@ -20,6 +20,13 @@ export const SKILL_EFFECT_CATALOG = {
     boardEffect: true,
     soundCues: { startAt: 0.04, impactAt: 0.52 }
   },
+  "protocol-takeover": {
+    label: "协议接管",
+    targetRule: "empty-point",
+    active: true,
+    boardEffect: false,
+    soundCues: { startAt: 0.05, impactAt: 0.5 }
+  },
   "random-blast": {
     label: "随机爆炸",
     targetRule: "none",
@@ -40,6 +47,20 @@ export const SKILL_EFFECT_CATALOG = {
     active: true,
     boardEffect: true,
     soundCues: { startAt: 0.04, impactAt: 0.58 }
+  },
+  "liberty-purge": {
+    label: "虚湮解弦",
+    targetRule: "legal-move-point",
+    active: true,
+    boardEffect: false,
+    soundCues: { startAt: 0.04, impactAt: 0.5 }
+  },
+  "double-move": {
+    label: "ChangLi double move",
+    targetRule: "none",
+    active: true,
+    boardEffect: false,
+    soundCues: { startAt: 0.05, impactAt: 0.5 }
   },
   "color-illusion-passive": {
     label: "被动伪装",

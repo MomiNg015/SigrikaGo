@@ -17,6 +17,7 @@ import {
   playMove,
   pointId,
   prepareScoringState,
+  protocolTakeover,
   randomBlast,
   randomLayout,
   resultWithInvalidFlagForGame,
@@ -508,6 +509,157 @@ describe("SigrikaGo rules", () => {
     expect(result.state.moveNumber).toBe(0);
   });
 
+  it("uses Mornye protocol takeover to ban the opponent from an empty point without changing turn or liberties", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "mornye" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    forceStone(state, 3, 4, COLORS.white);
+    forceStone(state, 4, 3, COLORS.white);
+    forceStone(state, 5, 4, COLORS.white);
+
+    const result = useSkill(state, COLORS.black, "mornye", pointId(4, 4));
+
+    expect(result.ok).toBe(true);
+    const target = getPoint(result.state, pointId(4, 4));
+    expect(target.valid).toBe(true);
+    expect(target.stone).toBeNull();
+    expect(target.protocolBan).toEqual({
+      owner: COLORS.black,
+      bannedColor: COLORS.white,
+      effect: "protocol-takeover"
+    });
+    expect(collectTestGroup(result.state, pointId(3, 4)).liberties).toContain(pointId(4, 4));
+    expect(result.state.skillCosts.black).toBe(2);
+    expect(result.state.skillUses.black).toBe(0);
+    expect(result.state.turn).toBe(COLORS.black);
+    expect(result.state.moveNumber).toBe(0);
+    expect(result.state.history.at(-1)).toMatchObject({
+      type: "skill",
+      effectType: "protocol-takeover",
+      color: COLORS.black,
+      id: pointId(4, 4),
+      bannedColor: COLORS.white
+    });
+  });
+
+  it("blocks banned-color moves and empty-point skill targets but allows stone-target skills on protocol points", () => {
+    let state = createGameState([
+      { color: COLORS.black, characterId: "mornye" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    state = protocolTakeover(state, COLORS.black, pointId(4, 4), {
+      skill: CHARACTERS.mornye.skill,
+      skillName: CHARACTERS.mornye.skill.name,
+      consumesTurn: false
+    }).state;
+
+    expect(playMove(state, COLORS.white, pointId(4, 4)).ok).toBe(false);
+    expect(useSkill(state, COLORS.white, "sigrika", pointId(4, 4)).ok).toBe(false);
+
+    state.turn = COLORS.black;
+    const blackMove = playMove(state, COLORS.black, pointId(4, 4));
+    expect(blackMove.ok).toBe(true);
+    expect(getPoint(blackMove.state, pointId(4, 4)).protocolBan?.bannedColor).toBe(COLORS.white);
+
+    blackMove.state.turn = COLORS.white;
+    const flip = useSkill(blackMove.state, COLORS.white, "denia", pointId(4, 4));
+
+    expect(flip.ok).toBe(true);
+    expect(getPoint(flip.state, pointId(4, 4)).stone).toBe(COLORS.white);
+    expect(getPoint(flip.state, pointId(4, 4)).protocolBan?.bannedColor).toBe(COLORS.white);
+  });
+
+  it("rejects protocol takeover targets that are occupied, erased, or already protocol banned", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "mornye" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    forceStone(state, 3, 3, COLORS.white);
+    getPoint(state, pointId(4, 4)).valid = false;
+    getPoint(state, pointId(5, 5)).protocolBan = {
+      owner: COLORS.white,
+      bannedColor: COLORS.black,
+      effect: "protocol-takeover"
+    };
+
+    expect(useSkill(state, COLORS.black, "mornye", pointId(3, 3)).ok).toBe(false);
+    expect(useSkill(state, COLORS.black, "mornye", pointId(4, 4)).ok).toBe(false);
+    expect(useSkill(state, COLORS.black, "mornye", pointId(5, 5)).ok).toBe(false);
+  });
+
+  it("keeps protocol bans through stone mutation and removal but clears them when the intersection is erased", () => {
+    let state = createGameState([
+      { color: COLORS.black, characterId: "mornye" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    state = protocolTakeover(state, COLORS.black, pointId(4, 4), {
+      skill: CHARACTERS.mornye.skill,
+      skillName: CHARACTERS.mornye.skill.name,
+      consumesTurn: false
+    }).state;
+    state.turn = COLORS.black;
+    state = playMove(state, COLORS.black, pointId(4, 4)).state;
+    state.turn = COLORS.white;
+    state = flipStone(state, COLORS.white, pointId(4, 4), {
+      skill: CHARACTERS.denia.skill,
+      skillName: CHARACTERS.denia.skill.name,
+      consumesTurn: false
+    }).state;
+
+    expect(getPoint(state, pointId(4, 4)).stone).toBe(COLORS.white);
+    expect(getPoint(state, pointId(4, 4)).protocolBan?.bannedColor).toBe(COLORS.white);
+
+    state = rowSlash(state, COLORS.black, pointId(4, 4), {
+      skill: CHARACTERS.qiuyuan.skill,
+      skillName: CHARACTERS.qiuyuan.skill.name,
+      consumesTurn: false
+    }).state;
+    expect(getPoint(state, pointId(4, 4)).stone).toBeNull();
+    expect(getPoint(state, pointId(4, 4)).protocolBan?.bannedColor).toBe(COLORS.white);
+
+    state.turn = COLORS.black;
+    const erased = erasePoint(state, COLORS.black, pointId(4, 4));
+    expect(erased.ok).toBe(true);
+    expect(getPoint(erased.state, pointId(4, 4)).valid).toBe(false);
+    expect(getPoint(erased.state, pointId(4, 4)).protocolBan).toBeUndefined();
+  });
+
+  it("treats protocol-banned empty points as neutral for the banned color without polluting nearby territory", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "mornye" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    surroundWhiteBox(state);
+    getPoint(state, pointId(3, 3)).protocolBan = {
+      owner: COLORS.black,
+      bannedColor: COLORS.white,
+      effect: "protocol-takeover"
+    };
+    const inside = new Set([
+      pointId(2, 2), pointId(3, 2), pointId(4, 2),
+      pointId(2, 3), pointId(3, 3), pointId(4, 3),
+      pointId(2, 4), pointId(3, 4), pointId(4, 4)
+    ]);
+    const neutralOutside = state.points
+      .filter((point) => point.valid && !point.stone && !inside.has(point.id))
+      .map((point) => point.id);
+    state.scoring = {
+      ...prepareScoringState(state),
+      neutralPoints: neutralOutside
+    };
+    state.scoring = prepareScoringState(state);
+
+    expect(state.scoring.territory.white).not.toContain(pointId(3, 3));
+    expect(state.scoring.territory.white).toEqual(expect.arrayContaining([
+      pointId(2, 2),
+      pointId(4, 4)
+    ]));
+
+    const result = scoreGame(state);
+    expect(result.whiteTerritory).toBe(8);
+  });
+
   it("uses Lynae spray skill to transform the target and one random eligible stone simultaneously", () => {
     const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
     forceStone(state, 4, 4, COLORS.white);
@@ -802,6 +954,136 @@ describe("SigrikaGo rules", () => {
     expect(result.state.history.at(-1).cleanupRemovals).toEqual([
       { color: COLORS.white, stones: [pointId(10, 10)], owner: COLORS.black }
     ]);
+  });
+
+  it("uses Chisa liberty purge after a legal move and clamps overclock from snapshot removals", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "chisa" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    state.turn = COLORS.black;
+    state.ko = pointId(12, 12);
+    state.passes = 2;
+
+    forceStone(state, 3, 3, COLORS.white);
+    forceStone(state, 2, 3, COLORS.black);
+    forceStone(state, 4, 3, COLORS.black);
+    forceStone(state, 3, 2, COLORS.black);
+
+    forceStone(state, 6, 6, COLORS.black);
+    forceStone(state, 5, 6, COLORS.white);
+    forceStone(state, 7, 6, COLORS.white);
+    forceStone(state, 6, 5, COLORS.white);
+
+    forceStone(state, 9, 9, "spray");
+    forceStone(state, 8, 9, COLORS.white);
+    forceStone(state, 10, 9, COLORS.white);
+    forceStone(state, 9, 8, COLORS.white);
+
+    const result = useSkill(state, COLORS.black, "chisa", pointId(0, 0));
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(0, 0)).stone).toBe(COLORS.black);
+    expect(getPoint(result.state, pointId(3, 3)).stone).toBeNull();
+    expect(getPoint(result.state, pointId(6, 6)).stone).toBeNull();
+    expect(getPoint(result.state, pointId(9, 9)).stone).toBeNull();
+    expect(result.state.skillRemovals.black).toBe(1);
+    expect(result.state.skillRemovals.white).toBe(1);
+    expect(result.state.skillCosts.black).toBe(1);
+    expect(result.state.skillUses.black).toBe(0);
+    expect(result.state.turn).toBe(COLORS.white);
+    expect(result.state.moveNumber).toBe(1);
+    expect(result.state.passes).toBe(0);
+    expect(result.state.ko).toBeNull();
+    expect(result.state.libertyPurgeMarks).toEqual([{
+      effectType: "liberty-purge",
+      owner: COLORS.black,
+      clearAfterColor: COLORS.white,
+      pointIds: [pointId(3, 3), pointId(6, 6), pointId(9, 9)]
+    }]);
+    expect(result.state.history.at(-1)).toMatchObject({
+      type: "skill",
+      effectType: "liberty-purge",
+      id: pointId(0, 0),
+      placedId: pointId(0, 0),
+      rawOverclockDelta: 1,
+      overclockAdded: 1,
+      removed: 3,
+      removedByColor: { white: 1, black: 1, spray: 1 },
+      removalMarkIds: [pointId(3, 3), pointId(6, 6), pointId(9, 9)]
+    });
+  });
+
+  it("lets Chisa reveal an opponent hidden hand without spending the skill", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "chisa" },
+      { color: COLORS.white, characterId: "aemeath" }
+    ]);
+    const target = getPoint(state, pointId(4, 4));
+    target.stone = COLORS.white;
+    target.hiddenHand = {
+      owner: COLORS.white,
+      exposed: false,
+      effect: "hidden-hand"
+    };
+
+    const result = useSkill(state, COLORS.black, "chisa", pointId(4, 4));
+
+    expect(result.ok).toBe(true);
+    expect(result.revealedOnly).toBe(true);
+    expect(getPoint(result.state, pointId(4, 4)).hiddenHand.exposed).toBe(true);
+    expect(result.state.skillUses.black).toBe(1);
+    expect(result.state.turn).toBe(COLORS.black);
+    expect(result.state.history).toEqual([]);
+  });
+
+  it("keeps Chisa removal marks through non-turn-consuming skills and clears them after the opponent turn ends", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "chisa" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    forceStone(state, 3, 3, COLORS.white);
+    forceStone(state, 2, 3, COLORS.black);
+    forceStone(state, 4, 3, COLORS.black);
+    forceStone(state, 3, 2, COLORS.black);
+
+    const chisaResult = useSkill(state, COLORS.black, "chisa", pointId(0, 0));
+    expect(chisaResult.ok).toBe(true);
+    expect(chisaResult.state.libertyPurgeMarks?.[0]?.pointIds).toEqual([pointId(3, 3)]);
+
+    const freeSkillResult = useSkill(chisaResult.state, COLORS.white, "sigrika", pointId(1, 1));
+    expect(freeSkillResult.ok).toBe(true);
+    expect(freeSkillResult.state.turn).toBe(COLORS.white);
+    expect(freeSkillResult.state.libertyPurgeMarks?.[0]?.pointIds).toEqual([pointId(3, 3)]);
+
+    const passResult = passMove(freeSkillResult.state, COLORS.white);
+    expect(passResult.ok).toBe(true);
+    expect(passResult.state.turn).toBe(COLORS.black);
+    expect(passResult.state.libertyPurgeMarks).toEqual([]);
+  });
+
+  it("rejects Chisa targets that are not legal ordinary moves", () => {
+    const occupied = createGameState([
+      { color: COLORS.black, characterId: "chisa" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    forceStone(occupied, 4, 4, COLORS.white);
+    expect(useSkill(occupied, COLORS.black, "chisa", pointId(4, 4)).ok).toBe(false);
+
+    const ko = createGameState([
+      { color: COLORS.black, characterId: "chisa" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    ko.ko = pointId(4, 4);
+    expect(useSkill(ko, COLORS.black, "chisa", pointId(4, 4)).ok).toBe(false);
+
+    const suicide = createGameState([
+      { color: COLORS.black, characterId: "chisa" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    forceStone(suicide, 0, 1, COLORS.white);
+    forceStone(suicide, 1, 0, COLORS.white);
+    expect(useSkill(suicide, COLORS.black, "chisa", pointId(0, 0)).ok).toBe(false);
   });
 
   it("clears QiuYuan slash marks on the owner's next ordinary move", () => {
@@ -1196,5 +1478,92 @@ describe("SigrikaGo rules", () => {
     expect(result.marginValue).toBe(-9.5);
     expect(result.margin).toBe(4.75);
     expect(result.text).toBe("白胜4又3/4子");
+  });
+
+  it("unlocks ChangLi only after the opponent resolves an active skill", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "changli" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+
+    expect(canStartSkill(state, "changli")).toBe(false);
+    state.history.push({ type: "skill", effectType: "color-illusion-passive", color: COLORS.white });
+    expect(canStartSkill(state, "changli")).toBe(false);
+    state.history.push({ type: "skill", effectType: "erase-point", color: COLORS.white });
+    expect(canStartSkill(state, "changli")).toBe(true);
+  });
+
+  it("unlocks ChangLi after the opponent resolves hidden-hand active skill", () => {
+    let state = createGameState([
+      { color: COLORS.black, characterId: "changli" },
+      { color: COLORS.white, characterId: "aemeath" }
+    ]);
+    state.turn = COLORS.white;
+
+    const hiddenHand = useSkill(state, COLORS.white, "aemeath", pointId(3, 3));
+
+    expect(hiddenHand.ok).toBe(true);
+    state = hiddenHand.state;
+    expect(state.history.at(-1)).toMatchObject({
+      type: "skill",
+      effectType: "hidden-hand",
+      color: COLORS.white
+    });
+    expect(state.turn).toBe(COLORS.black);
+    expect(canStartSkill(state, "changli")).toBe(true);
+  });
+
+  it("lets ChangLi take two normal moves after the skill resolves", () => {
+    let state = createGameState([
+      { color: COLORS.black, characterId: "changli" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    state.history.push({ type: "skill", effectType: "erase-point", color: COLORS.white });
+
+    const skillResult = useSkill(state, COLORS.black, "changli");
+    expect(skillResult.ok).toBe(true);
+    expect(skillResult.state.turn).toBe(COLORS.black);
+    expect(skillResult.state.extraTurn).toMatchObject({ owner: COLORS.black, remaining: 2, used: 0 });
+    expect(skillResult.state.skillCosts.black).toBe(3);
+
+    const firstMove = playMove(skillResult.state, COLORS.black, pointId(3, 3));
+    expect(firstMove.ok).toBe(true);
+    expect(firstMove.state.turn).toBe(COLORS.black);
+    expect(firstMove.state.extraTurn).toMatchObject({ owner: COLORS.black, remaining: 1, used: 1 });
+
+    const secondMove = playMove(firstMove.state, COLORS.black, pointId(4, 4));
+    expect(secondMove.ok).toBe(true);
+    expect(secondMove.state.turn).toBe(COLORS.white);
+    expect(secondMove.state.extraTurn).toBeNull();
+  });
+
+  it("does not consume ChangLi extra moves on illegal move attempts", () => {
+    let state = createGameState([
+      { color: COLORS.black, characterId: "changli" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    state.history.push({ type: "skill", effectType: "erase-point", color: COLORS.white });
+    state = useSkill(state, COLORS.black, "changli").state;
+
+    const illegal = playMove(state, COLORS.black, pointId(-1, -1));
+
+    expect(illegal.ok).toBe(false);
+    expect(state.extraTurn).toMatchObject({ owner: COLORS.black, remaining: 2, used: 0 });
+  });
+
+  it("clears ChangLi extra turn when the player passes", () => {
+    let state = createGameState([
+      { color: COLORS.black, characterId: "changli" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    state.history.push({ type: "skill", effectType: "erase-point", color: COLORS.white });
+    state = useSkill(state, COLORS.black, "changli").state;
+
+    const result = passMove(state, COLORS.black);
+
+    expect(result.ok).toBe(true);
+    expect(result.state.turn).toBe(COLORS.white);
+    expect(result.state.extraTurn).toBeNull();
+    expect(result.state.passes).toBe(1);
   });
 });

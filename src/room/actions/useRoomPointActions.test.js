@@ -28,4 +28,27 @@ describe("room point action confirmation", () => {
       skillUsesBoardConfirmation: true
     })).toBe(false);
   });
+
+  it("allows surface-confirmed skills to release from any board point", () => {
+    expect(canConfirmPointAction({
+      actionType: "skill",
+      canConfirmSkillPoint: () => false,
+      point: { id: "A1", valid: false },
+      skillUsesBoardConfirmation: true,
+      skillUsesBoardSurfaceConfirmation: true
+    })).toBe(true);
+  });
+
+  it("rejects banned-color ordinary moves on empty protocol-banned points", () => {
+    expect(canConfirmPointAction({
+      actionType: "move",
+      me: { color: "white" },
+      point: {
+        id: "D4",
+        valid: true,
+        stone: null,
+        protocolBan: { owner: "black", bannedColor: "white", effect: "protocol-takeover" }
+      }
+    })).toBe(false);
+  });
 });

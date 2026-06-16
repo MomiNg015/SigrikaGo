@@ -122,7 +122,8 @@ const roomSkillLifecycle = createRoomSkillLifecycle({
 const {
   startActiveSkill,
   maybeStartPassiveSkill,
-  schedulePendingSkillResolution
+  schedulePendingSkillResolution,
+  completePendingSkillResolution
 } = roomSkillLifecycle;
 const roomOpeningLifecycle = createRoomOpeningLifecycle({
   appendSystem,
@@ -150,6 +151,7 @@ const roomRestoreLifecycle = createRoomRestoreLifecycle({
   completeRoomOpening,
   scheduleGameStart,
   schedulePendingSkillResolution,
+  completePendingSkillResolution,
   schedulePendingRoomDeadlines,
   scheduleEmptyActiveRoomClose
 });

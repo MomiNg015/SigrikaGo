@@ -23,11 +23,12 @@ function Board({
   stoneDecorations = {},
   onPoint,
   onScoringPoint,
-  onNeutral
+  onNeutral,
+  onBoardSurface
 }) {
   const pointerTypeRef = useRef("");
-  const handlersRef = useRef({ onPoint, onScoringPoint, onNeutral });
-  handlersRef.current = { onPoint, onScoringPoint, onNeutral };
+  const handlersRef = useRef({ onPoint, onScoringPoint, onNeutral, onBoardSurface });
+  handlersRef.current = { onPoint, onScoringPoint, onNeutral, onBoardSurface };
   const boardSize = game.size ?? 13;
   const markedAction = lastMarkedAction(game.history);
   const moveNumbers = useMemo(
@@ -37,6 +38,9 @@ function Board({
   const labels = useMemo(() => Array.from({ length: boardSize }, (_, index) => coordLetter(index)), [boardSize]);
   const rows = useMemo(() => Array.from({ length: boardSize }, (_, index) => boardSize - index), [boardSize]);
   const lines = useMemo(() => buildBoardLines(game.points), [game.points]);
+  const libertyPurgeMarkIds = useMemo(() => new Set(
+    (game.libertyPurgeMarks ?? []).flatMap((mark) => Array.isArray(mark.pointIds) ? mark.pointIds : [])
+  ), [game.libertyPurgeMarks]);
   const showScoringMarks = ["marking-dead", "result-review", "finished"].includes(game.phase);
   const territoryOwner = useMemo(() => new Map([
     ...(showScoringMarks ? game.scoring?.territory?.black ?? [] : []).map((id) => [id, COLORS.black]),
@@ -47,7 +51,13 @@ function Board({
     <div className={`board-wrap ${pendingSkill ? "targeting" : ""}`} data-board-size={boardSize} style={{ "--size": boardSize }}>
       {showCoords && <div className="coord-row coord-top">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
       {showCoords && <div className="coord-col coord-left">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
-      <div className="board">
+      <div
+        className="board"
+        onClick={() => {
+          handlersRef.current.onBoardSurface?.({ pointerType: pointerTypeRef.current });
+          pointerTypeRef.current = "";
+        }}
+      >
         <BoardAmbientEffects active={hasColorIllusionFog(game)} />
         <svg className="board-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           {lines.map((line) => (
@@ -91,6 +101,7 @@ function Board({
               handlersRef={handlersRef}
               hasScoringPoint={Boolean(onScoringPoint)}
               isStar={isStarPoint(point.x, point.y, boardSize)}
+              libertyPurgeMarked={libertyPurgeMarkIds.has(point.id)}
               markedActionId={markedAction?.id ?? ""}
               moveNumber={showMoves ? moveNumbers.get(point.id) ?? null : null}
               neutralMarked={showScoringMarks && Boolean(game.scoring?.neutralPoints?.includes(point.id))}
@@ -140,6 +151,7 @@ function PointButton({
   handlersRef,
   hasScoringPoint,
   isStar,
+  libertyPurgeMarked,
   markedActionId,
   moveNumber,
   neutralMarked,
@@ -173,7 +185,8 @@ function PointButton({
         event.stopPropagation();
         handlersRef.current.onScoringPoint?.(point);
       }}
-      onClick={() => {
+      onClick={(event) => {
+        event.stopPropagation();
         if (!hasScoringPoint) {
           handlersRef.current.onPoint(point, { pointerType: pointerTypeRef.current });
           pointerTypeRef.current = "";
@@ -198,7 +211,14 @@ function PointButton({
       {emptyTerritoryOwner && <span className={`territory-mark ${emptyTerritoryOwner}`} aria-label={`${emptyTerritoryOwner} territory`} />}
       {deadOwner && <span className={`dead-mark ${deadOwner}`} aria-label={`${deadOwner} dead-stone mark`} />}
       {neutralMarked && <span className="neutral-mark" aria-label="neutral point" />}
+      {point.protocolBan && (
+        <span
+          className={`protocol-ban-mark ${point.protocolBan.bannedColor}`}
+          aria-label={`${point.protocolBan.bannedColor} protocol ban`}
+        />
+      )}
       {point.skillEffect === "blast-marker" && <span className="skill-effect-marker blast" aria-hidden="true" />}
+      {libertyPurgeMarked && <span className="liberty-purge-removal-mark" aria-label="liberty purge removal" />}
       {confirmClass && <span className="touch-confirm-marker" aria-hidden="true" />}
     </button>
   );
@@ -223,6 +243,7 @@ export function arePointButtonPropsEqual(previous, next) {
     && previous.handlersRef === next.handlersRef
     && previous.hasScoringPoint === next.hasScoringPoint
     && previous.isStar === next.isStar
+    && previous.libertyPurgeMarked === next.libertyPurgeMarked
     && previous.markedActionId === next.markedActionId
     && previous.moveNumber === next.moveNumber
     && previous.neutralMarked === next.neutralMarked
@@ -242,6 +263,7 @@ export function areBoardPropsEqual(previous, next) {
     && samePointConfirmation(previous.pointConfirmation, next.pointConfirmation)
     && samePreviewPlayer(previous.previewPlayer, next.previewPlayer)
     && Boolean(previous.onScoringPoint) === Boolean(next.onScoringPoint)
+    && Boolean(previous.onBoardSurface) === Boolean(next.onBoardSurface)
     && sameStoneDecorations(previous.stoneDecorations, next.stoneDecorations);
 }
 

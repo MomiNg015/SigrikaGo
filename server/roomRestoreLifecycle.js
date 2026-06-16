@@ -7,6 +7,7 @@ export function createRoomRestoreLifecycle({
   completeRoomOpening,
   scheduleGameStart,
   schedulePendingSkillResolution,
+  completePendingSkillResolution,
   schedulePendingRoomDeadlines,
   scheduleEmptyActiveRoomClose,
   now = Date.now
@@ -39,7 +40,10 @@ export function createRoomRestoreLifecycle({
 
   function resumeActiveRoom(room, io) {
     if (room.game.phase === GAME_PHASES.skillPreview) {
-      if (!schedulePendingSkillResolution(room, io)) {
+      const pendingSkill = room.game.pendingSkill;
+      if (pendingSkill?.effectType === "double-move" && completePendingSkillResolution?.(room.code, pendingSkill.id, io)) {
+        // ChangLi resumes directly into the server-owned double-move state.
+      } else if (!schedulePendingSkillResolution(room, io)) {
         room.game.phase = GAME_PHASES.playing;
         room.game.pendingSkill = null;
       }

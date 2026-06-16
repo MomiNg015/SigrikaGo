@@ -48,7 +48,7 @@
 - `createPoints` / `getPoint` / `activeNeighbors`: 位于 `src/shared/gameBoard.js`，集中封装棋盘几何和点位访问；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `collectGroup`: 位于 `src/shared/gameGroups.js`，集中封装棋子连通块和气的遍历；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `createScoringState` / `prepareScoringState` / `markDeadGroup` / `toggleNeutralPoint` / `resetDeadMarks` / `scoreGame`: 位于 `src/shared/gameScoring.js`，集中封装数子阶段状态和终局计分；`src/shared/game.js` 保持同名转导以兼容既有调用方。
-- `normalizeSkillConfig` / `skillRequiresExistingStone` / `skillUsesBoardConfirmation`: 位于 `src/shared/gameSkills.js`，集中封装技能配置归一化、棋子依赖判定和确认式无目标技能判定；`src/shared/game.js` 保持同名转导以兼容既有调用方。
+- `normalizeSkillConfig` / `skillRequiresExistingStone` / `skillUsesBoardConfirmation` / `skillUsesBoardSurfaceConfirmation`: 位于 `src/shared/gameSkills.js`，集中封装技能配置归一化、棋子依赖判定和确认式无目标技能判定；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `executeRegisteredSkill` / `skillConsumesTurn`: 位于 `src/shared/gameSkillRegistry.js`，集中封装主动技能 `effectType` 到执行 handler 的分发与回合消耗判定。
 - `ACTIVE_SKILL_HANDLERS` / `executeActiveSkillHandler`: 位于 `src/shared/gameSkillHandlers.js`，集中维护当前具体主动技能 handler；`src/shared/game.js` 保留规则状态和兼容转导，新增主动技能应优先扩展 handler/registry 契约。
 - `createResignResult` / `createTimeoutResult` / `createDrawResult` / `resultWithInvalidFlagForGame`: 位于 `src/shared/gameResults.js`，集中封装对局结果 payload 与早期无效局标记；`src/shared/game.js` 保持同名转导以兼容既有调用方。
@@ -221,6 +221,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 ## Board Effect Theme Guard
 
 - Bright School board guards keep `.board-row-effects` transparent and overflow-visible, and keep `.board-row-slash` plus its `::before`/`::after` highlights as the only painted slash elements. This protects the DOM-only `row-slash` overlay from the theme firewall's generic `[class*="row"]` paper surface and pseudo-element rules, which otherwise can cover the grid and stones with a blank panel or flatten the slash into a plain bar.
+- Chisa's `.liberty-purge-removal-mark` is centered on each point button with `left/top: 50%` and `translate(-50%, -50%)`; its `::before` and `::after` bars own the rotation. Shared board CSS and the Bright School guard both keep the mark saturated red `#ff1733`, visible above stones, and pointer-events-none so it remains a purely visual removal history marker.
 
 ## Achievement And Personalization Frontend
 

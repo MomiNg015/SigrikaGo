@@ -50,7 +50,7 @@ describe("ActionBar helpers", () => {
     const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
     const targetingBlock = css.slice(css.indexOf("Bright School skill targeting repair."));
 
-    expect(targetingBlock).toContain(".action-bar .skill-action.active");
+    expect(targetingBlock).toContain(".action-bar .skill-action.active:not(:disabled)");
     expect(targetingBlock).toContain("--bright-school-skill-active-bg-0");
     expect(targetingBlock).toContain("--bright-school-skill-active-shadow-0");
     expect(targetingBlock).toContain("animation: bright-school-skill-action-glow 1.1s linear infinite !important");
@@ -61,6 +61,17 @@ describe("ActionBar helpers", () => {
     expect(targetingBlock).toContain("0% {");
     expect(targetingBlock).toContain("50% {");
     expect(targetingBlock).toContain("100% {");
+  });
+
+  it("keeps Bright School unavailable skill actions visibly disabled", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const disabledBlock = css.slice(css.indexOf("Bright School unavailable skill action repair."));
+
+    expect(disabledBlock).toContain(".action-bar .skill-action:disabled");
+    expect(disabledBlock).toContain("background: #d6cfd9 !important");
+    expect(disabledBlock).toContain("color: #7d7282 !important");
+    expect(disabledBlock).toContain("box-shadow: none !important");
+    expect(disabledBlock).toContain("animation: none !important");
   });
 
   it("keeps removable test tools behind an explicit dev flag", () => {

@@ -11,6 +11,7 @@ export function useRoomPointActions({
   role,
   setPendingSkill,
   skillUsesBoardConfirmation = false,
+  skillUsesBoardSurfaceConfirmation = false,
   skillPreview,
   onGameAction,
   onScoringAction
@@ -28,7 +29,7 @@ export function useRoomPointActions({
     if (displayRoom.game.phase !== GAME_PHASES.playing) return;
     if (role !== "player") return;
     const actionType = pendingSkill ? "skill" : "move";
-    if (!canConfirmPointAction({ point, actionType, canConfirmSkillPoint, me, skillUsesBoardConfirmation })) {
+    if (!canConfirmPointAction({ point, actionType, canConfirmSkillPoint, me, skillUsesBoardConfirmation, skillUsesBoardSurfaceConfirmation })) {
       setPointConfirmation(null);
       return;
     }
@@ -41,10 +42,18 @@ export function useRoomPointActions({
     }
     if (pendingSkill) {
       setPendingSkill(false);
-      onGameAction({ type: "skill", pointId: point.id });
+      onGameAction(skillUsesBoardSurfaceConfirmation ? { type: "skill" } : { type: "skill", pointId: point.id });
       return;
     }
     onGameAction({ type: "move", pointId: point.id });
+  }
+
+  function handleBoardSurface() {
+    if (isReplay || skillPreview || !pendingSkill || !skillUsesBoardSurfaceConfirmation) return;
+    if (displayRoom.game.phase !== GAME_PHASES.playing || role !== "player") return;
+    setPointConfirmation(null);
+    setPendingSkill(false);
+    onGameAction({ type: "skill" });
   }
 
   function handleScoringPoint(point) {
@@ -54,6 +63,7 @@ export function useRoomPointActions({
 
   return {
     handlePoint,
+    handleBoardSurface,
     handleScoringPoint,
     pointConfirmation
   };
@@ -64,11 +74,13 @@ export function canConfirmPointAction({
   actionType,
   canConfirmSkillPoint = () => false,
   me = null,
-  skillUsesBoardConfirmation = false
+  skillUsesBoardConfirmation = false,
+  skillUsesBoardSurfaceConfirmation = false
 }) {
   if (actionType === "skill") {
+    if (skillUsesBoardSurfaceConfirmation) return true;
     if (skillUsesBoardConfirmation) return Boolean(point?.valid);
     return canConfirmSkillPoint(point, me);
   }
-  return Boolean(point?.valid && !point.stone);
+  return Boolean(point?.valid && !point.stone && point.protocolBan?.bannedColor !== me?.color);
 }

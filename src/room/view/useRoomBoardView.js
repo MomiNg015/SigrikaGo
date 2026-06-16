@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { COLORS, canStartSkill, gameViewForColor } from "../../shared/game.js";
-import { skillUsesBoardConfirmation } from "../../shared/gameSkills.js";
+import { skillUsesBoardConfirmation, skillUsesBoardSurfaceConfirmation } from "../../shared/gameSkills.js";
 import { canPreviewPoint, replayGameAt, replayRoomAt } from "../roomView.js";
 import { effectiveRoomRole, roomGameInfoForPlayers } from "../roomState.js";
 
@@ -34,6 +34,7 @@ export function useRoomBoardView({ room, user, replayStep }) {
   const skillConfig = me?.character?.skill ?? me?.characterId;
   const skillAvailable = me ? canStartSkill(displayRoom.game, skillConfig) : true;
   const usesBoardConfirmation = me ? skillUsesBoardConfirmation(skillConfig) : false;
+  const usesBoardSurfaceConfirmation = me ? skillUsesBoardSurfaceConfirmation(skillConfig) : false;
   const opponentConnected = role !== "player" || opponent?.connected !== false;
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
   const skillPreview = displayRoom.game.pendingSkill;
@@ -74,6 +75,7 @@ export function useRoomBoardView({ room, user, replayStep }) {
     setViewColor,
     skillAvailable,
     skillUsesBoardConfirmation: usesBoardConfirmation,
+    skillUsesBoardSurfaceConfirmation: usesBoardSurfaceConfirmation,
     skillPreview,
     viewColor,
     whitePlayer,

@@ -18,6 +18,7 @@ export default function RoomBattleStage({
   characters,
   displayRoom,
   drawRequest,
+  handleBoardSurface,
   handlePoint,
   handleScoringPoint,
   hasAnyStones,
@@ -113,6 +114,7 @@ export default function RoomBattleStage({
         onPoint={handlePoint}
         onScoringPoint={displayRoom.game.phase === "marking-dead" ? handleScoringPoint : null}
         onNeutral={(id) => onScoringAction({ type: "mark-neutral", pointId: id })}
+        onBoardSurface={handleBoardSurface}
       />
     </div>
   );
@@ -125,6 +127,8 @@ export default function RoomBattleStage({
       pendingSkill={pendingSkill}
       setPendingSkill={setPendingSkill}
       skillLocked={Boolean(skillPreview)}
+      skillActionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
+      decisionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
       skillEnabled={displayRoom.game.skillEnabled !== false}
       skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
       skillAvailable={skillAvailable}

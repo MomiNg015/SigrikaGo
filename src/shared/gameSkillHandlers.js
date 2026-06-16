@@ -1,4 +1,4 @@
-import { erasePoint, flipStone, randomBlast, rowSlash, sprayStone } from "./gameSkillActions.js";
+import { doubleMove, erasePoint, flipStone, libertyPurge, protocolTakeover, randomBlast, rowSlash, sprayStone } from "./gameSkillActions.js";
 import { playHiddenHand } from "./gameStoneActions.js";
 import { executeRegisteredSkill, skillConsumesTurn } from "./gameSkillRegistry.js";
 
@@ -18,6 +18,11 @@ export const ACTIVE_SKILL_HANDLERS = {
     characterId: skill.characterId ?? "aemeath",
     skill
   }),
+  "protocol-takeover": ({ state, color, targetId, skill }) => protocolTakeover(state, color, targetId, {
+    skillName: skill.name,
+    consumesTurn: skillConsumesTurn(skill),
+    skill
+  }),
   "random-blast": ({ state, color, skill }) => randomBlast(state, color, {
     skillName: skill.name,
     consumesTurn: skillConsumesTurn(skill),
@@ -31,6 +36,15 @@ export const ACTIVE_SKILL_HANDLERS = {
   "spray-stone": ({ state, color, targetId, skill }) => sprayStone(state, color, targetId, {
     skillName: skill.name,
     consumesTurn: skillConsumesTurn(skill),
+    skill
+  }),
+  "liberty-purge": ({ state, color, targetId, skill }) => libertyPurge(state, color, targetId, {
+    skillName: skill.name,
+    consumesTurn: skillConsumesTurn(skill),
+    skill
+  }),
+  "double-move": ({ state, color, skill }) => doubleMove(state, color, {
+    skillName: skill.name,
     skill
   })
 };

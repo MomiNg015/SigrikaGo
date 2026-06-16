@@ -100,6 +100,43 @@ describe("room skill resolution helpers", () => {
     });
   });
 
+  test("builds Chisa pending skill preview metadata from placement and removal marks", () => {
+    const preview = buildPendingSkillPreview({
+      pendingSkillId: "skill-chisa",
+      player: {
+        color: COLORS.black,
+        characterId: "chisa",
+        character: CHARACTERS.chisa,
+        user: { username: "alice", itemEffects: {} }
+      },
+      character: CHARACTERS.chisa,
+      skill: CHARACTERS.chisa.skill,
+      requestedTargetId: "0,0",
+      resolvedGame: {
+        history: [{
+          type: "skill",
+          effectType: "liberty-purge",
+          id: "0,0",
+          removalMarkIds: ["3,3", "6,6"],
+          removed: 2,
+          removedByColor: { black: 1, white: 1 }
+        }]
+      },
+      resolvesAt: 2000
+    });
+
+    expect(preview).toMatchObject({
+      id: "skill-chisa",
+      characterId: "chisa",
+      effectType: "liberty-purge",
+      targetId: "0,0",
+      affectedPointIds: ["0,0", "3,3", "6,6"],
+      removalMarkIds: ["3,3", "6,6"],
+      removed: 2,
+      removedByColor: { black: 1, white: 1 }
+    });
+  });
+
   test("schedules and completes pending skill resolutions through injected room lifecycle hooks", () => {
     const room = {
       code: "12345",

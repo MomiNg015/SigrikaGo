@@ -41,7 +41,7 @@
 
 `server/userAssets.js` 是账号资产兼容边界：`parseAssetList()` / `parseOwnedItemCounts()` 处理旧字符串和公开数组 payload，`syncStructuredUserAssets()` 将 legacy 字段替换式同步到 `UserCharacter`、`UserDecoration`、`UserItem` 和 `UserItemEffect`，`publicUserAssets()` 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。`server/db.js` 的 `publicUser()` 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。
 
-仇远（`qiuyuan`）是内置剑客角色，立绘位于 `/assets/characters/qiuyuan.png`，获得方式文案为“部员招募获得”。部员招募尚未实装时，`server/userAssets.js` 将该角色视为管理员限定资源：管理员公开资产会自动补齐 `qiuyuan`，普通玩家不会默认拥有或部署。
+仇远（`qiuyuan`）是内置剑客角色，立绘位于 `/assets/characters/qiuyuan.png`，获得方式文案为“部员招募获得”。莫宁（`mornye` / Mornye）是内置科学家角色，立绘位于 `/assets/characters/mornye.png`，获得方式文案为“招募获得”。部员招募尚未实装时，`server/userAssets.js` 将这类角色视为管理员限定资源：管理员公开资产会自动补齐 `qiuyuan` 和 `mornye`，普通玩家不会默认拥有或部署。
 
 ### LoginSession
 
@@ -103,12 +103,12 @@
 
 - `id`: 主键 cuid。
 - `characterId`: 关联 `Character.id`，唯一。
-- `effectType`: 技能实际效果类型，当前支持 `erase-point`、`flip-stone`、`hidden-hand`、`random-blast`、`spray-stone`、`color-illusion-passive`、`row-slash`。
+- `effectType`: Skill effect type; currently supports `erase-point`, `flip-stone`, `hidden-hand`, `protocol-takeover`, `random-blast`, `spray-stone`, `color-illusion-passive`, `row-slash`, `double-move`, and `liberty-purge`.
 - `name`: 技能名。
 - `description`: 技能描述。
 - `uses`: 每局使用次数。
 - `freeTurn`: 是否不消耗回合。
-- `targetRule`: 目标规则，当前校验为 `empty-point`、`stone`、`any-point` 或 `none`；猪小仙 `random-blast` 为 `none`，但仍进入待释放确认状态，点击棋盘任意点后才释放。
+- `targetRule`: Targeting rule; currently validated as `empty-point`, `stone`, `any-point`, `legal-move-point`, or `none`. `random-blast` and `double-move` use `none`; Chisa `liberty-purge` uses `legal-move-point` so the target must pass ordinary move legality on the server.
 - `paramsJson`: JSON 字符串，当前作为扩展参数保留。
 - `costType`: `numeric` 或 `special`。
 - `costValue`: 超频值；`numeric` 会参与数子扣分，`special` 当前仅展示。
@@ -125,6 +125,8 @@
 `row-slash` 是仇远“一斩足矣”的主动棋盘技能。目标规则为 `any-point`，只能指定当前棋盘内仍有效的交叉点；空点和已有棋子均可指定，被抹除的无效点不可指定。技能横向处理目标所在行，直接移除该行所有黑棋、白棋、命名中立棋子、隐藏手棋子和幻色棋子，并清除劫状态。直接移除的黑白棋子按真实颜色给受益方增加 `skillRemovals`；中立棋子参与仇远超频增加但不提供黑白除子；隐藏手被直接移除时不产生发现提示；幻色棋子按真实颜色结算并清掉幻色状态。直接移除后会自动清理因此无气的棋串，后续清理仍计入 `skillRemovals`，但不再增加仇远超频。
 
 该技能基础超频消耗为 `0`，然后按直接移除棋子数追加超频，每枚直接移除棋子 `+2`；空行可以发动并消耗技能/回合，但追加超频为 `0`。发动后消耗本回合，重置连续虚手，`moveNumber +1`，并在 `rowEffects` 中记录一条公开横斩视觉标记。该标记只影响显示，不改变交叉点有效性，会在仇远使用者下一次普通落子时清除。
+
+`protocol-takeover` 是莫宁“协议接管”的主动棋盘技能。目标规则为 `empty-point`，只能指定当前棋盘内有效、空置、未被协议标记的交叉点。技能在点位上写入 `protocolBan = { owner, bannedColor, effect: "protocol-takeover" }`，其中 `owner` 是施放方，`bannedColor` 是对手。协议标记是公开点位状态，会随房间广播、观战和回放同步；被禁方不能在该空点普通落子，也不能把该空点作为空点/任意点指定类技能目标。若该点后来存在棋子，石子目标技能仍可指定该棋子，普通提子、翻转、横斩、随机爆破和喷涂等非抹除效果不会清除协议标记；只有 `erase-point` 抹除交叉点时会同步删除 `protocolBan`。数子时协议空点对 `bannedColor` 保持中立，不计入被禁方领地，但区域遍历仍把该点当作空区域的一部分，所以不会把同一块领地拆开或污染其它空点归属。莫宁技能超频为 `2`，`freeTurn: true`，发动后不消耗本回合。
 
 ### Decoration
 

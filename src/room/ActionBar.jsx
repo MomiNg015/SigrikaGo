@@ -19,6 +19,8 @@ export default function ActionBar({
   pendingSkill,
   setPendingSkill,
   skillLocked = false,
+  skillActionLocked = skillLocked,
+  decisionLocked = skillLocked,
   skillEnabled = true,
   skillUses,
   skillAvailable = true,
@@ -74,7 +76,7 @@ export default function ActionBar({
         <Hand size={18} />
         <span className="action-label mobile-action-button-label">弃手</span>
       </button>
-      <button onClick={onCountingRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, hasAnyStones, opponentConnected })}>
+      <button onClick={onCountingRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })}>
         <Calculator size={18} />
         <span className="action-label mobile-action-button-label">数子</span>
       </button>
@@ -82,13 +84,13 @@ export default function ActionBar({
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}
         onClick={() => setPendingSkill(!pendingSkill)}
-        disabled={!me || phase !== "playing" || !isMyTurn || skillLocked || skillUses <= 0 || !skillAvailable}
+        disabled={!me || phase !== "playing" || !isMyTurn || skillActionLocked || skillUses <= 0 || !skillAvailable}
       >
         <Sparkles size={20} />
         <span className="action-label mobile-action-button-label">技能 · {skillUses}</span>
       </button>
       )}
-      <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked, opponentConnected })}>
+      <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
         <Handshake size={18} />
         <span className="action-label mobile-action-button-label">和棋</span>
       </button>

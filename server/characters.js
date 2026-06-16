@@ -140,6 +140,7 @@ export function toCharacterPayload(record) {
     acquisitionMethod: record.acquisitionMethod ?? "",
     source: record.source ?? "default",
     enabled: record.enabled,
+    sortOrder: record.sortOrder ?? 0,
     skill
   };
 }
@@ -149,7 +150,6 @@ export async function seedCharacters(prisma) {
   for (const [sortOrder, character] of entries.entries()) {
     const existing = await prisma.character.findUnique({ where: { slug: character.id }, include: { skill: true } });
     if (existing) {
-      await syncBuiltinCharacterFields(prisma, existing, character, sortOrder);
       await syncBuiltinSkillCost(prisma, existing, character);
       continue;
     }
@@ -181,14 +181,6 @@ export async function seedCharacters(prisma) {
         }
       }
     });
-  }
-}
-
-async function syncBuiltinCharacterFields(prisma, existing, character, sortOrder) {
-  const data = {};
-  if (existing.sortOrder !== sortOrder) data.sortOrder = sortOrder;
-  if (Object.keys(data).length) {
-    await prisma.character.update({ where: { id: existing.id }, data });
   }
 }
 

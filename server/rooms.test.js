@@ -592,6 +592,67 @@ describe("rooms character integration", () => {
     });
   });
 
+  test("adds Chisa placement and removal metadata to pending skill previews", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    const characterConfig = { ...CHARACTERS.chisa, id: "chisa" };
+    joinMatchmaking({ user: user("chisa-black", "chisa", characterConfig), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("chisa-white", "sigrika"), socketId: "socket-b" }, io);
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+
+    const black = room.players.find((player) => player.user.id === "chisa-black");
+    const targetId = pointId(0, 0);
+    const removedId = pointId(3, 3);
+    room.game.turn = black.color;
+    getPoint(room.game, removedId).stone = COLORS.white;
+    getPoint(room.game, pointId(2, 3)).stone = COLORS.black;
+    getPoint(room.game, pointId(3, 2)).stone = COLORS.black;
+    getPoint(room.game, pointId(4, 3)).stone = COLORS.black;
+
+    const result = handleGameAction(room.code, black.user.id, { type: "skill", pointId: targetId }, io);
+
+    expect(result.ok).toBe(true);
+    expect(room.game.pendingSkill).toMatchObject({
+      characterId: "chisa",
+      effectType: "liberty-purge",
+      targetId,
+      affectedPointIds: [targetId, removedId],
+      removalMarkIds: [removedId],
+      removed: 1,
+      removedByColor: { white: 1 }
+    });
+  });
+
+  test("lets Chisa reveal an opponent hidden hand without entering skill preview", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    const characterConfig = { ...CHARACTERS.chisa, id: "chisa" };
+    joinMatchmaking({ user: user("reveal-chisa", "chisa", characterConfig), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("reveal-hidden", "aemeath", CHARACTERS.aemeath), socketId: "socket-b" }, io);
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+
+    const black = room.players.find((player) => player.user.id === "reveal-chisa");
+    const targetId = pointId(4, 4);
+    room.game.turn = black.color;
+    const rivalColor = opponentColor(black.color);
+    getPoint(room.game, targetId).stone = rivalColor;
+    getPoint(room.game, targetId).hiddenHand = { owner: rivalColor, exposed: false, effect: "hidden-hand" };
+
+    const result = handleGameAction(room.code, black.user.id, { type: "skill", pointId: targetId }, io);
+
+    expect(result.ok).toBe(true);
+    expect(room.game.phase).toBe(GAME_PHASES.playing);
+    expect(room.game.pendingSkill).toBeFalsy();
+    expect(room.pendingSkillResolution).toBeFalsy();
+    expect(room.game.turn).toBe(black.color);
+    expect(room.game.skillUses[black.color]).toBe(1);
+    expect(room.game.history).toHaveLength(0);
+    expect(getPoint(room.game, targetId).hiddenHand.exposed).toBe(true);
+    expect(room.chat.some((entry) => entry.kind === "skill")).toBe(false);
+  });
+
   test("renders targetColor from the targeted stone before a skill mutates it", () => {
     const characterConfig = {
       id: "denia",

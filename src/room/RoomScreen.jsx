@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GAME_PHASES } from "../shared/game.js";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import { OpeningModal } from "../modals/GameLifecycleModals.jsx";
@@ -21,7 +21,7 @@ import { useRoomBoardView } from "./view/useRoomBoardView.js";
 
 export { MOBILE_ROOM_MEDIA_QUERY };
 
-export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay }) {
+export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay, onToast }) {
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -46,6 +46,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     setViewColor,
     skillAvailable,
     skillUsesBoardConfirmation,
+    skillUsesBoardSurfaceConfirmation,
     skillPreview,
     viewColor,
     winnerColor
@@ -62,7 +63,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     onDrawRespond,
     onScoringAction
   });
-  const { handlePoint, handleScoringPoint, pointConfirmation } = useRoomPointActions({
+  const { handleBoardSurface, handlePoint, handleScoringPoint, pointConfirmation } = useRoomPointActions({
     canConfirmSkillPoint,
     displayRoom,
     isReplay,
@@ -71,6 +72,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     role,
     setPendingSkill,
     skillUsesBoardConfirmation,
+    skillUsesBoardSurfaceConfirmation,
     skillPreview,
     onGameAction,
     onScoringAction
@@ -87,6 +89,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     role,
     room
   });
+  useDoubleMoveToast({ room: displayRoom, showToast: onToast, isReplay });
 
   useEffect(() => {
     if (!showCloseCountdown) return undefined;
@@ -159,6 +162,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         displayRoom={displayRoom}
         drawRequest={drawRequest}
         handlePoint={handlePoint}
+        handleBoardSurface={handleBoardSurface}
         handleScoringPoint={handleScoringPoint}
         hasAnyStones={hasAnyStones}
         isLiveSpectator={isLiveSpectator}
@@ -221,6 +225,24 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       {skillPreview && <SkillBanner banner={skillPreview} characters={characters} audioSettings={audioSettings} />}
     </Layout>
   );
+}
+
+function useDoubleMoveToast({ room, showToast, isReplay }) {
+  const lastToastKeyRef = useRef("");
+  useEffect(() => {
+    if (isReplay || typeof showToast !== "function") return;
+    const extraTurn = room.game.extraTurn;
+    if (extraTurn?.effectType !== "double-move") {
+      lastToastKeyRef.current = "";
+      return;
+    }
+    const total = Number(extraTurn.remaining ?? 0) + Number(extraTurn.used ?? 0);
+    const current = Number(extraTurn.used ?? 0) + 1;
+    const key = `${room.code}:${extraTurn.owner}:${extraTurn.used}:${extraTurn.remaining}:${room.game.moveNumber}`;
+    if (lastToastKeyRef.current === key) return;
+    lastToastKeyRef.current = key;
+    showToast(`长离·谋定后动：第 ${current}/${total} 手`, "info");
+  }, [isReplay, room.code, room.game.extraTurn, room.game.moveNumber, showToast]);
 }
 
 export {

@@ -237,7 +237,7 @@ describe("user asset list helpers", () => {
       role: "admin",
       rank: "18级",
       ownedCharacters: "sigrika"
-    }).ownedCharacters).toEqual(expect.arrayContaining(["lynae", "qiuyuan"]));
+    }).ownedCharacters).toEqual(expect.arrayContaining(["lynae", "qiuyuan", "mornye", "changli"]));
   });
 
   it("keeps QiuYuan admin-only until recruitment is implemented", () => {
@@ -246,5 +246,26 @@ describe("user asset list helpers", () => {
       rank: "9段",
       ownedCharacters: "sigrika"
     }).ownedCharacters).not.toContain("qiuyuan");
+  });
+
+  it("keeps ChangLi admin-only until recruitment is implemented", () => {
+    expect(publicUserAssets({
+      role: "player",
+      rank: "9 dan",
+      ownedCharacters: "sigrika"
+    }).ownedCharacters).not.toContain("changli");
+  });
+
+  it("opens Chisa directly to admins until recruitment is implemented", () => {
+    expect(publicUserAssets({
+      role: "admin",
+      rank: "9 dan",
+      ownedCharacters: "sigrika"
+    }).ownedCharacters).toContain("chisa");
+    expect(publicUserAssets({
+      role: "player",
+      rank: "9 dan",
+      ownedCharacters: "sigrika"
+    }).ownedCharacters).not.toContain("chisa");
   });
 });

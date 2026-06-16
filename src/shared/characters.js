@@ -4,6 +4,14 @@ import { canonicalCharacterId } from "./characterAliases.js";
 export const CHARACTERS = FALLBACK_CHARACTERS;
 export const characterList = fallbackCharacterList;
 
+const fallbackCharacterOrder = new Map(
+  fallbackCharacterList.map((character, index) => [canonicalCharacterId(character.id), index])
+);
+
+export function characterListFromCatalog(catalog = CHARACTERS) {
+  return Object.values(catalog ?? {}).sort(compareCharactersForDisplay);
+}
+
 export function mergeCharacters(apiCharacters = [], disabledSlugs = []) {
   const disabled = new Set((Array.isArray(disabledSlugs) ? disabledSlugs : []).map(canonicalCharacterId));
   const merged = Object.fromEntries(
@@ -42,4 +50,28 @@ export function mergeCharacters(apiCharacters = [], disabledSlugs = []) {
   }
 
   return merged;
+}
+
+function compareCharactersForDisplay(a, b) {
+  const explicitSortDifference = Number(hasDisplaySortOrder(b)) - Number(hasDisplaySortOrder(a));
+  if (explicitSortDifference !== 0) return explicitSortDifference;
+  const bySortOrder = displaySortOrder(a) - displaySortOrder(b);
+  if (bySortOrder !== 0) return bySortOrder;
+  const byFallbackOrder = fallbackOrder(a) - fallbackOrder(b);
+  if (byFallbackOrder !== 0) return byFallbackOrder;
+  return String(a?.id ?? "").localeCompare(String(b?.id ?? ""));
+}
+
+function displaySortOrder(character) {
+  const value = Number(character?.sortOrder);
+  return Number.isFinite(value) ? value : fallbackOrder(character);
+}
+
+function hasDisplaySortOrder(character) {
+  return Number.isFinite(Number(character?.sortOrder));
+}
+
+function fallbackOrder(character) {
+  const id = canonicalCharacterId(character?.id);
+  return fallbackCharacterOrder.get(id) ?? fallbackCharacterOrder.size;
 }

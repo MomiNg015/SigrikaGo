@@ -12,9 +12,12 @@ describe("game skill registry", () => {
       "erase-point",
       "flip-stone",
       "hidden-hand",
+      "protocol-takeover",
       "random-blast",
       "row-slash",
-      "spray-stone"
+      "spray-stone",
+      "liberty-purge",
+      "double-move"
     ]);
   });
 

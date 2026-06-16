@@ -39,6 +39,7 @@
 - ChangLi (`changli`) uses the `double-move` active skill. The server persists the public chained-action state in `game.extraTurn`; board confirmation is not tied to an intersection, and restoring during ChangLi skill preview resolves directly into the double-move state without replaying the banner, sound, or animation.
 - Hidden-hand is an active skill history entry with `effectType: "hidden-hand"`, so ChangLi unlock checks treat Aemeath's resolved hidden-hand the same as other opponent active skills while still ignoring passive effects. Bright School's late skill-action layer also owns a disabled override for `.action-bar .skill-action:disabled`, keeping unavailable skills gray instead of inheriting active/normal gradients.
 - Bright School board guards keep DOM-only board effect layers transparent and restore their pseudo-elements so broad theme firewall rules such as `[class*="row"]` cannot turn QiuYuan's slash overlay into a blank paper panel or a plain bar over the board; Mornye's protocol marker remains a pointer-events-none point child and never changes board hit testing.
+- Chisa's `.liberty-purge-removal-mark` is also a point-local DOM effect: its container stays centered with `left/top: 50%` and `translate(-50%, -50%)`, while the red cross bars rotate inside the marker. Bright School guards preserve saturated red `#ff1733`, pseudo-element bars, and pointer-events-none behavior so removal marks line up with board intersections without changing hit testing.
 
 ## Modal Layering Note
 

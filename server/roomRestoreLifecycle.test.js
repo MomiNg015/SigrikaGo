@@ -104,6 +104,28 @@ describe("room restore lifecycle", () => {
     expect(scheduleEmptyActiveRoomClose).toHaveBeenCalledWith(room, "io");
   });
 
+  test("completes ChangLi pending skill previews immediately during restore", () => {
+    const startGameClock = vi.fn();
+    const completePendingSkillResolution = vi.fn(() => true);
+    const schedulePendingSkillResolution = vi.fn();
+    const lifecycle = createLifecycle({
+      startGameClock,
+      completePendingSkillResolution,
+      schedulePendingSkillResolution
+    });
+    const room = testRoom({
+      game: {
+        phase: GAME_PHASES.skillPreview,
+        pendingSkill: { id: "skill-1", effectType: "double-move" }
+      }
+    });
+
+    expect(lifecycle.resumeRoomTimers(room, "io")).toBe(true);
+    expect(completePendingSkillResolution).toHaveBeenCalledWith(room.code, "skill-1", "io");
+    expect(schedulePendingSkillResolution).not.toHaveBeenCalled();
+    expect(startGameClock).toHaveBeenCalledWith(room, "io");
+  });
+
   test("falls invalid restored skill previews back to playing", () => {
     const schedulePendingSkillResolution = vi.fn(() => false);
     const lifecycle = createLifecycle({

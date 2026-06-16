@@ -21,17 +21,21 @@ import { GAME_PHASES } from "./gamePhases.js";
 import {
   normalizeSkillConfig,
   skillRequiresExistingStone,
-  skillUsesBoardConfirmation
+  skillUsesBoardConfirmation,
+  skillUsesBoardSurfaceConfirmation
 } from "./gameSkills.js";
 import { executeActiveSkillHandler } from "./gameSkillHandlers.js";
 import {
+  doubleMove,
   erasePoint,
   flipStone,
+  libertyPurge,
+  protocolTakeover,
   randomBlast,
   rowSlash,
   sprayStone
 } from "./gameSkillActions.js";
-import { cloneState } from "./gameSkillState.js";
+import { clearExpiredLibertyPurgeMarks, cloneState } from "./gameSkillState.js";
 import {
   HIDDEN_HAND_NOTICE,
   exposeHiddenHands,
@@ -84,11 +88,15 @@ export { GAME_PHASES } from "./gamePhases.js";
 export {
   normalizeSkillConfig,
   skillRequiresExistingStone,
-  skillUsesBoardConfirmation
+  skillUsesBoardConfirmation,
+  skillUsesBoardSurfaceConfirmation
 } from "./gameSkills.js";
 export {
+  doubleMove,
   erasePoint,
   flipStone,
+  libertyPurge,
+  protocolTakeover,
   randomBlast,
   rowSlash,
   sprayStone
@@ -137,6 +145,7 @@ export function createGameState(players = [], options = {}) {
     scoring: null,
     suspendedHiddenHands: [],
     rowEffects: [],
+    extraTurn: null,
     winner: null
   };
 }
@@ -259,9 +268,13 @@ export function passMove(state, color) {
   if (state.turn !== color) return fail("还没有轮到你");
   const next = cloneState(state);
   next.turn = opponent(color);
+  if (next.extraTurn?.effectType === "double-move" && next.extraTurn.owner === color) {
+    next.extraTurn = null;
+  }
   next.ko = null;
   next.passes += 1;
   next.moveNumber += 1;
+  clearExpiredLibertyPurgeMarks(next);
   next.history.push({ type: "pass", color, moveNumber: next.moveNumber });
   return ok(next);
 }
@@ -278,8 +291,10 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
   if (!gameModeSkillEnabled(state.mode)) return fail("标准对弈不能使用技能");
   if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能使用技能");
   if (state.turn !== color) return fail("还没有轮到你");
+  if (state.extraTurn) return fail("连下状态中不能使用技能");
   if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
   const skill = normalizeSkillConfig(skillOrCharacterId);
+  if (isProtocolBannedEmptySkillTarget(state, color, targetId)) return fail("该交叉点为禁入点");
   if (!canStartSkill(state, skill)) return fail("场上没有可作用的棋子");
   return executeActiveSkillHandler({
     state,
@@ -291,12 +306,26 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
 
 export function canStartSkill(state, skillOrCharacterId) {
   if (!gameModeSkillEnabled(state.mode)) return false;
+  if (state.extraTurn) return false;
   const skill = normalizeSkillConfig(skillOrCharacterId);
+  if (skill?.effectType === "double-move") {
+    return opponentResolvedActiveSkill(state, state.turn);
+  }
   if (skill?.effectType === "spray-stone") {
     return state.points.some((point) => canSprayTransformStone(point));
   }
   if (!skillRequiresExistingStone(skill)) return true;
   return state.points.some((point) => point.valid && point.stone);
+}
+
+function opponentResolvedActiveSkill(state, color) {
+  const rival = opponent(color);
+  return (state.history ?? []).some((entry) => (
+    entry?.type === "skill"
+    && entry.color === rival
+    && entry.effectType
+    && entry.effectType !== "color-illusion-passive"
+  ));
 }
 
 function clearBoardStones(state) {
@@ -354,6 +383,12 @@ function createPassiveState(players = [], mode = gameModeById()) {
       }];
     })
     .filter(Boolean));
+}
+
+function isProtocolBannedEmptySkillTarget(state, color, targetId) {
+  if (!targetId) return false;
+  const point = getPoint(state, targetId);
+  return Boolean(point?.valid && !point.stone && point.protocolBan?.bannedColor === color);
 }
 
 function passiveProbability(skill) {

@@ -63,6 +63,20 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       params: {}
     };
   }
+  if (fallback?.skill?.id === "protocol-takeover") {
+    return {
+      characterId: fallback.id,
+      effectType: "protocol-takeover",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: Boolean(fallback.skill.freeTurn),
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+      systemMessage: fallback.skill.systemMessage,
+      targetRule: "empty-point",
+      params: fallback.skill.params ?? {}
+    };
+  }
   if (fallback?.skill?.id === "random-blast") {
     return {
       characterId: fallback.id,
@@ -105,6 +119,34 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       params: fallback.skill.params ?? {}
     };
   }
+  if (fallback?.skill?.id === "liberty-purge") {
+    return {
+      characterId: fallback.id,
+      effectType: "liberty-purge",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: false,
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+      systemMessage: fallback.skill.systemMessage,
+      targetRule: "legal-move-point",
+      params: fallback.skill.params ?? {}
+    };
+  }
+  if (fallback?.skill?.id === "double-move") {
+    return {
+      characterId: fallback.id,
+      effectType: "double-move",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: true,
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
+      systemMessage: fallback.skill.systemMessage,
+      targetRule: "none",
+      params: fallback.skill.params ?? { moves: 2 }
+    };
+  }
   if (fallback?.skill?.id === "color-illusion-passive") {
     return {
       characterId: fallback.id,
@@ -132,5 +174,11 @@ export function skillRequiresExistingStone(skillOrCharacterId) {
 export function skillUsesBoardConfirmation(skillOrCharacterId) {
   const skill = normalizeSkillConfig(skillOrCharacterId);
   const effectType = skill?.effectType ?? skill?.id;
-  return effectType === "random-blast";
+  return effectType === "random-blast" || skillUsesBoardSurfaceConfirmation(skill);
+}
+
+export function skillUsesBoardSurfaceConfirmation(skillOrCharacterId) {
+  const skill = normalizeSkillConfig(skillOrCharacterId);
+  const effectType = skill?.effectType ?? skill?.id;
+  return effectType === "double-move";
 }

@@ -5,6 +5,7 @@ import { collectGroup } from "./gameGroups.js";
 import { fail, ok } from "./gameActionResult.js";
 import {
   applySkillCost,
+  clearExpiredLibertyPurgeMarks,
   clearOwnedBoardMarkers,
   clearStone,
   cloneState
@@ -39,6 +40,7 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
   }
   if (next.ko === id) return fail("此处为劫禁着点");
 
+  if (isProtocolBannedEmptyPoint(point, color)) return fail("该交叉点为禁入点");
   point.stone = color;
   if (hidden) {
     point.hiddenHand = {
@@ -72,18 +74,36 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
     ? removed[0]
     : null;
   clearOwnedBoardMarkers(next, color);
-  next.turn = opponent(color);
+  applyExtraTurnAfterNormalAction(next, color);
+  clearExpiredLibertyPurgeMarks(next);
   next.passes = 0;
   next.moveNumber += 1;
   const hiddenHandRevealed = notices.includes(HIDDEN_HAND_NOTICE);
   next.history.push(hidden
-    ? { type: "skill", skill: "小爱出击", color, id, captures: removed, hiddenHandRevealed, moveNumber: next.moveNumber }
+    ? { type: "skill", skill: "小爱出击", effectType: "hidden-hand", color, id, captures: removed, hiddenHandRevealed, moveNumber: next.moveNumber }
     : { type: "move", color, id, captures: removed, colorIllusion: point.colorIllusion ?? null, hiddenHandRevealed, moveNumber: next.moveNumber });
   if (hidden) {
     next.skillUses[color] -= 1;
     applySkillCost(next, color, skill ?? "aemeath");
   }
   return ok(next, { notices });
+}
+
+function applyExtraTurnAfterNormalAction(state, color) {
+  const extraTurn = state.extraTurn;
+  if (extraTurn?.effectType !== "double-move" || extraTurn.owner !== color) {
+    state.turn = opponent(color);
+    return;
+  }
+  const remaining = Math.max(0, Number(extraTurn.remaining ?? 0) - 1);
+  const used = Math.max(0, Number(extraTurn.used ?? 0) + 1);
+  if (remaining > 0) {
+    state.extraTurn = { ...extraTurn, remaining, used };
+    state.turn = color;
+    return;
+  }
+  state.extraTurn = null;
+  state.turn = opponent(color);
 }
 
 function applyColorIllusion(state, color, point, override) {
@@ -141,6 +161,10 @@ export function restoreSuspendedHiddenHands(state) {
 
 function isUnexposedOpponentHiddenHand(point, color) {
   return point.hiddenHand && !point.hiddenHand.exposed && point.hiddenHand.owner !== color;
+}
+
+function isProtocolBannedEmptyPoint(point, color) {
+  return !point.stone && point.protocolBan?.bannedColor === color;
 }
 
 function revealHiddenHand(point) {

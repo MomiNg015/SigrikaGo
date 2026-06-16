@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
 import { safeUploadFilename } from "./adminRoutes.js";
-import { listPublicCharacterResponse, toCharacterPayload, validateCharacterInput } from "./characters.js";
+import { listPublicCharacterResponse, seedCharacters, toCharacterPayload, validateCharacterInput } from "./characters.js";
 
 const validInput = {
   slug: "star-rune",
@@ -91,6 +91,23 @@ describe("character admin helpers", () => {
     expect(payload.skill).toBeNull();
   });
 
+  it("returns sort order in public character payloads", () => {
+    const payload = toCharacterPayload({
+      id: "character-db-1",
+      slug: "sigrika",
+      name: "Sigrika",
+      description: "",
+      portraitUrl: "/assets/sigrika.png",
+      portraitSource: "url",
+      palette: "#ff9b4d",
+      enabled: true,
+      sortOrder: 42,
+      skill: null
+    });
+
+    expect(payload.sortOrder).toBe(42);
+  });
+
   it("accepts a valid erase-point skill targeting an empty point", () => {
     const result = validateCharacterInput(validInput);
 
@@ -149,6 +166,59 @@ describe("character admin helpers", () => {
     expect(result.value.skill.effectType).toBe("spray-stone");
     expect(result.value.skill.targetRule).toBe("stone");
     expect(result.value.skill.costValue).toBe("4");
+  });
+
+  it("accepts Mornye protocol takeover skills targeting empty points", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      slug: "mornye",
+      name: "莫宁",
+      portraitUrl: "/assets/characters/mornye.png",
+      acquisitionMethod: "招募获得",
+      skill: {
+        effectType: "protocol-takeover",
+        name: "协议接管",
+        description: "指定棋盘一处空置交叉点，将其变为对方的禁入点。",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "empty-point",
+        paramsJson: "{}",
+        costType: "numeric",
+        costValue: "2"
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.skill.effectType).toBe("protocol-takeover");
+    expect(result.value.skill.targetRule).toBe("empty-point");
+    expect(result.value.skill.costValue).toBe("2");
+  });
+
+  it("accepts ChangLi double-move skills with no target", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      slug: "changli",
+      name: "长离",
+      portraitUrl: "/assets/characters/changli.png",
+      acquisitionMethod: "招募获得",
+      skill: {
+        effectType: "double-move",
+        name: "谋定后动",
+        description: "本回合可以连下2手。",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "none",
+        paramsJson: "{\"moves\":2}",
+        costType: "numeric",
+        costValue: "3"
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.skill.effectType).toBe("double-move");
+    expect(result.value.skill.targetRule).toBe("none");
+    expect(result.value.skill.costValue).toBe("3");
+    expect(result.value.skill.freeTurn).toBe(true);
   });
 
   it("uses the shared default system message when no custom message is provided", () => {
@@ -375,6 +445,7 @@ describe("character admin helpers", () => {
               portraitSource: "url",
               palette: "#6ab7ff",
               enabled: true,
+              sortOrder: 7,
               skill: null
             }];
           }
@@ -387,7 +458,29 @@ describe("character admin helpers", () => {
     });
 
     expect(response.characters.map((character) => character.id)).toEqual(["denia"]);
+    expect(response.characters[0].sortOrder).toBe(7);
     expect(response.disabledSlugs).toEqual(["sigrika"]);
+  });
+
+  it("does not overwrite admin-managed builtin sort orders during seed", async () => {
+    const updates = [];
+    const existing = {
+      id: "character-db-1",
+      slug: "sigrika",
+      sortOrder: 99,
+      skill: null
+    };
+    const prisma = {
+      character: {
+        findUnique: async ({ where }) => where.slug === "sigrika" ? existing : null,
+        update: async (query) => updates.push(query),
+        create: async () => ({})
+      }
+    };
+
+    await seedCharacters(prisma);
+
+    expect(updates).toEqual([]);
   });
 
   it("omits legacy Denia rows from the public character response", async () => {

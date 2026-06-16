@@ -14,18 +14,24 @@ describe("skillEffectCatalog", () => {
       "erase-point",
       "flip-stone",
       "hidden-hand",
+      "protocol-takeover",
       "random-blast",
       "row-slash",
       "spray-stone",
+      "liberty-purge",
+      "double-move",
       "color-illusion-passive"
     ]);
     expect(ACTIVE_SKILL_EFFECT_TYPES).toEqual([
       "erase-point",
       "flip-stone",
       "hidden-hand",
+      "protocol-takeover",
       "random-blast",
       "row-slash",
-      "spray-stone"
+      "spray-stone",
+      "liberty-purge",
+      "double-move"
     ]);
   });
 
@@ -33,9 +39,12 @@ describe("skillEffectCatalog", () => {
     expect(skillEffectTargetRule("erase-point")).toBe("empty-point");
     expect(skillEffectTargetRule("flip-stone")).toBe("stone");
     expect(skillEffectTargetRule("hidden-hand")).toBe("empty-point");
+    expect(skillEffectTargetRule("protocol-takeover")).toBe("empty-point");
     expect(skillEffectTargetRule("random-blast")).toBe("none");
     expect(skillEffectTargetRule("row-slash")).toBe("any-point");
     expect(skillEffectTargetRule("spray-stone")).toBe("stone");
+    expect(skillEffectTargetRule("liberty-purge")).toBe("legal-move-point");
+    expect(skillEffectTargetRule("double-move")).toBe("none");
     expect(skillEffectTargetRule("color-illusion-passive")).toBe("none");
     expect(skillEffectTargetRule("unknown")).toBe("none");
   });
@@ -46,15 +55,18 @@ describe("skillEffectCatalog", () => {
       value: "spray-stone",
       label: "流光溢彩"
     });
-    expect(skillEffectTypeMessage()).toBe("erase-point, flip-stone, hidden-hand, random-blast, row-slash, spray-stone, or color-illusion-passive");
+    expect(skillEffectTypeMessage()).toBe("erase-point, flip-stone, hidden-hand, protocol-takeover, random-blast, row-slash, spray-stone, liberty-purge, double-move, or color-illusion-passive");
   });
 
   test("provides sound cue timing for animated board effects", () => {
     expect(skillEffectSoundCues("erase-point")).toEqual({ startAt: 0.08, impactAt: 0.48 });
     expect(skillEffectSoundCues("flip-stone")).toEqual({ startAt: 0.04, impactAt: 0.6 });
     expect(skillEffectSoundCues("random-blast")).toEqual({ startAt: 0.06, impactAt: 0.56 });
+    expect(skillEffectSoundCues("protocol-takeover")).toEqual({ startAt: 0.05, impactAt: 0.5 });
     expect(skillEffectSoundCues("row-slash")).toEqual({ startAt: 0.04, impactAt: 0.46 });
     expect(skillEffectSoundCues("spray-stone")).toEqual({ startAt: 0.04, impactAt: 0.58 });
+    expect(skillEffectSoundCues("liberty-purge")).toEqual({ startAt: 0.04, impactAt: 0.5 });
+    expect(skillEffectSoundCues("double-move")).toEqual({ startAt: 0.05, impactAt: 0.5 });
     expect(skillEffectSoundCues("hidden-hand")).toEqual({ startAt: 0.04, impactAt: 0.52 });
     expect(skillEffectSoundCues("color-illusion-passive")).toEqual({ startAt: 0, impactAt: 0 });
   });

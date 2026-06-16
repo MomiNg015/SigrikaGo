@@ -3,7 +3,7 @@ import { DEFAULT_RANK, normalizeRank } from "../src/shared/rankProgression.js";
 import { parseItemEffects } from "./itemEffects.js";
 
 const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia", "aemeath"];
-const ADMIN_ONLY_CHARACTER_IDS = ["qiuyuan"];
+const ADMIN_ONLY_CHARACTER_IDS = ["qiuyuan", "mornye", "changli", "chisa"];
 const RATING_UNLOCKS = [
   { characterId: "nabomo", rating: 1400 }
 ];

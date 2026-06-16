@@ -94,6 +94,12 @@ export function createRoomSkillLifecycle({
     const skillTargetId = skillUsesBoardConfirmation(skillConfig) ? null : action.pointId;
     const result = useSkill(room.game, player.color, skillConfig, skillTargetId);
     if (!result.ok) return result;
+    if (result.revealedOnly) {
+      room.game = result.state;
+      appendNotices(room, result.notices ?? []);
+      broadcastRoom(io, room);
+      return { ok: true, room };
+    }
 
     const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
     const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
@@ -153,7 +159,7 @@ export function createRoomSkillLifecycle({
     if (player) resetByoYomi(player);
     appendNotices(latest, resolution.notices ?? []);
     if (latest.game.phase === GAME_PHASES.finished) scheduleRoomClose(roomCode, io);
-    else maybeStartPassiveSkill(latest, io);
+    else if (!latest.game.extraTurn) maybeStartPassiveSkill(latest, io);
     broadcastRoom(io, latest);
     return true;
   }
@@ -179,10 +185,12 @@ export function buildPendingSkillPreview({
   const effectType = skillAction?.effectType ?? skill?.effectType ?? skill?.id ?? "";
   const targetId = skillAction?.id ?? requestedTargetId ?? null;
   const markedPointIds = Array.isArray(skillAction?.marked) ? skillAction.marked : [];
+  const removalMarkIds = Array.isArray(skillAction?.removalMarkIds) ? skillAction.removalMarkIds : [];
   const affectedPointIds = affectedPointIdsForSkillAction({
     effectType,
     targetId,
     markedPointIds,
+    removalMarkIds,
     boardSize: resolvedGame?.size
   });
 
@@ -199,6 +207,7 @@ export function buildPendingSkillPreview({
     targetId,
     affectedPointIds,
     markedPointIds,
+    removalMarkIds,
     row: Number.isInteger(skillAction?.row) ? skillAction.row : null,
     removed: skillAction?.removed ?? 0,
     removedByColor: skillAction?.removedByColor ?? null,
@@ -208,8 +217,11 @@ export function buildPendingSkillPreview({
   };
 }
 
-export function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds, boardSize = 13 }) {
+export function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds, removalMarkIds = [], boardSize = 13 }) {
   if (effectType === "random-blast") return markedPointIds;
+  if (effectType === "liberty-purge") {
+    return [...new Set([...(targetId ? [targetId] : []), ...removalMarkIds])];
+  }
   if (effectType === "row-slash" && targetId) {
     const [, rawY] = String(targetId).split(",").map(Number);
     if (!Number.isInteger(rawY)) return [];

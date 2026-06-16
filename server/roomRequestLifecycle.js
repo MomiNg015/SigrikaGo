@@ -24,6 +24,7 @@ export function createRoomRequestLifecycle({
     if (!context.ok) return context;
     const { room, player } = context;
     if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请数子" };
+    if (room.game.extraTurn) return { ok: false, error: "连下状态中不能申请数子" };
     return applyCountingRequest({
       room,
       player,
@@ -47,6 +48,7 @@ export function createRoomRequestLifecycle({
     if (!context.ok) return context;
     const { room, player } = context;
     if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "当前不能申请和棋" };
+    if (room.game.extraTurn) return { ok: false, error: "连下状态中不能申请和棋" };
     return applyDrawRequest({
       room,
       player,

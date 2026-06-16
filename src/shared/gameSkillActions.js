@@ -6,11 +6,14 @@ import {
   isPlayerColor,
   opponent
 } from "./gameConstants.js";
-import { getPoint, parsePointId, pointId } from "./gameBoard.js";
+import { activeNeighbors, getPoint, parsePointId, pointId } from "./gameBoard.js";
+import { collectGroup } from "./gameGroups.js";
+import { HIDDEN_HAND_NOTICE } from "./gameStoneActions.js";
 import { fail, ok } from "./gameActionResult.js";
 import {
   applyExtraSkillCost,
   applySkillCost,
+  clearOwnedBoardMarkers,
   clearStone,
   cloneState,
   resolveCapturesAfterMutation
@@ -21,6 +24,7 @@ export function erasePoint(state, color, id, options = {}) {
   const point = getPoint(next, id);
   if (!point?.valid) return fail("该交叉点已不可用");
   if (point.stone) return fail("只能抹除空交叉点");
+  delete point.protocolBan;
   point.valid = false;
   point.mark = null;
   point.skillEffect = "erased-point";
@@ -33,6 +37,35 @@ export function erasePoint(state, color, id, options = {}) {
   next.ko = null;
   next.history.push({ type: "skill", skill: "星辰符文", effectType: "erase-point", color, id, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
+  return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false, "skillRemovals"));
+}
+
+export function protocolTakeover(state, color, id, options = {}) {
+  const next = cloneState(state);
+  const point = getPoint(next, id);
+  if (!point?.valid) return fail("必须指定有效交叉点");
+  if (point.stone) return fail("只能指定空置交叉点");
+  if (point.protocolBan) return fail("该交叉点已有禁入协议");
+
+  point.protocolBan = {
+    owner: color,
+    bannedColor: opponent(color),
+    effect: "protocol-takeover"
+  };
+  point.skillEffect = "protocol-takeover";
+  point.skillEffectOwner = color;
+  next.skillUses[color] -= 1;
+  applySkillCost(next, color, options.skill ?? "mornye");
+  next.ko = null;
+  next.history.push({
+    type: "skill",
+    skill: options.skillName ?? "协议接管",
+    effectType: "protocol-takeover",
+    color,
+    id,
+    bannedColor: opponent(color),
+    moveNumber: next.moveNumber
+  });
   return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false, "skillRemovals"));
 }
 
@@ -170,6 +203,109 @@ export function rowSlash(state, color, id, options = {}) {
   return ok(resolved);
 }
 
+export function libertyPurge(state, color, id, options = {}) {
+  const next = cloneState(state);
+  const point = getPoint(next, id);
+  if (!point?.valid) return fail("必须指定有效交叉点");
+  if (point?.stone) {
+    if (isUnexposedOpponentHiddenHand(point, color)) {
+      point.hiddenHand.exposed = true;
+      return ok(next, { notices: [HIDDEN_HAND_NOTICE], revealedOnly: true });
+    }
+    return fail("该交叉点已有棋子");
+  }
+  if (next.ko === id) return fail("此处为劫禁着点");
+  if (point.protocolBan?.bannedColor === color) return fail("该交叉点为禁入点");
+
+  point.stone = color;
+  point.hiddenHand = null;
+  point.colorIllusion = null;
+
+  const normalCaptures = [];
+  let creditedCaptures = 0;
+  for (const neighbor of activeNeighbors(next, point)) {
+    if (neighbor.stone && neighbor.stone !== color) {
+      const group = collectGroup(next, neighbor.id);
+      if (group.liberties.size === 0) {
+        normalCaptures.push(...group.stones);
+        if (captureCreditOwner(group.color) === color) creditedCaptures += group.stones.length;
+      }
+    }
+  }
+  for (const stone of normalCaptures) clearStone(next, stone);
+
+  const ownGroup = collectGroup(next, id);
+  if (ownGroup.liberties.size === 0) return fail("禁自杀");
+
+  const purgeGroups = oneLibertyGroups(next);
+  const directRemovals = [];
+  const removedByColor = {};
+  let rawOverclockDelta = 0;
+  let hiddenHandRemoved = false;
+  next.skillRemovals ??= { black: 0, white: 0 };
+
+  for (const group of purgeGroups) {
+    const owner = captureCreditOwner(group.color);
+    removedByColor[group.color] = (removedByColor[group.color] ?? 0) + group.stones.length;
+    rawOverclockDelta += group.color === color ? -group.stones.length : group.stones.length;
+    if (owner) {
+      next.skillRemovals[owner] = (next.skillRemovals[owner] ?? 0) + group.stones.length;
+    }
+    for (const stone of group.stones) {
+      const removedPoint = getPoint(next, stone);
+      if (removedPoint?.hiddenHand && !removedPoint.hiddenHand.exposed) hiddenHandRemoved = true;
+      directRemovals.push({ id: stone, from: group.color, owner });
+      clearStone(next, stone);
+    }
+  }
+
+  next.captures[color] += creditedCaptures;
+  next.skillUses[color] -= 1;
+  applySkillCost(next, color, options.skill ?? "chisa");
+  const overclockAdded = Math.max(0, rawOverclockDelta);
+  applyExtraSkillCost(next, color, overclockAdded, {
+    characterId: options.skill?.characterId ?? "chisa",
+    reason: "liberty-purge-snapshot-removals"
+  });
+  next.ko = null;
+  clearOwnedBoardMarkers(next, color);
+  const removalMarkIds = directRemovals.map((removal) => removal.id);
+  next.libertyPurgeMarks = removalMarkIds.length
+    ? [{ effectType: "liberty-purge", owner: color, clearAfterColor: opponent(color), pointIds: removalMarkIds }]
+    : [];
+  const cleanupRemovals = [];
+  next.history.push({
+    type: "skill",
+    effectType: "liberty-purge",
+    skill: options.skillName ?? "虚湮解弦",
+    color,
+    id,
+    placedId: id,
+    captures: normalCaptures,
+    removed: directRemovals.length,
+    removedByColor,
+    directRemovals,
+    cleanupRemovals,
+    rawOverclockDelta,
+    overclockAdded,
+    removalMarkIds,
+    hiddenHandRemoved,
+    moveNumber: next.moveNumber
+  });
+
+  const resolved = resolveCapturesAfterMutation(
+    next,
+    color,
+    options.consumesTurn ?? true,
+    "skillRemovals",
+    cleanupRemovals
+  );
+  if (options.consumesTurn ?? true) resolved.passes = 0;
+  resolved.ko = null;
+  const notices = hiddenHandRemoved ? [HIDDEN_HAND_NOTICE] : [];
+  return ok(resolved, { notices });
+}
+
 export function randomBlast(state, color, options = {}) {
   const next = cloneState(state);
   const size = Math.max(1, Number(options.skill?.params?.size ?? 3) || 3);
@@ -217,6 +353,45 @@ export function randomBlast(state, color, options = {}) {
     moveNumber: next.moveNumber
   });
   return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false, "skillRemovals"));
+}
+
+export function doubleMove(state, color, options = {}) {
+  const next = cloneState(state);
+  const moves = Math.max(2, Math.floor(Number(options.skill?.params?.moves ?? 2)) || 2);
+  next.extraTurn = {
+    effectType: "double-move",
+    owner: color,
+    remaining: moves,
+    used: 0
+  };
+  next.skillUses[color] -= 1;
+  applySkillCost(next, color, options.skill ?? "changli");
+  next.ko = null;
+  next.history.push({
+    type: "skill",
+    effectType: "double-move",
+    skill: options.skillName ?? "ChangLi double move",
+    color,
+    moves,
+    moveNumber: next.moveNumber
+  });
+  return ok(next);
+}
+
+function oneLibertyGroups(state) {
+  const groups = [];
+  const visited = new Set();
+  for (const point of state.points) {
+    if (!point.valid || !point.stone || visited.has(point.id)) continue;
+    const group = collectGroup(state, point.id);
+    group.stones.forEach((stone) => visited.add(stone));
+    if (group.liberties.size === 1) groups.push(group);
+  }
+  return groups;
+}
+
+function isUnexposedOpponentHiddenHand(point, color) {
+  return point.hiddenHand && !point.hiddenHand.exposed && point.hiddenHand.owner !== color;
 }
 
 function randomBlastStoneCenter(state, radius) {
