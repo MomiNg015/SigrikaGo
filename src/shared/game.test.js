@@ -21,6 +21,7 @@ import {
   randomLayout,
   resultWithInvalidFlagForGame,
   restoreSkillUse,
+  rowSlash,
   resignGame,
   scoreGame,
   suspendUnexposedHiddenHands,
@@ -695,6 +696,131 @@ describe("SigrikaGo rules", () => {
     } finally {
       Math.random = originalRandom;
     }
+  });
+
+  it("uses QiuYuan row slash on any valid point and charges overclock for direct row removals", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "qiuyuan" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    state.turn = COLORS.black;
+    state.ko = pointId(2, 2);
+    state.passes = 2;
+    forceStone(state, 0, 4, COLORS.black);
+    forceStone(state, 1, 4, COLORS.white);
+    forceStone(state, 2, 4, "spray");
+    forceStone(state, 3, 4, COLORS.white);
+    getPoint(state, pointId(3, 4)).hiddenHand = {
+      owner: COLORS.white,
+      exposed: false,
+      effect: "hidden-hand"
+    };
+    forceStone(state, 4, 4, COLORS.black);
+    getPoint(state, pointId(4, 4)).colorIllusion = {
+      owner: COLORS.black,
+      visibleAs: COLORS.white,
+      effect: "color-illusion-passive"
+    };
+
+    const result = useSkill(state, COLORS.black, "qiuyuan", pointId(6, 4));
+
+    expect(result.ok).toBe(true);
+    for (let x = 0; x <= 4; x += 1) {
+      const point = getPoint(result.state, pointId(x, 4));
+      expect(point.stone).toBeNull();
+      expect(point.hiddenHand).toBeFalsy();
+      expect(point.colorIllusion).toBeFalsy();
+    }
+    expect(result.notices ?? []).not.toContain("鍙戠幇闅愯棌鎵嬩簡锛?");
+    expect(result.state.skillRemovals.black).toBe(2);
+    expect(result.state.skillRemovals.white).toBe(2);
+    expect(result.state.skillCosts.black).toBe(10);
+    expect(result.state.skillUses.black).toBe(0);
+    expect(result.state.turn).toBe(COLORS.white);
+    expect(result.state.moveNumber).toBe(1);
+    expect(result.state.passes).toBe(0);
+    expect(result.state.ko).toBeNull();
+    expect(result.state.rowEffects).toEqual([{ effectType: "row-slash", owner: COLORS.black, y: 4, id: pointId(6, 4) }]);
+    expect(result.state.history.at(-1)).toMatchObject({
+      type: "skill",
+      effectType: "row-slash",
+      row: 4,
+      directRemoved: 5,
+      overclockAdded: 10,
+      removed: 5,
+      removedByColor: { black: 2, white: 2, spray: 1 }
+    });
+  });
+
+  it("lets QiuYuan row slash empty rows and rejects erased target points", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "qiuyuan" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    state.turn = COLORS.black;
+
+    const empty = useSkill(state, COLORS.black, "qiuyuan", pointId(6, 6));
+
+    expect(empty.ok).toBe(true);
+    expect(empty.state.skillCosts.black).toBe(0);
+    expect(empty.state.skillUses.black).toBe(0);
+    expect(empty.state.turn).toBe(COLORS.white);
+    expect(empty.state.history.at(-1)).toMatchObject({
+      effectType: "row-slash",
+      directRemoved: 0,
+      overclockAdded: 0
+    });
+
+    const invalidTargetState = createGameState([
+      { color: COLORS.black, characterId: "qiuyuan" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    getPoint(invalidTargetState, pointId(6, 6)).valid = false;
+    const invalid = useSkill(invalidTargetState, COLORS.black, "qiuyuan", pointId(6, 6));
+
+    expect(invalid.ok).toBe(false);
+    expect(invalidTargetState.skillUses.black).toBe(1);
+  });
+
+  it("keeps QiuYuan chain cleanup out of row-slash overclock", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "qiuyuan" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    forceStone(state, 10, 10, COLORS.white);
+    forceStone(state, 9, 10, COLORS.black);
+    forceStone(state, 11, 10, COLORS.black);
+    forceStone(state, 10, 9, COLORS.black);
+    forceStone(state, 10, 11, COLORS.black);
+
+    const result = useSkill(state, COLORS.black, "qiuyuan", pointId(6, 6));
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(10, 10)).stone).toBeNull();
+    expect(result.state.skillRemovals.black).toBe(1);
+    expect(result.state.skillCosts.black).toBe(0);
+    expect(result.state.history.at(-1).cleanupRemovals).toEqual([
+      { color: COLORS.white, stones: [pointId(10, 10)], owner: COLORS.black }
+    ]);
+  });
+
+  it("clears QiuYuan slash marks on the owner's next ordinary move", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "qiuyuan" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    const slashed = rowSlash(state, COLORS.black, pointId(6, 6), {
+      skill: CHARACTERS.qiuyuan.skill,
+      skillName: CHARACTERS.qiuyuan.skill.name
+    }).state;
+    const whiteMove = playMove(slashed, COLORS.white, pointId(0, 0)).state;
+
+    expect(whiteMove.rowEffects).toHaveLength(1);
+    whiteMove.turn = COLORS.black;
+    const blackMove = playMove(whiteMove, COLORS.black, pointId(1, 0));
+
+    expect(blackMove.ok).toBe(true);
+    expect(blackMove.state.rowEffects).toEqual([]);
   });
 
   it("chooses the random blast center from existing non-edge stones", () => {

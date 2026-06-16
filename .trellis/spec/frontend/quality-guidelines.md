@@ -46,25 +46,30 @@ Questions to answer:
 
 #### 2. Signatures
 - `loginPreloadAssets()` returns grouped assets: `criticalImages`, `deferredImages`, `images`, `criticalAudio`, `deferredAudio`, and `audio`.
-- `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress })` waits for critical groups, starts deferred groups in the background, and caps concurrent loaders.
+- `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress, taskTimeoutMs })` waits for critical groups, starts deferred groups in the background, caps concurrent loaders, and bounds each loader with a timeout.
 - `npm run check` is the local handoff gate and should run unit tests, Vite build, production config validation with explicit sample env, and `docs:system-design`.
 - `npm run check:production` remains the strict production-env validator and must not silently inject sample secrets or origins.
 - `vite.config.js` manually chunks React, Socket.IO client code, and Pixi into `react-vendor`, `realtime-vendor`, and `pixi-vendor` respectively. Do not add a catch-all `vendor` chunk unless the build is checked for circular chunk warnings.
+- `vite.config.js` configures the dev `/socket.io` websocket proxy with an error handler that keeps expected backend-watch restart disconnects quiet while still warning on unexpected proxy errors.
 
 #### 3. Contracts
+- Frontend API calls through `api()` must have a bounded request timeout. Startup begins on the `preloading` view before `/api/auth/refresh` completes, so a hung auth refresh or catalog/settings request must reject and enter existing recovery flow instead of leaving the app on the preload screen forever.
 - Critical images include character portraits and home entry/background imagery needed for the first home render.
 - Critical audio includes common board/UI effect sounds that are decoded for immediate interaction feedback.
 - Deferred media includes shop/effect previews, stone decoration images, result/match sounds, BGM tracks, character skill voices, and system voices.
 - Preload progress represents critical preload completion; deferred assets must not keep users trapped on the preload screen.
-- Preload failures remain non-blocking for both critical and deferred groups.
+- Preload failures and hung loaders remain non-blocking for both critical and deferred groups; timed-out tasks count as completed preload work so startup can recover after reconnect or server restart.
 - The grouped asset API must keep `images` and `audio` flattened arrays for compatibility with tests and existing callers.
 - Production entry JS should stay split from heavy runtime libraries. The Pixi chunk may be larger than Vite's default 500 KB warning because it is lazy-loaded and prewarmed only for skill-enabled boards; the configured warning limit should remain a documented exception, not a way to hide a growing entry chunk.
+- Dev proxy `ECONNRESET` and `ECONNREFUSED` errors from `/socket.io` are expected while `dev:server` restarts; do not remove the proxy error handler unless the replacement keeps those disconnects from spamming the client terminal.
 
 #### 4. Validation & Error Matrix
+- API request never settles -> abort after the request timeout and reject with a user-readable timeout error.
 - Missing grouped fields but legacy `images`/`audio` provided -> treat all legacy assets as critical.
 - Empty critical groups -> call `onProgress(1)` and still start deferred work if present.
 - Invalid or zero concurrency -> fall back to one worker.
 - Loader rejection -> swallow the failure and continue remaining preload work.
+- Loader never settles -> treat it like a non-blocking preload failure after the per-task timeout and continue remaining preload work.
 - Production env missing real secrets/origins -> `npm run check:production` fails; `npm run check` may use explicit sample env for local validation.
 
 #### 5. Good/Base/Bad Cases
@@ -75,10 +80,12 @@ Questions to answer:
 - Bad: Making `check:production` pass by mutating production defaults instead of keeping sample env limited to the aggregate `check` command.
 
 #### 6. Tests Required
+- API client tests must assert a hung request is aborted and rejected instead of staying pending forever.
 - Asset grouping tests must assert representative first-screen assets are critical and representative music/voice/shop assets are deferred.
 - Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
+- Preload behavior tests must assert a hung critical loader cannot keep login preload pending forever.
 - Script contract tests must assert `npm run check` includes tests, build, production config validation, docs generation, and explicit sample production env.
-- Vite build config tests must assert manual chunk grouping, the absence of a catch-all vendor chunk, and the intentional Pixi warning limit.
+- Vite build config tests must assert manual chunk grouping, the absence of a catch-all vendor chunk, the intentional Pixi warning limit, and quiet handling for expected dev websocket proxy disconnects.
 - Run `npm run check` before handoff when changing preload or verification commands.
 
 #### 7. Wrong vs Correct
@@ -327,6 +334,9 @@ Required assertion points:
 - Mobile player-info explanations should support touch as well as desktop hover. Removal, overclock, and skill labels should open a tap-position tooltip on mobile/coarse pointers; the tooltip must use viewport-contained fixed width with normal wrapping and emergency word breaks, clamp within the viewport, flip below taps near the top edge, and cap height with internal scrolling so explanation text cannot overflow off-screen.
 - Theme overrides, especially Bright School mobile rules with `!important`, must mirror the shared mobile room contract rather than redefining a conflicting layout.
 - Battle-room tags and buttons should stay visually flat on mobile. Header tags, timer chips, capture chips, player labels, menu buttons, dock tabs, action buttons, replay buttons, and chat controls should use border-only treatment without `box-shadow`, `filter: drop-shadow(...)`, or `text-shadow`. Bright School control-shadow cleanup must use selectors specific enough to beat older `.app-shell... .captures span` / `.skill-chip` `!important` rules; a low-specificity `:where(...)` reset alone is not sufficient. Do not use a generic room `button` reset that catches `.point`; board point buttons and stone/current-move visuals are gameplay affordances and must stay separately controlled by board styles.
+- Board point buttons must explicitly opt out of ordinary button chrome in both shared board CSS and Bright School board guards: keep `appearance: none`, transparent background/background-image, no border/shadow, `min-width/min-height: 0`, and `touch-action: none`. Otherwise 13x13 button surfaces can cover the SVG grid and make the board appear as a blank white square.
+- Board grid SVGs also need dedicated survival rules. Keep `.board-lines` as an absolute `display: block` layer with `width/height: 100%`, `max-width/max-height: none`, visible stroke/opacity, and Bright School guard overrides so broad `svg { height: auto; max-width: 100%; }` media resets cannot collapse the grid while DOM effects such as row slash remain visible.
+- DOM board effect layers whose class names include broad words such as `row` must explicitly opt out of Bright School generic surface rules with enough specificity to beat `[class*="row"]:not(...) !important`. Keep `.board-row-effects` transparent, borderless, shadowless, and overflow-visible, and keep `.board-row-slash` responsible for only the slash artwork so generic paper panels cannot cover the grid and stones. If the effect uses `::before`/`::after` for highlights or cuts, restore those pseudo-elements with the same scoped specificity because the Bright School generic pseudo-element firewall also matches `[class*="row"]`.
 - Phase-aware `decision-bar` controls are not the same layout as the normal action grid. Mobile dead-stone confirmation must keep a compact copy column and a two-button `decision-actions` grid; shared mobile CSS, `mobile-adaptive.css`, and Bright School mobile overrides must all preserve this special layout so confirm/reset buttons do not stack awkwardly inside 375px/393px portrait docks.
 - Scoring board marks carry semantic color and shape separately. `territory-mark.black/white` draws owner-colored crosses for black/white empty territory, while `dead-mark.black/white` draws owner-colored circles for white/black dead stones; dead-stone marks must not inherit the territory cross pseudo-elements.
 
@@ -381,7 +391,7 @@ Required assertion points:
 - Replay step counters should center their `current/max` text and any icon content.
 - Desktop room floating panels, including chat popovers, skill detail panels, hover/click stat tooltips, and room member action popovers, must use the shared `--room-floating-z` contract instead of fixed cross-surface z-index values. Opening, hovering, focusing, or clicking one of these panels should bring that surface to the front.
 - Shared modal backdrops must stack above room `--room-floating-z` surfaces, including the member popover fallback of `140`, so request and confirmation modals dim skill chips, chat controls, and member popovers together.
-- Mobile room portrait strips must collapse character-chain badges to compact star/count pills using `data-chain-count`; do not reuse the full desktop repeated-star badge over small portraits.
+- Mobile room portrait strips must not show character-chain badges. Duplicate-chain data can stay in the user payload, but `CharacterChainBadge` should render nothing unless the product explicitly re-enables the badge.
 - Keep player cards and skill wrappers overflow-visible so dynamically raised skill panels can escape the side panel without clipping.
 - Room member action popovers must keep their fixed-position anchor variables and use `--room-floating-z` in both base CSS and Bright School theme overrides.
 - Capture/removal/overclock chips should share stable heights so skill-only counters do not look shorter or taller than captures.

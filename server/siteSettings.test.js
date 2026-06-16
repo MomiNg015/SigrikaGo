@@ -28,5 +28,10 @@ describe("site settings defaults", () => {
       create: { key: "homeSubtitle", value: DEFAULT_SITE_SETTINGS.homeSubtitle },
       update: {}
     });
+    expect(upsert).toHaveBeenCalledWith({
+      where: { key: "footerText" },
+      create: { key: "footerText", value: DEFAULT_SITE_SETTINGS.footerText },
+      update: {}
+    });
   });
 });

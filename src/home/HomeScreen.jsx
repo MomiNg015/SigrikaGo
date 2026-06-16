@@ -16,54 +16,55 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
   };
 
   return (
-    <main className="home-screen home-terminal-screen">
-      <HomeHeader
-        isAdmin={user.role === "admin"}
-        onlineCount={onlineCount}
-        siteTitle={siteSettings.homeTitle}
-        onLogout={onLogout}
-        onOpenAdmin={onOpenAdmin}
-        onOpenMessageBoard={onOpenMessageBoard}
-        onOpenSettings={onOpenSettings}
-      />
-
-      <section className="home-main-panel home-terminal-main">
-        <HomeStage
-          selectedCharacter={selectedCharacter}
-          user={user}
-          onOpenFriends={onOpenFriends}
-          onOpenHouse={onOpenHouse}
-          onOpenResume={onOpenResume}
-          onOpenLeaderboard={onOpenLeaderboard}
-          onOpenShop={onOpenShop}
-          onOpenGacha={onOpenGacha}
-          onOpenWarehouse={onOpenWarehouse}
-          onOpenWatch={onOpenWatch}
-          onStartMatch={() => {
-            onOpenMatch?.();
-            setMatchModePickerOpen(true);
-          }}
+    <>
+      <main className="home-screen home-terminal-screen">
+        <HomeHeader
+          isAdmin={user.role === "admin"}
+          onlineCount={onlineCount}
+          siteTitle={siteSettings.homeTitle}
+          onLogout={onLogout}
+          onOpenAdmin={onOpenAdmin}
+          onOpenMessageBoard={onOpenMessageBoard}
+          onOpenSettings={onOpenSettings}
         />
-      </section>
 
-      {matchModePickerOpen && (
-        <MatchModePicker
-          matchmakingCounts={matchmakingCounts}
-          onClose={() => setMatchModePickerOpen(false)}
-          onSelect={(mode) => {
-            setMatchModePickerOpen(false);
-            onStartMatch(mode);
-          }}
-        />
-      )}
+        <section className="home-main-panel home-terminal-main">
+          <HomeStage
+            selectedCharacter={selectedCharacter}
+            user={user}
+            onOpenFriends={onOpenFriends}
+            onOpenHouse={onOpenHouse}
+            onOpenResume={onOpenResume}
+            onOpenLeaderboard={onOpenLeaderboard}
+            onOpenShop={onOpenShop}
+            onOpenGacha={onOpenGacha}
+            onOpenWarehouse={onOpenWarehouse}
+            onOpenWatch={onOpenWatch}
+            onStartMatch={() => {
+              onOpenMatch?.();
+              setMatchModePickerOpen(true);
+            }}
+          />
+        </section>
 
-      <section className="home-orientation-guard" aria-label="横屏提示">
-        <h2>请横屏使用</h2>
-        <p>星炬学院围棋部需要横屏才能完整显示棋局入口和部员手册。</p>
-      </section>
+        {matchModePickerOpen && (
+          <MatchModePicker
+            matchmakingCounts={matchmakingCounts}
+            onClose={() => setMatchModePickerOpen(false)}
+            onSelect={(mode) => {
+              setMatchModePickerOpen(false);
+              onStartMatch(mode);
+            }}
+          />
+        )}
 
-      <HomeFooter siteTitle={siteSettings.homeTitle} />
-    </main>
+        <section className="home-orientation-guard" aria-label="横屏提示">
+          <h2>请横屏使用</h2>
+          <p>星炬学院围棋部需要横屏才能完整显示棋局入口和部员手册。</p>
+        </section>
+      </main>
+      <HomeFooter footerText={siteSettings.footerText} siteTitle={siteSettings.homeTitle} />
+    </>
   );
 }
 

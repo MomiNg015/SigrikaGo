@@ -67,6 +67,11 @@ function Board({
           audioSettings={audioSettings}
           prewarm={game.skillEnabled !== false}
         />
+        <BoardRowSlashOverlay
+          boardSize={boardSize}
+          pendingSkill={game.pendingSkill}
+          rowEffects={game.rowEffects}
+        />
         {game.points.map((point) => {
           const emptyTerritoryOwner = !point.stone ? territoryOwner.get(point.id) : null;
           const deadOwner = point.stone ? deadStoneOwners[point.id] : null;
@@ -100,6 +105,26 @@ function Board({
       </div>
       {showCoords && <div className="coord-col coord-right">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
       {showCoords && <div className="coord-row coord-bottom">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
+    </div>
+  );
+}
+
+function BoardRowSlashOverlay({ boardSize, pendingSkill = null, rowEffects = [] }) {
+  const pendingRow = pendingSkill?.effectType === "row-slash" ? rowForSlash(pendingSkill) : null;
+  const effects = [
+    ...(Array.isArray(rowEffects) ? rowEffects : []),
+    ...(Number.isInteger(pendingRow) ? [{ effectType: "row-slash", y: pendingRow, preview: true }] : [])
+  ].filter((effect) => effect?.effectType === "row-slash" && Number.isInteger(effect.y));
+  if (!effects.length) return null;
+  return (
+    <div className="board-row-effects" aria-hidden="true">
+      {effects.map((effect, index) => (
+        <span
+          key={`${effect.owner ?? "preview"}-${effect.y}-${index}`}
+          className={`board-row-slash ${effect.preview ? "preview" : ""}`}
+          style={{ "--row-y": `${((effect.y + 0.5) / boardSize) * 100}%` }}
+        />
+      ))}
     </div>
   );
 }
@@ -177,6 +202,12 @@ function PointButton({
       {confirmClass && <span className="touch-confirm-marker" aria-hidden="true" />}
     </button>
   );
+}
+
+function rowForSlash(pendingSkill) {
+  if (Number.isInteger(pendingSkill?.row)) return pendingSkill.row;
+  const [, y] = String(pendingSkill?.targetId ?? "").split(",").map(Number);
+  return Number.isInteger(y) ? y : null;
 }
 
 const MemoPointButton = memo(PointButton, arePointButtonPropsEqual);

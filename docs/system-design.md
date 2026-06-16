@@ -15,13 +15,15 @@
 
 ## 当前架构摘要
 
-- 前端使用 React 19、Vite 和 Socket.IO client；`src/main.jsx` 只负责浏览器挂载，应用组合根在 `src/app/App.jsx`，业务状态逐步下沉到 `src/app/*` hooks 和独立视图组件，应用级弹窗可见性集中在 `src/app/useOverlayState.js`，房间/回放/结果弹窗会话状态集中在 `src/app/useRoomSessionState.js`，已关闭结果不会因 `room:resume` 再弹，匹配等待/成功过渡状态集中在 `src/app/useMatchSessionState.js`。
+- 前端使用 React 19、Vite 和 Socket.IO client；`src/main.jsx` 只负责浏览器挂载，应用组合根在 `src/app/App.jsx`，业务状态逐步下沉到 `src/app/*` hooks 和独立视图组件，应用级弹窗可见性集中在 `src/app/useOverlayState.js`，房间/回放/结果弹窗会话状态集中在 `src/app/useRoomSessionState.js`，已关闭结果不会因 `room:resume` 再弹，匹配等待/成功过渡状态集中在 `src/app/useMatchSessionState.js`；开发期 Vite `/socket.io` 代理会静默处理后端 watch 重启造成的预期 websocket 断连错误。
 - 后端使用 Express、Socket.IO、Prisma 和 SQLite；`server/index.js` 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 `server/serverStartup.js`，Socket 连接事件套件由 `server/socketEvents.js` 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 `server/socket*Events.js` 模块，生产静态托管收口在 `server/staticAssets.js`，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块。
 - 对局模式由 `src/shared/gameModes.js` 统一配置，前后端共享模式顺序、棋盘大小、贴目、技能开关和时间控制。
+- 站点公开配置通过 `SiteSetting` key/value 存储，并由 `src/shared/siteSettings.js` 定义前后端共享默认值；后台系统设置可编辑大厅标题/副标题、关于文本和首页 footer 长文本，footer 支持受限 Markdown 链接。
 - 对局规则支持黑白棋子与命名中立棋子并存；中立棋子按同名阵营连接、阻断领地并参与气/提子判定，但不归属黑白除子。
+- 星炬技能体系包含面向整行的 `row-slash` 主动技能；仇远（`qiuyuan`）通过“一斩足矣”指定任意有效交叉点，移除该横线所有棋子并按直接移除数增加超频，管理员在部员招募系统实装前默认拥有该角色；棋盘刀痕由 DOM/CSS 专用层渲染并使用 `row-slash-strike` 横向斩击动画，`BoardSkillEffects` 不为该 DOM-only 技能挂整棋盘覆盖层，棋盘点位按钮保持透明无按钮皮肤，`.board-lines` SVG 网格层也显式保持铺满棋盘和可见 stroke，避免全局/主题按钮或媒体规则盖住、压塌棋盘网格。
 - 玩家资源包含角色、装饰、道具、音乐、抽卡奖励、蓝宝石和金币；结构化关系表与旧字符串字段仍处在兼容迁移期，legacy 解析、结构化同步和公开资产合并规则集中在 `server/userAssets.js`。
 - 玩家 UI 当前默认 Bright School 主题；主题注册、CSS 入口和作用域合同保留未来扩展口，共享基础层已从单一 `base.css` 入口拆到 `src/styles/base/`，房间样式已从单一 `room.css` 入口拆到 `src/styles/room/`，Startorch 对局终端皮肤已从单一 `room-terminal.css` 入口拆到 `src/styles/room-terminal/`，共享弹窗样式已从单一 `modals.css` 入口拆到 `src/styles/modals/`，移动弹窗安全层已从单一 `mobile-modals.css` 入口拆到 `src/styles/mobile-modals/`，商业/社交/仓库样式已从单一 `commerce-settings.css` 入口拆到 `src/styles/commerce/` 领域分篇，其中商店/设置/移动商业补丁继续从 `src/styles/commerce/shop-settings.css` 拆到 `src/styles/commerce/shop-settings/`；共享响应式层已从单一 `responsive.css` 入口拆到 `src/styles/responsive/`，共享移动对局层已从单一 `mobile-room.css` 入口拆到 `src/styles/mobile-room/`，共享 HUD 兼容层已从单一 `hud-components.css` 入口拆到 `src/styles/hud-components/`，最终移动端安全层也从单一 `mobile-adaptive.css` 入口拆到 `src/styles/mobile-adaptive/`，其中 Bright School 最终移动兜底覆盖继续拆到 `src/styles/mobile-adaptive/bright-school-overrides/`；Bright School 对应早期可读性清理、商业覆盖、移动端覆盖、竖屏对局覆盖、组件修复覆盖、质量兜底层和防 HUD 串色 firewall 分别拆到 `src/styles/themes/bright-school/contrast-purge/`、`src/styles/themes/bright-school/commerce/`、`src/styles/themes/bright-school/mobile/`、`src/styles/themes/bright-school/mobile/room/`、`src/styles/themes/bright-school/component-repairs/`、`src/styles/themes/bright-school/quality-base/`、`src/styles/themes/bright-school/firewall/`。
-- 启动预加载区分关键资源与延迟资源，房间运行期使用轻量 `room:clock` 与完整 `room:update` 分流，降低高频交互卡顿。
+- 启动预加载区分关键资源与延迟资源，并为单个资源加载设置超时兜底，避免服务器重启或缓存恢复时把玩家卡在资源准备页；房间运行期使用轻量 `room:clock` 与完整 `room:update` 分流，降低高频交互卡顿。
 
 ## 维护约定
 
@@ -30,11 +32,15 @@
 - 发现乱码时先确认源文件是否含 `Unicode replacement character` 或常见 mojibake 片段，再区分终端显示问题和文件内容损坏。
 - 修改 Markdown 后运行 `npm run docs:system-design`；涉及脚本或编码规则时运行 `npm test -- docs/systemDesignHtml.test.js`。
 
+## Board Effect Theme Guard
+
+- Bright School board guards keep the DOM-only `row-slash` effect layer transparent and restore its slash pseudo-elements so broad theme firewall rules such as `[class*="row"]` cannot turn QiuYuan's slash overlay into a blank paper panel or a plain bar over the board.
+
 ## Modal Layering Note
 
 - Shared `.modal-backdrop` stacks above room `--room-floating-z` surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.
-- Mobile room portraits render character-chain badges as compact star/count pills near the portrait edge, rather than full repeated-star badges over the character art.
-- Bright School portrait phone polish that must outlive theme overrides is centralized in the final `src/styles/mobile-adaptive/bright-school-portrait.css` layer, including home player plaque nameplate fitting, centered container-sized plaque mode stats, compact character-chain portrait badges, the two-row resume header, internally scrolling resume character records, and shop wallet single-line/blue-gem capsule treatment. Desktop and narrow-desktop home image entries also rely on the final `src/styles/mobile-adaptive/home-narrow-desktop.css` safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual `<img>` art must stay `border-box`, `max-height: 100%`, and `object-fit: contain` so the member manual and match artwork cannot spill out of the bottom of the card.
+- Character duplicate chain counts remain in user data for reward/progression logic, but player-facing desktop and mobile UI hides character-chain badges on portrait surfaces.
+- Bright School portrait phone polish that must outlive theme overrides is centralized in the final `src/styles/mobile-adaptive/bright-school-portrait.css` layer, including home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, internally scrolling resume character records, and shop wallet single-line/blue-gem capsule treatment. Desktop and narrow-desktop home image entries also rely on the final `src/styles/mobile-adaptive/home-narrow-desktop.css` safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual `<img>` art must stay `border-box`, `max-height: 100%`, and `object-fit: contain` so the member manual and match artwork cannot spill out of the bottom of the card.
 - Resume character records in the final Bright School mobile layers reuse the detailed user profile character-list rhythm: the outer section stays lightweight, while compact four-column rows carry avatar, name, record, and win rate without clipping. The embedded resume list keeps total games and win/loss/draw on one line, while separate nested record dialogs may still use their two-line compact record treatment.
 - Mobile user profile stat cards center their label and value content inside each card; the record card keeps total games and win/loss/draw as compact centered lines sized to stay within the card.
 - Mobile user profile footer actions reuse the resume replay button's green treatment for "对局回放"; relationship actions that are already effective, such as "已是好友" or "已在黑名单", keep their native disabled semantics and render as gray inactive controls in the final Bright School mobile layer.

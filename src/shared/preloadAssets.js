@@ -60,7 +60,8 @@ export async function preloadLoginAssets(assets, {
   loadAudio = preloadFetch,
   loadEffectAudio = preloadEffectSound,
   loadImage = preloadImage,
-  onProgress = () => {}
+  onProgress = () => {},
+  taskTimeoutMs = 8000
 } = {}) {
   const groups = normalizePreloadAssetGroups(assets);
   const decodedEffects = new Set(RUNTIME_AUDIO_ASSETS.interaction);
@@ -82,13 +83,14 @@ export async function preloadLoginAssets(assets, {
     let completed = 0;
     await runPreloadTasks(criticalTasks, {
       concurrency,
+      taskTimeoutMs,
       onComplete: () => {
         completed += 1;
         onProgress(completed / criticalTasks.length);
       }
     });
   }
-  void runPreloadTasks(deferredTasks, { concurrency });
+  void runPreloadTasks(deferredTasks, { concurrency, taskTimeoutMs });
 }
 
 function preloadImage(src) {
@@ -144,7 +146,7 @@ function createPreloadTasks(images, audio, { decodedEffects, loadAudio, loadEffe
   ];
 }
 
-async function runPreloadTasks(tasks, { concurrency = 6, onComplete = () => {} } = {}) {
+async function runPreloadTasks(tasks, { concurrency = 6, onComplete = () => {}, taskTimeoutMs = 8000 } = {}) {
   if (tasks.length === 0) return;
   const workerCount = Math.max(1, Math.min(Number(concurrency) || 1, tasks.length));
   let nextIndex = 0;
@@ -152,8 +154,21 @@ async function runPreloadTasks(tasks, { concurrency = 6, onComplete = () => {} }
     while (nextIndex < tasks.length) {
       const task = tasks[nextIndex];
       nextIndex += 1;
-      await task().catch(() => null);
+      const taskPromise = Promise.resolve().then(task).catch(() => null);
+      await withTaskTimeout(taskPromise, taskTimeoutMs);
       onComplete();
     }
   }));
+}
+
+function withTaskTimeout(promise, timeoutMs) {
+  const timeout = Number(timeoutMs);
+  if (!Number.isFinite(timeout) || timeout <= 0) return promise;
+
+  let timeoutId;
+  const timeoutPromise = new Promise((resolve) => {
+    timeoutId = setTimeout(() => resolve(null), timeout);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId));
 }

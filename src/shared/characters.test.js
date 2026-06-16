@@ -5,6 +5,17 @@ describe("character fallback", () => {
   it("keeps built-in characters available before API load", () => {
     expect(characterList.map((character) => character.id)).toContain("sigrika");
     expect(characterList.map((character) => character.id)).toContain("denia");
+    expect(CHARACTERS.qiuyuan).toMatchObject({
+      id: "qiuyuan",
+      name: "仇远",
+      portrait: "/assets/characters/qiuyuan.png",
+      acquisitionMethod: "部员招募获得",
+      skill: {
+        id: "row-slash",
+        name: "一斩足矣",
+        costValue: "0"
+      }
+    });
     expect(CHARACTERS.lynae).toMatchObject({
       id: "lynae",
       name: "琳奈",

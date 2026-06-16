@@ -35,6 +35,30 @@ describe("api client auth refresh", () => {
     expect(refresh).not.toHaveBeenCalled();
   });
 
+  it("rejects instead of waiting forever when a request never settles", async () => {
+    const fetchMock = vi.fn((_url, options = {}) => new Promise((_resolve, reject) => {
+      options.signal?.addEventListener("abort", () => {
+        reject(new DOMException("Aborted", "AbortError"));
+      });
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await Promise.race([
+      api("/api/auth/refresh", {
+        method: "POST",
+        requestTimeoutMs: 1,
+        skipAuthRefresh: true
+      }).then(
+        () => "resolved",
+        (error) => error.message
+      ),
+      new Promise((resolve) => setTimeout(() => resolve("stuck"), 25))
+    ]);
+
+    expect(result).toBe("请求超时，请稍后重试。");
+    expect(fetchMock.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
+  });
+
   it("retries portrait uploads once after refreshing the access token", async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse({ error: "请先登录" }, 401))

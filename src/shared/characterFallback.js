@@ -92,6 +92,24 @@ export const FALLBACK_CHARACTERS = {
       description: "指定棋盘上一枚非喷涂、非隐藏手的棋子，在其变成喷涂棋子的同时，随机将棋盘上另一枚非喷涂、非隐藏手的棋子也变成喷涂棋子；若不存在另一枚可随机转换的棋子，则只转换指定棋子。超频2。"
     }
   },
+  qiuyuan: {
+    id: "qiuyuan",
+    name: "仇远",
+    description: "沉默寡言的剑客，只需一斩便能让棋盘横线归于清寂。",
+    palette: "#2f3a3d",
+    portrait: "/assets/characters/qiuyuan.png",
+    acquisitionMethod: "部员招募获得",
+    skill: {
+      id: "row-slash",
+      name: "一斩足矣",
+      uses: 1,
+      cost: 0,
+      costType: "numeric",
+      costValue: "0",
+      systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
+      description: "指定棋盘上一枚棋子或交叉点，移除其所在行的所有棋子。每移除一枚棋子，超频+2。发动技能会消耗本回合。"
+    }
+  },
   nabomo: {
     id: "nabomo",
     name: "娜波摩",

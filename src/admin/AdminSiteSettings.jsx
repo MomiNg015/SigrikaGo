@@ -33,7 +33,7 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
 
   return (
     <section className="admin-list-section">
-      <AdminSectionHeader title="大厅文案" meta="修改大厅标题、副标题和关于文本" />
+      <AdminSectionHeader title="大厅文案" meta="修改大厅标题、副标题、关于文本和页脚信息" />
       <form className="admin-form admin-settings-form" onSubmit={saveSettings}>
         <label>
           <AdminFieldLabel text="大厅标题" tip="显示在大厅顶部的主标题。" />
@@ -59,6 +59,15 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
             rows={8}
             value={draft.aboutText}
             onChange={(event) => setDraft((current) => ({ ...current, aboutText: event.target.value }))}
+          />
+        </label>
+        <label>
+          <AdminFieldLabel text="页脚信息" tip="显示在大厅右下角页脚。支持 Markdown 链接格式：[文字](https://example.com)。" />
+          <textarea
+            maxLength={3000}
+            rows={6}
+            value={draft.footerText}
+            onChange={(event) => setDraft((current) => ({ ...current, footerText: event.target.value }))}
           />
         </label>
         <div className="inline-actions">

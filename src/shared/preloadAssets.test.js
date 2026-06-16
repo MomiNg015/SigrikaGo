@@ -144,6 +144,37 @@ describe("deployment preload asset helpers", () => {
     deferredCompletions.forEach((resolve) => resolve());
   });
 
+  it("does not keep login preload stuck when a critical asset loader never settles", async () => {
+    const events = [];
+    const never = () => new Promise(() => {});
+    const load = async (src) => {
+      events.push(`done:${src}`);
+      return src;
+    };
+
+    const result = await Promise.race([
+      preloadLoginAssets({
+        criticalImages: ["hung-image"],
+        criticalAudio: ["critical-audio"]
+      }, {
+        concurrency: 1,
+        taskTimeoutMs: 1,
+        loadImage: never,
+        loadAudio: load,
+        loadEffectAudio: load,
+        onProgress: (progress) => events.push(`progress:${progress}`)
+      }).then(() => "resolved"),
+      new Promise((resolve) => setTimeout(() => resolve("stuck"), 25))
+    ]);
+
+    expect(result).toBe("resolved");
+    expect(events).toEqual([
+      "progress:0.5",
+      "done:critical-audio",
+      "progress:1"
+    ]);
+  });
+
   it("keeps the project check command as the core handoff gate", () => {
     const packageJson = JSON.parse(fs.readFileSync(path.resolve("package.json"), "utf8"));
 

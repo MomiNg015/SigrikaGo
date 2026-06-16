@@ -160,6 +160,73 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain('class="point');
   });
 
+  test("renders QiuYuan row slash as a continuous board overlay", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: createPoints(13),
+        history: [],
+        rowEffects: [{ effectType: "row-slash", owner: "black", y: 6, id: "4,6" }]
+      }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup).toContain("board-row-effects");
+    expect(markup).toContain("board-row-slash");
+    expect(markup).toContain("--row-y:");
+    expect(markup).toContain("<button");
+    expect(css).toContain(".board-row-slash");
+    expect(css).toContain("left: -7%");
+    expect(css).toContain("right: -7%");
+    expect(css).toContain("pointer-events: none");
+    expect(css).toContain("animation: row-slash-strike 620ms");
+    expect(css).toContain("@keyframes row-slash-strike");
+  });
+
+  test("keeps board point buttons transparent so they cannot cover grid lines", () => {
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const pointBlock = css.match(/\.board \.point\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(pointBlock).toContain("appearance: none !important");
+    expect(pointBlock).toContain("background: transparent !important");
+    expect(pointBlock).toContain("background-image: none !important");
+    expect(pointBlock).toContain("min-height: 0 !important");
+    expect(pointBlock).toContain("box-shadow: none !important");
+  });
+
+  test("keeps the board grid svg stretched over the playable board", () => {
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const gridSvgBlock = css.match(/\.board-lines\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(gridSvgBlock).toContain("display: block");
+    expect(gridSvgBlock).toContain("width: 100%");
+    expect(gridSvgBlock).toContain("height: 100%");
+    expect(gridSvgBlock).toContain("max-width: none");
+    expect(gridSvgBlock).toContain("max-height: none");
+  });
+
+  test("renders QiuYuan pending skill row preview from target metadata", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "skill-preview",
+        size: 13,
+        points: createPoints(13),
+        history: [],
+        pendingSkill: {
+          id: "slash-preview",
+          effectType: "row-slash",
+          targetId: "3,5",
+          row: 5
+        }
+      }
+    })));
+
+    expect(markup).toContain("board-row-slash preview");
+    expect(markup).not.toContain("board-effects-layer");
+    expect(markup).not.toContain('data-effect-type="row-slash"');
+  });
+
   test("prewarms Pixi only for skill-enabled boards", () => {
     const source = readFileSync(new URL("./Board.jsx", import.meta.url), "utf8");
 
@@ -205,12 +272,59 @@ describe("areBoardPropsEqual", () => {
     expect(css).not.toMatch(/\.theme-bright-school\.theme-bright-school \.white\s*\{/);
     expect(boardPointBlock).toContain("min-width: 0");
     expect(boardPointBlock).toContain("min-height: 0");
+    expect(boardPointBlock).toContain("background: transparent");
+    expect(boardPointBlock).toContain("background-image: none");
     expect(boardPointBlock).toContain("aspect-ratio: 1 / 1");
     expect(boardStoneBlock).toContain("aspect-ratio: 1 / 1");
     expect(boardStoneBlock).toContain("left: 50%");
     expect(boardStoneBlock).toContain("top: 50%");
     expect(boardStoneBlock).toContain("var(--stone-offset-x, 0px)");
     expect(boardStoneBlock).toContain("var(--stone-offset-y, 0px)");
+  });
+
+  test("Bright School guard prevents global svg media rules from collapsing board lines", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const boardBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board\s*\{[^}]+\}/)?.[0] ?? "";
+    const gridSvgBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board-lines\s*\{[^}]+\}/)?.[0] ?? "";
+    const gridLineBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board-lines line\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(boardBlock).toContain("background: transparent !important");
+    expect(boardBlock).toContain("background-image: none !important");
+    expect(boardBlock).toContain("overflow: visible !important");
+    expect(gridSvgBlock).toContain("width: 100% !important");
+    expect(gridSvgBlock).toContain("height: 100% !important");
+    expect(gridSvgBlock).toContain("max-width: none !important");
+    expect(gridSvgBlock).toContain("max-height: none !important");
+    expect(gridSvgBlock).toContain("background: transparent !important");
+    expect(gridLineBlock).toContain("stroke: #4a3736 !important");
+    expect(gridLineBlock).toContain("opacity: 1 !important");
+  });
+
+  test("Bright School guard keeps row slash containers from becoming paper panels", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const rowEffectsBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.board-row-effects\.board-row-effects\s*\{[^}]+\}/)?.[0] ?? "";
+    const rowSlashBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.board-row-slash\.board-row-slash\s*\{[^}]+\}/)?.[0] ?? "";
+    const rowSlashBeforeAfterBlock = css.match(/\.theme-bright-school\.theme-bright-school \.board \.board-row-slash\.board-row-slash::before,[\s\S]*?\.theme-bright-school\.theme-bright-school \.board \.board-row-slash\.board-row-slash::after\s*\{[^}]+\}/)?.[0] ?? "";
+    const rowSlashAfterBlockStart = css.lastIndexOf(".theme-bright-school.theme-bright-school .board .board-row-slash.board-row-slash::after");
+    const rowSlashAfterBlock = rowSlashAfterBlockStart >= 0 ? css.slice(rowSlashAfterBlockStart, css.indexOf("}", rowSlashAfterBlockStart) + 1) : "";
+
+    expect(rowEffectsBlock).toContain(".board .board-row-effects.board-row-effects");
+    expect(rowEffectsBlock).toContain("background: transparent !important");
+    expect(rowEffectsBlock).toContain("background-color: transparent !important");
+    expect(rowEffectsBlock).toContain("background-image: none !important");
+    expect(rowEffectsBlock).toContain("border: 0 !important");
+    expect(rowEffectsBlock).toContain("box-shadow: none !important");
+    expect(rowEffectsBlock).toContain("overflow: visible !important");
+    expect(rowEffectsBlock).toContain("clip-path: none !important");
+    expect(rowSlashBlock).toContain(".board .board-row-slash.board-row-slash");
+    expect(rowSlashBlock).toContain("background:");
+    expect(rowSlashBlock).toContain("clip-path: polygon(0 46%, 8% 36%, 49% 44%, 93% 30%, 100% 48%, 92% 66%, 48% 58%, 7% 72%) !important");
+    expect(rowSlashBlock).toContain("drop-shadow(0 0 7px rgba(232, 255, 248, 0.48))");
+    expect(rowSlashBlock).not.toContain("background-color: var(--bright-sheet)");
+    expect(rowSlashBeforeAfterBlock).toContain('content: "" !important');
+    expect(rowSlashBeforeAfterBlock).toContain("display: block !important");
+    expect(rowSlashBeforeAfterBlock).toContain("transform: skewX(-18deg) !important");
+    expect(rowSlashAfterBlock).toContain("background: rgba(34, 44, 47, 0.42) !important");
   });
 
   test("bright school keeps skill targeting glow separate from star-point dots", () => {

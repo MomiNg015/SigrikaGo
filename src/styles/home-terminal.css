@@ -641,6 +641,13 @@
   white-space: nowrap;
 }
 
+.home-footer-strip a {
+  color: inherit;
+  pointer-events: auto;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .home-orientation-guard {
   display: none;
 }

@@ -532,6 +532,35 @@ describe("rooms character integration", () => {
     });
   });
 
+  test("adds row-slash row metadata to pending skill previews", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    const characterConfig = { ...CHARACTERS.qiuyuan, id: "qiuyuan" };
+    joinMatchmaking({ user: user("slash-black", "qiuyuan", characterConfig), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("slash-white", "sigrika"), socketId: "socket-b" }, io);
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+
+    const black = room.players.find((player) => player.user.id === "slash-black");
+    const targetId = pointId(3, 5);
+    room.game.turn = black.color;
+    getPoint(room.game, pointId(0, 5)).stone = COLORS.white;
+    getPoint(room.game, pointId(1, 5)).stone = "spray";
+    const result = handleGameAction(room.code, black.user.id, { type: "skill", pointId: targetId }, io);
+
+    expect(result.ok).toBe(true);
+    expect(room.game.pendingSkill).toMatchObject({
+      characterId: "qiuyuan",
+      effectType: "row-slash",
+      targetId,
+      row: 5,
+      affectedPointIds: Array.from({ length: 13 }, (_item, x) => pointId(x, 5)),
+      markedPointIds: [],
+      removed: 2,
+      removedByColor: { white: 1, spray: 1 }
+    });
+  });
+
   test("adds hidden-hand data stream metadata to pending skill previews", () => {
     vi.useFakeTimers();
     const io = fakeIo();

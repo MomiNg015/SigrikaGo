@@ -13,6 +13,7 @@ describe("game skill registry", () => {
       "flip-stone",
       "hidden-hand",
       "random-blast",
+      "row-slash",
       "spray-stone"
     ]);
   });

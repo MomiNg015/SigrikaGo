@@ -143,7 +143,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("title=\"彩虹豆豆跳跳糖效果中\"");
   });
 
-  it("renders character chain badges in the house manual character grid", () => {
+  it("hides character chain badges in the house manual character grid", () => {
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
         id: 1,
@@ -168,8 +168,7 @@ describe("deriveCharacterRecordStats", () => {
       onApplyDecoration: () => {}
     }));
 
-    expect(html).toContain("character-chain-badge");
-    expect(html.match(/class="character-chain-badge"/g)).toHaveLength(1);
+    expect(html).not.toContain("character-chain-badge");
   });
 
   it("plays the selected character sortie voice before selecting the character", () => {

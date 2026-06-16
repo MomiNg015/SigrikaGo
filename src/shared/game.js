@@ -112,6 +112,7 @@ export function createGameState(players = [], options = {}) {
     phase: GAME_PHASES.playing,
     scoring: null,
     suspendedHiddenHands: [],
+    rowEffects: [],
     winner: null
   };
 }
@@ -284,7 +285,7 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
   next.ko = removed.length === 1 && ownGroup.stones.length === 1 && ownGroup.liberties.size === 1
     ? removed[0]
     : null;
-  clearBlastMarkers(next, color);
+  clearOwnedBoardMarkers(next, color);
   next.turn = opponent(color);
   next.passes = 0;
   next.moveNumber += 1;
@@ -373,6 +374,7 @@ function clearBoardStones(state) {
     }
     point.mark = null;
   }
+  state.rowEffects = [];
 }
 
 function allStoneGroupsHaveLiberties(state) {
@@ -520,6 +522,69 @@ export function sprayStone(state, color, id, options = {}) {
     "skillRemovals",
     cleanupRemovals
   ));
+}
+
+export function rowSlash(state, color, id, options = {}) {
+  const next = cloneState(state);
+  const target = getPoint(next, id);
+  if (!target?.valid) return fail("蹇呴』鎸囧畾鏈夋晥浜ゅ弶鐐?");
+
+  const row = target.y;
+  const removedByColor = {};
+  const directRemovals = [];
+  next.skillRemovals ??= { black: 0, white: 0 };
+
+  for (const point of next.points) {
+    if (!point.valid || point.y !== row || !point.stone) continue;
+    const from = point.stone;
+    removedByColor[from] = (removedByColor[from] ?? 0) + 1;
+    const owner = captureCreditOwner(from);
+    if (owner) {
+      next.skillRemovals[owner] = (next.skillRemovals[owner] ?? 0) + 1;
+    }
+    directRemovals.push({ id: point.id, from, owner });
+    clearStone(next, point.id);
+  }
+
+  const directRemoved = directRemovals.length;
+  const overclockAdded = directRemoved * 2;
+  next.skillUses[color] -= 1;
+  applySkillCost(next, color, options.skill ?? "qiuyuan");
+  applyExtraSkillCost(next, color, overclockAdded, {
+    characterId: options.skill?.characterId ?? "qiuyuan",
+    reason: "row-slash-direct-removals"
+  });
+  next.ko = null;
+  next.rowEffects = [
+    ...(next.rowEffects ?? []).filter((effect) => effect.owner !== color),
+    { effectType: "row-slash", owner: color, y: row, id }
+  ];
+  const cleanupRemovals = [];
+  next.history.push({
+    type: "skill",
+    effectType: "row-slash",
+    skill: options.skillName ?? "一斩足矣",
+    color,
+    id,
+    row,
+    directRemoved,
+    overclockAdded,
+    removed: directRemoved,
+    removedByColor,
+    directRemovals,
+    cleanupRemovals,
+    moveNumber: next.moveNumber
+  });
+
+  const resolved = resolveCapturesAfterMutation(
+    next,
+    color,
+    options.consumesTurn ?? true,
+    "skillRemovals",
+    cleanupRemovals
+  );
+  if (options.consumesTurn ?? true) resolved.passes = 0;
+  return ok(resolved);
 }
 
 export function randomBlast(state, color, options = {}) {
@@ -695,13 +760,14 @@ function clearStone(state, id) {
   point.colorIllusion = null;
 }
 
-function clearBlastMarkers(state, ownerColor) {
+function clearOwnedBoardMarkers(state, ownerColor) {
   for (const point of state.points) {
     if (point.skillEffect !== "blast-marker") continue;
     if (point.skillEffectOwner !== ownerColor) continue;
     point.skillEffect = null;
     point.skillEffectOwner = null;
   }
+  state.rowEffects = (state.rowEffects ?? []).filter((effect) => effect.owner !== ownerColor);
 }
 
 function applySkillCost(state, color, skillOrCharacterId) {
@@ -723,6 +789,20 @@ function applySkillCost(state, color, skillOrCharacterId) {
     characterId: typeof skillOrCharacterId === "string" ? skillOrCharacterId : skill?.characterId ?? null,
     costType,
     costValue
+  });
+}
+
+function applyExtraSkillCost(state, color, cost, { characterId = null, reason = "" } = {}) {
+  if (!Number.isFinite(cost) || cost <= 0) return;
+  state.skillCosts = state.skillCosts ?? { black: 0, white: 0 };
+  state.skillCosts[color] = (state.skillCosts[color] ?? 0) + cost;
+  state.skillCostNotes = state.skillCostNotes ?? [];
+  state.skillCostNotes.push({
+    color,
+    characterId,
+    costType: "numeric",
+    costValue: String(cost),
+    reason
   });
 }
 

@@ -30,6 +30,10 @@ export function playSkillEffectSound(effectType, cue, audioSettings = DEFAULT_AU
   }
   if (effectType === "hidden-hand") {
     playDataStreamSound(context, cue, volume, now);
+    return;
+  }
+  if (effectType === "row-slash") {
+    playSlashSound(context, cue, volume, now);
   }
 }
 
@@ -95,6 +99,18 @@ function playDataStreamSound(context, cue, volume, now) {
   if (cue === SKILL_EFFECT_SOUND_TYPES.impact) {
     scheduleTone(context, { type: "triangle", frequency: 380, endFrequency: 1160, start: now, length: 0.28, volume: 0.1 * volume });
     scheduleNoise(context, { start: now + 0.04, length: 0.16, volume: 0.055 * volume, highpass: 1600 });
+  }
+}
+
+function playSlashSound(context, cue, volume, now) {
+  if (cue === SKILL_EFFECT_SOUND_TYPES.start) {
+    scheduleNoise(context, { start: now, length: 0.16, volume: 0.06 * volume, highpass: 1800 });
+    scheduleTone(context, { type: "triangle", frequency: 820, endFrequency: 1240, start: now + 0.02, length: 0.18, volume: 0.08 * volume });
+    return;
+  }
+  if (cue === SKILL_EFFECT_SOUND_TYPES.impact) {
+    scheduleNoise(context, { start: now, length: 0.22, volume: 0.16 * volume, highpass: 950 });
+    scheduleTone(context, { type: "sawtooth", frequency: 210, endFrequency: 72, start: now, length: 0.2, volume: 0.12 * volume });
   }
 }
 

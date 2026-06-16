@@ -19,6 +19,10 @@ describe("boardSkillEffectRegistry", () => {
     });
   });
 
+  test("keeps row-slash out of Pixi renderers because it uses the DOM row overlay", () => {
+    expect(BOARD_SKILL_EFFECT_RENDERERS["row-slash"]).toBeUndefined();
+  });
+
   test("skips unknown effects without touching the Pixi stage", () => {
     const app = { stage: { addChild: () => { throw new Error("should not draw"); } } };
 

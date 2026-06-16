@@ -68,7 +68,37 @@ describe("BoardSkillEffects", () => {
     expect(markup).toContain("board-effects-layer");
     expect(markup).toContain('data-effect-id="skill-1"');
     expect(markup).toContain('data-effect-type="flip-stone"');
+    expect(markup).toContain('data-board-effect="true"');
     expect(markup).toContain("aria-hidden=\"true\"");
+  });
+
+  test("omits the full-board layer for non-Pixi skill visuals", () => {
+    const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
+      boardSize: 13,
+      pendingSkill: {
+        id: "slash-dom-only",
+        effectType: "row-slash",
+        targetId: "4,5",
+        row: 5
+      }
+    }));
+
+    expect(markup).toBe("");
+    expect(markup).not.toContain("board-effects-layer");
+    expect(markup).not.toContain('data-effect-type="row-slash"');
+  });
+
+  test("omits DOM-only skill layers even when legacy preview metadata has no id", () => {
+    const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
+      boardSize: 13,
+      pendingSkill: {
+        effectType: "row-slash",
+        targetId: "4,5",
+        row: 5
+      }
+    }));
+
+    expect(markup).toBe("");
   });
 
   test("supports disabling idle Pixi prewarm for no-skill boards", () => {

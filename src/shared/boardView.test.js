@@ -81,6 +81,34 @@ describe("board view helpers", () => {
     })).toBe(true);
   });
 
+  it("previews QiuYuan row slash on any valid intersection", () => {
+    const game = {
+      phase: GAME_PHASES.playing,
+      turn: COLORS.black,
+      skillUses: { black: 1 }
+    };
+    const player = {
+      color: COLORS.black,
+      character: { skill: { effectType: "row-slash" } }
+    };
+
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: { valid: true, stone: null }
+    })).toBe(true);
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: { valid: true, stone: COLORS.white }
+    })).toBe(true);
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: { valid: false, stone: COLORS.white }
+    })).toBe(false);
+  });
+
   it("does not preview Baconbits random blast targets", () => {
     const game = {
       phase: GAME_PHASES.playing,

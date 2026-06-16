@@ -1,4 +1,5 @@
 const API_BASE = "";
+const DEFAULT_REQUEST_TIMEOUT_MS = 8000;
 let authRefreshHandler = null;
 
 export function configureAuthRefresh(handler) {
@@ -6,7 +7,7 @@ export function configureAuthRefresh(handler) {
 }
 
 export async function api(path, options = {}) {
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await fetchWithTimeout(`${API_BASE}${path}`, {
     method: options.method ?? "GET",
     credentials: "same-origin",
     headers: {
@@ -14,7 +15,7 @@ export async function api(path, options = {}) {
       ...(options.token ? { Authorization: `Bearer ${options.token}` } : {})
     },
     body: options.body ? JSON.stringify(options.body) : undefined
-  });
+  }, options.requestTimeoutMs);
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
     const text = await response.text();
@@ -55,7 +56,7 @@ export async function uploadPortrait(file, token) {
 async function uploadPortraitWithToken(file, token, { skipAuthRefresh = false } = {}) {
   const form = new FormData();
   form.append("portrait", file);
-  const response = await fetch(`${API_BASE}/api/admin/uploads/character-portrait`, {
+  const response = await fetchWithTimeout(`${API_BASE}/api/admin/uploads/character-portrait`, {
     method: "POST",
     credentials: "same-origin",
     headers: { Authorization: `Bearer ${token}` },
@@ -70,4 +71,26 @@ async function uploadPortraitWithToken(file, token, { skipAuthRefresh = false } 
   }
   if (!response.ok) throw new Error(data.error ?? "\u4e0a\u4f20\u5931\u8d25");
   return data.url;
+}
+
+async function fetchWithTimeout(url, init, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS) {
+  const timeout = Number(timeoutMs);
+  if (!Number.isFinite(timeout) || timeout <= 0) return fetch(url, init);
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    return await fetch(url, {
+      ...init,
+      signal: controller.signal
+    });
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error("\u8bf7\u6c42\u8d85\u65f6\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }

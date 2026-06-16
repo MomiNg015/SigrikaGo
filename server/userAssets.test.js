@@ -237,6 +237,14 @@ describe("user asset list helpers", () => {
       role: "admin",
       rank: "18级",
       ownedCharacters: "sigrika"
-    }).ownedCharacters).toContain("lynae");
+    }).ownedCharacters).toEqual(expect.arrayContaining(["lynae", "qiuyuan"]));
+  });
+
+  it("keeps QiuYuan admin-only until recruitment is implemented", () => {
+    expect(publicUserAssets({
+      role: "player",
+      rank: "9段",
+      ownedCharacters: "sigrika"
+    }).ownedCharacters).not.toContain("qiuyuan");
   });
 });

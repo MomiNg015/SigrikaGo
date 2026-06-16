@@ -6,6 +6,7 @@ describe("server skill registry", () => {
     expect(skillConfigForCharacter("sigrika").targetRule).toBe("empty-point");
     expect(skillConfigForCharacter("denia").targetRule).toBe("stone");
     expect(skillConfigForCharacter("baconbits").targetRule).toBe("none");
+    expect(skillConfigForCharacter("qiuyuan").targetRule).toBe("any-point");
     expect(skillConfigForCharacter("nabomo").targetRule).toBe("none");
   });
 });

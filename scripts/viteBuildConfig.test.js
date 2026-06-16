@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import config from "../vite.config.js";
+import { EventEmitter } from "node:events";
+import config, { configureDevSocketProxy, isQuietDevProxySocketError } from "../vite.config.js";
 
 describe("vite build config", () => {
   const manualChunks = config.build.rollupOptions.output.manualChunks;
@@ -17,5 +18,28 @@ describe("vite build config", () => {
 
   test("allows the lazy Pixi chunk while keeping entry chunks below the default warning target", () => {
     expect(config.build.chunkSizeWarningLimit).toBe(900);
+  });
+
+  test("keeps expected websocket proxy disconnects quiet during dev server restarts", () => {
+    const proxy = new EventEmitter();
+    const originalWarn = console.warn;
+    const warnings = [];
+    console.warn = (...args) => warnings.push(args);
+
+    try {
+      configureDevSocketProxy(proxy);
+      proxy.emit("error", Object.assign(new Error("read ECONNRESET"), { code: "ECONNRESET" }));
+      proxy.emit("error", Object.assign(new Error("connect ECONNREFUSED"), { code: "ECONNREFUSED" }));
+      proxy.emit("error", Object.assign(new Error("unexpected"), { code: "EOTHER" }));
+    } finally {
+      console.warn = originalWarn;
+    }
+
+    expect(config.server.proxy["/socket.io"].configure).toBe(configureDevSocketProxy);
+    expect(isQuietDevProxySocketError({ code: "ECONNRESET" })).toBe(true);
+    expect(isQuietDevProxySocketError({ code: "ECONNREFUSED" })).toBe(true);
+    expect(isQuietDevProxySocketError({ code: "EOTHER" })).toBe(false);
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0][0]).toBe("[vite] websocket proxy error:");
   });
 });

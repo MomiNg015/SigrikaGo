@@ -6,16 +6,16 @@ import { readCssWithImports } from "../styles/cssTestUtils.js";
 import CharacterChainBadge, { chainCountForCharacter } from "./CharacterChainBadge.jsx";
 
 describe("CharacterChainBadge", () => {
-  it("renders up to five yellow stars, then switches to multiplier text", () => {
+  it("keeps chain counts hidden even when a character has duplicate-chain data", () => {
     expect(renderToStaticMarkup(createElement(CharacterChainBadge, {
       user: { characterChains: { denia: 3 } },
       characterId: "denia"
-    }))).toContain("★★★");
+    }))).toBe("");
 
     expect(renderToStaticMarkup(createElement(CharacterChainBadge, {
       user: { characterChains: { denia: 6 } },
       characterId: "denia"
-    }))).toContain("★×6");
+    }))).toBe("");
   });
 
   it("reads canonical character ids and adds portrait display hooks", () => {

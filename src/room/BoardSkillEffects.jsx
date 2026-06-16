@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { skillEffectHasBoardEffect } from "../shared/skillEffectCatalog.js";
 import { skillEffectTiming, SKILL_EFFECT_REDUCED_MOTION_MS } from "../shared/skillPresentation.js";
 import { playRegisteredBoardSkillEffect } from "./boardSkillEffectRegistry.js";
 import { boardPointCenter } from "./boardSkillEffectGeometry.js";
@@ -30,12 +31,16 @@ export default function BoardSkillEffects({ boardSize = 13, pendingSkill = null,
   const playedEffectIdRef = useRef("");
   const effectType = pendingSkill?.effectType ?? "";
   const targetId = pendingSkill?.targetId ?? "";
+  const hasBoardEffect = skillEffectHasBoardEffect(effectType);
+  const hasPendingEffect = Boolean(effectType);
 
-  useEffect(() => schedulePixiPrewarm({ enabled: prewarm }), [prewarm]);
+  useEffect(() => {
+    schedulePixiPrewarm({ enabled: prewarm && (!hasPendingEffect || hasBoardEffect) });
+  }, [hasBoardEffect, hasPendingEffect, prewarm]);
 
   useEffect(() => {
     const host = hostRef.current;
-    if (!host || !pendingSkill?.id || playedEffectIdRef.current === pendingSkill.id) return undefined;
+    if (!hasBoardEffect || !host || !pendingSkill?.id || playedEffectIdRef.current === pendingSkill.id) return undefined;
     playedEffectIdRef.current = pendingSkill.id;
     let disposed = false;
     let cleanup = () => {};
@@ -52,7 +57,9 @@ export default function BoardSkillEffects({ boardSize = 13, pendingSkill = null,
       window.clearTimeout(startTimer);
       cleanup();
     };
-  }, [audioSettings, boardSize, pendingSkill]);
+  }, [audioSettings, boardSize, hasBoardEffect, pendingSkill]);
+
+  if (hasPendingEffect && !hasBoardEffect) return null;
 
   return (
     <div
@@ -60,6 +67,7 @@ export default function BoardSkillEffects({ boardSize = 13, pendingSkill = null,
       className="board-effects-layer"
       data-effect-id={pendingSkill?.id ?? ""}
       data-effect-type={effectType}
+      data-board-effect={hasBoardEffect ? "true" : "false"}
       data-target-id={targetId}
       aria-hidden="true"
     />

@@ -10,6 +10,7 @@ describe("skill effect sounds", () => {
     expect(skillEffectSoundCues("erase-point")).toEqual({ startAt: 0.08, impactAt: 0.48 });
     expect(skillEffectSoundCues("flip-stone")).toEqual({ startAt: 0.04, impactAt: 0.6 });
     expect(skillEffectSoundCues("random-blast")).toEqual({ startAt: 0.06, impactAt: 0.56 });
+    expect(skillEffectSoundCues("row-slash")).toEqual({ startAt: 0.04, impactAt: 0.46 });
     expect(skillEffectSoundCues("hidden-hand")).toEqual({ startAt: 0.04, impactAt: 0.52 });
   });
 

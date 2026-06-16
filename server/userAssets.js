@@ -3,6 +3,7 @@ import { DEFAULT_RANK, normalizeRank } from "../src/shared/rankProgression.js";
 import { parseItemEffects } from "./itemEffects.js";
 
 const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia", "aemeath"];
+const ADMIN_ONLY_CHARACTER_IDS = ["qiuyuan"];
 const RATING_UNLOCKS = [
   { characterId: "nabomo", rating: 1400 }
 ];
@@ -111,6 +112,7 @@ export function publicUserAssets(user) {
     if ((user?.rating ?? 0) >= unlock.rating) ownedCharacters.add(unlock.characterId);
   }
   if (user?.role === "admin") {
+    for (const characterId of ADMIN_ONLY_CHARACTER_IDS) ownedCharacters.add(characterId);
     for (const unlock of RANK_UNLOCKS) ownedCharacters.add(unlock.characterId);
   } else {
     const userRankStep = publicUserRankStep(user);

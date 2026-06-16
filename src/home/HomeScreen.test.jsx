@@ -280,10 +280,13 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("font-size: clamp(22px, 6.7vw, 32px) !important");
     expect(finalMobileCss).toContain("text-overflow: clip !important");
     expect(finalMobileCss).toContain("@media (min-width: 769px)");
+    expect(finalMobileCss).toContain(".home-screen.home-terminal-screen + .home-footer-strip");
     expect(finalMobileCss).toContain(".home-screen.home-terminal-screen > .home-footer-strip");
     expect(finalMobileCss).toContain("position: fixed !important");
     expect(finalMobileCss).toContain("bottom: clamp(8px, 1.4vw, 16px) !important");
     expect(finalMobileCss).toContain("pointer-events: none !important");
+    expect(finalMobileCss).toContain(".home-footer-strip a");
+    expect(finalMobileCss).toContain("pointer-events: auto !important");
     expect(finalMobileCss).toContain(".home-footer-strip");
     expect(finalMobileCss).toContain("position: static !important");
     expect(finalMobileCss).toContain(".leaderboard-header h2");
@@ -299,6 +302,21 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".home-player-zone,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry");
     expect(finalMobileCss).toContain("position: static !important");
     expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 860px), (min-width: 701px) and (max-height: 560px)");
+  });
+
+  it("renders configured footer text with safe markdown links", () => {
+    const html = renderHome({
+      siteSettings: {
+        homeTitle: "棋境大厅",
+        homeSubtitle: "测试服",
+        aboutText: "关于",
+        footerText: "棋境大厅\n[备案链接](https://beian.miit.gov.cn/)\n<script>alert(1)</script>"
+      }
+    });
+
+    expect(html).toContain('class="home-footer-line"');
+    expect(html).toContain('<a href="https://beian.miit.gov.cn/" rel="noreferrer" target="_blank">备案链接</a>');
+    expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
   });
 
   it("keeps match mode cancel actions separated from mode choices", () => {

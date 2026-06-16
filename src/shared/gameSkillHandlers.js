@@ -1,4 +1,4 @@
-import { erasePoint, flipStone, playHiddenHand, randomBlast, sprayStone } from "./game.js";
+import { erasePoint, flipStone, playHiddenHand, randomBlast, rowSlash, sprayStone } from "./game.js";
 import { executeRegisteredSkill, skillConsumesTurn } from "./gameSkillRegistry.js";
 
 export const ACTIVE_SKILL_HANDLERS = {
@@ -18,6 +18,11 @@ export const ACTIVE_SKILL_HANDLERS = {
     skill
   }),
   "random-blast": ({ state, color, skill }) => randomBlast(state, color, {
+    skillName: skill.name,
+    consumesTurn: skillConsumesTurn(skill),
+    skill
+  }),
+  "row-slash": ({ state, color, targetId, skill }) => rowSlash(state, color, targetId, {
     skillName: skill.name,
     consumesTurn: skillConsumesTurn(skill),
     skill

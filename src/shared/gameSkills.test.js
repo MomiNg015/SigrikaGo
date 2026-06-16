@@ -21,12 +21,19 @@ describe("game skill configuration", () => {
       targetRule: "stone",
       costValue: "4"
     });
+    expect(normalizeSkillConfig("qiuyuan")).toMatchObject({
+      characterId: "qiuyuan",
+      effectType: "row-slash",
+      targetRule: "any-point",
+      costValue: "0"
+    });
   });
 
   it("identifies skills that need an existing board stone before they can start", () => {
     expect(skillRequiresExistingStone("denia")).toBe(true);
     expect(skillRequiresExistingStone("baconbits")).toBe(true);
     expect(skillRequiresExistingStone("lynae")).toBe(true);
+    expect(skillRequiresExistingStone("qiuyuan")).toBe(false);
     expect(skillRequiresExistingStone("aemeath")).toBe(false);
   });
 

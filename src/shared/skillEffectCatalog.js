@@ -27,6 +27,13 @@ export const SKILL_EFFECT_CATALOG = {
     boardEffect: true,
     soundCues: { startAt: 0.06, impactAt: 0.56 }
   },
+  "row-slash": {
+    label: "一斩足矣",
+    targetRule: "any-point",
+    active: true,
+    boardEffect: false,
+    soundCues: { startAt: 0.04, impactAt: 0.46 }
+  },
   "spray-stone": {
     label: "流光溢彩",
     targetRule: "stone",
@@ -68,6 +75,10 @@ export function skillEffectTargetRule(effectType, fallbackRule = null) {
 
 export function skillEffectSoundCues(effectType) {
   return SKILL_EFFECT_CATALOG[effectType]?.soundCues ?? { startAt: 0, impactAt: 0 };
+}
+
+export function skillEffectHasBoardEffect(effectType) {
+  return Boolean(SKILL_EFFECT_CATALOG[effectType]?.boardEffect);
 }
 
 export function skillEffectTypeMessage() {

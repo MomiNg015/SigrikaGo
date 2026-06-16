@@ -32,6 +32,62 @@ Questions to answer:
 
 <!-- How to create and run migrations -->
 
+### Scenario: Site Setting Public Configuration
+
+#### 1. Scope / Trigger
+- Trigger: any change to public site settings, admin system settings fields, `/api/site-settings`, `/api/admin/site-settings`, or frontend lobby/about/footer copy that is backed by `SiteSetting`.
+- Site settings are a cross-layer key/value contract: shared defaults define allowed keys, backend sanitizes and persists them, public/admin APIs return the merged values, and frontend components render them.
+
+#### 2. Signatures
+- `DEFAULT_SITE_SETTINGS` in `src/shared/siteSettings.js` is the source of truth for supported keys and fallback values.
+- `SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS)` in `server/siteSettings.js`.
+- Current keys: `homeTitle`, `homeSubtitle`, `aboutText`, and `footerText`.
+- `footerText` supports Markdown-style links in the frontend only: `[label](https://example.com)`.
+
+#### 3. Contracts
+- `ensureDefaultSiteSettings(prisma)` must upsert every key from `DEFAULT_SITE_SETTINGS` without overwriting already configured values.
+- `getPublicSiteSettings(prisma)` must ignore unknown database rows and merge only supported keys over shared defaults.
+- `updateSiteSettings({ prisma, adminUser, body })` must sanitize every supported key, upsert each value, and write one `site-settings.update` audit entry.
+- New settings fields must be added to `DEFAULT_SITE_SETTINGS`, `SITE_SETTING_LIMITS`, admin settings UI, public/admin route tests, and frontend rendering tests together.
+- The frontend must render `footerText` links through a constrained parser rather than arbitrary HTML.
+
+#### 4. Validation & Error Matrix
+- Missing key in request body -> sanitize to the shared default for that key.
+- Blank or whitespace-only value -> fall back to the shared default.
+- Overlong value -> trim and slice to the key-specific `SITE_SETTING_LIMITS` length.
+- Unknown stored key -> ignored by `rowsToSettings`.
+- Footer text containing raw HTML -> React escapes it as text; it must not be inserted with `dangerouslySetInnerHTML`.
+- Footer Markdown link with non-HTTP protocol -> stays plain text because only `http://` and `https://` links are recognized.
+
+#### 5. Good/Base/Bad Cases
+- Good: adding `footerText` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, and home footer rendering tests in one change.
+- Base: an old database without `footerText` rows serves the shared default until an admin saves a custom footer.
+- Bad: accepting arbitrary HTML for the footer to make links work.
+- Bad: adding a field only to the admin form while `SITE_SETTING_KEYS` still rejects it.
+
+#### 6. Tests Required
+- Backend defaults tests assert `ensureDefaultSiteSettings()` seeds every supported key.
+- Admin route tests assert PATCH/GET round-trip for newly added keys.
+- Public settings loader tests assert API values merge over defaults without dropping new keys.
+- Frontend component tests assert configured footer text renders and raw HTML stays escaped.
+- CSS/static tests assert desktop footer remains viewport-fixed and mobile footer remains in normal document flow when those layout contracts are affected.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<footer dangerouslySetInnerHTML={{ __html: settings.footerText }} />
+```
+
+Correct:
+
+```jsx
+<HomeFooter footerText={siteSettings.footerText} />
+```
+
+`HomeFooter` parses only safe Markdown link syntax and lets React escape all other text.
+
 ### Scenario: Game Mode Persistence
 
 #### 1. Scope / Trigger

@@ -109,6 +109,82 @@
   contain: layout paint;
 }
 
+.board-row-effects {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  overflow: visible;
+  contain: layout paint;
+}
+
+.board-row-slash {
+  position: absolute;
+  left: -7%;
+  right: -7%;
+  top: var(--row-y);
+  height: clamp(8px, 2.2vw, 18px);
+  transform-origin: 0 50%;
+  translate: 0 -50%;
+  rotate: -1.4deg;
+  scale: 1 1;
+  opacity: 0.78;
+  background:
+    linear-gradient(90deg, transparent 0 3%, rgba(255, 255, 255, 0.7) 12%, rgba(37, 48, 51, 0.88) 49%, rgba(162, 244, 216, 0.5) 72%, transparent 98%),
+    linear-gradient(180deg, transparent 0 24%, rgba(255, 255, 255, 0.72) 42%, rgba(22, 28, 31, 0.64) 56%, transparent 82%);
+  clip-path: polygon(0 46%, 8% 36%, 49% 44%, 93% 30%, 100% 48%, 92% 66%, 48% 58%, 7% 72%);
+  filter: drop-shadow(0 0 7px rgba(232, 255, 248, 0.48)) drop-shadow(0 2px 2px rgba(19, 22, 24, 0.28));
+  animation: row-slash-strike 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.board-row-slash::before,
+.board-row-slash::after {
+  content: "";
+  position: absolute;
+  inset: 34% 2%;
+  background: rgba(255, 255, 255, 0.74);
+  transform: skewX(-18deg);
+}
+
+.board-row-slash::after {
+  inset: 55% 4% 18%;
+  background: rgba(34, 44, 47, 0.42);
+}
+
+.board-row-slash.preview {
+  opacity: 0.36;
+  animation:
+    row-slash-strike 620ms cubic-bezier(0.16, 1, 0.3, 1) both,
+    row-slash-preview-pulse 0.9s ease-in-out 620ms infinite alternate;
+}
+
+@keyframes row-slash-strike {
+  0% {
+    opacity: 0;
+    scale: 0.02 0.62;
+    filter: drop-shadow(0 0 0 rgba(232, 255, 248, 0));
+  }
+  42% {
+    opacity: 0.94;
+    scale: 1.08 1;
+    filter: drop-shadow(0 0 18px rgba(232, 255, 248, 0.76)) drop-shadow(0 2px 2px rgba(19, 22, 24, 0.28));
+  }
+  100% {
+    opacity: 0.78;
+    scale: 1 1;
+    filter: drop-shadow(0 0 7px rgba(232, 255, 248, 0.48)) drop-shadow(0 2px 2px rgba(19, 22, 24, 0.28));
+  }
+}
+
+@keyframes row-slash-preview-pulse {
+  from {
+    filter: drop-shadow(0 0 4px rgba(232, 255, 248, 0.35));
+  }
+  to {
+    filter: drop-shadow(0 0 12px rgba(159, 244, 217, 0.72));
+  }
+}
+
 .board-ambient-layer {
   position: absolute;
   inset: 0;
@@ -235,6 +311,7 @@
 @media (prefers-reduced-motion: reduce) {
   .board-effects-layer,
   .board-effects-canvas,
+  .board-row-slash,
   .fog-cloud,
   .fog-cloud::after {
     animation-duration: 1ms !important;
@@ -243,15 +320,35 @@
 }
 
 .point {
+  appearance: none;
+  -webkit-appearance: none;
   position: relative;
   border: 0;
   background: transparent;
+  background-color: transparent;
+  background-image: none;
   min-width: 0;
   min-height: 0;
   display: grid;
   place-items: center;
   padding: 0;
   z-index: 2;
+}
+
+.board .point {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  touch-action: none !important;
 }
 
 .point::before {
@@ -499,8 +596,14 @@
 .board-lines {
   position: absolute;
   inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
   pointer-events: none;
   z-index: 1;
+  overflow: visible;
 }
 
 .board-lines line {

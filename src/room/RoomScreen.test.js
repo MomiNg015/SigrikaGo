@@ -502,7 +502,8 @@ describe("RoomScreen helpers", () => {
     const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
     const brightPortraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
 
-    expect(chainBadgeSource).toContain("data-chain-count={count}");
+    expect(chainBadgeSource).toContain("return null");
+    expect(chainBadgeSource).not.toContain("data-chain-count={count}");
     expect(portraitMedia).toContain("grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr)");
     expect(portraitMedia).toContain("grid-template-rows: minmax(0, 30px) minmax(0, 26px)");
     expect(portraitMedia).toContain(".mobile-room-screen .player-meta");

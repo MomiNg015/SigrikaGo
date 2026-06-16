@@ -1,6 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+const DEV_PROXY_QUIET_SOCKET_ERRORS = new Set(["ECONNRESET", "ECONNREFUSED"]);
+
+function isQuietDevProxySocketError(error) {
+  return DEV_PROXY_QUIET_SOCKET_ERRORS.has(error?.code);
+}
+
+function configureDevSocketProxy(proxy) {
+  proxy.on("error", (error) => {
+    if (isQuietDevProxySocketError(error)) return;
+    console.warn("[vite] websocket proxy error:", error);
+  });
+}
+
 export default defineConfig({
   plugins: [react()],
   build: {
@@ -35,8 +48,11 @@ export default defineConfig({
       "/uploads": "http://localhost:3001",
       "/socket.io": {
         target: "http://localhost:3001",
-        ws: true
+        ws: true,
+        configure: configureDevSocketProxy
       }
     }
   }
 });
+
+export { configureDevSocketProxy, isQuietDevProxySocketError };

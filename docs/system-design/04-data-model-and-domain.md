@@ -41,6 +41,8 @@
 
 `server/userAssets.js` 是账号资产兼容边界：`parseAssetList()` / `parseOwnedItemCounts()` 处理旧字符串和公开数组 payload，`syncStructuredUserAssets()` 将 legacy 字段替换式同步到 `UserCharacter`、`UserDecoration`、`UserItem` 和 `UserItemEffect`，`publicUserAssets()` 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。`server/db.js` 的 `publicUser()` 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。
 
+仇远（`qiuyuan`）是内置剑客角色，立绘位于 `/assets/characters/qiuyuan.png`，获得方式文案为“部员招募获得”。部员招募尚未实装时，`server/userAssets.js` 将该角色视为管理员限定资源：管理员公开资产会自动补齐 `qiuyuan`，普通玩家不会默认拥有或部署。
+
 ### LoginSession
 
 持久化登录会话表，用于 refresh cookie、单账号单会话和服务重启后的登录恢复。
@@ -101,7 +103,7 @@
 
 - `id`: 主键 cuid。
 - `characterId`: 关联 `Character.id`，唯一。
-- `effectType`: 技能实际效果类型，当前支持 `erase-point`、`flip-stone`、`hidden-hand`、`random-blast`、`spray-stone`、`color-illusion-passive`。
+- `effectType`: 技能实际效果类型，当前支持 `erase-point`、`flip-stone`、`hidden-hand`、`random-blast`、`spray-stone`、`color-illusion-passive`、`row-slash`。
 - `name`: 技能名。
 - `description`: 技能描述。
 - `uses`: 每局使用次数。
@@ -117,6 +119,12 @@
 ### Neutral Stones
 
 `src/shared/gameConstants.js` 维护命名中立棋子类型，当前内置 `spray`，由琳奈 `spray-stone` 技能生成。中立棋子不是黑白任一方，但同名中立棋子属于同一阵营并按围棋气规则连接；不同阵营之间互相阻断气和领地。黑/白棋子转化为喷涂棋子时立即给对手 `skillRemovals +1`，中立棋子被提、被爆破、被死子标记或在技能后无气清理时不提供黑白除子。数子阶段中立棋子不计入黑白子数，可作为边界参与空点归属；被中立棋子或多阵营共同围住的空点保持中立。
+
+### Row Slash Skill
+
+`row-slash` 是仇远“一斩足矣”的主动棋盘技能。目标规则为 `any-point`，只能指定当前棋盘内仍有效的交叉点；空点和已有棋子均可指定，被抹除的无效点不可指定。技能横向处理目标所在行，直接移除该行所有黑棋、白棋、命名中立棋子、隐藏手棋子和幻色棋子，并清除劫状态。直接移除的黑白棋子按真实颜色给受益方增加 `skillRemovals`；中立棋子参与仇远超频增加但不提供黑白除子；隐藏手被直接移除时不产生发现提示；幻色棋子按真实颜色结算并清掉幻色状态。直接移除后会自动清理因此无气的棋串，后续清理仍计入 `skillRemovals`，但不再增加仇远超频。
+
+该技能基础超频消耗为 `0`，然后按直接移除棋子数追加超频，每枚直接移除棋子 `+2`；空行可以发动并消耗技能/回合，但追加超频为 `0`。发动后消耗本回合，重置连续虚手，`moveNumber +1`，并在 `rowEffects` 中记录一条公开横斩视觉标记。该标记只影响显示，不改变交叉点有效性，会在仇远使用者下一次普通落子时清除。
 
 ### Decoration
 
@@ -167,7 +175,7 @@
 
 站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。
 
-- `key`: 主键。当前使用 `homeTitle`、`homeSubtitle` 与 `aboutText`。
+- `key`: 主键。当前使用 `homeTitle`、`homeSubtitle`、`aboutText` 与 `footerText`。
 - `value`: 配置值字符串。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 

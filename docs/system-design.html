@@ -58,7 +58,7 @@
 <p>1. <a href="./system-design/01-project-overview.md">项目总览与功能边界</a> 2. <a href="./system-design/02-frontend-architecture.md">前端架构与状态边界</a> 3. <a href="./system-design/03-backend-realtime-api.md">后端、HTTP API 与实时房间</a> 4. <a href="./system-design/04-data-model-and-domain.md">数据模型与领域系统</a> 5. <a href="./system-design/05-assets-audio-preload.md">资源、音频与启动预加载</a> 6. <a href="./system-design/06-ui-theme-mobile.md">UI 主题、移动端与交互体验</a> 7. <a href="./system-design/07-performance-tech-debt.md">性能、技术债与扩展路线</a> 8. <a href="./system-design/08-workflow-and-history.md">工作流、文档规则与历史记录</a></p>
 <h2>当前架构摘要</h2>
 <ul>
-<li>前端使用 React 19、Vite 和 Socket.IO client；<code>src/main.jsx</code> 只负责浏览器挂载，应用组合根在 <code>src/app/App.jsx</code>，业务状态逐步下沉到 <code>src/app/*</code> hooks 和独立视图组件，应用级弹窗可见性集中在 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态集中在 <code>src/app/useRoomSessionState.js</code>，已关闭结果不会因 <code>room:resume</code> 再弹，匹配等待/成功过渡状态集中在 <code>src/app/useMatchSessionState.js</code>。</li>
+<li>前端使用 React 19、Vite 和 Socket.IO client；<code>src/main.jsx</code> 只负责浏览器挂载，应用组合根在 <code>src/app/App.jsx</code>，业务状态逐步下沉到 <code>src/app/*</code> hooks 和独立视图组件，应用级弹窗可见性集中在 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态集中在 <code>src/app/useRoomSessionState.js</code>，已关闭结果不会因 <code>room:resume</code> 再弹，匹配等待/成功过渡状态集中在 <code>src/app/useMatchSessionState.js</code>；开发期 Vite <code>/socket.io</code> 代理会静默处理后端 watch 重启造成的预期 websocket 断连错误。</li>
 </ul>
 <ul>
 <li>后端使用 Express、Socket.IO、Prisma 和 SQLite；<code>server/index.js</code> 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 <code>server/serverStartup.js</code>，Socket 连接事件套件由 <code>server/socketEvents.js</code> 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 <code>server/socket*Events.js</code> 模块，生产静态托管收口在 <code>server/staticAssets.js</code>，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块。</li>
@@ -67,7 +67,13 @@
 <li>对局模式由 <code>src/shared/gameModes.js</code> 统一配置，前后端共享模式顺序、棋盘大小、贴目、技能开关和时间控制。</li>
 </ul>
 <ul>
+<li>站点公开配置通过 <code>SiteSetting</code> key/value 存储，并由 <code>src/shared/siteSettings.js</code> 定义前后端共享默认值；后台系统设置可编辑大厅标题/副标题、关于文本和首页 footer 长文本，footer 支持受限 Markdown 链接。</li>
+</ul>
+<ul>
 <li>对局规则支持黑白棋子与命名中立棋子并存；中立棋子按同名阵营连接、阻断领地并参与气/提子判定，但不归属黑白除子。</li>
+</ul>
+<ul>
+<li>星炬技能体系包含面向整行的 <code>row-slash</code> 主动技能；仇远（<code>qiuyuan</code>）通过“一斩足矣”指定任意有效交叉点，移除该横线所有棋子并按直接移除数增加超频，管理员在部员招募系统实装前默认拥有该角色；棋盘刀痕由 DOM/CSS 专用层渲染并使用 <code>row-slash-strike</code> 横向斩击动画，<code>BoardSkillEffects</code> 不为该 DOM-only 技能挂整棋盘覆盖层，棋盘点位按钮保持透明无按钮皮肤，<code>.board-lines</code> SVG 网格层也显式保持铺满棋盘和可见 stroke，避免全局/主题按钮或媒体规则盖住、压塌棋盘网格。</li>
 </ul>
 <ul>
 <li>玩家资源包含角色、装饰、道具、音乐、抽卡奖励、蓝宝石和金币；结构化关系表与旧字符串字段仍处在兼容迁移期，legacy 解析、结构化同步和公开资产合并规则集中在 <code>server/userAssets.js</code>。</li>
@@ -76,7 +82,7 @@
 <li>玩家 UI 当前默认 Bright School 主题；主题注册、CSS 入口和作用域合同保留未来扩展口，共享基础层已从单一 <code>base.css</code> 入口拆到 <code>src/styles/base/</code>，房间样式已从单一 <code>room.css</code> 入口拆到 <code>src/styles/room/</code>，Startorch 对局终端皮肤已从单一 <code>room-terminal.css</code> 入口拆到 <code>src/styles/room-terminal/</code>，共享弹窗样式已从单一 <code>modals.css</code> 入口拆到 <code>src/styles/modals/</code>，移动弹窗安全层已从单一 <code>mobile-modals.css</code> 入口拆到 <code>src/styles/mobile-modals/</code>，商业/社交/仓库样式已从单一 <code>commerce-settings.css</code> 入口拆到 <code>src/styles/commerce/</code> 领域分篇，其中商店/设置/移动商业补丁继续从 <code>src/styles/commerce/shop-settings.css</code> 拆到 <code>src/styles/commerce/shop-settings/</code>；共享响应式层已从单一 <code>responsive.css</code> 入口拆到 <code>src/styles/responsive/</code>，共享移动对局层已从单一 <code>mobile-room.css</code> 入口拆到 <code>src/styles/mobile-room/</code>，共享 HUD 兼容层已从单一 <code>hud-components.css</code> 入口拆到 <code>src/styles/hud-components/</code>，最终移动端安全层也从单一 <code>mobile-adaptive.css</code> 入口拆到 <code>src/styles/mobile-adaptive/</code>，其中 Bright School 最终移动兜底覆盖继续拆到 <code>src/styles/mobile-adaptive/bright-school-overrides/</code>；Bright School 对应早期可读性清理、商业覆盖、移动端覆盖、竖屏对局覆盖、组件修复覆盖、质量兜底层和防 HUD 串色 firewall 分别拆到 <code>src/styles/themes/bright-school/contrast-purge/</code>、<code>src/styles/themes/bright-school/commerce/</code>、<code>src/styles/themes/bright-school/mobile/</code>、<code>src/styles/themes/bright-school/mobile/room/</code>、<code>src/styles/themes/bright-school/component-repairs/</code>、<code>src/styles/themes/bright-school/quality-base/</code>、<code>src/styles/themes/bright-school/firewall/</code>。</li>
 </ul>
 <ul>
-<li>启动预加载区分关键资源与延迟资源，房间运行期使用轻量 <code>room:clock</code> 与完整 <code>room:update</code> 分流，降低高频交互卡顿。</li>
+<li>启动预加载区分关键资源与延迟资源，并为单个资源加载设置超时兜底，避免服务器重启或缓存恢复时把玩家卡在资源准备页；房间运行期使用轻量 <code>room:clock</code> 与完整 <code>room:update</code> 分流，降低高频交互卡顿。</li>
 </ul>
 <h2>维护约定</h2>
 <ul>
@@ -91,15 +97,19 @@
 <ul>
 <li>修改 Markdown 后运行 <code>npm run docs:system-design</code>；涉及脚本或编码规则时运行 <code>npm test -- docs/systemDesignHtml.test.js</code>。</li>
 </ul>
+<h2>Board Effect Theme Guard</h2>
+<ul>
+<li>Bright School board guards keep the DOM-only <code>row-slash</code> effect layer transparent and restore its slash pseudo-elements so broad theme firewall rules such as <code>[class*=&quot;row&quot;]</code> cannot turn QiuYuan's slash overlay into a blank paper panel or a plain bar over the board.</li>
+</ul>
 <h2>Modal Layering Note</h2>
 <ul>
 <li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.</li>
 </ul>
 <ul>
-<li>Mobile room portraits render character-chain badges as compact star/count pills near the portrait edge, rather than full repeated-star badges over the character art.</li>
+<li>Character duplicate chain counts remain in user data for reward/progression logic, but player-facing desktop and mobile UI hides character-chain badges on portrait surfaces.</li>
 </ul>
 <ul>
-<li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer, including home player plaque nameplate fitting, centered container-sized plaque mode stats, compact character-chain portrait badges, the two-row resume header, internally scrolling resume character records, and shop wallet single-line/blue-gem capsule treatment. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
+<li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer, including home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, internally scrolling resume character records, and shop wallet single-line/blue-gem capsule treatment. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
 </ul>
 <ul>
 <li>Resume character records in the final Bright School mobile layers reuse the detailed user profile character-list rhythm: the outer section stays lightweight, while compact four-column rows carry avatar, name, record, and win rate without clipping. The embedded resume list keeps total games and win/loss/draw on one line, while separate nested record dialogs may still use their two-line compact record treatment.</li>
@@ -304,7 +314,7 @@
 <li>大厅首页展示组件。</li>
 </ul>
 <ul>
-<li>负责大厅标题/副标题、匹配主入口、履历/部员手册入口、观战/排行榜/商城/后台管理工具入口。</li>
+<li>负责大厅标题、固定副标题、匹配主入口、履历/部员手册入口、观战/排行榜/商城/后台管理工具入口，并把可配置 footer 作为 <code>main.home-screen</code> 后方的 HUD sibling 渲染。</li>
 </ul>
 </ul>
 <ul>
@@ -1172,7 +1182,7 @@
 <li>站点公开配置读取和后台更新逻辑。</li>
 </ul>
 <ul>
-<li>当前管理大厅标题 <code>homeTitle</code>、大厅副标题 <code>homeSubtitle</code> 与设置关于页长文本 <code>aboutText</code>，并写入后台审计日志。</li>
+<li>当前管理大厅标题 <code>homeTitle</code>、大厅副标题 <code>homeSubtitle</code>、设置关于页长文本 <code>aboutText</code> 与首页 footer 长文本 <code>footerText</code>，并写入后台审计日志。</li>
 </ul>
 </ul>
 <ul>
@@ -1254,7 +1264,10 @@
 <li><code>public/hotspot-prototype.html</code> 是单页热点原型，用用户提供的 <code>/assets/prototypes/classroom-bg1.webp</code> 作为 1672:941 舞台背景，并用百分比定位的蓝色热点按钮模拟排行榜、留言、游戏、登出、部员手册和匹配入口；当前仅用于验证手绘大厅背景上的可点击区域，点击后显示 toast，不接入正式大厅状态。</li>
 </ul>
 <ul>
-<li>大厅顶部标题和副标题来自 <code>GET /api/site-settings</code>；未配置或接口失败时回退到 <code>大厅</code> / <code>SigrikaGo</code>。标题组居中显示，副标题和主标题轻微错位，右侧功能区固定在右上角。</li>
+<li>大厅顶部标题来自 <code>GET /api/site-settings</code>；未配置或接口失败时回退到共享默认值。标题组居中显示，当前顶部副标题仍使用固定文案“连罗伊人的都爱玩的智力游戏”，右侧功能区固定在右上角。</li>
+</ul>
+<ul>
+<li>首页 footer 文本来自 <code>footerText</code> 站点配置，后台以长文本维护；渲染时支持受限 Markdown 链接 <code>[文字](https://example.com)</code>，只把 <code>http/https</code> 链接转为锚点，其余内容作为普通文本显示。桌面端 footer 是 <code>main.home-screen</code> 后方的 HUD sibling 并固定在视口右下角，避免被大厅主舞台滚动容器带动；移动端仍在普通文档流中显示。</li>
 </ul>
 <ul>
 <li>大厅与对局页右上操作区共用同一个留言板入口。留言板当前为前端占位弹窗，输入框默认提示“Bug、问题反馈和意见都可以在这里提交哦”，包含提交按钮，提交暂不落库。</li>
@@ -1608,7 +1621,7 @@
 <li>装饰管理：列表主视图，新增/编辑装饰在右侧抽屉中完成，支持停用装饰。</li>
 </ul>
 <ul>
-<li>系统设置：可编辑大厅标题和大厅副标题；保存后通过 <code>SiteSetting</code> 持久化，并立即回写当前前端大厅状态。</li>
+<li>系统设置：可编辑大厅标题、大厅副标题、关于文本和首页 footer 长文本；保存后通过 <code>SiteSetting</code> 持久化，并立即回写当前前端大厅状态。</li>
 </ul>
 <ul>
 <li>审计日志：记录部分后台操作前后值。</li>
@@ -1671,7 +1684,7 @@
 </ul>
 <h3>前端通用函数</h3>
 <ul>
-<li><code>api</code>: HTTP JSON 请求封装，位于 <code>src/api/client.js</code>。</li>
+<li><code>api</code>: HTTP JSON 请求封装，位于 <code>src/api/client.js</code>，默认带请求超时和 AbortController 兜底，避免启动恢复、目录读取或站点设置请求在服务器重启期间永久 pending。</li>
 </ul>
 <ul>
 <li><code>adminApi</code>: <code>/api/admin</code> 请求封装，位于 <code>src/api/client.js</code>。</li>
@@ -1695,13 +1708,16 @@
 <li><code>validateShopItemDraft</code> / <code>decorationDraftToBody</code>: 位于 <code>src/shared/adminDrafts.js</code>，后台商城/装饰表单校验。</li>
 </ul>
 <ul>
-<li><code>DEFAULT_SITE_SETTINGS</code>: 位于 <code>src/shared/siteSettings.js</code>，前后端共用大厅标题、副标题和设置关于文本默认值。</li>
+<li><code>DEFAULT_SITE_SETTINGS</code>: 位于 <code>src/shared/siteSettings.js</code>，前后端共用大厅标题、副标题、设置关于文本和首页 footer 文本默认值。</li>
 </ul>
 <ul>
 <li><code>lastMarkedAction</code> / <code>canPreviewSkillTarget</code>: 位于 <code>src/shared/boardView.js</code>，用于统一棋盘最后落子/技能标记与技能预览判定。</li>
 </ul>
 <ul>
 <li><code>SKILL_EFFECT_CATALOG</code> / <code>skillEffectTargetRule</code> / <code>skillEffectSoundCues</code>: 位于 <code>src/shared/skillEffectCatalog.js</code>，集中维护技能 <code>effectType</code> 的管理端标签、默认目标规则、主动/被动分类、棋盘演出标记和音效 cue。管理端角色表单、服务端角色校验、技能归一化、目标预览和技能音效都应从该 catalog 读取这些元数据。</li>
+</ul>
+<ul>
+<li><code>row-slash</code> 是主动技能类型但不挂 Pixi <code>boardEffect</code> canvas，目标规则为 <code>any-point</code>。服务端 pending skill preview 会附带 <code>row</code> 和整行 <code>affectedPointIds</code>，前端 <code>Board</code> 以 <code>BoardRowSlashOverlay</code> 渲染一条贯穿棋盘外缘的横向刀痕，并由 CSS <code>row-slash-strike</code> 动画完成斩击展开；该 DOM overlay 为 <code>pointer-events: none</code>，且 <code>BoardSkillEffects</code> 对这类 DOM-only 预览直接返回 <code>null</code>，避免任何整棋盘效果层覆盖棋盘网格、星位和棋子。</li>
 </ul>
 <ul>
 <li><code>COLORS</code> / <code>opponent</code>: 位于 <code>src/shared/gameConstants.js</code>，集中维护棋色常量与对手颜色推导；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
@@ -1771,7 +1787,7 @@
 <li><code>validateShopItemInput</code> / <code>validateDecorationInput</code>: 商城与装饰校验。</li>
 </ul>
 <ul>
-<li><code>getPublicSiteSettings</code> / <code>updateSiteSettings</code>: 站点配置读取、清洗、持久化和审计写入。</li>
+<li><code>getPublicSiteSettings</code> / <code>updateSiteSettings</code>: 站点配置读取、清洗、持久化和审计写入；当前公开配置包含 <code>homeTitle</code>、<code>homeSubtitle</code>、<code>aboutText</code> 与 <code>footerText</code>。</li>
 </ul>
 <ul>
 <li><code>buildLeaderboard</code>: 排行榜统计。</li>
@@ -1851,7 +1867,7 @@
 </ul>
 </ul>
 <ul>
-<li>登录 access token 只存在 React 内存状态中；<code>src/app/sessionState.js</code> 初始进入 <code>preloading</code>，由 <code>src/app/App.jsx</code> 调用 <code>/api/auth/refresh</code> 尝试从 <code>HttpOnly</code> refresh cookie 恢复登录。恢复失败才进入登录页。</li>
+<li>登录 access token 只存在 React 内存状态中；<code>src/app/sessionState.js</code> 初始进入 <code>preloading</code>，由 <code>src/app/App.jsx</code> 调用 <code>/api/auth/refresh</code> 尝试从 <code>HttpOnly</code> refresh cookie 恢复登录。恢复失败或刷新请求超时才进入登录页，避免服务器重启期间把玩家永久停在资源准备页。</li>
 </ul>
 <ul>
 <li>音频设置存在 <code>localStorage</code> 的 <code>sigrika-audio-settings</code>。</li>
@@ -1989,10 +2005,10 @@
 <li><code>Board.jsx</code> owns board grid rendering, coordinate labels, stones, move numbers, scoring marks, skill effect markers, decorated stone images, the latest-move red stone outline, and board point events. The latest-move outline is centered on the stone as an independent square/circular marker so decorated stone art cannot stretch it into an oval.</li>
 </ul>
 <ul>
-<li><code>Board.jsx</code> renders intersections through memoized point buttons. <code>arePointButtonPropsEqual()</code> compares only visible point state, point identity, pointer-handler refs, and interaction capability flags; event functions are read through a stable <code>handlersRef</code> so room parent renders can update click behavior without forcing every board point to re-render.</li>
+<li><code>Board.jsx</code> renders intersections through memoized point buttons. <code>arePointButtonPropsEqual()</code> compares only visible point state, point identity, pointer-handler refs, and interaction capability flags; event functions are read through a stable <code>handlersRef</code> so room parent renders can update click behavior without forcing every board point to re-render. Because those intersections are real <code>button</code> elements layered above the SVG grid, shared board CSS and Bright School board guards must explicitly reset them to transparent, no appearance, no border/shadow, zero min-size, and <code>touch-action: none</code>; otherwise global button skins can cover the grid and make the board look blank.</li>
 </ul>
 <ul>
-<li><code>Board.jsx</code> renders board grid strokes from <code>buildBoardLines()</code>, which emits continuous row/column runs instead of one segment per cell. This avoids uneven internal stroke joins and keeps first-line corners connected; invalid intersections still split only the affected row/column run.</li>
+<li><code>Board.jsx</code> renders board grid strokes from <code>buildBoardLines()</code>, which emits continuous row/column runs instead of one segment per cell. This avoids uneven internal stroke joins and keeps first-line corners connected; invalid intersections still split only the affected row/column run. The <code>.board-lines</code> SVG is a gameplay layer rather than ordinary media, so shared CSS and Bright School guard layers pin it to <code>display: block</code>, full width/height, no max-size cap, visible stroke, and visible opacity to survive global <code>svg</code> media resets.</li>
 </ul>
 <ul>
 <li><code>Board.jsx</code> marks first-line board grid runs with <code>edge-line</code>; CSS keeps every non-edge grid run at one uniform stroke width and renders every first-line run exactly 2.5x that width in the Bright School theme.</li>
@@ -2050,7 +2066,7 @@
 <ul>
 <li>Latest room/home refinements:</li>
 <ul>
-<li>Desktop home footer text is protected by the final theme safety layer as a viewport-fixed HUD element at the lower-right corner, so it stays at the bottom of the desktop window while the lobby stage scrolls on shorter heights. The mobile Bright School footer remains part of normal document flow below the lobby content.</li>
+<li>Desktop home footer text is rendered as a <code>main.home-screen</code> sibling HUD element and protected by the final theme safety layer as viewport-fixed at the lower-right corner, so it stays at the bottom of the desktop window while the lobby stage scrolls on shorter heights. The mobile Bright School footer remains part of normal document flow below the lobby content.</li>
 </ul>
 <ul>
 <li>Desktop room headers keep the message/settings/move/coordinate controls in a right-aligned control group before the room-exit button, rather than floating around the middle of the header. Room exit buttons use a shared light-blue treatment on desktop and mobile; in the Bright School desktop header, the exit button keeps the same dark outline shadow as the adjacent room control buttons. Duplicate exit buttons beside desktop chat and inside the replay bar are removed so the header remains the single desktop room-leave entry. Replay step counters center their <code>current/max</code> text, desktop chat popovers, skill detail panels, stat hover/click tips, and room member action popovers share a dynamic room floating-layer stack where the latest interaction renders in front, and the capture/removal/overclock chips share a stable height.</li>
@@ -2059,7 +2075,7 @@
 <li>The home player plaque rank/rating chip uses a light background with dark text again, while the admin-only management button remains a green circular icon-plus-title control aligned with the home user plaque.</li>
 </ul>
 <ul>
-<li>The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle <code>连罗伊人的都爱玩的智力游戏</code>, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip shows the site title, <code>Copyright ©KURO GAMES. ALL RIGHTS RESERVED.</code>, and <code>浙ICP备2026035038号</code> as evenly spaced items. The middle stage is an unframed fixed-ratio coordinate surface (<code>1480 / 620</code>) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a <code>1200px</code> minimum, <code>503px</code> minimum height, and <code>1920px</code> maximum width; phone landscape uses a smaller <code>960px</code> by <code>402px</code> minimum stage. The home app shell uses <code>/assets/home/multipurpose-classroom-bg.webp</code> as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, <code>部员手册</code>, <code>星炬对弈</code>, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, <code>部员手册</code> is offset slightly right/down from the dock edge, and <code>星炬对弈</code> is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry no longer renders a hover/focus text popup; mode titles, rule copy, and current matchmaking counts live in the click-open mode picker. Phone portrait shows a dedicated <code>请横屏使用</code> guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values, while a masked <code>::before</code> layer uses the same PNG alpha channel to show a solid aqua shadow translated down and right; this avoids large transparent-PNG filter/drop-shadow repaint costs while keeping the requested shadow look. The match-entry PNG has transparent borders after low-alpha background cleanup, avoiding faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow, and when the home stage compresses below the utility-label comfort threshold, utility buttons hide their visible text and keep only the icon inside the circular target.</li>
+<li>The home screen uses a compact anime game-menu layout: the top strip contains a larger site title, the fixed subtitle <code>连罗伊人的都爱玩的智力游戏</code>, the gray-white online-count pill, and settings/message/logout/admin actions; the footer strip reads from configurable <code>footerText</code>, whose default lines are the site title, <code>Copyright ©KURO GAMES. ALL RIGHTS RESERVED.</code>, and <code>浙ICP备2026035038号</code>. The middle stage is an unframed fixed-ratio coordinate surface (<code>1480 / 620</code>) that scales as one piece instead of letting the two large image buttons fight the page flow. Desktop keeps the original wide-stage rule with a <code>1200px</code> minimum, <code>503px</code> minimum height, and <code>1920px</code> maximum width; phone landscape uses a smaller <code>960px</code> by <code>402px</code> minimum stage. The home app shell uses <code>/assets/home/multipurpose-classroom-bg.webp</code> as a fixed full-viewport background, then layers blur, saturation, translucent gradients, and glassy top/footer strips over it for a frosted classroom feel. The player plaque, <code>部员手册</code>, <code>星炬对弈</code>, and circular utility dock are absolute-positioned by percentage inside that stage; the player plaque is slightly larger with wider internal spacing, shows rank and rating on one line, shares the utility dock's left edge, <code>部员手册</code> is offset slightly right/down from the dock edge, and <code>星炬对弈</code> is nudged up by a few pixels while remaining the dominant right-side entry. The manual and match buttons use their source image aspect ratios as full-size clickable boxes so the visible artwork stays inside the hover/click target. The match entry no longer renders a hover/focus text popup; mode titles, rule copy, and current matchmaking counts live in the click-open mode picker. Phone portrait shows a dedicated <code>请横屏使用</code> guard instead of the home stage. Image-entry hover moves and rotates only the image child layer with small transform values, while a masked <code>::before</code> layer uses the same PNG alpha channel to show a solid aqua shadow translated down and right; this avoids large transparent-PNG filter/drop-shadow repaint costs while keeping the requested shadow look. The match-entry PNG has transparent borders after low-alpha background cleanup, avoiding faint square-edge artifacts on wide desktop browsers. All non-image controls share a hover/focus cue of slight upward movement, a blue outline ring, and a subtle brightness/saturation lift so users can clearly see the target they are about to choose. Utility dock buttons still do not carry a persistent shadow, and when the home stage compresses below the utility-label comfort threshold, utility buttons hide their visible text and keep only the icon inside the circular target.</li>
 </ul>
 <ul>
 <li>Desktop Bright School home polish removes the former <code>LOBBY_ROOM</code> debug/status pill from the top strip, keeps the current-user plaque on an explicit avatar/name/stats grid so the username cannot run into the portrait at wide sizes, and overrides the <code>部员手册</code> sticker label back to the rounded UI font stack with nowrap text for consistency with the rest of the interface.</li>
@@ -2136,6 +2152,9 @@
 <li>Vite development proxy forwards <code>/socket.io</code> websocket traffic to the local backend, keeping the same-origin socket path usable in development and production.</li>
 </ul>
 <ul>
+<li>Vite development proxy also handles expected <code>/socket.io</code> websocket disconnect errors such as <code>ECONNRESET</code> and <code>ECONNREFUSED</code> quietly. These are normal when <code>dev:server</code> restarts the backend with <code>node --watch</code>; unexpected proxy errors still emit a concise warning.</li>
+</ul>
+<ul>
 <li>After a valid token is confirmed, the app enters a <code>preloading</code> view before the home screen.</li>
 </ul>
 <ul>
@@ -2145,10 +2164,14 @@
 <li>The preload step fetches non-replay runtime assets after login, but it is now split by startup criticality. Critical preload waits for current character portraits, home entry/background imagery, and common board/UI effect sounds before the app can leave the preload screen. Shop imagery, candy/effect previews, stone decoration images, result/match sounds, configured BGM tracks, character skill voices, and system voices stay in the same asset manifest but load as deferred background work with a concurrency cap so first entry to the home screen is not blocked by the full music/voice library. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.</li>
 </ul>
 <ul>
-<li>Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.</li>
+<li>Preload failures are non-blocking: failed or hanging asset loaders are ignored after a bounded per-task timeout so users are not trapped on the loading screen if a single critical or optional resource stalls during reconnect, server restart, or cache recovery.</li>
 </ul>
 <ul>
 <li>The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.</li>
+</ul>
+<h2>Board Effect Theme Guard</h2>
+<ul>
+<li>Bright School board guards keep <code>.board-row-effects</code> transparent and overflow-visible, and keep <code>.board-row-slash</code> plus its <code>::before</code>/<code>::after</code> highlights as the only painted slash elements. This protects the DOM-only <code>row-slash</code> overlay from the theme firewall's generic <code>[class*=&quot;row&quot;]</code> paper surface and pseudo-element rules, which otherwise can cover the grid and stones with a blank panel or flatten the slash into a plain bar.</li>
 </ul>
 <h2>Achievement And Personalization Frontend</h2>
 <ul>
@@ -2504,6 +2527,7 @@
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <p><code>server/userAssets.js</code> 是账号资产兼容边界：<code>parseAssetList()</code> / <code>parseOwnedItemCounts()</code> 处理旧字符串和公开数组 payload，<code>syncStructuredUserAssets()</code> 将 legacy 字段替换式同步到 <code>UserCharacter</code>、<code>UserDecoration</code>、<code>UserItem</code> 和 <code>UserItemEffect</code>，<code>publicUserAssets()</code> 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。<code>server/db.js</code> 的 <code>publicUser()</code> 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。</p>
+<p>仇远（<code>qiuyuan</code>）是内置剑客角色，立绘位于 <code>/assets/characters/qiuyuan.png</code>，获得方式文案为“部员招募获得”。部员招募尚未实装时，<code>server/userAssets.js</code> 将该角色视为管理员限定资源：管理员公开资产会自动补齐 <code>qiuyuan</code>，普通玩家不会默认拥有或部署。</p>
 <h3>LoginSession</h3>
 <p>持久化登录会话表，用于 refresh cookie、单账号单会话和服务重启后的登录恢复。</p>
 <ul>
@@ -2623,7 +2647,7 @@
 <li><code>characterId</code>: 关联 <code>Character.id</code>，唯一。</li>
 </ul>
 <ul>
-<li><code>effectType</code>: 技能实际效果类型，当前支持 <code>erase-point</code>、<code>flip-stone</code>、<code>hidden-hand</code>、<code>random-blast</code>、<code>spray-stone</code>、<code>color-illusion-passive</code>。</li>
+<li><code>effectType</code>: 技能实际效果类型，当前支持 <code>erase-point</code>、<code>flip-stone</code>、<code>hidden-hand</code>、<code>random-blast</code>、<code>spray-stone</code>、<code>color-illusion-passive</code>、<code>row-slash</code>。</li>
 </ul>
 <ul>
 <li><code>name</code>: 技能名。</li>
@@ -2660,6 +2684,9 @@
 </ul>
 <h3>Neutral Stones</h3>
 <p><code>src/shared/gameConstants.js</code> 维护命名中立棋子类型，当前内置 <code>spray</code>，由琳奈 <code>spray-stone</code> 技能生成。中立棋子不是黑白任一方，但同名中立棋子属于同一阵营并按围棋气规则连接；不同阵营之间互相阻断气和领地。黑/白棋子转化为喷涂棋子时立即给对手 <code>skillRemovals +1</code>，中立棋子被提、被爆破、被死子标记或在技能后无气清理时不提供黑白除子。数子阶段中立棋子不计入黑白子数，可作为边界参与空点归属；被中立棋子或多阵营共同围住的空点保持中立。</p>
+<h3>Row Slash Skill</h3>
+<p><code>row-slash</code> 是仇远“一斩足矣”的主动棋盘技能。目标规则为 <code>any-point</code>，只能指定当前棋盘内仍有效的交叉点；空点和已有棋子均可指定，被抹除的无效点不可指定。技能横向处理目标所在行，直接移除该行所有黑棋、白棋、命名中立棋子、隐藏手棋子和幻色棋子，并清除劫状态。直接移除的黑白棋子按真实颜色给受益方增加 <code>skillRemovals</code>；中立棋子参与仇远超频增加但不提供黑白除子；隐藏手被直接移除时不产生发现提示；幻色棋子按真实颜色结算并清掉幻色状态。直接移除后会自动清理因此无气的棋串，后续清理仍计入 <code>skillRemovals</code>，但不再增加仇远超频。</p>
+<p>该技能基础超频消耗为 <code>0</code>，然后按直接移除棋子数追加超频，每枚直接移除棋子 <code>+2</code>；空行可以发动并消耗技能/回合，但追加超频为 <code>0</code>。发动后消耗本回合，重置连续虚手，<code>moveNumber +1</code>，并在 <code>rowEffects</code> 中记录一条公开横斩视觉标记。该标记只影响显示，不改变交叉点有效性，会在仇远使用者下一次普通落子时清除。</p>
 <h3>Decoration</h3>
 <p>装饰配置。</p>
 <ul>
@@ -2759,7 +2786,7 @@
 <h3>SiteSetting</h3>
 <p>站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。</p>
 <ul>
-<li><code>key</code>: 主键。当前使用 <code>homeTitle</code>、<code>homeSubtitle</code> 与 <code>aboutText</code>。</li>
+<li><code>key</code>: 主键。当前使用 <code>homeTitle</code>、<code>homeSubtitle</code>、<code>aboutText</code> 与 <code>footerText</code>。</li>
 </ul>
 <ul>
 <li><code>value</code>: 配置值字符串。</li>
@@ -2824,6 +2851,9 @@
 <li>Spark skill presentation uses a hybrid board renderer: <code>Board</code> keeps the React DOM/SVG grid, buttons, coordinates, stones, scoring marks, and click handling as the source of interaction truth, while <code>BoardSkillEffects</code> mounts a <code>pointer-events: none</code> PixiJS canvas overlay for character skill animations and <code>BoardAmbientEffects</code> renders ongoing passive ambience. Skill-enabled boards schedule an idle <code>pixi.js</code> prewarm through <code>src/room/pixiPrewarm.js</code>, and the eventual skill animation reuses the same module promise; standard no-skill boards skip this prewarm. Concrete Pixi animation implementations live behind <code>src/room/boardSkillEffectRegistry.js</code>, with shared board geometry in <code>src/room/boardSkillEffectGeometry.js</code>, so adding a board-capable effect extends the catalog and registry instead of growing the React host component. Skill preview metadata comes from the already-resolved backend skill action (<code>effectType</code>, <code>targetId</code>, affected/marked points, removal counts, and <code>resolvesAt</code>), so the animation layer never recomputes or changes game rules. The shared <code>src/shared/skillPresentation.js</code> timing contract keeps the 2s skill banner first, then starts the board effect, with reduced-motion users receiving a short static hit effect. Full-motion effects are staged as anticipation, impact, and afterglow/residue phases so visual polish stays in the presentation layer without changing board state timing. Aemeath <code>hidden-hand</code> uses a full-board green/white electronic data-stream sweep, while Nabomo <code>color-illusion-passive</code> uses low-opacity feathered black/gray cloud shapes for the duration of the active passive, avoiding any visible rectangular overlay edge. Board skill SFX are scheduled from the same frontend timeline through <code>src/room/boardSkillEffectSoundScheduler.js</code> and the existing <code>sfx</code> audio channel; they are cleaned up with the overlay and are suppressed for reduced-motion board effects.</li>
 </ul>
 <ul>
+<li>仇远的 <code>row-slash</code> 技能使用 <code>/assets/characters/qiuyuan.png</code> 作为内置立绘，并在被选中的水平行上渲染一条连续刀痕。持久棋盘标记保存在 <code>game.rowEffects</code>，会同步给观战、回放和实时客户端，直到技能拥有者下一次普通落子；刀痕由 DOM/CSS overlay 呈现，不挂整块 Pixi canvas，也不渲染 <code>BoardSkillEffects</code> 的全棋盘覆盖层，避免表现层遮挡棋盘内容。</li>
+</ul>
+<ul>
 <li>Mode-specific competitive stats live in <code>UserModeStats</code> with one row per user and mode. Each row owns <code>rating</code>, <code>rank</code>, <code>recentResults</code>, <code>wins</code>, <code>losses</code>, and <code>draws</code>; <code>recentResults</code> stores the current rank-cycle decisive results from old to new. Existing <code>User.rating</code>, <code>rank</code>, <code>wins</code>, and <code>losses</code> remain spark-mode compatibility mirrors during this migration, while standard rating/rank/records are read from <code>UserModeStats</code>; coins remain a global account asset.</li>
 </ul>
 <ul>
@@ -2839,7 +2869,7 @@
 <li>Gacha admin prize rows label numeric inputs inline: quantity uses <code>个</code> or <code>金币</code> depending on prize type, and probability is entered as basis points with <code>/10000</code> shown beside the field. Decoration prize options merge the two built-in stone decorations from <code>STONE_DECORATIONS</code> with admin-created decorations so administrators can select all currently available decoration resources. Gacha admin CSS stays scoped under <code>.admin-gacha-board</code> / <code>.admin-gacha-*</code> so Bright School player-facing theme layers do not bleed into the admin console.</li>
 </ul>
 <ul>
-<li>Character duplicate rewards increment <code>UserCharacter.chainCount</code>; public user payloads expose <code>characterChains</code>, and <code>CharacterChainBadge</code> overlays the chain count on portrait surfaces. Counts from 1 to 5 render as yellow five-point stars; counts above 5 collapse to <code>★×n</code> so compact portrait cards do not overflow. Player account mutation routes that return a refreshed user, including sortie-character and stone-decoration updates, must include the user asset relations used by <code>publicUser()</code> so member-manual rerenders do not replace existing chain counts with an empty map.</li>
+<li>Character duplicate rewards increment <code>UserCharacter.chainCount</code>; public user payloads still expose <code>characterChains</code> for reward/progression continuity, but <code>CharacterChainBadge</code> intentionally renders nothing so desktop and mobile portrait surfaces do not show chain-count badges. Player account mutation routes that return a refreshed user, including sortie-character and stone-decoration updates, must include the user asset relations used by <code>publicUser()</code> so member-manual rerenders do not replace existing chain counts with an empty map.</li>
 </ul>
 <ul>
 <li>Blue gems are a wallet currency surfaced alongside coins in shop and resume UI. They are currently earned from duplicate decoration/music gacha rewards and reserved for future shop use.</li>
@@ -3131,6 +3161,9 @@
 <li>星炬棋盘技能特效的程序化音效由 <code>src/room/boardSkillEffectSoundScheduler.js</code> 按 catalog cue 点调度，并由 <code>src/audio/skillEffectSounds.js</code> 负责真正发声；这些音效只读 <code>audioSettings.sfx</code>，不参与服务端结算，也不会在 reduced-motion 棋盘演出中播放爆炸/飞入类音效。<code>src/room/pixiPrewarm.js</code> 在技能可用棋盘空闲时预热 <code>pixi.js</code>，真实演出时复用同一个加载 promise，避免首个技能把模块加载成本集中到动画开始时。</li>
 </ul>
 <ul>
+<li><code>row-slash</code> 保留 <code>skillEffectSoundCues</code> cue 元数据供后续程序化拔刀与斩击音效复用；当前棋盘刀痕走 DOM/CSS overlay，没有独立音频文件依赖，不渲染 Pixi 效果层，也不需要 Pixi 预热。</li>
+</ul>
+<ul>
 <li>娜波摩被动雾层由 <code>BoardAmbientEffects</code> 根据 <code>game.passives.*.colorIllusion.active</code> 派生，使用多个羽化的黑灰 CSS 云团而不是整块矩形半透明贴层，并保持 <code>pointer-events: none</code>，因此不会影响落子、触控确认、数子标记或观战/回放棋盘读取。</li>
 </ul>
 <ul>
@@ -3262,7 +3295,7 @@
 <li>The preload step fetches non-replay runtime assets after login, but it is now split by startup criticality. Critical preload waits for current character portraits, home entry/background imagery, and common board/UI effect sounds before the app can leave the preload screen. Shop imagery, candy/effect previews, stone decoration images, result/match sounds, configured BGM tracks, character skill voices, and system voices stay in the same asset manifest but load as deferred background work with a concurrency cap so first entry to the home screen is not blocked by the full music/voice library. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.</li>
 </ul>
 <ul>
-<li>Preload failures are non-blocking: failed assets are ignored so users are not trapped on the loading screen if a single optional resource fails.</li>
+<li>Preload failures are non-blocking: failed or hanging asset loaders are ignored after a bounded per-task timeout so users are not trapped on the loading screen if a single critical or optional resource stalls during reconnect, server restart, or cache recovery.</li>
 </ul>
 <ul>
 <li>The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.</li>
@@ -3288,7 +3321,7 @@
 <li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.</li>
 </ul>
 <ul>
-<li>Mobile room portraits render character-chain badges as compact star/count pills near the portrait edge, rather than full repeated-star badges over the character art.</li>
+<li>Mobile room portraits do not render character-chain badges; duplicate-chain data remains in user payloads but is hidden on player-facing portrait surfaces.</li>
 </ul>
 <h2>Feedback Messages</h2>
 <ul>
@@ -3341,7 +3374,7 @@
 <li>Mobile interaction feel is owned by the final mobile CSS layers instead of JSX-specific handlers. <code>src/styles/mobile-adaptive.css</code> defines shared tap tokens, removes mobile tap highlights, gives buttons/cards/rows a short 120ms press response, keeps internal scroll containers smooth and contained, and adds lightweight backdrop/sheet entrance animations with a <code>prefers-reduced-motion</code> fallback.</li>
 </ul>
 <ul>
-<li>Bright School's portrait mobile layer is an import-only entry that mirrors the same interaction contract with high-specificity theme rules: home entries, utility buttons, modal controls, shop/warehouse/house cards, table rows, and room dock tabs all get touch-friendly press feedback; board points keep <code>touch-action: none</code> so taps place/confirm stones without page drag, while previewable and touch-confirming points get a subtle scale/brightness response.</li>
+<li>Bright School's portrait mobile layer is an import-only entry that mirrors the same interaction contract with high-specificity theme rules: home entries, utility buttons, modal controls, shop/warehouse/house cards, table rows, and room dock tabs all get touch-friendly press feedback; board points keep <code>touch-action: none</code> so taps place/confirm stones without page drag, while previewable and touch-confirming points get a subtle scale/brightness response. Board point buttons are exempt from ordinary button chrome in both shared board CSS and the Bright School refinement-board layer: they stay transparent with no appearance, border, shadow, background image, or inherited 44px min-size, so theme button rules cannot paint a white button sheet above the SVG grid. The <code>.board-lines</code> SVG grid is likewise protected from broad media resets by full-size, no max-size, visible-stroke guard rules.</li>
 </ul>
 <ul>
 <li>Commerce and settings controls use mobile grid tabs/pagination with wrapping labels instead of squeezed inline buttons. Shop mobile layout collapses to a top summary strip plus a two-column item grid, with one-column fallback below 360px; card purchase actions retain full-width 44px touch targets.</li>
@@ -3353,7 +3386,7 @@
 <li>Bright School home image entries use the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer even on desktop breakpoints. The card shell can keep labels and sticker shadows visible beyond the border, but the actual <code>部员手册</code> and <code>匹配对局</code> <code>&lt;img&gt;</code> nodes are forced to <code>box-sizing: border-box</code>, <code>height/max-height: 100%</code>, and <code>object-fit: contain</code>, preventing large or narrow desktop layouts from letting artwork spill below the button frame.</li>
 </ul>
 <ul>
-<li>Bright School portrait home/profile/shop fixes that must survive theme overrides live in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer. The home player plaque reserves a non-collapsing middle column for <code>UserIdentity</code>, keeps equipped nameplates visible inside the username tag, and shrinks character-chain badges to portrait-corner pills so they do not cover most of the character art. The resume header uses a two-row grid on phones: title plus close button on the first row, achievement/personalization shortcuts left on the second row, and coin/gem wallets right on the second row. The final portrait rule repeats the desktop-level resume header selectors so desktop grid-column assignments cannot hide the mobile close button; its wallet slot is shrinkable and lets coin/gem capsules wrap as whole controls when space is tight instead of overflowing past the modal edge. Embedded resume character records use an internally scrolling list with taller rows instead of compressing avatars and text. Bright School shop wallets may wrap only as whole capsules; coin and blue-gem counters stay single-line when room allows, and the shop blue-gem capsule reuses the resume blue-gem gradient.</li>
+<li>Bright School portrait home/profile/shop fixes that must survive theme overrides live in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer. The home player plaque reserves a non-collapsing middle column for <code>UserIdentity</code>, keeps equipped nameplates visible inside the username tag, and keeps character-chain badges hidden so they do not cover character art. The resume header uses a two-row grid on phones: title plus close button on the first row, achievement/personalization shortcuts left on the second row, and coin/gem wallets right on the second row. The final portrait rule repeats the desktop-level resume header selectors so desktop grid-column assignments cannot hide the mobile close button; its wallet slot is shrinkable and lets coin/gem capsules wrap as whole controls when space is tight instead of overflowing past the modal edge. Embedded resume character records use an internally scrolling list with taller rows instead of compressing avatars and text. Bright School shop wallets may wrap only as whole capsules; coin and blue-gem counters stay single-line when room allows, and the shop blue-gem capsule reuses the resume blue-gem gradient.</li>
 </ul>
 <ul>
 <li>Bright School home player plaque stats are centered inside the stats panel on desktop and mobile: the stats panel declares an inline-size container, each mode row uses three shrinkable centered columns for mode/rank/rating, and the text uses container query units so ratings stay inside the plaque when the stage or phone width changes.</li>
@@ -3389,7 +3422,7 @@
 <li>Personalization equipment categories use compact style-picker entry buttons instead of listing every decoration inline. The nested picker shows default plus unlocked options, auto-closes on selection, and updates the try-on preview immediately; mobile uses a single-column internal scroll list while desktop uses an adaptive grid.</li>
 </ul>
 <ul>
-<li>The mobile home footer is part of the normal home document flow rather than a fixed overlay. This keeps copyright text below the content stack and prevents it from covering navigation cards or modal content.</li>
+<li>The home footer is rendered from configurable <code>footerText</code> site settings. Desktop treats it as a viewport-fixed HUD sibling after <code>main.home-screen</code>, so it remains in the lower-right browser corner while the lobby stage scrolls; links use the safe Markdown form <code>[label](https://example.com)</code>. The mobile home footer remains part of the normal document flow rather than a fixed overlay, keeping copyright/link text below the content stack and preventing it from covering navigation cards or modal content.</li>
 </ul>
 <ul>
 <li>Nested replay dialogs inside the house modal use a fixed-height grid shell with the replay list as the internal scroll region on phones. Replay rows remain card-like, and long replay histories no longer depend on a bottom horizontal scrollbar or page-level scrolling.</li>

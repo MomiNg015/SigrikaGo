@@ -43,7 +43,7 @@ describe("publicUser", () => {
       blueGems: 0,
       selectedCharacter: "sigrika",
       selectedStoneDecoration: "paw-stone",
-      ownedCharacters: ["sigrika", "denia", "aemeath", "lynae"],
+      ownedCharacters: ["sigrika", "denia", "aemeath", "qiuyuan", "lynae"],
       ownedItems: [],
       characterChains: {},
       itemEffects: { sigrikaCandyDisabled: true },

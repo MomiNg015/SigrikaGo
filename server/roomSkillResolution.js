@@ -179,7 +179,12 @@ export function buildPendingSkillPreview({
   const effectType = skillAction?.effectType ?? skill?.effectType ?? skill?.id ?? "";
   const targetId = skillAction?.id ?? requestedTargetId ?? null;
   const markedPointIds = Array.isArray(skillAction?.marked) ? skillAction.marked : [];
-  const affectedPointIds = affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds });
+  const affectedPointIds = affectedPointIdsForSkillAction({
+    effectType,
+    targetId,
+    markedPointIds,
+    boardSize: resolvedGame?.size
+  });
 
   return {
     id: pendingSkillId,
@@ -194,6 +199,7 @@ export function buildPendingSkillPreview({
     targetId,
     affectedPointIds,
     markedPointIds,
+    row: Number.isInteger(skillAction?.row) ? skillAction.row : null,
     removed: skillAction?.removed ?? 0,
     removedByColor: skillAction?.removedByColor ?? null,
     resolvesAt,
@@ -202,7 +208,13 @@ export function buildPendingSkillPreview({
   };
 }
 
-export function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds }) {
+export function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds, boardSize = 13 }) {
   if (effectType === "random-blast") return markedPointIds;
+  if (effectType === "row-slash" && targetId) {
+    const [, rawY] = String(targetId).split(",").map(Number);
+    if (!Number.isInteger(rawY)) return [];
+    const size = Math.max(1, Number(boardSize) || 13);
+    return Array.from({ length: size }, (_, x) => `${x},${rawY}`);
+  }
   return targetId ? [targetId] : [];
 }

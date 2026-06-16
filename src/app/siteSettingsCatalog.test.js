@@ -6,7 +6,8 @@ describe("public site settings loading", () => {
     const defaults = {
       homeTitle: "Default title",
       homeSubtitle: "Default subtitle",
-      aboutText: "Default about"
+      aboutText: "Default about",
+      footerText: "Default footer"
     };
     const apiClient = vi.fn(async () => ({
       settings: { homeTitle: "Remote title" }
@@ -15,7 +16,8 @@ describe("public site settings loading", () => {
     await expect(loadPublicSiteSettings({ apiClient, defaults })).resolves.toEqual({
       homeTitle: "Remote title",
       homeSubtitle: "Default subtitle",
-      aboutText: "Default about"
+      aboutText: "Default about",
+      footerText: "Default footer"
     });
     expect(apiClient).toHaveBeenCalledWith("/api/site-settings");
   });
