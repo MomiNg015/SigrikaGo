@@ -73,7 +73,7 @@
 <li>对局规则支持黑白棋子与命名中立棋子并存；中立棋子按同名阵营连接、阻断领地并参与气/提子判定，但不归属黑白除子。<code>src/shared/game.js</code> 保留共享对局 API 门面，阶段常量、动作结果、普通落子/隐藏手动作、主动技能动作和技能状态变更 helper 已拆到 <code>gamePhases.js</code>、<code>gameActionResult.js</code>、<code>gameStoneActions.js</code>、<code>gameSkillActions.js</code> 和 <code>gameSkillState.js</code>，降低新增技能继续膨胀核心状态机的风险。</li>
 </ul>
 <ul>
-<li>星炬技能体系包含面向整行的 <code>row-slash</code> 主动技能；仇远（<code>qiuyuan</code>）通过“一斩足矣”指定任意有效交叉点，移除该横线所有棋子并按直接移除数增加超频，管理员在部员招募系统实装前默认拥有该角色；棋盘刀痕由 DOM/CSS 专用层渲染并使用 <code>row-slash-strike</code> 横向斩击动画，<code>BoardSkillEffects</code> 不为该 DOM-only 技能挂整棋盘覆盖层，棋盘点位按钮保持透明无按钮皮肤，<code>.board-lines</code> SVG 网格层也显式保持铺满棋盘和可见 stroke，避免全局/主题按钮或媒体规则盖住、压塌棋盘网格。</li>
+<li>星炬技能体系包含面向整行的 <code>row-slash</code> 主动技能和面向空交叉点的 <code>protocol-takeover</code> 主动技能；仇远（<code>qiuyuan</code>）通过“一斩足矣”指定任意有效交叉点，移除该横线所有棋子并按直接移除数增加超频，莫宁（<code>mornye</code>）通过“协议接管”把一个空点写入对手禁入协议，管理员在部员招募系统实装前默认拥有这两个部员招募角色；棋盘刀痕与协议禁入标记均由 DOM/CSS 专用层渲染，<code>BoardSkillEffects</code> 不为这些 DOM-only 技能挂整棋盘覆盖层，棋盘点位按钮保持透明无按钮皮肤，<code>.board-lines</code> SVG 网格层也显式保持铺满棋盘和可见 stroke，避免全局/主题按钮或媒体规则盖住、压塌棋盘网格。</li>
 </ul>
 <ul>
 <li>玩家资源包含角色、装饰、道具、音乐、抽卡奖励、蓝宝石和金币；结构化关系表与旧字符串字段仍处在兼容迁移期，legacy 解析、结构化同步和公开资产合并规则集中在 <code>server/userAssets.js</code>。</li>
@@ -99,9 +99,21 @@
 </ul>
 <h2>Board Effect Theme Guard</h2>
 <ul>
-<li>Bright School board guards keep the DOM-only <code>row-slash</code> effect layer transparent and restore its slash pseudo-elements so broad theme firewall rules such as <code>[class*=&quot;row&quot;]</code> cannot turn QiuYuan's slash overlay into a blank paper panel or a plain bar over the board.</li>
+<li>Admin-managed character <code>sortOrder</code> is persistent data, not a seed-owned builtin field. <code>seedCharacters</code> only assigns fallback order when creating missing builtin characters, public <code>/api/characters</code> includes <code>sortOrder</code>, and the member manual derives its character list through the shared catalog sorter so saved admin order survives server restarts and reaches player UI.</li>
+</ul>
+<ul>
+<li>ChangLi (<code>changli</code>) uses the <code>double-move</code> active skill. The server persists the public chained-action state in <code>game.extraTurn</code>; board confirmation is not tied to an intersection, and restoring during ChangLi skill preview resolves directly into the double-move state without replaying the banner, sound, or animation.</li>
+</ul>
+<ul>
+<li>Hidden-hand is an active skill history entry with <code>effectType: &quot;hidden-hand&quot;</code>, so ChangLi unlock checks treat Aemeath's resolved hidden-hand the same as other opponent active skills while still ignoring passive effects. Bright School's late skill-action layer also owns a disabled override for <code>.action-bar .skill-action:disabled</code>, keeping unavailable skills gray instead of inheriting active/normal gradients.</li>
+</ul>
+<ul>
+<li>Bright School board guards keep DOM-only board effect layers transparent and restore their pseudo-elements so broad theme firewall rules such as <code>[class*=&quot;row&quot;]</code> cannot turn QiuYuan's slash overlay into a blank paper panel or a plain bar over the board; Mornye's protocol marker remains a pointer-events-none point child and never changes board hit testing.</li>
 </ul>
 <h2>Modal Layering Note</h2>
+<ul>
+<li>Chisa (<code>chisa</code>) uses the <code>liberty-purge</code> active skill. The server resolves a normal legal move first, then removes all one-liberty groups from a board snapshot, records <code>removalMarkIds</code>, clamps negative overclock deltas to zero, clears ko, and keeps <code>.liberty-purge-removal-mark</code> red crosses until the opponent's next real turn ends. Admin users own Chisa by default until recruitment is implemented.</li>
+</ul>
 <ul>
 <li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.</li>
 </ul>
@@ -145,6 +157,9 @@
 <li>Personalization sections now expose one &quot;style picker&quot; entry per equipment category. Each picker opens a nested modal containing default plus unlocked decorations, closes immediately after selection, and updates the local try-on preview while the existing save action remains the only persistence step.</li>
 </ul>
 <h2>Music Management Note</h2>
+<ul>
+<li>Settings &gt; Audio persists optional per-channel mute flags under <code>audioSettings.muted</code>; clicking an audio row title toggles mute without changing the slider percentage, and moving the slider clears that channel's mute flag.</li>
+</ul>
 <ul>
 <li>后台“音乐管理”只维护 <code>MUSIC_TRACKS</code> 静态曲目的显示名覆盖值；<code>MusicTrackSetting</code> 不改变轨道 id、类型、角色绑定或音频文件，玩家侧 <code>/api/music-tracks</code>、角色 BGM 选择、商城音乐展示和抽卡音乐奖项显示会使用合并后的曲目名称。</li>
 </ul>
@@ -500,7 +515,7 @@
 <ul>
 <li><code>src/app/characterCatalog.js</code></li>
 <ul>
-<li>Loads the public character catalog through <code>/api/characters</code>, merges it with built-in fallback characters, and falls back to the local catalog on request failure. This keeps startup preloading and admin-triggered character refresh on the same path.</li>
+<li>Loads the public character catalog through <code>/api/characters</code>, merges it with built-in fallback characters, and falls back to the local catalog on request failure. This keeps startup preloading and admin-triggered character refresh on the same path. The public catalog carries admin-managed <code>sortOrder</code>, and App-level character list views must derive display order through <code>characterListFromCatalog</code> instead of raw object insertion order.</li>
 </ul>
 </ul>
 <ul>
@@ -615,6 +630,9 @@
 </ul>
 <ul>
 <li>将后端 DB 角色与内置角色合并。</li>
+</ul>
+<ul>
+<li><code>characterListFromCatalog</code> sorts display lists by public character <code>sortOrder</code>; fallback-only characters keep builtin order after explicitly sorted records, so the member manual does not lose admin order.</li>
 </ul>
 </ul>
 <ul>
@@ -1371,10 +1389,13 @@
 </ul>
 <h3>技能与角色</h3>
 <ul>
-<li>内置角色 fallback：<code>sigrika</code>、<code>denia</code>、<code>aemeath</code>、<code>baconbits</code>、<code>nabomo</code>、<code>lynae</code>。旧达妮娅 slug <code>danea</code>/<code>denea</code> 不再作为兼容别名参与前端合并、用户公开资料或出战角色解析；启动时 <code>cleanupLegacyDeniaCharacterData</code> 会在角色 seed 前把用户选角/拥有权迁移到 canonical <code>denia</code>，删除旧角色行，删除引用旧 slug 的对局记录，并把角色商品、抽卡奖项和成就奖励目标改写为 <code>denia</code>。公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在部员手册。</li>
+<li>内置角色 fallback：<code>sigrika</code>、<code>denia</code>、<code>aemeath</code>、<code>baconbits</code>、<code>nabomo</code>、<code>lynae</code>、<code>qiuyuan</code>、<code>mornye</code>、<code>changli</code>、<code>chisa</code>。旧达妮娅 slug <code>danea</code>/<code>denea</code> 不再作为兼容别名参与前端合并、用户公开资料或出战角色解析；启动时 <code>cleanupLegacyDeniaCharacterData</code> 会在角色 seed 前把用户选角/拥有权迁移到 canonical <code>denia</code>，删除旧角色行，删除引用旧 slug 的对局记录，并把角色商品、抽卡奖项和成就奖励目标改写为 <code>denia</code>。公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在部员手册。</li>
 </ul>
 <ul>
 <li>DB 角色会覆盖/合并内置角色。</li>
+</ul>
+<ul>
+<li>Character <code>sortOrder</code> is admin-managed persistent order. <code>seedCharacters</code> only assigns builtin default order when creating missing rows, and must not overwrite existing character order on server restart.</li>
 </ul>
 <ul>
 <li>所有存在的角色都会出现在棋舍角色列表；未拥有角色以灰色状态展示，可查看信息但不可出战。</li>
@@ -1397,6 +1418,9 @@
 <li><code>hidden-hand</code>：隐藏手，未暴露前对对方隐藏。</li>
 </ul>
 <ul>
+<li><code>protocol-takeover</code>：莫宁主动技“协议接管”。指定一个有效、空置、未被协议标记的交叉点，写入对手禁入协议；该空点阻止被禁方普通落子和空点/任意点指定类技能目标，不阻止该点已有棋子被石子目标技能指定，也不改变气、提子、劫或棋子归属。协议点为空时不计入被禁方领地，但仍作为空区域连通的一部分，避免污染同一区域内其它空点归属；协议标记会随棋子翻转、横斩移除、随机爆破和普通提子保留，只有交叉点被抹除时清除。</li>
+</ul>
+<ul>
 <li><code>random-blast</code>：随机选择棋盘上非一路的已有棋子作为中心，并移除以该棋子为中心的固定 3x3 区域内棋子。</li>
 </ul>
 <ul>
@@ -1404,6 +1428,9 @@
 </ul>
 <ul>
 <li><code>color-illusion-passive</code>：娜波摩被动技“千变万化”。第一次轮到娜波摩玩家时自动进入技能演出，演出结束后该玩家后续落子有 80% 概率在对手视角中显示为对手颜色，真实棋盘规则仍按实际颜色计算；数子申请待确认时仍保持伪装，双方同意并进入死子确认/数子阶段、结果确认或对局结束后才显示真实棋盘。</li>
+</ul>
+<ul>
+<li><code>liberty-purge</code>: Chisa active skill &quot;????&quot;. The target rule is <code>legal-move-point</code>: the server first applies a normal legal move, including ko, protocol ban, and suicide checks, then removes every group with exactly one liberty from a single board snapshot. Removed non-friendly stones add overclock, removed friendly stones subtract overclock, and the final extra overclock is clamped at zero. Removed points are recorded in <code>libertyPurgeMarks</code> / <code>removalMarkIds</code> and rendered as red crosses until the opponent's next real turn ends. Targeting an opponent unexposed hidden hand only reveals it and does not spend the skill, switch turns, or enter skill preview.</li>
 </ul>
 </ul>
 <ul>
@@ -1438,6 +1465,9 @@
 </ul>
 <ul>
 <li>无目标技能不显示落子/目标预览；猪小仙 <code>random-blast</code> 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。前端必须把 <code>canPreviewSkillTarget</code> 的目标预览判定和 <code>skillUsesBoardConfirmation</code> 的棋盘确认判定分开：前者保持 <code>false</code>，后者允许合法棋盘点触发 <code>use-skill</code>。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。</li>
+</ul>
+<ul>
+<li>ChangLi (<code>changli</code>) <code>double-move</code>: server resolution writes public <code>game.extraTurn</code> state. Each successful ordinary move decrements the remaining opportunity, pass follows the normal pass flow and clears <code>extraTurn</code>, counting/draw requests are blocked while <code>extraTurn</code> is active, and restored ChangLi skill previews resolve directly into the double-move state without replaying presentation.</li>
 </ul>
 <ul>
 <li>技能可配置：</li>
@@ -1732,7 +1762,7 @@
 <li><code>createScoringState</code> / <code>prepareScoringState</code> / <code>markDeadGroup</code> / <code>toggleNeutralPoint</code> / <code>resetDeadMarks</code> / <code>scoreGame</code>: 位于 <code>src/shared/gameScoring.js</code>，集中封装数子阶段状态和终局计分；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
 </ul>
 <ul>
-<li><code>normalizeSkillConfig</code> / <code>skillRequiresExistingStone</code> / <code>skillUsesBoardConfirmation</code>: 位于 <code>src/shared/gameSkills.js</code>，集中封装技能配置归一化、棋子依赖判定和确认式无目标技能判定；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
+<li><code>normalizeSkillConfig</code> / <code>skillRequiresExistingStone</code> / <code>skillUsesBoardConfirmation</code> / <code>skillUsesBoardSurfaceConfirmation</code>: 位于 <code>src/shared/gameSkills.js</code>，集中封装技能配置归一化、棋子依赖判定和确认式无目标技能判定；<code>src/shared/game.js</code> 保持同名转导以兼容既有调用方。</li>
 </ul>
 <ul>
 <li><code>executeRegisteredSkill</code> / <code>skillConsumesTurn</code>: 位于 <code>src/shared/gameSkillRegistry.js</code>，集中封装主动技能 <code>effectType</code> 到执行 handler 的分发与回合消耗判定。</li>
@@ -2527,7 +2557,7 @@
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <p><code>server/userAssets.js</code> 是账号资产兼容边界：<code>parseAssetList()</code> / <code>parseOwnedItemCounts()</code> 处理旧字符串和公开数组 payload，<code>syncStructuredUserAssets()</code> 将 legacy 字段替换式同步到 <code>UserCharacter</code>、<code>UserDecoration</code>、<code>UserItem</code> 和 <code>UserItemEffect</code>，<code>publicUserAssets()</code> 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。<code>server/db.js</code> 的 <code>publicUser()</code> 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。</p>
-<p>仇远（<code>qiuyuan</code>）是内置剑客角色，立绘位于 <code>/assets/characters/qiuyuan.png</code>，获得方式文案为“部员招募获得”。部员招募尚未实装时，<code>server/userAssets.js</code> 将该角色视为管理员限定资源：管理员公开资产会自动补齐 <code>qiuyuan</code>，普通玩家不会默认拥有或部署。</p>
+<p>仇远（<code>qiuyuan</code>）是内置剑客角色，立绘位于 <code>/assets/characters/qiuyuan.png</code>，获得方式文案为“部员招募获得”。莫宁（<code>mornye</code> / Mornye）是内置科学家角色，立绘位于 <code>/assets/characters/mornye.png</code>，获得方式文案为“招募获得”。部员招募尚未实装时，<code>server/userAssets.js</code> 将这类角色视为管理员限定资源：管理员公开资产会自动补齐 <code>qiuyuan</code> 和 <code>mornye</code>，普通玩家不会默认拥有或部署。</p>
 <h3>LoginSession</h3>
 <p>持久化登录会话表，用于 refresh cookie、单账号单会话和服务重启后的登录恢复。</p>
 <ul>
@@ -2647,7 +2677,7 @@
 <li><code>characterId</code>: 关联 <code>Character.id</code>，唯一。</li>
 </ul>
 <ul>
-<li><code>effectType</code>: 技能实际效果类型，当前支持 <code>erase-point</code>、<code>flip-stone</code>、<code>hidden-hand</code>、<code>random-blast</code>、<code>spray-stone</code>、<code>color-illusion-passive</code>、<code>row-slash</code>。</li>
+<li><code>effectType</code>: Skill effect type; currently supports <code>erase-point</code>, <code>flip-stone</code>, <code>hidden-hand</code>, <code>protocol-takeover</code>, <code>random-blast</code>, <code>spray-stone</code>, <code>color-illusion-passive</code>, <code>row-slash</code>, <code>double-move</code>, and <code>liberty-purge</code>.</li>
 </ul>
 <ul>
 <li><code>name</code>: 技能名。</li>
@@ -2662,7 +2692,7 @@
 <li><code>freeTurn</code>: 是否不消耗回合。</li>
 </ul>
 <ul>
-<li><code>targetRule</code>: 目标规则，当前校验为 <code>empty-point</code>、<code>stone</code>、<code>any-point</code> 或 <code>none</code>；猪小仙 <code>random-blast</code> 为 <code>none</code>，但仍进入待释放确认状态，点击棋盘任意点后才释放。</li>
+<li><code>targetRule</code>: Targeting rule; currently validated as <code>empty-point</code>, <code>stone</code>, <code>any-point</code>, <code>legal-move-point</code>, or <code>none</code>. <code>random-blast</code> and <code>double-move</code> use <code>none</code>; Chisa <code>liberty-purge</code> uses <code>legal-move-point</code> so the target must pass ordinary move legality on the server.</li>
 </ul>
 <ul>
 <li><code>paramsJson</code>: JSON 字符串，当前作为扩展参数保留。</li>
@@ -2687,6 +2717,7 @@
 <h3>Row Slash Skill</h3>
 <p><code>row-slash</code> 是仇远“一斩足矣”的主动棋盘技能。目标规则为 <code>any-point</code>，只能指定当前棋盘内仍有效的交叉点；空点和已有棋子均可指定，被抹除的无效点不可指定。技能横向处理目标所在行，直接移除该行所有黑棋、白棋、命名中立棋子、隐藏手棋子和幻色棋子，并清除劫状态。直接移除的黑白棋子按真实颜色给受益方增加 <code>skillRemovals</code>；中立棋子参与仇远超频增加但不提供黑白除子；隐藏手被直接移除时不产生发现提示；幻色棋子按真实颜色结算并清掉幻色状态。直接移除后会自动清理因此无气的棋串，后续清理仍计入 <code>skillRemovals</code>，但不再增加仇远超频。</p>
 <p>该技能基础超频消耗为 <code>0</code>，然后按直接移除棋子数追加超频，每枚直接移除棋子 <code>+2</code>；空行可以发动并消耗技能/回合，但追加超频为 <code>0</code>。发动后消耗本回合，重置连续虚手，<code>moveNumber +1</code>，并在 <code>rowEffects</code> 中记录一条公开横斩视觉标记。该标记只影响显示，不改变交叉点有效性，会在仇远使用者下一次普通落子时清除。</p>
+<p><code>protocol-takeover</code> 是莫宁“协议接管”的主动棋盘技能。目标规则为 <code>empty-point</code>，只能指定当前棋盘内有效、空置、未被协议标记的交叉点。技能在点位上写入 <code>protocolBan = { owner, bannedColor, effect: &quot;protocol-takeover&quot; }</code>，其中 <code>owner</code> 是施放方，<code>bannedColor</code> 是对手。协议标记是公开点位状态，会随房间广播、观战和回放同步；被禁方不能在该空点普通落子，也不能把该空点作为空点/任意点指定类技能目标。若该点后来存在棋子，石子目标技能仍可指定该棋子，普通提子、翻转、横斩、随机爆破和喷涂等非抹除效果不会清除协议标记；只有 <code>erase-point</code> 抹除交叉点时会同步删除 <code>protocolBan</code>。数子时协议空点对 <code>bannedColor</code> 保持中立，不计入被禁方领地，但区域遍历仍把该点当作空区域的一部分，所以不会把同一块领地拆开或污染其它空点归属。莫宁技能超频为 <code>2</code>，<code>freeTurn: true</code>，发动后不消耗本回合。</p>
 <h3>Decoration</h3>
 <p>装饰配置。</p>
 <ul>
@@ -2852,6 +2883,12 @@
 </ul>
 <ul>
 <li>仇远的 <code>row-slash</code> 技能使用 <code>/assets/characters/qiuyuan.png</code> 作为内置立绘，并在被选中的水平行上渲染一条连续刀痕。持久棋盘标记保存在 <code>game.rowEffects</code>，会同步给观战、回放和实时客户端，直到技能拥有者下一次普通落子；刀痕由 DOM/CSS overlay 呈现，不挂整块 Pixi canvas，也不渲染 <code>BoardSkillEffects</code> 的全棋盘覆盖层，避免表现层遮挡棋盘内容。</li>
+</ul>
+<ul>
+<li>莫宁的 <code>protocol-takeover</code> 技能使用 <code>/assets/characters/mornye.png</code> 作为内置立绘。协议禁入标记直接渲染为棋盘点按钮内的 <code>.protocol-ban-mark</code> DOM/CSS 子层，保持 <code>pointer-events: none</code>，以便该标记对双方、观战和回放可见，同时不改变落子、触控确认、数子标记或技能目标命中。</li>
+</ul>
+<ul>
+<li>Chisa <code>liberty-purge</code> uses <code>/assets/characters/chisa.png</code> as its builtin portrait. The skill does not mount a Pixi whole-board effect; pending metadata carries both the placed target and <code>removalMarkIds</code>, and <code>Board</code> renders <code>.liberty-purge-removal-mark</code> red crosses as pointer-transparent point children independent from protocol bans, blast residue, scoring marks, and dead-stone marks.</li>
 </ul>
 <ul>
 <li>Mode-specific competitive stats live in <code>UserModeStats</code> with one row per user and mode. Each row owns <code>rating</code>, <code>rank</code>, <code>recentResults</code>, <code>wins</code>, <code>losses</code>, and <code>draws</code>; <code>recentResults</code> stores the current rank-cycle decisive results from old to new. Existing <code>User.rating</code>, <code>rank</code>, <code>wins</code>, and <code>losses</code> remain spark-mode compatibility mirrors during this migration, while standard rating/rank/records are read from <code>UserModeStats</code>; coins remain a global account asset.</li>
@@ -3048,6 +3085,9 @@
 <ul>
 <li>Owns default audio settings, localStorage loading, per-channel volume calculation, and finite-number sanitization for persisted percent values.</li>
 </ul>
+<ul>
+<li>Audio settings also support optional per-channel mute flags under <code>muted</code>; <code>audioVolume()</code> returns <code>0</code> when <code>muted.master</code> or the requested channel flag is true, while keeping the stored 0-100 slider percentage unchanged.</li>
+</ul>
 </ul>
 <ul>
 <li><code>src/audio/backgroundDucking.js</code></li>
@@ -3161,7 +3201,7 @@
 <li>星炬棋盘技能特效的程序化音效由 <code>src/room/boardSkillEffectSoundScheduler.js</code> 按 catalog cue 点调度，并由 <code>src/audio/skillEffectSounds.js</code> 负责真正发声；这些音效只读 <code>audioSettings.sfx</code>，不参与服务端结算，也不会在 reduced-motion 棋盘演出中播放爆炸/飞入类音效。<code>src/room/pixiPrewarm.js</code> 在技能可用棋盘空闲时预热 <code>pixi.js</code>，真实演出时复用同一个加载 promise，避免首个技能把模块加载成本集中到动画开始时。</li>
 </ul>
 <ul>
-<li><code>row-slash</code> 保留 <code>skillEffectSoundCues</code> cue 元数据供后续程序化拔刀与斩击音效复用；当前棋盘刀痕走 DOM/CSS overlay，没有独立音频文件依赖，不渲染 Pixi 效果层，也不需要 Pixi 预热。</li>
+<li><code>row-slash</code> 和 <code>protocol-takeover</code> 保留 <code>skillEffectSoundCues</code> cue 元数据供后续程序化音效复用；当前棋盘刀痕和协议禁入标记走 DOM/CSS overlay，没有独立音频文件依赖，不渲染 Pixi 效果层，也不需要 Pixi 预热。</li>
 </ul>
 <ul>
 <li>娜波摩被动雾层由 <code>BoardAmbientEffects</code> 根据 <code>game.passives.*.colorIllusion.active</code> 派生，使用多个羽化的黑灰 CSS 云团而不是整块矩形半透明贴层，并保持 <code>pointer-events: none</code>，因此不会影响落子、触控确认、数子标记或观战/回放棋盘读取。</li>

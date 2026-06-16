@@ -18,6 +18,56 @@ Most app-wide state is still owned by `src/app/App.jsx` and passed into extracte
 - Overlay visibility state lives behind `useOverlayState`; `App.jsx` may pass the returned `show*` flags and `setShow*` callbacks to route and overlay composition, but it should not add new top-level `useState(false)` flags for modal visibility.
 - Toast state is app shell state owned by `useToastQueue`.
 
+### Scenario: Audio Settings Mute State
+
+#### 1. Scope / Trigger
+- Trigger: changing Settings > Audio controls, `DEFAULT_AUDIO_SETTINGS`, `loadAudioSettings()`, `audioVolume()`, or playback code that reads `audioSettings`.
+- Audio settings are local app shell state persisted to `localStorage`, and playback modules consume the same object for BGM, SFX, and voice volume.
+
+#### 2. Signatures
+- `DEFAULT_AUDIO_SETTINGS`: `{ master: number, bgm: number, sfx: number, voice: number, muted: Record<string, boolean> }`.
+- Persisted storage key: `sigrika-audio-settings`.
+- `audioVolume(settings, channel)` returns the effective 0-1 volume for the requested playback channel.
+
+#### 3. Contracts
+- Slider percentages remain 0-100 values and must not be rewritten to `0` merely because a channel is muted.
+- Per-channel mute state lives under `audioSettings.muted[channel]`.
+- `muted.master === true` mutes every channel; `muted[channel] === true` mutes only that requested channel.
+- Settings UI title buttons may toggle mute state; range slider changes must clear that channel's mute flag and keep the new percentage.
+- Playback modules should continue calling `audioVolume()` instead of inspecting raw percentages or muted flags directly.
+
+#### 4. Validation & Error Matrix
+- Old persisted settings with no `muted` object -> valid, all channels unmuted.
+- `muted[channel] === true` with slider value `80` -> effective volume is `0`, displayed slider value remains `80`.
+- Moving a muted channel slider -> muted flag for that channel becomes false.
+- Invalid percentage values -> keep using existing finite-number fallback behavior.
+
+#### 5. Good/Base/Bad Cases
+- Good: clicking the BGM title sets `muted.bgm = true` while `bgm` remains `50`.
+- Base: a user with only `{ master, bgm, sfx, voice }` in localStorage keeps the old audible behavior.
+- Bad: setting `bgm: 0` to represent mute, because manual slider movement can no longer restore the previous percentage.
+
+#### 6. Tests Required
+- `src/audio/audioSettings.test.js` covers master/channel mute behavior and finite percentage fallback.
+- `src/modals/SettingsModal.test.jsx` covers muted row hooks, unchanged range value, title toggle source, and slider unmute source.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+setAudioSettings((settings) => ({ ...settings, bgm: 0 }));
+```
+
+Correct:
+
+```js
+setAudioSettings((settings) => ({
+  ...settings,
+  muted: { ...(settings.muted ?? {}), bgm: true }
+}));
+```
+
 ---
 
 ## Server State

@@ -21,4 +21,10 @@ describe("audio settings", () => {
     expect(audioVolume({ master: 200, voice: 200 }, "voice")).toBe(1);
     expect(audioVolume({ master: -10, voice: 80 }, "voice")).toBe(0);
   });
+
+  it("returns zero volume when master or a channel is muted without changing percentages", () => {
+    expect(audioVolume({ master: 80, bgm: 50, muted: { bgm: true } }, "bgm")).toBe(0);
+    expect(audioVolume({ master: 80, bgm: 50, muted: { sfx: true } }, "bgm")).toBe(0.4);
+    expect(audioVolume({ master: 80, voice: 80, muted: { master: true } }, "voice")).toBe(0);
+  });
 });

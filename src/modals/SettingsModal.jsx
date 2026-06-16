@@ -31,22 +31,46 @@ export default function SettingsModal({
         </div>
         {tab === "audio" && (
           <div className="settings-panel settings-modal-content">
-            {audioItems.map((item) => (
-              <label className="volume-row audio-slider-item" key={item.key}>
-                <span>{item.icon}{item.label}</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={audioSettings[item.key]}
-                  onChange={(event) => setAudioSettings((settings) => ({
-                    ...settings,
-                    [item.key]: Number(event.target.value)
-                  }))}
-                />
-                <strong>{audioSettings[item.key]}</strong>
-              </label>
-            ))}
+            {audioItems.map((item) => {
+              const muted = audioSettings?.muted?.[item.key] === true;
+              const labelId = `audio-volume-label-${item.key}`;
+
+              return (
+                <div className={`volume-row audio-slider-item ${muted ? "is-muted" : ""}`} key={item.key}>
+                  <button
+                    type="button"
+                    id={labelId}
+                    className="audio-volume-title"
+                    aria-pressed={muted}
+                    onClick={() => setAudioSettings((settings) => ({
+                      ...settings,
+                      muted: {
+                        ...(settings.muted ?? {}),
+                        [item.key]: !(settings.muted?.[item.key] === true)
+                      }
+                    }))}
+                  >
+                    {item.icon}{item.label}
+                  </button>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    aria-labelledby={labelId}
+                    value={audioSettings[item.key]}
+                    onChange={(event) => setAudioSettings((settings) => ({
+                      ...settings,
+                      [item.key]: Number(event.target.value),
+                      muted: {
+                        ...(settings.muted ?? {}),
+                        [item.key]: false
+                      }
+                    }))}
+                  />
+                  <strong>{audioSettings[item.key]}</strong>
+                </div>
+              );
+            })}
           </div>
         )}
         {tab === "theme" && (
