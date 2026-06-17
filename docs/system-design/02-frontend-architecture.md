@@ -210,12 +210,14 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 
 - Frontend deployment helpers live in `src/shared/preloadAssets.js`.
 - Socket.IO now connects to `window.location.origin`, so the deployed site can run behind `https://sigrika.fun` without a hard-coded localhost socket endpoint.
+- `src/app/gameSocket.js` sets explicit mobile-friendly recovery options for the game socket: reconnect indefinitely, retry quickly, cap reconnect delay at 3 seconds, and fail the initial handshake after 6 seconds so a weak mobile network can recover instead of waiting on the default long timeout.
 - Vite development proxy forwards `/socket.io` websocket traffic to the local backend, keeping the same-origin socket path usable in development and production.
 - Vite development proxy also handles expected `/socket.io` websocket disconnect errors such as `ECONNRESET` and `ECONNREFUSED` quietly. These are normal when `dev:server` restarts the backend with `node --watch`; unexpected proxy errors still emit a concise warning.
 - After a valid token is confirmed, the app enters a `preloading` view before the home screen.
 - Fresh login enters `preloading` before the home screen, preventing the home screen from flashing before assets begin loading. Stored-token startup is intentionally disabled so refresh and browser restart return to the login screen.
 - The preload step fetches non-replay runtime assets after login, but it is now split by startup criticality. Critical preload waits for current character portraits, home entry/background imagery, and common board/UI effect sounds before the app can leave the preload screen. Shop imagery, candy/effect previews, stone decoration images, result/match sounds, configured BGM tracks, character skill voices, and system voices stay in the same asset manifest but load as deferred background work with a concurrency cap so first entry to the home screen is not blocked by the full music/voice library. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.
 - Preload failures are non-blocking: failed or hanging asset loaders are ignored after a bounded per-task timeout so users are not trapped on the loading screen if a single critical or optional resource stalls during reconnect, server restart, or cache recovery.
+- Startup preload is independent from transient Socket.IO client instances. `useStartupPreload()` must not receive `socket` or include a socket object in its dependency list; token/session state cleanup will tear down the socket through the socket lifecycle hook, while preload continues exactly once for the confirmed token.
 - The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.
 
 ## Board Effect Theme Guard

@@ -85,7 +85,7 @@
 <li>玩家 UI 当前默认 Bright School 主题；主题注册、CSS 入口和作用域合同保留未来扩展口，共享基础层已从单一 <code>base.css</code> 入口拆到 <code>src/styles/base/</code>，房间样式已从单一 <code>room.css</code> 入口拆到 <code>src/styles/room/</code>，Startorch 对局终端皮肤已从单一 <code>room-terminal.css</code> 入口拆到 <code>src/styles/room-terminal/</code>，共享弹窗样式已从单一 <code>modals.css</code> 入口拆到 <code>src/styles/modals/</code>，移动弹窗安全层已从单一 <code>mobile-modals.css</code> 入口拆到 <code>src/styles/mobile-modals/</code>，商业/社交/仓库样式已从单一 <code>commerce-settings.css</code> 入口拆到 <code>src/styles/commerce/</code> 领域分篇，其中商店/设置/移动商业补丁继续从 <code>src/styles/commerce/shop-settings.css</code> 拆到 <code>src/styles/commerce/shop-settings/</code>；共享响应式层已从单一 <code>responsive.css</code> 入口拆到 <code>src/styles/responsive/</code>，共享移动对局层已从单一 <code>mobile-room.css</code> 入口拆到 <code>src/styles/mobile-room/</code>，共享 HUD 兼容层已从单一 <code>hud-components.css</code> 入口拆到 <code>src/styles/hud-components/</code>，最终移动端安全层也从单一 <code>mobile-adaptive.css</code> 入口拆到 <code>src/styles/mobile-adaptive/</code>，其中 Bright School 最终移动兜底覆盖继续拆到 <code>src/styles/mobile-adaptive/bright-school-overrides/</code>；Bright School 对应早期可读性清理、商业覆盖、移动端覆盖、竖屏对局覆盖、组件修复覆盖、质量兜底层和防 HUD 串色 firewall 分别拆到 <code>src/styles/themes/bright-school/contrast-purge/</code>、<code>src/styles/themes/bright-school/commerce/</code>、<code>src/styles/themes/bright-school/mobile/</code>、<code>src/styles/themes/bright-school/mobile/room/</code>、<code>src/styles/themes/bright-school/component-repairs/</code>、<code>src/styles/themes/bright-school/quality-base/</code>、<code>src/styles/themes/bright-school/firewall/</code>。</li>
 </ul>
 <ul>
-<li>启动预加载区分关键资源与延迟资源，并为单个资源加载设置超时兜底，避免服务器重启或缓存恢复时把玩家卡在资源准备页；房间运行期使用轻量 <code>room:clock</code> 与完整 <code>room:update</code> 分流，降低高频交互卡顿。</li>
+<li>启动预加载区分关键资源与延迟资源，并为单个资源加载设置超时兜底，避免服务器重启或缓存恢复时把玩家卡在资源准备页；房间运行期使用轻量 <code>room:clock</code> 与完整 <code>room:update</code> 分流，降低高频交互卡顿。移动端弱网下，启动预加载不订阅瞬时 Socket.IO 实例变化，对局 socket 连接使用明确重连和 6 秒握手超时，避免连接抖动把玩家反复留在资源准备页。</li>
 </ul>
 <ul>
 <li>Bright School 桌面首页新增四段响应式布局契约：wide desktop、compact desktop、micro desktop 和 mobile 分别处理；<code>1181px-1500px</code> 的中等桌面段会优先保证玩家铭牌完整显示，铭牌用户名不得跨列遮挡段位面板，micro desktop 使用受控 <code>960px</code> 横向舞台，核心入口保持正常 grid flow，低高度允许纵向滚动。</li>
@@ -2203,6 +2203,9 @@
 <li>Socket.IO now connects to <code>window.location.origin</code>, so the deployed site can run behind <code>https://sigrika.fun</code> without a hard-coded localhost socket endpoint.</li>
 </ul>
 <ul>
+<li><code>src/app/gameSocket.js</code> sets explicit mobile-friendly recovery options for the game socket: reconnect indefinitely, retry quickly, cap reconnect delay at 3 seconds, and fail the initial handshake after 6 seconds so a weak mobile network can recover instead of waiting on the default long timeout.</li>
+</ul>
+<ul>
 <li>Vite development proxy forwards <code>/socket.io</code> websocket traffic to the local backend, keeping the same-origin socket path usable in development and production.</li>
 </ul>
 <ul>
@@ -2219,6 +2222,9 @@
 </ul>
 <ul>
 <li>Preload failures are non-blocking: failed or hanging asset loaders are ignored after a bounded per-task timeout so users are not trapped on the loading screen if a single critical or optional resource stalls during reconnect, server restart, or cache recovery.</li>
+</ul>
+<ul>
+<li>Startup preload is independent from transient Socket.IO client instances. <code>useStartupPreload()</code> must not receive <code>socket</code> or include a socket object in its dependency list; token/session state cleanup will tear down the socket through the socket lifecycle hook, while preload continues exactly once for the confirmed token.</li>
 </ul>
 <ul>
 <li>The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.</li>

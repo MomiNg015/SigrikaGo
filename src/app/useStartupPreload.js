@@ -25,7 +25,6 @@ export function useStartupPreload({
   setToken,
   setUser,
   setView,
-  socket,
   token,
   viewRef
 }) {
@@ -69,7 +68,6 @@ export function useStartupPreload({
       })
       .catch(() => {
         if (cancelled) return;
-        socket?.close();
         setToken("");
         setUser(null);
         setRoom(null);
@@ -107,7 +105,6 @@ export function useStartupPreload({
     setToken,
     setUser,
     setView,
-    socket,
     token,
     viewRef
   ]);

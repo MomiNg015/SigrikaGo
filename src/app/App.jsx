@@ -148,7 +148,6 @@ export default function App() {
     setToken,
     setUser,
     setView,
-    socket,
     token,
     viewRef
   });

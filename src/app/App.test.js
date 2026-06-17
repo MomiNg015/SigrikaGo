@@ -9,6 +9,13 @@ describe("App startup preload wiring", () => {
     expect(preloadCall).toContain("setMusicTracks");
   });
 
+  it("keeps startup preload independent from transient socket objects", () => {
+    const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+    const preloadCall = source.match(/useStartupPreload\(\{[\s\S]*?\n  \}\);/)?.[0] ?? "";
+
+    expect(preloadCall).not.toContain("socket,");
+  });
+
   it("derives the character list view through the shared catalog sorter", () => {
     const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
 

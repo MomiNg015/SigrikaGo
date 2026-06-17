@@ -19,7 +19,14 @@ describe("game socket connection", () => {
     });
 
     expect(result).toBe(socket);
-    expect(ioClient).toHaveBeenCalledWith("http://localhost:5173", { auth: { token: "token-1" } });
+    expect(ioClient).toHaveBeenCalledWith("http://localhost:5173", {
+      auth: { token: "token-1" },
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 500,
+      reconnectionDelayMax: 3000,
+      timeout: 6000
+    });
     expect(installHandlers).toHaveBeenCalledWith(socket, handlers, { buildRoomResumeRequest });
   });
 });
