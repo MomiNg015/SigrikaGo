@@ -29,7 +29,11 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-grid.top-stats-bar {
+    display: grid !important;
     grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto minmax(0, 1fr) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-stats {
@@ -43,7 +47,10 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records {
     grid-column: 1 / -1 !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
     gap: 8px !important;
+    min-height: 0 !important;
     padding: 0 !important;
     border: 0 !important;
     border-radius: 0 !important;
@@ -214,11 +221,13 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-list {
     width: 100% !important;
+    height: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
+    min-height: 0 !important;
     box-sizing: border-box !important;
     gap: 6px !important;
-    max-height: min(260px, 38dvh) !important;
+    max-height: none !important;
     align-content: start !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;

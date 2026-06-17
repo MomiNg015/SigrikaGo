@@ -254,7 +254,9 @@
 }
 
 .resume-modal .profile-grid.top-stats-bar {
+  display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: auto auto minmax(0, 1fr);
   margin-top: 4px;
   min-height: 0;
   overflow: hidden;

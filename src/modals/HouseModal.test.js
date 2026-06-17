@@ -505,6 +505,7 @@ describe("deriveCharacterRecordStats", () => {
     const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
 
     expect(modalCss).toContain(".resume-modal .profile-grid.top-stats-bar");
+    expect(modalCss).toContain("grid-template-rows: auto auto minmax(0, 1fr);");
     expect(modalCss).toContain(".resume-modal {\n  width: min(620px, 100%);\n  display: grid;\n  grid-template-rows: auto auto auto minmax(0, 1fr);");
     expect(modalCss).toContain("max-height: calc(100dvh - 32px);");
     expect(modalCss).toContain("overflow: hidden;");
@@ -552,6 +553,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain(".house-modal .owned-decoration-section");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".resume-modal .profile-grid.top-stats-bar");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("grid-template-columns: 1fr;");
+    expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("grid-template-rows: auto auto minmax(0, 1fr);");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".resume-modal .profile-resume-stats");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)) !important");
@@ -595,11 +597,14 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("position: static !important");
     expect(finalMobileCss).toContain(".resume-modal .profile-grid.top-stats-bar");
     expect(finalMobileCss).toContain("grid-template-columns: 1fr !important");
+    expect(finalMobileCss).toContain("grid-template-rows: auto auto minmax(0, 1fr) !important");
     expect(finalMobileCss).toContain(".resume-modal .profile-resume-stats");
     expect(finalMobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
     expect(finalMobileCss).toContain(".resume-modal .profile-rank-results");
     expect(finalMobileCss).toContain(".resume-character-records");
     expect(finalMobileCss).toContain(".resume-character-records .character-record-list");
+    expect(finalMobileCss).toContain("height: 100% !important");
+    expect(finalMobileCss).toContain("max-height: none !important");
     expect(finalMobileCss).toContain(".resume-character-records > strong");
     expect(finalMobileCss).toContain("background: transparent !important");
     expect(finalMobileCss).toContain("box-shadow: none !important");
