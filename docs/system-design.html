@@ -124,7 +124,7 @@
 <li>Character duplicate chain counts remain in user data for reward/progression logic, but player-facing desktop and mobile UI hides character-chain badges on portrait surfaces.</li>
 </ul>
 <ul>
-<li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer, including home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, internally scrolling resume character records, and shop wallet single-line/blue-gem capsule treatment. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
+<li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer, including home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, internally scrolling resume character records, and shop wallet single-line/blue-gem capsule treatment. Login auth chrome keeps the brand and login/register segmented wrappers transparent on desktop and mobile, while the outer login card retains the Bright School lower-right hard shadow. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
 </ul>
 <ul>
 <li>Resume character records in the final Bright School mobile layers reuse the detailed user profile character-list rhythm: the outer section stays lightweight, while compact four-column rows carry avatar, name, record, and win rate without clipping. The embedded resume list keeps total games and win/loss/draw on one line, while separate nested record dialogs may still use their two-line compact record treatment.</li>
@@ -168,7 +168,7 @@
 </ul>
 <h2>Achievement And Personalization Note</h2>
 <ul>
-<li>用户名注册/搜索校验允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 10 个半角字符宽度，等价于最多 5 个中日韩字符或 10 个半角字符。</li>
+<li>用户名注册/搜索校验允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 10 个半角字符宽度，等价于最多 5 个中日韩字符或 10 个半角字符。注册页把用户名、密码和确认密码规范放在输入框 placeholder 中，用户开始输入后自然隐藏；失焦或提交时才在对应字段下方显示错误。</li>
 </ul>
 <ul>
 <li>成就系统以 <code>Achievement</code>、<code>AchievementRewardAsset</code>、<code>UserAchievement</code>、<code>AchievementCounter</code> 和 <code>UserAchievementEquipment</code> 为核心模型；启动时 <code>ensureAchievementSchema</code> 会先于角色/商店种子任务运行，为旧 SQLite 自动补表，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 补 <code>source</code> 字段。玩家侧 <code>/api/achievements</code> 返回合并后的成就列表与本次新解锁成就，<code>/api/me/achievement-equipment</code> 读写称号、徽章和用户名背景装备；成就目标本体由代码/种子维护，后台 <code>/api/admin/achievements</code> 只允许修改成就名、成就内容、奖励资产和排序，<code>/api/admin/achievement-reward-assets</code> 继续管理奖励资产并写审计日志。</li>
@@ -320,7 +320,7 @@
 <li>登录/注册展示组件。</li>
 </ul>
 <ul>
-<li>注册模式显示“确认密码”输入框；前端会先校验两次密码一致，再提交注册请求。</li>
+<li>注册模式显示“确认密码”输入框；前端会先校验两次密码一致，再提交注册请求。用户名、密码和确认密码规范作为输入框 placeholder 展示，用户输入后隐藏；字段失焦或提交时才在对应输入框下方显示错误。</li>
 </ul>
 <ul>
 <li>调用 <code>src/api/client.js</code> 完成认证请求，并通过 <code>onAuth</code> 回写 token 与用户信息。</li>
@@ -1242,7 +1242,7 @@
 <li>用户注册与登录。</li>
 </ul>
 <ul>
-<li>注册界面要求两次密码输入一致；确认密码只用于前端校验，不随 API payload 保存。</li>
+<li>注册界面要求两次密码输入一致；确认密码只用于前端校验，不随 API payload 保存。注册输入规范作为 placeholder 展示，字段错误仍在对应输入框下方反馈。</li>
 </ul>
 <ul>
 <li>密码使用 <code>bcryptjs</code> 哈希存储。</li>
@@ -3432,7 +3432,7 @@
 <li>Commerce and settings controls use mobile grid tabs/pagination with wrapping labels instead of squeezed inline buttons. Shop mobile layout collapses to a top summary strip plus a two-column item grid, with one-column fallback below 360px; card purchase actions retain full-width 44px touch targets.</li>
 </ul>
 <ul>
-<li>Bright School's final mobile layer keeps login and home titles on one line by scaling type within bounded widths instead of truncating the main title. The login brand and login/register segmented control no longer add tinted background panels on phones, so the paper grid remains the dominant surface.</li>
+<li>Bright School's final mobile layer keeps login and home titles on one line by scaling type within bounded widths instead of truncating the main title. The login brand and login/register segmented control no longer add tinted background panels on phones or desktop, so the paper grid remains the dominant surface; the outer login card keeps the same lower-right hard shadow depth as Bright School buttons.</li>
 </ul>
 <ul>
 <li>Bright School home image entries use the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer even on desktop breakpoints. The card shell can keep labels and sticker shadows visible beyond the border, but the actual <code>部员手册</code> and <code>匹配对局</code> <code>&lt;img&gt;</code> nodes are forced to <code>box-sizing: border-box</code>, <code>height/max-height: 100%</code>, and <code>object-fit: contain</code>, preventing large or narrow desktop layouts from letting artwork spill below the button frame.</li>

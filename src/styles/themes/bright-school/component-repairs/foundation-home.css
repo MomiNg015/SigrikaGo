@@ -34,6 +34,39 @@
   box-shadow: 5px 5px 0 rgba(74, 55, 54, 0.9) !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-screen .auth-panel.login-card-container.login-card-container {
+  box-shadow: 6px 6px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .segmented {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-field-error {
+  color: #c0182d !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form input::placeholder {
+  color: #6b5d5a !important;
+  opacity: 0.76 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-field.invalid input {
+  border-color: #c0182d !important;
+  box-shadow:
+    0 0 0 3px rgba(192, 24, 45, 0.2),
+    inset 2px 2px 0 rgba(61, 43, 37, 0.1) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title {
   color: var(--bright-ink) !important;
   font-family: "Arial Rounded MT Bold", "Microsoft YaHei", sans-serif !important;

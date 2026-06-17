@@ -504,8 +504,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("max-height: min(760px, calc(100dvh - 32px));");
     expect(modalCss).toContain(".profile-character-list");
     expect(modalCss).toContain("max-height: min(260px, 34dvh);");
-    const brightSchoolModalCss = readFileSync(new URL("../styles/themes/bright-school/modals.css", import.meta.url), "utf8");
-    expect(brightSchoolModalCss).toContain(".resume-modal {\n  grid-template-rows: auto auto auto minmax(0, 1fr) !important;");
+    const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
+    expect(brightSchoolModalCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {\n  grid-template-rows: auto auto auto minmax(0, 1fr) !important;");
     expect(brightSchoolModalCss).toContain("max-height: calc(100dvh - 32px) !important;");
     expect(brightSchoolModalCss).toContain("overflow: hidden !important;");
     expect(brightSchoolModalCss).toContain(".mode-tabs button[aria-selected=\"true\"]");

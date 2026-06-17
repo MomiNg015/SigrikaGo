@@ -69,7 +69,12 @@
     gap: 10px !important;
     background: transparent !important;
     background-image: none !important;
+    border: 0 !important;
     box-shadow: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-screen .auth-panel.login-card-container.login-card-container {
+    box-shadow: 6px 6px 0 var(--bright-border) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup img {

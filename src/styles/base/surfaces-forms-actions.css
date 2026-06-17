@@ -52,6 +52,22 @@ p {
   color: #6b596d;
 }
 
+.auth-field-error {
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.auth-field-error {
+  color: #b63d52;
+  font-weight: 800;
+}
+
+.auth-form input::placeholder {
+  color: #766979;
+  opacity: 0.74;
+}
+
 .auth-form input,
 .chat-box input {
   border: 1px solid #ddcfe2;
@@ -59,6 +75,11 @@ p {
   padding: 12px 14px;
   background: white;
   outline: none;
+}
+
+.auth-field.invalid input {
+  border-color: #b63d52;
+  box-shadow: 0 0 0 3px rgba(182, 61, 82, 0.16);
 }
 
 .segmented {

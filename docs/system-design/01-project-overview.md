@@ -110,7 +110,7 @@ SigrikaGo/
 
 - `src/auth/AuthScreen.jsx`
   - 登录/注册展示组件。
-  - 注册模式显示“确认密码”输入框；前端会先校验两次密码一致，再提交注册请求。
+  - 注册模式显示“确认密码”输入框；前端会先校验两次密码一致，再提交注册请求。用户名、密码和确认密码规范作为输入框 placeholder 展示，用户输入后隐藏；字段失焦或提交时才在对应输入框下方显示错误。
   - 调用 `src/api/client.js` 完成认证请求，并通过 `onAuth` 回写 token 与用户信息。
 
 - `src/home/HomeScreen.jsx`
@@ -500,7 +500,7 @@ SigrikaGo/
 ### 账号与用户
 
 - 用户注册与登录。
-- 注册界面要求两次密码输入一致；确认密码只用于前端校验，不随 API payload 保存。
+- 注册界面要求两次密码输入一致；确认密码只用于前端校验，不随 API payload 保存。注册输入规范作为 placeholder 展示，字段错误仍在对应输入框下方反馈。
 - 密码使用 `bcryptjs` 哈希存储。
 - 登录态使用短期页面内存 access token + 持久化 refresh cookie：access token 仍只保存在 React 内存中，不写入 `localStorage`；浏览器保存 `HttpOnly` refresh cookie，页面刷新、浏览器重开或后端短暂重启后会先调用 `/api/auth/refresh` 自动恢复登录。
 - `LoginSession` 数据库存储当前有效会话、refresh token 哈希、过期时间和撤销时间；Socket 断开只影响在线状态，不再直接撤销登录会话。
