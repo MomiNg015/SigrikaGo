@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 15
+- **Total Sessions**: 16
 - **Last Active**: 2026-06-17
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~503 | Active |
+| `journal-1.md` | ~536 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 16 | 2026-06-17 | Mobile room tab press state | `9a2b554` | `codex/new-branch` |
 | 15 | 2026-06-17 | Profile resume mobile layout polish | `bdfda307`, `df329ef3` | `codex/new-branch` |
 | 14 | 2026-06-14 | 角色详情说明颜色与音乐暂停续播 | `0135941` | `codex/gacha-scheme-c-ui` |
 | 13 | 2026-06-13 | 修复首页资源请求循环限流 | `8e63888` | `codex/gacha-scheme-c-ui` |

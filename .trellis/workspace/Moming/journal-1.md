@@ -501,3 +501,36 @@ Fixed resume modal recent results, character record ordering and scrolling, wall
 ### Next Steps
 
 - None - task complete
+
+
+## Session 16: Mobile room tab press state
+
+**Date**: 2026-06-17
+**Task**: Mobile room tab press state
+**Branch**: `codex/new-branch`
+
+### Summary
+
+Removed translate/scale press motion from flat mobile room dock tabs, preserving background-color feedback and documenting the mobile flat-control contract.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9a2b554` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
