@@ -47,7 +47,7 @@
 ## Modal Layering Note
 
 - Chisa (`chisa`) uses the `liberty-purge` active skill. The server resolves a normal legal move first, then removes all one-liberty groups from a board snapshot, records `removalMarkIds`, clamps negative overclock deltas to zero, clears ko, and keeps `.liberty-purge-removal-mark` red crosses until the opponent's next real turn ends. Admin users own Chisa by default until recruitment is implemented.
-- Shared `.modal-backdrop` stacks above room `--room-floating-z` surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.
+- Shared `.modal-backdrop` stacks above room `--room-floating-z` surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together. 房间内申请和棋、申请数子与确认数子结果的定时 toast 由流程响应、阶段变化或自动消失关闭，不提供手动关闭按钮。
 - Character duplicate chain counts remain in user data for reward/progression logic, but player-facing desktop and mobile UI hides character-chain badges on portrait surfaces.
 - Mobile character-detail dialogs keep the character name horizontal and single-line, place the compact BGM preview capsule at the top-right of the heading row, left-align skill and character-description copy, and omit the standalone skill-cost badge; Bright School theme layers and the final `mobile-adaptive` safety layer repeat these constraints so narrow phones cannot fall back to vertical names or centered body text.
 - Bright School portrait phone polish that must outlive theme overrides is centralized in the final `src/styles/mobile-adaptive/bright-school-portrait.css` layer, while final mobile social/warehouse safeguards keep inventory item cards at a stable 88px minimum height for readable item details; the portrait polish includes home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, resume character records that take remaining modal height and scroll internally on short phones, mobile room tabs that change selected background without press-offset motion, and shop wallet single-line/blue-gem capsule treatment. Login auth chrome keeps the brand and login/register segmented wrappers transparent on desktop and mobile, while the outer login card retains the Bright School lower-right hard shadow. Desktop and narrow-desktop home image entries also rely on the final `src/styles/mobile-adaptive/home-narrow-desktop.css` safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual `<img>` art must stay `border-box`, `max-height: 100%`, and `object-fit: contain` so the member manual and match artwork cannot spill out of the bottom of the card.
@@ -65,9 +65,15 @@
 
 ## Music Management Note
 
+- 角色技能 BGM 当前配置：达妮娅使用 canonical `denia-skill-default`（`bgm_*`），西格莉卡使用 `sigrika_intro_once.ogg` + `sigrika_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`，千咲使用 `chisa_intro_once.ogg` + `chisa_loop.ogg`。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical `denia` 查找达妮娅技能 BGM。
+
 - Settings > Audio persists optional per-channel mute flags under `audioSettings.muted`; clicking an audio row title toggles mute without changing the slider percentage, and moving the slider clears that channel's mute flag.
 
 - 后台“音乐管理”只维护 `MUSIC_TRACKS` 静态曲目的显示名覆盖值；`MusicTrackSetting` 不改变轨道 id、类型、角色绑定或音频文件，玩家侧 `/api/music-tracks`、角色 BGM 选择、商城音乐展示和抽卡音乐奖项显示会使用合并后的曲目名称。
+- 仇远（`qiuyuan`）的默认技能 BGM 是 `qiuyuan-skill-default`，使用两段式 `intro-loop` 播放：`/assets/music/qiuyuan_intro_once.ogg` 播放一次后接 `/assets/music/qiuyuan_loop.ogg` 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。
+- 琳奈（`lynae`）的默认技能 BGM 是 `lynae-skill-default`，使用两段式 `intro-loop` 播放：`/assets/music/lynae_intro_once.ogg` 播放一次后接 `/assets/music/lynae_loop.ogg` 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。
+
+- 千咲（`chisa`）的默认技能 BGM 是 `chisa-skill-default`，使用两段式 `intro-loop` 播放：`/assets/music/chisa_intro_once.ogg` 播放一次后接 `/assets/music/chisa_loop.ogg` 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。
 
 ## Achievement And Personalization Note
 

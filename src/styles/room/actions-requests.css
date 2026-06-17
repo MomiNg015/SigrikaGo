@@ -156,7 +156,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
-  padding: 14px 44px 15px 16px;
+  padding: 14px 16px 15px;
   border: 1px solid rgba(113, 96, 130, 0.2);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.96);
@@ -215,21 +215,6 @@
   background: #b9b2c0;
   color: #ffffff;
   cursor: not-allowed;
-}
-
-.room-request-toast-close {
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  width: 26px;
-  height: 26px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(235, 230, 240, 0.86);
-  color: #6a586f;
-  font-size: 18px;
-  font-weight: 900;
-  line-height: 1;
 }
 
 .room-request-toast-progress {

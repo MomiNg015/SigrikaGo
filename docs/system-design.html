@@ -124,7 +124,7 @@
 <li>Chisa (<code>chisa</code>) uses the <code>liberty-purge</code> active skill. The server resolves a normal legal move first, then removes all one-liberty groups from a board snapshot, records <code>removalMarkIds</code>, clamps negative overclock deltas to zero, clears ko, and keeps <code>.liberty-purge-removal-mark</code> red crosses until the opponent's next real turn ends. Admin users own Chisa by default until recruitment is implemented.</li>
 </ul>
 <ul>
-<li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.</li>
+<li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together. 房间内申请和棋、申请数子与确认数子结果的定时 toast 由流程响应、阶段变化或自动消失关闭，不提供手动关闭按钮。</li>
 </ul>
 <ul>
 <li>Character duplicate chain counts remain in user data for reward/progression logic, but player-facing desktop and mobile UI hides character-chain badges on portrait surfaces.</li>
@@ -170,10 +170,22 @@
 </ul>
 <h2>Music Management Note</h2>
 <ul>
+<li>角色技能 BGM 当前配置：达妮娅使用 canonical <code>denia-skill-default</code>（<code>bgm_*</code>），西格莉卡使用 <code>sigrika_intro_once.ogg</code> + <code>sigrika_loop.ogg</code>，爱弥斯使用 <code>lhl_*</code>，猪小仙使用 <code>matoya_*</code>，娜波摩使用 <code>busizhe_*</code>，千咲使用 <code>chisa_intro_once.ogg</code> + <code>chisa_loop.ogg</code>。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical <code>denia</code> 查找达妮娅技能 BGM。</li>
+</ul>
+<ul>
 <li>Settings &gt; Audio persists optional per-channel mute flags under <code>audioSettings.muted</code>; clicking an audio row title toggles mute without changing the slider percentage, and moving the slider clears that channel's mute flag.</li>
 </ul>
 <ul>
 <li>后台“音乐管理”只维护 <code>MUSIC_TRACKS</code> 静态曲目的显示名覆盖值；<code>MusicTrackSetting</code> 不改变轨道 id、类型、角色绑定或音频文件，玩家侧 <code>/api/music-tracks</code>、角色 BGM 选择、商城音乐展示和抽卡音乐奖项显示会使用合并后的曲目名称。</li>
+</ul>
+<ul>
+<li>仇远（<code>qiuyuan</code>）的默认技能 BGM 是 <code>qiuyuan-skill-default</code>，使用两段式 <code>intro-loop</code> 播放：<code>/assets/music/qiuyuan_intro_once.ogg</code> 播放一次后接 <code>/assets/music/qiuyuan_loop.ogg</code> 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。</li>
+</ul>
+<ul>
+<li>琳奈（<code>lynae</code>）的默认技能 BGM 是 <code>lynae-skill-default</code>，使用两段式 <code>intro-loop</code> 播放：<code>/assets/music/lynae_intro_once.ogg</code> 播放一次后接 <code>/assets/music/lynae_loop.ogg</code> 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。</li>
+</ul>
+<ul>
+<li>千咲（<code>chisa</code>）的默认技能 BGM 是 <code>chisa-skill-default</code>，使用两段式 <code>intro-loop</code> 播放：<code>/assets/music/chisa_intro_once.ogg</code> 播放一次后接 <code>/assets/music/chisa_loop.ogg</code> 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。</li>
 </ul>
 <h2>Achievement And Personalization Note</h2>
 <ul>
@@ -3173,7 +3185,7 @@
 <li>对弈常规 BGM 使用 <code>shanjifu_intro_once.ogg</code> + <code>shanjifu_loop.ogg</code>。</li>
 </ul>
 <ul>
-<li>角色技能 BGM 当前配置：达妮娅使用 canonical <code>denia-skill-default</code>（<code>bgm_*</code>），西格莉卡使用 <code>koimoon_132_intro_no_fadein_2p5s.ogg</code> + <code>koimoon_132_micro_loop.ogg</code>，爱弥斯使用 <code>lhl_*</code>，猪小仙使用 <code>matoya_*</code>，娜波摩使用 <code>busizhe_*</code>。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical <code>denia</code> 查找达妮娅技能 BGM。</li>
+<li>角色技能 BGM 当前配置：达妮娅使用 canonical <code>denia-skill-default</code>（<code>bgm_*</code>），西格莉卡使用 <code>sigrika_intro_once.ogg</code> + <code>sigrika_loop.ogg</code>，爱弥斯使用 <code>lhl_*</code>，猪小仙使用 <code>matoya_*</code>，娜波摩使用 <code>busizhe_*</code>，千咲使用 <code>chisa_intro_once.ogg</code> + <code>chisa_loop.ogg</code>。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical <code>denia</code> 查找达妮娅技能 BGM。</li>
 </ul>
 <ul>
 <li>BGM 优先级为：角色技能 BGM &gt; 对弈常规 BGM &gt; 主界面 BGM。</li>
