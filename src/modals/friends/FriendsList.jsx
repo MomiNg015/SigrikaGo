@@ -30,8 +30,6 @@ export default function FriendsList({
         <span>状态</span>
         <span>常用角色</span>
         <span>用户名</span>
-        <span>段位</span>
-        <span>积分</span>
         <span>操作</span>
       </div>
       {rows.map((row) => {
@@ -45,10 +43,6 @@ export default function FriendsList({
                 <strong className="friend-username">
                   <UserIdentity user={row} compact />
                 </strong>
-                <div className="friend-stats">
-                  <span className="friend-rank">{row.rank}</span>
-                  <span className="friend-rating">{row.rating}分</span>
-                </div>
               </div>
               <div className="friend-actions-cell">
                 <button

@@ -183,7 +183,7 @@
 <li>成就系统以 <code>Achievement</code>、<code>AchievementRewardAsset</code>、<code>UserAchievement</code>、<code>AchievementCounter</code> 和 <code>UserAchievementEquipment</code> 为核心模型；启动时 <code>ensureAchievementSchema</code> 会先于角色/商店种子任务运行，为旧 SQLite 自动补表，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 补 <code>source</code> 字段。玩家侧 <code>/api/achievements</code> 返回合并后的成就列表与本次新解锁成就，<code>/api/me/achievement-equipment</code> 读写称号、徽章和用户名背景装备；成就目标本体由代码/种子维护，后台 <code>/api/admin/achievements</code> 只允许修改成就名、成就内容、奖励资产和排序，<code>/api/admin/achievement-reward-assets</code> 继续管理奖励资产并写审计日志。</li>
 </ul>
 <ul>
-<li><code>/api/me</code>、<code>GET/PATCH /api/me/achievement-equipment</code> 会同时返回 <code>achievementEquipment</code> 装备 id 与 <code>achievementEquipmentAssets</code> / <code>equipmentAssets</code> 奖励资产显示数据；socket 登录用户、排行榜和社交用户列表/资料也会批量附加 <code>achievementEquipmentAssets</code>。前端通过共享 <code>UserIdentity</code> 在对弈玩家名、房间成员、排行榜、好友/黑名单、资料卡、观战列表和结算赢家名等完整用户展示点渲染称号、徽章和用户名背景。</li>
+<li><code>/api/me</code>、<code>GET/PATCH /api/me/achievement-equipment</code> 会同时返回 <code>achievementEquipment</code> 装备 id 与 <code>achievementEquipmentAssets</code> / <code>equipmentAssets</code> 奖励资产显示数据；socket 登录用户、排行榜和社交用户列表/资料也会批量附加 <code>achievementEquipmentAssets</code>。前端通过共享 <code>UserIdentity</code> 在对弈玩家名、房间成员、排行榜、好友/黑名单、资料卡、观战列表和结算赢家名等完整用户展示点渲染称号、徽章和用户名背景；好友/黑名单列表行只展示状态、常用角色、用户名和操作入口，不再展示段位或积分，详细资料仍保留完整统计。</li>
 </ul>
 <ul>
 <li>用户名背景由 <code>UserIdentity</code> 的用户名标签承载：标签宽度随用户名内容和内边距自适应，默认无边框且背景透明，装备 nameplate 后只替换同一标签的背景图；父容器仍只负责标签整体居中或左对齐。桌面端和移动端分别设置最大宽度与内边距保护，避免旧长用户名撑破列表或对局布局。nameplate PNG 应先用 <code>scripts/pngTrim.mjs</code> 按 alpha 边界裁掉透明空边，避免上传图的空画布造成视觉偏移。</li>

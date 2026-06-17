@@ -73,24 +73,6 @@
     white-space: nowrap;
   }
 
-  .friends-row .friend-stats {
-    min-width: 0;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .friends-row .friend-rank {
-    font-size: 12px;
-    white-space: nowrap;
-  }
-
-  .friends-row .friend-rating {
-    font-size: 12px;
-    white-space: nowrap;
-  }
-
   .friends-row .friend-actions-cell {
     grid-area: action;
     justify-self: end;

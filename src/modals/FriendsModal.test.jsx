@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import FriendsModal from "./FriendsModal.jsx";
+import FriendsList from "./friends/FriendsList.jsx";
 import { normalizeFriendSearchInput } from "./friends/friendSearch.js";
 
 describe("FriendsModal mobile layout", () => {
@@ -27,6 +28,39 @@ describe("FriendsModal mobile layout", () => {
     expect(html).toContain("aria-label=\"关闭好友窗口\"");
   });
 
+  it("omits rank and rating from friends and blacklist list rows", () => {
+    const rows = [{
+      id: "user-1",
+      username: "moming",
+      rank: "9段",
+      rating: 1860,
+      status: "online",
+      characterId: "sigrika"
+    }];
+    const renderList = (activeTab) => renderToStaticMarkup(createElement(FriendsList, {
+      actionRow: null,
+      activeTab,
+      characters: {},
+      loading: false,
+      rows,
+      onOpenConfirm: () => {},
+      onOpenProfile: () => {},
+      onRequestMatch: () => {},
+      onToggleAction: () => {}
+    }));
+
+    for (const activeTab of ["friends", "blacklist"]) {
+      const html = renderList(activeTab);
+
+      expect(html).toContain("moming");
+      expect(html).not.toContain("friend-stats");
+      expect(html).not.toContain("friend-rank");
+      expect(html).not.toContain("friend-rating");
+      expect(html).not.toContain("9段");
+      expect(html).not.toContain("1860分");
+    }
+  });
+
   it("uses compact mobile friend cards instead of a horizontally scrolling table", () => {
     const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
     const adaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
@@ -42,7 +76,7 @@ describe("FriendsModal mobile layout", () => {
     expect(phoneModalMedia).toContain(".friends-row > .friend-main");
     expect(phoneModalMedia).toContain("align-content: center");
     expect(phoneModalMedia).toContain("justify-items: center");
-    expect(phoneModalMedia).toContain(".friends-row .friend-stats");
+    expect(phoneModalMedia).not.toContain(".friends-row .friend-stats");
     expect(phoneModalMedia).toContain(".friends-list .quiet-text");
     expect(phoneModalMedia).toContain("width: 100%");
     expect(phoneModalMedia).not.toContain(".friends-row,\n  .friend-action-row {\n    min-width: 560px;");
