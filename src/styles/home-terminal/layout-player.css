@@ -14,16 +14,16 @@
   aspect-ratio: auto;
   display: grid;
   grid-template-areas:
-    "player entries"
-    "nav entries";
-  grid-template-columns: minmax(240px, 0.72fr) minmax(360px, 1.28fr);
+    "player manual match"
+    "nav manual match";
+  grid-template-columns: minmax(300px, 0.82fr) minmax(190px, 0.52fr) minmax(430px, 1.2fr);
   grid-template-rows: auto minmax(0, 1fr);
   gap: clamp(18px, 3vw, 54px);
   align-items: center;
   overflow: visible;
 }
 
-@media (min-width: 769px) and (max-width: 1180px) {
+@media (min-width: 1024px) and (max-width: 1180px) {
   .home-screen {
     padding-inline: clamp(12px, 2vw, 20px);
     overflow-x: hidden;
@@ -32,7 +32,12 @@
 
   .home-grid-featured {
     width: 100%;
+    grid-template-areas:
+      "player manual"
+      "nav manual"
+      "match match";
     grid-template-columns: minmax(220px, 0.82fr) minmax(300px, 1.18fr);
+    grid-template-rows: auto auto minmax(220px, auto);
     gap: clamp(12px, 2.1vw, 28px);
   }
 
@@ -74,7 +79,7 @@
 
 .home-player-zone {
   grid-area: player;
-  width: min(420px, 100%);
+  width: min(440px, 100%);
   height: auto;
   overflow: visible;
 }

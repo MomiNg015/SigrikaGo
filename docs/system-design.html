@@ -84,6 +84,9 @@
 <ul>
 <li>启动预加载区分关键资源与延迟资源，并为单个资源加载设置超时兜底，避免服务器重启或缓存恢复时把玩家卡在资源准备页；房间运行期使用轻量 <code>room:clock</code> 与完整 <code>room:update</code> 分流，降低高频交互卡顿。</li>
 </ul>
+<ul>
+<li>Bright School 桌面首页新增四段响应式布局契约：wide desktop、compact desktop、micro desktop 和 mobile 分别处理；<code>1181px-1500px</code> 的中等桌面段会优先保证玩家铭牌完整显示，铭牌用户名不得跨列遮挡段位面板，micro desktop 使用受控 <code>960px</code> 横向舞台，核心入口保持正常 grid flow，低高度允许纵向滚动。</li>
+</ul>
 <h2>维护约定</h2>
 <ul>
 <li>入口文档只写总览、导航和跨主题规则；详细事实写入对应分篇。</li>
@@ -3436,6 +3439,9 @@
 </ul>
 <ul>
 <li>Bright School home image entries use the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer even on desktop breakpoints. The card shell can keep labels and sticker shadows visible beyond the border, but the actual <code>部员手册</code> and <code>匹配对局</code> <code>&lt;img&gt;</code> nodes are forced to <code>box-sizing: border-box</code>, <code>height/max-height: 100%</code>, and <code>object-fit: contain</code>, preventing large or narrow desktop layouts from letting artwork spill below the button frame.</li>
+</ul>
+<ul>
+<li>Bright School 桌面首页采用四段响应式契约：<code>&gt;=1181px</code> 是 wide desktop，主舞台无横向滚动并让匹配入口成为一级视觉主角，其中 <code>1181px-1500px</code> 额外压缩列间距并给玩家铭牌保留可读列宽，避免 1280x768 等中等桌面裁切段位积分；<code>1024px-1180px</code> 是 compact desktop，使用 <code>player/manual/utility/match</code> 命名网格且不允许页面级横向滚动；<code>701px-1023px</code> 是 micro desktop，<code>.home-main-panel</code> 提供受控横向滚动，内部 <code>.home-stage</code> 固定 <code>960px</code> 最小舞台宽度，默认优先露出铭牌和匹配入口；<code>&lt;=700px</code> 继续走移动首页布局。核心可点击入口必须在正常 grid flow 内；Bright School 玩家铭牌内部保持头像、用户名、段位面板三列固定结构，用户名只能在中间列内缩放和收敛，不能跨列遮挡段位面板；低高度桌面允许纵向滚动，footer 只在宽桌面且高度充足时固定在视口右下角。</li>
 </ul>
 <ul>
 <li>Bright School portrait home/profile/shop fixes that must survive theme overrides live in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer. The home player plaque reserves a non-collapsing middle column for <code>UserIdentity</code>, keeps equipped nameplates visible inside the username tag, and keeps character-chain badges hidden so they do not cover character art. The resume header uses a two-row grid on phones: title plus close button on the first row, achievement/personalization shortcuts left on the second row, and coin/gem wallets right on the second row. The final portrait rule repeats the desktop-level resume header selectors so desktop grid-column assignments cannot hide the mobile close button; its wallet slot is shrinkable and lets coin/gem capsules wrap as whole controls when space is tight instead of overflowing past the modal edge. Embedded resume character records use an internally scrolling list with taller rows instead of compressing avatars and text. Bright School shop wallets may wrap only as whole capsules; coin and blue-gem counters stay single-line when room allows, and the shop blue-gem capsule reuses the resume blue-gem gradient.</li>

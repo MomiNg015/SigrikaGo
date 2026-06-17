@@ -428,10 +428,11 @@ describe("component-level HUD refinements", () => {
     expect(plaqueBlock).toContain("column-gap: 14px !important");
     expect(plaqueBlock).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card > strong");
-    expect(plaquePolish).toContain("overflow: visible !important");
+    expect(plaquePolish).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name");
-    expect(plaquePolish).toContain("width: max-content !important");
-    expect(plaquePolish).toContain("flex: 0 0 auto !important");
+    expect(plaquePolish).toContain("--user-identity-name-tag-padding-x: 0.32em");
+    expect(plaquePolish).toContain("width: 100% !important");
+    expect(plaquePolish).toContain("flex: 1 1 auto !important");
     expect(plaquePolish).toContain("text-overflow: clip !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before");
     expect(plaquePolish).toContain('font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');

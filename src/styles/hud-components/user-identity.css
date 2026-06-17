@@ -67,6 +67,7 @@
 }
 
 .user-identity-name {
+  font-size: var(--user-identity-fit-font-size, 1em);
   max-width: 100%;
   min-width: 0;
   overflow: hidden;

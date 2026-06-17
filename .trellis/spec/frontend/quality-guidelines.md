@@ -510,14 +510,18 @@ Correct:
 
 ### Bright School Home Responsive Contracts
 
-The Bright School home layout has three distinct responsive modes. Keep them explicit so medium desktop windows do not inherit the large scrapbook offsets.
+The Bright School home layout has four distinct responsive modes. Keep them explicit so medium desktop windows do not inherit the large scrapbook offsets, and so micro desktop windows preserve content before changing composition.
 
 Required assertion points:
 
 - Base terminal layout must not force a fixed minimum viewport width; `.home-screen` and `.home-grid-featured` should keep `min-width: 0`.
-- Large desktop can use the decorative scrapbook composition, but 701px-1180px widths and low-height desktop windows must be protected by the final `mobile-adaptive.css` guard.
-- The narrow desktop guard should switch the home stage to named CSS grid areas (`player`, `manual`, `utility`, `match`) and reset player/manual/match/utility regions to `position: static`.
-- Below the narrower fallback threshold, use a single-column grid so utility cards and the manual entry scroll vertically instead of overlapping.
+- Large desktop starts at 1181px. It can use the three-column composition, but should not create horizontal page scroll.
+- The 1181px-1500px middle desktop band must reserve enough left-column width for the fixed-structure Bright School player plaque; prefer reducing column gaps and secondary-column width before shrinking plaque text below readability.
+- Bright School player plaque names must stay inside the middle identity column. Do not use `width: max-content` or visible overflow on plaque identity children if that lets the username cover `.plaque-stats`; use bounded width plus the shared `--user-identity-fit-font-size` scaling instead.
+- Compact desktop is 1024px-1180px and should switch the home stage to named CSS grid areas (`player`, `manual`, `utility`, `match`) while staying inside the viewport.
+- Micro desktop is 701px-1023px. It should use a controlled minimum home stage width, currently `960px`, with horizontal scroll localized to `.home-main-panel`; do not shrink core entries until their contents become unreadable.
+- The final `mobile-adaptive/home-narrow-desktop.css` layer owns compact and micro desktop safety after theme overrides. It must reset player/manual/match/utility regions to `position: static` and remove decorative transforms that can create invisible hit boxes or overlaps.
+- Footer chrome should be fixed only on wide and tall desktop windows. Compact, micro, and low-height desktop windows should keep the footer in normal flow so it cannot cover core entries.
 - Home plaque stats must be in a shrinkable grid column with `min-width: 0`; avoid fixed pixel stats columns on mobile because long usernames need the remaining space.
 
 Wrong:
@@ -538,12 +542,23 @@ Correct:
   min-width: 0;
 }
 
-@media (min-width: 701px) and (max-width: 1180px) {
+@media (min-width: 1024px) and (max-width: 1180px) {
   .home-stage {
     grid-template-areas:
       "player manual"
-      "utility manual"
+      "nav manual"
       "match match";
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1023px) {
+  .home-main-panel {
+    overflow-x: auto;
+  }
+
+  .home-stage {
+    width: 960px;
+    min-width: 960px;
   }
 }
 ```

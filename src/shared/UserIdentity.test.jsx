@@ -43,12 +43,12 @@ describe("UserIdentity", () => {
     expect(markup).toContain("Moming");
   });
 
-  it("exposes a compact fit font-size for legacy long usernames", () => {
+  it("exposes a fit font-size for legacy long usernames", () => {
     expect(userIdentityFitFontSize("moming")).toBeNull();
     expect(userIdentityFitFontSize("0337_win_a")).toBe("0.860em");
 
     const markup = renderToStaticMarkup(
-      <UserIdentity user={{ username: "0337_win_a" }} compact />
+      <UserIdentity user={{ username: "0337_win_a" }} />
     );
 
     expect(markup).toContain("--user-identity-fit-font-size:0.860em");

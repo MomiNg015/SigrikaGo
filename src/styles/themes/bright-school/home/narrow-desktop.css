@@ -1,8 +1,8 @@
 @media (min-width: 701px) and (max-width: 1180px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone {
-    left: clamp(18px, 3.2vw, 38px) !important;
-    width: clamp(318px, 36vw, 386px) !important;
-    transform-origin: 38% -64px !important;
+    left: auto !important;
+    width: 100% !important;
+    transform-origin: center !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before {

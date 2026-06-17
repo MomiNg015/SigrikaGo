@@ -25,6 +25,8 @@
 - 玩家 UI 当前默认 Bright School 主题；主题注册、CSS 入口和作用域合同保留未来扩展口，共享基础层已从单一 `base.css` 入口拆到 `src/styles/base/`，房间样式已从单一 `room.css` 入口拆到 `src/styles/room/`，Startorch 对局终端皮肤已从单一 `room-terminal.css` 入口拆到 `src/styles/room-terminal/`，共享弹窗样式已从单一 `modals.css` 入口拆到 `src/styles/modals/`，移动弹窗安全层已从单一 `mobile-modals.css` 入口拆到 `src/styles/mobile-modals/`，商业/社交/仓库样式已从单一 `commerce-settings.css` 入口拆到 `src/styles/commerce/` 领域分篇，其中商店/设置/移动商业补丁继续从 `src/styles/commerce/shop-settings.css` 拆到 `src/styles/commerce/shop-settings/`；共享响应式层已从单一 `responsive.css` 入口拆到 `src/styles/responsive/`，共享移动对局层已从单一 `mobile-room.css` 入口拆到 `src/styles/mobile-room/`，共享 HUD 兼容层已从单一 `hud-components.css` 入口拆到 `src/styles/hud-components/`，最终移动端安全层也从单一 `mobile-adaptive.css` 入口拆到 `src/styles/mobile-adaptive/`，其中 Bright School 最终移动兜底覆盖继续拆到 `src/styles/mobile-adaptive/bright-school-overrides/`；Bright School 对应早期可读性清理、商业覆盖、移动端覆盖、竖屏对局覆盖、组件修复覆盖、质量兜底层和防 HUD 串色 firewall 分别拆到 `src/styles/themes/bright-school/contrast-purge/`、`src/styles/themes/bright-school/commerce/`、`src/styles/themes/bright-school/mobile/`、`src/styles/themes/bright-school/mobile/room/`、`src/styles/themes/bright-school/component-repairs/`、`src/styles/themes/bright-school/quality-base/`、`src/styles/themes/bright-school/firewall/`。
 - 启动预加载区分关键资源与延迟资源，并为单个资源加载设置超时兜底，避免服务器重启或缓存恢复时把玩家卡在资源准备页；房间运行期使用轻量 `room:clock` 与完整 `room:update` 分流，降低高频交互卡顿。
 
+- Bright School 桌面首页新增四段响应式布局契约：wide desktop、compact desktop、micro desktop 和 mobile 分别处理；`1181px-1500px` 的中等桌面段会优先保证玩家铭牌完整显示，铭牌用户名不得跨列遮挡段位面板，micro desktop 使用受控 `960px` 横向舞台，核心入口保持正常 grid flow，低高度允许纵向滚动。
+
 ## 维护约定
 
 - 入口文档只写总览、导航和跨主题规则；详细事实写入对应分篇。
