@@ -22,7 +22,7 @@ export function UserProfileCard({
   const [mode, setMode] = useState(normalizeGameModeId(user.mode));
   const [profileUser, setProfileUser] = useState({ ...user, mode: normalizeGameModeId(user.mode) });
   const mainCharacter = findCharacter(characters, profileUser.characterId) ?? CHARACTERS.sigrika;
-  const characterStats = profileUser.characterStats ?? [];
+  const characterStats = sortCharacterStatsByGames(profileUser.characterStats);
   const [replays, setReplays] = useState([]);
   const [showReplays, setShowReplays] = useState(false);
   const [loadingReplays, setLoadingReplays] = useState(false);
@@ -117,7 +117,7 @@ export function UserProfileCard({
         <span><small><Star size={16} />积分</small><b>{profileUser.rating}分</b></span>
         <span><small><Trophy size={16} />段位</small><b>{profileUser.rank}</b></span>
       </div>
-      <RecentResultMarkers results={profileUser.recentResults} className="profile-rank-results" />
+      <RecentResultMarkers results={profileUser.recentResults} className="profile-rank-results" label="最近十盘的战绩" />
       <div className="profile-resume-section profile-character-section">
         <strong>角色战绩</strong>
         <div className="profile-character-list">
@@ -185,6 +185,19 @@ export function splitRecordSummary(record = "0局 · 0胜0负0和") {
   }
 
   return { total: normalized, breakdown: "0胜0负0和" };
+}
+
+export function sortCharacterStatsByGames(characterStats = []) {
+  return [...(Array.isArray(characterStats) ? characterStats : [])].sort((a, b) => (
+    characterStatGames(b) - characterStatGames(a)
+      || String(a.characterId ?? "").localeCompare(String(b.characterId ?? ""), "zh-CN")
+  ));
+}
+
+function characterStatGames(item = {}) {
+  if (Number.isFinite(item.total)) return item.total;
+  const match = String(item.record ?? "").match(/(\d+)\s*局/u);
+  return match ? Number(match[1]) : 0;
 }
 
 export function ConfirmPanel({ message, confirmText = "确定", cancelText = "返回", onConfirm, onCancel }) {

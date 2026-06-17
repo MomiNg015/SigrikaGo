@@ -58,7 +58,7 @@
 - Desktop resume headers reserve separate right-aligned grid columns for the coin/gem wallet group and close button, preventing the global absolute close-button rule from colliding with currency capsules.
 - Mobile resume headers use a final high-specificity Bright School override so the close button stays in the first-row right slot and the wallet group stays inside a shrinkable second-row right slot; when width is tight, coin and blue-gem capsules wrap as whole controls instead of overflowing past the modal edge.
 - Desktop resume modals keep the outer window fixed inside the viewport with hidden outer overflow; embedded character records own the vertical scroll region. Desktop user profile detail modals likewise give the character-record list a bounded scroll area, and character detail headers reserve right-side space so the compact BGM player cannot collide with the close button.
-- Resume and user profile recent-result rows render a low-contrast "显示最近十盘的战绩" watermark inside `.profile-rank-results`; result chips stay above that text so win/loss markers remain the primary readable layer on desktop and mobile.
+- Resume and user profile recent-result rows render a real `.recent-result-label` reading "最近十盘的战绩" above the marker chips inside `.profile-rank-results`; the label is small black text rather than a background watermark, and the chips/empty state remain the primary row content on desktop and mobile.
 - Personalization sections now expose one "style picker" entry per equipment category. Each picker opens a nested modal containing default plus unlocked decorations, closes immediately after selection, and updates the local try-on preview while the existing save action remains the only persistence step.
 
 ## Music Management Note

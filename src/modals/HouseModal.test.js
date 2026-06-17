@@ -7,7 +7,7 @@ import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import HouseModal from "./HouseModal.jsx";
 import ResumeModal from "./ResumeModal.jsx";
 import { CharacterDetailDialog, CharacterRecordsDialog } from "./house/HouseNestedDialogs.jsx";
-import { splitRecordSummary, UserProfileCard } from "./UserProfileCard.jsx";
+import { sortCharacterStatsByGames, splitRecordSummary, UserProfileCard } from "./UserProfileCard.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("deriveCharacterRecordStats", () => {
@@ -59,6 +59,14 @@ describe("deriveCharacterRecordStats", () => {
     });
   });
 
+  it("sorts profile character stats by total games descending", () => {
+    expect(sortCharacterStatsByGames([
+      { characterId: "denia", record: "14局 · 4胜10负0和" },
+      { characterId: "aemeath", record: "38局 · 23胜14负1和" },
+      { characterId: "sigrika", record: "21局 · 9胜12负0和" }
+    ]).map((item) => item.characterId)).toEqual(["aemeath", "sigrika", "denia"]);
+  });
+
   it("renders mobile-safe two-line record markup for profile and character records", () => {
     const profileHtml = renderToStaticMarkup(createElement(UserProfileCard, {
       user: {
@@ -89,6 +97,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).toContain("profile-record-total");
     expect(profileHtml).toContain("profile-record-breakdown");
     expect(profileHtml).toContain("profile-mode-tabs");
+    expect(profileHtml).toContain("recent-result-label");
+    expect(profileHtml).toContain("最近十盘的战绩");
     expect(profileHtml.indexOf("profile-mode-tabs")).toBeLessThan(profileHtml.indexOf("profile-resume-stats"));
     expect(profileHtml).not.toContain("3段 · 1160分");
     expect(recordHtml).toContain("character-record-summary");
@@ -310,6 +320,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("profile-record-lines");
     expect(html).toContain("profile-record-total");
     expect(html).toContain("profile-record-breakdown");
+    expect(html).toContain("recent-result-label");
+    expect(html).toContain("最近十盘的战绩");
     expect(html).toContain("resume-character-records");
     expect(html).toContain("角色战绩");
     expect(html).toContain("character-record-list");
@@ -362,7 +374,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("grid-area: wallet !important");
     expect(finalMobileCss).toContain("grid-column: auto !important");
     expect(finalMobileCss).toContain("max-width: 100% !important");
-    expect(finalMobileCss).toContain("flex-wrap: wrap !important");
+    expect(finalMobileCss).toContain("flex-wrap: nowrap !important");
     expect(finalMobileCss).toContain(".resume-modal > .resume-header > .resume-close-button");
     expect(finalMobileCss).toContain("grid-area: close !important");
     expect(finalMobileCss).toContain("visibility: visible !important");
@@ -498,6 +510,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("overflow: hidden;");
     expect(modalCss).toContain(".resume-character-records {\n  display: grid;\n  grid-template-rows: auto minmax(0, 1fr);");
     expect(modalCss).toContain(".resume-character-records .character-record-list");
+    expect(modalCss).toContain("overscroll-behavior: contain;");
     expect(modalCss).toContain("max-height: none;");
     expect(modalCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(modalCss).toContain(".room-floating-modal.user-profile-modal");
@@ -591,10 +604,14 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("background: transparent !important");
     expect(finalMobileCss).toContain("box-shadow: none !important");
     expect(finalMobileCss).toContain("grid-template-columns: 38px minmax(48px, 0.72fr) minmax(0, 1.18fr) minmax(40px, 0.52fr) !important");
-    expect(modalCss).toContain(".profile-rank-results::before");
     expect(modalCss).toContain(".profile-rank-results::after");
-    expect(modalCss).toContain("content: \"显示最近十盘的战绩\";");
-    expect(modalCss).toContain("color: rgba(61, 43, 37, 0.16);");
+    expect(modalCss).toContain("display: flex;");
+    expect(modalCss).toContain("flex-wrap: wrap;");
+    expect(modalCss).toContain(".profile-rank-results .recent-result-label");
+    expect(modalCss).toContain("flex: 0 0 100%;");
+    expect(modalCss).toContain("content: none;");
+    expect(modalCss).not.toContain("content: \"显示最近十盘的战绩\";");
+    expect(modalCss).toContain("color: #1f1714;");
     expect(modalCss).toContain("z-index: 2;");
     expect(modalCss).toContain("border: 2px solid #3d2b25");
     expect(modalCss).toContain("box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.2)");

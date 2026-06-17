@@ -118,8 +118,12 @@
   width: 100%;
   min-height: 54px;
   box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  padding: 11px 14px;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px 12px;
   border: 2px solid #3d2b25;
   border-radius: 14px;
   background:
@@ -139,18 +143,21 @@
 }
 
 .profile-rank-results::after {
-  content: "显示最近十盘的战绩";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  color: rgba(61, 43, 37, 0.16);
-  font-size: clamp(13px, 2.4vw, 18px);
+  content: none;
+}
+
+.profile-rank-results .recent-result-label {
+  position: relative;
+  z-index: 2;
+  display: block;
+  flex: 0 0 100%;
+  text-align: center;
+  color: #1f1714;
+  font-size: 12px;
   font-weight: 900;
-  line-height: 1;
+  line-height: 1.15;
   white-space: nowrap;
-  pointer-events: none;
+  word-break: keep-all;
 }
 
 .profile-rank-results .recent-result-marker,
@@ -186,6 +193,8 @@
   max-height: min(260px, 34dvh);
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding-right: 4px;
 }
 

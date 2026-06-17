@@ -31,6 +31,8 @@
 
   .resume-header-actions {
     gap: 6px;
+    flex-wrap: nowrap;
+    min-width: 0;
   }
 
   .resume-title-actions {
@@ -54,9 +56,12 @@
   }
 
   .resume-wallet {
+    min-width: 0;
     min-height: var(--modal-close-size, 44px);
     padding: 6px 10px;
     font-size: 12px;
+    white-space: nowrap;
+    word-break: keep-all;
   }
 
   .house-modal .replay-open-button {
