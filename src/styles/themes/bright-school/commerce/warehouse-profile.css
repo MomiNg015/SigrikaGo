@@ -269,8 +269,8 @@
     grid-template-columns: 36px minmax(0, 1fr) auto auto !important;
     grid-template-rows: auto auto !important;
     gap: 2px 10px !important;
-    padding: 8px 10px !important;
-    min-height: auto !important;
+    padding: 10px 10px !important;
+    min-height: 88px !important;
     max-width: 100% !important;
     border-radius: 12px !important;
   }

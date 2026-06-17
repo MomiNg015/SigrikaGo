@@ -194,9 +194,9 @@
     grid-template-columns: 36px minmax(0, 1fr) auto auto !important;
     grid-template-rows: auto auto !important;
     gap: 2px 10px !important;
-    padding: 6px 10px !important;
+    padding: 10px 10px !important;
     align-items: center !important;
-    min-height: auto !important;
+    min-height: 88px !important;
   }
 
   .warehouse-item img,

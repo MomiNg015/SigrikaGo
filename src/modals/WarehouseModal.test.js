@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import WarehouseModal, { warehouseTargetState } from "./WarehouseModal.jsx";
 import WarehouseTargetModal, { warehouseCharacterTargetAvailability } from "./warehouse/WarehouseTargetModal.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("WarehouseModal candy feedback", () => {
   it("keeps the used character centered with the effect text after item use", () => {
@@ -92,6 +93,20 @@ describe("WarehouseModal candy feedback", () => {
 
     expect(html).toContain("warehouse-effect-result");
     expect(html).toContain("warehouse-item-category-character");
+  });
+
+  it("keeps mobile warehouse item cards tall enough for item details", () => {
+    const brightSchoolMobileCss = readCssWithImports(
+      new URL("../styles/themes/bright-school/mobile.css", import.meta.url)
+    );
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(brightSchoolMobileCss).toContain(".warehouse-item");
+    expect(brightSchoolMobileCss).toContain("min-height: 88px !important");
+    expect(brightSchoolMobileCss).toContain("padding: 10px 10px !important");
+    expect(finalMobileCss).toContain(".warehouse-item");
+    expect(finalMobileCss).toContain("min-height: 88px !important");
+    expect(finalMobileCss).toContain("padding: 10px 10px !important");
   });
 
   it("disables character targets that are already affected or have no item effect", () => {
