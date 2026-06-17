@@ -186,7 +186,7 @@ describe("socket handlers", () => {
     expect(deps.setLobbyStats).toHaveBeenCalledWith({
       onlineCount: 0,
       matchmakingCount: 0,
-      matchmakingCounts: { spark: 0, standard: 0 }
+      matchmakingCounts: { spark: 0, standard: 0, gomoku: 0 }
     });
     expect(deps.closeAllOverlays).toHaveBeenCalledOnce();
     expect(deps.setView).toHaveBeenCalledWith("login");
@@ -202,7 +202,7 @@ describe("socket handlers", () => {
     expect(deps.setLobbyStats).toHaveBeenCalledWith({
       onlineCount: 3,
       matchmakingCount: 2,
-      matchmakingCounts: { spark: 2, standard: 0 }
+      matchmakingCounts: { spark: 2, standard: 0, gomoku: 0 }
     });
   });
 

@@ -75,6 +75,7 @@
   - Timer progress bars use shared state variables across themes: blue during main time, red when byo-yomi has 3 or 2 periods left, and a multicolor fill on the final byo-yomi period.
   - The compact `30s × 3` style is no longer used in the player info timer.
 - Room action area:
+  - 五子棋房间的普通操作区只保留和棋与认输；弃手、数子/死子标记、结果复核、技能按钮和技能预览入口均由模式配置或 `gameModeFamily(mode)` 隐藏/拒绝。房间创建系统消息按当前模式生成，五子棋会追加自动猜先的执黑提示。
   - Normal play shows regular action buttons below the board.
   - Draw requests, counting requests, dead-stone marking, and result review render in the main board action area through phase-aware `DecisionBar` controls.
   - Mobile dead-stone confirmation keeps `decision-bar` separate from the normal action-button grid: the copy column shows the title plus a two-line clamped hint, and `decision-actions` uses two equal-width confirm/reset buttons. `mobile-room.css`, `mobile-adaptive.css`, and Bright School mobile overrides must preserve this special layout so 375px/393px portrait docks do not stack the confirmation buttons awkwardly.

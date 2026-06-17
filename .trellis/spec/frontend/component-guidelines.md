@@ -40,26 +40,26 @@ Questions to answer:
 
 #### 2. Signatures
 - Import mode facts from `src/shared/gameModes.js`.
-- UI mode ids are `spark` and `standard`.
-- Mode option order must use `modeOrderedEntries()` so `spark` appears before `standard`.
+- UI mode ids are `spark`, `standard`, and `gomoku`.
+- Mode option order must use `modeOrderedEntries()` so `spark` appears before `standard`, then `gomoku` appears after the Go modes.
 - Room controls receive `game.skillEnabled !== false` or equivalent normalized mode state.
 - Board components receive `game.size` and expose it as `--size` on the shared board wrapper so intersections, labels, star points, and click targets use one board-size source.
 
 #### 3. Contracts
-- Home match entry opens a two-option modal before emitting `match:join`.
-- Duel requests open the same two-option choice before emitting `duel:request`; incoming request UI must show the selected mode title and rules text.
-- Mode tabs are required for leaderboard, watch list, and record/history views.
-- Home player plaques render two compact mode stat rows from `modeOrderedEntries()`: spark rank/rating first, standard rank/rating second. Do not collapse them back into a single global rank/rating pair, and do not show recent-result markers on the plaque.
-- Standard room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels.
+- Home match entry opens a mode picker before emitting `match:join`; it must render every mode returned by `modeOrderedEntries()`.
+- Duel requests open the same mode picker before emitting `duel:request`; incoming request UI must show the selected mode title and rules text.
+- Mode tabs are required for leaderboard, watch list, profile/detail, and record/history views. These tabs must use each mode's `shortTitle`, stay in one non-wrapping row, and allocate the three current modes across one line.
+- Home player plaques render compact mode stat rows from `modeOrderedEntries()`: spark rank/rating first, standard rank/rating second, gomoku rank/rating third. Do not collapse them back into a single global rank/rating pair, and do not show recent-result markers on the plaque.
+- No-skill room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels. Gomoku additionally hides Go-only pass/counting/dead-stone controls and capture/removal/overclock info chips.
 - Standard scoring copy must omit overclock/skill-cost descriptions and use black komi `3.75`.
 - Coordinate labels must grid with `repeat(var(--size), minmax(0, 1fr))`; do not leave coordinate rows or columns hard-coded to 13 tracks.
 
 #### 4. Validation & Error Matrix
 - Missing `game.mode` -> render as `spark`.
 - Missing `game.skillEnabled` -> assume skills enabled for legacy rooms.
-- `standard` with accidental skill state -> UI must still hide skill controls when `skillEnabled === false`.
+- `standard` or `gomoku` with accidental skill state -> UI must still hide skill controls when `skillEnabled === false`.
 - Standard board actions on points such as `18,18` must be accepted by the backend because point validation uses the room game's size, not the legacy 13-line default.
-- Mobile mode controls -> keep 44px-plus touch targets and avoid compressing Chinese labels into wrapped fragments.
+- Mobile mode controls -> keep 44px-plus touch targets; mode tabs must not wrap Chinese labels, and tab surfaces should show `五子棋` instead of the longer Gomoku entry copy.
 
 #### 5. Good/Base/Bad Cases
 - Good: `ActionBar` receives `skillEnabled={displayRoom.game.skillEnabled !== false}` and conditionally renders the skill button.
@@ -68,12 +68,12 @@ Questions to answer:
 - Bad: rendering a 19-line board while `.coord-row` still uses `repeat(13, 1fr)`, which makes labels drift away from intersections.
 
 #### 6. Tests Required
-- Home mode picker renders both modes and counts.
+- Home mode picker renders every shared mode and per-mode waiting count.
 - Match/join socket payload includes selected mode.
-- Standard room state renders 19-line board star points and no skill UI.
-- Standard room accepts moves at the 19-line edge and Board CSS tests assert coordinate rows/columns use `var(--size)`.
-- Leaderboard/watch/history fetches or filters by selected mode.
-- Home plaque tests assert both `plaque-mode-stat-spark` and `plaque-mode-stat-standard` render with mode-specific ratings and stored ranks, while recent result markers stay limited to profile/history detail surfaces.
+- Standard room state renders 19-line board star points and no skill UI; gomoku room state renders the 13-line board with the spark star points, no skill UI, and no Go-only controls.
+- Standard room accepts moves at the 19-line edge, gomoku rejects pass/skill actions, and Board CSS tests assert coordinate rows/columns use `var(--size)`.
+- Leaderboard/watch/profile-detail/history fetches or filters by selected mode and render three one-line tabs with short labels.
+- Home plaque tests assert `plaque-mode-stat-spark`, `plaque-mode-stat-standard`, and `plaque-mode-stat-gomoku` render with mode-specific ratings and stored ranks, while recent result markers stay limited to profile/history detail surfaces.
 - Friend duel request payload and incoming banner include mode.
 
 #### 7. Wrong vs Correct

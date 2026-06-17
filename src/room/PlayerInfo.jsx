@@ -6,6 +6,7 @@ import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../shared/UserIdentity.jsx";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
+import { gameModeFamily } from "../shared/gameModes.js";
 import TimeBar from "./TimeBar.jsx";
 
 export const PLAYER_INFO_TOOLTIPS = {
@@ -47,6 +48,8 @@ function PlayerInfo({
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
   const skillEnabled = game.skillEnabled !== false;
+  const isGomoku = gameModeFamily(game.mode) === "gomoku";
+  const showGoStats = !isGomoku;
   const resultBadge = resultBadgeForPlayer(player, game, { isWinner, isDrawResult });
   const disconnectBadge = disconnectBadgeForPlayer(player, game);
   const requestFloatingLayer = () => onFloatingLayerRequest?.(floatingLayerId);
@@ -80,7 +83,7 @@ function PlayerInfo({
         <span className="meta-tag rating-tag">{player.user.rating}分</span>
       </div>
       <TimeBar time={player.time} />
-      <div className="captures">
+      {showGoStats && <div className="captures">
         <span><strong>提子</strong>{player.captures}</span>
         {skillEnabled && <span
           className="info-stat removal-stat"
@@ -122,7 +125,7 @@ function PlayerInfo({
         >
           <strong>超频</strong>{skillCost}
         </span>}
-      </div>
+      </div>}
       {skillEnabled && <div
         className={`skill-chip-wrap ${skillDetailOpen ? "open" : ""}`}
         onMouseLeave={() => setSkillDetailOpen(false)}
@@ -219,9 +222,11 @@ function playerInfoSliceEqual(previousPlayer, nextPlayer) {
 
 function gamePlayerSliceEqual(previousGame, nextGame, color) {
   if (previousGame === nextGame) return true;
-  return previousGame?.phase === nextGame?.phase
+  return previousGame?.mode === nextGame?.mode
+    && previousGame?.phase === nextGame?.phase
     && previousGame?.turn === nextGame?.turn
     && previousGame?.winner === nextGame?.winner
+    && previousGame?.skillEnabled === nextGame?.skillEnabled
     && previousGame?.skillUses?.[color] === nextGame?.skillUses?.[color]
     && previousGame?.skillCosts?.[color] === nextGame?.skillCosts?.[color]
     && previousGame?.skillRemovals?.[color] === nextGame?.skillRemovals?.[color];

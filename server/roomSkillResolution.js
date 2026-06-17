@@ -17,6 +17,7 @@ import {
   SKILL_BANNER_DURATION_MS,
   SKILL_BOARD_EFFECT_DURATION_MS
 } from "../src/shared/skillPresentation.js";
+import { gameModeFamily } from "../src/shared/gameModes.js";
 import { describeSkillUse } from "./roomSkillMessages.js";
 
 export function createPendingSkillResolution({
@@ -90,6 +91,7 @@ export function createRoomSkillLifecycle({
 
   function startActiveSkill({ room, player, action, io }) {
     const skillConfig = player.character?.skill ?? player.characterId;
+    if (gameModeFamily(room.game?.mode) === "gomoku") return { ok: false, error: "五子棋不能使用技能" };
     if (!canStartSkill(room.game, skillConfig)) return { ok: false, error: "场上没有可作用的棋子" };
     const skillTargetId = skillUsesBoardConfirmation(skillConfig) ? null : action.pointId;
     const result = useSkill(room.game, player.color, skillConfig, skillTargetId);

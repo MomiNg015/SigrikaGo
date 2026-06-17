@@ -1,4 +1,5 @@
 import { applyRoomSnapshot } from "./roomSnapshot.js";
+import { GAME_MODE_IDS } from "../shared/gameModes.js";
 
 export function createSocketHandlers({
   matchSuccessRef,
@@ -45,7 +46,7 @@ export function createSocketHandlers({
     setMatchSuccess(null);
     setReplayStep(null);
     setPendingSkill(false);
-    setLobbyStats({ onlineCount: 0, matchmakingCount: 0, matchmakingCounts: { spark: 0, standard: 0 } });
+    setLobbyStats({ onlineCount: 0, matchmakingCount: 0, matchmakingCounts: emptyModeCounts() });
     closeAllOverlays();
     setView("login");
     showToast(message);
@@ -60,10 +61,7 @@ export function createSocketHandlers({
       setLobbyStats({
         onlineCount: Number(stats.onlineCount ?? 0),
         matchmakingCount: Number(stats.matchmakingCount ?? 0),
-        matchmakingCounts: {
-          spark: Number(stats.matchmakingCounts?.spark ?? stats.matchmakingCount ?? 0),
-          standard: Number(stats.matchmakingCounts?.standard ?? 0)
-        }
+        matchmakingCounts: modeCountsFromLobbyStats(stats)
       });
     },
     matchFound: (roomView) => {
@@ -176,7 +174,7 @@ export function createSocketHandlers({
       setMatchSuccess(null);
       setReplayStep(null);
       setPendingSkill(false);
-      setLobbyStats({ onlineCount: 0, matchmakingCount: 0, matchmakingCounts: { spark: 0, standard: 0 } });
+      setLobbyStats({ onlineCount: 0, matchmakingCount: 0, matchmakingCounts: emptyModeCounts() });
       closeAllOverlays();
       setView("login");
       showToast(message || "账号已在其他地方登录");
@@ -217,4 +215,15 @@ function roomAudioBaselineSnapshotKey(roomView) {
     roomView.game?.history?.length ?? 0,
     roomView.chat?.length ?? 0
   ].join(":");
+}
+
+function emptyModeCounts() {
+  return Object.fromEntries(GAME_MODE_IDS.map((mode) => [mode, 0]));
+}
+
+function modeCountsFromLobbyStats(stats = {}) {
+  return Object.fromEntries(GAME_MODE_IDS.map((mode) => [
+    mode,
+    Number(stats.matchmakingCounts?.[mode] ?? (mode === "spark" ? stats.matchmakingCount : 0) ?? 0)
+  ]));
 }

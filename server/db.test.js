@@ -37,7 +37,8 @@ describe("publicUser", () => {
       losses: 2,
       modeStats: {
         spark: { rating: 1000, rank: "3段", recentResults: ["win", "loss"], wins: 1, losses: 2, draws: 0 },
-        standard: { rating: 1000, rank: "4段", recentResults: [], wins: 0, losses: 0, draws: 0 }
+        standard: { rating: 1000, rank: "4段", recentResults: [], wins: 0, losses: 0, draws: 0 },
+        gomoku: { rating: 1000, rank: "3段", recentResults: [], wins: 0, losses: 0, draws: 0 }
       },
       coins: 300,
       blueGems: 0,
@@ -173,6 +174,7 @@ describe("ensureGameModeSchema", () => {
     expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "UserModeStats" ADD COLUMN "recentResults" TEXT NOT NULL DEFAULT \'\'');
     expect(executeRawUnsafe).toHaveBeenCalledWith('ALTER TABLE "GameRecord" ADD COLUMN "mode" TEXT NOT NULL DEFAULT \'spark\'');
     expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining('INSERT OR IGNORE INTO "UserModeStats"'));
+    expect(executeRawUnsafe).toHaveBeenCalledWith(expect.stringContaining("'gomoku'"));
   });
 });
 

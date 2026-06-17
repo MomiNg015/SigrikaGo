@@ -3,6 +3,8 @@ import { activeNeighbors, getPoint } from "./gameBoard.js";
 import { captureCreditOwner, opponent } from "./gameConstants.js";
 import { collectGroup } from "./gameGroups.js";
 import { fail, ok } from "./gameActionResult.js";
+import { gameModeFamily } from "./gameModes.js";
+import { playGomokuMove } from "./gomokuRules.js";
 import {
   applySkillCost,
   clearExpiredLibertyPurgeMarks,
@@ -14,6 +16,7 @@ import {
 export const HIDDEN_HAND_NOTICE = "发现隐藏手了！";
 
 export function playMove(state, color, id, options = {}) {
+  if (gameModeFamily(state.mode) === "gomoku") return playGomokuMove(state, color, id);
   return placeStone(state, color, id, { hidden: false, colorIllusion: options.colorIllusion });
 }
 

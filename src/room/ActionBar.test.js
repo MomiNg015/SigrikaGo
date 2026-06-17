@@ -46,6 +46,15 @@ describe("ActionBar helpers", () => {
     expect(decisionGate).not.toContain("GAME_PHASES.resultReview");
   });
 
+  it("hides pass and counting controls for gomoku mode", () => {
+    const source = readFileSync(new URL("./ActionBar.jsx", import.meta.url), "utf8");
+    const battleStageSource = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("gameModeFamily(mode) === \"gomoku\"");
+    expect(source).toContain("showGoControls");
+    expect(battleStageSource).toContain("mode={displayRoom.game.mode}");
+  });
+
   it("keeps Bright School skill targeting visibly active", () => {
     const css = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
     const targetingBlock = css.slice(css.indexOf("Bright School skill targeting repair."));

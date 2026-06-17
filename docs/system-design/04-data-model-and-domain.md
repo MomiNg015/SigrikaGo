@@ -6,6 +6,7 @@
 
 - 账号资产正在从字符串字段逐步迁移到结构化关系表，旧字段仍承担兼容镜像职责；legacy 字段解析、结构化同步和公开资产合并边界集中在 `server/userAssets.js`。
 - 模式化对局数据以 `mode` 串联房间、记录、排行榜、履历和用户模式统计。
+- `gomoku` 是独立统计桶：既有用户通过迁移和 `ensureGameModeSchema()` 回填 `UserModeStats(mode=gomoku)`，默认 `rating=1000`、`rank=3段`、`recentResults=''`、胜负和棋全为 0；排行榜仍只展示该模式已有完成对局的用户。
 - 抽卡是独立奖励子系统，和商城购买共享角色、装饰、音乐、道具等资源目录。
 
 ## 4. 数据模型与字段说明
@@ -79,6 +80,11 @@
 - `moveCount`: 手数。
 - `snapshot`: JSON 字符串，保存 `roomView` 快照。
 - `createdAt`: 创建时间。
+- `mode`: 对局模式快照，当前支持 `spark`、`standard`、`gomoku`；排行榜、履历、公开资料和回放按该字段过滤。
+
+### Gomoku Domain
+
+`gomoku` 五子棋模式使用 `src/shared/gomokuRules.js` 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。
 
 ### Character
 

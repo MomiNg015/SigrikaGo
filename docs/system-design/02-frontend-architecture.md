@@ -63,7 +63,7 @@
 
 ### 后端通用逻辑
 
-- `publicUser`: 用户公开字段白名单，并返回模式级 `modeStats.{spark,standard}`，其中包含 `rating/rank/recentResults/wins/losses/draws`。
+- `publicUser`: 用户公开字段白名单，并返回模式级 `modeStats.{spark,standard,gomoku}`，其中包含 `rating/rank/recentResults/wins/losses/draws`。
 - `applyRankProgression`: 位于 `src/shared/rankProgression.js`，前后端共用的段位升降级规则。胜负局会更新当前模式窗口，胜 7 盘升段/级、负 8 盘降段/级，并在触发后清空窗口。
 - `makeAuth`: HTTP 鉴权与管理员中间件。
 - `validateCharacterInput`: 角色/技能输入校验。

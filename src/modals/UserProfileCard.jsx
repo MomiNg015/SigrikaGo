@@ -100,7 +100,7 @@ export function UserProfileCard({
             disabled={loadingProfileMode && mode !== entry.id}
             onClick={() => changeMode(entry.id)}
           >
-            {entry.title}
+            {entry.shortTitle}
           </button>
         ))}
       </div>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { isLeaderboardCurrentUser, leaderboardRankClass } from "./LeaderboardModal.jsx";
+import LeaderboardModal, { isLeaderboardCurrentUser, leaderboardRankClass } from "./LeaderboardModal.jsx";
 import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
 
 describe("LeaderboardModal layout", () => {
@@ -151,6 +151,19 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain(".profile-replay-dialog");
     expect(phoneModalMedia).toContain(".replay-table");
     expect(phoneModalMedia).toContain("overflow-x: auto");
+  });
+
+  it("uses one-line short labels for leaderboard mode tabs", () => {
+    const markup = renderToStaticMarkup(
+      <LeaderboardModal token="token" user={{ id: "u1" }} characters={{}} onClose={() => {}} />
+    );
+    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+
+    expect(markup).toContain(">五子棋</button>");
+    expect(markup).not.toContain(">来下五子棋吗？</button>");
+    expect(modalCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
+    expect(modalCss).toContain("white-space: nowrap;");
+    expect(modalCss).toContain("word-break: keep-all;");
   });
 
   it("turns the leaderboard into mobile cards instead of a horizontally clipped table", () => {

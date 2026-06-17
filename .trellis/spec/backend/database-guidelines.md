@@ -101,13 +101,13 @@ Correct:
 - Runtime mode ids must come from `src/shared/gameModes.js`, not duplicated string lists.
 
 #### 3. Contracts
-- Accepted mode ids: `spark`, `standard`. Unknown or missing ids normalize to `spark`.
+- Accepted mode ids: `spark`, `standard`, and `gomoku`. Unknown or missing ids normalize to `spark`.
 - `spark` mirrors legacy `User.rating`, `User.wins`, and `User.losses` for backward compatibility.
 - `spark` also mirrors legacy `User.rank` after decisive results, but mode rank source of truth is `UserModeStats.rank`.
-- `standard` keeps rating, rank, recent result window, and record data in `UserModeStats`; do not write standard wins/losses/rating/rank into legacy `User` fields.
+- Non-spark modes such as `standard` and `gomoku` keep rating, rank, recent result window, and record data in `UserModeStats`; do not write their wins/losses/draws/rating/rank into legacy `User` fields.
 - Rank is independent from rating. New users/new mode rows default to `3段`; decisive mode results append `win`/`loss` to `recentResults` from old to new, promote at 7 wins, demote at 8 losses, cap at `9段`/`18级`, and clear `recentResults` after a promotion or demotion trigger.
 - `GameRecord.mode` must be written for every saved room result, including draw records.
-- Older SQLite development databases must be upgraded in place at startup: create `UserModeStats`, add `GameRecord.mode`, add `UserModeStats.rank`/`recentResults`, and backfill one `spark` row per existing user before login/profile reads include `modeStats`.
+- Older SQLite development databases must be upgraded in place at startup: create `UserModeStats`, add `GameRecord.mode`, add `UserModeStats.rank`/`recentResults`, and backfill required shared mode rows (`spark`, `standard`, `gomoku`) per existing user before login/profile reads include `modeStats`.
 
 #### 4. Validation & Error Matrix
 - Missing mode in old data -> treat as `spark`.
@@ -117,7 +117,7 @@ Correct:
 - Result is a draw after the threshold -> create the record and increment mode `draws`, but do not apply rating, coin, rank, or recent-result updates.
 
 #### 5. Good/Base/Bad Cases
-- Good: `joinMatchmaking({ mode: "standard" })` only pairs with standard queued players and saves records as `standard`.
+- Good: `joinMatchmaking({ mode: "gomoku" })` only pairs with gomoku queued players and saves records as `gomoku`.
 - Base: old records without `mode` still appear in spark-only history and leaderboard views.
 - Bad: leaderboard filters by mode but room persistence saves all records as `spark`.
 
@@ -125,7 +125,7 @@ Correct:
 - Shared mode config normalization and ordering.
 - Matchmaking queue isolation by mode.
 - Game record persistence includes `mode`.
-- Startup schema guard creates missing mode tables/columns and backfills legacy spark data.
+- Startup schema guard creates missing mode tables/columns and backfills legacy spark data plus default non-spark mode rows.
 - Mode-specific leaderboard/profile/history filters.
 - Draw persistence increments `UserModeStats.draws` without reward writes.
 - Rank progression tests cover 7-win promotion, 8-loss demotion, cap/floor behavior, and clearing `recentResults` after a trigger.

@@ -121,6 +121,7 @@ export default function RoomBattleStage({
   const actionPanel = (
     <ActionBar
       role={role}
+      mode={displayRoom.game.mode}
       phase={displayRoom.game.phase}
       me={me}
       isMyTurn={Boolean(me && displayRoom.game.turn === me.color)}

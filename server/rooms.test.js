@@ -195,11 +195,13 @@ describe("room game record persistence", () => {
     const io = fakeIo();
     const firstRoom = joinMatchmaking({ user: user("standard-a", "sigrika"), socketId: "socket-a", mode: "standard" }, io);
     const secondRoom = joinMatchmaking({ user: user("spark-a", "sigrika"), socketId: "socket-b", mode: "spark" }, io);
+    const thirdRoom = joinMatchmaking({ user: user("gomoku-a", "sigrika"), socketId: "socket-d", mode: "gomoku" }, io);
 
     expect(firstRoom).toBeNull();
     expect(secondRoom).toBeNull();
-    expect(matchmakingCount()).toBe(2);
-    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 1 });
+    expect(thirdRoom).toBeNull();
+    expect(matchmakingCount()).toBe(3);
+    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 1, gomoku: 1 });
 
     const matched = joinMatchmaking({ user: user("standard-b", "denia"), socketId: "socket-c", mode: "standard" }, io);
 
@@ -207,7 +209,7 @@ describe("room game record persistence", () => {
     expect(matched.mode).toBe("standard");
     expect(matched.game.mode).toBe("standard");
     expect(matched.game.size).toBe(19);
-    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 0 });
+    expect(matchmakingCountsByMode()).toEqual({ spark: 1, standard: 0, gomoku: 1 });
   });
 
   test("accepts standard mode moves on the full 19-line board", () => {

@@ -90,7 +90,7 @@ function ModeTabs({ mode, onModeChange }) {
           className={mode === entry.id ? "active" : ""}
           onClick={() => onModeChange(entry.id)}
         >
-          {entry.title}
+          {entry.shortTitle}
         </button>
       ))}
     </div>

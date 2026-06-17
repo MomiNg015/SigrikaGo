@@ -10,10 +10,10 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
   const [matchModePickerOpen, setMatchModePickerOpen] = useState(false);
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
   const onlineCount = Number(lobbyStats.onlineCount ?? 0);
-  const matchmakingCounts = {
-    spark: Number(lobbyStats.matchmakingCounts?.spark ?? lobbyStats.matchmakingCount ?? 0),
-    standard: Number(lobbyStats.matchmakingCounts?.standard ?? 0)
-  };
+  const matchmakingCounts = Object.fromEntries(modeOrderedEntries().map((mode) => [
+    mode.id,
+    Number(lobbyStats.matchmakingCounts?.[mode.id] ?? (mode.id === "spark" ? lobbyStats.matchmakingCount : 0) ?? 0)
+  ]));
 
   return (
     <>

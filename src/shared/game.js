@@ -16,7 +16,7 @@ import {
   parsePointId,
   pointId
 } from "./gameBoard.js";
-import { gameModeById, gameModeSkillEnabled } from "./gameModes.js";
+import { gameModeById, gameModeFamily, gameModeSkillEnabled } from "./gameModes.js";
 import { GAME_PHASES } from "./gamePhases.js";
 import {
   normalizeSkillConfig,
@@ -264,6 +264,7 @@ export function restoreSkillUse(state, color) {
 }
 
 export function passMove(state, color) {
+  if (gameModeFamily(state.mode) === "gomoku") return fail("五子棋不能弃手");
   if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能弃一手");
   if (state.turn !== color) return fail("还没有轮到你");
   const next = cloneState(state);

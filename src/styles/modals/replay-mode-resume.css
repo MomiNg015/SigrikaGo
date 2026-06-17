@@ -223,7 +223,7 @@
 
 .mode-tabs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   width: 100%;
   margin: 8px 0 14px;
@@ -235,6 +235,10 @@
   background: #eef7ff;
   border-color: #9cc7e6;
   color: #2f536b;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 .mode-tabs button.active,

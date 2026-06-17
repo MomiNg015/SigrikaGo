@@ -97,6 +97,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).toContain("profile-record-total");
     expect(profileHtml).toContain("profile-record-breakdown");
     expect(profileHtml).toContain("profile-mode-tabs");
+    expect(profileHtml).toContain(">五子棋</button>");
+    expect(profileHtml).not.toContain(">来下五子棋吗？</button>");
     expect(profileHtml).toContain("recent-result-label");
     expect(profileHtml).toContain("最近十盘的战绩");
     expect(profileHtml.indexOf("profile-mode-tabs")).toBeLessThan(profileHtml.indexOf("profile-resume-stats"));
@@ -308,6 +310,8 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(html).toContain("<h2>履历</h2>");
     expect(html.indexOf("mode-tabs")).toBeLessThan(html.indexOf("resume-replay-action"));
+    expect(html).toContain(">五子棋</button>");
+    expect(html).not.toContain(">来下五子棋吗？</button>");
     expect(html.indexOf("resume-replay-action")).toBeLessThan(html.indexOf("top-stats-bar"));
     expect(html).toContain("top-stats-bar");
     expect(html).toContain("resume-wallet");
@@ -514,6 +518,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("overscroll-behavior: contain;");
     expect(modalCss).toContain("max-height: none;");
     expect(modalCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
+    expect(modalCss).toContain("white-space: nowrap;");
+    expect(modalCss).toContain("word-break: keep-all;");
     expect(modalCss).toContain(".room-floating-modal.user-profile-modal");
     expect(modalCss).toContain("max-height: min(760px, calc(100dvh - 32px));");
     expect(modalCss).toContain(".profile-character-list");
