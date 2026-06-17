@@ -460,6 +460,7 @@ describe("deriveCharacterRecordStats", () => {
     }));
 
     expect(html).toContain("character-description");
+    expect(html).not.toContain("skill-cost-badge");
     expect(html).not.toMatch(/class="character-description"><strong>/);
     expect(html).toContain("来自星辉社团的棋手。");
     expect(styles).toMatch(/\.character-description\s*\{[^}]*font-style:\s*italic;/s);

@@ -37,7 +37,6 @@ export function CharacterDetailDialog({ character, detailOwned, itemEffects, use
           </div>
           <div className="skill-title-row">
             <strong>{character.skill.name}</strong>
-            <span className="skill-cost-badge">超频 {formatSkillCost(character.skill)}</span>
           </div>
           <p>{character.skill.description}</p>
           <p className="acquisition-method"><strong>获得途径</strong>{character.acquisitionMethod || "初始可用"}</p>
@@ -90,13 +89,4 @@ export function CharacterRecordsDialog({ characterRecords, itemEffects, onClose 
       </section>
     </div>
   );
-}
-
-function formatSkillCost(skillOrCost) {
-  if (skillOrCost && typeof skillOrCost === "object") {
-    const costType = skillOrCost.costType ?? "numeric";
-    const costValue = String(skillOrCost.costValue ?? skillOrCost.cost ?? 0);
-    return costType === "numeric" ? `${costValue || 0}子` : costValue;
-  }
-  return typeof skillOrCost === "number" ? `${skillOrCost}子` : skillOrCost;
 }
