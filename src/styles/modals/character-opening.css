@@ -75,6 +75,12 @@
 .character-detail-heading h3 {
   min-width: 0;
   line-height: 1;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
 }
 
 .character-music-player {
@@ -178,6 +184,7 @@
   color: #6f5b74;
   font-size: 16px;
   line-height: 1.7;
+  text-align: left;
 }
 
 .character-description {

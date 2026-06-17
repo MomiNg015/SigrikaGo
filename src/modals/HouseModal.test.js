@@ -464,9 +464,12 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("来自星辉社团的棋手。");
     expect(styles).toMatch(/\.character-description\s*\{[^}]*font-style:\s*italic;/s);
     expect(styles).toMatch(/\.character-description\s*\{[^}]*color:\s*#7b3fa0;/s);
+    expect(styles).toMatch(/\.character-detail-copy p\s*\{[^}]*text-align:\s*left;/s);
     expect(brightSchoolStyles).toContain(".character-details-modal .character-description");
     expect(brightSchoolStyles).toContain(".character-detail-copy .character-description");
     expect(brightSchoolStyles).toContain("color: #7b3fa0 !important");
+    expect(brightSchoolStyles).toContain(".character-detail-copy .character-description");
+    expect(brightSchoolStyles).toContain("text-align: left !important");
   });
   it("renders the character skill BGM player in the detail heading", () => {
     const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
@@ -493,8 +496,25 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("grid-template-columns: minmax(0, 1fr) minmax(132px, 172px);");
     expect(css).toContain("padding-right: calc(var(--modal-close-size, 44px) + 12px);");
     expect(css).toContain("background-color: transparent;");
+    expect(css).toMatch(/\.character-detail-heading h3\s*\{[^}]*white-space:\s*nowrap;[^}]*word-break:\s*keep-all;[^}]*writing-mode:\s*horizontal-tb;/s);
     expect(css).toContain("width: 172px;");
     expect(css).toContain("height: 30px;");
+
+    const phoneCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url))
+      + readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(124px, 156px);");
+    expect(phoneCss).toContain("width: min(156px, 46vw);");
+    expect(phoneCss).toContain("justify-self: end;");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(124px, 156px) !important");
+    expect(finalMobileCss).toContain("padding-right: 0 !important");
+    expect(finalMobileCss).toContain("width: min(156px, 46vw) !important");
+    expect(finalMobileCss).toContain("writing-mode: horizontal-tb !important");
+    expect(brightSchoolMobileCss).toContain(".character-detail-heading h3");
+    expect(brightSchoolMobileCss).toContain("white-space: nowrap !important");
+    expect(brightSchoolMobileCss).toContain("text-align: left !important");
   });
 
   it("keeps the Bright School mobile house manual internally scrollable", () => {

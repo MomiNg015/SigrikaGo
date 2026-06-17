@@ -130,6 +130,9 @@
 <li>Character duplicate chain counts remain in user data for reward/progression logic, but player-facing desktop and mobile UI hides character-chain badges on portrait surfaces.</li>
 </ul>
 <ul>
+<li>Mobile character-detail dialogs keep the character name horizontal and single-line, place the compact BGM preview capsule at the top-right of the heading row, and left-align skill and character-description copy; Bright School theme layers and the final <code>mobile-adaptive</code> safety layer repeat these constraints so narrow phones cannot fall back to vertical names or centered body text.</li>
+</ul>
+<ul>
 <li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer, including home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, resume character records that take remaining modal height and scroll internally on short phones, mobile room tabs that change selected background without press-offset motion, and shop wallet single-line/blue-gem capsule treatment. Login auth chrome keeps the brand and login/register segmented wrappers transparent on desktop and mobile, while the outer login card retains the Bright School lower-right hard shadow. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
 </ul>
 <ul>
