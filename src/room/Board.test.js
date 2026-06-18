@@ -240,9 +240,12 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain("--row-y:");
     expect(markup).toContain("<button");
     expect(css).toContain(".board-row-slash");
-    expect(css).toContain("left: -7%");
-    expect(css).toContain("right: -7%");
+    expect(css).toContain("left: -8%");
+    expect(css).toContain("right: -8%");
     expect(css).toContain("pointer-events: none");
+    expect(css).toContain("radial-gradient(ellipse at 16% 34%");
+    expect(css).toContain("clip-path: none");
+    expect(css).toContain(".board-row-slash::before");
     expect(css).toContain("animation: row-slash-strike 620ms");
     expect(css).toContain("@keyframes row-slash-strike");
   });
@@ -381,13 +384,15 @@ describe("areBoardPropsEqual", () => {
     expect(rowEffectsBlock).toContain("clip-path: none !important");
     expect(rowSlashBlock).toContain(".board .board-row-slash.board-row-slash");
     expect(rowSlashBlock).toContain("background:");
-    expect(rowSlashBlock).toContain("clip-path: polygon(0 46%, 8% 36%, 49% 44%, 93% 30%, 100% 48%, 92% 66%, 48% 58%, 7% 72%) !important");
-    expect(rowSlashBlock).toContain("drop-shadow(0 0 7px rgba(232, 255, 248, 0.48))");
+    expect(rowSlashBlock).toContain("radial-gradient(ellipse at 16% 34%");
+    expect(rowSlashBlock).toContain("clip-path: none !important");
+    expect(rowSlashBlock).toContain("drop-shadow(0 0 11px rgba(221, 255, 248, 0.64))");
     expect(rowSlashBlock).not.toContain("background-color: var(--bright-sheet)");
     expect(rowSlashBeforeAfterBlock).toContain('content: "" !important');
     expect(rowSlashBeforeAfterBlock).toContain("display: block !important");
-    expect(rowSlashBeforeAfterBlock).toContain("transform: skewX(-18deg) !important");
-    expect(rowSlashAfterBlock).toContain("background: rgba(34, 44, 47, 0.42) !important");
+    expect(rowSlashBeforeAfterBlock).toContain("pointer-events: none !important");
+    expect(rowSlashAfterBlock).toContain("rgba(13, 17, 19, 0.84)");
+    expect(rowSlashAfterBlock).toContain("transform: translateY(12%) skewX(-18deg) !important");
   });
 
   test("bright school keeps skill targeting glow separate from star-point dots", () => {

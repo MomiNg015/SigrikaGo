@@ -35,7 +35,7 @@ import {
   rowSlash,
   sprayStone
 } from "./gameSkillActions.js";
-import { clearExpiredLibertyPurgeMarks, cloneState } from "./gameSkillState.js";
+import { clearExpiredLibertyPurgeMarks, clearExpiredRowEffects, cloneState } from "./gameSkillState.js";
 import {
   HIDDEN_HAND_NOTICE,
   exposeHiddenHands,
@@ -275,6 +275,7 @@ export function passMove(state, color) {
   next.ko = null;
   next.passes += 1;
   next.moveNumber += 1;
+  clearExpiredRowEffects(next, color);
   clearExpiredLibertyPurgeMarks(next);
   next.history.push({ type: "pass", color, moveNumber: next.moveNumber });
   return ok(next);

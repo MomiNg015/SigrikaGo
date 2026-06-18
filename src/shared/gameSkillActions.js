@@ -173,7 +173,7 @@ export function rowSlash(state, color, id, options = {}) {
   next.ko = null;
   next.rowEffects = [
     ...(next.rowEffects ?? []).filter((effect) => effect.owner !== color),
-    { effectType: "row-slash", owner: color, y: row, id }
+    { effectType: "row-slash", owner: color, clearAfterColor: opponent(color), y: row, id }
   ];
   const cleanupRemovals = [];
   next.history.push({

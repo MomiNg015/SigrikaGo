@@ -8,6 +8,7 @@ import { playGomokuMove } from "./gomokuRules.js";
 import {
   applySkillCost,
   clearExpiredLibertyPurgeMarks,
+  clearExpiredRowEffects,
   clearOwnedBoardMarkers,
   clearStone,
   cloneState
@@ -78,6 +79,7 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
     : null;
   clearOwnedBoardMarkers(next, color);
   applyExtraTurnAfterNormalAction(next, color);
+  clearExpiredRowEffects(next, color);
   clearExpiredLibertyPurgeMarks(next);
   next.passes = 0;
   next.moveNumber += 1;

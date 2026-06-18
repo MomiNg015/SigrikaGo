@@ -892,7 +892,13 @@ describe("SigrikaGo rules", () => {
     expect(result.state.moveNumber).toBe(1);
     expect(result.state.passes).toBe(0);
     expect(result.state.ko).toBeNull();
-    expect(result.state.rowEffects).toEqual([{ effectType: "row-slash", owner: COLORS.black, y: 4, id: pointId(6, 4) }]);
+    expect(result.state.rowEffects).toEqual([{
+      effectType: "row-slash",
+      owner: COLORS.black,
+      clearAfterColor: COLORS.white,
+      y: 4,
+      id: pointId(6, 4)
+    }]);
     expect(result.state.history.at(-1)).toMatchObject({
       type: "skill",
       effectType: "row-slash",
@@ -1086,7 +1092,7 @@ describe("SigrikaGo rules", () => {
     expect(useSkill(suicide, COLORS.black, "chisa", pointId(0, 0)).ok).toBe(false);
   });
 
-  it("clears QiuYuan slash marks on the owner's next ordinary move", () => {
+  it("clears QiuYuan slash marks on the opponent's next ordinary move", () => {
     const state = createGameState([
       { color: COLORS.black, characterId: "qiuyuan" },
       { color: COLORS.white, characterId: "sigrika" }
@@ -1097,12 +1103,7 @@ describe("SigrikaGo rules", () => {
     }).state;
     const whiteMove = playMove(slashed, COLORS.white, pointId(0, 0)).state;
 
-    expect(whiteMove.rowEffects).toHaveLength(1);
-    whiteMove.turn = COLORS.black;
-    const blackMove = playMove(whiteMove, COLORS.black, pointId(1, 0));
-
-    expect(blackMove.ok).toBe(true);
-    expect(blackMove.state.rowEffects).toEqual([]);
+    expect(whiteMove.rowEffects).toEqual([]);
   });
 
   it("chooses the random blast center from existing non-edge stones", () => {
