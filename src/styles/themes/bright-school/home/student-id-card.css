@@ -130,8 +130,12 @@
   flex: 1 1 auto !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name-tag {
+  box-sizing: border-box !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name {
-  overflow: hidden !important;
+  overflow: visible !important;
   text-overflow: clip !important;
 }
 

@@ -147,7 +147,8 @@ describe("HomeScreen", () => {
     const brightPlaqueStrongBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card > strong\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueIdentityBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity,[\s\S]+?max-width: 100% !important;[\s\S]+?\}/)?.[0] ?? "";
     const brightPlaqueNameSizingBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-main,[\s\S]+?flex: 1 1 auto !important;[\s\S]+?\}/)?.[0] ?? "";
-    const brightPlaqueNameOverflowBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name\s*\{[^}]+\}/g)?.find((block) => block.includes("overflow: hidden")) ?? "";
+    const brightPlaqueNameTagBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name-tag\s*\{[^}]+\}/g)?.find((block) => block.includes("box-sizing: border-box")) ?? "";
+    const brightPlaqueNameOverflowBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name\s*\{[^}]+\}/g)?.find((block) => block.includes("overflow: visible")) ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
     const brightNarrowDesktopMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-width: 1180px\)\s*\{[\s\S]+?@media \(max-width: 700px\)/)?.[0] ?? "";
@@ -187,7 +188,8 @@ describe("HomeScreen", () => {
     expect(brightHomeCss).toContain("--user-identity-name-tag-padding-x: 0.32em");
     expect(brightPlaqueNameSizingBlock).toContain("width: 100%");
     expect(brightPlaqueNameSizingBlock).toContain("flex: 1 1 auto");
-    expect(brightPlaqueNameOverflowBlock).toContain("overflow: hidden");
+    expect(brightPlaqueNameTagBlock).toContain("box-sizing: border-box");
+    expect(brightPlaqueNameOverflowBlock).toContain("overflow: visible");
     expect(brightPlaqueNameOverflowBlock).toContain("text-overflow: clip");
     expect(brightStatsBlock).toContain("width: 100%");
     expect(brightStatsBlock).toContain("min-width: 0");
