@@ -72,6 +72,19 @@ describe("areBoardPropsEqual", () => {
     expect(latestMoveBlock).not.toContain("height: 9px");
   });
 
+  test("keeps ordinary placement hints centered on board intersections", () => {
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const previewBlock = css.match(/\.point::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const confirmBlock = css.match(/\.touch-confirm-marker\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(previewBlock).toContain("left: 50%");
+    expect(previewBlock).toContain("top: 50%");
+    expect(previewBlock).toContain("transform: translate(-50%, -50%)");
+    expect(confirmBlock).toContain("left: 50%");
+    expect(confirmBlock).toContain("top: 50%");
+    expect(confirmBlock).toContain("transform: translate(-50%, -50%)");
+  });
+
   test("uses stable one-pixel directional stone offsets for a hand-placed board feel", () => {
     const point = { id: "3,10", x: 3, y: 10, stone: "black" };
     const first = stoneOffsetForPoint(point);

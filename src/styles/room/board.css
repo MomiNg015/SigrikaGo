@@ -374,6 +374,8 @@
 .point::before {
   position: absolute;
   content: "";
+  left: 50%;
+  top: 50%;
   width: 58%;
   height: 58%;
   border-radius: 7px;
@@ -382,6 +384,7 @@
   opacity: 0;
   z-index: 4;
   pointer-events: none;
+  transform: translate(-50%, -50%);
 }
 
 .point.previewable:hover::before {
@@ -721,6 +724,8 @@
 
 .touch-confirm-marker {
   position: absolute;
+  left: 50%;
+  top: 50%;
   width: 72%;
   height: 72%;
   border-radius: 50%;
@@ -731,6 +736,7 @@
     0 0 16px rgba(34, 211, 238, 0.66);
   z-index: 5;
   pointer-events: none;
+  transform: translate(-50%, -50%);
 }
 
 .stone b {

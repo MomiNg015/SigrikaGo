@@ -9,6 +9,8 @@
 - 移动端布局由共享移动层、Bright School 移动层和最终 `mobile-adaptive.css` 安全层共同约束。
 - 视觉合同应靠 CSS contract tests 锁定，避免后续主题覆盖把语义状态、关闭按钮、移动列表等打散。
 
+- Board move preview and mobile touch-confirmation markers must be explicitly centered with `left/top: 50%` and `translate(-50%, -50%)` inside each `.point`, because ChangLi's extra-turn placements reuse ordinary move placement hints and must stay on grid intersections rather than drifting toward cell centers.
+
 - Startorch home terminal styles are now an import-only lobby skin entry. `src/styles/home-terminal.css` owns import order and delegates concrete rules to `src/styles/home-terminal/shell-background.css`, `top-strip.css`, `layout-player.css`, `entries.css`, `utility-footer-motion.css`, and `mobile.css`; `src/styles/styleContract.test.js` guards that directory and import map.
 - Shared mobile home layout styles are now import-only as well. `src/styles/mobile-home.css` delegates the base 900px mobile/tablet rules, the 620px narrow-phone fallback, and the 900px landscape fallback to `src/styles/mobile-home/`, with `src/styles/styleContract.test.js` guarding the import order.
 

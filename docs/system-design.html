@@ -120,6 +120,9 @@
 <li>Bright School board guards keep DOM-only board effect layers transparent and restore their pseudo-elements so broad theme firewall rules such as <code>[class*=&quot;row&quot;]</code> cannot turn QiuYuan's slash overlay into a blank paper panel or a plain bar over the board; Mornye's protocol marker remains a pointer-events-none point child and never changes board hit testing. The playable board surface is shared through <code>--board-wood-texture</code>, a WebP wood image asset reused by the base room CSS and Bright School guard layers.</li>
 </ul>
 <ul>
+<li>Board move preview and mobile touch-confirmation markers are point-local visual effects anchored with <code>left/top: 50%</code> and <code>translate(-50%, -50%)</code>, so ChangLi's extra-turn ordinary placement hints stay on board intersections instead of drifting into cell centers.</li>
+</ul>
+<ul>
 <li>Chisa's <code>.liberty-purge-removal-mark</code> is also a point-local DOM effect: its container stays centered with <code>left/top: 50%</code> and <code>translate(-50%, -50%)</code>, while the red cross bars rotate inside the marker. Bright School guards preserve saturated red <code>#ff1733</code>, pseudo-element bars, and pointer-events-none behavior so removal marks line up with board intersections without changing hit testing.</li>
 </ul>
 <h2>Modal Layering Note</h2>
@@ -3414,6 +3417,9 @@
 </ul>
 <ul>
 <li>视觉合同应靠 CSS contract tests 锁定，避免后续主题覆盖把语义状态、关闭按钮、移动列表等打散。</li>
+</ul>
+<ul>
+<li>Board move preview and mobile touch-confirmation markers must be explicitly centered with <code>left/top: 50%</code> and <code>translate(-50%, -50%)</code> inside each <code>.point</code>, because ChangLi's extra-turn placements reuse ordinary move placement hints and must stay on grid intersections rather than drifting toward cell centers.</li>
 </ul>
 <ul>
 <li>Startorch home terminal styles are now an import-only lobby skin entry. <code>src/styles/home-terminal.css</code> owns import order and delegates concrete rules to <code>src/styles/home-terminal/shell-background.css</code>, <code>top-strip.css</code>, <code>layout-player.css</code>, <code>entries.css</code>, <code>utility-footer-motion.css</code>, and <code>mobile.css</code>; <code>src/styles/styleContract.test.js</code> guards that directory and import map.</li>
