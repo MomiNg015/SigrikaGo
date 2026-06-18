@@ -424,12 +424,14 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("border-bottom-color: transparent !important");
     expect(plaquePolish).toContain("transform: rotate(-8deg) !important");
     expect(plaquePolish).toContain("transform: rotate(8deg) !important");
-    expect(plaqueBlock).toContain("grid-template-columns: 76px minmax(96px, 1fr) minmax(136px, 150px) !important");
+    expect(plaqueBlock).toContain("--home-plaque-name-column-min: calc(12ch + 2em)");
+    expect(plaqueBlock).toContain("grid-template-columns: 76px minmax(var(--home-plaque-name-column-min), 1fr) minmax(136px, 150px) !important");
     expect(plaqueBlock).toContain("column-gap: 14px !important");
     expect(plaqueBlock).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card > strong");
     expect(plaquePolish).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name");
+    expect(plaquePolish).toContain("--user-identity-name-tag-max-width: 100%");
     expect(plaquePolish).toContain("--user-identity-name-tag-padding-x: 0.32em");
     expect(plaquePolish).toContain("width: 100% !important");
     expect(plaquePolish).toContain("flex: 1 1 auto !important");

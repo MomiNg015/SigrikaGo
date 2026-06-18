@@ -1,6 +1,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+  --home-plaque-name-column-min: calc(12ch + 2em);
   display: grid !important;
-  grid-template-columns: 76px minmax(96px, 1fr) minmax(136px, 150px) !important;
+  grid-template-columns: 76px minmax(var(--home-plaque-name-column-min), 1fr) minmax(136px, 150px) !important;
   column-gap: 14px !important;
   align-items: center !important;
   cursor: pointer !important;
@@ -117,6 +118,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity {
+  --user-identity-name-tag-max-width: 100%;
   --user-identity-name-tag-padding-x: 0.32em;
   width: 100% !important;
 }

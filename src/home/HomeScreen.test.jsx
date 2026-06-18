@@ -177,11 +177,13 @@ describe("HomeScreen", () => {
     expect(statsBlock).toContain("font-family: ui-monospace");
     expect(statsBlock).toContain("min-width: 154px");
     expect(css).toContain(".home-player-zone .plaque-mode-stat");
-    expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(96px, 1fr) minmax(136px, 150px)");
+    expect(brightPlaqueBlock).toContain("--home-plaque-name-column-min: calc(12ch + 2em)");
+    expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(var(--home-plaque-name-column-min), 1fr) minmax(136px, 150px)");
     expect(brightPlaqueBlock).toContain("overflow: hidden");
     expect(brightPlaqueStrongBlock).toContain("overflow: hidden");
     expect(brightPlaqueStrongBlock).toContain("text-overflow: clip");
     expect(brightPlaqueIdentityBlock).toContain("max-width: 100%");
+    expect(brightHomeCss).toContain("--user-identity-name-tag-max-width: 100%");
     expect(brightHomeCss).toContain("--user-identity-name-tag-padding-x: 0.32em");
     expect(brightPlaqueNameSizingBlock).toContain("width: 100%");
     expect(brightPlaqueNameSizingBlock).toContain("flex: 1 1 auto");
@@ -202,7 +204,8 @@ describe("HomeScreen", () => {
     expect(brightShortHeightMedia).toContain("height: clamp(270px, 50dvh, 356px)");
     expect(brightNarrowDesktopMedia).not.toContain("width: clamp(318px, 36vw, 386px)");
     expect(brightNarrowDesktopMedia).toContain("width: 100%");
-    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(88px, 1fr) minmax(108px, clamp(112px, 31%, 128px))");
+    expect(brightNarrowDesktopMedia).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
+    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(var(--home-plaque-name-column-min), 1fr) minmax(100px, clamp(104px, 28%, 120px))");
     expect(brightNarrowDesktopMedia).toContain("font-size: clamp(20px, 2.1vw, 24px)");
     expect(brightNarrowDesktopMedia).toContain("grid-template-columns: minmax(0, 0.86fr) minmax(0, 0.74fr) minmax(0, 1fr)");
     expect(utilityBlock).toContain("grid-template-columns: 1fr");
@@ -299,7 +302,8 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("@media (min-width: 1181px) and (max-width: 1500px)");
     expect(finalMobileCss).toContain("grid-template-columns: minmax(390px, 0.9fr) minmax(160px, 0.42fr) minmax(360px, 1.08fr) !important");
     expect(finalMobileCss).toContain("width: min(100%, 440px) !important");
-    expect(finalMobileCss).toContain("grid-template-columns: 62px minmax(128px, 1fr) minmax(118px, 132px) !important");
+    expect(finalMobileCss).toContain("--home-plaque-name-column-min: calc(12ch + 1.4em)");
+    expect(finalMobileCss).toContain("grid-template-columns: 62px minmax(var(--home-plaque-name-column-min), 1fr) minmax(118px, 132px) !important");
     expect(finalMobileCss).toContain("font-size: clamp(18px, 1.45vw, 21px) !important");
     expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 1023px)");
     expect(finalMobileCss).toContain("--home-micro-stage-width: 960px");
@@ -307,6 +311,8 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("overscroll-behavior-inline: contain");
     expect(finalMobileCss).toContain("scrollbar-gutter: stable both-edges");
     expect(finalMobileCss).toContain("width: var(--home-micro-stage-width) !important");
+    expect(finalMobileCss).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
+    expect(finalMobileCss).toContain("grid-template-columns: clamp(54px, 7vw, 64px) minmax(var(--home-plaque-name-column-min), 1fr) minmax(108px, 30%) !important");
     expect(finalMobileCss).toContain("\"player match\"");
     expect(finalMobileCss).toContain("\"manual match\"");
     expect(finalMobileCss).toContain("\"utility utility\"");

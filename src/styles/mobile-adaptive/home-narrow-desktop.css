@@ -54,7 +54,8 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
-    grid-template-columns: 62px minmax(128px, 1fr) minmax(118px, 132px) !important;
+    --home-plaque-name-column-min: calc(12ch + 1.4em);
+    grid-template-columns: 62px minmax(var(--home-plaque-name-column-min), 1fr) minmax(118px, 132px) !important;
     column-gap: 10px !important;
     padding: 16px 12px 12px 22px !important;
   }
@@ -140,7 +141,8 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
-    grid-template-columns: clamp(52px, 7vw, 62px) minmax(0, 1fr) minmax(112px, clamp(116px, 34%, 136px)) !important;
+    --home-plaque-name-column-min: calc(12ch + 1em);
+    grid-template-columns: clamp(52px, 7vw, 62px) minmax(var(--home-plaque-name-column-min), 1fr) minmax(104px, clamp(108px, 30%, 128px)) !important;
     column-gap: clamp(8px, 1.2vw, 12px) !important;
     min-height: 90px !important;
     padding: 16px 12px 12px 22px !important;
@@ -257,7 +259,8 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
-    grid-template-columns: clamp(54px, 7vw, 64px) minmax(128px, 1fr) minmax(118px, 34%) !important;
+    --home-plaque-name-column-min: calc(12ch + 1.2em);
+    grid-template-columns: clamp(54px, 7vw, 64px) minmax(var(--home-plaque-name-column-min), 1fr) minmax(108px, 30%) !important;
     column-gap: clamp(8px, 1.2vw, 12px) !important;
     min-height: 96px !important;
     padding: 16px 12px 12px 22px !important;
