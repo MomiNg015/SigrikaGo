@@ -1,0 +1,24 @@
+/* Bright School shop responsive polish. */
+@media (max-width: 860px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
+    justify-content: center !important;
+    gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot {
+    min-height: 160px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img {
+    width: min(88vw, 190px) !important;
+    max-height: 190px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item-detail-modal {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}

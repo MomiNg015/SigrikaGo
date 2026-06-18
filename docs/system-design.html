@@ -132,6 +132,9 @@
 <li>Bright School gallery polish now follows the import-only pattern through <code>src/styles/themes/bright-school/gallery-polish.css</code> and <code>src/styles/themes/bright-school/gallery-polish/</code>, keeping theme tokens, home image entries/art, paper surfaces, chat paper grid, interaction states, and addendum notes in focused files.</li>
 </ul>
 <ul>
+<li>Bright School commerce shop polish now follows the nested import-only pattern through <code>src/styles/themes/bright-school/commerce/shop.css</code> and <code>src/styles/themes/bright-school/commerce/shop/</code>, keeping sidebar/wallet, product grid, item detail dialog, and responsive rules in focused files.</li>
+</ul>
+<ul>
 <li>Bright School portrait mobile home shell now follows the same nested import-only pattern through <code>src/styles/themes/bright-school/mobile/home-shell.css</code> and <code>src/styles/themes/bright-school/mobile/home-shell/</code>, keeping shell base, top strip/menu, main stage, player plaque, and entries/utility/footer rules in focused files.</li>
 </ul>
 <ul>
@@ -3463,6 +3466,9 @@
 <ul>
 <li>Bright School portrait mobile home shell is now a nested import-only entry: <code>src/styles/themes/bright-school/mobile/home-shell.css</code> owns import order, while <code>src/styles/themes/bright-school/mobile/home-shell/</code> contains shell-base, top-strip-menu, main-stage, player-plaque, and entries-utility-footer so future mobile home, menu, plaque, and footer rules stay in focused files.</li>
 </ul>
+<ul>
+<li>Bright School commerce shop polish is also a nested import-only entry: <code>src/styles/themes/bright-school/commerce/shop.css</code> owns import order while <code>src/styles/themes/bright-school/commerce/shop/</code> contains sidebar-wallet, product-grid, detail-dialog, and responsive rules.</li>
+</ul>
 <h2>Modal Layering</h2>
 <ul>
 <li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.</li>
@@ -3650,6 +3656,9 @@
 </ul>
 <ul>
 <li>Bright School portrait mobile home shell styling now follows the same sub-entry pattern: <code>src/styles/themes/bright-school/mobile/home-shell.css</code> owns import order and delegates shell base, top strip/menu, main stage, player plaque, and entries/utility/footer rules to <code>src/styles/themes/bright-school/mobile/home-shell/</code>, with theme contract tests guarding the nested import order.</li>
+</ul>
+<ul>
+<li>Bright School commerce shop polish now follows the same sub-entry pattern: <code>src/styles/themes/bright-school/commerce/shop.css</code> owns import order and delegates sidebar/wallet, product-grid, detail-dialog, and responsive rules to <code>src/styles/themes/bright-school/commerce/shop/</code>, with theme contract tests guarding the nested import order.</li>
 </ul>
 <ul>
 <li>The shared lobby, house manual, profile stat, match entry, and watch-list layer now follows the import-only domain pattern. <code>src/styles/lobby.css</code> delegates panel/profile, character card, match/watch entry, watch-list shell, and watch-list phone fallback rules to <code>src/styles/lobby/</code>, while feature tests read the expanded CSS import tree.</li>
