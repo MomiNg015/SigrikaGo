@@ -1,0 +1,53 @@
+/* Bright School commerce typography and numeric text. */
+/* Bright School cute typography and warehouse/profile repair layer. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  button,
+  input,
+  textarea,
+  select,
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  span,
+  strong,
+  small,
+  label,
+  dt,
+  dd
+) {
+  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+  color: #3d2b25 !important;
+  text-shadow: none !important;
+  letter-spacing: 0.01em !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  h1,
+  h2,
+  h3,
+  .home-brand-title,
+  .modal-title,
+  .warehouse-header h2,
+  .profile-resume-hero h3,
+  .shop-detail-copy h3
+) {
+  font-weight: 900 !important;
+  text-shadow:
+    1px 1px 0 #fff3c8,
+    2px 2px 0 rgba(255, 158, 187, 0.42) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .plaque-stats,
+  .profile-resume-stats > span,
+  .warehouse-item span,
+  .shop-wallet,
+  .timer-value,
+  .score-chip
+) {
+  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+}

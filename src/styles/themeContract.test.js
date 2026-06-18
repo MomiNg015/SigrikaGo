@@ -84,6 +84,26 @@ describe("player theme CSS contract", () => {
     expect(shopEntry).not.toContain("@media (max-width: 860px)");
   });
 
+  it("keeps Bright School commerce warehouse and profile as an import-only polish entry", () => {
+    const warehouseProfileEntry = readFileSync(
+      new URL("./themes/bright-school/commerce/warehouse-profile.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(warehouseProfileEntry)).toEqual([
+      "./warehouse-profile/typography-numbers.css",
+      "./warehouse-profile/profile-stats.css",
+      "./warehouse-profile/warehouse-header.css",
+      "./warehouse-profile/warehouse-empty.css",
+      "./warehouse-profile/warehouse-item-card.css",
+      "./warehouse-profile/warehouse-item-mobile.css"
+    ]);
+    expect(warehouseProfileEntry).not.toContain(".profile-resume-stats");
+    expect(warehouseProfileEntry).not.toContain(".warehouse-grid");
+    expect(warehouseProfileEntry).not.toContain(".warehouse-item");
+    expect(warehouseProfileEntry).not.toContain("@media (max-width");
+  });
+
   it("keeps Bright School base as an import-only foundation entry", () => {
     const brightBaseEntry = readFileSync(new URL("./themes/bright-school/base.css", import.meta.url), "utf8");
 
