@@ -468,6 +468,7 @@ describe("component-level HUD refinements", () => {
   it("loads shared user identity cosmetics for username surfaces", () => {
     expect(hudCss).toContain(".user-identity.has-nameplate");
     expect(hudCss).toContain("--user-identity-name-tag-max-width: 10em");
+    expect(hudCss).toContain("--user-identity-name-tag-min-height: 2.36em");
     expect(hudCss).toContain("--user-identity-name-tag-padding-x: 0.72em");
     expect(hudCss).toContain("--user-identity-name-tag-radius: 0");
     expect(hudCss).toContain("width: auto");
@@ -475,6 +476,7 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain("box-sizing: content-box");
     expect(hudCss).toContain("border: 0");
     expect(hudCss).toContain("border-radius: var(--user-identity-name-tag-radius)");
+    expect(hudCss).toContain("line-height: 1.22");
     expect(hudCss).toContain("background-color: transparent");
     expect(hudCss).toContain("background-image: none");
     expect(hudCss).toContain("box-shadow: none");
@@ -488,7 +490,7 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain("--user-identity-name-tag-max-width: 8.5em");
     expect(hudCss).toContain("--user-identity-name-tag-padding-x: 0.52em");
     expect(hudCss).toContain(".user-identity.compact.has-nameplate");
-    expect(hudCss).toContain("--user-identity-name-tag-min-height: 1.95em");
+    expect(hudCss).toContain("--user-identity-name-tag-min-height: 2.08em");
     expect(hudCss).toContain("--user-identity-name-tag-max-width: 8em");
     expect(hudCss).toContain("--user-identity-name-tag-padding-x: 0.46em");
     expect(hudCss).toContain(".mobile-room-screen .name-button .user-identity.has-nameplate");

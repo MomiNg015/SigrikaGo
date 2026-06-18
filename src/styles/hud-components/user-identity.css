@@ -1,5 +1,5 @@
 .user-identity {
-  --user-identity-name-tag-min-height: 2.18em;
+  --user-identity-name-tag-min-height: 2.36em;
   --user-identity-name-tag-max-width: 10em;
   --user-identity-name-tag-padding-x: 0.72em;
   --user-identity-name-tag-radius: 0;
@@ -33,6 +33,7 @@
   padding: 0 var(--user-identity-name-tag-padding-x);
   border: 0;
   border-radius: var(--user-identity-name-tag-radius);
+  line-height: 1.22;
   background-color: transparent;
   background-image: none;
   background-position: left center;
@@ -72,6 +73,7 @@
   max-width: 100%;
   min-width: 0;
   overflow: hidden;
+  line-height: 1.18;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -103,7 +105,7 @@
 }
 
 .user-identity.compact.has-nameplate {
-  --user-identity-name-tag-min-height: 2.05em;
+  --user-identity-name-tag-min-height: 2.2em;
 }
 
 .user-identity.compact .user-identity-title {
@@ -174,7 +176,7 @@
 
 @media (max-width: 768px) {
   .user-identity {
-    --user-identity-name-tag-min-height: 2.05em;
+    --user-identity-name-tag-min-height: 2.22em;
     --user-identity-name-tag-max-width: 8.5em;
     --user-identity-name-tag-padding-x: 0.52em;
     padding: 2px 6px;
@@ -204,7 +206,7 @@
   }
 
   .user-identity.compact.has-nameplate {
-    --user-identity-name-tag-min-height: 1.95em;
+    --user-identity-name-tag-min-height: 2.08em;
   }
 
   .user-identity.compact {
