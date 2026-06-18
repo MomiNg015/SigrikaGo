@@ -1,0 +1,74 @@
+.stone i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100% + 6px);
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3px solid #e13b4f;
+  background: transparent;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.72),
+    0 0 10px rgba(225, 59, 79, 0.7);
+  pointer-events: none;
+}
+
+.touch-confirm-marker {
+  position: absolute;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  border: 3px solid #22d3ee;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.58),
+    0 0 16px rgba(34, 211, 238, 0.66);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.stone b {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: currentColor;
+  font-size: clamp(9px, 1.4vw, 13px);
+  line-height: 1;
+}
+
+.black .stone b {
+  color: #f5f0fa;
+}
+
+.white .stone b {
+  color: #332b37;
+}
+
+.void {
+  width: 58%;
+  height: 58%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 42% 42%, rgba(59, 37, 20, 0.88) 0 22%, rgba(96, 62, 31, 0.78) 23% 43%, rgba(139, 92, 44, 0.48) 44% 66%, rgba(84, 52, 25, 0.18) 67% 100%);
+  border: 1px solid rgba(73, 44, 20, 0.42);
+  box-shadow:
+    inset 0 2px 6px rgba(21, 13, 7, 0.45),
+    0 1px 3px rgba(255, 236, 179, 0.35),
+    0 0 0 3px rgba(255, 152, 42, 0.72),
+    0 0 15px rgba(255, 133, 31, 0.9);
+  animation: erased-point-glow 1.35s ease-in-out infinite alternate;
+  z-index: 3;
+}
+
+@keyframes erased-point-glow {
+  from {
+    filter: drop-shadow(0 0 4px rgba(255, 147, 42, 0.6));
+  }
+  to {
+    filter: drop-shadow(0 0 13px rgba(255, 121, 26, 0.95));
+  }
+}

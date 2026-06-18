@@ -372,6 +372,25 @@ describe("root CSS entry contract", () => {
     expect(roomEntry).not.toContain(".chat-widget {");
   });
 
+  it("keeps room board styles as an import-only board sub-entry", () => {
+    const boardEntry = readFileSync(new URL("./room/board.css", import.meta.url), "utf8");
+
+    expect(cssImports(boardEntry)).toEqual([
+      "./board/frame-coordinates.css",
+      "./board/row-slash.css",
+      "./board/ambient-fog.css",
+      "./board/effects-canvas-motion.css",
+      "./board/points-preview.css",
+      "./board/stones-skill-effects.css",
+      "./board/latest-touch-void.css",
+      "./board/grid-scoring.css"
+    ]);
+    expect(boardEntry).not.toContain(".board-wrap {");
+    expect(boardEntry).not.toContain(".board-row-slash {");
+    expect(boardEntry).not.toContain(".point {");
+    expect(boardEntry).not.toContain(".board-lines {");
+  });
+
   it("keeps room-terminal.css as an import-only battlefield skin entry", () => {
     const roomTerminalEntry = readFileSync(new URL("./room-terminal.css", import.meta.url), "utf8");
 

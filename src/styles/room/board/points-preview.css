@@ -1,0 +1,90 @@
+.point {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  border: 0;
+  background: transparent;
+  background-color: transparent;
+  background-image: none;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  z-index: 2;
+}
+
+.board .point {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  touch-action: none !important;
+}
+
+.point::before {
+  position: absolute;
+  content: "";
+  width: 58%;
+  height: 58%;
+  border-radius: 7px;
+  background: rgba(72, 102, 198, 0.22);
+  border: 2px solid rgba(72, 102, 198, 0.62);
+  opacity: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.point.previewable:hover::before {
+  opacity: 1;
+}
+
+.point.touch-confirming::before {
+  display: none;
+  opacity: 0;
+}
+
+.board-wrap.targeting .point::before {
+  border: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.36) 0 28%, rgba(187, 83, 255, 0.22) 29% 62%, rgba(255, 93, 171, 0.04) 63% 100%),
+    conic-gradient(from 110deg, rgba(255, 126, 194, 0.72), rgba(117, 127, 255, 0.72), rgba(71, 218, 199, 0.62), rgba(255, 126, 194, 0.72));
+  box-shadow: 0 0 12px rgba(178, 76, 255, 0.52), 0 0 26px rgba(255, 104, 183, 0.24);
+}
+
+.point.star::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #050404;
+  z-index: 0;
+}
+
+.point.black::after,
+.point.white::after,
+.point.spray::after,
+.point.erased::after {
+  display: none;
+}
+
+.point.black::before,
+.point.white::before,
+.point.spray::before,
+.point.erased::before {
+  display: none;
+}
+
+.point.black.previewable::before,
+.point.white.previewable::before {
+  display: block;
+}
