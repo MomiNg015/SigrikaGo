@@ -1,0 +1,24 @@
+/* Bright School portrait mobile warehouse shell and grid. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-modal {
+    min-height: min(420px, calc(100dvh - 20px)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-empty {
+    width: 100% !important;
+    min-height: 150px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-grid {
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+    white-space: normal !important;
+    flex: 1 1 auto !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    align-content: start !important;
+  }
+}

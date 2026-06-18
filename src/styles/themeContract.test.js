@@ -226,6 +226,23 @@ describe("player theme CSS contract", () => {
     expect(mobileHomeShellEntry).not.toContain(".home-utility-grid");
   });
 
+  it("keeps Bright School mobile commerce and warehouse as an import-only portrait entry", () => {
+    const mobileCommerceEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/commerce-warehouse.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(mobileCommerceEntry)).toEqual([
+      "./commerce-warehouse/shop-layout.css",
+      "./commerce-warehouse/warehouse-shell.css",
+      "./commerce-warehouse/warehouse-items.css"
+    ]);
+    expect(mobileCommerceEntry).not.toContain(".shop-layout {");
+    expect(mobileCommerceEntry).not.toContain(".shop-item {");
+    expect(mobileCommerceEntry).not.toContain(".warehouse-grid");
+    expect(mobileCommerceEntry).not.toContain(".warehouse-item");
+  });
+
   it("keeps Bright School mobile room as an import-only portrait battle entry", () => {
     const mobileRoomEntry = readFileSync(new URL("./themes/bright-school/mobile/room.css", import.meta.url), "utf8");
 
