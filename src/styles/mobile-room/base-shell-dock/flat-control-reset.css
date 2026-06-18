@@ -1,0 +1,46 @@
+/* Mobile room flat control reset */
+
+@media (max-width: 900px) {
+  .mobile-room-screen :where(
+    .room-header,
+    .room-code-label,
+    .room-info-tag,
+    .toggle,
+    .room-mobile-exit,
+    .room-mobile-menu-toggle,
+    .room-mobile-menu-panel,
+    .room-mobile-menu-panel button,
+    .mobile-room-dock,
+    .player-info,
+    .name-button,
+    .color-badge,
+    .rank-tag,
+    .rating-tag,
+    .captures span,
+    .digital-timer,
+    .timer-track,
+    .timer-track span,
+    .board-stage,
+    .board-wrap,
+    .mobile-tab-button,
+    .mobile-tab-panel,
+    .action-bar button,
+    .mobile-tab-panel .action-bar button,
+    .decision-bar,
+    .decision-actions button,
+    .replay-bar,
+    .replay-bar button,
+    .operation-hint,
+    .room-people,
+    .room-person,
+    .chat-toggle-button,
+    .chat-exit-action,
+    .chat-popover,
+    .chat-close-button,
+    .skill-chip
+  ) {
+    box-shadow: none;
+    filter: none;
+    text-shadow: none;
+  }
+}

@@ -326,6 +326,23 @@ describe("root CSS entry contract", () => {
     expect(mobileRoomEntry).not.toContain(".mobile-tab-panel .action-bar");
   });
 
+  it("keeps mobile room base shell and dock styles as an import-only sub-entry", () => {
+    const baseShellDockEntry = readFileSync(new URL("./mobile-room/base-shell-dock.css", import.meta.url), "utf8");
+
+    expect(cssImports(baseShellDockEntry)).toEqual([
+      "./base-shell-dock/shell-header-menu.css",
+      "./base-shell-dock/flat-control-reset.css",
+      "./base-shell-dock/viewport-dock-shell.css",
+      "./base-shell-dock/player-timer-strip.css",
+      "./base-shell-dock/board-viewport.css",
+      "./base-shell-dock/dock-tabs-actions.css",
+      "./base-shell-dock/decision-chat-panel.css"
+    ]);
+    expect(baseShellDockEntry).not.toContain(".mobile-room-screen {");
+    expect(baseShellDockEntry).not.toContain(".mobile-room-viewport {");
+    expect(baseShellDockEntry).not.toContain(".mobile-tab-panel .action-bar");
+  });
+
   it("keeps mobile-home.css as an import-only mobile lobby entry", () => {
     const mobileHomeEntry = readFileSync(new URL("./mobile-home.css", import.meta.url), "utf8");
 

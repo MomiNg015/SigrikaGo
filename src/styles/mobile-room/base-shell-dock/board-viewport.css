@@ -1,0 +1,27 @@
+/* Mobile room board viewport */
+
+@media (max-width: 900px) {
+  .mobile-room-screen .board-stage {
+    width: var(--mobile-room-board-size);
+    min-width: 0;
+    max-width: 100%;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+
+  .mobile-room-screen .board-wrap {
+    width: min(100%, var(--mobile-room-board-size));
+    height: min(100%, var(--mobile-room-board-size));
+    min-width: 0;
+    max-height: 100%;
+    padding: clamp(8px, 2.4vw, 14px);
+    grid-template-columns: 16px 1fr 16px;
+    grid-template-rows: 16px 1fr 16px;
+  }
+
+  .mobile-room-screen .coord-row,
+  .mobile-room-screen .coord-col {
+    font-size: 11px;
+  }
+}

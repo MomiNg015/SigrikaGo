@@ -147,6 +147,9 @@
 <li>Startorch HUD hardening now follows the nested import-only pattern through <code>src/styles/hud-components/hud-hardening.css</code> and <code>src/styles/hud-components/hud-hardening/</code>, keeping tokens/shell/scrollbars, input/settings/auth contrast, inventory tags, home hologram entries, character deploy/detail styling, shop pagination/owned badges, warehouse surfaces, and friend action rows in focused files.</li>
 </ul>
 <ul>
+<li>Shared mobile battle shell and dock styling now follows the nested import-only pattern through <code>src/styles/mobile-room/base-shell-dock.css</code> and <code>src/styles/mobile-room/base-shell-dock/</code>, keeping shell/header/menu, flat control reset, viewport/dock shell, player/timer strip, board viewport, dock tabs/actions, and decision/chat panels in focused files.</li>
+</ul>
+<ul>
 <li>Bright School portrait mobile home shell now follows the same nested import-only pattern through <code>src/styles/themes/bright-school/mobile/home-shell.css</code> and <code>src/styles/themes/bright-school/mobile/home-shell/</code>, keeping shell base, top strip/menu, main stage, player plaque, and entries/utility/footer rules in focused files.</li>
 </ul>
 <ul>
@@ -3494,6 +3497,9 @@
 <li>Startorch HUD hardening is also a nested import-only entry: <code>src/styles/hud-components/hud-hardening.css</code> owns import order while <code>src/styles/hud-components/hud-hardening/</code> contains tokens-shell-scrollbars, inputs-settings-auth, inventory-state-tags, home-hologram-entries, character-deploy-detail, shop-pagination-owned, warehouse-surfaces, and friend-actions rules.</li>
 </ul>
 <ul>
+<li>Shared mobile battle shell/dock styling is also a nested import-only entry: <code>src/styles/mobile-room/base-shell-dock.css</code> owns import order while <code>src/styles/mobile-room/base-shell-dock/</code> contains shell-header-menu, flat-control-reset, viewport-dock-shell, player-timer-strip, board-viewport, dock-tabs-actions, and decision-chat-panel rules.</li>
+</ul>
+<ul>
 <li>Bright School portrait mobile commerce and warehouse layout is also a nested import-only entry: <code>src/styles/themes/bright-school/mobile/commerce-warehouse.css</code> owns import order while <code>src/styles/themes/bright-school/mobile/commerce-warehouse/</code> contains shop-layout, warehouse-shell, and warehouse-items rules.</li>
 </ul>
 <ul>
@@ -3704,6 +3710,9 @@
 </ul>
 <ul>
 <li>Startorch HUD hardening now follows the same sub-entry pattern: <code>src/styles/hud-components/hud-hardening.css</code> owns import order and delegates tokens/shell/scrollbars, inputs/settings/auth contrast, inventory tags, home hologram entries, character deploy/detail styling, shop pagination/owned badges, warehouse surfaces, and friend action rows to <code>src/styles/hud-components/hud-hardening/</code>; style contract tests guard the nested import order.</li>
+</ul>
+<ul>
+<li>Shared mobile battle shell/dock styling now follows the same sub-entry pattern: <code>src/styles/mobile-room/base-shell-dock.css</code> owns import order and delegates shell/header/menu, flat control reset, viewport/dock shell, player/timer strip, board viewport, dock tabs/actions, and decision/chat panels to <code>src/styles/mobile-room/base-shell-dock/</code>; style contract tests guard the nested import order.</li>
 </ul>
 <ul>
 <li>Bright School portrait mobile commerce and warehouse layout now follows the same sub-entry pattern: <code>src/styles/themes/bright-school/mobile/commerce-warehouse.css</code> owns import order and delegates shop layout, warehouse shell/grid, and warehouse item card rules to <code>src/styles/themes/bright-school/mobile/commerce-warehouse/</code>; the split also removes a duplicated shop mobile block while preserving the final warehouse grid declarations.</li>
