@@ -1,0 +1,119 @@
+/* Room player timers and time tracks. */
+.timer {
+  --timer-track-fill: linear-gradient(90deg, #5d7fe8, #69c3ff);
+  --timer-track-glow: 0 0 10px rgba(84, 139, 255, 0.32);
+  padding: clamp(7px, 0.9vw, 10px);
+  border-radius: 8px;
+  background: #f0f5ff;
+  font-weight: 800;
+  text-align: center;
+}
+
+.digital-timer {
+  min-height: clamp(74px, 7vw, 88px);
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 244, 0.98), rgba(244, 249, 255, 0.96)) padding-box,
+    linear-gradient(135deg, rgba(255, 196, 92, 0.5), rgba(112, 161, 255, 0.42)) border-box;
+  border: 1px solid transparent;
+  color: #745536;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86), 0 8px 20px rgba(128, 103, 76, 0.12);
+}
+
+.player-info.active-turn .digital-timer {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 222, 0.98), rgba(255, 243, 235, 0.96)) padding-box,
+    linear-gradient(135deg, rgba(255, 190, 55, 0.7), rgba(255, 111, 135, 0.44)) border-box;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 24px rgba(203, 160, 46, 0.16);
+}
+
+.player-info.active-turn .name-button,
+.player-info.active-turn .player-meta span,
+.player-info.active-turn .captures {
+  color: #3f2b08;
+}
+
+.timer-label {
+  min-height: 14px;
+  color: rgba(117, 83, 47, 0.72);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.timer-digits {
+  min-height: clamp(32px, 3.6vw, 42px);
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  color: #d87a16;
+  font-family: "Consolas", "Courier New", monospace;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow: 0 0 8px rgba(255, 166, 61, 0.42), 0 0 14px rgba(255, 215, 127, 0.28);
+}
+
+.timer.main-time .timer-digits {
+  color: #83848a;
+  text-shadow: 0 0 8px rgba(120, 126, 140, 0.24);
+}
+
+.timer-primary {
+  min-width: 4.2ch;
+  display: inline-block;
+  font-size: clamp(29px, 3.4vw, 40px);
+  font-weight: 900;
+}
+
+.timer-periods {
+  min-width: 2ch;
+  display: inline-block;
+  color: #b46b22;
+  font-size: clamp(16px, 1.8vw, 21px);
+  font-weight: 900;
+}
+
+.timer.final-byo-yomi .timer-digits {
+  color: #df4f42;
+  text-shadow: 0 0 8px rgba(255, 95, 76, 0.42), 0 0 14px rgba(255, 177, 102, 0.3);
+}
+
+.timer.byo-yomi .timer-primary {
+  color: #df2f2f;
+}
+
+.timer.warning-byo-yomi {
+  --timer-track-fill: linear-gradient(90deg, #ff3f3f, #c8173b);
+  --timer-track-glow: 0 0 10px rgba(255, 63, 63, 0.35);
+}
+
+.timer.final-byo-yomi {
+  --timer-track-fill: linear-gradient(90deg, #ff3434, #ffbd2e, #42d66b, #3a8cff, #b44dff);
+  --timer-track-glow: 0 0 12px rgba(255, 90, 160, 0.36);
+}
+
+.timer-text {
+  line-height: 1;
+}
+
+.timer-track {
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: rgba(91, 116, 172, 0.16);
+  overflow: hidden;
+}
+
+.timer-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--timer-track-fill);
+  box-shadow: var(--timer-track-glow);
+  transition: width 0.25s linear;
+}

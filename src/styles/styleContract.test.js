@@ -391,6 +391,24 @@ describe("root CSS entry contract", () => {
     expect(boardEntry).not.toContain(".board-lines {");
   });
 
+  it("keeps room players, timers, and skills as an import-only room sub-entry", () => {
+    const playersTimersSkillsEntry = readFileSync(new URL("./room/players-timers-skills.css", import.meta.url), "utf8");
+
+    expect(cssImports(playersTimersSkillsEntry)).toEqual([
+      "./players-timers-skills/side-layout.css",
+      "./players-timers-skills/player-card.css",
+      "./players-timers-skills/captures-tooltips.css",
+      "./players-timers-skills/timers.css",
+      "./players-timers-skills/skill-chips.css",
+      "./players-timers-skills/mobile-tap-tooltip.css",
+      "./players-timers-skills/color-badges.css"
+    ]);
+    expect(playersTimersSkillsEntry).not.toContain(".player-info {");
+    expect(playersTimersSkillsEntry).not.toContain(".timer {");
+    expect(playersTimersSkillsEntry).not.toContain(".skill-chip");
+    expect(playersTimersSkillsEntry).not.toContain(".mobile-tap-tooltip");
+  });
+
   it("keeps room-terminal.css as an import-only battlefield skin entry", () => {
     const roomTerminalEntry = readFileSync(new URL("./room-terminal.css", import.meta.url), "utf8");
 

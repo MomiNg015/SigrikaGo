@@ -1,0 +1,18 @@
+/* Room player color badges. */
+.color-badge {
+  width: clamp(22px, 2.2vw, 26px);
+  height: clamp(22px, 2.2vw, 26px);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: inset -5px -6px 10px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(45, 29, 18, 0.18);
+}
+
+.color-badge.black {
+  background: radial-gradient(circle at 32% 26%, #4e4b51, #050507 72%);
+}
+
+.color-badge.white {
+  background:
+    repeating-linear-gradient(18deg, rgba(160, 166, 174, 0.14) 0 2px, transparent 2px 8px),
+    radial-gradient(circle at 34% 26%, #ffffff, #d9dce2 78%);
+}

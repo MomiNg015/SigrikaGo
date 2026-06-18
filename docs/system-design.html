@@ -129,6 +129,9 @@
 <li>Bright School room readability now follows the import-only pattern through <code>src/styles/themes/bright-school/room.css</code> and <code>src/styles/themes/bright-school/room/</code>, keeping header/exit controls, player status, floating skill panels, player name controls, side tags, board coordinates, and flat control cleanup in focused files.</li>
 </ul>
 <ul>
+<li>Shared room player, timer, capture, skill chip, mobile tap tooltip, and color badge styling now follows the nested import-only pattern through <code>src/styles/room/players-timers-skills.css</code> and <code>src/styles/room/players-timers-skills/</code>, with style contract coverage guarding the sub-entry import order.</li>
+</ul>
+<ul>
 <li>Bright School gallery polish now follows the import-only pattern through <code>src/styles/themes/bright-school/gallery-polish.css</code> and <code>src/styles/themes/bright-school/gallery-polish/</code>, keeping theme tokens, home image entries/art, paper surfaces, chat paper grid, interaction states, and addendum notes in focused files.</li>
 </ul>
 <ul>
@@ -3521,6 +3524,9 @@
 <li>The Startorch live-room terminal skin keeps <code>src/styles/room-terminal.css</code> as the root import point after <code>mobile-room.css</code>, but concrete rules now live under <code>src/styles/room-terminal/</code> for shell/theme variables, header tags, player/timer/skill panels, board/actions, shared panels/chat/replay, portrait mobile, and landscape mobile. Room tests read the import tree so the skin contract follows the split files instead of depending on one monolithic CSS source.</li>
 </ul>
 <ul>
+<li>Shared room player/timer/skill styling is also nested import-only: <code>src/styles/room/players-timers-skills.css</code> delegates side layout, player cards, capture tooltips, timers, skill chips, mobile tap tooltips, and color badges to <code>src/styles/room/players-timers-skills/</code>.</li>
+</ul>
+<ul>
 <li>The mobile room layout remains driven by <code>MobileRoomLayout</code>, but portrait and landscape breakpoints now prioritize the board as the primary region. Portrait uses a single-column stack with compact opponent/self player strips, a board size calculated from remaining <code>100dvh</code> space, and a bounded bottom tab dock. Landscape uses a three-column board-centered grid with player strips as side rails and the dock below, so the board stays visually dominant on phones and narrow tablets. Short landscape player rails hide portrait art, rank/rating tags, capture counters, and skill chips, keeping only the player identity and timer inside the side cards instead of clipping overflow content.</li>
 </ul>
 <ul>
@@ -3638,6 +3644,9 @@
 </ul>
 <ul>
 <li>Shared board styling now follows the same import-only sub-entry pattern. <code>src/styles/room/board.css</code> delegates frame/coordinates, row-slash DOM effects, ambient fog, effect canvas/reduced-motion, point previews, stones/skill effects, latest-move/touch/void markers, and grid/scoring marks to <code>src/styles/room/board/</code>; board and style contract tests read the expanded import tree.</li>
+</ul>
+<ul>
+<li>Shared room player/timer/skill styling now follows the same sub-entry pattern. <code>src/styles/room/players-timers-skills.css</code> delegates side layout, player cards, capture tooltips, timers, skill chips, mobile tap tooltips, and color badges to <code>src/styles/room/players-timers-skills/</code>; style contract tests read the expanded import tree.</li>
 </ul>
 <ul>
 <li>CSS debt cleanup continues by moving the shared Startorch home terminal skin to an import-only entry. <code>src/styles/home-terminal.css</code> now delegates shell/background, top-strip, layout/player, image entries, utility/footer/motion, and mobile rules to <code>src/styles/home-terminal/</code>; <code>src/styles/styleContract.test.js</code> keeps the import order and approved nested directory list current. Remaining high-risk CSS targets now include other large style files that are not yet domainized.</li>
