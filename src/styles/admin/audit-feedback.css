@@ -1,0 +1,14 @@
+.audit-table-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.audit-table {
+  min-width: 680px;
+}
+
+.feedback-table td:last-child {
+  max-width: 560px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

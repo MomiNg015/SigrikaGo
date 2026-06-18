@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import AdminGachaPools, { prizeOptionsForType } from "./AdminGachaPools.jsx";
 import { ADMIN_TABS, ADMIN_TAB_LABELS } from "./AdminShell.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 import {
   buildGachaPoolDraft,
   gachaPoolDraftToBody,
@@ -80,7 +81,7 @@ describe("AdminGachaPools", () => {
   });
 
   it("keeps gacha admin styles separate from shop cards", () => {
-    const source = readFileSync(new URL("../styles/admin.css", import.meta.url), "utf8");
+    const source = readCssWithImports(new URL("../styles/admin.css", import.meta.url));
 
     expect(source).toContain(".admin-gacha-board");
     expect(source).toContain(".admin-gacha-prize-row");
@@ -90,7 +91,7 @@ describe("AdminGachaPools", () => {
   });
 
   it("keeps the gacha editor drawer wide and internally responsive", () => {
-    const source = readFileSync(new URL("../styles/admin.css", import.meta.url), "utf8");
+    const source = readCssWithImports(new URL("../styles/admin.css", import.meta.url));
 
     expect(source).toContain(".admin-gacha-board .admin-crud-drawer");
     expect(source).toContain("width: min(1040px, calc(100vw - 32px))");

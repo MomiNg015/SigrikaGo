@@ -27,6 +27,7 @@ const ROOT_STYLE_IMPORTS = [
 const DOMAIN_STYLE_FILES = new Set(ROOT_STYLE_IMPORTS.map((importPath) => basename(importPath)));
 const SECONDARY_ENTRY_STYLE_FILES = new Set(["mobile-adaptive.css"]);
 const DOMAIN_STYLE_DIRECTORIES = new Set([
+  "admin",
   "base",
   "commerce",
   "home-terminal",
@@ -121,6 +122,23 @@ describe("root CSS entry contract", () => {
     expect(baseEntry).not.toContain(":root {");
     expect(baseEntry).not.toContain(".home-screen {");
     expect(baseEntry).not.toContain(".message-board-modal {");
+  });
+
+  it("keeps admin.css as an import-only admin console entry", () => {
+    const adminEntry = readFileSync(new URL("./admin.css", import.meta.url), "utf8");
+
+    expect(cssImports(adminEntry)).toEqual([
+      "./admin/shell-layout.css",
+      "./admin/shared-surfaces.css",
+      "./admin/characters.css",
+      "./admin/audit-feedback.css",
+      "./admin/gacha.css",
+      "./admin/achievements.css",
+      "./admin/responsive.css"
+    ]);
+    expect(adminEntry).not.toContain(".admin-screen {");
+    expect(adminEntry).not.toContain(".admin-table {");
+    expect(adminEntry).not.toContain(".admin-gacha-board");
   });
 
   it("keeps the mobile interaction safety layer touch friendly", () => {
