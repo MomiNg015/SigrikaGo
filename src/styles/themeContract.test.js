@@ -157,6 +157,23 @@ describe("player theme CSS contract", () => {
     expect(brightHomeEntry).not.toContain("@media (min-width: 701px)");
   });
 
+  it("keeps Bright School gallery polish as an import-only static gallery parity entry", () => {
+    const galleryPolishEntry = readFileSync(new URL("./themes/bright-school/gallery-polish.css", import.meta.url), "utf8");
+
+    expect(cssImports(galleryPolishEntry)).toEqual([
+      "./gallery-polish/theme-tokens.css",
+      "./gallery-polish/home-image-entry.css",
+      "./gallery-polish/home-image-art.css",
+      "./gallery-polish/paper-surfaces.css",
+      "./gallery-polish/chat-paper-grid.css",
+      "./gallery-polish/home-image-interaction.css",
+      "./gallery-polish/theme-addendum.css"
+    ]);
+    expect(galleryPolishEntry).not.toContain("--theme-text");
+    expect(galleryPolishEntry).not.toContain(".home-image-entry");
+    expect(galleryPolishEntry).not.toContain(".chat-box");
+  });
+
   it("keeps Bright School mobile as an import-only domain entry", () => {
     const mobileEntry = readFileSync(new URL("./themes/bright-school/mobile.css", import.meta.url), "utf8");
 
