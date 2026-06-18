@@ -1,0 +1,38 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid.top-stats-bar .stat strong,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat strong {
+    display: block !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    font-size: clamp(11px, 3.35vw, 15px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-list {
+    grid-template-columns: repeat(auto-fill, minmax(58px, 70px)) !important;
+    justify-content: start !important;
+    align-content: start !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .character-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-auto-rows: 88px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .owned-decoration-chip {
+    width: 70px !important;
+    max-width: 70px !important;
+    min-height: 54px !important;
+    justify-self: start !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .deploy-tag {
+    display: none !important;
+  }
+}

@@ -215,6 +215,24 @@ describe("root CSS entry contract", () => {
     expect(brightSchoolOverridesEntry).not.toContain(".leaderboard-row");
   });
 
+  it("keeps Bright School mobile profile-house-records as an import-only guard sub-entry", () => {
+    const profileHouseRecordsEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-overrides/profile-house-records.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(profileHouseRecordsEntry)).toEqual([
+      "./profile-house-records/house-profile-stats.css",
+      "./profile-house-records/profile-resume-stats.css",
+      "./profile-house-records/character-record-dialog.css",
+      "./profile-house-records/resume-character-records.css"
+    ]);
+    expect(profileHouseRecordsEntry).not.toContain(".profile-grid.top-stats-bar");
+    expect(profileHouseRecordsEntry).not.toContain(".character-record-dialog");
+    expect(profileHouseRecordsEntry).not.toContain(".resume-character-records");
+    expect(profileHouseRecordsEntry).not.toContain("@media (max-width");
+  });
+
   it("keeps Bright School narrow desktop home safety as an import-only guard entry", () => {
     const homeNarrowDesktopEntry = readFileSync(
       new URL("./mobile-adaptive/home-narrow-desktop.css", import.meta.url),

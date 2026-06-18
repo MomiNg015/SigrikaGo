@@ -165,6 +165,9 @@
 <li>Bright School portrait mobile list/settings/social layout now follows the nested import-only pattern through <code>src/styles/themes/bright-school/mobile/lists-settings.css</code> and <code>src/styles/themes/bright-school/mobile/lists-settings/</code>, keeping list scroll widths, watch rows, friends rows, table shells, leaderboard cards, replay cards, and toolbar/card-border rules in focused files.</li>
 </ul>
 <ul>
+<li>Bright School final mobile profile/house records now follow the nested import-only pattern through <code>src/styles/mobile-adaptive/bright-school-overrides/profile-house-records.css</code> and <code>src/styles/mobile-adaptive/bright-school-overrides/profile-house-records/</code>, keeping house/profile stat fixes, profile resume stats, character record dialog rules, and embedded resume character records in focused files.</li>
+</ul>
+<ul>
 <li>Admin-managed character <code>sortOrder</code> is persistent data, not a seed-owned builtin field. <code>seedCharacters</code> only assigns fallback order when creating missing builtin characters, public <code>/api/characters</code> includes <code>sortOrder</code>, and the member manual derives its character list through the shared catalog sorter so saved admin order survives server restarts and reaches player UI.</li>
 </ul>
 <ul>
@@ -3560,7 +3563,7 @@
 <li><code>src/styles/mobile-modals.css</code> is now an import-only mobile modal safety entry after <code>room-terminal.css</code> and before HUD compatibility styles. It delegates backdrop/base mobile constraints, 760px compact modal shells, 560px watch/replay/shop/leaderboard/friends/house-resume phone layouts, and reduced-motion safety to <code>src/styles/mobile-modals/</code>, while modal feature tests read the import tree so the split does not weaken the existing layout contracts.</li>
 </ul>
 <ul>
-<li>Bright School's final mobile guard entry <code>src/styles/mobile-adaptive/bright-school-overrides.css</code> is also import-only. Its concrete rules are split under <code>src/styles/mobile-adaptive/bright-school-overrides/</code> by home/auth header, replay dialog, profile/house records, shop cards, leaderboard cards, and deployed-character state, preserving the original 760px portrait cascade order without keeping one large late override file.</li>
+<li>Bright School's final mobile guard entry <code>src/styles/mobile-adaptive/bright-school-overrides.css</code> is also import-only. Its concrete rules are split under <code>src/styles/mobile-adaptive/bright-school-overrides/</code> by home/auth header, replay dialog, profile/house records, shop cards, leaderboard cards, and deployed-character state, preserving the original 760px portrait cascade order without keeping one large late override file. The profile/house records sub-entry <code>src/styles/mobile-adaptive/bright-school-overrides/profile-house-records.css</code> is nested import-only as well, delegating house/profile stat fixes, profile resume stats, character record dialog rules, and embedded resume character records to <code>src/styles/mobile-adaptive/bright-school-overrides/profile-house-records/</code>.</li>
 </ul>
 <ul>
 <li>The Startorch live-room terminal skin keeps <code>src/styles/room-terminal.css</code> as the root import point after <code>mobile-room.css</code>, but concrete rules now live under <code>src/styles/room-terminal/</code> for shell/theme variables, header tags, player/timer/skill panels, board/actions, shared panels/chat/replay, portrait mobile, and landscape mobile. Room tests read the import tree so the skin contract follows the split files instead of depending on one monolithic CSS source.</li>
@@ -3692,6 +3695,9 @@
 </ul>
 <ul>
 <li>Bright School narrow-desktop home-stage safety now follows the same sub-entry pattern. <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> delegates common region resets, wide-stage, compact-stage, micro-stage scroll, and short-height stack rules to <code>src/styles/mobile-adaptive/home-narrow-desktop/</code>; style contract tests read the expanded import tree.</li>
+</ul>
+<ul>
+<li>Bright School final mobile profile/house records now follow the same sub-entry pattern. <code>src/styles/mobile-adaptive/bright-school-overrides/profile-house-records.css</code> delegates house/profile stat fixes, profile resume stats, character record dialog rules, and embedded resume character records to <code>src/styles/mobile-adaptive/bright-school-overrides/profile-house-records/</code>; style contract tests read the expanded import tree.</li>
 </ul>
 <ul>
 <li>CSS debt cleanup continues by moving the shared Startorch home terminal skin to an import-only entry. <code>src/styles/home-terminal.css</code> now delegates shell/background, top-strip, layout/player, image entries, utility/footer/motion, and mobile rules to <code>src/styles/home-terminal/</code>; <code>src/styles/styleContract.test.js</code> keeps the import order and approved nested directory list current. Remaining high-risk CSS targets now include other large style files that are not yet domainized.</li>
