@@ -7,11 +7,7 @@
   width: min(var(--board-size), 92vw) !important;
   max-width: 100% !important;
   aspect-ratio: 1 / 1 !important;
-  background:
-    linear-gradient(90deg, rgba(94, 60, 20, 0.06), transparent 18%, rgba(255, 245, 202, 0.18) 34%, transparent 58%, rgba(92, 56, 17, 0.06)),
-    repeating-linear-gradient(90deg, rgba(74, 55, 54, 0.08) 0 1px, transparent 1px 16px),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.24) 0 1px, transparent 1px 18px),
-    #d9c993 !important;
+  background: var(--board-wood-texture) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .point:not(.black):not(.white):not(.erased)::after {

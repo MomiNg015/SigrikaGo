@@ -86,6 +86,20 @@ describe("areBoardPropsEqual", () => {
     expect(differentStone).not.toEqual(first);
   });
 
+  test("uses the shared warm wood texture for the board surface across theme guards", () => {
+    const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const boardWrapBlock = roomCss.match(/\.board-wrap\s*\{[^}]+\}/)?.[0] ?? "";
+    const themeBoardWrapBlock = brightSchoolCss.match(/\.theme-bright-school\.theme-bright-school \.board-wrap\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(boardWrapBlock).toContain("--board-wood-texture");
+    expect(boardWrapBlock).toContain("#e0ad52");
+    expect(boardWrapBlock).toContain("repeating-linear-gradient(91deg");
+    expect(boardWrapBlock).toContain("repeating-linear-gradient(8deg");
+    expect(boardWrapBlock).toContain("background: var(--board-wood-texture)");
+    expect(themeBoardWrapBlock).toContain("background: var(--board-wood-texture) !important");
+  });
+
   test("renders spray stones with an independent non-decorated visual contract", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {

@@ -1,7 +1,5 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap {
-  background:
-    linear-gradient(90deg, rgba(94, 60, 20, 0.05), transparent 18%, rgba(255, 245, 202, 0.16) 34%, transparent 58%, rgba(92, 56, 17, 0.05)),
-    #dccd97 !important;
+  background: var(--board-wood-texture) !important;
 }
 
 
