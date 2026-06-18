@@ -111,6 +111,9 @@
 <li>ChangLi (<code>changli</code>) uses the <code>double-move</code> active skill. The server persists the public chained-action state in <code>game.extraTurn</code>; board confirmation is not tied to an intersection, and restoring during ChangLi skill preview resolves directly into the double-move state without replaying the banner, sound, or animation.</li>
 </ul>
 <ul>
+<li>Lynae (<code>lynae</code>) <code>spray-stone</code> records its resolved <code>randomTargetId</code> in skill history. Replay reconstruction must pass that recorded target back into the shared spray resolver instead of rerolling, so replay step changes cannot turn different historical stones into spray stones.</li>
+</ul>
+<ul>
 <li>Hidden-hand is an active skill history entry with <code>effectType: &quot;hidden-hand&quot;</code>, so ChangLi unlock checks treat Aemeath's resolved hidden-hand the same as other opponent active skills while still ignoring passive effects. Bright School's late skill-action layer also owns a disabled override for <code>.action-bar .skill-action:disabled</code>, keeping unavailable skills gray instead of inheriting active/normal gradients.</li>
 </ul>
 <ul>

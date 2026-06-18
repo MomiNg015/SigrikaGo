@@ -109,6 +109,7 @@ Correct:
 - `BOARD_SKILL_EFFECT_RENDERERS` and `playRegisteredBoardSkillEffect()` live in `src/room/boardSkillEffectRegistry.js`; concrete Pixi board animations must register by `effectType` there instead of growing `BoardSkillEffects.jsx`.
 - DOM/CSS-only board visuals such as QiuYuan `row-slash` must keep `SKILL_EFFECT_CATALOG[effectType].boardEffect === false`; `BoardSkillEffects` must return `null` for those active previews so no full-board overlay layer or Pixi canvas can cover the grid. Their animation belongs in the dedicated DOM/CSS layer, for example `BoardRowSlashOverlay` plus the `row-slash-strike` keyframes.
 - `game.rowEffects`: DOM/CSS row markers shaped as `{ effectType: "row-slash", owner, clearAfterColor, y, id }`; `clearAfterColor` is the color whose next action clears the marker.
+- Lynae `spray-stone` history entries carry `randomTargetId`, `transformed`, `immediateRemovals`, and `cleanupRemovals`; replay reconstruction must use the recorded random target instead of calling the live random selection path again.
 - ChangLi `double-move` placements persist on board points as `point.skillEffect = "double-move-stone"` plus `point.skillEffectOwner = color`; `Board` renders the class on the point so the stone can carry a persistent DOM/CSS flame halo without creating a full-board effect layer.
 - `--board-wood-texture`: shared `.board-wrap` surface background; late theme guard layers must reference the variable instead of duplicating independent board texture stacks.
 - `boardPointCenter()` and `pointCenterForHost()` live in `src/room/boardSkillEffectGeometry.js` so component tests and animation renderers share one board-size-aware coordinate contract.
@@ -127,6 +128,7 @@ Correct:
 - Board SFX must be scheduled from the same board effect timeline, use the existing `sfx` volume channel, and clean up timers with the Pixi overlay.
 - Board SFX timer mapping and cleanup belong in `boardSkillEffectSoundScheduler.js`; `BoardSkillEffects.jsx` should not duplicate cue math or timer iteration.
 - The backend must derive animation metadata from the already-resolved skill action, not by recomputing skill rules.
+- Replay reconstruction is rules execution for historical display, not a new live action. Any skill whose live resolution depends on randomness or pre-resolved metadata, including Lynae `spray-stone` and Baconbits `random-blast`, must replay from the history entry's recorded target ids.
 - Admin character options, backend character validation, skill normalization, board target preview, active skill type lists, server fallback skill config, and board skill SFX cue timing must read shared effect metadata from `src/shared/skillEffectCatalog.js` instead of each keeping a local `effectType -> targetRule/label/cue` table.
 - Every catalog entry with `boardEffect: true` must have a matching `BOARD_SKILL_EFFECT_RENDERERS` entry; unknown effect types should no-op without touching the Pixi stage.
 - Effects that draw their persistent visual through React DOM/CSS, such as a row-wide slash marker stored in `game.rowEffects`, must not be registered as Pixi `boardEffect` entries. A full-size Pixi canvas can become an opaque overlay in some browser/runtime paths and hide the board grid, star points, and stones.
@@ -176,6 +178,7 @@ Correct:
 - Board/CSS contract tests assert `.board .point` cannot inherit visible button chrome, `.board-lines` cannot inherit ordinary media sizing, and `row-slash` keeps a dedicated CSS animation.
 - Board/CSS contract tests assert protocol-ban and double-move-stone persistent point effects have their expected glow keyframes, while shared game tests assert ChangLi's two extra-turn placements retain `double-move-stone`.
 - Board/CSS contract tests assert `.board-wrap` defines `--board-wood-texture` and late Bright School guards reuse that variable.
+- Replay tests assert Lynae `spray-stone` uses the history entry's `randomTargetId` so stepping through a replay cannot reroll which ordinary stone became spray.
 - Pixi prewarm tests assert disabled mode does not schedule loading, cancellation prevents idle imports, and prewarm/live effect loading share one promise.
 - Ambient tests assert active color illusion fog is pointer-transparent and renders without removing board buttons.
 - SFX tests assert stable cue points and muted settings avoiding AudioContext creation.

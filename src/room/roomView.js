@@ -10,6 +10,7 @@ import {
   passMove,
   playMove,
   randomBlast,
+  sprayStone,
   useSkill
 } from "../shared/game.js";
 import { canPreviewSkillTarget } from "../shared/boardView.js";
@@ -176,6 +177,13 @@ export function replayGameAt(room, step) {
           consumesTurn: false,
           centerId: entry.id
         });
+      } else if (entry.effectType === "spray-stone") {
+        result = sprayStone(game, entry.color, entry.id, {
+          skill,
+          skillName: entry.skill,
+          consumesTurn: true,
+          randomTargetId: replaySprayRandomTargetId(entry)
+        });
       } else {
         result = useSkill(game, entry.color, skill, entry.id);
       }
@@ -183,6 +191,13 @@ export function replayGameAt(room, step) {
     if (result?.ok) game = result.state;
   }
   return game;
+}
+
+function replaySprayRandomTargetId(entry) {
+  if (Object.hasOwn(entry, "randomTargetId")) return entry.randomTargetId;
+  return Array.isArray(entry.transformed)
+    ? entry.transformed.find((target) => target?.id && target.id !== entry.id)?.id
+    : undefined;
 }
 
 export function isStarPoint(x, y) {
