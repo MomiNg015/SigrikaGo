@@ -121,7 +121,7 @@
 </ul>
 <h2>Modal Layering Note</h2>
 <ul>
-<li>Chisa (<code>chisa</code>) uses the <code>liberty-purge</code> active skill. The server resolves a normal legal move first, then removes all one-liberty groups from a board snapshot, records <code>removalMarkIds</code>, clamps negative overclock deltas to zero, clears ko, and keeps <code>.liberty-purge-removal-mark</code> red crosses until the opponent's next real turn ends. Admin users own Chisa by default until recruitment is implemented.</li>
+<li>Chisa (<code>chisa</code>) uses the <code>liberty-purge</code> active skill. The server resolves a normal legal move first, then removes all one-liberty groups from a board snapshot, records <code>removalMarkIds</code>, clamps negative overclock deltas to zero, clears ko, and keeps <code>.liberty-purge-removal-mark</code> red crosses until the opponent's next real turn ends. Because <code>liberty-purge</code> places a real stone, <code>lastMarkedAction</code> treats its <code>placedId</code>/<code>id</code> as the latest placed-stone marker on the board. Admin users own Chisa by default until recruitment is implemented.</li>
 </ul>
 <ul>
 <li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together. 房间内申请和棋、申请数子与确认数子结果的定时 toast 由流程响应、阶段变化或自动消失关闭，不提供手动关闭按钮。</li>
@@ -1765,7 +1765,7 @@
 <li><code>DEFAULT_SITE_SETTINGS</code>: 位于 <code>src/shared/siteSettings.js</code>，前后端共用大厅标题、副标题、设置关于文本和首页 footer 文本默认值。</li>
 </ul>
 <ul>
-<li><code>lastMarkedAction</code> / <code>canPreviewSkillTarget</code>: 位于 <code>src/shared/boardView.js</code>，用于统一棋盘最后落子/技能标记与技能预览判定。</li>
+<li><code>lastMarkedAction</code> / <code>canPreviewSkillTarget</code>: 位于 <code>src/shared/boardView.js</code>，用于统一棋盘最后落子/技能标记与技能预览判定；普通落子、反色技能和千咲 <code>liberty-purge</code> 这类实际落子的技能都会成为最新落子标记来源。</li>
 </ul>
 <ul>
 <li><code>SKILL_EFFECT_CATALOG</code> / <code>skillEffectTargetRule</code> / <code>skillEffectSoundCues</code>: 位于 <code>src/shared/skillEffectCatalog.js</code>，集中维护技能 <code>effectType</code> 的管理端标签、默认目标规则、主动/被动分类、棋盘演出标记和音效 cue。管理端角色表单、服务端角色校验、技能归一化、目标预览和技能音效都应从该 catalog 读取这些元数据。</li>

@@ -142,6 +142,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - `arePointButtonPropsEqual(previous, next)` is the point-level React memo comparator for board intersections.
 - Point buttons receive stable refs such as `handlersRef` and `pointerTypeRef`; visible state and capability booleans remain ordinary props.
 - `triggerUnavailableShake(target)` restarts `ui-unavailable-shake` without reading layout metrics such as `offsetWidth`.
+- `lastMarkedAction(history)` is the canonical source for the board's latest placed-stone marker.
 
 #### 3. Contracts
 - Point memo comparison may ignore event function identity only when the rendered button reads the latest handlers through a stable ref object.
@@ -149,12 +150,14 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - Do not rely on `game` object identity inside a point button; derive per-point display props in `Board` and pass only the point's slice.
 - Unavailable feedback may remove and re-add the shake class on the next animation frame; it must not force a synchronous layout read to restart CSS animation.
 - Neutral point marking remains phase-gated by an explicit capability prop such as `canMarkNeutral`.
+- History entries for skills that place a real stone must be eligible for the latest placed-stone marker. Keep Chisa `liberty-purge` covered through `lastMarkedAction(history)` instead of treating only ordinary moves as markable placements.
 
 #### 4. Validation & Error Matrix
 - Handler function changes but the same stable handler ref is passed -> point button may stay memoized and must still call the latest handler from `handlersRef.current`.
 - Scoring handler availability changes -> point button must re-render because pointer/click semantics change.
 - Point stone, mark, decoration, move number, preview class, or confirmation class changes -> point button must re-render.
 - Browser lacks `requestAnimationFrame` -> unavailable feedback may fall back to a timer instead of forcing layout.
+- A skill history entry with `effectType: "liberty-purge"` and `placedId`/`id` after an ordinary move -> latest marker must move to the skill placement point.
 
 #### 5. Good/Base/Bad Cases
 - Good: A timer tick or parent handler recreation does not re-render all board intersections, while a new click handler stored in `handlersRef.current` is still used.
@@ -164,6 +167,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 
 #### 6. Tests Required
 - Board comparator tests must assert handler-ref content changes stay memoized and visible/capability changes re-render.
+- Board view tests must assert Chisa `liberty-purge` placement becomes the latest marked action after an ordinary move.
 - Interaction feedback tests must assert source behavior does not use `offsetWidth` and uses an async restart mechanism such as `requestAnimationFrame`.
 - Run targeted tests for `src/room/Board.test.js` and `src/app/InteractionFeedback.test.js`, then run the project `check` gate before handoff.
 
