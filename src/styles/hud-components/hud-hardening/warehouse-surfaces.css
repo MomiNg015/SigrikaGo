@@ -1,0 +1,17 @@
+/* Startorch HUD warehouse surfaces. */
+.warehouse-item,
+.warehouse-effect-result,
+.warehouse-character-grid button {
+  background:
+    linear-gradient(rgba(0, 255, 190, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 191, 255, 0.055) 1px, transparent 1px),
+    radial-gradient(circle at 22% 10%, rgba(0, 255, 190, 0.1), transparent 34%),
+    rgba(5, 15, 22, 0.78) !important;
+  background-size: 18px 18px, 18px 18px, cover, cover;
+}
+
+.warehouse-item img,
+.warehouse-effect-result img,
+.warehouse-character-grid img {
+  background: transparent !important;
+}

@@ -374,6 +374,25 @@ describe("root CSS entry contract", () => {
     expect(hudEntry).not.toContain(".character-chain-badge");
   });
 
+  it("keeps HUD hardening as an import-only component sub-entry", () => {
+    const hudHardeningEntry = readFileSync(new URL("./hud-components/hud-hardening.css", import.meta.url), "utf8");
+
+    expect(cssImports(hudHardeningEntry)).toEqual([
+      "./hud-hardening/tokens-shell-scrollbars.css",
+      "./hud-hardening/inputs-settings-auth.css",
+      "./hud-hardening/inventory-state-tags.css",
+      "./hud-hardening/home-hologram-entries.css",
+      "./hud-hardening/character-deploy-detail.css",
+      "./hud-hardening/shop-pagination-owned.css",
+      "./hud-hardening/warehouse-surfaces.css",
+      "./hud-hardening/friend-actions.css"
+    ]);
+    expect(hudHardeningEntry).not.toContain(":root {");
+    expect(hudHardeningEntry).not.toContain(".login-card-container");
+    expect(hudHardeningEntry).not.toContain(".character-detail");
+    expect(hudHardeningEntry).not.toContain(".shop-pagination button");
+  });
+
   it("keeps room.css as an import-only domain entry", () => {
     const roomEntry = readFileSync(new URL("./room.css", import.meta.url), "utf8");
 
