@@ -1,8 +1,8 @@
 /* Board frame, effects, stones, coordinates, and scoring markers. */
 .board-wrap {
   --board-wood-texture:
-    url("/assets/boards/go-board-background-01-kaya-wood-2048.png") center / cover no-repeat,
-    #d99a24;
+    url("/assets/boards/go-board-background-reference-color-vertical-2048.webp") center / cover no-repeat,
+    #e4aa2f;
   width: var(--board-size);
   max-width: 100%;
   min-width: 0;

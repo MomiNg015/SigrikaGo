@@ -93,11 +93,11 @@ describe("areBoardPropsEqual", () => {
     const themeBoardWrapBlock = brightSchoolCss.match(/\.theme-bright-school\.theme-bright-school \.board-wrap\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(boardWrapBlock).toContain("--board-wood-texture");
-    expect(boardWrapBlock).toContain('url("/assets/boards/go-board-background-01-kaya-wood-2048.png")');
-    expect(boardWrapBlock).toContain("#d99a24");
+    expect(boardWrapBlock).toContain('url("/assets/boards/go-board-background-reference-color-vertical-2048.webp")');
+    expect(boardWrapBlock).toContain("#e4aa2f");
     expect(boardWrapBlock).toContain("background: var(--board-wood-texture)");
     expect(themeBoardWrapBlock).toContain("background: var(--board-wood-texture) !important");
-    expect(() => readFileSync(new URL("../../public/assets/boards/go-board-background-01-kaya-wood-2048.png", import.meta.url))).not.toThrow();
+    expect(() => readFileSync(new URL("../../public/assets/boards/go-board-background-reference-color-vertical-2048.webp", import.meta.url))).not.toThrow();
   });
 
   test("renders spray stones with an independent non-decorated visual contract", () => {
