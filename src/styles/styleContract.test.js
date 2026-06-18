@@ -351,6 +351,24 @@ describe("root CSS entry contract", () => {
     expect(gachaEntry).not.toContain("@keyframes gacha-drum-spin");
   });
 
+  it("keeps commerce social-profile.css as an import-only commerce sub-entry", () => {
+    const socialProfileEntry = readFileSync(new URL("./commerce/social-profile.css", import.meta.url), "utf8");
+
+    expect(cssImports(socialProfileEntry)).toEqual([
+      "./social-profile/modal-shells.css",
+      "./social-profile/friends-toolbar-search.css",
+      "./social-profile/friends-list-status.css",
+      "./social-profile/friend-actions-notices.css",
+      "./social-profile/duel-request-banner.css",
+      "./social-profile/leaderboard-table.css",
+      "./social-profile/owned-decoration-section.css"
+    ]);
+    expect(socialProfileEntry).not.toContain(".friends-row {");
+    expect(socialProfileEntry).not.toContain(".duel-request-banner {");
+    expect(socialProfileEntry).not.toContain(".leaderboard-table {");
+    expect(socialProfileEntry).not.toContain("@keyframes duel-request-drop");
+  });
+
   it("keeps commerce terminal-polish.css as an import-only commerce sub-entry", () => {
     const terminalPolishEntry = readFileSync(new URL("./commerce/terminal-polish.css", import.meta.url), "utf8");
 

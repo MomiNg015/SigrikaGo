@@ -1,0 +1,131 @@
+.leaderboard-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 44px;
+  margin-bottom: 16px;
+}
+
+.leaderboard-header h2,
+.leaderboard-header p {
+  margin: 0;
+}
+
+.leaderboard-table {
+  --leaderboard-grid-columns: 62px 82px minmax(116px, 0.88fr) repeat(6, minmax(64px, 0.55fr));
+  --leaderboard-scroll-gutter: 17px;
+  min-width: 820px;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  flex: 1 1 auto;
+}
+
+.leaderboard-list {
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.leaderboard-heading,
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: var(--leaderboard-grid-columns);
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.leaderboard-heading {
+  padding: 0 14px;
+  padding-right: calc(14px + var(--leaderboard-scroll-gutter));
+  color: #7d6a82;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.leaderboard-row {
+  min-height: 76px;
+  padding: 10px 14px;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.leaderboard-row.current-user {
+  border-color: rgba(255, 198, 61, 0.52);
+  background: linear-gradient(135deg, rgba(255, 249, 220, 0.98), rgba(255, 255, 255, 0.96));
+  box-shadow: 0 8px 20px rgba(196, 145, 35, 0.12);
+}
+
+.leaderboard-row.pinned {
+  min-height: 68px;
+  background: linear-gradient(135deg, #fff4c8, #fffdf4);
+}
+
+.leaderboard-current {
+  display: grid;
+  gap: 6px;
+  padding-top: 10px;
+  padding-right: var(--leaderboard-scroll-gutter);
+  border-top: 1px solid rgba(128, 102, 142, 0.16);
+  background: #fffafd;
+}
+
+.leaderboard-current-label {
+  color: #8a6d10;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.leaderboard-row > * {
+  min-width: 0;
+  justify-self: center;
+}
+
+.leaderboard-rank {
+  color: #5d7fe8;
+  font-size: 20px;
+}
+
+.leaderboard-row img {
+  width: 72px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.leaderboard-player {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  text-align: center;
+}
+
+.leaderboard-player strong,
+.leaderboard-player span {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard-player span,
+.leaderboard-row > span {
+  color: #7d6a82;
+}
+
+.leaderboard-row > b {
+  color: #2d2430;
+  font-size: 20px;
+}
+
+.leaderboard-mobile-record {
+  display: none;
+}

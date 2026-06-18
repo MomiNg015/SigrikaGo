@@ -1,0 +1,79 @@
+.friends-list {
+  min-width: 620px;
+  display: grid;
+  gap: 8px;
+}
+
+.friends-list-heading,
+.friends-row {
+  display: grid;
+  grid-template-columns: 66px 92px minmax(120px, 1fr) 74px;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.friends-list-heading {
+  padding: 0 12px;
+  color: #7d6a82;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.friends-row {
+  position: relative;
+  min-height: 76px;
+  padding: 9px 12px;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffffff, #fff7fb);
+}
+
+.friends-row img {
+  width: 74px;
+  height: 58px;
+  object-fit: contain;
+  justify-self: center;
+}
+
+.friends-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.friend-main {
+  display: contents;
+}
+
+.friends-row span {
+  color: #6f5f75;
+  font-weight: 800;
+}
+
+.online-status {
+  min-width: 52px;
+  justify-self: center;
+  padding: 5px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(111, 95, 117, 0.16);
+  background: #f2edf4;
+  font-size: 12px;
+}
+
+.online-status.online {
+  background: #e6f8ed;
+  color: #258253;
+  border-color: rgba(37, 130, 83, 0.18);
+}
+
+.online-status.offline {
+  background: #eeeeef;
+  color: #7b7780;
+}
+
+.online-status.playing {
+  background: #ffe8ea;
+  color: #c93445;
+  border-color: rgba(201, 52, 69, 0.18);
+}

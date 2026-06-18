@@ -159,6 +159,9 @@
 <li>Shared gacha modal styling now follows the nested import-only pattern through <code>src/styles/commerce/gacha.css</code> and <code>src/styles/commerce/gacha/</code>, keeping modal tabs, featured prize stack, machine stage, featured prize, control panel, list/result dialogs, and animations in focused files.</li>
 </ul>
 <ul>
+<li>Shared social/profile/leaderboard styling now follows the nested import-only pattern through <code>src/styles/commerce/social-profile.css</code> and <code>src/styles/commerce/social-profile/</code>, keeping modal shells, friends toolbar/search, friends list/status, friend actions/notices, duel request banner, leaderboard table, and owned decoration section rules in focused files.</li>
+</ul>
+<ul>
 <li>Bright School portrait mobile house/profile styling now follows the nested import-only pattern through <code>src/styles/themes/bright-school/mobile/house-profile.css</code> and <code>src/styles/themes/bright-school/mobile/house-profile/</code>, keeping shell/profile stats, character grid/cards, owned decorations, and character detail/music controls in focused files.</li>
 </ul>
 <ul>
@@ -3572,6 +3575,9 @@
 <li>The shared gacha modal sub-entry <code>src/styles/commerce/gacha.css</code> is also import-only and delegates modal tabs, featured stack, machine stage, featured prize, control panel, list/result dialogs, and animations to <code>src/styles/commerce/gacha/</code>, preserving the existing commerce layer order while keeping result grid and animation rules in named files.</li>
 </ul>
 <ul>
+<li>The shared social/profile/leaderboard sub-entry <code>src/styles/commerce/social-profile.css</code> is also import-only and delegates modal shells, friends toolbar/search, friends list/status, friend actions/notices, duel request banner, leaderboard table, and owned decoration section rules to <code>src/styles/commerce/social-profile/</code>, preserving the existing commerce layer order while keeping social and leaderboard contracts in named files.</li>
+</ul>
+<ul>
 <li>The Startorch commerce/social polish sub-entry <code>src/styles/commerce/terminal-polish.css</code> is also import-only and delegates terminal headers/profile stats, character cards, shop shell/tabs, item cards/empty states, list/status rows, settings/warehouse target surfaces, and compact phone fixes to <code>src/styles/commerce/terminal-polish/</code>, preserving the existing commerce layer order.</li>
 </ul>
 <ul>
@@ -3761,6 +3767,9 @@
 </ul>
 <ul>
 <li>Shared gacha modal styling now follows the same sub-entry pattern: <code>src/styles/commerce/gacha.css</code> owns import order and delegates modal tabs, featured stack, machine stage, featured prize, control panel, list/result dialogs, and animations to <code>src/styles/commerce/gacha/</code>; style contract and gacha modal tests read the expanded import tree.</li>
+</ul>
+<ul>
+<li>Shared social/profile/leaderboard styling now follows the same sub-entry pattern: <code>src/styles/commerce/social-profile.css</code> owns import order and delegates modal shells, friends toolbar/search, friends list/status, friend actions/notices, duel request banner, leaderboard table, and owned decoration section rules to <code>src/styles/commerce/social-profile/</code>; style contract and social/leaderboard modal tests read the expanded import tree.</li>
 </ul>
 <ul>
 <li>Bright School portrait mobile house/profile styling now follows the same sub-entry pattern: <code>src/styles/themes/bright-school/mobile/house-profile.css</code> owns import order and delegates shell/profile stats, character grid/cards, owned decorations, and character detail/music controls to <code>src/styles/themes/bright-school/mobile/house-profile/</code>; theme contract tests guard the nested import order.</li>
