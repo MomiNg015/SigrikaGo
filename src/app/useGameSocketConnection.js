@@ -16,8 +16,8 @@ export function useGameSocketConnection({
   audioSettingsRef,
   closeAllOverlays,
   matchSuccessRef,
+  onSocketReconnect = () => {},
   roomRef,
-  setAudioResumeSignal,
   setDismissedResultRoom,
   setIncomingDuel,
   setLobbyStats,
@@ -68,7 +68,7 @@ export function useGameSocketConnection({
         playDoorbellSound
       }),
       buildRoomResumeRequest,
-      onSocketReconnect: () => setAudioResumeSignal((value) => value + 1)
+      onSocketReconnect
     });
     setSocket(nextSocket);
     return () => nextSocket.close();
@@ -76,8 +76,8 @@ export function useGameSocketConnection({
     audioSettingsRef,
     closeAllOverlays,
     matchSuccessRef,
+    onSocketReconnect,
     roomRef,
-    setAudioResumeSignal,
     setDismissedResultRoom,
     setIncomingDuel,
     setLobbyStats,

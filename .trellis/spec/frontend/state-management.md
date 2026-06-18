@@ -68,6 +68,65 @@ setAudioSettings((settings) => ({
 }));
 ```
 
+### Scenario: App Audio Runtime State
+
+#### 1. Scope / Trigger
+- Trigger: changing app-level audio settings initialization, audio-settings persistence, background-music resume behavior, or socket reconnect wiring that affects playback recovery.
+- This is app shell state, not route state or socket protocol state.
+
+#### 2. Signatures
+- `useAudioRuntimeState()` returns `{ audioSettings, setAudioSettings, audioResumeSignal, resumeAudioPlayback }`.
+- `useAudioSettingsPersistence(audioSettings)` persists the returned settings to `localStorage`.
+- `useGameSocketConnection({ onSocketReconnect })` receives a callback and forwards it to `connectGameSocket()`.
+
+#### 3. Contracts
+- `App.jsx` should call `useAudioRuntimeState()` instead of directly importing `loadAudioSettings` or calling `useAudioSettingsPersistence()`.
+- Socket reconnects should call the hook's `resumeAudioPlayback()` callback, not a raw `setAudioResumeSignal` setter owned by `App.jsx`.
+- `BackgroundMusic` receives the hook's `audioResumeSignal`; ordinary SFX/voice consumers continue receiving the same `audioSettings` object.
+- Settings UI still mutates audio settings through the returned `setAudioSettings` callback.
+- Keep the hook free of route, room, match, and overlay state so it remains a focused audio runtime boundary.
+
+#### 4. Validation & Error Matrix
+- Initial render -> load settings through `loadAudioSettings()` inside the hook.
+- Audio settings change -> persist through `useAudioSettingsPersistence(audioSettings)`.
+- Socket reconnect -> increment `audioResumeSignal` through `resumeAudioPlayback()`.
+- Missing reconnect callback -> `useGameSocketConnection` falls back to a no-op.
+
+#### 5. Good/Base/Bad Cases
+- Good: `const { audioSettings, audioResumeSignal, resumeAudioPlayback } = useAudioRuntimeState();`
+- Base: Existing settings modal props continue to receive `audioSettings` and `setAudioSettings`.
+- Bad: `App.jsx` imports `loadAudioSettings` and stores `[audioResumeSignal, setAudioResumeSignal]` directly.
+- Bad: socket code knows about the audio signal setter shape instead of receiving a callback.
+
+#### 6. Tests Required
+- App wiring tests should assert `App.jsx` delegates to `useAudioRuntimeState()` and does not import `loadAudioSettings` or `useAudioSettingsPersistence`.
+- Socket handler tests should continue asserting reconnect callbacks are invoked when `connect` fires.
+- Run `npm test -- src/app/App.test.js src/app/socketHandlers.test.js` after changes in this boundary.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+const [audioSettings, setAudioSettings] = useState(loadAudioSettings);
+const [audioResumeSignal, setAudioResumeSignal] = useState(0);
+useAudioSettingsPersistence(audioSettings);
+useGameSocketConnection({ setAudioResumeSignal });
+```
+
+Correct:
+
+```jsx
+const {
+  audioSettings,
+  setAudioSettings,
+  audioResumeSignal,
+  resumeAudioPlayback
+} = useAudioRuntimeState();
+
+useGameSocketConnection({ onSocketReconnect: resumeAudioPlayback });
+```
+
 ---
 
 ## Server State

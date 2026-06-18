@@ -105,6 +105,9 @@
 </ul>
 <h2>Board Effect Theme Guard</h2>
 <ul>
+<li>App audio runtime state now lives in <code>src/app/useAudioRuntimeState.js</code>, keeping local audio settings persistence and socket-reconnect resume signaling out of the <code>src/app/App.jsx</code> composition root.</li>
+</ul>
+<ul>
 <li>Admin-managed character <code>sortOrder</code> is persistent data, not a seed-owned builtin field. <code>seedCharacters</code> only assigns fallback order when creating missing builtin characters, public <code>/api/characters</code> includes <code>sortOrder</code>, and the member manual derives its character list through the shared catalog sorter so saved admin order survives server restarts and reaches player UI.</li>
 </ul>
 <ul>
@@ -1986,6 +1989,9 @@
 </ul>
 <h2>相关详细记录</h2>
 <h2>Frontend Module Extraction Update</h2>
+<ul>
+<li>App audio runtime state now lives in <code>src/app/useAudioRuntimeState.js</code>; it owns local audio settings, persistence, and the socket-reconnect audio resume signal so <code>src/app/App.jsx</code> keeps less playback-specific state wiring.</li>
+</ul>
 <p>This update reduces the highest-payoff frontend coupling without changing user-facing behavior.</p>
 <ul>
 <li>Character display helpers now live in <code>src/shared/characterDisplay.js</code>.</li>
@@ -3580,7 +3586,7 @@
 <li>CSS 体积和全局层叠仍是前端维护风险。共享基础样式已从单体 <code>base.css</code> 拆成 import-only 入口和 <code>src/styles/base/</code> 领域文件，房间样式已从单体 <code>room.css</code> 拆成 import-only 入口和 <code>src/styles/room/</code> 领域文件，Startorch 对局终端皮肤已从单体 <code>room-terminal.css</code> 拆成 import-only 入口和 <code>src/styles/room-terminal/</code> 领域文件，共享弹窗样式已从单体 <code>modals.css</code> 拆成 import-only 入口和 <code>src/styles/modals/</code> 领域文件，移动弹窗安全层已从单体 <code>mobile-modals.css</code> 拆成 import-only 入口和 <code>src/styles/mobile-modals/</code> 领域文件，商业/社交/仓库样式已从单体 <code>commerce-settings.css</code> 拆成 import-only 入口和 <code>src/styles/commerce/</code> 领域文件，且 <code>src/styles/commerce/shop-settings.css</code> 已继续拆成 import-only 子入口和 <code>src/styles/commerce/shop-settings/</code> 领域文件；共享响应式层已从单体 <code>responsive.css</code> 拆成 import-only 入口和 <code>src/styles/responsive/</code> 断点文件，共享移动对局层已从单体 <code>mobile-room.css</code> 拆成 import-only 入口和 <code>src/styles/mobile-room/</code> 断点文件，共享 HUD 兼容层已从单体 <code>hud-components.css</code> 拆成 import-only 入口和 <code>src/styles/hud-components/</code> 领域文件，最终移动安全层也从单体 <code>mobile-adaptive.css</code> 拆成 import-only 入口和 <code>src/styles/mobile-adaptive/</code> 领域文件，且 Bright School 最终移动兜底覆盖已继续拆成 import-only 入口和 <code>src/styles/mobile-adaptive/bright-school-overrides/</code> 领域文件；Bright School 基础主题、早期可读性清理、大厅主题、商业覆盖、移动端覆盖、竖屏对局覆盖、组件修复覆盖、质量兜底层和防 HUD 串色 firewall 也分别拆成 import-only 入口与 <code>src/styles/themes/bright-school/base/</code>、<code>src/styles/themes/bright-school/contrast-purge/</code>、<code>src/styles/themes/bright-school/home/</code>、<code>src/styles/themes/bright-school/commerce/</code>、<code>src/styles/themes/bright-school/mobile/</code>、<code>src/styles/themes/bright-school/mobile/room/</code>、<code>src/styles/themes/bright-school/component-repairs/</code>、<code>src/styles/themes/bright-school/quality-base/</code>、<code>src/styles/themes/bright-school/firewall/</code> 领域文件；下一步高风险目标转为 <code>admin.css</code> 等剩余大文件，以及 Bright School 剩余 <code>modals.css</code> 等高 <code>!important</code> override 链路。</li>
 </ul>
 <ul>
-<li><code>src/main.jsx</code> 已瘦身为浏览器挂载入口，应用组合根迁移到 <code>src/app/App.jsx</code>，应用级弹窗可见性已收口到 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态已收口到 <code>src/app/useRoomSessionState.js</code>，匹配等待/成功过渡状态已收口到 <code>src/app/useMatchSessionState.js</code>；下一步可继续把 App 级音频、大厅辅助和启动状态编排拆成更聚焦的状态/动作 hook。服务端启动数据与 schema 初始化已收口到 <code>server/serverStartup.js</code>，Socket.IO 连接事件套件已收口到 <code>server/socketEvents.js</code>，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理继续由各自 <code>server/socket*Events.js</code> 分组模块维护，生产静态资源托管已收口到 <code>server/staticAssets.js</code>，账号资产 legacy 字段解析、结构化同步和公开合并规则已收口到 <code>server/userAssets.js</code>；后续重点转为剩余数据模型兼容镜像字段、前端状态编排和 CSS 技术债。运行期图片和关键交互音频资源清单已先收口到 <code>src/shared/assetRegistry.js</code>，后续可继续扩展到角色、后台资源目录和更完整的音频分类。</li>
+<li><code>src/main.jsx</code> 已瘦身为浏览器挂载入口，应用组合根迁移到 <code>src/app/App.jsx</code>，应用级弹窗可见性已收口到 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态已收口到 <code>src/app/useRoomSessionState.js</code>，匹配等待/成功过渡状态已收口到 <code>src/app/useMatchSessionState.js</code>；App 级音频运行态已收口到 <code>src/app/useAudioRuntimeState.js</code>，负责本地音频设置、持久化和 socket 重连后的背景音恢复信号；下一步可继续把大厅辅助和启动状态编排拆成更聚焦的状态/动作 hook。服务端启动数据与 schema 初始化已收口到 <code>server/serverStartup.js</code>，Socket.IO 连接事件套件已收口到 <code>server/socketEvents.js</code>，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理继续由各自 <code>server/socket*Events.js</code> 分组模块维护，生产静态资源托管已收口到 <code>server/staticAssets.js</code>，账号资产 legacy 字段解析、结构化同步和公开合并规则已收口到 <code>server/userAssets.js</code>；后续重点转为剩余数据模型兼容镜像字段、前端状态编排和 CSS 技术债。运行期图片和关键交互音频资源清单已先收口到 <code>src/shared/assetRegistry.js</code>，后续可继续扩展到角色、后台资源目录和更完整的音频分类。</li>
 </ul>
 <ul>
 <li>实时性能已经通过轻量时钟、房间广播边界、结构共享和棋盘 memo 得到改善。</li>

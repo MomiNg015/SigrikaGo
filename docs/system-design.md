@@ -37,6 +37,9 @@
 
 ## Board Effect Theme Guard
 
+
+- App audio runtime state now lives in `src/app/useAudioRuntimeState.js`, keeping local audio settings persistence and socket-reconnect resume signaling out of the `src/app/App.jsx` composition root.
+
 - Admin-managed character `sortOrder` is persistent data, not a seed-owned builtin field. `seedCharacters` only assigns fallback order when creating missing builtin characters, public `/api/characters` includes `sortOrder`, and the member manual derives its character list through the shared catalog sorter so saved admin order survives server restarts and reaches player UI.
 
 - ChangLi (`changli`) uses the `double-move` active skill. The server persists the public chained-action state in `game.extraTurn`; board confirmation is not tied to an intersection, and restoring during ChangLi skill preview resolves directly into the double-move state without replaying the banner, sound, or animation.

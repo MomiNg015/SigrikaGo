@@ -125,6 +125,9 @@
 
 ## Frontend Module Extraction Update
 
+
+- App audio runtime state now lives in `src/app/useAudioRuntimeState.js`; it owns local audio settings, persistence, and the socket-reconnect audio resume signal so `src/app/App.jsx` keeps less playback-specific state wiring.
+
 This update reduces the highest-payoff frontend coupling without changing user-facing behavior.
 
 - Character display helpers now live in `src/shared/characterDisplay.js`.
