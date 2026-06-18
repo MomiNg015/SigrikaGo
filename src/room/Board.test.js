@@ -46,11 +46,15 @@ describe("areBoardPropsEqual", () => {
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const exposedBlock = css.match(/\.exposed-hidden-hand \.stone\s*\{[^}]+\}/)?.[0] ?? "";
     const flippedBlock = css.match(/\.flipped-stone \.stone\s*\{[^}]+\}/)?.[0] ?? "";
+    const doubleMoveBlock = css.match(/\.double-move-stone \.stone\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(exposedBlock).toContain("rgba(8, 174, 84, 0.95)");
     expect(exposedBlock).toContain("rgba(0, 142, 72, 0.96)");
     expect(flippedBlock).toContain("rgba(126, 30, 255, 0.95)");
     expect(flippedBlock).toContain("rgba(112, 24, 214, 0.96)");
+    expect(doubleMoveBlock).toContain("rgba(255, 65, 32, 0.96)");
+    expect(doubleMoveBlock).toContain("double-move-stone-glow");
+    expect(css).toContain("@keyframes double-move-stone-glow");
   });
 
   test("marks the latest move with a circular red stone outline instead of a center dot", () => {
@@ -123,6 +127,8 @@ describe("areBoardPropsEqual", () => {
     expect(css).toContain(".protocol-ban-mark");
     expect(css).toContain("pointer-events: none");
     expect(css).toContain("rotate(45deg)");
+    expect(css).toContain("protocol-ban-bluewhite-glow");
+    expect(css).toContain("@keyframes protocol-ban-bluewhite-glow");
   });
 
   test("renders Chisa removal marks as independent red cross overlays", () => {

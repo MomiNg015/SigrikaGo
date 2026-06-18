@@ -45,7 +45,12 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
   if (next.ko === id) return fail("此处为劫禁着点");
 
   if (isProtocolBannedEmptyPoint(point, color)) return fail("该交叉点为禁入点");
+  const doubleMovePlacement = next.extraTurn?.effectType === "double-move" && next.extraTurn.owner === color;
   point.stone = color;
+  if (doubleMovePlacement) {
+    point.skillEffect = "double-move-stone";
+    point.skillEffectOwner = color;
+  }
   if (hidden) {
     point.hiddenHand = {
       owner: color,
