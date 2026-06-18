@@ -1,0 +1,87 @@
+.resume-modal {
+  width: min(620px, 100%);
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  gap: 16px;
+  max-height: calc(100dvh - 32px);
+  overflow: hidden;
+}
+
+.resume-modal .profile-grid.top-stats-bar {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  margin-top: 4px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.resume-header {
+  position: relative;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) max-content var(--modal-close-size, 44px);
+  align-items: center;
+  justify-content: stretch;
+  gap: 12px;
+  padding-right: 0;
+  min-height: var(--modal-close-size, 44px);
+}
+
+.resume-header h2 {
+  grid-column: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.resume-title-actions {
+  grid-column: 2;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-right: 0;
+}
+
+.resume-title-actions h2 {
+  padding-right: 0;
+}
+
+.resume-modal .resume-header > .resume-header-actions {
+  grid-column: 3;
+}
+
+.resume-modal .resume-header > .resume-close-button {
+  grid-column: 4;
+  position: static;
+  inset: auto;
+  justify-self: end;
+  align-self: center;
+  transform: none;
+}
+
+.resume-mini-action {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(61, 43, 37, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 250, 238, 0.9);
+  color: #4f3d55;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.resume-title-actions .achievement-entry-action {
+  background: #ffe4ee;
+  border-color: #f08bad;
+  color: #76314a;
+}
+
+.resume-title-actions .personalization-entry-action {
+  background: #e5f4ff;
+  border-color: #86bfe8;
+  color: #2c5d7c;
+}

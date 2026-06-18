@@ -439,4 +439,24 @@ describe("root CSS entry contract", () => {
     expect(modalsEntry).not.toContain(".resume-modal {");
     expect(modalsEntry).not.toContain(".character-detail {");
   });
+
+  it("keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry", () => {
+    const replayModeResumeEntry = readFileSync(new URL("./modals/replay-mode-resume.css", import.meta.url), "utf8");
+
+    expect(cssImports(replayModeResumeEntry)).toEqual([
+      "./replay-mode-resume/replay-list-table.css",
+      "./replay-mode-resume/resume-header-actions.css",
+      "./replay-mode-resume/match-mode-tabs.css",
+      "./replay-mode-resume/resume-modal-layout.css",
+      "./replay-mode-resume/achievement-modal.css",
+      "./replay-mode-resume/personalization-preview-grid.css",
+      "./replay-mode-resume/personalization-picker.css",
+      "./replay-mode-resume/resume-character-records.css"
+    ]);
+    expect(replayModeResumeEntry).not.toContain(".replay-list {");
+    expect(replayModeResumeEntry).not.toContain(".resume-modal {");
+    expect(replayModeResumeEntry).not.toContain(".achievement-modal,");
+    expect(replayModeResumeEntry).not.toContain(".personalization-modal {");
+    expect(replayModeResumeEntry).not.toContain(".resume-character-records {");
+  });
 });
