@@ -96,6 +96,7 @@ describe("PlayerInfo labels", () => {
 
   it("keeps overclock text red and timer tracks state-colored across themes", () => {
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const roomTerminalCss = readCssWithImports(new URL("../styles/room-terminal.css", import.meta.url));
     const themesCss = readFileSync(new URL("../styles/themes.css", import.meta.url), "utf8");
     const themeComponentsCss = readFileSync(new URL("../styles/themes/theme-components.css", import.meta.url), "utf8");
     const sharedCss = readFileSync(new URL("../styles/themes/shared.css", import.meta.url), "utf8");
@@ -124,6 +125,13 @@ describe("PlayerInfo labels", () => {
     expect(metaTagBlock).toContain("display: inline-flex");
     expect(metaTagBlock).toContain("align-items: center");
     expect(metaTagBlock).toContain("justify-content: center");
+    const activeTurnBlock = cssBlock(roomCss, ".player-info.active-turn");
+    expect(activeTurnBlock).toContain("#fff0a6");
+    expect(activeTurnBlock).toContain("border-color: rgba(218, 152, 26, 0.72)");
+    expect(roomCss).toContain(".player-info.active-turn .name-button");
+    const terminalActiveTurnBlock = cssBlock(roomTerminalCss, ".player-info.active-turn");
+    expect(terminalActiveTurnBlock).toContain("rgba(255, 225, 102, 0.92)");
+    expect(terminalActiveTurnBlock).toContain("border-color: #ffd34f");
     expect(roomCss).toContain("color: #d93645 !important");
     expect(roomCss).toContain(".result-badge.draw");
     expect(roomCss).toContain("--skill-chip-accent");
@@ -146,6 +154,9 @@ describe("PlayerInfo labels", () => {
     expect(brightSchoolCss).toContain(".timer-track span");
     expect(brightSchoolCss).toContain("background: var(--timer-track-fill");
     expect(brightSchoolCss).toContain(".captures .cost-stat");
+    expect(brightSchoolCss).toContain(".player-info.active-turn");
+    expect(brightSchoolCss).toContain("background-color: #fff0a6 !important");
+    expect(brightSchoolCss).toContain("border-color: #d18b17 !important");
   });
 
   it("colors room portrait backgrounds by the player's stone color in Bright School", () => {

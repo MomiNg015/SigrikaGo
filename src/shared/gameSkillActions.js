@@ -95,7 +95,10 @@ export function sprayStone(state, color, id, options = {}) {
   if (!canSprayTransformStone(target)) return fail("必须指定非喷涂、非隐藏的棋子");
 
   const candidates = next.points.filter((point) => point.id !== id && canSprayTransformStone(point));
-  const randomTarget = candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : null;
+  const replayRandomTarget = Object.hasOwn(options, "randomTargetId") ? getPoint(next, options.randomTargetId) : null;
+  const randomTarget = Object.hasOwn(options, "randomTargetId")
+    ? (replayRandomTarget?.id !== id && canSprayTransformStone(replayRandomTarget) ? replayRandomTarget : null)
+    : candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : null;
   const transformed = [];
   const immediateRemovals = [];
   next.skillRemovals ??= { black: 0, white: 0 };

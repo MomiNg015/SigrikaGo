@@ -1531,11 +1531,14 @@ describe("SigrikaGo rules", () => {
     expect(firstMove.ok).toBe(true);
     expect(firstMove.state.turn).toBe(COLORS.black);
     expect(firstMove.state.extraTurn).toMatchObject({ owner: COLORS.black, remaining: 1, used: 1 });
+    expect(getPoint(firstMove.state, pointId(3, 3)).skillEffect).toBe("double-move-stone");
 
     const secondMove = playMove(firstMove.state, COLORS.black, pointId(4, 4));
     expect(secondMove.ok).toBe(true);
     expect(secondMove.state.turn).toBe(COLORS.white);
     expect(secondMove.state.extraTurn).toBeNull();
+    expect(getPoint(secondMove.state, pointId(3, 3)).skillEffect).toBe("double-move-stone");
+    expect(getPoint(secondMove.state, pointId(4, 4)).skillEffect).toBe("double-move-stone");
   });
 
   it("does not consume ChangLi extra moves on illegal move attempts", () => {

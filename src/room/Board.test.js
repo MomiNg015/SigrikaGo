@@ -46,11 +46,15 @@ describe("areBoardPropsEqual", () => {
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const exposedBlock = css.match(/\.exposed-hidden-hand \.stone\s*\{[^}]+\}/)?.[0] ?? "";
     const flippedBlock = css.match(/\.flipped-stone \.stone\s*\{[^}]+\}/)?.[0] ?? "";
+    const doubleMoveBlock = css.match(/\.double-move-stone \.stone\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(exposedBlock).toContain("rgba(8, 174, 84, 0.95)");
     expect(exposedBlock).toContain("rgba(0, 142, 72, 0.96)");
     expect(flippedBlock).toContain("rgba(126, 30, 255, 0.95)");
     expect(flippedBlock).toContain("rgba(112, 24, 214, 0.96)");
+    expect(doubleMoveBlock).toContain("rgba(255, 65, 32, 0.96)");
+    expect(doubleMoveBlock).toContain("double-move-stone-glow");
+    expect(css).toContain("@keyframes double-move-stone-glow");
   });
 
   test("marks the latest move with a circular red stone outline instead of a center dot", () => {
@@ -68,6 +72,25 @@ describe("areBoardPropsEqual", () => {
     expect(latestMoveBlock).not.toContain("height: 9px");
   });
 
+  test("keeps ordinary placement hints centered on board intersections", () => {
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const pointBlock = css.match(/\.point\s*\{[^}]+\}/)?.[0] ?? "";
+    const previewBlock = css.match(/\.point::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const pointConfirmBlock = css.match(/\.point\.touch-confirming::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const confirmBlock = css.match(/\.touch-confirm-marker\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(pointBlock).toContain("display: grid");
+    expect(pointBlock).toContain("place-items: center");
+    expect(previewBlock).not.toContain("left: 50%");
+    expect(previewBlock).not.toContain("top: 50%");
+    expect(previewBlock).not.toContain("translate(-50%, -50%)");
+    expect(pointConfirmBlock).toContain("display: none");
+    expect(pointConfirmBlock).toContain("opacity: 0");
+    expect(confirmBlock).not.toContain("left: 50%");
+    expect(confirmBlock).not.toContain("top: 50%");
+    expect(confirmBlock).not.toContain("translate(-50%, -50%)");
+  });
+
   test("uses stable one-pixel directional stone offsets for a hand-placed board feel", () => {
     const point = { id: "3,10", x: 3, y: 10, stone: "black" };
     const first = stoneOffsetForPoint(point);
@@ -80,6 +103,20 @@ describe("areBoardPropsEqual", () => {
     expect(Math.abs(first.y)).toBeLessThanOrEqual(1);
     expect(Math.abs(first.x) || Math.abs(first.y)).toBeGreaterThanOrEqual(1);
     expect(differentStone).not.toEqual(first);
+  });
+
+  test("uses the shared warm wood texture for the board surface across theme guards", () => {
+    const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const boardWrapBlock = roomCss.match(/\.board-wrap\s*\{[^}]+\}/)?.[0] ?? "";
+    const themeBoardWrapBlock = brightSchoolCss.match(/\.theme-bright-school\.theme-bright-school \.board-wrap\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(boardWrapBlock).toContain("--board-wood-texture");
+    expect(boardWrapBlock).toContain('url("/assets/boards/go-board-background-reference-color-vertical-2048.webp")');
+    expect(boardWrapBlock).toContain("#e4aa2f");
+    expect(boardWrapBlock).toContain("background: var(--board-wood-texture)");
+    expect(themeBoardWrapBlock).toContain("background: var(--board-wood-texture) !important");
+    expect(() => readFileSync(new URL("../../public/assets/boards/go-board-background-reference-color-vertical-2048.webp", import.meta.url))).not.toThrow();
   });
 
   test("renders spray stones with an independent non-decorated visual contract", () => {
@@ -123,6 +160,8 @@ describe("areBoardPropsEqual", () => {
     expect(css).toContain(".protocol-ban-mark");
     expect(css).toContain("pointer-events: none");
     expect(css).toContain("rotate(45deg)");
+    expect(css).toContain("protocol-ban-bluewhite-glow");
+    expect(css).toContain("@keyframes protocol-ban-bluewhite-glow");
   });
 
   test("renders Chisa removal marks as independent red cross overlays", () => {

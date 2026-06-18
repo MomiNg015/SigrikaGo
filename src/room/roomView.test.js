@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { CHARACTERS } from "../shared/characters.js";
 import {
   buildBoardLines,
   coordLabel,
@@ -166,5 +167,49 @@ describe("roomView helpers", () => {
       phase: GAME_PHASES.finished,
       winner: { winnerColor: COLORS.white, text: "白中盘胜" }
     });
+  });
+  test("replays Lynae spray random target from history instead of rerolling", () => {
+    const targetId = pointId(3, 3);
+    const firstCandidateId = pointId(4, 3);
+    const otherCandidateId = pointId(5, 3);
+    const recordedRandomTargetId = pointId(6, 3);
+    const history = [
+      { type: "move", color: COLORS.black, id: targetId },
+      { type: "move", color: COLORS.white, id: firstCandidateId },
+      { type: "move", color: COLORS.black, id: otherCandidateId },
+      { type: "move", color: COLORS.white, id: recordedRandomTargetId },
+      {
+        type: "skill",
+        effectType: "spray-stone",
+        skill: CHARACTERS.lynae.skill.name,
+        color: COLORS.black,
+        id: targetId,
+        randomTargetId: recordedRandomTargetId
+      }
+    ];
+    const players = [
+      { color: COLORS.black, characterId: "lynae", character: CHARACTERS.lynae, user: { id: "black" } },
+      { color: COLORS.white, characterId: "sigrika", character: CHARACTERS.sigrika, user: { id: "white" } }
+    ];
+    const room = {
+      players,
+      game: {
+        ...createGameState(players),
+        history
+      }
+    };
+    const originalRandom = Math.random;
+    Math.random = () => 0;
+
+    try {
+      const replay = replayRoomAt(room, history.length).game;
+
+      expect(replay.points.find((point) => point.id === targetId)?.stone).toBe("spray");
+      expect(replay.points.find((point) => point.id === recordedRandomTargetId)?.stone).toBe("spray");
+      expect(replay.points.find((point) => point.id === firstCandidateId)?.stone).toBe(COLORS.white);
+      expect(replay.points.find((point) => point.id === otherCandidateId)?.stone).toBe(COLORS.black);
+    } finally {
+      Math.random = originalRandom;
+    }
   });
 });

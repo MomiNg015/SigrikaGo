@@ -1,5 +1,8 @@
 /* Board frame, effects, stones, coordinates, and scoring markers. */
 .board-wrap {
+  --board-wood-texture:
+    url("/assets/boards/go-board-background-reference-color-vertical-2048.webp") center / cover no-repeat,
+    #e4aa2f;
   width: var(--board-size);
   max-width: 100%;
   min-width: 0;
@@ -11,12 +14,11 @@
   display: grid;
   grid-template-columns: clamp(22px, 2.3vw, 28px) 1fr clamp(22px, 2.3vw, 28px);
   grid-template-rows: clamp(22px, 2.3vw, 28px) 1fr clamp(22px, 2.3vw, 28px);
-  background:
-    linear-gradient(90deg, rgba(94, 60, 20, 0.08), transparent 18%, rgba(255, 245, 202, 0.15) 34%, transparent 58%, rgba(92, 56, 17, 0.08)),
-    repeating-linear-gradient(94deg, rgba(101, 62, 19, 0.13) 0 1px, transparent 1px 10px),
-    repeating-linear-gradient(7deg, rgba(255, 238, 183, 0.15) 0 2px, transparent 2px 22px),
-    #dbae5f;
-  box-shadow: inset 0 0 0 2px rgba(106, 73, 27, 0.18), 0 20px 70px rgba(78, 54, 92, 0.18);
+  background: var(--board-wood-texture);
+  box-shadow:
+    inset 0 0 0 2px rgba(126, 79, 22, 0.34),
+    inset 0 0 34px rgba(111, 65, 12, 0.16),
+    0 20px 70px rgba(78, 54, 92, 0.18);
 }
 
 .board-stage {
@@ -326,8 +328,12 @@
   .board-effects-layer,
   .board-effects-canvas,
   .board-row-slash,
+  .double-move-stone .stone,
+  .double-move-stone .stone::before,
+  .double-move-stone .stone::after,
   .fog-cloud,
-  .fog-cloud::after {
+  .fog-cloud::after,
+  .protocol-ban-mark {
     animation-duration: 1ms !important;
     transition-duration: 1ms !important;
   }
@@ -383,14 +389,8 @@
 }
 
 .point.touch-confirming::before {
-  display: block;
-  opacity: 1;
-  border-radius: 50%;
-  border: 3px solid #22d3ee;
-  background: rgba(255, 255, 255, 0.14);
-  box-shadow:
-    0 0 0 3px rgba(255, 255, 255, 0.58),
-    0 0 18px rgba(34, 211, 238, 0.72);
+  display: none;
+  opacity: 0;
 }
 
 .board-wrap.targeting .point::before {
@@ -498,6 +498,43 @@
   animation: flipped-stone-glow 1.35s ease-in-out infinite alternate;
 }
 
+.double-move-stone .stone {
+  box-shadow:
+    inset -9px -11px 15px rgba(0, 0, 0, 0.18),
+    0 6px 10px rgba(45, 29, 18, 0.28),
+    0 0 0 3px rgba(255, 65, 32, 0.96),
+    0 0 18px rgba(255, 91, 28, 0.9),
+    0 0 34px rgba(255, 177, 52, 0.62);
+  animation: double-move-stone-glow 1.12s ease-in-out infinite alternate;
+}
+
+.double-move-stone .stone::before,
+.double-move-stone .stone::after {
+  content: "";
+  position: absolute;
+  inset: -24%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.double-move-stone .stone::before {
+  background:
+    radial-gradient(ellipse at 48% 88%, rgba(255, 245, 186, 0.72) 0 9%, transparent 22%),
+    conic-gradient(from 210deg, transparent 0 11%, rgba(255, 80, 28, 0.74) 15% 23%, transparent 31% 41%, rgba(255, 171, 47, 0.72) 47% 58%, transparent 66% 100%);
+  filter: blur(1px);
+  animation: double-move-flame-tongues 1.05s ease-in-out infinite alternate;
+}
+
+.double-move-stone .stone::after {
+  inset: -15%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 48%, rgba(255, 83, 31, 0.42) 54%, transparent 72%),
+    radial-gradient(ellipse at 50% 85%, rgba(255, 191, 73, 0.44), transparent 45%);
+  filter: blur(3px);
+  animation: double-move-flame-halo 1.4s ease-in-out infinite alternate;
+}
+
 .skill-effect-marker.blast {
   position: absolute;
   width: 36%;
@@ -531,6 +568,7 @@
     0 0 12px rgba(87, 132, 255, 0.52);
   z-index: 4;
   pointer-events: none;
+  animation: protocol-ban-bluewhite-glow 1.28s ease-in-out infinite alternate;
 }
 
 .protocol-ban-mark::before,
@@ -612,6 +650,50 @@
   }
   to {
     filter: drop-shadow(0 0 16px rgba(124, 30, 230, 1));
+  }
+}
+
+@keyframes double-move-stone-glow {
+  from {
+    filter: drop-shadow(0 0 6px rgba(255, 74, 29, 0.78));
+  }
+  to {
+    filter: drop-shadow(0 0 18px rgba(255, 122, 28, 0.98));
+  }
+}
+
+@keyframes double-move-flame-tongues {
+  from {
+    opacity: 0.62;
+    transform: rotate(-8deg) scale(0.94);
+  }
+  to {
+    opacity: 0.92;
+    transform: rotate(10deg) scale(1.08);
+  }
+}
+
+@keyframes double-move-flame-halo {
+  from {
+    opacity: 0.48;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 0.78;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes protocol-ban-bluewhite-glow {
+  from {
+    filter:
+      drop-shadow(0 0 4px rgba(255, 255, 255, 0.78))
+      drop-shadow(0 0 9px rgba(83, 143, 255, 0.62));
+  }
+  to {
+    filter:
+      drop-shadow(0 0 8px rgba(255, 255, 255, 0.96))
+      drop-shadow(0 0 18px rgba(91, 177, 255, 0.88));
   }
 }
 

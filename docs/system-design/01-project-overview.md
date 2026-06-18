@@ -539,6 +539,7 @@ SigrikaGo/
 - 计时与读秒：房间玩家包含 `mainTime`、`byoYomi`、`byoYomiPeriods` 等内存字段。
 - 对局者刷新页面、关闭页面或短暂断线后，前端会保存最近玩家房间号并在 Socket 重连时请求 `room:resume`。如果内存房间仍存在且未结束，服务端会把该 socket 重新绑定到房间并广播当前房间视图；断线期间服务端棋钟继续按真实时间推进，不会暂停。如果房间已结束但仍在内存或可通过该房间号找到 `GameRecord.snapshot`，前端停留在大厅并恢复结果弹窗；关闭结果弹窗后清理最近房间号。正常在线收到终局 `room:update` 的对局者会立即清理最近玩家房间号，因此主界面结果弹窗只用于“对局中断线且终局时未能及时连回”的玩家恢复结果。同一个有效对局结果被对局者关闭后，即使后续 WebSocket 重连再次收到该房间的 `room:resume` 结果 payload，也必须保持已关闭状态，不能再次弹出结果弹窗。如果服务重启导致内存房间丢失且没有可恢复棋谱，前端会清理最近房间号、回到大厅，并提示“房间已不存在，可能是服务器重启或房间已关闭”。
 - 玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能超频使用红色强调。除子与超频标签支持桌面悬停说明和移动端点按说明：除子说明其会在数目时按 `+除子*1` 计入，超频说明其会在数目时按 `-超频*2` 扣减。移动端的除子、超频、技能说明从点击位置生成浮层，但浮层使用固定的视口内宽度和强制换行，定位会按浮层最大宽度和视口边距夹取，顶部空间不足时改为向下展开，并用最大高度和内部滚动保证内容不溢出画面外。
+- Room player info panels use `.active-turn` as the current-turn visual contract: the player whose turn it is turns yellow on both desktop and mobile, and late theme layers such as Bright School must preserve that yellow turn-state cue.
 - 对局结束后，玩家信息区立绘右下角显示通用结果角标：胜为红字、负为黑字、和为绿字。该颜色规则定义在共享房间样式层，对所有主题界面通用。Bright School 房间内的角色头像框还会按执棋色着底：黑方为 `#2b2b2b`，白方为纯白，且房间角色立绘图片不再带投影，避免胜负角标、头像底色和图片阴影互相混淆。
 - 棋谱回放打开时会把 `GameRecord` 的 `winnerColor/resultText` 回填到回放房间快照的 `game.winner`，即使旧快照缺少该字段，回放信息区立绘右下也能显示对应胜/负/和角标。
 - 回放棋局每一步由 `replayRoomAt()` 重算棋盘，但会保留原始回放房间的 `finished` phase 和 `winner` 元数据，避免回放视图因为重算过程丢失结果角标。
