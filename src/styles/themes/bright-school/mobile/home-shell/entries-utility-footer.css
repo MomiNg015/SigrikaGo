@@ -1,0 +1,106 @@
+/* Bright School portrait mobile entry, utility, and footer layout. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    justify-self: stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature {
+    grid-area: match !important;
+    min-height: 0 !important;
+    height: clamp(190px, 58vw, 245px) !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
+    grid-area: manual !important;
+    min-height: 0 !important;
+    height: clamp(210px, 72vw, 286px) !important;
+    transform: none !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    place-items: center !important;
+    border-width: 2px !important;
+    border-radius: 18px !important;
+    box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.56) !important;
+    transform: none !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry {
+    height: 100% !important;
+    transform: none !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    transform: none !important;
+    filter: drop-shadow(4px 5px 0 rgba(61, 43, 37, 0.14)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry:hover,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry:hover {
+    transform: translateY(-2px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
+    grid-area: utility !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    display: grid !important;
+    grid-template-columns: 28px minmax(0, 1fr) !important;
+    justify-content: start !important;
+    padding: 0 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry strong {
+    display: block !important;
+    min-width: 0 !important;
+    font-size: 14px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-footer-strip {
+    width: 100% !important;
+    padding: 8px 4px 0 !important;
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+    text-align: center !important;
+  }
+}

@@ -192,6 +192,25 @@ describe("player theme CSS contract", () => {
     expect(mobileEntry).not.toContain("@keyframes bright-mobile-sheet-in");
   });
 
+  it("keeps Bright School mobile home shell as an import-only portrait home entry", () => {
+    const mobileHomeShellEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/home-shell.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(mobileHomeShellEntry)).toEqual([
+      "./home-shell/shell-base.css",
+      "./home-shell/top-strip-menu.css",
+      "./home-shell/main-stage.css",
+      "./home-shell/player-plaque.css",
+      "./home-shell/entries-utility-footer.css"
+    ]);
+    expect(mobileHomeShellEntry).not.toContain(".home-screen {");
+    expect(mobileHomeShellEntry).not.toContain(".home-mobile-menu");
+    expect(mobileHomeShellEntry).not.toContain(".home-player-plaque");
+    expect(mobileHomeShellEntry).not.toContain(".home-utility-grid");
+  });
+
   it("keeps Bright School mobile room as an import-only portrait battle entry", () => {
     const mobileRoomEntry = readFileSync(new URL("./themes/bright-school/mobile/room.css", import.meta.url), "utf8");
 

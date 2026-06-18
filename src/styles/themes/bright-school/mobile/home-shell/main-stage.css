@@ -1,0 +1,40 @@
+/* Bright School portrait mobile home main stage. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 4px 0 0 !important;
+    padding: 14px 10px 16px !important;
+    border-width: 2px !important;
+    border-radius: 20px !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main::after {
+    top: 8px !important;
+    width: min(190px, 58vw) !important;
+    height: 14px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "player"
+      "match"
+      "manual"
+      "utility" !important;
+    gap: 14px !important;
+    padding: 20px 0 0 !important;
+    overflow: visible !important;
+  }
+}

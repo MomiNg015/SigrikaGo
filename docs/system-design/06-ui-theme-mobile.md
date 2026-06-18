@@ -12,6 +12,7 @@
 
 - Startorch home terminal styles are now an import-only lobby skin entry. `src/styles/home-terminal.css` owns import order and delegates concrete rules to `src/styles/home-terminal/shell-background.css`, `top-strip.css`, `layout-player.css`, `entries.css`, `utility-footer-motion.css`, and `mobile.css`; `src/styles/styleContract.test.js` guards that directory and import map.
 - Shared mobile home layout styles are now import-only as well. `src/styles/mobile-home.css` delegates the base 900px mobile/tablet rules, the 620px narrow-phone fallback, and the 900px landscape fallback to `src/styles/mobile-home/`, with `src/styles/styleContract.test.js` guarding the import order.
+- Bright School portrait mobile home shell is now a nested import-only entry: `src/styles/themes/bright-school/mobile/home-shell.css` owns import order, while `src/styles/themes/bright-school/mobile/home-shell/` contains shell-base, top-strip-menu, main-stage, player-plaque, and entries-utility-footer so future mobile home, menu, plaque, and footer rules stay in focused files.
 
 ## Modal Layering
 

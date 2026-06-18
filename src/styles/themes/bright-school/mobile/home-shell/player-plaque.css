@@ -1,0 +1,86 @@
+/* Bright School portrait mobile player plaque. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    grid-area: player !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-self: stretch !important;
+    transform: rotate(-0.4deg) !important;
+    filter: drop-shadow(0 10px 10px rgba(61, 43, 37, 0.12)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+    width: 100% !important;
+    min-height: 92px !important;
+    grid-template-columns: clamp(50px, 14vw, 58px) minmax(0, 1fr) minmax(106px, clamp(112px, 33vw, 132px)) !important;
+    gap: clamp(7px, 2.3vw, 10px) !important;
+    padding: 18px 12px 12px 22px !important;
+    border-width: 2px !important;
+    border-radius: 16px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::after {
+    top: -24px !important;
+    width: 28px !important;
+    height: 46px !important;
+    border-width: 3px !important;
+    border-left-width: 6px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before {
+    left: 52px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::after {
+    right: 52px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar {
+    width: 56px !important;
+    height: 56px !important;
+    padding: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card strong {
+    font-size: clamp(20px, 6vw, 26px) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: clamp(7px, 2.1vw, 9px) clamp(6px, 2vw, 8px) !important;
+    border-width: 2px !important;
+    place-content: center stretch !important;
+    place-items: center stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-stat {
+    grid-template-columns: minmax(0, 0.86fr) minmax(0, 0.74fr) minmax(0, 1fr) !important;
+    gap: clamp(2px, 2.8cqw, 4px) !important;
+    align-items: center !important;
+    justify-items: center !important;
+    justify-content: stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-name {
+    font-size: clamp(9px, 8.2cqw, 12px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rank,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rating {
+    font-size: clamp(9px, 8.9cqw, 13px) !important;
+  }
+}
