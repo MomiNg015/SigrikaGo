@@ -1,0 +1,37 @@
+/* Bright School skill targeting repair. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .action-bar .skill-action.active:not(:disabled) {
+  --bright-school-skill-active-bg-0: linear-gradient(135deg, #ffcf4d 0%, #ff75b7 38%, #71e0d1 72%, #fff3c8 100%);
+  --bright-school-skill-active-bg-50: linear-gradient(135deg, #71e0d1 0%, #fff3c8 34%, #ff75b7 68%, #ffcf4d 100%);
+  --bright-school-skill-active-bg-100: linear-gradient(135deg, #ff75b7 0%, #ffcf4d 36%, #71e0d1 70%, #fff3c8 100%);
+  --bright-school-skill-active-shadow-0:
+    3px 3px 0 #3d2b25,
+    0 0 0 4px rgba(255, 255, 255, 0.72),
+    0 0 22px rgba(255, 117, 183, 0.58),
+    0 0 36px rgba(113, 224, 209, 0.42);
+  --bright-school-skill-active-shadow-50:
+    3px 3px 0 #3d2b25,
+    0 0 0 4px rgba(255, 255, 255, 0.78),
+    0 0 24px rgba(113, 224, 209, 0.58),
+    0 0 40px rgba(255, 207, 77, 0.42);
+  --bright-school-skill-active-shadow-100:
+    3px 3px 0 #3d2b25,
+    0 0 0 4px rgba(255, 255, 255, 0.72),
+    0 0 22px rgba(255, 207, 77, 0.56),
+    0 0 36px rgba(255, 117, 183, 0.44);
+  position: relative !important;
+  background: var(--bright-school-skill-active-bg-0) !important;
+  border-color: #3d2b25 !important;
+  box-shadow: var(--bright-school-skill-active-shadow-0) !important;
+  animation: bright-school-skill-action-glow 1.1s linear infinite !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .action-bar .skill-action.active:not(:disabled)::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -5px !important;
+  border-radius: inherit !important;
+  box-shadow: var(--bright-school-skill-active-shadow-0);
+  pointer-events: none !important;
+  z-index: 0 !important;
+  animation: bright-school-skill-action-aura 1.1s linear infinite !important;
+}

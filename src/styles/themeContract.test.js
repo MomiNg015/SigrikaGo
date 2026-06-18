@@ -177,6 +177,23 @@ describe("player theme CSS contract", () => {
     expect(modalsEntry).not.toContain(".room-person-popover");
   });
 
+  it("keeps Bright School effects as an import-only animation and board-effect entry", () => {
+    const effectsEntry = readFileSync(new URL("./themes/bright-school/effects.css", import.meta.url), "utf8");
+
+    expect(cssImports(effectsEntry)).toEqual([
+      "./effects/selected-controls.css",
+      "./effects/skill-action-active.css",
+      "./effects/skill-action-disabled.css",
+      "./effects/board-targeting.css",
+      "./effects/board-marks.css",
+      "./effects/keyframes.css",
+      "./effects/reduced-motion.css"
+    ]);
+    expect(effectsEntry).not.toContain(".sortie-button.selected");
+    expect(effectsEntry).not.toContain(".board-wrap.targeting");
+    expect(effectsEntry).not.toContain("@keyframes bright-school-skill-action-glow");
+  });
+
   it("keeps Bright School component repairs as an import-only domain entry", () => {
     const componentRepairsEntry = readFileSync(new URL("./themes/bright-school/component-repairs.css", import.meta.url), "utf8");
 

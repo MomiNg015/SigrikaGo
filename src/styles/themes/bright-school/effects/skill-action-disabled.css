@@ -1,0 +1,19 @@
+/* Bright School unavailable skill action repair. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .action-bar .skill-action:disabled,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .action-bar .skill-action.spent {
+  background: #d6cfd9 !important;
+  color: #7d7282 !important;
+  border-color: #cfc6d2 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  animation: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .action-bar .skill-action:disabled::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .action-bar .skill-action.spent::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
