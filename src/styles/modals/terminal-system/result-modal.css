@@ -1,0 +1,60 @@
+/* Startorch terminal result modal layout */
+
+.result-modal.black-win,
+.result-modal.draw-result {
+  background:
+    linear-gradient(135deg, rgba(0, 255, 190, 0.08), transparent 38%),
+    var(--terminal-bg-strong);
+  border-color: var(--terminal-line);
+  color: var(--terminal-text);
+}
+
+.result-summary p {
+  color: #ffffff;
+}
+
+.result-rewards span {
+  border-radius: 2px;
+  background: rgba(0, 255, 190, 0.08);
+  border-color: rgba(0, 255, 190, 0.28);
+  color: #ffffff;
+}
+
+.result-rewards strong {
+  color: var(--terminal-muted);
+}
+
+.modal-backdrop:has(.result-modal) {
+  place-items: center;
+  align-items: center;
+}
+
+.modal-backdrop:has(.result-modal) .result-modal {
+  width: 50vw;
+  max-width: calc(100vw - 32px);
+  min-width: min(420px, calc(100vw - 32px));
+  height: 40vh;
+  max-height: calc(100dvh - 32px);
+  min-height: 280px;
+  box-sizing: border-box;
+  grid-template-columns: minmax(110px, 32%) minmax(0, 1fr);
+  gap: clamp(14px, 2vw, 22px);
+  overflow: hidden;
+}
+
+.modal-backdrop:has(.result-modal) .result-modal.draw-result {
+  grid-template-columns: 1fr;
+}
+
+.modal-backdrop:has(.result-modal) .result-winner img {
+  width: min(150px, 100%);
+  height: min(150px, calc(40vh - 112px));
+}
+
+.match-portrait,
+.result-winner img,
+.character-detail-art img,
+.profile-resume-hero img,
+.warehouse-effect-result img {
+  filter: drop-shadow(0 0 18px rgba(0, 255, 190, 0.26)) drop-shadow(0 16px 24px rgba(0, 0, 0, 0.34));
+}

@@ -512,6 +512,24 @@ describe("root CSS entry contract", () => {
     expect(modalsEntry).not.toContain(".character-detail {");
   });
 
+  it("keeps terminal modal system styles as an import-only sub-entry", () => {
+    const terminalSystemEntry = readFileSync(new URL("./modals/terminal-system.css", import.meta.url), "utf8");
+
+    expect(cssImports(terminalSystemEntry)).toEqual([
+      "./terminal-system/tokens-backdrop.css",
+      "./terminal-system/modal-chrome.css",
+      "./terminal-system/close-header-actions.css",
+      "./terminal-system/terminal-buttons.css",
+      "./terminal-system/replay-profile-surfaces.css",
+      "./terminal-system/result-modal.css",
+      "./terminal-system/outcomes-resume-actions.css"
+    ]);
+    expect(terminalSystemEntry).not.toContain(":root {");
+    expect(terminalSystemEntry).not.toContain(".small-modal,");
+    expect(terminalSystemEntry).not.toContain(".primary-action,");
+    expect(terminalSystemEntry).not.toContain(".result-modal.black-win");
+  });
+
   it("keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry", () => {
     const replayModeResumeEntry = readFileSync(new URL("./modals/replay-mode-resume.css", import.meta.url), "utf8");
 
