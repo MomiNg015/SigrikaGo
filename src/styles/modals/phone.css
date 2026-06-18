@@ -23,7 +23,7 @@
   }
 
   .character-detail-copy {
-    text-align: center;
+    text-align: left;
   }
 
   .character-detail-copy h3 {
@@ -31,25 +31,37 @@
   }
 
   .character-detail-heading {
-    align-items: stretch;
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr) minmax(124px, 156px);
+    align-items: start;
+    gap: 8px;
+    padding-right: 0;
+  }
+
+  .character-detail-heading h3 {
+    line-height: 1.05;
+    white-space: nowrap;
+    word-break: keep-all;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
   }
 
   .character-music-player {
-    width: min(172px, 100%);
+    width: min(156px, 46vw);
     max-width: 100%;
     justify-content: flex-start;
-    justify-self: center;
+    justify-self: end;
+    align-self: start;
   }
 
   .character-music-name,
   .character-music-select {
-    max-width: 132px;
+    max-width: 116px;
   }
 
   .character-detail-copy p {
     font-size: 13px;
     line-height: 1.55;
+    text-align: left;
   }
 
   .profile-replay-dialog {

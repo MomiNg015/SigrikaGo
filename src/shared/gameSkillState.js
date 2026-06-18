@@ -22,11 +22,14 @@ export function clearOwnedBoardMarkers(state, ownerColor) {
     point.skillEffect = null;
     point.skillEffectOwner = null;
   }
-  state.rowEffects = (state.rowEffects ?? []).filter((effect) => effect.owner !== ownerColor);
 }
 
 export function clearExpiredLibertyPurgeMarks(state) {
   state.libertyPurgeMarks = (state.libertyPurgeMarks ?? []).filter((mark) => mark.owner !== state.turn);
+}
+
+export function clearExpiredRowEffects(state, actionColor) {
+  state.rowEffects = (state.rowEffects ?? []).filter((effect) => effect.clearAfterColor !== actionColor);
 }
 
 export function applySkillCost(state, color, skillOrCharacterId) {
@@ -93,6 +96,7 @@ export function resolveCapturesAfterMutation(state, actorColor, consumesTurn = t
   if (consumesTurn) {
     state.turn = opponent(actorColor);
     state.moveNumber += 1;
+    clearExpiredRowEffects(state, actorColor);
     clearExpiredLibertyPurgeMarks(state);
   }
   return state;

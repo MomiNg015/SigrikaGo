@@ -141,7 +141,7 @@ useStartupPreload({
 #### 3. Contracts
 - Keep using `mergeCurrentUserFromRoom(currentUser, roomView)` when the current player's room snapshot carries fresh account-visible fields such as coins, item effects, cosmetics, or character state.
 - `updateUser` must not generate coins, rating, or rank-change toasts. Numeric rewards can be shown in dedicated result UI, not as automatic account-diff toasts.
-- A player entering a spark or standard room is a context switch, not a settlement event.
+- A player entering a spark, standard, or gomoku room is a context switch, not a settlement event.
 - When the app enters `home`, refresh `/api/me` once and write the response through `updateUser` so the lobby plaque reflects post-game mode stats.
 - Finished result resume snapshots (`payload.type === "result"`) must not merge stale player stats into the current user.
 
@@ -444,7 +444,7 @@ const { matchStart, matchSuccess, setMatchStart, setMatchSuccess } = useMatchSes
 
 ## Common Mistakes
 
-- Treating room snapshot rating/rank changes as account reward events. Mode-specific stats can differ between spark and standard, so changing modes can make the current player's displayed rating/rank change without any game settlement.
+- Treating room snapshot rating/rank changes as account reward events. Mode-specific stats can differ across spark, standard, and gomoku, so changing modes can make the current player's displayed rating/rank change without any game settlement.
 - Bypassing `applyRoomSnapshot` for full same-room `room:update` payloads. This loses structural sharing and makes memoized board/player consumers work harder.
 - Adding app-level modal flags directly to `App.jsx` instead of extending `useOverlayState()`.
 - Storing `resultModalOpen` as independent state instead of deriving it from `useRoomSessionState()`.

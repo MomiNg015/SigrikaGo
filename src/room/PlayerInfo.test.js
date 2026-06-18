@@ -35,6 +35,14 @@ describe("PlayerInfo labels", () => {
     });
   });
 
+  it("hides go and skill counters from gomoku player panels", () => {
+    const source = readFileSync(new URL("./PlayerInfo.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("gameModeFamily(game.mode) === \"gomoku\"");
+    expect(source).toContain("showGoStats");
+    expect(source).toContain("{showGoStats && <div className=\"captures\">");
+  });
+
   it("does not show win/loss portrait badges for invalid finished games", () => {
     const game = {
       phase: "finished",

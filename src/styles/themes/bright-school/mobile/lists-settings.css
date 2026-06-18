@@ -92,19 +92,6 @@
     white-space: nowrap !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .friend-stats {
-    min-width: 0 !important;
-    display: flex !important;
-    gap: 10px !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .friend-rank,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .friend-rating {
-    white-space: nowrap !important;
-  }
-
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .friend-actions-cell {
     grid-area: action !important;
     justify-self: end !important;

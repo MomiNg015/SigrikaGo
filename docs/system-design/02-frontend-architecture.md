@@ -41,9 +41,9 @@
 - `buildCharacterDraft` / `characterDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台角色表单数据转换。
 - `validateShopItemDraft` / `decorationDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台商城/装饰表单校验。
 - `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题、副标题、设置关于文本和首页 footer 文本默认值。
-- `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定。
+- `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定；普通落子、反色技能和千咲 `liberty-purge` 这类实际落子的技能都会成为最新落子标记来源。
 - `SKILL_EFFECT_CATALOG` / `skillEffectTargetRule` / `skillEffectSoundCues`: 位于 `src/shared/skillEffectCatalog.js`，集中维护技能 `effectType` 的管理端标签、默认目标规则、主动/被动分类、棋盘演出标记和音效 cue。管理端角色表单、服务端角色校验、技能归一化、目标预览和技能音效都应从该 catalog 读取这些元数据。
-- `row-slash` 是主动技能类型但不挂 Pixi `boardEffect` canvas，目标规则为 `any-point`。服务端 pending skill preview 会附带 `row` 和整行 `affectedPointIds`，前端 `Board` 以 `BoardRowSlashOverlay` 渲染一条贯穿棋盘外缘的横向刀痕，并由 CSS `row-slash-strike` 动画完成斩击展开；该 DOM overlay 为 `pointer-events: none`，且 `BoardSkillEffects` 对这类 DOM-only 预览直接返回 `null`，避免任何整棋盘效果层覆盖棋盘网格、星位和棋子。
+- `row-slash` 是主动技能类型但不挂 Pixi `boardEffect` canvas，目标规则为 `any-point`。服务端 pending skill preview 会附带 `row` 和整行 `affectedPointIds`，前端 `Board` 以 `BoardRowSlashOverlay` 渲染一条贯穿棋盘外缘的破碎横向刀痕，并由 CSS `row-slash-strike` 动画完成斩击展开；持久标记来自 `game.rowEffects`，通过 `clearAfterColor` 在对手下一次行动后清除。该 DOM overlay 为 `pointer-events: none`，且 `BoardSkillEffects` 对这类 DOM-only 预览直接返回 `null`，避免任何整棋盘效果层覆盖棋盘网格、星位和棋子。
 - `COLORS` / `opponent`: 位于 `src/shared/gameConstants.js`，集中维护棋色常量与对手颜色推导；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `createPoints` / `getPoint` / `activeNeighbors`: 位于 `src/shared/gameBoard.js`，集中封装棋盘几何和点位访问；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `collectGroup`: 位于 `src/shared/gameGroups.js`，集中封装棋子连通块和气的遍历；`src/shared/game.js` 保持同名转导以兼容既有调用方。
@@ -63,7 +63,7 @@
 
 ### 后端通用逻辑
 
-- `publicUser`: 用户公开字段白名单，并返回模式级 `modeStats.{spark,standard}`，其中包含 `rating/rank/recentResults/wins/losses/draws`。
+- `publicUser`: 用户公开字段白名单，并返回模式级 `modeStats.{spark,standard,gomoku}`，其中包含 `rating/rank/recentResults/wins/losses/draws`。
 - `applyRankProgression`: 位于 `src/shared/rankProgression.js`，前后端共用的段位升降级规则。胜负局会更新当前模式窗口，胜 7 盘升段/级、负 8 盘降段/级，并在触发后清空窗口。
 - `makeAuth`: HTTP 鉴权与管理员中间件。
 - `validateCharacterInput`: 角色/技能输入校验。
@@ -210,12 +210,14 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 
 - Frontend deployment helpers live in `src/shared/preloadAssets.js`.
 - Socket.IO now connects to `window.location.origin`, so the deployed site can run behind `https://sigrika.fun` without a hard-coded localhost socket endpoint.
+- `src/app/gameSocket.js` sets explicit mobile-friendly recovery options for the game socket: reconnect indefinitely, retry quickly, cap reconnect delay at 3 seconds, and fail the initial handshake after 6 seconds so a weak mobile network can recover instead of waiting on the default long timeout.
 - Vite development proxy forwards `/socket.io` websocket traffic to the local backend, keeping the same-origin socket path usable in development and production.
 - Vite development proxy also handles expected `/socket.io` websocket disconnect errors such as `ECONNRESET` and `ECONNREFUSED` quietly. These are normal when `dev:server` restarts the backend with `node --watch`; unexpected proxy errors still emit a concise warning.
 - After a valid token is confirmed, the app enters a `preloading` view before the home screen.
 - Fresh login enters `preloading` before the home screen, preventing the home screen from flashing before assets begin loading. Stored-token startup is intentionally disabled so refresh and browser restart return to the login screen.
 - The preload step fetches non-replay runtime assets after login, but it is now split by startup criticality. Critical preload waits for current character portraits, home entry/background imagery, and common board/UI effect sounds before the app can leave the preload screen. Shop imagery, candy/effect previews, stone decoration images, result/match sounds, configured BGM tracks, character skill voices, and system voices stay in the same asset manifest but load as deferred background work with a concurrency cap so first entry to the home screen is not blocked by the full music/voice library. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.
 - Preload failures are non-blocking: failed or hanging asset loaders are ignored after a bounded per-task timeout so users are not trapped on the loading screen if a single critical or optional resource stalls during reconnect, server restart, or cache recovery.
+- Startup preload is independent from transient Socket.IO client instances. `useStartupPreload()` must not receive `socket` or include a socket object in its dependency list; token/session state cleanup will tear down the socket through the socket lifecycle hook, while preload continues exactly once for the confirmed token.
 - The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.
 
 ## Board Effect Theme Guard

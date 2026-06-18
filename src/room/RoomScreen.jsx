@@ -54,7 +54,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   const [closeCountdownNow, setCloseCountdownNow] = useState(Date.now());
   const showCloseCountdown = shouldShowRoomCloseCountdown(displayRoom);
   const useMobileLayout = useMobileRoomLayout();
-  const { roomRequestToast, handleTimedRequestAction, closeTimedRequestToast } = useTimedRoomRequestToast({
+  const { roomRequestToast, handleTimedRequestAction } = useTimedRoomRequestToast({
     room: displayRoom,
     userId: user.id,
     isReplay,
@@ -203,7 +203,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         <TimedRoomRequestToast
           toast={roomRequestToast}
           onAction={handleTimedRequestAction}
-          onClose={closeTimedRequestToast}
         />
       )}
       {confirmAction && (

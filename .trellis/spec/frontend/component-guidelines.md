@@ -40,26 +40,26 @@ Questions to answer:
 
 #### 2. Signatures
 - Import mode facts from `src/shared/gameModes.js`.
-- UI mode ids are `spark` and `standard`.
-- Mode option order must use `modeOrderedEntries()` so `spark` appears before `standard`.
+- UI mode ids are `spark`, `standard`, and `gomoku`.
+- Mode option order must use `modeOrderedEntries()` so `spark` appears before `standard`, then `gomoku` appears after the Go modes.
 - Room controls receive `game.skillEnabled !== false` or equivalent normalized mode state.
 - Board components receive `game.size` and expose it as `--size` on the shared board wrapper so intersections, labels, star points, and click targets use one board-size source.
 
 #### 3. Contracts
-- Home match entry opens a two-option modal before emitting `match:join`.
-- Duel requests open the same two-option choice before emitting `duel:request`; incoming request UI must show the selected mode title and rules text.
-- Mode tabs are required for leaderboard, watch list, and record/history views.
-- Home player plaques render two compact mode stat rows from `modeOrderedEntries()`: spark rank/rating first, standard rank/rating second. Do not collapse them back into a single global rank/rating pair, and do not show recent-result markers on the plaque.
-- Standard room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels.
+- Home match entry opens a mode picker before emitting `match:join`; it must render every mode returned by `modeOrderedEntries()`.
+- Duel requests open the same mode picker before emitting `duel:request`; incoming request UI must show the selected mode title and rules text.
+- Mode tabs are required for leaderboard, watch list, profile/detail, and record/history views. These tabs must use each mode's `shortTitle`, stay in one non-wrapping row, and allocate the three current modes across one line.
+- Home player plaques render compact mode stat rows from `modeOrderedEntries()`: spark rank/rating first, standard rank/rating second, gomoku rank/rating third. Do not collapse them back into a single global rank/rating pair, and do not show recent-result markers on the plaque.
+- No-skill room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels. Gomoku additionally hides Go-only pass/counting/dead-stone controls and capture/removal/overclock info chips.
 - Standard scoring copy must omit overclock/skill-cost descriptions and use black komi `3.75`.
 - Coordinate labels must grid with `repeat(var(--size), minmax(0, 1fr))`; do not leave coordinate rows or columns hard-coded to 13 tracks.
 
 #### 4. Validation & Error Matrix
 - Missing `game.mode` -> render as `spark`.
 - Missing `game.skillEnabled` -> assume skills enabled for legacy rooms.
-- `standard` with accidental skill state -> UI must still hide skill controls when `skillEnabled === false`.
+- `standard` or `gomoku` with accidental skill state -> UI must still hide skill controls when `skillEnabled === false`.
 - Standard board actions on points such as `18,18` must be accepted by the backend because point validation uses the room game's size, not the legacy 13-line default.
-- Mobile mode controls -> keep 44px-plus touch targets and avoid compressing Chinese labels into wrapped fragments.
+- Mobile mode controls -> keep 44px-plus touch targets; mode tabs must not wrap Chinese labels, and tab surfaces should show `五子棋` instead of the longer Gomoku entry copy.
 
 #### 5. Good/Base/Bad Cases
 - Good: `ActionBar` receives `skillEnabled={displayRoom.game.skillEnabled !== false}` and conditionally renders the skill button.
@@ -68,12 +68,12 @@ Questions to answer:
 - Bad: rendering a 19-line board while `.coord-row` still uses `repeat(13, 1fr)`, which makes labels drift away from intersections.
 
 #### 6. Tests Required
-- Home mode picker renders both modes and counts.
+- Home mode picker renders every shared mode and per-mode waiting count.
 - Match/join socket payload includes selected mode.
-- Standard room state renders 19-line board star points and no skill UI.
-- Standard room accepts moves at the 19-line edge and Board CSS tests assert coordinate rows/columns use `var(--size)`.
-- Leaderboard/watch/history fetches or filters by selected mode.
-- Home plaque tests assert both `plaque-mode-stat-spark` and `plaque-mode-stat-standard` render with mode-specific ratings and stored ranks, while recent result markers stay limited to profile/history detail surfaces.
+- Standard room state renders 19-line board star points and no skill UI; gomoku room state renders the 13-line board with the spark star points, no skill UI, and no Go-only controls.
+- Standard room accepts moves at the 19-line edge, gomoku rejects pass/skill actions, and Board CSS tests assert coordinate rows/columns use `var(--size)`.
+- Leaderboard/watch/profile-detail/history fetches or filters by selected mode and render three one-line tabs with short labels.
+- Home plaque tests assert `plaque-mode-stat-spark`, `plaque-mode-stat-standard`, and `plaque-mode-stat-gomoku` render with mode-specific ratings and stored ranks, while recent result markers stay limited to profile/history detail surfaces.
 - Friend duel request payload and incoming banner include mode.
 
 #### 7. Wrong vs Correct
@@ -108,6 +108,7 @@ Correct:
 - `schedulePixiPrewarm({ enabled })` and `loadPixiModule()` live in `src/room/pixiPrewarm.js`; both prewarm and live board effects must share the same Pixi import promise.
 - `BOARD_SKILL_EFFECT_RENDERERS` and `playRegisteredBoardSkillEffect()` live in `src/room/boardSkillEffectRegistry.js`; concrete Pixi board animations must register by `effectType` there instead of growing `BoardSkillEffects.jsx`.
 - DOM/CSS-only board visuals such as QiuYuan `row-slash` must keep `SKILL_EFFECT_CATALOG[effectType].boardEffect === false`; `BoardSkillEffects` must return `null` for those active previews so no full-board overlay layer or Pixi canvas can cover the grid. Their animation belongs in the dedicated DOM/CSS layer, for example `BoardRowSlashOverlay` plus the `row-slash-strike` keyframes.
+- `game.rowEffects`: DOM/CSS row markers shaped as `{ effectType: "row-slash", owner, clearAfterColor, y, id }`; `clearAfterColor` is the color whose next action clears the marker.
 - `boardPointCenter()` and `pointCenterForHost()` live in `src/room/boardSkillEffectGeometry.js` so component tests and animation renderers share one board-size-aware coordinate contract.
 - `BoardAmbientEffects`: receives derived passive state such as active Nabomo color illusion fog and renders non-interactive ongoing board ambience.
 - `scheduleBoardSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings })` and `clearBoardSkillEffectSoundTimers(timerIds)` live in `src/room/boardSkillEffectSoundScheduler.js`; the React host should call these helpers instead of manually mapping cue timers.
@@ -127,6 +128,7 @@ Correct:
 - Admin character options, backend character validation, skill normalization, board target preview, active skill type lists, server fallback skill config, and board skill SFX cue timing must read shared effect metadata from `src/shared/skillEffectCatalog.js` instead of each keeping a local `effectType -> targetRule/label/cue` table.
 - Every catalog entry with `boardEffect: true` must have a matching `BOARD_SKILL_EFFECT_RENDERERS` entry; unknown effect types should no-op without touching the Pixi stage.
 - Effects that draw their persistent visual through React DOM/CSS, such as a row-wide slash marker stored in `game.rowEffects`, must not be registered as Pixi `boardEffect` entries. A full-size Pixi canvas can become an opaque overlay in some browser/runtime paths and hide the board grid, star points, and stones.
+- QiuYuan `row-slash` is visible only until the opponent's next action. Store `clearAfterColor: opponent(owner)` and clear expired row effects from ordinary moves, passes, and turn-consuming skill resolution by action color, not by the row effect owner.
 - Board point buttons sit above the SVG grid; shared board CSS and theme guard layers must explicitly keep `.board .point` transparent with no appearance, no border/shadow/background image, zero min-size, and `touch-action: none` so broad button rules cannot cover the grid.
 - The board grid SVG must be treated as a gameplay layer, not ordinary media. `.board-lines` must explicitly keep `display: block`, `width/height: 100%`, `max-width/max-height: none`, and theme guard stroke/opacity rules so global `img/svg/canvas` media resets such as `height: auto` cannot collapse or wash out the grid.
 - `prefers-reduced-motion: reduce` must use a short static hit effect without fly-in, scale bursts, explosions, board shake, or explosive SFX.
@@ -137,6 +139,7 @@ Correct:
 - Missing `targetId` -> skip the Pixi effect safely.
 - Unknown `effectType` -> keep the overlay inert and preserve the normal skill preview/result flow.
 - `boardEffect === false` for a known effect -> render any DOM/CSS overlay separately through its dedicated component; do not render `BoardSkillEffects` markup and do not create a canvas.
+- `rowEffects` contains `{ owner: "black", clearAfterColor: "white" }` and white makes any valid action -> remove that row marker from the next game snapshot.
 - Muted `sfx` channel -> do not create WebAudio contexts or play board skill SFX.
 - Unmounted board / route change during a skill effect -> clear scheduled SFX timers before they fire.
 - Active Nabomo passive fog -> board clicks, touch confirmation, score marking, coordinates, and move numbers remain available because the fog is presentation-only.
@@ -164,6 +167,7 @@ Correct:
 - Effects tests assert coordinate mapping for 13-line and 19-line boards and reduced-motion timing.
 - Registry tests assert every catalog `boardEffect` type has a renderer and unknown effect types no-op safely.
 - Component tests assert DOM-only skill visuals render no `board-effects-layer` and do not require a Pixi renderer.
+- Shared game tests assert QiuYuan row slash records `clearAfterColor` and clears on the opponent's next ordinary move.
 - Board/CSS contract tests assert `.board .point` cannot inherit visible button chrome, `.board-lines` cannot inherit ordinary media sizing, and `row-slash` keeps a dedicated CSS animation.
 - Pixi prewarm tests assert disabled mode does not schedule loading, cancellation prevents idle imports, and prewarm/live effect loading share one promise.
 - Ambient tests assert active color illusion fog is pointer-transparent and renders without removing board buttons.

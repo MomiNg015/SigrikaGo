@@ -6,6 +6,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { GAME_PHASES } from "../shared/game.js";
+import { gameModeFamily } from "../shared/gameModes.js";
 import { canRequestOpponentDecision } from "./actionBar/actionAvailability.js";
 import DeadStoneDecisionBar from "./actionBar/DeadStoneDecisionBar.jsx";
 import ReplayActionBar from "./actionBar/ReplayActionBar.jsx";
@@ -13,6 +14,7 @@ import TestTools from "./actionBar/TestTools.jsx";
 
 export default function ActionBar({
   role,
+  mode = "spark",
   phase,
   me,
   isMyTurn,
@@ -70,16 +72,18 @@ export default function ActionBar({
       />
     );
   }
+  const isGomoku = gameModeFamily(mode) === "gomoku";
+  const showGoControls = !isGomoku;
   return (
     <nav className="action-bar">
-      <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>
+      {showGoControls && <button onClick={onPass} disabled={phase !== "playing" || skillLocked}>
         <Hand size={18} />
         <span className="action-label mobile-action-button-label">弃手</span>
-      </button>
-      <button onClick={onCountingRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })}>
+      </button>}
+      {showGoControls && <button onClick={onCountingRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, hasAnyStones, opponentConnected })}>
         <Calculator size={18} />
         <span className="action-label mobile-action-button-label">数子</span>
-      </button>
+      </button>}
       {skillEnabled && (
       <button
         className={`skill-action ${pendingSkill ? "active" : ""} ${skillUses <= 0 ? "spent" : ""}`}

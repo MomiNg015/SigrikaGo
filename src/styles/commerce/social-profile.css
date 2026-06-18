@@ -104,7 +104,7 @@
 .friends-list-heading,
 .friends-row {
   display: grid;
-  grid-template-columns: 66px 92px minmax(120px, 1fr) 82px 92px 74px;
+  grid-template-columns: 66px 92px minmax(120px, 1fr) 74px;
   align-items: center;
   gap: 10px;
   text-align: center;
@@ -139,8 +139,7 @@
   white-space: nowrap;
 }
 
-.friend-main,
-.friend-stats {
+.friend-main {
   display: contents;
 }
 

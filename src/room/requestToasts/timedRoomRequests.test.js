@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { GAME_PHASES } from "../../shared/game.js";
+import TimedRoomRequestToast from "./TimedRoomRequestToast.jsx";
 import { timedRoomRequestSnapshot, timedRoomRequestToastForPlayer, timedRoomResponseToast } from "./timedRoomRequests.js";
 
 const players = [
@@ -80,6 +83,37 @@ describe("timed room request toasts", () => {
     expect(timedRoomResponseToast(previous, room({ phase: GAME_PHASES.playing }))).toMatchObject({
       message: "数子申请未通过，对局继续。"
     });
+  });
+
+  it("renders timed room request toasts without a manual close button", () => {
+    const actionableHtml = renderToStaticMarkup(createElement(TimedRoomRequestToast, {
+      toast: {
+        title: "收到和棋申请",
+        message: "对方申请和棋。",
+        deadline: Date.now() + 10_000,
+        actions: [
+          { action: "draw:accept", label: "同意", tone: "agree" },
+          { action: "draw:reject", label: "不同意", tone: "reject" }
+        ]
+      },
+      onAction: () => {}
+    }));
+    const passiveHtml = renderToStaticMarkup(createElement(TimedRoomRequestToast, {
+      toast: {
+        title: "数子结果确认",
+        message: "等待对方确认结果。",
+        actions: []
+      },
+      onAction: () => {}
+    }));
+
+    expect(actionableHtml).toContain("room-request-toast actionable");
+    expect(actionableHtml).toContain("同意");
+    expect(actionableHtml).not.toContain("room-request-toast-close");
+    expect(actionableHtml).not.toContain("关闭提示");
+    expect(passiveHtml).toContain("room-request-toast passive");
+    expect(passiveHtml).not.toContain("room-request-toast-close");
+    expect(passiveHtml).not.toContain("关闭提示");
   });
 });
 

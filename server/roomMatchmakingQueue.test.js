@@ -15,10 +15,11 @@ describe("roomMatchmakingQueue", () => {
 
     expect(queue.join(player("spark-a", "socket-a")).matched).toBe(false);
     expect(queue.join(player("standard-a", "socket-b", "standard")).matched).toBe(false);
+    expect(queue.join(player("gomoku-a", "socket-c", "gomoku")).matched).toBe(false);
 
-    expect(queue.count()).toBe(2);
-    expect(queue.countsByMode()).toEqual({ spark: 1, standard: 1 });
-    expect(queue.list().map((entry) => entry.user.id)).toEqual(["spark-a", "standard-a"]);
+    expect(queue.count()).toBe(3);
+    expect(queue.countsByMode()).toEqual({ spark: 1, standard: 1, gomoku: 1 });
+    expect(queue.list().map((entry) => entry.user.id)).toEqual(["spark-a", "standard-a", "gomoku-a"]);
   });
 
   test("matches only players in the same normalized mode", () => {
@@ -26,6 +27,7 @@ describe("roomMatchmakingQueue", () => {
 
     queue.join(player("standard-a", "socket-a", "standard"));
     queue.join(player("spark-a", "socket-b", "spark"));
+    queue.join(player("gomoku-a", "socket-d", "gomoku"));
     const match = queue.join(player("standard-b", "socket-c", "standard"));
 
     expect(match).toMatchObject({
@@ -34,7 +36,7 @@ describe("roomMatchmakingQueue", () => {
       opponent: { user: { id: "standard-a" } },
       player: { user: { id: "standard-b" } }
     });
-    expect(queue.list().map((entry) => entry.user.id)).toEqual(["spark-a"]);
+    expect(queue.list().map((entry) => entry.user.id)).toEqual(["spark-a", "gomoku-a"]);
   });
 
   test("deduplicates by user id and socket id before joining", () => {

@@ -1,4 +1,4 @@
-import { normalizeGameModeId } from "../src/shared/gameModes.js";
+import { gameModeById, normalizeGameModeId } from "../src/shared/gameModes.js";
 import { createRoom } from "./roomFactory.js";
 
 export function createRoomCreationLifecycle({
@@ -23,7 +23,7 @@ export function createRoomCreationLifecycle({
     });
     registerCreatedRoom(room, io);
     emitMatchFound(io, room, first, player);
-    appendSystem(room, "\u5339\u914d\u6210\u529f\uff0c3\u79d2\u540e\u8fdb\u5165\u661f\u70ac\u5bf9\u5f08\u3002");
+    appendRoomCreatedNotices(room, "匹配成功");
     broadcastRoom(io, room);
     return room;
   }
@@ -37,7 +37,7 @@ export function createRoomCreationLifecycle({
       isCodeTaken: isRoomCodeTaken
     });
     registerCreatedRoom(room, io);
-    appendSystem(room, "\u5bf9\u5c40\u7533\u8bf7\u5df2\u540c\u610f\uff0c3\u79d2\u540e\u8fdb\u5165\u661f\u70ac\u5bf9\u5f08\u3002");
+    appendRoomCreatedNotices(room, "对局申请已同意");
     emitMatchFound(io, room, first, second);
     broadcastRoom(io, room);
     return room;
@@ -53,6 +53,15 @@ export function createRoomCreationLifecycle({
   function emitMatchFound(io, room, first, second) {
     io.to(first.socketId).emit("match:found", roomView(room, first.user.id));
     io.to(second.socketId).emit("match:found", roomView(room, second.user.id));
+  }
+
+  function appendRoomCreatedNotices(room, prefix) {
+    const mode = gameModeById(room.mode ?? room.game?.mode);
+    appendSystem(room, `${prefix}，3秒后进入${mode.shortTitle}对弈。`);
+    if (mode.family === "gomoku") {
+      const blackPlayer = room.players.find((player) => player.color === "black");
+      appendSystem(room, `已自动猜先，${blackPlayer?.user?.username ?? "黑方"}执黑先行。`);
+    }
   }
 
   return {

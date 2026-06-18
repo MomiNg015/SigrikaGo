@@ -133,4 +133,19 @@ describe("room creation lifecycle", () => {
       ["socket-b", "match:found"]
     ]);
   });
+
+  test("announces gomoku room mode and automatic color assignment", () => {
+    const first = queuedPlayer("alice", "socket-a");
+    const second = queuedPlayer("bob", "socket-b");
+    const io = fakeIo();
+    const { lifecycle, deps } = createLifecycle();
+
+    const room = lifecycle.createDirectRoom(first, second, io, "gomoku");
+
+    expect(room.mode).toBe("gomoku");
+    expect(room.game.mode).toBe("gomoku");
+    expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("五子棋"));
+    expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("自动猜先"));
+    expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("执黑先行"));
+  });
 });

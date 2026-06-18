@@ -78,11 +78,23 @@ describe("WatchModal helpers", () => {
     expect(modalCss).toContain("position: static;");
     expect(modalCss).toContain(".modal-backdrop .watch-list-actions .icon-button");
     expect(css).toContain(".watch-list-modal .mode-tabs");
-    expect(css).toContain("grid-template-columns: repeat(2, max-content);");
+    expect(css).toContain("grid-template-columns: repeat(3, max-content);");
     expect(css).toContain("min-height: 44px;");
     expect(css).toContain("grid-template-rows: auto auto minmax(220px, 1fr) auto auto;");
-    expect(css).toContain("grid-template-columns: repeat(2, minmax(0, 1fr));");
+    expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr));");
     expect(css).toContain("min-height: 40px;");
+  });
+
+  it("uses the short Gomoku label in watch mode tabs", () => {
+    const html = renderToStaticMarkup(createElement(WatchModal, {
+      token: "token",
+      characters: {},
+      onJoinRoom: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain(">五子棋</button>");
+    expect(html).not.toContain(">来下五子棋吗？</button>");
   });
 
   it("keeps watch list headers and rows on the same mobile columns", () => {

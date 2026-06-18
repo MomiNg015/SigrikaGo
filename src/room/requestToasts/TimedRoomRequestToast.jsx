@@ -1,10 +1,9 @@
 import ScoringBreakdown from "../ScoringBreakdown.jsx";
 
-export default function TimedRoomRequestToast({ toast, onAction, onClose }) {
+export default function TimedRoomRequestToast({ toast, onAction }) {
   const hasActions = toast.actions?.length > 0;
   return (
     <section className={`room-request-toast ${hasActions ? "actionable" : "passive"}`} role="status" aria-live="polite">
-      <button className="room-request-toast-close" type="button" aria-label="关闭提示" onClick={onClose}>×</button>
       <div className="room-request-toast-copy">
         <strong>{toast.title}</strong>
         <p>{toast.message}</p>

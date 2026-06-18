@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { COLORS, GAME_PHASES } from "../src/shared/game.js";
+import { COLORS, GAME_PHASES, createGameState } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import {
   SKILL_BOARD_EFFECT_DURATION_MS,
@@ -135,6 +135,35 @@ describe("room skill resolution helpers", () => {
       removed: 2,
       removedByColor: { black: 1, white: 1 }
     });
+  });
+
+  test("rejects active skills in gomoku rooms before target validation", () => {
+    const room = {
+      code: "12345",
+      players: [],
+      game: createGameState([{ userId: "alice", color: COLORS.black, characterId: "sigrika" }], { mode: "gomoku" })
+    };
+    const lifecycle = createRoomSkillLifecycle({
+      rooms: new Map([[room.code, room]]),
+      scheduleRoomTimeout: vi.fn(),
+      appendSystem: vi.fn(),
+      appendNotices: vi.fn(),
+      resetByoYomi: vi.fn(),
+      scheduleRoomClose: vi.fn(),
+      broadcastRoom: vi.fn()
+    });
+
+    expect(lifecycle.startActiveSkill({
+      room,
+      player: {
+        color: COLORS.black,
+        characterId: "sigrika",
+        character: CHARACTERS.sigrika,
+        user: { username: "alice" }
+      },
+      action: { type: "skill", pointId: "0,0" },
+      io: {}
+    })).toEqual({ ok: false, error: "五子棋不能使用技能" });
   });
 
   test("schedules and completes pending skill resolutions through injected room lifecycle hooks", () => {

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { DEFAULT_RANK, normalizeRank, parseRecentResults } from "../src/shared/rankProgression.js";
+import { GAME_MODE_IDS, normalizeGameModeId } from "../src/shared/gameModes.js";
 import { publicUserAssets } from "./userAssets.js";
 import { ownedMusicIdsWithDefaults, parseMusicSelections } from "../src/shared/musicLibrary.js";
 
@@ -85,6 +86,11 @@ export async function ensureGameModeSchema(client = prisma) {
   await client.$executeRawUnsafe(`
     INSERT OR IGNORE INTO "UserModeStats" ("id", "userId", "mode", "rating", "wins", "losses", "draws", "createdAt", "updatedAt")
     SELECT "id" || ':spark', "id", 'spark', "rating", "wins", "losses", 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+    FROM "User"
+  `);
+  await client.$executeRawUnsafe(`
+    INSERT OR IGNORE INTO "UserModeStats" ("id", "userId", "mode", "rating", "rank", "recentResults", "wins", "losses", "draws", "createdAt", "updatedAt")
+    SELECT "id" || ':gomoku', "id", 'gomoku', 1000, '3段', '', 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
     FROM "User"
   `);
 }
@@ -203,29 +209,20 @@ export function publicUser(user) {
 
 function publicModeStats(user) {
   const rows = modeStatsRows(user.modeStats);
-  const stats = {
-    spark: {
-      rating: Number(user.rating ?? 1000),
-      rank: normalizeRank(user.rank ?? DEFAULT_RANK),
-      recentResults: [],
-      wins: Number(user.wins ?? 0),
-      losses: Number(user.losses ?? 0),
-      draws: 0
-    },
-    standard: {
-      rating: 1000,
-      rank: DEFAULT_RANK,
-      recentResults: [],
-      wins: 0,
-      losses: 0,
-      draws: 0
-    }
-  };
+  const stats = Object.fromEntries(GAME_MODE_IDS.map((mode) => [mode, {
+    rating: mode === "spark" ? Number(user.rating ?? 1000) : 1000,
+    rank: mode === "spark" ? normalizeRank(user.rank ?? DEFAULT_RANK) : DEFAULT_RANK,
+    recentResults: [],
+    wins: mode === "spark" ? Number(user.wins ?? 0) : 0,
+    losses: mode === "spark" ? Number(user.losses ?? 0) : 0,
+    draws: 0
+  }]));
   for (const row of rows) {
-    if (!stats[row.mode]) continue;
-    stats[row.mode] = {
-      rating: Number(row.rating ?? stats[row.mode].rating),
-      rank: normalizeRank(row.rank ?? stats[row.mode].rank),
+    const mode = normalizeGameModeId(row.mode);
+    if (!stats[mode]) continue;
+    stats[mode] = {
+      rating: Number(row.rating ?? stats[mode].rating),
+      rank: normalizeRank(row.rank ?? stats[mode].rank),
       recentResults: parseRecentResults(row.recentResults),
       wins: Number(row.wins ?? 0),
       losses: Number(row.losses ?? 0),

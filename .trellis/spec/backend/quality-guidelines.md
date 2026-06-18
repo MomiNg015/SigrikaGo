@@ -517,7 +517,7 @@ Tests touching queue state, mode isolation, deduplication, or `canPair` behavior
 - `createRoom(first, second, { modeInput, isCodeTaken, now, random })` normalizes the mode, assigns black/white players, creates the opening game state, sets initial timers/deadlines, and generates a non-conflicting room code through `isCodeTaken`.
 - `toRoomPlayer(player, color, mode)` builds room player state, including the initial clock and selected character config.
 - `userForRoomMode(user, mode)` projects mode-specific rating/rank/win/loss values onto the in-room user snapshot.
-- `modeStatsForUser(user, mode)` reads object or array `modeStats` and falls back to legacy spark values or standard defaults.
+- `modeStatsForUser(user, mode)` reads object or array `modeStats` and falls back to legacy spark values or shared non-spark defaults such as standard/gomoku defaults.
 - `randomRoomCode({ isCodeTaken, random })` owns five-digit room code generation and collision retry.
 
 `server/rooms.js` should decide **when** to create a room and what to do after creation, but it should not hand-build room object shape or duplicate mode-stat projection.

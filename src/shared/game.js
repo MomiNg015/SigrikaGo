@@ -16,7 +16,7 @@ import {
   parsePointId,
   pointId
 } from "./gameBoard.js";
-import { gameModeById, gameModeSkillEnabled } from "./gameModes.js";
+import { gameModeById, gameModeFamily, gameModeSkillEnabled } from "./gameModes.js";
 import { GAME_PHASES } from "./gamePhases.js";
 import {
   normalizeSkillConfig,
@@ -35,7 +35,7 @@ import {
   rowSlash,
   sprayStone
 } from "./gameSkillActions.js";
-import { clearExpiredLibertyPurgeMarks, cloneState } from "./gameSkillState.js";
+import { clearExpiredLibertyPurgeMarks, clearExpiredRowEffects, cloneState } from "./gameSkillState.js";
 import {
   HIDDEN_HAND_NOTICE,
   exposeHiddenHands,
@@ -264,6 +264,7 @@ export function restoreSkillUse(state, color) {
 }
 
 export function passMove(state, color) {
+  if (gameModeFamily(state.mode) === "gomoku") return fail("五子棋不能弃手");
   if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能弃一手");
   if (state.turn !== color) return fail("还没有轮到你");
   const next = cloneState(state);
@@ -274,6 +275,7 @@ export function passMove(state, color) {
   next.ko = null;
   next.passes += 1;
   next.moveNumber += 1;
+  clearExpiredRowEffects(next, color);
   clearExpiredLibertyPurgeMarks(next);
   next.history.push({ type: "pass", color, moveNumber: next.moveNumber });
   return ok(next);

@@ -14,7 +14,8 @@ function renderHome(overrides = {}) {
       rating: 1000,
       modeStats: {
         spark: { rating: 1260, rank: "4段", recentResults: ["win", "loss"], wins: 3, losses: 1, draws: 0 },
-        standard: { rating: 920, rank: "3段", recentResults: ["loss"], wins: 1, losses: 2, draws: 0 }
+        standard: { rating: 920, rank: "3段", recentResults: ["loss"], wins: 1, losses: 2, draws: 0 },
+        gomoku: { rating: 1010, rank: "3段", recentResults: [], wins: 0, losses: 0, draws: 1 }
       },
       selectedCharacter: "sigrika",
       role: "player",
@@ -156,8 +157,10 @@ describe("HomeScreen", () => {
     expect(html).toContain('aria-label="打开履历"');
     expect(html).toContain("plaque-mode-stat plaque-mode-stat-spark");
     expect(html).toContain("plaque-mode-stat plaque-mode-stat-standard");
+    expect(html).toContain("plaque-mode-stat plaque-mode-stat-gomoku");
     expect(html).toContain("1260分");
     expect(html).toContain("920分");
+    expect(html).toContain("1010分");
     expect(html).not.toContain("plaque-mode-results");
     expect(html).not.toContain("recent-result-marker");
     expect(html).not.toContain("recent-result-empty");

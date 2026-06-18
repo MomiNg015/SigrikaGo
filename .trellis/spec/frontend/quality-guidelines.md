@@ -47,6 +47,8 @@ Questions to answer:
 #### 2. Signatures
 - `loginPreloadAssets()` returns grouped assets: `criticalImages`, `deferredImages`, `images`, `criticalAudio`, `deferredAudio`, and `audio`.
 - `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress, taskTimeoutMs })` waits for critical groups, starts deferred groups in the background, caps concurrent loaders, and bounds each loader with a timeout.
+- `useStartupPreload({ token, ... })` must not receive a transient Socket.IO `socket` instance or include one in its dependency list.
+- `connectGameSocket({ socketBase, token, ... })` creates the game Socket.IO client with explicit reconnect settings: `reconnection: true`, `reconnectionAttempts: Infinity`, `reconnectionDelay: 500`, `reconnectionDelayMax: 3000`, and `timeout: 6000`.
 - `npm run check` is the local handoff gate and should run unit tests, Vite build, production config validation with explicit sample env, and `docs:system-design`.
 - `npm run check:production` remains the strict production-env validator and must not silently inject sample secrets or origins.
 - `vite.config.js` manually chunks React, Socket.IO client code, and Pixi into `react-vendor`, `realtime-vendor`, and `pixi-vendor` respectively. Do not add a catch-all `vendor` chunk unless the build is checked for circular chunk warnings.
@@ -59,6 +61,8 @@ Questions to answer:
 - Deferred media includes shop/effect previews, stone decoration images, result/match sounds, BGM tracks, character skill voices, and system voices.
 - Preload progress represents critical preload completion; deferred assets must not keep users trapped on the preload screen.
 - Preload failures and hung loaders remain non-blocking for both critical and deferred groups; timed-out tasks count as completed preload work so startup can recover after reconnect or server restart.
+- Startup preload must be independent from transient socket object identity. Token/session cleanup can close sockets through the socket lifecycle hook after state changes; preloading should continue once for the confirmed token instead of restarting when a mobile WebSocket reconnects or a socket instance changes.
+- The game socket should fail its initial connection attempt quickly enough for mobile recovery feedback and Socket.IO retry logic to take over. Do not rely on Socket.IO's default long handshake timeout for this app shell path.
 - The grouped asset API must keep `images` and `audio` flattened arrays for compatibility with tests and existing callers.
 - Production entry JS should stay split from heavy runtime libraries. The Pixi chunk may be larger than Vite's default 500 KB warning because it is lazy-loaded and prewarmed only for skill-enabled boards; the configured warning limit should remain a documented exception, not a way to hide a growing entry chunk.
 - Dev proxy `ECONNRESET` and `ECONNREFUSED` errors from `/socket.io` are expected while `dev:server` restarts; do not remove the proxy error handler unless the replacement keeps those disconnects from spamming the client terminal.
@@ -70,10 +74,13 @@ Questions to answer:
 - Invalid or zero concurrency -> fall back to one worker.
 - Loader rejection -> swallow the failure and continue remaining preload work.
 - Loader never settles -> treat it like a non-blocking preload failure after the per-task timeout and continue remaining preload work.
+- Socket instance changes while token preload is in progress -> do not cancel or restart `useStartupPreload`.
+- Mobile WebSocket handshake stalls -> Socket.IO connection attempt times out after 6 seconds and retries with the configured reconnect delays.
 - Production env missing real secrets/origins -> `npm run check:production` fails; `npm run check` may use explicit sample env for local validation.
 
 #### 5. Good/Base/Bad Cases
 - Good: Login reaches home after current portraits, home art, and UI/board SFX are ready while BGM and voice assets keep loading in the background.
+- Good: A mobile client with a flaky `/socket.io` WebSocket keeps the asset preload flow stable while Socket.IO retries the realtime connection.
 - Good: React and Socket.IO runtime code are cached in stable vendor chunks, while Pixi stays in a lazy `pixi-vendor` chunk outside the initial room entry path.
 - Base: Older tests or helpers that pass only `images` and `audio` still work.
 - Bad: Awaiting every configured music and voice file before home entry.
@@ -84,6 +91,8 @@ Questions to answer:
 - Asset grouping tests must assert representative first-screen assets are critical and representative music/voice/shop assets are deferred.
 - Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
 - Preload behavior tests must assert a hung critical loader cannot keep login preload pending forever.
+- App wiring tests must assert startup preload is not passed a `socket` prop.
+- Game socket tests must assert the mobile recovery reconnect and 6-second handshake timeout options.
 - Script contract tests must assert `npm run check` includes tests, build, production config validation, docs generation, and explicit sample production env.
 - Vite build config tests must assert manual chunk grouping, the absence of a catch-all vendor chunk, the intentional Pixi warning limit, and quiet handling for expected dev websocket proxy disconnects.
 - Run `npm run check` before handoff when changing preload or verification commands.
@@ -106,6 +115,23 @@ await preloadLoginAssets(loginPreloadAssets({ characters }), { onProgress });
 
 `preloadLoginAssets` waits for critical groups and starts deferred groups with a concurrency cap.
 
+Wrong:
+
+```jsx
+useStartupPreload({ token, socket });
+```
+
+This lets a transient realtime connection object restart login asset preload on mobile reconnects.
+
+Correct:
+
+```jsx
+useStartupPreload({ token });
+connectGameSocket({ socketBase, token });
+```
+
+The socket lifecycle hook owns realtime reconnects while startup preload remains tied to the confirmed token.
+
 ### Board point and interaction feedback performance contracts
 
 #### 1. Scope / Trigger
@@ -116,6 +142,7 @@ await preloadLoginAssets(loginPreloadAssets({ characters }), { onProgress });
 - `arePointButtonPropsEqual(previous, next)` is the point-level React memo comparator for board intersections.
 - Point buttons receive stable refs such as `handlersRef` and `pointerTypeRef`; visible state and capability booleans remain ordinary props.
 - `triggerUnavailableShake(target)` restarts `ui-unavailable-shake` without reading layout metrics such as `offsetWidth`.
+- `lastMarkedAction(history)` is the canonical source for the board's latest placed-stone marker.
 
 #### 3. Contracts
 - Point memo comparison may ignore event function identity only when the rendered button reads the latest handlers through a stable ref object.
@@ -123,12 +150,14 @@ await preloadLoginAssets(loginPreloadAssets({ characters }), { onProgress });
 - Do not rely on `game` object identity inside a point button; derive per-point display props in `Board` and pass only the point's slice.
 - Unavailable feedback may remove and re-add the shake class on the next animation frame; it must not force a synchronous layout read to restart CSS animation.
 - Neutral point marking remains phase-gated by an explicit capability prop such as `canMarkNeutral`.
+- History entries for skills that place a real stone must be eligible for the latest placed-stone marker. Keep Chisa `liberty-purge` covered through `lastMarkedAction(history)` instead of treating only ordinary moves as markable placements.
 
 #### 4. Validation & Error Matrix
 - Handler function changes but the same stable handler ref is passed -> point button may stay memoized and must still call the latest handler from `handlersRef.current`.
 - Scoring handler availability changes -> point button must re-render because pointer/click semantics change.
 - Point stone, mark, decoration, move number, preview class, or confirmation class changes -> point button must re-render.
 - Browser lacks `requestAnimationFrame` -> unavailable feedback may fall back to a timer instead of forcing layout.
+- A skill history entry with `effectType: "liberty-purge"` and `placedId`/`id` after an ordinary move -> latest marker must move to the skill placement point.
 
 #### 5. Good/Base/Bad Cases
 - Good: A timer tick or parent handler recreation does not re-render all board intersections, while a new click handler stored in `handlersRef.current` is still used.
@@ -138,6 +167,7 @@ await preloadLoginAssets(loginPreloadAssets({ characters }), { onProgress });
 
 #### 6. Tests Required
 - Board comparator tests must assert handler-ref content changes stay memoized and visible/capability changes re-render.
+- Board view tests must assert Chisa `liberty-purge` placement becomes the latest marked action after an ordinary move.
 - Interaction feedback tests must assert source behavior does not use `offsetWidth` and uses an async restart mechanism such as `requestAnimationFrame`.
 - Run targeted tests for `src/room/Board.test.js` and `src/app/InteractionFeedback.test.js`, then run the project `check` gate before handoff.
 

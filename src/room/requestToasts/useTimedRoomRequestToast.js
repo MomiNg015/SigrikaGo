@@ -62,7 +62,6 @@ export function useTimedRoomRequestToast({
 
   return {
     roomRequestToast,
-    handleTimedRequestAction,
-    closeTimedRequestToast: () => setRoomRequestToast(null)
+    handleTimedRequestAction
   };
 }
