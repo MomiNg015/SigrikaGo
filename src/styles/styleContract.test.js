@@ -215,6 +215,26 @@ describe("root CSS entry contract", () => {
     expect(brightSchoolOverridesEntry).not.toContain(".leaderboard-row");
   });
 
+  it("keeps Bright School portrait as an import-only final guard entry", () => {
+    const brightSchoolPortraitEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-portrait.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(brightSchoolPortraitEntry)).toEqual([
+      "./bright-school-portrait/resume-modal-layout.css",
+      "./bright-school-portrait/resume-character-records.css",
+      "./bright-school-portrait/home-player-plaque.css",
+      "./bright-school-portrait/shop-wallet.css",
+      "./bright-school-portrait/settings-tabs.css",
+      "./bright-school-portrait/mobile-room-chat.css",
+      "./bright-school-portrait/character-detail.css"
+    ]);
+    expect(brightSchoolPortraitEntry).not.toContain(".resume-header-actions {");
+    expect(brightSchoolPortraitEntry).not.toContain(".mobile-room-screen .chat-popover");
+    expect(brightSchoolPortraitEntry).not.toContain(".character-detail-heading");
+  });
+
   it("keeps nested CSS files under approved domain entry maps", () => {
     const nestedCssFiles = cssFilesUnder(stylesDir)
       .map((filePath) => relative(stylesDir, filePath).replaceAll("\\", "/"))

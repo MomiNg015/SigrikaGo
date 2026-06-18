@@ -1,0 +1,114 @@
+/* Bright School portrait mobile room chat safety rules. */
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open {
+    z-index: 9 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel {
+    z-index: 9 !important;
+    pointer-events: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.modal-backdrop) .mobile-room-screen .room-mobile-menu,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.modal-backdrop) .mobile-room-screen .room-mobile-menu-panel {
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-room-tabs:has(.chat-widget.open),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel:has(.chat-widget.open) {
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-widget.open {
+    z-index: 8 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-popover {
+    right: 0 !important;
+    bottom: calc(100% + 8px) !important;
+    width: min(340px, calc(100vw - 24px)) !important;
+    max-height: min(360px, calc(100dvh - 260px)) !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-log {
+    height: min(190px, 32dvh) !important;
+    min-height: 112px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .captures span,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .digital-timer,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .timer-track,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .timer-track span,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .skill-chip,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .replay-step-indicator,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .replay-bar,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .replay-bar button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .action-bar button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-toggle-button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-close-button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-panel,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-panel button {
+    box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen #mobile-room-panel-actions .replay-bar {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen #mobile-room-panel-actions .replay-bar button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen #mobile-room-panel-actions .replay-step-indicator {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .message-board-modal {
+    position: relative !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .message-board-modal > .close-button {
+    position: absolute !important;
+    top: var(--modal-close-inset, 12px) !important;
+    right: var(--modal-close-inset, 12px) !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+    z-index: 20 !important;
+  }
+
+  /* Lock app shell scrolling when inside the mobile battle room */
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.mobile-room-screen) {
+    height: 100dvh !important;
+    overflow-y: hidden !important;
+    touch-action: none !important;
+  }
+
+  /* Prevent room menu from overlapping active modals and their close buttons */
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.modal-backdrop) .mobile-room-screen .room-mobile-menu {
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.modal-backdrop) .mobile-room-screen .room-mobile-menu-panel {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}

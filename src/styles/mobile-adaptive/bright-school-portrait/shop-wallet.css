@@ -1,0 +1,33 @@
+/* Bright School portrait shop wallet safety rules. */
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap {
+    width: auto !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-flow: row wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 7px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet {
+    flex: 0 1 auto !important;
+    min-width: max-content !important;
+    min-height: 38px !important;
+    padding: 7px 12px !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet.blue-gem-wallet {
+    background: linear-gradient(135deg, #dffbff 0%, #7fd6f2 48%, #2d9fd0 100%) !important;
+    border-color: #2380b5 !important;
+    color: #0e4f7a !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet.blue-gem-wallet svg {
+    color: #0e4f7a !important;
+  }
+}
