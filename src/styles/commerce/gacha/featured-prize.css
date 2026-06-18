@@ -1,0 +1,40 @@
+.gacha-featured-prize {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: clamp(86px, 14vw, 112px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(128, 102, 142, 0.16);
+}
+
+.gacha-featured-prize img {
+  width: clamp(86px, 14vw, 112px);
+  height: clamp(86px, 14vw, 112px);
+  object-fit: contain;
+}
+
+.gacha-featured-prize .gacha-featured-stack.large {
+  grid-auto-columns: clamp(50px, 8vw, 64px);
+  min-width: clamp(86px, 14vw, 112px);
+}
+
+.gacha-featured-prize .gacha-featured-stack.large img + img {
+  margin-left: -46px;
+}
+
+.gacha-featured-prize span,
+.gacha-featured-prize small {
+  color: #7b6a7f;
+  font-weight: 800;
+}
+
+.gacha-featured-prize strong {
+  display: block;
+  color: #2d2430;
+  font-size: clamp(20px, 2.6vw, 28px);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}

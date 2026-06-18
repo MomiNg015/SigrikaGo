@@ -333,6 +333,24 @@ describe("root CSS entry contract", () => {
     expect(shopSettingsEntry).not.toContain(".warehouse-grid {");
   });
 
+  it("keeps commerce gacha.css as an import-only commerce sub-entry", () => {
+    const gachaEntry = readFileSync(new URL("./commerce/gacha.css", import.meta.url), "utf8");
+
+    expect(cssImports(gachaEntry)).toEqual([
+      "./gacha/modal-tabs.css",
+      "./gacha/featured-stack.css",
+      "./gacha/machine-stage.css",
+      "./gacha/featured-prize.css",
+      "./gacha/control-panel.css",
+      "./gacha/list-result-dialogs.css",
+      "./gacha/animations.css"
+    ]);
+    expect(gachaEntry).not.toContain(".gacha-modal {");
+    expect(gachaEntry).not.toContain(".gacha-main {");
+    expect(gachaEntry).not.toContain(".gacha-result-card");
+    expect(gachaEntry).not.toContain("@keyframes gacha-drum-spin");
+  });
+
   it("keeps commerce terminal-polish.css as an import-only commerce sub-entry", () => {
     const terminalPolishEntry = readFileSync(new URL("./commerce/terminal-polish.css", import.meta.url), "utf8");
 
