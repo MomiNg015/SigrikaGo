@@ -236,7 +236,7 @@ SigrikaGo/
   - `characterListFromCatalog` sorts display lists by public character `sortOrder`; fallback-only characters keep builtin order after explicitly sorted records, so the member manual does not lose admin order.
 
 - `src/styles.css`
-  - CSS 入口文件，当前按 `styles/base.css`、`admin.css`、`lobby.css`、`room.css`、`modals.css`、`commerce-settings.css`、`responsive.css` 分域导入；其中 `base.css` 是 import-only 入口，具体全局基础、预加载、控件、顶栏、主页和反馈规则拆到 `styles/base/`，`room.css` 是 import-only 入口，具体房间布局、玩家计时、棋盘、操作、成员浮层和聊天规则拆到 `styles/room/`，`modals.css` 是 import-only 入口，具体共享弹窗、结果/技能、履历/回放、用户资料、角色详情、手机适配和终端视觉系统拆到 `styles/modals/`。
+  - CSS 入口文件，当前按 `styles/base.css`、`admin.css`、`lobby.css`、`room.css`、`modals.css`、`commerce-settings.css`、`responsive.css` 分域导入；其中 `base.css` 是 import-only 入口，具体全局基础、预加载、控件、顶栏、主页和反馈规则拆到 `styles/base/`，`admin.css` 是 import-only 入口，具体后台壳层、共享表面、角色、审计/反馈、抽卡、成就和响应式规则拆到 `styles/admin/`，`lobby.css` 是 import-only 入口，具体面板/profile、角色卡、匹配/观战入口、观战列表和手机观战回退规则拆到 `styles/lobby/`，`room.css` 是 import-only 入口，具体房间布局、玩家计时、棋盘、操作、成员浮层和聊天规则拆到 `styles/room/`，`modals.css` 是 import-only 入口，具体共享弹窗、结果/技能、履历/回放、用户资料、角色详情、手机适配和终端视觉系统拆到 `styles/modals/`。
 
 ### 后端
 

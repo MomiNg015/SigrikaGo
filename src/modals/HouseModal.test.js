@@ -551,9 +551,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolModalCss).toContain("overflow: hidden !important;");
     expect(brightSchoolModalCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
     expect(brightSchoolModalCss).toContain("background: #ff9ebb !important");
-    expect(readFileSync(new URL("../styles/lobby.css", import.meta.url), "utf8")).toContain(".character-item-effect-badges");
-    expect(readFileSync(new URL("../styles/lobby.css", import.meta.url), "utf8")).toContain(".character-item-effect-icon");
-    expect(readFileSync(new URL("../styles/lobby.css", import.meta.url), "utf8")).toContain(".character-card .character-item-effect-icon");
+    const lobbyCss = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
+    expect(lobbyCss).toContain(".character-item-effect-badges");
+    expect(lobbyCss).toContain(".character-item-effect-icon");
+    expect(lobbyCss).toContain(".character-card .character-item-effect-icon");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-item-effect-icon");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".house-modal .character-card.portrait-card .character-item-effect-icon");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("width: 24px;");

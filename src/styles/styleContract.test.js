@@ -32,6 +32,7 @@ const DOMAIN_STYLE_DIRECTORIES = new Set([
   "commerce",
   "home-terminal",
   "hud-components",
+  "lobby",
   "mobile-adaptive",
   "mobile-home",
   "mobile-modals",
@@ -139,6 +140,21 @@ describe("root CSS entry contract", () => {
     expect(adminEntry).not.toContain(".admin-screen {");
     expect(adminEntry).not.toContain(".admin-table {");
     expect(adminEntry).not.toContain(".admin-gacha-board");
+  });
+
+  it("keeps lobby.css as an import-only lobby and house entry", () => {
+    const lobbyEntry = readFileSync(new URL("./lobby.css", import.meta.url), "utf8");
+
+    expect(cssImports(lobbyEntry)).toEqual([
+      "./lobby/panels-profile.css",
+      "./lobby/characters.css",
+      "./lobby/match-watch-entry.css",
+      "./lobby/watch-list.css",
+      "./lobby/watch-list-responsive.css"
+    ]);
+    expect(lobbyEntry).not.toContain(".profile-grid {");
+    expect(lobbyEntry).not.toContain(".character-list {");
+    expect(lobbyEntry).not.toContain(".watch-list-modal");
   });
 
   it("keeps the mobile interaction safety layer touch friendly", () => {

@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { readFileSync } from "node:fs";
 import { statusTextForWatchRoom, watchRoomRowKey, joinWatchRoomFromList } from "./WatchModal.jsx";
 import WatchModal from "./WatchModal.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
@@ -68,7 +67,7 @@ describe("WatchModal helpers", () => {
   });
 
   it("keeps watch mode tabs compact above the room table", () => {
-    const css = readText(new URL("../styles/lobby.css", import.meta.url));
+    const css = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
     const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
 
     expect(css).toContain("grid-template-rows: auto auto minmax(318px, 1fr) auto auto;");
@@ -126,8 +125,4 @@ function mediaBlock(css, marker) {
     start = css.indexOf(marker, start + marker.length);
   }
   return blocks.join("\n");
-}
-
-function readText(url) {
-  return readFileSync(url, "utf8").replace(/\r\n/g, "\n");
 }
