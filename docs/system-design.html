@@ -157,6 +157,9 @@
 <li>Achievement and personalization modal headers keep their close button in the same grid row as the title on desktop and mobile; the final Bright School mobile layer repeats this contract so global absolute close-button rules cannot push nested modal close controls onto the divider line.</li>
 </ul>
 <ul>
+<li>Room player info panels use <code>.active-turn</code> as the current-turn visual contract: the player whose turn it is turns yellow on both desktop and mobile, and late theme layers such as Bright School must preserve that yellow turn-state cue.</li>
+</ul>
+<ul>
 <li>Desktop resume headers reserve separate right-aligned grid columns for the coin/gem wallet group and close button, preventing the global absolute close-button rule from colliding with currency capsules.</li>
 </ul>
 <ul>
@@ -1371,6 +1374,9 @@
 </ul>
 <ul>
 <li>玩家信息区的段位和积分分列为棋子上下两枚标签；积分显示追加“分”，技能超频使用红色强调。除子与超频标签支持桌面悬停说明和移动端点按说明：除子说明其会在数目时按 <code>+除子*1</code> 计入，超频说明其会在数目时按 <code>-超频*2</code> 扣减。移动端的除子、超频、技能说明从点击位置生成浮层，但浮层使用固定的视口内宽度和强制换行，定位会按浮层最大宽度和视口边距夹取，顶部空间不足时改为向下展开，并用最大高度和内部滚动保证内容不溢出画面外。</li>
+</ul>
+<ul>
+<li>Room player info panels use <code>.active-turn</code> as the current-turn visual contract: the player whose turn it is turns yellow on both desktop and mobile, and late theme layers such as Bright School must preserve that yellow turn-state cue.</li>
 </ul>
 <ul>
 <li>对局结束后，玩家信息区立绘右下角显示通用结果角标：胜为红字、负为黑字、和为绿字。该颜色规则定义在共享房间样式层，对所有主题界面通用。Bright School 房间内的角色头像框还会按执棋色着底：黑方为 <code>#2b2b2b</code>，白方为纯白，且房间角色立绘图片不再带投影，避免胜负角标、头像底色和图片阴影互相混淆。</li>
