@@ -125,11 +125,13 @@ describe("root CSS entry contract", () => {
 
   it("keeps the mobile interaction safety layer touch friendly", () => {
     const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+    const touchConfirmBlock = mobileCss.match(/\.point\.touch-confirming\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(mobileCss).toContain("--mobile-tap-duration: 120ms");
     expect(mobileCss).toContain("-webkit-tap-highlight-color: transparent");
     expect(mobileCss).toContain(".point.previewable:active");
     expect(mobileCss).toContain("touch-action: none");
+    expect(touchConfirmBlock).not.toContain("transform: scale");
     expect(mobileCss).toContain("@keyframes mobile-sheet-in");
     expect(mobileCss).toContain("@media (max-width: 768px) and (prefers-reduced-motion: reduce)");
   });

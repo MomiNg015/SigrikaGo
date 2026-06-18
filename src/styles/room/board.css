@@ -374,8 +374,6 @@
 .point::before {
   position: absolute;
   content: "";
-  left: 50%;
-  top: 50%;
   width: 58%;
   height: 58%;
   border-radius: 7px;
@@ -384,7 +382,6 @@
   opacity: 0;
   z-index: 4;
   pointer-events: none;
-  transform: translate(-50%, -50%);
 }
 
 .point.previewable:hover::before {
@@ -392,14 +389,8 @@
 }
 
 .point.touch-confirming::before {
-  display: block;
-  opacity: 1;
-  border-radius: 50%;
-  border: 3px solid #22d3ee;
-  background: rgba(255, 255, 255, 0.14);
-  box-shadow:
-    0 0 0 3px rgba(255, 255, 255, 0.58),
-    0 0 18px rgba(34, 211, 238, 0.72);
+  display: none;
+  opacity: 0;
 }
 
 .board-wrap.targeting .point::before {
@@ -724,8 +715,6 @@
 
 .touch-confirm-marker {
   position: absolute;
-  left: 50%;
-  top: 50%;
   width: 72%;
   height: 72%;
   border-radius: 50%;
@@ -736,7 +725,6 @@
     0 0 16px rgba(34, 211, 238, 0.66);
   z-index: 5;
   pointer-events: none;
-  transform: translate(-50%, -50%);
 }
 
 .stone b {

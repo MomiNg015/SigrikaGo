@@ -74,15 +74,21 @@ describe("areBoardPropsEqual", () => {
 
   test("keeps ordinary placement hints centered on board intersections", () => {
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const pointBlock = css.match(/\.point\s*\{[^}]+\}/)?.[0] ?? "";
     const previewBlock = css.match(/\.point::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const pointConfirmBlock = css.match(/\.point\.touch-confirming::before\s*\{[^}]+\}/)?.[0] ?? "";
     const confirmBlock = css.match(/\.touch-confirm-marker\s*\{[^}]+\}/)?.[0] ?? "";
 
-    expect(previewBlock).toContain("left: 50%");
-    expect(previewBlock).toContain("top: 50%");
-    expect(previewBlock).toContain("transform: translate(-50%, -50%)");
-    expect(confirmBlock).toContain("left: 50%");
-    expect(confirmBlock).toContain("top: 50%");
-    expect(confirmBlock).toContain("transform: translate(-50%, -50%)");
+    expect(pointBlock).toContain("display: grid");
+    expect(pointBlock).toContain("place-items: center");
+    expect(previewBlock).not.toContain("left: 50%");
+    expect(previewBlock).not.toContain("top: 50%");
+    expect(previewBlock).not.toContain("translate(-50%, -50%)");
+    expect(pointConfirmBlock).toContain("display: none");
+    expect(pointConfirmBlock).toContain("opacity: 0");
+    expect(confirmBlock).not.toContain("left: 50%");
+    expect(confirmBlock).not.toContain("top: 50%");
+    expect(confirmBlock).not.toContain("translate(-50%, -50%)");
   });
 
   test("uses stable one-pixel directional stone offsets for a hand-placed board feel", () => {

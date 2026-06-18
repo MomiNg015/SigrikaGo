@@ -117,9 +117,12 @@
       filter var(--mobile-tap-duration) var(--mobile-tap-ease);
   }
 
-  .point.previewable:active,
-  .point.touch-confirming {
+  .point.previewable:active {
     transform: scale(0.94);
+    filter: brightness(1.04) saturate(1.08);
+  }
+
+  .point.touch-confirming {
     filter: brightness(1.04) saturate(1.08);
   }
 

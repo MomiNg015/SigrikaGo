@@ -74,9 +74,13 @@
       filter 120ms cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.previewable:active,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.touch-confirming {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.previewable:active {
     transform: scale(0.94) !important;
+    filter: brightness(1.04) saturate(1.08) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.touch-confirming {
+    transform: none !important;
     filter: brightness(1.04) saturate(1.08) !important;
   }
 }
