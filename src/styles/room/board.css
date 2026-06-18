@@ -1,13 +1,8 @@
 /* Board frame, effects, stones, coordinates, and scoring markers. */
 .board-wrap {
   --board-wood-texture:
-    linear-gradient(90deg, rgba(126, 74, 16, 0.16), transparent 13%, rgba(255, 224, 145, 0.2) 31%, transparent 54%, rgba(118, 69, 12, 0.14)),
-    linear-gradient(0deg, rgba(255, 238, 177, 0.16), transparent 18%, rgba(116, 71, 18, 0.09) 48%, transparent 76%),
-    linear-gradient(90deg, transparent 0 14%, rgba(107, 66, 19, 0.07) 14.3% 14.8%, transparent 15.2% 31%, rgba(255, 236, 164, 0.09) 31.5% 32%, transparent 32.4% 47%, rgba(108, 65, 17, 0.08) 47.4% 47.9%, transparent 48.3% 64%, rgba(255, 232, 150, 0.09) 64.5% 65%, transparent 65.4% 82%, rgba(105, 61, 14, 0.07) 82.2% 82.7%, transparent 83.1%),
-    repeating-linear-gradient(91deg, rgba(118, 72, 18, 0.14) 0 1px, transparent 1px 7px, rgba(255, 229, 154, 0.1) 7px 8px, transparent 8px 15px),
-    repeating-linear-gradient(0deg, rgba(108, 66, 16, 0.09) 0 1px, transparent 1px 17px),
-    repeating-linear-gradient(8deg, rgba(255, 234, 159, 0.12) 0 2px, transparent 2px 28px),
-    #e0ad52;
+    url("/assets/boards/go-board-background-01-kaya-wood-2048.png") center / cover no-repeat,
+    #d99a24;
   width: var(--board-size);
   max-width: 100%;
   min-width: 0;
