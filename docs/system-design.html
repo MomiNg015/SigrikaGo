@@ -153,6 +153,9 @@
 <li>Startorch terminal modal system styling now follows the nested import-only pattern through <code>src/styles/modals/terminal-system.css</code> and <code>src/styles/modals/terminal-system/</code>, keeping terminal tokens/backdrop, modal chrome, close/header actions, terminal buttons, replay/profile surfaces, result modal layout, and outcome/resume actions in focused files.</li>
 </ul>
 <ul>
+<li>Bright School portrait mobile house/profile styling now follows the nested import-only pattern through <code>src/styles/themes/bright-school/mobile/house-profile.css</code> and <code>src/styles/themes/bright-school/mobile/house-profile/</code>, keeping shell/profile stats, character grid/cards, owned decorations, and character detail/music controls in focused files.</li>
+</ul>
+<ul>
 <li>Bright School portrait mobile home shell now follows the same nested import-only pattern through <code>src/styles/themes/bright-school/mobile/home-shell.css</code> and <code>src/styles/themes/bright-school/mobile/home-shell/</code>, keeping shell base, top strip/menu, main stage, player plaque, and entries/utility/footer rules in focused files.</li>
 </ul>
 <ul>
@@ -3506,6 +3509,9 @@
 <li>Startorch terminal modal system styling is also a nested import-only entry: <code>src/styles/modals/terminal-system.css</code> owns import order while <code>src/styles/modals/terminal-system/</code> contains tokens-backdrop, modal-chrome, close-header-actions, terminal-buttons, replay-profile-surfaces, result-modal, and outcomes-resume-actions rules.</li>
 </ul>
 <ul>
+<li>Bright School portrait mobile house/profile styling is also a nested import-only entry: <code>src/styles/themes/bright-school/mobile/house-profile.css</code> owns import order while <code>src/styles/themes/bright-school/mobile/house-profile/</code> contains shell-profile-stats, character-grid-cards, owned-decorations, and character-detail-music rules.</li>
+</ul>
+<ul>
 <li>Bright School portrait mobile commerce and warehouse layout is also a nested import-only entry: <code>src/styles/themes/bright-school/mobile/commerce-warehouse.css</code> owns import order while <code>src/styles/themes/bright-school/mobile/commerce-warehouse/</code> contains shop-layout, warehouse-shell, and warehouse-items rules.</li>
 </ul>
 <ul>
@@ -3722,6 +3728,9 @@
 </ul>
 <ul>
 <li>Startorch terminal modal system styling now follows the same sub-entry pattern: <code>src/styles/modals/terminal-system.css</code> owns import order and delegates terminal tokens/backdrop, modal chrome, close/header actions, terminal buttons, replay/profile surfaces, result modal layout, and outcome/resume actions to <code>src/styles/modals/terminal-system/</code>; style contract tests guard the nested import order.</li>
+</ul>
+<ul>
+<li>Bright School portrait mobile house/profile styling now follows the same sub-entry pattern: <code>src/styles/themes/bright-school/mobile/house-profile.css</code> owns import order and delegates shell/profile stats, character grid/cards, owned decorations, and character detail/music controls to <code>src/styles/themes/bright-school/mobile/house-profile/</code>; theme contract tests guard the nested import order.</li>
 </ul>
 <ul>
 <li>Bright School portrait mobile commerce and warehouse layout now follows the same sub-entry pattern: <code>src/styles/themes/bright-school/mobile/commerce-warehouse.css</code> owns import order and delegates shop layout, warehouse shell/grid, and warehouse item card rules to <code>src/styles/themes/bright-school/mobile/commerce-warehouse/</code>; the split also removes a duplicated shop mobile block while preserving the final warehouse grid declarations.</li>

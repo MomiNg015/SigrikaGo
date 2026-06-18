@@ -263,6 +263,24 @@ describe("player theme CSS contract", () => {
     expect(mobileCommerceEntry).not.toContain(".warehouse-item");
   });
 
+  it("keeps Bright School mobile house and profile as an import-only portrait entry", () => {
+    const mobileHouseProfileEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/house-profile.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(mobileHouseProfileEntry)).toEqual([
+      "./house-profile/shell-profile-stats.css",
+      "./house-profile/character-grid-cards.css",
+      "./house-profile/owned-decorations.css",
+      "./house-profile/character-detail-music.css"
+    ]);
+    expect(mobileHouseProfileEntry).not.toContain(".house-layout {");
+    expect(mobileHouseProfileEntry).not.toContain(".character-list {");
+    expect(mobileHouseProfileEntry).not.toContain(".owned-decoration-section");
+    expect(mobileHouseProfileEntry).not.toContain(".character-detail-heading");
+  });
+
   it("keeps Bright School mobile lists and settings as an import-only portrait entry", () => {
     const mobileListsSettingsEntry = readFileSync(
       new URL("./themes/bright-school/mobile/lists-settings.css", import.meta.url),

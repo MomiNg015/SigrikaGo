@@ -1,0 +1,94 @@
+/* Bright School portrait house shell and profile stats */
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-layout {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal {
+    display: grid !important;
+    grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+    align-content: stretch !important;
+    gap: 10px !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {
+    grid-template-rows: auto auto auto minmax(0, 1fr) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .profile-grid.top-stats-bar {
+    flex: 0 0 auto !important;
+    grid-template-columns: 1fr !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats {
+    gap: 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-grid.top-stats-bar {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto minmax(0, 1fr) !important;
+    align-self: stretch !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-rank-results {
+    grid-column: 1 / -1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid .stat {
+    min-height: 64px !important;
+    padding: 10px !important;
+    border-width: 2px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat > span,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat strong {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat > span,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat strong {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat strong {
+    font-size: clamp(12px, 3.5vw, 16px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .stat-tip {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    top: auto !important;
+    bottom: calc(18px + env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    max-width: none !important;
+    transform: none !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+}

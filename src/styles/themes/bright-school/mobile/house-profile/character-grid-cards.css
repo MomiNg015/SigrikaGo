@@ -1,0 +1,96 @@
+/* Bright School portrait house character grid and cards */
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: 88px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-right: 2px !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 88px !important;
+    padding: 6px !important;
+    display: grid !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    justify-items: center !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card img {
+    max-height: 44px !important;
+    object-fit: contain !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .character-item-effect-badges {
+    top: 4px !important;
+    left: 4px !important;
+    z-index: 4 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .character-item-effect-icon {
+    width: 24px !important;
+    height: 24px !important;
+    max-height: 24px !important;
+    padding: 2px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card strong,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card small,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked small,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card .lock-text-title {
+    display: block !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .character-card.portrait-card > strong {
+    display: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.portrait-card .lock-text-title {
+    width: 38px !important;
+    height: 24px !important;
+    line-height: 24px !important;
+    font-size: 11px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .sortie-button {
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .deploy-tag {
+    position: absolute !important;
+    top: 6px !important;
+    left: 6px !important;
+    right: 6px !important;
+    min-height: 20px !important;
+    padding: 2px 6px !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
