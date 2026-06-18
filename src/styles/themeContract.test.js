@@ -121,6 +121,24 @@ describe("player theme CSS contract", () => {
     expect(radicalPurgeEntry).not.toContain(".timer-track");
   });
 
+  it("keeps Bright School specificity overrides as an import-only anti-bleed entry", () => {
+    const specificityEntry = readFileSync(new URL("./themes/bright-school/specificity-overrides.css", import.meta.url), "utf8");
+
+    expect(cssImports(specificityEntry)).toEqual([
+      "./specificity-overrides/global-reset.css",
+      "./specificity-overrides/panel-shells.css",
+      "./specificity-overrides/forms-textareas.css",
+      "./specificity-overrides/settings-panels.css",
+      "./specificity-overrides/character-details.css",
+      "./specificity-overrides/buttons.css",
+      "./specificity-overrides/scrollbars.css",
+      "./specificity-overrides/anti-tech-bleed-addendum.css"
+    ]);
+    expect(specificityEntry).not.toContain(".auth-panel");
+    expect(specificityEntry).not.toContain("input:not([type=\"checkbox\"]");
+    expect(specificityEntry).not.toContain("*::-webkit-scrollbar");
+  });
+
   it("keeps Bright School home as an import-only lobby entry", () => {
     const brightHomeEntry = readFileSync(new URL("./themes/bright-school/home.css", import.meta.url), "utf8");
 
