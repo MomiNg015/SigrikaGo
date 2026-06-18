@@ -1,0 +1,26 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-screen :where(
+  .room-code-label,
+  .room-info-tag,
+  .toggle,
+  .room-mobile-exit,
+  .room-mobile-menu-toggle,
+  .room-mobile-menu-panel button,
+  .mobile-tab-button,
+  .action-bar button,
+  .decision-actions button,
+  .replay-bar button,
+  .chat-toggle-button,
+  .chat-exit-action,
+  .name-button,
+  .rank-tag,
+  .rating-tag,
+  .captures span,
+  .digital-timer,
+  .timer-track,
+  .timer-track span,
+  .skill-chip
+) {
+  box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}

@@ -228,6 +228,23 @@ describe("player theme CSS contract", () => {
     expect(effectsEntry).not.toContain("@keyframes bright-school-skill-action-glow");
   });
 
+  it("keeps Bright School room as an import-only battle readability entry", () => {
+    const roomEntry = readFileSync(new URL("./themes/bright-school/room.css", import.meta.url), "utf8");
+
+    expect(cssImports(roomEntry)).toEqual([
+      "./room/header-exit.css",
+      "./room/player-status.css",
+      "./room/skill-floating.css",
+      "./room/player-name-controls.css",
+      "./room/side-tags.css",
+      "./room/board-coordinates.css",
+      "./room/flat-controls.css"
+    ]);
+    expect(roomEntry).not.toContain(".desktop-room-screen .room-header");
+    expect(roomEntry).not.toContain(".player-info.active-turn");
+    expect(roomEntry).not.toContain(".board-wrap .coord-row");
+  });
+
   it("keeps Bright School component repairs as an import-only domain entry", () => {
     const componentRepairsEntry = readFileSync(new URL("./themes/bright-school/component-repairs.css", import.meta.url), "utf8");
 

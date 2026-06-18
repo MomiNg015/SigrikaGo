@@ -421,7 +421,7 @@ describe("RoomScreen helpers", () => {
     const mobileRoomCss = readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
     const mobileAdaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const brightMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
-    const brightRoomCss = readText(new URL("../styles/themes/bright-school/room.css", import.meta.url), "utf8");
+    const brightRoomCss = readCssWithImports(new URL("../styles/themes/bright-school/room.css", import.meta.url));
     const portraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
     const landscapeMedia = mediaBlock(mobileRoomCss, "@media (max-width: 900px) and (orientation: landscape)");
 
@@ -669,7 +669,7 @@ describe("RoomScreen helpers", () => {
   it("keeps desktop room controls aligned and overlays above side controls", () => {
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
-    const brightRoomCss = readText(new URL("../styles/themes/bright-school/room.css", import.meta.url));
+    const brightRoomCss = readCssWithImports(new URL("../styles/themes/bright-school/room.css", import.meta.url));
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url));
     const modalBackdropZ = cssZIndexForSelector(modalCss, ".modal-backdrop");
 

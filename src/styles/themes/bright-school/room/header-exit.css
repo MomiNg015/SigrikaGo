@@ -1,0 +1,25 @@
+/* Bright School room replay/battle readability fixes. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto auto !important;
+  align-items: center !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-toggles {
+  justify-self: end !important;
+  justify-content: flex-end !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .desktop-room-screen .room-mobile-exit {
+  justify-self: end !important;
+  border: 2px solid #4a3736 !important;
+  box-shadow: 3px 3px 0 #4a3736 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-mobile-exit {
+  background: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
+  background-color: #eaf8ff !important;
+  background-image: linear-gradient(135deg, #eaf8ff, #d5efff) !important;
+  border-color: #7dbfe6 !important;
+  color: #225a78 !important;
+}
