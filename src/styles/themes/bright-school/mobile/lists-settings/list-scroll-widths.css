@@ -1,0 +1,23 @@
+/* Bright School portrait mobile list scroll and width guards. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-table,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table {
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-list,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-table {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-heading,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-heading,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-row {
+    min-width: min(640px, 176vw) !important;
+  }
+
+}

@@ -1,0 +1,29 @@
+/* Bright School portrait mobile watch row layout. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-row {
+    min-width: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-row {
+    grid-template-areas:
+      "code status"
+      "black white"
+      "meta meta" !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 4px 8px !important;
+    padding: 8px 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-player-cell {
+    gap: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-player-cell img {
+    width: 28px !important;
+    height: 22px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-side-label {
+    font-size: 11px !important;
+  }
+}

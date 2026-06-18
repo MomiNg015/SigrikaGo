@@ -147,6 +147,9 @@
 <li>Bright School portrait mobile commerce and warehouse layout now follows the nested import-only pattern through <code>src/styles/themes/bright-school/mobile/commerce-warehouse.css</code> and <code>src/styles/themes/bright-school/mobile/commerce-warehouse/</code>, keeping shop layout, warehouse shell/grid, and warehouse item card rules in focused files while removing a duplicated shop mobile block.</li>
 </ul>
 <ul>
+<li>Bright School portrait mobile list/settings/social layout now follows the nested import-only pattern through <code>src/styles/themes/bright-school/mobile/lists-settings.css</code> and <code>src/styles/themes/bright-school/mobile/lists-settings/</code>, keeping list scroll widths, watch rows, friends rows, table shells, leaderboard cards, replay cards, and toolbar/card-border rules in focused files.</li>
+</ul>
+<ul>
 <li>Admin-managed character <code>sortOrder</code> is persistent data, not a seed-owned builtin field. <code>seedCharacters</code> only assigns fallback order when creating missing builtin characters, public <code>/api/characters</code> includes <code>sortOrder</code>, and the member manual derives its character list through the shared catalog sorter so saved admin order survives server restarts and reaches player UI.</li>
 </ul>
 <ul>
@@ -3481,6 +3484,9 @@
 <ul>
 <li>Bright School portrait mobile commerce and warehouse layout is also a nested import-only entry: <code>src/styles/themes/bright-school/mobile/commerce-warehouse.css</code> owns import order while <code>src/styles/themes/bright-school/mobile/commerce-warehouse/</code> contains shop-layout, warehouse-shell, and warehouse-items rules.</li>
 </ul>
+<ul>
+<li>Bright School portrait mobile list/settings/social layout is also a nested import-only entry: <code>src/styles/themes/bright-school/mobile/lists-settings.css</code> owns import order while <code>src/styles/themes/bright-school/mobile/lists-settings/</code> contains list-scroll-widths, watch-rows, friends-rows, table-shells, leaderboard-cards, replay-cards, and toolbars-card-borders rules.</li>
+</ul>
 <h2>Modal Layering</h2>
 <ul>
 <li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.</li>
@@ -3683,6 +3689,9 @@
 </ul>
 <ul>
 <li>Bright School portrait mobile commerce and warehouse layout now follows the same sub-entry pattern: <code>src/styles/themes/bright-school/mobile/commerce-warehouse.css</code> owns import order and delegates shop layout, warehouse shell/grid, and warehouse item card rules to <code>src/styles/themes/bright-school/mobile/commerce-warehouse/</code>; the split also removes a duplicated shop mobile block while preserving the final warehouse grid declarations.</li>
+</ul>
+<ul>
+<li>Bright School portrait mobile list/settings/social layout now follows the same sub-entry pattern: <code>src/styles/themes/bright-school/mobile/lists-settings.css</code> owns import order and delegates list scroll widths, watch rows, friends rows, table shells, leaderboard cards, replay cards, and toolbar/card-border rules to <code>src/styles/themes/bright-school/mobile/lists-settings/</code>; theme contract tests guard the nested import order.</li>
 </ul>
 <ul>
 <li>The shared lobby, house manual, profile stat, match entry, and watch-list layer now follows the import-only domain pattern. <code>src/styles/lobby.css</code> delegates panel/profile, character card, match/watch entry, watch-list shell, and watch-list phone fallback rules to <code>src/styles/lobby/</code>, while feature tests read the expanded CSS import tree.</li>

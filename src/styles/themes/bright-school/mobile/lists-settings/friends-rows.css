@@ -1,0 +1,55 @@
+/* Bright School portrait mobile friends row layout. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row {
+    min-width: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-areas:
+      "status avatar info action" !important;
+    grid-template-columns: auto 32px minmax(0, 1fr) 44px !important;
+    gap: 4px 6px !important;
+    align-items: center !important;
+    padding: 10px !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .online-status {
+    grid-area: status !important;
+    min-width: 0 !important;
+    padding: 4px 6px !important;
+    font-size: 11px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row img {
+    grid-area: avatar !important;
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row > .friend-main {
+    grid-area: info !important;
+    min-width: 0 !important;
+    display: grid !important;
+    gap: 4px !important;
+    align-content: center !important;
+    justify-items: center !important;
+    text-align: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .friend-username {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row .friend-actions-cell {
+    grid-area: action !important;
+    justify-self: end !important;
+  }
+}

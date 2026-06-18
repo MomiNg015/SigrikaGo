@@ -87,7 +87,8 @@ describe("FriendsModal mobile layout", () => {
     expect(adaptivePhoneMedia).toContain("grid-template-areas:");
     expect(adaptivePhoneMedia).toContain("\"status avatar info action\"");
     expect(brightSchoolMobileCss).toContain(".friends-list,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-table {\n    overflow-x: hidden !important;");
-    expect(brightSchoolMobileCss).toContain(".friends-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-row {\n    min-width: 0 !important;");
+    expect(brightSchoolMobileCss).toContain(".friends-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row {\n    min-width: 0 !important;");
+    expect(brightSchoolMobileCss).toContain(".watch-room-row {\n    min-width: 0 !important;");
   });
 
   it("keeps desktop friend search clear of the close button", () => {

@@ -15,6 +15,7 @@
 - Bright School portrait mobile home shell is now a nested import-only entry: `src/styles/themes/bright-school/mobile/home-shell.css` owns import order, while `src/styles/themes/bright-school/mobile/home-shell/` contains shell-base, top-strip-menu, main-stage, player-plaque, and entries-utility-footer so future mobile home, menu, plaque, and footer rules stay in focused files.
 - Bright School commerce shop polish is also a nested import-only entry: `src/styles/themes/bright-school/commerce/shop.css` owns import order while `src/styles/themes/bright-school/commerce/shop/` contains sidebar-wallet, product-grid, detail-dialog, and responsive rules.
 - Bright School portrait mobile commerce and warehouse layout is also a nested import-only entry: `src/styles/themes/bright-school/mobile/commerce-warehouse.css` owns import order while `src/styles/themes/bright-school/mobile/commerce-warehouse/` contains shop-layout, warehouse-shell, and warehouse-items rules.
+- Bright School portrait mobile list/settings/social layout is also a nested import-only entry: `src/styles/themes/bright-school/mobile/lists-settings.css` owns import order while `src/styles/themes/bright-school/mobile/lists-settings/` contains list-scroll-widths, watch-rows, friends-rows, table-shells, leaderboard-cards, replay-cards, and toolbars-card-borders rules.
 
 ## Modal Layering
 
