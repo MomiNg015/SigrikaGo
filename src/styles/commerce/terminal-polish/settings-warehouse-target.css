@@ -1,0 +1,24 @@
+/* Startorch Academy tactical terminal settings and warehouse target surfaces. */
+.settings-panel,
+.about-panel,
+.volume-row {
+  color: var(--terminal-text);
+}
+
+.volume-row input {
+  accent-color: var(--terminal-cyan);
+}
+
+.character-target-modal,
+.warehouse-effect-result {
+  position: relative;
+  overflow: hidden;
+}
+
+.warehouse-character-grid button {
+  border-radius: 2px;
+  clip-path: var(--terminal-cut);
+  border-color: rgba(0, 191, 255, 0.28);
+  background: rgba(10, 32, 40, 0.58);
+  color: var(--terminal-text);
+}

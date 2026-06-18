@@ -1,0 +1,49 @@
+/* Startorch Academy tactical terminal commerce and social window headers/profile stats. */
+.leaderboard-header,
+.warehouse-header,
+.house-header,
+.friends-modal-toolbar,
+.watch-list-header {
+  border-bottom: 1px solid rgba(0, 255, 190, 0.24);
+  padding-bottom: 12px;
+}
+
+.leaderboard-header svg,
+.warehouse-header > svg,
+.watch-list-header svg,
+.house-header svg {
+  color: var(--terminal-cyan);
+  filter: drop-shadow(0 0 10px rgba(0, 255, 190, 0.48));
+}
+
+.profile-grid {
+  gap: 10px;
+}
+
+.profile-grid .stat {
+  min-height: 70px;
+  border: 1px solid rgba(0, 255, 190, 0.38);
+  border-radius: 0;
+  clip-path: polygon(18px 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
+  background:
+    linear-gradient(90deg, rgba(0, 255, 190, 0.12), transparent 34%),
+    rgba(10, 32, 40, 0.58);
+  color: var(--terminal-text);
+  box-shadow: inset 0 0 18px rgba(0, 255, 190, 0.08);
+}
+
+.profile-grid .stat > span {
+  color: var(--terminal-muted);
+}
+
+.profile-grid .stat strong,
+.leaderboard-row > b,
+.leaderboard-row > span,
+.friends-row > span,
+.warehouse-item span,
+.shop-price,
+.shop-wallet,
+.watch-code-cell,
+.watch-status {
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+}

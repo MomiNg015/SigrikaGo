@@ -294,6 +294,24 @@ describe("root CSS entry contract", () => {
     expect(shopSettingsEntry).not.toContain(".warehouse-grid {");
   });
 
+  it("keeps commerce terminal-polish.css as an import-only commerce sub-entry", () => {
+    const terminalPolishEntry = readFileSync(new URL("./commerce/terminal-polish.css", import.meta.url), "utf8");
+
+    expect(cssImports(terminalPolishEntry)).toEqual([
+      "./terminal-polish/headers-profile.css",
+      "./terminal-polish/character-cards.css",
+      "./terminal-polish/shop-shell-tabs.css",
+      "./terminal-polish/item-cards-empty.css",
+      "./terminal-polish/lists-status.css",
+      "./terminal-polish/settings-warehouse-target.css",
+      "./terminal-polish/compact-phone.css"
+    ]);
+    expect(terminalPolishEntry).not.toContain(".leaderboard-header,");
+    expect(terminalPolishEntry).not.toContain(".shop-modal {");
+    expect(terminalPolishEntry).not.toContain(".leaderboard-row,");
+    expect(terminalPolishEntry).not.toContain("@media (max-width");
+  });
+
   it("keeps responsive.css as an import-only breakpoint entry", () => {
     const responsiveEntry = readFileSync(new URL("./responsive.css", import.meta.url), "utf8");
 
