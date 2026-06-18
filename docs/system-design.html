@@ -150,6 +150,9 @@
 <li>Shared mobile battle shell and dock styling now follows the nested import-only pattern through <code>src/styles/mobile-room/base-shell-dock.css</code> and <code>src/styles/mobile-room/base-shell-dock/</code>, keeping shell/header/menu, flat control reset, viewport/dock shell, player/timer strip, board viewport, dock tabs/actions, and decision/chat panels in focused files.</li>
 </ul>
 <ul>
+<li>Final portrait mobile battle-room safety now follows the nested import-only pattern through <code>src/styles/mobile-adaptive/mobile-room-portrait.css</code> and <code>src/styles/mobile-adaptive/mobile-room-portrait/</code>, keeping shell/header/menu, neutral chrome reset, viewport shell, player strips, board viewport, dock panels, and action/decision controls in focused files.</li>
+</ul>
+<ul>
 <li>Startorch terminal modal system styling now follows the nested import-only pattern through <code>src/styles/modals/terminal-system.css</code> and <code>src/styles/modals/terminal-system/</code>, keeping terminal tokens/backdrop, modal chrome, close/header actions, terminal buttons, replay/profile surfaces, result modal layout, and outcome/resume actions in focused files.</li>
 </ul>
 <ul>
@@ -3551,7 +3554,7 @@
 </ul>
 <h2>Mobile Responsive Adaptation</h2>
 <ul>
-<li><code>src/styles/mobile-adaptive.css</code> is imported at the end of <code>src/styles/themes.css</code>, preserving the existing <code>styles.css</code> theme-layer contract while making this the final 320px-768px mobile safety layer. The entry is import-only and delegates concrete rules to <code>src/styles/mobile-adaptive/</code>, while keeping existing visual themes and component markup intact and enforcing no page-level horizontal overflow, 44px minimum touch targets for buttons/tabs/icon controls, 16px mobile form inputs, safe-area padding, and media elements constrained to their containers.</li>
+<li><code>src/styles/mobile-adaptive.css</code> is imported at the end of <code>src/styles/themes.css</code>, preserving the existing <code>styles.css</code> theme-layer contract while making this the final 320px-768px mobile safety layer. The entry is import-only and delegates concrete rules to <code>src/styles/mobile-adaptive/</code>, while keeping existing visual themes and component markup intact and enforcing no page-level horizontal overflow, 44px minimum touch targets for buttons/tabs/icon controls, 16px mobile form inputs, safe-area padding, and media elements constrained to their containers. The portrait mobile battle-room sub-entry <code>src/styles/mobile-adaptive/mobile-room-portrait.css</code> is nested import-only and delegates shell/header/menu, neutral chrome reset, viewport shell, player strips, board viewport, dock panels, and action/decision controls to <code>src/styles/mobile-adaptive/mobile-room-portrait/</code>.</li>
 </ul>
 <ul>
 <li>The shared commerce sub-entry <code>src/styles/commerce/shop-settings.css</code> is import-only and delegates shop shell/tabs, settings panel, shop cards, detail/pagination, compact shop media, compact modal safety, and phone layouts to <code>src/styles/commerce/shop-settings/</code>. This keeps shop, settings, leaderboard/friends mobile guards, and warehouse/house phone fixes in named files while preserving the existing <code>commerce-settings.css</code> import position.</li>
@@ -3734,6 +3737,9 @@
 </ul>
 <ul>
 <li>Shared mobile battle shell/dock styling now follows the same sub-entry pattern: <code>src/styles/mobile-room/base-shell-dock.css</code> owns import order and delegates shell/header/menu, flat control reset, viewport/dock shell, player/timer strip, board viewport, dock tabs/actions, and decision/chat panels to <code>src/styles/mobile-room/base-shell-dock/</code>; style contract tests guard the nested import order.</li>
+</ul>
+<ul>
+<li>Final portrait mobile battle-room safety now follows the same sub-entry pattern: <code>src/styles/mobile-adaptive/mobile-room-portrait.css</code> owns import order and delegates shell/header/menu, neutral chrome reset, viewport shell, player strips, board viewport, dock panels, and action/decision controls to <code>src/styles/mobile-adaptive/mobile-room-portrait/</code>; style contract tests guard the nested import order.</li>
 </ul>
 <ul>
 <li>Startorch terminal modal system styling now follows the same sub-entry pattern: <code>src/styles/modals/terminal-system.css</code> owns import order and delegates terminal tokens/backdrop, modal chrome, close/header actions, terminal buttons, replay/profile surfaces, result modal layout, and outcome/resume actions to <code>src/styles/modals/terminal-system/</code>; style contract tests guard the nested import order.</li>

@@ -1,0 +1,102 @@
+@media (max-width: 768px) and (orientation: portrait) {
+  .mobile-room-screen .player-info {
+    height: 100%;
+    min-height: 64px;
+    max-height: var(--mobile-room-player-strip-height);
+    grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr);
+    grid-template-rows: minmax(0, 30px) minmax(0, 26px);
+    grid-template-areas:
+      "portrait meta time"
+      "portrait captures skill";
+    padding: 5px 7px;
+    gap: 4px 6px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .player-info img {
+    width: 46px;
+    height: 46px;
+  }
+
+  .mobile-room-screen .portrait-wrap .character-chain-badge {
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: -4px;
+    min-width: 20px;
+    min-height: 14px;
+    max-width: 38px;
+    padding: 1px 4px;
+    border-width: 1px;
+    font-size: 0;
+    transform: translateX(-50%);
+  }
+
+  .mobile-room-screen .portrait-wrap .character-chain-badge::before {
+    content: "★";
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .mobile-room-screen .portrait-wrap .character-chain-badge::after {
+    content: attr(data-chain-count);
+    margin-left: 1px;
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .mobile-room-screen .player-meta {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0 4px;
+  }
+
+  .mobile-room-screen .name-button {
+    grid-column: 1;
+    max-width: 100%;
+    font-size: 12.5px;
+  }
+
+  .mobile-room-screen .color-badge {
+    display: none;
+  }
+
+  .mobile-room-screen .digital-timer {
+    min-width: 0;
+    min-height: 30px;
+    grid-template-columns: auto minmax(38px, 1fr);
+    padding: 2px 6px;
+  }
+
+  .mobile-room-screen .timer-primary {
+    min-width: 3.3ch;
+    font-size: 19px;
+  }
+
+  .mobile-room-screen .timer-track {
+    min-width: 38px;
+  }
+
+  .mobile-room-screen .captures {
+    min-width: 0;
+    gap: 3px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .captures span {
+    min-width: 0;
+    min-height: 22px;
+    padding: 2px 4px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .mobile-room-screen .skill-chip {
+    min-height: 24px;
+    padding: 3px 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

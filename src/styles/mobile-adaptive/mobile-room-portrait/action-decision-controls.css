@@ -1,0 +1,82 @@
+@media (max-width: 768px) and (orientation: portrait) {
+  .mobile-room-screen .mobile-tab-panel .action-bar {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-auto-rows: 46px !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar button {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    min-height: 46px !important;
+    height: 46px !important;
+    display: grid !important;
+    place-items: center !important;
+    align-content: center !important;
+    justify-items: center !important;
+    grid-template-rows: 1fr !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-bar {
+    grid-template-columns: minmax(0, 1fr) minmax(128px, 0.72fr) !important;
+    grid-auto-rows: auto !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-height: 0 !important;
+    padding: 6px 8px !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy {
+    gap: 2px !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy strong {
+    font-size: 13px !important;
+    line-height: 1.1 !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy span {
+    display: -webkit-box !important;
+    overflow: hidden !important;
+    font-size: 10.5px !important;
+    line-height: 1.22 !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    width: 100% !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-actions button {
+    min-height: 42px !important;
+    height: auto !important;
+    padding: 5px 4px !important;
+    font-size: 11px !important;
+    line-height: 1.12 !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar button:has(.action-label) {
+    grid-template-rows: 18px 1fr !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar .exit-action {
+    display: none !important;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar button svg {
+    justify-self: center;
+    align-self: center;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .skill-action {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  .mobile-room-screen .mobile-tab-button {
+    min-height: 40px !important;
+  }
+}

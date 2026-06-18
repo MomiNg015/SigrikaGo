@@ -196,6 +196,27 @@ describe("root CSS entry contract", () => {
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
   });
 
+  it("keeps mobile room portrait safety styles as an import-only sub-entry", () => {
+    const mobileRoomPortraitEntry = readFileSync(
+      new URL("./mobile-adaptive/mobile-room-portrait.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(mobileRoomPortraitEntry)).toEqual([
+      "./mobile-room-portrait/shell-header-menu.css",
+      "./mobile-room-portrait/neutral-chrome-reset.css",
+      "./mobile-room-portrait/viewport-shell.css",
+      "./mobile-room-portrait/player-strips.css",
+      "./mobile-room-portrait/board-viewport.css",
+      "./mobile-room-portrait/dock-panels.css",
+      "./mobile-room-portrait/action-decision-controls.css"
+    ]);
+    expect(mobileRoomPortraitEntry).not.toContain(".mobile-room-screen {");
+    expect(mobileRoomPortraitEntry).not.toContain(".player-info {");
+    expect(mobileRoomPortraitEntry).not.toContain(".mobile-tab-panel .action-bar");
+    expect(mobileRoomPortraitEntry).not.toContain("@media (max-width");
+  });
+
   it("keeps Bright School mobile overrides as an import-only guard entry", () => {
     const brightSchoolOverridesEntry = readFileSync(
       new URL("./mobile-adaptive/bright-school-overrides.css", import.meta.url),
