@@ -215,6 +215,24 @@ describe("root CSS entry contract", () => {
     expect(brightSchoolOverridesEntry).not.toContain(".leaderboard-row");
   });
 
+  it("keeps Bright School narrow desktop home safety as an import-only guard entry", () => {
+    const homeNarrowDesktopEntry = readFileSync(
+      new URL("./mobile-adaptive/home-narrow-desktop.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(homeNarrowDesktopEntry)).toEqual([
+      "./home-narrow-desktop/region-reset.css",
+      "./home-narrow-desktop/wide-stage.css",
+      "./home-narrow-desktop/compact-stage.css",
+      "./home-narrow-desktop/micro-stage-scroll.css",
+      "./home-narrow-desktop/short-height-stack.css"
+    ]);
+    expect(homeNarrowDesktopEntry).not.toContain(".home-player-zone");
+    expect(homeNarrowDesktopEntry).not.toContain(".home-grid-featured.home-stage");
+    expect(homeNarrowDesktopEntry).not.toContain("@media (min-width");
+  });
+
   it("keeps Bright School portrait as an import-only final guard entry", () => {
     const brightSchoolPortraitEntry = readFileSync(
       new URL("./mobile-adaptive/bright-school-portrait.css", import.meta.url),

@@ -132,6 +132,9 @@
 <li>Shared room player, timer, capture, skill chip, mobile tap tooltip, and color badge styling now follows the nested import-only pattern through <code>src/styles/room/players-timers-skills.css</code> and <code>src/styles/room/players-timers-skills/</code>, with style contract coverage guarding the sub-entry import order.</li>
 </ul>
 <ul>
+<li>Bright School narrow-desktop home-stage safety now follows the nested import-only pattern through <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> and <code>src/styles/mobile-adaptive/home-narrow-desktop/</code>, separating the common region reset, wide stage, compact stage, micro-stage scroll, and short-height stack breakpoints.</li>
+</ul>
+<ul>
 <li>Bright School gallery polish now follows the import-only pattern through <code>src/styles/themes/bright-school/gallery-polish.css</code> and <code>src/styles/themes/bright-school/gallery-polish/</code>, keeping theme tokens, home image entries/art, paper surfaces, chat paper grid, interaction states, and addendum notes in focused files.</li>
 </ul>
 <ul>
@@ -3548,7 +3551,7 @@
 <li>Bright School's final mobile layer keeps login and home titles on one line by scaling type within bounded widths instead of truncating the main title. The login brand and login/register segmented control no longer add tinted background panels on phones or desktop, so the paper grid remains the dominant surface; the outer login card keeps the same lower-right hard shadow depth as Bright School buttons.</li>
 </ul>
 <ul>
-<li>Bright School home image entries use the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer even on desktop breakpoints. The card shell can keep labels and sticker shadows visible beyond the border, but the actual <code>部员手册</code> and <code>匹配对局</code> <code>&lt;img&gt;</code> nodes are forced to <code>box-sizing: border-box</code>, <code>height/max-height: 100%</code>, and <code>object-fit: contain</code>, preventing large or narrow desktop layouts from letting artwork spill below the button frame.</li>
+<li>Bright School home image entries use the final import-only <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer even on desktop breakpoints. Concrete rules live under <code>src/styles/mobile-adaptive/home-narrow-desktop/</code> by common region reset, 1181px-1500px wide stage, 1024px-1180px compact stage, 701px-1023px micro-stage scroll, and short-height stack concerns. The card shell can keep labels and sticker shadows visible beyond the border, but the actual member manual and match artwork <code>&lt;img&gt;</code> nodes are forced to <code>box-sizing: border-box</code>, <code>height/max-height: 100%</code>, and <code>object-fit: contain</code>, preventing large or narrow desktop layouts from letting artwork spill below the button frame.</li>
 </ul>
 <ul>
 <li>Bright School 桌面首页采用四段响应式契约：<code>&gt;=1181px</code> 是 wide desktop，主舞台无横向滚动并让匹配入口成为一级视觉主角，其中 <code>1181px-1500px</code> 额外压缩列间距并给玩家铭牌保留可读列宽，避免 1280x768 等中等桌面裁切段位积分；<code>1024px-1180px</code> 是 compact desktop，使用 <code>player/manual/utility/match</code> 命名网格且不允许页面级横向滚动；<code>701px-1023px</code> 是 micro desktop，<code>.home-main-panel</code> 提供受控横向滚动，内部 <code>.home-stage</code> 固定 <code>960px</code> 最小舞台宽度，默认优先露出铭牌和匹配入口；<code>&lt;=700px</code> 继续走移动首页布局。核心可点击入口必须在正常 grid flow 内；Bright School 玩家铭牌内部保持头像、用户名、段位面板三列固定结构，用户名只能在中间列内缩放和收敛，不能跨列遮挡段位面板；低高度桌面允许纵向滚动，footer 只在宽桌面且高度充足时固定在视口右下角。</li>
@@ -3647,6 +3650,9 @@
 </ul>
 <ul>
 <li>Shared room player/timer/skill styling now follows the same sub-entry pattern. <code>src/styles/room/players-timers-skills.css</code> delegates side layout, player cards, capture tooltips, timers, skill chips, mobile tap tooltips, and color badges to <code>src/styles/room/players-timers-skills/</code>; style contract tests read the expanded import tree.</li>
+</ul>
+<ul>
+<li>Bright School narrow-desktop home-stage safety now follows the same sub-entry pattern. <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> delegates common region resets, wide-stage, compact-stage, micro-stage scroll, and short-height stack rules to <code>src/styles/mobile-adaptive/home-narrow-desktop/</code>; style contract tests read the expanded import tree.</li>
 </ul>
 <ul>
 <li>CSS debt cleanup continues by moving the shared Startorch home terminal skin to an import-only entry. <code>src/styles/home-terminal.css</code> now delegates shell/background, top-strip, layout/player, image entries, utility/footer/motion, and mobile rules to <code>src/styles/home-terminal/</code>; <code>src/styles/styleContract.test.js</code> keeps the import order and approved nested directory list current. Remaining high-risk CSS targets now include other large style files that are not yet domainized.</li>

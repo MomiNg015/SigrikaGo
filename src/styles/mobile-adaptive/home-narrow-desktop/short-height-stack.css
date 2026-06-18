@@ -1,0 +1,16 @@
+/* Bright School short-height desktop home stage stack. */
+@media (min-width: 1024px) and (max-height: 560px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
+    grid-template-areas:
+      "player"
+      "manual"
+      "utility"
+      "match" !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
+    height: clamp(240px, 46dvh, 360px) !important;
+  }
+}
