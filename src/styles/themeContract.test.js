@@ -105,6 +105,22 @@ describe("player theme CSS contract", () => {
     expect(contrastPurgeEntry).not.toContain(".home-grid-featured > .home-utility-grid .utility-entry");
   });
 
+  it("keeps Bright School radical purge as an import-only emergency cleanup entry", () => {
+    const radicalPurgeEntry = readFileSync(new URL("./themes/bright-school/radical-purge.css", import.meta.url), "utf8");
+
+    expect(cssImports(radicalPurgeEntry)).toEqual([
+      "./radical-purge/home-top-controls.css",
+      "./radical-purge/home-utility-controls.css",
+      "./radical-purge/profile-handbook-cleanup.css",
+      "./radical-purge/character-detail-cleanup.css",
+      "./radical-purge/commerce-social-cleanup.css",
+      "./radical-purge/room-action-cleanup.css"
+    ]);
+    expect(radicalPurgeEntry).not.toContain(".home-top-strip .icon-button");
+    expect(radicalPurgeEntry).not.toContain(".friends-row");
+    expect(radicalPurgeEntry).not.toContain(".timer-track");
+  });
+
   it("keeps Bright School home as an import-only lobby entry", () => {
     const brightHomeEntry = readFileSync(new URL("./themes/bright-school/home.css", import.meta.url), "utf8");
 

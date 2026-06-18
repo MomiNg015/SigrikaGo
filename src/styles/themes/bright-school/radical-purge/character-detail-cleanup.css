@@ -1,0 +1,30 @@
+/* --------------------------------------------------------------------------
+   4. 角色详情立绘暗色背景与瞎眼文字修复 (对应 image_e7799c.jpg)
+   -------------------------------------------------------------------------- */
+/* 强制消除立绘背后的高科技深灰格子底，换上温暖明亮的奶油色衬底 */
+.app-shell.player-theme-enabled.theme-bright-school .character-detail-art,
+.app-shell.player-theme-enabled.theme-bright-school .character-detail.unowned .character-detail-art {
+  background: #fff4e0 !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+/* 修复右侧瞎眼的浅色文字与空心描边标签 */
+.app-shell.player-theme-enabled.theme-bright-school .character-detail-copy h3 {
+  color: #ff6f86 !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .skill-title-row strong,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row strong,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .acquisition-method strong {
+  background: #ff9ebb !important;
+  color: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 20px !important;
+  box-shadow: 2px 2px 0px #4a3736 !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .skill-cost-badge {
+  background: #9ad3de !important;
+  color: #4a3736 !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 20px !important;
+}
