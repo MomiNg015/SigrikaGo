@@ -254,7 +254,9 @@
 }
 
 .resume-modal .profile-grid.top-stats-bar {
+  display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: auto auto minmax(0, 1fr);
   margin-top: 4px;
   min-height: 0;
   overflow: hidden;
@@ -809,6 +811,7 @@
   gap: 10px;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
   padding: 12px;
   border: 2px solid #3d2b25;
   border-radius: 18px;
@@ -832,6 +835,8 @@
   max-height: none;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding-right: 4px;
 }
 

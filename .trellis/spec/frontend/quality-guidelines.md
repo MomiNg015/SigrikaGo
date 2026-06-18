@@ -333,7 +333,7 @@ Required assertion points:
 - Mobile nested record dialogs, including the house character-record dialog, must be clamped to the viewport and scroll internally. Character record rows should use compact avatar/name/record/rate columns, and the record text must stay on one line with `white-space: nowrap`, `word-break: keep-all`, and a non-compressing `max-content` record column so win/loss/draw text cannot wrap mid-stat.
 - Mobile player-info explanations should support touch as well as desktop hover. Removal, overclock, and skill labels should open a tap-position tooltip on mobile/coarse pointers; the tooltip must use viewport-contained fixed width with normal wrapping and emergency word breaks, clamp within the viewport, flip below taps near the top edge, and cap height with internal scrolling so explanation text cannot overflow off-screen.
 - Theme overrides, especially Bright School mobile rules with `!important`, must mirror the shared mobile room contract rather than redefining a conflicting layout.
-- Battle-room tags and buttons should stay visually flat on mobile. Header tags, timer chips, capture chips, player labels, menu buttons, dock tabs, action buttons, replay buttons, and chat controls should use border-only treatment without `box-shadow`, `filter: drop-shadow(...)`, or `text-shadow`. Bright School control-shadow cleanup must use selectors specific enough to beat older `.app-shell... .captures span` / `.skill-chip` `!important` rules; a low-specificity `:where(...)` reset alone is not sufficient. Do not use a generic room `button` reset that catches `.point`; board point buttons and stone/current-move visuals are gameplay affordances and must stay separately controlled by board styles.
+- Battle-room tags and buttons should stay visually flat on mobile. Header tags, timer chips, capture chips, player labels, menu buttons, dock tabs, action buttons, replay buttons, and chat controls should use border-only treatment without `box-shadow`, `filter: drop-shadow(...)`, or `text-shadow`. When a mobile room control is flat, selected/pressed feedback must not use translate/scale offsets; dock tabs such as `.mobile-tab-button` should change background/border color only so the tab bar does not jitter without a shadow model. Bright School control-shadow cleanup must use selectors specific enough to beat older `.app-shell... .captures span` / `.skill-chip` `!important` rules; a low-specificity `:where(...)` reset alone is not sufficient. Do not use a generic room `button` reset that catches `.point`; board point buttons and stone/current-move visuals are gameplay affordances and must stay separately controlled by board styles.
 - Board point buttons must explicitly opt out of ordinary button chrome in both shared board CSS and Bright School board guards: keep `appearance: none`, transparent background/background-image, no border/shadow, `min-width/min-height: 0`, and `touch-action: none`. Otherwise 13x13 button surfaces can cover the SVG grid and make the board appear as a blank white square.
 - Board grid SVGs also need dedicated survival rules. Keep `.board-lines` as an absolute `display: block` layer with `width/height: 100%`, `max-width/max-height: none`, visible stroke/opacity, and Bright School guard overrides so broad `svg { height: auto; max-width: 100%; }` media resets cannot collapse the grid while DOM effects such as row slash remain visible.
 - DOM board effect layers whose class names include broad words such as `row` must explicitly opt out of Bright School generic surface rules with enough specificity to beat `[class*="row"]:not(...) !important`. Keep `.board-row-effects` transparent, borderless, shadowless, and overflow-visible, and keep `.board-row-slash` responsible for only the slash artwork so generic paper panels cannot cover the grid and stones. If the effect uses `::before`/`::after` for highlights or cuts, restore those pseudo-elements with the same scoped specificity because the Bright School generic pseudo-element firewall also matches `[class*="row"]`.
@@ -510,14 +510,18 @@ Correct:
 
 ### Bright School Home Responsive Contracts
 
-The Bright School home layout has three distinct responsive modes. Keep them explicit so medium desktop windows do not inherit the large scrapbook offsets.
+The Bright School home layout has four distinct responsive modes. Keep them explicit so medium desktop windows do not inherit the large scrapbook offsets, and so micro desktop windows preserve content before changing composition.
 
 Required assertion points:
 
 - Base terminal layout must not force a fixed minimum viewport width; `.home-screen` and `.home-grid-featured` should keep `min-width: 0`.
-- Large desktop can use the decorative scrapbook composition, but 701px-1180px widths and low-height desktop windows must be protected by the final `mobile-adaptive.css` guard.
-- The narrow desktop guard should switch the home stage to named CSS grid areas (`player`, `manual`, `utility`, `match`) and reset player/manual/match/utility regions to `position: static`.
-- Below the narrower fallback threshold, use a single-column grid so utility cards and the manual entry scroll vertically instead of overlapping.
+- Large desktop starts at 1181px. It can use the three-column composition, but should not create horizontal page scroll.
+- The 1181px-1500px middle desktop band must reserve enough left-column width for the fixed-structure Bright School player plaque; prefer reducing column gaps and secondary-column width before shrinking plaque text below readability.
+- Bright School player plaque names must stay inside the middle identity column. Do not use `width: max-content` or visible overflow on plaque identity children if that lets the username cover `.plaque-stats`; use bounded width plus the shared `--user-identity-fit-font-size` scaling instead.
+- Compact desktop is 1024px-1180px and should switch the home stage to named CSS grid areas (`player`, `manual`, `utility`, `match`) while staying inside the viewport.
+- Micro desktop is 701px-1023px. It should use a controlled minimum home stage width, currently `960px`, with horizontal scroll localized to `.home-main-panel`; do not shrink core entries until their contents become unreadable.
+- The final `mobile-adaptive/home-narrow-desktop.css` layer owns compact and micro desktop safety after theme overrides. It must reset player/manual/match/utility regions to `position: static` and remove decorative transforms that can create invisible hit boxes or overlaps.
+- Footer chrome should be fixed only on wide and tall desktop windows. Compact, micro, and low-height desktop windows should keep the footer in normal flow so it cannot cover core entries.
 - Home plaque stats must be in a shrinkable grid column with `min-width: 0`; avoid fixed pixel stats columns on mobile because long usernames need the remaining space.
 
 Wrong:
@@ -538,12 +542,23 @@ Correct:
   min-width: 0;
 }
 
-@media (min-width: 701px) and (max-width: 1180px) {
+@media (min-width: 1024px) and (max-width: 1180px) {
   .home-stage {
     grid-template-areas:
       "player manual"
-      "utility manual"
+      "nav manual"
       "match match";
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1023px) {
+  .home-main-panel {
+    overflow-x: auto;
+  }
+
+  .home-stage {
+    width: 960px;
+    min-width: 960px;
   }
 }
 ```

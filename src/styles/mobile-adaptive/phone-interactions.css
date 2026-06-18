@@ -81,6 +81,29 @@
     filter: brightness(0.985) saturate(1.04);
   }
 
+  .mobile-room-screen .mobile-tab-button {
+    transition:
+      background-color var(--mobile-tap-duration) var(--mobile-tap-ease),
+      border-color var(--mobile-tap-duration) var(--mobile-tap-ease),
+      color var(--mobile-tap-duration) var(--mobile-tap-ease);
+  }
+
+  .mobile-room-screen .mobile-tab-button.active:not(:disabled),
+  .mobile-room-screen .mobile-tab-button[aria-selected="true"]:not(:disabled),
+  .mobile-room-screen .mobile-tab-button:active:not(:disabled) {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-button.active:not(:disabled),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-button[aria-selected="true"]:not(:disabled),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-button:active:not(:disabled) {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
+
   .board,
   .board-wrap,
   .point {

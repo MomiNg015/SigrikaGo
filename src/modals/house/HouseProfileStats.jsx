@@ -33,7 +33,7 @@ export default function HouseProfileStats({ stats, rank, recentResults = [], cha
           tip="段位：最近10盘胜负中胜7盘升段/级，负8盘降段/级；升降级后重新记录。"
         />
       </div>
-      <RecentResultMarkers results={recentResults} className="profile-rank-results" />
+      <RecentResultMarkers results={recentResults} className="profile-rank-results" label="最近十盘的战绩" />
       <section className="resume-character-records" aria-label="角色战绩">
         <strong>角色战绩</strong>
         <CharacterRecordsPanel characterRecords={characterRecords} itemEffects={itemEffects} />

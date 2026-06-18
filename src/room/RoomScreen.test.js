@@ -451,6 +451,8 @@ describe("RoomScreen helpers", () => {
     expect(mobileAdaptiveCss).toContain(".room-mobile-menu-panel button");
     expect(mobileAdaptiveCss).toContain(".replay-bar button");
     expect(mobileAdaptiveCss).toContain(".timer-track span");
+    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .mobile-tab-button:active:not(:disabled)");
+    expect(mobileAdaptiveCss).toContain("transform: none !important");
     expect(mobileAdaptiveCss).toContain(".mobile-room-screen .room-mobile-menu.open");
     expect(mobileAdaptiveCss).toContain(".mobile-tab-panel:has(.chat-widget.open)");
     expect(mobileAdaptiveCss).toContain(".mobile-room-screen .chat-popover");
@@ -467,6 +469,7 @@ describe("RoomScreen helpers", () => {
     expect(brightMobileCss).toContain(".room-mobile-menu-toggle");
     expect(brightMobileCss).toContain(".captures span");
     expect(brightMobileCss).toContain(".timer-track span");
+    expect(brightMobileCss).toContain(".mobile-room-screen .mobile-tab-button:active:not(:disabled)");
     expect(brightMobileCss).toContain(".chat-toggle-button");
     expect(brightMobileCss).toContain(".chat-exit-action");
     expect(brightMobileCss).toContain("box-shadow: none !important");

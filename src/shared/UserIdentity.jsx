@@ -10,7 +10,7 @@ export default function UserIdentity({
   const emblem = assets.badge;
   const nameplate = showNameplate ? assets.nameplate : null;
   const displayName = name ?? user?.username ?? "-";
-  const fitFontSize = compact ? userIdentityFitFontSize(displayName) : null;
+  const fitFontSize = userIdentityFitFontSize(displayName);
   const titleText = displayAssetText(title);
   const emblemText = displayAssetText(emblem);
   const classes = [

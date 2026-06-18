@@ -16,7 +16,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {
-    grid-template-rows: auto minmax(0, auto) !important;
+    grid-template-rows: auto auto auto minmax(0, 1fr) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal .profile-grid.top-stats-bar {
@@ -42,6 +42,9 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-grid.top-stats-bar {
     grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto minmax(0, 1fr) !important;
+    align-self: stretch !important;
+    overflow: hidden !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-rank-results {

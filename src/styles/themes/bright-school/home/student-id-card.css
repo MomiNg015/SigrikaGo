@@ -105,7 +105,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card > strong {
-  overflow: visible !important;
+  overflow: hidden !important;
   text-overflow: clip !important;
 }
 
@@ -113,18 +113,23 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-main,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name-tag,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name {
-  max-width: none !important;
+  max-width: 100% !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity {
+  --user-identity-name-tag-padding-x: 0.32em;
+  width: 100% !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-main,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name-tag,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name {
-  width: max-content !important;
-  flex: 0 0 auto !important;
+  width: 100% !important;
+  flex: 1 1 auto !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name {
-  overflow: visible !important;
+  overflow: hidden !important;
   text-overflow: clip !important;
 }
 

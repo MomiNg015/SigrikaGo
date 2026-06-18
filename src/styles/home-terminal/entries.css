@@ -1,9 +1,9 @@
 .home-match-feature {
-  grid-area: entries;
+  grid-area: match;
   width: 100%;
   max-width: 920px;
   display: grid;
-  grid-template-columns: minmax(190px, 0.72fr) minmax(300px, 1.28fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: clamp(18px, 2.6vw, 42px);
   aspect-ratio: auto;
@@ -12,7 +12,7 @@
 
 .house-manual-entry {
   --entry-art: url("/assets/home/book-entry.webp");
-  grid-area: entries;
+  grid-area: manual;
   align-self: center;
   justify-self: start;
   width: clamp(190px, 19vw, 320px);
@@ -22,7 +22,7 @@
 
 .match-image-entry {
   --entry-art: url("/assets/home/fantasy-match-entry.webp");
-  grid-column: 2;
+  grid-column: 1;
   width: 100%;
   height: clamp(300px, 56vh, 620px);
   border-color: rgba(0, 191, 255, 0.32);

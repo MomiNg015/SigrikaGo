@@ -1,5 +1,5 @@
 /* Desktop Bright School home footer safety layer. */
-@media (min-width: 769px) {
+@media (min-width: 1181px) and (min-height: 960px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen.home-terminal-screen + .home-footer-strip,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen.home-terminal-screen > .home-footer-strip {
     position: fixed !important;
@@ -11,6 +11,22 @@
     width: auto !important;
     max-width: calc(100vw - 24px) !important;
     margin: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-footer-strip a {
+    pointer-events: auto !important;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1180px), (min-width: 701px) and (max-height: 959px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen.home-terminal-screen + .home-footer-strip,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen.home-terminal-screen > .home-footer-strip {
+    position: static !important;
+    justify-self: end !important;
+    width: fit-content !important;
+    max-width: calc(100vw - 24px) !important;
+    margin: 0 clamp(12px, 2vw, 24px) clamp(10px, 1.8vw, 18px) auto !important;
     pointer-events: none !important;
   }
 

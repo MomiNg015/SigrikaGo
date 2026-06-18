@@ -467,3 +467,70 @@ Changed character detail description styling to purple italic across base and Br
 ### Next Steps
 
 - None - task complete
+
+
+## Session 15: Profile resume mobile layout polish
+
+**Date**: 2026-06-17
+**Task**: Profile resume mobile layout polish
+**Branch**: `codex/new-branch`
+
+### Summary
+
+Fixed resume modal recent results, character record ordering and scrolling, wallet wrapping, and short-phone character record clipping; updated CSS contracts and system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bdfda307` | (see git log) |
+| `df329ef3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 16: Mobile room tab press state
+
+**Date**: 2026-06-17
+**Task**: Mobile room tab press state
+**Branch**: `codex/new-branch`
+
+### Summary
+
+Removed translate/scale press motion from flat mobile room dock tabs, preserving background-color feedback and documenting the mobile flat-control contract.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9a2b554` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

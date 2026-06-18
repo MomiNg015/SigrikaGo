@@ -93,8 +93,8 @@ describe("HomeScreen", () => {
   it("renders hologram entry pods without changing the primary click targets", () => {
     const html = renderHome();
     const css = readCssFixture("../styles/home-terminal.css");
-    const stageBlock = css.match(/\.home-grid-featured\s*\{[^}]+\}/g)?.find((block) => block.includes("minmax(240px, 0.72fr)")) ?? "";
-    const narrowDesktopMedia = css.match(/@media \(min-width: 769px\) and \(max-width: 1180px\)\s*\{[\s\S]+?\.home-player-zone \.plaque-stats\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
+    const stageBlock = css.match(/\.home-grid-featured\s*\{[^}]+\}/g)?.find((block) => block.includes("grid-template-areas")) ?? "";
+    const narrowDesktopMedia = css.match(/@media \(min-width: 1024px\) and \(max-width: 1180px\)\s*\{[\s\S]+?\.home-player-zone \.plaque-stats\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
     const imageEntryBlock = css.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const hoverBlock = css.match(/\.home-image-entry:hover,[\s\S]+?\.home-image-entry:focus-visible\s*\{[^}]+\}/)?.[0] ?? "";
     const tacticalTextBlock = css.match(/\.home-image-entry::after\s*\{[^}]+\}/)?.[0] ?? "";
@@ -109,7 +109,9 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("matchmaking-popup");
     expect(html).not.toContain("当前匹配人数：3");
     expect(html).not.toContain("aria-describedby=\"matchmaking-count-popup\"");
-    expect(stageBlock).toContain("grid-template-columns: minmax(240px, 0.72fr) minmax(360px, 1.28fr)");
+    expect(stageBlock).toContain('"player manual match"');
+    expect(stageBlock).toContain('"nav manual match"');
+    expect(stageBlock).toContain("grid-template-columns: minmax(300px, 0.82fr) minmax(190px, 0.52fr) minmax(430px, 1.2fr)");
     expect(stageBlock).toContain("min-width: 0");
     expect(narrowDesktopMedia).toContain(".home-grid-featured");
     expect(narrowDesktopMedia).toContain("grid-template-columns: minmax(220px, 0.82fr) minmax(300px, 1.18fr)");
@@ -142,10 +144,9 @@ describe("HomeScreen", () => {
     const brightHomeCss = readCssFixture("../styles/themes/bright-school/home.css");
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card > strong\s*\{[^}]+\}/)?.[0] ?? "";
-    const brightPlaqueNameBlocks = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name\s*\{[^}]+\}/g) ?? [];
-    const brightPlaqueNameMaxBlock = brightPlaqueNameBlocks.find((block) => block.includes("max-width: none")) ?? "";
-    const brightPlaqueNameSizingBlock = brightPlaqueNameBlocks.find((block) => block.includes("width: max-content")) ?? "";
-    const brightPlaqueNameOverflowBlock = brightPlaqueNameBlocks.find((block) => block.includes("overflow: visible")) ?? "";
+    const brightPlaqueIdentityBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity,[\s\S]+?max-width: 100% !important;[\s\S]+?\}/)?.[0] ?? "";
+    const brightPlaqueNameSizingBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-main,[\s\S]+?flex: 1 1 auto !important;[\s\S]+?\}/)?.[0] ?? "";
+    const brightPlaqueNameOverflowBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name\s*\{[^}]+\}/g)?.find((block) => block.includes("overflow: hidden")) ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
     const brightNarrowDesktopMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-width: 1180px\)\s*\{[\s\S]+?@media \(max-width: 700px\)/)?.[0] ?? "";
@@ -175,12 +176,13 @@ describe("HomeScreen", () => {
     expect(css).toContain(".home-player-zone .plaque-mode-stat");
     expect(brightPlaqueBlock).toContain("grid-template-columns: 76px minmax(96px, 1fr) minmax(136px, 150px)");
     expect(brightPlaqueBlock).toContain("overflow: hidden");
-    expect(brightPlaqueStrongBlock).toContain("overflow: visible");
+    expect(brightPlaqueStrongBlock).toContain("overflow: hidden");
     expect(brightPlaqueStrongBlock).toContain("text-overflow: clip");
-    expect(brightPlaqueNameMaxBlock).toContain("max-width: none");
-    expect(brightPlaqueNameSizingBlock).toContain("width: max-content");
-    expect(brightPlaqueNameSizingBlock).toContain("flex: 0 0 auto");
-    expect(brightPlaqueNameOverflowBlock).toContain("overflow: visible");
+    expect(brightPlaqueIdentityBlock).toContain("max-width: 100%");
+    expect(brightHomeCss).toContain("--user-identity-name-tag-padding-x: 0.32em");
+    expect(brightPlaqueNameSizingBlock).toContain("width: 100%");
+    expect(brightPlaqueNameSizingBlock).toContain("flex: 1 1 auto");
+    expect(brightPlaqueNameOverflowBlock).toContain("overflow: hidden");
     expect(brightPlaqueNameOverflowBlock).toContain("text-overflow: clip");
     expect(brightStatsBlock).toContain("width: 100%");
     expect(brightStatsBlock).toContain("min-width: 0");
@@ -191,10 +193,12 @@ describe("HomeScreen", () => {
     expect(brightHomeCss).toContain("font-size: clamp(10px, 8.9cqw, 15px)");
     expect(brightHomeCss).toContain(".plaque-mode-rating");
     expect(brightHomeCss).toContain("justify-self: center");
-    expect(brightShortHeightMedia).toContain("max-height: calc(100dvh - 128px)");
+    expect(brightShortHeightMedia).not.toContain("max-height: calc(100dvh - 128px)");
+    expect(brightShortHeightMedia).toContain("min-height: auto");
     expect(brightShortHeightMedia).toContain("height: clamp(220px, 36dvh, 286px)");
     expect(brightShortHeightMedia).toContain("height: clamp(270px, 50dvh, 356px)");
-    expect(brightNarrowDesktopMedia).toContain("width: clamp(318px, 36vw, 386px)");
+    expect(brightNarrowDesktopMedia).not.toContain("width: clamp(318px, 36vw, 386px)");
+    expect(brightNarrowDesktopMedia).toContain("width: 100%");
     expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(88px, 1fr) minmax(108px, clamp(112px, 31%, 128px))");
     expect(brightNarrowDesktopMedia).toContain("font-size: clamp(20px, 2.1vw, 24px)");
     expect(brightNarrowDesktopMedia).toContain("grid-template-columns: minmax(0, 0.86fr) minmax(0, 0.74fr) minmax(0, 1fr)");
@@ -275,7 +279,7 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".home-brand-title");
     expect(finalMobileCss).toContain("font-size: clamp(22px, 6.7vw, 32px) !important");
     expect(finalMobileCss).toContain("text-overflow: clip !important");
-    expect(finalMobileCss).toContain("@media (min-width: 769px)");
+    expect(finalMobileCss).toContain("@media (min-width: 1181px) and (min-height: 960px)");
     expect(finalMobileCss).toContain(".home-screen.home-terminal-screen + .home-footer-strip");
     expect(finalMobileCss).toContain(".home-screen.home-terminal-screen > .home-footer-strip");
     expect(finalMobileCss).toContain("position: fixed !important");
@@ -288,7 +292,21 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".leaderboard-header h2");
     expect(finalMobileCss).toContain(".owned-decoration-header h3");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
-    expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 1180px), (min-width: 701px) and (max-height: 640px)");
+    expect(finalMobileCss).toContain("@media (min-width: 1024px) and (max-width: 1180px), (min-width: 701px) and (max-height: 640px)");
+    expect(finalMobileCss).toContain("@media (min-width: 1181px) and (max-width: 1500px)");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(390px, 0.9fr) minmax(160px, 0.42fr) minmax(360px, 1.08fr) !important");
+    expect(finalMobileCss).toContain("width: min(100%, 440px) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: 62px minmax(128px, 1fr) minmax(118px, 132px) !important");
+    expect(finalMobileCss).toContain("font-size: clamp(18px, 1.45vw, 21px) !important");
+    expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 1023px)");
+    expect(finalMobileCss).toContain("--home-micro-stage-width: 960px");
+    expect(finalMobileCss).toContain("overflow-x: auto !important");
+    expect(finalMobileCss).toContain("overscroll-behavior-inline: contain");
+    expect(finalMobileCss).toContain("scrollbar-gutter: stable both-edges");
+    expect(finalMobileCss).toContain("width: var(--home-micro-stage-width) !important");
+    expect(finalMobileCss).toContain("\"player match\"");
+    expect(finalMobileCss).toContain("\"manual match\"");
+    expect(finalMobileCss).toContain("\"utility utility\"");
     expect(finalMobileCss).toContain("@media (min-width: 701px)");
     expect(finalMobileCss).toContain(".home-image-entry > img");
     expect(finalMobileCss).toContain("box-sizing: border-box !important");
@@ -297,7 +315,7 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("\"player manual\"");
     expect(finalMobileCss).toContain(".home-player-zone,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry");
     expect(finalMobileCss).toContain("position: static !important");
-    expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 860px), (min-width: 701px) and (max-height: 560px)");
+    expect(finalMobileCss).toContain("@media (min-width: 1024px) and (max-height: 560px)");
   });
 
   it("renders configured footer text with safe markdown links", () => {

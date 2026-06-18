@@ -44,6 +44,21 @@
     filter: brightness(0.985) saturate(1.04) !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-button {
+    transition:
+      background-color 120ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 120ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 120ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-button.active:not(:disabled),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-button[aria-selected="true"]:not(:disabled),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-button:active:not(:disabled) {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen :where(
     .board,
     .board-wrap,

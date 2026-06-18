@@ -8,12 +8,13 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
     padding-top: clamp(50px, 8dvh, 70px) !important;
-    max-height: calc(100dvh - 128px) !important;
+    min-height: auto !important;
+    max-height: none !important;
     overflow: visible !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone {
-    top: clamp(-64px, -8dvh, -48px) !important;
+    top: auto !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
