@@ -162,6 +162,9 @@
 <li>Bright School portrait mobile home shell now follows the same nested import-only pattern through <code>src/styles/themes/bright-school/mobile/home-shell.css</code> and <code>src/styles/themes/bright-school/mobile/home-shell/</code>, keeping shell base, top strip/menu, main stage, player plaque, and entries/utility/footer rules in focused files.</li>
 </ul>
 <ul>
+<li>Bright School desktop student ID card styling now follows the nested import-only pattern through <code>src/styles/themes/bright-school/home/student-id-card.css</code> and <code>src/styles/themes/bright-school/home/student-id-card/</code>, keeping card shell/avatar, identity name, user identity tag, and mode stats rules in focused files.</li>
+</ul>
+<ul>
 <li>Bright School portrait mobile commerce and warehouse layout now follows the nested import-only pattern through <code>src/styles/themes/bright-school/mobile/commerce-warehouse.css</code> and <code>src/styles/themes/bright-school/mobile/commerce-warehouse/</code>, keeping shop layout, warehouse shell/grid, and warehouse item card rules in focused files while removing a duplicated shop mobile block.</li>
 </ul>
 <ul>
@@ -3500,6 +3503,9 @@
 <li>Bright School portrait mobile home shell is now a nested import-only entry: <code>src/styles/themes/bright-school/mobile/home-shell.css</code> owns import order, while <code>src/styles/themes/bright-school/mobile/home-shell/</code> contains shell-base, top-strip-menu, main-stage, player-plaque, and entries-utility-footer so future mobile home, menu, plaque, and footer rules stay in focused files.</li>
 </ul>
 <ul>
+<li>Bright School desktop student ID card styling is now a nested import-only entry: <code>src/styles/themes/bright-school/home/student-id-card.css</code> owns import order, while <code>src/styles/themes/bright-school/home/student-id-card/</code> contains card-shell-avatar, identity-name, user-identity-tag, and mode-stats rules.</li>
+</ul>
+<ul>
 <li>Bright School commerce shop polish is also a nested import-only entry: <code>src/styles/themes/bright-school/commerce/shop.css</code> owns import order while <code>src/styles/themes/bright-school/commerce/shop/</code> contains sidebar-wallet, product-grid, detail-dialog, and responsive rules.</li>
 </ul>
 <ul>
@@ -3698,6 +3704,9 @@
 </ul>
 <ul>
 <li>Bright School narrow-desktop home-stage safety now follows the same sub-entry pattern. <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> delegates common region resets, wide-stage, compact-stage, micro-stage scroll, and short-height stack rules to <code>src/styles/mobile-adaptive/home-narrow-desktop/</code>; style contract tests read the expanded import tree.</li>
+</ul>
+<ul>
+<li>Bright School desktop student ID card styling now follows the same sub-entry pattern. <code>src/styles/themes/bright-school/home/student-id-card.css</code> delegates card shell/avatar, identity name, user identity tag, and mode stats rules to <code>src/styles/themes/bright-school/home/student-id-card/</code>; theme contract tests read the expanded import tree.</li>
 </ul>
 <ul>
 <li>Bright School final mobile profile/house records now follow the same sub-entry pattern. <code>src/styles/mobile-adaptive/bright-school-overrides/profile-house-records.css</code> delegates house/profile stat fixes, profile resume stats, character record dialog rules, and embedded resume character records to <code>src/styles/mobile-adaptive/bright-school-overrides/profile-house-records/</code>; style contract tests read the expanded import tree.</li>

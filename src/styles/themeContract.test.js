@@ -192,6 +192,21 @@ describe("player theme CSS contract", () => {
     expect(brightHomeEntry).not.toContain("@media (min-width: 701px)");
   });
 
+  it("keeps Bright School home student-id-card as an import-only sub-entry", () => {
+    const studentIdEntry = readFileSync(new URL("./themes/bright-school/home/student-id-card.css", import.meta.url), "utf8");
+
+    expect(cssImports(studentIdEntry)).toEqual([
+      "./student-id-card/card-shell-avatar.css",
+      "./student-id-card/identity-name.css",
+      "./student-id-card/user-identity-tag.css",
+      "./student-id-card/mode-stats.css"
+    ]);
+    expect(studentIdEntry).not.toContain(".home-player-plaque.tactical-id-card {");
+    expect(studentIdEntry).not.toContain(".plaque-avatar");
+    expect(studentIdEntry).not.toContain(".user-identity-name-tag");
+    expect(studentIdEntry).not.toContain(".plaque-mode-stat");
+  });
+
   it("keeps Bright School gallery polish as an import-only static gallery parity entry", () => {
     const galleryPolishEntry = readFileSync(new URL("./themes/bright-school/gallery-polish.css", import.meta.url), "utf8");
 

@@ -1,0 +1,18 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card strong {
+  align-self: center !important;
+  min-width: 0 !important;
+  padding-left: 4px !important;
+  color: #3d2b25 !important;
+  font-size: clamp(20px, 1.9vw, 26px) !important;
+  font-weight: 900 !important;
+  line-height: 1.08 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card > strong {
+  overflow: hidden !important;
+  text-overflow: clip !important;
+}
