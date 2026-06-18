@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import SettingsModal from "./SettingsModal.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("SettingsModal terminal style hooks", () => {
   it("renders settings and audio rows with contrast-fix class hooks", () => {
@@ -42,7 +43,7 @@ describe("SettingsModal terminal style hooks", () => {
 
   it("keeps audio title buttons visually text-only despite global button skins", () => {
     const baseCss = readFileSync(new URL("../styles/commerce/shop-settings/settings-panel.css", import.meta.url), "utf8");
-    const brightSchoolCss = readFileSync(new URL("../styles/themes/bright-school/modals.css", import.meta.url), "utf8");
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
     const mobileSafetyCss = readFileSync(new URL("../styles/mobile-adaptive/bright-school-portrait.css", import.meta.url), "utf8");
 
     for (const css of [baseCss, brightSchoolCss, mobileSafetyCss]) {

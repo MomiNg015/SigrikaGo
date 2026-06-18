@@ -160,6 +160,23 @@ describe("player theme CSS contract", () => {
     expect(mobileRoomEntry).not.toContain(".character-record-dialog {");
   });
 
+  it("keeps Bright School modals as an import-only modal cleanup entry", () => {
+    const modalsEntry = readFileSync(new URL("./themes/bright-school/modals.css", import.meta.url), "utf8");
+
+    expect(cssImports(modalsEntry)).toEqual([
+      "./modals/handbook-decoration.css",
+      "./modals/surface-cleanup.css",
+      "./modals/settings-lobby-cleanup.css",
+      "./modals/selected-actions.css",
+      "./modals/resume-personalization.css",
+      "./modals/result-room-popovers.css",
+      "./modals/stage-decoration-fixes.css"
+    ]);
+    expect(modalsEntry).not.toContain(".settings-modal");
+    expect(modalsEntry).not.toContain(".resume-modal");
+    expect(modalsEntry).not.toContain(".room-person-popover");
+  });
+
   it("keeps Bright School component repairs as an import-only domain entry", () => {
     const componentRepairsEntry = readFileSync(new URL("./themes/bright-school/component-repairs.css", import.meta.url), "utf8");
 
