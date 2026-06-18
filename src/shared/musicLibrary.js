@@ -152,7 +152,7 @@ export const MUSIC_TRACKS = {
     characterId: "sigrika",
     defaultUnlocked: true,
     purchasable: false,
-    playback: introLoop("/assets/music/koimoon_132_intro_no_fadein_2p5s.ogg", "/assets/music/koimoon_132_micro_loop.ogg")
+    playback: introLoop("/assets/music/sigrika_intro_once.ogg", "/assets/music/sigrika_loop.ogg")
   },
   "sigrika-skill-dream": {
     id: "sigrika-skill-dream",
@@ -161,7 +161,7 @@ export const MUSIC_TRACKS = {
     characterId: "sigrika",
     defaultUnlocked: false,
     purchasable: true,
-    playback: introLoop("/assets/music/koimoon_132_intro_no_fadein_2p5s.ogg", "/assets/music/koimoon_132_micro_loop.ogg")
+    playback: introLoop("/assets/music/sigrika_intro_once.ogg", "/assets/music/sigrika_loop.ogg")
   },
   "aemeath-skill-default": {
     id: "aemeath-skill-default",
@@ -189,6 +189,51 @@ export const MUSIC_TRACKS = {
     defaultUnlocked: true,
     purchasable: false,
     playback: introLoop("/assets/music/busizhe_intro_once.ogg", "/assets/music/busizhe_loop.ogg")
+  },
+  "qiuyuan-skill-default": {
+    id: "qiuyuan-skill-default",
+    name: "Qiuyuan Skill BGM",
+    type: MUSIC_TYPES.skill,
+    characterId: "qiuyuan",
+    defaultUnlocked: true,
+    purchasable: false,
+    playback: introLoop("/assets/music/qiuyuan_intro_once.ogg", "/assets/music/qiuyuan_loop.ogg")
+  },
+  "lynae-skill-default": {
+    id: "lynae-skill-default",
+    name: "Lynae Skill BGM",
+    type: MUSIC_TYPES.skill,
+    characterId: "lynae",
+    defaultUnlocked: true,
+    purchasable: false,
+    playback: introLoop("/assets/music/lynae_intro_once.ogg", "/assets/music/lynae_loop.ogg")
+  },
+  "chisa-skill-default": {
+    id: "chisa-skill-default",
+    name: "Chisa Skill BGM",
+    type: MUSIC_TYPES.skill,
+    characterId: "chisa",
+    defaultUnlocked: true,
+    purchasable: false,
+    playback: introLoop("/assets/music/chisa_intro_once.ogg", "/assets/music/chisa_loop.ogg")
+  },
+  "changli-skill-default": {
+    id: "changli-skill-default",
+    name: "Changli Skill BGM",
+    type: MUSIC_TYPES.skill,
+    characterId: "changli",
+    defaultUnlocked: true,
+    purchasable: false,
+    playback: introLoop("/assets/music/changli_intro_once.ogg", "/assets/music/changli_loop.ogg")
+  },
+  "mornye-skill-default": {
+    id: "mornye-skill-default",
+    name: "Mornye Skill BGM",
+    type: MUSIC_TYPES.skill,
+    characterId: "mornye",
+    defaultUnlocked: true,
+    purchasable: false,
+    playback: introLoop("/assets/music/mornye_intro_once.ogg", "/assets/music/mornye_loop.ogg")
   }
 };
 

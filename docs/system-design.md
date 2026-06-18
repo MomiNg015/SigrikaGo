@@ -65,7 +65,7 @@
 
 ## Music Management Note
 
-- 角色技能 BGM 当前配置：达妮娅使用 canonical `denia-skill-default`（`bgm_*`），西格莉卡使用 `sigrika_intro_once.ogg` + `sigrika_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`，千咲使用 `chisa_intro_once.ogg` + `chisa_loop.ogg`。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical `denia` 查找达妮娅技能 BGM。
+- 角色技能 BGM 当前配置：达妮娅使用 canonical `denia-skill-default`（`bgm_*`），西格莉卡使用 `sigrika_intro_once.ogg` + `sigrika_loop.ogg`，爱弥斯使用 `lhl_*`，猪小仙使用 `matoya_*`，娜波摩使用 `busizhe_*`，千咲使用 `chisa_intro_once.ogg` + `chisa_loop.ogg`，长离使用 `changli_intro_once.ogg` + `changli_loop.ogg`，莫宁使用 `mornye_intro_once.ogg` + `mornye_loop.ogg`。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical `denia` 查找达妮娅技能 BGM。
 
 - Settings > Audio persists optional per-channel mute flags under `audioSettings.muted`; clicking an audio row title toggles mute without changing the slider percentage, and moving the slider clears that channel's mute flag.
 
@@ -74,6 +74,10 @@
 - 琳奈（`lynae`）的默认技能 BGM 是 `lynae-skill-default`，使用两段式 `intro-loop` 播放：`/assets/music/lynae_intro_once.ogg` 播放一次后接 `/assets/music/lynae_loop.ogg` 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。
 
 - 千咲（`chisa`）的默认技能 BGM 是 `chisa-skill-default`，使用两段式 `intro-loop` 播放：`/assets/music/chisa_intro_once.ogg` 播放一次后接 `/assets/music/chisa_loop.ogg` 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。
+
+- 长离（`changli`）的默认技能 BGM 是 `changli-skill-default`，使用两段式 `intro-loop` 播放：`/assets/music/changli_intro_once.ogg` 播放一次后接 `/assets/music/changli_loop.ogg` 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。
+
+- 莫宁（`mornye`）的默认技能 BGM 是 `mornye-skill-default`，使用两段式 `intro-loop` 播放：`/assets/music/mornye_intro_once.ogg` 播放一次后接 `/assets/music/mornye_loop.ogg` 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。
 
 ## Achievement And Personalization Note
 

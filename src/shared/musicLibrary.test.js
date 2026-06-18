@@ -106,7 +106,7 @@ describe("background music library", () => {
     });
   });
 
-  it("uses Koimoon as Sigrika skill music", () => {
+  it("uses Sigrika skill music", () => {
     const track = resolveBackgroundMusic({
       view: "room",
       skillPreview: { characterId: "sigrika" }
@@ -118,8 +118,8 @@ describe("background music library", () => {
       characterId: "sigrika",
       playback: {
         mode: "intro-loop",
-        introSrc: "/assets/music/koimoon_132_intro_no_fadein_2p5s.ogg",
-        loopSrc: "/assets/music/koimoon_132_micro_loop.ogg",
+        introSrc: "/assets/music/sigrika_intro_once.ogg",
+        loopSrc: "/assets/music/sigrika_loop.ogg",
         loop: true
       }
     });
@@ -177,6 +177,101 @@ describe("background music library", () => {
         mode: "intro-loop",
         introSrc: "/assets/music/busizhe_intro_once.ogg",
         loopSrc: "/assets/music/busizhe_loop.ogg",
+        loop: true
+      }
+    });
+  });
+
+  it("uses Qiuyuan skill music", () => {
+    const track = resolveBackgroundMusic({
+      view: "room",
+      skillPreview: { characterId: "qiuyuan" }
+    });
+
+    expect(track).toMatchObject({
+      id: "qiuyuan-skill-default",
+      type: "skill",
+      characterId: "qiuyuan",
+      playback: {
+        mode: "intro-loop",
+        introSrc: "/assets/music/qiuyuan_intro_once.ogg",
+        loopSrc: "/assets/music/qiuyuan_loop.ogg",
+        loop: true
+      }
+    });
+  });
+
+  it("uses Lynae skill music", () => {
+    const track = resolveBackgroundMusic({
+      view: "room",
+      skillPreview: { characterId: "lynae" }
+    });
+
+    expect(track).toMatchObject({
+      id: "lynae-skill-default",
+      type: "skill",
+      characterId: "lynae",
+      playback: {
+        mode: "intro-loop",
+        introSrc: "/assets/music/lynae_intro_once.ogg",
+        loopSrc: "/assets/music/lynae_loop.ogg",
+        loop: true
+      }
+    });
+  });
+
+  it("uses Chisa skill music", () => {
+    const track = resolveBackgroundMusic({
+      view: "room",
+      skillPreview: { characterId: "chisa" }
+    });
+
+    expect(track).toMatchObject({
+      id: "chisa-skill-default",
+      type: "skill",
+      characterId: "chisa",
+      playback: {
+        mode: "intro-loop",
+        introSrc: "/assets/music/chisa_intro_once.ogg",
+        loopSrc: "/assets/music/chisa_loop.ogg",
+        loop: true
+      }
+    });
+  });
+
+  it("uses Changli skill music", () => {
+    const track = resolveBackgroundMusic({
+      view: "room",
+      skillPreview: { characterId: "changli" }
+    });
+
+    expect(track).toMatchObject({
+      id: "changli-skill-default",
+      type: "skill",
+      characterId: "changli",
+      playback: {
+        mode: "intro-loop",
+        introSrc: "/assets/music/changli_intro_once.ogg",
+        loopSrc: "/assets/music/changli_loop.ogg",
+        loop: true
+      }
+    });
+  });
+
+  it("uses Mornye skill music", () => {
+    const track = resolveBackgroundMusic({
+      view: "room",
+      skillPreview: { characterId: "mornye" }
+    });
+
+    expect(track).toMatchObject({
+      id: "mornye-skill-default",
+      type: "skill",
+      characterId: "mornye",
+      playback: {
+        mode: "intro-loop",
+        introSrc: "/assets/music/mornye_intro_once.ogg",
+        loopSrc: "/assets/music/mornye_loop.ogg",
         loop: true
       }
     });
@@ -280,6 +375,15 @@ describe("background music library", () => {
       ownedMusicIds: ["denia-skill-alt"],
       tracks
     }).map((track) => track.id)).toEqual(["sigrika-skill-default"]);
+  });
+
+  it("uses Sigrika replacement BGM for the purchasable Sigrika music option", () => {
+    expect(MUSIC_TRACKS["sigrika-skill-dream"].playback).toMatchObject({
+      mode: "intro-loop",
+      introSrc: "/assets/music/sigrika_intro_once.ogg",
+      loopSrc: "/assets/music/sigrika_loop.ogg",
+      loop: true
+    });
   });
 
   it("stops background music after the game is finished", () => {

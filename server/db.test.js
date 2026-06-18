@@ -56,7 +56,12 @@ describe("publicUser", () => {
         "sigrika-skill-default",
         "aemeath-skill-default",
         "baconbits-skill-default",
-        "nabomo-skill-default"
+        "nabomo-skill-default",
+        "qiuyuan-skill-default",
+        "lynae-skill-default",
+        "chisa-skill-default",
+        "changli-skill-default",
+        "mornye-skill-default"
       ],
       musicSelections: { skill: {} }
     });
