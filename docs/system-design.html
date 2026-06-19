@@ -103,6 +103,9 @@
 <ul>
 <li>修改 Markdown 后运行 <code>npm run docs:system-design</code>；涉及脚本或编码规则时运行 <code>npm test -- docs/systemDesignHtml.test.js</code>。</li>
 </ul>
+<ul>
+<li>Bright School theme typography now loads <code>LXGW WenKai</code> plus <code>Nunito Sans</code> from the root CSS entry and exposes <code>--bright-school-font-body</code> / <code>--bright-school-font-display</code> in <code>src/styles/themes/bright-school/base/paper-root.css</code>. Theme-specific high-specificity cute typography rules should reference those variables instead of hard-coding platform rounded fonts, so desktop and mobile keep the same campus-style Chinese/English font pairing.</li>
+</ul>
 <h2>Board Effect Theme Guard</h2>
 <ul>
 <li>Mobile match-mode picker cards keep rule text split into two stable lines, pin the count/status chip to the far right edge of each mode button, and keep the status label on one line.</li>
@@ -3578,6 +3581,9 @@
 </ul>
 <ul>
 <li>Bright School portrait mobile list/settings/social layout is also a nested import-only entry: <code>src/styles/themes/bright-school/mobile/lists-settings.css</code> owns import order while <code>src/styles/themes/bright-school/mobile/lists-settings/</code> contains list-scroll-widths, watch-rows, friends-rows, table-shells, leaderboard-cards, replay-cards, and toolbars-card-borders rules.</li>
+</ul>
+<ul>
+<li>Bright School typography uses the campus font pair <code>LXGW WenKai</code> + <code>Nunito Sans</code>. The global font import lives at the top of <code>src/styles.css</code>, while <code>src/styles/themes/bright-school/base/paper-root.css</code> owns <code>--bright-school-font-body</code> and <code>--bright-school-font-display</code>; desktop, mobile, shop, warehouse, home title, and sticker-label overrides should consume those variables instead of reintroducing <code>Arial Rounded</code> / platform-only stacks.</li>
 </ul>
 <h2>Modal Layering</h2>
 <ul>

@@ -35,6 +35,8 @@
 - 发现乱码时先确认源文件是否含 `Unicode replacement character` 或常见 mojibake 片段，再区分终端显示问题和文件内容损坏。
 - 修改 Markdown 后运行 `npm run docs:system-design`；涉及脚本或编码规则时运行 `npm test -- docs/systemDesignHtml.test.js`。
 
+- Bright School theme typography now loads `LXGW WenKai` plus `Nunito Sans` from the root CSS entry and exposes `--bright-school-font-body` / `--bright-school-font-display` in `src/styles/themes/bright-school/base/paper-root.css`. Theme-specific high-specificity cute typography rules should reference those variables instead of hard-coding platform rounded fonts, so desktop and mobile keep the same campus-style Chinese/English font pairing.
+
 ## Board Effect Theme Guard
 
 - Mobile match-mode picker cards keep rule text split into two stable lines, pin the count/status chip to the far right edge of each mode button, and keep the status label on one line.

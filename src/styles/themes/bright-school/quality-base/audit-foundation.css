@@ -15,7 +15,7 @@
   overflow-x: clip !important;
   background-color: #fffbf2 !important;
   color: #3d2b25 !important;
-  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+  font-family: var(--bright-school-font-body) !important;
 }
 
 @supports not (overflow: clip) {
@@ -161,7 +161,7 @@
   .timer-label,
   .timer-periods
 ) {
-  font-family: "Arial Rounded MT Bold", "Nunito", "Microsoft YaHei UI", system-ui, sans-serif !important;
+  font-family: var(--bright-school-font-display) !important;
   font-variant-numeric: tabular-nums !important;
   font-feature-settings: "tnum" 1, "liga" 1 !important;
   color: #3d2b25 !important;

@@ -288,7 +288,7 @@ describe("HomeScreen", () => {
     expect(brightMobileCss).toContain("padding: 12px 12px 48px !important");
     expect(brightMobileCss).toContain("bottom: 10px !important");
     expect(brightMobileCss).toContain("max-width: calc(100% - 28px) !important");
-    expect(brightMobileCss).toContain("font-family: \"Arial Rounded MT Bold\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", system-ui, sans-serif !important");
+    expect(brightMobileCss).toContain("font-family: var(--bright-school-font-display) !important");
 
     const finalMobileCss = readCssFixture("../styles/mobile-adaptive.css");
     expect(finalMobileCss).toContain(":has(.modal-backdrop) .home-mobile-menu");

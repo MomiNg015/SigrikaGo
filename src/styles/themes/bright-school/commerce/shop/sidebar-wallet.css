@@ -102,7 +102,7 @@
   border: 3px solid #3d2b25 !important;
   border-radius: 999px !important;
   box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.72), inset 0 2px 0 rgba(255, 255, 255, 0.7) !important;
-  font-family: "Arial Rounded MT Bold", "Microsoft YaHei", sans-serif !important;
+  font-family: var(--bright-school-font-display) !important;
   font-weight: 900 !important;
 }
 

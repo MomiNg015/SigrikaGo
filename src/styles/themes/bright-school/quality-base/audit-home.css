@@ -6,12 +6,12 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-brand {
   min-width: 0 !important;
   color: #3d2b25 !important;
-  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+  font-family: var(--bright-school-font-display) !important;
   font-weight: 900 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title {
-  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+  font-family: var(--bright-school-font-display) !important;
   font-weight: 900 !important;
   letter-spacing: 0.02em !important;
   text-shadow:
@@ -20,7 +20,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-subtitle {
-  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+  font-family: var(--bright-school-font-display) !important;
   font-weight: 800 !important;
   letter-spacing: 0.01em !important;
 }
