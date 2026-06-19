@@ -70,6 +70,15 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
             onChange={(event) => setDraft((current) => ({ ...current, footerText: event.target.value }))}
           />
         </label>
+        <label>
+          <AdminFieldLabel text="加载页提示语" tip="显示在加载进度条下方；每行一句，玩家加载时随机展示并每 10 秒切换。" />
+          <textarea
+            maxLength={1000}
+            rows={5}
+            value={draft.preloadTips}
+            onChange={(event) => setDraft((current) => ({ ...current, preloadTips: event.target.value }))}
+          />
+        </label>
         <div className="inline-actions">
           <button className="primary-action" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</button>
         </div>

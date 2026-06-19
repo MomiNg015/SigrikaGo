@@ -183,7 +183,7 @@
 
 站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。
 
-- `key`: 主键。当前使用 `homeTitle`、`homeSubtitle`、`aboutText` 与 `footerText`。
+- `key`: 主键。当前使用 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText` 与 `preloadTips`；`preloadTips` 以换行文本存储加载页提示语集合。
 - `value`: 配置值字符串。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 

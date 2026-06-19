@@ -41,15 +41,17 @@ Questions to answer:
 #### 2. Signatures
 - `DEFAULT_SITE_SETTINGS` in `src/shared/siteSettings.js` is the source of truth for supported keys and fallback values.
 - `SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS)` in `server/siteSettings.js`.
-- Current keys: `homeTitle`, `homeSubtitle`, `aboutText`, and `footerText`.
+- Current keys: `homeTitle`, `homeSubtitle`, `aboutText`, `footerText`, and `preloadTips`.
 - `footerText` supports Markdown-style links in the frontend only: `[label](https://example.com)`.
+- `preloadTips` stores one loading-screen tip per line. The frontend parses non-empty trimmed lines, chooses one random tip for the preload screen, and rotates to another random tip every 10 seconds while the preload view stays mounted.
 
 #### 3. Contracts
 - `ensureDefaultSiteSettings(prisma)` must upsert every key from `DEFAULT_SITE_SETTINGS` without overwriting already configured values.
 - `getPublicSiteSettings(prisma)` must ignore unknown database rows and merge only supported keys over shared defaults.
 - `updateSiteSettings({ prisma, adminUser, body })` must sanitize every supported key, upsert each value, and write one `site-settings.update` audit entry.
-- New settings fields must be added to `DEFAULT_SITE_SETTINGS`, `SITE_SETTING_LIMITS`, admin settings UI, public/admin route tests, and frontend rendering tests together.
+- New settings fields must be added to `DEFAULT_SITE_SETTINGS`, `SITE_SETTING_LIMITS`, admin settings UI, public/admin route tests, frontend rendering tests, and system-design docs together.
 - The frontend must render `footerText` links through a constrained parser rather than arbitrary HTML.
+- Loading-screen tips must stay plain text. Do not parse HTML or Markdown for `preloadTips`; React text rendering should escape all configured content.
 
 #### 4. Validation & Error Matrix
 - Missing key in request body -> sanitize to the shared default for that key.
@@ -58,19 +60,25 @@ Questions to answer:
 - Unknown stored key -> ignored by `rowsToSettings`.
 - Footer text containing raw HTML -> React escapes it as text; it must not be inserted with `dangerouslySetInnerHTML`.
 - Footer Markdown link with non-HTTP protocol -> stays plain text because only `http://` and `https://` links are recognized.
+- Blank `preloadTips` request value -> falls back to `DEFAULT_SITE_SETTINGS.preloadTips`.
+- `preloadTips` containing blank lines -> blank lines are ignored by the frontend parser.
 
 #### 5. Good/Base/Bad Cases
 - Good: adding `footerText` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, and home footer rendering tests in one change.
+- Good: adding `preloadTips` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, preload component tests, style contract tests, and system-design docs in one change.
 - Base: an old database without `footerText` rows serves the shared default until an admin saves a custom footer.
 - Bad: accepting arbitrary HTML for the footer to make links work.
 - Bad: adding a field only to the admin form while `SITE_SETTING_KEYS` still rejects it.
+- Bad: hard-coding loading tips only in `AssetPreloadScreen`, because admins cannot change them through the existing system settings flow.
 
 #### 6. Tests Required
 - Backend defaults tests assert `ensureDefaultSiteSettings()` seeds every supported key.
 - Admin route tests assert PATCH/GET round-trip for newly added keys.
 - Public settings loader tests assert API values merge over defaults without dropping new keys.
 - Frontend component tests assert configured footer text renders and raw HTML stays escaped.
+- Preload component tests assert configured tips are parsed from newline text and render below the progress bar.
 - CSS/static tests assert desktop footer remains viewport-fixed and mobile footer remains in normal document flow when those layout contracts are affected.
+- CSS/static tests assert final theme safety layers preserve the borderless preload panel when theme panel rules would otherwise add a frame.
 
 #### 7. Wrong vs Correct
 
@@ -87,6 +95,21 @@ Correct:
 ```
 
 `HomeFooter` parses only safe Markdown link syntax and lets React escape all other text.
+
+Wrong:
+
+```jsx
+const tips = ["tip A", "tip B"];
+<AssetPreloadScreen tips={tips} />
+```
+
+Correct:
+
+```jsx
+<AssetPreloadScreen tipsText={siteSettings.preloadTips} />
+```
+
+`preloadTips` stays in the same `SiteSetting` key/value contract as other public system settings.
 
 ### Scenario: Game Mode Persistence
 

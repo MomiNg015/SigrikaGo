@@ -33,5 +33,10 @@ describe("site settings defaults", () => {
       create: { key: "footerText", value: DEFAULT_SITE_SETTINGS.footerText },
       update: {}
     });
+    expect(upsert).toHaveBeenCalledWith({
+      where: { key: "preloadTips" },
+      create: { key: "preloadTips", value: DEFAULT_SITE_SETTINGS.preloadTips },
+      update: {}
+    });
   });
 });

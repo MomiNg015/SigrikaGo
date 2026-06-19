@@ -91,7 +91,7 @@ export default function AppRoutes({
   return (
     <>
       {view === "login" && <AuthScreen onAuth={onAuth} />}
-      {view === "preloading" && <AssetPreloadScreen progress={assetProgress} />}
+      {view === "preloading" && <AssetPreloadScreen progress={assetProgress} tipsText={siteSettings.preloadTips} />}
       {view === "home" && homeScreen}
       {view === "admin" && user?.role === "admin" && (
         <AdminConsole

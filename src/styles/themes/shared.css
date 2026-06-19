@@ -226,6 +226,10 @@
   box-shadow: var(--timer-track-glow, 0 0 10px color-mix(in srgb, var(--theme-accent) 45%, transparent));
 }
 
+.app-shell.player-theme-enabled .preload-tip {
+  color: var(--theme-muted);
+}
+
 .app-shell.player-theme-enabled .board-stage {
   border-color: var(--theme-border);
   box-shadow: var(--theme-glow);

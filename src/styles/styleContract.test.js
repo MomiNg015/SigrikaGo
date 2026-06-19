@@ -309,7 +309,8 @@ describe("root CSS entry contract", () => {
       "./bright-school-overrides/replay-dialog.css",
       "./bright-school-overrides/profile-house-records.css",
       "./bright-school-overrides/shop-cards.css",
-      "./bright-school-overrides/leaderboard-cards.css"
+      "./bright-school-overrides/leaderboard-cards.css",
+      "./bright-school-overrides/preload.css"
     ]);
     expect(brightSchoolOverridesEntry).not.toContain(".home-mobile-menu-panel");
     expect(brightSchoolOverridesEntry).not.toContain(".character-record-dialog");

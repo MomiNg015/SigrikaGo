@@ -192,7 +192,7 @@ SigrikaGo/
   - Converts a replay record snapshot into the room-screen state used by normal house replays and admin replays: room snapshot, latest replay step, cleared pending skill, and `room` view.
 - `src/app/siteSettingsCatalog.js`
   - Loads public site settings from `/api/site-settings`, merges them over shared defaults, and falls back to `DEFAULT_SITE_SETTINGS` when the request fails.
-  - Shares the in-flight startup settings request. Login and refresh preloading wait for this loader before switching to `home`, so the first home render uses the configured title/subtitle instead of briefly showing the default `大厅` copy.
+  - Shares the in-flight startup settings request. Login and refresh preloading wait for this loader before switching to `home`, so the preload screen and first home render use configured loading tips, title, and subtitle instead of briefly showing defaults.
 - `src/shared/game.js`
   - 共享的游戏规则引擎。
   - 负责棋盘状态、落子、提子、禁自杀、劫、弃手、认输、主动技能执行函数、隐藏手、死子标记、数子、回放重算等。
@@ -657,5 +657,5 @@ SigrikaGo/
 - 角色立绘上传：支持 png/jpeg/webp/gif，大小限制 3MB。
 - 商城管理：列表主视图，新增/编辑商品在右侧抽屉中完成，支持下架商品。
 - 装饰管理：列表主视图，新增/编辑装饰在右侧抽屉中完成，支持停用装饰。
-- 系统设置：可编辑大厅标题、大厅副标题、关于文本和首页 footer 长文本；保存后通过 `SiteSetting` 持久化，并立即回写当前前端大厅状态。
+- 系统设置：可编辑大厅标题、大厅副标题、关于文本、首页 footer 长文本和加载页提示语集合；保存后通过 `SiteSetting` 持久化，并立即回写当前前端大厅/加载页状态。
 - 审计日志：记录部分后台操作前后值。

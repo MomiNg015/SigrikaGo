@@ -40,7 +40,7 @@
 - `resultRewardDelta`: 位于 `src/shared/resultRewards.js`，集中维护结果奖励差值，供后端持久化与前端结果展示共用；积分胜 `+20`、负 `-20`、和 `0`，金币胜 `+50`、负 `+20`、和 `0`。
 - `buildCharacterDraft` / `characterDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台角色表单数据转换。
 - `validateShopItemDraft` / `decorationDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台商城/装饰表单校验。
-- `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题、副标题、设置关于文本和首页 footer 文本默认值。
+- `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题、副标题、设置关于文本、首页 footer 文本和加载页提示语集合默认值。
 - `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定；普通落子、反色技能和千咲 `liberty-purge` 这类实际落子的技能都会成为最新落子标记来源。
 - `SKILL_EFFECT_CATALOG` / `skillEffectTargetRule` / `skillEffectSoundCues`: 位于 `src/shared/skillEffectCatalog.js`，集中维护技能 `effectType` 的管理端标签、默认目标规则、主动/被动分类、棋盘演出标记和音效 cue。管理端角色表单、服务端角色校验、技能归一化、目标预览和技能音效都应从该 catalog 读取这些元数据。
 - `row-slash` 是主动技能类型但不挂 Pixi `boardEffect` canvas，目标规则为 `any-point`。服务端 pending skill preview 会附带 `row` 和整行 `affectedPointIds`，前端 `Board` 以 `BoardRowSlashOverlay` 渲染一条贯穿棋盘外缘的破碎横向刀痕，并由 CSS `row-slash-strike` 动画完成斩击展开；持久标记来自 `game.rowEffects`，通过 `clearAfterColor` 在对手下一次行动后清除。该 DOM overlay 为 `pointer-events: none`，且 `BoardSkillEffects` 对这类 DOM-only 预览直接返回 `null`，避免任何整棋盘效果层覆盖棋盘网格、星位和棋子。
@@ -69,7 +69,7 @@
 - `validateCharacterInput`: 角色/技能输入校验。
 - `toCharacterPayload`: 角色公开 payload。
 - `validateShopItemInput` / `validateDecorationInput`: 商城与装饰校验。
-- `getPublicSiteSettings` / `updateSiteSettings`: 站点配置读取、清洗、持久化和审计写入；当前公开配置包含 `homeTitle`、`homeSubtitle`、`aboutText` 与 `footerText`。
+- `getPublicSiteSettings` / `updateSiteSettings`: 站点配置读取、清洗、持久化和审计写入；当前公开配置包含 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText` 与 `preloadTips`。
 - `buildLeaderboard`: 排行榜统计。
 - `ratingDeltaForResult`: 根据 `winnerColor` 计算玩家积分变化；胜方 +20、负方 -20、和棋 0。
 - `safeUploadFilename`: 上传文件名清洗。
@@ -221,7 +221,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - The preload step fetches non-replay runtime assets after login, but it is now split by startup criticality. Critical preload waits for current character portraits, home entry/background imagery, and common board/UI effect sounds before the app can leave the preload screen. Shop imagery, candy/effect previews, stone decoration images, result/match sounds, configured BGM tracks, character skill voices, and system voices stay in the same asset manifest but load as deferred background work with a concurrency cap so first entry to the home screen is not blocked by the full music/voice library. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.
 - Preload failures are non-blocking: failed or hanging asset loaders are ignored after a bounded per-task timeout so users are not trapped on the loading screen if a single critical or optional resource stalls during reconnect, server restart, or cache recovery.
 - Startup preload is independent from transient Socket.IO client instances. `useStartupPreload()` must not receive `socket` or include a socket object in its dependency list; token/session state cleanup will tear down the socket through the socket lifecycle hook, while preload continues exactly once for the confirmed token.
-- The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads.
+- The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads. `AssetPreloadScreen` reads `siteSettings.preloadTips`, parses one non-empty tip per line, shows one random tip below the progress bar, and rotates to another random tip every 10 seconds while the view remains open. The loading panel itself stays borderless in both the base layer and the final Bright School safety layer so mobile and desktop keep the same no-frame loading treatment.
 
 ## Board Effect Theme Guard
 

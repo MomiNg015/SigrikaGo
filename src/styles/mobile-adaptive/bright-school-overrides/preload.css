@@ -1,0 +1,20 @@
+.app-shell.player-theme-enabled.theme-bright-school .asset-preload-panel,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .asset-preload-panel {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .asset-preload-panel::before,
+.app-shell.player-theme-enabled.theme-bright-school .asset-preload-panel::after,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .asset-preload-panel::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .asset-preload-panel::after {
+  content: none !important;
+  display: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .preload-tip,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-tip {
+  color: #5a4740 !important;
+}

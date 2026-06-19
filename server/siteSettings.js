@@ -6,7 +6,8 @@ const SITE_SETTING_LIMITS = {
   homeTitle: 24,
   homeSubtitle: 80,
   aboutText: 3000,
-  footerText: 3000
+  footerText: 3000,
+  preloadTips: 1000
 };
 
 export async function getPublicSiteSettings(prisma) {

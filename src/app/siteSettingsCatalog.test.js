@@ -7,7 +7,8 @@ describe("public site settings loading", () => {
       homeTitle: "Default title",
       homeSubtitle: "Default subtitle",
       aboutText: "Default about",
-      footerText: "Default footer"
+      footerText: "Default footer",
+      preloadTips: "Default tip"
     };
     const apiClient = vi.fn(async () => ({
       settings: { homeTitle: "Remote title" }
@@ -17,7 +18,8 @@ describe("public site settings loading", () => {
       homeTitle: "Remote title",
       homeSubtitle: "Default subtitle",
       aboutText: "Default about",
-      footerText: "Default footer"
+      footerText: "Default footer",
+      preloadTips: "Default tip"
     });
     expect(apiClient).toHaveBeenCalledWith("/api/site-settings");
   });
