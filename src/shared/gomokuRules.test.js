@@ -28,19 +28,22 @@ describe("gomoku rules", () => {
     expect(state.skillUses).toEqual({ black: 0, white: 0 });
   });
 
-  it("finishes immediately when a player makes exactly five in a row", () => {
+  it("finishes with winning-line metadata when a player makes exactly five in a row", () => {
     const state = createGameState([], { mode: "gomoku" });
     for (let x = 2; x <= 5; x += 1) forceStone(state, x, 6, COLORS.black);
     state.turn = COLORS.black;
 
     const result = playMove(state, COLORS.black, pointId(6, 6));
+    const winningLine = [2, 3, 4, 5, 6].map((x) => pointId(x, 6));
 
     expect(result.ok).toBe(true);
     expect(result.state.phase).toBe(GAME_PHASES.finished);
     expect(result.state.winner).toMatchObject({
       winnerColor: COLORS.black,
-      reason: "gomoku-five"
+      reason: "gomoku-five",
+      winningLine
     });
+    expect(result.state.history.at(-1).winningLine).toEqual(winningLine);
   });
 
   it("rejects black overlines without changing the board or turn", () => {

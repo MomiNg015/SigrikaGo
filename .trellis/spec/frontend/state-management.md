@@ -557,6 +557,7 @@ showAchievementUnlocks(result.achievementUnlocks);
 #### 3. Contracts
 - `App.jsx` should read room-session fields from `useRoomSessionState()` instead of adding separate top-level state for room, replay, pending skill, or result dismissal.
 - `resultModalOpen` is derived state and should not be stored separately.
+- Gomoku `gomoku-five` result snapshots with `winner.winningLine` use transient `resultRevealReady` state inside `useRoomSessionState()` only to gate the derived result modal for the 2-second board reveal. Do not open the modal during replay; replay keeps `replayStep !== null` and only renders the board highlight.
 - `setRoom` remains the only React state entry point for full server room snapshots; socket handlers should still use `applyRoomSnapshot()` before writing same-room updates.
 - Result resume snapshots should keep using the existing resume-session helpers and setters from this hook.
 - Replay opening should update room, replay step, pending skill, and view together through the existing replay actions.
@@ -567,6 +568,7 @@ showAchievementUnlocks(result.achievementUnlocks);
 - Active replay step -> result modal closed even for a finished room.
 - Dismissed room code equals the finished room code -> result modal closed.
 - Invalid finished result -> result modal closed.
+- Gomoku five-in-row result with `resultRevealReady === false` -> result modal closed until the reveal timer finishes.
 
 #### 5. Good/Base/Bad Cases
 - Good: `const { room, setRoom, replayStep, setReplayStep, resultModalOpen } = useRoomSessionState();`
@@ -576,6 +578,7 @@ showAchievementUnlocks(result.achievementUnlocks);
 
 #### 6. Tests Required
 - `src/app/useRoomSessionState.test.js` should cover default state and result modal derivation.
+- `src/app/resumeSession.test.js` should cover the 2000 ms gomoku result reveal delay gate and the replay-closed branch.
 - `src/app/resumeSession.test.js`, `src/app/replayOpening.test.js`, and `src/app/socketHandlers.test.js` should be run after changing room resume, replay, or socket room session behavior.
 
 #### 7. Wrong vs Correct

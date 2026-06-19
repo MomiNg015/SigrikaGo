@@ -18,7 +18,7 @@
 用户账号与资产/战绩。
 
 - `id`: 主键 cuid。
-- `username`: 唯一用户名。注册/用户搜索校验只允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 8 个半角字符宽度，等价于最多 4 个中日韩字符或 8 个半角字符。 Legacy startup cleanup trims overlong existing usernames to the trailing 8 display-width units and adds a short numeric marker only when needed to preserve username uniqueness.
+- `username`: 唯一用户名。注册/用户搜索校验只允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 8 个半角字符宽度，等价于最多 4 个中日韩字符或 8 个半角字符。 Legacy startup cleanup trims overlong existing usernames to the trailing 8 display-width units and adds a short numeric marker only when needed to preserve username uniqueness.
 - `passwordHash`: bcrypt 哈希密码。
 - `role`: 用户角色，当前代码使用 `player` / `admin`。
 - `status`: 用户状态，当前代码使用 `active` / `banned`。
@@ -101,7 +101,7 @@
 
 ### Gomoku Domain
 
-`gomoku` 五子棋模式使用 `src/shared/gomokuRules.js` 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。
+`gomoku` 五子棋模式使用 `src/shared/gomokuRules.js` 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。 A decisive five-in-row result records the exact five point ids in `winner.winningLine`; live clients delay the result modal for 2 seconds while highlighting those stones, while replay views only render the same highlight.
 
 ### Character
 

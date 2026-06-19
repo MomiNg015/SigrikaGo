@@ -168,6 +168,40 @@ describe("roomView helpers", () => {
       winner: { winnerColor: COLORS.white, text: "白中盘胜" }
     });
   });
+
+  test("reconstructs gomoku winning-line metadata for replay board highlights", () => {
+    const players = [
+      { color: COLORS.black, user: { id: "black" } },
+      { color: COLORS.white, user: { id: "white" } }
+    ];
+    const history = [
+      { type: "move", color: COLORS.black, id: pointId(2, 6) },
+      { type: "move", color: COLORS.white, id: pointId(0, 0) },
+      { type: "move", color: COLORS.black, id: pointId(3, 6) },
+      { type: "move", color: COLORS.white, id: pointId(0, 1) },
+      { type: "move", color: COLORS.black, id: pointId(4, 6) },
+      { type: "move", color: COLORS.white, id: pointId(0, 2) },
+      { type: "move", color: COLORS.black, id: pointId(5, 6) },
+      { type: "move", color: COLORS.white, id: pointId(0, 3) },
+      { type: "move", color: COLORS.black, id: pointId(6, 6) }
+    ];
+    const room = {
+      players,
+      game: {
+        ...createGameState(players, { mode: "gomoku" }),
+        phase: GAME_PHASES.finished,
+        winner: null,
+        history
+      }
+    };
+
+    expect(replayRoomAt(room, history.length).game.winner).toMatchObject({
+      winnerColor: COLORS.black,
+      reason: "gomoku-five",
+      winningLine: [2, 3, 4, 5, 6].map((x) => pointId(x, 6))
+    });
+  });
+
   test("replays Lynae spray random target from history instead of rerolling", () => {
     const targetId = pointId(3, 3);
     const firstCandidateId = pointId(4, 3);

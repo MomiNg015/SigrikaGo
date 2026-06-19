@@ -30,6 +30,7 @@ export function playGomokuMove(state, color, id) {
 
   const winner = gomokuWinner(next, color, id);
   if (winner) {
+    next.history.at(-1).winningLine = winner.winningLine;
     next.phase = GAME_PHASES.finished;
     next.winner = winner;
     return ok(next);
@@ -52,13 +53,31 @@ export function blackForbiddenMove(state, id) {
 }
 
 function gomokuWinner(state, color, id) {
-  const wins = DIRECTIONS.some(([dx, dy]) => contiguousLength(state, id, color, dx, dy) >= 5);
-  if (!wins) return null;
+  const winningLine = gomokuWinningLine(state, color, id);
+  if (!winningLine.length) return null;
   return {
     winnerColor: color,
     reason: "gomoku-five",
+    winningLine,
     text: `${color === COLORS.black ? "黑" : "白"}五连胜`
   };
+}
+
+function gomokuWinningLine(state, color, id) {
+  for (const [dx, dy] of DIRECTIONS) {
+    const run = virtualRun(state, id, color, dx, dy, { requireExisting: true });
+    if (run.length >= 5) return winningLineIds(run, id, dx, dy);
+  }
+  return [];
+}
+
+function winningLineIds(run, originId, dx, dy) {
+  const ids = Array.from({ length: run.length }, (_, index) => (
+    pointId(run.start.x + dx * index, run.start.y + dy * index)
+  ));
+  const originIndex = ids.indexOf(originId);
+  const startIndex = Math.min(Math.max(originIndex - 2, 0), ids.length - 5);
+  return ids.slice(startIndex, startIndex + 5);
 }
 
 function hasOverline(state, id, color) {

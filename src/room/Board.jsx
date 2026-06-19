@@ -41,6 +41,11 @@ function Board({
   const libertyPurgeMarkIds = useMemo(() => new Set(
     (game.libertyPurgeMarks ?? []).flatMap((mark) => Array.isArray(mark.pointIds) ? mark.pointIds : [])
   ), [game.libertyPurgeMarks]);
+  const gomokuWinningLineIds = useMemo(() => new Set(
+    game.mode === "gomoku" && game.winner?.reason === "gomoku-five" && Array.isArray(game.winner.winningLine)
+      ? game.winner.winningLine
+      : []
+  ), [game.mode, game.winner?.reason, game.winner?.winningLine]);
   const showScoringMarks = ["marking-dead", "result-review", "finished"].includes(game.phase);
   const territoryOwner = useMemo(() => new Map([
     ...(showScoringMarks ? game.scoring?.territory?.black ?? [] : []).map((id) => [id, COLORS.black]),
@@ -110,6 +115,7 @@ function Board({
               previewClass={previewClass}
               showMoves={showMoves}
               showScoringMarks={showScoringMarks}
+              winningLineMarked={gomokuWinningLineIds.has(point.id)}
             />
           );
         })}
@@ -159,7 +165,8 @@ function PointButton({
   pointerTypeRef,
   previewClass,
   showMoves,
-  showScoringMarks
+  showScoringMarks,
+  winningLineMarked
 }) {
   const hiddenClass = point.hiddenHand
     ? point.hiddenHand.exposed ? "hidden-hand exposed-hidden-hand" : "hidden-hand"
@@ -176,7 +183,7 @@ function PointButton({
 
   return (
     <button
-      className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${previewClass} ${confirmClass} ${isStar ? "star" : ""}`}
+      className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${previewClass} ${confirmClass} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""}`}
       style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
       onPointerDown={(event) => {
         pointerTypeRef.current = event.pointerType;
@@ -251,7 +258,8 @@ export function arePointButtonPropsEqual(previous, next) {
     && previous.pointerTypeRef === next.pointerTypeRef
     && previous.previewClass === next.previewClass
     && previous.showMoves === next.showMoves
-    && previous.showScoringMarks === next.showScoringMarks;
+    && previous.showScoringMarks === next.showScoringMarks
+    && previous.winningLineMarked === next.winningLineMarked;
 }
 
 export function areBoardPropsEqual(previous, next) {

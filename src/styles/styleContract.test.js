@@ -666,6 +666,7 @@ describe("root CSS entry contract", () => {
       "./board/effects-canvas-motion.css",
       "./board/points-preview.css",
       "./board/stones-skill-effects.css",
+      "./board/gomoku-winning-line.css",
       "./board/latest-touch-void.css",
       "./board/grid-scoring.css"
     ]);
