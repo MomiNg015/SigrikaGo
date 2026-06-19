@@ -21,6 +21,7 @@ describe("server startup", () => {
     const ensureAchievementSchema = task("ensureAchievementSchema");
     const seedBuiltinAchievements = task("seedBuiltinAchievements");
     const cleanupLegacyDeniaCharacterData = task("cleanupLegacyDeniaCharacterData");
+    const cleanupLegacyUsernames = task("cleanupLegacyUsernames");
     const promoteConfiguredAdmins = task("promoteConfiguredAdmins");
 
     await initializeServerData({
@@ -37,6 +38,7 @@ describe("server startup", () => {
       ensureAchievementSchema,
       seedBuiltinAchievements,
       cleanupLegacyDeniaCharacterData,
+      cleanupLegacyUsernames,
       promoteConfiguredAdmins
     });
 
@@ -44,6 +46,7 @@ describe("server startup", () => {
       "ensureAchievementSchema",
       "seedBuiltinAchievements",
       "cleanupLegacyDeniaCharacterData",
+      "cleanupLegacyUsernames",
       "seedCharacters",
       "seedBuiltinShopItems",
       "ensureDefaultSiteSettings",

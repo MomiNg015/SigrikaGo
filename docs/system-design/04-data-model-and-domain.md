@@ -18,7 +18,7 @@
 用户账号与资产/战绩。
 
 - `id`: 主键 cuid。
-- `username`: 唯一用户名。注册/用户搜索校验只允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 10 个半角字符宽度，等价于最多 5 个中日韩字符或 10 个半角字符。
+- `username`: 唯一用户名。注册/用户搜索校验只允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 8 个半角字符宽度，等价于最多 4 个中日韩字符或 8 个半角字符。 Legacy startup cleanup trims overlong existing usernames to the trailing 8 display-width units and adds a short numeric marker only when needed to preserve username uniqueness.
 - `passwordHash`: bcrypt 哈希密码。
 - `role`: 用户角色，当前代码使用 `player` / `admin`。
 - `status`: 用户状态，当前代码使用 `active` / `banned`。

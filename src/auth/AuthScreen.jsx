@@ -166,19 +166,19 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
 }
 
 export const AUTH_REGISTER_HELP = {
-  username: "\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf\uff1b\u6700\u591a 5 \u4e2a\u4e2d\u65e5\u97e9\u5b57\u6216 10 \u4e2a\u534a\u89d2\u5b57\u7b26\u3002",
+  username: "\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf\uff1b\u6700\u591a 4 \u4e2a\u4e2d\u65e5\u97e9\u5b57\u6216 8 \u4e2a\u534a\u89d2\u5b57\u7b26\u3002",
   password: "\u5bc6\u7801\u957f\u5ea6\u9700\u4e3a 6-14 \u4f4d\uff0c\u4e0d\u80fd\u5305\u542b\u63a7\u5236\u5b57\u7b26\u3002",
   confirmPassword: "\u8bf7\u518d\u8f93\u5165\u4e00\u6b21\u5bc6\u7801\uff0c\u9700\u8981\u548c\u4e0a\u65b9\u5bc6\u7801\u5b8c\u5168\u4e00\u81f4\u3002"
 };
 
 const USERNAME_MIN_WIDTH = 2;
-const USERNAME_MAX_WIDTH = 10;
+const USERNAME_MAX_WIDTH = 8;
 const PASSWORD_MIN_LENGTH = 6;
 const PASSWORD_MAX_LENGTH = 14;
 const CJK_USERNAME_CHAR = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]$/u;
 const USERNAME_PATTERN = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}A-Za-z0-9_]+$/u;
 const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/;
-const USERNAME_WIDTH_ERROR = `\u7528\u6237\u540d\u9700\u4e3a ${USERNAME_MIN_WIDTH}-${USERNAME_MAX_WIDTH} \u4e2a\u534a\u89d2\u5b57\u7b26\u5bbd\u5ea6\uff0c\u6700\u591a 5 \u4e2a\u4e2d\u6587/\u65e5\u6587/\u97e9\u6587\u5b57\u6216 10 \u4e2a\u534a\u89d2\u82f1\u6587/\u6570\u5b57/\u4e0b\u5212\u7ebf`;
+const USERNAME_WIDTH_ERROR = `\u7528\u6237\u540d\u9700\u4e3a ${USERNAME_MIN_WIDTH}-${USERNAME_MAX_WIDTH} \u4e2a\u534a\u89d2\u5b57\u7b26\u5bbd\u5ea6\uff0c\u6700\u591a 4 \u4e2a\u4e2d\u6587/\u65e5\u6587/\u97e9\u6587\u5b57\u6216 8 \u4e2a\u534a\u89d2\u82f1\u6587/\u6570\u5b57/\u4e0b\u5212\u7ebf`;
 const USERNAME_PATTERN_ERROR = "\u7528\u6237\u540d\u4ec5\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf";
 const PASSWORD_LENGTH_ERROR = `\u5bc6\u7801\u9700\u4e3a ${PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} \u4f4d`;
 const PASSWORD_CONTROL_ERROR = "\u5bc6\u7801\u4e0d\u80fd\u5305\u542b\u63a7\u5236\u5b57\u7b26";
