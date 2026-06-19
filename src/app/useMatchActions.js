@@ -24,7 +24,7 @@ export function useMatchActions({
 
   const completeMatchSuccess = useCallback(() => {
     if (!matchSuccess) return;
-    setRoom(completePendingMatchRoom(matchSuccessRef, matchSuccess.room));
+    setRoom((current) => completePendingMatchRoom(matchSuccessRef, matchSuccess.room, current));
     matchSuccessRef.current = null;
     setMatchSuccess(null);
     setView("room");
