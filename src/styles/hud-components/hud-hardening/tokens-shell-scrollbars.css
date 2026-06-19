@@ -1,0 +1,70 @@
+/* Startorch HUD tokens, shell surfaces, and scrollbars. */
+:root {
+  --hud-bg-deep: rgba(3, 12, 20, 0.8);
+  --hud-panel-deep: rgba(5, 15, 22, 0.95);
+  --hud-cyan: #00ffbe;
+  --hud-blue: #00bfff;
+  --hud-text: #e0f7f4;
+  --hud-muted: rgba(185, 233, 228, 0.66);
+}
+
+html,
+body {
+  background: #03070a;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(0, 255, 190, 0.08), transparent 34%),
+    radial-gradient(circle at 12% 82%, rgba(0, 191, 255, 0.08), transparent 32%),
+    linear-gradient(135deg, #03070a, #07131a 48%, #020509) !important;
+}
+
+.app-shell:has(.auth-screen) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.app-shell:has(.auth-screen)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgba(224, 247, 244, 0.05) 0 1px, transparent 1px 4px),
+    url("/assets/home/multipurpose-classroom-bg.webp");
+  background-size: 100% 4px, cover;
+  background-position: center;
+  opacity: 0.42;
+}
+
+.auth-screen {
+  position: relative;
+  z-index: 1;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--hud-cyan) rgba(0, 0, 0, 0.3);
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background: var(--hud-cyan);
+  box-shadow: 0 0 8px var(--hud-cyan);
+}
+
+*::-webkit-scrollbar-corner {
+  background: rgba(0, 0, 0, 0.3);
+}

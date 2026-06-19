@@ -1,0 +1,63 @@
+.friend-actions-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.friend-gear-button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #dfd4e5;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #5f4f63;
+  display: grid;
+  place-items: center;
+}
+
+.friend-action-row {
+  margin: -2px 8px 4px;
+  padding: 8px;
+  border: 1px solid rgba(128, 102, 142, 0.14);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff7fb, #f3f8ff);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 8px;
+}
+
+.friend-action-row button {
+  min-height: 32px;
+  min-width: 0;
+  width: 100%;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4f3d55;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(72, 44, 86, 0.08);
+}
+
+.friend-action-row button:disabled {
+  color: #aaa0ad;
+  background: #ebe6ed;
+  cursor: not-allowed;
+}
+
+.friend-notice {
+  width: fit-content;
+  margin: 0 0 10px;
+  padding: 7px 11px;
+  border-radius: 8px;
+  background: #edf8f2;
+  color: #2b7652;
+  font-weight: 800;
+}
+
+.friend-notice.danger {
+  background: #fff0f1;
+  color: #c93445;
+  border: 1px solid rgba(201, 52, 69, 0.22);
+}

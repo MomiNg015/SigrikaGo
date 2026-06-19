@@ -25,6 +25,7 @@ export function roomPersistenceSnapshot(room) {
   return {
     snapshotVersion: CURRENT_ROOM_SNAPSHOT_VERSION,
     code: room.code,
+    revision: Number(room.revision ?? 0),
     mode: room.mode ?? room.game?.mode ?? "spark",
     players: room.players.map((player) => ({
       ...player,
@@ -62,6 +63,7 @@ export function hydratePersistedRoom(snapshot, { now = Date.now } = {}) {
     })),
     spectators: [],
     chat: snapshot.chat ?? [],
+    revision: Number(snapshot.revision ?? 0),
     timerId: null,
     timeoutIds: [],
     emptyTimerId: null,

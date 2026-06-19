@@ -1,0 +1,38 @@
+@media (max-width: 768px) and (orientation: portrait) {
+  .mobile-room-screen :where(
+    .room-header,
+    .room-code-label,
+    .room-info-tag,
+    .toggle,
+    .room-mobile-exit,
+    .room-mobile-menu-toggle,
+    .room-mobile-menu-panel,
+    .room-mobile-menu-panel button,
+    .mobile-room-dock,
+    .mobile-tab-button,
+    .mobile-tab-panel,
+    .mobile-tab-panel .action-bar button,
+    .action-bar button,
+    .decision-actions button,
+    .replay-bar button,
+    .operation-hint,
+    .player-info,
+    .name-button,
+    .color-badge,
+    .rank-tag,
+    .rating-tag,
+    .captures span,
+    .digital-timer,
+    .timer-track,
+    .timer-track span,
+    .skill-chip,
+    .chat-toggle-button,
+    .chat-exit-action,
+    .chat-popover,
+    .chat-close-button
+  ) {
+    box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+  }
+}

@@ -31,4 +31,15 @@ describe("App startup preload wiring", () => {
     expect(source).toContain("const showAchievementUnlocks = useCallback(");
     expect(source).toContain("}, [showToast]);");
   });
+
+  it("delegates audio runtime state out of the app composition root", () => {
+    const appSource = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+    const hookSource = readFileSync(new URL("./useAudioRuntimeState.js", import.meta.url), "utf8");
+
+    expect(appSource).toContain("useAudioRuntimeState");
+    expect(appSource).not.toContain("loadAudioSettings");
+    expect(appSource).not.toContain("useAudioSettingsPersistence");
+    expect(hookSource).toContain("useAudioSettingsPersistence(audioSettings)");
+    expect(hookSource).toContain("setAudioResumeSignal((value) => value + 1)");
+  });
 });

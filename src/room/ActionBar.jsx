@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Calculator,
   Flag,
@@ -12,7 +13,7 @@ import DeadStoneDecisionBar from "./actionBar/DeadStoneDecisionBar.jsx";
 import ReplayActionBar from "./actionBar/ReplayActionBar.jsx";
 import TestTools from "./actionBar/TestTools.jsx";
 
-export default function ActionBar({
+function ActionBar({
   role,
   mode = "spark",
   phase,
@@ -29,10 +30,6 @@ export default function ActionBar({
   hasAnyStones = true,
   opponentConnected = true,
   scoring,
-  drawRequest,
-  drawDeadline,
-  countingDeadline,
-  resultDeadline,
   replayStep = 0,
   replayMax = 0,
   showTestTools = false,
@@ -42,13 +39,9 @@ export default function ActionBar({
   onTestEnterByoYomi,
   onPass,
   onCountingRequest,
-  onCountingRespond,
   onDrawRequest,
-  onDrawRespond,
   onConfirmScoring,
   onResetScoring,
-  onAcceptResult,
-  onRejectResult,
   onResign
 }) {
   if (role === "spectator") {
@@ -111,4 +104,42 @@ export default function ActionBar({
   );
 }
 
+export function areActionBarPropsEqual(previous, next) {
+  if (previous.role !== next.role) return false;
+  if (previous.role === "spectator") {
+    return previous.replayStep === next.replayStep
+      && previous.replayMax === next.replayMax
+      && previous.onReplayStep === next.onReplayStep;
+  }
+
+  return previous.mode === next.mode
+    && previous.phase === next.phase
+    && previous.me?.user?.id === next.me?.user?.id
+    && Boolean(previous.me) === Boolean(next.me)
+    && previous.isMyTurn === next.isMyTurn
+    && Boolean(previous.pendingSkill) === Boolean(next.pendingSkill)
+    && previous.setPendingSkill === next.setPendingSkill
+    && previous.skillLocked === next.skillLocked
+    && previous.skillActionLocked === next.skillActionLocked
+    && previous.decisionLocked === next.decisionLocked
+    && previous.skillEnabled === next.skillEnabled
+    && previous.skillUses === next.skillUses
+    && previous.skillAvailable === next.skillAvailable
+    && previous.hasAnyStones === next.hasAnyStones
+    && previous.opponentConnected === next.opponentConnected
+    && previous.scoring === next.scoring
+    && previous.showTestTools === next.showTestTools
+    && previous.onTestRandomLayout === next.onTestRandomLayout
+    && previous.onTestRestoreSkill === next.onTestRestoreSkill
+    && previous.onTestEnterByoYomi === next.onTestEnterByoYomi
+    && previous.onPass === next.onPass
+    && previous.onCountingRequest === next.onCountingRequest
+    && previous.onDrawRequest === next.onDrawRequest
+    && previous.onConfirmScoring === next.onConfirmScoring
+    && previous.onResetScoring === next.onResetScoring
+    && previous.onResign === next.onResign;
+}
+
 export { canRequestOpponentDecision } from "./actionBar/actionAvailability.js";
+
+export default memo(ActionBar, areActionBarPropsEqual);

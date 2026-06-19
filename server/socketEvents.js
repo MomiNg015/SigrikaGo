@@ -31,7 +31,8 @@ export function registerSocketEvents(socket, deps) {
     findRoomForUser: deps.findRoomForUser,
     resumePayloadForUser: deps.resumePayloadForUser,
     roomView: deps.roomView,
-    broadcastRoom: deps.broadcastRoom
+    broadcastRoom: deps.broadcastRoom,
+    broadcastRoomPresencePatch: deps.broadcastRoomPresencePatch
   });
 
   registerGameSocketEvents(socket, {
@@ -48,7 +49,8 @@ export function registerSocketEvents(socket, deps) {
   registerChatSocketEvents(socket, {
     io: deps.io,
     addChat: deps.addChat,
-    broadcastRoom: deps.broadcastRoom
+    broadcastRoom: deps.broadcastRoom,
+    broadcastRoomPatch: deps.broadcastRoomPatch
   });
 
   registerDuelSocketEvents(socket, {
@@ -63,6 +65,7 @@ export function registerSocketEvents(socket, deps) {
     unregisterOnlineSocket: deps.unregisterOnlineSocket,
     detachSocket: deps.detachSocket,
     broadcastRoom: deps.broadcastRoom,
+    broadcastRoomPresencePatch: deps.broadcastRoomPresencePatch,
     broadcastLobbyStats: deps.broadcastLobbyStats
   });
 }

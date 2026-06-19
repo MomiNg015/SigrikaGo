@@ -1,0 +1,13 @@
+@media (max-width: 768px) and (orientation: portrait) {
+  .mobile-room-screen .mobile-room-dock {
+    flex: 0 0 auto;
+    max-height: calc(var(--mobile-room-dock-panel-height) + 46px);
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    max-height: var(--mobile-room-dock-panel-height);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}

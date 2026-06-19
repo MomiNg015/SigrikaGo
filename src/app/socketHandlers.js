@@ -1,8 +1,10 @@
 import { applyRoomSnapshot } from "./roomSnapshot.js";
+import { applyRoomPatch, roomPatchCanUpdate, roomPatchNeedsResume } from "./roomPatch.js";
 import { GAME_MODE_IDS } from "../shared/gameModes.js";
 
 export function createSocketHandlers({
   matchSuccessRef,
+  incomingDuelRef = { current: null },
   roomRef,
   audioSettingsRef,
   closeAllOverlays,
@@ -56,13 +58,13 @@ export function createSocketHandlers({
     socketReconnect: () => {
       shouldAudioBaselineNextLiveSnapshot = true;
     },
-    matchWaiting: ({ startedAt, mode = "spark" }) => setMatchStart({ startedAt, mode }),
+    matchWaiting: (payload = {}) => {
+      const nextMatchStart = normalizeMatchStart(payload);
+      setMatchStart((current) => sameMatchStart(current, nextMatchStart) ? current : nextMatchStart);
+    },
     lobbyStats: (stats = {}) => {
-      setLobbyStats({
-        onlineCount: Number(stats.onlineCount ?? 0),
-        matchmakingCount: Number(stats.matchmakingCount ?? 0),
-        matchmakingCounts: modeCountsFromLobbyStats(stats)
-      });
+      const nextStats = normalizeLobbyStats(stats);
+      setLobbyStats((current) => sameLobbyStats(current, nextStats) ? current : nextStats);
     },
     matchFound: (roomView) => {
       closeAllOverlays();
@@ -92,8 +94,30 @@ export function createSocketHandlers({
       setView("room");
     },
     roomClock: (clock) => {
-      setMatchSuccess((current) => current ? { ...current, room: applyRoomClock(current.room, clock) } : current);
-      setRoom((current) => applyRoomClock(current, clock));
+      const roomCode = clock?.roomCode;
+      if (!roomCode) return;
+      if (matchSuccessRef.current?.room?.code === roomCode) {
+        const nextPendingRoom = applyRoomClock(matchSuccessRef.current.room, clock);
+        if (nextPendingRoom !== matchSuccessRef.current.room) {
+          matchSuccessRef.current = { ...matchSuccessRef.current, room: nextPendingRoom };
+          setMatchSuccess((current) => {
+            if (!current) return current;
+            const nextRoom = applyRoomClock(current.room, clock);
+            return nextRoom === current.room ? current : { ...current, room: nextRoom };
+          });
+        }
+      }
+      if (roomRef.current?.code === roomCode) {
+        setRoom((current) => applyRoomClock(current, clock));
+      }
+    },
+    roomPatch: (patch, requestRoomResume = () => {}) => {
+      if (roomPatchNeedsResume(roomRef.current, patch)) {
+        requestRoomResume();
+        return;
+      }
+      if (!roomPatchCanUpdate(roomRef.current, patch)) return;
+      setRoom((current) => applyRoomPatch(current, patch));
     },
     roomResume: (payload) => {
       shouldAudioBaselineNextLiveSnapshot = false;
@@ -117,6 +141,8 @@ export function createSocketHandlers({
         setRoom: (roomView) => {
           if (payload.type === "room") {
             updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
+            setRoom((current) => applyRoomSnapshot(current, roomView));
+            return;
           }
           setRoom(roomView);
         },
@@ -148,10 +174,13 @@ export function createSocketHandlers({
       showToast(message);
     },
     duelIncoming: (request) => {
+      if (sameDuelRequest(incomingDuelRef.current, request)) return;
+      incomingDuelRef.current = request;
       setIncomingDuel(request);
       playDoorbellSound(audioSettingsRef.current);
     },
     duelClosed: ({ requestId }) => {
+      if (incomingDuelRef.current?.requestId === requestId) incomingDuelRef.current = null;
       setIncomingDuel((current) => current?.requestId === requestId ? null : current);
     },
     duelRejected: ({ username }) => {
@@ -187,6 +216,9 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
   socket.on("lobby:stats", handlers.lobbyStats);
   socket.on("match:found", handlers.matchFound);
   socket.on("room:update", handlers.roomUpdate);
+  socket.on("room:patch", (patch) => {
+    handlers.roomPatch(patch, () => socket.emit("room:resume", buildRoomResumeRequest()));
+  });
   socket.on("room:clock", handlers.roomClock);
   socket.on("room:resume", handlers.roomResume);
   socket.on("connect", () => {
@@ -219,6 +251,35 @@ function roomAudioBaselineSnapshotKey(roomView) {
 
 function emptyModeCounts() {
   return Object.fromEntries(GAME_MODE_IDS.map((mode) => [mode, 0]));
+}
+
+export function normalizeLobbyStats(stats = {}) {
+  return {
+    onlineCount: Number(stats.onlineCount ?? 0),
+    matchmakingCount: Number(stats.matchmakingCount ?? 0),
+    matchmakingCounts: modeCountsFromLobbyStats(stats)
+  };
+}
+
+export function sameLobbyStats(current = {}, next = {}) {
+  if (Number(current.onlineCount ?? 0) !== Number(next.onlineCount ?? 0)) return false;
+  if (Number(current.matchmakingCount ?? 0) !== Number(next.matchmakingCount ?? 0)) return false;
+  return GAME_MODE_IDS.every((mode) => Object.prototype.hasOwnProperty.call(current.matchmakingCounts ?? {}, mode)
+    && Number(current.matchmakingCounts?.[mode] ?? 0) === Number(next.matchmakingCounts?.[mode] ?? 0));
+}
+
+export function normalizeMatchStart({ startedAt, mode = "spark" } = {}) {
+  return { startedAt, mode };
+}
+
+export function sameMatchStart(current, next) {
+  if (!current || !next) return current === next;
+  return current.startedAt === next.startedAt && (current.mode ?? "spark") === (next.mode ?? "spark");
+}
+
+export function sameDuelRequest(current, next) {
+  if (!current || !next) return current === next;
+  return current.requestId === next.requestId;
 }
 
 function modeCountsFromLobbyStats(stats = {}) {

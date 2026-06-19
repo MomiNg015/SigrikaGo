@@ -1,0 +1,30 @@
+/* 2. 强制覆盖所有通用弹窗、面板、Header 基础骨架的外观 */
+.app-shell.player-theme-enabled.theme-bright-school .auth-panel,
+.app-shell.player-theme-enabled.theme-bright-school .asset-preload-panel,
+.app-shell.player-theme-enabled.theme-bright-school .home-top-strip,
+.app-shell.player-theme-enabled.theme-bright-school .home-player-plaque,
+.app-shell.player-theme-enabled.theme-bright-school .room-header,
+.app-shell.player-theme-enabled.theme-bright-school .player-info,
+.app-shell.player-theme-enabled.theme-bright-school .chat-box,
+.app-shell.player-theme-enabled.theme-bright-school .room-people,
+.app-shell.player-theme-enabled.theme-bright-school .operation-hint,
+.app-shell.player-theme-enabled.theme-bright-school .small-modal,
+.app-shell.player-theme-enabled.theme-bright-school .shop-modal,
+.app-shell.player-theme-enabled.theme-bright-school .house-modal,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-modal,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-modal,
+.app-shell.player-theme-enabled.theme-bright-school .friends-modal,
+.app-shell.player-theme-enabled.theme-bright-school .confirm-modal,
+.app-shell.player-theme-enabled.theme-bright-school .result-modal,
+.app-shell.player-theme-enabled.theme-bright-school .settings-modal,
+.app-shell.player-theme-enabled.theme-bright-school .nested-modal {
+  background-color: #fffbf2 !important;
+  background-image: var(--theme-paper-grid) !important;
+  background-size: 20px 20px !important;
+  border: 3px solid #4a3736 !important;
+  border-radius: 16px !important;
+  box-shadow: 5px 5px 0px #4a3736 !important;
+  color: #4a3736 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}

@@ -3,6 +3,8 @@ import { COLORS } from "../src/shared/game.js";
 import {
   broadcastRoom,
   broadcastRoomClock,
+  broadcastRoomPatch,
+  broadcastRoomPresencePatch,
   broadcastToast,
   emitRoomClosed,
   roomClockPayload,
@@ -97,6 +99,118 @@ describe("roomBroadcasts", () => {
         { color: COLORS.white, time: { main: 300 } }
       ]
     });
+  });
+
+  test("broadcasts lightweight room patches with forced persistence", () => {
+    const io = fakeIo();
+    const persistRoom = vi.fn();
+    const room = testRoom();
+    room.revision = 7;
+
+    broadcastRoomPatch(
+      io,
+      room,
+      { type: "chat:append", eventId: "stale", baseRevision: 1, revision: 2, roomCode: "99999", message: { id: "chat-1" } },
+      { persistRoom }
+    );
+
+    expect(persistRoom).toHaveBeenCalledWith(room, { force: true });
+    expect(room.revision).toBe(8);
+    expect(io.messages).toEqual([
+      {
+        socketId: "black-socket",
+        event: "room:patch",
+        payload: {
+          roomCode: "12345",
+          eventId: "12345:8:chat:append",
+          baseRevision: 7,
+          revision: 8,
+          type: "chat:append",
+          message: { id: "chat-1" }
+        }
+      },
+      {
+        socketId: "spectator-socket",
+        event: "room:patch",
+        payload: {
+          roomCode: "12345",
+          eventId: "12345:8:chat:append",
+          baseRevision: 7,
+          revision: 8,
+          type: "chat:append",
+          message: { id: "chat-1" }
+        }
+      }
+    ]);
+  });
+
+  test("broadcasts presence patches from the room view without sending game state", () => {
+    const io = fakeIo();
+    const persistRoom = vi.fn();
+    const room = testRoom();
+    room.revision = 3;
+    room.chat = [{ id: "system-1", text: "connected" }];
+    const roomViewFn = vi.fn((sourceRoom, viewerId) => ({
+      code: sourceRoom.code,
+      viewerId,
+      players: [{ color: COLORS.black, connected: true }],
+      spectatorCount: 1,
+      spectators: [{ user: { id: "spectator-user" } }],
+      chat: sourceRoom.chat,
+      game: { phase: "playing" }
+    }));
+
+    broadcastRoomPresencePatch(io, room, { persistRoom, roomViewFn });
+
+    expect(roomViewFn).toHaveBeenCalledWith(room, "black-user");
+    expect(room.revision).toBe(4);
+    expect(io.messages).toEqual([
+      {
+        socketId: "black-socket",
+        event: "room:patch",
+        payload: {
+          roomCode: "12345",
+          eventId: "12345:4:presence:update",
+          baseRevision: 3,
+          revision: 4,
+          type: "presence:update",
+          players: [{ color: COLORS.black, connected: true }],
+          spectatorCount: 1,
+          spectators: [{ user: { id: "spectator-user" } }],
+          chat: [{ id: "system-1", text: "connected" }]
+        }
+      },
+      {
+        socketId: "spectator-socket",
+        event: "room:patch",
+        payload: {
+          roomCode: "12345",
+          eventId: "12345:4:presence:update",
+          baseRevision: 3,
+          revision: 4,
+          type: "presence:update",
+          players: [{ color: COLORS.black, connected: true }],
+          spectatorCount: 1,
+          spectators: [{ user: { id: "spectator-user" } }],
+          chat: [{ id: "system-1", text: "connected" }]
+        }
+      }
+    ]);
+    expect(io.messages[0].payload).not.toHaveProperty("game");
+    expect(persistRoom).toHaveBeenCalledWith(room, { force: true });
+  });
+
+  test("skips presence patches when no participant is connected", () => {
+    const io = fakeIo();
+    const persistRoom = vi.fn();
+    const room = testRoom();
+    room.players[0].socketId = null;
+    room.spectators = [];
+
+    broadcastRoomPresencePatch(io, room, { persistRoom });
+
+    expect(io.messages).toEqual([]);
+    expect(persistRoom).not.toHaveBeenCalled();
   });
 
   test("builds clock payloads without sharing mutable player time objects", () => {

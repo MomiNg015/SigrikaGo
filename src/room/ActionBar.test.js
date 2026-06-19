@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { canRequestOpponentDecision } from "./ActionBar.jsx";
+import { areActionBarPropsEqual, canRequestOpponentDecision } from "./ActionBar.jsx";
 
 describe("ActionBar helpers", () => {
   it("disables opponent decision requests while the opponent is disconnected", () => {
@@ -88,7 +88,88 @@ describe("ActionBar helpers", () => {
 
     expect(source).toContain("import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === \"true\"");
   });
+
+  it("memoizes the action bar across clock-only player changes", () => {
+    const base = actionBarProps();
+
+    expect(areActionBarPropsEqual(base, {
+      ...base,
+      me: {
+        ...base.me,
+        time: { main: 12, byoYomi: 3 }
+      }
+    })).toBe(true);
+    expect(areActionBarPropsEqual(base, { ...base, skillUses: 0 })).toBe(false);
+    expect(areActionBarPropsEqual(base, { ...base, pendingSkill: { id: "erase-point" } })).toBe(false);
+  });
+
+  it("keeps scoring decision updates visible while ignoring unrelated props", () => {
+    const base = actionBarProps({
+      phase: "marking-dead",
+      scoring: { confirmedBy: [] }
+    });
+
+    expect(areActionBarPropsEqual(base, {
+      ...base,
+      me: {
+        ...base.me,
+        time: { main: 9 }
+      }
+    })).toBe(true);
+    expect(areActionBarPropsEqual(base, {
+      ...base,
+      scoring: { confirmedBy: ["user-1"] }
+    })).toBe(false);
+  });
+
+  it("keeps room battle action callbacks stable for memoized controls", () => {
+    const source = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("const handleTestRandomLayout = useCallback");
+    expect(source).toContain("const handleConfirmScoring = useCallback");
+    expect(source).toContain("onTestRandomLayout={handleTestRandomLayout}");
+    expect(source).toContain("onConfirmScoring={handleConfirmScoring}");
+    expect(source).not.toContain("onTestRandomLayout={() =>");
+    expect(source).not.toContain("onConfirmScoring={() =>");
+  });
 });
+
+function noop() {}
+
+function actionBarProps(overrides = {}) {
+  return {
+    role: "player",
+    mode: "spark",
+    phase: "playing",
+    me: { color: "black", user: { id: "user-1" }, time: { main: 30 } },
+    isMyTurn: true,
+    pendingSkill: null,
+    setPendingSkill: noop,
+    skillLocked: false,
+    skillActionLocked: false,
+    decisionLocked: false,
+    skillEnabled: true,
+    skillUses: 1,
+    skillAvailable: true,
+    hasAnyStones: true,
+    opponentConnected: true,
+    scoring: null,
+    replayStep: 0,
+    replayMax: 0,
+    showTestTools: false,
+    onReplayStep: noop,
+    onTestRandomLayout: noop,
+    onTestRestoreSkill: noop,
+    onTestEnterByoYomi: noop,
+    onPass: noop,
+    onCountingRequest: noop,
+    onDrawRequest: noop,
+    onConfirmScoring: noop,
+    onResetScoring: noop,
+    onResign: noop,
+    ...overrides
+  };
+}
 
 function mediaBlock(css, marker) {
   const start = css.indexOf(marker);

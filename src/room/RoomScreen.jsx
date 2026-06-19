@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GAME_PHASES } from "../shared/game.js";
 import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 import { OpeningModal } from "../modals/GameLifecycleModals.jsx";
@@ -51,7 +51,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     viewColor,
     winnerColor
   } = useRoomBoardView({ room, user, replayStep });
-  const [closeCountdownNow, setCloseCountdownNow] = useState(Date.now());
   const showCloseCountdown = shouldShowRoomCloseCountdown(displayRoom);
   const useMobileLayout = useMobileRoomLayout();
   const { roomRequestToast, handleTimedRequestAction } = useTimedRoomRequestToast({
@@ -91,14 +90,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   });
   useDoubleMoveToast({ room: displayRoom, showToast: onToast, isReplay });
 
-  useEffect(() => {
-    if (!showCloseCountdown) return undefined;
-    setCloseCountdownNow(Date.now());
-    const timerId = setInterval(() => setCloseCountdownNow(Date.now()), 1000);
-    return () => clearInterval(timerId);
-  }, [showCloseCountdown, displayRoom.closesAt]);
-
-  function requestResignConfirm() {
+  const requestResignConfirm = useCallback(() => {
     if (displayRoom.game.phase === "finished") return;
     setConfirmAction({
       title: "确认认输",
@@ -106,9 +98,9 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       confirmText: "认输",
       onConfirm: () => onGameAction({ type: "resign" })
     });
-  }
+  }, [displayRoom.game.phase, onGameAction]);
 
-  function requestPassConfirm() {
+  const requestPassConfirm = useCallback(() => {
     if (displayRoom.game.phase !== "playing") return;
     setConfirmAction({
       title: "确认弃手",
@@ -116,9 +108,9 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       confirmText: "弃手",
       onConfirm: () => onGameAction({ type: "pass" })
     });
-  }
+  }, [displayRoom.game.phase, onGameAction]);
 
-  function requestExitConfirm() {
+  const requestExitConfirm = useCallback(() => {
     if (displayRoom.game.phase !== "finished" && role === "player") {
       setConfirmAction({
         title: "退出房间",
@@ -132,7 +124,13 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       return;
     }
     onBack();
-  }
+  }, [displayRoom.game.phase, onBack, onGameAction, role]);
+  const toggleCoords = useCallback(() => {
+    setShowCoords((current) => !current);
+  }, []);
+  const toggleMoves = useCallback(() => {
+    setShowMoves((current) => !current);
+  }, []);
 
   const Layout = useMobileLayout ? MobileRoomLayout : DesktopRoomLayout;
   const battleLayoutClassName = useMobileLayout ? "mobile-battle-layout" : "battle-layout";
@@ -140,7 +138,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   return (
     <Layout>
       <RoomHeader
-        closeCountdownNow={closeCountdownNow}
         isReplay={isReplay}
         room={displayRoom}
         roomGameInfo={roomGameInfo}
@@ -150,8 +147,8 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         onOpenMessageBoard={onOpenMessageBoard}
         onOpenSettings={onOpenSettings}
         onBack={requestExitConfirm}
-        onToggleCoords={() => setShowCoords(!showCoords)}
-        onToggleMoves={() => setShowMoves(!showMoves)}
+        onToggleCoords={toggleCoords}
+        onToggleMoves={toggleMoves}
       />
       <RoomBattleStage
         battleLayoutClassName={battleLayoutClassName}

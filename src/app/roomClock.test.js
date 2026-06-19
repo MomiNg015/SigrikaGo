@@ -35,4 +35,13 @@ describe("applyRoomClock", () => {
 
     expect(applyRoomClock(room, { roomCode: "99999", players: [] })).toBe(room);
   });
+
+  test("ignores clock payloads when the room snapshot has no player list yet", () => {
+    const room = { code: "12345", game: {} };
+
+    expect(applyRoomClock(room, {
+      roomCode: "12345",
+      players: [{ color: "black", time: { main: 299 } }]
+    })).toBe(room);
+  });
 });

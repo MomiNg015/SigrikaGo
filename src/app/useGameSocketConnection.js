@@ -15,9 +15,10 @@ import { createSocketHandlers } from "./socketHandlers.js";
 export function useGameSocketConnection({
   audioSettingsRef,
   closeAllOverlays,
+  incomingDuelRef,
   matchSuccessRef,
+  onSocketReconnect = () => {},
   roomRef,
-  setAudioResumeSignal,
   setDismissedResultRoom,
   setIncomingDuel,
   setLobbyStats,
@@ -43,6 +44,7 @@ export function useGameSocketConnection({
       token,
       handlers: createSocketHandlers({
         matchSuccessRef,
+        incomingDuelRef,
         roomRef,
         audioSettingsRef,
         closeAllOverlays,
@@ -68,16 +70,17 @@ export function useGameSocketConnection({
         playDoorbellSound
       }),
       buildRoomResumeRequest,
-      onSocketReconnect: () => setAudioResumeSignal((value) => value + 1)
+      onSocketReconnect
     });
     setSocket(nextSocket);
     return () => nextSocket.close();
   }, [
     audioSettingsRef,
     closeAllOverlays,
+    incomingDuelRef,
     matchSuccessRef,
+    onSocketReconnect,
     roomRef,
-    setAudioResumeSignal,
     setDismissedResultRoom,
     setIncomingDuel,
     setLobbyStats,

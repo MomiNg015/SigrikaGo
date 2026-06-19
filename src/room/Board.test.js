@@ -7,22 +7,36 @@ import Board from "./Board.jsx";
 import { areBoardPropsEqual, arePointButtonPropsEqual, stoneOffsetForPoint } from "./Board.jsx";
 
 describe("areBoardPropsEqual", () => {
-  test("keeps the board memoized when only handler references change", () => {
+  test("rerenders the board when handler references change so stable refs stay current", () => {
     const game = { phase: "playing", points: [], history: [] };
     const previous = boardProps({ game, onPoint: () => "before" });
     const next = boardProps({ game, onPoint: () => "after" });
 
-    expect(areBoardPropsEqual(previous, next)).toBe(true);
+    expect(areBoardPropsEqual(previous, next)).toBe(false);
+  });
+
+  test("keeps point buttons memoized while the stable handler ref contents change", () => {
+    const point = { id: "3,3", x: 3, y: 3, valid: true, stone: null };
+    const pointerTypeRef = { current: "" };
+    const handlersRef = { current: { onPoint: () => "before" } };
+    const previous = pointButtonProps({ point, handlersRef, pointerTypeRef });
+    handlersRef.current = { onPoint: () => "after" };
+    const next = pointButtonProps({ point, handlersRef, pointerTypeRef });
+
+    expect(arePointButtonPropsEqual(previous, next)).toBe(true);
   });
 
   test("keeps the board memoized when timer ticks replace the same preview player", () => {
     const game = { phase: "playing", points: [], history: [] };
+    const handlers = boardHandlers();
     const previous = boardProps({
       game,
+      ...handlers,
       previewPlayer: { color: "black", characterId: "sigrika", character: null, time: { main: 300 } }
     });
     const next = boardProps({
       game,
+      ...handlers,
       previewPlayer: { color: "black", characterId: "sigrika", character: null, time: { main: 299 } }
     });
 
@@ -554,6 +568,15 @@ function boardProps(overrides = {}) {
     onScoringPoint: null,
     onNeutral: () => {},
     ...overrides
+  };
+}
+
+function boardHandlers() {
+  return {
+    onPoint: () => {},
+    onScoringPoint: null,
+    onNeutral: () => {},
+    onBoardSurface: () => {}
   };
 }
 

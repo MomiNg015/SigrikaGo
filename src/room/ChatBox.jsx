@@ -1,10 +1,10 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { memo, useEffect, useId, useRef, useState } from "react";
 import { MessageCircle, Send, X } from "lucide-react";
 import { CHARACTERS } from "../shared/characters.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { formatMessageTime } from "./roomView.js";
 
-export default function ChatBox({
+function ChatBox({
   room,
   onChat,
   readonly = false,
@@ -105,8 +105,32 @@ export default function ChatBox({
   );
 }
 
+export function areChatBoxPropsEqual(previous, next) {
+  return previous.room?.code === next.room?.code
+    && previous.room?.chat === next.room?.chat
+    && sameChatPlayers(previous.room?.players, next.room?.players)
+    && previous.onChat === next.onChat
+    && previous.readonly === next.readonly
+    && previous.trailingAction === next.trailingAction
+    && previous.floatingLayerZ === next.floatingLayerZ
+    && previous.onFloatingLayerRequest === next.onFloatingLayerRequest;
+}
+
 export function playerChatCount(messages = []) {
   return messages.filter((message) => message?.type === "chat").length;
+}
+
+function sameChatPlayers(previous = [], next = []) {
+  if (previous === next) return true;
+  if (previous.length !== next.length) return false;
+  return previous.every((player, index) => sameChatPlayer(player, next[index]));
+}
+
+function sameChatPlayer(previous, next) {
+  return previous?.color === next?.color
+    && previous?.character === next?.character
+    && previous?.characterId === next?.characterId
+    && previous?.user?.id === next?.user?.id;
 }
 
 function chatName(message, room) {
@@ -115,3 +139,5 @@ function chatName(message, room) {
   const character = findCharacter(CHARACTERS, player.character ?? player.characterId);
   return `${message.username}[${character.name}]`;
 }
+
+export default memo(ChatBox, areChatBoxPropsEqual);

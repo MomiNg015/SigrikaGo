@@ -159,6 +159,17 @@ describe("RoomScreen helpers", () => {
     expect(shouldShowRoomCloseCountdown({ game: { phase: "finished" }, closesAt: null })).toBe(false);
   });
 
+  it("keeps the close countdown timer local to the room header", () => {
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url));
+    const headerSource = readText(new URL("./header/RoomHeader.jsx", import.meta.url));
+
+    expect(source).not.toContain("closeCountdownNow");
+    expect(source).not.toContain("setInterval(() => setCloseCountdownNow");
+    expect(headerSource).toContain("function RoomCloseCountdown");
+    expect(headerSource).toContain("const timerId = setInterval(() => setNow(Date.now()), 1000)");
+    expect(headerSource).toContain("<RoomCloseCountdown closesAt={room.closesAt} />");
+  });
+
   it("treats finished player rooms as spectator view", () => {
     expect(effectiveRoomRole({ role: "player", game: { phase: "playing" } })).toBe("player");
     expect(effectiveRoomRole({ role: "player", game: { phase: "finished" } })).toBe("spectator");
@@ -176,11 +187,34 @@ describe("RoomScreen helpers", () => {
     const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("function requestPassConfirm()");
+    expect(source).toContain("const requestPassConfirm = useCallback");
     expect(source).toContain("onConfirm: () => onGameAction({ type: \"pass\" })");
+    expect(source).toContain("const toggleCoords = useCallback");
+    expect(source).toContain("const toggleMoves = useCallback");
+    expect(source).toContain("onToggleCoords={toggleCoords}");
+    expect(source).toContain("onToggleMoves={toggleMoves}");
     expect(source).toContain("是否弃一手");
     expect(battleSource).toContain("onPass={onPass}");
     expect(battleSource).not.toContain("onPass={() => onGameAction({ type: \"pass\" })}");
+  });
+
+  it("passes a stable neutral-point handler into the memoized board", () => {
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+
+    expect(battleSource).toContain("const handleNeutralPoint = useCallback");
+    expect(battleSource).toContain("onNeutral={handleNeutralPoint}");
+    expect(battleSource).not.toContain("onNeutral={(id) => onScoringAction");
+  });
+
+  it("passes stable floating-layer handlers into chat and member panels", () => {
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+
+    expect(battleSource).toContain("const handleMembersFloatingLayer = useCallback");
+    expect(battleSource).toContain("const handleChatFloatingLayer = useCallback");
+    expect(battleSource).toContain("onFloatingLayerRequest={handleMembersFloatingLayer}");
+    expect(battleSource).toContain("onFloatingLayerRequest={handleChatFloatingLayer}");
+    expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"chat\")}");
+    expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"members\")}");
   });
 
   it("seeds resumed room audio baseline before passive room audio effects", () => {
@@ -421,7 +455,7 @@ describe("RoomScreen helpers", () => {
     const mobileRoomCss = readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
     const mobileAdaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const brightMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
-    const brightRoomCss = readText(new URL("../styles/themes/bright-school/room.css", import.meta.url), "utf8");
+    const brightRoomCss = readCssWithImports(new URL("../styles/themes/bright-school/room.css", import.meta.url));
     const portraitMedia = mediaBlock(brightMobileCss, "@media (max-width: 760px) and (orientation: portrait)");
     const landscapeMedia = mediaBlock(mobileRoomCss, "@media (max-width: 900px) and (orientation: landscape)");
 
@@ -669,7 +703,7 @@ describe("RoomScreen helpers", () => {
   it("keeps desktop room controls aligned and overlays above side controls", () => {
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
-    const brightRoomCss = readText(new URL("../styles/themes/bright-school/room.css", import.meta.url));
+    const brightRoomCss = readCssWithImports(new URL("../styles/themes/bright-school/room.css", import.meta.url));
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url));
     const modalBackdropZ = cssZIndexForSelector(modalCss, ".modal-backdrop");
 

@@ -1,7 +1,36 @@
 import { describe, expect, it, vi } from "vitest";
 import { createSocketHandlers, installSocketHandlers } from "./socketHandlers.js";
+import { applyRoomClock } from "./roomClock.js";
 
 describe("socket handlers", () => {
+  it("stores match waiting payloads from the socket", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.matchWaiting({ startedAt: 12345, mode: "standard" });
+
+    expect(matchStartSetterResult(deps)).toEqual({ startedAt: 12345, mode: "standard" });
+  });
+
+  it("defaults match waiting mode to spark", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.matchWaiting({ startedAt: 12345 });
+
+    expect(matchStartSetterResult(deps)).toEqual({ startedAt: 12345, mode: "spark" });
+  });
+
+  it("keeps identical match waiting payloads stable during repeated socket updates", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+    const current = { startedAt: 12345, mode: "gomoku" };
+
+    handlers.matchWaiting({ startedAt: 12345, mode: "gomoku" });
+
+    expect(matchStartSetterResult(deps, current)).toBe(current);
+  });
+
   it("handles match found by closing overlays, syncing the user, and storing the transition", () => {
     const roomView = { code: "12345", players: [] };
     const deps = handlerDeps();
@@ -34,10 +63,22 @@ describe("socket handlers", () => {
   });
 
   it("syncs user stats silently when restoring a live room", () => {
-    const roomView = { code: "12345", players: [] };
+    const currentRoom = {
+      code: "12345",
+      role: "player",
+      game: { phase: "playing" },
+      players: [],
+      __audioResumeBaseline: true
+    };
+    const roomView = {
+      code: "12345",
+      role: "player",
+      game: { phase: "playing" },
+      players: []
+    };
     const deps = handlerDeps({
       handleRoomResumePayload: vi.fn((_payload, handlers) => {
-        handlers.setRoom(roomView);
+        handlers.setRoom({ ...roomView, __audioResumeBaseline: true });
         handlers.setView("room");
         return true;
       })
@@ -48,7 +89,8 @@ describe("socket handlers", () => {
 
     expect(deps.updateUser).toHaveBeenCalledOnce();
     expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function));
-    expect(deps.setRoom).toHaveBeenCalledWith(roomView);
+    expect(deps.setRoom).toHaveBeenCalledWith(expect.any(Function));
+    expect(roomSetterResult(deps, 1, currentRoom)).toBe(currentRoom);
     expect(deps.setView).toHaveBeenCalledWith("room");
   });
 
@@ -108,6 +150,166 @@ describe("socket handlers", () => {
     expect(roomSetterResult(deps)).toBe(roomView);
   });
 
+  it("ignores stale room clock payloads without scheduling room state updates", () => {
+    const currentRoom = {
+      code: "12345",
+      players: [{ color: "black", time: { main: 300 } }]
+    };
+    const deps = handlerDeps({ roomRef: { current: currentRoom } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomClock({
+      roomCode: "99999",
+      players: [{ color: "black", time: { main: 299 } }]
+    });
+
+    expect(deps.setMatchSuccess).not.toHaveBeenCalled();
+    expect(deps.setRoom).not.toHaveBeenCalled();
+  });
+
+  it("updates only the pending match room for pending match clock payloads", () => {
+    const pendingRoom = {
+      code: "12345",
+      players: [{ color: "black", time: { main: 300 } }]
+    };
+    const deps = handlerDeps({
+      matchSuccessRef: {
+        current: {
+          room: pendingRoom,
+          startedAt: 1000
+        }
+      },
+      applyRoomClock
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomClock({
+      roomCode: "12345",
+      players: [{ color: "black", time: { main: 299 } }]
+    });
+
+    expect(deps.setMatchSuccess).toHaveBeenCalledWith(expect.any(Function));
+    expect(deps.setRoom).not.toHaveBeenCalled();
+    expect(deps.setMatchSuccess.mock.calls[0][0]({
+      room: pendingRoom,
+      startedAt: 1000
+    }).room.players[0].time.main).toBe(299);
+    expect(deps.matchSuccessRef.current.room.players[0].time.main).toBe(299);
+  });
+
+  it("ignores unchanged pending match clock payloads before scheduling state", () => {
+    const pendingRoom = {
+      code: "12345",
+      players: [{ color: "black", time: { main: 300 } }]
+    };
+    const deps = handlerDeps({
+      matchSuccessRef: {
+        current: {
+          room: pendingRoom,
+          startedAt: 1000
+        }
+      },
+      applyRoomClock
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomClock({
+      roomCode: "12345",
+      players: [{ color: "black", time: { main: 300 } }]
+    });
+
+    expect(deps.matchSuccessRef.current.room).toBe(pendingRoom);
+    expect(deps.setMatchSuccess).not.toHaveBeenCalled();
+    expect(deps.setRoom).not.toHaveBeenCalled();
+  });
+
+  it("applies room patches without replacing unchanged room slices", () => {
+    const game = { phase: "playing" };
+    const currentRoom = { code: "12345", revision: 0, game, chat: [] };
+    const deps = handlerDeps({ roomRef: { current: currentRoom } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 0,
+      revision: 1,
+      message: { id: "chat-1", text: "hello" }
+    });
+
+    const nextRoom = roomSetterResult(deps, 1, currentRoom);
+    expect(nextRoom).toEqual({
+      ...currentRoom,
+      revision: 1,
+      chat: [{ id: "chat-1", text: "hello" }]
+    });
+    expect(nextRoom.game).toBe(game);
+  });
+
+  it("ignores room patches that cannot update the current room before scheduling state", () => {
+    const currentRoom = { code: "12345", revision: 2, chat: [] };
+    const deps = handlerDeps({ roomRef: { current: currentRoom } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomPatch({
+      roomCode: "99999",
+      type: "chat:append",
+      message: { id: "chat-wrong-room" }
+    });
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "unknown",
+      revision: 3
+    });
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "chat:append",
+      revision: 2,
+      message: { id: "chat-stale" }
+    });
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 2,
+      revision: 3
+    });
+
+    expect(deps.setRoom).not.toHaveBeenCalled();
+  });
+
+  it("ignores room patches when no current room is available", () => {
+    const deps = handlerDeps({ roomRef: { current: null } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "presence:update",
+      baseRevision: 0,
+      revision: 1,
+      players: []
+    });
+
+    expect(deps.setRoom).not.toHaveBeenCalled();
+  });
+
+  it("requests a room resume instead of applying a gapped room patch", () => {
+    const currentRoom = { code: "12345", revision: 1, chat: [] };
+    const deps = handlerDeps({ roomRef: { current: currentRoom } });
+    const handlers = createSocketHandlers(deps);
+    const requestRoomResume = vi.fn();
+
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 4,
+      revision: 5,
+      message: { id: "chat-5", text: "late" }
+    }, requestRoomResume);
+
+    expect(requestRoomResume).toHaveBeenCalledOnce();
+    expect(deps.setRoom).not.toHaveBeenCalled();
+  });
+
   it("clears remembered player room when an online client receives the finished room update", () => {
     const roomView = { code: "12345", role: "player", game: { phase: "finished" }, players: [] };
     const deps = handlerDeps();
@@ -156,6 +358,41 @@ describe("socket handlers", () => {
     expect(deps.showToast).toHaveBeenCalledWith("closed");
   });
 
+  it("stores a new incoming duel request and plays the doorbell once", () => {
+    const request = { requestId: "duel-1", from: { username: "alice" }, mode: "gomoku" };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.duelIncoming(request);
+
+    expect(deps.incomingDuelRef.current).toBe(request);
+    expect(deps.setIncomingDuel).toHaveBeenCalledWith(request);
+    expect(deps.playDoorbellSound).toHaveBeenCalledWith(deps.audioSettingsRef.current);
+  });
+
+  it("ignores duplicate incoming duel requests before scheduling banner or audio work", () => {
+    const current = { requestId: "duel-1", from: { username: "alice" }, mode: "gomoku" };
+    const deps = handlerDeps({ incomingDuelRef: { current } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.duelIncoming({ requestId: "duel-1", from: { username: "alice" }, mode: "gomoku" });
+
+    expect(deps.incomingDuelRef.current).toBe(current);
+    expect(deps.setIncomingDuel).not.toHaveBeenCalled();
+    expect(deps.playDoorbellSound).not.toHaveBeenCalled();
+  });
+
+  it("clears the incoming duel ref when the matching request closes", () => {
+    const current = { requestId: "duel-1", from: { username: "alice" }, mode: "gomoku" };
+    const deps = handlerDeps({ incomingDuelRef: { current } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.duelClosed({ requestId: "duel-1" });
+
+    expect(deps.incomingDuelRef.current).toBeNull();
+    expect(deps.setIncomingDuel.mock.calls[0][0](current)).toBeNull();
+  });
+
   it("marks a closed finished player room as dismissed so the result modal does not reopen", () => {
     const deps = handlerDeps({
       roomRef: { current: { code: "12345", role: "player", game: { phase: "finished" } } }
@@ -199,10 +436,42 @@ describe("socket handlers", () => {
 
     handlers.lobbyStats({ onlineCount: 3, matchmakingCount: 2 });
 
-    expect(deps.setLobbyStats).toHaveBeenCalledWith({
+    expect(lobbyStatsSetterResult(deps)).toEqual({
       onlineCount: 3,
       matchmakingCount: 2,
       matchmakingCounts: { spark: 2, standard: 0, gomoku: 0 }
+    });
+  });
+
+  it("keeps identical lobby stats stable during repeated socket updates", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+    const current = {
+      onlineCount: 3,
+      matchmakingCount: 2,
+      matchmakingCounts: { spark: 1, standard: 1, gomoku: 0 }
+    };
+
+    handlers.lobbyStats({
+      onlineCount: 3,
+      matchmakingCount: 2,
+      matchmakingCounts: { spark: 1, standard: 1, gomoku: 0 }
+    });
+
+    expect(lobbyStatsSetterResult(deps, current)).toBe(current);
+  });
+
+  it("normalizes legacy lobby stats state even when visible counts match", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+    const current = { onlineCount: 0, matchmakingCount: 0 };
+
+    handlers.lobbyStats({ onlineCount: 0, matchmakingCount: 0 });
+
+    expect(lobbyStatsSetterResult(deps, current)).toEqual({
+      onlineCount: 0,
+      matchmakingCount: 0,
+      matchmakingCounts: { spark: 0, standard: 0, gomoku: 0 }
     });
   });
 
@@ -254,7 +523,33 @@ describe("socket handlers", () => {
     listeners.get("connect")();
 
     expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
+    expect(socket.on).toHaveBeenCalledWith("room:patch", expect.any(Function));
     expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+  });
+
+  it("emits a room resume request when an installed patch listener detects a gap", () => {
+    const listeners = new Map();
+    const socket = {
+      on: vi.fn((event, callback) => listeners.set(event, callback)),
+      emit: vi.fn()
+    };
+    const deps = handlerDeps({
+      roomRef: { current: { code: "12345", revision: 1, chat: [] } }
+    });
+
+    installSocketHandlers(socket, createSocketHandlers(deps), {
+      buildRoomResumeRequest: () => ({ roomCode: "12345" })
+    });
+    listeners.get("room:patch")({
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 4,
+      revision: 5,
+      message: { id: "chat-5" }
+    });
+
+    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+    expect(deps.setRoom).not.toHaveBeenCalled();
   });
 
   it("routes socket reconnects through room audio snapshot baselining before resume", () => {
@@ -284,9 +579,20 @@ function roomSetterResult(deps, callNumber = 1, currentRoom = null) {
   return typeof argument === "function" ? argument(currentRoom) : argument;
 }
 
+function lobbyStatsSetterResult(deps, currentStats = {}) {
+  const argument = deps.setLobbyStats.mock.calls.at(-1)?.[0];
+  return typeof argument === "function" ? argument(currentStats) : argument;
+}
+
+function matchStartSetterResult(deps, currentMatchStart = null) {
+  const argument = deps.setMatchStart.mock.calls.at(-1)?.[0];
+  return typeof argument === "function" ? argument(currentMatchStart) : argument;
+}
+
 function handlerDeps(overrides = {}) {
   return {
     matchSuccessRef: { current: null },
+    incomingDuelRef: { current: null },
     roomRef: { current: null },
     audioSettingsRef: { current: {} },
     closeAllOverlays: vi.fn(),

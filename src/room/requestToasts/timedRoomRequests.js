@@ -69,6 +69,21 @@ export function timedRoomRequestSnapshot(room, userId) {
   };
 }
 
+export function timedRoomRequestEffectKey(room, userId) {
+  if (!room || !userId) return "";
+  const toast = timedRoomRequestToastForPlayer(room, userId);
+  return [
+    room.code ?? "",
+    room.role ?? "",
+    room.game?.phase ?? "",
+    toast?.key ?? "",
+    toast?.title ?? "",
+    toast?.message ?? "",
+    toast?.score?.text ?? "",
+    toast?.actions?.map((action) => action.action).join(",") ?? ""
+  ].join("|");
+}
+
 export function timedRoomResponseToast(previousRequest, room) {
   if (!previousRequest || !room) return null;
   const phase = room.game?.phase;

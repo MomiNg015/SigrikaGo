@@ -1,0 +1,29 @@
+/* Startorch HUD friend action rows. */
+.friend-action-row {
+  padding: 12px;
+  border: 1px solid rgba(0, 255, 190, 0.42) !important;
+  border-radius: 0 !important;
+  background: rgba(10, 25, 30, 0.9) !important;
+  box-shadow:
+    0 0 14px rgba(0, 255, 190, 0.12),
+    inset 0 0 14px rgba(0, 191, 255, 0.08) !important;
+}
+
+.friend-action-row button {
+  min-height: 38px;
+  padding: 8px 16px;
+  border: 1px solid rgba(0, 255, 190, 0.52) !important;
+  border-radius: 0 !important;
+  background: rgba(10, 25, 30, 0.9) !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 10px rgba(0, 255, 190, 0.08) !important;
+}
+
+.friend-action-row button:hover,
+.friend-action-row button:focus-visible {
+  border-color: var(--hud-cyan) !important;
+  color: var(--hud-cyan) !important;
+  box-shadow:
+    0 0 14px rgba(0, 255, 190, 0.26),
+    inset 0 0 12px rgba(0, 255, 190, 0.12) !important;
+}

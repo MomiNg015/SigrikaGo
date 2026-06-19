@@ -2,14 +2,14 @@ import { useCallback, useState } from "react";
 import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { deploymentSocketBase } from "../shared/preloadAssets.js";
-import { BackgroundMusic, loadAudioSettings } from "../audio/playback.jsx";
+import { BackgroundMusic } from "../audio/playback.jsx";
 import AppOverlays from "./AppOverlays.jsx";
 import AppRoutes from "./AppRoutes.jsx";
 import InteractionFeedback from "./InteractionFeedback.jsx";
 import { initialSessionState } from "./sessionState.js";
 import { useAppActions } from "./useAppActions.js";
+import { useAudioRuntimeState } from "./useAudioRuntimeState.js";
 import { useAuthSession } from "./useAuthSession.js";
-import { useAudioSettingsPersistence } from "./useAudioSettingsPersistence.js";
 import { useBackgroundMusicTrack } from "./useBackgroundMusicTrack.js";
 import { useAppShellTheme } from "./useAppShellTheme.js";
 import { useCurrentUser } from "./useCurrentUser.js";
@@ -65,7 +65,12 @@ export default function App() {
     setShowSettings,
     setShowMessageBoard
   } = useOverlayState();
-  const [audioSettings, setAudioSettings] = useState(loadAudioSettings);
+  const {
+    audioResumeSignal,
+    audioSettings,
+    resumeAudioPlayback,
+    setAudioSettings
+  } = useAudioRuntimeState();
   const [replayRecords, setReplayRecords] = useState([]);
   const {
     dismissedResultRoom,
@@ -84,7 +89,6 @@ export default function App() {
   const [incomingDuel, setIncomingDuel] = useState(null);
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
-  const [audioResumeSignal, setAudioResumeSignal] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
   const showAchievementUnlocks = useCallback((unlocks = []) => {
     for (const unlock of unlocks) {
@@ -93,8 +97,9 @@ export default function App() {
   }, [showToast]);
   const { setUser, updateUser, user } = useCurrentUser();
   const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState();
-  const { audioSettingsRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
+  const { audioSettingsRef, incomingDuelRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
     audioSettings,
+    incomingDuel,
     matchSuccess,
     room,
     view
@@ -212,9 +217,10 @@ export default function App() {
   useGameSocketConnection({
     audioSettingsRef,
     closeAllOverlays,
+    incomingDuelRef,
     matchSuccessRef,
+    onSocketReconnect: resumeAudioPlayback,
     roomRef,
-    setAudioResumeSignal,
     setDismissedResultRoom,
     setIncomingDuel,
     setLobbyStats,
@@ -237,7 +243,6 @@ export default function App() {
   useReplayRecords({ enabled: showHouse || showResume, showToast, token, setReplayRecords });
   useHomeUserRefresh({ onAchievementUnlocks: showAchievementUnlocks, token, updateUser, user, view });
 
-  useAudioSettingsPersistence(audioSettings);
   useRoomMemory(room);
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GAME_PHASES } from "../../shared/game.js";
 import { nextPointConfirmation, shouldUsePointConfirmation } from "../mobilePointConfirmation.js";
 
@@ -17,19 +17,26 @@ export function useRoomPointActions({
   onScoringAction
 }) {
   const [pointConfirmation, setPointConfirmation] = useState(null);
+  const phase = displayRoom.game.phase;
+  const meColor = me?.color;
 
   useEffect(() => {
     setPointConfirmation(null);
   }, [displayRoom.code, displayRoom.game.turn, displayRoom.game.phase, pendingSkill, skillPreview, isReplay]);
 
-  function handlePoint(point, eventMeta = {}) {
+  const handleScoringPoint = useCallback((point) => {
+    if (point.stone) onScoringAction({ type: "mark-dead", pointId: point.id });
+    else if (point.valid) onScoringAction({ type: "mark-neutral", pointId: point.id });
+  }, [onScoringAction]);
+
+  const handlePoint = useCallback((point, eventMeta = {}) => {
     if (isReplay) return;
     if (skillPreview) return;
-    if (displayRoom.game.phase === "marking-dead") return handleScoringPoint(point);
-    if (displayRoom.game.phase !== GAME_PHASES.playing) return;
+    if (phase === "marking-dead") return handleScoringPoint(point);
+    if (phase !== GAME_PHASES.playing) return;
     if (role !== "player") return;
     const actionType = pendingSkill ? "skill" : "move";
-    if (!canConfirmPointAction({ point, actionType, canConfirmSkillPoint, me, skillUsesBoardConfirmation, skillUsesBoardSurfaceConfirmation })) {
+    if (!canConfirmPointAction({ point, actionType, canConfirmSkillPoint, me: { color: meColor }, skillUsesBoardConfirmation, skillUsesBoardSurfaceConfirmation })) {
       setPointConfirmation(null);
       return;
     }
@@ -46,20 +53,29 @@ export function useRoomPointActions({
       return;
     }
     onGameAction({ type: "move", pointId: point.id });
-  }
+  }, [
+    canConfirmSkillPoint,
+    handleScoringPoint,
+    isReplay,
+    meColor,
+    onGameAction,
+    pendingSkill,
+    phase,
+    pointConfirmation,
+    role,
+    setPendingSkill,
+    skillPreview,
+    skillUsesBoardConfirmation,
+    skillUsesBoardSurfaceConfirmation
+  ]);
 
-  function handleBoardSurface() {
+  const handleBoardSurface = useCallback(() => {
     if (isReplay || skillPreview || !pendingSkill || !skillUsesBoardSurfaceConfirmation) return;
-    if (displayRoom.game.phase !== GAME_PHASES.playing || role !== "player") return;
+    if (phase !== GAME_PHASES.playing || role !== "player") return;
     setPointConfirmation(null);
     setPendingSkill(false);
     onGameAction({ type: "skill" });
-  }
-
-  function handleScoringPoint(point) {
-    if (point.stone) onScoringAction({ type: "mark-dead", pointId: point.id });
-    else if (point.valid) onScoringAction({ type: "mark-neutral", pointId: point.id });
-  }
+  }, [isReplay, onGameAction, pendingSkill, phase, role, setPendingSkill, skillPreview, skillUsesBoardSurfaceConfirmation]);
 
   return {
     handlePoint,

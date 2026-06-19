@@ -1,0 +1,59 @@
+/* Mobile room viewport and dock shell */
+
+@media (max-width: 900px) {
+  .mobile-room-screen .mobile-room-viewport {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    grid-template-areas:
+      "opponent"
+      "board"
+      "self"
+      "dock";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, var(--mobile-room-player-strip-height)) minmax(0, 1fr) minmax(0, var(--mobile-room-player-strip-height)) auto;
+    gap: var(--mobile-room-edge-gap);
+    overflow: hidden;
+    align-content: stretch;
+  }
+
+  .mobile-room-screen .mobile-room-viewport .opponent-side {
+    grid-area: opponent;
+  }
+
+  .mobile-room-screen .mobile-room-viewport .board-column {
+    grid-area: board;
+  }
+
+  .mobile-room-screen .mobile-room-viewport .room-side {
+    grid-area: self;
+  }
+
+  .mobile-room-screen .mobile-room-dock {
+    grid-area: dock;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(128, 102, 142, 0.14);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 12px 30px rgba(42, 32, 48, 0.1);
+    backdrop-filter: blur(14px) saturate(1.08);
+  }
+
+  .mobile-player-slot,
+  .mobile-board-viewport {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .mobile-room-screen .mobile-player-slot {
+    overflow: hidden;
+  }
+
+  .mobile-board-viewport {
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+}

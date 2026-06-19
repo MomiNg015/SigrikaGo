@@ -1,0 +1,65 @@
+/* Gacha modal, prize/result dialogs, and capsule animation contracts. */
+.gacha-modal {
+  width: min(1120px, calc(100vw - (var(--page-pad) * 2)));
+  height: min(720px, calc(100dvh - (var(--page-pad) * 2)));
+  min-height: min(620px, calc(100dvh - (var(--page-pad) * 2)));
+  max-height: calc(100dvh - (var(--page-pad) * 2));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 14px;
+  text-align: left;
+  overflow: hidden;
+}
+
+.gacha-pool-tabs {
+  min-width: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(188px, 236px);
+  gap: 10px;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 54px 8px 2px;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.gacha-ticket-tab {
+  min-width: 0;
+  min-height: 86px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  gap: 3px 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid rgba(128, 102, 142, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent 26%),
+    linear-gradient(135deg, #ffffff, #fff6fb 54%, #edf9ff);
+  color: #4f3d55;
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(72, 44, 86, 0.08);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.gacha-ticket-tab.active {
+  border-color: #5d7fe8;
+  background:
+    linear-gradient(135deg, #fff9d9, #ffe7f3 54%, #e5f5ff);
+  box-shadow: 0 14px 28px rgba(93, 127, 232, 0.16);
+  transform: translateY(-2px);
+}
+
+.gacha-ticket-tab img {
+  grid-row: span 2;
+  width: 58px;
+  height: 62px;
+  object-fit: contain;
+}
+
+.gacha-ticket-tab .gacha-featured-stack {
+  grid-row: span 2;
+}

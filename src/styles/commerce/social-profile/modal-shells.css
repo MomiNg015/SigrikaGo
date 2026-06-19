@@ -1,0 +1,23 @@
+/* Social, profile, house, friends, duel, and leaderboard windows. */
+.house-modal {
+  width: min(900px, calc(100vw - (var(--page-pad) * 2)));
+  text-align: left;
+  max-height: calc(100dvh - (var(--page-pad) * 2));
+  overflow: auto;
+}
+
+.leaderboard-modal {
+  width: min(880px, calc(100vw - (var(--page-pad) * 2)));
+  text-align: left;
+  max-height: calc(100dvh - (var(--page-pad) * 2));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.friends-modal {
+  width: min(720px, calc(100vw - (var(--page-pad) * 2)));
+  text-align: left;
+  max-height: calc(100dvh - (var(--page-pad) * 2));
+  overflow: auto;
+}

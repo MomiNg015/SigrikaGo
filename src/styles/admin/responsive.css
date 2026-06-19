@@ -1,0 +1,49 @@
+@media (max-width: 860px) {
+  .admin-gacha-board .admin-crud-drawer {
+    inset: 12px;
+    width: auto;
+    max-height: calc(100dvh - 24px);
+    padding: 18px;
+  }
+
+  .admin-gacha-board .admin-crud-drawer .admin-character-form {
+    padding-right: 28px;
+  }
+
+  .admin-gacha-prize-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-gacha-prize-editor-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-achievement-board .admin-section-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-gacha-form .admin-character-form-grid,
+  .admin-gacha-prize-controls,
+  .admin-gacha-prize-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-gacha-prize-row label {
+    min-height: 40px;
+    align-items: center;
+  }
+
+  .admin-gacha-prize-resource {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .admin-gacha-prize-thumb {
+    width: 44px;
+    height: 44px;
+  }
+}

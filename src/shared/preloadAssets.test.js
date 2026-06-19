@@ -95,6 +95,22 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalAudio).toEqual(expect.arrayContaining(RUNTIME_AUDIO_ASSETS.interaction));
   });
 
+  it("keeps critical startup preload limited to first-screen UI assets", () => {
+    const assets = loginPreloadAssets();
+    const bulkyRuntimeAudio = [
+      ...Object.values(MUSIC_TRACKS).flatMap((track) => playbackAssetSources(track.playback)),
+      ...Object.values(CHARACTER_SKILL_VOICES),
+      ...Object.values(CHARACTER_SYSTEM_VOICES).flatMap((voiceMap) => Object.values(voiceMap))
+    ];
+
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
+    expect(assets.criticalImages).not.toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
+    expect(assets.criticalImages).not.toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
+    expect(assets.criticalAudio).toHaveLength(RUNTIME_AUDIO_ASSETS.interaction.length);
+    expect(assets.criticalAudio).not.toEqual(expect.arrayContaining(bulkyRuntimeAudio));
+    expect(assets.deferredAudio).toEqual(expect.arrayContaining(bulkyRuntimeAudio));
+  });
+
   it("keeps the runtime asset registry independent from playback implementations", () => {
     const registrySource = fs.readFileSync(path.resolve("src/shared/assetRegistry.js"), "utf8");
 

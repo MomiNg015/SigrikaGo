@@ -1,0 +1,25 @@
+.app-shell.player-theme-enabled.theme-bright-school .home-top-strip,
+.app-shell.player-theme-enabled.theme-bright-school .home-player-plaque,
+.app-shell.player-theme-enabled.theme-bright-school .room-header,
+.app-shell.player-theme-enabled.theme-bright-school .player-info,
+.app-shell.player-theme-enabled.theme-bright-school .board-stage,
+.app-shell.player-theme-enabled.theme-bright-school .small-modal,
+.app-shell.player-theme-enabled.theme-bright-school .shop-modal,
+.app-shell.player-theme-enabled.theme-bright-school .house-modal,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-modal,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-modal,
+.app-shell.player-theme-enabled.theme-bright-school .friends-modal,
+.app-shell.player-theme-enabled.theme-bright-school .confirm-modal,
+.app-shell.player-theme-enabled.theme-bright-school .result-modal,
+.app-shell.player-theme-enabled.theme-bright-school .settings-modal,
+.app-shell.player-theme-enabled.theme-bright-school .message-board-modal,
+.app-shell.player-theme-enabled.theme-bright-school .nested-modal,
+.app-shell.player-theme-enabled.theme-bright-school .room-floating-modal {
+  background: #ffffff !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 16px !important;
+  box-shadow: 4px 4px 0 #3d2b25 !important;
+  clip-path: none !important;
+  text-shadow: none !important;
+}

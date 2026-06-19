@@ -1,0 +1,51 @@
+/* Startorch terminal replay and profile surfaces */
+
+.replay-item,
+.replay-table-row,
+.profile-resume-hero,
+.profile-resume-stats > span,
+.profile-character-row,
+.character-record-row,
+.warehouse-effect-result p {
+  border: 1px solid var(--terminal-line-soft);
+  border-radius: 2px;
+  clip-path: var(--terminal-row-cut);
+  background: rgba(18, 43, 52, 0.52);
+  color: var(--terminal-text);
+  box-shadow: inset 0 0 18px rgba(0, 191, 255, 0.08);
+}
+
+.replay-table-heading,
+.replay-item span,
+.profile-resume-hero span,
+.profile-resume-section strong,
+.profile-resume-stats small,
+.replay-table-row span,
+.profile-character-row span {
+  color: var(--terminal-muted);
+}
+
+.replay-table-row,
+.profile-character-row,
+.result-rewards span {
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.nested-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  background: rgba(1, 9, 13, 0.46);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.nested-modal-backdrop .nested-modal {
+  position: relative;
+  inset: auto;
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(760px, calc(100dvh - 32px));
+  overflow: auto;
+}

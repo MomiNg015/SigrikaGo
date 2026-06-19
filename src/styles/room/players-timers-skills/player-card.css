@@ -1,0 +1,169 @@
+/* Room player cards and result status badges. */
+.player-info {
+  padding: clamp(10px, 1.1vw, 14px);
+  display: grid;
+  gap: clamp(7px, 0.9vw, 10px);
+  align-self: start;
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.player-info.winner {
+  background: linear-gradient(120deg, rgba(255, 245, 171, 0.9), rgba(255, 162, 191, 0.86), rgba(139, 197, 255, 0.88), rgba(157, 239, 184, 0.86));
+  background-size: 320% 320%;
+  border-color: rgba(255, 255, 255, 0.78);
+  animation: winner-rainbow 4s linear infinite;
+}
+
+.player-info.active-turn {
+  background:
+    linear-gradient(135deg, rgba(255, 228, 107, 0.5), rgba(255, 247, 188, 0.96) 48%, rgba(255, 211, 75, 0.56)),
+    #fff0a6;
+  border-color: rgba(218, 152, 26, 0.72);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.36),
+    inset 0 0 24px rgba(255, 196, 39, 0.26),
+    0 18px 54px rgba(203, 160, 46, 0.22);
+  color: #3f2b08;
+}
+
+.player-info.draw-result {
+  background: rgba(211, 246, 219, 0.94);
+  border-color: rgba(76, 178, 103, 0.42);
+  box-shadow: 0 18px 54px rgba(56, 154, 83, 0.16);
+}
+
+@keyframes winner-rainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.portrait-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.player-info img {
+  width: 100%;
+  height: var(--side-portrait);
+  object-fit: contain;
+}
+
+.result-badge {
+  position: absolute;
+  right: clamp(32px, 3.4vw, 44px);
+  bottom: clamp(8px, 1.1vw, 16px);
+  width: clamp(38px, 4.2vw, 50px);
+  height: clamp(38px, 4.2vw, 50px);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 3px solid currentColor;
+  background: rgba(255, 255, 255, 0.36);
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+  box-shadow: 0 10px 24px rgba(42, 27, 45, 0.16);
+  z-index: 3;
+}
+
+.result-badge.win {
+  color: #d91528;
+}
+
+.result-badge.loss {
+  color: #121217;
+}
+
+.result-badge.draw {
+  color: #138a46;
+}
+
+.disconnect-badge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  display: inline-grid;
+  place-items: center;
+  min-width: 74px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 2px solid #d91528;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #d91528;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+  box-shadow: 0 8px 20px rgba(85, 12, 24, 0.14);
+}
+
+.viewpoint-button {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(91, 112, 163, 0.28);
+  background: rgba(255, 255, 255, 0.9);
+  color: #5d6b91;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(56, 70, 112, 0.16);
+  z-index: 2;
+}
+
+.viewpoint-button.active {
+  color: #fff;
+  border-color: rgba(67, 120, 232, 0.72);
+  background: linear-gradient(135deg, #4378e8, #7a9dff);
+  box-shadow: 0 12px 28px rgba(67, 120, 232, 0.28);
+}
+
+.name-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #2d2430;
+  font-weight: 800;
+}
+
+.player-meta {
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  text-align: center;
+}
+
+.player-meta span {
+  color: #7b6a7f;
+  font-size: clamp(12px, 1.1vw, 14px);
+}
+
+.meta-tag {
+  min-width: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(246, 240, 252, 0.88));
+  border: 1px solid rgba(126, 102, 144, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74), 0 5px 12px rgba(75, 58, 88, 0.07);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.rating-tag {
+  color: #5c6285;
+}

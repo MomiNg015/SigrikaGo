@@ -1,0 +1,40 @@
+.resume-header-actions {
+  margin-left: 0;
+  position: static;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+  min-width: max-content;
+}
+
+.resume-header-actions .close-button {
+  position: static;
+  flex: 0 0 auto;
+}
+
+.resume-wallet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-height: var(--modal-close-size, 44px);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.resume-wallet.blue-gem-wallet {
+  background: linear-gradient(135deg, #dffbff 0%, #7fd6f2 48%, #2d9fd0 100%);
+  border-color: #2380b5;
+  color: #0e4f7a;
+}
+
+.resume-replay-action {
+  justify-self: start;
+  margin-top: -4px;
+  background: #e4f6f0;
+  border-color: #73b79f;
+  color: #245b4f;
+}

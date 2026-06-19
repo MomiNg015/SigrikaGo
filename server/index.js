@@ -41,6 +41,8 @@ import {
   addChat,
   attachSocketToRoom,
   broadcastRoom,
+  broadcastRoomPatch,
+  broadcastRoomPresencePatch,
   createDirectRoom,
   detachSocket,
   findRoomForUser,
@@ -248,7 +250,9 @@ io.on("connection", (socket) => {
     duelRequests,
     unregisterOnlineSocket,
     detachSocket,
-    broadcastRoom
+    broadcastRoom,
+    broadcastRoomPatch,
+    broadcastRoomPresencePatch
   });
 });
 

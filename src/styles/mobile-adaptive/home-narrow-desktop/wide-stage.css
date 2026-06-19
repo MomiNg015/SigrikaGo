@@ -1,0 +1,27 @@
+/* Bright School 1181px to 1500px home stage safety. */
+@media (min-width: 1181px) and (max-width: 1500px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
+    grid-template-columns: minmax(390px, 0.9fr) minmax(160px, 0.42fr) minmax(360px, 1.08fr) !important;
+    gap: clamp(14px, 1.8vw, 24px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone {
+    width: min(100%, 440px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+    --home-plaque-name-column-min: calc(12ch + 1.4em);
+    grid-template-columns: 62px minmax(0, 1fr) minmax(106px, 116px) !important;
+    column-gap: 10px !important;
+    padding: 16px 12px 12px 22px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar {
+    width: 62px !important;
+    height: 62px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card strong {
+    font-size: clamp(18px, 1.45vw, 21px) !important;
+  }
+}

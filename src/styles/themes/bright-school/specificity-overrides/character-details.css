@@ -1,0 +1,29 @@
+/* 5. 解决部员手册二级窗口【角色详情】看不清技能名与途径的问题 */
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal,
+.app-shell.player-theme-enabled.theme-bright-school div[class*="details-modal"] {
+  background: #ffffff !important;
+  color: #4a3736 !important;
+  border: 3px solid #4a3736 !important;
+  box-shadow: 5px 5px 0px #4a3736 !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal p,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal span,
+.app-shell.player-theme-enabled.theme-bright-school .skill-description-text {
+  color: #4a3736 !important;
+  font-weight: 500 !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .character-description {
+  color: #7b3fa0 !important;
+}
+/* 将详情面板里的“技能名：”、“获得途径：”等引导标签及重要加粗元素重写为深玫瑰红，制造极佳的视觉对比度 */
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal h2,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal h3,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal h4,
+.app-shell.player-theme-enabled.theme-bright-school .detail-label,
+.app-shell.player-theme-enabled.theme-bright-school span[class*="label"],
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row span,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row strong:first-child,
+.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .acquisition-method strong {
+  color: #c84b6f !important;
+  font-weight: 900 !important;
+}

@@ -1,0 +1,84 @@
+/* Startorch HUD input, settings, and auth contrast hardening. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+textarea,
+.message-board-modal textarea,
+.friend-search input {
+  padding: 12px;
+  border: 1px solid rgba(0, 255, 190, 0.4) !important;
+  border-radius: 2px;
+  outline: none !important;
+  background: var(--hud-bg-deep) !important;
+  color: var(--hud-text) !important;
+  box-shadow: inset 0 0 10px rgba(0, 255, 190, 0.1);
+  caret-color: var(--hud-cyan);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"])::placeholder,
+textarea::placeholder {
+  color: rgba(185, 233, 228, 0.46);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):focus,
+textarea:focus,
+.message-board-modal textarea:focus,
+.friend-search input:focus {
+  border-color: var(--hud-cyan) !important;
+  box-shadow:
+    inset 0 0 12px rgba(0, 255, 190, 0.16),
+    0 0 16px rgba(0, 255, 190, 0.34);
+}
+
+.settings-modal-content,
+.about-panel-block,
+div[class*="about"],
+div[class*="setting"] {
+  background: rgba(6, 18, 26, 0.95) !important;
+  color: #ffffff !important;
+}
+
+.about-panel-block text,
+.about-panel-block p,
+div[class*="about"] p {
+  color: #00ffbe !important;
+  font-weight: 500 !important;
+  text-shadow: 0 0 6px rgba(0, 255, 190, 0.3);
+}
+
+div[class*="volume-row"],
+.audio-slider-item {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(0, 255, 190, 0.2) !important;
+  color: #fff !important;
+}
+
+.login-card-container,
+.register-card-container {
+  background: rgba(9, 23, 34, 0.85) !important;
+  border: 2px solid #00ffbe !important;
+  box-shadow: 0 0 25px rgba(0, 255, 190, 0.2), inset 0 0 15px rgba(0, 255, 190, 0.1) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+.login-card-container h1,
+.login-card-container h2,
+.login-title-text {
+  color: #fff !important;
+  text-shadow: 0 0 10px #00ffbe;
+}
+
+.login-card-container input {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(0, 255, 190, 0.4) !important;
+  color: #fff !important;
+}
+
+.login-submit-btn,
+button[class*="enter-btn"],
+div[class*="submit-btn"] {
+  background: #00ffbe !important;
+  color: #030a10 !important;
+  font-weight: 900 !important;
+  letter-spacing: 2px !important;
+  box-shadow: 0 0 15px #00ffbe !important;
+}

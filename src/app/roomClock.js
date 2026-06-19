@@ -1,5 +1,6 @@
 export function applyRoomClock(room, clock) {
   if (!room || !clock || room.code !== clock.roomCode) return room;
+  if (!Array.isArray(room.players)) return room;
   const timesByColor = new Map((clock.players ?? []).map((player) => [player.color, player.time]));
   let changed = false;
   const players = room.players.map((player) => {

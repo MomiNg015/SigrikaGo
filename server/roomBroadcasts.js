@@ -25,6 +25,36 @@ export function broadcastRoomClock(io, room, { persistRoom = () => {} } = {}) {
   }
 }
 
+export function broadcastRoomPatch(io, room, patch, { persistRoom = () => {} } = {}) {
+  const baseRevision = Number(room.revision ?? 0);
+  const revision = baseRevision + 1;
+  room.revision = revision;
+  persistRoom(room, { force: true });
+  const payload = {
+    ...patch,
+    eventId: `${room.code}:${revision}:${patch.type}`,
+    baseRevision,
+    revision,
+    roomCode: room.code
+  };
+  for (const participant of roomParticipants(room)) {
+    emitToSocket(io, participant.socketId, "room:patch", payload);
+  }
+}
+
+export function broadcastRoomPresencePatch(io, room, { persistRoom = () => {}, roomViewFn = roomView } = {}) {
+  const participant = roomParticipants(room).find((candidate) => candidate.socketId);
+  if (!participant) return;
+  const view = roomViewFn(room, participant.user.id);
+  broadcastRoomPatch(io, room, {
+    type: "presence:update",
+    players: view.players,
+    spectatorCount: view.spectatorCount,
+    spectators: view.spectators,
+    chat: view.chat
+  }, { persistRoom });
+}
+
 export function roomClockPayload(room) {
   return {
     roomCode: room.code,

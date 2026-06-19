@@ -1,0 +1,43 @@
+/* Bright School portrait mobile list table shells. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-list-modal .inline-close {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    width: var(--modal-close-size, 44px) !important;
+    height: var(--modal-close-size, 44px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-table,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    display: grid !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    gap: 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table {
+    grid-template-rows: none !important;
+    grid-auto-rows: auto !important;
+    align-content: start !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-heading,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table-heading {
+    display: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-heading,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table-heading {
+    min-width: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-list {
+    display: grid !important;
+    gap: 8px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+}

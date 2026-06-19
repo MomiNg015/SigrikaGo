@@ -11,6 +11,8 @@ describe("room runtime", () => {
       prisma,
       persistRoomState,
       broadcastRoomUpdate: vi.fn(),
+      broadcastRoomPatch: vi.fn(),
+      broadcastRoomPresencePatch: vi.fn(),
       broadcastRoomToast: vi.fn(),
       throttleMs: 5000,
       onPersistError
@@ -33,6 +35,8 @@ describe("room runtime", () => {
       prisma: "prisma",
       persistRoomState,
       broadcastRoomUpdate: vi.fn(),
+      broadcastRoomPatch: vi.fn(),
+      broadcastRoomPresencePatch: vi.fn(),
       broadcastRoomToast: vi.fn(),
       throttleMs: 5000
     });
@@ -50,6 +54,8 @@ describe("room runtime", () => {
       prisma: "prisma",
       persistRoomState: vi.fn(),
       broadcastRoomUpdate,
+      broadcastRoomPatch: vi.fn(),
+      broadcastRoomPresencePatch: vi.fn(),
       broadcastRoomToast: vi.fn(),
       throttleMs: 5000
     });
@@ -62,12 +68,55 @@ describe("room runtime", () => {
     });
   });
 
+  test("broadcasts room patches with the runtime persist callback", () => {
+    const broadcastRoomPatch = vi.fn();
+    const runtime = createRoomRuntime({
+      prisma: "prisma",
+      persistRoomState: vi.fn(),
+      broadcastRoomUpdate: vi.fn(),
+      broadcastRoomPatch,
+      broadcastRoomPresencePatch: vi.fn(),
+      broadcastRoomToast: vi.fn(),
+      throttleMs: 5000
+    });
+    const room = { code: "12345" };
+    const patch = { type: "chat:append", message: { id: "chat-1" } };
+
+    runtime.broadcastRoomPatch("io", room, patch);
+
+    expect(broadcastRoomPatch).toHaveBeenCalledWith("io", room, patch, {
+      persistRoom: runtime.persistRoom
+    });
+  });
+
+  test("broadcasts room presence patches with the runtime persist callback", () => {
+    const broadcastRoomPresencePatch = vi.fn();
+    const runtime = createRoomRuntime({
+      prisma: "prisma",
+      persistRoomState: vi.fn(),
+      broadcastRoomUpdate: vi.fn(),
+      broadcastRoomPatch: vi.fn(),
+      broadcastRoomPresencePatch,
+      broadcastRoomToast: vi.fn(),
+      throttleMs: 5000
+    });
+    const room = { code: "12345" };
+
+    runtime.broadcastRoomPresencePatch("io", room);
+
+    expect(broadcastRoomPresencePatch).toHaveBeenCalledWith("io", room, {
+      persistRoom: runtime.persistRoom
+    });
+  });
+
   test("forwards room toasts through the broadcast boundary", () => {
     const broadcastRoomToast = vi.fn();
     const runtime = createRoomRuntime({
       prisma: "prisma",
       persistRoomState: vi.fn(),
       broadcastRoomUpdate: vi.fn(),
+      broadcastRoomPatch: vi.fn(),
+      broadcastRoomPresencePatch: vi.fn(),
       broadcastRoomToast,
       throttleMs: 5000
     });

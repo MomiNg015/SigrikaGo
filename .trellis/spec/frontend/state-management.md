@@ -68,6 +68,65 @@ setAudioSettings((settings) => ({
 }));
 ```
 
+### Scenario: App Audio Runtime State
+
+#### 1. Scope / Trigger
+- Trigger: changing app-level audio settings initialization, audio-settings persistence, background-music resume behavior, or socket reconnect wiring that affects playback recovery.
+- This is app shell state, not route state or socket protocol state.
+
+#### 2. Signatures
+- `useAudioRuntimeState()` returns `{ audioSettings, setAudioSettings, audioResumeSignal, resumeAudioPlayback }`.
+- `useAudioSettingsPersistence(audioSettings)` persists the returned settings to `localStorage`.
+- `useGameSocketConnection({ onSocketReconnect })` receives a callback and forwards it to `connectGameSocket()`.
+
+#### 3. Contracts
+- `App.jsx` should call `useAudioRuntimeState()` instead of directly importing `loadAudioSettings` or calling `useAudioSettingsPersistence()`.
+- Socket reconnects should call the hook's `resumeAudioPlayback()` callback, not a raw `setAudioResumeSignal` setter owned by `App.jsx`.
+- `BackgroundMusic` receives the hook's `audioResumeSignal`; ordinary SFX/voice consumers continue receiving the same `audioSettings` object.
+- Settings UI still mutates audio settings through the returned `setAudioSettings` callback.
+- Keep the hook free of route, room, match, and overlay state so it remains a focused audio runtime boundary.
+
+#### 4. Validation & Error Matrix
+- Initial render -> load settings through `loadAudioSettings()` inside the hook.
+- Audio settings change -> persist through `useAudioSettingsPersistence(audioSettings)`.
+- Socket reconnect -> increment `audioResumeSignal` through `resumeAudioPlayback()`.
+- Missing reconnect callback -> `useGameSocketConnection` falls back to a no-op.
+
+#### 5. Good/Base/Bad Cases
+- Good: `const { audioSettings, audioResumeSignal, resumeAudioPlayback } = useAudioRuntimeState();`
+- Base: Existing settings modal props continue to receive `audioSettings` and `setAudioSettings`.
+- Bad: `App.jsx` imports `loadAudioSettings` and stores `[audioResumeSignal, setAudioResumeSignal]` directly.
+- Bad: socket code knows about the audio signal setter shape instead of receiving a callback.
+
+#### 6. Tests Required
+- App wiring tests should assert `App.jsx` delegates to `useAudioRuntimeState()` and does not import `loadAudioSettings` or `useAudioSettingsPersistence`.
+- Socket handler tests should continue asserting reconnect callbacks are invoked when `connect` fires.
+- Run `npm test -- src/app/App.test.js src/app/socketHandlers.test.js` after changes in this boundary.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+const [audioSettings, setAudioSettings] = useState(loadAudioSettings);
+const [audioResumeSignal, setAudioResumeSignal] = useState(0);
+useAudioSettingsPersistence(audioSettings);
+useGameSocketConnection({ setAudioResumeSignal });
+```
+
+Correct:
+
+```jsx
+const {
+  audioSettings,
+  setAudioSettings,
+  audioResumeSignal,
+  resumeAudioPlayback
+} = useAudioRuntimeState();
+
+useGameSocketConnection({ onSocketReconnect: resumeAudioPlayback });
+```
+
 ---
 
 ## Server State
@@ -178,15 +237,80 @@ Correct:
 updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 ```
 
+### Scenario: Lobby Stats State Writes
+
+#### 1. Scope / Trigger
+- Trigger: handling `lobby:stats` socket payloads or changing lobby online/matchmaking counters.
+- Lobby stats can arrive while the user is browsing home, waiting for matchmaking, or recovering from reconnects, so duplicate payloads should not churn the home shell.
+
+#### 2. Signatures
+- `normalizeLobbyStats(stats)` returns `{ onlineCount, matchmakingCount, matchmakingCounts }`.
+- `sameLobbyStats(current, next)` returns `true` only when the current state already has every supported mode count and all numeric counts match.
+
+#### 3. Contracts
+- `socketHandlers.lobbyStats(stats)` should write through a functional setter and return the current state object when normalized stats are unchanged.
+- Legacy or reset state without `matchmakingCounts` should be normalized on the next lobby stats payload even when visible counts are zero.
+- Per-mode counts must continue to use `GAME_MODE_IDS` so new modes do not require hard-coded lobby updater branches.
+
+#### 4. Validation & Error Matrix
+- Duplicate `{ onlineCount, matchmakingCount, matchmakingCounts }` -> return the current state object.
+- Missing `matchmakingCounts` on the incoming payload -> derive spark from `matchmakingCount` and other modes from `0`.
+- Existing current state lacks `matchmakingCounts` -> return a normalized object instead of preserving the legacy shape.
+
+#### 5. Good/Base/Bad Cases
+- Good: repeated `lobby:stats` payloads with identical mode counts do not re-render the home screen.
+- Base: older reset paths that only store `{ onlineCount, matchmakingCount }` are normalized by the next socket payload.
+- Bad: `setLobbyStats({ ... })` for every socket payload because unchanged server counts still create a new object graph.
+
+#### 6. Tests Required
+- `src/app/socketHandlers.test.js` must assert lobby stats normalization and stable-object behavior for duplicate payloads.
+
+### Scenario: Room Clock State Writes
+
+#### 1. Scope / Trigger
+- Trigger: handling lightweight `room:clock` payloads from the socket.
+- Clock payloads are high-frequency updates and must not schedule React state writes for unrelated or already-cleared room sessions.
+
+#### 2. Signatures
+- `applyRoomClock(room, clock)` returns the room object that should remain in state.
+- `socketHandlers.roomClock(clock)` routes the payload to the current live room and/or pending match-success room only when their `code` matches `clock.roomCode`.
+
+#### 3. Contracts
+- Ignore missing or stale `room:clock` payloads without calling `setRoom` or `setMatchSuccess`.
+- If only the pending match-success room matches the clock, update only `matchSuccess`; do not call the live room setter while `roomRef.current` is empty or points elsewhere.
+- If a pending match-success clock payload does not change any timer data, do not schedule `setMatchSuccess`; the transition ref may keep its existing room object.
+- If only the live room matches the clock, update only `room`.
+- `applyRoomClock()` must preserve `room.game`, unchanged player objects, and the whole room object when no player time changed.
+- `applyRoomClock()` must return the original room when the snapshot has no `players` array yet; clock recovery must not crash an incomplete or legacy snapshot.
+
+#### 4. Validation & Error Matrix
+- `clock.roomCode` differs from current and pending room codes -> no state setter is called.
+- Pending match room code matches and current room is null -> only `setMatchSuccess` is called.
+- Pending match room code matches but all player times are unchanged -> no state setter is called.
+- Current room code matches -> `setRoom((current) => applyRoomClock(current, clock))` is called.
+- Matching room has no `players` array -> return the room unchanged.
+
+#### 5. Good/Base/Bad Cases
+- Good: A stale clock from a closed room is ignored before scheduling state work.
+- Base: A normal playing room tick updates only the active player's time object and keeps `game` stable.
+- Bad: Calling both `setRoom` and `setMatchSuccess` for every clock payload regardless of room code.
+
+#### 6. Tests Required
+- `src/app/roomClock.test.js` must cover changed timers, wrong-room payloads, and missing player lists.
+- `src/app/socketHandlers.test.js` must cover stale clock payloads and pending-match-only clock payloads.
+
 ### Scenario: Room Snapshot Structural Sharing
 
 #### 1. Scope / Trigger
-- Trigger: handling full `room:update` snapshots that replace authoritative room state.
+- Trigger: handling full `room:update` snapshots, live `room:resume` snapshots, or pending match-success room snapshots that replace authoritative room state.
 - Full room snapshots are still the protocol contract, but the frontend should preserve stable references for unchanged snapshot subtrees before writing to React state.
 
 #### 2. Signatures
 - `applyRoomSnapshot(currentRoom, incomingRoom)` returns the room object that should be stored in state.
 - `socketHandlers.roomUpdate(roomView)` must call `setRoom((current) => applyRoomSnapshot(current, nextRoomView))`.
+- Live `socketHandlers.roomResume({ type: "room", room })` must also store the recovered snapshot through a functional setter and `applyRoomSnapshot`; result resumes may restore the finished result snapshot directly.
+- `syncPendingMatchRoom()` and `completePendingMatchRoom()` must structurally share same-room pending match snapshots so a `match:found` followed by `room:update` does not bypass the full-snapshot sharing path before the transition modal completes.
+- `syncPendingMatchRoom()` should consume same-room duplicate snapshots without calling `setMatchSuccess` when `applyRoomSnapshot()` returns the current pending room object.
 
 #### 3. Contracts
 - If the current and incoming room are missing, have different `code`, or have different `role`, use the incoming snapshot directly.
@@ -202,14 +326,16 @@ updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 - Different room code or role -> return `incomingRoom` without sharing.
 
 #### 5. Good/Base/Bad Cases
-- Good: `room:update` after reconnect can preserve the existing room object when the server sends the same snapshot twice.
+- Good: `room:update`, live `room:resume`, or a pending match-success room update can preserve the existing room object when the server sends the same snapshot twice.
+- Good: a duplicate pending match-success `room:update` is consumed by the transition boundary without creating a fresh `{ startedAt, room }` wrapper.
 - Base: A move update replaces the changed point and history while preserving unrelated point objects.
 - Bad: Directly calling `setRoom(roomView)` for every same-room snapshot, forcing room consumers to compare fresh object graphs.
 - Bad: Mutating the incoming snapshot or current room in place.
 
 #### 6. Tests Required
 - Unit tests for `applyRoomSnapshot` must cover duplicate snapshots, per-point sharing, per-player sharing, and different room identities.
-- Socket handler tests must assert `room:update` uses a functional state setter and still preserves reconnect audio-baseline markers.
+- Socket handler tests must assert `room:update` and live `room:resume` use functional state setters and still preserve reconnect audio-baseline markers.
+- Match transition tests must assert pending match room sync and completion keep unchanged snapshot subtrees stable, and duplicate pending snapshots do not schedule `setMatchSuccess`.
 - Run `npm test -- src/app/roomSnapshot.test.js src/app/socketHandlers.test.js` for changes in this area, then run the project `check` gate before handoff.
 
 #### 7. Wrong vs Correct
@@ -225,6 +351,82 @@ Correct:
 ```js
 setRoom((current) => applyRoomSnapshot(current, roomView));
 ```
+
+### Scenario: Room Patch Continuity
+
+#### 1. Scope / Trigger
+- Trigger: adding or changing any lightweight `room:patch` payload, room patch reducer, socket patch listener, or backend room patch emission path.
+- Room patches are incremental realtime state, not authoritative snapshots. They must be cheap to apply, idempotent, and recoverable when a client misses a patch.
+
+#### 2. Signatures
+- Backend patch payloads include `{ roomCode, eventId, type, baseRevision, revision, ...patchFields }`.
+- Full room views include `revision` so the client knows the latest patch stream position after `room:update`, `room:resume`, or `match:found`.
+- `applyRoomPatch(currentRoom, patch)` returns the room object to store in state.
+- `roomPatchNeedsResume(currentRoom, patch)` returns `true` when a patch is for the current room but its revision does not continue from the current room revision.
+- `roomPatchCanUpdate(currentRoom, patch)` returns `true` only when the patch targets the current room, has a known patch type, is not stale, and has the minimum type-specific payload needed to change state.
+- Installed socket handlers must emit `room:resume` when `roomPatchNeedsResume(...)` is true.
+- Current lightweight patch types are `chat:append` and `presence:update`.
+
+#### 3. Contracts
+- `server/roomBroadcasts.js` owns patch revision metadata. Individual socket event modules should pass the domain patch shape, not hand-roll `eventId`, `baseRevision`, or `revision`.
+- Patch revisions are monotonic per room. A patch with `revision <= currentRoom.revision` is duplicate or stale and must not be applied.
+- A patch with `baseRevision !== currentRoom.revision` and `revision > currentRoom.revision` indicates a gap. The client must reject it and request `room:resume`.
+- Legacy patches without `revision` may still be applied by type-specific reducers for backward-compatible tests or narrow mocks, but new runtime patches must carry revision fields.
+- Patch reducers must preserve unchanged room slices, especially `game` and `players`, so chat/request patches do not cause board or timer panels to re-render.
+- Socket patch handlers must check `roomPatchCanUpdate(...)` before calling `setRoom`; wrong-room, missing-room, unknown, stale, duplicate, and malformed patches should not schedule React state work.
+- `presence:update` patches may replace `players`, `spectatorCount`, `spectators`, and `chat`, but must not carry or replace `game`; connection changes, spectator membership, and connection system messages should not repaint the board. Their reducers should structurally share unchanged player, spectator, and chat entries so only changed member rows or player panels receive new object references.
+- If a full `room:update` already includes the same mutation that a following continuous patch carries, the patch reducer must still advance `room.revision` so the next patch is not treated as a gap.
+- Full `room:update` and `room:resume` remain authoritative. Patch recovery should request a snapshot rather than trying to infer missing intermediate state.
+
+#### 4. Validation & Error Matrix
+- Patch is for another room code -> ignore it and do not request resume.
+- Patch is for no current room -> ignore it and do not call `setRoom`.
+- Patch has no revision -> apply only if its type-specific reducer can do so idempotently.
+- Patch revision is equal to or below current revision -> ignore as duplicate/stale.
+- Patch base revision differs from current revision while patch revision is newer -> reject patch and emit `room:resume`.
+- Patch type is unknown -> ignore it without mutating state.
+- Current room is null -> ignore patch because there is no local target for continuity checks.
+- Continuous `chat:append` patch contains a message that already exists in a just-applied full snapshot -> advance revision without duplicating the message.
+- Continuous `presence:update` patch after a direct reconnect snapshot -> advance revision and keep the authoritative `game` object from the snapshot.
+
+#### 5. Good/Base/Bad Cases
+- Good: `chat:append` with `baseRevision: 2` and `revision: 3` appends one message, stores `revision: 3`, and preserves the existing `game` object.
+- Good: `presence:update` with `baseRevision: 3` and `revision: 4` updates connection flags, spectators, and system chat while preserving `room.game` and unchanged member/chat entry references.
+- Base: duplicate `chat:append` with the same message id or same revision returns the current room object.
+- Bad: applying a patch with `baseRevision: 4` while the client room is at `revision: 1`, because that can hide missed moves, request state, or chat entries.
+- Bad: using a full `room:update` broadcast for disconnect/reconnect or spectator membership changes after a socket has already received its direct authoritative snapshot.
+- Bad: calling `setRoom((current) => ({ ...current, chat: nextChat }))` directly from a socket listener without using the shared reducer and gap check.
+
+#### 6. Tests Required
+- `src/app/roomPatch.test.js` must cover continuous patch application, duplicate/stale patch ignoring, unknown/wrong-room patch ignoring, and gap detection.
+- Patch scheduling tests must assert `roomPatchCanUpdate()` rejects missing-room, wrong-room, stale, unknown, and malformed patches before React state setters are called.
+- Presence patch tests must assert `presence:update` preserves `game`, structurally shares unchanged member/chat entries, updates changed slices, and advances revision when a direct snapshot already contains the same mutation.
+- `src/app/socketHandlers.test.js` must assert gapped installed patch listeners emit `room:resume` and do not call `setRoom`.
+- Backend broadcast tests must assert patch payloads include `eventId`, `baseRevision`, and `revision`, and that the room revision increments before persistence.
+- Backend room socket tests must assert join/resume/leave/disconnect connection changes use `broadcastRoomPresencePatch` instead of full room broadcasts.
+- Room factory, view, and persistence tests must assert room `revision` is created, exposed in views, persisted, and hydrated with a safe default for older snapshots.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+socket.on("room:patch", (patch) => {
+  setRoom((current) => ({ ...current, chat: [...current.chat, patch.message] }));
+});
+```
+
+This applies patches even when the client missed an earlier patch and can re-render unchanged room slices unnecessarily.
+
+Correct:
+
+```js
+socket.on("room:patch", (patch) => {
+  handlers.roomPatch(patch, () => socket.emit("room:resume", buildRoomResumeRequest()));
+});
+```
+
+`handlers.roomPatch` checks revision continuity before calling `applyRoomPatch`, and requests the authoritative snapshot when continuity is broken.
 
 ### Scenario: App Overlay Visibility State
 
@@ -400,6 +602,8 @@ const { room, setRoom, replayStep, setReplayStep, resultModalOpen } = useRoomSes
 - `useMatchSessionState()` returns `matchStart`, `matchSuccess`, `isMatchPending`, `isMatchTransitioning`, `setMatchStart`, and `setMatchSuccess`.
 - `initialMatchSessionState()` returns the default match state.
 - `matchSessionView(state)` derives booleans from the two transition fields.
+- `normalizeMatchStart(payload)` returns `{ startedAt, mode }` with missing mode normalized to `spark`.
+- `sameMatchStart(current, next)` checks whether a repeated waiting payload can keep the current object.
 
 #### 3. Contracts
 - `App.jsx` should read match transition fields from `useMatchSessionState()` instead of adding separate top-level state for pending or successful match transitions.
@@ -407,21 +611,27 @@ const { room, setRoom, replayStep, setReplayStep, resultModalOpen } = useRoomSes
 - `matchSuccess` owns the success transition payload and should remain either `null` or `{ startedAt, room }`.
 - `isMatchPending` and `isMatchTransitioning` are derived state; do not store them independently.
 - `matchSuccessRef` still mirrors `matchSuccess` through `useSyncedRefs()` for socket room-update synchronization.
+- `socketHandlers.matchWaiting(payload)` should write through a functional setter and return the current `matchStart` object when `startedAt` and `mode` are unchanged.
 
 #### 4. Validation & Error Matrix
 - No `matchStart` and no `matchSuccess` -> no match modal.
 - `matchStart` present -> waiting modal can render mode and start time.
+- Repeated `match:waiting` with the same `startedAt` and mode -> keep the current `matchStart` object.
+- Missing waiting mode -> normalize to `spark`.
 - `matchSuccess` present -> success transition can complete into the pending room.
 - Room resume or auth reset -> both match fields must be cleared.
 
 #### 5. Good/Base/Bad Cases
 - Good: `const { matchStart, setMatchStart, matchSuccess, setMatchSuccess } = useMatchSessionState();`
+- Good: duplicate `match:waiting` payloads from reconnect do not recreate the waiting-modal payload object.
 - Base: `AppOverlays` can continue receiving `matchStart` and `matchSuccess` separately while the shell boundary is gradually narrowed.
 - Bad: adding a separate `const [isMatching, setIsMatching] = useState(false);`.
+- Bad: `setMatchStart({ startedAt, mode })` for every waiting payload because unchanged server notifications still re-render the match waiting overlay.
 - Bad: treating `matchSuccessRef.current` as a source of truth after `matchSuccess` has been cleared.
 
 #### 6. Tests Required
 - `src/app/useMatchSessionState.test.js` should cover default state and derived pending/transition flags.
+- `src/app/socketHandlers.test.js` should assert waiting payload normalization and stable-object behavior for duplicate `match:waiting` payloads.
 - `src/app/matchTransition.test.js`, `src/app/socketHandlers.test.js`, `src/app/sessionState.test.js`, and `src/app/resumeSession.test.js` should be run after changing match transition behavior.
 
 #### 7. Wrong vs Correct
@@ -440,12 +650,46 @@ Correct:
 const { matchStart, matchSuccess, setMatchStart, setMatchSuccess } = useMatchSessionState();
 ```
 
+### Scenario: Incoming Duel Request State
+
+#### 1. Scope / Trigger
+- Trigger: handling `duel:incoming` or `duel:closed` socket payloads, changing the direct-duel banner, or changing the synthesized doorbell sound trigger.
+- Incoming duel requests are transient app shell state. The socket payload can be repeated around reconnect or delivery retries, so duplicate request ids must not retrigger the banner or sound.
+
+#### 2. Signatures
+- `incomingDuelRef` mirrors the current `incomingDuel` app state through `useSyncedRefs()`.
+- `socketHandlers.duelIncoming(request)` stores a new request only when `sameDuelRequest(incomingDuelRef.current, request)` is false.
+- `sameDuelRequest(current, next)` compares `requestId`.
+
+#### 3. Contracts
+- `App.jsx` should pass `incomingDuelRef` into `useGameSocketConnection()` alongside the setter.
+- `duel:incoming` should update `incomingDuelRef.current` immediately before calling `setIncomingDuel(request)`, so back-to-back duplicate socket payloads are suppressed before React commits the state update.
+- Doorbell SFX should play only for a newly accepted incoming request id.
+- `duel:closed` should clear `incomingDuelRef.current` when the closed request id matches the current banner request.
+- Do not put sound playback inside a React state updater; updater functions must stay pure.
+
+#### 4. Validation & Error Matrix
+- First `duel:incoming` for `requestId: "a"` -> set the banner request and play the doorbell once.
+- Repeated `duel:incoming` for `requestId: "a"` while the banner is already current -> no setter call and no sound.
+- `duel:incoming` for a different request id -> replace the banner and play the doorbell.
+- `duel:closed` for the current request id -> clear both the ref and the visible banner through the existing functional setter.
+- `duel:closed` for an old request id -> leave the current banner alone.
+
+#### 5. Good/Base/Bad Cases
+- Good: a reconnect replay of the same direct-duel request does not animate the banner or replay the doorbell.
+- Base: a new friend duel request still interrupts the current banner because it has a different `requestId`.
+- Bad: `setIncomingDuel(request); playDoorbellSound(...)` for every incoming payload because repeated packets can cause duplicate UI and audio work.
+
+#### 6. Tests Required
+- `src/app/socketHandlers.test.js` must assert new incoming duel requests set state and play audio, duplicate request ids are ignored before scheduling state, and matching close events clear the ref.
+
 ---
 
 ## Common Mistakes
 
 - Treating room snapshot rating/rank changes as account reward events. Mode-specific stats can differ across spark, standard, and gomoku, so changing modes can make the current player's displayed rating/rank change without any game settlement.
-- Bypassing `applyRoomSnapshot` for full same-room `room:update` payloads. This loses structural sharing and makes memoized board/player consumers work harder.
+- Bypassing `applyRoomSnapshot` for full same-room `room:update`, live `room:resume`, or pending match-success room payloads. This loses structural sharing and makes memoized board/player consumers work harder.
 - Adding app-level modal flags directly to `App.jsx` instead of extending `useOverlayState()`.
 - Storing `resultModalOpen` as independent state instead of deriving it from `useRoomSessionState()`.
 - Adding independent match booleans instead of deriving them from `useMatchSessionState()`.
+- Replaying direct-duel banner state or doorbell audio for the same `requestId` instead of suppressing duplicate `duel:incoming` payloads through `incomingDuelRef`.

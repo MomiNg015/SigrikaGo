@@ -27,10 +27,12 @@ const ROOT_STYLE_IMPORTS = [
 const DOMAIN_STYLE_FILES = new Set(ROOT_STYLE_IMPORTS.map((importPath) => basename(importPath)));
 const SECONDARY_ENTRY_STYLE_FILES = new Set(["mobile-adaptive.css"]);
 const DOMAIN_STYLE_DIRECTORIES = new Set([
+  "admin",
   "base",
   "commerce",
   "home-terminal",
   "hud-components",
+  "lobby",
   "mobile-adaptive",
   "mobile-home",
   "mobile-modals",
@@ -43,9 +45,47 @@ const DOMAIN_STYLE_DIRECTORIES = new Set([
 ]);
 const TEST_STYLE_FILES = new Set(["hudComponents.test.js", "styleContract.test.js", "themeContract.test.js"]);
 const DOCUMENTATION_FILES = new Set(["README.md"]);
+const CSS_SIZE_GUARD_BYTES = 6000;
+const KNOWN_OVERSIZED_CSS_FILES = new Map([
+  ["base/home-legacy-grid.css", 6736],
+  ["base/home-stage-artboard.css", 8657],
+  ["hud-components/pop-tech-terminal.css", 8513],
+  ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
+  ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
+  ["mobile-adaptive/mobile-profile-records.css", 6842],
+  ["mobile-adaptive/phone-core.css", 6228],
+  ["mobile-adaptive/phone-gacha.css", 6147],
+  ["mobile-modals/phone-house-resume.css", 6956],
+  ["mobile-room/portrait-room.css", 7502],
+  ["modals/character-opening.css", 6330],
+  ["responsive/phone-portrait-room.css", 6803],
+  ["room-terminal/players-timers-skills.css", 7414],
+  ["room/actions-requests.css", 6204],
+  ["room/board/stones-skill-effects.css", 6837],
+  ["themes/bright-school/component-repairs/foundation-home.css", 6973],
+  ["themes/bright-school/component-repairs/notebook-polish.css", 6408],
+  ["themes/bright-school/component-repairs/warehouse-character.css", 8413],
+  ["themes/bright-school/mobile/room/dock-actions.css", 6459],
+  ["themes/bright-school/mobile/room/shell-header-menu.css", 6872],
+  ["themes/bright-school/mobile/room/viewport-player-strips.css", 7109],
+  ["themes/bright-school/quality-base/refinement-board.css", 6997],
+  ["themes/shared.css", 7647],
+  ["themes/theme-components.css", 7012]
+]);
 
 function cssImports(source) {
   return [...source.matchAll(/@import\s+"([^"]+)";/g)].map((match) => match[1]);
+}
+
+function concreteCssAfterImports(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/@import\s+"[^"]+";\s*/g, "")
+    .trim();
+}
+
+function normalizedCssSize(source) {
+  return Buffer.byteLength(source.replace(/\r\n/g, "\n"), "utf8");
 }
 
 function cssFilesUnder(dir) {
@@ -78,6 +118,48 @@ describe("root CSS entry contract", () => {
     });
 
     expect(unexpectedFiles).toEqual([]);
+  });
+
+  it("keeps CSS files with imports as import-only entries", () => {
+    const filesWithMixedImports = cssFilesUnder(stylesDir)
+      .map((filePath) => {
+        const source = readFileSync(filePath, "utf8");
+
+        return {
+          path: relative(stylesDir, filePath).replaceAll("\\", "/"),
+          hasImports: cssImports(source).length > 0,
+          concreteCss: concreteCssAfterImports(source)
+        };
+      })
+      .filter(({ hasImports, concreteCss }) => hasImports && concreteCss.length > 0)
+      .map(({ path }) => path);
+
+    expect(filesWithMixedImports).toEqual([]);
+  });
+
+  it("prevents new oversized CSS files and growth in known CSS debt files", () => {
+    const oversizedCssFiles = cssFilesUnder(stylesDir)
+      .map((filePath) => {
+        const source = readFileSync(filePath, "utf8");
+
+        return {
+          path: relative(stylesDir, filePath).replaceAll("\\", "/"),
+          bytes: normalizedCssSize(source)
+        };
+      })
+      .filter(({ bytes }) => bytes >= CSS_SIZE_GUARD_BYTES);
+
+    const unexpectedOversizedFiles = oversizedCssFiles.filter(({ path }) => !KNOWN_OVERSIZED_CSS_FILES.has(path));
+    const expandedKnownDebtFiles = oversizedCssFiles
+      .filter(({ path, bytes }) => {
+        const currentLimit = KNOWN_OVERSIZED_CSS_FILES.get(path);
+
+        return currentLimit !== undefined && bytes > currentLimit;
+      })
+      .map(({ path, bytes }) => ({ path, bytes, limit: KNOWN_OVERSIZED_CSS_FILES.get(path) }));
+
+    expect(unexpectedOversizedFiles).toEqual([]);
+    expect(expandedKnownDebtFiles).toEqual([]);
   });
 
   it("keeps mobile-adaptive.css as the final theme entry safety layer", () => {
@@ -123,6 +205,38 @@ describe("root CSS entry contract", () => {
     expect(baseEntry).not.toContain(".message-board-modal {");
   });
 
+  it("keeps admin.css as an import-only admin console entry", () => {
+    const adminEntry = readFileSync(new URL("./admin.css", import.meta.url), "utf8");
+
+    expect(cssImports(adminEntry)).toEqual([
+      "./admin/shell-layout.css",
+      "./admin/shared-surfaces.css",
+      "./admin/characters.css",
+      "./admin/audit-feedback.css",
+      "./admin/gacha.css",
+      "./admin/achievements.css",
+      "./admin/responsive.css"
+    ]);
+    expect(adminEntry).not.toContain(".admin-screen {");
+    expect(adminEntry).not.toContain(".admin-table {");
+    expect(adminEntry).not.toContain(".admin-gacha-board");
+  });
+
+  it("keeps lobby.css as an import-only lobby and house entry", () => {
+    const lobbyEntry = readFileSync(new URL("./lobby.css", import.meta.url), "utf8");
+
+    expect(cssImports(lobbyEntry)).toEqual([
+      "./lobby/panels-profile.css",
+      "./lobby/characters.css",
+      "./lobby/match-watch-entry.css",
+      "./lobby/watch-list.css",
+      "./lobby/watch-list-responsive.css"
+    ]);
+    expect(lobbyEntry).not.toContain(".profile-grid {");
+    expect(lobbyEntry).not.toContain(".character-list {");
+    expect(lobbyEntry).not.toContain(".watch-list-modal");
+  });
+
   it("keeps the mobile interaction safety layer touch friendly", () => {
     const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
     const touchConfirmBlock = mobileCss.match(/\.point\.touch-confirming\s*\{[^}]+\}/)?.[0] ?? "";
@@ -162,6 +276,27 @@ describe("root CSS entry contract", () => {
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
   });
 
+  it("keeps mobile room portrait safety styles as an import-only sub-entry", () => {
+    const mobileRoomPortraitEntry = readFileSync(
+      new URL("./mobile-adaptive/mobile-room-portrait.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(mobileRoomPortraitEntry)).toEqual([
+      "./mobile-room-portrait/shell-header-menu.css",
+      "./mobile-room-portrait/neutral-chrome-reset.css",
+      "./mobile-room-portrait/viewport-shell.css",
+      "./mobile-room-portrait/player-strips.css",
+      "./mobile-room-portrait/board-viewport.css",
+      "./mobile-room-portrait/dock-panels.css",
+      "./mobile-room-portrait/action-decision-controls.css"
+    ]);
+    expect(mobileRoomPortraitEntry).not.toContain(".mobile-room-screen {");
+    expect(mobileRoomPortraitEntry).not.toContain(".player-info {");
+    expect(mobileRoomPortraitEntry).not.toContain(".mobile-tab-panel .action-bar");
+    expect(mobileRoomPortraitEntry).not.toContain("@media (max-width");
+  });
+
   it("keeps Bright School mobile overrides as an import-only guard entry", () => {
     const brightSchoolOverridesEntry = readFileSync(
       new URL("./mobile-adaptive/bright-school-overrides.css", import.meta.url),
@@ -179,6 +314,62 @@ describe("root CSS entry contract", () => {
     expect(brightSchoolOverridesEntry).not.toContain(".home-mobile-menu-panel");
     expect(brightSchoolOverridesEntry).not.toContain(".character-record-dialog");
     expect(brightSchoolOverridesEntry).not.toContain(".leaderboard-row");
+  });
+
+  it("keeps Bright School mobile profile-house-records as an import-only guard sub-entry", () => {
+    const profileHouseRecordsEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-overrides/profile-house-records.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(profileHouseRecordsEntry)).toEqual([
+      "./profile-house-records/house-profile-stats.css",
+      "./profile-house-records/profile-resume-stats.css",
+      "./profile-house-records/character-record-dialog.css",
+      "./profile-house-records/resume-character-records.css"
+    ]);
+    expect(profileHouseRecordsEntry).not.toContain(".profile-grid.top-stats-bar");
+    expect(profileHouseRecordsEntry).not.toContain(".character-record-dialog");
+    expect(profileHouseRecordsEntry).not.toContain(".resume-character-records");
+    expect(profileHouseRecordsEntry).not.toContain("@media (max-width");
+  });
+
+  it("keeps Bright School narrow desktop home safety as an import-only guard entry", () => {
+    const homeNarrowDesktopEntry = readFileSync(
+      new URL("./mobile-adaptive/home-narrow-desktop.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(homeNarrowDesktopEntry)).toEqual([
+      "./home-narrow-desktop/region-reset.css",
+      "./home-narrow-desktop/wide-stage.css",
+      "./home-narrow-desktop/compact-stage.css",
+      "./home-narrow-desktop/micro-stage-scroll.css",
+      "./home-narrow-desktop/short-height-stack.css"
+    ]);
+    expect(homeNarrowDesktopEntry).not.toContain(".home-player-zone");
+    expect(homeNarrowDesktopEntry).not.toContain(".home-grid-featured.home-stage");
+    expect(homeNarrowDesktopEntry).not.toContain("@media (min-width");
+  });
+
+  it("keeps Bright School portrait as an import-only final guard entry", () => {
+    const brightSchoolPortraitEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-portrait.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(brightSchoolPortraitEntry)).toEqual([
+      "./bright-school-portrait/resume-modal-layout.css",
+      "./bright-school-portrait/resume-character-records.css",
+      "./bright-school-portrait/home-player-plaque.css",
+      "./bright-school-portrait/shop-wallet.css",
+      "./bright-school-portrait/settings-tabs.css",
+      "./bright-school-portrait/mobile-room-chat.css",
+      "./bright-school-portrait/character-detail.css"
+    ]);
+    expect(brightSchoolPortraitEntry).not.toContain(".resume-header-actions {");
+    expect(brightSchoolPortraitEntry).not.toContain(".mobile-room-screen .chat-popover");
+    expect(brightSchoolPortraitEntry).not.toContain(".character-detail-heading");
   });
 
   it("keeps nested CSS files under approved domain entry maps", () => {
@@ -222,6 +413,60 @@ describe("root CSS entry contract", () => {
     expect(shopSettingsEntry).not.toContain(".warehouse-grid {");
   });
 
+  it("keeps commerce gacha.css as an import-only commerce sub-entry", () => {
+    const gachaEntry = readFileSync(new URL("./commerce/gacha.css", import.meta.url), "utf8");
+
+    expect(cssImports(gachaEntry)).toEqual([
+      "./gacha/modal-tabs.css",
+      "./gacha/featured-stack.css",
+      "./gacha/machine-stage.css",
+      "./gacha/featured-prize.css",
+      "./gacha/control-panel.css",
+      "./gacha/list-result-dialogs.css",
+      "./gacha/animations.css"
+    ]);
+    expect(gachaEntry).not.toContain(".gacha-modal {");
+    expect(gachaEntry).not.toContain(".gacha-main {");
+    expect(gachaEntry).not.toContain(".gacha-result-card");
+    expect(gachaEntry).not.toContain("@keyframes gacha-drum-spin");
+  });
+
+  it("keeps commerce social-profile.css as an import-only commerce sub-entry", () => {
+    const socialProfileEntry = readFileSync(new URL("./commerce/social-profile.css", import.meta.url), "utf8");
+
+    expect(cssImports(socialProfileEntry)).toEqual([
+      "./social-profile/modal-shells.css",
+      "./social-profile/friends-toolbar-search.css",
+      "./social-profile/friends-list-status.css",
+      "./social-profile/friend-actions-notices.css",
+      "./social-profile/duel-request-banner.css",
+      "./social-profile/leaderboard-table.css",
+      "./social-profile/owned-decoration-section.css"
+    ]);
+    expect(socialProfileEntry).not.toContain(".friends-row {");
+    expect(socialProfileEntry).not.toContain(".duel-request-banner {");
+    expect(socialProfileEntry).not.toContain(".leaderboard-table {");
+    expect(socialProfileEntry).not.toContain("@keyframes duel-request-drop");
+  });
+
+  it("keeps commerce terminal-polish.css as an import-only commerce sub-entry", () => {
+    const terminalPolishEntry = readFileSync(new URL("./commerce/terminal-polish.css", import.meta.url), "utf8");
+
+    expect(cssImports(terminalPolishEntry)).toEqual([
+      "./terminal-polish/headers-profile.css",
+      "./terminal-polish/character-cards.css",
+      "./terminal-polish/shop-shell-tabs.css",
+      "./terminal-polish/item-cards-empty.css",
+      "./terminal-polish/lists-status.css",
+      "./terminal-polish/settings-warehouse-target.css",
+      "./terminal-polish/compact-phone.css"
+    ]);
+    expect(terminalPolishEntry).not.toContain(".leaderboard-header,");
+    expect(terminalPolishEntry).not.toContain(".shop-modal {");
+    expect(terminalPolishEntry).not.toContain(".leaderboard-row,");
+    expect(terminalPolishEntry).not.toContain("@media (max-width");
+  });
+
   it("keeps responsive.css as an import-only breakpoint entry", () => {
     const responsiveEntry = readFileSync(new URL("./responsive.css", import.meta.url), "utf8");
 
@@ -252,6 +497,23 @@ describe("root CSS entry contract", () => {
     expect(mobileRoomEntry).not.toContain(".mobile-room-screen {");
     expect(mobileRoomEntry).not.toContain(".mobile-room-viewport {");
     expect(mobileRoomEntry).not.toContain(".mobile-tab-panel .action-bar");
+  });
+
+  it("keeps mobile room base shell and dock styles as an import-only sub-entry", () => {
+    const baseShellDockEntry = readFileSync(new URL("./mobile-room/base-shell-dock.css", import.meta.url), "utf8");
+
+    expect(cssImports(baseShellDockEntry)).toEqual([
+      "./base-shell-dock/shell-header-menu.css",
+      "./base-shell-dock/flat-control-reset.css",
+      "./base-shell-dock/viewport-dock-shell.css",
+      "./base-shell-dock/player-timer-strip.css",
+      "./base-shell-dock/board-viewport.css",
+      "./base-shell-dock/dock-tabs-actions.css",
+      "./base-shell-dock/decision-chat-panel.css"
+    ]);
+    expect(baseShellDockEntry).not.toContain(".mobile-room-screen {");
+    expect(baseShellDockEntry).not.toContain(".mobile-room-viewport {");
+    expect(baseShellDockEntry).not.toContain(".mobile-tab-panel .action-bar");
   });
 
   it("keeps mobile-home.css as an import-only mobile lobby entry", () => {
@@ -302,6 +564,25 @@ describe("root CSS entry contract", () => {
     expect(hudEntry).not.toContain(".character-chain-badge");
   });
 
+  it("keeps HUD hardening as an import-only component sub-entry", () => {
+    const hudHardeningEntry = readFileSync(new URL("./hud-components/hud-hardening.css", import.meta.url), "utf8");
+
+    expect(cssImports(hudHardeningEntry)).toEqual([
+      "./hud-hardening/tokens-shell-scrollbars.css",
+      "./hud-hardening/inputs-settings-auth.css",
+      "./hud-hardening/inventory-state-tags.css",
+      "./hud-hardening/home-hologram-entries.css",
+      "./hud-hardening/character-deploy-detail.css",
+      "./hud-hardening/shop-pagination-owned.css",
+      "./hud-hardening/warehouse-surfaces.css",
+      "./hud-hardening/friend-actions.css"
+    ]);
+    expect(hudHardeningEntry).not.toContain(":root {");
+    expect(hudHardeningEntry).not.toContain(".login-card-container");
+    expect(hudHardeningEntry).not.toContain(".character-detail");
+    expect(hudHardeningEntry).not.toContain(".shop-pagination button");
+  });
+
   it("keeps room.css as an import-only domain entry", () => {
     const roomEntry = readFileSync(new URL("./room.css", import.meta.url), "utf8");
 
@@ -316,6 +597,43 @@ describe("root CSS entry contract", () => {
     expect(roomEntry).not.toContain(".battle-layout {");
     expect(roomEntry).not.toContain(".board {");
     expect(roomEntry).not.toContain(".chat-widget {");
+  });
+
+  it("keeps room board styles as an import-only board sub-entry", () => {
+    const boardEntry = readFileSync(new URL("./room/board.css", import.meta.url), "utf8");
+
+    expect(cssImports(boardEntry)).toEqual([
+      "./board/frame-coordinates.css",
+      "./board/row-slash.css",
+      "./board/ambient-fog.css",
+      "./board/effects-canvas-motion.css",
+      "./board/points-preview.css",
+      "./board/stones-skill-effects.css",
+      "./board/latest-touch-void.css",
+      "./board/grid-scoring.css"
+    ]);
+    expect(boardEntry).not.toContain(".board-wrap {");
+    expect(boardEntry).not.toContain(".board-row-slash {");
+    expect(boardEntry).not.toContain(".point {");
+    expect(boardEntry).not.toContain(".board-lines {");
+  });
+
+  it("keeps room players, timers, and skills as an import-only room sub-entry", () => {
+    const playersTimersSkillsEntry = readFileSync(new URL("./room/players-timers-skills.css", import.meta.url), "utf8");
+
+    expect(cssImports(playersTimersSkillsEntry)).toEqual([
+      "./players-timers-skills/side-layout.css",
+      "./players-timers-skills/player-card.css",
+      "./players-timers-skills/captures-tooltips.css",
+      "./players-timers-skills/timers.css",
+      "./players-timers-skills/skill-chips.css",
+      "./players-timers-skills/mobile-tap-tooltip.css",
+      "./players-timers-skills/color-badges.css"
+    ]);
+    expect(playersTimersSkillsEntry).not.toContain(".player-info {");
+    expect(playersTimersSkillsEntry).not.toContain(".timer {");
+    expect(playersTimersSkillsEntry).not.toContain(".skill-chip");
+    expect(playersTimersSkillsEntry).not.toContain(".mobile-tap-tooltip");
   });
 
   it("keeps room-terminal.css as an import-only battlefield skin entry", () => {
@@ -365,5 +683,43 @@ describe("root CSS entry contract", () => {
     expect(modalsEntry).not.toContain(".modal-backdrop {");
     expect(modalsEntry).not.toContain(".resume-modal {");
     expect(modalsEntry).not.toContain(".character-detail {");
+  });
+
+  it("keeps terminal modal system styles as an import-only sub-entry", () => {
+    const terminalSystemEntry = readFileSync(new URL("./modals/terminal-system.css", import.meta.url), "utf8");
+
+    expect(cssImports(terminalSystemEntry)).toEqual([
+      "./terminal-system/tokens-backdrop.css",
+      "./terminal-system/modal-chrome.css",
+      "./terminal-system/close-header-actions.css",
+      "./terminal-system/terminal-buttons.css",
+      "./terminal-system/replay-profile-surfaces.css",
+      "./terminal-system/result-modal.css",
+      "./terminal-system/outcomes-resume-actions.css"
+    ]);
+    expect(terminalSystemEntry).not.toContain(":root {");
+    expect(terminalSystemEntry).not.toContain(".small-modal,");
+    expect(terminalSystemEntry).not.toContain(".primary-action,");
+    expect(terminalSystemEntry).not.toContain(".result-modal.black-win");
+  });
+
+  it("keeps replay, mode, resume, achievement, and personalization modal styles as an import-only sub-entry", () => {
+    const replayModeResumeEntry = readFileSync(new URL("./modals/replay-mode-resume.css", import.meta.url), "utf8");
+
+    expect(cssImports(replayModeResumeEntry)).toEqual([
+      "./replay-mode-resume/replay-list-table.css",
+      "./replay-mode-resume/resume-header-actions.css",
+      "./replay-mode-resume/match-mode-tabs.css",
+      "./replay-mode-resume/resume-modal-layout.css",
+      "./replay-mode-resume/achievement-modal.css",
+      "./replay-mode-resume/personalization-preview-grid.css",
+      "./replay-mode-resume/personalization-picker.css",
+      "./replay-mode-resume/resume-character-records.css"
+    ]);
+    expect(replayModeResumeEntry).not.toContain(".replay-list {");
+    expect(replayModeResumeEntry).not.toContain(".resume-modal {");
+    expect(replayModeResumeEntry).not.toContain(".achievement-modal,");
+    expect(replayModeResumeEntry).not.toContain(".personalization-modal {");
+    expect(replayModeResumeEntry).not.toContain(".resume-character-records {");
   });
 });

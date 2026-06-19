@@ -1,0 +1,123 @@
+/* Replay lists, mode picker, resume header, and embedded character records. */
+.replay-list {
+  margin-top: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.replay-list h3 {
+  margin: 0;
+}
+
+.replay-item {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #fff;
+  color: #2d2430;
+  padding: 12px;
+}
+
+.replay-item span {
+  color: #7d6a82;
+}
+
+.replay-table {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+  min-width: min(720px, 100%);
+}
+
+.replay-table-heading,
+.replay-table-row {
+  display: grid;
+  grid-template-columns: 108px minmax(130px, 1.15fr) minmax(130px, 1.15fr) minmax(110px, 0.9fr) 64px;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.replay-table-heading {
+  padding: 0 10px;
+  color: #7d6a82;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.replay-table-row {
+  min-height: 54px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #2d2430;
+}
+
+.replay-table-row.outcome-win {
+  border-color: #bce8ca;
+  background: linear-gradient(135deg, #ecfff1, #f7fff9);
+}
+
+.replay-table-row.outcome-loss {
+  border-color: #d8d8de;
+  background: linear-gradient(135deg, #f1f2f4, #fafafa);
+}
+
+.replay-table-row.outcome-draw {
+  border-color: #ecd179;
+  background: linear-gradient(135deg, #fff4bd, #fffbe7);
+}
+
+.replay-player-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  gap: 6px;
+}
+
+.replay-player-cell img {
+  width: 34px;
+  height: 30px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.replay-player-cell b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.replay-table.compact {
+  min-width: 0;
+}
+
+.replay-table.compact .replay-table-heading,
+.replay-table.compact .replay-table-row {
+  grid-template-columns: 84px minmax(92px, 1fr) minmax(92px, 1fr) minmax(86px, 0.8fr) 52px;
+  font-size: 12px;
+}
+
+.replay-open-button {
+  margin-top: 16px;
+  border: 1px solid #d7cae0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: #ffffff;
+  color: #4f3d55;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.house-header .replay-open-button {
+  margin-top: 0;
+  padding: 9px 13px;
+}

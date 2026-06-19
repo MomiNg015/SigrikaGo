@@ -2,6 +2,8 @@ export function createRoomRuntime({
   prisma,
   persistRoomState,
   broadcastRoomUpdate,
+  broadcastRoomPatch: broadcastRoomPatchEvent,
+  broadcastRoomPresencePatch: broadcastRoomPresencePatchEvent,
   broadcastRoomToast,
   throttleMs,
   onPersistError = (error) => {
@@ -22,6 +24,14 @@ export function createRoomRuntime({
     broadcastRoomUpdate(io, room, { persistRoom });
   }
 
+  function broadcastRoomPatch(io, room, patch) {
+    broadcastRoomPatchEvent(io, room, patch, { persistRoom });
+  }
+
+  function broadcastRoomPresencePatch(io, room) {
+    broadcastRoomPresencePatchEvent(io, room, { persistRoom });
+  }
+
   function broadcastToast(io, room, text) {
     broadcastRoomToast(io, room, text);
   }
@@ -29,6 +39,8 @@ export function createRoomRuntime({
   return {
     persistRoom,
     broadcastRoom,
+    broadcastRoomPatch,
+    broadcastRoomPresencePatch,
     broadcastToast
   };
 }

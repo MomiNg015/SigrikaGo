@@ -1,4 +1,4 @@
-export const SEARCH_USERNAME_MAX_WIDTH = 10;
+export const SEARCH_USERNAME_MAX_WIDTH = 8;
 export const SEARCH_USERNAME_MAX_LENGTH = SEARCH_USERNAME_MAX_WIDTH;
 export const SEARCH_USERNAME_DISALLOWED = /[^\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}A-Za-z0-9_]/gu;
 const CJK_USERNAME_CHAR = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]$/u;

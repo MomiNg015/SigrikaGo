@@ -65,6 +65,30 @@ export default function RoomBattleStage({
     layerCounterRef.current = nextZ;
     setFloatingLayers((current) => ({ ...current, [layerId]: nextZ }));
   }, []);
+  const handleNeutralPoint = useCallback((id) => {
+    onScoringAction({ type: "mark-neutral", pointId: id });
+  }, [onScoringAction]);
+  const handleMembersFloatingLayer = useCallback(() => {
+    bringFloatingLayerToFront("members");
+  }, [bringFloatingLayerToFront]);
+  const handleChatFloatingLayer = useCallback(() => {
+    bringFloatingLayerToFront("chat");
+  }, [bringFloatingLayerToFront]);
+  const handleTestRandomLayout = useCallback(() => {
+    onGameAction({ type: "test-random-layout" });
+  }, [onGameAction]);
+  const handleTestRestoreSkill = useCallback(() => {
+    onGameAction({ type: "test-restore-skill" });
+  }, [onGameAction]);
+  const handleTestEnterByoYomi = useCallback(() => {
+    onGameAction({ type: "test-enter-byo-yomi" });
+  }, [onGameAction]);
+  const handleConfirmScoring = useCallback(() => {
+    onScoringAction({ type: "confirm-dead" });
+  }, [onScoringAction]);
+  const handleResetScoring = useCallback(() => {
+    onScoringAction({ type: "reset-dead" });
+  }, [onScoringAction]);
   const selfPlayer = me ?? displayRoom.players[0];
   const isPlaying = displayRoom.game.phase === "playing";
   const isFinished = displayRoom.game.phase === "finished";
@@ -94,7 +118,7 @@ export default function RoomBattleStage({
       token={token}
       onOpenReplay={onOpenReplay}
       floatingLayerZ={floatingLayers.members}
-      onFloatingLayerRequest={() => bringFloatingLayerToFront("members")}
+      onFloatingLayerRequest={handleMembersFloatingLayer}
     />
   );
   const hintPanel = !isReplay && role === "player" && (
@@ -113,7 +137,7 @@ export default function RoomBattleStage({
         stoneDecorations={stoneDecorationsForRoom(displayRoom)}
         onPoint={handlePoint}
         onScoringPoint={displayRoom.game.phase === "marking-dead" ? handleScoringPoint : null}
-        onNeutral={(id) => onScoringAction({ type: "mark-neutral", pointId: id })}
+        onNeutral={handleNeutralPoint}
         onBoardSurface={handleBoardSurface}
       />
     </div>
@@ -136,26 +160,18 @@ export default function RoomBattleStage({
       hasAnyStones={hasAnyStones}
       opponentConnected={opponentConnected}
       scoring={scoring}
-      drawRequest={drawRequest}
-      drawDeadline={displayRoom.drawDeadline ?? drawRequest?.deadline}
-      countingDeadline={displayRoom.countingDeadline ?? scoring?.deadline}
-      resultDeadline={displayRoom.resultDeadline ?? scoring?.resultDeadline}
       replayStep={boardStep ?? liveStep}
       replayMax={liveStep}
       onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
       showTestTools={SHOW_TEST_TOOLS}
-      onTestRandomLayout={() => onGameAction({ type: "test-random-layout" })}
-      onTestRestoreSkill={() => onGameAction({ type: "test-restore-skill" })}
-      onTestEnterByoYomi={() => onGameAction({ type: "test-enter-byo-yomi" })}
+      onTestRandomLayout={handleTestRandomLayout}
+      onTestRestoreSkill={handleTestRestoreSkill}
+      onTestEnterByoYomi={handleTestEnterByoYomi}
       onPass={onPass}
       onCountingRequest={onCountingRequest}
-      onCountingRespond={onCountingRespond}
       onDrawRequest={onDrawRequest}
-      onDrawRespond={onDrawRespond}
-      onConfirmScoring={() => onScoringAction({ type: "confirm-dead" })}
-      onResetScoring={() => onScoringAction({ type: "reset-dead" })}
-      onAcceptResult={() => onScoringAction({ type: "accept-result" })}
-      onRejectResult={() => onScoringAction({ type: "reject-result" })}
+      onConfirmScoring={handleConfirmScoring}
+      onResetScoring={handleResetScoring}
       onResign={onResign}
     />
   );
@@ -183,7 +199,7 @@ export default function RoomBattleStage({
       onChat={onChat}
       readonly={isReplay}
       floatingLayerZ={floatingLayers.chat}
-      onFloatingLayerRequest={() => bringFloatingLayerToFront("chat")}
+      onFloatingLayerRequest={handleChatFloatingLayer}
     />
   );
 

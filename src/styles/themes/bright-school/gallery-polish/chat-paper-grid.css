@@ -1,0 +1,9 @@
+.app-shell.player-theme-enabled.theme-bright-school .chat-box,
+.app-shell.player-theme-enabled.theme-bright-school .chat-log {
+  background-color: #ffffff !important;
+  background-image:
+    linear-gradient(rgba(154, 211, 222, 0.26) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 211, 222, 0.26) 1px, transparent 1px) !important;
+  background-size: 15px 15px !important;
+  color: #3d2b25 !important;
+}

@@ -25,14 +25,14 @@ describe("deployment security helpers", () => {
   });
 
   it("limits usernames by CJK and half-width display width", () => {
-    expect(usernameDisplayWidth("露露A_1234")).toBe(10);
-    expect(validateUsername("露露A_1234")).toEqual({ ok: true, value: "露露A_1234" });
-    expect(validateUsername("露露Alice_1").ok).toBe(false);
-    expect(validateUsername("一二三四五").ok).toBe(true);
-    expect(validateUsername("一二三四五六").ok).toBe(false);
-    expect(validateUsername("Alice_1234").ok).toBe(true);
-    expect(validateUsername("Alice_12345").ok).toBe(false);
-    expect(validateUsername("かなカナ한").ok).toBe(true);
+    expect(usernameDisplayWidth("\u9732\u9732A_12")).toBe(8);
+    expect(validateUsername("\u9732\u9732A_12")).toEqual({ ok: true, value: "\u9732\u9732A_12" });
+    expect(validateUsername("\u9732\u9732A_123").ok).toBe(false);
+    expect(validateUsername("\u4e00\u4e8c\u4e09\u56db").ok).toBe(true);
+    expect(validateUsername("\u4e00\u4e8c\u4e09\u56db\u4e94").ok).toBe(false);
+    expect(validateUsername("Alice_12").ok).toBe(true);
+    expect(validateUsername("Alice_123").ok).toBe(false);
+    expect(validateUsername("\u304b\u306a\u30ab\u30ca").ok).toBe(true);
   });
 
   it("normalizes chat text without allowing control characters or unbounded length", () => {

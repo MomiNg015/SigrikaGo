@@ -1,0 +1,221 @@
+/* Bright School portrait resume modal layout safety rules. */
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    min-width: max-content !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    justify-self: auto !important;
+    gap: 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions .close-button {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    flex: 0 0 auto !important;
+    transform: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-wallet {
+    flex: 0 0 auto !important;
+    max-width: 92px !important;
+    margin: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-grid.top-stats-bar {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto minmax(0, 1fr) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal .profile-rank-results {
+    grid-column: 1 / -1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records {
+    grid-column: 1 / -1 !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 8px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records > strong {
+    padding-inline: 2px !important;
+    color: #3d2b25 !important;
+    font-size: clamp(18px, 5vw, 22px) !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header {
+    display: grid !important;
+    grid-template-areas:
+      "title close"
+      "links wallet" !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 48%) !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    gap: 8px 10px !important;
+    padding-right: 0 !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header > h2 {
+    grid-area: title !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-title-actions {
+    grid-area: links !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-title-actions .resume-mini-action {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    padding: 7px 10px !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-header-actions {
+    grid-area: wallet !important;
+    grid-column: auto !important;
+    position: static !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-end !important;
+    justify-self: end !important;
+    align-self: center !important;
+    gap: clamp(4px, 1.7vw, 7px) !important;
+    min-width: 0 !important;
+    width: min(100%, max-content) !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-close-button {
+    grid-area: close !important;
+    grid-column: auto !important;
+    position: static !important;
+    inset: auto !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    justify-self: end !important;
+    align-self: center !important;
+    width: var(--modal-close-size, 44px) !important;
+    min-width: var(--modal-close-size, 44px) !important;
+    height: var(--modal-close-size, 44px) !important;
+    min-height: var(--modal-close-size, 44px) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-wallet {
+    flex: 0 1 auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    padding: 7px clamp(6px, 1.9vw, 10px) !important;
+    font-size: clamp(11px, 3.1vw, 13px) !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal > .resume-header {
+    grid-template-areas:
+      "title close"
+      "links wallet" !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 48%) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal > .resume-header > .resume-header-actions {
+    grid-area: wallet !important;
+    grid-column: auto !important;
+    max-width: 100% !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal > .resume-header > .resume-close-button {
+    grid-area: close !important;
+    grid-column: auto !important;
+    display: inline-grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-modal > .achievement-header,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .personalization-modal > .achievement-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) var(--modal-close-size, 44px) !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding-right: 0 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-modal > .achievement-header h2,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .personalization-modal > .achievement-header h2 {
+    min-width: 0 !important;
+    margin: 0 !important;
+    line-height: 1.12 !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-modal > .achievement-header .close-button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .personalization-modal > .achievement-header .close-button {
+    position: static !important;
+    inset: auto !important;
+    justify-self: end !important;
+    align-self: center !important;
+    width: var(--modal-close-size, 44px) !important;
+    min-width: var(--modal-close-size, 44px) !important;
+    height: var(--modal-close-size, 44px) !important;
+    min-height: var(--modal-close-size, 44px) !important;
+    transform: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .personalization-picker-modal .personalization-picker-header .close-button {
+    position: static !important;
+    inset: auto !important;
+    justify-self: end !important;
+    align-self: center !important;
+    transform: none !important;
+  }
+}

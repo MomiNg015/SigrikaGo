@@ -1,0 +1,155 @@
+/* Bright School portrait mobile shop layout and cards. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
+    flex: 0 0 auto !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "bubble mascot"
+      "wallet mascot" !important;
+    gap: 8px 10px !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    padding: 12px !important;
+    border-width: 2px !important;
+    border-radius: 16px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
+    grid-area: bubble !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot {
+    grid-area: mascot !important;
+    width: 88px !important;
+    min-height: 96px !important;
+    height: 96px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img {
+    width: 92px !important;
+    max-height: 102px !important;
+    filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.16)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap {
+    grid-area: wallet !important;
+    align-items: start !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content {
+    flex: 1 1 auto !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    gap: 10px !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs {
+    width: 100% !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs button {
+    min-width: 0 !important;
+    padding: 8px 6px !important;
+    font-size: 13px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-rows: minmax(190px, auto) !important;
+    gap: 10px !important;
+    padding-right: 2px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item {
+    min-width: 0 !important;
+    min-height: 220px !important;
+    height: auto !important;
+    padding: 10px !important;
+    border-width: 2px !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-meta {
+    display: contents !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > strong {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+    text-align: center !important;
+    margin: 6px 0 3px 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > span {
+    font-size: 11px !important;
+    color: #8fa0dd !important;
+    text-align: center !important;
+    margin: 2px 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .shop-price {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    text-align: center !important;
+    margin: 3px 0 6px 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 4px !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .shop-price b {
+    font-size: 15px !important;
+    font-weight: 900 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > img,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > svg,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .stone-decoration-preview {
+    height: 70px !important;
+    min-height: 70px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item > strong {
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-description,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item p {
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-pagination {
+    flex: 0 0 auto !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+}

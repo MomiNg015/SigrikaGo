@@ -14,7 +14,7 @@ describe("AuthScreen submit validation", () => {
   it("rejects registration when password confirmation does not match", () => {
     expect(validateAuthSubmit({
       mode: "register",
-      username: "Alice_123",
+      username: "Alice_12",
       password: "secret1",
       confirmPassword: "secret2"
     })).toEqual({
@@ -31,16 +31,16 @@ describe("AuthScreen submit validation", () => {
   it("allows registration when password confirmation matches", () => {
     expect(validateAuthSubmit({
       mode: "register",
-      username: "Alice_123",
+      username: "Alice_12",
       password: "secret1",
       confirmPassword: "secret1"
     })).toEqual({ ok: true });
   });
 
   it("validates registration fields with the same username and password limits as the server", () => {
-    expect(usernameDisplayWidth("Alice_1234")).toBe(10);
-    expect(validateAuthField("username", "Alice_1234")).toBe("");
-    expect(validateAuthField("username", "Alice_12345")).toContain("2-10");
+    expect(usernameDisplayWidth("Alice_12")).toBe(8);
+    expect(validateAuthField("username", "Alice_12")).toBe("");
+    expect(validateAuthField("username", "Alice_123")).toContain("2-8");
     expect(validateAuthField("username", "bad-name")).toBe("\u7528\u6237\u540d\u4ec5\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf");
     expect(validateAuthField("password", "12345")).toBe("\u5bc6\u7801\u9700\u4e3a 6-14 \u4f4d");
     expect(validateAuthField("password", "123456789012345")).toBe("\u5bc6\u7801\u9700\u4e3a 6-14 \u4f4d");
@@ -75,9 +75,9 @@ describe("AuthScreen submit validation", () => {
   });
 
   it("truncates username input by CJK and half-width display width", () => {
-    expect(truncateUsernameInput("一二三四五六")).toBe("一二三四五");
-    expect(truncateUsernameInput("Alice_12345")).toBe("Alice_1234");
-    expect(truncateUsernameInput("露露A_12345")).toBe("露露A_1234");
+    expect(truncateUsernameInput("\u4e00\u4e8c\u4e09\u56db\u4e94")).toBe("\u4e00\u4e8c\u4e09\u56db");
+    expect(truncateUsernameInput("Alice_123")).toBe("Alice_12");
+    expect(truncateUsernameInput("\u9732\u9732A_123")).toBe("\u9732\u9732A_12");
   });
 
   it("renders tactical terminal class hooks without changing the auth form", () => {

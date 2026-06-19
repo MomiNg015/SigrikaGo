@@ -1,0 +1,124 @@
+.personalization-picker-backdrop {
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(61, 43, 37, 0.18);
+}
+
+.personalization-picker-modal {
+  position: relative;
+  inset: auto;
+  z-index: 31;
+  width: min(560px, 100%);
+  max-height: min(520px, calc(100dvh - 72px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  overflow: hidden;
+  border: 2px solid #3d2b25;
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(255, 250, 238, 0.96), rgba(246, 255, 251, 0.96)),
+    repeating-linear-gradient(0deg, transparent 0 15px, rgba(118, 177, 193, 0.1) 15px 16px);
+  box-shadow: 6px 7px 0 rgba(61, 43, 37, 0.28);
+}
+
+.personalization-picker-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--modal-close-size, 44px);
+  align-items: center;
+  gap: 10px;
+}
+
+.personalization-picker-header h3 {
+  margin: 0;
+  color: #3d2b25;
+  font-size: 20px;
+  line-height: 1.15;
+}
+
+.personalization-picker-modal .personalization-picker-header .close-button {
+  position: static;
+  inset: auto;
+  justify-self: end;
+  align-self: center;
+  width: var(--modal-close-size, 44px);
+  min-width: var(--modal-close-size, 44px);
+  height: var(--modal-close-size, 44px);
+  min-height: var(--modal-close-size, 44px);
+  transform: none;
+}
+
+.personalization-picker-list {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  align-content: start;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.personalization-picker-list button {
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 2px solid rgba(61, 43, 37, 0.26);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #4f3d55;
+  text-align: left;
+  font-weight: 900;
+}
+
+.personalization-picker-list button.equipped {
+  border-color: #3d2b25;
+  background: #ff9ebb;
+  color: #3d2b25;
+  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.28);
+}
+
+.personalization-picker-list button.trying {
+  border-color: #1f6f5b;
+  background: #ecfff6;
+  color: #1f6f5b;
+  box-shadow: 0 0 0 3px rgba(31, 111, 91, 0.12);
+}
+
+.personalization-picker-list button span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.personalization-option-preview {
+  display: grid;
+  place-items: center;
+}
+
+.personalization-modal > .primary-action {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 5;
+  margin: 0;
+}
+
+.personalization-section button img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.personalization-section button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 900;
+}

@@ -1,0 +1,83 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-panel.settings-modal-content {
+  background: transparent !important;
+  background-image: none !important;
+  color: #3d2b25 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-panel.settings-modal-content::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-panel.settings-modal-content::after {
+  display: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-portrait {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  filter:
+    drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.2))
+    drop-shadow(0 10px 18px rgba(255, 158, 187, 0.24)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+  background:
+    radial-gradient(circle at 16% 45%, rgba(255, 158, 187, 0.45), transparent 34%),
+    linear-gradient(135deg, #ffe5ee 0%, #fff4d8 48%, #dff5df 100%) !important;
+  color: #3d2b25 !important;
+  border-color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-header .quiet-text {
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  color: #6a554d !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:focus,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:active {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  min-width: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  color: #3d2b25 !important;
+  filter: none !important;
+  text-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title:focus,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title:active {
+  color: #8f8793 !important;
+}

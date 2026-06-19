@@ -1,0 +1,23 @@
+/* --------------------------------------------------------------------------
+   5. 商店、好友、观战深色棱角部件全面净化 (对应 image_e77db6.png 各种暗灰模块)
+   -------------------------------------------------------------------------- */
+.app-shell.player-theme-enabled.theme-bright-school .friends-row,
+.app-shell.player-theme-enabled.theme-bright-school .leaderboard-row,
+.app-shell.player-theme-enabled.theme-bright-school .shop-item,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-item,
+.app-shell.player-theme-enabled.theme-bright-school .friend-action-row,
+.app-shell.player-theme-enabled.theme-bright-school .watch-room-row,
+.app-shell.player-theme-enabled.theme-bright-school .profile-character-row,
+.app-shell.player-theme-enabled.theme-bright-school .character-record-row {
+  background: #ffffff !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 12px !important;
+  clip-path: none !important;
+  box-shadow: 3px 3px 0px #4a3736 !important;
+  color: #4a3736 !important;
+}
+/* 移除卡片底部死性不改的科技蓝/科技橙彩色尾巴衬条 */
+.app-shell.player-theme-enabled.theme-bright-school .shop-item::after,
+.app-shell.player-theme-enabled.theme-bright-school .warehouse-item::after {
+  display: none !important;
+}

@@ -1,0 +1,34 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures span {
+  min-height: 36px !important;
+  box-sizing: border-box !important;
+  align-items: center !important;
+  padding-block: 6px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-step-indicator {
+  display: inline-grid !important;
+  place-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info {
+  overflow: visible !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn {
+  background:
+    linear-gradient(135deg, rgba(255, 226, 91, 0.58), rgba(255, 246, 177, 0.98) 48%, rgba(255, 205, 62, 0.62)),
+    #fff0a6 !important;
+  background-color: #fff0a6 !important;
+  background-image: linear-gradient(135deg, rgba(255, 226, 91, 0.58), rgba(255, 246, 177, 0.98) 48%, rgba(255, 205, 62, 0.62)) !important;
+  border-color: #d18b17 !important;
+  color: #3f2b08 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .name-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .player-meta span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures span {
+  color: #3f2b08 !important;
+}

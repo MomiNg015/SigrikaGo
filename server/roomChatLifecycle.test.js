@@ -59,7 +59,9 @@ describe("room chat lifecycle", () => {
   test("appends normalized chat messages with the current move number", () => {
     const { lifecycle, room } = createLifecycle();
 
-    expect(lifecycle.addChat("12345", { id: "u1", username: "Alice" }, " hi ")).toBe(room);
+    const mutation = lifecycle.addChat("12345", { id: "u1", username: "Alice" }, " hi ");
+
+    expect(mutation).toEqual({ room, message: room.chat[0] });
     expect(room.chat).toEqual([
       {
         id: "chat-id",

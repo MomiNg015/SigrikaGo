@@ -9,6 +9,7 @@ import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
 import { seedBuiltinShopItems } from "./shop.js";
 import { ensureDefaultSiteSettings } from "./siteSettings.js";
 import { ensureSocialSchema } from "./social.js";
+import { cleanupLegacyUsernames } from "./usernameCleanup.js";
 
 export async function initializeServerData({
   prisma,
@@ -24,11 +25,13 @@ export async function initializeServerData({
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
   seedBuiltinAchievements: seedBuiltinAchievementsTask = seedBuiltinAchievements,
   cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask = cleanupLegacyDeniaCharacterData,
+  cleanupLegacyUsernames: cleanupLegacyUsernamesTask = cleanupLegacyUsernames,
   promoteConfiguredAdmins: promoteConfiguredAdminsTask = promoteConfiguredAdmins
 }) {
   await ensureAchievementSchemaTask(prisma);
   await seedBuiltinAchievementsTask(prisma);
   await cleanupLegacyDeniaCharacterDataTask(prisma);
+  await cleanupLegacyUsernamesTask(prisma);
   await seedCharactersTask(prisma);
   await seedBuiltinShopItemsTask(prisma);
   await ensureDefaultSiteSettingsTask(prisma);

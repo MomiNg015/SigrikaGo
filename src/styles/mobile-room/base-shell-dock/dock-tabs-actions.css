@@ -1,0 +1,85 @@
+/* Mobile room dock tabs and action bar */
+
+@media (max-width: 900px) {
+  .mobile-room-screen .mobile-tab-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 5px;
+  }
+
+  .mobile-room-screen .mobile-tab-button {
+    min-height: 44px;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .mobile-room-screen .mobile-tab-list .mobile-tab-button {
+    min-height: 44px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    min-height: 0;
+    max-height: var(--mobile-room-dock-panel-height);
+    overflow: auto;
+    padding: 7px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-room-screen #mobile-room-panel-actions {
+    overflow: visible;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .test-tools {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar {
+    position: static;
+    bottom: auto;
+    z-index: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    justify-items: center;
+    grid-template-rows: 1fr;
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar .exit-action {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar button svg {
+    justify-self: center;
+    align-self: center;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar .action-label {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .skill-action {
+    width: 100%;
+    min-width: 0;
+    grid-column: 2;
+    grid-row: 1;
+  }
+}

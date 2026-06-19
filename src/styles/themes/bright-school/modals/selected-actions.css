@@ -1,0 +1,53 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button[aria-selected="true"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-tabs button[aria-selected="true"] {
+  background: #ff9ebb !important;
+  color: #3d2b25 !important;
+  border-color: #3d2b25 !important;
+  box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.72) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button.active svg,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button[aria-selected="true"] svg {
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-title-actions .achievement-entry-action {
+  background: #ffe4ee !important;
+  border-color: #f08bad !important;
+  color: #76314a !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-title-actions .personalization-entry-action {
+  background: #d9f0ff !important;
+  border-color: #7db8e8 !important;
+  color: #245f8c !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-wallet.blue-gem-wallet {
+  background: linear-gradient(135deg, #dffbff 0%, #7fd6f2 48%, #2d9fd0 100%) !important;
+  border-color: #2380b5 !important;
+  color: #0e4f7a !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-replay-action {
+  background: #e4f6f0 !important;
+  border-color: #73b79f !important;
+  color: #245b4f !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
+  background:
+    linear-gradient(135deg, rgba(226, 255, 228, 0.96), rgba(246, 255, 241, 0.98)) padding-box !important;
+  border-color: #73b79f !important;
+  color: #245b4f !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-rank {
+  background: #dff5df !important;
+  border-color: #73b79f !important;
+  color: #245b4f !important;
+}

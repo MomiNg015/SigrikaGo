@@ -1,0 +1,120 @@
+/* Startorch terminal modal shell chrome */
+
+.small-modal,
+.shop-modal,
+.house-modal,
+.warehouse-modal,
+.leaderboard-modal,
+.friends-modal,
+.confirm-modal,
+.result-modal,
+.settings-modal,
+.message-board-modal,
+.nested-modal,
+.character-target-modal,
+.room-floating-modal {
+  color: var(--terminal-text);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), transparent 34%),
+    linear-gradient(180deg, rgba(12, 22, 29, 0.88), rgba(5, 13, 18, 0.92));
+  background-color: var(--terminal-bg);
+  border: 1px solid var(--terminal-line);
+  border-radius: 2px;
+  clip-path: var(--terminal-cut);
+  box-shadow: var(--terminal-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.small-modal::before,
+.shop-modal::before,
+.house-modal::before,
+.warehouse-modal::before,
+.leaderboard-modal::before,
+.friends-modal::before,
+.confirm-modal::before,
+.result-modal::before,
+.settings-modal::before,
+.message-board-modal::before,
+.nested-modal::before,
+.character-target-modal::before,
+.room-floating-modal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent, rgba(0, 255, 190, 0.12), transparent) 0 0 / 100% 1px,
+    repeating-linear-gradient(180deg, rgba(224, 247, 244, 0.045) 0 1px, transparent 1px 7px);
+  mix-blend-mode: screen;
+}
+
+.small-modal::after,
+.shop-modal::after,
+.house-modal::after,
+.warehouse-modal::after,
+.leaderboard-modal::after,
+.friends-modal::after,
+.confirm-modal::after,
+.result-modal::after,
+.settings-modal::after,
+.message-board-modal::after,
+.nested-modal::after,
+.character-target-modal::after,
+.room-floating-modal::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 0;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--terminal-cyan), var(--terminal-blue), transparent);
+  box-shadow: 0 0 16px rgba(0, 255, 190, 0.68);
+}
+
+.small-modal > *,
+.shop-modal > *,
+.house-modal > *,
+.warehouse-modal > *,
+.leaderboard-modal > *,
+.friends-modal > *,
+.confirm-modal > *,
+.result-modal > *,
+.settings-modal > *,
+.message-board-modal > *,
+.nested-modal > *,
+.character-target-modal > *,
+.room-floating-modal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.small-modal h2,
+.shop-modal h2,
+.house-modal h2,
+.warehouse-modal h2,
+.leaderboard-modal h2,
+.friends-modal h2,
+.confirm-modal h2,
+.result-modal h2,
+.settings-modal h2,
+.message-board-modal h2,
+.nested-modal h2,
+.nested-modal h3,
+.room-floating-modal h3 {
+  color: #ffffff;
+  letter-spacing: 0;
+  text-shadow: 0 0 14px rgba(0, 255, 190, 0.38);
+}
+
+.quiet-text,
+.confirm-modal p,
+.result-summary p,
+.profile-resume-hero p,
+.character-detail-copy p,
+.inline-confirm-panel p,
+.opening-modal p,
+.match-success-modal p {
+  color: var(--terminal-muted);
+}

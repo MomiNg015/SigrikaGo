@@ -3,7 +3,12 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { GAME_PHASES } from "../../shared/game.js";
 import TimedRoomRequestToast from "./TimedRoomRequestToast.jsx";
-import { timedRoomRequestSnapshot, timedRoomRequestToastForPlayer, timedRoomResponseToast } from "./timedRoomRequests.js";
+import {
+  timedRoomRequestEffectKey,
+  timedRoomRequestSnapshot,
+  timedRoomRequestToastForPlayer,
+  timedRoomResponseToast
+} from "./timedRoomRequests.js";
 
 const players = [
   { user: { id: "black", username: "黑方" }, color: "black" },
@@ -83,6 +88,39 @@ describe("timed room request toasts", () => {
     expect(timedRoomResponseToast(previous, room({ phase: GAME_PHASES.playing }))).toMatchObject({
       message: "数子申请未通过，对局继续。"
     });
+  });
+
+  it("keeps the timed request effect key stable across clock-only player time changes", () => {
+    const currentRoom = room({
+      phase: GAME_PHASES.drawRequested,
+      drawRequest: { requestedBy: "black" },
+      drawDeadline: 1000
+    });
+    const clockOnlyRoom = {
+      ...currentRoom,
+      players: currentRoom.players.map((player) => ({
+        ...player,
+        time: { main: player.color === "black" ? 299 : 300 }
+      }))
+    };
+    const nextDeadlineRoom = { ...currentRoom, drawDeadline: 2000 };
+
+    expect(timedRoomRequestEffectKey(clockOnlyRoom, "white")).toBe(timedRoomRequestEffectKey(currentRoom, "white"));
+    expect(timedRoomRequestEffectKey(nextDeadlineRoom, "white")).not.toBe(timedRoomRequestEffectKey(currentRoom, "white"));
+  });
+
+  it("changes the timed request effect key when result review acceptance changes", () => {
+    const result = { text: "black wins by 1", formula: [] };
+    const pendingRoom = room({
+      phase: GAME_PHASES.resultReview,
+      scoring: { result, resultDeadline: 3000, resultAcceptedBy: [] }
+    });
+    const acceptedRoom = room({
+      phase: GAME_PHASES.resultReview,
+      scoring: { result, resultDeadline: 3000, resultAcceptedBy: ["white"] }
+    });
+
+    expect(timedRoomRequestEffectKey(acceptedRoom, "white")).not.toBe(timedRoomRequestEffectKey(pendingRoom, "white"));
   });
 
   it("renders timed room request toasts without a manual close button", () => {

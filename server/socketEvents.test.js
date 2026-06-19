@@ -45,6 +45,8 @@ function createDeps(overrides = {}) {
     unregisterOnlineSocket: vi.fn(),
     detachSocket: vi.fn(() => []),
     broadcastRoom: vi.fn(),
+    broadcastRoomPatch: vi.fn(),
+    broadcastRoomPresencePatch: vi.fn(),
     ...overrides
   };
 }
@@ -74,5 +76,24 @@ describe("socket event registration", () => {
       "duel:respond",
       "disconnect"
     ]);
+  });
+
+  it("routes chat sends to room patch broadcasts", () => {
+    const socket = createSocket();
+    const room = { code: "12345" };
+    const message = { id: "chat-1", text: "hello" };
+    const deps = createDeps({
+      addChat: vi.fn(() => ({ room, message }))
+    });
+
+    registerSocketEvents(socket, deps);
+    const chatHandler = socket.on.mock.calls.find(([event]) => event === "chat:send")[1];
+    chatHandler({ roomCode: "12345", text: "hello" });
+
+    expect(deps.broadcastRoomPatch).toHaveBeenCalledWith(deps.io, room, {
+      type: "chat:append",
+      message
+    });
+    expect(deps.broadcastRoom).not.toHaveBeenCalledWith(deps.io, room);
   });
 });

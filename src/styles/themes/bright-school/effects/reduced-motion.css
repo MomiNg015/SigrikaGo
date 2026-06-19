@@ -1,0 +1,10 @@
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+}

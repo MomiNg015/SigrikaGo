@@ -62,7 +62,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
     const username = searchUsername.trim();
     if (!username) return;
     if (username.length < 2) {
-      notify("用户名需为 2-16 位", "danger");
+      notify("用户名需为 2-8 位", "danger");
       return;
     }
     setActionTarget(null);

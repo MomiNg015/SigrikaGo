@@ -1,0 +1,29 @@
+/* Bright School profile resume statistic cards. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats {
+  gap: 14px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span {
+  min-height: 78px !important;
+  padding: 14px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  background: linear-gradient(135deg, #fff8e5, #ffdfeb) !important;
+  color: #3d2b25 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 18px !important;
+  box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.7) !important;
+  clip-path: none !important;
+  transform: none !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats small {
+  color: #6a554d !important;
+  opacity: 1 !important;
+  font-weight: 900 !important;
+}

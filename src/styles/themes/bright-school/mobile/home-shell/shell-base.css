@@ -1,0 +1,31 @@
+/* Bright School portrait mobile shell base. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+    width: 100vw !important;
+    min-width: 0 !important;
+    min-height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(*, *::before, *::after) {
+    max-width: 100% !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-screen {
+    width: 100vw !important;
+    min-width: 0 !important;
+    min-height: 100dvh !important;
+    height: auto !important;
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      calc(10px + env(safe-area-inset-right))
+      calc(14px + env(safe-area-inset-bottom))
+      calc(10px + env(safe-area-inset-left)) !important;
+    gap: 10px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}

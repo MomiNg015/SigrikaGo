@@ -8,10 +8,10 @@ import { normalizeFriendSearchInput } from "./friends/friendSearch.js";
 
 describe("FriendsModal mobile layout", () => {
   it("normalizes friend search names with the same width budget as registration", () => {
-    expect(normalizeFriendSearchInput("一二三四五六")).toBe("一二三四五");
-    expect(normalizeFriendSearchInput("Alice_12345")).toBe("Alice_1234");
-    expect(normalizeFriendSearchInput("露露A_12345")).toBe("露露A_1234");
-    expect(normalizeFriendSearchInput("bad<script>")).toBe("badscript");
+    expect(normalizeFriendSearchInput("\u4e00\u4e8c\u4e09\u56db\u4e94")).toBe("\u4e00\u4e8c\u4e09\u56db");
+    expect(normalizeFriendSearchInput("Alice_123")).toBe("Alice_12");
+    expect(normalizeFriendSearchInput("\u9732\u9732A_123")).toBe("\u9732\u9732A_12");
+    expect(normalizeFriendSearchInput("bad<script>")).toBe("badscrip");
   });
 
   it("renders an explicit close button in the main friends sheet", () => {
@@ -87,7 +87,8 @@ describe("FriendsModal mobile layout", () => {
     expect(adaptivePhoneMedia).toContain("grid-template-areas:");
     expect(adaptivePhoneMedia).toContain("\"status avatar info action\"");
     expect(brightSchoolMobileCss).toContain(".friends-list,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-table {\n    overflow-x: hidden !important;");
-    expect(brightSchoolMobileCss).toContain(".friends-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-row {\n    min-width: 0 !important;");
+    expect(brightSchoolMobileCss).toContain(".friends-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row {\n    min-width: 0 !important;");
+    expect(brightSchoolMobileCss).toContain(".watch-room-row {\n    min-width: 0 !important;");
   });
 
   it("keeps desktop friend search clear of the close button", () => {

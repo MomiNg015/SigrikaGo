@@ -6,6 +6,8 @@ import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.j
 import {
   broadcastRoom as broadcastRoomUpdate,
   broadcastRoomClock,
+  broadcastRoomPatch as broadcastRoomPatchEvent,
+  broadcastRoomPresencePatch as broadcastRoomPresencePatchEvent,
   broadcastToast as broadcastRoomToast,
   emitRoomClosed,
   roomView
@@ -57,6 +59,8 @@ const roomRuntime = createRoomRuntime({
   prisma,
   persistRoomState,
   broadcastRoomUpdate,
+  broadcastRoomPatch: broadcastRoomPatchEvent,
+  broadcastRoomPresencePatch: broadcastRoomPresencePatchEvent,
   broadcastRoomToast,
   throttleMs: ROOM_PERSIST_THROTTLE_MS
 });
@@ -64,7 +68,7 @@ const {
   persistRoom,
   broadcastToast
 } = roomRuntime;
-export const { broadcastRoom } = roomRuntime;
+export const { broadcastRoom, broadcastRoomPatch, broadcastRoomPresencePatch } = roomRuntime;
 
 export function getRoom(roomCode) {
   return rooms.get(roomCode);

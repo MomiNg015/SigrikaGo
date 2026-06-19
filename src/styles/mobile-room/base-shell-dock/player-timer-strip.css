@@ -1,0 +1,53 @@
+/* Mobile room player and timer strip */
+
+@media (max-width: 900px) {
+  .mobile-room-screen .player-info {
+    box-sizing: border-box;
+    min-height: 44px;
+    height: 100%;
+    max-height: var(--mobile-room-player-strip-height);
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 4;
+    grid-template-columns: clamp(44px, 8vw, 62px) minmax(0, 1fr) minmax(128px, auto);
+    grid-template-rows: minmax(0, 42px) minmax(0, 32px);
+    grid-template-areas:
+      "portrait meta time"
+      "portrait captures skill";
+    align-items: center;
+    gap: 4px 8px;
+    padding: 6px 8px;
+  }
+
+  .mobile-room-screen .player-info img {
+    height: clamp(42px, 8vw, 62px);
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .mobile-room-screen .timer-label {
+    display: none;
+  }
+
+  .mobile-room-screen .digital-timer {
+    min-height: 28px;
+    display: grid;
+    grid-template-areas: "digits track";
+    grid-template-columns: auto minmax(64px, 1fr);
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+  }
+
+  .mobile-room-screen .timer-digits {
+    grid-area: digits;
+    min-height: 0;
+  }
+
+  .mobile-room-screen .timer-track {
+    grid-area: track;
+    height: 6px;
+    margin-top: 0;
+  }
+}

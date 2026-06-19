@@ -18,6 +18,7 @@ function createDeps(overrides = {}) {
     unregisterOnlineSocket: vi.fn(),
     detachSocket: vi.fn(() => []),
     broadcastRoom: vi.fn(),
+    broadcastRoomPresencePatch: vi.fn(),
     broadcastLobbyStats: vi.fn(),
     ...overrides
   };
@@ -32,7 +33,7 @@ describe("socket disconnect events", () => {
     expect(socket.on).toHaveBeenCalledWith("disconnect", expect.any(Function));
   });
 
-  it("unregisters the socket, detaches rooms, broadcasts each changed room, and refreshes lobby stats", () => {
+  it("unregisters the socket, detaches rooms, broadcasts each changed room presence, and refreshes lobby stats", () => {
     const socket = createSocket();
     const rooms = [{ code: "11111" }, { code: "22222" }];
     const deps = createDeps({ detachSocket: vi.fn(() => rooms) });
@@ -42,8 +43,9 @@ describe("socket disconnect events", () => {
 
     expect(deps.unregisterOnlineSocket).toHaveBeenCalledWith(socket);
     expect(deps.detachSocket).toHaveBeenCalledWith("socket-a", deps.io);
-    expect(deps.broadcastRoom).toHaveBeenNthCalledWith(1, deps.io, rooms[0]);
-    expect(deps.broadcastRoom).toHaveBeenNthCalledWith(2, deps.io, rooms[1]);
+    expect(deps.broadcastRoomPresencePatch).toHaveBeenNthCalledWith(1, deps.io, rooms[0]);
+    expect(deps.broadcastRoomPresencePatch).toHaveBeenNthCalledWith(2, deps.io, rooms[1]);
+    expect(deps.broadcastRoom).not.toHaveBeenCalled();
     expect(deps.broadcastLobbyStats).toHaveBeenCalledTimes(1);
   });
 
@@ -55,6 +57,7 @@ describe("socket disconnect events", () => {
     socket.trigger("disconnect");
 
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
+    expect(deps.broadcastRoomPresencePatch).not.toHaveBeenCalled();
     expect(deps.broadcastLobbyStats).toHaveBeenCalledTimes(1);
   });
 });

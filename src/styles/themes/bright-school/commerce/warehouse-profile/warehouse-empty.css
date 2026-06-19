@@ -1,0 +1,68 @@
+/* Bright School warehouse empty state. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-empty {
+  position: relative !important;
+  min-height: 164px !important;
+  display: grid !important;
+  place-items: center !important;
+  align-content: center !important;
+  gap: 10px !important;
+  padding: 28px 18px !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 158, 187, 0.2), transparent 26%),
+    radial-gradient(circle at 88% 82%, rgba(191, 232, 221, 0.3), transparent 28%),
+    repeating-linear-gradient(0deg, transparent 0 27px, rgba(154, 211, 222, 0.18) 27px 28px),
+    #fffaf0 !important;
+  color: #3d2b25 !important;
+  border: 3px dashed rgba(61, 43, 37, 0.66) !important;
+  border-radius: 18px !important;
+  box-shadow:
+    3px 4px 0 rgba(61, 43, 37, 0.22),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.7) !important;
+  clip-path: none !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-empty::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 76px !important;
+  height: 76px !important;
+  pointer-events: none !important;
+  background: linear-gradient(135deg, rgba(191, 232, 221, 0.92) 0 50%, transparent 50%) !important;
+  border-radius: 15px 0 0 !important;
+  opacity: 0.72 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-empty::after {
+  content: "" !important;
+  position: absolute !important;
+  right: 18px !important;
+  bottom: 16px !important;
+  width: 62px !important;
+  height: 18px !important;
+  pointer-events: none !important;
+  background:
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.38) 0 5px, transparent 5px 10px),
+    rgba(255, 158, 187, 0.34) !important;
+  border: 1px dashed rgba(61, 43, 37, 0.24) !important;
+  border-radius: 999px !important;
+  transform: rotate(-3deg) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-empty svg {
+  width: 28px !important;
+  height: 28px !important;
+  color: #3d2b25 !important;
+  stroke: #3d2b25 !important;
+  stroke-width: 2.4 !important;
+  filter: drop-shadow(1px 2px 0 rgba(255, 255, 255, 0.72)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-empty strong {
+  color: #3d2b25 !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+}

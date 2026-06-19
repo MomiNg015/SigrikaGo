@@ -1,0 +1,103 @@
+/* Board frame, effects, stones, coordinates, and scoring markers. */
+.board-wrap {
+  --board-wood-texture:
+    url("/assets/boards/go-board-background-reference-color-vertical-2048.webp") center / cover no-repeat,
+    #e4aa2f;
+  width: var(--board-size);
+  max-width: 100%;
+  min-width: 0;
+  aspect-ratio: 1;
+  justify-self: center;
+  padding: clamp(20px, 3vw, 38px);
+  border-radius: 8px;
+  position: relative;
+  display: grid;
+  grid-template-columns: clamp(22px, 2.3vw, 28px) 1fr clamp(22px, 2.3vw, 28px);
+  grid-template-rows: clamp(22px, 2.3vw, 28px) 1fr clamp(22px, 2.3vw, 28px);
+  background: var(--board-wood-texture);
+  box-shadow:
+    inset 0 0 0 2px rgba(126, 79, 22, 0.34),
+    inset 0 0 34px rgba(111, 65, 12, 0.16),
+    0 20px 70px rgba(78, 54, 92, 0.18);
+}
+
+.board-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: var(--board-size);
+  max-width: 100%;
+}
+
+.board-wrap.targeting {
+  animation: target-rainbow 1.2s linear infinite;
+}
+
+@keyframes target-rainbow {
+  0% { box-shadow: inset 0 0 0 4px #ff5b6b, 0 20px 70px rgba(78, 54, 92, 0.18); }
+  25% { box-shadow: inset 0 0 0 4px #ffbf3f, 0 20px 70px rgba(78, 54, 92, 0.18); }
+  50% { box-shadow: inset 0 0 0 4px #3fd68f, 0 20px 70px rgba(78, 54, 92, 0.18); }
+  75% { box-shadow: inset 0 0 0 4px #5d7fe8, 0 20px 70px rgba(78, 54, 92, 0.18); }
+  100% { box-shadow: inset 0 0 0 4px #d85cff, 0 20px 70px rgba(78, 54, 92, 0.18); }
+}
+
+.coord-row,
+.coord-col {
+  color: #090708;
+  font-family: "Times New Roman", "Noto Serif SC", "Songti SC", serif;
+  font-weight: 600;
+  font-size: clamp(13px, 1.45vw, 18px);
+  line-height: 1;
+  user-select: none;
+}
+
+.coord-row {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--size), minmax(0, 1fr));
+  align-items: center;
+  text-align: center;
+}
+
+.coord-top {
+  grid-row: 1;
+}
+
+.coord-bottom {
+  grid-row: 3;
+}
+
+.coord-col {
+  grid-row: 2;
+  display: grid;
+  grid-template-rows: repeat(var(--size), minmax(0, 1fr));
+  align-items: center;
+  text-align: center;
+}
+
+.board-wrap[data-board-size="19"] .coord-row,
+.board-wrap[data-board-size="19"] .coord-col {
+  font-size: clamp(10px, 1vw, 14px);
+  font-weight: 700;
+}
+
+.coord-left {
+  grid-column: 1;
+}
+
+.coord-right {
+  grid-column: 3;
+}
+
+.board {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--size), 1fr);
+  grid-template-rows: repeat(var(--size), 1fr);
+  background: transparent;
+  touch-action: none;
+}
