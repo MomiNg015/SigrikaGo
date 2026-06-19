@@ -54,7 +54,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
   position: relative !important;
   z-index: 1 !important;
-  padding-top: clamp(74px, 8vw, 112px) !important;
+  padding-top: clamp(44px, 4.8vw, 72px) !important;
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
