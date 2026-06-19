@@ -425,11 +425,12 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("transform: rotate(-8deg) !important");
     expect(plaquePolish).toContain("transform: rotate(8deg) !important");
     expect(plaqueBlock).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
-    expect(plaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(122px, 136px) !important");
-    expect(plaqueBlock).toContain("column-gap: 12px !important");
+    expect(plaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(108px, 116px) !important");
+    expect(plaqueBlock).toContain("column-gap: 10px !important");
     expect(plaqueBlock).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card > strong");
     expect(plaquePolish).toContain("overflow: hidden !important");
+    expect(plaquePolish).toContain("padding-right: 6px !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name");
     expect(plaquePolish).toContain("--user-identity-name-tag-max-width: 100%");
     expect(plaquePolish).toContain("--user-identity-name-tag-padding-x: 0.32em");
@@ -437,6 +438,7 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("min-width: 0 !important");
     expect(plaquePolish).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain("flex: 1 1 auto !important");
+    expect(plaquePolish).toContain("font-size: min(var(--user-identity-fit-font-size, 1em), 0.82em) !important");
     expect(plaquePolish).toContain("text-overflow: clip !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before");
     expect(plaquePolish).toContain('font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');

@@ -3,8 +3,8 @@
   min-width: 0 !important;
   box-sizing: border-box !important;
   container-type: inline-size !important;
-  padding: 11px 9px 9px !important;
-  gap: 3px !important;
+  padding: 9px 6px 8px !important;
+  gap: 2px !important;
   align-self: stretch !important;
   place-content: center stretch !important;
   place-items: center stretch !important;
@@ -18,7 +18,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-stat {
   width: 100% !important;
-  grid-template-columns: minmax(0, 0.86fr) minmax(0, 0.74fr) minmax(0, 1fr) !important;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.7fr) minmax(0, 1fr) !important;
   grid-template-rows: auto auto !important;
   gap: clamp(2px, 2.8cqw, 5px) !important;
   align-items: center !important;
@@ -44,12 +44,12 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-name {
   color: #6f8f84 !important;
-  font-size: clamp(10px, 8.2cqw, 13px) !important;
+  font-size: clamp(9px, 8.4cqw, 12px) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rank,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rating {
-  font-size: clamp(10px, 8.9cqw, 15px) !important;
+  font-size: clamp(9px, 9cqw, 13px) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rating {
