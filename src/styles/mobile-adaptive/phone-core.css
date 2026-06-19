@@ -29,6 +29,7 @@
 
   .match-mode-count {
     min-width: 72px !important;
+    justify-self: end !important;
   }
 
   .match-mode-count small {
