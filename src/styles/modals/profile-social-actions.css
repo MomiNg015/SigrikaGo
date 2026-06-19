@@ -70,6 +70,7 @@
 .profile-report-dialog form {
   display: grid;
   gap: 10px;
+  width: 100%;
 }
 
 .profile-report-dialog label {

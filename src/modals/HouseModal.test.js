@@ -594,6 +594,11 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain(".profile-replay-button:disabled");
     expect(modalCss).toContain(".profile-relation-actions button:disabled");
     expect(modalCss).toContain("background: linear-gradient(135deg, #ececef, #d9d9dd);");
+    expect(modalCss).toContain(".confirm-inline-modal");
+    expect(modalCss).toContain("position: fixed;");
+    expect(modalCss).toContain("inset: 50% auto auto 50%;");
+    expect(modalCss).toContain("transform: translate(-50%, -50%);");
+    expect(modalCss).toContain("max-height: calc(100dvh - 32px);");
     expect(modalCss).toContain(".profile-like-button:active:not(:disabled)");
     expect(modalCss).toContain("transform: translateY(2px);");
     expect(modalCss).toContain("box-shadow: 0 2px 0 rgba(79, 61, 85, 0.12);");

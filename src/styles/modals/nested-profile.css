@@ -1,4 +1,4 @@
-/* Nested modal, user profile, relation actions, and inline confirmation panels. */
+/* Nested profile modal styles. */
 .nested-modal {
   position: absolute;
   inset: 54px 22px 22px;
@@ -26,9 +26,11 @@
 }
 
 .confirm-inline-modal {
-  inset: auto 50%;
-  top: 50%;
+  position: fixed;
+  inset: 50% auto auto 50%;
   width: min(360px, calc(100% - 44px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
   transform: translate(-50%, -50%);
 }
 
