@@ -534,3 +534,36 @@ Removed translate/scale press motion from flat mobile room dock tabs, preserving
 ### Next Steps
 
 - None - task complete
+
+
+## Session 17: Disable unavailable social actions
+
+**Date**: 2026-06-19
+**Task**: Disable unavailable social actions
+**Branch**: `master`
+
+### Summary
+
+Disabled unavailable direct-message and social action controls in friend/member popovers, added theme gray states, tests, and documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ab25bbe5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
