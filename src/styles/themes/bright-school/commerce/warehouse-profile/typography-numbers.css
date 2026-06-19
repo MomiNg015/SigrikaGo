@@ -18,7 +18,7 @@
   dt,
   dd
 ) {
-  font-family: var(--bright-school-font-display) !important;
+  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
   color: #3d2b25 !important;
   text-shadow: none !important;
   letter-spacing: 0.01em !important;
@@ -48,6 +48,6 @@
   .timer-value,
   .score-chip
 ) {
-  font-family: var(--bright-school-font-display) !important;
+  font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
   font-variant-numeric: tabular-nums !important;
 }

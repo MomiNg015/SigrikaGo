@@ -69,7 +69,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title {
   color: var(--bright-ink) !important;
-  font-family: var(--bright-school-font-display) !important;
+  font-family: "Arial Rounded MT Bold", "Microsoft YaHei", sans-serif !important;
   font-size: clamp(28px, 3.4vw, 42px) !important;
   font-weight: 900 !important;
   letter-spacing: 0 !important;
@@ -92,7 +92,7 @@
   box-shadow: 2px 2px 0 var(--bright-border) !important;
   clip-path: none !important;
   padding: 8px 14px !important;
-  font-family: var(--bright-school-font-display) !important;
+  font-family: "Arial Rounded MT Bold", "Microsoft YaHei", sans-serif !important;
   font-weight: 900 !important;
 }
 

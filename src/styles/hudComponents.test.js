@@ -353,7 +353,7 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain('content: "匹配对局" !important');
     expect(themesCss).toContain("min-width: 132px !important");
     expect(themesCss).toContain("white-space: nowrap !important");
-    expect(themesCss).toContain('--bright-school-font-display: "Nunito Sans", "LXGW WenKai Screen", "LXGW WenKai"');
+    expect(themesCss).toContain('"Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei"');
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque .plaque-avatar");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque .plaque-avatar img");
@@ -363,7 +363,7 @@ describe("component-level HUD refinements", () => {
 
   it("unifies Bright School cute typography and repairs warehouse/profile text blocks", () => {
     expect(themesCss).toContain("Bright School cute typography and warehouse/profile repair layer.");
-    expect(themesCss).toContain("font-family: var(--bright-school-font-body) !important");
+    expect(themesCss).toContain('"Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span");
     expect(themesCss).toContain("clip-path: none !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header .quiet-text");
@@ -441,7 +441,7 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).not.toContain("user-identity-fit-font-size");
     expect(plaquePolish).toContain("text-overflow: clip !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before");
-    expect(plaquePolish).toContain("font-family: var(--bright-school-font-display) !important");
+    expect(plaquePolish).toContain('font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
   });
 
   it("keeps Bright School stage transparent and preserves match motion", () => {

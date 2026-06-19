@@ -1,12 +1,9 @@
 /* Bright School theme: cream notebook paper, polaroids, stationery stickers. */
 .app-shell.player-theme-enabled.theme-bright-school {
-  --bright-school-font-body: "Nunito Sans", "LXGW WenKai Screen", "LXGW WenKai", "Noto Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  --bright-school-font-display: "Nunito Sans", "LXGW WenKai Screen", "LXGW WenKai", "Noto Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
   background-color: #fffbf2 !important;
   background-image: var(--theme-paper-grid) !important;
   background-size: 20px 20px !important;
   color: #4a3736 !important;
-  font-family: var(--bright-school-font-body) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school:has(.auth-screen),

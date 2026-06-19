@@ -35,7 +35,7 @@
     min-height: 34px !important;
     box-sizing: border-box !important;
     padding: 6px 16px !important;
-    font-family: var(--bright-school-font-display) !important;
+    font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
     font-size: 14px !important;
     font-weight: 900 !important;
     line-height: 1 !important;

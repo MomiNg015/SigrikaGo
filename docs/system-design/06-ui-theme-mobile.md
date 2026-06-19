@@ -23,8 +23,6 @@
 - Bright School portrait mobile commerce and warehouse layout is also a nested import-only entry: `src/styles/themes/bright-school/mobile/commerce-warehouse.css` owns import order while `src/styles/themes/bright-school/mobile/commerce-warehouse/` contains shop-layout, warehouse-shell, and warehouse-items rules.
 - Bright School portrait mobile list/settings/social layout is also a nested import-only entry: `src/styles/themes/bright-school/mobile/lists-settings.css` owns import order while `src/styles/themes/bright-school/mobile/lists-settings/` contains list-scroll-widths, watch-rows, friends-rows, table-shells, leaderboard-cards, replay-cards, and toolbars-card-borders rules.
 
-- Bright School typography uses the campus font pair `LXGW WenKai` + `Nunito Sans`. The global font import lives at the top of `src/styles.css`, while `src/styles/themes/bright-school/base/paper-root.css` owns `--bright-school-font-body` and `--bright-school-font-display`; desktop, mobile, shop, warehouse, home title, and sticker-label overrides should consume those variables instead of reintroducing `Arial Rounded` / platform-only stacks.
-
 ## Modal Layering
 
 - Shared `.modal-backdrop` stacks above room `--room-floating-z` surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.
