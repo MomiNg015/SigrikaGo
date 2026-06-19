@@ -146,6 +146,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - `areRoomPeopleListPropsEqual(previous, next)` is the member-list comparator for avoiding room-clock rerenders.
 - `areOperationHintPropsEqual(previous, next)` is the action-hint comparator for avoiding room-clock rerenders.
 - `areActionBarPropsEqual(previous, next)` is the room action comparator for avoiding countdown or clock-only rerenders while keeping button availability and decision bars live.
+- `timedRoomRequestEffectKey(room, userId)` is the request-toast effect dependency key; it must ignore clock-only player time changes while changing for request phase, deadline, requester, acceptance, or displayed request copy changes.
 - `triggerUnavailableShake(target)` restarts `ui-unavailable-shake` without reading layout metrics such as `offsetWidth`.
 - `lastMarkedAction(history)` is the canonical source for the board's latest placed-stone marker.
 
@@ -161,6 +162,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - `ActionBar` should ignore player `time` changes and unused timed-request payloads while still rerendering for role, mode, phase, turn ownership, skill state, skill uses, decision locks, opponent connectivity, scoring reference, replay step, and every rendered callback identity.
 - `RoomBattleStage` must pass named stable callbacks into `ActionBar` for test tools and scoring decisions; inline action dispatchers defeat `areActionBarPropsEqual()` during parent renders.
 - `RoomScreen` should pass stable confirmation and header-toggle callbacks into room composition; close-countdown timer state belongs in `RoomCloseCountdown` under `RoomHeader` so a finished-room countdown does not re-run the whole room screen or recreate pass/resign/exit and coordinate/move toggle handlers.
+- Timed room request toast logic should depend on `timedRoomRequestEffectKey(room, userId)`, not the whole `room` object, so `room:clock` player-time churn does not rerun draw/counting/result request state effects.
 - Comparator inputs must include visible point state, board size, marker/decoration classes, move number state, scoring mark state, and interaction capability flags such as `hasScoringPoint`.
 - Do not rely on `game` object identity inside a point button; derive per-point display props in `Board` and pass only the point's slice.
 - Unavailable feedback may remove and re-add the shake class on the next animation frame; it must not force a synchronous layout read to restart CSS animation.
@@ -178,6 +180,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - Room clock tick changes only player `time` -> `OperationHint` should stay memoized.
 - Phase, turn, winner, scoring/draw request, or active-player user mapping changes -> `OperationHint` must rerender.
 - Room clock or close-countdown tick changes only player `time` or header timer text -> `ActionBar` should stay memoized, and the close countdown tick should be local to the header.
+- Room clock tick changes only player `time` while draw/counting/result request fields are unchanged -> timed request toast effects should not rerun.
 - Skill uses, pending-skill active state, scoring confirmation reference, replay step, or rendered action callback identity changes -> `ActionBar` must rerender.
 - Scoring handler availability changes -> point button must re-render because pointer/click semantics change.
 - Point stone, mark, decoration, move number, preview class, or confirmation class changes -> point button must re-render.
@@ -207,6 +210,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - Action bar tests must assert `areActionBarPropsEqual()` ignores clock-only player time changes, rerenders on skill/scoring changes, and source-guards stable `RoomBattleStage` callbacks.
 - Room screen source tests must assert memoized room widgets receive stable floating-layer callbacks.
 - Room screen source tests must assert finished-room close countdown timing is local to `RoomHeader` / `RoomCloseCountdown`, not top-level `RoomScreen` state.
+- Timed request toast tests must assert `timedRoomRequestEffectKey()` is stable across clock-only player time changes and changes when request deadlines or result-review acceptance changes.
 - Board view tests must assert Chisa `liberty-purge` placement becomes the latest marked action after an ordinary move.
 - Interaction feedback tests must assert source behavior does not use `offsetWidth` and uses an async restart mechanism such as `requestAnimationFrame`.
 - Run targeted tests for `src/room/Board.test.js` and `src/app/InteractionFeedback.test.js`, then run the project `check` gate before handoff.

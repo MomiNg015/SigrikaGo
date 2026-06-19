@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { timedRoomRequestSnapshot, timedRoomRequestToastForPlayer, timedRoomResponseToast } from "./timedRoomRequests.js";
+import {
+  timedRoomRequestEffectKey,
+  timedRoomRequestSnapshot,
+  timedRoomRequestToastForPlayer,
+  timedRoomResponseToast
+} from "./timedRoomRequests.js";
 
 export function useTimedRoomRequestToast({
   room,
@@ -13,6 +18,7 @@ export function useTimedRoomRequestToast({
   const [roomRequestToast, setRoomRequestToast] = useState(null);
   const shownTimedRequestKeyRef = useRef("");
   const timedRequestSnapshotRef = useRef(null);
+  const requestEffectKey = timedRoomRequestEffectKey(room, userId);
 
   useEffect(() => {
     shownTimedRequestKeyRef.current = "";
@@ -40,7 +46,7 @@ export function useTimedRoomRequestToast({
       shownTimedRequestKeyRef.current = nextToast.key;
       setRoomRequestToast(nextToast);
     }
-  }, [room, userId, isReplay, role]);
+  }, [requestEffectKey, userId, isReplay, role]);
 
   useEffect(() => {
     if (!roomRequestToast?.autoDismiss) return undefined;
