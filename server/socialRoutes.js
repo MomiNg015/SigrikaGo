@@ -3,9 +3,11 @@ import { normalizeGameModeId } from "../src/shared/gameModes.js";
 import { validateUsername } from "./security.js";
 import {
   deleteRelationship,
+  createUserReport,
   getUserProfile,
   getUserProfileByUsername,
   getUserReplays,
+  likeUserProfile,
   listSocialUsers,
   RELATIONSHIP_TYPES,
   setRelationship
@@ -18,6 +20,8 @@ export function createSocialRouteHandlers({
   getUserProfileByUsernameFn = getUserProfileByUsername,
   getUserProfileFn = getUserProfile,
   getUserReplaysFn = getUserReplays,
+  likeUserProfileFn = likeUserProfile,
+  createUserReportFn = createUserReport,
   listSocialUsersFn = listSocialUsers,
   normalizeMode = normalizeGameModeId,
   setRelationshipFn = setRelationship,
@@ -125,6 +129,31 @@ export function createSocialRouteHandlers({
     res.json({ records });
   }
 
+  async function likeProfile(req, res) {
+    try {
+      res.json(await likeUserProfileFn({
+        prisma,
+        likerUserId: req.user.id,
+        targetUserId: req.params.id
+      }));
+    } catch (error) {
+      res.status(error.status ?? 500).json({ error: error.message ?? "点赞失败" });
+    }
+  }
+
+  async function reportProfile(req, res) {
+    try {
+      res.json(await createUserReportFn({
+        prisma,
+        reporter: req.user,
+        reportedUserId: req.params.id,
+        content: req.body.content
+      }));
+    } catch (error) {
+      res.status(error.status ?? 500).json({ error: error.message ?? "举报提交失败" });
+    }
+  }
+
   return {
     listSocial,
     addFriend,
@@ -133,7 +162,9 @@ export function createSocialRouteHandlers({
     removeBlacklist,
     searchProfile,
     getProfile,
-    getReplays
+    getReplays,
+    likeProfile,
+    reportProfile
   };
 }
 
@@ -147,6 +178,8 @@ export function createSocialRouter({ authHttp, ...deps }) {
   router.delete("/social/blacklist/:targetId", authHttp, handlers.removeBlacklist);
   router.get("/users/search/profile", authHttp, handlers.searchProfile);
   router.get("/users/:id/profile", authHttp, handlers.getProfile);
+  router.post("/users/:id/like", authHttp, handlers.likeProfile);
+  router.post("/users/:id/report", authHttp, handlers.reportProfile);
   router.get("/users/:id/replays", handlers.getReplays);
   return router;
 }

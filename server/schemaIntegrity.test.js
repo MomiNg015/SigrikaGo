@@ -41,6 +41,23 @@ describe("Prisma schema integrity", () => {
     expect(readFileSync(migrationPath, "utf8")).toContain("CREATE TABLE IF NOT EXISTS \"FeedbackMessage\"");
   });
 
+  it("tracks profile likes and user reports through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606190001_add_user_likes_reports",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    expect(schema).toContain("model UserProfileLike");
+    expect(schema).toContain("model UserReport");
+    expect(migration).toContain("CREATE TABLE IF NOT EXISTS \"UserProfileLike\"");
+    expect(migration).toContain("CREATE TABLE IF NOT EXISTS \"UserReport\"");
+  });
+
   it("tracks persisted rooms through a migration", () => {
     const migrationPath = join(
       process.cwd(),

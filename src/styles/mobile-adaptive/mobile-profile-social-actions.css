@@ -1,0 +1,30 @@
+/* Mobile profile like/report actions. */
+@media (max-width: 768px) {
+  .user-profile-card .profile-social-actions {
+    right: 10px !important;
+    bottom: 10px !important;
+    gap: 6px !important;
+  }
+
+  .user-profile-card .profile-like-button,
+  .user-profile-card .profile-report-button {
+    min-height: 44px !important;
+    border-radius: 12px !important;
+  }
+
+  .user-profile-card .profile-like-button {
+    min-width: 54px !important;
+    padding: 7px 9px !important;
+  }
+
+  .user-profile-card .profile-report-button {
+    width: 44px !important;
+  }
+
+  .user-profile-card .profile-like-button:disabled,
+  .user-profile-card .profile-report-button:disabled {
+    background: linear-gradient(135deg, #ececef, #d9d9dd) !important;
+    color: #8e8792 !important;
+    cursor: not-allowed !important;
+  }
+}

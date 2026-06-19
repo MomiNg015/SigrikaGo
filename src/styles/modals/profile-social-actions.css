@@ -1,0 +1,76 @@
+/* Profile like/report actions and report dialog fields. */
+.profile-social-actions {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.profile-like-button,
+.profile-report-button {
+  min-height: 38px;
+  border: 1px solid #d7cae0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4f3d55;
+  font-weight: 900;
+  box-shadow: 0 2px 0 rgba(79, 61, 85, 0.12);
+}
+
+.profile-like-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 58px;
+  padding: 7px 10px;
+}
+
+.profile-report-button {
+  width: 38px;
+  padding: 0;
+}
+
+.profile-like-button:disabled,
+.profile-report-button:disabled {
+  background: #ebe6ed;
+  color: #9a909d;
+  border-color: #d6d1d8;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.profile-report-dialog form {
+  display: grid;
+  gap: 10px;
+}
+
+.profile-report-dialog label {
+  color: #4f3d55;
+  font-weight: 900;
+}
+
+.profile-report-dialog textarea {
+  width: 100%;
+  min-height: 132px;
+  resize: vertical;
+  border: 1px solid #d7cae0;
+  border-radius: 8px;
+  padding: 10px;
+  color: #3f3145;
+  box-sizing: border-box;
+}
+
+.profile-report-dialog small {
+  justify-self: end;
+  color: #7d6a82;
+  font-weight: 800;
+}
+
+.profile-report-dialog form > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

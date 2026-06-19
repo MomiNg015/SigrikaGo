@@ -316,6 +316,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/motion-keyframes.css",
       "./mobile-adaptive/mobile-room-portrait.css",
       "./mobile-adaptive/mobile-profile-records.css",
+      "./mobile-adaptive/mobile-profile-social-actions.css",
       "./mobile-adaptive/mobile-room-landscape.css",
       "./mobile-adaptive/narrow-phone.css",
       "./mobile-adaptive/bright-school-overrides.css",
@@ -729,6 +730,7 @@ describe("root CSS entry contract", () => {
       "./modals/base-result-skill.css",
       "./modals/replay-mode-resume.css",
       "./modals/nested-profile.css",
+      "./modals/profile-social-actions.css",
       "./modals/character-opening.css",
       "./modals/phone.css",
       "./modals/terminal-system.css"

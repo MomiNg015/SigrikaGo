@@ -12,15 +12,15 @@
   }
 
   .user-profile-card .profile-resume-hero {
-    grid-template-columns: 1fr !important;
-    justify-items: center !important;
-    gap: 8px !important;
-    padding: 12px 12px 14px !important;
-    text-align: center !important;
+    grid-template-columns: 86px minmax(0, 1fr) !important;
+    justify-items: start !important;
+    gap: 10px !important;
+    padding: 12px 102px 14px 12px !important;
+    text-align: left !important;
   }
 
   .user-profile-card .profile-resume-hero .profile-chain-portrait {
-    justify-self: center !important;
+    justify-self: start !important;
   }
 
   .user-profile-card .profile-resume-hero h3 {
@@ -28,6 +28,11 @@
     margin: 0 !important;
     font-size: clamp(20px, 6vw, 25px) !important;
     line-height: 1.18 !important;
+  }
+
+  .user-profile-card .profile-resume-hero img {
+    width: 82px !important;
+    height: 72px !important;
   }
 
   .user-profile-card .profile-mode-tabs {

@@ -9,6 +9,7 @@ import AdminFeedback from "./AdminFeedback.jsx";
 import AdminGachaPools from "./AdminGachaPools.jsx";
 import AdminMusicTracks from "./AdminMusicTracks.jsx";
 import AdminOverview from "./AdminOverview.jsx";
+import AdminReports from "./AdminReports.jsx";
 import AdminShopItems from "./AdminShopItems.jsx";
 import AdminSiteSettings from "./AdminSiteSettings.jsx";
 import AdminUsers, { UserEditor } from "./AdminUsers.jsx";
@@ -19,6 +20,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   const [adminCharacters, setAdminCharacters] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
   const [feedbackMessages, setFeedbackMessages] = useState([]);
+  const [userReports, setUserReports] = useState([]);
   const [shopItems, setShopItems] = useState([]);
   const [decorations, setDecorations] = useState([]);
   const [gachaPools, setGachaPools] = useState([]);
@@ -57,6 +59,11 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   useEffect(() => {
     if (tab !== "feedback") return;
     refreshFeedbackMessages();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "reports") return;
+    refreshUserReports();
   }, [tab, token]);
 
   useEffect(() => {
@@ -143,6 +150,16 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
     try {
       const data = await adminApi("/decorations", token);
       setDecorations(data.decorations ?? []);
+    } catch (error) {
+      notify(error.message);
+    }
+  }
+
+  async function refreshUserReports() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/user-reports", token);
+      setUserReports(data.reports ?? []);
     } catch (error) {
       notify(error.message);
     }
@@ -263,6 +280,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
       )}
       {tab === "settings" && <AdminSiteSettings token={token} onSaved={onSiteSettingsChanged} onNotice={notify} />}
       {tab === "feedback" && <AdminFeedback messages={feedbackMessages} />}
+      {tab === "reports" && <AdminReports reports={userReports} />}
       {tab === "audit" && <AdminAudit logs={auditLogs} />}
     </AdminShell>
   );

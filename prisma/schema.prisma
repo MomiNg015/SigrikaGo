@@ -41,6 +41,10 @@ model User {
   achievements       UserAchievement[]
   achievementCounters AchievementCounter[]
   achievementEquipment UserAchievementEquipment?
+  profileLikesGiven UserProfileLike[] @relation("ProfileLikesGiven")
+  profileLikesReceived UserProfileLike[] @relation("ProfileLikesReceived")
+  reportsSubmitted UserReport[] @relation("ReportsSubmitted")
+  reportsReceived UserReport[] @relation("ReportsReceived")
 }
 
 model UserModeStats {
@@ -237,6 +241,36 @@ model UserRelationship {
   @@unique([ownerUserId, targetUserId])
   @@index([ownerUserId, type])
   @@index([targetUserId])
+}
+
+model UserProfileLike {
+  id           String   @id @default(cuid())
+  likerUserId  String
+  targetUserId String
+  dayKey       String
+  createdAt    DateTime @default(now())
+  liker        User     @relation("ProfileLikesGiven", fields: [likerUserId], references: [id], onDelete: Cascade)
+  target       User     @relation("ProfileLikesReceived", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@unique([likerUserId, targetUserId, dayKey])
+  @@index([targetUserId])
+  @@index([likerUserId, createdAt])
+}
+
+model UserReport {
+  id               String   @id @default(cuid())
+  reporterUserId   String
+  reportedUserId   String
+  reporterUsername String
+  reportedUsername String
+  content          String
+  createdAt        DateTime @default(now())
+  reporter         User     @relation("ReportsSubmitted", fields: [reporterUserId], references: [id], onDelete: Cascade)
+  reported         User     @relation("ReportsReceived", fields: [reportedUserId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([reporterUserId])
+  @@index([reportedUserId])
 }
 
 model GameRecord {

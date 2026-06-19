@@ -12,6 +12,7 @@ import { USER_STATUS } from "./adminConfig.js";
 import { validateCharacterInput } from "./characters.js";
 import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { listFeedbackMessages } from "./feedback.js";
+import { listUserReports } from "./social.js";
 import { toShopItemPayload, validateDecorationInput, validateShopItemInput } from "./shop.js";
 import { getPublicSiteSettings, updateSiteSettings } from "./siteSettings.js";
 import { routeError } from "./adminRouteErrors.js";
@@ -153,6 +154,10 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
 
   router.get("/feedback", async (_req, res) => {
     res.json(await listFeedbackMessages({ prisma }));
+  });
+
+  router.get("/user-reports", async (_req, res) => {
+    res.json(await listUserReports({ prisma }));
   });
 
   router.get("/site-settings", async (_req, res) => {

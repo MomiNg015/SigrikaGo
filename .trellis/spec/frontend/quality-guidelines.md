@@ -57,6 +57,32 @@ Correct:
 <button type="button" disabled>Direct message</button>
 ```
 
+### Profile social action CSS split contract
+
+Profile like/report styling must stay split across focused CSS files so the style-contract oversized-file guard stays useful.
+
+Required assertion points:
+
+- Base desktop profile like/report rules live in `src/styles/modals/profile-social-actions.css`, imported by `src/styles/modals.css` immediately after `nested-profile.css`.
+- Mobile profile like/report overrides live in `src/styles/mobile-adaptive/mobile-profile-social-actions.css`, imported by `src/styles/mobile-adaptive.css` immediately after `mobile-profile-records.css`.
+- Broad profile layout rules such as hero grid, record rows, footer actions, and social action buttons should not all accumulate in one CSS file. If a focused rule set pushes a known debt file over its byte limit, split it into a named import-only domain file and update `styleContract.test.js`.
+- Update `docs/system-design.md` and `docs/system-design/06-ui-theme-mobile.md` when adding or renaming CSS domain entries.
+
+Wrong:
+
+```css
+/* Appending all new profile button and dialog rules to nested-profile.css */
+.profile-social-actions { ... }
+.profile-report-dialog textarea { ... }
+```
+
+Correct:
+
+```css
+@import "./modals/nested-profile.css";
+@import "./modals/profile-social-actions.css";
+```
+
 ---
 
 ## Testing Requirements

@@ -204,6 +204,63 @@ Correct:
 
 ---
 
+### Scenario: User Profile Social Actions
+
+#### 1. Scope / Trigger
+- Trigger: any change to `UserProfileCard`, friend/room profile overlays, profile hero layout, like/report buttons, or report dialogs.
+- The profile card is reused from friends/search and room member/observer flows, so behavior and layout must stay consistent on desktop and mobile.
+
+#### 2. Signatures
+- `UserProfileCard({ user, characters, token, onOpenReplay, replayDisabled, onAddFriend, onAddBlacklist, onNotice })`.
+- Profile payload fields used by the component: `id`, `relation`, `likeCount`, `likedToday`, `characterId`, `itemEffects`, `record`, `rating`, `rank`, `characterStats`, `recentResults`.
+- Like mutation: `POST /api/users/${profileUser.id}/like`.
+- Report mutation: `POST /api/users/${profileUser.id}/report` with `{ content }`.
+
+#### 3. Contracts
+- The portrait/username hero card owns the like/report controls. Do not move them into the footer relation-action area.
+- Like is an icon button with `ThumbsUp` plus a numeric count. Report is an icon-only `CircleAlert` button. Buttons must not include text labels inside the button.
+- Self profiles disable both like and report. Profiles already liked today disable only like. Blacklist relation must not disable either action unless it is also self/already-liked.
+- Successful report submission closes the dialog, clears the textarea, and emits `onNotice("举报已提交", "success")` when provided.
+- If no `onNotice` prop exists, local success text should not use the danger/error class.
+- Mobile and desktop hero content is left-aligned with portrait in the first column, identity in the second column, and social actions anchored bottom-right.
+
+#### 4. Validation & Error Matrix
+- Missing token -> mutation handlers should no-op or rely on auth route rejection; do not optimistically change local state without a response.
+- Like request fails -> keep current count/state and show error via notice/local error.
+- Report request fails -> keep dialog content and show error.
+- Report content empty after trim -> disable submit.
+- `relation === "self"` -> disable like and report controls in markup.
+
+#### 5. Good/Base/Bad Cases
+- Good: a friends-profile success notice appears in the top toast through `onNotice`.
+- Good: a room-profile report success falls back to a local success notice instead of a red error line.
+- Base: profile cards without like fields render count `0` and enabled state from relation.
+- Bad: rendering text such as "举报" inside the report icon button.
+- Bad: centering mobile hero content, because it no longer matches the desktop profile card contract.
+
+#### 6. Tests Required
+- Static markup tests assert `profile-social-actions`, `profile-like-button`, `profile-report-button`, count rendering, and disabled states.
+- Source or component tests assert like/report API paths.
+- CSS contract tests assert desktop/mobile left-aligned hero grid and bottom-right social action selectors.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<button>举报</button>
+```
+
+Correct:
+
+```jsx
+<button className="profile-report-button" title="举报" aria-label="举报用户">
+  <CircleAlert size={18} />
+</button>
+```
+
+---
+
 ### Scenario: Gacha Admin Featured Prizes Contract
 
 #### 1. Scope / Trigger

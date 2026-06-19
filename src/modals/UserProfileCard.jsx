@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChartNoAxesColumn, MonitorPlay, Star, Trophy, X } from "lucide-react";
+import { ChartNoAxesColumn, CircleAlert, MonitorPlay, Star, ThumbsUp, Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
 import { CHARACTERS } from "../shared/characters.js";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
@@ -17,7 +17,8 @@ export function UserProfileCard({
   onOpenReplay,
   replayDisabled = false,
   onAddFriend,
-  onAddBlacklist
+  onAddBlacklist,
+  onNotice
 }) {
   const [mode, setMode] = useState(normalizeGameModeId(user.mode));
   const [profileUser, setProfileUser] = useState({ ...user, mode: normalizeGameModeId(user.mode) });
@@ -28,16 +29,32 @@ export function UserProfileCard({
   const [loadingReplays, setLoadingReplays] = useState(false);
   const [replayError, setReplayError] = useState("");
   const [profileError, setProfileError] = useState("");
+  const [profileNotice, setProfileNotice] = useState("");
   const [loadingProfileMode, setLoadingProfileMode] = useState(false);
+  const [likePending, setLikePending] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [reportContent, setReportContent] = useState("");
+  const [reportPending, setReportPending] = useState(false);
   const recordSummary = splitRecordSummary(profileUser.record);
+  const canActOnProfile = profileUser.relation !== "self";
+  const canLikeProfile = canActOnProfile && !profileUser.likedToday && !likePending;
 
   useEffect(() => {
     const nextMode = normalizeGameModeId(user.mode);
     setProfileUser({ ...user, mode: nextMode });
     setMode(nextMode);
     setProfileError("");
+    setProfileNotice("");
     setReplays([]);
+    setReportContent("");
+    setShowReportDialog(false);
   }, [user]);
+
+  function notify(message, tone = "danger") {
+    if (onNotice) onNotice(message, tone);
+    else if (tone === "success") setProfileNotice(message);
+    else setProfileError(message);
+  }
 
   async function changeMode(nextMode) {
     const normalizedMode = normalizeGameModeId(nextMode);
@@ -47,6 +64,7 @@ export function UserProfileCard({
     setReplays([]);
     setReplayError("");
     setProfileError("");
+    setProfileNotice("");
     if (!token || !profileUser.id) return;
     setLoadingProfileMode(true);
     try {
@@ -76,6 +94,47 @@ export function UserProfileCard({
     }
   }
 
+  async function likeProfile() {
+    if (!canLikeProfile || !token) return;
+    setLikePending(true);
+    setProfileError("");
+    setProfileNotice("");
+    try {
+      const data = await api(`/api/users/${profileUser.id}/like`, { method: "POST", token });
+      setProfileUser((current) => ({
+        ...current,
+        likeCount: data.likeCount ?? current.likeCount ?? 0,
+        likedToday: data.likedToday ?? true
+      }));
+    } catch (error) {
+      notify(error.message, "danger");
+    } finally {
+      setLikePending(false);
+    }
+  }
+
+  async function submitReport(event) {
+    event.preventDefault();
+    if (!canActOnProfile || !token || reportPending) return;
+    setReportPending(true);
+    setProfileError("");
+    setProfileNotice("");
+    try {
+      await api(`/api/users/${profileUser.id}/report`, {
+        method: "POST",
+        token,
+        body: { content: reportContent }
+      });
+      setShowReportDialog(false);
+      setReportContent("");
+      notify("举报已提交", "success");
+    } catch (error) {
+      setProfileError(error.message);
+    } finally {
+      setReportPending(false);
+    }
+  }
+
   return (
     <section className="user-profile-card">
       <div className="profile-resume-hero">
@@ -83,10 +142,33 @@ export function UserProfileCard({
           <img src={resolveCandyPortrait(mainCharacter, profileUser.itemEffects)} alt={mainCharacter.name} />
           <CharacterChainBadge user={profileUser} characterId={mainCharacter.id} />
         </span>
-        <div>
+        <div className="profile-identity-block">
           <h3>
             <UserIdentity user={profileUser} />
           </h3>
+        </div>
+        <div className="profile-social-actions" aria-label="用户互动">
+          <button
+            className="profile-like-button"
+            type="button"
+            title="点赞"
+            aria-label={`点赞，当前 ${profileUser.likeCount ?? 0} 次`}
+            disabled={!canLikeProfile}
+            onClick={likeProfile}
+          >
+            <ThumbsUp size={17} />
+            <span>{profileUser.likeCount ?? 0}</span>
+          </button>
+          <button
+            className="profile-report-button"
+            type="button"
+            title="举报"
+            aria-label="举报用户"
+            disabled={!canActOnProfile}
+            onClick={() => setShowReportDialog(true)}
+          >
+            <CircleAlert size={18} />
+          </button>
         </div>
       </div>
       <div className="mode-tabs profile-mode-tabs" role="tablist" aria-label="对弈模式">
@@ -105,6 +187,7 @@ export function UserProfileCard({
         ))}
       </div>
       {profileError && <p className="room-people-error">{profileError}</p>}
+      {profileNotice && <p className="profile-inline-notice">{profileNotice}</p>}
       <div className="profile-resume-stats">
         <span className="profile-record-stat">
           <small><ChartNoAxesColumn size={16} />战绩</small>
@@ -166,6 +249,28 @@ export function UserProfileCard({
                 <ReplayList records={replays} characters={characters} currentUser={profileUser} onOpenReplay={onOpenReplay} />
               )}
             </div>
+          </section>
+        </div>
+      )}
+      {showReportDialog && (
+        <div className="modal-backdrop profile-modal-backdrop" onClick={() => setShowReportDialog(false)}>
+          <section className="room-floating-modal confirm-inline-modal profile-report-dialog" onClick={(event) => event.stopPropagation()}>
+            <button className="close-button" type="button" onClick={() => setShowReportDialog(false)}><X size={18} /></button>
+            <form onSubmit={submitReport}>
+              <label htmlFor="profile-report-content">举报内容</label>
+              <textarea
+                id="profile-report-content"
+                value={reportContent}
+                maxLength={400}
+                onChange={(event) => setReportContent(event.target.value)}
+                rows={5}
+              />
+              <small>{reportContent.length}/400</small>
+              <div>
+                <button className="danger-action" type="submit" disabled={reportPending || reportContent.trim().length === 0}>提交</button>
+                <button type="button" onClick={() => setShowReportDialog(false)}>取消</button>
+              </div>
+            </form>
           </section>
         </div>
       )}

@@ -172,6 +172,7 @@ export default function FriendsModal({ token, socket, characters, onNotice, onCl
         onCloseConfirm={() => setConfirmTarget(null)}
         onCloseDuelMode={() => setDuelModeTarget(null)}
         onCloseProfile={() => setProfileUser(null)}
+        onNotice={notify}
         onRequestMatchMode={requestMatchMode}
         onOpenReplay={(recordId) => {
           setProfileUser(null);

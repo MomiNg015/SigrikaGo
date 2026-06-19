@@ -16,6 +16,7 @@ export default function FriendsOverlays({
   onCloseDuelMode,
   onCloseProfile,
   onOpenReplay,
+  onNotice,
   onRequestMatchMode,
   onRemoveTarget
 }) {
@@ -32,6 +33,7 @@ export default function FriendsOverlays({
               onAddFriend={onAddFriend}
               onAddBlacklist={onAddBlacklist}
               onOpenReplay={onOpenReplay}
+              onNotice={onNotice}
             />
           </section>
         </div>

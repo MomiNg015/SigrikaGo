@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
+import AdminReports from "./AdminReports.jsx";
 import AdminShell, { ADMIN_TABS, ADMIN_TAB_LABELS } from "./AdminShell.jsx";
 
 describe("AdminShell", () => {
@@ -15,10 +16,29 @@ describe("AdminShell", () => {
       expect(html).toContain(ADMIN_TAB_LABELS[tab]);
     }
     expect(ADMIN_TABS).toContain("music");
+    expect(ADMIN_TABS).toContain("reports");
     expect(html).toContain("admin");
     expect(html).toContain("商城管理");
     expect(html).toContain("音乐管理");
+    expect(html).toContain("用户举报");
     expect(html).toContain("content");
+  });
+
+  it("renders user reports for admins", () => {
+    const html = renderToStaticMarkup(
+      <AdminReports reports={[{
+        id: "report-1",
+        reporterUsername: "alice",
+        reportedUsername: "bob",
+        content: "bad behavior",
+        createdAt: "2026-06-19T00:00:00.000Z"
+      }]} />
+    );
+
+    expect(html).toContain("用户举报");
+    expect(html).toContain("alice");
+    expect(html).toContain("bob");
+    expect(html).toContain("bad behavior");
   });
 
   it("calls setTab and onBack from shell controls", () => {

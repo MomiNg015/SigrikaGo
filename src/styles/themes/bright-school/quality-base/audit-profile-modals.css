@@ -18,7 +18,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero {
-  overflow: hidden !important;
+  overflow: visible !important;
   background: #fff6dd !important;
 }
 

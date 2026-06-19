@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  createUserReport,
   getUserProfile,
   getUserProfileByUsername,
   getUserReplays,
+  likeUserProfile,
+  listUserReports,
+  profileLikeDayKey,
   listSocialUsers,
   RELATIONSHIP_TYPES,
   setRelationship
@@ -251,6 +255,111 @@ describe("social profiles and relationships", () => {
       rank: "3段",
       status: "offline"
     });
+  });
+
+  it("uses Asia/Shanghai day keys for daily profile likes", () => {
+    expect(profileLikeDayKey(new Date("2026-06-18T15:59:59Z"))).toBe("2026-06-18");
+    expect(profileLikeDayKey(new Date("2026-06-18T16:00:00Z"))).toBe("2026-06-19");
+  });
+
+  it("stores one profile like per viewer target and day", async () => {
+    const writes = [];
+    const prisma = {
+      user: {
+        findUnique: async ({ where }) => where.id === "target-1" ? { id: "target-1" } : null
+      },
+      $executeRaw: async (_strings, ...values) => writes.push(values),
+      $queryRaw: async (_strings, ...values) => {
+        if (values.length === 1) return [{ count: 7n }];
+        if (values.length === 3) return [{ id: "like-1" }];
+        return [];
+      }
+    };
+
+    const result = await likeUserProfile({
+      prisma,
+      likerUserId: "viewer-1",
+      targetUserId: "target-1",
+      now: new Date("2026-06-19T01:00:00Z")
+    });
+
+    expect(writes[0][1]).toBe("viewer-1");
+    expect(writes[0][2]).toBe("target-1");
+    expect(writes[0][3]).toBe("2026-06-19");
+    expect(result).toEqual({ likeCount: 7, likedToday: true });
+  });
+
+  it("rejects liking or reporting yourself", async () => {
+    await expect(likeUserProfile({
+      prisma: {},
+      likerUserId: "user-1",
+      targetUserId: "user-1"
+    })).rejects.toMatchObject({ status: 400 });
+    await expect(createUserReport({
+      prisma: {},
+      reporter: { id: "user-1", username: "self" },
+      reportedUserId: "user-1",
+      content: "bad"
+    })).rejects.toMatchObject({ status: 400 });
+  });
+
+  it("stores user reports with reporter and reported snapshots", async () => {
+    const prisma = {
+      user: {
+        findUnique: async ({ where }) => where.id === "target-1" ? { id: "target-1", username: "target" } : null
+      },
+      $queryRaw: async (_strings, ...values) => [{
+        id: "report-1",
+        reporterUserId: values[1],
+        reportedUserId: values[2],
+        reporterUsername: values[3],
+        reportedUsername: values[4],
+        content: values[5],
+        createdAt: values[6]
+      }]
+    };
+
+    const result = await createUserReport({
+      prisma,
+      reporter: { id: "viewer-1", username: "viewer" },
+      reportedUserId: "target-1",
+      content: "  内容\u0000  "
+    });
+
+    expect(result.report).toMatchObject({
+      id: "report-1",
+      reporterUserId: "viewer-1",
+      reportedUserId: "target-1",
+      reporterUsername: "viewer",
+      reportedUsername: "target",
+      content: "内容"
+    });
+  });
+
+  it("lists recent user reports for admins", async () => {
+    const result = await listUserReports({
+      prisma: {
+        $queryRaw: async () => [{
+          id: "report-1",
+          reporterUserId: "viewer-1",
+          reportedUserId: "target-1",
+          reporterUsername: "viewer",
+          reportedUsername: "target",
+          content: "report body",
+          createdAt: new Date("2026-06-19T00:00:00Z")
+        }]
+      }
+    });
+
+    expect(result.reports).toEqual([{
+      id: "report-1",
+      reporterUserId: "viewer-1",
+      reportedUserId: "target-1",
+      reporterUsername: "viewer",
+      reportedUsername: "target",
+      content: "report body",
+      createdAt: "2026-06-19T00:00:00.000Z"
+    }]);
   });
 });
 

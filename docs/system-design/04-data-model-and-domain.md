@@ -65,6 +65,23 @@
 - `type`: 当前使用 `friend` 或 `blacklist`。
 - 同一个 `ownerUserId + targetUserId` 只有一条记录；好友和黑名单互斥，通过更新 `type` 覆盖。
 - 关系写入使用 raw SQL upsert，并显式写入 `createdAt` / `updatedAt`，避免开发库通过 Prisma push 建表时 `updatedAt` 没有数据库默认值而触发 NOT NULL 约束错误。
+
+### UserProfileLike
+
+用户资料点赞明细表，用于收到的点赞总数和每日点赞限制。
+
+- `likerUserId` / `targetUserId`: 点赞者与被点赞用户；自赞在领域层拒绝，黑名单关系不影响点赞。
+- `dayKey`: 服务端按 Asia/Shanghai 自然日生成的 `YYYY-MM-DD`，与 `likerUserId + targetUserId` 组成唯一键，保证同一用户每天最多给同一目标点赞一次。
+- 资料查询通过 raw SQL 统计 `targetUserId` 的总点赞数，并检查当前查看者当天是否已点赞。
+
+### UserReport
+
+用户资料举报表，用于后台只读查看用户提交的举报。
+
+- `reporterUserId` / `reportedUserId`: 举报者与被举报者；自举报在领域层拒绝，黑名单关系不影响举报。
+- `reporterUsername` / `reportedUsername`: 提交时用户名快照，避免后续改名影响历史举报可读性。
+- `content`: 复用反馈内容校验，去掉控制字符、trim 后非空且最长 400 字。
+- 后台当前只按 `createdAt desc` 展示最新 100 条；处理状态和通知用户等行为等待未来管理员邮件系统。
 - 已在 `prisma/schema.prisma` 声明，并通过 `202605220001_add_user_relationship` migration 固化建表和索引；服务启动时仍保留 `ensureSocialSchema` 作为开发库兜底。
 
 ### GameRecord

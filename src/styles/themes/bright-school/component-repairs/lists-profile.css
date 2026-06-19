@@ -51,6 +51,22 @@
   transform: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-like-button,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-button {
+  background: #ffffff !important;
+  color: var(--bright-ink) !important;
+  border: 2px solid var(--bright-border) !important;
+  box-shadow: 2px 2px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-like-button:disabled,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-button:disabled {
+  background: #d9d9dd !important;
+  color: #8d8582 !important;
+  border-color: #8d8582 !important;
+  box-shadow: none !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-hero img,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .portrait-wrap {
   background: radial-gradient(circle at 50% 58%, rgba(255, 158, 187, 0.28), rgba(255, 250, 240, 0.86) 66%) !important;

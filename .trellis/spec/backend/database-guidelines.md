@@ -426,6 +426,70 @@ await seedCharacters(prisma);
 
 ## Naming Conventions
 
+### Scenario: User Profile Likes And Reports
+
+#### 1. Scope / Trigger
+- Trigger: any change to public user profile like/report buttons, `/api/users/:id/like`, `/api/users/:id/report`, `/api/admin/user-reports`, profile payloads, or the `UserProfileLike` / `UserReport` schema.
+- This is cross-layer because storage enforces daily limits, social routes expose mutations, profile payloads expose count/state, and admin UI reads submitted reports.
+
+#### 2. Signatures
+- `UserProfileLike { id, likerUserId, targetUserId, dayKey, createdAt }` with unique `(likerUserId, targetUserId, dayKey)`.
+- `UserReport { id, reporterUserId, reportedUserId, reporterUsername, reportedUsername, content, createdAt }`.
+- `POST /api/users/:id/like` returns `{ likeCount, likedToday }`.
+- `POST /api/users/:id/report` accepts `{ content }` and returns `{ report }`.
+- `GET /api/admin/user-reports` returns `{ reports }`, latest 100 by `createdAt desc`.
+
+#### 3. Contracts
+- Server-side daily like limits use Asia/Shanghai natural days. Store the normalized `YYYY-MM-DD` key in `dayKey`; do not trust client dates.
+- Liking and reporting self are rejected before database writes.
+- Friend/blacklist relationship does not block liking or reporting.
+- Like insertion should be idempotent for the same day through the unique key and `INSERT OR IGNORE`, then re-read count/state.
+- Report content reuses feedback content validation: trim, remove control characters, require non-empty, and cap at 400 characters.
+- Store reporter/reported usernames as snapshots so admin review stays readable after future username changes.
+- Use raw SQL helpers for new social tables when runtime code must work before a regenerated Prisma client delegate is available.
+- Startup schema guard and Prisma migration must both create the tables and indexes.
+
+#### 4. Validation & Error Matrix
+- `likerUserId === targetUserId` -> `400`.
+- `reporter.id === reportedUserId` -> `400`.
+- Target user missing -> `404`.
+- Blank report content after trim/control stripping -> validation error from the feedback validator.
+- Duplicate like for same liker/target/day -> no new row, response still returns current `{ likeCount, likedToday: true }`.
+- Missing tables in older SQLite dev databases -> startup guard creates them in place.
+
+#### 5. Good/Base/Bad Cases
+- Good: a viewer likes another user once, sees the count increment, and receives `likedToday: true`.
+- Good: a blacklisted user can still submit a report, because moderation reporting is independent from social relation state.
+- Base: unauthenticated users cannot hit the authenticated mutation routes.
+- Bad: computing the daily limit in the browser or with the host local timezone.
+- Bad: only storing `reporterUserId` and `reportedUserId` without username snapshots for admin review.
+
+#### 6. Tests Required
+- Domain tests for Asia/Shanghai `dayKey`, duplicate-like behavior, self-like/self-report rejection, report content sanitation, and admin report list mapping.
+- Route handler tests for delegated like/report arguments and mounted authenticated routes.
+- Schema integrity tests for Prisma models and migration SQL.
+- Admin UI tests for the `reports` tab and read-only report table.
+- Profile component tests for disabled self/already-liked states and icon-only actions.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const dayKey = new Date().toISOString().slice(0, 10);
+await prisma.userProfileLike.create({ data: { likerUserId, targetUserId, dayKey } });
+```
+
+Correct:
+
+```js
+const dayKey = profileLikeDayKey(now);
+await prisma.$executeRaw`
+  INSERT OR IGNORE INTO UserProfileLike (id, likerUserId, targetUserId, dayKey, createdAt)
+  VALUES (${id}, ${likerUserId}, ${targetUserId}, ${dayKey}, ${now})
+`;
+```
+
 <!-- Table names, column names, index names -->
 
 (To be filled by the team)

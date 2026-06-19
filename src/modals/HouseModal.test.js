@@ -76,7 +76,8 @@ describe("deriveCharacterRecordStats", () => {
         rating: 1160,
         record: "29局 · 15胜10负4和",
         characterId: "sigrika",
-        characterStats: []
+        characterStats: [],
+        likeCount: 3
       },
       characters: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" }],
       token: "token"
@@ -97,6 +98,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).toContain("profile-record-total");
     expect(profileHtml).toContain("profile-record-breakdown");
     expect(profileHtml).toContain("profile-mode-tabs");
+    expect(profileHtml).toContain("profile-social-actions");
+    expect(profileHtml).toContain("profile-like-button");
+    expect(profileHtml).toContain("profile-report-button");
+    expect(profileHtml).toContain(">3</span>");
     expect(profileHtml).toContain(">五子棋</button>");
     expect(profileHtml).not.toContain(">来下五子棋吗？</button>");
     expect(profileHtml).toContain("recent-result-label");
@@ -106,6 +111,35 @@ describe("deriveCharacterRecordStats", () => {
     expect(recordHtml).toContain("character-record-summary");
     expect(recordHtml).toContain("character-record-total");
     expect(recordHtml).toContain("character-record-breakdown");
+  });
+
+  it("disables profile like and report actions for self and disables repeat daily likes", () => {
+    const baseUser = {
+      id: 1,
+      username: "moming",
+      rank: "3段",
+      rating: 1160,
+      record: "29局 · 15胜10负4和",
+      characterId: "sigrika",
+      characterStats: [],
+      likeCount: 4
+    };
+    const characters = [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" }];
+    const selfHtml = renderToStaticMarkup(createElement(UserProfileCard, {
+      user: { ...baseUser, relation: "self" },
+      characters,
+      token: "token"
+    }));
+    const likedHtml = renderToStaticMarkup(createElement(UserProfileCard, {
+      user: { ...baseUser, relation: "none", likedToday: true },
+      characters,
+      token: "token"
+    }));
+
+    expect(selfHtml).toMatch(/class="profile-like-button"[^>]*disabled=""/);
+    expect(selfHtml).toMatch(/class="profile-report-button"[^>]*disabled=""/);
+    expect(likedHtml).toMatch(/class="profile-like-button"[^>]*disabled=""/);
+    expect(likedHtml).not.toMatch(/class="profile-report-button"[^>]*disabled=""/);
   });
 
   it("marks house character cards with active item effect icons", () => {
@@ -599,6 +633,13 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("max-height: min(128px, 20dvh) !important");
     expect(finalMobileCss).toContain(".profile-grid.top-stats-bar .stat strong");
     expect(finalMobileCss).toContain(".user-profile-card .profile-mode-tabs");
+    expect(finalMobileCss).toContain(".user-profile-card .profile-resume-hero");
+    expect(finalMobileCss).toContain("grid-template-columns: 86px minmax(0, 1fr) !important");
+    expect(finalMobileCss).toContain("justify-items: start !important");
+    expect(finalMobileCss).toContain("text-align: left !important");
+    expect(finalMobileCss).toContain(".user-profile-card .profile-social-actions");
+    expect(finalMobileCss).toContain(".user-profile-card .profile-like-button:disabled");
+    expect(finalMobileCss).toContain(".user-profile-card .profile-report-button:disabled");
     expect(finalMobileCss).toContain(".user-profile-card .profile-footer-actions");
     expect(finalMobileCss).toContain("grid-template-columns: max-content minmax(0, max-content) !important");
     expect(finalMobileCss).toContain(".user-profile-card .profile-replay-button");

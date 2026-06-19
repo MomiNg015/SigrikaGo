@@ -1,5 +1,6 @@
 import { GAME_RESULT_REASONS, recordWinnerColor } from "./gameRecords.js";
 import { achievementStatsForUser, attachAchievementEquipmentAssetsToUsers } from "./achievements.js";
+import { validateFeedbackContent } from "./feedback.js";
 import { publicUser, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 
@@ -22,6 +23,32 @@ export async function ensureSocialSchema(prisma) {
   await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS UserRelationship_ownerUserId_targetUserId_key ON UserRelationship(ownerUserId, targetUserId)`;
   await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS UserRelationship_ownerUserId_type_idx ON UserRelationship(ownerUserId, type)`;
   await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS UserRelationship_targetUserId_idx ON UserRelationship(targetUserId)`;
+  await prisma.$executeRaw`
+    CREATE TABLE IF NOT EXISTS UserProfileLike (
+      id TEXT NOT NULL PRIMARY KEY,
+      likerUserId TEXT NOT NULL,
+      targetUserId TEXT NOT NULL,
+      dayKey TEXT NOT NULL,
+      createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await prisma.$executeRaw`CREATE UNIQUE INDEX IF NOT EXISTS UserProfileLike_likerUserId_targetUserId_dayKey_key ON UserProfileLike(likerUserId, targetUserId, dayKey)`;
+  await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS UserProfileLike_targetUserId_idx ON UserProfileLike(targetUserId)`;
+  await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS UserProfileLike_likerUserId_createdAt_idx ON UserProfileLike(likerUserId, createdAt)`;
+  await prisma.$executeRaw`
+    CREATE TABLE IF NOT EXISTS UserReport (
+      id TEXT NOT NULL PRIMARY KEY,
+      reporterUserId TEXT NOT NULL,
+      reportedUserId TEXT NOT NULL,
+      reporterUsername TEXT NOT NULL,
+      reportedUsername TEXT NOT NULL,
+      content TEXT NOT NULL,
+      createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS UserReport_createdAt_idx ON UserReport(createdAt)`;
+  await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS UserReport_reporterUserId_idx ON UserReport(reporterUserId)`;
+  await prisma.$executeRaw`CREATE INDEX IF NOT EXISTS UserReport_reportedUserId_idx ON UserReport(reportedUserId)`;
 }
 
 export async function listSocialUsers({ prisma, userId, statusForUser }) {
@@ -104,7 +131,7 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
   });
   if (!user) return null;
 
-  const [decoratedUsers, records, viewerRelation, achievementStats] = await Promise.all([
+  const [decoratedUsers, records, viewerRelation, achievementStats, likeSummary] = await Promise.all([
     attachAchievementEquipmentAssetsToUsers(prisma, [user]),
     prisma.gameRecord.findMany({
       where: {
@@ -125,13 +152,16 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
         `
       : []
     ,
-    achievementStatsForUser({ prisma, userId })
+    achievementStatsForUser({ prisma, userId }),
+    profileLikeSummary({ prisma, targetUserId: userId, viewerId })
   ]);
   const decoratedUser = decoratedUsers[0] ?? user;
 
   return {
     ...toSocialUser(decoratedUser, statusForUser?.(decoratedUser.id) ?? "offline", mode),
     achievementStats,
+    likeCount: likeSummary.likeCount,
+    likedToday: likeSummary.likedToday,
     record: formatRecord(recordStats(userId, records)),
     characterStats: characterStats(userId, records),
     relation: viewerId === userId ? "self" : viewerRelation?.[0]?.type ?? ""
@@ -182,6 +212,49 @@ export async function getUserReplays({ prisma, userId, mode: modeInput = "spark"
   }));
 }
 
+export async function likeUserProfile({ prisma, likerUserId, targetUserId, now = new Date() }) {
+  assertDifferentUsers(likerUserId, targetUserId);
+  const target = await prisma.user.findUnique({
+    where: { id: targetUserId },
+    select: { id: true }
+  });
+  if (!target) throw routeError(404, "用户不存在");
+  const dayKey = profileLikeDayKey(now);
+  await prisma.$executeRaw`
+    INSERT OR IGNORE INTO UserProfileLike (id, likerUserId, targetUserId, dayKey, createdAt)
+    VALUES (${crypto.randomUUID()}, ${likerUserId}, ${targetUserId}, ${dayKey}, ${now})
+  `;
+  return profileLikeSummary({ prisma, targetUserId, viewerId: likerUserId, now });
+}
+
+export async function createUserReport({ prisma, reporter, reportedUserId, content }) {
+  assertDifferentUsers(reporter?.id, reportedUserId);
+  const validated = validateFeedbackContent(content);
+  if (!validated.ok) throw routeError(400, validated.error);
+  const reported = await prisma.user.findUnique({
+    where: { id: reportedUserId },
+    select: { id: true, username: true }
+  });
+  if (!reported) throw routeError(404, "用户不存在");
+  const now = new Date();
+  const rows = await prisma.$queryRaw`
+    INSERT INTO UserReport (id, reporterUserId, reportedUserId, reporterUsername, reportedUsername, content, createdAt)
+    VALUES (${crypto.randomUUID()}, ${reporter.id}, ${reported.id}, ${reporter.username}, ${reported.username}, ${validated.value}, ${now})
+    RETURNING id, reporterUserId, reportedUserId, reporterUsername, reportedUsername, content, createdAt
+  `;
+  return { report: toUserReportPayload(rows[0]) };
+}
+
+export async function listUserReports({ prisma }) {
+  const rows = await prisma.$queryRaw`
+    SELECT id, reporterUserId, reportedUserId, reporterUsername, reportedUsername, content, createdAt
+    FROM UserReport
+    ORDER BY createdAt DESC
+    LIMIT 100
+  `;
+  return { reports: rows.map(toUserReportPayload) };
+}
+
 export function publicProfileSelect() {
   return {
     id: true,
@@ -224,6 +297,47 @@ function assertRelationship(ownerUserId, targetUserId, type) {
   if (!ownerUserId || !targetUserId) throw routeError(400, "用户不存在");
   if (ownerUserId === targetUserId) throw routeError(400, "不能对自己执行该操作");
   if (!Object.values(RELATIONSHIP_TYPES).includes(type)) throw routeError(400, "未知关系类型");
+}
+
+function assertDifferentUsers(sourceUserId, targetUserId) {
+  if (!sourceUserId || !targetUserId) throw routeError(400, "用户不存在");
+  if (sourceUserId === targetUserId) throw routeError(400, "不能对自己执行该操作");
+}
+
+async function profileLikeSummary({ prisma, targetUserId, viewerId, now = new Date() }) {
+  const dayKey = profileLikeDayKey(now);
+  const [countRows, todayRows] = await Promise.all([
+    prisma.$queryRaw`SELECT COUNT(*) AS count FROM UserProfileLike WHERE targetUserId = ${targetUserId}`,
+    viewerId && viewerId !== targetUserId
+      ? prisma.$queryRaw`
+          SELECT id FROM UserProfileLike
+          WHERE likerUserId = ${viewerId}
+            AND targetUserId = ${targetUserId}
+            AND dayKey = ${dayKey}
+          LIMIT 1
+        `
+      : []
+  ]);
+  return {
+    likeCount: Number(countRows?.[0]?.count ?? 0),
+    likedToday: viewerId === targetUserId ? true : todayRows.length > 0
+  };
+}
+
+export function profileLikeDayKey(date = new Date()) {
+  return new Date(date.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+function toUserReportPayload(record) {
+  return {
+    id: record.id,
+    reporterUserId: record.reporterUserId,
+    reportedUserId: record.reportedUserId,
+    reporterUsername: record.reporterUsername,
+    reportedUsername: record.reportedUsername,
+    content: record.content,
+    createdAt: new Date(record.createdAt).toISOString()
+  };
 }
 
 function recordStats(userId, records) {

@@ -145,6 +145,56 @@ describe("social route handlers", () => {
     expect(res.body).toEqual({ records: [{ id: "record-1" }] });
   });
 
+  it("likes a profile through an authenticated route", async () => {
+    let likeArgs = null;
+    const handlers = createSocialRouteHandlers({
+      prisma: {},
+      statusForUser: () => "offline",
+      likeUserProfileFn: async (args) => {
+        likeArgs = args;
+        return { likeCount: 12, likedToday: true };
+      }
+    });
+    const res = createResponse();
+
+    await handlers.likeProfile({
+      user: { id: "viewer-1" },
+      params: { id: "target-1" }
+    }, res);
+
+    expect(likeArgs).toMatchObject({
+      likerUserId: "viewer-1",
+      targetUserId: "target-1"
+    });
+    expect(res.body).toEqual({ likeCount: 12, likedToday: true });
+  });
+
+  it("submits a user report through an authenticated route", async () => {
+    let reportArgs = null;
+    const handlers = createSocialRouteHandlers({
+      prisma: {},
+      statusForUser: () => "offline",
+      createUserReportFn: async (args) => {
+        reportArgs = args;
+        return { report: { id: "report-1" } };
+      }
+    });
+    const res = createResponse();
+
+    await handlers.reportProfile({
+      user: { id: "viewer-1", username: "viewer" },
+      params: { id: "target-1" },
+      body: { content: "bad behavior" }
+    }, res);
+
+    expect(reportArgs).toMatchObject({
+      reporter: { id: "viewer-1", username: "viewer" },
+      reportedUserId: "target-1",
+      content: "bad behavior"
+    });
+    expect(res.body).toEqual({ report: { id: "report-1" } });
+  });
+
   it("mounts authenticated social routes and public replay routes separately", () => {
     const router = createSocialRouter({
       prisma: {},
@@ -160,6 +210,8 @@ describe("social route handlers", () => {
 
     expect(routeLayerCounts.get("/social")).toBe(2);
     expect(routeLayerCounts.get("/users/:id/profile")).toBe(2);
+    expect(routeLayerCounts.get("/users/:id/like")).toBe(2);
+    expect(routeLayerCounts.get("/users/:id/report")).toBe(2);
     expect(routeLayerCounts.get("/users/:id/replays")).toBe(1);
   });
 });
