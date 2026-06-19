@@ -255,13 +255,25 @@ describe("ShopModal helpers", () => {
   });
 
   it("keeps the Bright School mobile shop category tablist chrome-free", () => {
-    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const css = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
 
     expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs");
     expect(css).toContain("padding: 0 !important");
     expect(css).toContain("border: 0 !important");
     expect(css).toContain("background: transparent !important");
     expect(css).toContain("box-shadow: none !important");
+  });
+
+  it("keeps Bright School mobile shop shadows inside padded clipping containers", () => {
+    const css = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+
+    expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout");
+    expect(css).toContain("padding: 4px 6px 8px 4px !important");
+    expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content");
+    expect(css).toContain("padding: 2px 2px 6px !important");
+    expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-grid");
+    expect(css).toContain("padding: 2px 8px 12px 2px !important");
+    expect(css).toContain("scroll-padding: 2px 8px 12px 2px !important");
   });
 
   it("centers character and decoration prices after removing the visible limit row", () => {
