@@ -365,13 +365,13 @@ Required assertion points:
 
 ### UserIdentity Nameplate Background Contract
 
-Achievement nameplate backgrounds are skins for a fixed-ratio username badge, not a separate floating layer. `src/shared/UserIdentity.jsx` should render one `.user-identity-name-tag` around `.user-identity-name`; when an equipped nameplate image exists, apply it as that tag's `backgroundImage`. Equipped nameplates use the shared `3.75:1` slot and scene-owned `--user-nameplate-scale`; the username text inherits the same scene font size as unequipped usernames. Parent surfaces such as room player panels and leaderboard cells center or align the whole tag.
+Achievement nameplate backgrounds are skins for a fixed-ratio username badge, not a separate floating layer. `src/shared/UserIdentity.jsx` should render one `.user-identity-name-tag` around `.user-identity-name`; when an equipped nameplate image exists, apply it as that tag's `backgroundImage`. Equipped nameplates use the shared `3.75:1` slot and scene-owned `--user-nameplate-scale`; the username text uses the shared nameplate font token so text and background scale together. Parent surfaces such as room player panels and leaderboard cells center or align the whole tag.
 
 Nameplate PNG assets should still be alpha-trimmed before use. Transparent canvas padding changes the apparent center of the art even when the tag model is stable. Use `node scripts/pngTrim.mjs <input.png> [output.png]` for 8-bit RGBA PNG nameplates before wiring them into `AchievementRewardAsset.imageUrl`.
 
 Required assertion points:
 
-- `src/styles/hudComponents.test.js` should assert that the unequipped username tag uses `width: auto`, transparent borderless default styling, and responsive max-width/padding variables, while the equipped nameplate tag uses the fixed `--user-nameplate-width` / `--user-nameplate-height` slot without a nameplate-specific font size.
+- `src/styles/hudComponents.test.js` should assert that the unequipped username tag uses `width: auto`, transparent borderless default styling, and responsive max-width/padding variables, while the equipped nameplate tag uses the fixed `--user-nameplate-width` / `--user-nameplate-height` slot and the shared `--user-nameplate-font-size`.
 - Home player plaques should render nameplates through the nested `UserIdentity` tag, not a full-card plaque background layer. Bright School player plaque grids should keep a nonzero minimum username column so stats panels cannot collapse short names into ellipses, and plaque-scoped `UserIdentity` text must override list-style `text-overflow: ellipsis` so ordinary usernames render in full.
 - `scripts/pngTrim.test.js` should cover alpha-bound trimming before relying on the helper for checked-in nameplate assets.
 
@@ -379,19 +379,27 @@ Wrong:
 
 ```css
 .user-identity.has-nameplate .user-identity-name {
-  font-size: var(--user-nameplate-font-size);
+  font-size: calc(12px + var(--username-length) * 0.5px);
 }
 ```
 
-This makes equipped usernames visually different from unequipped usernames in the same scene.
+This makes the rendered size depend on username length again.
 
 Correct:
 
 ```css
+.user-identity {
+  --user-nameplate-font-size: calc(15px * var(--user-nameplate-scale));
+}
+
 .user-identity.has-nameplate .user-identity-name-tag {
   width: var(--user-nameplate-width);
   height: var(--user-nameplate-height);
   padding-inline: var(--user-nameplate-padding-x);
+}
+
+.user-identity.has-nameplate .user-identity-name {
+  font-size: var(--user-nameplate-font-size);
 }
 ```
 

@@ -492,8 +492,8 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain(".user-identity.has-nameplate .user-identity-name-tag");
     expect(hudCss).toContain("width: var(--user-nameplate-width)");
     expect(hudCss).toContain("height: var(--user-nameplate-height)");
-    expect(hudCss).not.toContain("--user-nameplate-font-size");
-    expect(hudCss).not.toContain(".user-identity.has-nameplate .user-identity-name {\n  font-size");
+    expect(hudCss).toContain("--user-nameplate-font-size: calc(15px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain(".user-identity.has-nameplate .user-identity-name {\n  font-size: var(--user-nameplate-font-size)");
     expect(hudCss).toContain(".leaderboard-player .user-identity {\n  justify-self: center");
     expect(hudCss).toContain(".leaderboard-player .user-identity-main {\n  justify-content: center");
     expect(hudCss).toContain(".leaderboard-player .user-identity-name-tag");
