@@ -159,6 +159,17 @@ describe("RoomScreen helpers", () => {
     expect(shouldShowRoomCloseCountdown({ game: { phase: "finished" }, closesAt: null })).toBe(false);
   });
 
+  it("keeps the close countdown timer local to the room header", () => {
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url));
+    const headerSource = readText(new URL("./header/RoomHeader.jsx", import.meta.url));
+
+    expect(source).not.toContain("closeCountdownNow");
+    expect(source).not.toContain("setInterval(() => setCloseCountdownNow");
+    expect(headerSource).toContain("function RoomCloseCountdown");
+    expect(headerSource).toContain("const timerId = setInterval(() => setNow(Date.now()), 1000)");
+    expect(headerSource).toContain("<RoomCloseCountdown closesAt={room.closesAt} />");
+  });
+
   it("treats finished player rooms as spectator view", () => {
     expect(effectiveRoomRole({ role: "player", game: { phase: "playing" } })).toBe("player");
     expect(effectiveRoomRole({ role: "player", game: { phase: "finished" } })).toBe("spectator");

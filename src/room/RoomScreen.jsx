@@ -51,7 +51,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     viewColor,
     winnerColor
   } = useRoomBoardView({ room, user, replayStep });
-  const [closeCountdownNow, setCloseCountdownNow] = useState(Date.now());
   const showCloseCountdown = shouldShowRoomCloseCountdown(displayRoom);
   const useMobileLayout = useMobileRoomLayout();
   const { roomRequestToast, handleTimedRequestAction } = useTimedRoomRequestToast({
@@ -90,13 +89,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     room
   });
   useDoubleMoveToast({ room: displayRoom, showToast: onToast, isReplay });
-
-  useEffect(() => {
-    if (!showCloseCountdown) return undefined;
-    setCloseCountdownNow(Date.now());
-    const timerId = setInterval(() => setCloseCountdownNow(Date.now()), 1000);
-    return () => clearInterval(timerId);
-  }, [showCloseCountdown, displayRoom.closesAt]);
 
   const requestResignConfirm = useCallback(() => {
     if (displayRoom.game.phase === "finished") return;
@@ -146,7 +138,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   return (
     <Layout>
       <RoomHeader
-        closeCountdownNow={closeCountdownNow}
         isReplay={isReplay}
         room={displayRoom}
         roomGameInfo={roomGameInfo}

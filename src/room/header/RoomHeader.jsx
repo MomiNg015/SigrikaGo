@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DoorOpen, Hash, Menu, MessageSquareText, PanelRight, Settings } from "lucide-react";
 import { roomCloseCountdownText } from "../roomState.js";
 
 export default function RoomHeader({
-  closeCountdownNow,
   isReplay,
   room,
   roomGameInfo,
@@ -35,11 +34,7 @@ export default function RoomHeader({
             </>
           )}
         </p>
-        {showCloseCountdown && (
-          <span className="room-info-tag close-countdown">
-            {roomCloseCountdownText(room.closesAt, closeCountdownNow)}
-          </span>
-        )}
+        {showCloseCountdown && <RoomCloseCountdown closesAt={room.closesAt} />}
         {isReplay && <h1>棋谱回放</h1>}
       </div>
       <div className="room-toggles">
@@ -90,5 +85,21 @@ export default function RoomHeader({
         </div>
       </div>
     </header>
+  );
+}
+
+export function RoomCloseCountdown({ closesAt }) {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    setNow(Date.now());
+    const timerId = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timerId);
+  }, [closesAt]);
+
+  return (
+    <span className="room-info-tag close-countdown">
+      {roomCloseCountdownText(closesAt, now)}
+    </span>
   );
 }
