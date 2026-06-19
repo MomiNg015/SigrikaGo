@@ -27,7 +27,8 @@
     max-width: 100% !important;
   }
 
-  .user-profile-card .profile-rank-results {
+  .user-profile-card .profile-rank-results,
+  .resume-modal .profile-rank-results {
     display: grid !important;
     grid-template-columns: repeat(10, minmax(0, 1fr)) !important;
     align-items: center !important;
@@ -36,13 +37,16 @@
     padding: 8px clamp(6px, 2vw, 10px) !important;
   }
 
-  .user-profile-card .profile-rank-results .recent-result-label {
+  .user-profile-card .profile-rank-results .recent-result-label,
+  .resume-modal .profile-rank-results .recent-result-label {
     grid-column: 1 / -1 !important;
     width: 100% !important;
   }
 
   .user-profile-card .profile-rank-results .recent-result-marker,
-  .user-profile-card .profile-rank-results .recent-result-empty {
+  .user-profile-card .profile-rank-results .recent-result-empty,
+  .resume-modal .profile-rank-results .recent-result-marker,
+  .resume-modal .profile-rank-results .recent-result-empty {
     width: clamp(20px, 5.8vw, 30px) !important;
     min-width: 0 !important;
     height: clamp(20px, 5.8vw, 30px) !important;
