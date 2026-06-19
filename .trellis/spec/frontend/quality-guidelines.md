@@ -145,6 +145,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - `areChatBoxPropsEqual(previous, next)` is the chat widget comparator for avoiding room-clock rerenders.
 - `areRoomPeopleListPropsEqual(previous, next)` is the member-list comparator for avoiding room-clock rerenders.
 - `areOperationHintPropsEqual(previous, next)` is the action-hint comparator for avoiding room-clock rerenders.
+- `areActionBarPropsEqual(previous, next)` is the room action comparator for avoiding countdown or clock-only rerenders while keeping button availability and decision bars live.
 - `triggerUnavailableShake(target)` restarts `ui-unavailable-shake` without reading layout metrics such as `offsetWidth`.
 - `lastMarkedAction(history)` is the canonical source for the board's latest placed-stone marker.
 
@@ -157,6 +158,9 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - `RoomPeopleList` should ignore player `time` changes from `room:clock` while still rerendering for room code changes, player connection state, spectator membership, and user display metadata used by `roomPeople()`.
 - `OperationHint` should ignore player `time` changes from `room:clock` while still rerendering for action-relevant fields: room code, phase, turn, winner, current user id, scoring reference, draw request reference, and color-to-user mappings.
 - `RoomBattleStage` must also pass stable floating-layer callbacks into memoized room widgets such as `ChatBox`; inline `onFloatingLayerRequest` callbacks defeat memo comparison during parent renders.
+- `ActionBar` should ignore player `time` changes and unused timed-request payloads while still rerendering for role, mode, phase, turn ownership, skill state, skill uses, decision locks, opponent connectivity, scoring reference, replay step, and every rendered callback identity.
+- `RoomBattleStage` must pass named stable callbacks into `ActionBar` for test tools and scoring decisions; inline action dispatchers defeat `areActionBarPropsEqual()` during parent renders.
+- `RoomScreen` should pass stable confirmation and header-toggle callbacks into room composition; close-countdown state should not recreate pass/resign/exit or coordinate/move toggle handlers.
 - Comparator inputs must include visible point state, board size, marker/decoration classes, move number state, scoring mark state, and interaction capability flags such as `hasScoringPoint`.
 - Do not rely on `game` object identity inside a point button; derive per-point display props in `Board` and pass only the point's slice.
 - Unavailable feedback may remove and re-add the shake class on the next animation frame; it must not force a synchronous layout read to restart CSS animation.
@@ -173,6 +177,8 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - Player connected state, username/rank/rating, achievement display metadata, or spectator list changes -> `RoomPeopleList` must rerender.
 - Room clock tick changes only player `time` -> `OperationHint` should stay memoized.
 - Phase, turn, winner, scoring/draw request, or active-player user mapping changes -> `OperationHint` must rerender.
+- Room clock or close-countdown tick changes only player `time` or header timer text -> `ActionBar` should stay memoized.
+- Skill uses, pending-skill active state, scoring confirmation reference, replay step, or rendered action callback identity changes -> `ActionBar` must rerender.
 - Scoring handler availability changes -> point button must re-render because pointer/click semantics change.
 - Point stone, mark, decoration, move number, preview class, or confirmation class changes -> point button must re-render.
 - Browser lacks `requestAnimationFrame` -> unavailable feedback may fall back to a timer instead of forcing layout.
@@ -185,6 +191,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - Good: `ChatBox` compares `room.chat` and chat display metadata, not the full `room.players[*].time` object.
 - Good: `RoomPeopleList` compares the `roomPeople()` source fields, not full player objects.
 - Good: `OperationHint` compares the action hint inputs, not full player timer objects.
+- Good: `ActionBar` compares the action-control inputs and rendered callback identities, not full player timer objects or unused request deadlines.
 - Base: A changed point object for one intersection re-renders that point and preserves other memoized points.
 - Bad: Ignoring handler identity while the point button directly closes over stale `onPoint`, `onScoringPoint`, or `onNeutral` props.
 - Bad: Restarting disabled feedback by reading `target.offsetWidth`.
@@ -197,6 +204,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - Chat tests must assert `areChatBoxPropsEqual()` ignores clock-only player time changes and rerenders on chat content or chat-name metadata changes.
 - Room people tests must assert `areRoomPeopleListPropsEqual()` ignores clock-only player time changes and rerenders on member visibility metadata changes.
 - Operation hint tests must assert `areOperationHintPropsEqual()` ignores clock-only player time changes and rerenders on action-relevant room changes.
+- Action bar tests must assert `areActionBarPropsEqual()` ignores clock-only player time changes, rerenders on skill/scoring changes, and source-guards stable `RoomBattleStage` callbacks.
 - Room screen source tests must assert memoized room widgets receive stable floating-layer callbacks.
 - Board view tests must assert Chisa `liberty-purge` placement becomes the latest marked action after an ordinary move.
 - Interaction feedback tests must assert source behavior does not use `offsetWidth` and uses an async restart mechanism such as `requestAnimationFrame`.

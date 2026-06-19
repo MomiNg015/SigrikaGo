@@ -176,8 +176,12 @@ describe("RoomScreen helpers", () => {
     const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("function requestPassConfirm()");
+    expect(source).toContain("const requestPassConfirm = useCallback");
     expect(source).toContain("onConfirm: () => onGameAction({ type: \"pass\" })");
+    expect(source).toContain("const toggleCoords = useCallback");
+    expect(source).toContain("const toggleMoves = useCallback");
+    expect(source).toContain("onToggleCoords={toggleCoords}");
+    expect(source).toContain("onToggleMoves={toggleMoves}");
     expect(source).toContain("是否弃一手");
     expect(battleSource).toContain("onPass={onPass}");
     expect(battleSource).not.toContain("onPass={() => onGameAction({ type: \"pass\" })}");
