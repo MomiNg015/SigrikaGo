@@ -104,20 +104,41 @@ describe("roomBroadcasts", () => {
     const io = fakeIo();
     const persistRoom = vi.fn();
     const room = testRoom();
+    room.revision = 7;
 
-    broadcastRoomPatch(io, room, { type: "chat:append", message: { id: "chat-1" } }, { persistRoom });
+    broadcastRoomPatch(
+      io,
+      room,
+      { type: "chat:append", eventId: "stale", baseRevision: 1, revision: 2, roomCode: "99999", message: { id: "chat-1" } },
+      { persistRoom }
+    );
 
     expect(persistRoom).toHaveBeenCalledWith(room, { force: true });
+    expect(room.revision).toBe(8);
     expect(io.messages).toEqual([
       {
         socketId: "black-socket",
         event: "room:patch",
-        payload: { roomCode: "12345", type: "chat:append", message: { id: "chat-1" } }
+        payload: {
+          roomCode: "12345",
+          eventId: "12345:8:chat:append",
+          baseRevision: 7,
+          revision: 8,
+          type: "chat:append",
+          message: { id: "chat-1" }
+        }
       },
       {
         socketId: "spectator-socket",
         event: "room:patch",
-        payload: { roomCode: "12345", type: "chat:append", message: { id: "chat-1" } }
+        payload: {
+          roomCode: "12345",
+          eventId: "12345:8:chat:append",
+          baseRevision: 7,
+          revision: 8,
+          type: "chat:append",
+          message: { id: "chat-1" }
+        }
       }
     ]);
   });

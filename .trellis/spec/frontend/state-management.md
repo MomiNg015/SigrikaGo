@@ -285,6 +285,69 @@ Correct:
 setRoom((current) => applyRoomSnapshot(current, roomView));
 ```
 
+### Scenario: Room Patch Continuity
+
+#### 1. Scope / Trigger
+- Trigger: adding or changing any lightweight `room:patch` payload, room patch reducer, socket patch listener, or backend room patch emission path.
+- Room patches are incremental realtime state, not authoritative snapshots. They must be cheap to apply, idempotent, and recoverable when a client misses a patch.
+
+#### 2. Signatures
+- Backend patch payloads include `{ roomCode, eventId, type, baseRevision, revision, ...patchFields }`.
+- Full room views include `revision` so the client knows the latest patch stream position after `room:update`, `room:resume`, or `match:found`.
+- `applyRoomPatch(currentRoom, patch)` returns the room object to store in state.
+- `roomPatchNeedsResume(currentRoom, patch)` returns `true` when a patch is for the current room but its revision does not continue from the current room revision.
+- Installed socket handlers must emit `room:resume` when `roomPatchNeedsResume(...)` is true.
+
+#### 3. Contracts
+- `server/roomBroadcasts.js` owns patch revision metadata. Individual socket event modules should pass the domain patch shape, not hand-roll `eventId`, `baseRevision`, or `revision`.
+- Patch revisions are monotonic per room. A patch with `revision <= currentRoom.revision` is duplicate or stale and must not be applied.
+- A patch with `baseRevision !== currentRoom.revision` and `revision > currentRoom.revision` indicates a gap. The client must reject it and request `room:resume`.
+- Legacy patches without `revision` may still be applied by type-specific reducers for backward-compatible tests or narrow mocks, but new runtime patches must carry revision fields.
+- Patch reducers must preserve unchanged room slices, especially `game` and `players`, so chat/request patches do not cause board or timer panels to re-render.
+- Full `room:update` and `room:resume` remain authoritative. Patch recovery should request a snapshot rather than trying to infer missing intermediate state.
+
+#### 4. Validation & Error Matrix
+- Patch is for another room code -> ignore it and do not request resume.
+- Patch has no revision -> apply only if its type-specific reducer can do so idempotently.
+- Patch revision is equal to or below current revision -> ignore as duplicate/stale.
+- Patch base revision differs from current revision while patch revision is newer -> reject patch and emit `room:resume`.
+- Patch type is unknown -> ignore it without mutating state.
+- Current room is null -> ignore patch because there is no local target for continuity checks.
+
+#### 5. Good/Base/Bad Cases
+- Good: `chat:append` with `baseRevision: 2` and `revision: 3` appends one message, stores `revision: 3`, and preserves the existing `game` object.
+- Base: duplicate `chat:append` with the same message id or same revision returns the current room object.
+- Bad: applying a patch with `baseRevision: 4` while the client room is at `revision: 1`, because that can hide missed moves, request state, or chat entries.
+- Bad: calling `setRoom((current) => ({ ...current, chat: nextChat }))` directly from a socket listener without using the shared reducer and gap check.
+
+#### 6. Tests Required
+- `src/app/roomPatch.test.js` must cover continuous patch application, duplicate/stale patch ignoring, unknown/wrong-room patch ignoring, and gap detection.
+- `src/app/socketHandlers.test.js` must assert gapped installed patch listeners emit `room:resume` and do not call `setRoom`.
+- Backend broadcast tests must assert patch payloads include `eventId`, `baseRevision`, and `revision`, and that the room revision increments before persistence.
+- Room factory, view, and persistence tests must assert room `revision` is created, exposed in views, persisted, and hydrated with a safe default for older snapshots.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+socket.on("room:patch", (patch) => {
+  setRoom((current) => ({ ...current, chat: [...current.chat, patch.message] }));
+});
+```
+
+This applies patches even when the client missed an earlier patch and can re-render unchanged room slices unnecessarily.
+
+Correct:
+
+```js
+socket.on("room:patch", (patch) => {
+  handlers.roomPatch(patch, () => socket.emit("room:resume", buildRoomResumeRequest()));
+});
+```
+
+`handlers.roomPatch` checks revision continuity before calling `applyRoomPatch`, and requests the authoritative snapshot when continuity is broken.
+
 ### Scenario: App Overlay Visibility State
 
 #### 1. Scope / Trigger

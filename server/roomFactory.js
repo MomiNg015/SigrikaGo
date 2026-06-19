@@ -36,6 +36,7 @@ export function createRoom(first, second, {
     spectators: [],
     game,
     chat: [],
+    revision: 0,
     createdAt,
     openingEndsAt: createdAt + MATCH_SUCCESS_DELAY_MS + OPENING_NOTICE_DELAY_MS,
     closesAt: null,

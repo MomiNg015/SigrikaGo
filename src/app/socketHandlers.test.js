@@ -110,22 +110,43 @@ describe("socket handlers", () => {
 
   it("applies room patches without replacing unchanged room slices", () => {
     const game = { phase: "playing" };
-    const currentRoom = { code: "12345", game, chat: [] };
-    const deps = handlerDeps();
+    const currentRoom = { code: "12345", revision: 0, game, chat: [] };
+    const deps = handlerDeps({ roomRef: { current: currentRoom } });
     const handlers = createSocketHandlers(deps);
 
     handlers.roomPatch({
       roomCode: "12345",
       type: "chat:append",
+      baseRevision: 0,
+      revision: 1,
       message: { id: "chat-1", text: "hello" }
     });
 
     const nextRoom = roomSetterResult(deps, 1, currentRoom);
     expect(nextRoom).toEqual({
       ...currentRoom,
+      revision: 1,
       chat: [{ id: "chat-1", text: "hello" }]
     });
     expect(nextRoom.game).toBe(game);
+  });
+
+  it("requests a room resume instead of applying a gapped room patch", () => {
+    const currentRoom = { code: "12345", revision: 1, chat: [] };
+    const deps = handlerDeps({ roomRef: { current: currentRoom } });
+    const handlers = createSocketHandlers(deps);
+    const requestRoomResume = vi.fn();
+
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 4,
+      revision: 5,
+      message: { id: "chat-5", text: "late" }
+    }, requestRoomResume);
+
+    expect(requestRoomResume).toHaveBeenCalledOnce();
+    expect(deps.setRoom).not.toHaveBeenCalled();
   });
 
   it("clears remembered player room when an online client receives the finished room update", () => {
@@ -276,6 +297,31 @@ describe("socket handlers", () => {
     expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
     expect(socket.on).toHaveBeenCalledWith("room:patch", expect.any(Function));
     expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+  });
+
+  it("emits a room resume request when an installed patch listener detects a gap", () => {
+    const listeners = new Map();
+    const socket = {
+      on: vi.fn((event, callback) => listeners.set(event, callback)),
+      emit: vi.fn()
+    };
+    const deps = handlerDeps({
+      roomRef: { current: { code: "12345", revision: 1, chat: [] } }
+    });
+
+    installSocketHandlers(socket, createSocketHandlers(deps), {
+      buildRoomResumeRequest: () => ({ roomCode: "12345" })
+    });
+    listeners.get("room:patch")({
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 4,
+      revision: 5,
+      message: { id: "chat-5" }
+    });
+
+    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+    expect(deps.setRoom).not.toHaveBeenCalled();
   });
 
   it("routes socket reconnects through room audio snapshot baselining before resume", () => {

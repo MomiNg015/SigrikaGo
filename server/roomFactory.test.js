@@ -49,6 +49,7 @@ describe("roomFactory", () => {
     expect(room).toMatchObject({
       code: "77500",
       mode: "standard",
+      revision: 0,
       spectators: [],
       chat: [],
       createdAt: 1000,

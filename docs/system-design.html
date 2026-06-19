@@ -105,7 +105,7 @@
 </ul>
 <h2>Board Effect Theme Guard</h2>
 <ul>
-<li>Room chat now uses a lightweight <code>room:patch</code> chat append path, and startup preload tests guard critical assets so bulky BGM, voices, shop images, and effect images stay deferred.</li>
+<li>Room chat now uses a lightweight <code>room:patch</code> chat append path with <code>eventId</code>, <code>baseRevision</code>, <code>revision</code>, and client-side gap recovery through <code>room:resume</code>; startup preload tests guard critical assets so bulky BGM, voices, shop images, and effect images stay deferred.</li>
 </ul>
 <ul>
 <li>App audio runtime state now lives in <code>src/app/useAudioRuntimeState.js</code>, keeping local audio settings persistence and socket-reconnect resume signaling out of the <code>src/app/App.jsx</code> composition root.</li>
@@ -3803,13 +3803,13 @@
 <li>Room clock ticks no longer use the full <code>room:update</code> payload during normal play. <code>server/rooms.js</code> emits a lightweight <code>room:clock</code> event once per second with <code>roomCode</code>, <code>activeColor</code>, <code>serverNow</code>, and each player's current <code>time</code>.</li>
 </ul>
 <ul>
-<li>Player chat now uses the first general room patch path: <code>server/socketChatEvents.js</code> broadcasts <code>room:patch</code> with <code>type: &quot;chat:append&quot;</code>, <code>server/roomBroadcasts.js</code> persists and emits the patch to connected participants, and <code>src/app/roomPatch.js</code> appends the message idempotently while preserving unchanged room slices such as <code>game</code> and <code>players</code>. Full <code>room:update</code> remains the authoritative path for joins, resumes, moves, skills, phase changes, scoring, draw/counting flows, and reconnect recovery.</li>
+<li>Player chat now uses the first general room patch path: <code>server/socketChatEvents.js</code> broadcasts <code>room:patch</code> with <code>type: &quot;chat:append&quot;</code>; <code>server/roomBroadcasts.js</code> increments room <code>revision</code>, emits <code>eventId</code>, <code>baseRevision</code>, and <code>revision</code>, then persists the room; <code>src/app/roomPatch.js</code> appends the message idempotently while preserving unchanged room slices such as <code>game</code> and <code>players</code>. If the client sees a patch gap, <code>src/app/socketHandlers.js</code> rejects the patch and emits <code>room:resume</code> to recover the authoritative snapshot. Full <code>room:update</code> remains the authoritative path for joins, resumes, moves, skills, phase changes, scoring, draw/counting flows, and reconnect recovery.</li>
 </ul>
 <ul>
 <li>Full <code>room:update</code> remains the authoritative synchronization path for match found, room join/resume, moves, skills, phase changes, scoring, draw/counting flows, reconnect recovery, and timeout transitions.</li>
 </ul>
 <ul>
-<li><code>server/roomBroadcasts.js</code> is the single backend emit boundary for room snapshot updates, lightweight clock updates, lightweight patch updates, room toasts, and close events. It skips disconnected participants, calls room persistence with the same forced/throttled timing as before, and keeps viewer-specific room view generation centralized for future patch-event work.</li>
+<li><code>server/roomBroadcasts.js</code> is the single backend emit boundary for room snapshot updates, lightweight clock updates, lightweight patch updates, room toasts, and close events. It skips disconnected participants, owns patch revision metadata, calls room persistence with the same forced/throttled timing as before, and keeps viewer-specific room view generation centralized for future patch-event work.</li>
 </ul>
 <ul>
 <li><code>server/roomRuntime.js</code> is the backend room runtime adapter boundary. It wires <code>server/roomStatePersistence.js</code> into <code>server/roomBroadcasts.js</code>, centralizing forced/throttled persistence callbacks, full-room broadcast persistence injection, and room toast forwarding outside the lifecycle composition module.</li>
@@ -3884,7 +3884,7 @@
 <li><code>server/serverLifecycle.js</code> guards local development startup/shutdown: occupied port 3001 now gets an explicit <code>EADDRINUSE</code> message, and <code>SIGINT</code> / <code>SIGTERM</code> close the HTTP server plus Prisma before process exit.</li>
 </ul>
 <ul>
-<li>The frontend applies full <code>room:update</code> snapshots through <code>src/app/roomSnapshot.js</code>. Same-room snapshots are structurally shared before entering React state, so duplicate snapshots can return the current room object and unchanged <code>game.points</code>, player entries, chat messages, and nested view data keep their existing references.</li>
+<li>The frontend applies full <code>room:update</code> snapshots through <code>src/app/roomSnapshot.js</code>. Same-room snapshots are structurally shared before entering React state, so duplicate snapshots can return the current room object and unchanged <code>game.points</code>, player entries, chat messages, and nested view data keep their existing references. Room views also carry the latest patch <code>revision</code> so clients can validate future patch continuity.</li>
 </ul>
 <ul>
 <li>The frontend merges <code>room:clock</code> through <code>src/app/roomClock.js</code>, updating only changed player timer objects while preserving the existing <code>room.game</code> object reference.</li>

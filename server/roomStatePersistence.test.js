@@ -17,6 +17,7 @@ describe("room state persistence", () => {
       spectators: [{ user: { id: "viewer" }, socketId: "socket-v" }],
       game: { phase: GAME_PHASES.playing },
       chat: [],
+      revision: 3,
       createdAt: 1,
       lastTick: 2,
       recordSaved: false
@@ -25,6 +26,7 @@ describe("room state persistence", () => {
     expect(roomPersistenceSnapshot(room)).toMatchObject({
       snapshotVersion: CURRENT_ROOM_SNAPSHOT_VERSION,
       code: "ABCDE",
+      revision: 3,
       players: [{ user: { id: "black" }, socketId: null, disconnectedAt: null }],
       spectators: [],
       game: room.game,
@@ -47,6 +49,7 @@ describe("room state persistence", () => {
     expect(room.emptyTimerId).toBeNull();
     expect(room.lastTick).toBe(12345);
     expect(room.lastPersistedAt).toBe(0);
+    expect(room.revision).toBe(0);
   });
 
   it("keeps finished room players without disconnected markers when hydrated", () => {

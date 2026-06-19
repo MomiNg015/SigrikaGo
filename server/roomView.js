@@ -15,6 +15,7 @@ export function buildRoomView(room, viewerId, options = {}) {
 
   return {
     code: room.code,
+    revision: Number(room.revision ?? 0),
     mode: room.mode ?? room.game?.mode ?? "spark",
     viewerId,
     role,
