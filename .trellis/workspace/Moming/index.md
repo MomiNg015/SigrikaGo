@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 17
+- **Total Sessions**: 18
 - **Last Active**: 2026-06-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~569 | Active |
+| `journal-1.md` | ~602 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 18 | 2026-06-19 | Profile likes and reports | `84303f59` | `master` |
 | 17 | 2026-06-19 | Disable unavailable social actions | `ab25bbe5` | `master` |
 | 16 | 2026-06-17 | Mobile room tab press state | `9a2b554` | `codex/new-branch` |
 | 15 | 2026-06-17 | Profile resume mobile layout polish | `bdfda307`, `df329ef3` | `codex/new-branch` |

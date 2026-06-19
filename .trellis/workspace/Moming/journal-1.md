@@ -567,3 +567,36 @@ Disabled unavailable direct-message and social action controls in friend/member 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 18: Profile likes and reports
+
+**Date**: 2026-06-19
+**Task**: Profile likes and reports
+**Branch**: `master`
+
+### Summary
+
+Added user profile likes, report submission, admin report review, profile action UI, schema migration, tests, and system design/spec documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `84303f59` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
