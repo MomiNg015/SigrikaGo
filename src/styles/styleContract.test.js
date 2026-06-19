@@ -188,6 +188,35 @@ describe("root CSS entry contract", () => {
     expect(baseCss).toContain("inset 0 2px 5px rgba(45, 36, 48, 0.16)");
   });
 
+  it("keeps the preload screen centered with wrapping text", () => {
+    const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
+
+    expect(baseCss).toContain(".asset-preload-screen");
+    expect(baseCss).toContain("min-height: 100dvh");
+    expect(baseCss).toContain("place-items: center");
+    expect(baseCss).toContain("background: transparent");
+    expect(baseCss).toContain("width: min(520px, calc(100vw - 32px))");
+    expect(baseCss).toContain(".preload-title");
+    expect(baseCss).toContain(".preload-tip");
+    expect(baseCss).toContain("white-space: normal");
+    expect(baseCss).toContain("overflow-wrap: anywhere");
+  });
+
+  it("keeps the final Bright School preload panel background-free", () => {
+    const preloadCss = readFileSync(
+      new URL("./mobile-adaptive/bright-school-overrides/preload.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(preloadCss).toContain(".asset-preload-panel");
+    expect(preloadCss).toContain("background-color: transparent !important");
+    expect(preloadCss).toContain("background-image: none !important");
+    expect(preloadCss).toContain(
+      ".asset-preload-panel.asset-preload-panel.asset-preload-panel.asset-preload-panel"
+    );
+    expect(preloadCss).not.toContain(":has(.asset-preload-screen)");
+  });
+
   it("keeps base.css as an import-only shared foundation entry", () => {
     const baseEntry = readFileSync(new URL("./base.css", import.meta.url), "utf8");
 

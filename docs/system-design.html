@@ -70,7 +70,7 @@
 <li>当前内置对局模式为 <code>spark</code>、<code>standard</code> 和 <code>gomoku</code>。五子棋沿用 13 路棋盘与星位、5 分钟 30 秒 3 次读秒、自动猜先和独立 <code>UserModeStats(mode=gomoku)</code> 段位/积分；需要出战角色但 <code>skillEnabled=false</code>，房间 UI 不显示弃手、数子、提子、除子、超频或技能信息。</li>
 </ul>
 <ul>
-<li>站点公开配置通过 <code>SiteSetting</code> key/value 存储，并由 <code>src/shared/siteSettings.js</code> 定义前后端共享默认值；后台系统设置可编辑大厅标题/副标题、关于文本、首页 footer 长文本和加载页提示语集合，footer 支持受限 Markdown 链接，加载页提示语按行维护并在玩家预加载时随机轮播。</li>
+<li>站点公开配置通过 <code>SiteSetting</code> key/value 存储，并由 <code>src/shared/siteSettings.js</code> 定义前后端共享默认值；后台系统设置可编辑大厅标题/副标题、关于文本、首页 footer 长文本和加载页提示语集合，footer 支持受限 Markdown 链接，加载页提示语按行维护并在玩家预加载时随机轮播；加载屏内容在桌面、移动端和短视口中保持整屏居中，标题与提示语允许按容器宽度换行，中间加载面板保持透明且不覆盖整页主题背景。</li>
 </ul>
 <ul>
 <li>对局规则支持黑白棋子与命名中立棋子并存；中立棋子按同名阵营连接、阻断领地并参与气/提子判定，但不归属黑白除子。<code>src/shared/game.js</code> 保留共享对局 API 门面，阶段常量、动作结果、普通落子/隐藏手动作、主动技能动作和技能状态变更 helper 已拆到 <code>gamePhases.js</code>、<code>gameActionResult.js</code>、<code>gameStoneActions.js</code>、<code>gameSkillActions.js</code> 和 <code>gameSkillState.js</code>，降低新增技能继续膨胀核心状态机的风险。</li>
@@ -2329,7 +2329,7 @@
 <li>Startup preload is independent from transient Socket.IO client instances. <code>useStartupPreload()</code> must not receive <code>socket</code> or include a socket object in its dependency list; token/session state cleanup will tear down the socket through the socket lifecycle hook, while preload continues exactly once for the confirmed token.</li>
 </ul>
 <ul>
-<li>The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads. <code>AssetPreloadScreen</code> reads <code>siteSettings.preloadTips</code>, parses one non-empty tip per line, shows one random tip below the progress bar, and rotates to another random tip every 10 seconds while the view remains open. The loading panel itself stays borderless in both the base layer and the final Bright School safety layer so mobile and desktop keep the same no-frame loading treatment.</li>
+<li>The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads. <code>AssetPreloadScreen</code> reads <code>siteSettings.preloadTips</code>, parses one non-empty tip per line, shows one random tip below the progress bar, and rotates to another random tip every 10 seconds while the view remains open. The loading panel itself stays borderless and transparent in both the base layer and the final Bright School safety layer, uses full-viewport centering, and lets the title plus tip text wrap inside the shared preload width so mobile and desktop keep the same no-frame loading treatment without adding a solid middle panel background.</li>
 </ul>
 <h2>Board Effect Theme Guard</h2>
 <ul>
@@ -3482,7 +3482,7 @@
 <li>Preload failures are non-blocking: failed or hanging asset loaders are ignored after a bounded per-task timeout so users are not trapped on the loading screen if a single critical or optional resource stalls during reconnect, server restart, or cache recovery.</li>
 </ul>
 <ul>
-<li>The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads. <code>AssetPreloadScreen</code> reads <code>siteSettings.preloadTips</code>, parses one non-empty tip per line, shows one random tip below the progress bar, and rotates to another random tip every 10 seconds while the view remains open. The loading panel itself stays borderless in both the base layer and the final Bright School safety layer so mobile and desktop keep the same no-frame loading treatment.</li>
+<li>The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads. <code>AssetPreloadScreen</code> reads <code>siteSettings.preloadTips</code>, parses one non-empty tip per line, shows one random tip below the progress bar, and rotates to another random tip every 10 seconds while the view remains open. The loading panel itself stays borderless and transparent in both the base layer and the final Bright School safety layer, uses full-viewport centering, and lets the title plus tip text wrap inside the shared preload width so mobile and desktop keep the same no-frame loading treatment without adding a solid middle panel background.</li>
 </ul>
 <p>---</p>
 <h1>UI 主题、移动端与交互体验</h1>

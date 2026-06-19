@@ -1,18 +1,24 @@
 .asset-preload-screen {
+  width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: var(--page-pad);
+  background: transparent;
+  text-align: center;
 }
 
 .asset-preload-panel {
-  width: min(320px, 100%);
+  width: min(520px, calc(100vw - 32px));
+  max-width: 100%;
   display: grid;
   justify-items: center;
   gap: 18px;
   border: 0;
   box-shadow: none;
   background: transparent;
+  text-align: center;
 }
 
 .preload-mark {
@@ -31,7 +37,11 @@
 }
 
 .preload-title {
+  width: 100%;
   text-align: center;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .preload-bar {
@@ -51,7 +61,7 @@
 }
 
 .preload-tip {
-  width: min(520px, 100vw - 32px);
+  width: 100%;
   min-height: 3em;
   text-align: center;
   color: rgba(79, 61, 85, 0.78);
@@ -60,12 +70,6 @@
   line-height: 1.55;
   word-break: keep-all;
   overflow-wrap: anywhere;
-}
-
-@media (min-width: 769px) {
-  .asset-preload-panel {
-    width: min(520px, 100%);
-  }
 }
 
 @keyframes preload-spin {

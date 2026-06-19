@@ -1,6 +1,11 @@
 .app-shell.player-theme-enabled.theme-bright-school .asset-preload-panel,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .asset-preload-panel {
+.app-shell.player-theme-enabled.theme-bright-school .asset-preload-panel.asset-preload-panel,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .asset-preload-panel,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .asset-preload-panel.asset-preload-panel,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+  .asset-preload-panel.asset-preload-panel.asset-preload-panel.asset-preload-panel {
   background: transparent !important;
+  background-color: transparent !important;
   background-image: none !important;
   border: 0 !important;
   box-shadow: none !important;
