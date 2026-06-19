@@ -581,6 +581,7 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(modalCss).toContain(".resume-modal .profile-grid.top-stats-bar");
     expect(modalCss).toContain("grid-template-rows: auto auto minmax(0, 1fr);");
+    expect(modalCss).toContain("overflow: visible;");
     expect(modalCss).toContain(".resume-modal {\n  width: min(620px, 100%);\n  display: grid;\n  grid-template-rows: auto auto auto minmax(0, 1fr);");
     expect(modalCss).toContain("max-height: calc(100dvh - 32px);");
     expect(modalCss).toContain("overflow: hidden;");

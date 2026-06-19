@@ -259,7 +259,7 @@
 <li>Mobile resume headers use a final high-specificity Bright School override so the close button stays in the first-row right slot and the wallet group stays inside a shrinkable second-row right slot; when width is tight, coin and blue-gem capsules wrap as whole controls instead of overflowing past the modal edge.</li>
 </ul>
 <ul>
-<li>Desktop resume modals keep the outer window fixed inside the viewport with hidden outer overflow; embedded character records own the vertical scroll region. Desktop user profile detail modals likewise give the character-record list a bounded scroll area, and character detail headers reserve right-side space so the compact BGM player cannot collide with the close button.</li>
+<li>Desktop resume modals keep the outer window fixed inside the viewport with hidden outer overflow; embedded character records own the vertical scroll region, while the <code>.profile-grid.top-stats-bar</code> stats wrapper stays overflow-visible so rating/rank help tooltips can escape the stat cards without being clipped. Desktop user profile detail modals likewise give the character-record list a bounded scroll area, and character detail headers reserve right-side space so the compact BGM player cannot collide with the close button.</li>
 </ul>
 <ul>
 <li>Resume and user profile recent-result rows render a real <code>.recent-result-label</code> reading &quot;最近十盘的战绩&quot; above the marker chips inside <code>.profile-rank-results</code>; the label is small black text rather than a background watermark, and the chips/empty state remain the primary row content on desktop and mobile.</li>
@@ -3700,7 +3700,7 @@
 <li>Desktop resume modal headers use a four-column title, shortcut, wallet, and close layout. The wallet group and close button both sit in right-aligned static grid columns so currency capsules cannot overlap the close control.</li>
 </ul>
 <ul>
-<li>Desktop resume modal bodies use a fixed-height internal grid instead of letting the whole modal scroll; the embedded character-record section owns the vertical scrollbar. Desktop user profile detail cards keep the same pattern by bounding <code>.profile-character-list</code>, while character detail headings reserve close-button space so the compact character BGM player and top-right close control do not overlap.</li>
+<li>Desktop resume modal bodies use a fixed-height internal grid instead of letting the whole modal scroll; the embedded character-record section owns the vertical scrollbar, while <code>.profile-grid.top-stats-bar</code> remains overflow-visible so rating/rank help tooltips are not clipped by the stat region. Desktop user profile detail cards keep the same pattern by bounding <code>.profile-character-list</code>, while character detail headings reserve close-button space so the compact character BGM player and top-right close control do not overlap.</li>
 </ul>
 <ul>
 <li>Personalization equipment categories use compact style-picker entry buttons instead of listing every decoration inline. The nested picker shows default plus unlocked options, auto-closes on selection, and updates the try-on preview immediately; mobile uses a single-column internal scroll list while desktop uses an adaptive grid.</li>
