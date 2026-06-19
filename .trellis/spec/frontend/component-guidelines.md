@@ -48,12 +48,14 @@ Questions to answer:
 - Do not emit inline font-size styles based on username length. The old `--user-identity-fit-font-size` behavior is forbidden.
 - Without an equipped nameplate, the username stays ordinary natural-width text.
 - With an equipped nameplate, `.user-identity.has-nameplate .user-identity-name-tag` uses the fixed `3.75:1` slot, centers the username, and reserves fixed scaled horizontal padding.
+- Nameplate backgrounds must not change the username font size. The `.user-identity-name` text inherits the same scene font size whether a nameplate is equipped or not.
 - Scene and viewport adaptation belongs in CSS via `--user-nameplate-scale`; do not use `ResizeObserver`, string measurement, or per-name JavaScript sizing.
 - Title and badge remain outside the nameplate background. The nameplate background wraps only the username.
 - Nameplate artwork should be delivered at `3.75:1`; existing PNGs may be alpha-trimmed and resampled to that ratio before use.
 
 #### 4. Validation & Error Matrix
-- Two-character CJK username and eight half-width Latin username in the same scene -> same rendered username font size and same nameplate dimensions.
+- Two-character CJK username and eight half-width Latin username in the same scene -> same rendered username font size and same nameplate dimensions when equipped.
+- Equipped and unequipped usernames in the same scene -> same rendered username font size.
 - Narrow mobile room/member surface -> reduce `--user-nameplate-scale`; do not shrink based on the actual username.
 - Extreme or legacy overlong username -> keep the fixed slot and allow the text span to ellipsize as the final fallback.
 - `showNameplate={false}` -> no nameplate background or fixed nameplate slot is applied.
@@ -62,6 +64,7 @@ Questions to answer:
 - Good: `.home-player-plaque .user-identity { --user-nameplate-scale: 1.12; }`.
 - Base: ordinary users without a nameplate render natural-width text.
 - Bad: calculating display width in React and writing `style={{ "--user-identity-fit-font-size": "0.86em" }}`.
+- Bad: defining `--user-nameplate-font-size` or `.has-nameplate .user-identity-name { font-size: ... }`.
 - Bad: stretching the equipped nameplate tag to `width: 100%` of every parent container.
 - Bad: reintroducing a left/center/right three-DOM-slice nameplate.
 

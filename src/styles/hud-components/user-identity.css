@@ -5,7 +5,6 @@
   --user-nameplate-width: calc(var(--user-nameplate-base-width) * var(--user-nameplate-scale));
   --user-nameplate-height: calc(var(--user-nameplate-base-height) * var(--user-nameplate-scale));
   --user-nameplate-padding-x: calc(15px * var(--user-nameplate-scale));
-  --user-nameplate-font-size: calc(14px * var(--user-nameplate-scale));
   --user-identity-name-tag-min-height: 1.4em;
   --user-identity-name-tag-max-width: 100%;
   --user-identity-name-tag-padding-x: 0.72em;
@@ -95,10 +94,6 @@
   line-height: 1.18;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.user-identity.has-nameplate .user-identity-name {
-  font-size: var(--user-nameplate-font-size);
 }
 
 .user-identity-emblem {
