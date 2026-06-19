@@ -45,9 +45,47 @@ const DOMAIN_STYLE_DIRECTORIES = new Set([
 ]);
 const TEST_STYLE_FILES = new Set(["hudComponents.test.js", "styleContract.test.js", "themeContract.test.js"]);
 const DOCUMENTATION_FILES = new Set(["README.md"]);
+const CSS_SIZE_GUARD_BYTES = 6000;
+const KNOWN_OVERSIZED_CSS_FILES = new Map([
+  ["base/home-legacy-grid.css", 6736],
+  ["base/home-stage-artboard.css", 8657],
+  ["hud-components/pop-tech-terminal.css", 8513],
+  ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
+  ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
+  ["mobile-adaptive/mobile-profile-records.css", 6842],
+  ["mobile-adaptive/phone-core.css", 6228],
+  ["mobile-adaptive/phone-gacha.css", 6147],
+  ["mobile-modals/phone-house-resume.css", 6956],
+  ["mobile-room/portrait-room.css", 7502],
+  ["modals/character-opening.css", 6330],
+  ["responsive/phone-portrait-room.css", 6803],
+  ["room-terminal/players-timers-skills.css", 7414],
+  ["room/actions-requests.css", 6204],
+  ["room/board/stones-skill-effects.css", 6837],
+  ["themes/bright-school/component-repairs/foundation-home.css", 6973],
+  ["themes/bright-school/component-repairs/notebook-polish.css", 6408],
+  ["themes/bright-school/component-repairs/warehouse-character.css", 8413],
+  ["themes/bright-school/mobile/room/dock-actions.css", 6459],
+  ["themes/bright-school/mobile/room/shell-header-menu.css", 6872],
+  ["themes/bright-school/mobile/room/viewport-player-strips.css", 7109],
+  ["themes/bright-school/quality-base/refinement-board.css", 6997],
+  ["themes/shared.css", 7647],
+  ["themes/theme-components.css", 7012]
+]);
 
 function cssImports(source) {
   return [...source.matchAll(/@import\s+"([^"]+)";/g)].map((match) => match[1]);
+}
+
+function concreteCssAfterImports(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/@import\s+"[^"]+";\s*/g, "")
+    .trim();
+}
+
+function normalizedCssSize(source) {
+  return Buffer.byteLength(source.replace(/\r\n/g, "\n"), "utf8");
 }
 
 function cssFilesUnder(dir) {
@@ -80,6 +118,48 @@ describe("root CSS entry contract", () => {
     });
 
     expect(unexpectedFiles).toEqual([]);
+  });
+
+  it("keeps CSS files with imports as import-only entries", () => {
+    const filesWithMixedImports = cssFilesUnder(stylesDir)
+      .map((filePath) => {
+        const source = readFileSync(filePath, "utf8");
+
+        return {
+          path: relative(stylesDir, filePath).replaceAll("\\", "/"),
+          hasImports: cssImports(source).length > 0,
+          concreteCss: concreteCssAfterImports(source)
+        };
+      })
+      .filter(({ hasImports, concreteCss }) => hasImports && concreteCss.length > 0)
+      .map(({ path }) => path);
+
+    expect(filesWithMixedImports).toEqual([]);
+  });
+
+  it("prevents new oversized CSS files and growth in known CSS debt files", () => {
+    const oversizedCssFiles = cssFilesUnder(stylesDir)
+      .map((filePath) => {
+        const source = readFileSync(filePath, "utf8");
+
+        return {
+          path: relative(stylesDir, filePath).replaceAll("\\", "/"),
+          bytes: normalizedCssSize(source)
+        };
+      })
+      .filter(({ bytes }) => bytes >= CSS_SIZE_GUARD_BYTES);
+
+    const unexpectedOversizedFiles = oversizedCssFiles.filter(({ path }) => !KNOWN_OVERSIZED_CSS_FILES.has(path));
+    const expandedKnownDebtFiles = oversizedCssFiles
+      .filter(({ path, bytes }) => {
+        const currentLimit = KNOWN_OVERSIZED_CSS_FILES.get(path);
+
+        return currentLimit !== undefined && bytes > currentLimit;
+      })
+      .map(({ path, bytes }) => ({ path, bytes, limit: KNOWN_OVERSIZED_CSS_FILES.get(path) }));
+
+    expect(unexpectedOversizedFiles).toEqual([]);
+    expect(expandedKnownDebtFiles).toEqual([]);
   });
 
   it("keeps mobile-adaptive.css as the final theme entry safety layer", () => {

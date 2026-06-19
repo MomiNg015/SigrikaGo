@@ -162,6 +162,9 @@
 <li>Shared social/profile/leaderboard styling now follows the nested import-only pattern through <code>src/styles/commerce/social-profile.css</code> and <code>src/styles/commerce/social-profile/</code>, keeping modal shells, friends toolbar/search, friends list/status, friend actions/notices, duel request banner, leaderboard table, and owned decoration section rules in focused files.</li>
 </ul>
 <ul>
+<li>General CSS architecture guard coverage now lives in <code>src/styles/styleContract.test.js</code>: CSS files that contain <code>@import</code> must remain import-only, and 6000-byte-or-larger CSS files are blocked unless they are existing known-debt files that do not grow beyond their recorded baseline.</li>
+</ul>
+<ul>
 <li>Bright School portrait mobile house/profile styling now follows the nested import-only pattern through <code>src/styles/themes/bright-school/mobile/house-profile.css</code> and <code>src/styles/themes/bright-school/mobile/house-profile/</code>, keeping shell/profile stats, character grid/cards, owned decorations, and character detail/music controls in focused files.</li>
 </ul>
 <ul>
@@ -3578,6 +3581,9 @@
 <li>The shared social/profile/leaderboard sub-entry <code>src/styles/commerce/social-profile.css</code> is also import-only and delegates modal shells, friends toolbar/search, friends list/status, friend actions/notices, duel request banner, leaderboard table, and owned decoration section rules to <code>src/styles/commerce/social-profile/</code>, preserving the existing commerce layer order while keeping social and leaderboard contracts in named files.</li>
 </ul>
 <ul>
+<li>General CSS architecture guard coverage lives in <code>src/styles/styleContract.test.js</code>: any CSS file with <code>@import</code> must stay import-only, and new or expanded 6000-byte CSS files fail the contract unless the known-debt baseline is intentionally updated during a split plan.</li>
+</ul>
+<ul>
 <li>The Startorch commerce/social polish sub-entry <code>src/styles/commerce/terminal-polish.css</code> is also import-only and delegates terminal headers/profile stats, character cards, shop shell/tabs, item cards/empty states, list/status rows, settings/warehouse target surfaces, and compact phone fixes to <code>src/styles/commerce/terminal-polish/</code>, preserving the existing commerce layer order.</li>
 </ul>
 <ul>
@@ -3770,6 +3776,9 @@
 </ul>
 <ul>
 <li>Shared social/profile/leaderboard styling now follows the same sub-entry pattern: <code>src/styles/commerce/social-profile.css</code> owns import order and delegates modal shells, friends toolbar/search, friends list/status, friend actions/notices, duel request banner, leaderboard table, and owned decoration section rules to <code>src/styles/commerce/social-profile/</code>; style contract and social/leaderboard modal tests read the expanded import tree.</li>
+</ul>
+<ul>
+<li>General CSS architecture guard coverage now prevents regression while the remaining CSS debt is worked down: <code>src/styles/styleContract.test.js</code> rejects mixed import/concrete CSS entries and rejects new or expanded 6000-byte CSS files outside the recorded known-debt baseline.</li>
 </ul>
 <ul>
 <li>Bright School portrait mobile house/profile styling now follows the same sub-entry pattern: <code>src/styles/themes/bright-school/mobile/house-profile.css</code> owns import order and delegates shell/profile stats, character grid/cards, owned decorations, and character detail/music controls to <code>src/styles/themes/bright-school/mobile/house-profile/</code>; theme contract tests guard the nested import order.</li>

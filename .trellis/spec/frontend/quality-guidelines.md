@@ -239,6 +239,7 @@ Required assertion points:
 - `src/styles/themeContract.test.js` owns the Bright School base, contrast-purge, radical-purge, specificity-overrides, home, home student-id-card, gallery-polish, commerce, modals, effects, room, mobile, mobile house/profile, mobile room, component repair, quality-base, and firewall import order.
 - Feature tests that need concrete CSS, such as gacha modal coverage, should read the CSS import tree instead of asserting that rules live directly in the entry file.
 - New top-level CSS domains should start as import-only entries with an explicit directory and a style contract test update.
+- `src/styles/styleContract.test.js` enforces the general CSS architecture guard: any CSS file containing `@import` must stay import-only, and files at or above the 6000-byte guard threshold must be either split or kept within the known-debt byte baseline recorded in the test.
 
 ### UserIdentity Nameplate Background Contract
 
