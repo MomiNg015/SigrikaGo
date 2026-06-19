@@ -7,6 +7,7 @@
   .match-mode-option {
     min-height: 72px !important;
     grid-template-columns: minmax(0, 1fr) auto !important;
+    justify-content: stretch !important;
     gap: 10px !important;
     padding: 12px !important;
   }
@@ -30,6 +31,7 @@
   .match-mode-count {
     min-width: 72px !important;
     justify-self: end !important;
+    margin-left: auto !important;
   }
 
   .match-mode-count small {

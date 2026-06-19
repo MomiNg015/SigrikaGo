@@ -16,6 +16,7 @@
 .match-mode-option {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
+  justify-content: stretch;
   align-items: center;
   gap: 16px;
   min-height: 76px;
@@ -53,6 +54,8 @@
 .match-mode-count {
   display: grid;
   justify-items: center;
+  justify-self: end;
+  margin-left: auto;
   min-width: 64px;
   padding: 8px 10px;
   border-radius: 8px;

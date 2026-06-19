@@ -53,7 +53,7 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
   ["mobile-adaptive/mobile-profile-records.css", 6842],
-  ["mobile-adaptive/phone-core.css", 6343],
+  ["mobile-adaptive/phone-core.css", 6418],
   ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-modals/phone-house-resume.css", 6956],
   ["mobile-room/portrait-room.css", 7502],
@@ -230,11 +230,14 @@ describe("root CSS entry contract", () => {
     expect(mobileCss).toContain("overflow: visible !important");
     expect(matchModeCss).toContain(".match-mode-rules");
     expect(matchModeCss).toContain(".match-mode-rule-line");
+    expect(matchModeCss).toContain("justify-content: stretch");
+    expect(matchModeCss).toContain("margin-left: auto");
     expect(matchModeCss).toContain(".match-mode-count small");
     expect(matchModeCss).toContain("white-space: nowrap !important");
     expect(matchModeCss).toContain("overflow-wrap: normal !important");
     expect(mobileCss).toContain(".match-mode-count");
     expect(mobileCss).toContain("justify-self: end !important");
+    expect(mobileCss).toContain("margin-left: auto !important");
   });
 
   it("keeps base.css as an import-only shared foundation entry", () => {
