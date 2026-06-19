@@ -37,7 +37,7 @@
 
 ## Board Effect Theme Guard
 
-- Room chat now uses a lightweight `room:patch` chat append path with `eventId`, `baseRevision`, `revision`, and client-side gap recovery through `room:resume`; startup preload tests guard critical assets so bulky BGM, voices, shop images, and effect images stay deferred.
+- Room chat now uses a lightweight `room:patch` chat append path with `eventId`, `baseRevision`, `revision`, and client-side gap recovery through `room:resume`; board handlers refresh through a board-shell rerender when needed, stay stable across clock churn through `useRoomPointActions` and stable `RoomBattleStage` callbacks, chat/member/action-hint widgets ignore clock-only player time changes, and point buttons stay memoized; startup preload tests guard critical assets so bulky BGM, voices, shop images, and effect images stay deferred.
 
 
 - App audio runtime state now lives in `src/app/useAudioRuntimeState.js`, keeping local audio settings persistence and socket-reconnect resume signaling out of the `src/app/App.jsx` composition root.

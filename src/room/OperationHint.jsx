@@ -1,7 +1,8 @@
+import { memo } from "react";
 import { GAME_PHASES } from "../shared/game.js";
 import ScoringBreakdown from "./ScoringBreakdown.jsx";
 
-export default function OperationHint({ room, user, scoring, drawRequest }) {
+function OperationHint({ room, user, scoring, drawRequest }) {
   const phase = room.game.phase;
   const isDrawRequester = drawRequest?.requestedBy === user.id;
   const isCountingRequester = scoring?.requestedBy === user.id;
@@ -57,3 +58,29 @@ export default function OperationHint({ room, user, scoring, drawRequest }) {
     </section>
   );
 }
+
+export function areOperationHintPropsEqual(previous, next) {
+  return previous.user?.id === next.user?.id
+    && previous.scoring === next.scoring
+    && previous.drawRequest === next.drawRequest
+    && previous.room?.code === next.room?.code
+    && operationGameSliceEqual(previous.room?.game, next.room?.game)
+    && sameOperationPlayers(previous.room?.players, next.room?.players);
+}
+
+function operationGameSliceEqual(previous, next) {
+  return previous?.phase === next?.phase
+    && previous?.turn === next?.turn
+    && previous?.winner === next?.winner;
+}
+
+function sameOperationPlayers(previous = [], next = []) {
+  if (previous === next) return true;
+  if (previous.length !== next.length) return false;
+  return previous.every((player, index) => (
+    player?.color === next[index]?.color
+    && player?.user?.id === next[index]?.user?.id
+  ));
+}
+
+export default memo(OperationHint, areOperationHintPropsEqual);

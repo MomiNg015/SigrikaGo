@@ -141,11 +141,22 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 #### 2. Signatures
 - `arePointButtonPropsEqual(previous, next)` is the point-level React memo comparator for board intersections.
 - Point buttons receive stable refs such as `handlersRef` and `pointerTypeRef`; visible state and capability booleans remain ordinary props.
+- `useRoomPointActions()` returns `useCallback`-stable `handlePoint`, `handleScoringPoint`, and `handleBoardSurface` callbacks.
+- `areChatBoxPropsEqual(previous, next)` is the chat widget comparator for avoiding room-clock rerenders.
+- `areRoomPeopleListPropsEqual(previous, next)` is the member-list comparator for avoiding room-clock rerenders.
+- `areOperationHintPropsEqual(previous, next)` is the action-hint comparator for avoiding room-clock rerenders.
 - `triggerUnavailableShake(target)` restarts `ui-unavailable-shake` without reading layout metrics such as `offsetWidth`.
 - `lastMarkedAction(history)` is the canonical source for the board's latest placed-stone marker.
 
 #### 3. Contracts
 - Point memo comparison may ignore event function identity only when the rendered button reads the latest handlers through a stable ref object.
+- Board-level memo comparison must not ignore handler identity if `handlersRef.current` is updated inside the board render. Handler changes should re-render the board shell to refresh the ref, while point buttons can still stay memoized because their `handlersRef` object identity is stable.
+- `useRoomPointActions()` callback dependencies should track click semantics, not whole room/player objects. Depend on fields such as `phase`, `role`, `pendingSkill`, and current player color instead of the full `displayRoom` or `me` object so room clock ticks do not churn board click handlers.
+- `RoomBattleStage` must pass named stable callbacks into `Board`; do not use inline handlers for board point props such as `onNeutral`, because board-level memo comparison treats handler identity as the signal that `handlersRef.current` needs refreshing.
+- `ChatBox` should ignore player `time` changes from `room:clock` while still rerendering for room code changes, chat array changes, and player metadata that affects chat names such as user id or character id.
+- `RoomPeopleList` should ignore player `time` changes from `room:clock` while still rerendering for room code changes, player connection state, spectator membership, and user display metadata used by `roomPeople()`.
+- `OperationHint` should ignore player `time` changes from `room:clock` while still rerendering for action-relevant fields: room code, phase, turn, winner, current user id, scoring reference, draw request reference, and color-to-user mappings.
+- `RoomBattleStage` must also pass stable floating-layer callbacks into memoized room widgets such as `ChatBox`; inline `onFloatingLayerRequest` callbacks defeat memo comparison during parent renders.
 - Comparator inputs must include visible point state, board size, marker/decoration classes, move number state, scoring mark state, and interaction capability flags such as `hasScoringPoint`.
 - Do not rely on `game` object identity inside a point button; derive per-point display props in `Board` and pass only the point's slice.
 - Unavailable feedback may remove and re-add the shake class on the next animation frame; it must not force a synchronous layout read to restart CSS animation.
@@ -153,7 +164,15 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - History entries for skills that place a real stone must be eligible for the latest placed-stone marker. Keep Chisa `liberty-purge` covered through `lastMarkedAction(history)` instead of treating only ordinary moves as markable placements.
 
 #### 4. Validation & Error Matrix
-- Handler function changes but the same stable handler ref is passed -> point button may stay memoized and must still call the latest handler from `handlersRef.current`.
+- Handler function changes -> board shell re-renders to refresh `handlersRef.current`; the same stable handler ref is passed to point buttons, so point buttons may stay memoized and must still call the latest handler.
+- Player timer object changes while the current player color and click semantics stay the same -> `useRoomPointActions()` should keep point handler identities stable.
+- Parent room render with unchanged scoring callback -> `RoomBattleStage` should pass the same `onNeutral` handler identity into `Board`.
+- Room clock tick changes only player `time` -> `ChatBox` should stay memoized.
+- Chat content or chat-name player metadata changes -> `ChatBox` must rerender.
+- Room clock tick changes only player `time` -> `RoomPeopleList` should stay memoized.
+- Player connected state, username/rank/rating, achievement display metadata, or spectator list changes -> `RoomPeopleList` must rerender.
+- Room clock tick changes only player `time` -> `OperationHint` should stay memoized.
+- Phase, turn, winner, scoring/draw request, or active-player user mapping changes -> `OperationHint` must rerender.
 - Scoring handler availability changes -> point button must re-render because pointer/click semantics change.
 - Point stone, mark, decoration, move number, preview class, or confirmation class changes -> point button must re-render.
 - Browser lacks `requestAnimationFrame` -> unavailable feedback may fall back to a timer instead of forcing layout.
@@ -161,12 +180,24 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 
 #### 5. Good/Base/Bad Cases
 - Good: A timer tick or parent handler recreation does not re-render all board intersections, while a new click handler stored in `handlersRef.current` is still used.
+- Good: Room clock ticks can replace player time objects without making `useRoomPointActions()` return new point handlers.
+- Good: `const handleNeutralPoint = useCallback(...)` is passed as `onNeutral={handleNeutralPoint}`.
+- Good: `ChatBox` compares `room.chat` and chat display metadata, not the full `room.players[*].time` object.
+- Good: `RoomPeopleList` compares the `roomPeople()` source fields, not full player objects.
+- Good: `OperationHint` compares the action hint inputs, not full player timer objects.
 - Base: A changed point object for one intersection re-renders that point and preserves other memoized points.
 - Bad: Ignoring handler identity while the point button directly closes over stale `onPoint`, `onScoringPoint`, or `onNeutral` props.
 - Bad: Restarting disabled feedback by reading `target.offsetWidth`.
 
 #### 6. Tests Required
 - Board comparator tests must assert handler-ref content changes stay memoized and visible/capability changes re-render.
+- Board comparator tests must assert handler identity changes re-render the board shell, so the stable handler ref cannot become stale.
+- Point-action tests must assert `useRoomPointActions()` keeps handlers callback-stable and narrows player dependencies to current color instead of the whole player object.
+- Room screen source tests must assert `RoomBattleStage` passes a stable neutral-point handler into `Board`.
+- Chat tests must assert `areChatBoxPropsEqual()` ignores clock-only player time changes and rerenders on chat content or chat-name metadata changes.
+- Room people tests must assert `areRoomPeopleListPropsEqual()` ignores clock-only player time changes and rerenders on member visibility metadata changes.
+- Operation hint tests must assert `areOperationHintPropsEqual()` ignores clock-only player time changes and rerenders on action-relevant room changes.
+- Room screen source tests must assert memoized room widgets receive stable floating-layer callbacks.
 - Board view tests must assert Chisa `liberty-purge` placement becomes the latest marked action after an ordinary move.
 - Interaction feedback tests must assert source behavior does not use `offsetWidth` and uses an async restart mechanism such as `requestAnimationFrame`.
 - Run targeted tests for `src/room/Board.test.js` and `src/app/InteractionFeedback.test.js`, then run the project `check` gate before handoff.

@@ -183,6 +183,25 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).not.toContain("onPass={() => onGameAction({ type: \"pass\" })}");
   });
 
+  it("passes a stable neutral-point handler into the memoized board", () => {
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+
+    expect(battleSource).toContain("const handleNeutralPoint = useCallback");
+    expect(battleSource).toContain("onNeutral={handleNeutralPoint}");
+    expect(battleSource).not.toContain("onNeutral={(id) => onScoringAction");
+  });
+
+  it("passes stable floating-layer handlers into chat and member panels", () => {
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+
+    expect(battleSource).toContain("const handleMembersFloatingLayer = useCallback");
+    expect(battleSource).toContain("const handleChatFloatingLayer = useCallback");
+    expect(battleSource).toContain("onFloatingLayerRequest={handleMembersFloatingLayer}");
+    expect(battleSource).toContain("onFloatingLayerRequest={handleChatFloatingLayer}");
+    expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"chat\")}");
+    expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"members\")}");
+  });
+
   it("seeds resumed room audio baseline before passive room audio effects", () => {
     const source = readText(new URL("./audio/useRoomAudioEffects.js", import.meta.url), "utf8");
 

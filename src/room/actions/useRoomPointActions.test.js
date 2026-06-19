@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { canConfirmPointAction } from "./useRoomPointActions.js";
 
 describe("room point action confirmation", () => {
@@ -50,5 +51,17 @@ describe("room point action confirmation", () => {
         protocolBan: { owner: "black", bannedColor: "white", effect: "protocol-takeover" }
       }
     })).toBe(false);
+  });
+
+  it("keeps board point handlers stable across player timer object churn", () => {
+    const source = readFileSync(new URL("./useRoomPointActions.js", import.meta.url), "utf8");
+
+    expect(source).toContain("import { useCallback, useEffect, useState } from \"react\"");
+    expect(source).toContain("const meColor = me?.color");
+    expect(source).toContain("const handleScoringPoint = useCallback");
+    expect(source).toContain("const handlePoint = useCallback");
+    expect(source).toContain("const handleBoardSurface = useCallback");
+    expect(source).toContain("me: { color: meColor }");
+    expect(source).not.toContain("canConfirmPointAction({ point, actionType, canConfirmSkillPoint, me,");
   });
 });

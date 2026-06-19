@@ -262,6 +262,10 @@ export function areBoardPropsEqual(previous, next) {
     && previous.audioSettings === next.audioSettings
     && samePointConfirmation(previous.pointConfirmation, next.pointConfirmation)
     && samePreviewPlayer(previous.previewPlayer, next.previewPlayer)
+    && previous.onPoint === next.onPoint
+    && previous.onScoringPoint === next.onScoringPoint
+    && previous.onNeutral === next.onNeutral
+    && previous.onBoardSurface === next.onBoardSurface
     && Boolean(previous.onScoringPoint) === Boolean(next.onScoringPoint)
     && Boolean(previous.onBoardSurface) === Boolean(next.onBoardSurface)
     && sameStoneDecorations(previous.stoneDecorations, next.stoneDecorations);

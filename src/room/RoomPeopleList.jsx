@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { useSocialRelations } from "../social/useSocialRelations.js";
@@ -6,7 +6,7 @@ import { roomPeople } from "./roomView.js";
 import { ConfirmPanel, UserProfileCard } from "../modals/UserProfileCard.jsx";
 import UserIdentity from "../shared/UserIdentity.jsx";
 
-export default function RoomPeopleList({
+function RoomPeopleList({
   room,
   user,
   characters,
@@ -187,3 +187,46 @@ export default function RoomPeopleList({
     </section>
   );
 }
+
+export function areRoomPeopleListPropsEqual(previous, next) {
+  return sameRoomPeopleSource(previous.room, next.room)
+    && previous.user?.id === next.user?.id
+    && previous.characters === next.characters
+    && previous.token === next.token
+    && previous.onOpenReplay === next.onOpenReplay
+    && previous.floatingLayerZ === next.floatingLayerZ
+    && previous.onFloatingLayerRequest === next.onFloatingLayerRequest;
+}
+
+function sameRoomPeopleSource(previousRoom, nextRoom) {
+  return previousRoom?.code === nextRoom?.code
+    && samePeoplePlayers(previousRoom?.players, nextRoom?.players)
+    && samePeopleUsers(previousRoom?.spectators, nextRoom?.spectators);
+}
+
+function samePeoplePlayers(previous = [], next = []) {
+  if (previous === next) return true;
+  if (previous.length !== next.length) return false;
+  return previous.every((player, index) => (
+    player?.color === next[index]?.color
+    && player?.connected === next[index]?.connected
+    && samePeopleUser(player?.user, next[index]?.user)
+  ));
+}
+
+function samePeopleUsers(previous = [], next = []) {
+  if (previous === next) return true;
+  if (previous.length !== next.length) return false;
+  return previous.every((entry, index) => samePeopleUser(entry?.user, next[index]?.user));
+}
+
+function samePeopleUser(previous, next) {
+  return previous?.id === next?.id
+    && previous?.username === next?.username
+    && previous?.rank === next?.rank
+    && previous?.rating === next?.rating
+    && previous?.achievementEquipment === next?.achievementEquipment
+    && previous?.achievementEquipmentAssets === next?.achievementEquipmentAssets;
+}
+
+export default memo(RoomPeopleList, areRoomPeopleListPropsEqual);

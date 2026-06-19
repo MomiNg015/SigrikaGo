@@ -65,6 +65,15 @@ export default function RoomBattleStage({
     layerCounterRef.current = nextZ;
     setFloatingLayers((current) => ({ ...current, [layerId]: nextZ }));
   }, []);
+  const handleNeutralPoint = useCallback((id) => {
+    onScoringAction({ type: "mark-neutral", pointId: id });
+  }, [onScoringAction]);
+  const handleMembersFloatingLayer = useCallback(() => {
+    bringFloatingLayerToFront("members");
+  }, [bringFloatingLayerToFront]);
+  const handleChatFloatingLayer = useCallback(() => {
+    bringFloatingLayerToFront("chat");
+  }, [bringFloatingLayerToFront]);
   const selfPlayer = me ?? displayRoom.players[0];
   const isPlaying = displayRoom.game.phase === "playing";
   const isFinished = displayRoom.game.phase === "finished";
@@ -94,7 +103,7 @@ export default function RoomBattleStage({
       token={token}
       onOpenReplay={onOpenReplay}
       floatingLayerZ={floatingLayers.members}
-      onFloatingLayerRequest={() => bringFloatingLayerToFront("members")}
+      onFloatingLayerRequest={handleMembersFloatingLayer}
     />
   );
   const hintPanel = !isReplay && role === "player" && (
@@ -113,7 +122,7 @@ export default function RoomBattleStage({
         stoneDecorations={stoneDecorationsForRoom(displayRoom)}
         onPoint={handlePoint}
         onScoringPoint={displayRoom.game.phase === "marking-dead" ? handleScoringPoint : null}
-        onNeutral={(id) => onScoringAction({ type: "mark-neutral", pointId: id })}
+        onNeutral={handleNeutralPoint}
         onBoardSurface={handleBoardSurface}
       />
     </div>
@@ -183,7 +192,7 @@ export default function RoomBattleStage({
       onChat={onChat}
       readonly={isReplay}
       floatingLayerZ={floatingLayers.chat}
-      onFloatingLayerRequest={() => bringFloatingLayerToFront("chat")}
+      onFloatingLayerRequest={handleChatFloatingLayer}
     />
   );
 
