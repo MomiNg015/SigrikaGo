@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 19
+- **Total Sessions**: 20
 - **Last Active**: 2026-06-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~635 | Active |
+| `journal-1.md` | ~669 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 20 | 2026-06-19 | Mobile profile layout fixes | `36d4ea1b`, `6fdef71c` | `master` |
 | 19 | 2026-06-19 | Remove report dialog cancel button | `2b7d5232` | `master` |
 | 18 | 2026-06-19 | Profile likes and reports | `84303f59` | `master` |
 | 17 | 2026-06-19 | Disable unavailable social actions | `ab25bbe5` | `master` |

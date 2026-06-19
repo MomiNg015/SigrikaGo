@@ -633,3 +633,37 @@ Removed the form-level cancel button from the profile report dialog while preser
 ### Next Steps
 
 - None - task complete
+
+
+## Session 20: Mobile profile layout fixes
+
+**Date**: 2026-06-19
+**Task**: Mobile profile layout fixes
+**Branch**: `master`
+
+### Summary
+
+Centered inline confirmation modal handling, then fixed mobile profile hero username placement and recent-result marker wrapping with CSS contract coverage.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `36d4ea1b` | (see git log) |
+| `6fdef71c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
