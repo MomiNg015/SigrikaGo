@@ -217,6 +217,9 @@
 <li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together. 房间内申请和棋、申请数子与确认数子结果的定时 toast 由流程响应、阶段变化或自动消失关闭，不提供手动关闭按钮。</li>
 </ul>
 <ul>
+<li>Shared modal entrance motion lives in <code>src/styles/modals/modal-motion.css</code>, imported immediately after the base modal shell. Backdrops fade in, desktop modal shells use a restrained opacity plus <code>translateY</code>/<code>scale</code> entrance, nested/centered dialogs preserve their positioning transforms, and <code>prefers-reduced-motion</code> disables the motion without changing modal layout.</li>
+</ul>
+<ul>
 <li>Character duplicate chain counts remain in user data for reward/progression logic, but player-facing desktop and mobile UI hides character-chain badges on portrait surfaces.</li>
 </ul>
 <ul>
@@ -3579,6 +3582,9 @@
 <h2>Modal Layering</h2>
 <ul>
 <li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.</li>
+</ul>
+<ul>
+<li>Shared modal entrance motion lives in <code>src/styles/modals/modal-motion.css</code>, imported immediately after the base modal shell. Backdrops fade in, desktop modal shells use a restrained opacity plus <code>translateY</code>/<code>scale</code> entrance, nested/centered dialogs preserve their positioning transforms, and <code>prefers-reduced-motion</code> disables the motion without changing modal layout.</li>
 </ul>
 <ul>
 <li>Mobile room portraits do not render character-chain badges; duplicate-chain data remains in user payloads but is hidden on player-facing portrait surfaces.</li>
