@@ -254,6 +254,16 @@ describe("ShopModal helpers", () => {
     expect(css).toContain("min-height: 30px !important");
   });
 
+  it("keeps the Bright School mobile shop category tablist chrome-free", () => {
+    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs");
+    expect(css).toContain("padding: 0 !important");
+    expect(css).toContain("border: 0 !important");
+    expect(css).toContain("background: transparent !important");
+    expect(css).toContain("box-shadow: none !important");
+  });
+
   it("centers character and decoration prices after removing the visible limit row", () => {
     const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));

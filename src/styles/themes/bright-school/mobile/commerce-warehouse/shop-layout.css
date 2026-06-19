@@ -64,6 +64,10 @@
     width: 100% !important;
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 5px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs button {
