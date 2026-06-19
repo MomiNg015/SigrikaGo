@@ -237,6 +237,38 @@ Correct:
 updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 ```
 
+### Scenario: Room Clock State Writes
+
+#### 1. Scope / Trigger
+- Trigger: handling lightweight `room:clock` payloads from the socket.
+- Clock payloads are high-frequency updates and must not schedule React state writes for unrelated or already-cleared room sessions.
+
+#### 2. Signatures
+- `applyRoomClock(room, clock)` returns the room object that should remain in state.
+- `socketHandlers.roomClock(clock)` routes the payload to the current live room and/or pending match-success room only when their `code` matches `clock.roomCode`.
+
+#### 3. Contracts
+- Ignore missing or stale `room:clock` payloads without calling `setRoom` or `setMatchSuccess`.
+- If only the pending match-success room matches the clock, update only `matchSuccess`; do not call the live room setter while `roomRef.current` is empty or points elsewhere.
+- If only the live room matches the clock, update only `room`.
+- `applyRoomClock()` must preserve `room.game`, unchanged player objects, and the whole room object when no player time changed.
+- `applyRoomClock()` must return the original room when the snapshot has no `players` array yet; clock recovery must not crash an incomplete or legacy snapshot.
+
+#### 4. Validation & Error Matrix
+- `clock.roomCode` differs from current and pending room codes -> no state setter is called.
+- Pending match room code matches and current room is null -> only `setMatchSuccess` is called.
+- Current room code matches -> `setRoom((current) => applyRoomClock(current, clock))` is called.
+- Matching room has no `players` array -> return the room unchanged.
+
+#### 5. Good/Base/Bad Cases
+- Good: A stale clock from a closed room is ignored before scheduling state work.
+- Base: A normal playing room tick updates only the active player's time object and keeps `game` stable.
+- Bad: Calling both `setRoom` and `setMatchSuccess` for every clock payload regardless of room code.
+
+#### 6. Tests Required
+- `src/app/roomClock.test.js` must cover changed timers, wrong-room payloads, and missing player lists.
+- `src/app/socketHandlers.test.js` must cover stale clock payloads and pending-match-only clock payloads.
+
 ### Scenario: Room Snapshot Structural Sharing
 
 #### 1. Scope / Trigger

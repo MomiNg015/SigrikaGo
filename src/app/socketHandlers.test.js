@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createSocketHandlers, installSocketHandlers } from "./socketHandlers.js";
+import { applyRoomClock } from "./roomClock.js";
 
 describe("socket handlers", () => {
   it("handles match found by closing overlays, syncing the user, and storing the transition", () => {
@@ -119,6 +120,52 @@ describe("socket handlers", () => {
     handlers.roomUpdate(roomView);
 
     expect(roomSetterResult(deps)).toBe(roomView);
+  });
+
+  it("ignores stale room clock payloads without scheduling room state updates", () => {
+    const currentRoom = {
+      code: "12345",
+      players: [{ color: "black", time: { main: 300 } }]
+    };
+    const deps = handlerDeps({ roomRef: { current: currentRoom } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomClock({
+      roomCode: "99999",
+      players: [{ color: "black", time: { main: 299 } }]
+    });
+
+    expect(deps.setMatchSuccess).not.toHaveBeenCalled();
+    expect(deps.setRoom).not.toHaveBeenCalled();
+  });
+
+  it("updates only the pending match room for pending match clock payloads", () => {
+    const pendingRoom = {
+      code: "12345",
+      players: [{ color: "black", time: { main: 300 } }]
+    };
+    const deps = handlerDeps({
+      matchSuccessRef: {
+        current: {
+          room: pendingRoom,
+          startedAt: 1000
+        }
+      },
+      applyRoomClock
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomClock({
+      roomCode: "12345",
+      players: [{ color: "black", time: { main: 299 } }]
+    });
+
+    expect(deps.setMatchSuccess).toHaveBeenCalledWith(expect.any(Function));
+    expect(deps.setRoom).not.toHaveBeenCalled();
+    expect(deps.setMatchSuccess.mock.calls[0][0]({
+      room: pendingRoom,
+      startedAt: 1000
+    }).room.players[0].time.main).toBe(299);
   });
 
   it("applies room patches without replacing unchanged room slices", () => {

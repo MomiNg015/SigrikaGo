@@ -93,8 +93,14 @@ export function createSocketHandlers({
       setView("room");
     },
     roomClock: (clock) => {
-      setMatchSuccess((current) => current ? { ...current, room: applyRoomClock(current.room, clock) } : current);
-      setRoom((current) => applyRoomClock(current, clock));
+      const roomCode = clock?.roomCode;
+      if (!roomCode) return;
+      if (matchSuccessRef.current?.room?.code === roomCode) {
+        setMatchSuccess((current) => current ? { ...current, room: applyRoomClock(current.room, clock) } : current);
+      }
+      if (roomRef.current?.code === roomCode) {
+        setRoom((current) => applyRoomClock(current, clock));
+      }
     },
     roomPatch: (patch, requestRoomResume = () => {}) => {
       if (roomPatchNeedsResume(roomRef.current, patch)) {
