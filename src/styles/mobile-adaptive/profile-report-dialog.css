@@ -1,0 +1,11 @@
+/* Final safety for profile report dialog placement. */
+.profile-report-dialog {
+  position: fixed !important;
+  inset: 50% auto auto 50% !important;
+  width: min(420px, calc(100vw - 44px)) !important;
+  max-width: calc(100vw - 44px) !important;
+  max-height: calc(100dvh - 32px) !important;
+  box-sizing: border-box !important;
+  overflow: auto !important;
+  transform: translate(-50%, -50%) !important;
+}

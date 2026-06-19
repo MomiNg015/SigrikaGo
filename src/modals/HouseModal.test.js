@@ -680,6 +680,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("width: 22px !important");
     expect(finalMobileCss).toContain(".user-profile-card .profile-like-button:disabled");
     expect(finalMobileCss).toContain(".user-profile-card .profile-report-button:disabled");
+    expect(finalMobileCss).toContain(".profile-report-dialog");
+    expect(finalMobileCss).toContain("width: min(420px, calc(100vw - 44px)) !important");
+    expect(finalMobileCss).toContain("transform: translate(-50%, -50%) !important");
     expect(finalMobileCss).toContain(".user-profile-card .profile-footer-actions");
     expect(finalMobileCss).toContain("grid-template-columns: max-content minmax(0, max-content) !important");
     expect(finalMobileCss).toContain(".user-profile-card .profile-replay-button");
