@@ -1,4 +1,16 @@
-/* Final safety for profile report dialog placement. */
+/* Final safety for inline confirmation and profile report dialog placement. */
+.confirm-inline-modal,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .confirm-inline-modal {
+  position: fixed !important;
+  inset: 50% auto auto 50% !important;
+  width: min(360px, calc(100vw - 44px)) !important;
+  max-width: calc(100vw - 44px) !important;
+  max-height: calc(100dvh - 32px) !important;
+  box-sizing: border-box !important;
+  overflow: auto !important;
+  transform: translate(-50%, -50%) !important;
+}
+
 .profile-report-dialog,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog {
   position: fixed !important;

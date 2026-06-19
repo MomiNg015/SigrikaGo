@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import FriendsModal from "./FriendsModal.jsx";
 import FriendsList from "./friends/FriendsList.jsx";
+import FriendsOverlays from "./friends/FriendsOverlays.jsx";
 import { normalizeFriendSearchInput } from "./friends/friendSearch.js";
 
 describe("FriendsModal mobile layout", () => {
@@ -90,6 +91,37 @@ describe("FriendsModal mobile layout", () => {
     expect(hudFriendCss).toContain("cursor: not-allowed");
     expect(brightSchoolCss).toContain(".friend-action-row button:disabled");
     expect(brightSchoolCss).toContain("background-color: #e7e3e7 !important");
+  });
+
+  it("centers blacklist removal confirmation overlays with the shared inline modal contract", () => {
+    const html = renderToStaticMarkup(createElement(FriendsOverlays, {
+      characters: [],
+      confirmTarget: {
+        type: "blacklist",
+        user: { id: "user-1", username: "moming" }
+      },
+      duelModeTarget: null,
+      profileUser: null,
+      token: "token",
+      onAddBlacklist: () => {},
+      onAddFriend: () => {},
+      onCloseConfirm: () => {},
+      onCloseDuelMode: () => {},
+      onCloseProfile: () => {},
+      onOpenReplay: () => {},
+      onNotice: () => {},
+      onRequestMatchMode: () => {},
+      onRemoveTarget: () => {}
+    }));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(html).toContain("room-floating-modal confirm-inline-modal");
+    expect(html).toContain("inline-confirm-panel");
+    expect(finalMobileCss).toContain(".confirm-inline-modal");
+    expect(finalMobileCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .confirm-inline-modal");
+    expect(finalMobileCss).toContain("inset: 50% auto auto 50% !important");
+    expect(finalMobileCss).toContain("transform: translate(-50%, -50%) !important");
+    expect(finalMobileCss).toContain("width: min(360px, calc(100vw - 44px)) !important");
   });
 
   it("uses compact mobile friend cards instead of a horizontally scrolling table", () => {
