@@ -146,6 +146,18 @@ describe("deriveCharacterRecordStats", () => {
     expect(likedHtml).not.toMatch(/class="profile-report-button"[^>]*disabled=""/);
   });
 
+  it("keeps the profile report dialog submit-only below the textarea", () => {
+    const source = readFileSync(new URL("./UserProfileCard.jsx", import.meta.url), "utf8");
+    const reportDialogStart = source.indexOf("{showReportDialog && (");
+    const reportDialogEnd = source.indexOf("</section>\n  );", reportDialogStart);
+    const reportDialogSource = source.slice(reportDialogStart, reportDialogEnd);
+
+    expect(reportDialogStart).toBeGreaterThan(-1);
+    expect(reportDialogSource).toContain('className="danger-action"');
+    expect(reportDialogSource).toContain("disabled={reportPending || reportContent.trim().length === 0}");
+    expect(reportDialogSource).not.toContain(">取消</button>");
+  });
+
   it("marks house character cards with active item effect icons", () => {
     const itemEffects = {
       sigrikaCandyDisabled: true,

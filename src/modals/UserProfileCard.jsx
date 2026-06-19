@@ -268,7 +268,6 @@ export function UserProfileCard({
               <small>{reportContent.length}/400</small>
               <div>
                 <button className="danger-action" type="submit" disabled={reportPending || reportContent.trim().length === 0}>提交</button>
-                <button type="button" onClick={() => setShowReportDialog(false)}>取消</button>
               </div>
             </form>
           </section>
