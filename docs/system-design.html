@@ -67,7 +67,7 @@
 <li>对局模式由 <code>src/shared/gameModes.js</code> 统一配置，前后端共享模式顺序、棋盘大小、贴目、技能开关和时间控制。</li>
 </ul>
 <ul>
-<li>当前内置对局模式为 <code>spark</code>、<code>standard</code> 和 <code>gomoku</code>。五子棋沿用 13 路棋盘与星位、5 分钟 30 秒 3 次读秒、自动猜先和独立 <code>UserModeStats(mode=gomoku)</code> 段位/积分；需要出战角色但 <code>skillEnabled=false</code>，房间 UI 不显示弃手、数子、提子、除子、超频或技能信息。 Gomoku five-in-row results carry <code>winner.winningLine</code>, the board plays a gold highlight on those five stones first, live games delay the result modal by 2 seconds, and replay only shows the highlight.</li>
+<li>当前内置对局模式为 <code>spark</code>、<code>standard</code> 和 <code>gomoku</code>。五子棋沿用 13 路棋盘与星位、5 分钟 30 秒 3 次读秒、自动猜先和独立 <code>UserModeStats(mode=gomoku)</code> 段位/积分；需要出战角色但 <code>skillEnabled=false</code>，房间 UI 不显示弃手、数子、提子、除子、超频或技能信息。 Gomoku five-in-row results carry <code>winner.winningLine</code>; the board keeps a persistent gold highlight on those five stones, live games show the result modal immediately, and replay only shows the highlight.</li>
 </ul>
 <ul>
 <li>站点公开配置通过 <code>SiteSetting</code> key/value 存储，并由 <code>src/shared/siteSettings.js</code> 定义前后端共享默认值；后台系统设置可编辑大厅标题/副标题、关于文本、首页 footer 长文本和加载页提示语集合，footer 支持受限 Markdown 链接，加载页提示语按行维护并在玩家预加载时随机轮播；加载屏内容在桌面、移动端和短视口中保持整屏居中，标题与提示语允许按容器宽度换行，中间加载面板保持透明且不覆盖整页主题背景。</li>
@@ -2812,7 +2812,7 @@
 <li><code>mode</code>: 对局模式快照，当前支持 <code>spark</code>、<code>standard</code>、<code>gomoku</code>；排行榜、履历、公开资料和回放按该字段过滤。</li>
 </ul>
 <h3>Gomoku Domain</h3>
-<p><code>gomoku</code> 五子棋模式使用 <code>src/shared/gomokuRules.js</code> 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。 A decisive five-in-row result records the exact five point ids in <code>winner.winningLine</code>; live clients delay the result modal for 2 seconds while highlighting those stones, while replay views only render the same highlight.</p>
+<p><code>gomoku</code> 五子棋模式使用 <code>src/shared/gomokuRules.js</code> 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。 A decisive five-in-row result records the exact five point ids in <code>winner.winningLine</code>; live clients show the result modal immediately while the board keeps those stones highlighted, and replay views only render the same persistent highlight.</p>
 <h3>Character</h3>
 <p>可配置角色。</p>
 <ul>

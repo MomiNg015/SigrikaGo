@@ -101,7 +101,7 @@
 
 ### Gomoku Domain
 
-`gomoku` 五子棋模式使用 `src/shared/gomokuRules.js` 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。 A decisive five-in-row result records the exact five point ids in `winner.winningLine`; live clients delay the result modal for 2 seconds while highlighting those stones, while replay views only render the same highlight.
+`gomoku` 五子棋模式使用 `src/shared/gomokuRules.js` 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。 A decisive five-in-row result records the exact five point ids in `winner.winningLine`; live clients show the result modal immediately while the board keeps those stones highlighted, and replay views only render the same persistent highlight.
 
 ### Character
 

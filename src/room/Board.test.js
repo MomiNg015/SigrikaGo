@@ -96,7 +96,8 @@ describe("areBoardPropsEqual", () => {
     expect(markup.match(/gomoku-winning-line/g)).toHaveLength(5);
     expect(css).toContain(".gomoku-winning-line .stone");
     expect(css).toContain("rgba(255, 220, 85, 0.98)");
-    expect(css).toContain("animation: gomoku-winning-stone-glow 2s");
+    expect(css).toContain("animation: gomoku-winning-stone-glow 1.45s ease-in-out infinite alternate");
+    expect(css).toContain("animation: gomoku-winning-ring-pulse 1.7s ease-in-out infinite alternate");
     expect(css).toContain("@keyframes gomoku-winning-ring-pulse");
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
   });

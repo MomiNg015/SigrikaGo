@@ -1,14 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 import {
   LAST_ROOM_CODE_KEY,
-  GOMOKU_RESULT_REVEAL_DELAY_MS,
   buildRoomResumeRequest,
   clearLastRoomCode,
   dismissedResultRoomAfterResume,
-  gomokuResultRevealKey,
   handleRoomResumePayload,
   handleMissingRoomResumePayload,
-  isDelayedGomokuFiveResult,
   rememberPlayerRoom,
   shouldClearRoomOnReplayExit,
   shouldShowResultModal
@@ -169,7 +166,7 @@ describe("resume session helpers", () => {
     }, "", 12)).toBe(false);
   });
 
-  test("delays gomoku five-in-row result modals until the board reveal is ready", () => {
+  test("shows gomoku five-in-row result modals immediately outside replay", () => {
     const room = {
       code: "12345",
       game: {
@@ -184,12 +181,8 @@ describe("resume session helpers", () => {
       }
     };
 
-    expect(GOMOKU_RESULT_REVEAL_DELAY_MS).toBe(2000);
-    expect(isDelayedGomokuFiveResult(room)).toBe(true);
-    expect(gomokuResultRevealKey(room)).toBe("12345:9:black:2,6|3,6|4,6|5,6|6,6");
-    expect(shouldShowResultModal(room, "", null, { resultRevealReady: false })).toBe(false);
-    expect(shouldShowResultModal(room, "", null, { resultRevealReady: true })).toBe(true);
-    expect(shouldShowResultModal(room, "", 9, { resultRevealReady: true })).toBe(false);
+    expect(shouldShowResultModal(room, "")).toBe(true);
+    expect(shouldShowResultModal(room, "", 9)).toBe(false);
   });
 
   test("clears the replay room snapshot when exiting a replay", () => {

@@ -30,7 +30,7 @@ describe("room session state", () => {
     }).resultModalOpen).toBe(false);
   });
 
-  it("keeps gomoku five-in-row result hidden until reveal animation is ready", () => {
+  it("shows gomoku five-in-row results immediately outside replay", () => {
     const finishedRoom = {
       code: "12345",
       game: {
@@ -47,12 +47,11 @@ describe("room session state", () => {
     expect(roomSessionView({
       ...initialRoomSessionState(),
       room: finishedRoom,
-      resultRevealReady: false
-    }).resultModalOpen).toBe(false);
+    }).resultModalOpen).toBe(true);
     expect(roomSessionView({
       ...initialRoomSessionState(),
       room: finishedRoom,
-      resultRevealReady: true
-    }).resultModalOpen).toBe(true);
+      replayStep: 9
+    }).resultModalOpen).toBe(false);
   });
 });
