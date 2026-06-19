@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { ConfirmPanel, UserProfileCard } from "../UserProfileCard.jsx";
+import MatchModeRuleText from "../../home/MatchModeRuleText.jsx";
 import { modeOrderedEntries } from "../../shared/gameModes.js";
 import UserIdentity from "../../shared/UserIdentity.jsx";
 
@@ -60,7 +61,7 @@ export default function FriendsOverlays({
                 <button className="match-mode-option" type="button" key={mode.id} onClick={() => onRequestMatchMode(mode.id)}>
                   <span className="match-mode-copy">
                     <strong>{mode.title}</strong>
-                    <small>{mode.rulesText}</small>
+                    <MatchModeRuleText rulesText={mode.rulesText} />
                   </span>
                 </button>
               ))}

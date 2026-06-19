@@ -53,7 +53,7 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
   ["mobile-adaptive/mobile-profile-records.css", 6842],
-  ["mobile-adaptive/phone-core.css", 6228],
+  ["mobile-adaptive/phone-core.css", 6309],
   ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-modals/phone-house-resume.css", 6956],
   ["mobile-room/portrait-room.css", 7502],
@@ -215,6 +215,24 @@ describe("root CSS entry contract", () => {
       ".asset-preload-panel.asset-preload-panel.asset-preload-panel.asset-preload-panel"
     );
     expect(preloadCss).not.toContain(":has(.asset-preload-screen)");
+  });
+
+  it("keeps mobile settings tabs and match mode status on one line", () => {
+    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+    const matchModeCss = readCssWithImports(new URL("./modals.css", import.meta.url));
+
+    expect(mobileCss).toContain(".settings-modal .settings-tabs");
+    expect(mobileCss).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
+    expect(mobileCss).toContain(".settings-modal .settings-tabs button");
+    expect(mobileCss).toContain("white-space: nowrap !important");
+    expect(mobileCss).toContain(".settings-modal h2");
+    expect(mobileCss).toContain("line-height: 1.22 !important");
+    expect(mobileCss).toContain("overflow: visible !important");
+    expect(matchModeCss).toContain(".match-mode-rules");
+    expect(matchModeCss).toContain(".match-mode-rule-line");
+    expect(matchModeCss).toContain(".match-mode-count small");
+    expect(matchModeCss).toContain("white-space: nowrap !important");
+    expect(matchModeCss).toContain("overflow-wrap: normal !important");
   });
 
   it("keeps base.css as an import-only shared foundation entry", () => {

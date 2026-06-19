@@ -5,6 +5,7 @@ import { modeOrderedEntries } from "../shared/gameModes.js";
 import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
+import MatchModeRuleText from "./MatchModeRuleText.jsx";
 
 export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, onLogout, onStartMatch, onOpenMatch, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenGacha, onOpenFriends, onOpenSettings, onOpenMessageBoard, onOpenAdmin }) {
   const [matchModePickerOpen, setMatchModePickerOpen] = useState(false);
@@ -78,7 +79,7 @@ function MatchModePicker({ matchmakingCounts, onClose, onSelect }) {
             <button className="match-mode-option" type="button" key={mode.id} onClick={() => onSelect(mode.id)}>
               <span className="match-mode-copy">
                 <strong>{mode.title}</strong>
-                <small>{mode.rulesText}</small>
+                <MatchModeRuleText rulesText={mode.rulesText} />
               </span>
               <span className="match-mode-count">
                 <b>{Number(matchmakingCounts[mode.id] ?? 0)}</b>

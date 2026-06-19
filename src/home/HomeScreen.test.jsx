@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync, statSync } from "node:fs";
 import HomeScreen from "./HomeScreen.jsx";
+import MatchModeRuleText, { splitMatchModeRules } from "./MatchModeRuleText.jsx";
 import { CHARACTERS } from "../shared/characters.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
@@ -360,6 +361,22 @@ describe("HomeScreen", () => {
     expect(modalCss).toContain("margin-top: 12px;");
     expect(finalMobileCss).toContain(".match-mode-modal .match-mode-options + .secondary-action");
     expect(finalMobileCss).toContain("margin-top: 14px !important;");
+  });
+
+  it("splits match mode rules into stable mobile lines without a trailing time separator", () => {
+    const split = splitMatchModeRules("13路 · 5分钟30秒3次 · 黑贴2又3/4子");
+    const html = renderToStaticMarkup(createElement(MatchModeRuleText, {
+      rulesText: "13路 · 5分钟30秒3次 · 黑贴2又3/4子"
+    }));
+
+    expect(split).toEqual({
+      primary: "13路 · 5分钟30秒3次",
+      secondary: "黑贴2又3/4子"
+    });
+    expect(html).toContain("match-mode-rules");
+    expect(html).toContain("<span class=\"match-mode-rule-line\">13路 · 5分钟30秒3次</span>");
+    expect(html).toContain("<span class=\"match-mode-rule-line\">黑贴2又3/4子</span>");
+    expect(html).not.toContain("5分钟30秒3次 ·</span>");
   });
 
   it("passes a gacha entry through the home utility dock", () => {

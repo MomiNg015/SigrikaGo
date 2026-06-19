@@ -41,6 +41,15 @@
   line-height: 1.35;
 }
 
+.match-mode-rules {
+  display: grid;
+  gap: 2px;
+}
+
+.match-mode-rule-line {
+  display: block;
+}
+
 .match-mode-count {
   display: grid;
   justify-items: center;
@@ -54,6 +63,26 @@
 .match-mode-count b {
   font-variant-numeric: tabular-nums;
   font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .match-mode-copy small.match-mode-rules {
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .match-mode-rule-line {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .match-mode-count small {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
 }
 
 .mode-tabs {

@@ -17,8 +17,24 @@
     overflow-wrap: anywhere !important;
   }
 
+  .match-mode-copy small.match-mode-rules {
+    overflow-wrap: normal !important;
+  }
+
+  .match-mode-rule-line {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
   .match-mode-count {
-    min-width: 54px !important;
+    min-width: 72px !important;
+  }
+
+  .match-mode-count small {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
   }
 
   .match-mode-modal .match-mode-options + .secondary-action {

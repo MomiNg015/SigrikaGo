@@ -15,7 +15,7 @@
 
 ## 当前架构摘要
 
-- 前端使用 React 19、Vite 和 Socket.IO client；`src/main.jsx` 只负责浏览器挂载，应用组合根在 `src/app/App.jsx`，业务状态逐步下沉到 `src/app/*` hooks 和独立视图组件，应用级弹窗可见性集中在 `src/app/useOverlayState.js`，房间/回放/结果弹窗会话状态集中在 `src/app/useRoomSessionState.js`，已关闭结果不会因 `room:resume` 再弹，匹配等待/成功过渡状态集中在 `src/app/useMatchSessionState.js`；开发期 Vite `/socket.io` 代理会静默处理后端 watch 重启造成的预期 websocket 断连错误。
+- 前端使用 React 19、Vite 和 Socket.IO client；`src/main.jsx` 只负责浏览器挂载，应用组合根在 `src/app/App.jsx`，业务状态逐步下沉到 `src/app/*` hooks 和独立视图组件，应用级弹窗可见性集中在 `src/app/useOverlayState.js`，房间/回放/结果弹窗会话状态集中在 `src/app/useRoomSessionState.js`，已关闭结果不会因 `room:resume` 再弹，匹配等待/成功过渡状态集中在 `src/app/useMatchSessionState.js`；移动端对弈模式选择弹窗将路数+时间和贴目/规则分成稳定两行，设置弹窗在竖屏下保持标题不被裁切且内部 tab 单行并列；开发期 Vite `/socket.io` 代理会静默处理后端 watch 重启造成的预期 websocket 断连错误。
 - 后端使用 Express、Socket.IO、Prisma 和 SQLite；`server/index.js` 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 `server/serverStartup.js`，Socket 连接事件套件由 `server/socketEvents.js` 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 `server/socket*Events.js` 模块，生产静态托管收口在 `server/staticAssets.js`，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块。
 - 对局模式由 `src/shared/gameModes.js` 统一配置，前后端共享模式顺序、棋盘大小、贴目、技能开关和时间控制。
 - 当前内置对局模式为 `spark`、`standard` 和 `gomoku`。五子棋沿用 13 路棋盘与星位、5 分钟 30 秒 3 次读秒、自动猜先和独立 `UserModeStats(mode=gomoku)` 段位/积分；需要出战角色但 `skillEnabled=false`，房间 UI 不显示弃手、数子、提子、除子、超频或技能信息。

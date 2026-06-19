@@ -1,5 +1,29 @@
 /* Bright School portrait settings tabs safety rules. */
 @media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal h2 {
+    line-height: 1.22 !important;
+    min-height: 1.3em !important;
+    overflow: visible !important;
+    padding-block: 2px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-tabs button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:hover,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:focus,
