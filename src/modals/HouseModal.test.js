@@ -112,9 +112,11 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).toContain("最近十盘的战绩");
     expect(profileHtml.indexOf("profile-mode-tabs")).toBeLessThan(profileHtml.indexOf("profile-resume-stats"));
     expect(profileHtml).not.toContain("3段 · 1160分");
-    expect(recordHtml).toContain("character-record-summary");
     expect(recordHtml).toContain("character-record-total");
-    expect(recordHtml).toContain("character-record-breakdown");
+    expect(recordHtml).toContain("character-record-wins");
+    expect(recordHtml).toContain("character-record-losses");
+    expect(recordHtml).toContain("character-record-draws");
+    expect(recordHtml).toContain("character-record-rate");
   });
 
   it("disables profile like and report actions for self and disables repeat daily likes", () => {
@@ -676,10 +678,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain(".character-record-dialog");
     expect(css).toContain("width: min(420px, calc(100vw - 20px)) !important");
     expect(css).toContain(".character-record-row span");
-    expect(css).toContain(".profile-record-lines");
-    expect(css).toContain(".character-record-summary");
-    expect(css).toContain(".profile-record-separator");
-    expect(css).toContain(".character-record-separator");
+    expect(css).toContain(".character-record-rate");
     expect(css).toContain("word-break: keep-all !important");
     expect(css).toContain(".character-detail-art img");
     expect(css).toContain("filter: none !important");
@@ -717,7 +716,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain(".user-profile-card .profile-character-row");
     expect(finalMobileCss).toContain("overflow-x: hidden !important");
     expect(finalMobileCss).toContain("border-radius: 0 !important");
-    expect(finalMobileCss).toContain("grid-template-columns: 38px minmax(54px, 0.58fr) minmax(120px, 1fr) minmax(42px, 0.42fr) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: 38px minmax(48px, 0.72fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.48fr) !important");
+    expect(finalMobileCss).toContain(".profile-character-rate");
     expect(finalMobileCss).toContain(".user-profile-card .profile-record-breakdown");
     expect(finalMobileCss).toContain("font-size: clamp(12px, 3.45vw, 16px) !important");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
@@ -737,7 +737,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain(".resume-character-records > strong");
     expect(finalMobileCss).toContain("background: transparent !important");
     expect(finalMobileCss).toContain("box-shadow: none !important");
-    expect(finalMobileCss).toContain("grid-template-columns: 38px minmax(48px, 0.72fr) minmax(0, 1.18fr) minmax(40px, 0.52fr) !important");
+    expect(finalMobileCss).toContain("justify-self: end !important");
+    expect(finalMobileCss).toContain("text-align: right !important");
+    expect(finalMobileCss).toContain("font-variant-numeric: tabular-nums !important");
     expect(modalCss).toContain(".profile-rank-results::after");
     expect(modalCss).toContain("display: flex;");
     expect(modalCss).toContain("flex-wrap: wrap;");
@@ -765,17 +767,12 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain(".house-modal .deploy-tag");
     expect(finalMobileCss).toContain("display: none !important");
     expect(finalMobileCss).toContain(".character-record-row");
-    expect(finalMobileCss).toContain("grid-template-columns: 46px minmax(58px, 0.82fr) max-content minmax(48px, auto) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: 42px minmax(52px, 0.82fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.5fr) !important");
     expect(finalMobileCss).toContain(".resume-character-records .character-record-row");
-    expect(finalMobileCss).toContain("grid-template-columns: 38px minmax(54px, 0.58fr) minmax(120px, 1fr) minmax(42px, 0.42fr) !important");
-    expect(finalMobileCss).toContain(".resume-character-records .character-record-summary");
-    expect(finalMobileCss).toContain("display: block !important");
-    expect(finalMobileCss).toContain(".resume-character-records .character-record-separator");
-    expect(finalMobileCss).toContain("display: inline !important");
+    expect(finalMobileCss).toContain("grid-template-columns: 38px minmax(48px, 0.58fr) repeat(4, minmax(24px, 0.32fr)) minmax(38px, 0.42fr) !important");
+    expect(finalMobileCss).toContain(".resume-character-records .character-record-row :is(.character-record-total, .character-record-wins, .character-record-losses, .character-record-draws, .character-record-rate)");
     expect(finalMobileCss).toContain(".profile-record-lines");
-    expect(finalMobileCss).toContain(".character-record-summary");
     expect(finalMobileCss).toContain(".profile-record-separator");
-    expect(finalMobileCss).toContain(".character-record-separator");
     expect(finalMobileCss).toContain("overflow-wrap: normal !important");
   });
 

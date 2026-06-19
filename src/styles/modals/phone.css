@@ -119,8 +119,8 @@
   }
 
   .profile-character-row {
-    grid-template-columns: 42px minmax(64px, 1fr) minmax(82px, 1fr) 52px;
-    gap: 5px;
+    grid-template-columns: 42px minmax(58px, 1fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.5fr);
+    gap: 4px;
     padding: 6px;
     font-size: 11px;
   }

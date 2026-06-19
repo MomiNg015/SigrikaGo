@@ -35,9 +35,9 @@
 
 .resume-character-records .character-record-row {
   display: grid;
-  grid-template-columns: 46px minmax(84px, 1fr) minmax(112px, auto) minmax(52px, auto);
+  grid-template-columns: 46px minmax(84px, 1fr) repeat(4, minmax(38px, 48px)) minmax(54px, 64px);
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
   padding: 8px 10px;
   border: 2px solid rgba(61, 43, 37, 0.72);
@@ -58,12 +58,11 @@
   white-space: nowrap;
 }
 
-.resume-character-records .character-record-summary,
-.resume-character-records .character-record-row b {
+.resume-character-records .character-record-row :is(.character-record-total, .character-record-wins, .character-record-losses, .character-record-draws, .character-record-rate) {
+  justify-self: end;
+  min-width: 0;
+  text-align: right;
   white-space: nowrap;
   word-break: keep-all;
-}
-
-.resume-character-records .character-record-row b {
-  justify-self: end;
+  font-variant-numeric: tabular-nums;
 }

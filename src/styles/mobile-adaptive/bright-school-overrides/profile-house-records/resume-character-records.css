@@ -1,6 +1,7 @@
 @media (max-width: 760px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row {
-    grid-template-columns: 38px minmax(54px, 0.58fr) minmax(120px, 1fr) minmax(42px, 0.42fr) !important;
+    grid-template-columns: 38px minmax(48px, 0.58fr) repeat(4, minmax(24px, 0.32fr)) minmax(38px, 0.42fr) !important;
+    gap: 4px !important;
     align-items: center !important;
     min-height: 48px !important;
     padding-block: 6px !important;
@@ -15,27 +16,19 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row strong,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-summary,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row b {
     align-self: center !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-summary {
-    display: block !important;
-    gap: 0 !important;
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-row :is(.character-record-total, .character-record-wins, .character-record-losses, .character-record-draws, .character-record-rate) {
+    align-self: center !important;
+    justify-self: end !important;
     min-width: 0 !important;
+    text-align: right !important;
     overflow: hidden !important;
     text-overflow: clip !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-separator {
-    display: inline !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-total,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-character-records .character-record-breakdown {
-    display: inline !important;
+    font-variant-numeric: tabular-nums !important;
   }
 }

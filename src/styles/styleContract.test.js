@@ -733,6 +733,7 @@ describe("root CSS entry contract", () => {
       "./modals/base-result-skill.css",
       "./modals/replay-mode-resume.css",
       "./modals/nested-profile.css",
+      "./modals/profile-character-records.css",
       "./modals/profile-hero-cleanup.css",
       "./modals/profile-social-actions.css",
       "./modals/character-opening.css",
