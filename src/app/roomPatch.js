@@ -18,6 +18,16 @@ export function roomPatchNeedsResume(currentRoom, patch) {
   return Number(patch.baseRevision ?? 0) !== currentRevision;
 }
 
+export function roomPatchCanUpdate(currentRoom, patch) {
+  if (!currentRoom || !patch || patch.roomCode !== currentRoom.code) return false;
+  if (!["chat:append", "presence:update"].includes(patch.type)) return false;
+  if (patch.type === "chat:append" && !patch.message?.id) return false;
+  const patchRevision = Number(patch.revision ?? 0);
+  if (!patchRevision) return true;
+  const currentRevision = Number(currentRoom.revision ?? 0);
+  return patchRevision > currentRevision && Number(patch.baseRevision ?? 0) === currentRevision;
+}
+
 function canApplyPatchRevision(room, patch) {
   const patchRevision = Number(patch.revision ?? 0);
   if (!patchRevision) return true;

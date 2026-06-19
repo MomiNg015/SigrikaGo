@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyRoomPatch, roomPatchNeedsResume } from "./roomPatch.js";
+import { applyRoomPatch, roomPatchCanUpdate, roomPatchNeedsResume } from "./roomPatch.js";
 
 describe("room patch updates", () => {
   it("appends chat messages while preserving unchanged room slices", () => {
@@ -173,5 +173,54 @@ describe("room patch updates", () => {
     expect(applyRoomPatch(room, gapPatch)).toBe(room);
     expect(roomPatchNeedsResume(room, { ...gapPatch, baseRevision: 2, revision: 3 })).toBe(false);
     expect(roomPatchNeedsResume(room, { ...gapPatch, roomCode: "99999" })).toBe(false);
+  });
+
+  it("identifies patches worth scheduling before entering React state", () => {
+    const room = {
+      code: "12345",
+      revision: 2,
+      chat: []
+    };
+
+    expect(roomPatchCanUpdate(room, {
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 2,
+      revision: 3,
+      message: { id: "chat-3" }
+    })).toBe(true);
+    expect(roomPatchCanUpdate(room, {
+      roomCode: "12345",
+      type: "presence:update",
+      baseRevision: 2,
+      revision: 3,
+      players: []
+    })).toBe(true);
+    expect(roomPatchCanUpdate(room, {
+      roomCode: "99999",
+      type: "chat:append",
+      message: { id: "chat-3" }
+    })).toBe(false);
+    expect(roomPatchCanUpdate(room, {
+      roomCode: "12345",
+      type: "chat:append",
+      revision: 2,
+      message: { id: "chat-2" }
+    })).toBe(false);
+    expect(roomPatchCanUpdate(room, {
+      roomCode: "12345",
+      type: "unknown",
+      revision: 3
+    })).toBe(false);
+    expect(roomPatchCanUpdate(room, {
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 2,
+      revision: 3
+    })).toBe(false);
+    expect(roomPatchCanUpdate(null, {
+      roomCode: "12345",
+      type: "presence:update"
+    })).toBe(false);
   });
 });

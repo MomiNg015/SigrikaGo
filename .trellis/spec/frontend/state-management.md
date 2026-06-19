@@ -331,6 +331,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - Full room views include `revision` so the client knows the latest patch stream position after `room:update`, `room:resume`, or `match:found`.
 - `applyRoomPatch(currentRoom, patch)` returns the room object to store in state.
 - `roomPatchNeedsResume(currentRoom, patch)` returns `true` when a patch is for the current room but its revision does not continue from the current room revision.
+- `roomPatchCanUpdate(currentRoom, patch)` returns `true` only when the patch targets the current room, has a known patch type, is not stale, and has the minimum type-specific payload needed to change state.
 - Installed socket handlers must emit `room:resume` when `roomPatchNeedsResume(...)` is true.
 - Current lightweight patch types are `chat:append` and `presence:update`.
 
@@ -340,12 +341,14 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - A patch with `baseRevision !== currentRoom.revision` and `revision > currentRoom.revision` indicates a gap. The client must reject it and request `room:resume`.
 - Legacy patches without `revision` may still be applied by type-specific reducers for backward-compatible tests or narrow mocks, but new runtime patches must carry revision fields.
 - Patch reducers must preserve unchanged room slices, especially `game` and `players`, so chat/request patches do not cause board or timer panels to re-render.
+- Socket patch handlers must check `roomPatchCanUpdate(...)` before calling `setRoom`; wrong-room, missing-room, unknown, stale, duplicate, and malformed patches should not schedule React state work.
 - `presence:update` patches may replace `players`, `spectatorCount`, `spectators`, and `chat`, but must not carry or replace `game`; connection changes, spectator membership, and connection system messages should not repaint the board. Their reducers should structurally share unchanged player, spectator, and chat entries so only changed member rows or player panels receive new object references.
 - If a full `room:update` already includes the same mutation that a following continuous patch carries, the patch reducer must still advance `room.revision` so the next patch is not treated as a gap.
 - Full `room:update` and `room:resume` remain authoritative. Patch recovery should request a snapshot rather than trying to infer missing intermediate state.
 
 #### 4. Validation & Error Matrix
 - Patch is for another room code -> ignore it and do not request resume.
+- Patch is for no current room -> ignore it and do not call `setRoom`.
 - Patch has no revision -> apply only if its type-specific reducer can do so idempotently.
 - Patch revision is equal to or below current revision -> ignore as duplicate/stale.
 - Patch base revision differs from current revision while patch revision is newer -> reject patch and emit `room:resume`.
@@ -364,6 +367,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 
 #### 6. Tests Required
 - `src/app/roomPatch.test.js` must cover continuous patch application, duplicate/stale patch ignoring, unknown/wrong-room patch ignoring, and gap detection.
+- Patch scheduling tests must assert `roomPatchCanUpdate()` rejects missing-room, wrong-room, stale, unknown, and malformed patches before React state setters are called.
 - Presence patch tests must assert `presence:update` preserves `game`, structurally shares unchanged member/chat entries, updates changed slices, and advances revision when a direct snapshot already contains the same mutation.
 - `src/app/socketHandlers.test.js` must assert gapped installed patch listeners emit `room:resume` and do not call `setRoom`.
 - Backend broadcast tests must assert patch payloads include `eventId`, `baseRevision`, and `revision`, and that the room revision increments before persistence.

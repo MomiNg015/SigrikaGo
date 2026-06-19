@@ -191,6 +191,52 @@ describe("socket handlers", () => {
     expect(nextRoom.game).toBe(game);
   });
 
+  it("ignores room patches that cannot update the current room before scheduling state", () => {
+    const currentRoom = { code: "12345", revision: 2, chat: [] };
+    const deps = handlerDeps({ roomRef: { current: currentRoom } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomPatch({
+      roomCode: "99999",
+      type: "chat:append",
+      message: { id: "chat-wrong-room" }
+    });
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "unknown",
+      revision: 3
+    });
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "chat:append",
+      revision: 2,
+      message: { id: "chat-stale" }
+    });
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 2,
+      revision: 3
+    });
+
+    expect(deps.setRoom).not.toHaveBeenCalled();
+  });
+
+  it("ignores room patches when no current room is available", () => {
+    const deps = handlerDeps({ roomRef: { current: null } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "presence:update",
+      baseRevision: 0,
+      revision: 1,
+      players: []
+    });
+
+    expect(deps.setRoom).not.toHaveBeenCalled();
+  });
+
   it("requests a room resume instead of applying a gapped room patch", () => {
     const currentRoom = { code: "12345", revision: 1, chat: [] };
     const deps = handlerDeps({ roomRef: { current: currentRoom } });

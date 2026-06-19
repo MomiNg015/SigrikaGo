@@ -1,5 +1,5 @@
 import { applyRoomSnapshot } from "./roomSnapshot.js";
-import { applyRoomPatch, roomPatchNeedsResume } from "./roomPatch.js";
+import { applyRoomPatch, roomPatchCanUpdate, roomPatchNeedsResume } from "./roomPatch.js";
 import { GAME_MODE_IDS } from "../shared/gameModes.js";
 
 export function createSocketHandlers({
@@ -107,6 +107,7 @@ export function createSocketHandlers({
         requestRoomResume();
         return;
       }
+      if (!roomPatchCanUpdate(roomRef.current, patch)) return;
       setRoom((current) => applyRoomPatch(current, patch));
     },
     roomResume: (payload) => {
