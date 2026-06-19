@@ -34,10 +34,22 @@ describe("socket handlers", () => {
   });
 
   it("syncs user stats silently when restoring a live room", () => {
-    const roomView = { code: "12345", players: [] };
+    const currentRoom = {
+      code: "12345",
+      role: "player",
+      game: { phase: "playing" },
+      players: [],
+      __audioResumeBaseline: true
+    };
+    const roomView = {
+      code: "12345",
+      role: "player",
+      game: { phase: "playing" },
+      players: []
+    };
     const deps = handlerDeps({
       handleRoomResumePayload: vi.fn((_payload, handlers) => {
-        handlers.setRoom(roomView);
+        handlers.setRoom({ ...roomView, __audioResumeBaseline: true });
         handlers.setView("room");
         return true;
       })
@@ -48,7 +60,8 @@ describe("socket handlers", () => {
 
     expect(deps.updateUser).toHaveBeenCalledOnce();
     expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function));
-    expect(deps.setRoom).toHaveBeenCalledWith(roomView);
+    expect(deps.setRoom).toHaveBeenCalledWith(expect.any(Function));
+    expect(roomSetterResult(deps, 1, currentRoom)).toBe(currentRoom);
     expect(deps.setView).toHaveBeenCalledWith("room");
   });
 

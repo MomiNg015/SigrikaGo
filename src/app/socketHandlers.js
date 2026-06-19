@@ -125,6 +125,8 @@ export function createSocketHandlers({
         setRoom: (roomView) => {
           if (payload.type === "room") {
             updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
+            setRoom((current) => applyRoomSnapshot(current, roomView));
+            return;
           }
           setRoom(roomView);
         },
