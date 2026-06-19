@@ -373,10 +373,42 @@ describe("socket handlers", () => {
 
     handlers.lobbyStats({ onlineCount: 3, matchmakingCount: 2 });
 
-    expect(deps.setLobbyStats).toHaveBeenCalledWith({
+    expect(lobbyStatsSetterResult(deps)).toEqual({
       onlineCount: 3,
       matchmakingCount: 2,
       matchmakingCounts: { spark: 2, standard: 0, gomoku: 0 }
+    });
+  });
+
+  it("keeps identical lobby stats stable during repeated socket updates", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+    const current = {
+      onlineCount: 3,
+      matchmakingCount: 2,
+      matchmakingCounts: { spark: 1, standard: 1, gomoku: 0 }
+    };
+
+    handlers.lobbyStats({
+      onlineCount: 3,
+      matchmakingCount: 2,
+      matchmakingCounts: { spark: 1, standard: 1, gomoku: 0 }
+    });
+
+    expect(lobbyStatsSetterResult(deps, current)).toBe(current);
+  });
+
+  it("normalizes legacy lobby stats state even when visible counts match", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+    const current = { onlineCount: 0, matchmakingCount: 0 };
+
+    handlers.lobbyStats({ onlineCount: 0, matchmakingCount: 0 });
+
+    expect(lobbyStatsSetterResult(deps, current)).toEqual({
+      onlineCount: 0,
+      matchmakingCount: 0,
+      matchmakingCounts: { spark: 0, standard: 0, gomoku: 0 }
     });
   });
 
@@ -482,6 +514,11 @@ describe("socket handlers", () => {
 function roomSetterResult(deps, callNumber = 1, currentRoom = null) {
   const argument = deps.setRoom.mock.calls[callNumber - 1]?.[0];
   return typeof argument === "function" ? argument(currentRoom) : argument;
+}
+
+function lobbyStatsSetterResult(deps, currentStats = {}) {
+  const argument = deps.setLobbyStats.mock.calls.at(-1)?.[0];
+  return typeof argument === "function" ? argument(currentStats) : argument;
 }
 
 function handlerDeps(overrides = {}) {

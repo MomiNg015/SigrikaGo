@@ -237,6 +237,34 @@ Correct:
 updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 ```
 
+### Scenario: Lobby Stats State Writes
+
+#### 1. Scope / Trigger
+- Trigger: handling `lobby:stats` socket payloads or changing lobby online/matchmaking counters.
+- Lobby stats can arrive while the user is browsing home, waiting for matchmaking, or recovering from reconnects, so duplicate payloads should not churn the home shell.
+
+#### 2. Signatures
+- `normalizeLobbyStats(stats)` returns `{ onlineCount, matchmakingCount, matchmakingCounts }`.
+- `sameLobbyStats(current, next)` returns `true` only when the current state already has every supported mode count and all numeric counts match.
+
+#### 3. Contracts
+- `socketHandlers.lobbyStats(stats)` should write through a functional setter and return the current state object when normalized stats are unchanged.
+- Legacy or reset state without `matchmakingCounts` should be normalized on the next lobby stats payload even when visible counts are zero.
+- Per-mode counts must continue to use `GAME_MODE_IDS` so new modes do not require hard-coded lobby updater branches.
+
+#### 4. Validation & Error Matrix
+- Duplicate `{ onlineCount, matchmakingCount, matchmakingCounts }` -> return the current state object.
+- Missing `matchmakingCounts` on the incoming payload -> derive spark from `matchmakingCount` and other modes from `0`.
+- Existing current state lacks `matchmakingCounts` -> return a normalized object instead of preserving the legacy shape.
+
+#### 5. Good/Base/Bad Cases
+- Good: repeated `lobby:stats` payloads with identical mode counts do not re-render the home screen.
+- Base: older reset paths that only store `{ onlineCount, matchmakingCount }` are normalized by the next socket payload.
+- Bad: `setLobbyStats({ ... })` for every socket payload because unchanged server counts still create a new object graph.
+
+#### 6. Tests Required
+- `src/app/socketHandlers.test.js` must assert lobby stats normalization and stable-object behavior for duplicate payloads.
+
 ### Scenario: Room Clock State Writes
 
 #### 1. Scope / Trigger

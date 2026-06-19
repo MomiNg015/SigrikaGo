@@ -59,11 +59,8 @@ export function createSocketHandlers({
     },
     matchWaiting: ({ startedAt, mode = "spark" }) => setMatchStart({ startedAt, mode }),
     lobbyStats: (stats = {}) => {
-      setLobbyStats({
-        onlineCount: Number(stats.onlineCount ?? 0),
-        matchmakingCount: Number(stats.matchmakingCount ?? 0),
-        matchmakingCounts: modeCountsFromLobbyStats(stats)
-      });
+      const nextStats = normalizeLobbyStats(stats);
+      setLobbyStats((current) => sameLobbyStats(current, nextStats) ? current : nextStats);
     },
     matchFound: (roomView) => {
       closeAllOverlays();
@@ -247,6 +244,21 @@ function roomAudioBaselineSnapshotKey(roomView) {
 
 function emptyModeCounts() {
   return Object.fromEntries(GAME_MODE_IDS.map((mode) => [mode, 0]));
+}
+
+export function normalizeLobbyStats(stats = {}) {
+  return {
+    onlineCount: Number(stats.onlineCount ?? 0),
+    matchmakingCount: Number(stats.matchmakingCount ?? 0),
+    matchmakingCounts: modeCountsFromLobbyStats(stats)
+  };
+}
+
+export function sameLobbyStats(current = {}, next = {}) {
+  if (Number(current.onlineCount ?? 0) !== Number(next.onlineCount ?? 0)) return false;
+  if (Number(current.matchmakingCount ?? 0) !== Number(next.matchmakingCount ?? 0)) return false;
+  return GAME_MODE_IDS.every((mode) => Object.prototype.hasOwnProperty.call(current.matchmakingCounts ?? {}, mode)
+    && Number(current.matchmakingCounts?.[mode] ?? 0) === Number(next.matchmakingCounts?.[mode] ?? 0));
 }
 
 function modeCountsFromLobbyStats(stats = {}) {
