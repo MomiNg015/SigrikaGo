@@ -589,6 +589,11 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("background-color: transparent;");
     expect(modalCss).toContain("min-height: 38px;");
     expect(modalCss).toContain("min-width: 58px;");
+    expect(modalCss).toContain(".profile-replay-button {");
+    expect(modalCss).toContain("background: #e4f6f0;");
+    expect(modalCss).toContain(".profile-replay-button:disabled");
+    expect(modalCss).toContain(".profile-relation-actions button:disabled");
+    expect(modalCss).toContain("background: linear-gradient(135deg, #ececef, #d9d9dd);");
     expect(modalCss).toContain(".profile-like-button:active:not(:disabled)");
     expect(modalCss).toContain("transform: translateY(2px);");
     expect(modalCss).toContain("box-shadow: 0 2px 0 rgba(79, 61, 85, 0.12);");
@@ -608,6 +613,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolComponentCss).toContain("box-shadow: 2px 2px 0 var(--bright-border) !important");
     expect(brightSchoolComponentCss).toContain(":is(.profile-like-button, .profile-report-button):active:not(:disabled)");
     expect(brightSchoolComponentCss).toContain("transform: translateY(2px) !important");
+    expect(brightSchoolComponentCss).toContain(".user-profile-card .profile-replay-button");
+    expect(brightSchoolComponentCss).toContain("background: #e4f6f0 !important");
+    expect(brightSchoolComponentCss).toContain(":is(.profile-replay-button:disabled, .profile-relation-actions button:disabled)");
+    expect(brightSchoolComponentCss).toContain("background: linear-gradient(135deg, #ececef, #d9d9dd) !important");
     const lobbyCss = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
     expect(lobbyCss).toContain(".character-item-effect-badges");
     expect(lobbyCss).toContain(".character-item-effect-icon");

@@ -394,6 +394,7 @@ describe("player theme CSS contract", () => {
       "./component-repairs/foundation-home.css",
       "./component-repairs/shop.css",
       "./component-repairs/lists-profile.css",
+      "./component-repairs/profile-actions.css",
       "./component-repairs/warehouse-character.css",
       "./component-repairs/room-board.css",
       "./component-repairs/chat.css",

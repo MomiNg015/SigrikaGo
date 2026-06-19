@@ -245,8 +245,10 @@
 }
 
 .profile-replay-button:disabled {
-  background: #ebe6ed;
-  color: #9a909d;
+  border-color: #9b969d;
+  background: linear-gradient(135deg, #ececef, #d9d9dd);
+  color: #817b84;
+  opacity: 0.78;
   cursor: not-allowed;
 }
 
@@ -276,8 +278,10 @@
 }
 
 .profile-relation-actions button:disabled {
-  background: #ebe6ed;
-  color: #9a909d;
+  border-color: #9b969d;
+  background: linear-gradient(135deg, #ececef, #d9d9dd);
+  color: #817b84;
+  opacity: 0.78;
   cursor: not-allowed;
 }
 
