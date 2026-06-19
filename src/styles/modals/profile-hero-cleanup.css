@@ -1,0 +1,16 @@
+/* User profile hero chrome cleanup. */
+.profile-identity-block,
+.profile-identity-block :where(.user-identity, .user-identity-main, .user-identity-name-tag) {
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  filter: none;
+}
+
+.profile-resume-hero img {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  filter: none;
+}

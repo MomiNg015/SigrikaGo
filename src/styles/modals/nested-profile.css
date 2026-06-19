@@ -59,7 +59,6 @@
   width: 122px;
   height: 104px;
   object-fit: contain;
-  filter: drop-shadow(0 12px 18px rgba(74, 48, 88, 0.16));
 }
 
 .profile-resume-hero span,

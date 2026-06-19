@@ -53,10 +53,30 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-like-button,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-button {
-  background: #ffffff !important;
   color: var(--bright-ink) !important;
   border: 2px solid var(--bright-border) !important;
-  box-shadow: 2px 2px 0 var(--bright-border) !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-like-button {
+  background: #dff1ff !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-button {
+  background: #ff6f7d !important;
+  color: #ffffff !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block h3,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block .user-identity,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block .user-identity-main,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block .user-identity-name-tag {
+  background-color: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-like-button:disabled,
@@ -74,6 +94,14 @@
   border-radius: 16px !important;
   clip-path: none !important;
   box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-chain-portrait > img {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.black-portrait {

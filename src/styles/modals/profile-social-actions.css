@@ -6,15 +6,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 4px;
 }
 
 .profile-like-button,
 .profile-report-button {
   min-height: 38px;
-  border: 1px solid #d7cae0;
+  border: 1px solid #9fc5e8;
   border-radius: 8px;
-  background: #ffffff;
+  background: #dff1ff;
   color: #4f3d55;
   font-weight: 900;
   box-shadow: 0 2px 0 rgba(79, 61, 85, 0.12);
@@ -23,14 +23,32 @@
 .profile-like-button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   min-width: 58px;
   padding: 7px 10px;
 }
 
 .profile-report-button {
+  display: inline-grid;
+  place-items: center;
   width: 38px;
   padding: 0;
+  border-color: #d84f60;
+  background: #ff6f7d;
+  color: #ffffff;
+}
+
+.profile-like-button svg,
+.profile-report-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.profile-like-button span {
+  color: inherit;
+  font-size: inherit;
+  line-height: 1;
 }
 
 .profile-like-button:disabled,

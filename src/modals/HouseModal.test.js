@@ -77,7 +77,10 @@ describe("deriveCharacterRecordStats", () => {
         record: "29局 · 15胜10负4和",
         characterId: "sigrika",
         characterStats: [],
-        likeCount: 3
+        likeCount: 3,
+        achievementEquipmentAssets: {
+          nameplate: { imageUrl: "/assets/nameplate.png", name: "用户名背景" }
+        }
       },
       characters: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp" }],
       token: "token"
@@ -102,6 +105,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).toContain("profile-like-button");
     expect(profileHtml).toContain("profile-report-button");
     expect(profileHtml).toContain(">3</span>");
+    expect(profileHtml).toContain("background-image:url(/assets/nameplate.png)");
     expect(profileHtml).toContain(">五子棋</button>");
     expect(profileHtml).not.toContain(">来下五子棋吗？</button>");
     expect(profileHtml).toContain("recent-result-label");
@@ -579,12 +583,25 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("max-height: min(760px, calc(100dvh - 32px));");
     expect(modalCss).toContain(".profile-character-list");
     expect(modalCss).toContain("max-height: min(260px, 34dvh);");
+    expect(modalCss).toContain(".profile-resume-hero img");
+    expect(modalCss).toContain("filter: none;");
+    expect(modalCss).toContain(".profile-identity-block :where(.user-identity, .user-identity-main, .user-identity-name-tag)");
+    expect(modalCss).toContain("background-color: transparent;");
+    expect(modalCss).toContain("min-height: 38px;");
+    expect(modalCss).toContain("min-width: 58px;");
     const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
+    const brightSchoolComponentCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     expect(brightSchoolModalCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {\n  grid-template-rows: auto auto auto minmax(0, 1fr) !important;");
     expect(brightSchoolModalCss).toContain("max-height: calc(100dvh - 32px) !important;");
     expect(brightSchoolModalCss).toContain("overflow: hidden !important;");
     expect(brightSchoolModalCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
     expect(brightSchoolModalCss).toContain("background: #ff9ebb !important");
+    expect(brightSchoolComponentCss).toContain(".user-profile-card .profile-identity-block .user-identity-name-tag");
+    expect(brightSchoolComponentCss).toContain("background-color: transparent !important");
+    expect(brightSchoolComponentCss).toContain(".user-profile-card .profile-chain-portrait > img");
+    expect(brightSchoolComponentCss).toContain("border: 0 !important");
+    expect(brightSchoolComponentCss).toContain("background: #dff1ff !important");
+    expect(brightSchoolComponentCss).toContain("background: #ff6f7d !important");
     const lobbyCss = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
     expect(lobbyCss).toContain(".character-item-effect-badges");
     expect(lobbyCss).toContain(".character-item-effect-icon");
@@ -638,6 +655,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("justify-items: start !important");
     expect(finalMobileCss).toContain("text-align: left !important");
     expect(finalMobileCss).toContain(".user-profile-card .profile-social-actions");
+    expect(finalMobileCss).toContain("height: 22px !important");
+    expect(finalMobileCss).toContain("min-width: 40px !important");
+    expect(finalMobileCss).toContain("width: 22px !important");
     expect(finalMobileCss).toContain(".user-profile-card .profile-like-button:disabled");
     expect(finalMobileCss).toContain(".user-profile-card .profile-report-button:disabled");
     expect(finalMobileCss).toContain(".user-profile-card .profile-footer-actions");
