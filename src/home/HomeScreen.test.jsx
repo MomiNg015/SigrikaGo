@@ -381,14 +381,25 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("5分钟30秒3次 ·</span>");
   });
 
-  it("passes a gacha entry through the home utility dock", () => {
+  it("renders the temporary recruitment entry as a disabled home utility action", () => {
     const source = readFileSync(new URL("./components/HomeUtilityDock.jsx", import.meta.url), "utf8");
+    const baseCss = readCssFixture("../styles/base.css");
+    const brightSchoolCss = readCssFixture("../styles/themes/bright-school.css");
+    const mobileCss = readCssFixture("../styles/mobile-adaptive.css");
     const stageSource = readFileSync(new URL("./components/HomeStage.jsx", import.meta.url), "utf8");
     const routeSource = readFileSync(new URL("../app/AppRoutes.jsx", import.meta.url), "utf8");
     const overlaySource = readFileSync(new URL("../app/AppOverlays.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("gacha-entry");
+    expect(source).toContain("recruitment-entry");
     expect(source).toContain("onOpenGacha");
+    expect(source).toContain("disabled");
+    expect(source).toContain("招募");
+    expect(source).not.toContain("<strong>扭蛋</strong>");
+    expect(baseCss).toContain(".home-grid-featured > .home-utility-grid .utility-entry:disabled");
+    expect(brightSchoolCss).toContain(".home-grid-featured > .home-utility-grid .utility-entry:disabled");
+    expect(brightSchoolCss).toContain("cursor: not-allowed !important");
+    expect(mobileCss).toContain(".utility-entry:active:not(:disabled)");
     expect(stageSource).toContain("onOpenGacha");
     expect(routeSource).toContain("setShowGacha(true)");
     expect(overlaySource).toContain("GachaModal");

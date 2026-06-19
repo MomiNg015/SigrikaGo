@@ -250,6 +250,7 @@ describe("root CSS entry contract", () => {
       "./base/topbar-room-tags.css",
       "./base/home-legacy-grid.css",
       "./base/home-stage-artboard.css",
+      "./base/home-unavailable-entry.css",
       "./base/message-feedback.css"
     ]);
     expect(baseEntry).not.toContain(":root {");

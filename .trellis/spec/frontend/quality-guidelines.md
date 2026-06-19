@@ -57,6 +57,35 @@ Correct:
 <button type="button" disabled>Direct message</button>
 ```
 
+### Home utility unavailable-entry contract
+
+Temporarily unavailable home utility entries must look and behave unavailable on both desktop and mobile, even when a theme layer restyles the utility dock.
+
+Required assertion points:
+
+- Keep the entry in the home utility dock only when product discovery still matters; otherwise remove it entirely. If it remains visible, render it as a native `disabled` button.
+- Rename the visible label to the product-facing future feature name, not the unavailable internal implementation name. For example, a hidden gacha implementation can surface as `Recruitment`.
+- Add a focused base CSS file for shared disabled utility-entry treatment when the existing home layout file is already oversized.
+- Add active-theme disabled selectors when theme files style `.utility-entry`, hover, focus, or active states with high specificity or `!important`; the disabled rule must preserve a gray background, gray text/border, `cursor: not-allowed`, no press transform, and no action-looking shadow.
+- Mobile touch feedback selectors must use `:active:not(:disabled)` for `.utility-entry` so disabled home actions cannot receive a pressed visual state.
+- Tests should assert the disabled markup, the product-facing label, base disabled CSS, active-theme disabled CSS, and the mobile `:not(:disabled)` touch selector.
+
+Wrong:
+
+```jsx
+<button className="home-entry utility-entry" onClick={openFeature}>Gacha</button>
+```
+
+This still looks and behaves like an available action.
+
+Correct:
+
+```jsx
+<button className="home-entry utility-entry recruitment-entry" disabled title="Recruitment unavailable">
+  <strong>Recruitment</strong>
+</button>
+```
+
 ### Profile social action CSS split contract
 
 Profile like/report styling must stay split across focused CSS files so the style-contract oversized-file guard stays useful.
