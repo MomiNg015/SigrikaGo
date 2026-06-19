@@ -27,3 +27,13 @@
     0 0 14px rgba(0, 255, 190, 0.26),
     inset 0 0 12px rgba(0, 255, 190, 0.12) !important;
 }
+
+.friend-action-row button:disabled,
+.friend-action-row button:disabled:hover,
+.friend-action-row button:disabled:focus-visible {
+  border-color: rgba(148, 163, 184, 0.32) !important;
+  background: rgba(22, 30, 36, 0.72) !important;
+  color: rgba(203, 213, 225, 0.56) !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+}

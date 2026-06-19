@@ -61,6 +61,37 @@ describe("FriendsModal mobile layout", () => {
     }
   });
 
+  it("renders unavailable friend actions as disabled controls", () => {
+    const rows = [{
+      id: "user-1",
+      username: "moming",
+      rank: "9段",
+      rating: 1860,
+      status: "offline",
+      characterId: "sigrika"
+    }];
+    const html = renderToStaticMarkup(createElement(FriendsList, {
+      actionRow: rows[0],
+      activeTab: "friends",
+      characters: {},
+      loading: false,
+      rows,
+      onOpenConfirm: () => {},
+      onOpenProfile: () => {},
+      onRequestMatch: () => {},
+      onToggleAction: () => {}
+    }));
+    const hudFriendCss = readCssWithImports(new URL("../styles/hud-components/hud-hardening.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/contrast-purge.css", import.meta.url));
+
+    expect(html).toContain("<button type=\"button\" disabled=\"\">密谈</button>");
+    expect(html).toContain("<button type=\"button\" disabled=\"\">对局申请</button>");
+    expect(hudFriendCss).toContain(".friend-action-row button:disabled");
+    expect(hudFriendCss).toContain("cursor: not-allowed");
+    expect(brightSchoolCss).toContain(".friend-action-row button:disabled");
+    expect(brightSchoolCss).toContain("background-color: #e7e3e7 !important");
+  });
+
   it("uses compact mobile friend cards instead of a horizontally scrolling table", () => {
     const css = readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url));
     const adaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));

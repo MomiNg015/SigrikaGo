@@ -32,7 +32,30 @@ Questions to answer:
 
 <!-- Patterns that must always be used -->
 
-(To be filled by the team)
+### Social action disabled-state contract
+
+Friend-list action rows, room member popovers, profile relation actions, and other user/social action menus must render unavailable actions as native disabled controls, not as active-looking inert buttons.
+
+Required assertion points:
+
+- Use a real `disabled` attribute for actions that cannot run, including unavailable direct-message entries while the feature is not implemented.
+- Keep click handlers guarded when the action depends on mutable user state, such as online/offline match requests or friend/blacklist relation changes.
+- Add base and active-theme `button:disabled` CSS when high-specificity theme layers style the same action buttons with `!important`; disabled actions must stay gray and use `cursor: not-allowed` on desktop and mobile.
+- Static markup tests should assert the disabled attribute for unavailable social actions, and style-contract tests should assert the disabled selector exists in every theme layer that can override the button.
+
+Wrong:
+
+```jsx
+<button type="button">Direct message</button>
+```
+
+This looks actionable even when the feature is unavailable.
+
+Correct:
+
+```jsx
+<button type="button" disabled>Direct message</button>
+```
 
 ---
 

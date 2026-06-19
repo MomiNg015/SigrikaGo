@@ -21,6 +21,18 @@
   text-shadow: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row button:disabled,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row button:disabled:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row button:disabled:focus-visible {
+  background-color: #e7e3e7 !important;
+  background-image: none !important;
+  color: #817b84 !important;
+  border-color: #9b969d !important;
+  box-shadow: 1px 2px 0 rgba(91, 84, 94, 0.42) !important;
+  opacity: 0.78 !important;
+  cursor: not-allowed !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-grid-container,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-list {
   border-right: none !important;

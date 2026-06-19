@@ -81,7 +81,7 @@ function FriendActionPanel({ activeTab, row, onOpenConfirm, onOpenProfile, onReq
       <button type="button" onClick={() => onOpenProfile(row)}>详细信息</button>
       {activeTab === "friends" ? (
         <>
-          <button type="button">密谈</button>
+          <button type="button" disabled>密谈</button>
           <button type="button" disabled={row.status !== "online"} onClick={() => onRequestMatch(row)}>对局申请</button>
           <button type="button" onClick={() => onOpenConfirm("friend", row)}>解除好友</button>
         </>
