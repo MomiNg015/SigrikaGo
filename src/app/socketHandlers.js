@@ -1,4 +1,5 @@
 import { applyRoomSnapshot } from "./roomSnapshot.js";
+import { applyRoomPatch } from "./roomPatch.js";
 import { GAME_MODE_IDS } from "../shared/gameModes.js";
 
 export function createSocketHandlers({
@@ -95,6 +96,9 @@ export function createSocketHandlers({
       setMatchSuccess((current) => current ? { ...current, room: applyRoomClock(current.room, clock) } : current);
       setRoom((current) => applyRoomClock(current, clock));
     },
+    roomPatch: (patch) => {
+      setRoom((current) => applyRoomPatch(current, patch));
+    },
     roomResume: (payload) => {
       shouldAudioBaselineNextLiveSnapshot = false;
       if (handleMissingRoomResumePayload(payload, roomRef.current, {
@@ -187,6 +191,7 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
   socket.on("lobby:stats", handlers.lobbyStats);
   socket.on("match:found", handlers.matchFound);
   socket.on("room:update", handlers.roomUpdate);
+  socket.on("room:patch", handlers.roomPatch);
   socket.on("room:clock", handlers.roomClock);
   socket.on("room:resume", handlers.roomResume);
   socket.on("connect", () => {

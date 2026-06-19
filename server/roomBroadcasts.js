@@ -25,6 +25,14 @@ export function broadcastRoomClock(io, room, { persistRoom = () => {} } = {}) {
   }
 }
 
+export function broadcastRoomPatch(io, room, patch, { persistRoom = () => {} } = {}) {
+  persistRoom(room, { force: true });
+  const payload = { roomCode: room.code, ...patch };
+  for (const participant of roomParticipants(room)) {
+    emitToSocket(io, participant.socketId, "room:patch", payload);
+  }
+}
+
 export function roomClockPayload(room) {
   return {
     roomCode: room.code,

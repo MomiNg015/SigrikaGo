@@ -13,10 +13,13 @@ function createSocket(user = { id: "user-a" }) {
 }
 
 function createDeps(overrides = {}) {
+  const room = { code: "12345" };
+  const message = { id: "chat-1", type: "chat", text: "hello" };
   return {
     io: {},
-    addChat: vi.fn(() => ({ code: "12345" })),
+    addChat: vi.fn(() => ({ room, message })),
     broadcastRoom: vi.fn(),
+    broadcastRoomPatch: vi.fn(),
     ...overrides
   };
 }
@@ -30,16 +33,21 @@ describe("socket chat events", () => {
     expect(socket.on).toHaveBeenCalledWith("chat:send", expect.any(Function));
   });
 
-  it("forwards chat payloads with the current socket user and broadcasts changed rooms", () => {
+  it("forwards chat payloads with the current socket user and broadcasts chat patches", () => {
     const socket = createSocket({ id: "chat-user", username: "Chat User" });
     const room = { code: "12345" };
-    const deps = createDeps({ addChat: vi.fn(() => room) });
+    const message = { id: "chat-1", type: "chat", text: "hello" };
+    const deps = createDeps({ addChat: vi.fn(() => ({ room, message })) });
 
     registerChatSocketEvents(socket, deps);
     socket.trigger("chat:send", { roomCode: "12345", text: "hello" });
 
     expect(deps.addChat).toHaveBeenCalledWith("12345", socket.user, "hello");
-    expect(deps.broadcastRoom).toHaveBeenCalledWith(deps.io, room);
+    expect(deps.broadcastRoomPatch).toHaveBeenCalledWith(deps.io, room, {
+      type: "chat:append",
+      message
+    });
+    expect(deps.broadcastRoom).not.toHaveBeenCalled();
   });
 
   it("does not broadcast when chat mutation returns no room", () => {
@@ -50,5 +58,17 @@ describe("socket chat events", () => {
     socket.trigger("chat:send", { roomCode: "bad", text: "" });
 
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
+    expect(deps.broadcastRoomPatch).not.toHaveBeenCalled();
+  });
+
+  it("falls back to full room broadcasts for legacy chat mutations", () => {
+    const socket = createSocket();
+    const room = { code: "12345" };
+    const deps = createDeps({ addChat: vi.fn(() => room), broadcastRoomPatch: null });
+
+    registerChatSocketEvents(socket, deps);
+    socket.trigger("chat:send", { roomCode: "12345", text: "hello" });
+
+    expect(deps.broadcastRoom).toHaveBeenCalledWith(deps.io, room);
   });
 });

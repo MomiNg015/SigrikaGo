@@ -37,6 +37,8 @@
 
 ## Board Effect Theme Guard
 
+- Room chat now uses a lightweight `room:patch` chat append path, and startup preload tests guard critical assets so bulky BGM, voices, shop images, and effect images stay deferred.
+
 
 - App audio runtime state now lives in `src/app/useAudioRuntimeState.js`, keeping local audio settings persistence and socket-reconnect resume signaling out of the `src/app/App.jsx` composition root.
 

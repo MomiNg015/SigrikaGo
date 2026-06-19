@@ -3,6 +3,7 @@ import { COLORS } from "../src/shared/game.js";
 import {
   broadcastRoom,
   broadcastRoomClock,
+  broadcastRoomPatch,
   broadcastToast,
   emitRoomClosed,
   roomClockPayload,
@@ -97,6 +98,28 @@ describe("roomBroadcasts", () => {
         { color: COLORS.white, time: { main: 300 } }
       ]
     });
+  });
+
+  test("broadcasts lightweight room patches with forced persistence", () => {
+    const io = fakeIo();
+    const persistRoom = vi.fn();
+    const room = testRoom();
+
+    broadcastRoomPatch(io, room, { type: "chat:append", message: { id: "chat-1" } }, { persistRoom });
+
+    expect(persistRoom).toHaveBeenCalledWith(room, { force: true });
+    expect(io.messages).toEqual([
+      {
+        socketId: "black-socket",
+        event: "room:patch",
+        payload: { roomCode: "12345", type: "chat:append", message: { id: "chat-1" } }
+      },
+      {
+        socketId: "spectator-socket",
+        event: "room:patch",
+        payload: { roomCode: "12345", type: "chat:append", message: { id: "chat-1" } }
+      }
+    ]);
   });
 
   test("builds clock payloads without sharing mutable player time objects", () => {

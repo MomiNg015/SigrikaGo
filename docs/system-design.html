@@ -105,6 +105,9 @@
 </ul>
 <h2>Board Effect Theme Guard</h2>
 <ul>
+<li>Room chat now uses a lightweight <code>room:patch</code> chat append path, and startup preload tests guard critical assets so bulky BGM, voices, shop images, and effect images stay deferred.</li>
+</ul>
+<ul>
 <li>App audio runtime state now lives in <code>src/app/useAudioRuntimeState.js</code>, keeping local audio settings persistence and socket-reconnect resume signaling out of the <code>src/app/App.jsx</code> composition root.</li>
 </ul>
 <ul>
@@ -3800,10 +3803,13 @@
 <li>Room clock ticks no longer use the full <code>room:update</code> payload during normal play. <code>server/rooms.js</code> emits a lightweight <code>room:clock</code> event once per second with <code>roomCode</code>, <code>activeColor</code>, <code>serverNow</code>, and each player's current <code>time</code>.</li>
 </ul>
 <ul>
-<li>Full <code>room:update</code> remains the authoritative synchronization path for match found, room join/resume, moves, skills, chat, phase changes, scoring, draw/counting flows, and timeout transitions.</li>
+<li>Player chat now uses the first general room patch path: <code>server/socketChatEvents.js</code> broadcasts <code>room:patch</code> with <code>type: &quot;chat:append&quot;</code>, <code>server/roomBroadcasts.js</code> persists and emits the patch to connected participants, and <code>src/app/roomPatch.js</code> appends the message idempotently while preserving unchanged room slices such as <code>game</code> and <code>players</code>. Full <code>room:update</code> remains the authoritative path for joins, resumes, moves, skills, phase changes, scoring, draw/counting flows, and reconnect recovery.</li>
 </ul>
 <ul>
-<li><code>server/roomBroadcasts.js</code> is the single backend emit boundary for room snapshot updates, lightweight clock updates, room toasts, and close events. It skips disconnected participants, calls room persistence with the same forced/throttled timing as before, and keeps viewer-specific room view generation centralized for future patch-event work.</li>
+<li>Full <code>room:update</code> remains the authoritative synchronization path for match found, room join/resume, moves, skills, phase changes, scoring, draw/counting flows, reconnect recovery, and timeout transitions.</li>
+</ul>
+<ul>
+<li><code>server/roomBroadcasts.js</code> is the single backend emit boundary for room snapshot updates, lightweight clock updates, lightweight patch updates, room toasts, and close events. It skips disconnected participants, calls room persistence with the same forced/throttled timing as before, and keeps viewer-specific room view generation centralized for future patch-event work.</li>
 </ul>
 <ul>
 <li><code>server/roomRuntime.js</code> is the backend room runtime adapter boundary. It wires <code>server/roomStatePersistence.js</code> into <code>server/roomBroadcasts.js</code>, centralizing forced/throttled persistence callbacks, full-room broadcast persistence injection, and room toast forwarding outside the lifecycle composition module.</li>
@@ -3866,7 +3872,7 @@
 <li><code>server/roomActionLifecycle.js</code> is the backend gameplay action entry boundary. Game actions now share room-code validation, room lookup, point validation, player lookup, pending-skill rejection, test-action dispatch, skill-action dispatch, and standard action delegation in one focused module.</li>
 </ul>
 <ul>
-<li><code>server/roomChatLifecycle.js</code> is the backend room chat entry boundary. Chat sends now share room-code validation, text normalization, room lookup, message id creation, current move-number capture, and chat payload shape in one focused module.</li>
+<li><code>server/roomChatLifecycle.js</code> is the backend room chat entry boundary. Chat sends now share room-code validation, text normalization, room lookup, message id creation, current move-number capture, chat payload shape, and <code>{ room, message }</code> mutation result in one focused module so socket code can emit append-only chat patches without rebuilding a viewer-specific room snapshot.</li>
 </ul>
 <ul>
 <li><code>server/roomQueries.js</code> is the backend room read-model boundary. Active-room lists, watch-room summaries, active membership checks, and user room lookup now share one projection module while participant counts and player summaries continue to come from <code>server/roomPresence.js</code>.</li>

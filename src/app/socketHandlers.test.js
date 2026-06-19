@@ -108,6 +108,26 @@ describe("socket handlers", () => {
     expect(roomSetterResult(deps)).toBe(roomView);
   });
 
+  it("applies room patches without replacing unchanged room slices", () => {
+    const game = { phase: "playing" };
+    const currentRoom = { code: "12345", game, chat: [] };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomPatch({
+      roomCode: "12345",
+      type: "chat:append",
+      message: { id: "chat-1", text: "hello" }
+    });
+
+    const nextRoom = roomSetterResult(deps, 1, currentRoom);
+    expect(nextRoom).toEqual({
+      ...currentRoom,
+      chat: [{ id: "chat-1", text: "hello" }]
+    });
+    expect(nextRoom.game).toBe(game);
+  });
+
   it("clears remembered player room when an online client receives the finished room update", () => {
     const roomView = { code: "12345", role: "player", game: { phase: "finished" }, players: [] };
     const deps = handlerDeps();
@@ -254,6 +274,7 @@ describe("socket handlers", () => {
     listeners.get("connect")();
 
     expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
+    expect(socket.on).toHaveBeenCalledWith("room:patch", expect.any(Function));
     expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
   });
 

@@ -15,7 +15,7 @@ export function createRoomChatLifecycle({
     const room = rooms.get(validatedRoomCode.value);
     if (!room) return null;
 
-    room.chat.push({
+    const message = {
       id: randomUUID(),
       type: "chat",
       userId: user.id,
@@ -23,8 +23,9 @@ export function createRoomChatLifecycle({
       moveNumber: room.game.moveNumber,
       text: normalizedText.value,
       createdAt: now()
-    });
-    return room;
+    };
+    room.chat.push(message);
+    return { room, message };
   }
 
   return {
