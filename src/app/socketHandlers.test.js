@@ -3,6 +3,34 @@ import { createSocketHandlers, installSocketHandlers } from "./socketHandlers.js
 import { applyRoomClock } from "./roomClock.js";
 
 describe("socket handlers", () => {
+  it("stores match waiting payloads from the socket", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.matchWaiting({ startedAt: 12345, mode: "standard" });
+
+    expect(matchStartSetterResult(deps)).toEqual({ startedAt: 12345, mode: "standard" });
+  });
+
+  it("defaults match waiting mode to spark", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.matchWaiting({ startedAt: 12345 });
+
+    expect(matchStartSetterResult(deps)).toEqual({ startedAt: 12345, mode: "spark" });
+  });
+
+  it("keeps identical match waiting payloads stable during repeated socket updates", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+    const current = { startedAt: 12345, mode: "gomoku" };
+
+    handlers.matchWaiting({ startedAt: 12345, mode: "gomoku" });
+
+    expect(matchStartSetterResult(deps, current)).toBe(current);
+  });
+
   it("handles match found by closing overlays, syncing the user, and storing the transition", () => {
     const roomView = { code: "12345", players: [] };
     const deps = handlerDeps();
@@ -519,6 +547,11 @@ function roomSetterResult(deps, callNumber = 1, currentRoom = null) {
 function lobbyStatsSetterResult(deps, currentStats = {}) {
   const argument = deps.setLobbyStats.mock.calls.at(-1)?.[0];
   return typeof argument === "function" ? argument(currentStats) : argument;
+}
+
+function matchStartSetterResult(deps, currentMatchStart = null) {
+  const argument = deps.setMatchStart.mock.calls.at(-1)?.[0];
+  return typeof argument === "function" ? argument(currentMatchStart) : argument;
 }
 
 function handlerDeps(overrides = {}) {

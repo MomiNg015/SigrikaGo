@@ -602,6 +602,8 @@ const { room, setRoom, replayStep, setReplayStep, resultModalOpen } = useRoomSes
 - `useMatchSessionState()` returns `matchStart`, `matchSuccess`, `isMatchPending`, `isMatchTransitioning`, `setMatchStart`, and `setMatchSuccess`.
 - `initialMatchSessionState()` returns the default match state.
 - `matchSessionView(state)` derives booleans from the two transition fields.
+- `normalizeMatchStart(payload)` returns `{ startedAt, mode }` with missing mode normalized to `spark`.
+- `sameMatchStart(current, next)` checks whether a repeated waiting payload can keep the current object.
 
 #### 3. Contracts
 - `App.jsx` should read match transition fields from `useMatchSessionState()` instead of adding separate top-level state for pending or successful match transitions.
@@ -609,21 +611,27 @@ const { room, setRoom, replayStep, setReplayStep, resultModalOpen } = useRoomSes
 - `matchSuccess` owns the success transition payload and should remain either `null` or `{ startedAt, room }`.
 - `isMatchPending` and `isMatchTransitioning` are derived state; do not store them independently.
 - `matchSuccessRef` still mirrors `matchSuccess` through `useSyncedRefs()` for socket room-update synchronization.
+- `socketHandlers.matchWaiting(payload)` should write through a functional setter and return the current `matchStart` object when `startedAt` and `mode` are unchanged.
 
 #### 4. Validation & Error Matrix
 - No `matchStart` and no `matchSuccess` -> no match modal.
 - `matchStart` present -> waiting modal can render mode and start time.
+- Repeated `match:waiting` with the same `startedAt` and mode -> keep the current `matchStart` object.
+- Missing waiting mode -> normalize to `spark`.
 - `matchSuccess` present -> success transition can complete into the pending room.
 - Room resume or auth reset -> both match fields must be cleared.
 
 #### 5. Good/Base/Bad Cases
 - Good: `const { matchStart, setMatchStart, matchSuccess, setMatchSuccess } = useMatchSessionState();`
+- Good: duplicate `match:waiting` payloads from reconnect do not recreate the waiting-modal payload object.
 - Base: `AppOverlays` can continue receiving `matchStart` and `matchSuccess` separately while the shell boundary is gradually narrowed.
 - Bad: adding a separate `const [isMatching, setIsMatching] = useState(false);`.
+- Bad: `setMatchStart({ startedAt, mode })` for every waiting payload because unchanged server notifications still re-render the match waiting overlay.
 - Bad: treating `matchSuccessRef.current` as a source of truth after `matchSuccess` has been cleared.
 
 #### 6. Tests Required
 - `src/app/useMatchSessionState.test.js` should cover default state and derived pending/transition flags.
+- `src/app/socketHandlers.test.js` should assert waiting payload normalization and stable-object behavior for duplicate `match:waiting` payloads.
 - `src/app/matchTransition.test.js`, `src/app/socketHandlers.test.js`, `src/app/sessionState.test.js`, and `src/app/resumeSession.test.js` should be run after changing match transition behavior.
 
 #### 7. Wrong vs Correct

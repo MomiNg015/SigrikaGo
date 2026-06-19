@@ -57,7 +57,10 @@ export function createSocketHandlers({
     socketReconnect: () => {
       shouldAudioBaselineNextLiveSnapshot = true;
     },
-    matchWaiting: ({ startedAt, mode = "spark" }) => setMatchStart({ startedAt, mode }),
+    matchWaiting: (payload = {}) => {
+      const nextMatchStart = normalizeMatchStart(payload);
+      setMatchStart((current) => sameMatchStart(current, nextMatchStart) ? current : nextMatchStart);
+    },
     lobbyStats: (stats = {}) => {
       const nextStats = normalizeLobbyStats(stats);
       setLobbyStats((current) => sameLobbyStats(current, nextStats) ? current : nextStats);
@@ -259,6 +262,15 @@ export function sameLobbyStats(current = {}, next = {}) {
   if (Number(current.matchmakingCount ?? 0) !== Number(next.matchmakingCount ?? 0)) return false;
   return GAME_MODE_IDS.every((mode) => Object.prototype.hasOwnProperty.call(current.matchmakingCounts ?? {}, mode)
     && Number(current.matchmakingCounts?.[mode] ?? 0) === Number(next.matchmakingCounts?.[mode] ?? 0));
+}
+
+export function normalizeMatchStart({ startedAt, mode = "spark" } = {}) {
+  return { startedAt, mode };
+}
+
+export function sameMatchStart(current, next) {
+  if (!current || !next) return current === next;
+  return current.startedAt === next.startedAt && (current.mode ?? "spark") === (next.mode ?? "spark");
 }
 
 function modeCountsFromLobbyStats(stats = {}) {
