@@ -3,12 +3,13 @@ export function registerDisconnectSocketEvents(socket, {
   unregisterOnlineSocket,
   detachSocket,
   broadcastRoom,
+  broadcastRoomPresencePatch = broadcastRoom,
   broadcastLobbyStats
 }) {
   socket.on("disconnect", () => {
     unregisterOnlineSocket(socket);
     for (const room of detachSocket(socket.id, io)) {
-      broadcastRoom(io, room);
+      broadcastRoomPresencePatch(io, room);
     }
     broadcastLobbyStats();
   });

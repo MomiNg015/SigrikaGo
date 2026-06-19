@@ -42,6 +42,19 @@ export function broadcastRoomPatch(io, room, patch, { persistRoom = () => {} } =
   }
 }
 
+export function broadcastRoomPresencePatch(io, room, { persistRoom = () => {}, roomViewFn = roomView } = {}) {
+  const participant = roomParticipants(room).find((candidate) => candidate.socketId);
+  if (!participant) return;
+  const view = roomViewFn(room, participant.user.id);
+  broadcastRoomPatch(io, room, {
+    type: "presence:update",
+    players: view.players,
+    spectatorCount: view.spectatorCount,
+    spectators: view.spectators,
+    chat: view.chat
+  }, { persistRoom });
+}
+
 export function roomClockPayload(room) {
   return {
     roomCode: room.code,

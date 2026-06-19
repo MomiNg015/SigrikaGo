@@ -10,7 +10,8 @@ export function registerRoomSocketEvents(socket, {
   findRoomForUser,
   resumePayloadForUser,
   roomView,
-  broadcastRoom
+  broadcastRoom,
+  broadcastRoomPresencePatch = broadcastRoom
 }) {
   socket.on("room:join", ({ roomCode } = {}) => {
     const validatedRoomCode = validateRoomCode(roomCode);
@@ -24,7 +25,7 @@ export function registerRoomSocketEvents(socket, {
       return;
     }
     socket.emit("room:update", roomView(room, socket.user.id));
-    broadcastRoom(io, room);
+    broadcastRoomPresencePatch(io, room);
   });
 
   socket.on("room:leave", ({ roomCode } = {}) => {
@@ -32,7 +33,7 @@ export function registerRoomSocketEvents(socket, {
     if (!room) return;
     socket.leave(room.code);
     socket.emit("room:left", { roomCode: room.code });
-    broadcastRoom(io, room);
+    broadcastRoomPresencePatch(io, room);
   });
 
   socket.on("room:resume", async ({ roomCode } = {}) => {
@@ -47,7 +48,7 @@ export function registerRoomSocketEvents(socket, {
       const room = attachSocketToRoom(payload.room.code, socket, socket.user);
       if (room) {
         socket.emit("room:update", roomView(room, socket.user.id));
-        broadcastRoom(io, room);
+        broadcastRoomPresencePatch(io, room);
         return;
       }
     }

@@ -42,6 +42,7 @@ import {
   attachSocketToRoom,
   broadcastRoom,
   broadcastRoomPatch,
+  broadcastRoomPresencePatch,
   createDirectRoom,
   detachSocket,
   findRoomForUser,
@@ -250,7 +251,8 @@ io.on("connection", (socket) => {
     unregisterOnlineSocket,
     detachSocket,
     broadcastRoom,
-    broadcastRoomPatch
+    broadcastRoomPatch,
+    broadcastRoomPresencePatch
   });
 });
 

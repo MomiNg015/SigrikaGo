@@ -3,6 +3,7 @@ export function createRoomRuntime({
   persistRoomState,
   broadcastRoomUpdate,
   broadcastRoomPatch: broadcastRoomPatchEvent,
+  broadcastRoomPresencePatch: broadcastRoomPresencePatchEvent,
   broadcastRoomToast,
   throttleMs,
   onPersistError = (error) => {
@@ -27,6 +28,10 @@ export function createRoomRuntime({
     broadcastRoomPatchEvent(io, room, patch, { persistRoom });
   }
 
+  function broadcastRoomPresencePatch(io, room) {
+    broadcastRoomPresencePatchEvent(io, room, { persistRoom });
+  }
+
   function broadcastToast(io, room, text) {
     broadcastRoomToast(io, room, text);
   }
@@ -35,6 +40,7 @@ export function createRoomRuntime({
     persistRoom,
     broadcastRoom,
     broadcastRoomPatch,
+    broadcastRoomPresencePatch,
     broadcastToast
   };
 }

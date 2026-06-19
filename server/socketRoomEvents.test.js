@@ -27,6 +27,7 @@ function createDeps(overrides = {}) {
     resumePayloadForUser: vi.fn(async () => ({ type: "none" })),
     roomView: vi.fn((room, viewerId) => ({ code: room.code, viewerId })),
     broadcastRoom: vi.fn(),
+    broadcastRoomPresencePatch: vi.fn(),
     ...overrides
   };
 }
@@ -54,6 +55,7 @@ describe("socket room events", () => {
     expect(socket.emit).toHaveBeenCalledWith("error:toast", "bad room code");
     expect(deps.attachSocketToRoom).not.toHaveBeenCalled();
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
+    expect(deps.broadcastRoomPresencePatch).not.toHaveBeenCalled();
   });
 
   it("emits the existing room-unavailable toast when join cannot attach", () => {
@@ -66,9 +68,10 @@ describe("socket room events", () => {
     expect(deps.attachSocketToRoom).toHaveBeenCalledWith("12345", socket, socket.user);
     expect(socket.emit).toHaveBeenCalledWith("error:toast", expect.any(String));
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
+    expect(deps.broadcastRoomPresencePatch).not.toHaveBeenCalled();
   });
 
-  it("emits the viewer room update and broadcasts after a successful join", () => {
+  it("emits the viewer room update and broadcasts a presence patch after a successful join", () => {
     const socket = createSocket({ id: "viewer-a" });
     const room = { code: "12345" };
     const deps = createDeps({ attachSocketToRoom: vi.fn(() => room) });
@@ -77,10 +80,11 @@ describe("socket room events", () => {
     socket.trigger("room:join", { roomCode: "12345" });
 
     expect(socket.emit).toHaveBeenCalledWith("room:update", { code: "12345", viewerId: "viewer-a" });
-    expect(deps.broadcastRoom).toHaveBeenCalledWith(deps.io, room);
+    expect(deps.broadcastRoomPresencePatch).toHaveBeenCalledWith(deps.io, room);
+    expect(deps.broadcastRoom).not.toHaveBeenCalledWith(deps.io, room);
   });
 
-  it("leaves a room, emits room:left, and broadcasts the changed room", () => {
+  it("leaves a room, emits room:left, and broadcasts changed presence", () => {
     const socket = createSocket({ id: "leaving-user" });
     const room = { code: "54321" };
     const deps = createDeps({ leaveRoom: vi.fn(() => room) });
@@ -91,7 +95,8 @@ describe("socket room events", () => {
     expect(deps.leaveRoom).toHaveBeenCalledWith("54321", "leaving-user", "socket-a");
     expect(socket.leave).toHaveBeenCalledWith("54321");
     expect(socket.emit).toHaveBeenCalledWith("room:left", { roomCode: "54321" });
-    expect(deps.broadcastRoom).toHaveBeenCalledWith(deps.io, room);
+    expect(deps.broadcastRoomPresencePatch).toHaveBeenCalledWith(deps.io, room);
+    expect(deps.broadcastRoom).not.toHaveBeenCalledWith(deps.io, room);
   });
 
   it("does nothing when leaveRoom reports no changed room", () => {
@@ -104,9 +109,10 @@ describe("socket room events", () => {
     expect(socket.leave).not.toHaveBeenCalled();
     expect(socket.emit).not.toHaveBeenCalled();
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
+    expect(deps.broadcastRoomPresencePatch).not.toHaveBeenCalled();
   });
 
-  it("attaches and broadcasts a resumable room payload", async () => {
+  it("attaches and broadcasts a resumable room presence payload", async () => {
     const socket = createSocket({ id: "resume-user" });
     const room = { code: "67890" };
     const deps = createDeps({
@@ -127,7 +133,8 @@ describe("socket room events", () => {
     });
     expect(deps.attachSocketToRoom).toHaveBeenCalledWith("67890", socket, socket.user);
     expect(socket.emit).toHaveBeenCalledWith("room:update", { code: "67890", viewerId: "resume-user" });
-    expect(deps.broadcastRoom).toHaveBeenCalledWith(deps.io, room);
+    expect(deps.broadcastRoomPresencePatch).toHaveBeenCalledWith(deps.io, room);
+    expect(deps.broadcastRoom).not.toHaveBeenCalledWith(deps.io, room);
     expect(socket.emit).not.toHaveBeenCalledWith("room:resume", expect.any(Object));
   });
 
@@ -141,5 +148,6 @@ describe("socket room events", () => {
 
     expect(socket.emit).toHaveBeenCalledWith("room:resume", payload);
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
+    expect(deps.broadcastRoomPresencePatch).not.toHaveBeenCalled();
   });
 });

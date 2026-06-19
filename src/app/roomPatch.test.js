@@ -29,6 +29,63 @@ describe("room patch updates", () => {
     expect(nextRoom.revision).toBe(1);
   });
 
+  it("advances the revision when a continuous chat patch is already reflected in the snapshot", () => {
+    const message = { id: "chat-2", text: "second" };
+    const room = {
+      code: "12345",
+      revision: 1,
+      game: { phase: "playing" },
+      chat: [message]
+    };
+
+    const nextRoom = applyRoomPatch(room, {
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 1,
+      revision: 2,
+      message
+    });
+
+    expect(nextRoom).not.toBe(room);
+    expect(nextRoom.chat).toBe(room.chat);
+    expect(nextRoom.revision).toBe(2);
+  });
+
+  it("updates room presence while preserving game state", () => {
+    const game = { phase: "playing" };
+    const chat = [{ id: "system-1", type: "system", text: "reconnected" }];
+    const room = {
+      code: "12345",
+      revision: 2,
+      game,
+      players: [{ color: "black", connected: false }],
+      spectators: [],
+      spectatorCount: 0,
+      chat: []
+    };
+    const players = [{ color: "black", connected: true }];
+    const spectators = [{ user: { id: "spectator-user" } }];
+
+    const nextRoom = applyRoomPatch(room, {
+      roomCode: "12345",
+      type: "presence:update",
+      baseRevision: 2,
+      revision: 3,
+      players,
+      spectators,
+      spectatorCount: 1,
+      chat
+    });
+
+    expect(nextRoom).not.toBe(room);
+    expect(nextRoom.game).toBe(game);
+    expect(nextRoom.players).toBe(players);
+    expect(nextRoom.spectators).toBe(spectators);
+    expect(nextRoom.spectatorCount).toBe(1);
+    expect(nextRoom.chat).toBe(chat);
+    expect(nextRoom.revision).toBe(3);
+  });
+
   it("ignores duplicate, stale, and unknown room patches", () => {
     const room = {
       code: "12345",

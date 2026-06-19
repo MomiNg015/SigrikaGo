@@ -297,6 +297,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - `applyRoomPatch(currentRoom, patch)` returns the room object to store in state.
 - `roomPatchNeedsResume(currentRoom, patch)` returns `true` when a patch is for the current room but its revision does not continue from the current room revision.
 - Installed socket handlers must emit `room:resume` when `roomPatchNeedsResume(...)` is true.
+- Current lightweight patch types are `chat:append` and `presence:update`.
 
 #### 3. Contracts
 - `server/roomBroadcasts.js` owns patch revision metadata. Individual socket event modules should pass the domain patch shape, not hand-roll `eventId`, `baseRevision`, or `revision`.
@@ -304,6 +305,8 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - A patch with `baseRevision !== currentRoom.revision` and `revision > currentRoom.revision` indicates a gap. The client must reject it and request `room:resume`.
 - Legacy patches without `revision` may still be applied by type-specific reducers for backward-compatible tests or narrow mocks, but new runtime patches must carry revision fields.
 - Patch reducers must preserve unchanged room slices, especially `game` and `players`, so chat/request patches do not cause board or timer panels to re-render.
+- `presence:update` patches may replace `players`, `spectatorCount`, `spectators`, and `chat`, but must not carry or replace `game`; connection changes, spectator membership, and connection system messages should not repaint the board.
+- If a full `room:update` already includes the same mutation that a following continuous patch carries, the patch reducer must still advance `room.revision` so the next patch is not treated as a gap.
 - Full `room:update` and `room:resume` remain authoritative. Patch recovery should request a snapshot rather than trying to infer missing intermediate state.
 
 #### 4. Validation & Error Matrix
@@ -313,17 +316,23 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - Patch base revision differs from current revision while patch revision is newer -> reject patch and emit `room:resume`.
 - Patch type is unknown -> ignore it without mutating state.
 - Current room is null -> ignore patch because there is no local target for continuity checks.
+- Continuous `chat:append` patch contains a message that already exists in a just-applied full snapshot -> advance revision without duplicating the message.
+- Continuous `presence:update` patch after a direct reconnect snapshot -> advance revision and keep the authoritative `game` object from the snapshot.
 
 #### 5. Good/Base/Bad Cases
 - Good: `chat:append` with `baseRevision: 2` and `revision: 3` appends one message, stores `revision: 3`, and preserves the existing `game` object.
+- Good: `presence:update` with `baseRevision: 3` and `revision: 4` updates connection flags, spectators, and system chat while preserving `room.game`.
 - Base: duplicate `chat:append` with the same message id or same revision returns the current room object.
 - Bad: applying a patch with `baseRevision: 4` while the client room is at `revision: 1`, because that can hide missed moves, request state, or chat entries.
+- Bad: using a full `room:update` broadcast for disconnect/reconnect or spectator membership changes after a socket has already received its direct authoritative snapshot.
 - Bad: calling `setRoom((current) => ({ ...current, chat: nextChat }))` directly from a socket listener without using the shared reducer and gap check.
 
 #### 6. Tests Required
 - `src/app/roomPatch.test.js` must cover continuous patch application, duplicate/stale patch ignoring, unknown/wrong-room patch ignoring, and gap detection.
+- Presence patch tests must assert `presence:update` preserves `game`, updates member/chat slices, and advances revision when a direct snapshot already contains the same mutation.
 - `src/app/socketHandlers.test.js` must assert gapped installed patch listeners emit `room:resume` and do not call `setRoom`.
 - Backend broadcast tests must assert patch payloads include `eventId`, `baseRevision`, and `revision`, and that the room revision increments before persistence.
+- Backend room socket tests must assert join/resume/leave/disconnect connection changes use `broadcastRoomPresencePatch` instead of full room broadcasts.
 - Room factory, view, and persistence tests must assert room `revision` is created, exposed in views, persisted, and hydrated with a safe default for older snapshots.
 
 #### 7. Wrong vs Correct

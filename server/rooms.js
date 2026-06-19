@@ -7,6 +7,7 @@ import {
   broadcastRoom as broadcastRoomUpdate,
   broadcastRoomClock,
   broadcastRoomPatch as broadcastRoomPatchEvent,
+  broadcastRoomPresencePatch as broadcastRoomPresencePatchEvent,
   broadcastToast as broadcastRoomToast,
   emitRoomClosed,
   roomView
@@ -59,6 +60,7 @@ const roomRuntime = createRoomRuntime({
   persistRoomState,
   broadcastRoomUpdate,
   broadcastRoomPatch: broadcastRoomPatchEvent,
+  broadcastRoomPresencePatch: broadcastRoomPresencePatchEvent,
   broadcastRoomToast,
   throttleMs: ROOM_PERSIST_THROTTLE_MS
 });
@@ -66,7 +68,7 @@ const {
   persistRoom,
   broadcastToast
 } = roomRuntime;
-export const { broadcastRoom, broadcastRoomPatch } = roomRuntime;
+export const { broadcastRoom, broadcastRoomPatch, broadcastRoomPresencePatch } = roomRuntime;
 
 export function getRoom(roomCode) {
   return rooms.get(roomCode);

@@ -46,6 +46,7 @@ function createDeps(overrides = {}) {
     detachSocket: vi.fn(() => []),
     broadcastRoom: vi.fn(),
     broadcastRoomPatch: vi.fn(),
+    broadcastRoomPresencePatch: vi.fn(),
     ...overrides
   };
 }
