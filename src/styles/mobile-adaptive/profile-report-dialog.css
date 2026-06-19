@@ -1,5 +1,6 @@
 /* Final safety for profile report dialog placement. */
-.profile-report-dialog {
+.profile-report-dialog,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog {
   position: fixed !important;
   inset: 50% auto auto 50% !important;
   width: min(420px, calc(100vw - 44px)) !important;

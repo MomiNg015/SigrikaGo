@@ -604,6 +604,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("box-shadow: 0 2px 0 rgba(79, 61, 85, 0.12);");
     const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
     const brightSchoolComponentCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    const finalThemeCss = readCssWithImports(new URL("../styles/themes.css", import.meta.url));
     expect(brightSchoolModalCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {\n  grid-template-rows: auto auto auto minmax(0, 1fr) !important;");
     expect(brightSchoolModalCss).toContain("max-height: calc(100dvh - 32px) !important;");
     expect(brightSchoolModalCss).toContain("overflow: hidden !important;");
@@ -622,6 +623,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolComponentCss).toContain("background: #e4f6f0 !important");
     expect(brightSchoolComponentCss).toContain(":is(.profile-replay-button:disabled, .profile-relation-actions button:disabled)");
     expect(brightSchoolComponentCss).toContain("background: linear-gradient(135deg, #ececef, #d9d9dd) !important");
+    expect(finalThemeCss.lastIndexOf(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog"))
+      .toBeGreaterThan(finalThemeCss.lastIndexOf("width: min(1120px, calc(100vw - 32px)) !important"));
     const lobbyCss = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
     expect(lobbyCss).toContain(".character-item-effect-badges");
     expect(lobbyCss).toContain(".character-item-effect-icon");
@@ -681,6 +684,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain(".user-profile-card .profile-like-button:disabled");
     expect(finalMobileCss).toContain(".user-profile-card .profile-report-button:disabled");
     expect(finalMobileCss).toContain(".profile-report-dialog");
+    expect(finalMobileCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog");
     expect(finalMobileCss).toContain("width: min(420px, calc(100vw - 44px)) !important");
     expect(finalMobileCss).toContain("transform: translate(-50%, -50%) !important");
     expect(finalMobileCss).toContain(".user-profile-card .profile-footer-actions");
