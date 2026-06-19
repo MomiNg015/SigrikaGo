@@ -316,6 +316,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/motion-keyframes.css",
       "./mobile-adaptive/mobile-room-portrait.css",
       "./mobile-adaptive/mobile-profile-records.css",
+      "./mobile-adaptive/mobile-profile-hero-results.css",
       "./mobile-adaptive/mobile-profile-social-actions.css",
       "./mobile-adaptive/profile-report-dialog.css",
       "./mobile-adaptive/mobile-room-landscape.css",

@@ -1,0 +1,55 @@
+/* Mobile profile hero and recent-result layout fixes. */
+@media (max-width: 768px) {
+  .user-profile-card .profile-resume-hero {
+    grid-template-columns: minmax(112px, 150px) minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    align-items: start !important;
+    gap: 4px 10px !important;
+  }
+
+  .user-profile-card .profile-resume-hero .profile-chain-portrait {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  .user-profile-card .profile-resume-hero .profile-identity-block {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+    align-self: start !important;
+    width: 100% !important;
+    max-width: 150px !important;
+  }
+
+  .user-profile-card .profile-resume-hero h3 .user-identity,
+  .user-profile-card .profile-resume-hero h3 .user-identity-main,
+  .user-profile-card .profile-resume-hero h3 .user-identity-name-tag {
+    max-width: 100% !important;
+  }
+
+  .user-profile-card .profile-rank-results {
+    display: grid !important;
+    grid-template-columns: repeat(10, minmax(0, 1fr)) !important;
+    align-items: center !important;
+    justify-items: center !important;
+    gap: clamp(2px, 1vw, 5px) !important;
+    padding: 8px clamp(6px, 2vw, 10px) !important;
+  }
+
+  .user-profile-card .profile-rank-results .recent-result-label {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+
+  .user-profile-card .profile-rank-results .recent-result-marker,
+  .user-profile-card .profile-rank-results .recent-result-empty {
+    width: clamp(20px, 5.8vw, 30px) !important;
+    min-width: 0 !important;
+    height: clamp(20px, 5.8vw, 30px) !important;
+    padding: 0 !important;
+    font-size: clamp(10px, 3vw, 15px) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+}
