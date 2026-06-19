@@ -56,4 +56,12 @@
     white-space: nowrap !important;
     word-break: keep-all !important;
   }
+
+  .user-profile-card .profile-rank-results .recent-result-empty,
+  .resume-modal .profile-rank-results .recent-result-empty {
+    grid-column: 1 / -1 !important;
+    justify-self: center !important;
+    width: clamp(44px, 14vw, 60px) !important;
+    padding: 0 8px !important;
+  }
 }

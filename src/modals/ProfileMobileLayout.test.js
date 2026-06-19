@@ -16,6 +16,9 @@ describe("profile mobile layout contracts", () => {
     expect(finalMobileCss).toContain(".user-profile-card .profile-rank-results .recent-result-marker");
     expect(finalMobileCss).toContain(".resume-modal .profile-rank-results .recent-result-marker");
     expect(finalMobileCss).toContain("width: clamp(20px, 5.8vw, 30px) !important");
+    expect(finalMobileCss).toContain(".resume-modal .profile-rank-results .recent-result-empty");
+    expect(finalMobileCss).toContain("justify-self: center !important");
+    expect(finalMobileCss).toContain("width: clamp(44px, 14vw, 60px) !important");
     expect(finalMobileCss).toContain("font-size: clamp(10px, 3vw, 15px) !important");
     expect(finalMobileCss).toContain("word-break: keep-all !important");
   });
