@@ -492,6 +492,7 @@ const { showShop, setShowShop, showGacha, setShowGacha } = useOverlayState();
 #### 3. Contracts
 - Resume/profile entry buttons should open achievements and personalization by toggling overlay state, not by navigating away from the home shell.
 - `AchievementModal` must fetch `GET /api/achievements` when opened and keep filter tabs local to the modal (`unachieved`, `achieved`, `all`).
+- Achieved-time popovers are viewport overlays, not modal content. Render them through a `document.body` portal and position them from click/keyboard viewport coordinates so scrollable modal shells and theme `overflow` guards cannot clip them or push them to the modal bottom.
 - `PersonalizationModal` must fetch `GET /api/me/achievement-equipment`, patch only changed equipment slots, and write returned user/equipment data through `updateUser`.
 - Home `/api/me` refresh should consume any returned `achievementUnlocks` before or alongside updating current user state.
 - The callback passed as `onAchievementUnlocks` into `useHomeUserRefresh()` must be stable, such as via `useCallback([showToast])`; otherwise every user refresh render can trigger another `/api/me` request loop.
@@ -517,6 +518,7 @@ const { showShop, setShowShop, showGacha, setShowGacha } = useOverlayState();
 #### 6. Tests Required
 - `src/app/useOverlayState.test.js` must include achievement and personalization keys in default and close-all projections.
 - Modal/component tests should assert achievement tabs, achieved/unachieved row classes, equipment slot validation messaging, and save refresh behavior when practical.
+- Achievement modal tests should assert achieved-time popover positioning clamps to viewport coordinates and the popover is rendered through a body portal rather than inside the scrollable modal shell.
 - Commerce/gacha/warehouse hook tests must assert returned unlocks are passed to the achievement toast helper.
 - App-level regression tests should assert the achievement unlock callback passed to home refresh is memoized.
 - App overlay/source tests should be updated when the achievement/personalization prop boundary changes.

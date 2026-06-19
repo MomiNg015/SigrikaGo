@@ -1,4 +1,5 @@
 import React from "react";
+import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import AchievementModal, { achievementTimePopoverPosition } from "./AchievementModal.jsx";
@@ -43,6 +44,11 @@ describe("AchievementModal", () => {
   });
 
   it("anchors the achieved-time popover to viewport coordinates without crossing the screen edge", () => {
+    const source = readFileSync(new URL("./AchievementModal.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("createPortal(");
+    expect(source).toContain("document.body");
+
     expect(achievementTimePopoverPosition({
       clientX: 6,
       clientY: 6,

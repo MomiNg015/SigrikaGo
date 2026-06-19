@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Award, X } from "lucide-react";
 import { api } from "../api/client.js";
 
@@ -153,21 +154,27 @@ export default function AchievementModal({ token, onClose, onNotice }) {
             </article>
           ))}
         </div>
-        {timePopover && (
-          <div
-            className="achievement-time-popover"
-            role="status"
-            style={{
-              left: `${timePopover.left}px`,
-              top: `${timePopover.top}px`
-            }}
-          >
-            <span>达成时间</span>
-            <time>{timePopover.value}</time>
-          </div>
-        )}
       </section>
+      <AchievementTimePopover popover={timePopover} />
     </div>
+  );
+}
+
+function AchievementTimePopover({ popover }) {
+  if (!popover || typeof document === "undefined") return null;
+  return createPortal(
+    <div
+      className="achievement-time-popover"
+      role="status"
+      style={{
+        left: `${popover.left}px`,
+        top: `${popover.top}px`
+      }}
+    >
+      <span>达成时间</span>
+      <time>{popover.value}</time>
+    </div>,
+    document.body
   );
 }
 
