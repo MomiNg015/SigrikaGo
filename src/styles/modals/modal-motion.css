@@ -1,8 +1,8 @@
 /* Shared modal entrance motion. */
 :root {
   --modal-motion-backdrop-duration: 170ms;
-  --modal-motion-shell-duration: 260ms;
-  --modal-motion-nested-duration: 220ms;
+  --modal-motion-shell-duration: 320ms;
+  --modal-motion-nested-duration: 260ms;
   --modal-motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -19,36 +19,51 @@
 @keyframes sigrika-modal-shell-in {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.985);
+    transform: translate3d(-18px, 22px, 0) rotate(-1.6deg) scale(0.965);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translate3d(2px, -2px, 0) rotate(0.25deg) scale(1.006);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
   }
 }
 
 @keyframes sigrika-modal-nested-in {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.992);
+    transform: translate3d(-10px, 14px, 0) rotate(-0.9deg) scale(0.982);
+  }
+
+  76% {
+    opacity: 1;
+    transform: translate3d(1px, -1px, 0) rotate(0.18deg) scale(1.003);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
   }
 }
 
 @keyframes sigrika-modal-centered-in {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.985);
+    transform: translate(calc(-50% - 12px), calc(-50% + 16px)) rotate(-1.2deg) scale(0.97);
+  }
+
+  74% {
+    opacity: 1;
+    transform: translate(calc(-50% + 1px), calc(-50% - 1px)) rotate(0.2deg) scale(1.004);
   }
 
   to {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
   }
 }
 

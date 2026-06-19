@@ -758,6 +758,8 @@ describe("root CSS entry contract", () => {
     expect(modalMotionCss).toContain(".nested-modal-backdrop");
     expect(modalMotionCss).toContain(".room-floating-modal:not(.confirm-inline-modal)");
     expect(modalMotionCss).toContain(".modal-backdrop .confirm-inline-modal");
+    expect(modalMotionCss).toContain("translate3d(-18px, 22px, 0) rotate(-1.6deg) scale(0.965)");
+    expect(modalMotionCss).toContain("rotate(0deg) scale(1)");
     expect(modalMotionCss).toContain("transform: translate(-50%, -50%) !important");
     expect(modalMotionCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(modalCss).toContain("animation: sigrika-modal-shell-in var(--modal-motion-shell-duration)");
