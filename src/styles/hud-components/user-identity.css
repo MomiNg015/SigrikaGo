@@ -1,6 +1,13 @@
 .user-identity {
-  --user-identity-name-tag-min-height: 2.36em;
-  --user-identity-name-tag-max-width: 10em;
+  --user-nameplate-scale: 1;
+  --user-nameplate-base-width: 96px;
+  --user-nameplate-base-height: 25.6px;
+  --user-nameplate-width: calc(var(--user-nameplate-base-width) * var(--user-nameplate-scale));
+  --user-nameplate-height: calc(var(--user-nameplate-base-height) * var(--user-nameplate-scale));
+  --user-nameplate-padding-x: calc(15px * var(--user-nameplate-scale));
+  --user-nameplate-font-size: calc(14px * var(--user-nameplate-scale));
+  --user-identity-name-tag-min-height: 1.4em;
+  --user-identity-name-tag-max-width: 100%;
   --user-identity-name-tag-padding-x: 0.72em;
   --user-identity-name-tag-radius: 0;
   position: relative;
@@ -43,6 +50,18 @@
   overflow: hidden;
 }
 
+.user-identity.has-nameplate .user-identity-name-tag {
+  justify-content: center;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: var(--user-nameplate-width);
+  height: var(--user-nameplate-height);
+  min-height: var(--user-nameplate-height);
+  max-width: min(100%, var(--user-nameplate-width));
+  padding-inline: var(--user-nameplate-padding-x);
+  background-position: center;
+}
+
 .user-identity-title,
 .user-identity-main {
   min-width: 0;
@@ -69,13 +88,17 @@
 }
 
 .user-identity-name {
-  font-size: var(--user-identity-fit-font-size, 1em);
+  font-size: 1em;
   max-width: 100%;
   min-width: 0;
   overflow: hidden;
   line-height: 1.18;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.user-identity.has-nameplate .user-identity-name {
+  font-size: var(--user-nameplate-font-size);
 }
 
 .user-identity-emblem {
@@ -105,7 +128,7 @@
 }
 
 .user-identity.compact.has-nameplate {
-  --user-identity-name-tag-min-height: 2.2em;
+  --user-nameplate-scale: 0.88;
 }
 
 .user-identity.compact .user-identity-title {
@@ -176,8 +199,9 @@
 
 @media (max-width: 768px) {
   .user-identity {
-    --user-identity-name-tag-min-height: 2.22em;
-    --user-identity-name-tag-max-width: 8.5em;
+    --user-nameplate-scale: 0.92;
+    --user-identity-name-tag-min-height: 1.35em;
+    --user-identity-name-tag-max-width: 100%;
     --user-identity-name-tag-padding-x: 0.52em;
     padding: 2px 6px;
   }
@@ -206,7 +230,7 @@
   }
 
   .user-identity.compact.has-nameplate {
-    --user-identity-name-tag-min-height: 2.08em;
+    --user-nameplate-scale: 0.8;
   }
 
   .user-identity.compact {
@@ -222,6 +246,6 @@
 
   .mobile-room-screen .name-button .user-identity.has-nameplate,
   .mobile-room-screen .room-person-name .user-identity.has-nameplate {
-    --user-identity-name-tag-max-width: 7.5em;
+    --user-nameplate-scale: 0.76;
   }
 }

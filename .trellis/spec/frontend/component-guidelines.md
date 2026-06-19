@@ -32,6 +32,66 @@ Questions to answer:
 
 <!-- How props should be defined and typed -->
 
+### Scenario: User Identity Nameplate Scaling Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to `UserIdentity`, username/nameplate CSS, achievement personalization previews, leaderboard names, room member names, or home player plaques.
+- Username nameplates are a visual identity surface. Their size must be stable within each scene and must not depend on the username string length.
+
+#### 2. Signatures
+- `UserIdentity({ user, name, className, compact, showNameplate })` renders title, badge, and username nameplate cosmetics.
+- Equipped nameplate data is read from `user.achievementEquipmentAssets.nameplate.imageUrl`.
+- CSS scale is controlled by `--user-nameplate-scale`.
+- The shared base nameplate is `--user-nameplate-base-width: 96px` and `--user-nameplate-base-height: 25.6px`, a `3.75:1` ratio.
+
+#### 3. Contracts
+- Do not emit inline font-size styles based on username length. The old `--user-identity-fit-font-size` behavior is forbidden.
+- Without an equipped nameplate, the username stays ordinary natural-width text.
+- With an equipped nameplate, `.user-identity.has-nameplate .user-identity-name-tag` uses the fixed `3.75:1` slot, centers the username, and reserves fixed scaled horizontal padding.
+- Scene and viewport adaptation belongs in CSS via `--user-nameplate-scale`; do not use `ResizeObserver`, string measurement, or per-name JavaScript sizing.
+- Title and badge remain outside the nameplate background. The nameplate background wraps only the username.
+- Nameplate artwork should be delivered at `3.75:1`; existing PNGs may be alpha-trimmed and resampled to that ratio before use.
+
+#### 4. Validation & Error Matrix
+- Two-character CJK username and eight half-width Latin username in the same scene -> same rendered username font size and same nameplate dimensions.
+- Narrow mobile room/member surface -> reduce `--user-nameplate-scale`; do not shrink based on the actual username.
+- Extreme or legacy overlong username -> keep the fixed slot and allow the text span to ellipsize as the final fallback.
+- `showNameplate={false}` -> no nameplate background or fixed nameplate slot is applied.
+
+#### 5. Good/Base/Bad Cases
+- Good: `.home-player-plaque .user-identity { --user-nameplate-scale: 1.12; }`.
+- Base: ordinary users without a nameplate render natural-width text.
+- Bad: calculating display width in React and writing `style={{ "--user-identity-fit-font-size": "0.86em" }}`.
+- Bad: stretching the equipped nameplate tag to `width: 100%` of every parent container.
+- Bad: reintroducing a left/center/right three-DOM-slice nameplate.
+
+#### 6. Tests Required
+- `src/shared/UserIdentity.test.jsx` asserts username length does not create inline font-size variables.
+- `src/styles/hudComponents.test.js` asserts the shared fixed-ratio nameplate variables and scale hooks.
+- Home, leaderboard, profile, or room CSS tests should assert scene-specific scale and high-specificity theme overrides when those surfaces are changed.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+const fitFontSize = userIdentityFitFontSize(displayName);
+return <span style={{ "--user-identity-fit-font-size": fitFontSize }} />;
+```
+
+Correct:
+
+```css
+.user-identity.has-nameplate .user-identity-name-tag {
+  width: var(--user-nameplate-width);
+  height: var(--user-nameplate-height);
+}
+
+.room-person-name .user-identity {
+  --user-nameplate-scale: 0.76;
+}
+```
+
 ### Scenario: Game Mode UI Contracts
 
 #### 1. Scope / Trigger

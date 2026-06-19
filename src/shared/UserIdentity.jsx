@@ -10,7 +10,6 @@ export default function UserIdentity({
   const emblem = assets.badge;
   const nameplate = showNameplate ? assets.nameplate : null;
   const displayName = name ?? user?.username ?? "-";
-  const fitFontSize = userIdentityFitFontSize(displayName);
   const titleText = displayAssetText(title);
   const emblemText = displayAssetText(emblem);
   const classes = [
@@ -23,7 +22,7 @@ export default function UserIdentity({
   ].filter(Boolean).join(" ");
 
   return (
-    <span className={classes} style={fitFontSize ? { "--user-identity-fit-font-size": fitFontSize } : undefined}>
+    <span className={classes}>
       {titleText && <span className="user-identity-title">{titleText}</span>}
       <span className="user-identity-main">
         {emblem && (
@@ -42,23 +41,6 @@ export default function UserIdentity({
   );
 }
 
-export function userIdentityFitFontSize(name) {
-  const displayWidth = measureDisplayWidth(name);
-  if (displayWidth <= 8) return null;
-  const scale = Math.max(0.58, Math.min(1, 8.6 / displayWidth));
-  return `${scale.toFixed(3)}em`;
-}
-
 function displayAssetText(asset) {
   return String(asset?.text || asset?.name || "").trim();
-}
-
-function measureDisplayWidth(value) {
-  return Array.from(String(value ?? "")).reduce((total, char) => {
-    return total + (isWideDisplayCharacter(char) ? 2 : 1);
-  }, 0);
-}
-
-function isWideDisplayCharacter(char) {
-  return /[\u2e80-\u9fff\uac00-\ud7af\u3040-\u30ff\uff01-\uff60\uffe0-\uffe6]/u.test(char);
 }

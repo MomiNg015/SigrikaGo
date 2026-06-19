@@ -13,24 +13,27 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity {
-    --user-identity-name-tag-max-width: min(100%, 7.2em);
-    --user-identity-name-tag-padding-x: 0.34em;
+    --user-nameplate-scale: 1.02;
     width: 100% !important;
     max-width: 100% !important;
     padding-inline: 0 !important;
     font-size: clamp(19px, 5.4vw, 23px) !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-main,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name-tag,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-main {
     width: 100% !important;
     max-width: 100% !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name-tag {
     justify-content: center !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity.has-nameplate .user-identity-name-tag {
+    width: var(--user-nameplate-width) !important;
+    min-width: var(--user-nameplate-width) !important;
+    max-width: min(100%, var(--user-nameplate-width)) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name {
