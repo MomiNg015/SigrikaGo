@@ -1,3 +1,5 @@
+import { shareSnapshotValue } from "./roomSnapshot.js";
+
 export function applyRoomPatch(currentRoom, patch) {
   if (!currentRoom || !patch) return currentRoom;
   if (patch.roomCode !== currentRoom.code) return currentRoom;
@@ -38,12 +40,12 @@ function updatePresence(room, patch) {
   return {
     ...room,
     revision: nextRevision(room, patch.revision),
-    players: Array.isArray(patch.players) ? patch.players : room.players,
+    players: Array.isArray(patch.players) ? shareSnapshotValue(room.players, patch.players) : room.players,
     spectatorCount: Number.isFinite(Number(patch.spectatorCount))
       ? Number(patch.spectatorCount)
       : room.spectatorCount,
-    spectators: Array.isArray(patch.spectators) ? patch.spectators : room.spectators,
-    chat: Array.isArray(patch.chat) ? patch.chat : room.chat
+    spectators: Array.isArray(patch.spectators) ? shareSnapshotValue(room.spectators, patch.spectators) : room.spectators,
+    chat: Array.isArray(patch.chat) ? shareSnapshotValue(room.chat, patch.chat) : room.chat
   };
 }
 

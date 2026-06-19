@@ -305,7 +305,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - A patch with `baseRevision !== currentRoom.revision` and `revision > currentRoom.revision` indicates a gap. The client must reject it and request `room:resume`.
 - Legacy patches without `revision` may still be applied by type-specific reducers for backward-compatible tests or narrow mocks, but new runtime patches must carry revision fields.
 - Patch reducers must preserve unchanged room slices, especially `game` and `players`, so chat/request patches do not cause board or timer panels to re-render.
-- `presence:update` patches may replace `players`, `spectatorCount`, `spectators`, and `chat`, but must not carry or replace `game`; connection changes, spectator membership, and connection system messages should not repaint the board.
+- `presence:update` patches may replace `players`, `spectatorCount`, `spectators`, and `chat`, but must not carry or replace `game`; connection changes, spectator membership, and connection system messages should not repaint the board. Their reducers should structurally share unchanged player, spectator, and chat entries so only changed member rows or player panels receive new object references.
 - If a full `room:update` already includes the same mutation that a following continuous patch carries, the patch reducer must still advance `room.revision` so the next patch is not treated as a gap.
 - Full `room:update` and `room:resume` remain authoritative. Patch recovery should request a snapshot rather than trying to infer missing intermediate state.
 
@@ -321,7 +321,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 
 #### 5. Good/Base/Bad Cases
 - Good: `chat:append` with `baseRevision: 2` and `revision: 3` appends one message, stores `revision: 3`, and preserves the existing `game` object.
-- Good: `presence:update` with `baseRevision: 3` and `revision: 4` updates connection flags, spectators, and system chat while preserving `room.game`.
+- Good: `presence:update` with `baseRevision: 3` and `revision: 4` updates connection flags, spectators, and system chat while preserving `room.game` and unchanged member/chat entry references.
 - Base: duplicate `chat:append` with the same message id or same revision returns the current room object.
 - Bad: applying a patch with `baseRevision: 4` while the client room is at `revision: 1`, because that can hide missed moves, request state, or chat entries.
 - Bad: using a full `room:update` broadcast for disconnect/reconnect or spectator membership changes after a socket has already received its direct authoritative snapshot.
@@ -329,7 +329,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 
 #### 6. Tests Required
 - `src/app/roomPatch.test.js` must cover continuous patch application, duplicate/stale patch ignoring, unknown/wrong-room patch ignoring, and gap detection.
-- Presence patch tests must assert `presence:update` preserves `game`, updates member/chat slices, and advances revision when a direct snapshot already contains the same mutation.
+- Presence patch tests must assert `presence:update` preserves `game`, structurally shares unchanged member/chat entries, updates changed slices, and advances revision when a direct snapshot already contains the same mutation.
 - `src/app/socketHandlers.test.js` must assert gapped installed patch listeners emit `room:resume` and do not call `setRoom`.
 - Backend broadcast tests must assert patch payloads include `eventId`, `baseRevision`, and `revision`, and that the room revision increments before persistence.
 - Backend room socket tests must assert join/resume/leave/disconnect connection changes use `broadcastRoomPresencePatch` instead of full room broadcasts.

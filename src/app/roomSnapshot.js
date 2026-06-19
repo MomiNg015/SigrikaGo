@@ -4,7 +4,7 @@ export function applyRoomSnapshot(currentRoom, incomingRoom) {
   return shareSnapshotValue(currentRoom, incomingRoom);
 }
 
-function shareSnapshotValue(previous, next) {
+export function shareSnapshotValue(previous, next) {
   if (Object.is(previous, next)) return previous;
   if (Array.isArray(previous) && Array.isArray(next)) return shareSnapshotArray(previous, next);
   if (isSnapshotObject(previous) && isSnapshotObject(next)) return shareSnapshotObject(previous, next);

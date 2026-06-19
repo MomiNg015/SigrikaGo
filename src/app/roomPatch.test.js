@@ -79,11 +79,58 @@ describe("room patch updates", () => {
 
     expect(nextRoom).not.toBe(room);
     expect(nextRoom.game).toBe(game);
-    expect(nextRoom.players).toBe(players);
-    expect(nextRoom.spectators).toBe(spectators);
+    expect(nextRoom.players).toEqual(players);
+    expect(nextRoom.spectators).toEqual(spectators);
     expect(nextRoom.spectatorCount).toBe(1);
-    expect(nextRoom.chat).toBe(chat);
+    expect(nextRoom.chat).toEqual(chat);
     expect(nextRoom.revision).toBe(3);
+  });
+
+  it("structurally shares unchanged presence entries", () => {
+    const unchangedWhite = {
+      color: "white",
+      connected: true,
+      user: { id: "white-user", username: "White" },
+      time: { main: 300 }
+    };
+    const spectator = { user: { id: "spectator-user", username: "Spectator" } };
+    const chatMessage = { id: "system-1", type: "system", text: "joined" };
+    const room = {
+      code: "12345",
+      revision: 3,
+      game: { phase: "playing" },
+      players: [
+        { color: "black", connected: true, user: { id: "black-user", username: "Black" } },
+        unchangedWhite
+      ],
+      spectators: [spectator],
+      spectatorCount: 1,
+      chat: [chatMessage]
+    };
+
+    const nextRoom = applyRoomPatch(room, {
+      roomCode: "12345",
+      type: "presence:update",
+      baseRevision: 3,
+      revision: 4,
+      players: [
+        { color: "black", connected: false, disconnectedAt: 123, user: { id: "black-user", username: "Black" } },
+        { color: "white", connected: true, user: { id: "white-user", username: "White" }, time: { main: 300 } }
+      ],
+      spectators: [{ user: { id: "spectator-user", username: "Spectator" } }],
+      spectatorCount: 1,
+      chat: [{ id: "system-1", type: "system", text: "joined" }]
+    });
+
+    expect(nextRoom.players).not.toBe(room.players);
+    expect(nextRoom.players[0]).not.toBe(room.players[0]);
+    expect(nextRoom.players[1]).toBe(unchangedWhite);
+    expect(nextRoom.spectators).toBe(room.spectators);
+    expect(nextRoom.spectators[0]).toBe(spectator);
+    expect(nextRoom.chat).toBe(room.chat);
+    expect(nextRoom.chat[0]).toBe(chatMessage);
+    expect(nextRoom.game).toBe(room.game);
+    expect(nextRoom.revision).toBe(4);
   });
 
   it("ignores duplicate, stale, and unknown room patches", () => {
