@@ -600,3 +600,36 @@ Added user profile likes, report submission, admin report review, profile action
 ### Next Steps
 
 - None - task complete
+
+
+## Session 19: Remove report dialog cancel button
+
+**Date**: 2026-06-19
+**Task**: Remove report dialog cancel button
+**Branch**: `master`
+
+### Summary
+
+Removed the form-level cancel button from the profile report dialog while preserving close affordances, added a regression test, and verified npm run check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2b7d5232` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
