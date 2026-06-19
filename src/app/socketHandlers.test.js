@@ -166,6 +166,33 @@ describe("socket handlers", () => {
       room: pendingRoom,
       startedAt: 1000
     }).room.players[0].time.main).toBe(299);
+    expect(deps.matchSuccessRef.current.room.players[0].time.main).toBe(299);
+  });
+
+  it("ignores unchanged pending match clock payloads before scheduling state", () => {
+    const pendingRoom = {
+      code: "12345",
+      players: [{ color: "black", time: { main: 300 } }]
+    };
+    const deps = handlerDeps({
+      matchSuccessRef: {
+        current: {
+          room: pendingRoom,
+          startedAt: 1000
+        }
+      },
+      applyRoomClock
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomClock({
+      roomCode: "12345",
+      players: [{ color: "black", time: { main: 300 } }]
+    });
+
+    expect(deps.matchSuccessRef.current.room).toBe(pendingRoom);
+    expect(deps.setMatchSuccess).not.toHaveBeenCalled();
+    expect(deps.setRoom).not.toHaveBeenCalled();
   });
 
   it("applies room patches without replacing unchanged room slices", () => {

@@ -96,7 +96,15 @@ export function createSocketHandlers({
       const roomCode = clock?.roomCode;
       if (!roomCode) return;
       if (matchSuccessRef.current?.room?.code === roomCode) {
-        setMatchSuccess((current) => current ? { ...current, room: applyRoomClock(current.room, clock) } : current);
+        const nextPendingRoom = applyRoomClock(matchSuccessRef.current.room, clock);
+        if (nextPendingRoom !== matchSuccessRef.current.room) {
+          matchSuccessRef.current = { ...matchSuccessRef.current, room: nextPendingRoom };
+          setMatchSuccess((current) => {
+            if (!current) return current;
+            const nextRoom = applyRoomClock(current.room, clock);
+            return nextRoom === current.room ? current : { ...current, room: nextRoom };
+          });
+        }
       }
       if (roomRef.current?.code === roomCode) {
         setRoom((current) => applyRoomClock(current, clock));

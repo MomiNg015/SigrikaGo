@@ -56,6 +56,33 @@ describe("match transition room sync", () => {
     expect(nextState.room.players).toBe(currentRoom.players);
   });
 
+  it("does not schedule pending match state when an incoming snapshot is unchanged", () => {
+    const currentRoom = {
+      code: "12345",
+      role: "player",
+      game: { phase: "playing", points: [{ id: "A1", stone: null }] },
+      players: [{ color: "black", time: { main: 30 } }]
+    };
+    const incomingRoom = {
+      code: "12345",
+      role: "player",
+      game: { phase: "playing", points: [{ id: "A1", stone: null }] },
+      players: [{ color: "black", time: { main: 30 } }]
+    };
+    const matchSuccessRef = {
+      current: {
+        room: currentRoom,
+        startedAt: 1000
+      }
+    };
+    const setMatchSuccess = vi.fn();
+
+    expect(syncPendingMatchRoom(matchSuccessRef, setMatchSuccess, incomingRoom)).toBe(true);
+
+    expect(matchSuccessRef.current.room).toBe(currentRoom);
+    expect(setMatchSuccess).not.toHaveBeenCalled();
+  });
+
   it("shares the pending room with the current room when completing the transition", () => {
     const player = { color: "black", time: { main: 30 } };
     const currentRoom = {

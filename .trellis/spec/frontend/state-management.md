@@ -250,6 +250,7 @@ updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 #### 3. Contracts
 - Ignore missing or stale `room:clock` payloads without calling `setRoom` or `setMatchSuccess`.
 - If only the pending match-success room matches the clock, update only `matchSuccess`; do not call the live room setter while `roomRef.current` is empty or points elsewhere.
+- If a pending match-success clock payload does not change any timer data, do not schedule `setMatchSuccess`; the transition ref may keep its existing room object.
 - If only the live room matches the clock, update only `room`.
 - `applyRoomClock()` must preserve `room.game`, unchanged player objects, and the whole room object when no player time changed.
 - `applyRoomClock()` must return the original room when the snapshot has no `players` array yet; clock recovery must not crash an incomplete or legacy snapshot.
@@ -257,6 +258,7 @@ updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 #### 4. Validation & Error Matrix
 - `clock.roomCode` differs from current and pending room codes -> no state setter is called.
 - Pending match room code matches and current room is null -> only `setMatchSuccess` is called.
+- Pending match room code matches but all player times are unchanged -> no state setter is called.
 - Current room code matches -> `setRoom((current) => applyRoomClock(current, clock))` is called.
 - Matching room has no `players` array -> return the room unchanged.
 
@@ -280,6 +282,7 @@ updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 - `socketHandlers.roomUpdate(roomView)` must call `setRoom((current) => applyRoomSnapshot(current, nextRoomView))`.
 - Live `socketHandlers.roomResume({ type: "room", room })` must also store the recovered snapshot through a functional setter and `applyRoomSnapshot`; result resumes may restore the finished result snapshot directly.
 - `syncPendingMatchRoom()` and `completePendingMatchRoom()` must structurally share same-room pending match snapshots so a `match:found` followed by `room:update` does not bypass the full-snapshot sharing path before the transition modal completes.
+- `syncPendingMatchRoom()` should consume same-room duplicate snapshots without calling `setMatchSuccess` when `applyRoomSnapshot()` returns the current pending room object.
 
 #### 3. Contracts
 - If the current and incoming room are missing, have different `code`, or have different `role`, use the incoming snapshot directly.
@@ -296,6 +299,7 @@ updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 
 #### 5. Good/Base/Bad Cases
 - Good: `room:update`, live `room:resume`, or a pending match-success room update can preserve the existing room object when the server sends the same snapshot twice.
+- Good: a duplicate pending match-success `room:update` is consumed by the transition boundary without creating a fresh `{ startedAt, room }` wrapper.
 - Base: A move update replaces the changed point and history while preserving unrelated point objects.
 - Bad: Directly calling `setRoom(roomView)` for every same-room snapshot, forcing room consumers to compare fresh object graphs.
 - Bad: Mutating the incoming snapshot or current room in place.
@@ -303,7 +307,7 @@ updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
 #### 6. Tests Required
 - Unit tests for `applyRoomSnapshot` must cover duplicate snapshots, per-point sharing, per-player sharing, and different room identities.
 - Socket handler tests must assert `room:update` and live `room:resume` use functional state setters and still preserve reconnect audio-baseline markers.
-- Match transition tests must assert pending match room sync and completion keep unchanged snapshot subtrees stable.
+- Match transition tests must assert pending match room sync and completion keep unchanged snapshot subtrees stable, and duplicate pending snapshots do not schedule `setMatchSuccess`.
 - Run `npm test -- src/app/roomSnapshot.test.js src/app/socketHandlers.test.js` for changes in this area, then run the project `check` gate before handoff.
 
 #### 7. Wrong vs Correct
