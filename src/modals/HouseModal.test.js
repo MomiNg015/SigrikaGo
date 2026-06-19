@@ -589,6 +589,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("background-color: transparent;");
     expect(modalCss).toContain("min-height: 38px;");
     expect(modalCss).toContain("min-width: 58px;");
+    expect(modalCss).toContain(".profile-like-button:active:not(:disabled)");
+    expect(modalCss).toContain("transform: translateY(2px);");
+    expect(modalCss).toContain("box-shadow: 0 2px 0 rgba(79, 61, 85, 0.12);");
     const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
     const brightSchoolComponentCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     expect(brightSchoolModalCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .resume-modal {\n  grid-template-rows: auto auto auto minmax(0, 1fr) !important;");
@@ -596,12 +599,15 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolModalCss).toContain("overflow: hidden !important;");
     expect(brightSchoolModalCss).toContain(".mode-tabs button[aria-selected=\"true\"]");
     expect(brightSchoolModalCss).toContain("background: #ff9ebb !important");
-    expect(brightSchoolComponentCss).toContain(".user-profile-card .profile-identity-block .user-identity-name-tag");
+    expect(brightSchoolComponentCss).toContain(".user-profile-card .profile-identity-block :is(.user-identity, .user-identity-main, .user-identity-name-tag)");
     expect(brightSchoolComponentCss).toContain("background-color: transparent !important");
     expect(brightSchoolComponentCss).toContain(".user-profile-card .profile-chain-portrait > img");
     expect(brightSchoolComponentCss).toContain("border: 0 !important");
     expect(brightSchoolComponentCss).toContain("background: #dff1ff !important");
     expect(brightSchoolComponentCss).toContain("background: #ff6f7d !important");
+    expect(brightSchoolComponentCss).toContain("box-shadow: 2px 2px 0 var(--bright-border) !important");
+    expect(brightSchoolComponentCss).toContain(":is(.profile-like-button, .profile-report-button):active:not(:disabled)");
+    expect(brightSchoolComponentCss).toContain("transform: translateY(2px) !important");
     const lobbyCss = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
     expect(lobbyCss).toContain(".character-item-effect-badges");
     expect(lobbyCss).toContain(".character-item-effect-icon");

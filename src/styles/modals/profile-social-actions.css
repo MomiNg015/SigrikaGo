@@ -18,6 +18,7 @@
   color: #4f3d55;
   font-weight: 900;
   box-shadow: 0 2px 0 rgba(79, 61, 85, 0.12);
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
 }
 
 .profile-like-button {
@@ -49,6 +50,12 @@
   color: inherit;
   font-size: inherit;
   line-height: 1;
+}
+
+.profile-like-button:active:not(:disabled),
+.profile-report-button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: none;
 }
 
 .profile-like-button:disabled,

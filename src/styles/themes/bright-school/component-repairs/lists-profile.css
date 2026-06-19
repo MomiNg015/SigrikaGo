@@ -51,11 +51,10 @@
   transform: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-like-button,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-button {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.profile-like-button, .profile-report-button) {
   color: var(--bright-ink) !important;
   border: 2px solid var(--bright-border) !important;
-  box-shadow: none !important;
+  box-shadow: 2px 2px 0 var(--bright-border) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-like-button {
@@ -67,11 +66,13 @@
   color: #ffffff !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.profile-like-button, .profile-report-button):active:not(:disabled) {
+  transform: translateY(2px) !important;
+  box-shadow: none !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block h3,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block .user-identity,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block .user-identity-main,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block .user-identity-name-tag {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-profile-card .profile-identity-block :is(.user-identity, .user-identity-main, .user-identity-name-tag) {
   background-color: transparent !important;
   border: 0 !important;
   outline: 0 !important;
