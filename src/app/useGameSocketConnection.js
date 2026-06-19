@@ -15,6 +15,7 @@ import { createSocketHandlers } from "./socketHandlers.js";
 export function useGameSocketConnection({
   audioSettingsRef,
   closeAllOverlays,
+  incomingDuelRef,
   matchSuccessRef,
   onSocketReconnect = () => {},
   roomRef,
@@ -43,6 +44,7 @@ export function useGameSocketConnection({
       token,
       handlers: createSocketHandlers({
         matchSuccessRef,
+        incomingDuelRef,
         roomRef,
         audioSettingsRef,
         closeAllOverlays,
@@ -75,6 +77,7 @@ export function useGameSocketConnection({
   }, [
     audioSettingsRef,
     closeAllOverlays,
+    incomingDuelRef,
     matchSuccessRef,
     onSocketReconnect,
     roomRef,

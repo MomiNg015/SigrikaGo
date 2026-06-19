@@ -1,10 +1,15 @@
 import { useEffect, useRef } from "react";
 
-export function useSyncedRefs({ audioSettings, matchSuccess, room, view }) {
+export function useSyncedRefs({ audioSettings, incomingDuel, matchSuccess, room, view }) {
+  const incomingDuelRef = useRef(incomingDuel);
   const matchSuccessRef = useRef(matchSuccess);
   const roomRef = useRef(room);
   const viewRef = useRef(view);
   const audioSettingsRef = useRef(audioSettings);
+
+  useEffect(() => {
+    incomingDuelRef.current = incomingDuel;
+  }, [incomingDuel]);
 
   useEffect(() => {
     matchSuccessRef.current = matchSuccess;
@@ -24,6 +29,7 @@ export function useSyncedRefs({ audioSettings, matchSuccess, room, view }) {
 
   return {
     audioSettingsRef,
+    incomingDuelRef,
     matchSuccessRef,
     roomRef,
     viewRef

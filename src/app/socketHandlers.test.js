@@ -358,6 +358,41 @@ describe("socket handlers", () => {
     expect(deps.showToast).toHaveBeenCalledWith("closed");
   });
 
+  it("stores a new incoming duel request and plays the doorbell once", () => {
+    const request = { requestId: "duel-1", from: { username: "alice" }, mode: "gomoku" };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.duelIncoming(request);
+
+    expect(deps.incomingDuelRef.current).toBe(request);
+    expect(deps.setIncomingDuel).toHaveBeenCalledWith(request);
+    expect(deps.playDoorbellSound).toHaveBeenCalledWith(deps.audioSettingsRef.current);
+  });
+
+  it("ignores duplicate incoming duel requests before scheduling banner or audio work", () => {
+    const current = { requestId: "duel-1", from: { username: "alice" }, mode: "gomoku" };
+    const deps = handlerDeps({ incomingDuelRef: { current } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.duelIncoming({ requestId: "duel-1", from: { username: "alice" }, mode: "gomoku" });
+
+    expect(deps.incomingDuelRef.current).toBe(current);
+    expect(deps.setIncomingDuel).not.toHaveBeenCalled();
+    expect(deps.playDoorbellSound).not.toHaveBeenCalled();
+  });
+
+  it("clears the incoming duel ref when the matching request closes", () => {
+    const current = { requestId: "duel-1", from: { username: "alice" }, mode: "gomoku" };
+    const deps = handlerDeps({ incomingDuelRef: { current } });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.duelClosed({ requestId: "duel-1" });
+
+    expect(deps.incomingDuelRef.current).toBeNull();
+    expect(deps.setIncomingDuel.mock.calls[0][0](current)).toBeNull();
+  });
+
   it("marks a closed finished player room as dismissed so the result modal does not reopen", () => {
     const deps = handlerDeps({
       roomRef: { current: { code: "12345", role: "player", game: { phase: "finished" } } }
@@ -557,6 +592,7 @@ function matchStartSetterResult(deps, currentMatchStart = null) {
 function handlerDeps(overrides = {}) {
   return {
     matchSuccessRef: { current: null },
+    incomingDuelRef: { current: null },
     roomRef: { current: null },
     audioSettingsRef: { current: {} },
     closeAllOverlays: vi.fn(),

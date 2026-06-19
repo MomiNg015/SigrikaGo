@@ -650,6 +650,39 @@ Correct:
 const { matchStart, matchSuccess, setMatchStart, setMatchSuccess } = useMatchSessionState();
 ```
 
+### Scenario: Incoming Duel Request State
+
+#### 1. Scope / Trigger
+- Trigger: handling `duel:incoming` or `duel:closed` socket payloads, changing the direct-duel banner, or changing the synthesized doorbell sound trigger.
+- Incoming duel requests are transient app shell state. The socket payload can be repeated around reconnect or delivery retries, so duplicate request ids must not retrigger the banner or sound.
+
+#### 2. Signatures
+- `incomingDuelRef` mirrors the current `incomingDuel` app state through `useSyncedRefs()`.
+- `socketHandlers.duelIncoming(request)` stores a new request only when `sameDuelRequest(incomingDuelRef.current, request)` is false.
+- `sameDuelRequest(current, next)` compares `requestId`.
+
+#### 3. Contracts
+- `App.jsx` should pass `incomingDuelRef` into `useGameSocketConnection()` alongside the setter.
+- `duel:incoming` should update `incomingDuelRef.current` immediately before calling `setIncomingDuel(request)`, so back-to-back duplicate socket payloads are suppressed before React commits the state update.
+- Doorbell SFX should play only for a newly accepted incoming request id.
+- `duel:closed` should clear `incomingDuelRef.current` when the closed request id matches the current banner request.
+- Do not put sound playback inside a React state updater; updater functions must stay pure.
+
+#### 4. Validation & Error Matrix
+- First `duel:incoming` for `requestId: "a"` -> set the banner request and play the doorbell once.
+- Repeated `duel:incoming` for `requestId: "a"` while the banner is already current -> no setter call and no sound.
+- `duel:incoming` for a different request id -> replace the banner and play the doorbell.
+- `duel:closed` for the current request id -> clear both the ref and the visible banner through the existing functional setter.
+- `duel:closed` for an old request id -> leave the current banner alone.
+
+#### 5. Good/Base/Bad Cases
+- Good: a reconnect replay of the same direct-duel request does not animate the banner or replay the doorbell.
+- Base: a new friend duel request still interrupts the current banner because it has a different `requestId`.
+- Bad: `setIncomingDuel(request); playDoorbellSound(...)` for every incoming payload because repeated packets can cause duplicate UI and audio work.
+
+#### 6. Tests Required
+- `src/app/socketHandlers.test.js` must assert new incoming duel requests set state and play audio, duplicate request ids are ignored before scheduling state, and matching close events clear the ref.
+
 ---
 
 ## Common Mistakes
@@ -659,3 +692,4 @@ const { matchStart, matchSuccess, setMatchStart, setMatchSuccess } = useMatchSes
 - Adding app-level modal flags directly to `App.jsx` instead of extending `useOverlayState()`.
 - Storing `resultModalOpen` as independent state instead of deriving it from `useRoomSessionState()`.
 - Adding independent match booleans instead of deriving them from `useMatchSessionState()`.
+- Replaying direct-duel banner state or doorbell audio for the same `requestId` instead of suppressing duplicate `duel:incoming` payloads through `incomingDuelRef`.

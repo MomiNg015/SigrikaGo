@@ -4,6 +4,7 @@ import { GAME_MODE_IDS } from "../shared/gameModes.js";
 
 export function createSocketHandlers({
   matchSuccessRef,
+  incomingDuelRef = { current: null },
   roomRef,
   audioSettingsRef,
   closeAllOverlays,
@@ -173,10 +174,13 @@ export function createSocketHandlers({
       showToast(message);
     },
     duelIncoming: (request) => {
+      if (sameDuelRequest(incomingDuelRef.current, request)) return;
+      incomingDuelRef.current = request;
       setIncomingDuel(request);
       playDoorbellSound(audioSettingsRef.current);
     },
     duelClosed: ({ requestId }) => {
+      if (incomingDuelRef.current?.requestId === requestId) incomingDuelRef.current = null;
       setIncomingDuel((current) => current?.requestId === requestId ? null : current);
     },
     duelRejected: ({ username }) => {
@@ -271,6 +275,11 @@ export function normalizeMatchStart({ startedAt, mode = "spark" } = {}) {
 export function sameMatchStart(current, next) {
   if (!current || !next) return current === next;
   return current.startedAt === next.startedAt && (current.mode ?? "spark") === (next.mode ?? "spark");
+}
+
+export function sameDuelRequest(current, next) {
+  if (!current || !next) return current === next;
+  return current.requestId === next.requestId;
 }
 
 function modeCountsFromLobbyStats(stats = {}) {

@@ -97,8 +97,9 @@ export default function App() {
   }, [showToast]);
   const { setUser, updateUser, user } = useCurrentUser();
   const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState();
-  const { audioSettingsRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
+  const { audioSettingsRef, incomingDuelRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
     audioSettings,
+    incomingDuel,
     matchSuccess,
     room,
     view
@@ -216,6 +217,7 @@ export default function App() {
   useGameSocketConnection({
     audioSettingsRef,
     closeAllOverlays,
+    incomingDuelRef,
     matchSuccessRef,
     onSocketReconnect: resumeAudioPlayback,
     roomRef,
