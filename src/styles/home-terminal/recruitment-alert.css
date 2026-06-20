@@ -1,9 +1,21 @@
+.home-grid-featured > .home-utility-grid .recruitment-entry.has-alert {
+  border-color: #ff9ebb;
+  border-left-color: #ff5f95;
+  background: linear-gradient(90deg, rgba(255, 95, 149, 0.38), rgba(255, 158, 187, 0.18)), rgba(6, 17, 26, 0.9);
+  box-shadow: -8px 0 22px rgba(255, 95, 149, 0.22), inset 0 0 20px rgba(255, 158, 187, 0.12);
+}
+
+.home-grid-featured > .home-utility-grid .recruitment-entry.has-alert svg {
+  color: #ff9ebb;
+}
+
 .home-entry-red-dot {
   position: absolute;
   top: 8px;
   right: 8px;
   width: 10px;
   height: 10px;
+  display: block;
   border-radius: 50%;
   background: #e23b55;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.92), 0 0 12px rgba(226, 59, 85, 0.45);

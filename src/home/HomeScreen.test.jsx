@@ -391,6 +391,7 @@ describe("HomeScreen", () => {
     expect(source).toContain("recruitment-entry");
     expect(source).toContain("onOpenRecruitment");
     expect(source).toContain("home-entry-red-dot");
+    expect(source).toContain("has-alert");
     expect(source).toContain("recruitmentReady");
     expect(source).toContain("招募");
     expect(source).not.toContain("<strong>扭蛋</strong>");
@@ -398,5 +399,12 @@ describe("HomeScreen", () => {
     expect(stageSource).toContain("onOpenRecruitment");
     expect(routeSource).toContain("setShowRecruitment(true)");
     expect(overlaySource).toContain("RecruitmentModal");
+    const alertCss = readCssFixture("../styles/home-terminal/recruitment-alert.css");
+    const brightUtilityCss = readCssFixture("../styles/themes/bright-school/contrast-purge/home-utility-tabs.css");
+    expect(alertCss).toContain(".recruitment-entry.has-alert");
+    expect(alertCss).toContain("background: linear-gradient(90deg");
+    expect(alertCss).toContain("display: block;");
+    expect(brightUtilityCss).toContain(".recruitment-entry.has-alert");
+    expect(brightUtilityCss).toContain("background: #ff9ebb !important;");
   });
 });

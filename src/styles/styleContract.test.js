@@ -739,8 +739,8 @@ describe("root CSS entry contract", () => {
       "./home-terminal/top-strip.css",
       "./home-terminal/layout-player.css",
       "./home-terminal/entries.css",
-      "./home-terminal/recruitment-alert.css",
       "./home-terminal/utility-footer-motion.css",
+      "./home-terminal/recruitment-alert.css",
       "./home-terminal/mobile.css"
     ]);
     expect(homeTerminalEntry).not.toContain(".app-shell:has(.home-screen)");
