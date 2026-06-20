@@ -109,6 +109,26 @@ describe("WarehouseModal candy feedback", () => {
     expect(finalMobileCss).toContain("padding: 10px 10px !important");
   });
 
+  it("lays out desktop warehouse items as single-row entries while preserving mobile overrides", () => {
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const gridBlock = commerceCss.match(/\.warehouse-grid\s*\{[^}]+\}/)?.[0] ?? "";
+    const itemBlock = [...commerceCss.matchAll(/\.warehouse-item\s*\{[^}]+\}/g)]
+      .map((match) => match[0])
+      .find((block) => block.includes("64px minmax(0, 1fr) auto")) ?? "";
+    const actionBlock = [...commerceCss.matchAll(/\.warehouse-item \.primary-action\s*\{[^}]+\}/g)]
+      .map((match) => match[0])
+      .find((block) => block.includes("align-self: center")) ?? "";
+
+    expect(gridBlock).toContain("grid-template-columns: 1fr");
+    expect(itemBlock).toContain("grid-template-columns: 64px minmax(0, 1fr) auto");
+    expect(itemBlock).toContain("align-items: center");
+    expect(actionBlock).not.toContain("grid-column: 1 / -1");
+    expect(actionBlock).toContain("align-self: center");
+    expect(finalMobileCss).toContain(".warehouse-item");
+    expect(finalMobileCss).toContain("grid-template-columns: 36px minmax(0, 1fr) auto auto !important");
+  });
+
   it("disables character targets that are already affected or have no item effect", () => {
     const item = { itemId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖", targetType: "character" };
     const characters = {
@@ -145,7 +165,17 @@ describe("WarehouseModal candy feedback", () => {
 
     expect(html.match(/warehouse-target-disabled/g)).toHaveLength(2);
     expect(html.match(/disabled=""/g)).toHaveLength(2);
-    expect(html).toContain("效果中");
-    expect(html).toContain("无效果");
+    expect(html).not.toContain("<small");
+    expect(html).not.toContain("title=\"效果中");
+    expect(html).not.toContain("title=\"无效果");
+
+    const brightSchoolMobileCss = readCssWithImports(
+      new URL("../styles/themes/bright-school/mobile.css", import.meta.url)
+    );
+    const brightSchoolComponentCss = readCssWithImports(
+      new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url)
+    );
+    expect(brightSchoolMobileCss).not.toContain(".warehouse-character-grid small");
+    expect(brightSchoolComponentCss).not.toContain(".warehouse-character-grid button.warehouse-target-disabled small");
   });
 });

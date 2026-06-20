@@ -48,14 +48,13 @@ export default function WarehouseTargetModal({
                     className={targetAvailability.disabled ? "warehouse-target-disabled" : ""}
                     disabled={targetAvailability.disabled}
                     aria-disabled={targetAvailability.disabled}
-                    title={targetAvailability.reason || character.name}
+                    title={character.name}
                     onClick={() => {
                       if (!targetAvailability.disabled) onUseItem(targetItem, character.id);
                     }}
                   >
                     <img src={resolveCandyPortrait(character, user?.itemEffects)} alt={character.name} loading="lazy" decoding="async" />
                     <span>{character.name}</span>
-                    {targetAvailability.reason && <small>{targetAvailability.reason}</small>}
                   </button>
                 );
               })}

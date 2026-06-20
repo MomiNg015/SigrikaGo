@@ -85,6 +85,9 @@
 <li>玩家资源包含角色、装饰、道具、音乐、抽卡奖励、蓝宝石和金币；结构化关系表与旧字符串字段仍处在兼容迁移期，legacy 解析、结构化同步和公开资产合并规则集中在 <code>server/userAssets.js</code>。</li>
 </ul>
 <ul>
+<li>Warehouse inventory uses single-row item entries on desktop and compact single-column row cards on mobile; character-target item selection disables unavailable character cards with gray native disabled state only, without showing reason badges or reason text in the card/title.</li>
+</ul>
+<ul>
 <li>Player-facing character acquisition now uses the recruitment system instead of the gacha modal. Recruitment consumes warehouse items from the shop misc category, allows only one active task per user, decides the result at start time, exposes a five-minute pending period, shows the home recruitment entry pink ready background only for ready-to-view responses with a client-side readyAt refresh in addition to polling, grants a fixed-code-pool character on success, refunds the consumed item on no-response, computes remaining candidates from the merged legacy-plus-structured user asset projection, and rejects start immediately without consuming the item when the selected item has no remaining recruitable candidates. Non-production recruitment builds expose <code>/api/recruitment/fast-forward</code> and a clock icon button beside the countdown to shorten the pending task to five seconds; production rejects this route and the production UI hides the test shortcut.</li>
 </ul>
 <ul>
@@ -1697,7 +1700,7 @@
 <li>商店商品槽和仓库道具/角色目标列表会缓存当前分类、页码和拥有角色派生结果；弹窗中的道具图、角色图和使用结果图使用 lazy loading 与 async decoding，避免道具图片或动图增加后挤占对局/弹窗打开时的主线程预算。</li>
 </ul>
 <ul>
-<li>大厅左下工具区新增“仓库”入口，玩家可查看已购道具、数量和说明。自己目标道具可直接使用；角色目标道具会弹出角色选择窗口，展示自己拥有的角色立绘；处于该道具效果中的角色显示“效果中”并置灰禁用，对该道具无实际效果的角色显示“无效果”并置灰禁用，其余可用角色点击后按个消耗道具；若道具有已实现效果，窗口会只保留被选择角色立绘并在下方展示效果文本。使用道具只减少仓库道具数量，不恢复商店库存；短提示和错误统一走页面顶部 toast，不在仓库窗口内额外显示。</li>
+<li>Home lower-left tools include Warehouse for purchased items, quantities, and descriptions. Desktop warehouse inventory items render as single-row entries, while mobile keeps compact single-column row cards. Self-target items can be used directly. Character-target items open a character picker with owned character portraits; characters that are already affected or have no effect for that item are disabled and grayed out on desktop and mobile without reason badges or reason text, while usable characters consume one item on click. Implemented item effects then show only the chosen character portrait and effect copy. Item use only reduces warehouse quantity, does not restore shop stock, and success/error feedback stays in the top toast instead of inline warehouse notices.</li>
 </ul>
 <ul>
 <li>对角色使用道具成功后，页面顶部 toast 显示“对[角色名]成功使用了[道具名]”；使用结果窗口读取接口返回的最新 <code>user.itemEffects</code>，所以达妮娅吃下彩虹豆豆跳跳糖后，结果窗口中的达妮娅立绘会立即显示为彩色 GIF 状态。</li>
@@ -3164,7 +3167,7 @@
 <li>Shop item cards on mobile views display meta text in compact vertical rows: name first, optional stock text for consumable items, and price below it. Character and decoration cards no longer show purchase-limit wording, so their <code>.shop-card-meta-price-only</code> state centers the price horizontally on both desktop and mobile. Cards use flex column direction with <code>min-height: 220px</code> and <code>height: auto</code> to prevent squeeze under different viewport heights. In addition, the metadata wrapper <code>.shop-card-meta</code> is set to <code>display: contents</code> in the mobile layout so its children participate directly in card alignment flow, and font sizes of the name and price are scaled up for visual emphasis.</li>
 </ul>
 <ul>
-<li>Warehouse items layout on mobile views is optimized to align to the top of the container instead of stretching. By applying <code>align-content: start</code> to <code>.warehouse-grid</code> under the Bright School mobile theme and general commerce layout, individual items stack neatly from top to bottom even if there is only one item present.</li>
+<li>Warehouse item layout uses single-row entries on desktop and compact single-column row cards on mobile. Mobile views keep <code>align-content: start</code> on <code>.warehouse-grid</code> under the Bright School mobile theme and general commerce layout so individual items stack neatly from top to bottom even if there is only one item present.</li>
 </ul>
 <ul>
 <li>Warehouse target selection card grid layout on mobile views displays characters on a dynamic grid with up to four columns per row, shrinking and expanding cards automatically using the formula <code>repeat(auto-fit, minmax(calc((100% - 36px) / 4), 1fr))</code>. Cards utilize flex column direction to place portraits on top of centered names, and portraits scale responsively using flex-grow with height zero, preventing overlap or text clipping on small viewports.</li>

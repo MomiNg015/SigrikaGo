@@ -620,7 +620,7 @@ SigrikaGo/
 - 购买会扣除用户金币，并写入 `ownedCharacters`、`ownedDecorations` 或 `ownedItems`；道具可重复购买并按数量累加。道具 `stockQuantity` 表示每个用户独立的商店库存上限，不共享全服库存；购买道具会写入用户侧 `itemPurchaseCounts`，用于计算该用户剩余商店库存。
 - 商店选项卡包含“道具”，点击后切换到道具商品页；道具对当前用户的剩余商店库存为 0 时仍可展示，但“购买”按钮改为“已售罄”并禁用。
 - 商店商品槽和仓库道具/角色目标列表会缓存当前分类、页码和拥有角色派生结果；弹窗中的道具图、角色图和使用结果图使用 lazy loading 与 async decoding，避免道具图片或动图增加后挤占对局/弹窗打开时的主线程预算。
-- 大厅左下工具区新增“仓库”入口，玩家可查看已购道具、数量和说明。自己目标道具可直接使用；角色目标道具会弹出角色选择窗口，展示自己拥有的角色立绘；处于该道具效果中的角色显示“效果中”并置灰禁用，对该道具无实际效果的角色显示“无效果”并置灰禁用，其余可用角色点击后按个消耗道具；若道具有已实现效果，窗口会只保留被选择角色立绘并在下方展示效果文本。使用道具只减少仓库道具数量，不恢复商店库存；短提示和错误统一走页面顶部 toast，不在仓库窗口内额外显示。
+- Home lower-left tools include Warehouse for purchased items, quantities, and descriptions. Desktop warehouse inventory items render as single-row entries, while mobile keeps compact single-column row cards. Self-target items can be used directly. Character-target items open a character picker with owned character portraits; characters that are already affected or have no effect for that item are disabled and grayed out on desktop and mobile without reason badges or reason text, while usable characters consume one item on click. Implemented item effects then show only the chosen character portrait and effect copy. Item use only reduces warehouse quantity, does not restore shop stock, and success/error feedback stays in the top toast instead of inline warehouse notices.
 - 对角色使用道具成功后，页面顶部 toast 显示“对[角色名]成功使用了[道具名]”；使用结果窗口读取接口返回的最新 `user.itemEffects`，所以达妮娅吃下彩虹豆豆跳跳糖后，结果窗口中的达妮娅立绘会立即显示为彩色 GIF 状态。
 - 商店购买、商店加载错误、后台管理保存/下架/上传/封禁等操作反馈统一走页面顶部 toast，不在对应弹窗、抽屉或后台编辑区内新增成功/失败文本框。
 - 页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。toast 只用于普通错误、操作反馈和成功提示，不再自动弹出金币、积分或段位增减；对局收益继续在结果弹窗中展示，回到大厅后由 `/api/me` 刷新的铭牌统计体现最新段位积分。

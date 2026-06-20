@@ -199,12 +199,6 @@
   opacity: 0.62 !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button.warehouse-target-disabled small {
-  background: rgba(61, 43, 37, 0.12) !important;
-  color: #5c5753 !important;
-  border: 1px solid rgba(61, 43, 37, 0.22) !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid img {
   width: 100% !important;
   height: 96px !important;

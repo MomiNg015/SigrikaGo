@@ -512,6 +512,58 @@ Place the final mobile contract in `mobile-adaptive.css`, then let theme CSS adj
 
 ---
 
+### Scenario: Warehouse Inventory And Target Card Presentation
+
+#### 1. Scope / Trigger
+- Trigger: any change to `WarehouseModal`, `WarehouseItemGrid`, `WarehouseTargetModal`, warehouse item CSS, or Bright School/mobile warehouse overrides.
+
+#### 2. Signatures
+- `WarehouseItemGrid({ items, usingItemId, onSelectTargetItem, onUseItem })` renders `.warehouse-grid` and `.warehouse-item`.
+- `WarehouseTargetModal(...)` renders `.warehouse-character-grid` and disabled `.warehouse-target-disabled` buttons.
+- `warehouseCharacterTargetAvailability({ character, item, itemEffects })` may return `reason` for logic and tests, but the target card UI must not display that reason.
+
+#### 3. Contracts
+- Desktop `.warehouse-grid` is single-column and each `.warehouse-item` is a row: icon, text, action in one horizontal entry.
+- Mobile warehouse inventory keeps compact single-column row cards through final mobile overrides.
+- Character-target unavailable cards use native `disabled`, `.warehouse-target-disabled`, gray/low-saturation styling, and no reason badge or reason text.
+- Do not put availability reason in `<small>` or `title`; title should stay the character name.
+- The disabled visual rule applies to desktop, Bright School, and mobile theme layers.
+
+#### 4. Validation & Error Matrix
+- `item.targetType === "character"` opens the target modal.
+- `targetAvailability.disabled === true` renders a disabled gray card with no click behavior and no reason copy.
+- Already affected characters and no-effect characters are both disabled visually without distinguishing labels.
+- Mobile viewport follows the same no-reason target card contract.
+
+#### 5. Good / Base / Bad Cases
+- Good: disabled target button has class `warehouse-target-disabled`, a disabled attribute, and a character-name-only title.
+- Base: helper still returns `reason` for logic, but UI does not show it.
+- Bad: `<small>{targetAvailability.reason}</small>` or `title={targetAvailability.reason}` in target cards.
+- Bad: desktop inventory returns to a multi-column card grid.
+
+#### 6. Tests Required
+- `src/modals/WarehouseModal.test.js` asserts desktop row layout, mobile overrides, disabled target cards, and absence of reason labels/title.
+- Theme/style contract tests should run after moving warehouse CSS import boundaries.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<button disabled={targetAvailability.disabled} title={targetAvailability.reason || character.name}>
+  <span>{character.name}</span>
+  {targetAvailability.reason && <small>{targetAvailability.reason}</small>}
+</button>
+```
+
+Correct:
+
+```jsx
+<button disabled={targetAvailability.disabled} title={character.name}>
+  <span>{character.name}</span>
+</button>
+```
+
 ## Styling Patterns
 
 <!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->
