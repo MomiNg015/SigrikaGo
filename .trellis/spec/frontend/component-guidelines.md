@@ -571,6 +571,63 @@ Correct:
 </button>
 ```
 
+### Scenario: Recruitment Modal Bulletin Board Background
+
+#### 1. Scope / Trigger
+- Trigger: any change to `RecruitmentModal`, `.recruitment-board`, recruitment commerce CSS, Bright School recruitment overrides, or recruitment visual assets.
+- The recruitment modal's second row is the main bulletin-board stage. Theme layers must preserve its scene background instead of flattening it to a plain color.
+
+#### 2. Signatures
+- `RecruitmentModal` renders `<main className="recruitment-board">` for idle, pending, ready, and result states.
+- Base CSS lives in `src/styles/commerce/recruitment/board.css`.
+- Bright School polish lives in `src/styles/themes/bright-school/commerce/recruitment.css`.
+- The board background image is `/assets/recruitment/notice-board-background.webp`.
+- The shared CSS hook is `--recruitment-board-background-image`.
+
+#### 3. Contracts
+- `.recruitment-board` must define `--recruitment-board-background-image: url("/assets/recruitment/notice-board-background.webp")`.
+- The board must compose the image through `background-image`, not through extra JSX or an `<img>` element that can interfere with board state content.
+- Use `background-size: 100% 100%` so the scrapbook edge details remain visible in the rectangular second-row panel on desktop and mobile.
+- Bright School recruitment overrides may change border, shadow, and overlay tint, but must keep `var(--recruitment-board-background-image)` in `.recruitment-board`.
+- State cards inside the board own text readability; do not bake text or state UI into the background asset.
+
+#### 4. Validation & Error Matrix
+- Idle with no selected item -> empty board copy appears over the bulletin background.
+- Selected, pending, ready, and result states -> the same board background remains behind the state card.
+- Bright School active -> `.recruitment-board` still includes `var(--recruitment-board-background-image)` and does not collapse to a flat `background: #...`.
+- Mobile viewport -> the board keeps stable dimensions from `phone-recruitment.css`; the background may stretch with the panel but must not introduce horizontal overflow.
+
+#### 5. Good / Base / Bad Cases
+- Good: base CSS defines the image variable and Bright School uses `background-image: ..., var(--recruitment-board-background-image) !important`.
+- Base: item/result cards are semi-opaque surfaces layered above the image.
+- Bad: adding an absolutely positioned `<img>` inside `RecruitmentModal` behind content.
+- Bad: a theme override that uses `background: #fff3d5 !important` and drops the image.
+
+#### 6. Tests Required
+- `src/styles/styleContract.test.js` asserts the base recruitment board image variable and `var(...)` usage.
+- `src/styles/themeContract.test.js` asserts Bright School recruitment CSS preserves the board image variable and sizing.
+- Run `npm test -- src/styles/styleContract.test.js src/styles/themeContract.test.js src/modals/RecruitmentModal.test.js` after recruitment board CSS changes.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```css
+.theme-bright-school .recruitment-board {
+  background: #fff3d5 !important;
+}
+```
+
+Correct:
+
+```css
+.theme-bright-school .recruitment-board {
+  background-image:
+    linear-gradient(180deg, rgba(255, 253, 239, 0.1), rgba(242, 249, 246, 0.14)),
+    var(--recruitment-board-background-image) !important;
+}
+```
+
 ### Scenario: Player Currency Visibility In Resume And Shop
 
 #### 1. Scope / Trigger

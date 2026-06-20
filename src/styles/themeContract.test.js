@@ -58,6 +58,7 @@ describe("player theme CSS contract", () => {
 
   it("keeps Bright School commerce as an import-only domain entry", () => {
     const commerceEntry = readFileSync(new URL("./themes/bright-school/commerce.css", import.meta.url), "utf8");
+    const recruitmentPolish = readFileSync(new URL("./themes/bright-school/commerce/recruitment.css", import.meta.url), "utf8");
 
     expect(cssImports(commerceEntry)).toEqual([
       "./commerce/gacha.css",
@@ -68,6 +69,8 @@ describe("player theme CSS contract", () => {
     expect(commerceEntry).not.toContain(".gacha-modal {");
     expect(commerceEntry).not.toContain(".shop-layout {");
     expect(commerceEntry).not.toContain(".warehouse-grid {");
+    expect(recruitmentPolish).toContain("var(--recruitment-board-background-image)");
+    expect(recruitmentPolish).toContain("background-size: 100% 100% !important;");
   });
 
   it("keeps Bright School commerce shop as an import-only modal polish entry", () => {

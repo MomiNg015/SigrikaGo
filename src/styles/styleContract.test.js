@@ -503,6 +503,9 @@ describe("root CSS entry contract", () => {
     ]);
     expect(recruitmentEntry).not.toContain(".recruitment-modal {");
     expect(recruitmentShell).toContain("position: relative;");
+    expect(recruitmentBoard).toContain("--recruitment-board-background-image: url(\"/assets/recruitment/notice-board-background.webp\")");
+    expect(recruitmentBoard).toContain("var(--recruitment-board-background-image)");
+    expect(statSync(new URL("../../public/assets/recruitment/notice-board-background.webp", import.meta.url)).size).toBeLessThan(100_000);
     expect(recruitmentBoard).toContain(".recruitment-countdown-row");
     expect(recruitmentBoard).toContain(".recruitment-fast-forward-button");
     expect(phoneRecruitment).toContain(".recruitment-fast-forward-button");
