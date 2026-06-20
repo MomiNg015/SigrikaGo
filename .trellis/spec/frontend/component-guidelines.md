@@ -571,6 +571,56 @@ Correct:
 </button>
 ```
 
+### Scenario: Player Currency Visibility In Resume And Shop
+
+#### 1. Scope / Trigger
+- Trigger: any change to `ResumeModal`, `ShopSidebar`, shop wallet markup, resume header wallet markup, or player-facing currency display in shop/resume surfaces.
+
+#### 2. Signatures
+- `ResumeModal({ user, ... })` receives `user.coins` and may still receive `user.blueGems`.
+- `ShopSidebar({ mascotLine, user })` receives `user.coins` and may still receive `user.blueGems`.
+- Visible wallet markup uses `.shop-wallet`; the hidden blue-gem capsule previously used `.blue-gem-wallet`.
+
+#### 3. Contracts
+- Resume and shop must render only the coin wallet capsule.
+- Do not render `.blue-gem-wallet`, `Gem`, `user.blueGems`, or blue-gem balance text in `ResumeModal` or `ShopSidebar`.
+- Keep backend/user payload `blueGems` compatibility intact; this contract hides the player-facing shop/resume surfaces only.
+- Legacy gacha internals may still carry `blueGems` and duplicate-conversion data unless product scope explicitly removes that system.
+
+#### 4. Validation & Error Matrix
+- `user.blueGems > 0` in resume -> no blue-gem wallet element, title, icon, or balance appears.
+- `user.blueGems > 0` in shop -> no blue-gem wallet element, title, icon, or balance appears.
+- Missing `user.coins` -> existing coin fallback rules still apply; do not reintroduce blue-gem fallback UI.
+
+#### 5. Good / Base / Bad Cases
+- Good: `<p className="shop-wallet"><CircleDollarSign />{user.coins}</p>`.
+- Base: tests may pass `blueGems` in user fixtures to prove the UI ignores it.
+- Bad: `<p className="shop-wallet blue-gem-wallet"><Gem />{user.blueGems}</p>`.
+
+#### 6. Tests Required
+- `src/modals/HouseModal.test.js` asserts resume markup does not include `blue-gem-wallet`.
+- `src/modals/ShopModal.test.js` asserts shop markup keeps the coin wallet and does not include `blue-gem-wallet` or the passed blue-gem balance.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<p className="shop-wallet blue-gem-wallet">
+  <Gem size={18} />
+  {user.blueGems ?? 0}
+</p>
+```
+
+Correct:
+
+```jsx
+<p className="shop-wallet">
+  <CircleDollarSign size={18} />
+  {user.coins ?? 0}
+</p>
+```
+
 ## Styling Patterns
 
 <!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->

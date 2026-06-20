@@ -369,7 +369,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("resume-wallet");
     expect(html).toContain("achievement-entry-action");
     expect(html).toContain("personalization-entry-action");
-    expect(html).toContain("blue-gem-wallet");
+    expect(html).not.toContain("blue-gem-wallet");
     expect(html).toContain("对局回放");
     expect(html).toContain("战绩");
     expect(html).toContain("段位");
@@ -410,9 +410,6 @@ describe("deriveCharacterRecordStats", () => {
     expect(modalCss).toContain("background: #ffe4ee;");
     expect(modalCss).toContain(".resume-title-actions .personalization-entry-action");
     expect(modalCss).toContain("background: #e5f4ff;");
-    expect(modalCss).toContain(".resume-wallet.blue-gem-wallet");
-    expect(modalCss).toContain("background: linear-gradient(135deg, #dffbff 0%, #7fd6f2 48%, #2d9fd0 100%);");
-    expect(modalCss).toContain("border-color: #2380b5;");
     expect(modalCss).toContain("min-height: var(--modal-close-size, 44px);");
     expect(modalCss).toContain("padding-right: 0;");
     expect(modalCss).toContain(".resume-character-records");
