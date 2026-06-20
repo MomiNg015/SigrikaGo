@@ -381,7 +381,7 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("5分钟30秒3次 ·</span>");
   });
 
-  it("renders the recruitment entry as an enabled home utility action with a ready alert", () => {
+  it("renders the recruitment entry as an enabled home utility action with a ready background alert", () => {
     const source = readFileSync(new URL("./components/HomeUtilityDock.jsx", import.meta.url), "utf8");
     const mobileCss = readCssFixture("../styles/mobile-adaptive.css");
     const stageSource = readFileSync(new URL("./components/HomeStage.jsx", import.meta.url), "utf8");
@@ -390,7 +390,7 @@ describe("HomeScreen", () => {
 
     expect(source).toContain("recruitment-entry");
     expect(source).toContain("onOpenRecruitment");
-    expect(source).toContain("home-entry-red-dot");
+    expect(source).not.toContain("home-entry-red-dot");
     expect(source).toContain("has-alert");
     expect(source).toContain("recruitmentReady");
     expect(source).toContain("招募");
@@ -403,8 +403,9 @@ describe("HomeScreen", () => {
     const brightUtilityCss = readCssFixture("../styles/themes/bright-school/contrast-purge/home-utility-tabs.css");
     expect(alertCss).toContain(".recruitment-entry.has-alert");
     expect(alertCss).toContain("background: linear-gradient(90deg");
-    expect(alertCss).toContain("display: block;");
+    expect(alertCss).not.toContain("home-entry-red-dot");
     expect(brightUtilityCss).toContain(".recruitment-entry.has-alert");
     expect(brightUtilityCss).toContain("background: #ff9ebb !important;");
+    expect(brightUtilityCss).not.toContain("home-entry-red-dot");
   });
 });

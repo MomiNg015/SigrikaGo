@@ -8,15 +8,3 @@
 .home-grid-featured > .home-utility-grid .recruitment-entry.has-alert svg {
   color: #ff9ebb;
 }
-
-.home-entry-red-dot {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 10px;
-  height: 10px;
-  display: block;
-  border-radius: 50%;
-  background: #e23b55;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.92), 0 0 12px rgba(226, 59, 85, 0.45);
-}

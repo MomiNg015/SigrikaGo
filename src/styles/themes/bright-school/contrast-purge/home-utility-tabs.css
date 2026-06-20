@@ -33,11 +33,6 @@
   box-shadow: 4px 4px 0 #3d2b25, 0 0 0 4px rgba(255, 255, 255, 0.78) inset !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .recruitment-entry.has-alert .home-entry-red-dot {
-  display: block !important;
-  background: #e23b55 !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:disabled,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:disabled:hover,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:disabled:focus-visible,

@@ -348,8 +348,8 @@ await tx.gachaPool.update({
 - The rejection message is player-facing: `好像已经没有可以用该道具招募的角色了`.
 - Only one active recruitment task is allowed per user.
 - A pending task's result is decided at start time, but result details remain hidden until claim.
-- The home recruitment entry red dot and pink ready background appear only when `task.status === "ready"`.
-- The app shell must schedule a client-side refresh from `task.readyAt`, in addition to periodic polling, so closing the modal during the countdown still produces the ready red dot shortly after the countdown ends.
+- The home recruitment entry pink ready background appears only when `task.status === "ready"`.
+- The app shell must schedule a client-side refresh from `task.readyAt`, in addition to periodic polling, so closing the modal during the countdown still produces the ready pink background shortly after the countdown ends.
 - Fast-forward is a removable test tool: backend access must reject `NODE_ENV === "production"`, while the frontend clock icon may render in dev serving, `--mode development` builds, or explicit `VITE_ENABLE_TEST_TOOLS === "true"` builds.
 - Fast-forward must only shorten a pending task to five seconds remaining; it must not extend tasks that already have less time remaining.
 
@@ -359,17 +359,17 @@ await tx.gachaPool.update({
 - Selected item has zero remaining candidates, including candidates present only in `UserCharacter` rows -> `400` with the exact player-facing no-candidate message.
 - User has no selected item quantity -> `400`.
 - Fast-forward in production -> `403`.
-- Pending task reaches `readyAt` while modal is closed -> app refreshes `/api/recruitment` and sets the home red dot plus pink ready background.
-- Pending task is still before `readyAt` -> no red dot.
+- Pending task reaches `readyAt` while modal is closed -> app refreshes `/api/recruitment` and sets the home pink ready background.
+- Pending task is still before `readyAt` -> no pink ready background.
 
 #### 5. Good/Base/Bad Cases
 - Good: a player owns QiuYuan and ChangLi through structured `UserCharacter` rows, then using `radio-recruitment-ticket` shows the no-candidate message and keeps the item count unchanged.
-- Good: a player starts recruitment, closes the modal, waits until `readyAt`, and sees the home recruitment button red dot plus pink ready background without waiting for the next long polling interval.
+- Good: a player starts recruitment, closes the modal, waits until `readyAt`, and sees the home recruitment button pink ready background without waiting for the next long polling interval.
 - Good: in development with test tools enabled, a tester clicks the countdown clock icon and the task moves to five seconds remaining.
 - Base: periodic `/api/recruitment` polling still repairs stale client state after tab sleep or missed timers.
 - Bad: checking only the legacy `ownedCharacters` string for recruitment candidates while public user payloads merge structured rows.
 - Bad: consuming the item first and refunding it only after discovering all candidates are owned.
-- Bad: exposing fast-forward in production or relying only on a 30-second polling interval for the ready red dot.
+- Bad: exposing fast-forward in production or relying only on a 30-second polling interval for the ready background.
 
 #### 6. Tests Required
 - Backend recruitment tests assert the no-candidate start path rejects with the exact message and does not update the user or create a task.
@@ -378,7 +378,7 @@ await tx.gachaPool.update({
 - Route tests assert `/api/recruitment/fast-forward` forwards the authenticated user id.
 - App shell tests assert pending recruitment task state is stored and `readyAt` schedules a refresh that can set `recruitmentReady`.
 - Modal/source tests assert the countdown clock action is visible for dev serving, `--mode development`, or the explicit test-tool flag.
-- Home screen tests assert the recruitment entry renders a red dot and pink ready background only when `recruitmentReady` is true.
+- Home screen tests assert the recruitment entry renders a pink ready background only when `recruitmentReady` is true.
 
 #### 7. Wrong vs Correct
 
