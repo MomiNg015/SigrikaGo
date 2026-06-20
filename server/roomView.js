@@ -17,6 +17,8 @@ export function buildRoomView(room, viewerId, options = {}) {
     code: room.code,
     revision: Number(room.revision ?? 0),
     mode: room.mode ?? room.game?.mode ?? "spark",
+    rated: room.rated !== false,
+    matchSource: room.matchSource ?? (room.rated === false ? "private" : "matchmaking"),
     viewerId,
     role,
     players: room.players.map((player) => ({

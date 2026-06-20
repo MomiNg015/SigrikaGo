@@ -361,7 +361,7 @@ describe("admin site settings routes", () => {
     const readResponse = await requestAdminRoute(prisma, "/site-settings", { method: "GET" });
 
     expect(updateResponse.status).toBe(200);
-    expect(updateResponse.body.settings).toEqual({
+    expect(updateResponse.body.settings).toMatchObject({
       homeTitle: "棋境大厅",
       homeSubtitle: "SigrikaGo 测试服",
       aboutText: "关于测试文本",

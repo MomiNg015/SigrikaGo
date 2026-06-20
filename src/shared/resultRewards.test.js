@@ -38,4 +38,15 @@ describe("result rewards", () => {
       coins: COIN_DRAW_DELTA
     });
   });
+
+  it("uses player ratings and ranks when supplied", () => {
+    expect(resultRewardDelta(COLORS.black, COLORS.black, {
+      self: { rating: 1000, rank: "9段" },
+      opponent: { rating: 1000, rank: "3段" }
+    })).toMatchObject({
+      outcome: "win",
+      rating: 5,
+      coins: COIN_WIN_DELTA
+    });
+  });
 });

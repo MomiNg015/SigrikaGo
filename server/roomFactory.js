@@ -11,6 +11,8 @@ export const OPENING_NOTICE_DELAY_MS = 3000;
 
 export function createRoom(first, second, {
   modeInput = first.mode ?? second.mode ?? "spark",
+  rated = true,
+  matchSource = "matchmaking",
   isCodeTaken = () => false,
   now = Date.now,
   random = Math.random
@@ -32,6 +34,8 @@ export function createRoom(first, second, {
   return {
     code: randomRoomCode({ isCodeTaken, random }),
     mode,
+    rated: rated !== false,
+    matchSource,
     players,
     spectators: [],
     game,

@@ -6,23 +6,29 @@ import {
   parseRecentResults,
   serializeRecentResults
 } from "../src/shared/rankProgression.js";
+import { normalizeRatingRules } from "../src/shared/ratingRules.js";
 
-export function applyResultRewardsToRoomUsers(winner, loser, winnerReward, loserReward, { mode = "spark" } = {}) {
-  winner.user = applyUserReward(winner.user, winnerReward, { wins: 1 }, { mode });
-  loser.user = applyUserReward(loser.user, loserReward, { losses: 1 }, { mode });
+export function applyResultRewardsToRoomUsers(winner, loser, winnerReward, loserReward, { mode = "spark", rules } = {}) {
+  winner.user = applyUserReward(winner.user, winnerReward, { wins: 1 }, { mode, rules });
+  loser.user = applyUserReward(loser.user, loserReward, { losses: 1 }, { mode, rules });
 }
 
-export function applyUserReward(user, reward, recordDelta, { mode = "spark" } = {}) {
+export function applyUserReward(user, reward, recordDelta, { mode = "spark", rules } = {}) {
   const normalizedMode = normalizeGameModeId(mode);
+  const normalizedRules = normalizeRatingRules(rules);
   const currentModeStats = modeStatsForUser(user, normalizedMode);
-  const rating = Number(currentModeStats.rating ?? 0) + reward.rating;
   const wins = Number(currentModeStats.wins ?? 0) + (recordDelta.wins ?? 0);
   const losses = Number(currentModeStats.losses ?? 0) + (recordDelta.losses ?? 0);
+  const draws = Number(currentModeStats.draws ?? 0) + (recordDelta.draws ?? 0);
   const progression = applyRankProgression({
     rank: currentModeStats.rank,
     recentResults: currentModeStats.recentResults,
     outcome: recordDelta.wins ? "win" : recordDelta.losses ? "loss" : ""
   });
+  const rankRatingDelta = progression.triggered
+    ? (progression.direction === "up" ? normalizedRules.rankChangeRatingDelta : -normalizedRules.rankChangeRatingDelta)
+    : 0;
+  const rating = Number(currentModeStats.rating ?? 0) + reward.rating + rankRatingDelta;
   const modeStats = {
     ...(user.modeStats ?? {}),
     [normalizedMode]: {
@@ -31,7 +37,7 @@ export function applyUserReward(user, reward, recordDelta, { mode = "spark" } = 
       recentResults: progression.recentResults,
       wins,
       losses,
-      draws: Number(currentModeStats.draws ?? 0)
+      draws
     }
   };
   return {

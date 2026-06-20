@@ -98,6 +98,11 @@
 - `snapshot`: JSON 字符串，保存 `roomView` 快照。
 - `createdAt`: 创建时间。
 - `mode`: 对局模式快照，当前支持 `spark`、`standard`、`gomoku`；排行榜、履历、公开资料和回放按该字段过滤。
+- `rated`: whether the game affects rating, rank, public profile stats, leaderboard stats, and recent-results windows. Matchmaking games are rated; direct/private duel games are friendly and unrated.
+- `matchSource`: source snapshot, currently `matchmaking` or `duel`, used by replay and result UI to mark friendly games.
+- `blackRatingDelta`, `whiteRatingDelta`: settled rating audit deltas for both sides; friendly games store 0.
+- `blackCoinsDelta`, `whiteCoinsDelta`: settled coin audit deltas for both sides; friendly games respect the server-day reward limit.
+- `blackRankDelta`, `whiteRankDelta`: rank movement audit value, where promotion is 1, demotion is -1, and no movement is 0.
 
 ### Gomoku Domain
 
@@ -201,6 +206,7 @@
 站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。
 
 - `key`: 主键。当前使用 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText` 与 `preloadTips`；`preloadTips` 以换行文本存储加载页提示语集合。
+- `ratingRules`: JSON SiteSetting value for dynamic rating, rank-gap scaling, optional anti-boosting, rank-change rating delta, and friendly-match coin limits.
 - `value`: 配置值字符串。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 

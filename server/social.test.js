@@ -237,6 +237,37 @@ describe("social profiles and relationships", () => {
     })]);
   });
 
+  it("excludes unrated friendly games from profile stats but keeps them in replay summaries", async () => {
+    const records = [
+      record({ id: "rated-win", blackUserId: "target-1", whiteUserId: "user-2", winnerColor: "black", rated: true }),
+      record({ id: "friendly-loss", blackUserId: "user-2", whiteUserId: "target-1", winnerColor: "black", rated: false, matchSource: "duel" })
+    ];
+    const prisma = socialProfilePrisma({
+      users: [{
+        id: "target-1",
+        username: "target",
+        rating: 1200,
+        selectedCharacter: "sigrika",
+        ownedCharacters: "sigrika"
+      }],
+      records
+    });
+
+    const profile = await getUserProfile({
+      prisma,
+      userId: "target-1",
+      viewerId: "viewer-1",
+      statusForUser: () => "online"
+    });
+    const replays = await getUserReplays({ prisma, userId: "target-1" });
+
+    expect(profile.record).toMatch(/^1/);
+    expect(replays.map((item) => [item.id, item.rated, item.matchSource])).toEqual([
+      ["rated-win", true, "matchmaking"],
+      ["friendly-loss", false, "duel"]
+    ]);
+  });
+
   it("finds public profile by exact username for social search", async () => {
     const profile = await getUserProfileByUsername({
       prisma: socialProfilePrisma({
@@ -374,7 +405,9 @@ function socialProfilePrisma({ users = [], records = [] }) {
       findMany: async ({ where, orderBy, take }) => {
         let result = records.filter((item) => {
           const targetIds = where.OR.map((condition) => condition.blackUserId ?? condition.whiteUserId);
-          return targetIds.includes(item.blackUserId) || targetIds.includes(item.whiteUserId);
+          const matchesUser = targetIds.includes(item.blackUserId) || targetIds.includes(item.whiteUserId);
+          const matchesRated = typeof where.rated === "boolean" ? item.rated !== false === where.rated : true;
+          return matchesUser && matchesRated;
         });
         if (orderBy?.createdAt === "desc") {
           result = [...result].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

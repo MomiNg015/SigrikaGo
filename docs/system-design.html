@@ -73,6 +73,9 @@
 <li>站点公开配置通过 <code>SiteSetting</code> key/value 存储，并由 <code>src/shared/siteSettings.js</code> 定义前后端共享默认值；后台系统设置可编辑大厅标题/副标题、关于文本、首页 footer 长文本和加载页提示语集合，footer 支持受限 Markdown 链接，加载页提示语按行维护并在玩家预加载时随机轮播；加载屏内容在桌面、移动端和短视口中保持整屏居中，标题与提示语允许按容器宽度换行，中间加载面板保持透明且不覆盖整页主题背景。</li>
 </ul>
 <ul>
+<li><code>ratingRules</code> controls dynamic rated-match rewards, rank-gap scaling, optional anti-boosting, rank-change rating deltas, and friendly-match coin limits. Matchmaking is rated; direct/private duels are friendly, excluded from public stats/rank windows, kept in replay history, and marked in replay UI.</li>
+</ul>
+<ul>
 <li>对局规则支持黑白棋子与命名中立棋子并存；中立棋子按同名阵营连接、阻断领地并参与气/提子判定，但不归属黑白除子。<code>src/shared/game.js</code> 保留共享对局 API 门面，阶段常量、动作结果、普通落子/隐藏手动作、主动技能动作和技能状态变更 helper 已拆到 <code>gamePhases.js</code>、<code>gameActionResult.js</code>、<code>gameStoneActions.js</code>、<code>gameSkillActions.js</code> 和 <code>gameSkillState.js</code>，降低新增技能继续膨胀核心状态机的风险。</li>
 </ul>
 <ul>
@@ -2451,16 +2454,19 @@
 <ul>
 <li>Result rewards:</li>
 <ul>
-<li>The result modal displays the current player's rating and coin deltas.</li>
+<li>Only random matchmaking rooms are rated; direct/private duel rooms are friendly matches. Friendly matches do not update rating, rank windows, leaderboard/profile stats, or recent ten-game results, but they are still persisted as replays and marked with <code>rated=false</code> plus <code>matchSource=duel</code>.</li>
 </ul>
 <ul>
-<li>Rating deltas are win <code>+20</code>, loss <code>-20</code>, draw <code>0</code>.</li>
+<li>Rated rating deltas use <code>src/shared/ratingRules.js</code>: Elo expected score with configurable K, min/max clamps, rank-gap decay, and optional anti-boost repeat-opponent decay from <code>SiteSetting.ratingRules</code>. Rating can go negative.</li>
 </ul>
 <ul>
-<li>Coin deltas are win <code>+50</code>, loss <code>+20</code>, draw <code>0</code>.</li>
+<li>Rank movement still uses the last ten rated decisive results; 7 wins promote, 8 losses demote, draws are ignored. Each promotion/demotion applies a configurable fixed rating delta, default <code>100</code>.</li>
 </ul>
 <ul>
-<li>Decisive game persistence uses <code>resultRewardDelta</code>; winner records gain coins and rating, loser records gain consolation coins and lose rating. Draws remain record-only for rewards.</li>
+<li>Coin rewards for rated games remain uncapped by day. Friendly matches use configurable win/loss/draw coin values and grant coins only for the first configured number of friendly games per user per server day, default 3 days counted by Asia/Shanghai.</li>
+</ul>
+<ul>
+<li>The result modal displays settled rating/coin deltas from <code>room.game.resultRewards[userId]</code>; friendly results show that the game does not count toward rating/rank, and show the daily friendly-reward limit state when reached.</li>
 </ul>
 </ul>
 <ul>
@@ -2811,6 +2817,21 @@
 <ul>
 <li><code>mode</code>: 对局模式快照，当前支持 <code>spark</code>、<code>standard</code>、<code>gomoku</code>；排行榜、履历、公开资料和回放按该字段过滤。</li>
 </ul>
+<ul>
+<li><code>rated</code>: whether the game affects rating, rank, public profile stats, leaderboard stats, and recent-results windows. Matchmaking games are rated; direct/private duel games are friendly and unrated.</li>
+</ul>
+<ul>
+<li><code>matchSource</code>: source snapshot, currently <code>matchmaking</code> or <code>duel</code>, used by replay and result UI to mark friendly games.</li>
+</ul>
+<ul>
+<li><code>blackRatingDelta</code>, <code>whiteRatingDelta</code>: settled rating audit deltas for both sides; friendly games store 0.</li>
+</ul>
+<ul>
+<li><code>blackCoinsDelta</code>, <code>whiteCoinsDelta</code>: settled coin audit deltas for both sides; friendly games respect the server-day reward limit.</li>
+</ul>
+<ul>
+<li><code>blackRankDelta</code>, <code>whiteRankDelta</code>: rank movement audit value, where promotion is 1, demotion is -1, and no movement is 0.</li>
+</ul>
 <h3>Gomoku Domain</h3>
 <p><code>gomoku</code> 五子棋模式使用 <code>src/shared/gomokuRules.js</code> 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。 A decisive five-in-row result records the exact five point ids in <code>winner.winningLine</code>; live clients show the result modal immediately while the board keeps those stones highlighted, and replay views only render the same persistent highlight.</p>
 <h3>Character</h3>
@@ -3001,6 +3022,9 @@
 <p>站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。</p>
 <ul>
 <li><code>key</code>: 主键。当前使用 <code>homeTitle</code>、<code>homeSubtitle</code>、<code>aboutText</code>、<code>footerText</code> 与 <code>preloadTips</code>；<code>preloadTips</code> 以换行文本存储加载页提示语集合。</li>
+</ul>
+<ul>
+<li><code>ratingRules</code>: JSON SiteSetting value for dynamic rating, rank-gap scaling, optional anti-boosting, rank-change rating delta, and friendly-match coin limits.</li>
 </ul>
 <ul>
 <li><code>value</code>: 配置值字符串。</li>

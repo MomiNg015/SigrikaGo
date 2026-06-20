@@ -49,6 +49,8 @@ describe("roomFactory", () => {
     expect(room).toMatchObject({
       code: "77500",
       mode: "standard",
+      rated: true,
+      matchSource: "matchmaking",
       revision: 0,
       spectators: [],
       chat: [],
@@ -81,6 +83,21 @@ describe("roomFactory", () => {
       [COLORS.black, "second"],
       [COLORS.white, "first"]
     ]);
+  });
+
+  test("supports unrated direct room metadata", () => {
+    const room = createRoom(
+      queuePlayer("first", "socket-a"),
+      queuePlayer("second", "socket-b"),
+      {
+        rated: false,
+        matchSource: "duel",
+        random: () => 0.75
+      }
+    );
+
+    expect(room.rated).toBe(false);
+    expect(room.matchSource).toBe("duel");
   });
 
   test("projects mode stats onto room users", () => {

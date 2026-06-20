@@ -165,4 +165,23 @@ describe("leaderboard", () => {
       })
     ]);
   });
+
+  it("ignores unrated friendly records", () => {
+    const users = [
+      { id: "u1", username: "alice", rating: 1040, selectedCharacter: "sigrika" },
+      { id: "u2", username: "bob", rating: 1000, selectedCharacter: "danea" }
+    ];
+    const records = [
+      {
+        rated: false,
+        blackUserId: "u1",
+        whiteUserId: "u2",
+        blackCharacter: "sigrika",
+        whiteCharacter: "danea",
+        winnerColor: "black"
+      }
+    ];
+
+    expect(buildLeaderboard(users, records)).toEqual([]);
+  });
 });

@@ -732,6 +732,7 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(modalsEntry)).toEqual([
       "./modals/base-result-skill.css",
+      "./modals/result-modal.css",
       "./modals/replay-mode-resume.css",
       "./modals/nested-profile.css",
       "./modals/profile-character-records.css",

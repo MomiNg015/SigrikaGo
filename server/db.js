@@ -82,6 +82,14 @@ export async function ensureGameModeSchema(client = prisma) {
   if (!hasGameRecordMode) {
     await client.$executeRawUnsafe(`ALTER TABLE "GameRecord" ADD COLUMN "mode" TEXT NOT NULL DEFAULT 'spark'`);
   }
+  await ensureGameRecordColumn(client, gameRecordColumns, "rated", `ALTER TABLE "GameRecord" ADD COLUMN "rated" BOOLEAN NOT NULL DEFAULT true`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "matchSource", `ALTER TABLE "GameRecord" ADD COLUMN "matchSource" TEXT NOT NULL DEFAULT 'matchmaking'`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "blackRatingDelta", `ALTER TABLE "GameRecord" ADD COLUMN "blackRatingDelta" INTEGER NOT NULL DEFAULT 0`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "whiteRatingDelta", `ALTER TABLE "GameRecord" ADD COLUMN "whiteRatingDelta" INTEGER NOT NULL DEFAULT 0`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "blackCoinsDelta", `ALTER TABLE "GameRecord" ADD COLUMN "blackCoinsDelta" INTEGER NOT NULL DEFAULT 0`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "whiteCoinsDelta", `ALTER TABLE "GameRecord" ADD COLUMN "whiteCoinsDelta" INTEGER NOT NULL DEFAULT 0`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "blackRankDelta", `ALTER TABLE "GameRecord" ADD COLUMN "blackRankDelta" INTEGER NOT NULL DEFAULT 0`);
+  await ensureGameRecordColumn(client, gameRecordColumns, "whiteRankDelta", `ALTER TABLE "GameRecord" ADD COLUMN "whiteRankDelta" INTEGER NOT NULL DEFAULT 0`);
   await client.$executeRawUnsafe(`UPDATE "GameRecord" SET "mode" = 'spark' WHERE "mode" IS NULL OR "mode" = ''`);
   await client.$executeRawUnsafe(`
     INSERT OR IGNORE INTO "UserModeStats" ("id", "userId", "mode", "rating", "wins", "losses", "draws", "createdAt", "updatedAt")
@@ -93,6 +101,12 @@ export async function ensureGameModeSchema(client = prisma) {
     SELECT "id" || ':gomoku', "id", 'gomoku', 1000, '3段', '', 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
     FROM "User"
   `);
+}
+
+async function ensureGameRecordColumn(client, columns, name, sql) {
+  if (!columns.some((column) => column.name === name)) {
+    await client.$executeRawUnsafe(sql);
+  }
 }
 
 export async function ensureGachaSchema(client = prisma) {

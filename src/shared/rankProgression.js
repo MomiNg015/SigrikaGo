@@ -88,7 +88,7 @@ export function normalizeRankOutcome(outcome = "") {
   return "";
 }
 
-function rankToStep(rank = DEFAULT_RANK) {
+export function rankToStep(rank = DEFAULT_RANK) {
   const value = String(rank ?? "").trim();
   const danMatch = value.match(/^(\d+)段$/u);
   if (danMatch) {

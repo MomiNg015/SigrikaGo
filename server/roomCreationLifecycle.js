@@ -19,6 +19,8 @@ export function createRoomCreationLifecycle({
     const first = match.opponent;
     const room = createRoom(first, match.player, {
       modeInput: match.mode,
+      rated: true,
+      matchSource: "matchmaking",
       isCodeTaken: isRoomCodeTaken
     });
     registerCreatedRoom(room, io);
@@ -34,6 +36,8 @@ export function createRoomCreationLifecycle({
     matchmakingQueue.removeUser(second.user.id);
     const room = createRoom({ ...first, mode }, { ...second, mode }, {
       modeInput: mode,
+      rated: false,
+      matchSource: "duel",
       isCodeTaken: isRoomCodeTaken
     });
     registerCreatedRoom(room, io);

@@ -69,6 +69,30 @@ describe("ReplayList", () => {
     expect(html).toContain("replay-table-row outcome-loss");
   });
 
+  it("marks unrated friendly replays with an accessible handshake icon", () => {
+    const html = renderToStaticMarkup(createElement(ReplayList, {
+      characters,
+      currentUser: { id: "user-1", username: "moming" },
+      records: [{
+        id: "record-friendly",
+        createdAt: "2026-06-06T00:31:00.000Z",
+        blackUserId: "user-1",
+        whiteUserId: "user-2",
+        blackName: "moming",
+        whiteName: "friend",
+        blackCharacter: "sigrika",
+        whiteCharacter: "denia",
+        winnerColor: "black",
+        resultText: "黑胜",
+        moveCount: 50,
+        rated: false
+      }]
+    }));
+
+    expect(html).toContain("replay-friendly-icon");
+    expect(html).toContain("aria-label=\"友谊对局\"");
+  });
+
   it("keeps replay outcome row colors in the final modal style layer", () => {
     const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const finalWinRule = css.lastIndexOf(".replay-table-row.outcome-win");
