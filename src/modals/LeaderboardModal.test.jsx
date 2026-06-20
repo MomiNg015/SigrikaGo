@@ -198,7 +198,8 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain(".friends-modal button");
     expect(phoneModalMedia).toContain("justify-content: center");
     expect(finalMobileCss).toContain(".leaderboard-row.top-rank .leaderboard-rank");
-    expect(finalMobileCss).toContain("border-radius: 50% !important");
+    expect(finalMobileCss).toContain("border-radius: 0 !important");
+    expect(finalMobileCss).toContain("background: transparent !important");
     expect(finalMobileCss).toContain("clip-path: none !important");
     expect(finalMobileCss).toContain("grid-template-rows: minmax(0, 1fr) auto !important");
     expect(finalMobileCss).toContain('"rank avatar player score"');
@@ -225,6 +226,32 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain("min-height: 72px !important");
     expect(finalMobileCss).toContain("width: 34px !important");
     expect(finalMobileCss).toContain("font-size: 17px !important");
+  });
+
+  it("uses row-level gold, silver, and bronze highlights instead of top-rank number triangles", () => {
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const topRankBadgeBlock = commerceCss.match(/\.leaderboard-row\.top-rank \.leaderboard-rank\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(commerceCss).toContain(".leaderboard-row.rank-1");
+    expect(commerceCss).toContain("rgba(255, 247, 196, 0.34)");
+    expect(commerceCss).toContain(".leaderboard-row.rank-2");
+    expect(commerceCss).toContain("rgba(195, 211, 224, 0.24)");
+    expect(commerceCss).toContain(".leaderboard-row.rank-3");
+    expect(commerceCss).toContain("rgba(218, 155, 94, 0.22)");
+    expect(topRankBadgeBlock).toContain("background: transparent");
+    expect(topRankBadgeBlock).toContain("clip-path: none");
+    expect(topRankBadgeBlock).not.toContain("polygon(50% 100%, 0 0, 100% 0)");
+    expect(brightSchoolCss).toContain(".leaderboard-row.rank-1");
+    expect(brightSchoolCss).toContain("rgba(255, 246, 187, 0.98)");
+    expect(brightSchoolCss).toContain(".leaderboard-row.rank-2");
+    expect(brightSchoolCss).toContain("rgba(224, 232, 238, 0.96)");
+    expect(brightSchoolCss).toContain(".leaderboard-row.rank-3");
+    expect(brightSchoolCss).toContain("rgba(226, 171, 112, 0.94)");
+    expect(finalMobileCss).toContain(".leaderboard-row.rank-1");
+    expect(finalMobileCss).toContain("background: transparent !important");
+    expect(finalMobileCss).toContain("border-radius: 0 !important");
   });
 });
 

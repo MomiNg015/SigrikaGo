@@ -257,6 +257,7 @@
 </ul>
 <ul>
 <li>Mobile leaderboard rows use a compact card grid with no extra left list inset, smaller rank badges, larger character portraits, and a centered username/rank stack so the rank label shares the same vertical center axis as the username/nameplate. Compact leaderboard <code>UserIdentity</code> names provide a fit font-size token so legacy/generated usernames shrink before they would fall back to clipped ellipses. Leaderboard rows representing the current user, including the pinned &quot;my ranking&quot; row, use a light green surface on desktop and mobile so they remain visually distinct from ordinary leaderboard entries.</li>
+<li>Leaderboard top-three emphasis belongs on the whole row, not the rank-number badge: rank 1 uses a gold gradient row, rank 2 uses a silver gradient row, and rank 3 uses a light bronze gradient row across desktop and mobile. The top-three rank number itself stays a plain readable number with no triangular badge background.</li>
 </ul>
 <ul>
 <li>Selected tab-like controls and selected option buttons share a pressed visual contract across desktop and mobile: active/aria-selected/aria-pressed states shorten the drop shadow, shift down slightly, and add an inset shadow so the selected control reads as physically pressed rather than merely highlighted.</li>
