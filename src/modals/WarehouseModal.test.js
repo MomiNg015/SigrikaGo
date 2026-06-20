@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import WarehouseModal, { warehouseTargetState } from "./WarehouseModal.jsx";
+import WarehouseItemGrid from "./warehouse/WarehouseItemGrid.jsx";
 import WarehouseTargetModal, { warehouseCharacterTargetAvailability } from "./warehouse/WarehouseTargetModal.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
@@ -126,7 +127,40 @@ describe("WarehouseModal candy feedback", () => {
     expect(actionBlock).not.toContain("grid-column: 1 / -1");
     expect(actionBlock).toContain("align-self: center");
     expect(finalMobileCss).toContain(".warehouse-item");
-    expect(finalMobileCss).toContain("grid-template-columns: 36px minmax(0, 1fr) auto auto !important");
+    expect(finalMobileCss).toContain("grid-template-columns: 36px minmax(0, 1fr) auto !important");
+    expect(finalMobileCss).toContain("grid-row: 1 !important");
+    expect(finalMobileCss).toContain("grid-row: 2 !important");
+    expect(finalMobileCss).toContain("text-align: right !important");
+  });
+
+  it("renders unusable item actions as disabled gray buttons on desktop and mobile", () => {
+    const html = renderToStaticMarkup(createElement(WarehouseItemGrid, {
+      items: [{
+        itemId: "recruitment-poster",
+        name: "招新贴报",
+        description: "可以招募学院内的人",
+        quantity: 2,
+        targetType: "recruitment",
+        usable: false
+      }],
+      usingItemId: "",
+      onSelectTargetItem: () => {},
+      onUseItem: () => {}
+    }));
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+    const disabledBlock = commerceCss.match(/\.warehouse-item \.primary-action:disabled\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(html).toContain('class="primary-action"');
+    expect(html).toContain("disabled=\"\"");
+    expect(html).toContain("请去招募");
+    expect(disabledBlock).toContain("cursor: not-allowed");
+    expect(disabledBlock).toContain("grayscale");
+    expect(finalMobileCss).toContain(".primary-action:active:not(:disabled)");
+    expect(brightSchoolCss).toContain(".warehouse-item .primary-action:disabled");
+    expect(brightSchoolCss).toContain("background: #d8d4cc !important");
+    expect(brightSchoolCss).toContain("cursor: not-allowed !important");
   });
 
   it("disables character targets that are already affected or have no item effect", () => {

@@ -70,6 +70,16 @@
   align-self: center;
 }
 
+.warehouse-item .primary-action:disabled {
+  border-color: rgba(128, 132, 136, 0.28);
+  background: linear-gradient(135deg, #d9d6d2, #c4c8ca);
+  color: #717678;
+  box-shadow: none;
+  filter: grayscale(0.45) saturate(0.55);
+  opacity: 0.78;
+  cursor: not-allowed;
+}
+
 .warehouse-empty {
   min-height: 160px;
   display: grid;

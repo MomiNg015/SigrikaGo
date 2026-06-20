@@ -86,3 +86,18 @@
   align-self: end !important;
   justify-self: end !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item .primary-action:disabled,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item .primary-action:disabled:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item .primary-action:disabled:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item .primary-action:disabled:active {
+  background: #d8d4cc !important;
+  background-image: none !important;
+  color: #7a766f !important;
+  border-color: #8d887f !important;
+  box-shadow: 1px 1px 0 rgba(61, 43, 37, 0.38) !important;
+  filter: grayscale(0.55) saturate(0.45) !important;
+  opacity: 0.74 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}

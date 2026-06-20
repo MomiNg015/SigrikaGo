@@ -525,6 +525,8 @@ Place the final mobile contract in `mobile-adaptive.css`, then let theme CSS adj
 #### 3. Contracts
 - Desktop `.warehouse-grid` is single-column and each `.warehouse-item` is a row: icon, text, action in one horizontal entry.
 - Mobile warehouse inventory keeps compact single-column row cards through final mobile overrides.
+- Mobile warehouse item rows place the quantity chip in the right action column above the use button; keep the chip right-aligned and the button directly below it.
+- Warehouse use buttons that are unavailable for direct use, including recruitment-only items, must stay native `disabled` controls and render as gray disabled buttons on desktop and mobile.
 - Character-target unavailable cards use native `disabled`, `.warehouse-target-disabled`, gray/low-saturation styling, and no reason badge or reason text.
 - Do not put availability reason in `<small>` or `title`; title should stay the character name.
 - The disabled visual rule applies to desktop, Bright School, and mobile theme layers.
@@ -534,15 +536,20 @@ Place the final mobile contract in `mobile-adaptive.css`, then let theme CSS adj
 - `targetAvailability.disabled === true` renders a disabled gray card with no click behavior and no reason copy.
 - Already affected characters and no-effect characters are both disabled visually without distinguishing labels.
 - Mobile viewport follows the same no-reason target card contract.
+- `item.usable === false` -> disabled gray use button, not an active-looking primary button.
+- Mobile viewport -> quantity chip is above the use button in the same right-aligned action column.
 
 #### 5. Good / Base / Bad Cases
 - Good: disabled target button has class `warehouse-target-disabled`, a disabled attribute, and a character-name-only title.
+- Good: disabled warehouse use button has `disabled`, `cursor: not-allowed`, and gray base plus Bright School theme styles.
 - Base: helper still returns `reason` for logic, but UI does not show it.
+- Bad: mobile quantity and use button sit side by side in separate action columns.
+- Bad: `请去招募` uses pink primary styling while disabled.
 - Bad: `<small>{targetAvailability.reason}</small>` or `title={targetAvailability.reason}` in target cards.
 - Bad: desktop inventory returns to a multi-column card grid.
 
 #### 6. Tests Required
-- `src/modals/WarehouseModal.test.js` asserts desktop row layout, mobile overrides, disabled target cards, and absence of reason labels/title.
+- `src/modals/WarehouseModal.test.js` asserts desktop row layout, mobile quantity-above-button overrides, disabled warehouse use buttons, disabled target cards, and absence of reason labels/title.
 - Theme/style contract tests should run after moving warehouse CSS import boundaries.
 
 #### 7. Wrong vs Correct
