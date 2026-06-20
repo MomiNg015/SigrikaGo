@@ -1,4 +1,4 @@
-import { ClipboardList, Radio, X } from "lucide-react";
+import { ClipboardList, Clock, Radio, X } from "lucide-react";
 import { formatRecruitmentCountdown, useRecruitmentCatalog } from "./recruitment/useRecruitmentCatalog.js";
 
 export default function RecruitmentModal({
@@ -12,8 +12,10 @@ export default function RecruitmentModal({
 }) {
   const {
     busy,
+    canFastForward,
     clearResult,
     claim,
+    fastForward,
     items,
     loading,
     result,
@@ -42,7 +44,7 @@ export default function RecruitmentModal({
         <main className="recruitment-board">
           {loading && <p className="quiet-text">加载招新公示中...</p>}
           {!loading && phase === "idle" && <IdleBoard selectedItem={selectedItem} />}
-          {!loading && phase === "pending" && <PendingBoard task={task} />}
+          {!loading && phase === "pending" && <PendingBoard task={task} busy={busy} canFastForward={canFastForward} onFastForward={fastForward} />}
           {!loading && phase === "ready" && <ReadyBoard task={task} busy={busy} onClaim={claim} />}
           {!loading && phase === "result" && <ResultBoard result={result} task={task} characters={characters} />}
         </main>
@@ -101,14 +103,28 @@ function IdleBoard({ selectedItem }) {
   );
 }
 
-function PendingBoard({ task }) {
+function PendingBoard({ task, busy, canFastForward, onFastForward }) {
   return (
     <section className="recruitment-status-card">
       <RecruitmentItemIcon item={task} large />
       <div>
         <strong>{task.itemName}</strong>
         <span>等待招新回应</span>
-        <b>{formatRecruitmentCountdown(task)}</b>
+        <div className={`recruitment-countdown-row ${canFastForward ? "has-fast-forward" : ""}`}>
+          <b>{formatRecruitmentCountdown(task)}</b>
+          {canFastForward && (
+            <button
+              className="recruitment-fast-forward-button"
+              type="button"
+              disabled={busy}
+              onClick={onFastForward}
+              title="快速计时到 5 秒"
+              aria-label="快速计时到 5 秒"
+            >
+              <Clock size={20} />
+            </button>
+          )}
+        </div>
       </div>
     </section>
   );

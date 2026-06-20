@@ -36,6 +36,19 @@
   background: #ffdfeb !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button {
+  border: 3px solid #3d2b25 !important;
+  background: #fffdf6 !important;
+  color: #d65372 !important;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.42) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button:hover:not(:disabled),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button:focus-visible:not(:disabled) {
+  background: #ffdfeb !important;
+  color: #9f294c !important;
+}
+
 @media (max-width: 768px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-modal {
     border-width: 3px !important;

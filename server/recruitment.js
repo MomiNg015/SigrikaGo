@@ -8,13 +8,16 @@ import {
 import {
   parseCharacterAssetList,
   parseOwnedItemCounts,
+  publicUserAssets,
   serializeAssetList,
   serializeOwnedItemCounts,
   syncStructuredUserAssets
 } from "./userAssets.js";
+import { canUseDebugTestActions } from "./security.js";
 
 const RECRUITMENT_CONFIG_KEY = "recruitmentConfig";
 const ACTIVE_TASK_STATUSES = new Set(["pending"]);
+const RECRUITMENT_FAST_FORWARD_REMAINING_MS = 5000;
 
 export async function ensureRecruitmentSchema(client) {
   if (!client?.$executeRawUnsafe) return;
@@ -58,7 +61,7 @@ export async function getRecruitmentStatus({ prisma, userId, now = new Date() })
   const [task, config, user] = await Promise.all([
     findActiveRecruitmentTask(prisma, userId),
     getRecruitmentConfig(prisma),
-    prisma.user.findUnique({ where: { id: userId } })
+    findRecruitmentUser(prisma, userId)
   ]);
   if (!user) throw routeError(404, "用户不存在");
   const streaks = await listRecruitmentStreaks(prisma, userId);
@@ -75,14 +78,14 @@ export async function startRecruitment({ prisma, userId, itemType, now = new Dat
 
   return prisma.$transaction(async (tx) => {
     const [user, activeTask, config] = await Promise.all([
-      tx.user.findUnique({ where: { id: userId } }),
+      findRecruitmentUser(tx, userId),
       findActiveRecruitmentTask(tx, userId),
       getRecruitmentConfig(tx)
     ]);
     if (!user) throw routeError(404, "用户不存在");
     if (activeTask) throw routeError(400, "现在只能同时进行一次招募");
 
-    const ownedCharacters = parseCharacterAssetList(user.ownedCharacters);
+    const ownedCharacters = publicUserAssets(user).ownedCharacters;
     const candidateIds = item.candidates.filter((candidateId) => !ownedCharacters.includes(candidateId));
     if (candidateIds.length === 0) {
       throw routeError(400, "好像已经没有可以用该道具招募的角色了");
@@ -132,7 +135,7 @@ export async function startRecruitment({ prisma, userId, itemType, now = new Dat
 export async function claimRecruitment({ prisma, userId, now = new Date() }) {
   return prisma.$transaction(async (tx) => {
     const [user, task] = await Promise.all([
-      tx.user.findUnique({ where: { id: userId } }),
+      findRecruitmentUser(tx, userId),
       findActiveRecruitmentTask(tx, userId)
     ]);
     if (!user) throw routeError(404, "用户不存在");
@@ -143,9 +146,10 @@ export async function claimRecruitment({ prisma, userId, now = new Date() }) {
 
     const data = {};
     if (task.resultType === "success" && task.resultCharacterSlug) {
-      const ownedCharacters = parseCharacterAssetList(user.ownedCharacters);
+      const ownedCharacters = publicUserAssets(user).ownedCharacters;
       if (!ownedCharacters.includes(task.resultCharacterSlug)) {
-        data.ownedCharacters = serializeAssetList([...ownedCharacters, task.resultCharacterSlug]);
+        const legacyOwnedCharacters = parseCharacterAssetList(user.ownedCharacters);
+        data.ownedCharacters = serializeAssetList([...legacyOwnedCharacters, task.resultCharacterSlug]);
       }
     } else {
       const ownedItems = parseOwnedItemCounts(user.ownedItems);
@@ -168,6 +172,29 @@ export async function claimRecruitment({ prisma, userId, now = new Date() }) {
     return {
       user: publicUser(updatedUser),
       task: toRecruitmentTaskPayload(claimedTask, { now, reveal: true })
+    };
+  });
+}
+
+export async function fastForwardRecruitment({ prisma, userId, now = new Date(), env = process.env }) {
+  if (!canUseDebugTestActions(env)) throw routeError(403, "测试工具仅开发环境可用");
+
+  return prisma.$transaction(async (tx) => {
+    const task = await findActiveRecruitmentTask(tx, userId);
+    if (!task) throw routeError(404, "没有正在等待的招新回应");
+
+    const targetReadyAt = new Date(new Date(now).getTime() + RECRUITMENT_FAST_FORWARD_REMAINING_MS);
+    const currentReadyAt = new Date(task.readyAt);
+    const nextReadyAt = currentReadyAt.getTime() > targetReadyAt.getTime() ? targetReadyAt : currentReadyAt;
+    const updatedTask = nextReadyAt.getTime() === currentReadyAt.getTime()
+      ? task
+      : await tx.recruitmentTask.update({
+        where: { id: task.id },
+        data: { readyAt: nextReadyAt }
+      });
+
+    return {
+      task: toRecruitmentTaskPayload(updatedTask, { now, reveal: false })
     };
   });
 }
@@ -276,6 +303,13 @@ async function findActiveRecruitmentTask(prisma, userId) {
       claimedAt: null
     },
     orderBy: { startedAt: "desc" }
+  });
+}
+
+async function findRecruitmentUser(prisma, userId) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    include: { userCharacters: true }
   });
 }
 

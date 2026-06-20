@@ -327,14 +327,15 @@ await tx.gachaPool.update({
 
 ---
 
-### Scenario: Recruitment Task Start And Ready Badge Contract
+### Scenario: Recruitment Task Start, Candidate Ownership, And Ready Badge Contract
 
 #### 1. Scope / Trigger
-- Trigger: any change to recruitment item start rules, `RecruitmentTask` status projection, `/api/recruitment`, `/api/recruitment/start`, or the home recruitment entry ready indicator.
+- Trigger: any change to recruitment item start rules, `RecruitmentTask` status projection, `/api/recruitment`, `/api/recruitment/start`, `/api/recruitment/fast-forward`, or the home recruitment entry ready indicator.
 - Recruitment is a cross-layer contract because one API call consumes inventory, creates a persisted task, exposes a computed pending/ready status, and drives a home-shell notification after the modal may be closed.
 
 #### 2. Signatures
 - `POST /api/recruitment/start` accepts `{ itemType }`.
+- `POST /api/recruitment/fast-forward` accepts no body and returns `{ task }`; it is a development test tool only.
 - `GET /api/recruitment` returns `{ items, task, config }`.
 - `task.status` is projected as `"pending"` before `readyAt`, `"ready"` after `readyAt`, and `"claimed"` only after claim.
 - `RecruitmentTask { userId, itemType, status, resultType, resultCharacterSlug?, responseText, startedAt, readyAt, claimedAt? }`.
@@ -342,31 +343,41 @@ await tx.gachaPool.update({
 
 #### 3. Contracts
 - Start must reject immediately when the selected recruitment item has no unowned candidates for that user.
+- Remaining candidates must be computed from `publicUserAssets(user).ownedCharacters`, with `userCharacters` included in the user query, so structured `UserCharacter` rows and legacy `ownedCharacters` strings cannot diverge for recruitment eligibility.
 - That rejection must happen before consuming the item or creating `RecruitmentTask`.
 - The rejection message is player-facing: `好像已经没有可以用该道具招募的角色了`.
 - Only one active recruitment task is allowed per user.
 - A pending task's result is decided at start time, but result details remain hidden until claim.
 - The home recruitment entry red dot appears only when `task.status === "ready"`.
 - The app shell must schedule a client-side refresh from `task.readyAt`, in addition to periodic polling, so closing the modal during the countdown still produces the ready red dot shortly after the countdown ends.
+- Fast-forward is a removable test tool: backend access must use `canUseDebugTestActions(env)`, and the frontend clock icon must be hidden unless `import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === "true"`.
+- Fast-forward must only shorten a pending task to five seconds remaining; it must not extend tasks that already have less time remaining.
 
 #### 4. Validation & Error Matrix
 - Unknown `itemType` -> `400`.
 - Active pending recruitment exists -> `400`.
-- Selected item has zero remaining candidates -> `400` with the exact player-facing no-candidate message.
+- Selected item has zero remaining candidates, including candidates present only in `UserCharacter` rows -> `400` with the exact player-facing no-candidate message.
 - User has no selected item quantity -> `400`.
+- Fast-forward outside enabled development test tools -> `403`.
 - Pending task reaches `readyAt` while modal is closed -> app refreshes `/api/recruitment` and sets the home red dot.
 - Pending task is still before `readyAt` -> no red dot.
 
 #### 5. Good/Base/Bad Cases
-- Good: a player owns Lynae, Mornye, and Chisa, then using `campus-recruitment-poster` shows the no-candidate message and keeps the item count unchanged.
+- Good: a player owns QiuYuan and ChangLi through structured `UserCharacter` rows, then using `radio-recruitment-ticket` shows the no-candidate message and keeps the item count unchanged.
 - Good: a player starts recruitment, closes the modal, waits until `readyAt`, and sees the home recruitment button red dot without waiting for the next long polling interval.
+- Good: in development with test tools enabled, a tester clicks the countdown clock icon and the task moves to five seconds remaining.
 - Base: periodic `/api/recruitment` polling still repairs stale client state after tab sleep or missed timers.
+- Bad: checking only the legacy `ownedCharacters` string for recruitment candidates while public user payloads merge structured rows.
 - Bad: consuming the item first and refunding it only after discovering all candidates are owned.
-- Bad: relying only on a 30-second polling interval for the ready red dot.
+- Bad: exposing fast-forward in production or relying only on a 30-second polling interval for the ready red dot.
 
 #### 6. Tests Required
 - Backend recruitment tests assert the no-candidate start path rejects with the exact message and does not update the user or create a task.
+- Backend recruitment tests assert structured `UserCharacter` rows block recruitment for already-owned candidates.
+- Backend recruitment tests assert fast-forward requires enabled development test tools and moves pending tasks to five seconds remaining.
+- Route tests assert `/api/recruitment/fast-forward` forwards the authenticated user id.
 - App shell tests assert pending recruitment task state is stored and `readyAt` schedules a refresh that can set `recruitmentReady`.
+- Modal/source tests assert the countdown clock action is behind the explicit dev test-tool flag.
 - Home screen tests assert the recruitment entry renders a red dot only when `recruitmentReady` is true.
 
 #### 7. Wrong vs Correct
@@ -374,21 +385,30 @@ await tx.gachaPool.update({
 Wrong:
 
 ```js
-const ownedItems = parseOwnedItemCounts(user.ownedItems);
-ownedItems[item.itemType] -= 1;
+const ownedCharacters = parseCharacterAssetList(user.ownedCharacters);
 const candidateIds = item.candidates.filter((id) => !ownedCharacters.includes(id));
-if (!candidateIds.length) throw routeError(400, "No candidates");
 ```
 
 Correct:
 
 ```js
+const user = await tx.user.findUnique({ where: { id: userId }, include: { userCharacters: true } });
+const ownedCharacters = publicUserAssets(user).ownedCharacters;
 const candidateIds = item.candidates.filter((id) => !ownedCharacters.includes(id));
-if (!candidateIds.length) {
-  throw routeError(400, "好像已经没有可以用该道具招募的角色了");
-}
+```
 
-const ownedItems = parseOwnedItemCounts(user.ownedItems);
+Wrong:
+
+```jsx
+<button className="recruitment-fast-forward-button" onClick={fastForward} />
+```
+
+Correct:
+
+```jsx
+{canFastForward && (
+  <button className="recruitment-fast-forward-button" onClick={fastForward} />
+)}
 ```
 
 Wrong:

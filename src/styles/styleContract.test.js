@@ -492,6 +492,8 @@ describe("root CSS entry contract", () => {
 
   it("keeps commerce recruitment.css as an import-only commerce sub-entry", () => {
     const recruitmentEntry = readFileSync(new URL("./commerce/recruitment.css", import.meta.url), "utf8");
+    const recruitmentBoard = readFileSync(new URL("./commerce/recruitment/board.css", import.meta.url), "utf8");
+    const phoneRecruitment = readFileSync(new URL("./mobile-adaptive/phone-recruitment.css", import.meta.url), "utf8");
 
     expect(cssImports(recruitmentEntry)).toEqual([
       "./recruitment/modal-shell.css",
@@ -499,6 +501,9 @@ describe("root CSS entry contract", () => {
       "./recruitment/actions.css"
     ]);
     expect(recruitmentEntry).not.toContain(".recruitment-modal {");
+    expect(recruitmentBoard).toContain(".recruitment-countdown-row");
+    expect(recruitmentBoard).toContain(".recruitment-fast-forward-button");
+    expect(phoneRecruitment).toContain(".recruitment-fast-forward-button");
   });
 
   it("keeps commerce social-profile.css as an import-only commerce sub-entry", () => {

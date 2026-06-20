@@ -57,11 +57,56 @@
 }
 
 .recruitment-status-card b {
-  display: block;
-  margin-top: 8px;
   color: #d65372;
   font-size: clamp(2rem, 5vw, 3.4rem);
   line-height: 1;
+}
+
+.recruitment-countdown-row {
+  width: fit-content;
+  max-width: 100%;
+  display: inline-grid;
+  grid-template-columns: minmax(0, auto);
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.recruitment-countdown-row.has-fast-forward {
+  grid-template-columns: minmax(0, auto) 44px;
+}
+
+.recruitment-fast-forward-button {
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(214, 83, 114, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #d65372;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.recruitment-fast-forward-button:hover:not(:disabled),
+.recruitment-fast-forward-button:focus-visible:not(:disabled) {
+  border-color: rgba(214, 83, 114, 0.58);
+  background: #fff1f5;
+  color: #a93052;
+}
+
+.recruitment-fast-forward-button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.recruitment-fast-forward-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .recruitment-result-success > img {

@@ -51,6 +51,27 @@
     height: 68px !important;
   }
 
+  .recruitment-countdown-row {
+    max-width: 100% !important;
+    grid-template-columns: minmax(0, auto) !important;
+    gap: 8px !important;
+  }
+
+  .recruitment-countdown-row.has-fast-forward {
+    grid-template-columns: minmax(0, auto) 44px !important;
+  }
+
+  .recruitment-countdown-row b {
+    font-size: clamp(1.65rem, 10vw, 2.5rem) !important;
+  }
+
+  .recruitment-fast-forward-button {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
   .recruitment-result-success > img {
     width: 78px !important;
     height: 104px !important;

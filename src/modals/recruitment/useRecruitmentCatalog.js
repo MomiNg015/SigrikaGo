@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "../../api/client.js";
 
 export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onStatusChange }) {
+  const canFastForward = import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === "true";
   const [items, setItems] = useState([]);
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -93,6 +94,21 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
     }
   }
 
+  async function fastForward() {
+    setBusy(true);
+    try {
+      const data = await api("/api/recruitment/fast-forward", { method: "POST", token });
+      setTask(data.task ?? null);
+      onStatusChange?.(data.task ?? null);
+      onNotice?.("已将招新倒计时缩短到 5 秒", "success");
+      await refresh();
+    } catch (error) {
+      onNotice?.(error.message, "danger");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function clearResult() {
     setResult(null);
     setTask(null);
@@ -101,7 +117,9 @@ export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onS
 
   return {
     busy,
+    canFastForward,
     clearResult,
+    fastForward,
     claim,
     items,
     loading,

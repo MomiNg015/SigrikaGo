@@ -1,9 +1,10 @@
 import express from "express";
-import { claimRecruitment, getRecruitmentStatus, startRecruitment } from "./recruitment.js";
+import { claimRecruitment, fastForwardRecruitment, getRecruitmentStatus, startRecruitment } from "./recruitment.js";
 
 export function createRecruitmentRouteHandlers({
   prisma,
   claimRecruitmentFn = claimRecruitment,
+  fastForwardRecruitmentFn = fastForwardRecruitment,
   getRecruitmentStatusFn = getRecruitmentStatus,
   startRecruitmentFn = startRecruitment
 }) {
@@ -36,7 +37,15 @@ export function createRecruitmentRouteHandlers({
     }
   }
 
-  return { status, start, claim };
+  async function fastForward(req, res) {
+    try {
+      res.json(await fastForwardRecruitmentFn({ prisma, userId: req.user.id, now: new Date() }));
+    } catch (error) {
+      res.status(error.status ?? 500).json({ error: error.message ?? "快速计时失败" });
+    }
+  }
+
+  return { status, start, claim, fastForward };
 }
 
 export function createRecruitmentRouter(deps) {
@@ -44,6 +53,7 @@ export function createRecruitmentRouter(deps) {
   const handlers = createRecruitmentRouteHandlers(deps);
   router.get("/recruitment", handlers.status);
   router.post("/recruitment/start", handlers.start);
+  router.post("/recruitment/fast-forward", handlers.fastForward);
   router.post("/recruitment/claim", handlers.claim);
   return router;
 }
