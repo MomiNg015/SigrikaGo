@@ -36,7 +36,8 @@ export default function AppRoutes({
   setReplayStep,
   setRoom,
   setShowFriends,
-  setShowGacha,
+  recruitmentReady,
+  setShowRecruitment,
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
@@ -77,9 +78,10 @@ export default function AppRoutes({
         playUiShopOpenSound(audioSettings);
         setShowShop(true);
       }}
-      onOpenGacha={() => {
+      recruitmentReady={recruitmentReady}
+      onOpenRecruitment={() => {
         playUiShopOpenSound(audioSettings);
-        setShowGacha(true);
+        setShowRecruitment(true);
       }}
       onOpenFriends={() => setShowFriends(true)}
       onOpenSettings={() => setShowSettings(true)}

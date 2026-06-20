@@ -7,7 +7,7 @@ export function useOverlayActions({
   setDismissedResultRoom,
   setRoom,
   setShowFriends,
-  setShowGacha,
+  setShowRecruitment,
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
@@ -25,12 +25,12 @@ export function useOverlayActions({
     setShowLeaderboard(false);
     setShowWatch(false);
     setShowFriends(false);
-    setShowGacha(false);
+    setShowRecruitment(false);
     setShowSettings(false);
     setShowMessageBoard(false);
   }, [
     setShowFriends,
-    setShowGacha,
+    setShowRecruitment,
     setShowHouse,
     setShowLeaderboard,
     setShowMessageBoard,

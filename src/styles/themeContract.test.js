@@ -61,6 +61,7 @@ describe("player theme CSS contract", () => {
 
     expect(cssImports(commerceEntry)).toEqual([
       "./commerce/gacha.css",
+      "./commerce/recruitment.css",
       "./commerce/shop.css",
       "./commerce/warehouse-profile.css"
     ]);

@@ -321,10 +321,14 @@ describe("shop", () => {
     expect(updates).toEqual([]);
   });
 
-  it("seeds Baconbits as a 9999 coin shop character", async () => {
+  it("disables Baconbits sale and seeds recruitment items", async () => {
     const calls = [];
     await seedBuiltinShopItems({
       shopItem: {
+        updateMany: async (query) => {
+          calls.push(["updateMany", query]);
+          return { count: 1 };
+        },
         findFirst: async (query) => {
           calls.push(["findFirst", query]);
           return null;
@@ -339,11 +343,26 @@ describe("shop", () => {
     expect(calls).toContainEqual([
       "create",
       expect.objectContaining({
-        name: "猪小仙",
-        category: "character",
-        targetId: "baconbits",
-        priceCoins: 9999,
-        imageUrl: "/assets/baconbits.webp"
+        category: "item",
+        targetId: "campus-recruitment-poster",
+        itemTargetType: "self",
+        imageUrl: "/assets/items/recruitment-poster.svg"
+      })
+    ]);
+    expect(calls).toContainEqual([
+      "updateMany",
+      expect.objectContaining({
+        where: expect.objectContaining({ targetId: "baconbits" }),
+        data: expect.objectContaining({ purchasable: false, enabled: false })
+      })
+    ]);
+    expect(calls).toContainEqual([
+      "create",
+      expect.objectContaining({
+        category: "item",
+        targetId: "radio-recruitment-ticket",
+        itemTargetType: "self",
+        imageUrl: "/assets/items/radio-recruitment-ticket.svg"
       })
     ]);
   });

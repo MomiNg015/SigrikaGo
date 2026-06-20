@@ -19,9 +19,23 @@ export default function HouseCharacterGrid({
     <div className="character-list character-grid-container">
       {characters.map((character) => {
         const characterId = canonicalCharacterId(character.id);
+        const hideIntel = characterId === "baconbits" && !owned.has(characterId);
         const disabledReason = characterSortieDisabledReason(characterId, itemEffects);
         const itemEffectBadges = activeCharacterItemEffects(characterId, itemEffects);
-        const sortieDisabled = !owned.has(characterId) || Boolean(disabledReason);
+        const sortieDisabled = hideIntel || !owned.has(characterId) || Boolean(disabledReason);
+        if (hideIntel) {
+          return (
+            <div
+              className="character-card portrait-card unowned hidden-intel-card"
+              key={character.id}
+              aria-label="暂无情报"
+            >
+              <span className="locked-portrait lock-text-title">?</span>
+              <strong>暂无情报</strong>
+              <small>暂不可获取</small>
+            </div>
+          );
+        }
         return (
           <div
             className={`character-card portrait-card ${selectedCharacter === characterId ? "selected is-deployed" : ""} ${owned.has(characterId) ? "" : "unowned"}`}

@@ -5,8 +5,9 @@ import PlayerPlaque from "./PlayerPlaque.jsx";
 export default function HomeStage({
   selectedCharacter,
   user,
+  recruitmentReady,
   onOpenFriends,
-  onOpenGacha,
+  onOpenRecruitment,
   onOpenHouse,
   onOpenResume,
   onOpenLeaderboard,
@@ -22,7 +23,8 @@ export default function HomeStage({
       <MatchEntry onStartMatch={onStartMatch} />
       <HomeUtilityDock
         onOpenFriends={onOpenFriends}
-        onOpenGacha={onOpenGacha}
+        recruitmentReady={recruitmentReady}
+        onOpenRecruitment={onOpenRecruitment}
         onOpenLeaderboard={onOpenLeaderboard}
         onOpenShop={onOpenShop}
         onOpenWarehouse={onOpenWarehouse}

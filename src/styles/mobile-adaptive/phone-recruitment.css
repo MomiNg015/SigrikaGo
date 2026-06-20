@@ -1,0 +1,86 @@
+/* Final phone/tablet recruitment modal safety rules. */
+@media (max-width: 768px) {
+  .recruitment-modal {
+    width: min(100%, calc(100vw - 16px)) !important;
+    max-width: calc(100vw - 16px) !important;
+    min-height: min(520px, calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important;
+    max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    grid-template-rows: auto minmax(220px, 1fr) auto !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+
+  .recruitment-phase-pending,
+  .recruitment-phase-ready {
+    grid-template-rows: auto minmax(260px, 1fr) !important;
+  }
+
+  .recruitment-header {
+    align-items: start !important;
+    gap: 8px !important;
+    padding-right: 38px !important;
+  }
+
+  .recruitment-header p {
+    max-width: 44vw !important;
+    font-size: 0.8rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .recruitment-board {
+    min-height: 0 !important;
+  }
+
+  .recruitment-empty-board,
+  .recruitment-selection-card,
+  .recruitment-status-card,
+  .recruitment-result-card {
+    width: calc(100% - 16px) !important;
+    min-height: 168px !important;
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    gap: 12px !important;
+    padding: 12px !important;
+  }
+
+  .recruitment-empty-board {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .recruitment-item-icon.large {
+    width: 68px !important;
+    height: 68px !important;
+  }
+
+  .recruitment-result-success > img {
+    width: 78px !important;
+    height: 104px !important;
+  }
+
+  .recruitment-actions {
+    grid-template-columns: minmax(0, 1fr) minmax(74px, 86px) !important;
+    gap: 6px !important;
+  }
+
+  .recruitment-item-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .recruitment-item-button {
+    min-height: 52px !important;
+    grid-template-columns: 28px minmax(0, 1fr) auto !important;
+    gap: 5px !important;
+    padding: 6px !important;
+  }
+
+  .recruitment-item-button .recruitment-item-icon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .recruitment-item-button span,
+  .recruitment-item-button b,
+  .recruitment-use-button {
+    font-size: 0.78rem !important;
+  }
+}

@@ -1,0 +1,72 @@
+.recruitment-board {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(128, 102, 142, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 239, 0.92), rgba(242, 249, 246, 0.92)),
+    repeating-linear-gradient(90deg, rgba(91, 65, 48, 0.08) 0 1px, transparent 1px 22px);
+}
+
+.recruitment-empty-board,
+.recruitment-selection-card,
+.recruitment-status-card,
+.recruitment-result-card {
+  width: min(620px, calc(100% - 28px));
+  min-height: 180px;
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  padding: clamp(16px, 3vw, 24px);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 30px rgba(62, 43, 34, 0.12);
+}
+
+.recruitment-empty-board {
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  text-align: center;
+  color: rgba(87, 67, 57, 0.7);
+}
+
+.recruitment-item-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  object-fit: contain;
+}
+
+.recruitment-item-icon.large {
+  width: 96px;
+  height: 96px;
+}
+
+.recruitment-selection-card strong,
+.recruitment-status-card strong,
+.recruitment-result-card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #3d2b25;
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+}
+
+.recruitment-status-card b {
+  display: block;
+  margin-top: 8px;
+  color: #d65372;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1;
+}
+
+.recruitment-result-success > img {
+  width: 120px;
+  height: 150px;
+  object-fit: contain;
+  align-self: end;
+}

@@ -310,6 +310,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/desktop-home-footer.css",
       "./mobile-adaptive/phone-core.css",
       "./mobile-adaptive/phone-gacha.css",
+      "./mobile-adaptive/phone-recruitment.css",
       "./mobile-adaptive/phone-shop.css",
       "./mobile-adaptive/phone-social-warehouse.css",
       "./mobile-adaptive/phone-interactions.css",
@@ -442,6 +443,7 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(commerceEntry)).toEqual([
       "./commerce/gacha.css",
+      "./commerce/recruitment.css",
       "./commerce/social-profile.css",
       "./commerce/shop-settings.css",
       "./commerce/terminal-polish.css",
@@ -486,6 +488,17 @@ describe("root CSS entry contract", () => {
     expect(gachaEntry).not.toContain(".gacha-main {");
     expect(gachaEntry).not.toContain(".gacha-result-card");
     expect(gachaEntry).not.toContain("@keyframes gacha-drum-spin");
+  });
+
+  it("keeps commerce recruitment.css as an import-only commerce sub-entry", () => {
+    const recruitmentEntry = readFileSync(new URL("./commerce/recruitment.css", import.meta.url), "utf8");
+
+    expect(cssImports(recruitmentEntry)).toEqual([
+      "./recruitment/modal-shell.css",
+      "./recruitment/board.css",
+      "./recruitment/actions.css"
+    ]);
+    expect(recruitmentEntry).not.toContain(".recruitment-modal {");
   });
 
   it("keeps commerce social-profile.css as an import-only commerce sub-entry", () => {
@@ -719,6 +732,7 @@ describe("root CSS entry contract", () => {
       "./home-terminal/top-strip.css",
       "./home-terminal/layout-player.css",
       "./home-terminal/entries.css",
+      "./home-terminal/recruitment-alert.css",
       "./home-terminal/utility-footer-motion.css",
       "./home-terminal/mobile.css"
     ]);

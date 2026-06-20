@@ -9,7 +9,7 @@ import {
 export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("character");
+  const [activeCategory, setActiveCategory] = useState("item");
   const [activePage, setActivePage] = useState(1);
   const [mascotLine] = useState(() => pickShopMascotLine());
   const [purchasingId, setPurchasingId] = useState("");

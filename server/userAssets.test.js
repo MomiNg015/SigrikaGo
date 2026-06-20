@@ -219,12 +219,12 @@ describe("user asset list helpers", () => {
     });
   });
 
-  it("unlocks Lynae for players at 5 dan in spark mode", () => {
+  it("does not auto-unlock Lynae by rank after recruitment is enabled", () => {
     expect(publicUserAssets({
       rank: "4段",
       ownedCharacters: "sigrika",
       modeStats: [{ mode: "spark", rank: "5段" }]
-    }).ownedCharacters).toContain("lynae");
+    }).ownedCharacters).not.toContain("lynae");
     expect(publicUserAssets({
       rank: "4段",
       ownedCharacters: "sigrika",
@@ -232,15 +232,20 @@ describe("user asset list helpers", () => {
     }).ownedCharacters).not.toContain("lynae");
   });
 
-  it("unlocks Lynae for admins regardless of rank", () => {
+  it("keeps existing admin-open recruitable characters without auto-granting Lynae", () => {
     expect(publicUserAssets({
       role: "admin",
       rank: "18级",
       ownedCharacters: "sigrika"
-    }).ownedCharacters).toEqual(expect.arrayContaining(["lynae", "qiuyuan", "mornye", "changli"]));
+    }).ownedCharacters).toEqual(expect.arrayContaining(["qiuyuan", "mornye", "changli"]));
+    expect(publicUserAssets({
+      role: "admin",
+      rank: "18级",
+      ownedCharacters: "sigrika"
+    }).ownedCharacters).not.toContain("lynae");
   });
 
-  it("keeps QiuYuan admin-only until recruitment is implemented", () => {
+  it("keeps QiuYuan out of default player assets until recruited", () => {
     expect(publicUserAssets({
       role: "player",
       rank: "9段",
@@ -248,7 +253,7 @@ describe("user asset list helpers", () => {
     }).ownedCharacters).not.toContain("qiuyuan");
   });
 
-  it("keeps ChangLi admin-only until recruitment is implemented", () => {
+  it("keeps ChangLi out of default player assets until recruited", () => {
     expect(publicUserAssets({
       role: "player",
       rank: "9 dan",
@@ -256,7 +261,7 @@ describe("user asset list helpers", () => {
     }).ownedCharacters).not.toContain("changli");
   });
 
-  it("opens Chisa directly to admins until recruitment is implemented", () => {
+  it("opens Chisa directly to admins while regular players must recruit her", () => {
     expect(publicUserAssets({
       role: "admin",
       rank: "9 dan",

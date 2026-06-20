@@ -5,7 +5,7 @@ describe("overlay state", () => {
   it("keeps every app overlay key in one state contract", () => {
     expect(OVERLAY_STATE_KEYS).toEqual([
       "shop",
-      "gacha",
+      "recruitment",
       "house",
       "warehouse",
       "resume",
@@ -19,7 +19,7 @@ describe("overlay state", () => {
     ]);
     expect(initialOverlayState()).toEqual({
       shop: false,
-      gacha: false,
+      recruitment: false,
       house: false,
       warehouse: false,
       resume: false,

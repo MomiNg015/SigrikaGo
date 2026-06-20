@@ -1,11 +1,20 @@
 import { Archive, CircleDotDashed, Eye, ShoppingBag, Trophy, UsersRound } from "lucide-react";
 
-export default function HomeUtilityDock({ onOpenFriends, onOpenGacha, onOpenLeaderboard, onOpenShop, onOpenWarehouse, onOpenWatch }) {
+export default function HomeUtilityDock({
+  recruitmentReady = false,
+  onOpenFriends,
+  onOpenRecruitment,
+  onOpenLeaderboard,
+  onOpenShop,
+  onOpenWarehouse,
+  onOpenWatch
+}) {
   return (
     <div className="home-utility-grid tactical-nav-grid">
-      <button className="home-entry utility-entry gacha-entry recruitment-entry" onClick={onOpenGacha} title="招募暂未开放" aria-label="招募暂未开放" disabled>
+      <button className={`home-entry utility-entry recruitment-entry ${recruitmentReady ? "has-alert" : ""}`} onClick={onOpenRecruitment} title="招募">
         <CircleDotDashed size={28} />
         <strong>招募</strong>
+        {recruitmentReady && <span className="home-entry-red-dot" aria-label="有招新回应" />}
       </button>
       <button className="home-entry utility-entry shop-entry" data-ui-sound="none" onClick={onOpenShop} title="商店">
         <ShoppingBag size={28} />

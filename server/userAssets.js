@@ -7,9 +7,7 @@ const ADMIN_ONLY_CHARACTER_IDS = ["qiuyuan", "mornye", "changli", "chisa"];
 const RATING_UNLOCKS = [
   { characterId: "nabomo", rating: 1400 }
 ];
-const RANK_UNLOCKS = [
-  { characterId: "lynae", rankStep: 5 }
-];
+const RANK_UNLOCKS = [];
 
 export function parseAssetList(value, { normalize = (item) => item } = {}) {
   const rawItems = Array.isArray(value)

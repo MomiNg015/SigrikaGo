@@ -68,7 +68,7 @@ describe("ShopModal helpers", () => {
       onClose: () => {}
     }));
 
-    expect(html).toContain("shop-category-character");
+    expect(html).toContain("shop-category-item");
     expect(source).toContain("store-owned-tag");
     expect(source).toContain("shop-item-empty terminal-locked-slot");
   });

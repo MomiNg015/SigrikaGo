@@ -1,0 +1,42 @@
+.recruitment-modal {
+  width: min(920px, calc(100vw - (var(--page-pad) * 2)));
+  min-height: min(560px, calc(100dvh - (var(--page-pad) * 2)));
+  max-height: calc(100dvh - (var(--page-pad) * 2));
+  display: grid;
+  grid-template-rows: auto minmax(260px, 1fr) auto;
+  gap: 14px;
+  padding: clamp(18px, 3vw, 26px);
+  overflow: hidden;
+  text-align: left;
+}
+
+.recruitment-phase-pending,
+.recruitment-phase-ready {
+  grid-template-rows: auto minmax(300px, 1fr);
+}
+
+.recruitment-header {
+  min-width: 0;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  padding-right: 44px;
+}
+
+.recruitment-header h2 {
+  margin: 2px 0 0;
+}
+
+.recruitment-kicker {
+  color: rgba(87, 67, 57, 0.68);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.recruitment-header p {
+  max-width: 320px;
+  margin: 0;
+  color: rgba(87, 67, 57, 0.72);
+  font-size: 0.95rem;
+}

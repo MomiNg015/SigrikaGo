@@ -13,6 +13,7 @@ import {
   serializeOwnedItemCounts,
   syncStructuredUserAssets
 } from "./userAssets.js";
+import { isRecruitmentInventoryItem } from "./recruitment.js";
 
 export { parseItemEffects } from "./itemEffects.js";
 
@@ -42,6 +43,8 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
     ]);
     if (!user) throw routeError(404, "用户不存在");
     if (!item) throw routeError(404, "道具不存在");
+
+    if (isRecruitmentInventoryItem(item.targetId)) throw routeError(400, "请在招募窗口使用这个道具");
 
     const ownedItems = parseOwnedItems(user.ownedItems);
     if ((ownedItems[item.targetId] ?? 0) <= 0) throw routeError(400, "未拥有该道具");
@@ -81,7 +84,8 @@ export function toItemPayload(item, quantity = 0) {
     ...payload,
     itemId: payload.targetId,
     quantity,
-    targetType: normalizeItemTargetType(payload.itemTargetType)
+    targetType: normalizeItemTargetType(payload.itemTargetType),
+    usable: !isRecruitmentInventoryItem(payload.targetId)
   };
 }
 

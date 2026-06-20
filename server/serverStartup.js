@@ -5,6 +5,7 @@ import { ensureGachaSchema, ensureGameModeSchema } from "./db.js";
 import { ensureLoginSessionSchema } from "./loginSessions.js";
 import { cleanupLegacyDeniaCharacterData } from "./legacyDeniaCleanup.js";
 import { ensureMusicTrackSettingsSchema } from "./musicTracks.js";
+import { ensureRecruitmentSchema } from "./recruitment.js";
 import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
 import { seedBuiltinShopItems } from "./shop.js";
 import { ensureDefaultSiteSettings } from "./siteSettings.js";
@@ -21,6 +22,7 @@ export async function initializeServerData({
   ensureLoginSessionSchema: ensureLoginSessionSchemaTask = ensureLoginSessionSchema,
   ensureGameModeSchema: ensureGameModeSchemaTask = ensureGameModeSchema,
   ensureGachaSchema: ensureGachaSchemaTask = ensureGachaSchema,
+  ensureRecruitmentSchema: ensureRecruitmentSchemaTask = ensureRecruitmentSchema,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
   seedBuiltinAchievements: seedBuiltinAchievementsTask = seedBuiltinAchievements,
@@ -40,6 +42,7 @@ export async function initializeServerData({
   await ensureLoginSessionSchemaTask(prisma);
   await ensureGameModeSchemaTask(prisma);
   await ensureGachaSchemaTask(prisma);
+  await ensureRecruitmentSchemaTask(prisma);
   await ensureMusicTrackSettingsSchemaTask(prisma);
   await promoteConfiguredAdminsTask(prisma);
 }
