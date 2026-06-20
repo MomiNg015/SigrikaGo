@@ -350,7 +350,7 @@ await tx.gachaPool.update({
 - A pending task's result is decided at start time, but result details remain hidden until claim.
 - The home recruitment entry red dot appears only when `task.status === "ready"`.
 - The app shell must schedule a client-side refresh from `task.readyAt`, in addition to periodic polling, so closing the modal during the countdown still produces the ready red dot shortly after the countdown ends.
-- Fast-forward is a removable test tool: backend access must use `canUseDebugTestActions(env)`, and the frontend clock icon must be hidden unless `import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === "true"`.
+- Fast-forward is a removable test tool: backend access must reject `NODE_ENV === "production"`, while the frontend clock icon may render in dev serving, `--mode development` builds, or explicit `VITE_ENABLE_TEST_TOOLS === "true"` builds.
 - Fast-forward must only shorten a pending task to five seconds remaining; it must not extend tasks that already have less time remaining.
 
 #### 4. Validation & Error Matrix
@@ -358,7 +358,7 @@ await tx.gachaPool.update({
 - Active pending recruitment exists -> `400`.
 - Selected item has zero remaining candidates, including candidates present only in `UserCharacter` rows -> `400` with the exact player-facing no-candidate message.
 - User has no selected item quantity -> `400`.
-- Fast-forward outside enabled development test tools -> `403`.
+- Fast-forward in production -> `403`.
 - Pending task reaches `readyAt` while modal is closed -> app refreshes `/api/recruitment` and sets the home red dot.
 - Pending task is still before `readyAt` -> no red dot.
 
@@ -374,10 +374,10 @@ await tx.gachaPool.update({
 #### 6. Tests Required
 - Backend recruitment tests assert the no-candidate start path rejects with the exact message and does not update the user or create a task.
 - Backend recruitment tests assert structured `UserCharacter` rows block recruitment for already-owned candidates.
-- Backend recruitment tests assert fast-forward requires enabled development test tools and moves pending tasks to five seconds remaining.
+- Backend recruitment tests assert fast-forward is rejected in production and moves non-production pending tasks to five seconds remaining.
 - Route tests assert `/api/recruitment/fast-forward` forwards the authenticated user id.
 - App shell tests assert pending recruitment task state is stored and `readyAt` schedules a refresh that can set `recruitmentReady`.
-- Modal/source tests assert the countdown clock action is behind the explicit dev test-tool flag.
+- Modal/source tests assert the countdown clock action is visible for dev serving, `--mode development`, or the explicit test-tool flag.
 - Home screen tests assert the recruitment entry renders a red dot only when `recruitmentReady` is true.
 
 #### 7. Wrong vs Correct

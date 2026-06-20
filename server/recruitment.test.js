@@ -148,7 +148,7 @@ describe("recruitment", () => {
     expect(response.task.remainingMs).toBe(5000);
   });
 
-  it("rejects fast-forward outside enabled development test tools", async () => {
+  it("rejects fast-forward in production", async () => {
     await expect(fastForwardRecruitment({
       prisma: {},
       userId: "user-1",

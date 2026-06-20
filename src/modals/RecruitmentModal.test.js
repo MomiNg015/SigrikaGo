@@ -12,6 +12,8 @@ describe("RecruitmentModal", () => {
     expect(modalSource).toContain("aria-label=\"快速计时到 5 秒\"");
     expect(modalSource).toContain("onFastForward={fastForward}");
     expect(hookSource).toContain("/api/recruitment/fast-forward");
-    expect(hookSource).toContain("import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === \"true\"");
+    expect(hookSource).toContain("import.meta.env.DEV");
+    expect(hookSource).toContain("import.meta.env.MODE === \"development\"");
+    expect(hookSource).toContain("import.meta.env.VITE_ENABLE_TEST_TOOLS === \"true\"");
   });
 });

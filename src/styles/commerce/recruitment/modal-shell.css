@@ -1,4 +1,5 @@
 .recruitment-modal {
+  position: relative;
   width: min(920px, calc(100vw - (var(--page-pad) * 2)));
   min-height: min(560px, calc(100dvh - (var(--page-pad) * 2)));
   max-height: calc(100dvh - (var(--page-pad) * 2));

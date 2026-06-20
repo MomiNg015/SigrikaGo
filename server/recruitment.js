@@ -13,7 +13,6 @@ import {
   serializeOwnedItemCounts,
   syncStructuredUserAssets
 } from "./userAssets.js";
-import { canUseDebugTestActions } from "./security.js";
 
 const RECRUITMENT_CONFIG_KEY = "recruitmentConfig";
 const ACTIVE_TASK_STATUSES = new Set(["pending"]);
@@ -177,7 +176,7 @@ export async function claimRecruitment({ prisma, userId, now = new Date() }) {
 }
 
 export async function fastForwardRecruitment({ prisma, userId, now = new Date(), env = process.env }) {
-  if (!canUseDebugTestActions(env)) throw routeError(403, "测试工具仅开发环境可用");
+  if (env.NODE_ENV === "production") throw routeError(403, "测试工具仅开发环境可用");
 
   return prisma.$transaction(async (tx) => {
     const task = await findActiveRecruitmentTask(tx, userId);

@@ -2,7 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "../../api/client.js";
 
 export function useRecruitmentCatalog({ token, user, onNotice, onUserChange, onStatusChange }) {
-  const canFastForward = import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === "true";
+  const canFastForward =
+    import.meta.env.DEV ||
+    import.meta.env.MODE === "development" ||
+    import.meta.env.VITE_ENABLE_TEST_TOOLS === "true";
   const [items, setItems] = useState([]);
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
