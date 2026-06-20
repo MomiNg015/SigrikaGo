@@ -349,6 +349,7 @@ describe("player theme CSS contract", () => {
       "./modals/surface-cleanup.css",
       "./modals/settings-lobby-cleanup.css",
       "./modals/selected-actions.css",
+      "./modals/leaderboard.css",
       "./modals/resume-personalization.css",
       "./modals/result-room-popovers.css",
       "./modals/stage-decoration-fixes.css"

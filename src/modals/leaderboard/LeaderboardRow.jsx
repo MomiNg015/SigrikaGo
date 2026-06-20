@@ -8,12 +8,15 @@ export function leaderboardRankClass(rank) {
 
 export default function LeaderboardRow({ player, rank, characters, highlight = false, pinned = false }) {
   const character = findCharacter(characters, player.commonCharacter);
+  const characterId = character?.id ?? player.commonCharacter ?? "";
   const winRate = player.totalGames > 0 ? `${((player.wins / player.totalGames) * 100).toFixed(1)}%` : "0.0%";
   const draws = player.draws ?? Math.max(0, (player.totalGames ?? 0) - (player.wins ?? 0) - (player.losses ?? 0));
   return (
     <article className={`leaderboard-row ${leaderboardRankClass(rank)} ${highlight ? "current-user" : ""} ${pinned ? "pinned" : ""}`} data-rank={rank}>
       <strong className="leaderboard-rank">#{rank}</strong>
-      <img src={resolveCandyPortrait(character, player.itemEffects)} alt={`${player.username}头像`} />
+      <div className="leaderboard-avatar" data-character-id={characterId}>
+        <img src={resolveCandyPortrait(character, player.itemEffects)} alt={`${player.username}头像`} />
+      </div>
       <div className="leaderboard-player">
         <strong>
           <UserIdentity user={player} compact />

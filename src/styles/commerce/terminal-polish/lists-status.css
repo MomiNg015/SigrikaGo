@@ -47,24 +47,33 @@
 .leaderboard-row.rank-1 {
   border-color: rgba(255, 210, 87, 0.68);
   background:
-    linear-gradient(100deg, rgba(255, 247, 196, 0.34) 0%, rgba(255, 210, 87, 0.24) 46%, rgba(255, 159, 28, 0.18) 100%),
+    linear-gradient(100deg, rgba(70, 46, 12, 0.2), rgba(255, 244, 190, 0.2) 42%, rgba(139, 86, 20, 0.18)),
+    url("/assets/leaderboard/top-rank-gold.webp"),
     rgba(45, 34, 16, 0.72);
+  background-size: 100% 100%, cover, auto;
+  background-position: center;
   box-shadow: 0 0 20px rgba(255, 210, 87, 0.2), inset 0 0 18px rgba(255, 210, 87, 0.1);
 }
 
 .leaderboard-row.rank-2 {
   border-color: rgba(211, 224, 234, 0.64);
   background:
-    linear-gradient(100deg, rgba(255, 255, 255, 0.28) 0%, rgba(195, 211, 224, 0.24) 48%, rgba(129, 157, 178, 0.18) 100%),
+    linear-gradient(100deg, rgba(36, 49, 60, 0.18), rgba(255, 255, 255, 0.18) 45%, rgba(85, 105, 120, 0.18)),
+    url("/assets/leaderboard/top-rank-silver.webp"),
     rgba(24, 36, 44, 0.72);
+  background-size: 100% 100%, cover, auto;
+  background-position: center;
   box-shadow: 0 0 18px rgba(211, 224, 234, 0.16), inset 0 0 18px rgba(211, 224, 234, 0.08);
 }
 
 .leaderboard-row.rank-3 {
   border-color: rgba(218, 155, 94, 0.62);
   background:
-    linear-gradient(100deg, rgba(255, 221, 178, 0.26) 0%, rgba(218, 155, 94, 0.22) 48%, rgba(166, 98, 56, 0.16) 100%),
+    linear-gradient(100deg, rgba(82, 49, 28, 0.18), rgba(255, 229, 200, 0.18) 45%, rgba(126, 73, 40, 0.18)),
+    url("/assets/leaderboard/top-rank-bronze.webp"),
     rgba(42, 30, 22, 0.72);
+  background-size: 100% 100%, cover, auto;
+  background-position: center;
   box-shadow: 0 0 18px rgba(218, 155, 94, 0.16), inset 0 0 18px rgba(218, 155, 94, 0.08);
 }
 
