@@ -144,6 +144,7 @@ describe("HomeScreen", () => {
     const utilityTextBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityHoverBeforeBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry:hover::before,[\s\S]+?\.utility-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
     const brightHomeCss = readCssFixture("../styles/themes/bright-school/home.css");
+    const brightUtilityCss = readCssFixture("../styles/themes/bright-school/contrast-purge/home-utility-tabs.css");
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card strong\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongClipBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card > strong\s*\{[^}]+\}/)?.[0] ?? "";
@@ -229,6 +230,13 @@ describe("HomeScreen", () => {
     expect(css).toContain(".home-grid-featured > .home-utility-grid .utility-entry strong {\n  display: block");
     expect(utilityTextBlock).toContain("transform: skewX(15deg)");
     expect(utilityHoverBeforeBlock).toContain("animation: home-nav-flow");
+    expect(brightUtilityCss).toContain(".utility-entry:hover:not(:disabled)");
+    expect(brightUtilityCss).toContain("transform: translateY(-3px) scale(1.018) !important;");
+    expect(brightUtilityCss).toContain(".utility-entry:active:not(:disabled)");
+    expect(brightUtilityCss).toContain("transform: translateY(2px) scale(0.985) !important;");
+    expect(brightUtilityCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(brightUtilityCss).toContain("transition-duration: 1ms !important;");
+    expect(brightUtilityCss).not.toContain(".utility-entry:nth-child(3n),\n.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:hover");
   });
 
   it("renders equipped achievement nameplates on the player identity tag", () => {

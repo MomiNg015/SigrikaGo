@@ -30,6 +30,7 @@
 - 启动预加载区分关键资源与延迟资源，并为单个资源加载设置超时兜底，避免服务器重启或缓存恢复时把玩家卡在资源准备页；房间运行期使用轻量 `room:clock`、`room:patch` 与完整 `room:update` 分流，降低高频交互卡顿。移动端弱网下，启动预加载不订阅瞬时 Socket.IO 实例变化，对局 socket 连接使用明确重连和 6 秒握手超时，避免连接抖动把玩家反复留在资源准备页。
 
 - Bright School desktop home keeps explicit wide desktop, compact desktop, micro desktop, and mobile layout contracts. In the `1181px-1500px` desktop band, the mode stats panel must stay compact and must not cover or visually consume long usernames; the username column owns the remaining width, scales earlier, and clips inside its own tag only as a last resort. Wide desktop keeps the stage top spacing compact, while micro desktop keeps a controlled `960px` horizontal stage with core entries in normal grid flow and low-height desktop windows may scroll vertically.
+- Bright School home utility buttons use paper-card microinteractions in the final contrast-purge layer: hover/focus lifts the left utility dock buttons with a pink state, active press compresses the hard shadow and moves down slightly, disabled entries keep native gray inactive styling, recruitment-ready keeps its pink alert background, and `prefers-reduced-motion` removes the transform while preserving clear state colors.
 
 ## 维护约定
 
