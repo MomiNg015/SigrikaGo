@@ -587,7 +587,7 @@ Correct:
 #### 3. Contracts
 - `.recruitment-board` must define `--recruitment-board-background-image: url("/assets/recruitment/notice-board-background.webp")`.
 - The board must compose the image through `background-image`, not through extra JSX or an `<img>` element that can interfere with board state content.
-- Use `background-size: 100% 100%` so the scrapbook edge details remain visible in the rectangular second-row panel on desktop and mobile.
+- Use `background-size: cover` and `background-position: center center` so the image scales proportionally, never stretches, and crops from the vertically centered portion of the artwork.
 - Bright School recruitment overrides may change border, shadow, and overlay tint, but must keep `var(--recruitment-board-background-image)` in `.recruitment-board`.
 - State cards inside the board own text readability; do not bake text or state UI into the background asset.
 
@@ -595,7 +595,7 @@ Correct:
 - Idle with no selected item -> empty board copy appears over the bulletin background.
 - Selected, pending, ready, and result states -> the same board background remains behind the state card.
 - Bright School active -> `.recruitment-board` still includes `var(--recruitment-board-background-image)` and does not collapse to a flat `background: #...`.
-- Mobile viewport -> the board keeps stable dimensions from `phone-recruitment.css`; the background may stretch with the panel but must not introduce horizontal overflow.
+- Mobile viewport -> the board keeps stable dimensions from `phone-recruitment.css`; the background may crop but must scale proportionally and must not introduce horizontal overflow.
 
 #### 5. Good / Base / Bad Cases
 - Good: base CSS defines the image variable and Bright School uses `background-image: ..., var(--recruitment-board-background-image) !important`.

@@ -70,7 +70,8 @@ describe("player theme CSS contract", () => {
     expect(commerceEntry).not.toContain(".shop-layout {");
     expect(commerceEntry).not.toContain(".warehouse-grid {");
     expect(recruitmentPolish).toContain("var(--recruitment-board-background-image)");
-    expect(recruitmentPolish).toContain("background-size: 100% 100% !important;");
+    expect(recruitmentPolish).toContain("background-position: center center !important;");
+    expect(recruitmentPolish).toContain("background-size: cover !important;");
   });
 
   it("keeps Bright School commerce shop as an import-only modal polish entry", () => {
