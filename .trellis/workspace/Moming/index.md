@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 20
-- **Last Active**: 2026-06-19
+- **Total Sessions**: 21
+- **Last Active**: 2026-06-20
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~669 | Active |
+| `journal-1.md` | ~702 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 21 | 2026-06-20 | Dynamic rating and friendly match rewards | `b3254761` | `codex/bright-school-font-refresh` |
 | 20 | 2026-06-19 | Mobile profile layout fixes | `36d4ea1b`, `6fdef71c` | `master` |
 | 19 | 2026-06-19 | Remove report dialog cancel button | `2b7d5232` | `master` |
 | 18 | 2026-06-19 | Profile likes and reports | `84303f59` | `master` |
