@@ -60,8 +60,3 @@
   transform: translate(-50%, -50%) !important;
   pointer-events: none !important;
 }
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point.star:not(.black):not(.white):not(.erased)::before {
-  content: none !important;
-  display: none !important;
-}

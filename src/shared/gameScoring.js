@@ -115,11 +115,13 @@ export function scoreGame(state) {
   const whiteTerritory = territory.white.length;
   const blackSkillCost = numericSkillCost(state, COLORS.black);
   const whiteSkillCost = numericSkillCost(state, COLORS.white);
+  const blackSkillRemovals = numericSkillRemovals(state, COLORS.black);
+  const whiteSkillRemovals = numericSkillRemovals(state, COLORS.white);
   const blackRaw = blackStones + blackTerritory;
   const whiteRaw = whiteStones + whiteTerritory;
   const komi = mode.komi ?? KOMI_STONES;
-  const black = blackRaw - komi - blackSkillCost + whiteSkillCost;
-  const white = whiteRaw + komi - whiteSkillCost + blackSkillCost;
+  const black = blackRaw + blackSkillRemovals - komi - blackSkillCost + whiteSkillCost;
+  const white = whiteRaw + whiteSkillRemovals + komi - whiteSkillCost + blackSkillCost;
   const marginValue = black - white;
   const margin = Math.abs(marginValue) / 2;
   const winnerColor = marginValue > 0 ? COLORS.black : COLORS.white;
@@ -136,6 +138,8 @@ export function scoreGame(state) {
     whiteTerritory,
     blackSkillCost,
     whiteSkillCost,
+    blackSkillRemovals,
+    whiteSkillRemovals,
     blackAfterKomi: black,
     whiteAfterKomi: white,
     winnerColor,
@@ -146,6 +150,7 @@ export function scoreGame(state) {
       black: {
         stones: blackStones,
         territory: blackTerritory,
+        skillRemovals: blackSkillRemovals,
         komi: -komi,
         ownSkillCost: blackSkillCost ? -blackSkillCost : 0,
         opponentSkillCost: whiteSkillCost,
@@ -154,6 +159,7 @@ export function scoreGame(state) {
       white: {
         stones: whiteStones,
         territory: whiteTerritory,
+        skillRemovals: whiteSkillRemovals,
         komi,
         ownSkillCost: whiteSkillCost ? -whiteSkillCost : 0,
         opponentSkillCost: blackSkillCost,
@@ -276,6 +282,12 @@ function collectTerritoryIgnoringColor(state, startId, neutral, ignoredColor) {
 function numericSkillCost(state, color) {
   if (!gameModeSkillEnabled(state.mode)) return 0;
   return state.skillCosts?.[color] ?? 0;
+}
+
+function numericSkillRemovals(state, color) {
+  if (!gameModeSkillEnabled(state.mode)) return 0;
+  const value = Number(state.skillRemovals?.[color] ?? 0);
+  return Number.isFinite(value) ? value : 0;
 }
 
 function ok(state, extra = {}) {

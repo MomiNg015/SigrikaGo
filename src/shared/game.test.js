@@ -687,7 +687,7 @@ describe("SigrikaGo rules", () => {
       expect(result.ok).toBe(true);
       expect(getPoint(result.state, pointId(4, 4)).stone).toBe("spray");
       expect(getPoint(result.state, pointId(5, 4)).stone).toBe("spray");
-      expect(result.state.skillRemovals.black).toBe(1);
+      expect(result.state.skillRemovals.black).toBe(0);
       expect(result.state.skillRemovals.white).toBe(1);
       expect(result.state.skillCosts.black).toBe(4);
       expect(result.state.turn).toBe(COLORS.white);
@@ -734,7 +734,7 @@ describe("SigrikaGo rules", () => {
     expect(getPoint(result.state, pointId(4, 4)).stone).toBe("spray");
     expect(getPoint(result.state, pointId(5, 4)).stone).toBe("spray");
     expect(getPoint(result.state, pointId(6, 4)).stone).toBe(COLORS.white);
-    expect(result.state.skillRemovals.black).toBe(0);
+    expect(result.state.skillRemovals.black).toBe(-1);
     expect(result.state.skillRemovals.white).toBe(1);
     expect(result.state.history.at(-1).randomTargetId).toBeNull();
   });
@@ -884,7 +884,7 @@ describe("SigrikaGo rules", () => {
       expect(point.colorIllusion).toBeFalsy();
     }
     expect(result.notices ?? []).not.toContain("鍙戠幇闅愯棌鎵嬩簡锛?");
-    expect(result.state.skillRemovals.black).toBe(2);
+    expect(result.state.skillRemovals.black).toBe(1);
     expect(result.state.skillRemovals.white).toBe(2);
     expect(result.state.skillCosts.black).toBe(10);
     expect(result.state.skillUses.black).toBe(0);
@@ -955,7 +955,7 @@ describe("SigrikaGo rules", () => {
 
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(10, 10)).stone).toBeNull();
-    expect(result.state.skillRemovals.black).toBe(1);
+    expect(result.state.skillRemovals.black).toBe(0);
     expect(result.state.skillCosts.black).toBe(0);
     expect(result.state.history.at(-1).cleanupRemovals).toEqual([
       { color: COLORS.white, stones: [pointId(10, 10)], owner: COLORS.black }
@@ -1481,6 +1481,32 @@ describe("SigrikaGo rules", () => {
     expect(result.text).toBe("白胜4又3/4子");
   });
 
+  it("counts positive and negative skill removals in scoring", () => {
+    const state = createGameState();
+    forceStone(state, 0, 0, COLORS.black);
+    forceStone(state, 12, 12, COLORS.white);
+    state.skillRemovals.black = -1;
+    state.skillRemovals.white = 2;
+    state.scoring = prepareScoringState(state);
+
+    const result = scoreGame(state);
+
+    expect(result.blackSkillRemovals).toBe(-1);
+    expect(result.whiteSkillRemovals).toBe(2);
+    expect(result.black).toBe(-2.75);
+    expect(result.white).toBe(5.75);
+    expect(result.formula.black).toMatchObject({
+      stones: 1,
+      skillRemovals: -1,
+      total: -2.75
+    });
+    expect(result.formula.white).toMatchObject({
+      stones: 1,
+      skillRemovals: 2,
+      total: 5.75
+    });
+  });
+
   it("unlocks ChangLi only after the opponent resolves an active skill", () => {
     const state = createGameState([
       { color: COLORS.black, characterId: "changli" },
@@ -1537,6 +1563,7 @@ describe("SigrikaGo rules", () => {
     expect(secondMove.ok).toBe(true);
     expect(secondMove.state.turn).toBe(COLORS.white);
     expect(secondMove.state.extraTurn).toBeNull();
+    expect(secondMove.state.skillRemovals.black).toBe(1);
     expect(getPoint(secondMove.state, pointId(3, 3)).skillEffect).toBe("double-move-stone");
     expect(getPoint(secondMove.state, pointId(4, 4)).skillEffect).toBe("double-move-stone");
   });

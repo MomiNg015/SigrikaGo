@@ -6,6 +6,7 @@ describe("overlay state", () => {
     expect(OVERLAY_STATE_KEYS).toEqual([
       "shop",
       "recruitment",
+      "matchModePicker",
       "house",
       "warehouse",
       "resume",
@@ -20,6 +21,7 @@ describe("overlay state", () => {
     expect(initialOverlayState()).toEqual({
       shop: false,
       recruitment: false,
+      matchModePicker: false,
       house: false,
       warehouse: false,
       resume: false,

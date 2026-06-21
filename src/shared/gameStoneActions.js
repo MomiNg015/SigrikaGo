@@ -107,6 +107,10 @@ function applyExtraTurnAfterNormalAction(state, color) {
   }
   const remaining = Math.max(0, Number(extraTurn.remaining ?? 0) - 1);
   const used = Math.max(0, Number(extraTurn.used ?? 0) + 1);
+  if (used === 2) {
+    state.skillRemovals ??= { black: 0, white: 0 };
+    state.skillRemovals[color] = (state.skillRemovals[color] ?? 0) + 1;
+  }
   if (remaining > 0) {
     state.extraTurn = { ...extraTurn, remaining, used };
     state.turn = color;

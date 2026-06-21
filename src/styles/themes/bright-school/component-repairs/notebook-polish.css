@@ -43,15 +43,15 @@
 
 /* 趣味立体糖果棋子（白子立体奶油糖，黑子浓醇巧克力） */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .black .stone:not(.decorated-stone) {
-  background: radial-gradient(circle at 30% 25%, #5a3c36 0%, #301f1c 70%, #1e1210 100%) !important;
-  box-shadow: inset -3px -4px 6px rgba(0, 0, 0, 0.45), 0 5px 8px rgba(61, 43, 37, 0.3) !important;
-  border: 2px solid var(--bright-border) !important;
+  background: radial-gradient(circle at 30% 25%, #5a3c36 0 16%, #301f1c 62%, #1e1210 100%) !important;
+  box-shadow: 0 5px 8px rgba(61, 43, 37, 0.24) !important;
+  border: 0 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .white .stone:not(.decorated-stone) {
-  background: radial-gradient(circle at 35% 25%, #ffffff 0%, #fffbf0 45%, #fff1cc 85%, #ffdca8 100%) !important;
-  box-shadow: inset -2px -3px 5px rgba(61, 43, 37, 0.15), 0 5px 8px rgba(61, 43, 37, 0.3) !important;
-  border: 2px solid var(--bright-border) !important;
+  background: radial-gradient(circle at 35% 25%, #ffffff 0 18%, #fffbf0 50%, #fff1cc 82%, #ffdca8 100%) !important;
+  box-shadow: 0 5px 8px rgba(61, 43, 37, 0.22) !important;
+  border: 0 !important;
 }
 
 /* ==========================================================================

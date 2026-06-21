@@ -72,6 +72,18 @@
   box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.32) !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .primary-action:disabled,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .primary-action:disabled:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .primary-action:disabled:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .primary-action:disabled:active {
+  background: #d8d1cb !important;
+  color: rgba(61, 43, 37, 0.58) !important;
+  border-color: rgba(61, 43, 37, 0.36) !important;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.16) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-character.shop-item > img,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-item.shop-item > img {
   padding: 0 !important;

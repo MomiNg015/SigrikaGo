@@ -1,7 +1,10 @@
+import { useEffect, useRef } from "react";
 import { ClipboardList, Clock, Radio, X } from "lucide-react";
+import { playRecruitmentResultSound } from "../audio/playback.jsx";
 import { formatRecruitmentCountdown, useRecruitmentCatalog } from "./recruitment/useRecruitmentCatalog.js";
 
 export default function RecruitmentModal({
+  audioSettings,
   characters = {},
   token,
   user,
@@ -28,20 +31,30 @@ export default function RecruitmentModal({
 
   const phase = result ? "result" : task?.status === "ready" ? "ready" : task?.status === "pending" ? "pending" : "idle";
   const canUse = phase === "idle" && selectedItem && selectedItem.quantity > 0 && !busy;
+  const playedResultSoundRef = useRef(null);
+
+  useEffect(() => {
+    if (!result) {
+      playedResultSoundRef.current = null;
+      return;
+    }
+    const soundKey = `${result.type}:${result.characterId ?? "miss"}:${result.text ?? ""}`;
+    if (playedResultSoundRef.current === soundKey) return;
+    playedResultSoundRef.current = soundKey;
+    playRecruitmentResultSound(result.type, audioSettings);
+  }, [audioSettings, result]);
 
   return (
     <div className="modal-backdrop recruitment-backdrop" onClick={onClose}>
-      <section className={`recruitment-modal recruitment-phase-${phase}`} onClick={(event) => event.stopPropagation()}>
+      <section className={`recruitment-modal recruitment-phase-${phase} ${result?.type === "success" ? "recruitment-result-success-phase" : result ? "recruitment-result-miss-phase" : ""}`} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" type="button" onClick={onClose}><X size={20} /></button>
         <header className="recruitment-header">
           <div>
-            <span className="recruitment-kicker">围棋部招新现场</span>
-            <h2>部员招募</h2>
+            <h2>部员招募栏</h2>
           </div>
-          <p>公示板已经摆好，先选招募道具，再等回应。</p>
         </header>
 
-        <main className="recruitment-board">
+        <main className={`recruitment-board recruitment-board-${phase}`}>
           {loading && <p className="quiet-text">加载招新公示中...</p>}
           {!loading && phase === "idle" && <IdleBoard selectedItem={selectedItem} />}
           {!loading && phase === "pending" && <PendingBoard task={task} busy={busy} canFastForward={canFastForward} onFastForward={fastForward} />}
@@ -66,7 +79,7 @@ export default function RecruitmentModal({
               ))}
             </div>
             <button className="primary-action recruitment-use-button" type="button" disabled={!canUse} onClick={start}>
-              {busy ? "张贴中" : "使用"}
+              {busy ? "张贴中" : canUse ? "使用" : "不可用"}
             </button>
           </footer>
         )}
@@ -109,7 +122,6 @@ function PendingBoard({ task, busy, canFastForward, onFastForward }) {
       <RecruitmentItemIcon item={task} large />
       <div>
         <strong>{task.itemName}</strong>
-        <span>等待招新回应</span>
         <div className={`recruitment-countdown-row ${canFastForward ? "has-fast-forward" : ""}`}>
           <b>{formatRecruitmentCountdown(task)}</b>
           {canFastForward && (
@@ -136,7 +148,6 @@ function ReadyBoard({ task, busy, onClaim }) {
       <RecruitmentItemIcon item={task} large />
       <div>
         <strong>{task.itemName}</strong>
-        <span>回应已经送到部室门口</span>
         <button className="primary-action" type="button" disabled={busy} onClick={onClaim}>
           查看招新回应
         </button>
@@ -152,7 +163,6 @@ function ResultBoard({ result, task, characters }) {
       <section className="recruitment-result-card recruitment-result-miss">
         <RecruitmentItemIcon item={task} large />
         <div>
-          <strong>这次还没有新回应</strong>
           <p>{result?.text}</p>
         </div>
       </section>

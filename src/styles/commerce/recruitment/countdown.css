@@ -1,0 +1,66 @@
+.recruitment-status-card b {
+  position: relative;
+  z-index: 1;
+  color: #55f2b8;
+  font-family: "Courier New", Consolas, monospace;
+  font-size: clamp(2.1rem, 5.2vw, 3.6rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow:
+    0 0 3px rgba(85, 242, 184, 0.86),
+    0 0 10px rgba(85, 242, 184, 0.52),
+    0 0 18px rgba(20, 166, 126, 0.32),
+    1px 1px 0 rgba(61, 43, 37, 0.32);
+}
+
+.recruitment-countdown-row {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  display: inline-grid;
+  grid-template-columns: minmax(0, auto);
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.recruitment-countdown-row.has-fast-forward {
+  grid-template-columns: minmax(0, auto) 44px;
+}
+
+.recruitment-fast-forward-button {
+  position: relative;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  border: 2px solid rgba(61, 43, 37, 0.72);
+  border-radius: 12px;
+  background: #fffdf6;
+  color: #3d2b25;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.recruitment-fast-forward-button:hover:not(:disabled),
+.recruitment-fast-forward-button:focus-visible:not(:disabled) {
+  border-color: #3d2b25;
+  background: #e9fff5;
+  color: #145f49;
+}
+
+.recruitment-fast-forward-button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.recruitment-fast-forward-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}

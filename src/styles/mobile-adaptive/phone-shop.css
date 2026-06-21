@@ -112,6 +112,18 @@
     padding: 8px 7px;
   }
 
+  .shop-item .primary-action:disabled,
+  .shop-item .primary-action:disabled:hover,
+  .shop-item .primary-action:disabled:focus-visible,
+  .shop-item .primary-action:disabled:active {
+    background: #d8d1cb !important;
+    color: rgba(61, 43, 37, 0.58) !important;
+    border-color: rgba(61, 43, 37, 0.36) !important;
+    box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.16) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+
   .shop-item-detail-modal {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);

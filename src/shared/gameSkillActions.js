@@ -19,6 +19,11 @@ import {
   resolveCapturesAfterMutation
 } from "./gameSkillState.js";
 
+function adjustSkillRemovals(state, color, delta) {
+  state.skillRemovals ??= { black: 0, white: 0 };
+  state.skillRemovals[color] = (state.skillRemovals[color] ?? 0) + delta;
+}
+
 export function erasePoint(state, color, id, options = {}) {
   const next = cloneState(state);
   const point = getPoint(next, id);
@@ -117,6 +122,7 @@ export function sprayStone(state, color, id, options = {}) {
     transformed.push({ id: point.id, from, to: NEUTRAL_STONES.spray });
   }
 
+  adjustSkillRemovals(next, color, -1);
   next.skillUses[color] -= 1;
   applySkillCost(next, color, options.skill ?? "lynae");
   next.ko = null;
@@ -165,6 +171,7 @@ export function rowSlash(state, color, id, options = {}) {
     clearStone(next, point.id);
   }
 
+  adjustSkillRemovals(next, color, -1);
   const directRemoved = directRemovals.length;
   const overclockAdded = directRemoved * 2;
   next.skillUses[color] -= 1;

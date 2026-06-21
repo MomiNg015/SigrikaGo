@@ -150,6 +150,7 @@ export async function seedCharacters(prisma) {
   for (const [sortOrder, character] of entries.entries()) {
     const existing = await prisma.character.findUnique({ where: { slug: character.id }, include: { skill: true } });
     if (existing) {
+      await syncBuiltinStaticPortrait(prisma, existing, character);
       await syncBuiltinSkillCost(prisma, existing, character);
       continue;
     }
@@ -182,6 +183,20 @@ export async function seedCharacters(prisma) {
       }
     });
   }
+}
+
+async function syncBuiltinStaticPortrait(prisma, existing, character) {
+  if (!existing.id || existing.portraitUrl === character.portrait) return;
+  if (existing.source && existing.source !== "default") return;
+  if (existing.portraitSource && existing.portraitSource !== "url") return;
+  if (!String(existing.portraitUrl ?? "").startsWith("/assets/")) return;
+  await prisma.character.update({
+    where: { id: existing.id },
+    data: {
+      portraitUrl: character.portrait,
+      portraitSource: "url"
+    }
+  });
 }
 
 async function syncBuiltinSkillCost(prisma, existing, character) {

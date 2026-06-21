@@ -32,6 +32,7 @@ describe("InteractionFeedback", () => {
 
     expect(appRoutesSource).toContain("playUiHouseOpenSound(audioSettings)");
     expect(appRoutesSource).toContain("playUiMatchOpenSound(audioSettings)");
+    expect(appRoutesSource).toContain("playUiRecruitmentOpenSound(audioSettings)");
     expect(appRoutesSource).toContain("playUiShopOpenSound(audioSettings)");
     expect(houseModalSource).toContain("playUiDetailOpenSound(audioSettings)");
     expect(homeImageEntriesSource).toContain("data-ui-sound=\"none\"");

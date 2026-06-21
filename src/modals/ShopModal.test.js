@@ -94,6 +94,51 @@ describe("ShopModal helpers", () => {
     expect(detailSource).not.toContain("finalPrice");
   });
 
+  it("keeps unavailable shop purchase actions native disabled controls", () => {
+    const baseItem = {
+      id: "test-card",
+      category: "character",
+      targetId: "sigrika",
+      name: "test",
+      priceCoins: 100,
+      finalPrice: 100,
+      discountPercent: 0,
+      purchasable: true
+    };
+    const renderCard = (item, user) => renderToStaticMarkup(createElement(ShopItemCard, {
+      item,
+      index: 0,
+      activeCategory: item.category,
+      purchasingId: "",
+      user,
+      onBuy: () => {},
+      onShowDetail: () => {}
+    }));
+
+    const ownedHtml = renderCard(baseItem, { coins: 200, ownedCharacters: ["sigrika"], ownedDecorations: [] });
+    const soldOutHtml = renderCard({ ...baseItem, category: "item", targetId: "radio", stockQuantity: 1, remainingStock: 0 }, { coins: 200 });
+    const tooExpensiveHtml = renderCard(baseItem, { coins: 1, ownedCharacters: [], ownedDecorations: [] });
+
+    expect(ownedHtml).toContain("disabled=\"\"");
+    expect(ownedHtml).toContain("shop-action-owned");
+    expect(soldOutHtml).toContain("disabled=\"\"");
+    expect(soldOutHtml).toContain("shop-action-sold-out");
+    expect(tooExpensiveHtml).toContain("disabled=\"\"");
+  });
+
+  it("styles all unavailable shop purchase actions as gray across base, theme, and mobile layers", () => {
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const themesCss = readCssWithImports(new URL("../styles/themes.css", import.meta.url));
+    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(commerceCss).toContain(".shop-item .primary-action:disabled");
+    expect(commerceCss).toContain("background: #d8d1cb;");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .primary-action:disabled");
+    expect(themesCss).toContain("background: #d8d1cb !important;");
+    expect(mobileCss).toContain(".shop-item .primary-action:disabled");
+    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .primary-action:disabled");
+  });
+
   it("hides purchase-limit text and centers prices for character and decoration cards", () => {
     const baseItem = {
       id: "test-card",
