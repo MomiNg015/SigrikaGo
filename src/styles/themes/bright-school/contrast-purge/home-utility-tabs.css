@@ -23,3 +23,17 @@
   box-shadow: 4px 4px 0 #3d2b25 !important;
   text-shadow: none !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:disabled,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:disabled:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:disabled:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:disabled:active {
+  background: #d6d1cd !important;
+  color: #7f7670 !important;
+  border-color: #8f8580 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  filter: grayscale(1) saturate(0.35) !important;
+  opacity: 0.72 !important;
+  transform: none !important;
+}

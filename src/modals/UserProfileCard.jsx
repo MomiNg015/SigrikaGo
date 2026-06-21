@@ -206,6 +206,7 @@ export function UserProfileCard({
         <div className="profile-character-list">
           {characterStats.map((item) => {
             const character = findCharacter(characters, item.characterId) ?? CHARACTERS.sigrika;
+            const record = characterRecordColumns(item);
             return (
               <div className="profile-character-row" key={item.characterId}>
                 <span className="profile-chain-portrait small">
@@ -213,8 +214,11 @@ export function UserProfileCard({
                   <CharacterChainBadge user={profileUser} characterId={character.id} />
                 </span>
                 <span>{character.name}</span>
-                <span>{item.record}</span>
-                <b>{item.winRate}</b>
+                <span className="profile-character-total">{record.total}局</span>
+                <span className="profile-character-wins">{record.wins}胜</span>
+                <span className="profile-character-losses">{record.losses}负</span>
+                <span className="profile-character-draws">{record.draws}和</span>
+                <b className="profile-character-rate">{record.winRate}</b>
               </div>
             );
           })}
@@ -298,10 +302,54 @@ export function sortCharacterStatsByGames(characterStats = []) {
   ));
 }
 
+export function characterRecordColumns(item = {}) {
+  const total = finiteRecordNumber(item.total);
+  const wins = finiteRecordNumber(item.wins);
+  const losses = finiteRecordNumber(item.losses);
+  const draws = finiteRecordNumber(item.draws);
+  if (total !== null || wins !== null || losses !== null || draws !== null) {
+    const normalized = {
+      total: total ?? Math.max(0, (wins ?? 0) + (losses ?? 0) + (draws ?? 0)),
+      wins: wins ?? 0,
+      losses: losses ?? 0,
+      draws: draws ?? 0
+    };
+    return {
+      ...normalized,
+      winRate: item.winRate ?? winRateText(normalized.wins, normalized.total)
+    };
+  }
+
+  const compact = String(item.record ?? "").match(/(\d+)\s*\u5c40\s*(?:[\u00b7\u2022]\s*)?(\d+)\s*\u80dc\s*(\d+)\s*\u8d1f\s*(\d+)\s*\u548c/u);
+  if (compact) {
+    const normalized = {
+      total: Number(compact[1]),
+      wins: Number(compact[2]),
+      losses: Number(compact[3]),
+      draws: Number(compact[4])
+    };
+    return {
+      ...normalized,
+      winRate: item.winRate ?? winRateText(normalized.wins, normalized.total)
+    };
+  }
+
+  return { total: 0, wins: 0, losses: 0, draws: 0, winRate: item.winRate ?? "0.0%" };
+}
+
 function characterStatGames(item = {}) {
   if (Number.isFinite(item.total)) return item.total;
   const match = String(item.record ?? "").match(/(\d+)\s*局/u);
   return match ? Number(match[1]) : 0;
+}
+
+function finiteRecordNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.max(0, number) : null;
+}
+
+function winRateText(wins, total) {
+  return total > 0 ? ((wins / total) * 100).toFixed(1) + "%" : "0.0%";
 }
 
 export function ConfirmPanel({ message, confirmText = "确定", cancelText = "返回", onConfirm, onCancel }) {

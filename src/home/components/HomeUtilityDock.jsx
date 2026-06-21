@@ -3,9 +3,9 @@ import { Archive, CircleDotDashed, Eye, ShoppingBag, Trophy, UsersRound } from "
 export default function HomeUtilityDock({ onOpenFriends, onOpenGacha, onOpenLeaderboard, onOpenShop, onOpenWarehouse, onOpenWatch }) {
   return (
     <div className="home-utility-grid tactical-nav-grid">
-      <button className="home-entry utility-entry gacha-entry" onClick={onOpenGacha} title="扭蛋">
+      <button className="home-entry utility-entry gacha-entry recruitment-entry" onClick={onOpenGacha} title="招募暂未开放" aria-label="招募暂未开放" disabled>
         <CircleDotDashed size={28} />
-        <strong>扭蛋</strong>
+        <strong>招募</strong>
       </button>
       <button className="home-entry utility-entry shop-entry" data-ui-sound="none" onClick={onOpenShop} title="商店">
         <ShoppingBag size={28} />

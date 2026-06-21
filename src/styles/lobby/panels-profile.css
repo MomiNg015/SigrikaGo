@@ -78,9 +78,9 @@
 
 .character-record-row {
   display: grid;
-  grid-template-columns: 64px minmax(86px, 1fr) minmax(144px, 1.2fr) 72px;
+  grid-template-columns: 56px minmax(78px, 1fr) repeat(4, minmax(36px, 46px)) minmax(54px, 62px);
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 9px 12px;
   border: 1px solid #eaddea;
   border-radius: 8px;
@@ -96,6 +96,15 @@
 .character-record-row span {
   color: #5f5066;
   font-weight: 800;
+}
+
+.character-record-row :is(.character-record-total, .character-record-wins, .character-record-losses, .character-record-draws, .character-record-rate) {
+  justify-self: end;
+  min-width: 0;
+  text-align: right;
+  white-space: nowrap;
+  word-break: keep-all;
+  font-variant-numeric: tabular-nums;
 }
 
 .character-record-row b {

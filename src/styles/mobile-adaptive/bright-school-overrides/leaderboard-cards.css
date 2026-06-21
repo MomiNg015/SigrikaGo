@@ -86,7 +86,6 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player .user-identity.compact .user-identity-name {
-    font-size: var(--user-identity-fit-font-size, 1em) !important;
     text-overflow: clip !important;
   }
 

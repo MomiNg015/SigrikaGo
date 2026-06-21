@@ -432,13 +432,13 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain("padding-right: 6px !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name");
-    expect(plaquePolish).toContain("--user-identity-name-tag-max-width: 100%");
-    expect(plaquePolish).toContain("--user-identity-name-tag-padding-x: 0.32em");
+    expect(plaquePolish).toContain("--user-nameplate-scale: 1.12");
     expect(plaquePolish).toContain("width: 100% !important");
     expect(plaquePolish).toContain("min-width: 0 !important");
     expect(plaquePolish).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain("flex: 1 1 auto !important");
-    expect(plaquePolish).toContain("font-size: min(var(--user-identity-fit-font-size, 1em), 0.82em) !important");
+    expect(plaquePolish).toContain("width: var(--user-nameplate-width) !important");
+    expect(plaquePolish).not.toContain("user-identity-fit-font-size");
     expect(plaquePolish).toContain("text-overflow: clip !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before");
     expect(plaquePolish).toContain('font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
@@ -471,8 +471,10 @@ describe("component-level HUD refinements", () => {
 
   it("loads shared user identity cosmetics for username surfaces", () => {
     expect(hudCss).toContain(".user-identity.has-nameplate");
-    expect(hudCss).toContain("--user-identity-name-tag-max-width: 10em");
-    expect(hudCss).toContain("--user-identity-name-tag-min-height: 2.36em");
+    expect(hudCss).toContain("--user-nameplate-base-width: 96px");
+    expect(hudCss).toContain("--user-nameplate-base-height: 25.6px");
+    expect(hudCss).toContain("--user-nameplate-width: calc(var(--user-nameplate-base-width) * var(--user-nameplate-scale))");
+    expect(hudCss).toContain("--user-nameplate-height: calc(var(--user-nameplate-base-height) * var(--user-nameplate-scale))");
     expect(hudCss).toContain("--user-identity-name-tag-padding-x: 0.72em");
     expect(hudCss).toContain("--user-identity-name-tag-radius: 0");
     expect(hudCss).toContain("width: auto");
@@ -487,18 +489,23 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain("background-position: left center");
     expect(hudCss).toContain("background-size: 100% 100%");
     expect(hudCss).toContain(".user-identity-name-tag");
+    expect(hudCss).toContain(".user-identity.has-nameplate .user-identity-name-tag");
+    expect(hudCss).toContain("width: var(--user-nameplate-width)");
+    expect(hudCss).toContain("height: var(--user-nameplate-height)");
+    expect(hudCss).toContain("--user-nameplate-font-size: calc(15px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain(".user-identity.has-nameplate .user-identity-name {\n  font-size: var(--user-nameplate-font-size)");
     expect(hudCss).toContain(".leaderboard-player .user-identity {\n  justify-self: center");
     expect(hudCss).toContain(".leaderboard-player .user-identity-main {\n  justify-content: center");
     expect(hudCss).toContain(".leaderboard-player .user-identity-name-tag");
     expect(hudCss).toContain("@media (max-width: 768px)");
-    expect(hudCss).toContain("--user-identity-name-tag-max-width: 8.5em");
+    expect(hudCss).toContain("--user-nameplate-scale: 0.92");
     expect(hudCss).toContain("--user-identity-name-tag-padding-x: 0.52em");
     expect(hudCss).toContain(".user-identity.compact.has-nameplate");
-    expect(hudCss).toContain("--user-identity-name-tag-min-height: 2.08em");
+    expect(hudCss).toContain("--user-nameplate-scale: 0.8");
     expect(hudCss).toContain("--user-identity-name-tag-max-width: 8em");
     expect(hudCss).toContain("--user-identity-name-tag-padding-x: 0.46em");
     expect(hudCss).toContain(".mobile-room-screen .name-button .user-identity.has-nameplate");
-    expect(hudCss).toContain("--user-identity-name-tag-max-width: 7.5em");
+    expect(hudCss).toContain("--user-nameplate-scale: 0.76");
     expect(hudCss).toContain(".name-button .user-identity:not(.has-nameplate)");
     expect(hudCss).toContain(".user-identity-emblem");
     expect(hudCss).toContain(".leaderboard-player .user-identity");

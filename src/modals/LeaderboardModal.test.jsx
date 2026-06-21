@@ -212,7 +212,7 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain("justify-items: center !important");
     expect(finalMobileCss).toContain("justify-content: center !important");
     expect(finalMobileCss).toContain(".leaderboard-player .user-identity.compact .user-identity-name");
-    expect(finalMobileCss).toContain("font-size: var(--user-identity-fit-font-size, 1em) !important");
+    expect(finalMobileCss).not.toContain("user-identity-fit-font-size");
     expect(finalMobileCss).toContain("text-overflow: clip !important");
     expect(finalMobileCss).toContain(".leaderboard-player > span");
     expect(finalMobileCss).toContain("width: auto !important");

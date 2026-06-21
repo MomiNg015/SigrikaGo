@@ -34,8 +34,8 @@
     min-width: 0 !important;
     box-sizing: border-box !important;
     display: grid !important;
-    grid-template-columns: 46px minmax(58px, 0.82fr) max-content minmax(48px, auto) !important;
-    gap: 6px !important;
+    grid-template-columns: 42px minmax(52px, 0.82fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.5fr) !important;
+    gap: 4px !important;
     align-items: center !important;
     padding: 8px !important;
     font-size: clamp(11px, 2.9vw, 13px) !important;
@@ -61,30 +61,13 @@
     overflow-wrap: normal !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-lines,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-summary {
-    display: grid !important;
-    gap: 2px !important;
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row :is(.character-record-total, .character-record-wins, .character-record-losses, .character-record-draws, .character-record-rate) {
+    justify-self: end !important;
     min-width: 0 !important;
-    white-space: normal !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-separator,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-separator {
-    display: none !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-total,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-record-breakdown,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-total,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-breakdown {
+    text-align: right !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow-wrap: normal !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-record-row b {
-    justify-self: end !important;
-    white-space: nowrap !important;
+    font-variant-numeric: tabular-nums !important;
   }
 }

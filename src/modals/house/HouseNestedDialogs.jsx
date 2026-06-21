@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { CharacterMusicPreview } from "../../audio/CharacterMusicPreview.jsx";
 import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../shared/musicLibrary.js";
 import { ReplayList } from "../ReplayList.jsx";
+import { characterRecordColumns } from "../UserProfileCard.jsx";
 import { characterCandyPortrait } from "./houseStats.js";
 
 export function CharacterDetailDialog({ character, detailOwned, itemEffects, user, audioSettings, musicTracks, onSelectCharacterMusic, onClose }) {
@@ -62,19 +63,21 @@ export function HouseReplayDialog({ characterListView, records, currentUser, onC
 export function CharacterRecordsPanel({ characterRecords, itemEffects }) {
   return (
     <div className="character-record-list">
-      {characterRecords.length === 0 && <p className="quiet-text">暂无角色战绩。</p>}
-      {characterRecords.map((entry) => (
-        <article className="character-record-row" key={entry.character.id}>
-          <img src={characterCandyPortrait(entry.character, itemEffects)} alt={entry.character.name} />
-          <strong>{entry.character.name}</strong>
-          <span className="character-record-summary">
-            <span className="character-record-total">{entry.total}局</span>
-            <span className="character-record-separator"> · </span>
-            <span className="character-record-breakdown">{entry.wins}胜{entry.losses}负{entry.draws}和</span>
-          </span>
-          <b>{entry.total > 0 ? `${((entry.wins / entry.total) * 100).toFixed(1)}%` : "0.0%"}</b>
-        </article>
-      ))}
+      {characterRecords.length === 0 && <p className="quiet-text">{"\u6682\u65e0\u89d2\u8272\u6218\u7ee9\u3002"}</p>}
+      {characterRecords.map((entry) => {
+        const record = characterRecordColumns(entry);
+        return (
+          <article className="character-record-row" key={entry.character.id}>
+            <img src={characterCandyPortrait(entry.character, itemEffects)} alt={entry.character.name} />
+            <strong>{entry.character.name}</strong>
+            <span className="character-record-total">{record.total}{"\u5c40"}</span>
+            <span className="character-record-wins">{record.wins}{"\u80dc"}</span>
+            <span className="character-record-losses">{record.losses}{"\u8d1f"}</span>
+            <span className="character-record-draws">{record.draws}{"\u548c"}</span>
+            <b className="character-record-rate">{record.winRate}</b>
+          </article>
+        );
+      })}
     </div>
   );
 }

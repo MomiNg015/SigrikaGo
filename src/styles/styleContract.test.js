@@ -250,6 +250,7 @@ describe("root CSS entry contract", () => {
       "./base/topbar-room-tags.css",
       "./base/home-legacy-grid.css",
       "./base/home-stage-artboard.css",
+      "./base/home-unavailable-entry.css",
       "./base/message-feedback.css"
     ]);
     expect(baseEntry).not.toContain(":root {");
@@ -730,8 +731,10 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(modalsEntry)).toEqual([
       "./modals/base-result-skill.css",
+      "./modals/modal-motion.css",
       "./modals/replay-mode-resume.css",
       "./modals/nested-profile.css",
+      "./modals/profile-character-records.css",
       "./modals/profile-hero-cleanup.css",
       "./modals/profile-social-actions.css",
       "./modals/character-opening.css",
@@ -741,6 +744,24 @@ describe("root CSS entry contract", () => {
     expect(modalsEntry).not.toContain(".modal-backdrop {");
     expect(modalsEntry).not.toContain(".resume-modal {");
     expect(modalsEntry).not.toContain(".character-detail {");
+  });
+
+  it("keeps shared modal entrance motion lightweight and reduced-motion safe", () => {
+    const modalMotionCss = readFileSync(new URL("./modals/modal-motion.css", import.meta.url), "utf8");
+    const modalCss = readCssWithImports(new URL("./modals.css", import.meta.url));
+
+    expect(modalMotionCss).toContain("@keyframes sigrika-modal-backdrop-in");
+    expect(modalMotionCss).toContain("@keyframes sigrika-modal-shell-in");
+    expect(modalMotionCss).toContain("@keyframes sigrika-modal-nested-in");
+    expect(modalMotionCss).toContain("@keyframes sigrika-modal-centered-in");
+    expect(modalMotionCss).toContain(".modal-backdrop,");
+    expect(modalMotionCss).toContain(".nested-modal-backdrop");
+    expect(modalMotionCss).toContain(".room-floating-modal:not(.confirm-inline-modal)");
+    expect(modalMotionCss).toContain(".modal-backdrop .confirm-inline-modal");
+    expect(modalMotionCss).toContain("transform: translate(-50%, -50%) !important");
+    expect(modalMotionCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(modalCss).toContain("animation: sigrika-modal-shell-in var(--modal-motion-shell-duration)");
+    expect(modalCss).not.toContain("transition: all");
   });
 
   it("keeps terminal modal system styles as an import-only sub-entry", () => {

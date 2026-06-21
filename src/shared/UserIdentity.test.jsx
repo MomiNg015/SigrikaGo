@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import UserIdentity, { userIdentityFitFontSize } from "./UserIdentity.jsx";
+import UserIdentity from "./UserIdentity.jsx";
 
 describe("UserIdentity", () => {
   it("renders equipped title, badge, and username background assets", () => {
@@ -43,15 +43,17 @@ describe("UserIdentity", () => {
     expect(markup).toContain("Moming");
   });
 
-  it("exposes a fit font-size for legacy long usernames", () => {
-    expect(userIdentityFitFontSize("moming")).toBeNull();
-    expect(userIdentityFitFontSize("0337_win_a")).toBe("0.860em");
-
-    const markup = renderToStaticMarkup(
-      <UserIdentity user={{ username: "0337_win_a" }} />
+  it("does not change font size from username length", () => {
+    const shortMarkup = renderToStaticMarkup(
+      <UserIdentity user={{ username: "李白" }} />
+    );
+    const longMarkup = renderToStaticMarkup(
+      <UserIdentity user={{ username: "Moming88" }} />
     );
 
-    expect(markup).toContain("--user-identity-fit-font-size:0.860em");
-    expect(markup).toContain("0337_win_a");
+    expect(shortMarkup).not.toContain("--user-identity-fit-font-size");
+    expect(longMarkup).not.toContain("--user-identity-fit-font-size");
+    expect(shortMarkup).toContain("李白");
+    expect(longMarkup).toContain("Moming88");
   });
 });

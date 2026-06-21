@@ -193,45 +193,6 @@
   min-width: 0;
 }
 
-.profile-character-section {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.profile-character-list {
-  display: grid;
-  align-content: start;
-  gap: 6px;
-  min-height: 0;
-  max-height: min(260px, 34dvh);
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  padding-right: 4px;
-}
-
-.profile-character-row {
-  display: grid;
-  grid-template-columns: 64px minmax(82px, 1fr) minmax(110px, 1fr) 70px;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border: 1px solid #eaddea;
-  border-radius: 8px;
-  background: #ffffff;
-}
-
-.profile-character-row img {
-  width: 58px;
-  height: 46px;
-  object-fit: contain;
-}
-
-.profile-character-row b {
-  color: #4f7b5d;
-}
-
 .profile-replay-button {
   width: fit-content;
   min-height: 38px;

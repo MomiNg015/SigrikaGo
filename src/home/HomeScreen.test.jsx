@@ -148,8 +148,9 @@ describe("HomeScreen", () => {
     const brightPlaqueStrongBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card strong\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongClipBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card > strong\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueIdentityBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity,[\s\S]+?max-width: 100% !important;[\s\S]+?\}/)?.[0] ?? "";
-    const brightPlaqueNameSizingBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-main,[\s\S]+?flex: 1 1 auto !important;[\s\S]+?\}/)?.[0] ?? "";
+    const brightPlaqueNameSizingBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-main\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueNameTagBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name-tag\s*\{[^}]+\}/g)?.find((block) => block.includes("box-sizing: border-box")) ?? "";
+    const brightPlaqueFixedNameplateBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity\.has-nameplate \.user-identity-name-tag\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueNameOverflowBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name\s*\{[^}]+\}/g)?.find((block) => block.includes("overflow: visible")) ?? "";
     const brightStageBlock = brightHomeCss.match(/main\.home-screen\.home-terminal-screen > section\.home-main-panel\.home-terminal-main > section\.home-grid-featured\.home-stage\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
@@ -188,17 +189,18 @@ describe("HomeScreen", () => {
     expect(brightPlaqueStrongClipBlock).toContain("overflow: hidden");
     expect(brightPlaqueStrongClipBlock).toContain("text-overflow: clip");
     expect(brightPlaqueIdentityBlock).toContain("max-width: 100%");
-    expect(brightHomeCss).toContain("--user-identity-name-tag-max-width: 100%");
-    expect(brightHomeCss).toContain("--user-identity-name-tag-padding-x: 0.32em");
-    expect(brightHomeCss).toContain(".home-player-plaque.tactical-id-card .user-identity {\n  --user-identity-name-tag-max-width: 100%;\n  --user-identity-name-tag-padding-x: 0.32em;\n  width: 100% !important;\n  min-width: 0 !important;\n  overflow: hidden !important;");
+    expect(brightHomeCss).toContain("--user-nameplate-scale: 1.12");
+    expect(brightHomeCss).toContain(".home-player-plaque.tactical-id-card .user-identity {\n  --user-nameplate-scale: 1.12;\n  width: 100% !important;\n  min-width: 0 !important;\n  overflow: hidden !important;");
     expect(brightPlaqueNameSizingBlock).toContain("width: 100%");
     expect(brightPlaqueNameSizingBlock).toContain("min-width: 0");
     expect(brightPlaqueNameSizingBlock).toContain("flex: 1 1 auto");
     expect(brightPlaqueNameTagBlock).toContain("box-sizing: border-box");
     expect(brightPlaqueNameTagBlock).toContain("overflow: hidden");
+    expect(brightPlaqueFixedNameplateBlock).toContain("width: var(--user-nameplate-width)");
+    expect(brightPlaqueFixedNameplateBlock).toContain("flex: 0 0 auto");
     expect(brightPlaqueNameOverflowBlock).toContain("overflow: visible");
     expect(brightPlaqueNameOverflowBlock).toContain("text-overflow: clip");
-    expect(brightPlaqueNameOverflowBlock).toContain("font-size: min(var(--user-identity-fit-font-size, 1em), 0.82em)");
+    expect(brightPlaqueNameOverflowBlock).not.toContain("user-identity-fit-font-size");
     expect(brightStageBlock).toContain("padding-top: clamp(44px, 4.8vw, 72px)");
     expect(brightStatsBlock).toContain("width: 100%");
     expect(brightStatsBlock).toContain("min-width: 0");
@@ -379,14 +381,25 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("5分钟30秒3次 ·</span>");
   });
 
-  it("passes a gacha entry through the home utility dock", () => {
+  it("renders the temporary recruitment entry as a disabled home utility action", () => {
     const source = readFileSync(new URL("./components/HomeUtilityDock.jsx", import.meta.url), "utf8");
+    const baseCss = readCssFixture("../styles/base.css");
+    const brightSchoolCss = readCssFixture("../styles/themes/bright-school.css");
+    const mobileCss = readCssFixture("../styles/mobile-adaptive.css");
     const stageSource = readFileSync(new URL("./components/HomeStage.jsx", import.meta.url), "utf8");
     const routeSource = readFileSync(new URL("../app/AppRoutes.jsx", import.meta.url), "utf8");
     const overlaySource = readFileSync(new URL("../app/AppOverlays.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("gacha-entry");
+    expect(source).toContain("recruitment-entry");
     expect(source).toContain("onOpenGacha");
+    expect(source).toContain("disabled");
+    expect(source).toContain("招募");
+    expect(source).not.toContain("<strong>扭蛋</strong>");
+    expect(baseCss).toContain(".home-grid-featured > .home-utility-grid .utility-entry:disabled");
+    expect(brightSchoolCss).toContain(".home-grid-featured > .home-utility-grid .utility-entry:disabled");
+    expect(brightSchoolCss).toContain("cursor: not-allowed !important");
+    expect(mobileCss).toContain(".utility-entry:active:not(:disabled)");
     expect(stageSource).toContain("onOpenGacha");
     expect(routeSource).toContain("setShowGacha(true)");
     expect(overlaySource).toContain("GachaModal");

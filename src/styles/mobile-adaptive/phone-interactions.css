@@ -69,7 +69,7 @@
   .mobile-tab-button:active:not(:disabled),
   .home-image-entry:active,
   .home-player-plaque:active,
-  .utility-entry:active,
+  .utility-entry:active:not(:disabled),
   .character-card:active,
   .shop-item:active,
   .warehouse-item:active,
