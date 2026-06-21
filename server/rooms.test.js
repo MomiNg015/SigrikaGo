@@ -47,10 +47,12 @@ import {
   findRoomForUser,
   handleGameAction,
   handleScoringAction,
+  flushRoomPersistence,
   joinMatchmaking,
   leaveRoom,
   listWaitingPlayers,
   listWatchRooms,
+  markRoomPreloadReady,
   matchmakingCountsByMode,
   matchmakingCount,
   requestCounting,
@@ -120,6 +122,12 @@ function opponentColor(color) {
   return color === COLORS.black ? COLORS.white : COLORS.black;
 }
 
+function finishMatchPreload(room, io) {
+  for (const player of room.players) {
+    markRoomPreloadReady(room.code, player.user.id, io);
+  }
+}
+
 describe("room game record persistence", () => {
   afterEach(() => {
     clearRoomsForTest();
@@ -133,6 +141,8 @@ describe("room game record persistence", () => {
     joinMatchmaking({ user: user("winner", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("loser", "sigrika"), socketId: "socket-b" }, io);
     Math.random.mockRestore();
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
 
     const loser = room.players.find((player) => player.color === COLORS.white);
@@ -217,6 +227,8 @@ describe("room game record persistence", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("standard-black", "sigrika"), socketId: "socket-a", mode: "standard" }, io);
     const room = joinMatchmaking({ user: user("standard-white", "denia"), socketId: "socket-b", mode: "standard" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
 
     const black = room.players.find((player) => player.color === COLORS.black);
@@ -245,6 +257,8 @@ describe("room game record persistence", () => {
       socketId: "socket-b"
     }, io);
     Math.random.mockRestore();
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
 
     const loser = room.players.find((player) => player.color === COLORS.white);
@@ -281,6 +295,8 @@ describe("room game record persistence", () => {
       socketId: "socket-a"
     }, io);
     const room = joinMatchmaking({ user: user("early-other", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     room.game.moveNumber = 10;
 
@@ -297,6 +313,8 @@ describe("room game record persistence", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("draw-alice", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("draw-bob", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     room.game.moveNumber = 11;
 
@@ -322,6 +340,8 @@ describe("room game record persistence", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("early-draw-alice", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("early-draw-bob", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     room.game.moveNumber = 10;
 
@@ -348,6 +368,8 @@ describe("room game record persistence", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("early-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("early-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     room.game.moveNumber = 10;
 
@@ -428,6 +450,8 @@ describe("rooms character integration", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("alice", "sigrika", characterConfig), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("bob", "sigrika", characterConfig), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -451,6 +475,8 @@ describe("rooms character integration", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("preview-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("preview-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
     io.messages = [];
@@ -485,6 +511,8 @@ describe("rooms character integration", () => {
     const characterConfig = { ...CHARACTERS.denia, id: "denia" };
     joinMatchmaking({ user: user("flip-black", "denia", characterConfig), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("flip-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -511,6 +539,8 @@ describe("rooms character integration", () => {
     joinMatchmaking({ user: user("blast-black", "baconbits"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("blast-white", "sigrika"), socketId: "socket-b" }, io);
     Math.random.mockRestore();
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -534,12 +564,45 @@ describe("rooms character integration", () => {
     });
   });
 
+  test("adds Lynae spray transform points to pending skill previews", () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    const characterConfig = { ...CHARACTERS.lynae, id: "lynae" };
+    joinMatchmaking({ user: user("spray-black", "lynae", characterConfig), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("spray-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+    vi.spyOn(Math, "random").mockReturnValue(0);
+
+    const black = room.players.find((player) => player.user.id === "spray-black");
+    const targetId = pointId(4, 4);
+    const randomTargetId = pointId(9, 9);
+    room.game.turn = black.color;
+    getPoint(room.game, targetId).stone = COLORS.white;
+    getPoint(room.game, randomTargetId).stone = COLORS.black;
+    const result = handleGameAction(room.code, black.user.id, { type: "skill", pointId: targetId }, io);
+
+    Math.random.mockRestore();
+    expect(result.ok).toBe(true);
+    expect(room.game.pendingSkill).toMatchObject({
+      characterId: "lynae",
+      effectType: "spray-stone",
+      targetId,
+      affectedPointIds: [targetId, randomTargetId],
+      markedPointIds: []
+    });
+  });
+
   test("adds row-slash row metadata to pending skill previews", () => {
     vi.useFakeTimers();
     const io = fakeIo();
     const characterConfig = { ...CHARACTERS.qiuyuan, id: "qiuyuan" };
     joinMatchmaking({ user: user("slash-black", "qiuyuan", characterConfig), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("slash-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -576,6 +639,8 @@ describe("rooms character integration", () => {
     };
     joinMatchmaking({ user: user("hidden-black", "aemeath", characterConfig), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("hidden-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -600,6 +665,8 @@ describe("rooms character integration", () => {
     const characterConfig = { ...CHARACTERS.chisa, id: "chisa" };
     joinMatchmaking({ user: user("chisa-black", "chisa", characterConfig), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("chisa-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -632,6 +699,8 @@ describe("rooms character integration", () => {
     const characterConfig = { ...CHARACTERS.chisa, id: "chisa" };
     joinMatchmaking({ user: user("reveal-chisa", "chisa", characterConfig), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("reveal-hidden", "aemeath", CHARACTERS.aemeath), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -676,6 +745,8 @@ describe("rooms character integration", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("alice", "denia", characterConfig), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("bob", "denia", characterConfig), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -697,6 +768,8 @@ describe("rooms character integration", () => {
     joinMatchmaking({ user: user("bacon", "baconbits"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("other", "sigrika"), socketId: "socket-b" }, io);
     Math.random.mockRestore();
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -755,6 +828,8 @@ describe("rooms removable test tools", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("test-alice", "aemeath", characterConfig), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("test-bob", "aemeath", characterConfig), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -782,6 +857,8 @@ describe("rooms removable test tools", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("test-alice", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("test-bob", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -810,6 +887,8 @@ describe("rooms removable test tools", () => {
       const io = fakeIo();
       joinMatchmaking({ user: user("test-alice", "aemeath"), socketId: "socket-a" }, io);
       const room = joinMatchmaking({ user: user("test-bob", "aemeath"), socketId: "socket-b" }, io);
+      finishMatchPreload(room, io);
+
       completeRoomOpening(room, io);
       clearRoomTimers(room);
 
@@ -835,6 +914,8 @@ describe("rooms removable test tools", () => {
       const io = fakeIo();
       joinMatchmaking({ user: user("test-alice", "aemeath"), socketId: "socket-a" }, io);
       const room = joinMatchmaking({ user: user("test-bob", "aemeath"), socketId: "socket-b" }, io);
+      finishMatchPreload(room, io);
+
       completeRoomOpening(room, io);
       clearRoomTimers(room);
 
@@ -857,6 +938,7 @@ describe("rooms removable test tools", () => {
     joinMatchmaking({ user: user("alice", "nabomo", CHARACTERS.nabomo), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("bob", "sigrika", CHARACTERS.sigrika), socketId: "socket-b" }, io);
     Math.random.mockRestore();
+    finishMatchPreload(room, io);
 
     const nabomo = room.players.find((player) => player.characterId === "nabomo");
     expect(room.game.phase).toBe(GAME_PHASES.opening);
@@ -887,6 +969,7 @@ describe("room opening sequence", () => {
     joinMatchmaking({ user: user("opening-alice", "nabomo", CHARACTERS.nabomo), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("opening-bob", "sigrika", CHARACTERS.sigrika), socketId: "socket-b" }, io);
     Math.random.mockRestore();
+    finishMatchPreload(room, io);
 
     const view = roomView(room, room.players[0].user.id);
     expect(room.game.phase).toBe(GAME_PHASES.opening);
@@ -910,6 +993,8 @@ describe("room opening sequence", () => {
     joinMatchmaking({ user: user("clock-alice", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("clock-bob", "sigrika"), socketId: "socket-b" }, io);
     Math.random.mockRestore();
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     io.messages = [];
 
@@ -938,6 +1023,8 @@ describe("room request timers", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("counting-timer-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("counting-timer-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -952,6 +1039,8 @@ describe("room request timers", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("draw-timer-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("draw-timer-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -966,6 +1055,8 @@ describe("room request timers", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("result-timer-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("result-timer-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -1080,6 +1171,8 @@ describe("room participants view", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("disconnect-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("disconnect-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
 
     detachSocket("socket-a", io);
@@ -1138,6 +1231,8 @@ describe("room participants view", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("skill-restore-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("skill-restore-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -1145,6 +1240,7 @@ describe("room participants view", () => {
     const targetId = pointId(3, 3);
     expect(handleGameAction(room.code, black.user.id, { type: "skill", pointId: targetId }, io).ok).toBe(true);
     broadcastRoom(io, room);
+    await flushRoomPersistence();
     const snapshot = prismaMocks.executeRaw.mock.calls.findLast((call) => call[1] === room.code && typeof call[3] === "string")?.[3];
     expect(snapshot).toBeTruthy();
 
@@ -1168,11 +1264,14 @@ describe("room participants view", () => {
     joinMatchmaking({ user: user("passive-restore-black", "nabomo", CHARACTERS.nabomo), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("passive-restore-white", "sigrika", CHARACTERS.sigrika), socketId: "socket-b" }, io);
     Math.random.mockRestore();
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
     expect(startInitialPassiveSkillNow(room, io)).toBe(true);
     broadcastRoom(io, room);
+    await flushRoomPersistence();
     const snapshot = prismaMocks.executeRaw.mock.calls.findLast((call) => call[1] === room.code && typeof call[3] === "string")?.[3];
     expect(snapshot).toBeTruthy();
 
@@ -1202,6 +1301,8 @@ describe("room participants view", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("empty-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("empty-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     clearRoomTimers(room);
 
@@ -1223,6 +1324,8 @@ describe("room participants view", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("close-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("close-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     room.game.moveNumber = 11;
 
@@ -1247,6 +1350,8 @@ describe("room participants view", () => {
     const io = fakeIo();
     joinMatchmaking({ user: user("invalid-close-black", "sigrika"), socketId: "socket-a" }, io);
     const room = joinMatchmaking({ user: user("invalid-close-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+
     completeRoomOpening(room, io);
     room.game.moveNumber = 10;
 
@@ -1275,4 +1380,53 @@ describe("room participants view", () => {
     ]));
     expect(prismaMocks.gameRecordCreate).not.toHaveBeenCalled();
   });
+
+  test("deletes persisted room only after pending room snapshot writes finish", async () => {
+    vi.useFakeTimers();
+    const io = fakeIo();
+    joinMatchmaking({ user: user("delete-order-black", "sigrika"), socketId: "socket-a" }, io);
+    const room = joinMatchmaking({ user: user("delete-order-white", "sigrika"), socketId: "socket-b" }, io);
+    finishMatchPreload(room, io);
+    completeRoomOpening(room, io);
+    clearRoomTimers(room);
+    await flushRoomPersistence();
+
+    const pendingUpsert = deferred();
+    const persistenceEvents = [];
+    prismaMocks.executeRaw.mockImplementation((strings, ...values) => {
+      const sql = String(strings[0]);
+      if (sql.includes("INSERT INTO PersistedRoom") && values[0] === room.code) {
+        persistenceEvents.push("upsert-started");
+        return pendingUpsert.promise;
+      }
+      if (sql.includes("DELETE FROM PersistedRoom") && values[0] === room.code) {
+        persistenceEvents.push("delete");
+      }
+      return Promise.resolve();
+    });
+
+    room.game.moveNumber = 10;
+    const white = room.players.find((player) => player.color === COLORS.white);
+    expect(handleGameAction(room.code, white.user.id, { type: "resign" }, io).ok).toBe(true);
+    vi.advanceTimersByTime(30 * 1000);
+    await Promise.resolve();
+
+    expect(persistenceEvents).toEqual(["upsert-started"]);
+
+    pendingUpsert.resolve();
+    await flushRoomPersistence(room.code);
+    await Promise.resolve();
+
+    expect(persistenceEvents).toEqual(["upsert-started", "delete"]);
+  });
 });
+
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, reject, resolve };
+}

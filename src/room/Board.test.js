@@ -162,6 +162,7 @@ describe("areBoardPropsEqual", () => {
     expect(boardWrapBlock).toContain("background: var(--board-wood-texture)");
     expect(themeBoardWrapBlock).toContain("background: var(--board-wood-texture) !important");
     expect(() => readFileSync(new URL("../../public/assets/boards/go-board-background-reference-color-vertical-2048.webp", import.meta.url))).not.toThrow();
+    expect(() => readFileSync(new URL("../../public/assets/boards/nabomo-color-illusion-board.webp", import.meta.url))).not.toThrow();
   });
 
   test("renders spray stones with an independent non-decorated visual contract", () => {
@@ -179,7 +180,43 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain('class="point  spray');
     expect(markup).not.toContain("decorated-stone");
     expect(css).toContain(".spray .stone");
+    expect(css).toContain(".spray .stone::before");
+    expect(css).toContain("spray-stone-bottom-glow");
+    expect(css).toContain("spray-stone-entry-glow");
     expect(css).toContain("--spray-stone-fallback");
+    expect(() => readFileSync(new URL("../../public/assets/stones/spray-stone.webp", import.meta.url))).not.toThrow();
+  });
+
+  test("masks original stones during Lynae spray pending animation", () => {
+    const targetId = "3,3";
+    const randomTargetId = "6,6";
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "skill-preview",
+        size: 13,
+        points: [
+          { id: targetId, x: 3, y: 3, valid: true, stone: "white" },
+          { id: randomTargetId, x: 6, y: 6, valid: true, stone: "black" }
+        ],
+        history: [],
+        pendingSkill: {
+          id: "spray-preview",
+          effectType: "spray-stone",
+          targetId,
+          affectedPointIds: [targetId, randomTargetId],
+          bannerDurationMs: 2000,
+          boardEffectDurationMs: 1800
+        }
+      }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup.match(/spray-transform-pending/g)).toHaveLength(2);
+    expect(markup).toContain("--skill-banner-duration:2000ms");
+    expect(markup).toContain("--skill-board-effect-duration:1800ms");
+    expect(css).toContain(".spray-transform-pending .stone");
+    expect(css).toContain("spray-original-paint-cover");
+    expect(css).toContain("spray-transform-paint-bloom");
   });
 
   test("renders protocol ban markers as pointer-transparent point overlays", () => {
@@ -377,13 +414,14 @@ describe("areBoardPropsEqual", () => {
     expect(markup).not.toContain('data-effect-type="row-slash"');
   });
 
-  test("prewarms Pixi only for skill-enabled boards", () => {
+  test("prewarms Pixi only for skill-enabled boards with global effects enabled", () => {
     const source = readFileSync(new URL("./Board.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("prewarm={game.skillEnabled !== false}");
+    expect(source).toContain("prewarm={game.skillEnabled !== false && skillEffectsEnabled !== false}");
+    expect(source).toContain("effectsEnabled={skillEffectsEnabled !== false && game.pendingSkill?.effectsEnabled !== false}");
   });
 
-  test("renders Nabomo passive fog as a board ambient layer without replacing points", () => {
+  test("renders Nabomo passive desaturation as a board ambient layer without replacing points", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {
         phase: "playing",
@@ -397,7 +435,8 @@ describe("areBoardPropsEqual", () => {
     })));
 
     expect(markup).toContain("board-ambient-layer");
-    expect(markup).toContain('data-ambient-effect="color-illusion-fog"');
+    expect(markup).toContain("color-illusion-board-surface");
+    expect(markup).toContain('data-ambient-effect="color-illusion-desaturate"');
     expect(markup).toContain("<button");
     expect(markup).toContain('class="point');
   });
@@ -495,8 +534,7 @@ describe("areBoardPropsEqual", () => {
     expect(targetingBlock).toContain(".board .point.star:not(.black):not(.white):not(.erased)::after");
     expect(targetingBlock).toContain("transform: translate(-50%, -50%) !important");
     expect(targetingBlock).toContain(".board-wrap.targeting .point.previewable::before");
-    expect(targetingBlock).toContain(".board .point.star:not(.black):not(.white):not(.erased)::before");
-    expect(targetingBlock).toContain("content: none !important");
+    expect(targetingBlock).not.toContain(".board .point.star:not(.black):not(.white):not(.erased)::before");
   });
 
   test("bright school keeps scoring markers centered on board intersections", () => {

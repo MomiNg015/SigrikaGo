@@ -18,6 +18,7 @@ function Board({
   showMoves,
   pendingSkill,
   audioSettings,
+  skillEffectsEnabled = true,
   pointConfirmation,
   previewPlayer,
   stoneDecorations = {},
@@ -30,6 +31,7 @@ function Board({
   const handlersRef = useRef({ onPoint, onScoringPoint, onNeutral, onBoardSurface });
   handlersRef.current = { onPoint, onScoringPoint, onNeutral, onBoardSurface };
   const boardSize = game.size ?? 13;
+  const colorIllusionActive = hasColorIllusionFog(game) && skillEffectsEnabled !== false;
   const markedAction = lastMarkedAction(game.history);
   const moveNumbers = useMemo(
     () => new Map(game.history.filter((entry) => entry.type === "move").map((entry) => [entry.id, entry.moveNumber])),
@@ -46,6 +48,11 @@ function Board({
       ? game.winner.winningLine
       : []
   ), [game.mode, game.winner?.reason, game.winner?.winningLine]);
+  const pendingSprayPointIds = useMemo(() => new Set(
+    game.pendingSkill?.effectType === "spray-stone" && Array.isArray(game.pendingSkill.affectedPointIds)
+      ? game.pendingSkill.affectedPointIds
+      : []
+  ), [game.pendingSkill?.affectedPointIds, game.pendingSkill?.effectType]);
   const showScoringMarks = ["marking-dead", "result-review", "finished"].includes(game.phase);
   const territoryOwner = useMemo(() => new Map([
     ...(showScoringMarks ? game.scoring?.territory?.black ?? [] : []).map((id) => [id, COLORS.black]),
@@ -53,7 +60,15 @@ function Board({
   ]), [game.scoring?.territory?.black, game.scoring?.territory?.white, showScoringMarks]);
   const deadStoneOwners = showScoringMarks ? game.scoring?.deadStoneOwners ?? {} : {};
   return (
-    <div className={`board-wrap ${pendingSkill ? "targeting" : ""}`} data-board-size={boardSize} style={{ "--size": boardSize }}>
+    <div
+      className={`board-wrap ${pendingSkill ? "targeting" : ""} ${colorIllusionActive ? "color-illusion-board-surface" : ""}`}
+      data-board-size={boardSize}
+      style={{
+        "--size": boardSize,
+        "--skill-banner-duration": `${game.pendingSkill?.bannerDurationMs ?? 2000}ms`,
+        "--skill-board-effect-duration": `${game.pendingSkill?.boardEffectDurationMs ?? 1800}ms`
+      }}
+    >
       {showCoords && <div className="coord-row coord-top">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
       {showCoords && <div className="coord-col coord-left">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
       <div
@@ -63,7 +78,7 @@ function Board({
           pointerTypeRef.current = "";
         }}
       >
-        <BoardAmbientEffects active={hasColorIllusionFog(game)} />
+        <BoardAmbientEffects active={colorIllusionActive} effectsEnabled={skillEffectsEnabled} />
         <svg className="board-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           {lines.map((line) => (
             <line
@@ -80,7 +95,8 @@ function Board({
           boardSize={boardSize}
           pendingSkill={game.pendingSkill}
           audioSettings={audioSettings}
-          prewarm={game.skillEnabled !== false}
+          prewarm={game.skillEnabled !== false && skillEffectsEnabled !== false}
+          effectsEnabled={skillEffectsEnabled !== false && game.pendingSkill?.effectsEnabled !== false}
         />
         <BoardRowSlashOverlay
           boardSize={boardSize}
@@ -112,6 +128,7 @@ function Board({
               neutralMarked={showScoringMarks && Boolean(game.scoring?.neutralPoints?.includes(point.id))}
               point={point}
               pointerTypeRef={pointerTypeRef}
+              pendingEffectClass={pendingSprayPointIds.has(point.id) ? "spray-transform-pending" : ""}
               previewClass={previewClass}
               showMoves={showMoves}
               showScoringMarks={showScoringMarks}
@@ -163,6 +180,7 @@ function PointButton({
   neutralMarked,
   point,
   pointerTypeRef,
+  pendingEffectClass,
   previewClass,
   showMoves,
   showScoringMarks,
@@ -183,7 +201,7 @@ function PointButton({
 
   return (
     <button
-      className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${previewClass} ${confirmClass} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""}`}
+      className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${pendingEffectClass} ${previewClass} ${confirmClass} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""}`}
       style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
       onPointerDown={(event) => {
         pointerTypeRef.current = event.pointerType;
@@ -256,6 +274,7 @@ export function arePointButtonPropsEqual(previous, next) {
     && previous.neutralMarked === next.neutralMarked
     && previous.point === next.point
     && previous.pointerTypeRef === next.pointerTypeRef
+    && previous.pendingEffectClass === next.pendingEffectClass
     && previous.previewClass === next.previewClass
     && previous.showMoves === next.showMoves
     && previous.showScoringMarks === next.showScoringMarks
@@ -268,6 +287,7 @@ export function areBoardPropsEqual(previous, next) {
     && previous.showMoves === next.showMoves
     && previous.pendingSkill === next.pendingSkill
     && previous.audioSettings === next.audioSettings
+    && previous.skillEffectsEnabled === next.skillEffectsEnabled
     && samePointConfirmation(previous.pointConfirmation, next.pointConfirmation)
     && samePreviewPlayer(previous.previewPlayer, next.previewPlayer)
     && previous.onPoint === next.onPoint

@@ -1,7 +1,8 @@
 export {
   SKILL_BANNER_DURATION_MS,
   SKILL_BOARD_EFFECT_DURATION_MS,
-  SKILL_PREVIEW_DELAY_MS
+  SKILL_PREVIEW_DELAY_MS,
+  skillPreviewResolutionDelay
 } from "../src/shared/skillPresentation.js";
 
 import {
@@ -12,12 +13,13 @@ import {
   useSkill
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
-import { SKILL_PREVIEW_DELAY_MS } from "../src/shared/skillPresentation.js";
 import {
   SKILL_BANNER_DURATION_MS,
-  SKILL_BOARD_EFFECT_DURATION_MS
+  SKILL_BOARD_EFFECT_DURATION_MS,
+  skillPreviewResolutionDelay
 } from "../src/shared/skillPresentation.js";
 import { gameModeFamily } from "../src/shared/gameModes.js";
+import { getCachedPublicSiteSettings } from "./siteSettings.js";
 import { describeSkillUse } from "./roomSkillMessages.js";
 
 export function createPendingSkillResolution({
@@ -25,14 +27,17 @@ export function createPendingSkillResolution({
   game,
   notices = [],
   playerColor,
+  effectType = "",
+  effectsEnabled = true,
   now = Date.now
 }) {
   return {
     pendingSkillId,
-    resolvesAt: now() + SKILL_PREVIEW_DELAY_MS,
+    resolvesAt: now() + skillPreviewResolutionDelay({ effectType, effectsEnabled }),
     game,
     notices,
-    playerColor
+    playerColor,
+    effectsEnabled
   };
 }
 
@@ -64,11 +69,14 @@ export function createRoomSkillLifecycle({
     io
   }) {
     const pendingSkillId = randomId();
+    const effectType = resolvedSkillEffectType(result.state, skill);
     room.pendingSkillResolution = createPendingSkillResolution({
       pendingSkillId,
       game: result.state,
       notices: result.notices ?? [],
-      playerColor: player.color
+      playerColor: player.color,
+      effectType,
+      effectsEnabled: skillEffectsEnabled()
     });
     const pendingSkill = buildPendingSkillPreview({
       pendingSkillId,
@@ -77,7 +85,9 @@ export function createRoomSkillLifecycle({
       skill,
       requestedTargetId: skillTargetId,
       resolvedGame: result.state,
-      resolvesAt: room.pendingSkillResolution.resolvesAt
+      effectType,
+      resolvesAt: room.pendingSkillResolution.resolvesAt,
+      effectsEnabled: room.pendingSkillResolution.effectsEnabled
     });
     room.game = {
       ...room.game,
@@ -181,10 +191,12 @@ export function buildPendingSkillPreview({
   skill,
   requestedTargetId,
   resolvedGame,
-  resolvesAt
+  effectType: providedEffectType = "",
+  resolvesAt,
+  effectsEnabled = true
 }) {
   const skillAction = [...(resolvedGame.history ?? [])].reverse().find((entry) => entry.type === "skill");
-  const effectType = skillAction?.effectType ?? skill?.effectType ?? skill?.id ?? "";
+  const effectType = providedEffectType || resolvedSkillEffectType(resolvedGame, skill);
   const targetId = skillAction?.id ?? requestedTargetId ?? null;
   const markedPointIds = Array.isArray(skillAction?.marked) ? skillAction.marked : [];
   const removalMarkIds = Array.isArray(skillAction?.removalMarkIds) ? skillAction.removalMarkIds : [];
@@ -193,6 +205,7 @@ export function buildPendingSkillPreview({
     targetId,
     markedPointIds,
     removalMarkIds,
+    transformed: skillAction?.transformed,
     boardSize: resolvedGame?.size
   });
 
@@ -214,13 +227,29 @@ export function buildPendingSkillPreview({
     removed: skillAction?.removed ?? 0,
     removedByColor: skillAction?.removedByColor ?? null,
     resolvesAt,
+    effectsEnabled,
     bannerDurationMs: SKILL_BANNER_DURATION_MS,
-    boardEffectDurationMs: SKILL_BOARD_EFFECT_DURATION_MS
+    boardEffectDurationMs: effectsEnabled === false ? 0 : SKILL_BOARD_EFFECT_DURATION_MS
   };
 }
 
-export function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds, removalMarkIds = [], boardSize = 13 }) {
+function resolvedSkillEffectType(resolvedGame, skill) {
+  const skillAction = [...(resolvedGame?.history ?? [])].reverse().find((entry) => entry.type === "skill");
+  return skillAction?.effectType ?? skill?.effectType ?? skill?.id ?? "";
+}
+
+function skillEffectsEnabled() {
+  return getCachedPublicSiteSettings().skillEffectsEnabled !== false;
+}
+
+export function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds, removalMarkIds = [], transformed = [], boardSize = 13 }) {
   if (effectType === "random-blast") return markedPointIds;
+  if (effectType === "spray-stone") {
+    const transformedIds = Array.isArray(transformed)
+      ? transformed.map((entry) => entry?.id).filter(Boolean)
+      : [];
+    return [...new Set([...(targetId ? [targetId] : []), ...transformedIds])];
+  }
   if (effectType === "liberty-purge") {
     return [...new Set([...(targetId ? [targetId] : []), ...removalMarkIds])];
   }
