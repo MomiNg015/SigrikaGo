@@ -58,15 +58,20 @@ describe("player theme CSS contract", () => {
 
   it("keeps Bright School commerce as an import-only domain entry", () => {
     const commerceEntry = readFileSync(new URL("./themes/bright-school/commerce.css", import.meta.url), "utf8");
+    const recruitmentPolish = readFileSync(new URL("./themes/bright-school/commerce/recruitment.css", import.meta.url), "utf8");
 
     expect(cssImports(commerceEntry)).toEqual([
       "./commerce/gacha.css",
+      "./commerce/recruitment.css",
       "./commerce/shop.css",
       "./commerce/warehouse-profile.css"
     ]);
     expect(commerceEntry).not.toContain(".gacha-modal {");
     expect(commerceEntry).not.toContain(".shop-layout {");
     expect(commerceEntry).not.toContain(".warehouse-grid {");
+    expect(recruitmentPolish).toContain("var(--recruitment-board-background-image)");
+    expect(recruitmentPolish).toContain("background-position: center center !important;");
+    expect(recruitmentPolish).toContain("background-size: cover !important;");
   });
 
   it("keeps Bright School commerce shop as an import-only modal polish entry", () => {
@@ -344,6 +349,7 @@ describe("player theme CSS contract", () => {
       "./modals/surface-cleanup.css",
       "./modals/settings-lobby-cleanup.css",
       "./modals/selected-actions.css",
+      "./modals/leaderboard.css",
       "./modals/resume-personalization.css",
       "./modals/result-room-popovers.css",
       "./modals/stage-decoration-fixes.css"

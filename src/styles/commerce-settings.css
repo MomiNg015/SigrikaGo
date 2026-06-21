@@ -1,5 +1,6 @@
 /* Commerce, profile, social, warehouse, and toast style entry. */
 @import "./commerce/gacha.css";
+@import "./commerce/recruitment.css";
 @import "./commerce/social-profile.css";
 @import "./commerce/shop-settings.css";
 @import "./commerce/terminal-polish.css";

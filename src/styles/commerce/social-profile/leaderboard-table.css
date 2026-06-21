@@ -87,6 +87,10 @@
   justify-self: center;
 }
 
+.leaderboard-avatar {
+  display: contents;
+}
+
 .leaderboard-rank {
   color: #5d7fe8;
   font-size: 20px;
@@ -128,4 +132,51 @@
 
 .leaderboard-mobile-record {
   display: none;
+}
+
+@media (min-width: 761px) {
+  .leaderboard-row > * {
+    align-self: center;
+  }
+
+  .leaderboard-rank,
+  .leaderboard-row > span,
+  .leaderboard-row > b {
+    display: grid;
+    place-items: center;
+    line-height: 1;
+  }
+
+  .leaderboard-row img {
+    align-self: center;
+    justify-self: center;
+  }
+
+  .leaderboard-avatar {
+    width: 72px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    align-self: center;
+    justify-self: center;
+    overflow: visible;
+  }
+
+  .leaderboard-avatar > img {
+    width: 72px;
+    height: 64px;
+    object-fit: contain;
+    transform: translateY(-6px);
+  }
+
+  .leaderboard-player {
+    align-content: center;
+  }
+
+  .leaderboard-player > strong {
+    width: 100%;
+    display: grid;
+    place-items: center;
+    line-height: 1;
+  }
 }

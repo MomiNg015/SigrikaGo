@@ -36,18 +36,3 @@
   border-color: #73b79f !important;
   color: #245b4f !important;
 }
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
-  background:
-    linear-gradient(135deg, rgba(226, 255, 228, 0.96), rgba(246, 255, 241, 0.98)) padding-box !important;
-  border-color: #73b79f !important;
-  color: #245b4f !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-rank {
-  background: #dff5df !important;
-  border-color: #73b79f !important;
-  color: #245b4f !important;
-}

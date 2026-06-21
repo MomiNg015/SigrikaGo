@@ -1,6 +1,5 @@
 export const SHOP_CATEGORIES = [
-  ["character", "角色"],
-  ["item", "道具"],
+  ["item", "杂物"],
   ["decoration", "装饰"],
   ["music", "音乐"]
 ];

@@ -1,4 +1,5 @@
 /* Bright School commerce style entry. */
 @import "./commerce/gacha.css";
+@import "./commerce/recruitment.css";
 @import "./commerce/shop.css";
 @import "./commerce/warehouse-profile.css";

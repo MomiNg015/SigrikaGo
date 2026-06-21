@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import LeaderboardModal, { isLeaderboardCurrentUser, leaderboardRankClass } from "./LeaderboardModal.jsx";
 import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
@@ -76,6 +76,8 @@ describe("LeaderboardModal layout", () => {
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(markup).toContain("leaderboard-row");
+    expect(markup).toContain("leaderboard-avatar");
+    expect(markup).toContain("data-character-id=\"sigrika\"");
     expect(markup).toContain("current-user");
     expect(markup).toContain("pinned");
     expect(brightSchoolCss).toContain(".leaderboard-row.current-user");
@@ -198,7 +200,8 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain(".friends-modal button");
     expect(phoneModalMedia).toContain("justify-content: center");
     expect(finalMobileCss).toContain(".leaderboard-row.top-rank .leaderboard-rank");
-    expect(finalMobileCss).toContain("border-radius: 50% !important");
+    expect(finalMobileCss).toContain("border-radius: 0 !important");
+    expect(finalMobileCss).toContain("background: transparent !important");
     expect(finalMobileCss).toContain("clip-path: none !important");
     expect(finalMobileCss).toContain("grid-template-rows: minmax(0, 1fr) auto !important");
     expect(finalMobileCss).toContain('"rank avatar player score"');
@@ -225,6 +228,41 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain("min-height: 72px !important");
     expect(finalMobileCss).toContain("width: 34px !important");
     expect(finalMobileCss).toContain("font-size: 17px !important");
+  });
+
+  it("uses textured row-level gold, silver, and bronze highlights instead of top-rank number triangles", () => {
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const topRankBadgeBlock = commerceCss.match(/\.leaderboard-row\.top-rank \.leaderboard-rank\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(commerceCss).toContain(".leaderboard-row.rank-1");
+    expect(commerceCss).toContain('url("/assets/leaderboard/top-rank-gold.webp")');
+    expect(commerceCss).toContain(".leaderboard-row.rank-2");
+    expect(commerceCss).toContain('url("/assets/leaderboard/top-rank-silver.webp")');
+    expect(commerceCss).toContain(".leaderboard-row.rank-3");
+    expect(commerceCss).toContain('url("/assets/leaderboard/top-rank-bronze.webp")');
+    expect(topRankBadgeBlock).toContain("background: transparent");
+    expect(topRankBadgeBlock).toContain("clip-path: none");
+    expect(topRankBadgeBlock).not.toContain("polygon(50% 100%, 0 0, 100% 0)");
+    expect(brightSchoolCss).toContain(".leaderboard-row.rank-1");
+    expect(brightSchoolCss).toContain('url("/assets/leaderboard/top-rank-gold.webp")');
+    expect(brightSchoolCss).toContain(".leaderboard-row.rank-2");
+    expect(brightSchoolCss).toContain('url("/assets/leaderboard/top-rank-silver.webp")');
+    expect(brightSchoolCss).toContain(".leaderboard-row.rank-3");
+    expect(brightSchoolCss).toContain('url("/assets/leaderboard/top-rank-bronze.webp")');
+    expect(brightSchoolCss).toContain("align-items: center !important");
+    expect(brightSchoolCss).toContain("align-self: center !important");
+    expect(brightSchoolCss).toContain("line-height: 1 !important");
+    expect(brightSchoolCss).toContain("@media (min-width: 761px)");
+    expect(brightSchoolCss).toContain(".leaderboard-avatar");
+    expect(brightSchoolCss).toContain("transform: translateY(-6px) !important");
+    expect(finalMobileCss).toContain(".leaderboard-row.rank-1");
+    expect(finalMobileCss).toContain("background: transparent !important");
+    expect(finalMobileCss).toContain("border-radius: 0 !important");
+    expect(statSync(new URL("../../public/assets/leaderboard/top-rank-gold.webp", import.meta.url)).size).toBeLessThan(30_000);
+    expect(statSync(new URL("../../public/assets/leaderboard/top-rank-silver.webp", import.meta.url)).size).toBeLessThan(30_000);
+    expect(statSync(new URL("../../public/assets/leaderboard/top-rank-bronze.webp", import.meta.url)).size).toBeLessThan(30_000);
   });
 });
 

@@ -310,6 +310,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/desktop-home-footer.css",
       "./mobile-adaptive/phone-core.css",
       "./mobile-adaptive/phone-gacha.css",
+      "./mobile-adaptive/phone-recruitment.css",
       "./mobile-adaptive/phone-shop.css",
       "./mobile-adaptive/phone-social-warehouse.css",
       "./mobile-adaptive/phone-interactions.css",
@@ -366,6 +367,7 @@ describe("root CSS entry contract", () => {
       "./bright-school-overrides/profile-house-records.css",
       "./bright-school-overrides/shop-cards.css",
       "./bright-school-overrides/leaderboard-cards.css",
+      "./bright-school-overrides/leaderboard-top-ranks.css",
       "./bright-school-overrides/preload.css"
     ]);
     expect(brightSchoolOverridesEntry).not.toContain(".home-mobile-menu-panel");
@@ -442,6 +444,7 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(commerceEntry)).toEqual([
       "./commerce/gacha.css",
+      "./commerce/recruitment.css",
       "./commerce/social-profile.css",
       "./commerce/shop-settings.css",
       "./commerce/terminal-polish.css",
@@ -486,6 +489,27 @@ describe("root CSS entry contract", () => {
     expect(gachaEntry).not.toContain(".gacha-main {");
     expect(gachaEntry).not.toContain(".gacha-result-card");
     expect(gachaEntry).not.toContain("@keyframes gacha-drum-spin");
+  });
+
+  it("keeps commerce recruitment.css as an import-only commerce sub-entry", () => {
+    const recruitmentEntry = readFileSync(new URL("./commerce/recruitment.css", import.meta.url), "utf8");
+    const recruitmentShell = readFileSync(new URL("./commerce/recruitment/modal-shell.css", import.meta.url), "utf8");
+    const recruitmentBoard = readFileSync(new URL("./commerce/recruitment/board.css", import.meta.url), "utf8");
+    const phoneRecruitment = readFileSync(new URL("./mobile-adaptive/phone-recruitment.css", import.meta.url), "utf8");
+
+    expect(cssImports(recruitmentEntry)).toEqual([
+      "./recruitment/modal-shell.css",
+      "./recruitment/board.css",
+      "./recruitment/actions.css"
+    ]);
+    expect(recruitmentEntry).not.toContain(".recruitment-modal {");
+    expect(recruitmentShell).toContain("position: relative;");
+    expect(recruitmentBoard).toContain("--recruitment-board-background-image: url(\"/assets/recruitment/notice-board-background.webp\")");
+    expect(recruitmentBoard).toContain("var(--recruitment-board-background-image)");
+    expect(statSync(new URL("../../public/assets/recruitment/notice-board-background.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(recruitmentBoard).toContain(".recruitment-countdown-row");
+    expect(recruitmentBoard).toContain(".recruitment-fast-forward-button");
+    expect(phoneRecruitment).toContain(".recruitment-fast-forward-button");
   });
 
   it("keeps commerce social-profile.css as an import-only commerce sub-entry", () => {
@@ -720,6 +744,7 @@ describe("root CSS entry contract", () => {
       "./home-terminal/layout-player.css",
       "./home-terminal/entries.css",
       "./home-terminal/utility-footer-motion.css",
+      "./home-terminal/recruitment-alert.css",
       "./home-terminal/mobile.css"
     ]);
     expect(homeTerminalEntry).not.toContain(".app-shell:has(.home-screen)");

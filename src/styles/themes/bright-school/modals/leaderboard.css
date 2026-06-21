@@ -1,0 +1,113 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
+  background:
+    linear-gradient(135deg, rgba(226, 255, 228, 0.96), rgba(246, 255, 241, 0.98)) padding-box !important;
+  border-color: #73b79f !important;
+  color: #245b4f !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-rank {
+  background: #dff5df !important;
+  border-color: #73b79f !important;
+  color: #245b4f !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-1 {
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, 0.24), rgba(255, 248, 222, 0.08) 42%, rgba(185, 119, 30, 0.16)),
+    url("/assets/leaderboard/top-rank-gold.webp") !important;
+  background-size: 100% 100%, cover !important;
+  background-position: center !important;
+  border-color: #d59f26 !important;
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-2 {
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, 0.28), rgba(244, 248, 250, 0.06) 44%, rgba(117, 138, 153, 0.14)),
+    url("/assets/leaderboard/top-rank-silver.webp") !important;
+  background-size: 100% 100%, cover !important;
+  background-position: center !important;
+  border-color: #9baab6 !important;
+  color: #2f3a42 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-3 {
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, 0.24), rgba(255, 233, 212, 0.08) 44%, rgba(147, 82, 42, 0.14)),
+    url("/assets/leaderboard/top-rank-bronze.webp") !important;
+  background-size: 100% 100%, cover !important;
+  background-position: center !important;
+  border-color: #b47445 !important;
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.top-rank .leaderboard-rank {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  filter: none !important;
+  padding-bottom: 0 !important;
+}
+
+@media (min-width: 761px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row {
+    align-items: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row > * {
+    align-self: center !important;
+    justify-self: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row > b,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row > span,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-rank {
+    display: grid !important;
+    place-items: center !important;
+    line-height: 1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row img {
+    align-self: center !important;
+    justify-self: center !important;
+    display: block !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-avatar {
+    width: 72px !important;
+    height: 56px !important;
+    display: grid !important;
+    place-items: center !important;
+    align-self: center !important;
+    justify-self: center !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-avatar > img {
+    width: 72px !important;
+    height: 64px !important;
+    object-fit: contain !important;
+    transform: translateY(-6px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player {
+    align-content: center !important;
+    justify-items: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player > strong {
+    width: 100% !important;
+    display: grid !important;
+    place-items: center !important;
+    line-height: 1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-player > span {
+    display: grid !important;
+    place-items: center !important;
+    line-height: 1 !important;
+  }
+}

@@ -7,7 +7,7 @@ import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
 import MatchModeRuleText from "./MatchModeRuleText.jsx";
 
-export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, onLogout, onStartMatch, onOpenMatch, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenGacha, onOpenFriends, onOpenSettings, onOpenMessageBoard, onOpenAdmin }) {
+export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, onLogout, onStartMatch, onOpenMatch, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenMessageBoard, onOpenAdmin }) {
   const [matchModePickerOpen, setMatchModePickerOpen] = useState(false);
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
   const onlineCount = Number(lobbyStats.onlineCount ?? 0);
@@ -38,7 +38,8 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
             onOpenResume={onOpenResume}
             onOpenLeaderboard={onOpenLeaderboard}
             onOpenShop={onOpenShop}
-            onOpenGacha={onOpenGacha}
+            recruitmentReady={recruitmentReady}
+            onOpenRecruitment={onOpenRecruitment}
             onOpenWarehouse={onOpenWarehouse}
             onOpenWatch={onOpenWatch}
             onStartMatch={() => {

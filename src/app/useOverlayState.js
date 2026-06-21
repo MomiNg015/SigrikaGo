@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 
 export const OVERLAY_STATE_KEYS = [
   "shop",
-  "gacha",
+  "recruitment",
   "house",
   "warehouse",
   "resume",
@@ -38,7 +38,7 @@ export function useOverlayState() {
 
   const setters = useMemo(() => ({
     setShowShop: (value) => setOverlay("shop", value),
-    setShowGacha: (value) => setOverlay("gacha", value),
+    setShowRecruitment: (value) => setOverlay("recruitment", value),
     setShowHouse: (value) => setOverlay("house", value),
     setShowWarehouse: (value) => setOverlay("warehouse", value),
     setShowResume: (value) => setOverlay("resume", value),
@@ -53,7 +53,7 @@ export function useOverlayState() {
 
   return useMemo(() => ({
     showShop: overlays.shop,
-    showGacha: overlays.gacha,
+    showRecruitment: overlays.recruitment,
     showHouse: overlays.house,
     showWarehouse: overlays.warehouse,
     showResume: overlays.resume,

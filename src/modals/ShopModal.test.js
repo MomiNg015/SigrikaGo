@@ -45,18 +45,20 @@ describe("ShopModal helpers", () => {
     expect(html).not.toContain("shop-header-display");
   });
 
-  it("keeps the shop blue-gem wallet visually aligned with the resume blue-gem capsule", () => {
+  it("hides the shop blue-gem wallet while keeping the coin wallet visible", () => {
+    const html = renderToStaticMarkup(createElement(ShopModal, {
+      token: "token",
+      user: { coins: 90610, blueGems: 12, ownedCharacters: [], ownedDecorations: [] },
+      onPurchased: () => {},
+      onClose: () => {}
+    }));
     const baseShopCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
-    const brightSchoolShopCss = readCssWithImports(new URL("../styles/themes/bright-school/commerce.css", import.meta.url));
-    const mobileAdaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-    const resumeGradient = "linear-gradient(135deg, #dffbff 0%, #7fd6f2 48%, #2d9fd0 100%)";
 
-    expect(baseShopCss).toContain(".shop-wallet.blue-gem-wallet");
-    expect(baseShopCss).toContain(`background: ${resumeGradient} !important;`);
-    expect(brightSchoolShopCss).toContain(".shop-wallet.blue-gem-wallet");
-    expect(brightSchoolShopCss).toContain(`background: ${resumeGradient} !important;`);
-    expect(brightSchoolShopCss).toContain(".shop-wallet.blue-gem-wallet svg");
-    expect(mobileAdaptiveCss).toContain(".shop-wallet.blue-gem-wallet svg");
+    expect(html).toContain("shop-wallet");
+    expect(html).toContain("90610");
+    expect(html).not.toContain("blue-gem-wallet");
+    expect(html).not.toContain(">12</p>");
+    expect(baseShopCss).toContain(".shop-wallet-wrap");
   });
 
   it("adds category hooks for tactical rarity glow styling", () => {
@@ -68,7 +70,7 @@ describe("ShopModal helpers", () => {
       onClose: () => {}
     }));
 
-    expect(html).toContain("shop-category-character");
+    expect(html).toContain("shop-category-item");
     expect(source).toContain("store-owned-tag");
     expect(source).toContain("shop-item-empty terminal-locked-slot");
   });

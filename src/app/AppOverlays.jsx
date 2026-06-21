@@ -8,7 +8,7 @@ import MessageBoardModal from "../modals/MessageBoardModal.jsx";
 import PersonalizationModal from "../modals/PersonalizationModal.jsx";
 import ResumeModal from "../modals/ResumeModal.jsx";
 import SettingsModal from "../modals/SettingsModal.jsx";
-import GachaModal from "../modals/GachaModal.jsx";
+import RecruitmentModal from "../modals/RecruitmentModal.jsx";
 import ShopModal from "../modals/ShopModal.jsx";
 import WarehouseModal from "../modals/WarehouseModal.jsx";
 import WatchModal from "../modals/WatchModal.jsx";
@@ -27,6 +27,7 @@ export default function AppOverlays({
   onMatchSuccessComplete,
   onMessageSubmitted,
   onRemoveToast,
+  onRecruitmentStatusChange,
   onResultClose,
   openReplay,
   replayRecords,
@@ -38,7 +39,7 @@ export default function AppOverlays({
   setIncomingDuel,
   setShowAchievements,
   setShowFriends,
-  setShowGacha,
+  setShowRecruitment,
   setShowHouse,
   setShowLeaderboard,
   setShowMessageBoard,
@@ -50,7 +51,7 @@ export default function AppOverlays({
   setShowWatch,
   setVisualTheme,
   showFriends,
-  showGacha,
+  showRecruitment,
   showAchievements,
   showHouse,
   showLeaderboard,
@@ -202,13 +203,15 @@ export default function AppOverlays({
           musicTracks={musicTracks}
         />
       )}
-      {showGacha && (
-        <GachaModal
+      {showRecruitment && (
+        <RecruitmentModal
+          characters={characters}
           token={token}
           user={user}
           onUserChange={updateUser}
           onNotice={showToast}
-          onClose={() => setShowGacha(false)}
+          onStatusChange={onRecruitmentStatusChange}
+          onClose={() => setShowRecruitment(false)}
         />
       )}
       {showSettings && (

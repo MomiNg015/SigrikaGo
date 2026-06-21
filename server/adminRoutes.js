@@ -48,6 +48,7 @@ import {
   validateGachaPoolInput
 } from "./adminGachaManagement.js";
 import { listMusicTrackSettings, updateMusicTrackSetting } from "./musicTracks.js";
+import { getRecruitmentConfig, updateRecruitmentConfig } from "./recruitment.js";
 
 export { serializeAudit } from "./adminAudit.js";
 export {
@@ -499,6 +500,22 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
     try {
       const pool = await disableGachaPool({ prisma, adminUser: req.user, poolId: req.params.id });
       res.json({ pool });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/recruitment-config", async (_req, res) => {
+    try {
+      res.json({ config: await getRecruitmentConfig(prisma) });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/recruitment-config", async (req, res) => {
+    try {
+      res.json(await updateRecruitmentConfig({ prisma, input: req.body }));
     } catch (error) {
       sendRouteError(res, error);
     }

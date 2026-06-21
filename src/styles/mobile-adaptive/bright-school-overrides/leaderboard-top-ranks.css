@@ -1,0 +1,35 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-1 {
+    background:
+      linear-gradient(135deg, rgba(255, 246, 187, 0.98), rgba(255, 209, 89, 0.94) 52%, rgba(255, 178, 63, 0.9)) padding-box !important;
+    border-color: #d59f26 !important;
+    color: #3d2b25 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-2 {
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(224, 232, 238, 0.96) 52%, rgba(185, 198, 207, 0.92)) padding-box !important;
+    border-color: #9baab6 !important;
+    color: #2f3a42 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-3 {
+    background:
+      linear-gradient(135deg, rgba(255, 232, 199, 0.98), rgba(226, 171, 112, 0.94) 52%, rgba(197, 133, 78, 0.9)) padding-box !important;
+    border-color: #b47445 !important;
+    color: #3d2b25 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.top-rank .leaderboard-rank,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-1 .leaderboard-rank,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-2 .leaderboard-rank,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.rank-3 .leaderboard-rank {
+    background: transparent !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    clip-path: none !important;
+    filter: none !important;
+    padding-bottom: 0 !important;
+  }
+}

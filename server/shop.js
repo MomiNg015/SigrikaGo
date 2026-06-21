@@ -16,6 +16,7 @@ import {
 } from "./userProgressLedger.js";
 import { STONE_DECORATIONS } from "../src/shared/stoneDecorations.js";
 import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
+import { RECRUITMENT_ITEMS } from "../src/shared/recruitment.js";
 
 const SHOP_CATEGORIES = new Set(["character", "decoration", "item", "music"]);
 const BUILTIN_SHOP_ITEMS = [
@@ -25,12 +26,26 @@ const BUILTIN_SHOP_ITEMS = [
     targetId: "baconbits",
     priceCoins: 9999,
     discountPercent: 0,
-    purchasable: true,
-    enabled: true,
+    purchasable: false,
+    enabled: false,
     sortOrder: 100,
     description: "获得角色猪小仙。",
     imageUrl: "/assets/baconbits.webp"
   },
+  ...Object.values(RECRUITMENT_ITEMS).map((item) => ({
+    name: item.name,
+    category: "item",
+    targetId: item.itemType,
+    itemTargetType: "self",
+    stockQuantity: -1,
+    priceCoins: item.priceCoins,
+    discountPercent: 0,
+    purchasable: true,
+    enabled: true,
+    sortOrder: item.sortOrder,
+    description: item.description,
+    imageUrl: item.imageUrl
+  })),
   {
     name: "彩虹豆豆跳跳糖",
     category: "item",
@@ -175,6 +190,16 @@ export async function listShopItems(prisma, userId = "") {
 }
 
 export async function seedBuiltinShopItems(prisma) {
+  await prisma.shopItem.updateMany?.({
+    where: {
+      category: "character",
+      targetId: "baconbits"
+    },
+    data: {
+      purchasable: false,
+      enabled: false
+    }
+  });
   for (const item of BUILTIN_SHOP_ITEMS) {
     const existing = await prisma.shopItem.findFirst({
       where: {

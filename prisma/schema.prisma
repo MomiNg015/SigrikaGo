@@ -38,6 +38,8 @@ model User {
   userItemEffects    UserItemEffect[]
   modeStats          UserModeStats[]
   gachaDraws         GachaDraw[]
+  recruitmentTasks   RecruitmentTask[]
+  recruitmentMissStreaks RecruitmentMissStreak[]
   achievements       UserAchievement[]
   achievementCounters AchievementCounter[]
   achievementEquipment UserAchievementEquipment?
@@ -45,6 +47,40 @@ model User {
   profileLikesReceived UserProfileLike[] @relation("ProfileLikesReceived")
   reportsSubmitted UserReport[] @relation("ReportsSubmitted")
   reportsReceived UserReport[] @relation("ReportsReceived")
+}
+
+model RecruitmentTask {
+  id                 String   @id @default(cuid())
+  userId             String
+  itemType           String
+  status             String   @default("pending")
+  resultType         String
+  resultCharacterSlug String?
+  successRatePercent Int
+  missStreakAtStart  Int      @default(0)
+  responseText       String   @default("")
+  startedAt          DateTime @default(now())
+  readyAt            DateTime
+  claimedAt          DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status, readyAt])
+  @@index([itemType])
+}
+
+model RecruitmentMissStreak {
+  id        String   @id @default(cuid())
+  userId    String
+  itemType  String
+  streak    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemType])
+  @@index([itemType])
 }
 
 model UserModeStats {

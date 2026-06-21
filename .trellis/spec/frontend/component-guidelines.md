@@ -512,6 +512,172 @@ Place the final mobile contract in `mobile-adaptive.css`, then let theme CSS adj
 
 ---
 
+### Scenario: Warehouse Inventory And Target Card Presentation
+
+#### 1. Scope / Trigger
+- Trigger: any change to `WarehouseModal`, `WarehouseItemGrid`, `WarehouseTargetModal`, warehouse item CSS, or Bright School/mobile warehouse overrides.
+
+#### 2. Signatures
+- `WarehouseItemGrid({ items, usingItemId, onSelectTargetItem, onUseItem })` renders `.warehouse-grid` and `.warehouse-item`.
+- `WarehouseTargetModal(...)` renders `.warehouse-character-grid` and disabled `.warehouse-target-disabled` buttons.
+- `warehouseCharacterTargetAvailability({ character, item, itemEffects })` may return `reason` for logic and tests, but the target card UI must not display that reason.
+
+#### 3. Contracts
+- Desktop `.warehouse-grid` is single-column and each `.warehouse-item` is a row: icon, text, action in one horizontal entry.
+- Mobile warehouse inventory keeps compact single-column row cards through final mobile overrides.
+- Mobile warehouse item rows place the quantity chip in the right action column above the use button; keep the chip right-aligned and the button directly below it.
+- Warehouse use buttons that are unavailable for direct use, including recruitment-only items, must stay native `disabled` controls and render as gray disabled buttons on desktop and mobile.
+- Character-target unavailable cards use native `disabled`, `.warehouse-target-disabled`, gray/low-saturation styling, and no reason badge or reason text.
+- Do not put availability reason in `<small>` or `title`; title should stay the character name.
+- The disabled visual rule applies to desktop, Bright School, and mobile theme layers.
+
+#### 4. Validation & Error Matrix
+- `item.targetType === "character"` opens the target modal.
+- `targetAvailability.disabled === true` renders a disabled gray card with no click behavior and no reason copy.
+- Already affected characters and no-effect characters are both disabled visually without distinguishing labels.
+- Mobile viewport follows the same no-reason target card contract.
+- `item.usable === false` -> disabled gray use button, not an active-looking primary button.
+- Mobile viewport -> quantity chip is above the use button in the same right-aligned action column.
+
+#### 5. Good / Base / Bad Cases
+- Good: disabled target button has class `warehouse-target-disabled`, a disabled attribute, and a character-name-only title.
+- Good: disabled warehouse use button has `disabled`, `cursor: not-allowed`, and gray base plus Bright School theme styles.
+- Base: helper still returns `reason` for logic, but UI does not show it.
+- Bad: mobile quantity and use button sit side by side in separate action columns.
+- Bad: `请去招募` uses pink primary styling while disabled.
+- Bad: `<small>{targetAvailability.reason}</small>` or `title={targetAvailability.reason}` in target cards.
+- Bad: desktop inventory returns to a multi-column card grid.
+
+#### 6. Tests Required
+- `src/modals/WarehouseModal.test.js` asserts desktop row layout, mobile quantity-above-button overrides, disabled warehouse use buttons, disabled target cards, and absence of reason labels/title.
+- Theme/style contract tests should run after moving warehouse CSS import boundaries.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<button disabled={targetAvailability.disabled} title={targetAvailability.reason || character.name}>
+  <span>{character.name}</span>
+  {targetAvailability.reason && <small>{targetAvailability.reason}</small>}
+</button>
+```
+
+Correct:
+
+```jsx
+<button disabled={targetAvailability.disabled} title={character.name}>
+  <span>{character.name}</span>
+</button>
+```
+
+### Scenario: Recruitment Modal Bulletin Board Background
+
+#### 1. Scope / Trigger
+- Trigger: any change to `RecruitmentModal`, `.recruitment-board`, recruitment commerce CSS, Bright School recruitment overrides, or recruitment visual assets.
+- The recruitment modal's second row is the main bulletin-board stage. Theme layers must preserve its scene background instead of flattening it to a plain color.
+
+#### 2. Signatures
+- `RecruitmentModal` renders `<main className="recruitment-board">` for idle, pending, ready, and result states.
+- Base CSS lives in `src/styles/commerce/recruitment/board.css`.
+- Bright School polish lives in `src/styles/themes/bright-school/commerce/recruitment.css`.
+- The board background image is `/assets/recruitment/notice-board-background.webp`.
+- The shared CSS hook is `--recruitment-board-background-image`.
+
+#### 3. Contracts
+- `.recruitment-board` must define `--recruitment-board-background-image: url("/assets/recruitment/notice-board-background.webp")`.
+- The board must compose the image through `background-image`, not through extra JSX or an `<img>` element that can interfere with board state content.
+- Use `background-size: cover` and `background-position: center center` so the image scales proportionally, never stretches, and crops from the vertically centered portion of the artwork.
+- Bright School recruitment overrides may change border, shadow, and overlay tint, but must keep `var(--recruitment-board-background-image)` in `.recruitment-board`.
+- State cards inside the board own text readability; do not bake text or state UI into the background asset.
+
+#### 4. Validation & Error Matrix
+- Idle with no selected item -> empty board copy appears over the bulletin background.
+- Selected, pending, ready, and result states -> the same board background remains behind the state card.
+- Bright School active -> `.recruitment-board` still includes `var(--recruitment-board-background-image)` and does not collapse to a flat `background: #...`.
+- Mobile viewport -> the board keeps stable dimensions from `phone-recruitment.css`; the background may crop but must scale proportionally and must not introduce horizontal overflow.
+
+#### 5. Good / Base / Bad Cases
+- Good: base CSS defines the image variable and Bright School uses `background-image: ..., var(--recruitment-board-background-image) !important`.
+- Base: item/result cards are semi-opaque surfaces layered above the image.
+- Bad: adding an absolutely positioned `<img>` inside `RecruitmentModal` behind content.
+- Bad: a theme override that uses `background: #fff3d5 !important` and drops the image.
+
+#### 6. Tests Required
+- `src/styles/styleContract.test.js` asserts the base recruitment board image variable and `var(...)` usage.
+- `src/styles/themeContract.test.js` asserts Bright School recruitment CSS preserves the board image variable and sizing.
+- Run `npm test -- src/styles/styleContract.test.js src/styles/themeContract.test.js src/modals/RecruitmentModal.test.js` after recruitment board CSS changes.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```css
+.theme-bright-school .recruitment-board {
+  background: #fff3d5 !important;
+}
+```
+
+Correct:
+
+```css
+.theme-bright-school .recruitment-board {
+  background-image:
+    linear-gradient(180deg, rgba(255, 253, 239, 0.1), rgba(242, 249, 246, 0.14)),
+    var(--recruitment-board-background-image) !important;
+}
+```
+
+### Scenario: Player Currency Visibility In Resume And Shop
+
+#### 1. Scope / Trigger
+- Trigger: any change to `ResumeModal`, `ShopSidebar`, shop wallet markup, resume header wallet markup, or player-facing currency display in shop/resume surfaces.
+
+#### 2. Signatures
+- `ResumeModal({ user, ... })` receives `user.coins` and may still receive `user.blueGems`.
+- `ShopSidebar({ mascotLine, user })` receives `user.coins` and may still receive `user.blueGems`.
+- Visible wallet markup uses `.shop-wallet`; the hidden blue-gem capsule previously used `.blue-gem-wallet`.
+
+#### 3. Contracts
+- Resume and shop must render only the coin wallet capsule.
+- Do not render `.blue-gem-wallet`, `Gem`, `user.blueGems`, or blue-gem balance text in `ResumeModal` or `ShopSidebar`.
+- Keep backend/user payload `blueGems` compatibility intact; this contract hides the player-facing shop/resume surfaces only.
+- Legacy gacha internals may still carry `blueGems` and duplicate-conversion data unless product scope explicitly removes that system.
+
+#### 4. Validation & Error Matrix
+- `user.blueGems > 0` in resume -> no blue-gem wallet element, title, icon, or balance appears.
+- `user.blueGems > 0` in shop -> no blue-gem wallet element, title, icon, or balance appears.
+- Missing `user.coins` -> existing coin fallback rules still apply; do not reintroduce blue-gem fallback UI.
+
+#### 5. Good / Base / Bad Cases
+- Good: `<p className="shop-wallet"><CircleDollarSign />{user.coins}</p>`.
+- Base: tests may pass `blueGems` in user fixtures to prove the UI ignores it.
+- Bad: `<p className="shop-wallet blue-gem-wallet"><Gem />{user.blueGems}</p>`.
+
+#### 6. Tests Required
+- `src/modals/HouseModal.test.js` asserts resume markup does not include `blue-gem-wallet`.
+- `src/modals/ShopModal.test.js` asserts shop markup keeps the coin wallet and does not include `blue-gem-wallet` or the passed blue-gem balance.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<p className="shop-wallet blue-gem-wallet">
+  <Gem size={18} />
+  {user.blueGems ?? 0}
+</p>
+```
+
+Correct:
+
+```jsx
+<p className="shop-wallet">
+  <CircleDollarSign size={18} />
+  {user.coins ?? 0}
+</p>
+```
+
 ## Styling Patterns
 
 <!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->

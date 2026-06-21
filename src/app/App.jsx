@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { api } from "../api/client.js";
 import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { deploymentSocketBase } from "../shared/preloadAssets.js";
@@ -41,7 +42,7 @@ export default function App() {
   } = useMatchSessionState();
   const {
     showShop,
-    showGacha,
+    showRecruitment,
     showHouse,
     showWarehouse,
     showResume,
@@ -53,7 +54,7 @@ export default function App() {
     showSettings,
     showMessageBoard,
     setShowShop,
-    setShowGacha,
+    setShowRecruitment,
     setShowHouse,
     setShowWarehouse,
     setShowResume,
@@ -89,6 +90,8 @@ export default function App() {
   const [incomingDuel, setIncomingDuel] = useState(null);
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
+  const [recruitmentReady, setRecruitmentReady] = useState(false);
+  const [recruitmentBadgeTask, setRecruitmentBadgeTask] = useState(null);
   const { removeToast, showToast, toasts } = useToastQueue();
   const showAchievementUnlocks = useCallback((unlocks = []) => {
     for (const unlock of unlocks) {
@@ -194,7 +197,7 @@ export default function App() {
     setReplayStep,
     setRoom,
     setShowFriends,
-    setShowGacha,
+    setShowRecruitment,
     setShowHouse,
     setShowLeaderboard,
     setShowMessageBoard,
@@ -242,6 +245,53 @@ export default function App() {
 
   useReplayRecords({ enabled: showHouse || showResume, showToast, token, setReplayRecords });
   useHomeUserRefresh({ onAchievementUnlocks: showAchievementUnlocks, token, updateUser, user, view });
+  const handleRecruitmentStatusChange = useCallback((task) => {
+    setRecruitmentReady(task?.status === "ready");
+    setRecruitmentBadgeTask(task ?? null);
+  }, []);
+  useEffect(() => {
+    if (!token || !user) {
+      setRecruitmentReady(false);
+      setRecruitmentBadgeTask(null);
+      return undefined;
+    }
+    let alive = true;
+    const refreshRecruitmentBadge = async () => {
+      try {
+        const data = await api("/api/recruitment", { token });
+        if (!alive) return;
+        setRecruitmentReady(data.task?.status === "ready");
+        setRecruitmentBadgeTask(data.task ?? null);
+      } catch {
+        if (alive) {
+          setRecruitmentReady(false);
+          setRecruitmentBadgeTask(null);
+        }
+      }
+    };
+    refreshRecruitmentBadge();
+    const timer = window.setInterval(refreshRecruitmentBadge, 30000);
+    return () => {
+      alive = false;
+      window.clearInterval(timer);
+    };
+  }, [token, user?.id]);
+
+  useEffect(() => {
+    if (!token || !user || !recruitmentBadgeTask || recruitmentBadgeTask.status !== "pending") return undefined;
+    const remainingMs = new Date(recruitmentBadgeTask.readyAt).getTime() - Date.now();
+    const timer = window.setTimeout(async () => {
+      try {
+        const data = await api("/api/recruitment", { token });
+        setRecruitmentReady(data.task?.status === "ready");
+        setRecruitmentBadgeTask(data.task ?? null);
+      } catch {
+        setRecruitmentReady(false);
+        setRecruitmentBadgeTask(null);
+      }
+    }, Math.max(0, Number.isFinite(remainingMs) ? remainingMs : 0) + 400);
+    return () => window.clearTimeout(timer);
+  }, [token, user?.id, recruitmentBadgeTask?.id, recruitmentBadgeTask?.status, recruitmentBadgeTask?.readyAt]);
 
   useRoomMemory(room);
 
@@ -279,7 +329,8 @@ export default function App() {
         setReplayStep={setReplayStep}
         setRoom={setRoom}
         setShowFriends={setShowFriends}
-        setShowGacha={setShowGacha}
+        recruitmentReady={recruitmentReady}
+        setShowRecruitment={setShowRecruitment}
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
@@ -314,6 +365,7 @@ export default function App() {
         onMatchSuccessComplete={completeMatchSuccess}
         onMessageSubmitted={() => showToast("感谢您的反馈！", "success")}
         onRemoveToast={removeToast}
+        onRecruitmentStatusChange={handleRecruitmentStatusChange}
         onResultClose={closeResultModal}
         openReplay={openReplay}
         replayRecords={replayRecords}
@@ -324,7 +376,7 @@ export default function App() {
         setAudioSettings={setAudioSettings}
         setIncomingDuel={setIncomingDuel}
         setShowFriends={setShowFriends}
-        setShowGacha={setShowGacha}
+        setShowRecruitment={setShowRecruitment}
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMessageBoard={setShowMessageBoard}
@@ -337,7 +389,7 @@ export default function App() {
         setShowWatch={setShowWatch}
         setVisualTheme={setVisualTheme}
         showFriends={showFriends}
-        showGacha={showGacha}
+        showRecruitment={showRecruitment}
         showHouse={showHouse}
         showLeaderboard={showLeaderboard}
         showMessageBoard={showMessageBoard}

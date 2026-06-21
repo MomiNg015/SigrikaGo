@@ -27,9 +27,20 @@ describe("App startup preload wiring", () => {
   it("keeps the achievement unlock callback stable for home refresh", () => {
     const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("useCallback, useState");
+    expect(source).toContain("useCallback, useEffect, useState");
     expect(source).toContain("const showAchievementUnlocks = useCallback(");
     expect(source).toContain("}, [showToast]);");
+  });
+
+  it("refreshes the recruitment badge when a pending task reaches readyAt", () => {
+    const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("const [recruitmentBadgeTask, setRecruitmentBadgeTask] = useState(null)");
+    expect(source).toContain("const handleRecruitmentStatusChange = useCallback((task) =>");
+    expect(source).toContain("recruitmentBadgeTask.status !== \"pending\"");
+    expect(source).toContain("new Date(recruitmentBadgeTask.readyAt).getTime() - Date.now()");
+    expect(source).toContain("window.setTimeout(async () =>");
+    expect(source).toContain("setRecruitmentReady(data.task?.status === \"ready\")");
   });
 
   it("delegates audio runtime state out of the app composition root", () => {

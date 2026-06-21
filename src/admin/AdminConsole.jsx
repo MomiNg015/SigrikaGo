@@ -9,6 +9,7 @@ import AdminFeedback from "./AdminFeedback.jsx";
 import AdminGachaPools from "./AdminGachaPools.jsx";
 import AdminMusicTracks from "./AdminMusicTracks.jsx";
 import AdminOverview from "./AdminOverview.jsx";
+import AdminRecruitmentSettings from "./AdminRecruitmentSettings.jsx";
 import AdminReports from "./AdminReports.jsx";
 import AdminShopItems from "./AdminShopItems.jsx";
 import AdminSiteSettings from "./AdminSiteSettings.jsx";
@@ -270,6 +271,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
           onNotice={notify}
         />
       )}
+      {tab === "recruitment" && <AdminRecruitmentSettings token={token} onNotice={notify} />}
       {tab === "achievements" && (
         <AdminAchievements
           data={achievementData}
