@@ -58,6 +58,32 @@
   color: #2d2430;
 }
 
+.replay-time-cell {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.replay-time-cell > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.replay-friendly-icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(93, 127, 232, 0.12);
+  color: #3454b8;
+}
+
 .replay-table-row.outcome-win {
   border-color: #bce8ca;
   background: linear-gradient(135deg, #ecfff1, #f7fff9);

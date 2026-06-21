@@ -40,10 +40,11 @@
 - Socket disconnects only change online/offline presence and room disconnect state. They no longer revoke login sessions, so page refreshes, temporary backend restarts, or network hiccups do not force users back to the login screen as long as the refresh cookie remains valid.
 
 - Result rewards:
-  - The result modal displays the current player's rating and coin deltas.
-  - Rating deltas are win `+20`, loss `-20`, draw `0`.
-  - Coin deltas are win `+50`, loss `+20`, draw `0`.
-  - Decisive game persistence uses `resultRewardDelta`; winner records gain coins and rating, loser records gain consolation coins and lose rating. Draws remain record-only for rewards.
+  - Only random matchmaking rooms are rated; direct/private duel rooms are friendly matches. Friendly matches do not update rating, rank windows, leaderboard/profile stats, or recent ten-game results, but they are still persisted as replays and marked with `rated=false` plus `matchSource=duel`.
+  - Rated rating deltas use `src/shared/ratingRules.js`: Elo expected score with configurable K, min/max clamps, rank-gap decay, and optional anti-boost repeat-opponent decay from `SiteSetting.ratingRules`. Rating can go negative.
+  - Rank movement still uses the last ten rated decisive results; 7 wins promote, 8 losses demote, draws are ignored. Each promotion/demotion applies a configurable fixed rating delta, default `100`.
+  - Coin rewards for rated games remain uncapped by day. Friendly matches use configurable win/loss/draw coin values and grant coins only for the first configured number of friendly games per user per server day, default 3 days counted by Asia/Shanghai.
+  - The result modal displays settled rating/coin deltas from `room.game.resultRewards[userId]`; friendly results show that the game does not count toward rating/rank, and show the daily friendly-reward limit state when reached.
 - Home layout:
   - The home screen prioritizes "星炬对弈" as the largest primary action.
   - "棋舍" is a secondary profile/character entry with the selected portrait vertically centered beside player info.

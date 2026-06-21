@@ -28,6 +28,7 @@ export function buildLeaderboard(users = [], records = [], options = {}) {
 
   for (const record of records) {
     if (normalizeGameModeId(record.mode) !== mode) continue;
+    if (record.rated === false) continue;
     const winnerColor = recordWinnerColor(record);
     addGame(rows.get(record.blackUserId), record.blackCharacter, winnerColor, "black");
     addGame(rows.get(record.whiteUserId), record.whiteCharacter, winnerColor, "white");

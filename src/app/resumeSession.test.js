@@ -166,6 +166,25 @@ describe("resume session helpers", () => {
     }, "", 12)).toBe(false);
   });
 
+  test("shows gomoku five-in-row result modals immediately outside replay", () => {
+    const room = {
+      code: "12345",
+      game: {
+        mode: "gomoku",
+        phase: "finished",
+        moveNumber: 9,
+        winner: {
+          winnerColor: "black",
+          reason: "gomoku-five",
+          winningLine: ["2,6", "3,6", "4,6", "5,6", "6,6"]
+        }
+      }
+    };
+
+    expect(shouldShowResultModal(room, "")).toBe(true);
+    expect(shouldShowResultModal(room, "", 9)).toBe(false);
+  });
+
   test("clears the replay room snapshot when exiting a replay", () => {
     expect(shouldClearRoomOnReplayExit(null)).toBe(false);
     expect(shouldClearRoomOnReplayExit(0)).toBe(true);

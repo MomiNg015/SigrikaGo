@@ -136,6 +136,7 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
     prisma.gameRecord.findMany({
       where: {
         mode,
+        rated: true,
         OR: [
           { blackUserId: userId },
           { whiteUserId: userId }
@@ -207,6 +208,12 @@ export async function getUserReplays({ prisma, userId, mode: modeInput = "spark"
     moveCount: record.moveCount,
     blackCharacter: record.blackCharacter,
     whiteCharacter: record.whiteCharacter,
+    rated: record.rated !== false,
+    matchSource: record.matchSource ?? (record.rated === false ? "private" : "matchmaking"),
+    blackRatingDelta: record.blackRatingDelta ?? 0,
+    whiteRatingDelta: record.whiteRatingDelta ?? 0,
+    blackCoinsDelta: record.blackCoinsDelta ?? 0,
+    whiteCoinsDelta: record.whiteCoinsDelta ?? 0,
     mode: record.mode ?? "spark",
     createdAt: record.createdAt
   }));
@@ -400,6 +407,12 @@ function replaySummarySelect() {
     moveCount: true,
     blackCharacter: true,
     whiteCharacter: true,
+    rated: true,
+    matchSource: true,
+    blackRatingDelta: true,
+    whiteRatingDelta: true,
+    blackCoinsDelta: true,
+    whiteCoinsDelta: true,
     mode: true,
     createdAt: true
   };

@@ -94,6 +94,7 @@ describe("room creation lifecycle", () => {
     const room = lifecycle.joinMatchmaking(player, io, { canPair: () => true });
 
     expect(room).toBeTruthy();
+    expect(room).toMatchObject({ rated: true, matchSource: "matchmaking" });
     expect(deps.rooms.get(room.code)).toBe(room);
     expect(deps.persistRoom).toHaveBeenCalledWith(room, { force: true });
     expect(deps.startGameClock).toHaveBeenCalledWith(room, io);
@@ -119,6 +120,7 @@ describe("room creation lifecycle", () => {
     const room = lifecycle.createDirectRoom(first, second, io, "standard");
 
     expect(room.mode).toBe("standard");
+    expect(room).toMatchObject({ rated: false, matchSource: "duel" });
     expect(room.game.mode).toBe("standard");
     expect(matchmakingQueue.removeUser).toHaveBeenCalledWith("alice");
     expect(matchmakingQueue.removeUser).toHaveBeenCalledWith("bob");

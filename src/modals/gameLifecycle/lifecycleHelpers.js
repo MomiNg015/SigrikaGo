@@ -24,6 +24,17 @@ export function resultRewardForRoom(room, user) {
   const currentPlayer = resultPlayerForRoom(room, user);
   if (!currentPlayer) return null;
   if (room.game.winner?.invalid) return { rating: 0, coins: 0 };
+  const settledReward = room.game.resultRewards?.[user?.id];
+  if (settledReward) return settledReward;
+  if (room.rated === false) {
+    return {
+      outcome: "friendly",
+      rating: 0,
+      coins: 0,
+      rated: false,
+      matchSource: room.matchSource ?? "private"
+    };
+  }
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
   return resultRewardDelta(currentPlayer.color, winnerColor);
 }

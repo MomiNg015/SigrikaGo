@@ -576,6 +576,7 @@ showAchievementUnlocks(result.achievementUnlocks);
 
 #### 6. Tests Required
 - `src/app/useRoomSessionState.test.js` should cover default state and result modal derivation.
+- `src/app/resumeSession.test.js` should cover that gomoku five-in-row results show immediately outside replay and stay closed during replay.
 - `src/app/resumeSession.test.js`, `src/app/replayOpening.test.js`, and `src/app/socketHandlers.test.js` should be run after changing room resume, replay, or socket room session behavior.
 
 #### 7. Wrong vs Correct

@@ -570,7 +570,6 @@ Required assertion points:
 - Moving a modal action between header/body sections should be covered by a static markup order assertion when the order matters to the user workflow.
 - Match-mode picker cancel actions must keep explicit vertical spacing from the mode option group in base CSS and the final mobile safety layer, so the escape action never visually attaches to the last mode option on desktop or mobile.
 - Home image entries should not expose rules or matchmaking status through hover/focus text popups. Keep those details in click-open modals or mode pickers so desktop hover and mobile touch behavior stay consistent.
-- Shared modal entrance motion belongs in `src/styles/modals/modal-motion.css`, not per-modal component code. Animate only `opacity` and `transform`, keep durations in the small modal range, and preserve centered positioning transforms such as `translate(-50%, -50%)` for inline report/confirm dialogs. Add or update CSS contract tests when new modal shell classes join the shared motion set, and keep `prefers-reduced-motion` disabling motion without changing layout.
 
 ### Modal Close Button Contracts
 

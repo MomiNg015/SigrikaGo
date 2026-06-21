@@ -41,9 +41,10 @@ Questions to answer:
 #### 2. Signatures
 - `DEFAULT_SITE_SETTINGS` in `src/shared/siteSettings.js` is the source of truth for supported keys and fallback values.
 - `SITE_SETTING_KEYS = Object.keys(DEFAULT_SITE_SETTINGS)` in `server/siteSettings.js`.
-- Current keys: `homeTitle`, `homeSubtitle`, `aboutText`, `footerText`, and `preloadTips`.
+- Current keys: `homeTitle`, `homeSubtitle`, `aboutText`, `footerText`, `preloadTips`, and `ratingRules`.
 - `footerText` supports Markdown-style links in the frontend only: `[label](https://example.com)`.
 - `preloadTips` stores one loading-screen tip per line. The frontend parses non-empty trimmed lines, chooses one random tip for the preload screen, and rotates to another random tip every 10 seconds while the preload view stays mounted.
+- `ratingRules` stores JSON for dynamic rating deltas, rank-gap scaling, optional anti-boosting, rank-change rating bonuses/penalties, and friendly-match coin reward limits.
 
 #### 3. Contracts
 - `ensureDefaultSiteSettings(prisma)` must upsert every key from `DEFAULT_SITE_SETTINGS` without overwriting already configured values.
@@ -52,6 +53,7 @@ Questions to answer:
 - New settings fields must be added to `DEFAULT_SITE_SETTINGS`, `SITE_SETTING_LIMITS`, admin settings UI, public/admin route tests, frontend rendering tests, and system-design docs together.
 - The frontend must render `footerText` links through a constrained parser rather than arbitrary HTML.
 - Loading-screen tips must stay plain text. Do not parse HTML or Markdown for `preloadTips`; React text rendering should escape all configured content.
+- `ratingRules` must be normalized through `normalizeRatingRules()` on both admin save and backend sanitize paths; backend persistence stores the normalized JSON string.
 
 #### 4. Validation & Error Matrix
 - Missing key in request body -> sanitize to the shared default for that key.
@@ -62,10 +64,12 @@ Questions to answer:
 - Footer Markdown link with non-HTTP protocol -> stays plain text because only `http://` and `https://` links are recognized.
 - Blank `preloadTips` request value -> falls back to `DEFAULT_SITE_SETTINGS.preloadTips`.
 - `preloadTips` containing blank lines -> blank lines are ignored by the frontend parser.
+- Invalid or partial `ratingRules` JSON -> merge with `DEFAULT_RATING_RULES` and clamp numeric values before storage.
 
 #### 5. Good/Base/Bad Cases
 - Good: adding `footerText` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, and home footer rendering tests in one change.
 - Good: adding `preloadTips` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, preload component tests, style contract tests, and system-design docs in one change.
+- Good: adding `ratingRules` updates shared defaults, backend limits, admin structured controls, settlement tests, admin/site settings tests, and system-design docs in one change.
 - Base: an old database without `footerText` rows serves the shared default until an admin saves a custom footer.
 - Bad: accepting arbitrary HTML for the footer to make links work.
 - Bad: adding a field only to the admin form while `SITE_SETTING_KEYS` still rejects it.
@@ -79,6 +83,7 @@ Questions to answer:
 - Preload component tests assert configured tips are parsed from newline text and render below the progress bar.
 - CSS/static tests assert desktop footer remains viewport-fixed and mobile footer remains in normal document flow when those layout contracts are affected.
 - CSS/static tests assert final theme safety layers preserve the borderless preload panel when theme panel rules would otherwise add a frame.
+- Rating-rule tests assert sanitized defaults and admin-saved values cannot persist malformed/clashing rule objects.
 
 #### 7. Wrong vs Correct
 
@@ -110,6 +115,100 @@ Correct:
 ```
 
 `preloadTips` stays in the same `SiteSetting` key/value contract as other public system settings.
+
+Wrong:
+
+```js
+const rules = JSON.parse(settings.ratingRules);
+```
+
+Correct:
+
+```js
+const rules = ratingRulesFromSettings(settings);
+```
+
+`ratingRulesFromSettings()` handles missing, malformed, and partial stored values through the shared normalizer.
+
+### Scenario: Rated Results And Friendly Match Persistence
+
+#### 1. Scope / Trigger
+- Trigger: any change to room creation source, result settlement, rating/rank/coin rewards, replay APIs, public profile stats, or leaderboard stats.
+- This is a cross-layer contract because room metadata is created by matchmaking/duel flows, stored on `GameRecord`, included in snapshots/API responses, and rendered by result/replay UI.
+
+#### 2. Signatures
+- `createRoom(first, second, { rated = true, matchSource = "matchmaking" })`
+- `GameRecord.rated Boolean @default(true)`
+- `GameRecord.matchSource String @default("matchmaking")`
+- `GameRecord.blackRatingDelta`, `whiteRatingDelta`, `blackCoinsDelta`, `whiteCoinsDelta`, `blackRankDelta`, `whiteRankDelta`
+- `room.game.resultRewards[userId] = { rating, coins, rank, rewardLimitReached, outcome, rated, matchSource }`
+- `src/shared/ratingRules.js` owns dynamic rating calculation, anti-boost multipliers, friendly coin rewards, and settings normalization.
+
+#### 3. Contracts
+- Random matchmaking rooms must be `rated: true` and `matchSource: "matchmaking"`.
+- Direct/private duel rooms must be `rated: false` and `matchSource: "duel"`.
+- Rated games update rating, coins, mode stats, recent ten-game rank windows, public profile stats, and leaderboard stats.
+- Friendly games do not update rating, mode stats, rank windows, public profile stats, or leaderboard stats.
+- Friendly games are still persisted as `GameRecord` rows, included in replay lists, and marked in replay UI.
+- Friendly coin rewards are limited per user per server day, using Asia/Shanghai day boundaries by default.
+- Rated rank movement still uses decisive results only: 7 wins promote, 8 losses demote, draws do not enter `recentResults`.
+- Promotion/demotion applies the configured fixed rating delta in addition to the game rating delta.
+- Anti-boosting is configurable and may be disabled for launch; when enabled, it scales repeat-opponent rating deltas without suppressing replay persistence.
+
+#### 4. Validation & Error Matrix
+- Missing `rated` on old records -> treat as rated for backward compatibility.
+- Missing `matchSource` on old records -> treat as `matchmaking`.
+- Friendly game after daily reward limit -> persist replay and store zero friendly coin delta for that user.
+- Draw in rated game -> may move rating through Elo actual score `0.5`, increments draw stats, and does not enter rank recent-results.
+- Malformed `ratingRules` -> normalize to defaults and clamp limits before settlement.
+
+#### 5. Good/Base/Bad Cases
+- Good: direct duel creates a replay with `rated=false`, shows a handshake marker, but leaves profile stats unchanged.
+- Good: matchmaking between uneven ranks applies rank-gap scaling so high-rank farming low-rank opponents is less profitable and riskier.
+- Base: old records without `rated` remain visible in leaderboard/profile history as rated records.
+- Bad: checking `matchSource === "duel"` in one profile query while leaderboard forgets to exclude friendly rows.
+- Bad: awarding friendly-match coins from frontend state instead of audited server settlement.
+
+#### 6. Tests Required
+- Room factory/lifecycle tests assert matchmaking and direct-room metadata.
+- Room view and replay route tests assert `rated`, `matchSource`, and audit deltas are exposed.
+- Settlement tests assert rated dynamic deltas, rank-change rating delta, draw behavior, friendly no-stat behavior, and friendly daily coin limit.
+- Leaderboard/profile tests assert friendly records are excluded from public stats while replay lists still include them.
+- Frontend result/replay tests assert friendly result copy, reward-limit copy, and handshake replay marker.
+- Schema integrity tests assert Prisma schema and migration include every new audit field.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const ratingDelta = winner ? 20 : -20;
+await prisma.gameRecord.create({ data: { roomCode, blackUserId, whiteUserId } });
+```
+
+Correct:
+
+```js
+const rules = ratingRulesFromSettings(settings);
+const ratingDelta = resultRewardDelta(color, winnerColor, { self, opponent, rules });
+await prisma.gameRecord.create({
+  data: { roomCode, blackUserId, whiteUserId, rated: room.rated !== false, matchSource: room.matchSource, blackRatingDelta, whiteRatingDelta }
+});
+```
+
+Wrong:
+
+```js
+const profileRecords = await prisma.gameRecord.findMany({ where: { OR: userRecordWhere(userId) } });
+```
+
+Correct:
+
+```js
+const profileRecords = await prisma.gameRecord.findMany({
+  where: { rated: true, OR: userRecordWhere(userId) }
+});
+```
 
 ### Scenario: Game Mode Persistence
 

@@ -60,10 +60,30 @@ describe("room rewards", () => {
       coins: 0
     };
 
-    expect(applyUserReward(user, { rating: 20, coins: 50 }, { wins: 1 })).toMatchObject({
-      rank: "4段",
+    const nextUser = applyUserReward(user, { rating: 20, coins: 50 }, { wins: 1 });
+
+    expect(nextUser.rating).toBe(1120);
+    expect(nextUser.modeStats.spark.rating).toBe(1120);
+    expect(nextUser.modeStats.spark.recentResults).toEqual([]);
+    expect(nextUser.modeStats.spark.rank).not.toBe(user.modeStats.spark.rank);
+  });
+
+  it("applies draw rating without changing the recent rank window", () => {
+    const user = {
+      wins: 1,
+      losses: 1,
+      rating: 1000,
+      rank: "3段",
       modeStats: {
-        spark: expect.objectContaining({ rank: "4段", recentResults: [] })
+        spark: { rating: 1000, rank: "3段", recentResults: ["win", "loss"], wins: 1, losses: 1, draws: 0 }
+      },
+      coins: 0
+    };
+
+    expect(applyUserReward(user, { rating: 6, coins: 0 }, { draws: 1 })).toMatchObject({
+      rating: 1006,
+      modeStats: {
+        spark: expect.objectContaining({ rating: 1006, draws: 1, recentResults: ["win", "loss"] })
       }
     });
   });

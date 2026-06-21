@@ -18,7 +18,7 @@
 用户账号与资产/战绩。
 
 - `id`: 主键 cuid。
-- `username`: 唯一用户名。注册/用户搜索校验只允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 8 个半角字符宽度，等价于最多 4 个中日韩字符或 8 个半角字符。 Legacy startup cleanup trims overlong existing usernames to the trailing 8 display-width units and adds a short numeric marker only when needed to preserve username uniqueness.
+- `username`: 唯一用户名。注册/用户搜索校验只允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 8 个半角字符宽度，等价于最多 4 个中日韩字符或 8 个半角字符。 Legacy startup cleanup trims overlong existing usernames to the trailing 8 display-width units and adds a short numeric marker only when needed to preserve username uniqueness.
 - `passwordHash`: bcrypt 哈希密码。
 - `role`: 用户角色，当前代码使用 `player` / `admin`。
 - `status`: 用户状态，当前代码使用 `active` / `banned`。
@@ -98,10 +98,15 @@
 - `snapshot`: JSON 字符串，保存 `roomView` 快照。
 - `createdAt`: 创建时间。
 - `mode`: 对局模式快照，当前支持 `spark`、`standard`、`gomoku`；排行榜、履历、公开资料和回放按该字段过滤。
+- `rated`: whether the game affects rating, rank, public profile stats, leaderboard stats, and recent-results windows. Matchmaking games are rated; direct/private duel games are friendly and unrated.
+- `matchSource`: source snapshot, currently `matchmaking` or `duel`, used by replay and result UI to mark friendly games.
+- `blackRatingDelta`, `whiteRatingDelta`: settled rating audit deltas for both sides; friendly games store 0.
+- `blackCoinsDelta`, `whiteCoinsDelta`: settled coin audit deltas for both sides; friendly games respect the server-day reward limit.
+- `blackRankDelta`, `whiteRankDelta`: rank movement audit value, where promotion is 1, demotion is -1, and no movement is 0.
 
 ### Gomoku Domain
 
-`gomoku` 五子棋模式使用 `src/shared/gomokuRules.js` 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。
+`gomoku` 五子棋模式使用 `src/shared/gomokuRules.js` 的共享规则：13 路棋盘，黑白轮流落子，精确五连立即获胜，满盘未分胜负为和棋。黑方禁手在落子前阻止并向行动方返回错误，覆盖长连、双四和有效双三；MVP 不做完整连珠递归禁手推演。五子棋不允许 pass，不进入数子/死子标记流程，也不允许主动或被动技能。 A decisive five-in-row result records the exact five point ids in `winner.winningLine`; live clients show the result modal immediately while the board keeps those stones highlighted, and replay views only render the same persistent highlight.
 
 ### Character
 
@@ -201,6 +206,7 @@
 站点级公开配置，以 key/value 形式存储，方便后续扩展更多大厅文案或全局展示配置。
 
 - `key`: 主键。当前使用 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText` 与 `preloadTips`；`preloadTips` 以换行文本存储加载页提示语集合。
+- `ratingRules`: JSON SiteSetting value for dynamic rating, rank-gap scaling, optional anti-boosting, rank-change rating delta, and friendly-match coin limits.
 - `value`: 配置值字符串。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 

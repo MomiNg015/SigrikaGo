@@ -1,3 +1,4 @@
+import { Handshake } from "lucide-react";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { COLORS } from "../shared/game.js";
 import { recordWinnerColor } from "../shared/gameRecords.js";
@@ -16,9 +17,17 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
       </div>
       {records.map((record) => {
         const outcome = replayOutcomeForUser(record, currentUser);
+        const friendly = record.rated === false;
         return (
         <button className={`replay-table-row ${outcome ? `outcome-${outcome}` : ""}`} key={record.id} type="button" onClick={() => onOpenReplay?.(record.id)}>
-          <span>{formatReplayTime(record.createdAt)}</span>
+          <span className="replay-time-cell">
+            {friendly && (
+              <span className="replay-friendly-icon" title="友谊对局" aria-label="友谊对局">
+                <Handshake size={16} aria-hidden="true" />
+              </span>
+            )}
+            <span>{formatReplayTime(record.createdAt)}</span>
+          </span>
           <ReplayPlayer name={record.blackName} characterId={record.blackCharacter} characters={characters} />
           <ReplayPlayer name={record.whiteName} characterId={record.whiteCharacter} characters={characters} />
           <span>{record.resultText}</span>

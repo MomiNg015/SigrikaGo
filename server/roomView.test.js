@@ -37,11 +37,19 @@ function testRoom() {
     openingEndsAt: null,
     closesAt: null,
     countingDeadline: null,
-    drawDeadline: null
+    drawDeadline: null,
+    rated: false,
+    matchSource: "duel"
   };
 }
 
 describe("room view serialization", () => {
+  it("exposes rating and match-source metadata", () => {
+    const view = buildRoomView(testRoom(), "black-user");
+
+    expect(view).toMatchObject({ rated: false, matchSource: "duel" });
+  });
+
   it("returns the player-specific board view and player counters", () => {
     const view = buildRoomView(testRoom(), "white-user");
 

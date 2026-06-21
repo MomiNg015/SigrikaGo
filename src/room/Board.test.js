@@ -71,6 +71,37 @@ describe("areBoardPropsEqual", () => {
     expect(css).toContain("@keyframes double-move-stone-glow");
   });
 
+  test("marks gomoku winning stones with a point-local golden reveal effect", () => {
+    const points = createPoints(13).map((point) => (
+      point.y === 6 && point.x >= 2 && point.x <= 6
+        ? { ...point, stone: "black" }
+        : point
+    ));
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "finished",
+        mode: "gomoku",
+        size: 13,
+        points,
+        history: [],
+        winner: {
+          winnerColor: "black",
+          reason: "gomoku-five",
+          winningLine: ["2,6", "3,6", "4,6", "5,6", "6,6"]
+        }
+      }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup.match(/gomoku-winning-line/g)).toHaveLength(5);
+    expect(css).toContain(".gomoku-winning-line .stone");
+    expect(css).toContain("rgba(255, 220, 85, 0.98)");
+    expect(css).toContain("animation: gomoku-winning-stone-glow 1.45s ease-in-out infinite alternate");
+    expect(css).toContain("animation: gomoku-winning-ring-pulse 1.7s ease-in-out infinite alternate");
+    expect(css).toContain("@keyframes gomoku-winning-ring-pulse");
+    expect(css).toContain("@media (prefers-reduced-motion: reduce)");
+  });
+
   test("marks the latest move with a circular red stone outline instead of a center dot", () => {
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const latestMoveBlock = css.match(/\.stone i\s*\{[^}]+\}/)?.[0] ?? "";

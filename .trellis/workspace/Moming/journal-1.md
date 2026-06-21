@@ -667,3 +667,36 @@ Centered inline confirmation modal handling, then fixed mobile profile hero user
 ### Next Steps
 
 - None - task complete
+
+
+## Session 21: Dynamic rating and friendly match rewards
+
+**Date**: 2026-06-20
+**Task**: Dynamic rating and friendly match rewards
+**Branch**: `codex/bright-school-font-refresh`
+
+### Summary
+
+Implemented configurable dynamic rating, rated-vs-friendly match settlement, replay markers, admin controls, schema audit fields, docs, and tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b3254761` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

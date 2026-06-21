@@ -285,6 +285,14 @@ model GameRecord {
   resultText  String
   winnerColor String?
   resultReason String?
+  rated       Boolean  @default(true)
+  matchSource String   @default("matchmaking")
+  blackRatingDelta Int @default(0)
+  whiteRatingDelta Int @default(0)
+  blackCoinsDelta  Int @default(0)
+  whiteCoinsDelta  Int @default(0)
+  blackRankDelta   Int @default(0)
+  whiteRankDelta   Int @default(0)
   moveCount   Int
   mode        String   @default("spark")
   snapshot    String

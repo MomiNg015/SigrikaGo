@@ -26,7 +26,6 @@
 ## Modal Layering
 
 - Shared `.modal-backdrop` stacks above room `--room-floating-z` surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.
-- Shared modal entrance motion lives in `src/styles/modals/modal-motion.css`, imported immediately after the base modal shell. Backdrops fade in, desktop modal shells use a restrained opacity plus `translateY`/`scale` entrance, nested/centered dialogs preserve their positioning transforms, and `prefers-reduced-motion` disables the motion without changing modal layout.
 - Mobile room portraits do not render character-chain badges; duplicate-chain data remains in user payloads but is hidden on player-facing portrait surfaces.
 
 ## Feedback Messages

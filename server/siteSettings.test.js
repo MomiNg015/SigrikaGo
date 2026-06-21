@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_SITE_SETTINGS } from "../src/shared/siteSettings.js";
-import { ensureDefaultSiteSettings } from "./siteSettings.js";
+import { ensureDefaultSiteSettings, sanitizeSiteSettings } from "./siteSettings.js";
 
 describe("site settings defaults", () => {
   it("uses the academy brand as the production fallback title", () => {
@@ -38,5 +38,29 @@ describe("site settings defaults", () => {
       create: { key: "preloadTips", value: DEFAULT_SITE_SETTINGS.preloadTips },
       update: {}
     });
+    expect(upsert).toHaveBeenCalledWith({
+      where: { key: "ratingRules" },
+      create: { key: "ratingRules", value: DEFAULT_SITE_SETTINGS.ratingRules },
+      update: {}
+    });
+  });
+
+  it("normalizes rating rules from admin settings input", () => {
+    const settings = sanitizeSiteSettings({
+      ...DEFAULT_SITE_SETTINGS,
+      ratingRules: {
+        elo: { kFactor: 999, deltaMin: 6, deltaMax: 10 },
+        rankChangeRatingDelta: 100,
+        rankGapAdjustment: { enabled: true, steps: [] },
+        antiBoost: { enabled: true, reducedMultiplier: 0.25 },
+        privateRewards: { winCoins: 20, lossCoins: 10, drawCoins: 10, dailyRewardLimit: 3 }
+      }
+    });
+
+    const rules = JSON.parse(settings.ratingRules);
+    expect(rules.elo.kFactor).toBe(80);
+    expect(rules.elo.deltaMax).toBe(20);
+    expect(rules.antiBoost.enabled).toBe(true);
+    expect(rules.privateRewards.dailyRewardLimit).toBe(3);
   });
 });

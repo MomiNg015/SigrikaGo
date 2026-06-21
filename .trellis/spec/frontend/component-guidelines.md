@@ -135,6 +135,7 @@ Correct:
 - Match/join socket payload includes selected mode.
 - Standard room state renders 19-line board star points and no skill UI; gomoku room state renders the 13-line board with the spark star points, no skill UI, and no Go-only controls.
 - Standard room accepts moves at the 19-line edge, gomoku rejects pass/skill actions, and Board CSS tests assert coordinate rows/columns use `var(--size)`.
+- Gomoku decisive five-in-row results expose `game.winner.winningLine` with the five highlighted point ids. `Board` renders those stones with a persistent point-local `.gomoku-winning-line` gold effect in live rooms and replay snapshots; the effect stays pointer-transparent and includes a reduced-motion fallback.
 - Leaderboard/watch/profile-detail/history fetches or filters by selected mode and render three one-line tabs with short labels.
 - Home plaque tests assert `plaque-mode-stat-spark`, `plaque-mode-stat-standard`, and `plaque-mode-stat-gomoku` render with mode-specific ratings and stored ranks, while recent result markers stay limited to profile/history detail surfaces.
 - Friend duel request payload and incoming banner include mode.

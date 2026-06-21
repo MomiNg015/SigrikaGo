@@ -55,6 +55,14 @@ describe("personal replay route", () => {
             resultText: "\u9ed1\u65b9\u80dc",
             winnerColor: "black",
             resultReason: "resign",
+            rated: false,
+            matchSource: "duel",
+            blackRatingDelta: 0,
+            whiteRatingDelta: 0,
+            blackCoinsDelta: 20,
+            whiteCoinsDelta: 10,
+            blackRankDelta: 0,
+            whiteRankDelta: 0,
             moveCount: 42,
             mode: null,
             blackCharacter: "sigrika",
@@ -71,7 +79,11 @@ describe("personal replay route", () => {
     expect(res.body.records[0]).toMatchObject({
       blackUserId: "black-1",
       whiteUserId: "white-1",
-      mode: "spark"
+      mode: "spark",
+      rated: false,
+      matchSource: "duel",
+      blackCoinsDelta: 20,
+      whiteCoinsDelta: 10
     });
   });
 

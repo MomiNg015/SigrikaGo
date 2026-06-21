@@ -58,6 +58,32 @@ describe("Prisma schema integrity", () => {
     expect(migration).toContain("CREATE TABLE IF NOT EXISTS \"UserReport\"");
   });
 
+  it("tracks rating audit fields on game records through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606200001_add_rating_audit_fields",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    for (const field of [
+      "rated",
+      "matchSource",
+      "blackRatingDelta",
+      "whiteRatingDelta",
+      "blackCoinsDelta",
+      "whiteCoinsDelta",
+      "blackRankDelta",
+      "whiteRankDelta"
+    ]) {
+      expect(schema).toContain(field);
+      expect(migration).toContain(field);
+    }
+  });
+
   it("tracks persisted rooms through a migration", () => {
     const migrationPath = join(
       process.cwd(),

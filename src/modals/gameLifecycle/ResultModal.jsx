@@ -22,6 +22,7 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
   const currentPlayer = resultPlayerForRoom(room, user);
   const voiceCharacter = findCharacter(characters, currentPlayer?.character ?? currentPlayer?.characterId);
   const reward = resultRewardForRoom(room, user);
+  const isFriendlyMatch = reward?.rated === false || room.rated === false;
   const playedResultSoundRef = useRef(false);
   const playedResultVoiceRef = useRef(false);
 
@@ -61,12 +62,14 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
         <div className="result-summary">
           <h2>对局结果</h2>
           <p>{room.game.winner?.text ?? "对局结束"}</p>
+          {isFriendlyMatch && <p className="result-match-note">友谊对局 · 不计入积分与段位</p>}
           {reward && (
             <div className="result-rewards" aria-label="本局收益">
               <span><strong>积分</strong>{formatSignedDelta(reward.rating)}</span>
               <span><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>
             </div>
           )}
+          {reward?.rewardLimitReached && <p className="result-reward-limit-note">今日友谊对局奖励已达上限</p>}
           <button onClick={onClose}>确认</button>
         </div>
       </section>

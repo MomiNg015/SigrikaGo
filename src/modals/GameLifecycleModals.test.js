@@ -35,6 +35,33 @@ describe("GameLifecycleModals helpers", () => {
     expect(resultRewardForRoom(room, { id: "u1" })).toEqual({ rating: 0, coins: 0 });
   });
 
+  it("prefers settled result rewards from the room snapshot", () => {
+    const room = {
+      rated: false,
+      matchSource: "duel",
+      players: [{ user: { id: "u1" }, color: COLORS.black }],
+      game: {
+        winner: { winnerColor: COLORS.black },
+        resultRewards: {
+          u1: {
+            rating: 0,
+            coins: 0,
+            rated: false,
+            matchSource: "duel",
+            rewardLimitReached: true
+          }
+        }
+      }
+    };
+
+    expect(resultRewardForRoom(room, { id: "u1" })).toMatchObject({
+      rating: 0,
+      coins: 0,
+      rated: false,
+      rewardLimitReached: true
+    });
+  });
+
   it("selects the result voice event from the current player's outcome", () => {
     const room = {
       players: [
