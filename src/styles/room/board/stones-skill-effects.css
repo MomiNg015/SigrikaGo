@@ -7,17 +7,17 @@
   border-radius: 50%;
   z-index: 2;
   transform: translate(calc(-50% + var(--stone-offset-x, 0px)), calc(-50% + var(--stone-offset-y, 0px)));
-  box-shadow: inset -9px -11px 15px rgba(0, 0, 0, 0.18), 0 6px 10px rgba(45, 29, 18, 0.28);
+  box-shadow: 0 6px 10px rgba(45, 29, 18, 0.24);
 }
 
 .black .stone {
-  background: radial-gradient(circle at 32% 26%, #4e4b51, #050507 72%);
+  background: radial-gradient(circle at 32% 26%, #4e4b51 0 16%, #16151a 56%, #050507 100%);
 }
 
 .white .stone {
   background:
     repeating-linear-gradient(18deg, rgba(160, 166, 174, 0.14) 0 2px, transparent 2px 8px),
-    radial-gradient(circle at 34% 26%, #ffffff, #d9dce2 78%);
+    radial-gradient(circle at 34% 26%, #ffffff 0 20%, #eef0f5 58%, #d9dce2 100%);
 }
 
 .spray .stone {

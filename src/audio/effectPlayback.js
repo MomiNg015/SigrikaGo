@@ -2,12 +2,15 @@ import { BOARD_SOUND_TYPES } from "../shared/boardAudio.js";
 import {
   CAPTURE_SOUND,
   HIDDEN_HAND_REVEAL_SOUND,
+  RECRUITMENT_MISS_SOUND,
+  RECRUITMENT_SUCCESS_SOUND,
   STONE_SOUND,
   UI_CLOSE_WINDOW_SOUND,
   UI_CONFIRM_SOUND,
   UI_DETAIL_OPEN_SOUND,
   UI_HOUSE_OPEN_SOUND,
   UI_MATCH_OPEN_SOUND,
+  UI_RECRUITMENT_OPEN_SOUND,
   UI_SHOP_OPEN_SOUND,
   UI_UNAVAILABLE_SOUND
 } from "../shared/audioAssets.js";
@@ -17,12 +20,15 @@ import { browserAudioContextClass } from "./audioRuntime.js";
 export {
   CAPTURE_SOUND,
   HIDDEN_HAND_REVEAL_SOUND,
+  RECRUITMENT_MISS_SOUND,
+  RECRUITMENT_SUCCESS_SOUND,
   STONE_SOUND,
   UI_CLOSE_WINDOW_SOUND,
   UI_CONFIRM_SOUND,
   UI_DETAIL_OPEN_SOUND,
   UI_HOUSE_OPEN_SOUND,
   UI_MATCH_OPEN_SOUND,
+  UI_RECRUITMENT_OPEN_SOUND,
   UI_SHOP_OPEN_SOUND,
   UI_UNAVAILABLE_SOUND
 };
@@ -150,10 +156,18 @@ export function playUiMatchOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
   playEffectSound(UI_MATCH_OPEN_SOUND, audioSettings);
 }
 
+export function playUiRecruitmentOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_RECRUITMENT_OPEN_SOUND, audioSettings);
+}
+
 export function playUiShopOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
   playEffectSound(UI_SHOP_OPEN_SOUND, audioSettings);
 }
 
 export function playUiUnavailableSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
   playEffectSound(UI_UNAVAILABLE_SOUND, audioSettings);
+}
+
+export function playRecruitmentResultSound(resultType, audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(resultType === "success" ? RECRUITMENT_SUCCESS_SOUND : RECRUITMENT_MISS_SOUND, audioSettings);
 }

@@ -17,20 +17,42 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-board {
   background-color: #fff3d5 !important;
-  background-image:
-    linear-gradient(180deg, rgba(255, 253, 239, 0.1), rgba(242, 249, 246, 0.14)),
-    var(--recruitment-board-background-image) !important;
+  background-image: var(--recruitment-board-background-image) !important;
   background-position: center center !important;
   background-repeat: no-repeat !important;
   background-size: cover !important;
-  box-shadow: inset 0 0 0 5px rgba(255, 255, 255, 0.52) !important;
+  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.42), inset 0 0 0 5px rgba(255, 255, 255, 0.36) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-selection-card,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-status-card,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-card {
-  background: #fffdf6 !important;
+  background-color: #fffdf6 !important;
+  background-image:
+    linear-gradient(90deg, rgba(255, 253, 246, 0.72), rgba(255, 253, 246, 0.46)),
+    var(--recruitment-paper-background-image) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
   box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.5) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-success {
+  background-color: #dff5df !important;
+  background-image:
+    linear-gradient(90deg, rgba(223, 245, 223, 0.74), rgba(255, 253, 246, 0.44)),
+    var(--recruitment-paper-background-image) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-miss {
+  background-color: #fff8e5 !important;
+  background-image:
+    linear-gradient(90deg, rgba(255, 248, 229, 0.72), rgba(255, 253, 246, 0.42)),
+    var(--recruitment-paper-background-image) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-selection-card p {
+  color: #b53434 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-item-button {
@@ -42,17 +64,36 @@
   background: #ffdfeb !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-use-button:disabled {
+  border-color: rgba(61, 43, 37, 0.42) !important;
+  background: #d8d1cb !important;
+  color: rgba(61, 43, 37, 0.58) !important;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.22) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button {
-  border: 3px solid #3d2b25 !important;
+  border: 2px solid rgba(61, 43, 37, 0.72) !important;
   background: #fffdf6 !important;
-  color: #d65372 !important;
-  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.42) !important;
+  color: #3d2b25 !important;
+  box-shadow: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button:hover:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-fast-forward-button:focus-visible:not(:disabled) {
-  background: #ffdfeb !important;
-  color: #9f294c !important;
+  border-color: #3d2b25 !important;
+  background: #e9fff5 !important;
+  color: #145f49 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-actions .recruitment-use-button {
+  background: #fffdf6 !important;
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-actions .recruitment-use-button:active:not(:disabled) {
+  background: #ff8fb7 !important;
 }
 
 @media (max-width: 768px) {

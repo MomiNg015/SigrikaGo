@@ -1,25 +1,54 @@
 .recruitment-board {
-  --recruitment-board-background-image: url("/assets/recruitment/notice-board-background.webp");
+  --recruitment-board-background-image: url("/assets/recruitment/notice-board-flat-candidate.webp");
+  --recruitment-paper-background-image: url("/assets/recruitment/recruitment-letter-paper-flat.webp");
   min-width: 0;
   min-height: 0;
+  position: relative;
   display: grid;
   place-items: center;
   overflow: hidden;
-  border: 1px solid rgba(128, 102, 142, 0.18);
-  border-radius: 8px;
+  border: 3px solid #3d2b25;
+  border-radius: 18px;
   background-color: #fff3d5;
   background-image:
-    linear-gradient(180deg, rgba(255, 253, 239, 0.18), rgba(242, 249, 246, 0.22)),
     var(--recruitment-board-background-image);
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
+  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.32);
+}
+
+.recruitment-board::before,
+.recruitment-board::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.recruitment-board::before {
+  inset: 12px;
+  border: 2px dashed rgba(61, 43, 37, 0.12);
+  border-radius: 12px;
+}
+
+.recruitment-board::after {
+  inset: 0;
+  opacity: 0;
+  background: url("/assets/recruitment/celebration-flat-candidate.webp") center / cover no-repeat;
+  transition: opacity 220ms ease;
+}
+
+.recruitment-result-success-phase .recruitment-board::after {
+  opacity: 0.62;
 }
 
 .recruitment-empty-board,
 .recruitment-selection-card,
 .recruitment-status-card,
 .recruitment-result-card {
+  position: relative;
+  z-index: 1;
   width: min(620px, calc(100% - 28px));
   min-height: 180px;
   display: grid;
@@ -27,16 +56,60 @@
   align-items: center;
   gap: 20px;
   padding: clamp(16px, 3vw, 24px);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 14px 30px rgba(62, 43, 34, 0.12);
+  border: 3px solid #3d2b25;
+  border-radius: 16px;
+  background-color: #fffdf6;
+  background-image:
+    linear-gradient(90deg, rgba(255, 253, 246, 0.72), rgba(255, 253, 246, 0.46)),
+    var(--recruitment-paper-background-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: 5px 6px 0 rgba(61, 43, 37, 0.38);
+  transform: rotate(-0.7deg);
+  animation: recruitment-paper-pop 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.recruitment-empty-board::before,
+.recruitment-selection-card::before,
+.recruitment-status-card::before,
+.recruitment-result-card::before {
+  content: "";
+  position: absolute;
+  top: -13px;
+  left: clamp(24px, 10%, 56px);
+  width: 74px;
+  height: 24px;
+  border: 2px solid rgba(61, 43, 37, 0.38);
+  border-radius: 5px;
+  background: #ffdfeb;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.18);
+  transform: rotate(-5deg);
+}
+
+.recruitment-board-ready .recruitment-status-card::after,
+.recruitment-result-miss::after {
+  content: "";
+  position: absolute;
+  right: clamp(12px, 4%, 28px);
+  bottom: clamp(10px, 4%, 22px);
+  width: clamp(104px, 20vw, 154px);
+  aspect-ratio: 420 / 248;
+  pointer-events: none;
+  opacity: 0.94;
+  background: url("/assets/recruitment/recruitment-envelope-flat.webp") center / contain no-repeat;
+  transform: rotate(4deg);
+  filter: drop-shadow(2px 3px 0 rgba(61, 43, 37, 0.2));
 }
 
 .recruitment-empty-board {
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
   text-align: center;
-  color: rgba(87, 67, 57, 0.7);
+  color: rgba(61, 43, 37, 0.72);
+  background-image:
+    linear-gradient(135deg, rgba(255, 223, 235, 0.5), rgba(255, 253, 246, 0.62)),
+    var(--recruitment-paper-background-image);
 }
 
 .recruitment-item-icon {
@@ -61,57 +134,8 @@
   font-size: clamp(1.15rem, 2.2vw, 1.55rem);
 }
 
-.recruitment-status-card b {
-  color: #d65372;
-  font-size: clamp(2rem, 5vw, 3.4rem);
-  line-height: 1;
-}
-
-.recruitment-countdown-row {
-  width: fit-content;
-  max-width: 100%;
-  display: inline-grid;
-  grid-template-columns: minmax(0, auto);
-  align-items: center;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.recruitment-countdown-row.has-fast-forward {
-  grid-template-columns: minmax(0, auto) 44px;
-}
-
-.recruitment-fast-forward-button {
-  width: 44px;
-  height: 44px;
-  display: inline-grid;
-  place-items: center;
-  border: 1px solid rgba(214, 83, 114, 0.28);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
-  color: #d65372;
-  cursor: pointer;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
-}
-
-.recruitment-fast-forward-button:hover:not(:disabled),
-.recruitment-fast-forward-button:focus-visible:not(:disabled) {
-  border-color: rgba(214, 83, 114, 0.58);
-  background: #fff1f5;
-  color: #a93052;
-}
-
-.recruitment-fast-forward-button:active:not(:disabled) {
-  transform: scale(0.96);
-}
-
-.recruitment-fast-forward-button:disabled {
-  cursor: wait;
-  opacity: 0.55;
+.recruitment-selection-card p {
+  color: #b53434;
 }
 
 .recruitment-result-success > img {
@@ -119,4 +143,52 @@
   height: 150px;
   object-fit: contain;
   align-self: end;
+  filter: drop-shadow(3px 5px 0 rgba(61, 43, 37, 0.22));
+}
+
+.recruitment-result-success {
+  background-color: #dff5df;
+  background-image:
+    linear-gradient(90deg, rgba(223, 245, 223, 0.74), rgba(255, 253, 246, 0.44)),
+    var(--recruitment-paper-background-image);
+  transform: rotate(0.5deg);
+}
+
+.recruitment-result-success::before {
+  background: #fff3c1;
+}
+
+.recruitment-result-miss {
+  background-color: #fff8e5;
+  background-image:
+    linear-gradient(90deg, rgba(255, 248, 229, 0.72), rgba(255, 253, 246, 0.42)),
+    var(--recruitment-paper-background-image);
+  transform: rotate(-1.1deg);
+}
+
+.recruitment-result-miss::before {
+  background: #dff3ff;
+}
+
+@keyframes recruitment-paper-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) rotate(-2deg) scale(0.98);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recruitment-empty-board,
+  .recruitment-selection-card,
+  .recruitment-status-card,
+  .recruitment-result-card {
+    animation: none;
+  }
+
+  .recruitment-board::after {
+    transition: none;
+  }
 }

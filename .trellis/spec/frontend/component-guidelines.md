@@ -590,22 +590,30 @@ Correct:
 - Use `background-size: cover` and `background-position: center center` so the image scales proportionally, never stretches, and crops from the vertically centered portion of the artwork.
 - Bright School recruitment overrides may change border, shadow, and overlay tint, but must keep `var(--recruitment-board-background-image)` in `.recruitment-board`.
 - State cards inside the board own text readability; do not bake text or state UI into the background asset.
+- The recruitment header should stay compact and use the single visible title `部员招募栏`; do not reintroduce a separate kicker/subtitle paragraph on mobile because it competes with the board stage.
+- Pending recruitment should not show a helper label to the left of the time. Render only the remaining time digits through `.recruitment-countdown-row` as CRT-style green glowing tabular text without adding a screen background, border, or scanlines; keep the dev-only fast-forward icon as a small plain adjacent control.
+- Selected-item confidence copy is a secondary cue and should stay visually distinct from the item name/scope, currently through `.recruitment-selection-card p` red text.
+- Mobile item buttons may collapse to icon plus quantity only. If item names cannot fit in the one-line action row, hide the label span rather than showing clipped text.
+- Unavailable recruitment confirmation must be a native disabled button and render as a gray disabled control in base CSS, Bright School, and final mobile overrides.
 
 #### 4. Validation & Error Matrix
 - Idle with no selected item -> empty board copy appears over the bulletin background.
 - Selected, pending, ready, and result states -> the same board background remains behind the state card.
 - Bright School active -> `.recruitment-board` still includes `var(--recruitment-board-background-image)` and does not collapse to a flat `background: #...`.
 - Mobile viewport -> the board keeps stable dimensions from `phone-recruitment.css`; the background may crop but must scale proportionally and must not introduce horizontal overflow.
+- 393px portrait viewport -> item buttons show complete icon-plus-quantity controls without half-clipped item names, and the use button visibly changes to gray disabled state when unavailable.
 
 #### 5. Good / Base / Bad Cases
 - Good: base CSS defines the image variable and Bright School uses `background-image: ..., var(--recruitment-board-background-image) !important`.
+- Good: mobile `.recruitment-item-button span` is hidden while the icon and `x<n>` quantity remain visible.
+- Good: `.recruitment-use-button:disabled` exists in the shared action CSS and Bright School override.
 - Base: item/result cards are semi-opaque surfaces layered above the image.
 - Bad: adding an absolutely positioned `<img>` inside `RecruitmentModal` behind content.
 - Bad: a theme override that uses `background: #fff3d5 !important` and drops the image.
 
 #### 6. Tests Required
 - `src/styles/styleContract.test.js` asserts the base recruitment board image variable and `var(...)` usage.
-- `src/styles/themeContract.test.js` asserts Bright School recruitment CSS preserves the board image variable and sizing.
+- `src/styles/themeContract.test.js` asserts Bright School recruitment CSS preserves the board image variable, sizing, and disabled use-button override.
 - Run `npm test -- src/styles/styleContract.test.js src/styles/themeContract.test.js src/modals/RecruitmentModal.test.js` after recruitment board CSS changes.
 
 #### 7. Wrong vs Correct
@@ -627,6 +635,34 @@ Correct:
     var(--recruitment-board-background-image) !important;
 }
 ```
+
+### Scenario: Shop Purchase Disabled Action Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to `ShopItemCard`, shop purchase availability helpers, `src/styles/commerce/shop-settings/`, Bright School shop commerce rules, or final mobile shop card overrides.
+
+#### 2. Signatures
+- `ShopItemCard(...)` renders the product-card purchase button as `.shop-item .primary-action`.
+- Unavailable purchase states include already owned, sold out, `purchasable === false`, pending purchase, and insufficient coins.
+- State marker classes may still include `.shop-action-owned` and `.shop-action-sold-out`, but the disabled visual contract is controlled by `.shop-item .primary-action:disabled`.
+
+#### 3. Contracts
+- Every unavailable purchase action must be a native disabled button, not just a changed label.
+- All disabled shop purchase buttons render as one gray inactive treatment across base CSS, Bright School shop polish, and final mobile overrides.
+- Do not make already-owned buttons green or sold-out buttons category-specific when the button is disabled; those states can be communicated by label while the affordance stays unavailable.
+- Disabled shop purchase buttons must keep `cursor: not-allowed`, no active transform, and no action-looking primary shadow.
+
+#### 4. Validation & Error Matrix
+- Already-owned character or decoration -> disabled gray purchase button with the owned label.
+- Sold-out item -> disabled gray purchase button with the sold-out label.
+- Insufficient coins -> disabled gray purchase button with the insufficient-coins label.
+- Bright School active on mobile portrait -> final mobile shop card overrides preserve the gray disabled treatment.
+
+#### 5. Tests Required
+- `src/modals/ShopModal.test.js` asserts owned, sold-out, and insufficient-coin card actions render native disabled buttons.
+- Shop style tests or source assertions must cover base shop CSS, Bright School shop CSS, and final mobile shop overrides for `.shop-item .primary-action:disabled`.
+
+---
 
 ### Scenario: Player Currency Visibility In Resume And Shop
 

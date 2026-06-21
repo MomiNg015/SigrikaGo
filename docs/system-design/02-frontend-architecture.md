@@ -56,6 +56,8 @@
 - `canStartSkill`: 位于 `src/shared/game.js`，前后端共用技能启动前置条件，用于判断棋子目标/棋子依赖技能在当前棋盘状态下是否可用。
 - `rememberPlayerRoom` / `buildRoomResumeRequest` / `handleRoomResumePayload` / `dismissedResultRoomAfterResume`: 位于 `src/app/resumeSession.js`，集中封装前端断线恢复 localStorage 与结果恢复状态编排；已被用户关闭过的同房间有效结果在后续 `room:resume` 中保持 dismissed，不会重复打开结果弹窗。
 - `useOverlayState` / `OVERLAY_STATE_KEYS`: 位于 `src/app/useOverlayState.js`，集中维护商店、抽卡、棋舍、仓库、履历、排行榜、好友、观战、设置和留言板等应用级弹窗可见性，避免 `App.jsx` 继续堆叠成组 `useState(false)`。
+- `modalDismissal`: lives in `src/app/modalDismissal.js` and owns the shared topmost-modal dismissal contract. Desktop Escape and browser/mobile history back close only the current top modal; app overlays, result/match-waiting modals, and the home match-mode picker should use this shared mechanism instead of local keydown/popstate listeners. When no modal is active, the mobile root-back guard intercepts phone/browser back on login, preload, home, admin, and room screens and shows the shared confirm modal with “确定要退出游戏吗？” before allowing the browser to leave the app.
+- `modalDismissal` 的 root-back guard 只响应真实父级回退。功能窗口通过关闭按钮或取消按钮主动关闭时会清理对应 history 哨兵并压制同次 `popstate`，避免误弹退出确认；手机回退关闭功能窗口时同样只关闭最上层窗口。用户在退出确认中点“退出游戏”会先尝试跨过 guard/history 哨兵回退，若浏览器没有可回退页面则跳转到 `about:blank` 作为离开游戏页的兜底。
 - `useRoomSessionState` / `roomSessionView`: 位于 `src/app/useRoomSessionState.js`，集中维护 `room`、`pendingSkill`、`replayStep`、`dismissedResultRoom` 和派生的 `resultModalOpen`，避免结果弹窗可见性在路由、覆盖层和背景音乐间重复计算；对局者关闭某一房间结果后，该房间号会作为去重哨兵阻止同一有效结果再次显示。
 - `useMatchSessionState` / `matchSessionView`: 位于 `src/app/useMatchSessionState.js`，集中维护 `matchStart`、`matchSuccess` 和派生的匹配等待/过渡标记，避免匹配弹窗、socket 同步和背景音乐各自维护过渡状态。
 - `replayRoomAt`: 用历史记录重放房间状态；观战实时回放另由 `replayGameAt` 只派生棋盘进程。

@@ -2,7 +2,7 @@ import AdminConsole from "../admin/AdminConsole.jsx";
 import AuthScreen from "../auth/AuthScreen.jsx";
 import HomeScreen from "../home/HomeScreen.jsx";
 import RoomScreen from "../room/RoomScreen.jsx";
-import { playUiHouseOpenSound, playUiMatchOpenSound, playUiShopOpenSound } from "../audio/playback.jsx";
+import { playUiHouseOpenSound, playUiMatchOpenSound, playUiRecruitmentOpenSound, playUiShopOpenSound } from "../audio/playback.jsx";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
 import { planRoomBackNavigation } from "./roomNavigation.js";
 
@@ -37,6 +37,8 @@ export default function AppRoutes({
   setRoom,
   setShowFriends,
   recruitmentReady,
+  showMatchModePicker,
+  setShowMatchModePicker,
   setShowRecruitment,
   setShowHouse,
   setShowLeaderboard,
@@ -66,6 +68,8 @@ export default function AppRoutes({
       onSelectCharacter={selectCharacter}
       onStartMatch={startMatch}
       onOpenMatch={() => playUiMatchOpenSound(audioSettings)}
+      matchModePickerOpen={showMatchModePicker}
+      onMatchModePickerOpenChange={setShowMatchModePicker}
       onOpenHouse={() => {
         playUiHouseOpenSound(audioSettings);
         setShowHouse(true);
@@ -80,7 +84,7 @@ export default function AppRoutes({
       }}
       recruitmentReady={recruitmentReady}
       onOpenRecruitment={() => {
-        playUiShopOpenSound(audioSettings);
+        playUiRecruitmentOpenSound(audioSettings);
         setShowRecruitment(true);
       }}
       onOpenFriends={() => setShowFriends(true)}

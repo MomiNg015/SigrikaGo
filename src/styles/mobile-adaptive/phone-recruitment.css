@@ -16,19 +16,23 @@
   }
 
   .recruitment-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     align-items: start !important;
-    gap: 8px !important;
-    padding-right: 38px !important;
+    padding-right: 48px !important;
   }
 
-  .recruitment-header p {
-    max-width: 44vw !important;
-    font-size: 0.8rem !important;
-    line-height: 1.25 !important;
+  .recruitment-header h2 {
+    white-space: nowrap !important;
+    font-size: clamp(1.5rem, 8vw, 2rem) !important;
+    line-height: 1.08 !important;
   }
 
   .recruitment-board {
     min-height: 0 !important;
+    border-width: 2px !important;
+    border-radius: 14px !important;
+    box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.28) !important;
   }
 
   .recruitment-empty-board,
@@ -40,6 +44,28 @@
     grid-template-columns: 72px minmax(0, 1fr) !important;
     gap: 12px !important;
     padding: 12px !important;
+    border-width: 2px !important;
+    border-radius: 12px !important;
+    box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.32) !important;
+    transform: none !important;
+  }
+
+  .recruitment-empty-board::before,
+  .recruitment-selection-card::before,
+  .recruitment-status-card::before,
+  .recruitment-result-card::before {
+    top: -10px !important;
+    left: 18px !important;
+    width: 54px !important;
+    height: 18px !important;
+  }
+
+  .recruitment-board-ready .recruitment-status-card::after,
+  .recruitment-result-miss::after {
+    width: 78px !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    opacity: 0.74 !important;
   }
 
   .recruitment-empty-board {
@@ -52,24 +78,26 @@
   }
 
   .recruitment-countdown-row {
-    max-width: 100% !important;
+    width: fit-content !important;
+    max-width: min(100%, 230px) !important;
     grid-template-columns: minmax(0, auto) !important;
     gap: 8px !important;
   }
 
   .recruitment-countdown-row.has-fast-forward {
-    grid-template-columns: minmax(0, auto) 44px !important;
+    grid-template-columns: minmax(0, auto) 40px !important;
   }
 
   .recruitment-countdown-row b {
-    font-size: clamp(1.65rem, 10vw, 2.5rem) !important;
+    font-size: clamp(1.7rem, 9vw, 2.4rem) !important;
+    letter-spacing: 0.05em !important;
   }
 
   .recruitment-fast-forward-button {
-    width: 44px !important;
-    height: 44px !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
   }
 
   .recruitment-result-success > img {
@@ -82,6 +110,22 @@
     gap: 6px !important;
   }
 
+  .recruitment-result-actions {
+    grid-template-columns: minmax(140px, 220px) !important;
+    justify-content: center !important;
+  }
+
+  .recruitment-result-actions .recruitment-use-button {
+    width: min(100%, 220px) !important;
+    justify-self: center !important;
+    background: #fffdf6 !important;
+    color: #3d2b25 !important;
+  }
+
+  .recruitment-result-actions .recruitment-use-button:active:not(:disabled) {
+    background: #ff8fb7 !important;
+  }
+
   .recruitment-item-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 6px !important;
@@ -89,9 +133,14 @@
 
   .recruitment-item-button {
     min-height: 52px !important;
-    grid-template-columns: 28px minmax(0, 1fr) auto !important;
-    gap: 5px !important;
-    padding: 6px !important;
+    grid-template-columns: 28px minmax(22px, auto) !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    padding: 6px 8px !important;
+    border-width: 2px !important;
+    border-radius: 12px !important;
+    box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.3) !important;
+    text-align: center !important;
   }
 
   .recruitment-item-button .recruitment-item-icon {
@@ -99,9 +148,18 @@
     height: 28px !important;
   }
 
-  .recruitment-item-button span,
+  .recruitment-item-button span {
+    display: none !important;
+  }
+
   .recruitment-item-button b,
   .recruitment-use-button {
     font-size: 0.78rem !important;
+  }
+
+  .recruitment-use-button:disabled {
+    background: #d8d1cb !important;
+    color: rgba(61, 43, 37, 0.58) !important;
+    box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.18) !important;
   }
 }

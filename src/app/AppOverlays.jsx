@@ -205,6 +205,7 @@ export default function AppOverlays({
       )}
       {showRecruitment && (
         <RecruitmentModal
+          audioSettings={audioSettings}
           characters={characters}
           token={token}
           user={user}

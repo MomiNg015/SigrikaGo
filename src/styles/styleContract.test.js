@@ -500,16 +500,38 @@ describe("root CSS entry contract", () => {
     expect(cssImports(recruitmentEntry)).toEqual([
       "./recruitment/modal-shell.css",
       "./recruitment/board.css",
+      "./recruitment/countdown.css",
       "./recruitment/actions.css"
     ]);
     expect(recruitmentEntry).not.toContain(".recruitment-modal {");
     expect(recruitmentShell).toContain("position: relative;");
-    expect(recruitmentBoard).toContain("--recruitment-board-background-image: url(\"/assets/recruitment/notice-board-background.webp\")");
+    const recruitmentCountdown = readFileSync(new URL("./commerce/recruitment/countdown.css", import.meta.url), "utf8");
+    expect(recruitmentBoard).toContain("--recruitment-board-background-image: url(\"/assets/recruitment/notice-board-flat-candidate.webp\")");
     expect(recruitmentBoard).toContain("var(--recruitment-board-background-image)");
-    expect(statSync(new URL("../../public/assets/recruitment/notice-board-background.webp", import.meta.url)).size).toBeLessThan(100_000);
-    expect(recruitmentBoard).toContain(".recruitment-countdown-row");
-    expect(recruitmentBoard).toContain(".recruitment-fast-forward-button");
+    expect(recruitmentBoard).toContain("/assets/recruitment/celebration-flat-candidate.webp");
+    expect(recruitmentBoard).toContain("/assets/recruitment/recruitment-letter-paper-flat.webp");
+    expect(recruitmentBoard).toContain("/assets/recruitment/recruitment-envelope-flat.webp");
+    expect(recruitmentBoard).toContain("@keyframes recruitment-paper-pop");
+    expect(recruitmentBoard).toContain(".recruitment-selection-card p");
+    expect(recruitmentBoard).toContain("color: #b53434;");
+    expect(statSync(new URL("../../public/assets/recruitment/notice-board-flat-candidate.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(statSync(new URL("../../public/assets/recruitment/celebration-flat-candidate.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(statSync(new URL("../../public/assets/recruitment/stationery-flat-candidate.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(statSync(new URL("../../public/assets/recruitment/recruitment-letter-paper-flat.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(statSync(new URL("../../public/assets/recruitment/recruitment-envelope-flat.webp", import.meta.url)).size).toBeLessThan(100_000);
+    expect(recruitmentCountdown).toContain(".recruitment-countdown-row");
+    expect(recruitmentCountdown).not.toContain("repeating-linear-gradient");
+    expect(recruitmentCountdown).not.toContain("border: 3px solid #3d2b25;");
+    expect(recruitmentCountdown).toContain("font-family: \"Courier New\", Consolas, monospace;");
+    expect(recruitmentCountdown).toContain("text-shadow:");
+    expect(recruitmentCountdown).toContain(".recruitment-fast-forward-button");
+    expect(phoneRecruitment).toContain(".recruitment-empty-board::before");
     expect(phoneRecruitment).toContain(".recruitment-fast-forward-button");
+    expect(phoneRecruitment).toContain(".recruitment-result-actions");
+    expect(phoneRecruitment).toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
+    expect(phoneRecruitment).toContain(".recruitment-item-button span");
+    expect(phoneRecruitment).toContain("display: none !important;");
+    expect(phoneRecruitment).toContain(".recruitment-use-button:disabled");
   });
 
   it("keeps commerce social-profile.css as an import-only commerce sub-entry", () => {

@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 export const OVERLAY_STATE_KEYS = [
   "shop",
   "recruitment",
+  "matchModePicker",
   "house",
   "warehouse",
   "resume",
@@ -39,6 +40,7 @@ export function useOverlayState() {
   const setters = useMemo(() => ({
     setShowShop: (value) => setOverlay("shop", value),
     setShowRecruitment: (value) => setOverlay("recruitment", value),
+    setShowMatchModePicker: (value) => setOverlay("matchModePicker", value),
     setShowHouse: (value) => setOverlay("house", value),
     setShowWarehouse: (value) => setOverlay("warehouse", value),
     setShowResume: (value) => setOverlay("resume", value),
@@ -54,6 +56,7 @@ export function useOverlayState() {
   return useMemo(() => ({
     showShop: overlays.shop,
     showRecruitment: overlays.recruitment,
+    showMatchModePicker: overlays.matchModePicker,
     showHouse: overlays.house,
     showWarehouse: overlays.warehouse,
     showResume: overlays.resume,

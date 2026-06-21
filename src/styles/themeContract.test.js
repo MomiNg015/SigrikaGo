@@ -70,8 +70,17 @@ describe("player theme CSS contract", () => {
     expect(commerceEntry).not.toContain(".shop-layout {");
     expect(commerceEntry).not.toContain(".warehouse-grid {");
     expect(recruitmentPolish).toContain("var(--recruitment-board-background-image)");
+    expect(recruitmentPolish).toContain("var(--recruitment-paper-background-image)");
     expect(recruitmentPolish).toContain("background-position: center center !important;");
     expect(recruitmentPolish).toContain("background-size: cover !important;");
+    expect(recruitmentPolish).toContain(".recruitment-use-button:disabled");
+    expect(recruitmentPolish).toContain("cursor: not-allowed !important;");
+    expect(recruitmentPolish).toContain(".recruitment-fast-forward-button");
+    expect(recruitmentPolish).toContain(".recruitment-selection-card p");
+    expect(recruitmentPolish).toContain("color: #b53434 !important;");
+    expect(recruitmentPolish).toContain(".recruitment-result-actions .recruitment-use-button");
+    expect(recruitmentPolish).toContain("background: #fffdf6 !important;");
+    expect(recruitmentPolish).toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
   });
 
   it("keeps Bright School commerce shop as an import-only modal polish entry", () => {
@@ -472,6 +481,38 @@ describe("player theme CSS contract", () => {
     expect(themeCss).toContain(":is(.territory-mark, .dead-mark, .neutral-mark)");
   });
 
+  it("keeps Bright School star points from occupying the move-preview pseudo element", () => {
+    const roomBoardCss = readFileSync(new URL("./themes/bright-school/component-repairs/room-board.css", import.meta.url), "utf8");
+    const boardTargetingCss = readFileSync(new URL("./themes/bright-school/effects/board-targeting.css", import.meta.url), "utf8");
+
+    expect(roomBoardCss).toContain(".point.star:not(.black):not(.white):not(.erased)::after");
+    expect(roomBoardCss).not.toContain(".point.star:not(.black):not(.white):not(.erased)::before");
+    expect(boardTargetingCss).not.toContain(".point.star:not(.black):not(.white):not(.erased)::before");
+  });
+
+  it("keeps default board stones free of outline rings", () => {
+    const sharedStoneCss = readFileSync(new URL("./room/board/stones-skill-effects.css", import.meta.url), "utf8");
+    const notebookPolishCss = readFileSync(
+      new URL("./themes/bright-school/component-repairs/notebook-polish.css", import.meta.url),
+      "utf8"
+    );
+    const defaultStoneBlock = cssBlock(sharedStoneCss, ".stone");
+    const brightBlackStoneBlock = cssBlock(
+      notebookPolishCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .black .stone:not(.decorated-stone)"
+    );
+    const brightWhiteStoneBlock = cssBlock(
+      notebookPolishCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .white .stone:not(.decorated-stone)"
+    );
+
+    expect(defaultStoneBlock).not.toContain("inset");
+    expect(brightBlackStoneBlock).not.toContain("inset");
+    expect(brightWhiteStoneBlock).not.toContain("inset");
+    expect(brightBlackStoneBlock).toContain("border: 0 !important");
+    expect(brightWhiteStoneBlock).toContain("border: 0 !important");
+  });
+
   it("keeps Bright School mobile interaction polish in the final theme tree", () => {
     const themeCss = readCssWithImports(new URL("./themes.css", import.meta.url));
 
@@ -493,6 +534,14 @@ describe("player theme CSS contract", () => {
 
 function cssImports(source) {
   return [...source.matchAll(/@import\s+"([^"]+)";/g)].map((match) => match[1]);
+}
+
+function cssBlock(source, selector) {
+  const start = source.indexOf(`${selector} {`);
+  if (start < 0) return "";
+  const bodyStart = source.indexOf("{", start);
+  const bodyEnd = source.indexOf("}", bodyStart);
+  return source.slice(start, bodyEnd + 1);
 }
 
 function readCssWithImports(url, seen = new Set()) {

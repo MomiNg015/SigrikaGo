@@ -483,6 +483,35 @@ describe("character admin helpers", () => {
     expect(updates).toEqual([]);
   });
 
+  it("syncs builtin static portrait asset paths during seed", async () => {
+    const updates = [];
+    const existing = {
+      id: "character-db-nabomo",
+      slug: "nabomo",
+      portraitUrl: "/assets/nabomo.png",
+      portraitSource: "url",
+      source: "default",
+      skill: null
+    };
+    const prisma = {
+      character: {
+        findUnique: async ({ where }) => where.slug === "nabomo" ? existing : null,
+        update: async (query) => updates.push(query),
+        create: async () => ({})
+      }
+    };
+
+    await seedCharacters(prisma);
+
+    expect(updates).toContainEqual({
+      where: { id: "character-db-nabomo" },
+      data: {
+        portraitUrl: "/assets/nabomo.webp",
+        portraitSource: "url"
+      }
+    });
+  });
+
   it("omits legacy Denia rows from the public character response", async () => {
     const response = await listPublicCharacterResponse({
       character: {

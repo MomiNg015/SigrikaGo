@@ -586,6 +586,7 @@ SigrikaGo/
 - 依赖棋盘已有棋子的技能在场上没有可用目标时不可启动：前端技能按钮会变灰，服务端也会在 `use-skill` action 中二次校验并拒绝。当前包括以黑白棋子为目标的达妮娅 `flip-stone`、需要随机选择现有棋子为中心的猪小仙 `random-blast`，以及以非喷涂、非隐藏手棋子为目标的琳奈 `spray-stone`。
 - 无目标技能不显示落子/目标预览；猪小仙 `random-blast` 使用“确认式无目标”流程：点击技能后进入待释放状态，棋盘悬停不显示目标标记，点击任意棋盘点仅确认释放。前端必须把 `canPreviewSkillTarget` 的目标预览判定和 `skillUsesBoardConfirmation` 的棋盘确认判定分开：前者保持 `false`，后者允许合法棋盘点触发 `use-skill`。真正爆炸中心仍由服务端随机选择棋盘上非一路的已有棋子，点击点不作为爆炸中心。技能生效后会在完整 3x3 区域留下较弱的交叉点高亮，施放者下一手落子后清除。爆炸残留区域使用独立视觉层展示，不遮挡普通落子点 hover 提示。
 - ChangLi (`changli`) `double-move`: server resolution writes public `game.extraTurn` state. Each successful ordinary move decrements the remaining opportunity, pass follows the normal pass flow and clears `extraTurn`, counting/draw requests are blocked while `extraTurn` is active, and restored ChangLi skill previews resolve directly into the double-move state without replaying presentation.
+- 除子可以为负，并在数目时按 `+除子*1` 计入总分。琳奈 `spray-stone` 和仇远 `row-slash` 技能生效后发动方除子额外 `-1`；长离 `double-move` 若成功落下第 2 步，发动方除子 `+1`。
 - 技能可配置：
   - 使用次数 `uses`
   - 是否不消耗回合 `freeTurn`
