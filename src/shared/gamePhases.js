@@ -1,4 +1,5 @@
 export const GAME_PHASES = {
+  preloading: "preloading",
   opening: "opening",
   playing: "playing",
   countingRequested: "counting-requested",

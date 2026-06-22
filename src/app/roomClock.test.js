@@ -6,6 +6,7 @@ describe("applyRoomClock", () => {
     const game = { moveNumber: 12 };
     const room = {
       code: "12345",
+      clockSeq: 1,
       game,
       players: [
         { color: "black", user: { id: "black-user" }, time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 } },
@@ -15,6 +16,7 @@ describe("applyRoomClock", () => {
 
     const next = applyRoomClock(room, {
       roomCode: "12345",
+      clockSeq: 2,
       activeColor: "black",
       serverNow: 1000,
       players: [
@@ -27,7 +29,30 @@ describe("applyRoomClock", () => {
     expect(next.game).toBe(game);
     expect(next.players[0]).not.toBe(room.players[0]);
     expect(next.players[1]).toBe(room.players[1]);
+    expect(next.clockSeq).toBe(2);
     expect(next.players[0].time.main).toBe(299);
+  });
+
+  test("ignores stale clock payloads that arrive after a newer room snapshot", () => {
+    const room = {
+      code: "12345",
+      clockSeq: 8,
+      game: { moveNumber: 13 },
+      players: [
+        { color: "black", user: { id: "black-user" }, time: { main: 0, byoYomi: 30, periodRemaining: 30, periods: 2 } },
+        { color: "white", user: { id: "white-user" }, time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 } }
+      ]
+    };
+
+    expect(applyRoomClock(room, {
+      roomCode: "12345",
+      clockSeq: 7,
+      activeColor: "black",
+      players: [
+        { color: "black", time: { main: 0, byoYomi: 30, periodRemaining: 1, periods: 3 } },
+        { color: "white", time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 } }
+      ]
+    })).toBe(room);
   });
 
   test("ignores clock payloads for a different room", () => {

@@ -39,6 +39,16 @@ describe("site settings defaults", () => {
       update: {}
     });
     expect(upsert).toHaveBeenCalledWith({
+      where: { key: "characterLoadingLines" },
+      create: { key: "characterLoadingLines", value: DEFAULT_SITE_SETTINGS.characterLoadingLines },
+      update: {}
+    });
+    expect(upsert).toHaveBeenCalledWith({
+      where: { key: "skillEffectsEnabled" },
+      create: { key: "skillEffectsEnabled", value: "true" },
+      update: {}
+    });
+    expect(upsert).toHaveBeenCalledWith({
       where: { key: "ratingRules" },
       create: { key: "ratingRules", value: DEFAULT_SITE_SETTINGS.ratingRules },
       update: {}
@@ -62,5 +72,18 @@ describe("site settings defaults", () => {
     expect(rules.elo.deltaMax).toBe(20);
     expect(rules.antiBoost.enabled).toBe(true);
     expect(rules.privateRewards.dailyRewardLimit).toBe(3);
+  });
+
+  it("normalizes the skill effects switch for storage", () => {
+    expect(sanitizeSiteSettings({ ...DEFAULT_SITE_SETTINGS, skillEffectsEnabled: false }).skillEffectsEnabled).toBe("false");
+    expect(sanitizeSiteSettings({ ...DEFAULT_SITE_SETTINGS, skillEffectsEnabled: "off" }).skillEffectsEnabled).toBe("false");
+    expect(sanitizeSiteSettings({ ...DEFAULT_SITE_SETTINGS, skillEffectsEnabled: "on" }).skillEffectsEnabled).toBe("true");
+  });
+
+  it("preserves admin-configured character loading lines", () => {
+    expect(sanitizeSiteSettings({
+      ...DEFAULT_SITE_SETTINGS,
+      characterLoadingLines: "sigrika=西格莉卡正在戳棋盘\nmornye=莫宁正在校准协议"
+    }).characterLoadingLines).toBe("sigrika=西格莉卡正在戳棋盘\nmornye=莫宁正在校准协议");
   });
 });

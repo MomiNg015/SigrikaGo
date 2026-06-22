@@ -16,6 +16,7 @@ export function buildRoomView(room, viewerId, options = {}) {
   return {
     code: room.code,
     revision: Number(room.revision ?? 0),
+    clockSeq: Number(room.clockSeq ?? 0),
     mode: room.mode ?? room.game?.mode ?? "spark",
     rated: room.rated !== false,
     matchSource: room.matchSource ?? (room.rated === false ? "private" : "matchmaking"),
@@ -40,6 +41,14 @@ export function buildRoomView(room, viewerId, options = {}) {
     gameViews: views,
     chat: room.chat,
     openingEndsAt: room.openingEndsAt,
+    preload: room.preload
+      ? {
+          startedAt: room.preload.startedAt ?? null,
+          deadlineAt: room.preload.deadlineAt ?? null,
+          readyCount: Number(room.preload.readyCount ?? room.preload.readyUserIds?.length ?? 0),
+          requiredCount: Number(room.preload.requiredCount ?? room.players.length)
+        }
+      : null,
     closesAt: room.closesAt,
     countingDeadline: room.countingDeadline,
     drawDeadline: room.drawDeadline,

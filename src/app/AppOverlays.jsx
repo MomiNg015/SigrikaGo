@@ -109,7 +109,7 @@ export default function AppOverlays({
           characters={characters}
         />
       )}
-      {matchSuccess && (
+      {matchSuccess && !matchSuccess.countdownComplete && (
         <MatchSuccessModal
           startedAt={matchSuccess.startedAt}
           audioSettings={audioSettings}

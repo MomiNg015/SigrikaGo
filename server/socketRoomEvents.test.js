@@ -28,6 +28,7 @@ function createDeps(overrides = {}) {
     roomView: vi.fn((room, viewerId) => ({ code: room.code, viewerId })),
     broadcastRoom: vi.fn(),
     broadcastRoomPresencePatch: vi.fn(),
+    markRoomPreloadReady: vi.fn(),
     ...overrides
   };
 }
@@ -41,6 +42,7 @@ describe("socket room events", () => {
     expect(socket.on).toHaveBeenCalledWith("room:join", expect.any(Function));
     expect(socket.on).toHaveBeenCalledWith("room:leave", expect.any(Function));
     expect(socket.on).toHaveBeenCalledWith("room:resume", expect.any(Function));
+    expect(socket.on).toHaveBeenCalledWith("room:preload-ready", expect.any(Function));
   });
 
   it("emits a toast and skips attach when join receives an invalid room code", () => {
@@ -149,5 +151,15 @@ describe("socket room events", () => {
     expect(socket.emit).toHaveBeenCalledWith("room:resume", payload);
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
     expect(deps.broadcastRoomPresencePatch).not.toHaveBeenCalled();
+  });
+
+  it("marks a player ready for the match preload barrier", () => {
+    const socket = createSocket({ id: "ready-user" });
+    const deps = createDeps();
+
+    registerRoomSocketEvents(socket, deps);
+    socket.trigger("room:preload-ready", { roomCode: "12345" });
+
+    expect(deps.markRoomPreloadReady).toHaveBeenCalledWith("12345", "ready-user", deps.io);
   });
 });

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { GAME_PHASES } from "../src/shared/game.js";
 import {
   CURRENT_ROOM_SNAPSHOT_VERSION,
+  flushRoomPersistence,
   hydratePersistedRoom,
   persistRoomState,
   roomPersistenceSnapshot
@@ -18,6 +19,7 @@ describe("room state persistence", () => {
       game: { phase: GAME_PHASES.playing },
       chat: [],
       revision: 3,
+      clockSeq: 4,
       createdAt: 1,
       lastTick: 2,
       recordSaved: false
@@ -27,6 +29,7 @@ describe("room state persistence", () => {
       snapshotVersion: CURRENT_ROOM_SNAPSHOT_VERSION,
       code: "ABCDE",
       revision: 3,
+      clockSeq: 4,
       players: [{ user: { id: "black" }, socketId: null, disconnectedAt: null }],
       spectators: [],
       game: room.game,
@@ -50,6 +53,7 @@ describe("room state persistence", () => {
     expect(room.lastTick).toBe(12345);
     expect(room.lastPersistedAt).toBe(0);
     expect(room.revision).toBe(0);
+    expect(room.clockSeq).toBe(0);
   });
 
   it("keeps finished room players without disconnected markers when hydrated", () => {
@@ -87,11 +91,129 @@ describe("room state persistence", () => {
     persistRoomState({ prisma: {}, room, upsert, now: () => 1200, throttleMs: 5000 });
     expect(upsert).not.toHaveBeenCalled();
 
-    persistRoomState({ prisma: {}, room, upsert, force: true, now: () => 1200, throttleMs: 5000 });
+    await persistRoomState({ prisma: {}, room, upsert, force: true, now: () => 1200, throttleMs: 5000 });
     expect(upsert).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
       code: "ABCDE",
       status: "active"
     }));
-    await Promise.resolve();
+  });
+
+  it("serializes persistence writes for the same room code", async () => {
+    const first = deferred();
+    const upsert = vi.fn()
+      .mockImplementationOnce(() => first.promise)
+      .mockResolvedValueOnce();
+    const room = {
+      code: "SERIAL",
+      players: [],
+      spectators: [],
+      game: { phase: GAME_PHASES.playing },
+      chat: [],
+      revision: 1
+    };
+
+    const firstPersist = persistRoomState({ prisma: {}, room, upsert, force: true, now: () => 1000, throttleMs: 5000 });
+    room.revision = 2;
+    const secondPersist = persistRoomState({ prisma: {}, room, upsert, force: true, now: () => 1100, throttleMs: 5000 });
+
+    expect(upsert).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(upsert.mock.calls[0][1].snapshot).revision).toBe(1);
+
+    first.resolve();
+    await Promise.all([firstPersist, secondPersist]);
+
+    expect(upsert).toHaveBeenCalledTimes(2);
+    expect(JSON.parse(upsert.mock.calls[1][1].snapshot).revision).toBe(2);
+  });
+
+  it("does not block persistence writes for different room codes", async () => {
+    const first = deferred();
+    const upsert = vi.fn()
+      .mockImplementationOnce(() => first.promise)
+      .mockResolvedValueOnce();
+
+    const firstPersist = persistRoomState({
+      prisma: {},
+      room: roomForPersistence("FIRST"),
+      upsert,
+      force: true,
+      now: () => 1000,
+      throttleMs: 5000
+    });
+    const secondPersist = persistRoomState({
+      prisma: {},
+      room: roomForPersistence("SECOND"),
+      upsert,
+      force: true,
+      now: () => 1000,
+      throttleMs: 5000
+    });
+
+    expect(upsert).toHaveBeenCalledTimes(2);
+
+    first.resolve();
+    await Promise.all([firstPersist, secondPersist]);
+  });
+
+  it("flushes one room code without waiting for unrelated room writes", async () => {
+    const first = deferred();
+    const second = deferred();
+    const upsert = vi.fn()
+      .mockImplementationOnce(() => first.promise)
+      .mockImplementationOnce(() => second.promise);
+
+    persistRoomState({
+      prisma: {},
+      room: roomForPersistence("FIRST"),
+      upsert,
+      force: true,
+      now: () => 1000,
+      throttleMs: 5000
+    });
+    persistRoomState({
+      prisma: {},
+      room: roomForPersistence("SECOND"),
+      upsert,
+      force: true,
+      now: () => 1000,
+      throttleMs: 5000
+    });
+
+    const flushFirst = flushRoomPersistence("FIRST").then(() => "flushed");
+    first.resolve();
+
+    try {
+      await expect(Promise.race([
+        flushFirst,
+        nextTick().then(() => "still-waiting")
+      ])).resolves.toBe("flushed");
+    } finally {
+      second.resolve();
+      await flushRoomPersistence();
+    }
   });
 });
+
+function roomForPersistence(code) {
+  return {
+    code,
+    players: [],
+    spectators: [],
+    game: { phase: GAME_PHASES.playing },
+    chat: []
+  };
+}
+
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, reject, resolve };
+}
+
+function nextTick() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}

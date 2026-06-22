@@ -48,8 +48,9 @@ function createLifecycle(overrides = {}) {
     matchmakingQueue,
     isRoomCodeTaken: vi.fn((code) => rooms.has(code)),
     persistRoom: vi.fn(),
+    registerRoom: vi.fn(),
     startGameClock: vi.fn(),
-    scheduleGameStart: vi.fn(),
+    scheduleRoomPreloadTimeout: vi.fn(),
     roomView: vi.fn((room, viewerId) => ({ code: room.code, viewerId })),
     appendSystem: vi.fn(),
     broadcastRoom: vi.fn(),
@@ -75,8 +76,9 @@ describe("room creation lifecycle", () => {
     expect(lifecycle.joinMatchmaking(player, fakeIo())).toBeNull();
     expect(deps.rooms.size).toBe(0);
     expect(deps.persistRoom).not.toHaveBeenCalled();
+    expect(deps.registerRoom).not.toHaveBeenCalled();
     expect(deps.startGameClock).not.toHaveBeenCalled();
-    expect(deps.scheduleGameStart).not.toHaveBeenCalled();
+    expect(deps.scheduleRoomPreloadTimeout).not.toHaveBeenCalled();
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
   });
 
@@ -96,9 +98,10 @@ describe("room creation lifecycle", () => {
     expect(room).toBeTruthy();
     expect(room).toMatchObject({ rated: true, matchSource: "matchmaking" });
     expect(deps.rooms.get(room.code)).toBe(room);
+    expect(deps.registerRoom).toHaveBeenCalledWith(room);
     expect(deps.persistRoom).toHaveBeenCalledWith(room, { force: true });
     expect(deps.startGameClock).toHaveBeenCalledWith(room, io);
-    expect(deps.scheduleGameStart).toHaveBeenCalledWith(room, io);
+    expect(deps.scheduleRoomPreloadTimeout).toHaveBeenCalledWith(room, io);
     expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("3"));
     expect(deps.broadcastRoom).toHaveBeenCalledWith(io, room);
     expect(io.messages).toEqual([
@@ -125,9 +128,10 @@ describe("room creation lifecycle", () => {
     expect(matchmakingQueue.removeUser).toHaveBeenCalledWith("alice");
     expect(matchmakingQueue.removeUser).toHaveBeenCalledWith("bob");
     expect(deps.rooms.get(room.code)).toBe(room);
+    expect(deps.registerRoom).toHaveBeenCalledWith(room);
     expect(deps.persistRoom).toHaveBeenCalledWith(room, { force: true });
     expect(deps.startGameClock).toHaveBeenCalledWith(room, io);
-    expect(deps.scheduleGameStart).toHaveBeenCalledWith(room, io);
+    expect(deps.scheduleRoomPreloadTimeout).toHaveBeenCalledWith(room, io);
     expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("3"));
     expect(deps.broadcastRoom).toHaveBeenCalledWith(io, room);
     expect(io.messages.map((message) => [message.socketId, message.event])).toEqual([

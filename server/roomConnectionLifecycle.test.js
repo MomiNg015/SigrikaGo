@@ -10,12 +10,14 @@ describe("room connection lifecycle", () => {
     const appendSystem = vi.fn();
     const clearEmptyRoomClose = vi.fn();
     const persistRoom = vi.fn();
+    const registerRoomSocket = vi.fn();
     const socket = { id: "socket-new", join: vi.fn() };
     const lifecycle = createLifecycle({
       rooms: new Map([[room.code, room]]),
       appendSystem,
       clearEmptyRoomClose,
-      persistRoom
+      persistRoom,
+      registerRoomSocket
     });
 
     expect(lifecycle.attachSocketToRoom(room.code, socket, room.players[0].user)).toBe(room);
@@ -23,25 +25,33 @@ describe("room connection lifecycle", () => {
     expect(clearEmptyRoomClose).toHaveBeenCalledWith(room);
     expect(appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("已重新连接"), { kind: "reconnect" });
     expect(socket.join).toHaveBeenCalledWith(room.code);
+    expect(registerRoomSocket).toHaveBeenCalledWith(room, "socket-new");
     expect(persistRoom).toHaveBeenCalledWith(room, { force: true });
   });
 
-  test("adds first-time spectators without duplicating existing spectators", () => {
+  test("adds first-time spectators and refreshes existing spectator sockets", () => {
     const watcher = user("watcher");
     const room = testRoom();
     const appendSystem = vi.fn();
     const persistRoom = vi.fn();
+    const registerRoomSocket = vi.fn();
+    const unregisterRoomSocket = vi.fn();
     const lifecycle = createLifecycle({
       rooms: new Map([[room.code, room]]),
       appendSystem,
-      persistRoom
+      persistRoom,
+      registerRoomSocket,
+      unregisterRoomSocket
     });
 
     expect(lifecycle.attachSocketToRoom(room.code, { id: "socket-watch", join: vi.fn() }, watcher)).toBe(room);
     expect(lifecycle.attachSocketToRoom(room.code, { id: "socket-watch-2", join: vi.fn() }, watcher)).toBe(room);
 
-    expect(room.spectators).toEqual([{ user: watcher, socketId: "socket-watch" }]);
+    expect(room.spectators).toEqual([{ user: watcher, socketId: "socket-watch-2" }]);
     expect(appendSystem).toHaveBeenCalledTimes(1);
+    expect(unregisterRoomSocket).toHaveBeenCalledWith(room, "socket-watch");
+    expect(registerRoomSocket).toHaveBeenNthCalledWith(1, room, "socket-watch");
+    expect(registerRoomSocket).toHaveBeenNthCalledWith(2, room, "socket-watch-2");
   });
 
   test("detaches player and spectator sockets, schedules empty-room close, and persists changed rooms", () => {
@@ -53,12 +63,14 @@ describe("room connection lifecycle", () => {
     const appendSystem = vi.fn();
     const scheduleEmptyActiveRoomClose = vi.fn();
     const persistRoom = vi.fn();
+    const unregisterRoomSocket = vi.fn();
     const lifecycle = createLifecycle({
       rooms: new Map([[room.code, room]]),
       matchmakingQueue,
       appendSystem,
       scheduleEmptyActiveRoomClose,
       persistRoom,
+      unregisterRoomSocket,
       now: () => 5000
     });
 
@@ -66,11 +78,39 @@ describe("room connection lifecycle", () => {
     expect(matchmakingQueue.removeSocket).toHaveBeenCalledWith("socket-a");
     expect(room.players[0]).toMatchObject({ socketId: null, disconnectedAt: 5000 });
     expect(appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("断线中"), { kind: "disconnect" });
+    expect(unregisterRoomSocket).toHaveBeenCalledWith(room, "socket-a");
     expect(scheduleEmptyActiveRoomClose).toHaveBeenCalledWith(room, "io");
     expect(persistRoom).toHaveBeenCalledWith(room, { force: true });
 
     expect(lifecycle.detachSocket("socket-watch", "io")).toEqual([room]);
     expect(room.spectators).toEqual([]);
+    expect(unregisterRoomSocket).toHaveBeenCalledWith(room, "socket-watch");
+  });
+
+  test("detaches only rooms returned by the socket index", () => {
+    const indexedRoom = testRoom({
+      code: "11111",
+      players: [player("alice", { socketId: "socket-a" })]
+    });
+    const unindexedRoom = testRoom({
+      code: "22222",
+      players: [player("bob", { socketId: "socket-a" })]
+    });
+    const persistRoom = vi.fn();
+    const lifecycle = createLifecycle({
+      rooms: new Map([
+        [indexedRoom.code, indexedRoom],
+        [unindexedRoom.code, unindexedRoom]
+      ]),
+      findRoomsForSocket: vi.fn(() => [indexedRoom]),
+      persistRoom,
+      now: () => 5000
+    });
+
+    expect(lifecycle.detachSocket("socket-a", "io")).toEqual([indexedRoom]);
+    expect(indexedRoom.players[0]).toMatchObject({ socketId: null, disconnectedAt: 5000 });
+    expect(unindexedRoom.players[0]).toMatchObject({ socketId: "socket-a", disconnectedAt: null });
+    expect(persistRoom).toHaveBeenCalledTimes(1);
   });
 
   test("does not add disconnect notices for finished player sockets", () => {
@@ -98,17 +138,21 @@ describe("room connection lifecycle", () => {
     });
     const appendSystem = vi.fn();
     const persistRoom = vi.fn();
+    const unregisterRoomSocket = vi.fn();
     const lifecycle = createLifecycle({
       rooms: new Map([[room.code, room]]),
       appendSystem,
-      persistRoom
+      persistRoom,
+      unregisterRoomSocket
     });
 
     expect(lifecycle.leaveRoom(room.code, "alice", "socket-a")).toBe(room);
     expect(finishedPlayer).toMatchObject({ socketId: null, disconnectedAt: null });
+    expect(unregisterRoomSocket).toHaveBeenCalledWith(room, "socket-a");
 
     expect(lifecycle.leaveRoom(room.code, "watcher", "socket-watch")).toBe(room);
     expect(room.spectators).toEqual([]);
+    expect(unregisterRoomSocket).toHaveBeenCalledWith(room, "socket-watch");
     expect(appendSystem).toHaveBeenCalledTimes(2);
     expect(appendSystem).toHaveBeenLastCalledWith(room, expect.stringContaining("离开了观战席"), { kind: "spectator-leave" });
     expect(persistRoom).toHaveBeenCalledTimes(2);

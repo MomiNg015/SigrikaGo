@@ -5,6 +5,9 @@
 @import "./board/effects-canvas-motion.css";
 @import "./board/points-preview.css";
 @import "./board/stones-skill-effects.css";
+@import "./board/row-slash-stone-effects.css";
+@import "./board/liberty-purge-stone-effects.css";
+@import "./board/spray-stone-effects.css";
 @import "./board/gomoku-winning-line.css";
 @import "./board/latest-touch-void.css";
 @import "./board/grid-scoring.css";

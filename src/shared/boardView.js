@@ -4,7 +4,6 @@ import { canSprayTransformStone } from "./gameConstants.js";
 export function lastMarkedAction(history = []) {
   return [...history].reverse().find((entry) => (
     entry.type === "move" || entry.effectType === "flip-stone"
-    || entry.effectType === "liberty-purge"
   ));
 }
 

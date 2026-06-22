@@ -103,6 +103,25 @@ describe("room queries", () => {
     expect(queries.isUserInActiveRoom("bob")).toBe(false);
   });
 
+  test("delegates membership lookups to the room index when provided", () => {
+    const indexedRoom = room("indexed", { players: [{ user: { id: "alice" } }] });
+    const membershipIndex = {
+      isUserInActiveRoom: vi.fn(() => true),
+      findRoomForUser: vi.fn(() => indexedRoom)
+    };
+    const { queries } = createQueries({
+      membershipIndex,
+      rooms: new Map()
+    });
+
+    expect(queries.isUserInActiveRoom("alice")).toBe(true);
+    expect(queries.findRoomForUser("alice")).toBe(indexedRoom);
+    expect(queries.findRoomForUser("alice", "indexed")).toBe(indexedRoom);
+    expect(membershipIndex.isUserInActiveRoom).toHaveBeenCalledWith("alice");
+    expect(membershipIndex.findRoomForUser).toHaveBeenCalledWith("alice", "");
+    expect(membershipIndex.findRoomForUser).toHaveBeenCalledWith("alice", "indexed");
+  });
+
   test("finds rooms for users globally or within a specific room code", () => {
     const first = room("first", { players: [{ user: { id: "alice" } }] });
     const second = room("second", { players: [{ user: { id: "bob" } }] });
@@ -116,5 +135,24 @@ describe("room queries", () => {
     expect(queries.findRoomForUser("bob")).toBe(second);
     expect(queries.findRoomForUser("bob", "first")).toBeNull();
     expect(queries.findRoomForUser("alice", "first")).toBe(first);
+  });
+
+  test("scan fallback finds active rooms before finished rooms", () => {
+    const finished = room("finished", {
+      players: [{ user: { id: "alice" } }],
+      game: { phase: GAME_PHASES.finished }
+    });
+    const active = room("active", {
+      players: [{ user: { id: "alice" } }]
+    });
+    const { queries } = createQueries({
+      rooms: new Map([
+        [finished.code, finished],
+        [active.code, active]
+      ])
+    });
+
+    expect(queries.findRoomForUser("alice")).toBe(active);
+    expect(queries.findRoomForUser("alice", "finished")).toBe(finished);
   });
 });

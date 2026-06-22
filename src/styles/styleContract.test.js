@@ -196,7 +196,12 @@ describe("root CSS entry contract", () => {
     expect(baseCss).toContain("place-items: center");
     expect(baseCss).toContain("background: transparent");
     expect(baseCss).toContain("width: min(520px, calc(100vw - 32px))");
+    expect(baseCss).toContain(".preload-character");
+    expect(baseCss).toContain("preload-character-hop");
+    expect(baseCss).toContain(".preload-character img");
+    expect(baseCss).toContain("filter: none");
     expect(baseCss).toContain(".preload-title");
+    expect(baseCss).toContain(".preload-status");
     expect(baseCss).toContain(".preload-tip");
     expect(baseCss).toContain("white-space: normal");
     expect(baseCss).toContain("overflow-wrap: anywhere");
@@ -712,6 +717,9 @@ describe("root CSS entry contract", () => {
       "./board/effects-canvas-motion.css",
       "./board/points-preview.css",
       "./board/stones-skill-effects.css",
+      "./board/row-slash-stone-effects.css",
+      "./board/liberty-purge-stone-effects.css",
+      "./board/spray-stone-effects.css",
       "./board/gomoku-winning-line.css",
       "./board/latest-touch-void.css",
       "./board/grid-scoring.css"

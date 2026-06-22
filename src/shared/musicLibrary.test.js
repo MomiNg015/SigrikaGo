@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  CHARACTER_SKILL_VOICES,
   CHARACTER_SYSTEM_VOICES,
   characterVoiceMapForSkill,
   DEFEAT_SOUND,
@@ -484,6 +485,19 @@ describe("background music library", () => {
     expect(resolveSkillVoice({ characterId: "denia" })).toBe("/assets/voice/denia_skill_cast.ogg");
   });
 
+  it("uses one of the configured QiuYuan skill voice candidates", () => {
+    expect(CHARACTER_SKILL_VOICES.qiuyuan).toEqual([
+      "/assets/voice/qiuyuan_skill_cast.ogg",
+      "/assets/voice/qiuyuan_skill_cast_1.ogg"
+    ]);
+    expect(resolveSkillVoice({ characterId: "qiuyuan" }, CHARACTER_SKILL_VOICES, () => 0)).toBe(
+      "/assets/voice/qiuyuan_skill_cast.ogg"
+    );
+    expect(resolveSkillVoice({ characterId: "qiuyuan" }, CHARACTER_SKILL_VOICES, () => 0.99)).toBe(
+      "/assets/voice/qiuyuan_skill_cast_1.ogg"
+    );
+  });
+
   it("resolves a configured skill voice from the skill banner character", () => {
     const voice = resolveSkillVoice(
       { character: { id: "sigrika" } },
@@ -499,6 +513,22 @@ describe("background music library", () => {
     }, {})).toEqual({
       sigrika: {
         "skill-cast": "/assets/voice/sigrika_skill_cast.ogg"
+      }
+    });
+  });
+
+  it("bridges skill voice candidate lists into character system voice maps", () => {
+    expect(characterVoiceMapForSkill({
+      qiuyuan: [
+        "/assets/voice/qiuyuan_skill_cast.ogg",
+        "/assets/voice/qiuyuan_skill_cast_1.ogg"
+      ]
+    }, {})).toEqual({
+      qiuyuan: {
+        "skill-cast": [
+          "/assets/voice/qiuyuan_skill_cast.ogg",
+          "/assets/voice/qiuyuan_skill_cast_1.ogg"
+        ]
       }
     });
   });

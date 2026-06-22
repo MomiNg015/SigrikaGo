@@ -46,7 +46,7 @@ describe("socket chat events", () => {
     expect(deps.broadcastRoomPatch).toHaveBeenCalledWith(deps.io, room, {
       type: "chat:append",
       message
-    });
+    }, { forcePersist: false });
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
   });
 

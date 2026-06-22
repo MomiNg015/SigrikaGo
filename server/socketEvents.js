@@ -32,7 +32,8 @@ export function registerSocketEvents(socket, deps) {
     resumePayloadForUser: deps.resumePayloadForUser,
     roomView: deps.roomView,
     broadcastRoom: deps.broadcastRoom,
-    broadcastRoomPresencePatch: deps.broadcastRoomPresencePatch
+    broadcastRoomPresencePatch: deps.broadcastRoomPresencePatch,
+    markRoomPreloadReady: deps.markRoomPreloadReady
   });
 
   registerGameSocketEvents(socket, {

@@ -24,8 +24,8 @@ export function createRoomRuntime({
     broadcastRoomUpdate(io, room, { persistRoom });
   }
 
-  function broadcastRoomPatch(io, room, patch) {
-    broadcastRoomPatchEvent(io, room, patch, { persistRoom });
+  function broadcastRoomPatch(io, room, patch, { forcePersist = true } = {}) {
+    broadcastRoomPatchEvent(io, room, patch, { forcePersist, persistRoom });
   }
 
   function broadcastRoomPresencePatch(io, room) {

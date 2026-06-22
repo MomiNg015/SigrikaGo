@@ -50,6 +50,7 @@ export default function RoomBattleStage({
   showCoords,
   showMoves,
   skillAvailable,
+  skillEffectsEnabled = true,
   skillPreview,
   token,
   user,
@@ -132,6 +133,7 @@ export default function RoomBattleStage({
         showMoves={showMoves}
         pendingSkill={pendingSkill}
         audioSettings={audioSettings}
+        skillEffectsEnabled={skillEffectsEnabled}
         pointConfirmation={pointConfirmation}
         previewPlayer={role === "player" ? me : null}
         stoneDecorations={stoneDecorationsForRoom(displayRoom)}

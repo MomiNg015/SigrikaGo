@@ -1,6 +1,7 @@
 import { applyRoomSnapshot } from "./roomSnapshot.js";
 import { applyRoomPatch, roomPatchCanUpdate, roomPatchNeedsResume } from "./roomPatch.js";
 import { GAME_MODE_IDS } from "../shared/gameModes.js";
+import { GAME_PHASES } from "../shared/game.js";
 
 export function createSocketHandlers({
   matchSuccessRef,
@@ -73,13 +74,21 @@ export function createSocketHandlers({
       updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
       const transition = {
         room: roomView,
-        startedAt: now()
+        startedAt: now(),
+        countdownComplete: false
       };
       matchSuccessRef.current = transition;
       setMatchSuccess(transition);
     },
     roomUpdate: (roomView) => {
       updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
+      if (shouldCompletePendingMatch(matchSuccessRef.current, roomView)) {
+        setRoom((current) => applyRoomSnapshot(current, roomView));
+        matchSuccessRef.current = null;
+        setMatchSuccess(null);
+        setView("room");
+        return;
+      }
       if (syncPendingMatchRoom(matchSuccessRef, setMatchSuccess, roomView)) return;
       const nextAudioBaselineSnapshotKey = roomAudioBaselineSnapshotKey(roomView);
       const shouldApplyAudioBaseline = shouldMarkRoomAudioBaseline(roomView)
@@ -164,6 +173,15 @@ export function createSocketHandlers({
       if (isFinishedPlayerRoom && payload.reason === "finished-room-close") return;
       showToast(payload.message || "房间已关闭");
     },
+    matchPreloadTimeout: (payload = {}) => {
+      clearLastRoomCode();
+      clearRoomUiState();
+      matchSuccessRef.current = null;
+      setMatchStart(null);
+      setMatchSuccess(null);
+      setView("home");
+      showToast(payload.message || "一方加载超时，匹配中止");
+    },
     errorToast: (message) => {
       if (String(message).includes("房间不存在")) {
         clearLastRoomCode();
@@ -227,6 +245,7 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
     socket.emit("room:resume", buildRoomResumeRequest());
   });
   socket.on("room:closed", handlers.roomClosed);
+  socket.on("match:preload-timeout", handlers.matchPreloadTimeout);
   socket.on("error:toast", handlers.errorToast);
   socket.on("duel:incoming", handlers.duelIncoming);
   socket.on("duel:closed", handlers.duelClosed);
@@ -238,6 +257,16 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
 
 function shouldMarkRoomAudioBaseline(roomView) {
   return roomView?.role === "player" && roomView?.game?.phase === "playing";
+}
+
+function shouldCompletePendingMatch(matchSuccess, roomView) {
+  return Boolean(
+    matchSuccess?.room?.code
+      && roomView?.code === matchSuccess.room.code
+      && roomView?.game?.phase
+      && roomView.game.phase !== GAME_PHASES.preloading
+      && matchSuccess.countdownComplete
+  );
 }
 
 function roomAudioBaselineSnapshotKey(roomView) {

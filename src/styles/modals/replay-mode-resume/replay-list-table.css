@@ -35,7 +35,7 @@
 .replay-table-heading,
 .replay-table-row {
   display: grid;
-  grid-template-columns: 108px minmax(130px, 1.15fr) minmax(130px, 1.15fr) minmax(110px, 0.9fr) 64px;
+  grid-template-columns: 150px minmax(130px, 1.15fr) minmax(130px, 1.15fr) minmax(110px, 0.9fr) 64px;
   align-items: center;
   gap: 8px;
   text-align: center;
@@ -60,17 +60,19 @@
 
 .replay-time-cell {
   display: inline-flex;
-  min-width: 0;
+  min-width: max-content;
   align-items: center;
   justify-content: center;
   gap: 5px;
 }
 
 .replay-time-cell > span:last-child {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex: 0 0 auto;
+  min-width: max-content;
+  overflow: visible;
+  text-overflow: clip;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .replay-friendly-icon {
@@ -126,7 +128,7 @@
 
 .replay-table.compact .replay-table-heading,
 .replay-table.compact .replay-table-row {
-  grid-template-columns: 84px minmax(92px, 1fr) minmax(92px, 1fr) minmax(86px, 0.8fr) 52px;
+  grid-template-columns: 132px minmax(92px, 1fr) minmax(92px, 1fr) minmax(86px, 0.8fr) 52px;
   font-size: 12px;
 }
 

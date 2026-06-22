@@ -20,20 +20,6 @@
     radial-gradient(circle at 34% 26%, #ffffff 0 20%, #eef0f5 58%, #d9dce2 100%);
 }
 
-.spray .stone {
-  --spray-stone-fallback:
-    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.92), rgba(141, 246, 236, 0.72) 22%, transparent 33%),
-    conic-gradient(from 210deg, #34e2c4, #8d7cff, #ff7eb6, #ffd15d, #34e2c4);
-  background:
-    center / 100% 100% no-repeat url("/assets/stones/spray-stone.webp"),
-    var(--spray-stone-fallback);
-  box-shadow:
-    inset -7px -10px 14px rgba(31, 24, 56, 0.28),
-    inset 7px 8px 14px rgba(255, 255, 255, 0.22),
-    0 6px 10px rgba(45, 29, 18, 0.24),
-    0 0 12px rgba(68, 220, 196, 0.34);
-}
-
 .black .stone.decorated-stone,
 .white .stone.decorated-stone {
   background: center / 100% 100% no-repeat var(--stone-decoration-image);
@@ -87,9 +73,7 @@
 }
 
 .double-move-stone .stone::before {
-  background:
-    radial-gradient(ellipse at 48% 88%, rgba(255, 245, 186, 0.72) 0 9%, transparent 22%),
-    conic-gradient(from 210deg, transparent 0 11%, rgba(255, 80, 28, 0.74) 15% 23%, transparent 31% 41%, rgba(255, 171, 47, 0.72) 47% 58%, transparent 66% 100%);
+  background: center/116% no-repeat url("/assets/effects/changli-flame-sprite.svg"),radial-gradient(ellipse at 48% 88%, rgba(255,245,186,.72) 0 9%, transparent 22%),conic-gradient(from 210deg, transparent 0 11%, rgba(255,80,28,.74) 15% 23%, transparent 31% 41%, rgba(255,171,47,.72) 47% 58%, transparent 66% 100%);
   filter: blur(1px);
   animation: double-move-flame-tongues 1.05s ease-in-out infinite alternate;
 }
@@ -222,34 +206,18 @@
 }
 
 @keyframes double-move-stone-glow {
-  from {
-    filter: drop-shadow(0 0 6px rgba(255, 74, 29, 0.78));
-  }
-  to {
-    filter: drop-shadow(0 0 18px rgba(255, 122, 28, 0.98));
-  }
+  from { filter: drop-shadow(0 0 6px rgba(255, 74, 29, 0.78)); }
+  to { filter: drop-shadow(0 0 18px rgba(255, 122, 28, 0.98)); }
 }
 
 @keyframes double-move-flame-tongues {
-  from {
-    opacity: 0.62;
-    transform: rotate(-8deg) scale(0.94);
-  }
-  to {
-    opacity: 0.92;
-    transform: rotate(10deg) scale(1.08);
-  }
+  from { opacity: 0.62; transform: rotate(-8deg) scale(0.94); }
+  to { opacity: 0.92; transform: rotate(10deg) scale(1.08); }
 }
 
 @keyframes double-move-flame-halo {
-  from {
-    opacity: 0.48;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 0.78;
-    transform: scale(1.08);
-  }
+  from { opacity: 0.48; transform: scale(0.92); }
+  to { opacity: 0.78; transform: scale(1.08); }
 }
 
 @keyframes protocol-ban-bluewhite-glow {

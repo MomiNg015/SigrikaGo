@@ -2,6 +2,7 @@ import { GAME_PHASES } from "../src/shared/game.js";
 import { upsertPersistedRoom } from "./roomPersistence.js";
 
 export const CURRENT_ROOM_SNAPSHOT_VERSION = 1;
+const pendingRoomPersistence = new Map();
 
 export function persistRoomState({
   prisma,
@@ -18,7 +19,40 @@ export function persistRoomState({
   room.lastPersistedAt = currentTime;
   const snapshot = JSON.stringify(roomPersistenceSnapshot(room));
   const status = room.game.phase === GAME_PHASES.finished ? "finished" : "active";
-  upsert(prisma, { code: room.code, status, snapshot }).catch(onError);
+  return enqueueRoomPersistence(room.code, () => upsert(prisma, { code: room.code, status, snapshot }), onError);
+}
+
+export async function flushRoomPersistence(roomCode = "") {
+  if (roomCode) {
+    while (pendingRoomPersistence.has(roomCode)) {
+      await Promise.allSettled([pendingRoomPersistence.get(roomCode)]);
+    }
+    return;
+  }
+  while (pendingRoomPersistence.size > 0) {
+    await Promise.allSettled([...pendingRoomPersistence.values()]);
+  }
+}
+
+function enqueueRoomPersistence(roomCode, persist, onError) {
+  const previous = pendingRoomPersistence.get(roomCode);
+  const current = previous
+    ? previous.catch(() => {}).then(persist).catch(onError)
+    : runPersistenceNow(persist, onError);
+  pendingRoomPersistence.set(roomCode, current);
+  current.finally(() => {
+    if (pendingRoomPersistence.get(roomCode) === current) pendingRoomPersistence.delete(roomCode);
+  });
+  return current;
+}
+
+function runPersistenceNow(persist, onError) {
+  try {
+    return Promise.resolve(persist()).catch(onError);
+  } catch (error) {
+    onError(error);
+    return Promise.resolve();
+  }
 }
 
 export function roomPersistenceSnapshot(room) {
@@ -26,6 +60,7 @@ export function roomPersistenceSnapshot(room) {
     snapshotVersion: CURRENT_ROOM_SNAPSHOT_VERSION,
     code: room.code,
     revision: Number(room.revision ?? 0),
+    clockSeq: Number(room.clockSeq ?? 0),
     mode: room.mode ?? room.game?.mode ?? "spark",
     players: room.players.map((player) => ({
       ...player,
@@ -36,6 +71,7 @@ export function roomPersistenceSnapshot(room) {
     chat: room.chat,
     createdAt: room.createdAt,
     openingEndsAt: room.openingEndsAt,
+    preload: room.preload ?? null,
     closesAt: room.closesAt,
     emptySince: room.emptySince,
     countingDeadline: room.countingDeadline,
@@ -64,6 +100,7 @@ export function hydratePersistedRoom(snapshot, { now = Date.now } = {}) {
     spectators: [],
     chat: snapshot.chat ?? [],
     revision: Number(snapshot.revision ?? 0),
+    clockSeq: Number(snapshot.clockSeq ?? 0),
     timerId: null,
     timeoutIds: [],
     emptyTimerId: null,

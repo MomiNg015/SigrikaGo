@@ -32,6 +32,14 @@ export function playSkillEffectSound(effectType, cue, audioSettings = DEFAULT_AU
     playDataStreamSound(context, cue, volume, now);
     return;
   }
+  if (effectType === "protocol-takeover") {
+    playProtocolTakeoverSound(context, cue, volume, now);
+    return;
+  }
+  if (effectType === "double-move") {
+    playPhoenixFireSound(context, cue, volume, now);
+    return;
+  }
   if (effectType === "row-slash") {
     playSlashSound(context, cue, volume, now);
   }
@@ -99,6 +107,35 @@ function playDataStreamSound(context, cue, volume, now) {
   if (cue === SKILL_EFFECT_SOUND_TYPES.impact) {
     scheduleTone(context, { type: "triangle", frequency: 380, endFrequency: 1160, start: now, length: 0.28, volume: 0.1 * volume });
     scheduleNoise(context, { start: now + 0.04, length: 0.16, volume: 0.055 * volume, highpass: 1600 });
+  }
+}
+
+function playProtocolTakeoverSound(context, cue, volume, now) {
+  if (cue === SKILL_EFFECT_SOUND_TYPES.start) {
+    scheduleTone(context, { type: "sine", frequency: 620, endFrequency: 1540, start: now, length: 0.3, volume: 0.13 * volume });
+    scheduleTone(context, { type: "triangle", frequency: 1240, endFrequency: 1860, start: now + 0.05, length: 0.2, volume: 0.08 * volume });
+    scheduleNoise(context, { start: now + 0.02, length: 0.26, volume: 0.08 * volume, highpass: 1800 });
+    return;
+  }
+  if (cue === SKILL_EFFECT_SOUND_TYPES.impact) {
+    scheduleTone(context, { type: "triangle", frequency: 440, endFrequency: 1280, start: now, length: 0.26, volume: 0.16 * volume });
+    scheduleTone(context, { type: "square", frequency: 1720, endFrequency: 860, start: now + 0.02, length: 0.09, volume: 0.09 * volume });
+    scheduleTone(context, { type: "sine", frequency: 1960, endFrequency: 1480, start: now + 0.11, length: 0.18, volume: 0.08 * volume });
+    scheduleNoise(context, { start: now + 0.01, length: 0.2, volume: 0.09 * volume, highpass: 2400 });
+  }
+}
+
+function playPhoenixFireSound(context, cue, volume, now) {
+  if (cue === SKILL_EFFECT_SOUND_TYPES.start) {
+    scheduleTone(context, { type: "sawtooth", frequency: 340, endFrequency: 920, start: now, length: 0.34, volume: 0.08 * volume });
+    scheduleTone(context, { type: "triangle", frequency: 680, endFrequency: 1380, start: now + 0.08, length: 0.24, volume: 0.06 * volume });
+    scheduleNoise(context, { start: now + 0.04, length: 0.32, volume: 0.07 * volume, highpass: 720 });
+    return;
+  }
+  if (cue === SKILL_EFFECT_SOUND_TYPES.impact) {
+    scheduleTone(context, { type: "sawtooth", frequency: 156, endFrequency: 52, start: now, length: 0.34, volume: 0.18 * volume });
+    scheduleNoise(context, { start: now, length: 0.4, volume: 0.2 * volume, lowpass: 900 });
+    scheduleNoise(context, { start: now + 0.08, length: 0.18, volume: 0.08 * volume, highpass: 1600 });
   }
 }
 

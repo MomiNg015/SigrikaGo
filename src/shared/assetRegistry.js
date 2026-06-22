@@ -27,7 +27,12 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
   ]),
   effects: Object.freeze([
     DENIA_CANDY_PORTRAIT,
-    "/assets/effects/denia-bubble-pop.webp"
+    "/assets/boards/nabomo-color-illusion-board.webp",
+    "/assets/effects/changli-fire-phoenix.svg",
+    "/assets/effects/changli-flame-sprite.svg",
+    "/assets/effects/denia-bubble-pop.webp",
+    "/assets/effects/sigrika-erased-field-marker.webp",
+    "/assets/stones/spray-stone.webp"
   ])
 });
 

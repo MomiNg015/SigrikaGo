@@ -226,7 +226,8 @@
   box-shadow: var(--timer-track-glow, 0 0 10px color-mix(in srgb, var(--theme-accent) 45%, transparent));
 }
 
-.app-shell.player-theme-enabled .preload-tip {
+.app-shell.player-theme-enabled .preload-tip,
+.app-shell.player-theme-enabled .preload-status {
   color: var(--theme-muted);
 }
 

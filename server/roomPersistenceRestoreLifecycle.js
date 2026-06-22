@@ -5,6 +5,7 @@ export function createRoomPersistenceRestoreLifecycle({
   ensureRestoredDisconnectedNotices,
   resumeRoomTimers,
   persistRoom,
+  registerRoom = () => {},
   onError = (message, error) => console.error(message, error)
 }) {
   async function restorePersistedRooms(io) {
@@ -18,6 +19,7 @@ export function createRoomPersistenceRestoreLifecycle({
 
         ensureRestoredDisconnectedNotices(room);
         rooms.set(room.code, room);
+        registerRoom(room);
         restored.push(room);
 
         if (resumeRoomTimers(room, io) !== false) {

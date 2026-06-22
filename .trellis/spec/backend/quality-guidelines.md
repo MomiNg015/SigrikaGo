@@ -32,6 +32,12 @@ Questions to answer:
 
 <!-- Patterns that must always be used -->
 
+### Match Preload Room Boundary
+
+Matched and accepted-duel rooms must start in `GAME_PHASES.preloading` and use `server/roomPreparationLifecycle.js` as the only boundary for player resource readiness. Socket handlers may validate `room:preload-ready` and forward `{ roomCode, userId }`, but they must not mutate room phase directly. The lifecycle owns ready counts, the 60 second timeout, `match:preload-timeout`, transition into `opening`, and scheduling the existing game-start timer.
+
+Tests touching this boundary should cover room creation, ready count broadcasts, both-ready opening transition, timeout abort, and socket event registration.
+
 ### Auth HTTP Boundary Contract
 
 `server/authRoutes.js` owns the `/api/auth/*` HTTP request handlers:
@@ -319,6 +325,7 @@ Tests touching admin character create/update/disable, legacy skill field compati
 
 - `broadcastRoom(io, room, { persistRoom })` emits viewer-specific `room:update` payloads and force-persists the room before delivery.
 - `broadcastRoomClock(io, room, { persistRoom })` emits lightweight `room:clock` payloads and uses throttled persistence.
+- `broadcastRoomPatch(io, room, patch, { persistRoom, forcePersist })` emits lightweight `room:patch` payloads with revision metadata; default patch persistence is forced, while explicitly non-critical chat/presence callers may pass `forcePersist: false` to use the shared throttled persistence path.
 - `broadcastToast(io, room, text)` and `emitRoomClosed(io, room, payload)` emit only to connected room participants.
 - `roomView(room, viewerId)` remains the compatibility wrapper for `buildRoomView()`.
 
@@ -347,6 +354,8 @@ Tests touching this boundary should update `server/roomBroadcasts.test.js` for p
 - `createRoomRuntime(deps)` returns `persistRoom(room, options)`, `broadcastRoom(io, room)`, and `broadcastToast(io, room, text)`.
 - `persistRoom()` delegates to `persistRoomState({ prisma, room, force, throttleMs, onError })` and defaults `force` to false.
 - `broadcastRoom()` delegates to `server/roomBroadcasts.js` with the runtime `persistRoom` callback so full room snapshots keep forced persistence behavior centralized.
+- `broadcastRoomPatch(io, room, patch, { forcePersist })` forwards the persistence timing choice to `server/roomBroadcasts.js`, defaulting to forced persistence unless the socket boundary explicitly marks the patch as non-critical.
+- `server/roomStatePersistence.js` serializes asynchronous snapshot upserts per room code, while allowing different room codes to persist independently; callers that need a global consistency point can await `flushRoomPersistence()`, and callers that need only one room can await `flushRoomPersistence(roomCode)` without blocking unrelated room writes.
 - `broadcastToast()` forwards room toast delivery to the broadcast boundary without duplicating participant iteration.
 
 `server/rooms.js` should compose this runtime once and inject the returned callbacks into lifecycles, but it should not duplicate persistence throttling options, broadcast persistence injection, or toast forwarding wrappers.
@@ -367,7 +376,7 @@ const { persistRoom, broadcastToast } = roomRuntime;
 export const { broadcastRoom } = roomRuntime;
 ```
 
-Tests touching persistence option wiring, default force behavior, full-room broadcast persistence injection, or toast forwarding should update `server/roomRuntime.test.js`; payload-level broadcast tests should stay in `server/roomBroadcasts.test.js`.
+Tests touching persistence option wiring, default force behavior, per-room persistence ordering, full-room broadcast persistence injection, or toast forwarding should update `server/roomRuntime.test.js` or `server/roomStatePersistence.test.js`; payload-level broadcast tests should stay in `server/roomBroadcasts.test.js`.
 
 ### Room Timer Boundary Contract
 
@@ -461,10 +470,10 @@ Tests touching participant-state rules should update `server/roomPresence.test.j
 `server/roomConnectionLifecycle.js` owns room socket connection-state mutation:
 
 - `createRoomConnectionLifecycle(deps)` returns `attachSocketToRoom`, `detachSocket`, and `leaveRoom`.
-- `attachSocketToRoom(roomCode, socket, user)` validates the room code, reconnects existing players, clears empty-room close state, appends reconnect notices for active disconnected players, adds first-time spectators, joins the socket room, and force-persists changed room state.
-- Spectator attach is idempotent by `user.id`; duplicate spectator joins should not append duplicate spectators or duplicate join notices.
-- `detachSocket(socketId, io)` removes the socket from matchmaking, disconnects matching players, timestamps `disconnectedAt`, appends disconnect notices only for unfinished rooms, removes matching spectators, schedules empty-room close when `io` is provided, force-persists changed rooms, and returns changed rooms.
-- `leaveRoom(roomCode, userId, socketId)` handles explicit spectator leave and finished-player leave-as-spectator cleanup, appends `spectator-leave` notices, and force-persists changed room state.
+- `attachSocketToRoom(roomCode, socket, user)` validates the room code, reconnects existing players, clears empty-room close state, appends reconnect notices for active disconnected players, adds first-time spectators, joins the socket room, updates the injected socket-room index callbacks, and force-persists changed room state.
+- Spectator attach is idempotent by `user.id`; duplicate spectator joins should refresh the spectator socket id without appending duplicate spectators or duplicate join notices.
+- `detachSocket(socketId, io)` removes the socket from matchmaking, reads candidate rooms through the injected socket-room lookup callback, disconnects matching players, timestamps `disconnectedAt`, appends disconnect notices only for unfinished rooms, removes matching spectators, unregisters socket mappings, schedules empty-room close when `io` is provided, force-persists changed rooms, and returns changed rooms.
+- `leaveRoom(roomCode, userId, socketId)` handles explicit spectator leave and finished-player leave-as-spectator cleanup, unregisters socket mappings, appends `spectator-leave` notices, and force-persists changed room state.
 
 `server/rooms.js` should decide which socket event calls this boundary, but it should not duplicate player/spectator socket mutation, reconnect/disconnect notice rules, or forced persistence after connection-state changes.
 
@@ -482,7 +491,7 @@ Correct:
 detachSocket(socketId, io);
 ```
 
-Tests touching player reconnects, spectator joins/leaves, socket disconnect cleanup, finished-player leave behavior, or connection-state persistence should update `server/roomConnectionLifecycle.test.js`; socket-event integration can remain in `server/rooms.test.js`.
+Tests touching player reconnects, spectator joins/leaves, socket-index maintenance, socket disconnect cleanup, finished-player leave behavior, or connection-state persistence should update `server/roomConnectionLifecycle.test.js`; socket-event integration can remain in `server/rooms.test.js`.
 
 ### Room Matchmaking Queue Boundary Contract
 
@@ -734,6 +743,7 @@ Tests touching chat entry validation order, message shape, move-number capture, 
 - `listWatchRooms()` projects each room to `{ code, mode, onlineCount, moveNumber, status, closesAt, black, white }`, using `room.mode ?? room.game.mode ?? "spark"` and delegating participant counts/player summaries to `server/roomPresence.js`.
 - `isUserInActiveRoom(userId)` must use active-room filtering so finished rooms do not block matchmaking or lobby actions.
 - `findRoomForUser(userId, roomCode)` searches either a specific room code or all rooms and returns `null` when no player match exists.
+- When `server/roomMembershipIndex.js` is injected, active membership checks and user-room lookup should use the user-to-room index instead of scanning every room. Socket disconnect cleanup should use the same index module's socket-to-room lookup through `server/roomConnectionLifecycle.js`.
 
 `server/rooms.js` should keep the shared room map, but it should not duplicate watch-list projection shape, active-room filtering, online-count calculation, or user-room lookup behavior.
 
@@ -788,7 +798,7 @@ Tests touching counting/draw/scoring entry validation, phase preconditions, play
 
 - `createRoomCloseLifecycle(deps)` returns `scheduleRoomClose`, `closeRoom`, `scheduleEmptyActiveRoomClose`, and `clearEmptyRoomClose`.
 - `scheduleRoomClose(roomCode, io)` schedules finished-room cleanup, triggers unsaved record persistence through injected callbacks, force-persists `closesAt`, extends valid finished rooms while participants remain connected, and closes with `{ reason: "finished-room-close", roomCode }`.
-- `closeRoom(roomCode, io, options)` clears room timers, emits `room:closed`, removes the room from memory, and triggers persisted-room deletion.
+- `closeRoom(roomCode, io, options)` clears room timers, emits `room:closed`, removes the room from memory, and triggers persisted-room deletion. The `rooms.js` composition must wait for pending snapshot upserts for that room code before deleting the persisted row so a late upsert cannot recreate a closed room.
 - `scheduleEmptyActiveRoomClose(room, io)` marks unfinished rooms invalid after all players are disconnected for five minutes, appends the invalid-room system message, persists the invalid state, and closes the room without creating a game record.
 - `clearEmptyRoomClose(room)` cancels the tracked empty-room timeout and clears `emptySince` / `emptyTimerId`.
 

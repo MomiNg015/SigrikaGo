@@ -1,8 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { COLORS, GAME_PHASES } from "../src/shared/game.js";
 import {
-  MATCH_SUCCESS_DELAY_MS,
-  OPENING_NOTICE_DELAY_MS,
+  MATCH_PRELOAD_TIMEOUT_MS,
   createRoom,
   modeStatsForUser,
   randomRoomCode,
@@ -33,7 +32,7 @@ function queuePlayer(id, socketId, overrides = {}) {
 }
 
 describe("roomFactory", () => {
-  test("creates an opening room with deterministic colors and timing", () => {
+  test("creates a preloading room with deterministic colors and timing", () => {
     const now = () => 1000;
     const room = createRoom(
       queuePlayer("first", "socket-a"),
@@ -52,10 +51,18 @@ describe("roomFactory", () => {
       rated: true,
       matchSource: "matchmaking",
       revision: 0,
+      clockSeq: 0,
       spectators: [],
       chat: [],
       createdAt: 1000,
-      openingEndsAt: 1000 + MATCH_SUCCESS_DELAY_MS + OPENING_NOTICE_DELAY_MS,
+      openingEndsAt: null,
+      preload: {
+        startedAt: 1000,
+        deadlineAt: 1000 + MATCH_PRELOAD_TIMEOUT_MS,
+        readyUserIds: [],
+        readyCount: 0,
+        requiredCount: 2
+      },
       closesAt: null,
       countingDeadline: null,
       drawDeadline: null,
@@ -64,7 +71,7 @@ describe("roomFactory", () => {
       lastTick: 1000,
       recordSaved: false
     });
-    expect(room.game.phase).toBe(GAME_PHASES.opening);
+    expect(room.game.phase).toBe(GAME_PHASES.preloading);
     expect(room.game.mode).toBe("standard");
     expect(room.players.map((player) => [player.color, player.user.id, player.socketId])).toEqual([
       [COLORS.black, "first", "socket-a"],

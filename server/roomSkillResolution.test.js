@@ -5,6 +5,7 @@ import {
   SKILL_BOARD_EFFECT_DURATION_MS,
   SKILL_BANNER_DURATION_MS,
   SKILL_PREVIEW_DELAY_MS,
+  skillPreviewResolutionDelay,
   buildPendingSkillPreview,
   createPendingSkillResolution,
   createRoomSkillLifecycle,
@@ -28,7 +29,8 @@ describe("room skill resolution helpers", () => {
       resolvesAt: 1000 + SKILL_PREVIEW_DELAY_MS,
       game,
       notices: ["notice"],
-      playerColor: "black"
+      playerColor: "black",
+      effectsEnabled: true
     });
     expect(JSON.parse(JSON.stringify(resolution))).toEqual(resolution);
   });
@@ -39,6 +41,47 @@ describe("room skill resolution helpers", () => {
     expect(SKILL_PREVIEW_DELAY_MS).toBeGreaterThanOrEqual(
       SKILL_BANNER_DURATION_MS + SKILL_BOARD_EFFECT_DURATION_MS
     );
+  });
+
+  test("resolves immediately after the banner when skill effects are disabled", () => {
+    const game = { phase: "playing", history: [{ type: "skill" }] };
+    const resolution = createPendingSkillResolution({
+      pendingSkillId: "skill-1",
+      game,
+      notices: [],
+      playerColor: "black",
+      effectsEnabled: false,
+      now: () => 1000
+    });
+
+    expect(skillPreviewResolutionDelay({ effectsEnabled: false })).toBe(SKILL_BANNER_DURATION_MS);
+    expect(resolution).toMatchObject({
+      resolvesAt: 1000 + SKILL_BANNER_DURATION_MS,
+      effectsEnabled: false
+    });
+  });
+
+  test("resolves Nabomo passive at banner end so the board transition starts without a gap", () => {
+    const game = {
+      phase: "playing",
+      history: [{ type: "skill", effectType: "color-illusion-passive" }]
+    };
+    const resolution = createPendingSkillResolution({
+      pendingSkillId: "skill-nabomo",
+      game,
+      notices: [],
+      playerColor: "black",
+      effectType: "color-illusion-passive",
+      now: () => 1000
+    });
+
+    expect(skillPreviewResolutionDelay({ effectType: "color-illusion-passive" })).toBe(
+      SKILL_BANNER_DURATION_MS
+    );
+    expect(resolution).toMatchObject({
+      resolvesAt: 1000 + SKILL_BANNER_DURATION_MS,
+      effectsEnabled: true
+    });
   });
 
   test("calculates remaining delay for restored pending skill snapshots", () => {
@@ -133,9 +176,116 @@ describe("room skill resolution helpers", () => {
       affectedPointIds: ["0,0", "3,3", "6,6"],
       removalMarkIds: ["3,3", "6,6"],
       removed: 2,
-      removedByColor: { black: 1, white: 1 }
+      removedByColor: { black: 1, white: 1 },
+      boardEffectDurationMs: SKILL_BOARD_EFFECT_DURATION_MS
     });
   });
+
+  test("builds QiuYuan row-slash preview metadata with removed stone colors", () => {
+    const preview = buildPendingSkillPreview({
+      pendingSkillId: "skill-qiuyuan",
+      player: {
+        color: COLORS.black,
+        characterId: "qiuyuan",
+        character: CHARACTERS.qiuyuan,
+        user: { username: "alice", itemEffects: {} }
+      },
+      character: CHARACTERS.qiuyuan,
+      skill: CHARACTERS.qiuyuan.skill,
+      requestedTargetId: "3,5",
+      resolvedGame: {
+        size: 13,
+        history: [{
+          type: "skill",
+          effectType: "row-slash",
+          id: "3,5",
+          row: 5,
+          directRemovals: [
+            { id: "0,5", from: COLORS.white, owner: COLORS.black },
+            { id: "1,5", from: "spray", owner: null }
+          ],
+          removed: 2,
+          removedByColor: { white: 1, spray: 1 }
+        }]
+      },
+      resolvesAt: 2000
+    });
+
+    expect(preview).toMatchObject({
+      id: "skill-qiuyuan",
+      effectType: "row-slash",
+      targetId: "3,5",
+      row: 5,
+      affectedPointIds: Array.from({ length: 13 }, (_item, x) => `${x},5`),
+      removedStones: [
+        { id: "0,5", from: COLORS.white },
+        { id: "1,5", from: "spray" }
+      ],
+      removed: 2,
+      removedByColor: { white: 1, spray: 1 }
+    });
+  });
+
+  test("extends Chisa pending resolution until every removal slash can play", () => {
+    const removalMarkIds = ["0,1", "1,1", "2,1", "3,1", "4,1", "5,1", "6,1", "7,1"];
+    const game = {
+      phase: "playing",
+      history: [{
+        type: "skill",
+        effectType: "liberty-purge",
+        id: "0,0",
+        removalMarkIds
+      }]
+    };
+    const resolution = createPendingSkillResolution({
+      pendingSkillId: "skill-chisa-many",
+      game,
+      playerColor: COLORS.black,
+      effectType: "liberty-purge",
+      now: () => 1000
+    });
+    const preview = buildPendingSkillPreview({
+      pendingSkillId: "skill-chisa-many",
+      player: {
+        color: COLORS.black,
+        characterId: "chisa",
+        character: CHARACTERS.chisa,
+        user: { username: "alice", itemEffects: {} }
+      },
+      character: CHARACTERS.chisa,
+      skill: CHARACTERS.chisa.skill,
+      requestedTargetId: "0,0",
+      resolvedGame: game,
+      resolvesAt: resolution.resolvesAt
+    });
+
+    expect(preview.boardEffectDurationMs).toBe(2530);
+    expect(resolution.resolvesAt).toBe(1000 + SKILL_BANNER_DURATION_MS + preview.boardEffectDurationMs);
+  });
+
+  test("marks disabled effect previews with a zero board-effect window", () => {
+    const preview = buildPendingSkillPreview({
+      pendingSkillId: "skill-disabled",
+      player: {
+        color: COLORS.black,
+        characterId: "sigrika",
+        character: CHARACTERS.sigrika,
+        user: { username: "alice", itemEffects: {} }
+      },
+      character: CHARACTERS.sigrika,
+      skill: CHARACTERS.sigrika.skill,
+      requestedTargetId: "0,0",
+      resolvedGame: {
+        history: [{ type: "skill", effectType: "erase-point", id: "0,0" }]
+      },
+      resolvesAt: 2000,
+      effectsEnabled: false
+    });
+
+    expect(preview.effectsEnabled).toBe(false);
+    expect(preview.boardEffectDurationMs).toBe(0);
+  });
+
 
   test("rejects active skills in gomoku rooms before target validation", () => {
     const room = {

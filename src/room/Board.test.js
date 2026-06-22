@@ -61,6 +61,7 @@ describe("areBoardPropsEqual", () => {
     const exposedBlock = css.match(/\.exposed-hidden-hand \.stone\s*\{[^}]+\}/)?.[0] ?? "";
     const flippedBlock = css.match(/\.flipped-stone \.stone\s*\{[^}]+\}/)?.[0] ?? "";
     const doubleMoveBlock = css.match(/\.double-move-stone \.stone\s*\{[^}]+\}/)?.[0] ?? "";
+    const libertyPurgeBlock = css.match(/\.liberty-purge-stone \.stone\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(exposedBlock).toContain("rgba(8, 174, 84, 0.95)");
     expect(exposedBlock).toContain("rgba(0, 142, 72, 0.96)");
@@ -68,7 +69,10 @@ describe("areBoardPropsEqual", () => {
     expect(flippedBlock).toContain("rgba(112, 24, 214, 0.96)");
     expect(doubleMoveBlock).toContain("rgba(255, 65, 32, 0.96)");
     expect(doubleMoveBlock).toContain("double-move-stone-glow");
+    expect(libertyPurgeBlock).toContain("rgba(171, 10, 38, 0.78)");
+    expect(libertyPurgeBlock).toContain("liberty-purge-stone-glow");
     expect(css).toContain("@keyframes double-move-stone-glow");
+    expect(css).toContain("@keyframes liberty-purge-stone-glow");
   });
 
   test("marks gomoku winning stones with a point-local golden reveal effect", () => {
@@ -117,6 +121,27 @@ describe("areBoardPropsEqual", () => {
     expect(latestMoveBlock).not.toContain("height: 9px");
   });
 
+  test("renders erased Sigrika field markers from the crater WebP asset at point scale", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: [{ id: "3,3", x: 3, y: 3, valid: false, stone: null }],
+        history: []
+      }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const voidBlock = css.match(/\.void\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(markup).toContain('class="void"');
+    expect(voidBlock).toContain("--erased-field-marker-size: 72%");
+    expect(voidBlock).toContain("width: var(--erased-field-marker-size)");
+    expect(voidBlock).toContain("background: center / contain no-repeat url(\"/assets/effects/sigrika-erased-field-marker.webp\")");
+    expect(voidBlock).toContain("pointer-events: none");
+    expect(voidBlock).not.toContain("radial-gradient");
+    expect(() => readFileSync(new URL("../../public/assets/effects/sigrika-erased-field-marker.webp", import.meta.url))).not.toThrow();
+  });
+
   test("keeps ordinary placement hints centered on board intersections", () => {
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const pointBlock = css.match(/\.point\s*\{[^}]+\}/)?.[0] ?? "";
@@ -162,6 +187,7 @@ describe("areBoardPropsEqual", () => {
     expect(boardWrapBlock).toContain("background: var(--board-wood-texture)");
     expect(themeBoardWrapBlock).toContain("background: var(--board-wood-texture) !important");
     expect(() => readFileSync(new URL("../../public/assets/boards/go-board-background-reference-color-vertical-2048.webp", import.meta.url))).not.toThrow();
+    expect(() => readFileSync(new URL("../../public/assets/boards/nabomo-color-illusion-board.webp", import.meta.url))).not.toThrow();
   });
 
   test("renders spray stones with an independent non-decorated visual contract", () => {
@@ -179,7 +205,102 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain('class="point  spray');
     expect(markup).not.toContain("decorated-stone");
     expect(css).toContain(".spray .stone");
-    expect(css).toContain("--spray-stone-fallback");
+    expect(css).toContain(".spray .stone::before");
+    expect(css).toContain("spray-stone-bottom-glow");
+    expect(css).toContain("spray-stone-entry-glow");
+    const sprayStoneBlock = css.match(/\.spray \.stone\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(css).toContain('--spray-stone-art: center / 100% 100% no-repeat url("/assets/stones/spray-stone.webp")');
+    expect(sprayStoneBlock).toContain("background: var(--spray-stone-art)");
+    expect(sprayStoneBlock).not.toContain("--spray-stone-fallback");
+    expect(sprayStoneBlock).not.toContain("conic-gradient");
+    expect(css).not.toContain("--spray-stone-fallback");
+    expect(readFileSync(new URL("../styles/room/board/spray-stone-effects.css", import.meta.url), "utf8")).not.toContain("conic-gradient");
+    expect(() => readFileSync(new URL("../../public/assets/stones/spray-stone.webp", import.meta.url))).not.toThrow();
+  });
+
+  test("masks original stones during Lynae spray pending animation", () => {
+    const targetId = "3,3";
+    const randomTargetId = "6,6";
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "skill-preview",
+        size: 13,
+        points: [
+          { id: targetId, x: 3, y: 3, valid: true, stone: "white" },
+          { id: randomTargetId, x: 6, y: 6, valid: true, stone: "black" }
+        ],
+        history: [],
+        pendingSkill: {
+          id: "spray-preview",
+          effectType: "spray-stone",
+          targetId,
+          affectedPointIds: [targetId, randomTargetId],
+          bannerDurationMs: 2000,
+          boardEffectDurationMs: 1800
+        }
+      }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup.match(/spray-transform-pending/g)).toHaveLength(2);
+    expect(markup).toContain("--skill-banner-duration:2000ms");
+    expect(markup).toContain("--skill-board-effect-duration:1800ms");
+    expect(css).toContain(".spray-transform-pending .stone");
+    expect(css).toContain("spray-original-paint-cover");
+    expect(css).toContain("spray-transform-paint-bloom");
+    expect(css).toMatch(/\.spray \.stone,\r?\n\.spray-transform-pending \.stone/);
+    const pendingPaintBlock = css.match(/\.spray-transform-pending \.stone::before\s*\{[^}]+\}/)?.[0] ?? "";
+    const paintCoverKeyframes = css.match(/@keyframes spray-original-paint-cover \{[\s\S]*?\n\}/)?.[0] ?? "";
+    const paintBloomKeyframes = css.match(/@keyframes spray-transform-paint-bloom \{[\s\S]*?\n\}/)?.[0] ?? "";
+
+    expect(pendingPaintBlock).toContain("inset: -10%");
+    expect(pendingPaintBlock).toContain("radial-gradient(circle at 22% 34%, rgba(34, 211, 238, 0.9)");
+    expect(pendingPaintBlock).toContain("radial-gradient(circle at 74% 31%, rgba(255, 80, 154, 0.86)");
+    expect(pendingPaintBlock).toContain("mask-image: radial-gradient(ellipse at 50% 50%");
+    expect(pendingPaintBlock).not.toContain("linear-gradient");
+    expect(pendingPaintBlock).not.toContain("conic-gradient");
+    expect(pendingPaintBlock).not.toContain("box-shadow");
+    expect(pendingPaintBlock).toContain("z-index: 6");
+    expect(paintCoverKeyframes).toContain("0% { opacity: 1; filter: none; }");
+    expect(paintCoverKeyframes).toContain("62% { opacity: 1; filter: saturate(1.1) brightness(1.03); }");
+    expect(paintCoverKeyframes).toContain("72% { background: var(--spray-stone-art);");
+    expect(paintBloomKeyframes).toContain("0% { opacity: 0;");
+    expect(paintBloomKeyframes).toContain("18% { opacity: 0.98;");
+    expect(paintBloomKeyframes).toContain("68% { opacity: 0.96;");
+    expect(paintBloomKeyframes).toContain("82% { opacity: 0.72;");
+  });
+
+  test("uses the final spray stone offset while Lynae pending paint covers the original stone", () => {
+    const point = createPoints(13).find((candidate) => {
+      const originalOffset = stoneOffsetForPoint({ ...candidate, stone: "white" });
+      const sprayOffset = stoneOffsetForPoint({ ...candidate, stone: "spray" });
+      return originalOffset.x !== sprayOffset.x || originalOffset.y !== sprayOffset.y;
+    });
+    expect(point).toBeTruthy();
+    const originalOffset = stoneOffsetForPoint({ ...point, stone: "white" });
+    const sprayOffset = stoneOffsetForPoint({ ...point, stone: "spray" });
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "skill-preview",
+        size: 13,
+        points: [{ ...point, stone: "white" }],
+        history: [],
+        pendingSkill: {
+          id: "spray-preview",
+          effectType: "spray-stone",
+          targetId: point.id,
+          affectedPointIds: [point.id],
+          bannerDurationMs: 2000,
+          boardEffectDurationMs: 1800
+        }
+      }
+    })));
+
+    expect(markup).toContain("spray-transform-pending");
+    expect(markup).toContain(`--stone-offset-x:${sprayOffset.x}px`);
+    expect(markup).toContain(`--stone-offset-y:${sprayOffset.y}px`);
+    expect(markup).not.toContain(`--stone-offset-x:${originalOffset.x}px;--stone-offset-y:${originalOffset.y}px`);
   });
 
   test("renders protocol ban markers as pointer-transparent point overlays", () => {
@@ -307,6 +428,86 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain('class="point');
   });
 
+  test("shows Chisa pending placement before delayed slashes and keeps it off the latest-move ring", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "skill-preview",
+        size: 13,
+        points: createPoints(13),
+        history: [{ type: "move", id: "3,3", moveNumber: 1 }],
+        pendingSkill: {
+          id: "chisa-pending",
+          color: "black",
+          effectType: "liberty-purge",
+          targetId: "6,6",
+          affectedPointIds: ["6,6", "5,6"],
+          removalMarkIds: ["5,6"],
+          bannerDurationMs: 2000,
+          boardEffectDurationMs: 1800
+        }
+      },
+      stoneDecorations: { black: "paw-stone", white: "" }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup).toContain('data-effect-type="liberty-purge"');
+    expect(markup).toContain('class="point  black  liberty-purge-stone liberty-purge-pending');
+    expect(markup).toContain("stone decorated-stone liberty-purge-pending-stone");
+    expect(markup).toContain("--stone-decoration-image:url(&quot;/assets/decorations/paw-stone-black.webp&quot;)");
+    expect(css).toContain("liberty-purge-stone-drop");
+    expect(css).toContain("var(--skill-banner-duration, 2000ms)");
+  });
+
+  test("renders resolved Chisa skill stones with their own red glow instead of the latest-move ring", () => {
+    const points = createPoints(13).map((point) => (
+      point.id === "6,6"
+        ? { ...point, stone: "black", skillEffect: "liberty-purge-stone", skillEffectOwner: "black" }
+        : point
+    ));
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points,
+        history: [
+          { type: "move", id: "3,3", moveNumber: 1 },
+          { type: "skill", effectType: "liberty-purge", id: "6,6", placedId: "6,6", moveNumber: 1 }
+        ]
+      }
+    })));
+
+    expect(markup).toContain("liberty-purge-stone");
+    expect(markup).not.toContain('class="stone "><i');
+  });
+
+  test("reveals Sigrika erased field marker at the meteor impact point during the pending animation", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "skill-preview",
+        size: 13,
+        points: createPoints(13),
+        history: [],
+        pendingSkill: {
+          id: "sigrika-impact",
+          effectType: "erase-point",
+          targetId: "6,6",
+          affectedPointIds: ["6,6"],
+          bannerDurationMs: 2000,
+          boardEffectDurationMs: 1800
+        }
+      }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup).toContain("--erase-impact-marker-delay:3044ms");
+    expect(markup).toContain('class="void erase-impact-pending"');
+    expect(markup).not.toContain('class="point erased');
+    expect(css).toContain(".void.erase-impact-pending");
+    expect(css).toContain("erase-impact-marker-reveal");
+    expect(css).toContain("opacity: 0");
+    expect(css).not.toContain(".void.erase-impact-pending::before");
+  });
+
   test("renders QiuYuan row slash as a continuous board overlay", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {
@@ -331,6 +532,8 @@ describe("areBoardPropsEqual", () => {
     expect(css).toContain("clip-path: none");
     expect(css).toContain(".board-row-slash::before");
     expect(css).toContain("animation: row-slash-strike 620ms");
+    expect(css).toContain(".board-row-slash.casting");
+    expect(css).toContain("animation-delay: var(--skill-banner-duration, 2000ms)");
     expect(css).toContain("@keyframes row-slash-strike");
   });
 
@@ -356,34 +559,49 @@ describe("areBoardPropsEqual", () => {
     expect(gridSvgBlock).toContain("max-height: none");
   });
 
-  test("renders QiuYuan pending skill row preview from target metadata", () => {
+  test("renders QiuYuan pending skill by sweeping the persistent row scar overlay", () => {
+    const points = createPoints(13);
+    points.find((point) => point.id === "0,5").stone = "black";
+    points.find((point) => point.id === "3,5").stone = "white";
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {
         phase: "skill-preview",
         size: 13,
-        points: createPoints(13),
+        points,
         history: [],
         pendingSkill: {
           id: "slash-preview",
           effectType: "row-slash",
           targetId: "3,5",
-          row: 5
+          row: 5,
+          affectedPointIds: Array.from({ length: 13 }, (_item, x) => `${x},5`)
         }
       }
     })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
 
-    expect(markup).toContain("board-row-slash preview");
     expect(markup).not.toContain("board-effects-layer");
     expect(markup).not.toContain('data-effect-type="row-slash"');
+    expect(markup).toContain("board-row-effects");
+    expect(markup).toContain("board-row-slash casting");
+    expect(markup).toContain("row-slash-cut-pending");
+    expect(markup).toContain("--row-slash-cut-delay:80ms");
+    expect(markup).toContain("--row-slash-cut-delay:210ms");
+    expect(markup).not.toContain("board-row-slash preview");
+    expect(css).toContain(".row-slash-cut-pending .stone");
+    expect(css).toContain("row-slash-cut-away 120ms steps(1, end)");
+    expect(css).toContain("row-slash-cut-flash 140ms");
+    expect(css).toContain("@keyframes row-slash-cut-away");
   });
 
-  test("prewarms Pixi only for skill-enabled boards", () => {
+  test("prewarms Pixi only for skill-enabled boards with global effects enabled", () => {
     const source = readFileSync(new URL("./Board.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("prewarm={game.skillEnabled !== false}");
+    expect(source).toContain("prewarm={game.skillEnabled !== false && skillEffectsEnabled !== false}");
+    expect(source).toContain("effectsEnabled={skillEffectsEnabled !== false && game.pendingSkill?.effectsEnabled !== false}");
   });
 
-  test("renders Nabomo passive fog as a board ambient layer without replacing points", () => {
+  test("renders Nabomo passive desaturation as a board ambient layer without replacing points", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {
         phase: "playing",
@@ -397,7 +615,8 @@ describe("areBoardPropsEqual", () => {
     })));
 
     expect(markup).toContain("board-ambient-layer");
-    expect(markup).toContain('data-ambient-effect="color-illusion-fog"');
+    expect(markup).toContain("color-illusion-board-surface");
+    expect(markup).toContain('data-ambient-effect="color-illusion-desaturate"');
     expect(markup).toContain("<button");
     expect(markup).toContain('class="point');
   });
@@ -495,8 +714,7 @@ describe("areBoardPropsEqual", () => {
     expect(targetingBlock).toContain(".board .point.star:not(.black):not(.white):not(.erased)::after");
     expect(targetingBlock).toContain("transform: translate(-50%, -50%) !important");
     expect(targetingBlock).toContain(".board-wrap.targeting .point.previewable::before");
-    expect(targetingBlock).toContain(".board .point.star:not(.black):not(.white):not(.erased)::before");
-    expect(targetingBlock).toContain("content: none !important");
+    expect(targetingBlock).not.toContain(".board .point.star:not(.black):not(.white):not(.erased)::before");
   });
 
   test("bright school keeps scoring markers centered on board intersections", () => {
@@ -584,6 +802,14 @@ describe("arePointButtonPropsEqual", () => {
       pointButtonProps({ point, libertyPurgeMarked: false }),
       pointButtonProps({ point, libertyPurgeMarked: true })
     )).toBe(false);
+    expect(arePointButtonPropsEqual(
+      pointButtonProps({ point, eraseImpactPending: false }),
+      pointButtonProps({ point, eraseImpactPending: true })
+    )).toBe(false);
+    expect(arePointButtonPropsEqual(
+      pointButtonProps({ point, pendingLibertyPurgeColor: "" }),
+      pointButtonProps({ point, pendingLibertyPurgeColor: "black" })
+    )).toBe(false);
   });
 });
 
@@ -618,6 +844,7 @@ function pointButtonProps(overrides = {}) {
     deadOwner: null,
     decorationImage: null,
     emptyTerritoryOwner: null,
+    eraseImpactPending: false,
     gameMode: "spark",
     handlersRef: { current: { onPoint: () => {}, onScoringPoint: null, onNeutral: () => {} } },
     hasScoringPoint: false,
@@ -628,6 +855,8 @@ function pointButtonProps(overrides = {}) {
     neutralMarked: false,
     point: { id: "0,0", x: 0, y: 0, valid: true, stone: null },
     pointerTypeRef: { current: "" },
+    pendingLibertyPurgeColor: "",
+    pendingEffectClass: "",
     previewClass: "",
     showMoves: false,
     showScoringMarks: false,

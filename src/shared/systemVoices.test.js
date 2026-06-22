@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SYSTEM_VOICE_EVENTS, resolveSystemVoice } from "./systemVoices.js";
+import { SYSTEM_VOICE_EVENTS, resolveSystemVoice, resolveVoiceSource, voiceSourceCandidates } from "./systemVoices.js";
 
 describe("system voices", () => {
   it("exposes explicit system voice event keys for character voice maps", () => {
@@ -30,6 +30,36 @@ describe("system voices", () => {
       type: "audio",
       src: "/assets/voice/sigrika-game-start.ogg"
     });
+  });
+
+  it("normalizes and randomly resolves character voice source candidates", () => {
+    expect(voiceSourceCandidates(["/assets/voice/a.ogg", "", null, " /assets/voice/b.ogg "])).toEqual([
+      "/assets/voice/a.ogg",
+      "/assets/voice/b.ogg"
+    ]);
+    expect(resolveVoiceSource(["/assets/voice/a.ogg", "/assets/voice/b.ogg"], () => 0)).toBe("/assets/voice/a.ogg");
+    expect(resolveVoiceSource(["/assets/voice/a.ogg", "/assets/voice/b.ogg"], () => 0.99)).toBe("/assets/voice/b.ogg");
+  });
+
+  it("randomly resolves character-specific system voice asset candidates", () => {
+    const character = {
+      systemVoices: {
+        [SYSTEM_VOICE_EVENTS.skillCast]: [
+          "/assets/voice/qiuyuan_skill_cast.ogg",
+          "/assets/voice/qiuyuan_skill_cast_1.ogg"
+        ]
+      }
+    };
+    const originalRandom = Math.random;
+    Math.random = () => 0.99;
+    try {
+      expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, { character })).toEqual({
+        type: "audio",
+        src: "/assets/voice/qiuyuan_skill_cast_1.ogg"
+      });
+    } finally {
+      Math.random = originalRandom;
+    }
   });
 
   it("formats byo-yomi period and countdown announcements", () => {

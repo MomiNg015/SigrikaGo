@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { canonicalCharacterId } from "../shared/characterAliases.js";
+import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 
 const TIP_ROTATION_MS = 10000;
@@ -19,29 +21,133 @@ function randomTipIndex(tips, currentIndex = -1) {
   return nextIndex;
 }
 
-export default function AssetPreloadScreen({ progress, tipsText }) {
+export function characterLoadingLineMap(linesText = DEFAULT_SITE_SETTINGS.characterLoadingLines) {
+  return Object.fromEntries(String(linesText || DEFAULT_SITE_SETTINGS.characterLoadingLines)
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const separatorIndex = firstSeparatorIndex(line);
+      if (separatorIndex <= 0) return null;
+      const key = canonicalCharacterId(line.slice(0, separatorIndex).trim());
+      const value = line.slice(separatorIndex + 1).trim();
+      return key && value ? [key, value] : null;
+    })
+    .filter(Boolean));
+}
+
+export function characterLoadingLine(character, linesText = DEFAULT_SITE_SETTINGS.characterLoadingLines) {
+  const characterId = canonicalCharacterId(character?.id);
+  const line = characterLoadingLineMap(linesText)[characterId];
+  return line || `${character?.name || "角色"}正在加载中`;
+}
+
+export function randomPreloadCharacter(characters = CHARACTERS, random = Math.random, currentCharacter = null) {
+  const candidates = characterListFromCatalog(characters)
+    .filter((character) => character?.portrait);
+  if (candidates.length === 0) return CHARACTERS.sigrika;
+  const index = Math.min(candidates.length - 1, Math.floor(random() * candidates.length));
+  const nextCharacter = candidates[index];
+  if (candidates.length > 1 && canonicalCharacterId(nextCharacter?.id) === canonicalCharacterId(currentCharacter?.id)) {
+    return candidates[(index + 1) % candidates.length];
+  }
+  return nextCharacter;
+}
+
+function randomPreloadDisplayState({
+  tips,
+  characters,
+  fixedCharacter = null,
+  currentTipIndex = -1,
+  currentCharacter = null
+}) {
+  return {
+    tipIndex: randomTipIndex(tips, currentTipIndex),
+    randomCharacter: fixedCharacter
+      ? null
+      : randomPreloadCharacter(characters, Math.random, currentCharacter)
+  };
+}
+
+function characterFromCatalogById(characters, characterId) {
+  const canonicalId = canonicalCharacterId(characterId);
+  if (!canonicalId) return null;
+  return characterListFromCatalog(characters)
+    .find((catalogCharacter) => canonicalCharacterId(catalogCharacter?.id) === canonicalId) ?? null;
+}
+
+export default function AssetPreloadScreen({
+  character = null,
+  characters = CHARACTERS,
+  label = "",
+  loadingLinesText = DEFAULT_SITE_SETTINGS.characterLoadingLines,
+  progress,
+  statusText = "",
+  tipsText
+}) {
   const percent = Math.round(Math.max(0, Math.min(1, progress)) * 100);
   const tips = useMemo(() => preloadTipList(tipsText), [tipsText]);
-  const [tipIndex, setTipIndex] = useState(() => randomTipIndex(tips));
+  const tipsSignature = tips.join("\n");
+  const fixedCharacterId = canonicalCharacterId(character?.id) || "";
+  const [displayState, setDisplayState] = useState(() => randomPreloadDisplayState({
+    tips,
+    characters,
+    fixedCharacter: character
+  }));
+  const didMountRef = useRef(false);
+  const latestInputsRef = useRef({ character, characters, tips });
+  const { tipIndex, randomCharacter } = displayState;
+  const randomCharacterId = canonicalCharacterId(randomCharacter?.id);
+  const displayCharacter = character
+    ? characterFromCatalogById(characters, character.id) ?? character
+    : characterFromCatalogById(characters, randomCharacterId) ?? randomCharacter;
   const currentTip = tips[tipIndex] ?? tips[0] ?? "";
+  const title = label || characterLoadingLine(displayCharacter, loadingLinesText);
 
   useEffect(() => {
-    setTipIndex(randomTipIndex(tips));
-  }, [tips]);
+    latestInputsRef.current = { character, characters, tips };
+  }, [character, characters, tips]);
 
   useEffect(() => {
-    if (tips.length <= 1) return undefined;
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+    setDisplayState((current) => ({
+      tipIndex: randomTipIndex(tips, current.tipIndex),
+      randomCharacter: character
+        ? null
+        : current.randomCharacter ?? randomPreloadCharacter(characters)
+    }));
+  }, [fixedCharacterId, tipsSignature]);
+
+  useEffect(() => {
+    if (character && tips.length <= 1) return undefined;
     const timer = setInterval(() => {
-      setTipIndex((current) => randomTipIndex(tips, current));
+      const latestInputs = latestInputsRef.current;
+      setDisplayState((current) => randomPreloadDisplayState({
+        tips: latestInputs.tips,
+        characters: latestInputs.characters,
+        fixedCharacter: latestInputs.character,
+        currentTipIndex: current.tipIndex,
+        currentCharacter: current.randomCharacter
+      }));
     }, TIP_ROTATION_MS);
     return () => clearInterval(timer);
-  }, [tips]);
+  }, [fixedCharacterId, tipsSignature]);
 
   return (
     <main className="asset-preload-screen">
       <section className="asset-preload-panel">
-        <div className="preload-mark" />
-        <p className="preload-title">{"\u754c\u9762\u52a0\u8f7d\u4e2d"}</p>
+        {displayCharacter?.portrait ? (
+          <span className="preload-character" aria-label={displayCharacter.name ?? "当前角色"}>
+            <img src={displayCharacter.portrait} alt={displayCharacter.name ?? ""} />
+          </span>
+        ) : (
+          <div className="preload-mark" />
+        )}
+        <p className="preload-title">{title}</p>
+        {statusText && <p className="preload-status">{statusText}</p>}
         <div className="preload-bar" aria-label={"\u8d44\u6e90\u52a0\u8f7d " + percent + "%"}>
           <span style={{ width: `${percent}%` }} />
         </div>
@@ -49,4 +155,12 @@ export default function AssetPreloadScreen({ progress, tipsText }) {
       </section>
     </main>
   );
+}
+
+function firstSeparatorIndex(line) {
+  const separators = ["=", ":", "："];
+  return separators
+    .map((separator) => line.indexOf(separator))
+    .filter((index) => index >= 0)
+    .sort((a, b) => a - b)[0] ?? -1;
 }

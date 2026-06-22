@@ -21,7 +21,7 @@ import { useRoomBoardView } from "./view/useRoomBoardView.js";
 
 export { MOBILE_ROOM_MEDIA_QUERY };
 
-export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay, onToast }) {
+export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay, onToast }) {
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -191,6 +191,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         showMoves={showMoves}
         skillAvailable={skillAvailable}
         skillPreview={skillPreview}
+        skillEffectsEnabled={siteSettings?.skillEffectsEnabled !== false}
         token={token}
         user={user}
         viewColor={viewColor}

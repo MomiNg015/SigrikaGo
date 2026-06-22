@@ -15,6 +15,20 @@ export const SYSTEM_VOICE_EVENTS = {
   countdown: (seconds) => `countdown-${seconds}`
 };
 
+export function voiceSourceCandidates(value) {
+  if (Array.isArray(value)) return value.map(normalizeVoiceSource).filter(Boolean);
+  return [normalizeVoiceSource(value)].filter(Boolean);
+}
+
+export function resolveVoiceSource(value, random = Math.random) {
+  const candidates = voiceSourceCandidates(value);
+  if (candidates.length === 0) return null;
+  if (candidates.length === 1) return candidates[0];
+  const rawIndex = Math.floor(random() * candidates.length);
+  const index = Math.min(candidates.length - 1, Math.max(0, rawIndex));
+  return candidates[index] ?? candidates[0];
+}
+
 const DEFAULT_SYSTEM_VOICE_TEXT = {
   [SYSTEM_VOICE_EVENTS.gameStart]: "对局开始",
   [SYSTEM_VOICE_EVENTS.sortie]: "出战",
@@ -42,7 +56,7 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
   if (event === SYSTEM_VOICE_EVENTS.timeout) {
     return { type: "tts", text: "" };
   }
-  const characterVoice = character?.systemVoices?.[event];
+  const characterVoice = resolveVoiceSource(character?.systemVoices?.[event]);
   if (characterVoice) return { type: "audio", src: characterVoice };
   if (event === SYSTEM_VOICE_EVENTS.byoYomiPeriods) {
     if (params.periods === 2) {
@@ -65,4 +79,9 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
 function countdownText(seconds) {
   if (!Number.isInteger(seconds) || seconds < 1 || seconds > 10) return "";
   return String(seconds);
+}
+
+function normalizeVoiceSource(value) {
+  const source = String(value ?? "").trim();
+  return source || null;
 }

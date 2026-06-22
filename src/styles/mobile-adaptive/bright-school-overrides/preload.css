@@ -20,6 +20,8 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .preload-tip,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-tip {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-tip,
+.app-shell.player-theme-enabled.theme-bright-school .preload-status,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-status {
   color: #5a4740 !important;
 }

@@ -85,6 +85,29 @@ describe("room runtime", () => {
     runtime.broadcastRoomPatch("io", room, patch);
 
     expect(broadcastRoomPatch).toHaveBeenCalledWith("io", room, patch, {
+      forcePersist: true,
+      persistRoom: runtime.persistRoom
+    });
+  });
+
+  test("passes throttled patch persistence through the broadcast boundary", () => {
+    const broadcastRoomPatch = vi.fn();
+    const runtime = createRoomRuntime({
+      prisma: "prisma",
+      persistRoomState: vi.fn(),
+      broadcastRoomUpdate: vi.fn(),
+      broadcastRoomPatch,
+      broadcastRoomPresencePatch: vi.fn(),
+      broadcastRoomToast: vi.fn(),
+      throttleMs: 5000
+    });
+    const room = { code: "12345" };
+    const patch = { type: "chat:append", message: { id: "chat-1" } };
+
+    runtime.broadcastRoomPatch("io", room, patch, { forcePersist: false });
+
+    expect(broadcastRoomPatch).toHaveBeenCalledWith("io", room, patch, {
+      forcePersist: false,
       persistRoom: runtime.persistRoom
     });
   });

@@ -48,7 +48,7 @@ function isRootBackHistoryState(state) {
 }
 
 export function rootBackExitGuardEnabled({ activeId, view }) {
-  return !activeId && ["login", "preloading", "home", "admin", "room"].includes(view);
+  return !activeId && ["login", "preloading", "match-preloading", "home", "admin", "room"].includes(view);
 }
 
 export function isMobileBackCapable(win = typeof window === "undefined" ? undefined : window) {

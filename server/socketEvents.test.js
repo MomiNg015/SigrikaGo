@@ -47,6 +47,7 @@ function createDeps(overrides = {}) {
     broadcastRoom: vi.fn(),
     broadcastRoomPatch: vi.fn(),
     broadcastRoomPresencePatch: vi.fn(),
+    markRoomPreloadReady: vi.fn(),
     ...overrides
   };
 }
@@ -65,6 +66,7 @@ describe("socket event registration", () => {
       "room:join",
       "room:leave",
       "room:resume",
+      "room:preload-ready",
       "game:action",
       "counting:request",
       "counting:respond",
@@ -93,7 +95,7 @@ describe("socket event registration", () => {
     expect(deps.broadcastRoomPatch).toHaveBeenCalledWith(deps.io, room, {
       type: "chat:append",
       message
-    });
+    }, { forcePersist: false });
     expect(deps.broadcastRoom).not.toHaveBeenCalledWith(deps.io, room);
   });
 });

@@ -7,10 +7,11 @@ export function createRoomCreationLifecycle({
   isRoomCodeTaken,
   persistRoom,
   startGameClock,
-  scheduleGameStart,
+  scheduleRoomPreloadTimeout = () => {},
   roomView,
   appendSystem,
-  broadcastRoom
+  broadcastRoom,
+  registerRoom = () => {}
 }) {
   function joinMatchmaking(player, io, { canPair = () => true } = {}) {
     const match = matchmakingQueue.join(player, { canPair });
@@ -49,9 +50,10 @@ export function createRoomCreationLifecycle({
 
   function registerCreatedRoom(room, io) {
     rooms.set(room.code, room);
+    registerRoom(room);
     persistRoom(room, { force: true });
     startGameClock(room, io);
-    scheduleGameStart(room, io);
+    scheduleRoomPreloadTimeout(room, io);
   }
 
   function emitMatchFound(io, room, first, second) {

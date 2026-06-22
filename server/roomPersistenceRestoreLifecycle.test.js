@@ -8,6 +8,7 @@ function createLifecycle(overrides = {}) {
     listPersistedRooms: vi.fn(async () => []),
     hydratePersistedRoom: vi.fn((snapshot) => snapshot),
     ensureRestoredDisconnectedNotices: vi.fn(),
+    registerRoom: vi.fn(),
     resumeRoomTimers: vi.fn(() => true),
     persistRoom: vi.fn(),
     onError: vi.fn(),
@@ -33,6 +34,7 @@ describe("room persistence restore lifecycle", () => {
     expect(deps.hydratePersistedRoom).toHaveBeenCalledWith({ code: "12345" });
     expect(deps.ensureRestoredDisconnectedNotices).toHaveBeenCalledWith(room);
     expect(deps.rooms.get(room.code)).toBe(room);
+    expect(deps.registerRoom).toHaveBeenCalledWith(room);
     expect(deps.resumeRoomTimers).toHaveBeenCalledWith(room, "io");
     expect(deps.persistRoom).toHaveBeenCalledWith(room, { force: true });
   });
@@ -45,6 +47,7 @@ describe("room persistence restore lifecycle", () => {
     await expect(lifecycle.restorePersistedRooms("io")).resolves.toEqual([]);
 
     expect(deps.ensureRestoredDisconnectedNotices).not.toHaveBeenCalled();
+    expect(deps.registerRoom).not.toHaveBeenCalled();
     expect(deps.resumeRoomTimers).not.toHaveBeenCalled();
     expect(deps.persistRoom).not.toHaveBeenCalled();
     expect(deps.rooms.size).toBe(0);
@@ -61,6 +64,7 @@ describe("room persistence restore lifecycle", () => {
     await expect(lifecycle.restorePersistedRooms("io")).resolves.toEqual([room]);
 
     expect(deps.rooms.get(room.code)).toBe(room);
+    expect(deps.registerRoom).toHaveBeenCalledWith(room);
     expect(deps.persistRoom).not.toHaveBeenCalled();
   });
 

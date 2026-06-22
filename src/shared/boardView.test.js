@@ -14,13 +14,13 @@ describe("board view helpers", () => {
     expect(lastMarkedAction(history.slice(0, 2))?.id).toBe("3,3");
   });
 
-  it("marks Chisa liberty purge placement as the latest placed stone", () => {
+  it("does not reuse the latest-move marker for Chisa liberty purge placement", () => {
     const history = [
       { type: "move", id: "3,3", moveNumber: 1 },
       { type: "skill", effectType: "liberty-purge", id: "5,5", placedId: "5,5", moveNumber: 1 }
     ];
 
-    expect(lastMarkedAction(history)?.id).toBe("5,5");
+    expect(lastMarkedAction(history)?.id).toBe("3,3");
   });
 
   it("does not preview a target marker for no-target skills", () => {

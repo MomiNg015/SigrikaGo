@@ -83,10 +83,30 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
             onChange={(event) => setDraft((current) => ({ ...current, preloadTips: event.target.value }))}
           />
         </label>
+        <label>
+          <AdminFieldLabel text="角色加载台词" tip="每行一个角色加载台词，格式为 角色ID=台词，例如 sigrika=西格莉卡正在戳棋盘。" />
+          <textarea
+            maxLength={3000}
+            rows={6}
+            value={draft.characterLoadingLines}
+            onChange={(event) => setDraft((current) => ({ ...current, characterLoadingLines: event.target.value }))}
+          />
+        </label>
         <RatingRulesEditor
           value={draft.ratingRules}
           onChange={(ratingRules) => setDraft((current) => ({ ...current, ratingRules }))}
         />
+        <fieldset className="admin-settings-fieldset">
+          <legend>对局表现</legend>
+          <label className="admin-toggle-row">
+            <input
+              type="checkbox"
+              checked={draft.skillEffectsEnabled !== false}
+              onChange={(event) => setDraft((current) => ({ ...current, skillEffectsEnabled: event.target.checked }))}
+            />
+            <span>启用技能特效演出</span>
+          </label>
+        </fieldset>
         <div className="inline-actions">
           <button className="primary-action" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</button>
         </div>

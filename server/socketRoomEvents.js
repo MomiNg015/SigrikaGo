@@ -1,4 +1,4 @@
-const ROOM_NOT_AVAILABLE_MESSAGE = "鎴块棿涓嶅瓨鍦ㄦ垨宸茬粡鍏抽棴";
+const ROOM_NOT_AVAILABLE_MESSAGE = "\u623f\u95f4\u4e0d\u5b58\u5728\u6216\u5df2\u7ecf\u5173\u95ed";
 
 export function registerRoomSocketEvents(socket, {
   io,
@@ -11,7 +11,8 @@ export function registerRoomSocketEvents(socket, {
   resumePayloadForUser,
   roomView,
   broadcastRoom,
-  broadcastRoomPresencePatch = broadcastRoom
+  broadcastRoomPresencePatch = broadcastRoom,
+  markRoomPreloadReady = () => null
 }) {
   socket.on("room:join", ({ roomCode } = {}) => {
     const validatedRoomCode = validateRoomCode(roomCode);
@@ -53,5 +54,14 @@ export function registerRoomSocketEvents(socket, {
       }
     }
     socket.emit("room:resume", payload);
+  });
+
+  socket.on("room:preload-ready", ({ roomCode } = {}) => {
+    const validatedRoomCode = validateRoomCode(roomCode);
+    if (!validatedRoomCode.ok) {
+      socket.emit("error:toast", validatedRoomCode.error);
+      return;
+    }
+    markRoomPreloadReady(validatedRoomCode.value, socket.user.id, io);
   });
 }

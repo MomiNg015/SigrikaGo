@@ -3,6 +3,9 @@
   --board-wood-texture:
     url("/assets/boards/go-board-background-reference-color-vertical-2048.webp") center / cover no-repeat,
     #e4aa2f;
+  --nabomo-color-illusion-board-texture:
+    url("/assets/boards/nabomo-color-illusion-board.webp") center / cover no-repeat,
+    #b9bdbe;
   width: var(--board-size);
   max-width: 100%;
   min-width: 0;
@@ -19,6 +22,23 @@
     inset 0 0 0 2px rgba(126, 79, 22, 0.34),
     inset 0 0 34px rgba(111, 65, 12, 0.16),
     0 20px 70px rgba(78, 54, 92, 0.18);
+}
+
+.board-wrap > * {
+  position: relative;
+  z-index: 1;
+}
+
+.board-wrap.color-illusion-board-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: var(--nabomo-color-illusion-board-texture);
+  clip-path: circle(150% at 50% 50%);
+  animation: color-illusion-board-texture-spread 820ms ease-out both;
 }
 
 .board-stage {
@@ -39,6 +59,20 @@
   50% { box-shadow: inset 0 0 0 4px #3fd68f, 0 20px 70px rgba(78, 54, 92, 0.18); }
   75% { box-shadow: inset 0 0 0 4px #5d7fe8, 0 20px 70px rgba(78, 54, 92, 0.18); }
   100% { box-shadow: inset 0 0 0 4px #d85cff, 0 20px 70px rgba(78, 54, 92, 0.18); }
+}
+
+@keyframes color-illusion-board-texture-spread {
+  from {
+    opacity: 0.24;
+    clip-path: circle(0% at 50% 50%);
+  }
+  28% {
+    opacity: 0.96;
+  }
+  to {
+    opacity: 1;
+    clip-path: circle(150% at 50% 50%);
+  }
 }
 
 .coord-row,

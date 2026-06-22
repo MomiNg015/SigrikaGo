@@ -20,6 +20,7 @@ export function createRoomCloseLifecycle({
   persistRoom,
   appendSystem,
   saveGameRecord,
+  unregisterRoom = () => {},
   prepareCloseState = () => {},
   onSaveError = (error) => console.error("Failed to save game record", error),
   onDeleteError = (error) => console.error("Failed to delete persisted room", error),
@@ -61,6 +62,7 @@ export function createRoomCloseLifecycle({
       roomCode
     };
     emitRoomClosed(io, room, payload);
+    unregisterRoom(room);
     rooms.delete(roomCode);
     Promise.resolve(deletePersistedRoom(roomCode)).catch(onDeleteError);
   }
