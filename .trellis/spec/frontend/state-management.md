@@ -14,7 +14,7 @@ Most app-wide state is still owned by `src/app/App.jsx` and passed into extracte
 
 - Current account state lives behind `useCurrentUser`; use its `updateUser` callback instead of writing directly to the `user` setter so account changes stay centralized.
 - Room session state lives behind `useRoomSessionState`; authoritative room snapshots still come from the server, while replay position, pending-skill UI state, dismissed result room, and derived result-modal visibility stay in this app-level room session boundary.
-- Match session state lives behind `useMatchSessionState`; pending matchmaking and match-success transition state stay together because socket handlers, startup preload, match actions, overlays, and background music all observe or mutate this pair.
+- Match session state lives behind `useMatchSessionState`; pending matchmaking and match-success transition state stay together because socket handlers, startup preload, match actions, overlays, and background music all observe or mutate this pair. Match-success rooms in `GAME_PHASES.preloading` must route to the `match-preloading` view, synchronize server `preload.readyCount/requiredCount`, and only auto-enter `room` when a later room snapshot leaves preloading.
 - Overlay visibility state lives behind `useOverlayState`; `App.jsx` may pass the returned `show*` flags and `setShow*` callbacks to route and overlay composition, but it should not add new top-level `useState(false)` flags for modal visibility.
 - Toast state is app shell state owned by `useToastQueue`.
 

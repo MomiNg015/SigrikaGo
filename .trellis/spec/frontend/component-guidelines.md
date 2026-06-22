@@ -168,16 +168,18 @@ Correct:
 #### 2. Signatures
 - `game.pendingSkill`: `{ id, characterId, skillName, effectType, targetId, affectedPointIds, markedPointIds, removed, removedByColor, resolvesAt, bannerDurationMs, boardEffectDurationMs }`.
 - `SKILL_EFFECT_CATALOG`: shared `effectType` metadata in `src/shared/skillEffectCatalog.js`, including admin labels, default target rules, active/passive classification, board-effect availability, and sound cue timing.
+- `skillEffectPresentation(effectType, options)` and `skillEffectTimeline(pendingSkill, options)` live in `src/shared/skillPresentation.js`; this is the shared presentation configuration entry for timeline, Pixi/DOM/SFX layer capability, and the future all-effects-off switch.
 - `BoardSkillEffects`: receives `boardSize={game.size}`, `pendingSkill={game.pendingSkill}`, and optional `audioSettings`.
 - `schedulePixiPrewarm({ enabled })` and `loadPixiModule()` live in `src/room/pixiPrewarm.js`; both prewarm and live board effects must share the same Pixi import promise.
-- `BOARD_SKILL_EFFECT_RENDERERS` and `playRegisteredBoardSkillEffect()` live in `src/room/boardSkillEffectRegistry.js`; concrete Pixi board animations must register by `effectType` there instead of growing `BoardSkillEffects.jsx`.
+- `preparePixiEffect()` lives in `BoardSkillEffects.jsx`; it starts the live Pixi app initialization and per-renderer asset preload during the skill banner window, before the board-effect timer fires.
+- `BOARD_SKILL_EFFECT_RENDERERS`, `boardSkillEffectAssetUrls()`, and `playRegisteredBoardSkillEffect()` live in `src/room/boardSkillEffectRegistry.js`; concrete Pixi board animations and their preloadable image assets must register by `effectType` there instead of growing `BoardSkillEffects.jsx`.
 - DOM/CSS-only board visuals such as QiuYuan `row-slash` must keep `SKILL_EFFECT_CATALOG[effectType].boardEffect === false`; `BoardSkillEffects` must return `null` for those active previews so no full-board overlay layer or Pixi canvas can cover the grid. Their animation belongs in the dedicated DOM/CSS layer, for example `BoardRowSlashOverlay` plus the `row-slash-strike` keyframes.
 - `game.rowEffects`: DOM/CSS row markers shaped as `{ effectType: "row-slash", owner, clearAfterColor, y, id }`; `clearAfterColor` is the color whose next action clears the marker.
 - Lynae `spray-stone` history entries carry `randomTargetId`, `transformed`, `immediateRemovals`, and `cleanupRemovals`; replay reconstruction must use the recorded random target instead of calling the live random selection path again.
-- ChangLi `double-move` placements persist on board points as `point.skillEffect = "double-move-stone"` plus `point.skillEffectOwner = color`; `Board` renders the class on the point so the stone can carry a persistent DOM/CSS flame halo without creating a full-board effect layer.
+- ChangLi `double-move` has two presentation layers: the cast phase is a full-board Pixi effect registered as `BOARD_SKILL_EFFECT_RENDERERS["double-move"]`, while the resolved placements persist on board points as `point.skillEffect = "double-move-stone"` plus `point.skillEffectOwner = color`; `Board` renders the class on the point so the stone can carry a persistent DOM/CSS flame halo after the Pixi overlay is gone.
 - `--board-wood-texture`: shared `.board-wrap` surface background; late theme guard layers must reference the variable instead of duplicating independent board texture stacks.
 - `boardPointCenter()` and `pointCenterForHost()` live in `src/room/boardSkillEffectGeometry.js` so component tests and animation renderers share one board-size-aware coordinate contract.
-- `BoardAmbientEffects`: receives derived passive state such as active Nabomo color illusion fog and renders non-interactive ongoing board ambience.
+- `BoardAmbientEffects`: receives derived passive state such as active Nabomo color illusion and renders non-interactive ongoing board ambience.
 - `scheduleBoardSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings })` and `clearBoardSkillEffectSoundTimers(timerIds)` live in `src/room/boardSkillEffectSoundScheduler.js`; the React host should call these helpers instead of manually mapping cue timers.
 - `playSkillEffectSound(effectType, cue, audioSettings)`: presentation-only SFX helper for `start` and `impact` animation cues.
 - `boardPointCenter(pointId, { boardSize, width, height })`: maps a board point id to a pixel center in the current board viewport.
@@ -185,10 +187,12 @@ Correct:
 #### 3. Contracts
 - `Board` keeps DOM/SVG as the interaction source of truth; PixiJS is presentation-only.
 - The effects canvas and ambient layers must use `pointer-events: none` and must not replace point buttons, scoring marks, move numbers, coordinates, or skill targeting classes.
-- Board effects start after `bannerDurationMs`, not when the banner first appears.
+- Board effects start after `bannerDurationMs`, not when the banner first appears. Pixi module loading, app initialization, and renderer image asset loading should begin during the banner window so the first visible board-effect frame appears immediately after the banner ends.
+- `BoardSkillEffects` must ask `src/shared/skillPresentation.js` whether presentation is enabled before scheduling Pixi prewarm, rendering the overlay host, mounting a Pixi app, or scheduling board-effect SFX.
 - Skill-enabled boards may schedule idle Pixi prewarm after the board mounts, but this prewarm must not block board rendering, preload screens, room entry, or standard no-skill rooms.
+- If a live Pixi effect is still preparing when the board-effect phase begins, `BoardSkillEffects` may expose the existing `data-effect-fallback="true"` pulse briefly, then replace it with the real Pixi renderer as soon as preparation completes. Do not leave a visually empty post-banner gap.
 - Aemeath `hidden-hand` is a full-board effect: green electronic data streams move from the board edge toward the center, flash with white light, then dissipate outward/away without depending on a point-local impact.
-- Nabomo `color-illusion-passive` has ongoing low-opacity black/gray cloud ambience while any color illusion passive is active; render it as separate feathered cloud shapes, not as a full rectangular board tint, and keep stones/intersections readable.
+- Nabomo `color-illusion-passive` has ongoing gray/white board ambience while any color illusion passive is active; render it through `BoardAmbientEffects` as a pointer-transparent center-out CSS activation wave and through `.board-wrap.color-illusion-board-surface::before` as a center-out transition into `/assets/boards/nabomo-color-illusion-board.webp`, keep that background visible until the passive ends, avoid Pixi/ticker-based persistent ambience for this passive, and keep stones/intersections readable.
 - Board SFX must be scheduled from the same board effect timeline, use the existing `sfx` volume channel, and clean up timers with the Pixi overlay.
 - Board SFX timer mapping and cleanup belong in `boardSkillEffectSoundScheduler.js`; `BoardSkillEffects.jsx` should not duplicate cue math or timer iteration.
 - The backend must derive animation metadata from the already-resolved skill action, not by recomputing skill rules.
@@ -196,7 +200,7 @@ Correct:
 - Admin character options, backend character validation, skill normalization, board target preview, active skill type lists, server fallback skill config, and board skill SFX cue timing must read shared effect metadata from `src/shared/skillEffectCatalog.js` instead of each keeping a local `effectType -> targetRule/label/cue` table.
 - Every catalog entry with `boardEffect: true` must have a matching `BOARD_SKILL_EFFECT_RENDERERS` entry; unknown effect types should no-op without touching the Pixi stage.
 - Effects that draw their persistent visual through React DOM/CSS, such as a row-wide slash marker stored in `game.rowEffects`, must not be registered as Pixi `boardEffect` entries. A full-size Pixi canvas can become an opaque overlay in some browser/runtime paths and hide the board grid, star points, and stones.
-- Persistent point-local visuals such as Mornye `protocol-takeover` and ChangLi `double-move-stone` belong on the existing point/stone DOM nodes. They must remain pointer-transparent and respect reduced motion; do not model them as `BoardSkillEffects` Pixi renderers.
+- Persistent point-local visuals such as Mornye `protocol-takeover` and ChangLi `double-move-stone` belong on the existing point/stone DOM nodes. They must remain pointer-transparent and respect reduced motion. A transient cast-phase animation may still be a `BoardSkillEffects` Pixi renderer when the catalog marks that skill with `boardEffect: true`, as Mornye `protocol-takeover` and ChangLi `double-move` do.
 - QiuYuan `row-slash` is visible only until the opponent's next action. Store `clearAfterColor: opponent(owner)` and clear expired row effects from ordinary moves, passes, and turn-consuming skill resolution by action color, not by the row effect owner.
 - Board point buttons sit above the SVG grid; shared board CSS and theme guard layers must explicitly keep `.board .point` transparent with no appearance, no border/shadow/background image, zero min-size, and `touch-action: none` so broad button rules cannot cover the grid.
 - The board grid SVG must be treated as a gameplay layer, not ordinary media. `.board-lines` must explicitly keep `display: block`, `width/height: 100%`, `max-width/max-height: none`, and theme guard stroke/opacity rules so global `img/svg/canvas` media resets such as `height: auto` cannot collapse or wash out the grid.
@@ -206,26 +210,29 @@ Correct:
 #### 4. Validation & Error Matrix
 - Missing `pendingSkill` -> render no effect but keep the board usable.
 - `game.skillEnabled === false` -> keep the board usable and pass `prewarm={false}` so standard boards do not load Pixi early.
+- Skill presentation effects disabled globally -> render no board effect overlay, do not prewarm Pixi for skill effects, and do not schedule board-effect SFX.
 - Missing `targetId` -> skip the Pixi effect safely.
 - Unknown `effectType` -> keep the overlay inert and preserve the normal skill preview/result flow.
 - `boardEffect === false` for a known effect -> render any DOM/CSS overlay separately through its dedicated component; do not render `BoardSkillEffects` markup and do not create a canvas.
 - `rowEffects` contains `{ owner: "black", clearAfterColor: "white" }` and white makes any valid action -> remove that row marker from the next game snapshot.
 - Muted `sfx` channel -> do not create WebAudio contexts or play board skill SFX.
 - Unmounted board / route change during a skill effect -> clear scheduled SFX timers before they fire.
-- Active Nabomo passive fog -> board clicks, touch confirmation, score marking, coordinates, and move numbers remain available because the fog is presentation-only.
-- Visible square fog boundary -> invalid; the ambient layer must use feathered cloud shapes/masks so it reads as black cloud rather than a rectangular overlay.
+- Active Nabomo passive gray board background -> board clicks, touch confirmation, score marking, coordinates, and move numbers remain available because the ambience is presentation-only.
+- Visible square fog boundary or persistent smoke layer -> invalid; the ambient layer should use the lightweight center-out desaturation wave and then rely on the persistent low-saturation board state.
 - Standard mode with no skills -> no pending skill effect should appear.
 - Restored room with `resolvesAt` in the past -> backend resolves immediately through existing pending-skill scheduling.
 
 #### 5. Good/Base/Bad Cases
 - Good: Sigrika erase, Danea flip, Aemeath hidden-hand, and Baconbits blast all route from `effectType` supplied by the room snapshot.
 - Good: a skill-enabled room prewarms Pixi during browser idle time, and the first actual skill effect reuses that module promise instead of issuing a second dynamic import.
+- Good: when a pending skill with a Pixi board effect appears, `BoardSkillEffects` prepares the transparent Pixi canvas and any renderer image assets during the banner window; the `setTimeout` at `bannerDurationMs` only starts playback and SFX.
 - Good: adding a new effect starts by extending `SKILL_EFFECT_CATALOG`, then wiring concrete rule handlers, server preview metadata, board animation, and tests.
 - Good: adding a new board animation updates `BOARD_SKILL_EFFECT_RENDERERS` and its registry test, while `BoardSkillEffects.jsx` remains the lifecycle host.
+- Good: changing presentation timing, per-effect Pixi/DOM layer capability, or the global effects-enabled state is done through `src/shared/skillPresentation.js` and covered by `src/shared/skillPresentation.test.js`.
 - Good: QiuYuan `row-slash` renders through `BoardRowSlashOverlay`, omits the full-board `BoardSkillEffects` layer, leaves `BOARD_SKILL_EFFECT_RENDERERS["row-slash"]` undefined, and uses CSS keyframes for the row-wide slash animation.
-- Good: ChangLi `double-move` normal placements set `double-move-stone` on both extra-turn stones, and `Board` applies the red flame CSS class directly to each affected stone.
+- Good: Mornye `protocol-takeover` plays a lavender-and-ice-blue data-light Pixi beam from the top of the board into the target point after the banner, with distinct procedural start and target-lock SFX, then the resolved point keeps the `.protocol-ban-mark` DOM/CSS marker. Good: ChangLi `double-move` plays a transparent-SVG red phoenix and irregular full-board fire Pixi cast after the banner, then normal placements set `double-move-stone` on both extra-turn stones and `Board` applies the red flame CSS class directly to each affected stone.
 - Good: Danea flip visually reads as transparent bubble formation, purple-black corruption, then pop/flash before the final stone color appears.
-- Good: Nabomo fog is driven by active passive state and continues after the passive activation banner/effect has resolved.
+- Good: Nabomo gray board background is driven by active passive state and continues after the passive activation banner/effect has resolved.
 - Base: legacy replay skill entries without new visual metadata still replay through the rules layer.
 - Bad: using `canPreviewSkillTarget` as the random-blast click eligibility gate; no-target skills must keep preview false while board confirmation remains allowed.
 - Bad: calculating the random-blast center on the frontend instead of using backend `pendingSkill.targetId`.
@@ -238,13 +245,14 @@ Correct:
 - Effects tests assert coordinate mapping for 13-line and 19-line boards and reduced-motion timing.
 - Registry tests assert every catalog `boardEffect` type has a renderer and unknown effect types no-op safely.
 - Component tests assert DOM-only skill visuals render no `board-effects-layer` and do not require a Pixi renderer.
+- `BoardSkillEffects` tests assert live Pixi preparation initializes the app and preloads renderer assets during the banner window, before playback begins.
 - Shared game tests assert QiuYuan row slash records `clearAfterColor` and clears on the opponent's next ordinary move.
 - Board/CSS contract tests assert `.board .point` cannot inherit visible button chrome, `.board-lines` cannot inherit ordinary media sizing, and `row-slash` keeps a dedicated CSS animation.
 - Board/CSS contract tests assert protocol-ban and double-move-stone persistent point effects have their expected glow keyframes, while shared game tests assert ChangLi's two extra-turn placements retain `double-move-stone`.
 - Board/CSS contract tests assert `.board-wrap` defines `--board-wood-texture` and late Bright School guards reuse that variable.
 - Replay tests assert Lynae `spray-stone` uses the history entry's `randomTargetId` so stepping through a replay cannot reroll which ordinary stone became spray.
 - Pixi prewarm tests assert disabled mode does not schedule loading, cancellation prevents idle imports, and prewarm/live effect loading share one promise.
-- Ambient tests assert active color illusion fog is pointer-transparent and renders without removing board buttons.
+- Ambient tests assert active color illusion board background transition is pointer-transparent, avoids Pixi/fog DOM, uses the dedicated WebP background, and renders without removing board buttons.
 - SFX tests assert stable cue points and muted settings avoiding AudioContext creation.
 - Scheduler tests assert catalog cue timing, reduced-motion suppression, and timer cleanup.
 - Catalog tests assert effect type order, admin options, default target rules, active effect lists, and SFX cues.

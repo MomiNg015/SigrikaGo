@@ -40,10 +40,10 @@
 - `resultRewardDelta`: 位于 `src/shared/resultRewards.js`，集中维护结果奖励差值，供后端持久化与前端结果展示共用；积分胜 `+20`、负 `-20`、和 `0`，金币胜 `+50`、负 `+20`、和 `0`。
 - `buildCharacterDraft` / `characterDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台角色表单数据转换。
 - `validateShopItemDraft` / `decorationDraftToBody`: 位于 `src/shared/adminDrafts.js`，后台商城/装饰表单校验。
-- `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题、副标题、设置关于文本、首页 footer 文本和加载页提示语集合默认值。
-- `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定；普通落子、反色技能和千咲 `liberty-purge` 这类实际落子的技能都会成为最新落子标记来源。
+- `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题、副标题、设置关于文本、首页 footer 文本、加载页提示语集合和角色加载台词集合默认值。
+- `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定；普通落子和反色技能会成为最新落子标记来源。千咲 `liberty-purge` 虽然会实际落子，但该落子使用专属 `liberty-purge-stone` 持续红光，不复用最新落子红圈。
 - `SKILL_EFFECT_CATALOG` / `skillEffectTargetRule` / `skillEffectSoundCues`: 位于 `src/shared/skillEffectCatalog.js`，集中维护技能 `effectType` 的管理端标签、默认目标规则、主动/被动分类、棋盘演出标记和音效 cue。管理端角色表单、服务端角色校验、技能归一化、目标预览和技能音效都应从该 catalog 读取这些元数据。
-- `row-slash` 是主动技能类型但不挂 Pixi `boardEffect` canvas，目标规则为 `any-point`。服务端 pending skill preview 会附带 `row` 和整行 `affectedPointIds`，前端 `Board` 以 `BoardRowSlashOverlay` 渲染一条贯穿棋盘外缘的破碎横向刀痕，并由 CSS `row-slash-strike` 动画完成斩击展开；持久标记来自 `game.rowEffects`，通过 `clearAfterColor` 在对手下一次行动后清除。该 DOM overlay 为 `pointer-events: none`，且 `BoardSkillEffects` 对这类 DOM-only 预览直接返回 `null`，避免任何整棋盘效果层覆盖棋盘网格、星位和棋子。
+- `row-slash` 是主动技能类型，但不注册 Pixi `boardEffect` canvas，目标规则为 `any-point`。服务端 pending skill preview 会附带 `row`、整行 `affectedPointIds`，以及直接被移除棋子的 `removedStones`（id/color）；前端 `BoardRowSlashOverlay` 在 pending 阶段直接渲染与最终标记一致的 `.board-row-slash`，但通过 `--skill-banner-duration` 延迟到横幅结束后才让刀痕从左到右展开并作为扫光使用；`Board` 同步给受影响行棋子添加 `row-slash-cut-pending` 和按棋盘宽度比例计算的 `--row-slash-cut-delay`，使棋子在扫光触及时用短促硬切快速消失。持久标记来自结算后的 `game.rowEffects`，继续由同一 DOM/CSS overlay 渲染，并通过 `clearAfterColor` 在对手下一次行动后清除。DOM overlay 始终为 `pointer-events: none`，`BoardSkillEffects` 对该 effect 返回空标记，避免 full-board canvas 覆盖棋盘。
 - `COLORS` / `opponent`: 位于 `src/shared/gameConstants.js`，集中维护棋色常量与对手颜色推导；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `createPoints` / `getPoint` / `activeNeighbors`: 位于 `src/shared/gameBoard.js`，集中封装棋盘几何和点位访问；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `collectGroup`: 位于 `src/shared/gameGroups.js`，集中封装棋子连通块和气的遍历；`src/shared/game.js` 保持同名转导以兼容既有调用方。
@@ -71,7 +71,7 @@
 - `validateCharacterInput`: 角色/技能输入校验。
 - `toCharacterPayload`: 角色公开 payload。
 - `validateShopItemInput` / `validateDecorationInput`: 商城与装饰校验。
-- `getPublicSiteSettings` / `updateSiteSettings`: 站点配置读取、清洗、持久化和审计写入；当前公开配置包含 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText` 与 `preloadTips`。
+- `getPublicSiteSettings` / `updateSiteSettings`: 站点配置读取、清洗、持久化和审计写入；当前公开配置包含 `homeTitle`、`homeSubtitle`、`aboutText`、`footerText`、`preloadTips`、`characterLoadingLines` 与技能特效开关。
 - `buildLeaderboard`: 排行榜统计。
 - `ratingDeltaForResult`: 根据 `winnerColor` 计算玩家积分变化；胜方 +20、负方 -20、和棋 0。
 - `safeUploadFilename`: 上传文件名清洗。
@@ -146,7 +146,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - `HouseModal.jsx` owns the player manual/profile modal, owned character grid, decoration application controls, personal replay dialog, and per-character record dialog.
 - `ShopModal.jsx` owns the 扎希拉商店 modal, category tabs, fixed 8-slot item grid, purchase flow, item ownership state, and shop mascot/item preview rendering.
   - Its non-component constants and pure helpers live in `src/modals/shopModalHelpers.js`, so the component module keeps a Fast Refresh-compatible export shape.
-- `GameLifecycleModals.jsx` owns the matching, match-success countdown, opening color prompt, and result/reward modals. It also exposes pure countdown, color-label, and signed-delta helpers covered by `GameLifecycleModals.test.js`.
+- `GameLifecycleModals.jsx` owns the matching, match-success countdown, opening color prompt, and result/reward modals. `AppOverlays` keeps the match-success countdown visible on the current screen first; only `matchSuccess.countdownComplete` may move a still-`preloading` match into the battle preload route, so resource readiness cannot skip the countdown. It also exposes pure countdown, color-label, and signed-delta helpers covered by `GameLifecycleModals.test.js`.
   - `FeedbackModals.jsx` owns the generic confirm modal, toast stack, and direct-duel request banner. Its duel countdown/progress helpers and toast queue limiting are covered by `FeedbackModals.test.js`.
   - `SkillBanner.jsx` owns the skill burst overlay and skill-cast voice trigger. The helper that prevents duplicate or empty voice playback is covered by `SkillBanner.test.js`.
   - `StoneDecorationPreview.jsx` owns reusable black/white decoration previews for house and shop surfaces.
@@ -223,7 +223,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - The preload step fetches non-replay runtime assets after login, but it is now split by startup criticality. Critical preload waits for current character portraits, home entry/background imagery, and common board/UI effect sounds before the app can leave the preload screen. Shop imagery, candy/effect previews, stone decoration images, result/match sounds, configured BGM tracks, character skill voices, and system voices stay in the same asset manifest but load as deferred background work with a concurrency cap so first entry to the home screen is not blocked by the full music/voice library. Replay lists and replay details remain lazy data requests so opening the app does not prefetch historical game records.
 - Preload failures are non-blocking: failed or hanging asset loaders are ignored after a bounded per-task timeout so users are not trapped on the loading screen if a single critical or optional resource stalls during reconnect, server restart, or cache recovery.
 - Startup preload is independent from transient Socket.IO client instances. `useStartupPreload()` must not receive `socket` or include a socket object in its dependency list; token/session state cleanup will tear down the socket through the socket lifecycle hook, while preload continues exactly once for the confirmed token.
-- The preload screen includes a compact spinner and progress bar, with a short minimum display duration to avoid a visual flash on cached loads. `AssetPreloadScreen` reads `siteSettings.preloadTips`, parses one non-empty tip per line, shows one random tip below the progress bar, and rotates to another random tip every 10 seconds while the view remains open. The loading panel itself stays borderless and transparent in both the base layer and the final Bright School safety layer, uses full-viewport centering, and lets the title plus tip text wrap inside the shared preload width so mobile and desktop keep the same no-frame loading treatment without adding a solid middle panel background.
+- The preload screen uses a character portrait hop plus progress bar, with a short minimum display duration to avoid a visual flash on cached loads. `AssetPreloadScreen` reads `siteSettings.characterLoadingLines` as `characterId=line` rows for the main loading line, uses a random catalog character for post-login preload, and uses the current player character for battle preload; the spinner remains only as an image-missing fallback. It also reads `siteSettings.preloadTips`, parses one non-empty tip per line, shows one random tip below the progress bar, and on the post-login preload view rotates the random character portrait, character loading line, and tip together every 10 seconds while the view remains open; fixed-character battle preload keeps the player character stable and only rotates tips. The loading panel itself stays borderless and transparent in both the base layer and the final Bright School safety layer, uses full-viewport centering, and lets the character line plus tip text wrap inside the shared preload width so mobile and desktop keep the same no-frame loading treatment without adding a solid middle panel background.
 
 ## Board Effect Theme Guard
 

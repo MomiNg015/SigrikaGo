@@ -410,7 +410,7 @@ SigrikaGo/
 
 - `server/roomSkillResolution.js`
   - Room skill preview lifecycle boundary.
-  - Owns active-skill preview start, passive-skill preview start, `pendingSkillResolution` snapshot creation, restored delay calculation, pending-resolution scheduling, preview payload metadata, and completion after the preview delay. `server/rooms.js` decides when room actions/opening/restore paths call this boundary, while skill preview mutation, notice append, byo-yomi reset, finished-room close handoff, and broadcast-after-resolution stay centralized here. Skill preview timing comes from `src/shared/skillPresentation.js`, covering the banner and board effect animation windows.
+  - Owns active-skill preview start, passive-skill preview start, `pendingSkillResolution` snapshot creation, restored delay calculation, pending-resolution scheduling, preview payload metadata, and completion after the preview delay. `server/rooms.js` decides when room actions/opening/restore paths call this boundary, while skill preview mutation, notice append, byo-yomi reset, finished-room close handoff, and broadcast-after-resolution stay centralized here. Skill preview timing and presentation gating come from `src/shared/skillPresentation.js`, covering the banner window, board effect window, per-effect Pixi/DOM layer capabilities, and the global all-effects-off switch before any room host prewarms, prepares, or plays Pixi. `SiteSetting.skillEffectsEnabled` is read from the cached public site settings when a pending skill preview is created; when disabled, the backend keeps the skill banner window and resolves immediately after it instead of waiting for the board-effect phase.
 
 - `server/roomClockLifecycle.js`
   - Room clock tick lifecycle boundary.
@@ -566,7 +566,7 @@ SigrikaGo/
 - 角色信息包含 `acquisitionMethod`/“获得途径”和 `description` 纯文本，可由后台维护；棋舍角色详情会在获得途径下方直接以斜体展示角色描述正文，数据库为空时前端回退到内置角色默认描述。
 - 娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 `User.rating` 自动补充 `nabomo` 到已拥有角色列表。琳奈的获得途径为星炬模式首次升上 5 段自动获得；公开用户序列化时会根据星炬 `modeStats.rank`（缺省时回退 `User.rank`）自动补充 `lynae`，管理员用户不受段位限制直接拥有。
 - 技能类型：
-  - `erase-point`：抹除空交叉点，点位不可落子且不参与数子。
+  - `erase-point`：抹除空交叉点，点位不可落子且不参与数子。 Resolved erased points render `/assets/effects/sigrika-erased-field-marker.webp` as a point-local transparent WebP field marker.
   - `flip-stone`：反转目标棋子颜色。
   - `hidden-hand`：隐藏手，未暴露前对对方隐藏。
   - `protocol-takeover`：莫宁主动技“协议接管”。指定一个有效、空置、未被协议标记的交叉点，写入对手禁入协议；该空点阻止被禁方普通落子和空点/任意点指定类技能目标，不阻止该点已有棋子被石子目标技能指定，也不改变气、提子、劫或棋子归属。协议点为空时不计入被禁方领地，但仍作为空区域连通的一部分，避免污染同一区域内其它空点归属；协议标记会随棋子翻转、横斩移除、随机爆破和普通提子保留，只有交叉点被抹除时清除。
@@ -576,7 +576,7 @@ SigrikaGo/
   - `liberty-purge`: Chisa active skill "????". The target rule is `legal-move-point`: the server first applies a normal legal move, including ko, protocol ban, and suicide checks, then removes every group with exactly one liberty from a single board snapshot. Removed non-friendly stones add overclock, removed friendly stones subtract overclock, and the final extra overclock is clamped at zero. Removed points are recorded in `libertyPurgeMarks` / `removalMarkIds` and rendered as red crosses until the opponent's next real turn ends. Targeting an opponent unexposed hidden hand only reveals it and does not spend the skill, switch turns, or enter skill preview.
 - 中立棋子由 `src/shared/gameConstants.js` 统一命名；同名中立棋子互相连接，不属于黑白双方，可被普通落子、猪小仙 `random-blast` 和死子标记移除，但中立棋子被移除不提供黑白除子。数子时中立棋子不计黑白子数，会作为边界参与空点归属判定；被喷涂棋子或多阵营共同围住的空点保持中立。
 - 达妮娅 `flip-stone` 作用于真实黑/白棋子，不能反色喷涂棋子或其它中立棋子；如果目标点带有娜波摩伪装，反色后会清除该点伪装。
-- 技能演出流程：服务端先进入 `skill-preview` 并广播 `pendingSkill`，此时棋盘保持旧状态；中间横幅动画结束后才真正应用技能效果并再次广播。
+- 技能演出流程：服务端先进入 `skill-preview` 并广播 `pendingSkill`，此时棋盘保持旧状态；默认在技能横幅和棋盘特效演出后应用技能效果并再次广播。后台 `skillEffectsEnabled` 关闭时，服务端只保留技能横幅阶段，横幅结束后直接应用技能效果；前端通过 `src/shared/skillPresentation.js` 解析每个 `effectType` 的演出时间线、Pixi 棋盘层、DOM-only 层、音效层和关闭特效状态，`BoardSkillEffects` prepares the transparent canvas, Pixi app, and renderer assets during the skill banner window, then starts playback and SFX at banner end to avoid a post-banner blank gap; it 只负责按该配置预热/挂载表现层，不再自行散落判断。
 - 技能目标确认态由前端 `pendingSkill` 驱动：`ActionBar` 给技能按钮添加 `.active`，`Board` 给棋盘容器添加 `.board-wrap.targeting` 并给可用目标点添加 `.previewable`。Bright School 的最后 CSS 层必须保留技能按钮与棋盘外圈的彩色动画发光，并让星位点使用独立 `::after` 居中显示；旧的星位 `::before` 必须显式关闭，避免和目标预览光圈使用的 `::before` 冲突并产生虚假星位。
 - 数目/死子确认阶段的棋盘标记由 `territory-mark`、`dead-mark`、`neutral-mark` 挂在对应 `.point` 内。`territory-mark.black/white` 用对应颜色的 `×` 表示黑/白领地，`dead-mark.black/white` 只用对应颜色的圆圈表示白/黑死子归属，不能继承领地 `×` 的伪元素。Bright School 的通用 `button > * { transform: none !important; }` 会影响棋盘点按钮的直接子元素，因此最终层必须为这些标记恢复 `left/top: 50%` 与 `transform: translate(-50%, -50%) !important`，确保 X 点和死子圈始终落在交叉点中心。
 - Bright School 棋盘相关的最终补丁要优先降低 CSS 熵：技能按钮/棋盘外圈发光的关键帧使用局部 CSS 变量复用三段视觉状态，静态兜底阴影留在元素本体，动态彩色光晕放到透明 `::after` 层，避免与旧主题里的 `box-shadow !important` 覆盖链互相抵消；数目/死子标记使用单个 `:is(.territory-mark, .dead-mark, .neutral-mark)` 选择器共享交叉点居中规则。后续新增棋盘修复应先扩展这些局部令牌或共享选择器，避免在文件尾部继续堆叠等价的散装覆盖。
