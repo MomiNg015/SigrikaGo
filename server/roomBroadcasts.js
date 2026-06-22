@@ -8,6 +8,7 @@ export function roomView(room, viewerId) {
 }
 
 export function broadcastRoom(io, room, { persistRoom = () => {}, roomViewFn = roomView } = {}) {
+  advanceRoomClockSeq(room);
   persistRoom(room, { force: true });
   for (const player of room.players) {
     emitRoomUpdate(io, room, player, roomViewFn);
@@ -18,6 +19,7 @@ export function broadcastRoom(io, room, { persistRoom = () => {}, roomViewFn = r
 }
 
 export function broadcastRoomClock(io, room, { persistRoom = () => {} } = {}) {
+  advanceRoomClockSeq(room);
   const payload = roomClockPayload(room);
   persistRoom(room);
   for (const participant of roomParticipants(room)) {
@@ -25,11 +27,11 @@ export function broadcastRoomClock(io, room, { persistRoom = () => {} } = {}) {
   }
 }
 
-export function broadcastRoomPatch(io, room, patch, { persistRoom = () => {} } = {}) {
+export function broadcastRoomPatch(io, room, patch, { persistRoom = () => {}, forcePersist = true } = {}) {
   const baseRevision = Number(room.revision ?? 0);
   const revision = baseRevision + 1;
   room.revision = revision;
-  persistRoom(room, { force: true });
+  persistRoom(room, { force: forcePersist });
   const payload = {
     ...patch,
     eventId: `${room.code}:${revision}:${patch.type}`,
@@ -52,12 +54,13 @@ export function broadcastRoomPresencePatch(io, room, { persistRoom = () => {}, r
     spectatorCount: view.spectatorCount,
     spectators: view.spectators,
     chat: view.chat
-  }, { persistRoom });
+  }, { forcePersist: false, persistRoom });
 }
 
 export function roomClockPayload(room) {
   return {
     roomCode: room.code,
+    clockSeq: Number(room.clockSeq ?? 0),
     activeColor: room.game.turn,
     serverNow: Date.now(),
     players: room.players.map((player) => ({
@@ -65,6 +68,10 @@ export function roomClockPayload(room) {
       time: { ...player.time }
     }))
   };
+}
+
+function advanceRoomClockSeq(room) {
+  room.clockSeq = Number(room.clockSeq ?? 0) + 1;
 }
 
 export function broadcastToast(io, room, text) {

@@ -4,6 +4,7 @@ import HomeScreen from "../home/HomeScreen.jsx";
 import RoomScreen from "../room/RoomScreen.jsx";
 import { playUiHouseOpenSound, playUiMatchOpenSound, playUiRecruitmentOpenSound, playUiShopOpenSound } from "../audio/playback.jsx";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
+import BattleAssetPreloadScreen from "./BattleAssetPreloadScreen.jsx";
 import { planRoomBackNavigation } from "./roomNavigation.js";
 
 export default function AppRoutes({
@@ -15,6 +16,7 @@ export default function AppRoutes({
   emitScoring,
   lobbyStats,
   logout,
+  matchSuccess,
   onAuth,
   onCountingRespond,
   onCountingRequest,
@@ -97,7 +99,24 @@ export default function AppRoutes({
   return (
     <>
       {view === "login" && <AuthScreen onAuth={onAuth} />}
-      {view === "preloading" && <AssetPreloadScreen progress={assetProgress} tipsText={siteSettings.preloadTips} />}
+      {view === "preloading" && (
+        <AssetPreloadScreen
+          characters={characters}
+          loadingLinesText={siteSettings.characterLoadingLines}
+          progress={assetProgress}
+          tipsText={siteSettings.preloadTips}
+        />
+      )}
+      {view === "match-preloading" && (
+        <BattleAssetPreloadScreen
+          characters={characters}
+          matchSuccess={matchSuccess}
+          musicTracks={musicTracks}
+          siteSettings={siteSettings}
+          socket={socket}
+          user={user}
+        />
+      )}
       {view === "home" && homeScreen}
       {view === "admin" && user?.role === "admin" && (
         <AdminConsole
@@ -127,6 +146,7 @@ export default function AppRoutes({
           pendingSkill={pendingSkill}
           setPendingSkill={setPendingSkill}
           audioSettings={audioSettings}
+          siteSettings={siteSettings}
           onOpenSettings={() => setShowSettings(true)}
           onOpenMessageBoard={() => setShowMessageBoard(true)}
           onBack={() => {

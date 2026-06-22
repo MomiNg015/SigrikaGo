@@ -2,7 +2,7 @@ import { prisma } from "./db.js";
 import { resetByoYomi } from "./roomClockTiming.js";
 import { prepareCandyEffectUpdates } from "./roomItemEffects.js";
 import { deletePersistedRoom as deletePersistedRoomState, listPersistedRooms } from "./roomPersistence.js";
-import { hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
+import { flushRoomPersistence, hydratePersistedRoom, persistRoomState } from "./roomStatePersistence.js";
 import {
   broadcastRoom as broadcastRoomUpdate,
   broadcastRoomClock,
@@ -24,6 +24,7 @@ import {
   hasConnectedRoomParticipant
 } from "./roomPresence.js";
 import { createRoomMatchmakingQueue } from "./roomMatchmakingQueue.js";
+import { createRoomMembershipIndex } from "./roomMembershipIndex.js";
 import {
   createRoomSkillLifecycle
 } from "./roomSkillResolution.js";
@@ -46,14 +47,17 @@ import { createRoomChatLifecycle } from "./roomChatLifecycle.js";
 import { createRoomQueries } from "./roomQueries.js";
 import { createRoomPersistenceRestoreLifecycle } from "./roomPersistenceRestoreLifecycle.js";
 import { createRoomOpeningLifecycle } from "./roomOpeningLifecycle.js";
+import { createRoomPreparationLifecycle } from "./roomPreparationLifecycle.js";
 import { createRoomRuntime } from "./roomRuntime.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 
 export { roomView };
 export { clearRoomTimers };
+export { flushRoomPersistence };
 
 const rooms = new Map();
 const matchmakingQueue = createRoomMatchmakingQueue();
+const roomMembershipIndex = createRoomMembershipIndex({ rooms });
 const ROOM_PERSIST_THROTTLE_MS = 5000;
 const roomRuntime = createRoomRuntime({
   prisma,
@@ -86,10 +90,14 @@ const roomCloseLifecycle = createRoomCloseLifecycle({
   hasConnectedRoomParticipant,
   arePlayersDisconnected,
   emitRoomClosed,
-  deletePersistedRoom: (roomCode) => deletePersistedRoomState(prisma, roomCode),
+  deletePersistedRoom: async (roomCode) => {
+    await flushRoomPersistence(roomCode);
+    return deletePersistedRoomState(prisma, roomCode);
+  },
   persistRoom,
   appendSystem,
   saveGameRecord: (room) => persistGameRecord({ prisma, room }),
+  unregisterRoom: roomMembershipIndex.unregisterRoom,
   prepareCloseState: prepareCandyEffectUpdates
 });
 const {
@@ -114,6 +122,23 @@ const {
   scheduleResultReviewTimeout,
   schedulePendingRoomDeadlines
 } = roomDeadlineScheduler;
+const roomPreparationLifecycle = createRoomPreparationLifecycle({
+  rooms,
+  clearRoomTimers,
+  deletePersistedRoom: async (roomCode) => {
+    await flushRoomPersistence(roomCode);
+    return deletePersistedRoomState(prisma, roomCode);
+  },
+  unregisterRoom: roomMembershipIndex.unregisterRoom,
+  scheduleRoomTimeout,
+  appendSystem,
+  broadcastRoom,
+  scheduleGameStart
+});
+const {
+  markRoomPreloadReady,
+  scheduleRoomPreloadTimeout
+} = roomPreparationLifecycle;
 const roomSkillLifecycle = createRoomSkillLifecycle({
   rooms,
   scheduleRoomTimeout,
@@ -154,6 +179,7 @@ const roomRestoreLifecycle = createRoomRestoreLifecycle({
   startGameClock,
   completeRoomOpening,
   scheduleGameStart,
+  scheduleRoomPreloadTimeout,
   schedulePendingSkillResolution,
   completePendingSkillResolution,
   schedulePendingRoomDeadlines,
@@ -167,7 +193,10 @@ const roomConnectionLifecycle = createRoomConnectionLifecycle({
   appendSystem,
   clearEmptyRoomClose,
   scheduleEmptyActiveRoomClose,
-  persistRoom
+  persistRoom,
+  findRoomsForSocket: roomMembershipIndex.findRoomsForSocket,
+  registerRoomSocket: roomMembershipIndex.registerSocket,
+  unregisterRoomSocket: roomMembershipIndex.unregisterSocket
 });
 export const {
   attachSocketToRoom,
@@ -200,14 +229,17 @@ const roomCreationLifecycle = createRoomCreationLifecycle({
   persistRoom,
   startGameClock,
   scheduleGameStart,
+  scheduleRoomPreloadTimeout,
   roomView,
   appendSystem,
-  broadcastRoom
+  broadcastRoom,
+  registerRoom: roomMembershipIndex.registerRoom
 });
 export const {
   joinMatchmaking,
   createDirectRoom
 } = roomCreationLifecycle;
+export { markRoomPreloadReady };
 const roomActionLifecycle = createRoomActionLifecycle({
   rooms,
   validateRoomCode,
@@ -227,7 +259,7 @@ const roomChatLifecycle = createRoomChatLifecycle({
   normalizeChatText
 });
 export const { addChat } = roomChatLifecycle;
-const roomQueries = createRoomQueries({ rooms });
+const roomQueries = createRoomQueries({ rooms, membershipIndex: roomMembershipIndex });
 export const {
   listActiveRooms,
   listWatchRooms,
@@ -240,7 +272,8 @@ const roomPersistenceRestoreLifecycle = createRoomPersistenceRestoreLifecycle({
   hydratePersistedRoom,
   ensureRestoredDisconnectedNotices,
   resumeRoomTimers,
-  persistRoom
+  persistRoom,
+  registerRoom: roomMembershipIndex.registerRoom
 });
 export const { restorePersistedRooms } = roomPersistenceRestoreLifecycle;
 
@@ -249,6 +282,7 @@ export function clearRoomsForTest() {
     clearRoomTimers(room);
   }
   rooms.clear();
+  roomMembershipIndex.clear();
   matchmakingQueue.clear();
 }
 

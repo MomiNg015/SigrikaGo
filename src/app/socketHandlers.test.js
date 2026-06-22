@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createSocketHandlers, installSocketHandlers } from "./socketHandlers.js";
 import { applyRoomClock } from "./roomClock.js";
+import { syncPendingMatchRoom } from "./matchTransition.js";
 
 describe("socket handlers", () => {
   it("stores match waiting payloads from the socket", () => {
@@ -45,6 +46,54 @@ describe("socket handlers", () => {
     expect(deps.updateUser).toHaveBeenCalledWith(expect.any(Function));
     expect(deps.matchSuccessRef.current).toMatchObject({ room: roomView });
     expect(deps.setMatchSuccess).toHaveBeenCalledWith(deps.matchSuccessRef.current);
+    expect(deps.setView).not.toHaveBeenCalled();
+  });
+
+  it("keeps preloading match rooms on the current screen until the countdown completes", () => {
+    const roomView = { code: "12345", game: { phase: "preloading" }, players: [] };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.matchFound(roomView);
+
+    expect(deps.setView).not.toHaveBeenCalled();
+  });
+
+  it("automatically enters the room when a pending match leaves preloading after the countdown completed", () => {
+    const pendingRoom = { code: "12345", game: { phase: "preloading" }, players: [] };
+    const openingRoom = { code: "12345", role: "player", game: { phase: "opening" }, players: [] };
+    const deps = handlerDeps({
+      matchSuccessRef: { current: { room: pendingRoom, startedAt: 1000, countdownComplete: true } }
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomUpdate(openingRoom);
+
+    expect(roomSetterResult(deps)).toEqual(openingRoom);
+    expect(deps.matchSuccessRef.current).toBeNull();
+    expect(deps.setMatchSuccess).toHaveBeenCalledWith(null);
+    expect(deps.setView).toHaveBeenCalledWith("room");
+  });
+
+  it("keeps a loaded preloading match pending until the match success countdown completes", () => {
+    const pendingRoom = { code: "12345", game: { phase: "preloading" }, players: [] };
+    const openingRoom = { code: "12345", role: "player", game: { phase: "opening" }, players: [] };
+    const deps = handlerDeps({
+      matchSuccessRef: { current: { room: pendingRoom, startedAt: 1000, countdownComplete: false } },
+      syncPendingMatchRoom
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomUpdate(openingRoom);
+
+    expect(deps.matchSuccessRef.current).toMatchObject({
+      room: openingRoom,
+      startedAt: 1000,
+      countdownComplete: false
+    });
+    expect(deps.setMatchSuccess).toHaveBeenCalledWith(expect.any(Function));
+    expect(deps.setRoom).not.toHaveBeenCalled();
+    expect(deps.setView).not.toHaveBeenCalled();
   });
 
   it("keeps room updates in a pending match transition instead of entering the room", () => {
@@ -358,6 +407,22 @@ describe("socket handlers", () => {
     expect(deps.showToast).toHaveBeenCalledWith("closed");
   });
 
+  it("returns home and clears pending match state when match preload times out", () => {
+    const deps = handlerDeps({
+      matchSuccessRef: { current: { room: { code: "12345" } } }
+    });
+    const handlers = createSocketHandlers(deps);
+
+    handlers.matchPreloadTimeout({ roomCode: "12345", message: "一方加载超时，匹配中止" });
+
+    expect(deps.matchSuccessRef.current).toBeNull();
+    expect(deps.setMatchStart).toHaveBeenCalledWith(null);
+    expect(deps.setMatchSuccess).toHaveBeenCalledWith(null);
+    expect(deps.setRoom).toHaveBeenCalledWith(null);
+    expect(deps.setView).toHaveBeenCalledWith("home");
+    expect(deps.showToast).toHaveBeenCalledWith("一方加载超时，匹配中止");
+  });
+
   it("stores a new incoming duel request and plays the doorbell once", () => {
     const request = { requestId: "duel-1", from: { username: "alice" }, mode: "gomoku" };
     const deps = handlerDeps();
@@ -524,6 +589,7 @@ describe("socket handlers", () => {
 
     expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
     expect(socket.on).toHaveBeenCalledWith("room:patch", expect.any(Function));
+    expect(socket.on).toHaveBeenCalledWith("match:preload-timeout", expect.any(Function));
     expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
   });
 

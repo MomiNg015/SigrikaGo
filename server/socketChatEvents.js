@@ -8,7 +8,7 @@ export function registerChatSocketEvents(socket, {
     const mutation = addChat(roomCode, socket.user, text);
     if (!mutation) return;
     if (mutation.message && broadcastRoomPatch) {
-      broadcastRoomPatch(io, mutation.room, { type: "chat:append", message: mutation.message });
+      broadcastRoomPatch(io, mutation.room, { type: "chat:append", message: mutation.message }, { forcePersist: false });
       return;
     }
     broadcastRoom(io, mutation.room ?? mutation);

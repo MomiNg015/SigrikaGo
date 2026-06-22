@@ -426,6 +426,7 @@ export default function App() {
         emitScoring={emitScoring}
         lobbyStats={lobbyStats}
         logout={logout}
+        matchSuccess={matchSuccess}
         onAuth={handleAuth}
         onCountingRequest={() => socket?.emit("counting:request", { roomCode: room.code })}
         onCountingRespond={(accepted) => socket?.emit("counting:respond", { roomCode: room.code, accepted })}

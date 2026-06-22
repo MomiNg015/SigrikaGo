@@ -41,6 +41,7 @@ function lifecycleFor(rooms, overrides = {}) {
     persisted: [],
     saved: [],
     prepared: [],
+    unregistered: [],
     messages: [],
     saveErrors: [],
     deleteErrors: []
@@ -70,6 +71,7 @@ function lifecycleFor(rooms, overrides = {}) {
       return Promise.resolve();
     },
     prepareCloseState: (room) => calls.prepared.push(room.code),
+    unregisterRoom: (room) => calls.unregistered.push(room.code),
     onSaveError: (error) => calls.saveErrors.push(error),
     onDeleteError: (error) => calls.deleteErrors.push(error),
     ...overrides
@@ -110,6 +112,7 @@ describe("roomCloseLifecycle", () => {
       roomCode: room.code,
       payload: { reason: "finished-room-close", roomCode: room.code }
     });
+    expect(calls.unregistered).toEqual([room.code]);
     expect(calls.deleted).toEqual([room.code]);
     expect(rooms.has(room.code)).toBe(false);
   });
@@ -167,6 +170,7 @@ describe("roomCloseLifecycle", () => {
     });
     expect(room.recordSaved).toBe(true);
     expect(calls.messages).toEqual(["双方离开房间超过5分钟，对局无效。"]);
+    expect(calls.unregistered).toEqual([room.code]);
     expect(calls.deleted).toEqual([room.code]);
     expect(rooms.has(room.code)).toBe(false);
   });

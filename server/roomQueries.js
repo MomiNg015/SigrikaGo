@@ -6,6 +6,7 @@ import {
 
 export function createRoomQueries({
   rooms,
+  membershipIndex = null,
   onlineParticipantCount = defaultOnlineParticipantCount,
   watchPlayerSummary = defaultWatchPlayerSummary
 }) {
@@ -27,12 +28,16 @@ export function createRoomQueries({
   }
 
   function isUserInActiveRoom(userId) {
+    if (membershipIndex?.isUserInActiveRoom) return membershipIndex.isUserInActiveRoom(userId);
     return listActiveRooms().some((room) => room.players.some((player) => player.user.id === userId));
   }
 
   function findRoomForUser(userId, roomCode = "") {
+    if (membershipIndex?.findRoomForUser) return membershipIndex.findRoomForUser(userId, roomCode);
     const candidates = roomCode ? [rooms.get(roomCode)] : [...rooms.values()];
-    return candidates.find((room) => room?.players.some((player) => player.user.id === userId)) ?? null;
+    return candidates.find((room) => room?.players.some((player) => player.user.id === userId && room.game.phase !== GAME_PHASES.finished))
+      ?? candidates.find((room) => room?.players.some((player) => player.user.id === userId))
+      ?? null;
   }
 
   return {

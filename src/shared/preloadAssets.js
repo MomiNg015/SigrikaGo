@@ -3,12 +3,17 @@ import {
   CHARACTER_SYSTEM_VOICES,
   CHARACTER_SKILL_VOICES,
   MATCH_SUCCESS_SOUND,
+  MUSIC_TYPES,
   MUSIC_TRACKS,
   VICTORY_SOUND,
-  DEFEAT_SOUND
+  DEFEAT_SOUND,
+  resolveSkillMusicTrack
 } from "./musicLibrary.js";
 import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
 import { STONE_DECORATIONS } from "./stoneDecorations.js";
+import { CHARACTERS } from "./characters.js";
+import { canonicalCharacterId } from "./characterAliases.js";
+import { voiceSourceCandidates } from "./systemVoices.js";
 
 export function deploymentSocketBase(locationLike = globalThis.location) {
   return locationLike?.origin ?? "";
@@ -47,12 +52,54 @@ export function loginPreloadAssets({
     VICTORY_SOUND,
     DEFEAT_SOUND,
     ...Object.values(tracks).flatMap((track) => playbackAssetSources(track?.playback)),
-    ...Object.values(skillVoices),
-    ...Object.values(systemVoices).flatMap((voiceMap) => Object.values(voiceMap ?? {}))
+    ...Object.values(skillVoices).flatMap(voiceSourceCandidates),
+    ...Object.values(systemVoices).flatMap((voiceMap) => Object.values(voiceMap ?? {}).flatMap(voiceSourceCandidates))
   ]);
   const audio = compactUnique([...criticalAudio, ...deferredAudio]);
 
   return { criticalImages, deferredImages, images, criticalAudio, deferredAudio, audio };
+}
+
+export function battlePreloadAssets({
+  room = null,
+  characters = CHARACTERS,
+  tracks = MUSIC_TRACKS,
+  skillVoices = CHARACTER_SKILL_VOICES,
+  systemVoices = CHARACTER_SYSTEM_VOICES
+} = {}) {
+  const players = room?.players ?? [];
+  const characterIds = compactUnique(players.map((player) => canonicalCharacterId(
+    player.character?.id ?? player.characterId
+  )));
+  const roomCharacters = characterIds
+    .map((characterId) => characters?.[characterId] ?? CHARACTERS[characterId])
+    .filter(Boolean);
+  const skillTracks = characterIds
+    .map((characterId) => resolveSkillMusicTrack({ characterId, tracks }))
+    .filter(Boolean);
+  const battleTracks = Object.values(tracks ?? {}).filter((track) => track?.type === MUSIC_TYPES.battle);
+
+  const criticalImages = compactUnique([
+    ...roomCharacters.map((character) => character?.portrait),
+    ...RUNTIME_IMAGE_ASSETS.effects
+  ]);
+  const criticalAudio = compactUnique([
+    MATCH_SUCCESS_SOUND,
+    ...RUNTIME_AUDIO_ASSETS.interaction,
+    ...battleTracks.flatMap((track) => playbackAssetSources(track.playback)),
+    ...skillTracks.flatMap((track) => playbackAssetSources(track.playback)),
+    ...characterIds.flatMap((characterId) => voiceSourceCandidates(skillVoices?.[characterId])),
+    ...characterIds.flatMap((characterId) => Object.values(systemVoices?.[characterId] ?? {}).flatMap(voiceSourceCandidates))
+  ]);
+
+  return {
+    criticalImages,
+    deferredImages: [],
+    images: criticalImages,
+    criticalAudio,
+    deferredAudio: [],
+    audio: criticalAudio
+  };
 }
 
 export async function preloadLoginAssets(assets, {

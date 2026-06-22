@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { GAME_PHASES } from "../shared/game.js";
 import { completePendingMatchRoom } from "./matchTransition.js";
 
 export function useMatchActions({
@@ -24,6 +25,13 @@ export function useMatchActions({
 
   const completeMatchSuccess = useCallback(() => {
     if (!matchSuccess) return;
+    const nextTransition = matchSuccessCountdownCompletedTransition(matchSuccess, matchSuccessRef.current);
+    if (nextTransition.room?.game?.phase === GAME_PHASES.preloading) {
+      matchSuccessRef.current = nextTransition;
+      setMatchSuccess((current) => current ? { ...current, ...nextTransition } : current);
+      setView("match-preloading");
+      return;
+    }
     setRoom((current) => completePendingMatchRoom(matchSuccessRef, matchSuccess.room, current));
     matchSuccessRef.current = null;
     setMatchSuccess(null);
@@ -64,5 +72,15 @@ export function useMatchActions({
     requestDraw,
     respondDraw,
     startMatch
+  };
+}
+
+export function matchSuccessCountdownCompletedTransition(matchSuccess, latestTransition = matchSuccess) {
+  const transition = latestTransition ?? matchSuccess;
+  const room = latestTransition?.room ?? matchSuccess?.room;
+  return {
+    ...transition,
+    room,
+    countdownComplete: true
   };
 }

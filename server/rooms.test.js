@@ -621,6 +621,10 @@ describe("rooms character integration", () => {
       row: 5,
       affectedPointIds: Array.from({ length: 13 }, (_item, x) => pointId(x, 5)),
       markedPointIds: [],
+      removedStones: [
+        { id: pointId(0, 5), from: COLORS.white },
+        { id: pointId(1, 5), from: "spray" }
+      ],
       removed: 2,
       removedByColor: { white: 1, spray: 1 }
     });

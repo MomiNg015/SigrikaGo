@@ -39,7 +39,27 @@ describe("socket guards", () => {
     }
 
     expect(next).toHaveBeenCalledTimes(120);
-    expect(socket.emit).toHaveBeenCalledWith("error:toast", expect.any(String));
+    expect(socket.emit).toHaveBeenCalledWith("error:toast", "操作过于频繁，请稍后再试");
+  });
+
+  it("emits only one rate-limit toast per rate window", () => {
+    let now = 1000;
+    const socket = createSocket();
+    installSocketRateGuard(socket, { now: () => now });
+    const middleware = createSocket.middleware;
+    const next = vi.fn();
+
+    for (let index = 0; index < 123; index += 1) {
+      middleware([], next);
+    }
+
+    expect(next).toHaveBeenCalledTimes(120);
+    expect(socket.emit).toHaveBeenCalledTimes(1);
+    now += 10001;
+    for (let index = 0; index < 121; index += 1) {
+      middleware([], next);
+    }
+    expect(socket.emit).toHaveBeenCalledTimes(2);
   });
 
   it("resets the count after the rate window elapses", () => {

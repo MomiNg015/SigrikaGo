@@ -8,6 +8,9 @@ export function createRoomConnectionLifecycle({
   clearEmptyRoomClose,
   scheduleEmptyActiveRoomClose,
   persistRoom,
+  findRoomsForSocket = () => [...rooms.values()],
+  registerRoomSocket = () => {},
+  unregisterRoomSocket = () => {},
   now = Date.now
 }) {
   function attachSocketToRoom(roomCode, socket, user) {
@@ -21,6 +24,7 @@ export function createRoomConnectionLifecycle({
     } else {
       attachSpectatorSocket(room, socket, user);
     }
+    registerRoomSocket(room, socket.id);
     socket.join(validatedRoomCode.value);
     persistRoom(room, { force: true });
     return room;
@@ -30,6 +34,9 @@ export function createRoomConnectionLifecycle({
     const shouldAnnounceReconnect = !player.socketId
       && player.disconnectedAt
       && room.game.phase !== GAME_PHASES.finished;
+    if (player.socketId && player.socketId !== socket.id) {
+      unregisterRoomSocket(room, player.socketId);
+    }
     player.socketId = socket.id;
     player.disconnectedAt = null;
     clearEmptyRoomClose(room);
@@ -39,7 +46,14 @@ export function createRoomConnectionLifecycle({
   }
 
   function attachSpectatorSocket(room, socket, user) {
-    if (room.spectators.some((candidate) => candidate.user.id === user.id)) return;
+    const existing = room.spectators.find((candidate) => candidate.user.id === user.id);
+    if (existing) {
+      if (existing.socketId && existing.socketId !== socket.id) {
+        unregisterRoomSocket(room, existing.socketId);
+      }
+      existing.socketId = socket.id;
+      return;
+    }
     room.spectators.push({ user, socketId: socket.id });
     appendSystem(room, `${user.username}进入了观战席。`);
   }
@@ -47,7 +61,7 @@ export function createRoomConnectionLifecycle({
   function detachSocket(socketId, io = null) {
     matchmakingQueue.removeSocket(socketId);
     const changedRooms = [];
-    for (const room of rooms.values()) {
+    for (const room of findRoomsForSocket(socketId)) {
       let changed = detachPlayersWithSocket(room, socketId);
       if (detachSpectatorsWithSocket(room, socketId)) changed = true;
       if (changed) {
@@ -68,6 +82,7 @@ export function createRoomConnectionLifecycle({
         if (room.game.phase !== GAME_PHASES.finished) {
           appendSystem(room, `${player.user.username}断线中。`, { kind: "disconnect" });
         }
+        unregisterRoomSocket(room, socketId);
         changed = true;
       }
     }
@@ -77,6 +92,7 @@ export function createRoomConnectionLifecycle({
   function detachSpectatorsWithSocket(room, socketId) {
     const before = room.spectators.length;
     room.spectators = room.spectators.filter((spectator) => spectator.socketId !== socketId);
+    if (room.spectators.length !== before) unregisterRoomSocket(room, socketId);
     return room.spectators.length !== before;
   }
 
@@ -87,6 +103,7 @@ export function createRoomConnectionLifecycle({
     if (!room) return null;
     const finishedPlayer = findFinishedPlayerLeaving(room, userId, socketId);
     if (finishedPlayer) {
+      unregisterRoomSocket(room, finishedPlayer.socketId);
       finishedPlayer.socketId = null;
       finishedPlayer.disconnectedAt = null;
       appendSystem(room, `${finishedPlayer.user.username}离开了观战席。`, { kind: "spectator-leave" });
@@ -98,6 +115,7 @@ export function createRoomConnectionLifecycle({
     ));
     if (!spectator) return null;
     room.spectators = room.spectators.filter((candidate) => candidate !== spectator);
+    unregisterRoomSocket(room, spectator.socketId);
     appendSystem(room, `${spectator.user.username}离开了观战席。`, { kind: "spectator-leave" });
     persistRoom(room, { force: true });
     return room;

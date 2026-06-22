@@ -8,6 +8,7 @@ import { DEFAULT_RANK, normalizeRank, parseRecentResults } from "../src/shared/r
 
 export const MATCH_SUCCESS_DELAY_MS = 3000;
 export const OPENING_NOTICE_DELAY_MS = 3000;
+export const MATCH_PRELOAD_TIMEOUT_MS = 60000;
 
 export function createRoom(first, second, {
   modeInput = first.mode ?? second.mode ?? "spark",
@@ -30,7 +31,8 @@ export function createRoom(first, second, {
     characterId: p.characterId,
     character: p.character
   })), { mode });
-  game.phase = GAME_PHASES.opening;
+  game.phase = GAME_PHASES.preloading;
+  const preloadDeadlineAt = createdAt + MATCH_PRELOAD_TIMEOUT_MS;
   return {
     code: randomRoomCode({ isCodeTaken, random }),
     mode,
@@ -41,8 +43,16 @@ export function createRoom(first, second, {
     game,
     chat: [],
     revision: 0,
+    clockSeq: 0,
     createdAt,
-    openingEndsAt: createdAt + MATCH_SUCCESS_DELAY_MS + OPENING_NOTICE_DELAY_MS,
+    openingEndsAt: null,
+    preload: {
+      startedAt: createdAt,
+      deadlineAt: preloadDeadlineAt,
+      readyUserIds: [],
+      readyCount: 0,
+      requiredCount: players.length
+    },
     closesAt: null,
     countingDeadline: null,
     drawDeadline: null,

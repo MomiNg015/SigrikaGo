@@ -60,11 +60,13 @@ describe("roomBroadcasts", () => {
   test("broadcasts room updates with viewer-specific room views and forced persistence", () => {
     const io = fakeIo();
     const persistRoom = vi.fn();
-    const roomViewFn = vi.fn((room, viewerId) => ({ code: room.code, viewerId }));
+    const roomViewFn = vi.fn((room, viewerId) => ({ code: room.code, viewerId, clockSeq: room.clockSeq }));
+    const room = testRoom();
 
-    broadcastRoom(io, testRoom(), { persistRoom, roomViewFn });
+    broadcastRoom(io, room, { persistRoom, roomViewFn });
 
     expect(persistRoom).toHaveBeenCalledWith(expect.objectContaining({ code: "12345" }), { force: true });
+    expect(room.clockSeq).toBe(1);
     expect(roomViewFn).toHaveBeenCalledTimes(2);
     expect(roomViewFn).toHaveBeenNthCalledWith(1, expect.objectContaining({ code: "12345" }), "black-user");
     expect(roomViewFn).toHaveBeenNthCalledWith(2, expect.objectContaining({ code: "12345" }), "spectator-user");
@@ -72,12 +74,12 @@ describe("roomBroadcasts", () => {
       {
         socketId: "black-socket",
         event: "room:update",
-        payload: { code: "12345", viewerId: "black-user" }
+        payload: { code: "12345", viewerId: "black-user", clockSeq: 1 }
       },
       {
         socketId: "spectator-socket",
         event: "room:update",
-        payload: { code: "12345", viewerId: "spectator-user" }
+        payload: { code: "12345", viewerId: "spectator-user", clockSeq: 1 }
       }
     ]);
   });
@@ -90,9 +92,11 @@ describe("roomBroadcasts", () => {
     broadcastRoomClock(io, room, { persistRoom });
 
     expect(persistRoom).toHaveBeenCalledWith(room);
+    expect(room.clockSeq).toBe(1);
     expect(io.messages.map((message) => message.event)).toEqual(["room:clock", "room:clock"]);
     expect(io.messages[0].payload).toMatchObject({
       roomCode: "12345",
+      clockSeq: 1,
       activeColor: COLORS.black,
       players: [
         { color: COLORS.black, time: { main: 299 } },
@@ -142,6 +146,20 @@ describe("roomBroadcasts", () => {
         }
       }
     ]);
+  });
+
+  test("can broadcast room patches with throttled persistence", () => {
+    const io = fakeIo();
+    const persistRoom = vi.fn();
+    const room = testRoom();
+
+    broadcastRoomPatch(io, room, { type: "chat:append", message: { id: "chat-1" } }, {
+      forcePersist: false,
+      persistRoom
+    });
+
+    expect(persistRoom).toHaveBeenCalledWith(room, { force: false });
+    expect(io.messages).toHaveLength(2);
   });
 
   test("broadcasts presence patches from the room view without sending game state", () => {
@@ -197,7 +215,7 @@ describe("roomBroadcasts", () => {
       }
     ]);
     expect(io.messages[0].payload).not.toHaveProperty("game");
-    expect(persistRoom).toHaveBeenCalledWith(room, { force: true });
+    expect(persistRoom).toHaveBeenCalledWith(room, { force: false });
   });
 
   test("skips presence patches when no participant is connected", () => {

@@ -6,6 +6,7 @@ export function createRoomRestoreLifecycle({
   startGameClock,
   completeRoomOpening,
   scheduleGameStart,
+  scheduleRoomPreloadTimeout = () => {},
   schedulePendingSkillResolution,
   completePendingSkillResolution,
   schedulePendingRoomDeadlines,
@@ -18,6 +19,9 @@ export function createRoomRestoreLifecycle({
     }
     if (room.game.phase === GAME_PHASES.opening) {
       return resumeOpeningRoom(room, io);
+    }
+    if (room.game.phase === GAME_PHASES.preloading) {
+      return resumePreloadingRoom(room, io);
     }
     return resumeActiveRoom(room, io);
   }
@@ -35,6 +39,12 @@ export function createRoomRestoreLifecycle({
     startGameClock(room, io);
     if (room.openingEndsAt <= now()) completeRoomOpening(room, io);
     else scheduleGameStart(room, io);
+    return true;
+  }
+
+  function resumePreloadingRoom(room, io) {
+    startGameClock(room, io);
+    scheduleRoomPreloadTimeout(room, io);
     return true;
   }
 
