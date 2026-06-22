@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createMailboxBatch,
   deleteMailboxMessage,
+  ensureMailboxSchema,
   listMailboxMessages,
   mailboxSummary,
   claimMailboxMessage,
@@ -10,6 +11,26 @@ import {
 } from "./mailbox.js";
 
 describe("mailbox domain", () => {
+  it("creates mailbox tables for older local SQLite databases at startup", async () => {
+    const calls = [];
+    await ensureMailboxSchema({
+      $executeRawUnsafe: async (sql) => {
+        calls.push(sql);
+      }
+    });
+
+    expect(calls).toEqual([
+      expect.stringContaining('CREATE TABLE IF NOT EXISTS "MailboxBatch"'),
+      expect.stringContaining('CREATE TABLE IF NOT EXISTS "MailboxMessage"'),
+      expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxBatch_targetMode_createdAt_idx"'),
+      expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxBatch_includeFutureUsers_createdAt_idx"'),
+      expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxBatch_adminUserId_createdAt_idx"'),
+      expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_userId_createdAt_idx"'),
+      expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_userId_isRead_idx"'),
+      expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_batchId_userId_idx"')
+    ]);
+  });
+
   it("delivers mail by deleting the oldest read settled message when the mailbox is full", async () => {
     const { prisma, messages } = mailboxPrisma({
       users: [userFixture("user-1")],

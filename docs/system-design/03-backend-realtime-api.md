@@ -110,3 +110,4 @@
 - `server/mailbox.js` owns domain behavior. Admin sends create a `MailboxBatch`, deliver `MailboxMessage` rows to eligible users, and write an audit event with action `mailbox.send`.
 - Player claims are manual. Coin claims write a `UserProgressLedger` row with reason `mailbox.claim`; item claims update the legacy owned item projection and the structured `UserItem` mirror through existing inventory helpers.
 - Global batches can target current users only or current plus future users. Future-eligible batches are materialized for a user when mailbox list or summary is read.
+- `initializeServerData()` runs `ensureMailboxSchema()` during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.

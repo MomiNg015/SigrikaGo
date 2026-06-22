@@ -227,4 +227,4 @@
 - `MailboxMessage` records one delivered user-visible message: recipient user id, optional batch id, title/body, serialized attachment payload, read/claim/delete timestamps, and creation time.
 - Each user mailbox is capped at 20 visible messages. Before delivery, the domain deletes the oldest safe messages that are already read and have no unclaimed attachment. If no safe space exists, delivery is skipped instead of deleting claimable rewards.
 - A message with an unclaimed attachment is not deletable. Claiming is idempotent at the domain level by checking `claimedAt` and the attachment type before mutating coins or inventory.
-- The schema is backed by migration `202606220001_add_mailbox_system`; `server/schemaIntegrity.test.js` checks that the migration and Prisma model stay in sync.
+- The schema is backed by migration `202606220001_add_mailbox_system` and by the startup compatibility guard `ensureMailboxSchema()` for older local SQLite databases; `server/schemaIntegrity.test.js` checks that the migration and Prisma model stay in sync.

@@ -2714,6 +2714,9 @@
 <ul>
 <li>Global batches can target current users only or current plus future users. Future-eligible batches are materialized for a user when mailbox list or summary is read.</li>
 </ul>
+<ul>
+<li><code>initializeServerData()</code> runs <code>ensureMailboxSchema()</code> during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.</li>
+</ul>
 <p>---</p>
 <h1>数据模型与领域系统</h1>
 <p>本文记录 Prisma 模型、核心领域数据、抽卡/商城/奖励/段位等跨前后端共享概念。新增模型、迁移、领域字段或兼容镜像字段时优先更新本分篇。</p>
@@ -3156,7 +3159,7 @@
 <li>A message with an unclaimed attachment is not deletable. Claiming is idempotent at the domain level by checking <code>claimedAt</code> and the attachment type before mutating coins or inventory.</li>
 </ul>
 <ul>
-<li>The schema is backed by migration <code>202606220001_add_mailbox_system</code>; <code>server/schemaIntegrity.test.js</code> checks that the migration and Prisma model stay in sync.</li>
+<li>The schema is backed by migration <code>202606220001_add_mailbox_system</code> and by the startup compatibility guard <code>ensureMailboxSchema()</code> for older local SQLite databases; <code>server/schemaIntegrity.test.js</code> checks that the migration and Prisma model stay in sync.</li>
 </ul>
 <p>---</p>
 <h1>资源、音频与启动预加载</h1>
