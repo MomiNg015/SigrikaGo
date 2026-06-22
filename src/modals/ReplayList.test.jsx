@@ -93,6 +93,25 @@ describe("ReplayList", () => {
     expect(html).toContain("aria-label=\"友谊对局\"");
   });
 
+  it("keeps desktop replay timestamps fully visible", () => {
+    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const replayTableCss = css.slice(css.indexOf(".replay-table-heading,"));
+    const desktopTimeCellRule = replayTableCss.slice(
+      replayTableCss.indexOf(".replay-time-cell > span:last-child"),
+      replayTableCss.indexOf(".replay-friendly-icon")
+    );
+
+    expect(replayTableCss).toContain(
+      "grid-template-columns: 150px minmax(130px, 1.15fr) minmax(130px, 1.15fr) minmax(110px, 0.9fr) 64px;"
+    );
+    expect(replayTableCss).toContain(
+      "grid-template-columns: 132px minmax(92px, 1fr) minmax(92px, 1fr) minmax(86px, 0.8fr) 52px;"
+    );
+    expect(desktopTimeCellRule).toContain("overflow: visible;");
+    expect(desktopTimeCellRule).toContain("text-overflow: clip;");
+    expect(desktopTimeCellRule).not.toContain("text-overflow: ellipsis;");
+  });
+
   it("keeps replay outcome row colors in the final modal style layer", () => {
     const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const finalWinRule = css.lastIndexOf(".replay-table-row.outcome-win");
