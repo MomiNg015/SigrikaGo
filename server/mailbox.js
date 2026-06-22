@@ -60,17 +60,25 @@ export async function ensureMailboxSchema(client) {
       "isRead" BOOLEAN NOT NULL DEFAULT false,
       "readAt" DATETIME,
       "claimedAt" DATETIME,
+      "deletedAt" DATETIME,
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT "MailboxMessage_batchId_fkey" FOREIGN KEY ("batchId") REFERENCES "MailboxBatch" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
       CONSTRAINT "MailboxMessage_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
     )
   `);
+  if (client?.$queryRawUnsafe) {
+    const messageColumns = await client.$queryRawUnsafe(`PRAGMA table_info("MailboxMessage")`);
+    if (!hasColumn(messageColumns, "deletedAt")) {
+      await client.$executeRawUnsafe(`ALTER TABLE "MailboxMessage" ADD COLUMN "deletedAt" DATETIME`);
+    }
+  }
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "MailboxBatch_targetMode_createdAt_idx" ON "MailboxBatch"("targetMode", "createdAt")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "MailboxBatch_includeFutureUsers_createdAt_idx" ON "MailboxBatch"("includeFutureUsers", "createdAt")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "MailboxBatch_adminUserId_createdAt_idx" ON "MailboxBatch"("adminUserId", "createdAt")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "MailboxMessage_userId_createdAt_idx" ON "MailboxMessage"("userId", "createdAt")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "MailboxMessage_userId_isRead_idx" ON "MailboxMessage"("userId", "isRead")`);
   await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "MailboxMessage_batchId_userId_idx" ON "MailboxMessage"("batchId", "userId")`);
+  await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "MailboxMessage_userId_deletedAt_createdAt_idx" ON "MailboxMessage"("userId", "deletedAt", "createdAt")`);
 }
 
 export async function createMailboxBatch({ prisma, adminUser, input }) {
@@ -113,7 +121,7 @@ export async function createMailboxBatch({ prisma, adminUser, input }) {
 export async function listMailboxMessages({ prisma, userId }) {
   await ensureFutureMailboxMessages({ prisma, userId });
   const messages = await prisma.mailboxMessage.findMany({
-    where: { userId },
+    where: { userId, deletedAt: null },
     orderBy: { createdAt: "desc" }
   });
   return { messages: messages.map(toMailboxMessagePayload) };
@@ -121,7 +129,7 @@ export async function listMailboxMessages({ prisma, userId }) {
 
 export async function mailboxSummary({ prisma, userId }) {
   await ensureFutureMailboxMessages({ prisma, userId });
-  const messages = await prisma.mailboxMessage.findMany({ where: { userId } });
+  const messages = await prisma.mailboxMessage.findMany({ where: { userId, deletedAt: null } });
   const unreadCount = messages.filter((message) => !message.isRead).length;
   const claimableCount = messages.filter(isClaimableMessage).length;
   return {
@@ -134,6 +142,7 @@ export async function mailboxSummary({ prisma, userId }) {
 export async function markMailboxMessageRead({ prisma, userId, messageId }) {
   const message = await prisma.mailboxMessage.findUnique({ where: { id: messageId } });
   if (!message || message.userId !== userId) throw routeError(404, "邮件不存在");
+  if (message.deletedAt) throw routeError(404, "邮件不存在");
   if (message.isRead) return { message: toMailboxMessagePayload(message) };
   const updated = await prisma.mailboxMessage.update({
     where: { id: message.id },
@@ -145,8 +154,9 @@ export async function markMailboxMessageRead({ prisma, userId, messageId }) {
 export async function deleteMailboxMessage({ prisma, userId, messageId }) {
   const message = await prisma.mailboxMessage.findUnique({ where: { id: messageId } });
   if (!message || message.userId !== userId) throw routeError(404, "邮件不存在");
+  if (message.deletedAt) throw routeError(404, "邮件不存在");
   if (isClaimableMessage(message)) throw routeError(400, "请先领取附件");
-  await prisma.mailboxMessage.delete({ where: { id: message.id } });
+  await prisma.mailboxMessage.update({ where: { id: message.id }, data: { deletedAt: new Date() } });
   return { ok: true };
 }
 
@@ -154,6 +164,7 @@ export async function claimMailboxMessage({ prisma, userId, messageId }) {
   return prisma.$transaction(async (tx) => {
     const message = await tx.mailboxMessage.findUnique({ where: { id: messageId } });
     if (!message || message.userId !== userId) throw routeError(404, "邮件不存在");
+    if (message.deletedAt) throw routeError(404, "邮件不存在");
     const user = await tx.user.findUnique({ where: { id: userId } });
     if (!user) throw routeError(404, "用户不存在");
     if (!hasAttachment(message)) {
@@ -320,11 +331,11 @@ async function deliverBatchToRecipients(prisma, batch, recipients) {
 }
 
 async function deliverBatchToRecipient(prisma, batch, userId) {
-  const currentCount = await prisma.mailboxMessage.count({ where: { userId } });
+  const currentCount = await prisma.mailboxMessage.count({ where: { userId, deletedAt: null } });
   if (currentCount >= MAILBOX_MAX_MESSAGES) {
     const safeMessage = await oldestSafeDeletableMessage(prisma, userId);
     if (!safeMessage) return false;
-    await prisma.mailboxMessage.delete({ where: { id: safeMessage.id } });
+    await prisma.mailboxMessage.update({ where: { id: safeMessage.id }, data: { deletedAt: new Date() } });
   }
   await prisma.mailboxMessage.create({
     data: {
@@ -342,7 +353,7 @@ async function deliverBatchToRecipient(prisma, batch, userId) {
 
 async function oldestSafeDeletableMessage(prisma, userId) {
   const messages = await prisma.mailboxMessage.findMany({
-    where: { userId },
+    where: { userId, deletedAt: null },
     orderBy: { createdAt: "asc" }
   });
   return messages.find((message) => message.isRead && !isClaimableMessage(message)) ?? null;
@@ -402,6 +413,10 @@ function positiveInteger(value) {
   if (typeof value === "number") return Number.isSafeInteger(value) && value > 0 ? value : 0;
   if (typeof value === "string" && /^\d+$/.test(value.trim())) return Number(value);
   return 0;
+}
+
+function hasColumn(columns, name) {
+  return Array.isArray(columns) && columns.some((column) => column?.name === name);
 }
 
 function routeError(status, message) {

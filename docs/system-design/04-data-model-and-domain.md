@@ -224,7 +224,7 @@
 ## Mailbox Data Model
 
 - `MailboxBatch` records one admin send operation: admin user id, target mode, optional selected recipient id, title/body, serialized attachment payload, future-user eligibility, delivered/skipped counts, and creation time.
-- `MailboxMessage` records one delivered user-visible message: recipient user id, optional batch id, title/body, serialized attachment payload, read/claim/delete timestamps, and creation time.
-- Each user mailbox is capped at 20 visible messages. Before delivery, the domain deletes the oldest safe messages that are already read and have no unclaimed attachment. If no safe space exists, delivery is skipped instead of deleting claimable rewards.
+- `MailboxMessage` records one delivered user-visible message: recipient user id, optional batch id, title/body, serialized attachment payload, read/claim/delete timestamps, and creation time. `deletedAt` is a soft-delete marker so future-eligible global batches cannot be redelivered after a player removes a visible message.
+- Each user mailbox is capped at 20 visible non-deleted messages. Before delivery, the domain soft-deletes the oldest safe messages that are already read and have no unclaimed attachment. If no safe space exists, delivery is skipped instead of deleting claimable rewards.
 - A message with an unclaimed attachment is not deletable. Claiming is idempotent at the domain level by checking `claimedAt` and the attachment type before mutating coins or inventory.
-- The schema is backed by migration `202606220001_add_mailbox_system` and by the startup compatibility guard `ensureMailboxSchema()` for older local SQLite databases; `server/schemaIntegrity.test.js` checks that the migration and Prisma model stay in sync.
+- The schema is backed by migrations `202606220001_add_mailbox_system` and `202606220002_soft_delete_mailbox_messages`, plus the startup compatibility guard `ensureMailboxSchema()` for older local SQLite databases; `server/schemaIntegrity.test.js` checks that migrations and the Prisma model stay in sync.

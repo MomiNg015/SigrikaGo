@@ -303,6 +303,7 @@ model MailboxMessage {
   isRead             Boolean  @default(false)
   readAt             DateTime?
   claimedAt          DateTime?
+  deletedAt          DateTime?
   createdAt          DateTime @default(now())
   batch              MailboxBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -310,6 +311,7 @@ model MailboxMessage {
   @@index([userId, createdAt])
   @@index([userId, isRead])
   @@index([batchId, userId])
+  @@index([userId, deletedAt, createdAt])
 }
 
 model UserRelationship {

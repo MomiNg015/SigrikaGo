@@ -366,6 +366,9 @@
 <ul>
 <li>Admins send mailbox batches from the admin console to one user, all current users, or all current plus future users. Item and coin claims update the existing inventory and progress systems.</li>
 </ul>
+<ul>
+<li>Player deletes are soft deletes on <code>MailboxMessage.deletedAt</code>; future-eligible global batches still see that delivery history, so a deleted mail is not recreated on the next mailbox summary or list refresh.</li>
+</ul>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
 <p>本文记录 SigrikaGo 的整体目录、核心模块和已实现能力。入口文档只保留阅读导航；具体维护时优先更新本分篇或其它对应分篇。</p>
@@ -2715,6 +2718,9 @@
 <li>Global batches can target current users only or current plus future users. Future-eligible batches are materialized for a user when mailbox list or summary is read.</li>
 </ul>
 <ul>
+<li><code>DELETE /mailbox/:id</code> soft-deletes by setting <code>MailboxMessage.deletedAt</code>. Player list, summary, capacity, read, and claim flows treat deleted rows as hidden, while future-batch materialization still uses them as delivery history to prevent deleted global mail from being recreated.</li>
+</ul>
+<ul>
 <li><code>initializeServerData()</code> runs <code>ensureMailboxSchema()</code> during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.</li>
 </ul>
 <p>---</p>
@@ -3150,16 +3156,16 @@
 <li><code>MailboxBatch</code> records one admin send operation: admin user id, target mode, optional selected recipient id, title/body, serialized attachment payload, future-user eligibility, delivered/skipped counts, and creation time.</li>
 </ul>
 <ul>
-<li><code>MailboxMessage</code> records one delivered user-visible message: recipient user id, optional batch id, title/body, serialized attachment payload, read/claim/delete timestamps, and creation time.</li>
+<li><code>MailboxMessage</code> records one delivered user-visible message: recipient user id, optional batch id, title/body, serialized attachment payload, read/claim/delete timestamps, and creation time. <code>deletedAt</code> is a soft-delete marker so future-eligible global batches cannot be redelivered after a player removes a visible message.</li>
 </ul>
 <ul>
-<li>Each user mailbox is capped at 20 visible messages. Before delivery, the domain deletes the oldest safe messages that are already read and have no unclaimed attachment. If no safe space exists, delivery is skipped instead of deleting claimable rewards.</li>
+<li>Each user mailbox is capped at 20 visible non-deleted messages. Before delivery, the domain soft-deletes the oldest safe messages that are already read and have no unclaimed attachment. If no safe space exists, delivery is skipped instead of deleting claimable rewards.</li>
 </ul>
 <ul>
 <li>A message with an unclaimed attachment is not deletable. Claiming is idempotent at the domain level by checking <code>claimedAt</code> and the attachment type before mutating coins or inventory.</li>
 </ul>
 <ul>
-<li>The schema is backed by migration <code>202606220001_add_mailbox_system</code> and by the startup compatibility guard <code>ensureMailboxSchema()</code> for older local SQLite databases; <code>server/schemaIntegrity.test.js</code> checks that the migration and Prisma model stay in sync.</li>
+<li>The schema is backed by migrations <code>202606220001_add_mailbox_system</code> and <code>202606220002_soft_delete_mailbox_messages</code>, plus the startup compatibility guard <code>ensureMailboxSchema()</code> for older local SQLite databases; <code>server/schemaIntegrity.test.js</code> checks that migrations and the Prisma model stay in sync.</li>
 </ul>
 <p>---</p>
 <h1>资源、音频与启动预加载</h1>

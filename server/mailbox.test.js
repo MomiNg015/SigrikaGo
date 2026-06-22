@@ -27,7 +27,8 @@ describe("mailbox domain", () => {
       expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxBatch_adminUserId_createdAt_idx"'),
       expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_userId_createdAt_idx"'),
       expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_userId_isRead_idx"'),
-      expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_batchId_userId_idx"')
+      expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_batchId_userId_idx"'),
+      expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_userId_deletedAt_createdAt_idx"')
     ]);
   });
 
@@ -64,8 +65,8 @@ describe("mailbox domain", () => {
 
     expect(result.batch.deliveredCount).toBe(1);
     expect(result.batch.skippedCount).toBe(0);
-    expect(messages.some((message) => message.id === "old-read")).toBe(false);
-    expect(messages).toHaveLength(20);
+    expect(messages.find((message) => message.id === "old-read")?.deletedAt).toBeInstanceOf(Date);
+    expect(messages.filter((message) => !message.deletedAt)).toHaveLength(20);
     expect(messages.at(-1)).toMatchObject({
       userId: "user-1",
       title: "Maintenance Gift",
@@ -132,6 +133,42 @@ describe("mailbox domain", () => {
       userId: "future-user",
       title: "Launch Gift"
     });
+  });
+
+  it("does not redeliver a future-eligible global batch after the user deletes it", async () => {
+    const { prisma, messages } = mailboxPrisma({
+      users: [userFixture("future-user")],
+      messages: [messageFixture("mail-1", {
+        batchId: "batch-1",
+        userId: "future-user",
+        isRead: true,
+        attachmentType: MAILBOX_ATTACHMENT_TYPES.coins,
+        attachmentQuantity: 10,
+        claimedAt: new Date("2026-06-22T00:01:00Z")
+      })],
+      batches: [{
+        id: "batch-1",
+        adminUserId: "admin-1",
+        adminUsername: "admin",
+        targetMode: MAILBOX_TARGET_MODES.allWithFuture,
+        title: "Launch Gift",
+        body: "Welcome.",
+        attachmentType: MAILBOX_ATTACHMENT_TYPES.coins,
+        attachmentItemId: "",
+        attachmentQuantity: 10,
+        includeFutureUsers: true,
+        deliveredCount: 1,
+        skippedCount: 0,
+        createdAt: new Date("2026-06-22T00:00:00Z")
+      }]
+    });
+
+    await deleteMailboxMessage({ prisma, userId: "future-user", messageId: "mail-1" });
+    const result = await listMailboxMessages({ prisma, userId: "future-user" });
+
+    expect(result.messages).toHaveLength(0);
+    expect(messages.filter((message) => message.batchId === "batch-1" && message.userId === "future-user" && !message.deletedAt)).toHaveLength(0);
+    expect(messages.find((message) => message.id === "mail-1")?.deletedAt).toBeInstanceOf(Date);
   });
 
   it("claims coin attachments once and writes a mailbox progress ledger entry", async () => {
@@ -275,6 +312,7 @@ function messageFixture(id, overrides = {}) {
     attachmentQuantity: 0,
     isRead: false,
     claimedAt: null,
+    deletedAt: null,
     createdAt: new Date("2026-06-22T00:00:00Z"),
     ...overrides
   };
@@ -334,7 +372,7 @@ function mailboxPrisma({ users: userRows = [], messages: messageRows = [], batch
       },
       findUnique: async ({ where }) => messages.find((message) => message.id === where.id) ?? null,
       create: async ({ data }) => {
-        const message = { id: `mail-${nextMessage++}`, createdAt: new Date("2026-06-22T00:00:00Z"), isRead: false, claimedAt: null, ...data };
+        const message = { id: `mail-${nextMessage++}`, createdAt: new Date("2026-06-22T00:00:00Z"), isRead: false, claimedAt: null, deletedAt: null, ...data };
         messages.push(message);
         return message;
       },
@@ -387,6 +425,7 @@ function matchesMessage(message, where = {}) {
   if (where.batchId && message.batchId !== where.batchId) return false;
   if (where.isRead != null && message.isRead !== where.isRead) return false;
   if (where.claimedAt === null && message.claimedAt !== null) return false;
+  if (where.deletedAt === null && message.deletedAt !== null) return false;
   if (where.OR) return where.OR.some((clause) => matchesMessage(message, clause));
   if (where.attachmentType?.notIn && where.attachmentType.notIn.includes(message.attachmentType)) return false;
   return true;
