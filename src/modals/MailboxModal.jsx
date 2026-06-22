@@ -20,6 +20,7 @@ export default function MailboxModal({
     () => messages.find((message) => message.id === selectedId) ?? messages[0] ?? null,
     [messages, selectedId]
   );
+  const listEmptyText = loaded ? "暂无邮件" : "正在读取邮件...";
 
   async function refresh() {
     if (!token) return;
@@ -92,65 +93,70 @@ export default function MailboxModal({
         </header>
 
         {error && <p className="form-error mailbox-error">{error}</p>}
-        {!loaded && <p className="mailbox-empty">正在读取邮件...</p>}
-        {loaded && messages.length === 0 && <p className="mailbox-empty">暂无邮件</p>}
-
-        {loaded && messages.length > 0 && (
-          <div className="mailbox-layout">
-            <div className="mailbox-list" role="list">
-              {messages.map((message) => (
-                <button
-                  className={`mailbox-list-item ${selected?.id === message.id ? "active" : ""} ${message.isRead ? "is-read" : "is-unread"}`}
-                  type="button"
-                  key={message.id}
-                  onClick={() => {
-                    setSelectedId(message.id);
-                    markRead(message);
-                  }}
-                >
-                  <span className="mailbox-list-title">{message.title}</span>
-                  <span className="mailbox-list-time">{formatDateTime(message.createdAt)}</span>
-                  <span className="mailbox-list-status">
-                    {!message.isRead && <b>未读</b>}
-                    {message.claimable && <b>待领取</b>}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {selected && (
-              <article className="mailbox-detail">
-                <span className="mailbox-detail-time">{formatDateTime(selected.createdAt)}</span>
-                <h3>{selected.title}</h3>
-                <p className="mailbox-body">{selected.body}</p>
-                <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
-                <div className="mailbox-actions">
-                  {hasAttachment(selected.attachment) && (
-                    <button
-                      className="primary-action"
-                      type="button"
-                      disabled={!selected.claimable || busyId === selected.id}
-                      onClick={() => claim(selected)}
-                    >
-                      {selected.claimable ? <Gift size={18} /> : <CheckCircle2 size={18} />}
-                      {selected.claimable ? "领取附件" : "已领取"}
-                    </button>
-                  )}
-                  <button
-                    className="secondary-action"
-                    type="button"
-                    disabled={!selected.deletable || busyId === selected.id}
-                    onClick={() => remove(selected)}
-                    title={selected.deletable ? "删除邮件" : "请先领取附件"}
-                  >
-                    <Trash2 size={18} />
-                    删除
-                  </button>
-                </div>
-              </article>
+        <div className="mailbox-layout">
+          <div className="mailbox-list" role="list">
+            {messages.length === 0 && (
+              <div className="mailbox-list-empty" role="listitem">
+                {listEmptyText}
+              </div>
             )}
+            {messages.map((message) => (
+              <button
+                className={`mailbox-list-item ${selected?.id === message.id ? "active" : ""} ${message.isRead ? "is-read" : "is-unread"}`}
+                type="button"
+                key={message.id}
+                onClick={() => {
+                  setSelectedId(message.id);
+                  markRead(message);
+                }}
+              >
+                <span className="mailbox-list-title">{message.title}</span>
+                <span className="mailbox-list-time">{formatDateTime(message.createdAt)}</span>
+                <span className="mailbox-list-status">
+                  {!message.isRead && <b>未读</b>}
+                  {message.claimable && <b>待领取</b>}
+                </span>
+              </button>
+            ))}
           </div>
-        )}
+
+          {selected ? (
+            <article className="mailbox-detail">
+              <span className="mailbox-detail-time">{formatDateTime(selected.createdAt)}</span>
+              <h3>{selected.title}</h3>
+              <p className="mailbox-body">{selected.body}</p>
+              <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
+              <div className="mailbox-actions">
+                {hasAttachment(selected.attachment) && (
+                  <button
+                    className="primary-action"
+                    type="button"
+                    disabled={!selected.claimable || busyId === selected.id}
+                    onClick={() => claim(selected)}
+                  >
+                    {selected.claimable ? <Gift size={18} /> : <CheckCircle2 size={18} />}
+                    {selected.claimable ? "领取附件" : "已领取"}
+                  </button>
+                )}
+                <button
+                  className="secondary-action"
+                  type="button"
+                  disabled={!selected.deletable || busyId === selected.id}
+                  onClick={() => remove(selected)}
+                  title={selected.deletable ? "删除邮件" : "请先领取附件"}
+                >
+                  <Trash2 size={18} />
+                  删除
+                </button>
+              </div>
+            </article>
+          ) : (
+            <article className="mailbox-detail mailbox-detail-empty" aria-live="polite">
+              <MailOpen size={28} />
+              <h3>暂无选中邮件</h3>
+            </article>
+          )}
+        </div>
       </section>
     </div>
   );

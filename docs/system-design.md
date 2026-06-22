@@ -148,3 +148,4 @@
 - Mailbox is an authenticated player/admin HTTP feature. Players open it from the home top-right action area or the mobile menu, read admin-only text mail, manually claim one optional attachment, and can keep at most 20 messages.
 - Admins send mailbox batches from the admin console to one user, all current users, or all current plus future users. Item and coin claims update the existing inventory and progress systems.
 - Player deletes are soft deletes on `MailboxMessage.deletedAt`; future-eligible global batches still see that delivery history, so a deleted mail is not recreated on the next mailbox summary or list refresh.
+- The player mailbox keeps the same list/detail layout for empty inboxes; the left mail list shows the empty state while the detail pane remains reserved.

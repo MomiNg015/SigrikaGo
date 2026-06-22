@@ -369,6 +369,9 @@
 <ul>
 <li>Player deletes are soft deletes on <code>MailboxMessage.deletedAt</code>; future-eligible global batches still see that delivery history, so a deleted mail is not recreated on the next mailbox summary or list refresh.</li>
 </ul>
+<ul>
+<li>The player mailbox keeps the same list/detail layout for empty inboxes; the left mail list shows the empty state while the detail pane remains reserved.</li>
+</ul>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
 <p>本文记录 SigrikaGo 的整体目录、核心模块和已实现能力。入口文档只保留阅读导航；具体维护时优先更新本分篇或其它对应分篇。</p>
@@ -3911,6 +3914,9 @@
 </ul>
 <ul>
 <li><code>src/styles/modals/mailbox.css</code> defines the player mailbox modal as a two-column list/detail layout on desktop and a stacked list/detail layout on mobile, with bounded internal scroll regions so long mail bodies do not push the modal outside the viewport.</li>
+</ul>
+<ul>
+<li>Empty player inboxes keep the same mailbox layout as populated inboxes: the left mail list renders a compact <code>暂无邮件</code> row, and the detail pane stays reserved instead of replacing the whole modal with a separate empty card.</li>
 </ul>
 <ul>
 <li>The mailbox modal is included in the shared terminal and Bright School modal shell layers so desktop renders as a centered sheet instead of a full-width strip, while mobile keeps a top sheet with safe-area padding.</li>

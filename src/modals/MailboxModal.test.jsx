@@ -32,4 +32,20 @@ describe("MailboxModal", () => {
     expect(html).toContain("领取附件");
     expect(html).toContain("disabled=\"\"");
   });
+
+  it("keeps the two-pane mailbox layout when there are no messages", () => {
+    const html = renderToStaticMarkup(createElement(MailboxModal, {
+      token: "token",
+      initialMessages: [],
+      initialLoaded: true,
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("mailbox-layout");
+    expect(html).toContain("mailbox-list");
+    expect(html).toContain("mailbox-list-empty");
+    expect(html).toContain("暂无邮件");
+    expect(html).toContain("mailbox-detail mailbox-detail-empty");
+    expect(html).not.toContain("mailbox-empty");
+  });
 });

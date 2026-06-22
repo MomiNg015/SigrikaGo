@@ -68,6 +68,19 @@
   text-align: left;
 }
 
+.mailbox-list-empty {
+  min-height: 98px;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  border: 1px dashed #e4dbea;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
+  color: #7d6a82;
+  font-weight: 900;
+  text-align: center;
+}
+
 .mailbox-list-item.active {
   border-color: #7f98f2;
   background: #f5f8ff;
@@ -116,6 +129,17 @@
   border: 1px solid #eaddea;
   border-radius: 8px;
   background: #fff;
+}
+
+.mailbox-detail-empty {
+  align-items: center;
+  justify-content: center;
+  color: #7d6a82;
+  text-align: center;
+}
+
+.mailbox-detail-empty svg {
+  color: #6f7aa8;
 }
 
 .mailbox-detail h3 {
@@ -169,37 +193,6 @@
   gap: 10px;
 }
 
-.mailbox-empty {
-  flex: 1;
-  min-height: 260px;
-  display: grid;
-  place-items: center;
-  padding: 28px;
-  border: 1px dashed rgba(93, 127, 232, 0.36);
-  border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgba(93, 127, 232, 0.08), transparent 48%),
-    rgba(255, 255, 255, 0.58);
-  color: #453844;
-  font-size: 22px;
-  font-weight: 900;
-  text-align: center;
-}
-
-.mailbox-empty::before {
-  content: "";
-  display: block;
-  width: 64px;
-  height: 64px;
-  margin-bottom: 14px;
-  border: 2px solid rgba(74, 55, 54, 0.7);
-  border-radius: 18px;
-  background:
-    linear-gradient(145deg, transparent 46%, rgba(93, 127, 232, 0.18) 47% 53%, transparent 54%),
-    #fff7df;
-  box-shadow: 3px 3px 0 rgba(74, 55, 54, 0.5);
-}
-
 .mailbox-error {
   margin: 0;
 }
@@ -237,8 +230,7 @@
     grid-template-columns: 1fr;
   }
 
-  .mailbox-empty {
-    min-height: 330px;
-    padding: 22px 16px;
+  .mailbox-list-empty {
+    min-height: 76px;
   }
 }
