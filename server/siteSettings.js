@@ -10,8 +10,10 @@ const SITE_SETTING_LIMITS = {
   aboutText: 3000,
   footerText: 3000,
   preloadTips: 1000,
+  characterLoadingLines: 3000,
   ratingRules: 8000
 };
+const BOOLEAN_SITE_SETTING_KEYS = new Set(["skillEffectsEnabled"]);
 
 export async function getPublicSiteSettings(prisma) {
   const rows = await prisma.siteSetting.findMany({
@@ -29,7 +31,7 @@ export async function ensureDefaultSiteSettings(prisma) {
   for (const [key, value] of Object.entries(DEFAULT_SITE_SETTINGS)) {
     await prisma.siteSetting.upsert({
       where: { key },
-      create: { key, value },
+      create: { key, value: toStoredSiteSettingValue(key, value) },
       update: {}
     });
   }
@@ -66,6 +68,9 @@ export function sanitizeSiteSettings(body = {}) {
   return Object.fromEntries(
     SITE_SETTING_KEYS.map((key) => {
       const fallback = DEFAULT_SITE_SETTINGS[key];
+      if (BOOLEAN_SITE_SETTING_KEYS.has(key)) {
+        return [key, normalizeBooleanSiteSetting(body?.[key], fallback) ? "true" : "false"];
+      }
       if (key === RATING_RULES_SETTING_KEY) {
         return [key, JSON.stringify(normalizeRatingRules(body?.[key] ?? fallback), null, 2)];
       }
@@ -80,7 +85,24 @@ function rowsToSettings(rows) {
   for (const row of rows) {
     if (!Object.hasOwn(settings, row.key)) continue;
     const value = String(row.value ?? "").trim();
-    if (value) settings[row.key] = value;
+    if (!value) continue;
+    settings[row.key] = BOOLEAN_SITE_SETTING_KEYS.has(row.key)
+      ? normalizeBooleanSiteSetting(value, DEFAULT_SITE_SETTINGS[row.key])
+      : value;
   }
   return settings;
+}
+
+function toStoredSiteSettingValue(key, value) {
+  if (BOOLEAN_SITE_SETTING_KEYS.has(key)) return normalizeBooleanSiteSetting(value, DEFAULT_SITE_SETTINGS[key]) ? "true" : "false";
+  return String(value ?? "");
+}
+
+function normalizeBooleanSiteSetting(value, fallback = true) {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value !== 0;
+  const normalized = String(value ?? "").trim().toLowerCase();
+  if (["true", "1", "yes", "on", "enabled"].includes(normalized)) return true;
+  if (["false", "0", "no", "off", "disabled"].includes(normalized)) return false;
+  return Boolean(fallback);
 }

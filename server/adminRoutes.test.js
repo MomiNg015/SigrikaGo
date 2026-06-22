@@ -355,7 +355,9 @@ describe("admin site settings routes", () => {
         homeSubtitle: "SigrikaGo 测试服",
         aboutText: "关于测试文本",
         footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
-        preloadTips: "第一句提示\n第二句提示"
+        preloadTips: "第一句提示\n第二句提示",
+        characterLoadingLines: "sigrika=西格莉卡正在戳棋盘",
+        skillEffectsEnabled: false
       }
     });
     const readResponse = await requestAdminRoute(prisma, "/site-settings", { method: "GET" });
@@ -366,7 +368,9 @@ describe("admin site settings routes", () => {
       homeSubtitle: "SigrikaGo 测试服",
       aboutText: "关于测试文本",
       footerText: "棋境大厅\n[备案](https://beian.miit.gov.cn/)",
-      preloadTips: "第一句提示\n第二句提示"
+      preloadTips: "第一句提示\n第二句提示",
+      characterLoadingLines: "sigrika=西格莉卡正在戳棋盘",
+      skillEffectsEnabled: false
     });
     expect(readResponse.body.settings.homeTitle).toBe("棋境大厅");
     expect(auditWrites[0].action).toBe("site-settings.update");
