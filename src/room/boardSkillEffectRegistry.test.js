@@ -40,6 +40,7 @@ describe("boardSkillEffectRegistry", () => {
   test("exposes renderer asset urls for banner-window preloading", () => {
     expect(boardSkillEffectAssetUrls("flip-stone")).toEqual(["/assets/effects/denia-bubble-pop.webp"]);
     expect(boardSkillEffectAssetUrls("random-blast")).toEqual(["/assets/baconbits.webp"]);
+    expect(boardSkillEffectAssetUrls("row-slash")).toEqual([]);
     expect(boardSkillEffectAssetUrls("unknown-effect")).toEqual([]);
   });
 
@@ -72,8 +73,42 @@ describe("boardSkillEffectRegistry", () => {
     expect(spraySource).toContain("for (const [targetIndex, effectTarget] of targets.entries())");
   });
 
-  test("keeps row-slash out of Pixi renderers because it uses the DOM row overlay", () => {
+  test("plays Chisa liberty-purge as delayed sequential scissor slashes over removal points", () => {
+    const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
+    const libertySource = registrySource.match(/function playLibertyPurge[\s\S]*?function sprayEffectTargets/)?.[0] ?? "";
+
+    expect(BOARD_SKILL_EFFECT_RENDERERS["liberty-purge"]).toMatchObject({
+      play: expect.any(Function),
+      playReducedMotion: expect.any(Function)
+    });
+    expect(libertySource).toContain("libertyPurgeSlashTargets");
+    expect(libertySource).toContain("pendingSkill?.removalMarkIds");
+    expect(libertySource).toContain("pendingSkill?.affectedPointIds");
+    expect(libertySource).toContain("pointId !== pendingSkill?.targetId");
+    expect(libertySource).toContain("LIBERTY_PURGE_SLASH_STAGGER_MS");
+    expect(libertySource).toContain("LIBERTY_PURGE_SLASH_DRAW_MS");
+    expect(libertySource).not.toContain("slice(0, 7)");
+    expect(libertySource).toContain("drawScissorSlash");
+    expect(libertySource).toContain("0xff1733");
+  });
+
+  test("keeps Sigrika meteor impact crater opaque dark gray so the resolved marker cannot show through early", () => {
+    const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
+    const meteorSource = registrySource.match(/function playMeteorErase[\s\S]*?function playBubbleFlip/)?.[0] ?? "";
+
+    expect(meteorSource).toContain("const craterAlpha = craterProgress > 0 ? 1 : 0");
+    expect(meteorSource).toContain("fill({ color: 0x4a4648, alpha: craterAlpha })");
+    expect(meteorSource).not.toContain("fill({ color: 0x000000");
+    expect(meteorSource).not.toContain("alpha: 0.64 * craterProgress");
+  });
+
+  test("keeps QiuYuan row-slash out of Pixi renderers because the cast uses the DOM row scar", () => {
+    const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
+
     expect(BOARD_SKILL_EFFECT_RENDERERS["row-slash"]).toBeUndefined();
+    expect(registrySource).not.toContain("QIUYUAN_BLADE_STREAK_IMAGE");
+    expect(registrySource).not.toContain("playQiuYuanRowSlash");
+    expect(registrySource).not.toContain("/assets/effects/qiuyuan-blade-streak.svg");
   });
 
   test("skips unknown effects without touching the Pixi stage", () => {

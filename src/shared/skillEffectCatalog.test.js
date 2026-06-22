@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   ACTIVE_SKILL_EFFECT_TYPES,
+  SKILL_EFFECT_CATALOG,
   SKILL_EFFECT_OPTIONS,
   skillEffectSoundCues,
   skillEffectTargetRule,
@@ -66,8 +67,24 @@ describe("skillEffectCatalog", () => {
     expect(skillEffectSoundCues("row-slash")).toEqual({ startAt: 0.04, impactAt: 0.46 });
     expect(skillEffectSoundCues("spray-stone")).toEqual({ startAt: 0.04, impactAt: 0.58 });
     expect(skillEffectSoundCues("liberty-purge")).toEqual({ startAt: 0.04, impactAt: 0.5 });
-    expect(skillEffectSoundCues("double-move")).toEqual({ startAt: 0.05, impactAt: 0.5 });
+    expect(skillEffectSoundCues("double-move")).toEqual({ startAt: 0.05, impactAt: 0.44 });
     expect(skillEffectSoundCues("hidden-hand")).toEqual({ startAt: 0.04, impactAt: 0.52 });
     expect(skillEffectSoundCues("color-illusion-passive")).toEqual({ startAt: 0, impactAt: 0 });
+  });
+
+  test("marks ChangLi double-move as a full-board cast effect", () => {
+    expect(SKILL_EFFECT_CATALOG["double-move"].boardEffect).toBe(true);
+  });
+
+  test("marks Mornye protocol takeover as a targeted board cast effect", () => {
+    expect(SKILL_EFFECT_CATALOG["protocol-takeover"].boardEffect).toBe(true);
+  });
+
+  test("marks Chisa liberty-purge as a targeted board cast effect", () => {
+    expect(SKILL_EFFECT_CATALOG["liberty-purge"].boardEffect).toBe(true);
+  });
+
+  test("keeps QiuYuan row-slash as a DOM-only row scar effect", () => {
+    expect(SKILL_EFFECT_CATALOG["row-slash"].boardEffect).toBe(false);
   });
 });

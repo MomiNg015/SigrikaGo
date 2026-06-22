@@ -4,20 +4,17 @@ export function hasColorIllusionFog(game) {
   return Object.values(game?.passives ?? {}).some((passive) => passive?.colorIllusion?.active);
 }
 
-function BoardAmbientEffects({ active = false }) {
+function BoardAmbientEffects({ active = false, effectsEnabled = true }) {
+  const ambientVisible = active && effectsEnabled !== false;
+
   return (
     <div
       className="board-ambient-layer"
-      data-ambient-effect={active ? "color-illusion-fog" : ""}
+      data-ambient-effect={ambientVisible ? "color-illusion-desaturate" : ""}
       aria-hidden="true"
     >
-      {active && (
-        <>
-          <span className="fog-cloud fog-cloud-a" />
-          <span className="fog-cloud fog-cloud-b" />
-          <span className="fog-cloud fog-cloud-c" />
-          <span className="fog-cloud fog-cloud-d" />
-        </>
+      {ambientVisible && (
+        <span className="color-illusion-desaturate-wave" />
       )}
     </div>
   );

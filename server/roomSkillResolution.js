@@ -15,7 +15,7 @@ import {
 import { CHARACTERS } from "../src/shared/characters.js";
 import {
   SKILL_BANNER_DURATION_MS,
-  SKILL_BOARD_EFFECT_DURATION_MS,
+  skillBoardEffectDurationMs,
   skillPreviewResolutionDelay
 } from "../src/shared/skillPresentation.js";
 import { gameModeFamily } from "../src/shared/gameModes.js";
@@ -31,9 +31,11 @@ export function createPendingSkillResolution({
   effectsEnabled = true,
   now = Date.now
 }) {
+  const skillAction = latestSkillAction(game);
+  const removalMarkIds = Array.isArray(skillAction?.removalMarkIds) ? skillAction.removalMarkIds : [];
   return {
     pendingSkillId,
-    resolvesAt: now() + skillPreviewResolutionDelay({ effectType, effectsEnabled }),
+    resolvesAt: now() + skillPreviewResolutionDelay({ effectType, effectsEnabled, removalMarkIds }),
     game,
     notices,
     playerColor,
@@ -200,6 +202,11 @@ export function buildPendingSkillPreview({
   const targetId = skillAction?.id ?? requestedTargetId ?? null;
   const markedPointIds = Array.isArray(skillAction?.marked) ? skillAction.marked : [];
   const removalMarkIds = Array.isArray(skillAction?.removalMarkIds) ? skillAction.removalMarkIds : [];
+  const removedStones = Array.isArray(skillAction?.directRemovals)
+    ? skillAction.directRemovals
+        .map((entry) => ({ id: entry?.id, from: entry?.from }))
+        .filter((entry) => entry.id && entry.from)
+    : [];
   const affectedPointIds = affectedPointIdsForSkillAction({
     effectType,
     targetId,
@@ -226,15 +233,22 @@ export function buildPendingSkillPreview({
     row: Number.isInteger(skillAction?.row) ? skillAction.row : null,
     removed: skillAction?.removed ?? 0,
     removedByColor: skillAction?.removedByColor ?? null,
+    removedStones,
     resolvesAt,
     effectsEnabled,
     bannerDurationMs: SKILL_BANNER_DURATION_MS,
-    boardEffectDurationMs: effectsEnabled === false ? 0 : SKILL_BOARD_EFFECT_DURATION_MS
+    boardEffectDurationMs: effectsEnabled === false
+      ? 0
+      : skillBoardEffectDurationMs({ effectType, removalMarkIds })
   };
 }
 
+function latestSkillAction(game) {
+  return [...(game?.history ?? [])].reverse().find((entry) => entry.type === "skill");
+}
+
 function resolvedSkillEffectType(resolvedGame, skill) {
-  const skillAction = [...(resolvedGame?.history ?? [])].reverse().find((entry) => entry.type === "skill");
+  const skillAction = latestSkillAction(resolvedGame);
   return skillAction?.effectType ?? skill?.effectType ?? skill?.id ?? "";
 }
 

@@ -906,7 +906,12 @@ describe("SigrikaGo rules", () => {
       directRemoved: 5,
       overclockAdded: 10,
       removed: 5,
-      removedByColor: { black: 2, white: 2, spray: 1 }
+      removedByColor: { black: 2, white: 2, spray: 1 },
+      directRemovals: expect.arrayContaining([
+        expect.objectContaining({ id: pointId(0, 4), from: COLORS.black }),
+        expect.objectContaining({ id: pointId(1, 4), from: COLORS.white }),
+        expect.objectContaining({ id: pointId(2, 4), from: "spray" })
+      ])
     });
   });
 
@@ -990,6 +995,8 @@ describe("SigrikaGo rules", () => {
 
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(0, 0)).stone).toBe(COLORS.black);
+    expect(getPoint(result.state, pointId(0, 0)).skillEffect).toBe("liberty-purge-stone");
+    expect(getPoint(result.state, pointId(0, 0)).skillEffectOwner).toBe(COLORS.black);
     expect(getPoint(result.state, pointId(3, 3)).stone).toBeNull();
     expect(getPoint(result.state, pointId(6, 6)).stone).toBeNull();
     expect(getPoint(result.state, pointId(9, 9)).stone).toBeNull();

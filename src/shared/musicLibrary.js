@@ -1,4 +1,4 @@
-import { SYSTEM_VOICE_EVENTS } from "./systemVoices.js";
+import { SYSTEM_VOICE_EVENTS, resolveVoiceSource } from "./systemVoices.js";
 import { canonicalCharacterId } from "./characterAliases.js";
 
 export const MUSIC_TYPES = {
@@ -15,7 +15,11 @@ export const CHARACTER_SKILL_VOICES = {
   sigrika: "/assets/voice/sigrika_skill_cast.ogg",
   aemeath: "/assets/voice/aemeath_skill_cast.ogg",
   nabomo: "/assets/voice/nabomo_skill_cast.ogg",
-  baconbits: "/assets/voice/baconbits_skill_cast.ogg"
+  baconbits: "/assets/voice/baconbits_skill_cast.ogg",
+  qiuyuan: [
+    "/assets/voice/qiuyuan_skill_cast.ogg",
+    "/assets/voice/qiuyuan_skill_cast_1.ogg"
+  ]
 };
 
 export const CHARACTER_SYSTEM_VOICES = {
@@ -375,10 +379,10 @@ export function resolveResultSound(room, user) {
   return player.color === winnerColor ? VICTORY_SOUND : DEFEAT_SOUND;
 }
 
-export function resolveSkillVoice(skillPreview, voices = CHARACTER_SKILL_VOICES) {
+export function resolveSkillVoice(skillPreview, voices = CHARACTER_SKILL_VOICES, random = Math.random) {
   const characterId = skillPreview?.characterId ?? skillPreview?.character?.id;
   if (!characterId) return null;
-  return voices[characterId] ?? null;
+  return resolveVoiceSource(voices[characterId], random);
 }
 
 export function characterVoiceMapForSkill(voices = CHARACTER_SKILL_VOICES, systemVoices = CHARACTER_SYSTEM_VOICES) {

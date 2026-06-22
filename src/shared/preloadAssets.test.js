@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 import { CHARACTER_SKILL_VOICES, CHARACTER_SYSTEM_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
-import { deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadLoginAssets } from "./preloadAssets.js";
+import { battlePreloadAssets, deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadLoginAssets } from "./preloadAssets.js";
+import { voiceSourceCandidates } from "./systemVoices.js";
 
 describe("deployment preload asset helpers", () => {
   it("uses same-origin socket connections in the browser", () => {
@@ -45,6 +46,11 @@ describe("deployment preload asset helpers", () => {
     expect(assets.deferredImages).toContain("/assets/zahiya_shop.webp");
     expect(assets.deferredImages).toContain("/assets/items/rainbow-bean-candy.webp");
     expect(assets.images).toContain("/assets/effects/denia-bubble-pop.webp");
+    expect(assets.images).toContain("/assets/boards/nabomo-color-illusion-board.webp");
+    expect(assets.images).toContain("/assets/effects/changli-fire-phoenix.svg");
+    expect(assets.images).toContain("/assets/effects/changli-flame-sprite.svg");
+    expect(assets.images).toContain("/assets/effects/sigrika-erased-field-marker.webp");
+    expect(assets.images).toContain("/assets/stones/spray-stone.webp");
     expect(assets.images).toContain(DENIA_CANDY_PORTRAIT);
     expect(assets.audio).toContain("/assets/music/godown_clear.ogg");
     expect(assets.audio).toContain("/assets/music/ui_close_window.ogg");
@@ -76,6 +82,10 @@ describe("deployment preload asset helpers", () => {
     expect(assets.audio).toContain("/assets/voice/sigrika_skill_cast.ogg");
     expect(assets.audio).toContain("/assets/voice/denia_skill_cast.ogg");
     expect(assets.audio).toContain("/assets/voice/baconbits_skill_cast.ogg");
+    expect(assets.audio).toContain("/assets/voice/qiuyuan_skill_cast.ogg");
+    expect(assets.audio).toContain("/assets/voice/qiuyuan_skill_cast_1.ogg");
+    expect(assets.deferredAudio).toContain("/assets/voice/qiuyuan_skill_cast.ogg");
+    expect(assets.deferredAudio).toContain("/assets/voice/qiuyuan_skill_cast_1.ogg");
     expect(assets.audio).toContain("/assets/voice/baconbits_result_win.ogg");
     expect(assets.audio).toContain("/assets/voice/baconbits_result_loss.ogg");
     expect(assets.audio).toContain("/assets/voice/sigrika_countdown_10.ogg");
@@ -95,12 +105,56 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalAudio).toEqual(expect.arrayContaining(RUNTIME_AUDIO_ASSETS.interaction));
   });
 
+  it("builds battle preload assets from both room player characters", () => {
+    const assets = battlePreloadAssets({
+      room: {
+        players: [
+          { characterId: "changli" },
+          { characterId: "nabomo" }
+        ]
+      },
+      characters: {
+        changli: { id: "changli", portrait: "/assets/characters/changli.png" },
+        nabomo: { id: "nabomo", portrait: "/assets/nabomo.webp" }
+      },
+      tracks: MUSIC_TRACKS,
+      skillVoices: CHARACTER_SKILL_VOICES,
+      systemVoices: CHARACTER_SYSTEM_VOICES
+    });
+
+    expect(assets.criticalImages).toContain("/assets/characters/changli.png");
+    expect(assets.criticalImages).toContain("/assets/nabomo.webp");
+    expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
+    expect(assets.criticalAudio).toContain("/assets/music/changli_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/busizhe_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/nabomo_skill_cast.ogg");
+  });
+
+  it("includes every configured skill voice candidate in battle preload assets", () => {
+    const assets = battlePreloadAssets({
+      room: {
+        players: [
+          { characterId: "qiuyuan" }
+        ]
+      },
+      characters: {
+        qiuyuan: { id: "qiuyuan", portrait: "/assets/characters/qiuyuan.png" }
+      },
+      tracks: MUSIC_TRACKS,
+      skillVoices: CHARACTER_SKILL_VOICES,
+      systemVoices: {}
+    });
+
+    expect(assets.criticalAudio).toContain("/assets/voice/qiuyuan_skill_cast.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/qiuyuan_skill_cast_1.ogg");
+  });
+
   it("keeps critical startup preload limited to first-screen UI assets", () => {
     const assets = loginPreloadAssets();
     const bulkyRuntimeAudio = [
       ...Object.values(MUSIC_TRACKS).flatMap((track) => playbackAssetSources(track.playback)),
-      ...Object.values(CHARACTER_SKILL_VOICES),
-      ...Object.values(CHARACTER_SYSTEM_VOICES).flatMap((voiceMap) => Object.values(voiceMap))
+      ...Object.values(CHARACTER_SKILL_VOICES).flatMap(voiceSourceCandidates),
+      ...Object.values(CHARACTER_SYSTEM_VOICES).flatMap((voiceMap) => Object.values(voiceMap).flatMap(voiceSourceCandidates))
     ];
 
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));

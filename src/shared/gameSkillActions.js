@@ -230,6 +230,8 @@ export function libertyPurge(state, color, id, options = {}) {
   point.stone = color;
   point.hiddenHand = null;
   point.colorIllusion = null;
+  point.skillEffect = "liberty-purge-stone";
+  point.skillEffectOwner = color;
 
   const normalCaptures = [];
   let creditedCaptures = 0;

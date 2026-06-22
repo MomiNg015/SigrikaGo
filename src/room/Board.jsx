@@ -12,6 +12,8 @@ import {
   isStarPoint
 } from "./roomView.js";
 
+const SIGRIKA_ERASE_IMPACT_PROGRESS = 0.58;
+
 function Board({
   game,
   showCoords,
@@ -53,6 +55,65 @@ function Board({
       ? game.pendingSkill.affectedPointIds
       : []
   ), [game.pendingSkill?.affectedPointIds, game.pendingSkill?.effectType]);
+  const pendingRowSlashPointIds = useMemo(() => new Set(
+    skillEffectsEnabled !== false
+      && game.pendingSkill?.effectsEnabled !== false
+      && game.pendingSkill?.effectType === "row-slash"
+      && Array.isArray(game.pendingSkill.affectedPointIds)
+      ? game.pendingSkill.affectedPointIds
+      : []
+  ), [
+    game.pendingSkill?.affectedPointIds,
+    game.pendingSkill?.effectType,
+    game.pendingSkill?.effectsEnabled,
+    skillEffectsEnabled
+  ]);
+  const pendingErasePointIds = useMemo(() => {
+    if (
+      skillEffectsEnabled === false
+      || game.pendingSkill?.effectsEnabled === false
+      || game.pendingSkill?.effectType !== "erase-point"
+    ) {
+      return new Set();
+    }
+    const pointIds = Array.isArray(game.pendingSkill.affectedPointIds) && game.pendingSkill.affectedPointIds.length
+      ? game.pendingSkill.affectedPointIds
+      : [game.pendingSkill.targetId].filter(Boolean);
+    return new Set(pointIds);
+  }, [
+    game.pendingSkill?.affectedPointIds,
+    game.pendingSkill?.effectType,
+    game.pendingSkill?.effectsEnabled,
+    game.pendingSkill?.targetId,
+    skillEffectsEnabled
+  ]);
+  const pendingLibertyPurgeStone = useMemo(() => {
+    if (
+      skillEffectsEnabled === false
+      || game.pendingSkill?.effectsEnabled === false
+      || game.pendingSkill?.effectType !== "liberty-purge"
+      || !game.pendingSkill?.targetId
+      || !isPlayerColor(game.pendingSkill?.color)
+    ) {
+      return null;
+    }
+    return {
+      pointId: game.pendingSkill.targetId,
+      color: game.pendingSkill.color
+    };
+  }, [
+    game.pendingSkill?.color,
+    game.pendingSkill?.effectType,
+    game.pendingSkill?.effectsEnabled,
+    game.pendingSkill?.targetId,
+    skillEffectsEnabled
+  ]);
+  const skillBannerDurationMs = Number(game.pendingSkill?.bannerDurationMs ?? 2000);
+  const skillBoardEffectDurationMs = Number(game.pendingSkill?.boardEffectDurationMs ?? 1800);
+  const rowSlashEffectsEnabled = skillEffectsEnabled !== false && game.pendingSkill?.effectsEnabled !== false;
+  const eraseImpactMarkerDelayMs = Math.round(
+    skillBannerDurationMs + skillBoardEffectDurationMs * SIGRIKA_ERASE_IMPACT_PROGRESS
+  );
   const showScoringMarks = ["marking-dead", "result-review", "finished"].includes(game.phase);
   const territoryOwner = useMemo(() => new Map([
     ...(showScoringMarks ? game.scoring?.territory?.black ?? [] : []).map((id) => [id, COLORS.black]),
@@ -65,8 +126,9 @@ function Board({
       data-board-size={boardSize}
       style={{
         "--size": boardSize,
-        "--skill-banner-duration": `${game.pendingSkill?.bannerDurationMs ?? 2000}ms`,
-        "--skill-board-effect-duration": `${game.pendingSkill?.boardEffectDurationMs ?? 1800}ms`
+        "--skill-banner-duration": `${skillBannerDurationMs}ms`,
+        "--skill-board-effect-duration": `${skillBoardEffectDurationMs}ms`,
+        "--erase-impact-marker-delay": `${eraseImpactMarkerDelayMs}ms`
       }}
     >
       {showCoords && <div className="coord-row coord-top">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
@@ -100,15 +162,31 @@ function Board({
         />
         <BoardRowSlashOverlay
           boardSize={boardSize}
-          pendingSkill={game.pendingSkill}
           rowEffects={game.rowEffects}
+          pendingSkill={game.pendingSkill}
+          effectsEnabled={rowSlashEffectsEnabled}
         />
         {game.points.map((point) => {
           const emptyTerritoryOwner = !point.stone ? territoryOwner.get(point.id) : null;
           const deadOwner = point.stone ? deadStoneOwners[point.id] : null;
           const previewClass = canPreviewPoint(game, previewPlayer, point, pendingSkill, Boolean(onScoringPoint)) ? "previewable" : "";
-          const decorationImage = isPlayerColor(point.stone) ? stoneDecorationImage(stoneDecorations[point.stone], point.stone) : null;
+          const pendingLibertyPurgeColor = pendingLibertyPurgeStone?.pointId === point.id ? pendingLibertyPurgeStone.color : "";
+          const decorationColor = point.stone ?? pendingLibertyPurgeColor;
+          const decorationImage = isPlayerColor(decorationColor)
+            ? stoneDecorationImage(stoneDecorations[decorationColor], decorationColor)
+            : null;
           const confirmClass = pointConfirmation?.pointId === point.id ? "touch-confirming" : "";
+          const pendingEffectClasses = [
+            pendingSprayPointIds.has(point.id) ? "spray-transform-pending" : "",
+            pendingRowSlashPointIds.has(point.id) && point.stone ? "row-slash-cut-pending" : ""
+          ].filter(Boolean).join(" ");
+          const pendingEffectStyle = pendingRowSlashPointIds.has(point.id) && point.stone
+            ? {
+                "--row-slash-cut-delay": `${Math.round(
+                  80 + (point.x / Math.max(1, boardSize - 1)) * 520
+                )}ms`
+              }
+            : undefined;
           return (
             <MemoPointButton
               key={point.id}
@@ -118,6 +196,7 @@ function Board({
               deadOwner={deadOwner}
               decorationImage={decorationImage}
               emptyTerritoryOwner={emptyTerritoryOwner}
+              eraseImpactPending={point.valid && pendingErasePointIds.has(point.id)}
               gameMode={game.mode}
               handlersRef={handlersRef}
               hasScoringPoint={Boolean(onScoringPoint)}
@@ -128,7 +207,9 @@ function Board({
               neutralMarked={showScoringMarks && Boolean(game.scoring?.neutralPoints?.includes(point.id))}
               point={point}
               pointerTypeRef={pointerTypeRef}
-              pendingEffectClass={pendingSprayPointIds.has(point.id) ? "spray-transform-pending" : ""}
+              pendingLibertyPurgeColor={pendingLibertyPurgeColor}
+              pendingEffectClass={pendingEffectClasses}
+              pendingEffectStyle={pendingEffectStyle}
               previewClass={previewClass}
               showMoves={showMoves}
               showScoringMarks={showScoringMarks}
@@ -143,24 +224,40 @@ function Board({
   );
 }
 
-function BoardRowSlashOverlay({ boardSize, pendingSkill = null, rowEffects = [] }) {
-  const pendingRow = pendingSkill?.effectType === "row-slash" ? rowForSlash(pendingSkill) : null;
+function BoardRowSlashOverlay({ boardSize, rowEffects = [], pendingSkill = null, effectsEnabled = true }) {
+  const pendingRow = rowSlashPendingRow(pendingSkill);
+  const pendingEffect = effectsEnabled !== false && Number.isInteger(pendingRow)
+    ? {
+        effectType: "row-slash",
+        owner: pendingSkill.color,
+        y: pendingRow,
+        id: pendingSkill.targetId ?? pendingSkill.id ?? "pending",
+        casting: true
+      }
+    : null;
   const effects = [
-    ...(Array.isArray(rowEffects) ? rowEffects : []),
-    ...(Number.isInteger(pendingRow) ? [{ effectType: "row-slash", y: pendingRow, preview: true }] : [])
+    ...(pendingEffect ? [pendingEffect] : []),
+    ...(Array.isArray(rowEffects) ? rowEffects : [])
   ].filter((effect) => effect?.effectType === "row-slash" && Number.isInteger(effect.y));
   if (!effects.length) return null;
   return (
     <div className="board-row-effects" aria-hidden="true">
       {effects.map((effect, index) => (
         <span
-          key={`${effect.owner ?? "preview"}-${effect.y}-${index}`}
-          className={`board-row-slash ${effect.preview ? "preview" : ""}`}
+          key={`${effect.owner ?? "preview"}-${effect.y}-${effect.id ?? index}`}
+          className={`board-row-slash ${effect.casting ? "casting" : ""}`}
           style={{ "--row-y": `${((effect.y + 0.5) / boardSize) * 100}%` }}
         />
       ))}
     </div>
   );
+}
+
+function rowSlashPendingRow(pendingSkill) {
+  if (pendingSkill?.effectType !== "row-slash") return null;
+  if (Number.isInteger(pendingSkill.row)) return pendingSkill.row;
+  const row = Number(String(pendingSkill.targetId ?? "").split(",")[1]);
+  return Number.isInteger(row) ? row : null;
 }
 
 function PointButton({
@@ -170,6 +267,7 @@ function PointButton({
   deadOwner,
   decorationImage,
   emptyTerritoryOwner,
+  eraseImpactPending,
   gameMode,
   handlersRef,
   hasScoringPoint,
@@ -180,7 +278,9 @@ function PointButton({
   neutralMarked,
   point,
   pointerTypeRef,
+  pendingLibertyPurgeColor,
   pendingEffectClass,
+  pendingEffectStyle,
   previewClass,
   showMoves,
   showScoringMarks,
@@ -189,19 +289,25 @@ function PointButton({
   const hiddenClass = point.hiddenHand
     ? point.hiddenHand.exposed ? "hidden-hand exposed-hidden-hand" : "hidden-hand"
     : "";
-  const skillEffectClass = point.skillEffect ?? "";
-  const stoneOffset = point.stone ? stoneOffsetForPoint(point, gameMode) : null;
-  const stoneStyle = point.stone
+  const displayStone = point.stone ?? pendingLibertyPurgeColor;
+  const pendingLibertyPurgeClass = pendingLibertyPurgeColor ? "liberty-purge-stone liberty-purge-pending" : "";
+  const skillEffectClass = [point.skillEffect ?? "", pendingLibertyPurgeClass].filter(Boolean).join(" ");
+  const offsetPoint = pendingEffectClass === "spray-transform-pending"
+    ? { ...point, stone: "spray" }
+    : displayStone ? { ...point, stone: displayStone } : point;
+  const stoneOffset = displayStone ? stoneOffsetForPoint(offsetPoint, gameMode) : null;
+  const stoneStyle = displayStone
     ? {
         "--stone-offset-x": `${stoneOffset.x}px`,
         "--stone-offset-y": `${stoneOffset.y}px`,
+        ...(pendingEffectStyle ?? {}),
         ...(decorationImage ? { "--stone-decoration-image": `url("${decorationImage}")` } : {})
       }
     : undefined;
 
   return (
     <button
-      className={`point ${point.valid ? "" : "erased"} ${point.stone ?? ""} ${hiddenClass} ${skillEffectClass} ${pendingEffectClass} ${previewClass} ${confirmClass} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""}`}
+      className={`point ${point.valid ? "" : "erased"} ${displayStone ?? ""} ${hiddenClass} ${skillEffectClass} ${pendingEffectClass} ${previewClass} ${confirmClass} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""}`}
       style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
       onPointerDown={(event) => {
         pointerTypeRef.current = event.pointerType;
@@ -223,9 +329,9 @@ function PointButton({
       }}
       title={coordLabel(point.x, point.y, boardSize)}
     >
-      {point.stone && (
+      {displayStone && (
         <span
-          className={`stone ${decorationImage ? "decorated-stone" : ""}`}
+          className={`stone ${decorationImage ? "decorated-stone" : ""} ${pendingLibertyPurgeColor ? "liberty-purge-pending-stone" : ""}`}
           style={stoneStyle}
         >
           {markedActionId === point.id && <i />}
@@ -233,6 +339,7 @@ function PointButton({
         </span>
       )}
       {!point.valid && <span className="void" />}
+      {eraseImpactPending && <span className="void erase-impact-pending" aria-hidden="true" />}
       {emptyTerritoryOwner && <span className={`territory-mark ${emptyTerritoryOwner}`} aria-label={`${emptyTerritoryOwner} territory`} />}
       {deadOwner && <span className={`dead-mark ${deadOwner}`} aria-label={`${deadOwner} dead-stone mark`} />}
       {neutralMarked && <span className="neutral-mark" aria-label="neutral point" />}
@@ -249,12 +356,6 @@ function PointButton({
   );
 }
 
-function rowForSlash(pendingSkill) {
-  if (Number.isInteger(pendingSkill?.row)) return pendingSkill.row;
-  const [, y] = String(pendingSkill?.targetId ?? "").split(",").map(Number);
-  return Number.isInteger(y) ? y : null;
-}
-
 const MemoPointButton = memo(PointButton, arePointButtonPropsEqual);
 
 export function arePointButtonPropsEqual(previous, next) {
@@ -264,6 +365,7 @@ export function arePointButtonPropsEqual(previous, next) {
     && previous.deadOwner === next.deadOwner
     && previous.decorationImage === next.decorationImage
     && previous.emptyTerritoryOwner === next.emptyTerritoryOwner
+    && previous.eraseImpactPending === next.eraseImpactPending
     && previous.gameMode === next.gameMode
     && previous.handlersRef === next.handlersRef
     && previous.hasScoringPoint === next.hasScoringPoint
@@ -274,7 +376,9 @@ export function arePointButtonPropsEqual(previous, next) {
     && previous.neutralMarked === next.neutralMarked
     && previous.point === next.point
     && previous.pointerTypeRef === next.pointerTypeRef
+    && previous.pendingLibertyPurgeColor === next.pendingLibertyPurgeColor
     && previous.pendingEffectClass === next.pendingEffectClass
+    && samePendingEffectStyle(previous.pendingEffectStyle, next.pendingEffectStyle)
     && previous.previewClass === next.previewClass
     && previous.showMoves === next.showMoves
     && previous.showScoringMarks === next.showScoringMarks
@@ -297,6 +401,10 @@ export function areBoardPropsEqual(previous, next) {
     && Boolean(previous.onScoringPoint) === Boolean(next.onScoringPoint)
     && Boolean(previous.onBoardSurface) === Boolean(next.onBoardSurface)
     && sameStoneDecorations(previous.stoneDecorations, next.stoneDecorations);
+}
+
+function samePendingEffectStyle(previous, next) {
+  return (previous?.["--row-slash-cut-delay"] ?? "") === (next?.["--row-slash-cut-delay"] ?? "");
 }
 
 export function stoneOffsetForPoint(point, mode = "spark") {

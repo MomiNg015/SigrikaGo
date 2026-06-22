@@ -4,6 +4,10 @@ export const SKILL_BANNER_DURATION_MS = 2000;
 export const SKILL_BOARD_EFFECT_DURATION_MS = 1800;
 export const SKILL_PREVIEW_DELAY_MS = 4000;
 export const SKILL_EFFECT_REDUCED_MOTION_MS = 320;
+export const LIBERTY_PURGE_SLASH_INITIAL_DELAY_MS = 240;
+export const LIBERTY_PURGE_SLASH_STAGGER_MS = 170;
+export const LIBERTY_PURGE_SLASH_DRAW_MS = 650;
+export const LIBERTY_PURGE_SLASH_EXIT_MS = 450;
 
 const DEFAULT_SKILL_PRESENTATION_LAYERS = Object.freeze({
   banner: true,
@@ -17,7 +21,6 @@ const DEFAULT_SKILL_PRESENTATION_LAYERS = Object.freeze({
 export const SKILL_EFFECT_PRESENTATION_CONFIG = Object.freeze({
   "row-slash": Object.freeze({
     layers: Object.freeze({
-      boardEffect: false,
       domBoardEffect: true
     })
   }),
@@ -38,7 +41,6 @@ export const SKILL_EFFECT_PRESENTATION_CONFIG = Object.freeze({
   }),
   "liberty-purge": Object.freeze({
     layers: Object.freeze({
-      boardEffect: false,
       domBoardEffect: true
     })
   }),
@@ -59,8 +61,24 @@ export function skillEffectTiming({ reducedMotion = false } = {}) {
   };
 }
 
-export function skillPreviewResolutionDelay({ effectType = "", effectsEnabled = true } = {}) {
+export function skillBoardEffectDurationMs({ effectType = "", removalMarkIds = [] } = {}) {
+  if (effectType !== "liberty-purge") return SKILL_BOARD_EFFECT_DURATION_MS;
+  const removalCount = Array.isArray(removalMarkIds) ? removalMarkIds.length : 0;
+  if (removalCount <= 1) return SKILL_BOARD_EFFECT_DURATION_MS;
+  return Math.max(
+    SKILL_BOARD_EFFECT_DURATION_MS,
+    LIBERTY_PURGE_SLASH_INITIAL_DELAY_MS
+      + (removalCount - 1) * LIBERTY_PURGE_SLASH_STAGGER_MS
+      + LIBERTY_PURGE_SLASH_DRAW_MS
+      + LIBERTY_PURGE_SLASH_EXIT_MS
+  );
+}
+
+export function skillPreviewResolutionDelay({ effectType = "", effectsEnabled = true, removalMarkIds = [] } = {}) {
   if (effectsEnabled === false) return SKILL_BANNER_DURATION_MS;
+  if (effectType === "liberty-purge") {
+    return SKILL_BANNER_DURATION_MS + skillBoardEffectDurationMs({ effectType, removalMarkIds });
+  }
   const configuredDelay = Number(SKILL_EFFECT_PRESENTATION_CONFIG[effectType]?.resolutionDelayMs);
   if (Number.isFinite(configuredDelay) && configuredDelay >= 0) return configuredDelay;
   return SKILL_PREVIEW_DELAY_MS;

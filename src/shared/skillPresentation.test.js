@@ -3,6 +3,7 @@ import {
   SKILL_EFFECT_REDUCED_MOTION_MS,
   SKILL_PREVIEW_DELAY_MS,
   SKILL_BANNER_DURATION_MS,
+  skillBoardEffectDurationMs,
   skillEffectPresentation,
   skillEffectTimeline,
   skillEffectTiming,
@@ -55,7 +56,7 @@ describe("skillPresentation", () => {
     });
   });
 
-  test("keeps DOM-only effects out of the Pixi board layer", () => {
+  test("keeps QiuYuan row-slash in the DOM row scar layer", () => {
     expect(skillEffectPresentation("row-slash")).toMatchObject({
       effectType: "row-slash",
       enabled: true,
@@ -94,6 +95,27 @@ describe("skillPresentation", () => {
   test("combines Lynae spray-stone Pixi cast with persistent DOM spray stone visuals", () => {
     expect(skillEffectPresentation("spray-stone")).toMatchObject({
       effectType: "spray-stone",
+      enabled: true,
+      layers: {
+        boardEffect: true,
+        domBoardEffect: true,
+        sound: true
+      }
+    });
+  });
+
+  test("combines Chisa liberty-purge Pixi cast with persistent DOM removal marks", () => {
+    expect(skillPreviewResolutionDelay({ effectType: "liberty-purge" })).toBe(3800);
+    expect(skillBoardEffectDurationMs({
+      effectType: "liberty-purge",
+      removalMarkIds: ["0,0", "1,1", "2,2", "3,3", "4,4", "5,5", "6,6", "7,7"]
+    })).toBe(2530);
+    expect(skillPreviewResolutionDelay({
+      effectType: "liberty-purge",
+      removalMarkIds: ["0,0", "1,1", "2,2", "3,3", "4,4", "5,5", "6,6", "7,7"]
+    })).toBe(4530);
+    expect(skillEffectPresentation("liberty-purge")).toMatchObject({
+      effectType: "liberty-purge",
       enabled: true,
       layers: {
         boardEffect: true,

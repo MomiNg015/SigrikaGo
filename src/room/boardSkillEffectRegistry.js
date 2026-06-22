@@ -1,3 +1,9 @@
+import {
+  LIBERTY_PURGE_SLASH_DRAW_MS,
+  LIBERTY_PURGE_SLASH_EXIT_MS,
+  LIBERTY_PURGE_SLASH_INITIAL_DELAY_MS,
+  LIBERTY_PURGE_SLASH_STAGGER_MS
+} from "../shared/skillPresentation.js";
 import { boardPointCenter, pointCenterForHost } from "./boardSkillEffectGeometry.js";
 
 const BACONBITS_IMAGE = "/assets/baconbits.webp";
@@ -491,7 +497,8 @@ function playMeteorErase({ app, pixi, target, durationMs }) {
       ring.circle(target.x, target.y, 4 + impact * 36).stroke({ width: 2, color: 0xffffff, alpha: 0.42 * (1 - impact) });
     }
     crater.clear();
-    crater.ellipse(target.x, target.y + 1, 9 + craterProgress * 15, 4 + craterProgress * 8).fill({ color: 0x38282d, alpha: 0.64 * craterProgress });
+    const craterAlpha = craterProgress > 0 ? 1 : 0;
+    crater.ellipse(target.x, target.y + 1, 9 + craterProgress * 15, 4 + craterProgress * 8).fill({ color: 0x4a4648, alpha: craterAlpha });
     crater.ellipse(target.x - 2, target.y - 1, 5 + craterProgress * 8, 2 + craterProgress * 4).fill({ color: 0x86594b, alpha: 0.32 * craterProgress });
     cracks.clear();
     if (craterProgress) {
@@ -705,6 +712,138 @@ function playSprayStone({ app, pixi, host, boardSize, pendingSkill, target, dura
   });
 }
 
+function playLibertyPurge({ app, pixi, host, boardSize, pendingSkill, target, durationMs }) {
+  const wash = new pixi.Graphics();
+  const slashLayer = new pixi.Graphics();
+  const sparks = new pixi.Graphics();
+  app.stage.addChild(wash, slashLayer, sparks);
+  const targets = libertyPurgeSlashTargets({ host, boardSize, pendingSkill, target });
+  const cellSize = Math.min(host.clientWidth, host.clientHeight) / Math.max(1, boardSize);
+  const baseLength = Math.max(30, Math.min(76, cellSize * 2.5));
+  const lastSlashStartMs = LIBERTY_PURGE_SLASH_INITIAL_DELAY_MS
+    + Math.max(0, targets.length - 1) * LIBERTY_PURGE_SLASH_STAGGER_MS;
+  const fadeStartMs = Math.max(durationMs * 0.74, lastSlashStartMs + LIBERTY_PURGE_SLASH_DRAW_MS * 0.68);
+  const startedAt = performance.now();
+
+  app.ticker.add(() => {
+    const elapsedMs = performance.now() - startedAt;
+    const exit = clamp01((elapsedMs - fadeStartMs) / LIBERTY_PURGE_SLASH_EXIT_MS);
+    const globalAlpha = 1 - exit;
+    wash.clear();
+    slashLayer.clear();
+    sparks.clear();
+
+    for (const [index, point] of targets.entries()) {
+      const local = clamp01(
+        (elapsedMs - LIBERTY_PURGE_SLASH_INITIAL_DELAY_MS - index * LIBERTY_PURGE_SLASH_STAGGER_MS)
+          / LIBERTY_PURGE_SLASH_DRAW_MS
+      );
+      if (!local) continue;
+      const draw = easeOutCubic(Math.min(local / 0.62, 1));
+      const fade = globalAlpha * (1 - clamp01((local - 0.68) / 0.32) * 0.28);
+      const angle = point.angle;
+      const length = baseLength * (0.82 + (index % 3) * 0.12);
+      const open = length * (0.18 + draw * 0.38);
+
+      wash.ellipse(point.x, point.y, length * 0.72 * draw, length * 0.26 * draw)
+        .fill({ color: 0xff1733, alpha: 0.06 * fade });
+      drawScissorSlash(slashLayer, {
+        x: point.x,
+        y: point.y,
+        angle,
+        length,
+        progress: draw,
+        alpha: fade
+      });
+      drawScissorSlash(slashLayer, {
+        x: point.x + Math.cos(angle + Math.PI / 2) * open * 0.22,
+        y: point.y + Math.sin(angle + Math.PI / 2) * open * 0.22,
+        angle: angle + Math.PI * 0.55,
+        length: length * 0.82,
+        progress: draw,
+        alpha: fade * 0.86
+      });
+
+      if (local > 0.2 && local < 0.92) {
+        const burst = clamp01((local - 0.2) / 0.72);
+        for (let sparkIndex = 0; sparkIndex < 5; sparkIndex += 1) {
+          const sparkAngle = angle + (sparkIndex - 2) * 0.34 + Math.sin(index) * 0.2;
+          const distance = burst * (8 + sparkIndex * 3);
+          sparks.circle(
+            point.x + Math.cos(sparkAngle) * distance,
+            point.y + Math.sin(sparkAngle) * distance,
+            1.2 + (sparkIndex % 2) * 0.45
+          ).fill({ color: sparkIndex % 2 ? 0xffedf0 : 0xff1733, alpha: 0.62 * fade * (1 - burst * 0.44) });
+        }
+      }
+    }
+  });
+}
+
+function playReducedMotionLibertyPurge({ app, pixi, host, boardSize, pendingSkill, target, durationMs }) {
+  const slashLayer = new pixi.Graphics();
+  app.stage.addChild(slashLayer);
+  const targets = libertyPurgeSlashTargets({ host, boardSize, pendingSkill, target }).slice(0, 4);
+  const cellSize = Math.min(host.clientWidth, host.clientHeight) / Math.max(1, boardSize);
+  const length = Math.max(28, Math.min(64, cellSize * 2.2));
+  const startedAt = performance.now();
+
+  app.ticker.add(() => {
+    const progress = clamp01((performance.now() - startedAt) / durationMs);
+    const alpha = 0.78 * (1 - progress);
+    slashLayer.clear();
+    for (const point of targets) {
+      drawScissorSlash(slashLayer, {
+        x: point.x,
+        y: point.y,
+        angle: point.angle,
+        length,
+        progress: 1,
+        alpha
+      });
+    }
+  });
+}
+
+function libertyPurgeSlashTargets({ host, boardSize, pendingSkill, target }) {
+  const removalPointIds = Array.isArray(pendingSkill?.removalMarkIds)
+    ? pendingSkill.removalMarkIds
+    : [];
+  const pointIds = removalPointIds.length
+    ? removalPointIds
+    : (Array.isArray(pendingSkill?.affectedPointIds)
+        ? pendingSkill.affectedPointIds.filter((pointId) => pointId !== pendingSkill?.targetId)
+        : []);
+  const points = pointIds
+    .map((pointId) => pointCenterForHost(pointId, { boardSize, host }))
+    .filter(Boolean);
+  const uniquePoints = points.length ? points : [];
+  return uniquePoints.map((point, index) => ({
+    ...point,
+    angle: -0.78 + (index % 4) * 0.34 + Math.sin(index * 1.7) * 0.18
+  }));
+}
+
+function drawScissorSlash(graphics, { x, y, angle, length, progress, alpha }) {
+  const half = (length * progress) / 2;
+  const startX = x - Math.cos(angle) * half;
+  const startY = y - Math.sin(angle) * half;
+  const endX = x + Math.cos(angle) * half;
+  const endY = y + Math.sin(angle) * half;
+  const bendX = x + Math.cos(angle + Math.PI / 2) * length * 0.08 * Math.sin(progress * Math.PI);
+  const bendY = y + Math.sin(angle + Math.PI / 2) * length * 0.08 * Math.sin(progress * Math.PI);
+
+  graphics.moveTo(startX, startY)
+    .quadraticCurveTo(bendX, bendY, endX, endY)
+    .stroke({ width: 9, color: 0x3a0710, alpha: 0.22 * alpha });
+  graphics.moveTo(startX, startY)
+    .quadraticCurveTo(bendX, bendY, endX, endY)
+    .stroke({ width: 5.2, color: 0xff1733, alpha: 0.78 * alpha });
+  graphics.moveTo(lerp(startX, endX, 0.08), lerp(startY, endY, 0.08))
+    .quadraticCurveTo(bendX, bendY, lerp(startX, endX, 0.92), lerp(startY, endY, 0.92))
+    .stroke({ width: 1.6, color: 0xfff0f2, alpha: 0.68 * alpha });
+}
+
 function sprayEffectTargets({ host, boardSize, pendingSkill, target }) {
   const pointIds = Array.isArray(pendingSkill?.affectedPointIds)
     ? pendingSkill.affectedPointIds
@@ -772,6 +911,10 @@ export const BOARD_SKILL_EFFECT_RENDERERS = Object.freeze({
     fullBoard: true,
     play: playDataStreamHiddenHand,
     playReducedMotion: playReducedMotionBoardSweep
+  }),
+  "liberty-purge": Object.freeze({
+    play: playLibertyPurge,
+    playReducedMotion: playReducedMotionLibertyPurge
   }),
   "protocol-takeover": Object.freeze({
     play: playProtocolTakeover,

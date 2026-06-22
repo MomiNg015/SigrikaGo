@@ -1,10 +1,12 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import BoardSkillEffects, {
   SKILL_EFFECT_REDUCED_MOTION_MS,
   boardPointCenter,
   effectTimingForPendingSkill,
+  preparePixiEffect,
   reducedMotionQuery
 } from "./BoardSkillEffects.jsx";
 
@@ -72,11 +74,75 @@ describe("BoardSkillEffects", () => {
     expect(markup).toContain("aria-hidden=\"true\"");
   });
 
-  test("omits the full-board layer for non-Pixi skill visuals", () => {
+  test("keeps the Pixi fallback transparent instead of flashing a board-covering gray panel", () => {
+    const css = readFileSync(new URL("../styles/room/board/effects-canvas-motion.css", import.meta.url), "utf8");
+    const fallbackBlock = css.match(/\.board-effects-layer\[data-effect-fallback="true"\]::after\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(fallbackBlock).toContain("background: transparent");
+    expect(fallbackBlock).not.toContain("background-color");
+    expect(fallbackBlock).not.toContain("inset: 0");
+    expect(fallbackBlock).not.toContain("width: 100%");
+    expect(fallbackBlock).not.toContain("height: 100%");
+  });
+
+  test("prepares the Pixi app and renderer assets during the banner window", async () => {
+    const appInstances = [];
+    class Application {
+      constructor() {
+        this.canvas = { className: "" };
+        this.init = vi.fn(async () => {});
+        this.destroy = vi.fn();
+        appInstances.push(this);
+      }
+    }
+    const pixi = {
+      Application,
+      Assets: {
+        load: vi.fn(async () => {})
+      }
+    };
+    const host = {
+      clientWidth: 260,
+      clientHeight: 260,
+      dataset: {},
+      children: [],
+      replaceChildren(...children) {
+        this.children = children;
+      }
+    };
+    const loadPixi = vi.fn(async () => pixi);
+
+    const prepared = preparePixiEffect({
+      host,
+      pendingSkill: { id: "changli-cast", effectType: "double-move" },
+      loadPixi
+    });
+
+    expect(loadPixi).toHaveBeenCalledTimes(1);
+    await prepared.ready;
+
+    expect(appInstances).toHaveLength(1);
+    expect(appInstances[0].init).toHaveBeenCalledWith(expect.objectContaining({
+      resizeTo: host,
+      backgroundAlpha: 0
+    }));
+    expect(pixi.Assets.load).toHaveBeenCalledWith([
+      "/assets/effects/changli-fire-phoenix.svg",
+      "/assets/effects/changli-flame-sprite.svg"
+    ]);
+    expect(host.children).toEqual([appInstances[0].canvas]);
+    expect(appInstances[0].canvas.className).toBe("board-effects-canvas");
+
+    prepared.cleanup();
+    expect(appInstances[0].destroy).toHaveBeenCalled();
+    expect(host.children).toEqual([]);
+  });
+
+  test("omits QiuYuan row slash Pixi layer because the cast uses the DOM row scar", () => {
     const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
       boardSize: 13,
       pendingSkill: {
-        id: "slash-dom-only",
+        id: "slash-pixi-cast",
         effectType: "row-slash",
         targetId: "4,5",
         row: 5
@@ -84,11 +150,57 @@ describe("BoardSkillEffects", () => {
     }));
 
     expect(markup).toBe("");
-    expect(markup).not.toContain("board-effects-layer");
-    expect(markup).not.toContain('data-effect-type="row-slash"');
   });
 
-  test("omits DOM-only skill layers even when legacy preview metadata has no id", () => {
+  test("renders ChangLi double-move as a full-board Pixi layer", () => {
+    const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
+      boardSize: 13,
+      pendingSkill: {
+        id: "changli-double-move",
+        effectType: "double-move"
+      }
+    }));
+
+    expect(markup).toContain("board-effects-layer");
+    expect(markup).toContain('data-effect-id="changli-double-move"');
+    expect(markup).toContain('data-effect-type="double-move"');
+    expect(markup).toContain('data-board-effect="true"');
+  });
+
+  test("renders Mornye protocol takeover as a targeted Pixi layer", () => {
+    const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
+      boardSize: 13,
+      pendingSkill: {
+        id: "mornye-protocol",
+        effectType: "protocol-takeover",
+        targetId: "6,6"
+      }
+    }));
+
+    expect(markup).toContain("board-effects-layer");
+    expect(markup).toContain('data-effect-id="mornye-protocol"');
+    expect(markup).toContain('data-effect-type="protocol-takeover"');
+    expect(markup).toContain('data-board-effect="true"');
+  });
+
+  test("renders Chisa liberty-purge as a targeted Pixi layer", () => {
+    const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
+      boardSize: 13,
+      pendingSkill: {
+        id: "chisa-liberty-purge",
+        effectType: "liberty-purge",
+        targetId: "6,6",
+        affectedPointIds: ["6,6", "5,6", "7,6"]
+      }
+    }));
+
+    expect(markup).toContain("board-effects-layer");
+    expect(markup).toContain('data-effect-id="chisa-liberty-purge"');
+    expect(markup).toContain('data-effect-type="liberty-purge"');
+    expect(markup).toContain('data-board-effect="true"');
+  });
+
+  test("still omits row-slash layer metadata even when a legacy preview has no id", () => {
     const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
       boardSize: 13,
       pendingSkill: {
@@ -110,5 +222,27 @@ describe("BoardSkillEffects", () => {
 
     expect(markup).toContain("board-effects-layer");
     expect(markup).not.toContain("prewarm");
+  });
+
+  test("supports disabling skill presentation effects from one host setting", () => {
+    const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
+      boardSize: 13,
+      effectsEnabled: false,
+      pendingSkill: {
+        id: "disabled-effect",
+        effectType: "erase-point",
+        targetId: "6,6"
+      }
+    }));
+
+    expect(markup).toBe("");
+    expect(effectTimingForPendingSkill({
+      effectType: "erase-point",
+      bannerDurationMs: 2000,
+      boardEffectDurationMs: 1800
+    }, { effectsEnabled: false })).toEqual({
+      startDelayMs: 0,
+      durationMs: 0
+    });
   });
 });

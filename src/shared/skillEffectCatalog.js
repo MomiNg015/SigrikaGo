@@ -24,7 +24,7 @@ export const SKILL_EFFECT_CATALOG = {
     label: "协议接管",
     targetRule: "empty-point",
     active: true,
-    boardEffect: false,
+    boardEffect: true,
     soundCues: { startAt: 0.05, impactAt: 0.5 }
   },
   "random-blast": {
@@ -52,15 +52,15 @@ export const SKILL_EFFECT_CATALOG = {
     label: "虚湮解弦",
     targetRule: "legal-move-point",
     active: true,
-    boardEffect: false,
+    boardEffect: true,
     soundCues: { startAt: 0.04, impactAt: 0.5 }
   },
   "double-move": {
     label: "ChangLi double move",
     targetRule: "none",
     active: true,
-    boardEffect: false,
-    soundCues: { startAt: 0.05, impactAt: 0.5 }
+    boardEffect: true,
+    soundCues: { startAt: 0.05, impactAt: 0.44 }
   },
   "color-illusion-passive": {
     label: "被动伪装",
