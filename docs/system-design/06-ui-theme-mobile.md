@@ -97,5 +97,6 @@
 
 - The home mailbox entry uses a `lucide-react` mail icon in the existing top-right action cluster on desktop and the compact mobile menu on phones. The badge is the unread plus claimable count from the summary API.
 - `src/styles/modals/mailbox.css` defines the player mailbox modal as a two-column list/detail layout on desktop and a stacked list/detail layout on mobile, with bounded internal scroll regions so long mail bodies do not push the modal outside the viewport.
+- The mailbox modal is included in the shared terminal and Bright School modal shell layers so desktop renders as a centered sheet instead of a full-width strip, while mobile keeps a top sheet with safe-area padding.
 - `src/styles/admin/mailbox.css` defines the admin send form and recent send history as a two-column admin workspace on desktop and a single-column flow below 900px.
 - The mailbox styles are imported through the existing import-only domain entrypoints: `src/styles/modals.css`, `src/styles/admin.css`, and `src/styles/home-terminal/top-strip.css`.

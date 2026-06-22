@@ -16,6 +16,7 @@
 .app-shell.player-theme-enabled.theme-bright-school .confirm-modal,
 .app-shell.player-theme-enabled.theme-bright-school .result-modal,
 .app-shell.player-theme-enabled.theme-bright-school .settings-modal,
+.app-shell.player-theme-enabled.theme-bright-school .mailbox-modal,
 .app-shell.player-theme-enabled.theme-bright-school .nested-modal {
   background: #ffffff !important;
   border: 3px solid #4a3736 !important;
@@ -29,6 +30,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school .auth-panel,
 .app-shell.player-theme-enabled.theme-bright-school .settings-modal,
+.app-shell.player-theme-enabled.theme-bright-school .mailbox-modal,
 .app-shell.player-theme-enabled.theme-bright-school .small-modal,
 .app-shell.player-theme-enabled.theme-bright-school .shop-modal,
 .app-shell.player-theme-enabled.theme-bright-school .house-modal,
@@ -47,6 +49,12 @@
   background: rgba(74, 55, 54, 0.38) !important;
   backdrop-filter: blur(4px) !important;
   -webkit-backdrop-filter: blur(4px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school .mailbox-backdrop {
+  align-items: center !important;
+  justify-items: center !important;
+  padding: clamp(18px, 4vw, 40px) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .close-button {

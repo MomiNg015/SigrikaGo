@@ -23,6 +23,7 @@
     .confirm-modal,
     .result-modal,
     .settings-modal,
+    .mailbox-modal,
     .nested-modal,
     .character-target-modal,
     .character-details-modal,
@@ -57,6 +58,7 @@
     .leaderboard-modal,
     .friends-modal,
     .settings-modal,
+    .mailbox-modal,
     .message-board-modal,
     .watch-list-modal,
     .user-profile-modal,
@@ -113,6 +115,7 @@
     .leaderboard-modal button,
     .friends-modal button,
     .settings-modal button,
+    .mailbox-modal button,
     .message-board-modal button,
     .small-modal button,
     .room-floating-modal button,
@@ -129,6 +132,15 @@
     min-width: 0 !important;
     padding-right: 48px !important;
     gap: 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mailbox-backdrop {
+    align-items: start !important;
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      calc(10px + env(safe-area-inset-right))
+      calc(10px + env(safe-area-inset-bottom))
+      calc(10px + env(safe-area-inset-left)) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header h2,
