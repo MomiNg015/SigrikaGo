@@ -16,6 +16,7 @@ describe("overlay state", () => {
       "friends",
       "watch",
       "settings",
+      "mailbox",
       "messageBoard"
     ]);
     expect(initialOverlayState()).toEqual({
@@ -31,6 +32,7 @@ describe("overlay state", () => {
       friends: false,
       watch: false,
       settings: false,
+      mailbox: false,
       messageBoard: false
     });
   });

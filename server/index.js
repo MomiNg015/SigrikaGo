@@ -14,6 +14,7 @@ import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
 import { createAuthRouter } from "./authRoutes.js";
 import { createCommerceRouter } from "./commerceRoutes.js";
 import { createGachaRouter } from "./gachaRoutes.js";
+import { createMailboxRouter } from "./mailboxRoutes.js";
 import { createRecruitmentRouter } from "./recruitmentRoutes.js";
 import { createPlayerRouter, createCharacterSelectionData, validateOptionalRoomCode } from "./playerRoutes.js";
 import { createPublicRouter } from "./publicRoutes.js";
@@ -187,6 +188,7 @@ app.use("/api/auth", createAuthRouter({
 
 app.use("/api", authHttp, createCommerceRouter({ prisma }));
 app.use("/api", authHttp, createGachaRouter({ prisma }));
+app.use("/api", authHttp, createMailboxRouter({ prisma }));
 app.use("/api", authHttp, createRecruitmentRouter({ prisma }));
 
 app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));

@@ -359,6 +359,13 @@
 <ul>
 <li>Runtime stability note: room runtime uses lightweight <code>room:clock</code> / <code>room:patch</code> and full <code>room:update</code> paths, user/socket room indexes for resume and disconnect lookup, throttled persistence for chat/presence patches, forced persistence for key lifecycle updates, and room-code-specific persistence flush before close cleanup deletes a persisted room row so delayed upserts cannot recreate closed rooms.</li>
 </ul>
+<h2>Mailbox System Summary</h2>
+<ul>
+<li>Mailbox is an authenticated player/admin HTTP feature. Players open it from the home top-right action area or the mobile menu, read admin-only text mail, manually claim one optional attachment, and can keep at most 20 messages.</li>
+</ul>
+<ul>
+<li>Admins send mailbox batches from the admin console to one user, all current users, or all current plus future users. Item and coin claims update the existing inventory and progress systems.</li>
+</ul>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
 <p>本文记录 SigrikaGo 的整体目录、核心模块和已实现能力。入口文档只保留阅读导航；具体维护时优先更新本分篇或其它对应分篇。</p>
@@ -2412,6 +2419,19 @@
 <ul>
 <li>后台 <code>AdminConsole</code> 新增 <code>achievements</code> tab，<code>AdminAchievements</code> 使用“成就列表 / 奖励资产”双视图；成就列表只编辑既有成就的成就名、成就内容、奖励资产和排序，不提供新增或下线成就入口，奖励资产视图继续管理 <code>/api/admin/achievement-reward-assets</code>。</li>
 </ul>
+<h2>Mailbox UI</h2>
+<ul>
+<li>The player mailbox is mounted as an app-level overlay through <code>src/app/useOverlayState.js</code>, <code>src/app/modalDismissal.js</code>, <code>src/app/AppOverlays.jsx</code>, and <code>src/modals/MailboxModal.jsx</code>.</li>
+</ul>
+<ul>
+<li><code>src/app/App.jsx</code> polls <code>GET /api/mailbox/summary</code> while a user session is active and refreshes again when the mailbox opens. The home header receives <code>mailboxBadgeCount</code> and exposes a desktop icon button plus a mobile-menu entry.</li>
+</ul>
+<ul>
+<li><code>MailboxModal</code> owns list/detail selection, marks a message read when selected, and calls the player mailbox APIs for manual claim and delete. It reports successful coin or item claims through the existing toast and user-refresh paths.</li>
+</ul>
+<ul>
+<li>Admin mailbox management is a first-class admin tab. <code>AdminConsole</code> loads recent batches and item options, <code>AdminShell</code> owns the tab label, and <code>AdminMailbox</code> provides user search, target mode selection, one optional attachment, send submission, and recent batch history.</li>
+</ul>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
 <p>本文记录 Express、Socket.IO、房间生命周期、HTTP 路由边界和生产部署相关设计。新增 API、Socket 事件、房间生命周期模块或部署行为时优先更新本分篇。</p>
@@ -2677,6 +2697,22 @@
 </ul>
 <ul>
 <li><code>src/main.jsx</code> handles <code>room:closed</code> payloads, clears the remembered room code, resets room UI state, and displays the payload message when present. Finished-room cleanup payloads carry <code>reason: &quot;finished-room-close&quot;</code> plus <code>roomCode</code>; player clients mark that result as dismissed and stay silent so the result modal does not reopen during cleanup.</li>
+</ul>
+<h2>Mailbox API</h2>
+<ul>
+<li>Player mailbox routes are authenticated under <code>/api</code>: <code>GET /mailbox/summary</code>, <code>GET /mailbox</code>, <code>POST /mailbox/:id/read</code>, <code>POST /mailbox/:id/claim</code>, and <code>DELETE /mailbox/:id</code>.</li>
+</ul>
+<ul>
+<li>Admin mailbox routes are authenticated and admin-only under <code>/api/admin</code>: <code>GET /mailbox/users</code>, <code>GET /mailbox/batches</code>, and <code>POST /mailbox/batches</code>.</li>
+</ul>
+<ul>
+<li><code>server/mailbox.js</code> owns domain behavior. Admin sends create a <code>MailboxBatch</code>, deliver <code>MailboxMessage</code> rows to eligible users, and write an audit event with action <code>mailbox.send</code>.</li>
+</ul>
+<ul>
+<li>Player claims are manual. Coin claims write a <code>UserProgressLedger</code> row with reason <code>mailbox.claim</code>; item claims update the legacy owned item projection and the structured <code>UserItem</code> mirror through existing inventory helpers.</li>
+</ul>
+<ul>
+<li>Global batches can target current users only or current plus future users. Future-eligible batches are materialized for a user when mailbox list or summary is read.</li>
 </ul>
 <p>---</p>
 <h1>数据模型与领域系统</h1>
@@ -3105,6 +3141,22 @@
 </ul>
 <ul>
 <li><code>ensureAchievementSchema</code> 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 <code>Character</code>、<code>Decoration</code>、<code>ShopItem</code> 添加 <code>source</code> 字段；<code>server/serverStartup.js</code> 会在角色与商店种子任务之前执行该 guard，避免 Prisma 在旧库缺少 <code>source</code> 列时先读取这些模型。</li>
+</ul>
+<h2>Mailbox Data Model</h2>
+<ul>
+<li><code>MailboxBatch</code> records one admin send operation: admin user id, target mode, optional selected recipient id, title/body, serialized attachment payload, future-user eligibility, delivered/skipped counts, and creation time.</li>
+</ul>
+<ul>
+<li><code>MailboxMessage</code> records one delivered user-visible message: recipient user id, optional batch id, title/body, serialized attachment payload, read/claim/delete timestamps, and creation time.</li>
+</ul>
+<ul>
+<li>Each user mailbox is capped at 20 visible messages. Before delivery, the domain deletes the oldest safe messages that are already read and have no unclaimed attachment. If no safe space exists, delivery is skipped instead of deleting claimable rewards.</li>
+</ul>
+<ul>
+<li>A message with an unclaimed attachment is not deletable. Claiming is idempotent at the domain level by checking <code>claimedAt</code> and the attachment type before mutating coins or inventory.</li>
+</ul>
+<ul>
+<li>The schema is backed by migration <code>202606220001_add_mailbox_system</code>; <code>server/schemaIntegrity.test.js</code> checks that the migration and Prisma model stay in sync.</li>
 </ul>
 <p>---</p>
 <h1>资源、音频与启动预加载</h1>
@@ -3843,6 +3895,19 @@
 </ul>
 <ul>
 <li><code>toast.achievement</code> 使用金橙色高亮渐变和更强阴影，作为成就达成反馈；普通成功/错误 toast 样式不变。</li>
+</ul>
+<h2>Mailbox UI And Mobile</h2>
+<ul>
+<li>The home mailbox entry uses a <code>lucide-react</code> mail icon in the existing top-right action cluster on desktop and the compact mobile menu on phones. The badge is the unread plus claimable count from the summary API.</li>
+</ul>
+<ul>
+<li><code>src/styles/modals/mailbox.css</code> defines the player mailbox modal as a two-column list/detail layout on desktop and a stacked list/detail layout on mobile, with bounded internal scroll regions so long mail bodies do not push the modal outside the viewport.</li>
+</ul>
+<ul>
+<li><code>src/styles/admin/mailbox.css</code> defines the admin send form and recent send history as a two-column admin workspace on desktop and a single-column flow below 900px.</li>
+</ul>
+<ul>
+<li>The mailbox styles are imported through the existing import-only domain entrypoints: <code>src/styles/modals.css</code>, <code>src/styles/admin.css</code>, and <code>src/styles/home-terminal/top-strip.css</code>.</li>
 </ul>
 <p>---</p>
 <h1>性能、技术债与扩展路线</h1>

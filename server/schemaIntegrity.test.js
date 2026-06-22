@@ -120,6 +120,28 @@ describe("Prisma schema integrity", () => {
     }
   });
 
+  it("tracks mailbox batches and messages through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606220001_add_mailbox_system",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    for (const modelName of [
+      "MailboxBatch",
+      "MailboxMessage"
+    ]) {
+      expect(schema).toContain(`model ${modelName}`);
+      expect(migration).toContain(`CREATE TABLE IF NOT EXISTS "${modelName}"`);
+    }
+    expect(schema).toContain("mailboxMessages   MailboxMessage[]");
+    expect(migration).toContain("CREATE INDEX IF NOT EXISTS \"MailboxMessage_userId_createdAt_idx\"");
+  });
+
   it("tracks gacha pools, rewards, blue gems, and character chains through a migration", () => {
     const schema = readFileSync(schemaPath, "utf8");
     const migrationPath = join(

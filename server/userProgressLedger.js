@@ -7,6 +7,7 @@ export const PROGRESS_REASONS = {
   adminUpdate: "admin.update",
   gameResult: "game.result",
   gachaDraw: "gacha.draw",
+  mailboxClaim: "mailbox.claim",
   shopPurchase: "shop.purchase"
 };
 

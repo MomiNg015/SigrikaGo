@@ -7,6 +7,7 @@ import AdminCharacters from "./AdminCharacters.jsx";
 import AdminDecorations from "./AdminDecorations.jsx";
 import AdminFeedback from "./AdminFeedback.jsx";
 import AdminGachaPools from "./AdminGachaPools.jsx";
+import AdminMailbox from "./AdminMailbox.jsx";
 import AdminMusicTracks from "./AdminMusicTracks.jsx";
 import AdminOverview from "./AdminOverview.jsx";
 import AdminRecruitmentSettings from "./AdminRecruitmentSettings.jsx";
@@ -25,6 +26,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   const [shopItems, setShopItems] = useState([]);
   const [decorations, setDecorations] = useState([]);
   const [gachaPools, setGachaPools] = useState([]);
+  const [mailboxBatches, setMailboxBatches] = useState([]);
   const [achievementData, setAchievementData] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [adminError, setAdminError] = useState("");
@@ -90,6 +92,11 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   useEffect(() => {
     if (tab !== "achievements") return;
     refreshAchievements();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "mailbox") return;
+    refreshMailboxContext();
   }, [tab, token]);
 
   async function refreshUsers(nextSelectedId = selectedUser?.id) {
@@ -205,6 +212,19 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
     }
   }
 
+  async function refreshMailboxContext() {
+    setAdminError("");
+    try {
+      const [batchData] = await Promise.all([
+        adminApi("/mailbox/batches", token),
+        refreshShopItems()
+      ]);
+      setMailboxBatches(batchData.batches ?? []);
+    } catch (error) {
+      notify(error.message);
+    }
+  }
+
   return (
     <AdminShell user={user} tab={tab} setTab={setTab} onBack={onBack} error={adminError}>
       {tab === "overview" && <AdminOverview summary={summary} />}
@@ -272,6 +292,15 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
         />
       )}
       {tab === "recruitment" && <AdminRecruitmentSettings token={token} onNotice={notify} />}
+      {tab === "mailbox" && (
+        <AdminMailbox
+          token={token}
+          initialLoaded
+          initialBatches={mailboxBatches}
+          shopItems={shopItems.filter((item) => item.category === "item")}
+          onNotice={notify}
+        />
+      )}
       {tab === "achievements" && (
         <AdminAchievements
           data={achievementData}

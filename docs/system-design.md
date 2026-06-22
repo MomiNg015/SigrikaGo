@@ -142,3 +142,8 @@
 - 新增内置成就“点亮语义！”使用 `mode_character_wins` 条件统计玩家使用西格莉卡在 `spark`（星炬对弈）模式的胜场，达到 100 胜后解锁 `/assets/achievements/semantic-nameplate.png` 用户名背景；`seedBuiltinAchievements` 会让管理员默认达成所有内置成就并标记奖励已发放。
 - 启动初始化会在角色 seed 前运行 `cleanupLegacyDeniaCharacterData`：旧达妮娅 slug `danea`/`denea` 的用户选角和拥有权会迁移到 canonical `denia`，旧角色行会删除，引用旧 slug 的对局记录会删除，角色商品/抽卡/成就奖励目标会改写为 `denia`；公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在前台。
 - Runtime stability note: room runtime uses lightweight `room:clock` / `room:patch` and full `room:update` paths, user/socket room indexes for resume and disconnect lookup, throttled persistence for chat/presence patches, forced persistence for key lifecycle updates, and room-code-specific persistence flush before close cleanup deletes a persisted room row so delayed upserts cannot recreate closed rooms.
+
+## Mailbox System Summary
+
+- Mailbox is an authenticated player/admin HTTP feature. Players open it from the home top-right action area or the mobile menu, read admin-only text mail, manually claim one optional attachment, and can keep at most 20 messages.
+- Admins send mailbox batches from the admin console to one user, all current users, or all current plus future users. Item and coin claims update the existing inventory and progress systems.

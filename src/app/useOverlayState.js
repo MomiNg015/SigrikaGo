@@ -13,6 +13,7 @@ export const OVERLAY_STATE_KEYS = [
   "friends",
   "watch",
   "settings",
+  "mailbox",
   "messageBoard"
 ];
 
@@ -50,6 +51,7 @@ export function useOverlayState() {
     setShowFriends: (value) => setOverlay("friends", value),
     setShowWatch: (value) => setOverlay("watch", value),
     setShowSettings: (value) => setOverlay("settings", value),
+    setShowMailbox: (value) => setOverlay("mailbox", value),
     setShowMessageBoard: (value) => setOverlay("messageBoard", value)
   }), [setOverlay]);
 
@@ -66,6 +68,7 @@ export function useOverlayState() {
     showFriends: overlays.friends,
     showWatch: overlays.watch,
     showSettings: overlays.settings,
+    showMailbox: overlays.mailbox,
     showMessageBoard: overlays.messageBoard,
     ...setters
   }), [overlays, setters]);

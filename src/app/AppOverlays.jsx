@@ -4,6 +4,7 @@ import FriendsModal from "../modals/FriendsModal.jsx";
 import { MatchModal, MatchSuccessModal, ResultModal } from "../modals/GameLifecycleModals.jsx";
 import HouseModal from "../modals/HouseModal.jsx";
 import LeaderboardModal from "../modals/LeaderboardModal.jsx";
+import MailboxModal from "../modals/MailboxModal.jsx";
 import MessageBoardModal from "../modals/MessageBoardModal.jsx";
 import PersonalizationModal from "../modals/PersonalizationModal.jsx";
 import ResumeModal from "../modals/ResumeModal.jsx";
@@ -26,6 +27,7 @@ export default function AppOverlays({
   onMatchCancel,
   onMatchSuccessComplete,
   onMessageSubmitted,
+  onMailboxSummaryChange,
   onRemoveToast,
   onRecruitmentStatusChange,
   onResultClose,
@@ -42,6 +44,7 @@ export default function AppOverlays({
   setShowRecruitment,
   setShowHouse,
   setShowLeaderboard,
+  setShowMailbox,
   setShowMessageBoard,
   setShowPersonalization,
   setShowResume,
@@ -55,6 +58,7 @@ export default function AppOverlays({
   showAchievements,
   showHouse,
   showLeaderboard,
+  showMailbox,
   showMessageBoard,
   showPersonalization,
   showResume,
@@ -223,6 +227,15 @@ export default function AppOverlays({
           visualTheme={visualTheme}
           setVisualTheme={setVisualTheme}
           onClose={() => setShowSettings(false)}
+        />
+      )}
+      {showMailbox && (
+        <MailboxModal
+          token={token}
+          onClose={() => setShowMailbox(false)}
+          onNotice={showToast}
+          onSummaryChange={onMailboxSummaryChange}
+          onUserChange={updateUser}
         />
       )}
       {showMessageBoard && (

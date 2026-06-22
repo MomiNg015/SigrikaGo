@@ -237,3 +237,10 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - `PersonalizationModal` 通过 `/api/me/achievement-equipment` 读取可装备的成就奖励资产，并允许装备称号、徽章和用户名背景。桌面端为三列装备区，移动端改为竖向分区；保存后回写当前 `user.achievementEquipment`。弹窗内预览区使用共享 `UserIdentity` 组合草稿装备，作为保存前试穿效果；装备按钮用粉红色标出当前已保存生效项，用浅绿色标出草稿中正在试穿但尚未保存的项。
 - 商城、抽卡、仓库使用道具和首页 `/api/me` 刷新都会消费响应里的 `achievementUnlocks`，逐条触发 `achievement` tone toast；toast 样式仍由现有 `ToastStack` 队列统一管理。
 - 后台 `AdminConsole` 新增 `achievements` tab，`AdminAchievements` 使用“成就列表 / 奖励资产”双视图；成就列表只编辑既有成就的成就名、成就内容、奖励资产和排序，不提供新增或下线成就入口，奖励资产视图继续管理 `/api/admin/achievement-reward-assets`。
+
+## Mailbox UI
+
+- The player mailbox is mounted as an app-level overlay through `src/app/useOverlayState.js`, `src/app/modalDismissal.js`, `src/app/AppOverlays.jsx`, and `src/modals/MailboxModal.jsx`.
+- `src/app/App.jsx` polls `GET /api/mailbox/summary` while a user session is active and refreshes again when the mailbox opens. The home header receives `mailboxBadgeCount` and exposes a desktop icon button plus a mobile-menu entry.
+- `MailboxModal` owns list/detail selection, marks a message read when selected, and calls the player mailbox APIs for manual claim and delete. It reports successful coin or item claims through the existing toast and user-refresh paths.
+- Admin mailbox management is a first-class admin tab. `AdminConsole` loads recent batches and item options, `AdminShell` owns the tab label, and `AdminMailbox` provides user search, target mode selection, one optional attachment, send submission, and recent batch history.

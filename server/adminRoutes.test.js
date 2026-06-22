@@ -323,6 +323,89 @@ describe("admin user routes", () => {
   });
 });
 
+describe("admin mailbox routes", () => {
+  it("searches mailbox recipients by username", async () => {
+    const response = await requestAdminRoute({
+      user: {
+        findMany: async ({ where, take }) => {
+          expect(where.username.contains).toBe("ali");
+          expect(take).toBe(20);
+          return [{ id: "user-1", username: "alice", role: "player", status: "active" }];
+        }
+      }
+    }, "/mailbox/users?q=ali", { method: "GET" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.users).toEqual([{ id: "user-1", username: "alice", role: "player", status: "active" }]);
+  });
+
+  it("creates mailbox batches for admins", async () => {
+    const response = await requestAdminRoute(mailboxAdminPrisma(), "/mailbox/batches", {
+      method: "POST",
+      body: {
+        targetMode: "user",
+        recipientUserId: "user-1",
+        title: "Gift",
+        body: "Please claim.",
+        attachmentType: "coins",
+        attachmentQuantity: 10
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.batch).toMatchObject({
+      targetMode: "user",
+      title: "Gift",
+      deliveredCount: 1,
+      skippedCount: 0
+    });
+  });
+});
+
+function mailboxAdminPrisma() {
+  const user = { id: "user-1", username: "alice", role: "player", status: "active" };
+  const batches = [];
+  const messages = [];
+  const tx = {
+    user: {
+      findUnique: async () => user,
+      findMany: async () => [user]
+    },
+    mailboxBatch: {
+      create: async ({ data }) => {
+        const batch = { id: "batch-1", createdAt: new Date("2026-06-22T00:00:00Z"), ...data };
+        batches.push(batch);
+        return batch;
+      },
+      update: async ({ data }) => {
+        batches[0] = { ...batches[0], ...data };
+        return batches[0];
+      },
+      findMany: async () => batches
+    },
+    mailboxMessage: {
+      count: async () => messages.length,
+      findMany: async () => messages,
+      create: async ({ data }) => {
+        const message = { id: "mail-1", createdAt: new Date("2026-06-22T00:00:00Z"), isRead: false, claimedAt: null, ...data };
+        messages.push(message);
+        return message;
+      },
+      delete: async () => {}
+    },
+    adminAuditLog: {
+      create: async () => ({})
+    }
+  };
+  return {
+    user: tx.user,
+    mailboxBatch: {
+      findMany: async () => batches
+    },
+    $transaction: async (callback) => callback(tx)
+  };
+}
+
 describe("admin site settings routes", () => {
   it("allows admins to read and update lobby copy", async () => {
     const store = new Map();
