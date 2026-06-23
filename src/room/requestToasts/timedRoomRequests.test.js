@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
 import { GAME_PHASES } from "../../shared/game.js";
 import TimedRoomRequestToast from "./TimedRoomRequestToast.jsx";
 import {
@@ -152,6 +153,12 @@ describe("timed room request toasts", () => {
     expect(passiveHtml).toContain("room-request-toast passive");
     expect(passiveHtml).not.toContain("room-request-toast-close");
     expect(passiveHtml).not.toContain("关闭提示");
+  });
+  it("portals browser request toasts to body so they do not affect room layout", () => {
+    const source = readFileSync(new URL("./TimedRoomRequestToast.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("createPortal(content, document.body)");
+    expect(source).toContain("typeof document === \"undefined\"");
   });
 });
 

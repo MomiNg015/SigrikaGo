@@ -113,6 +113,16 @@
   background: #ffffff !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.disconnected-portrait {
+  background:
+    radial-gradient(circle at 50% 58%, rgba(255, 185, 193, 0.72), rgba(255, 232, 235, 0.94) 68%),
+    #ffe8eb !important;
+  border-color: #d94a62 !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.54),
+    3px 3px 0 rgba(217, 74, 98, 0.28) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap img {
   background: transparent !important;
   border: 0 !important;

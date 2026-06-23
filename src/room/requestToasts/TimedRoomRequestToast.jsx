@@ -1,6 +1,13 @@
+import { createPortal } from "react-dom";
 import ScoringBreakdown from "../ScoringBreakdown.jsx";
 
 export default function TimedRoomRequestToast({ toast, onAction }) {
+  const content = <TimedRoomRequestToastContent toast={toast} onAction={onAction} />;
+  if (typeof document === "undefined" || !document.body) return content;
+  return createPortal(content, document.body);
+}
+
+function TimedRoomRequestToastContent({ toast, onAction }) {
   const hasActions = toast.actions?.length > 0;
   return (
     <section className={`room-request-toast ${hasActions ? "actionable" : "passive"}`} role="status" aria-live="polite">

@@ -51,7 +51,7 @@ function PlayerInfo({
   const isGomoku = gameModeFamily(game.mode) === "gomoku";
   const showGoStats = !isGomoku;
   const resultBadge = resultBadgeForPlayer(player, game, { isWinner, isDrawResult });
-  const disconnectBadge = disconnectBadgeForPlayer(player, game);
+  const isDisconnected = isDisconnectedPlayer(player, game);
   const requestFloatingLayer = () => onFloatingLayerRequest?.(floatingLayerId);
   return (
     <aside
@@ -68,10 +68,9 @@ function PlayerInfo({
         }
       } : undefined}
     >
-      <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"}`}>
+      <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${isDisconnected ? "disconnected-portrait" : ""}`}>
         <img src={playerCandyPortrait(character, player)} alt={character.name} />
         <CharacterChainBadge user={player.user} characterId={character.id} />
-        {disconnectBadge && <span className="disconnect-badge">{disconnectBadge}</span>}
         {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       </div>
       <div className="player-meta">
@@ -239,9 +238,9 @@ export function resultBadgeForPlayer(player, game, { isWinner = false, isDrawRes
   return game.phase === "finished" ? { label: "负", tone: "loss" } : null;
 }
 
-export function disconnectBadgeForPlayer(player, game) {
+export function isDisconnectedPlayer(player, game) {
   if (!player || game?.phase === "finished") return null;
-  return player.connected === false && player.disconnectedAt ? "断线中" : null;
+  return player.connected === false && player.disconnectedAt ? true : null;
 }
 
 export function playerCandyPortrait(character = {}, player = {}) {
