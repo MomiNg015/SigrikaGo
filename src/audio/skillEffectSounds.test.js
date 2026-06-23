@@ -1,8 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { playSkillEffectSound, skillEffectSoundCues } from "./skillEffectSounds.js";
+import {
+  playSkillEffectSound,
+  resetSkillEffectSoundContextForTest,
+  skillEffectSoundCues
+} from "./skillEffectSounds.js";
 
 describe("skill effect sounds", () => {
   afterEach(() => {
+    resetSkillEffectSoundContextForTest();
     vi.unstubAllGlobals();
   });
 
@@ -29,6 +34,73 @@ describe("skill effect sounds", () => {
     vi.stubGlobal("window", {});
 
     expect(() => playSkillEffectSound("flip-stone", "impact", { master: 100, sfx: 100 })).not.toThrow();
+  });
+
+  it("plays Aemeath hidden-hand as low startup, high data stream, and takeover pulse cues", () => {
+    const events = [];
+    class FakeAudioContext {
+      constructor() {
+        this.currentTime = 2;
+        this.destination = {};
+        this.sampleRate = 8000;
+        this.state = "running";
+      }
+
+      createOscillator() {
+        const oscillator = {
+          type: "sine",
+          frequency: {
+            setValueAtTime: vi.fn(),
+            exponentialRampToValueAtTime: vi.fn()
+          },
+          connect: vi.fn(),
+          start: vi.fn((time) => events.push(["oscillator:start", oscillator.type, time])),
+          stop: vi.fn()
+        };
+        return oscillator;
+      }
+
+      createGain() {
+        return {
+          gain: {
+            setValueAtTime: vi.fn(),
+            exponentialRampToValueAtTime: vi.fn()
+          },
+          connect: vi.fn()
+        };
+      }
+
+      createBuffer(_channels, length) {
+        return {
+          getChannelData: vi.fn(() => new Float32Array(length))
+        };
+      }
+
+      createBufferSource() {
+        return {
+          buffer: null,
+          connect: vi.fn(),
+          start: vi.fn((time) => events.push(["noise:start", time])),
+          stop: vi.fn()
+        };
+      }
+
+      createBiquadFilter() {
+        return {
+          type: "highpass",
+          frequency: { setValueAtTime: vi.fn() },
+          connect: vi.fn()
+        };
+      }
+    }
+    vi.stubGlobal("window", { AudioContext: FakeAudioContext });
+
+    playSkillEffectSound("hidden-hand", "start", { master: 100, sfx: 100 });
+    playSkillEffectSound("hidden-hand", "impact", { master: 100, sfx: 100 });
+
+    expect(events.filter(([type]) => type === "oscillator:start")).toHaveLength(6);
+    expect(events.filter(([type]) => type === "noise:start")).toHaveLength(3);
+    expect(events.map((event) => event[0])).toContain("noise:start");
   });
 
   it("plays Mornye protocol takeover start and impact sounds through WebAudio", () => {

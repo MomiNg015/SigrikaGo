@@ -3,6 +3,9 @@ import { skillEffectHasBoardEffect } from "./skillEffectCatalog.js";
 export const SKILL_BANNER_DURATION_MS = 2000;
 export const SKILL_BOARD_EFFECT_DURATION_MS = 1800;
 export const SKILL_PREVIEW_DELAY_MS = 4000;
+export const FLIP_STONE_BUBBLE_COVER_RESOLUTION_MS = 3040;
+export const HIDDEN_HAND_BOARD_EFFECT_DURATION_MS = 1500;
+export const HIDDEN_HAND_PREVIEW_DELAY_MS = SKILL_BANNER_DURATION_MS + HIDDEN_HAND_BOARD_EFFECT_DURATION_MS;
 export const SKILL_EFFECT_REDUCED_MOTION_MS = 320;
 export const LIBERTY_PURGE_SLASH_INITIAL_DELAY_MS = 240;
 export const LIBERTY_PURGE_SLASH_STAGGER_MS = 170;
@@ -19,6 +22,12 @@ const DEFAULT_SKILL_PRESENTATION_LAYERS = Object.freeze({
 });
 
 export const SKILL_EFFECT_PRESENTATION_CONFIG = Object.freeze({
+  "flip-stone": Object.freeze({
+    resolutionDelayMs: FLIP_STONE_BUBBLE_COVER_RESOLUTION_MS
+  }),
+  "hidden-hand": Object.freeze({
+    resolutionDelayMs: HIDDEN_HAND_PREVIEW_DELAY_MS
+  }),
   "row-slash": Object.freeze({
     layers: Object.freeze({
       domBoardEffect: true
@@ -62,6 +71,7 @@ export function skillEffectTiming({ reducedMotion = false } = {}) {
 }
 
 export function skillBoardEffectDurationMs({ effectType = "", removalMarkIds = [] } = {}) {
+  if (effectType === "hidden-hand") return HIDDEN_HAND_BOARD_EFFECT_DURATION_MS;
   if (effectType !== "liberty-purge") return SKILL_BOARD_EFFECT_DURATION_MS;
   const removalCount = Array.isArray(removalMarkIds) ? removalMarkIds.length : 0;
   if (removalCount <= 1) return SKILL_BOARD_EFFECT_DURATION_MS;

@@ -1,5 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
+  HIDDEN_HAND_BOARD_EFFECT_DURATION_MS,
+  HIDDEN_HAND_PREVIEW_DELAY_MS,
   SKILL_EFFECT_REDUCED_MOTION_MS,
   SKILL_PREVIEW_DELAY_MS,
   SKILL_BANNER_DURATION_MS,
@@ -41,6 +43,17 @@ describe("skillPresentation", () => {
     expect(skillPreviewResolutionDelay({ effectType: "color-illusion-passive" })).toBe(
       SKILL_BANNER_DURATION_MS
     );
+  });
+
+  test("resolves Denia flip-stone while the corrupt bubble covers the target", () => {
+    expect(skillPreviewResolutionDelay({ effectType: "flip-stone" })).toBe(3040);
+  });
+
+  test("keeps Aemeath hidden-hand within its upgraded board-effect window", () => {
+    expect(HIDDEN_HAND_BOARD_EFFECT_DURATION_MS).toBe(1500);
+    expect(HIDDEN_HAND_PREVIEW_DELAY_MS).toBe(3500);
+    expect(skillBoardEffectDurationMs({ effectType: "hidden-hand" })).toBe(1500);
+    expect(skillPreviewResolutionDelay({ effectType: "hidden-hand" })).toBe(3500);
   });
 
   test("normalizes catalog-backed Pixi board effects", () => {

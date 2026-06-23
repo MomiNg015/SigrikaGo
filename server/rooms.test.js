@@ -659,7 +659,9 @@ describe("rooms character integration", () => {
       effectType: "hidden-hand",
       targetId,
       affectedPointIds: [targetId],
-      markedPointIds: []
+      markedPointIds: [],
+      bannerDurationMs: 2000,
+      boardEffectDurationMs: 1500
     });
   });
 
