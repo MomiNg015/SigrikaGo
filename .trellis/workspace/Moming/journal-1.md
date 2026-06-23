@@ -700,3 +700,36 @@ Implemented configurable dynamic rating, rated-vs-friendly match settlement, rep
 ### Next Steps
 
 - None - task complete
+
+
+## Session 22: Stabilize room runtime guardrails
+
+**Date**: 2026-06-23
+**Task**: Stabilize room runtime guardrails
+**Branch**: `codex/stability-tech-debt-audit`
+
+### Summary
+
+Handled stability audit guardrails: overlay registry and app-shell hook extraction, room broadcast and asset sync guardrails, result-save close gating, gameplay phase guards, patch-gap resume debounce, docs/spec updates, and verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `adab31a3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
