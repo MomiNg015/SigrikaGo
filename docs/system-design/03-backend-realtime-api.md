@@ -102,3 +102,13 @@
 - When a player socket disconnects, the room clears that player's `socketId` and records `disconnectedAt`. If both players are absent from an unfinished room for 5 minutes, the server marks the game as `invalid` with reason `empty-room`, skips `GameRecord` creation, deletes the persisted room, and removes the room from memory.
 - Finished rooms keep the existing 5-minute review window. When the timer fires while any player or spectator socket is still attached, the server extends `closesAt` instead of closing the room. Only empty finished rooms are deleted.
 - `src/main.jsx` handles `room:closed` payloads, clears the remembered room code, resets room UI state, and displays the payload message when present. Finished-room cleanup payloads carry `reason: "finished-room-close"` plus `roomCode`; player clients mark that result as dismissed and stay silent so the result modal does not reopen during cleanup.
+
+## Mailbox API
+
+- Player mailbox routes are authenticated under `/api`: `GET /mailbox/summary`, `GET /mailbox`, `POST /mailbox/:id/read`, `POST /mailbox/:id/claim`, and `DELETE /mailbox/:id`.
+- Admin mailbox routes are authenticated and admin-only under `/api/admin`: `GET /mailbox/users`, `GET /mailbox/batches`, and `POST /mailbox/batches`.
+- `server/mailbox.js` owns domain behavior. Admin sends create a `MailboxBatch`, deliver `MailboxMessage` rows to eligible users, and write an audit event with action `mailbox.send`.
+- Player claims are manual. Coin claims write a `UserProgressLedger` row with reason `mailbox.claim`; item claims update the legacy owned item projection and the structured `UserItem` mirror through existing inventory helpers.
+- Global batches can target current users only or current plus future users. Future-eligible batches are materialized for a user when mailbox list or summary is read.
+- `DELETE /mailbox/:id` soft-deletes by setting `MailboxMessage.deletedAt`. Player list, summary, capacity, read, and claim flows treat deleted rows as hidden, while future-batch materialization still uses them as delivery history to prevent deleted global mail from being recreated.
+- `initializeServerData()` runs `ensureMailboxSchema()` during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.

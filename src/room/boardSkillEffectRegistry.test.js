@@ -25,6 +25,23 @@ describe("boardSkillEffectRegistry", () => {
     });
   });
 
+  test("renders Aemeath hidden-hand as a center-out line-only circuit takeover", () => {
+    const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
+    const hiddenHandSource = registrySource.match(/function playDataStreamHiddenHand[\s\S]*?function playReducedMotionHit/)?.[0] ?? "";
+
+    expect(hiddenHandSource).toContain("circuitBoardPoints");
+    expect(hiddenHandSource).toContain("drawCircuitLanes");
+    expect(hiddenHandSource).toContain("drawCircuitDiagonals");
+    expect(hiddenHandSource).toContain("membraneAlpha");
+    expect(hiddenHandSource).toContain("boardPointCenter");
+    expect(hiddenHandSource).not.toContain("drawCircuitChips");
+    expect(hiddenHandSource).not.toContain("const chips");
+    expect(hiddenHandSource).not.toContain("roundRect");
+    expect(hiddenHandSource).not.toContain("new pixi.Text");
+    expect(hiddenHandSource).not.toContain("\"01\"");
+    expect(hiddenHandSource).not.toContain("\"10\"");
+  });
+
   test("keeps ChangLi double-move registered as a full-board effect", () => {
     expect(BOARD_SKILL_EFFECT_RENDERERS["double-move"]).toMatchObject({
       fullBoard: true,

@@ -20,6 +20,7 @@ export const APP_MODAL_DISMISS_ORDER = [
   "shop",
   "recruitment",
   "settings",
+  "mailbox",
   "messageBoard"
 ];
 

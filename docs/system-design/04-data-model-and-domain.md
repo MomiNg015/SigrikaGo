@@ -220,3 +220,11 @@
 - `UserAchievementEquipment` 保存用户当前装备的 `titleAssetId`、`badgeAssetId` 和 `nameplateAssetId`。更新装备时只允许选择该用户已达成成就解锁的对应类型奖励资产。
 - 用户资料与装备接口除返回 `achievementEquipment` id 外，还会返回当前槽位对应的 `achievementEquipmentAssets` / `equipmentAssets`，让前端无需再次查表即可渲染称号、徽章和用户名背景图片。`attachAchievementEquipmentAssetsToUsers` 用于批量装饰用户列表，socket 登录用户、排行榜用户和社交用户列表/资料都走这条路径，确保任何拿到完整用户对象的用户名展示点具备同一套个性化资产。
 - `ensureAchievementSchema` 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 `Character`、`Decoration`、`ShopItem` 添加 `source` 字段；`server/serverStartup.js` 会在角色与商店种子任务之前执行该 guard，避免 Prisma 在旧库缺少 `source` 列时先读取这些模型。
+
+## Mailbox Data Model
+
+- `MailboxBatch` records one admin send operation: admin user id, target mode, optional selected recipient id, title/body, serialized attachment payload, future-user eligibility, delivered/skipped counts, and creation time.
+- `MailboxMessage` records one delivered user-visible message: recipient user id, optional batch id, title/body, serialized attachment payload, read/claim/delete timestamps, and creation time. `deletedAt` is a soft-delete marker so future-eligible global batches cannot be redelivered after a player removes a visible message.
+- Each user mailbox is capped at 20 visible non-deleted messages. Before delivery, the domain soft-deletes the oldest safe messages that are already read and have no unclaimed attachment. If no safe space exists, delivery is skipped instead of deleting claimable rewards.
+- A message with an unclaimed attachment is not deletable. Claiming is idempotent at the domain level by checking `claimedAt` and the attachment type before mutating coins or inventory.
+- The schema is backed by migrations `202606220001_add_mailbox_system` and `202606220002_soft_delete_mailbox_messages`, plus the startup compatibility guard `ensureMailboxSchema()` for older local SQLite databases; `server/schemaIntegrity.test.js` checks that migrations and the Prisma model stay in sync.

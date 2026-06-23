@@ -444,6 +444,7 @@ socket.on("room:patch", (patch) => {
 - Keep existing `show*` / `setShow*` prop names at composition boundaries until the receiving component is intentionally refactored.
 - Setter callbacks returned by `useOverlayState()` should remain stable so `useOverlayActions()` and socket/replay actions do not recreate callbacks on every overlay toggle.
 - `closeAllOverlays()` in `useOverlayActions()` should close every key represented by `OVERLAY_STATE_KEYS`.
+- Every setter used by `closeAllOverlays()` must be passed through `App.jsx -> useAppActions -> useOverlayActions`; socket lifecycle paths call `closeAllOverlays()` before recording match or resume state, so a missing setter can interrupt non-overlay flows.
 - Overlay visibility should stay separate from route state, room server state, current user state, and toast queue state.
 
 #### 4. Validation & Error Matrix
@@ -451,6 +452,7 @@ socket.on("room:patch", (patch) => {
 - One overlay opens -> only that key changes.
 - Bulk close -> every known overlay key becomes false.
 - Adding a new overlay -> update `OVERLAY_STATE_KEYS`, hook return shape, close-all behavior, `AppRoutes` / `AppOverlays` wiring, and tests.
+- Missing setter wiring through `useAppActions` -> invalid implementation; tests should fail before `match:found`, room resume, or replay entry can hit a runtime `TypeError`.
 
 #### 5. Good/Base/Bad Cases
 - Good: `const { showShop, setShowShop } = useOverlayState();`
@@ -460,6 +462,7 @@ socket.on("room:patch", (patch) => {
 
 #### 6. Tests Required
 - `src/app/useOverlayState.test.js` should assert the canonical overlay key list and default/close-all projections.
+- App wiring tests should assert new overlay setters are passed from `App.jsx` into `useAppActions()` and onward into `useOverlayActions()`.
 - App route or overlay source tests should be updated when a new overlay prop is introduced.
 
 #### 7. Wrong vs Correct
@@ -693,6 +696,7 @@ const { matchStart, matchSuccess, setMatchStart, setMatchSuccess } = useMatchSes
 - Treating room snapshot rating/rank changes as account reward events. Mode-specific stats can differ across spark, standard, and gomoku, so changing modes can make the current player's displayed rating/rank change without any game settlement.
 - Bypassing `applyRoomSnapshot` for full same-room `room:update`, live `room:resume`, or pending match-success room payloads. This loses structural sharing and makes memoized board/player consumers work harder.
 - Adding app-level modal flags directly to `App.jsx` instead of extending `useOverlayState()`.
+- Adding an overlay key to `useOverlayActions.closeAllOverlays()` without also passing its setter through `useAppActions()`.
 - Storing `resultModalOpen` as independent state instead of deriving it from `useRoomSessionState()`.
 - Adding independent match booleans instead of deriving them from `useMatchSessionState()`.
 - Replaying direct-duel banner state or doorbell audio for the same `requestId` instead of suppressing duplicate `duel:incoming` payloads through `incomingDuelRef`.

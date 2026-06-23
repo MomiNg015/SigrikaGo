@@ -120,6 +120,38 @@ describe("Prisma schema integrity", () => {
     }
   });
 
+  it("tracks mailbox batches and messages through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606220001_add_mailbox_system",
+      "migration.sql"
+    );
+    const softDeleteMigrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606220002_soft_delete_mailbox_messages",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+    const softDeleteMigration = readFileSync(softDeleteMigrationPath, "utf8");
+
+    for (const modelName of [
+      "MailboxBatch",
+      "MailboxMessage"
+    ]) {
+      expect(schema).toContain(`model ${modelName}`);
+      expect(migration).toContain(`CREATE TABLE IF NOT EXISTS "${modelName}"`);
+    }
+    expect(schema).toContain("mailboxMessages   MailboxMessage[]");
+    expect(schema).toContain("deletedAt");
+    expect(migration).toContain("CREATE INDEX IF NOT EXISTS \"MailboxMessage_userId_createdAt_idx\"");
+    expect(softDeleteMigration).toContain("ALTER TABLE \"MailboxMessage\" ADD COLUMN \"deletedAt\"");
+  });
+
   it("tracks gacha pools, rewards, blue gems, and character chains through a migration", () => {
     const schema = readFileSync(schemaPath, "utf8");
     const migrationPath = join(

@@ -92,3 +92,12 @@
 - 个性化窗口桌面端使用预览区加三列装备面板，称号、徽章、用户名背景分别独立选择；预览区通过 `UserIdentity` 展示保存前试穿效果。装备按钮状态遵循成就 tab 的粉红选中视觉：粉红表示当前已保存并生效，浅绿色表示正在试穿但尚未保存。560px 以下改为单列面板，按钮保持 42px 以上高度和内部省略号，保证移动端可点选。
 - 部员手册的出战状态分两层表达：角色卡本体使用浅绿色表示当前出战角色，卡内出战按钮复用 tab/装备按钮的粉红选中视觉并保留 pressed depth；桌面和移动最终层都显式覆盖该状态，避免 disabled 或通用按钮样式把当前出战按钮洗回灰色。
 - `toast.achievement` 使用金橙色高亮渐变和更强阴影，作为成就达成反馈；普通成功/错误 toast 样式不变。
+
+## Mailbox UI And Mobile
+
+- The home mailbox entry uses a `lucide-react` mail icon in the existing top-right action cluster on desktop and the compact mobile menu on phones. The badge is the unread plus claimable count from the summary API.
+- `src/styles/modals/mailbox.css` defines the player mailbox modal as a two-column list/detail layout on desktop and a stacked list/detail layout on mobile, with bounded internal scroll regions so long mail bodies do not push the modal outside the viewport.
+- Empty player inboxes keep the same mailbox layout as populated inboxes: the left mail list renders a compact `暂无邮件` row, and the detail pane stays reserved instead of replacing the whole modal with a separate empty card.
+- The mailbox modal is included in the shared terminal and Bright School modal shell layers so desktop renders as a centered sheet instead of a full-width strip, while mobile keeps a top sheet with safe-area padding.
+- `src/styles/admin/mailbox.css` defines the admin send form and recent send history as a two-column admin workspace on desktop and a single-column flow below 900px.
+- The mailbox styles are imported through the existing import-only domain entrypoints: `src/styles/modals.css`, `src/styles/admin.css`, and `src/styles/home-terminal/top-strip.css`.

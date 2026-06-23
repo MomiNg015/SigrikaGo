@@ -235,67 +235,174 @@ function changliFlamePointIds(boardSize) {
   return [...ids];
 }
 
-function playDataStreamHiddenHand({ app, pixi, host, durationMs }) {
-  const grid = new pixi.Graphics();
-  const streams = new pixi.Graphics();
-  const glow = new pixi.Graphics();
+function playDataStreamHiddenHand({ app, pixi, host, boardSize, durationMs }) {
+  const underlay = new pixi.Graphics();
+  const gridLines = new pixi.Graphics();
+  const diagonals = new pixi.Graphics();
+  const membrane = new pixi.Graphics();
+  const afterglow = new pixi.Graphics();
   const width = host.clientWidth;
   const height = host.clientHeight;
   const center = { x: width / 2, y: height / 2 };
-  const particles = Array.from({ length: 52 }, (_, index) => ({
-    angle: (Math.PI * 2 * index) / 52,
-    lane: index % 4,
-    speed: 0.72 + (index % 7) * 0.04,
-    glyph: new pixi.Text({
-      text: index % 3 === 0 ? "01" : index % 3 === 1 ? "10" : "◇",
-      style: {
-        fill: index % 5 === 0 ? 0xffffff : 0x7dffbf,
-        fontSize: 10 + (index % 3) * 2,
-        fontFamily: "monospace"
-      }
-    })
-  }));
-  for (const particle of particles) {
-    particle.glyph.anchor.set(0.5);
-    app.stage.addChild(particle.glyph);
-  }
-  app.stage.addChild(grid, streams, glow);
-  const maxRadius = Math.hypot(width, height) * 0.62;
+  app.stage.addChild(underlay, gridLines, diagonals, membrane, afterglow);
+  const points = circuitBoardPoints({ boardSize, width, height });
+  const horizontalLanes = circuitGridLanes(points, boardSize, "horizontal");
+  const verticalLanes = circuitGridLanes(points, boardSize, "vertical");
+  const diagonalLinks = circuitDiagonalLinks(points, boardSize);
+  const maxRadius = Math.hypot(width, height) * 0.58;
+  const cellSize = Math.min(width, height) / Math.max(1, boardSize);
   const startedAt = performance.now();
 
   app.ticker.add(() => {
     const progress = clamp01((performance.now() - startedAt) / durationMs);
-    const enter = easeOutCubic(Math.min(progress / 0.5, 1));
-    const exit = clamp01((progress - 0.58) / 0.36);
-    const alpha = Math.min(1, enter * 1.2) * (1 - exit);
-    const wave = maxRadius * (1 - enter * 0.78 + exit * 0.72);
-    grid.clear();
-    streams.clear();
-    glow.clear();
-    glow.circle(center.x, center.y, Math.max(16, wave * 0.52))
-      .fill({ color: 0x38ff9b, alpha: 0.05 * alpha })
-      .stroke({ width: 2, color: 0xeafff4, alpha: 0.28 * alpha });
-    for (let index = 0; index < 8; index += 1) {
-      const inset = index * 18 + enter * 22;
-      const rectAlpha = alpha * Math.max(0, 0.24 - index * 0.018);
-      if (inset < width / 2 && inset < height / 2) {
-        grid.roundRect(inset, inset, width - inset * 2, height - inset * 2, 10)
-          .stroke({ width: 1.4, color: index % 2 ? 0xbfffe1 : 0x38ff9b, alpha: rectAlpha });
+    const ignition = easeOutCubic(clamp01(progress / 0.18));
+    const spread = easeOutCubic(clamp01((progress - 0.08) / 0.52));
+    const exit = clamp01((progress - 0.74) / 0.22);
+    const alpha = ignition * (1 - exit);
+    const radius = maxRadius * spread;
+    const membraneLocal = clamp01((progress - 0.48) / 0.18);
+    const membraneFade = clamp01((progress - 0.64) / 0.16);
+    const membraneAlpha = Math.sin(membraneLocal * Math.PI) * (1 - membraneFade * 0.35);
+
+    underlay.clear();
+    gridLines.clear();
+    diagonals.clear();
+    membrane.clear();
+    afterglow.clear();
+
+    underlay.circle(center.x, center.y, Math.max(cellSize * 0.75, radius * 0.22))
+      .fill({ color: 0x05351f, alpha: 0.1 * alpha })
+      .circle(center.x, center.y, Math.max(cellSize * 0.4, radius * 0.08))
+      .fill({ color: 0xbaffdf, alpha: 0.18 * ignition * (1 - exit) });
+
+    drawCircuitLanes(gridLines, horizontalLanes, { center, radius, progress, alpha, width: 2.6, color: 0x2dff89 });
+    drawCircuitLanes(gridLines, verticalLanes, { center, radius, progress, alpha, width: 2.1, color: 0xb9ffda });
+    drawCircuitDiagonals(diagonals, diagonalLinks, { center, radius, progress, alpha });
+
+    if (membraneAlpha > 0) {
+      const coverAlpha = 0.08 + membraneAlpha * 0.24;
+      membrane.rect(0, 0, width, height)
+        .fill({ color: 0x041810, alpha: coverAlpha })
+        .rect(0, 0, width, height)
+        .stroke({ width: 2, color: 0x7dffc2, alpha: 0.24 * membraneAlpha });
+      drawCircuitLanes(membrane, horizontalLanes, {
+        center,
+        radius: maxRadius,
+        progress: 1,
+        alpha: membraneAlpha,
+        width: 1.5,
+        color: 0x8dffc8
+      });
+      drawCircuitLanes(membrane, verticalLanes, {
+        center,
+        radius: maxRadius,
+        progress: 1,
+        alpha: membraneAlpha,
+        width: 1.2,
+        color: 0xffffff
+      });
+    }
+
+    const residue = clamp01((progress - 0.68) / 0.28);
+    if (residue > 0) {
+      for (let index = 0; index < 18; index += 1) {
+        const angle = index * 2.399 + progress * 0.38;
+        const distance = maxRadius * (0.14 + residue * (0.72 + (index % 4) * 0.04));
+        afterglow.rect(
+          center.x + Math.cos(angle) * distance,
+          center.y + Math.sin(angle) * distance * 0.88,
+          3 + (index % 3) * 2,
+          1.5
+        ).fill({ color: index % 3 ? 0x55ff9f : 0xffffff, alpha: 0.28 * alpha * (1 - residue) });
       }
     }
-    for (const particle of particles) {
-      const radius = wave - particle.lane * 18 + Math.sin(progress * 8 + particle.lane) * 5;
-      const x = center.x + Math.cos(particle.angle + progress * 0.22 * particle.speed) * radius;
-      const y = center.y + Math.sin(particle.angle + progress * 0.18 * particle.speed) * radius;
-      particle.glyph.x = x;
-      particle.glyph.y = y;
-      particle.glyph.alpha = alpha * (0.36 + particle.lane * 0.12);
-      particle.glyph.rotation = particle.angle + Math.PI / 2;
-      streams.moveTo(x, y)
-        .lineTo(lerp(x, center.x, 0.1), lerp(y, center.y, 0.1))
-        .stroke({ width: 1.2, color: particle.lane % 2 ? 0xffffff : 0x6cffb0, alpha: 0.08 * alpha });
-    }
   });
+}
+
+function circuitBoardPoints({ boardSize, width, height }) {
+  const points = [];
+  for (let y = 0; y < boardSize; y += 1) {
+    for (let x = 0; x < boardSize; x += 1) {
+      const point = boardPointCenter(`${x},${y}`, { boardSize, width, height });
+      points.push({
+        ...point,
+        boardX: x,
+        boardY: y,
+        phase: ((x * 17 + y * 31) % 23) / 23
+      });
+    }
+  }
+  return points;
+}
+
+function circuitGridLanes(points, boardSize, direction) {
+  const lanes = [];
+  for (let y = 0; y < boardSize; y += 1) {
+    for (let x = 0; x < boardSize - 1; x += 1) {
+      const first = direction === "horizontal"
+        ? points[y * boardSize + x]
+        : points[x * boardSize + y];
+      const second = direction === "horizontal"
+        ? points[y * boardSize + x + 1]
+        : points[(x + 1) * boardSize + y];
+      lanes.push({
+        first,
+        second,
+        phase: ((first.boardX + 1) * 11 + (first.boardY + 1) * 7) % 13 / 13
+      });
+    }
+  }
+  return lanes;
+}
+
+function circuitDiagonalLinks(points, boardSize) {
+  const links = [];
+  for (let y = 1; y < boardSize - 1; y += 2) {
+    for (let x = 1; x < boardSize - 1; x += 3) {
+      const first = points[y * boardSize + x];
+      const xOffset = (x + y) % 2 === 0 ? 1 : -1;
+      const yOffset = (x * 3 + y) % 2 === 0 ? 1 : -1;
+      const second = points[(y + yOffset) * boardSize + x + xOffset];
+      if (first && second) links.push({ first, second, phase: ((x + 2) * (y + 3)) % 17 / 17 });
+    }
+  }
+  return links;
+}
+
+function drawCircuitLanes(graphics, lanes, { center, radius, progress, alpha, width, color }) {
+  for (const lane of lanes) {
+    const midpoint = {
+      x: (lane.first.x + lane.second.x) / 2,
+      y: (lane.first.y + lane.second.y) / 2
+    };
+    const distance = Math.hypot(midpoint.x - center.x, midpoint.y - center.y);
+    const reveal = clamp01((radius - distance + 26) / 52);
+    if (!reveal) continue;
+    const streak = 0.62 + Math.sin(progress * 34 + lane.phase * Math.PI * 2) * 0.26;
+    const lineAlpha = alpha * reveal * (0.26 + streak * 0.28);
+    graphics.moveTo(lane.first.x, lane.first.y)
+      .lineTo(lane.second.x, lane.second.y)
+      .stroke({ width, color, alpha: lineAlpha });
+  }
+}
+
+function drawCircuitDiagonals(graphics, links, { center, radius, progress, alpha }) {
+  for (const link of links) {
+    const midpoint = {
+      x: (link.first.x + link.second.x) / 2,
+      y: (link.first.y + link.second.y) / 2
+    };
+    const distance = Math.hypot(midpoint.x - center.x, midpoint.y - center.y);
+    const reveal = clamp01((radius - distance + 18) / 46);
+    if (!reveal) continue;
+    graphics.moveTo(link.first.x, link.first.y)
+      .lineTo(link.second.x, link.second.y)
+      .stroke({
+        width: 1.15,
+        color: link.phase > 0.5 ? 0xbaffdf : 0x25ff84,
+        alpha: alpha * reveal * (0.12 + Math.sin(progress * 20 + link.phase * 5) * 0.04)
+      });
+  }
 }
 
 function playReducedMotionHit({ app, pixi, target, durationMs }) {

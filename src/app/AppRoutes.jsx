@@ -38,12 +38,14 @@ export default function AppRoutes({
   setReplayStep,
   setRoom,
   setShowFriends,
+  mailboxBadgeCount,
   recruitmentReady,
   showMatchModePicker,
   setShowMatchModePicker,
   setShowRecruitment,
   setShowHouse,
   setShowLeaderboard,
+  setShowMailbox,
   setShowMessageBoard,
   setShowResume,
   setShowSettings,
@@ -85,12 +87,14 @@ export default function AppRoutes({
         setShowShop(true);
       }}
       recruitmentReady={recruitmentReady}
+      mailboxBadgeCount={mailboxBadgeCount}
       onOpenRecruitment={() => {
         playUiRecruitmentOpenSound(audioSettings);
         setShowRecruitment(true);
       }}
       onOpenFriends={() => setShowFriends(true)}
       onOpenSettings={() => setShowSettings(true)}
+      onOpenMailbox={() => setShowMailbox(true)}
       onOpenMessageBoard={() => setShowMessageBoard(true)}
       onOpenAdmin={() => setView("admin")}
     />

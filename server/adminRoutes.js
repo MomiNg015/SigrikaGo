@@ -49,6 +49,11 @@ import {
 } from "./adminGachaManagement.js";
 import { listMusicTrackSettings, updateMusicTrackSetting } from "./musicTracks.js";
 import { getRecruitmentConfig, updateRecruitmentConfig } from "./recruitment.js";
+import {
+  createMailboxBatch,
+  listAdminMailboxBatches,
+  searchMailboxUsers
+} from "./mailbox.js";
 
 export { serializeAudit } from "./adminAudit.js";
 export {
@@ -159,6 +164,30 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
 
   router.get("/user-reports", async (_req, res) => {
     res.json(await listUserReports({ prisma }));
+  });
+
+  router.get("/mailbox/users", async (req, res) => {
+    try {
+      res.json(await searchMailboxUsers({ prisma, query: req.query.q }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/mailbox/batches", async (_req, res) => {
+    try {
+      res.json(await listAdminMailboxBatches({ prisma }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.post("/mailbox/batches", async (req, res) => {
+    try {
+      res.json(await createMailboxBatch({ prisma, adminUser: req.user, input: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
   });
 
   router.get("/site-settings", async (_req, res) => {

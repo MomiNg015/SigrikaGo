@@ -84,6 +84,27 @@ describe("room skill resolution helpers", () => {
     });
   });
 
+  test("resolves Denia flip-stone while the bubble cover hides the stone", () => {
+    const game = {
+      phase: "playing",
+      history: [{ type: "skill", effectType: "flip-stone", id: "6,6" }]
+    };
+    const resolution = createPendingSkillResolution({
+      pendingSkillId: "skill-denia",
+      game,
+      notices: [],
+      playerColor: "black",
+      effectType: "flip-stone",
+      now: () => 1000
+    });
+
+    expect(skillPreviewResolutionDelay({ effectType: "flip-stone" })).toBe(3040);
+    expect(resolution).toMatchObject({
+      resolvesAt: 4040,
+      effectsEnabled: true
+    });
+  });
+
   test("calculates remaining delay for restored pending skill snapshots", () => {
     expect(pendingSkillResolutionDelay({ resolvesAt: 2500 }, { now: () => 1000 })).toBe(1500);
     expect(pendingSkillResolutionDelay({ resolvesAt: 500 }, { now: () => 1000 })).toBe(0);

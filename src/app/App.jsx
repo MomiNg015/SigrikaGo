@@ -63,6 +63,7 @@ export default function App() {
     showFriends,
     showWatch,
     showSettings,
+    showMailbox,
     showMessageBoard,
     setShowShop,
     setShowRecruitment,
@@ -76,6 +77,7 @@ export default function App() {
     setShowFriends,
     setShowWatch,
     setShowSettings,
+    setShowMailbox,
     setShowMessageBoard
   } = useOverlayState();
   const {
@@ -105,6 +107,7 @@ export default function App() {
   const [assetProgress, setAssetProgress] = useState(0);
   const [recruitmentReady, setRecruitmentReady] = useState(false);
   const [recruitmentBadgeTask, setRecruitmentBadgeTask] = useState(null);
+  const [mailboxSummary, setMailboxSummary] = useState({ unreadCount: 0, claimableCount: 0, badgeCount: 0 });
   const { removeToast, showToast, toasts } = useToastQueue();
   const showAchievementUnlocks = useCallback((unlocks = []) => {
     for (const unlock of unlocks) {
@@ -213,6 +216,7 @@ export default function App() {
     setShowRecruitment,
     setShowHouse,
     setShowLeaderboard,
+    setShowMailbox,
     setShowMessageBoard,
     setShowResume,
     setShowSettings,
@@ -229,6 +233,23 @@ export default function App() {
     const nextMusicTracks = await loadMusicTrackCatalog({ token });
     setMusicTracks(nextMusicTracks);
   }
+
+  const refreshMailboxSummary = useCallback(async () => {
+    if (!token || !user) {
+      setMailboxSummary({ unreadCount: 0, claimableCount: 0, badgeCount: 0 });
+      return;
+    }
+    try {
+      const summary = await api("/api/mailbox/summary", { token });
+      setMailboxSummary({
+        unreadCount: Number(summary.unreadCount ?? 0),
+        claimableCount: Number(summary.claimableCount ?? 0),
+        badgeCount: Number(summary.badgeCount ?? 0)
+      });
+    } catch {
+      setMailboxSummary({ unreadCount: 0, claimableCount: 0, badgeCount: 0 });
+    }
+  }, [token, user?.id]);
 
   useGameSocketConnection({
     audioSettingsRef,
@@ -271,6 +292,7 @@ export default function App() {
     shop: showShop,
     recruitment: showRecruitment,
     settings: showSettings,
+    mailbox: showMailbox,
     messageBoard: showMessageBoard
   });
   const dismissTopModal = useCallback(() => {
@@ -317,6 +339,9 @@ export default function App() {
       case "settings":
         setShowSettings(false);
         break;
+      case "mailbox":
+        setShowMailbox(false);
+        break;
       case "messageBoard":
         setShowMessageBoard(false);
         break;
@@ -332,6 +357,7 @@ export default function App() {
     setShowMatchModePicker,
     setShowHouse,
     setShowLeaderboard,
+    setShowMailbox,
     setShowMessageBoard,
     setShowPersonalization,
     setShowResume,
@@ -351,6 +377,19 @@ export default function App() {
 
   useReplayRecords({ enabled: showHouse || showResume, showToast, token, setReplayRecords });
   useHomeUserRefresh({ onAchievementUnlocks: showAchievementUnlocks, token, updateUser, user, view });
+  useEffect(() => {
+    if (!token || !user) {
+      setMailboxSummary({ unreadCount: 0, claimableCount: 0, badgeCount: 0 });
+      return undefined;
+    }
+    refreshMailboxSummary();
+    const timer = window.setInterval(refreshMailboxSummary, 30000);
+    return () => window.clearInterval(timer);
+  }, [refreshMailboxSummary, token, user?.id]);
+  useEffect(() => {
+    if (!showMailbox) return;
+    refreshMailboxSummary();
+  }, [refreshMailboxSummary, showMailbox]);
   const handleRecruitmentStatusChange = useCallback((task) => {
     setRecruitmentReady(task?.status === "ready");
     setRecruitmentBadgeTask(task ?? null);
@@ -448,12 +487,14 @@ export default function App() {
         setReplayStep={setReplayStep}
         setRoom={setRoom}
         setShowFriends={setShowFriends}
+        mailboxBadgeCount={mailboxSummary.badgeCount}
         recruitmentReady={recruitmentReady}
         showMatchModePicker={showMatchModePicker}
         setShowMatchModePicker={setShowMatchModePicker}
         setShowRecruitment={setShowRecruitment}
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
+        setShowMailbox={setShowMailbox}
         setShowMessageBoard={setShowMessageBoard}
         setShowResume={setShowResume}
         setShowAchievements={setShowAchievements}
@@ -500,6 +541,7 @@ export default function App() {
         setShowRecruitment={setShowRecruitment}
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
+        setShowMailbox={setShowMailbox}
         setShowMessageBoard={setShowMessageBoard}
         setShowResume={setShowResume}
         setShowAchievements={setShowAchievements}
@@ -513,6 +555,7 @@ export default function App() {
         showRecruitment={showRecruitment}
         showHouse={showHouse}
         showLeaderboard={showLeaderboard}
+        showMailbox={showMailbox}
         showMessageBoard={showMessageBoard}
         showResume={showResume}
         showAchievements={showAchievements}
@@ -520,6 +563,7 @@ export default function App() {
         showSettings={showSettings}
         showShop={showShop}
         showToast={showToast}
+        onMailboxSummaryChange={refreshMailboxSummary}
         showWarehouse={showWarehouse}
         showWatch={showWatch}
         siteSettings={siteSettings}

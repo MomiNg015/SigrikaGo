@@ -1,0 +1,124 @@
+.admin-mailbox {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.admin-mailbox-compose {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-mailbox-compose h3,
+.admin-mailbox-history h3 {
+  margin: 0;
+  color: #2d2430;
+}
+
+.admin-mailbox-compose label {
+  display: grid;
+  gap: 6px;
+  color: #6b596d;
+  font-weight: 800;
+}
+
+.admin-mailbox-compose input,
+.admin-mailbox-compose select,
+.admin-mailbox-compose textarea {
+  width: 100%;
+  border: 1px solid #ddcfe2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #2d2430;
+}
+
+.admin-mailbox-compose textarea {
+  resize: vertical;
+}
+
+.admin-mailbox-targets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 5px;
+  border-radius: 8px;
+  background: #f2e9f5;
+}
+
+.admin-mailbox-targets button,
+.admin-mailbox-user-results button {
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 10px;
+  background: transparent;
+  color: #68536e;
+  font-weight: 800;
+}
+
+.admin-mailbox-targets button.active,
+.admin-mailbox-user-results button.active {
+  background: #fff;
+  color: #2d2430;
+  box-shadow: 0 6px 18px rgba(82, 61, 90, 0.12);
+}
+
+.admin-mailbox-user-search {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-mailbox-user-results {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-mailbox-user-results button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #eaddea;
+  background: #fff;
+  text-align: left;
+}
+
+.admin-mailbox-user-results small {
+  color: #7d6a82;
+}
+
+.admin-mailbox-attachment-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-mailbox-attachment-grid label:first-child:last-child {
+  grid-column: 1 / -1;
+}
+
+.admin-mailbox-history {
+  min-width: 0;
+}
+
+.admin-mailbox-history .admin-table-wrap {
+  margin-top: 14px;
+}
+
+.admin-success {
+  margin: 0;
+  color: #267044;
+  font-weight: 900;
+}
+
+@media (max-width: 900px) {
+  .admin-mailbox {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-mailbox-targets,
+  .admin-mailbox-attachment-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -72,6 +72,7 @@
 
 .home-top-strip .icon-button,
 .home-top-strip .admin-nav-action {
+  position: relative;
   width: 40px;
   min-width: 40px;
   height: 40px;
@@ -101,4 +102,35 @@
   padding: 0 12px;
   color: var(--home-terminal-blue);
   border-color: rgba(0, 191, 255, 0.52);
+}
+
+.mailbox-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: 999px;
+  background: #ff4d72;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 0 14px rgba(255, 77, 114, 0.72);
+}
+
+.home-mobile-mailbox-action {
+  position: relative;
+}
+
+.home-mobile-mailbox-action .mailbox-badge {
+  position: static;
+  margin-left: auto;
+  box-shadow: none;
 }

@@ -24,6 +24,7 @@ describe("modal dismissal", () => {
       "shop",
       "recruitment",
       "settings",
+      "mailbox",
       "messageBoard"
     ]);
   });

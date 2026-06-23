@@ -33,6 +33,7 @@ function renderHome(overrides = {}) {
     onOpenShop: () => {},
     onOpenFriends: () => {},
     onOpenSettings: () => {},
+    onOpenMailbox: () => {},
     onOpenMessageBoard: () => {},
     onOpenAdmin: () => {},
     ...overrides
@@ -415,5 +416,15 @@ describe("HomeScreen", () => {
     expect(brightUtilityCss).toContain(".recruitment-entry.has-alert");
     expect(brightUtilityCss).toContain("background: #ff9ebb !important;");
     expect(brightUtilityCss).not.toContain("home-entry-red-dot");
+  });
+
+  it("renders mailbox actions in desktop topbar and mobile menu with badge hooks", () => {
+    const html = renderHome({ mailboxBadgeCount: 3 });
+
+    expect(html).toContain("mailbox-action");
+    expect(html).toContain("home-mobile-mailbox-action");
+    expect(html).toContain("mailbox-badge");
+    expect(html).toContain(">3</span>");
+    expect(html).toContain("aria-label=\"打开邮箱，3封未处理邮件\"");
   });
 });

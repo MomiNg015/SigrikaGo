@@ -273,6 +273,7 @@ describe("root CSS entry contract", () => {
       "./admin/audit-feedback.css",
       "./admin/gacha.css",
       "./admin/achievements.css",
+      "./admin/mailbox.css",
       "./admin/responsive.css"
     ]);
     expect(adminEntry).not.toContain(".admin-screen {");
@@ -795,7 +796,8 @@ describe("root CSS entry contract", () => {
       "./modals/profile-social-actions.css",
       "./modals/character-opening.css",
       "./modals/phone.css",
-      "./modals/terminal-system.css"
+      "./modals/terminal-system.css",
+      "./modals/mailbox.css"
     ]);
     expect(modalsEntry).not.toContain(".modal-backdrop {");
     expect(modalsEntry).not.toContain(".resume-modal {");

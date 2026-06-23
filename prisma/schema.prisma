@@ -47,6 +47,8 @@ model User {
   profileLikesReceived UserProfileLike[] @relation("ProfileLikesReceived")
   reportsSubmitted UserReport[] @relation("ReportsSubmitted")
   reportsReceived UserReport[] @relation("ReportsReceived")
+  mailboxMessages   MailboxMessage[]
+  mailboxBatches    MailboxBatch[] @relation("MailboxAdminBatches")
 }
 
 model RecruitmentTask {
@@ -264,6 +266,52 @@ model UserProgressLedger {
 
   @@index([userId, metric, createdAt])
   @@index([refType, refId])
+}
+
+model MailboxBatch {
+  id                 String   @id @default(cuid())
+  adminUserId        String
+  adminUsername      String
+  targetMode         String
+  recipientUserId    String   @default("")
+  title              String
+  body               String
+  attachmentType     String   @default("none")
+  attachmentItemId   String   @default("")
+  attachmentQuantity Int      @default(0)
+  includeFutureUsers Boolean  @default(false)
+  deliveredCount     Int      @default(0)
+  skippedCount       Int      @default(0)
+  createdAt          DateTime @default(now())
+  admin              User     @relation("MailboxAdminBatches", fields: [adminUserId], references: [id], onDelete: Restrict)
+  messages           MailboxMessage[]
+
+  @@index([targetMode, createdAt])
+  @@index([includeFutureUsers, createdAt])
+  @@index([adminUserId, createdAt])
+}
+
+model MailboxMessage {
+  id                 String   @id @default(cuid())
+  batchId            String?
+  userId             String
+  title              String
+  body               String
+  attachmentType     String   @default("none")
+  attachmentItemId   String   @default("")
+  attachmentQuantity Int      @default(0)
+  isRead             Boolean  @default(false)
+  readAt             DateTime?
+  claimedAt          DateTime?
+  deletedAt          DateTime?
+  createdAt          DateTime @default(now())
+  batch              MailboxBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, isRead])
+  @@index([batchId, userId])
+  @@index([userId, deletedAt, createdAt])
 }
 
 model UserRelationship {

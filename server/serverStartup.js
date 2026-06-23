@@ -3,6 +3,7 @@ import { ensureAchievementSchema, seedBuiltinAchievements } from "./achievements
 import { seedCharacters } from "./characters.js";
 import { ensureGachaSchema, ensureGameModeSchema } from "./db.js";
 import { ensureLoginSessionSchema } from "./loginSessions.js";
+import { ensureMailboxSchema } from "./mailbox.js";
 import { cleanupLegacyDeniaCharacterData } from "./legacyDeniaCleanup.js";
 import { ensureMusicTrackSettingsSchema } from "./musicTracks.js";
 import { ensureRecruitmentSchema } from "./recruitment.js";
@@ -22,6 +23,7 @@ export async function initializeServerData({
   ensureLoginSessionSchema: ensureLoginSessionSchemaTask = ensureLoginSessionSchema,
   ensureGameModeSchema: ensureGameModeSchemaTask = ensureGameModeSchema,
   ensureGachaSchema: ensureGachaSchemaTask = ensureGachaSchema,
+  ensureMailboxSchema: ensureMailboxSchemaTask = ensureMailboxSchema,
   ensureRecruitmentSchema: ensureRecruitmentSchemaTask = ensureRecruitmentSchema,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
@@ -42,6 +44,7 @@ export async function initializeServerData({
   await ensureLoginSessionSchemaTask(prisma);
   await ensureGameModeSchemaTask(prisma);
   await ensureGachaSchemaTask(prisma);
+  await ensureMailboxSchemaTask(prisma);
   await ensureRecruitmentSchemaTask(prisma);
   await ensureMusicTrackSettingsSchemaTask(prisma);
   await promoteConfiguredAdminsTask(prisma);

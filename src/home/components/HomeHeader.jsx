@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { LogOut, Menu, MessageSquareText, Settings } from "lucide-react";
+import { LogOut, Mail, Menu, MessageSquareText, Settings } from "lucide-react";
 
 export default function HomeHeader({
   isAdmin,
   onlineCount,
   siteTitle,
+  mailboxBadgeCount = 0,
   onLogout,
   onOpenAdmin,
+  onOpenMailbox,
   onOpenMessageBoard,
   onOpenSettings
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mailboxCount = Math.max(0, Math.floor(Number(mailboxBadgeCount) || 0));
+  const mailboxLabel = mailboxCount > 0 ? `打开邮箱，${mailboxCount}封未处理邮件` : "打开邮箱";
   const closeMobileMenu = (action) => () => {
     setMobileMenuOpen(false);
     action?.();
@@ -24,6 +28,10 @@ export default function HomeHeader({
       </div>
       <span className="home-online-tag">在线人数：{onlineCount}</span>
       <div className="topbar-actions">
+        <button className="icon-button mailbox-action" aria-label={mailboxLabel} title="邮箱" onClick={onOpenMailbox}>
+          <Mail size={20} />
+          {mailboxCount > 0 && <span className="mailbox-badge">{mailboxCount}</span>}
+        </button>
         <button className="icon-button" title="留言板" onClick={onOpenMessageBoard}><MessageSquareText size={20} /></button>
         <button className="icon-button" title="设置" onClick={onOpenSettings}><Settings size={20} /></button>
         {isAdmin && (
@@ -46,6 +54,11 @@ export default function HomeHeader({
           <Menu size={21} />
         </button>
         <div className="home-mobile-menu-panel" id="home-mobile-menu-panel" aria-hidden={!mobileMenuOpen}>
+          <button className="home-mobile-mailbox-action" type="button" onClick={closeMobileMenu(onOpenMailbox)}>
+            <Mail size={18} />
+            邮箱
+            {mailboxCount > 0 && <span className="mailbox-badge">{mailboxCount}</span>}
+          </button>
           <button type="button" onClick={closeMobileMenu(onOpenMessageBoard)}>
             <MessageSquareText size={18} />
             留言

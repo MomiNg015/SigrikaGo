@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { arePlayerInfoPropsEqual, disconnectBadgeForPlayer, playerCandyPortrait, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer, tooltipPointFromEvent } from "./PlayerInfo.jsx";
+import { arePlayerInfoPropsEqual, isDisconnectedPlayer, playerCandyPortrait, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer, tooltipPointFromEvent } from "./PlayerInfo.jsx";
 import { COLORS } from "../shared/game.js";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 
@@ -70,11 +70,15 @@ describe("PlayerInfo labels", () => {
     });
   });
 
-  it("shows disconnect badge only before a game has a result", () => {
+  it("marks disconnected portraits only before a game has a result", () => {
     const disconnected = { connected: false, disconnectedAt: 123 };
-    expect(disconnectBadgeForPlayer(disconnected, { phase: "playing" })).toBe("断线中");
-    expect(disconnectBadgeForPlayer({ ...disconnected, connected: true }, { phase: "playing" })).toBeNull();
-    expect(disconnectBadgeForPlayer(disconnected, { phase: "finished" })).toBeNull();
+    const source = readFileSync(new URL("./PlayerInfo.jsx", import.meta.url), "utf8");
+
+    expect(isDisconnectedPlayer(disconnected, { phase: "playing" })).toBe(true);
+    expect(isDisconnectedPlayer({ ...disconnected, connected: true }, { phase: "playing" })).toBeNull();
+    expect(isDisconnectedPlayer(disconnected, { phase: "finished" })).toBeNull();
+    expect(source).toContain("disconnected-portrait");
+    expect(source).not.toContain("disconnect-badge");
   });
 
   it("swaps Denia portraits to the candy gif while the effect is active", () => {
@@ -161,6 +165,7 @@ describe("PlayerInfo labels", () => {
 
   it("colors room portrait backgrounds by the player's stone color in Bright School", () => {
     const playerInfoSource = readFileSync(new URL("./PlayerInfo.jsx", import.meta.url), "utf8");
+    const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const componentRepairsCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
     const roomPortraitImageBlocks = brightSchoolCss.match(/\.player-info \.portrait-wrap img\s*\{[^}]+\}/g) ?? [];
@@ -176,6 +181,10 @@ describe("PlayerInfo labels", () => {
     expect(componentRepairsCss).toContain("background: #2b2b2b !important");
     expect(componentRepairsCss).toContain(".player-info .portrait-wrap.white-portrait");
     expect(componentRepairsCss).toContain("background: #ffffff !important");
+    expect(roomCss).toContain(".portrait-wrap.disconnected-portrait");
+    expect(roomCss).toContain("#ffe8eb");
+    expect(componentRepairsCss).toContain(".player-info .portrait-wrap.disconnected-portrait");
+    expect(componentRepairsCss).toContain("#ffe8eb !important");
     expect(finalRoomPortraitImageBlock).toContain("filter: none !important");
   });
 

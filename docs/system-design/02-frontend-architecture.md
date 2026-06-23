@@ -43,6 +43,7 @@
 - `DEFAULT_SITE_SETTINGS`: 位于 `src/shared/siteSettings.js`，前后端共用大厅标题、副标题、设置关于文本、首页 footer 文本、加载页提示语集合和角色加载台词集合默认值。
 - `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定；普通落子和反色技能会成为最新落子标记来源。千咲 `liberty-purge` 虽然会实际落子，但该落子使用专属 `liberty-purge-stone` 持续红光，不复用最新落子红圈。
 - `SKILL_EFFECT_CATALOG` / `skillEffectTargetRule` / `skillEffectSoundCues`: 位于 `src/shared/skillEffectCatalog.js`，集中维护技能 `effectType` 的管理端标签、默认目标规则、主动/被动分类、棋盘演出标记和音效 cue。管理端角色表单、服务端角色校验、技能归一化、目标预览和技能音效都应从该 catalog 读取这些元数据。
+- `flip-stone` 使用 `BoardSkillEffects` 的 Pixi 泡泡演出，但其 pending skill resolution delay 在 `src/shared/skillPresentation.js` 中单独设为 `3040ms`，早于默认 `4000ms`。这样服务端权威反色快照会在泡泡黑化并遮住目标棋子时广播，爆裂后露出的已经是反色后的棋子。
 - `row-slash` 是主动技能类型，但不注册 Pixi `boardEffect` canvas，目标规则为 `any-point`。服务端 pending skill preview 会附带 `row`、整行 `affectedPointIds`，以及直接被移除棋子的 `removedStones`（id/color）；前端 `BoardRowSlashOverlay` 在 pending 阶段直接渲染与最终标记一致的 `.board-row-slash`，但通过 `--skill-banner-duration` 延迟到横幅结束后才让刀痕从左到右展开并作为扫光使用；`Board` 同步给受影响行棋子添加 `row-slash-cut-pending` 和按棋盘宽度比例计算的 `--row-slash-cut-delay`，使棋子在扫光触及时用短促硬切快速消失。持久标记来自结算后的 `game.rowEffects`，继续由同一 DOM/CSS overlay 渲染，并通过 `clearAfterColor` 在对手下一次行动后清除。DOM overlay 始终为 `pointer-events: none`，`BoardSkillEffects` 对该 effect 返回空标记，避免 full-board canvas 覆盖棋盘。
 - `COLORS` / `opponent`: 位于 `src/shared/gameConstants.js`，集中维护棋色常量与对手颜色推导；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `createPoints` / `getPoint` / `activeNeighbors`: 位于 `src/shared/gameBoard.js`，集中封装棋盘几何和点位访问；`src/shared/game.js` 保持同名转导以兼容既有调用方。
@@ -237,3 +238,11 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - `PersonalizationModal` 通过 `/api/me/achievement-equipment` 读取可装备的成就奖励资产，并允许装备称号、徽章和用户名背景。桌面端为三列装备区，移动端改为竖向分区；保存后回写当前 `user.achievementEquipment`。弹窗内预览区使用共享 `UserIdentity` 组合草稿装备，作为保存前试穿效果；装备按钮用粉红色标出当前已保存生效项，用浅绿色标出草稿中正在试穿但尚未保存的项。
 - 商城、抽卡、仓库使用道具和首页 `/api/me` 刷新都会消费响应里的 `achievementUnlocks`，逐条触发 `achievement` tone toast；toast 样式仍由现有 `ToastStack` 队列统一管理。
 - 后台 `AdminConsole` 新增 `achievements` tab，`AdminAchievements` 使用“成就列表 / 奖励资产”双视图；成就列表只编辑既有成就的成就名、成就内容、奖励资产和排序，不提供新增或下线成就入口，奖励资产视图继续管理 `/api/admin/achievement-reward-assets`。
+
+## Mailbox UI
+
+- The player mailbox is mounted as an app-level overlay through `src/app/useOverlayState.js`, `src/app/modalDismissal.js`, `src/app/AppOverlays.jsx`, and `src/modals/MailboxModal.jsx`.
+- `src/app/App.jsx` polls `GET /api/mailbox/summary` while a user session is active and refreshes again when the mailbox opens. The home header receives `mailboxBadgeCount` and exposes a desktop icon button plus a mobile-menu entry.
+- `MailboxModal` owns list/detail selection, marks a message read when selected, and calls the player mailbox APIs for manual claim and delete. It reports successful coin or item claims through the existing toast and user-refresh paths.
+- Admin mailbox management is a first-class admin tab. `AdminConsole` loads recent batches and item options, `AdminShell` owns the tab label, and `AdminMailbox` provides user search, target mode selection, one optional attachment, send submission, and recent batch history.
+- Any new app-level overlay must pass its setter through `App.jsx -> useAppActions -> useOverlayActions`. The shared `closeAllOverlays()` callback is invoked by socket lifecycle paths such as `match:found` before recording the match-success transition, so missing setters can interrupt matchmaking and room recovery.

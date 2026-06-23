@@ -49,6 +49,11 @@ export function skillEffectSoundCues(effectType) {
   return catalogSkillEffectSoundCues(effectType);
 }
 
+export function resetSkillEffectSoundContextForTest() {
+  sharedSkillEffectContext?.close?.();
+  sharedSkillEffectContext = null;
+}
+
 function getSkillEffectAudioContext() {
   if (sharedSkillEffectContext && sharedSkillEffectContext.state !== "closed") return sharedSkillEffectContext;
   const AudioContextClass = browserAudioContextClass();
@@ -99,14 +104,18 @@ function playBlastSound(context, cue, volume, now) {
 
 function playDataStreamSound(context, cue, volume, now) {
   if (cue === SKILL_EFFECT_SOUND_TYPES.start) {
-    scheduleTone(context, { type: "square", frequency: 960, endFrequency: 1320, start: now, length: 0.12, volume: 0.05 * volume });
-    scheduleTone(context, { type: "sine", frequency: 520, endFrequency: 780, start: now + 0.06, length: 0.24, volume: 0.08 * volume });
-    scheduleNoise(context, { start: now + 0.02, length: 0.2, volume: 0.045 * volume, highpass: 1200 });
+    scheduleTone(context, { type: "sine", frequency: 82, endFrequency: 168, start: now, length: 0.42, volume: 0.14 * volume });
+    scheduleTone(context, { type: "square", frequency: 760, endFrequency: 1480, start: now + 0.06, length: 0.34, volume: 0.065 * volume });
+    scheduleTone(context, { type: "triangle", frequency: 1520, endFrequency: 2160, start: now + 0.16, length: 0.22, volume: 0.05 * volume });
+    scheduleNoise(context, { start: now + 0.04, length: 0.36, volume: 0.07 * volume, highpass: 1400 });
     return;
   }
   if (cue === SKILL_EFFECT_SOUND_TYPES.impact) {
-    scheduleTone(context, { type: "triangle", frequency: 380, endFrequency: 1160, start: now, length: 0.28, volume: 0.1 * volume });
-    scheduleNoise(context, { start: now + 0.04, length: 0.16, volume: 0.055 * volume, highpass: 1600 });
+    scheduleTone(context, { type: "sawtooth", frequency: 190, endFrequency: 64, start: now, length: 0.2, volume: 0.16 * volume });
+    scheduleTone(context, { type: "square", frequency: 1840, endFrequency: 920, start: now + 0.01, length: 0.12, volume: 0.085 * volume });
+    scheduleTone(context, { type: "triangle", frequency: 620, endFrequency: 1540, start: now + 0.08, length: 0.24, volume: 0.095 * volume });
+    scheduleNoise(context, { start: now, length: 0.18, volume: 0.1 * volume, highpass: 2200 });
+    scheduleNoise(context, { start: now + 0.12, length: 0.2, volume: 0.055 * volume, highpass: 1500 });
   }
 }
 

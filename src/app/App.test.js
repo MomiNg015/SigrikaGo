@@ -53,4 +53,15 @@ describe("App startup preload wiring", () => {
     expect(hookSource).toContain("useAudioSettingsPersistence(audioSettings)");
     expect(hookSource).toContain("setAudioResumeSignal((value) => value + 1)");
   });
+
+  it("passes every app-level overlay setter through the shared overlay closer", () => {
+    const appSource = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+    const actionsSource = readFileSync(new URL("./useAppActions.js", import.meta.url), "utf8");
+    const appActionsCall = appSource.match(/useAppActions\(\{[\s\S]*?\n  \}\);/)?.[0] ?? "";
+    const overlayActionsCall = actionsSource.match(/useOverlayActions\(\{[\s\S]*?\n  \}\);/)?.[0] ?? "";
+
+    expect(appActionsCall).toContain("setShowMailbox");
+    expect(actionsSource).toContain("setShowMailbox,");
+    expect(overlayActionsCall).toContain("setShowMailbox");
+  });
 });

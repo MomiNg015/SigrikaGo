@@ -10,6 +10,7 @@ export function useOverlayActions({
   setShowRecruitment,
   setShowHouse,
   setShowLeaderboard,
+  setShowMailbox,
   setShowMessageBoard,
   setShowResume,
   setShowSettings,
@@ -27,12 +28,14 @@ export function useOverlayActions({
     setShowFriends(false);
     setShowRecruitment(false);
     setShowSettings(false);
+    setShowMailbox(false);
     setShowMessageBoard(false);
   }, [
     setShowFriends,
     setShowRecruitment,
     setShowHouse,
     setShowLeaderboard,
+    setShowMailbox,
     setShowMessageBoard,
     setShowResume,
     setShowSettings,

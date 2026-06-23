@@ -16,10 +16,12 @@ describe("AdminShell", () => {
       expect(html).toContain(ADMIN_TAB_LABELS[tab]);
     }
     expect(ADMIN_TABS).toContain("music");
+    expect(ADMIN_TABS).toContain("mailbox");
     expect(ADMIN_TABS).toContain("reports");
     expect(html).toContain("admin");
     expect(html).toContain("商城管理");
     expect(html).toContain("音乐管理");
+    expect(html).toContain("邮箱管理");
     expect(html).toContain("用户举报");
     expect(html).toContain("content");
   });

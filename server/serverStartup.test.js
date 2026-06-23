@@ -17,6 +17,7 @@ describe("server startup", () => {
     const ensureLoginSessionSchema = task("ensureLoginSessionSchema");
     const ensureGameModeSchema = task("ensureGameModeSchema");
     const ensureGachaSchema = task("ensureGachaSchema");
+    const ensureMailboxSchema = task("ensureMailboxSchema");
     const ensureMusicTrackSettingsSchema = task("ensureMusicTrackSettingsSchema");
     const ensureAchievementSchema = task("ensureAchievementSchema");
     const seedBuiltinAchievements = task("seedBuiltinAchievements");
@@ -34,6 +35,7 @@ describe("server startup", () => {
       ensureLoginSessionSchema,
       ensureGameModeSchema,
       ensureGachaSchema,
+      ensureMailboxSchema,
       ensureMusicTrackSettingsSchema,
       ensureAchievementSchema,
       seedBuiltinAchievements,
@@ -55,6 +57,7 @@ describe("server startup", () => {
       "ensureLoginSessionSchema",
       "ensureGameModeSchema",
       "ensureGachaSchema",
+      "ensureMailboxSchema",
       "ensureMusicTrackSettingsSchema",
       "promoteConfiguredAdmins"
     ]);
