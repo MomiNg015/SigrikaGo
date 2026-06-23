@@ -4,6 +4,7 @@ import {
   EMPTY_ACTIVE_ROOM_CLOSE_MS,
   INVALID_ROOM_CLOSE_DELAY_MS,
   ROOM_CLOSE_DELAY_MS,
+  ROOM_RECORD_SAVE_RETRY_MS,
   createRoomCloseLifecycle,
   roomCloseDelay
 } from "./roomCloseLifecycle.js";
@@ -68,6 +69,7 @@ function lifecycleFor(rooms, overrides = {}) {
     },
     saveGameRecord: (room) => {
       calls.saved.push(room.code);
+      room.recordSaved = true;
       return Promise.resolve();
     },
     prepareCloseState: (room) => calls.prepared.push(room.code),
@@ -113,6 +115,42 @@ describe("roomCloseLifecycle", () => {
       payload: { reason: "finished-room-close", roomCode: room.code }
     });
     expect(calls.unregistered).toEqual([room.code]);
+    expect(calls.deleted).toEqual([room.code]);
+    expect(rooms.has(room.code)).toBe(false);
+  });
+
+  test("keeps valid finished rooms open until the result record is saved", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1000);
+    const saveError = new Error("db unavailable");
+    const room = testRoom({ recordSaved: false });
+    const rooms = new Map([[room.code, room]]);
+    const { lifecycle, calls } = lifecycleFor(rooms, {
+      saveGameRecord: vi.fn()
+        .mockRejectedValueOnce(saveError)
+        .mockImplementationOnce(async (roomToSave) => {
+          roomToSave.recordSaved = true;
+        })
+    });
+
+    lifecycle.scheduleRoomClose(room.code, "io");
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(calls.saveErrors).toEqual([saveError]);
+
+    vi.advanceTimersByTime(ROOM_CLOSE_DELAY_MS);
+    await Promise.resolve();
+
+    expect(rooms.has(room.code)).toBe(true);
+    expect(calls.closed).toEqual([]);
+    expect(calls.deleted).toEqual([]);
+    expect(room.closesAt).toBe(1000 + ROOM_CLOSE_DELAY_MS + ROOM_RECORD_SAVE_RETRY_MS);
+
+    vi.advanceTimersByTime(ROOM_RECORD_SAVE_RETRY_MS);
+    await Promise.resolve();
+
+    expect(calls.closed).toHaveLength(1);
     expect(calls.deleted).toEqual([room.code]);
     expect(rooms.has(room.code)).toBe(false);
   });

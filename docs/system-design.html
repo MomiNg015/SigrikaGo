@@ -384,6 +384,28 @@
 <ul>
 <li>App-level overlays must keep <code>useOverlayState</code>, <code>App</code>, <code>useAppActions</code>, and <code>useOverlayActions</code> wiring in sync. <code>closeAllOverlays()</code> is reused by <code>match:found</code>, room resume, and replay entry flows, so a missing overlay setter can break matchmaking before the match-success/preload state is recorded.</li>
 </ul>
+<h2>Stability Boundary Update</h2>
+<ul>
+<li>App-level overlays are registered in <code>src/app/overlayRegistry.js</code>. <code>useOverlayState</code>, <code>modalDismissal</code>, <code>useOverlayActions</code>, and <code>App.jsx</code> derive overlay state, close-all behavior, and topmost-modal dismissal from that registry so new overlays do not need separate manual wiring that can break matchmaking or room recovery.</li>
+</ul>
+<ul>
+<li>Mailbox summary polling lives in <code>src/app/useMailboxSummary.js</code>, and recruitment ready-state polling/timing lives in <code>src/app/useRecruitmentReadyState.js</code>, keeping the app composition root focused on wiring rather than feature-specific polling loops.</li>
+</ul>
+<ul>
+<li>Room broadcast persistence policy is declared in <code>server/roomBroadcasts.js</code>: full updates and default patches force persistence, while clock and presence-style patch categories remain throttled/lightweight.</li>
+</ul>
+<ul>
+<li>Finished valid rooms do not close until <code>server/roomResultPersistence.js</code> has saved the result record; <code>server/roomCloseLifecycle.js</code> retries failed result saves before emitting <code>room:closed</code> or deleting persisted room state.</li>
+</ul>
+<ul>
+<li>Gameplay actions pass through the phase matrix in <code>server/roomActionPhaseGuards.js</code> before reaching move/pass/resign/skill resolution, so opening, skill preview, dead-stone marking, result review, and finished phases cannot be overwritten by generic board actions.</li>
+</ul>
+<ul>
+<li>Client patch-gap recovery is debounced in <code>src/app/socketHandlers.js</code>: duplicate gapped <code>room:patch</code> payloads for the same room/revision emit at most one <code>room:resume</code> per debounce window, and full <code>room:update</code> / <code>room:resume</code> snapshots clear that debounce state.</li>
+</ul>
+<ul>
+<li>Legacy-to-structured asset sync only deletes structured rows whose <code>source</code> is <code>legacy</code>; feature-owned rows from achievements, gacha, mailbox, recruitment, or future flows stay owned by their source-specific paths and are merged for public projection.</li>
+</ul>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
 <p>本文记录 SigrikaGo 的整体目录、核心模块和已实现能力。入口文档只保留阅读导航；具体维护时优先更新本分篇或其它对应分篇。</p>
@@ -2445,7 +2467,7 @@
 <li>The player mailbox is mounted as an app-level overlay through <code>src/app/useOverlayState.js</code>, <code>src/app/modalDismissal.js</code>, <code>src/app/AppOverlays.jsx</code>, and <code>src/modals/MailboxModal.jsx</code>.</li>
 </ul>
 <ul>
-<li><code>src/app/App.jsx</code> polls <code>GET /api/mailbox/summary</code> while a user session is active and refreshes again when the mailbox opens. The home header receives <code>mailboxBadgeCount</code> and exposes a desktop icon button plus a mobile-menu entry.</li>
+<li><code>src/app/useMailboxSummary.js</code> polls <code>GET /api/mailbox/summary</code> while a user session is active and refreshes again when the mailbox opens. <code>src/app/useRecruitmentReadyState.js</code> owns recruitment ready polling plus the readyAt timeout refresh. The app composition root consumes both hooks instead of hosting feature-specific polling loops.</li>
 </ul>
 <ul>
 <li><code>MailboxModal</code> owns list/detail selection, marks a message read when selected, and calls the player mailbox APIs for manual claim and delete. It reports successful coin or item claims through the existing toast and user-refresh paths.</li>
@@ -2454,7 +2476,7 @@
 <li>Admin mailbox management is a first-class admin tab. <code>AdminConsole</code> loads recent batches and item options, <code>AdminShell</code> owns the tab label, and <code>AdminMailbox</code> provides user search, target mode selection, one optional attachment, send submission, and recent batch history.</li>
 </ul>
 <ul>
-<li>Any new app-level overlay must pass its setter through <code>App.jsx -&gt; useAppActions -&gt; useOverlayActions</code>. The shared <code>closeAllOverlays()</code> callback is invoked by socket lifecycle paths such as <code>match:found</code> before recording the match-success transition, so missing setters can interrupt matchmaking and room recovery.</li>
+<li>Any new app-level overlay must be added to <code>src/app/overlayRegistry.js</code>. <code>useOverlayState</code>, <code>modalDismissal</code>, <code>useOverlayActions</code>, and <code>App.jsx</code> derive visibility props, setter props, close-all behavior, and topmost-modal dismissal from that registry. The shared <code>closeAllOverlays()</code> callback is invoked by socket lifecycle paths such as <code>match:found</code> before recording the match-success transition, so overlay registration is a matchmaking stability contract on both desktop Escape and mobile/browser back paths.</li>
 </ul>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
@@ -2720,6 +2742,9 @@
 <li>Finished rooms keep the existing 5-minute review window. When the timer fires while any player or spectator socket is still attached, the server extends <code>closesAt</code> instead of closing the room. Only empty finished rooms are deleted.</li>
 </ul>
 <ul>
+<li>Valid finished rooms are also gated on result persistence: if <code>saveGameRecord()</code> fails or is still pending when the close timer fires, <code>server/roomCloseLifecycle.js</code> keeps the room in memory/persistence, retries the save after a short delay, and only emits <code>room:closed</code> / deletes <code>PersistedRoom</code> once <code>recordSaved</code> is true. Invalid finished rooms such as empty-room invalidations continue to skip record creation and may close through the shorter invalid close path.</li>
+</ul>
+<ul>
 <li><code>src/main.jsx</code> handles <code>room:closed</code> payloads, clears the remembered room code, resets room UI state, and displays the payload message when present. Finished-room cleanup payloads carry <code>reason: &quot;finished-room-close&quot;</code> plus <code>roomCode</code>; player clients mark that result as dismissed and stay silent so the result modal does not reopen during cleanup.</li>
 </ul>
 <h2>Mailbox API</h2>
@@ -2743,6 +2768,16 @@
 </ul>
 <ul>
 <li><code>initializeServerData()</code> runs <code>ensureMailboxSchema()</code> during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.</li>
+</ul>
+<h2>Realtime Broadcast Stability</h2>
+<ul>
+<li><code>server/roomBroadcasts.js</code> declares <code>ROOM_BROADCAST_PERSISTENCE</code> as the code-level policy for persistence expectations: full room updates and default room patches force persistence, while clock and presence-patch categories remain lightweight/throttled.</li>
+</ul>
+<ul>
+<li>The policy is guarded by <code>server/roomBroadcasts.test.js</code> so future realtime changes can adjust room protocol shape without accidentally turning high-frequency clock or presence traffic into forced snapshot writes, or weakening forced persistence for authoritative lifecycle updates.</li>
+</ul>
+<ul>
+<li><code>server/roomActionPhaseGuards.js</code> declares the gameplay action phase matrix before lifecycle dispatch: move/pass/skill require <code>playing</code>, resign is limited to <code>playing</code>, <code>counting-requested</code>, and <code>draw-requested</code>, and opening, skill-preview, marking-dead, result-review, or finished phases reject generic board actions before they can mutate state.</li>
 </ul>
 <p>---</p>
 <h1>数据模型与领域系统</h1>
@@ -3187,6 +3222,13 @@
 </ul>
 <ul>
 <li>The schema is backed by migrations <code>202606220001_add_mailbox_system</code> and <code>202606220002_soft_delete_mailbox_messages</code>, plus the startup compatibility guard <code>ensureMailboxSchema()</code> for older local SQLite databases; <code>server/schemaIntegrity.test.js</code> checks that migrations and the Prisma model stay in sync.</li>
+</ul>
+<h2>Source-Scoped Asset Sync</h2>
+<ul>
+<li><code>server/userAssets.js</code> treats compatibility string fields as a legacy mirror. Rows projected from those fields use <code>source = &quot;legacy&quot;</code>.</li>
+</ul>
+<ul>
+<li>Structured sync cleanup is source-scoped: it deletes only absent rows whose source is <code>legacy</code>. Rows written by achievements, gacha, mailbox, recruitment, or future feature domains stay owned by those flows and are merged by <code>publicUserAssets()</code> instead of being removed by legacy refresh.</li>
 </ul>
 <p>---</p>
 <h1>资源、音频与启动预加载</h1>
@@ -4047,7 +4089,7 @@
 <li>Room clock ticks no longer use the full <code>room:update</code> payload during normal play. <code>server/rooms.js</code> emits a lightweight <code>room:clock</code> event once per second with <code>roomCode</code>, <code>activeColor</code>, <code>serverNow</code>, and each player's current <code>time</code>.</li>
 </ul>
 <ul>
-<li>Player chat and room presence now use general room patch paths: <code>server/socketChatEvents.js</code> broadcasts <code>room:patch</code> with <code>type: &quot;chat:append&quot;</code>, while <code>server/socketRoomEvents.js</code> and <code>server/socketDisconnectEvents.js</code> use <code>broadcastRoomPresencePatch()</code> for disconnect, reconnect, spectator membership, and leave changes. <code>server/roomBroadcasts.js</code> increments room <code>revision</code>, emits <code>eventId</code>, <code>baseRevision</code>, and <code>revision</code>; full room updates and default patches still force persistence, but chat and presence patches explicitly opt into throttled persistence because connection lifecycle mutations already force-save the authoritative room before the lightweight presence broadcast. <code>src/app/roomPatch.js</code> applies <code>chat:append</code> idempotently and applies <code>presence:update</code> by replacing player/spectator/chat slices while preserving <code>game</code> and structurally sharing unchanged entries. <code>src/app/socketHandlers.js</code> filters missing-room, wrong-room, unknown, stale, and malformed patches before scheduling React state work; if the client sees a patch gap, it rejects the patch and emits <code>room:resume</code> to recover the authoritative snapshot. Full <code>room:update</code> remains the authoritative path for the joining/resuming socket, match found, moves, skills, phase changes, scoring, draw/counting flows, timeout transitions, and patch recovery.</li>
+<li>Player chat and room presence now use general room patch paths: <code>server/socketChatEvents.js</code> broadcasts <code>room:patch</code> with <code>type: &quot;chat:append&quot;</code>, while <code>server/socketRoomEvents.js</code> and <code>server/socketDisconnectEvents.js</code> use <code>broadcastRoomPresencePatch()</code> for disconnect, reconnect, spectator membership, and leave changes. <code>server/roomBroadcasts.js</code> increments room <code>revision</code>, emits <code>eventId</code>, <code>baseRevision</code>, and <code>revision</code>; full room updates and default patches still force persistence, but chat and presence patches explicitly opt into throttled persistence because connection lifecycle mutations already force-save the authoritative room before the lightweight presence broadcast. <code>src/app/roomPatch.js</code> applies <code>chat:append</code> idempotently and applies <code>presence:update</code> by replacing player/spectator/chat slices while preserving <code>game</code> and structurally sharing unchanged entries. <code>src/app/socketHandlers.js</code> filters missing-room, wrong-room, unknown, stale, and malformed patches before scheduling React state work; if the client sees a patch gap, it rejects the patch and emits <code>room:resume</code> to recover the authoritative snapshot. Duplicate gapped patch payloads for the same room/revision are debounced so a bad network burst cannot spam resume requests, and authoritative <code>room:update</code> / <code>room:resume</code> snapshots clear the debounce state. Full <code>room:update</code> remains the authoritative path for the joining/resuming socket, match found, moves, skills, phase changes, scoring, draw/counting flows, timeout transitions, and patch recovery.</li>
 </ul>
 <ul>
 <li>Full <code>room:update</code> remains the authoritative synchronization path for match found, the socket that just joined/resumed, moves, skills, phase changes, scoring, draw/counting flows, timeout transitions, and any patch-gap recovery.</li>
@@ -4116,6 +4158,9 @@
 <li><code>server/roomActionLifecycle.js</code> is the backend gameplay action entry boundary. Game actions now share room-code validation, room lookup, point validation, player lookup, pending-skill rejection, test-action dispatch, skill-action dispatch, and standard action delegation in one focused module.</li>
 </ul>
 <ul>
+<li><code>server/roomActionPhaseGuards.js</code> is the backend gameplay phase matrix. It keeps standard board actions and active skills from mutating opening, preview, scoring, review, or finished rooms before action-specific reducers run, while explicitly documenting the limited non-playing phases where resign remains accepted.</li>
+</ul>
+<ul>
 <li><code>server/roomChatLifecycle.js</code> is the backend room chat entry boundary. Chat sends now share room-code validation, text normalization, room lookup, message id creation, current move-number capture, chat payload shape, and <code>{ room, message }</code> mutation result in one focused module so socket code can emit append-only chat patches without rebuilding a viewer-specific room snapshot.</li>
 </ul>
 <ul>
@@ -4150,6 +4195,19 @@
 </ul>
 <ul>
 <li>Dead-stone expansion and territory flood-fill use the same cursor-based queue pattern, reducing extra array churn during scoring and result review.</li>
+</ul>
+<h2>App Stability Debt Reduction</h2>
+<ul>
+<li>App-level overlay debt is reduced by <code>src/app/overlayRegistry.js</code>. Overlay state keys, React prop names, setter names, close-all behavior, and modal dismissal ordering now share one registry. This protects <code>match:found</code>, room resume, replay entry, desktop Escape, and mobile/browser back handling from future overlay additions that forget one wiring path.</li>
+</ul>
+<ul>
+<li><code>src/app/useMailboxSummary.js</code> and <code>src/app/useRecruitmentReadyState.js</code> move feature-specific polling and readyAt timing out of <code>src/app/App.jsx</code>, leaving the app composition root to connect feature hooks to routes/overlays. Future app-shell features should follow this pattern instead of adding more inline polling loops to <code>App.jsx</code>.</li>
+</ul>
+<ul>
+<li><code>server/userAssets.js</code> now treats legacy string-field mirroring as source-scoped synchronization. Only rows with <code>source = &quot;legacy&quot;</code> are deleted during mirror cleanup, so structured rows written by achievements, gacha, mailbox, recruitment, or future feature systems survive legacy refresh.</li>
+</ul>
+<ul>
+<li><code>server/roomBroadcasts.js</code> declares a tested persistence policy for realtime broadcast categories. Full room updates and default patches remain forced persistence paths; clock and presence patch categories remain lightweight/throttled. This is a guardrail for future protocol work, not a full room protocol rewrite.</li>
 </ul>
 <p>---</p>
 <h1>工作流、文档规则与历史记录</h1>

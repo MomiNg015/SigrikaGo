@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { createSocketHandlers, installSocketHandlers } from "./socketHandlers.js";
+import {
+  ROOM_PATCH_RESUME_DEBOUNCE_MS,
+  createSocketHandlers,
+  installSocketHandlers
+} from "./socketHandlers.js";
 import { applyRoomClock } from "./roomClock.js";
 import { syncPendingMatchRoom } from "./matchTransition.js";
 
@@ -616,6 +620,71 @@ describe("socket handlers", () => {
 
     expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
     expect(deps.setRoom).not.toHaveBeenCalled();
+  });
+
+  it("debounces duplicate patch gap resume requests until an authoritative room snapshot arrives", () => {
+    let currentTime = 1000;
+    const listeners = new Map();
+    const socket = {
+      on: vi.fn((event, callback) => listeners.set(event, callback)),
+      emit: vi.fn()
+    };
+    const deps = handlerDeps({
+      roomRef: { current: { code: "12345", revision: 1, chat: [] } }
+    });
+    const patch = {
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 4,
+      revision: 5,
+      message: { id: "chat-5" }
+    };
+
+    installSocketHandlers(socket, createSocketHandlers(deps), {
+      buildRoomResumeRequest: () => ({ roomCode: "12345" }),
+      now: () => currentTime
+    });
+    listeners.get("room:patch")(patch);
+    listeners.get("room:patch")(patch);
+    currentTime += ROOM_PATCH_RESUME_DEBOUNCE_MS - 1;
+    listeners.get("room:patch")(patch);
+
+    expect(socket.emit).toHaveBeenCalledTimes(1);
+    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+
+    listeners.get("room:update")({ code: "12345", revision: 5, players: [] });
+    listeners.get("room:patch")(patch);
+
+    expect(socket.emit).toHaveBeenCalledTimes(2);
+  });
+
+  it("allows another patch gap resume after the debounce window", () => {
+    let currentTime = 1000;
+    const listeners = new Map();
+    const socket = {
+      on: vi.fn((event, callback) => listeners.set(event, callback)),
+      emit: vi.fn()
+    };
+    const deps = handlerDeps({
+      roomRef: { current: { code: "12345", revision: 1, chat: [] } }
+    });
+    const patch = {
+      roomCode: "12345",
+      type: "chat:append",
+      baseRevision: 4,
+      revision: 5,
+      message: { id: "chat-5" }
+    };
+
+    installSocketHandlers(socket, createSocketHandlers(deps), {
+      buildRoomResumeRequest: () => ({ roomCode: "12345" }),
+      now: () => currentTime
+    });
+    listeners.get("room:patch")(patch);
+    currentTime += ROOM_PATCH_RESUME_DEBOUNCE_MS;
+    listeners.get("room:patch")(patch);
+
+    expect(socket.emit).toHaveBeenCalledTimes(2);
   });
 
   it("routes socket reconnects through room audio snapshot baselining before resume", () => {

@@ -685,8 +685,9 @@ Tests touching room action point validation should update `server/roomActionVali
 - `createRoomActionLifecycle(deps)` returns `handleGameAction(roomCode, userId, action, io)`.
 - `handleGameAction()` validates the room code, looks up the room, delegates point-target validation to `validateActionPoint(action, room.game.size)`, verifies the actor is a room player, and rejects new actions while `room.game.pendingSkill` is active.
 - Test actions go through `isRoomTestAction()` / `handleRoomTestAction()`, append optional test system messages, apply returned game state, and append returned notices.
-- Skill actions delegate to `startActiveSkill({ room, player, action, io })`.
-- Standard move/pass/resign actions delegate to `applyStandardGameAction()` with the injected room lifecycle dependencies.
+- Non-test gameplay actions must pass `validateRoomActionPhase(action, room.game.phase)` from `server/roomActionPhaseGuards.js` before skill or standard action delegation.
+- Skill actions delegate to `startActiveSkill({ room, player, action, io })` only when the phase matrix allows `skill`.
+- Standard move/pass/resign actions delegate to `applyStandardGameAction()` with the injected room lifecycle dependencies only when the phase matrix allows that action type. Move/pass/skill require `GAME_PHASES.playing`; resign is allowed in `playing`, `counting-requested`, and `draw-requested`, but not opening, skill-preview, marking-dead, result-review, or finished.
 
 `server/rooms.js` should expose the action entry point for socket/API routing, but it should not duplicate action validation order, test-action state application, skill routing, or standard-action dependency wiring.
 
@@ -705,7 +706,7 @@ const roomActionLifecycle = createRoomActionLifecycle(deps);
 export const { handleGameAction } = roomActionLifecycle;
 ```
 
-Tests touching gameplay action entry validation order, test-action dispatch, skill dispatch, or standard-action dependency wiring should update `server/roomActionLifecycle.test.js`; action-result rule behavior should stay in the focused rule modules.
+Tests touching gameplay action entry validation order, phase-matrix rejection, test-action dispatch, skill dispatch, or standard-action dependency wiring should update `server/roomActionLifecycle.test.js`; action-result rule behavior should stay in the focused rule modules.
 
 ### Room Chat Lifecycle Boundary Contract
 
@@ -944,8 +945,9 @@ Tests touching opening delay, passive-skill delay, timeout state resets, timeout
 - Valid draws create a `GameRecord`, increment both players' mode `draws`, update in-room mode stats, and do not apply rating/coin rewards.
 - Decisive results create a `GameRecord`, apply room-user rewards, upsert winner/loser mode stats, update user rating/win/loss/coin fields where appropriate, create progress ledger entries, and include item-effect cleanup operations.
 - `modeStatsUpsertOperation()`, `applyDrawResultToRoomUser()`, and `gameResultProgressEntries()` keep the operation-shape helpers testable outside the realtime room lifecycle.
+- `server/roomCloseLifecycle.js` must not emit `room:closed`, unregister the room, delete it from memory, or delete the persisted row for a valid finished room until `room.recordSaved === true`. If `saveGameRecord()` fails or is still pending when the close timer fires, keep the room open and retry the save before scheduling another close check. Invalid finished rooms may skip record creation because `saveGameRecord()` marks them saved.
 
-`server/rooms.js` should decide **when** a finished room needs saving, but it should not own `GameRecord` payload shape, mode-stat upsert shape, reward transaction composition, or progress ledger payloads.
+`server/rooms.js` should decide **when** a finished room needs saving, but it should not own `GameRecord` payload shape, mode-stat upsert shape, reward transaction composition, progress ledger payloads, or the close-before-record-saved retry policy.
 
 Wrong:
 
@@ -959,7 +961,7 @@ Correct:
 await saveGameRecord({ prisma, room });
 ```
 
-Tests touching result persistence helpers, invalid-result skipping, draw stat updates, or progress ledger payloads should update `server/roomResultPersistence.test.js`; integrated winner/loser reward persistence should remain covered by `server/rooms.test.js`.
+Tests touching result persistence helpers, invalid-result skipping, draw stat updates, or progress ledger payloads should update `server/roomResultPersistence.test.js`; tests touching close gating around failed or pending record saves should update `server/roomCloseLifecycle.test.js`; integrated winner/loser reward persistence should remain covered by `server/rooms.test.js`.
 
 ### Server Startup Data Boundary Contract
 

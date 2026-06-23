@@ -1,21 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
+import { APP_OVERLAYS, OVERLAY_STATE_KEYS } from "./overlayRegistry.js";
 
-export const OVERLAY_STATE_KEYS = [
-  "shop",
-  "recruitment",
-  "matchModePicker",
-  "house",
-  "warehouse",
-  "resume",
-  "achievements",
-  "personalization",
-  "leaderboard",
-  "friends",
-  "watch",
-  "settings",
-  "mailbox",
-  "messageBoard"
-];
+export { OVERLAY_STATE_KEYS };
 
 export function initialOverlayState(value = false) {
   return Object.fromEntries(OVERLAY_STATE_KEYS.map((key) => [key, value]));
@@ -38,38 +24,17 @@ export function useOverlayState() {
     });
   }, []);
 
-  const setters = useMemo(() => ({
-    setShowShop: (value) => setOverlay("shop", value),
-    setShowRecruitment: (value) => setOverlay("recruitment", value),
-    setShowMatchModePicker: (value) => setOverlay("matchModePicker", value),
-    setShowHouse: (value) => setOverlay("house", value),
-    setShowWarehouse: (value) => setOverlay("warehouse", value),
-    setShowResume: (value) => setOverlay("resume", value),
-    setShowAchievements: (value) => setOverlay("achievements", value),
-    setShowPersonalization: (value) => setOverlay("personalization", value),
-    setShowLeaderboard: (value) => setOverlay("leaderboard", value),
-    setShowFriends: (value) => setOverlay("friends", value),
-    setShowWatch: (value) => setOverlay("watch", value),
-    setShowSettings: (value) => setOverlay("settings", value),
-    setShowMailbox: (value) => setOverlay("mailbox", value),
-    setShowMessageBoard: (value) => setOverlay("messageBoard", value)
-  }), [setOverlay]);
+  const setters = useMemo(
+    () => Object.fromEntries(
+      APP_OVERLAYS.map(({ key, setterProp }) => [setterProp, (value) => setOverlay(key, value)])
+    ),
+    [setOverlay]
+  );
 
   return useMemo(() => ({
-    showShop: overlays.shop,
-    showRecruitment: overlays.recruitment,
-    showMatchModePicker: overlays.matchModePicker,
-    showHouse: overlays.house,
-    showWarehouse: overlays.warehouse,
-    showResume: overlays.resume,
-    showAchievements: overlays.achievements,
-    showPersonalization: overlays.personalization,
-    showLeaderboard: overlays.leaderboard,
-    showFriends: overlays.friends,
-    showWatch: overlays.watch,
-    showSettings: overlays.settings,
-    showMailbox: overlays.mailbox,
-    showMessageBoard: overlays.messageBoard,
+    overlayState: overlays,
+    overlaySetters: setters,
+    ...Object.fromEntries(APP_OVERLAYS.map(({ key, showProp }) => [showProp, overlays[key]])),
     ...setters
   }), [overlays, setters]);
 }

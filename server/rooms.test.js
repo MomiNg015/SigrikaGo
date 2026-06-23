@@ -273,12 +273,14 @@ describe("room game record persistence", () => {
     expect(prismaMocks.userItemEffectDeleteMany).toHaveBeenCalledWith({
       where: {
         userId: "sigrika-candy",
+        source: "legacy",
         effectKey: { notIn: [] }
       }
     });
     expect(prismaMocks.userItemEffectDeleteMany).toHaveBeenCalledWith({
       where: {
         userId: "denia-candy",
+        source: "legacy",
         effectKey: { notIn: [] }
       }
     });

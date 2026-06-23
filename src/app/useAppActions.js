@@ -6,6 +6,7 @@ import { useReplayActions } from "./useReplayActions.js";
 export function useAppActions({
   matchSuccess,
   matchSuccessRef,
+  overlaySetters,
   room,
   socket,
   token,
@@ -20,37 +21,16 @@ export function useAppActions({
   setPendingSkill,
   setReplayStep,
   setRoom,
-  setShowFriends,
-  setShowRecruitment,
-  setShowHouse,
-  setShowLeaderboard,
-  setShowMailbox,
-  setShowMessageBoard,
-  setShowResume,
-  setShowSettings,
-  setShowShop,
-  setShowWarehouse,
-  setShowWatch,
   setToken,
   setUser,
   setView
 }) {
   const overlayActions = useOverlayActions({
+    overlaySetters,
     room,
     view,
     setDismissedResultRoom,
-    setRoom,
-    setShowFriends,
-    setShowRecruitment,
-    setShowHouse,
-    setShowLeaderboard,
-    setShowMailbox,
-    setShowMessageBoard,
-    setShowResume,
-    setShowSettings,
-    setShowShop,
-    setShowWarehouse,
-    setShowWatch
+    setRoom
   });
 
   const accountActions = useAccountActions({

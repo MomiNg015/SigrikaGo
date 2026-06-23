@@ -7,6 +7,7 @@ import {
   broadcastRoomPresencePatch,
   broadcastToast,
   emitRoomClosed,
+  ROOM_BROADCAST_PERSISTENCE,
   roomClockPayload,
   roomParticipants
 } from "./roomBroadcasts.js";
@@ -49,6 +50,15 @@ function testRoom() {
 }
 
 describe("roomBroadcasts", () => {
+  test("documents persistence policy for room broadcast categories", () => {
+    expect(ROOM_BROADCAST_PERSISTENCE).toEqual({
+      fullUpdate: { force: true },
+      clock: { force: false },
+      patchDefault: { force: true },
+      presencePatch: { force: false }
+    });
+  });
+
   test("lists room participants in player then spectator order", () => {
     expect(roomParticipants(testRoom()).map((participant) => participant.user.id)).toEqual([
       "black-user",

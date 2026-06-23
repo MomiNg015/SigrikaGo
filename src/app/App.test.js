@@ -27,20 +27,20 @@ describe("App startup preload wiring", () => {
   it("keeps the achievement unlock callback stable for home refresh", () => {
     const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("useCallback, useEffect, useState");
+    expect(source).toContain("useCallback, useState");
     expect(source).toContain("const showAchievementUnlocks = useCallback(");
     expect(source).toContain("}, [showToast]);");
   });
 
-  it("refreshes the recruitment badge when a pending task reaches readyAt", () => {
+  it("delegates recruitment badge timing out of the app composition root", () => {
     const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+    const hookSource = readFileSync(new URL("./useRecruitmentReadyState.js", import.meta.url), "utf8");
 
-    expect(source).toContain("const [recruitmentBadgeTask, setRecruitmentBadgeTask] = useState(null)");
-    expect(source).toContain("const handleRecruitmentStatusChange = useCallback((task) =>");
-    expect(source).toContain("recruitmentBadgeTask.status !== \"pending\"");
-    expect(source).toContain("new Date(recruitmentBadgeTask.readyAt).getTime() - Date.now()");
-    expect(source).toContain("window.setTimeout(async () =>");
-    expect(source).toContain("setRecruitmentReady(data.task?.status === \"ready\")");
+    expect(source).toContain("useRecruitmentReadyState({ token, user })");
+    expect(source).not.toContain("recruitmentBadgeTask");
+    expect(hookSource).toContain("recruitmentBadgeTask.status !== \"pending\"");
+    expect(hookSource).toContain("window.setTimeout(refreshRecruitmentBadge, recruitmentReadyDelayMs(recruitmentBadgeTask))");
+    expect(hookSource).toContain("return { recruitmentReady, handleRecruitmentStatusChange }");
   });
 
   it("delegates audio runtime state out of the app composition root", () => {
@@ -54,14 +54,26 @@ describe("App startup preload wiring", () => {
     expect(hookSource).toContain("setAudioResumeSignal((value) => value + 1)");
   });
 
-  it("passes every app-level overlay setter through the shared overlay closer", () => {
+  it("passes the registered overlay setters through the shared overlay closer", () => {
     const appSource = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
     const actionsSource = readFileSync(new URL("./useAppActions.js", import.meta.url), "utf8");
+    const overlayActionsSource = readFileSync(new URL("./useOverlayActions.js", import.meta.url), "utf8");
     const appActionsCall = appSource.match(/useAppActions\(\{[\s\S]*?\n  \}\);/)?.[0] ?? "";
     const overlayActionsCall = actionsSource.match(/useOverlayActions\(\{[\s\S]*?\n  \}\);/)?.[0] ?? "";
 
-    expect(appActionsCall).toContain("setShowMailbox");
-    expect(actionsSource).toContain("setShowMailbox,");
-    expect(overlayActionsCall).toContain("setShowMailbox");
+    expect(appSource).toContain("overlaySetters");
+    expect(appActionsCall).toContain("overlaySetters");
+    expect(overlayActionsCall).toContain("overlaySetters");
+    expect(overlayActionsSource).toContain("closeOverlaySetters(overlaySetters)");
+  });
+
+  it("delegates mailbox summary polling out of the app composition root", () => {
+    const appSource = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+    const hookSource = readFileSync(new URL("./useMailboxSummary.js", import.meta.url), "utf8");
+
+    expect(appSource).toContain("useMailboxSummary({");
+    expect(appSource).toContain("mailboxOpen: showMailbox");
+    expect(appSource).not.toContain("setMailboxSummary");
+    expect(hookSource).toContain("window.setInterval(refreshMailboxSummary, 30000)");
   });
 });

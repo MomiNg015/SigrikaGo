@@ -1,28 +1,12 @@
 import { useCallback, useEffect, useRef } from "react";
+import { APP_MODAL_DISMISS_ORDER } from "./overlayRegistry.js";
 
 const MODAL_HISTORY_MARKER = "__sigrikaModal";
 const ROOT_BACK_HISTORY_MARKER = "__sigrikaRootBackGuard";
 let modalBackDismissedInCurrentPop = false;
 let modalHistoryCleanupInCurrentPop = false;
 
-export const APP_MODAL_DISMISS_ORDER = [
-  "result",
-  "matchStart",
-  "matchModePicker",
-  "house",
-  "resume",
-  "achievements",
-  "personalization",
-  "warehouse",
-  "leaderboard",
-  "watch",
-  "friends",
-  "shop",
-  "recruitment",
-  "settings",
-  "mailbox",
-  "messageBoard"
-];
+export { APP_MODAL_DISMISS_ORDER };
 
 export function topDismissibleModalKey(state = {}) {
   for (let index = APP_MODAL_DISMISS_ORDER.length - 1; index >= 0; index -= 1) {

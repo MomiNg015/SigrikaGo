@@ -228,3 +228,8 @@
 - Each user mailbox is capped at 20 visible non-deleted messages. Before delivery, the domain soft-deletes the oldest safe messages that are already read and have no unclaimed attachment. If no safe space exists, delivery is skipped instead of deleting claimable rewards.
 - A message with an unclaimed attachment is not deletable. Claiming is idempotent at the domain level by checking `claimedAt` and the attachment type before mutating coins or inventory.
 - The schema is backed by migrations `202606220001_add_mailbox_system` and `202606220002_soft_delete_mailbox_messages`, plus the startup compatibility guard `ensureMailboxSchema()` for older local SQLite databases; `server/schemaIntegrity.test.js` checks that migrations and the Prisma model stay in sync.
+
+## Source-Scoped Asset Sync
+
+- `server/userAssets.js` treats compatibility string fields as a legacy mirror. Rows projected from those fields use `source = "legacy"`.
+- Structured sync cleanup is source-scoped: it deletes only absent rows whose source is `legacy`. Rows written by achievements, gacha, mailbox, recruitment, or future feature domains stay owned by those flows and are merged by `publicUserAssets()` instead of being removed by legacy refresh.

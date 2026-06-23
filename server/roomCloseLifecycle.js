@@ -3,6 +3,7 @@ import { GAME_PHASES } from "../src/shared/game.js";
 export const ROOM_CLOSE_DELAY_MS = 5 * 60 * 1000;
 export const INVALID_ROOM_CLOSE_DELAY_MS = 30 * 1000;
 export const EMPTY_ACTIVE_ROOM_CLOSE_MS = 5 * 60 * 1000;
+export const ROOM_RECORD_SAVE_RETRY_MS = 30 * 1000;
 
 export function roomCloseDelay(room) {
   return room?.game?.winner?.invalid ? INVALID_ROOM_CLOSE_DELAY_MS : ROOM_CLOSE_DELAY_MS;
@@ -29,10 +30,7 @@ export function createRoomCloseLifecycle({
   function scheduleRoomClose(roomCode, io) {
     const room = rooms.get(roomCode);
     if (!room) return;
-    if (!room.recordSaved) {
-      prepareCloseState(room);
-      Promise.resolve(saveGameRecord(room)).catch(onSaveError);
-    }
+    requestRoomRecordSave(room);
     const closeDelay = roomCloseDelay(room);
     const nextClosesAt = now() + closeDelay;
     if (!room.closesAt || (room.game.winner?.invalid && room.closesAt > nextClosesAt)) {
@@ -42,6 +40,13 @@ export function createRoomCloseLifecycle({
     scheduleRoomTimeout(room, () => {
       const latest = rooms.get(roomCode);
       if (!latest) return;
+      if (!latest.game.winner?.invalid && !latest.recordSaved) {
+        latest.closesAt = now() + ROOM_RECORD_SAVE_RETRY_MS;
+        requestRoomRecordSave(latest);
+        persistRoom(latest, { force: true });
+        scheduleRoomClose(roomCode, io);
+        return;
+      }
       if (!latest.game.winner?.invalid && hasConnectedRoomParticipant(latest)) {
         latest.closesAt = now() + roomCloseDelay(latest);
         persistRoom(latest, { force: true });
@@ -50,6 +55,19 @@ export function createRoomCloseLifecycle({
       }
       closeRoom(roomCode, io, { reason: "finished-room-close" });
     }, Math.max(0, room.closesAt - now()));
+  }
+
+  function requestRoomRecordSave(room) {
+    if (room.recordSaved || room.recordSavePromise) return;
+    prepareCloseState(room);
+    room.recordSavePromise = Promise.resolve(saveGameRecord(room))
+      .catch((error) => {
+        room.recordSaveError = error;
+        onSaveError(error);
+      })
+      .finally(() => {
+        room.recordSavePromise = null;
+      });
   }
 
   function closeRoom(roomCode, io, { message = "", reason = "" } = {}) {

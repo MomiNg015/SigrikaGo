@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
-import { api } from "../api/client.js";
+import { useCallback, useState } from "react";
 import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { deploymentSocketBase } from "../shared/preloadAssets.js";
@@ -24,9 +23,12 @@ import {
   useModalDismissal,
   useRootBackExitGuard
 } from "./modalDismissal.js";
+import { dismissOverlayByKey } from "./overlayRegistry.js";
 import { useReplayRecords } from "./useReplayRecords.js";
+import { useMailboxSummary } from "./useMailboxSummary.js";
 import { useMatchSessionState } from "./useMatchSessionState.js";
 import { useOverlayState } from "./useOverlayState.js";
+import { useRecruitmentReadyState } from "./useRecruitmentReadyState.js";
 import { useRoomSessionState } from "./useRoomSessionState.js";
 import { useRoomMemory } from "./useRoomMemory.js";
 import { useSiteSettingsState } from "./useSiteSettingsState.js";
@@ -65,6 +67,8 @@ export default function App() {
     showSettings,
     showMailbox,
     showMessageBoard,
+    overlayState,
+    overlaySetters,
     setShowShop,
     setShowRecruitment,
     setShowMatchModePicker,
@@ -105,9 +109,6 @@ export default function App() {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
-  const [recruitmentReady, setRecruitmentReady] = useState(false);
-  const [recruitmentBadgeTask, setRecruitmentBadgeTask] = useState(null);
-  const [mailboxSummary, setMailboxSummary] = useState({ unreadCount: 0, claimableCount: 0, badgeCount: 0 });
   const { removeToast, showToast, toasts } = useToastQueue();
   const showAchievementUnlocks = useCallback((unlocks = []) => {
     for (const unlock of unlocks) {
@@ -115,6 +116,12 @@ export default function App() {
     }
   }, [showToast]);
   const { setUser, updateUser, user } = useCurrentUser();
+  const { mailboxSummary, refreshMailboxSummary } = useMailboxSummary({
+    mailboxOpen: showMailbox,
+    token,
+    user
+  });
+  const { handleRecruitmentStatusChange, recruitmentReady } = useRecruitmentReadyState({ token, user });
   const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState();
   const { audioSettingsRef, incomingDuelRef, matchSuccessRef, roomRef, viewRef } = useSyncedRefs({
     audioSettings,
@@ -198,6 +205,7 @@ export default function App() {
   } = useAppActions({
     matchSuccess,
     matchSuccessRef,
+    overlaySetters,
     room,
     socket,
     token,
@@ -212,17 +220,6 @@ export default function App() {
     setPendingSkill,
     setReplayStep,
     setRoom,
-    setShowFriends,
-    setShowRecruitment,
-    setShowHouse,
-    setShowLeaderboard,
-    setShowMailbox,
-    setShowMessageBoard,
-    setShowResume,
-    setShowSettings,
-    setShowShop,
-    setShowWarehouse,
-    setShowWatch,
     setToken,
     setUser,
     setView
@@ -233,23 +230,6 @@ export default function App() {
     const nextMusicTracks = await loadMusicTrackCatalog({ token });
     setMusicTracks(nextMusicTracks);
   }
-
-  const refreshMailboxSummary = useCallback(async () => {
-    if (!token || !user) {
-      setMailboxSummary({ unreadCount: 0, claimableCount: 0, badgeCount: 0 });
-      return;
-    }
-    try {
-      const summary = await api("/api/mailbox/summary", { token });
-      setMailboxSummary({
-        unreadCount: Number(summary.unreadCount ?? 0),
-        claimableCount: Number(summary.claimableCount ?? 0),
-        badgeCount: Number(summary.badgeCount ?? 0)
-      });
-    } catch {
-      setMailboxSummary({ unreadCount: 0, claimableCount: 0, badgeCount: 0 });
-    }
-  }, [token, user?.id]);
 
   useGameSocketConnection({
     audioSettingsRef,
@@ -280,20 +260,7 @@ export default function App() {
   const topModalKey = topDismissibleModalKey({
     result: resultModalOpen,
     matchStart: Boolean(matchStart),
-    matchModePicker: showMatchModePicker,
-    house: showHouse,
-    resume: showResume,
-    achievements: showAchievements,
-    personalization: showPersonalization,
-    warehouse: showWarehouse,
-    leaderboard: showLeaderboard,
-    watch: showWatch,
-    friends: showFriends,
-    shop: showShop,
-    recruitment: showRecruitment,
-    settings: showSettings,
-    mailbox: showMailbox,
-    messageBoard: showMessageBoard
+    ...overlayState
   });
   const dismissTopModal = useCallback(() => {
     switch (topModalKey) {
@@ -303,68 +270,14 @@ export default function App() {
       case "matchStart":
         cancelMatch();
         break;
-      case "matchModePicker":
-        setShowMatchModePicker(false);
-        break;
-      case "house":
-        setShowHouse(false);
-        break;
-      case "resume":
-        setShowResume(false);
-        break;
-      case "achievements":
-        setShowAchievements(false);
-        break;
-      case "personalization":
-        setShowPersonalization(false);
-        break;
-      case "warehouse":
-        setShowWarehouse(false);
-        break;
-      case "leaderboard":
-        setShowLeaderboard(false);
-        break;
-      case "watch":
-        setShowWatch(false);
-        break;
-      case "friends":
-        setShowFriends(false);
-        break;
-      case "shop":
-        setShowShop(false);
-        break;
-      case "recruitment":
-        setShowRecruitment(false);
-        break;
-      case "settings":
-        setShowSettings(false);
-        break;
-      case "mailbox":
-        setShowMailbox(false);
-        break;
-      case "messageBoard":
-        setShowMessageBoard(false);
-        break;
       default:
+        dismissOverlayByKey(topModalKey, overlaySetters);
         break;
     }
   }, [
     cancelMatch,
     closeResultModal,
-    setShowAchievements,
-    setShowFriends,
-    setShowRecruitment,
-    setShowMatchModePicker,
-    setShowHouse,
-    setShowLeaderboard,
-    setShowMailbox,
-    setShowMessageBoard,
-    setShowPersonalization,
-    setShowResume,
-    setShowSettings,
-    setShowShop,
-    setShowWarehouse,
-    setShowWatch,
+    overlaySetters,
     topModalKey
   ]);
   useModalDismissal({ activeId: topModalKey, onDismiss: dismissTopModal });
@@ -377,66 +290,6 @@ export default function App() {
 
   useReplayRecords({ enabled: showHouse || showResume, showToast, token, setReplayRecords });
   useHomeUserRefresh({ onAchievementUnlocks: showAchievementUnlocks, token, updateUser, user, view });
-  useEffect(() => {
-    if (!token || !user) {
-      setMailboxSummary({ unreadCount: 0, claimableCount: 0, badgeCount: 0 });
-      return undefined;
-    }
-    refreshMailboxSummary();
-    const timer = window.setInterval(refreshMailboxSummary, 30000);
-    return () => window.clearInterval(timer);
-  }, [refreshMailboxSummary, token, user?.id]);
-  useEffect(() => {
-    if (!showMailbox) return;
-    refreshMailboxSummary();
-  }, [refreshMailboxSummary, showMailbox]);
-  const handleRecruitmentStatusChange = useCallback((task) => {
-    setRecruitmentReady(task?.status === "ready");
-    setRecruitmentBadgeTask(task ?? null);
-  }, []);
-  useEffect(() => {
-    if (!token || !user) {
-      setRecruitmentReady(false);
-      setRecruitmentBadgeTask(null);
-      return undefined;
-    }
-    let alive = true;
-    const refreshRecruitmentBadge = async () => {
-      try {
-        const data = await api("/api/recruitment", { token });
-        if (!alive) return;
-        setRecruitmentReady(data.task?.status === "ready");
-        setRecruitmentBadgeTask(data.task ?? null);
-      } catch {
-        if (alive) {
-          setRecruitmentReady(false);
-          setRecruitmentBadgeTask(null);
-        }
-      }
-    };
-    refreshRecruitmentBadge();
-    const timer = window.setInterval(refreshRecruitmentBadge, 30000);
-    return () => {
-      alive = false;
-      window.clearInterval(timer);
-    };
-  }, [token, user?.id]);
-
-  useEffect(() => {
-    if (!token || !user || !recruitmentBadgeTask || recruitmentBadgeTask.status !== "pending") return undefined;
-    const remainingMs = new Date(recruitmentBadgeTask.readyAt).getTime() - Date.now();
-    const timer = window.setTimeout(async () => {
-      try {
-        const data = await api("/api/recruitment", { token });
-        setRecruitmentReady(data.task?.status === "ready");
-        setRecruitmentBadgeTask(data.task ?? null);
-      } catch {
-        setRecruitmentReady(false);
-        setRecruitmentBadgeTask(null);
-      }
-    }, Math.max(0, Number.isFinite(remainingMs) ? remainingMs : 0) + 400);
-    return () => window.clearTimeout(timer);
-  }, [token, user?.id, recruitmentBadgeTask?.id, recruitmentBadgeTask?.status, recruitmentBadgeTask?.readyAt]);
 
   useRoomMemory(room);
 

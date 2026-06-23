@@ -97,6 +97,7 @@ describe("items", () => {
     expect(structuredWrites).toContainEqual(["userItem.deleteMany", expect.objectContaining({
       where: {
         userId: "user-1",
+        source: "legacy",
         itemId: { notIn: [] }
       }
     })]);

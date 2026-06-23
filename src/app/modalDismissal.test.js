@@ -54,7 +54,8 @@ describe("modal dismissal", () => {
 
     expect(appSource).toContain("useModalDismissal({ activeId: topModalKey, onDismiss: dismissTopModal })");
     expect(appSource).toContain("const topModalKey = topDismissibleModalKey({");
-    expect(appSource).toContain("matchModePicker: showMatchModePicker");
+    expect(appSource).toContain("...overlayState");
+    expect(appSource).toContain("dismissOverlayByKey(topModalKey, overlaySetters)");
     expect(homeSource).toContain("matchModePickerOpen = false");
     expect(homeSource).toContain("onMatchModePickerOpenChange?.(true)");
   });

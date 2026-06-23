@@ -143,24 +143,28 @@ export function structuredUserAssetSyncOperations(prisma, user) {
     prisma.userCharacter?.deleteMany?.({
       where: {
         userId: String(user.id),
+        source: "legacy",
         characterSlug: { notIn: rows.characters.map((row) => row.characterSlug) }
       }
     }),
     prisma.userDecoration?.deleteMany?.({
       where: {
         userId: String(user.id),
+        source: "legacy",
         decorationSlug: { notIn: rows.decorations.map((row) => row.decorationSlug) }
       }
     }),
     prisma.userItem?.deleteMany?.({
       where: {
         userId: String(user.id),
+        source: "legacy",
         itemId: { notIn: rows.items.map((row) => row.itemId) }
       }
     }),
     prisma.userItemEffect?.deleteMany?.({
       where: {
         userId: String(user.id),
+        source: "legacy",
         effectKey: { notIn: rows.itemEffects.map((row) => row.effectKey) }
       }
     }),
@@ -200,6 +204,7 @@ export function structuredUserItemEffectSyncOperations(prisma, user) {
     prisma.userItemEffect?.deleteMany?.({
       where: {
         userId,
+        source: "legacy",
         effectKey: { notIn: rows.map((row) => row.effectKey) }
       }
     }),

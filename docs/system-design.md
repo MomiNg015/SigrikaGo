@@ -153,3 +153,13 @@
 - Player deletes are soft deletes on `MailboxMessage.deletedAt`; future-eligible global batches still see that delivery history, so a deleted mail is not recreated on the next mailbox summary or list refresh.
 - The player mailbox keeps the same list/detail layout for empty inboxes; the left mail list shows the empty state while the detail pane remains reserved.
 - App-level overlays must keep `useOverlayState`, `App`, `useAppActions`, and `useOverlayActions` wiring in sync. `closeAllOverlays()` is reused by `match:found`, room resume, and replay entry flows, so a missing overlay setter can break matchmaking before the match-success/preload state is recorded.
+
+## Stability Boundary Update
+
+- App-level overlays are registered in `src/app/overlayRegistry.js`. `useOverlayState`, `modalDismissal`, `useOverlayActions`, and `App.jsx` derive overlay state, close-all behavior, and topmost-modal dismissal from that registry so new overlays do not need separate manual wiring that can break matchmaking or room recovery.
+- Mailbox summary polling lives in `src/app/useMailboxSummary.js`, and recruitment ready-state polling/timing lives in `src/app/useRecruitmentReadyState.js`, keeping the app composition root focused on wiring rather than feature-specific polling loops.
+- Room broadcast persistence policy is declared in `server/roomBroadcasts.js`: full updates and default patches force persistence, while clock and presence-style patch categories remain throttled/lightweight.
+- Finished valid rooms do not close until `server/roomResultPersistence.js` has saved the result record; `server/roomCloseLifecycle.js` retries failed result saves before emitting `room:closed` or deleting persisted room state.
+- Gameplay actions pass through the phase matrix in `server/roomActionPhaseGuards.js` before reaching move/pass/resign/skill resolution, so opening, skill preview, dead-stone marking, result review, and finished phases cannot be overwritten by generic board actions.
+- Client patch-gap recovery is debounced in `src/app/socketHandlers.js`: duplicate gapped `room:patch` payloads for the same room/revision emit at most one `room:resume` per debounce window, and full `room:update` / `room:resume` snapshots clear that debounce state.
+- Legacy-to-structured asset sync only deletes structured rows whose `source` is `legacy`; feature-owned rows from achievements, gacha, mailbox, recruitment, or future flows stay owned by their source-specific paths and are merged for public projection.

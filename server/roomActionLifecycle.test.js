@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
+import { GAME_PHASES } from "../src/shared/game.js";
 import { createRoomActionLifecycle } from "./roomActionLifecycle.js";
 
 function testRoom(overrides = {}) {
@@ -11,6 +12,7 @@ function testRoom(overrides = {}) {
     game: {
       size: 13,
       moveNumber: 1,
+      phase: GAME_PHASES.playing,
       pendingSkill: null,
       ...overrides.game
     },
@@ -104,6 +106,52 @@ describe("room action lifecycle", () => {
       io: "io"
     });
     expect(deps.applyStandardGameAction).not.toHaveBeenCalled();
+  });
+
+  test("blocks standard board actions outside the playing phase", () => {
+    const action = { type: "move", pointId: "aa" };
+    const { lifecycle, deps, room } = createLifecycle({
+      room: testRoom({ game: { phase: GAME_PHASES.opening } })
+    });
+
+    expect(lifecycle.handleGameAction(room.code, "black", action, "io")).toEqual({
+      ok: false,
+      error: "当前阶段不能执行该操作"
+    });
+    expect(deps.applyStandardGameAction).not.toHaveBeenCalled();
+  });
+
+  test("blocks active skills outside the playing phase before skill resolution", () => {
+    const action = { type: "skill", targetId: "p-1" };
+    const { lifecycle, deps, room } = createLifecycle({
+      room: testRoom({ game: { phase: GAME_PHASES.skillPreview } })
+    });
+
+    expect(lifecycle.handleGameAction(room.code, "black", action, "io")).toEqual({
+      ok: false,
+      error: "当前阶段不能执行该操作"
+    });
+    expect(deps.startActiveSkill).not.toHaveBeenCalled();
+  });
+
+  test("allows resigns during pending counting or draw requests only", () => {
+    const countingRoom = testRoom({ game: { phase: GAME_PHASES.countingRequested } });
+    const countingLifecycle = createLifecycle({ room: countingRoom });
+
+    expect(countingLifecycle.lifecycle.handleGameAction(countingRoom.code, "black", { type: "resign" }, "io")).toEqual({
+      ok: true,
+      standard: true
+    });
+    expect(countingLifecycle.deps.applyStandardGameAction).toHaveBeenCalledOnce();
+
+    const reviewRoom = testRoom({ game: { phase: GAME_PHASES.resultReview } });
+    const reviewLifecycle = createLifecycle({ room: reviewRoom });
+
+    expect(reviewLifecycle.lifecycle.handleGameAction(reviewRoom.code, "black", { type: "resign" }, "io")).toEqual({
+      ok: false,
+      error: "当前阶段不能执行该操作"
+    });
+    expect(reviewLifecycle.deps.applyStandardGameAction).not.toHaveBeenCalled();
   });
 
   test("dispatches standard actions with room lifecycle dependencies", () => {

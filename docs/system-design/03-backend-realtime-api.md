@@ -101,6 +101,7 @@
 - Server startup calls `restorePersistedRooms(io)` after the socket layer is installed. Restored rooms restart their clock/opening/deadline/close timers, and players can reconnect through the existing `room:resume` flow.
 - When a player socket disconnects, the room clears that player's `socketId` and records `disconnectedAt`. If both players are absent from an unfinished room for 5 minutes, the server marks the game as `invalid` with reason `empty-room`, skips `GameRecord` creation, deletes the persisted room, and removes the room from memory.
 - Finished rooms keep the existing 5-minute review window. When the timer fires while any player or spectator socket is still attached, the server extends `closesAt` instead of closing the room. Only empty finished rooms are deleted.
+- Valid finished rooms are also gated on result persistence: if `saveGameRecord()` fails or is still pending when the close timer fires, `server/roomCloseLifecycle.js` keeps the room in memory/persistence, retries the save after a short delay, and only emits `room:closed` / deletes `PersistedRoom` once `recordSaved` is true. Invalid finished rooms such as empty-room invalidations continue to skip record creation and may close through the shorter invalid close path.
 - `src/main.jsx` handles `room:closed` payloads, clears the remembered room code, resets room UI state, and displays the payload message when present. Finished-room cleanup payloads carry `reason: "finished-room-close"` plus `roomCode`; player clients mark that result as dismissed and stay silent so the result modal does not reopen during cleanup.
 
 ## Mailbox API
@@ -112,3 +113,9 @@
 - Global batches can target current users only or current plus future users. Future-eligible batches are materialized for a user when mailbox list or summary is read.
 - `DELETE /mailbox/:id` soft-deletes by setting `MailboxMessage.deletedAt`. Player list, summary, capacity, read, and claim flows treat deleted rows as hidden, while future-batch materialization still uses them as delivery history to prevent deleted global mail from being recreated.
 - `initializeServerData()` runs `ensureMailboxSchema()` during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.
+
+## Realtime Broadcast Stability
+
+- `server/roomBroadcasts.js` declares `ROOM_BROADCAST_PERSISTENCE` as the code-level policy for persistence expectations: full room updates and default room patches force persistence, while clock and presence-patch categories remain lightweight/throttled.
+- The policy is guarded by `server/roomBroadcasts.test.js` so future realtime changes can adjust room protocol shape without accidentally turning high-frequency clock or presence traffic into forced snapshot writes, or weakening forced persistence for authoritative lifecycle updates.
+- `server/roomActionPhaseGuards.js` declares the gameplay action phase matrix before lifecycle dispatch: move/pass/skill require `playing`, resign is limited to `playing`, `counting-requested`, and `draw-requested`, and opening, skill-preview, marking-dead, result-review, or finished phases reject generic board actions before they can mutate state.

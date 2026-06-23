@@ -1,4 +1,5 @@
 import { applyStandardGameAction as defaultApplyStandardGameAction } from "./roomGameActions.js";
+import { validateRoomActionPhase } from "./roomActionPhaseGuards.js";
 import {
   handleRoomTestAction as defaultHandleRoomTestAction,
   isRoomTestAction as defaultIsRoomTestAction
@@ -36,6 +37,9 @@ export function createRoomActionLifecycle({
     if (isRoomTestAction(action)) {
       return handleTestAction({ action, player, room });
     }
+
+    const phaseError = validateRoomActionPhase(action, room.game.phase);
+    if (phaseError) return { ok: false, error: phaseError };
 
     if (action.type === "skill") {
       return startActiveSkill({ room, player, action, io });

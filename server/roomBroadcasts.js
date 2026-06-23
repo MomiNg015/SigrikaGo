@@ -3,13 +3,20 @@ import { roomParticipants } from "./roomPresence.js";
 
 export { roomParticipants };
 
+export const ROOM_BROADCAST_PERSISTENCE = Object.freeze({
+  fullUpdate: Object.freeze({ force: true }),
+  clock: Object.freeze({ force: false }),
+  patchDefault: Object.freeze({ force: true }),
+  presencePatch: Object.freeze({ force: false })
+});
+
 export function roomView(room, viewerId) {
   return buildRoomView(room, viewerId);
 }
 
 export function broadcastRoom(io, room, { persistRoom = () => {}, roomViewFn = roomView } = {}) {
   advanceRoomClockSeq(room);
-  persistRoom(room, { force: true });
+  persistRoom(room, ROOM_BROADCAST_PERSISTENCE.fullUpdate);
   for (const player of room.players) {
     emitRoomUpdate(io, room, player, roomViewFn);
   }
@@ -31,7 +38,7 @@ export function broadcastRoomPatch(io, room, patch, { persistRoom = () => {}, fo
   const baseRevision = Number(room.revision ?? 0);
   const revision = baseRevision + 1;
   room.revision = revision;
-  persistRoom(room, { force: forcePersist });
+  persistRoom(room, forcePersist ? ROOM_BROADCAST_PERSISTENCE.patchDefault : ROOM_BROADCAST_PERSISTENCE.presencePatch);
   const payload = {
     ...patch,
     eventId: `${room.code}:${revision}:${patch.type}`,

@@ -115,7 +115,7 @@ describe("user asset list helpers", () => {
     })]);
   });
 
-  it("deletes structured asset rows that are absent from legacy fields", async () => {
+  it("deletes only legacy structured asset rows that are absent from legacy fields", async () => {
     const calls = [];
     const prisma = {
       userCharacter: {
@@ -137,13 +137,13 @@ describe("user asset list helpers", () => {
     });
 
     expect(calls).toContainEqual(["character.deleteMany", {
-      where: { userId: "user-1", characterSlug: { notIn: ["sigrika"] } }
+      where: { userId: "user-1", source: "legacy", characterSlug: { notIn: ["sigrika"] } }
     }]);
     expect(calls).toContainEqual(["item.deleteMany", {
-      where: { userId: "user-1", itemId: { notIn: [] } }
+      where: { userId: "user-1", source: "legacy", itemId: { notIn: [] } }
     }]);
     expect(calls).toContainEqual(["effect.deleteMany", {
-      where: { userId: "user-1", effectKey: { notIn: [] } }
+      where: { userId: "user-1", source: "legacy", effectKey: { notIn: [] } }
     }]);
   });
 
@@ -169,7 +169,7 @@ describe("user asset list helpers", () => {
 
     expect(operations).toHaveLength(2);
     expect(calls).toContainEqual(["effect.deleteMany", {
-      where: { userId: "user-1", effectKey: { notIn: ["deniaRainbowGlow"] } }
+      where: { userId: "user-1", source: "legacy", effectKey: { notIn: ["deniaRainbowGlow"] } }
     }]);
     expect(calls).toContainEqual(["effect.upsert", expect.objectContaining({
       where: { userId_effectKey: { userId: "user-1", effectKey: "deniaRainbowGlow" } },

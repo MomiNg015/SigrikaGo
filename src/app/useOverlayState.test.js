@@ -4,33 +4,33 @@ import { closeOverlayState, initialOverlayState, OVERLAY_STATE_KEYS } from "./us
 describe("overlay state", () => {
   it("keeps every app overlay key in one state contract", () => {
     expect(OVERLAY_STATE_KEYS).toEqual([
-      "shop",
-      "recruitment",
       "matchModePicker",
       "house",
-      "warehouse",
       "resume",
       "achievements",
       "personalization",
+      "warehouse",
       "leaderboard",
-      "friends",
       "watch",
+      "friends",
+      "shop",
+      "recruitment",
       "settings",
       "mailbox",
       "messageBoard"
     ]);
     expect(initialOverlayState()).toEqual({
-      shop: false,
-      recruitment: false,
       matchModePicker: false,
       house: false,
-      warehouse: false,
       resume: false,
       achievements: false,
       personalization: false,
+      warehouse: false,
       leaderboard: false,
-      friends: false,
       watch: false,
+      friends: false,
+      shop: false,
+      recruitment: false,
       settings: false,
       mailbox: false,
       messageBoard: false

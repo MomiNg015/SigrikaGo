@@ -1,48 +1,17 @@
 import { useCallback } from "react";
+import { closeOverlaySetters } from "./overlayRegistry.js";
 import { clearLastRoomCode } from "./resumeSession.js";
 
 export function useOverlayActions({
+  overlaySetters,
   room,
   view,
   setDismissedResultRoom,
-  setRoom,
-  setShowFriends,
-  setShowRecruitment,
-  setShowHouse,
-  setShowLeaderboard,
-  setShowMailbox,
-  setShowMessageBoard,
-  setShowResume,
-  setShowSettings,
-  setShowShop,
-  setShowWarehouse,
-  setShowWatch
+  setRoom
 }) {
   const closeAllOverlays = useCallback(() => {
-    setShowShop(false);
-    setShowHouse(false);
-    setShowResume(false);
-    setShowWarehouse(false);
-    setShowLeaderboard(false);
-    setShowWatch(false);
-    setShowFriends(false);
-    setShowRecruitment(false);
-    setShowSettings(false);
-    setShowMailbox(false);
-    setShowMessageBoard(false);
-  }, [
-    setShowFriends,
-    setShowRecruitment,
-    setShowHouse,
-    setShowLeaderboard,
-    setShowMailbox,
-    setShowMessageBoard,
-    setShowResume,
-    setShowSettings,
-    setShowShop,
-    setShowWarehouse,
-    setShowWatch
-  ]);
+    closeOverlaySetters(overlaySetters);
+  }, [overlaySetters]);
 
   const closeResultModal = useCallback(() => {
     if (!room) return;

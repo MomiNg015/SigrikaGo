@@ -365,6 +365,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - `roomPatchNeedsResume(currentRoom, patch)` returns `true` when a patch is for the current room but its revision does not continue from the current room revision.
 - `roomPatchCanUpdate(currentRoom, patch)` returns `true` only when the patch targets the current room, has a known patch type, is not stale, and has the minimum type-specific payload needed to change state.
 - Installed socket handlers must emit `room:resume` when `roomPatchNeedsResume(...)` is true.
+- Installed socket handlers must debounce duplicate patch-gap `room:resume` emits for the same room, patch type, `baseRevision`, and `revision` within `ROOM_PATCH_RESUME_DEBOUNCE_MS`; authoritative `room:update` and `room:resume` snapshots clear that debounce state.
 - Current lightweight patch types are `chat:append` and `presence:update`.
 
 #### 3. Contracts
@@ -374,6 +375,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - Legacy patches without `revision` may still be applied by type-specific reducers for backward-compatible tests or narrow mocks, but new runtime patches must carry revision fields.
 - Patch reducers must preserve unchanged room slices, especially `game` and `players`, so chat/request patches do not cause board or timer panels to re-render.
 - Socket patch handlers must check `roomPatchCanUpdate(...)` before calling `setRoom`; wrong-room, missing-room, unknown, stale, duplicate, and malformed patches should not schedule React state work.
+- Socket patch handlers must not emit unbounded resume requests for the same gapped patch burst. Use the installed-listener debounce helper, then allow another resume after the debounce window or after an authoritative snapshot arrives.
 - `presence:update` patches may replace `players`, `spectatorCount`, `spectators`, and `chat`, but must not carry or replace `game`; connection changes, spectator membership, and connection system messages should not repaint the board. Their reducers should structurally share unchanged player, spectator, and chat entries so only changed member rows or player panels receive new object references.
 - If a full `room:update` already includes the same mutation that a following continuous patch carries, the patch reducer must still advance `room.revision` so the next patch is not treated as a gap.
 - Full `room:update` and `room:resume` remain authoritative. Patch recovery should request a snapshot rather than trying to infer missing intermediate state.
@@ -384,6 +386,8 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - Patch has no revision -> apply only if its type-specific reducer can do so idempotently.
 - Patch revision is equal to or below current revision -> ignore as duplicate/stale.
 - Patch base revision differs from current revision while patch revision is newer -> reject patch and emit `room:resume`.
+- Duplicate gapped patch for the same room/type/base/revision inside the debounce window -> reject patch and do not emit another `room:resume`.
+- Gapped patch after the debounce window or after `room:update` / `room:resume` -> emit a new `room:resume`.
 - Patch type is unknown -> ignore it without mutating state.
 - Current room is null -> ignore patch because there is no local target for continuity checks.
 - Continuous `chat:append` patch contains a message that already exists in a just-applied full snapshot -> advance revision without duplicating the message.
@@ -394,6 +398,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - Good: `presence:update` with `baseRevision: 3` and `revision: 4` updates connection flags, spectators, and system chat while preserving `room.game` and unchanged member/chat entry references.
 - Base: duplicate `chat:append` with the same message id or same revision returns the current room object.
 - Bad: applying a patch with `baseRevision: 4` while the client room is at `revision: 1`, because that can hide missed moves, request state, or chat entries.
+- Bad: emitting `room:resume` for every repeated copy of the same gapped patch during a weak-network burst.
 - Bad: using a full `room:update` broadcast for disconnect/reconnect or spectator membership changes after a socket has already received its direct authoritative snapshot.
 - Bad: calling `setRoom((current) => ({ ...current, chat: nextChat }))` directly from a socket listener without using the shared reducer and gap check.
 
@@ -401,7 +406,7 @@ setRoom((current) => applyRoomSnapshot(current, roomView));
 - `src/app/roomPatch.test.js` must cover continuous patch application, duplicate/stale patch ignoring, unknown/wrong-room patch ignoring, and gap detection.
 - Patch scheduling tests must assert `roomPatchCanUpdate()` rejects missing-room, wrong-room, stale, unknown, and malformed patches before React state setters are called.
 - Presence patch tests must assert `presence:update` preserves `game`, structurally shares unchanged member/chat entries, updates changed slices, and advances revision when a direct snapshot already contains the same mutation.
-- `src/app/socketHandlers.test.js` must assert gapped installed patch listeners emit `room:resume` and do not call `setRoom`.
+- `src/app/socketHandlers.test.js` must assert gapped installed patch listeners emit `room:resume`, do not call `setRoom`, debounce duplicate gapped patch requests, and clear the debounce after an authoritative snapshot.
 - Backend broadcast tests must assert patch payloads include `eventId`, `baseRevision`, and `revision`, and that the room revision increments before persistence.
 - Backend room socket tests must assert join/resume/leave/disconnect connection changes use `broadcastRoomPresencePatch` instead of full room broadcasts.
 - Room factory, view, and persistence tests must assert room `revision` is created, exposed in views, persisted, and hydrated with a safe default for older snapshots.
@@ -426,7 +431,7 @@ socket.on("room:patch", (patch) => {
 });
 ```
 
-`handlers.roomPatch` checks revision continuity before calling `applyRoomPatch`, and requests the authoritative snapshot when continuity is broken.
+`handlers.roomPatch` checks revision continuity before calling `applyRoomPatch`, and requests the authoritative snapshot when continuity is broken. The installed listener owns duplicate resume debounce; do not put debounce state into the reducer.
 
 ### Scenario: App Overlay Visibility State
 
@@ -436,33 +441,35 @@ socket.on("room:patch", (patch) => {
 
 #### 2. Signatures
 - `useOverlayState()` returns `show*` booleans and `setShow*` callbacks for every app-level overlay.
+- `APP_OVERLAYS` in `src/app/overlayRegistry.js` is the canonical overlay metadata list: each entry defines the overlay key, visible prop name, setter prop name, and dismissal behavior.
 - `OVERLAY_STATE_KEYS` lists the canonical overlay keys.
 - `initialOverlayState(value)` and `closeOverlayState(state)` keep bulk state operations testable without rendering React.
 
 #### 3. Contracts
-- New app-level overlay visibility belongs in `useOverlayState()`, not as another top-level `useState(false)` in `App.jsx`.
+- New app-level overlay visibility belongs in `src/app/overlayRegistry.js`, then `useOverlayState()`, route props, and overlay rendering should derive or validate against that registry. Do not add another top-level `useState(false)` in `App.jsx`.
 - Keep existing `show*` / `setShow*` prop names at composition boundaries until the receiving component is intentionally refactored.
 - Setter callbacks returned by `useOverlayState()` should remain stable so `useOverlayActions()` and socket/replay actions do not recreate callbacks on every overlay toggle.
-- `closeAllOverlays()` in `useOverlayActions()` should close every key represented by `OVERLAY_STATE_KEYS`.
-- Every setter used by `closeAllOverlays()` must be passed through `App.jsx -> useAppActions -> useOverlayActions`; socket lifecycle paths call `closeAllOverlays()` before recording match or resume state, so a missing setter can interrupt non-overlay flows.
+- `closeAllOverlays()` in `useOverlayActions()` should close every key represented by `APP_OVERLAYS` through registry-derived setter maps rather than a hand-maintained setter parameter list.
+- Modal dismissal order should derive from the registry plus any documented non-overlay modal entries. Socket lifecycle paths call `closeAllOverlays()` before recording match or resume state, so a missing registry entry can interrupt non-overlay flows.
 - Overlay visibility should stay separate from route state, room server state, current user state, and toast queue state.
 
 #### 4. Validation & Error Matrix
 - All overlays false by default -> no app modal renders.
 - One overlay opens -> only that key changes.
 - Bulk close -> every known overlay key becomes false.
-- Adding a new overlay -> update `OVERLAY_STATE_KEYS`, hook return shape, close-all behavior, `AppRoutes` / `AppOverlays` wiring, and tests.
-- Missing setter wiring through `useAppActions` -> invalid implementation; tests should fail before `match:found`, room resume, or replay entry can hit a runtime `TypeError`.
+- Adding a new overlay -> update `APP_OVERLAYS`, route/overlay rendering, and registry contract tests. Close-all and dismissal behavior should follow from the registry metadata.
+- Missing registry metadata for an app-level overlay -> invalid implementation; tests should fail before `match:found`, room resume, or replay entry can hit a runtime `TypeError`.
 
 #### 5. Good/Base/Bad Cases
-- Good: `const { showShop, setShowShop } = useOverlayState();`
+- Good: add `{ key: "shop", prop: "showShop", setter: "setShowShop", dismissible: true }` to `APP_OVERLAYS`, then consume `showShop` / `setShowShop` from `useOverlayState()`.
 - Base: `AppRoutes` can still receive `setShowShop` while the composition boundary is being gradually narrowed.
 - Bad: `const [showNewModal, setShowNewModal] = useState(false);` inside `App.jsx`.
-- Bad: closing all overlays by manually updating only the currently visible subset.
+- Bad: closing all overlays by manually updating only the currently visible subset or maintaining a second close-all setter list outside the registry.
 
 #### 6. Tests Required
-- `src/app/useOverlayState.test.js` should assert the canonical overlay key list and default/close-all projections.
-- App wiring tests should assert new overlay setters are passed from `App.jsx` into `useAppActions()` and onward into `useOverlayActions()`.
+- `src/app/overlayRegistry.test.js` should assert the canonical overlay metadata list, derived state keys, close-all setter coverage, and dismissal order coverage.
+- `src/app/useOverlayState.test.js` should assert the registry-derived default state and setter shape.
+- App wiring tests should assert critical socket/replay paths can call `closeAllOverlays()` without missing overlay setters.
 - App route or overlay source tests should be updated when a new overlay prop is introduced.
 
 #### 7. Wrong vs Correct
