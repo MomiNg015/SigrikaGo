@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { api } from "../api/client.js";
-import { loginPreloadAssets, preloadLoginAssets } from "../shared/preloadAssets.js";
+import { loginPreloadAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "../shared/preloadAssets.js";
 import { loadPublicCharacterCatalog } from "./characterCatalog.js";
 import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
 import { shouldFinishPreloadAsHome } from "./sessionState.js";
@@ -31,26 +31,37 @@ export function useStartupPreload({
   useEffect(() => {
     if (!token) return;
     let cancelled = false;
+    let cancelRetry = () => {};
     api("/api/me", { token })
       .then(async (data) => {
         if (cancelled) return;
         setUser(data.user);
         setView("preloading");
         setAssetProgress(0);
-        const [nextCharacters, nextMusicTracks] = await Promise.all([
+        const [nextCharacters, nextMusicTracks, shopData, inventoryData, recruitmentData] = await Promise.all([
           loadPublicCharacterCatalog({ token }),
-          loadMusicTrackCatalog({ token })
+          loadMusicTrackCatalog({ token }),
+          api("/api/shop", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] })),
+          api("/api/items/inventory", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] })),
+          api("/api/recruitment", { token, requestTimeoutMs: 8000 }).catch(() => ({ items: [] }))
         ]);
         if (cancelled) return;
         setCharacters(nextCharacters);
         setMusicTracks(nextMusicTracks);
         const startedAt = Date.now();
+        const skippedAssets = [];
         await preloadLoginAssets(loginPreloadAssets({
           characters: nextCharacters,
-          ownedCharacters: data.user.ownedCharacters,
-          itemEffects: data.user.itemEffects,
-          musicSelections: data.user.musicSelections
+          user: data.user,
+          shopItems: shopData.items ?? [],
+          inventoryItems: [
+            ...(inventoryData.items ?? []),
+            ...(recruitmentData.items ?? [])
+          ],
+          tracks: nextMusicTracks
         }), {
+          concurrency: 4,
+          onSkipped: (src) => skippedAssets.push(src),
           onProgress: (progress) => {
             if (!cancelled) setAssetProgress(progress);
           }
@@ -64,6 +75,7 @@ export function useStartupPreload({
           matchSuccess: matchSuccessRef.current
         })) {
           setView("home");
+          cancelRetry = retrySkippedPreloadAssets(skippedAssets, { concurrency: 2 });
         }
       })
       .catch(() => {
@@ -84,6 +96,7 @@ export function useStartupPreload({
       });
     return () => {
       cancelled = true;
+      cancelRetry();
     };
   }, [
     fallbackCharacters,

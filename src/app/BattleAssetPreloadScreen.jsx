@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CHARACTERS } from "../shared/characters.js";
-import { battlePreloadAssets, preloadLoginAssets } from "../shared/preloadAssets.js";
+import { battlePreloadAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "../shared/preloadAssets.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
 
@@ -27,10 +27,14 @@ export default function BattleAssetPreloadScreen({
   useEffect(() => {
     if (!roomCode || !socket || reportedRoomRef.current === roomCode) return undefined;
     let cancelled = false;
+    let cancelRetry = () => {};
     setLocalProgress(0);
+    const skippedAssets = [];
     const assets = battlePreloadAssets({ room, characters, tracks: musicTracks });
     preloadLoginAssets(assets, {
+      concurrency: 4,
       taskTimeoutMs: 12000,
+      onSkipped: (src) => skippedAssets.push(src),
       onProgress: (nextProgress) => {
         if (!cancelled) setLocalProgress(nextProgress);
       }
@@ -38,9 +42,11 @@ export default function BattleAssetPreloadScreen({
       if (cancelled) return;
       reportedRoomRef.current = roomCode;
       socket.emit("room:preload-ready", { roomCode });
+      cancelRetry = retrySkippedPreloadAssets(skippedAssets, { concurrency: 2 });
     });
     return () => {
       cancelled = true;
+      cancelRetry();
     };
   }, [characters, musicTracks, roomAssetKey, roomCode, socket]);
 

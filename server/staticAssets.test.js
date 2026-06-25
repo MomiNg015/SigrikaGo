@@ -74,4 +74,24 @@ describe("production static assets", () => {
 
     expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", "public, max-age=31536000, immutable");
   });
+
+  it("marks public asset resources as immutable so repeat visits use the browser cache", () => {
+    const app = createApp();
+    let setHeaders;
+    const staticMiddleware = vi.fn((_distDir, options) => {
+      setHeaders = options.setHeaders;
+      return vi.fn();
+    });
+    const res = { setHeader: vi.fn() };
+
+    installProductionStaticAssets(app, {
+      distDir: "/app/dist",
+      env: { NODE_ENV: "production" },
+      existsSync: () => true,
+      staticMiddleware
+    });
+    setHeaders(res, "/app/dist/assets/music/main_bgm.ogg");
+
+    expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", "public, max-age=31536000, immutable");
+  });
 });

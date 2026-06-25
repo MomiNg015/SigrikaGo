@@ -120,11 +120,12 @@ Correct:
 
 #### 1. Scope / Trigger
 - Trigger: any change to login/startup preload behavior, runtime asset manifests, Vite build chunking, or project handoff verification commands.
-- Startup preload is user-visible performance infrastructure; it must keep first-screen assets prioritized without forcing every optional BGM/voice/shop asset to block home entry.
+- Startup preload is user-visible performance infrastructure; it must block home entry on current-user-accessible home, shop, inventory, character, owned/default BGM, and relevant voice assets, while excluding inaccessible resources such as unpurchased music audio.
 
 #### 2. Signatures
 - `loginPreloadAssets()` returns grouped assets: `criticalImages`, `deferredImages`, `images`, `criticalAudio`, `deferredAudio`, and `audio`.
-- `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress, taskTimeoutMs })` waits for critical groups, starts deferred groups in the background, caps concurrent loaders, and bounds each loader with a timeout.
+- `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress, onSkipped, taskTimeoutMs })` waits for critical groups, starts deferred groups in the background when callers provide them, caps concurrent loaders, bounds each loader with a timeout, and reports timed-out or failed sources through `onSkipped`.
+- `retrySkippedPreloadAssets(skippedAssets, { concurrency, retryDelaysMs, taskTimeoutMs })` retries skipped login or battle resources after the target screen has been entered.
 - `useStartupPreload({ token, ... })` must not receive a transient Socket.IO `socket` instance or include one in its dependency list.
 - `connectGameSocket({ socketBase, token, ... })` creates the game Socket.IO client with explicit reconnect settings: `reconnection: true`, `reconnectionAttempts: Infinity`, `reconnectionDelay: 500`, `reconnectionDelayMax: 3000`, and `timeout: 6000`.
 - `npm run check` is the local handoff gate and should run unit tests, Vite build, production config validation with explicit sample env, and `docs:system-design`.
@@ -134,11 +135,11 @@ Correct:
 
 #### 3. Contracts
 - Frontend API calls through `api()` must have a bounded request timeout. Startup begins on the `preloading` view before `/api/auth/refresh` completes, so a hung auth refresh or catalog/settings request must reject and enter existing recovery flow instead of leaving the app on the preload screen forever.
-- Critical images include character portraits and home entry/background imagery needed for the first home render.
-- Critical audio includes common board/UI effect sounds that are decoded for immediate interaction feedback.
-- Deferred media includes shop/effect previews, stone decoration images, result/match sounds, BGM tracks, character skill voices, and system voices.
-- Preload progress represents critical preload completion; deferred assets must not keep users trapped on the preload screen.
-- Preload failures and hung loaders remain non-blocking for both critical and deferred groups; timed-out tasks count as completed preload work so startup can recover after reconnect or server restart.
+- Critical login images include current-user-visible character portraits, home entry/background imagery, shop product images, owned inventory/recruitment item images, and equipped achievement asset images.
+- Critical login audio includes common board/UI effect sounds plus owned/default-unlocked BGM and relevant character/system voices that the current user can reach. Unpurchased music product audio must not be preloaded.
+- Deferred groups remain supported for compatibility, but the current login preload manifest should not put current-user-accessible home/shop/character/BGM/voice resources in deferred groups.
+- Battle preload must derive assets from the current room, players, and mode. Modes with `skillEnabled=false` must skip skill BGM, skill voices, and skill effect images.
+- Preload progress represents completion of the blocking manifest. Timed-out tasks count as completed preload work for the current pass, are reported through `onSkipped`, and should be retried after entry with lower concurrency.
 - Startup preload must be independent from transient socket object identity. Token/session cleanup can close sockets through the socket lifecycle hook after state changes; preloading should continue once for the confirmed token instead of restarting when a mobile WebSocket reconnects or a socket instance changes.
 - The game socket should fail its initial connection attempt quickly enough for mobile recovery feedback and Socket.IO retry logic to take over. Do not rely on Socket.IO's default long handshake timeout for this app shell path.
 - The grouped asset API must keep `images` and `audio` flattened arrays for compatibility with tests and existing callers.
@@ -166,8 +167,9 @@ Correct:
 
 #### 6. Tests Required
 - API client tests must assert a hung request is aborted and rejected instead of staying pending forever.
-- Asset grouping tests must assert representative first-screen assets are critical and representative music/voice/shop assets are deferred.
+- Asset grouping tests must assert representative current-user-accessible home/shop/character/music/voice assets are critical and inaccessible unpurchased music audio is excluded.
 - Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
+- Preload behavior tests must assert skipped/timeout assets are reported and can be retried in the background.
 - Preload behavior tests must assert a hung critical loader cannot keep login preload pending forever.
 - App wiring tests must assert startup preload is not passed a `socket` prop.
 - Game socket tests must assert the mobile recovery reconnect and 6-second handshake timeout options.
@@ -183,15 +185,20 @@ Wrong:
 await Promise.all([...images, ...audio].map(preloadEverything));
 ```
 
-This blocks the home screen on optional music, voice, shop, and effect-preview assets.
+This either over-fetches inaccessible resources or lacks per-asset timeout/retry reporting.
 
 Correct:
 
 ```js
-await preloadLoginAssets(loginPreloadAssets({ characters }), { onProgress });
+const skipped = [];
+await preloadLoginAssets(loginPreloadAssets({ characters, user, shopItems, inventoryItems, tracks }), {
+  onProgress,
+  onSkipped: (src) => skipped.push(src)
+});
+retrySkippedPreloadAssets(skipped, { concurrency: 2 });
 ```
 
-`preloadLoginAssets` waits for critical groups and starts deferred groups with a concurrency cap.
+`loginPreloadAssets` derives the current user's accessible blocking manifest, while `preloadLoginAssets` bounds each asset and reports skipped sources for background retry.
 
 Wrong:
 

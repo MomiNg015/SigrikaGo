@@ -19,7 +19,7 @@ function room(overrides = {}) {
     openingEndsAt: null,
     preload: {
       startedAt: 1000,
-      deadlineAt: 61000,
+      deadlineAt: 91000,
       readyUserIds: [],
       readyCount: 0,
       requiredCount: 2
@@ -103,7 +103,7 @@ describe("room preparation lifecycle", () => {
     const { calls, lifecycle } = lifecycleFor(rooms);
 
     lifecycle.scheduleRoomPreloadTimeout(currentRoom, io);
-    vi.advanceTimersByTime(60000);
+    vi.advanceTimersByTime(90000);
 
     expect(rooms.has(currentRoom.code)).toBe(false);
     expect(calls.unregistered).toEqual(["12345"]);

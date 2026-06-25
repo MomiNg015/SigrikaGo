@@ -34,7 +34,7 @@ Questions to answer:
 
 ### Match Preload Room Boundary
 
-Matched and accepted-duel rooms must start in `GAME_PHASES.preloading` and use `server/roomPreparationLifecycle.js` as the only boundary for player resource readiness. Socket handlers may validate `room:preload-ready` and forward `{ roomCode, userId }`, but they must not mutate room phase directly. The lifecycle owns ready counts, the 60 second timeout, `match:preload-timeout`, transition into `opening`, and scheduling the existing game-start timer.
+Matched and accepted-duel rooms must start in `GAME_PHASES.preloading` and use `server/roomPreparationLifecycle.js` as the only boundary for player resource readiness. Socket handlers may validate `room:preload-ready` and forward `{ roomCode, userId }`, but they must not mutate room phase directly. The lifecycle owns ready counts, the 90 second timeout, `match:preload-timeout`, transition into `opening`, and scheduling the existing game-start timer.
 
 Tests touching this boundary should cover room creation, ready count broadcasts, both-ready opening transition, timeout abort, and socket event registration.
 
@@ -1318,7 +1318,7 @@ Tests touching Socket.IO disconnect event registration, cleanup ordering, change
 `server/staticAssets.js` owns production Vite asset hosting and SPA fallback:
 
 - `installProductionStaticAssets(app, { distDir })` mounts nothing unless `NODE_ENV === "production"` and `distDir` exists.
-- When active, it mounts the built Vite directory with a short default cache and adds a one-year immutable `Cache-Control` header for hashed chunk/asset filenames, including Vite dash-style names such as `index-abcdef12.js`.
+- When active, it mounts the built Vite directory with a short default cache and adds a one-year immutable `Cache-Control` header for hashed chunk/asset filenames and public `/assets/**` runtime resources. Resource content changes must use a changed URL or filename because these responses are immutable in browsers.
 - The SPA fallback must exclude `/api`, `/socket.io`, and `/uploads` so backend APIs, Socket.IO transport, and uploaded assets keep their existing routes.
 - `server/index.js` should provide the `distDir` and call this boundary once near the end of route/socket setup; it should not duplicate production checks, cache-header regexes, or fallback route patterns.
 

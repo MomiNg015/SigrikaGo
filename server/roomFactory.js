@@ -8,7 +8,7 @@ import { DEFAULT_RANK, normalizeRank, parseRecentResults } from "../src/shared/r
 
 export const MATCH_SUCCESS_DELAY_MS = 3000;
 export const OPENING_NOTICE_DELAY_MS = 3000;
-export const MATCH_PRELOAD_TIMEOUT_MS = 60000;
+export const MATCH_PRELOAD_TIMEOUT_MS = 90000;
 
 export function createRoom(first, second, {
   modeInput = first.mode ?? second.mode ?? "spark",
