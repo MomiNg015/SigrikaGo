@@ -3,14 +3,18 @@ import { canPreviewSkillTarget, lastMarkedAction } from "./boardView.js";
 import { COLORS, GAME_PHASES } from "./game.js";
 
 describe("board view helpers", () => {
-  it("marks normal moves and flip skills", () => {
+  it("marks normal moves and visible point skill actions", () => {
     const history = [
       { type: "move", id: "3,3", moveNumber: 1 },
       { type: "skill", effectType: "random-blast", id: "9,9", moveNumber: 1 },
-      { type: "skill", effectType: "flip-stone", id: "4,4", moveNumber: 2 }
+      { type: "skill", effectType: "flip-stone", id: "4,4", moveNumber: 2 },
+      { type: "skill", effectType: "hidden-hand", id: "5,5", moveNumber: 3 },
+      { type: "skill", effectType: "voyage-star", id: "5,5", moveNumber: 3 }
     ];
 
-    expect(lastMarkedAction(history)?.id).toBe("4,4");
+    expect(lastMarkedAction(history)?.id).toBe("5,5");
+    expect(lastMarkedAction(history.slice(0, 4))?.id).toBe("5,5");
+    expect(lastMarkedAction(history.slice(0, 3))?.id).toBe("4,4");
     expect(lastMarkedAction(history.slice(0, 2))?.id).toBe("3,3");
   });
 

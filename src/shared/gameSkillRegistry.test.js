@@ -12,6 +12,7 @@ describe("game skill registry", () => {
       "erase-point",
       "flip-stone",
       "hidden-hand",
+      "voyage-star",
       "protocol-takeover",
       "random-blast",
       "row-slash",

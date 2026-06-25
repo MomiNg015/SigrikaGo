@@ -1,5 +1,6 @@
 import { CHARACTERS } from "./characters.js";
 import { canonicalCharacterId } from "./characterAliases.js";
+import { derivedSkillDefinitionsFromSkill } from "./derivedSkills.js";
 import { skillEffectTargetRule } from "./skillEffectCatalog.js";
 
 export function normalizeSkillConfig(skillOrCharacterId) {
@@ -32,7 +33,21 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
       systemMessage: fallback.skill.systemMessage,
       targetRule: "empty-point",
-      params: {}
+      params: fallback.skill.params ?? {}
+    };
+  }
+  if (fallback?.skill?.id === "voyage-star") {
+    return {
+      characterId: fallback.id,
+      effectType: "voyage-star",
+      name: fallback.skill.name,
+      uses: fallback.skill.uses ?? 1,
+      freeTurn: true,
+      costType: fallback.skill.costType ?? "numeric",
+      costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 5),
+      systemMessage: fallback.skill.systemMessage,
+      targetRule: "none",
+      params: fallback.skill.params ?? {}
     };
   }
   if (fallback?.skill?.id === "flip-stone") {
@@ -180,5 +195,10 @@ export function skillUsesBoardConfirmation(skillOrCharacterId) {
 export function skillUsesBoardSurfaceConfirmation(skillOrCharacterId) {
   const skill = normalizeSkillConfig(skillOrCharacterId);
   const effectType = skill?.effectType ?? skill?.id;
-  return effectType === "double-move";
+  return effectType === "double-move" || effectType === "voyage-star";
+}
+
+export function configuredDerivedSkills(skillOrCharacterId) {
+  const skill = normalizeSkillConfig(skillOrCharacterId);
+  return derivedSkillDefinitionsFromSkill(skill);
 }

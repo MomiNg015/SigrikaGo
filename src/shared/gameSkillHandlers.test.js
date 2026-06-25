@@ -17,7 +17,8 @@ describe("game skill handlers", () => {
       "row-slash",
       "spray-stone",
       "liberty-purge",
-      "double-move"
+      "double-move",
+      "voyage-star"
     ]);
   });
 

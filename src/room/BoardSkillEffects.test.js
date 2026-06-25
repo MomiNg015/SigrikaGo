@@ -9,12 +9,29 @@ import BoardSkillEffects, {
   preparePixiEffect,
   reducedMotionQuery
 } from "./BoardSkillEffects.jsx";
+import { pointCenterForHost } from "./boardSkillEffectGeometry.js";
 
 describe("BoardSkillEffects", () => {
   test("maps board point ids to pixel centers for different board sizes", () => {
     expect(boardPointCenter("0,0", { boardSize: 13, width: 260, height: 260 })).toEqual({ x: 10, y: 10 });
     expect(boardPointCenter("12,12", { boardSize: 13, width: 260, height: 260 })).toEqual({ x: 250, y: 250 });
     expect(boardPointCenter("18,18", { boardSize: 19, width: 380, height: 380 })).toEqual({ x: 370, y: 370 });
+  });
+
+  test("prefers the rendered board point center for Pixi effects", () => {
+    const pointElement = {
+      getBoundingClientRect: () => ({ left: 140, top: 92, width: 40, height: 40 })
+    };
+    const host = {
+      clientWidth: 260,
+      clientHeight: 260,
+      getBoundingClientRect: () => ({ left: 100, top: 52, width: 260, height: 260 }),
+      parentElement: {
+        querySelector: (selector) => selector === '[data-point-id="3,4"]' ? pointElement : null
+      }
+    };
+
+    expect(pointCenterForHost("3,4", { boardSize: 13, host })).toEqual({ x: 60, y: 60 });
   });
 
   test("starts board effects only after the skill banner phase", () => {
@@ -138,7 +155,7 @@ describe("BoardSkillEffects", () => {
     expect(host.children).toEqual([]);
   });
 
-  test("omits QiuYuan row slash Pixi layer because the cast uses the DOM row scar", () => {
+  test("renders QiuYuan row slash as a full-board Pixi cast layer", () => {
     const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
       boardSize: 13,
       pendingSkill: {
@@ -149,7 +166,10 @@ describe("BoardSkillEffects", () => {
       }
     }));
 
-    expect(markup).toBe("");
+    expect(markup).toContain("board-effects-layer");
+    expect(markup).toContain('data-effect-id="slash-pixi-cast"');
+    expect(markup).toContain('data-effect-type="row-slash"');
+    expect(markup).toContain('data-board-effect="true"');
   });
 
   test("renders ChangLi double-move as a full-board Pixi layer", () => {
@@ -200,7 +220,7 @@ describe("BoardSkillEffects", () => {
     expect(markup).toContain('data-board-effect="true"');
   });
 
-  test("still omits row-slash layer metadata even when a legacy preview has no id", () => {
+  test("renders row-slash layer metadata even when a legacy preview has no id", () => {
     const markup = renderToStaticMarkup(createElement(BoardSkillEffects, {
       boardSize: 13,
       pendingSkill: {
@@ -210,7 +230,9 @@ describe("BoardSkillEffects", () => {
       }
     }));
 
-    expect(markup).toBe("");
+    expect(markup).toContain("board-effects-layer");
+    expect(markup).toContain('data-effect-type="row-slash"');
+    expect(markup).toContain('data-board-effect="true"');
   });
 
   test("supports disabling idle Pixi prewarm for no-skill boards", () => {
@@ -244,5 +266,15 @@ describe("BoardSkillEffects", () => {
       startDelayMs: 0,
       durationMs: 0
     });
+  });
+
+  test("keeps an already-started Pixi cast alive when the resolved room snapshot clears pendingSkill", () => {
+    const source = readFileSync(new URL("./BoardSkillEffects.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("const activeEffectCleanupRef = useRef(() => {})");
+    expect(source).toContain("if (!started) preparedEffect.cleanup()");
+    expect(source).toContain("activeEffectCleanupRef.current = cleanup");
+    expect(source).toContain("preparedEffect.cleanup();");
+    expect(source).not.toContain("cleanup();\n      preparedEffect.cleanup();");
   });
 });

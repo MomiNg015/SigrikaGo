@@ -20,6 +20,13 @@ export const SKILL_EFFECT_CATALOG = {
     boardEffect: true,
     soundCues: { startAt: 0.04, impactAt: 0.52 }
   },
+  "voyage-star": {
+    label: "远航星",
+    targetRule: "none",
+    active: true,
+    boardEffect: true,
+    soundCues: { startAt: 0.05, impactAt: 0.42 }
+  },
   "protocol-takeover": {
     label: "协议接管",
     targetRule: "empty-point",
@@ -38,7 +45,7 @@ export const SKILL_EFFECT_CATALOG = {
     label: "一斩足矣",
     targetRule: "any-point",
     active: true,
-    boardEffect: false,
+    boardEffect: true,
     soundCues: { startAt: 0.04, impactAt: 0.46 }
   },
   "spray-stone": {

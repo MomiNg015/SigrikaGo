@@ -15,6 +15,7 @@ describe("skillEffectCatalog", () => {
       "erase-point",
       "flip-stone",
       "hidden-hand",
+      "voyage-star",
       "protocol-takeover",
       "random-blast",
       "row-slash",
@@ -27,6 +28,7 @@ describe("skillEffectCatalog", () => {
       "erase-point",
       "flip-stone",
       "hidden-hand",
+      "voyage-star",
       "protocol-takeover",
       "random-blast",
       "row-slash",
@@ -40,6 +42,7 @@ describe("skillEffectCatalog", () => {
     expect(skillEffectTargetRule("erase-point")).toBe("empty-point");
     expect(skillEffectTargetRule("flip-stone")).toBe("stone");
     expect(skillEffectTargetRule("hidden-hand")).toBe("empty-point");
+    expect(skillEffectTargetRule("voyage-star")).toBe("none");
     expect(skillEffectTargetRule("protocol-takeover")).toBe("empty-point");
     expect(skillEffectTargetRule("random-blast")).toBe("none");
     expect(skillEffectTargetRule("row-slash")).toBe("any-point");
@@ -56,7 +59,7 @@ describe("skillEffectCatalog", () => {
       value: "spray-stone",
       label: "流光溢彩"
     });
-    expect(skillEffectTypeMessage()).toBe("erase-point, flip-stone, hidden-hand, protocol-takeover, random-blast, row-slash, spray-stone, liberty-purge, double-move, or color-illusion-passive");
+    expect(skillEffectTypeMessage()).toBe("erase-point, flip-stone, hidden-hand, voyage-star, protocol-takeover, random-blast, row-slash, spray-stone, liberty-purge, double-move, or color-illusion-passive");
   });
 
   test("provides sound cue timing for animated board effects", () => {
@@ -64,6 +67,7 @@ describe("skillEffectCatalog", () => {
     expect(skillEffectSoundCues("flip-stone")).toEqual({ startAt: 0.04, impactAt: 0.6 });
     expect(skillEffectSoundCues("random-blast")).toEqual({ startAt: 0.06, impactAt: 0.56 });
     expect(skillEffectSoundCues("protocol-takeover")).toEqual({ startAt: 0.05, impactAt: 0.5 });
+    expect(skillEffectSoundCues("voyage-star")).toEqual({ startAt: 0.05, impactAt: 0.42 });
     expect(skillEffectSoundCues("row-slash")).toEqual({ startAt: 0.04, impactAt: 0.46 });
     expect(skillEffectSoundCues("spray-stone")).toEqual({ startAt: 0.04, impactAt: 0.58 });
     expect(skillEffectSoundCues("liberty-purge")).toEqual({ startAt: 0.04, impactAt: 0.5 });
@@ -84,7 +88,7 @@ describe("skillEffectCatalog", () => {
     expect(SKILL_EFFECT_CATALOG["liberty-purge"].boardEffect).toBe(true);
   });
 
-  test("keeps QiuYuan row-slash as a DOM-only row scar effect", () => {
-    expect(SKILL_EFFECT_CATALOG["row-slash"].boardEffect).toBe(false);
+  test("marks QiuYuan row-slash as a Pixi cast plus DOM row scar effect", () => {
+    expect(SKILL_EFFECT_CATALOG["row-slash"].boardEffect).toBe(true);
   });
 });

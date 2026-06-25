@@ -5,6 +5,9 @@ import {
   SKILL_EFFECT_REDUCED_MOTION_MS,
   SKILL_PREVIEW_DELAY_MS,
   SKILL_BANNER_DURATION_MS,
+  SKILL_BOARD_EFFECT_DURATION_MS,
+  VOYAGE_STAR_PREVIEW_DELAY_MS,
+  VOYAGE_STAR_WHITEOUT_RESOLUTION_PROGRESS,
   skillBoardEffectDurationMs,
   skillEffectPresentation,
   skillEffectTimeline,
@@ -56,6 +59,23 @@ describe("skillPresentation", () => {
     expect(skillPreviewResolutionDelay({ effectType: "hidden-hand" })).toBe(3500);
   });
 
+  test("resolves Voyage Star while the opaque whiteout is still covering the board", () => {
+    expect(VOYAGE_STAR_WHITEOUT_RESOLUTION_PROGRESS).toBe(0.52);
+    expect(VOYAGE_STAR_PREVIEW_DELAY_MS).toBe(
+      SKILL_BANNER_DURATION_MS + Math.round(SKILL_BOARD_EFFECT_DURATION_MS * 0.52)
+    );
+    expect(skillPreviewResolutionDelay({ effectType: "voyage-star" })).toBe(VOYAGE_STAR_PREVIEW_DELAY_MS);
+    expect(skillEffectPresentation("voyage-star")).toMatchObject({
+      effectType: "voyage-star",
+      enabled: true,
+      layers: {
+        boardEffect: true,
+        domBoardEffect: true,
+        sound: true
+      }
+    });
+  });
+
   test("normalizes catalog-backed Pixi board effects", () => {
     expect(skillEffectPresentation("erase-point")).toMatchObject({
       effectType: "erase-point",
@@ -69,12 +89,12 @@ describe("skillPresentation", () => {
     });
   });
 
-  test("keeps QiuYuan row-slash in the DOM row scar layer", () => {
+  test("combines QiuYuan row-slash Pixi cast with the DOM row scar layer", () => {
     expect(skillEffectPresentation("row-slash")).toMatchObject({
       effectType: "row-slash",
       enabled: true,
       layers: {
-        boardEffect: false,
+        boardEffect: true,
         domBoardEffect: true,
         sound: true
       }

@@ -10,6 +10,7 @@ import { activeNeighbors, getPoint, parsePointId, pointId } from "./gameBoard.js
 import { collectGroup } from "./gameGroups.js";
 import { HIDDEN_HAND_NOTICE } from "./gameStoneActions.js";
 import { fail, ok } from "./gameActionResult.js";
+import { activeDerivedSkillState, canUseVoyageStar, spentDerivedSkillState } from "./derivedSkills.js";
 import {
   applyExtraSkillCost,
   applySkillCost,
@@ -318,6 +319,105 @@ export function libertyPurge(state, color, id, options = {}) {
   return ok(resolved, { notices });
 }
 
+export function voyageStar(state, color, options = {}) {
+  if (!canUseVoyageStar(state, color)) return fail("远航星只能以仍未暴露的小爱出击隐藏手为中心发动");
+  const source = activeDerivedSkillState(state, color);
+  const next = cloneState(state);
+  const center = getPoint(next, source.sourceHiddenHandId);
+  const erasePointIds = crossPointIds(next, center.id).filter((pointIdValue) => getPoint(next, pointIdValue)?.valid);
+  const erasePointIdSet = new Set(erasePointIds);
+  const secondaryPointIds = [...new Set(
+    erasePointIds.flatMap((erasedId) => crossPointIds(next, erasedId).filter((candidateId) => !erasePointIdSet.has(candidateId)))
+  )].filter((pointIdValue) => getPoint(next, pointIdValue)?.valid);
+  const directRemovals = [];
+  const erasedPointRemovals = [];
+  const secondaryRemovals = [];
+  const removedByColor = {};
+  let hiddenHandRemoved = false;
+  let opponentHiddenHandsRemoved = 0;
+  next.skillRemovals ??= { black: 0, white: 0 };
+
+  for (const pointIdValue of erasePointIds) {
+    const point = getPoint(next, pointIdValue);
+    if (!point?.valid) continue;
+    const removal = removeStoneForVoyageStar(next, point, removedByColor);
+    if (removal) {
+      directRemovals.push(removal);
+      erasedPointRemovals.push(removal);
+      if (removal.owner) next.skillRemovals[removal.owner] = (next.skillRemovals[removal.owner] ?? 0) + 1;
+      if (removal.hiddenHandRemoved) {
+        hiddenHandRemoved = true;
+        if (removal.hiddenHandOwner !== color) opponentHiddenHandsRemoved += 1;
+      }
+    }
+    delete point.protocolBan;
+    point.valid = false;
+    point.mark = null;
+    point.skillEffect = point.id === center.id ? "voyage-star-crater-point" : "voyage-star-erased-point";
+    point.skillEffectOwner = color;
+    point.neighbors = [];
+  }
+
+  for (const other of next.points) {
+    other.neighbors = other.neighbors.filter((neighborId) => !erasePointIdSet.has(neighborId));
+  }
+
+  for (const pointIdValue of secondaryPointIds) {
+    const point = getPoint(next, pointIdValue);
+    if (!point?.valid || !point.stone) continue;
+    const removal = removeStoneForVoyageStar(next, point, removedByColor);
+    if (!removal) continue;
+    directRemovals.push(removal);
+    secondaryRemovals.push(removal);
+    if (removal.owner) next.skillRemovals[removal.owner] = (next.skillRemovals[removal.owner] ?? 0) + 1;
+    if (removal.hiddenHandRemoved) {
+      hiddenHandRemoved = true;
+      if (removal.hiddenHandOwner !== color) opponentHiddenHandsRemoved += 1;
+    }
+  }
+
+  next.derivedSkills = {
+    ...(next.derivedSkills ?? {}),
+    [color]: spentDerivedSkillState(source)
+  };
+  applySkillCost(next, color, options.skill ?? source);
+  next.ko = null;
+  clearOwnedBoardMarkers(next, color);
+  const cleanupRemovals = [];
+  next.history.push({
+    type: "skill",
+    effectType: "voyage-star",
+    skill: options.skillName ?? source.name ?? "远航星",
+    color,
+    id: center.id,
+    erasedPointIds: erasePointIds,
+    secondaryRemovalIds: secondaryRemovals.map((removal) => removal.id),
+    affectedPointIds: [...new Set([center.id, ...erasePointIds, ...secondaryPointIds])],
+    removed: directRemovals.length,
+    removedByColor,
+    directRemovals,
+    erasedPointRemovals,
+    secondaryRemovals,
+    cleanupRemovals,
+    hiddenHandRemoved,
+    opponentHiddenHandsRemoved,
+    costType: source.costType ?? options.skill?.costType ?? "numeric",
+    costValue: String(source.costValue ?? options.skill?.costValue ?? 0),
+    musicTrackId: source.musicTrackId ?? options.skill?.musicTrackId ?? null,
+    moveNumber: next.moveNumber
+  });
+
+  const resolved = resolveCapturesAfterMutation(
+    next,
+    color,
+    options.consumesTurn ?? false,
+    "skillRemovals",
+    cleanupRemovals
+  );
+  resolved.ko = null;
+  return ok(resolved, { notices: [] });
+}
+
 export function randomBlast(state, color, options = {}) {
   const next = cloneState(state);
   const size = Math.max(1, Number(options.skill?.params?.size ?? 3) || 3);
@@ -365,6 +465,39 @@ export function randomBlast(state, color, options = {}) {
     moveNumber: next.moveNumber
   });
   return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? false, "skillRemovals"));
+}
+
+function crossPointIds(state, id) {
+  const parsed = parsePointId(id);
+  if (!Number.isInteger(parsed.x) || !Number.isInteger(parsed.y)) return [];
+  return [
+    pointId(parsed.x, parsed.y),
+    pointId(parsed.x - 1, parsed.y),
+    pointId(parsed.x + 1, parsed.y),
+    pointId(parsed.x, parsed.y - 1),
+    pointId(parsed.x, parsed.y + 1)
+  ].filter((candidateId) => {
+    const candidate = parsePointId(candidateId);
+    return candidate.x >= 0 && candidate.y >= 0 && candidate.x < state.size && candidate.y < state.size;
+  });
+}
+
+function removeStoneForVoyageStar(state, point, removedByColor) {
+  if (!point?.stone) return null;
+  const from = point.stone;
+  removedByColor[from] = (removedByColor[from] ?? 0) + 1;
+  const owner = captureCreditOwner(from);
+  const hiddenHandOwner = point.hiddenHand?.owner ?? null;
+  const hiddenHandRemoved = Boolean(point.hiddenHand && !point.hiddenHand.exposed);
+  const removal = {
+    id: point.id,
+    from,
+    owner,
+    hiddenHandRemoved,
+    hiddenHandOwner
+  };
+  clearStone(state, point.id);
+  return removal;
 }
 
 export function doubleMove(state, color, options = {}) {

@@ -6,8 +6,9 @@ import OperationHint from "./OperationHint.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
 import RoomPeopleList from "./RoomPeopleList.jsx";
 import { stoneDecorationsForRoom } from "./roomView.js";
+import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
 
-const SHOW_TEST_TOOLS = import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === "true";
+const SHOW_TEST_TOOLS = import.meta.env.DEV;
 const ROOM_FLOATING_LAYER_BASE_Z = 90;
 
 export default function RoomBattleStage({
@@ -91,6 +92,7 @@ export default function RoomBattleStage({
     onScoringAction({ type: "reset-dead" });
   }, [onScoringAction]);
   const selfPlayer = me ?? displayRoom.players[0];
+  const selfSkill = effectiveSkillDisplayForPlayer(displayRoom.game, selfPlayer);
   const isPlaying = displayRoom.game.phase === "playing";
   const isFinished = displayRoom.game.phase === "finished";
   const isMobileBattleLayout = battleLayoutClassName === "mobile-battle-layout";
@@ -157,7 +159,8 @@ export default function RoomBattleStage({
       skillActionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
       decisionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
       skillEnabled={displayRoom.game.skillEnabled !== false}
-      skillUses={me ? displayRoom.game.skillUses[me.color] ?? 0 : 0}
+      skillName={selfSkill?.name}
+      skillUses={selfPlayer ? effectiveSkillUsesForColor(displayRoom.game, selfPlayer.color) : 0}
       skillAvailable={skillAvailable}
       hasAnyStones={hasAnyStones}
       opponentConnected={opponentConnected}

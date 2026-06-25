@@ -4,12 +4,13 @@ import {
   buildBoardLines,
   coordLabel,
   formatClock,
+  replayGameAt,
   replayRoomAt,
   roomPeople,
   signedStoneTerm,
   stoneDecorationsForRoom
 } from "./roomView.js";
-import { COLORS, GAME_PHASES, createGameState, pointId } from "../shared/game.js";
+import { COLORS, GAME_PHASES, createGameState, getPoint, pointId, useSkill } from "../shared/game.js";
 
 describe("roomView helpers", () => {
   test("formats room members from players and spectators", () => {
@@ -245,5 +246,54 @@ describe("roomView helpers", () => {
     } finally {
       Math.random = originalRandom;
     }
+  });
+
+  test("reconstructs Voyage Star erased points from history without requiring live derived-skill availability", () => {
+    const players = [
+      { color: COLORS.black, characterId: "aemeath", character: CHARACTERS.aemeath, user: { id: "black" } },
+      { color: COLORS.white, characterId: "sigrika", character: CHARACTERS.sigrika, user: { id: "white" } }
+    ];
+    const centerId = pointId(6, 6);
+    let game = createGameState(players);
+    const hiddenHandResult = useSkill(game, COLORS.black, "aemeath", centerId);
+    expect(hiddenHandResult.ok).toBe(true);
+    game = hiddenHandResult.state;
+    game.turn = COLORS.black;
+    const voyageResult = useSkill(game, COLORS.black, game.derivedSkills.black, null);
+    expect(voyageResult.ok).toBe(true);
+    const voyageEntry = voyageResult.state.history.find((entry) => entry.effectType === "voyage-star");
+    const room = {
+      players,
+      game: {
+        ...createGameState(players),
+        history: [
+          {
+            ...voyageEntry,
+            erasedPointIds: voyageEntry.erasedPointIds,
+            directRemovals: [],
+            removedByColor: {},
+            secondaryRemovals: [],
+            cleanupRemovals: []
+          }
+        ]
+      }
+    };
+
+    const replay = replayGameAt(room, 1);
+
+    expect(getPoint(replay, centerId)).toMatchObject({
+      valid: false,
+      skillEffect: "voyage-star-crater-point",
+      skillEffectOwner: COLORS.black
+    });
+    expect(getPoint(replay, pointId(5, 6))).toMatchObject({
+      valid: false,
+      skillEffect: "voyage-star-erased-point",
+      skillEffectOwner: COLORS.black
+    });
+    expect(replay.history.at(-1)).toMatchObject({
+      effectType: "voyage-star",
+      id: centerId
+    });
   });
 });

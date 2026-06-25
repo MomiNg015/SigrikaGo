@@ -1,4 +1,4 @@
-import { doubleMove, erasePoint, flipStone, libertyPurge, protocolTakeover, randomBlast, rowSlash, sprayStone } from "./gameSkillActions.js";
+import { doubleMove, erasePoint, flipStone, libertyPurge, protocolTakeover, randomBlast, rowSlash, sprayStone, voyageStar } from "./gameSkillActions.js";
 import { playHiddenHand } from "./gameStoneActions.js";
 import { executeRegisteredSkill, skillConsumesTurn } from "./gameSkillRegistry.js";
 
@@ -45,6 +45,11 @@ export const ACTIVE_SKILL_HANDLERS = {
   }),
   "double-move": ({ state, color, skill }) => doubleMove(state, color, {
     skillName: skill.name,
+    skill
+  }),
+  "voyage-star": ({ state, color, skill }) => voyageStar(state, color, {
+    skillName: skill.name,
+    consumesTurn: skillConsumesTurn(skill),
     skill
   })
 };

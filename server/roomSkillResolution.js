@@ -12,6 +12,8 @@ import {
   skillUsesBoardConfirmation,
   useSkill
 } from "../src/shared/game.js";
+import { effectiveSkillConfigForColor } from "../src/shared/derivedSkills.js";
+import { normalizeSkillConfig } from "../src/shared/gameSkills.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import {
   SKILL_BANNER_DURATION_MS,
@@ -96,13 +98,14 @@ export function createRoomSkillLifecycle({
       phase: GAME_PHASES.skillPreview,
       pendingSkill
     };
-    appendSystem(room, describeSkillUse(room, player, skillTargetId), { kind: "skill" });
+    appendSystem(room, describeSkillUse(room, player, skillTargetId, skill), { kind: "skill" });
     schedulePendingSkillResolution(room, io);
     return { ok: true, room };
   }
 
   function startActiveSkill({ room, player, action, io }) {
-    const skillConfig = player.character?.skill ?? player.characterId;
+    const baseSkillConfig = normalizeSkillConfig(player.character?.skill ?? player.characterId);
+    const skillConfig = effectiveSkillConfigForColor(room.game, player.color, baseSkillConfig);
     if (gameModeFamily(room.game?.mode) === "gomoku") return { ok: false, error: "五子棋不能使用技能" };
     if (!canStartSkill(room.game, skillConfig)) return { ok: false, error: "场上没有可作用的棋子" };
     const skillTargetId = skillUsesBoardConfirmation(skillConfig) ? null : action.pointId;
@@ -116,12 +119,11 @@ export function createRoomSkillLifecycle({
     }
 
     const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
-    const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
     return beginPendingSkillPreview({
       room,
       player,
       character,
-      skill,
+      skill: skillConfig,
       skillTargetId,
       result,
       io
@@ -212,6 +214,9 @@ export function buildPendingSkillPreview({
     targetId,
     markedPointIds,
     removalMarkIds,
+    affectedPointIds: skillAction?.affectedPointIds,
+    erasedPointIds: skillAction?.erasedPointIds,
+    secondaryRemovalIds: skillAction?.secondaryRemovalIds,
     transformed: skillAction?.transformed,
     boardSize: resolvedGame?.size
   });
@@ -225,9 +230,12 @@ export function buildPendingSkillPreview({
     characterName: character.name,
     itemEffects: player.user.itemEffects ?? {},
     skillName: skill.name,
+    musicTrackId: skillAction?.musicTrackId ?? skill.musicTrackId ?? null,
     effectType,
     targetId,
     affectedPointIds,
+    erasedPointIds: Array.isArray(skillAction?.erasedPointIds) ? skillAction.erasedPointIds : [],
+    secondaryRemovalIds: Array.isArray(skillAction?.secondaryRemovalIds) ? skillAction.secondaryRemovalIds : [],
     markedPointIds,
     removalMarkIds,
     row: Number.isInteger(skillAction?.row) ? skillAction.row : null,
@@ -256,7 +264,15 @@ function skillEffectsEnabled() {
   return getCachedPublicSiteSettings().skillEffectsEnabled !== false;
 }
 
-export function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds, removalMarkIds = [], transformed = [], boardSize = 13 }) {
+export function affectedPointIdsForSkillAction({ effectType, targetId, markedPointIds, removalMarkIds = [], affectedPointIds = [], erasedPointIds = [], secondaryRemovalIds = [], transformed = [], boardSize = 13 }) {
+  if (Array.isArray(affectedPointIds) && affectedPointIds.length) return [...new Set(affectedPointIds)];
+  if (effectType === "voyage-star") {
+    return [...new Set([
+      ...(targetId ? [targetId] : []),
+      ...(Array.isArray(erasedPointIds) ? erasedPointIds : []),
+      ...(Array.isArray(secondaryRemovalIds) ? secondaryRemovalIds : [])
+    ])];
+  }
   if (effectType === "random-blast") return markedPointIds;
   if (effectType === "spray-stone") {
     const transformedIds = Array.isArray(transformed)

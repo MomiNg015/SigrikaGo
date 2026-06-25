@@ -83,10 +83,20 @@ describe("ActionBar helpers", () => {
     expect(disabledBlock).toContain("animation: none !important");
   });
 
-  it("keeps removable test tools behind an explicit dev flag", () => {
+  it("keeps removable test tools development-only", () => {
     const source = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
 
-    expect(source).toContain("import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === \"true\"");
+    expect(source).toContain("const SHOW_TEST_TOOLS = import.meta.env.DEV");
+    expect(source).not.toContain("VITE_ENABLE_TEST_TOOLS");
+  });
+
+  it("reads the action skill label from the current room player snapshot", () => {
+    const source = readFileSync(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("const selfPlayer = me ?? displayRoom.players[0]");
+    expect(source).toContain("effectiveSkillDisplayForPlayer(displayRoom.game, selfPlayer)");
+    expect(source).toContain("effectiveSkillUsesForColor(displayRoom.game, selfPlayer.color)");
+    expect(source).not.toContain("effectiveSkillDisplayForPlayer(displayRoom.game, me)");
   });
 
   it("memoizes the action bar across clock-only player changes", () => {

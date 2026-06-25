@@ -1179,6 +1179,105 @@ describe("SigrikaGo rules", () => {
     expect(result.state.turn).toBe(COLORS.white);
   });
 
+  it("creates Voyage Star after Aemeath hidden-hand without leaking the source in opponent views", () => {
+    const state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+
+    const result = useSkill(state, COLORS.black, "aemeath", pointId(4, 4));
+
+    expect(result.ok).toBe(true);
+    expect(result.state.derivedSkills.black).toMatchObject({
+      effectType: "voyage-star",
+      name: "远航星",
+      uses: 1,
+      sourceHiddenHandId: pointId(4, 4)
+    });
+    expect(gameViewForColor(result.state, COLORS.white).derivedSkills.black).toMatchObject({
+      effectType: "voyage-star",
+      uses: 1,
+      sourceHiddenHandId: null
+    });
+  });
+
+  it("keeps Voyage Star disabled if its hidden hand has been exposed", () => {
+    let state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    state = useSkill(state, COLORS.black, "aemeath", pointId(6, 6)).state;
+    state = playMove(state, COLORS.white, pointId(6, 6)).state;
+    state.turn = COLORS.black;
+
+    expect(canStartSkill(state, state.derivedSkills.black)).toBe(false);
+    expect(useSkill(state, COLORS.black, state.derivedSkills.black, null).ok).toBe(false);
+  });
+
+  it("uses Voyage Star from the hidden-hand source, erases the cross, removes the outer stones, and keeps the turn", () => {
+    let state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    state = useSkill(state, COLORS.black, "aemeath", pointId(6, 6)).state;
+    forceStone(state, 5, 6, COLORS.white);
+    forceStone(state, 7, 6, COLORS.black);
+    forceStone(state, 6, 5, COLORS.white);
+    forceStone(state, 6, 7, COLORS.black);
+    forceStone(state, 4, 6, COLORS.white);
+    forceStone(state, 8, 6, COLORS.white);
+    forceStone(state, 6, 4, COLORS.black);
+    state.turn = COLORS.black;
+
+    const result = useSkill(state, COLORS.black, state.derivedSkills.black, null);
+
+    expect(result.ok).toBe(true);
+    expect(getPoint(result.state, pointId(6, 6))).toMatchObject({
+      valid: false,
+      stone: null,
+      skillEffect: "voyage-star-crater-point"
+    });
+    for (const id of [pointId(5, 6), pointId(7, 6), pointId(6, 5), pointId(6, 7)]) {
+      expect(getPoint(result.state, id)).toMatchObject({
+        valid: false,
+        stone: null,
+        skillEffect: "voyage-star-erased-point"
+      });
+    }
+    for (const id of [pointId(4, 6), pointId(8, 6), pointId(6, 4)]) {
+      expect(getPoint(result.state, id).stone).toBe(null);
+    }
+    expect(result.state.derivedSkills.black).toMatchObject({ uses: 0, spent: true, sourceHiddenHandId: null });
+    expect(result.state.skillCosts.black).toBe(5);
+    expect(result.state.turn).toBe(COLORS.black);
+    expect(result.state.moveNumber).toBe(1);
+    expect(result.state.history.at(-1)).toMatchObject({
+      effectType: "voyage-star",
+      id: pointId(6, 6),
+      removed: 8,
+      costValue: "5",
+      musicTrackId: "aemeath-voyage-star-default"
+    });
+  });
+
+  it("keeps Voyage Star centered on the exact hidden-hand coordinate", () => {
+    let state = createGameState([{ color: COLORS.black }, { color: COLORS.white }]);
+    const hiddenHandId = pointId(3, 4);
+    state = useSkill(state, COLORS.black, "aemeath", hiddenHandId).state;
+    state.turn = COLORS.black;
+
+    const result = useSkill(state, COLORS.black, state.derivedSkills.black, null);
+
+    expect(result.ok).toBe(true);
+    expect(result.state.history.at(-1)).toMatchObject({
+      effectType: "voyage-star",
+      id: hiddenHandId,
+      erasedPointIds: expect.arrayContaining([
+        hiddenHandId,
+        pointId(2, 4),
+        pointId(4, 4),
+        pointId(3, 3),
+        pointId(3, 5)
+      ])
+    });
+    expect(getPoint(result.state, hiddenHandId)).toMatchObject({
+      valid: false,
+      skillEffect: "voyage-star-crater-point"
+    });
+    expect(getPoint(result.state, pointId(4, 5)).valid).toBe(true);
+  });
+
   it("creates a random test layout with 50 black and 50 white stones and no dead groups", () => {
     const state = createGameState();
 

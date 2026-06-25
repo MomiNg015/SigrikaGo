@@ -1,4 +1,4 @@
-import { COLORS, GAME_PHASES, randomLayout, restoreSkillUse } from "../src/shared/game.js";
+import { GAME_PHASES, randomLayout, restoreSkillUse } from "../src/shared/game.js";
 import { resetByoYomi } from "./roomClockTiming.js";
 import { canUseDebugTestActions } from "./security.js";
 
@@ -18,17 +18,19 @@ export function handleRoomTestAction({ action = {}, env = process.env, player, r
     return { ok: false, error: "测试工具仅开发环境可用" };
   }
 
-  const label = player.color === COLORS.black ? "黑" : "白";
   if (action.type === "test-enter-byo-yomi") {
     if (room.game.phase !== GAME_PHASES.playing) return { ok: false, error: "对局当前不能进入读秒" };
-    player.time.main = 0;
-    resetByoYomi(player);
+    for (const roomPlayer of room.players ?? []) {
+      if (!roomPlayer?.time) continue;
+      roomPlayer.time.main = 0;
+      resetByoYomi(roomPlayer);
+    }
     return {
       ok: true,
       result: null,
       room,
       skipByoYomiReset: true,
-      systemMessage: `测试工具：${label}方已进入读秒。`
+      systemMessage: "测试工具：双方已进入读秒。"
     };
   }
 

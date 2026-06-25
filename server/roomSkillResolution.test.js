@@ -105,6 +105,27 @@ describe("room skill resolution helpers", () => {
     });
   });
 
+  test("resolves Voyage Star during the full-board whiteout", () => {
+    const game = {
+      phase: "playing",
+      history: [{ type: "skill", effectType: "voyage-star", id: "6,6" }]
+    };
+    const resolution = createPendingSkillResolution({
+      pendingSkillId: "skill-voyage-star",
+      game,
+      notices: [],
+      playerColor: "black",
+      effectType: "voyage-star",
+      now: () => 1000
+    });
+
+    expect(skillPreviewResolutionDelay({ effectType: "voyage-star" })).toBe(2936);
+    expect(resolution).toMatchObject({
+      resolvesAt: 3936,
+      effectsEnabled: true
+    });
+  });
+
   test("calculates remaining delay for restored pending skill snapshots", () => {
     expect(pendingSkillResolutionDelay({ resolvesAt: 2500 }, { now: () => 1000 })).toBe(1500);
     expect(pendingSkillResolutionDelay({ resolvesAt: 500 }, { now: () => 1000 })).toBe(0);
@@ -198,6 +219,54 @@ describe("room skill resolution helpers", () => {
       removalMarkIds: ["3,3", "6,6"],
       removed: 2,
       removedByColor: { black: 1, white: 1 },
+      boardEffectDurationMs: SKILL_BOARD_EFFECT_DURATION_MS
+    });
+  });
+
+  test("builds Voyage Star pending preview metadata with fixed music and hidden-hand center", () => {
+    const preview = buildPendingSkillPreview({
+      pendingSkillId: "skill-voyage-star",
+      player: {
+        color: COLORS.black,
+        characterId: "aemeath",
+        character: CHARACTERS.aemeath,
+        user: { username: "alice", itemEffects: {} }
+      },
+      character: CHARACTERS.aemeath,
+      skill: {
+        effectType: "voyage-star",
+        name: "远航星",
+        musicTrackId: "aemeath-voyage-star-default"
+      },
+      requestedTargetId: null,
+      resolvedGame: {
+        history: [{
+          type: "skill",
+          effectType: "voyage-star",
+          id: "6,6",
+          erasedPointIds: ["6,6", "5,6", "7,6", "6,5", "6,7"],
+          secondaryRemovalIds: ["4,6", "8,6"],
+          affectedPointIds: ["6,6", "5,6", "7,6", "6,5", "6,7", "4,6", "8,6"],
+          directRemovals: [{ id: "4,6", from: COLORS.white }],
+          removed: 1,
+          removedByColor: { white: 1 },
+          musicTrackId: "aemeath-voyage-star-default"
+        }]
+      },
+      resolvesAt: 2000
+    });
+
+    expect(preview).toMatchObject({
+      id: "skill-voyage-star",
+      characterId: "aemeath",
+      skillName: "远航星",
+      effectType: "voyage-star",
+      targetId: "6,6",
+      musicTrackId: "aemeath-voyage-star-default",
+      erasedPointIds: ["6,6", "5,6", "7,6", "6,5", "6,7"],
+      secondaryRemovalIds: ["4,6", "8,6"],
+      affectedPointIds: ["6,6", "5,6", "7,6", "6,5", "6,7", "4,6", "8,6"],
+      removedStones: [{ id: "4,6", from: COLORS.white }],
       boardEffectDurationMs: SKILL_BOARD_EFFECT_DURATION_MS
     });
   });

@@ -225,6 +225,13 @@ describe("RoomScreen helpers", () => {
     expect(source.indexOf("shouldSeedRoomAudioBaseline(room)")).toBeLessThan(source.indexOf("playSystemVoice(SYSTEM_VOICE_EVENTS.gameStart"));
   });
 
+  it("passes room mode to the game-start system voice resolver", () => {
+    const source = readText(new URL("./audio/useRoomAudioEffects.js", import.meta.url), "utf8");
+
+    expect(source).toContain("playSystemVoice(SYSTEM_VOICE_EVENTS.gameStart");
+    expect(source).toContain("params: { mode: displayRoom.mode }");
+  });
+
   it("keeps the board primary while preserving player portraits on mobile", () => {
     const css = readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
     const compactMedia = mediaBlock(css, "@media (max-width: 900px)");
@@ -245,7 +252,7 @@ describe("RoomScreen helpers", () => {
     expect(compactMedia).toContain(".mobile-room-screen .timer-label");
     expect(compactMedia).toContain("display: none");
     expect(compactMedia).toContain(".mobile-room-screen .mobile-tab-panel .test-tools");
-    expect(compactMedia).toContain("display: none");
+    expect(compactMedia).toContain("display: inline-flex");
     expect(compactMedia).toContain(".mobile-room-screen .mobile-tab-list .mobile-tab-button");
     expect(landscapeMedia).toContain("\"opponent board self\"");
     expect(landscapeMedia).toContain("\"dock dock dock\"");

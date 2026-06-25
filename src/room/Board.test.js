@@ -508,6 +508,108 @@ describe("areBoardPropsEqual", () => {
     expect(css).not.toContain(".void.erase-impact-pending::before");
   });
 
+  test("renders Voyage Star center point with only one centered star crater marker", () => {
+    const points = createPoints(13);
+    const center = points.find((point) => point.id === "6,6");
+    const erasedNeighbor = points.find((point) => point.id === "5,6");
+    center.valid = false;
+    center.skillEffect = "voyage-star-erased-point";
+    erasedNeighbor.valid = false;
+    erasedNeighbor.skillEffect = "voyage-star-erased-point";
+
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points,
+        history: [{ type: "skill", effectType: "voyage-star", id: "6,6" }]
+      }
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+
+    expect(markup).toContain("voyage-star-crater-mark");
+    expect(markup).toContain('data-point-id="6,6"');
+    expect(markup).toContain("--voyage-star-crater-x:50%");
+    expect(markup).toContain("--voyage-star-crater-y:50%");
+    expect((markup.match(/voyage-star-crater-mark/g) ?? [])).toHaveLength(1);
+    expect(markup).not.toContain('class="void"');
+    expect(css).toContain(".voyage-star-crater-mark");
+    expect(css).toContain("width: calc(350% / var(--size))");
+    expect(css).toContain("height: calc(350% / var(--size))");
+    expect(css).toContain('background: center / contain no-repeat url("/assets/effects/voyage-star-crater.webp")');
+    expect(css).toContain("left: var(--voyage-star-crater-x, 50%)");
+    expect(css).toContain("top: var(--voyage-star-crater-y, 50%)");
+    expect(css).toContain("transform: translate(-50%, -50%)");
+    expect(css).toContain("animation: voyage-star-crater-aura 1.85s ease-in-out infinite alternate");
+    expect(css).toContain("drop-shadow(0 0 8px rgba(214, 92, 255, 0.76))");
+    expect(css).not.toContain("@keyframes voyage-star-crater-haze");
+    expect(css).not.toContain(".voyage-star-crater-mark::before");
+  });
+
+  test("renders Voyage Star crater point directly when the resolved point carries the crater effect", () => {
+    const points = createPoints(13);
+    const center = points.find((point) => point.id === "6,6");
+    center.valid = false;
+    center.skillEffect = "voyage-star-crater-point";
+
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points,
+        history: []
+      }
+    })));
+
+    expect(markup).toContain("voyage-star-crater-mark");
+    expect(markup).toContain("--voyage-star-crater-x:50%");
+    expect(markup).toContain("--voyage-star-crater-y:50%");
+    expect(markup).not.toContain('class="void"');
+  });
+
+  test("positions the Voyage Star crater from board coordinates instead of point-child layout", () => {
+    const points = createPoints(13);
+    const center = points.find((point) => point.id === "4,9");
+    center.valid = false;
+    center.skillEffect = "voyage-star-crater-point";
+
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points,
+        history: [{ type: "skill", effectType: "voyage-star", id: "4,9" }]
+      }
+    })));
+
+    expect(markup).toContain("--voyage-star-crater-x:34.61538461538461%");
+    expect(markup).toContain("--voyage-star-crater-y:73.07692307692307%");
+  });
+
+  test("does not keep the latest-move ring on the previous move after Voyage Star", () => {
+    const points = createPoints(13);
+    const previousMove = points.find((point) => point.id === "1,9");
+    const center = points.find((point) => point.id === "4,9");
+    previousMove.stone = "black";
+    center.valid = false;
+    center.skillEffect = "voyage-star-crater-point";
+
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points,
+        history: [
+          { type: "move", id: "1,9", moveNumber: 17 },
+          { type: "skill", effectType: "voyage-star", id: "4,9", moveNumber: 17 }
+        ]
+      }
+    })));
+
+    expect(markup).toContain("voyage-star-crater-mark");
+    expect(markup).not.toContain("<i></i>");
+  });
+
   test("renders QiuYuan row slash as a continuous board overlay", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {
@@ -525,15 +627,23 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain("--row-y:");
     expect(markup).toContain("<button");
     expect(css).toContain(".board-row-slash");
-    expect(css).toContain("left: -8%");
-    expect(css).toContain("right: -8%");
+    expect(css).toContain("left: -18%");
+    expect(css).toContain("right: -18%");
+    expect(css).toContain("height: calc(180% / var(--size))");
     expect(css).toContain("pointer-events: none");
     expect(css).toContain("radial-gradient(ellipse at 16% 34%");
-    expect(css).toContain("clip-path: none");
+    expect(css).toContain("clip-path: inset(0 0 0 0)");
+    expect(css).toContain("--row-slash-y-offset: clamp(6px, 1.8vw, 13px)");
+    expect(css).toContain("translate: 0 calc(-50% + var(--row-slash-y-offset))");
     expect(css).toContain(".board-row-slash::before");
-    expect(css).toContain("animation: row-slash-strike 620ms");
+    expect(css).toContain("animation: row-slash-strike 520ms");
     expect(css).toContain(".board-row-slash.casting");
-    expect(css).toContain("animation-delay: var(--skill-banner-duration, 2000ms)");
+    expect(css).toContain("animation-duration: var(--row-slash-cast-duration, 396ms)");
+    expect(css).toContain("animation-delay: calc(var(--skill-banner-duration, 2000ms) + var(--row-slash-cast-delay, 342ms))");
+    expect(css).toContain("clip-path: inset(0 100% 0 0)");
+    expect(css).toContain("clip-path: inset(0 18% 0 0)");
+    expect(css).toContain("100% 10px no-repeat");
+    expect(css).toContain("100% 8px no-repeat");
     expect(css).toContain("@keyframes row-slash-strike");
   });
 
@@ -559,7 +669,7 @@ describe("areBoardPropsEqual", () => {
     expect(gridSvgBlock).toContain("max-height: none");
   });
 
-  test("renders QiuYuan pending skill by sweeping the persistent row scar overlay", () => {
+  test("renders QiuYuan pending skill with a Pixi cast and synchronized persistent row scar", () => {
     const points = createPoints(13);
     points.find((point) => point.id === "0,5").stone = "black";
     points.find((point) => point.id === "3,5").stone = "white";
@@ -569,6 +679,7 @@ describe("areBoardPropsEqual", () => {
         size: 13,
         points,
         history: [],
+        rowEffects: [{ effectType: "row-slash", owner: "black", y: 5, id: "resolved-5" }],
         pendingSkill: {
           id: "slash-preview",
           effectType: "row-slash",
@@ -580,13 +691,16 @@ describe("areBoardPropsEqual", () => {
     })));
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
 
-    expect(markup).not.toContain("board-effects-layer");
-    expect(markup).not.toContain('data-effect-type="row-slash"');
+    expect(markup).toContain("board-effects-layer");
+    expect(markup).toContain('data-effect-type="row-slash"');
     expect(markup).toContain("board-row-effects");
+    expect((markup.match(/board-row-slash/g) ?? []).length).toBe(1);
     expect(markup).toContain("board-row-slash casting");
+    expect(markup).toContain("--row-slash-cast-delay:342ms");
+    expect(markup).toContain("--row-slash-cast-duration:396ms");
     expect(markup).toContain("row-slash-cut-pending");
-    expect(markup).toContain("--row-slash-cut-delay:80ms");
-    expect(markup).toContain("--row-slash-cut-delay:210ms");
+    expect(markup).toContain("--row-slash-cut-delay:420ms");
+    expect(markup).toContain("--row-slash-cut-delay:495ms");
     expect(markup).not.toContain("board-row-slash preview");
     expect(css).toContain(".row-slash-cut-pending .stone");
     expect(css).toContain("row-slash-cut-away 120ms steps(1, end)");
@@ -688,13 +802,14 @@ describe("areBoardPropsEqual", () => {
     expect(rowSlashBlock).toContain(".board .board-row-slash.board-row-slash");
     expect(rowSlashBlock).toContain("background:");
     expect(rowSlashBlock).toContain("radial-gradient(ellipse at 16% 34%");
-    expect(rowSlashBlock).toContain("clip-path: none !important");
+    expect(rowSlashBlock).toContain("100% 10px no-repeat");
+    expect(rowSlashBlock).not.toContain("clip-path:");
     expect(rowSlashBlock).toContain("drop-shadow(0 0 11px rgba(221, 255, 248, 0.64))");
     expect(rowSlashBlock).not.toContain("background-color: var(--bright-sheet)");
     expect(rowSlashBeforeAfterBlock).toContain('content: "" !important');
     expect(rowSlashBeforeAfterBlock).toContain("display: block !important");
     expect(rowSlashBeforeAfterBlock).toContain("pointer-events: none !important");
-    expect(rowSlashAfterBlock).toContain("rgba(13, 17, 19, 0.84)");
+    expect(rowSlashAfterBlock).toContain("rgba(18, 86, 94, 0.58)");
     expect(rowSlashAfterBlock).toContain("transform: translateY(12%) skewX(-18deg) !important");
   });
 

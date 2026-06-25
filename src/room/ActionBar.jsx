@@ -25,6 +25,7 @@ function ActionBar({
   skillActionLocked = skillLocked,
   decisionLocked = skillLocked,
   skillEnabled = true,
+  skillName = "技能",
   skillUses,
   skillAvailable = true,
   hasAnyStones = true,
@@ -84,7 +85,7 @@ function ActionBar({
         disabled={!me || phase !== "playing" || !isMyTurn || skillActionLocked || skillUses <= 0 || !skillAvailable}
       >
         <Sparkles size={20} />
-        <span className="action-label mobile-action-button-label">技能 · {skillUses}</span>
+        <span className="action-label mobile-action-button-label">{skillName} · {skillUses}</span>
       </button>
       )}
       <button onClick={onDrawRequest} disabled={!canRequestOpponentDecision({ phase, skillLocked: decisionLocked, opponentConnected })}>
@@ -123,6 +124,7 @@ export function areActionBarPropsEqual(previous, next) {
     && previous.skillActionLocked === next.skillActionLocked
     && previous.decisionLocked === next.decisionLocked
     && previous.skillEnabled === next.skillEnabled
+    && previous.skillName === next.skillName
     && previous.skillUses === next.skillUses
     && previous.skillAvailable === next.skillAvailable
     && previous.hasAnyStones === next.hasAnyStones

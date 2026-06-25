@@ -1,0 +1,6 @@
+file 'C:/codex/SigrikaGo/outputs/skill-gifs/aemeath/frames/voyage-star/frame-0000.png'
+file 'C:/codex/SigrikaGo/outputs/skill-gifs/aemeath/frames/voyage-star/frame-0003.png'
+file 'C:/codex/SigrikaGo/outputs/skill-gifs/aemeath/frames/voyage-star/frame-0006.png'
+file 'C:/codex/SigrikaGo/outputs/skill-gifs/aemeath/frames/voyage-star/frame-0009.png'
+file 'C:/codex/SigrikaGo/outputs/skill-gifs/aemeath/frames/voyage-star/frame-0012.png'
+file 'C:/codex/SigrikaGo/outputs/skill-gifs/aemeath/frames/voyage-star/frame-0015.png'

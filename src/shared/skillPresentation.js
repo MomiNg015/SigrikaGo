@@ -6,6 +6,9 @@ export const SKILL_PREVIEW_DELAY_MS = 4000;
 export const FLIP_STONE_BUBBLE_COVER_RESOLUTION_MS = 3040;
 export const HIDDEN_HAND_BOARD_EFFECT_DURATION_MS = 1500;
 export const HIDDEN_HAND_PREVIEW_DELAY_MS = SKILL_BANNER_DURATION_MS + HIDDEN_HAND_BOARD_EFFECT_DURATION_MS;
+export const VOYAGE_STAR_WHITEOUT_RESOLUTION_PROGRESS = 0.52;
+export const VOYAGE_STAR_PREVIEW_DELAY_MS = SKILL_BANNER_DURATION_MS
+  + Math.round(SKILL_BOARD_EFFECT_DURATION_MS * VOYAGE_STAR_WHITEOUT_RESOLUTION_PROGRESS);
 export const SKILL_EFFECT_REDUCED_MOTION_MS = 320;
 export const LIBERTY_PURGE_SLASH_INITIAL_DELAY_MS = 240;
 export const LIBERTY_PURGE_SLASH_STAGGER_MS = 170;
@@ -27,6 +30,12 @@ export const SKILL_EFFECT_PRESENTATION_CONFIG = Object.freeze({
   }),
   "hidden-hand": Object.freeze({
     resolutionDelayMs: HIDDEN_HAND_PREVIEW_DELAY_MS
+  }),
+  "voyage-star": Object.freeze({
+    resolutionDelayMs: VOYAGE_STAR_PREVIEW_DELAY_MS,
+    layers: Object.freeze({
+      domBoardEffect: true
+    })
   }),
   "row-slash": Object.freeze({
     layers: Object.freeze({

@@ -28,12 +28,18 @@ describe("boardSkillEffectRegistry", () => {
   test("renders Aemeath hidden-hand as a center-out line-only circuit takeover", () => {
     const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
     const hiddenHandSource = registrySource.match(/function playDataStreamHiddenHand[\s\S]*?function playReducedMotionHit/)?.[0] ?? "";
+    const reducedSweepSource = registrySource.match(/function playReducedMotionBoardSweep[\s\S]*?function playReducedMotionChangliDoubleMove/)?.[0] ?? "";
 
     expect(hiddenHandSource).toContain("circuitBoardPoints");
     expect(hiddenHandSource).toContain("drawCircuitLanes");
     expect(hiddenHandSource).toContain("drawCircuitDiagonals");
     expect(hiddenHandSource).toContain("membraneAlpha");
     expect(hiddenHandSource).toContain("boardPointCenter");
+    expect(hiddenHandSource).not.toContain("0x041810");
+    expect(hiddenHandSource).not.toContain("coverAlpha");
+    expect(hiddenHandSource).not.toContain("const underlay = new pixi.Graphics()");
+    expect(hiddenHandSource).not.toContain("underlay.circle");
+    expect(reducedSweepSource).not.toContain(".circle(center.x, center.y");
     expect(hiddenHandSource).not.toContain("drawCircuitChips");
     expect(hiddenHandSource).not.toContain("const chips");
     expect(hiddenHandSource).not.toContain("roundRect");
@@ -52,6 +58,89 @@ describe("boardSkillEffectRegistry", () => {
       play: expect.any(Function),
       playReducedMotion: expect.any(Function)
     });
+  });
+
+  test("keeps Aemeath Voyage Star registered as a full-board sword impact, quake, and dissolve effect", () => {
+    const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
+    const voyageSource = registrySource.match(/function playVoyageStar[\s\S]*?function playReducedMotionVoyageStar/)?.[0] ?? "";
+    const reducedVoyageSource = registrySource.match(/function playReducedMotionVoyageStar[\s\S]*?function libertyPurgeSlashTargets/)?.[0] ?? "";
+    const explosionCoverSource = registrySource.match(/function drawVoyageStarExplosionCover[\s\S]*?function drawVoyageStarSword/)?.[0] ?? "";
+
+    expect(BOARD_SKILL_EFFECT_RENDERERS["voyage-star"]).toMatchObject({
+      fullBoard: true,
+      assets: ["/assets/effects/voyage-star-crater.webp"],
+      play: expect.any(Function),
+      playReducedMotion: expect.any(Function)
+    });
+    expect(registrySource).toContain("VOYAGE_STAR_CRATER_IMAGE");
+    expect(registrySource).toContain("VOYAGE_STAR_SOLID_CORE_CELLS");
+    expect(registrySource).toContain("VOYAGE_STAR_DISSOLVE_SPARKS");
+    expect(registrySource).toContain("VOYAGE_STAR_QUAKE_DUST");
+    expect(registrySource).toContain("voyageStarSeed");
+    expect(voyageSource).toContain("drawVoyageStarSword");
+    expect(voyageSource).toContain("const quakeLayer = new pixi.Container()");
+    expect(voyageSource).toContain("const omen = new pixi.Graphics()");
+    expect(voyageSource).toContain("const shockwaves = new pixi.Graphics()");
+    expect(voyageSource).toContain("const dust = new pixi.Graphics()");
+    expect(voyageSource).toContain("const explosionCoverLayer = new pixi.Graphics()");
+    expect(voyageSource).toContain("quakeLayer.addChild(omen, impactGlow, shockwaves, dust, particles, sword)");
+    expect(voyageSource).toContain("app.stage.addChild(quakeLayer, explosionCoverLayer)");
+    expect(voyageSource).toContain("drawVoyageStarOmen");
+    expect(voyageSource).toContain("drawVoyageStarEarthquake");
+    expect(voyageSource).toContain("voyageStarQuakeShake");
+    expect(voyageSource).toContain("const coverProgress = easeOutCubic");
+    expect(voyageSource).toContain("const coverDissolve = clamp01((progress - 0.77) / 0.21)");
+    expect(voyageSource).toContain("const coverAlpha = coverDissolve > 0 ? 1 - easeInCubic(coverDissolve) : 1");
+    expect(voyageSource).toContain("const fullCover = coverProgress >= 0.82");
+    expect(voyageSource).toContain("const glowAlpha = fullCover");
+    expect(voyageSource).toContain("const swordAlpha = fullCover");
+    expect(voyageSource).toContain("? 0");
+    expect(voyageSource).toContain("drawVoyageStarExplosionCover");
+    expect(voyageSource).toContain("dissolveProgress: coverDissolve");
+    expect(voyageSource).toContain("fall");
+    expect(voyageSource).toContain("cellSize");
+    expect(voyageSource).not.toContain("craterSprite");
+    expect(voyageSource).not.toContain("drawVoyageStarCrater");
+    expect(voyageSource).toContain("pointCenterForHost(pendingSkill?.targetId");
+    expect(voyageSource).toContain("voyageStarRemovedTargets");
+    expect(voyageSource).toContain("voyageStarFullCoverRadius");
+    expect(voyageSource).toContain("0xffffff");
+    expect(voyageSource).toContain("0xffdf85");
+    expect(voyageSource).not.toContain("alpha: whiteout");
+    expect(explosionCoverSource).toContain("SOFT_EXPLOSION_EDGE_STEPS");
+    expect(explosionCoverSource).toContain("solidCoreRadius");
+    expect(explosionCoverSource).toContain("cellSize * VOYAGE_STAR_SOLID_CORE_CELLS");
+    expect(explosionCoverSource).toContain("solidTransitionRadius");
+    expect(explosionCoverSource).toContain("transitionAlpha");
+    expect(explosionCoverSource).toContain("edgeFeather");
+    expect(explosionCoverSource).toContain("edgeProgress");
+    expect(explosionCoverSource).toContain("Math.pow(1 - edgeProgress, 2.35)");
+    expect(explosionCoverSource).toContain("if (layerAlpha > 0.001)");
+    expect(explosionCoverSource).toContain("0.86 * alpha");
+    expect(explosionCoverSource).toContain("0.68 * alpha");
+    expect(explosionCoverSource).not.toContain("radius * 1.24");
+    expect(explosionCoverSource).toContain("0xfff4c4");
+    expect(explosionCoverSource).toContain("0xffed9a");
+    expect(explosionCoverSource).toContain("if (fullCover)");
+    expect(explosionCoverSource).toContain("rect(0, 0, width, height)");
+    expect(explosionCoverSource).toContain("fill({ color: 0xffffff, alpha })");
+    expect(explosionCoverSource).toContain("drawVoyageStarDissolve");
+    expect(explosionCoverSource).not.toContain("0.5 * alpha");
+    expect(explosionCoverSource).not.toContain("0.58 * alpha");
+    expect(reducedVoyageSource).toContain("0xfff4c4");
+    expect(reducedVoyageSource).not.toContain("craterSprite");
+    expect(reducedVoyageSource).not.toContain("drawVoyageStarCrater");
+    expect(reducedVoyageSource).not.toContain("0.32 * alpha");
+    expect(registrySource).not.toContain("voyageStarCraterCenterForHost");
+    expect(registrySource).not.toContain("x: target.x - cellWidth");
+    expect(registrySource).not.toContain("y: target.y - cellHeight");
+    expect(registrySource).toContain("const bladeTip = y");
+    expect(registrySource).toContain("const bladeBase = y - size * 0.96");
+    expect(registrySource).not.toContain("const bladeBottom = y + size * 0.18");
+  });
+
+  test("preloads Voyage Star crater artwork for the resolved board marker", () => {
+    expect(boardSkillEffectAssetUrls("voyage-star")).toEqual(["/assets/effects/voyage-star-crater.webp"]);
   });
 
   test("exposes renderer asset urls for banner-window preloading", () => {
@@ -119,12 +208,53 @@ describe("boardSkillEffectRegistry", () => {
     expect(meteorSource).not.toContain("alpha: 0.64 * craterProgress");
   });
 
-  test("keeps QiuYuan row-slash out of Pixi renderers because the cast uses the DOM row scar", () => {
+  test("plays QiuYuan row-slash as a Pixi ink-blade cast before the DOM row scar persists", () => {
     const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
+    const rowSlashSource = registrySource.match(/function playRowSlash[\s\S]*?function playReducedMotionRowSlash/)?.[0] ?? "";
 
-    expect(BOARD_SKILL_EFFECT_RENDERERS["row-slash"]).toBeUndefined();
+    expect(BOARD_SKILL_EFFECT_RENDERERS["row-slash"]).toMatchObject({
+      fullBoard: true,
+      play: expect.any(Function),
+      playReducedMotion: expect.any(Function)
+    });
+    expect(registrySource).toContain("ROW_SLASH_INK_PARTICLES");
+    expect(registrySource).toContain("ROW_SLASH_SPARKS");
+    expect(rowSlashSource).toContain("drawRowSlashOmen");
+    expect(rowSlashSource).toContain("drawRowSlashCharge");
+    expect(rowSlashSource).toContain("drawRowSlashInkBrush");
+    expect(rowSlashSource).toContain("drawRowSlashLeadingEdge");
+    expect(rowSlashSource).toContain("drawRowSlashInkSparks");
+    expect(rowSlashSource).toContain("drawRowSlashStoneCut");
+    expect(rowSlashSource).toContain("rowSlashCutTargets");
+    expect(rowSlashSource).toContain("const main = easeOutCubic(clamp01((progress - 0.19) / 0.22))");
+    expect(rowSlashSource).toContain("0.23 + xProgress * 0.17");
+    expect(registrySource).toContain("drawRowSlashOmenBrush");
+    expect(registrySource).toContain("travelDuration: 0.17");
+    expect(registrySource).toContain("const fadeOut = 1 - clamp01((progress - 0.54) / 0.18)");
+    expect(registrySource).toContain("const sweep = easeOutCubic(clamp01(raw))");
+    expect(registrySource).toContain("(Math.PI / 3)");
+    expect(registrySource).toContain("reveal: sweep");
+    expect(registrySource).toContain("direction: flash.direction");
+    expect(registrySource).toContain("const brushHeight = cellSize * 1.8");
+    expect(registrySource).toContain("drawRowSlashInkSmears");
+    expect(registrySource).toContain("drawRowSlashBladeGlow");
+    expect(registrySource).toContain("const glowLayers = [");
+    expect(registrySource).toContain("color: 0xbffff5");
+    expect(registrySource).toContain("color: 0xe8fffb");
+    expect(registrySource).toContain("spread: brushHeight * 0.74");
+    expect(registrySource).toContain("0x0e2935");
+    expect(registrySource).toContain("0x286d76");
+    expect(registrySource).toContain("0x5c9190");
+    expect(registrySource).not.toContain("width: Math.max(10, cellSize * 0.34)");
+    expect(registrySource).toContain("Math.hypot(width, height) * 1.42");
+    expect(registrySource).toContain("seedIndex: 112");
+    expect(registrySource).toContain("seedIndex: 137");
+    expect(registrySource).toContain("rowSlashSeed");
+    expect(rowSlashSource).not.toContain("fill({ color: 0xaefcf1");
+    expect(rowSlashSource).not.toContain("fill({ color: 0xdffff9");
+    expect(rowSlashSource).not.toContain("fill({ color: 0x6fd9d6");
+    expect(registrySource).toContain("0xffffff");
     expect(registrySource).not.toContain("QIUYUAN_BLADE_STREAK_IMAGE");
-    expect(registrySource).not.toContain("playQiuYuanRowSlash");
     expect(registrySource).not.toContain("/assets/effects/qiuyuan-blade-streak.svg");
   });
 

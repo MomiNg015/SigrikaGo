@@ -6,9 +6,9 @@ import {
 } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 
-export function describeSkillUse(room, player, targetId) {
+export function describeSkillUse(room, player, targetId, activeSkill = null) {
   const character = player.character ?? CHARACTERS[player.characterId] ?? CHARACTERS.sigrika;
-  const skill = character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
+  const skill = activeSkill ?? character.skill ?? CHARACTERS[player.characterId]?.skill ?? CHARACTERS.sigrika.skill;
   const effectType = skill.effectType ?? skill.id;
   const colorLabel = player.color === COLORS.black ? "黑" : "白";
   const targetStone = getPoint(room.game, targetId)?.stone;
@@ -37,6 +37,9 @@ export function describeSkillUse(room, player, targetId) {
     const from = stoneLabel(point?.stone);
     const to = stoneLabel(point?.stone ? opponent(point.stone) : null);
     return `${fixed}。诅咒了${coord}的${from}，将其从${from}变成了${to}。`;
+  }
+  if (effectType === "voyage-star") {
+    return `${fixed}。白色大剑坠入棋盘，远航星展开。`;
   }
   if (effectType === "hidden-hand" || player.characterId === "aemeath") {
     return `${fixed}。落下了电子幽灵般的一手，应该不会被发现吧...`;

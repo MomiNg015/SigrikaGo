@@ -87,6 +87,29 @@ function Board({
     game.pendingSkill?.targetId,
     skillEffectsEnabled
   ]);
+  const voyageStarCraterPointIds = useMemo(() => new Set(
+    (game.history ?? [])
+      .filter((entry) => entry?.type === "skill" && entry.effectType === "voyage-star" && entry.id)
+      .map((entry) => entry.id)
+  ), [game.history]);
+  const voyageStarCraterMarkers = useMemo(() => {
+    const pointById = new Map(game.points.map((point) => [point.id, point]));
+    const markerIds = new Set([
+      ...voyageStarCraterPointIds,
+      ...game.points
+        .filter((point) => point.skillEffect === "voyage-star-crater-point")
+        .map((point) => point.id)
+    ]);
+    return [...markerIds].flatMap((pointIdValue) => {
+      const point = pointById.get(pointIdValue) ?? pointFromId(pointIdValue);
+      if (!point) return [];
+      return [{
+        id: pointIdValue,
+        x: `${((point.x + 0.5) / boardSize) * 100}%`,
+        y: `${((point.y + 0.5) / boardSize) * 100}%`
+      }];
+    });
+  }, [boardSize, game.points, voyageStarCraterPointIds]);
   const pendingLibertyPurgeStone = useMemo(() => {
     if (
       skillEffectsEnabled === false
@@ -165,6 +188,7 @@ function Board({
           rowEffects={game.rowEffects}
           pendingSkill={game.pendingSkill}
           effectsEnabled={rowSlashEffectsEnabled}
+          boardEffectDurationMs={skillBoardEffectDurationMs}
         />
         {game.points.map((point) => {
           const emptyTerritoryOwner = !point.stone ? territoryOwner.get(point.id) : null;
@@ -183,7 +207,7 @@ function Board({
           const pendingEffectStyle = pendingRowSlashPointIds.has(point.id) && point.stone
             ? {
                 "--row-slash-cut-delay": `${Math.round(
-                  80 + (point.x / Math.max(1, boardSize - 1)) * 520
+                  420 + (point.x / Math.max(1, boardSize - 1)) * 300
                 )}ms`
               }
             : undefined;
@@ -213,10 +237,22 @@ function Board({
               previewClass={previewClass}
               showMoves={showMoves}
               showScoringMarks={showScoringMarks}
+              voyageStarCraterMarked={voyageStarCraterPointIds.has(point.id)}
               winningLineMarked={gomokuWinningLineIds.has(point.id)}
             />
           );
         })}
+        {voyageStarCraterMarkers.map((marker) => (
+          <span
+            key={`voyage-star-crater-${marker.id}`}
+            className="voyage-star-crater-mark"
+            style={{
+              "--voyage-star-crater-x": marker.x,
+              "--voyage-star-crater-y": marker.y
+            }}
+            aria-hidden="true"
+          />
+        ))}
       </div>
       {showCoords && <div className="coord-col coord-right">{rows.map((label) => <span key={label}>{label}</span>)}</div>}
       {showCoords && <div className="coord-row coord-bottom">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
@@ -224,20 +260,32 @@ function Board({
   );
 }
 
-function BoardRowSlashOverlay({ boardSize, rowEffects = [], pendingSkill = null, effectsEnabled = true }) {
+function BoardRowSlashOverlay({
+  boardSize,
+  rowEffects = [],
+  pendingSkill = null,
+  effectsEnabled = true,
+  boardEffectDurationMs = 1800
+}) {
   const pendingRow = rowSlashPendingRow(pendingSkill);
+  const castDelayMs = Math.round(Number(boardEffectDurationMs) * 0.19);
+  const castDurationMs = Math.round(Number(boardEffectDurationMs) * 0.22);
   const pendingEffect = effectsEnabled !== false && Number.isInteger(pendingRow)
     ? {
         effectType: "row-slash",
         owner: pendingSkill.color,
         y: pendingRow,
         id: pendingSkill.targetId ?? pendingSkill.id ?? "pending",
-        casting: true
+        casting: true,
+        castDelayMs,
+        castDurationMs
       }
     : null;
   const effects = [
     ...(pendingEffect ? [pendingEffect] : []),
-    ...(Array.isArray(rowEffects) ? rowEffects : [])
+    ...(Array.isArray(rowEffects)
+      ? rowEffects.filter((effect) => !pendingEffect || effect?.effectType !== "row-slash" || effect.y !== pendingEffect.y)
+      : [])
   ].filter((effect) => effect?.effectType === "row-slash" && Number.isInteger(effect.y));
   if (!effects.length) return null;
   return (
@@ -246,7 +294,15 @@ function BoardRowSlashOverlay({ boardSize, rowEffects = [], pendingSkill = null,
         <span
           key={`${effect.owner ?? "preview"}-${effect.y}-${effect.id ?? index}`}
           className={`board-row-slash ${effect.casting ? "casting" : ""}`}
-          style={{ "--row-y": `${((effect.y + 0.5) / boardSize) * 100}%` }}
+          style={{
+            "--row-y": `${((effect.y + 0.5) / boardSize) * 100}%`,
+            ...(effect.casting
+              ? {
+                  "--row-slash-cast-delay": `${effect.castDelayMs}ms`,
+                  "--row-slash-cast-duration": `${effect.castDurationMs}ms`
+                }
+              : {})
+          }}
         />
       ))}
     </div>
@@ -284,12 +340,15 @@ function PointButton({
   previewClass,
   showMoves,
   showScoringMarks,
+  voyageStarCraterMarked,
   winningLineMarked
 }) {
   const hiddenClass = point.hiddenHand
     ? point.hiddenHand.exposed ? "hidden-hand exposed-hidden-hand" : "hidden-hand"
     : "";
   const displayStone = point.stone ?? pendingLibertyPurgeColor;
+  const isVoyageStarErasedPoint = point.skillEffect === "voyage-star-erased-point" || point.skillEffect === "voyage-star-crater-point";
+  const isVoyageStarCraterPoint = point.skillEffect === "voyage-star-crater-point" || voyageStarCraterMarked;
   const pendingLibertyPurgeClass = pendingLibertyPurgeColor ? "liberty-purge-stone liberty-purge-pending" : "";
   const skillEffectClass = [point.skillEffect ?? "", pendingLibertyPurgeClass].filter(Boolean).join(" ");
   const offsetPoint = pendingEffectClass === "spray-transform-pending"
@@ -308,6 +367,7 @@ function PointButton({
   return (
     <button
       className={`point ${point.valid ? "" : "erased"} ${displayStone ?? ""} ${hiddenClass} ${skillEffectClass} ${pendingEffectClass} ${previewClass} ${confirmClass} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""}`}
+      data-point-id={point.id}
       style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
       onPointerDown={(event) => {
         pointerTypeRef.current = event.pointerType;
@@ -338,7 +398,7 @@ function PointButton({
           {showMoves && moveNumber !== null && <b>{moveNumber}</b>}
         </span>
       )}
-      {!point.valid && <span className="void" />}
+      {!point.valid && !isVoyageStarErasedPoint && <span className="void" />}
       {eraseImpactPending && <span className="void erase-impact-pending" aria-hidden="true" />}
       {emptyTerritoryOwner && <span className={`territory-mark ${emptyTerritoryOwner}`} aria-label={`${emptyTerritoryOwner} territory`} />}
       {deadOwner && <span className={`dead-mark ${deadOwner}`} aria-label={`${deadOwner} dead-stone mark`} />}
@@ -382,6 +442,7 @@ export function arePointButtonPropsEqual(previous, next) {
     && previous.previewClass === next.previewClass
     && previous.showMoves === next.showMoves
     && previous.showScoringMarks === next.showScoringMarks
+    && previous.voyageStarCraterMarked === next.voyageStarCraterMarked
     && previous.winningLineMarked === next.winningLineMarked;
 }
 
@@ -432,6 +493,12 @@ function stableHash(value) {
     hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
   }
   return hash;
+}
+
+function pointFromId(pointIdValue) {
+  const [x, y] = String(pointIdValue ?? "").split(",").map(Number);
+  if (!Number.isInteger(x) || !Number.isInteger(y)) return null;
+  return { id: pointIdValue, x, y };
 }
 
 function samePointConfirmation(previous, next) {

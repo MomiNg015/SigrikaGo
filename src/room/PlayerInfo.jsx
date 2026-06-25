@@ -6,6 +6,7 @@ import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../shared/UserIdentity.jsx";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
 import { findCharacter } from "../shared/characterDisplay.js";
+import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
 import { gameModeFamily } from "../shared/gameModes.js";
 import TimeBar from "./TimeBar.jsx";
 
@@ -43,8 +44,12 @@ function PlayerInfo({
     return () => document.removeEventListener("pointerdown", closeTooltip);
   }, [tapTooltip]);
   if (!player) return <aside className="player-info empty" />;
-  const character = findCharacter(characters, player.character ?? player.characterId);
-  const skillUses = game.skillUses[player.color] ?? 0;
+  const baseCharacter = findCharacter(characters, player.character ?? player.characterId);
+  const activeSkill = effectiveSkillDisplayForPlayer(game, { ...player, character: baseCharacter });
+  const character = activeSkill
+    ? { ...baseCharacter, skill: { ...baseCharacter.skill, ...activeSkill } }
+    : baseCharacter;
+  const skillUses = effectiveSkillUsesForColor(game, player.color);
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
   const skillEnabled = game.skillEnabled !== false;
@@ -227,6 +232,9 @@ function gamePlayerSliceEqual(previousGame, nextGame, color) {
     && previousGame?.winner === nextGame?.winner
     && previousGame?.skillEnabled === nextGame?.skillEnabled
     && previousGame?.skillUses?.[color] === nextGame?.skillUses?.[color]
+    && previousGame?.derivedSkills?.[color]?.name === nextGame?.derivedSkills?.[color]?.name
+    && previousGame?.derivedSkills?.[color]?.uses === nextGame?.derivedSkills?.[color]?.uses
+    && previousGame?.derivedSkills?.[color]?.sourceHiddenHandId === nextGame?.derivedSkills?.[color]?.sourceHiddenHandId
     && previousGame?.skillCosts?.[color] === nextGame?.skillCosts?.[color]
     && previousGame?.skillRemovals?.[color] === nextGame?.skillRemovals?.[color];
 }

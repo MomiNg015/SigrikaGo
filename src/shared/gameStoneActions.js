@@ -1,6 +1,7 @@
 import { GAME_PHASES } from "./gamePhases.js";
 import { activeNeighbors, getPoint } from "./gameBoard.js";
 import { captureCreditOwner, opponent } from "./gameConstants.js";
+import { createDerivedSkillState, voyageStarDefinitionFromSkill } from "./derivedSkills.js";
 import { collectGroup } from "./gameGroups.js";
 import { fail, ok } from "./gameActionResult.js";
 import { gameModeFamily } from "./gameModes.js";
@@ -95,6 +96,13 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
   if (hidden) {
     next.skillUses[color] -= 1;
     applySkillCost(next, color, skill ?? "aemeath");
+    const derivedSkill = createDerivedSkillState(voyageStarDefinitionFromSkill(skill), id);
+    if (derivedSkill) {
+      next.derivedSkills = {
+        ...(next.derivedSkills ?? {}),
+        [color]: derivedSkill
+      };
+    }
   }
   return ok(next, { notices });
 }

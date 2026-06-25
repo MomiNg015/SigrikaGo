@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { COLORS, canStartSkill, gameViewForColor } from "../../shared/game.js";
+import { effectiveSkillConfigForPlayer } from "../../shared/derivedSkills.js";
 import { skillUsesBoardConfirmation, skillUsesBoardSurfaceConfirmation } from "../../shared/gameSkills.js";
 import { canPreviewPoint, replayGameAt, replayRoomAt } from "../roomView.js";
 import { effectiveRoomRole, roomGameInfoForPlayers } from "../roomState.js";
@@ -31,7 +32,7 @@ export function useRoomBoardView({ room, user, replayStep }) {
   const scoring = displayRoom.game.scoring;
   const drawRequest = displayRoom.game.drawRequest;
   const hasAnyStones = displayRoom.game.points.some((point) => Boolean(point.stone));
-  const skillConfig = me?.character?.skill ?? me?.characterId;
+  const skillConfig = effectiveSkillConfigForPlayer(displayRoom.game, me);
   const skillAvailable = me ? canStartSkill(displayRoom.game, skillConfig) : true;
   const usesBoardConfirmation = me ? skillUsesBoardConfirmation(skillConfig) : false;
   const usesBoardSurfaceConfirmation = me ? skillUsesBoardSurfaceConfirmation(skillConfig) : false;

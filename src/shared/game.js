@@ -18,6 +18,7 @@ import {
 } from "./gameBoard.js";
 import { gameModeById, gameModeFamily, gameModeSkillEnabled } from "./gameModes.js";
 import { GAME_PHASES } from "./gamePhases.js";
+import { canUseVoyageStar, effectiveSkillUsesForColor } from "./derivedSkills.js";
 import {
   normalizeSkillConfig,
   skillRequiresExistingStone,
@@ -33,7 +34,8 @@ import {
   protocolTakeover,
   randomBlast,
   rowSlash,
-  sprayStone
+  sprayStone,
+  voyageStar
 } from "./gameSkillActions.js";
 import { clearExpiredLibertyPurgeMarks, clearExpiredRowEffects, cloneState } from "./gameSkillState.js";
 import {
@@ -86,6 +88,10 @@ export {
 } from "./gameBoard.js";
 export { GAME_PHASES } from "./gamePhases.js";
 export {
+  canUseVoyageStar,
+  effectiveSkillUsesForColor
+} from "./derivedSkills.js";
+export {
   normalizeSkillConfig,
   skillRequiresExistingStone,
   skillUsesBoardConfirmation,
@@ -99,7 +105,8 @@ export {
   protocolTakeover,
   randomBlast,
   rowSlash,
-  sprayStone
+  sprayStone,
+  voyageStar
 } from "./gameSkillActions.js";
 export { cloneState } from "./gameSkillState.js";
 export {
@@ -138,6 +145,7 @@ export function createGameState(players = [], options = {}) {
     history: [],
     players,
     skillUses: Object.fromEntries(players.map((p) => [p.color, configuredSkillUses(p, mode)])),
+    derivedSkills: {},
     skillCosts: { black: 0, white: 0 },
     skillCostNotes: [],
     passives: createPassiveState(players, mode),
@@ -209,6 +217,12 @@ export function gameViewForColor(game, viewerColor) {
     }
     return nextPoint;
   });
+  view.derivedSkills = Object.fromEntries(
+    Object.entries(view.derivedSkills ?? {}).map(([color, derived]) => [
+      color,
+      color === viewerColor ? derived : { ...derived, sourceHiddenHandId: null }
+    ])
+  );
   return view;
 }
 
@@ -294,8 +308,11 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
   if (state.phase !== GAME_PHASES.playing) return fail("对局当前不能使用技能");
   if (state.turn !== color) return fail("还没有轮到你");
   if (state.extraTurn) return fail("连下状态中不能使用技能");
-  if ((state.skillUses[color] ?? 0) <= 0) return fail("技能次数已经用完");
   const skill = normalizeSkillConfig(skillOrCharacterId);
+  const remainingUses = skill?.effectType === "voyage-star"
+    ? effectiveSkillUsesForColor(state, color)
+    : (state.skillUses[color] ?? 0);
+  if (remainingUses <= 0) return fail("技能次数已经用完");
   if (isProtocolBannedEmptySkillTarget(state, color, targetId)) return fail("该交叉点为禁入点");
   if (!canStartSkill(state, skill)) return fail("场上没有可作用的棋子");
   return executeActiveSkillHandler({
@@ -312,6 +329,9 @@ export function canStartSkill(state, skillOrCharacterId) {
   const skill = normalizeSkillConfig(skillOrCharacterId);
   if (skill?.effectType === "double-move") {
     return opponentResolvedActiveSkill(state, state.turn);
+  }
+  if (skill?.effectType === "voyage-star") {
+    return canUseVoyageStar(state, state.turn);
   }
   if (skill?.effectType === "spray-stone") {
     return state.points.some((point) => canSprayTransformStone(point));
@@ -335,7 +355,7 @@ function clearBoardStones(state) {
     point.stone = null;
     point.hiddenHand = null;
     point.colorIllusion = null;
-    if (point.skillEffect !== "erased-point") {
+    if (!["erased-point", "voyage-star-erased-point", "voyage-star-crater-point"].includes(point.skillEffect)) {
       point.skillEffect = null;
       point.skillEffectOwner = null;
     }

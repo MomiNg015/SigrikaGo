@@ -10,6 +10,13 @@ const BACONBITS_IMAGE = "/assets/baconbits.webp";
 const CHANGLI_FIRE_PHOENIX_IMAGE = "/assets/effects/changli-fire-phoenix.svg";
 const CHANGLI_FLAME_SPRITE_IMAGE = "/assets/effects/changli-flame-sprite.svg";
 const DANEA_BUBBLE_IMAGE = "/assets/effects/denia-bubble-pop.webp";
+const VOYAGE_STAR_CRATER_IMAGE = "/assets/effects/voyage-star-crater.webp";
+const SOFT_EXPLOSION_EDGE_STEPS = 44;
+const VOYAGE_STAR_DISSOLVE_SPARKS = 46;
+const VOYAGE_STAR_QUAKE_DUST = 34;
+const VOYAGE_STAR_SOLID_CORE_CELLS = 2.2;
+const ROW_SLASH_INK_PARTICLES = 28;
+const ROW_SLASH_SPARKS = 16;
 const MORNYE_PROTOCOL_COLORS = Object.freeze({
   core: 0xf8f6ff,
   ice: 0xbdefff,
@@ -43,16 +50,13 @@ export function boardSkillEffectAssetUrls(effectType) {
 function playReducedMotionBoardSweep({ app, pixi, host, durationMs }) {
   const sweep = new pixi.Graphics();
   app.stage.addChild(sweep);
-  const center = { x: host.clientWidth / 2, y: host.clientHeight / 2 };
   const startedAt = performance.now();
   app.ticker.add(() => {
     const progress = clamp01((performance.now() - startedAt) / durationMs);
     const alpha = 0.28 * (1 - progress);
     sweep.clear()
       .rect(0, 0, host.clientWidth, host.clientHeight)
-      .fill({ color: 0x102d23, alpha: alpha * 0.4 })
-      .circle(center.x, center.y, Math.min(host.clientWidth, host.clientHeight) * (0.26 + progress * 0.12))
-      .stroke({ width: 3, color: 0xdfffee, alpha });
+      .fill({ color: 0x102d23, alpha: alpha * 0.4 });
   });
 }
 
@@ -236,7 +240,6 @@ function changliFlamePointIds(boardSize) {
 }
 
 function playDataStreamHiddenHand({ app, pixi, host, boardSize, durationMs }) {
-  const underlay = new pixi.Graphics();
   const gridLines = new pixi.Graphics();
   const diagonals = new pixi.Graphics();
   const membrane = new pixi.Graphics();
@@ -244,13 +247,12 @@ function playDataStreamHiddenHand({ app, pixi, host, boardSize, durationMs }) {
   const width = host.clientWidth;
   const height = host.clientHeight;
   const center = { x: width / 2, y: height / 2 };
-  app.stage.addChild(underlay, gridLines, diagonals, membrane, afterglow);
+  app.stage.addChild(gridLines, diagonals, membrane, afterglow);
   const points = circuitBoardPoints({ boardSize, width, height });
   const horizontalLanes = circuitGridLanes(points, boardSize, "horizontal");
   const verticalLanes = circuitGridLanes(points, boardSize, "vertical");
   const diagonalLinks = circuitDiagonalLinks(points, boardSize);
   const maxRadius = Math.hypot(width, height) * 0.58;
-  const cellSize = Math.min(width, height) / Math.max(1, boardSize);
   const startedAt = performance.now();
 
   app.ticker.add(() => {
@@ -264,27 +266,18 @@ function playDataStreamHiddenHand({ app, pixi, host, boardSize, durationMs }) {
     const membraneFade = clamp01((progress - 0.64) / 0.16);
     const membraneAlpha = Math.sin(membraneLocal * Math.PI) * (1 - membraneFade * 0.35);
 
-    underlay.clear();
     gridLines.clear();
     diagonals.clear();
     membrane.clear();
     afterglow.clear();
-
-    underlay.circle(center.x, center.y, Math.max(cellSize * 0.75, radius * 0.22))
-      .fill({ color: 0x05351f, alpha: 0.1 * alpha })
-      .circle(center.x, center.y, Math.max(cellSize * 0.4, radius * 0.08))
-      .fill({ color: 0xbaffdf, alpha: 0.18 * ignition * (1 - exit) });
 
     drawCircuitLanes(gridLines, horizontalLanes, { center, radius, progress, alpha, width: 2.6, color: 0x2dff89 });
     drawCircuitLanes(gridLines, verticalLanes, { center, radius, progress, alpha, width: 2.1, color: 0xb9ffda });
     drawCircuitDiagonals(diagonals, diagonalLinks, { center, radius, progress, alpha });
 
     if (membraneAlpha > 0) {
-      const coverAlpha = 0.08 + membraneAlpha * 0.24;
       membrane.rect(0, 0, width, height)
-        .fill({ color: 0x041810, alpha: coverAlpha })
-        .rect(0, 0, width, height)
-        .stroke({ width: 2, color: 0x7dffc2, alpha: 0.24 * membraneAlpha });
+        .stroke({ width: 2, color: 0x7dffc2, alpha: 0.2 * membraneAlpha });
       drawCircuitLanes(membrane, horizontalLanes, {
         center,
         radius: maxRadius,
@@ -819,6 +812,101 @@ function playSprayStone({ app, pixi, host, boardSize, pendingSkill, target, dura
   });
 }
 
+function playRowSlash({ app, pixi, host, boardSize, pendingSkill, durationMs }) {
+  const width = host.clientWidth;
+  const height = host.clientHeight;
+  const cellSize = Math.min(width, height) / Math.max(1, boardSize);
+  const row = rowSlashRow(pendingSkill);
+  if (!Number.isInteger(row)) return;
+  const y = ((row + 0.5) / boardSize) * height;
+  const omen = new pixi.Graphics();
+  const ink = new pixi.Graphics();
+  const edge = new pixi.Graphics();
+  const cuts = new pixi.Graphics();
+  const sparks = new pixi.Graphics();
+  app.stage.addChild(omen, ink, edge, cuts, sparks);
+  const cutTargets = rowSlashCutTargets({ host, boardSize, pendingSkill, row });
+  const startedAt = performance.now();
+
+  app.ticker.add(() => {
+    const progress = clamp01((performance.now() - startedAt) / durationMs);
+    const main = easeOutCubic(clamp01((progress - 0.19) / 0.22));
+    const inkFade = 1 - clamp01((progress - 0.66) / 0.12);
+    omen.clear();
+    ink.clear();
+    edge.clear();
+    cuts.clear();
+    sparks.clear();
+
+    drawRowSlashOmen(omen, { width, height, cellSize, progress });
+
+    const charge = clamp01((progress - 0.13) / 0.07) * (1 - clamp01((progress - 0.2) / 0.08));
+    if (charge > 0) {
+      drawRowSlashCharge(ink, { y, cellSize, charge });
+    }
+
+    if (main > 0 && inkFade > 0) {
+      const headX = lerp(-cellSize * 0.75, width + cellSize * 0.75, main);
+      drawRowSlashInkBrush(ink, {
+        width,
+        y,
+        cellSize,
+        headX,
+        progress: main,
+        alpha: inkFade
+      });
+      drawRowSlashLeadingEdge(edge, {
+        x: headX,
+        y,
+        cellSize,
+        alpha: inkFade * (1 - clamp01((main - 0.9) / 0.1))
+      });
+      drawRowSlashInkSparks(sparks, {
+        width,
+        y,
+        cellSize,
+        headX,
+        progress: main,
+        alpha: inkFade
+      });
+    }
+
+    for (const [index, point] of cutTargets.entries()) {
+      const xProgress = point.x / Math.max(1, width);
+      const local = clamp01((progress - (0.23 + xProgress * 0.17)) / 0.075);
+      if (!local) continue;
+      drawRowSlashStoneCut(cuts, {
+        point,
+        cellSize,
+        local,
+        index
+      });
+    }
+  });
+}
+
+function playReducedMotionRowSlash({ app, pixi, host, boardSize, pendingSkill, durationMs }) {
+  const width = host.clientWidth;
+  const height = host.clientHeight;
+  const row = rowSlashRow(pendingSkill);
+  if (!Number.isInteger(row)) return;
+  const y = ((row + 0.5) / boardSize) * height;
+  const cellSize = Math.min(width, height) / Math.max(1, boardSize);
+  const flash = new pixi.Graphics();
+  app.stage.addChild(flash);
+  const startedAt = performance.now();
+
+  app.ticker.add(() => {
+    const progress = clamp01((performance.now() - startedAt) / durationMs);
+    const alpha = Math.sin(progress * Math.PI);
+    flash.clear()
+      .rect(0, y - cellSize * 0.46, width, cellSize * 0.92)
+      .fill({ color: 0xbaf8ef, alpha: 0.2 * alpha })
+      .rect(0, y - cellSize * 0.08, width, cellSize * 0.16)
+      .fill({ color: 0xffffff, alpha: 0.62 * alpha });
+  });
+}
+
 function playLibertyPurge({ app, pixi, host, boardSize, pendingSkill, target, durationMs }) {
   const wash = new pixi.Graphics();
   const slashLayer = new pixi.Graphics();
@@ -912,6 +1000,493 @@ function playReducedMotionLibertyPurge({ app, pixi, host, boardSize, pendingSkil
   });
 }
 
+function playVoyageStar({ app, pixi, host, boardSize, pendingSkill, durationMs }) {
+  const width = host.clientWidth;
+  const height = host.clientHeight;
+  const center = pointCenterForHost(pendingSkill?.targetId, { boardSize, host }) ?? { x: width / 2, y: height / 2 };
+  const removedTargets = voyageStarRemovedTargets({ host, boardSize, pendingSkill });
+  const quakeLayer = new pixi.Container();
+  const omen = new pixi.Graphics();
+  const sword = new pixi.Graphics();
+  const impactGlow = new pixi.Graphics();
+  const shockwaves = new pixi.Graphics();
+  const dust = new pixi.Graphics();
+  const particles = new pixi.Graphics();
+  const explosionCoverLayer = new pixi.Graphics();
+  quakeLayer.addChild(omen, impactGlow, shockwaves, dust, particles, sword);
+  app.stage.addChild(quakeLayer, explosionCoverLayer);
+  const fullCoverRadius = voyageStarFullCoverRadius({ width, height, center });
+  const cellSize = Math.min(width, height) / Math.max(1, boardSize);
+  const startedAt = performance.now();
+
+  app.ticker.add(() => {
+    const progress = clamp01((performance.now() - startedAt) / durationMs);
+    const omenProgress = clamp01(progress / 0.15);
+    const fall = easeInCubic(clamp01((progress - 0.1) / 0.22));
+    const impact = clamp01((progress - 0.28) / 0.22);
+    const shock = clamp01((progress - 0.28) / 0.24);
+    const coverProgress = easeOutCubic(clamp01((progress - 0.42) / 0.16));
+    const coverDissolve = clamp01((progress - 0.77) / 0.21);
+    const coverAlpha = coverDissolve > 0 ? 1 - easeInCubic(coverDissolve) : 1;
+    const fullCover = coverProgress >= 0.82;
+    const swordY = lerp(-height * 0.42, center.y, fall);
+    const swordAlpha = fullCover
+      ? 0
+      : progress < 0.5
+        ? 1
+        : 1 - clamp01((progress - 0.5) / 0.08) * 0.36;
+    const shake = voyageStarQuakeShake(progress, cellSize);
+    quakeLayer.x = shake.x;
+    quakeLayer.y = shake.y;
+
+    const glowAlpha = fullCover
+      ? 0
+      : Math.max(omenProgress * (1 - clamp01((progress - 0.22) / 0.18)) * 0.28, impact * (1 - clamp01((progress - 0.44) / 0.16)));
+
+    omen.clear();
+    if (progress < 0.42) {
+      drawVoyageStarOmen(omen, { center, width, height, cellSize, progress, omenProgress, fall });
+    }
+
+    impactGlow.clear()
+      .circle(center.x, center.y, cellSize * (0.55 + impact * 3.3))
+      .fill({ color: 0xffdf85, alpha: 0.16 * glowAlpha })
+      .circle(center.x, center.y, cellSize * (0.36 + impact * 2.2))
+      .fill({ color: 0xffffff, alpha: 0.22 * glowAlpha });
+
+    shockwaves.clear();
+    dust.clear();
+    if (shock > 0 && !fullCover) {
+      drawVoyageStarEarthquake(shockwaves, dust, {
+        center,
+        width,
+        height,
+        cellSize,
+        shock,
+        progress
+      });
+    }
+
+    particles.clear();
+    if (impact > 0) {
+      for (const [index, target] of removedTargets.entries()) {
+        const burst = clamp01((progress - 0.34 - index * 0.012) / 0.34);
+        if (!burst) continue;
+        for (let particleIndex = 0; particleIndex < 5; particleIndex += 1) {
+          const angle = particleIndex * 1.257 + index * 0.73;
+          const distance = burst * cellSize * (0.28 + particleIndex * 0.12);
+          particles.star(
+            target.x + Math.cos(angle) * distance,
+            target.y + Math.sin(angle) * distance,
+            4,
+            Math.max(2.2, cellSize * 0.08),
+            Math.max(0.9, cellSize * 0.03)
+          ).fill({ color: particleIndex % 2 ? 0xffdf85 : 0xffffff, alpha: 0.48 * (1 - burst) * (1 - coverProgress) });
+        }
+      }
+    }
+
+    sword.clear();
+    if (swordAlpha > 0) {
+      drawVoyageStarSword(sword, {
+        x: center.x,
+        y: swordY,
+        size: Math.max(54, cellSize * 3.8),
+        alpha: swordAlpha,
+        fall
+      });
+    }
+
+    explosionCoverLayer.clear();
+    if (coverProgress > 0 && coverAlpha > 0) {
+      drawVoyageStarExplosionCover(explosionCoverLayer, {
+        center,
+        width,
+        height,
+        cellSize,
+        radius: fullCoverRadius * coverProgress,
+        fullCover,
+        dissolveProgress: coverDissolve,
+        alpha: coverAlpha
+      });
+    }
+  });
+}
+
+function playReducedMotionVoyageStar({ app, pixi, host, boardSize, pendingSkill, durationMs }) {
+  const width = host.clientWidth;
+  const height = host.clientHeight;
+  const whiteoutLayer = new pixi.Graphics();
+  app.stage.addChild(whiteoutLayer);
+  const startedAt = performance.now();
+
+  app.ticker.add(() => {
+    const progress = clamp01((performance.now() - startedAt) / durationMs);
+    const alpha = 1 - progress;
+    whiteoutLayer.clear()
+      .rect(0, 0, width, height)
+      .fill({ color: 0xfff4c4, alpha: 0.42 * alpha })
+      .rect(0, 0, width, height)
+      .fill({ color: 0xffffff, alpha: 0.62 * alpha });
+  });
+}
+
+function rowSlashRow(pendingSkill) {
+  if (Number.isInteger(pendingSkill?.row)) return pendingSkill.row;
+  const row = Number(String(pendingSkill?.targetId ?? "").split(",")[1]);
+  return Number.isInteger(row) ? row : null;
+}
+
+function rowSlashCutTargets({ host, boardSize, pendingSkill, row }) {
+  const pointIds = Array.isArray(pendingSkill?.affectedPointIds) && pendingSkill.affectedPointIds.length
+    ? pendingSkill.affectedPointIds
+    : Array.from({ length: boardSize }, (_, x) => `${x},${row}`);
+  return pointIds
+    .map((pointIdValue) => pointCenterForHost(pointIdValue, { boardSize, host }))
+    .filter(Boolean)
+    .sort((left, right) => left.x - right.x);
+}
+
+function drawRowSlashOmen(graphics, { width, height, cellSize, progress }) {
+  const flashes = [
+    { start: 0.02, travelDuration: 0.17, seedIndex: 112, direction: 1 },
+    { start: 0.1, travelDuration: 0.17, seedIndex: 137, direction: -1 }
+  ];
+  const fadeOut = 1 - clamp01((progress - 0.54) / 0.18);
+  for (const [index, flash] of flashes.entries()) {
+    const raw = (progress - flash.start) / flash.travelDuration;
+    if (raw <= 0 || fadeOut <= 0) continue;
+    const sweep = easeOutCubic(clamp01(raw));
+    const alphaIn = clamp01(raw / 0.18);
+    const seed = rowSlashSeed(flash.seedIndex);
+    const alpha = alphaIn * fadeOut;
+    const angle = Math.PI / 2 + (seed.radius - 0.5) * (Math.PI / 3);
+    const travel = (flash.direction > 0 ? sweep - 0.5 : 0.5 - sweep) * height * 0.88;
+    const centerX = width * (0.34 + seed.size * 0.32) + Math.cos(angle) * travel;
+    const centerY = height * 0.5 + Math.sin(angle) * travel;
+    drawRowSlashOmenBrush(graphics, {
+      width,
+      height,
+      centerX,
+      centerY,
+      angle,
+      seedOffset: index * 18,
+      cellSize,
+      alpha,
+      reveal: sweep,
+      direction: flash.direction
+    });
+  }
+}
+
+function drawRowSlashOmenBrush(graphics, {
+  width,
+  height,
+  centerX,
+  centerY,
+  angle,
+  seedOffset,
+  cellSize,
+  alpha,
+  reveal = 1,
+  direction = 1
+}) {
+  const length = Math.hypot(width, height) * 1.42;
+  const fullHalf = length / 2;
+  const tangentX = Math.cos(angle);
+  const tangentY = Math.sin(angle);
+  const normalX = Math.cos(angle + Math.PI / 2);
+  const normalY = Math.sin(angle + Math.PI / 2);
+  const startAlong = direction > 0 ? -fullHalf : fullHalf;
+  const endAlong = direction > 0
+    ? lerp(-fullHalf, fullHalf, reveal)
+    : lerp(fullHalf, -fullHalf, reveal);
+  const half = Math.max(cellSize * 0.44, Math.abs(endAlong - startAlong) / 2);
+  const midAlong = (startAlong + endAlong) / 2;
+  const brushCenterX = centerX + tangentX * midAlong;
+  const brushCenterY = centerY + tangentY * midAlong;
+  const visibleLength = half * 2;
+  const brushHeight = cellSize * 1.8;
+  drawRowSlashInkSmears(graphics, {
+    x: brushCenterX,
+    y: brushCenterY,
+    angle,
+    length: visibleLength,
+    spread: brushHeight * 0.72,
+    cellSize,
+    alpha,
+    seedOffset: seedOffset + 4,
+    count: 18
+  });
+  drawRowSlashBladeGlow(graphics, {
+    x: brushCenterX,
+    y: brushCenterY,
+    angle,
+    length: visibleLength,
+    cellSize,
+    alpha
+  });
+  drawInkSlashLine(graphics, {
+    x: brushCenterX,
+    y: brushCenterY,
+    angle,
+    length: visibleLength,
+    width: Math.max(3, cellSize * 0.08),
+    color: 0xffffff,
+    alpha: 0.92 * alpha
+  });
+  drawInkSlashLine(graphics, {
+    x: brushCenterX - normalX * cellSize * 0.16,
+    y: brushCenterY - normalY * cellSize * 0.16,
+    angle,
+    length: visibleLength * 0.92,
+    width: Math.max(2.4, cellSize * 0.075),
+    color: 0x2f7f86,
+    alpha: 0.4 * alpha
+  });
+  drawInkSlashLine(graphics, {
+    x: brushCenterX + normalX * cellSize * 0.18,
+    y: brushCenterY + normalY * cellSize * 0.18,
+    angle,
+    length: visibleLength * 0.82,
+    width: Math.max(2, cellSize * 0.058),
+    color: 0x173e4a,
+    alpha: 0.28 * alpha
+  });
+
+  for (let particleIndex = 0; particleIndex < 10; particleIndex += 1) {
+    const seed = rowSlashSeed(seedOffset + particleIndex + 40);
+    const along = (seed.radius - 0.5) * visibleLength * 0.84;
+    const side = (seed.size - 0.5) * brushHeight * 1.4;
+    graphics.circle(
+      brushCenterX + tangentX * along + normalX * side,
+      brushCenterY + tangentY * along + normalY * side,
+      Math.max(1, cellSize * (0.018 + seed.delay * 0.028))
+    ).fill({ color: seed.delay > 0.52 ? 0xffffff : 0xb9fff4, alpha: 0.22 * alpha });
+  }
+}
+
+function drawRowSlashCharge(graphics, { y, cellSize, charge }) {
+  const x = -cellSize * 0.12;
+  graphics.circle(x + cellSize * 0.24, y, cellSize * (0.22 + charge * 0.26))
+    .fill({ color: 0xdffff9, alpha: 0.18 * charge })
+    .circle(x + cellSize * 0.12, y, cellSize * (0.08 + charge * 0.12))
+    .fill({ color: 0xffffff, alpha: 0.38 * charge });
+  for (let index = 0; index < 8; index += 1) {
+    const seed = rowSlashSeed(index);
+    const px = x + cellSize * (0.08 + seed.radius * 0.75);
+    const py = y + (seed.size - 0.5) * cellSize * 1.34;
+    graphics.circle(px, py, Math.max(1, cellSize * (0.02 + seed.delay * 0.04)))
+      .fill({ color: seed.delay > 0.5 ? 0xffffff : 0x9df2e8, alpha: 0.34 * charge });
+  }
+}
+
+function drawRowSlashInkBrush(graphics, { width, y, cellSize, headX, progress, alpha }) {
+  const brushHeight = cellSize * 1.8;
+  const left = -cellSize * 0.7;
+  const right = Math.min(width + cellSize * 0.7, headX);
+  const slashLength = Math.max(0, right - left);
+  const centerX = left + slashLength / 2;
+  if (slashLength <= 0) return;
+  drawRowSlashInkSmears(graphics, {
+    x: centerX,
+    y,
+    angle: 0,
+    length: slashLength,
+    spread: brushHeight * 0.74,
+    cellSize,
+    alpha,
+    seedOffset: 18,
+    count: 30
+  });
+  drawRowSlashBladeGlow(graphics, {
+    x: centerX,
+    y,
+    angle: 0,
+    length: slashLength,
+    cellSize,
+    alpha
+  });
+  drawInkSlashLine(graphics, {
+    x: centerX,
+    y,
+    angle: 0,
+    length: slashLength,
+    width: Math.max(3, cellSize * 0.1),
+    color: 0xffffff,
+    alpha: 0.86 * alpha
+  });
+  drawInkSlashLine(graphics, {
+    x: centerX,
+    y: y + cellSize * 0.18,
+    angle: 0,
+    length: slashLength * 0.94,
+    width: Math.max(2, cellSize * 0.06),
+    color: 0x1f5662,
+    alpha: 0.42 * alpha
+  });
+  drawInkSlashLine(graphics, {
+    x: centerX,
+    y: y - cellSize * 0.16,
+    angle: 0,
+    length: slashLength * 0.9,
+    width: Math.max(1.8, cellSize * 0.05),
+    color: 0x4c8688,
+    alpha: 0.34 * alpha
+  });
+
+  for (let index = 0; index < ROW_SLASH_INK_PARTICLES; index += 1) {
+    const seed = rowSlashSeed(index + 20);
+    const x = lerp(left + cellSize * 0.4, right - cellSize * 0.2, seed.radius);
+    if (x > right || x < left) continue;
+    const yOffset = (seed.size - 0.5) * brushHeight * 1.05;
+    const particleAlpha = alpha * (0.12 + seed.delay * 0.18) * (1 - clamp01(progress - seed.radius));
+    graphics.circle(x, y + yOffset, Math.max(1, cellSize * (0.018 + seed.delay * 0.05)))
+      .fill({ color: seed.size > 0.56 ? 0xffffff : 0x85e8df, alpha: particleAlpha });
+  }
+}
+
+function drawRowSlashLeadingEdge(graphics, { x, y, cellSize, alpha }) {
+  if (alpha <= 0) return;
+  graphics.poly([
+    x - cellSize * 0.18, y - cellSize * 0.78,
+    x + cellSize * 0.32, y - cellSize * 0.2,
+    x + cellSize * 0.2, y + cellSize * 0.76,
+    x - cellSize * 0.26, y + cellSize * 0.18
+  ]).fill({ color: 0xffffff, alpha: 0.42 * alpha });
+  graphics.moveTo(x - cellSize * 0.18, y - cellSize * 0.72)
+    .lineTo(x + cellSize * 0.2, y + cellSize * 0.72)
+    .stroke({ width: Math.max(2.4, cellSize * 0.08), color: 0xffffff, alpha: 0.86 * alpha });
+}
+
+function drawRowSlashInkSparks(graphics, { width, y, cellSize, headX, progress, alpha }) {
+  for (let index = 0; index < ROW_SLASH_SPARKS; index += 1) {
+    const seed = rowSlashSeed(index + 80);
+    const local = clamp01(progress * 1.2 - seed.delay * 0.42);
+    if (!local) continue;
+    const x = Math.min(width + cellSize, headX - cellSize * (0.2 + seed.radius * 2.5) * local);
+    const yOffset = (seed.size - 0.5) * cellSize * 1.7;
+    const sparkleAlpha = Math.sin(local * Math.PI) * alpha * 0.72;
+    graphics.star(
+      x,
+      y + yOffset,
+      4,
+      Math.max(2.2, cellSize * (0.05 + seed.delay * 0.04)),
+      Math.max(0.8, cellSize * 0.018)
+    ).fill({ color: index % 3 ? 0xbffff5 : 0xffffff, alpha: sparkleAlpha });
+  }
+}
+
+function drawRowSlashStoneCut(graphics, { point, cellSize, local, index }) {
+  const fade = 1 - clamp01((local - 0.5) / 0.5);
+  const angle = -0.08 + ((index % 3) - 1) * 0.035;
+  drawInkSlashLine(graphics, {
+    x: point.x,
+    y: point.y,
+    angle,
+    length: cellSize * (0.78 + local * 0.34),
+    width: Math.max(1.4, cellSize * 0.036),
+    color: 0xffffff,
+    alpha: 0.82 * fade
+  });
+  for (let shardIndex = 0; shardIndex < 3; shardIndex += 1) {
+    const direction = shardIndex - 1;
+    const drift = local * cellSize * (0.12 + shardIndex * 0.08);
+    graphics.poly([
+      point.x + direction * cellSize * 0.08 + drift,
+      point.y - cellSize * 0.14 - drift * 0.15,
+      point.x + direction * cellSize * 0.18 + drift * 1.15,
+      point.y + cellSize * 0.02,
+      point.x + direction * cellSize * 0.06 + drift,
+      point.y + cellSize * 0.12 + drift * 0.1
+    ]).fill({ color: shardIndex % 2 ? 0xbffbf4 : 0xffffff, alpha: 0.34 * fade });
+  }
+}
+
+function drawInkSlashLine(graphics, { x, y, angle, length, width, color, alpha }) {
+  const half = length / 2;
+  const dx = Math.cos(angle) * half;
+  const dy = Math.sin(angle) * half;
+  graphics.moveTo(x - dx, y - dy)
+    .lineTo(x + dx, y + dy)
+    .stroke({ width, color, alpha, cap: "round" });
+}
+
+function drawRowSlashBladeGlow(graphics, { x, y, angle, length, cellSize, alpha }) {
+  const glowLayers = [
+    { width: 0.48, color: 0xbffff5, alpha: 0.12 },
+    { width: 0.3, color: 0xe8fffb, alpha: 0.18 },
+    { width: 0.18, color: 0xffffff, alpha: 0.24 }
+  ];
+  for (const layer of glowLayers) {
+    drawInkSlashLine(graphics, {
+      x,
+      y,
+      angle,
+      length,
+      width: Math.max(2.4, cellSize * layer.width),
+      color: layer.color,
+      alpha: alpha * layer.alpha
+    });
+  }
+}
+
+function drawRowSlashInkSmears(graphics, { x, y, angle, length, spread, cellSize, alpha, seedOffset, count }) {
+  const tangentX = Math.cos(angle);
+  const tangentY = Math.sin(angle);
+  const normalX = Math.cos(angle + Math.PI / 2);
+  const normalY = Math.sin(angle + Math.PI / 2);
+  const half = length / 2;
+  for (let index = 0; index < count; index += 1) {
+    const seed = rowSlashSeed(seedOffset + index * 3);
+    const siblingSeed = rowSlashSeed(seedOffset + index * 3 + 1);
+    const along = lerp(-half * 0.94, half * 0.94, seed.radius);
+    const segmentHalf = cellSize * (0.12 + seed.delay * 0.28);
+    const offset = (seed.size - 0.5) * spread;
+    const thickness = cellSize * (0.018 + siblingSeed.radius * 0.07);
+    const ragged = (siblingSeed.size - 0.5) * cellSize * 0.12;
+    const cx = x + tangentX * along + normalX * offset;
+    const cy = y + tangentY * along + normalY * offset;
+    const color = seed.delay > 0.66
+      ? 0x0e2935
+      : seed.delay > 0.36
+        ? 0x286d76
+        : 0x5c9190;
+    graphics.poly([
+      cx - tangentX * segmentHalf + normalX * (-thickness + ragged),
+      cy - tangentY * segmentHalf + normalY * (-thickness + ragged),
+      cx + tangentX * segmentHalf * (0.8 + seed.size * 0.5) + normalX * (-thickness * (0.3 + siblingSeed.delay)),
+      cy + tangentY * segmentHalf * (0.8 + seed.size * 0.5) + normalY * (-thickness * (0.3 + siblingSeed.delay)),
+      cx + tangentX * segmentHalf + normalX * (thickness - ragged * 0.45),
+      cy + tangentY * segmentHalf + normalY * (thickness - ragged * 0.45),
+      cx - tangentX * segmentHalf * (0.7 + siblingSeed.size * 0.4) + normalX * (thickness * (0.4 + seed.radius)),
+      cy - tangentY * segmentHalf * (0.7 + siblingSeed.size * 0.4) + normalY * (thickness * (0.4 + seed.radius))
+    ]).fill({ color, alpha: alpha * (0.16 + seed.delay * 0.18) });
+  }
+  for (let index = 0; index < Math.max(4, Math.floor(count / 3)); index += 1) {
+    const seed = rowSlashSeed(seedOffset + index * 5 + 80);
+    const along = lerp(-half * 0.9, half * 0.9, seed.radius);
+    const offset = (seed.size - 0.5) * spread * 0.7;
+    drawInkSlashLine(graphics, {
+      x: x + tangentX * along + normalX * offset,
+      y: y + tangentY * along + normalY * offset,
+      angle,
+      length: cellSize * (0.32 + seed.delay * 0.9),
+      width: Math.max(1, cellSize * (0.018 + seed.size * 0.025)),
+      color: 0xffffff,
+      alpha: alpha * (0.18 + seed.delay * 0.18)
+    });
+  }
+}
+
+function rowSlashSeed(index) {
+  return {
+    delay: ((index * 11) % 29) / 28,
+    radius: ((index * 17) % 37) / 36,
+    size: ((index * 23) % 41) / 40
+  };
+}
+
 function libertyPurgeSlashTargets({ host, boardSize, pendingSkill, target }) {
   const removalPointIds = Array.isArray(pendingSkill?.removalMarkIds)
     ? pendingSkill.removalMarkIds
@@ -929,6 +1504,247 @@ function libertyPurgeSlashTargets({ host, boardSize, pendingSkill, target }) {
     ...point,
     angle: -0.78 + (index % 4) * 0.34 + Math.sin(index * 1.7) * 0.18
   }));
+}
+
+function voyageStarRemovedTargets({ host, boardSize, pendingSkill }) {
+  const pointIds = Array.isArray(pendingSkill?.removedStones)
+    ? pendingSkill.removedStones.map((entry) => entry?.id).filter(Boolean)
+    : [];
+  return [...new Set(pointIds)]
+    .map((pointIdValue) => pointCenterForHost(pointIdValue, { boardSize, host }))
+    .filter(Boolean);
+}
+
+function voyageStarFullCoverRadius({ width, height, center }) {
+  return Math.max(
+    Math.hypot(center.x, center.y),
+    Math.hypot(width - center.x, center.y),
+    Math.hypot(center.x, height - center.y),
+    Math.hypot(width - center.x, height - center.y)
+  ) * 1.08;
+}
+
+function voyageStarQuakeShake(progress, cellSize) {
+  const first = quakePulse(progress, 0.3, 0.1, 1);
+  const second = quakePulse(progress, 0.39, 0.08, 0.62);
+  const third = quakePulse(progress, 0.48, 0.06, 0.34);
+  const power = (first + second + third) * Math.max(2.2, cellSize * 0.085);
+  return {
+    x: Math.sin(progress * 150) * power + Math.sin(progress * 79) * power * 0.38,
+    y: Math.cos(progress * 132) * power * 0.72
+  };
+}
+
+function quakePulse(progress, start, duration, strength) {
+  const local = clamp01((progress - start) / duration);
+  if (!local) return 0;
+  return Math.sin(local * Math.PI) * strength;
+}
+
+function drawVoyageStarOmen(graphics, { center, width, height, cellSize, progress, omenProgress, fall }) {
+  const fade = 1 - clamp01((progress - 0.24) / 0.14);
+  const alpha = Math.sin(omenProgress * Math.PI) * fade;
+  if (alpha <= 0) return;
+  graphics.circle(center.x, center.y, cellSize * (0.8 + omenProgress * 1.8))
+    .fill({ color: 0xfff4c4, alpha: 0.08 * alpha })
+    .circle(center.x, center.y, cellSize * (0.38 + omenProgress * 0.62))
+    .fill({ color: 0xffffff, alpha: 0.12 * alpha });
+  for (let index = -2; index <= 2; index += 1) {
+    const lane = index / 2;
+    const beamAlpha = alpha * (0.08 + (2 - Math.abs(index)) * 0.035) * (1 - fall * 0.45);
+    const beamWidth = cellSize * (0.12 + (2 - Math.abs(index)) * 0.045);
+    const topY = Math.max(0, center.y - height * 0.48);
+    graphics.rect(center.x + lane * cellSize * 1.05 - beamWidth / 2, topY, beamWidth, center.y - topY + cellSize * 0.8)
+      .fill({ color: index === 0 ? 0xffffff : 0xfff4c4, alpha: beamAlpha });
+  }
+  for (let index = 0; index < 8; index += 1) {
+    const angle = index * 0.785 + progress * 0.4;
+    const distance = cellSize * (1.2 + (index % 3) * 0.32 + omenProgress * 0.8);
+    graphics.star(
+      center.x + Math.cos(angle) * distance,
+      center.y + Math.sin(angle) * distance * 0.78,
+      4,
+      Math.max(2.5, cellSize * 0.08),
+      Math.max(1, cellSize * 0.03)
+    ).fill({ color: index % 2 ? 0xfff4c4 : 0xffffff, alpha: 0.34 * alpha });
+  }
+}
+
+function drawVoyageStarEarthquake(shockwaves, dust, { center, width, height, cellSize, shock, progress }) {
+  const maxRadius = Math.hypot(width, height) * 0.48;
+  const fade = 1 - clamp01((shock - 0.72) / 0.28);
+  for (let index = 0; index < 3; index += 1) {
+    const local = clamp01(shock * 1.25 - index * 0.18);
+    if (!local) continue;
+    const ringFade = Math.sin(local * Math.PI) * fade;
+    const radius = cellSize * (0.9 + index * 0.45) + maxRadius * local * (0.18 + index * 0.05);
+    shockwaves.ellipse(center.x, center.y, radius, radius * (0.72 + index * 0.04))
+      .stroke({
+        width: Math.max(2, cellSize * (0.08 + index * 0.025)),
+        color: index % 2 ? 0xffd78a : 0xffffff,
+        alpha: 0.46 * ringFade
+      });
+    shockwaves.ellipse(center.x, center.y + cellSize * 0.05, radius * 0.72, radius * 0.4)
+      .stroke({ width: Math.max(1.4, cellSize * 0.04), color: 0xfff4c4, alpha: 0.2 * ringFade });
+  }
+  for (let index = 0; index < VOYAGE_STAR_QUAKE_DUST; index += 1) {
+    const seed = voyageStarSeed(index);
+    const angle = seed.angle + progress * 0.2;
+    const local = clamp01(shock * 1.12 - seed.delay);
+    if (!local) continue;
+    const distance = cellSize * (0.75 + seed.radius * 4.2) * (0.42 + local);
+    const x = center.x + Math.cos(angle) * distance;
+    const y = center.y + Math.sin(angle) * distance * 0.7 - local * cellSize * 0.22;
+    const alpha = Math.sin(local * Math.PI) * (0.34 + seed.radius * 0.24) * fade;
+    dust.circle(x, y, Math.max(1.2, cellSize * (0.025 + seed.size * 0.045)))
+      .fill({ color: seed.size > 0.55 ? 0xffffff : 0xffe2a2, alpha: 0.4 * alpha });
+  }
+}
+
+function voyageStarSeed(index) {
+  const angle = (index * 2.399963 + ((index * 19) % 11) * 0.071) % (Math.PI * 2);
+  return {
+    angle,
+    delay: ((index * 7) % 13) / 52,
+    radius: ((index * 17) % 29) / 28,
+    size: ((index * 23) % 31) / 30
+  };
+}
+
+function drawVoyageStarExplosionCover(graphics, {
+  center,
+  width,
+  height,
+  cellSize,
+  radius,
+  fullCover,
+  dissolveProgress = 0,
+  alpha
+}) {
+  if (!fullCover) {
+    const solidCoreRadius = Math.min(radius, Math.max(18, cellSize * VOYAGE_STAR_SOLID_CORE_CELLS));
+    const edgeFeather = Math.max(cellSize * 0.62, radius * 0.5);
+    const outerRadius = Math.max(radius, solidCoreRadius) + edgeFeather;
+    const solidTransitionRadius = solidCoreRadius + Math.max(10, cellSize * 0.55);
+    const featherStart = solidCoreRadius / outerRadius;
+    for (let step = SOFT_EXPLOSION_EDGE_STEPS; step >= 1; step -= 1) {
+      const t = step / SOFT_EXPLOSION_EDGE_STEPS;
+      const layerRadius = outerRadius * t;
+      const edgeProgress = clamp01((t - featherStart) / Math.max(0.001, 1 - featherStart));
+      const coreProgress = clamp01(t / Math.max(0.001, featherStart));
+      const edgeAlpha = Math.pow(1 - edgeProgress, 2.35);
+      const coreAlpha = Math.pow(1 - coreProgress, 1.15);
+      const color = edgeProgress > 0 ? 0xffed9a : coreProgress > 0.58 ? 0xfff4c4 : 0xffffff;
+      const layerAlpha = alpha * edgeAlpha * (0.01 + coreAlpha * 0.058);
+      if (layerAlpha > 0.001) {
+        graphics.circle(center.x, center.y, layerRadius)
+          .fill({ color, alpha: layerAlpha });
+      }
+    }
+    for (let step = 8; step >= 1; step -= 1) {
+      const t = step / 8;
+      const transitionAlpha = alpha * Math.pow(1 - t, 1.7) * 0.34;
+      if (transitionAlpha > 0.001) {
+        graphics.circle(center.x, center.y, solidCoreRadius + (solidTransitionRadius - solidCoreRadius) * t)
+          .fill({ color: 0xfff4c4, alpha: transitionAlpha });
+      }
+    }
+    graphics.circle(center.x, center.y, solidCoreRadius)
+      .fill({ color: 0xfff4c4, alpha: 0.86 * alpha })
+      .circle(center.x, center.y, solidCoreRadius * 0.72)
+      .fill({ color: 0xffffff, alpha: 0.68 * alpha });
+  }
+
+  if (fullCover) {
+    const dissolve = clamp01(dissolveProgress);
+    graphics.rect(0, 0, width, height)
+      .fill({ color: 0xffffff, alpha });
+    if (dissolve > 0) {
+      drawVoyageStarDissolve(graphics, { center, width, height, cellSize, dissolve });
+    }
+  }
+}
+
+function drawVoyageStarDissolve(graphics, { center, width, height, cellSize, dissolve }) {
+  const fade = 1 - dissolve;
+  const maxRadius = Math.hypot(width, height) * 0.58;
+  for (let index = 0; index < 4; index += 1) {
+    const ringProgress = clamp01(dissolve * 1.35 - index * 0.16);
+    if (!ringProgress) continue;
+    const ringFade = Math.sin(ringProgress * Math.PI) * fade;
+    if (ringFade <= 0.002) continue;
+    graphics.circle(center.x, center.y, maxRadius * (0.16 + ringProgress * 0.94))
+      .stroke({
+        width: Math.max(10, cellSize * (0.32 + index * 0.08)) * (1 - ringProgress * 0.54),
+        color: index % 2 ? 0xfff4c4 : 0xffffff,
+        alpha: 0.2 * ringFade
+      });
+  }
+  for (let index = 0; index < VOYAGE_STAR_DISSOLVE_SPARKS; index += 1) {
+    const angle = index * 2.399 + dissolve * 1.3;
+    const lane = 0.18 + (index % 7) * 0.095;
+    const drift = maxRadius * (lane + dissolve * (0.3 + (index % 5) * 0.032));
+    const x = center.x + Math.cos(angle) * drift;
+    const y = center.y + Math.sin(angle) * drift * 0.82;
+    const pulse = Math.sin((dissolve * 2.7 + index * 0.17) * Math.PI);
+    const sparkleAlpha = Math.max(0, pulse) * fade;
+    if (sparkleAlpha <= 0.002) continue;
+    const size = Math.max(4, cellSize * (0.08 + (index % 4) * 0.026));
+    graphics.star(x, y, 4 + (index % 2), size * (1.8 + dissolve * 2.2), size)
+      .fill({ color: index % 3 ? 0xfff4c4 : 0xffffff, alpha: 0.64 * sparkleAlpha });
+    graphics.circle(x, y, size * (2.8 + dissolve * 4.4))
+      .fill({ color: 0xffed9a, alpha: 0.12 * sparkleAlpha });
+  }
+  for (let index = 0; index < 14; index += 1) {
+    const angle = index * 0.628 + dissolve * 0.42;
+    const inner = maxRadius * (0.1 + dissolve * 0.38);
+    const outer = maxRadius * (0.38 + dissolve * 0.7);
+    graphics.moveTo(center.x + Math.cos(angle) * inner, center.y + Math.sin(angle) * inner)
+      .lineTo(center.x + Math.cos(angle) * outer, center.y + Math.sin(angle) * outer)
+      .stroke({ width: Math.max(2.2, cellSize * 0.06), color: 0xffffff, alpha: 0.2 * fade });
+  }
+}
+
+function drawVoyageStarSword(graphics, { x, y, size, alpha, fall = 1 }) {
+  const bladeHalf = size * 0.11;
+  const bladeTip = y;
+  const bladeBase = y - size * 0.96;
+  const trailAlpha = alpha * (1 - clamp01((fall - 0.62) / 0.38));
+  if (trailAlpha > 0.02) {
+    graphics.moveTo(x, bladeBase - size * 0.92)
+      .lineTo(x + size * 0.22, bladeBase - size * 0.08)
+      .lineTo(x, bladeTip)
+      .lineTo(x - size * 0.22, bladeBase - size * 0.08)
+      .fill({ color: 0xdff8ff, alpha: 0.1 * trailAlpha })
+      .moveTo(x, bladeBase - size * 0.68)
+      .lineTo(x + size * 0.09, bladeBase - size * 0.06)
+      .lineTo(x, bladeTip - size * 0.02)
+      .lineTo(x - size * 0.09, bladeBase - size * 0.06)
+      .fill({ color: 0xffffff, alpha: 0.16 * trailAlpha });
+  }
+  graphics.circle(x, bladeTip - size * 0.2, size * 0.28)
+    .fill({ color: 0xdff8ff, alpha: 0.08 * alpha });
+  graphics.poly([
+    x, bladeTip,
+    x + bladeHalf, bladeTip - size * 0.2,
+    x + bladeHalf * 0.72, bladeBase,
+    x - bladeHalf * 0.72, bladeBase,
+    x - bladeHalf, bladeTip - size * 0.2
+  ]).fill({ color: 0xffffff, alpha })
+    .stroke({ width: Math.max(2, size * 0.035), color: 0xdff8ff, alpha: 0.72 * alpha });
+  graphics.moveTo(x, bladeTip - size * 0.08)
+    .lineTo(x, bladeBase + size * 0.05)
+    .stroke({ width: Math.max(1.4, size * 0.018), color: 0xcff7ff, alpha: 0.78 * alpha });
+  graphics.rect(x - size * 0.34, bladeBase - size * 0.04, size * 0.68, size * 0.08)
+    .fill({ color: 0xffffff, alpha: 0.92 * alpha });
+  graphics.rect(x - size * 0.38, bladeBase - size * 0.015, size * 0.76, size * 0.03)
+    .fill({ color: 0xdff8ff, alpha: 0.56 * alpha });
+  graphics.rect(x - size * 0.08, bladeBase - size * 0.34, size * 0.16, size * 0.34)
+    .fill({ color: 0xf4fbff, alpha: 0.9 * alpha });
+  graphics.circle(x, bladeBase - size * 0.05, size * 0.13)
+    .stroke({ width: Math.max(2, size * 0.035), color: 0xffffff, alpha: 0.78 * alpha })
+    .circle(x, bladeBase - size * 0.05, size * 0.055)
+    .fill({ color: 0xbdefff, alpha: 0.7 * alpha });
 }
 
 function drawScissorSlash(graphics, { x, y, angle, length, progress, alpha }) {
@@ -1019,6 +1835,12 @@ export const BOARD_SKILL_EFFECT_RENDERERS = Object.freeze({
     play: playDataStreamHiddenHand,
     playReducedMotion: playReducedMotionBoardSweep
   }),
+  "voyage-star": Object.freeze({
+    fullBoard: true,
+    assets: [VOYAGE_STAR_CRATER_IMAGE],
+    play: playVoyageStar,
+    playReducedMotion: playReducedMotionVoyageStar
+  }),
   "liberty-purge": Object.freeze({
     play: playLibertyPurge,
     playReducedMotion: playReducedMotionLibertyPurge
@@ -1030,6 +1852,11 @@ export const BOARD_SKILL_EFFECT_RENDERERS = Object.freeze({
   "random-blast": Object.freeze({
     assets: [BACONBITS_IMAGE],
     play: playBaconbitsBlast
+  }),
+  "row-slash": Object.freeze({
+    fullBoard: true,
+    play: playRowSlash,
+    playReducedMotion: playReducedMotionRowSlash
   }),
   "spray-stone": Object.freeze({ play: playSprayStone })
 });

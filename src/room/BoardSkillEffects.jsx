@@ -35,6 +35,7 @@ export default function BoardSkillEffects({
 }) {
   const hostRef = useRef(null);
   const playedEffectIdRef = useRef("");
+  const activeEffectCleanupRef = useRef(() => {});
   const effectType = pendingSkill?.effectType ?? "";
   const targetId = pendingSkill?.targetId ?? "";
   const presentation = skillEffectPresentation(effectType, { pendingSkill, effectsEnabled });
@@ -47,10 +48,18 @@ export default function BoardSkillEffects({
 
   useEffect(() => {
     const host = hostRef.current;
-    if (effectsEnabled === false || !hasBoardEffect || !host || !pendingSkill?.id || playedEffectIdRef.current === pendingSkill.id) return undefined;
+    if (effectsEnabled === false) {
+      activeEffectCleanupRef.current();
+      activeEffectCleanupRef.current = () => {};
+      return undefined;
+    }
+    if (!hasBoardEffect || !host || !pendingSkill?.id || playedEffectIdRef.current === pendingSkill.id) return undefined;
+    activeEffectCleanupRef.current();
+    activeEffectCleanupRef.current = () => {};
     playedEffectIdRef.current = pendingSkill.id;
     let disposed = false;
     let cleanup = () => {};
+    let started = false;
 
     const reducedMotion = window.matchMedia?.(reducedMotionQuery)?.matches ?? false;
     const activePresentation = skillEffectPresentation(effectType, { pendingSkill, reducedMotion, effectsEnabled });
@@ -58,6 +67,7 @@ export default function BoardSkillEffects({
     const preparedEffect = preparePixiEffect({ host, pendingSkill });
     const startTimer = window.setTimeout(() => {
       if (disposed) return;
+      started = true;
       cleanup = playPreparedPixiEffect({
         preparedEffect,
         boardSize,
@@ -67,15 +77,20 @@ export default function BoardSkillEffects({
         reducedMotion,
         audioSettings
       });
+      activeEffectCleanupRef.current = cleanup;
     }, startDelayMs);
 
     return () => {
       disposed = true;
       window.clearTimeout(startTimer);
-      cleanup();
-      preparedEffect.cleanup();
+      if (!started) preparedEffect.cleanup();
     };
   }, [audioSettings, boardSize, effectsEnabled, effectType, hasBoardEffect, pendingSkill]);
+
+  useEffect(() => () => {
+    activeEffectCleanupRef.current();
+    activeEffectCleanupRef.current = () => {};
+  }, []);
 
   if (effectsEnabled === false || (hasPendingEffect && !hasBoardEffect)) return null;
 
@@ -163,5 +178,6 @@ function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, prese
     window.clearTimeout(timeoutId);
     clearBoardSkillEffectSoundTimers(soundTimers);
     delete preparedEffect.host.dataset.effectFallback;
+    preparedEffect.cleanup();
   };
 }

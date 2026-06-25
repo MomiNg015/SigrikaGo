@@ -35,7 +35,7 @@ describe("room test actions", () => {
     expect(isRoomTestAction({ type: "move" })).toBe(false);
   });
 
-  it("rejects all test actions outside explicitly enabled development mode", () => {
+  it("rejects all test actions in production even when explicitly enabled", () => {
     const room = testRoom();
     const result = handleRoomTestAction({
       action: { type: "test-restore-skill" },
@@ -53,13 +53,14 @@ describe("room test actions", () => {
     room.game.phase = GAME_PHASES.playing;
     const result = handleRoomTestAction({
       action: { type: "test-enter-byo-yomi" },
-      env: { NODE_ENV: "development", ENABLE_TEST_ACTIONS: "1" },
+      env: { NODE_ENV: "development" },
       player: room.players[0],
       room
     });
 
     expect(result.ok).toBe(true);
     expect(room.players[0].time.main).toBe(0);
+    expect(room.players[1].time.main).toBe(0);
     expect(result.result).toBeNull();
     expect(result.skipByoYomiReset).toBe(true);
   });

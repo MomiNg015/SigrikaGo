@@ -6,6 +6,7 @@ import {
   activatePassiveSkill,
   createGameState,
   gameViewForColor,
+  getPoint,
   isStarPoint as sharedIsStarPoint,
   passMove,
   playMove,
@@ -13,6 +14,7 @@ import {
   sprayStone,
   useSkill
 } from "../shared/game.js";
+import { applySkillCost } from "../shared/gameSkillState.js";
 import { canPreviewSkillTarget } from "../shared/boardView.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 
@@ -184,6 +186,8 @@ export function replayGameAt(room, step) {
           consumesTurn: true,
           randomTargetId: replaySprayRandomTargetId(entry)
         });
+      } else if (entry.effectType === "voyage-star") {
+        result = replayVoyageStarFromHistory(game, entry, player);
       } else {
         result = useSkill(game, entry.color, skill, entry.id);
       }
@@ -191,6 +195,96 @@ export function replayGameAt(room, step) {
     if (result?.ok) game = result.state;
   }
   return game;
+}
+
+function replayVoyageStarFromHistory(game, entry, player) {
+  if (!entry?.id) return { ok: false };
+  const next = structuredClone(game);
+  const erasedPointIds = new Set(
+    Array.isArray(entry.erasedPointIds) && entry.erasedPointIds.length
+      ? entry.erasedPointIds
+      : [entry.id, ...(Array.isArray(entry.affectedPointIds) ? entry.affectedPointIds : [])]
+  );
+  const removalIds = new Set([
+    ...historyRemovalIds(entry.directRemovals),
+    ...historyRemovalIds(entry.erasedPointRemovals),
+    ...historyRemovalIds(entry.secondaryRemovals),
+    ...historyRemovalIds(entry.cleanupRemovals),
+    ...(Array.isArray(entry.secondaryRemovalIds) ? entry.secondaryRemovalIds : [])
+  ]);
+
+  for (const pointIdValue of erasedPointIds) {
+    const point = getPoint(next, pointIdValue);
+    if (!point) continue;
+    point.stone = null;
+    point.hiddenHand = null;
+    point.colorIllusion = null;
+    delete point.protocolBan;
+    point.valid = false;
+    point.mark = null;
+    point.skillEffect = point.id === entry.id ? "voyage-star-crater-point" : "voyage-star-erased-point";
+    point.skillEffectOwner = entry.color;
+    point.neighbors = [];
+  }
+
+  for (const point of next.points) {
+    point.neighbors = (point.neighbors ?? []).filter((neighborId) => !erasedPointIds.has(neighborId));
+  }
+
+  for (const pointIdValue of removalIds) {
+    const point = getPoint(next, pointIdValue);
+    if (!point) continue;
+    point.stone = null;
+    point.hiddenHand = null;
+    point.colorIllusion = null;
+  }
+
+  applySkillCost(next, entry.color, {
+    characterId: player?.characterId ?? player?.character?.id ?? null,
+    costType: entry.costType ?? "numeric",
+    costValue: String(entry.costValue ?? 0)
+  });
+  next.skillRemovals ??= { black: 0, white: 0 };
+  for (const [owner, count] of Object.entries(historyRemovedByColor(entry))) {
+    if (owner) next.skillRemovals[owner] = (next.skillRemovals[owner] ?? 0) + count;
+  }
+  if (next.derivedSkills?.[entry.color]?.effectType === "voyage-star") {
+    next.derivedSkills[entry.color] = {
+      ...next.derivedSkills[entry.color],
+      uses: 0,
+      spent: true,
+      sourceHiddenHandId: null
+    };
+  }
+  next.ko = null;
+  next.history.push({ ...entry });
+  return { ok: true, state: next };
+}
+
+function historyRemovalIds(removals) {
+  if (!Array.isArray(removals)) return [];
+  return removals.flatMap((removal) => {
+    if (!removal) return [];
+    if (typeof removal === "string") return [removal];
+    if (Array.isArray(removal.stones)) return removal.stones;
+    return removal.id ? [removal.id] : [];
+  });
+}
+
+function historyRemovedByColor(entry) {
+  const counts = { ...(entry.removedByColor ?? {}) };
+  const hasRecordedDirectCounts = Object.keys(counts).length > 0;
+  const removals = [
+    ...(hasRecordedDirectCounts ? [] : (Array.isArray(entry.directRemovals) ? entry.directRemovals : [])),
+    ...(Array.isArray(entry.cleanupRemovals) ? entry.cleanupRemovals : [])
+  ];
+  for (const removal of removals) {
+    const owner = removal?.owner;
+    if (!owner) continue;
+    const count = Array.isArray(removal.stones) ? removal.stones.length : removal.id ? 1 : 0;
+    counts[owner] = (counts[owner] ?? 0) + count;
+  }
+  return counts;
 }
 
 function replaySprayRandomTargetId(entry) {
