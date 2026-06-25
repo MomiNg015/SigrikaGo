@@ -56,6 +56,13 @@ export function playVoiceSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS) {
   });
 }
 
+export function stopVoicePlayback() {
+  stopActiveVoicePlayback();
+  if (typeof window !== "undefined" && "speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
 export function preloadVoiceSound(src) {
   if (!src) return Promise.resolve(null);
   if (voiceBufferCache.has(src)) return Promise.resolve(voiceBufferCache.get(src));

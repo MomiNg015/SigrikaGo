@@ -15,6 +15,14 @@ export const SYSTEM_VOICE_EVENTS = {
   countdown: (seconds) => `countdown-${seconds}`
 };
 
+export const SYSTEM_VOICE_MODE_EVENTS = {
+  gomokuGameStart: `${SYSTEM_VOICE_EVENTS.gameStart}:gomoku`
+};
+
+export const SYSTEM_VOICE_SKILL_EVENTS = {
+  voyageStarSkillCast: `${SYSTEM_VOICE_EVENTS.skillCast}:voyage-star`
+};
+
 export function voiceSourceCandidates(value) {
   if (Array.isArray(value)) return value.map(normalizeVoiceSource).filter(Boolean);
   return [normalizeVoiceSource(value)].filter(Boolean);
@@ -56,6 +64,14 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
   if (event === SYSTEM_VOICE_EVENTS.timeout) {
     return { type: "tts", text: "" };
   }
+  const modeVoiceEvent = modeSpecificVoiceEvent(event, params.mode);
+  const modeCharacterVoice = resolveVoiceSource(character?.systemVoices?.[modeVoiceEvent]);
+  if (modeCharacterVoice) return { type: "audio", src: modeCharacterVoice };
+
+  const skillVoiceEvent = skillSpecificVoiceEvent(event, params.effectType);
+  const skillCharacterVoice = resolveVoiceSource(character?.systemVoices?.[skillVoiceEvent]);
+  if (skillCharacterVoice) return { type: "audio", src: skillCharacterVoice };
+
   const characterVoice = resolveVoiceSource(character?.systemVoices?.[event]);
   if (characterVoice) return { type: "audio", src: characterVoice };
   if (event === SYSTEM_VOICE_EVENTS.byoYomiPeriods) {
@@ -74,6 +90,20 @@ export function resolveSystemVoice(event, { character = null, params = {} } = {}
     return { type: "tts", text: countdownText(Number(countdownMatch[2])) };
   }
   return { type: "tts", text: DEFAULT_SYSTEM_VOICE_TEXT[event] ?? "" };
+}
+
+function modeSpecificVoiceEvent(event, mode) {
+  if (event === SYSTEM_VOICE_EVENTS.gameStart && mode === "gomoku") {
+    return SYSTEM_VOICE_MODE_EVENTS.gomokuGameStart;
+  }
+  return null;
+}
+
+function skillSpecificVoiceEvent(event, effectType) {
+  if (event === SYSTEM_VOICE_EVENTS.skillCast && effectType === "voyage-star") {
+    return SYSTEM_VOICE_SKILL_EVENTS.voyageStarSkillCast;
+  }
+  return null;
 }
 
 function countdownText(seconds) {

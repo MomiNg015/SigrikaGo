@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { SYSTEM_VOICE_EVENTS, resolveSystemVoice, resolveVoiceSource, voiceSourceCandidates } from "./systemVoices.js";
+import {
+  SYSTEM_VOICE_EVENTS,
+  SYSTEM_VOICE_MODE_EVENTS,
+  SYSTEM_VOICE_SKILL_EVENTS,
+  resolveSystemVoice,
+  resolveVoiceSource,
+  voiceSourceCandidates
+} from "./systemVoices.js";
 
 describe("system voices", () => {
   it("exposes explicit system voice event keys for character voice maps", () => {
@@ -10,6 +17,8 @@ describe("system voices", () => {
     expect(SYSTEM_VOICE_EVENTS.houseDetail).toBe("house-detail");
     expect(SYSTEM_VOICE_EVENTS.countdown(10)).toBe("countdown-10");
     expect(SYSTEM_VOICE_EVENTS.countdown(1)).toBe("countdown-1");
+    expect(SYSTEM_VOICE_MODE_EVENTS.gomokuGameStart).toBe("game-start:gomoku");
+    expect(SYSTEM_VOICE_SKILL_EVENTS.voyageStarSkillCast).toBe("skill-cast:voyage-star");
   });
 
   it("falls back to TTS for game start before character voice assets are configured", () => {
@@ -29,6 +38,54 @@ describe("system voices", () => {
     })).toEqual({
       type: "audio",
       src: "/assets/voice/sigrika-game-start.ogg"
+    });
+  });
+
+  it("uses a Gomoku-specific game-start asset before the normal game-start asset", () => {
+    const character = {
+      systemVoices: {
+        [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/changli_match_start.ogg",
+        [SYSTEM_VOICE_MODE_EVENTS.gomokuGameStart]: "/assets/voice/changli_wuzi_match_start.ogg"
+      }
+    };
+
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.gameStart, {
+      character,
+      params: { mode: "gomoku" }
+    })).toEqual({
+      type: "audio",
+      src: "/assets/voice/changli_wuzi_match_start.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.gameStart, {
+      character,
+      params: { mode: "spark" }
+    })).toEqual({
+      type: "audio",
+      src: "/assets/voice/changli_match_start.ogg"
+    });
+  });
+
+  it("uses an effect-specific skill-cast asset before the normal skill-cast asset", () => {
+    const character = {
+      systemVoices: {
+        [SYSTEM_VOICE_EVENTS.skillCast]: "/assets/voice/aemeath_skill_cast.ogg",
+        [SYSTEM_VOICE_SKILL_EVENTS.voyageStarSkillCast]: "/assets/voice/aemeath_skill_cast_voyage.ogg"
+      }
+    };
+
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, {
+      character,
+      params: { effectType: "voyage-star" }
+    })).toEqual({
+      type: "audio",
+      src: "/assets/voice/aemeath_skill_cast_voyage.ogg"
+    });
+    expect(resolveSystemVoice(SYSTEM_VOICE_EVENTS.skillCast, {
+      character,
+      params: { effectType: "hidden-hand" }
+    })).toEqual({
+      type: "audio",
+      src: "/assets/voice/aemeath_skill_cast.ogg"
     });
   });
 

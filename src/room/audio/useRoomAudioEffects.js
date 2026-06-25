@@ -139,7 +139,8 @@ export function useRoomAudioEffects({
     systemVoiceRef.current.gameStart = gameStartMessage.id;
     playSystemVoice(SYSTEM_VOICE_EVENTS.gameStart, {
       character: voiceCharacterForPlayer(me, characters),
+      params: { mode: displayRoom.mode },
       audioSettings
     });
-  }, [displayRoom.chat, displayRoom.game.phase, isReplay, role, me, characters, audioSettings]);
+  }, [displayRoom.chat, displayRoom.game.phase, displayRoom.mode, isReplay, role, me, characters, audioSettings]);
 }

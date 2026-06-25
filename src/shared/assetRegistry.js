@@ -23,6 +23,7 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
   ]),
   shop: Object.freeze([
     "/assets/zahiya_shop.webp",
+    "/assets/items/qiuyuan-zhouwo.webp",
     "/assets/items/rainbow-bean-candy.webp"
   ]),
   effects: Object.freeze([

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { SYSTEM_VOICE_MODE_EVENTS, SYSTEM_VOICE_SKILL_EVENTS } from "./systemVoices.js";
 import {
   CHARACTER_SKILL_VOICES,
   CHARACTER_SYSTEM_VOICES,
@@ -6,6 +7,7 @@ import {
   DEFEAT_SOUND,
   MATCH_SUCCESS_SOUND,
   MUSIC_TRACKS,
+  latestSkillPreview,
   musicTracksWithDisplayNames,
   VICTORY_SOUND,
   latestSkillCharacterId,
@@ -126,7 +128,7 @@ describe("background music library", () => {
     });
   });
 
-  it("uses LHL as Aemeath skill music", () => {
+  it("uses Aemeath0 as Aemeath base skill music", () => {
     const track = resolveBackgroundMusic({
       view: "room",
       skillPreview: { characterId: "aemeath" }
@@ -138,8 +140,8 @@ describe("background music library", () => {
       characterId: "aemeath",
       playback: {
         mode: "intro-loop",
-        introSrc: "/assets/music/lhl_intro_once.ogg",
-        loopSrc: "/assets/music/lhl_loop.ogg",
+        introSrc: "/assets/music/aemeath0_once.ogg",
+        loopSrc: "/assets/music/aemeath0_loop.ogg",
         loop: true
       }
     });
@@ -200,6 +202,35 @@ describe("background music library", () => {
         loop: true
       }
     });
+  });
+
+  it("exposes Qiuyuan Zhouwo as a purchasable skill music option", () => {
+    expect(MUSIC_TRACKS["qiuyuan-skill-zhouwo"]).toMatchObject({
+      id: "qiuyuan-skill-zhouwo",
+      name: "肘我",
+      type: "skill",
+      characterId: "qiuyuan",
+      defaultUnlocked: false,
+      purchasable: true,
+      playback: {
+        mode: "single-loop",
+        src: "/assets/music/qiuyuan_zhouwo_loop.ogg",
+        loop: true
+      }
+    });
+
+    expect(skillMusicOptionsForCharacter({
+      characterId: "qiuyuan",
+      ownedMusicIds: ownedMusicIdsWithDefaults(["qiuyuan-skill-zhouwo"]),
+      tracks: MUSIC_TRACKS
+    }).map((track) => track.id)).toContain("qiuyuan-skill-zhouwo");
+
+    expect(resolveSkillMusicTrack({
+      characterId: "qiuyuan",
+      selections: { skill: { qiuyuan: "qiuyuan-skill-zhouwo" } },
+      ownedMusicIds: ownedMusicIdsWithDefaults(["qiuyuan-skill-zhouwo"]),
+      tracks: MUSIC_TRACKS
+    }).id).toBe("qiuyuan-skill-zhouwo");
   });
 
   it("uses Lynae skill music", () => {
@@ -285,6 +316,21 @@ describe("background music library", () => {
     });
 
     expect(track.id).toBe("denia-skill-default");
+  });
+
+  it("keeps derived skill music active after the skill banner ends", () => {
+    const track = resolveBackgroundMusic({
+      view: "room",
+      latestSkillPreview: {
+        characterId: "aemeath",
+        effectType: "voyage-star",
+        musicTrackId: "aemeath-voyage-star-default"
+      },
+      selections: { skill: { aemeath: "aemeath-skill-default" } },
+      tracks: MUSIC_TRACKS
+    });
+
+    expect(track.id).toBe("aemeath-voyage-star-default");
   });
 
   it("applies display-name overrides without changing playback metadata", () => {
@@ -378,6 +424,45 @@ describe("background music library", () => {
     }).map((track) => track.id)).toEqual(["sigrika-skill-default"]);
   });
 
+  it("keeps Aemeath Voyage Star BGM fixed and selectable as a player skill music choice", () => {
+    expect(MUSIC_TRACKS["aemeath-voyage-star-default"]).toMatchObject({
+      type: "skill",
+      characterId: "aemeath",
+      effectType: "voyage-star",
+      defaultUnlocked: true,
+      purchasable: false,
+      playback: {
+        mode: "intro-loop",
+        introSrc: "/assets/music/lhl_intro_once.ogg",
+        loopSrc: "/assets/music/lhl_loop.ogg",
+        loop: true
+      }
+    });
+
+    expect(skillMusicOptionsForCharacter({
+      characterId: "aemeath",
+      tracks: MUSIC_TRACKS
+    }).map((track) => track.id)).toEqual([
+      "aemeath-skill-default",
+      "aemeath-voyage-star-default"
+    ]);
+  });
+
+  it("uses the fixed Voyage Star BGM before selected Aemeath skill music during skill preview", () => {
+    const track = resolveBackgroundMusic({
+      view: "room",
+      skillPreview: {
+        characterId: "aemeath",
+        effectType: "voyage-star",
+        musicTrackId: "aemeath-voyage-star-default"
+      },
+      selections: { skill: { aemeath: "aemeath-skill-default" } },
+      tracks: MUSIC_TRACKS
+    });
+
+    expect(track.id).toBe("aemeath-voyage-star-default");
+  });
+
   it("uses Sigrika replacement BGM for the purchasable Sigrika music option", () => {
     expect(MUSIC_TRACKS["sigrika-skill-dream"].playback).toMatchObject({
       mode: "intro-loop",
@@ -429,6 +514,33 @@ describe("background music library", () => {
     expect(characterId).toBe("denia");
   });
 
+  it("derives latest skill metadata from room history and player color", () => {
+    const preview = latestSkillPreview({
+      game: {
+        phase: "playing",
+        history: [
+          { type: "skill", color: "black", effectType: "base", musicTrackId: "aemeath-skill-default" },
+          {
+            type: "skill",
+            color: "white",
+            effectType: "voyage-star",
+            musicTrackId: "aemeath-voyage-star-default"
+          }
+        ]
+      },
+      players: [
+        { color: "black", characterId: "sigrika" },
+        { color: "white", character: { id: "aemeath" } }
+      ]
+    });
+
+    expect(preview).toEqual({
+      characterId: "aemeath",
+      effectType: "voyage-star",
+      musicTrackId: "aemeath-voyage-star-default"
+    });
+  });
+
   it("prioritizes a configured skill track over battle music", () => {
     const track = resolveBackgroundMusic({
       view: "room",
@@ -473,8 +585,30 @@ describe("background music library", () => {
     expect(resolveSkillVoice({ characterId: "aemeath" })).toBe("/assets/voice/aemeath_skill_cast.ogg");
   });
 
+  it("configures a dedicated Aemeath Voyage Star skill voice", () => {
+    expect(CHARACTER_SYSTEM_VOICES.aemeath[SYSTEM_VOICE_SKILL_EVENTS.voyageStarSkillCast]).toBe(
+      "/assets/voice/aemeath_skill_cast_voyage.ogg"
+    );
+  });
+
   it("uses the configured Nabomo skill voice", () => {
     expect(resolveSkillVoice({ characterId: "nabomo" })).toBe("/assets/voice/nabomo_skill_cast.ogg");
+  });
+
+  it("uses the configured Lynae skill voice", () => {
+    expect(resolveSkillVoice({ characterId: "lynae" })).toBe("/assets/voice/lynae_skill_cast.ogg");
+  });
+
+  it("uses the configured Changli skill voice", () => {
+    expect(resolveSkillVoice({ characterId: "changli" })).toBe("/assets/voice/changli_skill_cast.ogg");
+  });
+
+  it("uses the configured Chisa skill voice", () => {
+    expect(resolveSkillVoice({ characterId: "chisa" })).toBe("/assets/voice/chisa_skill_cast.ogg");
+  });
+
+  it("uses the configured Mornye skill voice", () => {
+    expect(resolveSkillVoice({ characterId: "mornye" })).toBe("/assets/voice/mornye_skill_cast.ogg");
   });
 
   it("uses the configured Baconbits skill voice", () => {
@@ -630,6 +764,92 @@ describe("background music library", () => {
     });
   });
 
+  it("includes Lynae character system voices", () => {
+    expect(CHARACTER_SYSTEM_VOICES.lynae).toMatchObject({
+      "game-start": "/assets/voice/lynae_match_start.ogg",
+      sortie: "/assets/voice/lynae_sortie.ogg",
+      "byo-yomi-start": "/assets/voice/lynae_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/lynae_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/lynae_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/lynae_countdown_10.ogg",
+      "countdown-9": "/assets/voice/lynae_countdown_9.ogg",
+      "countdown-8": "/assets/voice/lynae_countdown_8.ogg",
+      "countdown-7": "/assets/voice/lynae_countdown_7.ogg",
+      "countdown-6": "/assets/voice/lynae_countdown_6.ogg",
+      "countdown-5": "/assets/voice/lynae_countdown_5.ogg",
+      "countdown-4": "/assets/voice/lynae_countdown_4.ogg",
+      "countdown-3": "/assets/voice/lynae_countdown_3.ogg",
+      "countdown-2": "/assets/voice/lynae_countdown_2.ogg",
+      "countdown-1": "/assets/voice/lynae_countdown_1.ogg",
+      "result-victory": "/assets/voice/lynae_result_win.ogg",
+      "result-defeat": "/assets/voice/lynae_result_loss.ogg",
+      "result-draw": "/assets/voice/lynae_result_draw.ogg"
+    });
+  });
+
+  it("includes Changli character system voices with a Gomoku-specific start voice", () => {
+    expect(CHARACTER_SYSTEM_VOICES.changli).toMatchObject({
+      "game-start": "/assets/voice/changli_match_start.ogg",
+      [SYSTEM_VOICE_MODE_EVENTS.gomokuGameStart]: "/assets/voice/changli_wuzi_match_start.ogg",
+      sortie: "/assets/voice/changli_sortie.ogg",
+      "byo-yomi-start": "/assets/voice/changli_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/changli_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/changli_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/changli_countdown_10.ogg",
+      "countdown-9": "/assets/voice/changli_countdown_9.ogg",
+      "countdown-8": "/assets/voice/changli_countdown_8.ogg",
+      "countdown-7": "/assets/voice/changli_countdown_7.ogg",
+      "countdown-6": "/assets/voice/changli_countdown_6.ogg",
+      "countdown-5": "/assets/voice/changli_countdown_5.ogg",
+      "countdown-4": "/assets/voice/changli_countdown_4.ogg",
+      "countdown-3": "/assets/voice/changli_countdown_3.ogg",
+      "countdown-2": "/assets/voice/changli_countdown_2.ogg",
+      "countdown-1": "/assets/voice/changli_countdown_1.ogg",
+      "result-victory": "/assets/voice/changli_result_win.ogg",
+      "result-defeat": "/assets/voice/changli_result_loss.ogg",
+      "result-draw": "/assets/voice/changli_result_draw.ogg"
+    });
+  });
+
+  it("includes Chisa character system voices", () => {
+    expect(CHARACTER_SYSTEM_VOICES.chisa).toMatchObject({
+      "game-start": "/assets/voice/chisa_match_start.ogg",
+      sortie: "/assets/voice/chisa_sortie.ogg",
+      "byo-yomi-start": "/assets/voice/chisa_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/chisa_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/chisa_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/chisa_countdown_10.ogg",
+      "countdown-9": "/assets/voice/chisa_countdown_9.ogg",
+      "countdown-8": "/assets/voice/chisa_countdown_8.ogg",
+      "countdown-7": "/assets/voice/chisa_countdown_7.ogg",
+      "countdown-6": "/assets/voice/chisa_countdown_6.ogg",
+      "countdown-5": "/assets/voice/chisa_countdown_5.ogg",
+      "countdown-4": "/assets/voice/chisa_countdown_4.ogg",
+      "countdown-3": "/assets/voice/chisa_countdown_3.ogg",
+      "countdown-2": "/assets/voice/chisa_countdown_2.ogg",
+      "countdown-1": "/assets/voice/chisa_countdown_1.ogg",
+      "result-victory": "/assets/voice/chisa_result_win.ogg",
+      "result-defeat": "/assets/voice/chisa_result_loss.ogg",
+      "result-draw": "/assets/voice/chisa_result_draw.ogg"
+    });
+  });
+
+  it("includes Mornye character system voices with a detail voice", () => {
+    expect(CHARACTER_SYSTEM_VOICES.mornye).toMatchObject({
+      "game-start": "/assets/voice/mornye_match_start.ogg",
+      sortie: "/assets/voice/mornye_sortie.ogg",
+      "house-detail": "/assets/voice/mornye_detail.ogg",
+      "byo-yomi-start": "/assets/voice/mornye_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/mornye_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/mornye_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/mornye_countdown_10.ogg",
+      "countdown-1": "/assets/voice/mornye_countdown_1.ogg",
+      "result-victory": "/assets/voice/mornye_result_win.ogg",
+      "result-defeat": "/assets/voice/mornye_result_loss.ogg",
+      "result-draw": "/assets/voice/mornye_result_draw.ogg"
+    });
+  });
+
   it("merges Baconbits system voices with the skill voice bridge", () => {
     expect(characterVoiceMapForSkill().baconbits).toMatchObject({
       "game-start": "/assets/voice/baconbits_game_start.ogg",
@@ -642,5 +862,68 @@ describe("background music library", () => {
       "skill-cast": "/assets/voice/baconbits_skill_cast.ogg"
     });
     expect(characterVoiceMapForSkill().baconbits).not.toHaveProperty("timeout");
+  });
+
+  it("merges Lynae system voices with the skill voice bridge", () => {
+    expect(characterVoiceMapForSkill().lynae).toMatchObject({
+      "game-start": "/assets/voice/lynae_match_start.ogg",
+      sortie: "/assets/voice/lynae_sortie.ogg",
+      "byo-yomi-start": "/assets/voice/lynae_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/lynae_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/lynae_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/lynae_countdown_10.ogg",
+      "countdown-1": "/assets/voice/lynae_countdown_1.ogg",
+      "result-victory": "/assets/voice/lynae_result_win.ogg",
+      "result-defeat": "/assets/voice/lynae_result_loss.ogg",
+      "result-draw": "/assets/voice/lynae_result_draw.ogg",
+      "skill-cast": "/assets/voice/lynae_skill_cast.ogg"
+    });
+  });
+
+  it("merges Changli system voices with the skill voice bridge", () => {
+    expect(characterVoiceMapForSkill().changli).toMatchObject({
+      "game-start": "/assets/voice/changli_match_start.ogg",
+      [SYSTEM_VOICE_MODE_EVENTS.gomokuGameStart]: "/assets/voice/changli_wuzi_match_start.ogg",
+      sortie: "/assets/voice/changli_sortie.ogg",
+      "byo-yomi-start": "/assets/voice/changli_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/changli_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/changli_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/changli_countdown_10.ogg",
+      "countdown-1": "/assets/voice/changli_countdown_1.ogg",
+      "result-victory": "/assets/voice/changli_result_win.ogg",
+      "result-defeat": "/assets/voice/changli_result_loss.ogg",
+      "result-draw": "/assets/voice/changli_result_draw.ogg",
+      "skill-cast": "/assets/voice/changli_skill_cast.ogg"
+    });
+  });
+
+  it("merges Chisa system voices with the skill voice bridge", () => {
+    expect(characterVoiceMapForSkill().chisa).toMatchObject({
+      "game-start": "/assets/voice/chisa_match_start.ogg",
+      sortie: "/assets/voice/chisa_sortie.ogg",
+      "byo-yomi-start": "/assets/voice/chisa_byoyomi_start.ogg",
+      "byo-yomi-period-2": "/assets/voice/chisa_byoyomi_remaining_2.ogg",
+      "byo-yomi-period-1": "/assets/voice/chisa_byoyomi_remaining_1.ogg",
+      "countdown-10": "/assets/voice/chisa_countdown_10.ogg",
+      "countdown-1": "/assets/voice/chisa_countdown_1.ogg",
+      "result-victory": "/assets/voice/chisa_result_win.ogg",
+      "result-defeat": "/assets/voice/chisa_result_loss.ogg",
+      "result-draw": "/assets/voice/chisa_result_draw.ogg",
+      "skill-cast": "/assets/voice/chisa_skill_cast.ogg"
+    });
+  });
+
+  it("merges Mornye system voices with the skill voice bridge", () => {
+    expect(characterVoiceMapForSkill().mornye).toMatchObject({
+      "game-start": "/assets/voice/mornye_match_start.ogg",
+      sortie: "/assets/voice/mornye_sortie.ogg",
+      "house-detail": "/assets/voice/mornye_detail.ogg",
+      "countdown-10": "/assets/voice/mornye_countdown_10.ogg",
+      "countdown-1": "/assets/voice/mornye_countdown_1.ogg",
+      "result-victory": "/assets/voice/mornye_result_win.ogg",
+      "result-defeat": "/assets/voice/mornye_result_loss.ogg",
+      "result-draw": "/assets/voice/mornye_result_draw.ogg",
+      "skill-cast": "/assets/voice/mornye_skill_cast.ogg"
+    });
   });
 });

@@ -8,7 +8,8 @@ import {
   playVoiceSound,
   recoverBackgroundPlayback,
   resumeBackgroundContextWithFallback,
-  speakText
+  speakText,
+  stopVoicePlayback
 } from "./playback.jsx";
 
 describe("background music resume fallback", () => {
@@ -174,5 +175,35 @@ describe("background music resume fallback", () => {
     expect(played).toHaveLength(2);
     expect(played[0].pause).toHaveBeenCalledOnce();
     expect(played[1].pause).not.toHaveBeenCalled();
+  });
+
+  it("stops the active voice fallback and pending speech synthesis on request", async () => {
+    const played = [];
+    class FakeAudio {
+      constructor(src) {
+        this.src = src;
+        this.pause = vi.fn();
+        this.addEventListener = vi.fn();
+        played.push(this);
+      }
+
+      play() {
+        return Promise.resolve();
+      }
+    }
+    const speechSynthesis = { cancel: vi.fn() };
+    vi.stubGlobal("Audio", FakeAudio);
+    vi.stubGlobal("window", {
+      setTimeout: vi.fn((callback) => callback()),
+      speechSynthesis
+    });
+
+    playVoiceSound("/assets/voice/detail.ogg");
+    await Promise.resolve();
+    stopVoicePlayback();
+
+    expect(played).toHaveLength(1);
+    expect(played[0].pause).toHaveBeenCalledOnce();
+    expect(speechSynthesis.cancel).toHaveBeenCalledOnce();
   });
 });

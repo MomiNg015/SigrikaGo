@@ -1,4 +1,4 @@
-import { SYSTEM_VOICE_EVENTS, resolveVoiceSource } from "./systemVoices.js";
+import { SYSTEM_VOICE_EVENTS, SYSTEM_VOICE_MODE_EVENTS, SYSTEM_VOICE_SKILL_EVENTS, resolveVoiceSource } from "./systemVoices.js";
 import { canonicalCharacterId } from "./characterAliases.js";
 
 export const MUSIC_TYPES = {
@@ -16,6 +16,10 @@ export const CHARACTER_SKILL_VOICES = {
   aemeath: "/assets/voice/aemeath_skill_cast.ogg",
   nabomo: "/assets/voice/nabomo_skill_cast.ogg",
   baconbits: "/assets/voice/baconbits_skill_cast.ogg",
+  lynae: "/assets/voice/lynae_skill_cast.ogg",
+  changli: "/assets/voice/changli_skill_cast.ogg",
+  chisa: "/assets/voice/chisa_skill_cast.ogg",
+  mornye: "/assets/voice/mornye_skill_cast.ogg",
   qiuyuan: [
     "/assets/voice/qiuyuan_skill_cast.ogg",
     "/assets/voice/qiuyuan_skill_cast_1.ogg"
@@ -65,6 +69,7 @@ export const CHARACTER_SYSTEM_VOICES = {
   },
   aemeath: {
     [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/aemeath_match_start.ogg",
+    [SYSTEM_VOICE_SKILL_EVENTS.voyageStarSkillCast]: "/assets/voice/aemeath_skill_cast_voyage.ogg",
     [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/aemeath_sortie.ogg",
     [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/aemeath_byoyomi_start.ogg",
     [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/aemeath_byoyomi_remaining_2.ogg",
@@ -102,6 +107,88 @@ export const CHARACTER_SYSTEM_VOICES = {
     [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/nabomo_result_win.ogg",
     [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/nabomo_result_loss.ogg",
     [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/nabomo_result_draw.ogg"
+  },
+  lynae: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/lynae_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/lynae_sortie.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/lynae_byoyomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/lynae_byoyomi_remaining_2.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/lynae_byoyomi_remaining_1.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/lynae_countdown_10.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(9)]: "/assets/voice/lynae_countdown_9.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(8)]: "/assets/voice/lynae_countdown_8.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(7)]: "/assets/voice/lynae_countdown_7.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(6)]: "/assets/voice/lynae_countdown_6.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(5)]: "/assets/voice/lynae_countdown_5.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(4)]: "/assets/voice/lynae_countdown_4.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(3)]: "/assets/voice/lynae_countdown_3.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(2)]: "/assets/voice/lynae_countdown_2.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/lynae_countdown_1.ogg",
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/lynae_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/lynae_result_loss.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/lynae_result_draw.ogg"
+  },
+  changli: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/changli_match_start.ogg",
+    [SYSTEM_VOICE_MODE_EVENTS.gomokuGameStart]: "/assets/voice/changli_wuzi_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/changli_sortie.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/changli_byoyomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/changli_byoyomi_remaining_2.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/changli_byoyomi_remaining_1.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/changli_countdown_10.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(9)]: "/assets/voice/changli_countdown_9.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(8)]: "/assets/voice/changli_countdown_8.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(7)]: "/assets/voice/changli_countdown_7.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(6)]: "/assets/voice/changli_countdown_6.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(5)]: "/assets/voice/changli_countdown_5.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(4)]: "/assets/voice/changli_countdown_4.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(3)]: "/assets/voice/changli_countdown_3.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(2)]: "/assets/voice/changli_countdown_2.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/changli_countdown_1.ogg",
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/changli_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/changli_result_loss.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/changli_result_draw.ogg"
+  },
+  chisa: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/chisa_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/chisa_sortie.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/chisa_byoyomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/chisa_byoyomi_remaining_2.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/chisa_byoyomi_remaining_1.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/chisa_countdown_10.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(9)]: "/assets/voice/chisa_countdown_9.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(8)]: "/assets/voice/chisa_countdown_8.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(7)]: "/assets/voice/chisa_countdown_7.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(6)]: "/assets/voice/chisa_countdown_6.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(5)]: "/assets/voice/chisa_countdown_5.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(4)]: "/assets/voice/chisa_countdown_4.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(3)]: "/assets/voice/chisa_countdown_3.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(2)]: "/assets/voice/chisa_countdown_2.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/chisa_countdown_1.ogg",
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/chisa_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/chisa_result_loss.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/chisa_result_draw.ogg"
+  },
+  mornye: {
+    [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/mornye_match_start.ogg",
+    [SYSTEM_VOICE_EVENTS.sortie]: "/assets/voice/mornye_sortie.ogg",
+    [SYSTEM_VOICE_EVENTS.houseDetail]: "/assets/voice/mornye_detail.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiStart]: "/assets/voice/mornye_byoyomi_start.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod2]: "/assets/voice/mornye_byoyomi_remaining_2.ogg",
+    [SYSTEM_VOICE_EVENTS.byoYomiPeriod1]: "/assets/voice/mornye_byoyomi_remaining_1.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(10)]: "/assets/voice/mornye_countdown_10.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(9)]: "/assets/voice/mornye_countdown_9.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(8)]: "/assets/voice/mornye_countdown_8.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(7)]: "/assets/voice/mornye_countdown_7.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(6)]: "/assets/voice/mornye_countdown_6.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(5)]: "/assets/voice/mornye_countdown_5.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(4)]: "/assets/voice/mornye_countdown_4.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(3)]: "/assets/voice/mornye_countdown_3.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(2)]: "/assets/voice/mornye_countdown_2.ogg",
+    [SYSTEM_VOICE_EVENTS.countdown(1)]: "/assets/voice/mornye_countdown_1.ogg",
+    [SYSTEM_VOICE_EVENTS.resultVictory]: "/assets/voice/mornye_result_win.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDefeat]: "/assets/voice/mornye_result_loss.ogg",
+    [SYSTEM_VOICE_EVENTS.resultDraw]: "/assets/voice/mornye_result_draw.ogg"
   },
   baconbits: {
     [SYSTEM_VOICE_EVENTS.gameStart]: "/assets/voice/baconbits_game_start.ogg",
@@ -174,6 +261,16 @@ export const MUSIC_TRACKS = {
     characterId: "aemeath",
     defaultUnlocked: true,
     purchasable: false,
+    playback: introLoop("/assets/music/aemeath0_once.ogg", "/assets/music/aemeath0_loop.ogg")
+  },
+  "aemeath-voyage-star-default": {
+    id: "aemeath-voyage-star-default",
+    name: "Aemeath Voyage Star BGM",
+    type: MUSIC_TYPES.skill,
+    characterId: "aemeath",
+    effectType: "voyage-star",
+    defaultUnlocked: true,
+    purchasable: false,
     playback: introLoop("/assets/music/lhl_intro_once.ogg", "/assets/music/lhl_loop.ogg")
   },
   "baconbits-skill-default": {
@@ -202,6 +299,15 @@ export const MUSIC_TRACKS = {
     defaultUnlocked: true,
     purchasable: false,
     playback: introLoop("/assets/music/qiuyuan_intro_once.ogg", "/assets/music/qiuyuan_loop.ogg")
+  },
+  "qiuyuan-skill-zhouwo": {
+    id: "qiuyuan-skill-zhouwo",
+    name: "肘我",
+    type: MUSIC_TYPES.skill,
+    characterId: "qiuyuan",
+    defaultUnlocked: false,
+    purchasable: true,
+    playback: { mode: "single-loop", src: "/assets/music/qiuyuan_zhouwo_loop.ogg", loop: true }
   },
   "lynae-skill-default": {
     id: "lynae-skill-default",
@@ -304,6 +410,7 @@ export function skillMusicOptionsForCharacter({ characterId, ownedMusicIds = nul
   return Object.values(tracks).filter((track) => (
     isUsableTrack(track, MUSIC_TYPES.skill, ownedMusicIds)
     && canonicalCharacterId(track.characterId) === normalizedCharacterId
+    && track.selectable !== false
   ));
 }
 
@@ -331,6 +438,7 @@ export function resolveSkillMusicTrack({
 export function resolveBackgroundMusic({
   view,
   skillPreview = null,
+  latestSkillPreview = null,
   latestSkillCharacterId = null,
   gamePhase = null,
   matchSuccess = false,
@@ -344,6 +452,11 @@ export function resolveBackgroundMusic({
 
   if (view === "room" && skillPreview) {
     const skillTrack = findSkillTrack(skillPreview, tracks, selections, ownedMusicIds);
+    if (skillTrack) return skillTrack;
+  }
+
+  if (view === "room" && gamePhase !== "finished" && latestSkillPreview) {
+    const skillTrack = findSkillTrack(latestSkillPreview, tracks, selections, ownedMusicIds);
     if (skillTrack) return skillTrack;
   }
 
@@ -364,11 +477,21 @@ export function resolveBackgroundMusic({
 }
 
 export function latestSkillCharacterId(room) {
+  return latestSkillPreview(room)?.characterId ?? null;
+}
+
+export function latestSkillPreview(room) {
   if (!room?.game || room.game.phase === "finished") return null;
   const latestSkill = [...(room.game.history ?? [])].reverse().find((entry) => entry.type === "skill");
   if (!latestSkill) return null;
   const player = (room.players ?? []).find((candidate) => candidate.color === latestSkill.color);
-  return canonicalCharacterId(player?.character?.id ?? player?.characterId ?? null);
+  const characterId = canonicalCharacterId(player?.character?.id ?? player?.characterId ?? latestSkill.characterId ?? null);
+  if (!characterId) return null;
+  return {
+    characterId,
+    ...(latestSkill.effectType ? { effectType: latestSkill.effectType } : {}),
+    ...(latestSkill.musicTrackId ? { musicTrackId: latestSkill.musicTrackId } : {})
+  };
 }
 
 export function resolveResultSound(room, user) {
@@ -406,6 +529,13 @@ export function characterVoiceMapForSkill(voices = CHARACTER_SKILL_VOICES, syste
 function findSkillTrack(skillPreview, tracks, selections = {}, ownedMusicIds = null) {
   const characterId = canonicalCharacterId(skillPreview?.characterId ?? skillPreview?.character?.id);
   if (!characterId) return null;
+  const fixedTrack = skillPreview?.musicTrackId ? tracks[skillPreview.musicTrackId] : null;
+  if (
+    isUsableTrack(fixedTrack, MUSIC_TYPES.skill, null)
+    && canonicalCharacterId(fixedTrack.characterId) === characterId
+  ) {
+    return fixedTrack;
+  }
   return resolveSkillMusicTrack({ characterId, selections, ownedMusicIds, tracks });
 }
 

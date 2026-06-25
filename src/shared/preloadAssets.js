@@ -77,6 +77,12 @@ export function battlePreloadAssets({
   const skillTracks = characterIds
     .map((characterId) => resolveSkillMusicTrack({ characterId, tracks }))
     .filter(Boolean);
+  const derivedSkillTracks = characterIds
+    .flatMap((characterId) => Object.values(tracks ?? {}).filter((track) => (
+      track?.type === MUSIC_TYPES.skill
+      && track.effectType
+      && canonicalCharacterId(track.characterId) === characterId
+    )));
   const battleTracks = Object.values(tracks ?? {}).filter((track) => track?.type === MUSIC_TYPES.battle);
 
   const criticalImages = compactUnique([
@@ -88,6 +94,7 @@ export function battlePreloadAssets({
     ...RUNTIME_AUDIO_ASSETS.interaction,
     ...battleTracks.flatMap((track) => playbackAssetSources(track.playback)),
     ...skillTracks.flatMap((track) => playbackAssetSources(track.playback)),
+    ...derivedSkillTracks.flatMap((track) => playbackAssetSources(track.playback)),
     ...characterIds.flatMap((characterId) => voiceSourceCandidates(skillVoices?.[characterId])),
     ...characterIds.flatMap((characterId) => Object.values(systemVoices?.[characterId] ?? {}).flatMap(voiceSourceCandidates))
   ]);

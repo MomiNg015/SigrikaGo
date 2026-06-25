@@ -40,6 +40,10 @@ export function playSkillEffectSound(effectType, cue, audioSettings = DEFAULT_AU
     playPhoenixFireSound(context, cue, volume, now);
     return;
   }
+  if (effectType === "voyage-star") {
+    playVoyageStarSound(context, cue, volume, now);
+    return;
+  }
   if (effectType === "row-slash") {
     playSlashSound(context, cue, volume, now);
   }
@@ -145,6 +149,20 @@ function playPhoenixFireSound(context, cue, volume, now) {
     scheduleTone(context, { type: "sawtooth", frequency: 156, endFrequency: 52, start: now, length: 0.34, volume: 0.18 * volume });
     scheduleNoise(context, { start: now, length: 0.4, volume: 0.2 * volume, lowpass: 900 });
     scheduleNoise(context, { start: now + 0.08, length: 0.18, volume: 0.08 * volume, highpass: 1600 });
+  }
+}
+
+function playVoyageStarSound(context, cue, volume, now) {
+  if (cue === SKILL_EFFECT_SOUND_TYPES.start) {
+    scheduleTone(context, { type: "triangle", frequency: 980, endFrequency: 420, start: now, length: 0.36, volume: 0.1 * volume });
+    scheduleTone(context, { type: "sine", frequency: 1960, endFrequency: 2460, start: now + 0.08, length: 0.22, volume: 0.06 * volume });
+    scheduleNoise(context, { start: now + 0.03, length: 0.3, volume: 0.08 * volume, highpass: 1600 });
+    return;
+  }
+  if (cue === SKILL_EFFECT_SOUND_TYPES.impact) {
+    scheduleTone(context, { type: "sawtooth", frequency: 220, endFrequency: 58, start: now, length: 0.34, volume: 0.19 * volume });
+    scheduleTone(context, { type: "sine", frequency: 2440, endFrequency: 1220, start: now + 0.02, length: 0.18, volume: 0.08 * volume });
+    scheduleNoise(context, { start: now, length: 0.34, volume: 0.2 * volume, highpass: 1100 });
   }
 }
 

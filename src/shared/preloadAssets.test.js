@@ -42,8 +42,10 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalImages).toContain("/assets/home/book-entry.webp");
     expect(assets.criticalImages).toContain("/assets/home/multipurpose-classroom-bg.webp");
     expect(assets.images).toContain("/assets/zahiya_shop.webp");
+    expect(assets.images).toContain("/assets/items/qiuyuan-zhouwo.webp");
     expect(assets.images).toContain("/assets/items/rainbow-bean-candy.webp");
     expect(assets.deferredImages).toContain("/assets/zahiya_shop.webp");
+    expect(assets.deferredImages).toContain("/assets/items/qiuyuan-zhouwo.webp");
     expect(assets.deferredImages).toContain("/assets/items/rainbow-bean-candy.webp");
     expect(assets.images).toContain("/assets/effects/denia-bubble-pop.webp");
     expect(assets.images).toContain("/assets/boards/nabomo-color-illusion-board.webp");
@@ -65,9 +67,12 @@ describe("deployment preload asset helpers", () => {
     expect(assets.audio).toContain("/assets/music/main_bgm.ogg");
     expect(assets.audio).toContain("/assets/music/shanjifu_loop.ogg");
     expect(assets.audio).toContain("/assets/music/bgm_intro_once.ogg");
+    expect(assets.audio).toContain("/assets/music/aemeath0_loop.ogg");
+    expect(assets.audio).toContain("/assets/music/lhl_loop.ogg");
     expect(assets.audio).toContain("/assets/music/sigrika_loop.ogg");
     expect(assets.audio).toContain("/assets/music/busizhe_loop.ogg");
     expect(assets.audio).toContain("/assets/music/qiuyuan_loop.ogg");
+    expect(assets.audio).toContain("/assets/music/qiuyuan_zhouwo_loop.ogg");
     expect(assets.audio).toContain("/assets/music/lynae_loop.ogg");
     expect(assets.audio).toContain("/assets/music/chisa_loop.ogg");
     expect(assets.audio).toContain("/assets/music/changli_loop.ogg");
@@ -75,6 +80,7 @@ describe("deployment preload asset helpers", () => {
     expect(assets.deferredAudio).toContain("/assets/music/main_bgm.ogg");
     expect(assets.deferredAudio).toContain("/assets/music/shanjifu_loop.ogg");
     expect(assets.deferredAudio).toContain("/assets/music/qiuyuan_loop.ogg");
+    expect(assets.deferredAudio).toContain("/assets/music/qiuyuan_zhouwo_loop.ogg");
     expect(assets.deferredAudio).toContain("/assets/music/lynae_loop.ogg");
     expect(assets.deferredAudio).toContain("/assets/music/chisa_loop.ogg");
     expect(assets.deferredAudio).toContain("/assets/music/changli_loop.ogg");
@@ -86,6 +92,10 @@ describe("deployment preload asset helpers", () => {
     expect(assets.audio).toContain("/assets/voice/qiuyuan_skill_cast_1.ogg");
     expect(assets.deferredAudio).toContain("/assets/voice/qiuyuan_skill_cast.ogg");
     expect(assets.deferredAudio).toContain("/assets/voice/qiuyuan_skill_cast_1.ogg");
+    expect(assets.audio).toContain("/assets/voice/changli_skill_cast.ogg");
+    expect(assets.audio).toContain("/assets/voice/changli_wuzi_match_start.ogg");
+    expect(assets.audio).toContain("/assets/voice/chisa_skill_cast.ogg");
+    expect(assets.audio).toContain("/assets/voice/chisa_countdown_10.ogg");
     expect(assets.audio).toContain("/assets/voice/baconbits_result_win.ogg");
     expect(assets.audio).toContain("/assets/voice/baconbits_result_loss.ogg");
     expect(assets.audio).toContain("/assets/voice/sigrika_countdown_10.ogg");
@@ -127,7 +137,28 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.effects));
     expect(assets.criticalAudio).toContain("/assets/music/changli_loop.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/busizhe_loop.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/changli_skill_cast.ogg");
+    expect(assets.criticalAudio).toContain("/assets/voice/changli_wuzi_match_start.ogg");
     expect(assets.criticalAudio).toContain("/assets/voice/nabomo_skill_cast.ogg");
+  });
+
+  it("preloads derived skill tracks for matching room characters even when selectable", () => {
+    const assets = battlePreloadAssets({
+      room: { players: [{ characterId: "aemeath" }] },
+      characters: { aemeath: { id: "aemeath", portrait: "/assets/Aemeath_centered.webp" } },
+      tracks: {
+        ...MUSIC_TRACKS,
+        "aemeath-voyage-star-default": {
+          ...MUSIC_TRACKS["aemeath-voyage-star-default"],
+          selectable: true,
+          playback: { mode: "single-loop", src: "/assets/music/voyage-star-test.ogg", loop: true }
+        }
+      },
+      skillVoices: {},
+      systemVoices: {}
+    });
+
+    expect(assets.criticalAudio).toContain("/assets/music/voyage-star-test.ogg");
   });
 
   it("includes every configured skill voice candidate in battle preload assets", () => {
