@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Archive, CheckCircle2, Coins, Gift, MailOpen, Trash2, X } from "lucide-react";
 import { api } from "../api/client.js";
 
@@ -11,10 +11,10 @@ export default function MailboxModal({
   onSummaryChange,
   onUserChange
 }) {
-  const [messages, setMessages] = useState(initialMessages);
+  const [messages, setMessages] = useState(() => sortMailboxMessages(initialMessages));
   const [loaded, setLoaded] = useState(initialLoaded);
   const [error, setError] = useState("");
-  const [selectedId, setSelectedId] = useState(initialMessages[0]?.id ?? "");
+  const [selectedId, setSelectedId] = useState(() => sortMailboxMessages(initialMessages)[0]?.id ?? "");
   const [busyId, setBusyId] = useState("");
   const selected = useMemo(
     () => messages.find((message) => message.id === selectedId) ?? messages[0] ?? null,
@@ -27,7 +27,7 @@ export default function MailboxModal({
     setError("");
     try {
       const data = await api("/api/mailbox", { token });
-      const nextMessages = data.messages ?? [];
+      const nextMessages = sortMailboxMessages(data.messages ?? []);
       setMessages(nextMessages);
       setSelectedId((current) => nextMessages.some((message) => message.id === current) ? current : nextMessages[0]?.id ?? "");
       setLoaded(true);
@@ -83,10 +83,7 @@ export default function MailboxModal({
     <div className="modal-backdrop mailbox-backdrop" onClick={onClose}>
       <section className="modal-panel mailbox-modal" onClick={(event) => event.stopPropagation()} aria-label="邮箱">
         <header className="mailbox-header">
-          <div>
-            <p>MAILBOX</p>
-            <h2>邮箱</h2>
-          </div>
+          <h2>邮箱</h2>
           <button className="close-button" type="button" aria-label="关闭邮箱" onClick={onClose}>
             <X size={20} />
           </button>
@@ -102,7 +99,7 @@ export default function MailboxModal({
             )}
             {messages.map((message) => (
               <button
-                className={`mailbox-list-item ${selected?.id === message.id ? "active" : ""} ${message.isRead ? "is-read" : "is-unread"}`}
+                className={`mailbox-list-item ${selected?.id === message.id ? "active" : ""} ${mailboxMessageStateClass(message)}`}
                 type="button"
                 key={message.id}
                 onClick={() => {
@@ -115,6 +112,7 @@ export default function MailboxModal({
                 <span className="mailbox-list-status">
                   {!message.isRead && <b>未读</b>}
                   {message.claimable && <b>待领取</b>}
+                  {message.isRead && !message.claimable && <b>已完成</b>}
                 </span>
               </button>
             ))}
@@ -122,12 +120,23 @@ export default function MailboxModal({
 
           {selected ? (
             <article className="mailbox-detail">
-              <span className="mailbox-detail-time">{formatDateTime(selected.createdAt)}</span>
+              <div className="mailbox-detail-topline">
+                <span className="mailbox-detail-time">{formatDateTime(selected.createdAt)}</span>
+                <button
+                  className="mailbox-delete-button"
+                  type="button"
+                  disabled={!selected.deletable || busyId === selected.id}
+                  onClick={() => remove(selected)}
+                  aria-label={selected.deletable ? "删除邮件" : "请先领取附件"}
+                >
+                  <Trash2 size={19} />
+                </button>
+              </div>
               <h3>{selected.title}</h3>
               <p className="mailbox-body">{selected.body}</p>
               <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
-              <div className="mailbox-actions">
-                {hasAttachment(selected.attachment) && (
+              {hasAttachment(selected.attachment) && (
+                <div className="mailbox-actions">
                   <button
                     className="primary-action"
                     type="button"
@@ -137,18 +146,8 @@ export default function MailboxModal({
                     {selected.claimable ? <Gift size={18} /> : <CheckCircle2 size={18} />}
                     {selected.claimable ? "领取附件" : "已领取"}
                   </button>
-                )}
-                <button
-                  className="secondary-action"
-                  type="button"
-                  disabled={!selected.deletable || busyId === selected.id}
-                  onClick={() => remove(selected)}
-                  title={selected.deletable ? "删除邮件" : "请先领取附件"}
-                >
-                  <Trash2 size={18} />
-                  删除
-                </button>
-              </div>
+                </div>
+              )}
             </article>
           ) : (
             <article className="mailbox-detail mailbox-detail-empty" aria-live="polite">
@@ -160,6 +159,16 @@ export default function MailboxModal({
       </section>
     </div>
   );
+}
+
+function mailboxMessageStateClass(message) {
+  if (!message.isRead) return "state-new";
+  if (message.claimable) return "state-claimable";
+  return "state-done";
+}
+
+function sortMailboxMessages(messages) {
+  return [...messages].sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime());
 }
 
 function AttachmentView({ attachment, claimable }) {

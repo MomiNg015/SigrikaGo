@@ -46,9 +46,16 @@
 .recruitment-empty-board,
 .recruitment-selection-card,
 .recruitment-status-card,
+.recruitment-pending-panel,
 .recruitment-result-card {
   position: relative;
   z-index: 1;
+}
+
+.recruitment-empty-board,
+.recruitment-selection-card,
+.recruitment-status-card,
+.recruitment-result-card {
   width: min(620px, calc(100% - 28px));
   min-height: 180px;
   display: grid;
@@ -70,6 +77,66 @@
   animation: recruitment-paper-pop 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.recruitment-selection-card,
+.recruitment-status-card {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.recruitment-selection-card > div,
+.recruitment-status-card > div,
+.recruitment-pending-panel > div,
+.recruitment-result-card > div {
+  position: relative;
+  z-index: 2;
+}
+
+.recruitment-pending-panel {
+  width: min(620px, calc(100% - 28px));
+  min-height: 180px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  padding: clamp(16px, 3vw, 24px);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.recruitment-ready-card {
+  place-items: center;
+  text-align: center;
+}
+
+.recruitment-ready-card .primary-action {
+  min-height: 58px;
+  display: inline-grid;
+  place-items: center;
+  padding-inline: clamp(18px, 4vw, 34px);
+  white-space: normal;
+}
+
+.recruitment-item-watermark {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.recruitment-item-watermark-art {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 82%;
+  height: 136%;
+  color: #3d2b25;
+  opacity: 0.3;
+  transform: translate(-50%, -50%) rotate(20deg) scale(1.04);
+  transform-origin: center;
+}
+
 .recruitment-empty-board::before,
 .recruitment-selection-card::before,
 .recruitment-status-card::before,
@@ -87,7 +154,6 @@
   transform: rotate(-5deg);
 }
 
-.recruitment-board-ready .recruitment-status-card::after,
 .recruitment-result-miss::after {
   content: "";
   position: absolute;
@@ -127,6 +193,7 @@
 
 .recruitment-selection-card strong,
 .recruitment-status-card strong,
+.recruitment-pending-panel strong,
 .recruitment-result-card strong {
   display: block;
   margin-bottom: 6px;
@@ -142,7 +209,7 @@
   width: 120px;
   height: 150px;
   object-fit: contain;
-  align-self: end;
+  align-self: center;
   filter: drop-shadow(3px 5px 0 rgba(61, 43, 37, 0.22));
 }
 

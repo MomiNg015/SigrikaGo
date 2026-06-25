@@ -1,7 +1,25 @@
 import { useState } from "react";
 import { Bell, Info, Mic2, Music, Palette, Volume2, X } from "lucide-react";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
-import { DEFAULT_VISUAL_THEME, VISUAL_THEMES } from "../app/visualTheme.js";
+import { DEFAULT_VISUAL_THEME } from "../app/visualTheme.js";
+
+const THEME_CHOICES = [
+  {
+    id: "bright-school",
+    label: "\u6ca1\u7ecf\u8d39\u7684\u7b80\u6734\u56f4\u68cb\u90e8\u98ce\u683c",
+    available: true
+  },
+  {
+    id: "club-standard",
+    label: "\u4e2d\u89c4\u4e2d\u77e9\u7684\u56f4\u68cb\u90e8\u98ce\u683c",
+    available: false
+  },
+  {
+    id: "motari-luxury",
+    label: "\u83ab\u5854\u91cc\u5bb6\u65cf\u8d5e\u52a9\u7684\u5962\u534e\u98ce\u683c",
+    available: false
+  }
+];
 
 export default function SettingsModal({
   siteSettings = DEFAULT_SITE_SETTINGS,
@@ -9,6 +27,7 @@ export default function SettingsModal({
   setAudioSettings,
   visualTheme = DEFAULT_VISUAL_THEME,
   setVisualTheme = () => {},
+  onNotice = () => {},
   onClose
 }) {
   const [tab, setTab] = useState("audio");
@@ -21,7 +40,10 @@ export default function SettingsModal({
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <section className="settings-modal settings-modal-content" onClick={(event) => event.stopPropagation()}>
+      <section
+        className={`settings-modal settings-modal-content settings-tab-${tab}`}
+        onClick={(event) => event.stopPropagation()}
+      >
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <h2>{"\u8bbe\u7f6e"}</h2>
         <div className="settings-tabs" role="tablist">
@@ -75,21 +97,32 @@ export default function SettingsModal({
         )}
         {tab === "theme" && (
           <div className="settings-panel settings-modal-content theme-settings-panel">
-            <div className="theme-choice-group">
-              <span className="theme-choice-heading"><Palette size={14} />{"\u9875\u9762\u98ce\u683c"}</span>
-              <div className="theme-choice-grid">
-                {VISUAL_THEMES.map((theme) => (
+            <div className="theme-choice-grid" aria-label={"\u754c\u9762\u4e3b\u9898"}>
+              {THEME_CHOICES.map((theme) => {
+                const active = theme.available && visualTheme === theme.id;
+
+                return (
                   <button
                     type="button"
                     key={theme.id}
-                    className={`theme-choice-button ${visualTheme === theme.id ? "active" : ""}`}
-                    onClick={() => setVisualTheme(theme.id)}
+                    className={[
+                      "theme-choice-button",
+                      active ? "active" : "",
+                      theme.available ? "" : "is-future"
+                    ].filter(Boolean).join(" ")}
+                    aria-pressed={active}
+                    onClick={() => {
+                      if (theme.available) {
+                        setVisualTheme(theme.id);
+                        return;
+                      }
+                      onNotice("\u656c\u8bf7\u671f\u5f85~", "success");
+                    }}
                   >
-                    <strong>{theme.name}</strong>
-                    <span>{theme.description}</span>
+                    <strong>{theme.label}</strong>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
         )}

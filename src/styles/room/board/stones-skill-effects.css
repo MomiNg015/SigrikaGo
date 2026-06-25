@@ -103,6 +103,38 @@
   pointer-events: none;
 }
 
+.voyage-star-crater-mark {
+  position: absolute;
+  left: var(--voyage-star-crater-x, 50%);
+  top: var(--voyage-star-crater-y, 50%);
+  width: calc(350% / var(--size));
+  height: calc(350% / var(--size));
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  pointer-events: none;
+  background: center / contain no-repeat url("/assets/effects/voyage-star-crater.webp");
+  filter:
+    drop-shadow(0 0 2px rgba(255, 145, 255, 0.92))
+    drop-shadow(0 0 6px rgba(205, 74, 255, 0.72))
+    drop-shadow(0 0 10px rgba(92, 214, 255, 0.28));
+  animation: voyage-star-crater-aura 1.85s ease-in-out infinite alternate;
+}
+
+@keyframes voyage-star-crater-aura {
+  from {
+    filter:
+      drop-shadow(0 0 2px rgba(255, 145, 255, 0.78))
+      drop-shadow(0 0 5px rgba(205, 74, 255, 0.56))
+      drop-shadow(0 0 8px rgba(92, 214, 255, 0.22));
+  }
+  to {
+    filter:
+      drop-shadow(0 0 3px rgba(255, 170, 255, 1))
+      drop-shadow(0 0 8px rgba(214, 92, 255, 0.76))
+      drop-shadow(0 0 13px rgba(92, 214, 255, 0.34));
+  }
+}
+
 .protocol-ban-mark {
   position: absolute;
   left: 50%;

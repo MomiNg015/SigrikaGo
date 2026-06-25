@@ -1,6 +1,9 @@
-.recruitment-status-card b {
+.recruitment-status-card b,
+.recruitment-pending-panel b {
   position: relative;
   z-index: 1;
+  background: transparent;
+  box-shadow: none;
   color: #55f2b8;
   font-family: "Courier New", Consolas, monospace;
   font-size: clamp(2.1rem, 5.2vw, 3.6rem);
@@ -24,6 +27,9 @@
   align-items: center;
   gap: 10px;
   margin-top: 8px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .recruitment-countdown-row.has-fast-forward {

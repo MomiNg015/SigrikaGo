@@ -32,7 +32,12 @@
   }
 
   .mobile-room-screen .mobile-tab-panel .test-tools {
-    display: none;
+    grid-column: 1 / -1;
+    display: inline-flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px;
   }
 
   .mobile-room-screen .mobile-tab-panel .action-bar {
@@ -61,6 +66,12 @@
     grid-template-rows: 1fr;
     padding: 6px;
     gap: 4px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .test-tools button {
+    flex: 1 1 96px;
+    width: auto;
+    min-width: 0;
   }
 
   .mobile-room-screen .mobile-tab-panel .action-bar .exit-action {

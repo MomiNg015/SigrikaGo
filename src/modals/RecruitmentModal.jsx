@@ -106,7 +106,7 @@ function IdleBoard({ selectedItem }) {
   }
   return (
     <section className="recruitment-selection-card">
-      <RecruitmentItemIcon item={selectedItem} large />
+      <RecruitmentItemWatermark item={selectedItem} />
       <div>
         <strong>{selectedItem.name}</strong>
         <span>{selectedItem.scopeLabel}</span>
@@ -118,8 +118,8 @@ function IdleBoard({ selectedItem }) {
 
 function PendingBoard({ task, busy, canFastForward, onFastForward }) {
   return (
-    <section className="recruitment-status-card">
-      <RecruitmentItemIcon item={task} large />
+    <section className="recruitment-pending-panel">
+      <RecruitmentItemWatermark item={task} />
       <div>
         <strong>{task.itemName}</strong>
         <div className={`recruitment-countdown-row ${canFastForward ? "has-fast-forward" : ""}`}>
@@ -144,12 +144,11 @@ function PendingBoard({ task, busy, canFastForward, onFastForward }) {
 
 function ReadyBoard({ task, busy, onClaim }) {
   return (
-    <section className="recruitment-status-card">
-      <RecruitmentItemIcon item={task} large />
+    <section className="recruitment-status-card recruitment-ready-card">
+      <RecruitmentItemWatermark item={task} />
       <div>
-        <strong>{task.itemName}</strong>
         <button className="primary-action" type="button" disabled={busy} onClick={onClaim}>
-          查看招新回应
+          瞧瞧有没有新部员！
         </button>
       </div>
     </section>
@@ -182,6 +181,47 @@ function ResultBoard({ result, task, characters }) {
 function RecruitmentItemIcon({ item, large = false }) {
   const isRadio = String(item?.itemType ?? "").includes("radio");
   const className = `recruitment-item-icon ${large ? "large" : ""}`;
-  if (item?.imageUrl) return <img className={className} src={item.imageUrl} alt="" loading="lazy" decoding="async" />;
+  const imageUrl = recruitmentItemImageUrl(item);
+  if (imageUrl) return <img className={className} src={imageUrl} alt="" loading="lazy" decoding="async" />;
   return <span className={className} aria-hidden="true">{isRadio ? <Radio size={large ? 36 : 22} /> : <ClipboardList size={large ? 36 : 22} />}</span>;
+}
+
+function RecruitmentItemWatermark({ item }) {
+  const imageUrl = recruitmentItemImageUrl(item);
+  if (!imageUrl) return null;
+  const isRadio = String(item?.itemType ?? "").includes("radio");
+  return (
+    <span className="recruitment-item-watermark" aria-hidden="true">
+      {isRadio ? <RadioWatermarkIcon /> : <PosterWatermarkIcon />}
+    </span>
+  );
+}
+
+function recruitmentItemImageUrl(item) {
+  return String(item?.imageUrl || item?.itemImageUrl || "").trim();
+}
+
+function PosterWatermarkIcon() {
+  return (
+    <svg className="recruitment-item-watermark-art" viewBox="0 0 128 128" focusable="false">
+      <rect x="26" y="12" width="76" height="104" rx="10" fill="none" stroke="currentColor" strokeWidth="6" />
+      <path d="M38 34h52M38 50h44M38 66h52" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+      <circle cx="48" cy="88" r="8" fill="none" stroke="currentColor" strokeWidth="5" />
+      <path d="M64 88h26" stroke="#ef8fa8" strokeWidth="8" strokeLinecap="round" />
+      <path d="M94 14l12 13-14 3" fill="none" stroke="currentColor" strokeWidth="5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function RadioWatermarkIcon() {
+  return (
+    <svg className="recruitment-item-watermark-art" viewBox="0 0 128 128" focusable="false">
+      <rect x="18" y="34" width="92" height="60" rx="14" fill="none" stroke="currentColor" strokeWidth="6" />
+      <path d="M34 34l-8-18M94 34l12-18" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+      <circle cx="48" cy="64" r="16" fill="none" stroke="currentColor" strokeWidth="6" />
+      <circle cx="48" cy="64" r="5" fill="currentColor" />
+      <path d="M74 56h18M74 72h12" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+      <path d="M102 48c9 4 12 13 0 18" fill="none" stroke="#ef8fa8" strokeWidth="5" strokeLinecap="round" />
+    </svg>
+  );
 }

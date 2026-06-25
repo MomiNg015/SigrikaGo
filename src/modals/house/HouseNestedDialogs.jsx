@@ -1,11 +1,22 @@
 import { X } from "lucide-react";
 import { CharacterMusicPreview } from "../../audio/CharacterMusicPreview.jsx";
+import { derivedSkillDefinitionsFromSkill } from "../../shared/derivedSkills.js";
 import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../shared/musicLibrary.js";
 import { ReplayList } from "../ReplayList.jsx";
 import { characterRecordColumns } from "../UserProfileCard.jsx";
 import { characterCandyPortrait } from "./houseStats.js";
 
-export function CharacterDetailDialog({ character, detailOwned, itemEffects, user, audioSettings, musicTracks, onSelectCharacterMusic, onClose }) {
+export function CharacterDetailDialog({
+  character,
+  detailOwned,
+  itemEffects,
+  user,
+  audioSettings,
+  musicTracks,
+  onSelectCharacterMusic,
+  onPlayDetailVoice,
+  onClose
+}) {
   if (!character) return null;
   const musicOptions = skillMusicOptionsForCharacter({
     characterId: character.id,
@@ -18,6 +29,7 @@ export function CharacterDetailDialog({ character, detailOwned, itemEffects, use
     ownedMusicIds: user?.ownedMusicIds,
     tracks: musicTracks
   });
+  const derivedSkills = derivedSkillDefinitionsFromSkill(character.skill);
   const handleMusicChange = (trackId) => onSelectCharacterMusic?.({ characterId: character.id, trackId });
   return (
     <div className="nested-modal-backdrop" onClick={onClose}>
@@ -40,8 +52,28 @@ export function CharacterDetailDialog({ character, detailOwned, itemEffects, use
             <strong>{character.skill.name}</strong>
           </div>
           <p>{character.skill.description}</p>
+          {derivedSkills.map((skill) => (
+            <div className="derived-skill-detail" key={skill.effectType}>
+              <div className="skill-title-row">
+                <strong>{skill.name}</strong>
+              </div>
+              <p>{skill.description}</p>
+            </div>
+          ))}
           <p className="acquisition-method"><strong>获得途径</strong>{character.acquisitionMethod || "初始可用"}</p>
-          <p className="character-description">{character.description || "暂无角色描述"}</p>
+          <p
+            className="character-description"
+            role={onPlayDetailVoice ? "button" : undefined}
+            tabIndex={onPlayDetailVoice ? 0 : undefined}
+            onClick={onPlayDetailVoice}
+            onKeyDown={(event) => {
+              if (!onPlayDetailVoice || (event.key !== "Enter" && event.key !== " ")) return;
+              event.preventDefault();
+              onPlayDetailVoice();
+            }}
+          >
+            {character.description || "暂无角色描述"}
+          </p>
         </div>
       </section>
     </div>

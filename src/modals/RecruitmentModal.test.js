@@ -17,6 +17,15 @@ describe("RecruitmentModal", () => {
     expect(modalSource).not.toContain("公示板已经摆好");
     expect(modalSource).not.toContain("等待招新回应");
     expect(modalSource).toContain("canUse ? \"使用\" : \"不可用\"");
+    expect(modalSource).toContain("RecruitmentItemWatermark");
+    expect(modalSource).toContain("item?.imageUrl || item?.itemImageUrl");
+    expect(modalSource).toContain("recruitment-pending-panel");
+    expect(modalSource).toContain("PosterWatermarkIcon");
+    expect(modalSource).toContain("RadioWatermarkIcon");
+    expect(modalSource).toContain("fill=\"none\"");
+    expect(modalSource).toContain("瞧瞧有没有新部员！");
+    expect(modalSource).not.toContain("查看招新回应");
+    expect(modalSource).not.toContain("<strong>{task.itemName}</strong>\n        <button className=\"primary-action\" type=\"button\" disabled={busy} onClick={onClaim}>");
     expect(modalSource).toContain("recruitment-fast-forward-button");
     expect(modalSource).toContain("canFastForward");
     expect(modalSource).toContain("aria-label=\"快速计时到 5 秒\"");

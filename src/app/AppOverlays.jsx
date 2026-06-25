@@ -226,6 +226,7 @@ export default function AppOverlays({
           setAudioSettings={setAudioSettings}
           visualTheme={visualTheme}
           setVisualTheme={setVisualTheme}
+          onNotice={showToast}
           onClose={() => setShowSettings(false)}
         />
       )}

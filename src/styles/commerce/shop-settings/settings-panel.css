@@ -1,5 +1,5 @@
 .settings-modal {
-  width: min(560px, calc(100vw - (var(--page-pad) * 2)));
+  width: min(920px, calc(100vw - (var(--page-pad) * 2)));
   text-align: left;
 }
 
@@ -33,6 +33,70 @@
   min-height: 230px;
   display: grid;
   gap: 14px;
+}
+
+.theme-settings-panel {
+  min-height: 180px;
+}
+
+.theme-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+.theme-choice-button {
+  min-height: 112px;
+  padding: 16px 14px;
+  border: 2px solid #d7c0dc;
+  border-radius: 8px;
+  background: #fbf7fd;
+  color: #4f3d55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.theme-choice-button strong {
+  display: block;
+  max-width: 100%;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.theme-choice-button.active,
+.theme-choice-button[aria-pressed="true"] {
+  background: #f08bb4;
+  border-color: #4f3d55;
+  color: #2d2430;
+  box-shadow:
+    0 2px 0 rgba(45, 36, 48, 0.3),
+    inset 0 2px 8px rgba(255, 255, 255, 0.35);
+  transform: translateY(1px);
+}
+
+.theme-choice-button.is-future {
+  background: #fffaf1;
+  border-color: #d9c8aa;
+}
+
+.theme-choice-button:hover,
+.theme-choice-button:focus-visible {
+  border-color: #b85c91;
+  box-shadow: 0 6px 16px rgba(82, 61, 90, 0.14);
+}
+
+.theme-choice-button:active {
+  transform: translateY(2px) scale(0.99);
 }
 
 .about-panel {

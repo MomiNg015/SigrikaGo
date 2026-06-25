@@ -269,16 +269,39 @@ describe("root CSS entry contract", () => {
     expect(cssImports(adminEntry)).toEqual([
       "./admin/shell-layout.css",
       "./admin/shared-surfaces.css",
+      "./admin/analytics.css",
       "./admin/characters.css",
       "./admin/audit-feedback.css",
       "./admin/gacha.css",
       "./admin/achievements.css",
       "./admin/mailbox.css",
-      "./admin/responsive.css"
+      "./admin/responsive.css",
+      "./admin/polish.css"
     ]);
     expect(adminEntry).not.toContain(".admin-screen {");
     expect(adminEntry).not.toContain(".admin-table {");
     expect(adminEntry).not.toContain(".admin-gacha-board");
+  });
+
+  it("keeps admin analytics and polish styles as import-only sub-entries", () => {
+    const analyticsEntry = readFileSync(new URL("./admin/analytics.css", import.meta.url), "utf8");
+    const polishEntry = readFileSync(new URL("./admin/polish.css", import.meta.url), "utf8");
+
+    expect(cssImports(analyticsEntry)).toEqual([
+      "./analytics/brief.css",
+      "./analytics/lists.css",
+      "./analytics/operations.css"
+    ]);
+    expect(analyticsEntry).not.toContain(".admin-analytics-page {");
+    expect(analyticsEntry).not.toContain(".admin-bar-row {");
+
+    expect(cssImports(polishEntry)).toEqual([
+      "./polish/tokens-surfaces.css",
+      "./polish/forms-actions.css",
+      "./polish/tables-specials.css"
+    ]);
+    expect(polishEntry).not.toContain(".admin-screen {");
+    expect(polishEntry).not.toContain(".admin-table th");
   });
 
   it("keeps lobby.css as an import-only lobby and house entry", () => {
@@ -517,6 +540,15 @@ describe("root CSS entry contract", () => {
     expect(recruitmentBoard).toContain("/assets/recruitment/celebration-flat-candidate.webp");
     expect(recruitmentBoard).toContain("/assets/recruitment/recruitment-letter-paper-flat.webp");
     expect(recruitmentBoard).toContain("/assets/recruitment/recruitment-envelope-flat.webp");
+    expect(recruitmentBoard).toContain(".recruitment-item-watermark-art");
+    expect(recruitmentBoard).toContain("transform: translate(-50%, -50%) rotate(20deg) scale(1.04);");
+    expect(recruitmentBoard).toContain("opacity: 0.3;");
+    expect(recruitmentBoard).toContain(".recruitment-ready-card");
+    expect(recruitmentBoard).toContain(".recruitment-pending-panel");
+    expect(recruitmentBoard).toContain("border: 0;");
+    expect(recruitmentBoard).toContain("background: transparent;");
+    expect(recruitmentBoard).toContain(".recruitment-pending-panel > div");
+    expect(recruitmentBoard).toContain("align-self: center;");
     expect(recruitmentBoard).toContain("@keyframes recruitment-paper-pop");
     expect(recruitmentBoard).toContain(".recruitment-selection-card p");
     expect(recruitmentBoard).toContain("color: #b53434;");
@@ -526,6 +558,9 @@ describe("root CSS entry contract", () => {
     expect(statSync(new URL("../../public/assets/recruitment/recruitment-letter-paper-flat.webp", import.meta.url)).size).toBeLessThan(100_000);
     expect(statSync(new URL("../../public/assets/recruitment/recruitment-envelope-flat.webp", import.meta.url)).size).toBeLessThan(100_000);
     expect(recruitmentCountdown).toContain(".recruitment-countdown-row");
+    expect(recruitmentCountdown).toContain(".recruitment-pending-panel b");
+    expect(recruitmentCountdown).toContain("background: transparent;");
+    expect(recruitmentCountdown).toContain("box-shadow: none;");
     expect(recruitmentCountdown).not.toContain("repeating-linear-gradient");
     expect(recruitmentCountdown).not.toContain("border: 3px solid #3d2b25;");
     expect(recruitmentCountdown).toContain("font-family: \"Courier New\", Consolas, monospace;");
@@ -535,6 +570,15 @@ describe("root CSS entry contract", () => {
     expect(phoneRecruitment).toContain(".recruitment-fast-forward-button");
     expect(phoneRecruitment).toContain(".recruitment-result-actions");
     expect(phoneRecruitment).toContain(".recruitment-result-actions .recruitment-use-button:active:not(:disabled)");
+    expect(phoneRecruitment).toContain(".recruitment-status-card");
+    expect(phoneRecruitment).toContain("grid-template-columns: minmax(0, 1fr) !important;");
+    expect(phoneRecruitment).toContain(".recruitment-ready-card .primary-action");
+    expect(phoneRecruitment).toContain(".recruitment-pending-panel");
+    expect(phoneRecruitment).toContain("border: 0 !important;");
+    expect(phoneRecruitment).toContain("background: transparent !important;");
+    expect(phoneRecruitment).toContain(".recruitment-item-watermark-art");
+    expect(phoneRecruitment).toContain("height: 142% !important;");
+    expect(phoneRecruitment).toContain("opacity: 0.28 !important;");
     expect(phoneRecruitment).toContain(".recruitment-item-button span");
     expect(phoneRecruitment).toContain("display: none !important;");
     expect(phoneRecruitment).toContain(".recruitment-use-button:disabled");

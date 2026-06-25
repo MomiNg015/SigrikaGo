@@ -76,6 +76,16 @@ describe("player theme CSS contract", () => {
     expect(recruitmentPolish).toContain(".recruitment-use-button:disabled");
     expect(recruitmentPolish).toContain("cursor: not-allowed !important;");
     expect(recruitmentPolish).toContain(".recruitment-fast-forward-button");
+    expect(recruitmentPolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(");
+    expect(recruitmentPolish).toContain(
+      ".recruitment-pending-panel.recruitment-pending-panel.recruitment-pending-panel"
+    );
+    expect(recruitmentPolish).toContain(
+      ".recruitment-countdown-row.recruitment-countdown-row.recruitment-countdown-row"
+    );
+    expect(recruitmentPolish).toContain("background-color: transparent !important;");
+    expect(recruitmentPolish).toContain("background-image: none !important;");
+    expect(recruitmentPolish).toContain("border-radius: 0 !important;");
     expect(recruitmentPolish).toContain(".recruitment-selection-card p");
     expect(recruitmentPolish).toContain("color: #b53434 !important;");
     expect(recruitmentPolish).toContain(".recruitment-result-actions .recruitment-use-button");

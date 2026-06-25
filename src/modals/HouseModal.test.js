@@ -271,6 +271,18 @@ describe("deriveCharacterRecordStats", () => {
     expect(calls).toEqual([]);
   });
 
+  it("stops active character voice playback when house detail surfaces close", () => {
+    const source = readFileSync(new URL("./HouseModal.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("function closeCharacterDetail()");
+    expect(source).toContain("function closeHouseModal()");
+    expect(source).toContain("function playCharacterDetailVoice(character)");
+    expect(source.match(/stopVoicePlayback\(\);/g)).toHaveLength(2);
+    expect(source).toContain("onClose={closeCharacterDetail}");
+    expect(source).toContain("onPlayDetailVoice={() => playCharacterDetailVoice(detailCharacter)}");
+    expect(source).toContain("onClick={closeHouseModal}");
+  });
+
   it("renders owned decorations with icon and application status in the house manual", () => {
     const html = renderToStaticMarkup(createElement(HouseModal, {
       user: {
@@ -795,5 +807,28 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("character-music-select");
     expect(html).toContain("Sigrika Skill BGM");
     expect(html).toContain("Sigrika Dream BGM");
+  });
+
+  it("makes the character description area replay the detail voice", () => {
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "mornye",
+        name: "Mornye",
+        portrait: "/assets/mornye.png",
+        description: "Protocol details.",
+        skill: { name: "Skill", description: "Ban a point.", cost: 1 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      user: {},
+      audioSettings: {},
+      onPlayDetailVoice: () => {},
+      onSelectCharacterMusic: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("class=\"character-description\"");
+    expect(html).toContain("role=\"button\"");
+    expect(html).toContain("tabindex=\"0\"");
   });
 });

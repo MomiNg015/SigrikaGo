@@ -55,6 +55,18 @@
   color: #b53434 !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+  .recruitment-pending-panel.recruitment-pending-panel.recruitment-pending-panel,
+  .recruitment-pending-panel.recruitment-pending-panel.recruitment-pending-panel > div,
+  .recruitment-countdown-row.recruitment-countdown-row.recruitment-countdown-row
+) {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-item-button {
   background: #ffffff !important;
   box-shadow: 3px 3px 0 rgba(61, 43, 37, 0.45) !important;

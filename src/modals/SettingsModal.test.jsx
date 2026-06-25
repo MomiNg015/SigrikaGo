@@ -61,12 +61,46 @@ describe("SettingsModal terminal style hooks", () => {
     const source = readFileSync(new URL("./SettingsModal.jsx", import.meta.url), "utf8");
 
     expect(source).toContain('tab === "theme"');
-    expect(source).toContain("VISUAL_THEMES.map");
+    expect(source).toContain("settings-tab-${tab}");
+    expect(source).toContain("THEME_CHOICES.map");
     expect(source).toContain("theme-choice-button");
-    expect(source).toContain("onClick={() => setVisualTheme(theme.id)}");
+    expect(source).toContain("setVisualTheme(theme.id)");
+    expect(source).toContain("onNotice(\"\\u656c\\u8bf7\\u671f\\u5f85~\", \"success\")");
     expect(source).toContain("onChange={(event) => setAudioSettings");
     expect(source).not.toContain("VISUAL_EFFECT_LEVELS");
+    expect(source).not.toContain("VISUAL_THEMES.map");
     expect(source).not.toContain("setVisualEffect");
     expect(source).not.toContain("visualEffect");
+  });
+
+  it("renders three interface theme buttons without the old page-style heading", () => {
+    const source = readFileSync(new URL("./SettingsModal.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("\\u6ca1\\u7ecf\\u8d39\\u7684\\u7b80\\u6734\\u56f4\\u68cb\\u90e8\\u98ce\\u683c");
+    expect(source).toContain("\\u4e2d\\u89c4\\u4e2d\\u77e9\\u7684\\u56f4\\u68cb\\u90e8\\u98ce\\u683c");
+    expect(source).toContain("\\u83ab\\u5854\\u91cc\\u5bb6\\u65cf\\u8d5e\\u52a9\\u7684\\u5962\\u534e\\u98ce\\u683c");
+    expect(source).toContain("available: true");
+    expect(source).toContain("available: false");
+    expect(source).not.toContain("\\u4e3b\\u9898\\uff1a");
+    expect(source).not.toContain("\\uff08\\u5373\\u660e\\u4eae\\u6821\\u56ed\\u98ce\\u683c\\uff09");
+    expect(source).not.toContain("\\u9875\\u9762\\u98ce\\u683c");
+  });
+
+  it("keeps interface theme choices in a three-column desktop and mobile grid", () => {
+    const baseCss = readFileSync(new URL("../styles/commerce/shop-settings/settings-panel.css", import.meta.url), "utf8");
+    const mobileSafetyCss = readCssWithImports(new URL("../styles/mobile-adaptive/bright-school-portrait.css", import.meta.url));
+
+    for (const css of [baseCss, mobileSafetyCss]) {
+      expect(css).toContain(".theme-choice-grid");
+      expect(css).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
+      expect(css).toContain(".theme-choice-button");
+      expect(css).toContain("min-height:");
+    }
+
+    expect(mobileSafetyCss).toContain(".settings-modal.settings-tab-theme");
+    expect(mobileSafetyCss).toContain("grid-template-rows: auto auto minmax(0, 1fr) !important");
+    expect(mobileSafetyCss).toContain("overflow: hidden !important");
+    expect(mobileSafetyCss).toContain(".theme-settings-panel");
+    expect(mobileSafetyCss).toContain("overflow: visible !important");
   });
 });

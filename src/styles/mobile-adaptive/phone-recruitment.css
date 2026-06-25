@@ -50,6 +50,48 @@
     transform: none !important;
   }
 
+  .recruitment-pending-panel {
+    width: calc(100% - 16px) !important;
+    min-height: 168px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 12px !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .recruitment-selection-card,
+  .recruitment-status-card {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .recruitment-result-card {
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+  }
+
+  .recruitment-ready-card {
+    place-items: center !important;
+    text-align: center !important;
+  }
+
+  .recruitment-ready-card .primary-action {
+    min-height: 52px !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    width: min(100%, 220px) !important;
+    white-space: normal !important;
+  }
+
+  .recruitment-item-watermark-art {
+    width: 88% !important;
+    height: 142% !important;
+    opacity: 0.28 !important;
+  }
+
   .recruitment-empty-board::before,
   .recruitment-selection-card::before,
   .recruitment-status-card::before,
@@ -60,7 +102,6 @@
     height: 18px !important;
   }
 
-  .recruitment-board-ready .recruitment-status-card::after,
   .recruitment-result-miss::after {
     width: 78px !important;
     right: 8px !important;
