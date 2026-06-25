@@ -39,16 +39,15 @@ ENABLE_TEST_ACTIONS="false"
 - `PUBLIC_ORIGIN`: 用户访问站点的 HTTPS 地址，例如 `https://go.example.com`。
 - `ADMIN_USERNAMES`: 逗号分隔的管理员用户名。服务启动时会把这些用户名提升为管理员。
 - `UPLOAD_DIR`: 用户上传资源的持久化根目录。角色立绘上传会保存到 `${UPLOAD_DIR}/characters`，并通过 `/uploads/characters/...` 对外访问。
-- `ENABLE_TEST_ACTIONS`: 仅本地开发调试可设为 `true`。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
+- `ENABLE_TEST_ACTIONS`: 已不再需要用于本地开发；测试 action 在非生产环境默认可用。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
 
 开发环境若需要显示对局测试按钮，需要同时设置客户端与服务端开关：
 
 ```env
-ENABLE_TEST_ACTIONS="true"
-VITE_ENABLE_TEST_TOOLS="true"
+# 测试工具在非生产环境默认显示并可用；不要在生产环境开启 ENABLE_TEST_ACTIONS。
 ```
 
-不要把这两个开关带到生产 `.env`。
+不要把测试 action 开关带到生产 `.env`。
 
 ## 服务器目录
 

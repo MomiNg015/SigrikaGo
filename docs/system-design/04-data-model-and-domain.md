@@ -55,6 +55,7 @@
 - `expiresAt`: refresh session 过期时间。
 - `lastSeenAt`: 最近一次 HTTP/Socket 鉴权或 refresh 时间。
 - `createdAt`, `updatedAt`: 创建和更新时间。
+- 后台“今日登录用户数”和时长榜第一版从该表估算：`createdAt` 落在 Asia/Shanghai 当日的 session 计入登录事件，`userId` 去重得到唯一登录用户，`lastSeenAt - createdAt` 暂作为会话时长估算。后续若接入前端活跃事件或 Socket 活跃心跳，应新增专门活动表或快照，不应把估算口径伪装成精确活跃时长。
 
 ### UserRelationship
 
@@ -103,6 +104,7 @@
 - `blackRatingDelta`, `whiteRatingDelta`: settled rating audit deltas for both sides; friendly games store 0.
 - `blackCoinsDelta`, `whiteCoinsDelta`: settled coin audit deltas for both sides; friendly games respect the server-day reward limit.
 - `blackRankDelta`, `whiteRankDelta`: rank movement audit value, where promotion is 1, demotion is -1, and no movement is 0.
+- 后台分析第一版使用 `createdAt`、`mode`、`moveCount`、`resultText` 和 `resultReason` 统计今日完成对局、分模式完成数、平均手数和粗略无效局。房间创建数、中断率、预加载超时、重连恢复等实时事件尚无完整持久化事件源时必须标为 `待接入`。
 
 ### Gomoku Domain
 
@@ -131,13 +133,13 @@
 
 - `id`: 主键 cuid。
 - `characterId`: 关联 `Character.id`，唯一。
-- `effectType`: Skill effect type; currently supports `erase-point`, `flip-stone`, `hidden-hand`, `protocol-takeover`, `random-blast`, `spray-stone`, `color-illusion-passive`, `row-slash`, `double-move`, and `liberty-purge`.
+- `effectType`: Skill effect type; currently supports `erase-point`, `flip-stone`, `hidden-hand`, `voyage-star`, `protocol-takeover`, `random-blast`, `spray-stone`, `color-illusion-passive`, `row-slash`, `double-move`, and `liberty-purge`.
 - `name`: 技能名。
 - `description`: 技能描述。
 - `uses`: 每局使用次数。
 - `freeTurn`: 是否不消耗回合。
 - `targetRule`: Targeting rule; currently validated as `empty-point`, `stone`, `any-point`, `legal-move-point`, or `none`. `random-blast` and `double-move` use `none`; Chisa `liberty-purge` uses `legal-move-point` so the target must pass ordinary move legality on the server.
-- `paramsJson`: JSON 字符串，当前作为扩展参数保留。
+- `paramsJson`: JSON 字符串，当前作为扩展参数保留。Hidden-hand skills may store future-proof derived skill definitions under `params.derivedSkills`; Aemeath uses this to configure `voyage-star` display name, description, one-use derived slot, fixed music track id, and numeric overclock cost without a Prisma migration.
 - `costType`: `numeric` 或 `special`。
 - `costValue`: 超频值；`numeric` 会参与数子扣分，`special` 当前仅展示。
 - `systemMessage`: 技能系统消息模板。

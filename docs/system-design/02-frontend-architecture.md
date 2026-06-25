@@ -6,6 +6,7 @@
 
 - `src/main.jsx` 只负责浏览器挂载；`src/app/App.jsx` 是应用组合根，状态通过 `src/app/*` hooks 逐步收口，应用级弹窗可见性由 `src/app/useOverlayState.js` 维护，房间/回放/结果弹窗会话状态由 `src/app/useRoomSessionState.js` 维护，匹配等待/成功过渡状态由 `src/app/useMatchSessionState.js` 维护。
 - 玩家侧主题通过 `src/app/visualTheme.js` 和 `src/styles/themes.css` 维护注册与 CSS 入口。
+- 后台管理新增桌面端分析体验：`AdminOverview` 是默认“今日简报”，用可读总状态、原因、分级解读和下一步动作替代密集表格；`AdminOperations` 是运营分析页，先显示推荐解读，再用低密度 CSS 条形图和卡片展示活跃、注册、对局、分层、经济和模式表现。分析样式集中在 `src/styles/admin/analytics.css`，最终后台控件皮肤集中在 `src/styles/admin/polish.css`，用于统一浅色按钮、输入框、表格、tabs、危险操作和关闭按钮。
 - 前端性能重点在启动预加载、房间快照结构共享、棋盘点位 memo、移动端布局合同。
 
 ## 公共组件与状态管理
@@ -19,6 +20,8 @@
 - `AdminFieldLabel`: 带 title 提示的后台字段标签，位于 `src/admin/adminComponents.jsx`。
 - `AdminSectionHeader`: 后台列表页标题、数量和主操作按钮，位于 `src/admin/adminComponents.jsx`。
 - `AdminStatusPill`: 后台表格状态标签，位于 `src/admin/adminComponents.jsx`。
+- `AdminOverview`: 后台默认概况页，呈现“今日简报”、四个答案卡片、`需要处理 / 值得关注 / 正常记录` 解读、在线名单、时长榜、分模式对局和服务健康摘要。
+- `AdminOperations`: 后台运营分析页，支持日期范围 tab，优先显示推荐解读，再展示活跃、注册、对局趋势、玩家分层、经济摘要和模式表现。
 - `Toast` / `ToastStack`: 自动消失提示队列，使用高对比渐变底色突出规则错误、非法操作等短提示；成功提示为绿色。金币、积分、段位变化不再走 toast 队列，避免回房间、回大厅或模式统计刷新时出现误导性数值提示。队列最多保留最新 5 条，避免高频操作造成页面卡顿。
 - `ConfirmModal`: 通用确认弹窗。
 - `WatchPad`: 观战房间号输入。
@@ -44,7 +47,7 @@
 - `lastMarkedAction` / `canPreviewSkillTarget`: 位于 `src/shared/boardView.js`，用于统一棋盘最后落子/技能标记与技能预览判定；普通落子和反色技能会成为最新落子标记来源。千咲 `liberty-purge` 虽然会实际落子，但该落子使用专属 `liberty-purge-stone` 持续红光，不复用最新落子红圈。
 - `SKILL_EFFECT_CATALOG` / `skillEffectTargetRule` / `skillEffectSoundCues`: 位于 `src/shared/skillEffectCatalog.js`，集中维护技能 `effectType` 的管理端标签、默认目标规则、主动/被动分类、棋盘演出标记和音效 cue。管理端角色表单、服务端角色校验、技能归一化、目标预览和技能音效都应从该 catalog 读取这些元数据。
 - `flip-stone` 使用 `BoardSkillEffects` 的 Pixi 泡泡演出，但其 pending skill resolution delay 在 `src/shared/skillPresentation.js` 中单独设为 `3040ms`，早于默认 `4000ms`。这样服务端权威反色快照会在泡泡黑化并遮住目标棋子时广播，爆裂后露出的已经是反色后的棋子。
-- `row-slash` 是主动技能类型，但不注册 Pixi `boardEffect` canvas，目标规则为 `any-point`。服务端 pending skill preview 会附带 `row`、整行 `affectedPointIds`，以及直接被移除棋子的 `removedStones`（id/color）；前端 `BoardRowSlashOverlay` 在 pending 阶段直接渲染与最终标记一致的 `.board-row-slash`，但通过 `--skill-banner-duration` 延迟到横幅结束后才让刀痕从左到右展开并作为扫光使用；`Board` 同步给受影响行棋子添加 `row-slash-cut-pending` 和按棋盘宽度比例计算的 `--row-slash-cut-delay`，使棋子在扫光触及时用短促硬切快速消失。持久标记来自结算后的 `game.rowEffects`，继续由同一 DOM/CSS overlay 渲染，并通过 `clearAfterColor` 在对手下一次行动后清除。DOM overlay 始终为 `pointer-events: none`，`BoardSkillEffects` 对该 effect 返回空标记，避免 full-board canvas 覆盖棋盘。
+- `row-slash` 是主动技能类型，注册为短生命周期 Pixi `boardEffect` canvas，目标规则为 `any-point`。服务端 pending skill preview 会附带 `row`、整行 `affectedPointIds`，以及直接被移除棋子的 `removedStones`（id/color）；`BoardSkillEffects` 在技能横幅后播放仇远青白水墨刀光：两道竖向贯穿预兆刀光（第一道自上向下、第二道自下向上扫过，角度在 -30 到 30 度间确定性随机，扫完后留存到主刀光收势时一起淡出）、左侧墨锋起势、从左到右的 1.8 格高主刀和随 x 坐标推进的切子光屑。预兆和主刀都不再绘制浅蓝透明厚波纹，而是以白色直刃线为核心，先叠低透明青白渐变边光增加厚度，再叠加深青墨、灰蓝墨和飞白短段形成不规则水墨涂抹边缘。`BoardRowSlashOverlay` 仍然是持久刀痕的 DOM owner，并在主刀起势时让最终 `.board-row-slash` 以超出棋盘两侧的长度跟随 Pixi 主刀光从左向右裁切展开；casting 刀痕使用 `--row-slash-cast-delay` 和 `--row-slash-cast-duration`，分别来自当前 `boardEffectDurationMs` 的 0.19 和 0.22，使波浪形 DOM 刀痕与 Pixi 横劈同步从左到右出现；刀痕起点略向下偏移，使倾斜刀痕的视觉中点交合目标行中线；`Board` 同步给受影响行棋子添加 `row-slash-cut-pending` 和按棋盘宽度比例计算的 `--row-slash-cut-delay`，使棋子在主刀扫到时快速消失。持久标记来自结算后的 `game.rowEffects`，继续由同一 DOM/CSS overlay 渲染，并通过 `clearAfterColor` 在对手下一次行动后清除。Pixi canvas 和 DOM overlay 始终为 `pointer-events: none`，不改变棋盘点击区域。
 - `COLORS` / `opponent`: 位于 `src/shared/gameConstants.js`，集中维护棋色常量与对手颜色推导；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `createPoints` / `getPoint` / `activeNeighbors`: 位于 `src/shared/gameBoard.js`，集中封装棋盘几何和点位访问；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `collectGroup`: 位于 `src/shared/gameGroups.js`，集中封装棋子连通块和气的遍历；`src/shared/game.js` 保持同名转导以兼容既有调用方。
@@ -61,7 +64,8 @@
 - `modalDismissal` 的 root-back guard 只响应真实父级回退。功能窗口通过关闭按钮或取消按钮主动关闭时会清理对应 history 哨兵并压制同次 `popstate`，避免误弹退出确认；手机回退关闭功能窗口时同样只关闭最上层窗口。用户在退出确认中点“退出游戏”会先尝试跨过 guard/history 哨兵回退，若浏览器没有可回退页面则跳转到 `about:blank` 作为离开游戏页的兜底。
 - `useRoomSessionState` / `roomSessionView`: 位于 `src/app/useRoomSessionState.js`，集中维护 `room`、`pendingSkill`、`replayStep`、`dismissedResultRoom` 和派生的 `resultModalOpen`，避免结果弹窗可见性在路由、覆盖层和背景音乐间重复计算；对局者关闭某一房间结果后，该房间号会作为去重哨兵阻止同一有效结果再次显示。
 - `useMatchSessionState` / `matchSessionView`: 位于 `src/app/useMatchSessionState.js`，集中维护 `matchStart`、`matchSuccess` 和派生的匹配等待/过渡标记，避免匹配弹窗、socket 同步和背景音乐各自维护过渡状态。
-- `replayRoomAt`: 用历史记录重放房间状态；观战实时回放另由 `replayGameAt` 只派生棋盘进程。
+- `replayRoomAt`: 用历史记录重放房间状态；观战实时回放另由 `replayGameAt` 只派生棋盘进程。Aemeath's `voyage-star` replay path restores erased points, the center crater marker, recorded removals, and skill cost directly from history metadata instead of rerunning live derived-skill availability checks.
+- `lastMarkedAction()`: latest-action board rings include ordinary moves, flip-stone, Aemeath hidden-hand placement, and Voyage Star's source point. Voyage Star's erased source does not draw a stone ring, but it still becomes the latest action so the previous ordinary move is not highlighted after the skill resolves.
 - 音频相关：`loadAudioSettings`、`playStoneSound`、`playSystemVoice` 路由、`preloadVoiceSound`、`playPreloadedVoiceSound`、`speakText`。
 
 ### 后端通用逻辑
@@ -139,6 +143,12 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - System voice playback now lives in `src/audio/systemVoicePlayback.js`.
   - `playSystemVoice` resolves role/system voice events, plays preloaded audio when available, and falls back to TTS text.
   - `src/main.jsx` no longer owns the system voice resolver/playback wrapper.
+
+## Aemeath Derived Skill Frontend Contract
+
+- Aemeath hidden-hand derived skills are centralized in `src/shared/derivedSkills.js`. Room UI reads `effectiveSkillConfigForPlayer`, `effectiveSkillDisplayForPlayer`, and `effectiveSkillUsesForColor` so the action bar, player skill chip, board target preview, and character detail surfaces can swap from the base hidden-hand skill to the active derived skill without copying skill-state logic into React components.
+- `voyage-star` is treated as a no-target board-surface confirmation skill. `skillUsesBoardSurfaceConfirmation()` keeps its action flow aligned with ChangLi `double-move`: the skill button can stay visible but disabled while the source hidden hand is missing, exposed, or no longer owned by the caster.
+- Admin character drafts keep derived skill text and overclock in the base skill `params.derivedSkills` JSON through `buildCharacterDraft` and `characterDraftToBody`. The hidden-hand editor exposes two derived fields for Aemeath now, while the JSON shape is a list so future character derived skills can reuse the same draft and validation path.
 - Low-coupling modal components have been extracted from `src/main.jsx` into `src/modals/`.
   - `MessageBoardModal.jsx`
   - `SettingsModal.jsx`

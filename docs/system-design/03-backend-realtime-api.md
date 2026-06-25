@@ -114,8 +114,21 @@
 - `DELETE /mailbox/:id` soft-deletes by setting `MailboxMessage.deletedAt`. Player list, summary, capacity, read, and claim flows treat deleted rows as hidden, while future-batch materialization still uses them as delivery history to prevent deleted global mail from being recreated.
 - `initializeServerData()` runs `ensureMailboxSchema()` during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.
 
+## Admin Analytics API
+
+- 后台分析 API 挂载在 `/api/admin/analytics/*`，仍走现有 `authHttp + requireAdmin` 管线。
+- `GET /api/admin/analytics/overview` 返回后台默认“今日简报”数据：总状态、2-5 条原因、`需要处理 / 值得关注 / 正常记录` 解读、今日登录/注册/对局、在线名单、时长榜、待处理反馈/举报、服务健康和最近审计日志。第一版优先从 `User`、`LoginSession`、`GameRecord`、`FeedbackMessage`、`UserReport`、`AdminAuditLog` 与运行时在线/房间/匹配队列聚合，不伪造尚未采集的断线、IP、设备或错误事件。
+- `GET /api/admin/analytics/operations?range=today|yesterday|7d|30d` 返回运营分析数据：日期范围、可读解读、活跃/注册/对局趋势、模式完成数、玩家粗分层、金币净变化、抽卡和招募任务数量。深度留存、经济来源拆分、完整异常事件和导出仍是后续扩展。
+- `server/adminAnalytics.js` 是聚合边界；`server/adminRoutes.js` 只负责挂路由和注入 `onlineSessions`、`listActiveRooms`、`matchmakingCount`、`matchmakingCountsByMode` 等运行时读模型。
+
 ## Realtime Broadcast Stability
 
 - `server/roomBroadcasts.js` declares `ROOM_BROADCAST_PERSISTENCE` as the code-level policy for persistence expectations: full room updates and default room patches force persistence, while clock and presence-patch categories remain lightweight/throttled.
 - The policy is guarded by `server/roomBroadcasts.test.js` so future realtime changes can adjust room protocol shape without accidentally turning high-frequency clock or presence traffic into forced snapshot writes, or weakening forced persistence for authoritative lifecycle updates.
 - `server/roomActionPhaseGuards.js` declares the gameplay action phase matrix before lifecycle dispatch: move/pass/skill require `playing`, resign is limited to `playing`, `counting-requested`, and `draw-requested`, and opening, skill-preview, marking-dead, result-review, or finished phases reject generic board actions before they can mutate state.
+
+## Aemeath Derived Skill Realtime Contract
+
+- `server/roomSkillResolution.js` resolves active skill requests through `effectiveSkillConfigForColor()` before calling shared game rules. This lets Aemeath's active slot become `voyage-star` after hidden-hand resolution while preserving the same socket action (`room:skill`) and pending-skill lifecycle.
+- `voyage-star` pending previews include `effectType`, `targetId`, `affectedPointIds`, `erasedPointIds`, `secondaryRemovalIds`, `removedStones`, and fixed `musicTrackId`. The server has already executed the rule mutation before broadcasting the preview, so the Pixi layer uses these ids only for presentation and never recalculates removal legality.
+- System skill messages accept the effective skill config for the resolved action. A derived Aemeath cast therefore uses the derived name/message instead of the original hidden-hand message, while replay reconstruction uses history metadata to keep the same erased points and removals deterministic.
