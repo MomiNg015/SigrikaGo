@@ -38,6 +38,74 @@ Matched and accepted-duel rooms must start in `GAME_PHASES.preloading` and use `
 
 Tests touching this boundary should cover room creation, ready count broadcasts, both-ready opening transition, timeout abort, and socket event registration.
 
+### Room Debug Test Tools Contract
+
+#### 1. Scope / Trigger
+- Trigger: changing room debug actions, development-only room test buttons, or production deployment checks that mention debug gameplay tools.
+- This is a cross-layer test utility contract: frontend visibility, Socket.IO gameplay payloads, backend action handling, and production safety must stay aligned.
+
+#### 2. Signatures
+- Frontend visibility gate: `const SHOW_TEST_TOOLS = import.meta.env.DEV` in `src/room/RoomBattleStage.jsx`.
+- Debug action payloads: `{ type: "test-random-layout" }`, `{ type: "test-restore-skill" }`, and `{ type: "test-enter-byo-yomi" }`.
+- Backend action list: `ROOM_TEST_ACTION_TYPES` in `server/roomTestActions.js`.
+- Backend safety gate: `canUseDebugTestActions(env)` returns true only when `env.NODE_ENV !== "production"`.
+
+#### 3. Contracts
+- Room test tools are visible by default in Vite development builds and hidden in production builds.
+- Production must reject debug test actions even if legacy `ENABLE_TEST_ACTIONS` is set.
+- `test-enter-byo-yomi` is a room-wide test shortcut: it sets every room player's `time.main` to `0`, calls `resetByoYomi()` for each timed player, returns `skipByoYomiReset: true`, and does not run normal move effects.
+- The mobile room action dock must not hide `.test-tools`; development testers need the same shortcuts on phone layouts as on desktop.
+- The shortcut is not a production gameplay feature and must not change ordinary clock timing or phase rules.
+
+#### 4. Validation & Error Matrix
+- `NODE_ENV === "production"` with any debug flag -> reject with the existing test-tool unavailable error.
+- Non-production env -> allow room debug actions.
+- Room phase not `playing` -> `test-enter-byo-yomi` rejects without mutating player timers.
+- Missing or legacy player `time` object -> skip that player rather than crashing the debug action.
+
+#### 5. Good/Base/Bad Cases
+- Good: local `npm run dev` shows the Timer test button and one click puts both black and white timers into byo-yomi.
+- Base: production builds do not render the test-tool group and server-side production validation still fails when `ENABLE_TEST_ACTIONS` is enabled.
+- Bad: requiring both `VITE_ENABLE_TEST_TOOLS` and `ENABLE_TEST_ACTIONS` for local development, because it makes the temporary test button appear missing.
+- Bad: forcing only the acting player's timer into byo-yomi when the test goal is to exercise both players' countdown behavior.
+
+#### 6. Tests Required
+- `server/roomTestActions.test.js` must assert the action list, production rejection, and both-player byo-yomi mutation.
+- `server/security.test.js` must assert development-only debug action permission.
+- `src/room/ActionBar.test.js` must assert the frontend gate remains dev-only and does not depend on `VITE_ENABLE_TEST_TOOLS`.
+- `src/room/RoomScreen.test.js` must assert mobile room CSS keeps `.test-tools` visible in the action dock.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const SHOW_TEST_TOOLS = import.meta.env.DEV && import.meta.env.VITE_ENABLE_TEST_TOOLS === "true";
+```
+
+Correct:
+
+```js
+const SHOW_TEST_TOOLS = import.meta.env.DEV;
+```
+
+Wrong:
+
+```js
+player.time.main = 0;
+resetByoYomi(player);
+```
+
+Correct:
+
+```js
+for (const roomPlayer of room.players ?? []) {
+  if (!roomPlayer?.time) continue;
+  roomPlayer.time.main = 0;
+  resetByoYomi(roomPlayer);
+}
+```
+
 ### Auth HTTP Boundary Contract
 
 `server/authRoutes.js` owns the `/api/auth/*` HTTP request handlers:
