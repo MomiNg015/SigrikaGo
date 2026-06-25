@@ -7,6 +7,7 @@ export function createOnlineSessionManager({
   clearTimer = clearTimeout
 }) {
   const onlineSockets = new Map();
+  const onlineSocketDetails = new Map();
   const pendingLoginSessionTimers = new Map();
   const disconnectedSessionTimers = new Map();
 
@@ -51,6 +52,15 @@ export function createOnlineSessionManager({
     const sockets = onlineSockets.get(socket.user.id) ?? new Set();
     sockets.add(socket.id);
     onlineSockets.set(socket.user.id, sockets);
+    onlineSocketDetails.set(socket.id, {
+      socketId: socket.id,
+      userId: socket.user.id,
+      username: socket.user.username,
+      role: socket.user.role,
+      status: socket.user.status,
+      connectedAt: new Date(),
+      lastActiveAt: new Date()
+    });
     clearPendingLogin(socket.user.id);
   }
 
@@ -62,6 +72,7 @@ export function createOnlineSessionManager({
       onlineSockets.delete(socket.user.id);
       clearDisconnectedSessionTimer(socket.user.id);
     }
+    onlineSocketDetails.delete(socket.id);
     onSocketDisconnected(socket);
   }
 
@@ -75,6 +86,23 @@ export function createOnlineSessionManager({
     return socketId ? io.sockets.sockets.get(socketId) : null;
   }
 
+  function listOnlineUsers() {
+    return [...onlineSockets.entries()].map(([userId, socketIds]) => {
+      const socketId = socketIds.values().next().value;
+      const socket = socketId ? io.sockets.sockets.get(socketId) : null;
+      const detail = socketId ? onlineSocketDetails.get(socketId) : null;
+      return {
+        userId,
+        username: socket?.user?.username ?? detail?.username ?? "",
+        role: socket?.user?.role ?? detail?.role ?? "player",
+        status: statusForUser(userId),
+        socketCount: socketIds.size,
+        connectedAt: detail?.connectedAt ?? null,
+        lastActiveAt: detail?.lastActiveAt ?? null
+      };
+    });
+  }
+
   return {
     createLoginResponse,
     forceLogoutUser,
@@ -82,6 +110,7 @@ export function createOnlineSessionManager({
     unregisterOnlineSocket,
     statusForUser,
     firstOnlineSocket,
+    listOnlineUsers,
     hasOnlineUser: (userId) => onlineSockets.has(userId),
     onlineCount: () => onlineSockets.size
   };

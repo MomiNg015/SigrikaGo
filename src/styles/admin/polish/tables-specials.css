@@ -1,0 +1,140 @@
+.admin-sidebar button,
+.admin-achievement-switch button,
+.admin-range-tabs button,
+.admin-mailbox-targets button,
+.admin-mailbox-user-results button,
+.admin-character-card {
+  border-color: var(--admin-line);
+  background: #ffffff;
+  color: #334155;
+  box-shadow: none;
+}
+
+.admin-sidebar button:hover:not(.active),
+.admin-achievement-switch button:hover:not(.active),
+.admin-range-tabs button:hover:not(.active),
+.admin-mailbox-targets button:hover:not(.active),
+.admin-mailbox-user-results button:hover:not(.active),
+.admin-character-card:hover:not(.selected) {
+  border-color: #b9cbe0;
+  background: var(--admin-surface-tint);
+  box-shadow: 0 6px 16px rgba(55, 73, 92, 0.07);
+}
+
+.admin-sidebar button.active,
+.admin-achievement-switch button.active,
+.admin-range-tabs button.active,
+.admin-mailbox-targets button.active,
+.admin-mailbox-user-results button.active,
+.admin-character-card.selected {
+  border-color: #84afe3;
+  background: var(--admin-primary-soft);
+  color: var(--admin-primary-strong);
+  box-shadow:
+    inset 3px 0 0 var(--admin-primary),
+    0 0 0 3px rgba(47, 111, 189, 0.12);
+}
+
+.admin-range-tabs,
+.admin-mailbox-targets {
+  background: #eef4fa;
+  border: 1px solid var(--admin-line);
+}
+
+.admin-table th {
+  background: #f1f6fb;
+  color: #46566b;
+}
+
+.admin-table td {
+  color: var(--admin-ink);
+}
+
+.admin-table tbody tr:hover {
+  background: #f7fbff;
+}
+
+.admin-status-pill {
+  border: 1px solid var(--admin-line);
+  background: #f3f6fa;
+  color: #526173;
+}
+
+.admin-status-pill.green {
+  border-color: #bbe4c8;
+  background: var(--admin-green-soft);
+  color: var(--admin-green);
+}
+
+.admin-status-pill.red {
+  border-color: #f2b6bf;
+  background: var(--admin-red-soft);
+  color: var(--admin-red);
+}
+
+.admin-status-pill.blue {
+  border-color: #bad0ec;
+  background: var(--admin-primary-soft);
+  color: var(--admin-primary-strong);
+}
+
+.admin-danger-zone {
+  border-top-color: #f2c7cf;
+  background: linear-gradient(180deg, rgba(255, 240, 242, 0.45), rgba(255, 255, 255, 0));
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.admin-action-error {
+  border-color: #f2b6bf;
+  background: var(--admin-red-soft);
+  color: var(--admin-red);
+}
+
+.admin-success,
+.admin-save-message {
+  color: var(--admin-green);
+}
+
+.admin-toggle-row,
+.admin-replay-item,
+.admin-gacha-prize-row,
+.admin-online-group,
+.admin-mode-card,
+.admin-segment-grid article {
+  border-color: var(--admin-line);
+  background: #ffffff;
+}
+
+.admin-gacha-prize-editor-head {
+  border-color: #b9ded7;
+  background: linear-gradient(135deg, #f3fbfa, #fffaf0);
+}
+
+.admin-gacha-resource-static,
+.admin-gacha-featured-toggle {
+  border-color: #efd28e;
+  background: var(--admin-gold-soft);
+  color: var(--admin-gold);
+}
+
+.admin-gacha-featured-toggle[aria-pressed="true"] {
+  border-color: #d9ad4e;
+  background: #ffefbd;
+  color: #654512;
+  box-shadow: 0 0 0 3px rgba(217, 173, 78, 0.14);
+}
+
+.admin-screen .close-button {
+  border: 1px solid var(--admin-line);
+  background: #ffffff;
+  color: #526173;
+  box-shadow: var(--admin-shadow-sm);
+}
+
+.admin-screen .close-button:hover:not(:disabled),
+.admin-screen .close-button:focus-visible:not(:disabled) {
+  border-color: #f2b6bf;
+  background: var(--admin-red-soft);
+  color: var(--admin-red);
+}

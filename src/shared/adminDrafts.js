@@ -1,4 +1,5 @@
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
+import { DEFAULT_VOYAGE_STAR_DERIVED_SKILL } from "./derivedSkills.js";
 import { skillEffectTargetRule } from "./skillEffectCatalog.js";
 
 export function emptyCharacterDraft() {
@@ -25,6 +26,7 @@ export function emptyCharacterDraft() {
       paramsJson: "{}",
       costType: "numeric",
       costValue: "0",
+      derivedSkills: [defaultDerivedSkillDraft()],
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
       enabled: true
     }
@@ -33,6 +35,7 @@ export function emptyCharacterDraft() {
 
 export function buildCharacterDraft(character) {
   const skill = character.skill ?? {};
+  const derivedSkills = derivedSkillDraftsFromParams(skill.params ?? parseJsonObject(skill.paramsJson));
   return {
     dbId: character.dbId ?? "",
     originalSlug: character.id ?? "",
@@ -56,6 +59,7 @@ export function buildCharacterDraft(character) {
       paramsJson: skill.paramsJson ?? JSON.stringify(skill.params ?? {}),
       costType: skill.costType ?? "numeric",
       costValue: String(skill.costValue ?? skill.cost ?? 0),
+      derivedSkills,
       systemMessage: skill.systemMessage ?? DEFAULT_SKILL_SYSTEM_MESSAGE,
       enabled: skill.enabled ?? true
     }
@@ -70,6 +74,8 @@ export function characterDraftToBody(draft) {
   const costValue = String(draft.skill.costValue ?? "").trim();
   if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) return null;
   if (costType === "special" && !costValue) return null;
+  const paramsJson = skillParamsJsonWithDerivedSkills(draft.skill);
+  if (paramsJson == null) return null;
   return {
     slug: draft.slug.trim(),
     name: draft.name.trim(),
@@ -88,7 +94,7 @@ export function characterDraftToBody(draft) {
       uses,
       freeTurn: Boolean(draft.skill.freeTurn),
       targetRule: draft.skill.targetRule,
-      paramsJson: draft.skill.paramsJson,
+      paramsJson,
       costType,
       costValue,
       systemMessage: draft.skill.systemMessage.trim(),
@@ -279,6 +285,66 @@ export function targetRuleForEffect(effectType) {
   return skillEffectTargetRule(effectType, "empty-point");
 }
 
+export function defaultDerivedSkillDraft() {
+  return {
+    ...DEFAULT_VOYAGE_STAR_DERIVED_SKILL,
+    costValue: String(DEFAULT_VOYAGE_STAR_DERIVED_SKILL.costValue)
+  };
+}
+
+export function updateDerivedSkillDraft(draft, effectType, field, value) {
+  const derivedSkills = Array.isArray(draft.skill?.derivedSkills) && draft.skill.derivedSkills.length
+    ? draft.skill.derivedSkills
+    : [defaultDerivedSkillDraft()];
+  return {
+    ...draft,
+    skill: {
+      ...draft.skill,
+      derivedSkills: derivedSkills.map((skill) => (
+        skill.effectType === effectType ? { ...skill, [field]: value } : skill
+      ))
+    }
+  };
+}
+
+function skillParamsJsonWithDerivedSkills(skill) {
+  const params = parseJsonObject(skill.paramsJson);
+  if (params == null) return null;
+  const rawDerivedSkills = Array.isArray(skill.derivedSkills) ? skill.derivedSkills : [];
+  const derivedSkills = rawDerivedSkills
+    .map((definition) => sanitizeDerivedSkillDraft(definition))
+    .filter(Boolean);
+  if (derivedSkills.length !== rawDerivedSkills.length) return null;
+  const nextParams = { ...params };
+  if (derivedSkills.length) nextParams.derivedSkills = derivedSkills;
+  else delete nextParams.derivedSkills;
+  return JSON.stringify(nextParams);
+}
+
+function derivedSkillDraftsFromParams(params = {}) {
+  const raw = Array.isArray(params?.derivedSkills) ? params.derivedSkills : [];
+  const voyageStar = raw.find((definition) => (definition?.effectType ?? definition?.id) === "voyage-star");
+  return [{ ...defaultDerivedSkillDraft(), ...(voyageStar ?? {}) }];
+}
+
+function sanitizeDerivedSkillDraft(definition) {
+  if (!definition?.effectType) return null;
+  const costValue = String(definition.costValue ?? "").trim();
+  if (!/^-?\d+(\.\d+)?$/.test(costValue)) return null;
+  return {
+    id: definition.id ?? definition.effectType,
+    effectType: definition.effectType,
+    name: String(definition.name ?? "").trim() || DEFAULT_VOYAGE_STAR_DERIVED_SKILL.name,
+    description: String(definition.description ?? "").trim(),
+    uses: Math.max(0, Math.min(9, parseAdminInteger(definition.uses) ?? 1)),
+    freeTurn: definition.freeTurn !== false,
+    targetRule: definition.targetRule ?? skillEffectTargetRule(definition.effectType, "none"),
+    costType: "numeric",
+    costValue,
+    musicTrackId: definition.musicTrackId ?? DEFAULT_VOYAGE_STAR_DERIVED_SKILL.musicTrackId
+  };
+}
+
 function gachaPrizeDraftToBody(prize, index, errors) {
   const quantity = parseAdminInteger(prize.quantity);
   const probabilityBasisPoints = parseAdminInteger(prize.probabilityBasisPoints);
@@ -338,6 +404,17 @@ function normalizeFeaturedPrizeIndexes(draft = {}) {
     indexes.push(index);
   }
   return indexes;
+}
+
+function parseJsonObject(value) {
+  if (!value) return {};
+  if (typeof value === "object" && !Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(String(value));
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return null;
+  }
 }
 
 export function parseAdminInteger(value) {

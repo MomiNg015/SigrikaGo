@@ -1,0 +1,86 @@
+.admin-screen {
+  --admin-ink: #243142;
+  --admin-muted: #64748b;
+  --admin-soft: #f6f8fb;
+  --admin-surface: #ffffff;
+  --admin-surface-tint: #f8fbff;
+  --admin-line: #dbe5ef;
+  --admin-line-strong: #b8c7d9;
+  --admin-primary: #2f6fbd;
+  --admin-primary-strong: #24599d;
+  --admin-primary-soft: #eaf3ff;
+  --admin-green: #257251;
+  --admin-green-soft: #eaf8f0;
+  --admin-red: #b33a4b;
+  --admin-red-soft: #fff0f2;
+  --admin-gold: #8a6320;
+  --admin-gold-soft: #fff7df;
+  --admin-shadow-sm: 0 8px 20px rgba(55, 73, 92, 0.08);
+  --admin-shadow-md: 0 18px 48px rgba(55, 73, 92, 0.12);
+  background:
+    linear-gradient(180deg, rgba(247, 250, 253, 0.96), rgba(242, 247, 251, 0.96)),
+    #f4f7fb;
+  color: var(--admin-ink);
+}
+
+.admin-sidebar,
+.admin-main,
+.admin-drawer,
+.admin-crud-drawer,
+.admin-character-editor,
+.admin-empty-state,
+.admin-section-header,
+.admin-table-wrap,
+.admin-settings-fieldset,
+.admin-brief-card,
+.admin-operations-toolbar,
+.admin-panel,
+.admin-insight-section,
+.admin-chart-card,
+.admin-readable-state,
+.admin-mailbox-compose,
+.admin-mailbox-history {
+  background: var(--admin-surface);
+  border-color: var(--admin-line);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+.admin-sidebar {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-right: 1px solid var(--admin-line);
+}
+
+.admin-sidebar strong,
+.admin-main header strong,
+.admin-section-title-block h2,
+.admin-drawer h2,
+.admin-form-heading h2,
+.admin-character-form h3,
+.admin-mailbox-compose h3,
+.admin-mailbox-history h3,
+.admin-brief-main h2,
+.admin-operations-toolbar h2,
+.admin-panel h3,
+.admin-chart-card h3,
+.admin-section-inline-title h3 {
+  color: var(--admin-ink);
+}
+
+.admin-main header,
+.admin-section-header {
+  border-bottom-color: var(--admin-line);
+}
+
+.admin-main header span,
+.admin-section-title-block span,
+.admin-table-empty,
+.admin-online-row small,
+.admin-duration-row small,
+.admin-brief-main p,
+.admin-operations-toolbar p,
+.admin-panel-head p,
+.admin-chart-card p,
+.admin-insight-card p {
+  color: var(--admin-muted);
+}

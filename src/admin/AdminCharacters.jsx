@@ -5,7 +5,8 @@ import {
   buildCharacterDraft,
   characterDraftToBody,
   emptyCharacterDraft,
-  targetRuleForEffect
+  targetRuleForEffect,
+  updateDerivedSkillDraft
 } from "../shared/adminDrafts.js";
 import { SKILL_EFFECT_OPTIONS } from "../shared/skillEffectCatalog.js";
 import { SKILL_MESSAGE_TIP } from "../shared/skillMessages.js";
@@ -86,6 +87,10 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
         [field]: value
       }
     }));
+  }
+
+  function updateDerivedSkill(effectType, field, value) {
+    setDraft((current) => updateDerivedSkillDraft(current, effectType, field, value));
   }
 
   function updateSkillEffect(effectType) {
@@ -252,6 +257,40 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
           <textarea value={draft.skill.paramsJson} onChange={(event) => updateSkill("paramsJson", event.target.value)} />
         </label>
       </div>
+      {draft.skill.effectType === "hidden-hand" && (
+        <>
+          <h3>派生技能</h3>
+          <div className="admin-character-form-grid">
+            {(draft.skill.derivedSkills ?? []).map((derivedSkill) => (
+              <DerivedSkillEditor
+                key={derivedSkill.effectType}
+                derivedSkill={derivedSkill}
+                onChange={updateDerivedSkill}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </form>
+  );
+}
+
+function DerivedSkillEditor({ derivedSkill, onChange }) {
+  return (
+    <>
+      <label><AdminFieldLabel text="派生技能名" tip="小爱出击成功后替换技能栏显示的技能名。" />
+        <input value={derivedSkill.name} onChange={(event) => onChange(derivedSkill.effectType, "name", event.target.value)} />
+      </label>
+      <label><AdminFieldLabel text="派生超频" tip="发动派生技能时增加的超频数值。" />
+        <input
+          type="number"
+          value={derivedSkill.costValue}
+          onChange={(event) => onChange(derivedSkill.effectType, "costValue", event.target.value)}
+        />
+      </label>
+      <label className="wide-field"><AdminFieldLabel text="派生技能描述" tip="角色详情和对局技能说明中展示的派生技能文本。" />
+        <textarea value={derivedSkill.description} onChange={(event) => onChange(derivedSkill.effectType, "description", event.target.value)} />
+      </label>
+    </>
   );
 }

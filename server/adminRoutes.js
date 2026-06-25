@@ -54,6 +54,11 @@ import {
   listAdminMailboxBatches,
   searchMailboxUsers
 } from "./mailbox.js";
+import {
+  buildAdminOperationsAnalytics,
+  buildAdminOverviewAnalytics,
+  isSuperAdmin
+} from "./adminAnalytics.js";
 
 export { serializeAudit } from "./adminAudit.js";
 export {
@@ -130,7 +135,14 @@ async function removeUploadedFile(file) {
   }
 }
 
-export function createAdminRouter({ prisma, uploadMiddleware = null }) {
+export function createAdminRouter({
+  prisma,
+  uploadMiddleware = null,
+  onlineSessions = null,
+  listActiveRooms = () => [],
+  matchmakingCount = () => 0,
+  matchmakingCountsByMode = () => ({})
+}) {
   const router = Router();
 
   router.get("/summary", async (_req, res) => {
@@ -147,6 +159,31 @@ export function createAdminRouter({ prisma, uploadMiddleware = null }) {
     res.json({
       summary: { users, bannedUsers, characters, gameRecords },
       auditLogs
+    });
+  });
+
+  router.get("/analytics/overview", async (req, res) => {
+    const overview = await buildAdminOverviewAnalytics({
+      prisma,
+      onlineSessions,
+      listActiveRooms,
+      matchmakingCount,
+      matchmakingCountsByMode
+    });
+    res.json({
+      ...overview,
+      isSuperAdmin: isSuperAdmin(req.user)
+    });
+  });
+
+  router.get("/analytics/operations", async (req, res) => {
+    const operations = await buildAdminOperationsAnalytics({
+      prisma,
+      range: req.query.range
+    });
+    res.json({
+      ...operations,
+      isSuperAdmin: isSuperAdmin(req.user)
     });
   });
 

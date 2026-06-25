@@ -10,6 +10,7 @@ import AdminGachaPools from "./AdminGachaPools.jsx";
 import AdminMailbox from "./AdminMailbox.jsx";
 import AdminMusicTracks from "./AdminMusicTracks.jsx";
 import AdminOverview from "./AdminOverview.jsx";
+import AdminOperations from "./AdminOperations.jsx";
 import AdminRecruitmentSettings from "./AdminRecruitmentSettings.jsx";
 import AdminReports from "./AdminReports.jsx";
 import AdminShopItems from "./AdminShopItems.jsx";
@@ -17,7 +18,10 @@ import AdminSiteSettings from "./AdminSiteSettings.jsx";
 import AdminUsers, { UserEditor } from "./AdminUsers.jsx";
 
 export default function AdminConsole({ user, token, tab, setTab, musicTracks, onCurrentUserChange, onCharactersChanged, onMusicTracksChanged, onSiteSettingsChanged, onNotice, onBack, onOpenReplay }) {
-  const [summary, setSummary] = useState(null);
+  const [overviewData, setOverviewData] = useState(null);
+  const [operationsData, setOperationsData] = useState(null);
+  const [operationsRange, setOperationsRange] = useState("7d");
+  const [adminLoading, setAdminLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
@@ -38,11 +42,13 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
 
   useEffect(() => {
     if (tab !== "overview") return;
-    setAdminError("");
-    adminApi("/summary", token)
-      .then(setSummary)
-      .catch((error) => notify(error.message));
+    refreshOverview();
   }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "operations") return;
+    refreshOperations();
+  }, [tab, token, operationsRange]);
 
   useEffect(() => {
     if (tab !== "users") return;
@@ -110,6 +116,30 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
       }
     } catch (error) {
       notify(error.message);
+    }
+  }
+
+  async function refreshOverview() {
+    setAdminError("");
+    setAdminLoading(true);
+    try {
+      setOverviewData(await adminApi("/analytics/overview", token));
+    } catch (error) {
+      notify(error.message);
+    } finally {
+      setAdminLoading(false);
+    }
+  }
+
+  async function refreshOperations() {
+    setAdminError("");
+    setAdminLoading(true);
+    try {
+      setOperationsData(await adminApi(`/analytics/operations?range=${encodeURIComponent(operationsRange)}`, token));
+    } catch (error) {
+      notify(error.message);
+    } finally {
+      setAdminLoading(false);
     }
   }
 
@@ -227,7 +257,24 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
 
   return (
     <AdminShell user={user} tab={tab} setTab={setTab} onBack={onBack} error={adminError}>
-      {tab === "overview" && <AdminOverview summary={summary} />}
+      {tab === "overview" && (
+        <AdminOverview
+          data={overviewData}
+          loading={adminLoading && !overviewData}
+          onRefresh={refreshOverview}
+          onNavigate={setTab}
+        />
+      )}
+      {tab === "operations" && (
+        <AdminOperations
+          data={operationsData}
+          loading={adminLoading && !operationsData}
+          range={operationsRange}
+          onRangeChange={setOperationsRange}
+          onRefresh={refreshOperations}
+          onNavigate={setTab}
+        />
+      )}
       {tab === "users" && (
         <>
           <AdminUsers users={users} onSelect={setSelectedUser} />

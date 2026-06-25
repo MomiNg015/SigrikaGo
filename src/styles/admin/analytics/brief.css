@@ -1,0 +1,209 @@
+.admin-analytics-page {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.admin-kicker {
+  color: #5d6d8f;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.admin-brief-card,
+.admin-operations-toolbar,
+.admin-panel,
+.admin-insight-section,
+.admin-chart-card,
+.admin-readable-state {
+  border: 1px solid #dbe4f4;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(57, 69, 92, 0.08);
+}
+
+.admin-brief-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  padding: 20px;
+  border-left: 8px solid #5c9f71;
+}
+
+.admin-brief-card.blue {
+  border-left-color: #4f72c7;
+}
+
+.admin-brief-card.red {
+  border-left-color: #c94b5e;
+}
+
+.admin-brief-main {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-brief-main h2,
+.admin-operations-toolbar h2,
+.admin-panel h3,
+.admin-chart-card h3,
+.admin-section-inline-title h3 {
+  margin: 0;
+  color: #202936;
+  letter-spacing: 0;
+}
+
+.admin-brief-main h2 {
+  font-size: 28px;
+}
+
+.admin-brief-main p,
+.admin-operations-toolbar p,
+.admin-panel-head p,
+.admin-chart-card p,
+.admin-insight-card p {
+  margin: 0;
+  color: #667184;
+  line-height: 1.5;
+}
+
+.admin-brief-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-brief-reasons span {
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #f4f7fb;
+  color: #36445a;
+  font-weight: 700;
+}
+
+.admin-brief-actions,
+.admin-toolbar-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-brief-actions small {
+  color: #6b7483;
+}
+
+.admin-answer-grid,
+.admin-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-chart-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.admin-answer-card {
+  min-height: 154px;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid #dbe4f4;
+  border-radius: 8px;
+  background: #fbfdff;
+}
+
+.admin-answer-card svg {
+  color: #49658d;
+}
+
+.admin-answer-card span,
+.admin-mode-card span,
+.admin-segment-grid span,
+.admin-health-list span {
+  color: #667184;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-answer-card strong {
+  color: #202936;
+  font-size: 26px;
+}
+
+.admin-answer-card p {
+  margin: 0;
+  color: #566174;
+  line-height: 1.45;
+}
+
+.admin-answer-card.danger {
+  background: #fff7f8;
+  border-color: #efbec7;
+}
+
+.admin-insight-section {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.admin-insight-section.danger {
+  border-left: 6px solid #c94b5e;
+}
+
+.admin-insight-section.watch {
+  border-left: 6px solid #4f72c7;
+}
+
+.admin-insight-section.normal {
+  border-left: 6px solid #5c9f71;
+}
+
+.admin-section-inline-title,
+.admin-chart-card > div,
+.admin-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-section-inline-title {
+  justify-content: flex-start;
+  color: #2f405a;
+}
+
+.admin-insight-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-insight-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #e3eaf5;
+  border-radius: 8px;
+  background: #fbfdff;
+}
+
+.admin-insight-card strong {
+  color: #202936;
+}
+
+.admin-insight-card button {
+  min-height: 36px;
+  border: 1px solid #bfd0f2;
+  border-radius: 8px;
+  background: #eef4ff;
+  color: #294d8a;
+  font-weight: 900;
+  padding: 7px 12px;
+}

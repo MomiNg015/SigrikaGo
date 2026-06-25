@@ -94,6 +94,86 @@ describe("admin draft helpers", () => {
     expect(body.skill.enabled).toBe(false);
   });
 
+  it("round-trips Aemeath derived skill text and overclock through skill params", () => {
+    const draft = buildCharacterDraft({
+      id: "aemeath",
+      name: "Aemeath",
+      portrait: "/assets/Aemeath_centered.webp",
+      skill: {
+        effectType: "hidden-hand",
+        name: "Little Ai",
+        description: "Hidden hand.",
+        params: {
+          derivedSkills: [{
+            effectType: "voyage-star",
+            name: "Far Sail",
+            description: "Configured derived skill.",
+            costValue: "7"
+          }]
+        }
+      }
+    });
+
+    expect(draft.skill.derivedSkills[0]).toMatchObject({
+      effectType: "voyage-star",
+      name: "Far Sail",
+      description: "Configured derived skill.",
+      costValue: "7"
+    });
+
+    const body = characterDraftToBody({
+      ...draft,
+      slug: "aemeath",
+      sortOrder: "1",
+      skill: {
+        ...draft.skill,
+        uses: "1",
+        costValue: "0",
+        derivedSkills: [{
+          ...draft.skill.derivedSkills[0],
+          name: "远航星",
+          description: "New copy.",
+          costValue: "5"
+        }]
+      }
+    });
+
+    expect(JSON.parse(body.skill.paramsJson).derivedSkills[0]).toMatchObject({
+      effectType: "voyage-star",
+      name: "远航星",
+      description: "New copy.",
+      costValue: "5"
+    });
+  });
+
+  it("rejects invalid derived skill overclock when serializing character drafts", () => {
+    const draft = {
+      ...emptyCharacterDraft(),
+      slug: "aemeath",
+      name: "Aemeath",
+      description: "Aemeath description",
+      portraitUrl: "/assets/Aemeath_centered.webp",
+      sortOrder: "1",
+      skill: {
+        ...emptyCharacterDraft().skill,
+        effectType: "hidden-hand",
+        targetRule: "empty-point",
+        name: "Little Ai",
+        description: "Hidden hand.",
+        uses: "1",
+        costValue: "0",
+        derivedSkills: [{
+          effectType: "voyage-star",
+          name: "远航星",
+          description: "Derived.",
+          costValue: "five"
+        }]
+      }
+    };
+
+    expect(characterDraftToBody(draft)).toBeNull();
+  });
+
   it("validates shop and decoration drafts", () => {
     const shop = buildShopItemDraft({
       name: "Danea",
