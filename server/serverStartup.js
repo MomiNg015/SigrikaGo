@@ -12,6 +12,7 @@ import { seedBuiltinShopItems } from "./shop.js";
 import { ensureDefaultSiteSettings } from "./siteSettings.js";
 import { ensureSocialSchema } from "./social.js";
 import { cleanupLegacyUsernames } from "./usernameCleanup.js";
+import { seedAdminDefaultConfig } from "./adminDefaultSeed.js";
 
 export async function initializeServerData({
   prisma,
@@ -27,12 +28,17 @@ export async function initializeServerData({
   ensureRecruitmentSchema: ensureRecruitmentSchemaTask = ensureRecruitmentSchema,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
+  seedAdminDefaultConfig: seedAdminDefaultConfigTask = seedAdminDefaultConfig,
   seedBuiltinAchievements: seedBuiltinAchievementsTask = seedBuiltinAchievements,
   cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask = cleanupLegacyDeniaCharacterData,
   cleanupLegacyUsernames: cleanupLegacyUsernamesTask = cleanupLegacyUsernames,
   promoteConfiguredAdmins: promoteConfiguredAdminsTask = promoteConfiguredAdmins
 }) {
   await ensureAchievementSchemaTask(prisma);
+  await ensureGachaSchemaTask(prisma);
+  await ensureMusicTrackSettingsSchemaTask(prisma);
+  await ensureRecruitmentSchemaTask(prisma);
+  await seedAdminDefaultConfigTask(prisma);
   await seedBuiltinAchievementsTask(prisma);
   await cleanupLegacyDeniaCharacterDataTask(prisma);
   await cleanupLegacyUsernamesTask(prisma);
@@ -43,9 +49,6 @@ export async function initializeServerData({
   await ensureRoomPersistenceSchemaTask(prisma);
   await ensureLoginSessionSchemaTask(prisma);
   await ensureGameModeSchemaTask(prisma);
-  await ensureGachaSchemaTask(prisma);
   await ensureMailboxSchemaTask(prisma);
-  await ensureRecruitmentSchemaTask(prisma);
-  await ensureMusicTrackSettingsSchemaTask(prisma);
   await promoteConfiguredAdminsTask(prisma);
 }

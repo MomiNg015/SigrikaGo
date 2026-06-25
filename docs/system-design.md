@@ -46,6 +46,10 @@
 - 发现乱码时先确认源文件是否含 `Unicode replacement character` 或常见 mojibake 片段，再区分终端显示问题和文件内容损坏。
 - 修改 Markdown 后运行 `npm run docs:system-design`；涉及脚本或编码规则时运行 `npm test -- docs/systemDesignHtml.test.js`。
 
+## Admin Deployment Defaults
+
+- Non-user admin configuration defaults are captured in `server/adminDefaultSnapshot.js`, generated from the local `prisma/dev.db` admin state. Startup runs `seedAdminDefaultConfig()` from `server/adminDefaultSeed.js` after schema guards and before built-in seeders, creating only missing site settings, characters/skills, decorations, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, and recruitment-related admin data without overwriting cloud/admin edits. Users, user assets, purchases, feedback, reports, audit logs, analytics, mailbox history, game records, and live-room state remain excluded.
+
 ## Board Effect Theme Guard
 
 - Mobile match-mode picker cards keep rule text split into two stable lines, pin the count/status chip to the far right edge of each mode button, and keep the status label on one line.

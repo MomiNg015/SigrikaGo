@@ -32,6 +32,66 @@ Questions to answer:
 
 <!-- How to create and run migrations -->
 
+### Scenario: Non-User Admin Deployment Defaults
+
+#### 1. Scope / Trigger
+- Trigger: any change to startup seeding, admin-managed catalog/configuration defaults, or the contents of `server/adminDefaultSnapshot.js`.
+- The snapshot is deployment configuration, not runtime history. It exists so a fresh cloud database receives the current local admin configuration without copying `prisma/dev.db`.
+
+#### 2. Signatures
+- `ADMIN_DEFAULT_CONFIG` in `server/adminDefaultSnapshot.js`.
+- `seedAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CONFIG)` in `server/adminDefaultSeed.js`.
+- `initializeServerData()` in `server/serverStartup.js` must run schema guards for referenced tables before `seedAdminDefaultConfig()`, then run built-in seeders afterward.
+
+#### 3. Contracts
+- The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, and `MusicTrackSetting`.
+- The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, mailbox history, game records, and live-room state.
+- Seed behavior is missing-row only. Existing cloud/admin-edited rows must be preserved; use `upsert(..., update: {})` for key/id tables or `findUnique`/`findFirst` before `create` for catalog tables.
+- Startup order matters: schema guards for achievement, gacha, music track, and recruitment tables run first; snapshot seeding runs before built-in character/shop/site setting/achievement seeders so built-in defaults do not overwrite local admin defaults.
+
+#### 4. Validation & Error Matrix
+- Existing row found by stable key/slug/id -> skip create and do not update fields.
+- Missing row -> create from the committed snapshot.
+- Delegate missing in a narrowed test double -> seeder returns without throwing.
+- User/history model requested for snapshot -> reject the change and keep it outside deployment defaults.
+- Date-like optional fields from snapshots -> pass as nullable values accepted by Prisma for the target model.
+
+#### 5. Good/Base/Bad Cases
+- Good: a fresh database receives current character skill descriptions and system messages from `server/adminDefaultSnapshot.js`.
+- Base: an existing cloud database keeps its admin-edited `SiteSetting.homeTitle` because the startup upsert uses `update: {}`.
+- Bad: importing `prisma/dev.db` at runtime on the server.
+- Bad: adding `GachaDraw`, `User`, `UserItem`, `UserReport`, or audit rows to the snapshot.
+
+#### 6. Tests Required
+- Unit tests for `seedAdminDefaultConfig()` assert every included domain creates missing rows.
+- Unit tests assert existing rows are preserved and update payloads stay empty for upserted settings.
+- Startup-order tests assert schema guards run before the snapshot seed and built-in seeders run afterward.
+- A smoke test against a temporary database copy should verify the committed snapshot can be replayed through real Prisma create paths when changing snapshot shape.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await prisma.siteSetting.upsert({
+  where: { key: row.key },
+  create: row,
+  update: { value: row.value }
+});
+```
+
+Correct:
+
+```js
+await prisma.siteSetting.upsert({
+  where: { key: row.key },
+  create: { key: row.key, value: row.value },
+  update: {}
+});
+```
+
+The correct form seeds fresh deployments while preserving cloud/admin edits on restart.
+
 ### Scenario: Site Setting Public Configuration
 
 #### 1. Scope / Trigger

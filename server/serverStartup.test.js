@@ -18,8 +18,10 @@ describe("server startup", () => {
     const ensureGameModeSchema = task("ensureGameModeSchema");
     const ensureGachaSchema = task("ensureGachaSchema");
     const ensureMailboxSchema = task("ensureMailboxSchema");
+    const ensureRecruitmentSchema = task("ensureRecruitmentSchema");
     const ensureMusicTrackSettingsSchema = task("ensureMusicTrackSettingsSchema");
     const ensureAchievementSchema = task("ensureAchievementSchema");
+    const seedAdminDefaultConfig = task("seedAdminDefaultConfig");
     const seedBuiltinAchievements = task("seedBuiltinAchievements");
     const cleanupLegacyDeniaCharacterData = task("cleanupLegacyDeniaCharacterData");
     const cleanupLegacyUsernames = task("cleanupLegacyUsernames");
@@ -36,8 +38,10 @@ describe("server startup", () => {
       ensureGameModeSchema,
       ensureGachaSchema,
       ensureMailboxSchema,
+      ensureRecruitmentSchema,
       ensureMusicTrackSettingsSchema,
       ensureAchievementSchema,
+      seedAdminDefaultConfig,
       seedBuiltinAchievements,
       cleanupLegacyDeniaCharacterData,
       cleanupLegacyUsernames,
@@ -46,6 +50,10 @@ describe("server startup", () => {
 
     expect(calls).toEqual([
       "ensureAchievementSchema",
+      "ensureGachaSchema",
+      "ensureMusicTrackSettingsSchema",
+      "ensureRecruitmentSchema",
+      "seedAdminDefaultConfig",
       "seedBuiltinAchievements",
       "cleanupLegacyDeniaCharacterData",
       "cleanupLegacyUsernames",
@@ -56,9 +64,7 @@ describe("server startup", () => {
       "ensureRoomPersistenceSchema",
       "ensureLoginSessionSchema",
       "ensureGameModeSchema",
-      "ensureGachaSchema",
       "ensureMailboxSchema",
-      "ensureMusicTrackSettingsSchema",
       "promoteConfiguredAdmins"
     ]);
   });

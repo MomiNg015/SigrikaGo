@@ -13,6 +13,10 @@
 
 数据源定义在 `prisma/schema.prisma`，数据库为 SQLite。
 
+### Admin Deployment Defaults
+
+Non-user admin deployment defaults live in `server/adminDefaultSnapshot.js`, generated from the local `prisma/dev.db` admin configuration. `seedAdminDefaultConfig()` runs during startup after schema guards and before built-in seeders; it is missing-row only, so existing cloud/admin edits are preserved while fresh deployments receive the current site settings, character/skill descriptions and system messages, decorations, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, and recruitment-related admin defaults. User accounts, user-owned assets, purchases, feedback, reports, audit logs, analytics events, mailbox history, game records, and live-room state are intentionally outside this snapshot.
+
 ### User
 
 用户账号与资产/战绩。
