@@ -451,6 +451,73 @@ describe("shop", () => {
     ]);
   });
 
+  it("seeds Qiuyuan Zhouwo as a purchasable music shop item", async () => {
+    const calls = [];
+    await seedBuiltinShopItems({
+      shopItem: {
+        findFirst: async (query) => {
+          calls.push(["findFirst", query]);
+          return null;
+        },
+        create: async ({ data }) => {
+          calls.push(["create", data]);
+          return data;
+        }
+      }
+    });
+
+    expect(calls).toContainEqual([
+      "create",
+      expect.objectContaining({
+        name: "肘我",
+        category: "music",
+        targetId: "qiuyuan-skill-zhouwo",
+        stockQuantity: -1,
+        priceCoins: 800,
+        purchasable: true,
+        enabled: true,
+        description: "仇远的第二版技能 BGM",
+        imageUrl: "/assets/items/qiuyuan-zhouwo.webp"
+      })
+    ]);
+  });
+
+  it("backfills the Qiuyuan Zhouwo shop image when an existing item has no image", async () => {
+    const calls = [];
+    await seedBuiltinShopItems({
+      shopItem: {
+        updateMany: async (query) => {
+          calls.push(["updateMany", query]);
+          return { count: 1 };
+        },
+        findFirst: async (query) => {
+          calls.push(["findFirst", query]);
+          return query.where.targetId === "qiuyuan-skill-zhouwo"
+            ? { id: "shop-zhouwo", imageUrl: "" }
+            : null;
+        },
+        create: async ({ data }) => {
+          calls.push(["create", data]);
+          return data;
+        }
+      }
+    });
+
+    expect(calls).toContainEqual([
+      "updateMany",
+      {
+        where: {
+          category: "music",
+          targetId: "qiuyuan-skill-zhouwo",
+          imageUrl: ""
+        },
+        data: {
+          imageUrl: "/assets/items/qiuyuan-zhouwo.webp"
+        }
+      }
+    ]);
+  });
+
   it("does not overwrite existing builtin shop items during startup seeding", async () => {
     const existing = {
       id: "shop-existing",

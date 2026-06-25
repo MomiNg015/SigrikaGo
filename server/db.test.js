@@ -55,6 +55,7 @@ describe("publicUser", () => {
         "denia-skill-default",
         "sigrika-skill-default",
         "aemeath-skill-default",
+        "aemeath-voyage-star-default",
         "baconbits-skill-default",
         "nabomo-skill-default",
         "qiuyuan-skill-default",

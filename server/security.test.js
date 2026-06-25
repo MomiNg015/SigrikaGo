@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildAllowedOrigins,
+  canUseDebugTestActions,
   normalizeChatText,
   validateProductionDeployment,
   validatePassword,
@@ -45,6 +46,12 @@ describe("deployment security helpers", () => {
     expect(validateRoomCode("12345").ok).toBe(true);
     expect(validateRoomCode("1234").ok).toBe(false);
     expect(validateRoomCode("abcde").ok).toBe(false);
+  });
+
+  it("allows debug test actions in development only", () => {
+    expect(canUseDebugTestActions({ NODE_ENV: "development" })).toBe(true);
+    expect(canUseDebugTestActions({ NODE_ENV: "test" })).toBe(true);
+    expect(canUseDebugTestActions({ NODE_ENV: "production", ENABLE_TEST_ACTIONS: "true" })).toBe(false);
   });
 
   it("builds a production origin allowlist from configured domains", () => {

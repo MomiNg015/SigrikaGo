@@ -19,6 +19,8 @@ import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/mu
 import { RECRUITMENT_ITEMS } from "../src/shared/recruitment.js";
 
 const SHOP_CATEGORIES = new Set(["character", "decoration", "item", "music"]);
+const QIUYUAN_ZHOUWO_TRACK_ID = "qiuyuan-skill-zhouwo";
+const QIUYUAN_ZHOUWO_SHOP_IMAGE = "/assets/items/qiuyuan-zhouwo.webp";
 const BUILTIN_SHOP_ITEMS = [
   {
     name: "猪小仙",
@@ -59,6 +61,19 @@ const BUILTIN_SHOP_ITEMS = [
     sortOrder: 150,
     description: "产地不明的糖果，据说有神秘的效果",
     imageUrl: "/assets/items/rainbow-bean-candy.webp"
+  },
+  {
+    name: "肘我",
+    category: "music",
+    targetId: QIUYUAN_ZHOUWO_TRACK_ID,
+    stockQuantity: -1,
+    priceCoins: 800,
+    discountPercent: 0,
+    purchasable: true,
+    enabled: true,
+    sortOrder: 320,
+    description: "仇远的第二版技能 BGM",
+    imageUrl: QIUYUAN_ZHOUWO_SHOP_IMAGE
   },
   ...Object.values(STONE_DECORATIONS).map((decoration, index) => ({
     name: decoration.name,
@@ -198,6 +213,16 @@ export async function seedBuiltinShopItems(prisma) {
     data: {
       purchasable: false,
       enabled: false
+    }
+  });
+  await prisma.shopItem.updateMany?.({
+    where: {
+      category: "music",
+      targetId: QIUYUAN_ZHOUWO_TRACK_ID,
+      imageUrl: ""
+    },
+    data: {
+      imageUrl: QIUYUAN_ZHOUWO_SHOP_IMAGE
     }
   });
   for (const item of BUILTIN_SHOP_ITEMS) {

@@ -55,6 +55,7 @@ import {
   joinMatchmaking,
   leaveRoom,
   leaveMatchmaking,
+  listActiveRooms,
   listWaitingPlayers,
   listWatchRooms,
   markRoomPreloadReady,
@@ -191,7 +192,14 @@ app.use("/api", authHttp, createGachaRouter({ prisma }));
 app.use("/api", authHttp, createMailboxRouter({ prisma }));
 app.use("/api", authHttp, createRecruitmentRouter({ prisma }));
 
-app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({ prisma, uploadMiddleware: upload }));
+app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({
+  prisma,
+  uploadMiddleware: upload,
+  onlineSessions,
+  listActiveRooms,
+  matchmakingCount,
+  matchmakingCountsByMode
+}));
 app.use("/api", authHttp, createPlayerRouter({
   prisma,
   findRoomForUser,
