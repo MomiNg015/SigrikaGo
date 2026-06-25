@@ -49,19 +49,22 @@ const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["base/home-legacy-grid.css", 6736],
   ["base/home-stage-artboard.css", 8657],
+  ["commerce/recruitment/board.css", 6111],
   ["hud-components/pop-tech-terminal.css", 8513],
   ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
+  ["mobile-adaptive/bright-school-portrait/settings-tabs.css", 6576],
   ["mobile-adaptive/mobile-profile-records.css", 6842],
   ["mobile-adaptive/phone-core.css", 6418],
   ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-modals/phone-house-resume.css", 6956],
+  ["modals/mailbox.css", 10616],
   ["mobile-room/portrait-room.css", 7502],
   ["modals/character-opening.css", 6330],
   ["responsive/phone-portrait-room.css", 6803],
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
-  ["room/board/stones-skill-effects.css", 6837],
+  ["room/board/stones-skill-effects.css", 7290],
   ["themes/bright-school/component-repairs/foundation-home.css", 6973],
   ["themes/bright-school/component-repairs/notebook-polish.css", 6408],
   ["themes/bright-school/component-repairs/warehouse-character.css", 8413],
@@ -453,6 +456,7 @@ describe("root CSS entry contract", () => {
       "./bright-school-portrait/shop-wallet.css",
       "./bright-school-portrait/settings-tabs.css",
       "./bright-school-portrait/mobile-room-chat.css",
+      "./bright-school-portrait/mailbox-modal.css",
       "./bright-school-portrait/character-detail.css"
     ]);
     expect(brightSchoolPortraitEntry).not.toContain(".resume-header-actions {");

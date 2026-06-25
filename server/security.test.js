@@ -49,8 +49,9 @@ describe("deployment security helpers", () => {
   });
 
   it("allows debug test actions in development only", () => {
-    expect(canUseDebugTestActions({ NODE_ENV: "development" })).toBe(true);
-    expect(canUseDebugTestActions({ NODE_ENV: "test" })).toBe(true);
+    expect(canUseDebugTestActions({ NODE_ENV: "development", ENABLE_TEST_ACTIONS: "true" })).toBe(true);
+    expect(canUseDebugTestActions({ NODE_ENV: "development" })).toBe(false);
+    expect(canUseDebugTestActions({ NODE_ENV: "test", ENABLE_TEST_ACTIONS: "true" })).toBe(true);
     expect(canUseDebugTestActions({ NODE_ENV: "production", ENABLE_TEST_ACTIONS: "true" })).toBe(false);
   });
 

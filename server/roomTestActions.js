@@ -1,4 +1,4 @@
-import { GAME_PHASES, randomLayout, restoreSkillUse } from "../src/shared/game.js";
+import { COLORS, GAME_PHASES, randomLayout, restoreSkillUse } from "../src/shared/game.js";
 import { resetByoYomi } from "./roomClockTiming.js";
 import { canUseDebugTestActions } from "./security.js";
 
@@ -42,6 +42,7 @@ export function handleRoomTestAction({ action = {}, env = process.env, player, r
     };
   }
 
+  const label = player.color === COLORS.black ? "黑" : "白";
   return {
     ok: true,
     result: restoreSkillUse(room.game, player.color),
