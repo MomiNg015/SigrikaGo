@@ -11,7 +11,7 @@ describe("admin default config seed", () => {
     expect(calls).toContainEqual(["siteSetting.upsert", {
       where: { key: "homeTitle" },
       create: { key: "homeTitle", value: "Snapshot Home" },
-      update: {}
+      update: { value: "Snapshot Home" }
     }]);
     expect(calls).toContainEqual(["character.create", expect.objectContaining({
       data: expect.objectContaining({
@@ -42,11 +42,11 @@ describe("admin default config seed", () => {
     expect(calls).toContainEqual(["musicTrackSetting.upsert", {
       where: { id: "track-snapshot" },
       create: { id: "track-snapshot", displayName: "Snapshot Track" },
-      update: {}
+      update: { displayName: "Snapshot Track" }
     }]);
   });
 
-  it("preserves existing admin-managed rows during startup seeding", async () => {
+  it("syncs existing non-user admin rows to the deployment snapshot", async () => {
     const calls = [];
     const existing = {
       characters: new Set(["snapshot-character"]),
@@ -66,8 +66,42 @@ describe("admin default config seed", () => {
     expect(calls.some(([name]) => name === "gachaPool.create")).toBe(false);
     expect(calls.some(([name]) => name === "achievementRewardAsset.create")).toBe(false);
     expect(calls.some(([name]) => name === "achievement.create")).toBe(false);
-    expect(calls).toContainEqual(["siteSetting.upsert", expect.objectContaining({ update: {} })]);
-    expect(calls).toContainEqual(["musicTrackSetting.upsert", expect.objectContaining({ update: {} })]);
+    expect(calls).toContainEqual(["siteSetting.upsert", expect.objectContaining({
+      update: { value: "Snapshot Home" }
+    })]);
+    expect(calls).toContainEqual(["character.update", expect.objectContaining({
+      where: { slug: "snapshot-character" },
+      data: expect.objectContaining({
+        description: "Snapshot description.",
+        skill: { upsert: expect.objectContaining({
+          create: expect.objectContaining({ systemMessage: "{player} casts {skill}" }),
+          update: expect.objectContaining({ systemMessage: "{player} casts {skill}" })
+        }) }
+      })
+    })]);
+    expect(calls).toContainEqual(["decoration.update", expect.objectContaining({
+      where: { slug: "snapshot-decoration" },
+      data: expect.objectContaining({ description: "Snapshot decoration description." })
+    })]);
+    expect(calls).toContainEqual(["shopItem.update", expect.objectContaining({
+      where: { id: "shop-existing" },
+      data: expect.objectContaining({ description: "Snapshot shop item description." })
+    })]);
+    expect(calls).toContainEqual(["gachaPool.update", expect.objectContaining({
+      where: { id: "pool-snapshot" },
+      data: expect.objectContaining({ description: "Snapshot pool description." })
+    })]);
+    expect(calls).toContainEqual(["achievementRewardAsset.update", expect.objectContaining({
+      where: { id: "reward-snapshot" },
+      data: expect.objectContaining({ description: "Snapshot reward description." })
+    })]);
+    expect(calls).toContainEqual(["achievement.update", expect.objectContaining({
+      where: { key: "achievement-snapshot" },
+      data: expect.objectContaining({ content: "Snapshot achievement content." })
+    })]);
+    expect(calls).toContainEqual(["musicTrackSetting.upsert", expect.objectContaining({
+      update: { displayName: "Snapshot Track" }
+    })]);
   });
 });
 
@@ -195,7 +229,7 @@ function adminDefaultSeedPrisma({ calls, existing = {} }) {
     }),
     findFirst: vi.fn(async ({ where }) => {
       if (name === "shopItem") {
-        return has("shopTargets", `${where?.category}:${where?.targetId}`) ? { id: "existing" } : null;
+        return has("shopTargets", `${where?.category}:${where?.targetId}`) ? { id: "shop-existing" } : null;
       }
       return null;
     }),
@@ -205,6 +239,10 @@ function adminDefaultSeedPrisma({ calls, existing = {} }) {
     }),
     create: vi.fn(async (query) => {
       calls.push([`${name}.create`, query]);
+      return query.data;
+    }),
+    update: vi.fn(async (query) => {
+      calls.push([`${name}.update`, query]);
       return query.data;
     })
   });

@@ -48,7 +48,7 @@
 
 ## Admin Deployment Defaults
 
-- Non-user admin configuration defaults are captured in `server/adminDefaultSnapshot.js`, generated from the local `prisma/dev.db` admin state. Startup runs `seedAdminDefaultConfig()` from `server/adminDefaultSeed.js` after schema guards and before built-in seeders, creating only missing site settings, characters/skills, decorations, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, and recruitment-related admin data without overwriting cloud/admin edits. Users, user assets, purchases, feedback, reports, audit logs, analytics, mailbox history, game records, and live-room state remain excluded.
+- Non-user admin configuration defaults are captured in `server/adminDefaultSnapshot.js`, generated from the local `prisma/dev.db` admin state. Startup runs `seedAdminDefaultConfig()` from `server/adminDefaultSeed.js` after schema guards and before built-in seeders, syncing site settings, characters/skills, decorations, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, and recruitment-related admin data to that deployment snapshot. Users, user assets, purchases, feedback, reports, audit logs, analytics, mailbox history, game records, and live-room state remain excluded.
 
 ## Board Effect Theme Guard
 

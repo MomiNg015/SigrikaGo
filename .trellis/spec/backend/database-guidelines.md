@@ -46,11 +46,13 @@ Questions to answer:
 #### 3. Contracts
 - The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, and `MusicTrackSetting`.
 - The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, mailbox history, game records, and live-room state.
-- Seed behavior is missing-row only. Existing cloud/admin-edited rows must be preserved; use `upsert(..., update: {})` for key/id tables or `findUnique`/`findFirst` before `create` for catalog tables.
+- Seed behavior treats the snapshot as the deployment source of truth. Existing non-user admin rows are updated to the snapshot, and missing rows are created.
+- `SiteSetting` and `MusicTrackSetting` use `upsert` with non-empty `update` payloads. Catalog tables find the stable row first, then `update` existing rows or `create` missing rows.
+- `GachaPool` updates rebuild the pool's prize list with `deleteMany` plus nested `create`; this intentionally removes stale default prizes while preserving draw history through nullable `GachaDrawReward.prizeId`.
 - Startup order matters: schema guards for achievement, gacha, music track, and recruitment tables run first; snapshot seeding runs before built-in character/shop/site setting/achievement seeders so built-in defaults do not overwrite local admin defaults.
 
 #### 4. Validation & Error Matrix
-- Existing row found by stable key/slug/id -> skip create and do not update fields.
+- Existing row found by stable key/slug/id -> update snapshot-managed fields.
 - Missing row -> create from the committed snapshot.
 - Delegate missing in a narrowed test double -> seeder returns without throwing.
 - User/history model requested for snapshot -> reject the change and keep it outside deployment defaults.
@@ -58,13 +60,13 @@ Questions to answer:
 
 #### 5. Good/Base/Bad Cases
 - Good: a fresh database receives current character skill descriptions and system messages from `server/adminDefaultSnapshot.js`.
-- Base: an existing cloud database keeps its admin-edited `SiteSetting.homeTitle` because the startup upsert uses `update: {}`.
+- Base: an existing cloud database with old defaults receives the current snapshot values on restart/deploy.
 - Bad: importing `prisma/dev.db` at runtime on the server.
 - Bad: adding `GachaDraw`, `User`, `UserItem`, `UserReport`, or audit rows to the snapshot.
 
 #### 6. Tests Required
 - Unit tests for `seedAdminDefaultConfig()` assert every included domain creates missing rows.
-- Unit tests assert existing rows are preserved and update payloads stay empty for upserted settings.
+- Unit tests assert existing rows are updated to the deployment snapshot.
 - Startup-order tests assert schema guards run before the snapshot seed and built-in seeders run afterward.
 - A smoke test against a temporary database copy should verify the committed snapshot can be replayed through real Prisma create paths when changing snapshot shape.
 
@@ -76,7 +78,7 @@ Wrong:
 await prisma.siteSetting.upsert({
   where: { key: row.key },
   create: row,
-  update: { value: row.value }
+  update: {}
 });
 ```
 
@@ -86,11 +88,11 @@ Correct:
 await prisma.siteSetting.upsert({
   where: { key: row.key },
   create: { key: row.key, value: row.value },
-  update: {}
+  update: { value: row.value }
 });
 ```
 
-The correct form seeds fresh deployments while preserving cloud/admin edits on restart.
+The correct form upgrades already-deployed old defaults to the committed deployment snapshot.
 
 ### Scenario: Site Setting Public Configuration
 
