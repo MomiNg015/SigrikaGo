@@ -59,7 +59,10 @@ describe("socket event registration", () => {
     registerSocketEvents(socket, createDeps());
 
     expect(socket.use).toHaveBeenCalledWith(expect.any(Function));
-    expect(socket.data.rateGuard).toEqual(expect.objectContaining({ count: 0 }));
+    expect(socket.data.rateGuard).toEqual({
+      action: expect.objectContaining({ count: 0, notified: false }),
+      recovery: expect.objectContaining({ count: 0, notified: false })
+    });
     expect(socket.on.mock.calls.map(([event]) => event)).toEqual([
       "match:join",
       "match:leave",

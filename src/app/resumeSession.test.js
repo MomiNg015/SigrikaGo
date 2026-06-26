@@ -1,11 +1,14 @@
 import { describe, expect, test, vi } from "vitest";
 import {
+  DISMISSED_RESULT_ROOM_KEY,
   LAST_ROOM_CODE_KEY,
   buildRoomResumeRequest,
   clearLastRoomCode,
   dismissedResultRoomAfterResume,
   handleRoomResumePayload,
   handleMissingRoomResumePayload,
+  readDismissedResultRoom,
+  rememberDismissedResultRoom,
   rememberPlayerRoom,
   shouldClearRoomOnReplayExit,
   shouldShowResultModal
@@ -30,9 +33,24 @@ describe("resume session helpers", () => {
     expect(rememberPlayerRoom({ code: "54321", role: "player" }, storage)).toBe(true);
     expect(storage.getItem(LAST_ROOM_CODE_KEY)).toBe("54321");
     expect(buildRoomResumeRequest(storage)).toEqual({ roomCode: "54321" });
+    expect(storage.getItem(DISMISSED_RESULT_ROOM_KEY)).toBeNull();
 
+    expect(rememberPlayerRoom({ code: "54321", role: "player", game: { phase: "finished" } }, storage)).toBe(false);
+    expect(buildRoomResumeRequest(storage)).toEqual({ roomCode: "" });
+
+    expect(rememberPlayerRoom({ code: "54321", role: "player", game: { phase: "playing" } }, storage)).toBe(true);
     clearLastRoomCode(storage);
     expect(buildRoomResumeRequest(storage)).toEqual({ roomCode: "" });
+  });
+
+  test("persists dismissed finished rooms while clearing reconnect room memory", () => {
+    const storage = memoryStorage();
+    storage.setItem(LAST_ROOM_CODE_KEY, "67890");
+
+    expect(rememberDismissedResultRoom("67890", storage)).toBe(true);
+
+    expect(storage.getItem(LAST_ROOM_CODE_KEY)).toBeNull();
+    expect(readDismissedResultRoom(storage)).toBe("67890");
   });
 
   test("handles finished room resume as a result modal restore", () => {

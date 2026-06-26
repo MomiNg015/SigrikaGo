@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import {
+  importPixiWithCspCompat,
   loadPixiModule,
   resetPixiPrewarmForTests,
   schedulePixiPrewarm
@@ -50,6 +51,25 @@ describe("pixiPrewarm", () => {
     const loaded = await loadPixiModule(importPixi);
 
     expect(loaded).toBe(pixiModule);
+    expect(importPixi).toHaveBeenCalledOnce();
+  });
+
+  test("loads the strict-CSP Pixi compatibility module before Pixi itself", async () => {
+    const pixiModule = { Application: function Application() {} };
+    const calls = [];
+    const importUnsafeEval = vi.fn(async () => {
+      calls.push("pixi.js/unsafe-eval");
+      return {};
+    });
+    const importPixi = vi.fn(async () => {
+      calls.push("pixi.js");
+      return pixiModule;
+    });
+
+    await expect(importPixiWithCspCompat({ importUnsafeEval, importPixi })).resolves.toBe(pixiModule);
+
+    expect(calls).toEqual(["pixi.js/unsafe-eval", "pixi.js"]);
+    expect(importUnsafeEval).toHaveBeenCalledOnce();
     expect(importPixi).toHaveBeenCalledOnce();
   });
 

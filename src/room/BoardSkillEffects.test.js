@@ -92,15 +92,11 @@ describe("BoardSkillEffects", () => {
     expect(markup).toContain("aria-hidden=\"true\"");
   });
 
-  test("keeps the Pixi fallback transparent instead of flashing a board-covering gray panel", () => {
+  test("does not register a visible DOM fallback for failed Pixi effects", () => {
     const css = readFileSync(new URL("../styles/room/board/effects-canvas-motion.css", import.meta.url), "utf8");
-    const fallbackBlock = css.match(/\.board-effects-layer\[data-effect-fallback="true"\]::after\s*\{[^}]+\}/)?.[0] ?? "";
 
-    expect(fallbackBlock).toContain("background: transparent");
-    expect(fallbackBlock).not.toContain("background-color");
-    expect(fallbackBlock).not.toContain("inset: 0");
-    expect(fallbackBlock).not.toContain("width: 100%");
-    expect(fallbackBlock).not.toContain("height: 100%");
+    expect(css).not.toContain("data-effect-fallback");
+    expect(css).not.toContain("board-effect-fallback");
   });
 
   test("prepares the Pixi app and renderer assets during the banner window", async () => {
@@ -150,13 +146,101 @@ describe("BoardSkillEffects", () => {
     ]);
     expect(host.children).toEqual([appInstances[0].canvas]);
     expect(appInstances[0].canvas.className).toBe("board-effects-canvas");
+    expect(host.dataset.effectFailed).toBeUndefined();
 
     prepared.cleanup();
     expect(appInstances[0].destroy).toHaveBeenCalled();
     expect(host.children).toEqual([]);
   });
 
-  test("guards Pixi ticker callbacks so animation failures can fall back", () => {
+  test("mounts the real Pixi canvas without waiting for renderer assets to decode", async () => {
+    let resolveAssets;
+    const assetsPromise = new Promise((resolve) => {
+      resolveAssets = resolve;
+    });
+    class Application {
+      constructor() {
+        this.canvas = { className: "" };
+        this.init = vi.fn(async () => {});
+        this.destroy = vi.fn();
+      }
+    }
+    const pixi = {
+      Application,
+      Assets: {
+        load: vi.fn(() => assetsPromise)
+      }
+    };
+    const host = {
+      clientWidth: 260,
+      clientHeight: 260,
+      dataset: {},
+      children: [],
+      replaceChildren(...children) {
+        this.children = children;
+      }
+    };
+    const prepared = preparePixiEffect({
+      host,
+      pendingSkill: { id: "aemeath-voyage", effectType: "voyage-star" },
+      loadPixi: vi.fn(async () => pixi)
+    });
+
+    const runtime = await prepared.ready;
+    let assetsSettled = false;
+    runtime.assetsReady.then(() => {
+      assetsSettled = true;
+    });
+    await Promise.resolve();
+
+    expect(pixi.Assets.load).toHaveBeenCalledWith(["/assets/effects/voyage-star-crater.webp"]);
+    expect(host.children).toEqual([runtime.app.canvas]);
+    expect(runtime.app.canvas.className).toBe("board-effects-canvas");
+    expect(assetsSettled).toBe(false);
+
+    resolveAssets([]);
+    await runtime.assetsReady;
+    expect(assetsSettled).toBe(true);
+
+    prepared.cleanup();
+    expect(host.children).toEqual([]);
+  });
+
+  test("records Pixi initialization failure without installing a fallback visual", async () => {
+    const host = {
+      clientWidth: 0,
+      clientHeight: 0,
+      dataset: {},
+      children: [],
+      replaceChildren(...children) {
+        this.children = children;
+      }
+    };
+    const prepared = preparePixiEffect({
+      host,
+      pendingSkill: { id: "aemeath-voyage", effectType: "voyage-star" },
+      loadPixi: vi.fn(async () => ({
+        Application: class Application {
+          constructor() {
+            this.canvas = { className: "" };
+          }
+          async init() {}
+          destroy() {}
+        },
+        Assets: { load: vi.fn(async () => {}) }
+      }))
+    });
+
+    await prepared.ready;
+
+    expect(host.dataset.effectFailed).toBe("true");
+    expect(host.dataset.effectState).toBe("failed");
+    expect(host.dataset.effectError).toContain("drawable size");
+    expect(host.dataset.effectFallback).toBeUndefined();
+    expect(host.children).toEqual([]);
+  });
+
+  test("guards Pixi ticker callbacks so animation failures stay inside the effects layer", () => {
     let storedTickerCallback = null;
     const app = {
       ticker: {
@@ -296,7 +380,10 @@ describe("BoardSkillEffects", () => {
     const source = readFileSync(new URL("./BoardSkillEffects.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("const activeEffectCleanupRef = useRef(() => {})");
-    expect(source).toContain("if (!started) preparedEffect.cleanup()");
+    expect(source).toContain("const [activeBoardEffect, setActiveBoardEffect] = useState(null)");
+    expect(source).toContain("const displaySkill = pendingSkill ?? activeBoardEffect");
+    expect(source).toContain("if (!started) {");
+    expect(source).toContain("clearActiveBoardEffect();");
     expect(source).toContain("activeEffectCleanupRef.current = cleanup");
     expect(source).toContain("preparedEffect.cleanup();");
     expect(source).not.toContain("cleanup();\n      preparedEffect.cleanup();");

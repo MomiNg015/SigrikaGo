@@ -5,6 +5,7 @@ import RoomScreen from "../room/RoomScreen.jsx";
 import { playUiHouseOpenSound, playUiMatchOpenSound, playUiRecruitmentOpenSound, playUiShopOpenSound } from "../audio/playback.jsx";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
 import BattleAssetPreloadScreen from "./BattleAssetPreloadScreen.jsx";
+import { rememberDismissedResultRoom } from "./resumeSession.js";
 import { planRoomBackNavigation } from "./roomNavigation.js";
 
 export default function AppRoutes({
@@ -162,6 +163,7 @@ export default function AppRoutes({
               setRoom(null);
             }
             if (plan.dismissResultRoomCode) {
+              rememberDismissedResultRoom(plan.dismissResultRoomCode);
               setDismissedResultRoom(plan.dismissResultRoomCode);
             }
             setReplayStep(plan.nextReplayStep);

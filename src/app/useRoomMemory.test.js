@@ -10,4 +10,12 @@ describe("room resume memory", () => {
     expect(roomToRememberForResume(null, pendingRoom)).toBe(pendingRoom);
     expect(roomToRememberForResume(null, null)).toBeNull();
   });
+
+  it("does not remember finished player rooms for reconnect resume", () => {
+    const finishedRoom = { code: "finished", role: "player", game: { phase: "finished" } };
+    const pendingRoom = { code: "pending", role: "player", game: { phase: "preloading" } };
+
+    expect(roomToRememberForResume(finishedRoom, null)).toBeNull();
+    expect(roomToRememberForResume(finishedRoom, pendingRoom)).toBe(pendingRoom);
+  });
 });

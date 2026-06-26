@@ -39,13 +39,16 @@ export function playRegisteredBoardSkillEffect({
   try {
     const renderer = renderers[pendingSkill?.effectType];
     if (!renderer) return;
+    assertPlayableBoardEffectHost({ app, host, durationMs, effectType: pendingSkill?.effectType });
     if (renderer.fullBoard) {
       const play = reducedMotion ? renderer.playReducedMotion : renderer.play;
       play?.({ app, pixi, host, boardSize, pendingSkill, durationMs });
       return;
     }
     const target = pointCenterForHost(pendingSkill.targetId, { boardSize, host });
-    if (!target) return;
+    if (!isFinitePoint(target)) {
+      throw new Error(`Pixi board effect target is unavailable for ${pendingSkill?.effectType ?? "unknown"}`);
+    }
     if (reducedMotion) {
       const play = renderer.playReducedMotion ?? playReducedMotionHit;
       play({ app, pixi, host, boardSize, pendingSkill, target, durationMs });
@@ -1023,10 +1026,16 @@ function playReducedMotionLibertyPurge({ app, pixi, host, boardSize, pendingSkil
 }
 
 function playVoyageStar({ app, pixi, host, boardSize, pendingSkill, durationMs }) {
-  const width = host.clientWidth;
-  const height = host.clientHeight;
-  const center = pointCenterForHost(pendingSkill?.targetId, { boardSize, host }) ?? { x: width / 2, y: height / 2 };
+  const { width, height } = boardEffectHostSize(host, "voyage-star");
+  const safeDurationMs = boardEffectDurationMs(durationMs, "voyage-star");
+  const center = pointCenterForHost(pendingSkill?.targetId, { boardSize, host });
+  if (!isFinitePoint(center)) {
+    throw new Error("Voyage Star target center is unavailable");
+  }
   const removedTargets = voyageStarRemovedTargets({ host, boardSize, pendingSkill });
+  if (!Array.isArray(removedTargets)) {
+    throw new Error("Voyage Star removed target list is invalid");
+  }
   const quakeLayer = new pixi.Container();
   const omen = new pixi.Graphics();
   const sword = new pixi.Graphics();
@@ -1042,7 +1051,7 @@ function playVoyageStar({ app, pixi, host, boardSize, pendingSkill, durationMs }
   const startedAt = performance.now();
 
   app.ticker.add(() => {
-    const progress = clamp01((performance.now() - startedAt) / durationMs);
+    const progress = clamp01((performance.now() - startedAt) / safeDurationMs);
     const omenProgress = clamp01(progress / 0.15);
     const fall = easeInCubic(clamp01((progress - 0.1) / 0.22));
     const impact = clamp01((progress - 0.28) / 0.22);
@@ -1136,14 +1145,18 @@ function playVoyageStar({ app, pixi, host, boardSize, pendingSkill, durationMs }
 }
 
 function playReducedMotionVoyageStar({ app, pixi, host, boardSize, pendingSkill, durationMs }) {
-  const width = host.clientWidth;
-  const height = host.clientHeight;
+  const { width, height } = boardEffectHostSize(host, "voyage-star");
+  const safeDurationMs = boardEffectDurationMs(durationMs, "voyage-star");
+  const center = pointCenterForHost(pendingSkill?.targetId, { boardSize, host });
+  if (!isFinitePoint(center)) {
+    throw new Error("Voyage Star target center is unavailable");
+  }
   const whiteoutLayer = new pixi.Graphics();
   app.stage.addChild(whiteoutLayer);
   const startedAt = performance.now();
 
   app.ticker.add(() => {
-    const progress = clamp01((performance.now() - startedAt) / durationMs);
+    const progress = clamp01((performance.now() - startedAt) / safeDurationMs);
     const alpha = 1 - progress;
     whiteoutLayer.clear()
       .rect(0, 0, width, height)
@@ -1819,6 +1832,34 @@ function drawCracks(graphics, target, progress) {
 
 function lerp(start, end, progress) {
   return start + (end - start) * progress;
+}
+
+function assertPlayableBoardEffectHost({ app, host, durationMs, effectType }) {
+  if (!app?.stage?.addChild) throw new Error(`Pixi board effect stage is unavailable for ${effectType ?? "unknown"}`);
+  if (!app?.ticker?.add) throw new Error(`Pixi board effect ticker is unavailable for ${effectType ?? "unknown"}`);
+  boardEffectHostSize(host, effectType);
+  boardEffectDurationMs(durationMs, effectType);
+}
+
+function boardEffectHostSize(host, effectType) {
+  const width = Number(host?.clientWidth);
+  const height = Number(host?.clientHeight);
+  if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
+    throw new Error(`Pixi board effect host has invalid size for ${effectType ?? "unknown"}`);
+  }
+  return { width, height };
+}
+
+function boardEffectDurationMs(durationMs, effectType) {
+  const value = Number(durationMs);
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new Error(`Pixi board effect duration is invalid for ${effectType ?? "unknown"}`);
+  }
+  return value;
+}
+
+function isFinitePoint(point) {
+  return Number.isFinite(Number(point?.x)) && Number.isFinite(Number(point?.y));
 }
 
 function clamp01(value) {

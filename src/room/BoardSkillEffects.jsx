@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   skillEffectPresentation,
   skillEffectTimeline,
@@ -37,15 +37,20 @@ export default function BoardSkillEffects({
   const hostRef = useRef(null);
   const playedEffectIdRef = useRef("");
   const activeEffectCleanupRef = useRef(() => {});
-  const effectType = pendingSkill?.effectType ?? "";
-  const targetId = pendingSkill?.targetId ?? "";
-  const presentation = skillEffectPresentation(effectType, { pendingSkill, effectsEnabled });
+  const [activeBoardEffect, setActiveBoardEffect] = useState(null);
+  const displaySkill = pendingSkill ?? activeBoardEffect;
+  const effectType = displaySkill?.effectType ?? "";
+  const targetId = displaySkill?.targetId ?? "";
+  const presentation = skillEffectPresentation(effectType, { pendingSkill: displaySkill, effectsEnabled });
   const hasBoardEffect = presentation.layers.boardEffect;
   const hasPendingEffect = Boolean(effectType);
+  const pendingEffectType = pendingSkill?.effectType ?? "";
+  const pendingPresentation = skillEffectPresentation(pendingEffectType, { pendingSkill, effectsEnabled });
+  const pendingHasBoardEffect = pendingPresentation.layers.boardEffect;
 
   useEffect(() => {
-    return schedulePixiPrewarm({ enabled: effectsEnabled !== false && prewarm && (!hasPendingEffect || hasBoardEffect) });
-  }, [effectsEnabled, hasBoardEffect, hasPendingEffect, prewarm]);
+    return schedulePixiPrewarm({ enabled: effectsEnabled !== false && prewarm && (!pendingSkill || pendingHasBoardEffect) });
+  }, [effectsEnabled, pendingHasBoardEffect, pendingSkill, prewarm]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -54,29 +59,35 @@ export default function BoardSkillEffects({
       activeEffectCleanupRef.current = () => {};
       return undefined;
     }
-    if (!hasBoardEffect || !host || !pendingSkill?.id || playedEffectIdRef.current === pendingSkill.id) return undefined;
+    if (!pendingHasBoardEffect || !host || !pendingSkill?.id || playedEffectIdRef.current === pendingSkill.id) return undefined;
     activeEffectCleanupRef.current();
     activeEffectCleanupRef.current = () => {};
     playedEffectIdRef.current = pendingSkill.id;
+    const activeSkill = pendingSkill;
+    setActiveBoardEffect(activeSkill);
     let disposed = false;
     let cleanup = () => {};
     let started = false;
+    const clearActiveBoardEffect = () => {
+      setActiveBoardEffect((current) => current?.id === activeSkill.id ? null : current);
+    };
 
     const reducedMotion = window.matchMedia?.(reducedMotionQuery)?.matches ?? false;
-    const activePresentation = skillEffectPresentation(effectType, { pendingSkill, reducedMotion, effectsEnabled });
+    const activePresentation = skillEffectPresentation(pendingEffectType, { pendingSkill: activeSkill, reducedMotion, effectsEnabled });
     const { startDelayMs, durationMs } = activePresentation.timeline;
-    const preparedEffect = preparePixiEffect({ host, pendingSkill });
+    const preparedEffect = preparePixiEffect({ host, pendingSkill: activeSkill });
     const startTimer = window.setTimeout(() => {
       if (disposed) return;
       started = true;
       cleanup = playPreparedPixiEffect({
         preparedEffect,
         boardSize,
-        pendingSkill,
+        pendingSkill: activeSkill,
         presentation: activePresentation,
         durationMs,
         reducedMotion,
-        audioSettings
+        audioSettings,
+        onComplete: clearActiveBoardEffect
       });
       activeEffectCleanupRef.current = cleanup;
     }, startDelayMs);
@@ -84,9 +95,12 @@ export default function BoardSkillEffects({
     return () => {
       disposed = true;
       window.clearTimeout(startTimer);
-      if (!started) preparedEffect.cleanup();
+      if (!started) {
+        preparedEffect.cleanup();
+        clearActiveBoardEffect();
+      }
     };
-  }, [audioSettings, boardSize, effectsEnabled, effectType, hasBoardEffect, pendingSkill]);
+  }, [audioSettings, boardSize, effectsEnabled, pendingEffectType, pendingHasBoardEffect, pendingSkill]);
 
   useEffect(() => () => {
     activeEffectCleanupRef.current();
@@ -99,7 +113,7 @@ export default function BoardSkillEffects({
     <div
       ref={hostRef}
       className="board-effects-layer"
-      data-effect-id={pendingSkill?.id ?? ""}
+      data-effect-id={displaySkill?.id ?? ""}
       data-effect-type={effectType}
       data-board-effect={hasBoardEffect ? "true" : "false"}
       data-effects-enabled={effectsEnabled === false ? "false" : "true"}
@@ -116,6 +130,8 @@ export function preparePixiEffect({ host, pendingSkill, loadPixi = loadPixiModul
 
   const ready = loadPixi().then(async (pixi) => {
     if (!active) return;
+    await waitForBoardEffectHostSize(host);
+    if (!active) return;
     const { Application } = pixi;
     app = new Application();
     const initPromise = app.init({
@@ -123,21 +139,24 @@ export function preparePixiEffect({ host, pendingSkill, loadPixi = loadPixiModul
       backgroundAlpha: 0,
       antialias: true,
       autoDensity: true,
-      resolution: typeof window === "undefined" ? 1 : window.devicePixelRatio || 1
+      resolution: boardEffectResolution()
     });
-    const assetsPromise = assetUrls.length > 0
-      ? loadPixiAssetList(pixi, assetUrls).catch(() => [])
-      : Promise.resolve();
-    await Promise.all([initPromise, assetsPromise]);
+    const assetsReady = assetUrls.length > 0
+      ? loadPixiAssetList(pixi, assetUrls).then(
+        (assets) => ({ ok: true, assets }),
+        (error) => ({ ok: false, error })
+      )
+      : Promise.resolve({ ok: true, assets: [] });
+    await initPromise;
     if (!active) {
       app.destroy(true);
       return null;
     }
     host.replaceChildren(app.canvas);
     app.canvas.className = "board-effects-canvas";
-    return { app, host, pixi };
-  }).catch(() => {
-    if (active) host.dataset.effectFallback = "true";
+    return { app, host, pixi, assetsReady };
+  }).catch((error) => {
+    if (active) markPixiEffectFailed(host, error);
     return null;
   });
 
@@ -146,7 +165,7 @@ export function preparePixiEffect({ host, pendingSkill, loadPixi = loadPixiModul
     ready,
     cleanup() {
       active = false;
-      delete host.dataset.effectFallback;
+      clearPixiEffectDiagnostics(host);
       app?.destroy(true, { children: true });
       host.replaceChildren();
       app = null;
@@ -154,30 +173,36 @@ export function preparePixiEffect({ host, pendingSkill, loadPixi = loadPixiModul
   };
 }
 
-function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, presentation, durationMs, reducedMotion, audioSettings }) {
+function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, presentation, durationMs, reducedMotion, audioSettings, onComplete = () => {} }) {
   let active = true;
   let timeoutId = 0;
   let soundTimers = [];
   let restoreTicker = () => {};
   let failed = false;
-  preparedEffect.host.dataset.effectFallback = "true";
+  preparedEffect.host.dataset.effectState = "preparing";
 
-  const failEffect = () => {
+  const failEffect = (error) => {
     if (!active || failed) return;
     failed = true;
-    preparedEffect.host.dataset.effectFallback = "true";
+    markPixiEffectFailed(preparedEffect.host, error);
     window.clearTimeout(timeoutId);
     clearBoardSkillEffectSoundTimers(soundTimers);
     timeoutId = window.setTimeout(() => {
       preparedEffect.cleanup();
+      onComplete();
     }, durationMs + 180);
   };
 
   preparedEffect.ready.then((prepared) => {
     if (!active || !prepared) return;
-    delete preparedEffect.host.dataset.effectFallback;
-    const { app, host, pixi } = prepared;
+    delete preparedEffect.host.dataset.effectFailed;
+    delete preparedEffect.host.dataset.effectError;
+    preparedEffect.host.dataset.effectState = "running";
+    const { app, host, pixi, assetsReady } = prepared;
     restoreTicker = installPixiTickerErrorGuard(app, failEffect);
+    void assetsReady?.then((result) => {
+      if (active && result && result.ok === false) failEffect(result.error);
+    });
     soundTimers = presentation.layers.sound
       ? scheduleBoardSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings })
       : [];
@@ -194,6 +219,7 @@ function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, prese
     timeoutId = window.setTimeout(() => {
       clearBoardSkillEffectSoundTimers(soundTimers);
       preparedEffect.cleanup();
+      onComplete();
     }, durationMs + 180);
   });
 
@@ -202,8 +228,9 @@ function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, prese
     window.clearTimeout(timeoutId);
     clearBoardSkillEffectSoundTimers(soundTimers);
     restoreTicker();
-    delete preparedEffect.host.dataset.effectFallback;
+    clearPixiEffectDiagnostics(preparedEffect.host);
     preparedEffect.cleanup();
+    onComplete();
   };
 }
 
@@ -229,4 +256,51 @@ export function installPixiTickerErrorGuard(app, onError = () => {}) {
   return () => {
     if (ticker.add === guardedAdd) ticker.add = originalAdd;
   };
+}
+
+function boardEffectResolution() {
+  if (typeof window === "undefined") return 1;
+  const resolution = Number(window.devicePixelRatio) || 1;
+  return Math.max(1, Math.min(2, resolution));
+}
+
+async function waitForBoardEffectHostSize(host, { frames = 6 } = {}) {
+  if (hasDrawableHostSize(host)) return;
+  for (let index = 0; index < frames; index += 1) {
+    await nextAnimationFrame();
+    if (hasDrawableHostSize(host)) return;
+  }
+  throw new Error("Pixi board effect host has no drawable size");
+}
+
+function hasDrawableHostSize(host) {
+  return Number.isFinite(Number(host?.clientWidth))
+    && Number(host?.clientWidth) > 0
+    && Number.isFinite(Number(host?.clientHeight))
+    && Number(host?.clientHeight) > 0;
+}
+
+function nextAnimationFrame() {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(() => resolve());
+      return;
+    }
+    setTimeout(resolve, 16);
+  });
+}
+
+function markPixiEffectFailed(host, error) {
+  if (!host?.dataset) return;
+  host.dataset.effectState = "failed";
+  host.dataset.effectFailed = "true";
+  const message = error instanceof Error ? error.message : String(error ?? "unknown");
+  host.dataset.effectError = message.slice(0, 160);
+}
+
+function clearPixiEffectDiagnostics(host) {
+  if (!host?.dataset) return;
+  delete host.dataset.effectState;
+  delete host.dataset.effectFailed;
+  delete host.dataset.effectError;
 }

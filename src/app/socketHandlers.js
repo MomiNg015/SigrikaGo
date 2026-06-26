@@ -4,6 +4,7 @@ import { GAME_MODE_IDS } from "../shared/gameModes.js";
 import { GAME_PHASES } from "../shared/game.js";
 
 export const ROOM_PATCH_RESUME_DEBOUNCE_MS = 1000;
+export const ROOM_RESUME_REQUEST_COOLDOWN_MS = 1500;
 
 export function createSocketHandlers({
   matchSuccessRef,
@@ -268,27 +269,17 @@ export function createSocketHandlers({
 }
 
 export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest, onSocketReconnect = () => {}, now = () => Date.now() } = {}) {
-  let lastPatchResumeRequest = null;
+  const roomResumeEmitter = createRoomResumeEmitter(socket, { buildRoomResumeRequest, now });
 
-  function requestPatchResume(patch) {
-    const request = buildRoomResumeRequest();
-    const key = roomPatchResumeKey(request, patch);
-    const requestedAt = now();
-    if (
-      lastPatchResumeRequest?.key === key
-      && requestedAt - lastPatchResumeRequest.requestedAt < ROOM_PATCH_RESUME_DEBOUNCE_MS
-    ) {
-      return;
-    }
-    lastPatchResumeRequest = { key, requestedAt };
-    socket.emit("room:resume", request);
+  function requestPatchResume() {
+    roomResumeEmitter.emitRoomResume("patch-gap");
   }
 
   socket.on("match:waiting", handlers.matchWaiting);
   socket.on("lobby:stats", handlers.lobbyStats);
   socket.on("match:found", handlers.matchFound);
   socket.on("room:update", (roomView) => {
-    lastPatchResumeRequest = null;
+    roomResumeEmitter.markRoomResumeSettled(roomView?.code ?? "");
     handlers.roomUpdate(roomView);
   });
   socket.on("room:patch", (patch) => {
@@ -296,13 +287,13 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
   });
   socket.on("room:clock", handlers.roomClock);
   socket.on("room:resume", (payload) => {
-    lastPatchResumeRequest = null;
+    roomResumeEmitter.markRoomResumeSettled(payload?.room?.code ?? "");
     handlers.roomResume(payload);
   });
   socket.on("connect", () => {
     handlers.socketReconnect?.();
     onSocketReconnect();
-    socket.emit("room:resume", buildRoomResumeRequest());
+    roomResumeEmitter.emitRoomResume("socket-connect");
   });
   socket.on("room:closed", handlers.roomClosed);
   socket.on("match:preload-timeout", handlers.matchPreloadTimeout);
@@ -313,6 +304,41 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
   socket.on("duel:unavailable", handlers.duelUnavailable);
   socket.on("connect_error", handlers.connectError);
   socket.on("account:logged-out", handlers.accountLoggedOut);
+  return roomResumeEmitter;
+}
+
+export function createRoomResumeEmitter(socket, {
+  buildRoomResumeRequest = () => ({ roomCode: "" }),
+  cooldownMs = ROOM_RESUME_REQUEST_COOLDOWN_MS,
+  now = () => Date.now()
+} = {}) {
+  let pendingRoomResume = null;
+
+  function emitRoomResume(reason = "manual") {
+    const request = buildRoomResumeRequest() ?? {};
+    const key = roomResumeRequestKey(request);
+    const requestedAt = now();
+    if (
+      pendingRoomResume?.key === key
+      && requestedAt - pendingRoomResume.requestedAt < cooldownMs
+    ) {
+      return false;
+    }
+    pendingRoomResume = { key, requestedAt, reason };
+    socket.emit("room:resume", request);
+    return true;
+  }
+
+  function markRoomResumeSettled(roomCode = "") {
+    if (!pendingRoomResume) return;
+    const key = String(roomCode ?? "");
+    if (!key || pendingRoomResume.key === key) pendingRoomResume = null;
+  }
+
+  return {
+    emitRoomResume,
+    markRoomResumeSettled
+  };
 }
 
 export function roomPatchResumeKey(request = {}, patch = {}) {
@@ -323,6 +349,10 @@ export function roomPatchResumeKey(request = {}, patch = {}) {
     patch.revision ?? "",
     patch.type ?? ""
   ].join(":");
+}
+
+function roomResumeRequestKey(request = {}) {
+  return String(request.roomCode ?? "");
 }
 
 function shouldMarkRoomAudioBaseline(roomView) {

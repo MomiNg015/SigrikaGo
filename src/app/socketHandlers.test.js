@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   ROOM_PATCH_RESUME_DEBOUNCE_MS,
+  ROOM_RESUME_REQUEST_COOLDOWN_MS,
   createSocketHandlers,
   installSocketHandlers
 } from "./socketHandlers.js";
@@ -694,7 +695,7 @@ describe("socket handlers", () => {
     expect(socket.emit).toHaveBeenCalledTimes(2);
   });
 
-  it("allows another patch gap resume after the debounce window", () => {
+  it("allows another patch gap resume after the resume request cooldown", () => {
     let currentTime = 1000;
     const listeners = new Map();
     const socket = {
@@ -717,9 +718,59 @@ describe("socket handlers", () => {
       now: () => currentTime
     });
     listeners.get("room:patch")(patch);
-    currentTime += ROOM_PATCH_RESUME_DEBOUNCE_MS;
+    currentTime += ROOM_RESUME_REQUEST_COOLDOWN_MS;
     listeners.get("room:patch")(patch);
 
+    expect(socket.emit).toHaveBeenCalledTimes(2);
+  });
+
+  it("dedupes patch gap resume requests across changing presence revisions", () => {
+    let currentTime = 1000;
+    const listeners = new Map();
+    const socket = {
+      on: vi.fn((event, callback) => listeners.set(event, callback)),
+      emit: vi.fn()
+    };
+    const deps = handlerDeps({
+      roomRef: { current: { code: "12345", revision: 1, players: [] } }
+    });
+
+    installSocketHandlers(socket, createSocketHandlers(deps), {
+      buildRoomResumeRequest: () => ({ roomCode: "12345" }),
+      now: () => currentTime
+    });
+
+    listeners.get("room:patch")({
+      roomCode: "12345",
+      type: "presence:update",
+      baseRevision: 4,
+      revision: 5,
+      players: []
+    });
+    listeners.get("room:patch")({
+      roomCode: "12345",
+      type: "presence:update",
+      baseRevision: 5,
+      revision: 6,
+      players: []
+    });
+    listeners.get("room:patch")({
+      roomCode: "12345",
+      type: "presence:update",
+      baseRevision: 6,
+      revision: 7,
+      players: []
+    });
+
+    expect(socket.emit).toHaveBeenCalledTimes(1);
+    currentTime += ROOM_RESUME_REQUEST_COOLDOWN_MS;
+    listeners.get("room:patch")({
+      roomCode: "12345",
+      type: "presence:update",
+      baseRevision: 7,
+      revision: 8,
+      players: []
+    });
     expect(socket.emit).toHaveBeenCalledTimes(2);
   });
 

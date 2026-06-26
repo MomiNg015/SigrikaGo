@@ -1,13 +1,44 @@
+import { GAME_PHASES } from "../shared/game.js";
+
 export const LAST_ROOM_CODE_KEY = "sigrika-last-room-code";
+export const DISMISSED_RESULT_ROOM_KEY = "sigrika-dismissed-result-room-code";
 
 export function rememberPlayerRoom(room, storage = localStorage) {
-  if (!room?.code || room.role !== "player") return false;
+  if (room?.code && room.role === "player" && room.game?.phase === GAME_PHASES.finished) {
+    storage.removeItem(LAST_ROOM_CODE_KEY);
+    return false;
+  }
+  if (!isResumablePlayerRoom(room)) return false;
   storage.setItem(LAST_ROOM_CODE_KEY, room.code);
+  storage.removeItem(DISMISSED_RESULT_ROOM_KEY);
   return true;
+}
+
+export function isResumablePlayerRoom(room) {
+  return Boolean(
+    room?.code
+      && room.role === "player"
+      && room.game?.phase !== GAME_PHASES.finished
+  );
 }
 
 export function clearLastRoomCode(storage = localStorage) {
   storage.removeItem(LAST_ROOM_CODE_KEY);
+}
+
+export function rememberDismissedResultRoom(roomCode, storage = localStorage) {
+  if (!roomCode) return false;
+  storage.setItem(DISMISSED_RESULT_ROOM_KEY, roomCode);
+  storage.removeItem(LAST_ROOM_CODE_KEY);
+  return true;
+}
+
+export function readDismissedResultRoom(storage = safeLocalStorage()) {
+  return storage?.getItem(DISMISSED_RESULT_ROOM_KEY) ?? "";
+}
+
+function safeLocalStorage() {
+  return typeof localStorage === "undefined" ? null : localStorage;
 }
 
 export function buildRoomResumeRequest(storage = localStorage) {

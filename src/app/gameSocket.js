@@ -19,8 +19,12 @@ export function connectGameSocket({
     reconnectionDelayMax: 3000,
     timeout: 6000
   });
-  installHandlers(socket, handlers, { buildRoomResumeRequest, onSocketReconnect });
+  const resumeController = installHandlers(socket, handlers, { buildRoomResumeRequest, onSocketReconnect });
   socket.connect?.();
-  socket.emit?.("room:resume", buildRoomResumeRequest());
+  if (resumeController?.emitRoomResume) {
+    resumeController.emitRoomResume("initial-connect");
+  } else {
+    socket.emit?.("room:resume", buildRoomResumeRequest());
+  }
   return socket;
 }

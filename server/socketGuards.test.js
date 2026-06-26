@@ -77,6 +77,38 @@ describe("socket guards", () => {
 
     expect(next).toHaveBeenCalledTimes(121);
     expect(socket.emit).not.toHaveBeenCalled();
-    expect(socket.data.rateGuard.count).toBe(1);
+    expect(socket.data.rateGuard.action.count).toBe(1);
+  });
+
+  it("does not show user-visible rate-limit toasts for room resume storms", () => {
+    let now = 1000;
+    const socket = createSocket();
+    installSocketRateGuard(socket, { now: () => now });
+    const middleware = createSocket.middleware;
+    const next = vi.fn();
+    const ack = vi.fn();
+
+    for (let index = 0; index < 305; index += 1) {
+      middleware(["room:resume", { roomCode: "12345" }, ack], next);
+    }
+
+    expect(next).toHaveBeenCalledTimes(300);
+    expect(socket.emit).not.toHaveBeenCalledWith("error:toast", expect.any(String));
+    expect(ack).toHaveBeenCalledWith({ ok: false, error: "too_many_recovery_requests" });
+  });
+
+  it("still shows rate-limit toasts for high-frequency game actions", () => {
+    let now = 1000;
+    const socket = createSocket();
+    installSocketRateGuard(socket, { now: () => now });
+    const middleware = createSocket.middleware;
+    const next = vi.fn();
+
+    for (let index = 0; index < 121; index += 1) {
+      middleware(["game:action", { type: "pass" }], next);
+    }
+
+    expect(next).toHaveBeenCalledTimes(120);
+    expect(socket.emit).toHaveBeenCalledWith("error:toast", "操作过于频繁，请稍后再试");
   });
 });

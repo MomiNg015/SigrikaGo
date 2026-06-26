@@ -3,6 +3,7 @@ import { GAME_PHASES } from "../src/shared/game.js";
 export async function resumePayloadForUser({ prisma, userId, roomCode = "", findRoomForUser, roomView }) {
   const room = findRoomForUser(userId, roomCode);
   if (room) {
+    if (!roomCode && room.game?.phase === GAME_PHASES.finished) return { type: "none" };
     const view = roomView(room, userId);
     return room.game.phase === GAME_PHASES.finished
       ? { type: "result", room: view }

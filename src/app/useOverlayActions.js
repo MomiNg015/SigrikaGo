@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { closeOverlaySetters } from "./overlayRegistry.js";
-import { clearLastRoomCode } from "./resumeSession.js";
+import { clearLastRoomCode, rememberDismissedResultRoom } from "./resumeSession.js";
 
 export function useOverlayActions({
   overlaySetters,
@@ -16,6 +16,7 @@ export function useOverlayActions({
   const closeResultModal = useCallback(() => {
     if (!room) return;
     clearLastRoomCode();
+    rememberDismissedResultRoom(room.code);
     setDismissedResultRoom(room.code);
     if (view !== "room") setRoom(null);
   }, [room, setDismissedResultRoom, setRoom, view]);

@@ -150,6 +150,70 @@ describe("boardSkillEffectRegistry", () => {
     expect(boardSkillEffectAssetUrls("unknown-effect")).toEqual([]);
   });
 
+  test("runs hidden-hand through the Pixi renderer smoke path", () => {
+    const { app, pixi, tickerCallbacks } = createSmokePixi();
+    const onError = vi.fn();
+
+    playRegisteredBoardSkillEffect({
+      app,
+      pixi,
+      host: smokeHost(),
+      boardSize: 13,
+      pendingSkill: { effectType: "hidden-hand", targetId: "6,6" },
+      durationMs: 1500,
+      reducedMotion: false,
+      onError
+    });
+
+    expect(onError).not.toHaveBeenCalled();
+    expect(app.stage.children.length).toBeGreaterThan(0);
+    expect(tickerCallbacks).toHaveLength(1);
+    expect(() => tickerCallbacks[0]()).not.toThrow();
+  });
+
+  test("runs Voyage Star through the Pixi renderer smoke path", () => {
+    const { app, pixi, tickerCallbacks } = createSmokePixi();
+    const onError = vi.fn();
+
+    playRegisteredBoardSkillEffect({
+      app,
+      pixi,
+      host: smokeHost(),
+      boardSize: 13,
+      pendingSkill: {
+        effectType: "voyage-star",
+        targetId: "6,6",
+        removedStones: [{ id: "5,6" }, { id: "6,5" }]
+      },
+      durationMs: 1800,
+      reducedMotion: false,
+      onError
+    });
+
+    expect(onError).not.toHaveBeenCalled();
+    expect(app.stage.children.length).toBeGreaterThan(0);
+    expect(tickerCallbacks).toHaveLength(1);
+    expect(() => tickerCallbacks[0]()).not.toThrow();
+  });
+
+  test("reports invalid Voyage Star runtime input without throwing out of the room UI", () => {
+    const { app, pixi } = createSmokePixi();
+    const onError = vi.fn();
+
+    expect(() => playRegisteredBoardSkillEffect({
+      app,
+      pixi,
+      host: smokeHost({ clientWidth: 260, clientHeight: 260 }),
+      boardSize: 13,
+      pendingSkill: { effectType: "voyage-star", targetId: "" },
+      durationMs: 1800,
+      reducedMotion: false,
+      onError
+    })).not.toThrow();
+
+    expect(onError).toHaveBeenCalledWith(expect.any(Error));
+  });
+
   test("keeps ChangLi fire field irregular instead of drawing a full-canvas rectangle", () => {
     const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
     const changliSource = registrySource.match(/function playChangliDoubleMove[\s\S]*?function changliFlamePointIds/)?.[0] ?? "";
@@ -295,3 +359,51 @@ describe("boardSkillEffectRegistry", () => {
     expect(onError).toHaveBeenCalledWith(expect.any(Error));
   });
 });
+
+function smokeHost(overrides = {}) {
+  return {
+    clientWidth: 260,
+    clientHeight: 260,
+    ...overrides
+  };
+}
+
+function createSmokePixi() {
+  const tickerCallbacks = [];
+  class Graphics {
+    clear() { return this; }
+    rect() { return this; }
+    circle() { return this; }
+    ellipse() { return this; }
+    poly() { return this; }
+    star() { return this; }
+    moveTo() { return this; }
+    lineTo() { return this; }
+    quadraticCurveTo() { return this; }
+    bezierCurveTo() { return this; }
+    fill() { return this; }
+    stroke() { return this; }
+  }
+  class Container {
+    constructor() {
+      this.children = [];
+      this.x = 0;
+      this.y = 0;
+    }
+    addChild(...children) {
+      this.children.push(...children);
+      return children[0] ?? null;
+    }
+  }
+  const app = {
+    stage: new Container(),
+    ticker: {
+      add: vi.fn((callback) => tickerCallbacks.push(callback))
+    }
+  };
+  return {
+    app,
+    pixi: { Container, Graphics },
+    tickerCallbacks
+  };
+}

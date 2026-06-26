@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import { shouldShowResultModal } from "./resumeSession.js";
+import { readDismissedResultRoom, shouldShowResultModal } from "./resumeSession.js";
 
 export function initialRoomSessionState() {
   return {
     room: null,
     pendingSkill: false,
     replayStep: null,
-    dismissedResultRoom: ""
+    dismissedResultRoom: readDismissedResultRoom()
   };
 }
 
@@ -21,7 +21,7 @@ export function useRoomSessionState() {
   const [room, setRoom] = useState(null);
   const [pendingSkill, setPendingSkill] = useState(false);
   const [replayStep, setReplayStep] = useState(null);
-  const [dismissedResultRoom, setDismissedResultRoom] = useState("");
+  const [dismissedResultRoom, setDismissedResultRoom] = useState(() => readDismissedResultRoom());
 
   return useMemo(() => ({
     ...roomSessionView({ room, pendingSkill, replayStep, dismissedResultRoom }),

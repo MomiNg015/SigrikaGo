@@ -164,14 +164,18 @@ export function corsOriginForRequest(origin, callback, env = process.env) {
   callback(null, allowed.has(origin.replace(/\/+$/, "")));
 }
 
-export function createAuthRateLimit() {
-  return rateLimit({
+export function authRateLimitOptions(env = process.env) {
+  return {
     windowMs: 10 * 60 * 1000,
-    limit: 20,
+    limit: env.NODE_ENV === "stability" ? 240 : 20,
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: "请求过于频繁，请稍后再试" }
-  });
+  };
+}
+
+export function createAuthRateLimit(env = process.env) {
+  return rateLimit(authRateLimitOptions(env));
 }
 
 export function createApiRateLimit() {

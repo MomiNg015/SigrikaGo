@@ -76,4 +76,27 @@ describe("game socket connection", () => {
     expect(socket.connect).toHaveBeenCalledBefore(socket.emit);
     expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
   });
+
+  it("uses the installed resume controller for the immediate reconnect request", () => {
+    const resumeController = { emitRoomResume: vi.fn() };
+    const socket = {
+      connect: vi.fn(),
+      emit: vi.fn()
+    };
+    const ioClient = vi.fn(() => socket);
+    const installHandlers = vi.fn(() => resumeController);
+    const buildRoomResumeRequest = vi.fn(() => ({ roomCode: "12345" }));
+
+    connectGameSocket({
+      ioClient,
+      socketBase: "http://localhost:5173",
+      token: "token-1",
+      handlers: {},
+      installHandlers,
+      buildRoomResumeRequest
+    });
+
+    expect(resumeController.emitRoomResume).toHaveBeenCalledWith("initial-connect");
+    expect(socket.emit).not.toHaveBeenCalledWith("room:resume", expect.any(Object));
+  });
 });

@@ -31,8 +31,16 @@ export function resetPixiPrewarmForTests() {
   pixiModulePromise = null;
 }
 
+export async function importPixiWithCspCompat({
+  importUnsafeEval = () => import("pixi.js/unsafe-eval"),
+  importPixi = () => import("pixi.js")
+} = {}) {
+  await importUnsafeEval();
+  return importPixi();
+}
+
 function defaultImportPixi() {
-  return import("pixi.js");
+  return importPixiWithCspCompat();
 }
 
 function scheduleIdleCallback(callback) {

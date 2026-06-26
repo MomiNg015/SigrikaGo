@@ -19,6 +19,35 @@ describe("resumePayloadForUser", () => {
     });
   });
 
+  it("does not restore a finished in-memory room from an empty room code", async () => {
+    const room = { code: "12345", game: { phase: GAME_PHASES.finished } };
+    const payload = await resumePayloadForUser({
+      prisma: { gameRecord: { findFirst: async () => { throw new Error("should not query records"); } } },
+      userId: "user-1",
+      roomCode: "",
+      findRoomForUser: () => room,
+      roomView: () => ({ code: room.code, game: room.game })
+    });
+
+    expect(payload).toEqual({ type: "none" });
+  });
+
+  it("restores a finished in-memory room only when its room code is explicit", async () => {
+    const room = { code: "12345", game: { phase: GAME_PHASES.finished } };
+    const payload = await resumePayloadForUser({
+      prisma: { gameRecord: { findFirst: async () => { throw new Error("should not query records"); } } },
+      userId: "user-1",
+      roomCode: "12345",
+      findRoomForUser: () => room,
+      roomView: () => ({ code: room.code, game: room.game })
+    });
+
+    expect(payload).toEqual({
+      type: "result",
+      room: { code: "12345", game: { phase: GAME_PHASES.finished } }
+    });
+  });
+
   it("returns a finished record snapshot for the requested room after cleanup", async () => {
     const snapshot = {
       code: "12345",
