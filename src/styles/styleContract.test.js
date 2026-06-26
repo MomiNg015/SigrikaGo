@@ -258,6 +258,7 @@ describe("root CSS entry contract", () => {
       "./base/topbar-room-tags.css",
       "./base/home-legacy-grid.css",
       "./base/home-stage-artboard.css",
+      "./base/home-stage-toolbox.css",
       "./base/home-unavailable-entry.css",
       "./base/message-feedback.css"
     ]);

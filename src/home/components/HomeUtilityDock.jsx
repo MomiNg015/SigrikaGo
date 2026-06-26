@@ -1,5 +1,63 @@
 import { Archive, CircleDotDashed, Eye, ShoppingBag, Trophy, UsersRound } from "lucide-react";
 
+const UTILITY_ITEMS = [
+  {
+    key: "recruitment",
+    className: "recruitment-entry",
+    tone: "pink",
+    title: "招募",
+    description: "成员补给",
+    Icon: CircleDotDashed,
+    handler: "onOpenRecruitment"
+  },
+  {
+    key: "shop",
+    className: "shop-entry",
+    tone: "cream",
+    title: "商店",
+    description: "物资购入",
+    Icon: ShoppingBag,
+    handler: "onOpenShop",
+    sound: "none"
+  },
+  {
+    key: "warehouse",
+    className: "warehouse-entry",
+    tone: "mint",
+    title: "仓库",
+    description: "道具管理",
+    Icon: Archive,
+    handler: "onOpenWarehouse"
+  },
+  {
+    key: "leaderboard",
+    className: "leaderboard-entry",
+    tone: "blue",
+    title: "排行",
+    description: "天梯记录",
+    Icon: Trophy,
+    handler: "onOpenLeaderboard"
+  },
+  {
+    key: "watch",
+    className: "watch-entry",
+    tone: "teal",
+    title: "观战",
+    description: "当前房间",
+    Icon: Eye,
+    handler: "onOpenWatch"
+  },
+  {
+    key: "friends",
+    className: "friends-entry",
+    tone: "violet",
+    title: "好友",
+    description: "社交列表",
+    Icon: UsersRound,
+    handler: "onOpenFriends"
+  }
+];
+
 export default function HomeUtilityDock({
   recruitmentReady = false,
   onOpenFriends,
@@ -9,32 +67,35 @@ export default function HomeUtilityDock({
   onOpenWarehouse,
   onOpenWatch
 }) {
+  const handlers = {
+    onOpenFriends,
+    onOpenRecruitment,
+    onOpenLeaderboard,
+    onOpenShop,
+    onOpenWarehouse,
+    onOpenWatch
+  };
+
   return (
-    <div className="home-utility-grid tactical-nav-grid">
-      <button className={`home-entry utility-entry recruitment-entry ${recruitmentReady ? "has-alert" : ""}`} onClick={onOpenRecruitment} title="招募">
-        <CircleDotDashed size={28} />
-        <strong>招募</strong>
-      </button>
-      <button className="home-entry utility-entry shop-entry" data-ui-sound="none" onClick={onOpenShop} title="商店">
-        <ShoppingBag size={28} />
-        <strong>商店</strong>
-      </button>
-      <button className="home-entry utility-entry warehouse-entry" onClick={onOpenWarehouse} title="仓库">
-        <Archive size={28} />
-        <strong>仓库</strong>
-      </button>
-      <button className="home-entry utility-entry leaderboard-entry" onClick={onOpenLeaderboard} title="排行榜">
-        <Trophy size={28} />
-        <strong>排行榜</strong>
-      </button>
-      <button className="home-entry utility-entry watch-entry" onClick={onOpenWatch} title="观战">
-        <Eye size={28} />
-        <strong>观战</strong>
-      </button>
-      <button className="home-entry utility-entry friends-entry" onClick={onOpenFriends} title="好友">
-        <UsersRound size={28} />
-        <strong>好友</strong>
-      </button>
-    </div>
+    <nav className="home-utility-grid tactical-nav-grid" aria-label="大厅工具箱">
+      {UTILITY_ITEMS.map(({ key, className, tone, title, description, Icon, handler, sound }) => (
+        <button
+          className={`home-entry utility-entry ${className} utility-tone-${tone} ${key === "recruitment" && recruitmentReady ? "has-alert" : ""}`}
+          data-ui-sound={sound}
+          key={key}
+          onClick={handlers[handler]}
+          title={`${title}：${description}`}
+          type="button"
+        >
+          <i className="utility-entry-icon" aria-hidden="true">
+            <Icon size={24} />
+          </i>
+          <strong>{title}</strong>
+          <span className="utility-entry-description">
+            <small>{description}</small>
+          </span>
+        </button>
+      ))}
+    </nav>
   );
 }

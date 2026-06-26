@@ -31,6 +31,7 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
 
         <section className="home-main-panel home-terminal-main">
           <HomeStage
+            matchmakingCounts={matchmakingCounts}
             selectedCharacter={selectedCharacter}
             user={user}
             onOpenFriends={onOpenFriends}
@@ -60,10 +61,6 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
           />
         )}
 
-        <section className="home-orientation-guard" aria-label="横屏提示">
-          <h2>请横屏使用</h2>
-          <p>星炬学院围棋部需要横屏才能完整显示棋局入口和部员手册。</p>
-        </section>
       </main>
       <HomeFooter footerText={siteSettings.footerText} siteTitle={siteSettings.homeTitle} />
     </>

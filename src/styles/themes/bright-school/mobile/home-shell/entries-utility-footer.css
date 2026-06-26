@@ -17,7 +17,10 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature {
     grid-area: match !important;
     min-height: 0 !important;
-    height: clamp(190px, 58vw, 245px) !important;
+    height: auto !important;
+    display: grid !important;
+    grid-template-rows: minmax(188px, clamp(210px, 58vw, 270px)) auto !important;
+    gap: 10px !important;
     overflow: visible !important;
   }
 
@@ -78,13 +81,27 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
     width: 100% !important;
     min-width: 0 !important;
-    height: 52px !important;
-    min-height: 52px !important;
+    height: auto !important;
+    min-height: 56px !important;
     display: grid !important;
     grid-template-columns: 28px minmax(0, 1fr) !important;
     justify-content: start !important;
-    padding: 0 12px !important;
+    padding: 8px 12px !important;
     border-radius: 14px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-icon,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry > strong,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-description {
+    transform: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-icon {
+    grid-row: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry > strong {
+    grid-column: 2 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry strong {
@@ -94,6 +111,10 @@
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-description {
+    display: none !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-footer-strip {

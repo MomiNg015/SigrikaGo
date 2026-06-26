@@ -1,0 +1,27 @@
+/* Bright School utility toolbox states and motion preferences. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:hover:not(:disabled),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:focus-visible:not(:disabled) {
+  box-shadow: 7px 8px 0 #3d2b25, 0 12px 24px rgba(255, 158, 187, 0.2) !important;
+  filter: saturate(1.04) brightness(1.01) !important;
+  transform: translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:active:not(:disabled) {
+  box-shadow: 1px 1px 0 #3d2b25 !important;
+  filter: brightness(0.98) saturate(1.02) !important;
+  transform: translateY(1px) rotate(var(--utility-tilt, 0deg)) scale(0.98) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .recruitment-entry.has-alert {
+  box-shadow: 4px 4px 0 #3d2b25, 0 0 0 4px rgba(255, 255, 255, 0.78) inset !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:hover:not(:disabled),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:focus-visible:not(:disabled),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:active:not(:disabled) {
+    transition-duration: 1ms !important;
+    transform: none !important;
+  }
+}

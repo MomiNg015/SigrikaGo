@@ -1,0 +1,70 @@
+/* Bright School desktop home match-mode tickets. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature {
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  gap: clamp(10px, 1.2vw, 16px) !important;
+  align-items: stretch !important;
+  overflow: visible !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature .match-image-entry {
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-tickets {
+  width: min(94%, 720px) !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: clamp(10px, 1vw, 14px) !important;
+  justify-self: center !important;
+  z-index: 4 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-ticket {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 3px !important;
+  padding: 10px 14px !important;
+  background: #fffaf0 !important;
+  border: 3px solid #3d2b25 !important;
+  border-radius: 16px !important;
+  box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.76) !important;
+  color: #3d2b25 !important;
+  text-align: left !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-ticket:nth-child(2) {
+  background: #e7f7fb !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-ticket:nth-child(3) {
+  background: #dff8ef !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-ticket b,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-ticket small {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-ticket b {
+  font-size: clamp(12px, 1vw, 15px) !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-ticket small {
+  color: #6a554d !important;
+  font-size: clamp(10px, 0.82vw, 12px) !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-count {
+  font-variant-numeric: tabular-nums !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-label {
+  margin-left: 3px !important;
+}

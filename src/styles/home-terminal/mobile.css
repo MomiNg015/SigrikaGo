@@ -56,6 +56,15 @@
     gap: 14px;
   }
 
+  .home-match-mode-tickets {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .home-match-mode-ticket {
+    padding: 8px;
+  }
+
   .house-manual-entry,
   .match-image-entry {
     grid-column: auto;
@@ -87,7 +96,16 @@
     transform: none;
   }
 
-  .home-grid-featured > .home-utility-grid .utility-entry span {
+  .home-grid-featured > .home-utility-grid .utility-entry-icon,
+  .home-grid-featured > .home-utility-grid .utility-entry > strong {
+    grid-row: auto;
+  }
+
+  .home-grid-featured > .home-utility-grid .utility-entry > strong {
+    grid-column: 2;
+  }
+
+  .home-grid-featured > .home-utility-grid .utility-entry-description {
     display: none;
   }
 

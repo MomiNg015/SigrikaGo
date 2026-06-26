@@ -35,6 +35,7 @@
 - Bright School portrait mobile list/settings/social layout now follows the same sub-entry pattern: `src/styles/themes/bright-school/mobile/lists-settings.css` owns import order and delegates list scroll widths, watch rows, friends rows, table shells, leaderboard cards, replay cards, and toolbar/card-border rules to `src/styles/themes/bright-school/mobile/lists-settings/`; theme contract tests guard the nested import order.
 - The shared lobby, house manual, profile stat, match entry, and watch-list layer now follows the import-only domain pattern. `src/styles/lobby.css` delegates panel/profile, character card, match/watch entry, watch-list shell, and watch-list phone fallback rules to `src/styles/lobby/`, while feature tests read the expanded CSS import tree.
 - The shared mobile home layout followed the same pattern: `src/styles/mobile-home.css` now owns import order for the 900px base portrait/tablet layout, the 620px narrow-phone fallback, and the 900px landscape fallback through `src/styles/mobile-home/`. This keeps mobile lobby responsive rules extensible without adding more concrete CSS to the root entry layer.
+- Desktop home toolbox and match-mode ticket rules follow the same split pattern: shared base rules live in `src/styles/base/home-stage-toolbox.css`, while Bright School-specific desktop paper-card polish is an import-only `src/styles/themes/bright-school/home/utility-toolbox.css` sub-entry delegating to match tickets, toolbox grid, and interaction files.
 
 ## Realtime Performance Notes
 

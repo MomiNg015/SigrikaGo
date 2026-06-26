@@ -57,6 +57,16 @@
     gap: clamp(8px, 1.4vw, 12px) !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
+    min-height: 66px !important;
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    padding: 9px 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry small {
+    display: none !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
     grid-area: manual !important;
     height: clamp(250px, 48dvh, 420px) !important;
@@ -65,8 +75,17 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature {
     grid-area: match !important;
-    height: clamp(170px, 30dvh, 250px) !important;
+    height: clamp(230px, 38dvh, 320px) !important;
     min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature .match-image-entry {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-mode-ticket {
+    padding: 8px 10px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {

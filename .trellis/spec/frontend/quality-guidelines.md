@@ -695,12 +695,24 @@ Required assertion points:
 - The final `mobile-adaptive/home-narrow-desktop.css` layer owns compact and micro desktop safety after theme overrides. It must reset player/manual/match/utility regions to `position: static` and remove decorative transforms that can create invisible hit boxes or overlaps.
 - Footer chrome should be fixed only on wide and tall desktop windows. Compact, micro, and low-height desktop windows should keep the footer in normal flow so it cannot cover core entries.
 - Home plaque stats must be in a shrinkable grid column with `min-width: 0`; avoid fixed pixel stats columns on mobile because long usernames need the remaining space.
+- Phone portrait must remain a usable home layout, not an orientation gate. Below the phone breakpoint, keep `.home-main-panel` visible and stack the stage as `player`, `match`, `manual`, `utility`; do not render or reveal `.home-orientation-guard`.
+- Home utility entries may hide only the descriptor on compact/mobile layouts. Keep the icon and main `<strong>` title visible so the 2x3 mobile toolbox preserves recognisable touch targets.
 
 Wrong:
 
 ```css
 .home-screen {
   min-width: 1180px;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .home-main-panel {
+    display: none;
+  }
+
+  .home-orientation-guard {
+    display: grid;
+  }
 }
 ```
 
@@ -712,6 +724,20 @@ Correct:
 .home-screen,
 .home-grid-featured {
   min-width: 0;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .home-main-panel {
+    display: grid;
+  }
+
+  .home-stage {
+    grid-template-areas:
+      "player"
+      "match"
+      "manual"
+      "utility";
+  }
 }
 
 @media (min-width: 1024px) and (max-width: 1180px) {

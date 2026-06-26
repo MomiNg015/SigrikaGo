@@ -1,9 +1,9 @@
 .home-grid-featured > .home-utility-grid {
   grid-area: nav;
-  width: min(420px, 100%);
+  width: min(480px, 100%);
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
   align-self: end;
   justify-self: start;
   min-height: 0;
@@ -16,14 +16,14 @@
   position: relative;
   width: 100%;
   min-width: 0;
-  height: 48px;
-  min-height: 48px;
+  height: auto;
+  min-height: 78px;
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-columns: 26px minmax(0, 1fr);
   align-items: center;
   justify-items: start;
-  gap: 10px;
-  padding: 8px 16px 8px 14px;
+  gap: 9px;
+  padding: 10px 12px;
   border: 1px solid rgba(0, 255, 190, 0.24);
   border-left: 4px solid var(--home-terminal-cyan);
   border-radius: 0;
@@ -52,6 +52,29 @@
   transform: skewX(15deg);
 }
 
+.home-grid-featured > .home-utility-grid .utility-entry-icon,
+.home-grid-featured > .home-utility-grid .utility-entry-description {
+  min-width: 0;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry-icon {
+  width: 26px;
+  height: 26px;
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry > strong,
+.home-grid-featured > .home-utility-grid .utility-entry-description {
+  grid-column: 2;
+}
+
+.home-grid-featured > .home-utility-grid .utility-entry-description {
+  display: grid;
+  gap: 2px;
+}
+
 .home-grid-featured > .home-utility-grid .utility-entry svg {
   width: 22px;
   height: 22px;
@@ -63,11 +86,11 @@
   max-width: none;
   color: #ffffff;
   font-size: 13px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
 }
 
-.home-grid-featured > .home-utility-grid .utility-entry span {
-  display: none;
+.home-grid-featured > .home-utility-grid .utility-entry small {
+  display: block;
   max-width: 100%;
   overflow: hidden;
   color: var(--home-terminal-muted);

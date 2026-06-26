@@ -209,11 +209,28 @@ describe("player theme CSS contract", () => {
       "./home/manual-entry-label.css",
       "./home/short-height.css",
       "./home/narrow-desktop.css",
-      "./home/mobile-compact.css"
+      "./home/mobile-compact.css",
+      "./home/utility-toolbox.css"
     ]);
     expect(brightHomeEntry).not.toContain(".home-player-plaque.tactical-id-card {");
     expect(brightHomeEntry).not.toContain(".home-main-panel.home-terminal-main");
     expect(brightHomeEntry).not.toContain("@media (min-width: 701px)");
+  });
+
+  it("keeps Bright School home utility toolbox as an import-only sub-entry", () => {
+    const utilityToolboxEntry = readFileSync(
+      new URL("./themes/bright-school/home/utility-toolbox.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(utilityToolboxEntry)).toEqual([
+      "./utility-toolbox/match-tickets.css",
+      "./utility-toolbox/toolbox-grid.css",
+      "./utility-toolbox/toolbox-interactions.css"
+    ]);
+    expect(utilityToolboxEntry).not.toContain(".home-match-mode-tickets {");
+    expect(utilityToolboxEntry).not.toContain(".utility-entry {");
+    expect(utilityToolboxEntry).not.toContain("@media");
   });
 
   it("keeps Bright School home student-id-card as an import-only sub-entry", () => {
