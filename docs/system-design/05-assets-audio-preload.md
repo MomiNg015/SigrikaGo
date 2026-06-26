@@ -9,6 +9,7 @@
 - 匹配成功后的对局资源预加载使用 `battlePreloadAssets()` 按双方房间角色收集立绘、对局 BGM、角色技能 BGM、技能/系统语音和棋盘特效图片，但加载页视觉只展示当前用户自己的出战角色跳动立绘和该角色的后台配置加载台词。
 - 登录后预加载分为关键资源和延迟资源，关键资源阻塞进入首页，音乐/语音/商店预览等后台加载。
 - 音频分为 BGM、UI/棋盘音效、角色技能语音和系统语音，复用共享播放与设置通道。
+- 西格莉卡 `erase-point` 结算后的无效交叉点使用 `/assets/effects/sigrika-erased-field-marker.webp` 透明 WebP 作为坑洞标记，`.void` 在共享棋盘 CSS 中按 `150%` point-cell 尺寸显示，即 1.5 个棋盘格子长度，桌面和移动端共用同一资源与尺寸合同。
 
 - Game modes are now explicit shared runtime configuration. `spark` (`星炬对弈`) stays first and keeps the 13-line, skill-enabled Go rule set with black komi 2.75; `standard` (`标准对弈`) is second and uses a 19-line no-skill Go board with black komi 3.75; `gomoku` (`来下五子棋吗？`) is third and uses a 13-line no-skill Gomoku board with spark star points, automatic color assignment, 5 minutes plus 30 seconds x3, exact-five wins, full-board draw, and black forbidden moves. Frontend and backend should read titles, rule copy, board size, komi, skill enablement, time controls, mode family, and mode ordering from `src/shared/gameModes.js` instead of hard-coding mode facts.
 - Matchmaking, friend duels, room snapshots, persisted rooms, replay records, watch lists, leaderboards, and profile/history surfaces carry a `mode` field. Match queues are isolated by mode, lobby stats expose per-mode waiting counts, friend duel requests include the requested mode, and old/missing record modes normalize to `spark` for legacy data.

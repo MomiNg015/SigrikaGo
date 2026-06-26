@@ -121,7 +121,7 @@ describe("areBoardPropsEqual", () => {
     expect(latestMoveBlock).not.toContain("height: 9px");
   });
 
-  test("renders erased Sigrika field markers from the crater WebP asset at point scale", () => {
+  test("renders erased Sigrika field markers from the crater WebP asset at 1.5 board-cell scale", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {
         phase: "playing",
@@ -134,7 +134,7 @@ describe("areBoardPropsEqual", () => {
     const voidBlock = css.match(/\.void\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(markup).toContain('class="void"');
-    expect(voidBlock).toContain("--erased-field-marker-size: 72%");
+    expect(voidBlock).toContain("--erased-field-marker-size: 150%");
     expect(voidBlock).toContain("width: var(--erased-field-marker-size)");
     expect(voidBlock).toContain("background: center / contain no-repeat url(\"/assets/effects/sigrika-erased-field-marker.webp\")");
     expect(voidBlock).toContain("pointer-events: none");

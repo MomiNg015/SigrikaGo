@@ -47,7 +47,7 @@
 }
 
 .void {
-  --erased-field-marker-size: 72%;
+  --erased-field-marker-size: 150%;
   width: var(--erased-field-marker-size);
   height: var(--erased-field-marker-size);
   display: grid;
