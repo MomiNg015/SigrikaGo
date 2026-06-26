@@ -55,19 +55,19 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
   ["mobile-adaptive/bright-school-portrait/settings-tabs.css", 6576],
   ["mobile-adaptive/mobile-profile-records.css", 6842],
-  ["mobile-adaptive/phone-core.css", 6806],
+  ["mobile-adaptive/phone-core.css", 6418],
   ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-modals/phone-house-resume.css", 6956],
   ["modals/mailbox.css", 10616],
   ["mobile-room/portrait-room.css", 7502],
-  ["modals/character-opening.css", 12036],
+  ["modals/character-opening.css", 6330],
   ["responsive/phone-portrait-room.css", 6803],
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
   ["room/board/stones-skill-effects.css", 7290],
   ["themes/bright-school/component-repairs/foundation-home.css", 6973],
   ["themes/bright-school/component-repairs/notebook-polish.css", 6408],
-  ["themes/bright-school/component-repairs/warehouse-character.css", 11340],
+  ["themes/bright-school/component-repairs/warehouse-character.css", 8413],
   ["themes/bright-school/mobile/room/dock-actions.css", 6459],
   ["themes/bright-school/mobile/room/shell-header-menu.css", 6872],
   ["themes/bright-school/mobile/room/viewport-player-strips.css", 7109],
@@ -333,27 +333,6 @@ describe("root CSS entry contract", () => {
     expect(touchConfirmBlock).not.toContain("transform: scale");
     expect(mobileCss).toContain("@keyframes mobile-sheet-in");
     expect(mobileCss).toContain("@media (max-width: 768px) and (prefers-reduced-motion: reduce)");
-  });
-
-  it("keeps the character detail music player campus-style and mobile-safe", () => {
-    const modalCss = readCssWithImports(new URL("./modals.css", import.meta.url));
-    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
-
-    expect(modalCss).toContain(".character-music-player.is-loading");
-    expect(modalCss).toContain(".character-music-player.is-playing");
-    expect(modalCss).toContain(".character-music-player.is-error");
-    expect(modalCss).toContain(".character-music-status");
-    expect(modalCss).toContain(".character-music-select-frame");
-    expect(modalCss).toContain("appearance: none");
-    expect(modalCss).toContain("font-weight: 950");
-    expect(modalCss).toContain("transition:\n    background-color 90ms ease");
-    expect(modalCss).not.toContain(".character-music-toggle:active:not(:disabled) {\n  transform:");
-    expect(modalCss).toContain("@keyframes character-music-signal");
-    expect(modalCss).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(mobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(156px, 206px) !important");
-    expect(mobileCss).toContain("width: min(206px, 54vw) !important");
-    expect(mobileCss).toContain(".character-music-signal");
-    expect(mobileCss).toContain(".character-music-select-frame");
   });
 
   it("keeps mobile-adaptive.css as an import-only safety entry", () => {

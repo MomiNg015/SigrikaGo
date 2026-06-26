@@ -320,21 +320,6 @@ describe("player theme CSS contract", () => {
     expect(mobileHouseProfileEntry).not.toContain(".character-detail-heading");
   });
 
-  it("keeps Bright School character detail music player aligned across desktop and portrait mobile", () => {
-    const themeCss = readCssWithImports(new URL("./themes.css", import.meta.url));
-
-    expect(themeCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-loading");
-    expect(themeCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-error");
-    expect(themeCss).toContain("width: 220px !important");
-    expect(themeCss).toContain("height: 46px !important");
-    expect(themeCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(156px, 206px) !important");
-    expect(themeCss).toContain("width: min(206px, 54vw) !important");
-    expect(themeCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-signal");
-    expect(themeCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select-frame");
-    expect(themeCss).toContain("transition: background-color 90ms ease, color 90ms ease, box-shadow 90ms ease, filter 90ms ease !important");
-    expect(themeCss).not.toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:active:not(:disabled) {\n  transform:");
-  });
-
   it("keeps Bright School mobile lists and settings as an import-only portrait entry", () => {
     const mobileListsSettingsEntry = readFileSync(
       new URL("./themes/bright-school/mobile/lists-settings.css", import.meta.url),
