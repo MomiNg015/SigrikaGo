@@ -11,7 +11,7 @@ function createSocket(user = { id: "user-a" }) {
     on: vi.fn((event, handler) => {
       handlers[event] = handler;
     }),
-    trigger: (event, payload) => handlers[event](payload)
+    trigger: (event, payload, ack) => handlers[event](payload, ack)
   };
 }
 
@@ -161,5 +161,43 @@ describe("socket room events", () => {
     socket.trigger("room:preload-ready", { roomCode: "12345" });
 
     expect(deps.markRoomPreloadReady).toHaveBeenCalledWith("12345", "ready-user", deps.io);
+  });
+
+  it("acknowledges successful match preload ready reports", () => {
+    const socket = createSocket({ id: "ready-user" });
+    const room = {
+      code: "12345",
+      game: { phase: "preloading" },
+      preload: { readyCount: 1, requiredCount: 2 }
+    };
+    const ack = vi.fn();
+    const deps = createDeps({
+      markRoomPreloadReady: vi.fn(() => room)
+    });
+
+    registerRoomSocketEvents(socket, deps);
+    socket.trigger("room:preload-ready", { roomCode: "12345" }, ack);
+
+    expect(ack).toHaveBeenCalledWith({
+      ok: true,
+      roomCode: "12345",
+      phase: "preloading",
+      readyCount: 1,
+      requiredCount: 2
+    });
+  });
+
+  it("acknowledges invalid preload ready reports without marking a room ready", () => {
+    const socket = createSocket({ id: "ready-user" });
+    const ack = vi.fn();
+    const deps = createDeps({
+      validateRoomCode: vi.fn(() => ({ ok: false, error: "bad room code" }))
+    });
+
+    registerRoomSocketEvents(socket, deps);
+    socket.trigger("room:preload-ready", { roomCode: "bad" }, ack);
+
+    expect(deps.markRoomPreloadReady).not.toHaveBeenCalled();
+    expect(ack).toHaveBeenCalledWith({ ok: false, error: "bad room code" });
   });
 });

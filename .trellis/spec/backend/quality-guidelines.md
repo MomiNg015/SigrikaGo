@@ -1317,8 +1317,8 @@ Tests touching Socket.IO disconnect event registration, cleanup ordering, change
 
 `server/staticAssets.js` owns production Vite asset hosting and SPA fallback:
 
-- `installProductionStaticAssets(app, { distDir })` mounts nothing unless `NODE_ENV === "production"` and `distDir` exists.
-- When active, it mounts the built Vite directory with a short default cache and adds a one-year immutable `Cache-Control` header for hashed chunk/asset filenames and public `/assets/**` runtime resources. Resource content changes must use a changed URL or filename because these responses are immutable in browsers.
+- `installProductionStaticAssets(app, { distDir })` mounts nothing unless either `NODE_ENV === "production"` or `LOCAL_PROD_STATIC` is truthy, and `distDir` exists. `LOCAL_PROD_STATIC=1` is reserved for local production-like stability verification; it must not weaken production deployment validation.
+- When active, it mounts the built Vite directory with a short default cache and adds a one-year immutable `Cache-Control` header only for hashed Vite chunk/asset filenames. Public `/assets/**` runtime resources keep the shorter static cache and ETag behavior so same-name WebP/SVG/audio replacements are not pinned by immutable browser caches.
 - The SPA fallback must exclude `/api`, `/socket.io`, and `/uploads` so backend APIs, Socket.IO transport, and uploaded assets keep their existing routes.
 - `server/index.js` should provide the `distDir` and call this boundary once near the end of route/socket setup; it should not duplicate production checks, cache-header regexes, or fallback route patterns.
 
@@ -1337,7 +1337,7 @@ Correct:
 installProductionStaticAssets(app, { distDir });
 ```
 
-Tests touching production asset mounting, SPA fallback exclusions, or immutable cache headers should update `server/staticAssets.test.js`.
+Tests touching production asset mounting, local production-like static mode, SPA fallback exclusions, or immutable cache headers should update `server/staticAssets.test.js`.
 
 ### Leaderboard API Contract
 

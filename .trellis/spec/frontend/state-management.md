@@ -14,7 +14,7 @@ Most app-wide state is still owned by `src/app/App.jsx` and passed into extracte
 
 - Current account state lives behind `useCurrentUser`; use its `updateUser` callback instead of writing directly to the `user` setter so account changes stay centralized.
 - Room session state lives behind `useRoomSessionState`; authoritative room snapshots still come from the server, while replay position, pending-skill UI state, dismissed result room, and derived result-modal visibility stay in this app-level room session boundary.
-- Match session state lives behind `useMatchSessionState`; pending matchmaking and match-success transition state stay together because socket handlers, startup preload, match actions, overlays, and background music all observe or mutate this pair. Match-success rooms in `GAME_PHASES.preloading` must route to the `match-preloading` view, synchronize server `preload.readyCount/requiredCount`, and only auto-enter `room` when a later room snapshot leaves preloading.
+- Match session state lives behind `useMatchSessionState`; pending matchmaking and match-success transition state stay together because socket handlers, startup preload, match actions, overlays, and background music all observe or mutate this pair. Match-success rooms in `GAME_PHASES.preloading` must route to the `match-preloading` view, synchronize server `preload.readyCount/requiredCount`, and only auto-enter `room` when a later room snapshot leaves preloading. A refreshed player that recovers a `GAME_PHASES.preloading` room with no existing `matchSuccess` must rebuild a countdown-complete pending match before entering `match-preloading`, so battle preload can emit `room:preload-ready` again.
 - Overlay visibility state lives behind `useOverlayState`; `App.jsx` may pass the returned `show*` flags and `setShow*` callbacks to route and overlay composition, but it should not add new top-level `useState(false)` flags for modal visibility.
 - Toast state is app shell state owned by `useToastQueue`.
 
@@ -142,27 +142,33 @@ useGameSocketConnection({ onSocketReconnect: resumeAudioPlayback });
 - `loadPublicCharacterCatalog({ token })`
 - `loadMusicTrackCatalog({ token })`
 - `shouldFinishPreloadAsHome({ view, room, matchSuccess })`
+- `shouldShowStartupPreload({ room, matchSuccess })`
 
 #### 3. Contracts
 - `App.jsx` must pass every setter that `useStartupPreload()` destructures and invokes.
 - When authenticated preload succeeds, it must refresh `/api/me`, public characters, and merged music tracks before finishing at `home`.
 - `setMusicTracks(nextMusicTracks)` is required after `loadMusicTrackCatalog()` so post-login music labels use the merged catalog.
+- Startup preload must not cover an already recovered room or pending match. After `/api/me` returns, `useStartupPreload()` may set `view` to `preloading` only when `roomRef.current` and `matchSuccessRef.current` are both empty; a fast `room:resume` can legitimately restore `room` before startup asset preload begins.
 - The catch path may reset to login only for real preload failures; missing setter wiring is a code bug and must be covered by tests.
 - Do not add new preload side effects without updating both the hook call in `App.jsx` and a wiring/regression test.
 
 #### 4. Validation & Error Matrix
 - Valid token and all preload requests succeed -> set user/catalogs and finish at `home`.
+- Valid token while socket resume already restored an active room -> keep the recovered room view and continue asset preload without forcing `view` back to `preloading`.
 - Missing token -> no preload work.
 - `/api/me` or catalog request fails -> close socket, clear session state, and return to `login`.
 - Missing `setMusicTracks` or another invoked setter -> invalid implementation; tests should fail before runtime.
 
 #### 5. Good/Base/Bad Cases
 - Good: `App.jsx` passes `setMusicTracks` alongside `setCharacters` to `useStartupPreload()`.
+- Good: `shouldShowStartupPreload({ room: roomRef.current, matchSuccess: matchSuccessRef.current })` guards the startup `setView("preloading")` call.
 - Base: a fresh login preloads default music names when the admin has no display-name overrides.
 - Bad: adding `setFoo(nextFoo)` inside `useStartupPreload()` without passing `setFoo` from `App.jsx`, causing a post-login TypeError that is swallowed by the preload catch path.
+- Bad: unconditionally calling `setView("preloading")` after `/api/me`, because mobile same-origin socket resume can restore a room first and then be visually covered by the startup preload route.
 
 #### 6. Tests Required
 - App startup preload wiring tests assert the `useStartupPreload()` call includes invoked catalog setters such as `setMusicTracks`.
+- Session and app wiring tests assert startup preload does not cover an already recovered room or pending match.
 - Session/preload tests assert fresh login can finish as home even when the previous ref view is `login`.
 - API client tests should still cover auth refresh behavior when preload requests receive 401.
 

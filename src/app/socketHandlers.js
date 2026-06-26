@@ -1,4 +1,4 @@
-import { applyRoomSnapshot } from "./roomSnapshot.js";
+import { applyRoomSnapshot, normalizeRoomSnapshot } from "./roomSnapshot.js";
 import { applyRoomPatch, roomPatchCanUpdate, roomPatchNeedsResume } from "./roomPatch.js";
 import { GAME_MODE_IDS } from "../shared/gameModes.js";
 import { GAME_PHASES } from "../shared/game.js";
@@ -70,12 +70,13 @@ export function createSocketHandlers({
       setLobbyStats((current) => sameLobbyStats(current, nextStats) ? current : nextStats);
     },
     matchFound: (roomView) => {
+      const normalizedRoomView = normalizeRoomSnapshot(roomView);
       closeAllOverlays();
       setReplayStep(null);
       setMatchStart(null);
-      updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
+      updateUser((current) => mergeCurrentUserFromRoom(current, normalizedRoomView));
       const transition = {
-        room: roomView,
+        room: normalizedRoomView,
         startedAt: now(),
         countdownComplete: false
       };
@@ -83,22 +84,37 @@ export function createSocketHandlers({
       setMatchSuccess(transition);
     },
     roomUpdate: (roomView) => {
-      updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
-      if (shouldCompletePendingMatch(matchSuccessRef.current, roomView)) {
-        setRoom((current) => applyRoomSnapshot(current, roomView));
+      const normalizedRoomView = normalizeRoomSnapshot(roomView);
+      updateUser((current) => mergeCurrentUserFromRoom(current, normalizedRoomView));
+      if (shouldCompletePendingMatch(matchSuccessRef.current, normalizedRoomView)) {
+        setRoom((current) => applyRoomSnapshot(current, normalizedRoomView));
         matchSuccessRef.current = null;
         setMatchSuccess(null);
         setView("room");
         return;
       }
-      if (syncPendingMatchRoom(matchSuccessRef, setMatchSuccess, roomView)) return;
-      const nextAudioBaselineSnapshotKey = roomAudioBaselineSnapshotKey(roomView);
-      const shouldApplyAudioBaseline = shouldMarkRoomAudioBaseline(roomView)
+      if (shouldRecoverPreloadingMatch(matchSuccessRef.current, normalizedRoomView)) {
+        setMatchStart(null);
+        setReplayStep(null);
+        setPendingSkill(false);
+        const transition = {
+          room: normalizedRoomView,
+          startedAt: now(),
+          countdownComplete: true
+        };
+        matchSuccessRef.current = transition;
+        setMatchSuccess(transition);
+        setView("match-preloading");
+        return;
+      }
+      if (syncPendingMatchRoom(matchSuccessRef, setMatchSuccess, normalizedRoomView)) return;
+      const nextAudioBaselineSnapshotKey = roomAudioBaselineSnapshotKey(normalizedRoomView);
+      const shouldApplyAudioBaseline = shouldMarkRoomAudioBaseline(normalizedRoomView)
         && (shouldAudioBaselineNextLiveSnapshot || nextAudioBaselineSnapshotKey === audioBaselineSnapshotKey);
-      const nextRoomView = shouldApplyAudioBaseline ? { ...roomView, __audioResumeBaseline: true } : roomView;
+      const nextRoomView = shouldApplyAudioBaseline ? { ...normalizedRoomView, __audioResumeBaseline: true } : normalizedRoomView;
       shouldAudioBaselineNextLiveSnapshot = false;
       audioBaselineSnapshotKey = shouldApplyAudioBaseline ? nextAudioBaselineSnapshotKey : "";
-      if (roomView?.role === "player" && roomView?.game?.phase === "finished") {
+      if (normalizedRoomView?.role === "player" && normalizedRoomView?.game?.phase === "finished") {
         clearLastRoomCode();
       }
       setRoom((current) => applyRoomSnapshot(current, nextRoomView));
@@ -142,6 +158,25 @@ export function createSocketHandlers({
         setView,
         showToast
       })) return;
+      if (payload?.type === "room") {
+        const normalizedRoomView = normalizeRoomSnapshot(payload.room);
+        if (shouldRecoverPreloadingMatch(null, normalizedRoomView)) {
+          closeAllOverlays();
+          updateUser((current) => mergeCurrentUserFromRoom(current, normalizedRoomView));
+          setMatchStart(null);
+          setReplayStep(null);
+          setPendingSkill(false);
+          const transition = {
+            room: normalizedRoomView,
+            startedAt: now(),
+            countdownComplete: true
+          };
+          matchSuccessRef.current = transition;
+          setMatchSuccess(transition);
+          setView("match-preloading");
+          return;
+        }
+      }
       handleRoomResumePayload(payload, {
         closeAllOverlays,
         setMatchStart,
@@ -150,12 +185,13 @@ export function createSocketHandlers({
         setPendingSkill,
         setDismissedResultRoom,
         setRoom: (roomView) => {
+          const normalizedRoomView = normalizeRoomSnapshot(roomView);
           if (payload.type === "room") {
-            updateUser((current) => mergeCurrentUserFromRoom(current, roomView));
-            setRoom((current) => applyRoomSnapshot(current, roomView));
+            updateUser((current) => mergeCurrentUserFromRoom(current, normalizedRoomView));
+            setRoom((current) => applyRoomSnapshot(current, normalizedRoomView));
             return;
           }
-          setRoom(roomView);
+          setRoom(normalizedRoomView);
         },
         setView
       });
@@ -300,6 +336,14 @@ function shouldCompletePendingMatch(matchSuccess, roomView) {
       && roomView?.game?.phase
       && roomView.game.phase !== GAME_PHASES.preloading
       && matchSuccess.countdownComplete
+  );
+}
+
+function shouldRecoverPreloadingMatch(matchSuccess, roomView) {
+  return Boolean(
+    !matchSuccess
+      && roomView?.role === "player"
+      && roomView?.game?.phase === GAME_PHASES.preloading
   );
 }
 

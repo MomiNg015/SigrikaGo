@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { SKILL_EFFECT_CATALOG } from "../shared/skillEffectCatalog.js";
 import {
   BOARD_SKILL_EFFECT_RENDERERS,
@@ -270,5 +270,28 @@ describe("boardSkillEffectRegistry", () => {
       durationMs: 1000,
       reducedMotion: false
     })).not.toThrow();
+  });
+
+  test("reports renderer failures without throwing out of the room UI", () => {
+    const onError = vi.fn();
+
+    expect(() => playRegisteredBoardSkillEffect({
+      app: { stage: { addChild: vi.fn() } },
+      pixi: {},
+      host: { clientWidth: 260, clientHeight: 260 },
+      boardSize: 13,
+      pendingSkill: { effectType: "boom", targetId: "6,6" },
+      durationMs: 1000,
+      reducedMotion: false,
+      renderers: {
+        boom: {
+          play: () => {
+            throw new Error("renderer failed");
+          }
+        }
+      },
+      onError
+    })).not.toThrow();
+    expect(onError).toHaveBeenCalledWith(expect.any(Error));
   });
 });

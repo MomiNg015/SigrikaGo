@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { initialSessionState, shouldFinishPreloadAsHome } from "./sessionState.js";
+import { initialSessionState, shouldFinishPreloadAsHome, shouldShowStartupPreload } from "./sessionState.js";
 
 describe("initial session state", () => {
   it("does not restore auth tokens from localStorage after a page reload", () => {
@@ -21,5 +21,11 @@ describe("initial session state", () => {
 
   it("finishes fresh login preload even if the view ref still has the previous login value", () => {
     expect(shouldFinishPreloadAsHome({ view: "login", room: null, matchSuccess: null })).toBe(true);
+  });
+
+  it("does not let startup preload cover a recovered room or pending match", () => {
+    expect(shouldShowStartupPreload({ room: null, matchSuccess: null })).toBe(true);
+    expect(shouldShowStartupPreload({ room: { code: "12345" }, matchSuccess: null })).toBe(false);
+    expect(shouldShowStartupPreload({ room: null, matchSuccess: { room: { code: "12345" } } })).toBe(false);
   });
 });

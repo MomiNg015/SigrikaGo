@@ -6,6 +6,7 @@ import {
 } from "../shared/skillPresentation.js";
 import {
   boardSkillEffectAssetUrls,
+  loadPixiAssetList,
   playRegisteredBoardSkillEffect
 } from "./boardSkillEffectRegistry.js";
 import { boardPointCenter } from "./boardSkillEffectGeometry.js";
@@ -125,7 +126,7 @@ export function preparePixiEffect({ host, pendingSkill, loadPixi = loadPixiModul
       resolution: typeof window === "undefined" ? 1 : window.devicePixelRatio || 1
     });
     const assetsPromise = assetUrls.length > 0
-      ? pixi.Assets?.load?.(assetUrls).catch(() => {})
+      ? loadPixiAssetList(pixi, assetUrls).catch(() => [])
       : Promise.resolve();
     await Promise.all([initPromise, assetsPromise]);
     if (!active) {
@@ -157,16 +158,39 @@ function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, prese
   let active = true;
   let timeoutId = 0;
   let soundTimers = [];
+  let restoreTicker = () => {};
+  let failed = false;
   preparedEffect.host.dataset.effectFallback = "true";
+
+  const failEffect = () => {
+    if (!active || failed) return;
+    failed = true;
+    preparedEffect.host.dataset.effectFallback = "true";
+    window.clearTimeout(timeoutId);
+    clearBoardSkillEffectSoundTimers(soundTimers);
+    timeoutId = window.setTimeout(() => {
+      preparedEffect.cleanup();
+    }, durationMs + 180);
+  };
 
   preparedEffect.ready.then((prepared) => {
     if (!active || !prepared) return;
     delete preparedEffect.host.dataset.effectFallback;
     const { app, host, pixi } = prepared;
+    restoreTicker = installPixiTickerErrorGuard(app, failEffect);
     soundTimers = presentation.layers.sound
       ? scheduleBoardSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings })
       : [];
-    playRegisteredBoardSkillEffect({ app, pixi, host, boardSize, pendingSkill, durationMs, reducedMotion });
+    playRegisteredBoardSkillEffect({
+      app,
+      pixi,
+      host,
+      boardSize,
+      pendingSkill,
+      durationMs,
+      reducedMotion,
+      onError: failEffect
+    });
     timeoutId = window.setTimeout(() => {
       clearBoardSkillEffectSoundTimers(soundTimers);
       preparedEffect.cleanup();
@@ -177,7 +201,32 @@ function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, prese
     active = false;
     window.clearTimeout(timeoutId);
     clearBoardSkillEffectSoundTimers(soundTimers);
+    restoreTicker();
     delete preparedEffect.host.dataset.effectFallback;
     preparedEffect.cleanup();
+  };
+}
+
+export function installPixiTickerErrorGuard(app, onError = () => {}) {
+  const ticker = app?.ticker;
+  if (!ticker?.add || ticker.add.__sigrikaGuarded) return () => {};
+  const originalAdd = ticker.add;
+  const callOriginalAdd = originalAdd.bind(ticker);
+  const guardedAdd = (callback, ...args) => {
+    if (typeof callback !== "function") return callOriginalAdd(callback, ...args);
+    const guardedCallback = (...callbackArgs) => {
+      try {
+        return callback(...callbackArgs);
+      } catch (error) {
+        onError(error);
+        return undefined;
+      }
+    };
+    return callOriginalAdd(guardedCallback, ...args);
+  };
+  guardedAdd.__sigrikaGuarded = true;
+  ticker.add = guardedAdd;
+  return () => {
+    if (ticker.add === guardedAdd) ticker.add = originalAdd;
   };
 }

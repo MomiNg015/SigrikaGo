@@ -25,26 +25,47 @@ const MORNYE_PROTOCOL_COLORS = Object.freeze({
   shadow: 0x6f7fb6
 });
 
-export function playRegisteredBoardSkillEffect({ app, pixi, host, boardSize, pendingSkill, durationMs, reducedMotion }) {
-  const renderer = BOARD_SKILL_EFFECT_RENDERERS[pendingSkill?.effectType];
-  if (!renderer) return;
-  if (renderer.fullBoard) {
-    const play = reducedMotion ? renderer.playReducedMotion : renderer.play;
-    play?.({ app, pixi, host, boardSize, pendingSkill, durationMs });
-    return;
+export function playRegisteredBoardSkillEffect({
+  app,
+  pixi,
+  host,
+  boardSize,
+  pendingSkill,
+  durationMs,
+  reducedMotion,
+  renderers = BOARD_SKILL_EFFECT_RENDERERS,
+  onError = () => {}
+}) {
+  try {
+    const renderer = renderers[pendingSkill?.effectType];
+    if (!renderer) return;
+    if (renderer.fullBoard) {
+      const play = reducedMotion ? renderer.playReducedMotion : renderer.play;
+      play?.({ app, pixi, host, boardSize, pendingSkill, durationMs });
+      return;
+    }
+    const target = pointCenterForHost(pendingSkill.targetId, { boardSize, host });
+    if (!target) return;
+    if (reducedMotion) {
+      const play = renderer.playReducedMotion ?? playReducedMotionHit;
+      play({ app, pixi, host, boardSize, pendingSkill, target, durationMs });
+      return;
+    }
+    renderer.play({ app, pixi, host, boardSize, pendingSkill, target, durationMs });
+  } catch (error) {
+    onError(error);
   }
-  const target = pointCenterForHost(pendingSkill.targetId, { boardSize, host });
-  if (!target) return;
-  if (reducedMotion) {
-    const play = renderer.playReducedMotion ?? playReducedMotionHit;
-    play({ app, pixi, host, boardSize, pendingSkill, target, durationMs });
-    return;
-  }
-  renderer.play({ app, pixi, host, boardSize, pendingSkill, target, durationMs });
 }
 
 export function boardSkillEffectAssetUrls(effectType) {
   return BOARD_SKILL_EFFECT_RENDERERS[effectType]?.assets ?? [];
+}
+
+export async function loadPixiAssetList(pixi, urls) {
+  if (!pixi?.Assets?.load || urls.length === 0) return [];
+  const result = await pixi.Assets.load(urls);
+  if (Array.isArray(result)) return result;
+  return urls.map((url) => result?.[url] ?? null);
 }
 
 function playReducedMotionBoardSweep({ app, pixi, host, durationMs }) {
@@ -102,7 +123,8 @@ function playChangliDoubleMove({ app, pixi, host, boardSize, durationMs }) {
   let phoenixAspect = 1;
   const pointFlames = [];
   const pointIds = changliFlamePointIds(boardSize);
-  void pixi.Assets.load([CHANGLI_FIRE_PHOENIX_IMAGE, CHANGLI_FLAME_SPRITE_IMAGE]).then(([phoenixTexture, flameTexture]) => {
+  void loadPixiAssetList(pixi, [CHANGLI_FIRE_PHOENIX_IMAGE, CHANGLI_FLAME_SPRITE_IMAGE]).then(([phoenixTexture, flameTexture]) => {
+    if (!phoenixTexture || !flameTexture) return;
     phoenix = new pixi.Sprite({ texture: phoenixTexture });
     phoenixAspect = phoenixTexture.height && phoenixTexture.width ? phoenixTexture.height / phoenixTexture.width : 1;
     phoenix.anchor.set(0.5);

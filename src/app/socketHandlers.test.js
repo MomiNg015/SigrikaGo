@@ -5,6 +5,7 @@ import {
   installSocketHandlers
 } from "./socketHandlers.js";
 import { applyRoomClock } from "./roomClock.js";
+import { normalizeRoomSnapshot } from "./roomSnapshot.js";
 import { syncPendingMatchRoom } from "./matchTransition.js";
 
 describe("socket handlers", () => {
@@ -73,7 +74,7 @@ describe("socket handlers", () => {
 
     handlers.roomUpdate(openingRoom);
 
-    expect(roomSetterResult(deps)).toEqual(openingRoom);
+    expect(roomSetterResult(deps)).toEqual(normalizeRoomSnapshot(openingRoom));
     expect(deps.matchSuccessRef.current).toBeNull();
     expect(deps.setMatchSuccess).toHaveBeenCalledWith(null);
     expect(deps.setView).toHaveBeenCalledWith("room");
@@ -100,6 +101,41 @@ describe("socket handlers", () => {
     expect(deps.setView).not.toHaveBeenCalled();
   });
 
+  it("routes a recovered preloading player room back through battle preload after refresh", () => {
+    const roomView = { code: "12345", role: "player", game: { phase: "preloading" }, players: [] };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomUpdate(roomView);
+
+    expect(deps.matchSuccessRef.current).toMatchObject({
+      room: roomView,
+      startedAt: 1000,
+      countdownComplete: true
+    });
+    expect(deps.setMatchSuccess).toHaveBeenCalledWith(deps.matchSuccessRef.current);
+    expect(deps.setRoom).not.toHaveBeenCalled();
+    expect(deps.setView).toHaveBeenCalledWith("match-preloading");
+  });
+
+  it("routes a resumed preloading player room back through battle preload after refresh", () => {
+    const roomView = { code: "12345", role: "player", game: { phase: "preloading" }, players: [] };
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.roomResume({ type: "room", room: roomView });
+
+    expect(deps.handleRoomResumePayload).not.toHaveBeenCalled();
+    expect(deps.matchSuccessRef.current).toMatchObject({
+      room: normalizeRoomSnapshot(roomView),
+      startedAt: 1000,
+      countdownComplete: true
+    });
+    expect(deps.setMatchSuccess).toHaveBeenCalledWith(deps.matchSuccessRef.current);
+    expect(deps.setRoom).not.toHaveBeenCalled();
+    expect(deps.setView).toHaveBeenCalledWith("match-preloading");
+  });
+
   it("keeps room updates in a pending match transition instead of entering the room", () => {
     const roomView = { code: "12345", players: [] };
     const deps = handlerDeps({
@@ -116,13 +152,13 @@ describe("socket handlers", () => {
   });
 
   it("syncs user stats silently when restoring a live room", () => {
-    const currentRoom = {
+    const currentRoom = normalizeRoomSnapshot({
       code: "12345",
       role: "player",
       game: { phase: "playing" },
       players: [],
       __audioResumeBaseline: true
-    };
+    });
     const roomView = {
       code: "12345",
       role: "player",
@@ -156,7 +192,7 @@ describe("socket handlers", () => {
     handlers.roomUpdate(roomView);
 
     expect(roomSetterResult(deps)).toEqual({
-      ...roomView,
+      ...normalizeRoomSnapshot(roomView),
       __audioResumeBaseline: true
     });
   });
@@ -182,19 +218,19 @@ describe("socket handlers", () => {
     handlers.roomUpdate(nextRoomView);
 
     expect(roomSetterResult(deps, 1)).toEqual({
-      ...roomView,
+      ...normalizeRoomSnapshot(roomView),
       __audioResumeBaseline: true
     });
     expect(roomSetterResult(deps, 2, roomSetterResult(deps, 1))).toBe(roomSetterResult(deps, 1));
     expect(roomSetterResult(deps, 2, roomSetterResult(deps, 1))).toEqual({
-      ...roomView,
+      ...normalizeRoomSnapshot(roomView),
       __audioResumeBaseline: true
     });
-    expect(roomSetterResult(deps, 3, roomSetterResult(deps, 2, roomSetterResult(deps, 1)))).toEqual(nextRoomView);
+    expect(roomSetterResult(deps, 3, roomSetterResult(deps, 2, roomSetterResult(deps, 1)))).toEqual(normalizeRoomSnapshot(nextRoomView));
   });
 
   it("does not mark normal room updates as audio resumes", () => {
-    const roomView = { code: "12345", role: "player", game: { phase: "playing" }, players: [] };
+    const roomView = normalizeRoomSnapshot({ code: "12345", role: "player", game: { phase: "playing" }, players: [] });
     const deps = handlerDeps();
     const handlers = createSocketHandlers(deps);
 
@@ -364,7 +400,7 @@ describe("socket handlers", () => {
   });
 
   it("clears remembered player room when an online client receives the finished room update", () => {
-    const roomView = { code: "12345", role: "player", game: { phase: "finished" }, players: [] };
+    const roomView = normalizeRoomSnapshot({ code: "12345", role: "player", game: { phase: "finished" }, players: [] });
     const deps = handlerDeps();
     const handlers = createSocketHandlers(deps);
 
@@ -393,7 +429,7 @@ describe("socket handlers", () => {
     handlers.roomResume({ type: "result", room: resultRoom });
 
     expect(deps.updateUser).not.toHaveBeenCalled();
-    expect(deps.setRoom).toHaveBeenCalledWith(resultRoom);
+    expect(deps.setRoom).toHaveBeenCalledWith(normalizeRoomSnapshot(resultRoom));
     expect(deps.setView).toHaveBeenCalledWith("home");
   });
 

@@ -23,6 +23,23 @@ describe("production static assets", () => {
     expect(app.get).not.toHaveBeenCalled();
   });
 
+  it("mounts built assets in local production-like stability mode", () => {
+    const app = createApp();
+    const middleware = vi.fn();
+    const staticMiddleware = vi.fn(() => middleware);
+
+    installProductionStaticAssets(app, {
+      distDir: "/app/dist",
+      env: { NODE_ENV: "development", LOCAL_PROD_STATIC: "1" },
+      existsSync: () => true,
+      staticMiddleware
+    });
+
+    expect(staticMiddleware).toHaveBeenCalledWith("/app/dist", expect.objectContaining({ maxAge: "1h" }));
+    expect(app.use).toHaveBeenCalledWith(middleware);
+    expect(app.get).toHaveBeenCalledWith(/^(?!\/api|\/socket\.io|\/uploads).*/, expect.any(Function));
+  });
+
   it("does not mount static assets when the dist directory is absent", () => {
     const app = createApp();
 
@@ -75,7 +92,7 @@ describe("production static assets", () => {
     expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", "public, max-age=31536000, immutable");
   });
 
-  it("marks public asset resources as immutable so repeat visits use the browser cache", () => {
+  it("leaves mutable public asset resources on the shorter static cache", () => {
     const app = createApp();
     let setHeaders;
     const staticMiddleware = vi.fn((_distDir, options) => {
@@ -92,6 +109,26 @@ describe("production static assets", () => {
     });
     setHeaders(res, "/app/dist/assets/music/main_bgm.ogg");
 
-    expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", "public, max-age=31536000, immutable");
+    expect(res.setHeader).not.toHaveBeenCalledWith("Cache-Control", "public, max-age=31536000, immutable");
+  });
+
+  it("does not treat descriptive hyphenated public effect filenames as Vite hashes", () => {
+    const app = createApp();
+    let setHeaders;
+    const staticMiddleware = vi.fn((_distDir, options) => {
+      setHeaders = options.setHeaders;
+      return vi.fn();
+    });
+    const res = { setHeader: vi.fn() };
+
+    installProductionStaticAssets(app, {
+      distDir: "/app/dist",
+      env: { NODE_ENV: "production" },
+      existsSync: () => true,
+      staticMiddleware
+    });
+    setHeaders(res, "/app/dist/assets/effects/changli-fire-phoenix.svg");
+
+    expect(res.setHeader).not.toHaveBeenCalledWith("Cache-Control", "public, max-age=31536000, immutable");
   });
 });

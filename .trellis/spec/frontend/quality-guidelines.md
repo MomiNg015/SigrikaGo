@@ -127,7 +127,7 @@ Correct:
 - `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress, onSkipped, taskTimeoutMs })` waits for critical groups, starts deferred groups in the background when callers provide them, caps concurrent loaders, bounds each loader with a timeout, and reports timed-out or failed sources through `onSkipped`.
 - `retrySkippedPreloadAssets(skippedAssets, { concurrency, retryDelaysMs, taskTimeoutMs })` retries skipped login or battle resources after the target screen has been entered.
 - `useStartupPreload({ token, ... })` must not receive a transient Socket.IO `socket` instance or include one in its dependency list.
-- `connectGameSocket({ socketBase, token, ... })` creates the game Socket.IO client with explicit reconnect settings: `reconnection: true`, `reconnectionAttempts: Infinity`, `reconnectionDelay: 500`, `reconnectionDelayMax: 3000`, and `timeout: 6000`.
+- `connectGameSocket({ socketBase, token, ... })` creates the game Socket.IO client with explicit reconnect settings: `reconnection: true`, `reconnectionAttempts: Infinity`, `reconnectionDelay: 500`, `reconnectionDelayMax: 3000`, and `timeout: 6000`. It installs handlers before `connect()`, then immediately queues one `room:resume` emit in addition to the normal `connect` listener so polling/websocket timing cannot make room recovery depend on a single client event callback.
 - `npm run check` is the local handoff gate and should run unit tests, Vite build, production config validation with explicit sample env, and `docs:system-design`.
 - `npm run check:production` remains the strict production-env validator and must not silently inject sample secrets or origins.
 - `vite.config.js` manually chunks React, Socket.IO client code, and Pixi into `react-vendor`, `realtime-vendor`, and `pixi-vendor` respectively. Do not add a catch-all `vendor` chunk unless the build is checked for circular chunk warnings.
@@ -142,6 +142,7 @@ Correct:
 - Preload progress represents completion of the blocking manifest. Timed-out tasks count as completed preload work for the current pass, are reported through `onSkipped`, and should be retried after entry with lower concurrency.
 - Startup preload must be independent from transient socket object identity. Token/session cleanup can close sockets through the socket lifecycle hook after state changes; preloading should continue once for the confirmed token instead of restarting when a mobile WebSocket reconnects or a socket instance changes.
 - The game socket should fail its initial connection attempt quickly enough for mobile recovery feedback and Socket.IO retry logic to take over. Do not rely on Socket.IO's default long handshake timeout for this app shell path.
+- Room resume is idempotent. Do not remove the immediate queued `room:resume` from `connectGameSocket()` just because the installed `connect` listener also emits one; the immediate emit covers browser/mobile transport cases where the app shell otherwise waits on one event edge.
 - The grouped asset API must keep `images` and `audio` flattened arrays for compatibility with tests and existing callers.
 - Production entry JS should stay split from heavy runtime libraries. The Pixi chunk may be larger than Vite's default 500 KB warning because it is lazy-loaded and prewarmed only for skill-enabled boards; the configured warning limit should remain a documented exception, not a way to hide a growing entry chunk.
 - Dev proxy `ECONNRESET` and `ECONNREFUSED` errors from `/socket.io` are expected while `dev:server` restarts; do not remove the proxy error handler unless the replacement keeps those disconnects from spamming the client terminal.
@@ -173,6 +174,7 @@ Correct:
 - Preload behavior tests must assert a hung critical loader cannot keep login preload pending forever.
 - App wiring tests must assert startup preload is not passed a `socket` prop.
 - Game socket tests must assert the mobile recovery reconnect and 6-second handshake timeout options.
+- Game socket tests must assert handlers install before `connect()` and that an immediate `room:resume` is queued after connecting.
 - Script contract tests must assert `npm run check` includes tests, build, production config validation, docs generation, and explicit sample production env.
 - Vite build config tests must assert manual chunk grouping, the absence of a catch-all vendor chunk, the intentional Pixi warning limit, and quiet handling for expected dev websocket proxy disconnects.
 - Run `npm run check` before handoff when changing preload or verification commands.

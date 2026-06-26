@@ -178,6 +178,15 @@ export default function AppRoutes({
           onToast={onToast}
         />
       )}
+      {view === "room" && (!room || !user) && (
+        <AssetPreloadScreen
+          characters={characters}
+          loadingLinesText={siteSettings.characterLoadingLines}
+          progress={assetProgress}
+          statusText="正在恢复对局..."
+          tipsText={siteSettings.preloadTips}
+        />
+      )}
     </>
   );
 }

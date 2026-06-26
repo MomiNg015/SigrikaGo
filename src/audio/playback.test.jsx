@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import {
   installBackgroundResumeTriggers,
+  loadBackgroundBuffer,
   pauseBackgroundPlayback,
   playCountdownBeep,
   playDoorbellSound,
@@ -122,6 +123,26 @@ describe("background music resume fallback", () => {
     recoverBackgroundPlayback(state);
 
     expect(state.generation).toBe(7);
+  });
+
+  it("records failed background music fetches so reconnect recovery can retry", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => ({
+      ok: false,
+      status: 404,
+      arrayBuffer: vi.fn()
+    })));
+    const state = {
+      bufferCache: new Map(),
+      failedSources: new Map()
+    };
+    const context = {
+      decodeAudioData: vi.fn()
+    };
+
+    await expect(loadBackgroundBuffer(state, context, "/assets/music/missing.ogg")).rejects.toThrow("Failed to load background music");
+
+    expect(state.failedSources.get("/assets/music/missing.ogg")).toMatchObject({ status: 404 });
+    expect(context.decodeAudioData).not.toHaveBeenCalled();
   });
 
   it("stores the background music offset while character music preview is active", () => {

@@ -16,6 +16,15 @@ describe("App startup preload wiring", () => {
     expect(preloadCall).not.toContain("socket,");
   });
 
+  it("keeps startup preload from covering a recovered room", () => {
+    const source = readFileSync(new URL("./useStartupPreload.js", import.meta.url), "utf8");
+
+    expect(source).toContain("shouldShowStartupPreload");
+    expect(source).toContain("room: roomRef.current");
+    expect(source).toContain("matchSuccess: matchSuccessRef.current");
+    expect(source).toMatch(/if \(shouldShowStartupPreload\(\{[\s\S]*?setView\("preloading"\);[\s\S]*?\}/);
+  });
+
   it("derives the character list view through the shared catalog sorter", () => {
     const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
 
@@ -52,6 +61,20 @@ describe("App startup preload wiring", () => {
     expect(appSource).not.toContain("useAudioSettingsPersistence");
     expect(hookSource).toContain("useAudioSettingsPersistence(audioSettings)");
     expect(hookSource).toContain("setAudioResumeSignal((value) => value + 1)");
+  });
+
+  it("wraps the app root in an error boundary", () => {
+    const mainSource = readFileSync(new URL("../main.jsx", import.meta.url), "utf8");
+
+    expect(mainSource).toContain("AppErrorBoundary");
+    expect(mainSource).toContain("<AppErrorBoundary>");
+  });
+
+  it("renders a recovery surface instead of a blank room route", () => {
+    const routesSource = readFileSync(new URL("./AppRoutes.jsx", import.meta.url), "utf8");
+
+    expect(routesSource).toContain('view === "room" && (!room || !user)');
+    expect(routesSource).toContain("正在恢复对局");
   });
 
   it("passes the registered overlay setters through the shared overlay closer", () => {

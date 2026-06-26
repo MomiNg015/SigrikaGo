@@ -8,6 +8,7 @@
 - 玩家侧主题通过 `src/app/visualTheme.js` 和 `src/styles/themes.css` 维护注册与 CSS 入口。
 - 后台管理新增桌面端分析体验：`AdminOverview` 是默认“今日简报”，用可读总状态、原因、分级解读和下一步动作替代密集表格；`AdminOperations` 是运营分析页，先显示推荐解读，再用低密度 CSS 条形图和卡片展示活跃、注册、对局、分层、经济和模式表现。分析样式集中在 `src/styles/admin/analytics.css`，最终后台控件皮肤集中在 `src/styles/admin/polish.css`，用于统一浅色按钮、输入框、表格、tabs、危险操作和关闭按钮。
 - 前端性能重点在启动预加载、房间快照结构共享、棋盘点位 memo、移动端布局合同。
+- 应用根部由 `AppErrorBoundary` 包裹；`AppRoutes` 对 `view="room"` 但缺少 `room` 或 `user` 的瞬时恢复状态显示预加载恢复页，避免刷新/重连过程中空白渲染。`src/app/roomSnapshot.js` 在 socket full snapshot 进入 UI state 前补齐房间、棋局、聊天和观战者最小安全默认值，后续结构共享仍只比较同房间快照。
 
 ## 公共组件与状态管理
 
@@ -58,7 +59,7 @@
 - `createResignResult` / `createTimeoutResult` / `createDrawResult` / `resultWithInvalidFlagForGame`: 位于 `src/shared/gameResults.js`，集中封装对局结果 payload 与早期无效局标记；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `formatStones`: 位于 `src/shared/stoneFormatting.js`，集中封装子数整数/分数显示；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `canStartSkill`: 位于 `src/shared/game.js`，前后端共用技能启动前置条件，用于判断棋子目标/棋子依赖技能在当前棋盘状态下是否可用。
-- `rememberPlayerRoom` / `buildRoomResumeRequest` / `handleRoomResumePayload` / `dismissedResultRoomAfterResume`: 位于 `src/app/resumeSession.js`，集中封装前端断线恢复 localStorage 与结果恢复状态编排；已被用户关闭过的同房间有效结果在后续 `room:resume` 中保持 dismissed，不会重复打开结果弹窗。
+- `rememberPlayerRoom` / `buildRoomResumeRequest` / `handleRoomResumePayload` / `dismissedResultRoomAfterResume`: 位于 `src/app/resumeSession.js`，集中封装前端断线恢复 localStorage 与结果恢复状态编排；`src/app/useRoomMemory.js` 会优先记住 active player room，并在尚未进入 active room 的 `match-preloading` 阶段记住 pending match room code，使刷新后 socket `room:resume` 能找回仍在资源准备中的房间。已被用户关闭过的同房间有效结果在后续 `room:resume` 中保持 dismissed，不会重复打开结果弹窗。
 - `useOverlayState` / `OVERLAY_STATE_KEYS`: 位于 `src/app/useOverlayState.js`，集中维护商店、抽卡、棋舍、仓库、履历、排行榜、好友、观战、设置和留言板等应用级弹窗可见性，避免 `App.jsx` 继续堆叠成组 `useState(false)`。
 - `modalDismissal`: lives in `src/app/modalDismissal.js` and owns the shared topmost-modal dismissal contract. Desktop Escape and browser/mobile history back close only the current top modal; app overlays, result/match-waiting modals, and the home match-mode picker should use this shared mechanism instead of local keydown/popstate listeners. When no modal is active, the mobile root-back guard intercepts phone/browser back on login, preload, home, admin, and room screens and shows the shared confirm modal with “确定要退出游戏吗？” before allowing the browser to leave the app.
 - `modalDismissal` 的 root-back guard 只响应真实父级回退。功能窗口通过关闭按钮或取消按钮主动关闭时会清理对应 history 哨兵并压制同次 `popstate`，避免误弹退出确认；手机回退关闭功能窗口时同样只关闭最上层窗口。用户在退出确认中点“退出游戏”会先尝试跨过 guard/history 哨兵回退，若浏览器没有可回退页面则跳转到 `about:blank` 作为离开游戏页的兜底。
@@ -220,13 +221,13 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - Once a game is finished, room players use the same spectator role as observers in both server room views and frontend effective role handling: the action bar switches to replay/spectator controls, player-only hints/actions are hidden, and leaving the finished room clears the former player's live `socketId` from the room so watch-list online counts drop correctly.
 - The game-start system voice is only played for active player views in `playing` phase. Spectators and finished-room viewers do not replay historical `game-start` messages when joining through the watch list. Socket reconnects mark the next live player room snapshot with `__audioResumeBaseline`, and duplicate reconnect snapshots with the same room/history/chat key keep that marker so the server's immediate authoritative `room:update` plus following `presence:update` patch cannot overwrite the baseline before `RoomScreen` mounts and accidentally replay old `game-start` chat.
 - User profile cards keep the hero, aggregate stats, "角色战绩" title, and footer actions fixed inside the modal; only the character record rows scroll.
-- Login/preload recovery now preserves an unfinished `room:resume` result. If the socket recovers an active room while assets are still preloading, the preload completion guard does not force the user back to the home screen.
+- Login/preload recovery now preserves an unfinished `room:resume` result. If the socket recovers an active room while assets are still preloading, startup preload does not cover the recovered room with the generic `preloading` route and the preload completion guard does not force the user back to the home screen. If the recovered player room is still in `GAME_PHASES.preloading`, the socket handler rebuilds a countdown-complete pending match and routes to `match-preloading` so the battle preload screen can load room assets and emit `room:preload-ready` again after a refresh.
 
 ## Login Asset Preloading
 
 - Frontend deployment helpers live in `src/shared/preloadAssets.js`.
 - Socket.IO now connects to `window.location.origin`, so the deployed site can run behind `https://sigrika.fun` without a hard-coded localhost socket endpoint.
-- `src/app/gameSocket.js` sets explicit mobile-friendly recovery options for the game socket: reconnect indefinitely, retry quickly, cap reconnect delay at 3 seconds, and fail the initial handshake after 6 seconds so a weak mobile network can recover instead of waiting on the default long timeout.
+- `src/app/gameSocket.js` sets explicit mobile-friendly recovery options for the game socket: reconnect indefinitely, retry quickly, cap reconnect delay at 3 seconds, and fail the initial handshake after 6 seconds so a weak mobile network can recover instead of waiting on the default long timeout. It creates Socket.IO clients with `autoConnect: false`, installs all resume/reconnect handlers first, then calls `socket.connect()` and immediately queues one idempotent `room:resume`; this prevents a fast production same-origin connection from firing `connect` before handlers are registered and prevents mobile transport timing from making refresh recovery depend on one `connect` callback.
 - Vite development proxy forwards `/socket.io` websocket traffic to the local backend, keeping the same-origin socket path usable in development and production.
 - Vite development proxy also handles expected `/socket.io` websocket disconnect errors such as `ECONNRESET` and `ECONNREFUSED` quietly. These are normal when `dev:server` restarts the backend with `node --watch`; unexpected proxy errors still emit a concise warning.
 - After a valid token is confirmed, the app enters a `preloading` view before the home screen.

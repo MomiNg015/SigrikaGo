@@ -20,6 +20,8 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
     generation: 0,
     currentTrack: null,
     bufferCache: new Map(),
+    failedSources: new Map(),
+    htmlFallback: null,
     offset: 0,
     startedAt: 0,
     pauseRequested: false
@@ -61,6 +63,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
     if (!track) {
       state.currentTrack = null;
       state.offset = 0;
+      stopBackgroundHtmlFallback(state);
       fadeOutBackgroundPlayers(state);
       return () => {};
     }
@@ -70,7 +73,9 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
     state.baseVolume = volume;
     state.currentTrack = track;
     state.offset = 0;
-    scheduleBackgroundTrack({ state, context, track, generation }).catch(() => {});
+    scheduleBackgroundTrack({ state, context, track, generation }).catch((error) => {
+      startBackgroundHtmlFallback(state, track, error);
+    });
 
     return () => {};
   }, [trackKey]);
@@ -79,27 +84,40 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
 }
 
 export function recoverBackgroundPlayback(state) {
-  resumeBackgroundContextWithFallback(state);
   if (state.pauseRequested) return;
   if (!state.currentTrack) return;
+  state.active ??= [];
   if (state.active.length > 0) return;
+  resumeBackgroundContextWithFallback(state);
   const context = getBackgroundAudioContext(state);
-  if (!context) return;
+  if (!context) {
+    startBackgroundHtmlFallback(state, state.currentTrack);
+    return;
+  }
   state.generation += 1;
   const generation = state.generation;
-  scheduleBackgroundTrack({ state, context, track: state.currentTrack, generation }).catch(() => {});
+  scheduleBackgroundTrack({ state, context, track: state.currentTrack, generation }).catch((error) => {
+    startBackgroundHtmlFallback(state, state.currentTrack, error);
+  });
 }
 
 function getBackgroundAudioContext(state) {
   if (state.context) return state.context;
   const AudioContextClass = browserAudioContextClass();
   if (!AudioContextClass) return null;
-  state.context = new AudioContextClass();
+  try {
+    state.context = new AudioContextClass();
+  } catch {
+    state.context = null;
+  }
   return state.context;
 }
 
 async function scheduleBackgroundTrack({ state, context, track, generation }) {
-  if (!context) return;
+  if (!context) {
+    startBackgroundHtmlFallback(state, state.currentTrack);
+    return;
+  }
   const sources = playbackSources(track.playback);
   const decodedEntries = await Promise.all(
     sources.map(async (src) => [src, await loadBackgroundBuffer(state, context, src)])
@@ -112,6 +130,7 @@ async function scheduleBackgroundTrack({ state, context, track, generation }) {
   const gain = context.createGain();
   applyGainRamp(gain.gain, createVolumeRamp({ from: 0, to: currentBackgroundVolume(state), startAt }));
   gain.connect(context.destination);
+  stopBackgroundHtmlFallback(state);
   fadeOutBackgroundPlayers(state);
 
   const sourcesToStop = [];
@@ -133,13 +152,66 @@ function playbackSources(playback) {
   return [playback.src];
 }
 
-async function loadBackgroundBuffer(state, context, src) {
+function recordBackgroundSourceFailure(state, src, error) {
+  state.failedSources ??= new Map();
+  state.failedSources.set(src, {
+    message: error?.message ?? "Failed to load background music",
+    status: error?.status ?? null,
+    at: Date.now()
+  });
+}
+
+export async function loadBackgroundBuffer(state, context, src) {
   if (state.bufferCache.has(src)) return state.bufferCache.get(src);
-  const response = await fetch(src);
-  const arrayBuffer = await response.arrayBuffer();
-  const buffer = await context.decodeAudioData(arrayBuffer);
-  state.bufferCache.set(src, buffer);
-  return buffer;
+  try {
+    const response = await fetch(src);
+    if (response?.ok === false) {
+      const error = new Error(`Failed to load background music: ${src}`);
+      error.status = response.status;
+      throw error;
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = await context.decodeAudioData(arrayBuffer);
+    state.bufferCache.set(src, buffer);
+    state.failedSources?.delete?.(src);
+    return buffer;
+  } catch (error) {
+    recordBackgroundSourceFailure(state, src, error);
+    throw error;
+  }
+}
+
+function startBackgroundHtmlFallback(state, track) {
+  if (!track || typeof Audio === "undefined" || state.pauseRequested) return;
+  const src = htmlFallbackSource(track.playback);
+  if (!src) return;
+  if (state.htmlFallback?.src === src) {
+    state.htmlFallback.audio.volume = currentBackgroundVolume(state);
+    return;
+  }
+  stopBackgroundHtmlFallback(state);
+  const audio = new Audio(src);
+  audio.loop = true;
+  audio.preload = "auto";
+  audio.volume = currentBackgroundVolume(state);
+  state.htmlFallback = { audio, src };
+  audio.play().catch(() => {});
+}
+
+function htmlFallbackSource(playback) {
+  if (playback.mode === "intro-loop") return playback.loopSrc || playback.introSrc;
+  return playback.src;
+}
+
+function stopBackgroundHtmlFallback(state) {
+  const fallback = state.htmlFallback;
+  state.htmlFallback = null;
+  if (!fallback) return;
+  try {
+    fallback.audio.pause();
+  } catch {
+    // HTMLAudioElement may be released by the browser during page lifecycle changes.
+  }
 }
 
 export function resumeBackgroundContextWithFallback(state) {
@@ -155,6 +227,8 @@ export function resumeBackgroundContextWithFallback(state) {
 
 export function pauseBackgroundPlayback(state) {
   const context = state.context;
+  stopBackgroundHtmlFallback(state);
+  state.active ??= [];
   if (!context || state.active.length === 0) return;
   state.offset += Math.max(0, context.currentTime - state.startedAt);
   stopBackgroundPlayers(state);
@@ -163,7 +237,10 @@ export function pauseBackgroundPlayback(state) {
 export function installBackgroundResumeTriggers(state) {
   if (typeof window === "undefined") return () => {};
   const doc = typeof document === "undefined" ? null : document;
-  const retry = () => resumeBackgroundContextWithFallback(state);
+  const retry = () => {
+    resumeBackgroundContextWithFallback(state);
+    recoverBackgroundPlayback(state);
+  };
   const retryWhenVisible = () => {
     if (doc?.visibilityState === "hidden") return;
     retry();
@@ -207,10 +284,11 @@ function setBackgroundBaseVolume(state, volume) {
 
 function setBackgroundVolume(state) {
   const context = state.context;
+  if (state.htmlFallback?.audio) state.htmlFallback.audio.volume = currentBackgroundVolume(state);
   if (!context) return;
   const now = context.currentTime;
   const volume = currentBackgroundVolume(state);
-  for (const player of state.active) {
+  for (const player of state.active ?? []) {
     player.gain.gain.cancelScheduledValues(now);
     player.gain.gain.setValueAtTime(player.gain.gain.value, now);
     player.gain.gain.linearRampToValueAtTime(volume, now + 0.12);
@@ -222,13 +300,14 @@ function currentBackgroundVolume(state) {
 }
 
 function fadeOutBackgroundPlayers(state) {
+  stopBackgroundHtmlFallback(state);
   const context = state.context;
   if (!context) {
     state.active = [];
     return;
   }
   const now = context.currentTime;
-  const previous = state.active;
+  const previous = state.active ?? [];
   state.active = [];
   for (const player of previous) {
     player.gain.gain.cancelScheduledValues(now);
@@ -245,7 +324,7 @@ function fadeOutBackgroundPlayers(state) {
 }
 
 function stopBackgroundPlayers(state) {
-  const previous = state.active;
+  const previous = state.active ?? [];
   state.active = [];
   for (const player of previous) {
     for (const source of player.sources) {

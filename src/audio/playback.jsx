@@ -7,6 +7,7 @@ export { DEFAULT_AUDIO_SETTINGS, audioVolume, loadAudioSettings } from "./audioS
 export {
   BackgroundMusic,
   installBackgroundResumeTriggers,
+  loadBackgroundBuffer,
   pauseBackgroundPlayback,
   recoverBackgroundPlayback,
   resumeBackgroundContextWithFallback

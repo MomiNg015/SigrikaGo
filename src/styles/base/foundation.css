@@ -86,6 +86,39 @@ button {
   pointer-events: none;
 }
 
+.app-error-boundary {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  padding: clamp(18px, 5vw, 48px);
+  text-align: center;
+  background: #f4f3f6;
+  color: #2d2430;
+}
+
+.app-error-boundary h1 {
+  margin: 0;
+  font-size: clamp(1.35rem, 4vw, 2rem);
+}
+
+.app-error-boundary p {
+  max-width: 30rem;
+  margin: 0;
+  color: rgba(45, 36, 48, 0.72);
+}
+
+.app-error-boundary button {
+  justify-self: center;
+  min-height: 42px;
+  border: 1px solid rgba(45, 36, 48, 0.16);
+  border-radius: 8px;
+  padding: 0 18px;
+  background: #ffffff;
+  color: #2d2430;
+  box-shadow: 0 10px 26px rgba(32, 24, 35, 0.12);
+}
+
 .auth-screen,
 .home-screen,
 .room-screen,

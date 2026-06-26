@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("register refresh and logout maintain the browser refresh-cookie session", async ({ request }) => {
-  const username = `e2e${Date.now().toString(36)}`;
+  const username = `e2e${Date.now().toString(36).slice(-5)}`;
   const password = "pwpass12";
 
   const register = await request.post("/api/auth/register", {

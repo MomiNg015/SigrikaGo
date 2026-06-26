@@ -292,6 +292,8 @@ SigrikaGo/
   - `installProductionStaticAssets()` 只在 `NODE_ENV=production` 且 `dist/` 存在时挂载 Vite 构建产物和 SPA fallback；`/api`、`/socket.io`、`/uploads` 仍交给后端路由。
   - Vite hash 产物使用一年 immutable 缓存，普通资源保持 `1h` 缓存；`server/staticAssets.test.js` 覆盖挂载条件、fallback 和 hash 缓存规则。
 
+  - Current stability-verification contract: `installProductionStaticAssets()` also mounts the same built Vite app when `LOCAL_PROD_STATIC=1` and `dist/` exists, allowing `npm run verify:stability` to serve production build artifacts locally without enabling production security guards. Vite hash outputs stay immutable; public runtime `/assets/**` resources keep short cache/ETag behavior.
+
 - `server/authRoutes.js`
   - Auth HTTP route boundary.
   - Owns `/api/auth/register`, `/api/auth/login`, `/api/auth/refresh`, and `/api/auth/logout` request handlers, including credential validation, refresh-cookie rotation/clearing, active-account conflict response, force-login session eviction, and malformed-token-tolerant logout cleanup.

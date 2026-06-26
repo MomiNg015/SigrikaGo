@@ -56,12 +56,34 @@ export function registerRoomSocketEvents(socket, {
     socket.emit("room:resume", payload);
   });
 
-  socket.on("room:preload-ready", ({ roomCode } = {}) => {
+  socket.on("room:preload-ready", ({ roomCode } = {}, ack) => {
     const validatedRoomCode = validateRoomCode(roomCode);
     if (!validatedRoomCode.ok) {
       socket.emit("error:toast", validatedRoomCode.error);
+      acknowledgePreloadReady(ack, { ok: false, error: validatedRoomCode.error });
       return;
     }
-    markRoomPreloadReady(validatedRoomCode.value, socket.user.id, io);
+    const room = markRoomPreloadReady(validatedRoomCode.value, socket.user.id, io)
+      ?? findRoomForUser?.(socket.user.id, validatedRoomCode.value)
+      ?? null;
+    if (!room) {
+      acknowledgePreloadReady(ack, {
+        ok: false,
+        error: ROOM_NOT_AVAILABLE_MESSAGE,
+        roomCode: validatedRoomCode.value
+      });
+      return;
+    }
+    acknowledgePreloadReady(ack, {
+      ok: true,
+      roomCode: validatedRoomCode.value,
+      phase: room.game?.phase ?? null,
+      readyCount: Number(room.preload?.readyCount ?? 0),
+      requiredCount: Number(room.preload?.requiredCount ?? room.players?.length ?? 0)
+    });
   });
+}
+
+function acknowledgePreloadReady(ack, payload) {
+  if (typeof ack === "function") ack(payload);
 }

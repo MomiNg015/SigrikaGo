@@ -291,7 +291,7 @@ export default function App() {
   useReplayRecords({ enabled: showHouse || showResume, showToast, token, setReplayRecords });
   useHomeUserRefresh({ onAchievementUnlocks: showAchievementUnlocks, token, updateUser, user, view });
 
-  useRoomMemory(room);
+  useRoomMemory(room, matchSuccess?.room);
 
   return (
     <div className={appShellClassName}>

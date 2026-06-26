@@ -6,6 +6,7 @@ import BoardSkillEffects, {
   SKILL_EFFECT_REDUCED_MOTION_MS,
   boardPointCenter,
   effectTimingForPendingSkill,
+  installPixiTickerErrorGuard,
   preparePixiEffect,
   reducedMotionQuery
 } from "./BoardSkillEffects.jsx";
@@ -153,6 +154,29 @@ describe("BoardSkillEffects", () => {
     prepared.cleanup();
     expect(appInstances[0].destroy).toHaveBeenCalled();
     expect(host.children).toEqual([]);
+  });
+
+  test("guards Pixi ticker callbacks so animation failures can fall back", () => {
+    let storedTickerCallback = null;
+    const app = {
+      ticker: {
+        add(callback) {
+          storedTickerCallback = callback;
+        }
+      }
+    };
+    const originalAdd = app.ticker.add;
+    const onError = vi.fn();
+
+    const restore = installPixiTickerErrorGuard(app, onError);
+    app.ticker.add(() => {
+      throw new Error("ticker failed");
+    });
+
+    expect(() => storedTickerCallback()).not.toThrow();
+    expect(onError).toHaveBeenCalledWith(expect.any(Error));
+    restore();
+    expect(app.ticker.add).toBe(originalAdd);
   });
 
   test("renders QiuYuan row slash as a full-board Pixi cast layer", () => {

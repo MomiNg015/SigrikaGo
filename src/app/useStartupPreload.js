@@ -3,7 +3,7 @@ import { api } from "../api/client.js";
 import { loginPreloadAssets, preloadLoginAssets, retrySkippedPreloadAssets } from "../shared/preloadAssets.js";
 import { loadPublicCharacterCatalog } from "./characterCatalog.js";
 import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
-import { shouldFinishPreloadAsHome } from "./sessionState.js";
+import { shouldFinishPreloadAsHome, shouldShowStartupPreload } from "./sessionState.js";
 
 export function useStartupPreload({
   fallbackCharacters,
@@ -36,7 +36,12 @@ export function useStartupPreload({
       .then(async (data) => {
         if (cancelled) return;
         setUser(data.user);
-        setView("preloading");
+        if (shouldShowStartupPreload({
+          room: roomRef.current,
+          matchSuccess: matchSuccessRef.current
+        })) {
+          setView("preloading");
+        }
         setAssetProgress(0);
         const [nextCharacters, nextMusicTracks, shopData, inventoryData, recruitmentData] = await Promise.all([
           loadPublicCharacterCatalog({ token }),

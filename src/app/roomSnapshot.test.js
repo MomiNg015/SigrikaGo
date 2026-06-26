@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { applyRoomSnapshot } from "./roomSnapshot.js";
+import { applyRoomSnapshot, normalizeRoomSnapshot } from "./roomSnapshot.js";
 
 describe("applyRoomSnapshot", () => {
   test("returns the current room when a duplicate snapshot arrives with fresh object identities", () => {
@@ -54,6 +54,27 @@ describe("applyRoomSnapshot", () => {
     const incoming = roomSnapshot({ code: "54321" });
 
     expect(applyRoomSnapshot(current, incoming)).toBe(incoming);
+  });
+
+  test("normalizes incomplete recovered rooms before they enter UI state", () => {
+    expect(normalizeRoomSnapshot({
+      code: "12345",
+      role: "player",
+      game: { phase: "playing" }
+    })).toEqual({
+      code: "12345",
+      role: "player",
+      game: {
+        phase: "playing",
+        points: [],
+        history: [],
+        captures: { black: 0, white: 0 },
+        skillUses: {}
+      },
+      players: [],
+      spectators: [],
+      chat: []
+    });
   });
 });
 
