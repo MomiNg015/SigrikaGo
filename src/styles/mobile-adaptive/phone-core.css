@@ -260,7 +260,7 @@
   }
 
   .character-detail-heading {
-    grid-template-columns: minmax(0, 1fr) minmax(124px, 156px) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(156px, 206px) !important;
     align-items: start !important;
     gap: 8px !important;
     padding-right: 0 !important;
@@ -277,13 +277,31 @@
   }
 
   .character-music-player {
-    width: min(156px, 46vw) !important;
+    width: min(206px, 54vw) !important;
     max-width: 100% !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    gap: 6px !important;
+    padding-right: 8px !important;
     justify-self: end !important;
     align-self: start !important;
   }
 
+  .character-music-player::before {
+    inset: 8px 34px 8px 62px !important;
+  }
+
+  .character-music-toggle {
+    width: 44px !important;
+  }
+
+  .character-music-signal {
+    width: 14px !important;
+    height: 15px !important;
+  }
+
   .character-music-name,
+  .character-music-select-frame,
   .character-music-select {
     max-width: 116px !important;
   }
