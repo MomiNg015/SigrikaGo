@@ -67,7 +67,7 @@
 <li>后端使用 Express、Socket.IO、Prisma 和 SQLite；<code>server/index.js</code> 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 <code>server/serverStartup.js</code>，Socket 连接事件套件由 <code>server/socketEvents.js</code> 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 <code>server/socket*Events.js</code> 模块，生产静态托管收口在 <code>server/staticAssets.js</code>，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块；匹配或约战创建的房间先进入 <code>preloading</code> 阶段，由 <code>room:preload-ready</code> 形成双方资源就绪屏障，双方都 ready 后才进入 opening/自动猜先，任一方超过 90 秒未 ready 时服务端发出 <code>match:preload-timeout</code> 并中止匹配。</li>
 </ul>
 <ul>
-<li>后台管理新增面向云端运营的分析入口：<code>概况</code> 默认呈现“今日简报”，用 <code>正常 / 需要关注 / 需要处理</code> 总状态、原因、分级解读和下一步动作替代密集报表；<code>运营分析</code> 展示最近日期范围的活跃、注册、对局、玩家分层、经济和模式趋势。后端聚合逻辑集中在 <code>server/adminAnalytics.js</code>，通过 <code>/api/admin/analytics/overview</code> 与 <code>/api/admin/analytics/operations</code> 输出可读摘要，实时在线与匹配/房间统计从 <code>onlineSessions</code>、<code>rooms.js</code> 运行时边界注入，房间持久化错误、恢复错误、结果保存错误、预加载超时和恢复请求分类从 <code>runtimeStabilityMetrics</code> 注入服务健康区，深度 IP/设备事件仍待接入。</li>
+<li>后台管理新增面向云端运营的分析入口：<code>概况</code> 默认呈现“今日简报”，用 <code>正常 / 需要关注 / 需要处理</code> 总状态、原因、分级解读和下一步动作替代密集报表；<code>运营分析</code> 展示最近日期范围的活跃、注册、对局、玩家分层、经济和模式趋势。后端聚合逻辑集中在 <code>server/adminAnalytics.js</code>，通过 <code>/api/admin/analytics/overview</code> 与 <code>/api/admin/analytics/operations</code> 输出可读摘要，实时在线与匹配/房间统计从 <code>onlineSessions</code>、<code>rooms.js</code> 运行时边界注入，深度事件暂以 <code>待接入</code> 标注。</li>
 </ul>
 <ul>
 <li>对局模式由 <code>src/shared/gameModes.js</code> 统一配置，前后端共享模式顺序、棋盘大小、贴目、技能开关和时间控制。</li>
@@ -85,13 +85,13 @@
 <li><code>ratingRules</code> controls dynamic rated-match rewards, rank-gap scaling, optional anti-boosting, rank-change rating deltas, and friendly-match coin limits. Matchmaking is rated; direct/private duels are friendly, excluded from public stats/rank windows, kept in replay history, and marked in replay UI.</li>
 </ul>
 <ul>
-<li>对局规则支持黑白棋子与命名中立棋子并存；中立棋子按同名阵营连接、阻断领地并参与气/提子判定，但不归属黑白除子。普通落子提子按被吃棋串去重，哪怕新落子同时从多个相邻方向贴住同一无气棋串，也只把该棋串计入 <code>captures</code> 一次。<code>src/shared/game.js</code> 保留共享对局 API 门面，阶段常量、动作结果、普通落子/隐藏手动作、主动技能动作和技能状态变更 helper 已拆到 <code>gamePhases.js</code>、<code>gameActionResult.js</code>、<code>gameStoneActions.js</code>、<code>gameSkillActions.js</code> 和 <code>gameSkillState.js</code>，降低新增技能继续膨胀核心状态机的风险。</li>
+<li>对局规则支持黑白棋子与命名中立棋子并存；中立棋子按同名阵营连接、阻断领地并参与气/提子判定，但不归属黑白除子。<code>src/shared/game.js</code> 保留共享对局 API 门面，阶段常量、动作结果、普通落子/隐藏手动作、主动技能动作和技能状态变更 helper 已拆到 <code>gamePhases.js</code>、<code>gameActionResult.js</code>、<code>gameStoneActions.js</code>、<code>gameSkillActions.js</code> 和 <code>gameSkillState.js</code>，降低新增技能继续膨胀核心状态机的风险。</li>
 </ul>
 <ul>
-<li>星炬技能体系包含面向整行的 <code>row-slash</code> 主动技能、面向空交叉点的 <code>protocol-takeover</code> 主动技能和长离（<code>changli</code>）<code>double-move</code> 连落技能；仇远（<code>qiuyuan</code>）通过“一斩足矣”指定任意有效交叉点，移除该横线所有棋子并按每枚直接移除棋子 <code>+1</code> 增加超频，莫宁（<code>mornye</code>）通过“协议接管”把一个空点写入对手禁入协议，管理员在部员招募系统实装前默认拥有这两个部员招募角色；仇远 <code>row-slash</code> 在技能横幅结束后通过 <code>BoardSkillEffects</code> 播放不依赖外部纹理的 Pixi Graphics 青白水墨刀光：两道竖向贯穿预兆刀光（第一道自上向下、第二道自下向上扫过，角度在 -30 到 30 度间确定性随机，并留存到主刀光收势时一起淡出）和 1.8 格高主刀都去掉浅蓝透明厚波纹，改为白色直刃叠加青白渐变边光、深青墨/灰蓝墨短段不规则水墨涂抹边缘，随后从左到右刷过目标行并同步触发 <code>row-slash-cut-pending</code> 棋子消失；<code>BoardRowSlashOverlay</code> 让最终 <code>.board-row-slash</code> 以超出棋盘两侧的长度随 Pixi 主刀同一时间线从左向右裁切展开，casting 时序由 <code>boardEffectDurationMs * 0.19</code> 延迟和 <code>* 0.22</code> 持续时间驱动，刀痕起点略向下偏移以让倾斜刀痕中点交合目标行中线，结算后的同类刀痕继续来自 <code>game.rowEffects</code>，并通过 <code>clearAfterColor</code> 在对手下一次行动后清除；莫宁 <code>protocol-takeover</code> 在技能横幅后通过 <code>BoardSkillEffects</code> 播放淡紫与冰蓝数据流光束从上方向目标点落下的 Pixi 演出，并同步播放更明显的两段式数据束启动与目标锁定 SFX，结算后禁入点继续显示淡紫与冰蓝 DOM/CSS 协议标记；长离 <code>double-move</code> 在技能横幅后通过 <code>BoardSkillEffects</code> 播放透明 SVG 红色火焰凤凰飞入与不规则边界的全棋盘火焰 Pixi 演出，随后连续落下的棋子写入 <code>double-move-stone</code> 并继续显示复用透明火焰 sprite 的 DOM 持续光效；琳奈 <code>spray-stone</code> 生成的喷涂中立棋子使用 <code>/assets/stones/spray-stone.webp</code> 透明 WebP 作为 <code>.spray .stone</code> 背景，资源归入技能效果预加载组；娜波摩 <code>color-illusion-passive</code> 在被动持续期间由 <code>BoardAmbientEffects</code> 播放 pointer-transparent 的中心向外 CSS 灰白化扩散波纹，并由 <code>.board-wrap.color-illusion-board-surface::before</code> 从棋盘中心扩散切换到 <code>/assets/boards/nabomo-color-illusion-board.webp</code> 灰白木纹背景，该背景保持到被动结束，避免使用持续 Pixi 烟雾或被边界裁切的雾层；该被动通过技能演出配置层声明 2 秒横幅结束即结算，避免横幅后空档；<code>src/shared/skillPresentation.js</code> 统一解析技能演出时间线、棋盘/Pixi/DOM 图层能力和全局关闭特效开关，共享棋盘 CSS 通过 import-only <code>src/styles/room/board.css</code> 分派到 <code>src/styles/room/board/</code>，棋盘点位按钮保持透明无按钮皮肤，<code>.board-lines</code> SVG 网格层也显式保持铺满棋盘和可见 stroke，避免全局/主题按钮或媒体规则盖住、压塌棋盘网格。</li>
+<li>星炬技能体系包含面向整行的 <code>row-slash</code> 主动技能、面向空交叉点的 <code>protocol-takeover</code> 主动技能和长离（<code>changli</code>）<code>double-move</code> 连落技能；仇远（<code>qiuyuan</code>）通过“一斩足矣”指定任意有效交叉点，移除该横线所有棋子并按直接移除数增加超频，莫宁（<code>mornye</code>）通过“协议接管”把一个空点写入对手禁入协议，管理员在部员招募系统实装前默认拥有这两个部员招募角色；仇远 <code>row-slash</code> 在技能横幅结束后通过 <code>BoardSkillEffects</code> 播放不依赖外部纹理的 Pixi Graphics 青白水墨刀光：两道竖向贯穿预兆刀光（第一道自上向下、第二道自下向上扫过，角度在 -30 到 30 度间确定性随机，并留存到主刀光收势时一起淡出）和 1.8 格高主刀都去掉浅蓝透明厚波纹，改为白色直刃叠加青白渐变边光、深青墨/灰蓝墨短段不规则水墨涂抹边缘，随后从左到右刷过目标行并同步触发 <code>row-slash-cut-pending</code> 棋子消失；<code>BoardRowSlashOverlay</code> 让最终 <code>.board-row-slash</code> 以超出棋盘两侧的长度随 Pixi 主刀同一时间线从左向右裁切展开，casting 时序由 <code>boardEffectDurationMs * 0.19</code> 延迟和 <code>* 0.22</code> 持续时间驱动，刀痕起点略向下偏移以让倾斜刀痕中点交合目标行中线，结算后的同类刀痕继续来自 <code>game.rowEffects</code>，并通过 <code>clearAfterColor</code> 在对手下一次行动后清除；莫宁 <code>protocol-takeover</code> 在技能横幅后通过 <code>BoardSkillEffects</code> 播放淡紫与冰蓝数据流光束从上方向目标点落下的 Pixi 演出，并同步播放更明显的两段式数据束启动与目标锁定 SFX，结算后禁入点继续显示淡紫与冰蓝 DOM/CSS 协议标记；长离 <code>double-move</code> 在技能横幅后通过 <code>BoardSkillEffects</code> 播放透明 SVG 红色火焰凤凰飞入与不规则边界的全棋盘火焰 Pixi 演出，随后连续落下的棋子写入 <code>double-move-stone</code> 并继续显示复用透明火焰 sprite 的 DOM 持续光效；琳奈 <code>spray-stone</code> 生成的喷涂中立棋子使用 <code>/assets/stones/spray-stone.webp</code> 透明 WebP 作为 <code>.spray .stone</code> 背景，资源归入技能效果预加载组；娜波摩 <code>color-illusion-passive</code> 在被动持续期间由 <code>BoardAmbientEffects</code> 播放 pointer-transparent 的中心向外 CSS 灰白化扩散波纹，并由 <code>.board-wrap.color-illusion-board-surface::before</code> 从棋盘中心扩散切换到 <code>/assets/boards/nabomo-color-illusion-board.webp</code> 灰白木纹背景，该背景保持到被动结束，避免使用持续 Pixi 烟雾或被边界裁切的雾层；该被动通过技能演出配置层声明 2 秒横幅结束即结算，避免横幅后空档；<code>src/shared/skillPresentation.js</code> 统一解析技能演出时间线、棋盘/Pixi/DOM 图层能力和全局关闭特效开关，共享棋盘 CSS 通过 import-only <code>src/styles/room/board.css</code> 分派到 <code>src/styles/room/board/</code>，棋盘点位按钮保持透明无按钮皮肤，<code>.board-lines</code> SVG 网格层也显式保持铺满棋盘和可见 stroke，避免全局/主题按钮或媒体规则盖住、压塌棋盘网格。</li>
 </ul>
 <ul>
-<li>西格莉卡 <code>erase-point</code> 结算后的无效交叉点使用 <code>/assets/effects/sigrika-erased-field-marker.webp</code> 透明 WebP 作为 point-local 坑洞标记，<code>.void</code> 以 1.5 个棋盘格子长度显示，pending 陨石命中揭示和桌面/移动端棋盘共用同一尺寸合同；所有无效交叉点还会通过 <code>erased-boundary-layer</code> 先灰显周围最多四个棋盘格，再只沿合并灰显区域的外轮廓绘制与一路线同粗细的边界线，避免灰区内部出现加粗线。</li>
+<li>西格莉卡 <code>erase-point</code> 结算后的无效交叉点使用 <code>/assets/effects/sigrika-erased-field-marker.webp</code> 透明 WebP 作为 point-local 坑洞标记，<code>.void</code> 以 1.5 个棋盘格子长度显示，pending 陨石命中揭示和桌面/移动端棋盘共用同一尺寸合同。</li>
 </ul>
 <ul>
 <li>Lynae <code>spray-stone</code> pending previews include all transformed points in <code>affectedPointIds</code> so the Pixi cast covers the selected target and resolved random target together; <code>Board</code> masks those original stones with <code>.spray-transform-pending</code> during the post-banner effect window, then <code>.spray-transform-pending .stone</code> keeps the original stone visible while an internal borderless cyan/purple/pink/yellow irregular spray-paint cover blooms above it, and switches to the same <code>/assets/stones/spray-stone.webp</code> artwork only after that cover has stayed opaque through most of the post-banner effect window, and <code>.spray .stone</code> keeps that WebP-only neutral spray stone with no CSS/SVG fallback stone, plus a point-bound colorful underside glow. During the pending paint-cover frame, <code>Board</code> derives the stone offset from the final <code>spray</code> stone type so the covered original stone and resolved neutral spray stone do not jump between positions.</li>
@@ -284,9 +284,6 @@
 <li>Mobile character-detail dialogs keep the character name horizontal and single-line, place the compact BGM preview capsule at the top-right of the heading row, left-align skill and character-description copy, and omit the standalone skill-cost badge; Bright School theme layers and the final <code>mobile-adaptive</code> safety layer repeat these constraints so narrow phones cannot fall back to vertical names or centered body text.</li>
 </ul>
 <ul>
-<li>角色详情 <code>CharacterMusicPreview</code> 使用 <code>idle/loading/playing/error</code> 状态机；曲目切换后会预创建/复用 Web Audio context 并提前 fetch/decode 当前技能 BGM，<code>bufferPromises</code> 复用同一路径的 in-flight 解码，避免快速点击或切歌重复加载。点击播放会立即进入 loading 并暂停后台 BGM，调度成功后进入 playing，失败时释放后台暂停并保留非阻塞 error 状态。播放器视觉按 Bright School 校园社团随身广播机/磁带机处理，桌面、基础移动、Bright School 竖屏移动和最终移动安全层共享 220x46 / 206x44 的触控规格、信号动效、focus/disabled/error 和 reduced-motion 约束；可选曲目的下拉框必须包在 <code>.character-music-select-frame</code> 手账标签外框内，与普通曲名 <code>.character-music-name</code> 使用同一高对比标题层级。播放/暂停按钮的 hover/active 反馈只能用轻量颜色、filter 或 inset shadow，不使用位移 transform，避免悬停和按压时产生可感知卡顿。</li>
-</ul>
-<ul>
 <li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final import-only <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer and split under <code>src/styles/mobile-adaptive/bright-school-portrait/</code>, while final mobile social/warehouse safeguards keep inventory item cards at a stable 88px minimum height for readable item details; the portrait polish includes home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, resume character records that take remaining modal height and scroll internally on short phones, mobile room tabs that change selected background without press-offset motion, and single-line shop coin wallet treatment. Login auth chrome keeps the brand and login/register segmented wrappers transparent on desktop and mobile, while the outer login card retains the Bright School lower-right hard shadow. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
 </ul>
 <ul>
@@ -409,7 +406,7 @@
 <li>启动初始化会在角色 seed 前运行 <code>cleanupLegacyDeniaCharacterData</code>：旧达妮娅 slug <code>danea</code>/<code>denea</code> 的用户选角和拥有权会迁移到 canonical <code>denia</code>，旧角色行会删除，引用旧 slug 的对局记录会删除，角色商品/抽卡/成就奖励目标会改写为 <code>denia</code>；公共角色列表会防御性忽略旧 slug，避免旧达妮娅再次出现在前台。</li>
 </ul>
 <ul>
-<li>Runtime stability note: room runtime uses lightweight <code>room:clock</code> / <code>room:patch</code> and full <code>room:update</code> paths, user/socket room indexes for resume and disconnect lookup, throttled persistence for chat/presence patches, forced persistence for key lifecycle updates, room-code-specific persistence flush before close cleanup deletes a persisted room row so delayed upserts cannot recreate closed rooms, and process shutdown flushes queued room persistence before Prisma disconnects.</li>
+<li>Runtime stability note: room runtime uses lightweight <code>room:clock</code> / <code>room:patch</code> and full <code>room:update</code> paths, user/socket room indexes for resume and disconnect lookup, throttled persistence for chat/presence patches, forced persistence for key lifecycle updates, and room-code-specific persistence flush before close cleanup deletes a persisted room row so delayed upserts cannot recreate closed rooms.</li>
 </ul>
 <ul>
 <li>Development room test tools are non-production only. In development builds the room action area shows the test-tool group on desktop and mobile; <code>test-enter-byo-yomi</code> forces both room players into byo-yomi so countdown voice, timer UI, and clock recovery can be tested quickly. Production still rejects debug test actions even if legacy <code>ENABLE_TEST_ACTIONS</code> is set.</li>
@@ -441,7 +438,7 @@
 <li>Finished-room 恢复边界：<code>sigrika-last-room-code</code> 只保存未结束的玩家房间；玩家关闭有效结果或从 finished 房间退出时会持久写入 <code>sigrika-dismissed-result-room-code</code> 并清除 last-room。服务端 <code>room:resume</code> 对空 roomCode 不再自动拉起 finished room，只有显式 roomCode 才允许恢复历史结果，因此玩家离开结果页后刷新不会在房间回收前再次弹出同一结果。</li>
 </ul>
 <ul>
-<li>技能演出与音频恢复边界：<code>BoardSkillEffects</code> 继续把 Pixi 作为 presentation-only 覆盖层，严格 CSP 环境下先加载 <code>pixi.js/unsafe-eval</code> 再加载 <code>pixi.js</code>；真实 <code>.board-effects-canvas</code> 是技能演出验收条件，不再渲染 DOM/CSS 替代动画。Pixi app 初始化成功后立即挂载透明 canvas，renderer 资源加载作为独立受监控预热，不能阻塞 canvas 挂载；Pixi 初始化、WebGL、贴图、renderer 或 ticker 异常只会标记 <code>data-effect-failed</code> / <code>data-effect-error</code>、清理 sound timers 和 canvas，并保持对局页面不白屏，准生产测试仍判该技能失败。BGM 加载会校验 HTTP <code>response.ok</code>、记录 decode/fetch 失败源，WebAudio 调度失败时使用 <code>Audio</code> fallback；<code>BackgroundMusic</code> 即使当前还没有可播放曲目，也会在登录点击、触摸或键盘等真实用户激活时预创建并 resume BGM <code>AudioContext</code>，让登录后的启动预加载完成后能及时调度主界面 BGM。刷新或持久会话没有用户手势时仍受浏览器自动播放策略约束，但会在 <code>room:update</code> 音频基线、socket 重连、<code>pageshow</code>、可见性恢复、在线恢复和首次交互后恢复当前曲目。</li>
+<li>技能演出与音频恢复边界：<code>BoardSkillEffects</code> 继续把 Pixi 作为 presentation-only 覆盖层，严格 CSP 环境下先加载 <code>pixi.js/unsafe-eval</code> 再加载 <code>pixi.js</code>；真实 <code>.board-effects-canvas</code> 是技能演出验收条件，不再渲染 DOM/CSS 替代动画。Pixi app 初始化成功后立即挂载透明 canvas，renderer 资源加载作为独立受监控预热，不能阻塞 canvas 挂载；Pixi 初始化、WebGL、贴图、renderer 或 ticker 异常只会标记 <code>data-effect-failed</code> / <code>data-effect-error</code>、清理 sound timers 和 canvas，并保持对局页面不白屏，准生产测试仍判该技能失败。BGM 加载会校验 HTTP <code>response.ok</code>、记录 decode/fetch 失败源，WebAudio 调度失败时使用 <code>Audio</code> fallback，并在 <code>room:update</code> 音频基线、socket 重连、<code>pageshow</code>、可见性恢复和首次交互后恢复当前曲目。</li>
 </ul>
 <ul>
 <li>生产缓存边界：<code>server/staticAssets.js</code> 只对 Vite hash 产物设置一年 immutable；<code>public/assets/**</code> 下的运行时图片、WebP、SVG、音频和技能资源保留短缓存/ETag，云端同名替换资源时不会被旧 immutable 缓存长期锁住。</li>
@@ -468,16 +465,7 @@
 <li>Client patch-gap recovery is debounced in <code>src/app/socketHandlers.js</code>: duplicate gapped <code>room:patch</code> payloads for the same room/revision emit at most one <code>room:resume</code> per debounce window, room-code-level in-flight/cooldown state suppresses resume storms during presence reconnects, and full <code>room:update</code> / <code>room:resume</code> snapshots clear that debounce state. <code>server/socketGuards.js</code> separates recovery events (<code>room:resume</code>, <code>room:preload-ready</code>) from user actions, so excessive recovery traffic can be acked/rejected without showing the player-facing “操作频繁” toast that still protects <code>game:action</code> and chat.</li>
 </ul>
 <ul>
-<li><code>room:resume</code> payloads may include <code>resumeReason</code> such as <code>patch-gap</code> or <code>socket-connect</code>; this is diagnostics-only metadata consumed by server-side runtime stability counters and does not change room recovery behavior.</li>
-</ul>
-<ul>
 <li>Legacy-to-structured asset sync only deletes structured rows whose <code>source</code> is <code>legacy</code>; feature-owned rows from achievements, gacha, mailbox, recruitment, or future flows stay owned by their source-specific paths and are merged for public projection.</li>
-</ul>
-<ul>
-<li>No-target active skills that use board-surface confirmation, including Baconbits <code>random-blast</code>, ChangLi <code>double-move</code>, and Aemeath <code>voyage-star</code>, treat any board surface or point click as a one-click release confirmation. These skills dispatch <code>{ type: &quot;skill&quot; }</code> without a point id, bypass mobile point-confirmation markers, and keep <code>canPreviewSkillTarget</code> false for <code>targetRule: &quot;none&quot;</code> so hover/click does not show ordinary placement or target preview rings.</li>
-</ul>
-<ul>
-<li><code>npm run verify:battle-fixes</code> is the focused local verifier for recent battle-board fixes. It runs the targeted game/skill/board/chat/replay/admin-seed regression tests, regenerates system-design HTML, and validates the generated docs so board erase styling, no-target skill release, ordinary capture counting, chat wrapping, QiuYuan overclock, and related docs can be checked without manual room playtesting.</li>
 </ul>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
@@ -1646,7 +1634,7 @@
 <li>棋谱回放打开时会把 <code>GameRecord</code> 的 <code>winnerColor/resultText</code> 回填到回放房间快照的 <code>game.winner</code>，即使旧快照缺少该字段，回放信息区立绘右下也能显示对应胜/负/和角标。</li>
 </ul>
 <ul>
-<li>回放棋局每一步由 <code>replayRoomAt()</code> 重算棋盘，但会保留原始回放房间的 <code>finished</code> phase 和 <code>winner</code> 元数据，避免回放视图因为重算过程丢失结果角标；技能历史里的 <code>removedByColor</code> 按被移除棋子颜色记录，回放重算展示除子/提子时必须先通过 <code>captureCreditOwner()</code> 转成黑白受益方并忽略中立颜色，避免原始颜色计数被当作归属方重复累加。</li>
+<li>回放棋局每一步由 <code>replayRoomAt()</code> 重算棋盘，但会保留原始回放房间的 <code>finished</code> phase 和 <code>winner</code> 元数据，避免回放视图因为重算过程丢失结果角标。</li>
 </ul>
 <ul>
 <li>玩家信息区技能按钮从角色 <code>palette</code> 注入 <code>--skill-chip-accent</code>，按钮背景和边框渐变跟随角色主题色；可用技能使用更饱和的角色色渐变，技能次数为 0 时进入 <code>spent</code> 灰色状态。<code>theme-components.css</code> 会在隔离层之后再次声明 <code>.player-info .skill-chip</code> 与 <code>.skill-chip.spent</code>，防止 <code>room-terminal.css</code> 或 Bright School 后置层把语义颜色覆盖掉。</li>
@@ -1709,7 +1697,7 @@
 <ul>
 <li>技能类型：</li>
 </ul>
-<p>- <code>erase-point</code>：抹除空交叉点，点位不可落子且不参与数子。 结算后的无效点使用 <code>/assets/effects/sigrika-erased-field-marker.webp</code> 作为 point-local 透明 WebP 坑洞标记，并由棋盘的 <code>erased-boundary-layer</code> 灰显周围格子、用一路线同粗细外边界线标出边界。</p>
+<p>- <code>erase-point</code>：抹除空交叉点，点位不可落子且不参与数子。 Resolved erased points render <code>/assets/effects/sigrika-erased-field-marker.webp</code> as a point-local transparent WebP field marker.</p>
 <ul>
 <li><code>flip-stone</code>：反转目标棋子颜色。</li>
 </ul>
@@ -1718,9 +1706,6 @@
 </ul>
 <ul>
 <li><code>protocol-takeover</code>：莫宁主动技“协议接管”。指定一个有效、空置、未被协议标记的交叉点，写入对手禁入协议；该空点阻止被禁方普通落子和空点/任意点指定类技能目标，不阻止该点已有棋子被石子目标技能指定，也不改变气、提子、劫或棋子归属。协议点为空时不计入被禁方领地，但仍作为空区域连通的一部分，避免污染同一区域内其它空点归属；协议标记会随棋子翻转、横斩移除、随机爆破和普通提子保留，只有交叉点被抹除时清除。</li>
-</ul>
-<ul>
-<li><code>row-slash</code>：仇远主动技“一斩足矣”。指定任意有效交叉点，移除其所在行所有棋子；每直接移除一枚棋子追加 <code>+1</code> 超频，技能后的无气清理仍计入除子但不再增加仇远超频。</li>
 </ul>
 <ul>
 <li><code>random-blast</code>：随机选择棋盘上非一路的已有棋子作为中心，并移除以该棋子为中心的固定 3x3 区域内棋子。</li>
@@ -2358,13 +2343,10 @@
 <li><code>RoomScreen.jsx</code> owns room-level derived state, replay/spectator projection, room header game info, per-room sound effects, skill/opening modals, and layout composition for the full battle screen.</li>
 </ul>
 <ul>
-<li><code>src/room/roomView.js</code> owns <code>replayRoomAt()</code> reconstruction. Skill histories that record <code>removedByColor</code> by removed-stone color are converted through shared <code>captureCreditOwner()</code> before accumulating replay <code>game.skillRemovals</code>, and neutral colors are ignored, so replay skill-removal counters display the credited black/white owner once instead of inflating with raw stone colors.</li>
-</ul>
-<ul>
 <li><code>TimeBar.jsx</code> owns the player timer/digital display panel. It exposes <code>main-time</code>, <code>warning-byo-yomi</code>, and <code>final-byo-yomi</code> state classes so all themes can share the same timer-track color contract: main time is blue, byo-yomi with 3 or 2 periods left is red, and the final remaining period is multicolor.</li>
 </ul>
 <ul>
-<li><code>ChatBox.jsx</code> owns the room chat anchor button, optional trailing room-side action, left/up popover, scroll-to-bottom behavior, outside-click/Escape collapse behavior, and chat submission UI. The collapsed chat badge counts only player chat messages (<code>type === &quot;chat&quot;</code>) so system notices, skill notices, disconnect notices, and other non-player messages do not inflate the visible count. The desktop room keeps chat as a compact side-column tool group with the room exit button immediately to the chat button's right so the board action bar only contains game actions; opening chat renders the history/input panel from the tool group's bottom-right anchor. Mobile dock chat uses the same component and lets the popover overflow the dock instead of increasing the board layout height. Chat names and message bodies keep <code>pre-wrap</code> plus emergency word breaks so long text, URLs, and unspaced input wrap inside the popover on desktop and mobile.</li>
+<li><code>ChatBox.jsx</code> owns the room chat anchor button, optional trailing room-side action, left/up popover, scroll-to-bottom behavior, outside-click/Escape collapse behavior, and chat submission UI. The collapsed chat badge counts only player chat messages (<code>type === &quot;chat&quot;</code>) so system notices, skill notices, disconnect notices, and other non-player messages do not inflate the visible count. The desktop room keeps chat as a compact side-column tool group with the room exit button immediately to the chat button's right so the board action bar only contains game actions; opening chat renders the history/input panel from the tool group's bottom-right anchor. Mobile dock chat uses the same component and lets the popover overflow the dock instead of increasing the board layout height.</li>
 </ul>
 <ul>
 <li><code>PlayerInfo.jsx</code> owns player portrait, rank/rating tags, timer, captures/cost display, result badge, desktop skill detail popover, and mobile tap explanations for removal/overclock/skill labels. The mobile tap tooltip is anchored near the tap point, uses a fixed viewport-contained width with normal wrapping and emergency word breaks, clamps horizontally by its maximum width, flips below the tap near the top edge, and caps height with internal scrolling so explanation content cannot leave the viewport. The overclock/cost counter uses <code>cost-stat</code> and is forced to red text across themes, including broad theme reset layers. Skill detail panels and stat hover/click tooltips consume the desktop room floating-layer z-index variable, so the most recently hovered, focused, or clicked player tip can rise above chat and member popovers instead of relying on a fixed z-index.</li>
@@ -2389,9 +2371,6 @@
 </ul>
 <ul>
 <li><code>Board.jsx</code> marks first-line board grid runs with <code>edge-line</code>; CSS keeps every non-edge grid run at one uniform stroke width and renders every first-line run exactly 2.5x that width in the Bright School theme.</li>
-</ul>
-<ul>
-<li><code>Board.jsx</code> derives <code>erasedBoundaryGeometry()</code> from invalid intersections and renders a pointer-transparent <code>.erased-boundary-layer</code> above the SVG grid but below point buttons. Each erased point first shades the surrounding in-bounds board cells gray; the geometry then merges those gray cells and draws only the outer outline with the same stroke weight as first-line grid runs, so shared edges inside the gray area do not receive thick boundary strokes. Shared board CSS and Bright School repairs keep the desktop and mobile presentation aligned.</li>
 </ul>
 <ul>
 <li>Board stones use deterministic visual jitter for a more physical game feel: each stone gets stable <code>--stone-offset-x/y</code> values in one random direction from the intersection. Spark mode keeps a maximum 1px offset; standard mode uses a maximum 0.5px offset on both desktop and mobile because 19-line stones are smaller. The underlying <code>.point</code> button, game logic, scoring marks, and target previews remain centered on the original intersection.</li>
@@ -2441,7 +2420,7 @@
 <li>Main-time timer digits use a gray display color, while byo-yomi states keep their warning colors.</li>
 </ul>
 <ul>
-<li>Board grid strokes use continuous SVG row/column runs with square line caps and geometric precision rendering so internal lines do not appear as uneven stitched segments, and first-line corners stay visually connected. The fixed contrast rule remains shared across themes: all ordinary grid runs share one stroke width, first-line grid runs render at exactly 2.5x that width, and erased-point boundary lines reuse that first-line weight while gray cell fills show the removed intersection's affected area. Skill targeting highlights use a gradient glow instead of a solid outline. Stones affected by skill states use darker, higher-opacity green/purple halo rings so the effect reads clearly against the wooden board.</li>
+<li>Board grid strokes use continuous SVG row/column runs with square line caps and geometric precision rendering so internal lines do not appear as uneven stitched segments, and first-line corners stay visually connected. The fixed contrast rule remains shared across themes: all ordinary grid runs share one stroke width, and first-line grid runs render at exactly 2.5x that width. Skill targeting highlights use a gradient glow instead of a solid outline. Stones affected by skill states use darker, higher-opacity green/purple halo rings so the effect reads clearly against the wooden board.</li>
 </ul>
 <ul>
 <li>Latest room/home refinements:</li>
@@ -2562,9 +2541,6 @@
 <ul>
 <li>Chisa's <code>.liberty-purge-removal-mark</code> is centered on each point button with <code>left/top: 50%</code> and <code>translate(-50%, -50%)</code>; its <code>::before</code> and <code>::after</code> bars own the rotation. Shared board CSS and the Bright School guard both keep the mark saturated red <code>#ff1733</code>, visible above stones, and pointer-events-none so it remains a purely visual removal history marker.</li>
 </ul>
-<ul>
-<li>No-target active skills that confirm through the board surface use the same one-click contract on desktop and mobile. <code>skillUsesBoardSurfaceConfirmation()</code> covers Baconbits <code>random-blast</code>, ChangLi <code>double-move</code>, and Aemeath <code>voyage-star</code>; <code>useRoomPointActions</code> routes point-button clicks for those skills to <code>{ type: &quot;skill&quot; }</code> without a <code>pointId</code>, clears local targeting, and skips mobile double-tap confirmation. <code>canPreviewSkillTarget()</code> still returns false for <code>targetRule: &quot;none&quot;</code>, so these release confirmations never paint hover target or ordinary placement preview markers.</li>
-</ul>
 <h2>Achievement And Personalization Frontend</h2>
 <ul>
 <li><code>src/app/useOverlayState.js</code> 将 <code>achievements</code> 和 <code>personalization</code> 纳入应用级弹窗契约；<code>AppOverlays</code> 在履历弹窗之外挂载 <code>AchievementModal</code> 与 <code>PersonalizationModal</code>，并把履历标题区的“成就”“个性化”按钮作为入口。</li>
@@ -2615,9 +2591,6 @@
 </ul>
 <ul>
 <li><code>room:resume</code> 的空 roomCode 只恢复仍可继续的玩家房间，不会自动拉起 finished room；finished 历史结果只有在客户端显式传入 roomCode 时才允许恢复。这样玩家关闭结果或退出 finished 房间后刷新，不会因为内存房间仍在 5 分钟 review window 内而再次弹出结果。</li>
-</ul>
-<ul>
-<li><code>server/runtimeStabilityMetrics.js</code> 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 <code>patch-gap</code> 或 <code>socket-connect</code> 的 <code>room:resume</code> 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。</li>
 </ul>
 <h2>API 与实时事件</h2>
 <h2>Production Deployment Hardening</h2>
@@ -2902,7 +2875,7 @@
 <li>后台分析 API 挂载在 <code>/api/admin/analytics/*</code>，仍走现有 <code>authHttp + requireAdmin</code> 管线。</li>
 </ul>
 <ul>
-<li><code>GET /api/admin/analytics/overview</code> 返回后台默认“今日简报”数据：总状态、2-5 条原因、<code>需要处理 / 值得关注 / 正常记录</code> 解读、今日登录/注册/对局、在线名单、时长榜、待处理反馈/举报、服务健康和最近审计日志。第一版优先从 <code>User</code>、<code>LoginSession</code>、<code>GameRecord</code>、<code>FeedbackMessage</code>、<code>UserReport</code>、<code>AdminAuditLog</code>、实时在线/房间/匹配队列和 <code>runtimeStabilityMetrics</code> 聚合；深度 IP/设备/历史异常事件仍不伪造。</li>
+<li><code>GET /api/admin/analytics/overview</code> 返回后台默认“今日简报”数据：总状态、2-5 条原因、<code>需要处理 / 值得关注 / 正常记录</code> 解读、今日登录/注册/对局、在线名单、时长榜、待处理反馈/举报、服务健康和最近审计日志。第一版优先从 <code>User</code>、<code>LoginSession</code>、<code>GameRecord</code>、<code>FeedbackMessage</code>、<code>UserReport</code>、<code>AdminAuditLog</code> 与运行时在线/房间/匹配队列聚合，不伪造尚未采集的断线、IP、设备或错误事件。</li>
 </ul>
 <ul>
 <li><code>GET /api/admin/analytics/operations?range=today|yesterday|7d|30d</code> 返回运营分析数据：日期范围、可读解读、活跃/注册/对局趋势、模式完成数、玩家粗分层、金币净变化、抽卡和招募任务数量。深度留存、经济来源拆分、完整异常事件和导出仍是后续扩展。</li>
@@ -2919,9 +2892,6 @@
 </ul>
 <ul>
 <li><code>server/roomActionPhaseGuards.js</code> declares the gameplay action phase matrix before lifecycle dispatch: move/pass/skill require <code>playing</code>, resign is limited to <code>playing</code>, <code>counting-requested</code>, and <code>draw-requested</code>, and opening, skill-preview, marking-dead, result-review, or finished phases reject generic board actions before they can mutate state.</li>
-</ul>
-<ul>
-<li>Graceful shutdown uses <code>installServerLifecycle(..., { beforeShutdown: [flushRoomPersistence] })</code> so SIGINT/SIGTERM first stops accepting new HTTP connections, waits for queued room snapshot writes, then disconnects Prisma. This reduces the chance that a deploy/restart loses the last authoritative room state.</li>
 </ul>
 <h2>Aemeath Derived Skill Realtime Contract</h2>
 <ul>
@@ -3230,11 +3200,9 @@
 </ul>
 <h3>Neutral Stones</h3>
 <p><code>src/shared/gameConstants.js</code> 维护命名中立棋子类型，当前内置 <code>spray</code>，由琳奈 <code>spray-stone</code> 技能生成。中立棋子不是黑白任一方，但同名中立棋子属于同一阵营并按围棋气规则连接；不同阵营之间互相阻断气和领地。黑/白棋子转化为喷涂棋子时立即给对手 <code>skillRemovals +1</code>，中立棋子被提、被爆破、被死子标记或在技能后无气清理时不提供黑白除子。数子阶段中立棋子不计入黑白子数，可作为边界参与空点归属；被中立棋子或多阵营共同围住的空点保持中立。</p>
-<h3>Capture Rules</h3>
-<p>普通落子和先落子再按普通规则提子的技能入口共用 <code>collectNeighborCaptures()</code> 收集相邻无气棋串。该 helper 先按棋串去重，再写入本手 <code>history.captures</code> 和 <code>game.captures[color]</code>，因此同一被吃棋串即使从多个相邻方向贴着新落子点，也只按棋串真实棋子数计一次提子。命名中立棋子仍可被普通提走并从棋盘清除，但不会给黑/白任一方增加提子数。</p>
 <h3>Row Slash Skill</h3>
 <p><code>row-slash</code> 是仇远“一斩足矣”的主动棋盘技能。目标规则为 <code>any-point</code>，只能指定当前棋盘内仍有效的交叉点；空点和已有棋子均可指定，被抹除的无效点不可指定。技能横向处理目标所在行，直接移除该行所有黑棋、白棋、命名中立棋子、隐藏手棋子和幻色棋子，并清除劫状态。直接移除的黑白棋子按真实颜色给受益方增加 <code>skillRemovals</code>；中立棋子参与仇远超频增加但不提供黑白除子；隐藏手被直接移除时不产生发现提示；幻色棋子按真实颜色结算并清掉幻色状态。直接移除后会自动清理因此无气的棋串，后续清理仍计入 <code>skillRemovals</code>，但不再增加仇远超频。</p>
-<p>该技能基础超频消耗为 <code>0</code>，然后按直接移除棋子数追加超频，每枚直接移除棋子 <code>+1</code>；空行可以发动并消耗技能/回合，但追加超频为 <code>0</code>。发动后消耗本回合，重置连续虚手，<code>moveNumber +1</code>，并在 <code>rowEffects</code> 中记录一条公开横斩视觉标记。该标记只影响显示，不改变交叉点有效性，记录 <code>clearAfterColor: opponent(owner)</code>，并在对手下一次行动（普通落子、弃手或消耗回合技能）后清除。</p>
+<p>该技能基础超频消耗为 <code>0</code>，然后按直接移除棋子数追加超频，每枚直接移除棋子 <code>+2</code>；空行可以发动并消耗技能/回合，但追加超频为 <code>0</code>。发动后消耗本回合，重置连续虚手，<code>moveNumber +1</code>，并在 <code>rowEffects</code> 中记录一条公开横斩视觉标记。该标记只影响显示，不改变交叉点有效性，记录 <code>clearAfterColor: opponent(owner)</code>，并在对手下一次行动（普通落子、弃手或消耗回合技能）后清除。</p>
 <p><code>protocol-takeover</code> 是莫宁“协议接管”的主动棋盘技能。目标规则为 <code>empty-point</code>，只能指定当前棋盘内有效、空置、未被协议标记的交叉点。技能在点位上写入 <code>protocolBan = { owner, bannedColor, effect: &quot;protocol-takeover&quot; }</code>，其中 <code>owner</code> 是施放方，<code>bannedColor</code> 是对手。协议标记是公开点位状态，会随房间广播、观战和回放同步；被禁方不能在该空点普通落子，也不能把该空点作为空点/任意点指定类技能目标。若该点后来存在棋子，石子目标技能仍可指定该棋子，普通提子、翻转、横斩、随机爆破和喷涂等非抹除效果不会清除协议标记；只有 <code>erase-point</code> 抹除交叉点时会同步删除 <code>protocolBan</code>。数子时协议空点对 <code>bannedColor</code> 保持中立，不计入被禁方领地，但区域遍历仍把该点当作空区域的一部分，所以不会把同一块领地拆开或污染其它空点归属。莫宁技能超频为 <code>2</code>，<code>freeTurn: true</code>，发动后不消耗本回合。</p>
 <h3>Decoration</h3>
 <p>装饰配置。</p>
@@ -3411,10 +3379,10 @@
 <li>登录后预加载分为关键资源和延迟资源，关键资源阻塞进入首页，音乐/语音/商店预览等后台加载。</li>
 </ul>
 <ul>
-<li>音频分为 BGM、UI/棋盘音效、角色技能语音和系统语音，复用共享播放与设置通道。BGM WebAudio 加载会校验 <code>response.ok</code> 并记录 fetch/decode 失败源；调度失败、无 WebAudio 或浏览器阻止恢复时使用 <code>Audio</code> fallback 播放当前曲目。<code>BackgroundMusic</code> 在登录点击、触摸或键盘等真实用户激活期间会提前创建并 resume BGM <code>AudioContext</code>，即使当时还没有主界面曲目可调度，也能保留浏览器激活窗口；刷新或持久会话没有用户手势时仍受自动播放策略约束，并在 socket 重连、<code>pageshow</code>、可见性恢复、在线恢复和首次交互后重试当前曲目。</li>
+<li>音频分为 BGM、UI/棋盘音效、角色技能语音和系统语音，复用共享播放与设置通道。BGM WebAudio 加载会校验 <code>response.ok</code> 并记录 fetch/decode 失败源；调度失败、无 WebAudio 或浏览器阻止恢复时使用 <code>Audio</code> fallback 播放当前曲目，并在 socket 重连、<code>pageshow</code>、可见性恢复、在线恢复和首次交互后重试当前曲目。</li>
 </ul>
 <ul>
-<li>西格莉卡 <code>erase-point</code> 结算后的无效交叉点使用 <code>/assets/effects/sigrika-erased-field-marker.webp</code> 透明 WebP 作为坑洞标记，<code>.void</code> 在共享棋盘 CSS 中按 <code>150%</code> point-cell 尺寸显示，即 1.5 个棋盘格子长度，桌面和移动端共用同一资源与尺寸合同；周围格子的灰色填充与合并灰显区域的加粗外轮廓线由 CSS/SVG <code>erased-boundary-layer</code> 绘制，不新增图片资源或预加载项。</li>
+<li>西格莉卡 <code>erase-point</code> 结算后的无效交叉点使用 <code>/assets/effects/sigrika-erased-field-marker.webp</code> 透明 WebP 作为坑洞标记，<code>.void</code> 在共享棋盘 CSS 中按 <code>150%</code> point-cell 尺寸显示，即 1.5 个棋盘格子长度，桌面和移动端共用同一资源与尺寸合同。</li>
 </ul>
 <ul>
 <li>Game modes are now explicit shared runtime configuration. <code>spark</code> (<code>星炬对弈</code>) stays first and keeps the 13-line, skill-enabled Go rule set with black komi 2.75; <code>standard</code> (<code>标准对弈</code>) is second and uses a 19-line no-skill Go board with black komi 3.75; <code>gomoku</code> (<code>来下五子棋吗？</code>) is third and uses a 13-line no-skill Gomoku board with spark star points, automatic color assignment, 5 minutes plus 30 seconds x3, exact-five wins, full-board draw, and black forbidden moves. Frontend and backend should read titles, rule copy, board size, komi, skill enablement, time controls, mode family, and mode ordering from <code>src/shared/gameModes.js</code> instead of hard-coding mode facts.</li>
@@ -3430,9 +3398,6 @@
 </ul>
 <ul>
 <li>Spark skill presentation uses a hybrid board renderer: <code>Board</code> keeps the React DOM/SVG grid, buttons, coordinates, stones, scoring marks, and click handling as the source of interaction truth, while <code>BoardSkillEffects</code> mounts a <code>pointer-events: none</code> PixiJS canvas overlay for character skill animations and <code>BoardAmbientEffects</code> renders ongoing passive ambience. Skill-enabled boards schedule an idle <code>pixi.js</code> prewarm through <code>src/room/pixiPrewarm.js</code>, and the eventual skill animation reuses the same module promise; strict CSP builds load <code>pixi.js/unsafe-eval</code> before <code>pixi.js</code> so the renderer can initialize without runtime eval failures, and standard no-skill boards skip this prewarm. When a pending Pixi board effect is present, <code>BoardSkillEffects</code> initializes and mounts the transparent <code>.board-effects-canvas</code> during the banner window as soon as <code>app.init()</code> succeeds; renderer image asset loads continue as monitored preloads and cannot block canvas mounting. If Pixi init, WebGL, texture loading, renderer dispatch, or ticker callbacks fail, <code>BoardSkillEffects</code> catches the failure, marks the layer with <code>data-effect-failed</code> / <code>data-effect-error</code>, clears sound timers, and cleans up the canvas instead of letting the skill animation blank the page. There is no visible DOM/CSS replacement animation for a failed skill effect; a production-like test must observe a real <code>.board-effects-canvas</code> for the skill to pass. Concrete Pixi animation implementations live behind <code>src/room/boardSkillEffectRegistry.js</code>, with shared board geometry in <code>src/room/boardSkillEffectGeometry.js</code>; registry playback catches renderer errors through an <code>onError</code> hook, so adding a board-capable effect extends the catalog/registry without increasing the React host blast radius. Skill preview metadata comes from the already-resolved backend skill action (<code>effectType</code>, <code>targetId</code>, affected/marked points, removal counts, and <code>resolvesAt</code>), so the animation layer never recomputes or changes game rules. The shared <code>src/shared/skillPresentation.js</code> presentation contract keeps the 2s skill banner first, then starts the board effect, normalizes per-effect Pixi/DOM layer capabilities, and exposes the global all-effects-off switch used by <code>BoardSkillEffects</code> before prewarm, overlay rendering, and SFX scheduling; reduced-motion users receive a short static hit effect. Full-motion effects are staged as anticipation, impact, and afterglow/residue phases so visual polish stays in the presentation layer without changing board state timing. Aemeath <code>hidden-hand</code> uses a 1500ms full-board Pixi circuit-board takeover: a green electronic flow ignites at board center without a center green circle, travels outward along the board's horizontal and vertical grid lines with sparse diagonal circuit links, briefly draws only a light circuit outline membrane without a dark full-board fill, then dissolves uniformly without focusing the hidden target. Its procedural SFX uses a low startup tone, high electronic data stream, and short takeover pulse through the existing <code>sfx</code> channel. Sigrika <code>erase-point</code> keeps the resolved invalid intersection as a point-local DOM marker using transparent WebP <code>/assets/effects/sigrika-erased-field-marker.webp</code>, and the pending meteor cast reuses that point-local marker with a delayed impact reveal while the Pixi impact crater uses an opaque dark-gray core so the marker cannot show through before the hit frame, and no full-board gray fallback is used, ChangLi <code>double-move</code> uses transparent SVG <code>/assets/effects/changli-fire-phoenix.svg</code> and <code>/assets/effects/changli-flame-sprite.svg</code> sprites for a red phoenix fly-in plus an irregular-edged full-board fire cast phase, Lynae <code>spray-stone</code> sends every transformed point through pending <code>affectedPointIds</code>; the Pixi spray cast paints the selected target and resolved random target together, the original stones stay visible while an internal borderless cyan/purple/pink/yellow irregular <code>.spray-transform-pending</code> spray-paint cover blooms above them, then switch visually to <code>/assets/stones/spray-stone.webp</code> only after that cover has stayed opaque through most of the post-banner effect window, and generated spray neutral stones use the same WebP as their only stone artwork, without a CSS/SVG fallback stone, plus a point-bound colorful underside glow. Pending spray stones reuse the final <code>spray</code> offset while the paint cover hides the original stone, preventing a visible snap when resolution swaps the stone type. Nabomo <code>color-illusion-passive</code> uses a pointer-transparent CSS center-out activation wave plus a <code>.board-wrap.color-illusion-board-surface::before</code> texture reveal into <code>/assets/boards/nabomo-color-illusion-board.webp</code>, resolves at the 2s banner end so the gray/white board transition starts without a post-banner gap, then keeps that board background for the duration of the active passive; it intentionally avoids persistent Pixi smoke/ticker ambience and clipped rectangular fog edges on desktop and mobile. Board skill SFX are scheduled from the same frontend timeline through <code>src/room/boardSkillEffectSoundScheduler.js</code> and the existing <code>sfx</code> audio channel; they are cleaned up with the overlay and are suppressed for reduced-motion board effects.</li>
-</ul>
-<ul>
-<li>Resolved erased-point boundary cues are SVG/CSS-only: <code>Board</code> shades adjacent cells and draws first-line-weight outside outlines around the merged gray region through <code>.erased-boundary-layer</code>, so Sigrika and Voyage Star invalid intersections do not add preloadable assets beyond their existing point/crater artwork.</li>
 </ul>
 <ul>
 <li>仇远的 <code>row-slash</code> 技能使用 <code>/assets/characters/qiuyuan.png</code> 作为内置立绘；棋盘技能演出不依赖独立刀光纹理，而是通过 <code>BoardSkillEffects</code> 注册一个 full-board Pixi Graphics cast：技能横幅结束后先在棋盘内依次扫过两道竖向贯穿预兆刀光：第一道自上向下斜竖砍落，第二道自下向上竖劈，角度在 -30 到 30 度间确定性随机，扫完后留存到主刀收势并一起淡出；随后从目标行左侧聚出青白墨锋，并用约 1.8 格高度的主刀光从左到右刷过整行。预兆和主刀光去掉浅蓝透明厚波纹，保留白色直刃线，直刃边缘使用低透明青白渐变光效增厚，并通过 Pixi Graphics 多段深青墨、灰蓝墨、飞白短划制造水墨涂抹边缘。前端点位通过 <code>row-slash-cut-pending</code> 和 <code>--row-slash-cut-delay</code> 让该行棋子在主刀扫到时快速消失；<code>BoardRowSlashOverlay</code> 仍然负责持久 <code>.board-row-slash</code>，但 pending casting 刀痕会按 <code>boardEffectDurationMs * 0.19</code> 延迟和 <code>* 0.22</code> 时长与 Pixi 主刀同步从左向右裁切展开，并通过轻微下移起点让刀痕中点贴合目标行中线。结算后的持久棋盘标记保存在 <code>game.rowEffects</code>，会同步给观战、回放和实时客户端，并通过 <code>clearAfterColor</code> 在对手下一次行动（普通落子、弃手或消耗回合技能）后清除。</li>
@@ -3672,7 +3637,7 @@
 <ul>
 <li><code>src/audio/backgroundMusic.jsx</code></li>
 <ul>
-<li>Owns the React <code>BackgroundMusic</code> component, BGM Web Audio scheduling, intro-to-loop timing, decoded BGM buffer cache, pre-track user-activation priming, autoplay resume fallback, and reconnect recovery guard. <code>src/audio/playback.jsx</code> keeps compatibility re-exports for existing callers.</li>
+<li>Owns the React <code>BackgroundMusic</code> component, BGM Web Audio scheduling, intro-to-loop timing, decoded BGM buffer cache, autoplay resume fallback, and reconnect recovery guard. <code>src/audio/playback.jsx</code> keeps compatibility re-exports for existing callers.</li>
 </ul>
 </ul>
 <ul>
@@ -3721,7 +3686,7 @@
 <li>匹配成功倒计时、对局结果弹窗、对局房间的结束阶段会停止 BGM；如果用户从已结束棋谱回放退出到大厅，前端会清空回放房间快照，BGM resolver 以当前 <code>view = home</code> 为准恢复主界面 BGM。在线玩家从已结束房间主动退出回大厅时，前端也会把该房间号记为已处理结果，防止房间 5 分钟回收前的残留终局快照继续触发结果弹窗状态并压住大厅 BGM。</li>
 </ul>
 <ul>
-<li>登录点击、触摸或键盘等真实用户激活可能早于 <code>/api/me</code>、启动资源预加载和主界面曲目解析完成；<code>BackgroundMusic</code> 挂载在登录页期间就注册全局恢复触发器，并在没有当前曲目时也会预创建并 resume BGM <code>AudioContext</code>，让云端较慢的登录后加载流程仍能在进入大厅时及时调度主界面 BGM。刷新或持久登录自动进入大厅时可能没有用户手势，浏览器会继续挂起 <code>AudioContext</code>；<code>BackgroundMusic</code> 会在 resume 后检查上下文状态，如果仍为 suspended，就注册 pointerdown / keydown / touchstart 一次性重试，保证首次点击、按键或触摸后恢复大厅 BGM。</li>
+<li>持久登录自动进入大厅时可能没有用户手势，浏览器会继续挂起 <code>AudioContext</code>；<code>BackgroundMusic</code> 会在 resume 后检查上下文状态，如果仍为 suspended，就注册 pointerdown / keydown / touchstart 一次性重试，保证首次点击、按键或触摸后恢复大厅 BGM。</li>
 </ul>
 <ul>
 <li><code>BackgroundMusic</code> 使用 Web Audio 播放，预解码 intro/loop buffer，并在同一 <code>AudioContext</code> 时间线上调度 intro 到 loop，避免 HTMLAudio 切文件造成明显卡顿。</li>
@@ -3900,9 +3865,6 @@
 </ul>
 <ul>
 <li>Frontend music consumers should pass the merged track map into existing music-library resolver functions instead of duplicating selection logic. Character BGM preview/select controls, background music resolution, shop music card names, and gacha music prize options/display names should all use the merged catalog.</li>
-</ul>
-<ul>
-<li>角色详情 <code>CharacterMusicPreview</code> 仍消费现有 <code>MUSIC_TRACKS</code> playback 形状和 <code>src/shared/audioScheduling.js</code> 的 <code>BGM_START_DELAY_SECONDS</code> / <code>createPlaybackKey()</code>，不新增音频格式、接口或数据模型。组件在曲目进入详情页时预热当前 BGM 的 Web Audio buffer，<code>bufferCache</code> 保存已解码结果，<code>bufferPromises</code> 复用同一路径正在进行的 fetch/decode 并在成功或失败后清理；点击播放只做状态切换、后台 BGM 暂停和已预热 buffer 的调度，失败时释放后台暂停并显示 error 状态。<code>intro-loop</code> 曲目继续按 intro 一次 + loop 循环调度，暂停会保留 offset 供再次播放续播。</li>
 </ul>
 <h2>Login Asset Preloading</h2>
 <ul>
@@ -4444,9 +4406,6 @@
 </ul>
 <ul>
 <li>修改入口或分篇后运行 <code>npm run docs:system-design</code> 生成 <code>docs/system-design.html</code>。</li>
-</ul>
-<ul>
-<li><code>npm run verify:battle-fixes</code> runs the focused regression suite for battle-board fixes, then regenerates and validates system-design HTML. Use it before handoff when changing board erase styling, skill targeting/release confirmation, ordinary capture counting, chat wrapping, or character skill seed/config behavior.</li>
 </ul>
 <ul>
 <li>中文内容应使用 <code>apply_patch</code>、Node UTF-8 脚本或其它明确 UTF-8 的工具写入，避免 PowerShell 默认编码链路造成显示混乱。</li>

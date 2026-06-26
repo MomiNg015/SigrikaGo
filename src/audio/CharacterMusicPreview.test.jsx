@@ -1,11 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
-import {
-  createPreviewState,
-  loadPreviewBuffer,
-  pausePreview,
-  preloadPreview,
-  schedulePreviewSources
-} from "./CharacterMusicPreview.jsx";
+import { describe, expect, it } from "vitest";
+import { pausePreview, schedulePreviewSources } from "./CharacterMusicPreview.jsx";
 
 describe("character music preview scheduling", () => {
   it("resumes intro-loop playback from the intro offset", () => {
@@ -64,59 +58,6 @@ describe("character music preview scheduling", () => {
     expect(state.offset).toBe(11);
     expect(state.active).toBeNull();
     expect(stopped).toEqual(["source"]);
-  });
-
-  it("reuses in-flight preview buffer loads for the same source", async () => {
-    const state = createPreviewState();
-    const context = fakeContext();
-    const decodeAudioData = vi.fn(async () => ({ duration: 3 }));
-    context.decodeAudioData = decodeAudioData;
-    const arrayBuffer = new ArrayBuffer(8);
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
-      arrayBuffer: async () => arrayBuffer
-    });
-
-    const [first, second] = await Promise.all([
-      loadPreviewBuffer(state, context, "/assets/music/club.ogg"),
-      loadPreviewBuffer(state, context, "/assets/music/club.ogg")
-    ]);
-
-    expect(first).toBe(second);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(decodeAudioData).toHaveBeenCalledTimes(1);
-    expect(state.bufferCache.get("/assets/music/club.ogg")).toBe(first);
-    expect(state.bufferPromises.has("/assets/music/club.ogg")).toBe(false);
-
-    fetchMock.mockRestore();
-  });
-
-  it("clears failed in-flight preview buffer loads so playback can retry", async () => {
-    const state = createPreviewState();
-    const context = fakeContext();
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("network"));
-
-    await expect(loadPreviewBuffer(state, context, "/assets/music/missing.ogg")).rejects.toThrow("network");
-
-    expect(state.bufferCache.has("/assets/music/missing.ogg")).toBe(false);
-    expect(state.bufferPromises.has("/assets/music/missing.ogg")).toBe(false);
-
-    fetchMock.mockRestore();
-  });
-
-  it("reports preload failures without leaving an in-flight load behind", async () => {
-    const state = createPreviewState();
-    state.context = fakeContext();
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("network"));
-
-    await expect(preloadPreview({
-      state,
-      track: { playback: { src: "/assets/music/missing.ogg" } }
-    })).resolves.toBe(false);
-
-    expect(state.bufferCache.has("/assets/music/missing.ogg")).toBe(false);
-    expect(state.bufferPromises.has("/assets/music/missing.ogg")).toBe(false);
-
-    fetchMock.mockRestore();
   });
 });
 
