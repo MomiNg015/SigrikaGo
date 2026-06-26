@@ -53,6 +53,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-heading {
+  grid-template-columns: minmax(0, 1fr) minmax(172px, 220px) !important;
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
@@ -68,33 +69,105 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
-  background: #fff6dd !important;
+  background:
+    linear-gradient(180deg, #fffdf5, #ffefcf 54%, #dcf3ff),
+    repeating-linear-gradient(90deg, rgba(61, 43, 37, 0.08) 0 1px, transparent 1px 7px) !important;
   border: 2px solid var(--bright-border) !important;
-  border-radius: 999px !important;
-  width: 172px !important;
-  max-width: min(172px, 100%) !important;
-  height: 30px !important;
-  min-height: 30px !important;
-  padding: 0 8px 0 0 !important;
+  border-radius: 8px !important;
+  width: 220px !important;
+  max-width: min(220px, 100%) !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 10px 0 0 !important;
   box-shadow: 2px 2px 0 var(--bright-border) !important;
   color: var(--bright-ink) !important;
   overflow: hidden !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player::before {
+  border-color: rgba(61, 43, 37, 0.24) !important;
+  background:
+    linear-gradient(90deg, transparent 0 16%, rgba(61, 43, 37, 0.16) 16% 18%, transparent 18% 50%, rgba(61, 43, 37, 0.16) 50% 52%, transparent 52%),
+    rgba(255, 255, 255, 0.54) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-loading {
+  border-color: #4b83b8 !important;
+  background:
+    linear-gradient(180deg, #f5fcff, #dff4ff 54%, #fff2c7),
+    repeating-linear-gradient(90deg, rgba(61, 43, 37, 0.08) 0 1px, transparent 1px 7px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-playing {
+  transform: none !important;
+  background:
+    linear-gradient(180deg, #fffbd6, #dff4de 54%, #e8f5ff),
+    repeating-linear-gradient(90deg, rgba(61, 43, 37, 0.08) 0 1px, transparent 1px 7px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-error {
+  border-color: #b94754 !important;
+  background:
+    linear-gradient(180deg, #fff7f4, #ffd8d8 54%, #fff1bd),
+    repeating-linear-gradient(90deg, rgba(61, 43, 37, 0.08) 0 1px, transparent 1px 7px) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle {
-  background: #ffdfeb !important;
-  width: 32px !important;
+  background: #ffd66e !important;
+  width: 46px !important;
   height: 100% !important;
   border: 0 !important;
   border-right: 2px solid var(--bright-border) !important;
-  border-radius: 999px 0 0 999px !important;
+  border-radius: 6px 0 0 6px !important;
   box-shadow: none !important;
   color: var(--bright-ink) !important;
+  transform: translateZ(0) !important;
+  transition: background-color 90ms ease, color 90ms ease, box-shadow 90ms ease, filter 90ms ease !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:hover:not(:disabled) {
+  background: #ffe08f !important;
+  filter: brightness(1.03) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:active:not(:disabled) {
+  background: #ffbfd1 !important;
+  box-shadow: inset 0 3px 0 rgba(61, 43, 37, 0.18) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-error .character-music-toggle {
+  background: #ffd3d3 !important;
+  color: #7b252e !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-signal {
+  border-color: rgba(61, 43, 37, 0.32) !important;
+  background: rgba(255, 255, 248, 0.72) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-signal span {
+  background: var(--bright-ink) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select-frame,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select {
   color: var(--bright-ink) !important;
+  max-width: 126px !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select-frame {
+  border-color: rgba(61, 43, 37, 0.36) !important;
+  background:
+    linear-gradient(180deg, #fffef3, #fff1bd),
+    repeating-linear-gradient(0deg, transparent 0 8px, rgba(61, 43, 37, 0.08) 8px 9px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select-frame::after {
+  border-color: var(--bright-ink) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p,
