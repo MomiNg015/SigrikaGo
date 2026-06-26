@@ -559,25 +559,20 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("padding-right: calc(var(--modal-close-size, 44px) + 12px);");
     expect(css).toContain("background-color: transparent;");
     expect(css).toMatch(/\.character-detail-heading h3\s*\{[^}]*white-space:\s*nowrap;[^}]*word-break:\s*keep-all;[^}]*writing-mode:\s*horizontal-tb;/s);
-    expect(css).toContain("width: 188px;");
-    expect(css).toContain("height: 40px;");
-    expect(css).toContain(".character-music-select-frame");
-    expect(css).toContain("font-weight: 950;");
-    expect(css).toContain("appearance: none;");
-    expect(css).toContain(".character-music-toggle:hover:not(:disabled)");
-    expect(css).toContain(".character-music-toggle:active:not(:disabled)");
+    expect(css).toContain("width: 172px;");
+    expect(css).toContain("height: 30px;");
 
     const phoneCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url))
       + readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
-    expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(132px, 164px);");
-    expect(phoneCss).toContain("width: min(164px, 48vw);");
+    expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(124px, 156px);");
+    expect(phoneCss).toContain("width: min(156px, 46vw);");
     expect(phoneCss).toContain("justify-self: end;");
-    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(132px, 164px) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(124px, 156px) !important");
     expect(finalMobileCss).toContain("padding-right: 0 !important");
-    expect(finalMobileCss).toContain("width: min(164px, 48vw) !important");
+    expect(finalMobileCss).toContain("width: min(156px, 46vw) !important");
     expect(finalMobileCss).toContain("writing-mode: horizontal-tb !important");
     expect(brightSchoolMobileCss).toContain(".character-detail-heading h3");
     expect(brightSchoolMobileCss).toContain("white-space: nowrap !important");
@@ -810,7 +805,6 @@ describe("deriveCharacterRecordStats", () => {
     }));
 
     expect(html).toContain("character-music-select");
-    expect(html).toContain("character-music-select-frame");
     expect(html).toContain("Sigrika Skill BGM");
     expect(html).toContain("Sigrika Dream BGM");
   });

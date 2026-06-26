@@ -67,6 +67,36 @@
   text-orientation: mixed !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
+  background: #fff6dd !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 999px !important;
+  width: 172px !important;
+  max-width: min(172px, 100%) !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 8px 0 0 !important;
+  box-shadow: 2px 2px 0 var(--bright-border) !important;
+  color: var(--bright-ink) !important;
+  overflow: hidden !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle {
+  background: #ffdfeb !important;
+  width: 32px !important;
+  height: 100% !important;
+  border: 0 !important;
+  border-right: 2px solid var(--bright-border) !important;
+  border-radius: 999px 0 0 999px !important;
+  box-shadow: none !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select {
+  color: var(--bright-ink) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-title-row,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .acquisition-method {

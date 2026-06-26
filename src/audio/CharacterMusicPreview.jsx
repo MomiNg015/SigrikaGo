@@ -6,29 +6,23 @@ import { requestBackgroundMusicPause } from "./backgroundMusicPause.js";
 import { browserAudioContextClass } from "./audioRuntime.js";
 
 export function CharacterMusicPreview({ track, options = [], audioSettings, onTrackChange }) {
-  const [status, setStatus] = useState("idle");
+  const [playing, setPlaying] = useState(false);
   const playerRef = useRef(createPreviewState());
   const releaseBackgroundPauseRef = useRef(null);
   const volume = audioVolume(audioSettings, "bgm");
   const selectable = options.length > 1;
   const title = track?.name ?? "No BGM";
-  const playing = status === "playing";
-  const loading = status === "loading";
 
   useEffect(() => {
     setPreviewVolume(playerRef.current, volume);
   }, [volume]);
 
   useEffect(() => {
-    preloadPreviewTrack(playerRef.current, track);
-  }, [track]);
-
-  useEffect(() => {
     const state = playerRef.current;
     state.offset = 0;
     stopPreview(state);
     releaseBackgroundPause();
-    setStatus("idle");
+    setPlaying(false);
   }, [track?.id]);
 
   useEffect(() => () => {
@@ -39,23 +33,21 @@ export function CharacterMusicPreview({ track, options = [], audioSettings, onTr
   const label = useMemo(() => (playing ? "暂停角色 BGM" : "播放角色 BGM"), [playing]);
 
   async function togglePlayback() {
-    if (!track || loading) return;
+    if (!track) return;
     const state = playerRef.current;
     if (playing) {
       pausePreview(state);
       releaseBackgroundPause();
-      setStatus("idle");
+      setPlaying(false);
       return;
     }
-    setStatus("loading");
     const release = requestBackgroundMusicPause();
     releaseBackgroundPauseRef.current = release;
     const started = await playPreview({ state, track, volume }).catch(() => false);
     if (started) {
-      setStatus("playing");
+      setPlaying(true);
     } else {
       releaseBackgroundPause();
-      setStatus("error");
     }
   }
 
@@ -69,39 +61,25 @@ export function CharacterMusicPreview({ track, options = [], audioSettings, onTr
   }
 
   return (
-    <div
-      className={`character-music-player is-${status}`}
-      aria-label="角色 BGM 播放器"
-      aria-busy={loading ? "true" : "false"}
-    >
+    <div className="character-music-player" aria-label="角色 BGM 播放器">
       <button
         className="character-music-toggle"
         type="button"
         aria-label={label}
-        disabled={!track || loading}
+        disabled={!track}
         onClick={togglePlayback}
       >
         {playing ? <Pause size={16} /> : <Play size={16} />}
       </button>
-      <span className="character-music-signal" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </span>
       {selectable ? (
-        <span className="character-music-select-frame">
-          <select className="character-music-select" value={track?.id ?? ""} onChange={changeTrack}>
-            {options.map((option) => (
-              <option key={option.id} value={option.id}>{option.name}</option>
-            ))}
-          </select>
-        </span>
+        <select className="character-music-select" value={track?.id ?? ""} onChange={changeTrack}>
+          {options.map((option) => (
+            <option key={option.id} value={option.id}>{option.name}</option>
+          ))}
+        </select>
       ) : (
         <span className="character-music-name">{title}</span>
       )}
-      <span className="character-music-status" aria-live="polite">
-        {status === "error" ? "BGM 播放失败" : ""}
-      </span>
     </div>
   );
 }
@@ -110,17 +88,10 @@ export function createPreviewState() {
   return {
     active: null,
     bufferCache: new Map(),
-    bufferPromises: new Map(),
     context: null,
     offset: 0,
     startedAt: 0
   };
-}
-
-export function preloadPreviewTrack(state, track) {
-  const context = getPreviewAudioContext(state);
-  if (!context || !track?.playback) return null;
-  return loadPreviewBuffers(state, context, track.playback).catch(() => null);
 }
 
 export async function playPreview({ state, track, volume }) {
@@ -179,7 +150,7 @@ function setPreviewVolume(state, volume) {
   state.active.gain.gain.setValueAtTime(volume, state.context.currentTime);
 }
 
-export async function loadPreviewBuffers(state, context, playback) {
+async function loadPreviewBuffers(state, context, playback) {
   const sources = playback.mode === "intro-loop" ? [playback.introSrc, playback.loopSrc] : [playback.src];
   const entries = await Promise.all(sources.map(async (src) => [src, await loadPreviewBuffer(state, context, src)]));
   return Object.fromEntries(entries);
@@ -187,19 +158,11 @@ export async function loadPreviewBuffers(state, context, playback) {
 
 async function loadPreviewBuffer(state, context, src) {
   if (state.bufferCache.has(src)) return state.bufferCache.get(src);
-  if (state.bufferPromises.has(src)) return state.bufferPromises.get(src);
-  const promise = fetch(src)
-    .then((response) => response.arrayBuffer())
-    .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
-    .then((buffer) => {
-      state.bufferCache.set(src, buffer);
-      return buffer;
-    })
-    .finally(() => {
-      state.bufferPromises.delete(src);
-    });
-  state.bufferPromises.set(src, promise);
-  return promise;
+  const response = await fetch(src);
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = await context.decodeAudioData(arrayBuffer);
+  state.bufferCache.set(src, buffer);
+  return buffer;
 }
 
 export function schedulePreviewSources({ context, playback, buffers, startAt, offset = 0, destination = null }) {

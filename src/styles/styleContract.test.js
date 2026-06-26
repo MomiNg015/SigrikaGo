@@ -55,7 +55,7 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
   ["mobile-adaptive/bright-school-portrait/settings-tabs.css", 6576],
   ["mobile-adaptive/mobile-profile-records.css", 6842],
-  ["mobile-adaptive/phone-core.css", 6753],
+  ["mobile-adaptive/phone-core.css", 6418],
   ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-modals/phone-house-resume.css", 6956],
   ["modals/mailbox.css", 10616],
@@ -843,7 +843,6 @@ describe("root CSS entry contract", () => {
       "./modals/profile-hero-cleanup.css",
       "./modals/profile-social-actions.css",
       "./modals/character-opening.css",
-      "./modals/character-music-player.css",
       "./modals/phone.css",
       "./modals/terminal-system.css",
       "./modals/mailbox.css"

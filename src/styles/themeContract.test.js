@@ -421,7 +421,6 @@ describe("player theme CSS contract", () => {
       "./component-repairs/lists-profile.css",
       "./component-repairs/profile-actions.css",
       "./component-repairs/warehouse-character.css",
-      "./component-repairs/character-music.css",
       "./component-repairs/room-board.css",
       "./component-repairs/chat.css",
       "./component-repairs/notebook-polish.css"
@@ -499,22 +498,6 @@ describe("player theme CSS contract", () => {
     expect(roomBoardCss).toContain(".point.star:not(.black):not(.white):not(.erased)::after");
     expect(roomBoardCss).not.toContain(".point.star:not(.black):not(.white):not(.erased)::before");
     expect(boardTargetingCss).not.toContain(".point.star:not(.black):not(.white):not(.erased)::before");
-  });
-
-  it("keeps Bright School character music controls aligned with the compact school player", () => {
-    const characterCss = readFileSync(
-      new URL("./themes/bright-school/component-repairs/character-music.css", import.meta.url),
-      "utf8"
-    );
-    const mobileCss = readCssWithImports(new URL("./themes/bright-school/mobile.css", import.meta.url))
-      + readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
-
-    expect(characterCss).toContain(".character-music-select-frame");
-    expect(characterCss).toContain("width: 188px !important");
-    expect(characterCss).toContain("height: 40px !important");
-    expect(characterCss).toContain(".character-music-toggle:hover:not(:disabled)");
-    expect(mobileCss).toContain(".character-music-select-frame");
-    expect(mobileCss).toContain("width: min(164px, 48vw) !important");
   });
 
   it("keeps default board stones free of outline rings", () => {

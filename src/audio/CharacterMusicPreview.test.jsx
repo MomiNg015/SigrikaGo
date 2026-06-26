@@ -1,10 +1,5 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { createPreviewState, loadPreviewBuffers, pausePreview, schedulePreviewSources } from "./CharacterMusicPreview.jsx";
-
-afterEach(() => {
-  vi.restoreAllMocks();
-  vi.unstubAllGlobals();
-});
+import { describe, expect, it } from "vitest";
+import { pausePreview, schedulePreviewSources } from "./CharacterMusicPreview.jsx";
 
 describe("character music preview scheduling", () => {
   it("resumes intro-loop playback from the intro offset", () => {
@@ -63,29 +58,6 @@ describe("character music preview scheduling", () => {
     expect(state.offset).toBe(11);
     expect(state.active).toBeNull();
     expect(stopped).toEqual(["source"]);
-  });
-
-  it("reuses in-flight decoded buffers for repeated loads", async () => {
-    const state = createPreviewState();
-    const context = {
-      decodeAudioData: vi.fn(async () => ({ duration: 12 }))
-    };
-    const arrayBuffer = new ArrayBuffer(4);
-    vi.stubGlobal("fetch", vi.fn(async () => ({
-      arrayBuffer: async () => arrayBuffer
-    })));
-
-    const playback = { src: "song.ogg", loop: true };
-    const [first, second] = await Promise.all([
-      loadPreviewBuffers(state, context, playback),
-      loadPreviewBuffers(state, context, playback)
-    ]);
-
-    expect(fetch).toHaveBeenCalledTimes(1);
-    expect(context.decodeAudioData).toHaveBeenCalledTimes(1);
-    expect(first["song.ogg"]).toBe(second["song.ogg"]);
-    expect(state.bufferCache.has("song.ogg")).toBe(true);
-    expect(state.bufferPromises.has("song.ogg")).toBe(false);
   });
 });
 
