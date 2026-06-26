@@ -281,7 +281,7 @@
 <li>Character portrait assets should stay on stable transparent 640x640 canvases when replacing built-in portraits. Nabomo uses <code>/assets/nabomo.webp</code>; the current WebP replacement keeps a 640x640 RGBA canvas with an alpha content height matching the existing portrait scale and a file size in the same range as other WebP portraits, while <code>/assets/nabomo.png</code> is kept visually in sync for stale catalog/path compatibility.</li>
 </ul>
 <ul>
-<li>Mobile character-detail dialogs keep the character name horizontal and single-line, place the compact BGM preview capsule at the top-right of the heading row, left-align skill and character-description copy, and omit the standalone skill-cost badge; Bright School theme layers and the final <code>mobile-adaptive</code> safety layer repeat these constraints so narrow phones cannot fall back to vertical names or centered body text.</li>
+<li>Mobile character-detail dialogs keep the character name horizontal and single-line, place the compact BGM preview control at the top-right of the heading row, left-align skill and character-description copy, and omit the standalone skill-cost badge; Bright School theme layers and the final <code>mobile-adaptive</code> safety layer repeat these constraints so narrow phones cannot fall back to vertical names, centered body text, or the old plain select treatment. The player uses the same high-contrast title frame for fixed names and selectable music, wraps the native select in <code>.character-music-select-frame</code>, and keeps play/pause hover and press feedback to color/filter/inset-shadow changes so the heading row does not visually stutter.</li>
 </ul>
 <ul>
 <li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final import-only <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer and split under <code>src/styles/mobile-adaptive/bright-school-portrait/</code>, while final mobile social/warehouse safeguards keep inventory item cards at a stable 88px minimum height for readable item details; the portrait polish includes home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, resume character records that take remaining modal height and scroll internally on short phones, mobile room tabs that change selected background without press-offset motion, and single-line shop coin wallet treatment. Login auth chrome keeps the brand and login/register segmented wrappers transparent on desktop and mobile, while the outer login card retains the Bright School lower-right hard shadow. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
@@ -1634,7 +1634,7 @@
 <li>棋谱回放打开时会把 <code>GameRecord</code> 的 <code>winnerColor/resultText</code> 回填到回放房间快照的 <code>game.winner</code>，即使旧快照缺少该字段，回放信息区立绘右下也能显示对应胜/负/和角标。</li>
 </ul>
 <ul>
-<li>回放棋局每一步由 <code>replayRoomAt()</code> 重算棋盘，但会保留原始回放房间的 <code>finished</code> phase 和 <code>winner</code> 元数据，避免回放视图因为重算过程丢失结果角标。</li>
+<li>回放棋局每一步由 <code>replayRoomAt()</code> 重算棋盘，但会保留原始回放房间的 <code>finished</code> phase 和 <code>winner</code> 元数据，避免回放视图因为重算过程丢失结果角标；技能历史里的 <code>removedByColor</code> 按被移除棋子颜色记录，回放重算展示除子/提子时必须先通过 <code>captureCreditOwner()</code> 转成黑白受益方并忽略中立颜色，避免原始颜色计数被当作归属方重复累加。</li>
 </ul>
 <ul>
 <li>玩家信息区技能按钮从角色 <code>palette</code> 注入 <code>--skill-chip-accent</code>，按钮背景和边框渐变跟随角色主题色；可用技能使用更饱和的角色色渐变，技能次数为 0 时进入 <code>spent</code> 灰色状态。<code>theme-components.css</code> 会在隔离层之后再次声明 <code>.player-info .skill-chip</code> 与 <code>.skill-chip.spent</code>，防止 <code>room-terminal.css</code> 或 Bright School 后置层把语义颜色覆盖掉。</li>
@@ -1697,7 +1697,7 @@
 <ul>
 <li>技能类型：</li>
 </ul>
-<p>- <code>erase-point</code>：抹除空交叉点，点位不可落子且不参与数子。 Resolved erased points render <code>/assets/effects/sigrika-erased-field-marker.webp</code> as a point-local transparent WebP field marker.</p>
+<p>- <code>erase-point</code>：抹除空交叉点，点位不可落子且不参与数子。 结算后的无效点使用 <code>/assets/effects/sigrika-erased-field-marker.webp</code> 作为 point-local 透明 WebP 坑洞标记，并由棋盘的 <code>erased-boundary-layer</code> 灰显周围格子、用一路线同粗细外边界线标出边界。</p>
 <ul>
 <li><code>flip-stone</code>：反转目标棋子颜色。</li>
 </ul>
@@ -1706,6 +1706,9 @@
 </ul>
 <ul>
 <li><code>protocol-takeover</code>：莫宁主动技“协议接管”。指定一个有效、空置、未被协议标记的交叉点，写入对手禁入协议；该空点阻止被禁方普通落子和空点/任意点指定类技能目标，不阻止该点已有棋子被石子目标技能指定，也不改变气、提子、劫或棋子归属。协议点为空时不计入被禁方领地，但仍作为空区域连通的一部分，避免污染同一区域内其它空点归属；协议标记会随棋子翻转、横斩移除、随机爆破和普通提子保留，只有交叉点被抹除时清除。</li>
+</ul>
+<ul>
+<li><code>row-slash</code>：仇远主动技“一斩足矣”。指定任意有效交叉点，移除其所在行所有棋子；每直接移除一枚棋子追加 <code>+1</code> 超频，技能后的无气清理仍计入除子但不再增加仇远超频。</li>
 </ul>
 <ul>
 <li><code>random-blast</code>：随机选择棋盘上非一路的已有棋子作为中心，并移除以该棋子为中心的固定 3x3 区域内棋子。</li>
@@ -2343,10 +2346,13 @@
 <li><code>RoomScreen.jsx</code> owns room-level derived state, replay/spectator projection, room header game info, per-room sound effects, skill/opening modals, and layout composition for the full battle screen.</li>
 </ul>
 <ul>
+<li><code>src/room/roomView.js</code> owns <code>replayRoomAt()</code> reconstruction. Skill histories that record <code>removedByColor</code> by removed-stone color are converted through shared <code>captureCreditOwner()</code> before accumulating replay <code>game.skillRemovals</code>, and neutral colors are ignored, so replay skill-removal counters display the credited black/white owner once instead of inflating with raw stone colors.</li>
+</ul>
+<ul>
 <li><code>TimeBar.jsx</code> owns the player timer/digital display panel. It exposes <code>main-time</code>, <code>warning-byo-yomi</code>, and <code>final-byo-yomi</code> state classes so all themes can share the same timer-track color contract: main time is blue, byo-yomi with 3 or 2 periods left is red, and the final remaining period is multicolor.</li>
 </ul>
 <ul>
-<li><code>ChatBox.jsx</code> owns the room chat anchor button, optional trailing room-side action, left/up popover, scroll-to-bottom behavior, outside-click/Escape collapse behavior, and chat submission UI. The collapsed chat badge counts only player chat messages (<code>type === &quot;chat&quot;</code>) so system notices, skill notices, disconnect notices, and other non-player messages do not inflate the visible count. The desktop room keeps chat as a compact side-column tool group with the room exit button immediately to the chat button's right so the board action bar only contains game actions; opening chat renders the history/input panel from the tool group's bottom-right anchor. Mobile dock chat uses the same component and lets the popover overflow the dock instead of increasing the board layout height.</li>
+<li><code>ChatBox.jsx</code> owns the room chat anchor button, optional trailing room-side action, left/up popover, scroll-to-bottom behavior, outside-click/Escape collapse behavior, and chat submission UI. The collapsed chat badge counts only player chat messages (<code>type === &quot;chat&quot;</code>) so system notices, skill notices, disconnect notices, and other non-player messages do not inflate the visible count. The desktop room keeps chat as a compact side-column tool group with the room exit button immediately to the chat button's right so the board action bar only contains game actions; opening chat renders the history/input panel from the tool group's bottom-right anchor. Mobile dock chat uses the same component and lets the popover overflow the dock instead of increasing the board layout height. Chat names and message bodies keep <code>pre-wrap</code> plus emergency word breaks so long text, URLs, and unspaced input wrap inside the popover on desktop and mobile.</li>
 </ul>
 <ul>
 <li><code>PlayerInfo.jsx</code> owns player portrait, rank/rating tags, timer, captures/cost display, result badge, desktop skill detail popover, and mobile tap explanations for removal/overclock/skill labels. The mobile tap tooltip is anchored near the tap point, uses a fixed viewport-contained width with normal wrapping and emergency word breaks, clamps horizontally by its maximum width, flips below the tap near the top edge, and caps height with internal scrolling so explanation content cannot leave the viewport. The overclock/cost counter uses <code>cost-stat</code> and is forced to red text across themes, including broad theme reset layers. Skill detail panels and stat hover/click tooltips consume the desktop room floating-layer z-index variable, so the most recently hovered, focused, or clicked player tip can rise above chat and member popovers instead of relying on a fixed z-index.</li>
@@ -2371,6 +2377,9 @@
 </ul>
 <ul>
 <li><code>Board.jsx</code> marks first-line board grid runs with <code>edge-line</code>; CSS keeps every non-edge grid run at one uniform stroke width and renders every first-line run exactly 2.5x that width in the Bright School theme.</li>
+</ul>
+<ul>
+<li><code>Board.jsx</code> derives <code>erasedBoundaryGeometry()</code> from invalid intersections and renders a pointer-transparent <code>.erased-boundary-layer</code> above the SVG grid but below point buttons. Each erased point first shades the surrounding in-bounds board cells gray; the geometry then merges those gray cells and draws only the outer outline with the same stroke weight as first-line grid runs, so shared edges inside the gray area do not receive thick boundary strokes. Shared board CSS and Bright School repairs keep the desktop and mobile presentation aligned.</li>
 </ul>
 <ul>
 <li>Board stones use deterministic visual jitter for a more physical game feel: each stone gets stable <code>--stone-offset-x/y</code> values in one random direction from the intersection. Spark mode keeps a maximum 1px offset; standard mode uses a maximum 0.5px offset on both desktop and mobile because 19-line stones are smaller. The underlying <code>.point</code> button, game logic, scoring marks, and target previews remain centered on the original intersection.</li>
@@ -2420,7 +2429,7 @@
 <li>Main-time timer digits use a gray display color, while byo-yomi states keep their warning colors.</li>
 </ul>
 <ul>
-<li>Board grid strokes use continuous SVG row/column runs with square line caps and geometric precision rendering so internal lines do not appear as uneven stitched segments, and first-line corners stay visually connected. The fixed contrast rule remains shared across themes: all ordinary grid runs share one stroke width, and first-line grid runs render at exactly 2.5x that width. Skill targeting highlights use a gradient glow instead of a solid outline. Stones affected by skill states use darker, higher-opacity green/purple halo rings so the effect reads clearly against the wooden board.</li>
+<li>Board grid strokes use continuous SVG row/column runs with square line caps and geometric precision rendering so internal lines do not appear as uneven stitched segments, and first-line corners stay visually connected. The fixed contrast rule remains shared across themes: all ordinary grid runs share one stroke width, first-line grid runs render at exactly 2.5x that width, and erased-point boundary lines reuse that first-line weight while gray cell fills show the removed intersection's affected area. Skill targeting highlights use a gradient glow instead of a solid outline. Stones affected by skill states use darker, higher-opacity green/purple halo rings so the effect reads clearly against the wooden board.</li>
 </ul>
 <ul>
 <li>Latest room/home refinements:</li>
@@ -2541,6 +2550,9 @@
 <ul>
 <li>Chisa's <code>.liberty-purge-removal-mark</code> is centered on each point button with <code>left/top: 50%</code> and <code>translate(-50%, -50%)</code>; its <code>::before</code> and <code>::after</code> bars own the rotation. Shared board CSS and the Bright School guard both keep the mark saturated red <code>#ff1733</code>, visible above stones, and pointer-events-none so it remains a purely visual removal history marker.</li>
 </ul>
+<ul>
+<li>No-target active skills that confirm through the board surface use the same one-click contract on desktop and mobile. <code>skillUsesBoardSurfaceConfirmation()</code> covers Baconbits <code>random-blast</code>, ChangLi <code>double-move</code>, and Aemeath <code>voyage-star</code>; <code>useRoomPointActions</code> routes point-button clicks for those skills to <code>{ type: &quot;skill&quot; }</code> without a <code>pointId</code>, clears local targeting, and skips mobile double-tap confirmation. <code>canPreviewSkillTarget()</code> still returns false for <code>targetRule: &quot;none&quot;</code>, so these release confirmations never paint hover target or ordinary placement preview markers.</li>
+</ul>
 <h2>Achievement And Personalization Frontend</h2>
 <ul>
 <li><code>src/app/useOverlayState.js</code> 将 <code>achievements</code> 和 <code>personalization</code> 纳入应用级弹窗契约；<code>AppOverlays</code> 在履历弹窗之外挂载 <code>AchievementModal</code> 与 <code>PersonalizationModal</code>，并把履历标题区的“成就”“个性化”按钮作为入口。</li>
@@ -2591,6 +2603,9 @@
 </ul>
 <ul>
 <li><code>room:resume</code> 的空 roomCode 只恢复仍可继续的玩家房间，不会自动拉起 finished room；finished 历史结果只有在客户端显式传入 roomCode 时才允许恢复。这样玩家关闭结果或退出 finished 房间后刷新，不会因为内存房间仍在 5 分钟 review window 内而再次弹出结果。</li>
+</ul>
+<ul>
+<li><code>server/runtimeStabilityMetrics.js</code> 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 <code>patch-gap</code> 或 <code>socket-connect</code> 的 <code>room:resume</code> 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。</li>
 </ul>
 <h2>API 与实时事件</h2>
 <h2>Production Deployment Hardening</h2>
@@ -2875,7 +2890,7 @@
 <li>后台分析 API 挂载在 <code>/api/admin/analytics/*</code>，仍走现有 <code>authHttp + requireAdmin</code> 管线。</li>
 </ul>
 <ul>
-<li><code>GET /api/admin/analytics/overview</code> 返回后台默认“今日简报”数据：总状态、2-5 条原因、<code>需要处理 / 值得关注 / 正常记录</code> 解读、今日登录/注册/对局、在线名单、时长榜、待处理反馈/举报、服务健康和最近审计日志。第一版优先从 <code>User</code>、<code>LoginSession</code>、<code>GameRecord</code>、<code>FeedbackMessage</code>、<code>UserReport</code>、<code>AdminAuditLog</code> 与运行时在线/房间/匹配队列聚合，不伪造尚未采集的断线、IP、设备或错误事件。</li>
+<li><code>GET /api/admin/analytics/overview</code> 返回后台默认“今日简报”数据：总状态、2-5 条原因、<code>需要处理 / 值得关注 / 正常记录</code> 解读、今日登录/注册/对局、在线名单、时长榜、待处理反馈/举报、服务健康和最近审计日志。第一版优先从 <code>User</code>、<code>LoginSession</code>、<code>GameRecord</code>、<code>FeedbackMessage</code>、<code>UserReport</code>、<code>AdminAuditLog</code>、实时在线/房间/匹配队列和 <code>runtimeStabilityMetrics</code> 聚合；深度 IP/设备/历史异常事件仍不伪造。</li>
 </ul>
 <ul>
 <li><code>GET /api/admin/analytics/operations?range=today|yesterday|7d|30d</code> 返回运营分析数据：日期范围、可读解读、活跃/注册/对局趋势、模式完成数、玩家粗分层、金币净变化、抽卡和招募任务数量。深度留存、经济来源拆分、完整异常事件和导出仍是后续扩展。</li>
@@ -2892,6 +2907,9 @@
 </ul>
 <ul>
 <li><code>server/roomActionPhaseGuards.js</code> declares the gameplay action phase matrix before lifecycle dispatch: move/pass/skill require <code>playing</code>, resign is limited to <code>playing</code>, <code>counting-requested</code>, and <code>draw-requested</code>, and opening, skill-preview, marking-dead, result-review, or finished phases reject generic board actions before they can mutate state.</li>
+</ul>
+<ul>
+<li>Graceful shutdown uses <code>installServerLifecycle(..., { beforeShutdown: [flushRoomPersistence] })</code> so SIGINT/SIGTERM first stops accepting new HTTP connections, waits for queued room snapshot writes, then disconnects Prisma. This reduces the chance that a deploy/restart loses the last authoritative room state.</li>
 </ul>
 <h2>Aemeath Derived Skill Realtime Contract</h2>
 <ul>
@@ -3200,9 +3218,11 @@
 </ul>
 <h3>Neutral Stones</h3>
 <p><code>src/shared/gameConstants.js</code> 维护命名中立棋子类型，当前内置 <code>spray</code>，由琳奈 <code>spray-stone</code> 技能生成。中立棋子不是黑白任一方，但同名中立棋子属于同一阵营并按围棋气规则连接；不同阵营之间互相阻断气和领地。黑/白棋子转化为喷涂棋子时立即给对手 <code>skillRemovals +1</code>，中立棋子被提、被爆破、被死子标记或在技能后无气清理时不提供黑白除子。数子阶段中立棋子不计入黑白子数，可作为边界参与空点归属；被中立棋子或多阵营共同围住的空点保持中立。</p>
+<h3>Capture Rules</h3>
+<p>普通落子和先落子再按普通规则提子的技能入口共用 <code>collectNeighborCaptures()</code> 收集相邻无气棋串。该 helper 先按棋串去重，再写入本手 <code>history.captures</code> 和 <code>game.captures[color]</code>，因此同一被吃棋串即使从多个相邻方向贴着新落子点，也只按棋串真实棋子数计一次提子。命名中立棋子仍可被普通提走并从棋盘清除，但不会给黑/白任一方增加提子数。</p>
 <h3>Row Slash Skill</h3>
 <p><code>row-slash</code> 是仇远“一斩足矣”的主动棋盘技能。目标规则为 <code>any-point</code>，只能指定当前棋盘内仍有效的交叉点；空点和已有棋子均可指定，被抹除的无效点不可指定。技能横向处理目标所在行，直接移除该行所有黑棋、白棋、命名中立棋子、隐藏手棋子和幻色棋子，并清除劫状态。直接移除的黑白棋子按真实颜色给受益方增加 <code>skillRemovals</code>；中立棋子参与仇远超频增加但不提供黑白除子；隐藏手被直接移除时不产生发现提示；幻色棋子按真实颜色结算并清掉幻色状态。直接移除后会自动清理因此无气的棋串，后续清理仍计入 <code>skillRemovals</code>，但不再增加仇远超频。</p>
-<p>该技能基础超频消耗为 <code>0</code>，然后按直接移除棋子数追加超频，每枚直接移除棋子 <code>+2</code>；空行可以发动并消耗技能/回合，但追加超频为 <code>0</code>。发动后消耗本回合，重置连续虚手，<code>moveNumber +1</code>，并在 <code>rowEffects</code> 中记录一条公开横斩视觉标记。该标记只影响显示，不改变交叉点有效性，记录 <code>clearAfterColor: opponent(owner)</code>，并在对手下一次行动（普通落子、弃手或消耗回合技能）后清除。</p>
+<p>该技能基础超频消耗为 <code>0</code>，然后按直接移除棋子数追加超频，每枚直接移除棋子 <code>+1</code>；空行可以发动并消耗技能/回合，但追加超频为 <code>0</code>。发动后消耗本回合，重置连续虚手，<code>moveNumber +1</code>，并在 <code>rowEffects</code> 中记录一条公开横斩视觉标记。该标记只影响显示，不改变交叉点有效性，记录 <code>clearAfterColor: opponent(owner)</code>，并在对手下一次行动（普通落子、弃手或消耗回合技能）后清除。</p>
 <p><code>protocol-takeover</code> 是莫宁“协议接管”的主动棋盘技能。目标规则为 <code>empty-point</code>，只能指定当前棋盘内有效、空置、未被协议标记的交叉点。技能在点位上写入 <code>protocolBan = { owner, bannedColor, effect: &quot;protocol-takeover&quot; }</code>，其中 <code>owner</code> 是施放方，<code>bannedColor</code> 是对手。协议标记是公开点位状态，会随房间广播、观战和回放同步；被禁方不能在该空点普通落子，也不能把该空点作为空点/任意点指定类技能目标。若该点后来存在棋子，石子目标技能仍可指定该棋子，普通提子、翻转、横斩、随机爆破和喷涂等非抹除效果不会清除协议标记；只有 <code>erase-point</code> 抹除交叉点时会同步删除 <code>protocolBan</code>。数子时协议空点对 <code>bannedColor</code> 保持中立，不计入被禁方领地，但区域遍历仍把该点当作空区域的一部分，所以不会把同一块领地拆开或污染其它空点归属。莫宁技能超频为 <code>2</code>，<code>freeTurn: true</code>，发动后不消耗本回合。</p>
 <h3>Decoration</h3>
 <p>装饰配置。</p>
@@ -3662,7 +3682,7 @@
 <li>用户音乐库存与选择使用 <code>User.ownedMusicIds</code> 和 <code>User.musicSelections</code> 持久化；公开用户信息会自动并入 <code>defaultUnlocked</code> 曲目。角色技能 BGM 选择保存在 <code>musicSelections.skill[characterId]</code>，对局中技能预览和最近技能角色 BGM 都优先使用该选择，未拥有或角色不匹配时回退默认曲目。</li>
 </ul>
 <ul>
-<li>角色详情弹窗右上角包含独立的角色 BGM 预览播放器。播放器显示当前曲名，左侧播放/暂停按钮与播放器胶囊连为一体，支持播放/暂停并保留 intro/loop 进度；当该用户拥有同一角色的多首技能 BGM 时显示下拉选择，切换后通过 <code>/api/me/music-selection</code> 持久化并同步影响后续对局 BGM。</li>
+<li>角色详情弹窗右上角包含独立的角色 BGM 预览播放器。播放器在曲目进入详情时预热并解码当前 BGM，decoded buffer 使用缓存和 in-flight promise 复用，避免快速点击或切歌重复 fetch/decode；点击播放会先进入 loading 状态并暂停背景 BGM，调度成功后进入 playing，失败则释放背景暂停并显示非阻塞 error 状态。播放器显示当前曲名，左侧播放/暂停按钮与紧凑校园风控件连为一体，支持播放/暂停并保留 intro/loop 进度；当该用户拥有同一角色的多首技能 BGM 时显示下拉选择，select 必须包在 <code>.character-music-select-frame</code> 中并与普通曲名使用同一高对比标题样式，切换后通过 <code>/api/me/music-selection</code> 持久化并同步影响后续对局 BGM。</li>
 </ul>
 <ul>
 <li>角色 BGM 预览播放期间会向全局 <code>BackgroundMusic</code> 发出暂停请求；背景 BGM 会停止当前 source、保存 offset，并在预览暂停、切歌或关闭详情弹窗释放请求后按 offset 重新调度，从原进度恢复，避免双 BGM 叠播或大厅 BGM 从头重启。</li>
@@ -4406,6 +4426,9 @@
 </ul>
 <ul>
 <li>修改入口或分篇后运行 <code>npm run docs:system-design</code> 生成 <code>docs/system-design.html</code>。</li>
+</ul>
+<ul>
+<li><code>npm run verify:battle-fixes</code> runs the focused regression suite for battle-board fixes, then regenerates and validates system-design HTML. Use it before handoff when changing board erase styling, skill targeting/release confirmation, ordinary capture counting, chat wrapping, or character skill seed/config behavior.</li>
 </ul>
 <ul>
 <li>中文内容应使用 <code>apply_patch</code>、Node UTF-8 脚本或其它明确 UTF-8 的工具写入，避免 PowerShell 默认编码链路造成显示混乱。</li>

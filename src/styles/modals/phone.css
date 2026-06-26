@@ -31,7 +31,7 @@
   }
 
   .character-detail-heading {
-    grid-template-columns: minmax(0, 1fr) minmax(124px, 156px);
+    grid-template-columns: minmax(0, 1fr) minmax(132px, 164px);
     align-items: start;
     gap: 8px;
     padding-right: 0;
@@ -46,7 +46,7 @@
   }
 
   .character-music-player {
-    width: min(156px, 46vw);
+    width: min(164px, 48vw);
     max-width: 100%;
     justify-content: flex-start;
     justify-self: end;
@@ -54,8 +54,9 @@
   }
 
   .character-music-name,
+  .character-music-select-frame,
   .character-music-select {
-    max-width: 116px;
+    max-width: 98px;
   }
 
   .character-detail-copy p {
