@@ -141,7 +141,8 @@ export function createAdminRouter({
   onlineSessions = null,
   listActiveRooms = () => [],
   matchmakingCount = () => 0,
-  matchmakingCountsByMode = () => ({})
+  matchmakingCountsByMode = () => ({}),
+  runtimeStabilityMetrics = null
 }) {
   const router = Router();
 
@@ -168,7 +169,8 @@ export function createAdminRouter({
       onlineSessions,
       listActiveRooms,
       matchmakingCount,
-      matchmakingCountsByMode
+      matchmakingCountsByMode,
+      runtimeStabilityMetrics
     });
     res.json({
       ...overview,

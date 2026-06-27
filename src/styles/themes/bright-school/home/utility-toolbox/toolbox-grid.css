@@ -12,7 +12,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
   width: 100% !important;
   min-width: 0 !important;
-  min-height: clamp(72px, 6vw, 88px) !important;
+  min-height: clamp(58px, 5vw, 72px) !important;
   height: auto !important;
   display: grid !important;
   grid-template-columns: clamp(30px, 2.6vw, 36px) minmax(0, 1fr) !important;
@@ -68,7 +68,6 @@
   width: clamp(30px, 2.6vw, 36px) !important;
   height: clamp(30px, 2.6vw, 36px) !important;
   min-width: 0 !important;
-  grid-row: 1 / span 2 !important;
   display: grid !important;
   place-items: center !important;
   border: 2px solid rgba(61, 43, 37, 0.8) !important;
@@ -84,20 +83,11 @@
   color: #3d2b25 !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry > strong,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-description {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry > strong {
   grid-column: 2 !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-description {
-  min-width: 0 !important;
-  display: grid !important;
-  gap: 2px !important;
-  transform: none !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry strong,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry small {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry strong {
   min-width: 0 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -110,12 +100,4 @@
   font-size: clamp(14px, 1.12vw, 17px) !important;
   font-weight: 900 !important;
   letter-spacing: 0 !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry small {
-  display: block !important;
-  color: #6a554d !important;
-  font-size: clamp(10px, 0.78vw, 12px) !important;
-  font-weight: 900 !important;
-  line-height: 1.12 !important;
 }

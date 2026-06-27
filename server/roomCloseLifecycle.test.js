@@ -123,9 +123,11 @@ describe("roomCloseLifecycle", () => {
     vi.useFakeTimers();
     vi.setSystemTime(1000);
     const saveError = new Error("db unavailable");
+    const metrics = { increment: vi.fn() };
     const room = testRoom({ recordSaved: false });
     const rooms = new Map([[room.code, room]]);
     const { lifecycle, calls } = lifecycleFor(rooms, {
+      metrics,
       saveGameRecord: vi.fn()
         .mockRejectedValueOnce(saveError)
         .mockImplementationOnce(async (roomToSave) => {
@@ -138,6 +140,7 @@ describe("roomCloseLifecycle", () => {
     await Promise.resolve();
 
     expect(calls.saveErrors).toEqual([saveError]);
+    expect(metrics.increment).toHaveBeenCalledWith("roomResultSaveErrors");
 
     vi.advanceTimersByTime(ROOM_CLOSE_DELAY_MS);
     await Promise.resolve();

@@ -230,7 +230,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "row-slash",
         "name": "一斩足矣",
-        "description": "指定棋盘上一枚棋子或交叉点，移除其所在行的所有棋子。每移除一枚棋子，超频+2。",
+        "description": "指定棋盘上一枚棋子或交叉点，移除其所在行的所有棋子。每移除一枚棋子，超频+1。",
         "uses": 1,
         "freeTurn": false,
         "targetRule": "any-point",

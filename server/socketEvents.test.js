@@ -48,6 +48,7 @@ function createDeps(overrides = {}) {
     broadcastRoomPatch: vi.fn(),
     broadcastRoomPresencePatch: vi.fn(),
     markRoomPreloadReady: vi.fn(),
+    metrics: { increment: vi.fn() },
     ...overrides
   };
 }
@@ -100,5 +101,17 @@ describe("socket event registration", () => {
       message
     }, { forcePersist: false });
     expect(deps.broadcastRoom).not.toHaveBeenCalledWith(deps.io, room);
+  });
+
+  it("forwards runtime metrics into room recovery events", async () => {
+    const socket = createSocket();
+    const deps = createDeps();
+
+    registerSocketEvents(socket, deps);
+    const resumeHandler = socket.on.mock.calls.find(([event]) => event === "room:resume")[1];
+    await resumeHandler({ roomCode: "12345", resumeReason: "socket-connect" });
+
+    expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumeAttempts");
+    expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumeSocketConnectRequests");
   });
 });

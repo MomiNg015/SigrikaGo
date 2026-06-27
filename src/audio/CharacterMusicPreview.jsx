@@ -1,17 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { LoaderCircle, Pause, Play } from "lucide-react";
+import rough from "roughjs/bundled/rough.esm.js";
 import { BGM_START_DELAY_SECONDS } from "../shared/audioScheduling.js";
 import { audioVolume } from "./audioSettings.js";
 import { requestBackgroundMusicPause } from "./backgroundMusicPause.js";
 import { browserAudioContextClass } from "./audioRuntime.js";
 
 export function CharacterMusicPreview({ track, options = [], audioSettings, onTrackChange }) {
-  const [playing, setPlaying] = useState(false);
+  const [playbackState, setPlaybackState] = useState("idle");
   const playerRef = useRef(createPreviewState());
+  const playRequestRef = useRef(0);
   const releaseBackgroundPauseRef = useRef(null);
   const volume = audioVolume(audioSettings, "bgm");
   const selectable = options.length > 1;
   const title = track?.name ?? "No BGM";
+  const playing = playbackState === "playing";
+  const loading = playbackState === "loading";
 
   useEffect(() => {
     setPreviewVolume(playerRef.current, volume);
@@ -19,35 +23,49 @@ export function CharacterMusicPreview({ track, options = [], audioSettings, onTr
 
   useEffect(() => {
     const state = playerRef.current;
+    playRequestRef.current += 1;
     state.offset = 0;
     stopPreview(state);
     releaseBackgroundPause();
-    setPlaying(false);
+    setPlaybackState("idle");
   }, [track?.id]);
 
   useEffect(() => () => {
+    playRequestRef.current += 1;
     stopPreview(playerRef.current);
     releaseBackgroundPause();
   }, []);
 
-  const label = useMemo(() => (playing ? "暂停角色 BGM" : "播放角色 BGM"), [playing]);
+  const label = useMemo(() => {
+    if (loading) return "角色 BGM 加载中";
+    return playing ? "暂停角色 BGM" : "播放角色 BGM";
+  }, [loading, playing]);
 
   async function togglePlayback() {
-    if (!track) return;
+    if (!track || loading) return;
     const state = playerRef.current;
     if (playing) {
+      playRequestRef.current += 1;
       pausePreview(state);
       releaseBackgroundPause();
-      setPlaying(false);
+      setPlaybackState("idle");
       return;
     }
+    const requestId = playRequestRef.current + 1;
+    playRequestRef.current = requestId;
+    setPlaybackState("loading");
     const release = requestBackgroundMusicPause();
     releaseBackgroundPauseRef.current = release;
     const started = await playPreview({ state, track, volume }).catch(() => false);
+    if (playRequestRef.current !== requestId) {
+      stopPreview(state);
+      return;
+    }
     if (started) {
-      setPlaying(true);
+      setPlaybackState("playing");
     } else {
       releaseBackgroundPause();
+      setPlaybackState("idle");
     }
   }
 
@@ -61,15 +79,16 @@ export function CharacterMusicPreview({ track, options = [], audioSettings, onTr
   }
 
   return (
-    <div className="character-music-player" aria-label="角色 BGM 播放器">
+    <div className={`character-music-player ${loading ? "is-loading" : ""} ${playing ? "is-playing" : ""}`} aria-label="角色 BGM 播放器" aria-busy={loading ? "true" : "false"}>
+      <CharacterMusicSketch />
       <button
         className="character-music-toggle"
         type="button"
         aria-label={label}
-        disabled={!track}
+        disabled={!track || loading}
         onClick={togglePlayback}
       >
-        {playing ? <Pause size={16} /> : <Play size={16} />}
+        {loading ? <LoaderCircle size={16} /> : playing ? <Pause size={16} /> : <Play size={16} />}
       </button>
       {selectable ? (
         <select className="character-music-select" value={track?.id ?? ""} onChange={changeTrack}>
@@ -81,6 +100,64 @@ export function CharacterMusicPreview({ track, options = [], audioSettings, onTr
         <span className="character-music-name">{title}</span>
       )}
     </div>
+  );
+}
+
+export function CharacterMusicSketch() {
+  const svgRef = useRef(null);
+
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    svg.replaceChildren();
+    const rc = rough.svg(svg, { options: { seed: 27 } });
+    const frame = rc.rectangle(3, 4, 182, 30, {
+      roughness: 1.55,
+      bowing: 1.1,
+      stroke: "#2f251f",
+      strokeWidth: 1.9,
+      fill: "none"
+    });
+    const buttonRing = rc.ellipse(22, 19, 33, 30, {
+      roughness: 1.45,
+      bowing: 1.05,
+      stroke: "#2f251f",
+      strokeWidth: 1.8,
+      fill: "#ff9ebb",
+      fillStyle: "solid"
+    });
+    const topRule = rc.line(50, 12, 176, 11, {
+      roughness: 1.1,
+      stroke: "#71a9bf",
+      strokeWidth: 0.9
+    });
+    const titleRule = rc.line(50, 25, 128, 24, {
+      roughness: 1.2,
+      stroke: "#f0c35d",
+      strokeWidth: 1.3
+    });
+    const waveform = rc.curve([[130, 22], [138, 13], [146, 25], [154, 16], [162, 21], [170, 14], [179, 20]], {
+      roughness: 1.25,
+      stroke: "#d86791",
+      strokeWidth: 1.2
+    });
+    const tape = rc.line(8, 32, 178, 31, {
+      roughness: 1.4,
+      stroke: "#9c7b58",
+      strokeWidth: 0.8
+    });
+    svg.append(frame, buttonRing, topRule, titleRule, waveform, tape);
+  }, []);
+
+  return (
+    <svg
+      ref={svgRef}
+      className="character-music-sketch"
+      viewBox="0 0 188 38"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
+    />
   );
 }
 

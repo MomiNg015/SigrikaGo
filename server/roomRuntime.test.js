@@ -25,8 +25,31 @@ describe("room runtime", () => {
       room,
       force: true,
       throttleMs: 5000,
-      onError: onPersistError
+      onError: expect.any(Function)
     });
+  });
+
+  test("increments runtime metrics when room persistence fails", () => {
+    const error = new Error("db busy");
+    const metrics = { increment: vi.fn() };
+    const onPersistError = vi.fn();
+    const persistRoomState = vi.fn(({ onError }) => onError(error));
+    const runtime = createRoomRuntime({
+      prisma: "prisma",
+      persistRoomState,
+      broadcastRoomUpdate: vi.fn(),
+      broadcastRoomPatch: vi.fn(),
+      broadcastRoomPresencePatch: vi.fn(),
+      broadcastRoomToast: vi.fn(),
+      throttleMs: 5000,
+      metrics,
+      onPersistError
+    });
+
+    runtime.persistRoom({ code: "12345" });
+
+    expect(metrics.increment).toHaveBeenCalledWith("roomPersistenceErrors");
+    expect(onPersistError).toHaveBeenCalledWith(error);
   });
 
   test("defaults persist force to false", () => {

@@ -84,6 +84,23 @@
   stroke-width: 2 !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .erased-boundary-layer {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .erased-boundary-cell {
+  fill: rgba(86, 89, 92, 0.3) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .erased-boundary-line {
+  stroke: #4a3736 !important;
+  stroke-width: 2 !important;
+}
+
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-action,

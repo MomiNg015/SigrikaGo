@@ -10,7 +10,7 @@
     "build": "vite build",
     "check": "npm test && npm run build && node -e \"process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')\" && npm run docs:system-design",
     "start": "node server/index.js",
-    "test": "vitest run --exclude \"**/.worktrees/**\" --exclude \"tests/e2e/**\" --exclude \"tests/stability/**\"",
+    "test": "vitest run --exclude \"**/.worktrees/**\" --exclude \"**/.codex-run/**\" --exclude \"tests/e2e/**\" --exclude \"tests/stability/**\"",
     "test:e2e": "playwright test",
     "test:stability": "playwright test -c playwright.stability.config.js",
     "verify:battle-fixes": "node scripts/verify-battle-fixes.mjs",
@@ -42,12 +42,15 @@
     "prisma": "6.8.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "roughjs": "^4.6.6",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "vite": "^6.3.5",
     "vitest": "^3.1.4"
   },
   "devDependencies": {
-    "@playwright/test": "^1.60.0"
+    "@playwright/test": "^1.60.0",
+    "@tailwindcss/vite": "^4.3.1",
+    "tailwindcss": "^4.3.1"
   }
 }

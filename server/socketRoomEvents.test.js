@@ -29,6 +29,7 @@ function createDeps(overrides = {}) {
     broadcastRoom: vi.fn(),
     broadcastRoomPresencePatch: vi.fn(),
     markRoomPreloadReady: vi.fn(),
+    metrics: { increment: vi.fn() },
     ...overrides
   };
 }
@@ -135,6 +136,8 @@ describe("socket room events", () => {
     });
     expect(deps.attachSocketToRoom).toHaveBeenCalledWith("67890", socket, socket.user);
     expect(socket.emit).toHaveBeenCalledWith("room:update", { code: "67890", viewerId: "resume-user" });
+    expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumeAttempts");
+    expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumeSuccesses");
     expect(deps.broadcastRoomPresencePatch).toHaveBeenCalledWith(deps.io, room);
     expect(deps.broadcastRoom).not.toHaveBeenCalledWith(deps.io, room);
     expect(socket.emit).not.toHaveBeenCalledWith("room:resume", expect.any(Object));
@@ -149,8 +152,22 @@ describe("socket room events", () => {
     await socket.trigger("room:resume");
 
     expect(socket.emit).toHaveBeenCalledWith("room:resume", payload);
+    expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumeAttempts");
+    expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumeMisses");
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
     expect(deps.broadcastRoomPresencePatch).not.toHaveBeenCalled();
+  });
+
+  it("counts resume request reasons for recovery diagnostics", async () => {
+    const socket = createSocket();
+    const deps = createDeps();
+
+    registerRoomSocketEvents(socket, deps);
+    await socket.trigger("room:resume", { resumeReason: "patch-gap" });
+    await socket.trigger("room:resume", { resumeReason: "socket-connect" });
+
+    expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumePatchGapRequests");
+    expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumeSocketConnectRequests");
   });
 
   it("marks a player ready for the match preload barrier", () => {

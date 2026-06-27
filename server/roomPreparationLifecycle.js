@@ -13,6 +13,7 @@ export function createRoomPreparationLifecycle({
   appendSystem,
   broadcastRoom,
   scheduleGameStart,
+  metrics = null,
   now = () => Date.now()
 }) {
   function scheduleRoomPreloadTimeout(room, io) {
@@ -64,6 +65,7 @@ export function createRoomPreparationLifecycle({
   }
 
   function abortRoomPreload(room, io) {
+    metrics?.increment?.("matchPreloadTimeouts");
     emitMatchPreloadTimeout(io, room);
     clearRoomTimers(room);
     rooms.delete(room.code);

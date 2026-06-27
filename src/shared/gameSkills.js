@@ -195,7 +195,7 @@ export function skillUsesBoardConfirmation(skillOrCharacterId) {
 export function skillUsesBoardSurfaceConfirmation(skillOrCharacterId) {
   const skill = normalizeSkillConfig(skillOrCharacterId);
   const effectType = skill?.effectType ?? skill?.id;
-  return effectType === "double-move" || effectType === "voyage-star";
+  return effectType === "double-move" || effectType === "voyage-star" || effectType === "random-blast";
 }
 
 export function configuredDerivedSkills(skillOrCharacterId) {

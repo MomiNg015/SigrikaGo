@@ -11,4 +11,5 @@
 @import "./styles/room-terminal.css";
 @import "./styles/mobile-modals.css";
 @import "./styles/hud-components.css";
+@import "./styles/tailwind.css";
 @import "./styles/themes.css";

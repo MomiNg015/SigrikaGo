@@ -9,6 +9,7 @@ export {
   installBackgroundResumeTriggers,
   loadBackgroundBuffer,
   pauseBackgroundPlayback,
+  primeBackgroundAudioRuntime,
   recoverBackgroundPlayback,
   resumeBackgroundContextWithFallback
 } from "./backgroundMusic.jsx";

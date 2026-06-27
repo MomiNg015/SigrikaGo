@@ -20,6 +20,7 @@ export function startHttpServer(server, {
 export function installServerLifecycle(server, {
   processLike = process,
   dependencies = [],
+  beforeShutdown = [],
   logger = console
 } = {}) {
   let shuttingDown = false;
@@ -29,6 +30,9 @@ export function installServerLifecycle(server, {
     shuttingDown = true;
     try {
       await closeServer(server);
+      for (const task of beforeShutdown) {
+        await task?.();
+      }
       for (const dependency of dependencies) {
         await dependency?.$disconnect?.();
       }

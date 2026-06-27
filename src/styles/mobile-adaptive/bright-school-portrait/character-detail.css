@@ -5,7 +5,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-heading {
-    grid-template-columns: minmax(0, 1fr) minmax(124px, 156px) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(136px, 164px) !important;
     align-items: start !important;
     gap: 8px !important;
     padding-right: 0 !important;
@@ -22,15 +22,18 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
-    width: min(156px, 46vw) !important;
+    width: min(164px, 48vw) !important;
     max-width: 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 3px 8px 3px 3px !important;
     justify-self: end !important;
     align-self: start !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-name,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select {
-    max-width: 116px !important;
+    max-width: 112px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p,

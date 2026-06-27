@@ -13,7 +13,8 @@ describe("character fallback", () => {
       skill: {
         id: "row-slash",
         name: "一斩足矣",
-        costValue: "0"
+        costValue: "0",
+        description: expect.stringContaining("超频+1")
       }
     });
     expect(CHARACTERS.lynae).toMatchObject({

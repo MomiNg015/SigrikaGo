@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { areChatBoxPropsEqual, playerChatCount } from "./ChatBox.jsx";
 
 describe("ChatBox", () => {
@@ -58,6 +59,18 @@ describe("ChatBox", () => {
       }
     }))).toBe(false);
   });
+
+  it("allows chat messages and names to wrap inside the battle chat log", () => {
+    const css = readFileSync(new URL("../styles/room/chat-responsive.css", import.meta.url), "utf8");
+    const messageBlock = cssBlock(css, ".chat-log p");
+    const nameBlock = cssBlock(css, ".chat-log strong");
+
+    expect(messageBlock).toContain("white-space: pre-wrap");
+    expect(messageBlock).toContain("overflow-wrap: anywhere");
+    expect(messageBlock).toContain("word-break: break-word");
+    expect(nameBlock).toContain("overflow-wrap: anywhere");
+    expect(nameBlock).toContain("word-break: break-word");
+  });
 });
 
 function chatProps(overrides = {}) {
@@ -73,3 +86,11 @@ function chatProps(overrides = {}) {
 }
 
 function noop() {}
+
+function cssBlock(css, selector) {
+  const index = css.indexOf(`${selector} {`);
+  if (index === -1) return "";
+  const start = css.indexOf("{", index);
+  const end = css.indexOf("}", start);
+  return css.slice(start + 1, end);
+}

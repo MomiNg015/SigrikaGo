@@ -50,6 +50,7 @@ import { createRoomOpeningLifecycle } from "./roomOpeningLifecycle.js";
 import { createRoomPreparationLifecycle } from "./roomPreparationLifecycle.js";
 import { createRoomRuntime } from "./roomRuntime.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
+import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
 
 export { roomView };
 export { clearRoomTimers };
@@ -66,6 +67,7 @@ const roomRuntime = createRoomRuntime({
   broadcastRoomPatch: broadcastRoomPatchEvent,
   broadcastRoomPresencePatch: broadcastRoomPresencePatchEvent,
   broadcastRoomToast,
+  metrics: runtimeStabilityMetrics,
   throttleMs: ROOM_PERSIST_THROTTLE_MS
 });
 const {
@@ -98,7 +100,8 @@ const roomCloseLifecycle = createRoomCloseLifecycle({
   appendSystem,
   saveGameRecord: (room) => persistGameRecord({ prisma, room }),
   unregisterRoom: roomMembershipIndex.unregisterRoom,
-  prepareCloseState: prepareCandyEffectUpdates
+  prepareCloseState: prepareCandyEffectUpdates,
+  metrics: runtimeStabilityMetrics
 });
 const {
   scheduleRoomClose,
@@ -133,7 +136,8 @@ const roomPreparationLifecycle = createRoomPreparationLifecycle({
   scheduleRoomTimeout,
   appendSystem,
   broadcastRoom,
-  scheduleGameStart
+  scheduleGameStart,
+  metrics: runtimeStabilityMetrics
 });
 const {
   markRoomPreloadReady,
@@ -273,7 +277,8 @@ const roomPersistenceRestoreLifecycle = createRoomPersistenceRestoreLifecycle({
   ensureRestoredDisconnectedNotices,
   resumeRoomTimers,
   persistRoom,
-  registerRoom: roomMembershipIndex.registerRoom
+  registerRoom: roomMembershipIndex.registerRoom,
+  metrics: runtimeStabilityMetrics
 });
 export const { restorePersistedRooms } = roomPersistenceRestoreLifecycle;
 

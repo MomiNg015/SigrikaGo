@@ -3,7 +3,6 @@ import HomeUtilityDock from "./HomeUtilityDock.jsx";
 import PlayerPlaque from "./PlayerPlaque.jsx";
 
 export default function HomeStage({
-  matchmakingCounts,
   selectedCharacter,
   user,
   recruitmentReady,
@@ -21,7 +20,7 @@ export default function HomeStage({
     <section className="home-grid-featured home-stage home-terminal-stage">
       <PlayerPlaque character={selectedCharacter} user={user} onOpenResume={onOpenResume} />
       <HouseManualEntry onOpenHouse={onOpenHouse} />
-      <MatchEntry matchmakingCounts={matchmakingCounts} onStartMatch={onStartMatch} />
+      <MatchEntry onStartMatch={onStartMatch} />
       <HomeUtilityDock
         onOpenFriends={onOpenFriends}
         recruitmentReady={recruitmentReady}

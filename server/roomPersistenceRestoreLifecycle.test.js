@@ -71,7 +71,9 @@ describe("room persistence restore lifecycle", () => {
   test("logs bad rows and continues restoring later rows", async () => {
     const room = { code: "good", game: {} };
     const parseError = expect.any(SyntaxError);
+    const metrics = { increment: vi.fn() };
     const { lifecycle, deps } = createLifecycle({
+      metrics,
       listPersistedRooms: vi.fn(async () => [
         { code: "bad", snapshot: "{" },
         { code: "good", snapshot: JSON.stringify({ code: "good" }) }
@@ -82,6 +84,7 @@ describe("room persistence restore lifecycle", () => {
     await expect(lifecycle.restorePersistedRooms("io")).resolves.toEqual([room]);
 
     expect(deps.onError).toHaveBeenCalledWith("Failed to restore room bad", parseError);
+    expect(metrics.increment).toHaveBeenCalledWith("roomRestoreErrors");
     expect(deps.rooms.get("good")).toBe(room);
     expect(deps.persistRoom).toHaveBeenCalledWith(room, { force: true });
   });

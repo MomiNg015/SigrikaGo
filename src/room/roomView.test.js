@@ -296,4 +296,35 @@ describe("roomView helpers", () => {
       id: centerId
     });
   });
+
+  test("converts replay skill removal color counts into capture-credit owners once", () => {
+    const players = [
+      { color: COLORS.black, characterId: "aemeath", character: CHARACTERS.aemeath, user: { id: "black" } },
+      { color: COLORS.white, characterId: "sigrika", character: CHARACTERS.sigrika, user: { id: "white" } }
+    ];
+    const room = {
+      players,
+      game: {
+        ...createGameState(players),
+        history: [
+          {
+            type: "skill",
+            effectType: "voyage-star",
+            skill: CHARACTERS.aemeath.skill.name,
+            color: COLORS.black,
+            id: pointId(6, 6),
+            erasedPointIds: [pointId(6, 6)],
+            removedByColor: { white: 2, black: 1, spray: 3 },
+            cleanupRemovals: [
+              { color: COLORS.white, stones: [pointId(4, 4)], owner: COLORS.black }
+            ]
+          }
+        ]
+      }
+    };
+
+    const replay = replayGameAt(room, 1);
+
+    expect(replay.skillRemovals).toEqual({ black: 3, white: 1 });
+  });
 });

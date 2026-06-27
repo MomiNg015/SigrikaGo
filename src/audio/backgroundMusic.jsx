@@ -47,7 +47,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
     if (paused) {
       pauseBackgroundPlayback(state);
     } else {
-      resumeBackgroundContextWithFallback(state);
+      primeBackgroundAudioRuntime(state);
       recoverBackgroundPlayback(state);
     }
   }), []);
@@ -69,7 +69,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
     }
 
     const context = getBackgroundAudioContext(state);
-    resumeBackgroundContextWithFallback(state);
+    primeBackgroundAudioRuntime(state);
     state.baseVolume = volume;
     state.currentTrack = track;
     state.offset = 0;
@@ -88,8 +88,7 @@ export function recoverBackgroundPlayback(state) {
   if (!state.currentTrack) return;
   state.active ??= [];
   if (state.active.length > 0) return;
-  resumeBackgroundContextWithFallback(state);
-  const context = getBackgroundAudioContext(state);
+  const context = primeBackgroundAudioRuntime(state);
   if (!context) {
     startBackgroundHtmlFallback(state, state.currentTrack);
     return;
@@ -99,6 +98,13 @@ export function recoverBackgroundPlayback(state) {
   scheduleBackgroundTrack({ state, context, track: state.currentTrack, generation }).catch((error) => {
     startBackgroundHtmlFallback(state, state.currentTrack, error);
   });
+}
+
+export function primeBackgroundAudioRuntime(state) {
+  if (state.pauseRequested) return state.context ?? null;
+  const context = getBackgroundAudioContext(state);
+  resumeBackgroundContextWithFallback(state);
+  return context;
 }
 
 function getBackgroundAudioContext(state) {
@@ -238,7 +244,7 @@ export function installBackgroundResumeTriggers(state) {
   if (typeof window === "undefined") return () => {};
   const doc = typeof document === "undefined" ? null : document;
   const retry = () => {
-    resumeBackgroundContextWithFallback(state);
+    primeBackgroundAudioRuntime(state);
     recoverBackgroundPlayback(state);
   };
   const retryWhenVisible = () => {
@@ -270,7 +276,9 @@ function installBackgroundResumeRetry(state, context) {
     window.removeEventListener("keydown", state.retry);
     window.removeEventListener("touchstart", state.retry);
     state.retry = null;
-    context.resume().catch(() => {});
+    context.resume()
+      .then(() => recoverBackgroundPlayback(state))
+      .catch(() => installBackgroundResumeRetry(state, context));
   };
   window.addEventListener("pointerdown", state.retry, { once: true });
   window.addEventListener("keydown", state.retry, { once: true });

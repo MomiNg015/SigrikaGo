@@ -7,6 +7,7 @@ import {
   playCountdownBeep,
   playDoorbellSound,
   playVoiceSound,
+  primeBackgroundAudioRuntime,
   recoverBackgroundPlayback,
   resumeBackgroundContextWithFallback,
   speakText,
@@ -43,6 +44,57 @@ describe("background music resume fallback", () => {
 
     expect(context.resume).toHaveBeenCalledTimes(2);
     expect(state.retry).toBeNull();
+  });
+
+  it("primes the background audio runtime during user activation before a track exists", async () => {
+    const createdContexts = [];
+    class FakeAudioContext {
+      constructor() {
+        this.state = "suspended";
+        this.resume = vi.fn(async () => {
+          this.state = "running";
+        });
+        createdContexts.push(this);
+      }
+    }
+    vi.stubGlobal("window", { AudioContext: FakeAudioContext });
+    const state = { context: null, retry: null };
+
+    const context = primeBackgroundAudioRuntime(state);
+    await Promise.resolve();
+
+    expect(context).toBe(createdContexts[0]);
+    expect(state.context).toBe(context);
+    expect(context.resume).toHaveBeenCalledOnce();
+  });
+
+  it("uses browser gesture triggers to prime background audio before home music resolves", async () => {
+    const listeners = new Map();
+    const createdContexts = [];
+    class FakeAudioContext {
+      constructor() {
+        this.state = "suspended";
+        this.resume = vi.fn(async () => {
+          this.state = "running";
+        });
+        createdContexts.push(this);
+      }
+    }
+    const fakeWindow = {
+      AudioContext: FakeAudioContext,
+      addEventListener: vi.fn((event, callback) => listeners.set(event, callback)),
+      removeEventListener: vi.fn((event) => listeners.delete(event))
+    };
+    vi.stubGlobal("window", fakeWindow);
+    const state = { context: null, retry: null };
+
+    installBackgroundResumeTriggers(state);
+    listeners.get("pointerdown")();
+    await Promise.resolve();
+
+    expect(createdContexts).toHaveLength(1);
+    expect(state.context).toBe(createdContexts[0]);
+    expect(createdContexts[0].resume).toHaveBeenCalledOnce();
   });
 
   it("retries background music after page visibility or restore events", () => {

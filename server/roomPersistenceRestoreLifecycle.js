@@ -6,6 +6,7 @@ export function createRoomPersistenceRestoreLifecycle({
   resumeRoomTimers,
   persistRoom,
   registerRoom = () => {},
+  metrics = null,
   onError = (message, error) => console.error(message, error)
 }) {
   async function restorePersistedRooms(io) {
@@ -26,6 +27,7 @@ export function createRoomPersistenceRestoreLifecycle({
           persistRoom(room, { force: true });
         }
       } catch (error) {
+        metrics?.increment?.("roomRestoreErrors");
         onError(`Failed to restore room ${row.code}`, error);
       }
     }

@@ -6,7 +6,7 @@ import {
   isPlayerColor,
   opponent
 } from "./gameConstants.js";
-import { activeNeighbors, getPoint, parsePointId, pointId } from "./gameBoard.js";
+import { getPoint, parsePointId, pointId } from "./gameBoard.js";
 import { collectGroup } from "./gameGroups.js";
 import { HIDDEN_HAND_NOTICE } from "./gameStoneActions.js";
 import { fail, ok } from "./gameActionResult.js";
@@ -16,6 +16,7 @@ import {
   applySkillCost,
   clearOwnedBoardMarkers,
   clearStone,
+  collectNeighborCaptures,
   cloneState,
   resolveCapturesAfterMutation
 } from "./gameSkillState.js";
@@ -174,7 +175,7 @@ export function rowSlash(state, color, id, options = {}) {
 
   adjustSkillRemovals(next, color, -1);
   const directRemoved = directRemovals.length;
-  const overclockAdded = directRemoved * 2;
+  const overclockAdded = directRemoved;
   next.skillUses[color] -= 1;
   applySkillCost(next, color, options.skill ?? "qiuyuan");
   applyExtraSkillCost(next, color, overclockAdded, {
@@ -234,17 +235,7 @@ export function libertyPurge(state, color, id, options = {}) {
   point.skillEffect = "liberty-purge-stone";
   point.skillEffectOwner = color;
 
-  const normalCaptures = [];
-  let creditedCaptures = 0;
-  for (const neighbor of activeNeighbors(next, point)) {
-    if (neighbor.stone && neighbor.stone !== color) {
-      const group = collectGroup(next, neighbor.id);
-      if (group.liberties.size === 0) {
-        normalCaptures.push(...group.stones);
-        if (captureCreditOwner(group.color) === color) creditedCaptures += group.stones.length;
-      }
-    }
-  }
+  const { removed: normalCaptures, creditedCaptures } = collectNeighborCaptures(next, point, color);
   for (const stone of normalCaptures) clearStone(next, stone);
 
   const ownGroup = collectGroup(next, id);

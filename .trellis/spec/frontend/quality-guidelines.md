@@ -32,6 +32,65 @@ Questions to answer:
 
 <!-- Patterns that must always be used -->
 
+### Character Detail BGM Preview Interaction Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to `src/audio/CharacterMusicPreview.jsx`, `.character-music-*` CSS, Bright School character detail music overrides, or character skill BGM preview behavior.
+- The player sits in a compact modal heading, so interaction feedback must stay immediate and layout-stable even when first-use audio decoding is slow.
+
+#### 2. Signatures
+- `CharacterMusicPreview({ track, options, audioSettings, onTrackChange })` renders `.character-music-player`.
+- Local playback states are `idle`, `loading`, and `playing`.
+- The decorative Rough.js SVG layer renders as `.character-music-sketch` and is `aria-hidden`.
+
+#### 3. Contracts
+- Clicking play must enter a visible `loading` state before awaiting WebAudio fetch/decode.
+- The global background music pause request must be released when preview startup fails, the selected track changes, or the component unmounts.
+- Async preview startup must be guarded by a request id or equivalent stale-request check so old decode completions cannot set the player back to playing after track change/unmount.
+- Rough.js decoration must be generated after mount and outside hover/click handlers. It must be pointer-transparent and must not become the source of layout or hit testing.
+- The visible outer frame and play-button ring must come from `.character-music-sketch`; CSS borders on `.character-music-player` and `.character-music-toggle` stay `0` to avoid duplicated hand-drawn outlines.
+- Hover and press feedback for the play button must not change layout dimensions. Use transform, color, or opacity changes rather than width, height, border-width, padding, or DOM regeneration.
+- Mobile and desktop size contracts must be updated together for `.character-music-player` and the surrounding `.character-detail-heading` grid.
+
+#### 4. Validation & Error Matrix
+- Slow first decode -> button shows loading state immediately and does not look inert.
+- Startup failure -> release background pause request and return to idle.
+- Track changes while startup is pending -> old completion must be ignored and stopped.
+- Bright School active -> themed hover/active rules keep transform-only feedback.
+- Portrait mobile -> final mobile safety layer preserves the same non-overlap grid contract as the theme layer.
+
+#### 5. Good/Base/Bad Cases
+- Good: set local state to `loading`, request background pause, await `playPreview()`, then set `playing` only if the request id is still current.
+- Base: an already cached buffer can move from loading to playing quickly; the loading state may be brief but still exists.
+- Bad: waiting for `decodeAudioData()` before updating any visible state.
+- Bad: running Rough.js drawing or replacing SVG children inside hover, focus, active, or click handlers.
+- Bad: changing player width in desktop CSS without updating mobile heading grid contracts and tests.
+
+#### 6. Tests Required
+- `src/audio/CharacterMusicPreview.test.jsx` should assert the player exposes the sketch layer and accessible state hooks.
+- `src/modals/HouseModal.test.js` or focused style contract tests should assert desktop and mobile size hooks, `.is-loading` / `.is-playing` selectors, pointer-transparent sketch styling, and transform-only hover/press selectors.
+- Run `npm test -- src/audio/CharacterMusicPreview.test.jsx src/modals/HouseModal.test.js` after changing this surface.
+- Run `npm run build` after changing the Rough.js import path or player component module boundary.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+const started = await playPreview({ state, track, volume });
+setPlaying(started);
+```
+
+Correct:
+
+```jsx
+setPlaybackState("loading");
+const started = await playPreview({ state, track, volume });
+if (playRequestRef.current === requestId) {
+  setPlaybackState(started ? "playing" : "idle");
+}
+```
+
 ### Social action disabled-state contract
 
 Friend-list action rows, room member popovers, profile relation actions, and other user/social action menus must render unavailable actions as native disabled controls, not as active-looking inert buttons.

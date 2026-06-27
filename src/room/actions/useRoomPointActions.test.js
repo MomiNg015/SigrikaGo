@@ -62,6 +62,8 @@ describe("room point action confirmation", () => {
     expect(source).toContain("const handlePoint = useCallback");
     expect(source).toContain("const handleBoardSurface = useCallback");
     expect(source).toContain("me: { color: meColor }");
+    expect(source).toContain("if (pendingSkill && skillUsesBoardSurfaceConfirmation)");
+    expect(source).toContain("onGameAction({ type: \"skill\" })");
     expect(source).not.toContain("canConfirmPointAction({ point, actionType, canConfirmSkillPoint, me,");
   });
 });

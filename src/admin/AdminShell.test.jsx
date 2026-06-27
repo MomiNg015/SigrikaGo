@@ -91,7 +91,15 @@ describe("AdminShell", () => {
             durationLeaders: []
           },
           alerts: { reportsPending: 0, feedbackPending: 0 },
-          serviceHealth: { socketConnections: 2, activeRooms: 1, matchingQueue: 0, persistedActiveRooms: 1 }
+          serviceHealth: {
+            socketConnections: 2,
+            activeRooms: 1,
+            matchingQueue: 0,
+            persistedActiveRooms: 1,
+            reconnectsToday: 4,
+            preloadTimeoutsToday: 1,
+            apiErrorsToday: 0
+          }
         }}
       />
     );
@@ -100,6 +108,9 @@ describe("AdminShell", () => {
     expect(html).toContain("今日状态：需要关注");
     expect(html).toContain("现在在线");
     expect(html).toContain("首局转化偏低");
+    expect(html).toContain("重连恢复请求");
+    expect(html).toContain("预加载超时");
+    expect(html).toContain("运行错误计数");
     expect(html).not.toContain("admin-table");
   });
 

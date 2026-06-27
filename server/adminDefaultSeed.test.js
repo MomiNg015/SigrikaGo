@@ -1,7 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
+import { ADMIN_DEFAULT_CONFIG } from "./adminDefaultSnapshot.js";
 import { seedAdminDefaultConfig } from "./adminDefaultSeed.js";
 
 describe("admin default config seed", () => {
+  it("keeps QiuYuan row-slash description aligned with the runtime overclock rule", () => {
+    const qiuyuan = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "qiuyuan");
+
+    expect(qiuyuan?.skill.description).toContain("超频+1");
+    expect(qiuyuan?.skill.description).not.toContain("超频+2");
+  });
+
   it("creates missing non-user admin configuration from the snapshot", async () => {
     const calls = [];
     const prisma = adminDefaultSeedPrisma({ calls });

@@ -17,22 +17,29 @@ describe("server lifecycle", () => {
     expect(processLike.exit).toHaveBeenCalledWith(1);
   });
 
-  it("closes the server and disconnects dependencies on shutdown signals", async () => {
+  it("closes the server, runs shutdown tasks, and disconnects dependencies on shutdown signals", async () => {
+    const order = [];
     const signalHandlers = new Map();
     const server = {
-      close: vi.fn((callback) => callback())
+      close: vi.fn((callback) => {
+        order.push("close");
+        callback();
+      })
     };
-    const dependency = { $disconnect: vi.fn(async () => {}) };
+    const beforeShutdown = vi.fn(async () => order.push("flush"));
+    const dependency = { $disconnect: vi.fn(async () => order.push("disconnect")) };
     const processLike = {
       on: vi.fn((signal, handler) => signalHandlers.set(signal, handler)),
       exit: vi.fn()
     };
 
-    installServerLifecycle(server, { processLike, dependencies: [dependency] });
+    installServerLifecycle(server, { processLike, beforeShutdown: [beforeShutdown], dependencies: [dependency] });
     await signalHandlers.get("SIGTERM")();
 
     expect(server.close).toHaveBeenCalledOnce();
+    expect(beforeShutdown).toHaveBeenCalledOnce();
     expect(dependency.$disconnect).toHaveBeenCalledOnce();
+    expect(order).toEqual(["close", "flush", "disconnect"]);
     expect(processLike.exit).toHaveBeenCalledWith(0);
   });
 });

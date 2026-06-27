@@ -33,7 +33,8 @@ export function registerSocketEvents(socket, deps) {
     roomView: deps.roomView,
     broadcastRoom: deps.broadcastRoom,
     broadcastRoomPresencePatch: deps.broadcastRoomPresencePatch,
-    markRoomPreloadReady: deps.markRoomPreloadReady
+    markRoomPreloadReady: deps.markRoomPreloadReady,
+    metrics: deps.metrics
   });
 
   registerGameSocketEvents(socket, {

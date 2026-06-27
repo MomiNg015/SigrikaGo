@@ -4,7 +4,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createPoints } from "../shared/game.js";
 import Board from "./Board.jsx";
-import { areBoardPropsEqual, arePointButtonPropsEqual, stoneOffsetForPoint } from "./Board.jsx";
+import { areBoardPropsEqual, arePointButtonPropsEqual, erasedBoundaryGeometry, stoneOffsetForPoint } from "./Board.jsx";
 
 describe("areBoardPropsEqual", () => {
   test("rerenders the board when handler references change so stable refs stay current", () => {
@@ -667,6 +667,62 @@ describe("areBoardPropsEqual", () => {
     expect(gridSvgBlock).toContain("height: 100%");
     expect(gridSvgBlock).toContain("max-width: none");
     expect(gridSvgBlock).toContain("max-height: none");
+  });
+
+  test("renders gray cells and first-line-weight boundaries around erased intersections", () => {
+    const points = createPoints(13);
+    const erasedPoint = points.find((point) => point.id === "6,6");
+    erasedPoint.valid = false;
+    erasedPoint.skillEffect = "erased-point";
+    const geometry = erasedBoundaryGeometry(points, 13);
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points,
+        history: []
+      }
+    })));
+    const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+
+    expect(geometry.cells).toHaveLength(4);
+    expect(geometry.lines).toHaveLength(4);
+    expect(markup).toContain("erased-boundary-layer");
+    expect(markup.match(/erased-boundary-cell/g)).toHaveLength(4);
+    expect(markup.match(/erased-boundary-line/g)).toHaveLength(4);
+    expect(markup).toContain('data-erased-point-id="6,6"');
+    expect(roomCss).toContain(".erased-boundary-layer");
+    expect(roomCss).toContain(".erased-boundary-cell");
+    expect(roomCss).toContain("rgba(86, 89, 92, 0.32)");
+    expect(readStrokeWidth(roomCss, ".erased-boundary-line")).toBe(1.6);
+    expect(readStrokeWidth(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .erased-boundary-line")).toBe(2);
+  });
+
+  test("draws only the outside outline of merged erased gray cells", () => {
+    const points = createPoints(13);
+    for (const pointId of ["6,6", "7,6"]) {
+      const point = points.find((candidate) => candidate.id === pointId);
+      point.valid = false;
+      point.skillEffect = "erased-point";
+    }
+
+    const geometry = erasedBoundaryGeometry(points, 13);
+
+    expect(geometry.cells.map((cell) => cell.key).sort()).toEqual([
+      "cell-5-5",
+      "cell-5-6",
+      "cell-6-5",
+      "cell-6-6",
+      "cell-7-5",
+      "cell-7-6"
+    ]);
+    expect(geometry.lines.map((line) => line.key).sort()).toEqual([
+      "line-h-5-5-8",
+      "line-h-7-5-8",
+      "line-v-5-5-7",
+      "line-v-8-5-7"
+    ]);
   });
 
   test("renders QiuYuan pending skill with a Pixi cast and synchronized persistent row scar", () => {

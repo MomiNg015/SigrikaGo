@@ -1,7 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { pausePreview, schedulePreviewSources } from "./CharacterMusicPreview.jsx";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { CharacterMusicPreview, pausePreview, schedulePreviewSources } from "./CharacterMusicPreview.jsx";
 
 describe("character music preview scheduling", () => {
+  it("renders a stable Rough.js sketch layer and idle playback controls", () => {
+    const html = renderToStaticMarkup(createElement(CharacterMusicPreview, {
+      track: { id: "sigrika-skill-default", name: "Sigrika Skill BGM", playback: { src: "/assets/music/sigrika.ogg", loop: true } },
+      options: [],
+      audioSettings: {}
+    }));
+
+    expect(html).toContain("character-music-player");
+    expect(html).toContain("aria-busy=\"false\"");
+    expect(html).toContain("character-music-sketch");
+    expect(html).toContain("viewBox=\"0 0 188 38\"");
+    expect(html).toContain("aria-hidden=\"true\"");
+    expect(html).toContain("Sigrika Skill BGM");
+    expect(html).toContain("aria-label=\"播放角色 BGM\"");
+  });
+
   it("resumes intro-loop playback from the intro offset", () => {
     const context = fakeContext();
     const sources = schedulePreviewSources({

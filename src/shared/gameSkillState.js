@@ -1,6 +1,6 @@
 import { CHARACTERS } from "./characters.js";
 import { captureCreditOwner, opponent } from "./gameConstants.js";
-import { getPoint } from "./gameBoard.js";
+import { activeNeighbors, getPoint } from "./gameBoard.js";
 import { collectGroup } from "./gameGroups.js";
 
 export function cloneState(state) {
@@ -66,6 +66,23 @@ export function applyExtraSkillCost(state, color, cost, { characterId = null, re
     costValue: String(cost),
     reason
   });
+}
+
+export function collectNeighborCaptures(state, point, color) {
+  const visitedOpponentStones = new Set();
+  const removed = [];
+  let creditedCaptures = 0;
+
+  for (const neighbor of activeNeighbors(state, point)) {
+    if (!neighbor.stone || neighbor.stone === color || visitedOpponentStones.has(neighbor.id)) continue;
+    const group = collectGroup(state, neighbor.id);
+    group.stones.forEach((stone) => visitedOpponentStones.add(stone));
+    if (group.liberties.size !== 0) continue;
+    removed.push(...group.stones);
+    if (captureCreditOwner(group.color) === color) creditedCaptures += group.stones.length;
+  }
+
+  return { removed, creditedCaptures };
 }
 
 export function resolveCapturesAfterMutation(state, actorColor, consumesTurn = true, counter = "captures", cleanupSink = null) {

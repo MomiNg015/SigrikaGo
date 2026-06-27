@@ -69,7 +69,8 @@ describe("game skill configuration", () => {
     expect(skillUsesBoardSurfaceConfirmation("changli")).toBe(true);
     expect(skillUsesBoardConfirmation({ effectType: "voyage-star", targetRule: "none" })).toBe(true);
     expect(skillUsesBoardSurfaceConfirmation({ effectType: "voyage-star", targetRule: "none" })).toBe(true);
-    expect(skillUsesBoardSurfaceConfirmation("baconbits")).toBe(false);
+    expect(skillUsesBoardSurfaceConfirmation("baconbits")).toBe(true);
+    expect(skillUsesBoardSurfaceConfirmation({ effectType: "random-blast", targetRule: "none" })).toBe(true);
     expect(skillUsesBoardConfirmation("denia")).toBe(false);
     expect(skillUsesBoardConfirmation("sigrika")).toBe(false);
   });

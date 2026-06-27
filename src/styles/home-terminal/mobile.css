@@ -53,16 +53,6 @@
     width: 100%;
     max-width: 100%;
     grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .home-match-mode-tickets {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .home-match-mode-ticket {
-    padding: 8px;
   }
 
   .house-manual-entry,
@@ -103,10 +93,6 @@
 
   .home-grid-featured > .home-utility-grid .utility-entry > strong {
     grid-column: 2;
-  }
-
-  .home-grid-featured > .home-utility-grid .utility-entry-description {
-    display: none;
   }
 
   .home-footer-strip {

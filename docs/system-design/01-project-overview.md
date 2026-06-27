@@ -545,7 +545,7 @@ SigrikaGo/
 - Room player info panels use `.active-turn` as the current-turn visual contract: the player whose turn it is turns yellow on both desktop and mobile, and late theme layers such as Bright School must preserve that yellow turn-state cue.
 - 对局结束后，玩家信息区立绘右下角显示通用结果角标：胜为红字、负为黑字、和为绿字。该颜色规则定义在共享房间样式层，对所有主题界面通用。Bright School 房间内的角色头像框还会按执棋色着底：黑方为 `#2b2b2b`，白方为纯白，且房间角色立绘图片不再带投影，避免胜负角标、头像底色和图片阴影互相混淆。
 - 棋谱回放打开时会把 `GameRecord` 的 `winnerColor/resultText` 回填到回放房间快照的 `game.winner`，即使旧快照缺少该字段，回放信息区立绘右下也能显示对应胜/负/和角标。
-- 回放棋局每一步由 `replayRoomAt()` 重算棋盘，但会保留原始回放房间的 `finished` phase 和 `winner` 元数据，避免回放视图因为重算过程丢失结果角标。
+- 回放棋局每一步由 `replayRoomAt()` 重算棋盘，但会保留原始回放房间的 `finished` phase 和 `winner` 元数据，避免回放视图因为重算过程丢失结果角标；技能历史里的 `removedByColor` 按被移除棋子颜色记录，回放重算展示除子/提子时必须先通过 `captureCreditOwner()` 转成黑白受益方并忽略中立颜色，避免原始颜色计数被当作归属方重复累加。
 - 玩家信息区技能按钮从角色 `palette` 注入 `--skill-chip-accent`，按钮背景和边框渐变跟随角色主题色；可用技能使用更饱和的角色色渐变，技能次数为 0 时进入 `spent` 灰色状态。`theme-components.css` 会在隔离层之后再次声明 `.player-info .skill-chip` 与 `.skill-chip.spent`，防止 `room-terminal.css` 或 Bright School 后置层把语义颜色覆盖掉。
 - 技能栏支持悬停/点击展开“挂画”式技能说明面板，说明随鼠标移出或再次点击收起。
 - 对手信息区下方显示“房间成员”，固定最多 3 行高度并可滚动；回放模式不显示房间成员区域。对局者用黑/白棋图标标识执色且用户名为红色，观战者为黑色用户名。点击任一行会展开占位操作面板：详细信息、加好友/解除好友、加入黑名单/从黑名单解除、密谈。自己所在行的加好友和黑名单操作禁用；好友关系下加入黑名单按钮禁用。成员行按关系显示背景：自己为淡黄色，好友为浅绿色渐变，黑名单成员为灰色。加好友会自动从黑名单移除目标用户。
@@ -569,10 +569,11 @@ SigrikaGo/
 - 角色信息包含 `acquisitionMethod`/“获得途径”和 `description` 纯文本，可由后台维护；棋舍角色详情会在获得途径下方直接以斜体展示角色描述正文，数据库为空时前端回退到内置角色默认描述。
 - 娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 `User.rating` 自动补充 `nabomo` 到已拥有角色列表。琳奈的获得途径为星炬模式首次升上 5 段自动获得；公开用户序列化时会根据星炬 `modeStats.rank`（缺省时回退 `User.rank`）自动补充 `lynae`，管理员用户不受段位限制直接拥有。
 - 技能类型：
-  - `erase-point`：抹除空交叉点，点位不可落子且不参与数子。 Resolved erased points render `/assets/effects/sigrika-erased-field-marker.webp` as a point-local transparent WebP field marker.
+  - `erase-point`：抹除空交叉点，点位不可落子且不参与数子。 结算后的无效点使用 `/assets/effects/sigrika-erased-field-marker.webp` 作为 point-local 透明 WebP 坑洞标记，并由棋盘的 `erased-boundary-layer` 灰显周围格子、用一路线同粗细外边界线标出边界。
   - `flip-stone`：反转目标棋子颜色。
   - `hidden-hand`：隐藏手，未暴露前对对方隐藏。
   - `protocol-takeover`：莫宁主动技“协议接管”。指定一个有效、空置、未被协议标记的交叉点，写入对手禁入协议；该空点阻止被禁方普通落子和空点/任意点指定类技能目标，不阻止该点已有棋子被石子目标技能指定，也不改变气、提子、劫或棋子归属。协议点为空时不计入被禁方领地，但仍作为空区域连通的一部分，避免污染同一区域内其它空点归属；协议标记会随棋子翻转、横斩移除、随机爆破和普通提子保留，只有交叉点被抹除时清除。
+  - `row-slash`：仇远主动技“一斩足矣”。指定任意有效交叉点，移除其所在行所有棋子；每直接移除一枚棋子追加 `+1` 超频，技能后的无气清理仍计入除子但不再增加仇远超频。
   - `random-blast`：随机选择棋盘上非一路的已有棋子作为中心，并移除以该棋子为中心的固定 3x3 区域内棋子。
   - `spray-stone`：琳奈主动技“流光溢彩”。指定一枚非喷涂、非隐藏手棋子，并同时从棋盘上另一枚非喷涂、非隐藏手棋子中随机选一枚，转化为命名中立阵营“喷涂棋子”；如果没有随机候选，只转化指定棋子。黑/白棋转化为喷涂棋子时按来源颜色立即给对方 `skillRemovals +1`，其它中立棋子转化不给黑白除子；转化后按气规则反复清理无气棋群直到稳定，清理黑白棋群按正常归属计除子，清理中立棋群不计除子。
   - `color-illusion-passive`：娜波摩被动技“千变万化”。第一次轮到娜波摩玩家时自动进入技能演出，演出结束后该玩家后续落子有 80% 概率在对手视角中显示为对手颜色，真实棋盘规则仍按实际颜色计算；数子申请待确认时仍保持伪装，双方同意并进入死子确认/数子阶段、结果确认或对局结束后才显示真实棋盘。

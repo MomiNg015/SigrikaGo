@@ -259,35 +259,6 @@
     text-align: left !important;
   }
 
-  .character-detail-heading {
-    grid-template-columns: minmax(0, 1fr) minmax(124px, 156px) !important;
-    align-items: start !important;
-    gap: 8px !important;
-    padding-right: 0 !important;
-  }
-
-  .character-detail-heading h3 {
-    line-height: 1.05 !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-  }
-
-  .character-music-player {
-    width: min(156px, 46vw) !important;
-    max-width: 100% !important;
-    justify-self: end !important;
-    align-self: start !important;
-  }
-
-  .character-music-name,
-  .character-music-select {
-    max-width: 116px !important;
-  }
-
   .character-detail-copy p,
   .character-detail-copy .character-description {
     text-align: left !important;

@@ -138,6 +138,29 @@ describe("SigrikaGo rules", () => {
     expect(result.state.captures.black).toBe(1);
   });
 
+  it("counts a captured group once when the new stone touches it from multiple sides", () => {
+    const state = createGameState();
+    forceStone(state, 0, 0, COLORS.white);
+    forceStone(state, 1, 0, COLORS.white);
+    forceStone(state, 0, 1, COLORS.white);
+    forceStone(state, 2, 0, COLORS.black);
+    forceStone(state, 0, 2, COLORS.black);
+    state.turn = COLORS.black;
+
+    const result = playMove(state, COLORS.black, pointId(1, 1));
+
+    expect(result.ok).toBe(true);
+    expect(result.state.captures.black).toBe(3);
+    expect(result.state.history.at(-1).captures).toEqual([
+      pointId(0, 1),
+      pointId(0, 0),
+      pointId(1, 0)
+    ]);
+    expect(getPoint(result.state, pointId(0, 0)).stone).toBe(null);
+    expect(getPoint(result.state, pointId(1, 0)).stone).toBe(null);
+    expect(getPoint(result.state, pointId(0, 1)).stone).toBe(null);
+  });
+
   it("rejects suicide", () => {
     const state = createGameState();
     forceStone(state, 0, 1, COLORS.white);
@@ -886,7 +909,7 @@ describe("SigrikaGo rules", () => {
     expect(result.notices ?? []).not.toContain("鍙戠幇闅愯棌鎵嬩簡锛?");
     expect(result.state.skillRemovals.black).toBe(1);
     expect(result.state.skillRemovals.white).toBe(2);
-    expect(result.state.skillCosts.black).toBe(10);
+    expect(result.state.skillCosts.black).toBe(5);
     expect(result.state.skillUses.black).toBe(0);
     expect(result.state.turn).toBe(COLORS.white);
     expect(result.state.moveNumber).toBe(1);
@@ -904,7 +927,7 @@ describe("SigrikaGo rules", () => {
       effectType: "row-slash",
       row: 4,
       directRemoved: 5,
-      overclockAdded: 10,
+      overclockAdded: 5,
       removed: 5,
       removedByColor: { black: 2, white: 2, spray: 1 },
       directRemovals: expect.arrayContaining([

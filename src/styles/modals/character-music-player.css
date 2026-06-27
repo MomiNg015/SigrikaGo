@@ -1,0 +1,168 @@
+/* Character detail BGM preview player. */
+.character-music-player {
+  --character-music-paper: #fff8dd;
+  --character-music-ink: #2f251f;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  justify-self: end;
+  gap: 8px;
+  width: 188px;
+  max-width: min(188px, 100%);
+  height: 38px;
+  min-height: 38px;
+  padding: 4px 12px 4px 5px;
+  border: 0;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.78), transparent 34%),
+    linear-gradient(90deg, rgba(216, 103, 145, 0.18) 0 2px, transparent 2px 100%),
+    repeating-linear-gradient(0deg, rgba(113, 169, 191, 0.18) 0 1px, transparent 1px 9px),
+    linear-gradient(180deg, #fffdf1 0%, var(--character-music-paper) 58%, #fff0cb 100%);
+  box-shadow: 0 5px 0 rgba(47, 37, 31, 0.16), 0 9px 16px rgba(67, 44, 77, 0.1);
+  contain: layout paint;
+  overflow: hidden;
+  pointer-events: auto;
+  user-select: none;
+  isolation: isolate;
+}
+
+.character-music-sketch {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.character-music-sketch * {
+  vector-effect: non-scaling-stroke;
+}
+
+.character-music-toggle {
+  position: relative;
+  z-index: 2;
+  width: 35px;
+  min-width: 35px;
+  height: 30px;
+  min-height: 30px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--character-music-ink);
+  box-shadow: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color 140ms ease-out, transform 140ms ease-out;
+  will-change: transform;
+}
+
+.character-music-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 3px 2px 2px 3px;
+  z-index: -1;
+  border-radius: 999px;
+  background: rgba(255, 158, 187, 0.68);
+  transform: rotate(-2deg);
+  transition: background-color 140ms ease-out, opacity 140ms ease-out, transform 140ms ease-out;
+}
+
+.character-music-toggle:hover:not(:disabled),
+.character-music-toggle:focus-visible {
+  color: #2a221d;
+  transform: translateY(-1px);
+}
+
+.character-music-toggle:hover:not(:disabled)::before,
+.character-music-toggle:focus-visible::before {
+  background: rgba(255, 209, 102, 0.78);
+  transform: rotate(2deg) scale(1.03);
+}
+
+.character-music-toggle:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+}
+
+.character-music-toggle:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: default;
+}
+
+.character-music-player.is-loading .character-music-toggle {
+  opacity: 1;
+  color: #385c72;
+  cursor: wait;
+}
+
+.character-music-player.is-loading .character-music-toggle::before {
+  background: rgba(185, 231, 255, 0.84);
+}
+
+.character-music-player.is-loading .character-music-toggle svg {
+  animation: character-music-spin 780ms linear infinite;
+}
+
+.character-music-player.is-playing .character-music-toggle {
+  color: #315f4b;
+}
+
+.character-music-player.is-playing .character-music-toggle::before {
+  background: rgba(168, 231, 189, 0.82);
+}
+
+.character-music-name,
+.character-music-select {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  flex: 1 1 auto;
+  max-width: 126px;
+  padding: 4px 6px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.34);
+  color: #261b17;
+  font-weight: 950;
+  font-size: 13px;
+  line-height: 1;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.88), 0 0 5px rgba(255, 255, 255, 0.72);
+}
+
+.character-music-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.character-music-select {
+  min-height: 22px;
+  border: 0;
+  outline: none;
+  background: rgba(255, 255, 255, 0.34);
+  cursor: pointer;
+}
+
+.character-music-select:focus-visible {
+  border-radius: 6px;
+  outline: 2px solid rgba(93, 127, 232, 0.42);
+  outline-offset: 2px;
+}
+
+@keyframes character-music-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .character-music-toggle,
+  .character-music-player.is-loading .character-music-toggle svg {
+    animation: none;
+    transition-duration: 0.01ms;
+  }
+}

@@ -23,6 +23,7 @@ export function createRoomCloseLifecycle({
   saveGameRecord,
   unregisterRoom = () => {},
   prepareCloseState = () => {},
+  metrics = null,
   onSaveError = (error) => console.error("Failed to save game record", error),
   onDeleteError = (error) => console.error("Failed to delete persisted room", error),
   now = () => Date.now()
@@ -63,6 +64,7 @@ export function createRoomCloseLifecycle({
     room.recordSavePromise = Promise.resolve(saveGameRecord(room))
       .catch((error) => {
         room.recordSaveError = error;
+        metrics?.increment?.("roomResultSaveErrors");
         onSaveError(error);
       })
       .finally(() => {

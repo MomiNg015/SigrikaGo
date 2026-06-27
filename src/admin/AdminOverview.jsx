@@ -213,6 +213,9 @@ function ServiceHealth({ health = {} }) {
     ["活跃房间", health.activeRooms ?? 0],
     ["匹配队列", health.matchingQueue ?? 0],
     ["持久化活跃房间", health.persistedActiveRooms ?? 0],
+    ["重连恢复请求", health.reconnectsToday ?? 0],
+    ["预加载超时", health.preloadTimeoutsToday ?? 0],
+    ["运行错误计数", health.apiErrorsToday ?? 0],
     ["事件状态", health.dataStatus ?? "可用"]
   ];
   return (

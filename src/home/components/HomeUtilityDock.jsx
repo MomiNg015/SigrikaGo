@@ -6,7 +6,6 @@ const UTILITY_ITEMS = [
     className: "recruitment-entry",
     tone: "pink",
     title: "招募",
-    description: "成员补给",
     Icon: CircleDotDashed,
     handler: "onOpenRecruitment"
   },
@@ -15,17 +14,14 @@ const UTILITY_ITEMS = [
     className: "shop-entry",
     tone: "cream",
     title: "商店",
-    description: "物资购入",
     Icon: ShoppingBag,
-    handler: "onOpenShop",
-    sound: "none"
+    handler: "onOpenShop"
   },
   {
     key: "warehouse",
     className: "warehouse-entry",
     tone: "mint",
     title: "仓库",
-    description: "道具管理",
     Icon: Archive,
     handler: "onOpenWarehouse"
   },
@@ -34,7 +30,6 @@ const UTILITY_ITEMS = [
     className: "leaderboard-entry",
     tone: "blue",
     title: "排行",
-    description: "天梯记录",
     Icon: Trophy,
     handler: "onOpenLeaderboard"
   },
@@ -43,7 +38,6 @@ const UTILITY_ITEMS = [
     className: "watch-entry",
     tone: "teal",
     title: "观战",
-    description: "当前房间",
     Icon: Eye,
     handler: "onOpenWatch"
   },
@@ -52,7 +46,6 @@ const UTILITY_ITEMS = [
     className: "friends-entry",
     tone: "violet",
     title: "好友",
-    description: "社交列表",
     Icon: UsersRound,
     handler: "onOpenFriends"
   }
@@ -78,22 +71,19 @@ export default function HomeUtilityDock({
 
   return (
     <nav className="home-utility-grid tactical-nav-grid" aria-label="大厅工具箱">
-      {UTILITY_ITEMS.map(({ key, className, tone, title, description, Icon, handler, sound }) => (
+      {UTILITY_ITEMS.map(({ key, className, tone, title, Icon, handler }) => (
         <button
           className={`home-entry utility-entry ${className} utility-tone-${tone} ${key === "recruitment" && recruitmentReady ? "has-alert" : ""}`}
-          data-ui-sound={sound}
+          data-ui-sound="none"
           key={key}
           onClick={handlers[handler]}
-          title={`${title}：${description}`}
+          title={title}
           type="button"
         >
           <i className="utility-entry-icon" aria-hidden="true">
             <Icon size={24} />
           </i>
           <strong>{title}</strong>
-          <span className="utility-entry-description">
-            <small>{description}</small>
-          </span>
         </button>
       ))}
     </nav>

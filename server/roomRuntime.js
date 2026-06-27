@@ -6,17 +6,23 @@ export function createRoomRuntime({
   broadcastRoomPresencePatch: broadcastRoomPresencePatchEvent,
   broadcastRoomToast,
   throttleMs,
+  metrics = null,
   onPersistError = (error) => {
     console.error("Failed to persist room", error);
   }
 }) {
+  function handlePersistError(error) {
+    metrics?.increment?.("roomPersistenceErrors");
+    onPersistError(error);
+  }
+
   function persistRoom(room, { force = false } = {}) {
     persistRoomState({
       prisma,
       room,
       force,
       throttleMs,
-      onError: onPersistError
+      onError: handlePersistError
     });
   }
 

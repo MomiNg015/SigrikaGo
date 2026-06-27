@@ -40,6 +40,12 @@ export function useRoomPointActions({
       setPointConfirmation(null);
       return;
     }
+    if (pendingSkill && skillUsesBoardSurfaceConfirmation) {
+      setPointConfirmation(null);
+      setPendingSkill(false);
+      onGameAction({ type: "skill" });
+      return;
+    }
     if (shouldUsePointConfirmation(eventMeta)) {
       const confirmation = nextPointConfirmation(pointConfirmation, { pointId: point.id, actionType });
       setPointConfirmation(confirmation.next);

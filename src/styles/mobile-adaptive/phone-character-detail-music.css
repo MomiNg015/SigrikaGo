@@ -1,0 +1,34 @@
+/* Final mobile character detail BGM player safety rules. */
+@media (max-width: 768px) {
+  .character-detail-heading {
+    grid-template-columns: minmax(0, 1fr) minmax(136px, 164px) !important;
+    align-items: start !important;
+    gap: 8px !important;
+    padding-right: 0 !important;
+  }
+
+  .character-detail-heading h3 {
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+  }
+
+  .character-music-player {
+    width: min(164px, 48vw) !important;
+    max-width: 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 3px 8px 3px 3px !important;
+    justify-self: end !important;
+    align-self: start !important;
+  }
+
+  .character-music-name,
+  .character-music-select {
+    max-width: 112px !important;
+  }
+}

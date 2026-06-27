@@ -128,11 +128,21 @@
 
 .chat-log p {
   margin: 0;
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.45;
 }
 
 .chat-log span {
   color: #8d7891;
   margin-right: 6px;
+}
+
+.chat-log strong {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .chat-log .system {

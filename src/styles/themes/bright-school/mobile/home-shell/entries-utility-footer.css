@@ -19,8 +19,7 @@
     min-height: 0 !important;
     height: auto !important;
     display: grid !important;
-    grid-template-rows: minmax(188px, clamp(210px, 58vw, 270px)) auto !important;
-    gap: 10px !important;
+    grid-template-rows: minmax(188px, clamp(210px, 58vw, 270px)) !important;
     overflow: visible !important;
   }
 
@@ -91,8 +90,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-icon,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry > strong,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-description {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry > strong {
     transform: none !important;
   }
 
@@ -111,10 +109,6 @@
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-description {
-    display: none !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-footer-strip {

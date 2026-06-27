@@ -21,6 +21,7 @@ const ROOT_STYLE_IMPORTS = [
   "./styles/room-terminal.css",
   "./styles/mobile-modals.css",
   "./styles/hud-components.css",
+  "./styles/tailwind.css",
   "./styles/themes.css"
 ];
 
@@ -344,6 +345,7 @@ describe("root CSS entry contract", () => {
     expect(cssImports(mobileEntry)).toEqual([
       "./mobile-adaptive/desktop-home-footer.css",
       "./mobile-adaptive/phone-core.css",
+      "./mobile-adaptive/phone-character-detail-music.css",
       "./mobile-adaptive/phone-gacha.css",
       "./mobile-adaptive/phone-recruitment.css",
       "./mobile-adaptive/phone-shop.css",
@@ -853,6 +855,7 @@ describe("root CSS entry contract", () => {
       "./modals/profile-hero-cleanup.css",
       "./modals/profile-social-actions.css",
       "./modals/character-opening.css",
+      "./modals/character-music-player.css",
       "./modals/phone.css",
       "./modals/terminal-system.css",
       "./modals/mailbox.css"

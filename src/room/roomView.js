@@ -4,6 +4,7 @@ import {
   COLORS,
   GAME_PHASES,
   activatePassiveSkill,
+  captureCreditOwner,
   createGameState,
   gameViewForColor,
   getPoint,
@@ -272,19 +273,27 @@ function historyRemovalIds(removals) {
 }
 
 function historyRemovedByColor(entry) {
-  const counts = { ...(entry.removedByColor ?? {}) };
-  const hasRecordedDirectCounts = Object.keys(counts).length > 0;
+  const counts = {};
+  const hasRecordedDirectCounts = Object.keys(entry.removedByColor ?? {}).length > 0;
+  for (const [stoneColor, count] of Object.entries(entry.removedByColor ?? {})) {
+    addRemovalCount(counts, captureCreditOwner(stoneColor), count);
+  }
   const removals = [
     ...(hasRecordedDirectCounts ? [] : (Array.isArray(entry.directRemovals) ? entry.directRemovals : [])),
     ...(Array.isArray(entry.cleanupRemovals) ? entry.cleanupRemovals : [])
   ];
   for (const removal of removals) {
-    const owner = removal?.owner;
-    if (!owner) continue;
     const count = Array.isArray(removal.stones) ? removal.stones.length : removal.id ? 1 : 0;
-    counts[owner] = (counts[owner] ?? 0) + count;
+    addRemovalCount(counts, removal?.owner, count);
   }
   return counts;
+}
+
+function addRemovalCount(counts, owner, count) {
+  if (owner !== COLORS.black && owner !== COLORS.white) return;
+  const numericCount = Number(count);
+  if (!Number.isFinite(numericCount) || numericCount <= 0) return;
+  counts[owner] = (counts[owner] ?? 0) + numericCount;
 }
 
 function replaySprayRandomTargetId(entry) {

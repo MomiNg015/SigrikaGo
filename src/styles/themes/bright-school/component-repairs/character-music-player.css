@@ -1,0 +1,73 @@
+/* Bright School character detail BGM player. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.82), transparent 34%),
+    linear-gradient(90deg, rgba(216, 103, 145, 0.2) 0 2px, transparent 2px 100%),
+    repeating-linear-gradient(0deg, rgba(113, 169, 191, 0.2) 0 1px, transparent 1px 9px),
+    linear-gradient(180deg, #fffdf1 0%, #fff8dd 58%, #fff0cb 100%) !important;
+  border: 0 !important;
+  border-radius: 16px !important;
+  width: 188px !important;
+  max-width: min(188px, 100%) !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 4px 12px 4px 5px !important;
+  box-shadow: 0 5px 0 rgba(47, 37, 31, 0.18), 0 9px 16px rgba(61, 43, 37, 0.1) !important;
+  color: var(--bright-ink) !important;
+  overflow: hidden !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle {
+  background: transparent !important;
+  width: 35px !important;
+  min-width: 35px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  color: var(--bright-ink) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle::before {
+  background: rgba(255, 158, 187, 0.72) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:hover:not(:disabled),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:focus-visible {
+  transform: translateY(-1px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:hover:not(:disabled)::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:focus-visible::before {
+  background: rgba(255, 209, 102, 0.82) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-toggle:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-loading .character-music-toggle {
+  cursor: wait !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-loading .character-music-toggle::before {
+  background: rgba(185, 231, 255, 0.86) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-playing .character-music-toggle {
+  color: #315f4b !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player.is-playing .character-music-toggle::before {
+  background: rgba(168, 231, 189, 0.86) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select {
+  color: var(--bright-ink) !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  background: rgba(255, 255, 255, 0.36) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.88), 0 0 5px rgba(255, 255, 255, 0.72) !important;
+}

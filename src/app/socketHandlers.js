@@ -325,7 +325,7 @@ export function createRoomResumeEmitter(socket, {
       return false;
     }
     pendingRoomResume = { key, requestedAt, reason };
-    socket.emit("room:resume", request);
+    socket.emit("room:resume", { ...request, resumeReason: reason });
     return true;
   }
 

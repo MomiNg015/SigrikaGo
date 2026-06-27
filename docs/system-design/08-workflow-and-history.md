@@ -7,6 +7,8 @@
 - `docs/system-design.md` 是入口和目录，不再承载所有详细设计。
 - 详细设计按主题写入 `docs/system-design/*.md`。
 - 修改入口或分篇后运行 `npm run docs:system-design` 生成 `docs/system-design.html`。
+- `npm run verify:battle-fixes` runs the focused regression suite for battle-board fixes, then regenerates and validates system-design HTML. Use it before handoff when changing board erase styling, skill targeting/release confirmation, ordinary capture counting, chat wrapping, or character skill seed/config behavior.
+- `npm test` excludes local Codex scratch folders such as `.codex-run/` in addition to worktrees, e2e tests, and stability tests, so temporary staged snapshots cannot be collected as Vitest suites during handoff.
 - 中文内容应使用 `apply_patch`、Node UTF-8 脚本或其它明确 UTF-8 的工具写入，避免 PowerShell 默认编码链路造成显示混乱。
 
 ## Lobby Stats And Blacklist Match Blocking

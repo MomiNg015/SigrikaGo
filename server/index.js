@@ -48,6 +48,7 @@ import {
   createDirectRoom,
   detachSocket,
   findRoomForUser,
+  flushRoomPersistence,
   getRoom,
   handleGameAction,
   handleScoringAction,
@@ -74,6 +75,7 @@ import {
   toSocialUser
 } from "./social.js";
 import { resumePayloadForUser } from "./resume.js";
+import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
 
 const app = express();
 const server = createServer(app);
@@ -198,7 +200,8 @@ app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({
   onlineSessions,
   listActiveRooms,
   matchmakingCount,
-  matchmakingCountsByMode
+  matchmakingCountsByMode,
+  runtimeStabilityMetrics
 }));
 app.use("/api", authHttp, createPlayerRouter({
   prisma,
@@ -254,6 +257,7 @@ io.on("connection", (socket) => {
     resumePayloadForUser,
     roomView,
     markRoomPreloadReady,
+    metrics: runtimeStabilityMetrics,
     handleGameAction,
     requestCounting,
     respondCounting,
@@ -294,5 +298,5 @@ function isUserOnline(userId) {
 
 installProductionStaticAssets(app, { distDir });
 
-installServerLifecycle(server, { dependencies: [prisma] });
+installServerLifecycle(server, { beforeShutdown: [flushRoomPersistence], dependencies: [prisma] });
 startHttpServer(server, { port: PORT });

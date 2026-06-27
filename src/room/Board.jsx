@@ -42,6 +42,10 @@ function Board({
   const labels = useMemo(() => Array.from({ length: boardSize }, (_, index) => coordLetter(index)), [boardSize]);
   const rows = useMemo(() => Array.from({ length: boardSize }, (_, index) => boardSize - index), [boardSize]);
   const lines = useMemo(() => buildBoardLines(game.points), [game.points]);
+  const erasedBoundaries = useMemo(
+    () => erasedBoundaryGeometry(game.points, boardSize),
+    [boardSize, game.points]
+  );
   const libertyPurgeMarkIds = useMemo(() => new Set(
     (game.libertyPurgeMarks ?? []).flatMap((mark) => Array.isArray(mark.pointIds) ? mark.pointIds : [])
   ), [game.libertyPurgeMarks]);
@@ -176,6 +180,7 @@ function Board({
             />
           ))}
         </svg>
+        <BoardErasedBoundaryOverlay geometry={erasedBoundaries} />
         <BoardSkillEffects
           boardSize={boardSize}
           pendingSkill={game.pendingSkill}
@@ -258,6 +263,154 @@ function Board({
       {showCoords && <div className="coord-row coord-bottom">{labels.map((label) => <span key={label}>{label}</span>)}</div>}
     </div>
   );
+}
+
+function BoardErasedBoundaryOverlay({ geometry }) {
+  if (!geometry?.cells?.length && !geometry?.lines?.length) return null;
+  return (
+    <svg className="erased-boundary-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      {geometry.cells.map((cell) => (
+        <rect
+          key={cell.key}
+          className="erased-boundary-cell"
+          data-erased-point-id={cell.pointId}
+          x={cell.x}
+          y={cell.y}
+          width={cell.width}
+          height={cell.height}
+        />
+      ))}
+      {geometry.lines.map((line) => (
+        <line
+          key={line.key}
+          className="erased-boundary-line"
+          data-erased-point-id={line.pointId}
+          x1={line.x1}
+          y1={line.y1}
+          x2={line.x2}
+          y2={line.y2}
+        />
+      ))}
+    </svg>
+  );
+}
+
+export function erasedBoundaryGeometry(points = [], boardSize = 13) {
+  const size = Math.max(1, Number(boardSize) || 13);
+  const cells = new Map();
+
+  for (const point of points) {
+    if (point?.valid !== false) continue;
+    const x = Number(point.x);
+    const y = Number(point.y);
+    if (!Number.isInteger(x) || !Number.isInteger(y)) continue;
+
+    for (const [cellX, cellY] of [
+      [x - 1, y - 1],
+      [x, y - 1],
+      [x - 1, y],
+      [x, y]
+    ]) {
+      if (cellX < 0 || cellY < 0 || cellX >= size - 1 || cellY >= size - 1) continue;
+      const key = `cell-${cellX}-${cellY}`;
+      if (!cells.has(key)) {
+        const x1 = boardCoordinate(cellX, size);
+        const y1 = boardCoordinate(cellY, size);
+        cells.set(key, {
+          key,
+          pointId: point.id,
+          x: x1,
+          y: y1,
+          width: roundBoardNumber(boardCoordinate(cellX + 1, size) - x1),
+          height: roundBoardNumber(boardCoordinate(cellY + 1, size) - y1)
+        });
+      }
+    }
+  }
+
+  return {
+    cells: [...cells.values()],
+    lines: erasedBoundaryOutline([...cells.values()], size)
+  };
+}
+
+function erasedBoundaryOutline(cells, size) {
+  const cellSet = new Set(cells.map((cell) => cell.key));
+  const horizontal = new Map();
+  const vertical = new Map();
+
+  for (const cell of cells) {
+    const [, xValue, yValue] = cell.key.split("-");
+    const x = Number(xValue);
+    const y = Number(yValue);
+    if (!Number.isInteger(x) || !Number.isInteger(y)) continue;
+    if (!cellSet.has(`cell-${x}-${y - 1}`)) addOutlineSegment(horizontal, y, x, x + 1, cell.pointId);
+    if (!cellSet.has(`cell-${x}-${y + 1}`)) addOutlineSegment(horizontal, y + 1, x, x + 1, cell.pointId);
+    if (!cellSet.has(`cell-${x - 1}-${y}`)) addOutlineSegment(vertical, x, y, y + 1, cell.pointId);
+    if (!cellSet.has(`cell-${x + 1}-${y}`)) addOutlineSegment(vertical, x + 1, y, y + 1, cell.pointId);
+  }
+
+  return [
+    ...mergedOutlineSegments(horizontal, "h", size),
+    ...mergedOutlineSegments(vertical, "v", size)
+  ];
+}
+
+function addOutlineSegment(groups, fixed, start, end, pointIdValue) {
+  const group = groups.get(fixed) ?? [];
+  group.push({ start, end, pointId: pointIdValue });
+  groups.set(fixed, group);
+}
+
+function mergedOutlineSegments(groups, axis, size) {
+  const lines = [];
+  for (const [fixed, segments] of groups.entries()) {
+    const sorted = [...segments].sort((a, b) => a.start - b.start || a.end - b.end);
+    let current = null;
+    for (const segment of sorted) {
+      if (!current) {
+        current = { ...segment };
+        continue;
+      }
+      if (segment.start <= current.end) {
+        current.end = Math.max(current.end, segment.end);
+        continue;
+      }
+      lines.push(outlineLine(axis, fixed, current, size));
+      current = { ...segment };
+    }
+    if (current) lines.push(outlineLine(axis, fixed, current, size));
+  }
+  return lines.sort((a, b) => a.key.localeCompare(b.key));
+}
+
+function outlineLine(axis, fixed, segment, size) {
+  const key = `line-${axis}-${fixed}-${segment.start}-${segment.end}`;
+  return axis === "h"
+    ? {
+        key,
+        pointId: segment.pointId,
+        x1: boardCoordinate(segment.start, size),
+        y1: boardCoordinate(fixed, size),
+        x2: boardCoordinate(segment.end, size),
+        y2: boardCoordinate(fixed, size)
+      }
+    : {
+        key,
+        pointId: segment.pointId,
+        x1: boardCoordinate(fixed, size),
+        y1: boardCoordinate(segment.start, size),
+        x2: boardCoordinate(fixed, size),
+        y2: boardCoordinate(segment.end, size)
+      };
+}
+
+function boardCoordinate(value, size) {
+  return roundBoardNumber(((value + 0.5) / size) * 100);
+}
+
+function roundBoardNumber(value) {
+  return Math.round(value * 10000) / 10000;
 }
 
 function BoardRowSlashOverlay({

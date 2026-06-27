@@ -20,6 +20,20 @@ describe("admin analytics", () => {
       listActiveRooms: () => [{ code: "12345" }],
       matchmakingCount: () => 1,
       matchmakingCountsByMode: () => ({ spark: 1, standard: 0, gomoku: 0 }),
+      runtimeStabilityMetrics: {
+        snapshot: () => ({
+          startedAt: "2026-06-23T03:00:00.000Z",
+          roomPersistenceErrors: 1,
+          roomRestoreErrors: 2,
+          roomResultSaveErrors: 3,
+          matchPreloadTimeouts: 4,
+          roomResumeAttempts: 5,
+          roomResumeSuccesses: 6,
+          roomResumeMisses: 7,
+          roomResumePatchGapRequests: 8,
+          roomResumeSocketConnectRequests: 9
+        })
+      },
       now
     });
 
@@ -30,6 +44,10 @@ describe("admin analytics", () => {
     expect(data.today.registrations.firstGameConversionRate).toBe(1);
     expect(data.today.games.byMode.find((mode) => mode.mode === "spark").completed).toBe(1);
     expect(data.realtime.onlineUsers).toHaveLength(2);
+    expect(data.serviceHealth.reconnectsToday).toBe(9);
+    expect(data.serviceHealth.preloadTimeoutsToday).toBe(4);
+    expect(data.serviceHealth.apiErrorsToday).toBe(6);
+    expect(data.serviceHealth.runtimeStability.roomResumePatchGapRequests).toBe(8);
     expect(data.alerts.items.some((item) => item.actionLabel === "查看举报")).toBe(true);
   });
 

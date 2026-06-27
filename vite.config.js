@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 const DEV_PROXY_QUIET_SOCKET_ERRORS = new Set(["ECONNRESET", "ECONNREFUSED"]);
 
@@ -15,7 +16,7 @@ function configureDevSocketProxy(proxy) {
 }
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   build: {
     chunkSizeWarningLimit: 900,
     rollupOptions: {

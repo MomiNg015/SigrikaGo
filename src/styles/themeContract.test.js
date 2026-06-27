@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import {
+  VISUAL_THEME_OPTIONS,
   VISUAL_THEME_IDS,
   visualThemeCssImportPath,
   visualThemeScopeSelector
@@ -20,6 +21,21 @@ describe("player theme CSS contract", () => {
 
     for (const themeId of VISUAL_THEME_IDS) {
       expect(themeEntry).toContain(`@import "${visualThemeCssImportPath(themeId)}";`);
+    }
+  });
+
+  it("keeps future theme options out of the active CSS import contract", () => {
+    const themeEntry = readFileSync(new URL("./themes.css", import.meta.url), "utf8");
+
+    expect(VISUAL_THEME_OPTIONS.map((theme) => theme.id)).toEqual([
+      "bright-school",
+      "club-standard",
+      "motari-luxury"
+    ]);
+    expect(VISUAL_THEME_OPTIONS.filter((theme) => theme.available).map((theme) => theme.id)).toEqual(VISUAL_THEME_IDS);
+
+    for (const theme of VISUAL_THEME_OPTIONS.filter((themeOption) => !themeOption.available)) {
+      expect(themeEntry).not.toContain(`@import "./themes/${theme.id}.css";`);
     }
   });
 
@@ -224,7 +240,6 @@ describe("player theme CSS contract", () => {
     );
 
     expect(cssImports(utilityToolboxEntry)).toEqual([
-      "./utility-toolbox/match-tickets.css",
       "./utility-toolbox/toolbox-grid.css",
       "./utility-toolbox/toolbox-interactions.css"
     ]);
@@ -438,6 +453,7 @@ describe("player theme CSS contract", () => {
       "./component-repairs/lists-profile.css",
       "./component-repairs/profile-actions.css",
       "./component-repairs/warehouse-character.css",
+      "./component-repairs/character-music-player.css",
       "./component-repairs/room-board.css",
       "./component-repairs/chat.css",
       "./component-repairs/notebook-polish.css"

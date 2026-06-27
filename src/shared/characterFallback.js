@@ -107,7 +107,7 @@ export const FALLBACK_CHARACTERS = {
       costType: "numeric",
       costValue: "0",
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
-      description: "指定棋盘上一枚棋子或交叉点，移除其所在行的所有棋子。每移除一枚棋子，超频+2。发动技能会消耗本回合。"
+      description: "指定棋盘上一枚棋子或交叉点，移除其所在行的所有棋子。每移除一枚棋子，超频+1。发动技能会消耗本回合。"
     }
   },
   mornye: {

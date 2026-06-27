@@ -551,28 +551,43 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(html).toContain("character-detail-heading");
     expect(html).toContain("character-music-player");
+    expect(html).toContain("character-music-sketch");
     expect(html).toContain("Sigrika Skill BGM");
     expect(html).not.toContain("character-music-select");
     const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     expect(css).toContain(".character-detail-heading");
-    expect(css).toContain("grid-template-columns: minmax(0, 1fr) minmax(132px, 172px);");
+    expect(css).toContain("grid-template-columns: minmax(0, 1fr) minmax(150px, 188px);");
     expect(css).toContain("padding-right: calc(var(--modal-close-size, 44px) + 12px);");
     expect(css).toContain("background-color: transparent;");
     expect(css).toMatch(/\.character-detail-heading h3\s*\{[^}]*white-space:\s*nowrap;[^}]*word-break:\s*keep-all;[^}]*writing-mode:\s*horizontal-tb;/s);
-    expect(css).toContain("width: 172px;");
-    expect(css).toContain("height: 30px;");
+    expect(css).toContain("width: 188px;");
+    expect(css).toContain("height: 38px;");
+    expect(css).toContain(".character-music-sketch");
+    expect(css).toContain("pointer-events: none;");
+    expect(css).toContain("vector-effect: non-scaling-stroke;");
+    expect(css).toContain("repeating-linear-gradient(0deg");
+    expect(css).toMatch(/\.character-music-player\s*\{[^}]*border:\s*0;/s);
+    expect(css).toMatch(/\.character-music-toggle\s*\{[^}]*border:\s*0;/s);
+    expect(css).toContain(".character-music-toggle::before");
+    expect(css).toContain("font-weight: 950;");
+    expect(css).toContain(".character-music-player.is-loading .character-music-toggle");
+    expect(css).toContain(".character-music-player.is-playing .character-music-toggle");
+    expect(css).toMatch(/\.character-music-toggle:hover:not\(:disabled\),\s*\.character-music-toggle:focus-visible\s*\{[^}]*transform:\s*translateY\(-1px\);/s);
 
     const phoneCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+    const brightSchoolDesktopCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url))
       + readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
-    expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(124px, 156px);");
-    expect(phoneCss).toContain("width: min(156px, 46vw);");
+    expect(brightSchoolDesktopCss).toContain("border: 0 !important");
+    expect(brightSchoolDesktopCss).toContain(".character-music-toggle::before");
+    expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px);");
+    expect(phoneCss).toContain("width: min(164px, 48vw);");
     expect(phoneCss).toContain("justify-self: end;");
-    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(124px, 156px) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px) !important");
     expect(finalMobileCss).toContain("padding-right: 0 !important");
-    expect(finalMobileCss).toContain("width: min(156px, 46vw) !important");
+    expect(finalMobileCss).toContain("width: min(164px, 48vw) !important");
     expect(finalMobileCss).toContain("writing-mode: horizontal-tb !important");
     expect(brightSchoolMobileCss).toContain(".character-detail-heading h3");
     expect(brightSchoolMobileCss).toContain("white-space: nowrap !important");

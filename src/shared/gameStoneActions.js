@@ -1,6 +1,6 @@
 import { GAME_PHASES } from "./gamePhases.js";
 import { activeNeighbors, getPoint } from "./gameBoard.js";
-import { captureCreditOwner, opponent } from "./gameConstants.js";
+import { opponent } from "./gameConstants.js";
 import { createDerivedSkillState, voyageStarDefinitionFromSkill } from "./derivedSkills.js";
 import { collectGroup } from "./gameGroups.js";
 import { fail, ok } from "./gameActionResult.js";
@@ -11,6 +11,7 @@ import {
   clearExpiredLibertyPurgeMarks,
   clearExpiredRowEffects,
   clearOwnedBoardMarkers,
+  collectNeighborCaptures,
   clearStone,
   cloneState
 } from "./gameSkillState.js";
@@ -61,17 +62,7 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
   }
   applyColorIllusion(next, color, point, colorIllusion);
 
-  const removed = [];
-  let creditedCaptures = 0;
-  for (const neighbor of activeNeighbors(next, point)) {
-    if (neighbor.stone && neighbor.stone !== color) {
-      const group = collectGroup(next, neighbor.id);
-      if (group.liberties.size === 0) {
-        removed.push(...group.stones);
-        if (captureCreditOwner(group.color) === color) creditedCaptures += group.stones.length;
-      }
-    }
-  }
+  const { removed, creditedCaptures } = collectNeighborCaptures(next, point, color);
 
   for (const stone of removed) clearStone(next, stone);
 

@@ -9,6 +9,7 @@
 - 普通对局秒级时钟走轻量 `room:clock`，关键状态变化仍走完整 `room:update`。两者都携带并推进 `clockSeq`，前端只接受新于当前房间快照的时钟 payload，防止网络乱序把读秒次数或剩余时间覆盖回旧值。
 - 匹配或约战创建的房间先进入 `GAME_PHASES.preloading`，`server/roomPreparationLifecycle.js` 管理 60 秒资源准备截止时间、`room:preload-ready` 玩家 ready 上报、`room.update.preload.readyCount/requiredCount` 广播和超时中止；`server/socketRoomEvents.js` 的 `room:preload-ready` 是可重复调用的 ack 协议，服务端在校验房间码后返回 `{ ok, roomCode, phase, readyCount, requiredCount }`，客户端未收到 `{ ok: true }` 前可以安全重发；双方都 ready 后才切到 `opening` 并排原有开局倒计时。
 - `room:resume` 的空 roomCode 只恢复仍可继续的玩家房间，不会自动拉起 finished room；finished 历史结果只有在客户端显式传入 roomCode 时才允许恢复。这样玩家关闭结果或退出 finished 房间后刷新，不会因为内存房间仍在 5 分钟 review window 内而再次弹出结果。
+- `server/runtimeStabilityMetrics.js` 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 `patch-gap` 或 `socket-connect` 的 `room:resume` 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。
 
 ## API 与实时事件
 
@@ -119,7 +120,7 @@
 ## Admin Analytics API
 
 - 后台分析 API 挂载在 `/api/admin/analytics/*`，仍走现有 `authHttp + requireAdmin` 管线。
-- `GET /api/admin/analytics/overview` 返回后台默认“今日简报”数据：总状态、2-5 条原因、`需要处理 / 值得关注 / 正常记录` 解读、今日登录/注册/对局、在线名单、时长榜、待处理反馈/举报、服务健康和最近审计日志。第一版优先从 `User`、`LoginSession`、`GameRecord`、`FeedbackMessage`、`UserReport`、`AdminAuditLog` 与运行时在线/房间/匹配队列聚合，不伪造尚未采集的断线、IP、设备或错误事件。
+- `GET /api/admin/analytics/overview` 返回后台默认“今日简报”数据：总状态、2-5 条原因、`需要处理 / 值得关注 / 正常记录` 解读、今日登录/注册/对局、在线名单、时长榜、待处理反馈/举报、服务健康和最近审计日志。第一版优先从 `User`、`LoginSession`、`GameRecord`、`FeedbackMessage`、`UserReport`、`AdminAuditLog`、实时在线/房间/匹配队列和 `runtimeStabilityMetrics` 聚合；深度 IP/设备/历史异常事件仍不伪造。
 - `GET /api/admin/analytics/operations?range=today|yesterday|7d|30d` 返回运营分析数据：日期范围、可读解读、活跃/注册/对局趋势、模式完成数、玩家粗分层、金币净变化、抽卡和招募任务数量。深度留存、经济来源拆分、完整异常事件和导出仍是后续扩展。
 - `server/adminAnalytics.js` 是聚合边界；`server/adminRoutes.js` 只负责挂路由和注入 `onlineSessions`、`listActiveRooms`、`matchmakingCount`、`matchmakingCountsByMode` 等运行时读模型。
 
@@ -128,6 +129,7 @@
 - `server/roomBroadcasts.js` declares `ROOM_BROADCAST_PERSISTENCE` as the code-level policy for persistence expectations: full room updates and default room patches force persistence, while clock and presence-patch categories remain lightweight/throttled.
 - The policy is guarded by `server/roomBroadcasts.test.js` so future realtime changes can adjust room protocol shape without accidentally turning high-frequency clock or presence traffic into forced snapshot writes, or weakening forced persistence for authoritative lifecycle updates.
 - `server/roomActionPhaseGuards.js` declares the gameplay action phase matrix before lifecycle dispatch: move/pass/skill require `playing`, resign is limited to `playing`, `counting-requested`, and `draw-requested`, and opening, skill-preview, marking-dead, result-review, or finished phases reject generic board actions before they can mutate state.
+- Graceful shutdown uses `installServerLifecycle(..., { beforeShutdown: [flushRoomPersistence] })` so SIGINT/SIGTERM first stops accepting new HTTP connections, waits for queued room snapshot writes, then disconnects Prisma. This reduces the chance that a deploy/restart loses the last authoritative room state.
 
 ## Aemeath Derived Skill Realtime Contract
 

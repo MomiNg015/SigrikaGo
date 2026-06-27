@@ -10,6 +10,7 @@ export async function buildAdminOverviewAnalytics({
   listActiveRooms = () => [],
   matchmakingCount = () => 0,
   matchmakingCountsByMode = () => emptyModeCounts(),
+  runtimeStabilityMetrics = null,
   now = new Date()
 }) {
   const today = shanghaiDayRange(now);
@@ -43,6 +44,7 @@ export async function buildAdminOverviewAnalytics({
   ]);
 
   const runtime = runtimeSummary({ onlineSessions, listActiveRooms, matchmakingCount, matchmakingCountsByMode });
+  const stability = runtimeStabilitySnapshot(runtimeStabilityMetrics);
   const loginUserIds = unique(todayLoginSessions.map((session) => session.userId).filter(Boolean));
   const newUserIds = new Set(todayUsers.map((user) => user.id));
   const newUsersWithFirstGame = usersWithGame(todayUsers, todayGameRecords);
@@ -107,12 +109,32 @@ export async function buildAdminOverviewAnalytics({
       activeRooms: runtime.activeRooms,
       matchingQueue: runtime.matchmakingCount,
       persistedActiveRooms: activePersistedRooms,
-      reconnectsToday: null,
-      preloadTimeoutsToday: null,
-      apiErrorsToday: null,
-      dataStatus: "部分运行时事件待接入"
+      reconnectsToday: stability.roomResumeSocketConnectRequests,
+      preloadTimeoutsToday: stability.matchPreloadTimeouts,
+      apiErrorsToday: stability.runtimeErrorCount,
+      runtimeStability: stability,
+      dataStatus: "运行时稳定性计数为本进程启动以来"
     },
     auditLogs
+  };
+}
+
+function runtimeStabilitySnapshot(metrics) {
+  const snapshot = typeof metrics?.snapshot === "function" ? metrics.snapshot() : {};
+  const number = (key) => Number(snapshot[key] ?? 0);
+  const runtimeErrorCount = number("roomPersistenceErrors") + number("roomRestoreErrors") + number("roomResultSaveErrors");
+  return {
+    startedAt: snapshot.startedAt ?? null,
+    roomPersistenceErrors: number("roomPersistenceErrors"),
+    roomRestoreErrors: number("roomRestoreErrors"),
+    roomResultSaveErrors: number("roomResultSaveErrors"),
+    matchPreloadTimeouts: number("matchPreloadTimeouts"),
+    roomResumeAttempts: number("roomResumeAttempts"),
+    roomResumeSuccesses: number("roomResumeSuccesses"),
+    roomResumeMisses: number("roomResumeMisses"),
+    roomResumePatchGapRequests: number("roomResumePatchGapRequests"),
+    roomResumeSocketConnectRequests: number("roomResumeSocketConnectRequests"),
+    runtimeErrorCount
   };
 }
 

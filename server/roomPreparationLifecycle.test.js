@@ -100,12 +100,14 @@ describe("room preparation lifecycle", () => {
     const currentRoom = room();
     const rooms = new Map([[currentRoom.code, currentRoom]]);
     const io = fakeIo();
-    const { calls, lifecycle } = lifecycleFor(rooms);
+    const metrics = { increment: vi.fn() };
+    const { calls, lifecycle } = lifecycleFor(rooms, { metrics });
 
     lifecycle.scheduleRoomPreloadTimeout(currentRoom, io);
     vi.advanceTimersByTime(90000);
 
     expect(rooms.has(currentRoom.code)).toBe(false);
+    expect(metrics.increment).toHaveBeenCalledWith("matchPreloadTimeouts");
     expect(calls.unregistered).toEqual(["12345"]);
     expect(calls.deleted).toEqual(["12345"]);
     expect(io.messages).toEqual([

@@ -12,7 +12,8 @@ export function registerRoomSocketEvents(socket, {
   roomView,
   broadcastRoom,
   broadcastRoomPresencePatch = broadcastRoom,
-  markRoomPreloadReady = () => null
+  markRoomPreloadReady = () => null,
+  metrics = null
 }) {
   socket.on("room:join", ({ roomCode } = {}) => {
     const validatedRoomCode = validateRoomCode(roomCode);
@@ -37,7 +38,10 @@ export function registerRoomSocketEvents(socket, {
     broadcastRoomPresencePatch(io, room);
   });
 
-  socket.on("room:resume", async ({ roomCode } = {}) => {
+  socket.on("room:resume", async ({ roomCode, resumeReason } = {}) => {
+    metrics?.increment?.("roomResumeAttempts");
+    if (resumeReason === "patch-gap") metrics?.increment?.("roomResumePatchGapRequests");
+    if (resumeReason === "socket-connect") metrics?.increment?.("roomResumeSocketConnectRequests");
     const payload = await resumePayloadForUser({
       prisma,
       userId: socket.user.id,
@@ -48,11 +52,13 @@ export function registerRoomSocketEvents(socket, {
     if (payload.type === "room") {
       const room = attachSocketToRoom(payload.room.code, socket, socket.user);
       if (room) {
+        metrics?.increment?.("roomResumeSuccesses");
         socket.emit("room:update", roomView(room, socket.user.id));
         broadcastRoomPresencePatch(io, room);
         return;
       }
     }
+    metrics?.increment?.("roomResumeMisses");
     socket.emit("room:resume", payload);
   });
 

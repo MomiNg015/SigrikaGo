@@ -631,7 +631,7 @@ describe("socket handlers", () => {
     expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
     expect(socket.on).toHaveBeenCalledWith("room:patch", expect.any(Function));
     expect(socket.on).toHaveBeenCalledWith("match:preload-timeout", expect.any(Function));
-    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345", resumeReason: "socket-connect" });
   });
 
   it("emits a room resume request when an installed patch listener detects a gap", () => {
@@ -655,7 +655,7 @@ describe("socket handlers", () => {
       message: { id: "chat-5" }
     });
 
-    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345", resumeReason: "patch-gap" });
     expect(deps.setRoom).not.toHaveBeenCalled();
   });
 
@@ -687,7 +687,7 @@ describe("socket handlers", () => {
     listeners.get("room:patch")(patch);
 
     expect(socket.emit).toHaveBeenCalledTimes(1);
-    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345", resumeReason: "patch-gap" });
 
     listeners.get("room:update")({ code: "12345", revision: 5, players: [] });
     listeners.get("room:patch")(patch);
@@ -792,7 +792,7 @@ describe("socket handlers", () => {
 
     expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
     expect(roomSetterResult(deps)).toEqual(expect.objectContaining({ __audioResumeBaseline: true }));
-    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345" });
+    expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345", resumeReason: "socket-connect" });
   });
 });
 
