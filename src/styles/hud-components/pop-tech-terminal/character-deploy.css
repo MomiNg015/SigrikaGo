@@ -1,0 +1,24 @@
+.character-card.locked strong,
+.character-card.locked small,
+.lock-text-title,
+div[class*="lock"] span,
+div[class*="lock"] p {
+  color: #ff9fbd !important;
+  text-shadow: 0 0 8px rgba(255, 118, 163, 0.45);
+}
+
+.deploy-tag,
+.character-card.portrait-card:not(.is-deployed):not(.locked)::after {
+  border-color: rgba(255, 118, 163, 0.56);
+  border-radius: 999px;
+  clip-path: none;
+  background: rgba(255, 118, 163, 0.08) !important;
+  text-shadow:
+    0 0 8px rgba(255, 118, 163, 0.45),
+    0 0 10px rgba(0, 255, 190, 0.24);
+}
+
+.character-card.portrait-card:not(.is-deployed):not(.locked)::after {
+  content: "READY (｡•̀ᴗ-)✧";
+  color: rgba(255, 220, 233, 0.82);
+}

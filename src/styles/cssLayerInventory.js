@@ -49,6 +49,14 @@ export const CSS_LAYER_GROUPS = [
       "home-terminal.css",
       "mobile-modals.css",
       "hud-components.css",
+      "hud-components/pop-tech-terminal.css",
+      "hud-components/pop-tech-terminal/tokens.css",
+      "hud-components/pop-tech-terminal/modal-surfaces.css",
+      "hud-components/pop-tech-terminal/interactive-motion.css",
+      "hud-components/pop-tech-terminal/home-hologram.css",
+      "hud-components/pop-tech-terminal/character-deploy.css",
+      "hud-components/pop-tech-terminal/tabs-actions.css",
+      "hud-components/pop-tech-terminal/keyframes.css",
       "tailwind.css"
     ],
     guidance: "Safe candidates for import-only splits, naming cleanup, and token documentation when feature tests own exact visual values."
@@ -162,6 +170,18 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "base/home-stage-artboard/player-zone.css",
       "base/home-stage-artboard/image-entries.css",
       "base/home-stage-artboard/responsive.css"
+    ]
+  },
+  {
+    entry: "hud-components/pop-tech-terminal.css",
+    files: [
+      "hud-components/pop-tech-terminal/tokens.css",
+      "hud-components/pop-tech-terminal/modal-surfaces.css",
+      "hud-components/pop-tech-terminal/interactive-motion.css",
+      "hud-components/pop-tech-terminal/home-hologram.css",
+      "hud-components/pop-tech-terminal/character-deploy.css",
+      "hud-components/pop-tech-terminal/tabs-actions.css",
+      "hud-components/pop-tech-terminal/keyframes.css"
     ]
   },
   {

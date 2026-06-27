@@ -1,0 +1,68 @@
+.small-modal,
+.shop-modal,
+.house-modal,
+.warehouse-modal,
+.leaderboard-modal,
+.friends-modal,
+.confirm-modal,
+.result-modal,
+.settings-modal,
+.message-board-modal,
+.nested-modal,
+.character-target-modal,
+.room-floating-modal,
+.shop-item,
+.warehouse-item,
+.character-card.portrait-card,
+.friends-row,
+.leaderboard-row,
+.watch-room-row,
+.profile-character-row,
+.character-record-row,
+.volume-row,
+.audio-slider-item,
+.login-card-container {
+  border-color: rgba(255, 118, 163, 0.38) !important;
+  border-radius: 12px !important;
+  clip-path: polygon(14px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 10px 100%, 0 calc(100% - 10px), 0 14px) !important;
+  box-shadow:
+    0 0 18px rgba(255, 118, 163, 0.16),
+    0 0 26px rgba(0, 255, 190, 0.12),
+    inset 0 0 18px rgba(255, 255, 255, 0.05) !important;
+}
+
+.small-modal::after,
+.shop-modal::after,
+.house-modal::after,
+.warehouse-modal::after,
+.leaderboard-modal::after,
+.friends-modal::after,
+.confirm-modal::after,
+.result-modal::after,
+.settings-modal::after,
+.message-board-modal::after,
+.nested-modal::after,
+.character-target-modal::after,
+.room-floating-modal::after {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--hud-pink), var(--hud-cyan), var(--hud-pink), transparent);
+  box-shadow:
+    0 0 14px rgba(255, 118, 163, 0.55),
+    0 0 20px rgba(0, 255, 190, 0.32);
+}
+
+.small-modal h2,
+.shop-modal h2,
+.house-modal h2,
+.warehouse-modal h2,
+.leaderboard-modal h2,
+.friends-modal h2,
+.settings-modal h2,
+.message-board-modal h2,
+.home-brand-title,
+.login-title-text {
+  color: #ffffff !important;
+  text-shadow:
+    0 0 8px rgba(255, 118, 163, 0.55),
+    0 0 14px rgba(0, 255, 190, 0.32) !important;
+}

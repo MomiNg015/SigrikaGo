@@ -1,0 +1,8 @@
+/* Anime pop-tech soft terminal pass */
+:root {
+  --hud-pink: #ff76a3;
+  --hud-pink-soft: rgba(255, 118, 163, 0.26);
+  --hud-cyan-soft: rgba(0, 255, 190, 0.22);
+  --hud-jelly-bg: rgba(255, 255, 255, 0.12);
+  --hud-pop-text: #fff9fd;
+}

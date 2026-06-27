@@ -47,6 +47,7 @@ Round 3 has split these shared-domain debt files into import-only sub-entries wi
 
 - `base/home-stage-artboard.css` -> `base/home-stage-artboard/`
 - `base/home-legacy-grid.css` -> `base/home-legacy-grid/`
+- `hud-components/pop-tech-terminal.css` -> `hud-components/pop-tech-terminal/`
 - `modals/mailbox.css` -> `modals/mailbox/`
 - `commerce/recruitment/board.css` -> `commerce/recruitment/board/`
 

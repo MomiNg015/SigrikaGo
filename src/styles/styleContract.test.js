@@ -53,7 +53,6 @@ const TEST_STYLE_FILES = new Set([
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
-  ["hud-components/pop-tech-terminal.css", 8513],
   ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
   ["mobile-adaptive/bright-school-portrait/settings-tabs.css", 6576],
@@ -740,6 +739,18 @@ describe("root CSS entry contract", () => {
     expect(hudEntry).not.toContain(".app-shell {");
     expect(hudEntry).not.toContain(".shop-tabs button.active");
     expect(hudEntry).not.toContain(".character-chain-badge");
+
+    const popTechEntry = readFileSync(new URL("./hud-components/pop-tech-terminal.css", import.meta.url), "utf8");
+    expect(cssImports(popTechEntry)).toEqual([
+      "./pop-tech-terminal/tokens.css",
+      "./pop-tech-terminal/modal-surfaces.css",
+      "./pop-tech-terminal/interactive-motion.css",
+      "./pop-tech-terminal/home-hologram.css",
+      "./pop-tech-terminal/character-deploy.css",
+      "./pop-tech-terminal/tabs-actions.css",
+      "./pop-tech-terminal/keyframes.css"
+    ]);
+    expect(popTechEntry).not.toContain(".small-modal,");
   });
 
   it("keeps HUD hardening as an import-only component sub-entry", () => {

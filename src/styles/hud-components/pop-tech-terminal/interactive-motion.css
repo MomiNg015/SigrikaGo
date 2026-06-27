@@ -1,0 +1,26 @@
+button,
+.primary-action,
+.secondary-action,
+.danger-action,
+.icon-button,
+.close-button,
+.utility-entry,
+.shop-tabs button,
+.friends-tabs button,
+.settings-tabs button,
+.shop-pagination button {
+  transition:
+    transform 180ms cubic-bezier(0.22, 1.2, 0.36, 1),
+    filter 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease !important;
+}
+
+button:not(:disabled):hover,
+button:not(:disabled):focus-visible,
+.utility-entry:not(:disabled):hover,
+.utility-entry:not(:disabled):focus-visible {
+  transform: scale(1.03);
+  filter: saturate(1.12) brightness(1.08);
+}
