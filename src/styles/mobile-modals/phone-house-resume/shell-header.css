@@ -1,0 +1,74 @@
+@media (max-width: 560px) {
+  .house-modal {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    align-content: stretch;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .house-modal .house-header {
+    min-width: 0;
+    margin-bottom: 0;
+    padding-right: 40px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .house-modal .house-header h2 {
+    min-width: 0;
+    font-size: 18px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .resume-modal .house-header {
+    padding-right: 0;
+  }
+
+  .resume-header-actions {
+    gap: 6px;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .resume-title-actions {
+    gap: 5px;
+    padding-right: clamp(116px, 34vw, 138px);
+  }
+
+  .resume-title-actions h2 {
+    flex: 1 1 100%;
+  }
+
+  .resume-mini-action {
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .resume-header-actions .close-button {
+    position: static;
+    flex: 0 0 auto;
+  }
+
+  .resume-wallet {
+    min-width: 0;
+    min-height: var(--modal-close-size, 44px);
+    padding: 6px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+    word-break: keep-all;
+  }
+
+  .house-modal .replay-open-button {
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding: 6px 9px;
+    gap: 5px;
+    font-size: 12px;
+  }
+}

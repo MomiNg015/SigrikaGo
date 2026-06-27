@@ -59,7 +59,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/mobile-profile-records.css", 6842],
   ["mobile-adaptive/phone-core.css", 6418],
   ["mobile-adaptive/phone-gacha.css", 6147],
-  ["mobile-modals/phone-house-resume.css", 6956],
   ["mobile-room/portrait-room.css", 7502],
   ["modals/character-opening.css", 6330],
   ["responsive/phone-portrait-room.css", 6803],
@@ -723,6 +722,16 @@ describe("root CSS entry contract", () => {
     expect(mobileModalsEntry).not.toContain(".modal-backdrop {");
     expect(mobileModalsEntry).not.toContain(".leaderboard-row");
     expect(mobileModalsEntry).not.toContain(".house-modal .character-list");
+
+    const phoneHouseResumeEntry = readFileSync(new URL("./mobile-modals/phone-house-resume.css", import.meta.url), "utf8");
+    expect(cssImports(phoneHouseResumeEntry)).toEqual([
+      "./phone-house-resume/shell-header.css",
+      "./phone-house-resume/stats-records.css",
+      "./phone-house-resume/character-list.css",
+      "./phone-house-resume/decorations.css",
+      "./phone-house-resume/achievement-personalization.css"
+    ]);
+    expect(phoneHouseResumeEntry).not.toContain(".house-modal {");
   });
 
   it("keeps hud-components.css as an import-only HUD compatibility entry", () => {

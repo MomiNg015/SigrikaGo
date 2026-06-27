@@ -1,0 +1,54 @@
+@media (max-width: 560px) {
+  .house-modal .owned-decoration-section {
+    min-width: 0;
+    min-height: 0;
+    margin-top: 0;
+    overflow: auto;
+    padding-top: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .house-modal .owned-decoration-header {
+    gap: 6px;
+    margin-bottom: 6px;
+    padding-right: 0;
+    flex-wrap: nowrap;
+  }
+
+  .house-modal .owned-decoration-header h3 {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 15px;
+  }
+
+  .house-modal .owned-decoration-header .compact-action {
+    flex: 0 1 auto;
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .house-modal .owned-decoration-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .house-modal .owned-decoration-chip {
+    width: 100%;
+    min-width: 0;
+    min-height: 54px;
+    padding: 5px;
+  }
+
+  .house-modal .owned-decoration-chip .stone-decoration-preview {
+    width: 50px;
+    height: 26px;
+  }
+
+  .house-modal .owned-decoration-chip strong {
+    font-size: 11px;
+  }
+}

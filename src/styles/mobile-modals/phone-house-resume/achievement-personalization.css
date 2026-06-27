@@ -1,0 +1,95 @@
+@media (max-width: 560px) {
+  .achievement-modal,
+  .personalization-modal {
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 10px;
+    overflow: auto;
+  }
+
+  .achievement-tabs {
+    gap: 6px;
+  }
+
+  .achievement-tabs button {
+    min-height: 36px;
+    font-size: 12px;
+  }
+
+  .achievement-heading {
+    display: none;
+  }
+
+  .achievement-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+    padding: 10px;
+  }
+
+  .achievement-row strong {
+    font-size: 15px;
+  }
+
+  .achievement-row p {
+    font-size: 13px;
+  }
+
+  .achievement-time-popover {
+    max-width: calc(100vw - 28px);
+  }
+
+  .personalization-preview,
+  .personalization-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .personalization-preview {
+    gap: 8px;
+  }
+
+  .personalization-preview .user-identity {
+    justify-self: start;
+  }
+
+  .personalization-section button {
+    grid-template-columns: 30px minmax(0, 1fr);
+    min-height: 42px;
+  }
+
+  .personalization-section-summary {
+    gap: 7px;
+    padding: 8px;
+  }
+
+  .personalization-current-option {
+    min-height: 40px;
+    grid-template-columns: 30px minmax(0, 1fr);
+  }
+
+  .personalization-picker-backdrop {
+    padding: 10px;
+  }
+
+  .personalization-picker-modal {
+    width: min(100%, calc(100vw - 28px));
+    max-height: calc(100dvh - 56px);
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .personalization-picker-header h3 {
+    font-size: 18px;
+  }
+
+  .personalization-picker-list {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .personalization-picker-list button {
+    min-height: 48px;
+    grid-template-columns: 34px minmax(0, 1fr);
+    padding: 8px 10px;
+  }
+}

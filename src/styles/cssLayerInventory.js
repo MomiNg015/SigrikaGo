@@ -48,6 +48,12 @@ export const CSS_LAYER_GROUPS = [
       "mobile-home.css",
       "home-terminal.css",
       "mobile-modals.css",
+      "mobile-modals/phone-house-resume.css",
+      "mobile-modals/phone-house-resume/shell-header.css",
+      "mobile-modals/phone-house-resume/stats-records.css",
+      "mobile-modals/phone-house-resume/character-list.css",
+      "mobile-modals/phone-house-resume/decorations.css",
+      "mobile-modals/phone-house-resume/achievement-personalization.css",
       "hud-components.css",
       "hud-components/pop-tech-terminal.css",
       "hud-components/pop-tech-terminal/tokens.css",
@@ -170,6 +176,16 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "base/home-stage-artboard/player-zone.css",
       "base/home-stage-artboard/image-entries.css",
       "base/home-stage-artboard/responsive.css"
+    ]
+  },
+  {
+    entry: "mobile-modals/phone-house-resume.css",
+    files: [
+      "mobile-modals/phone-house-resume/shell-header.css",
+      "mobile-modals/phone-house-resume/stats-records.css",
+      "mobile-modals/phone-house-resume/character-list.css",
+      "mobile-modals/phone-house-resume/decorations.css",
+      "mobile-modals/phone-house-resume/achievement-personalization.css"
     ]
   },
   {

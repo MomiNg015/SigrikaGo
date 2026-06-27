@@ -1,0 +1,55 @@
+@media (max-width: 560px) {
+  .house-modal .profile-grid {
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .resume-modal .profile-grid.top-stats-bar {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .resume-modal .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .resume-modal .profile-record-lines {
+    display: grid;
+    gap: 2px;
+    white-space: normal;
+  }
+
+  .resume-modal .profile-record-separator {
+    display: none;
+  }
+
+  .resume-character-records {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .resume-character-records .character-record-list {
+    min-height: 0;
+    height: 100%;
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  .house-modal .stat {
+    min-width: 0;
+    padding: 7px 8px;
+    font-size: 12px;
+  }
+
+  .house-modal .stat > span,
+  .house-modal .stat strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
