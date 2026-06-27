@@ -57,7 +57,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
   ["room/board/stones-skill-effects.css", 7290],
-  ["themes/bright-school/mobile/room/viewport-player-strips.css", 7109],
   ["themes/bright-school/quality-base/refinement-board.css", 6997]
 ]);
 
@@ -259,6 +258,19 @@ describe("root CSS entry contract", () => {
       "./shell-header-menu/menu-panel-items.css"
     ]);
     expect(shellHeaderMenuEntry).not.toContain(".mobile-room-screen {");
+
+    const viewportPlayerStripsEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/room/viewport-player-strips.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(viewportPlayerStripsEntry)).toEqual([
+      "./viewport-player-strips/viewport-shell.css",
+      "./viewport-player-strips/player-card-grid.css",
+      "./viewport-player-strips/portrait-badge.css",
+      "./viewport-player-strips/player-meta-name.css",
+      "./viewport-player-strips/timer-captures-skill.css"
+    ]);
+    expect(viewportPlayerStripsEntry).not.toContain(".player-info {");
   });
 
   it("hides native number input spinner controls while preserving number inputs", () => {

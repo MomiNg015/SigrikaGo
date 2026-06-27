@@ -1,0 +1,58 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .digital-timer {
+    grid-area: time !important;
+    min-width: 0 !important;
+    min-height: 30px !important;
+    padding: 2px 6px !important;
+    grid-template-columns: auto minmax(38px, 1fr) !important;
+    gap: 6px !important;
+    border-width: 2px !important;
+    border-radius: 14px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .timer-primary,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .timer-digits {
+    font-size: 18px !important;
+    line-height: 1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .timer-track {
+    height: 7px !important;
+    min-width: 38px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .captures {
+    grid-area: captures !important;
+    min-width: 0 !important;
+    display: flex !important;
+    gap: 3px !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .captures span {
+    min-width: 0 !important;
+    min-height: 18px !important;
+    padding: 1px 4px !important;
+    font-size: 10px !important;
+    border-width: 1px !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .skill-chip-wrap {
+    grid-area: skill !important;
+    min-width: 0 !important;
+    justify-self: stretch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .skill-chip {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 24px !important;
+    padding: 2px 6px !important;
+    font-size: 10px !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}

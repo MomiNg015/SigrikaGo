@@ -1,0 +1,22 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    min-height: 64px !important;
+    max-height: var(--mobile-room-player-strip-height) !important;
+    padding: 5px 7px !important;
+    display: grid !important;
+    grid-template-columns: 48px minmax(0, 1fr) minmax(118px, 0.7fr) !important;
+    grid-template-rows: minmax(0, 30px) minmax(0, 26px) !important;
+    grid-template-areas:
+      "portrait meta time"
+      "portrait captures skill" !important;
+    gap: 4px 6px !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    border-width: 2px !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+  }
+}

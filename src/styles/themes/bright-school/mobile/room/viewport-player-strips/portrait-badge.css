@@ -1,0 +1,40 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .portrait-wrap {
+    grid-area: portrait !important;
+    min-width: 0 !important;
+    align-self: center !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info img {
+    width: 46px !important;
+    height: 46px !important;
+    object-fit: contain !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .portrait-wrap .character-chain-badge {
+    left: 50% !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: -4px !important;
+    min-width: 20px !important;
+    min-height: 14px !important;
+    max-width: 38px !important;
+    padding: 1px 4px !important;
+    border-width: 1px !important;
+    font-size: 0 !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .portrait-wrap .character-chain-badge::before {
+    content: "★" !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .portrait-wrap .character-chain-badge::after {
+    content: attr(data-chain-count) !important;
+    margin-left: 1px !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+  }
+}

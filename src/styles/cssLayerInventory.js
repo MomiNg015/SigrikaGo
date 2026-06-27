@@ -148,6 +148,12 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/mobile/room/shell-header-menu/menu-buttons.css",
       "themes/bright-school/mobile/room/shell-header-menu/menu-panel.css",
       "themes/bright-school/mobile/room/shell-header-menu/menu-panel-items.css",
+      "themes/bright-school/mobile/room/viewport-player-strips.css",
+      "themes/bright-school/mobile/room/viewport-player-strips/viewport-shell.css",
+      "themes/bright-school/mobile/room/viewport-player-strips/player-card-grid.css",
+      "themes/bright-school/mobile/room/viewport-player-strips/portrait-badge.css",
+      "themes/bright-school/mobile/room/viewport-player-strips/player-meta-name.css",
+      "themes/bright-school/mobile/room/viewport-player-strips/timer-captures-skill.css",
       "themes/bright-school/mobile/room/dock-actions.css",
       "themes/bright-school/mobile/room/dock-actions/dock-tabs-shell.css",
       "themes/bright-school/mobile/room/dock-actions/action-panel-hint.css",
@@ -424,6 +430,16 @@ export const CSS_THEME_OVERLAY_SPLITS = [
       "themes/bright-school/mobile/room/shell-header-menu/menu-buttons.css",
       "themes/bright-school/mobile/room/shell-header-menu/menu-panel.css",
       "themes/bright-school/mobile/room/shell-header-menu/menu-panel-items.css"
+    ]
+  },
+  {
+    entry: "themes/bright-school/mobile/room/viewport-player-strips.css",
+    files: [
+      "themes/bright-school/mobile/room/viewport-player-strips/viewport-shell.css",
+      "themes/bright-school/mobile/room/viewport-player-strips/player-card-grid.css",
+      "themes/bright-school/mobile/room/viewport-player-strips/portrait-badge.css",
+      "themes/bright-school/mobile/room/viewport-player-strips/player-meta-name.css",
+      "themes/bright-school/mobile/room/viewport-player-strips/timer-captures-skill.css"
     ]
   }
 ];
