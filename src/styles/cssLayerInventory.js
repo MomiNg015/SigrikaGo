@@ -156,6 +156,10 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/bright-school-overrides/leaderboard-cards/rank-current.css",
       "mobile-adaptive/home-narrow-desktop.css",
       "mobile-adaptive/bright-school-portrait.css",
+      "mobile-adaptive/bright-school-portrait/resume-modal-layout.css",
+      "mobile-adaptive/bright-school-portrait/resume-modal-layout/actions-stats-records.css",
+      "mobile-adaptive/bright-school-portrait/resume-modal-layout/header-grid.css",
+      "mobile-adaptive/bright-school-portrait/resume-modal-layout/achievement-personalization.css",
       "mobile-adaptive/reduced-motion.css"
     ],
     guidance: "This layer stays after themes.css imports. Move or split only with desktop and mobile verification."
@@ -294,6 +298,14 @@ export const CSS_FINAL_MOBILE_SAFETY_SPLITS = [
       "mobile-adaptive/bright-school-overrides/leaderboard-cards/player-identity.css",
       "mobile-adaptive/bright-school-overrides/leaderboard-cards/score-record.css",
       "mobile-adaptive/bright-school-overrides/leaderboard-cards/rank-current.css"
+    ]
+  },
+  {
+    entry: "mobile-adaptive/bright-school-portrait/resume-modal-layout.css",
+    files: [
+      "mobile-adaptive/bright-school-portrait/resume-modal-layout/actions-stats-records.css",
+      "mobile-adaptive/bright-school-portrait/resume-modal-layout/header-grid.css",
+      "mobile-adaptive/bright-school-portrait/resume-modal-layout/achievement-personalization.css"
     ]
   },
   {
