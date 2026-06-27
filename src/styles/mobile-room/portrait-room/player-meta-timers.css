@@ -1,0 +1,71 @@
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .mobile-room-screen .player-meta {
+    align-content: center;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0 4px;
+  }
+
+  .mobile-room-screen .name-button {
+    grid-column: 1;
+    max-width: 100%;
+    font-size: 12.5px;
+    line-height: 1;
+  }
+
+  .mobile-room-screen .rank-tag,
+  .mobile-room-screen .rating-tag {
+    min-width: 0;
+    min-height: 17px;
+    padding: 2px 5px;
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .color-badge {
+    display: none;
+  }
+
+  .mobile-room-screen .digital-timer {
+    min-height: 30px;
+    padding: 2px 6px;
+  }
+
+  .mobile-room-screen .timer-primary {
+    min-width: 3.2ch;
+    font-size: 16px;
+  }
+
+  .mobile-room-screen .timer-periods {
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .captures {
+    align-self: center;
+    gap: 2px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .captures span {
+    min-height: 18px;
+    padding: 1px 3px;
+    font-size: 10px;
+    gap: 2px;
+  }
+
+  .mobile-room-screen .captures strong {
+    font-size: 9px;
+  }
+
+  .mobile-room-screen .captures .info-stat::after {
+    left: auto;
+    right: 0;
+    bottom: calc(100% + 4px);
+    max-width: min(192px, calc(100vw - 32px));
+    padding: 6px 8px;
+    font-size: 10px;
+    line-height: 1.35;
+    transform: translateY(4px);
+    z-index: 50;
+  }
+}

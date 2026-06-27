@@ -53,7 +53,6 @@ const TEST_STYLE_FILES = new Set([
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
-  ["mobile-room/portrait-room.css", 7502],
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/board/stones-skill-effects.css", 7290],
   ["themes/bright-school/quality-base/refinement-board.css", 6997]
@@ -846,6 +845,19 @@ describe("root CSS entry contract", () => {
     expect(mobileRoomEntry).not.toContain(".mobile-room-screen {");
     expect(mobileRoomEntry).not.toContain(".mobile-room-viewport {");
     expect(mobileRoomEntry).not.toContain(".mobile-tab-panel .action-bar");
+
+    const portraitRoomEntry = readFileSync(new URL("./mobile-room/portrait-room.css", import.meta.url), "utf8");
+    expect(cssImports(portraitRoomEntry)).toEqual([
+      "./portrait-room/shell-viewport.css",
+      "./portrait-room/player-card-layout.css",
+      "./portrait-room/header-menu.css",
+      "./portrait-room/portrait-badges.css",
+      "./portrait-room/player-meta-timers.css",
+      "./portrait-room/skill-replay-popover.css",
+      "./portrait-room/board-dock-tabs.css",
+      "./portrait-room/decision-actions-hint.css"
+    ]);
+    expect(portraitRoomEntry).not.toContain(".mobile-room-screen {");
   });
 
   it("keeps mobile room base shell and dock styles as an import-only sub-entry", () => {

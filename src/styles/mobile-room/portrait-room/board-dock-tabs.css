@@ -1,0 +1,39 @@
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .mobile-room-screen .board-stage {
+    width: var(--mobile-room-board-size);
+    aspect-ratio: 1;
+  }
+
+  .mobile-room-screen .mobile-room-dock {
+    grid-area: dock;
+    max-height: calc(var(--mobile-room-dock-panel-height) + 46px);
+  }
+
+  .mobile-room-screen .mobile-tab-button {
+    min-height: 40px;
+    padding: 3px 7px;
+    font-size: 12px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel {
+    max-height: var(--mobile-room-dock-panel-height);
+    overflow: auto;
+    padding: 5px;
+  }
+
+  .mobile-room-screen #mobile-room-panel-actions {
+    overflow: visible;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar {
+    grid-auto-rows: 46px;
+    align-items: stretch;
+    overflow: visible;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar button {
+    min-height: 46px;
+    height: 46px;
+    padding: 4px;
+  }
+}

@@ -95,6 +95,15 @@ export const CSS_LAYER_GROUPS = [
       "room/actions-requests/replay-disabled.css",
       "mobile-room.css",
       "mobile-room/base-shell-dock.css",
+      "mobile-room/portrait-room.css",
+      "mobile-room/portrait-room/shell-viewport.css",
+      "mobile-room/portrait-room/player-card-layout.css",
+      "mobile-room/portrait-room/header-menu.css",
+      "mobile-room/portrait-room/portrait-badges.css",
+      "mobile-room/portrait-room/player-meta-timers.css",
+      "mobile-room/portrait-room/skill-replay-popover.css",
+      "mobile-room/portrait-room/board-dock-tabs.css",
+      "mobile-room/portrait-room/decision-actions-hint.css",
       "room-terminal.css",
       "room-terminal/board-actions.css",
       "room-terminal/players-timers-skills.css"
@@ -458,6 +467,19 @@ export const CSS_GAMEPLAY_ROOM_SPLITS = [
       "room/actions-requests/request-toast.css",
       "room/actions-requests/action-states-tools.css",
       "room/actions-requests/replay-disabled.css"
+    ]
+  },
+  {
+    entry: "mobile-room/portrait-room.css",
+    files: [
+      "mobile-room/portrait-room/shell-viewport.css",
+      "mobile-room/portrait-room/player-card-layout.css",
+      "mobile-room/portrait-room/header-menu.css",
+      "mobile-room/portrait-room/portrait-badges.css",
+      "mobile-room/portrait-room/player-meta-timers.css",
+      "mobile-room/portrait-room/skill-replay-popover.css",
+      "mobile-room/portrait-room/board-dock-tabs.css",
+      "mobile-room/portrait-room/decision-actions-hint.css"
     ]
   }
 ];

@@ -1,0 +1,20 @@
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .mobile-room-screen {
+    --mobile-room-board-size: min(calc(100vw - 18px), calc(100dvh - 386px), 352px);
+    --mobile-room-dock-panel-height: clamp(106px, 16dvh, 134px);
+    --mobile-room-player-strip-height: clamp(64px, 8.8dvh, 74px);
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen .mobile-room-viewport {
+    grid-template-areas:
+      "opponent"
+      "board"
+      "self"
+      "dock";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, var(--mobile-room-player-strip-height)) minmax(0, 1fr) minmax(0, var(--mobile-room-player-strip-height)) auto;
+    gap: 6px;
+  }
+}

@@ -83,6 +83,7 @@ Theme overlay cleanup is tracked separately from shared-domain and final-mobile 
 Gameplay and room cleanup is tracked separately from shared-domain and theme cleanup because those selectors affect active room controls:
 
 - `room/actions-requests.css` -> `room/actions-requests/`
+- `mobile-room/portrait-room.css` -> `mobile-room/portrait-room/`
 
 `CSS_GAMEPLAY_ROOM_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the high-risk gameplay room bucket.
 

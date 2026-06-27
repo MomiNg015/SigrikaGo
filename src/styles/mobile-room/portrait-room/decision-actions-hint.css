@@ -1,0 +1,71 @@
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .mobile-room-screen .mobile-tab-panel .decision-bar {
+    grid-template-columns: minmax(0, 1fr) minmax(128px, 0.72fr);
+    grid-auto-rows: auto;
+    align-items: center;
+    gap: 6px;
+    min-height: 0;
+    padding: 6px 8px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy {
+    gap: 2px;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy strong {
+    font-size: 13px;
+    line-height: 1.1;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-copy span {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 10.5px;
+    line-height: 1.22;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    width: 100%;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .decision-actions button {
+    min-height: 42px;
+    height: auto;
+    padding: 5px 4px;
+    font-size: 11px;
+    line-height: 1.12;
+  }
+
+  .mobile-room-screen #mobile-room-panel-actions .operation-hint {
+    max-height: 42px;
+    padding: 5px 8px;
+    overflow: hidden;
+  }
+
+  .mobile-room-screen #mobile-room-panel-actions .operation-hint strong {
+    display: inline;
+    margin-right: 6px;
+    margin-bottom: 0;
+    font-size: 11px;
+  }
+
+  .mobile-room-screen #mobile-room-panel-actions .operation-hint p {
+    display: inline;
+    font-size: 10.5px;
+    line-height: 1.25;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .action-bar .action-label {
+    display: none;
+  }
+
+  .mobile-room-screen .mobile-tab-panel .skill-action {
+    min-width: 0;
+    grid-column: 2;
+  }
+}

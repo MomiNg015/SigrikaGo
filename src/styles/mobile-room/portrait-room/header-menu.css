@@ -1,0 +1,34 @@
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .mobile-room-screen .room-toggles {
+    display: none;
+  }
+
+  .mobile-room-screen .room-mobile-exit {
+    display: inline-grid;
+    place-items: center;
+  }
+
+  .mobile-room-screen .room-mobile-exit,
+  .mobile-room-screen .room-mobile-menu-toggle,
+  .mobile-room-screen .room-mobile-menu .toggle {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .mobile-room-screen .room-mobile-menu-panel {
+    inline-size: min(176px, calc(100vw - 24px));
+    min-inline-size: min(156px, calc(100vw - 24px));
+    width: min(176px, calc(100vw - 24px));
+    right: 0;
+  }
+
+  .mobile-room-screen .room-title-stack {
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .room-info-tag.close-countdown {
+    display: block;
+  }
+}
