@@ -134,6 +134,10 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive.css",
       "mobile-adaptive/mobile-room-portrait.css",
       "mobile-adaptive/mobile-room-landscape.css",
+      "mobile-adaptive/mobile-profile-records.css",
+      "mobile-adaptive/mobile-profile-records/profile-shell-hero.css",
+      "mobile-adaptive/mobile-profile-records/character-record-list.css",
+      "mobile-adaptive/mobile-profile-records/footer-resume-stats.css",
       "mobile-adaptive/bright-school-overrides.css",
       "mobile-adaptive/home-narrow-desktop.css",
       "mobile-adaptive/bright-school-portrait.css",
@@ -245,6 +249,17 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "commerce/recruitment/board/surface.css",
       "commerce/recruitment/board/cards.css",
       "commerce/recruitment/board/motion.css"
+    ]
+  }
+];
+
+export const CSS_FINAL_MOBILE_SAFETY_SPLITS = [
+  {
+    entry: "mobile-adaptive/mobile-profile-records.css",
+    files: [
+      "mobile-adaptive/mobile-profile-records/profile-shell-hero.css",
+      "mobile-adaptive/mobile-profile-records/character-record-list.css",
+      "mobile-adaptive/mobile-profile-records/footer-resume-stats.css"
     ]
   }
 ];

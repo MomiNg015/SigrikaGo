@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  CSS_FINAL_MOBILE_SAFETY_SPLITS,
   CSS_LAYER_GROUPS,
   CSS_PROTECTED_SURFACES,
   CSS_REFACTOR_ROUNDS,
@@ -27,6 +28,16 @@ function concreteCssAfterImports(source) {
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/@import\s+"[^"]+"[^;]*;\s*/g, "")
     .trim();
+}
+
+function expectedRelativeImports(split) {
+  return split.files.map((filePath) => {
+    const [, ...nestedPath] = filePath.split("/");
+    const entryDirectory = split.entry.split("/").slice(0, -1);
+    const relativeParts = nestedPath.slice(entryDirectory.length - 1);
+
+    return `./${relativeParts.join("/")}`;
+  });
 }
 
 describe("CSS layer inventory", () => {
@@ -92,21 +103,30 @@ describe("CSS layer inventory", () => {
 
     for (const split of CSS_ROUND3_SHARED_SPLITS) {
       const entrySource = readFileSync(join(stylesDir, split.entry), "utf8");
-      const expectedImports = split.files.map((filePath) => {
-        const [, ...nestedPath] = filePath.split("/");
-        const entryDirectory = split.entry.split("/").slice(0, -1);
-        const relativeParts = nestedPath.slice(entryDirectory.length - 1);
 
-        return `./${relativeParts.join("/")}`;
-      });
-
-      expect(cssImports(entrySource)).toEqual(expectedImports);
+      expect(cssImports(entrySource)).toEqual(expectedRelativeImports(split));
       expect(concreteCssAfterImports(entrySource)).toBe("");
       expect(round3Candidates.has(split.entry)).toBe(true);
 
       for (const filePath of split.files) {
         expect(round3Candidates.has(filePath)).toBe(true);
         expect(protectedFiles.has(filePath)).toBe(false);
+      }
+    }
+  });
+
+  it("keeps final mobile safety splits import-only and in the final safety bucket", () => {
+    const finalMobileFiles = new Set(inventoryFilesForGroup("final-mobile-safety"));
+
+    for (const split of CSS_FINAL_MOBILE_SAFETY_SPLITS) {
+      const entrySource = readFileSync(join(stylesDir, split.entry), "utf8");
+
+      expect(cssImports(entrySource)).toEqual(expectedRelativeImports(split));
+      expect(concreteCssAfterImports(entrySource)).toBe("");
+      expect(finalMobileFiles.has(split.entry)).toBe(true);
+
+      for (const filePath of split.files) {
+        expect(finalMobileFiles.has(filePath)).toBe(true);
       }
     }
   });

@@ -56,6 +56,12 @@ Round 3 has split these shared-domain debt files into import-only sub-entries wi
 
 `CSS_ROUND3_SHARED_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only and stays out of gameplay or skill protected files.
 
+Final mobile safety cleanup is tracked separately because `mobile-adaptive.css` stays after `themes.css` and may override desktop and mobile theme rules:
+
+- `mobile-adaptive/mobile-profile-records.css` -> `mobile-adaptive/mobile-profile-records/`
+
+`CSS_FINAL_MOBILE_SAFETY_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the final mobile safety bucket.
+
 Round 4 regression gates are recorded in `CSS_ROUND4_REGRESSION_CHECKS`:
 
 - Static CSS contracts: `npm test -- src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js`

@@ -56,7 +56,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
   ["mobile-adaptive/bright-school-portrait/settings-tabs.css", 6576],
-  ["mobile-adaptive/mobile-profile-records.css", 6842],
   ["mobile-adaptive/phone-core.css", 6418],
   ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-room/portrait-room.css", 7502],
@@ -373,6 +372,17 @@ describe("root CSS entry contract", () => {
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
+
+    const mobileProfileRecordsEntry = readFileSync(
+      new URL("./mobile-adaptive/mobile-profile-records.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(mobileProfileRecordsEntry)).toEqual([
+      "./mobile-profile-records/profile-shell-hero.css",
+      "./mobile-profile-records/character-record-list.css",
+      "./mobile-profile-records/footer-resume-stats.css"
+    ]);
+    expect(mobileProfileRecordsEntry).not.toContain(".user-profile-card {");
   });
 
   it("keeps mobile room portrait safety styles as an import-only sub-entry", () => {

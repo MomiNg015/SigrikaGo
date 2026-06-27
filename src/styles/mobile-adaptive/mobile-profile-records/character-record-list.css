@@ -1,0 +1,79 @@
+@media (max-width: 768px) {
+  .user-profile-card .profile-record-lines {
+    display: grid !important;
+    justify-items: center !important;
+    gap: 1px !important;
+    white-space: normal !important;
+  }
+
+  .user-profile-card .profile-record-total,
+  .user-profile-card .profile-record-breakdown {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-align: center !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .user-profile-card .profile-record-breakdown {
+    font-size: clamp(12px, 3.45vw, 16px) !important;
+  }
+
+  .user-profile-card .profile-record-separator {
+    display: none !important;
+  }
+
+  .user-profile-card .profile-rank-results {
+    min-height: 44px !important;
+    margin: 0 2px !important;
+    padding: 8px 10px !important;
+  }
+
+  .user-profile-card .profile-character-section {
+    min-height: 0 !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  .user-profile-card .profile-character-list {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-right: 2px !important;
+  }
+
+  .user-profile-card .profile-character-row {
+    grid-template-columns: 38px minmax(48px, 0.72fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.48fr) !important;
+    gap: 4px !important;
+    margin: 0 2px 4px !important;
+    padding: 8px !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 4px) !important;
+    box-sizing: border-box !important;
+    font-size: clamp(10px, 2.72vw, 12px) !important;
+  }
+
+  .user-profile-card .profile-character-row > * {
+    min-width: 0 !important;
+  }
+
+  .user-profile-card .profile-character-row > span:nth-child(2) {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .user-profile-card .profile-character-row :is(.profile-character-total, .profile-character-wins, .profile-character-losses, .profile-character-draws, .profile-character-rate) {
+    justify-self: end !important;
+    text-align: right !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    font-variant-numeric: tabular-nums !important;
+  }
+}

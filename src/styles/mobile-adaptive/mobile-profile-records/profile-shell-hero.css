@@ -1,0 +1,90 @@
+/* Mobile resume/profile record line safety rules. */
+@media (max-width: 768px) {
+  .user-profile-card {
+    grid-template-rows: auto auto auto auto minmax(0, 1fr) auto !important;
+    gap: 10px !important;
+    max-height: calc(100dvh - 72px) !important;
+    padding: 2px 8px 8px !important;
+    overflow-x: visible !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .user-profile-card .profile-resume-hero {
+    grid-template-columns: 86px minmax(0, 1fr) !important;
+    justify-items: start !important;
+    gap: 10px !important;
+    padding: 12px 102px 14px 12px !important;
+    text-align: left !important;
+  }
+
+  .user-profile-card .profile-resume-hero .profile-chain-portrait {
+    justify-self: start !important;
+  }
+
+  .user-profile-card .profile-resume-hero h3 {
+    max-width: 100% !important;
+    margin: 0 !important;
+    font-size: clamp(20px, 6vw, 25px) !important;
+    line-height: 1.18 !important;
+  }
+
+  .user-profile-card .profile-resume-hero img {
+    width: 82px !important;
+    height: 72px !important;
+  }
+
+  .user-profile-card .profile-mode-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    margin: 0 !important;
+    gap: 6px !important;
+  }
+
+  .user-profile-card .profile-mode-tabs button {
+    min-height: 40px !important;
+    padding: 6px 8px !important;
+    white-space: nowrap !important;
+  }
+
+  .user-profile-card .profile-resume-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    padding: 0 2px 4px !important;
+  }
+
+  .user-profile-card .profile-resume-stats > span {
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    align-items: center !important;
+    justify-items: center !important;
+    min-height: 78px !important;
+    padding: 10px 8px !important;
+    border: 2px solid #3d2b25 !important;
+    border-radius: 18px !important;
+    background: linear-gradient(135deg, #fff8e5, #ffdfeb) !important;
+    box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.56) !important;
+    text-align: center !important;
+  }
+
+  .user-profile-card .profile-resume-stats > span > small {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+    font-size: clamp(11px, 3vw, 13px) !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+  }
+
+  .user-profile-card .profile-resume-stats > span > b {
+    display: grid !important;
+    justify-items: center !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: clamp(15px, 4.6vw, 19px) !important;
+    line-height: 1.12 !important;
+    text-align: center !important;
+  }
+}
