@@ -9,6 +9,7 @@ import {
   CSS_REFACTOR_ROUNDS,
   CSS_ROUND3_SHARED_SPLITS,
   CSS_ROUND4_REGRESSION_CHECKS,
+  CSS_THEME_OVERLAY_SPLITS,
   inventoryFilesForGroup
 } from "./cssLayerInventory.js";
 
@@ -127,6 +128,22 @@ describe("CSS layer inventory", () => {
 
       for (const filePath of split.files) {
         expect(finalMobileFiles.has(filePath)).toBe(true);
+      }
+    }
+  });
+
+  it("keeps theme overlay splits import-only and in the theme overlay bucket", () => {
+    const themeOverlayFiles = new Set(inventoryFilesForGroup("bright-school-theme-overrides"));
+
+    for (const split of CSS_THEME_OVERLAY_SPLITS) {
+      const entrySource = readFileSync(join(stylesDir, split.entry), "utf8");
+
+      expect(cssImports(entrySource)).toEqual(expectedRelativeImports(split));
+      expect(concreteCssAfterImports(entrySource)).toBe("");
+      expect(themeOverlayFiles.has(split.entry)).toBe(true);
+
+      for (const filePath of split.files) {
+        expect(themeOverlayFiles.has(filePath)).toBe(true);
       }
     }
   });

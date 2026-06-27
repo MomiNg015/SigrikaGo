@@ -1,0 +1,86 @@
+.theme-settings-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.theme-choice-group {
+  display: grid;
+  gap: 10px;
+}
+
+.theme-choice-heading {
+  color: var(--theme-muted, rgba(224, 247, 244, 0.72));
+  font-family: "Chakra Petch", "Courier New", monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.theme-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.theme-choice-button {
+  position: relative;
+  min-height: 86px;
+  padding: 12px;
+  border: 1px solid var(--theme-border-soft, rgba(0, 255, 190, 0.28));
+  border-radius: var(--theme-radius, 12px);
+  background: rgba(3, 12, 20, 0.58);
+  color: var(--theme-text, #e0f7f4);
+  text-align: left;
+  overflow: hidden;
+  transition: border-color var(--theme-transition, 180ms ease), box-shadow var(--theme-transition, 180ms ease), transform var(--theme-transition, 180ms ease);
+}
+
+.theme-choice-button::before {
+  content: "";
+  position: absolute;
+  inset: auto 12px 10px 12px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--theme-accent, #ff76a3), var(--theme-accent-2, #00ffbe));
+  opacity: 0.45;
+}
+
+.theme-choice-button:hover,
+.theme-choice-button:focus-visible,
+.theme-choice-button.active {
+  border-color: var(--theme-accent, #00ffbe);
+  box-shadow: var(--theme-glow, 0 0 20px rgba(0, 255, 190, 0.18));
+  transform: translateY(calc(-2px * var(--theme-motion-scale, 1)));
+}
+
+.theme-choice-button.active::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  top: 10px;
+  right: 10px;
+  border-radius: 999px;
+  background: var(--theme-accent, #ff76a3);
+  box-shadow: 0 0 10px var(--theme-accent, #ff76a3);
+}
+
+.theme-choice-button strong,
+.theme-choice-button span {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.theme-choice-button strong {
+  margin-bottom: 6px;
+  color: var(--theme-text, #fff);
+  font-size: 14px;
+  text-shadow: var(--theme-text-glow, none);
+}
+
+.theme-choice-button span {
+  color: var(--theme-muted, rgba(224, 247, 244, 0.72));
+  font-size: 12px;
+  line-height: 1.45;
+}

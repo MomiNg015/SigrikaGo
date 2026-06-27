@@ -67,6 +67,12 @@ Final mobile safety cleanup is tracked separately because `mobile-adaptive.css` 
 
 `CSS_FINAL_MOBILE_SAFETY_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the final mobile safety bucket.
 
+Theme overlay cleanup is tracked separately from shared-domain and final-mobile cleanup:
+
+- `themes/shared.css` -> `themes/shared/`
+
+`CSS_THEME_OVERLAY_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the Bright School/theme overlay bucket.
+
 Round 4 regression gates are recorded in `CSS_ROUND4_REGRESSION_CHECKS`:
 
 - Static CSS contracts: `npm test -- src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js`

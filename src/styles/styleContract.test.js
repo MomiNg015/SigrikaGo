@@ -64,7 +64,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["themes/bright-school/mobile/room/shell-header-menu.css", 6872],
   ["themes/bright-school/mobile/room/viewport-player-strips.css", 7109],
   ["themes/bright-school/quality-base/refinement-board.css", 6997],
-  ["themes/shared.css", 7647],
   ["themes/theme-components.css", 7012]
 ]);
 
@@ -161,6 +160,14 @@ describe("root CSS entry contract", () => {
     const themeEntry = readFileSync(new URL("./themes.css", import.meta.url), "utf8");
 
     expect(cssImports(themeEntry).at(-1)).toBe("./mobile-adaptive.css");
+
+    const sharedThemeEntry = readFileSync(new URL("./themes/shared.css", import.meta.url), "utf8");
+    expect(cssImports(sharedThemeEntry)).toEqual([
+      "./shared/player-theme-tokens.css",
+      "./shared/theme-settings-panel.css",
+      "./shared/player-theme-wiring.css"
+    ]);
+    expect(sharedThemeEntry).not.toContain(".app-shell.player-theme-enabled {");
   });
 
   it("hides native number input spinner controls while preserving number inputs", () => {

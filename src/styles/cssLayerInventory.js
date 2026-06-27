@@ -104,6 +104,9 @@ export const CSS_LAYER_GROUPS = [
     entries: [
       "themes.css",
       "themes/shared.css",
+      "themes/shared/player-theme-tokens.css",
+      "themes/shared/theme-settings-panel.css",
+      "themes/shared/player-theme-wiring.css",
       "themes/isolation.css",
       "themes/theme-components.css",
       "themes/bright-school.css",
@@ -326,6 +329,17 @@ export const CSS_FINAL_MOBILE_SAFETY_SPLITS = [
       "mobile-adaptive/mobile-profile-records/profile-shell-hero.css",
       "mobile-adaptive/mobile-profile-records/character-record-list.css",
       "mobile-adaptive/mobile-profile-records/footer-resume-stats.css"
+    ]
+  }
+];
+
+export const CSS_THEME_OVERLAY_SPLITS = [
+  {
+    entry: "themes/shared.css",
+    files: [
+      "themes/shared/player-theme-tokens.css",
+      "themes/shared/theme-settings-panel.css",
+      "themes/shared/player-theme-wiring.css"
     ]
   }
 ];
