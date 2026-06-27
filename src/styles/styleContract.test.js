@@ -57,7 +57,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
   ["room/board/stones-skill-effects.css", 7290],
-  ["themes/bright-school/mobile/room/dock-actions.css", 6459],
   ["themes/bright-school/mobile/room/shell-header-menu.css", 6872],
   ["themes/bright-school/mobile/room/viewport-player-strips.css", 7109],
   ["themes/bright-school/quality-base/refinement-board.css", 6997]
@@ -227,6 +226,27 @@ describe("root CSS entry contract", () => {
       "./notebook-polish/home-entry-badges.css"
     ]);
     expect(notebookPolishEntry).not.toContain(".home-grid-featured {");
+  });
+
+  it("keeps Bright School mobile room dock actions as import-only theme overlays", () => {
+    const brightSchoolMobileRoomEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/room.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(brightSchoolMobileRoomEntry)).toContain("./room/dock-actions.css");
+
+    const dockActionsEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/room/dock-actions.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(dockActionsEntry)).toEqual([
+      "./dock-actions/dock-tabs-shell.css",
+      "./dock-actions/action-panel-hint.css",
+      "./dock-actions/action-grid.css",
+      "./dock-actions/decision-bar.css",
+      "./dock-actions/action-button-labels.css"
+    ]);
+    expect(dockActionsEntry).not.toContain(".mobile-room-dock {");
   });
 
   it("hides native number input spinner controls while preserving number inputs", () => {

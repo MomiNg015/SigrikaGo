@@ -1,0 +1,30 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-action-panel {
+    display: grid !important;
+    grid-template-rows: minmax(0, auto) auto !important;
+    gap: 5px !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen #mobile-room-panel-actions .operation-hint {
+    max-height: 42px !important;
+    padding: 5px 8px !important;
+    overflow: hidden !important;
+    border-width: 1px !important;
+    border-radius: 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen #mobile-room-panel-actions .operation-hint strong {
+    display: inline !important;
+    margin-right: 6px !important;
+    margin-bottom: 0 !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen #mobile-room-panel-actions .operation-hint p {
+    display: inline !important;
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
+  }
+}

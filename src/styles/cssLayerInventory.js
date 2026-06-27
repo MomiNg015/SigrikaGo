@@ -141,6 +141,13 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/room.css",
       "themes/bright-school/modals.css",
       "themes/bright-school/mobile.css",
+      "themes/bright-school/mobile/room.css",
+      "themes/bright-school/mobile/room/dock-actions.css",
+      "themes/bright-school/mobile/room/dock-actions/dock-tabs-shell.css",
+      "themes/bright-school/mobile/room/dock-actions/action-panel-hint.css",
+      "themes/bright-school/mobile/room/dock-actions/action-grid.css",
+      "themes/bright-school/mobile/room/dock-actions/decision-bar.css",
+      "themes/bright-school/mobile/room/dock-actions/action-button-labels.css",
       "themes/bright-school/effects.css"
     ],
     guidance: "Bright School late repairs are intentional cascade boundaries. Keep high-specificity repairs unless a visual test proves they are obsolete."
@@ -391,6 +398,16 @@ export const CSS_THEME_OVERLAY_SPLITS = [
       "themes/bright-school/component-repairs/warehouse-character/character-detail.css",
       "themes/bright-school/component-repairs/warehouse-character/profile-character-badges.css",
       "themes/bright-school/component-repairs/warehouse-character/character-target-modal.css"
+    ]
+  },
+  {
+    entry: "themes/bright-school/mobile/room/dock-actions.css",
+    files: [
+      "themes/bright-school/mobile/room/dock-actions/dock-tabs-shell.css",
+      "themes/bright-school/mobile/room/dock-actions/action-panel-hint.css",
+      "themes/bright-school/mobile/room/dock-actions/action-grid.css",
+      "themes/bright-school/mobile/room/dock-actions/decision-bar.css",
+      "themes/bright-school/mobile/room/dock-actions/action-button-labels.css"
     ]
   }
 ];
