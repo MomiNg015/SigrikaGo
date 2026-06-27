@@ -12,6 +12,7 @@ import {
   CSS_ROUND4_REGRESSION_CHECKS,
   CSS_SKILL_PRESENTATION_SPLITS,
   CSS_THEME_OVERLAY_SPLITS,
+  CSS_UTILITY_LAYER_DECISION,
   inventoryFilesForGroup
 } from "./cssLayerInventory.js";
 
@@ -81,6 +82,35 @@ describe("CSS layer inventory", () => {
     expect(CSS_REFACTOR_ROUNDS[0].focus).toContain("Inventory");
     expect(CSS_REFACTOR_ROUNDS[1].allowedWork).toContain("split import-only shared domains");
     expect(CSS_REFACTOR_ROUNDS[2].allowedWork).toContain("board skill presentation verification");
+  });
+
+  it("documents the low-intrusion Tailwind utility layer decision", () => {
+    const rootImports = cssImports(readFileSync(rootStylesPath, "utf8"))
+      .map((importPath) => importPath.replace("./styles/", ""));
+    const tailwindSource = readFileSync(join(stylesDir, CSS_UTILITY_LAYER_DECISION.entry), "utf8");
+
+    expect(CSS_UTILITY_LAYER_DECISION.vitePlugin).toBe("@tailwindcss/vite");
+    expect(CSS_UTILITY_LAYER_DECISION.rootOrder).toEqual({ after: "hud-components.css", before: "themes.css" });
+    expect(rootImports.indexOf(CSS_UTILITY_LAYER_DECISION.entry)).toBe(
+      rootImports.indexOf(CSS_UTILITY_LAYER_DECISION.rootOrder.before) - 1
+    );
+    expect(rootImports[rootImports.indexOf(CSS_UTILITY_LAYER_DECISION.entry) - 1]).toBe(
+      CSS_UTILITY_LAYER_DECISION.rootOrder.after
+    );
+
+    for (const importRule of CSS_UTILITY_LAYER_DECISION.imports) {
+      expect(tailwindSource).toContain(
+        `@import "${importRule.source}" layer(${importRule.layer}) prefix(${importRule.prefix});`
+      );
+    }
+
+    for (const omittedImport of CSS_UTILITY_LAYER_DECISION.omittedImports) {
+      expect(tailwindSource).not.toContain(omittedImport);
+    }
+
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("tw:");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("Bright School");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("themes.css");
   });
 
   it("documents the round-4 desktop, mobile, and skill regression gates", () => {

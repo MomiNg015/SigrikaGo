@@ -6,7 +6,8 @@
 2. admin, lobby, room, modal, commerce/settings, and responsive domain files
 3. mobile and terminal compatibility files
 4. `hud-components.css`
-5. `themes.css` as the final root layer
+5. `tailwind.css` as a prefixed, low-intrusion utility layer
+6. `themes.css` as the final root layer
 
 ## Player Theme Registry
 
@@ -28,6 +29,12 @@ The active theme stack is intentionally conservative:
 5. `mobile-adaptive.css` as the last mobile safety layer.
 
 Do not move `mobile-adaptive.css` earlier in the cascade. It is the final override layer for phone and narrow tablet usability.
+
+## Utility Layer Decision
+
+Tailwind CSS v4 is installed, but only as the low-intrusion `src/styles/tailwind.css` utility layer. It is imported after `hud-components.css` and immediately before `themes.css`, imports only `tailwindcss/theme.css` and `tailwindcss/utilities.css` with `prefix(tw)`, and deliberately omits preflight/global resets.
+
+Use `tw:` utilities only for new low-risk surfaces. Do not migrate existing Bright School, room, board, skill-presentation, or final-mobile CSS to Tailwind without a focused migration plan and visual regression checks. Future player themes remain CSS-entry based through `themes.css` until the theme is imported, scoped, and visually verified.
 
 ## Layer Inventory
 

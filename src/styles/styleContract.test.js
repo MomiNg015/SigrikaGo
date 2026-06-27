@@ -89,6 +89,18 @@ describe("root CSS entry contract", () => {
     expect(ROOT_STYLE_IMPORTS.at(-1)).toBe("./styles/themes.css");
   });
 
+  it("keeps Tailwind as a prefixed utility layer before theme overrides", () => {
+    const source = readFileSync(rootStylesPath, "utf8");
+    const rootImports = cssImports(source);
+    const tailwindEntry = readFileSync(new URL("./tailwind.css", import.meta.url), "utf8");
+
+    expect(rootImports.indexOf("./styles/tailwind.css")).toBe(rootImports.indexOf("./styles/themes.css") - 1);
+    expect(rootImports[rootImports.indexOf("./styles/tailwind.css") - 1]).toBe("./styles/hud-components.css");
+    expect(tailwindEntry).toContain('@import "tailwindcss/theme.css" layer(theme) prefix(tw);');
+    expect(tailwindEntry).toContain('@import "tailwindcss/utilities.css" layer(utilities) prefix(tw);');
+    expect(tailwindEntry).not.toContain("preflight");
+  });
+
   it("keeps top-level style files either imported or intentionally non-CSS tests", () => {
     const topLevelFiles = readdirSync(stylesDir).filter((entry) => !statSync(join(stylesDir, entry)).isDirectory());
     const unexpectedFiles = topLevelFiles.filter((entry) => {

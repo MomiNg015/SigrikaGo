@@ -668,6 +668,23 @@ export const CSS_REFACTOR_ROUNDS = [
   }
 ];
 
+export const CSS_UTILITY_LAYER_DECISION = {
+  id: "tailwind-prefixed-utility-layer",
+  entry: "tailwind.css",
+  vitePlugin: "@tailwindcss/vite",
+  imports: [
+    { source: "tailwindcss/theme.css", layer: "theme", prefix: "tw" },
+    { source: "tailwindcss/utilities.css", layer: "utilities", prefix: "tw" }
+  ],
+  omittedImports: ["tailwindcss/preflight.css"],
+  rootOrder: { after: "hud-components.css", before: "themes.css" },
+  guidance: [
+    "Use only tw: prefixed utility classes for new low-risk surfaces.",
+    "Do not migrate existing Bright School, board, skill, room, or final mobile CSS without a focused visual migration.",
+    "Keep future player themes CSS-entry based through themes.css until imported, scoped, and visually verified."
+  ]
+};
+
 export const CSS_ROUND4_REGRESSION_CHECKS = [
   {
     id: "static-css-contracts",
