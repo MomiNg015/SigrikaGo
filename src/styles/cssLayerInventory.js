@@ -142,6 +142,12 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/modals.css",
       "themes/bright-school/mobile.css",
       "themes/bright-school/mobile/room.css",
+      "themes/bright-school/mobile/room/shell-header-menu.css",
+      "themes/bright-school/mobile/room/shell-header-menu/screen-shell.css",
+      "themes/bright-school/mobile/room/shell-header-menu/header-title-tags.css",
+      "themes/bright-school/mobile/room/shell-header-menu/menu-buttons.css",
+      "themes/bright-school/mobile/room/shell-header-menu/menu-panel.css",
+      "themes/bright-school/mobile/room/shell-header-menu/menu-panel-items.css",
       "themes/bright-school/mobile/room/dock-actions.css",
       "themes/bright-school/mobile/room/dock-actions/dock-tabs-shell.css",
       "themes/bright-school/mobile/room/dock-actions/action-panel-hint.css",
@@ -408,6 +414,16 @@ export const CSS_THEME_OVERLAY_SPLITS = [
       "themes/bright-school/mobile/room/dock-actions/action-grid.css",
       "themes/bright-school/mobile/room/dock-actions/decision-bar.css",
       "themes/bright-school/mobile/room/dock-actions/action-button-labels.css"
+    ]
+  },
+  {
+    entry: "themes/bright-school/mobile/room/shell-header-menu.css",
+    files: [
+      "themes/bright-school/mobile/room/shell-header-menu/screen-shell.css",
+      "themes/bright-school/mobile/room/shell-header-menu/header-title-tags.css",
+      "themes/bright-school/mobile/room/shell-header-menu/menu-buttons.css",
+      "themes/bright-school/mobile/room/shell-header-menu/menu-panel.css",
+      "themes/bright-school/mobile/room/shell-header-menu/menu-panel-items.css"
     ]
   }
 ];

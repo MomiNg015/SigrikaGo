@@ -1,0 +1,32 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-panel {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    width: min(176px, calc(100vw - 24px)) !important;
+    inline-size: min(176px, calc(100vw - 24px)) !important;
+    min-inline-size: min(156px, calc(100vw - 24px)) !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 6px !important;
+    padding: 8px !important;
+    box-sizing: border-box !important;
+    border: 2px solid #3d2b25 !important;
+    border-radius: 16px !important;
+    background:
+      linear-gradient(0deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.64)),
+      repeating-linear-gradient(0deg, rgba(60, 160, 220, 0.12) 0 1px, transparent 1px 18px),
+      #fff9ea !important;
+    box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.58) !important;
+    opacity: 0 !important;
+    transform: translateY(-6px) scale(0.98) !important;
+    transform-origin: top right !important;
+    pointer-events: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+    pointer-events: auto !important;
+  }
+}

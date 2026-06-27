@@ -57,7 +57,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
   ["room/board/stones-skill-effects.css", 7290],
-  ["themes/bright-school/mobile/room/shell-header-menu.css", 6872],
   ["themes/bright-school/mobile/room/viewport-player-strips.css", 7109],
   ["themes/bright-school/quality-base/refinement-board.css", 6997]
 ]);
@@ -247,6 +246,19 @@ describe("root CSS entry contract", () => {
       "./dock-actions/action-button-labels.css"
     ]);
     expect(dockActionsEntry).not.toContain(".mobile-room-dock {");
+
+    const shellHeaderMenuEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/room/shell-header-menu.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(shellHeaderMenuEntry)).toEqual([
+      "./shell-header-menu/screen-shell.css",
+      "./shell-header-menu/header-title-tags.css",
+      "./shell-header-menu/menu-buttons.css",
+      "./shell-header-menu/menu-panel.css",
+      "./shell-header-menu/menu-panel-items.css"
+    ]);
+    expect(shellHeaderMenuEntry).not.toContain(".mobile-room-screen {");
   });
 
   it("hides native number input spinner controls while preserving number inputs", () => {
