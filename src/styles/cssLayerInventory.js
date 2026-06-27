@@ -137,6 +137,11 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/phone-core/global-shell-controls.css",
       "mobile-adaptive/phone-core/modal-tabs-shell.css",
       "mobile-adaptive/phone-core/scroll-detail-result.css",
+      "mobile-adaptive/phone-gacha.css",
+      "mobile-adaptive/phone-gacha/modal-tabs.css",
+      "mobile-adaptive/phone-gacha/stage-machine.css",
+      "mobile-adaptive/phone-gacha/controls-actions.css",
+      "mobile-adaptive/phone-gacha/list-result-dialogs.css",
       "mobile-adaptive/mobile-room-portrait.css",
       "mobile-adaptive/mobile-room-landscape.css",
       "mobile-adaptive/mobile-profile-records.css",
@@ -266,6 +271,15 @@ export const CSS_FINAL_MOBILE_SAFETY_SPLITS = [
       "mobile-adaptive/phone-core/global-shell-controls.css",
       "mobile-adaptive/phone-core/modal-tabs-shell.css",
       "mobile-adaptive/phone-core/scroll-detail-result.css"
+    ]
+  },
+  {
+    entry: "mobile-adaptive/phone-gacha.css",
+    files: [
+      "mobile-adaptive/phone-gacha/modal-tabs.css",
+      "mobile-adaptive/phone-gacha/stage-machine.css",
+      "mobile-adaptive/phone-gacha/controls-actions.css",
+      "mobile-adaptive/phone-gacha/list-result-dialogs.css"
     ]
   },
   {

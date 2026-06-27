@@ -56,7 +56,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
   ["mobile-adaptive/bright-school-portrait/settings-tabs.css", 6576],
-  ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-room/portrait-room.css", 7502],
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
@@ -380,6 +379,15 @@ describe("root CSS entry contract", () => {
       "./phone-core/scroll-detail-result.css"
     ]);
     expect(phoneCoreEntry).not.toContain(".match-mode-modal {");
+
+    const phoneGachaEntry = readFileSync(new URL("./mobile-adaptive/phone-gacha.css", import.meta.url), "utf8");
+    expect(cssImports(phoneGachaEntry)).toEqual([
+      "./phone-gacha/modal-tabs.css",
+      "./phone-gacha/stage-machine.css",
+      "./phone-gacha/controls-actions.css",
+      "./phone-gacha/list-result-dialogs.css"
+    ]);
+    expect(phoneGachaEntry).not.toContain(".gacha-modal {");
 
     const mobileProfileRecordsEntry = readFileSync(
       new URL("./mobile-adaptive/mobile-profile-records.css", import.meta.url),

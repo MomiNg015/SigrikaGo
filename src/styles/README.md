@@ -60,6 +60,7 @@ Final mobile safety cleanup is tracked separately because `mobile-adaptive.css` 
 
 - `mobile-adaptive/mobile-profile-records.css` -> `mobile-adaptive/mobile-profile-records/`
 - `mobile-adaptive/phone-core.css` -> `mobile-adaptive/phone-core/`
+- `mobile-adaptive/phone-gacha.css` -> `mobile-adaptive/phone-gacha/`
 
 `CSS_FINAL_MOBILE_SAFETY_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the final mobile safety bucket.
 

@@ -1,0 +1,53 @@
+/* Final phone/tablet gacha modal survival rules. */
+@media (max-width: 768px) {
+  .gacha-modal {
+    width: min(100%, calc(100vw - 16px)) !important;
+    height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    max-width: calc(100vw - 16px) !important;
+    max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    overflow: hidden !important;
+  }
+
+  .gacha-pool-tabs {
+    min-width: 0 !important;
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: minmax(148px, 72vw) !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 2px 46px 6px 2px !important;
+    overscroll-behavior-inline: contain !important;
+    scrollbar-width: thin !important;
+  }
+
+  .gacha-ticket-tab {
+    min-width: 0 !important;
+    min-height: 72px !important;
+    grid-template-columns: 46px minmax(0, 1fr) !important;
+    gap: 2px 8px !important;
+    padding: 8px !important;
+  }
+
+  .gacha-ticket-tab img,
+  .gacha-featured-stack img {
+    width: 46px !important;
+    height: 50px !important;
+  }
+
+  .gacha-featured-stack {
+    grid-auto-columns: 29px !important;
+    min-width: 46px !important;
+  }
+
+  .gacha-featured-stack img + img {
+    margin-left: -20px !important;
+  }
+}

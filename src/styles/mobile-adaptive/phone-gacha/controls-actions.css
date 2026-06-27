@@ -1,0 +1,61 @@
+@media (max-width: 768px) {
+  .gacha-control-panel {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 8px !important;
+    padding: 9px !important;
+    align-content: start !important;
+  }
+
+  .gacha-wallet {
+    min-width: 0 !important;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .gacha-wallet span {
+    min-width: 0 !important;
+    min-height: 44px !important;
+    padding: 6px 8px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .gacha-round-actions {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    gap: 6px !important;
+    justify-content: end !important;
+  }
+
+  .gacha-round-button {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .gacha-draw-actions {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    align-self: stretch !important;
+  }
+
+  .gacha-draw-actions .primary-action {
+    min-width: 0 !important;
+    min-height: 46px !important;
+    padding: 8px 10px !important;
+    line-height: 1.15 !important;
+    white-space: nowrap !important;
+  }
+}
