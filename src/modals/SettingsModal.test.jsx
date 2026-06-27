@@ -62,11 +62,12 @@ describe("SettingsModal terminal style hooks", () => {
 
     expect(source).toContain('tab === "theme"');
     expect(source).toContain("settings-tab-${tab}");
-    expect(source).toContain("THEME_CHOICES.map");
+    expect(source).toContain("VISUAL_THEME_OPTIONS.map");
     expect(source).toContain("theme-choice-button");
     expect(source).toContain("setVisualTheme(theme.id)");
     expect(source).toContain("onNotice(\"\\u656c\\u8bf7\\u671f\\u5f85~\", \"success\")");
     expect(source).toContain("onChange={(event) => setAudioSettings");
+    expect(source).not.toContain("const THEME_CHOICES");
     expect(source).not.toContain("VISUAL_EFFECT_LEVELS");
     expect(source).not.toContain("VISUAL_THEMES.map");
     expect(source).not.toContain("setVisualEffect");
@@ -75,12 +76,15 @@ describe("SettingsModal terminal style hooks", () => {
 
   it("renders three interface theme buttons without the old page-style heading", () => {
     const source = readFileSync(new URL("./SettingsModal.jsx", import.meta.url), "utf8");
+    const themeSource = readFileSync(new URL("../app/visualTheme.js", import.meta.url), "utf8");
 
-    expect(source).toContain("\\u6ca1\\u7ecf\\u8d39\\u7684\\u7b80\\u6734\\u56f4\\u68cb\\u90e8\\u98ce\\u683c");
-    expect(source).toContain("\\u4e2d\\u89c4\\u4e2d\\u77e9\\u7684\\u56f4\\u68cb\\u90e8\\u98ce\\u683c");
-    expect(source).toContain("\\u83ab\\u5854\\u91cc\\u5bb6\\u65cf\\u8d5e\\u52a9\\u7684\\u5962\\u534e\\u98ce\\u683c");
-    expect(source).toContain("available: true");
-    expect(source).toContain("available: false");
+    expect(themeSource).toContain("\\u6ca1\\u7ecf\\u8d39\\u7684\\u7b80\\u6734\\u56f4\\u68cb\\u90e8\\u98ce\\u683c");
+    expect(themeSource).toContain("\\u4e2d\\u89c4\\u4e2d\\u77e9\\u7684\\u56f4\\u68cb\\u90e8\\u98ce\\u683c");
+    expect(themeSource).toContain("\\u83ab\\u5854\\u91cc\\u5bb6\\u65cf\\u8d5e\\u52a9\\u7684\\u5962\\u534e\\u98ce\\u683c");
+    expect(themeSource).toContain("available: true");
+    expect(themeSource).toContain("available: false");
+    expect(source).toContain("VISUAL_THEME_OPTIONS");
+    expect(source).not.toContain("const THEME_CHOICES");
     expect(source).not.toContain("\\u4e3b\\u9898\\uff1a");
     expect(source).not.toContain("\\uff08\\u5373\\u660e\\u4eae\\u6821\\u56ed\\u98ce\\u683c\\uff09");
     expect(source).not.toContain("\\u9875\\u9762\\u98ce\\u683c");

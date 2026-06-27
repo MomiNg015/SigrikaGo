@@ -1,0 +1,13 @@
+.home-screen {
+  --home-stage-min-w: 1200px;
+  --home-stage-min-h: 503px;
+  --home-stage-max-w: 1920px;
+  width: clamp(var(--home-stage-min-w), calc(100vw - (var(--page-pad) * 2)), var(--home-stage-max-w));
+  min-height: 100dvh;
+  height: auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: clamp(6px, 0.8vw, 10px);
+  padding: clamp(8px, 1vw, 14px) 0;
+  overflow: visible;
+}

@@ -43,13 +43,16 @@ const DOMAIN_STYLE_DIRECTORIES = new Set([
   "room-terminal",
   "themes"
 ]);
-const TEST_STYLE_FILES = new Set(["hudComponents.test.js", "styleContract.test.js", "themeContract.test.js"]);
+const TEST_STYLE_FILES = new Set([
+  "cssLayerInventory.test.js",
+  "hudComponents.test.js",
+  "styleContract.test.js",
+  "themeContract.test.js"
+]);
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["base/home-legacy-grid.css", 6736],
-  ["base/home-stage-artboard.css", 8657],
-  ["commerce/recruitment/board.css", 6111],
   ["hud-components/pop-tech-terminal.css", 8513],
   ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
@@ -58,7 +61,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/phone-core.css", 6418],
   ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-modals/phone-house-resume.css", 6956],
-  ["modals/mailbox.css", 10616],
   ["mobile-room/portrait-room.css", 7502],
   ["modals/character-opening.css", 6330],
   ["responsive/phone-portrait-room.css", 6803],
@@ -77,13 +79,13 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
 ]);
 
 function cssImports(source) {
-  return [...source.matchAll(/@import\s+"([^"]+)";/g)].map((match) => match[1]);
+  return [...source.matchAll(/@import\s+"([^"]+)"[^;]*;/g)].map((match) => match[1]);
 }
 
 function concreteCssAfterImports(source) {
   return source
     .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/@import\s+"[^"]+";\s*/g, "")
+    .replace(/@import\s+"[^"]+"[^;]*;\s*/g, "")
     .trim();
 }
 
@@ -528,7 +530,8 @@ describe("root CSS entry contract", () => {
   it("keeps commerce recruitment.css as an import-only commerce sub-entry", () => {
     const recruitmentEntry = readFileSync(new URL("./commerce/recruitment.css", import.meta.url), "utf8");
     const recruitmentShell = readFileSync(new URL("./commerce/recruitment/modal-shell.css", import.meta.url), "utf8");
-    const recruitmentBoard = readFileSync(new URL("./commerce/recruitment/board.css", import.meta.url), "utf8");
+    const recruitmentBoardEntry = readFileSync(new URL("./commerce/recruitment/board.css", import.meta.url), "utf8");
+    const recruitmentBoard = readCssWithImports(new URL("./commerce/recruitment/board.css", import.meta.url));
     const phoneRecruitment = readFileSync(new URL("./mobile-adaptive/phone-recruitment.css", import.meta.url), "utf8");
 
     expect(cssImports(recruitmentEntry)).toEqual([
@@ -537,7 +540,13 @@ describe("root CSS entry contract", () => {
       "./recruitment/countdown.css",
       "./recruitment/actions.css"
     ]);
+    expect(cssImports(recruitmentBoardEntry)).toEqual([
+      "./board/surface.css",
+      "./board/cards.css",
+      "./board/motion.css"
+    ]);
     expect(recruitmentEntry).not.toContain(".recruitment-modal {");
+    expect(recruitmentBoardEntry).not.toContain(".recruitment-board {");
     expect(recruitmentShell).toContain("position: relative;");
     const recruitmentCountdown = readFileSync(new URL("./commerce/recruitment/countdown.css", import.meta.url), "utf8");
     expect(recruitmentBoard).toContain("--recruitment-board-background-image: url(\"/assets/recruitment/notice-board-flat-candidate.webp\")");

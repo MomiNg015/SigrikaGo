@@ -151,6 +151,12 @@
 
 - 莫宁（`mornye`）的默认技能 BGM 是 `mornye-skill-default`，使用两段式 `intro-loop` 播放：`/assets/music/mornye_intro_once.ogg` 播放一次后接 `/assets/music/mornye_loop.ogg` 循环；该曲目默认解锁并跟随角色 BGM 选择/技能预览解析逻辑。
 
+## Dependency Notes
+
+- Player theme metadata now has one source of truth in `src/app/visualTheme.js`: `VISUAL_THEME_OPTIONS` includes both available and future settings choices, while `VISUAL_THEMES` / `VISUAL_THEME_IDS` expose only enabled themes that can be persisted and imported. Settings renders from the full option registry, so future styles can be listed without duplicating labels in the modal. CSS refactors must preserve the root theme order `shared -> isolation -> theme-components -> bright-school -> mobile-adaptive`; board, Pixi skill overlays, point buttons, and Bright School effect files remain protected skill-presentation surfaces and should not be broad-selector cleanup targets.
+- CSS round-2 inventory lives in `src/styles/cssLayerInventory.js` with tests in `src/styles/cssLayerInventory.test.js`. The inventory separates reorganizable shared domains from high-risk gameplay/room CSS, Bright School-specific overrides, final mobile safety layers, and skill-presentation protected files so later cleanup can stay scoped before visual and skill regression verification.
+- CSS round-3 and round-4 follow-ups are also encoded in `src/styles/cssLayerInventory.js`: `CSS_ROUND3_SHARED_SPLITS` records import-only shared-domain splits for `base/home-stage-artboard.css`, `modals/mailbox.css`, and `commerce/recruitment/board.css`; `CSS_ROUND4_REGRESSION_CHECKS` records the required static CSS, focused board/skill unit, and desktop/mobile Pixi visual stability gates. `npm run verify:battle-fixes` now includes CSS inventory/theme contracts plus BoardSkillEffects, BoardAmbientEffects, skill registry, skill SFX scheduling, and mobile point-confirmation tests.
+
 ## Achievement And Personalization Note
 
 - 用户名注册/搜索校验允许中文、日文、韩文、半角英文、数字和下划线；按显示宽度限制为最多 8 个半角字符宽度，等价于最多 4 个中日韩字符或 8 个半角字符。注册页把用户名、密码和确认密码规范放在输入框 placeholder 中，用户开始输入后自然隐藏；失焦或提交时才在对应字段下方显示错误。 Legacy startup cleanup trims overlong existing usernames to the trailing 8 display-width units and adds a short numeric marker only when needed to preserve username uniqueness.

@@ -1,0 +1,53 @@
+.recruitment-board {
+  --recruitment-board-background-image: url("/assets/recruitment/notice-board-flat-candidate.webp");
+  --recruitment-paper-background-image: url("/assets/recruitment/recruitment-letter-paper-flat.webp");
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 3px solid #3d2b25;
+  border-radius: 18px;
+  background-color: #fff3d5;
+  background-image:
+    var(--recruitment-board-background-image);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.32);
+}
+
+.recruitment-board::before,
+.recruitment-board::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.recruitment-board::before {
+  inset: 12px;
+  border: 2px dashed rgba(61, 43, 37, 0.12);
+  border-radius: 12px;
+}
+
+.recruitment-board::after {
+  inset: 0;
+  opacity: 0;
+  background: url("/assets/recruitment/celebration-flat-candidate.webp") center / cover no-repeat;
+  transition: opacity 220ms ease;
+}
+
+.recruitment-result-success-phase .recruitment-board::after {
+  opacity: 0.62;
+}
+
+.recruitment-empty-board,
+.recruitment-selection-card,
+.recruitment-status-card,
+.recruitment-pending-panel,
+.recruitment-result-card {
+  position: relative;
+  z-index: 1;
+}

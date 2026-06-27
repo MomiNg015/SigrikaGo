@@ -1,25 +1,7 @@
 import { useState } from "react";
 import { Bell, Info, Mic2, Music, Palette, Volume2, X } from "lucide-react";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
-import { DEFAULT_VISUAL_THEME } from "../app/visualTheme.js";
-
-const THEME_CHOICES = [
-  {
-    id: "bright-school",
-    label: "\u6ca1\u7ecf\u8d39\u7684\u7b80\u6734\u56f4\u68cb\u90e8\u98ce\u683c",
-    available: true
-  },
-  {
-    id: "club-standard",
-    label: "\u4e2d\u89c4\u4e2d\u77e9\u7684\u56f4\u68cb\u90e8\u98ce\u683c",
-    available: false
-  },
-  {
-    id: "motari-luxury",
-    label: "\u83ab\u5854\u91cc\u5bb6\u65cf\u8d5e\u52a9\u7684\u5962\u534e\u98ce\u683c",
-    available: false
-  }
-];
+import { DEFAULT_VISUAL_THEME, VISUAL_THEME_OPTIONS } from "../app/visualTheme.js";
 
 export default function SettingsModal({
   siteSettings = DEFAULT_SITE_SETTINGS,
@@ -98,7 +80,7 @@ export default function SettingsModal({
         {tab === "theme" && (
           <div className="settings-panel settings-modal-content theme-settings-panel">
             <div className="theme-choice-grid" aria-label={"\u754c\u9762\u4e3b\u9898"}>
-              {THEME_CHOICES.map((theme) => {
+              {VISUAL_THEME_OPTIONS.map((theme) => {
                 const active = theme.available && visualTheme === theme.id;
 
                 return (

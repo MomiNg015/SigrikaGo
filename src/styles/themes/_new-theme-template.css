@@ -1,8 +1,10 @@
 /* New player theme template.
-   1. Add the theme id in src/app/visualTheme.js.
+   1. Add the option to VISUAL_THEME_OPTIONS in src/app/visualTheme.js.
+      Keep available: false until the CSS is imported, scoped, and visually verified.
    2. Copy this file to src/styles/themes/<theme-id>.css, or create an import-only
       folder entry like bright-school.css when the skin needs multiple layers.
-   3. Import the entry from src/styles/themes.css with visualThemeCssImportPath(<theme-id>).
+   3. Import the entry from src/styles/themes.css, then set available: true so
+      VISUAL_THEMES and VISUAL_THEME_IDS expose the theme.
    4. Replace theme-example with the class emitted by visualThemeClassName(), for example theme-bright-school.
    5. Keep layer intent clear: tokens -> base surfaces -> component overrides -> mobile safety.
    6. Run src/app/visualTheme.test.js and src/styles/themeContract.test.js before visual polish. */

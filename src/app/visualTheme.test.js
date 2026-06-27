@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_VISUAL_THEME,
+  FUTURE_VISUAL_THEMES,
   VISUAL_THEME_CLASS_PREFIX,
   VISUAL_THEME_IDS,
+  VISUAL_THEME_OPTIONS,
   VISUAL_THEME_STORAGE_KEY,
+  VISUAL_THEMES,
+  isVisualThemeAvailable,
   loadVisualTheme,
   saveVisualTheme,
   sanitizeVisualTheme,
@@ -47,9 +51,19 @@ describe("visual theme preferences", () => {
 
   it("exposes stable theme extension helpers", () => {
     expect(VISUAL_THEME_CLASS_PREFIX).toBe("theme-");
+    expect(VISUAL_THEME_OPTIONS.map((theme) => theme.id)).toEqual([
+      "bright-school",
+      "club-standard",
+      "motari-luxury"
+    ]);
+    expect(VISUAL_THEMES.map((theme) => theme.id)).toEqual(["bright-school"]);
+    expect(FUTURE_VISUAL_THEMES.map((theme) => theme.id)).toEqual(["club-standard", "motari-luxury"]);
     expect(VISUAL_THEME_IDS).toEqual(["bright-school"]);
+    expect(isVisualThemeAvailable("bright-school")).toBe(true);
+    expect(isVisualThemeAvailable("club-standard")).toBe(false);
     expect(visualThemeScopeSelector("bright-school")).toBe(".app-shell.player-theme-enabled.theme-bright-school");
     expect(visualThemeCssImportPath("bright-school")).toBe("./themes/bright-school.css");
+    expect(visualThemeCssImportPath("club-standard")).toBe("./themes/bright-school.css");
     expect(visualThemeCssImportPath("bad")).toBe("./themes/bright-school.css");
   });
 });

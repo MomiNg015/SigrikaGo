@@ -1,0 +1,84 @@
+.home-top-strip,
+.home-footer-strip {
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 6px 14px;
+  border: 1px solid rgba(128, 102, 142, 0.12);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(248, 250, 255, 0.58), rgba(255, 255, 255, 0.48));
+  backdrop-filter: blur(14px) saturate(1.12);
+  box-shadow: 0 10px 28px rgba(31, 34, 48, 0.1);
+}
+
+.home-footer-strip {
+  min-height: 30px;
+  justify-content: center;
+  gap: clamp(18px, 3.2vw, 34px);
+  padding: 6px 12px;
+  background: linear-gradient(135deg, rgba(248, 247, 250, 0.56), rgba(239, 246, 248, 0.48));
+  color: #75617d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.home-footer-strip span {
+  white-space: nowrap;
+}
+
+.home-top-brand {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  color: #4f3d55;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-brand-title {
+  font-size: clamp(16px, 1.45vw, 20px);
+  line-height: 1;
+}
+
+.home-brand-subtitle {
+  color: #75617d;
+  font-size: clamp(12px, 1vw, 14px);
+  line-height: 1;
+}
+
+.home-online-tag {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 6px 12px;
+  border: 1px solid rgba(128, 102, 142, 0.16);
+  border-radius: 999px;
+  background: rgba(247, 247, 249, 0.88);
+  color: #2f2640;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.home-top-strip .topbar-actions {
+  margin-left: auto;
+}
+
+.admin-nav-action {
+  width: auto;
+  min-width: 76px;
+  padding: 0 10px;
+  grid-auto-flow: column;
+  gap: 5px;
+  color: #26764c;
+  background: linear-gradient(135deg, #eaffef, #c7f0d4);
+  font-size: 12px;
+  font-weight: 900;
+}

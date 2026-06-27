@@ -2,6 +2,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
 import MailboxModal from "./MailboxModal.jsx";
 
 describe("MailboxModal", () => {
@@ -116,7 +117,7 @@ describe("MailboxModal", () => {
   });
 
   it("keeps mailbox status colors above Bright School button surfaces", () => {
-    const css = readFileSync(new URL("../styles/modals/mailbox.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/modals/mailbox.css", import.meta.url));
 
     expect(css).toContain(".mailbox-list-item.state-new");
     expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-new");
@@ -126,7 +127,7 @@ describe("MailboxModal", () => {
   });
 
   it("keeps the mailbox close button in the title row", () => {
-    const css = readFileSync(new URL("../styles/modals/mailbox.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/modals/mailbox.css", import.meta.url));
     const mobileEntryCss = readFileSync(new URL("../styles/mobile-adaptive/bright-school-portrait.css", import.meta.url), "utf8");
     const mobileCss = readFileSync(new URL("../styles/mobile-adaptive/bright-school-portrait/mailbox-modal.css", import.meta.url), "utf8");
 
@@ -140,7 +141,7 @@ describe("MailboxModal", () => {
   });
 
   it("uses a covered paper background for the mail detail panel", () => {
-    const css = readFileSync(new URL("../styles/modals/mailbox.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/modals/mailbox.css", import.meta.url));
 
     expect(css).toContain(".mailbox-detail {");
     expect(css).toContain('background-image: url("/assets/mailbox/mail-body-paper.png")');
@@ -174,7 +175,7 @@ describe("MailboxModal", () => {
   });
 
   it("keeps the mobile mailbox as a horizontal list above the detail panel", () => {
-    const css = readFileSync(new URL("../styles/modals/mailbox.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/modals/mailbox.css", import.meta.url));
     const mobileCss = readFileSync(new URL("../styles/mobile-adaptive/bright-school-portrait/mailbox-modal.css", import.meta.url), "utf8");
 
     expect(css).toContain("grid-template-columns: minmax(0, 1fr)");
