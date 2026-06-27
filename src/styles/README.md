@@ -63,6 +63,7 @@ Final mobile safety cleanup is tracked separately because `mobile-adaptive.css` 
 - `mobile-adaptive/phone-gacha.css` -> `mobile-adaptive/phone-gacha/`
 - `mobile-adaptive/bright-school-overrides/leaderboard-cards.css` -> `mobile-adaptive/bright-school-overrides/leaderboard-cards/`
 - `mobile-adaptive/bright-school-portrait/resume-modal-layout.css` -> `mobile-adaptive/bright-school-portrait/resume-modal-layout/`
+- `mobile-adaptive/bright-school-portrait/settings-tabs.css` -> `mobile-adaptive/bright-school-portrait/settings-tabs/`
 
 `CSS_FINAL_MOBILE_SAFETY_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the final mobile safety bucket.
 

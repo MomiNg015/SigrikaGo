@@ -1,0 +1,41 @@
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:hover,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:focus,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:focus-visible,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title:active {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    min-width: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    clip-path: none !important;
+    color: #3d2b25 !important;
+    filter: none !important;
+    text-shadow: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title::before,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .volume-row > button.audio-volume-title::after {
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title:hover,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title:focus,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title:focus-visible,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .audio-slider-item.is-muted > button.audio-volume-title:active {
+    color: #8f8793 !important;
+  }
+}

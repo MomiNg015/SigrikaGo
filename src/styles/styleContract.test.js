@@ -53,7 +53,6 @@ const TEST_STYLE_FILES = new Set([
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
-  ["mobile-adaptive/bright-school-portrait/settings-tabs.css", 6576],
   ["mobile-room/portrait-room.css", 7502],
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
@@ -519,6 +518,17 @@ describe("root CSS entry contract", () => {
       "./resume-modal-layout/achievement-personalization.css"
     ]);
     expect(resumeModalLayoutEntry).not.toContain(".resume-header-actions {");
+
+    const settingsTabsEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-portrait/settings-tabs.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(settingsTabsEntry)).toEqual([
+      "./settings-tabs/shell-theme-grid.css",
+      "./settings-tabs/audio-volume-title.css",
+      "./settings-tabs/shared-active-tabs.css"
+    ]);
+    expect(settingsTabsEntry).not.toContain(".settings-modal h2");
   });
 
   it("keeps nested CSS files under approved domain entry maps", () => {

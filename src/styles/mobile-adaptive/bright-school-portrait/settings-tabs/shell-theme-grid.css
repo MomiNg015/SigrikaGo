@@ -1,0 +1,76 @@
+/* Bright School portrait settings tabs safety rules. */
+@media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal h2 {
+    line-height: 1.22 !important;
+    min-height: 1.3em !important;
+    overflow: visible !important;
+    padding-block: 2px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal.settings-tab-theme {
+    min-height: min(520px, calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important;
+    max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    grid-template-rows: auto auto minmax(0, 1fr) !important;
+    overflow: hidden !important;
+    scrollbar-gutter: auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-tabs button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .theme-choice-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .theme-settings-panel {
+    min-height: 0 !important;
+    align-content: stretch !important;
+    overflow: visible !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .theme-choice-button {
+    min-width: 0 !important;
+    min-height: 118px !important;
+    padding: 12px 8px !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: anywhere !important;
+    transform: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .theme-choice-button strong {
+    font-size: 0.82rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .theme-choice-button.active,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .theme-choice-button[aria-pressed="true"] {
+    background: #ff9ebb !important;
+    color: #3d2b25 !important;
+    border-color: #3d2b25 !important;
+    transform: translateY(2px) !important;
+    box-shadow:
+      0 1px 0 #3d2b25,
+      inset 3px 3px 0 rgba(61, 43, 37, 0.18),
+      inset -1px -1px 0 rgba(255, 255, 255, 0.58) !important;
+  }
+}
