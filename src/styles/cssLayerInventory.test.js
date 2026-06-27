@@ -10,6 +10,7 @@ import {
   CSS_REFACTOR_ROUNDS,
   CSS_ROUND3_SHARED_SPLITS,
   CSS_ROUND4_REGRESSION_CHECKS,
+  CSS_SKILL_PRESENTATION_SPLITS,
   CSS_THEME_OVERLAY_SPLITS,
   inventoryFilesForGroup
 } from "./cssLayerInventory.js";
@@ -161,6 +162,22 @@ describe("CSS layer inventory", () => {
 
       for (const filePath of split.files) {
         expect(highRiskRoomFiles.has(filePath)).toBe(true);
+      }
+    }
+  });
+
+  it("keeps skill presentation splits import-only and in the protected bucket", () => {
+    const protectedSkillFiles = new Set(inventoryFilesForGroup("skill-presentation-protected"));
+
+    for (const split of CSS_SKILL_PRESENTATION_SPLITS) {
+      const entrySource = readFileSync(join(stylesDir, split.entry), "utf8");
+
+      expect(cssImports(entrySource)).toEqual(expectedRelativeImports(split));
+      expect(concreteCssAfterImports(entrySource)).toBe("");
+      expect(protectedSkillFiles.has(split.entry)).toBe(true);
+
+      for (const filePath of split.files) {
+        expect(protectedSkillFiles.has(filePath)).toBe(true);
       }
     }
   });

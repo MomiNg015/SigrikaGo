@@ -53,7 +53,6 @@ const TEST_STYLE_FILES = new Set([
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
-  ["room/board/stones-skill-effects.css", 7290],
   ["themes/bright-school/quality-base/refinement-board.css", 6997]
 ]);
 
@@ -1012,6 +1011,21 @@ describe("root CSS entry contract", () => {
     expect(boardEntry).not.toContain(".board-row-slash {");
     expect(boardEntry).not.toContain(".point {");
     expect(boardEntry).not.toContain(".board-lines {");
+
+    const stonesSkillEffectsEntry = readFileSync(
+      new URL("./room/board/stones-skill-effects.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(stonesSkillEffectsEntry)).toEqual([
+      "./stones-skill-effects/stone-base.css",
+      "./stones-skill-effects/hidden-flip-double.css",
+      "./stones-skill-effects/transient-markers.css",
+      "./stones-skill-effects/voyage-star-keyframes.css",
+      "./stones-skill-effects/protocol-ban.css",
+      "./stones-skill-effects/liberty-purge.css",
+      "./stones-skill-effects/stone-effect-keyframes.css"
+    ]);
+    expect(stonesSkillEffectsEntry).not.toContain(".stone {");
   });
 
   it("keeps room players, timers, and skills as an import-only room sub-entry", () => {

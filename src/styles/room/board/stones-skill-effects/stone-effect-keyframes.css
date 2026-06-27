@@ -1,0 +1,45 @@
+@keyframes hidden-hand-glow {
+  from {
+    filter: drop-shadow(0 0 5px rgba(8, 174, 84, 0.82));
+  }
+  to {
+    filter: drop-shadow(0 0 16px rgba(0, 180, 88, 1));
+  }
+}
+
+@keyframes flipped-stone-glow {
+  from {
+    filter: drop-shadow(0 0 5px rgba(126, 30, 255, 0.82));
+  }
+  to {
+    filter: drop-shadow(0 0 16px rgba(124, 30, 230, 1));
+  }
+}
+
+@keyframes double-move-stone-glow {
+  from { filter: drop-shadow(0 0 6px rgba(255, 74, 29, 0.78)); }
+  to { filter: drop-shadow(0 0 18px rgba(255, 122, 28, 0.98)); }
+}
+
+@keyframes double-move-flame-tongues {
+  from { opacity: 0.62; transform: rotate(-8deg) scale(0.94); }
+  to { opacity: 0.92; transform: rotate(10deg) scale(1.08); }
+}
+
+@keyframes double-move-flame-halo {
+  from { opacity: 0.48; transform: scale(0.92); }
+  to { opacity: 0.78; transform: scale(1.08); }
+}
+
+@keyframes protocol-ban-bluewhite-glow {
+  from {
+    filter:
+      drop-shadow(0 0 4px rgba(255, 255, 255, 0.78))
+      drop-shadow(0 0 9px rgba(83, 143, 255, 0.62));
+  }
+  to {
+    filter:
+      drop-shadow(0 0 8px rgba(255, 255, 255, 0.96))
+      drop-shadow(0 0 18px rgba(91, 177, 255, 0.88));
+  }
+}

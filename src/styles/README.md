@@ -106,6 +106,12 @@ Board and skill presentation CSS is protected during theme refactors. Broad butt
 
 If a CSS refactor touches any of those selectors or files, run the board/room visual and contract tests before treating it as safe.
 
+Protected skill presentation cleanup is tracked separately from gameplay room cleanup:
+
+- `room/board/stones-skill-effects.css` -> `room/board/stones-skill-effects/`
+
+`CSS_SKILL_PRESENTATION_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split remains import-only inside the skill-presentation protected bucket.
+
 Rules for future CSS work:
 
 - Add new player themes through `themes.css` and `src/styles/themes/`, not directly in `styles.css`.

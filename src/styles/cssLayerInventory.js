@@ -236,6 +236,13 @@ export const CSS_LAYER_GROUPS = [
       "room/board/row-slash.css",
       "room/board/row-slash-stone-effects.css",
       "room/board/stones-skill-effects.css",
+      "room/board/stones-skill-effects/stone-base.css",
+      "room/board/stones-skill-effects/hidden-flip-double.css",
+      "room/board/stones-skill-effects/transient-markers.css",
+      "room/board/stones-skill-effects/voyage-star-keyframes.css",
+      "room/board/stones-skill-effects/protocol-ban.css",
+      "room/board/stones-skill-effects/liberty-purge.css",
+      "room/board/stones-skill-effects/stone-effect-keyframes.css",
       "room/board/spray-stone-effects.css",
       "room/board/liberty-purge-stone-effects.css",
       "room/board/ambient-fog.css",
@@ -499,6 +506,21 @@ export const CSS_GAMEPLAY_ROOM_SPLITS = [
   }
 ];
 
+export const CSS_SKILL_PRESENTATION_SPLITS = [
+  {
+    entry: "room/board/stones-skill-effects.css",
+    files: [
+      "room/board/stones-skill-effects/stone-base.css",
+      "room/board/stones-skill-effects/hidden-flip-double.css",
+      "room/board/stones-skill-effects/transient-markers.css",
+      "room/board/stones-skill-effects/voyage-star-keyframes.css",
+      "room/board/stones-skill-effects/protocol-ban.css",
+      "room/board/stones-skill-effects/liberty-purge.css",
+      "room/board/stones-skill-effects/stone-effect-keyframes.css"
+    ]
+  }
+];
+
 export const CSS_PROTECTED_SURFACES = [
   {
     id: "board-point-buttons",
@@ -574,6 +596,9 @@ export const CSS_PROTECTED_SURFACES = [
     category: "skill-presentation",
     files: [
       "room/board/stones-skill-effects.css",
+      "room/board/stones-skill-effects/hidden-flip-double.css",
+      "room/board/stones-skill-effects/protocol-ban.css",
+      "room/board/stones-skill-effects/stone-effect-keyframes.css",
       "themes/bright-school/effects/board-marks.css"
     ],
     requiredFragments: [
