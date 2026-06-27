@@ -1,0 +1,71 @@
+@media (max-width: 768px) {
+  .modal-backdrop {
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      calc(8px + env(safe-area-inset-right))
+      calc(8px + env(safe-area-inset-bottom))
+      calc(8px + env(safe-area-inset-left));
+    overflow-x: hidden;
+  }
+
+  .small-modal,
+  .confirm-modal,
+  .result-modal,
+  .shop-modal,
+  .house-modal,
+  .warehouse-modal,
+  .leaderboard-modal,
+  .friends-modal,
+  .settings-modal,
+  .message-board-modal,
+  .room-floating-modal,
+  .character-target-modal,
+  .profile-replay-dialog,
+  .shop-item-detail-modal {
+    width: min(100%, calc(100vw - 16px));
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .small-modal,
+  .confirm-modal,
+  .settings-modal,
+  .message-board-modal,
+  .room-floating-modal,
+  .character-target-modal,
+  .profile-replay-dialog,
+  .shop-item-detail-modal {
+    padding: 14px;
+  }
+
+  .settings-tabs,
+  .friends-tabs,
+  .shop-pagination {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    gap: 6px;
+  }
+
+  .shop-tabs {
+    min-width: 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .settings-tabs button,
+  .friends-tabs button,
+  .shop-tabs button,
+  .shop-pagination button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+}

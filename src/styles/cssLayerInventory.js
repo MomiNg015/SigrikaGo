@@ -132,6 +132,11 @@ export const CSS_LAYER_GROUPS = [
     rootEntries: [],
     entries: [
       "mobile-adaptive.css",
+      "mobile-adaptive/phone-core.css",
+      "mobile-adaptive/phone-core/match-mode.css",
+      "mobile-adaptive/phone-core/global-shell-controls.css",
+      "mobile-adaptive/phone-core/modal-tabs-shell.css",
+      "mobile-adaptive/phone-core/scroll-detail-result.css",
       "mobile-adaptive/mobile-room-portrait.css",
       "mobile-adaptive/mobile-room-landscape.css",
       "mobile-adaptive/mobile-profile-records.css",
@@ -254,6 +259,15 @@ export const CSS_ROUND3_SHARED_SPLITS = [
 ];
 
 export const CSS_FINAL_MOBILE_SAFETY_SPLITS = [
+  {
+    entry: "mobile-adaptive/phone-core.css",
+    files: [
+      "mobile-adaptive/phone-core/match-mode.css",
+      "mobile-adaptive/phone-core/global-shell-controls.css",
+      "mobile-adaptive/phone-core/modal-tabs-shell.css",
+      "mobile-adaptive/phone-core/scroll-detail-result.css"
+    ]
+  },
   {
     entry: "mobile-adaptive/mobile-profile-records.css",
     files: [

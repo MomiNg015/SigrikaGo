@@ -1,0 +1,46 @@
+/* Shared phone/tablet shell, modal, profile, and form safety rules. */
+@media (max-width: 768px) {
+  .match-mode-modal {
+    width: min(420px, calc(100vw - 20px)) !important;
+  }
+
+  .match-mode-option {
+    min-height: 72px !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    justify-content: stretch !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+
+  .match-mode-copy small {
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .match-mode-copy small.match-mode-rules {
+    overflow-wrap: normal !important;
+  }
+
+  .match-mode-rule-line {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .match-mode-count {
+    min-width: 72px !important;
+    justify-self: end !important;
+    margin-left: auto !important;
+  }
+
+  .match-mode-count small {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+  }
+
+  .match-mode-modal .match-mode-options + .secondary-action {
+    margin-top: 14px !important;
+  }
+}

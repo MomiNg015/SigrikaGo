@@ -1,0 +1,67 @@
+@media (max-width: 768px) {
+  .settings-body,
+  .settings-panel,
+  .message-board-body,
+  .house-layout,
+  .owned-decoration-section,
+  .warehouse-grid,
+  .leaderboard-table,
+  .profile-replay-list-scroll {
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .friends-list,
+  .watch-room-table {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .message-board-modal {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 10px;
+  }
+
+  .message-board-modal textarea {
+    min-height: min(180px, 36dvh);
+    resize: vertical;
+  }
+
+  .result-modal,
+  .shop-item-detail-modal,
+  .character-detail,
+  .profile-resume-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .character-detail-copy {
+    text-align: left !important;
+  }
+
+  .character-detail-copy p,
+  .character-detail-copy .character-description {
+    text-align: left !important;
+  }
+
+  .result-modal {
+    gap: 12px;
+    text-align: center;
+  }
+
+  .result-winner img {
+    width: min(136px, 40vw);
+    height: min(136px, 40vw);
+  }
+
+  .result-rewards,
+  .profile-resume-stats,
+  .profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

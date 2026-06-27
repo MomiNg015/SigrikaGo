@@ -59,6 +59,7 @@ Round 3 has split these shared-domain debt files into import-only sub-entries wi
 Final mobile safety cleanup is tracked separately because `mobile-adaptive.css` stays after `themes.css` and may override desktop and mobile theme rules:
 
 - `mobile-adaptive/mobile-profile-records.css` -> `mobile-adaptive/mobile-profile-records/`
+- `mobile-adaptive/phone-core.css` -> `mobile-adaptive/phone-core/`
 
 `CSS_FINAL_MOBILE_SAFETY_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the final mobile safety bucket.
 
