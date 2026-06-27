@@ -1,0 +1,68 @@
+/* Bright School component repair layer.
+   This block intentionally stays after the generic firewall: the firewall
+   prevents HUD bleed, then these rules restore the notebook-specific details. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school * {
+  scrollbar-width: thin !important;
+  scrollbar-color: #d58cab #fff6dd !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::-webkit-scrollbar-track {
+  background: #fff6dd !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 999px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff9ebb, #9ad3de) !important;
+  border: 2px solid #4a3736 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip {
+  min-height: 74px !important;
+  padding: 14px 18px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 3px solid var(--bright-border) !important;
+  border-radius: 18px !important;
+  box-shadow: 5px 5px 0 rgba(74, 55, 54, 0.9) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-screen .auth-panel.login-card-container.login-card-container {
+  box-shadow: 6px 6px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .segmented {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-field-error {
+  color: #c0182d !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form input::placeholder {
+  color: #6b5d5a !important;
+  opacity: 0.76 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-field.invalid input {
+  border-color: #c0182d !important;
+  box-shadow:
+    0 0 0 3px rgba(192, 24, 45, 0.2),
+    inset 2px 2px 0 rgba(61, 43, 37, 0.1) !important;
+}

@@ -121,6 +121,10 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/radical-purge.css",
       "themes/bright-school/firewall.css",
       "themes/bright-school/component-repairs.css",
+      "themes/bright-school/component-repairs/foundation-home.css",
+      "themes/bright-school/component-repairs/foundation-home/scrollbar-auth.css",
+      "themes/bright-school/component-repairs/foundation-home/home-brand-status.css",
+      "themes/bright-school/component-repairs/foundation-home/home-image-entry.css",
       "themes/bright-school/qa-guard.css",
       "themes/bright-school/quality-base.css",
       "themes/bright-school/commerce.css",
@@ -353,6 +357,14 @@ export const CSS_THEME_OVERLAY_SPLITS = [
       "themes/theme-components/replay-outcome-win.css",
       "themes/theme-components/replay-outcome-loss.css",
       "themes/theme-components/replay-outcome-draw.css"
+    ]
+  },
+  {
+    entry: "themes/bright-school/component-repairs/foundation-home.css",
+    files: [
+      "themes/bright-school/component-repairs/foundation-home/scrollbar-auth.css",
+      "themes/bright-school/component-repairs/foundation-home/home-brand-status.css",
+      "themes/bright-school/component-repairs/foundation-home/home-image-entry.css"
     ]
   }
 ];

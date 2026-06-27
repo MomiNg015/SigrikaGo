@@ -57,7 +57,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
   ["room/board/stones-skill-effects.css", 7290],
-  ["themes/bright-school/component-repairs/foundation-home.css", 6973],
   ["themes/bright-school/component-repairs/notebook-polish.css", 6408],
   ["themes/bright-school/component-repairs/warehouse-character.css", 8413],
   ["themes/bright-school/mobile/room/dock-actions.css", 6459],
@@ -176,6 +175,37 @@ describe("root CSS entry contract", () => {
       "./theme-components/replay-outcome-draw.css"
     ]);
     expect(themeComponentsEntry).not.toContain(".timer.byo-yomi");
+  });
+
+  it("keeps Bright School component repairs as import-only theme overlays", () => {
+    const componentRepairsEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(componentRepairsEntry)).toEqual([
+      "./component-repairs/foundation-home.css",
+      "./component-repairs/shop.css",
+      "./component-repairs/lists-profile.css",
+      "./component-repairs/profile-actions.css",
+      "./component-repairs/warehouse-character.css",
+      "./component-repairs/character-music-player.css",
+      "./component-repairs/room-board.css",
+      "./component-repairs/chat.css",
+      "./component-repairs/notebook-polish.css"
+    ]);
+    expect(componentRepairsEntry).not.toContain(".home-top-strip {");
+
+    const foundationHomeEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs/foundation-home.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(foundationHomeEntry)).toEqual([
+      "./foundation-home/scrollbar-auth.css",
+      "./foundation-home/home-brand-status.css",
+      "./foundation-home/home-image-entry.css"
+    ]);
+    expect(foundationHomeEntry).not.toContain(".home-top-strip {");
   });
 
   it("hides native number input spinner controls while preserving number inputs", () => {
