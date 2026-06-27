@@ -409,6 +409,12 @@
 <li>Full-repo CSS cleanup completion gates are tracked in <code>CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES</code>: each stage runs CSS contracts, high-risk room/board/skill/mobile work runs <code>npm run verify:battle-fixes</code>, protected Pixi/skill presentation work runs <code>npm run verify:stability -- tests/stability/skill-effects.spec.js</code>, and final handoff runs <code>npm run check</code>.</li>
 </ul>
 <ul>
+<li>The 2026-06-27 full-repo CSS cleanup backlog has been executed on <code>codex/full-repo-css-cleanup</code>; remaining risk is broad page visual coverage because the repo has functional desktop/mobile Playwright stability checks rather than screenshot baselines for every UI surface.</li>
+</ul>
+<ul>
+<li>CSS tests that assert concrete rules behind import-only entries should expand imports with <code>readCssWithImports()</code>; raw entry reads are reserved for import-order or import-only assertions.</li>
+</ul>
+<ul>
 <li>Final mobile safety splits are tracked separately as <code>CSS_FINAL_MOBILE_SAFETY_SPLITS</code> because <code>mobile-adaptive.css</code> remains the post-theme override layer. <code>mobile-adaptive/mobile-profile-records.css</code> now delegates to <code>mobile-adaptive/mobile-profile-records/</code> while preserving the 768px profile/resume record cascade, <code>mobile-adaptive/phone-core.css</code> delegates to <code>mobile-adaptive/phone-core/</code> for match mode, shell controls, modal tabs, and scroll/detail/result safety, <code>mobile-adaptive/phone-gacha.css</code> delegates to <code>mobile-adaptive/phone-gacha/</code> for legacy gacha modal, stage, controls, and result dialog survival rules, Bright School final leaderboard cards delegate to <code>mobile-adaptive/bright-school-overrides/leaderboard-cards/</code>, and Bright School portrait resume modal layout/settings tabs delegate to <code>mobile-adaptive/bright-school-portrait/resume-modal-layout/</code> and <code>mobile-adaptive/bright-school-portrait/settings-tabs/</code>.</li>
 </ul>
 <ul>

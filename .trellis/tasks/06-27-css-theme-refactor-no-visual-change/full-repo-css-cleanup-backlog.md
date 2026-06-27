@@ -4,6 +4,17 @@ Baseline: checked after commit `abed55f5` (`refactor css theme layers and safegu
 
 This note records the remaining large blocks for a future long-running goal. It is a planning record, not an implementation change.
 
+## Goal Execution Status
+
+Completed in the long-running CSS cleanup goal on branch `codex/full-repo-css-cleanup`.
+
+- Blocks 1-5 were executed as import-only CSS splits across shared domains, final mobile safety layers, Bright School overlays, room/gameplay CSS, and protected skill-presentation CSS.
+- Block 6 was resolved by keeping Tailwind CSS v4 as an already-installed, low-intrusion `tw:` utility layer through `src/styles/tailwind.css`; existing Bright School, room, board, skill-presentation, and final-mobile CSS remain CSS-entry owned unless a future focused migration adds visual checks.
+- Block 7 was expanded into `CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES`, which records the CSS contract, battle-fix, desktop/mobile Pixi stability, and final `npm run check` gates.
+- Block 8 was handled before the goal by keeping unrelated `.codex-run/` and `.impeccable/` worktree noise untracked and unstaged.
+
+Residual risk after this cleanup is not rule movement inside the committed CSS splits, which is covered by import-order and protected-surface contracts. The remaining visual risk is that the project still uses functional desktop/mobile Playwright stability checks rather than broad screenshot-baseline coverage for every page.
+
 ## Already Done
 
 - Player theme metadata now has one registry in `src/app/visualTheme.js`.

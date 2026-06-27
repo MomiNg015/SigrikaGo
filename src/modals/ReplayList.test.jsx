@@ -126,7 +126,7 @@ describe("ReplayList", () => {
   });
 
   it("keeps outcome colors above theme button hover and focus states", () => {
-    const css = readFileSync(new URL("../styles/themes/theme-components.css", import.meta.url), "utf8");
+    const css = readCssWithImports(new URL("../styles/themes/theme-components.css", import.meta.url));
     const finalLossFocusRule = css.lastIndexOf(".app-shell.player-theme-enabled .replay-table-row.outcome-loss:focus-visible");
     const finalDrawRule = css.lastIndexOf(".app-shell.player-theme-enabled .replay-table-row.outcome-draw");
     const brightSchoolLossRule = css.lastIndexOf(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss");

@@ -175,6 +175,16 @@ Correct:
 
 ## Testing Requirements
 
+### CSS import-only style contract tests
+
+When a test asserts concrete CSS rules from an entry that may contain `@import`, use `readCssWithImports()` instead of reading the entry file directly. CSS cleanup keeps domain entries import-only, so raw `readFileSync()` on an entry such as `themes/theme-components.css`, `themes/shared.css`, `room.css`, or `mobile-adaptive.css` only sees import directives and can fail even when the effective CSS is correct.
+
+Required assertion points:
+
+- Use `src/styles/cssTestUtils.js` `readCssWithImports()` for cross-entry CSS rule assertions outside files that already define an equivalent local helper.
+- Raw `readFileSync()` is still fine when the test intentionally asserts an entry is import-only or checks exact import order.
+- After splitting an entry into child CSS files, update dependent tests to preserve the same effective-rule assertions through import expansion instead of moving concrete rules back into the entry.
+
 ### Startup preload, build chunking, and handoff check contracts
 
 #### 1. Scope / Trigger

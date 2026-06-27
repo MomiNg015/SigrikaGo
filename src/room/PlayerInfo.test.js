@@ -102,8 +102,8 @@ describe("PlayerInfo labels", () => {
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const roomTerminalCss = readCssWithImports(new URL("../styles/room-terminal.css", import.meta.url));
     const themesCss = readFileSync(new URL("../styles/themes.css", import.meta.url), "utf8");
-    const themeComponentsCss = readFileSync(new URL("../styles/themes/theme-components.css", import.meta.url), "utf8");
-    const sharedCss = readFileSync(new URL("../styles/themes/shared.css", import.meta.url), "utf8");
+    const themeComponentsCss = readCssWithImports(new URL("../styles/themes/theme-components.css", import.meta.url));
+    const sharedCss = readCssWithImports(new URL("../styles/themes/shared.css", import.meta.url));
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
 
     expect(roomCss).toContain("--timer-track-fill: linear-gradient(90deg, #5d7fe8, #69c3ff)");
