@@ -53,7 +53,6 @@ const TEST_STYLE_FILES = new Set([
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
-  ["room-terminal/players-timers-skills.css", 7414],
   ["room/board/stones-skill-effects.css", 7290],
   ["themes/bright-school/quality-base/refinement-board.css", 6997]
 ]);
@@ -1048,6 +1047,19 @@ describe("root CSS entry contract", () => {
     expect(roomTerminalEntry).not.toContain(".app-shell:has(.room-screen)");
     expect(roomTerminalEntry).not.toContain(".player-info.self");
     expect(roomTerminalEntry).not.toContain(".mobile-room-screen .mobile-room-viewport");
+
+    const roomTerminalPlayersEntry = readFileSync(
+      new URL("./room-terminal/players-timers-skills.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(roomTerminalPlayersEntry)).toEqual([
+      "./players-timers-skills/player-panels.css",
+      "./players-timers-skills/identity-captures.css",
+      "./players-timers-skills/timers.css",
+      "./players-timers-skills/skill-chip-detail.css",
+      "./players-timers-skills/keyframes.css"
+    ]);
+    expect(roomTerminalPlayersEntry).not.toContain(".player-info {");
   });
 
   it("keeps home-terminal.css as an import-only lobby skin entry", () => {

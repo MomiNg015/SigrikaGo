@@ -1,0 +1,52 @@
+.portrait-wrap {
+  padding: 7px;
+  border: 1px solid color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 24%, transparent);
+  background:
+    radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 16%, transparent), transparent 58%),
+    rgba(0, 0, 0, 0.18);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+
+.player-info img {
+  filter:
+    drop-shadow(0 0 12px color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 22%, transparent))
+    drop-shadow(0 12px 22px rgba(0, 0, 0, 0.42));
+}
+
+.name-button {
+  color: #ffffff;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 42%, transparent);
+}
+
+.player-meta span {
+  color: var(--battle-muted);
+}
+
+.meta-tag {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+  border: 1px solid color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 44%, transparent);
+  background: rgba(3, 14, 18, 0.74);
+  color: var(--battle-text);
+  font-family: "Consolas", "Courier New", monospace;
+  box-shadow:
+    inset 0 0 10px color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 15%, transparent),
+    0 0 12px color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 10%, transparent);
+}
+
+.color-badge {
+  border: 1px solid color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 38%, transparent);
+}
+
+.captures span {
+  border-radius: 0;
+  border-color: rgba(0, 191, 255, 0.22);
+  background: rgba(3, 16, 22, 0.72);
+  color: var(--battle-text);
+  font-family: "Consolas", "Courier New", monospace;
+  box-shadow: inset 0 0 12px rgba(0, 191, 255, 0.08);
+}
+
+.captures strong {
+  color: color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 78%, #ffffff);
+}

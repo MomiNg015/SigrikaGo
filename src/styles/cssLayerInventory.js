@@ -106,7 +106,12 @@ export const CSS_LAYER_GROUPS = [
       "mobile-room/portrait-room/decision-actions-hint.css",
       "room-terminal.css",
       "room-terminal/board-actions.css",
-      "room-terminal/players-timers-skills.css"
+      "room-terminal/players-timers-skills.css",
+      "room-terminal/players-timers-skills/player-panels.css",
+      "room-terminal/players-timers-skills/identity-captures.css",
+      "room-terminal/players-timers-skills/timers.css",
+      "room-terminal/players-timers-skills/skill-chip-detail.css",
+      "room-terminal/players-timers-skills/keyframes.css"
     ],
     guidance: "Treat room and board layout as behavior-facing CSS. Do not batch with generic button, panel, media, or mobile cleanup."
   },
@@ -480,6 +485,16 @@ export const CSS_GAMEPLAY_ROOM_SPLITS = [
       "mobile-room/portrait-room/skill-replay-popover.css",
       "mobile-room/portrait-room/board-dock-tabs.css",
       "mobile-room/portrait-room/decision-actions-hint.css"
+    ]
+  },
+  {
+    entry: "room-terminal/players-timers-skills.css",
+    files: [
+      "room-terminal/players-timers-skills/player-panels.css",
+      "room-terminal/players-timers-skills/identity-captures.css",
+      "room-terminal/players-timers-skills/timers.css",
+      "room-terminal/players-timers-skills/skill-chip-detail.css",
+      "room-terminal/players-timers-skills/keyframes.css"
     ]
   }
 ];

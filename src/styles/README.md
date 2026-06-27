@@ -84,6 +84,7 @@ Gameplay and room cleanup is tracked separately from shared-domain and theme cle
 
 - `room/actions-requests.css` -> `room/actions-requests/`
 - `mobile-room/portrait-room.css` -> `mobile-room/portrait-room/`
+- `room-terminal/players-timers-skills.css` -> `room-terminal/players-timers-skills/`
 
 `CSS_GAMEPLAY_ROOM_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the high-risk gameplay room bucket.
 
