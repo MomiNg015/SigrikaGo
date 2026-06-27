@@ -1,0 +1,50 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 80 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(61, 43, 37, 0.22) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-target-modal {
+  width: min(760px, 92vw) !important;
+  max-height: min(560px, 84vh) !important;
+  overflow: auto !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button {
+  min-width: 0 !important;
+  aspect-ratio: 0.78 !important;
+  padding: 10px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button.warehouse-target-disabled {
+  background: linear-gradient(135deg, #f2f0eb, #dde2df) !important;
+  border-color: rgba(61, 43, 37, 0.44) !important;
+  color: #6d6864 !important;
+  box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.36) !important;
+  filter: grayscale(0.9) saturate(0.35) !important;
+  opacity: 0.72 !important;
+  cursor: not-allowed !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid button.warehouse-target-disabled img {
+  filter: grayscale(1) saturate(0.2) contrast(0.86) !important;
+  opacity: 0.62 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid img {
+  width: 100% !important;
+  height: 96px !important;
+  object-fit: contain !important;
+}

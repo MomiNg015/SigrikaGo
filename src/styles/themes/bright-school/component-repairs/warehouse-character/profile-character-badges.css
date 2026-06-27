@@ -1,0 +1,26 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid.top-stats-bar .stat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  min-height: 86px !important;
+  padding: 10px 6px !important;
+  text-align: center !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-grid.top-stats-bar .stat strong {
+  display: block !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  font-size: clamp(16px, 1.8vw, 22px) !important;
+  line-height: 1.2 !important;
+  margin-top: 4px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-item-effect-icon {
+  background: linear-gradient(135deg, #fff8c7, #f6cf6a 42%, #d89b2b 100%) !important;
+  border: 2px solid #3d2b25 !important;
+  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.58), inset 0 2px 0 rgba(255, 255, 255, 0.7) !important;
+  filter: none !important;
+}

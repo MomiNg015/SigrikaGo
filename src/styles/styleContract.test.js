@@ -57,7 +57,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
   ["room/board/stones-skill-effects.css", 7290],
-  ["themes/bright-school/component-repairs/warehouse-character.css", 8413],
   ["themes/bright-school/mobile/room/dock-actions.css", 6459],
   ["themes/bright-school/mobile/room/shell-header-menu.css", 6872],
   ["themes/bright-school/mobile/room/viewport-player-strips.css", 7109],
@@ -205,6 +204,18 @@ describe("root CSS entry contract", () => {
       "./foundation-home/home-image-entry.css"
     ]);
     expect(foundationHomeEntry).not.toContain(".home-top-strip {");
+
+    const warehouseCharacterEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs/warehouse-character.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(warehouseCharacterEntry)).toEqual([
+      "./warehouse-character/decoration-owned.css",
+      "./warehouse-character/character-detail.css",
+      "./warehouse-character/profile-character-badges.css",
+      "./warehouse-character/character-target-modal.css"
+    ]);
+    expect(warehouseCharacterEntry).not.toContain(".character-detail {");
 
     const notebookPolishEntry = readFileSync(
       new URL("./themes/bright-school/component-repairs/notebook-polish.css", import.meta.url),

@@ -1,0 +1,70 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail {
+  background: #fffaf0 !important;
+  color: var(--bright-ink) !important;
+  border: 3px solid var(--bright-border) !important;
+  border-radius: 18px !important;
+  box-shadow: 6px 6px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-art,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-art img {
+  background: #fff6dd !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-art img {
+  filter: drop-shadow(16px 18px 0 rgba(31, 22, 18, 0.32)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy {
+  background: #ffffff !important;
+  color: var(--bright-ink) !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-heading {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-heading h3 {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-title-row,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .acquisition-method {
+  background: transparent !important;
+  color: var(--bright-ink) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p {
+  text-align: left !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy .character-description {
+  color: #7b3fa0 !important;
+  text-align: left !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-title-row strong,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .acquisition-method strong,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy strong {
+  color: var(--bright-ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-weight: 900 !important;
+}
