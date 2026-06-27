@@ -14,6 +14,7 @@ describe("runtime stability metrics", () => {
     expect(metrics.snapshot()).toMatchObject({
       startedAt: "2026-06-26T00:00:00.000Z",
       roomResumeAttempts: 3,
+      roomResumeInitialConnectRequests: 0,
       roomPersistenceErrors: 0,
       matchPreloadTimeouts: 0
     });

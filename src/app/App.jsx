@@ -16,6 +16,7 @@ import { useAppShellTheme } from "./useAppShellTheme.js";
 import { useCurrentUser } from "./useCurrentUser.js";
 import { useGameSocketConnection } from "./useGameSocketConnection.js";
 import { useHomeUserRefresh } from "./useHomeUserRefresh.js";
+import { useIncomingDuelState } from "./useIncomingDuelState.js";
 import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
 import {
   rootBackExitGuardEnabled,
@@ -105,7 +106,7 @@ export default function App() {
   const [characters, setCharacters] = useState(CHARACTERS);
   const [musicTracks, setMusicTracks] = useState(MUSIC_TRACKS);
   const [adminTab, setAdminTab] = useState("overview");
-  const [incomingDuel, setIncomingDuel] = useState(null);
+  const { incomingDuel, setIncomingDuel } = useIncomingDuelState();
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);

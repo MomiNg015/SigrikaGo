@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { initializeServerData } from "./serverStartup.js";
+import { initializeServerData, SERVER_STARTUP_TASK_ORDER } from "./serverStartup.js";
 
 describe("server startup", () => {
   it("runs startup data and schema tasks in dependency order", async () => {
@@ -48,7 +48,7 @@ describe("server startup", () => {
       promoteConfiguredAdmins
     });
 
-    expect(calls).toEqual([
+    expect(SERVER_STARTUP_TASK_ORDER).toEqual([
       "ensureAchievementSchema",
       "ensureGachaSchema",
       "ensureMusicTrackSettingsSchema",
@@ -67,5 +67,6 @@ describe("server startup", () => {
       "ensureMailboxSchema",
       "promoteConfiguredAdmins"
     ]);
+    expect(calls).toEqual(SERVER_STARTUP_TASK_ORDER);
   });
 });

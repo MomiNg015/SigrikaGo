@@ -7,7 +7,8 @@ const COUNTER_KEYS = Object.freeze([
   "roomResumeSuccesses",
   "roomResumeMisses",
   "roomResumePatchGapRequests",
-  "roomResumeSocketConnectRequests"
+  "roomResumeSocketConnectRequests",
+  "roomResumeInitialConnectRequests"
 ]);
 
 export function createRuntimeStabilityMetrics({ now = () => new Date() } = {}) {

@@ -42,6 +42,7 @@ export function registerRoomSocketEvents(socket, {
     metrics?.increment?.("roomResumeAttempts");
     if (resumeReason === "patch-gap") metrics?.increment?.("roomResumePatchGapRequests");
     if (resumeReason === "socket-connect") metrics?.increment?.("roomResumeSocketConnectRequests");
+    if (resumeReason === "initial-connect") metrics?.increment?.("roomResumeInitialConnectRequests");
     const payload = await resumePayloadForUser({
       prisma,
       userId: socket.user.id,

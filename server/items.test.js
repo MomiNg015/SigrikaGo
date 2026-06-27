@@ -50,6 +50,23 @@ describe("items", () => {
     })).rejects.toMatchObject({ status: 403 });
   });
 
+  it("accepts structured character ownership for character-targeted items", async () => {
+    const response = await useInventoryItem({
+      userId: "user-1",
+      itemId: "rainbow-bean-candy",
+      characterId: "denia",
+      prisma: inventoryPrisma({
+        ownedCharacters: "sigrika",
+        userCharacters: [{ characterSlug: "denia", source: "achievement" }],
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character"
+      })
+    });
+
+    expect(response.user.itemEffects).toMatchObject({ deniaRainbowGlow: true });
+  });
+
   it("uses rainbow candy on Sigrika by disabling sortie, granting coins, and switching selected character", async () => {
     const updates = [];
     const response = await useInventoryItem({
@@ -164,6 +181,7 @@ function inventoryPrisma({
   ownedItems = "{}",
   itemEffects = "{}",
   ownedCharacters = "sigrika",
+  userCharacters = [],
   selectedCharacter = "sigrika",
   targetId = "dream-ticket",
   itemTargetType = "self",
@@ -183,6 +201,7 @@ function inventoryPrisma({
     selectedCharacter,
     selectedStoneDecoration: "",
     ownedCharacters,
+    userCharacters,
     ownedItems,
     itemEffects,
     ownedDecorations: ""

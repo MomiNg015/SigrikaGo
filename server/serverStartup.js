@@ -14,6 +14,26 @@ import { ensureSocialSchema } from "./social.js";
 import { cleanupLegacyUsernames } from "./usernameCleanup.js";
 import { seedAdminDefaultConfig } from "./adminDefaultSeed.js";
 
+export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
+  "ensureAchievementSchema",
+  "ensureGachaSchema",
+  "ensureMusicTrackSettingsSchema",
+  "ensureRecruitmentSchema",
+  "seedAdminDefaultConfig",
+  "seedBuiltinAchievements",
+  "cleanupLegacyDeniaCharacterData",
+  "cleanupLegacyUsernames",
+  "seedCharacters",
+  "seedBuiltinShopItems",
+  "ensureDefaultSiteSettings",
+  "ensureSocialSchema",
+  "ensureRoomPersistenceSchema",
+  "ensureLoginSessionSchema",
+  "ensureGameModeSchema",
+  "ensureMailboxSchema",
+  "promoteConfiguredAdmins"
+]);
+
 export async function initializeServerData({
   prisma,
   seedCharacters: seedCharactersTask = seedCharacters,
@@ -34,21 +54,27 @@ export async function initializeServerData({
   cleanupLegacyUsernames: cleanupLegacyUsernamesTask = cleanupLegacyUsernames,
   promoteConfiguredAdmins: promoteConfiguredAdminsTask = promoteConfiguredAdmins
 }) {
-  await ensureAchievementSchemaTask(prisma);
-  await ensureGachaSchemaTask(prisma);
-  await ensureMusicTrackSettingsSchemaTask(prisma);
-  await ensureRecruitmentSchemaTask(prisma);
-  await seedAdminDefaultConfigTask(prisma);
-  await seedBuiltinAchievementsTask(prisma);
-  await cleanupLegacyDeniaCharacterDataTask(prisma);
-  await cleanupLegacyUsernamesTask(prisma);
-  await seedCharactersTask(prisma);
-  await seedBuiltinShopItemsTask(prisma);
-  await ensureDefaultSiteSettingsTask(prisma);
-  await ensureSocialSchemaTask(prisma);
-  await ensureRoomPersistenceSchemaTask(prisma);
-  await ensureLoginSessionSchemaTask(prisma);
-  await ensureGameModeSchemaTask(prisma);
-  await ensureMailboxSchemaTask(prisma);
-  await promoteConfiguredAdminsTask(prisma);
+  const tasks = {
+    cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask,
+    cleanupLegacyUsernames: cleanupLegacyUsernamesTask,
+    ensureAchievementSchema: ensureAchievementSchemaTask,
+    ensureDefaultSiteSettings: ensureDefaultSiteSettingsTask,
+    ensureGachaSchema: ensureGachaSchemaTask,
+    ensureGameModeSchema: ensureGameModeSchemaTask,
+    ensureLoginSessionSchema: ensureLoginSessionSchemaTask,
+    ensureMailboxSchema: ensureMailboxSchemaTask,
+    ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask,
+    ensureRecruitmentSchema: ensureRecruitmentSchemaTask,
+    ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
+    ensureSocialSchema: ensureSocialSchemaTask,
+    promoteConfiguredAdmins: promoteConfiguredAdminsTask,
+    seedAdminDefaultConfig: seedAdminDefaultConfigTask,
+    seedBuiltinAchievements: seedBuiltinAchievementsTask,
+    seedBuiltinShopItems: seedBuiltinShopItemsTask,
+    seedCharacters: seedCharactersTask
+  };
+
+  for (const taskName of SERVER_STARTUP_TASK_ORDER) {
+    await tasks[taskName](prisma);
+  }
 }

@@ -15,6 +15,7 @@ Most app-wide state is still owned by `src/app/App.jsx` and passed into extracte
 - Current account state lives behind `useCurrentUser`; use its `updateUser` callback instead of writing directly to the `user` setter so account changes stay centralized.
 - Room session state lives behind `useRoomSessionState`; authoritative room snapshots still come from the server, while replay position, pending-skill UI state, dismissed result room, and derived result-modal visibility stay in this app-level room session boundary.
 - Match session state lives behind `useMatchSessionState`; pending matchmaking and match-success transition state stay together because socket handlers, startup preload, match actions, overlays, and background music all observe or mutate this pair. Match-success rooms in `GAME_PHASES.preloading` must route to the `match-preloading` view, synchronize server `preload.readyCount/requiredCount`, and only auto-enter `room` when a later room snapshot leaves preloading. A refreshed player that recovers a `GAME_PHASES.preloading` room with no existing `matchSuccess` must rebuild a countdown-complete pending match before entering `match-preloading`, so battle preload can emit `room:preload-ready` again.
+- Incoming direct-duel request state lives behind `useIncomingDuelState`; socket handlers still use `incomingDuelRef` to suppress duplicate request ids before React commits the visible banner state.
 - Overlay visibility state lives behind `useOverlayState`; `App.jsx` may pass the returned `show*` flags and `setShow*` callbacks to route and overlay composition, but it should not add new top-level `useState(false)` flags for modal visibility.
 - Toast state is app shell state owned by `useToastQueue`.
 
@@ -677,11 +678,14 @@ const { matchStart, matchSuccess, setMatchStart, setMatchSuccess } = useMatchSes
 
 #### 2. Signatures
 - `incomingDuelRef` mirrors the current `incomingDuel` app state through `useSyncedRefs()`.
+- `useIncomingDuelState()` returns `{ incomingDuel, setIncomingDuel }`.
+- `initialIncomingDuelState()` returns `null`.
 - `socketHandlers.duelIncoming(request)` stores a new request only when `sameDuelRequest(incomingDuelRef.current, request)` is false.
 - `sameDuelRequest(current, next)` compares `requestId`.
 
 #### 3. Contracts
 - `App.jsx` should pass `incomingDuelRef` into `useGameSocketConnection()` alongside the setter.
+- `App.jsx` should read direct-duel banner state from `useIncomingDuelState()` instead of owning another top-level `useState(null)`.
 - `duel:incoming` should update `incomingDuelRef.current` immediately before calling `setIncomingDuel(request)`, so back-to-back duplicate socket payloads are suppressed before React commits the state update.
 - Doorbell SFX should play only for a newly accepted incoming request id.
 - `duel:closed` should clear `incomingDuelRef.current` when the closed request id matches the current banner request.

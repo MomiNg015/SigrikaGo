@@ -472,6 +472,9 @@
 </ul>
 <h2>Stability Boundary Update</h2>
 <ul>
+<li>2026-06-27 stability/extensibility hardening keeps production on the current single Node.js room runtime. Multi-instance migration remains a future architecture boundary, but the code now exposes clearer seams: <code>server/roomQueries.js</code> can delegate active/watch room lists to an injected read model, <code>server/serverStartup.js</code> exports <code>SERVER_STARTUP_TASK_ORDER</code>, room-resume stability metrics include the <code>initial-connect</code> reason, character-target item ownership uses <code>publicUserAssets()</code>, skill effect image URLs live in <code>src/room/boardSkillEffectAssets.js</code>, and direct-duel incoming banner state lives in <code>src/app/useIncomingDuelState.js</code>.</li>
+</ul>
+<ul>
 <li>Startup preload / room resume race: <code>useStartupPreload()</code> now uses <code>shouldShowStartupPreload({ room: roomRef.current, matchSuccess: matchSuccessRef.current })</code> before setting <code>view=&quot;preloading&quot;</code> after <code>/api/me</code>; a fast mobile <code>room:resume</code> that already restored an active room or pending match cannot be visually covered by the generic login preload route.</li>
 </ul>
 <ul>
@@ -991,6 +994,9 @@
 <li>依次执行内置角色 seed、内置商城 seed、默认站点设置、社交/房间持久化/登录会话/模式/抽卡 schema guard，以及配置管理员提升。</li>
 </ul>
 <ul>
+<li>Exports <code>SERVER_STARTUP_TASK_ORDER</code> so startup schema/seed sequencing is an explicit, tested contract.</li>
+</ul>
+<ul>
 <li><code>server/serverStartup.test.js</code> 锁定初始化顺序，后续新增启动期 seed 或 schema guard 应优先扩展该模块。</li>
 </ul>
 </ul>
@@ -1466,6 +1472,9 @@
 </ul>
 <ul>
 <li>Owns active-room filtering, watch-room projection, user active-room membership checks, and user-to-room lookup while reusing <code>server/roomPresence.js</code> for online counts and watch player summaries.</li>
+</ul>
+<ul>
+<li>Active-room and watch-room list projection can delegate to an injected <code>roomReadModel</code>, with the current in-memory room scan kept as the single-process fallback.</li>
 </ul>
 </ul>
 <ul>
@@ -1996,7 +2005,10 @@
 <p>本文聚焦 React/Vite 前端、应用壳、路由、弹窗、状态同步、主题注册和前端模块拆分。新增前端入口、全局状态、主题注册或主要视图时优先更新本分篇。</p>
 <h2>当前结论</h2>
 <ul>
-<li><code>src/main.jsx</code> 只负责浏览器挂载；<code>src/app/App.jsx</code> 是应用组合根，状态通过 <code>src/app/*</code> hooks 逐步收口，应用级弹窗可见性由 <code>src/app/useOverlayState.js</code> 维护，房间/回放/结果弹窗会话状态由 <code>src/app/useRoomSessionState.js</code> 维护，匹配等待/成功过渡状态由 <code>src/app/useMatchSessionState.js</code> 维护。</li>
+<li><code>src/main.jsx</code> 只负责浏览器挂载；<code>src/app/App.jsx</code> 是应用组合根，状态通过 <code>src/app/*</code> hooks 逐步收口，应用级弹窗可见性由 <code>src/app/useOverlayState.js</code> 维护，房间/回放/结果弹窗会话状态由 <code>src/app/useRoomSessionState.js</code> 维护，匹配等待/成功过渡状态由 <code>src/app/useMatchSessionState.js</code> 维护，直连约战 incoming banner 状态由 <code>src/app/useIncomingDuelState.js</code> 维护。</li>
+</ul>
+<ul>
+<li>Direct-duel incoming banner state is isolated in <code>src/app/useIncomingDuelState.js</code>; <code>App.jsx</code> only wires <code>{ incomingDuel, setIncomingDuel }</code> into socket handlers and overlays so future lobby/social state does not add more transient state to the composition root.</li>
 </ul>
 <ul>
 <li>玩家侧主题通过 <code>src/app/visualTheme.js</code> 和 <code>src/styles/themes.css</code> 维护注册与 CSS 入口。</li>
@@ -2648,7 +2660,13 @@
 <li><code>room:resume</code> 的空 roomCode 只恢复仍可继续的玩家房间，不会自动拉起 finished room；finished 历史结果只有在客户端显式传入 roomCode 时才允许恢复。这样玩家关闭结果或退出 finished 房间后刷新，不会因为内存房间仍在 5 分钟 review window 内而再次弹出结果。</li>
 </ul>
 <ul>
-<li><code>server/runtimeStabilityMetrics.js</code> 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 <code>patch-gap</code> 或 <code>socket-connect</code> 的 <code>room:resume</code> 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。</li>
+<li><code>server/runtimeStabilityMetrics.js</code> 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 <code>initial-connect</code>、<code>patch-gap</code> 或 <code>socket-connect</code> 的 <code>room:resume</code> 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。</li>
+</ul>
+<ul>
+<li><code>server/serverStartup.js</code> exports <code>SERVER_STARTUP_TASK_ORDER</code> as the auditable startup/schema/seed order. Tests lock the order so future guards can be inserted intentionally instead of depending on incidental function order.</li>
+</ul>
+<ul>
+<li><code>server/roomQueries.js</code> remains the room read boundary. Active-room lists and watch-room summaries can delegate to an injected <code>roomReadModel</code>, while the current single-process runtime continues to use in-memory rooms as the default fallback.</li>
 </ul>
 <h2>API 与实时事件</h2>
 <h2>Production Deployment Hardening</h2>
@@ -3053,6 +3071,7 @@
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <p><code>server/userAssets.js</code> 是账号资产兼容边界：<code>parseAssetList()</code> / <code>parseOwnedItemCounts()</code> 处理旧字符串和公开数组 payload，<code>syncStructuredUserAssets()</code> 将 legacy 字段替换式同步到 <code>UserCharacter</code>、<code>UserDecoration</code>、<code>UserItem</code> 和 <code>UserItemEffect</code>，<code>publicUserAssets()</code> 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。<code>server/db.js</code> 的 <code>publicUser()</code> 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。</p>
+<p>Character-target inventory item use loads structured <code>userCharacters</code> and validates ownership through <code>publicUserAssets()</code>. During the legacy-to-structured migration, structured ownership rows can satisfy character targeting even when the old <code>ownedCharacters</code> string mirror is stale.</p>
 <p>仇远（<code>qiuyuan</code>）是内置剑客角色，立绘位于 <code>/assets/characters/qiuyuan.png</code>，获得方式文案为“部员招募获得”。莫宁（<code>mornye</code> / Mornye）是内置科学家角色，立绘位于 <code>/assets/characters/mornye.png</code>，获得方式文案为“招募获得”。部员招募尚未实装时，<code>server/userAssets.js</code> 将这类角色视为管理员限定资源：管理员公开资产会自动补齐 <code>qiuyuan</code> 和 <code>mornye</code>，普通玩家不会默认拥有或部署。</p>
 <h3>LoginSession</h3>
 <p>持久化登录会话表，用于 refresh cookie、单账号单会话和服务重启后的登录恢复。</p>
@@ -3434,6 +3453,9 @@
 </ul>
 <ul>
 <li>运行期静态图片和关键交互音频清单集中在 <code>src/shared/assetRegistry.js</code>，启动预加载从 <code>RUNTIME_IMAGE_ASSETS</code> 读取首页、商店和效果图分组，从 <code>RUNTIME_AUDIO_ASSETS.interaction</code> 读取棋盘/UI 关键音效，避免资源扩展时只改 UI 却漏改预加载。音频路径常量位于纯数据模块 <code>src/shared/audioAssets.js</code>，播放实现 <code>src/audio/effectPlayback.js</code> 只负责加载和播放并继续 re-export 常量以兼容旧调用。 Recruitment opening and result effects <code>recruitment-open.ogg</code>, <code>recruitment-success.ogg</code>, and <code>recruitment-miss.ogg</code> are included in the same interaction SFX preload group.</li>
+</ul>
+<ul>
+<li>Board skill effect image URLs are centralized in <code>src/room/boardSkillEffectAssets.js</code>; <code>src/room/boardSkillEffectRegistry.js</code> imports those constants and <code>boardSkillEffectAssetUrls()</code> so preload coverage and renderer asset dependencies share one tested catalog.</li>
 </ul>
 <ul>
 <li>匹配成功后的对局资源预加载使用 <code>battlePreloadAssets()</code> 按双方房间角色收集立绘、对局 BGM、角色技能 BGM、技能/系统语音和棋盘特效图片，但加载页视觉只展示当前用户自己的出战角色跳动立绘和该角色的后台配置加载台词。本地加载完成后通过 <code>room:preload-ready</code> ack 协议通知服务端；客户端在未收到 <code>{ ok: true }</code> 前会退避重试，socket 重连后也会立即重发当前房间 ready，服务端可安全去重同一玩家的 ready。</li>
@@ -4279,7 +4301,7 @@
 <li>CSS 体积和全局层叠仍是前端维护风险。共享基础样式已从单体 <code>base.css</code> 拆成 import-only 入口和 <code>src/styles/base/</code> 领域文件，房间样式已从单体 <code>room.css</code> 拆成 import-only 入口和 <code>src/styles/room/</code> 领域文件，且共享棋盘子入口 <code>src/styles/room/board.css</code> 已继续拆成 import-only 子入口和 <code>src/styles/room/board/</code> 领域文件；Startorch 对局终端皮肤已从单体 <code>room-terminal.css</code> 拆成 import-only 入口和 <code>src/styles/room-terminal/</code> 领域文件，共享弹窗样式已从单体 <code>modals.css</code> 拆成 import-only 入口和 <code>src/styles/modals/</code> 领域文件，且 <code>src/styles/modals/replay-mode-resume.css</code> 已继续拆成 import-only 子入口和 <code>src/styles/modals/replay-mode-resume/</code> 领域文件；移动弹窗安全层已从单体 <code>mobile-modals.css</code> 拆成 import-only 入口和 <code>src/styles/mobile-modals/</code> 领域文件，商业/社交/仓库样式已从单体 <code>commerce-settings.css</code> 拆成 import-only 入口和 <code>src/styles/commerce/</code> 领域文件，且 <code>src/styles/commerce/shop-settings.css</code> 已继续拆成 import-only 子入口和 <code>src/styles/commerce/shop-settings/</code> 领域文件，Startorch 商业/社交终端润色也已继续拆成 import-only 子入口和 <code>src/styles/commerce/terminal-polish/</code> 领域文件；共享响应式层已从单体 <code>responsive.css</code> 拆成 import-only 入口和 <code>src/styles/responsive/</code> 断点文件，共享移动对局层已从单体 <code>mobile-room.css</code> 拆成 import-only 入口和 <code>src/styles/mobile-room/</code> 断点文件，共享 HUD 兼容层已从单体 <code>hud-components.css</code> 拆成 import-only 入口和 <code>src/styles/hud-components/</code> 领域文件，最终移动安全层也从单体 <code>mobile-adaptive.css</code> 拆成 import-only 入口和 <code>src/styles/mobile-adaptive/</code> 领域文件，且 Bright School 最终移动兜底覆盖已继续拆成 import-only 入口和 <code>src/styles/mobile-adaptive/bright-school-overrides/</code> 领域文件，Bright School 竖屏手机最终兜底覆盖已继续拆成 import-only 入口和 <code>src/styles/mobile-adaptive/bright-school-portrait/</code> 领域文件；后台管理样式也从单体 <code>admin.css</code> 拆成 import-only 入口和 <code>src/styles/admin/</code> 领域文件，共享大厅/小屋/观战列表样式也从单体 <code>lobby.css</code> 拆成 import-only 入口和 <code>src/styles/lobby/</code> 领域文件；Bright School 基础主题、早期可读性清理、早期强制清场覆盖、高权重防串色覆盖、大厅主题、静态图廊一致性覆盖、商业覆盖、弹窗/设置/结果/房间浮层清理、动画/技能/棋盘效果、对局可读性覆盖、移动端覆盖、竖屏对局覆盖、组件修复覆盖、质量兜底层和防 HUD 串色 firewall 也分别拆成 import-only 入口与 <code>src/styles/themes/bright-school/base/</code>、<code>src/styles/themes/bright-school/contrast-purge/</code>、<code>src/styles/themes/bright-school/radical-purge/</code>、<code>src/styles/themes/bright-school/specificity-overrides/</code>、<code>src/styles/themes/bright-school/home/</code>、<code>src/styles/themes/bright-school/gallery-polish/</code>、<code>src/styles/themes/bright-school/commerce/</code>、<code>src/styles/themes/bright-school/modals/</code>、<code>src/styles/themes/bright-school/effects/</code>、<code>src/styles/themes/bright-school/room/</code>、<code>src/styles/themes/bright-school/mobile/</code>、<code>src/styles/themes/bright-school/mobile/room/</code>、<code>src/styles/themes/bright-school/component-repairs/</code>、<code>src/styles/themes/bright-school/quality-base/</code>、<code>src/styles/themes/bright-school/firewall/</code> 领域文件；下一步高风险目标转为仍未领域化的其他大样式文件。</li>
 </ul>
 <ul>
-<li><code>src/main.jsx</code> 已瘦身为浏览器挂载入口，应用组合根迁移到 <code>src/app/App.jsx</code>，应用级弹窗可见性已收口到 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态已收口到 <code>src/app/useRoomSessionState.js</code>，匹配等待/成功过渡状态已收口到 <code>src/app/useMatchSessionState.js</code>；App 级音频运行态已收口到 <code>src/app/useAudioRuntimeState.js</code>，负责本地音频设置、持久化和 socket 重连后的背景音恢复信号；下一步可继续把大厅辅助和启动状态编排拆成更聚焦的状态/动作 hook。服务端启动数据与 schema 初始化已收口到 <code>server/serverStartup.js</code>，Socket.IO 连接事件套件已收口到 <code>server/socketEvents.js</code>，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理继续由各自 <code>server/socket*Events.js</code> 分组模块维护，生产静态资源托管已收口到 <code>server/staticAssets.js</code>，账号资产 legacy 字段解析、结构化同步和公开合并规则已收口到 <code>server/userAssets.js</code>；后续重点转为剩余数据模型兼容镜像字段、前端状态编排和 CSS 技术债。运行期图片和关键交互音频资源清单已先收口到 <code>src/shared/assetRegistry.js</code>，后续可继续扩展到角色、后台资源目录和更完整的音频分类。</li>
+<li><code>src/main.jsx</code> 已瘦身为浏览器挂载入口，应用组合根迁移到 <code>src/app/App.jsx</code>，应用级弹窗可见性已收口到 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态已收口到 <code>src/app/useRoomSessionState.js</code>，匹配等待/成功过渡状态已收口到 <code>src/app/useMatchSessionState.js</code>，直连约战 incoming banner 状态已收口到 <code>src/app/useIncomingDuelState.js</code>；App 级音频运行态已收口到 <code>src/app/useAudioRuntimeState.js</code>，负责本地音频设置、持久化和 socket 重连后的背景音恢复信号；下一步可继续把大厅辅助和启动状态编排拆成更聚焦的状态/动作 hook。服务端启动数据与 schema 初始化已收口到 <code>server/serverStartup.js</code>，并由 <code>SERVER_STARTUP_TASK_ORDER</code> 明确可审计顺序；Socket.IO 连接事件套件已收口到 <code>server/socketEvents.js</code>，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理继续由各自 <code>server/socket*Events.js</code> 分组模块维护，生产静态资源托管已收口到 <code>server/staticAssets.js</code>，账号资产 legacy 字段解析、结构化同步和公开合并规则已收口到 <code>server/userAssets.js</code>；后续重点转为剩余数据模型兼容镜像字段、前端状态编排和 CSS 技术债。运行期图片和关键交互音频资源清单已先收口到 <code>src/shared/assetRegistry.js</code>，棋盘技能特效图片 URL 进一步收口到 <code>src/room/boardSkillEffectAssets.js</code>，后续可继续扩展到角色、后台资源目录和更完整的音频分类。</li>
 </ul>
 <ul>
 <li>实时性能已经通过轻量时钟、房间广播边界、结构共享和棋盘 memo 得到改善。</li>
@@ -4451,7 +4473,7 @@
 <li><code>server/roomChatLifecycle.js</code> is the backend room chat entry boundary. Chat sends now share room-code validation, text normalization, room lookup, message id creation, current move-number capture, chat payload shape, and <code>{ room, message }</code> mutation result in one focused module so socket code can emit append-only chat patches without rebuilding a viewer-specific room snapshot.</li>
 </ul>
 <ul>
-<li><code>server/roomQueries.js</code> is the backend room read-model boundary. Active-room lists and watch-room summaries still scan current rooms for projection, but active membership checks and user room lookup delegate to <code>server/roomMembershipIndex.js</code> when available. The index is populated by room creation and persisted-room restore, maintained during room connection/leave/disconnect, cleared by room close and tests, and prefers unfinished active rooms over finished review rooms for the same user so reconnect/resume lands on the playable match first; participant counts and player summaries continue to come from <code>server/roomPresence.js</code>.</li>
+<li><code>server/roomQueries.js</code> is the backend room read-model boundary. Active-room lists and watch-room summaries can delegate to an injected <code>roomReadModel</code>; the current single-process fallback still scans current rooms for projection. Active membership checks and user room lookup delegate to <code>server/roomMembershipIndex.js</code> when available. The index is populated by room creation and persisted-room restore, maintained during room connection/leave/disconnect, cleared by room close and tests, and prefers unfinished active rooms over finished review rooms for the same user so reconnect/resume lands on the playable match first; participant counts and player summaries continue to come from <code>server/roomPresence.js</code>.</li>
 </ul>
 <ul>
 <li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators still receive both black and white projections through <code>gameViews</code>, but players receive only their own visible board state.</li>
@@ -4489,6 +4511,9 @@
 </ul>
 <ul>
 <li><code>src/app/useMailboxSummary.js</code> and <code>src/app/useRecruitmentReadyState.js</code> move feature-specific polling and readyAt timing out of <code>src/app/App.jsx</code>, leaving the app composition root to connect feature hooks to routes/overlays. Future app-shell features should follow this pattern instead of adding more inline polling loops to <code>App.jsx</code>.</li>
+</ul>
+<ul>
+<li><code>src/app/useIncomingDuelState.js</code> moves direct-duel incoming request state out of <code>App.jsx</code>, matching the app-shell hook pattern used for overlays, room sessions, match transitions, mailbox summary, recruitment timing, and audio runtime.</li>
 </ul>
 <ul>
 <li>App-level render failures are contained by <code>src/app/AppErrorBoundary.jsx</code>, and <code>AppRoutes</code> renders the normal preload recovery shell when <code>view=&quot;room&quot;</code> lacks <code>room</code> or <code>user</code>. This keeps reconnect/startup races and unexpected child render errors from producing a blank page.</li>

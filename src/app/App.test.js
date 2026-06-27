@@ -99,4 +99,14 @@ describe("App startup preload wiring", () => {
     expect(appSource).not.toContain("setMailboxSummary");
     expect(hookSource).toContain("window.setInterval(refreshMailboxSummary, 30000)");
   });
+
+  it("delegates incoming duel request state out of the app composition root", () => {
+    const appSource = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+    const hookSource = readFileSync(new URL("./useIncomingDuelState.js", import.meta.url), "utf8");
+
+    expect(appSource).toContain("useIncomingDuelState()");
+    expect(appSource).not.toContain("const [incomingDuel, setIncomingDuel] = useState(null)");
+    expect(hookSource).toContain("initialIncomingDuelState");
+    expect(hookSource).toContain("return { incomingDuel, setIncomingDuel }");
+  });
 });

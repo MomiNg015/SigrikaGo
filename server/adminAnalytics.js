@@ -134,6 +134,7 @@ function runtimeStabilitySnapshot(metrics) {
     roomResumeMisses: number("roomResumeMisses"),
     roomResumePatchGapRequests: number("roomResumePatchGapRequests"),
     roomResumeSocketConnectRequests: number("roomResumeSocketConnectRequests"),
+    roomResumeInitialConnectRequests: number("roomResumeInitialConnectRequests"),
     runtimeErrorCount
   };
 }

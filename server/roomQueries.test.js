@@ -86,6 +86,26 @@ describe("room queries", () => {
     expect(deps.watchPlayerSummary).toHaveBeenCalledWith(playing, "white");
   });
 
+  test("delegates active and watch room lists to a read model when provided", () => {
+    const activeRows = [room("active")];
+    const watchRows = [{ code: "watch", status: "playing" }];
+    const roomReadModel = {
+      listActiveRooms: vi.fn(() => activeRows),
+      listWatchRooms: vi.fn(() => watchRows)
+    };
+    const { queries, deps } = createQueries({
+      roomReadModel,
+      rooms: new Map([[room("fallback").code, room("fallback")]])
+    });
+
+    expect(queries.listActiveRooms()).toBe(activeRows);
+    expect(queries.listWatchRooms()).toBe(watchRows);
+    expect(roomReadModel.listActiveRooms).toHaveBeenCalledTimes(1);
+    expect(roomReadModel.listWatchRooms).toHaveBeenCalledTimes(1);
+    expect(deps.onlineParticipantCount).not.toHaveBeenCalled();
+    expect(deps.watchPlayerSummary).not.toHaveBeenCalled();
+  });
+
   test("checks active-room membership without counting finished rooms", () => {
     const active = room("active", { players: [{ user: { id: "alice" } }] });
     const finished = room("finished", {

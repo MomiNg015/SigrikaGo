@@ -4,7 +4,8 @@
 
 ## 当前结论
 
-- `src/main.jsx` 只负责浏览器挂载；`src/app/App.jsx` 是应用组合根，状态通过 `src/app/*` hooks 逐步收口，应用级弹窗可见性由 `src/app/useOverlayState.js` 维护，房间/回放/结果弹窗会话状态由 `src/app/useRoomSessionState.js` 维护，匹配等待/成功过渡状态由 `src/app/useMatchSessionState.js` 维护。
+- `src/main.jsx` 只负责浏览器挂载；`src/app/App.jsx` 是应用组合根，状态通过 `src/app/*` hooks 逐步收口，应用级弹窗可见性由 `src/app/useOverlayState.js` 维护，房间/回放/结果弹窗会话状态由 `src/app/useRoomSessionState.js` 维护，匹配等待/成功过渡状态由 `src/app/useMatchSessionState.js` 维护，直连约战 incoming banner 状态由 `src/app/useIncomingDuelState.js` 维护。
+- Direct-duel incoming banner state is isolated in `src/app/useIncomingDuelState.js`; `App.jsx` only wires `{ incomingDuel, setIncomingDuel }` into socket handlers and overlays so future lobby/social state does not add more transient state to the composition root.
 - 玩家侧主题通过 `src/app/visualTheme.js` 和 `src/styles/themes.css` 维护注册与 CSS 入口。
 - 后台管理新增桌面端分析体验：`AdminOverview` 是默认“今日简报”，用可读总状态、原因、分级解读和下一步动作替代密集表格；`AdminOperations` 是运营分析页，先显示推荐解读，再用低密度 CSS 条形图和卡片展示活跃、注册、对局、分层、经济和模式表现。分析样式集中在 `src/styles/admin/analytics.css`，最终后台控件皮肤集中在 `src/styles/admin/polish.css`，用于统一浅色按钮、输入框、表格、tabs、危险操作和关闭按钮。
 - 前端性能重点在启动预加载、房间快照结构共享、棋盘点位 memo、移动端布局合同。

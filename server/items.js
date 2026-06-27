@@ -10,6 +10,7 @@ import {
 import {
   normalizeOwnedItemCounts,
   parseOwnedItemCounts,
+  publicUserAssets,
   serializeOwnedItemCounts,
   syncStructuredUserAssets
 } from "./userAssets.js";
@@ -36,7 +37,7 @@ export async function listItemInventory({ prisma, userId }) {
 export async function useInventoryItem({ prisma, userId, itemId, characterId = "" }) {
   return prisma.$transaction(async (tx) => {
     const [user, item] = await Promise.all([
-      tx.user.findUnique({ where: { id: userId } }),
+      tx.user.findUnique({ where: { id: userId }, include: { userCharacters: true } }),
       tx.shopItem.findFirst({
         where: { category: "item", targetId: itemId, enabled: true }
       })
@@ -53,7 +54,7 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
     const targetCharacter = String(characterId ?? "").trim();
     if (targetType === "character") {
       if (!targetCharacter) throw routeError(400, "请选择角色");
-      const ownedCharacters = String(user.ownedCharacters ?? "").split(",").map(canonicalCharacterId).filter(Boolean);
+      const ownedCharacters = publicUserAssets(user).ownedCharacters.map(canonicalCharacterId);
       if (!ownedCharacters.includes(canonicalCharacterId(targetCharacter))) throw routeError(403, "尚未获得该角色");
     }
 
@@ -152,13 +153,12 @@ function resolveItemEffect({ item, user, characterId }) {
 }
 
 function fallbackSelectedCharacter(user) {
-  const ownedCharacters = String(user.ownedCharacters ?? "")
-    .split(",")
+  const ownedCharacters = publicUserAssets(user).ownedCharacters
     .map(canonicalCharacterId)
     .filter((characterId) => characterId && characterId !== "sigrika");
   const fallback = ownedCharacters[0];
   if (!fallback) throw routeError(400, "没有可替换的出战角色");
-  return ownedCharacters[Math.floor(Math.random() * ownedCharacters.length)] ?? fallback;
+  return fallback;
 }
 
 function routeError(status, message) {
