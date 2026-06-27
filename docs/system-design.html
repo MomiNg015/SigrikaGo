@@ -406,6 +406,9 @@
 <li>CSS round-3 and round-4 follow-ups are also encoded in <code>src/styles/cssLayerInventory.js</code>: <code>CSS_ROUND3_SHARED_SPLITS</code> records import-only shared-domain splits for <code>base/home-legacy-grid.css</code>, <code>base/home-stage-artboard.css</code>, <code>hud-components/pop-tech-terminal.css</code>, <code>mobile-modals/phone-house-resume.css</code>, <code>modals/character-opening.css</code>, <code>responsive/phone-portrait-room.css</code>, <code>modals/mailbox.css</code>, and <code>commerce/recruitment/board.css</code>; <code>CSS_ROUND4_REGRESSION_CHECKS</code> records the required static CSS, focused board/skill unit, and desktop/mobile Pixi visual stability gates. <code>npm run verify:battle-fixes</code> now includes CSS inventory/theme contracts plus BoardSkillEffects, BoardAmbientEffects, skill registry, skill SFX scheduling, and mobile point-confirmation tests.</li>
 </ul>
 <ul>
+<li>Full-repo CSS cleanup completion gates are tracked in <code>CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES</code>: each stage runs CSS contracts, high-risk room/board/skill/mobile work runs <code>npm run verify:battle-fixes</code>, protected Pixi/skill presentation work runs <code>npm run verify:stability -- tests/stability/skill-effects.spec.js</code>, and final handoff runs <code>npm run check</code>.</li>
+</ul>
+<ul>
 <li>Final mobile safety splits are tracked separately as <code>CSS_FINAL_MOBILE_SAFETY_SPLITS</code> because <code>mobile-adaptive.css</code> remains the post-theme override layer. <code>mobile-adaptive/mobile-profile-records.css</code> now delegates to <code>mobile-adaptive/mobile-profile-records/</code> while preserving the 768px profile/resume record cascade, <code>mobile-adaptive/phone-core.css</code> delegates to <code>mobile-adaptive/phone-core/</code> for match mode, shell controls, modal tabs, and scroll/detail/result safety, <code>mobile-adaptive/phone-gacha.css</code> delegates to <code>mobile-adaptive/phone-gacha/</code> for legacy gacha modal, stage, controls, and result dialog survival rules, Bright School final leaderboard cards delegate to <code>mobile-adaptive/bright-school-overrides/leaderboard-cards/</code>, and Bright School portrait resume modal layout/settings tabs delegate to <code>mobile-adaptive/bright-school-portrait/resume-modal-layout/</code> and <code>mobile-adaptive/bright-school-portrait/settings-tabs/</code>.</li>
 </ul>
 <ul>
@@ -4066,6 +4069,9 @@
 </ul>
 <ul>
 <li>General CSS architecture guard coverage lives in <code>src/styles/styleContract.test.js</code>: any CSS file with <code>@import</code> must stay import-only, and new or expanded 6000-byte CSS files fail the contract unless the known-debt baseline is intentionally updated during a split plan.</li>
+</ul>
+<ul>
+<li>Full-repo CSS cleanup completion gates live in <code>CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES</code>: every CSS stage runs the static CSS contracts, room/board/skill/mobile or broad CSS changes run <code>npm run verify:battle-fixes</code>, protected Pixi/skill-presentation changes run <code>npm run verify:stability -- tests/stability/skill-effects.spec.js</code>, and final handoff runs <code>npm run check</code>.</li>
 </ul>
 <ul>
 <li>The Startorch commerce/social polish sub-entry <code>src/styles/commerce/terminal-polish.css</code> is also import-only and delegates terminal headers/profile stats, character cards, shop shell/tabs, item cards/empty states, list/status rows, settings/warehouse target surfaces, and compact phone fixes to <code>src/styles/commerce/terminal-polish/</code>, preserving the existing commerce layer order.</li>

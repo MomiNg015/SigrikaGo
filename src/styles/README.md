@@ -101,6 +101,13 @@ Round 4 regression gates are recorded in `CSS_ROUND4_REGRESSION_CHECKS`:
 - Focused board/skill units: `npm run verify:battle-fixes`
 - Desktop and mobile Pixi visual stability path: `npm run verify:stability -- tests/stability/skill-effects.spec.js`
 
+Full-repo cleanup completion gates are recorded in `CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES`:
+
+- Every CSS cleanup stage runs the static CSS contracts.
+- Room, board, skill, mobile, or broad CSS changes run `npm run verify:battle-fixes`.
+- Skill-presentation, Pixi canvas, or protected board effect changes run `npm run verify:stability -- tests/stability/skill-effects.spec.js`.
+- Final handoff runs `npm run check`, which includes the full unit suite, production build, production config check, and system design HTML generation.
+
 ## Gameplay And Skill Presentation Guard
 
 Board and skill presentation CSS is protected during theme refactors. Broad button, media, pseudo-element, transform, z-index, or min-size rules must not override:

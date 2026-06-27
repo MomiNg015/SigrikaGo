@@ -719,6 +719,33 @@ export const CSS_ROUND4_REGRESSION_CHECKS = [
   }
 ];
 
+export const CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES = [
+  {
+    id: "css-contracts",
+    command: "npm test -- src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js",
+    requiredFor: ["every CSS cleanup stage"],
+    coverage: ["root import order", "import-only entries", "oversized CSS guard", "protected surface fragments"]
+  },
+  {
+    id: "battle-fixes",
+    command: "npm run verify:battle-fixes",
+    requiredFor: ["room", "board", "skill", "mobile", "broad CSS changes"],
+    coverage: ["Board", "BoardSkillEffects", "skill SFX scheduling", "mobile point confirmation"]
+  },
+  {
+    id: "desktop-mobile-skill-stability",
+    command: "npm run verify:stability -- tests/stability/skill-effects.spec.js",
+    requiredFor: ["skill presentation", "Pixi canvas", "protected board effects"],
+    coverage: ["desktop Chromium", "mobile Chromium", "real Pixi canvas", "app error boundary absence"]
+  },
+  {
+    id: "final-repo-check",
+    command: "npm run check",
+    requiredFor: ["final handoff"],
+    coverage: ["full unit suite", "production build", "production config", "system design HTML"]
+  }
+];
+
 export function inventoryFilesForGroup(groupId) {
   return CSS_LAYER_GROUPS.find((group) => group.id === groupId)?.entries ?? [];
 }

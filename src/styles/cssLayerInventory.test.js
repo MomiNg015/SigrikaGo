@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   CSS_FINAL_MOBILE_SAFETY_SPLITS,
+  CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES,
   CSS_GAMEPLAY_ROOM_SPLITS,
   CSS_LAYER_GROUPS,
   CSS_PROTECTED_SURFACES,
@@ -124,6 +125,24 @@ describe("CSS layer inventory", () => {
     expect(coverage).toContain("mobile Chromium");
     expect(coverage).toContain("Pixi");
     expect(coverage).toContain("skill SFX");
+  });
+
+  it("documents final full-repo CSS cleanup verification gates", () => {
+    const commands = CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES.map((gate) => gate.command).join("\n");
+    const requiredScopes = CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES.flatMap((gate) => gate.requiredFor).join("\n");
+    const coverage = CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES.flatMap((gate) => gate.coverage).join("\n");
+
+    expect(commands).toContain("src/styles/cssLayerInventory.test.js");
+    expect(commands).toContain("npm run verify:battle-fixes");
+    expect(commands).toContain("npm run verify:stability -- tests/stability/skill-effects.spec.js");
+    expect(commands).toContain("npm run check");
+    expect(requiredScopes).toContain("broad CSS changes");
+    expect(requiredScopes).toContain("final handoff");
+    expect(coverage).toContain("desktop Chromium");
+    expect(coverage).toContain("mobile Chromium");
+    expect(coverage).toContain("real Pixi canvas");
+    expect(coverage).toContain("skill SFX scheduling");
+    expect(coverage).toContain("system design HTML");
   });
 
   it("keeps round-3 shared splits import-only and in the low-risk inventory bucket", () => {
