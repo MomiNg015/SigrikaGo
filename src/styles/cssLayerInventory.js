@@ -51,6 +51,11 @@ export const CSS_LAYER_GROUPS = [
       "commerce/recruitment/board/cards.css",
       "commerce/recruitment/board/motion.css",
       "responsive.css",
+      "responsive/phone-portrait-room.css",
+      "responsive/phone-portrait-room/shell-layout.css",
+      "responsive/phone-portrait-room/player-panels.css",
+      "responsive/phone-portrait-room/board-viewport.css",
+      "responsive/phone-portrait-room/tabs-actions.css",
       "mobile-home.css",
       "home-terminal.css",
       "mobile-modals.css",
@@ -214,6 +219,15 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "modals/character-opening/replay-match.css",
       "modals/character-opening/opening-animation.css",
       "modals/character-opening/keyframes.css"
+    ]
+  },
+  {
+    entry: "responsive/phone-portrait-room.css",
+    files: [
+      "responsive/phone-portrait-room/shell-layout.css",
+      "responsive/phone-portrait-room/player-panels.css",
+      "responsive/phone-portrait-room/board-viewport.css",
+      "responsive/phone-portrait-room/tabs-actions.css"
     ]
   },
   {

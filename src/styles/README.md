@@ -50,6 +50,7 @@ Round 3 has split these shared-domain debt files into import-only sub-entries wi
 - `hud-components/pop-tech-terminal.css` -> `hud-components/pop-tech-terminal/`
 - `mobile-modals/phone-house-resume.css` -> `mobile-modals/phone-house-resume/`
 - `modals/character-opening.css` -> `modals/character-opening/`
+- `responsive/phone-portrait-room.css` -> `responsive/phone-portrait-room/`
 - `modals/mailbox.css` -> `modals/mailbox/`
 - `commerce/recruitment/board.css` -> `commerce/recruitment/board/`
 

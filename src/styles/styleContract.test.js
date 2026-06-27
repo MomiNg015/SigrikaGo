@@ -60,7 +60,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/phone-core.css", 6418],
   ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-room/portrait-room.css", 7502],
-  ["responsive/phone-portrait-room.css", 6803],
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
   ["room/board/stones-skill-effects.css", 7290],
@@ -656,6 +655,15 @@ describe("root CSS entry contract", () => {
     expect(responsiveEntry).not.toContain(".home-grid-featured {");
     expect(responsiveEntry).not.toContain(".mobile-room-screen {");
     expect(responsiveEntry).not.toContain(".admin-crud-drawer {");
+
+    const phonePortraitRoomEntry = readFileSync(new URL("./responsive/phone-portrait-room.css", import.meta.url), "utf8");
+    expect(cssImports(phonePortraitRoomEntry)).toEqual([
+      "./phone-portrait-room/shell-layout.css",
+      "./phone-portrait-room/player-panels.css",
+      "./phone-portrait-room/board-viewport.css",
+      "./phone-portrait-room/tabs-actions.css"
+    ]);
+    expect(phonePortraitRoomEntry).not.toContain(".mobile-room-screen {");
   });
 
   it("keeps mobile-room.css as an import-only mobile battle entry", () => {

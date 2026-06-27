@@ -1,0 +1,156 @@
+@media (max-width: 760px) and (orientation: portrait), (max-width: 420px) {
+  .mobile-room-screen .player-info {
+    box-sizing: border-box;
+    max-height: 64px;
+    min-height: 0;
+    overflow: visible;
+    grid-template-columns: 34px minmax(0, 0.75fr) minmax(96px, 1fr);
+    grid-template-rows: minmax(0, 30px) minmax(0, 24px);
+    grid-template-areas:
+      "portrait meta time"
+      "captures captures skill";
+    align-items: center;
+    padding: 3px 5px;
+    gap: 2px 4px;
+    position: relative;
+    z-index: 4;
+  }
+
+  .mobile-room-screen .portrait-wrap {
+    align-self: center;
+  }
+
+  .mobile-room-screen .viewpoint-button {
+    width: 30px;
+    height: 30px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .mobile-room-screen .player-info img {
+    height: 34px;
+  }
+
+  .mobile-room-screen .player-meta {
+    align-content: center;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 1px 3px;
+  }
+
+  .mobile-room-screen .name-button {
+    grid-column: 1 / -1;
+    max-width: 8ch;
+    font-size: 10.5px;
+    line-height: 1;
+  }
+
+  .mobile-room-screen .rank-tag,
+  .mobile-room-screen .rating-tag {
+    min-width: 0;
+    min-height: 16px;
+    padding: 1px 5px;
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .color-badge {
+    width: 10px;
+    height: 10px;
+  }
+
+  .mobile-room-screen .digital-timer {
+    min-height: 22px;
+    grid-template-columns: auto minmax(54px, 1fr);
+    gap: 4px;
+    padding: 1px 4px;
+  }
+
+  .mobile-room-screen .timer-digits {
+    min-height: 0;
+  }
+
+  .mobile-room-screen .timer-primary {
+    min-width: 3.2ch;
+    font-size: 16px;
+  }
+
+  .mobile-room-screen .timer-periods {
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .timer-track {
+    height: 5px;
+  }
+
+  .mobile-room-screen .captures {
+    align-self: center;
+    gap: 2px;
+  }
+
+  .mobile-room-screen .captures span {
+    min-height: 18px;
+    padding: 1px 3px;
+    font-size: 10px;
+    gap: 2px;
+  }
+
+  .mobile-room-screen .captures strong {
+    font-size: 9px;
+  }
+
+  .mobile-room-screen .captures .info-stat::after {
+    left: auto;
+    right: 0;
+    bottom: calc(100% + 4px);
+    max-width: min(176px, calc(100vw - 32px));
+    padding: 6px 8px;
+    font-size: 10px;
+    line-height: 1.35;
+    transform: translateY(4px);
+    z-index: 50;
+  }
+
+  .mobile-room-screen .captures .info-stat:hover::after,
+  .mobile-room-screen .captures .info-stat:focus-visible::after {
+    transform: translateY(0);
+  }
+
+  .mobile-room-screen .skill-chip {
+    min-height: 20px;
+    padding: 1px 5px;
+    gap: 3px;
+    font-size: 10px;
+  }
+
+  .mobile-room-screen .skill-chip-wrap {
+    z-index: 45;
+  }
+
+  .mobile-room-screen .skill-detail-panel {
+    display: block;
+    top: auto;
+    bottom: calc(100% + 6px);
+    left: auto;
+    right: 0;
+    width: min(210px, calc(100vw - 24px));
+    max-width: min(210px, calc(100vw - 24px));
+    padding: 7px 9px;
+    border: 1px solid rgba(130, 105, 149, 0.22);
+    border-radius: 8px;
+    font-size: 10.5px;
+    line-height: 1.38;
+    transform: translateY(6px) scale(0.96);
+    transform-origin: bottom right;
+    z-index: 60;
+  }
+
+  .mobile-room-screen .skill-chip-wrap:hover .skill-detail-panel,
+  .mobile-room-screen .skill-chip-wrap.open .skill-detail-panel,
+  .mobile-room-screen .skill-chip:focus + .skill-detail-panel {
+    transform: translateY(0) scale(1);
+  }
+
+  .mobile-room-screen .skill-chip svg {
+    width: 13px;
+    height: 13px;
+  }
+}
