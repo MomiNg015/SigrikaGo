@@ -70,6 +70,7 @@ Final mobile safety cleanup is tracked separately because `mobile-adaptive.css` 
 Theme overlay cleanup is tracked separately from shared-domain and final-mobile cleanup:
 
 - `themes/shared.css` -> `themes/shared/`
+- `themes/theme-components.css` -> `themes/theme-components/`
 
 `CSS_THEME_OVERLAY_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the Bright School/theme overlay bucket.
 

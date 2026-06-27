@@ -1,0 +1,27 @@
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss,
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss:hover,
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss:focus-visible {
+  border-color: #cfcfd4 !important;
+  background: linear-gradient(135deg, #ececef, #f8f8f8) !important;
+  color: #3f4248 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss:focus-visible {
+  border-color: #cfcfd4 !important;
+  background: linear-gradient(135deg, #ececef, #f8f8f8) !important;
+  color: #3f4248 !important;
+}
+
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss:hover span,
+.app-shell.player-theme-enabled .replay-table-row.outcome-loss:focus-visible span {
+  color: #3f4248 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss:hover span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-table .replay-table-row.outcome-loss:focus-visible span {
+  color: #3f4248 !important;
+}

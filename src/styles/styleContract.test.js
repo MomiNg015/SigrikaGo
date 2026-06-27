@@ -63,8 +63,7 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["themes/bright-school/mobile/room/dock-actions.css", 6459],
   ["themes/bright-school/mobile/room/shell-header-menu.css", 6872],
   ["themes/bright-school/mobile/room/viewport-player-strips.css", 7109],
-  ["themes/bright-school/quality-base/refinement-board.css", 6997],
-  ["themes/theme-components.css", 7012]
+  ["themes/bright-school/quality-base/refinement-board.css", 6997]
 ]);
 
 function cssImports(source) {
@@ -168,6 +167,15 @@ describe("root CSS entry contract", () => {
       "./shared/player-theme-wiring.css"
     ]);
     expect(sharedThemeEntry).not.toContain(".app-shell.player-theme-enabled {");
+
+    const themeComponentsEntry = readFileSync(new URL("./themes/theme-components.css", import.meta.url), "utf8");
+    expect(cssImports(themeComponentsEntry)).toEqual([
+      "./theme-components/outcome-skill-states.css",
+      "./theme-components/replay-outcome-win.css",
+      "./theme-components/replay-outcome-loss.css",
+      "./theme-components/replay-outcome-draw.css"
+    ]);
+    expect(themeComponentsEntry).not.toContain(".timer.byo-yomi");
   });
 
   it("hides native number input spinner controls while preserving number inputs", () => {

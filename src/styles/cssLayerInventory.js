@@ -109,6 +109,10 @@ export const CSS_LAYER_GROUPS = [
       "themes/shared/player-theme-wiring.css",
       "themes/isolation.css",
       "themes/theme-components.css",
+      "themes/theme-components/outcome-skill-states.css",
+      "themes/theme-components/replay-outcome-win.css",
+      "themes/theme-components/replay-outcome-loss.css",
+      "themes/theme-components/replay-outcome-draw.css",
       "themes/bright-school.css",
       "themes/bright-school/base.css",
       "themes/bright-school/contrast-purge.css",
@@ -340,6 +344,15 @@ export const CSS_THEME_OVERLAY_SPLITS = [
       "themes/shared/player-theme-tokens.css",
       "themes/shared/theme-settings-panel.css",
       "themes/shared/player-theme-wiring.css"
+    ]
+  },
+  {
+    entry: "themes/theme-components.css",
+    files: [
+      "themes/theme-components/outcome-skill-states.css",
+      "themes/theme-components/replay-outcome-win.css",
+      "themes/theme-components/replay-outcome-loss.css",
+      "themes/theme-components/replay-outcome-draw.css"
     ]
   }
 ];
