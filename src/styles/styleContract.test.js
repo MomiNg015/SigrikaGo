@@ -57,7 +57,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
   ["room/board/stones-skill-effects.css", 7290],
-  ["themes/bright-school/component-repairs/notebook-polish.css", 6408],
   ["themes/bright-school/component-repairs/warehouse-character.css", 8413],
   ["themes/bright-school/mobile/room/dock-actions.css", 6459],
   ["themes/bright-school/mobile/room/shell-header-menu.css", 6872],
@@ -206,6 +205,17 @@ describe("root CSS entry contract", () => {
       "./foundation-home/home-image-entry.css"
     ]);
     expect(foundationHomeEntry).not.toContain(".home-top-strip {");
+
+    const notebookPolishEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs/notebook-polish.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(notebookPolishEntry)).toEqual([
+      "./notebook-polish/tape-rings-stones.css",
+      "./notebook-polish/lobby-notebook-background.css",
+      "./notebook-polish/home-entry-badges.css"
+    ]);
+    expect(notebookPolishEntry).not.toContain(".home-grid-featured {");
   });
 
   it("hides native number input spinner controls while preserving number inputs", () => {

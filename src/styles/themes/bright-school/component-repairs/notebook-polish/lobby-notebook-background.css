@@ -1,0 +1,54 @@
+/* ==========================================================================
+   BRIGHT SCHOOL LOBBY REDESIGN - 课桌与手账拟物化重构
+   ========================================================================== */
+
+/* 1. 大厅全局背景：温暖的手绘木板课桌 */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.home-screen) {
+  background-color: #eed6b8 !important;
+  background-image: 
+    linear-gradient(90deg, #d2b392 3px, transparent 3px),
+    repeating-linear-gradient(90deg, rgba(143, 98, 62, 0.05) 0 6px, transparent 6px 120px) !important;
+  background-size: 160px 100%, 320px 100% !important;
+}
+
+/* 2. 大厅核心网格：摆在课桌上展开的双页奶油手账本 */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured {
+  background: 
+    /* 中缝装订折痕阴影 */
+    linear-gradient(90deg, transparent 49%, rgba(61, 43, 37, 0.1) 49.5%, rgba(61, 43, 37, 0.22) 50%, rgba(61, 43, 37, 0.1) 50.5%, transparent 51%),
+    /* 左右边缘撕纸红线 */
+    linear-gradient(90deg, transparent 42px, rgba(255, 140, 171, 0.36) 42px, rgba(255, 140, 171, 0.36) 44px, transparent 44px),
+    linear-gradient(270deg, transparent 42px, rgba(255, 140, 171, 0.36) 42px, rgba(255, 140, 171, 0.36) 44px, transparent 44px),
+    /* 蓝色手账水平格子线 */
+    repeating-linear-gradient(transparent 0, transparent 27px, rgba(154, 211, 222, 0.22) 27px, rgba(154, 211, 222, 0.22) 28px),
+    #fffef8 !important;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 28px, 100% 100% !important;
+  border: 4px solid #3d2b25 !important;
+  border-radius: 28px !important;
+  box-shadow: 12px 14px 0px #3d2b25 !important;
+  padding: 26px !important;
+}
+
+/* 3. 拟物装订金属环效果：摆在中间的中缝活页铁线圈 */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured::before {
+  content: "" !important;
+  position: absolute !important;
+  left: calc(50% - 8px) !important;
+  top: 24px !important;
+  bottom: 24px !important;
+  width: 16px !important;
+  background-image: repeating-linear-gradient(
+    transparent 0px, 
+    transparent 36px, 
+    #3d2b25 36px, 
+    #3d2b25 40px, 
+    #ff9ebb 40px, 
+    #ff9ebb 46px, 
+    #3d2b25 46px, 
+    #3d2b25 50px, 
+    transparent 50px, 
+    transparent 90px
+  ) !important;
+  z-index: 10 !important;
+  pointer-events: none !important;
+}

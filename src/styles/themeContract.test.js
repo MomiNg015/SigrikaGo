@@ -535,9 +535,8 @@ describe("player theme CSS contract", () => {
 
   it("keeps default board stones free of outline rings", () => {
     const sharedStoneCss = readFileSync(new URL("./room/board/stones-skill-effects.css", import.meta.url), "utf8");
-    const notebookPolishCss = readFileSync(
+    const notebookPolishCss = readCssWithImports(
       new URL("./themes/bright-school/component-repairs/notebook-polish.css", import.meta.url),
-      "utf8"
     );
     const defaultStoneBlock = cssBlock(sharedStoneCss, ".stone");
     const brightBlackStoneBlock = cssBlock(

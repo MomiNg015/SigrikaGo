@@ -125,6 +125,10 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/component-repairs/foundation-home/scrollbar-auth.css",
       "themes/bright-school/component-repairs/foundation-home/home-brand-status.css",
       "themes/bright-school/component-repairs/foundation-home/home-image-entry.css",
+      "themes/bright-school/component-repairs/notebook-polish.css",
+      "themes/bright-school/component-repairs/notebook-polish/tape-rings-stones.css",
+      "themes/bright-school/component-repairs/notebook-polish/lobby-notebook-background.css",
+      "themes/bright-school/component-repairs/notebook-polish/home-entry-badges.css",
       "themes/bright-school/qa-guard.css",
       "themes/bright-school/quality-base.css",
       "themes/bright-school/commerce.css",
@@ -365,6 +369,14 @@ export const CSS_THEME_OVERLAY_SPLITS = [
       "themes/bright-school/component-repairs/foundation-home/scrollbar-auth.css",
       "themes/bright-school/component-repairs/foundation-home/home-brand-status.css",
       "themes/bright-school/component-repairs/foundation-home/home-image-entry.css"
+    ]
+  },
+  {
+    entry: "themes/bright-school/component-repairs/notebook-polish.css",
+    files: [
+      "themes/bright-school/component-repairs/notebook-polish/tape-rings-stones.css",
+      "themes/bright-school/component-repairs/notebook-polish/lobby-notebook-background.css",
+      "themes/bright-school/component-repairs/notebook-polish/home-entry-badges.css"
     ]
   }
 ];

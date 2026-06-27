@@ -72,6 +72,7 @@ Theme overlay cleanup is tracked separately from shared-domain and final-mobile 
 - `themes/shared.css` -> `themes/shared/`
 - `themes/theme-components.css` -> `themes/theme-components/`
 - `themes/bright-school/component-repairs/foundation-home.css` -> `themes/bright-school/component-repairs/foundation-home/`
+- `themes/bright-school/component-repairs/notebook-polish.css` -> `themes/bright-school/component-repairs/notebook-polish/`
 
 `CSS_THEME_OVERLAY_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the Bright School/theme overlay bucket.
 
