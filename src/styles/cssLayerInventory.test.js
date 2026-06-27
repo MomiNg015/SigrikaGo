@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   CSS_FINAL_MOBILE_SAFETY_SPLITS,
+  CSS_GAMEPLAY_ROOM_SPLITS,
   CSS_LAYER_GROUPS,
   CSS_PROTECTED_SURFACES,
   CSS_REFACTOR_ROUNDS,
@@ -144,6 +145,22 @@ describe("CSS layer inventory", () => {
 
       for (const filePath of split.files) {
         expect(themeOverlayFiles.has(filePath)).toBe(true);
+      }
+    }
+  });
+
+  it("keeps gameplay room splits import-only and in the high-risk room bucket", () => {
+    const highRiskRoomFiles = new Set(inventoryFilesForGroup("high-risk-gameplay-room"));
+
+    for (const split of CSS_GAMEPLAY_ROOM_SPLITS) {
+      const entrySource = readFileSync(join(stylesDir, split.entry), "utf8");
+
+      expect(cssImports(entrySource)).toEqual(expectedRelativeImports(split));
+      expect(concreteCssAfterImports(entrySource)).toBe("");
+      expect(highRiskRoomFiles.has(split.entry)).toBe(true);
+
+      for (const filePath of split.files) {
+        expect(highRiskRoomFiles.has(filePath)).toBe(true);
       }
     }
   });

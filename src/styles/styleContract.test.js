@@ -55,7 +55,6 @@ const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-room/portrait-room.css", 7502],
   ["room-terminal/players-timers-skills.css", 7414],
-  ["room/actions-requests.css", 6204],
   ["room/board/stones-skill-effects.css", 7290],
   ["themes/bright-school/quality-base/refinement-board.css", 6997]
 ]);
@@ -969,6 +968,16 @@ describe("root CSS entry contract", () => {
     expect(roomEntry).not.toContain(".battle-layout {");
     expect(roomEntry).not.toContain(".board {");
     expect(roomEntry).not.toContain(".chat-widget {");
+
+    const actionsRequestsEntry = readFileSync(new URL("./room/actions-requests.css", import.meta.url), "utf8");
+    expect(cssImports(actionsRequestsEntry)).toEqual([
+      "./actions-requests/toggles-action-bar.css",
+      "./actions-requests/decision-scoring.css",
+      "./actions-requests/request-toast.css",
+      "./actions-requests/action-states-tools.css",
+      "./actions-requests/replay-disabled.css"
+    ]);
+    expect(actionsRequestsEntry).not.toContain(".decision-bar {");
   });
 
   it("keeps room board styles as an import-only board sub-entry", () => {

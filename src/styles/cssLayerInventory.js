@@ -88,6 +88,11 @@ export const CSS_LAYER_GROUPS = [
       "room/board.css",
       "room/players-timers-skills.css",
       "room/actions-requests.css",
+      "room/actions-requests/toggles-action-bar.css",
+      "room/actions-requests/decision-scoring.css",
+      "room/actions-requests/request-toast.css",
+      "room/actions-requests/action-states-tools.css",
+      "room/actions-requests/replay-disabled.css",
       "mobile-room.css",
       "mobile-room/base-shell-dock.css",
       "room-terminal.css",
@@ -440,6 +445,19 @@ export const CSS_THEME_OVERLAY_SPLITS = [
       "themes/bright-school/mobile/room/viewport-player-strips/portrait-badge.css",
       "themes/bright-school/mobile/room/viewport-player-strips/player-meta-name.css",
       "themes/bright-school/mobile/room/viewport-player-strips/timer-captures-skill.css"
+    ]
+  }
+];
+
+export const CSS_GAMEPLAY_ROOM_SPLITS = [
+  {
+    entry: "room/actions-requests.css",
+    files: [
+      "room/actions-requests/toggles-action-bar.css",
+      "room/actions-requests/decision-scoring.css",
+      "room/actions-requests/request-toast.css",
+      "room/actions-requests/action-states-tools.css",
+      "room/actions-requests/replay-disabled.css"
     ]
   }
 ];

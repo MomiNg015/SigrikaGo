@@ -80,6 +80,12 @@ Theme overlay cleanup is tracked separately from shared-domain and final-mobile 
 
 `CSS_THEME_OVERLAY_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the Bright School/theme overlay bucket.
 
+Gameplay and room cleanup is tracked separately from shared-domain and theme cleanup because those selectors affect active room controls:
+
+- `room/actions-requests.css` -> `room/actions-requests/`
+
+`CSS_GAMEPLAY_ROOM_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split entry remains import-only inside the high-risk gameplay room bucket.
+
 Round 4 regression gates are recorded in `CSS_ROUND4_REGRESSION_CHECKS`:
 
 - Static CSS contracts: `npm test -- src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js`

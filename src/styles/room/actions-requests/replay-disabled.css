@@ -1,0 +1,24 @@
+.replay-step-indicator {
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(154, 132, 166, 0.24);
+  color: #5d5066;
+  font-weight: 900;
+}
+
+.action-bar .skill-action.spent,
+.action-bar .skill-action:disabled,
+.action-bar button:disabled {
+  background: #d6cfd9;
+  color: #7d7282;
+  border-color: #cfc6d2;
+  box-shadow: none;
+  cursor: not-allowed;
+}
