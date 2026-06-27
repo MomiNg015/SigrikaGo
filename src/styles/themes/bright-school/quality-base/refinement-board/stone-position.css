@@ -1,0 +1,15 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .stone {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 92% !important;
+  height: 92% !important;
+  max-width: none !important;
+  max-height: none !important;
+  aspect-ratio: 1 / 1 !important;
+  transform: translate(calc(-50% + var(--stone-offset-x, 0px)), calc(-50% + var(--stone-offset-y, 0px))) !important;
+  border-radius: 50% !important;
+  object-fit: contain !important;
+}

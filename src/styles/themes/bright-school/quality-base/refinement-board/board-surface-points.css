@@ -1,0 +1,48 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-wrap {
+  background: var(--board-wood-texture) !important;
+}
+
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .point:not(.black):not(.white):not(.erased)::after {
+  content: none !important;
+  display: none !important;
+  background: #edf0d7 !important; /* Parity check color */
+}
+
+
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point.white,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point.black {
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  filter: none !important;
+  overflow: visible !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board .point {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: visible !important;
+  touch-action: none !important;
+}

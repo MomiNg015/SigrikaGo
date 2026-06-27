@@ -252,6 +252,12 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/effects/keyframes.css",
       "themes/bright-school/effects/reduced-motion.css",
       "themes/bright-school/quality-base/refinement-board.css",
+      "themes/bright-school/quality-base/refinement-board/board-surface-points.css",
+      "themes/bright-school/quality-base/refinement-board/board-lines-layer.css",
+      "themes/bright-school/quality-base/refinement-board/row-effects-shell.css",
+      "themes/bright-school/quality-base/refinement-board/row-slash-art.css",
+      "themes/bright-school/quality-base/refinement-board/board-lines-stroke.css",
+      "themes/bright-school/quality-base/refinement-board/stone-position.css",
       "themes/bright-school/component-repairs/room-board.css",
       "themes/bright-school/mobile/room/touch-board-feedback.css"
     ],
@@ -518,6 +524,17 @@ export const CSS_SKILL_PRESENTATION_SPLITS = [
       "room/board/stones-skill-effects/liberty-purge.css",
       "room/board/stones-skill-effects/stone-effect-keyframes.css"
     ]
+  },
+  {
+    entry: "themes/bright-school/quality-base/refinement-board.css",
+    files: [
+      "themes/bright-school/quality-base/refinement-board/board-surface-points.css",
+      "themes/bright-school/quality-base/refinement-board/board-lines-layer.css",
+      "themes/bright-school/quality-base/refinement-board/row-effects-shell.css",
+      "themes/bright-school/quality-base/refinement-board/row-slash-art.css",
+      "themes/bright-school/quality-base/refinement-board/board-lines-stroke.css",
+      "themes/bright-school/quality-base/refinement-board/stone-position.css"
+    ]
   }
 ];
 
@@ -528,6 +545,7 @@ export const CSS_PROTECTED_SURFACES = [
     files: [
       "room/board/points-preview.css",
       "themes/bright-school/quality-base/refinement-board.css",
+      "themes/bright-school/quality-base/refinement-board/board-surface-points.css",
       "themes/bright-school/component-repairs/room-board.css"
     ],
     requiredFragments: [
@@ -548,6 +566,8 @@ export const CSS_PROTECTED_SURFACES = [
     files: [
       "room/board/grid-scoring.css",
       "themes/bright-school/quality-base/refinement-board.css",
+      "themes/bright-school/quality-base/refinement-board/board-lines-layer.css",
+      "themes/bright-school/quality-base/refinement-board/board-lines-stroke.css",
       "themes/bright-school/component-repairs/room-board.css"
     ],
     requiredFragments: [
@@ -580,7 +600,9 @@ export const CSS_PROTECTED_SURFACES = [
     files: [
       "room/board/row-slash.css",
       "room/board/row-slash-stone-effects.css",
-      "themes/bright-school/quality-base/refinement-board.css"
+      "themes/bright-school/quality-base/refinement-board.css",
+      "themes/bright-school/quality-base/refinement-board/row-effects-shell.css",
+      "themes/bright-school/quality-base/refinement-board/row-slash-art.css"
     ],
     requiredFragments: [
       ".board-row-effects",

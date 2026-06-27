@@ -109,6 +109,7 @@ If a CSS refactor touches any of those selectors or files, run the board/room vi
 Protected skill presentation cleanup is tracked separately from gameplay room cleanup:
 
 - `room/board/stones-skill-effects.css` -> `room/board/stones-skill-effects/`
+- `themes/bright-school/quality-base/refinement-board.css` -> `themes/bright-school/quality-base/refinement-board/`
 
 `CSS_SKILL_PRESENTATION_SPLITS` records these boundaries, and `cssLayerInventory.test.js` verifies each split remains import-only inside the skill-presentation protected bucket.
 

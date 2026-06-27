@@ -1,0 +1,15 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-lines {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}

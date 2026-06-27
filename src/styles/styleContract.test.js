@@ -52,9 +52,7 @@ const TEST_STYLE_FILES = new Set([
 ]);
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
-const KNOWN_OVERSIZED_CSS_FILES = new Map([
-  ["themes/bright-school/quality-base/refinement-board.css", 6997]
-]);
+const KNOWN_OVERSIZED_CSS_FILES = new Map();
 
 function cssImports(source) {
   return [...source.matchAll(/@import\s+"([^"]+)"[^;]*;/g)].map((match) => match[1]);
@@ -267,6 +265,23 @@ describe("root CSS entry contract", () => {
       "./viewport-player-strips/timer-captures-skill.css"
     ]);
     expect(viewportPlayerStripsEntry).not.toContain(".player-info {");
+  });
+
+  it("keeps Bright School refinement board as an import-only protected overlay", () => {
+    const refinementBoardEntry = readFileSync(
+      new URL("./themes/bright-school/quality-base/refinement-board.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(refinementBoardEntry)).toEqual([
+      "./refinement-board/board-surface-points.css",
+      "./refinement-board/board-lines-layer.css",
+      "./refinement-board/row-effects-shell.css",
+      "./refinement-board/row-slash-art.css",
+      "./refinement-board/board-lines-stroke.css",
+      "./refinement-board/stone-position.css"
+    ]);
+    expect(refinementBoardEntry).not.toContain(".board .point");
   });
 
   it("hides native number input spinner controls while preserving number inputs", () => {

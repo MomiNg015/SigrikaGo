@@ -1,0 +1,12 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-lines line {
+  display: inline !important;
+  stroke: #4a3736 !important;
+  stroke-width: 0.8 !important;
+  opacity: 1 !important;
+  vector-effect: non-scaling-stroke !important;
+  shape-rendering: geometricPrecision !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .board-lines line.edge-line {
+  stroke-width: 2 !important;
+}
