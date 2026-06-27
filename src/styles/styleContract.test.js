@@ -53,7 +53,6 @@ const TEST_STYLE_FILES = new Set([
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
-  ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
   ["mobile-adaptive/bright-school-portrait/settings-tabs.css", 6576],
   ["mobile-room/portrait-room.css", 7502],
@@ -441,6 +440,18 @@ describe("root CSS entry contract", () => {
     expect(brightSchoolOverridesEntry).not.toContain(".home-mobile-menu-panel");
     expect(brightSchoolOverridesEntry).not.toContain(".character-record-dialog");
     expect(brightSchoolOverridesEntry).not.toContain(".leaderboard-row");
+
+    const leaderboardCardsEntry = readFileSync(
+      new URL("./mobile-adaptive/bright-school-overrides/leaderboard-cards.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(leaderboardCardsEntry)).toEqual([
+      "./leaderboard-cards/modal-list-shell.css",
+      "./leaderboard-cards/player-identity.css",
+      "./leaderboard-cards/score-record.css",
+      "./leaderboard-cards/rank-current.css"
+    ]);
+    expect(leaderboardCardsEntry).not.toContain(".leaderboard-modal {");
   });
 
   it("keeps Bright School mobile profile-house-records as an import-only guard sub-entry", () => {

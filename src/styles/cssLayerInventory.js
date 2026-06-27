@@ -149,6 +149,11 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/mobile-profile-records/character-record-list.css",
       "mobile-adaptive/mobile-profile-records/footer-resume-stats.css",
       "mobile-adaptive/bright-school-overrides.css",
+      "mobile-adaptive/bright-school-overrides/leaderboard-cards.css",
+      "mobile-adaptive/bright-school-overrides/leaderboard-cards/modal-list-shell.css",
+      "mobile-adaptive/bright-school-overrides/leaderboard-cards/player-identity.css",
+      "mobile-adaptive/bright-school-overrides/leaderboard-cards/score-record.css",
+      "mobile-adaptive/bright-school-overrides/leaderboard-cards/rank-current.css",
       "mobile-adaptive/home-narrow-desktop.css",
       "mobile-adaptive/bright-school-portrait.css",
       "mobile-adaptive/reduced-motion.css"
@@ -280,6 +285,15 @@ export const CSS_FINAL_MOBILE_SAFETY_SPLITS = [
       "mobile-adaptive/phone-gacha/stage-machine.css",
       "mobile-adaptive/phone-gacha/controls-actions.css",
       "mobile-adaptive/phone-gacha/list-result-dialogs.css"
+    ]
+  },
+  {
+    entry: "mobile-adaptive/bright-school-overrides/leaderboard-cards.css",
+    files: [
+      "mobile-adaptive/bright-school-overrides/leaderboard-cards/modal-list-shell.css",
+      "mobile-adaptive/bright-school-overrides/leaderboard-cards/player-identity.css",
+      "mobile-adaptive/bright-school-overrides/leaderboard-cards/score-record.css",
+      "mobile-adaptive/bright-school-overrides/leaderboard-cards/rank-current.css"
     ]
   },
   {

@@ -1,0 +1,56 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-modal {
+    overflow-x: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-table {
+    gap: 10px !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-list {
+    gap: 7px !important;
+    padding-left: 0 !important;
+    padding-inline-start: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row {
+    background:
+      linear-gradient(135deg, rgba(255, 250, 240, 0.98), rgba(255, 246, 221, 0.96)) padding-box !important;
+    min-height: 72px !important;
+    grid-template-areas:
+      "rank avatar player score"
+      "rank avatar player record"
+      "rank avatar player rate" !important;
+    grid-template-columns: 30px 42px minmax(0, 1fr) minmax(96px, auto) !important;
+    gap: 4px 7px !important;
+    align-items: center !important;
+    padding: 8px 8px 8px 0 !important;
+    text-align: left !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {
+    background:
+      linear-gradient(135deg, rgba(226, 255, 228, 0.96), rgba(246, 255, 241, 0.98)) padding-box !important;
+    border-color: #73b79f !important;
+    color: #245b4f !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row.current-user .leaderboard-rank,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-rank {
+    background: #dff5df !important;
+    border-color: #73b79f !important;
+    color: #245b4f !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-row img {
+    width: 40px !important;
+    height: 44px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-rank {
+    align-self: center !important;
+    justify-self: center !important;
+  }
+}
