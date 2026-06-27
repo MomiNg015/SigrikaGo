@@ -46,6 +46,7 @@ Round 3 cleanup candidates must not include files listed by `high-risk-gameplay-
 Round 3 has split these shared-domain debt files into import-only sub-entries without changing rule values:
 
 - `base/home-stage-artboard.css` -> `base/home-stage-artboard/`
+- `base/home-legacy-grid.css` -> `base/home-legacy-grid/`
 - `modals/mailbox.css` -> `modals/mailbox/`
 - `commerce/recruitment/board.css` -> `commerce/recruitment/board/`
 

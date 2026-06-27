@@ -18,6 +18,12 @@ export const CSS_LAYER_GROUPS = [
     ],
     entries: [
       "base.css",
+      "base/home-legacy-grid.css",
+      "base/home-legacy-grid/layout.css",
+      "base/home-legacy-grid/player-plaque.css",
+      "base/home-legacy-grid/match-feature.css",
+      "base/home-legacy-grid/entry-cards.css",
+      "base/home-legacy-grid/utility-grid.css",
       "base/home-stage-artboard.css",
       "base/home-stage-artboard/screen.css",
       "base/home-stage-artboard/chrome.css",
@@ -137,6 +143,16 @@ export const CSS_LAYER_GROUPS = [
 ];
 
 export const CSS_ROUND3_SHARED_SPLITS = [
+  {
+    entry: "base/home-legacy-grid.css",
+    files: [
+      "base/home-legacy-grid/layout.css",
+      "base/home-legacy-grid/player-plaque.css",
+      "base/home-legacy-grid/match-feature.css",
+      "base/home-legacy-grid/entry-cards.css",
+      "base/home-legacy-grid/utility-grid.css"
+    ]
+  },
   {
     entry: "base/home-stage-artboard.css",
     files: [

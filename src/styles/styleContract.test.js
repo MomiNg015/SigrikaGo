@@ -53,7 +53,6 @@ const TEST_STYLE_FILES = new Set([
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
 const KNOWN_OVERSIZED_CSS_FILES = new Map([
-  ["base/home-legacy-grid.css", 6736],
   ["hud-components/pop-tech-terminal.css", 8513],
   ["mobile-adaptive/bright-school-overrides/leaderboard-cards.css", 7193],
   ["mobile-adaptive/bright-school-portrait/resume-modal-layout.css", 8340],
@@ -268,6 +267,16 @@ describe("root CSS entry contract", () => {
     expect(baseEntry).not.toContain(":root {");
     expect(baseEntry).not.toContain(".home-screen {");
     expect(baseEntry).not.toContain(".message-board-modal {");
+
+    const legacyHomeGridEntry = readFileSync(new URL("./base/home-legacy-grid.css", import.meta.url), "utf8");
+    expect(cssImports(legacyHomeGridEntry)).toEqual([
+      "./home-legacy-grid/layout.css",
+      "./home-legacy-grid/player-plaque.css",
+      "./home-legacy-grid/match-feature.css",
+      "./home-legacy-grid/entry-cards.css",
+      "./home-legacy-grid/utility-grid.css"
+    ]);
+    expect(legacyHomeGridEntry).not.toContain(".home-grid,");
   });
 
   it("keeps admin.css as an import-only admin console entry", () => {
