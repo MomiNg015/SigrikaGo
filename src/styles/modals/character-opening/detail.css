@@ -1,0 +1,84 @@
+/* Character detail, profile replay dialog, match success, and opening animation styles. */
+.character-detail {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  align-items: center;
+  gap: 22px;
+  text-align: center;
+  background:
+    linear-gradient(135deg, rgba(255, 242, 215, 0.92), rgba(255, 232, 246, 0.94), rgba(235, 243, 255, 0.96)),
+    #fff;
+  overflow: hidden;
+}
+
+.character-detail.unowned {
+  background:
+    linear-gradient(135deg, rgba(238, 239, 242, 0.96), rgba(224, 226, 232, 0.96)),
+    #eef0f4;
+}
+
+.character-detail::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.character-detail-art {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.22) 54%, transparent 70%);
+}
+
+.character-detail-art img {
+  width: 220px;
+  height: 210px;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 24px rgba(66, 44, 82, 0.18));
+}
+
+.character-detail.unowned .character-detail-art {
+  background: radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.72), rgba(230, 232, 237, 0.28) 54%, transparent 70%);
+}
+
+.character-detail.unowned .character-detail-art img {
+  filter: grayscale(1) opacity(0.62) drop-shadow(0 16px 24px rgba(66, 44, 82, 0.12));
+}
+
+.character-detail-copy {
+  text-align: left;
+  display: grid;
+  gap: 12px;
+  align-content: center;
+}
+
+.character-detail-copy h3 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.character-detail-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 188px);
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding-right: calc(var(--modal-close-size, 44px) + 12px);
+  background: transparent;
+  background-color: transparent;
+}
+
+.character-detail-heading h3 {
+  min-width: 0;
+  line-height: 1;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+}

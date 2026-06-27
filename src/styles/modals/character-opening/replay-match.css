@@ -1,0 +1,51 @@
+.replay-dialog {
+  overflow: auto;
+}
+
+.profile-replay-dialog {
+  width: min(760px, calc(100vw - 44px));
+  max-height: min(560px, calc(100vh - 96px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.profile-replay-dialog .replay-table {
+  min-width: 0;
+}
+
+.profile-replay-list-scroll {
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.match-portrait {
+  width: 118px;
+  height: 108px;
+  object-fit: contain;
+  margin: 0 auto 4px;
+  filter: drop-shadow(0 12px 18px rgba(74, 48, 88, 0.2));
+  animation: match-hop 0.9s ease-in-out infinite;
+}
+
+.match-success-modal {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.match-success-modal svg {
+  color: #3a8f75;
+  filter: drop-shadow(0 10px 16px rgba(58, 143, 117, 0.18));
+}
+
+.match-success-modal h2 {
+  margin: 0;
+}
+
+.match-success-modal p {
+  margin: 0;
+  color: #67586d;
+  font-weight: 700;
+}

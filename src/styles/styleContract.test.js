@@ -60,7 +60,6 @@ const KNOWN_OVERSIZED_CSS_FILES = new Map([
   ["mobile-adaptive/phone-core.css", 6418],
   ["mobile-adaptive/phone-gacha.css", 6147],
   ["mobile-room/portrait-room.css", 7502],
-  ["modals/character-opening.css", 6330],
   ["responsive/phone-portrait-room.css", 6803],
   ["room-terminal/players-timers-skills.css", 7414],
   ["room/actions-requests.css", 6204],
@@ -892,6 +891,16 @@ describe("root CSS entry contract", () => {
     expect(modalsEntry).not.toContain(".modal-backdrop {");
     expect(modalsEntry).not.toContain(".resume-modal {");
     expect(modalsEntry).not.toContain(".character-detail {");
+
+    const characterOpeningEntry = readFileSync(new URL("./modals/character-opening.css", import.meta.url), "utf8");
+    expect(cssImports(characterOpeningEntry)).toEqual([
+      "./character-opening/detail.css",
+      "./character-opening/skill-copy.css",
+      "./character-opening/replay-match.css",
+      "./character-opening/opening-animation.css",
+      "./character-opening/keyframes.css"
+    ]);
+    expect(characterOpeningEntry).not.toContain(".character-detail {");
   });
 
   it("keeps terminal modal system styles as an import-only sub-entry", () => {

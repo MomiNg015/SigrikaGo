@@ -1,0 +1,57 @@
+.skill-title-row strong {
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: linear-gradient(105deg, #ffe8a8, #ffd4ea);
+  border: 1px solid rgba(215, 154, 66, 0.28);
+}
+
+.skill-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.skill-cost-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #6d5472;
+  border: 1px solid rgba(147, 117, 155, 0.22);
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(84, 60, 94, 0.08);
+}
+
+.character-detail-copy p {
+  color: #6f5b74;
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.character-description {
+  font-style: italic;
+  color: #7b3fa0;
+}
+
+.character-detail-copy .acquisition-method {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  color: #4f4655;
+}
+
+.character-detail-copy .acquisition-method strong {
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: linear-gradient(105deg, #e9f7ef, #dbeafe);
+  border: 1px solid rgba(64, 139, 106, 0.26);
+  color: #2f5f55;
+}

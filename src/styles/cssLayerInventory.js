@@ -34,6 +34,12 @@ export const CSS_LAYER_GROUPS = [
       "admin.css",
       "lobby.css",
       "modals.css",
+      "modals/character-opening.css",
+      "modals/character-opening/detail.css",
+      "modals/character-opening/skill-copy.css",
+      "modals/character-opening/replay-match.css",
+      "modals/character-opening/opening-animation.css",
+      "modals/character-opening/keyframes.css",
       "modals/mailbox.css",
       "modals/mailbox/layout.css",
       "modals/mailbox/list.css",
@@ -198,6 +204,16 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "hud-components/pop-tech-terminal/character-deploy.css",
       "hud-components/pop-tech-terminal/tabs-actions.css",
       "hud-components/pop-tech-terminal/keyframes.css"
+    ]
+  },
+  {
+    entry: "modals/character-opening.css",
+    files: [
+      "modals/character-opening/detail.css",
+      "modals/character-opening/skill-copy.css",
+      "modals/character-opening/replay-match.css",
+      "modals/character-opening/opening-animation.css",
+      "modals/character-opening/keyframes.css"
     ]
   },
   {

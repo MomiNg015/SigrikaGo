@@ -1,0 +1,24 @@
+.opening-backdrop {
+  animation: opening-fade 3s ease forwards;
+}
+
+.opening-modal {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.opening-modal svg {
+  color: #5d7fe8;
+  filter: drop-shadow(0 10px 16px rgba(93, 127, 232, 0.2));
+}
+
+.opening-modal h2,
+.opening-modal p {
+  margin: 0;
+}
+
+.opening-modal p {
+  color: #67586d;
+  font-weight: 700;
+}
