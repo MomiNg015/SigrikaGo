@@ -55,7 +55,7 @@ describe("AnnouncementModal detail popup contract", () => {
   });
 
   it("renders entry details inside the parent announcement modal", () => {
-    const source = readFileSync(new URL("./AnnouncementModal.jsx", import.meta.url), "utf8");
+    const source = readFileSync(new URL("./AnnouncementModal.jsx", import.meta.url), "utf8").replace(/\r\n/g, "\n");
     const parentBackdropIndex = source.indexOf('className="modal-backdrop announcement-backdrop"');
     const parentModalIndex = source.indexOf('className="modal-panel announcement-modal"');
     const detailBackdropIndex = source.indexOf('className="nested-modal-backdrop announcement-detail-backdrop"');
