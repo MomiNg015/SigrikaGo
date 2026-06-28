@@ -1,0 +1,58 @@
+.onboarding-story-backdrop {
+  z-index: 100100 !important;
+  background: rgba(48, 34, 31, 0.42);
+  backdrop-filter: blur(2px);
+}
+
+.onboarding-story-modal {
+  position: relative;
+  width: min(760px, calc(100vw - 32px));
+  height: min(680px, calc(100dvh - 32px));
+  max-height: calc(100dvh - 32px);
+  display: grid;
+  grid-template-rows: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 1fr);
+  gap: 14px;
+  overflow: hidden;
+  border: 3px solid #4a3736;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 16px 16px, rgba(255, 158, 187, 0.28) 0 3px, transparent 4px),
+    linear-gradient(180deg, #fffaf0 0%, #f7fff9 100%);
+  background-size: 34px 34px, auto;
+  color: #3d2b25;
+  box-shadow: 6px 7px 0 rgba(74, 55, 54, 0.42);
+}
+
+.onboarding-story-modal.empty {
+  height: auto;
+  min-height: 180px;
+  grid-template-rows: auto;
+  place-items: center;
+  padding-top: 58px;
+}
+
+.onboarding-story-modal.empty .close-button {
+  top: 12px;
+  right: 12px;
+}
+
+.onboarding-story-fast-forward {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fffaf0;
+  border: 3px solid #4a3736;
+  border-radius: 999px;
+  color: #3d2b25;
+  box-shadow: 3px 3px 0 rgba(74, 55, 54, 0.38);
+  cursor: pointer;
+  touch-action: manipulation;
+}

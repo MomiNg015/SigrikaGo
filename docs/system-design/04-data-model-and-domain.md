@@ -222,6 +222,30 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `value`: 配置值字符串。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 
+### AnnouncementEntry
+
+后台维护的公告与更新日志内容表。
+
+- `kind`: `announcement` 或 `changelog`。公告可置顶；更新日志不使用置顶。
+- `title`: 标题，服务端限制 80 字符。
+- `body`: Markdown-lite 正文，服务端限制 10000 字符；草稿可为空，发布时必须非空。
+- `isPublished`: 是否对玩家可见。
+- `pinned`: 公告置顶标记；玩家公告列表按置顶优先，再按首次发布时间倒序。
+- `firstPublishedAt`: 首次发布时间。第一次发布时写入，后续编辑、取消发布、再发布都不重置；玩家列表排序和未读资格都以该字段为准。
+- `deletedAt`: 软删除时间。后台普通列表和玩家列表都隐藏软删除条目，当前不提供恢复入口。
+- `createdAt`, `updatedAt`: 创建和更新时间。
+
+### AnnouncementRead
+
+玩家公告/更新日志已读表。
+
+- `userId`: 玩家 id，关联 `User`。
+- `announcementId`: 内容 id，关联 `AnnouncementEntry`。
+- `readAt`: 最近一次打开详情并写入已读的时间。
+- `(userId, announcementId)` 唯一。未读摘要不预先给所有用户落行，而是按“已发布且 `firstPublishedAt > User.createdAt` 且没有已读行”即时计算，因此账号创建前首次发布的历史内容可见但不算未读。
+
+公告 schema 由 migration `202606280001_add_announcements` 固化，并由启动兼容 guard `ensureAnnouncementSchema()` 兜底老本地 SQLite；`server/schemaIntegrity.test.js` 检查 Prisma model 与 migration 同步。
+
 ## Achievement Domain
 
 - `AchievementRewardAsset` 定义成就奖励资产，字段包括 `type`、`name`、`description`、`imageUrl`、`text`、`targetType`、`targetId`、`amount`、`enabled`、`deletedAt` 和 `sortOrder`。奖励类型支持 `currency`、`title`、`badge`、`nameplate`、`character`、`decoration`、`item`、`music`；称号、徽章和用户名背景只作为个性化装备资产，角色/装饰/道具奖励必须指向 `source = "achievement"` 的限定资源。
@@ -240,6 +264,16 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - Each user mailbox is capped at 20 visible non-deleted messages. Before delivery, the domain soft-deletes the oldest safe messages that are already read and have no unclaimed attachment. If no safe space exists, delivery is skipped instead of deleting claimable rewards.
 - A message with an unclaimed attachment is not deletable. Claiming is idempotent at the domain level by checking `claimedAt` and the attachment type before mutating coins or inventory.
 - The schema is backed by migrations `202606220001_add_mailbox_system` and `202606220002_soft_delete_mailbox_messages`, plus the startup compatibility guard `ensureMailboxSchema()` for older local SQLite databases; `server/schemaIntegrity.test.js` checks that migrations and the Prisma model stay in sync.
+
+## Story Script Data Model
+
+- `StoryScript` is the generic剧情脚本 table. It is keyed by stable `key`, stores a display `title`, a controlled `triggerType`, structured trigger params serialized in `triggerParamsJson`, draft graph JSON (`draftStartNodeId`, `draftNodesJson`), optional published graph JSON (`publishedStartNodeId`, `publishedNodesJson`), publish timestamps, and normal create/update timestamps.
+- Story nodes are still stored as normalized JSON because each script is a small ordered dialogue graph rather than a query-heavy entity. The service layer validates node ids, speaker/character metadata, text, default next-node links, option labels, and option target ids before publishing.
+- Supported MVP trigger types are `onboarding` and `item-character-use`; `battle-tutorial-start` is reserved as a future naming boundary for local teaching battle scenes. `item-character-use` trigger params require exact `{ itemId, characterId }`; `onboarding` and the reserved battle trigger currently require no params.
+- At publish time the server permits only one published script for the same trigger type and normalized trigger params. This keeps item-character interactions deterministic: using rainbow bean candy on Denia can resolve to at most one published script.
+- `OnboardingStoryScript` remains in the schema as a legacy singleton compatibility source keyed by `id = "singleton"`. `seedDefaultStoryScripts()` migrates a valid published legacy onboarding script into `StoryScript(key="onboarding.default")` only when the generic key is missing; it does not overwrite admin edits.
+- `User.onboardingRequired` defaults to `false` for historical users and is set to `true` when a new user registers after the feature is available. `User.onboardingAutoShownAt` is null until the automatic story modal is opened successfully from the home view. Recording auto-shown sets `onboardingRequired = false` and writes `onboardingAutoShownAt` once; completion, skip, browser refresh, or later manual replay do not reopen the automatic story.
+- The generic schema is backed by migration `202606280003_add_story_scripts` and startup guard `ensureStoryScriptSchema()`. The onboarding touch fields and legacy table remain backed by `202606280002_add_onboarding_story` and `ensureOnboardingStorySchema()`.
 
 ## Source-Scoped Asset Sync
 

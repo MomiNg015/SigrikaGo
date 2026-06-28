@@ -42,7 +42,9 @@
 .timer.final-byo-yomi .timer-track span {
   border-radius: 0;
   background: linear-gradient(90deg, var(--side-glow, var(--battle-cyan)), var(--side-glow-2, var(--battle-blue)));
-  transition: width 0.25s linear;
+  transition:
+    background-color 0.25s linear,
+    opacity 0.25s linear;
   box-shadow:
     0 0 10px color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 72%, transparent),
     0 0 20px color-mix(in srgb, var(--side-glow-2, var(--battle-blue)) 44%, transparent);

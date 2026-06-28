@@ -1,0 +1,108 @@
+/* Bright School image-only home entry button feedback. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible {
+  background: transparent !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  padding: 0 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry::before,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 10% 8% auto auto !important;
+  width: 28% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  color: transparent !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+  letter-spacing: 0 !important;
+  line-height: 0 !important;
+  text-shadow: none !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 16% !important;
+  right: 16% !important;
+  bottom: 2% !important;
+  height: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry img {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.16)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible {
+  transform: rotate(2deg) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover img,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible img {
+  filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.16)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible {
+  outline: 3px solid rgba(255, 126, 176, 0.78) !important;
+  outline-offset: 4px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active {
+  transform: translateY(1px) rotate(1deg) scale(0.985) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active img {
+  filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.14)) !important;
+  transform: translateY(1px) scale(0.992) !important;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    touch-action: manipulation !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active {
+    transform: scale(0.99) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active img {
+    transform: scale(0.995) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry img,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active img {
+    transform: none !important;
+  }
+}

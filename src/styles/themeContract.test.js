@@ -419,6 +419,7 @@ describe("player theme CSS contract", () => {
       "./effects/skill-action-disabled.css",
       "./effects/board-targeting.css",
       "./effects/board-marks.css",
+      "./effects/home-image-entry-buttons.css",
       "./effects/keyframes.css",
       "./effects/reduced-motion.css"
     ]);
@@ -495,6 +496,7 @@ describe("player theme CSS contract", () => {
       "./firewall/controls-forms.css",
       "./firewall/semantic-badges.css",
       "./firewall/generic-surfaces.css",
+      "./firewall/announcement-controls.css",
       "./firewall/generic-pseudo-elements.css",
       "./firewall/typography.css"
     ]);

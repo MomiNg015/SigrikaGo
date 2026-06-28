@@ -673,7 +673,8 @@ describe("RoomScreen helpers", () => {
     expect(terminalCss).toContain(".player-info.opponent");
     expect(terminalCss).toContain("--side-glow: var(--battle-red)");
     expect(terminalCss).toContain(".timer-track span");
-    expect(terminalCss).toContain("transition: width 0.25s linear");
+    expect(terminalCss).not.toContain(`transition: ${"width"}`);
+    expect(terminalCss).toContain("background-color 0.25s linear");
     expect(terminalCss).toContain(".board-stage");
     expect(terminalCss).toContain("2px solid rgba(0, 255, 190, 0.4)");
     expect(terminalCss).toContain(".action-bar button");

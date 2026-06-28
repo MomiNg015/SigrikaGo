@@ -1,5 +1,8 @@
 import { promoteConfiguredAdmins } from "./adminConfig.js";
 import { ensureAchievementSchema, seedBuiltinAchievements } from "./achievements.js";
+import { ensureAnnouncementSchema } from "./announcements.js";
+import { ensureOnboardingStorySchema } from "./onboardingStory.js";
+import { ensureStoryScriptSchema, seedDefaultStoryScripts } from "./storyScripts.js";
 import { seedCharacters } from "./characters.js";
 import { ensureGachaSchema, ensureGameModeSchema } from "./db.js";
 import { ensureLoginSessionSchema } from "./loginSessions.js";
@@ -19,6 +22,10 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureGachaSchema",
   "ensureMusicTrackSettingsSchema",
   "ensureRecruitmentSchema",
+  "ensureAnnouncementSchema",
+  "ensureStoryScriptSchema",
+  "ensureOnboardingStorySchema",
+  "seedDefaultStoryScripts",
   "seedAdminDefaultConfig",
   "seedBuiltinAchievements",
   "cleanupLegacyDeniaCharacterData",
@@ -46,6 +53,10 @@ export async function initializeServerData({
   ensureGachaSchema: ensureGachaSchemaTask = ensureGachaSchema,
   ensureMailboxSchema: ensureMailboxSchemaTask = ensureMailboxSchema,
   ensureRecruitmentSchema: ensureRecruitmentSchemaTask = ensureRecruitmentSchema,
+  ensureAnnouncementSchema: ensureAnnouncementSchemaTask = ensureAnnouncementSchema,
+  ensureStoryScriptSchema: ensureStoryScriptSchemaTask = ensureStoryScriptSchema,
+  ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask = ensureOnboardingStorySchema,
+  seedDefaultStoryScripts: seedDefaultStoryScriptsTask = seedDefaultStoryScripts,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
   seedAdminDefaultConfig: seedAdminDefaultConfigTask = seedAdminDefaultConfig,
@@ -58,6 +69,8 @@ export async function initializeServerData({
     cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask,
     cleanupLegacyUsernames: cleanupLegacyUsernamesTask,
     ensureAchievementSchema: ensureAchievementSchemaTask,
+    ensureAnnouncementSchema: ensureAnnouncementSchemaTask,
+    ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask,
     ensureDefaultSiteSettings: ensureDefaultSiteSettingsTask,
     ensureGachaSchema: ensureGachaSchemaTask,
     ensureGameModeSchema: ensureGameModeSchemaTask,
@@ -66,12 +79,14 @@ export async function initializeServerData({
     ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask,
     ensureRecruitmentSchema: ensureRecruitmentSchemaTask,
     ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
+    ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
     ensureSocialSchema: ensureSocialSchemaTask,
     promoteConfiguredAdmins: promoteConfiguredAdminsTask,
     seedAdminDefaultConfig: seedAdminDefaultConfigTask,
     seedBuiltinAchievements: seedBuiltinAchievementsTask,
     seedBuiltinShopItems: seedBuiltinShopItemsTask,
-    seedCharacters: seedCharactersTask
+    seedCharacters: seedCharactersTask,
+    seedDefaultStoryScripts: seedDefaultStoryScriptsTask
   };
 
   for (const taskName of SERVER_STARTUP_TASK_ORDER) {

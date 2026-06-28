@@ -1,0 +1,64 @@
+@media (max-width: 760px) {
+  .onboarding-story-modal {
+    width: calc(100vw - 20px);
+    height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    grid-template-rows: minmax(0, 4fr) minmax(96px, 5fr) auto;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .onboarding-story-portrait {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .onboarding-story-portrait img {
+    width: min(34vw, 108px);
+    height: min(19vh, 118px);
+  }
+
+  .onboarding-story-portrait div {
+    padding: 0;
+  }
+
+  .onboarding-story-portrait span {
+    font-size: 16px;
+  }
+
+  .onboarding-story-text-button {
+    padding: 18px;
+  }
+
+  .onboarding-story-text-button span {
+    max-width: 100%;
+    font-size: 18px;
+    line-height: 1.75;
+  }
+
+  .onboarding-story-actions {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+  }
+
+  .onboarding-story-options {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    max-height: min(34dvh, 260px);
+    overflow-y: auto;
+  }
+
+  .onboarding-story-actions .primary-action,
+  .onboarding-story-actions .secondary-action {
+    width: 100%;
+    min-height: 44px;
+    font-size: clamp(12px, 3.7vw, 16px);
+    padding-inline: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-story-text-button i {
+    animation: none;
+  }
+}

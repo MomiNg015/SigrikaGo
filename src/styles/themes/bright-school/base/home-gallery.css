@@ -30,24 +30,26 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .home-image-entry::after {
-  content: attr(data-hud) !important;
+  content: "" !important;
   display: block !important;
   position: absolute;
   left: 14px;
   right: 14px;
   bottom: 12px;
-  height: auto;
+  height: 0;
   padding-top: 0;
   border: 0;
+  border-radius: 999px;
   background: transparent !important;
   clip-path: none !important;
-  color: #4a3736 !important;
-  font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
-  font-size: 12px;
+  color: transparent !important;
+  font-family: "Microsoft YaHei UI", "Trebuchet MS", sans-serif;
+  font-size: 0;
   font-weight: 900;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   text-align: center;
   transform: none !important;
+  pointer-events: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .home-image-entry img {

@@ -222,6 +222,8 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/bright-school-portrait/settings-tabs/shell-theme-grid.css",
       "mobile-adaptive/bright-school-portrait/settings-tabs/audio-volume-title.css",
       "mobile-adaptive/bright-school-portrait/settings-tabs/shared-active-tabs.css",
+      "mobile-adaptive/announcement-detail.css",
+      "mobile-adaptive/announcement-detail/window.css",
       "mobile-adaptive/reduced-motion.css"
     ],
     guidance: "This layer stays after themes.css imports. Move or split only with desktop and mobile verification."
@@ -390,6 +392,10 @@ export const CSS_FINAL_MOBILE_SAFETY_SPLITS = [
       "mobile-adaptive/bright-school-portrait/settings-tabs/audio-volume-title.css",
       "mobile-adaptive/bright-school-portrait/settings-tabs/shared-active-tabs.css"
     ]
+  },
+  {
+    entry: "mobile-adaptive/announcement-detail.css",
+    files: ["mobile-adaptive/announcement-detail/window.css"]
   },
   {
     entry: "mobile-adaptive/mobile-profile-records.css",

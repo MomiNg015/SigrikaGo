@@ -7,6 +7,7 @@ export function useWarehouseInventory({
   token,
   user,
   onNotice,
+  onStoryScript,
   onUserChange
 }) {
   const [items, setItems] = useState([]);
@@ -43,7 +44,13 @@ export function useWarehouseInventory({
       });
       setItems(data.items ?? []);
       onUserChange(data.user);
-      if (data.effectText && data.target?.characterId) {
+      if (data.storyScript && data.target?.characterId) {
+        const character = characters[data.target.characterId];
+        setTargetItem(null);
+        setTargetResult(null);
+        onStoryScript?.(data.storyScript, itemStoryLabels(data.item?.name ?? item.name));
+        onNotice?.(`对${character?.name ?? data.target.characterId}成功使用了${item.name}`, "success");
+      } else if (data.effectText && data.target?.characterId) {
         const character = characters[data.target.characterId];
         setTargetResult({
           item,
@@ -90,4 +97,16 @@ function notifyAchievementUnlocks(unlocks = [], onNotice) {
   for (const unlock of unlocks) {
     onNotice?.(`达成成就：${unlock.name}`, "achievement");
   }
+}
+
+function itemStoryLabels(itemName) {
+  return {
+    title: itemName || "道具互动",
+    fastForward: "快进并跳过剧情",
+    skipTitle: "确认跳过剧情？",
+    skipMessage: "跳过只会关闭这段演出，道具效果已经生效。",
+    noScript: "暂无可播放的剧情内容",
+    close: "关闭剧情",
+    textLabel: "道具互动剧情文本"
+  };
 }

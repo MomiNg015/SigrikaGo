@@ -1,4 +1,5 @@
 import { publicUser } from "./db.js";
+import { CHARACTERS } from "../src/shared/characters.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import {
   DENIA_CANDY_EFFECT_TEXT,
@@ -15,6 +16,7 @@ import {
   syncStructuredUserAssets
 } from "./userAssets.js";
 import { isRecruitmentInventoryItem } from "./recruitment.js";
+import { getPublishedStoryScriptForTrigger, STORY_TRIGGER_TYPES } from "./storyScripts.js";
 
 export { parseItemEffects } from "./itemEffects.js";
 
@@ -69,12 +71,29 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
       }
     });
     await syncStructuredUserAssets(tx, updated);
+    const publicItem = toItemPayload(item);
+    const target = targetType === "character" ? { type: targetType, characterId: targetCharacter } : { type: targetType };
+    const storyScript = targetType === "character" ? await getPublishedStoryScriptForTrigger({
+      prisma: tx,
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: {
+        itemId: item.targetId,
+        characterId: targetCharacter
+      },
+      variables: {
+        username: user.username,
+        characterName: CHARACTERS[targetCharacter]?.name ?? targetCharacter,
+        itemName: item.name
+      }
+    }) : null;
+
     return {
       user: publicUser(updated),
       items: await inventoryPayload(tx, updated),
-      item: toItemPayload(item),
+      item: publicItem,
       effectText: effect.effectText,
-      target: targetType === "character" ? { type: targetType, characterId: targetCharacter } : { type: targetType }
+      storyScript,
+      target
     };
   });
 }

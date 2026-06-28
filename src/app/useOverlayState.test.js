@@ -16,8 +16,11 @@ describe("overlay state", () => {
       "shop",
       "recruitment",
       "settings",
+      "announcements",
       "mailbox",
-      "messageBoard"
+      "messageBoard",
+      "onboardingStory",
+      "storyPlayer"
     ]);
     expect(initialOverlayState()).toEqual({
       matchModePicker: false,
@@ -32,8 +35,11 @@ describe("overlay state", () => {
       shop: false,
       recruitment: false,
       settings: false,
+      announcements: false,
       mailbox: false,
-      messageBoard: false
+      messageBoard: false,
+      onboardingStory: false,
+      storyPlayer: false
     });
   });
 

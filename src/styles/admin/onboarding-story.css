@@ -1,0 +1,166 @@
+.admin-onboarding-story {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-onboarding-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.admin-onboarding-editor,
+.admin-onboarding-preview {
+  min-width: 0;
+  padding: 16px;
+}
+
+.admin-onboarding-editor {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 14px;
+  max-height: calc(100dvh - 164px);
+  overflow: hidden;
+}
+
+.admin-onboarding-editor-head,
+.admin-onboarding-node header,
+.admin-onboarding-options-title,
+.admin-onboarding-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-onboarding-editor label,
+.admin-onboarding-node label {
+  display: grid;
+  gap: 6px;
+  color: #67506d;
+  font-weight: 900;
+}
+
+.admin-onboarding-editor input,
+.admin-onboarding-editor select,
+.admin-onboarding-editor textarea {
+  width: 100%;
+  border: 1px solid #ddcfe2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #2d2430;
+  font: inherit;
+}
+
+.admin-onboarding-node-list {
+  min-height: 0;
+  display: grid;
+  gap: 12px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 16px;
+  scrollbar-gutter: stable both-edges;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-onboarding-node {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #eaddea;
+  border-radius: 8px;
+  background: #fffafd;
+}
+
+.admin-onboarding-node header {
+  min-width: 0;
+}
+
+.admin-onboarding-node strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.admin-onboarding-node .icon-only {
+  flex: 0 0 auto;
+}
+
+.admin-onboarding-node-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-onboarding-textarea textarea {
+  resize: vertical;
+}
+
+.admin-onboarding-options {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-onboarding-option-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-onboarding-preview {
+  position: sticky;
+  top: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.admin-onboarding-preview h3 {
+  margin: 0;
+}
+
+.admin-onboarding-preview .onboarding-story-backdrop {
+  position: relative;
+  z-index: auto;
+  inset: auto;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.admin-onboarding-preview .onboarding-story-modal {
+  width: 100%;
+  max-width: 100%;
+  height: min(640px, calc(100dvh - 260px));
+  min-height: 480px;
+}
+
+@media (max-width: 1080px) {
+  .admin-onboarding-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-onboarding-preview {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-onboarding-editor {
+    max-height: calc(100dvh - 132px);
+  }
+
+  .admin-onboarding-node-grid,
+  .admin-onboarding-option-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-onboarding-editor-head,
+  .admin-onboarding-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

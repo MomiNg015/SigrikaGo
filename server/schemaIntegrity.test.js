@@ -152,6 +152,67 @@ describe("Prisma schema integrity", () => {
     expect(softDeleteMigration).toContain("ALTER TABLE \"MailboxMessage\" ADD COLUMN \"deletedAt\"");
   });
 
+  it("tracks announcements and read state through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606280001_add_announcements",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    for (const modelName of [
+      "AnnouncementEntry",
+      "AnnouncementRead"
+    ]) {
+      expect(schema).toContain(`model ${modelName}`);
+      expect(migration).toContain(`CREATE TABLE IF NOT EXISTS "${modelName}"`);
+    }
+    expect(schema).toContain("announcementReads AnnouncementRead[]");
+    expect(migration).toContain("CREATE UNIQUE INDEX IF NOT EXISTS \"AnnouncementRead_userId_announcementId_key\"");
+    expect(migration).toContain("CREATE INDEX IF NOT EXISTS \"AnnouncementEntry_kind_isPublished_deletedAt_pinned_firstPublishedAt_idx\"");
+  });
+
+  it("tracks onboarding story scripts and automatic touch state through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606280002_add_onboarding_story",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    expect(schema).toContain("model OnboardingStoryScript");
+    expect(schema).toContain("onboardingRequired");
+    expect(schema).toContain("onboardingAutoShownAt");
+    expect(migration).toContain("CREATE TABLE IF NOT EXISTS \"OnboardingStoryScript\"");
+    expect(migration).toContain("ALTER TABLE \"User\" ADD COLUMN \"onboardingRequired\"");
+    expect(migration).toContain("ALTER TABLE \"User\" ADD COLUMN \"onboardingAutoShownAt\"");
+  });
+
+  it("tracks generic story scripts through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606280003_add_story_scripts",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    expect(schema).toContain("model StoryScript");
+    expect(schema).toContain("triggerParamsJson");
+    expect(schema).toContain("@@index([triggerType, isPublished])");
+    expect(migration).toContain("CREATE TABLE IF NOT EXISTS \"StoryScript\"");
+    expect(migration).toContain("CREATE UNIQUE INDEX IF NOT EXISTS \"StoryScript_key_key\"");
+    expect(migration).toContain("CREATE INDEX IF NOT EXISTS \"StoryScript_triggerType_isPublished_idx\"");
+  });
+
   it("tracks gacha pools, rewards, blue gems, and character chains through a migration", () => {
     const schema = readFileSync(schemaPath, "utf8");
     const migrationPath = join(

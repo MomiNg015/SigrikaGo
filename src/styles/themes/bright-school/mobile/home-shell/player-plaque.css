@@ -34,7 +34,6 @@
     width: 28px !important;
     height: 46px !important;
     border-width: 3px !important;
-    border-left-width: 6px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before {

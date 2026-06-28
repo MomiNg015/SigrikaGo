@@ -11,8 +11,11 @@ export const APP_OVERLAYS = Object.freeze([
   { key: "shop", showProp: "showShop", setterProp: "setShowShop" },
   { key: "recruitment", showProp: "showRecruitment", setterProp: "setShowRecruitment" },
   { key: "settings", showProp: "showSettings", setterProp: "setShowSettings" },
+  { key: "announcements", showProp: "showAnnouncements", setterProp: "setShowAnnouncements" },
   { key: "mailbox", showProp: "showMailbox", setterProp: "setShowMailbox" },
-  { key: "messageBoard", showProp: "showMessageBoard", setterProp: "setShowMessageBoard" }
+  { key: "messageBoard", showProp: "showMessageBoard", setterProp: "setShowMessageBoard" },
+  { key: "onboardingStory", showProp: "showOnboardingStory", setterProp: "setShowOnboardingStory" },
+  { key: "storyPlayer", showProp: "showStoryPlayer", setterProp: "setShowStoryPlayer" }
 ]);
 
 export const OVERLAY_STATE_KEYS = Object.freeze(APP_OVERLAYS.map(({ key }) => key));

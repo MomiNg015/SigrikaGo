@@ -119,6 +119,21 @@
 - `DELETE /mailbox/:id` soft-deletes by setting `MailboxMessage.deletedAt`. Player list, summary, capacity, read, and claim flows treat deleted rows as hidden, while future-batch materialization still uses them as delivery history to prevent deleted global mail from being recreated.
 - `initializeServerData()` runs `ensureMailboxSchema()` during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.
 
+## Announcement API
+
+- 公告 API 只有登录后路径，没有未登录访客接口。玩家路由挂在 `/api`：`GET /announcements/summary` 返回全局与分 tab 未读摘要，`GET /announcements?kind=announcement|changelog&offset=&limit=` 返回已发布列表，`GET /announcements/:id` 返回详情，`POST /announcements/:id/read` 在打开详情后写入已读并返回新的未读摘要。
+- 后台管理路由挂在 `/api/admin` 且走 `authHttp + requireAdmin`：`GET /announcements?kind=&status=all|published|draft`、`POST /announcements`、`PATCH /announcements/:id` 和 `DELETE /announcements/:id`。删除是软删除，普通后台/玩家列表均隐藏，没有恢复 UI。
+- `server/announcements.js` 负责类型、状态、标题 80 字、正文 10000 字、发布正文非空、置顶只对公告生效、首次发布时间不可因编辑重置、审计日志和未读计算。编辑已发布内容不会重新触发未读；取消发布再发布保留首次发布时间。
+- `initializeServerData()` runs `ensureAnnouncementSchema()` during startup so older local SQLite databases get `AnnouncementEntry` and `AnnouncementRead` before announcement routes query them.
+
+## Story Script API
+
+- Generic story script behavior lives in `server/storyScripts.js`. It validates the shared node graph shape (`startNodeId`, nodes, `nextNodeId`, branch options), structured trigger fields, publish-time reachability basics, and trigger conflicts. Draft saves may be incomplete; publish requires non-empty nodes, a valid start node, unique node ids, non-empty text, valid targets, and at least one terminal node.
+- Player onboarding routes remain under `/api` for compatibility. `GET /api/onboarding-story` now reads the published generic `StoryScript` with trigger `onboarding` and returns it with `autoEligible`; `POST /api/onboarding-story/auto-shown` still records the automatic onboarding touch on the user.
+- Admin routes include the legacy onboarding compatibility endpoints plus generic story management under `/api/admin/story-scripts`. `GET /api/admin/story-scripts` lists draft/published script payloads, `GET /api/admin/story-scripts/:key` reads one script, and `PATCH /api/admin/story-scripts/:key` saves or publishes using `action: "save-draft" | "publish"`. The API accepts controlled `triggerType` and `triggerParams` fields; raw `triggerParamsJson` is rejected.
+- `useInventoryItem()` applies the item business effect first. For character-target item use it then looks up a published `item-character-use` story with exact `{ itemId, characterId }` trigger params, interpolates whitelisted `{username}`, `{characterName}`, and `{itemName}` variables, and returns `storyScript` alongside the existing `effectText`. Missing scripts keep the legacy effect-text fallback.
+- `initializeServerData()` runs `ensureStoryScriptSchema()`, then the onboarding compatibility schema guard, then `seedDefaultStoryScripts()`. The seed creates default onboarding plus rainbow-bean-candy scripts for Sigrika and Denia only when missing, and migrates an existing published legacy `OnboardingStoryScript` into `onboarding.default` when that generic key does not exist.
+
 ## Admin Analytics API
 
 - 后台分析 API 挂载在 `/api/admin/analytics/*`，仍走现有 `authHttp + requireAdmin` 管线。

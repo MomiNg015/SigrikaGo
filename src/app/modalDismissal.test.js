@@ -24,8 +24,11 @@ describe("modal dismissal", () => {
       "shop",
       "recruitment",
       "settings",
+      "announcements",
       "mailbox",
-      "messageBoard"
+      "messageBoard",
+      "onboardingStory",
+      "storyPlayer"
     ]);
   });
 

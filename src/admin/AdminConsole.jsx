@@ -3,12 +3,14 @@ import { adminApi } from "../api/client.js";
 import AdminShell from "./AdminShell.jsx";
 import AdminAudit from "./AdminAudit.jsx";
 import AdminAchievements from "./AdminAchievements.jsx";
+import AdminAnnouncements from "./AdminAnnouncements.jsx";
 import AdminCharacters from "./AdminCharacters.jsx";
 import AdminDecorations from "./AdminDecorations.jsx";
 import AdminFeedback from "./AdminFeedback.jsx";
 import AdminGachaPools from "./AdminGachaPools.jsx";
 import AdminMailbox from "./AdminMailbox.jsx";
 import AdminMusicTracks from "./AdminMusicTracks.jsx";
+import AdminOnboardingStory from "./AdminOnboardingStory.jsx";
 import AdminOverview from "./AdminOverview.jsx";
 import AdminOperations from "./AdminOperations.jsx";
 import AdminRecruitmentSettings from "./AdminRecruitmentSettings.jsx";
@@ -98,6 +100,11 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   useEffect(() => {
     if (tab !== "achievements") return;
     refreshAchievements();
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "onboarding") return;
+    refreshCharacters();
   }, [tab, token]);
 
   useEffect(() => {
@@ -339,6 +346,8 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
         />
       )}
       {tab === "recruitment" && <AdminRecruitmentSettings token={token} onNotice={notify} />}
+      {tab === "announcements" && <AdminAnnouncements token={token} onNotice={notify} />}
+      {tab === "onboarding" && <AdminOnboardingStory token={token} characters={adminCharacters} onNotice={notify} />}
       {tab === "mailbox" && (
         <AdminMailbox
           token={token}

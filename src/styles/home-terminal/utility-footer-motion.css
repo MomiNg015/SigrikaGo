@@ -1,6 +1,6 @@
 .home-grid-featured > .home-utility-grid {
-  grid-area: nav;
-  width: min(480px, 100%);
+  grid-area: utility;
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
@@ -25,10 +25,11 @@
   gap: 9px;
   padding: 10px 12px;
   border: 1px solid rgba(0, 255, 190, 0.24);
-  border-left: 4px solid var(--home-terminal-cyan);
   border-radius: 0;
   clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
-  background: rgba(6, 17, 26, 0.84);
+  background:
+    linear-gradient(90deg, rgba(0, 255, 190, 0.12), rgba(6, 17, 26, 0.84) 38%),
+    rgba(6, 17, 26, 0.84);
   color: var(--home-terminal-text);
   box-shadow: inset 0 0 18px rgba(0, 255, 190, 0.06);
   transform: skewX(-15deg);
@@ -83,8 +84,10 @@
 
 .home-grid-featured > .home-utility-grid .leaderboard-entry,
 .home-grid-featured > .home-utility-grid .watch-entry {
-  border-left-color: var(--home-terminal-blue);
   border-color: rgba(0, 191, 255, 0.24);
+  background:
+    linear-gradient(90deg, rgba(0, 191, 255, 0.12), rgba(6, 17, 26, 0.84) 38%),
+    rgba(6, 17, 26, 0.84);
 }
 
 .home-grid-featured > .home-utility-grid .leaderboard-entry svg,

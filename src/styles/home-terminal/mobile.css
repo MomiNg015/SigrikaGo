@@ -39,8 +39,9 @@
     display: grid;
     grid-template-areas:
       "player"
-      "entries"
-      "nav";
+      "match"
+      "manual"
+      "utility";
     grid-template-columns: 1fr;
     gap: 14px;
   }

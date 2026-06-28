@@ -35,6 +35,7 @@
     .leaderboard-modal,
     .friends-modal,
     .message-board-modal,
+    .onboarding-story-modal,
     .watch-list-modal,
     .profile-replay-dialog,
     .user-profile-modal
@@ -60,6 +61,7 @@
     .settings-modal,
     .mailbox-modal,
     .message-board-modal,
+    .onboarding-story-modal,
     .watch-list-modal,
     .user-profile-modal,
     .profile-replay-dialog
@@ -67,6 +69,12 @@
     display: flex !important;
     flex-direction: column !important;
     gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal {
+    display: grid !important;
+    grid-template-rows: minmax(0, 4fr) minmax(96px, 5fr) auto !important;
+    gap: 10px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
@@ -117,6 +125,7 @@
     .settings-modal button,
     .mailbox-modal button,
     .message-board-modal button,
+    .onboarding-story-modal button,
     .small-modal button,
     .room-floating-modal button,
     .nested-modal button

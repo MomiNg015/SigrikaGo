@@ -192,6 +192,83 @@ const rules = ratingRulesFromSettings(settings);
 
 `ratingRulesFromSettings()` handles missing, malformed, and partial stored values through the shared normalizer.
 
+### Scenario: Announcement And Changelog Content Persistence
+
+#### 1. Scope / Trigger
+- Trigger: changing announcement/changelog Prisma models, startup schema guards, authenticated player announcement APIs, admin announcement CRUD routes, unread badge behavior, or Markdown-lite content limits.
+- Announcement and changelog entries are one cross-layer content contract: admin writes bounded draft/published rows, backend exposes only published rows to authenticated players, and frontend unread badges depend on per-user read rows.
+
+#### 2. Signatures
+- `AnnouncementEntry { id, kind, title, body, isPublished, pinned, firstPublishedAt, deletedAt, createdAt, updatedAt }`.
+- `AnnouncementRead { id, userId, announcementId, readAt }` with unique `(userId, announcementId)`.
+- Valid `kind` values are `announcement` and `changelog`.
+- Authenticated player routes live under `/api/announcements`: summary, list, detail, and mark-read.
+- Admin routes live under `/api/admin/announcements`: list, create, patch, and soft-delete.
+- `ensureAnnouncementSchema(prisma)` must run during server startup before player or admin announcement routes are relied on in older SQLite development databases.
+
+#### 3. Contracts
+- Player announcement/changelog APIs require an authenticated user; do not add anonymous visitor or anonymous read-state branches.
+- Admin draft saves require a trimmed non-empty title and may store an empty body.
+- Admin publish actions require a trimmed non-empty title and body.
+- Titles are capped at 80 characters, and bodies are capped at 10,000 characters at the backend boundary.
+- Deletion is soft-delete: set `deletedAt` and hide the entry from normal player/admin lists instead of hard-removing the row.
+- First publish sets `firstPublishedAt` once. Edits, unpublish, and republish must preserve it.
+- Player lists sort by `firstPublishedAt`; pinned entries apply only to `announcement`, never to `changelog`.
+- Unread state exists only for published entries whose `firstPublishedAt` is later than the user's `createdAt` and that lack an `AnnouncementRead` row.
+- Opening an entry detail is the operation that marks that one entry as read.
+
+#### 4. Validation & Error Matrix
+- Unknown `kind` -> validation error before querying.
+- Unknown status filter -> validation error before querying.
+- Empty draft title -> validation error.
+- Empty publish title or body -> validation error.
+- Overlong title/body -> validation error.
+- Missing or unpublished player detail entry -> `404`.
+- Soft-deleted entries -> hidden from normal lists and unread summary calculations.
+- Missing announcement tables in an older SQLite dev database -> startup guard creates tables and indexes idempotently.
+
+#### 5. Good/Base/Bad Cases
+- Good: publishing a new changelog entry sets `firstPublishedAt`, makes it visible to authenticated players, and can create unread state for eligible users.
+- Good: fixing a typo on a published announcement preserves `firstPublishedAt` and does not make already-read rows unread again.
+- Base: a new account can see older published entries, but those historical entries do not create red dots because they predate `User.createdAt`.
+- Bad: using `updatedAt` for player ordering or unread calculations because edits would reorder old posts and re-notify players.
+- Bad: deleting rows directly from `AnnouncementEntry`, which removes operational history and can orphan read-state expectations.
+
+#### 6. Tests Required
+- Schema integrity tests assert Prisma models and migration SQL include announcement entry/read tables and indexes.
+- Startup tests assert `ensureAnnouncementSchema()` runs in server startup.
+- Domain tests assert validation, first-publish preservation, pinned/changelog behavior, soft-delete filtering, and unread eligibility.
+- Route tests assert authenticated player handlers pass `req.user.id` into list/detail/read/summary operations and surface domain errors consistently.
+- Admin route tests assert create/update/delete actions validate server-side and write audit logs.
+- Frontend tests assert overlay registry coverage, toolbar/mobile entry points, row/detail read behavior, and Markdown-lite escaping.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await prisma.announcementEntry.update({
+  where: { id },
+  data: { title, body, firstPublishedAt: new Date() }
+});
+```
+
+This refreshes the first-publish timestamp on every edit and can reorder or re-notify old content.
+
+Correct:
+
+```js
+const nextFirstPublishedAt = existing.firstPublishedAt ?? now;
+await prisma.announcementEntry.update({
+  where: { id },
+  data: { title, body, isPublished: true, firstPublishedAt: nextFirstPublishedAt }
+});
+```
+
+The first-publish timestamp is created by the first publish transition and then remains stable.
+
+---
+
 ### Scenario: Rated Results And Friendly Match Persistence
 
 #### 1. Scope / Trigger

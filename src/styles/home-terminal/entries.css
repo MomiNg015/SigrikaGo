@@ -1,11 +1,12 @@
 .home-match-feature {
   grid-area: match;
   width: 100%;
-  max-width: 920px;
+  max-width: 1080px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
-  align-items: center;
+  align-items: stretch;
+  align-self: stretch;
   aspect-ratio: auto;
   overflow: visible;
 }
@@ -14,9 +15,9 @@
   --entry-art: url("/assets/home/book-entry.webp");
   grid-area: manual;
   align-self: center;
-  justify-self: start;
-  width: clamp(190px, 19vw, 320px);
-  height: clamp(280px, 42vh, 520px);
+  justify-self: center;
+  width: clamp(250px, 28vw, 430px);
+  height: clamp(280px, 40vh, 450px);
   z-index: 2;
 }
 
@@ -24,7 +25,7 @@
   --entry-art: url("/assets/home/fantasy-match-entry.webp");
   grid-column: 1;
   width: 100%;
-  height: clamp(300px, 50vh, 560px);
+  height: clamp(560px, 72vh, 760px);
   border-color: rgba(0, 191, 255, 0.32);
 }
 
@@ -61,22 +62,25 @@
 }
 
 .home-image-entry::after {
-  content: attr(data-hud);
+  content: "";
   position: absolute;
-  left: 14px;
-  bottom: 10px;
-  z-index: 3;
-  color: var(--home-terminal-cyan);
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  left: 16%;
+  right: 16%;
+  bottom: 8px;
+  z-index: 0;
+  height: 0;
+  border-radius: 999px;
   opacity: 0;
-  text-shadow: 0 0 10px currentColor;
-  transition: opacity 160ms ease;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  pointer-events: none;
+  transition: none;
 }
 
 .match-image-entry::after {
-  color: var(--home-terminal-blue);
+  background: transparent;
+  box-shadow: none;
 }
 
 .home-image-entry img {
@@ -93,13 +97,12 @@
 
 .home-image-entry:hover,
 .home-image-entry:focus-visible {
-  transform: translateY(-10px);
+  transform: rotate(2deg);
   border-color: var(--home-terminal-cyan);
   box-shadow:
-    0 0 0 1px rgba(0, 255, 190, 0.48),
-    0 0 34px rgba(0, 255, 190, 0.32),
-    0 24px 68px rgba(0, 0, 0, 0.4),
-    inset 0 0 24px rgba(0, 255, 190, 0.16);
+    0 0 0 1px rgba(0, 255, 190, 0.08),
+    0 18px 44px rgba(0, 0, 0, 0.28),
+    inset 0 0 28px rgba(0, 191, 255, 0.09);
 }
 
 .match-image-entry {
@@ -110,21 +113,36 @@
 .match-image-entry:focus-visible {
   border-color: var(--home-terminal-blue);
   box-shadow:
-    0 0 0 1px rgba(0, 191, 255, 0.5),
-    0 0 34px rgba(0, 191, 255, 0.32),
-    0 24px 68px rgba(0, 0, 0, 0.4),
-    inset 0 0 24px rgba(0, 191, 255, 0.16);
+    0 0 0 1px rgba(0, 255, 190, 0.08),
+    0 18px 44px rgba(0, 0, 0, 0.28),
+    inset 0 0 28px rgba(0, 191, 255, 0.09);
 }
 
 .home-image-entry:hover::after,
 .home-image-entry:focus-visible::after {
-  opacity: 1;
-  animation: home-hud-blink 1s step-end infinite;
+  opacity: 0;
+  transform: none;
+  box-shadow: none;
 }
 
 .match-image-entry:hover::after,
 .match-image-entry:focus-visible::after {
-  animation: none;
+  box-shadow: none;
+}
+
+.home-image-entry:active {
+  transform: translateY(-2px) scale(0.985);
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 190, 0.34),
+    0 12px 34px rgba(0, 0, 0, 0.32),
+    inset 0 0 18px rgba(0, 255, 190, 0.12);
+}
+
+.match-image-entry:active {
+  box-shadow:
+    0 0 0 1px rgba(0, 191, 255, 0.22),
+    0 12px 34px rgba(0, 0, 0, 0.32),
+    inset 0 0 18px rgba(0, 191, 255, 0.12);
 }
 
 .home-image-entry:hover img,
@@ -134,5 +152,10 @@
 .match-image-entry:hover img,
 .match-image-entry:focus-visible img {
   transform: none;
-  filter: drop-shadow(0 0 18px rgba(0, 255, 190, 0.24));
+  filter: none;
+}
+
+.home-image-entry:active img {
+  transform: translate3d(0, 1px, 0) scale(0.992);
+  filter: none;
 }

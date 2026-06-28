@@ -47,7 +47,9 @@ export function createAuthRouteHandlers({
     const password = passwordResult.value;
     const passwordHash = await hashPassword(password, 10);
     try {
-      const user = await prisma.user.create({ data: { username, passwordHash } });
+      const user = await prisma.user.create({
+        data: { username, passwordHash, onboardingRequired: true }
+      });
       const syncedUser = await syncAdmin(user, prisma);
       await sendLoginResponse(res, syncedUser);
     } catch {

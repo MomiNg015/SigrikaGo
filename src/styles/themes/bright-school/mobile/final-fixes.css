@@ -20,32 +20,35 @@
 
 @media (max-width: 760px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
-    padding: 12px 12px 48px !important;
+    padding: 12px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry::before,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry::before {
-    left: 50% !important;
-    right: auto !important;
+    content: "" !important;
+    left: 12px !important;
+    right: 12px !important;
     top: auto !important;
-    bottom: 10px !important;
+    bottom: -10px !important;
     width: auto !important;
-    max-width: calc(100% - 28px) !important;
-    min-width: min(126px, calc(100% - 28px)) !important;
-    min-height: 34px !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 16px !important;
     box-sizing: border-box !important;
-    padding: 6px 16px !important;
-    font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
-    font-size: 14px !important;
+    padding: 0 !important;
+    font-family: "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important;
+    font-size: 0 !important;
     font-weight: 900 !important;
     line-height: 1 !important;
     letter-spacing: 0 !important;
     white-space: nowrap !important;
-    transform: translateX(-50%) rotate(-1deg) !important;
+    color: transparent !important;
+    pointer-events: none !important;
+    transform: none !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry::before {
-    min-width: min(132px, calc(100% - 28px)) !important;
+    min-width: 0 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry img {

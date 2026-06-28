@@ -11,26 +11,26 @@
     width: min(100%, calc(100vw - 24px)) !important;
     min-width: 0 !important;
     max-width: 100% !important;
-    margin: clamp(8px, 1.6dvh, 16px) auto clamp(12px, 2dvh, 22px) !important;
-    padding: clamp(16px, 2.6vw, 24px) !important;
+    margin: clamp(6px, 1.2dvh, 12px) auto clamp(10px, 1.6dvh, 18px) !important;
+    padding: clamp(12px, 2vw, 20px) !important;
     overflow: visible !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
     display: grid !important;
     grid-template-areas:
-      "player manual"
-      "utility manual"
-      "match match" !important;
-    grid-template-columns: minmax(230px, 0.86fr) minmax(300px, 1.14fr) !important;
-    grid-template-rows: auto auto minmax(170px, auto) !important;
-    gap: clamp(10px, 1.9vw, 18px) !important;
+      "player match"
+      "manual match"
+      "utility match" !important;
+    grid-template-columns: minmax(320px, 0.72fr) minmax(520px, 1.28fr) !important;
+    grid-template-rows: auto minmax(240px, auto) auto !important;
+    gap: clamp(8px, 1.2vw, 14px) clamp(12px, 1.8vw, 20px) !important;
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
     min-height: 0 !important;
     max-height: none !important;
-    padding: clamp(24px, 4dvh, 44px) 0 0 !important;
+    padding: clamp(14px, 2.4dvh, 26px) 0 0 !important;
     overflow: visible !important;
   }
 
@@ -65,18 +65,20 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
     grid-area: manual !important;
-    height: clamp(250px, 48dvh, 420px) !important;
+    justify-self: center !important;
+    height: clamp(260px, 44dvh, 400px) !important;
     min-height: 0 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature {
     grid-area: match !important;
-    height: clamp(230px, 38dvh, 320px) !important;
+    height: auto !important;
+    align-self: stretch !important;
     min-height: 0 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature .match-image-entry {
-    height: 100% !important;
+    height: clamp(520px, 72dvh, 700px) !important;
     min-height: 0 !important;
   }
 

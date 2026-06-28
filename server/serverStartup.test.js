@@ -19,6 +19,10 @@ describe("server startup", () => {
     const ensureGachaSchema = task("ensureGachaSchema");
     const ensureMailboxSchema = task("ensureMailboxSchema");
     const ensureRecruitmentSchema = task("ensureRecruitmentSchema");
+    const ensureAnnouncementSchema = task("ensureAnnouncementSchema");
+    const ensureStoryScriptSchema = task("ensureStoryScriptSchema");
+    const ensureOnboardingStorySchema = task("ensureOnboardingStorySchema");
+    const seedDefaultStoryScripts = task("seedDefaultStoryScripts");
     const ensureMusicTrackSettingsSchema = task("ensureMusicTrackSettingsSchema");
     const ensureAchievementSchema = task("ensureAchievementSchema");
     const seedAdminDefaultConfig = task("seedAdminDefaultConfig");
@@ -39,6 +43,10 @@ describe("server startup", () => {
       ensureGachaSchema,
       ensureMailboxSchema,
       ensureRecruitmentSchema,
+      ensureAnnouncementSchema,
+      ensureStoryScriptSchema,
+      ensureOnboardingStorySchema,
+      seedDefaultStoryScripts,
       ensureMusicTrackSettingsSchema,
       ensureAchievementSchema,
       seedAdminDefaultConfig,
@@ -53,6 +61,10 @@ describe("server startup", () => {
       "ensureGachaSchema",
       "ensureMusicTrackSettingsSchema",
       "ensureRecruitmentSchema",
+      "ensureAnnouncementSchema",
+      "ensureStoryScriptSchema",
+      "ensureOnboardingStorySchema",
+      "seedDefaultStoryScripts",
       "seedAdminDefaultConfig",
       "seedBuiltinAchievements",
       "cleanupLegacyDeniaCharacterData",

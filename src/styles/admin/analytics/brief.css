@@ -28,15 +28,18 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 18px;
   padding: 20px;
-  border-left: 8px solid #5c9f71;
+  border-color: #c9dfd0;
+  background: linear-gradient(180deg, #ffffff, #f8fcf9);
 }
 
 .admin-brief-card.blue {
-  border-left-color: #4f72c7;
+  border-color: #c9d5f2;
+  background: linear-gradient(180deg, #ffffff, #f7faff);
 }
 
 .admin-brief-card.red {
-  border-left-color: #c94b5e;
+  border-color: #efc4cc;
+  background: linear-gradient(180deg, #ffffff, #fff8f9);
 }
 
 .admin-brief-main {
@@ -153,15 +156,18 @@
 }
 
 .admin-insight-section.danger {
-  border-left: 6px solid #c94b5e;
+  border-color: #efbec7;
+  background: #fff8f9;
 }
 
 .admin-insight-section.watch {
-  border-left: 6px solid #4f72c7;
+  border-color: #c7d6f5;
+  background: #f8fbff;
 }
 
 .admin-insight-section.normal {
-  border-left: 6px solid #5c9f71;
+  border-color: #c7e2d0;
+  background: #fbfefa;
 }
 
 .admin-section-inline-title,

@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import AppOverlays from "./AppOverlays.jsx";
+import OnboardingStoryModal from "../modals/OnboardingStoryModal.jsx";
+import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
 
 describe("AppOverlays", () => {
   it("keeps the match success countdown visible during battle asset preloading", () => {
@@ -27,7 +29,92 @@ describe("AppOverlays", () => {
 
     expect(markup).not.toContain("match-success-modal");
   });
+
+  it("renders the generic story player above other overlays", () => {
+    const markup = renderToStaticMarkup(createElement(AppOverlays, overlayProps({
+      showStoryPlayer: true,
+      storyPlayerScript: {
+        script: {
+          startNodeId: "start",
+          nodes: [{ id: "start", speakerName: "达妮娅", characterId: "denia", text: "这是什么糖？", nextNodeId: "" }]
+        },
+        labels: { title: "道具互动" },
+        clear: vi.fn(),
+        open: vi.fn()
+      }
+    })));
+
+    expect(markup).toContain("onboarding-story-modal");
+    expect(markup).toContain("道具互动");
+    expect(markup).toContain("剧情对话文本");
+  });
+  it("closes every story overlay state and clears the active script when the generic story closes", () => {
+    const clear = vi.fn();
+    const setShowOnboardingStory = vi.fn();
+    const setShowStoryPlayer = vi.fn();
+    const tree = AppOverlays(overlayProps({
+      showOnboardingStory: true,
+      showStoryPlayer: true,
+      onboardingStoryScript: storyScript(),
+      storyPlayerScript: {
+        script: storyScript(),
+        labels: { title: "story" },
+        clear,
+        open: vi.fn()
+      },
+      setShowOnboardingStory,
+      setShowStoryPlayer
+    }));
+
+    findElementByType(tree, StoryPlayerModal).props.onClose();
+
+    expect(setShowStoryPlayer).toHaveBeenCalledWith(false);
+    expect(setShowOnboardingStory).toHaveBeenCalledWith(false);
+    expect(clear).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses the same full story cleanup for the legacy onboarding story surface", () => {
+    const clear = vi.fn();
+    const setShowOnboardingStory = vi.fn();
+    const setShowStoryPlayer = vi.fn();
+    const tree = AppOverlays(overlayProps({
+      showOnboardingStory: true,
+      onboardingStoryScript: storyScript(),
+      storyPlayerScript: {
+        script: null,
+        labels: null,
+        clear,
+        open: vi.fn()
+      },
+      setShowOnboardingStory,
+      setShowStoryPlayer
+    }));
+
+    findElementByType(tree, OnboardingStoryModal).props.onClose();
+
+    expect(setShowStoryPlayer).toHaveBeenCalledWith(false);
+    expect(setShowOnboardingStory).toHaveBeenCalledWith(false);
+    expect(clear).toHaveBeenCalledTimes(1);
+  });
 });
+
+function storyScript() {
+  return {
+    startNodeId: "start",
+    nodes: [{ id: "start", speakerName: "Denia", characterId: "denia", text: "Story text", nextNodeId: "" }]
+  };
+}
+
+function findElementByType(node, type) {
+  if (!node || typeof node !== "object") return null;
+  if (node.type === type) return node;
+  const children = Array.isArray(node.props?.children) ? node.props.children : [node.props?.children];
+  for (const child of children) {
+    const found = findElementByType(child, type);
+    if (found) return found;
+  }
+  return null;
+}
 
 function overlayProps(overrides = {}) {
   return {
@@ -42,6 +129,7 @@ function overlayProps(overrides = {}) {
     musicTracks: {},
     onMatchCancel: vi.fn(),
     onMatchSuccessComplete: vi.fn(),
+    onAnnouncementSummaryChange: vi.fn(),
     onMessageSubmitted: vi.fn(),
     onRecruitmentStatusChange: vi.fn(),
     onRemoveToast: vi.fn(),
@@ -59,6 +147,9 @@ function overlayProps(overrides = {}) {
     setShowRecruitment: vi.fn(),
     setShowHouse: vi.fn(),
     setShowLeaderboard: vi.fn(),
+    setShowAnnouncements: vi.fn(),
+    setShowOnboardingStory: vi.fn(),
+    setShowStoryPlayer: vi.fn(),
     setShowMessageBoard: vi.fn(),
     setShowPersonalization: vi.fn(),
     setShowResume: vi.fn(),
@@ -72,12 +163,16 @@ function overlayProps(overrides = {}) {
     showRecruitment: false,
     showHouse: false,
     showLeaderboard: false,
+    showAnnouncements: false,
+    showOnboardingStory: false,
+    showStoryPlayer: false,
     showMessageBoard: false,
     showPersonalization: false,
     showResume: false,
     showSettings: false,
     showShop: false,
     showToast: vi.fn(),
+    announcementUnreadByKind: {},
     showWarehouse: false,
     showWatch: false,
     siteSettings: {},
