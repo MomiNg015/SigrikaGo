@@ -104,6 +104,23 @@
     box-shadow: none !important;
   }
 
+  .topbar-actions > .icon-button,
+  .home-mobile-menu-toggle,
+  .modal-backdrop .close-button,
+  .nested-modal-backdrop .close-button {
+    min-width: var(--modal-close-size, 44px);
+    min-height: var(--modal-close-size, 44px);
+  }
+
+  .home-mobile-menu-panel button {
+    min-height: 44px;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-tabs button.active:not(:disabled),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-tabs button[aria-selected="true"]:not(:disabled) {
+    transform: translateY(2px) !important;
+  }
+
   .board,
   .board-wrap,
   .point {

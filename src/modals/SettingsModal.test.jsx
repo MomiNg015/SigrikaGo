@@ -14,7 +14,14 @@ describe("SettingsModal terminal style hooks", () => {
     }));
 
     expect(html).toContain("settings-modal settings-modal-content");
+    expect(html).toContain("role=\"dialog\"");
+    expect(html).toContain("aria-modal=\"true\"");
+    expect(html).toContain("aria-labelledby=\"settings-modal-title\"");
+    expect(html).toContain("aria-label=\"关闭设置\"");
     expect(html).toContain("settings-panel settings-modal-content");
+    expect(html).toContain("role=\"tabpanel\"");
+    expect(html).toContain("role=\"tab\"");
+    expect(html).toContain("aria-selected=\"true\"");
     expect(html).toContain("volume-row audio-slider-item");
     expect(html).toContain("audio-volume-title");
     expect(html).toContain("type=\"range\"");
@@ -106,5 +113,17 @@ describe("SettingsModal terminal style hooks", () => {
     expect(mobileSafetyCss).toContain("overflow: hidden !important");
     expect(mobileSafetyCss).toContain(".theme-settings-panel");
     expect(mobileSafetyCss).toContain("overflow: visible !important");
+  });
+
+  it("keeps final mobile settings modal scroll contained", () => {
+    const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(finalMobileCss).toContain(".settings-modal {\n    display: grid;");
+    expect(finalMobileCss).toContain("grid-template-rows: auto auto minmax(0, 1fr);");
+    expect(finalMobileCss).toContain(".settings-modal .settings-panel");
+    expect(finalMobileCss).toContain("overflow-y: auto;");
+    expect(finalMobileCss).toContain("overscroll-behavior: contain;");
+    expect(finalMobileCss).toContain(".settings-tabs button[aria-selected=\"true\"]:not(:disabled)");
+    expect(finalMobileCss).toContain("transform: translateY(2px) !important;");
   });
 });

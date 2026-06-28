@@ -163,9 +163,11 @@ describe("socket room events", () => {
     const deps = createDeps();
 
     registerRoomSocketEvents(socket, deps);
+    await socket.trigger("room:resume", { resumeReason: "initial-connect" });
     await socket.trigger("room:resume", { resumeReason: "patch-gap" });
     await socket.trigger("room:resume", { resumeReason: "socket-connect" });
 
+    expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumeInitialConnectRequests");
     expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumePatchGapRequests");
     expect(deps.metrics.increment).toHaveBeenCalledWith("roomResumeSocketConnectRequests");
   });

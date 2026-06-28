@@ -26,5 +26,6 @@
 
 - Trellis is installed in this repository with project workflow files under `.trellis/`, project-scoped AI skills under `.agents/skills/`, and Codex hook/subagent configuration under `.codex/`.
 - `AGENTS.md` keeps the Trellis assistant instructions plus the project rule that every update must keep `docs/system-design.md` synchronized.
+- Impeccable is installed as a project-scoped skill under `.agents/skills/impeccable`. Its detector hook is controlled by `.impeccable/config.json`, local consent is stored in `.impeccable/config.local.json`, Codex runs the PostToolUse manifest from `.codex/hooks.json`, and live-mode injection is preconfigured through `.impeccable/live/config.json` for the Vite `index.html` shell. Codex 0.142 parses `.codex/hooks.json` with a strict schema, so the shared manifest keeps only the top-level `hooks` object and stores descriptive notes in system-design docs instead of the JSON file.
 - Use `py -3 ./.trellis/scripts/get_context.py` to inspect current Trellis state. Use `py -3 ./.trellis/scripts/task.py create "<title>" --slug <slug>` to create tracked tasks before multi-step work.
 - The initialized Trellis context uses developer `Moming`, single-repo mode, and `backend` / `frontend` spec layers. A bootstrap guidelines task exists under `.trellis/tasks/00-bootstrap-guidelines/`.

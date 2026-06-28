@@ -28,7 +28,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible {
-    transform: translateY(-6px) !important;
+    transform: rotate(2deg) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry > img {

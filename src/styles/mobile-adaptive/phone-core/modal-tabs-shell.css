@@ -40,6 +40,31 @@
     padding: 14px;
   }
 
+  .settings-modal {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    align-content: start;
+    gap: 12px;
+    overflow: hidden;
+    scrollbar-gutter: auto;
+  }
+
+  .settings-modal h2 {
+    margin-right: calc(var(--modal-close-size, 44px) + 8px);
+  }
+
+  .settings-modal .settings-tabs {
+    margin-bottom: 0;
+  }
+
+  .settings-modal .settings-panel {
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .settings-tabs,
   .friends-tabs,
   .shop-pagination {

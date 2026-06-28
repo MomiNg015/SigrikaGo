@@ -6,7 +6,7 @@ import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
 import MatchModeRuleText from "./MatchModeRuleText.jsx";
 
-export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onOpenMatch, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenMailbox, onOpenMessageBoard, onOpenAdmin }) {
+export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onOpenMatch, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
   const onlineCount = Number(lobbyStats.onlineCount ?? 0);
   const matchmakingCounts = Object.fromEntries(modeOrderedEntries().map((mode) => [
@@ -22,10 +22,13 @@ export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SI
           onlineCount={onlineCount}
           siteTitle={siteSettings.homeTitle}
           mailboxBadgeCount={mailboxBadgeCount}
+          announcementUnread={announcementUnread}
           onLogout={onLogout}
           onOpenAdmin={onOpenAdmin}
+          onOpenAnnouncements={onOpenAnnouncements}
           onOpenMailbox={onOpenMailbox}
           onOpenMessageBoard={onOpenMessageBoard}
+          onOpenOnboardingStory={onOpenOnboardingStory}
           onOpenSettings={onOpenSettings}
         />
 

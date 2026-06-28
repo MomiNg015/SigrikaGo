@@ -6,9 +6,12 @@ import HouseModal from "../modals/HouseModal.jsx";
 import LeaderboardModal from "../modals/LeaderboardModal.jsx";
 import MailboxModal from "../modals/MailboxModal.jsx";
 import MessageBoardModal from "../modals/MessageBoardModal.jsx";
+import AnnouncementModal from "../modals/AnnouncementModal.jsx";
+import OnboardingStoryModal from "../modals/OnboardingStoryModal.jsx";
 import PersonalizationModal from "../modals/PersonalizationModal.jsx";
 import ResumeModal from "../modals/ResumeModal.jsx";
 import SettingsModal from "../modals/SettingsModal.jsx";
+import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
 import RecruitmentModal from "../modals/RecruitmentModal.jsx";
 import ShopModal from "../modals/ShopModal.jsx";
 import WarehouseModal from "../modals/WarehouseModal.jsx";
@@ -27,7 +30,11 @@ export default function AppOverlays({
   onMatchCancel,
   onMatchSuccessComplete,
   onMessageSubmitted,
+  onAnnouncementSummaryChange,
   onMailboxSummaryChange,
+  onStoryPlayerClose,
+  onboardingStoryScript,
+  storyPlayerScript,
   onRemoveToast,
   onRecruitmentStatusChange,
   onResultClose,
@@ -45,6 +52,9 @@ export default function AppOverlays({
   setShowHouse,
   setShowLeaderboard,
   setShowMailbox,
+  setShowAnnouncements,
+  setShowOnboardingStory,
+  setShowStoryPlayer,
   setShowMessageBoard,
   setShowPersonalization,
   setShowResume,
@@ -59,12 +69,16 @@ export default function AppOverlays({
   showHouse,
   showLeaderboard,
   showMailbox,
+  showAnnouncements,
+  showOnboardingStory,
+  showStoryPlayer,
   showMessageBoard,
   showPersonalization,
   showResume,
   showSettings,
   showShop,
   showToast,
+  announcementUnreadByKind,
   showWarehouse,
   showWatch,
   siteSettings,
@@ -75,6 +89,16 @@ export default function AppOverlays({
   user,
   visualTheme
 }) {
+  function closeStoryPlayer() {
+    if (onStoryPlayerClose) {
+      onStoryPlayerClose();
+      return;
+    }
+    setShowOnboardingStory(false);
+    setShowStoryPlayer(false);
+    storyPlayerScript?.clear?.();
+  }
+
   return (
     <>
       <ToastStack toasts={toasts} onClose={onRemoveToast} />
@@ -167,6 +191,7 @@ export default function AppOverlays({
           characters={characters}
           onUserChange={updateUser}
           onNotice={showToast}
+          onStoryScript={storyPlayerScript?.open}
           onClose={() => setShowWarehouse(false)}
         />
       )}
@@ -230,6 +255,15 @@ export default function AppOverlays({
           onClose={() => setShowSettings(false)}
         />
       )}
+      {showAnnouncements && (
+        <AnnouncementModal
+          token={token}
+          unreadByKind={announcementUnreadByKind}
+          onClose={() => setShowAnnouncements(false)}
+          onNotice={showToast}
+          onSummaryChange={onAnnouncementSummaryChange}
+        />
+      )}
       {showMailbox && (
         <MailboxModal
           token={token}
@@ -237,6 +271,21 @@ export default function AppOverlays({
           onNotice={showToast}
           onSummaryChange={onMailboxSummaryChange}
           onUserChange={updateUser}
+        />
+      )}
+      {showOnboardingStory && (
+        <OnboardingStoryModal
+          script={onboardingStoryScript}
+          characters={characters}
+          onClose={closeStoryPlayer}
+        />
+      )}
+      {showStoryPlayer && (
+        <StoryPlayerModal
+          script={storyPlayerScript?.script}
+          characters={characters}
+          labels={storyPlayerScript?.labels}
+          onClose={closeStoryPlayer}
         />
       )}
       {showMessageBoard && (

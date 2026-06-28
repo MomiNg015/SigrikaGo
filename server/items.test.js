@@ -50,6 +50,23 @@ describe("items", () => {
     })).rejects.toMatchObject({ status: 403 });
   });
 
+  it("accepts structured character ownership for character-targeted items", async () => {
+    const response = await useInventoryItem({
+      userId: "user-1",
+      itemId: "rainbow-bean-candy",
+      characterId: "denia",
+      prisma: inventoryPrisma({
+        ownedCharacters: "sigrika",
+        userCharacters: [{ characterSlug: "denia", source: "achievement" }],
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character"
+      })
+    });
+
+    expect(response.user.itemEffects).toMatchObject({ deniaRainbowGlow: true });
+  });
+
   it("uses rainbow candy on Sigrika by disabling sortie, granting coins, and switching selected character", async () => {
     const updates = [];
     const response = await useInventoryItem({
@@ -104,6 +121,58 @@ describe("items", () => {
     expect(structuredWrites).toContainEqual(["userItemEffect.upsert", expect.objectContaining({
       where: { userId_effectKey: { userId: "user-1", effectKey: "deniaRainbowGlow" } }
     })]);
+  });
+
+  it("returns the matching item-character story after applying a candy effect", async () => {
+    const response = await useInventoryItem({
+      userId: "user-1",
+      itemId: "rainbow-bean-candy",
+      characterId: "denia",
+      prisma: inventoryPrisma({
+        ownedCharacters: "sigrika,denia",
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character",
+        storyScripts: [{
+          key: "item.rainbow-bean-candy.denia",
+          title: "达妮娅的彩虹糖",
+          triggerType: "item-character-use",
+          triggerParamsJson: JSON.stringify({ itemId: "rainbow-bean-candy", characterId: "denia" }),
+          publishedStartNodeId: "start",
+          publishedNodesJson: JSON.stringify([
+            { id: "start", speakerName: "达妮娅", characterId: "denia", text: "{username}！你给{characterName}吃了什么！" }
+          ]),
+          publishedAt: new Date("2026-06-28T08:00:00.000Z")
+        }]
+      })
+    });
+
+    expect(response.storyScript).toMatchObject({
+      key: "item.rainbow-bean-candy.denia",
+      startNodeId: "start",
+      nodes: [
+        expect.objectContaining({ text: "moming！你给达妮娅吃了什么！" })
+      ]
+    });
+    expect(response.effectText).toContain("突然全身发出了彩虹光");
+  });
+
+  it("keeps the legacy effect text fallback when no item story is published", async () => {
+    const response = await useInventoryItem({
+      userId: "user-1",
+      itemId: "rainbow-bean-candy",
+      characterId: "denia",
+      prisma: inventoryPrisma({
+        ownedCharacters: "sigrika,denia",
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character",
+        storyScripts: []
+      })
+    });
+
+    expect(response.storyScript).toBeNull();
+    expect(response.effectText).toContain("突然全身发出了彩虹光");
   });
 
   it("requires canonical Denia ownership when using candy on canonical Denia", async () => {
@@ -164,11 +233,13 @@ function inventoryPrisma({
   ownedItems = "{}",
   itemEffects = "{}",
   ownedCharacters = "sigrika",
+  userCharacters = [],
   selectedCharacter = "sigrika",
   targetId = "dream-ticket",
   itemTargetType = "self",
   updates = [],
   structuredWrites = []
+  , storyScripts = []
 } = {}) {
   const user = {
     id: "user-1",
@@ -183,6 +254,7 @@ function inventoryPrisma({
     selectedCharacter,
     selectedStoneDecoration: "",
     ownedCharacters,
+    userCharacters,
     ownedItems,
     itemEffects,
     ownedDecorations: ""
@@ -215,6 +287,11 @@ function inventoryPrisma({
     shopItem: {
       findFirst: async () => item,
       findMany: async () => [item]
+    },
+    storyScript: {
+      findMany: async ({ where }) => storyScripts.filter((script) => (
+        script.triggerType === where.triggerType && Boolean(script.isPublished ?? true) === where.isPublished
+      ))
     },
     userCharacter: {
       upsert: async (input) => {

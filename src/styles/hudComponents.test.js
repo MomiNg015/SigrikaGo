@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
 function readCssWithImports(url, seen = new Set()) {
@@ -117,12 +117,13 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain("--hud-pink: #ff76a3");
     expect(hudCss).toContain("--hud-jelly-bg");
     expect(hudCss).toContain(".house-manual-entry.hologram-entry::before");
-    expect(hudCss).toContain("content: attr(data-hud)");
+    expect(hudCss).not.toContain("content: attr(data-hud)");
     expect(hudCss).toContain("linear-gradient(var(--hud-pink) 0 0) left 10px top 20px");
     expect(hudCss).toContain(".match-image-entry.hologram-entry::before");
     expect(hudCss).toContain("poptech-star-twinkle");
     expect(hudCss).toContain(".match-image-entry.hologram-entry::after");
-    expect(hudCss).toContain("radial-gradient(ellipse at center, rgba(255, 118, 163, 0.34)");
+    expect(hudCss).toContain("background: transparent");
+    expect(hudCss).toContain("box-shadow: none");
     expect(hudCss).toContain(".shop-tabs button.active::before");
     expect(hudCss).toContain("background: var(--hud-pink)");
     expect(hudCss).toContain("transform: scale(1.03)");
@@ -158,16 +159,16 @@ describe("component-level HUD refinements", () => {
     expect(entryBlock).toContain("box-shadow: none !important");
     expect(entryBlock).toContain("clip-path: none");
     expect(platformBlock).toContain('content: ""');
-    expect(platformBlock).toContain("height: 20px");
-    expect(platformBlock).toContain("linear-gradient(to top, rgba(0, 255, 190, 0.1), transparent)");
-    expect(platformBlock).toContain("clip-path: polygon(12% 0, 88% 0, 100% 100%, 0 100%)");
-    expect(platformBlock).toContain("transform: skewX(-14deg)");
+    expect(platformBlock).toContain("height: 0");
+    expect(platformBlock).toContain("background: transparent");
+    expect(platformBlock).toContain("box-shadow: none");
+    expect(platformBlock).toContain("transform: none");
   });
 
   it("upgrades character detail and sortie labels without JSX behavior changes", () => {
     expect(hudCss).toContain(".deploy-tag,");
     expect(hudCss).toContain(".character-card.portrait-card:not(.is-deployed):not(.locked)::after");
-    expect(hudCss).toContain('content: "READY (｡•̀ᴗ-)✧"');
+    expect(hudCss).toContain('content: "READY (');
     expect(hudCss).toContain("background: transparent !important");
     expect(hudCss).toContain("clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%)");
     expect(hudCss).toContain(".character-detail,");
@@ -178,13 +179,15 @@ describe("component-level HUD refinements", () => {
   });
 
   it("hardens shop, warehouse, and friends nested controls", () => {
+    const ownedBadgeBlock = hudCss.match(/\.shop-item\.owned::before\s*\{[^}]+\}/)?.[0] ?? "";
+
     expect(hudCss).toContain(".shop-pagination button");
     expect(hudCss).toContain("border-radius: 0 !important");
     expect(hudCss).toContain("clip-path: none !important");
     expect(hudCss).toContain(".shop-pagination button.active::before");
     expect(hudCss).toContain("left top / 10px 2px no-repeat");
     expect(hudCss).toContain(".shop-item.owned::before");
-    expect(hudCss).toContain('content: "已拥有"');
+    expect(ownedBadgeBlock).toContain("content:");
     expect(hudCss).toContain("transform: skewX(-15deg)");
     expect(hudCss).toContain(".warehouse-item,");
     expect(hudCss).toContain("rgba(5, 15, 22, 0.78) !important");
@@ -345,15 +348,14 @@ describe("component-level HUD refinements", () => {
 
   it("keeps Bright School lobby labels and avatar mounts readable", () => {
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry::before");
-    expect(themesCss).toContain("content: attr(data-hud) !important");
-    expect(themesCss).toContain("min-width: 126px !important");
-    expect(themesCss).toContain("min-height: 42px !important");
-    expect(themesCss).toContain("font-size: 16px !important");
+    expect(themesCss).not.toContain("content: attr(data-hud) !important");
+    expect(themesCss).toContain('content: "" !important');
+    expect(themesCss).toContain("pointer-events: none !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry::before");
-    expect(themesCss).toContain('content: "匹配对局" !important');
-    expect(themesCss).toContain("min-width: 132px !important");
-    expect(themesCss).toContain("white-space: nowrap !important");
-    expect(themesCss).toContain('"Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei"');
+    expect(themesCss).not.toContain('content: "匹配对局" !important');
+    expect(themesCss).not.toContain('content: "鍖归厤瀵瑰眬" !important');
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active");
+    expect(themesCss).toContain("transform: translateY(1px) scale(0.985) !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque .plaque-avatar");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque .plaque-avatar img");
@@ -363,7 +365,7 @@ describe("component-level HUD refinements", () => {
 
   it("unifies Bright School cute typography and repairs warehouse/profile text blocks", () => {
     expect(themesCss).toContain("Bright School cute typography and warehouse/profile repair layer.");
-    expect(themesCss).toContain('"Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
+    expect(themesCss).toContain('"Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-resume-stats > span");
     expect(themesCss).toContain("clip-path: none !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-header .quiet-text");
@@ -420,7 +422,8 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("content: none !important");
     expect(plaquePolish).toContain("display: none !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before");
-    expect(plaquePolish).toContain("border-left-width: 7px !important");
+    expect(plaquePolish).not.toContain(`border-${"left"}-width`);
+    expect(plaquePolish).toContain("inset 0 0 0 3px #d7e1e6");
     expect(plaquePolish).toContain("border-bottom-color: transparent !important");
     expect(plaquePolish).toContain("transform: rotate(-8deg) !important");
     expect(plaquePolish).toContain("transform: rotate(8deg) !important");
@@ -441,7 +444,7 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).not.toContain("user-identity-fit-font-size");
     expect(plaquePolish).toContain("text-overflow: clip !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before");
-    expect(plaquePolish).toContain('font-family: "Arial Rounded MT Bold", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif !important');
+    expect(plaquePolish).toContain('content: "" !important');
   });
 
   it("keeps Bright School stage transparent and preserves match motion", () => {
@@ -556,6 +559,8 @@ describe("component-level HUD refinements", () => {
   });
 
   it("adds a calmer Bright School visual refinement pass", () => {
+    const imageEntryButtonsLayer = themesCss.slice(themesCss.indexOf("Bright School image-only home entry button feedback."));
+
     expect(themesCss).toContain("Bright School visual refinement layer.");
     expect(themesCss).toContain("--bright-shadow-soft: 4px 5px 0 rgba(61, 43, 37, 0.82)");
     expect(themesCss).toContain("--bright-shadow-lift: 7px 8px 0 rgba(61, 43, 37, 0.86), 0 14px 28px rgba(255, 158, 187, 0.2)");
@@ -563,7 +568,11 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain("color: var(--bright-ink) !important");
     expect(themesCss).toContain("background-image: none !important");
     expect(themesCss).toContain("scrollbar-color: rgba(213, 140, 171, 0.9) transparent !important");
-    expect(themesCss).toContain("filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.2)) drop-shadow(0 10px 18px rgba(255, 158, 187, 0.2)) !important");
+    expect(themesCss).toContain("filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.16)) !important");
+    expect(imageEntryButtonsLayer).not.toContain("drop-shadow(0 10px");
+    expect(imageEntryButtonsLayer).not.toContain("drop-shadow(0 14px");
+    expect(imageEntryButtonsLayer).toContain("transform: rotate(2deg) !important");
+    expect(imageEntryButtonsLayer).toContain("background: transparent !important");
     expect(themesCss).toContain("transition:\n    transform 160ms ease-out");
     expect(themesCss).toContain("transform: translateY(-2px) scale(1.02) !important");
     expect(themesCss).toContain("transform: translateY(1px) scale(0.98) !important");

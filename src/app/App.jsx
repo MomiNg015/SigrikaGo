@@ -16,6 +16,7 @@ import { useAppShellTheme } from "./useAppShellTheme.js";
 import { useCurrentUser } from "./useCurrentUser.js";
 import { useGameSocketConnection } from "./useGameSocketConnection.js";
 import { useHomeUserRefresh } from "./useHomeUserRefresh.js";
+import { useIncomingDuelState } from "./useIncomingDuelState.js";
 import { loadMusicTrackCatalog } from "./musicTrackCatalog.js";
 import {
   rootBackExitGuardEnabled,
@@ -26,6 +27,8 @@ import {
 import { dismissOverlayByKey } from "./overlayRegistry.js";
 import { useReplayRecords } from "./useReplayRecords.js";
 import { useMailboxSummary } from "./useMailboxSummary.js";
+import { useAnnouncementSummary } from "./useAnnouncementSummary.js";
+import { useOnboardingStory } from "./useOnboardingStory.js";
 import { useMatchSessionState } from "./useMatchSessionState.js";
 import { useOverlayState } from "./useOverlayState.js";
 import { useRecruitmentReadyState } from "./useRecruitmentReadyState.js";
@@ -65,8 +68,11 @@ export default function App() {
     showFriends,
     showWatch,
     showSettings,
+    showAnnouncements,
     showMailbox,
     showMessageBoard,
+    showOnboardingStory,
+    showStoryPlayer,
     overlayState,
     overlaySetters,
     setShowShop,
@@ -81,8 +87,11 @@ export default function App() {
     setShowFriends,
     setShowWatch,
     setShowSettings,
+    setShowAnnouncements,
     setShowMailbox,
-    setShowMessageBoard
+    setShowMessageBoard,
+    setShowOnboardingStory,
+    setShowStoryPlayer
   } = useOverlayState();
   const {
     audioResumeSignal,
@@ -105,11 +114,25 @@ export default function App() {
   const [characters, setCharacters] = useState(CHARACTERS);
   const [musicTracks, setMusicTracks] = useState(MUSIC_TRACKS);
   const [adminTab, setAdminTab] = useState("overview");
-  const [incomingDuel, setIncomingDuel] = useState(null);
+  const { incomingDuel, setIncomingDuel } = useIncomingDuelState();
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
+  const [activeStoryPlayer, setActiveStoryPlayer] = useState({ script: null, labels: null });
+  const openStoryPlayer = useCallback((script, labels = null) => {
+    setShowOnboardingStory(false);
+    setActiveStoryPlayer({ script, labels });
+    setShowStoryPlayer(true);
+  }, [setShowOnboardingStory, setShowStoryPlayer]);
+  const clearStoryPlayer = useCallback(() => {
+    setActiveStoryPlayer({ script: null, labels: null });
+  }, []);
+  const closeStoryPlayerOverlay = useCallback(() => {
+    setShowOnboardingStory(false);
+    setShowStoryPlayer(false);
+    clearStoryPlayer();
+  }, [clearStoryPlayer, setShowOnboardingStory, setShowStoryPlayer]);
   const showAchievementUnlocks = useCallback((unlocks = []) => {
     for (const unlock of unlocks) {
       showToast(`达成成就：${unlock.name}`, "achievement");
@@ -120,6 +143,20 @@ export default function App() {
     mailboxOpen: showMailbox,
     token,
     user
+  });
+  const { announcementSummary, refreshAnnouncementSummary } = useAnnouncementSummary({
+    announcementOpen: showAnnouncements,
+    token,
+    user,
+    view
+  });
+  const { openOnboardingStory } = useOnboardingStory({
+    openStoryPlayer,
+    overlaySetters,
+    showToast,
+    token,
+    user,
+    view
   });
   const { handleRecruitmentStatusChange, recruitmentReady } = useRecruitmentReadyState({ token, user });
   const { refreshSiteSettings, setSiteSettings, siteSettings } = useSiteSettingsState();
@@ -270,12 +307,17 @@ export default function App() {
       case "matchStart":
         cancelMatch();
         break;
+      case "onboardingStory":
+      case "storyPlayer":
+        closeStoryPlayerOverlay();
+        break;
       default:
         dismissOverlayByKey(topModalKey, overlaySetters);
         break;
     }
   }, [
     cancelMatch,
+    closeStoryPlayerOverlay,
     closeResultModal,
     overlaySetters,
     topModalKey
@@ -330,6 +372,7 @@ export default function App() {
         onRefreshMusicTracks={refreshMusicTracks}
         onSiteSettingsChanged={setSiteSettings}
         onToast={showToast}
+        onOpenOnboardingStory={openOnboardingStory}
         pendingSkill={pendingSkill}
         replayStep={replayStep}
         room={room}
@@ -341,6 +384,7 @@ export default function App() {
         setRoom={setRoom}
         setShowFriends={setShowFriends}
         mailboxBadgeCount={mailboxSummary.badgeCount}
+        announcementUnread={announcementSummary.hasUnread}
         recruitmentReady={recruitmentReady}
         showMatchModePicker={showMatchModePicker}
         setShowMatchModePicker={setShowMatchModePicker}
@@ -348,6 +392,9 @@ export default function App() {
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMailbox={setShowMailbox}
+        setShowAnnouncements={setShowAnnouncements}
+        setShowOnboardingStory={setShowOnboardingStory}
+        setShowStoryPlayer={setShowStoryPlayer}
         setShowMessageBoard={setShowMessageBoard}
         setShowResume={setShowResume}
         setShowAchievements={setShowAchievements}
@@ -379,6 +426,8 @@ export default function App() {
         onMatchCancel={cancelMatch}
         onMatchSuccessComplete={completeMatchSuccess}
         onMessageSubmitted={() => showToast("感谢您的反馈！", "success")}
+        onAnnouncementSummaryChange={refreshAnnouncementSummary}
+        onStoryPlayerClose={closeStoryPlayerOverlay}
         onRemoveToast={removeToast}
         onRecruitmentStatusChange={handleRecruitmentStatusChange}
         onResultClose={closeResultModal}
@@ -395,6 +444,8 @@ export default function App() {
         setShowHouse={setShowHouse}
         setShowLeaderboard={setShowLeaderboard}
         setShowMailbox={setShowMailbox}
+        setShowAnnouncements={setShowAnnouncements}
+        setShowOnboardingStory={setShowOnboardingStory}
         setShowMessageBoard={setShowMessageBoard}
         setShowResume={setShowResume}
         setShowAchievements={setShowAchievements}
@@ -409,6 +460,9 @@ export default function App() {
         showHouse={showHouse}
         showLeaderboard={showLeaderboard}
         showMailbox={showMailbox}
+        showAnnouncements={showAnnouncements}
+        showOnboardingStory={showOnboardingStory}
+        showStoryPlayer={showStoryPlayer}
         showMessageBoard={showMessageBoard}
         showResume={showResume}
         showAchievements={showAchievements}
@@ -416,7 +470,14 @@ export default function App() {
         showSettings={showSettings}
         showShop={showShop}
         showToast={showToast}
+        announcementUnreadByKind={announcementSummary.unreadByKind}
         onMailboxSummaryChange={refreshMailboxSummary}
+        onboardingStoryScript={activeStoryPlayer.script}
+        storyPlayerScript={{
+          ...activeStoryPlayer,
+          open: openStoryPlayer,
+          clear: clearStoryPlayer
+        }}
         showWarehouse={showWarehouse}
         showWatch={showWatch}
         siteSettings={siteSettings}

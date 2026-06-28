@@ -41,15 +41,15 @@
     grid-template-areas:
       "player match"
       "manual match"
-      "utility utility" !important;
-    grid-template-columns: minmax(330px, 0.78fr) minmax(560px, 1.22fr) !important;
-    grid-template-rows: auto minmax(250px, auto) auto !important;
-    gap: clamp(12px, 1.8vw, 18px) !important;
+      "utility match" !important;
+    grid-template-columns: minmax(360px, 0.78fr) minmax(560px, 1.22fr) !important;
+    grid-template-rows: auto minmax(260px, auto) auto !important;
+    gap: clamp(10px, 1.5vw, 16px) !important;
     width: var(--home-micro-stage-width) !important;
     min-width: var(--home-micro-stage-width) !important;
     max-width: none !important;
     min-height: 0 !important;
-    padding: clamp(24px, 4dvh, 44px) 0 0 !important;
+    padding: clamp(18px, 3dvh, 32px) 0 0 !important;
     overflow: visible !important;
   }
 
@@ -72,7 +72,8 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
     grid-area: manual !important;
-    height: clamp(240px, 38dvh, 360px) !important;
+    justify-self: center !important;
+    height: clamp(250px, 40dvh, 370px) !important;
     min-height: 0 !important;
   }
 
@@ -89,7 +90,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
     grid-area: utility !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: clamp(8px, 1.4vw, 12px) !important;
   }
 

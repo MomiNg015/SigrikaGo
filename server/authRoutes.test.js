@@ -97,7 +97,8 @@ describe("auth route handlers", () => {
     expect(res.statusCode).toBe(200);
     expect(createdUsers).toEqual([{
       username: "alice",
-      passwordHash: "hash:secret1:10"
+      passwordHash: "hash:secret1:10",
+      onboardingRequired: true
     }]);
     expect(res.headers["Set-Cookie"]).toContain(`${REFRESH_COOKIE_NAME}=refresh-token`);
     expect(res.body).toEqual({

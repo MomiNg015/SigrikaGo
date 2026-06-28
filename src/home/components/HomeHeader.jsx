@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { LogOut, Mail, Menu, MessageSquareText, Settings } from "lucide-react";
+import { CircleHelp, LogOut, Mail, Menu, MessageSquareText, Newspaper, Settings } from "lucide-react";
 
 export default function HomeHeader({
   isAdmin,
   onlineCount,
   siteTitle,
   mailboxBadgeCount = 0,
+  announcementUnread = false,
   onLogout,
   onOpenAdmin,
+  onOpenAnnouncements,
   onOpenMailbox,
   onOpenMessageBoard,
+  onOpenOnboardingStory,
   onOpenSettings
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,24 +31,38 @@ export default function HomeHeader({
       </div>
       <span className="home-online-tag">在线人数：{onlineCount}</span>
       <div className="topbar-actions">
-        <button className="icon-button mailbox-action" aria-label={mailboxLabel} title="邮箱" onClick={onOpenMailbox}>
+        <button
+          className={`icon-button announcement-action ${announcementUnread ? "has-unread" : ""}`}
+          type="button"
+          aria-label={announcementUnread ? "打开公告，有未读内容" : "打开公告"}
+          title="公告"
+          onClick={onOpenAnnouncements}
+        >
+          <Newspaper size={20} />
+          {announcementUnread && <span className="announcement-badge-dot" />}
+        </button>
+        <button className="icon-button mailbox-action" type="button" aria-label={mailboxLabel} title="邮箱" onClick={onOpenMailbox}>
           <Mail size={20} />
           {mailboxCount > 0 && <span className="mailbox-badge">{mailboxCount}</span>}
         </button>
-        <button className="icon-button" title="留言板" onClick={onOpenMessageBoard}><MessageSquareText size={20} /></button>
-        <button className="icon-button" title="设置" onClick={onOpenSettings}><Settings size={20} /></button>
+        <button className="icon-button onboarding-action" type="button" aria-label="打开新手引导" title="引导" onClick={onOpenOnboardingStory}>
+          <CircleHelp size={20} />
+        </button>
+        <button className="icon-button" type="button" aria-label="打开留言板" title="留言板" onClick={onOpenMessageBoard}><MessageSquareText size={20} /></button>
+        <button className="icon-button" type="button" aria-label="打开设置" title="设置" onClick={onOpenSettings}><Settings size={20} /></button>
         {isAdmin && (
-          <button className="icon-button admin-nav-action" title="后台管理" onClick={onOpenAdmin}>
+          <button className="icon-button admin-nav-action" type="button" aria-label="打开后台管理" title="后台管理" onClick={onOpenAdmin}>
             <Settings size={22} />
             <span>后台管理</span>
           </button>
         )}
-        <button className="icon-button" title="退出登录" onClick={onLogout}><LogOut size={20} /></button>
+        <button className="icon-button" type="button" aria-label="退出登录" title="退出登录" onClick={onLogout}><LogOut size={20} /></button>
       </div>
       <div className={`home-mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
         <button
           className="icon-button home-mobile-menu-toggle"
           type="button"
+          aria-label={mobileMenuOpen ? "关闭首页菜单" : "打开首页菜单"}
           aria-expanded={mobileMenuOpen}
           aria-controls="home-mobile-menu-panel"
           title="选项"
@@ -54,10 +71,19 @@ export default function HomeHeader({
           <Menu size={21} />
         </button>
         <div className="home-mobile-menu-panel" id="home-mobile-menu-panel" aria-hidden={!mobileMenuOpen}>
+          <button className={`home-mobile-announcement-action ${announcementUnread ? "has-unread" : ""}`} type="button" onClick={closeMobileMenu(onOpenAnnouncements)}>
+            <Newspaper size={18} />
+            公告
+            {announcementUnread && <span className="announcement-badge-dot" />}
+          </button>
           <button className="home-mobile-mailbox-action" type="button" onClick={closeMobileMenu(onOpenMailbox)}>
             <Mail size={18} />
             邮箱
             {mailboxCount > 0 && <span className="mailbox-badge">{mailboxCount}</span>}
+          </button>
+          <button className="home-mobile-onboarding-action" type="button" aria-label="打开新手引导" onClick={closeMobileMenu(onOpenOnboardingStory)}>
+            <CircleHelp size={18} />
+            引导
           </button>
           <button type="button" onClick={closeMobileMenu(onOpenMessageBoard)}>
             <MessageSquareText size={18} />

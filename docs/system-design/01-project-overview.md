@@ -250,6 +250,7 @@ SigrikaGo/
 - `server/serverStartup.js`
   - 后端启动数据与 schema 初始化边界。
   - 依次执行内置角色 seed、内置商城 seed、默认站点设置、社交/房间持久化/登录会话/模式/抽卡 schema guard，以及配置管理员提升。
+  - Exports `SERVER_STARTUP_TASK_ORDER` so startup schema/seed sequencing is an explicit, tested contract.
   - `server/serverStartup.test.js` 锁定初始化顺序，后续新增启动期 seed 或 schema guard 应优先扩展该模块。
 
 - `server/socketChatEvents.js`
@@ -454,6 +455,7 @@ SigrikaGo/
 - `server/roomQueries.js`
   - Room read-model/query boundary.
   - Owns active-room filtering, watch-room projection, user active-room membership checks, and user-to-room lookup while reusing `server/roomPresence.js` for online counts and watch player summaries.
+  - Active-room and watch-room list projection can delegate to an injected `roomReadModel`, with the current in-memory room scan kept as the single-process fallback.
 
 - `server/roomClockTiming.js`
   - 房间棋钟纯计算模块。

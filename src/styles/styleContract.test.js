@@ -413,6 +413,8 @@ describe("root CSS entry contract", () => {
       "./admin/audit-feedback.css",
       "./admin/gacha.css",
       "./admin/achievements.css",
+      "./admin/announcements.css",
+      "./admin/onboarding-story.css",
       "./admin/mailbox.css",
       "./admin/responsive.css",
       "./admin/polish.css"
@@ -495,7 +497,8 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/bright-school-overrides.css",
       "./mobile-adaptive/reduced-motion.css",
       "./mobile-adaptive/home-narrow-desktop.css",
-      "./mobile-adaptive/bright-school-portrait.css"
+      "./mobile-adaptive/bright-school-portrait.css",
+      "./mobile-adaptive/announcement-detail.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
@@ -1135,7 +1138,9 @@ describe("root CSS entry contract", () => {
       "./modals/character-music-player.css",
       "./modals/phone.css",
       "./modals/terminal-system.css",
-      "./modals/mailbox.css"
+      "./modals/mailbox.css",
+      "./modals/announcement.css",
+      "./modals/onboarding-story.css"
     ]);
     expect(modalsEntry).not.toContain(".modal-backdrop {");
     expect(modalsEntry).not.toContain(".resume-modal {");
@@ -1150,6 +1155,15 @@ describe("root CSS entry contract", () => {
       "./character-opening/keyframes.css"
     ]);
     expect(characterOpeningEntry).not.toContain(".character-detail {");
+
+    const onboardingStoryEntry = readFileSync(new URL("./modals/onboarding-story.css", import.meta.url), "utf8");
+    expect(cssImports(onboardingStoryEntry)).toEqual([
+      "./onboarding-story/shell.css",
+      "./onboarding-story/portrait-text.css",
+      "./onboarding-story/actions-skip.css",
+      "./onboarding-story/mobile.css"
+    ]);
+    expect(onboardingStoryEntry).not.toContain(".onboarding-story-modal {");
   });
 
   it("keeps terminal modal system styles as an import-only sub-entry", () => {

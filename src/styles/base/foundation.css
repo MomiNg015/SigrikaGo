@@ -3,7 +3,7 @@
 :root {
   color: #2d2430;
   background: #fff8fb;
-  font-family: Inter, "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
   letter-spacing: 0;
   --page-pad: clamp(10px, 1.6vw, 24px);
   --fluid-gap: clamp(10px, 1.35vw, 18px);

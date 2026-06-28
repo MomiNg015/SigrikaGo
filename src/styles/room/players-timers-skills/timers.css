@@ -115,5 +115,7 @@
   border-radius: inherit;
   background: var(--timer-track-fill);
   box-shadow: var(--timer-track-glow);
-  transition: width 0.25s linear;
+  transition:
+    background-color 0.25s linear,
+    opacity 0.25s linear;
 }

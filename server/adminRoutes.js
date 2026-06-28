@@ -8,6 +8,21 @@ import {
   updateAchievement,
   updateRewardAsset
 } from "./achievements.js";
+import {
+  createAnnouncementEntry,
+  deleteAnnouncementEntry,
+  listAdminAnnouncementEntries,
+  updateAnnouncementEntry
+} from "./announcements.js";
+import {
+  getAdminOnboardingStory,
+  updateAdminOnboardingStory
+} from "./onboardingStory.js";
+import {
+  getAdminStoryScript,
+  listAdminStoryScripts,
+  updateAdminStoryScript
+} from "./storyScripts.js";
 import { USER_STATUS } from "./adminConfig.js";
 import { validateCharacterInput } from "./characters.js";
 import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
@@ -224,6 +239,103 @@ export function createAdminRouter({
   router.post("/mailbox/batches", async (req, res) => {
     try {
       res.json(await createMailboxBatch({ prisma, adminUser: req.user, input: req.body }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/announcements", async (req, res) => {
+    try {
+      res.json(await listAdminAnnouncementEntries({
+        prisma,
+        kind: req.query.kind,
+        status: req.query.status
+      }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.post("/announcements", async (req, res) => {
+    try {
+      res.json(await createAnnouncementEntry({
+        prisma,
+        adminUser: req.user,
+        input: req.body
+      }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/announcements/:id", async (req, res) => {
+    try {
+      res.json(await updateAnnouncementEntry({
+        prisma,
+        adminUser: req.user,
+        announcementId: req.params.id,
+        input: req.body
+      }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/announcements/:id", async (req, res) => {
+    try {
+      res.json(await deleteAnnouncementEntry({
+        prisma,
+        adminUser: req.user,
+        announcementId: req.params.id
+      }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/onboarding-story", async (_req, res) => {
+    try {
+      res.json(await getAdminOnboardingStory({ prisma }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/onboarding-story", async (req, res) => {
+    try {
+      res.json(await updateAdminOnboardingStory({
+        prisma,
+        adminUser: req.user,
+        input: req.body
+      }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/story-scripts", async (_req, res) => {
+    try {
+      res.json(await listAdminStoryScripts({ prisma }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.get("/story-scripts/:key", async (req, res) => {
+    try {
+      res.json(await getAdminStoryScript({ prisma, key: req.params.key }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/story-scripts/:key", async (req, res) => {
+    try {
+      res.json(await updateAdminStoryScript({
+        prisma,
+        adminUser: req.user,
+        input: { ...req.body, key: req.params.key }
+      }));
     } catch (error) {
       sendRouteError(res, error);
     }

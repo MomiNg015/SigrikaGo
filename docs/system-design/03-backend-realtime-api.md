@@ -9,7 +9,9 @@
 - 普通对局秒级时钟走轻量 `room:clock`，关键状态变化仍走完整 `room:update`。两者都携带并推进 `clockSeq`，前端只接受新于当前房间快照的时钟 payload，防止网络乱序把读秒次数或剩余时间覆盖回旧值。
 - 匹配或约战创建的房间先进入 `GAME_PHASES.preloading`，`server/roomPreparationLifecycle.js` 管理 60 秒资源准备截止时间、`room:preload-ready` 玩家 ready 上报、`room.update.preload.readyCount/requiredCount` 广播和超时中止；`server/socketRoomEvents.js` 的 `room:preload-ready` 是可重复调用的 ack 协议，服务端在校验房间码后返回 `{ ok, roomCode, phase, readyCount, requiredCount }`，客户端未收到 `{ ok: true }` 前可以安全重发；双方都 ready 后才切到 `opening` 并排原有开局倒计时。
 - `room:resume` 的空 roomCode 只恢复仍可继续的玩家房间，不会自动拉起 finished room；finished 历史结果只有在客户端显式传入 roomCode 时才允许恢复。这样玩家关闭结果或退出 finished 房间后刷新，不会因为内存房间仍在 5 分钟 review window 内而再次弹出结果。
-- `server/runtimeStabilityMetrics.js` 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 `patch-gap` 或 `socket-connect` 的 `room:resume` 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。
+- `server/runtimeStabilityMetrics.js` 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 `initial-connect`、`patch-gap` 或 `socket-connect` 的 `room:resume` 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。
+- `server/serverStartup.js` exports `SERVER_STARTUP_TASK_ORDER` as the auditable startup/schema/seed order. Tests lock the order so future guards can be inserted intentionally instead of depending on incidental function order.
+- `server/roomQueries.js` remains the room read boundary. Active-room lists and watch-room summaries can delegate to an injected `roomReadModel`, while the current single-process runtime continues to use in-memory rooms as the default fallback.
 
 ## API 与实时事件
 
@@ -116,6 +118,21 @@
 - Global batches can target current users only or current plus future users. Future-eligible batches are materialized for a user when mailbox list or summary is read.
 - `DELETE /mailbox/:id` soft-deletes by setting `MailboxMessage.deletedAt`. Player list, summary, capacity, read, and claim flows treat deleted rows as hidden, while future-batch materialization still uses them as delivery history to prevent deleted global mail from being recreated.
 - `initializeServerData()` runs `ensureMailboxSchema()` during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.
+
+## Announcement API
+
+- 公告 API 只有登录后路径，没有未登录访客接口。玩家路由挂在 `/api`：`GET /announcements/summary` 返回全局与分 tab 未读摘要，`GET /announcements?kind=announcement|changelog&offset=&limit=` 返回已发布列表，`GET /announcements/:id` 返回详情，`POST /announcements/:id/read` 在打开详情后写入已读并返回新的未读摘要。
+- 后台管理路由挂在 `/api/admin` 且走 `authHttp + requireAdmin`：`GET /announcements?kind=&status=all|published|draft`、`POST /announcements`、`PATCH /announcements/:id` 和 `DELETE /announcements/:id`。删除是软删除，普通后台/玩家列表均隐藏，没有恢复 UI。
+- `server/announcements.js` 负责类型、状态、标题 80 字、正文 10000 字、发布正文非空、置顶只对公告生效、首次发布时间不可因编辑重置、审计日志和未读计算。编辑已发布内容不会重新触发未读；取消发布再发布保留首次发布时间。
+- `initializeServerData()` runs `ensureAnnouncementSchema()` during startup so older local SQLite databases get `AnnouncementEntry` and `AnnouncementRead` before announcement routes query them.
+
+## Story Script API
+
+- Generic story script behavior lives in `server/storyScripts.js`. It validates the shared node graph shape (`startNodeId`, nodes, `nextNodeId`, branch options), structured trigger fields, publish-time reachability basics, and trigger conflicts. Draft saves may be incomplete; publish requires non-empty nodes, a valid start node, unique node ids, non-empty text, valid targets, and at least one terminal node.
+- Player onboarding routes remain under `/api` for compatibility. `GET /api/onboarding-story` now reads the published generic `StoryScript` with trigger `onboarding` and returns it with `autoEligible`; `POST /api/onboarding-story/auto-shown` still records the automatic onboarding touch on the user.
+- Admin routes include the legacy onboarding compatibility endpoints plus generic story management under `/api/admin/story-scripts`. `GET /api/admin/story-scripts` lists draft/published script payloads, `GET /api/admin/story-scripts/:key` reads one script, and `PATCH /api/admin/story-scripts/:key` saves or publishes using `action: "save-draft" | "publish"`. The API accepts controlled `triggerType` and `triggerParams` fields; raw `triggerParamsJson` is rejected.
+- `useInventoryItem()` applies the item business effect first. For character-target item use it then looks up a published `item-character-use` story with exact `{ itemId, characterId }` trigger params, interpolates whitelisted `{username}`, `{characterName}`, and `{itemName}` variables, and returns `storyScript` alongside the existing `effectText`. Missing scripts keep the legacy effect-text fallback.
+- `initializeServerData()` runs `ensureStoryScriptSchema()`, then the onboarding compatibility schema guard, then `seedDefaultStoryScripts()`. The seed creates default onboarding plus rainbow-bean-candy scripts for Sigrika and Denia only when missing, and migrates an existing published legacy `OnboardingStoryScript` into `onboarding.default` when that generic key does not exist.
 
 ## Admin Analytics API
 

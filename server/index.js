@@ -13,6 +13,8 @@ import { makeAuth, withToken } from "./auth.js";
 import { createAdminRouter, safeUploadFilename } from "./adminRoutes.js";
 import { createAuthRouter } from "./authRoutes.js";
 import { createCommerceRouter } from "./commerceRoutes.js";
+import { createAnnouncementRouter } from "./announcementRoutes.js";
+import { createOnboardingStoryRouter } from "./onboardingStoryRoutes.js";
 import { createGachaRouter } from "./gachaRoutes.js";
 import { createMailboxRouter } from "./mailboxRoutes.js";
 import { createRecruitmentRouter } from "./recruitmentRoutes.js";
@@ -190,6 +192,8 @@ app.use("/api/auth", createAuthRouter({
 }));
 
 app.use("/api", authHttp, createCommerceRouter({ prisma }));
+app.use("/api", authHttp, createAnnouncementRouter({ prisma }));
+app.use("/api", authHttp, createOnboardingStoryRouter({ prisma }));
 app.use("/api", authHttp, createGachaRouter({ prisma }));
 app.use("/api", authHttp, createMailboxRouter({ prisma }));
 app.use("/api", authHttp, createRecruitmentRouter({ prisma }));

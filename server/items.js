@@ -1,4 +1,5 @@
 import { publicUser } from "./db.js";
+import { CHARACTERS } from "../src/shared/characters.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import {
   DENIA_CANDY_EFFECT_TEXT,
@@ -10,10 +11,12 @@ import {
 import {
   normalizeOwnedItemCounts,
   parseOwnedItemCounts,
+  publicUserAssets,
   serializeOwnedItemCounts,
   syncStructuredUserAssets
 } from "./userAssets.js";
 import { isRecruitmentInventoryItem } from "./recruitment.js";
+import { getPublishedStoryScriptForTrigger, STORY_TRIGGER_TYPES } from "./storyScripts.js";
 
 export { parseItemEffects } from "./itemEffects.js";
 
@@ -36,7 +39,7 @@ export async function listItemInventory({ prisma, userId }) {
 export async function useInventoryItem({ prisma, userId, itemId, characterId = "" }) {
   return prisma.$transaction(async (tx) => {
     const [user, item] = await Promise.all([
-      tx.user.findUnique({ where: { id: userId } }),
+      tx.user.findUnique({ where: { id: userId }, include: { userCharacters: true } }),
       tx.shopItem.findFirst({
         where: { category: "item", targetId: itemId, enabled: true }
       })
@@ -53,7 +56,7 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
     const targetCharacter = String(characterId ?? "").trim();
     if (targetType === "character") {
       if (!targetCharacter) throw routeError(400, "请选择角色");
-      const ownedCharacters = String(user.ownedCharacters ?? "").split(",").map(canonicalCharacterId).filter(Boolean);
+      const ownedCharacters = publicUserAssets(user).ownedCharacters.map(canonicalCharacterId);
       if (!ownedCharacters.includes(canonicalCharacterId(targetCharacter))) throw routeError(403, "尚未获得该角色");
     }
 
@@ -68,12 +71,29 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
       }
     });
     await syncStructuredUserAssets(tx, updated);
+    const publicItem = toItemPayload(item);
+    const target = targetType === "character" ? { type: targetType, characterId: targetCharacter } : { type: targetType };
+    const storyScript = targetType === "character" ? await getPublishedStoryScriptForTrigger({
+      prisma: tx,
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: {
+        itemId: item.targetId,
+        characterId: targetCharacter
+      },
+      variables: {
+        username: user.username,
+        characterName: CHARACTERS[targetCharacter]?.name ?? targetCharacter,
+        itemName: item.name
+      }
+    }) : null;
+
     return {
       user: publicUser(updated),
       items: await inventoryPayload(tx, updated),
-      item: toItemPayload(item),
+      item: publicItem,
       effectText: effect.effectText,
-      target: targetType === "character" ? { type: targetType, characterId: targetCharacter } : { type: targetType }
+      storyScript,
+      target
     };
   });
 }
@@ -152,13 +172,12 @@ function resolveItemEffect({ item, user, characterId }) {
 }
 
 function fallbackSelectedCharacter(user) {
-  const ownedCharacters = String(user.ownedCharacters ?? "")
-    .split(",")
+  const ownedCharacters = publicUserAssets(user).ownedCharacters
     .map(canonicalCharacterId)
     .filter((characterId) => characterId && characterId !== "sigrika");
   const fallback = ownedCharacters[0];
   if (!fallback) throw routeError(400, "没有可替换的出战角色");
-  return ownedCharacters[Math.floor(Math.random() * ownedCharacters.length)] ?? fallback;
+  return fallback;
 }
 
 function routeError(status, message) {

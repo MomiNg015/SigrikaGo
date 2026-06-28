@@ -1,0 +1,529 @@
+import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import { routeError } from "./adminRouteErrors.js";
+import { writeAudit } from "./adminAudit.js";
+import { RAINBOW_BEAN_CANDY_ID } from "./itemEffects.js";
+
+export const STORY_TRIGGER_TYPES = Object.freeze({
+  onboarding: "onboarding",
+  itemCharacterUse: "item-character-use",
+  battleTutorialStart: "battle-tutorial-start"
+});
+
+export const ONBOARDING_STORY_KEY = "onboarding.default";
+
+const EMPTY_SCRIPT = Object.freeze({
+  startNodeId: "",
+  nodes: []
+});
+
+const VARIABLE_NAMES = new Set(["username", "characterName", "itemName"]);
+
+const ERRORS = Object.freeze({
+  invalidAction: "操作类型无效",
+  invalidInput: "剧情脚本格式无效",
+  invalidJson: "后台不能直接提交触发器 JSON",
+  keyRequired: "脚本 Key 不能为空",
+  triggerTypeRequired: "触发器类型无效",
+  itemCharacterTriggerRequired: "道具角色触发器需要选择道具和角色",
+  onboardingParamsEmpty: "新手引导触发器不需要参数",
+  missingNodes: "发布前至少需要一个节点",
+  missingStart: "起始节点不存在",
+  nodeIdRequired: "节点 ID 不能为空",
+  duplicateNodeId: "节点 ID 不能重复",
+  textRequired: "正文不能为空",
+  targetMissing: "跳转目标不存在",
+  optionLabelRequired: "选项文案不能为空",
+  optionTargetRequired: "选项目标不能为空",
+  endingRequired: "至少需要一个结束节点",
+  triggerConflict: "同一个触发点只能发布一个剧情脚本"
+});
+
+export async function ensureStoryScriptSchema(client) {
+  if (!client?.$executeRawUnsafe) return;
+  await client.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "StoryScript" (
+      "id" TEXT NOT NULL PRIMARY KEY,
+      "key" TEXT NOT NULL,
+      "title" TEXT NOT NULL DEFAULT '',
+      "triggerType" TEXT NOT NULL,
+      "triggerParamsJson" TEXT NOT NULL DEFAULT '{}',
+      "draftStartNodeId" TEXT NOT NULL DEFAULT '',
+      "draftNodesJson" TEXT NOT NULL DEFAULT '[]',
+      "isPublished" BOOLEAN NOT NULL DEFAULT false,
+      "publishedStartNodeId" TEXT NOT NULL DEFAULT '',
+      "publishedNodesJson" TEXT NOT NULL DEFAULT '[]',
+      "firstPublishedAt" DATETIME,
+      "publishedAt" DATETIME,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  await client.$executeRawUnsafe('CREATE UNIQUE INDEX IF NOT EXISTS "StoryScript_key_key" ON "StoryScript"("key")');
+  await client.$executeRawUnsafe('CREATE INDEX IF NOT EXISTS "StoryScript_triggerType_isPublished_idx" ON "StoryScript"("triggerType", "isPublished")');
+}
+
+export function validateStoryScriptInput(input = {}, { publishing = false } = {}) {
+  if (!input || typeof input !== "object") throw routeError(400, ERRORS.invalidInput);
+  if (Object.prototype.hasOwnProperty.call(input, "triggerParamsJson")) throw routeError(400, ERRORS.invalidJson);
+
+  const key = normalizeText(input.key);
+  const title = normalizeText(input.title);
+  const triggerType = normalizeTriggerType(input.triggerType);
+  const triggerParams = normalizeTriggerParams(triggerType, input.triggerParams);
+  const draft = validateStoryContent(input.draft ?? input, { publishing });
+
+  if (!key) throw routeError(400, ERRORS.keyRequired);
+  if (publishing) validateStoryContent(draft, { publishing: true });
+
+  return {
+    key,
+    title,
+    triggerType,
+    triggerParams,
+    draft
+  };
+}
+
+export function validateStoryContent(input = {}, { publishing = false } = {}) {
+  if (!input || typeof input !== "object") throw routeError(400, ERRORS.invalidInput);
+  const startNodeId = normalizeText(input.startNodeId);
+  const sourceNodes = Array.isArray(input.nodes) ? input.nodes : [];
+  const nodes = sourceNodes.map(normalizeNode);
+
+  if (!publishing) return { startNodeId, nodes };
+  if (!nodes.length) throw routeError(400, ERRORS.missingNodes);
+
+  const nodeIds = new Set();
+  for (const node of nodes) {
+    if (!node.id) throw routeError(400, ERRORS.nodeIdRequired);
+    if (nodeIds.has(node.id)) throw routeError(400, ERRORS.duplicateNodeId);
+    nodeIds.add(node.id);
+    if (!node.text) throw routeError(400, ERRORS.textRequired);
+  }
+
+  if (!startNodeId || !nodeIds.has(startNodeId)) throw routeError(400, ERRORS.missingStart);
+
+  let hasEnding = false;
+  for (const node of nodes) {
+    if (node.options.length) {
+      for (const option of node.options) {
+        if (!option.label) throw routeError(400, ERRORS.optionLabelRequired);
+        if (!option.nextNodeId) {
+          hasEnding = true;
+          continue;
+        }
+        if (!nodeIds.has(option.nextNodeId)) throw routeError(400, ERRORS.targetMissing);
+      }
+      continue;
+    }
+    if (node.nextNodeId) {
+      if (!nodeIds.has(node.nextNodeId)) throw routeError(400, ERRORS.targetMissing);
+      continue;
+    }
+    hasEnding = true;
+  }
+
+  if (!hasEnding) throw routeError(400, ERRORS.endingRequired);
+  return { startNodeId, nodes };
+}
+
+export async function listAdminStoryScripts({ prisma }) {
+  const records = await prisma.storyScript.findMany({
+    orderBy: [{ triggerType: "asc" }, { key: "asc" }]
+  });
+  return { scripts: records.map(toAdminStoryScriptPayload) };
+}
+
+export async function getAdminStoryScript({ prisma, key = ONBOARDING_STORY_KEY }) {
+  const record = await prisma.storyScript.findUnique({ where: { key } });
+  return { script: toAdminStoryScriptPayload(record, { key }) };
+}
+
+export async function updateStoryScriptDraft({ prisma, adminUser, input }) {
+  const normalized = validateStoryScriptInput(input, { publishing: false });
+  const updated = await prisma.$transaction(async (tx) => {
+    const before = await tx.storyScript.findUnique({ where: { key: normalized.key } });
+    const saved = await tx.storyScript.upsert({
+      where: { key: normalized.key },
+      create: {
+        id: normalized.key,
+        key: normalized.key,
+        title: normalized.title,
+        triggerType: normalized.triggerType,
+        triggerParamsJson: JSON.stringify(normalized.triggerParams),
+        draftStartNodeId: normalized.draft.startNodeId,
+        draftNodesJson: JSON.stringify(normalized.draft.nodes)
+      },
+      update: {
+        title: normalized.title,
+        triggerType: normalized.triggerType,
+        triggerParamsJson: JSON.stringify(normalized.triggerParams),
+        draftStartNodeId: normalized.draft.startNodeId,
+        draftNodesJson: JSON.stringify(normalized.draft.nodes)
+      }
+    });
+    await writeAudit(tx, adminUser, "story-script.update", saved.key, toAdminStoryScriptPayload(before), toAdminStoryScriptPayload(saved), "story-script");
+    return saved;
+  });
+  return { script: toAdminStoryScriptPayload(updated) };
+}
+
+export async function publishStoryScript({ prisma, adminUser, input }) {
+  const normalized = validateStoryScriptInput(input, { publishing: true });
+  return prisma.$transaction(async (tx) => {
+    const before = await tx.storyScript.findUnique({ where: { key: normalized.key } });
+    await assertNoPublishedTriggerConflict({
+      prisma: tx,
+      key: normalized.key,
+      triggerType: normalized.triggerType,
+      triggerParams: normalized.triggerParams
+    });
+    const now = new Date();
+    const saved = await tx.storyScript.upsert({
+      where: { key: normalized.key },
+      create: {
+        id: normalized.key,
+        key: normalized.key,
+        title: normalized.title,
+        triggerType: normalized.triggerType,
+        triggerParamsJson: JSON.stringify(normalized.triggerParams),
+        draftStartNodeId: normalized.draft.startNodeId,
+        draftNodesJson: JSON.stringify(normalized.draft.nodes),
+        isPublished: true,
+        publishedStartNodeId: normalized.draft.startNodeId,
+        publishedNodesJson: JSON.stringify(normalized.draft.nodes),
+        firstPublishedAt: now,
+        publishedAt: now
+      },
+      update: {
+        title: normalized.title,
+        triggerType: normalized.triggerType,
+        triggerParamsJson: JSON.stringify(normalized.triggerParams),
+        draftStartNodeId: normalized.draft.startNodeId,
+        draftNodesJson: JSON.stringify(normalized.draft.nodes),
+        isPublished: true,
+        publishedStartNodeId: normalized.draft.startNodeId,
+        publishedNodesJson: JSON.stringify(normalized.draft.nodes),
+        firstPublishedAt: before?.firstPublishedAt ?? now,
+        publishedAt: now
+      }
+    });
+    await writeAudit(tx, adminUser, "story-script.publish", saved.key, toAdminStoryScriptPayload(before), toAdminStoryScriptPayload(saved), "story-script");
+    return { script: toAdminStoryScriptPayload(saved) };
+  });
+}
+
+export async function updateAdminStoryScript({ prisma, adminUser, input }) {
+  const action = normalizeAdminAction(input?.action);
+  if (action === "publish") return publishStoryScript({ prisma, adminUser, input });
+  return updateStoryScriptDraft({ prisma, adminUser, input });
+}
+
+export async function getPublishedStoryScriptForTrigger({ prisma, triggerType, triggerParams = {}, variables = {} }) {
+  if (!prisma?.storyScript?.findMany) return null;
+  const normalizedTriggerType = normalizeTriggerType(triggerType);
+  const normalizedTriggerParams = normalizeTriggerParams(normalizedTriggerType, triggerParams);
+  const records = await prisma.storyScript.findMany({
+    where: {
+      triggerType: normalizedTriggerType,
+      isPublished: true
+    }
+  });
+  const record = records.find((candidate) => triggerParamsEqual(parseObjectJson(candidate.triggerParamsJson), normalizedTriggerParams));
+  if (!record) return null;
+  const script = toPlayerStoryScriptPayload(record);
+  if (!script) return null;
+  return interpolateStoryScript(script, variables);
+}
+
+export async function seedDefaultStoryScripts(prisma) {
+  if (!prisma?.storyScript?.findMany || !prisma?.storyScript?.create) return;
+  const seeds = await defaultStoryScriptSeedsWithLegacy(prisma);
+  const existing = await prisma.storyScript.findMany({
+    where: { key: { in: seeds.map((seed) => seed.key) } }
+  });
+  const existingKeys = new Set(existing.map((record) => record.key));
+  for (const seed of seeds) {
+    if (existingKeys.has(seed.key)) continue;
+    await prisma.storyScript.create({ data: storyScriptCreateData(seed) });
+  }
+}
+
+async function defaultStoryScriptSeedsWithLegacy(prisma) {
+  const seeds = defaultStoryScriptSeeds();
+  const legacy = await legacyOnboardingSeed(prisma);
+  if (!legacy) return seeds;
+  return seeds.map((seed) => seed.key === ONBOARDING_STORY_KEY ? legacy : seed);
+}
+
+export function defaultStoryScriptSeeds() {
+  return [
+    {
+      key: ONBOARDING_STORY_KEY,
+      title: "新手引导",
+      triggerType: STORY_TRIGGER_TYPES.onboarding,
+      triggerParams: {},
+      draft: {
+        startNodeId: "start",
+        nodes: [
+          {
+            id: "start",
+            speakerName: "希格莉卡",
+            characterId: "sigrika",
+            text: "欢迎来到 SigrikaGo。我会先带你熟悉这里的对局、角色和道具。",
+            nextNodeId: ""
+          }
+        ]
+      }
+    },
+    {
+      key: "item.rainbow-bean-candy.sigrika",
+      title: "西格莉卡的彩虹豆豆跳跳糖",
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: { itemId: RAINBOW_BEAN_CANDY_ID, characterId: "sigrika" },
+      draft: {
+        startNodeId: "start",
+        nodes: [
+          {
+            id: "start",
+            speakerName: "希格莉卡",
+            characterId: "sigrika",
+            text: "这是什么口味？等一下，我怎么一直在打嗝！",
+            nextNodeId: ""
+          }
+        ]
+      }
+    },
+    {
+      key: "item.rainbow-bean-candy.denia",
+      title: "达妮娅的彩虹豆豆跳跳糖",
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: { itemId: RAINBOW_BEAN_CANDY_ID, characterId: "denia" },
+      draft: {
+        startNodeId: "start",
+        nodes: [
+          {
+            id: "start",
+            speakerName: "达妮娅",
+            characterId: "denia",
+            text: "{username}！你到底给我吃了什么！",
+            nextNodeId: ""
+          }
+        ]
+      }
+    }
+  ];
+}
+
+export function toAdminStoryScriptPayload(record, fallback = {}) {
+  if (!record) {
+    return {
+      id: fallback.key ?? "",
+      key: fallback.key ?? "",
+      title: "",
+      triggerType: STORY_TRIGGER_TYPES.onboarding,
+      triggerParams: {},
+      draft: { ...EMPTY_SCRIPT, nodes: [] },
+      published: { ...EMPTY_SCRIPT, nodes: [] },
+      isPublished: false,
+      firstPublishedAt: null,
+      publishedAt: null,
+      createdAt: null,
+      updatedAt: null
+    };
+  }
+  return {
+    id: record.id,
+    key: record.key,
+    title: record.title ?? "",
+    triggerType: record.triggerType,
+    triggerParams: parseObjectJson(record.triggerParamsJson),
+    draft: {
+      startNodeId: record.draftStartNodeId ?? "",
+      nodes: parseNodesJson(record.draftNodesJson)
+    },
+    published: {
+      startNodeId: record.publishedStartNodeId ?? "",
+      nodes: parseNodesJson(record.publishedNodesJson)
+    },
+    isPublished: Boolean(record.isPublished),
+    firstPublishedAt: record.firstPublishedAt ?? null,
+    publishedAt: record.publishedAt ?? null,
+    createdAt: record.createdAt ?? null,
+    updatedAt: record.updatedAt ?? null
+  };
+}
+
+export function toPlayerStoryScriptPayload(record) {
+  if (!record?.isPublished && record?.isPublished !== undefined) return null;
+  const script = {
+    id: record.id,
+    key: record.key,
+    title: record.title ?? "",
+    triggerType: record.triggerType,
+    triggerParams: parseObjectJson(record.triggerParamsJson),
+    startNodeId: record.publishedStartNodeId ?? "",
+    nodes: parseNodesJson(record.publishedNodesJson),
+    publishedAt: record.publishedAt ?? record.firstPublishedAt ?? null
+  };
+  if (!script.startNodeId || !script.nodes.length) return null;
+  return script;
+}
+
+export function interpolateStoryScript(script, variables = {}) {
+  return {
+    ...script,
+    nodes: script.nodes.map((node) => ({
+      ...node,
+      text: interpolateText(node.text, variables),
+      speakerName: interpolateText(node.speakerName, variables),
+      options: node.options.map((option) => ({
+        ...option,
+        label: interpolateText(option.label, variables)
+      }))
+    }))
+  };
+}
+
+async function assertNoPublishedTriggerConflict({ prisma, key, triggerType, triggerParams }) {
+  const records = await prisma.storyScript.findMany({
+    where: {
+      triggerType,
+      isPublished: true
+    }
+  });
+  const conflict = records.find((record) => record.key !== key && triggerParamsEqual(parseObjectJson(record.triggerParamsJson), triggerParams));
+  if (conflict) throw routeError(400, ERRORS.triggerConflict);
+}
+
+function storyScriptCreateData(seed) {
+  const normalized = validateStoryScriptInput(seed, { publishing: true });
+  const now = new Date();
+  const published = seed.legacyPublished ?? normalized.draft;
+  const publishedAt = seed.legacyPublishedAt ?? now;
+  const firstPublishedAt = seed.legacyFirstPublishedAt ?? publishedAt;
+  return {
+    id: normalized.key,
+    key: normalized.key,
+    title: normalized.title,
+    triggerType: normalized.triggerType,
+    triggerParamsJson: JSON.stringify(normalized.triggerParams),
+    draftStartNodeId: normalized.draft.startNodeId,
+    draftNodesJson: JSON.stringify(normalized.draft.nodes),
+    isPublished: true,
+    publishedStartNodeId: published.startNodeId,
+    publishedNodesJson: JSON.stringify(published.nodes),
+    firstPublishedAt,
+    publishedAt
+  };
+}
+
+async function legacyOnboardingSeed(prisma) {
+  if (!prisma?.onboardingStoryScript?.findUnique) return null;
+  const legacy = await prisma.onboardingStoryScript.findUnique({ where: { id: "singleton" } });
+  if (!legacy?.isPublished) return null;
+  try {
+    const draft = validateStoryContent({
+      startNodeId: legacy.draftStartNodeId,
+      nodes: parseNodesJson(legacy.draftNodesJson)
+    }, { publishing: false });
+    const published = validateStoryContent({
+      startNodeId: legacy.publishedStartNodeId,
+      nodes: parseNodesJson(legacy.publishedNodesJson)
+    }, { publishing: true });
+    return {
+      key: ONBOARDING_STORY_KEY,
+      title: "新手引导",
+      triggerType: STORY_TRIGGER_TYPES.onboarding,
+      triggerParams: {},
+      draft,
+      legacyPublished: published,
+      legacyFirstPublishedAt: legacy.firstPublishedAt ?? null,
+      legacyPublishedAt: legacy.publishedAt ?? null
+    };
+  } catch {
+    return null;
+  }
+}
+
+function normalizeAdminAction(value) {
+  const action = normalizeText(value || "save-draft");
+  if (action === "save-draft" || action === "publish") return action;
+  throw routeError(400, ERRORS.invalidAction);
+}
+
+function normalizeTriggerType(value) {
+  const triggerType = normalizeText(value);
+  if (Object.values(STORY_TRIGGER_TYPES).includes(triggerType)) return triggerType;
+  throw routeError(400, ERRORS.triggerTypeRequired);
+}
+
+function normalizeTriggerParams(triggerType, params = {}) {
+  if (!params || typeof params !== "object" || Array.isArray(params)) throw routeError(400, ERRORS.invalidInput);
+  if (triggerType === STORY_TRIGGER_TYPES.onboarding || triggerType === STORY_TRIGGER_TYPES.battleTutorialStart) {
+    if (Object.keys(params).length > 0) throw routeError(400, ERRORS.onboardingParamsEmpty);
+    return {};
+  }
+  if (triggerType === STORY_TRIGGER_TYPES.itemCharacterUse) {
+    const itemId = normalizeText(params.itemId);
+    const characterId = canonicalCharacterId(params.characterId);
+    if (!itemId || !characterId) throw routeError(400, ERRORS.itemCharacterTriggerRequired);
+    return { itemId, characterId };
+  }
+  return {};
+}
+
+function triggerParamsEqual(left, right) {
+  return JSON.stringify(sortObject(left)) === JSON.stringify(sortObject(right));
+}
+
+function sortObject(value) {
+  return Object.fromEntries(Object.entries(value ?? {}).sort(([left], [right]) => left.localeCompare(right)));
+}
+
+function interpolateText(text, variables = {}) {
+  return String(text ?? "").replace(/\{([a-zA-Z][a-zA-Z0-9]*)\}/g, (match, name) => (
+    VARIABLE_NAMES.has(name) ? String(variables[name] ?? "") : match
+  ));
+}
+
+function normalizeNode(node = {}) {
+  const options = Array.isArray(node.options) ? node.options.map(normalizeOption) : [];
+  return {
+    id: normalizeText(node.id),
+    speakerName: normalizeText(node.speakerName),
+    characterId: normalizeText(node.characterId),
+    text: normalizeText(node.text),
+    nextNodeId: normalizeText(node.nextNodeId),
+    options
+  };
+}
+
+function normalizeOption(option = {}) {
+  return {
+    label: normalizeText(option.label),
+    nextNodeId: normalizeText(option.nextNodeId)
+  };
+}
+
+function normalizeText(value) {
+  return String(value ?? "").trim();
+}
+
+function parseNodesJson(value) {
+  try {
+    const parsed = JSON.parse(value || "[]");
+    return Array.isArray(parsed) ? parsed.map(normalizeNode) : [];
+  } catch {
+    return [];
+  }
+}
+
+function parseObjectJson(value) {
+  try {
+    const parsed = JSON.parse(value || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}

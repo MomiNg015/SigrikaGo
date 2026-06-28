@@ -33,8 +33,10 @@ function renderHome(overrides = {}) {
     onOpenShop: () => {},
     onOpenFriends: () => {},
     onOpenSettings: () => {},
+    onOpenAnnouncements: () => {},
     onOpenMailbox: () => {},
     onOpenMessageBoard: () => {},
+    onOpenOnboardingStory: () => {},
     onOpenAdmin: () => {},
     ...overrides
   }));
@@ -69,6 +71,10 @@ describe("HomeScreen", () => {
     expect(html).toContain("home-mobile-menu");
     expect(html).toContain("home-mobile-menu-toggle");
     expect(html).toContain("home-mobile-menu-panel");
+    expect(html).toContain("announcement-action");
+    expect(html).toContain("onboarding-action");
+    expect(html).toContain("\u5f15\u5bfc");
+    expect(html).toContain("\u516c\u544a");
     expect(html).not.toContain("home-lobby-status");
     expect(html).not.toContain("LOBBY_ROOM");
     expect(appShellBlock).toContain("overflow-x: hidden");
@@ -83,6 +89,14 @@ describe("HomeScreen", () => {
     expect(screenBlock).toContain("--home-terminal-cyan: #00ffbe");
     expect(screenBlock).toContain("--home-terminal-blue: #00bfff");
     expect(screenBlock).toContain("min-width: 0");
+  });
+
+  it("shows an unread red dot on the announcement toolbar action", () => {
+    const html = renderHome({ announcementUnread: true });
+
+    expect(html).toContain("announcement-action has-unread");
+    expect(html).toContain("announcement-badge-dot");
+    expect(html).toContain("\u6253\u5f00\u516c\u544a");
   });
 
   it("uses a compact WebP match image instead of the source PNG", () => {
@@ -100,7 +114,8 @@ describe("HomeScreen", () => {
     const narrowDesktopMedia = css.match(/@media \(min-width: 1024px\) and \(max-width: 1180px\)\s*\{[\s\S]+?\.home-player-zone \.plaque-stats\s*\{[^}]+\}[\s\S]+?\}/)?.[0] ?? "";
     const imageEntryBlock = css.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const hoverBlock = css.match(/\.home-image-entry:hover,[\s\S]+?\.home-image-entry:focus-visible\s*\{[^}]+\}/)?.[0] ?? "";
-    const tacticalTextBlock = css.match(/\.home-image-entry::after\s*\{[^}]+\}/)?.[0] ?? "";
+    const activeBlock = css.match(/\.home-image-entry:active\s*\{[^}]+\}/)?.[0] ?? "";
+    const projectionBlock = css.match(/\.home-image-entry::after\s*\{[^}]+\}/)?.[0] ?? "";
     const manualBlock = css.match(/\.house-manual-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const matchBlock = css.match(/\.match-image-entry\s*\{[^}]+\}/g)?.find((block) => block.includes("border-color: rgba(0, 191, 255, 0.32)")) ?? "";
 
@@ -109,33 +124,47 @@ describe("HomeScreen", () => {
     expect(html).toContain('class="home-image-entry match-image-entry hologram-entry"');
     expect(html).toContain('src="/assets/home/book-entry.webp"');
     expect(html).toContain('src="/assets/home/fantasy-match-entry.webp"');
+    expect(html).toContain('aria-label="部员手册"');
+    expect(html).toContain('aria-label="星炬对弈"');
+    expect(html).toContain('<img src="/assets/home/book-entry.webp" alt="" aria-hidden="true" decoding="async"/>');
+    expect(html).toContain('<img src="/assets/home/fantasy-match-entry.webp" alt="" aria-hidden="true" decoding="async"/>');
     expect(html).not.toContain("home-match-mode-tickets");
     expect(html).not.toContain("home-match-mode-ticket");
     expect(html).not.toContain("home-match-mode-count");
     expect(html).not.toContain("matchmaking-popup");
     expect(html).not.toContain("当前匹配人数：3");
     expect(html).not.toContain("aria-describedby=\"matchmaking-count-popup\"");
-    expect(stageBlock).toContain('"player manual match"');
-    expect(stageBlock).toContain('"nav manual match"');
-    expect(stageBlock).toContain("grid-template-columns: minmax(300px, 0.82fr) minmax(190px, 0.52fr) minmax(430px, 1.2fr)");
+    expect(stageBlock).toContain('"player match"');
+    expect(stageBlock).toContain('"manual match"');
+    expect(stageBlock).toContain('"utility match"');
+    expect(stageBlock).toContain("grid-template-columns: minmax(360px, 0.72fr) minmax(620px, 1.28fr)");
+    expect(stageBlock).toContain("grid-template-rows: auto minmax(280px, auto) auto");
+    expect(stageBlock).toContain("gap: clamp(12px, 1.6vw, 24px) clamp(18px, 2.4vw, 36px)");
     expect(stageBlock).toContain("min-width: 0");
     expect(narrowDesktopMedia).toContain(".home-grid-featured");
-    expect(narrowDesktopMedia).toContain("grid-template-columns: minmax(220px, 0.82fr) minmax(300px, 1.18fr)");
+    expect(narrowDesktopMedia).toContain("grid-template-columns: minmax(320px, 0.72fr) minmax(520px, 1.28fr)");
+    expect(narrowDesktopMedia).toContain('"utility match"');
     expect(narrowDesktopMedia).toContain(".home-player-zone .plaque-stats");
     expect(narrowDesktopMedia).toContain("min-width: 0");
     expect(stageBlock).toContain("overflow: visible");
+    expect(manualBlock).toContain("width: clamp(250px, 28vw, 430px)");
+    expect(manualBlock).toContain("height: clamp(280px, 40vh, 450px)");
     expect(imageEntryBlock).toContain("background: rgba(10, 28, 38, 0.52)");
     expect(imageEntryBlock).toContain("border: 1px solid rgba(0, 255, 190, 0.28)");
     expect(imageEntryBlock).toContain("clip-path: polygon");
     expect(imageEntryBlock).toContain("transition: transform 260ms");
-    expect(hoverBlock).toContain("transform: translateY(-10px)");
+    expect(hoverBlock).toContain("transform: rotate(2deg)");
     expect(hoverBlock).toContain("border-color: var(--home-terminal-cyan)");
-    expect(css).toContain(".match-image-entry:hover::after,\n.match-image-entry:focus-visible::after {\n  animation: none;");
+    expect(hoverBlock).not.toContain("0 0 34px");
+    expect(activeBlock).toContain("transform: translateY(-2px)");
+    expect(projectionBlock).toContain('content: ""');
+    expect(projectionBlock).toContain("background: transparent");
+    expect(projectionBlock).toContain("box-shadow: none");
     expect(css).not.toContain(".matchmaking-popup");
-    expect(tacticalTextBlock).toContain("content: attr(data-hud)");
-    expect(html).toContain('data-hud="部员手册"');
-    expect(html).toContain('data-hud="匹配对局"');
+    expect(css).not.toContain("content: attr(data-hud)");
+    expect(html).not.toContain("data-hud");
     expect(matchBlock).toContain("border-color: rgba(0, 191, 255, 0.32)");
+    expect(matchBlock).toContain("height: clamp(560px, 72vh, 760px)");
   });
 
   it("uses a tactical ID card and skewed navigation cards", () => {
@@ -215,7 +244,7 @@ describe("HomeScreen", () => {
     expect(brightPlaqueNameOverflowBlock).toContain("overflow: visible");
     expect(brightPlaqueNameOverflowBlock).toContain("text-overflow: clip");
     expect(brightPlaqueNameOverflowBlock).not.toContain("user-identity-fit-font-size");
-    expect(brightStageBlock).toContain("padding-top: clamp(44px, 4.8vw, 72px)");
+    expect(brightStageBlock).toContain("padding-top: clamp(28px, 3vw, 48px)");
     expect(brightStatsBlock).toContain("width: 100%");
     expect(brightStatsBlock).toContain("min-width: 0");
     expect(brightStatsBlock).toContain("box-sizing: border-box");
@@ -236,11 +265,13 @@ describe("HomeScreen", () => {
     expect(brightNarrowDesktopMedia).toContain("font-size: clamp(20px, 2.1vw, 24px)");
     expect(brightNarrowDesktopMedia).toContain("grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.7fr) minmax(0, 1fr)");
     expect(utilityBlock).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
-    expect(utilityBlock).toContain("width: min(480px, 100%)");
+    expect(utilityBlock).toContain("grid-area: utility");
+    expect(utilityBlock).toContain("width: 100%");
     expect(utilityEntryBlock).toContain("grid-template-columns: 26px minmax(0, 1fr)");
     expect(utilityEntryBlock).toContain("min-height: 64px");
     expect(utilityEntryBlock).toContain("transform: skewX(-15deg)");
-    expect(utilityEntryBlock).toContain("border-left: 4px solid var(--home-terminal-cyan)");
+    expect(utilityEntryBlock).not.toContain(`border-${"left"}`);
+    expect(utilityEntryBlock).toContain("linear-gradient(90deg, rgba(0, 255, 190, 0.12)");
     expect(utilityEntryBlock).toContain("clip-path: polygon");
     expect(css).toContain(".home-grid-featured > .home-utility-grid .utility-entry strong {\n  display: block");
     expect(css).not.toContain(".home-grid-featured > .home-utility-grid .utility-entry small {\n  display: block");
@@ -318,10 +349,10 @@ describe("HomeScreen", () => {
     expect(brightMobileCss).toContain("grid-template-columns: 22px max-content !important");
     expect(brightMobileCss).toContain("word-break: keep-all !important");
     expect(brightMobileCss).toContain(".topbar-actions > .icon-button");
-    expect(brightMobileCss).toContain("padding: 12px 12px 48px !important");
-    expect(brightMobileCss).toContain("bottom: 10px !important");
-    expect(brightMobileCss).toContain("max-width: calc(100% - 28px) !important");
-    expect(brightMobileCss).toContain("font-family: \"Arial Rounded MT Bold\", \"Microsoft YaHei UI\", \"Microsoft YaHei\", system-ui, sans-serif !important");
+    expect(brightMobileCss).toContain("padding: 12px !important");
+    expect(brightMobileCss).toContain('content: "" !important');
+    expect(brightMobileCss).toContain("bottom: -10px !important");
+    expect(brightMobileCss).toContain("pointer-events: none !important");
 
     const finalMobileCss = readCssFixture("../styles/mobile-adaptive.css");
     expect(finalMobileCss).toContain(":has(.modal-backdrop) .home-mobile-menu");
@@ -346,8 +377,11 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("white-space: nowrap !important");
     expect(finalMobileCss).toContain("@media (min-width: 1024px) and (max-width: 1180px), (min-width: 701px) and (max-height: 640px)");
     expect(finalMobileCss).toContain("@media (min-width: 1181px) and (max-width: 1500px)");
-    expect(finalMobileCss).toContain("grid-template-columns: minmax(390px, 0.9fr) minmax(160px, 0.42fr) minmax(360px, 1.08fr) !important");
-    expect(finalMobileCss).toContain("width: min(100%, 440px) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(420px, 0.72fr) minmax(640px, 1.28fr) !important");
+    expect(finalMobileCss).toContain("gap: clamp(10px, 1.25vw, 18px) clamp(18px, 2vw, 30px) !important");
+    expect(finalMobileCss).toContain("height: clamp(300px, 42dvh, 460px) !important");
+    expect(finalMobileCss).toContain("height: clamp(560px, 72dvh, 760px) !important");
+    expect(finalMobileCss).toContain("width: 100% !important");
     expect(finalMobileCss).toContain("--home-plaque-name-column-min: calc(12ch + 1.4em)");
     expect(finalMobileCss).toContain("grid-template-columns: 62px minmax(0, 1fr) minmax(106px, 116px) !important");
     expect(finalMobileCss).toContain("font-size: clamp(18px, 1.45vw, 21px) !important");
@@ -361,13 +395,15 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("grid-template-columns: clamp(54px, 7vw, 64px) minmax(0, 1fr) minmax(100px, 27%) !important");
     expect(finalMobileCss).toContain("\"player match\"");
     expect(finalMobileCss).toContain("\"manual match\"");
-    expect(finalMobileCss).toContain("\"utility utility\"");
+    expect(finalMobileCss).toContain("\"utility match\"");
     expect(finalMobileCss).toContain("@media (min-width: 701px)");
+    expect(finalMobileCss).toContain("transform: rotate(2deg) !important");
+    expect(finalMobileCss).not.toContain("transform: translateY(-6px) !important");
     expect(finalMobileCss).toContain(".home-image-entry > img");
     expect(finalMobileCss).toContain("box-sizing: border-box !important");
     expect(finalMobileCss).toContain("max-height: 100% !important");
     expect(finalMobileCss).toContain("grid-template-areas:");
-    expect(finalMobileCss).toContain("\"player manual\"");
+    expect(finalMobileCss).toContain("grid-template-columns: minmax(320px, 0.72fr) minmax(520px, 1.28fr) !important");
     expect(finalMobileCss).toContain(".home-player-zone,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry");
     expect(finalMobileCss).toContain("position: static !important");
     expect(finalMobileCss).toContain("@media (min-width: 1024px) and (max-height: 560px)");
@@ -452,5 +488,18 @@ describe("HomeScreen", () => {
     expect(html).toContain("mailbox-badge");
     expect(html).toContain(">3</span>");
     expect(html).toContain("aria-label=\"打开邮箱，3封未处理邮件\"");
+  });
+
+  it("renders onboarding replay actions in desktop topbar and mobile menu", () => {
+    const html = renderHome();
+    const desktopOnboardingAction = html.match(/<button class="icon-button onboarding-action"[\s\S]*?<\/button>/)?.[0] ?? "";
+
+    expect(html).toContain("onboarding-action");
+    expect(html).toContain("home-mobile-onboarding-action");
+    expect(html).toContain("aria-label=\"打开新手引导\"");
+    expect(desktopOnboardingAction).toContain("aria-label=\"打开新手引导\"");
+    expect(desktopOnboardingAction).not.toContain("<span");
+    expect(desktopOnboardingAction).not.toContain(">\u5f15\u5bfc<");
+    expect(html).toContain(">引导</button>");
   });
 });

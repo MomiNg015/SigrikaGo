@@ -29,6 +29,7 @@ export default function AppRoutes({
   onRefreshMusicTracks,
   onSiteSettingsChanged,
   onToast,
+  onOpenOnboardingStory,
   pendingSkill,
   replayStep,
   room,
@@ -47,6 +48,7 @@ export default function AppRoutes({
   setShowHouse,
   setShowLeaderboard,
   setShowMailbox,
+  setShowAnnouncements,
   setShowMessageBoard,
   setShowResume,
   setShowSettings,
@@ -61,7 +63,8 @@ export default function AppRoutes({
   updateUser,
   user,
   view,
-  musicTracks
+  musicTracks,
+  announcementUnread
 }) {
   const homeScreen = user && (
     <HomeScreen
@@ -89,14 +92,17 @@ export default function AppRoutes({
       }}
       recruitmentReady={recruitmentReady}
       mailboxBadgeCount={mailboxBadgeCount}
+      announcementUnread={announcementUnread}
       onOpenRecruitment={() => {
         playUiRecruitmentOpenSound(audioSettings);
         setShowRecruitment(true);
       }}
       onOpenFriends={() => setShowFriends(true)}
       onOpenSettings={() => setShowSettings(true)}
+      onOpenAnnouncements={() => setShowAnnouncements(true)}
       onOpenMailbox={() => setShowMailbox(true)}
       onOpenMessageBoard={() => setShowMessageBoard(true)}
+      onOpenOnboardingStory={onOpenOnboardingStory}
       onOpenAdmin={() => setView("admin")}
     />
   );

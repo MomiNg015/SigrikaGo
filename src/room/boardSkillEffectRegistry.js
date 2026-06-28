@@ -4,13 +4,16 @@ import {
   LIBERTY_PURGE_SLASH_INITIAL_DELAY_MS,
   LIBERTY_PURGE_SLASH_STAGGER_MS
 } from "../shared/skillPresentation.js";
+import {
+  BACONBITS_IMAGE,
+  CHANGLI_FIRE_PHOENIX_IMAGE,
+  CHANGLI_FLAME_SPRITE_IMAGE,
+  DANEA_BUBBLE_IMAGE,
+  VOYAGE_STAR_CRATER_IMAGE,
+  boardSkillEffectAssetUrls
+} from "./boardSkillEffectAssets.js";
 import { boardPointCenter, pointCenterForHost } from "./boardSkillEffectGeometry.js";
 
-const BACONBITS_IMAGE = "/assets/baconbits.webp";
-const CHANGLI_FIRE_PHOENIX_IMAGE = "/assets/effects/changli-fire-phoenix.svg";
-const CHANGLI_FLAME_SPRITE_IMAGE = "/assets/effects/changli-flame-sprite.svg";
-const DANEA_BUBBLE_IMAGE = "/assets/effects/denia-bubble-pop.webp";
-const VOYAGE_STAR_CRATER_IMAGE = "/assets/effects/voyage-star-crater.webp";
 const SOFT_EXPLOSION_EDGE_STEPS = 44;
 const VOYAGE_STAR_DISSOLVE_SPARKS = 46;
 const VOYAGE_STAR_QUAKE_DUST = 34;
@@ -60,9 +63,7 @@ export function playRegisteredBoardSkillEffect({
   }
 }
 
-export function boardSkillEffectAssetUrls(effectType) {
-  return BOARD_SKILL_EFFECT_RENDERERS[effectType]?.assets ?? [];
-}
+export { boardSkillEffectAssetUrls };
 
 export async function loadPixiAssetList(pixi, urls) {
   if (!pixi?.Assets?.load || urls.length === 0) return [];

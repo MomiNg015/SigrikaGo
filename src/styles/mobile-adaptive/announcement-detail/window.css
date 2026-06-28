@@ -1,0 +1,53 @@
+/* Final mobile safety for announcement detail dialogs. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-detail-backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  border-radius: inherit !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-detail-backdrop .announcement-detail-modal {
+  position: relative !important;
+  inset: 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  border-radius: inherit !important;
+}
+
+@media (max-width: 768px) {
+  .announcement-modal .announcement-detail-backdrop,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-detail-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    border-radius: inherit !important;
+    overflow: hidden !important;
+  }
+
+  .announcement-modal .announcement-detail-backdrop .announcement-detail-modal,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-detail-backdrop .announcement-detail-modal {
+    position: relative !important;
+    inset: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    border-radius: inherit !important;
+    overflow: hidden !important;
+  }
+}

@@ -23,8 +23,11 @@ describe("overlay registry", () => {
       "shop",
       "recruitment",
       "settings",
+      "announcements",
       "mailbox",
-      "messageBoard"
+      "messageBoard",
+      "onboardingStory",
+      "storyPlayer"
     ]);
     expect(APP_MODAL_DISMISS_ORDER).toEqual(["result", "matchStart", ...OVERLAY_STATE_KEYS]);
     expect(new Set(APP_OVERLAYS.map((overlay) => overlay.key)).size).toBe(APP_OVERLAYS.length);

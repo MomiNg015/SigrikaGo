@@ -1,0 +1,48 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-tabs button {
+  min-height: 46px !important;
+  padding: 8px 12px !important;
+  border: 3px solid transparent !important;
+  border-radius: 8px !important;
+  background: var(--bright-sheet) !important;
+  color: var(--bright-ink) !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-tabs button.active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-tabs button[aria-selected="true"] {
+  background: var(--bright-pink) !important;
+  color: var(--bright-ink) !important;
+  border-color: var(--bright-border) !important;
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list .announcement-list-item.announcement-list-item {
+  min-height: 68px !important;
+  padding: 15px 16px !important;
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 8px !important;
+  background: #fffdf8 !important;
+  color: var(--bright-ink) !important;
+  line-height: 1.32 !important;
+  box-shadow: 2px 3px 0 rgba(74, 55, 54, 0.18) !important;
+  transform: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list-meta b,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-detail-kind {
+  min-height: 28px !important;
+  padding: 5px 10px !important;
+  line-height: 1.2 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list .announcement-list-item.announcement-list-item:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list .announcement-list-item.announcement-list-item:focus-visible {
+  background: #fff7eb !important;
+  box-shadow: 3px 4px 0 rgba(74, 55, 54, 0.24) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal .announcement-list .announcement-list-item.announcement-list-item.is-unread {
+  background: #ffe4ef !important;
+}

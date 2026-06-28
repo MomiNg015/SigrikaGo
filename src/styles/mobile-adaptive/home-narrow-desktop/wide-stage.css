@@ -1,12 +1,19 @@
 /* Bright School 1181px to 1500px home stage safety. */
 @media (min-width: 1181px) and (max-width: 1500px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main > section.home-grid-featured.home-stage {
-    grid-template-columns: minmax(390px, 0.9fr) minmax(160px, 0.42fr) minmax(360px, 1.08fr) !important;
-    gap: clamp(14px, 1.8vw, 24px) !important;
+    grid-template-areas:
+      "player match"
+      "manual match"
+      "utility match" !important;
+    grid-template-columns: minmax(420px, 0.72fr) minmax(640px, 1.28fr) !important;
+    grid-template-rows: auto minmax(300px, auto) auto !important;
+    gap: clamp(10px, 1.25vw, 18px) clamp(18px, 2vw, 30px) !important;
+    align-items: stretch !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone {
-    width: min(100%, 440px) !important;
+    grid-area: player !important;
+    width: 100% !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
@@ -23,5 +30,27 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card strong {
     font-size: clamp(18px, 1.45vw, 21px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
+    grid-area: manual !important;
+    justify-self: center !important;
+    width: clamp(270px, 30vw, 430px) !important;
+    height: clamp(300px, 42dvh, 460px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-match-feature {
+    grid-area: match !important;
+    align-self: stretch !important;
+    max-width: 1080px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry {
+    height: clamp(560px, 72dvh, 760px) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
+    grid-area: utility !important;
+    width: 100% !important;
   }
 }

@@ -13,6 +13,8 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-tabs button.active:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .achievement-tabs button[aria-selected="true"]:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-tabs button.active:not(:disabled),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-tabs button.active:not(:disabled),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-tabs button[aria-selected="true"]:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs button.active:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-tabs button.active:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-pagination button.active:not(:disabled),

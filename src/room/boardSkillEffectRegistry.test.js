@@ -216,12 +216,13 @@ describe("boardSkillEffectRegistry", () => {
 
   test("keeps ChangLi fire field irregular instead of drawing a full-canvas rectangle", () => {
     const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
+    const assetSource = fs.readFileSync(path.resolve("src/room/boardSkillEffectAssets.js"), "utf8");
     const changliSource = registrySource.match(/function playChangliDoubleMove[\s\S]*?function changliFlamePointIds/)?.[0] ?? "";
 
     expect(changliSource).toContain("drawChangliFireField");
     expect(changliSource).not.toContain(".rect(0, 0, width, height)");
-    expect(registrySource).toContain("/assets/effects/changli-fire-phoenix.svg");
-    expect(registrySource).toContain("/assets/effects/changli-flame-sprite.svg");
+    expect(assetSource).toContain("/assets/effects/changli-fire-phoenix.svg");
+    expect(assetSource).toContain("/assets/effects/changli-flame-sprite.svg");
   });
 
   test("keeps Mornye protocol takeover registered as a targeted Pixi beam effect", () => {

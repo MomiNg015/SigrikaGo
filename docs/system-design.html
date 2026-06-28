@@ -58,7 +58,7 @@
 <p>1. <a href="./system-design/01-project-overview.md">项目总览与功能边界</a> 2. <a href="./system-design/02-frontend-architecture.md">前端架构与状态边界</a> 3. <a href="./system-design/03-backend-realtime-api.md">后端、HTTP API 与实时房间</a> 4. <a href="./system-design/04-data-model-and-domain.md">数据模型与领域系统</a> 5. <a href="./system-design/05-assets-audio-preload.md">资源、音频与启动预加载</a> 6. <a href="./system-design/06-ui-theme-mobile.md">UI 主题、移动端与交互体验</a> 7. <a href="./system-design/07-performance-tech-debt.md">性能、技术债与扩展路线</a> 8. <a href="./system-design/08-workflow-and-history.md">工作流、文档规则与历史记录</a></p>
 <h2>当前架构摘要</h2>
 <ul>
-<li>前端使用 React 19、Vite 和 Socket.IO client；<code>src/main.jsx</code> 只负责浏览器挂载，应用组合根在 <code>src/app/App.jsx</code>，业务状态逐步下沉到 <code>src/app/*</code> hooks 和独立视图组件，应用级弹窗可见性集中在 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态集中在 <code>src/app/useRoomSessionState.js</code>，已关闭结果不会因 <code>room:resume</code> 再弹，匹配等待/成功过渡状态集中在 <code>src/app/useMatchSessionState.js</code>；移动端对弈模式选择弹窗将路数+时间和贴目/规则分成稳定两行，设置弹窗在竖屏下保持标题不被裁切且内部 tab 单行并列；开发期 Vite <code>/socket.io</code> 代理会静默处理后端 watch 重启造成的预期 websocket 断连错误。</li>
+<li>前端使用 React 19、Vite 和 Socket.IO client；<code>src/main.jsx</code> 只负责浏览器挂载，应用组合根在 <code>src/app/App.jsx</code>，业务状态逐步下沉到 <code>src/app/*</code> hooks 和独立视图组件，应用级弹窗可见性集中在 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态集中在 <code>src/app/useRoomSessionState.js</code>，已关闭结果不会因 <code>room:resume</code> 再弹，匹配等待/成功过渡状态集中在 <code>src/app/useMatchSessionState.js</code>；移动端对弈模式选择弹窗将路数+时间和贴目/规则分成稳定两行，设置弹窗在竖屏下保持标题不被裁切、内部 tab 单行并列且面板区域独立滚动；移动端图标按钮和关闭按钮由最终安全层兜底为 44px 触控目标，主题动效避免宽度布局动画和弹性曲线；开发期 Vite <code>/socket.io</code> 代理会静默处理后端 watch 重启造成的预期 websocket 断连错误。</li>
 </ul>
 <ul>
 <li>Mobile root back handling is centralized in <code>src/app/modalDismissal.js</code>: login, preload, home, admin, and battle parent screens show the <code>确定要退出游戏吗？</code> confirmation when no functional modal is open; close/cancel buttons and phone back inside functional modals only dismiss the current modal and do not cascade into exit confirmation.</li>
@@ -68,6 +68,9 @@
 </ul>
 <ul>
 <li>后台管理新增面向云端运营的分析入口：<code>概况</code> 默认呈现“今日简报”，用 <code>正常 / 需要关注 / 需要处理</code> 总状态、原因、分级解读和下一步动作替代密集报表；<code>运营分析</code> 展示最近日期范围的活跃、注册、对局、玩家分层、经济和模式趋势。后端聚合逻辑集中在 <code>server/adminAnalytics.js</code>，通过 <code>/api/admin/analytics/overview</code> 与 <code>/api/admin/analytics/operations</code> 输出可读摘要，实时在线与匹配/房间统计从 <code>onlineSessions</code>、<code>rooms.js</code> 运行时边界注入，深度事件暂以 <code>待接入</code> 标注。</li>
+</ul>
+<ul>
+<li>公告中心是登录玩家功能，不存在访客路径：玩家从大厅右上角操作区打开公告弹窗，弹窗内有“公告 / 更新日志”两类列表，点击条目会在父公告窗口内部挂载与父窗口等大的嵌入式详情层；详情遮罩只覆盖父公告窗口，不覆盖整个视口，也不替换父窗口内容。玩家公告窗口的标题组不使用额外粉色装饰底或虚线线框，标题容器类名避免包含 <code>lock</code> 片段以免被 Bright School 锁定态通用选择器误伤；分段标签、列表行、空/错状态、详情类型标签和详情正文必须沿用其它玩家窗口的 8px 控件圆角、44px 触控目标、Bright School 纸张边框与粉色选中态，并保留足够内边距和行高，避免圆角区域裁切文字。详情头部使用固定垂直节奏，类型标签到标题的距离必须等于标题到时间行的距离；正文面板在详情窗口内占满剩余高度并保留窗口内边距，使短正文也能拉到窗口底部前的安全边界。样式入口 <code>src/styles/modals/announcement.css</code> 保持 import-only 并委托到 <code>src/styles/modals/announcement/</code> 子文件；Bright School 后置防火墙的公告控件修复在 <code>src/styles/themes/bright-school/firewall/announcement-controls.css</code>，用于压过通用 <code>[class*=&quot;item&quot;]</code> 保护层。最终移动安全层 <code>src/styles/mobile-adaptive/announcement-detail.css</code> 会清除通用 <code>.nested-modal</code> 的手机全屏定位和 Bright School 全宽覆盖，确保详情层在桌面和移动端都保持父公告窗口内的同尺寸嵌入。后台新增“公告管理”顶级页，统一维护公告与更新日志草稿、发布、取消发布、软删除和预览。后端领域边界在 <code>server/announcements.js</code> 与 <code>server/announcementRoutes.js</code>，数据由 <code>AnnouncementEntry</code> 与 <code>AnnouncementRead</code> 持久化，玩家未读只按首次发布时间晚于账号创建时间且尚未打开详情计算。</li>
 </ul>
 <ul>
 <li>对局模式由 <code>src/shared/gameModes.js</code> 统一配置，前后端共享模式顺序、棋盘大小、贴目、技能开关和时间控制。</li>
@@ -121,7 +124,7 @@
 <li>匹配成功后先保留 3 秒“匹配成功”倒计时弹窗；倒计时结束后才进入对局资源预加载页，该页复用登录加载页视觉，只显示本机玩家出战角色的跳动立绘和角色加载台词，并显示 <code>资源加载中 0/2</code> 到 <code>2/2</code> 的服务端 ready 人数，不再显示转圈动画。前端只有在匹配成功倒计时完成且房间已离开 <code>preloading</code>（双方资源 ready）后才进入对局页；若倒计时先结束则进入并停留在资源加载页，若资源先完成则继续显示倒计时并在倒计时结束后直接进入对局页。刷新或重连恢复到仍处于 <code>preloading</code> 的玩家房间时，客户端会重新构造已完成倒计时的 pending match 并进入 <code>match-preloading</code>，重新加载本地对局资源并发送 <code>room:preload-ready</code>，而不是把该快照直接写入 active room。启动预加载区分关键资源与延迟资源，并为单个资源加载设置超时兜底，避免服务器重启或缓存恢复时把玩家卡在资源准备页；房间运行期使用轻量 <code>room:clock</code>、<code>room:patch</code> 与完整 <code>room:update</code> 分流，降低高频交互卡顿；<code>room:clock</code> 与 <code>room:update</code> 共用 <code>clockSeq</code> 时钟序号，前端会忽略比当前房间快照更旧的轻量时钟，避免乱序到达导致棋钟倒转或读秒次数回退。后端房间恢复与活跃房间判定通过用户到房间的内存索引优先定位，避免 <code>room:resume</code> 在房间增多时全量扫描；聊天与在线状态 patch 使用节流持久化，完整房间更新和关键生命周期仍强制持久化。移动端弱网下，启动预加载不订阅瞬时 Socket.IO 实例变化，对局 socket 连接使用明确重连和 6 秒握手超时，避免连接抖动把玩家反复留在资源准备页。</li>
 </ul>
 <ul>
-<li>Bright School desktop home keeps explicit wide desktop, compact desktop, micro desktop, and mobile portrait layout contracts. In the <code>1181px-1500px</code> desktop band, the mode stats panel must stay compact and must not cover or visually consume long usernames; the username column owns the remaining width, scales earlier, and clips inside its own tag only as a last resort. Wide desktop keeps the stage top spacing compact and shows the 3x2 utility toolbox inside the stage; match-mode counts stay in the click-open mode picker instead of rendering tickets under the match entry. Micro desktop keeps a controlled <code>960px</code> horizontal stage with core entries in normal grid flow and low-height desktop windows may scroll vertically. Phone portrait renders the home stage as a single-column usable flow instead of showing an orientation guard.</li>
+<li>Bright School desktop home keeps explicit wide desktop, compact desktop, micro desktop, and mobile portrait layout contracts. In the <code>1181px-1500px</code> desktop band, the mode stats panel must stay compact and must not cover or visually consume long usernames; the username column owns the remaining width, scales earlier, and clips inside its own tag only as a last resort. Desktop home uses a two-column stage: the left column stacks the player plaque, member handbook, and 3x2 utility toolbox from top to bottom, while the right column is the primary match image button spanning the stack height. Wide and compact desktop keep the stage top spacing and column gaps tight, enlarge the match image as the primary action, and keep match-mode counts in the click-open mode picker instead of rendering tickets under the match entry. Micro desktop keeps a controlled <code>960px</code> horizontal stage with the same left-stack/right-match hierarchy and low-height desktop windows may scroll vertically. Phone portrait renders the home stage as a single-column usable flow instead of showing an orientation guard. The member handbook and match entries are image-only buttons: DOM buttons keep accessible <code>aria-label</code>s, images are decorative, theme layers must not draw <code>data-hud</code>, paper labels, or fixed text badges, and the final narrow-desktop safety layer must preserve clockwise hover/focus rotation instead of replacing it with lift-only motion.</li>
 </ul>
 <ul>
 <li>Bright School home utility buttons use paper-card microinteractions in the final toolbox/theme layers: hover/focus lifts the left utility toolbox, active press compresses the hard shadow and moves down slightly, disabled entries keep native gray inactive styling, recruitment-ready keeps its pink alert background, and <code>prefers-reduced-motion</code> removes the transform while preserving clear state colors. Each utility entry owns only an icon and title; the phone portrait toolbox keeps the same icon-plus-title contract in a 2x3 compact grid.</li>
@@ -163,7 +166,7 @@
 <li>Bright School modal cleanup now follows the import-only pattern through <code>src/styles/themes/bright-school/modals.css</code> and <code>src/styles/themes/bright-school/modals/</code>, keeping handbook, settings, selected-action, resume, result, popover, and stage-decoration repairs in focused files.</li>
 </ul>
 <ul>
-<li>Bright School effects now follow the import-only pattern through <code>src/styles/themes/bright-school/effects.css</code> and <code>src/styles/themes/bright-school/effects/</code>, keeping selected controls, skill action glow/disabled state, board targeting, board marks, keyframes, and reduced-motion rules in focused files.</li>
+<li>Bright School effects now follow the import-only pattern through <code>src/styles/themes/bright-school/effects.css</code> and <code>src/styles/themes/bright-school/effects/</code>, keeping selected controls, skill action glow/disabled state, board targeting, board marks, image-only home entry buttons, keyframes, and reduced-motion rules in focused files.</li>
 </ul>
 <ul>
 <li>Bright School radical purge now follows the import-only pattern through <code>src/styles/themes/bright-school/radical-purge.css</code> and <code>src/styles/themes/bright-school/radical-purge/</code>, keeping early emergency cleanup rules for home controls, handbook/profile surfaces, character detail, commerce/social rows, and room action controls in focused files.</li>
@@ -284,7 +287,7 @@
 <li>Mobile character-detail dialogs keep the character name horizontal and single-line, place the compact BGM preview capsule at the top-right of the heading row, left-align skill and character-description copy, and omit the standalone skill-cost badge; Bright School theme layers and the final <code>mobile-adaptive</code> safety layer repeat these constraints so narrow phones cannot fall back to vertical names or centered body text.</li>
 </ul>
 <ul>
-<li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final import-only <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer and split under <code>src/styles/mobile-adaptive/bright-school-portrait/</code>, while final mobile social/warehouse safeguards keep inventory item cards at a stable 88px minimum height for readable item details; the portrait polish includes home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, resume character records that take remaining modal height and scroll internally on short phones, mobile room tabs that change selected background without press-offset motion, and single-line shop coin wallet treatment. Login auth chrome keeps the brand and login/register segmented wrappers transparent on desktop and mobile, while the outer login card retains the Bright School lower-right hard shadow. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer: entry buttons may keep visible labels/shadows outside their frame, but their actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the bottom of the card.</li>
+<li>Bright School portrait phone polish that must outlive theme overrides is centralized in the final import-only <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer and split under <code>src/styles/mobile-adaptive/bright-school-portrait/</code>, while final mobile social/warehouse safeguards keep inventory item cards at a stable 88px minimum height for readable item details; the portrait polish includes home player plaque nameplate fitting, centered container-sized plaque mode stats, hidden character-chain portrait badges, the two-row resume header, resume character records that take remaining modal height and scroll internally on short phones, mobile room tabs that change selected background without press-offset motion, and single-line shop coin wallet treatment. Login auth chrome keeps the brand and login/register segmented wrappers transparent on desktop and mobile, while the outer login card retains the Bright School lower-right hard shadow. Desktop and narrow-desktop home image entries also rely on the final <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer and the Bright School <code>effects/home-image-entry-buttons.css</code> override: entry buttons show only the image art plus a single hard image drop-shadow and focus/press feedback; hover rotates the entry slightly clockwise without adding glow or blurred shadow, and the actual <code>&lt;img&gt;</code> art must stay <code>border-box</code>, <code>max-height: 100%</code>, and <code>object-fit: contain</code> so the member manual and match artwork cannot spill out of the button area.</li>
 </ul>
 <ul>
 <li>Resume character records in the final Bright School mobile layers reuse the detailed user profile character-list rhythm: the outer section stays lightweight, while compact rows carry avatar/name plus five right-aligned stat columns for total games, wins, losses, draws, and win rate. The embedded resume list and user profile details both keep those stat columns on one line with tabular numbers, while separate nested record dialogs use the same aligned column structure inside their scroll region.</li>
@@ -397,6 +400,9 @@
 <li><code>npm test</code> excludes local Codex scratch folders such as <code>.codex-run/</code> in addition to worktrees, e2e tests, and stability tests, so temporary staged snapshots cannot be collected as Vitest suites during handoff.</li>
 </ul>
 <ul>
+<li>Impeccable design review automation is available as a project-scoped skill in <code>.agents/skills/impeccable</code>: <code>.impeccable/config.json</code> enables the detector hook, <code>.codex/hooks.json</code> preserves the Trellis prompt hook and adds Impeccable <code>PostToolUse</code>, <code>PRODUCT.md</code> records the product design register, and <code>.impeccable/live/config.json</code> points live mode at the Vite <code>index.html</code> shell. Codex 0.142 parses <code>.codex/hooks.json</code> with a strict schema, so the shared manifest keeps only the top-level <code>hooks</code> object and stores descriptive notes in system-design docs instead of the JSON file.</li>
+</ul>
+<ul>
 <li>Player theme metadata now has one source of truth in <code>src/app/visualTheme.js</code>: <code>VISUAL_THEME_OPTIONS</code> includes both available and future settings choices, while <code>VISUAL_THEMES</code> / <code>VISUAL_THEME_IDS</code> expose only enabled themes that can be persisted and imported. Settings renders from the full option registry, so future styles can be listed without duplicating labels in the modal. CSS refactors must preserve the root theme order <code>shared -&gt; isolation -&gt; theme-components -&gt; bright-school -&gt; mobile-adaptive</code>; board, Pixi skill overlays, point buttons, and Bright School effect files remain protected skill-presentation surfaces and should not be broad-selector cleanup targets.</li>
 </ul>
 <ul>
@@ -415,7 +421,7 @@
 <li>CSS tests that assert concrete rules behind import-only entries should expand imports with <code>readCssWithImports()</code>; raw entry reads are reserved for import-order or import-only assertions.</li>
 </ul>
 <ul>
-<li>Final mobile safety splits are tracked separately as <code>CSS_FINAL_MOBILE_SAFETY_SPLITS</code> because <code>mobile-adaptive.css</code> remains the post-theme override layer. <code>mobile-adaptive/mobile-profile-records.css</code> now delegates to <code>mobile-adaptive/mobile-profile-records/</code> while preserving the 768px profile/resume record cascade, <code>mobile-adaptive/phone-core.css</code> delegates to <code>mobile-adaptive/phone-core/</code> for match mode, shell controls, modal tabs, and scroll/detail/result safety, <code>mobile-adaptive/phone-gacha.css</code> delegates to <code>mobile-adaptive/phone-gacha/</code> for legacy gacha modal, stage, controls, and result dialog survival rules, Bright School final leaderboard cards delegate to <code>mobile-adaptive/bright-school-overrides/leaderboard-cards/</code>, and Bright School portrait resume modal layout/settings tabs delegate to <code>mobile-adaptive/bright-school-portrait/resume-modal-layout/</code> and <code>mobile-adaptive/bright-school-portrait/settings-tabs/</code>.</li>
+<li>Final mobile safety splits are tracked separately as <code>CSS_FINAL_MOBILE_SAFETY_SPLITS</code> because <code>mobile-adaptive.css</code> remains the post-theme override layer. <code>mobile-adaptive/mobile-profile-records.css</code> now delegates to <code>mobile-adaptive/mobile-profile-records/</code> while preserving the 768px profile/resume record cascade, <code>mobile-adaptive/phone-core.css</code> delegates to <code>mobile-adaptive/phone-core/</code> for match mode, shell controls, modal tabs, and scroll/detail/result safety, <code>mobile-adaptive/phone-gacha.css</code> delegates to <code>mobile-adaptive/phone-gacha/</code> for legacy gacha modal, stage, controls, and result dialog survival rules, Bright School final leaderboard cards delegate to <code>mobile-adaptive/bright-school-overrides/leaderboard-cards/</code>, Bright School portrait resume modal layout/settings tabs delegate to <code>mobile-adaptive/bright-school-portrait/resume-modal-layout/</code> and <code>mobile-adaptive/bright-school-portrait/settings-tabs/</code>, announcement modal base styling delegates to <code>modals/announcement/</code>, and announcement detail mobile sizing delegates to <code>mobile-adaptive/announcement-detail/</code>.</li>
 </ul>
 <ul>
 <li>Theme overlay splits are tracked separately as <code>CSS_THEME_OVERLAY_SPLITS</code>. <code>themes/shared.css</code> now delegates to <code>themes/shared/</code> for player theme tokens, theme settings controls, and player-surface wiring, <code>themes/theme-components.css</code> delegates to <code>themes/theme-components/</code> for outcome badges, skill chips, and replay row semantic colors, Bright School component repairs such as <code>foundation-home.css</code>, <code>warehouse-character.css</code>, and <code>notebook-polish.css</code> delegate to matching nested directories, and Bright School portrait room <code>shell-header-menu.css</code>, <code>viewport-player-strips.css</code>, and <code>dock-actions.css</code> now delegate to matching directories under <code>themes/bright-school/mobile/room/</code> while preserving their positions before later Bright School repairs and final mobile safety layers.</li>
@@ -472,6 +478,9 @@
 </ul>
 <h2>Stability Boundary Update</h2>
 <ul>
+<li>2026-06-27 stability/extensibility hardening keeps production on the current single Node.js room runtime. Multi-instance migration remains a future architecture boundary, but the code now exposes clearer seams: <code>server/roomQueries.js</code> can delegate active/watch room lists to an injected read model, <code>server/serverStartup.js</code> exports <code>SERVER_STARTUP_TASK_ORDER</code>, room-resume stability metrics include the <code>initial-connect</code> reason, character-target item ownership uses <code>publicUserAssets()</code>, skill effect image URLs live in <code>src/room/boardSkillEffectAssets.js</code>, and direct-duel incoming banner state lives in <code>src/app/useIncomingDuelState.js</code>.</li>
+</ul>
+<ul>
 <li>Startup preload / room resume race: <code>useStartupPreload()</code> now uses <code>shouldShowStartupPreload({ room: roomRef.current, matchSuccess: matchSuccessRef.current })</code> before setting <code>view=&quot;preloading&quot;</code> after <code>/api/me</code>; a fast mobile <code>room:resume</code> that already restored an active room or pending match cannot be visually covered by the generic login preload route.</li>
 </ul>
 <ul>
@@ -509,6 +518,25 @@
 </ul>
 <ul>
 <li>Legacy-to-structured asset sync only deletes structured rows whose <code>source</code> is <code>legacy</code>; feature-owned rows from achievements, gacha, mailbox, recruitment, or future flows stay owned by their source-specific paths and are merged for public projection.</li>
+</ul>
+<h2>Story Script Summary</h2>
+<ul>
+<li>通用剧情播放器由 <code>StoryPlayerModal</code> 承担，<code>OnboardingStoryModal</code> 只是新手引导文案包装。播放器继续使用立绘区、打字机文字区和底部继续/选项区，桌面端保持 4:5:1 剧场比例，移动端保留大触控目标和父窗口内跳过确认层。</li>
+</ul>
+<ul>
+<li>剧情节点的立绘来源可包含角色目录之外的剧情专用候选，统一由 <code>src/shared/storyPortraits.js</code> 合成给后台下拉、后台预览和玩家侧 <code>StoryPlayerModal</code> 解析；这些候选只用于剧情节点 <code>characterId</code>，不改变玩家角色本体、出战角色或道具触发目标。当前内置剧情专用候选包括 <code>denia-rainbow-glow</code>，名称为“发彩虹光的达妮娅”，立绘复用 <code>/assets/characters/denia_color.webp</code>。</li>
+</ul>
+<ul>
+<li>应用级 overlay 新增 <code>storyPlayer</code>，排序高于仓库等业务弹窗；道具互动剧情会浮在仓库上方，玩家故事遮罩拥有高于普通 <code>.modal-backdrop</code> 与最终移动弹窗兜底层的专用层级。打开通用播放器会先清掉旧 <code>onboardingStory</code> 可见状态，跳过/完成/关闭和手机返回会同时关闭 <code>storyPlayer</code>、旧 <code>onboardingStory</code> 并清空当前脚本，关闭后再露出仓库。<code>useOnboardingStory()</code> 仍负责自动新手引导和手动回放，但打开的是同一个通用播放器。</li>
+</ul>
+<ul>
+<li>后端新增 <code>StoryScript</code> 通用模型和 <code>server/storyScripts.js</code> 领域层。脚本包含 <code>key/title/triggerType/triggerParamsJson</code>、草稿节点 JSON、发布节点 JSON 和发布时间；发布时校验起始节点、唯一节点 id、正文非空和至少一个结尾节点，并限制同一触发点最多一个已发布脚本。节点选项允许 <code>nextNodeId</code> 为空，表示点击该选项后关闭剧情窗口；非空选项目标仍必须指向当前脚本内存在的节点。</li>
+</ul>
+<ul>
+<li>MVP 触发器包括 <code>onboarding</code> 与 <code>item-character-use</code>，并预留 <code>battle-tutorial-start</code> 命名边界。彩虹豆豆跳跳糖作用到西格莉卡或达妮娅后，服务端先完成道具结算、成就触发和资产同步，再按 <code>{ itemId, characterId }</code> 查找剧情脚本并返回；没有脚本时前端继续显示旧 <code>effectText</code>。</li>
+</ul>
+<ul>
+<li>后台“新手引导”页升级为剧情脚本管理，支持脚本列表、新建、标题、受控触发器参数、节点表单、保存草稿、发布和预览，不暴露原始触发器 JSON。后台编辑器网格必须按头部、脚本元信息、节点滚动区、底部操作分行，只有节点列表吃剩余高度并滚动；节点列表还必须保留稳定滚动条安全边距，避免脚本元信息、节点卡片、输入框和删除按钮被压缩重叠、内部滚动条或右侧预览列遮住。旧 <code>/api/onboarding-story</code> 和 <code>/api/admin/onboarding-story</code> 兼容路径仍可用；启动种子会在缺失时创建默认 onboarding、Sigrika 糖果和 Denia 糖果脚本，并把已发布旧 <code>OnboardingStoryScript</code> 迁移到 <code>onboarding.default</code>。</li>
 </ul>
 <p>---</p>
 <h1>项目总览与功能边界</h1>
@@ -991,6 +1019,9 @@
 <li>依次执行内置角色 seed、内置商城 seed、默认站点设置、社交/房间持久化/登录会话/模式/抽卡 schema guard，以及配置管理员提升。</li>
 </ul>
 <ul>
+<li>Exports <code>SERVER_STARTUP_TASK_ORDER</code> so startup schema/seed sequencing is an explicit, tested contract.</li>
+</ul>
+<ul>
 <li><code>server/serverStartup.test.js</code> 锁定初始化顺序，后续新增启动期 seed 或 schema guard 应优先扩展该模块。</li>
 </ul>
 </ul>
@@ -1466,6 +1497,9 @@
 </ul>
 <ul>
 <li>Owns active-room filtering, watch-room projection, user active-room membership checks, and user-to-room lookup while reusing <code>server/roomPresence.js</code> for online counts and watch player summaries.</li>
+</ul>
+<ul>
+<li>Active-room and watch-room list projection can delegate to an injected <code>roomReadModel</code>, with the current in-memory room scan kept as the single-process fallback.</li>
 </ul>
 </ul>
 <ul>
@@ -1996,10 +2030,16 @@
 <p>本文聚焦 React/Vite 前端、应用壳、路由、弹窗、状态同步、主题注册和前端模块拆分。新增前端入口、全局状态、主题注册或主要视图时优先更新本分篇。</p>
 <h2>当前结论</h2>
 <ul>
-<li><code>src/main.jsx</code> 只负责浏览器挂载；<code>src/app/App.jsx</code> 是应用组合根，状态通过 <code>src/app/*</code> hooks 逐步收口，应用级弹窗可见性由 <code>src/app/useOverlayState.js</code> 维护，房间/回放/结果弹窗会话状态由 <code>src/app/useRoomSessionState.js</code> 维护，匹配等待/成功过渡状态由 <code>src/app/useMatchSessionState.js</code> 维护。</li>
+<li><code>src/main.jsx</code> 只负责浏览器挂载；<code>src/app/App.jsx</code> 是应用组合根，状态通过 <code>src/app/*</code> hooks 逐步收口，应用级弹窗可见性由 <code>src/app/useOverlayState.js</code> 维护，房间/回放/结果弹窗会话状态由 <code>src/app/useRoomSessionState.js</code> 维护，匹配等待/成功过渡状态由 <code>src/app/useMatchSessionState.js</code> 维护，直连约战 incoming banner 状态由 <code>src/app/useIncomingDuelState.js</code> 维护。</li>
+</ul>
+<ul>
+<li>Direct-duel incoming banner state is isolated in <code>src/app/useIncomingDuelState.js</code>; <code>App.jsx</code> only wires <code>{ incomingDuel, setIncomingDuel }</code> into socket handlers and overlays so future lobby/social state does not add more transient state to the composition root.</li>
 </ul>
 <ul>
 <li>玩家侧主题通过 <code>src/app/visualTheme.js</code> 和 <code>src/styles/themes.css</code> 维护注册与 CSS 入口。</li>
+</ul>
+<ul>
+<li>公告中心作为应用级 overlay 注册在 <code>src/app/overlayRegistry.js</code>，入口位于大厅右上角工具栏和移动端折叠菜单；<code>src/app/useAnnouncementSummary.js</code> 在进入大厅、打开公告弹窗和详情标记已读后刷新未读摘要。</li>
 </ul>
 <ul>
 <li>后台管理新增桌面端分析体验：<code>AdminOverview</code> 是默认“今日简报”，用可读总状态、原因、分级解读和下一步动作替代密集表格；<code>AdminOperations</code> 是运营分析页，先显示推荐解读，再用低密度 CSS 条形图和卡片展示活跃、注册、对局、分层、经济和模式表现。分析样式集中在 <code>src/styles/admin/analytics.css</code>，最终后台控件皮肤集中在 <code>src/styles/admin/polish.css</code>，用于统一浅色按钮、输入框、表格、tabs、危险操作和关闭按钮。</li>
@@ -2136,7 +2176,7 @@
 <li><code>rememberPlayerRoom</code> / <code>buildRoomResumeRequest</code> / <code>handleRoomResumePayload</code> / <code>rememberDismissedResultRoom</code> / <code>dismissedResultRoomAfterResume</code>: 位于 <code>src/app/resumeSession.js</code>，集中封装前端断线恢复 localStorage 与结果恢复状态编排；<code>src/app/useRoomMemory.js</code> 只记住未结束的 active player room，并在尚未进入 active room 的 <code>match-preloading</code> 阶段记住 pending match room code，使刷新后 socket <code>room:resume</code> 能找回仍在资源准备中的房间。有效 finished 房间不会写回 <code>sigrika-last-room-code</code>；玩家关闭结果弹窗或退出 finished 房间时会写入 <code>sigrika-dismissed-result-room-code</code> 并清除 last-room，已被用户关闭过的同房间有效结果在后续 <code>room:resume</code> 中保持 dismissed，不会重复打开结果弹窗。</li>
 </ul>
 <ul>
-<li><code>useOverlayState</code> / <code>OVERLAY_STATE_KEYS</code>: 位于 <code>src/app/useOverlayState.js</code>，集中维护商店、抽卡、棋舍、仓库、履历、排行榜、好友、观战、设置和留言板等应用级弹窗可见性，避免 <code>App.jsx</code> 继续堆叠成组 <code>useState(false)</code>。</li>
+<li><code>useOverlayState</code> / <code>OVERLAY_STATE_KEYS</code>: 位于 <code>src/app/useOverlayState.js</code>，集中维护商店、抽卡、棋舍、仓库、履历、排行榜、好友、观战、设置、公告中心、邮箱、留言板和通用剧情播放器等应用级弹窗可见性，避免 <code>App.jsx</code> 继续堆叠成组 <code>useState(false)</code>。</li>
 </ul>
 <ul>
 <li><code>modalDismissal</code>: lives in <code>src/app/modalDismissal.js</code> and owns the shared topmost-modal dismissal contract. Desktop Escape and browser/mobile history back close only the current top modal; app overlays, result/match-waiting modals, and the home match-mode picker should use this shared mechanism instead of local keydown/popstate listeners. When no modal is active, the mobile root-back guard intercepts phone/browser back on login, preload, home, admin, and room screens and shows the shared confirm modal with “确定要退出游戏吗？” before allowing the browser to leave the app.</li>
@@ -2628,6 +2668,41 @@
 <ul>
 <li>Any new app-level overlay must be added to <code>src/app/overlayRegistry.js</code>. <code>useOverlayState</code>, <code>modalDismissal</code>, <code>useOverlayActions</code>, and <code>App.jsx</code> derive visibility props, setter props, close-all behavior, and topmost-modal dismissal from that registry. The shared <code>closeAllOverlays()</code> callback is invoked by socket lifecycle paths such as <code>match:found</code> before recording the match-success transition, so overlay registration is a matchmaking stability contract on both desktop Escape and mobile/browser back paths.</li>
 </ul>
+<h2>Story Player Frontend</h2>
+<ul>
+<li><code>src/modals/StoryPlayerModal.jsx</code> is the reusable player-side story renderer for onboarding, item-character interactions, and future teaching scenes. <code>OnboardingStoryModal.jsx</code> is now a compatibility wrapper that passes onboarding labels into the same player.</li>
+</ul>
+<ul>
+<li><code>src/app/overlayRegistry.js</code> registers <code>storyPlayer</code> as the generic application-level overlay. It is ordered above warehouse, so Escape and mobile/browser back close the story first and keep the underlying warehouse open. Legacy <code>onboardingStory</code> remains registered for compatibility, but new story playback uses <code>storyPlayer</code>.</li>
+</ul>
+<ul>
+<li><code>src/app/useOnboardingStory.js</code> owns the onboarding lifecycle. Auto display waits for an authenticated user on the <code>home</code> view, fetches <code>/api/onboarding-story</code>, closes other overlays before opening the generic story player, and posts <code>auto-shown</code> once. Manual replay uses the same fetch path through <code>openOnboardingStory()</code> but does not mutate the auto flag.</li>
+</ul>
+<ul>
+<li><code>useWarehouseInventory()</code> treats a returned <code>storyScript</code> from item use as the preferred success presentation: the item effect has already been applied and inventory/user state updated, then the generic story player opens above the warehouse. If no script is returned, the warehouse keeps the legacy <code>effectText</code> result panel.</li>
+</ul>
+<ul>
+<li><code>src/modals/OnboardingStoryModal.jsx</code> is the shared story player for auto, manual, and admin preview. It renders the active node with a vertical stage layout, a centered portrait/speaker block without a separate title/subtitle header, a large text region, typewriter reveal, text-click skip-to-end, delayed options, next/finish navigation, and a secondary skip confirmation dialog. The right-top pure-icon fast-forward button opens the skip confirmation and replaces the ordinary close button in playable stories. Character lookup accepts admin-stored character ids or display names and reads <code>portraitUrl</code>, <code>portrait</code>, or <code>imageUrl</code> so draft scripts still show portraits when content editors select or paste a character name.</li>
+</ul>
+<ul>
+<li><code>HomeHeader</code> exposes the manual “引导” action in both the desktop top-right toolbar group and the compact mobile menu. <code>HomeScreen</code> and <code>AppRoutes</code> pass that callback from the app composition root rather than letting the header fetch feature data directly.</li>
+</ul>
+<ul>
+<li><code>AdminOnboardingStory</code> adds a top-level admin tab for the singleton script. The editor is form-based rather than raw JSON, covering start node, node ids, speaker/character, text, next-node links, and branch options, with an embedded preview rendered through the same <code>OnboardingStoryModal</code> component.</li>
+</ul>
+<h2>Announcement Center UI</h2>
+<ul>
+<li><code>AnnouncementModal</code> 挂载在 <code>AppOverlays</code>，玩家只通过已登录会话访问 <code>/api/announcements*</code>。父弹窗固定默认打开“公告”tab，内部列表每次加载 20 条并用“加载更多”追加；切换 tab 不清除已读状态。</li>
+</ul>
+<ul>
+<li>公告和更新日志都使用新闻式列表行：标题、首次发布时间、未读红点，公告额外显示置顶标签。点击列表行会在父公告窗口内部挂载 <code>nested-modal-backdrop</code> 二级详情弹窗，详情遮罩绝对定位到父窗口边界内，保持父窗口列表仍在背后挂载而不是被详情内容替换或被全屏遮罩覆盖；只有详情打开并成功调用 <code>POST /api/announcements/:id/read</code> 后才清除本条和全局未读摘要。</li>
+</ul>
+<ul>
+<li><code>MarkdownLiteContent</code> 是公告正文的安全 Markdown-lite 渲染边界，只支持段落、保留换行、无序列表、加粗和 <code>http/https</code> 链接，不使用 raw HTML。</li>
+</ul>
+<ul>
+<li>后台“公告管理”由 <code>AdminAnnouncements</code> 提供一个顶级 admin tab，内部再分“公告 / 更新日志”子 tab 和 <code>全部 / 已发布 / 草稿</code> 状态筛选。编辑区桌面显示编辑+预览双栏，移动端通过“编辑 / 预览”切换同一内容；发布、保存草稿、保存修改、取消发布和软删除都是显式按钮。</li>
+</ul>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
 <p>本文记录 Express、Socket.IO、房间生命周期、HTTP 路由边界和生产部署相关设计。新增 API、Socket 事件、房间生命周期模块或部署行为时优先更新本分篇。</p>
@@ -2648,7 +2723,13 @@
 <li><code>room:resume</code> 的空 roomCode 只恢复仍可继续的玩家房间，不会自动拉起 finished room；finished 历史结果只有在客户端显式传入 roomCode 时才允许恢复。这样玩家关闭结果或退出 finished 房间后刷新，不会因为内存房间仍在 5 分钟 review window 内而再次弹出结果。</li>
 </ul>
 <ul>
-<li><code>server/runtimeStabilityMetrics.js</code> 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 <code>patch-gap</code> 或 <code>socket-connect</code> 的 <code>room:resume</code> 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。</li>
+<li><code>server/runtimeStabilityMetrics.js</code> 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 <code>initial-connect</code>、<code>patch-gap</code> 或 <code>socket-connect</code> 的 <code>room:resume</code> 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。</li>
+</ul>
+<ul>
+<li><code>server/serverStartup.js</code> exports <code>SERVER_STARTUP_TASK_ORDER</code> as the auditable startup/schema/seed order. Tests lock the order so future guards can be inserted intentionally instead of depending on incidental function order.</li>
+</ul>
+<ul>
+<li><code>server/roomQueries.js</code> remains the room read boundary. Active-room lists and watch-room summaries can delegate to an injected <code>roomReadModel</code>, while the current single-process runtime continues to use in-memory rooms as the default fallback.</li>
 </ul>
 <h2>API 与实时事件</h2>
 <h2>Production Deployment Hardening</h2>
@@ -2928,6 +3009,35 @@
 <ul>
 <li><code>initializeServerData()</code> runs <code>ensureMailboxSchema()</code> during server startup so older local SQLite databases get the mailbox tables before the player or admin mailbox routes query them.</li>
 </ul>
+<h2>Announcement API</h2>
+<ul>
+<li>公告 API 只有登录后路径，没有未登录访客接口。玩家路由挂在 <code>/api</code>：<code>GET /announcements/summary</code> 返回全局与分 tab 未读摘要，<code>GET /announcements?kind=announcement|changelog&amp;offset=&amp;limit=</code> 返回已发布列表，<code>GET /announcements/:id</code> 返回详情，<code>POST /announcements/:id/read</code> 在打开详情后写入已读并返回新的未读摘要。</li>
+</ul>
+<ul>
+<li>后台管理路由挂在 <code>/api/admin</code> 且走 <code>authHttp + requireAdmin</code>：<code>GET /announcements?kind=&amp;status=all|published|draft</code>、<code>POST /announcements</code>、<code>PATCH /announcements/:id</code> 和 <code>DELETE /announcements/:id</code>。删除是软删除，普通后台/玩家列表均隐藏，没有恢复 UI。</li>
+</ul>
+<ul>
+<li><code>server/announcements.js</code> 负责类型、状态、标题 80 字、正文 10000 字、发布正文非空、置顶只对公告生效、首次发布时间不可因编辑重置、审计日志和未读计算。编辑已发布内容不会重新触发未读；取消发布再发布保留首次发布时间。</li>
+</ul>
+<ul>
+<li><code>initializeServerData()</code> runs <code>ensureAnnouncementSchema()</code> during startup so older local SQLite databases get <code>AnnouncementEntry</code> and <code>AnnouncementRead</code> before announcement routes query them.</li>
+</ul>
+<h2>Story Script API</h2>
+<ul>
+<li>Generic story script behavior lives in <code>server/storyScripts.js</code>. It validates the shared node graph shape (<code>startNodeId</code>, nodes, <code>nextNodeId</code>, branch options), structured trigger fields, publish-time reachability basics, and trigger conflicts. Draft saves may be incomplete; publish requires non-empty nodes, a valid start node, unique node ids, non-empty text, valid targets, and at least one terminal node.</li>
+</ul>
+<ul>
+<li>Player onboarding routes remain under <code>/api</code> for compatibility. <code>GET /api/onboarding-story</code> now reads the published generic <code>StoryScript</code> with trigger <code>onboarding</code> and returns it with <code>autoEligible</code>; <code>POST /api/onboarding-story/auto-shown</code> still records the automatic onboarding touch on the user.</li>
+</ul>
+<ul>
+<li>Admin routes include the legacy onboarding compatibility endpoints plus generic story management under <code>/api/admin/story-scripts</code>. <code>GET /api/admin/story-scripts</code> lists draft/published script payloads, <code>GET /api/admin/story-scripts/:key</code> reads one script, and <code>PATCH /api/admin/story-scripts/:key</code> saves or publishes using <code>action: &quot;save-draft&quot; | &quot;publish&quot;</code>. The API accepts controlled <code>triggerType</code> and <code>triggerParams</code> fields; raw <code>triggerParamsJson</code> is rejected.</li>
+</ul>
+<ul>
+<li><code>useInventoryItem()</code> applies the item business effect first. For character-target item use it then looks up a published <code>item-character-use</code> story with exact <code>{ itemId, characterId }</code> trigger params, interpolates whitelisted <code>{username}</code>, <code>{characterName}</code>, and <code>{itemName}</code> variables, and returns <code>storyScript</code> alongside the existing <code>effectText</code>. Missing scripts keep the legacy effect-text fallback.</li>
+</ul>
+<ul>
+<li><code>initializeServerData()</code> runs <code>ensureStoryScriptSchema()</code>, then the onboarding compatibility schema guard, then <code>seedDefaultStoryScripts()</code>. The seed creates default onboarding plus rainbow-bean-candy scripts for Sigrika and Denia only when missing, and migrates an existing published legacy <code>OnboardingStoryScript</code> into <code>onboarding.default</code> when that generic key does not exist.</li>
+</ul>
 <h2>Admin Analytics API</h2>
 <ul>
 <li>后台分析 API 挂载在 <code>/api/admin/analytics/*</code>，仍走现有 <code>authHttp + requireAdmin</code> 管线。</li>
@@ -3053,6 +3163,7 @@
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <p><code>server/userAssets.js</code> 是账号资产兼容边界：<code>parseAssetList()</code> / <code>parseOwnedItemCounts()</code> 处理旧字符串和公开数组 payload，<code>syncStructuredUserAssets()</code> 将 legacy 字段替换式同步到 <code>UserCharacter</code>、<code>UserDecoration</code>、<code>UserItem</code> 和 <code>UserItemEffect</code>，<code>publicUserAssets()</code> 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。<code>server/db.js</code> 的 <code>publicUser()</code> 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。</p>
+<p>Character-target inventory item use loads structured <code>userCharacters</code> and validates ownership through <code>publicUserAssets()</code>. During the legacy-to-structured migration, structured ownership rows can satisfy character targeting even when the old <code>ownedCharacters</code> string mirror is stale.</p>
 <p>仇远（<code>qiuyuan</code>）是内置剑客角色，立绘位于 <code>/assets/characters/qiuyuan.png</code>，获得方式文案为“部员招募获得”。莫宁（<code>mornye</code> / Mornye）是内置科学家角色，立绘位于 <code>/assets/characters/mornye.png</code>，获得方式文案为“招募获得”。部员招募尚未实装时，<code>server/userAssets.js</code> 将这类角色视为管理员限定资源：管理员公开资产会自动补齐 <code>qiuyuan</code> 和 <code>mornye</code>，普通玩家不会默认拥有或部署。</p>
 <h3>LoginSession</h3>
 <p>持久化登录会话表，用于 refresh cookie、单账号单会话和服务重启后的登录恢复。</p>
@@ -3377,6 +3488,47 @@
 <ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
+<h3>AnnouncementEntry</h3>
+<p>后台维护的公告与更新日志内容表。</p>
+<ul>
+<li><code>kind</code>: <code>announcement</code> 或 <code>changelog</code>。公告可置顶；更新日志不使用置顶。</li>
+</ul>
+<ul>
+<li><code>title</code>: 标题，服务端限制 80 字符。</li>
+</ul>
+<ul>
+<li><code>body</code>: Markdown-lite 正文，服务端限制 10000 字符；草稿可为空，发布时必须非空。</li>
+</ul>
+<ul>
+<li><code>isPublished</code>: 是否对玩家可见。</li>
+</ul>
+<ul>
+<li><code>pinned</code>: 公告置顶标记；玩家公告列表按置顶优先，再按首次发布时间倒序。</li>
+</ul>
+<ul>
+<li><code>firstPublishedAt</code>: 首次发布时间。第一次发布时写入，后续编辑、取消发布、再发布都不重置；玩家列表排序和未读资格都以该字段为准。</li>
+</ul>
+<ul>
+<li><code>deletedAt</code>: 软删除时间。后台普通列表和玩家列表都隐藏软删除条目，当前不提供恢复入口。</li>
+</ul>
+<ul>
+<li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
+</ul>
+<h3>AnnouncementRead</h3>
+<p>玩家公告/更新日志已读表。</p>
+<ul>
+<li><code>userId</code>: 玩家 id，关联 <code>User</code>。</li>
+</ul>
+<ul>
+<li><code>announcementId</code>: 内容 id，关联 <code>AnnouncementEntry</code>。</li>
+</ul>
+<ul>
+<li><code>readAt</code>: 最近一次打开详情并写入已读的时间。</li>
+</ul>
+<ul>
+<li><code>(userId, announcementId)</code> 唯一。未读摘要不预先给所有用户落行，而是按“已发布且 <code>firstPublishedAt &gt; User.createdAt</code> 且没有已读行”即时计算，因此账号创建前首次发布的历史内容可见但不算未读。</li>
+</ul>
+<p>公告 schema 由 migration <code>202606280001_add_announcements</code> 固化，并由启动兼容 guard <code>ensureAnnouncementSchema()</code> 兜底老本地 SQLite；<code>server/schemaIntegrity.test.js</code> 检查 Prisma model 与 migration 同步。</p>
 <h2>Achievement Domain</h2>
 <ul>
 <li><code>AchievementRewardAsset</code> 定义成就奖励资产，字段包括 <code>type</code>、<code>name</code>、<code>description</code>、<code>imageUrl</code>、<code>text</code>、<code>targetType</code>、<code>targetId</code>、<code>amount</code>、<code>enabled</code>、<code>deletedAt</code> 和 <code>sortOrder</code>。奖励类型支持 <code>currency</code>、<code>title</code>、<code>badge</code>、<code>nameplate</code>、<code>character</code>、<code>decoration</code>、<code>item</code>、<code>music</code>；称号、徽章和用户名背景只作为个性化装备资产，角色/装饰/道具奖励必须指向 <code>source = &quot;achievement&quot;</code> 的限定资源。</li>
@@ -3418,6 +3570,28 @@
 <ul>
 <li>The schema is backed by migrations <code>202606220001_add_mailbox_system</code> and <code>202606220002_soft_delete_mailbox_messages</code>, plus the startup compatibility guard <code>ensureMailboxSchema()</code> for older local SQLite databases; <code>server/schemaIntegrity.test.js</code> checks that migrations and the Prisma model stay in sync.</li>
 </ul>
+<h2>Story Script Data Model</h2>
+<ul>
+<li><code>StoryScript</code> is the generic剧情脚本 table. It is keyed by stable <code>key</code>, stores a display <code>title</code>, a controlled <code>triggerType</code>, structured trigger params serialized in <code>triggerParamsJson</code>, draft graph JSON (<code>draftStartNodeId</code>, <code>draftNodesJson</code>), optional published graph JSON (<code>publishedStartNodeId</code>, <code>publishedNodesJson</code>), publish timestamps, and normal create/update timestamps.</li>
+</ul>
+<ul>
+<li>Story nodes are still stored as normalized JSON because each script is a small ordered dialogue graph rather than a query-heavy entity. The service layer validates node ids, speaker/character metadata, text, default next-node links, option labels, and option target ids before publishing.</li>
+</ul>
+<ul>
+<li>Supported MVP trigger types are <code>onboarding</code> and <code>item-character-use</code>; <code>battle-tutorial-start</code> is reserved as a future naming boundary for local teaching battle scenes. <code>item-character-use</code> trigger params require exact <code>{ itemId, characterId }</code>; <code>onboarding</code> and the reserved battle trigger currently require no params.</li>
+</ul>
+<ul>
+<li>At publish time the server permits only one published script for the same trigger type and normalized trigger params. This keeps item-character interactions deterministic: using rainbow bean candy on Denia can resolve to at most one published script.</li>
+</ul>
+<ul>
+<li><code>OnboardingStoryScript</code> remains in the schema as a legacy singleton compatibility source keyed by <code>id = &quot;singleton&quot;</code>. <code>seedDefaultStoryScripts()</code> migrates a valid published legacy onboarding script into <code>StoryScript(key=&quot;onboarding.default&quot;)</code> only when the generic key is missing; it does not overwrite admin edits.</li>
+</ul>
+<ul>
+<li><code>User.onboardingRequired</code> defaults to <code>false</code> for historical users and is set to <code>true</code> when a new user registers after the feature is available. <code>User.onboardingAutoShownAt</code> is null until the automatic story modal is opened successfully from the home view. Recording auto-shown sets <code>onboardingRequired = false</code> and writes <code>onboardingAutoShownAt</code> once; completion, skip, browser refresh, or later manual replay do not reopen the automatic story.</li>
+</ul>
+<ul>
+<li>The generic schema is backed by migration <code>202606280003_add_story_scripts</code> and startup guard <code>ensureStoryScriptSchema()</code>. The onboarding touch fields and legacy table remain backed by <code>202606280002_add_onboarding_story</code> and <code>ensureOnboardingStorySchema()</code>.</li>
+</ul>
 <h2>Source-Scoped Asset Sync</h2>
 <ul>
 <li><code>server/userAssets.js</code> treats compatibility string fields as a legacy mirror. Rows projected from those fields use <code>source = &quot;legacy&quot;</code>.</li>
@@ -3434,6 +3608,9 @@
 </ul>
 <ul>
 <li>运行期静态图片和关键交互音频清单集中在 <code>src/shared/assetRegistry.js</code>，启动预加载从 <code>RUNTIME_IMAGE_ASSETS</code> 读取首页、商店和效果图分组，从 <code>RUNTIME_AUDIO_ASSETS.interaction</code> 读取棋盘/UI 关键音效，避免资源扩展时只改 UI 却漏改预加载。音频路径常量位于纯数据模块 <code>src/shared/audioAssets.js</code>，播放实现 <code>src/audio/effectPlayback.js</code> 只负责加载和播放并继续 re-export 常量以兼容旧调用。 Recruitment opening and result effects <code>recruitment-open.ogg</code>, <code>recruitment-success.ogg</code>, and <code>recruitment-miss.ogg</code> are included in the same interaction SFX preload group.</li>
+</ul>
+<ul>
+<li>Board skill effect image URLs are centralized in <code>src/room/boardSkillEffectAssets.js</code>; <code>src/room/boardSkillEffectRegistry.js</code> imports those constants and <code>boardSkillEffectAssetUrls()</code> so preload coverage and renderer asset dependencies share one tested catalog.</li>
 </ul>
 <ul>
 <li>匹配成功后的对局资源预加载使用 <code>battlePreloadAssets()</code> 按双方房间角色收集立绘、对局 BGM、角色技能 BGM、技能/系统语音和棋盘特效图片，但加载页视觉只展示当前用户自己的出战角色跳动立绘和该角色的后台配置加载台词。本地加载完成后通过 <code>room:preload-ready</code> ack 协议通知服务端；客户端在未收到 <code>{ ok: true }</code> 前会退避重试，socket 重连后也会立即重发当前房间 ready，服务端可安全去重同一玩家的 ready。</li>
@@ -3978,7 +4155,7 @@
 <li><code>src/styles/base.css</code> 现在是 import-only 共享基础入口，具体规则拆到 <code>src/styles/base/</code> 下的 foundation、asset-preload、surfaces-forms-actions、topbar-room-tags、home-legacy-grid、home-stage-artboard、home-stage-toolbox 和 message-feedback；<code>src/styles/room.css</code> 现在是 import-only 房间入口，具体规则拆到 <code>src/styles/room/</code> 下的 layout-tabs、players-timers-skills、import-only board、actions-requests、people-floating-replay 和 chat-responsive，其中 <code>room/board.css</code> 再转入 <code>room/board/</code> 下的 frame/coordinates、row slash、ambient fog、effect canvas/motion、points/preview、stones/skill effects、latest/touch/void 和 grid/scoring 分篇；<code>src/styles/modals.css</code> 是 import-only 共享弹窗入口，具体规则拆到 <code>src/styles/modals/</code> 下的 base-result-skill、import-only replay-mode-resume、nested-profile、profile-character-records、profile-hero-cleanup、profile-social-actions、character-opening、phone 和 terminal-system，其中 <code>modals/replay-mode-resume.css</code> 再转入 <code>modals/replay-mode-resume/</code> 下的 replay list/table、resume header actions、match mode/tabs、resume layout、achievement modal、personalization preview/grid、personalization picker 和 resume character records 分篇；<code>src/styles/commerce-settings.css</code> 也是 import-only 领域入口，具体规则拆到 <code>src/styles/commerce/gacha.css</code>、<code>social-profile.css</code>、<code>shop-settings.css</code>、<code>terminal-polish.css</code>、<code>warehouse-toast.css</code>；<code>src/styles/responsive.css</code> 作为共享响应式入口，按 900px 平板/窄桌面、900px 横屏、760px 紧凑布局、760px 竖屏房间、短横屏房间和 620px 小屏表单/棋盘转入 <code>src/styles/responsive/</code>；<code>src/styles/mobile-room.css</code> 作为共享移动对局入口，按基础 shell/dock、竖屏房间、超窄竖屏、横屏房间、短横屏房间和 reduced-motion 转入 <code>src/styles/mobile-room/</code>；<code>src/styles/hud-components.css</code> 作为共享 HUD 兼容入口，按 HUD 硬化、窄屏 HUD 调整、pop-tech 终端风格、成员手册可读性、角色连锁徽章和用户身份装饰转入 <code>src/styles/hud-components/</code>；<code>src/styles/mobile-adaptive.css</code> 作为最终移动端安全层入口，按通用手机、gacha、shop、社交/仓库、交互动效、房间竖屏/横屏、Bright School 兜底等顺序转入 <code>src/styles/mobile-adaptive/</code>，其中资料互动按钮移动规则单独放在 <code>mobile-profile-social-actions.css</code>，<code>bright-school-portrait.css</code> 再转入 <code>bright-school-portrait/</code> 下的 resume、home plaque、shop wallet、settings/tabs、mobile room/chat 和 character detail 分篇；Bright School 基础主题入口通过 <code>src/styles/themes/bright-school/base.css</code> 转入 <code>base/</code> 下的 paper-root、panels-modals、home-identity、home-gallery、pseudo-cleanup、room-chat-board、forms-content-cards 和 preload-scrollbars 分篇，Bright School 大厅入口通过 <code>src/styles/themes/bright-school/home.css</code> 转入 <code>home/</code> 下的 canvas-purge、main-panel-material、player-zone-clips、student-id-card、manual-entry-label、short-height、narrow-desktop、mobile-compact 和 utility-toolbox 分篇，Bright School 静态图廊一致性覆盖通过 <code>src/styles/themes/bright-school/gallery-polish.css</code> 转入 <code>gallery-polish/</code> 下的 theme-tokens、home-image-entry、home-image-art、paper-surfaces、chat-paper-grid、home-image-interaction 和 theme-addendum 分篇，Bright School 商业覆盖同样通过 <code>src/styles/themes/bright-school/commerce.css</code> 转入 <code>commerce/gacha.css</code>、<code>shop.css</code>、<code>warehouse-profile.css</code>，Bright School 竖屏移动端覆盖通过 <code>src/styles/themes/bright-school/mobile.css</code> 转入 <code>mobile/</code> 下的 home、modal、commerce、house、list、import-only room、motion 和 final-fixes 分篇，其中 <code>mobile/room.css</code> 再转入 <code>mobile/room/</code> 下的 shell-header-menu、viewport-player-strips、board-stage、dock-actions、record-dialogs、touch-board-feedback、modal-sheets 和 flat-controls 分篇；Bright School 早期可读性清理通过 <code>src/styles/themes/bright-school/contrast-purge.css</code> 转入 <code>contrast-purge/</code> 下的 root-shell、surfaces、controls、forms、cards-badges、notebook-details、meters-friend-scroll 和 home-utility-tabs 分篇；Bright School 早期强制清场覆盖通过 <code>src/styles/themes/bright-school/radical-purge.css</code> 转入 <code>radical-purge/</code> 下的 home-top-controls、home-utility-controls、profile-handbook-cleanup、character-detail-cleanup、commerce-social-cleanup 和 room-action-cleanup 分篇；Bright School 高权重防串色覆盖通过 <code>src/styles/themes/bright-school/specificity-overrides.css</code> 转入 <code>specificity-overrides/</code> 下的 global-reset、panel-shells、forms-textareas、settings-panels、character-details、buttons、scrollbars 和 anti-tech-bleed-addendum 分篇；Bright School 弹窗/设置/结果/房间浮层清理通过 <code>src/styles/themes/bright-school/modals.css</code> 转入 <code>modals/</code> 下的 handbook-decoration、surface-cleanup、settings-lobby-cleanup、selected-actions、resume-personalization、result-room-popovers 和 stage-decoration-fixes 分篇；Bright School 技能/棋盘动效覆盖通过 <code>src/styles/themes/bright-school/effects.css</code> 转入 <code>effects/</code> 下的 selected-controls、skill-action-active、skill-action-disabled、board-targeting、board-marks、keyframes 和 reduced-motion 分篇；Bright School 对局可读性覆盖通过 <code>src/styles/themes/bright-school/room.css</code> 转入 <code>room/</code> 下的 header-exit、player-status、skill-floating、player-name-controls、side-tags、board-coordinates 和 flat-controls 分篇；Bright School 组件修复覆盖通过 <code>src/styles/themes/bright-school/component-repairs.css</code> 转入 <code>component-repairs/</code> 下的 foundation-home、shop、lists-profile、warehouse-character、room-board、chat 和 notebook-polish 分篇，Bright School 质量兜底层通过 <code>src/styles/themes/bright-school/quality-base.css</code> 转入 <code>quality-base/</code> 下的 audit-foundation、audit-home、audit-commerce、audit-profile-modals、audit-room、audit-compact、refinement-foundation、refinement-controls、refinement-board 和 sticker-motion 分篇，Bright School 防 HUD 串色的 firewall 入口通过 <code>src/styles/themes/bright-school/firewall.css</code> 转入 <code>firewall/</code> 下的 root-surfaces、explicit-surfaces、explicit-pseudo-elements、controls-forms、semantic-badges、generic-surfaces、generic-pseudo-elements 和 typography 分篇。</li>
 </ul>
 <ul>
-<li>移动端布局由共享移动层、Bright School 移动层和最终 <code>mobile-adaptive.css</code> 安全层共同约束。</li>
+<li>移动端布局由共享移动层、Bright School 移动层和最终 <code>mobile-adaptive.css</code> 安全层共同约束。设置弹窗在最终手机层使用标题、tab、内部面板三行网格，外壳不滚动，当前 <code>settings-panel</code> 自己滚动并 containment；关闭按钮、首页图标按钮和手机菜单按钮保持显式 accessible label 与 44px 触控目标。</li>
 </ul>
 <ul>
 <li>视觉合同应靠 CSS contract tests 锁定，避免后续主题覆盖把语义状态、关闭按钮、移动列表等打散。</li>
@@ -4033,6 +4210,9 @@
 <li>Shared <code>.modal-backdrop</code> stacks above room <code>--room-floating-z</code> surfaces so request and confirmation modals dim skill chips, chat controls, and room member popovers together.</li>
 </ul>
 <ul>
+<li>Player story playback uses a dedicated top modal layer on <code>.onboarding-story-backdrop</code>, above ordinary <code>.modal-backdrop</code> sheets and the final mobile modal safeguard, so item-triggered stories remain clickable while the warehouse or other business modal stays underneath. Story dismissal is centralized: opening the generic player clears the legacy onboarding-story flag, and closing/skipping/back dismissal clears both story overlay flags plus the active script. Admin embedded story previews reset that backdrop to normal document stacking with <code>z-index: auto</code>.</li>
+</ul>
+<ul>
 <li>Mobile room portraits do not render character-chain badges; duplicate-chain data remains in user payloads but is hidden on player-facing portrait surfaces.</li>
 </ul>
 <h2>Feedback Messages</h2>
@@ -4059,7 +4239,7 @@
 </ul>
 <h2>Mobile Responsive Adaptation</h2>
 <ul>
-<li><code>src/styles/mobile-adaptive.css</code> is imported at the end of <code>src/styles/themes.css</code>, preserving the existing <code>styles.css</code> theme-layer contract while making this the final 320px-768px mobile safety layer. The entry is import-only and delegates concrete rules to <code>src/styles/mobile-adaptive/</code>, while keeping existing visual themes and component markup intact and enforcing no page-level horizontal overflow, 44px minimum touch targets for buttons/tabs/icon controls, 16px mobile form inputs, safe-area padding, and media elements constrained to their containers. The portrait mobile battle-room sub-entry <code>src/styles/mobile-adaptive/mobile-room-portrait.css</code> is nested import-only and delegates shell/header/menu, neutral chrome reset, viewport shell, player strips, board viewport, dock panels, and action/decision controls to <code>src/styles/mobile-adaptive/mobile-room-portrait/</code>.</li>
+<li><code>src/styles/mobile-adaptive.css</code> is imported at the end of <code>src/styles/themes.css</code>, preserving the existing <code>styles.css</code> theme-layer contract while making this the final 320px-768px mobile safety layer. The entry is import-only and delegates concrete rules to <code>src/styles/mobile-adaptive/</code>, while keeping existing visual themes and component markup intact and enforcing no page-level horizontal overflow, 44px minimum touch targets for buttons/tabs/icon controls, 16px mobile form inputs, safe-area padding, and media elements constrained to their containers. The portrait mobile battle-room sub-entry <code>src/styles/mobile-adaptive/mobile-room-portrait.css</code> is nested import-only and delegates shell/header/menu, neutral chrome reset, viewport shell, player strips, board viewport, dock panels, and action/decision controls to <code>src/styles/mobile-adaptive/mobile-room-portrait/</code>. The announcement detail sub-entry <code>src/styles/mobile-adaptive/announcement-detail.css</code> is also nested import-only and exists specifically to keep the embedded detail layer the same size as its parent announcement sheet after generic nested-modal and Bright School mobile overrides.</li>
 </ul>
 <ul>
 <li>The shared commerce sub-entry <code>src/styles/commerce/shop-settings.css</code> is import-only and delegates shop shell/tabs, settings panel, shop cards, detail/pagination, compact shop media, compact modal safety, and phone layouts to <code>src/styles/commerce/shop-settings/</code>. This keeps shop, settings, leaderboard/friends mobile guards, and warehouse/house phone fixes in named files while preserving the existing <code>commerce-settings.css</code> import position. Shop card purchase actions must keep unavailable states as native disabled controls and render sold out, already owned, not purchasable, pending purchase, and insufficient-coin buttons with one gray inactive treatment across base, Bright School, and final mobile layers.</li>
@@ -4104,7 +4284,7 @@
 <li>Modal and sheet behavior is normalized for mobile: shop, house, warehouse, leaderboard, friends, settings, message-board, profile, result, replay, and detail dialogs fit within <code>100dvh</code>, keep their outer frame inside the viewport, and assign scrolling to internal content regions. Leaderboard, friend rows, watch rows, and replay tables use mobile cards where compact reading matters; only views that truly need table comparison keep local horizontal scrolling instead of causing page overflow. The final <code>mobile-adaptive.css</code> safety layer explicitly keeps friend and watch lists on card-width rows with <code>overflow-x: hidden</code>, so later theme repairs cannot accidentally restore the old wide-table scroll behavior.</li>
 </ul>
 <ul>
-<li>Mobile interaction feel is owned by the final mobile CSS layers instead of JSX-specific handlers. <code>src/styles/mobile-adaptive.css</code> defines shared tap tokens, removes mobile tap highlights, gives buttons/cards/rows a short 120ms press response, keeps internal scroll containers smooth and contained, and adds lightweight backdrop/sheet entrance animations with a <code>prefers-reduced-motion</code> fallback.</li>
+<li>Mobile interaction feel is owned by the final mobile CSS layers instead of JSX-specific handlers. <code>src/styles/mobile-adaptive.css</code> defines shared tap tokens, removes mobile tap highlights, gives buttons/cards/rows a short 120ms press response, keeps internal scroll containers smooth and contained, and adds lightweight backdrop/sheet entrance animations with a <code>prefers-reduced-motion</code> fallback. Theme and HUD motion should animate transform, opacity, color, or shadow only; progress/timer bars must not declare <code>transition: width</code>, and spring/bounce cubic-bezier curves are avoided in favor of smooth deceleration.</li>
 </ul>
 <ul>
 <li>Bright School's portrait mobile layer is an import-only entry that mirrors the same interaction contract with high-specificity theme rules: home entries, utility buttons, modal controls, shop/warehouse/house cards, table rows, and room dock tabs all get touch-friendly press feedback; board points keep <code>touch-action: none</code> so taps place/confirm stones without page drag, while previewable and touch-confirming points get a subtle scale/brightness response. Board point buttons are exempt from ordinary button chrome in both shared board CSS and the Bright School refinement-board layer: they stay transparent with no appearance, border, shadow, background image, or inherited 44px min-size, so theme button rules cannot paint a white button sheet above the SVG grid. The <code>.board-lines</code> SVG grid is likewise protected from broad media resets by full-size, no max-size, visible-stroke guard rules.</li>
@@ -4128,7 +4308,7 @@
 <li>Round-3 shared-domain cleanup split <code>base/home-legacy-grid.css</code>, <code>base/home-stage-artboard.css</code>, <code>hud-components/pop-tech-terminal.css</code>, <code>mobile-modals/phone-house-resume.css</code>, <code>modals/character-opening.css</code>, <code>responsive/phone-portrait-room.css</code>, <code>modals/mailbox.css</code>, and <code>commerce/recruitment/board.css</code> into nested import-only directories while preserving their existing cascade positions. Round-4 regression gates are recorded as <code>CSS_ROUND4_REGRESSION_CHECKS</code>: static CSS contracts, <code>npm run verify:battle-fixes</code> for focused board/skill/mobile units, and <code>npm run verify:stability -- tests/stability/skill-effects.spec.js</code> for desktop and mobile Pixi skill visual stability.</li>
 </ul>
 <ul>
-<li>Final mobile safety cleanup uses <code>CSS_FINAL_MOBILE_SAFETY_SPLITS</code> instead of the shared-domain list. <code>mobile-adaptive/mobile-profile-records.css</code> now delegates to <code>mobile-adaptive/mobile-profile-records/</code> for profile shell/hero, character record rows, and footer/resume stat repairs, <code>mobile-adaptive/phone-core.css</code> delegates to <code>mobile-adaptive/phone-core/</code> for match mode, shell controls, modal tabs, and scroll/detail/result safety, <code>mobile-adaptive/phone-gacha.css</code> delegates to <code>mobile-adaptive/phone-gacha/</code> for legacy gacha modal, stage, controls, and result dialog survival rules, Bright School final leaderboard cards delegate to <code>mobile-adaptive/bright-school-overrides/leaderboard-cards/</code>, and Bright School portrait resume modal layout/settings tabs delegate to <code>mobile-adaptive/bright-school-portrait/resume-modal-layout/</code> and <code>mobile-adaptive/bright-school-portrait/settings-tabs/</code> while keeping the final 768px and 760px portrait cascade after themes.</li>
+<li>Final mobile safety cleanup uses <code>CSS_FINAL_MOBILE_SAFETY_SPLITS</code> instead of the shared-domain list. <code>mobile-adaptive/mobile-profile-records.css</code> now delegates to <code>mobile-adaptive/mobile-profile-records/</code> for profile shell/hero, character record rows, and footer/resume stat repairs, <code>mobile-adaptive/phone-core.css</code> delegates to <code>mobile-adaptive/phone-core/</code> for match mode, shell controls, modal tabs, and scroll/detail/result safety, <code>mobile-adaptive/phone-gacha.css</code> delegates to <code>mobile-adaptive/phone-gacha/</code> for legacy gacha modal, stage, controls, and result dialog survival rules, Bright School final leaderboard cards delegate to <code>mobile-adaptive/bright-school-overrides/leaderboard-cards/</code>, Bright School portrait resume modal layout/settings tabs delegate to <code>mobile-adaptive/bright-school-portrait/resume-modal-layout/</code> and <code>mobile-adaptive/bright-school-portrait/settings-tabs/</code>, and announcement detail mobile sizing delegates to <code>mobile-adaptive/announcement-detail/</code> while keeping the final 768px and 760px portrait cascade after themes.</li>
 </ul>
 <ul>
 <li>Theme overlay cleanup uses <code>CSS_THEME_OVERLAY_SPLITS</code>. <code>themes/shared.css</code> now delegates to <code>themes/shared/</code> for player theme tokens, theme settings controls, and player-surface wiring, <code>themes/theme-components.css</code> delegates to <code>themes/theme-components/</code> for outcome badges, skill chips, and replay row semantic colors, Bright School component repairs such as <code>foundation-home.css</code>, <code>warehouse-character.css</code>, and <code>notebook-polish.css</code> delegate to matching nested directories, and Bright School portrait room <code>shell-header-menu.css</code>, <code>viewport-player-strips.css</code>, and <code>dock-actions.css</code> now delegate to matching directories under <code>themes/bright-school/mobile/room/</code> while preserving the <code>themes.css</code> order before later Bright School repairs and final mobile safety layers.</li>
@@ -4146,10 +4326,10 @@
 <li>Bright School's final mobile layer keeps login and home titles on one line by scaling type within bounded widths instead of truncating the main title. The login brand and login/register segmented control no longer add tinted background panels on phones or desktop, so the paper grid remains the dominant surface; the outer login card keeps the same lower-right hard shadow depth as Bright School buttons.</li>
 </ul>
 <ul>
-<li>Bright School home image entries use the final import-only <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer even on desktop breakpoints. Concrete rules live under <code>src/styles/mobile-adaptive/home-narrow-desktop/</code> by common region reset, 1181px-1500px wide stage, 1024px-1180px compact stage, 701px-1023px micro-stage scroll, and short-height stack concerns. The card shell can keep labels and sticker shadows visible beyond the border, but the actual member manual and match artwork <code>&lt;img&gt;</code> nodes are forced to <code>box-sizing: border-box</code>, <code>height/max-height: 100%</code>, and <code>object-fit: contain</code>, preventing large or narrow desktop layouts from letting artwork spill below the button frame.</li>
+<li>Bright School home image entries use the final import-only <code>src/styles/mobile-adaptive/home-narrow-desktop.css</code> safety layer even on desktop breakpoints. Concrete rules live under <code>src/styles/mobile-adaptive/home-narrow-desktop/</code> by common region reset, 1181px-1500px wide stage, 1024px-1180px compact stage, 701px-1023px micro-stage scroll, and short-height stack concerns. The member handbook and match entries are image-only buttons: visible <code>data-hud</code>, paper labels, fixed text badges, card bottom label areas, radial glows, and blurred halo shadows are not allowed. Their buttons keep accessible <code>aria-label</code>s, the <code>&lt;img&gt;</code> nodes are decorative and constrained with <code>box-sizing: border-box</code>, <code>height/max-height: 100%</code>, and <code>object-fit: contain</code>, and the final Bright School <code>effects/home-image-entry-buttons.css</code> layer owns non-text hover/focus/active feedback. Desktop hover/focus rotates the entry slightly clockwise and keeps only the single hard image drop-shadow plus focus outline; the later narrow-desktop region reset must preserve that rotation instead of replacing it with lift-only motion. Touch/mobile cannot depend on hover, must keep at least 44px target size, and uses restrained press scaling without layout displacement. <code>prefers-reduced-motion</code> cancels transform movement while preserving focus visibility.</li>
 </ul>
 <ul>
-<li>Bright School 桌面首页采用四段响应式契约：<code>&gt;=1181px</code> 是 wide desktop，主舞台无横向滚动并让匹配入口成为一级视觉主角，其中 <code>1181px-1500px</code> 额外压缩列间距并给玩家铭牌保留可读列宽，避免 1280x768 等中等桌面裁切段位积分；<code>1024px-1180px</code> 是 compact desktop，使用 <code>player/manual/utility/match</code> 命名网格且不允许页面级横向滚动；<code>701px-1023px</code> 是 micro desktop，<code>.home-main-panel</code> 提供受控横向滚动，内部 <code>.home-stage</code> 固定 <code>960px</code> 最小舞台宽度，默认优先露出铭牌和匹配入口；<code>&lt;=700px</code> 继续走移动首页布局。核心可点击入口必须在正常 grid flow 内；Bright School 玩家铭牌内部保持头像、用户名、段位面板三列固定结构，用户名只能在中间列内缩放和收敛，不能跨列遮挡段位面板；低高度桌面允许纵向滚动，footer 只在宽桌面且高度充足时固定在视口右下角。桌面左下工具区是 3x2 “社团工具箱”，每个按钮只包含图标和主标题，移动紧凑规则同样不能隐藏主标题或压缩点击目标。匹配入口下方不展示模式票据；<code>lobbyStats.matchmakingCounts</code> 继续用于点击打开的对弈模式选择卡片，规则文案固定为“路数·时间”与“贴目/规则”两行，计数卡片固定贴到对弈按钮最右侧且“匹配中”保持一行；Bright School 竖屏设置弹窗的标题行高和 tabs 三列布局由最终 portrait 安全层控制，防止标题被裁切或 tab 换行。</li>
+<li>Bright School 桌面首页采用四段响应式契约：<code>&gt;=1181px</code> 是 wide desktop，主舞台无横向滚动并让匹配入口成为一级视觉主角；桌面主舞台统一使用两大列，左列从上到下堆叠玩家铭牌、部员手册和 3x2 “社团工具箱”，右列只放跨三行的匹配图片按钮。<code>1181px-1500px</code> 额外压缩列间距、降低舞台顶部留白、放大右侧匹配入口，并给玩家铭牌保留可读列宽，避免 1280x768 等中等桌面裁切段位积分；<code>1024px-1180px</code> 是 compact desktop，使用 <code>player/manual/utility/match</code> 命名网格，不允许页面级横向滚动，并保持左操作栈加右匹配主列；<code>701px-1023px</code> 是 micro desktop，<code>.home-main-panel</code> 提供受控横向滚动，内部 <code>.home-stage</code> 固定 <code>960px</code> 最小舞台宽度，继续保留左操作栈和右匹配入口的层级；<code>&lt;=700px</code> 继续走移动首页布局。核心可点击入口必须在正常 grid flow 内；Bright School 玩家铭牌内部保持头像、用户名、段位面板三列固定结构，用户名只能在中间列内缩放和收敛，不能跨列遮挡段位面板；低高度桌面允许纵向滚动，footer 只在宽桌面且高度充足时固定在视口右下角。桌面工具区每个按钮只包含图标和主标题，移动紧凑规则同样不能隐藏主标题或压缩点击目标。匹配入口下方不展示模式票据；<code>lobbyStats.matchmakingCounts</code> 继续用于点击打开的对弈模式选择卡片，规则文案固定为“路数·时间”与“贴目/规则”两行，计数卡片固定贴到对弈按钮最右侧且“匹配中”保持一行；Bright School 竖屏设置弹窗的标题行高和 tabs 三列布局由最终 portrait 安全层控制，防止标题被裁切或 tab 换行。</li>
 </ul>
 <ul>
 <li>Bright School portrait home/profile/shop fixes that must survive theme overrides live in the final import-only <code>src/styles/mobile-adaptive/bright-school-portrait.css</code> layer and its <code>src/styles/mobile-adaptive/bright-school-portrait/</code> domain files. The home player plaque reserves a non-collapsing middle column for <code>UserIdentity</code>, keeps equipped nameplates visible inside the username tag, and keeps character-chain badges hidden so they do not cover character art. The resume header uses a two-row grid on phones: title plus close button on the first row, achievement/personalization shortcuts left on the second row, and the visible coin wallet right on the second row. The final portrait rule repeats the desktop-level resume header selectors so desktop grid-column assignments cannot hide the mobile close button; its wallet slot is shrinkable and keeps the coin capsule inside the modal edge. Embedded resume character records use an internally scrolling list with taller rows instead of compressing avatars and text. Bright School shop wallet display now shows only the coin capsule while blue-gem balances remain hidden from shop and resume surfaces.</li>
@@ -4255,6 +4435,44 @@
 <ul>
 <li>The mailbox styles are imported through the existing import-only domain entrypoints: <code>src/styles/modals.css</code>, <code>src/styles/admin.css</code>, and <code>src/styles/home-terminal/top-strip.css</code>.</li>
 </ul>
+<h2>Announcement UI And Mobile</h2>
+<ul>
+<li>The home announcement entry uses a <code>lucide-react</code> newspaper icon in the same top-right action cluster as mailbox/settings on desktop and in the compact mobile menu on phones. A red dot indicates any unread announcement or changelog; tab-level and row-level dots inside the modal use the same semantic unread cue.</li>
+</ul>
+<ul>
+<li><code>src/styles/modals/announcement.css</code> is an import-only player announcement entry delegating to <code>src/styles/modals/announcement/</code>. The parent sheet stays bounded on desktop (<code>min-height</code> around 520px, capped by viewport) and near-fullscreen on phones, while its plain title lockup, segmented tabs, list rows, empty/error states, detail kind pill, and detail body use the same Bright School paper border, 8px control radius, pink selected tab, and 44px touch-target vocabulary as other player windows. The announcement title no longer carries a separate pink decorative badge or dashed frame; its wrapper class avoids the <code>lock</code> substring so Bright School locked-state selectors cannot misclassify it, and rounded controls reserve padding/line-height so labels are not clipped by their radii. Detail headers use one fixed vertical gap so the kind-to-title and title-to-time distances match, and the detail body flexes through the remaining modal height while keeping the sheet's bottom inset visible even for short announcement bodies. <code>src/styles/themes/bright-school/firewall/announcement-controls.css</code> is imported after the generic surface firewall so announcement row buttons keep their 8px row-card treatment instead of inheriting broad item/card chrome. Lists own their internal scroll regions, and details open through a child <code>.nested-modal-backdrop</code> inside the parent announcement modal; the detail backdrop is absolutely bounded by the parent window and the nested detail modal fills that parent-sized layer on desktop and phones. <code>src/styles/mobile-adaptive/announcement-detail/window.css</code> is the final mobile safety override that clears inherited nested-modal full-viewport positioning, restores parent-relative same-size embedding, and beats Bright School's generic full-width nested modal rule.</li>
+</ul>
+<ul>
+<li><code>src/styles/admin/announcements.css</code> defines the admin management page as list + editor workspace on desktop and a single-column mobile flow. Desktop shows edit and Markdown-lite preview side by side; mobile uses an edit/preview segmented switch. Soft-delete uses a normal confirmation dialog that shows the entry title and warns there is no restore entry.</li>
+</ul>
+<ul>
+<li>Announcement styles are imported through the existing import-only domain entrypoints: <code>src/styles/modals.css</code>, <code>src/styles/admin.css</code>, and <code>src/styles/home-terminal/top-strip.css</code>.</li>
+</ul>
+<h2>Story Player UI And Mobile</h2>
+<ul>
+<li><code>src/modals/StoryPlayerModal.jsx</code> is the reusable player story surface for onboarding and item-character interaction scenes. <code>src/styles/modals/onboarding-story.css</code> remains the import-only player story modal entry split into <code>onboarding-story/</code> shell, portrait/text, actions/skip-confirm, and mobile files. It defines the modal as a Bright School vertical theater sheet: a centered paper portrait area at the top with plain centered speaker-name text, no separate title/subtitle header, the largest area reserved for dialogue text, and bottom controls for next, finish, or branch options. Desktop uses a 4:5:1 grid ratio for portrait, text, and controls. The right-top pure-icon fast-forward button owns the skip-confirmation entry and replaces the ordinary close button. The skip confirmation is an absolute child overlay of the story modal, centered inside the parent window with width and height capped to that parent instead of inheriting generic full-screen nested-modal rules. The text area owns its own scroll behavior so long lines do not resize the stage.</li>
+</ul>
+<ul>
+<li>Story portrait options are not limited to playable/admin character rows. <code>src/shared/storyPortraits.js</code> merges the normal character catalog with story-only portraits before admin node selection and player-side rendering; story-only ids such as <code>denia-rainbow-glow</code> may appear in node <code>characterId</code> and render in <code>StoryPlayerModal</code>, while item trigger target selects stay restricted to real characters.</li>
+</ul>
+<ul>
+<li>The typewriter state is visible through the dialogue text region and a small caret treatment. Clicking the text region while typing fills the current node immediately; branch option buttons remain hidden until the current node text is fully visible.</li>
+</ul>
+<ul>
+<li>Story options with an empty <code>nextNodeId</code> are intentional close-window actions. Admin publish validation allows those empty targets while still requiring option labels and rejecting non-empty targets that do not exist in the current script. Player rendering continues to route those empty targets through <code>StoryPlayerModal</code> close behavior.</li>
+</ul>
+<ul>
+<li>Mobile uses the same story order as desktop but lets the sheet fill most of the viewport with safe-area padding and touch-sized controls. The Bright School mobile modal shell explicitly preserves the onboarding modal's grid layout instead of forcing the shared flex-column modal fallback, and the portrait area keeps symmetric padding so the portrait and name stay horizontally centered. Mobile branch buttons stack vertically at equal width; when there are many options the action area can grow and squeeze the text region, with its own internal scroll cap preventing page overflow.</li>
+</ul>
+<ul>
+<li><code>src/styles/admin/onboarding-story.css</code> gives the admin story script editor a two-column desktop workspace with script/trigger form editing and embedded preview side by side, then collapses to a single-column editor/preview flow below the admin mobile breakpoint. The editor card grid must keep the header, script metadata/trigger params, node list, and footer actions as separate rows, with only <code>.admin-onboarding-node-list</code> using the flexible <code>minmax(0, 1fr)</code> row and independent vertical scrollbar for long node scripts. That node scroll region must reserve a stable scrollbar gutter plus right padding, and node cards/header controls must stay shrinkable so metadata fields, delete buttons, inputs, and text do not overlap or render underneath the scrollbar or adjacent preview column on desktop or mobile.</li>
+</ul>
+<ul>
+<li>Player story layering is intentionally higher than warehouse and other app-level business modals on both desktop and mobile; skip/finish/close actions therefore target the story layer first, clear every story overlay state, then reveal the underlying modal state after the story closes.</li>
+</ul>
+<ul>
+<li>Bright School modal shell safeguards include <code>.onboarding-story-modal</code>, keeping close buttons, touch targets, and modal sizing aligned with the existing player modal vocabulary.</li>
+</ul>
 <h2>Mailbox UI And Mobile</h2>
 <ul>
 <li>The home mailbox entry uses a mail icon in the existing top-right action cluster on desktop and in the compact mobile menu on phones. The badge combines unread mail and claimable attachment counts from the summary API.</li>
@@ -4279,7 +4497,7 @@
 <li>CSS 体积和全局层叠仍是前端维护风险。共享基础样式已从单体 <code>base.css</code> 拆成 import-only 入口和 <code>src/styles/base/</code> 领域文件，房间样式已从单体 <code>room.css</code> 拆成 import-only 入口和 <code>src/styles/room/</code> 领域文件，且共享棋盘子入口 <code>src/styles/room/board.css</code> 已继续拆成 import-only 子入口和 <code>src/styles/room/board/</code> 领域文件；Startorch 对局终端皮肤已从单体 <code>room-terminal.css</code> 拆成 import-only 入口和 <code>src/styles/room-terminal/</code> 领域文件，共享弹窗样式已从单体 <code>modals.css</code> 拆成 import-only 入口和 <code>src/styles/modals/</code> 领域文件，且 <code>src/styles/modals/replay-mode-resume.css</code> 已继续拆成 import-only 子入口和 <code>src/styles/modals/replay-mode-resume/</code> 领域文件；移动弹窗安全层已从单体 <code>mobile-modals.css</code> 拆成 import-only 入口和 <code>src/styles/mobile-modals/</code> 领域文件，商业/社交/仓库样式已从单体 <code>commerce-settings.css</code> 拆成 import-only 入口和 <code>src/styles/commerce/</code> 领域文件，且 <code>src/styles/commerce/shop-settings.css</code> 已继续拆成 import-only 子入口和 <code>src/styles/commerce/shop-settings/</code> 领域文件，Startorch 商业/社交终端润色也已继续拆成 import-only 子入口和 <code>src/styles/commerce/terminal-polish/</code> 领域文件；共享响应式层已从单体 <code>responsive.css</code> 拆成 import-only 入口和 <code>src/styles/responsive/</code> 断点文件，共享移动对局层已从单体 <code>mobile-room.css</code> 拆成 import-only 入口和 <code>src/styles/mobile-room/</code> 断点文件，共享 HUD 兼容层已从单体 <code>hud-components.css</code> 拆成 import-only 入口和 <code>src/styles/hud-components/</code> 领域文件，最终移动安全层也从单体 <code>mobile-adaptive.css</code> 拆成 import-only 入口和 <code>src/styles/mobile-adaptive/</code> 领域文件，且 Bright School 最终移动兜底覆盖已继续拆成 import-only 入口和 <code>src/styles/mobile-adaptive/bright-school-overrides/</code> 领域文件，Bright School 竖屏手机最终兜底覆盖已继续拆成 import-only 入口和 <code>src/styles/mobile-adaptive/bright-school-portrait/</code> 领域文件；后台管理样式也从单体 <code>admin.css</code> 拆成 import-only 入口和 <code>src/styles/admin/</code> 领域文件，共享大厅/小屋/观战列表样式也从单体 <code>lobby.css</code> 拆成 import-only 入口和 <code>src/styles/lobby/</code> 领域文件；Bright School 基础主题、早期可读性清理、早期强制清场覆盖、高权重防串色覆盖、大厅主题、静态图廊一致性覆盖、商业覆盖、弹窗/设置/结果/房间浮层清理、动画/技能/棋盘效果、对局可读性覆盖、移动端覆盖、竖屏对局覆盖、组件修复覆盖、质量兜底层和防 HUD 串色 firewall 也分别拆成 import-only 入口与 <code>src/styles/themes/bright-school/base/</code>、<code>src/styles/themes/bright-school/contrast-purge/</code>、<code>src/styles/themes/bright-school/radical-purge/</code>、<code>src/styles/themes/bright-school/specificity-overrides/</code>、<code>src/styles/themes/bright-school/home/</code>、<code>src/styles/themes/bright-school/gallery-polish/</code>、<code>src/styles/themes/bright-school/commerce/</code>、<code>src/styles/themes/bright-school/modals/</code>、<code>src/styles/themes/bright-school/effects/</code>、<code>src/styles/themes/bright-school/room/</code>、<code>src/styles/themes/bright-school/mobile/</code>、<code>src/styles/themes/bright-school/mobile/room/</code>、<code>src/styles/themes/bright-school/component-repairs/</code>、<code>src/styles/themes/bright-school/quality-base/</code>、<code>src/styles/themes/bright-school/firewall/</code> 领域文件；下一步高风险目标转为仍未领域化的其他大样式文件。</li>
 </ul>
 <ul>
-<li><code>src/main.jsx</code> 已瘦身为浏览器挂载入口，应用组合根迁移到 <code>src/app/App.jsx</code>，应用级弹窗可见性已收口到 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态已收口到 <code>src/app/useRoomSessionState.js</code>，匹配等待/成功过渡状态已收口到 <code>src/app/useMatchSessionState.js</code>；App 级音频运行态已收口到 <code>src/app/useAudioRuntimeState.js</code>，负责本地音频设置、持久化和 socket 重连后的背景音恢复信号；下一步可继续把大厅辅助和启动状态编排拆成更聚焦的状态/动作 hook。服务端启动数据与 schema 初始化已收口到 <code>server/serverStartup.js</code>，Socket.IO 连接事件套件已收口到 <code>server/socketEvents.js</code>，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理继续由各自 <code>server/socket*Events.js</code> 分组模块维护，生产静态资源托管已收口到 <code>server/staticAssets.js</code>，账号资产 legacy 字段解析、结构化同步和公开合并规则已收口到 <code>server/userAssets.js</code>；后续重点转为剩余数据模型兼容镜像字段、前端状态编排和 CSS 技术债。运行期图片和关键交互音频资源清单已先收口到 <code>src/shared/assetRegistry.js</code>，后续可继续扩展到角色、后台资源目录和更完整的音频分类。</li>
+<li><code>src/main.jsx</code> 已瘦身为浏览器挂载入口，应用组合根迁移到 <code>src/app/App.jsx</code>，应用级弹窗可见性已收口到 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态已收口到 <code>src/app/useRoomSessionState.js</code>，匹配等待/成功过渡状态已收口到 <code>src/app/useMatchSessionState.js</code>，直连约战 incoming banner 状态已收口到 <code>src/app/useIncomingDuelState.js</code>；App 级音频运行态已收口到 <code>src/app/useAudioRuntimeState.js</code>，负责本地音频设置、持久化和 socket 重连后的背景音恢复信号；下一步可继续把大厅辅助和启动状态编排拆成更聚焦的状态/动作 hook。服务端启动数据与 schema 初始化已收口到 <code>server/serverStartup.js</code>，并由 <code>SERVER_STARTUP_TASK_ORDER</code> 明确可审计顺序；Socket.IO 连接事件套件已收口到 <code>server/socketEvents.js</code>，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理继续由各自 <code>server/socket*Events.js</code> 分组模块维护，生产静态资源托管已收口到 <code>server/staticAssets.js</code>，账号资产 legacy 字段解析、结构化同步和公开合并规则已收口到 <code>server/userAssets.js</code>；后续重点转为剩余数据模型兼容镜像字段、前端状态编排和 CSS 技术债。运行期图片和关键交互音频资源清单已先收口到 <code>src/shared/assetRegistry.js</code>，棋盘技能特效图片 URL 进一步收口到 <code>src/room/boardSkillEffectAssets.js</code>，后续可继续扩展到角色、后台资源目录和更完整的音频分类。</li>
 </ul>
 <ul>
 <li>实时性能已经通过轻量时钟、房间广播边界、结构共享和棋盘 memo 得到改善。</li>
@@ -4451,7 +4669,7 @@
 <li><code>server/roomChatLifecycle.js</code> is the backend room chat entry boundary. Chat sends now share room-code validation, text normalization, room lookup, message id creation, current move-number capture, chat payload shape, and <code>{ room, message }</code> mutation result in one focused module so socket code can emit append-only chat patches without rebuilding a viewer-specific room snapshot.</li>
 </ul>
 <ul>
-<li><code>server/roomQueries.js</code> is the backend room read-model boundary. Active-room lists and watch-room summaries still scan current rooms for projection, but active membership checks and user room lookup delegate to <code>server/roomMembershipIndex.js</code> when available. The index is populated by room creation and persisted-room restore, maintained during room connection/leave/disconnect, cleared by room close and tests, and prefers unfinished active rooms over finished review rooms for the same user so reconnect/resume lands on the playable match first; participant counts and player summaries continue to come from <code>server/roomPresence.js</code>.</li>
+<li><code>server/roomQueries.js</code> is the backend room read-model boundary. Active-room lists and watch-room summaries can delegate to an injected <code>roomReadModel</code>; the current single-process fallback still scans current rooms for projection. Active membership checks and user room lookup delegate to <code>server/roomMembershipIndex.js</code> when available. The index is populated by room creation and persisted-room restore, maintained during room connection/leave/disconnect, cleared by room close and tests, and prefers unfinished active rooms over finished review rooms for the same user so reconnect/resume lands on the playable match first; participant counts and player summaries continue to come from <code>server/roomPresence.js</code>.</li>
 </ul>
 <ul>
 <li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators still receive both black and white projections through <code>gameViews</code>, but players receive only their own visible board state.</li>
@@ -4489,6 +4707,9 @@
 </ul>
 <ul>
 <li><code>src/app/useMailboxSummary.js</code> and <code>src/app/useRecruitmentReadyState.js</code> move feature-specific polling and readyAt timing out of <code>src/app/App.jsx</code>, leaving the app composition root to connect feature hooks to routes/overlays. Future app-shell features should follow this pattern instead of adding more inline polling loops to <code>App.jsx</code>.</li>
+</ul>
+<ul>
+<li><code>src/app/useIncomingDuelState.js</code> moves direct-duel incoming request state out of <code>App.jsx</code>, matching the app-shell hook pattern used for overlays, room sessions, match transitions, mailbox summary, recruitment timing, and audio runtime.</li>
 </ul>
 <ul>
 <li>App-level render failures are contained by <code>src/app/AppErrorBoundary.jsx</code>, and <code>AppRoutes</code> renders the normal preload recovery shell when <code>view=&quot;room&quot;</code> lacks <code>room</code> or <code>user</code>. This keeps reconnect/startup races and unexpected child render errors from producing a blank page.</li>
@@ -4552,6 +4773,9 @@
 </ul>
 <ul>
 <li><code>AGENTS.md</code> keeps the Trellis assistant instructions plus the project rule that every update must keep <code>docs/system-design.md</code> synchronized.</li>
+</ul>
+<ul>
+<li>Impeccable is installed as a project-scoped skill under <code>.agents/skills/impeccable</code>. Its detector hook is controlled by <code>.impeccable/config.json</code>, local consent is stored in <code>.impeccable/config.local.json</code>, Codex runs the PostToolUse manifest from <code>.codex/hooks.json</code>, and live-mode injection is preconfigured through <code>.impeccable/live/config.json</code> for the Vite <code>index.html</code> shell. Codex 0.142 parses <code>.codex/hooks.json</code> with a strict schema, so the shared manifest keeps only the top-level <code>hooks</code> object and stores descriptive notes in system-design docs instead of the JSON file.</li>
 </ul>
 <ul>
 <li>Use <code>py -3 ./.trellis/scripts/get_context.py</code> to inspect current Trellis state. Use <code>py -3 ./.trellis/scripts/task.py create &quot;&lt;title&gt;&quot; --slug &lt;slug&gt;</code> to create tracked tasks before multi-step work.</li>

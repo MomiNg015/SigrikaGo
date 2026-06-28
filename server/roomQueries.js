@@ -7,14 +7,17 @@ import {
 export function createRoomQueries({
   rooms,
   membershipIndex = null,
+  roomReadModel = null,
   onlineParticipantCount = defaultOnlineParticipantCount,
   watchPlayerSummary = defaultWatchPlayerSummary
 }) {
   function listActiveRooms() {
+    if (roomReadModel?.listActiveRooms) return roomReadModel.listActiveRooms();
     return [...rooms.values()].filter((room) => room.game.phase !== GAME_PHASES.finished);
   }
 
   function listWatchRooms() {
+    if (roomReadModel?.listWatchRooms) return roomReadModel.listWatchRooms();
     return [...rooms.values()].map((room) => ({
       code: room.code,
       mode: room.mode ?? room.game.mode ?? "spark",

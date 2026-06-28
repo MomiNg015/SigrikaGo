@@ -4,8 +4,10 @@
 
 ## 当前结论
 
-- `src/main.jsx` 只负责浏览器挂载；`src/app/App.jsx` 是应用组合根，状态通过 `src/app/*` hooks 逐步收口，应用级弹窗可见性由 `src/app/useOverlayState.js` 维护，房间/回放/结果弹窗会话状态由 `src/app/useRoomSessionState.js` 维护，匹配等待/成功过渡状态由 `src/app/useMatchSessionState.js` 维护。
+- `src/main.jsx` 只负责浏览器挂载；`src/app/App.jsx` 是应用组合根，状态通过 `src/app/*` hooks 逐步收口，应用级弹窗可见性由 `src/app/useOverlayState.js` 维护，房间/回放/结果弹窗会话状态由 `src/app/useRoomSessionState.js` 维护，匹配等待/成功过渡状态由 `src/app/useMatchSessionState.js` 维护，直连约战 incoming banner 状态由 `src/app/useIncomingDuelState.js` 维护。
+- Direct-duel incoming banner state is isolated in `src/app/useIncomingDuelState.js`; `App.jsx` only wires `{ incomingDuel, setIncomingDuel }` into socket handlers and overlays so future lobby/social state does not add more transient state to the composition root.
 - 玩家侧主题通过 `src/app/visualTheme.js` 和 `src/styles/themes.css` 维护注册与 CSS 入口。
+- 公告中心作为应用级 overlay 注册在 `src/app/overlayRegistry.js`，入口位于大厅右上角工具栏和移动端折叠菜单；`src/app/useAnnouncementSummary.js` 在进入大厅、打开公告弹窗和详情标记已读后刷新未读摘要。
 - 后台管理新增桌面端分析体验：`AdminOverview` 是默认“今日简报”，用可读总状态、原因、分级解读和下一步动作替代密集表格；`AdminOperations` 是运营分析页，先显示推荐解读，再用低密度 CSS 条形图和卡片展示活跃、注册、对局、分层、经济和模式表现。分析样式集中在 `src/styles/admin/analytics.css`，最终后台控件皮肤集中在 `src/styles/admin/polish.css`，用于统一浅色按钮、输入框、表格、tabs、危险操作和关闭按钮。
 - 前端性能重点在启动预加载、房间快照结构共享、棋盘点位 memo、移动端布局合同。
 - 应用根部由 `AppErrorBoundary` 包裹；`AppRoutes` 对 `view="room"` 但缺少 `room` 或 `user` 的瞬时恢复状态显示预加载恢复页，避免刷新/重连过程中空白渲染。`src/app/roomSnapshot.js` 在 socket full snapshot 进入 UI state 前补齐房间、棋局、聊天和观战者最小安全默认值，后续结构共享仍只比较同房间快照。
@@ -61,7 +63,7 @@
 - `formatStones`: 位于 `src/shared/stoneFormatting.js`，集中封装子数整数/分数显示；`src/shared/game.js` 保持同名转导以兼容既有调用方。
 - `canStartSkill`: 位于 `src/shared/game.js`，前后端共用技能启动前置条件，用于判断棋子目标/棋子依赖技能在当前棋盘状态下是否可用。
 - `rememberPlayerRoom` / `buildRoomResumeRequest` / `handleRoomResumePayload` / `rememberDismissedResultRoom` / `dismissedResultRoomAfterResume`: 位于 `src/app/resumeSession.js`，集中封装前端断线恢复 localStorage 与结果恢复状态编排；`src/app/useRoomMemory.js` 只记住未结束的 active player room，并在尚未进入 active room 的 `match-preloading` 阶段记住 pending match room code，使刷新后 socket `room:resume` 能找回仍在资源准备中的房间。有效 finished 房间不会写回 `sigrika-last-room-code`；玩家关闭结果弹窗或退出 finished 房间时会写入 `sigrika-dismissed-result-room-code` 并清除 last-room，已被用户关闭过的同房间有效结果在后续 `room:resume` 中保持 dismissed，不会重复打开结果弹窗。
-- `useOverlayState` / `OVERLAY_STATE_KEYS`: 位于 `src/app/useOverlayState.js`，集中维护商店、抽卡、棋舍、仓库、履历、排行榜、好友、观战、设置和留言板等应用级弹窗可见性，避免 `App.jsx` 继续堆叠成组 `useState(false)`。
+- `useOverlayState` / `OVERLAY_STATE_KEYS`: 位于 `src/app/useOverlayState.js`，集中维护商店、抽卡、棋舍、仓库、履历、排行榜、好友、观战、设置、公告中心、邮箱、留言板和通用剧情播放器等应用级弹窗可见性，避免 `App.jsx` 继续堆叠成组 `useState(false)`。
 - `modalDismissal`: lives in `src/app/modalDismissal.js` and owns the shared topmost-modal dismissal contract. Desktop Escape and browser/mobile history back close only the current top modal; app overlays, result/match-waiting modals, and the home match-mode picker should use this shared mechanism instead of local keydown/popstate listeners. When no modal is active, the mobile root-back guard intercepts phone/browser back on login, preload, home, admin, and room screens and shows the shared confirm modal with “确定要退出游戏吗？” before allowing the browser to leave the app.
 - `modalDismissal` 的 root-back guard 只响应真实父级回退。功能窗口通过关闭按钮或取消按钮主动关闭时会清理对应 history 哨兵并压制同次 `popstate`，避免误弹退出确认；手机回退关闭功能窗口时同样只关闭最上层窗口。用户在退出确认中点“退出游戏”会先尝试跨过 guard/history 哨兵回退，若浏览器没有可回退页面则跳转到 `about:blank` 作为离开游戏页的兜底。
 - `useRoomSessionState` / `roomSessionView`: 位于 `src/app/useRoomSessionState.js`，集中维护 `room`、`pendingSkill`、`replayStep`、`dismissedResultRoom` 和派生的 `resultModalOpen`，避免结果弹窗可见性在路由、覆盖层和背景音乐间重复计算；对局者关闭某一房间结果后，该房间号会作为去重哨兵阻止同一有效结果再次显示。
@@ -261,3 +263,20 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - `MailboxModal` owns list/detail selection, marks a message read when selected, and calls the player mailbox APIs for manual claim and delete. It reports successful coin or item claims through the existing toast and user-refresh paths.
 - Admin mailbox management is a first-class admin tab. `AdminConsole` loads recent batches and item options, `AdminShell` owns the tab label, and `AdminMailbox` provides user search, target mode selection, one optional attachment, send submission, and recent batch history.
 - Any new app-level overlay must be added to `src/app/overlayRegistry.js`. `useOverlayState`, `modalDismissal`, `useOverlayActions`, and `App.jsx` derive visibility props, setter props, close-all behavior, and topmost-modal dismissal from that registry. The shared `closeAllOverlays()` callback is invoked by socket lifecycle paths such as `match:found` before recording the match-success transition, so overlay registration is a matchmaking stability contract on both desktop Escape and mobile/browser back paths.
+
+## Story Player Frontend
+
+- `src/modals/StoryPlayerModal.jsx` is the reusable player-side story renderer for onboarding, item-character interactions, and future teaching scenes. `OnboardingStoryModal.jsx` is now a compatibility wrapper that passes onboarding labels into the same player.
+- `src/app/overlayRegistry.js` registers `storyPlayer` as the generic application-level overlay. It is ordered above warehouse, so Escape and mobile/browser back close the story first and keep the underlying warehouse open. Legacy `onboardingStory` remains registered for compatibility, but new story playback uses `storyPlayer`.
+- `src/app/useOnboardingStory.js` owns the onboarding lifecycle. Auto display waits for an authenticated user on the `home` view, fetches `/api/onboarding-story`, closes other overlays before opening the generic story player, and posts `auto-shown` once. Manual replay uses the same fetch path through `openOnboardingStory()` but does not mutate the auto flag.
+- `useWarehouseInventory()` treats a returned `storyScript` from item use as the preferred success presentation: the item effect has already been applied and inventory/user state updated, then the generic story player opens above the warehouse. If no script is returned, the warehouse keeps the legacy `effectText` result panel.
+- `src/modals/OnboardingStoryModal.jsx` is the shared story player for auto, manual, and admin preview. It renders the active node with a vertical stage layout, a centered portrait/speaker block without a separate title/subtitle header, a large text region, typewriter reveal, text-click skip-to-end, delayed options, next/finish navigation, and a secondary skip confirmation dialog. The right-top pure-icon fast-forward button opens the skip confirmation and replaces the ordinary close button in playable stories. Character lookup accepts admin-stored character ids or display names and reads `portraitUrl`, `portrait`, or `imageUrl` so draft scripts still show portraits when content editors select or paste a character name.
+- `HomeHeader` exposes the manual “引导” action in both the desktop top-right toolbar group and the compact mobile menu. `HomeScreen` and `AppRoutes` pass that callback from the app composition root rather than letting the header fetch feature data directly.
+- `AdminOnboardingStory` adds a top-level admin tab for the singleton script. The editor is form-based rather than raw JSON, covering start node, node ids, speaker/character, text, next-node links, and branch options, with an embedded preview rendered through the same `OnboardingStoryModal` component.
+
+## Announcement Center UI
+
+- `AnnouncementModal` 挂载在 `AppOverlays`，玩家只通过已登录会话访问 `/api/announcements*`。父弹窗固定默认打开“公告”tab，内部列表每次加载 20 条并用“加载更多”追加；切换 tab 不清除已读状态。
+- 公告和更新日志都使用新闻式列表行：标题、首次发布时间、未读红点，公告额外显示置顶标签。点击列表行会在父公告窗口内部挂载 `nested-modal-backdrop` 二级详情弹窗，详情遮罩绝对定位到父窗口边界内，保持父窗口列表仍在背后挂载而不是被详情内容替换或被全屏遮罩覆盖；只有详情打开并成功调用 `POST /api/announcements/:id/read` 后才清除本条和全局未读摘要。
+- `MarkdownLiteContent` 是公告正文的安全 Markdown-lite 渲染边界，只支持段落、保留换行、无序列表、加粗和 `http/https` 链接，不使用 raw HTML。
+- 后台“公告管理”由 `AdminAnnouncements` 提供一个顶级 admin tab，内部再分“公告 / 更新日志”子 tab 和 `全部 / 已发布 / 草稿` 状态筛选。编辑区桌面显示编辑+预览双栏，移动端通过“编辑 / 预览”切换同一内容；发布、保存草稿、保存修改、取消发布和软删除都是显式按钮。

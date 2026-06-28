@@ -30,6 +30,8 @@ model User {
   ownedDecorations   String   @default("")
   ownedMusicIds      String   @default("")
   musicSelections    String   @default("{}")
+  onboardingRequired Boolean  @default(false)
+  onboardingAutoShownAt DateTime?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   userCharacters     UserCharacter[]
@@ -49,6 +51,7 @@ model User {
   reportsReceived UserReport[] @relation("ReportsReceived")
   mailboxMessages   MailboxMessage[]
   mailboxBatches    MailboxBatch[] @relation("MailboxAdminBatches")
+  announcementReads AnnouncementRead[]
 }
 
 model RecruitmentTask {
@@ -553,6 +556,68 @@ model SiteSetting {
   value     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model AnnouncementEntry {
+  id               String   @id @default(cuid())
+  kind             String
+  title            String
+  body             String   @default("")
+  isPublished      Boolean  @default(false)
+  pinned           Boolean  @default(false)
+  firstPublishedAt DateTime?
+  deletedAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  reads            AnnouncementRead[]
+
+  @@index([kind, isPublished, deletedAt, pinned, firstPublishedAt])
+  @@index([kind, deletedAt, createdAt])
+}
+
+model AnnouncementRead {
+  id             String            @id @default(cuid())
+  userId         String
+  announcementId String
+  readAt         DateTime          @default(now())
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  announcement   AnnouncementEntry @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, announcementId])
+  @@index([userId, readAt])
+  @@index([announcementId])
+}
+
+model StoryScript {
+  id                   String   @id
+  key                  String   @unique
+  title                String   @default("")
+  triggerType          String
+  triggerParamsJson    String   @default("{}")
+  draftStartNodeId     String   @default("")
+  draftNodesJson       String   @default("[]")
+  isPublished          Boolean  @default(false)
+  publishedStartNodeId String   @default("")
+  publishedNodesJson   String   @default("[]")
+  firstPublishedAt     DateTime?
+  publishedAt          DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([triggerType, isPublished])
+}
+
+model OnboardingStoryScript {
+  id                   String   @id
+  draftStartNodeId     String   @default("")
+  draftNodesJson       String   @default("[]")
+  isPublished          Boolean  @default(false)
+  publishedStartNodeId String   @default("")
+  publishedNodesJson   String   @default("[]")
+  firstPublishedAt     DateTime?
+  publishedAt          DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }
 
 model FeedbackMessage {

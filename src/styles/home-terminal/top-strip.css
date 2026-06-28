@@ -125,7 +125,31 @@
   box-shadow: 0 0 14px rgba(255, 77, 114, 0.72);
 }
 
+.announcement-action.has-unread {
+  border-color: rgba(255, 77, 114, 0.76);
+  color: #ff8faa;
+  box-shadow:
+    inset 0 0 14px rgba(255, 77, 114, 0.14),
+    0 0 14px rgba(255, 77, 114, 0.22);
+}
+
+.announcement-badge-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  background: #ff3d66;
+  box-shadow: 0 0 12px rgba(255, 61, 102, 0.86);
+}
+
 .home-mobile-mailbox-action {
+  position: relative;
+}
+
+.home-mobile-announcement-action {
   position: relative;
 }
 
@@ -133,4 +157,10 @@
   position: static;
   margin-left: auto;
   box-shadow: none;
+}
+
+.home-mobile-announcement-action .announcement-badge-dot {
+  position: static;
+  margin-left: auto;
+  flex: 0 0 auto;
 }

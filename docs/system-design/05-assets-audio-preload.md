@@ -6,6 +6,7 @@
 
 - 运行期图片优先引用 WebP；PNG/JPG/GIF 多作为源素材或兼容文件保留。
 - 运行期静态图片和关键交互音频清单集中在 `src/shared/assetRegistry.js`，启动预加载从 `RUNTIME_IMAGE_ASSETS` 读取首页、商店和效果图分组，从 `RUNTIME_AUDIO_ASSETS.interaction` 读取棋盘/UI 关键音效，避免资源扩展时只改 UI 却漏改预加载。音频路径常量位于纯数据模块 `src/shared/audioAssets.js`，播放实现 `src/audio/effectPlayback.js` 只负责加载和播放并继续 re-export 常量以兼容旧调用。 Recruitment opening and result effects `recruitment-open.ogg`, `recruitment-success.ogg`, and `recruitment-miss.ogg` are included in the same interaction SFX preload group.
+- Board skill effect image URLs are centralized in `src/room/boardSkillEffectAssets.js`; `src/room/boardSkillEffectRegistry.js` imports those constants and `boardSkillEffectAssetUrls()` so preload coverage and renderer asset dependencies share one tested catalog.
 - 匹配成功后的对局资源预加载使用 `battlePreloadAssets()` 按双方房间角色收集立绘、对局 BGM、角色技能 BGM、技能/系统语音和棋盘特效图片，但加载页视觉只展示当前用户自己的出战角色跳动立绘和该角色的后台配置加载台词。本地加载完成后通过 `room:preload-ready` ack 协议通知服务端；客户端在未收到 `{ ok: true }` 前会退避重试，socket 重连后也会立即重发当前房间 ready，服务端可安全去重同一玩家的 ready。
 - 登录后预加载分为关键资源和延迟资源，关键资源阻塞进入首页，音乐/语音/商店预览等后台加载。
 - 音频分为 BGM、UI/棋盘音效、角色技能语音和系统语音，复用共享播放与设置通道。BGM WebAudio 加载会校验 `response.ok` 并记录 fetch/decode 失败源；调度失败、无 WebAudio 或浏览器阻止恢复时使用 `Audio` fallback 播放当前曲目，并在 socket 重连、`pageshow`、可见性恢复、在线恢复和首次交互后重试当前曲目。
