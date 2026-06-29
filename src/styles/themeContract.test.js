@@ -567,6 +567,22 @@ describe("player theme CSS contract", () => {
     expect(themeCss).toContain("(prefers-reduced-motion: reduce)");
   });
 
+  it("keeps Bright School mobile story long-text compression from reverting to the default modal grid", () => {
+    const brightSchoolMobileCss = readCssWithImports(new URL("./themes/bright-school/mobile.css", import.meta.url));
+    const defaultStoryGridIndex = brightSchoolMobileCss.indexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal {"
+    );
+    const compressionStoryGridIndex = brightSchoolMobileCss.indexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal.long-text-compress-portrait {"
+    );
+
+    expect(defaultStoryGridIndex).toBeGreaterThanOrEqual(0);
+    expect(compressionStoryGridIndex).toBeGreaterThan(defaultStoryGridIndex);
+    expect(brightSchoolMobileCss).toContain(
+      "grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) auto !important;"
+    );
+  });
+
   it("keeps the new-theme template aligned with the registry contract", () => {
     const template = readFileSync(new URL("./themes/_new-theme-template.css", import.meta.url), "utf8");
 

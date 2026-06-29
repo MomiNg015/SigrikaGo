@@ -209,7 +209,7 @@
 
 ## Story Script Summary
 
-- 通用剧情播放器由 `StoryPlayerModal` 承担，`OnboardingStoryModal` 只是新手引导文案包装。播放器继续使用立绘区、打字机文字区和底部继续/选项区，桌面端默认保持 4:5:1 剧场比例，移动端保留大触控目标和父窗口内跳过确认层。节点级 `effect=long-text-compress-portrait` 会切换为长文本挤压立绘演出：文本区初始尺寸保持默认布局一致，随后随打字机内容增长并可把立绘区压到消失，文本区达到窗口上限后再启用自身滚动；该效果节点的打字速度为默认 1.5 倍。
+- 通用剧情播放器由 `StoryPlayerModal` 承担，`OnboardingStoryModal` 只是新手引导文案包装。播放器继续使用立绘区、打字机文字区和底部继续/选项区，桌面端默认保持 4:5:1 剧场比例，移动端保留大触控目标和父窗口内跳过确认层。节点级 `effect=long-text-compress-portrait` 会切换为长文本挤压立绘演出：文本区初始尺寸保持默认布局一致，随后随打字机内容增长并可把立绘区压到消失，文本区达到窗口上限后再启用自身滚动；该效果节点的打字速度为默认 1.5 倍。Bright School 移动弹窗主题有同等 specificity 的 effect 专用 `grid-template-rows` 覆盖，避免主题默认新手引导网格吞掉挤压演出。
 - 剧情节点的立绘来源可包含角色目录之外的剧情专用候选，统一由 `src/shared/storyPortraits.js` 合成给后台下拉、后台预览和玩家侧 `StoryPlayerModal` 解析；这些候选只用于剧情节点 `characterId`，不改变玩家角色本体、出战角色或道具触发目标。当前内置剧情专用候选包括 `denia-rainbow-glow`，名称为“发彩虹光的达妮娅”，立绘复用 `/assets/characters/denia_color.webp`。
 - 应用级 overlay 新增 `storyPlayer`，排序高于仓库等业务弹窗；道具互动剧情会浮在仓库上方，玩家故事遮罩拥有高于普通 `.modal-backdrop` 与最终移动弹窗兜底层的专用层级。打开通用播放器会先清掉旧 `onboardingStory` 可见状态，跳过/完成/关闭和手机返回会同时关闭 `storyPlayer`、旧 `onboardingStory` 并清空当前脚本，关闭后再露出仓库。`useOnboardingStory()` 仍负责自动新手引导和手动回放，但打开的是同一个通用播放器。
 - 后端新增 `StoryScript` 通用模型和 `server/storyScripts.js` 领域层。脚本包含 `key/title/triggerType/triggerParamsJson`、草稿节点 JSON、发布节点 JSON 和发布时间；发布时校验起始节点、唯一节点 id、正文非空、节点演出效果枚举、选项出现时间非负数字和至少一个结尾节点，并限制同一触发点最多一个已发布脚本。节点选项允许 `nextNodeId` 为空，表示点击该选项后关闭剧情窗口；非空选项目标仍必须指向当前脚本内存在的节点。每个选项可配置 `revealDelaySeconds`，为空时等正文展示完毕后出现，数字则从进入当前节点开始计时后单独出现。

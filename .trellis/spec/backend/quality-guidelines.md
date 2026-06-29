@@ -71,7 +71,7 @@ Questions to answer:
 - Backend story-script tests must assert effect normalization, invalid effect rejection, option reveal-delay preservation, blank compatibility, and invalid delay rejection.
 - Player story tests must assert effect class/data hooks and option reveal timing before and after typewriter completion.
 - Admin story tests must assert the effect control, option-level numeric timing input, and responsive option-row layout.
-- CSS contract tests must keep default story layout unchanged, lock any special effect layout hooks, and prevent the long-text compression effect from starting with a smaller-than-default text region.
+- CSS contract tests must keep default story layout unchanged, lock any special effect layout hooks, and prevent the long-text compression effect from starting with a smaller-than-default text region. Theme contract tests must also cover active mobile theme overrides, because Bright School mobile modal shell rules use `!important` and can otherwise revert effect nodes to the default onboarding story grid.
 
 #### 7. Wrong vs Correct
 

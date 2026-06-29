@@ -77,6 +77,10 @@
     gap: 10px !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal.long-text-compress-portrait {
+    grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) auto !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
     .shop-layout,
     .shop-content,
