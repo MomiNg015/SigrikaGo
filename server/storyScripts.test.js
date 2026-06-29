@@ -7,6 +7,7 @@ import {
   STORY_TRIGGER_TYPES,
   validateStoryScriptInput
 } from "./storyScripts.js";
+import { STORY_NODE_EFFECTS } from "../src/shared/storyPresentation.js";
 
 describe("story script domain", () => {
   it("creates the generic story script table for older local databases", async () => {
@@ -72,6 +73,75 @@ describe("story script domain", () => {
         ]
       }
     });
+  });
+
+  it("normalizes node effects and per-option reveal delays", () => {
+    expect(validateStoryScriptInput({
+      key: "item.rainbow-bean-candy.denia",
+      title: "Timing story",
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: { itemId: "rainbow-bean-candy", characterId: "denia" },
+      draft: {
+        startNodeId: "start",
+        nodes: [
+          {
+            id: "start",
+            speakerName: "Denia",
+            characterId: "denia",
+            effect: STORY_NODE_EFFECTS.longTextCompressPortrait,
+            text: "Long speech",
+            options: [
+              { label: "Interrupt", nextNodeId: "", revealDelaySeconds: "0.5" },
+              { label: "Wait", nextNodeId: "", revealDelaySeconds: "" }
+            ]
+          }
+        ]
+      }
+    }, { publishing: true })).toMatchObject({
+      draft: {
+        nodes: [
+          expect.objectContaining({
+            effect: STORY_NODE_EFFECTS.longTextCompressPortrait,
+            options: [
+              expect.objectContaining({ label: "Interrupt", revealDelaySeconds: 0.5 }),
+              expect.objectContaining({ label: "Wait", revealDelaySeconds: "" })
+            ]
+          })
+        ]
+      }
+    });
+  });
+
+  it("rejects invalid story presentation fields", () => {
+    const baseInput = {
+      key: "item.rainbow-bean-candy.denia",
+      title: "Bad presentation",
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: { itemId: "rainbow-bean-candy", characterId: "denia" },
+      draft: {
+        startNodeId: "start",
+        nodes: [{ id: "start", text: "Hello", options: [{ label: "Done", nextNodeId: "" }] }]
+      }
+    };
+
+    expect(() => validateStoryScriptInput({
+      ...baseInput,
+      draft: {
+        ...baseInput.draft,
+        nodes: [{ ...baseInput.draft.nodes[0], effect: "unknown-effect" }]
+      }
+    }, { publishing: true })).toThrow("剧情节点效果无效");
+
+    expect(() => validateStoryScriptInput({
+      ...baseInput,
+      draft: {
+        ...baseInput.draft,
+        nodes: [{
+          ...baseInput.draft.nodes[0],
+          options: [{ label: "Done", nextNodeId: "", revealDelaySeconds: "-1" }]
+        }]
+      }
+    }, { publishing: true })).toThrow("选项出现时间必须是非负数字");
   });
 
   it("still rejects option targets that name a missing node", () => {

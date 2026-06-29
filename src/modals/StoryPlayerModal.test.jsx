@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import StoryPlayerModal, { nextStoryNodeId } from "./StoryPlayerModal.jsx";
+import StoryPlayerModal, { nextStoryNodeId, visibleStoryOptions } from "./StoryPlayerModal.jsx";
 import { DENIA_RAINBOW_GLOW_STORY_PORTRAIT_ID } from "../shared/storyPortraits.js";
+import { STORY_NODE_EFFECTS } from "../shared/storyPresentation.js";
 
 describe("StoryPlayerModal", () => {
   it("renders configurable story player labels for non-onboarding interactions", () => {
@@ -53,5 +54,43 @@ describe("StoryPlayerModal", () => {
 
   it("treats an option with an empty target as the close-window path", () => {
     expect(nextStoryNodeId({ nextNodeId: "fallback" }, { label: "Sneak away", nextNodeId: "" })).toBe("");
+  });
+
+  it("marks long-text portrait compression nodes for effect styling", () => {
+    const html = renderToStaticMarkup(createElement(StoryPlayerModal, {
+      script: {
+        startNodeId: "start",
+        nodes: [
+          {
+            id: "start",
+            speakerName: "Denia",
+            characterId: "denia",
+            effect: STORY_NODE_EFFECTS.longTextCompressPortrait,
+            text: "very long",
+            nextNodeId: ""
+          }
+        ]
+      },
+      typewriterDisabled: true,
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("onboarding-story-modal long-text-compress-portrait");
+    expect(html).toContain('data-story-effect="long-text-compress-portrait"');
+  });
+
+  it("reveals branch options independently by delay or when typing completes", () => {
+    const node = {
+      options: [
+        { label: "Now", nextNodeId: "", revealDelaySeconds: 0 },
+        { label: "Soon", nextNodeId: "", revealDelaySeconds: "0.5" },
+        { label: "After text", nextNodeId: "" }
+      ]
+    };
+
+    expect(visibleStoryOptions(node, { typingComplete: false, elapsedMs: 0 }).map((option) => option.label)).toEqual(["Now"]);
+    expect(visibleStoryOptions(node, { typingComplete: false, elapsedMs: 499 }).map((option) => option.label)).toEqual(["Now"]);
+    expect(visibleStoryOptions(node, { typingComplete: false, elapsedMs: 500 }).map((option) => option.label)).toEqual(["Now", "Soon"]);
+    expect(visibleStoryOptions(node, { typingComplete: true, elapsedMs: 0 }).map((option) => option.label)).toEqual(["Now", "Soon", "After text"]);
   });
 });

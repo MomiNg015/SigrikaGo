@@ -3,6 +3,7 @@ import { FilePlus2, Plus, RefreshCw, Save, Trash2, Upload } from "lucide-react";
 import { adminApi } from "../api/client.js";
 import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
 import { storyPortraitCatalog, storyPortraitOptions } from "../shared/storyPortraits.js";
+import { STORY_NODE_EFFECT_OPTIONS, STORY_NODE_EFFECTS } from "../shared/storyPresentation.js";
 import { AdminSectionHeader, AdminStatusPill } from "./adminComponents.jsx";
 
 const TRIGGER_TYPES = Object.freeze({
@@ -33,12 +34,14 @@ const TEXT = Object.freeze({
   nodeId: "节点 ID",
   speakerName: "说话人",
   character: "立绘角色",
+  effect: "效果",
   text: "正文",
   nextNodeId: "下一节点",
   options: "选项",
   addOption: "添加选项",
   label: "选项文案",
   target: "目标节点",
+  revealDelaySeconds: "出现时间（秒）",
   preview: "预览",
   draft: "草稿",
   published: "已发布",
@@ -146,7 +149,7 @@ export default function AdminOnboardingStory({ token, characters = [], onNotice 
         startNodeId: current.draft.startNodeId || nextId,
         nodes: [
           ...current.draft.nodes,
-          { id: nextId, speakerName: "", characterId: characters[0]?.slug ?? "", text: "", nextNodeId: "", options: [] }
+          { id: nextId, speakerName: "", characterId: characters[0]?.slug ?? "", effect: STORY_NODE_EFFECTS.none, text: "", nextNodeId: "", options: [] }
         ]
       };
       return { ...current, draft };
@@ -238,6 +241,12 @@ export default function AdminOnboardingStory({ token, characters = [], onNotice 
                   <label>{TEXT.nodeId}<input value={node.id} onChange={(event) => updateNode(index, { id: event.target.value })} /></label>
                   <label>{TEXT.speakerName}<input value={node.speakerName} onChange={(event) => updateNode(index, { speakerName: event.target.value })} /></label>
                   <label>
+                    {TEXT.effect}
+                    <select value={node.effect ?? STORY_NODE_EFFECTS.none} onChange={(event) => updateNode(index, { effect: event.target.value })}>
+                      {STORY_NODE_EFFECT_OPTIONS.map((effect) => <option key={effect.value || "none"} value={effect.value}>{effect.label}</option>)}
+                    </select>
+                  </label>
+                  <label>
                     {TEXT.character}
                     <select value={node.characterId} onChange={(event) => updateNode(index, { characterId: event.target.value })}>
                       <option value="">无</option>
@@ -250,7 +259,7 @@ export default function AdminOnboardingStory({ token, characters = [], onNotice 
                 <div className="admin-onboarding-options">
                   <div className="admin-onboarding-options-title">
                     <span>{TEXT.options}</span>
-                    <button className="secondary-action" type="button" onClick={() => updateNode(index, { options: [...(node.options ?? []), { label: "", nextNodeId: "" }] })}>
+                    <button className="secondary-action" type="button" onClick={() => updateNode(index, { options: [...(node.options ?? []), { label: "", nextNodeId: "", revealDelaySeconds: "" }] })}>
                       <Plus size={16} />{TEXT.addOption}
                     </button>
                   </div>
@@ -258,6 +267,7 @@ export default function AdminOnboardingStory({ token, characters = [], onNotice 
                     <div className="admin-onboarding-option-row" key={optionIndex}>
                       <input aria-label={TEXT.label} placeholder={TEXT.label} value={option.label} onChange={(event) => updateOption(node, index, optionIndex, { label: event.target.value }, updateNode)} />
                       <input aria-label={TEXT.target} placeholder={TEXT.target} value={option.nextNodeId} onChange={(event) => updateOption(node, index, optionIndex, { nextNodeId: event.target.value }, updateNode)} />
+                      <input aria-label={TEXT.revealDelaySeconds} placeholder={TEXT.revealDelaySeconds} type="number" min="0" step="0.1" value={option.revealDelaySeconds ?? ""} onChange={(event) => updateOption(node, index, optionIndex, { revealDelaySeconds: event.target.value }, updateNode)} />
                       <button className="danger-action icon-only" type="button" aria-label="删除选项" onClick={() => updateNode(index, { options: node.options.filter((_, i) => i !== optionIndex) })}>
                         <Trash2 size={16} />
                       </button>

@@ -25,6 +25,7 @@ describe("AdminOnboardingStory", () => {
     expect(adminCss).toContain("grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr)");
     expect(adminCss).toContain("padding-right: 16px");
     expect(adminCss).toContain("scrollbar-gutter: stable both-edges");
+    expect(adminCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(120px, 0.45fr) auto");
     expect(adminCss).toContain(".admin-onboarding-node {\n  min-width: 0");
     expect(adminCss).toContain(".admin-onboarding-node header {\n  min-width: 0");
     expect(adminCss).toContain(".admin-onboarding-node strong {\n  min-width: 0");
@@ -42,5 +43,15 @@ describe("AdminOnboardingStory", () => {
     ]));
     expect(adminSource).toContain("const portraitOptions = useMemo(() => storyPortraitOptions(characters), [characters]);");
     expect(adminSource).toContain("portraitOptions.map((character)");
+  });
+
+  it("adds node effects and per-option reveal timing controls", () => {
+    expect(adminSource).toContain("STORY_NODE_EFFECT_OPTIONS");
+    expect(adminSource).toContain("STORY_NODE_EFFECTS.none");
+    expect(adminSource).toContain("TEXT.effect");
+    expect(adminSource).toContain("TEXT.revealDelaySeconds");
+    expect(adminSource).toContain('type="number"');
+    expect(adminSource).toContain('step="0.1"');
+    expect(adminSource).toContain("revealDelaySeconds: \"\"");
   });
 });

@@ -521,7 +521,7 @@
 </ul>
 <h2>Story Script Summary</h2>
 <ul>
-<li>通用剧情播放器由 <code>StoryPlayerModal</code> 承担，<code>OnboardingStoryModal</code> 只是新手引导文案包装。播放器继续使用立绘区、打字机文字区和底部继续/选项区，桌面端保持 4:5:1 剧场比例，移动端保留大触控目标和父窗口内跳过确认层。</li>
+<li>通用剧情播放器由 <code>StoryPlayerModal</code> 承担，<code>OnboardingStoryModal</code> 只是新手引导文案包装。播放器继续使用立绘区、打字机文字区和底部继续/选项区，桌面端默认保持 4:5:1 剧场比例，移动端保留大触控目标和父窗口内跳过确认层。节点级 <code>effect=long-text-compress-portrait</code> 会切换为长文本挤压立绘演出：文本区随打字机内容增长并可把立绘区压到消失，文本区达到窗口上限后再启用自身滚动。</li>
 </ul>
 <ul>
 <li>剧情节点的立绘来源可包含角色目录之外的剧情专用候选，统一由 <code>src/shared/storyPortraits.js</code> 合成给后台下拉、后台预览和玩家侧 <code>StoryPlayerModal</code> 解析；这些候选只用于剧情节点 <code>characterId</code>，不改变玩家角色本体、出战角色或道具触发目标。当前内置剧情专用候选包括 <code>denia-rainbow-glow</code>，名称为“发彩虹光的达妮娅”，立绘复用 <code>/assets/characters/denia_color.webp</code>。</li>
@@ -530,7 +530,7 @@
 <li>应用级 overlay 新增 <code>storyPlayer</code>，排序高于仓库等业务弹窗；道具互动剧情会浮在仓库上方，玩家故事遮罩拥有高于普通 <code>.modal-backdrop</code> 与最终移动弹窗兜底层的专用层级。打开通用播放器会先清掉旧 <code>onboardingStory</code> 可见状态，跳过/完成/关闭和手机返回会同时关闭 <code>storyPlayer</code>、旧 <code>onboardingStory</code> 并清空当前脚本，关闭后再露出仓库。<code>useOnboardingStory()</code> 仍负责自动新手引导和手动回放，但打开的是同一个通用播放器。</li>
 </ul>
 <ul>
-<li>后端新增 <code>StoryScript</code> 通用模型和 <code>server/storyScripts.js</code> 领域层。脚本包含 <code>key/title/triggerType/triggerParamsJson</code>、草稿节点 JSON、发布节点 JSON 和发布时间；发布时校验起始节点、唯一节点 id、正文非空和至少一个结尾节点，并限制同一触发点最多一个已发布脚本。节点选项允许 <code>nextNodeId</code> 为空，表示点击该选项后关闭剧情窗口；非空选项目标仍必须指向当前脚本内存在的节点。</li>
+<li>后端新增 <code>StoryScript</code> 通用模型和 <code>server/storyScripts.js</code> 领域层。脚本包含 <code>key/title/triggerType/triggerParamsJson</code>、草稿节点 JSON、发布节点 JSON 和发布时间；发布时校验起始节点、唯一节点 id、正文非空、节点演出效果枚举、选项出现时间非负数字和至少一个结尾节点，并限制同一触发点最多一个已发布脚本。节点选项允许 <code>nextNodeId</code> 为空，表示点击该选项后关闭剧情窗口；非空选项目标仍必须指向当前脚本内存在的节点。每个选项可配置 <code>revealDelaySeconds</code>，为空时等正文展示完毕后出现，数字则从进入当前节点开始计时后单独出现。</li>
 </ul>
 <ul>
 <li>MVP 触发器包括 <code>onboarding</code> 与 <code>item-character-use</code>，并预留 <code>battle-tutorial-start</code> 命名边界。彩虹豆豆跳跳糖作用到西格莉卡或达妮娅后，服务端先完成道具结算、成就触发和资产同步，再按 <code>{ itemId, characterId }</code> 查找剧情脚本并返回；没有脚本时前端继续显示旧 <code>effectText</code>。</li>
@@ -3024,7 +3024,7 @@
 </ul>
 <h2>Story Script API</h2>
 <ul>
-<li>Generic story script behavior lives in <code>server/storyScripts.js</code>. It validates the shared node graph shape (<code>startNodeId</code>, nodes, <code>nextNodeId</code>, branch options), structured trigger fields, publish-time reachability basics, and trigger conflicts. Draft saves may be incomplete; publish requires non-empty nodes, a valid start node, unique node ids, non-empty text, valid targets, and at least one terminal node.</li>
+<li>Generic story script behavior lives in <code>server/storyScripts.js</code>. It validates the shared node graph shape (<code>startNodeId</code>, nodes, node <code>effect</code>, <code>nextNodeId</code>, branch options, per-option <code>revealDelaySeconds</code>), structured trigger fields, publish-time reachability basics, and trigger conflicts. Draft saves may be incomplete, but story presentation fields are still normalized at the API boundary: node effects must be known values, and option reveal delays must be blank or non-negative finite seconds. Publish requires non-empty nodes, a valid start node, unique node ids, non-empty text, valid targets, and at least one terminal node.</li>
 </ul>
 <ul>
 <li>Player onboarding routes remain under <code>/api</code> for compatibility. <code>GET /api/onboarding-story</code> now reads the published generic <code>StoryScript</code> with trigger <code>onboarding</code> and returns it with <code>autoEligible</code>; <code>POST /api/onboarding-story/auto-shown</code> still records the automatic onboarding touch on the user.</li>
@@ -4450,13 +4450,16 @@
 </ul>
 <h2>Story Player UI And Mobile</h2>
 <ul>
-<li><code>src/modals/StoryPlayerModal.jsx</code> is the reusable player story surface for onboarding and item-character interaction scenes. <code>src/styles/modals/onboarding-story.css</code> remains the import-only player story modal entry split into <code>onboarding-story/</code> shell, portrait/text, actions/skip-confirm, and mobile files. It defines the modal as a Bright School vertical theater sheet: a centered paper portrait area at the top with plain centered speaker-name text, no separate title/subtitle header, the largest area reserved for dialogue text, and bottom controls for next, finish, or branch options. Desktop uses a 4:5:1 grid ratio for portrait, text, and controls. The right-top pure-icon fast-forward button owns the skip-confirmation entry and replaces the ordinary close button. The skip confirmation is an absolute child overlay of the story modal, centered inside the parent window with width and height capped to that parent instead of inheriting generic full-screen nested-modal rules. The text area owns its own scroll behavior so long lines do not resize the stage.</li>
+<li><code>src/modals/StoryPlayerModal.jsx</code> is the reusable player story surface for onboarding and item-character interaction scenes. <code>src/styles/modals/onboarding-story.css</code> remains the import-only player story modal entry split into <code>onboarding-story/</code> shell, portrait/text, actions/skip-confirm, and mobile files. It defines the modal as a Bright School vertical theater sheet: a centered paper portrait area at the top with plain centered speaker-name text, no separate title/subtitle header, the largest area reserved for dialogue text, and bottom controls for next, finish, or branch options. Desktop defaults to a 4:5:1 grid ratio for portrait, text, and controls. The right-top pure-icon fast-forward button owns the skip-confirmation entry and replaces the ordinary close button. The skip confirmation is an absolute child overlay of the story modal, centered inside the parent window with width and height capped to that parent instead of inheriting generic full-screen nested-modal rules. The default text area owns its own scroll behavior so long lines do not resize the stage.</li>
 </ul>
 <ul>
 <li>Story portrait options are not limited to playable/admin character rows. <code>src/shared/storyPortraits.js</code> merges the normal character catalog with story-only portraits before admin node selection and player-side rendering; story-only ids such as <code>denia-rainbow-glow</code> may appear in node <code>characterId</code> and render in <code>StoryPlayerModal</code>, while item trigger target selects stay restricted to real characters.</li>
 </ul>
 <ul>
-<li>The typewriter state is visible through the dialogue text region and a small caret treatment. Clicking the text region while typing fills the current node immediately; branch option buttons remain hidden until the current node text is fully visible.</li>
+<li>The typewriter state is visible through the dialogue text region and a small caret treatment. Clicking the text region while typing fills the current node immediately; branch option buttons normally remain hidden until the current node text is fully visible. Individual options may set <code>revealDelaySeconds</code>; those options appear after their own non-negative delay from node entry, and all remaining options appear when the text completes.</li>
+</ul>
+<ul>
+<li>Story nodes may set <code>effect=long-text-compress-portrait</code>. That mode switches the modal from the default grid to a vertical flex performance layout: the text region grows with typed content, squeezes the portrait region down to zero if needed, and only enables text-region scrolling after the text reaches the modal's viewport-bounded height.</li>
 </ul>
 <ul>
 <li>Story options with an empty <code>nextNodeId</code> are intentional close-window actions. Admin publish validation allows those empty targets while still requiring option labels and rejecting non-empty targets that do not exist in the current script. Player rendering continues to route those empty targets through <code>StoryPlayerModal</code> close behavior.</li>

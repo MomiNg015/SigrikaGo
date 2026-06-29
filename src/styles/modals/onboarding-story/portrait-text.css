@@ -101,6 +101,37 @@
   animation: onboarding-caret 900ms steps(2, end) infinite;
 }
 
+.onboarding-story-modal.long-text-compress-portrait .onboarding-story-portrait {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  padding-block: 0;
+}
+
+.onboarding-story-modal.long-text-compress-portrait .onboarding-story-portrait::before {
+  display: none;
+}
+
+.onboarding-story-modal.long-text-compress-portrait .onboarding-story-portrait img {
+  max-height: 100%;
+}
+
+.onboarding-story-modal.long-text-compress-portrait .onboarding-story-portrait div {
+  max-height: 2.4em;
+  overflow: hidden;
+}
+
+.onboarding-story-modal.long-text-compress-portrait .onboarding-story-text-button {
+  flex: 0 1 auto;
+  min-height: 96px;
+  max-height: calc(100% - 64px);
+  overflow: auto;
+}
+
+.onboarding-story-modal.long-text-compress-portrait .onboarding-story-actions {
+  flex: 0 0 auto;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-text-button,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-text-button:hover,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-text-button:focus-visible {

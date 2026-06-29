@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FastForward, X } from "lucide-react";
 import { storyPortraitCatalog } from "../shared/storyPortraits.js";
+import { isLongTextCompressPortraitEffect } from "../shared/storyPresentation.js";
 
 export const STORY_PLAYER_DEFAULT_TEXT = Object.freeze({
   title: "剧情",
@@ -30,12 +31,18 @@ export default function StoryPlayerModal({
   const nodesById = useMemo(() => new Map((script?.nodes ?? []).map((node) => [node.id, node])), [script]);
   const [nodeId, setNodeId] = useState(script?.startNodeId ?? "");
   const [visibleCount, setVisibleCount] = useState(typewriterDisabled ? currentNodeText(nodesById.get(script?.startNodeId ?? "")).length : 0);
+  const [nodeTimer, setNodeTimer] = useState(() => ({ nodeId: script?.startNodeId ?? "", elapsedMs: 0 }));
   const [skipConfirmOpen, setSkipConfirmOpen] = useState(false);
   const node = nodesById.get(nodeId) ?? null;
   const text = currentNodeText(node);
   const typingComplete = typewriterDisabled || visibleCount >= text.length;
   const displayText = typingComplete ? text : text.slice(0, visibleCount);
   const character = resolveCharacter(node?.characterId, characters);
+  const nodeElapsedMs = nodeTimer.nodeId === nodeId ? nodeTimer.elapsedMs : 0;
+  const visibleOptions = visibleStoryOptions(node, { typingComplete, elapsedMs: nodeElapsedMs });
+  const hasOptions = (node?.options?.length ?? 0) > 0;
+  const compressPortrait = isLongTextCompressPortraitEffect(node?.effect);
+  const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}`;
 
   useEffect(() => {
     setNodeId(script?.startNodeId ?? "");
@@ -43,6 +50,7 @@ export default function StoryPlayerModal({
 
   useEffect(() => {
     setVisibleCount(typewriterDisabled ? text.length : 0);
+    setNodeTimer({ nodeId, elapsedMs: 0 });
   }, [nodeId, text.length, typewriterDisabled]);
 
   useEffect(() => {
@@ -52,6 +60,20 @@ export default function StoryPlayerModal({
     }, TYPEWRITER_INTERVAL_MS);
     return () => window.clearTimeout(timer);
   }, [node, text.length, typewriterDisabled, visibleCount]);
+
+  useEffect(() => {
+    if (typewriterDisabled || typingComplete || !hasOptions) return undefined;
+    const nextDelayMs = nextOptionRevealDelayMs(node, nodeElapsedMs);
+    if (nextDelayMs == null) return undefined;
+    const timer = window.setTimeout(() => {
+      setNodeTimer((current) => (
+        current.nodeId === nodeId
+          ? { nodeId, elapsedMs: Math.max(current.elapsedMs, nextDelayMs) }
+          : current
+      ));
+    }, Math.max(0, nextDelayMs - nodeElapsedMs));
+    return () => window.clearTimeout(timer);
+  }, [hasOptions, node, nodeElapsedMs, nodeId, typewriterDisabled, typingComplete]);
 
   function moveTo(nextId) {
     if (!nextId || !nodesById.has(nextId)) {
@@ -84,7 +106,7 @@ export default function StoryPlayerModal({
 
   return (
     <div className="modal-backdrop onboarding-story-backdrop" onClick={onClose}>
-      <section className="modal-panel onboarding-story-modal" onClick={(event) => event.stopPropagation()} aria-label={textLabels.title}>
+      <section className={modalClassName} data-story-effect={node.effect || undefined} onClick={(event) => event.stopPropagation()} aria-label={textLabels.title}>
         <button className="onboarding-story-fast-forward" type="button" aria-label={textLabels.fastForward} title={textLabels.skip} onClick={() => setSkipConfirmOpen(true)}>
           <FastForward size={22} />
         </button>
@@ -109,16 +131,16 @@ export default function StoryPlayerModal({
         </div>
 
         <footer className="onboarding-story-actions">
-          {typingComplete && node.options?.length > 0 && (
+          {visibleOptions.length > 0 && (
             <div className="onboarding-story-options">
-              {node.options.map((option) => (
+              {visibleOptions.map((option) => (
                 <button key={`${node.id}:${option.label}:${option.nextNodeId}`} className="primary-action" type="button" onClick={() => moveTo(nextStoryNodeId(node, option))}>
                   {option.label}
                 </button>
               ))}
             </div>
           )}
-          {typingComplete && !node.options?.length && (
+          {typingComplete && !hasOptions && (
             <button className="primary-action onboarding-story-single-action" type="button" onClick={() => moveTo(nextStoryNodeId(node))}>
               {node.nextNodeId ? textLabels.continue : textLabels.finish}
             </button>
@@ -144,6 +166,31 @@ export default function StoryPlayerModal({
 
 export function nextStoryNodeId(node, option = null) {
   return String(option?.nextNodeId ?? node?.nextNodeId ?? "").trim();
+}
+
+export function visibleStoryOptions(node, { typingComplete = false, elapsedMs = 0 } = {}) {
+  const options = Array.isArray(node?.options) ? node.options : [];
+  if (typingComplete) return options;
+  return options.filter((option) => {
+    const delayMs = optionRevealDelayMs(option);
+    return delayMs != null && elapsedMs >= delayMs;
+  });
+}
+
+export function optionRevealDelayMs(option) {
+  const value = typeof option?.revealDelaySeconds === "string"
+    ? option.revealDelaySeconds.trim()
+    : option?.revealDelaySeconds;
+  if (value == null || value === "") return null;
+  const seconds = Number(value);
+  return Number.isFinite(seconds) && seconds >= 0 ? seconds * 1000 : null;
+}
+
+function nextOptionRevealDelayMs(node, elapsedMs) {
+  const delays = (node?.options ?? [])
+    .map(optionRevealDelayMs)
+    .filter((delayMs) => delayMs != null && delayMs > elapsedMs);
+  return delays.length ? Math.min(...delays) : null;
 }
 
 function currentNodeText(node) {

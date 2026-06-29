@@ -36,6 +36,11 @@
   right: 12px;
 }
 
+.onboarding-story-modal.long-text-compress-portrait {
+  display: flex;
+  flex-direction: column;
+}
+
 .onboarding-story-fast-forward {
   position: absolute;
   top: 12px;

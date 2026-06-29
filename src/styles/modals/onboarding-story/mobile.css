@@ -55,6 +55,15 @@
     font-size: clamp(12px, 3.7vw, 16px);
     padding-inline: 10px;
   }
+
+  .onboarding-story-modal.long-text-compress-portrait .onboarding-story-portrait {
+    padding-block: 0;
+  }
+
+  .onboarding-story-modal.long-text-compress-portrait .onboarding-story-text-button {
+    min-height: 96px;
+    max-height: calc(100% - 56px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

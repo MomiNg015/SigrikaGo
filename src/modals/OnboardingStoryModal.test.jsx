@@ -78,6 +78,11 @@ describe("OnboardingStoryModal", () => {
 
     expect(backdropBlock).toContain("z-index: 100100 !important");
     expect(onboardingStoryCss).toContain("grid-template-rows: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 1fr)");
+    expect(onboardingStoryCss).toContain(".onboarding-story-modal.long-text-compress-portrait");
+    expect(onboardingStoryCss).toContain("flex-direction: column");
+    expect(onboardingStoryCss).toContain("flex: 1 1 0");
+    expect(onboardingStoryCss).toContain("max-height: calc(100% - 64px)");
+    expect(onboardingStoryCss).toContain("overflow: auto;");
     expect(onboardingStoryCss).toContain("grid-template-columns: repeat(auto-fit, minmax(0, 1fr))");
     expect(onboardingStoryCss).toContain("max-height: min(34dvh, 260px)");
     expect(onboardingStoryCss).toContain(".onboarding-story-portrait div");

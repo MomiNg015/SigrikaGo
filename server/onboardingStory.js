@@ -1,4 +1,5 @@
 import { routeError } from "./adminRouteErrors.js";
+import { normalizeStoryNodeEffect } from "../src/shared/storyPresentation.js";
 import {
   getAdminStoryScript,
   getPublishedStoryScriptForTrigger,
@@ -28,6 +29,8 @@ const ERRORS = Object.freeze({
   targetMissing: "\u8df3\u8f6c\u76ee\u6807\u4e0d\u5b58\u5728",
   optionLabelRequired: "\u9009\u9879\u6587\u6848\u4e0d\u80fd\u4e3a\u7a7a",
   optionTargetRequired: "\u9009\u9879\u76ee\u6807\u4e0d\u80fd\u4e3a\u7a7a",
+  invalidNodeEffect: "\u5267\u60c5\u8282\u70b9\u6548\u679c\u65e0\u6548",
+  invalidOptionRevealDelay: "\u9009\u9879\u51fa\u73b0\u65f6\u95f4\u5fc5\u987b\u662f\u975e\u8d1f\u6570\u5b57",
   endingRequired: "\u81f3\u5c11\u9700\u8981\u4e00\u4e2a\u7ed3\u675f\u8282\u70b9"
 });
 
@@ -191,10 +194,13 @@ function onboardingInput(input = {}) {
 
 function normalizeNode(node = {}) {
   const options = Array.isArray(node.options) ? node.options.map(normalizeOption) : [];
+  const effect = normalizeStoryNodeEffect(node.effect);
+  if (effect == null) throw routeError(400, ERRORS.invalidNodeEffect);
   return {
     id: normalizeText(node.id),
     speakerName: normalizeText(node.speakerName),
     characterId: normalizeText(node.characterId),
+    effect,
     text: normalizeText(node.text),
     nextNodeId: normalizeText(node.nextNodeId),
     options
@@ -204,8 +210,17 @@ function normalizeNode(node = {}) {
 function normalizeOption(option = {}) {
   return {
     label: normalizeText(option.label),
-    nextNodeId: normalizeText(option.nextNodeId)
+    nextNodeId: normalizeText(option.nextNodeId),
+    revealDelaySeconds: normalizeOptionRevealDelaySeconds(option.revealDelaySeconds)
   };
+}
+
+function normalizeOptionRevealDelaySeconds(value) {
+  const normalized = typeof value === "string" ? value.trim() : value;
+  if (normalized == null || normalized === "") return "";
+  const delay = Number(normalized);
+  if (!Number.isFinite(delay) || delay < 0) throw routeError(400, ERRORS.invalidOptionRevealDelay);
+  return delay;
 }
 
 function normalizeText(value) {

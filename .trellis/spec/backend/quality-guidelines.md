@@ -32,6 +32,74 @@ Questions to answer:
 
 <!-- Patterns that must always be used -->
 
+### Scenario: Story Script Presentation Fields
+
+#### 1. Scope / Trigger
+- Trigger: changing generic story script node fields, option fields, admin story editing, `StoryPlayerModal`, or story-script validation.
+- Story scripts are stored as JSON in `StoryScript.draftNodesJson` and `StoryScript.publishedNodesJson`, so field additions must survive UI edit, API normalization, persistence, player playback, and legacy onboarding compatibility paths.
+
+#### 2. Signatures
+- Node fields: `{ id, speakerName, characterId, effect, text, nextNodeId, options }`.
+- Supported node effects come from `src/shared/storyPresentation.js`; empty string means no special effect.
+- Option fields: `{ label, nextNodeId, revealDelaySeconds }`.
+- `revealDelaySeconds` is either blank or a non-negative finite number of seconds.
+- `nextNodeId: ""` on an option is a close-window action, not a validation failure.
+
+#### 3. Contracts
+- Keep story presentation constants in `src/shared/storyPresentation.js` when both frontend and backend need the same ids.
+- `server/storyScripts.js` is the authoritative API normalization boundary for generic story scripts. It must preserve `effect` and per-option `revealDelaySeconds` when saving drafts, publishing, reading admin payloads, and returning player payloads.
+- The legacy onboarding compatibility normalizer in `server/onboardingStory.js` must stay aligned enough to preserve the same node and option presentation fields when it parses legacy JSON.
+- Admin editing should bind `effect` at node level and `revealDelaySeconds` at option level. Do not move reveal timing to the node unless the product contract changes.
+- Player rendering should treat blank reveal delays as "after typewriter complete" and numeric delays as timers from current-node entry. Completing the typewriter immediately reveals all options.
+
+#### 4. Validation & Error Matrix
+- Unknown `effect` -> HTTP 400 story input error.
+- Blank `effect` or missing `effect` -> normalize to no effect.
+- Missing or blank `revealDelaySeconds` -> normalize to blank and wait for text completion.
+- `revealDelaySeconds < 0`, `NaN`, or infinite -> HTTP 400 story input error.
+- Option `nextNodeId === ""` -> valid terminal close action.
+- Non-empty option target missing from current script -> publish-time target error.
+
+#### 5. Good/Base/Bad Cases
+- Good: `{ effect: "long-text-compress-portrait" }` reaches the player and only that node switches story modal layout.
+- Good: one option with `revealDelaySeconds: 0.5` appears while the text is still typing, while a blank-delay sibling waits for text completion.
+- Base: older nodes with no `effect` or `revealDelaySeconds` continue playing with default behavior.
+- Bad: adding an option timing field to the admin form but forgetting `normalizeOption()`, because the value will disappear on save.
+- Bad: using a node-level options reveal delay after the option-level contract is established.
+
+#### 6. Tests Required
+- Backend story-script tests must assert effect normalization, invalid effect rejection, option reveal-delay preservation, blank compatibility, and invalid delay rejection.
+- Player story tests must assert effect class/data hooks and option reveal timing before and after typewriter completion.
+- Admin story tests must assert the effect control, option-level numeric timing input, and responsive option-row layout.
+- CSS contract tests must keep default story layout unchanged and lock any special effect layout hooks.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+function normalizeOption(option = {}) {
+  return {
+    label: normalizeText(option.label),
+    nextNodeId: normalizeText(option.nextNodeId)
+  };
+}
+```
+
+This silently drops option timing on save.
+
+Correct:
+
+```js
+function normalizeOption(option = {}) {
+  return {
+    label: normalizeText(option.label),
+    nextNodeId: normalizeText(option.nextNodeId),
+    revealDelaySeconds: normalizeOptionRevealDelaySeconds(option.revealDelaySeconds)
+  };
+}
+```
+
 ### Match Preload Room Boundary
 
 Matched and accepted-duel rooms must start in `GAME_PHASES.preloading` and use `server/roomPreparationLifecycle.js` as the only boundary for player resource readiness. Socket handlers may validate `room:preload-ready` and forward `{ roomCode, userId }`, but they must not mutate room phase directly. The lifecycle owns ready counts, the 90 second timeout, `match:preload-timeout`, transition into `opening`, and scheduling the existing game-start timer.

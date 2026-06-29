@@ -1,4 +1,5 @@
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import { normalizeStoryNodeEffect } from "../src/shared/storyPresentation.js";
 import { routeError } from "./adminRouteErrors.js";
 import { writeAudit } from "./adminAudit.js";
 import { RAINBOW_BEAN_CANDY_ID } from "./itemEffects.js";
@@ -34,6 +35,8 @@ const ERRORS = Object.freeze({
   targetMissing: "跳转目标不存在",
   optionLabelRequired: "选项文案不能为空",
   optionTargetRequired: "选项目标不能为空",
+  invalidNodeEffect: "剧情节点效果无效",
+  invalidOptionRevealDelay: "选项出现时间必须是非负数字",
   endingRequired: "至少需要一个结束节点",
   triggerConflict: "同一个触发点只能发布一个剧情脚本"
 });
@@ -489,10 +492,13 @@ function interpolateText(text, variables = {}) {
 
 function normalizeNode(node = {}) {
   const options = Array.isArray(node.options) ? node.options.map(normalizeOption) : [];
+  const effect = normalizeStoryNodeEffect(node.effect);
+  if (effect == null) throw routeError(400, ERRORS.invalidNodeEffect);
   return {
     id: normalizeText(node.id),
     speakerName: normalizeText(node.speakerName),
     characterId: normalizeText(node.characterId),
+    effect,
     text: normalizeText(node.text),
     nextNodeId: normalizeText(node.nextNodeId),
     options
@@ -502,8 +508,17 @@ function normalizeNode(node = {}) {
 function normalizeOption(option = {}) {
   return {
     label: normalizeText(option.label),
-    nextNodeId: normalizeText(option.nextNodeId)
+    nextNodeId: normalizeText(option.nextNodeId),
+    revealDelaySeconds: normalizeOptionRevealDelaySeconds(option.revealDelaySeconds)
   };
+}
+
+function normalizeOptionRevealDelaySeconds(value) {
+  const normalized = typeof value === "string" ? value.trim() : value;
+  if (normalized == null || normalized === "") return "";
+  const delay = Number(normalized);
+  if (!Number.isFinite(delay) || delay < 0) throw routeError(400, ERRORS.invalidOptionRevealDelay);
+  return delay;
 }
 
 function normalizeText(value) {
