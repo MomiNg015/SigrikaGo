@@ -37,8 +37,7 @@
 }
 
 .onboarding-story-modal.long-text-compress-portrait {
-  display: flex;
-  flex-direction: column;
+  grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) minmax(56px, 1fr);
 }
 
 .onboarding-story-fast-forward {

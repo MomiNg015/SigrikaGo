@@ -56,12 +56,16 @@
     padding-inline: 10px;
   }
 
+  .onboarding-story-modal.long-text-compress-portrait {
+    grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) auto;
+  }
+
   .onboarding-story-modal.long-text-compress-portrait .onboarding-story-portrait {
     padding-block: 0;
   }
 
   .onboarding-story-modal.long-text-compress-portrait .onboarding-story-text-button {
-    min-height: 96px;
+    min-height: 0;
     max-height: calc(100% - 56px);
   }
 }

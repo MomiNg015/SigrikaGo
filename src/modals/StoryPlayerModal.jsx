@@ -19,6 +19,7 @@ export const STORY_PLAYER_DEFAULT_TEXT = Object.freeze({
 });
 
 const TYPEWRITER_INTERVAL_MS = 24;
+const LONG_TEXT_COMPRESS_TYPEWRITER_SPEED_MULTIPLIER = 1.5;
 
 export default function StoryPlayerModal({
   script,
@@ -42,6 +43,7 @@ export default function StoryPlayerModal({
   const visibleOptions = visibleStoryOptions(node, { typingComplete, elapsedMs: nodeElapsedMs });
   const hasOptions = (node?.options?.length ?? 0) > 0;
   const compressPortrait = isLongTextCompressPortraitEffect(node?.effect);
+  const typewriterIntervalMs = storyTypewriterIntervalMs(node?.effect);
   const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}`;
 
   useEffect(() => {
@@ -57,9 +59,9 @@ export default function StoryPlayerModal({
     if (typewriterDisabled || !node || visibleCount >= text.length) return undefined;
     const timer = window.setTimeout(() => {
       setVisibleCount((count) => Math.min(text.length, count + 1));
-    }, TYPEWRITER_INTERVAL_MS);
+    }, typewriterIntervalMs);
     return () => window.clearTimeout(timer);
-  }, [node, text.length, typewriterDisabled, visibleCount]);
+  }, [node, text.length, typewriterDisabled, typewriterIntervalMs, visibleCount]);
 
   useEffect(() => {
     if (typewriterDisabled || typingComplete || !hasOptions) return undefined;
@@ -184,6 +186,12 @@ export function optionRevealDelayMs(option) {
   if (value == null || value === "") return null;
   const seconds = Number(value);
   return Number.isFinite(seconds) && seconds >= 0 ? seconds * 1000 : null;
+}
+
+export function storyTypewriterIntervalMs(effect) {
+  return isLongTextCompressPortraitEffect(effect)
+    ? Math.round(TYPEWRITER_INTERVAL_MS / LONG_TEXT_COMPRESS_TYPEWRITER_SPEED_MULTIPLIER)
+    : TYPEWRITER_INTERVAL_MS;
 }
 
 function nextOptionRevealDelayMs(node, elapsedMs) {

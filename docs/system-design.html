@@ -521,7 +521,7 @@
 </ul>
 <h2>Story Script Summary</h2>
 <ul>
-<li>通用剧情播放器由 <code>StoryPlayerModal</code> 承担，<code>OnboardingStoryModal</code> 只是新手引导文案包装。播放器继续使用立绘区、打字机文字区和底部继续/选项区，桌面端默认保持 4:5:1 剧场比例，移动端保留大触控目标和父窗口内跳过确认层。节点级 <code>effect=long-text-compress-portrait</code> 会切换为长文本挤压立绘演出：文本区随打字机内容增长并可把立绘区压到消失，文本区达到窗口上限后再启用自身滚动。</li>
+<li>通用剧情播放器由 <code>StoryPlayerModal</code> 承担，<code>OnboardingStoryModal</code> 只是新手引导文案包装。播放器继续使用立绘区、打字机文字区和底部继续/选项区，桌面端默认保持 4:5:1 剧场比例，移动端保留大触控目标和父窗口内跳过确认层。节点级 <code>effect=long-text-compress-portrait</code> 会切换为长文本挤压立绘演出：文本区初始尺寸保持默认布局一致，随后随打字机内容增长并可把立绘区压到消失，文本区达到窗口上限后再启用自身滚动；该效果节点的打字速度为默认 1.5 倍。</li>
 </ul>
 <ul>
 <li>剧情节点的立绘来源可包含角色目录之外的剧情专用候选，统一由 <code>src/shared/storyPortraits.js</code> 合成给后台下拉、后台预览和玩家侧 <code>StoryPlayerModal</code> 解析；这些候选只用于剧情节点 <code>characterId</code>，不改变玩家角色本体、出战角色或道具触发目标。当前内置剧情专用候选包括 <code>denia-rainbow-glow</code>，名称为“发彩虹光的达妮娅”，立绘复用 <code>/assets/characters/denia_color.webp</code>。</li>
@@ -4459,7 +4459,7 @@
 <li>The typewriter state is visible through the dialogue text region and a small caret treatment. Clicking the text region while typing fills the current node immediately; branch option buttons normally remain hidden until the current node text is fully visible. Individual options may set <code>revealDelaySeconds</code>; those options appear after their own non-negative delay from node entry, and all remaining options appear when the text completes.</li>
 </ul>
 <ul>
-<li>Story nodes may set <code>effect=long-text-compress-portrait</code>. That mode switches the modal from the default grid to a vertical flex performance layout: the text region grows with typed content, squeezes the portrait region down to zero if needed, and only enables text-region scrolling after the text reaches the modal's viewport-bounded height.</li>
+<li>Story nodes may set <code>effect=long-text-compress-portrait</code>. That mode keeps the default story text region's initial size, then lets the text row grow with typed content, squeeze the portrait region down to zero if needed, and only enable text-region scrolling after the text reaches the modal's viewport-bounded height. The effect also runs the typewriter at 1.5x the default speed.</li>
 </ul>
 <ul>
 <li>Story options with an empty <code>nextNodeId</code> are intentional close-window actions. Admin publish validation allows those empty targets while still requiring option labels and rejecting non-empty targets that do not exist in the current script. Player rendering continues to route those empty targets through <code>StoryPlayerModal</code> close behavior.</li>

@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import StoryPlayerModal, { nextStoryNodeId, visibleStoryOptions } from "./StoryPlayerModal.jsx";
+import StoryPlayerModal, {
+  nextStoryNodeId,
+  storyTypewriterIntervalMs,
+  visibleStoryOptions
+} from "./StoryPlayerModal.jsx";
 import { DENIA_RAINBOW_GLOW_STORY_PORTRAIT_ID } from "../shared/storyPortraits.js";
 import { STORY_NODE_EFFECTS } from "../shared/storyPresentation.js";
 
@@ -77,6 +81,11 @@ describe("StoryPlayerModal", () => {
 
     expect(html).toContain("onboarding-story-modal long-text-compress-portrait");
     expect(html).toContain('data-story-effect="long-text-compress-portrait"');
+  });
+
+  it("types long-text portrait compression nodes at one and a half times speed", () => {
+    expect(storyTypewriterIntervalMs()).toBe(24);
+    expect(storyTypewriterIntervalMs(STORY_NODE_EFFECTS.longTextCompressPortrait)).toBe(16);
   });
 
   it("reveals branch options independently by delay or when typing completes", () => {

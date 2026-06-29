@@ -61,7 +61,7 @@ Questions to answer:
 - Non-empty option target missing from current script -> publish-time target error.
 
 #### 5. Good/Base/Bad Cases
-- Good: `{ effect: "long-text-compress-portrait" }` reaches the player and only that node switches story modal layout.
+- Good: `{ effect: "long-text-compress-portrait" }` reaches the player and only that node switches story modal layout, with the default text region initial size, portrait compression after long typed content, and 1.5x typewriter speed.
 - Good: one option with `revealDelaySeconds: 0.5` appears while the text is still typing, while a blank-delay sibling waits for text completion.
 - Base: older nodes with no `effect` or `revealDelaySeconds` continue playing with default behavior.
 - Bad: adding an option timing field to the admin form but forgetting `normalizeOption()`, because the value will disappear on save.
@@ -71,7 +71,7 @@ Questions to answer:
 - Backend story-script tests must assert effect normalization, invalid effect rejection, option reveal-delay preservation, blank compatibility, and invalid delay rejection.
 - Player story tests must assert effect class/data hooks and option reveal timing before and after typewriter completion.
 - Admin story tests must assert the effect control, option-level numeric timing input, and responsive option-row layout.
-- CSS contract tests must keep default story layout unchanged and lock any special effect layout hooks.
+- CSS contract tests must keep default story layout unchanged, lock any special effect layout hooks, and prevent the long-text compression effect from starting with a smaller-than-default text region.
 
 #### 7. Wrong vs Correct
 
