@@ -78,6 +78,10 @@ export const CSS_LAYER_GROUPS = [
       "hud-components/pop-tech-terminal/character-deploy.css",
       "hud-components/pop-tech-terminal/tabs-actions.css",
       "hud-components/pop-tech-terminal/keyframes.css",
+      "hud-components/user-identity.css",
+      "hud-components/user-identity/core.css",
+      "hud-components/user-identity/context-surfaces.css",
+      "hud-components/user-identity/phone-layouts.css",
       "tailwind.css"
     ],
     guidance: "Safe candidates for import-only splits, naming cleanup, and token documentation when feature tests own exact visual values."
@@ -328,6 +332,14 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "hud-components/pop-tech-terminal/character-deploy.css",
       "hud-components/pop-tech-terminal/tabs-actions.css",
       "hud-components/pop-tech-terminal/keyframes.css"
+    ]
+  },
+  {
+    entry: "hud-components/user-identity.css",
+    files: [
+      "hud-components/user-identity/core.css",
+      "hud-components/user-identity/context-surfaces.css",
+      "hud-components/user-identity/phone-layouts.css"
     ]
   },
   {

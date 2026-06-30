@@ -1,0 +1,56 @@
+/* Surface-specific UserIdentity sizing and alignment hooks. */
+.name-button .user-identity:not(.has-nameplate),
+.room-person-name .user-identity:not(.has-nameplate),
+.leaderboard-player .user-identity:not(.has-nameplate),
+.friend-main .user-identity:not(.has-nameplate),
+.watch-player-cell .user-identity:not(.has-nameplate),
+.result-winner .user-identity:not(.has-nameplate) {
+  width: auto;
+}
+
+.leaderboard-player .user-identity,
+.friend-main .user-identity,
+.watch-player-cell .user-identity,
+.room-person-name .user-identity,
+.result-winner .user-identity {
+  width: auto;
+}
+
+.leaderboard-player .user-identity {
+  justify-self: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.leaderboard-player .user-identity-main {
+  justify-content: center;
+}
+
+.leaderboard-player .user-identity-title {
+  justify-self: center;
+}
+
+.leaderboard-player .user-identity-main,
+.friend-main .user-identity-main,
+.watch-player-cell .user-identity-main,
+.room-person-name .user-identity-main,
+.result-winner .user-identity-main {
+  width: auto;
+  max-width: none;
+}
+
+.leaderboard-player .user-identity-name-tag,
+.friend-main .user-identity-name-tag,
+.watch-player-cell .user-identity-name-tag,
+.room-person-name .user-identity-name-tag,
+.result-winner .user-identity-name-tag {
+  max-width: var(--user-identity-name-tag-max-width);
+}
+
+.name-button .user-identity-name,
+.room-person-name .user-identity-name,
+.leaderboard-player .user-identity-name,
+.friend-main .user-identity-name,
+.watch-player-cell .user-identity-name {
+  max-width: 100%;
+}

@@ -1,0 +1,143 @@
+/* Shared UserIdentity badge and nameplate primitives. */
+.user-identity {
+  --user-nameplate-scale: 1;
+  --user-nameplate-base-width: 96px;
+  --user-nameplate-base-height: 25.6px;
+  --user-nameplate-width: calc(var(--user-nameplate-base-width) * var(--user-nameplate-scale));
+  --user-nameplate-height: calc(var(--user-nameplate-base-height) * var(--user-nameplate-scale));
+  --user-nameplate-padding-x: calc(15px * var(--user-nameplate-scale));
+  --user-nameplate-font-size: calc(15px * var(--user-nameplate-scale));
+  --user-identity-name-tag-min-height: 1.4em;
+  --user-identity-name-tag-max-width: 100%;
+  --user-identity-name-tag-padding-x: 0.72em;
+  --user-identity-name-tag-radius: 0;
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  align-items: center;
+  justify-items: start;
+  max-width: 100%;
+  min-width: 0;
+  padding: 2px 8px;
+  border-radius: 8px;
+  line-height: 1.08;
+  vertical-align: middle;
+}
+
+.user-identity.has-nameplate {
+  color: #3f2b25;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.user-identity-name-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: content-box;
+  width: auto;
+  max-width: var(--user-identity-name-tag-max-width);
+  min-height: var(--user-identity-name-tag-min-height);
+  min-width: 0;
+  padding: 0 var(--user-identity-name-tag-padding-x);
+  border: 0;
+  border-radius: var(--user-identity-name-tag-radius);
+  line-height: 1.22;
+  background-color: transparent;
+  background-image: none;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.user-identity.has-nameplate .user-identity-name-tag {
+  justify-content: center;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: var(--user-nameplate-width);
+  height: var(--user-nameplate-height);
+  min-height: var(--user-nameplate-height);
+  max-width: min(100%, var(--user-nameplate-width));
+  padding-inline: var(--user-nameplate-padding-x);
+  background-position: center;
+}
+
+.user-identity.has-nameplate .user-identity-name {
+  font-size: var(--user-nameplate-font-size);
+}
+
+.user-identity-title,
+.user-identity-main {
+  min-width: 0;
+}
+
+.user-identity-title {
+  justify-self: start;
+  max-width: 100%;
+  color: #7d4d00;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-identity-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  width: 100%;
+}
+
+.user-identity-name {
+  font-size: 1em;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  line-height: 1.18;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-identity-emblem {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(112, 69, 26, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #7d4d00;
+  font-size: 10px;
+  font-weight: 900;
+  box-shadow: 0 1px 4px rgba(118, 69, 25, 0.14);
+}
+
+.user-identity-emblem img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: inherit;
+}
+
+.user-identity.compact {
+  padding: 1px 6px;
+}
+
+.user-identity.compact.has-nameplate {
+  --user-nameplate-scale: 0.88;
+}
+
+.user-identity.compact .user-identity-title {
+  font-size: 9px;
+}
+
+.user-identity.compact .user-identity-emblem {
+  width: 16px;
+  height: 16px;
+  font-size: 9px;
+}

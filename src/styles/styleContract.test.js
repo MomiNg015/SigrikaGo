@@ -998,6 +998,16 @@ describe("root CSS entry contract", () => {
       "./pop-tech-terminal/keyframes.css"
     ]);
     expect(popTechEntry).not.toContain(".small-modal,");
+
+    const userIdentityEntry = readFileSync(new URL("./hud-components/user-identity.css", import.meta.url), "utf8");
+    expect(cssImports(userIdentityEntry)).toEqual([
+      "./user-identity/core.css",
+      "./user-identity/context-surfaces.css",
+      "./user-identity/phone-layouts.css"
+    ]);
+    expect(userIdentityEntry).not.toContain(".user-identity {");
+    expect(userIdentityEntry).not.toContain(".leaderboard-player .user-identity");
+    expect(userIdentityEntry).not.toContain("@media (max-width");
   });
 
   it("keeps HUD hardening as an import-only component sub-entry", () => {

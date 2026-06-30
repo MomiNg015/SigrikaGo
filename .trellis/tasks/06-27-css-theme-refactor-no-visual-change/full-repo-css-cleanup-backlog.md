@@ -24,6 +24,7 @@ Residual risk after this cleanup is not rule movement inside the committed CSS s
   - `src/styles/modals/mailbox.css`
   - `src/styles/commerce/recruitment/board.css`
   - `src/styles/commerce/warehouse-toast.css`
+  - `src/styles/hud-components/user-identity.css`
 - Round 4 regression gates are recorded in `CSS_ROUND4_REGRESSION_CHECKS`.
 
 ## Confirmed Remaining Large Blocks
