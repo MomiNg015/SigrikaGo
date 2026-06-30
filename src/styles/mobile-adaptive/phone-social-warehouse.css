@@ -16,6 +16,11 @@
     overflow-y: auto;
   }
 
+  .profile-replay-dialog .replay-table {
+    overflow: visible;
+    overscroll-behavior: auto;
+  }
+
   .friends-list,
   .watch-room-table {
     max-width: 100%;

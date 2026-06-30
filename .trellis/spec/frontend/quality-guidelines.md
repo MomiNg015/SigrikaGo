@@ -685,6 +685,62 @@ Correct:
 }
 ```
 
+### Mobile profile replay scroll containment contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to `UserProfileCard`, `ReplayList`, `.profile-replay-dialog`, `.profile-replay-list-scroll`, `.replay-table`, mobile replay card CSS, or Bright School mobile replay overrides.
+
+#### 2. Signatures
+- `UserProfileCard` renders the profile replay modal as `.profile-replay-dialog`.
+- `.profile-replay-list-scroll` is the only vertical scroll owner for profile/detail replay history on phones.
+- `.profile-replay-dialog .replay-table` is content inside that scroll owner.
+
+#### 3. Contracts
+- Keep `.profile-replay-dialog` as a bounded fixed-height/mobile shell with a fixed title/close area and a `minmax(0, 1fr)` replay-list region.
+- Keep `.profile-replay-list-scroll` scrollable with `overflow-y: auto`, `min-height: 0`, and touch momentum support.
+- Keep `.profile-replay-dialog .replay-table` non-scrollable with `overflow: visible`, not only `overflow-y: visible`. CSS computes `overflow-y: visible` back to `auto` when the other axis is `hidden`/`auto`, which creates a dead inner scroll container that can intercept touch and wheel chaining.
+- Bright School final mobile overrides must repeat the same `overflow: visible !important` and `overscroll-behavior: auto !important` table contract after any generic `.replay-table` mobile scroll rules.
+- House nested replay dialogs may keep their own table scroll/card contract; do not use a broad `.replay-table` rule to change profile replay scroll ownership.
+
+#### 4. Validation & Error Matrix
+- Profile replay history has more rows than the visible mobile list -> swiping on row text or buttons scrolls `.profile-replay-list-scroll`.
+- `.profile-replay-dialog .replay-table` computes to `overflow-y: auto` with no scroll range -> invalid, because it can swallow scroll gestures before the outer list receives them.
+- Bright School portrait active -> same scroll owner contract as base mobile.
+
+#### 5. Good/Base/Bad Cases
+- Good: `.profile-replay-dialog .replay-table { overflow: visible; overscroll-behavior: auto; }`
+- Base: `.profile-replay-list-scroll` owns the scrollbar and scrollTop changes while `.replay-table` remains at scrollTop `0`.
+- Bad: `.profile-replay-dialog .replay-table { overflow-x: hidden; overflow-y: visible; }`
+- Bad: a generic `.replay-table { overflow-y: auto; overscroll-behavior: contain; }` rule that also matches profile replay after the profile-specific override.
+
+#### 6. Tests Required
+- `src/modals/ReplayList.test.jsx` should assert the final mobile CSS contains the profile replay table `overflow: visible` contract for both base and Bright School final layers.
+- For browser-level regression checks, render a mobile Bright School profile replay fixture and verify wheel/touch scrolling changes `.profile-replay-list-scroll.scrollTop` while `.profile-replay-dialog .replay-table.scrollTop` stays `0`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```css
+.profile-replay-dialog .replay-table {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+```
+
+Correct:
+
+```css
+.profile-replay-dialog .profile-replay-list-scroll {
+  overflow-y: auto;
+}
+
+.profile-replay-dialog .replay-table {
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+```
+
 ### Home Layout Contracts
 
 Desktop home footer text is part of the HUD, not the scrollable stage content.

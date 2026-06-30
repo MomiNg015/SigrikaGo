@@ -8,6 +8,23 @@
     overflow: hidden !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog {
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .profile-replay-list-scroll {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    flex: 1 1 auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table {
     min-height: 0 !important;
@@ -21,6 +38,12 @@
     overflow-y: auto !important;
     overscroll-behavior: contain !important;
     -webkit-overflow-scrolling: touch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-replay-dialog .replay-table {
+    overflow: visible !important;
+    overscroll-behavior: auto !important;
+    -webkit-overflow-scrolling: auto !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-heading,

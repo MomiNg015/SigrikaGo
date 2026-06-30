@@ -122,6 +122,8 @@
   font-size: 11px;
   font-weight: 900;
   line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
   box-shadow: 0 0 14px rgba(255, 77, 114, 0.72);
 }
 
@@ -154,9 +156,10 @@
 }
 
 .home-mobile-mailbox-action .mailbox-badge {
-  position: static;
-  margin-left: auto;
-  box-shadow: none;
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  margin-left: 0;
 }
 
 .home-mobile-announcement-action .announcement-badge-dot {

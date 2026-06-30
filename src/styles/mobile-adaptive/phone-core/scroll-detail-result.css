@@ -13,6 +13,23 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  .profile-replay-dialog {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .profile-replay-dialog .profile-replay-list-scroll {
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .profile-replay-dialog .replay-table {
+    overflow: visible;
+    overscroll-behavior: auto;
+  }
+
   .friends-list,
   .watch-room-table {
     min-height: 0;

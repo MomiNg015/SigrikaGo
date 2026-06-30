@@ -482,12 +482,19 @@ describe("HomeScreen", () => {
 
   it("renders mailbox actions in desktop topbar and mobile menu with badge hooks", () => {
     const html = renderHome({ mailboxBadgeCount: 3 });
+    const homeCss = readCssFixture("../styles/home-terminal.css");
+    const mobileBadgeRule = homeCss.match(/\.home-mobile-mailbox-action \.mailbox-badge\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(html).toContain("mailbox-action");
     expect(html).toContain("home-mobile-mailbox-action");
     expect(html).toContain("mailbox-badge");
     expect(html).toContain(">3</span>");
     expect(html).toContain("aria-label=\"打开邮箱，3封未处理邮件\"");
+    expect(mobileBadgeRule).toContain("position: absolute");
+    expect(mobileBadgeRule).toContain("top: -7px");
+    expect(mobileBadgeRule).toContain("right: -7px");
+    expect(mobileBadgeRule).not.toContain("position: static");
+    expect(mobileBadgeRule).not.toContain("margin-left: auto");
   });
 
   it("renders onboarding replay actions in desktop topbar and mobile menu", () => {

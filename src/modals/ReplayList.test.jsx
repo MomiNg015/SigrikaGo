@@ -167,6 +167,12 @@ describe("ReplayList", () => {
     expect(finalMobileCss).toContain("grid-template-rows: auto minmax(0, 1fr) !important");
     expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table");
     expect(finalMobileCss).toContain(".profile-replay-dialog .replay-table");
+    expect(finalMobileCss).toContain(".profile-replay-dialog .profile-replay-list-scroll");
+    expect(finalMobileCss).toContain("grid-template-rows: auto minmax(0, 1fr) !important");
+    expect(finalMobileCss).toContain("flex: 1 1 auto !important");
+    expect(finalMobileCss).toContain(".profile-replay-dialog .replay-table {\n    overflow: visible;");
+    expect(finalMobileCss).toContain(".profile-replay-dialog .replay-table {\n    overflow: visible !important;");
+    expect(finalMobileCss).toContain("overscroll-behavior: auto !important;");
     expect(finalMobileCss).toContain("grid-template-rows: none !important");
     expect(finalMobileCss).toContain("grid-auto-rows: auto !important");
     expect(finalMobileCss).toContain("align-content: start !important");
