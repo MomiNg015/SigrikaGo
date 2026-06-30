@@ -766,3 +766,36 @@ Fixed mobile profile replay scroll ownership so row swipes scroll the outer list
 ### Next Steps
 
 - None - task complete
+
+
+## Session 24: Improve repo hygiene CI and frontend splitting
+
+**Date**: 2026-06-30
+**Task**: Improve repo hygiene CI and frontend splitting
+**Branch**: `master`
+
+### Summary
+
+Ignored generated outputs and local logs, removed tracked generated artifacts from Git, added GitHub Actions CI, lazy-loaded admin/tutorial/low-frequency overlays, and updated system design plus frontend quality specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a43a436e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
