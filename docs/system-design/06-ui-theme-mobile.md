@@ -26,6 +26,7 @@
 - Bright School portrait mobile house/profile styling is also a nested import-only entry: `src/styles/themes/bright-school/mobile/house-profile.css` owns import order while `src/styles/themes/bright-school/mobile/house-profile/` contains shell-profile-stats, character-grid-cards, owned-decorations, and character-detail-music rules.
 - Bright School portrait mobile commerce and warehouse layout is also a nested import-only entry: `src/styles/themes/bright-school/mobile/commerce-warehouse.css` owns import order while `src/styles/themes/bright-school/mobile/commerce-warehouse/` contains shop-layout, warehouse-shell, and warehouse-items rules.
 - Bright School portrait mobile list/settings/social layout is also a nested import-only entry: `src/styles/themes/bright-school/mobile/lists-settings.css` owns import order while `src/styles/themes/bright-school/mobile/lists-settings/` contains list-scroll-widths, watch-rows, friends-rows, table-shells, leaderboard-cards, replay-cards, and toolbars-card-borders rules.
+- Bright School portrait mobile modal shell is also a nested import-only entry: `src/styles/themes/bright-school/mobile/modal-shell.css` owns import order while `src/styles/themes/bright-school/mobile/modal-shell/` contains shell-surfaces and scroll-controls rules, keeping the generic modal sheet contract separate from shared scroll regions, close controls, and touch-target overrides.
 
 ## Modal Layering
 

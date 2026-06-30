@@ -1,0 +1,83 @@
+/* Bright School portrait mobile modal shell and shared surfaces. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop {
+    width: 100vw !important;
+    min-width: 0 !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      calc(10px + env(safe-area-inset-right))
+      calc(10px + env(safe-area-inset-bottom))
+      calc(10px + env(safe-area-inset-left)) !important;
+    align-items: start !important;
+    justify-items: center !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .small-modal,
+    .confirm-modal,
+    .result-modal,
+    .settings-modal,
+    .mailbox-modal,
+    .nested-modal,
+    .character-target-modal,
+    .character-details-modal,
+    .room-floating-modal,
+    .shop-item-detail-modal,
+    .shop-modal,
+    .warehouse-modal,
+    .house-modal,
+    .leaderboard-modal,
+    .friends-modal,
+    .message-board-modal,
+    .onboarding-story-modal,
+    .watch-list-modal,
+    .profile-replay-dialog,
+    .user-profile-modal
+  ) {
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    max-height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 14px !important;
+    overflow: hidden !important;
+    border-width: 2px !important;
+    border-radius: 18px !important;
+    box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.68) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .shop-modal,
+    .warehouse-modal,
+    .house-modal,
+    .leaderboard-modal,
+    .friends-modal,
+    .settings-modal,
+    .mailbox-modal,
+    .message-board-modal,
+    .onboarding-story-modal,
+    .watch-list-modal,
+    .user-profile-modal,
+    .profile-replay-dialog
+  ) {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal {
+    display: grid !important;
+    grid-template-rows: minmax(0, 4fr) minmax(96px, 5fr) auto !important;
+    gap: 10px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal.long-text-compress-portrait {
+    grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) auto !important;
+  }
+}

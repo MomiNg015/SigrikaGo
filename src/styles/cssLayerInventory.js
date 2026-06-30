@@ -168,6 +168,9 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/room.css",
       "themes/bright-school/modals.css",
       "themes/bright-school/mobile.css",
+      "themes/bright-school/mobile/modal-shell.css",
+      "themes/bright-school/mobile/modal-shell/shell-surfaces.css",
+      "themes/bright-school/mobile/modal-shell/scroll-controls.css",
       "themes/bright-school/mobile/room.css",
       "themes/bright-school/mobile/room/shell-header-menu.css",
       "themes/bright-school/mobile/room/shell-header-menu/screen-shell.css",
@@ -488,6 +491,13 @@ export const CSS_THEME_OVERLAY_SPLITS = [
       "themes/bright-school/component-repairs/warehouse-character/character-detail.css",
       "themes/bright-school/component-repairs/warehouse-character/profile-character-badges.css",
       "themes/bright-school/component-repairs/warehouse-character/character-target-modal.css"
+    ]
+  },
+  {
+    entry: "themes/bright-school/mobile/modal-shell.css",
+    files: [
+      "themes/bright-school/mobile/modal-shell/shell-surfaces.css",
+      "themes/bright-school/mobile/modal-shell/scroll-controls.css"
     ]
   },
   {

@@ -52,9 +52,7 @@ const TEST_STYLE_FILES = new Set([
 ]);
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
-const KNOWN_OVERSIZED_CSS_FILES = new Map([
-  ["themes/bright-school/mobile/modal-shell.css", 6161]
-]);
+const KNOWN_OVERSIZED_CSS_FILES = new Map([]);
 
 function cssImports(source) {
   return [...source.matchAll(/@import\s+"([^"]+)"[^;]*;/g)].map((match) => match[1]);
@@ -283,6 +281,20 @@ describe("root CSS entry contract", () => {
       "./viewport-player-strips/timer-captures-skill.css"
     ]);
     expect(viewportPlayerStripsEntry).not.toContain(".player-info {");
+  });
+
+  it("keeps Bright School mobile modal shell as an import-only theme overlay", () => {
+    const modalShellEntry = readFileSync(
+      new URL("./themes/bright-school/mobile/modal-shell.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(cssImports(modalShellEntry)).toEqual([
+      "./modal-shell/shell-surfaces.css",
+      "./modal-shell/scroll-controls.css"
+    ]);
+    expect(modalShellEntry).not.toContain(".modal-backdrop {");
+    expect(modalShellEntry).not.toContain(".close-button {");
   });
 
   it("keeps Bright School refinement board as an import-only protected overlay", () => {
