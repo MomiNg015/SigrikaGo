@@ -6,6 +6,7 @@ import {
   CSS_FINAL_MOBILE_SAFETY_SPLITS,
   CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES,
   CSS_GAMEPLAY_ROOM_SPLITS,
+  CSS_LAZY_ROUTE_STYLE_ENTRIES,
   CSS_LAYER_GROUPS,
   CSS_PROTECTED_SURFACES,
   CSS_REFACTOR_ROUNDS,
@@ -18,6 +19,7 @@ import {
 } from "./cssLayerInventory.js";
 
 const stylesDir = dirname(fileURLToPath(new URL("./base.css", import.meta.url)));
+const projectRoot = dirname(dirname(stylesDir));
 const rootStylesPath = fileURLToPath(new URL("../styles.css", import.meta.url));
 
 function cssImports(source) {
@@ -49,6 +51,7 @@ describe("CSS layer inventory", () => {
   it("keeps every inventory file pointed at an existing CSS file", () => {
     const inventoryFiles = new Set([
       ...CSS_LAYER_GROUPS.flatMap((group) => group.entries),
+      ...CSS_LAZY_ROUTE_STYLE_ENTRIES.map((entry) => entry.entry),
       ...CSS_PROTECTED_SURFACES.flatMap((surface) => surface.files)
     ]);
     const missingFiles = [...inventoryFiles].filter((filePath) => !existsSync(join(stylesDir, filePath)));
@@ -62,6 +65,20 @@ describe("CSS layer inventory", () => {
     const classifiedRootEntries = new Set(CSS_LAYER_GROUPS.flatMap((group) => group.rootEntries));
 
     expect(rootImports.filter((importPath) => !classifiedRootEntries.has(importPath))).toEqual([]);
+  });
+
+  it("documents route-lazy CSS entries outside the initial root stylesheet", () => {
+    const rootImports = cssImports(readFileSync(rootStylesPath, "utf8"))
+      .map((importPath) => importPath.replace("./styles/", ""));
+
+    for (const routeEntry of CSS_LAZY_ROUTE_STYLE_ENTRIES) {
+      expect(rootImports).not.toContain(routeEntry.entry);
+      expect(existsSync(join(stylesDir, routeEntry.entry))).toBe(true);
+      expect(readFileSync(join(projectRoot, routeEntry.owner), "utf8")).toContain(
+        `import "${routeEntry.importPath}";`
+      );
+      expect(routeEntry.reason).toContain("lazy");
+    }
   });
 
   it("keeps the round-3 cleanup candidates out of gameplay and skill protected files", () => {

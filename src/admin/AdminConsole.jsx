@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from "react";
 import { adminApi } from "../api/client.js";
+import "../styles/admin.css";
 import AdminShell from "./AdminShell.jsx";
 import AdminAudit from "./AdminAudit.jsx";
 import AdminAchievements from "./AdminAchievements.jsx";

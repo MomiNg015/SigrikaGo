@@ -203,7 +203,7 @@ describe("areBoardPropsEqual", () => {
       },
       tutorialTargetPointId: "5,5"
     })));
-    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const css = readCssWithImports(new URL("../styles/room/tutorial-battle-screen.css", import.meta.url));
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
     const targetRingBlock = css.match(/\.board \.point\.tutorial-target-point \.tutorial-target-ring\s*\{[^}]+\}/)?.[0] ?? "";
     const brightTargetRingBlock = brightSchoolCss.match(/\.theme-bright-school\.theme-bright-school \.board \.point\.tutorial-target-point \.tutorial-target-ring\s*\{[^}]+\}/)?.[0] ?? "";

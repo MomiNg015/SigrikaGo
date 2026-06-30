@@ -203,16 +203,17 @@ describe("PlayerInfo labels", () => {
       }
     })));
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const tutorialBattleCss = readCssWithImports(new URL("../styles/room/tutorial-battle-screen.css", import.meta.url));
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
-    const noCharacterBlock = cssBlock(roomCss, ".portrait-wrap.no-character");
+    const noCharacterBlock = cssBlock(tutorialBattleCss, ".portrait-wrap.no-character");
     const placeholderBlock = cssBlock(roomCss, ".skill-chip-placeholder");
     const brightNoCharacterBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.no-character");
     const brightMobileNoCharacterBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info .portrait-wrap.no-character");
-    const desktopTutorialNoCharacterBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character");
-    const desktopTutorialNoCharacterBlackBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character.black-portrait");
-    const desktopTutorialNoCharacterWhiteBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character.white-portrait");
-    const mobileTutorialNoCharacterBlackBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .mobile-battle-layout .portrait-wrap.no-character.black-portrait");
-    const mobileTutorialNoCharacterWhiteBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .mobile-battle-layout .portrait-wrap.no-character.white-portrait");
+    const desktopTutorialNoCharacterBlock = cssBlock(tutorialBattleCss, ".tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character");
+    const desktopTutorialNoCharacterBlackBlock = cssBlock(tutorialBattleCss, ".tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character.black-portrait");
+    const desktopTutorialNoCharacterWhiteBlock = cssBlock(tutorialBattleCss, ".tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character.white-portrait");
+    const mobileTutorialNoCharacterBlackBlock = cssBlock(tutorialBattleCss, ".tutorial-battle-screen-stage .mobile-battle-layout .portrait-wrap.no-character.black-portrait");
+    const mobileTutorialNoCharacterWhiteBlock = cssBlock(tutorialBattleCss, ".tutorial-battle-screen-stage .mobile-battle-layout .portrait-wrap.no-character.white-portrait");
     const brightDesktopTutorialNoCharacterBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character");
     const brightDesktopTutorialNoCharacterBlackBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.black-portrait");
     const brightDesktopTutorialNoCharacterWhiteBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.white-portrait");
@@ -243,8 +244,9 @@ describe("PlayerInfo labels", () => {
     expect(brightMobileTutorialNoCharacterWhiteBlock).toContain("background: #ffffff !important");
     expect(brightMobileNoCharacterBlock).toContain("width: 46px !important");
     expect(brightMobileNoCharacterBlock).toContain("height: 46px !important");
-    expect(roomCss).toContain(".mobile-room-screen .portrait-wrap.no-character");
-    const mobileNoCharacterBlock = cssBlock(roomCss, ".mobile-room-screen .portrait-wrap.no-character");
+    expect(roomCss).not.toContain(".mobile-room-screen .portrait-wrap.no-character");
+    expect(tutorialBattleCss).toContain(".mobile-room-screen .portrait-wrap.no-character");
+    const mobileNoCharacterBlock = cssBlock(tutorialBattleCss, ".mobile-room-screen .portrait-wrap.no-character");
     expect(mobileNoCharacterBlock).toContain("width: 46px");
     expect(mobileNoCharacterBlock).toContain("height: 46px");
     expect(mobileNoCharacterBlock).toContain("min-height: 46px");

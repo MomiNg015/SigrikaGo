@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Calculator, Flag, Play, Sparkles } from "lucide-react";
+import "../styles/room/tutorial-battle-screen.css";
 import { requestBackgroundMusicPause } from "../audio/backgroundMusicPause.js";
 import { BackgroundMusic } from "../audio/playback.jsx";
 import AssetPreloadScreen from "../app/AssetPreloadScreen.jsx";

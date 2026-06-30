@@ -9,7 +9,6 @@ const stylesDir = dirname(fileURLToPath(new URL("./base.css", import.meta.url)))
 
 const ROOT_STYLE_IMPORTS = [
   "./styles/base.css",
-  "./styles/admin.css",
   "./styles/lobby.css",
   "./styles/room.css",
   "./styles/modals.css",
@@ -26,6 +25,7 @@ const ROOT_STYLE_IMPORTS = [
 ];
 
 const DOMAIN_STYLE_FILES = new Set(ROOT_STYLE_IMPORTS.map((importPath) => basename(importPath)));
+const LAZY_ROUTE_STYLE_FILES = new Set(["admin.css"]);
 const SECONDARY_ENTRY_STYLE_FILES = new Set(["mobile-adaptive.css"]);
 const DOMAIN_STYLE_DIRECTORIES = new Set([
   "admin",
@@ -106,7 +106,11 @@ describe("root CSS entry contract", () => {
   it("keeps top-level style files either imported or intentionally non-CSS tests", () => {
     const topLevelFiles = readdirSync(stylesDir).filter((entry) => !statSync(join(stylesDir, entry)).isDirectory());
     const unexpectedFiles = topLevelFiles.filter((entry) => {
-      if (entry.endsWith(".css")) return !DOMAIN_STYLE_FILES.has(entry) && !SECONDARY_ENTRY_STYLE_FILES.has(entry);
+      if (entry.endsWith(".css")) {
+        return !DOMAIN_STYLE_FILES.has(entry)
+          && !SECONDARY_ENTRY_STYLE_FILES.has(entry)
+          && !LAZY_ROUTE_STYLE_FILES.has(entry);
+      }
       if (entry.endsWith(".test.js")) return !TEST_STYLE_FILES.has(entry);
       if (entry.endsWith(".md")) return !DOCUMENTATION_FILES.has(entry);
       return false;
@@ -406,7 +410,10 @@ describe("root CSS entry contract", () => {
 
   it("keeps admin.css as an import-only admin console entry", () => {
     const adminEntry = readFileSync(new URL("./admin.css", import.meta.url), "utf8");
+    const adminConsoleSource = readFileSync(new URL("../admin/AdminConsole.jsx", import.meta.url), "utf8");
 
+    expect(ROOT_STYLE_IMPORTS).not.toContain("./styles/admin.css");
+    expect(adminConsoleSource).toContain('import "../styles/admin.css";');
     expect(cssImports(adminEntry)).toEqual([
       "./admin/shell-layout.css",
       "./admin/shared-surfaces.css",
@@ -1000,6 +1007,8 @@ describe("root CSS entry contract", () => {
 
   it("keeps room.css as an import-only domain entry", () => {
     const roomEntry = readFileSync(new URL("./room.css", import.meta.url), "utf8");
+    const tutorialBattleEntry = readFileSync(new URL("./room/tutorial-battle-screen.css", import.meta.url), "utf8");
+    const tutorialBattleSource = readFileSync(new URL("../tutorial/TutorialBattleScreen.jsx", import.meta.url), "utf8");
 
     expect(cssImports(roomEntry)).toEqual([
       "./room/layout-tabs.css",
@@ -1007,12 +1016,20 @@ describe("root CSS entry contract", () => {
       "./room/board.css",
       "./room/actions-requests.css",
       "./room/people-floating-replay.css",
-      "./room/chat-responsive.css",
-      "./room/tutorial-battle-screen.css"
+      "./room/chat-responsive.css"
+    ]);
+    expect(tutorialBattleSource).toContain('import "../styles/room/tutorial-battle-screen.css";');
+    expect(cssImports(tutorialBattleEntry)).toEqual([
+      "./tutorial-battle-screen/overlay-choice.css",
+      "./tutorial-battle-screen/actions-targets.css",
+      "./tutorial-battle-screen/no-character-portraits.css",
+      "./tutorial-battle-screen/loading-motion.css"
     ]);
     expect(roomEntry).not.toContain(".battle-layout {");
     expect(roomEntry).not.toContain(".board {");
     expect(roomEntry).not.toContain(".chat-widget {");
+    expect(roomEntry).not.toContain("./room/tutorial-battle-screen.css");
+    expect(tutorialBattleEntry).not.toContain(".tutorial-battle-dialogue {");
 
     const actionsRequestsEntry = readFileSync(new URL("./room/actions-requests.css", import.meta.url), "utf8");
     expect(cssImports(actionsRequestsEntry)).toEqual([

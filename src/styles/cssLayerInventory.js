@@ -5,7 +5,6 @@ export const CSS_LAYER_GROUPS = [
     risk: "low-to-medium",
     rootEntries: [
       "base.css",
-      "admin.css",
       "lobby.css",
       "modals.css",
       "commerce-settings.css",
@@ -264,6 +263,21 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/mobile/room/touch-board-feedback.css"
     ],
     guidance: "Refactor only with board, skill banner, Pixi canvas, reduced-motion, and SFX timing checks."
+  }
+];
+
+export const CSS_LAZY_ROUTE_STYLE_ENTRIES = [
+  {
+    entry: "admin.css",
+    owner: "src/admin/AdminConsole.jsx",
+    importPath: "../styles/admin.css",
+    reason: "AdminConsole is route-lazy loaded and owns its 60KB admin style tree outside the initial app stylesheet."
+  },
+  {
+    entry: "room/tutorial-battle-screen.css",
+    owner: "src/tutorial/TutorialBattleScreen.jsx",
+    importPath: "../styles/room/tutorial-battle-screen.css",
+    reason: "TutorialBattleScreen is route-lazy loaded and owns its tutorial battle overlay/action/loading CSS outside shared room.css."
   }
 ];
 
