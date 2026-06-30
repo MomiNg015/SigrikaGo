@@ -15,4 +15,6 @@ dev-client.*.log
 playwright-report/
 test-results/
 output/
+outputs/
 prototypes/
+.codex-dev*.log

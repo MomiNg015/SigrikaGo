@@ -61,6 +61,9 @@
 <li>前端使用 React 19、Vite 和 Socket.IO client；<code>src/main.jsx</code> 只负责浏览器挂载，应用组合根在 <code>src/app/App.jsx</code>，业务状态逐步下沉到 <code>src/app/*</code> hooks 和独立视图组件，应用级弹窗可见性集中在 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态集中在 <code>src/app/useRoomSessionState.js</code>，已关闭结果不会因 <code>room:resume</code> 再弹，匹配等待/成功过渡状态集中在 <code>src/app/useMatchSessionState.js</code>；移动端对弈模式选择弹窗将路数+时间和贴目/规则分成稳定两行，设置弹窗在竖屏下保持标题不被裁切、内部 tab 单行并列且面板区域独立滚动，资料详情对局回放使用固定头部+内部滚动列表，内层 replay table 不再作为滚动容器以免截断触摸滚动链；移动端图标按钮和关闭按钮由最终安全层兜底为 44px 触控目标，主题动效避免宽度布局动画和弹性曲线，邮箱未读数量在菜单按钮上作为绝对定位角标呈现，不参与按钮文字排版；开发期 Vite <code>/socket.io</code> 代理会静默处理后端 watch 重启造成的预期 websocket 断连错误。</li>
 </ul>
 <ul>
+<li>初始前端入口继续避免一次性加载低频生产工具和业务弹窗：<code>AppRoutes</code> 通过 <code>React.lazy</code>/<code>Suspense</code> 延迟加载后台管理台与剧情教学对弈路由，<code>AppOverlays</code> 延迟加载棋舍、履历、成就、个性化、仓库、排行榜、观战、好友、商店、招募、设置、公告、邮箱和留言板等低频 overlay；匹配、结果、toast、约战和剧情播放器保持同步入口，避免影响对局与故事关闭/回退路径。</li>
+</ul>
+<ul>
 <li>Mobile root back handling is centralized in <code>src/app/modalDismissal.js</code>: login, preload, home, admin, and battle parent screens show the <code>确定要退出游戏吗？</code> confirmation when no functional modal is open; close/cancel buttons and phone back inside functional modals only dismiss the current modal and do not cascade into exit confirmation.</li>
 </ul>
 <ul>
@@ -113,6 +116,9 @@
 </ul>
 <ul>
 <li>Local skill-animation GIF export is a development-only preview workflow, not a production asset pipeline. <code>npm run export:skill-gifs -- --effect &lt;effect&gt; [--character &lt;id&gt;]</code> runs <code>scripts/export-skill-gifs.mjs</code>, starts a local Vite harness under <code>.trellis/tasks/06-23-gif/capture-harness</code>, mounts the same <code>BoardSkillEffects</code>/<code>Board</code> presentation paths used in live rooms, captures frames with Playwright, and encodes looping GIFs with ffmpeg under <code>outputs/skill-gifs/&lt;character-or-effect&gt;/</code>. The exporter supports effect-only previews on the current <code>.board-wrap</code> board texture and full board-context previews, keeps audio muted, and uses representative mock board metadata instead of entering a real Socket.IO room. Captures run under Playwright virtual time: the harness preloads the real effect path before the cast starts, then advances the browser clock by exactly one frame per screenshot so slow screenshot I/O cannot compress a multi-second animation into a faster GIF. Board-context Voyage Star captures also switch their mock <code>Board</code> to the resolved crater/removal state during the full-white cover window, matching the live room's hidden-under-cover settlement path.</li>
+</ul>
+<ul>
+<li><code>outputs/</code> and local <code>.codex-dev*.log</code> files are ignored development artifacts. Runtime assets that must ship should live under <code>public/assets/**</code> or another explicit source directory; generated GIF frames, preview screenshots, contact sheets, and local logs should not be tracked in Git.</li>
 </ul>
 <ul>
 <li>玩家资源包含角色、装饰、道具、音乐、抽卡奖励、蓝宝石和金币；结构化关系表与旧字符串字段仍处在兼容迁移期，legacy 解析、结构化同步和公开资产合并规则集中在 <code>server/userAssets.js</code>。</li>
@@ -506,6 +512,9 @@
 </ul>
 <ul>
 <li>本地准生产稳定性验证入口是 <code>npm run verify:stability</code>：脚本先执行 Vite production build，再通过 <code>playwright.stability.config.js</code> 启动 <code>scripts/start-stability-server.mjs</code>，以 <code>LOCAL_PROD_STATIC=1</code> 让同一个 Express/Socket.IO 服务托管 <code>dist/</code> 并保留非 production 的本地测试能力；默认端口是 <code>4173</code>，可用 <code>STABILITY_PORT</code> 或 <code>PORT</code> 覆盖。稳定性服务器使用 <code>NODE_ENV=stability</code>，仅在该环境把 <code>/api/auth</code> 限流上限提高到足够覆盖桌面和移动两组注册/刷新流量，生产环境仍保持严格 auth 限流。稳定性用例覆盖生产包缓存边界、运行时资源失败不白屏、桌面/移动浏览器的对局刷新恢复、星炬与爱弥斯 <code>hidden-hand</code> / <code>voyage-star</code> 真实 Pixi canvas、finished 房间退出后刷新不重弹结果、以及对手重连不触发本机“操作频繁”toast；它减少云服务器反复部署验证，但最终上线仍需确认 Nginx/CDN 没有覆盖 Node 返回的缓存头。</li>
+</ul>
+<ul>
+<li>GitHub Actions 的 <code>CI</code> workflow 是远端质量门：pull request 和 <code>master</code> push 会执行 <code>npm ci</code>、<code>npm test</code>、<code>npm run build</code>、示例生产配置检查和 <code>npm run docs:system-design</code>，与本地交付门保持一致。</li>
 </ul>
 <ul>
 <li>App-level overlays are registered in <code>src/app/overlayRegistry.js</code>. <code>useOverlayState</code>, <code>modalDismissal</code>, <code>useOverlayActions</code>, and <code>App.jsx</code> derive overlay state, close-all behavior, and topmost-modal dismissal from that registry so new overlays do not need separate manual wiring that can break matchmaking or room recovery.</li>
@@ -2072,6 +2081,9 @@
 <li>前端性能重点在启动预加载、房间快照结构共享、棋盘点位 memo、移动端布局合同。</li>
 </ul>
 <ul>
+<li>首屏代码拆分从低频入口开始：<code>AppRoutes</code> 通过 <code>React.lazy</code>/<code>Suspense</code> 延迟加载后台管理台和剧情教学对弈路由，<code>AppOverlays</code> 延迟加载棋舍、履历、成就、个性化、仓库、排行榜、观战、好友、商店、招募、设置、公告、邮箱和留言板等业务 overlay；匹配等待/成功、结果、toast、约战 banner 和剧情播放器保持同步加载，以保护对局恢复、故事关闭和移动端返回路径。</li>
+</ul>
+<ul>
 <li>应用根部由 <code>AppErrorBoundary</code> 包裹；<code>AppRoutes</code> 对 <code>view=&quot;room&quot;</code> 但缺少 <code>room</code> 或 <code>user</code> 的瞬时恢复状态显示预加载恢复页，避免刷新/重连过程中空白渲染。<code>src/app/roomSnapshot.js</code> 在 socket full snapshot 进入 UI state 前补齐房间、棋局、聊天和观战者最小安全默认值，后续结构共享仍只比较同房间快照。</li>
 </ul>
 <h2>公共组件与状态管理</h2>
@@ -2768,6 +2780,9 @@
 </ul>
 <ul>
 <li><code>npm run check</code> 是当前交付前的聚合质量入口，会顺序运行单元测试、Vite build、生产配置体检和系统设计 HTML 生成，减少改动后漏跑文档同步或部署配置检查的概率。</li>
+</ul>
+<ul>
+<li><code>.github/workflows/ci.yml</code> 是仓库级远端质量门：pull request 和 <code>master</code> push 会在 Ubuntu 上执行 <code>npm ci</code>、<code>npm test</code>、<code>npm run build</code>、示例生产配置检查和 <code>npm run docs:system-design</code>。工作流显式展开这些步骤而不是只调用聚合脚本，方便在 CI 日志中定位测试、构建、部署配置或文档生成失败。</li>
 </ul>
 <ul>
 <li><code>npm run verify:stability</code> 是本地准生产稳定性入口。它先构建 <code>dist/</code>，再用 <code>playwright.stability.config.js</code> 启动 <code>scripts/start-stability-server.mjs</code>，该启动脚本强制 <code>NODE_ENV=stability</code>、<code>LOCAL_PROD_STATIC=1</code>、<code>ENABLE_TEST_ACTIONS=true</code> 和默认端口 <code>4173</code>（可由 <code>STABILITY_PORT</code> 或 <code>PORT</code> 覆盖），从而在本地跑构建后的 Express/Socket.IO 站点，同时避开生产 HTTPS origin 强校验并保留测试造房能力。</li>
@@ -3682,6 +3697,9 @@
 <li>Development GIF previews for role skill animations are generated by <code>scripts/export-skill-gifs.mjs</code> through <code>npm run export:skill-gifs</code>. The script starts a local Vite capture harness, renders the existing <code>BoardSkillEffects</code> Pixi path over the current <code>.board-wrap</code> board texture for canvas effect-only captures and the full <code>Board</code> path for DOM/CSS effects such as <code>row-slash</code>, captures frames with Playwright virtual time, then uses ffmpeg to encode looping GIFs in <code>outputs/skill-gifs/&lt;character-or-effect&gt;/</code>. The harness lets the real effect path finish Pixi/canvas preparation before the cast starts, then advances the browser clock by one frame for each screenshot so capture I/O cost does not make the encoded GIF play faster than the in-room animation. Board-context Voyage Star captures also flip their mock <code>Board</code> to the resolved crater/removal state after <code>bannerDurationMs + 52%</code> of the board-effect window, while the active Pixi cover continues running above it, so exported GIFs can verify that the crater is revealed by dissolve instead of popping in. This workflow is intentionally local and muted; GIFs are preview artifacts and are not registered in runtime preload manifests.</li>
 </ul>
 <ul>
+<li>Generated preview outputs, including <code>outputs/skill-gifs/</code>, Playwright screenshots, contact sheets, and <code>.codex-dev*.log</code>, are ignored local artifacts rather than source assets. Assets that must be shipped at runtime should move into <code>public/assets/**</code> or another explicit source-controlled asset directory before code references them.</li>
+</ul>
+<ul>
 <li>Mode-specific competitive stats live in <code>UserModeStats</code> with one row per user and mode. Each row owns <code>rating</code>, <code>rank</code>, <code>recentResults</code>, <code>wins</code>, <code>losses</code>, and <code>draws</code>; <code>recentResults</code> stores the current rank-cycle decisive results from old to new. Existing <code>User.rating</code>, <code>rank</code>, <code>wins</code>, and <code>losses</code> remain spark-mode compatibility mirrors during this migration, while standard and gomoku rating/rank/records are read from <code>UserModeStats</code>; coins remain a global account asset.</li>
 </ul>
 <ul>
@@ -4540,6 +4558,9 @@
 </ul>
 <ul>
 <li><code>src/main.jsx</code> 已瘦身为浏览器挂载入口，应用组合根迁移到 <code>src/app/App.jsx</code>，应用级弹窗可见性已收口到 <code>src/app/useOverlayState.js</code>，房间/回放/结果弹窗会话状态已收口到 <code>src/app/useRoomSessionState.js</code>，匹配等待/成功过渡状态已收口到 <code>src/app/useMatchSessionState.js</code>，直连约战 incoming banner 状态已收口到 <code>src/app/useIncomingDuelState.js</code>；App 级音频运行态已收口到 <code>src/app/useAudioRuntimeState.js</code>，负责本地音频设置、持久化和 socket 重连后的背景音恢复信号；下一步可继续把大厅辅助和启动状态编排拆成更聚焦的状态/动作 hook。服务端启动数据与 schema 初始化已收口到 <code>server/serverStartup.js</code>，并由 <code>SERVER_STARTUP_TASK_ORDER</code> 明确可审计顺序；Socket.IO 连接事件套件已收口到 <code>server/socketEvents.js</code>，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理继续由各自 <code>server/socket*Events.js</code> 分组模块维护，生产静态资源托管已收口到 <code>server/staticAssets.js</code>，账号资产 legacy 字段解析、结构化同步和公开合并规则已收口到 <code>server/userAssets.js</code>；后续重点转为剩余数据模型兼容镜像字段、前端状态编排和 CSS 技术债。运行期图片和关键交互音频资源清单已先收口到 <code>src/shared/assetRegistry.js</code>，棋盘技能特效图片 URL 进一步收口到 <code>src/room/boardSkillEffectAssets.js</code>，后续可继续扩展到角色、后台资源目录和更完整的音频分类。</li>
+</ul>
+<ul>
+<li>Initial bundle debt is being reduced from low-risk surfaces first. Admin console and tutorial-battle route code now load through <code>React.lazy</code>, and low-frequency app overlays are lazy-loaded from <code>AppOverlays</code>; room gameplay, match/result lifecycle modals, toast, duel banner, and story playback stay synchronous until they have focused browser regression coverage.</li>
 </ul>
 <ul>
 <li>实时性能已经通过轻量时钟、房间广播边界、结构共享和棋盘 memo 得到改善。</li>

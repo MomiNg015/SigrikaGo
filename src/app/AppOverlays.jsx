@@ -1,23 +1,25 @@
+import { lazy, Suspense } from "react";
 import { DuelRequestBanner, ToastStack } from "../modals/FeedbackModals.jsx";
-import AchievementModal from "../modals/AchievementModal.jsx";
-import FriendsModal from "../modals/FriendsModal.jsx";
 import { MatchModal, MatchSuccessModal, ResultModal } from "../modals/GameLifecycleModals.jsx";
-import HouseModal from "../modals/HouseModal.jsx";
-import LeaderboardModal from "../modals/LeaderboardModal.jsx";
-import MailboxModal from "../modals/MailboxModal.jsx";
-import MessageBoardModal from "../modals/MessageBoardModal.jsx";
-import AnnouncementModal from "../modals/AnnouncementModal.jsx";
 import OnboardingStoryModal from "../modals/OnboardingStoryModal.jsx";
-import PersonalizationModal from "../modals/PersonalizationModal.jsx";
-import ResumeModal from "../modals/ResumeModal.jsx";
-import SettingsModal from "../modals/SettingsModal.jsx";
 import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
-import RecruitmentModal from "../modals/RecruitmentModal.jsx";
-import ShopModal from "../modals/ShopModal.jsx";
-import WarehouseModal from "../modals/WarehouseModal.jsx";
-import WatchModal from "../modals/WatchModal.jsx";
 import TutorialSessionModal from "../tutorial/TutorialSessionModal.jsx";
 import { isStoryNodeType } from "../shared/tutorialNodeTypes.js";
+
+const AchievementModal = lazy(() => import("../modals/AchievementModal.jsx"));
+const AnnouncementModal = lazy(() => import("../modals/AnnouncementModal.jsx"));
+const FriendsModal = lazy(() => import("../modals/FriendsModal.jsx"));
+const HouseModal = lazy(() => import("../modals/HouseModal.jsx"));
+const LeaderboardModal = lazy(() => import("../modals/LeaderboardModal.jsx"));
+const MailboxModal = lazy(() => import("../modals/MailboxModal.jsx"));
+const MessageBoardModal = lazy(() => import("../modals/MessageBoardModal.jsx"));
+const PersonalizationModal = lazy(() => import("../modals/PersonalizationModal.jsx"));
+const RecruitmentModal = lazy(() => import("../modals/RecruitmentModal.jsx"));
+const ResumeModal = lazy(() => import("../modals/ResumeModal.jsx"));
+const SettingsModal = lazy(() => import("../modals/SettingsModal.jsx"));
+const ShopModal = lazy(() => import("../modals/ShopModal.jsx"));
+const WarehouseModal = lazy(() => import("../modals/WarehouseModal.jsx"));
+const WatchModal = lazy(() => import("../modals/WatchModal.jsx"));
 
 export default function AppOverlays({
   applyStoneDecoration,
@@ -147,135 +149,137 @@ export default function AppOverlays({
           onComplete={onMatchSuccessComplete}
         />
       )}
-      {showHouse && user && (
-        <HouseModal
-          user={user}
-          records={replayRecords}
-          characterListView={characterListView}
-          audioSettings={audioSettings}
-          musicTracks={musicTracks}
-          onClose={() => setShowHouse(false)}
-          onSelectCharacter={selectCharacter}
-          onSelectCharacterMusic={selectCharacterMusic}
-          onApplyDecoration={applyStoneDecoration}
-        />
-      )}
-      {showResume && user && (
-        <ResumeModal
-          user={user}
-          records={replayRecords}
-          characterListView={characterListView}
-          onClose={() => setShowResume(false)}
-          onOpenAchievements={() => setShowAchievements(true)}
-          onOpenPersonalization={() => setShowPersonalization(true)}
-          onOpenReplay={openReplay}
-        />
-      )}
-      {showAchievements && user && (
-        <AchievementModal
-          token={token}
-          onClose={() => setShowAchievements(false)}
-          onNotice={showToast}
-        />
-      )}
-      {showPersonalization && user && (
-        <PersonalizationModal
-          token={token}
-          user={user}
-          onClose={() => setShowPersonalization(false)}
-          onNotice={showToast}
-          onUserChange={updateUser}
-        />
-      )}
-      {showWarehouse && user && (
-        <WarehouseModal
-          token={token}
-          user={user}
-          characters={characters}
-          onUserChange={updateUser}
-          onNotice={showToast}
-          onStoryScript={storyPlayerScript?.open}
-          onClose={() => setShowWarehouse(false)}
-        />
-      )}
-      {showLeaderboard && (
-        <LeaderboardModal
-          token={token}
-          user={user}
-          characters={characters}
-          onClose={() => setShowLeaderboard(false)}
-        />
-      )}
-      {showWatch && (
-        <WatchModal
-          token={token}
-          characters={characters}
-          onClose={() => setShowWatch(false)}
-          onJoinRoom={joinWatchRoom}
-          onNotice={showToast}
-        />
-      )}
-      {showFriends && (
-        <FriendsModal
-          token={token}
-          socket={socket}
-          characters={characters}
-          onNotice={showToast}
-          onClose={() => setShowFriends(false)}
-          onOpenReplay={openReplay}
-        />
-      )}
-      {showShop && (
-        <ShopModal
-          token={token}
-          user={user}
-          onPurchased={updateUser}
-          onNotice={showToast}
-          onClose={() => setShowShop(false)}
-          musicTracks={musicTracks}
-        />
-      )}
-      {showRecruitment && (
-        <RecruitmentModal
-          audioSettings={audioSettings}
-          characters={characters}
-          token={token}
-          user={user}
-          onUserChange={updateUser}
-          onNotice={showToast}
-          onStatusChange={onRecruitmentStatusChange}
-          onClose={() => setShowRecruitment(false)}
-        />
-      )}
-      {showSettings && (
-        <SettingsModal
-          siteSettings={siteSettings}
-          audioSettings={audioSettings}
-          setAudioSettings={setAudioSettings}
-          visualTheme={visualTheme}
-          setVisualTheme={setVisualTheme}
-          onNotice={showToast}
-          onClose={() => setShowSettings(false)}
-        />
-      )}
-      {showAnnouncements && (
-        <AnnouncementModal
-          token={token}
-          unreadByKind={announcementUnreadByKind}
-          onClose={() => setShowAnnouncements(false)}
-          onNotice={showToast}
-          onSummaryChange={onAnnouncementSummaryChange}
-        />
-      )}
-      {showMailbox && (
-        <MailboxModal
-          token={token}
-          onClose={() => setShowMailbox(false)}
-          onNotice={showToast}
-          onSummaryChange={onMailboxSummaryChange}
-          onUserChange={updateUser}
-        />
-      )}
+      <Suspense fallback={null}>
+        {showHouse && user && (
+          <HouseModal
+            user={user}
+            records={replayRecords}
+            characterListView={characterListView}
+            audioSettings={audioSettings}
+            musicTracks={musicTracks}
+            onClose={() => setShowHouse(false)}
+            onSelectCharacter={selectCharacter}
+            onSelectCharacterMusic={selectCharacterMusic}
+            onApplyDecoration={applyStoneDecoration}
+          />
+        )}
+        {showResume && user && (
+          <ResumeModal
+            user={user}
+            records={replayRecords}
+            characterListView={characterListView}
+            onClose={() => setShowResume(false)}
+            onOpenAchievements={() => setShowAchievements(true)}
+            onOpenPersonalization={() => setShowPersonalization(true)}
+            onOpenReplay={openReplay}
+          />
+        )}
+        {showAchievements && user && (
+          <AchievementModal
+            token={token}
+            onClose={() => setShowAchievements(false)}
+            onNotice={showToast}
+          />
+        )}
+        {showPersonalization && user && (
+          <PersonalizationModal
+            token={token}
+            user={user}
+            onClose={() => setShowPersonalization(false)}
+            onNotice={showToast}
+            onUserChange={updateUser}
+          />
+        )}
+        {showWarehouse && user && (
+          <WarehouseModal
+            token={token}
+            user={user}
+            characters={characters}
+            onUserChange={updateUser}
+            onNotice={showToast}
+            onStoryScript={storyPlayerScript?.open}
+            onClose={() => setShowWarehouse(false)}
+          />
+        )}
+        {showLeaderboard && (
+          <LeaderboardModal
+            token={token}
+            user={user}
+            characters={characters}
+            onClose={() => setShowLeaderboard(false)}
+          />
+        )}
+        {showWatch && (
+          <WatchModal
+            token={token}
+            characters={characters}
+            onClose={() => setShowWatch(false)}
+            onJoinRoom={joinWatchRoom}
+            onNotice={showToast}
+          />
+        )}
+        {showFriends && (
+          <FriendsModal
+            token={token}
+            socket={socket}
+            characters={characters}
+            onNotice={showToast}
+            onClose={() => setShowFriends(false)}
+            onOpenReplay={openReplay}
+          />
+        )}
+        {showShop && (
+          <ShopModal
+            token={token}
+            user={user}
+            onPurchased={updateUser}
+            onNotice={showToast}
+            onClose={() => setShowShop(false)}
+            musicTracks={musicTracks}
+          />
+        )}
+        {showRecruitment && (
+          <RecruitmentModal
+            audioSettings={audioSettings}
+            characters={characters}
+            token={token}
+            user={user}
+            onUserChange={updateUser}
+            onNotice={showToast}
+            onStatusChange={onRecruitmentStatusChange}
+            onClose={() => setShowRecruitment(false)}
+          />
+        )}
+        {showSettings && (
+          <SettingsModal
+            siteSettings={siteSettings}
+            audioSettings={audioSettings}
+            setAudioSettings={setAudioSettings}
+            visualTheme={visualTheme}
+            setVisualTheme={setVisualTheme}
+            onNotice={showToast}
+            onClose={() => setShowSettings(false)}
+          />
+        )}
+        {showAnnouncements && (
+          <AnnouncementModal
+            token={token}
+            unreadByKind={announcementUnreadByKind}
+            onClose={() => setShowAnnouncements(false)}
+            onNotice={showToast}
+            onSummaryChange={onAnnouncementSummaryChange}
+          />
+        )}
+        {showMailbox && (
+          <MailboxModal
+            token={token}
+            onClose={() => setShowMailbox(false)}
+            onNotice={showToast}
+            onSummaryChange={onMailboxSummaryChange}
+            onUserChange={updateUser}
+          />
+        )}
+      </Suspense>
       {showOnboardingStory && (
         <OnboardingStoryModal
           script={onboardingStoryScript}
@@ -309,13 +313,15 @@ export default function AppOverlays({
           />
         )
       )}
-      {showMessageBoard && (
-        <MessageBoardModal
-          token={token}
-          onSubmitted={onMessageSubmitted}
-          onClose={() => setShowMessageBoard(false)}
-        />
-      )}
+      <Suspense fallback={null}>
+        {showMessageBoard && (
+          <MessageBoardModal
+            token={token}
+            onSubmitted={onMessageSubmitted}
+            onClose={() => setShowMessageBoard(false)}
+          />
+        )}
+      </Suspense>
     </>
   );
 }

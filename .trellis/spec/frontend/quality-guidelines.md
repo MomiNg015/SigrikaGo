@@ -188,7 +188,7 @@ Required assertion points:
 ### Startup preload, build chunking, and handoff check contracts
 
 #### 1. Scope / Trigger
-- Trigger: any change to login/startup preload behavior, runtime asset manifests, Vite build chunking, or project handoff verification commands.
+- Trigger: any change to login/startup preload behavior, runtime asset manifests, Vite build chunking, project handoff verification commands, or the GitHub Actions CI quality gate.
 - Startup preload is user-visible performance infrastructure; it must block home entry on current-user-accessible home, shop, inventory, character, owned/default BGM, and relevant voice assets, while excluding inaccessible resources such as unpurchased music audio.
 
 #### 2. Signatures
@@ -199,6 +199,7 @@ Required assertion points:
 - `connectGameSocket({ socketBase, token, ... })` creates the game Socket.IO client with explicit reconnect settings: `reconnection: true`, `reconnectionAttempts: Infinity`, `reconnectionDelay: 500`, `reconnectionDelayMax: 3000`, and `timeout: 6000`. It installs handlers before `connect()`, then immediately queues one `room:resume` emit in addition to the normal `connect` listener so polling/websocket timing cannot make room recovery depend on a single client event callback.
 - `npm run check` is the local handoff gate and should run unit tests, Vite build, production config validation with explicit sample env, and `docs:system-design`.
 - `npm run check:production` remains the strict production-env validator and must not silently inject sample secrets or origins.
+- `.github/workflows/ci.yml` is the hosted quality gate for pull requests and pushes to `master`. It should use Node 22, `npm ci`, `npm test`, `npm run build`, explicit sample-env production config validation, and `npm run docs:system-design`.
 - `vite.config.js` manually chunks React, Socket.IO client code, and Pixi into `react-vendor`, `realtime-vendor`, and `pixi-vendor` respectively. Do not add a catch-all `vendor` chunk unless the build is checked for circular chunk warnings.
 - `vite.config.js` configures the dev `/socket.io` websocket proxy with an error handler that keeps expected backend-watch restart disconnects quiet while still warning on unexpected proxy errors.
 
@@ -214,6 +215,7 @@ Required assertion points:
 - Room resume is idempotent. Do not remove the immediate queued `room:resume` from `connectGameSocket()` just because the installed `connect` listener also emits one; the immediate emit covers browser/mobile transport cases where the app shell otherwise waits on one event edge.
 - The grouped asset API must keep `images` and `audio` flattened arrays for compatibility with tests and existing callers.
 - Production entry JS should stay split from heavy runtime libraries. The Pixi chunk may be larger than Vite's default 500 KB warning because it is lazy-loaded and prewarmed only for skill-enabled boards; the configured warning limit should remain a documented exception, not a way to hide a growing entry chunk.
+- The hosted CI workflow must mirror the local handoff gate instead of introducing a separate, weaker validation path. If `npm run check` changes, update `.github/workflows/ci.yml` and system-design docs in the same change.
 - Dev proxy `ECONNRESET` and `ECONNREFUSED` errors from `/socket.io` are expected while `dev:server` restarts; do not remove the proxy error handler unless the replacement keeps those disconnects from spamming the client terminal.
 
 #### 4. Validation & Error Matrix
@@ -226,14 +228,17 @@ Required assertion points:
 - Socket instance changes while token preload is in progress -> do not cancel or restart `useStartupPreload`.
 - Mobile WebSocket handshake stalls -> Socket.IO connection attempt times out after 6 seconds and retries with the configured reconnect delays.
 - Production env missing real secrets/origins -> `npm run check:production` fails; `npm run check` may use explicit sample env for local validation.
+- CI workflow omits docs generation or production config validation -> invalid, because documentation drift and deploy config regressions can merge even when tests pass.
 
 #### 5. Good/Base/Bad Cases
 - Good: Login reaches home after current portraits, home art, and UI/board SFX are ready while BGM and voice assets keep loading in the background.
 - Good: A mobile client with a flaky `/socket.io` WebSocket keeps the asset preload flow stable while Socket.IO retries the realtime connection.
 - Good: React and Socket.IO runtime code are cached in stable vendor chunks, while Pixi stays in a lazy `pixi-vendor` chunk outside the initial room entry path.
+- Good: CI runs the same core quality surfaces as local handoff so pull requests catch tests, build, production config, and system-design docs regressions before merge.
 - Base: Older tests or helpers that pass only `images` and `audio` still work.
 - Bad: Awaiting every configured music and voice file before home entry.
 - Bad: Making `check:production` pass by mutating production defaults instead of keeping sample env limited to the aggregate `check` command.
+- Bad: CI runs only `npm test`, because build, docs, and production config drift can still merge.
 
 #### 6. Tests Required
 - API client tests must assert a hung request is aborted and rejected instead of staying pending forever.
@@ -245,6 +250,7 @@ Required assertion points:
 - Game socket tests must assert the mobile recovery reconnect and 6-second handshake timeout options.
 - Game socket tests must assert handlers install before `connect()` and that an immediate `room:resume` is queued after connecting.
 - Script contract tests must assert `npm run check` includes tests, build, production config validation, docs generation, and explicit sample production env.
+- Workflow review must assert `.github/workflows/ci.yml` keeps the hosted CI commands aligned with the local handoff gate when either command list changes.
 - Vite build config tests must assert manual chunk grouping, the absence of a catch-all vendor chunk, the intentional Pixi warning limit, and quiet handling for expected dev websocket proxy disconnects.
 - Run `npm run check` before handoff when changing preload or verification commands.
 
@@ -270,6 +276,21 @@ retrySkippedPreloadAssets(skipped, { concurrency: 2 });
 ```
 
 `loginPreloadAssets` derives the current user's accessible blocking manifest, while `preloadLoginAssets` bounds each asset and reports skipped sources for background retry.
+
+Wrong:
+
+```yaml
+- run: npm test
+```
+
+Correct:
+
+```yaml
+- run: npm test
+- run: npm run build
+- run: node -e "process.env.JWT_SECRET='12345678901234567890123456789012';process.env.PUBLIC_ORIGIN='https://sigrika.example';import('./scripts/check-production-config.mjs')"
+- run: npm run docs:system-design
+```
 
 Wrong:
 

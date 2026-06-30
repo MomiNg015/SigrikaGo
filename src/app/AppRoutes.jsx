@@ -1,13 +1,15 @@
-import AdminConsole from "../admin/AdminConsole.jsx";
+import { lazy, Suspense } from "react";
 import AuthScreen from "../auth/AuthScreen.jsx";
 import HomeScreen from "../home/HomeScreen.jsx";
 import RoomScreen from "../room/RoomScreen.jsx";
-import TutorialBattleScreen from "../tutorial/TutorialBattleScreen.jsx";
 import { playUiHouseOpenSound, playUiMatchOpenSound, playUiRecruitmentOpenSound, playUiShopOpenSound } from "../audio/playback.jsx";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
 import BattleAssetPreloadScreen from "./BattleAssetPreloadScreen.jsx";
 import { rememberDismissedResultRoom } from "./resumeSession.js";
 import { planRoomBackNavigation } from "./roomNavigation.js";
+
+const AdminConsole = lazy(() => import("../admin/AdminConsole.jsx"));
+const TutorialBattleScreen = lazy(() => import("../tutorial/TutorialBattleScreen.jsx"));
 
 export default function AppRoutes({
   adminTab,
@@ -111,6 +113,15 @@ export default function AppRoutes({
       onOpenAdmin={() => setView("admin")}
     />
   );
+  const routeLoadingScreen = (
+    <AssetPreloadScreen
+      characters={characters}
+      loadingLinesText={siteSettings.characterLoadingLines}
+      progress={assetProgress}
+      statusText="正在加载界面..."
+      tipsText={siteSettings.preloadTips}
+    />
+  );
 
   return (
     <>
@@ -135,20 +146,22 @@ export default function AppRoutes({
       )}
       {view === "home" && homeScreen}
       {view === "admin" && user?.role === "admin" && (
-        <AdminConsole
-          user={user}
-          token={token}
-          tab={adminTab}
-          setTab={setAdminTab}
-          musicTracks={musicTracks}
-          onCurrentUserChange={updateUser}
-          onCharactersChanged={onRefreshCharacters}
-          onMusicTracksChanged={onRefreshMusicTracks}
-          onSiteSettingsChanged={onSiteSettingsChanged}
-          onNotice={onToast}
-          onBack={() => setView("home")}
-          onOpenReplay={onOpenAdminReplay}
-        />
+        <Suspense fallback={routeLoadingScreen}>
+          <AdminConsole
+            user={user}
+            token={token}
+            tab={adminTab}
+            setTab={setAdminTab}
+            musicTracks={musicTracks}
+            onCurrentUserChange={updateUser}
+            onCharactersChanged={onRefreshCharacters}
+            onMusicTracksChanged={onRefreshMusicTracks}
+            onSiteSettingsChanged={onSiteSettingsChanged}
+            onNotice={onToast}
+            onBack={() => setView("home")}
+            onOpenReplay={onOpenAdminReplay}
+          />
+        </Suspense>
       )}
       {view === "admin" && user?.role !== "admin" && homeScreen}
       {view === "room" && room && user && (
@@ -201,20 +214,22 @@ export default function AppRoutes({
         />
       )}
       {view === "tutorial-battle" && tutorialBattleSession && user && (
-        <TutorialBattleScreen
-          audioSettings={audioSettings}
-          characters={characters}
-          musicTracks={musicTracks}
-          session={tutorialBattleSession}
-          siteSettings={siteSettings}
-          user={user}
-          onClose={onTutorialBattleClose}
-          onComplete={onTutorialBattleComplete}
-          onExitToStory={onTutorialBattleExitToStory}
-          onOpenMessageBoard={() => setShowMessageBoard(true)}
-          onOpenSettings={() => setShowSettings(true)}
-          onToast={onToast}
-        />
+        <Suspense fallback={routeLoadingScreen}>
+          <TutorialBattleScreen
+            audioSettings={audioSettings}
+            characters={characters}
+            musicTracks={musicTracks}
+            session={tutorialBattleSession}
+            siteSettings={siteSettings}
+            user={user}
+            onClose={onTutorialBattleClose}
+            onComplete={onTutorialBattleComplete}
+            onExitToStory={onTutorialBattleExitToStory}
+            onOpenMessageBoard={() => setShowMessageBoard(true)}
+            onOpenSettings={() => setShowSettings(true)}
+            onToast={onToast}
+          />
+        </Suspense>
       )}
     </>
   );

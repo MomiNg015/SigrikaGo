@@ -10,6 +10,7 @@
 - 公告中心作为应用级 overlay 注册在 `src/app/overlayRegistry.js`，入口位于大厅右上角工具栏和移动端折叠菜单；`src/app/useAnnouncementSummary.js` 在进入大厅、打开公告弹窗和详情标记已读后刷新未读摘要。
 - 后台管理新增桌面端分析体验：`AdminOverview` 是默认“今日简报”，用可读总状态、原因、分级解读和下一步动作替代密集表格；`AdminOperations` 是运营分析页，先显示推荐解读，再用低密度 CSS 条形图和卡片展示活跃、注册、对局、分层、经济和模式表现。分析样式集中在 `src/styles/admin/analytics.css`，最终后台控件皮肤集中在 `src/styles/admin/polish.css`，用于统一浅色按钮、输入框、表格、tabs、危险操作和关闭按钮。
 - 前端性能重点在启动预加载、房间快照结构共享、棋盘点位 memo、移动端布局合同。
+- 首屏代码拆分从低频入口开始：`AppRoutes` 通过 `React.lazy`/`Suspense` 延迟加载后台管理台和剧情教学对弈路由，`AppOverlays` 延迟加载棋舍、履历、成就、个性化、仓库、排行榜、观战、好友、商店、招募、设置、公告、邮箱和留言板等业务 overlay；匹配等待/成功、结果、toast、约战 banner 和剧情播放器保持同步加载，以保护对局恢复、故事关闭和移动端返回路径。
 - 应用根部由 `AppErrorBoundary` 包裹；`AppRoutes` 对 `view="room"` 但缺少 `room` 或 `user` 的瞬时恢复状态显示预加载恢复页，避免刷新/重连过程中空白渲染。`src/app/roomSnapshot.js` 在 socket full snapshot 进入 UI state 前补齐房间、棋局、聊天和观战者最小安全默认值，后续结构共享仍只比较同房间快照。
 
 ## 公共组件与状态管理
