@@ -216,6 +216,34 @@
   z-index: 30;
 }
 
+.admin-screen .admin-announcement-confirm-backdrop {
+  background: rgba(20, 28, 45, 0.42) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.admin-screen .admin-announcement-confirm {
+  border: 1px solid #eaddea !important;
+  border-radius: 8px !important;
+  clip-path: none !important;
+  background: #ffffff !important;
+  color: #2d2430 !important;
+  box-shadow: 0 24px 80px rgba(58, 39, 70, 0.2) !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+.admin-screen .admin-announcement-confirm::before,
+.admin-screen .admin-announcement-confirm::after {
+  content: none !important;
+  display: none !important;
+}
+
+.admin-screen .admin-announcement-confirm :is(h2, p, strong) {
+  color: #2d2430 !important;
+  text-shadow: none !important;
+}
+
 .admin-announcement-confirm strong {
   color: #2d2430;
 }

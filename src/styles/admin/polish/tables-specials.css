@@ -126,15 +126,20 @@
 }
 
 .admin-screen .close-button {
-  border: 1px solid var(--admin-line);
-  background: #ffffff;
-  color: #526173;
-  box-shadow: var(--admin-shadow-sm);
+  border: 1px solid var(--admin-line) !important;
+  border-radius: 8px !important;
+  clip-path: none !important;
+  background: #ffffff !important;
+  color: #526173 !important;
+  box-shadow: var(--admin-shadow-sm) !important;
+  text-shadow: none !important;
+  filter: none !important;
 }
 
 .admin-screen .close-button:hover:not(:disabled),
 .admin-screen .close-button:focus-visible:not(:disabled) {
-  border-color: #f2b6bf;
-  background: var(--admin-red-soft);
-  color: var(--admin-red);
+  border-color: #f2b6bf !important;
+  background: var(--admin-red-soft) !important;
+  color: var(--admin-red) !important;
+  box-shadow: 0 0 0 3px rgba(179, 58, 75, 0.12) !important;
 }

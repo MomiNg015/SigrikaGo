@@ -5,8 +5,24 @@ import AdminReports from "./AdminReports.jsx";
 import AdminOperations from "./AdminOperations.jsx";
 import AdminOverview from "./AdminOverview.jsx";
 import AdminShell, { ADMIN_TABS, ADMIN_TAB_LABELS } from "./AdminShell.jsx";
+import { readCssWithImports } from "../styles/cssTestUtils.js";
+
+const adminCss = readCssWithImports(new URL("../styles/admin.css", import.meta.url));
 
 describe("AdminShell", () => {
+  it("keeps admin action and confirm modal chrome isolated from terminal skins", () => {
+    expect(adminCss).toMatch(/\.admin-screen :is\(\s*button,\s*\.primary-action,/);
+    expect(adminCss).toContain("clip-path: none !important;");
+    expect(adminCss).toContain("text-shadow: none !important;");
+    expect(adminCss).toContain("filter: none !important;");
+    expect(adminCss).toContain(".admin-screen .close-button");
+    expect(adminCss).toContain(".admin-screen .admin-announcement-confirm-backdrop");
+    expect(adminCss).toContain("backdrop-filter: none !important;");
+    expect(adminCss).toContain(".admin-screen .admin-announcement-confirm");
+    expect(adminCss).toContain("background: #ffffff !important;");
+    expect(adminCss).toContain("content: none !important;");
+  });
+
   it("renders all admin tabs with the active tab title", () => {
     const html = renderToStaticMarkup(
       <AdminShell user={{ username: "admin" }} tab="shop" setTab={vi.fn()} onBack={vi.fn()}>

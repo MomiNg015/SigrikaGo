@@ -185,6 +185,16 @@ Required assertion points:
 - Raw `readFileSync()` is still fine when the test intentionally asserts an entry is import-only or checks exact import order.
 - After splitting an entry into child CSS files, update dependent tests to preserve the same effective-rule assertions through import expansion instead of moving concrete rules back into the entry.
 
+### Admin route CSS isolation contract
+
+Admin screens are a light production tool surface, not a Startorch terminal surface. When admin markup reuses generic shared classes such as `.primary-action`, `.secondary-action`, `.danger-action`, `.close-button`, `.modal-backdrop`, or `.confirm-modal`, the effective `src/styles/admin.css` import tree must keep `.admin-screen`-scoped resets that beat global terminal/HUD rules.
+
+Required assertion points:
+
+- Keep action, danger, and close-button admin rules specific enough to reset `clip-path`, dark/neon backgrounds, `text-shadow`, `filter`, and terminal skew/cut styling.
+- Keep announcement confirmation modal/backdrop rules specific enough to clear terminal modal pseudo-elements, scanline/dark backdrops, and neon text treatment.
+- Add or update a focused admin test that reads `src/styles/admin.css` with `readCssWithImports()` whenever the admin polish or announcement confirmation rules change.
+
 ### Startup preload, build chunking, and handoff check contracts
 
 #### 1. Scope / Trigger
