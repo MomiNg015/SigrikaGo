@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 22
-- **Last Active**: 2026-06-23
+- **Total Sessions**: 23
+- **Last Active**: 2026-06-30
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~735 | Active |
+| `journal-1.md` | ~768 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 23 | 2026-06-30 | Fix mobile replay scroll and mailbox badge | `93df23e4` | `codex/battle-tutorial-session` |
 | 22 | 2026-06-23 | Stabilize room runtime guardrails | `adab31a3` | `codex/stability-tech-debt-audit` |
 | 21 | 2026-06-20 | Dynamic rating and friendly match rewards | `b3254761` | `codex/bright-school-font-refresh` |
 | 20 | 2026-06-19 | Mobile profile layout fixes | `36d4ea1b`, `6fdef71c` | `master` |

@@ -733,3 +733,36 @@ Handled stability audit guardrails: overlay registry and app-shell hook extracti
 ### Next Steps
 
 - None - task complete
+
+
+## Session 23: Fix mobile replay scroll and mailbox badge
+
+**Date**: 2026-06-30
+**Task**: Fix mobile replay scroll and mailbox badge
+**Branch**: `codex/battle-tutorial-session`
+
+### Summary
+
+Fixed mobile profile replay scroll ownership so row swipes scroll the outer list, restored mailbox unread count as a layout-independent mobile badge, updated tests, docs, and frontend spec.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `93df23e4` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
