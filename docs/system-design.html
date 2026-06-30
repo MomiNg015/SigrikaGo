@@ -172,7 +172,7 @@
 <li>App audio runtime state now lives in <code>src/app/useAudioRuntimeState.js</code>, keeping local audio settings persistence and socket-reconnect resume signaling out of the <code>src/app/App.jsx</code> composition root.</li>
 </ul>
 <ul>
-<li>Admin console styles now follow the import-only CSS domain pattern through <code>src/styles/admin.css</code> and <code>src/styles/admin/</code>, so character, audit, gacha, achievement, and responsive rules no longer live in the root stylesheet entry. <code>src/styles/admin/polish.css</code> is the final desktop admin control skin, keeping buttons, inputs, tables, tabs, danger actions, and close controls light, readable, and consistent after feature-specific admin CSS.</li>
+<li>Admin console styles now follow the import-only CSS domain pattern through <code>src/styles/admin.css</code> and <code>src/styles/admin/</code>, so character, audit, gacha, achievement, and responsive rules no longer live in the root stylesheet entry. <code>src/styles/admin/polish.css</code> is the final desktop admin control skin, keeping buttons, inputs, tables, tabs, danger actions, and close controls light, readable, and consistent after feature-specific admin CSS; its <code>polish/hud-isolation.css</code> child owns the high-specificity resets that keep admin headings, setting containers, and form controls out of Startorch/HUD skins.</li>
 </ul>
 <ul>
 <li>Lobby, house manual, match entry, and watch-list styles now follow the same import-only pattern through <code>src/styles/lobby.css</code> and <code>src/styles/lobby/</code>, keeping profile, character, match, watch shell, and phone fallback rules out of the root stylesheet entry.</li>
@@ -381,7 +381,7 @@
 <li>后台“音乐管理”只维护 <code>MUSIC_TRACKS</code> 静态曲目的显示名覆盖值；<code>MusicTrackSetting</code> 不改变轨道 id、类型、角色绑定或音频文件，玩家侧 <code>/api/music-tracks</code>、角色 BGM 选择、商城音乐展示和抽卡音乐奖项显示会使用合并后的曲目名称。</li>
 </ul>
 <ul>
-<li>后台管理台通过 lazy <code>src/styles/admin.css</code> 与 <code>.admin-screen</code> 作用域维持浅色生产工具视觉；<code>src/styles/admin/polish/forms-actions.css</code>、<code>tables-specials.css</code> 和公告管理样式会显式复位 <code>.primary-action</code>、<code>.secondary-action</code>、<code>.danger-action</code>、<code>.close-button</code>、<code>.modal-backdrop</code>、<code>.confirm-modal</code> 等共享类名的 <code>clip-path</code>、暗色背景、霓虹 text-shadow/filter 和终端 pseudo-element，防止 Startorch/HUD 的黑底、绿纹、斜角按钮污染后台桌面端和移动端。</li>
+<li>后台管理台通过 lazy <code>src/styles/admin.css</code> 与 <code>.admin-screen</code> 作用域维持浅色生产工具视觉；<code>src/styles/admin/polish/hud-isolation.css</code>、<code>forms-actions.css</code>、<code>tables-specials.css</code> 和公告管理样式会显式复位 <code>.primary-action</code>、<code>.secondary-action</code>、<code>.danger-action</code>、<code>.close-button</code>、<code>.modal-backdrop</code>、<code>.confirm-modal</code>、普通 <code>input</code>/<code>textarea</code>/<code>select</code> 和带 <code>setting</code> 片段的后台设置容器的 <code>clip-path</code>、暗色背景、霓虹 text-shadow/filter、绿色终端边线与 pseudo-element，防止 Startorch/HUD 的黑底、绿纹、斜角按钮和黑色输入框污染后台桌面端和移动端。</li>
 </ul>
 <ul>
 <li>仇远（<code>qiuyuan</code>）的默认技能 BGM 是 <code>qiuyuan-skill-default</code>，使用两段式 <code>intro-loop</code> 播放：<code>/assets/music/qiuyuan_intro_once.ogg</code> 播放一次后接 <code>/assets/music/qiuyuan_loop.ogg</code> 循环；第二版技能 BGM <code>qiuyuan-skill-zhouwo</code> 显示名为“肘我”，使用单文件循环 <code>/assets/music/qiuyuan_zhouwo_loop.ogg</code>，商城商品图使用居中裁切 WebP <code>/assets/items/qiuyuan-zhouwo.webp</code>，不默认解锁但可作为商城音乐商品购买；启动内置商城 seed 会为已存在且 <code>imageUrl</code> 为空的 <code>qiuyuan-skill-zhouwo</code> 音乐商品回填该商品图，不覆盖后台已配置的非空图片，购买后会出现在仇远角色详情播放器的技能 BGM 选择中。</li>
@@ -2084,7 +2084,7 @@
 <li>公告中心作为应用级 overlay 注册在 <code>src/app/overlayRegistry.js</code>，入口位于大厅右上角工具栏和移动端折叠菜单；<code>src/app/useAnnouncementSummary.js</code> 在进入大厅、打开公告弹窗和详情标记已读后刷新未读摘要。</li>
 </ul>
 <ul>
-<li>后台管理新增桌面端分析体验：<code>AdminOverview</code> 是默认“今日简报”，用可读总状态、原因、分级解读和下一步动作替代密集表格；<code>AdminOperations</code> 是运营分析页，先显示推荐解读，再用低密度 CSS 条形图和卡片展示活跃、注册、对局、分层、经济和模式表现。分析样式集中在 <code>src/styles/admin/analytics.css</code>，最终后台控件皮肤集中在 <code>src/styles/admin/polish.css</code>，用于统一浅色按钮、输入框、表格、tabs、危险操作和关闭按钮；该 polish 层也负责在 <code>.admin-screen</code> 内压过 Startorch/HUD 的全局 <code>.primary-action</code>、<code>.danger-action</code>、<code>.close-button</code>、<code>.modal-backdrop</code>、<code>.confirm-modal</code> 终端皮肤，确保后台桌面端和移动端不继承黑底、绿纹、斜角按钮或霓虹阴影。</li>
+<li>后台管理新增桌面端分析体验：<code>AdminOverview</code> 是默认“今日简报”，用可读总状态、原因、分级解读和下一步动作替代密集表格；<code>AdminOperations</code> 是运营分析页，先显示推荐解读，再用低密度 CSS 条形图和卡片展示活跃、注册、对局、分层、经济和模式表现。分析样式集中在 <code>src/styles/admin/analytics.css</code>，最终后台控件皮肤集中在 <code>src/styles/admin/polish.css</code>，用于统一浅色按钮、输入框、表格、tabs、危险操作和关闭按钮；该 polish 层的 <code>polish/hud-isolation.css</code> 子文件负责在 <code>.admin-screen</code> 内压过 Startorch/HUD 的全局 <code>.primary-action</code>、<code>.danger-action</code>、<code>.close-button</code>、<code>.modal-backdrop</code>、<code>.confirm-modal</code>、普通 <code>input</code>/<code>textarea</code>/<code>select</code> 和 <code>div[class*=&quot;setting&quot;]</code> 终端皮肤，确保后台桌面端和移动端不继承黑底、绿纹、斜角按钮、黑色输入框或霓虹阴影。</li>
 </ul>
 <ul>
 <li>前端性能重点在启动预加载、房间快照结构共享、棋盘点位 memo、移动端布局合同。</li>
@@ -4218,7 +4218,7 @@
 <li>低频路由 CSS 不再要求进入全局根样式：<code>src/styles/admin.css</code> 是后台管理 domain entry，但由 lazy <code>src/admin/AdminConsole.jsx</code> 导入；<code>src/styles/room/tutorial-battle-screen.css</code> 是剧情教学对弈专属 entry，由 lazy <code>src/tutorial/TutorialBattleScreen.jsx</code> 导入，包含桌面和移动教学战斗空角色位、目标/行动和 loading motion 规则。<code>src/styles/mobile-adaptive/admin-fullscreen.css</code> 仍保留在全局最终安全层中，因为它需要在主题和 HUD 之后清理 <code>.admin-screen</code> 的全屏背景继承。</li>
 </ul>
 <ul>
-<li>后台管理是浅色生产工具界面，即使复用 <code>.primary-action</code>、<code>.secondary-action</code>、<code>.danger-action</code>、<code>.close-button</code>、<code>.modal-backdrop</code>、<code>.confirm-modal</code> 等共享类名，也必须由 <code>src/styles/admin/polish.css</code> 与公告管理样式在 <code>.admin-screen</code> 内显式复位 <code>clip-path</code>、暗色/霓虹背景、text-shadow/filter 和终端 pseudo-element；该合同同时覆盖桌面端和移动端，避免 Startorch/HUD 的黑底、绿纹、斜角控件污染后台。</li>
+<li>后台管理是浅色生产工具界面，即使复用 <code>.primary-action</code>、<code>.secondary-action</code>、<code>.danger-action</code>、<code>.close-button</code>、<code>.modal-backdrop</code>、<code>.confirm-modal</code>、普通 <code>input</code>/<code>textarea</code>/<code>select</code> 或带 <code>setting</code> 片段的容器，也必须由 <code>src/styles/admin/polish.css</code> 与公告管理样式在 <code>.admin-screen</code> 内显式复位 <code>clip-path</code>、暗色/霓虹背景、绿色终端边线、text-shadow/filter 和终端 pseudo-element；该合同同时覆盖桌面端和移动端，避免 Startorch/HUD 的黑底、绿纹、斜角控件和黑色输入框污染后台。</li>
 </ul>
 <ul>
 <li>移动端布局由共享移动层、Bright School 移动层和最终 <code>mobile-adaptive.css</code> 安全层共同约束。设置弹窗在最终手机层使用标题、tab、内部面板三行网格，外壳不滚动，当前 <code>settings-panel</code> 自己滚动并 containment；关闭按钮、首页图标按钮和手机菜单按钮保持显式 accessible label 与 44px 触控目标。</li>

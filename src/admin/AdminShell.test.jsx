@@ -23,6 +23,18 @@ describe("AdminShell", () => {
     expect(adminCss).toContain("content: none !important;");
   });
 
+  it("keeps admin headings and form controls isolated from HUD hardening", () => {
+    expect(adminCss).toContain(".admin-screen .admin-settings-grid");
+    expect(adminCss).toContain("background: transparent !important;");
+    expect(adminCss).toMatch(/\.admin-screen :is\(\s*\.admin-main header,\s*\.admin-section-header,/);
+    expect(adminCss).toMatch(/\.admin-screen :is\(\s*input:not\(\[type="checkbox"\]\)/);
+    expect(adminCss).toContain("border: 1px solid var(--admin-line-strong) !important;");
+    expect(adminCss).toContain("background-color: #ffffff !important;");
+    expect(adminCss).toContain("background-image: none !important;");
+    expect(adminCss).toContain("caret-color: var(--admin-primary) !important;");
+    expect(adminCss).toContain(".admin-screen select");
+  });
+
   it("renders all admin tabs with the active tab title", () => {
     const html = renderToStaticMarkup(
       <AdminShell user={{ username: "admin" }} tab="shop" setTab={vi.fn()} onBack={vi.fn()}>

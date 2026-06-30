@@ -461,6 +461,7 @@ describe("root CSS entry contract", () => {
     expect(cssImports(polishEntry)).toEqual([
       "./polish/tokens-surfaces.css",
       "./polish/forms-actions.css",
+      "./polish/hud-isolation.css",
       "./polish/tables-specials.css"
     ]);
     expect(polishEntry).not.toContain(".admin-screen {");

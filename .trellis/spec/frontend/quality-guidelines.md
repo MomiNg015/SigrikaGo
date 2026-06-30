@@ -187,11 +187,12 @@ Required assertion points:
 
 ### Admin route CSS isolation contract
 
-Admin screens are a light production tool surface, not a Startorch terminal surface. When admin markup reuses generic shared classes such as `.primary-action`, `.secondary-action`, `.danger-action`, `.close-button`, `.modal-backdrop`, or `.confirm-modal`, the effective `src/styles/admin.css` import tree must keep `.admin-screen`-scoped resets that beat global terminal/HUD rules.
+Admin screens are a light production tool surface, not a Startorch terminal surface. When admin markup reuses generic shared classes such as `.primary-action`, `.secondary-action`, `.danger-action`, `.close-button`, `.modal-backdrop`, `.confirm-modal`, ordinary `input`/`textarea`/`select`, or setting-named containers, the effective `src/styles/admin.css` import tree must keep `.admin-screen`-scoped resets that beat global terminal/HUD rules.
 
 Required assertion points:
 
 - Keep action, danger, and close-button admin rules specific enough to reset `clip-path`, dark/neon backgrounds, `text-shadow`, `filter`, and terminal skew/cut styling.
+- Keep admin heading, settings-grid, and form-control rules specific enough to reset global HUD input and `div[class*="setting"]` hardening, including dark backgrounds, green borders, pseudo-elements, neon text treatment, and terminal focus/caret colors.
 - Keep announcement confirmation modal/backdrop rules specific enough to clear terminal modal pseudo-elements, scanline/dark backdrops, and neon text treatment.
 - Add or update a focused admin test that reads `src/styles/admin.css` with `readCssWithImports()` whenever the admin polish or announcement confirmation rules change.
 
