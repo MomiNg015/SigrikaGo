@@ -17,6 +17,21 @@
     text-orientation: mixed !important;
   }
 
+  .character-detail-title-line {
+    min-width: 0 !important;
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .character-cv-label {
+    max-width: 100% !important;
+    color: inherit !important;
+    text-decoration: none !important;
+    font-size: 13px !important;
+    line-height: 1.1 !important;
+  }
+
   .character-music-player {
     width: min(164px, 48vw) !important;
     max-width: 100% !important;

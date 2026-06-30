@@ -152,6 +152,11 @@
   line-height: 1;
 }
 
+.meta-placeholder {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .rating-tag {
   color: #5c6285;
 }

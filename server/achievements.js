@@ -87,8 +87,12 @@ const EQUIPMENT_FIELDS = {
 export async function ensureAchievementSchema(client) {
   if (!client?.$executeRawUnsafe || !client?.$queryRawUnsafe) return;
   await addColumnIfMissing(client, "Character", "source", `TEXT NOT NULL DEFAULT 'default'`);
+  await addColumnIfMissing(client, "Character", "cvName", `TEXT NOT NULL DEFAULT ''`);
+  await addColumnIfMissing(client, "Character", "cvUrl", `TEXT NOT NULL DEFAULT ''`);
   await addColumnIfMissing(client, "Decoration", "source", `TEXT NOT NULL DEFAULT 'default'`);
   await addColumnIfMissing(client, "ShopItem", "source", `TEXT NOT NULL DEFAULT 'default'`);
+  await addColumnIfMissing(client, "ShopItem", "illustName", `TEXT NOT NULL DEFAULT ''`);
+  await addColumnIfMissing(client, "ShopItem", "illustUrl", `TEXT NOT NULL DEFAULT ''`);
   await client.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "AchievementRewardAsset" (
       "id" TEXT NOT NULL PRIMARY KEY,

@@ -1,6 +1,8 @@
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
 import { DEFAULT_VOYAGE_STAR_DERIVED_SKILL } from "./derivedSkills.js";
 import { skillEffectTargetRule } from "./skillEffectCatalog.js";
+import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "./characterCv.js";
+import { normalizeShopItemIllustName, normalizeShopItemIllustUrl } from "./shopItemIllust.js";
 
 export function emptyCharacterDraft() {
   return {
@@ -9,6 +11,8 @@ export function emptyCharacterDraft() {
     slug: "",
     name: "",
     description: "",
+    cvName: "",
+    cvUrl: "",
     portraitUrl: "",
     portraitSource: "url",
     acquisitionMethod: "",
@@ -42,6 +46,8 @@ export function buildCharacterDraft(character) {
     slug: character.id ?? "",
     name: character.name ?? "",
     description: character.description ?? "",
+    cvName: character.cvName ?? "",
+    cvUrl: character.cvUrl ?? "",
     portraitUrl: character.portrait ?? "",
     portraitSource: character.portraitSource ?? "url",
     acquisitionMethod: character.acquisitionMethod ?? "",
@@ -76,10 +82,15 @@ export function characterDraftToBody(draft) {
   if (costType === "special" && !costValue) return null;
   const paramsJson = skillParamsJsonWithDerivedSkills(draft.skill);
   if (paramsJson == null) return null;
+  const cvName = normalizeCharacterCvName(draft.cvName);
+  const cvUrl = normalizeCharacterCvUrl(draft.cvUrl);
+  if (cvUrl == null || (cvUrl && !cvName)) return null;
   return {
     slug: draft.slug.trim(),
     name: draft.name.trim(),
     description: String(draft.description ?? "").trim(),
+    cvName,
+    cvUrl,
     portraitUrl: draft.portraitUrl.trim(),
     portraitSource: draft.portraitSource,
     acquisitionMethod: String(draft.acquisitionMethod ?? "").trim(),
@@ -118,6 +129,8 @@ export function emptyShopItemDraft() {
     sortOrder: 0,
     description: "",
     imageUrl: "",
+    illustName: "",
+    illustUrl: "",
     source: "default"
   };
 }
@@ -222,6 +235,8 @@ export function validateShopItemDraft(draft) {
   const discountPercent = parseAdminInteger(draft.discountPercent);
   const sortOrder = parseAdminInteger(draft.sortOrder);
   const stockQuantity = parseAdminInteger(draft.stockQuantity);
+  const illustName = normalizeShopItemIllustName(draft.illustName);
+  const illustUrl = normalizeShopItemIllustUrl(draft.illustUrl);
   const errors = [];
   if (!draft.name.trim()) errors.push("商品名");
   if (!draft.targetId.trim()) errors.push("目标标识");
@@ -229,6 +244,8 @@ export function validateShopItemDraft(draft) {
   if (discountPercent == null || discountPercent < 0 || discountPercent > 100) errors.push("折扣必须是 0 到 100 的整数");
   if (sortOrder == null) errors.push("排序必须是整数");
   if (stockQuantity == null || stockQuantity < -1) errors.push("库存必须是 -1 或 0 以上整数");
+  if (illustUrl == null) errors.push("illust 链接必须是 http(s) 或站内路径");
+  if (illustUrl && !illustName) errors.push("填写 illust 链接时必须填写绘师名");
   if (errors.length) {
     return { ok: false, error: `请检查：${errors.join("、")}` };
   }
@@ -247,6 +264,8 @@ export function validateShopItemDraft(draft) {
       sortOrder,
       description: draft.description.trim(),
       imageUrl: draft.imageUrl.trim(),
+      illustName,
+      illustUrl: illustUrl ?? "",
       source: draft.source === "achievement" ? "achievement" : "default"
     }
   };

@@ -906,7 +906,7 @@ describe("SigrikaGo rules", () => {
       expect(point.hiddenHand).toBeFalsy();
       expect(point.colorIllusion).toBeFalsy();
     }
-    expect(result.notices ?? []).not.toContain("鍙戠幇闅愯棌鎵嬩簡锛?");
+    expect(result.notices ?? []).not.toContain("\u9359\u6220\u5e47\u95c5\u612f\u68cc\u93b5\u5b29\u7c21\u951b?");
     expect(result.state.skillRemovals.black).toBe(1);
     expect(result.state.skillRemovals.white).toBe(2);
     expect(result.state.skillCosts.black).toBe(5);

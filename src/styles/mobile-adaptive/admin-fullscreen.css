@@ -1,0 +1,21 @@
+html:has(.admin-screen),
+body:has(.admin-screen) {
+  background: #f6f7fb;
+}
+
+.app-shell:has(.admin-screen) {
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #f6f7fb !important;
+}
+
+.app-shell:has(.admin-screen)::before,
+.app-shell:has(.admin-screen)::after {
+  display: none;
+}
+
+.admin-screen {
+  width: 100vw;
+  max-width: none;
+  margin: 0;
+}

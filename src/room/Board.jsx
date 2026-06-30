@@ -21,9 +21,12 @@ function Board({
   pendingSkill,
   audioSettings,
   skillEffectsEnabled = true,
+  stoneJitter = true,
   pointConfirmation,
   previewPlayer,
   stoneDecorations = {},
+  tutorialTargetPointId = "",
+  tutorialAnyBoardTarget = false,
   onPoint,
   onScoringPoint,
   onNeutral,
@@ -149,7 +152,7 @@ function Board({
   const deadStoneOwners = showScoringMarks ? game.scoring?.deadStoneOwners ?? {} : {};
   return (
     <div
-      className={`board-wrap ${pendingSkill ? "targeting" : ""} ${colorIllusionActive ? "color-illusion-board-surface" : ""}`}
+      className={`board-wrap ${pendingSkill ? "targeting" : ""} ${tutorialAnyBoardTarget ? "tutorial-any-board-target" : ""} ${colorIllusionActive ? "color-illusion-board-surface" : ""}`}
       data-board-size={boardSize}
       style={{
         "--size": boardSize,
@@ -242,6 +245,8 @@ function Board({
               previewClass={previewClass}
               showMoves={showMoves}
               showScoringMarks={showScoringMarks}
+              stoneJitter={stoneJitter}
+              tutorialTargeted={tutorialTargetPointId === point.id}
               voyageStarCraterMarked={voyageStarCraterPointIds.has(point.id)}
               winningLineMarked={gomokuWinningLineIds.has(point.id)}
             />
@@ -493,6 +498,8 @@ function PointButton({
   previewClass,
   showMoves,
   showScoringMarks,
+  stoneJitter,
+  tutorialTargeted,
   voyageStarCraterMarked,
   winningLineMarked
 }) {
@@ -507,7 +514,9 @@ function PointButton({
   const offsetPoint = pendingEffectClass === "spray-transform-pending"
     ? { ...point, stone: "spray" }
     : displayStone ? { ...point, stone: displayStone } : point;
-  const stoneOffset = displayStone ? stoneOffsetForPoint(offsetPoint, gameMode) : null;
+  const stoneOffset = displayStone && stoneJitter !== false
+    ? stoneOffsetForPoint(offsetPoint, gameMode)
+    : { x: 0, y: 0 };
   const stoneStyle = displayStone
     ? {
         "--stone-offset-x": `${stoneOffset.x}px`,
@@ -519,9 +528,12 @@ function PointButton({
 
   return (
     <button
-      className={`point ${point.valid ? "" : "erased"} ${displayStone ?? ""} ${hiddenClass} ${skillEffectClass} ${pendingEffectClass} ${previewClass} ${confirmClass} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""}`}
+      className={`point ${point.valid ? "" : "erased"} ${displayStone ?? ""} ${hiddenClass} ${skillEffectClass} ${pendingEffectClass} ${previewClass} ${confirmClass} ${tutorialTargeted ? "tutorial-target-point" : ""} ${isStar ? "star" : ""} ${winningLineMarked ? "gomoku-winning-line" : ""}`}
       data-point-id={point.id}
-      style={{ gridColumn: point.x + 1, gridRow: point.y + 1 }}
+      style={{
+        "--board-point-center-x": `${((point.x + 0.5) / boardSize) * 100}%`,
+        "--board-point-center-y": `${((point.y + 0.5) / boardSize) * 100}%`
+      }}
       onPointerDown={(event) => {
         pointerTypeRef.current = event.pointerType;
         if (!hasScoringPoint) return;
@@ -565,6 +577,7 @@ function PointButton({
       {point.skillEffect === "blast-marker" && <span className="skill-effect-marker blast" aria-hidden="true" />}
       {libertyPurgeMarked && <span className="liberty-purge-removal-mark" aria-label="liberty purge removal" />}
       {confirmClass && <span className="touch-confirm-marker" aria-hidden="true" />}
+      {tutorialTargeted && <span className="tutorial-target-ring" aria-hidden="true" />}
     </button>
   );
 }
@@ -595,6 +608,8 @@ export function arePointButtonPropsEqual(previous, next) {
     && previous.previewClass === next.previewClass
     && previous.showMoves === next.showMoves
     && previous.showScoringMarks === next.showScoringMarks
+    && previous.stoneJitter === next.stoneJitter
+    && previous.tutorialTargeted === next.tutorialTargeted
     && previous.voyageStarCraterMarked === next.voyageStarCraterMarked
     && previous.winningLineMarked === next.winningLineMarked;
 }
@@ -606,8 +621,11 @@ export function areBoardPropsEqual(previous, next) {
     && previous.pendingSkill === next.pendingSkill
     && previous.audioSettings === next.audioSettings
     && previous.skillEffectsEnabled === next.skillEffectsEnabled
+    && previous.stoneJitter === next.stoneJitter
     && samePointConfirmation(previous.pointConfirmation, next.pointConfirmation)
     && samePreviewPlayer(previous.previewPlayer, next.previewPlayer)
+    && previous.tutorialTargetPointId === next.tutorialTargetPointId
+    && previous.tutorialAnyBoardTarget === next.tutorialAnyBoardTarget
     && previous.onPoint === next.onPoint
     && previous.onScoringPoint === next.onScoringPoint
     && previous.onNeutral === next.onNeutral

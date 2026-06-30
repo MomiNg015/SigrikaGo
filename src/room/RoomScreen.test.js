@@ -745,6 +745,24 @@ describe("RoomScreen helpers", () => {
     expect(brightRoomCss).toContain(".skill-detail-panel");
     expect(brightRoomCss).toContain("z-index: var(--room-floating-z, 80) !important");
   });
+
+  it("lets tutorial battle hide utility tools and people panels while keeping the real room shell", () => {
+    const headerSource = readText(new URL("./header/RoomHeader.jsx", import.meta.url));
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url));
+    const tutorialSource = readText(new URL("../tutorial/TutorialBattleScreen.jsx", import.meta.url));
+
+    expect(headerSource).toContain("showUtilityControls = true");
+    expect(headerSource).toContain("{showUtilityControls && <div className=\"room-toggles\">");
+    expect(headerSource).toContain("{showUtilityControls && <div className={`room-mobile-menu");
+    expect(battleSource).toContain("showPeoplePanel = true");
+    expect(battleSource).toContain("showPeoplePanel && !isReplay");
+    expect(battleSource).toContain("chatCompactMessages = false");
+    expect(battleSource).toContain("compactMessages={chatCompactMessages}");
+    expect(battleSource).toContain("membersPanel && { id: \"members\"");
+    expect(tutorialSource).toContain("showUtilityControls={false}");
+    expect(tutorialSource).toContain("showPeoplePanel={false}");
+    expect(tutorialSource).toContain("chatCompactMessages");
+  });
 });
 
 function readText(url) {

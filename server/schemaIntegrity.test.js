@@ -12,7 +12,7 @@ describe("Prisma schema integrity", () => {
     expect(schema).toContain('rank               String   @default("3段")');
     expect(schema).toContain('recentResults String @default("")');
     expect(schema).toContain('@default("{fromColor}{player}使用了{character}的“{skill}”技能，目标是{point}。")');
-    expect(schema).not.toMatch(/[�绾鈥]/);
+    expect(schema).not.toMatch(/[\ufffd\u7efe\u9225]/);
   });
 
   it("tracks the UserRelationship table through a migration", () => {
@@ -95,6 +95,40 @@ describe("Prisma schema integrity", () => {
 
     expect(existsSync(migrationPath)).toBe(true);
     expect(readFileSync(migrationPath, "utf8")).toContain("CREATE TABLE IF NOT EXISTS \"PersistedRoom\"");
+  });
+
+  it("tracks character CV fields through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606300001_add_character_cv_fields",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    expect(schema).toContain("cvName");
+    expect(schema).toContain("cvUrl");
+    expect(migration).toContain("ALTER TABLE \"Character\" ADD COLUMN \"cvName\"");
+    expect(migration).toContain("ALTER TABLE \"Character\" ADD COLUMN \"cvUrl\"");
+  });
+
+  it("tracks shop item illustration credit fields through a migration", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migrationPath = join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606300002_add_shop_item_illust_fields",
+      "migration.sql"
+    );
+    const migration = readFileSync(migrationPath, "utf8");
+
+    expect(schema).toContain("illustName");
+    expect(schema).toContain("illustUrl");
+    expect(migration).toContain("ALTER TABLE \"ShopItem\" ADD COLUMN \"illustName\"");
+    expect(migration).toContain("ALTER TABLE \"ShopItem\" ADD COLUMN \"illustUrl\"");
   });
 
   it("tracks structured user assets and progress ledgers through a migration", () => {
@@ -185,13 +219,22 @@ describe("Prisma schema integrity", () => {
       "migration.sql"
     );
     const migration = readFileSync(migrationPath, "utf8");
+    const completionMigration = readFileSync(join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606290002_add_onboarding_completed_at",
+      "migration.sql"
+    ), "utf8");
 
     expect(schema).toContain("model OnboardingStoryScript");
     expect(schema).toContain("onboardingRequired");
     expect(schema).toContain("onboardingAutoShownAt");
+    expect(schema).toContain("onboardingCompletedAt");
     expect(migration).toContain("CREATE TABLE IF NOT EXISTS \"OnboardingStoryScript\"");
     expect(migration).toContain("ALTER TABLE \"User\" ADD COLUMN \"onboardingRequired\"");
     expect(migration).toContain("ALTER TABLE \"User\" ADD COLUMN \"onboardingAutoShownAt\"");
+    expect(completionMigration).toContain("ALTER TABLE \"User\" ADD COLUMN \"onboardingCompletedAt\"");
   });
 
   it("tracks generic story scripts through a migration", () => {
@@ -204,13 +247,31 @@ describe("Prisma schema integrity", () => {
       "migration.sql"
     );
     const migration = readFileSync(migrationPath, "utf8");
+    const tutorialMigration = readFileSync(join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202606290001_add_story_tutorial_initial_board",
+      "migration.sql"
+    ), "utf8");
 
     expect(schema).toContain("model StoryScript");
     expect(schema).toContain("triggerParamsJson");
+    expect(schema).toContain("draftInitialBoardJson");
+    expect(schema).toContain("publishedInitialBoardJson");
     expect(schema).toContain("@@index([triggerType, isPublished])");
     expect(migration).toContain("CREATE TABLE IF NOT EXISTS \"StoryScript\"");
     expect(migration).toContain("CREATE UNIQUE INDEX IF NOT EXISTS \"StoryScript_key_key\"");
     expect(migration).toContain("CREATE INDEX IF NOT EXISTS \"StoryScript_triggerType_isPublished_idx\"");
+    expect(tutorialMigration).toContain("draftInitialBoardJson");
+    expect(tutorialMigration).toContain("publishedInitialBoardJson");
+  });
+
+  it("regenerates Prisma Client before server entrypoints", () => {
+    const packageJson = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8"));
+
+    expect(packageJson.scripts["predev:server"]).toBe("prisma generate");
+    expect(packageJson.scripts.prestart).toBe("prisma generate");
   });
 
   it("tracks gacha pools, rewards, blue gems, and character chains through a migration", () => {

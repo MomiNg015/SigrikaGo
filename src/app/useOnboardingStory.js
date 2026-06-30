@@ -21,6 +21,11 @@ export function useOnboardingStory({
     return data;
   }, [token]);
 
+  const markCompleted = useCallback(async () => {
+    if (!token) return;
+    await api("/api/onboarding-story/completed", { method: "POST", token });
+  }, [token]);
+
   const openStory = useCallback(async ({ manual = false } = {}) => {
     if (!token) return;
     setLoading(true);
@@ -31,7 +36,7 @@ export function useOnboardingStory({
         return;
       }
       closeOverlaySetters(overlaySetters);
-      openStoryPlayer?.(data.script, onboardingStoryLabels());
+      openStoryPlayer?.(data.script, onboardingStoryLabels(), { onComplete: markCompleted });
       if (!manual && data.autoEligible && user?.id) {
         touchedAutoUsersRef.current.add(user.id);
         await api("/api/onboarding-story/auto-shown", { method: "POST", token });
@@ -41,7 +46,7 @@ export function useOnboardingStory({
     } finally {
       setLoading(false);
     }
-  }, [fetchStory, openStoryPlayer, overlaySetters, showToast, token, user?.id]);
+  }, [fetchStory, markCompleted, openStoryPlayer, overlaySetters, showToast, token, user?.id]);
 
   useEffect(() => {
     if (!token || !user?.id || view !== "home") return;
@@ -52,7 +57,7 @@ export function useOnboardingStory({
         const data = await fetchStory();
         if (cancelled || !data.script || !data.autoEligible) return;
         closeOverlaySetters(overlaySetters);
-        openStoryPlayer?.(data.script, onboardingStoryLabels());
+        openStoryPlayer?.(data.script, onboardingStoryLabels(), { onComplete: markCompleted });
         touchedAutoUsersRef.current.add(user.id);
         await api("/api/onboarding-story/auto-shown", { method: "POST", token });
       } catch {
@@ -62,7 +67,7 @@ export function useOnboardingStory({
     return () => {
       cancelled = true;
     };
-  }, [fetchStory, openStoryPlayer, overlaySetters, token, user?.id, view]);
+  }, [fetchStory, markCompleted, openStoryPlayer, overlaySetters, token, user?.id, view]);
 
   return {
     loading,

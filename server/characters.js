@@ -3,6 +3,7 @@ import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { isLegacyDeniaSlug } from "./legacyDeniaCleanup.js";
 import { isSkillEffectType, skillEffectTargetRule, skillEffectTypeMessage } from "../src/shared/skillEffectCatalog.js";
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
+import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../src/shared/characterCv.js";
 
 const COST_TYPES = new Set(["numeric", "special"]);
 
@@ -21,6 +22,8 @@ export function validateCharacterInput(input = {}) {
   const portraitUrl = String(input.portraitUrl ?? input.portrait ?? "").trim();
   const portraitSource = String(input.portraitSource ?? "url").trim();
   const acquisitionMethod = String(input.acquisitionMethod ?? "").trim();
+  const cvName = normalizeCharacterCvName(input.cvName);
+  const cvUrl = normalizeCharacterCvUrl(input.cvUrl);
   const source = normalizeSource(input.source);
   const palette = String(input.palette ?? "#5d7fe8").trim();
   const effectType = String(skillInput.effectType ?? "").trim();
@@ -71,6 +74,8 @@ export function validateCharacterInput(input = {}) {
     errors.push("costValue is required when costType is special");
   }
   if (!systemMessage) errors.push("systemMessage is required");
+  if (cvUrl == null) errors.push("cvUrl must be an http(s) URL or root-relative path");
+  if (cvUrl && !cvName) errors.push("cvName is required when cvUrl is set");
 
   try {
     params = JSON.parse(typeof paramsJson === "string" ? paramsJson : "{}");
@@ -89,6 +94,8 @@ export function validateCharacterInput(input = {}) {
       portraitUrl,
       portraitSource,
       acquisitionMethod,
+      cvName,
+      cvUrl: cvUrl ?? "",
       source,
       palette,
       enabled,
@@ -138,6 +145,8 @@ export function toCharacterPayload(record) {
     portrait: record.portraitUrl,
     portraitSource: record.portraitSource,
     acquisitionMethod: record.acquisitionMethod ?? "",
+    cvName: record.cvName ?? "",
+    cvUrl: record.cvUrl ?? "",
     source: record.source ?? "default",
     enabled: record.enabled,
     sortOrder: record.sortOrder ?? 0,

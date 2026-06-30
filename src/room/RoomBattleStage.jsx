@@ -14,6 +14,7 @@ const ROOM_FLOATING_LAYER_BASE_Z = 90;
 export default function RoomBattleStage({
   battleLayoutClassName,
   audioSettings,
+  actionPanelOverride,
   boardStep,
   canSwitchView,
   characters,
@@ -53,6 +54,12 @@ export default function RoomBattleStage({
   skillAvailable,
   skillEffectsEnabled = true,
   skillPreview,
+  chatReadonly = false,
+  chatDisabledInputMessage = "",
+  chatCompactMessages = false,
+  showPeoplePanel = true,
+  tutorialTargetPointId = "",
+  tutorialAnyBoardTarget = false,
   token,
   user,
   viewColor,
@@ -93,6 +100,7 @@ export default function RoomBattleStage({
   }, [onScoringAction]);
   const selfPlayer = me ?? displayRoom.players[0];
   const selfSkill = effectiveSkillDisplayForPlayer(displayRoom.game, selfPlayer);
+  const selfSkillEnabled = displayRoom.game.skillEnabled !== false && Boolean(selfSkill);
   const isPlaying = displayRoom.game.phase === "playing";
   const isFinished = displayRoom.game.phase === "finished";
   const isMobileBattleLayout = battleLayoutClassName === "mobile-battle-layout";
@@ -113,7 +121,7 @@ export default function RoomBattleStage({
       onFloatingLayerRequest={bringFloatingLayerToFront}
     />
   );
-  const membersPanel = !isReplay && (
+  const membersPanel = showPeoplePanel && !isReplay && (
     <RoomPeopleList
       room={displayRoom}
       user={user}
@@ -139,6 +147,8 @@ export default function RoomBattleStage({
         pointConfirmation={pointConfirmation}
         previewPlayer={role === "player" ? me : null}
         stoneDecorations={stoneDecorationsForRoom(displayRoom)}
+        tutorialTargetPointId={tutorialTargetPointId}
+        tutorialAnyBoardTarget={tutorialAnyBoardTarget}
         onPoint={handlePoint}
         onScoringPoint={displayRoom.game.phase === "marking-dead" ? handleScoringPoint : null}
         onNeutral={handleNeutralPoint}
@@ -146,7 +156,7 @@ export default function RoomBattleStage({
       />
     </div>
   );
-  const actionPanel = (
+  const defaultActionPanel = (
     <ActionBar
       role={role}
       mode={displayRoom.game.mode}
@@ -158,7 +168,7 @@ export default function RoomBattleStage({
       skillLocked={Boolean(skillPreview)}
       skillActionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
       decisionLocked={Boolean(skillPreview || displayRoom.game.extraTurn)}
-      skillEnabled={displayRoom.game.skillEnabled !== false}
+      skillEnabled={selfSkillEnabled}
       skillName={selfSkill?.name}
       skillUses={selfPlayer ? effectiveSkillUsesForColor(displayRoom.game, selfPlayer.color) : 0}
       skillAvailable={skillAvailable}
@@ -180,6 +190,7 @@ export default function RoomBattleStage({
       onResign={onResign}
     />
   );
+  const actionPanel = actionPanelOverride ?? defaultActionPanel;
   const selfInfo = (
     <PlayerInfo
       player={selfPlayer}
@@ -202,7 +213,9 @@ export default function RoomBattleStage({
     <ChatBox
       room={displayRoom}
       onChat={onChat}
-      readonly={isReplay}
+      readonly={isReplay || chatReadonly}
+      disabledInputMessage={chatDisabledInputMessage}
+      compactMessages={chatCompactMessages}
       floatingLayerZ={floatingLayers.chat}
       onFloatingLayerRequest={handleChatFloatingLayer}
     />

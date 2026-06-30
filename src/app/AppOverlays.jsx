@@ -16,6 +16,8 @@ import RecruitmentModal from "../modals/RecruitmentModal.jsx";
 import ShopModal from "../modals/ShopModal.jsx";
 import WarehouseModal from "../modals/WarehouseModal.jsx";
 import WatchModal from "../modals/WatchModal.jsx";
+import TutorialSessionModal from "../tutorial/TutorialSessionModal.jsx";
+import { isStoryNodeType } from "../shared/tutorialNodeTypes.js";
 
 export default function AppOverlays({
   applyStoneDecoration,
@@ -32,6 +34,7 @@ export default function AppOverlays({
   onMessageSubmitted,
   onAnnouncementSummaryChange,
   onMailboxSummaryChange,
+  onEnterTutorialBattle,
   onStoryPlayerClose,
   onboardingStoryScript,
   storyPlayerScript,
@@ -281,12 +284,30 @@ export default function AppOverlays({
         />
       )}
       {showStoryPlayer && (
-        <StoryPlayerModal
-          script={storyPlayerScript?.script}
-          characters={characters}
-          labels={storyPlayerScript?.labels}
-          onClose={closeStoryPlayer}
-        />
+        isUnifiedTutorialScript(storyPlayerScript?.script) ? (
+          <TutorialSessionModal
+            script={storyPlayerScript?.script}
+            characters={characters}
+            labels={storyPlayerScript?.labels}
+            onComplete={storyPlayerScript?.onComplete}
+            onClose={closeStoryPlayer}
+            onEnterBattle={(battleSession) => {
+              closeStoryPlayer();
+              onEnterTutorialBattle?.({
+                ...battleSession,
+                labels: storyPlayerScript?.labels,
+                onComplete: storyPlayerScript?.onComplete
+              });
+            }}
+          />
+        ) : (
+          <StoryPlayerModal
+            script={storyPlayerScript?.script}
+            characters={characters}
+            labels={storyPlayerScript?.labels}
+            onClose={closeStoryPlayer}
+          />
+        )
       )}
       {showMessageBoard && (
         <MessageBoardModal
@@ -297,4 +318,8 @@ export default function AppOverlays({
       )}
     </>
   );
+}
+
+function isUnifiedTutorialScript(script) {
+  return (script?.nodes ?? []).some((node) => !isStoryNodeType(node?.type));
 }

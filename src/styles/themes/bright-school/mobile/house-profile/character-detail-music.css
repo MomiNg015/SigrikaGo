@@ -25,6 +25,19 @@
     text-orientation: mixed !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-title-line {
+    min-width: 0 !important;
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-cv-label {
+    max-width: 100% !important;
+    color: var(--bright-ink) !important;
+    text-decoration: none !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
     width: min(164px, 48vw) !important;
     max-width: 100% !important;

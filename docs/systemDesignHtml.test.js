@@ -7,7 +7,7 @@ import {
 } from "../scripts/render-system-design-html.mjs";
 import { appendAfter, readUtf8Document, writeUtf8Document } from "../scripts/write-utf8-doc.mjs";
 
-const COMMON_MOJIBAKE_PATTERN = /(缂栫爜|鏄庝寒|涓婚|锛|鑾|鎴|閫)/;
+const COMMON_MOJIBAKE_PATTERN = /(\u7f02\u682b\u721c|\u93c4\u5e9d\u5bd2|\u6d93\u5a5a|\u951b|\u947e|\u93b4|\u95ab)/;
 
 describe("system design html", () => {
   it("stays generated from the markdown source set", async () => {

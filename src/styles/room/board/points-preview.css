@@ -1,7 +1,12 @@
 .point {
   appearance: none;
   -webkit-appearance: none;
-  position: relative;
+  position: absolute;
+  left: var(--board-point-center-x);
+  top: var(--board-point-center-y);
+  width: calc(100% / var(--size));
+  height: calc(100% / var(--size));
+  transform: translate(-50%, -50%);
   border: 0;
   background: transparent;
   background-color: transparent;
@@ -24,8 +29,9 @@
   box-shadow: none !important;
   min-width: 0 !important;
   min-height: 0 !important;
-  width: auto !important;
-  height: auto !important;
+  width: calc(100% / var(--size)) !important;
+  height: calc(100% / var(--size)) !important;
+  transform: translate(-50%, -50%) !important;
   padding: 0 !important;
   touch-action: none !important;
 }
@@ -33,6 +39,8 @@
 .point::before {
   position: absolute;
   content: "";
+  left: 50%;
+  top: 50%;
   width: 58%;
   height: 58%;
   border-radius: 7px;
@@ -40,6 +48,7 @@
   border: 2px solid rgba(72, 102, 198, 0.62);
   opacity: 0;
   z-index: 4;
+  transform: translate(-50%, -50%);
   pointer-events: none;
 }
 

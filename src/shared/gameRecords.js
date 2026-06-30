@@ -11,6 +11,8 @@ export const RATING_WIN_DELTA = 20;
 export const RATING_LOSS_DELTA = -20;
 export const RATING_DRAW_DELTA = 0;
 
+const LEGACY_MOJIBAKE_DRAW_TEXT = "\u935c\u5c7e\ue5d0";
+
 export function gameResultMetadata(winner = null) {
   return {
     winnerColor: normalizeWinnerColor(winner?.winnerColor ?? null),
@@ -70,7 +72,7 @@ export function ratingDeltaForResult(playerColor, winnerColor) {
 function recordIsDraw(record = {}) {
   if (record.resultReason === GAME_RESULT_REASONS.agreement) return true;
   const text = String(record.resultText ?? "");
-  return text === "和棋" || text === "鍜屾";
+  return text === "和棋" || text === LEGACY_MOJIBAKE_DRAW_TEXT;
 }
 
 function playerColorForRecord(user, record) {

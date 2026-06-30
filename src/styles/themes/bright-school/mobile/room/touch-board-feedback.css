@@ -69,18 +69,18 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point {
     touch-action: none !important;
+    transform: translate(-50%, -50%) !important;
     transition:
-      transform 120ms cubic-bezier(0.16, 1, 0.3, 1),
       filter 120ms cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.previewable:active {
-    transform: scale(0.94) !important;
+    transform: translate(-50%, -50%) scale(0.94) !important;
     filter: brightness(1.04) saturate(1.08) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.touch-confirming {
-    transform: none !important;
+    transform: translate(-50%, -50%) !important;
     filter: brightness(1.04) saturate(1.08) !important;
   }
 }

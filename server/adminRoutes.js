@@ -19,6 +19,7 @@ import {
   updateAdminOnboardingStory
 } from "./onboardingStory.js";
 import {
+  deleteStoryScript,
   getAdminStoryScript,
   listAdminStoryScripts,
   updateAdminStoryScript
@@ -335,6 +336,18 @@ export function createAdminRouter({
         prisma,
         adminUser: req.user,
         input: { ...req.body, key: req.params.key }
+      }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/story-scripts/:key", async (req, res) => {
+    try {
+      res.json(await deleteStoryScript({
+        prisma,
+        adminUser: req.user,
+        key: req.params.key
       }));
     } catch (error) {
       sendRouteError(res, error);

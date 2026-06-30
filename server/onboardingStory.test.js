@@ -3,6 +3,7 @@ import {
   ensureOnboardingStorySchema,
   getPlayerOnboardingStory,
   markOnboardingAutoShown,
+  markOnboardingCompleted,
   validateOnboardingStoryScript
 } from "./onboardingStory.js";
 
@@ -21,7 +22,8 @@ describe("onboarding story domain", () => {
     expect(executed).toEqual([
       expect.stringContaining('CREATE TABLE IF NOT EXISTS "OnboardingStoryScript"'),
       expect.stringContaining('ALTER TABLE "User" ADD COLUMN "onboardingRequired" BOOLEAN NOT NULL DEFAULT false'),
-      expect.stringContaining('ALTER TABLE "User" ADD COLUMN "onboardingAutoShownAt" DATETIME')
+      expect.stringContaining('ALTER TABLE "User" ADD COLUMN "onboardingAutoShownAt" DATETIME'),
+      expect.stringContaining('ALTER TABLE "User" ADD COLUMN "onboardingCompletedAt" DATETIME')
     ]);
     expect(queried).toContain('PRAGMA table_info("User")');
   });
@@ -146,6 +148,36 @@ describe("onboarding story domain", () => {
       data: {
         onboardingRequired: false,
         onboardingAutoShownAt: new Date("2026-06-28T08:00:00.000Z")
+      }
+    }]);
+  });
+
+  it("marks onboarding completion separately from automatic display state", async () => {
+    const updates = [];
+    const prisma = {
+      user: {
+        update: async ({ where, data }) => {
+          updates.push({ where, data });
+          return { id: where.id, ...data };
+        }
+      }
+    };
+
+    await markOnboardingCompleted({
+      prisma,
+      user: { id: "user-1", onboardingCompletedAt: null },
+      now: new Date("2026-06-29T08:00:00.000Z")
+    });
+    await markOnboardingCompleted({
+      prisma,
+      user: { id: "user-1", onboardingCompletedAt: new Date("2026-06-29T08:00:00.000Z") }
+    });
+
+    expect(updates).toEqual([{
+      where: { id: "user-1" },
+      data: {
+        onboardingRequired: false,
+        onboardingCompletedAt: new Date("2026-06-29T08:00:00.000Z")
       }
     }]);
   });

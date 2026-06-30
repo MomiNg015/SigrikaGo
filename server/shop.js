@@ -17,6 +17,7 @@ import {
 import { STONE_DECORATIONS } from "../src/shared/stoneDecorations.js";
 import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
 import { RECRUITMENT_ITEMS } from "../src/shared/recruitment.js";
+import { normalizeShopItemIllustName, normalizeShopItemIllustUrl } from "../src/shared/shopItemIllust.js";
 
 const SHOP_CATEGORIES = new Set(["character", "decoration", "item", "music"]);
 const QIUYUAN_ZHOUWO_TRACK_ID = "qiuyuan-skill-zhouwo";
@@ -117,6 +118,8 @@ export function toShopItemPayload(item, purchaseCounts = {}) {
     sortOrder: item.sortOrder ?? 0,
     description: item.description ?? "",
     imageUrl: item.imageUrl ?? "",
+    illustName: item.illustName ?? "",
+    illustUrl: item.illustUrl ?? "",
     source: item.source ?? "default"
   };
 }
@@ -134,6 +137,8 @@ export function validateShopItemInput(input = {}) {
   const purchasable = input.purchasable ?? true;
   const enabled = input.enabled ?? true;
   const source = normalizeSource(input.source);
+  const illustName = normalizeShopItemIllustName(input.illustName);
+  const illustUrl = normalizeShopItemIllustUrl(input.illustUrl);
 
   if (!name) errors.push("name is required");
   if (!SHOP_CATEGORIES.has(category)) errors.push("category must be character, decoration, item, or music");
@@ -144,6 +149,8 @@ export function validateShopItemInput(input = {}) {
   if (sortOrder == null) errors.push("sortOrder must be an integer");
   if (typeof purchasable !== "boolean") errors.push("purchasable must be a boolean");
   if (typeof enabled !== "boolean") errors.push("enabled must be a boolean");
+  if (illustUrl == null) errors.push("illustUrl must be an http(s) URL or root-relative path");
+  if (illustUrl && !illustName) errors.push("illustName is required when illustUrl is set");
   if (errors.length) return { ok: false, error: errors.join("\n") };
 
   return {
@@ -161,6 +168,8 @@ export function validateShopItemInput(input = {}) {
       sortOrder,
       description: String(input.description ?? "").trim(),
       imageUrl: String(input.imageUrl ?? "").trim(),
+      illustName,
+      illustUrl: illustUrl ?? "",
       source
     }
   };

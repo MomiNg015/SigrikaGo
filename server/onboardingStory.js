@@ -60,6 +60,11 @@ export async function ensureOnboardingStorySchema(client) {
     "onboardingAutoShownAt",
     'ALTER TABLE "User" ADD COLUMN "onboardingAutoShownAt" DATETIME'
   );
+  await addUserColumnIfMissing(
+    client,
+    "onboardingCompletedAt",
+    'ALTER TABLE "User" ADD COLUMN "onboardingCompletedAt" DATETIME'
+  );
 }
 
 export function validateOnboardingStoryScript(input = {}, { publishing = false } = {}) {
@@ -121,6 +126,19 @@ export async function markOnboardingAutoShown({ prisma, user, now = new Date() }
       data: {
         onboardingRequired: false,
         onboardingAutoShownAt: now
+      }
+    });
+  }
+  return { ok: true };
+}
+
+export async function markOnboardingCompleted({ prisma, user, now = new Date() }) {
+  if (user?.id && !user.onboardingCompletedAt) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        onboardingRequired: false,
+        onboardingCompletedAt: now
       }
     });
   }

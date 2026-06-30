@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import StoryPlayerModal, {
   nextStoryNodeId,
+  resolveStoryRenderNodeId,
   storyTypewriterIntervalMs,
   visibleStoryOptions
 } from "./StoryPlayerModal.jsx";
@@ -58,6 +59,15 @@ describe("StoryPlayerModal", () => {
 
   it("treats an option with an empty target as the close-window path", () => {
     expect(nextStoryNodeId({ nextNodeId: "fallback" }, { label: "Sneak away", nextNodeId: "" })).toBe("");
+  });
+
+  it("keeps the story shell on the next node when tutorial playback swaps the script window", () => {
+    const nodesById = new Map([
+      ["next", { id: "next", text: "下一句" }]
+    ]);
+
+    expect(resolveStoryRenderNodeId("previous", "next", nodesById)).toBe("next");
+    expect(resolveStoryRenderNodeId("next", "start", nodesById)).toBe("next");
   });
 
   it("marks long-text portrait compression nodes for effect styling", () => {

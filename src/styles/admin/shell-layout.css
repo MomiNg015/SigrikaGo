@@ -1,10 +1,16 @@
 /* Admin console */
 
 .admin-screen {
+  --admin-screen-pad: clamp(12px, 1.1vw, 20px);
   min-height: 100dvh;
+  width: 100vw;
+  max-width: none;
+  margin: 0;
+  padding: var(--admin-screen-pad);
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr);
   gap: 16px;
+  overflow: hidden;
 }
 
 .admin-sidebar,
@@ -20,6 +26,8 @@
   align-content: start;
   gap: 8px;
   padding: 16px;
+  max-height: calc(100dvh - (var(--admin-screen-pad) * 2));
+  overflow: auto;
 }
 
 .admin-sidebar strong {
@@ -45,7 +53,10 @@
 }
 
 .admin-main {
-  min-height: calc(100dvh - 48px);
+  min-width: 0;
+  min-height: 0;
+  max-height: calc(100dvh - (var(--admin-screen-pad) * 2));
+  overflow: auto;
   padding: 18px;
 }
 

@@ -41,6 +41,10 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
 
   useEffect(() => installBackgroundResumeTriggers(playerRef.current), []);
 
+  useEffect(() => () => {
+    stopBackgroundPlayback(playerRef.current);
+  }, []);
+
   useEffect(() => subscribeBackgroundMusicPause((paused) => {
     const state = playerRef.current;
     state.pauseRequested = paused;
@@ -240,6 +244,15 @@ export function pauseBackgroundPlayback(state) {
   stopBackgroundPlayers(state);
 }
 
+export function stopBackgroundPlayback(state) {
+  state.generation = (state.generation ?? 0) + 1;
+  state.currentTrack = null;
+  state.offset = 0;
+  stopBackgroundHtmlFallback(state);
+  stopBackgroundPlayers(state);
+  clearBackgroundResumeRetry(state);
+}
+
 export function installBackgroundResumeTriggers(state) {
   if (typeof window === "undefined") return () => {};
   const doc = typeof document === "undefined" ? null : document;
@@ -283,6 +296,17 @@ function installBackgroundResumeRetry(state, context) {
   window.addEventListener("pointerdown", state.retry, { once: true });
   window.addEventListener("keydown", state.retry, { once: true });
   window.addEventListener("touchstart", state.retry, { once: true });
+}
+
+function clearBackgroundResumeRetry(state) {
+  if (!state.retry || typeof window === "undefined") {
+    state.retry = null;
+    return;
+  }
+  window.removeEventListener("pointerdown", state.retry);
+  window.removeEventListener("keydown", state.retry);
+  window.removeEventListener("touchstart", state.retry);
+  state.retry = null;
 }
 
 function setBackgroundBaseVolume(state, volume) {

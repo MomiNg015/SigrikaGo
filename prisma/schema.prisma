@@ -32,6 +32,7 @@ model User {
   musicSelections    String   @default("{}")
   onboardingRequired Boolean  @default(false)
   onboardingAutoShownAt DateTime?
+  onboardingCompletedAt DateTime?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   userCharacters     UserCharacter[]
@@ -395,6 +396,8 @@ model Character {
   portraitUrl    String
   portraitSource String          @default("url")
   acquisitionMethod String       @default("")
+  cvName         String          @default("")
+  cvUrl          String          @default("")
   source         String          @default("default")
   palette        String          @default("#5d7fe8")
   enabled        Boolean         @default(true)
@@ -450,6 +453,8 @@ model ShopItem {
   sortOrder       Int      @default(0)
   description     String   @default("")
   imageUrl         String   @default("")
+  illustName       String   @default("")
+  illustUrl        String   @default("")
   source           String   @default("default")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -595,9 +600,11 @@ model StoryScript {
   triggerType          String
   triggerParamsJson    String   @default("{}")
   draftStartNodeId     String   @default("")
+  draftInitialBoardJson String  @default("")
   draftNodesJson       String   @default("[]")
   isPublished          Boolean  @default(false)
   publishedStartNodeId String   @default("")
+  publishedInitialBoardJson String @default("")
   publishedNodesJson   String   @default("[]")
   firstPublishedAt     DateTime?
   publishedAt          DateTime?

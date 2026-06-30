@@ -409,21 +409,6 @@ export const ADMIN_DEFAULT_CONFIG = {
       "imageUrl": "/assets/items/qiuyuan-zhouwo.webp",
       "source": "default"
     },
-    {
-      "name": "Codex Builtin Deco Item 69906981",
-      "category": "decoration",
-      "targetId": "papagan-peach-stone",
-      "itemTargetType": "self",
-      "stockQuantity": -1,
-      "priceCoins": 2,
-      "discountPercent": 0,
-      "purchasable": true,
-      "enabled": false,
-      "sortOrder": 998,
-      "description": "builtin target smoke patched",
-      "imageUrl": "/assets/decorations/papagan-peach-stone-preview.png",
-      "source": "default"
-    }
   ],
   "gachaPools": [
     {

@@ -13,7 +13,7 @@ const criticalRuntimeFiles = [
   "src/app/resumeSession.js"
 ];
 
-const mojibakePattern = /[�閹閻闁濠閸鐠娴鎴鐧瓒榛鏈缍妫]|\?{4,}/;
+const mojibakePattern = /[\ufffd\u95b9\u95bb\u95c1\u6fe0\u95b8\u9420\u5a34\u93b4\u9427\u74d2\u699b\u93c8\u7f0d\u59ab]|\?{4,}/;
 
 describe("critical user-facing text", () => {
   test("does not contain common UTF-8 mojibake fragments in auth and socket paths", () => {

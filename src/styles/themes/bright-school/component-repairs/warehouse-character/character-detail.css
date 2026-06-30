@@ -40,6 +40,15 @@
   text-orientation: mixed !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-cv-label {
+  min-height: 0 !important;
+  color: var(--bright-ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-title-row,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .acquisition-method {

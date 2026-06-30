@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { arePlayerInfoPropsEqual, isDisconnectedPlayer, playerCandyPortrait, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer, tooltipPointFromEvent } from "./PlayerInfo.jsx";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import PlayerInfo, { arePlayerInfoPropsEqual, isDisconnectedPlayer, playerCandyPortrait, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer, tooltipPointFromEvent } from "./PlayerInfo.jsx";
 import { COLORS } from "../shared/game.js";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 
@@ -186,6 +188,85 @@ describe("PlayerInfo labels", () => {
     expect(componentRepairsCss).toContain(".player-info .portrait-wrap.disconnected-portrait");
     expect(componentRepairsCss).toContain("#ffe8eb !important");
     expect(finalRoomPortraitImageBlock).toContain("filter: none !important");
+  });
+
+  it("keeps no-character tutorial player slots stable without rendering portrait or skill content", () => {
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      player: {
+        color: COLORS.black,
+        character: null,
+        characterId: "",
+        user: { username: "moming", rank: "", rating: "" },
+        captures: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 },
+        isTutorialPlayer: true
+      }
+    })));
+    const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const noCharacterBlock = cssBlock(roomCss, ".portrait-wrap.no-character");
+    const placeholderBlock = cssBlock(roomCss, ".skill-chip-placeholder");
+    const brightNoCharacterBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap.no-character");
+    const brightMobileNoCharacterBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .player-info .portrait-wrap.no-character");
+    const desktopTutorialNoCharacterBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character");
+    const desktopTutorialNoCharacterBlackBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character.black-portrait");
+    const desktopTutorialNoCharacterWhiteBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character.white-portrait");
+    const mobileTutorialNoCharacterBlackBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .mobile-battle-layout .portrait-wrap.no-character.black-portrait");
+    const mobileTutorialNoCharacterWhiteBlock = cssBlock(roomCss, ".tutorial-battle-screen-stage .mobile-battle-layout .portrait-wrap.no-character.white-portrait");
+    const brightDesktopTutorialNoCharacterBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character");
+    const brightDesktopTutorialNoCharacterBlackBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.black-portrait");
+    const brightDesktopTutorialNoCharacterWhiteBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .battle-layout .player-info .portrait-wrap.no-character.white-portrait");
+    const brightMobileTutorialNoCharacterBlackBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.black-portrait");
+    const brightMobileTutorialNoCharacterWhiteBlock = cssBlock(brightSchoolCss, ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-screen-stage .mobile-battle-layout .player-info .portrait-wrap.no-character.white-portrait");
+
+    expect(markup).toContain("portrait-wrap black-portrait no-character");
+    expect(markup).not.toContain("<img");
+    expect(markup).toContain("meta-tag rank-tag meta-placeholder");
+    expect(markup).toContain("skill-chip-placeholder");
+    expect(noCharacterBlock).toContain("height: var(--side-portrait)");
+    expect(noCharacterBlock).toContain("min-height: var(--side-portrait)");
+    expect(cssBlock(roomCss, ".meta-placeholder")).toContain("visibility: hidden");
+    expect(placeholderBlock).toContain("visibility: hidden");
+    expect(brightNoCharacterBlock).toContain("height: var(--side-portrait) !important");
+    expect(brightNoCharacterBlock).toContain("radial-gradient(circle at 50% 58%");
+    expect(brightNoCharacterBlock).toContain("2px dashed rgba(74, 55, 54, 0.42) !important");
+    expect(desktopTutorialNoCharacterBlock).toContain("height: calc(var(--side-portrait) + 4px)");
+    expect(desktopTutorialNoCharacterBlock).toContain("min-height: calc(var(--side-portrait) + 4px)");
+    expect(desktopTutorialNoCharacterBlackBlock).toContain("background: #2b2b2b");
+    expect(desktopTutorialNoCharacterWhiteBlock).toContain("background: #ffffff");
+    expect(mobileTutorialNoCharacterBlackBlock).toContain("background: #2b2b2b");
+    expect(mobileTutorialNoCharacterWhiteBlock).toContain("background: #ffffff");
+    expect(brightDesktopTutorialNoCharacterBlock).toContain("height: calc(var(--side-portrait) + 4px) !important");
+    expect(brightDesktopTutorialNoCharacterBlackBlock).toContain("background: #2b2b2b !important");
+    expect(brightDesktopTutorialNoCharacterWhiteBlock).toContain("background: #ffffff !important");
+    expect(brightMobileTutorialNoCharacterBlackBlock).toContain("background: #2b2b2b !important");
+    expect(brightMobileTutorialNoCharacterWhiteBlock).toContain("background: #ffffff !important");
+    expect(brightMobileNoCharacterBlock).toContain("width: 46px !important");
+    expect(brightMobileNoCharacterBlock).toContain("height: 46px !important");
+    expect(roomCss).toContain(".mobile-room-screen .portrait-wrap.no-character");
+    const mobileNoCharacterBlock = cssBlock(roomCss, ".mobile-room-screen .portrait-wrap.no-character");
+    expect(mobileNoCharacterBlock).toContain("width: 46px");
+    expect(mobileNoCharacterBlock).toContain("height: 46px");
+    expect(mobileNoCharacterBlock).toContain("min-height: 46px");
+  });
+
+  it("keeps the original timer layout contract for normal room timer cards", () => {
+    const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const mobileCss = readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+
+    expect(renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps()))).toContain("timer-track");
+    expect(cssBlock(roomCss, ".digital-timer")).toContain("align-content: center");
+    expect(cssBlock(roomCss, ".digital-timer")).not.toContain("place-content: center");
+    expect(cssBlock(roomCss, ".timer-digits")).toContain("align-items: baseline");
+    expect(cssBlock(roomCss, ".timer-digits")).not.toContain("width: 100%");
+    expect(cssBlock(roomCss, ".timer-track")).not.toContain("justify-self: stretch");
+    expect(cssBlock(mobileCss, ".mobile-room-screen .digital-timer")).not.toContain("justify-items: center");
+    expect(cssBlock(mobileCss, ".mobile-room-screen .timer-digits")).not.toContain("justify-content: center");
+    expect(cssBlock(mobileCss, ".mobile-room-screen .timer-track")).not.toContain("justify-self: stretch");
+    expect(brightSchoolCss).not.toMatch(/digital-timer[^{]*\{[^}]*place-content:\s*center/i);
+    expect(brightSchoolCss).not.toMatch(/timer-digits[^{]*\{[^}]*justify-content:\s*center/i);
+    expect(brightSchoolCss).not.toMatch(/timer-track[^{]*\{[^}]*justify-self:\s*stretch/i);
   });
 
   it("skips rerendering unchanged player panels during unrelated clock updates", () => {

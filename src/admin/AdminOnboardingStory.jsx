@@ -1,9 +1,46 @@
-import { useEffect, useMemo, useState } from "react";
-import { FilePlus2, Plus, RefreshCw, Save, Trash2, Upload } from "lucide-react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import {
+  AlertCircle,
+  BookOpen,
+  CheckCircle2,
+  Circle,
+  Copy,
+  Eraser,
+  Eye,
+  FilePlus2,
+  GitBranch,
+  HelpCircle,
+  MousePointer2,
+  PauseCircle,
+  Play,
+  Plus,
+  RefreshCw,
+  Save,
+  Trash2,
+  Upload,
+  X
+} from "lucide-react";
 import { adminApi } from "../api/client.js";
-import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
-import { storyPortraitCatalog, storyPortraitOptions } from "../shared/storyPortraits.js";
+import Board from "../room/Board.jsx";
+import { COLORS, createGameState, getPoint, isPlayerColor } from "../shared/game.js";
+import { characterListFromCatalog, CHARACTERS } from "../shared/characters.js";
+import { SKILL_EFFECT_CATALOG } from "../shared/skillEffectCatalog.js";
 import { STORY_NODE_EFFECT_OPTIONS, STORY_NODE_EFFECTS } from "../shared/storyPresentation.js";
+import { storyPortraitCatalog, storyPortraitOptions } from "../shared/storyPortraits.js";
+import {
+  TUTORIAL_NODE_TYPES,
+  isStoryNodeType,
+  isTutorialNpcNodeType,
+  nodeTypeRequiresPoint
+} from "../shared/tutorialNodeTypes.js";
+import { gameModeById } from "../shared/gameModes.js";
+import {
+  applyTutorialNodeAction,
+  applyTutorialSkillAction,
+  createTutorialGameState
+} from "../tutorial/tutorialGameState.js";
+import TutorialBattleScreen from "../tutorial/TutorialBattleScreen.jsx";
+import TutorialSessionModal from "../tutorial/TutorialSessionModal.jsx";
 import { AdminSectionHeader, AdminStatusPill } from "./adminComponents.jsx";
 
 const TRIGGER_TYPES = Object.freeze({
@@ -12,58 +49,188 @@ const TRIGGER_TYPES = Object.freeze({
   battleTutorialStart: "battle-tutorial-start"
 });
 
-const ITEM_OPTIONS = Object.freeze([
-  { id: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖" }
+const ONBOARDING_STORY_KEY = "onboarding.default";
+const END_TARGET = "__story-end__";
+const ADMIN_PREVIEW_USER = Object.freeze({
+  id: "admin-preview-user",
+  username: "预览玩家",
+  rank: "",
+  rating: ""
+});
+
+const PURPOSES = Object.freeze([
+  {
+    id: "onboarding",
+    label: "新手引导",
+    group: "新手引导",
+    triggerType: TRIGGER_TYPES.onboarding,
+    title: "新的新手引导",
+    keyPrefix: "onboarding.custom",
+    initialBoard: null
+  },
+  {
+    id: "item-interaction",
+    label: "道具互动",
+    group: "道具互动",
+    triggerType: TRIGGER_TYPES.itemCharacterUse,
+    title: "新的道具互动",
+    keyPrefix: "item.story",
+    initialBoard: null
+  },
+  {
+    id: "battle-tutorial",
+    label: "对弈教学",
+    group: "对弈教学",
+    triggerType: TRIGGER_TYPES.battleTutorialStart,
+    title: "新的对弈教学",
+    keyPrefix: "tutorial.battle",
+    initialBoard: { mode: "spark", stones: [] }
+  },
+  {
+    id: "mixed",
+    label: "混合剧情教学",
+    group: "混合剧情教学",
+    triggerType: TRIGGER_TYPES.battleTutorialStart,
+    title: "新的混合剧情教学",
+    keyPrefix: "tutorial.mixed",
+    initialBoard: { mode: "spark", stones: [] }
+  }
+]);
+
+const NODE_TYPE_GROUPS = Object.freeze([
+  {
+    label: "剧情步骤",
+    options: [
+      { value: TUTORIAL_NODE_TYPES.story, label: "剧情对白" }
+    ]
+  },
+  {
+    label: "对弈步骤",
+    options: [
+      { value: TUTORIAL_NODE_TYPES.boardSetup, label: "设置局面" },
+      { value: TUTORIAL_NODE_TYPES.npcDialogue, label: "NPC 对话" },
+      { value: TUTORIAL_NODE_TYPES.playerChoice, label: "玩家选项" },
+      { value: TUTORIAL_NODE_TYPES.playerMove, label: "玩家落子" },
+      { value: TUTORIAL_NODE_TYPES.npcMove, label: "NPC 落子" },
+      { value: TUTORIAL_NODE_TYPES.playerSkill, label: "玩家技能" },
+      { value: TUTORIAL_NODE_TYPES.npcSkill, label: "NPC 技能" }
+    ]
+  },
+  {
+    label: "结算步骤",
+    options: [
+      { value: TUTORIAL_NODE_TYPES.countingStart, label: "开始数目" },
+      { value: TUTORIAL_NODE_TYPES.markDead, label: "标死子" },
+      { value: TUTORIAL_NODE_TYPES.markNeutral, label: "标中立点" },
+      { value: TUTORIAL_NODE_TYPES.countingConfirm, label: "确认数目" },
+      { value: TUTORIAL_NODE_TYPES.resign, label: "认输" }
+    ]
+  }
+]);
+
+const NODE_TYPE_LABELS = Object.freeze(Object.fromEntries(
+  NODE_TYPE_GROUPS.flatMap((group) => group.options.map((option) => [option.value, option.label]))
+));
+
+const NODE_CATEGORY_LABELS = Object.freeze(Object.fromEntries(
+  NODE_TYPE_GROUPS.flatMap((group) => group.options.map((option) => [option.value, group.label]))
+));
+
+const COLOR_OPTIONS = Object.freeze([
+  { value: "", label: "未指定" },
+  { value: "black", label: "黑棋" },
+  { value: "white", label: "白棋" }
 ]);
 
 const TEXT = Object.freeze({
-  title: "剧情脚本",
-  meta: "维护新手引导、道具互动和后续教学演出的通用剧情脚本",
+  title: "剧情教学",
+  meta: "维护新手引导、道具互动和本地对弈教学脚本",
   refresh: "刷新",
-  newScript: "新建脚本",
-  addNode: "添加节点",
   saveDraft: "保存草稿",
   publish: "发布",
-  script: "脚本",
-  key: "Key",
-  scriptTitle: "标题",
-  triggerType: "触发器",
-  item: "道具",
-  characterTarget: "目标角色",
-  startNode: "起始节点",
-  nodeId: "节点 ID",
-  speakerName: "说话人",
-  character: "立绘角色",
-  effect: "效果",
-  text: "正文",
-  nextNodeId: "下一节点",
-  options: "选项",
-  addOption: "添加选项",
-  label: "选项文案",
-  target: "目标节点",
-  revealDelaySeconds: "出现时间（秒）",
-  preview: "预览",
+  unpublish: "停用",
+  previewStart: "从开头预览",
+  previewCurrent: "从当前步骤预览",
+  help: "完整说明",
+  issues: "实时问题",
+  noIssues: "暂无需要修复的问题",
+  systemScript: "系统脚本",
   draft: "草稿",
   published: "已发布",
-  saved: "已保存",
-  publishedNotice: "已发布"
+  saved: "草稿已保存",
+  publishedNotice: "脚本已发布",
+  unpublishedNotice: "脚本已停用",
+  deletedNotice: "脚本已删除"
 });
 
-export default function AdminOnboardingStory({ token, characters = [], onNotice }) {
+export default function AdminOnboardingStory({ token, characters = [], items = [], onNotice }) {
   const [scripts, setScripts] = useState([]);
   const [script, setScript] = useState(() => emptyStoryScript());
+  const [selectedNodeId, setSelectedNodeId] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [fieldError, setFieldError] = useState("");
+  const [dirty, setDirty] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [boardEditorOpen, setBoardEditorOpen] = useState(false);
+  const [nodeBoardEditorId, setNodeBoardEditorId] = useState("");
+  const [pointPicker, setPointPicker] = useState(null);
+  const [previewMode, setPreviewMode] = useState("start");
+  const [previewOverlayOpen, setPreviewOverlayOpen] = useState(false);
+  const [previewBattleSession, setPreviewBattleSession] = useState(null);
+  const [previewStoryStartId, setPreviewStoryStartId] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const selectedNodeRef = useRef("");
   const characterCatalog = useMemo(() => storyPortraitCatalog(characters), [characters]);
+  const gameCharacterCatalog = useMemo(() => adminCharacterCatalog(characters), [characters]);
   const portraitOptions = useMemo(() => storyPortraitOptions(characters), [characters]);
+  const skillCharacters = useMemo(() => adminSkillCharacters(characters), [characters]);
+  const itemOptions = useMemo(() => adminItemOptions(items), [items]);
+  const issues = useMemo(() => validateWorkbench(script, { itemOptions, skillCharacters }), [script, itemOptions, skillCharacters]);
+  const flow = useMemo(() => buildFlow(script.draft), [script.draft]);
+  const selectedNode = useMemo(
+    () => script.draft.nodes.find((node) => node.id === selectedNodeId) ?? script.draft.nodes[0] ?? null,
+    [script.draft.nodes, selectedNodeId]
+  );
+  const previewScript = useMemo(
+    () => previewMode === "current"
+      ? scriptForCurrentPreview(script.draft, selectedNode?.id)
+      : script.draft,
+    [previewMode, script.draft, selectedNode?.id]
+  );
 
   useEffect(() => {
     refresh();
   }, [token]);
 
-  async function refresh(nextKey = script.key) {
+  useEffect(() => {
+    selectedNodeRef.current = selectedNodeId;
+  }, [selectedNodeId]);
+
+  useEffect(() => {
+    if (!script.draft.nodes.length) {
+      setSelectedNodeId("");
+      return;
+    }
+    if (!script.draft.nodes.some((node) => node.id === selectedNodeRef.current)) {
+      setSelectedNodeId(script.draft.startNodeId || script.draft.nodes[0].id);
+    }
+  }, [script.draft.nodes, script.draft.startNodeId]);
+
+  useEffect(() => {
+    function beforeUnload(event) {
+      if (!dirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    }
+    window.addEventListener("beforeunload", beforeUnload);
+    return () => window.removeEventListener("beforeunload", beforeUnload);
+  }, [dirty]);
+
+  async function refresh(nextKey = script.key, { force = false } = {}) {
     if (!token) return;
+    if (!force && dirty && !window.confirm("当前脚本有未保存改动，确定刷新并放弃这些改动吗？")) return;
     setLoading(true);
     setFieldError("");
     try {
@@ -71,245 +238,1473 @@ export default function AdminOnboardingStory({ token, characters = [], onNotice 
       const nextScripts = data.scripts ?? [];
       setScripts(nextScripts);
       const selected = nextScripts.find((entry) => entry.key === nextKey) ?? nextScripts[0] ?? emptyStoryScript();
-      setScript(normalizeStoryScript(selected));
+      selectLocalScript(selected, { dirty: false });
     } catch (error) {
-      setFieldError(error.message);
-      onNotice?.(error.message);
+      reportError(error);
     } finally {
       setLoading(false);
     }
   }
 
-  function createScript() {
-    const key = uniqueScriptKey(scripts);
-    setScript(emptyStoryScript({
-      key,
-      title: "新的剧情脚本",
-      triggerType: TRIGGER_TYPES.itemCharacterUse,
-      triggerParams: {
-        itemId: ITEM_OPTIONS[0].id,
-        characterId: characters[0]?.slug ?? ""
-      }
-    }));
+  function selectLocalScript(nextScript, { dirty: nextDirty = false } = {}) {
+    const normalized = normalizeStoryScript(nextScript);
+    setScript(normalized);
+    setSelectedNodeId(normalized.draft.startNodeId || normalized.draft.nodes[0]?.id || "");
+    setDirty(nextDirty);
+    setCreateOpen(false);
+    setBoardEditorOpen(false);
+    setNodeBoardEditorId("");
+    setPointPicker(null);
+    setFieldError("");
   }
 
   async function selectScript(key) {
+    if (!key || key === script.key) return;
+      if (dirty && !window.confirm("当前脚本有未保存改动，确定切换脚本吗？")) return;
     const cached = scripts.find((entry) => entry.key === key);
     if (cached) {
-      setScript(normalizeStoryScript(cached));
+      selectLocalScript(cached);
       return;
     }
-    if (!token || !key) return;
     setLoading(true);
     try {
       const data = await adminApi(`/story-scripts/${encodeURIComponent(key)}`, token);
-      setScript(normalizeStoryScript(data.script));
+      selectLocalScript(data.script);
     } catch (error) {
-      setFieldError(error.message);
-      onNotice?.(error.message);
+      reportError(error);
     } finally {
       setLoading(false);
     }
+  }
+
+  function createScript(purposeId) {
+    if (dirty && !window.confirm("当前脚本有未保存改动，确定新建并放弃这些改动吗？")) return;
+    const purpose = PURPOSES.find((entry) => entry.id === purposeId) ?? PURPOSES[0];
+    const start = emptyStoryNode("start", characters[0]?.slug ?? "");
+    selectLocalScript(emptyStoryScript({
+      key: uniqueScriptKey(scripts, purpose.keyPrefix),
+      title: purpose.title,
+      triggerType: purpose.triggerType,
+      triggerParams: purpose.triggerType === TRIGGER_TYPES.itemCharacterUse
+        ? { itemId: itemOptions[0]?.id ?? "", characterId: characters[0]?.slug ?? "" }
+        : {},
+      draft: {
+        startNodeId: start.id,
+        initialBoard: purpose.initialBoard,
+        nodes: [start]
+      }
+    }), { dirty: true });
+  }
+
+  function copyScript(source = script) {
+    if (dirty && !window.confirm("当前脚本有未保存改动，确定复制并放弃这些改动吗？")) return;
+    const purpose = purposeForScript(source);
+    selectLocalScript({
+      ...source,
+      key: uniqueScriptKey(scripts, `${purpose.keyPrefix}.copy`),
+      title: `${source.title || "剧情教学"} 副本`,
+      isPublished: false,
+      firstPublishedAt: null,
+      publishedAt: null,
+      published: emptyScript(),
+      draft: cloneDraft(source.draft)
+    }, { dirty: true });
   }
 
   async function submit(action) {
     setSubmitting(true);
     setFieldError("");
     try {
-      const payload = toSubmitPayload(script, action);
+      const body = action === "unpublish" ? { action } : toSubmitPayload(script, action);
       const data = await adminApi(`/story-scripts/${encodeURIComponent(script.key)}`, token, {
         method: "PATCH",
-        body: payload
+        body
       });
-      setScript(normalizeStoryScript(data.script));
-      await refresh(data.script?.key ?? script.key);
-      onNotice?.(action === "publish" ? TEXT.publishedNotice : TEXT.saved, "success");
+      setDirty(false);
+      selectLocalScript(data.script, { dirty: false });
+      await refresh(data.script?.key ?? script.key, { force: true });
+      notify(action === "publish" ? TEXT.publishedNotice : action === "unpublish" ? TEXT.unpublishedNotice : TEXT.saved, "success");
     } catch (error) {
-      setFieldError(error.message);
-      onNotice?.(error.message);
+      reportError(error);
     } finally {
       setSubmitting(false);
     }
   }
 
-  function updateDraft(patch) {
+  async function deleteScript(target = script) {
+    if (isSystemScript(target) || target.isPublished) return;
+    if (!window.confirm(`确定删除“${target.title || target.key}”吗？此操作不可撤销。`)) return;
+    setSubmitting(true);
+    try {
+      await adminApi(`/story-scripts/${encodeURIComponent(target.key)}`, token, { method: "DELETE" });
+      setDirty(false);
+      notify(TEXT.deletedNotice, "success");
+      await refresh("", { force: true });
+    } catch (error) {
+      reportError(error);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function patchScript(patch) {
+    setScript((current) => ({ ...current, ...patch }));
+    setDirty(true);
+  }
+
+  function patchDraft(patch) {
     setScript((current) => ({ ...current, draft: { ...current.draft, ...patch } }));
+    setDirty(true);
   }
 
-  function updateNode(index, patch) {
-    updateDraft({
-      nodes: script.draft.nodes.map((node, nodeIndex) => nodeIndex === index ? { ...node, ...patch } : node)
+  function patchNode(nodeId, patch) {
+    patchDraft({
+      nodes: script.draft.nodes.map((node) => node.id === nodeId ? { ...node, ...patch } : node)
     });
   }
 
-  function addNode() {
-    setScript((current) => {
-      const nextId = uniqueNodeId(current.draft.nodes);
-      const draft = {
-        startNodeId: current.draft.startNodeId || nextId,
-        nodes: [
-          ...current.draft.nodes,
-          { id: nextId, speakerName: "", characterId: characters[0]?.slug ?? "", effect: STORY_NODE_EFFECTS.none, text: "", nextNodeId: "", options: [] }
-        ]
-      };
-      return { ...current, draft };
+  function patchOption(nodeId, optionIndex, patch) {
+    const node = script.draft.nodes.find((entry) => entry.id === nodeId);
+    if (!node) return;
+    patchNode(nodeId, {
+      options: (node.options ?? []).map((option, index) => index === optionIndex ? { ...option, ...patch } : option)
     });
   }
 
-  function removeNode(index) {
-    const removedId = script.draft.nodes[index]?.id;
-    const nodes = script.draft.nodes.filter((_, nodeIndex) => nodeIndex !== index);
-    updateDraft({
-      startNodeId: script.draft.startNodeId === removedId ? (nodes[0]?.id ?? "") : script.draft.startNodeId,
+  function updateTriggerType(triggerType) {
+    patchScript({
+      triggerType,
+      triggerParams: triggerType === TRIGGER_TYPES.itemCharacterUse
+        ? { itemId: itemOptions[0]?.id ?? "", characterId: characters[0]?.slug ?? "" }
+        : {}
+    });
+  }
+
+  function updateInitialBoard(patch) {
+    const current = script.draft.initialBoard ?? { mode: "spark", stones: [] };
+    patchDraft({ initialBoard: { ...current, ...patch } });
+  }
+
+  function addNodeAfter(type = TUTORIAL_NODE_TYPES.story) {
+    const currentId = selectedNode?.id || script.draft.startNodeId || script.draft.nodes.at(-1)?.id || "";
+    const nextId = uniqueNodeId(script.draft.nodes, type);
+    const currentIndex = script.draft.nodes.findIndex((node) => node.id === currentId);
+    const nextNode = emptyStoryNode(nextId, defaultCharacterId(characters), defaultPatchForType(type));
+    const nodes = [...script.draft.nodes];
+    if (currentIndex >= 0) {
+      const current = nodes[currentIndex];
+      nextNode.nextNodeId = current.options?.length ? "" : current.nextNodeId;
+      nodes[currentIndex] = current.options?.length ? current : { ...current, nextNodeId: nextId };
+      nodes.splice(currentIndex + 1, 0, nextNode);
+    } else {
+      nodes.push(nextNode);
+    }
+    patchDraft({
+      startNodeId: script.draft.startNodeId || nextId,
       nodes
     });
+    setSelectedNodeId(nextId);
+  }
+
+  function addBranchStep(nodeId, optionIndex) {
+    const nextId = uniqueNodeId(script.draft.nodes, "branch");
+    const nextNode = emptyStoryNode(nextId, defaultCharacterId(characters));
+    const nodes = script.draft.nodes.map((node) => {
+      if (node.id !== nodeId) return node;
+      return {
+        ...node,
+        options: (node.options ?? []).map((option, index) => (
+          index === optionIndex ? { ...option, nextNodeId: nextId, targetMissing: false } : option
+        ))
+      };
+    });
+    patchDraft({ nodes: [...nodes, nextNode] });
+    setSelectedNodeId(nextId);
+  }
+
+  function removeNode(nodeId) {
+    if (!nodeId || script.draft.nodes.length <= 1) return;
+    const removed = script.draft.nodes.find((node) => node.id === nodeId);
+    if (!removed) return;
+    if (!window.confirm(`删除步骤“${stepName(removed, script.draft.nodes.indexOf(removed))}”？`)) return;
+    const nodes = script.draft.nodes
+      .filter((node) => node.id !== nodeId)
+      .map((node) => {
+        const nextNodeId = node.nextNodeId === nodeId ? (removed.nextNodeId ?? "") : node.nextNodeId;
+        const options = (node.options ?? []).map((option) => option.nextNodeId === nodeId
+          ? { ...option, nextNodeId: "", targetMissing: true }
+          : option);
+        return { ...node, nextNodeId, options };
+      });
+    patchDraft({
+      startNodeId: script.draft.startNodeId === nodeId ? (removed.nextNodeId || nodes[0]?.id || "") : script.draft.startNodeId,
+      nodes
+    });
+    setSelectedNodeId(removed.nextNodeId || nodes[0]?.id || "");
+  }
+
+  function notify(message, tone = "neutral") {
+    setFeedback(message);
+    onNotice?.(message, tone);
+    window.setTimeout(() => setFeedback(""), 2400);
+  }
+
+  function reportError(error) {
+    const message = error.message ?? "剧情教学请求失败";
+    setFieldError(message);
+    notify(message, "danger");
   }
 
   return (
-    <section className="admin-onboarding-story">
-      <AdminSectionHeader title={TEXT.title} meta={TEXT.meta} actionLabel={TEXT.addNode} onAction={addNode}>
-        <button className="secondary-action" type="button" onClick={createScript}>
-          <FilePlus2 size={16} />{TEXT.newScript}
+    <section className="admin-story-workbench">
+      <AdminSectionHeader title={TEXT.title} meta={TEXT.meta} actionLabel="添加步骤" onAction={() => addNodeAfter()}>
+        <button className="admin-story-workbench-button secondary" type="button" onClick={() => setCreateOpen((open) => !open)}>
+          <FilePlus2 size={16} />新建脚本
         </button>
-        <button className="secondary-action" type="button" onClick={() => refresh()} disabled={loading}>
+        <button className="admin-story-workbench-button secondary" type="button" onClick={() => refresh(script.key)} disabled={loading}>
           <RefreshCw size={16} />{TEXT.refresh}
         </button>
       </AdminSectionHeader>
 
-      <div className="admin-onboarding-layout">
-        <section className="admin-card admin-onboarding-editor">
-          <div className="admin-onboarding-editor-head">
-            <label>
-              {TEXT.script}
-              <select value={scripts.some((entry) => entry.key === script.key) ? script.key : ""} onChange={(event) => selectScript(event.target.value)}>
-                {!scripts.some((entry) => entry.key === script.key) && <option value="">未保存的新脚本</option>}
-                {scripts.map((entry) => <option key={entry.key} value={entry.key}>{entry.title || entry.key}</option>)}
-              </select>
-            </label>
-            <AdminStatusPill tone={script.isPublished ? "green" : "neutral"}>
-              {script.isPublished ? TEXT.published : TEXT.draft}
-            </AdminStatusPill>
-          </div>
+      {createOpen && (
+        <section className="admin-story-workbench-create" aria-label="选择新建脚本用途">
+          {PURPOSES.map((purpose) => (
+            <button key={purpose.id} type="button" onClick={() => createScript(purpose.id)}>
+              <strong>{purpose.label}</strong>
+              <span>{purpose.group}用途 · {purpose.triggerType === TRIGGER_TYPES.itemCharacterUse ? "需要选择道具和角色" : "无需原始 JSON"}</span>
+            </button>
+          ))}
+        </section>
+      )}
 
-          <div className="admin-onboarding-node-grid">
-            <label>{TEXT.key}<input value={script.key} onChange={(event) => setScript((current) => ({ ...current, key: event.target.value }))} /></label>
-            <label>{TEXT.scriptTitle}<input value={script.title} onChange={(event) => setScript((current) => ({ ...current, title: event.target.value }))} /></label>
+      <div className="admin-story-workbench-shell">
+        <ScriptLibrary
+          scripts={scripts}
+          selectedKey={script.key}
+          onSelect={selectScript}
+          onCopy={copyScript}
+          onDelete={deleteScript}
+          onCreate={() => setCreateOpen((open) => !open)}
+        />
+
+        <main className="admin-story-workbench-main">
+          <WorkbenchToolbar
+            script={script}
+            dirty={dirty}
+            issues={issues}
+            submitting={submitting}
+            previewMode={previewMode}
+            onPreviewMode={setPreviewMode}
+            onCopy={() => copyScript()}
+            onSave={() => submit("save-draft")}
+            onPublish={() => submit("publish")}
+            onUnpublish={() => submit("unpublish")}
+            onDelete={() => deleteScript()}
+          />
+
+          <section className="admin-story-workbench-script">
             <label>
-              {TEXT.triggerType}
-              <select value={script.triggerType} onChange={(event) => setScript((current) => nextTriggerScript(current, event.target.value, characters))}>
+              <span>脚本标题</span>
+              <input value={script.title} onChange={(event) => patchScript({ title: event.target.value })} />
+            </label>
+            <label>
+              <span>脚本标识</span>
+              <input value={script.key} disabled={script.isPublished || isSystemScript(script)} onChange={(event) => patchScript({ key: event.target.value })} />
+            </label>
+            <label>
+              <span>用途</span>
+              <select value={script.triggerType} onChange={(event) => updateTriggerType(event.target.value)}>
                 <option value={TRIGGER_TYPES.onboarding}>新手引导</option>
-                <option value={TRIGGER_TYPES.itemCharacterUse}>道具作用到角色</option>
-                <option value={TRIGGER_TYPES.battleTutorialStart}>对弈教学预留</option>
+                <option value={TRIGGER_TYPES.itemCharacterUse}>道具互动</option>
+                <option value={TRIGGER_TYPES.battleTutorialStart}>对弈教学 / 混合剧情教学</option>
               </select>
             </label>
             {script.triggerType === TRIGGER_TYPES.itemCharacterUse && (
               <>
                 <label>
-                  {TEXT.item}
-                  <select value={script.triggerParams.itemId ?? ""} onChange={(event) => updateTriggerParams(script, setScript, { itemId: event.target.value })}>
-                    {ITEM_OPTIONS.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                  <span>触发道具</span>
+                  <select value={script.triggerParams.itemId ?? ""} onChange={(event) => patchScript({ triggerParams: { ...script.triggerParams, itemId: event.target.value } })}>
+                    <option value="">未选择</option>
+                    {itemOptions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
                   </select>
                 </label>
                 <label>
-                  {TEXT.characterTarget}
-                  <select value={script.triggerParams.characterId ?? ""} onChange={(event) => updateTriggerParams(script, setScript, { characterId: event.target.value })}>
+                  <span>目标角色</span>
+                  <select value={script.triggerParams.characterId ?? ""} onChange={(event) => patchScript({ triggerParams: { ...script.triggerParams, characterId: event.target.value } })}>
                     <option value="">未选择</option>
-                    {characters.map((character) => <option key={character.slug} value={character.slug}>{character.name}</option>)}
+                    {characters.map((character) => <option key={character.slug || character.id} value={character.slug || character.id}>{character.name}</option>)}
                   </select>
                 </label>
               </>
             )}
-            <label>
-              {TEXT.startNode}
-              <select value={script.draft.startNodeId} onChange={(event) => updateDraft({ startNodeId: event.target.value })}>
-                <option value="">未选择</option>
-                {script.draft.nodes.map((node) => <option key={node.id} value={node.id}>{node.id || "(空 ID)"}</option>)}
-              </select>
-            </label>
-          </div>
+            <InitialBoardSummary
+              board={script.draft.initialBoard}
+              onMode={(mode) => updateInitialBoard({ mode })}
+              onOpen={() => setBoardEditorOpen(true)}
+            />
+          </section>
 
-          <div className="admin-onboarding-node-list">
-            {script.draft.nodes.map((node, index) => (
-              <article className="admin-onboarding-node" key={`${index}:${node.id}`}>
-                <header>
-                  <strong>{node.id || `${TEXT.nodeId} ${index + 1}`}</strong>
-                  <button className="danger-action icon-only" type="button" aria-label="删除节点" onClick={() => removeNode(index)}>
-                    <Trash2 size={16} />
-                  </button>
-                </header>
-                <div className="admin-onboarding-node-grid">
-                  <label>{TEXT.nodeId}<input value={node.id} onChange={(event) => updateNode(index, { id: event.target.value })} /></label>
-                  <label>{TEXT.speakerName}<input value={node.speakerName} onChange={(event) => updateNode(index, { speakerName: event.target.value })} /></label>
-                  <label>
-                    {TEXT.effect}
-                    <select value={node.effect ?? STORY_NODE_EFFECTS.none} onChange={(event) => updateNode(index, { effect: event.target.value })}>
-                      {STORY_NODE_EFFECT_OPTIONS.map((effect) => <option key={effect.value || "none"} value={effect.value}>{effect.label}</option>)}
-                    </select>
-                  </label>
-                  <label>
-                    {TEXT.character}
-                    <select value={node.characterId} onChange={(event) => updateNode(index, { characterId: event.target.value })}>
-                      <option value="">无</option>
-                      {portraitOptions.map((character) => <option key={character.slug} value={character.slug}>{character.name}</option>)}
-                    </select>
-                  </label>
-                  <label>{TEXT.nextNodeId}<input value={node.nextNodeId} onChange={(event) => updateNode(index, { nextNodeId: event.target.value })} /></label>
+          <div className="admin-story-workbench-content">
+            <section className="admin-story-workbench-flow" aria-label="自动流程图">
+              <header>
+                <div>
+                  <h3>自动流程图</h3>
+                  <p>主线自上而下，分支横向展开；节点不可拖拽，也不需要手动画线。</p>
                 </div>
-                <label className="admin-onboarding-textarea">{TEXT.text}<textarea rows={4} value={node.text} onChange={(event) => updateNode(index, { text: event.target.value })} /></label>
-                <div className="admin-onboarding-options">
-                  <div className="admin-onboarding-options-title">
-                    <span>{TEXT.options}</span>
-                    <button className="secondary-action" type="button" onClick={() => updateNode(index, { options: [...(node.options ?? []), { label: "", nextNodeId: "", revealDelaySeconds: "" }] })}>
-                      <Plus size={16} />{TEXT.addOption}
-                    </button>
-                  </div>
-                  {(node.options ?? []).map((option, optionIndex) => (
-                    <div className="admin-onboarding-option-row" key={optionIndex}>
-                      <input aria-label={TEXT.label} placeholder={TEXT.label} value={option.label} onChange={(event) => updateOption(node, index, optionIndex, { label: event.target.value }, updateNode)} />
-                      <input aria-label={TEXT.target} placeholder={TEXT.target} value={option.nextNodeId} onChange={(event) => updateOption(node, index, optionIndex, { nextNodeId: event.target.value }, updateNode)} />
-                      <input aria-label={TEXT.revealDelaySeconds} placeholder={TEXT.revealDelaySeconds} type="number" min="0" step="0.1" value={option.revealDelaySeconds ?? ""} onChange={(event) => updateOption(node, index, optionIndex, { revealDelaySeconds: event.target.value }, updateNode)} />
-                      <button className="danger-action icon-only" type="button" aria-label="删除选项" onClick={() => updateNode(index, { options: node.options.filter((_, i) => i !== optionIndex) })}>
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
+                <button className="admin-story-workbench-button secondary" type="button" onClick={() => addNodeAfter()}>
+                  <Plus size={16} />插入步骤
+                </button>
+              </header>
+              <FlowGraph
+                flow={flow}
+                nodes={script.draft.nodes}
+                selectedNodeId={selectedNode?.id}
+                issues={issues}
+                onSelect={setSelectedNodeId}
+              />
+            </section>
 
-          {fieldError && <p className="form-error">{fieldError}</p>}
-          <div className="inline-actions admin-onboarding-actions">
-            <button className="secondary-action" type="button" disabled={submitting} onClick={() => submit("save-draft")}><Save size={16} />{TEXT.saveDraft}</button>
-            <button className="primary-action" type="button" disabled={submitting} onClick={() => submit("publish")}><Upload size={16} />{TEXT.publish}</button>
-            {script.publishedAt && <small>{TEXT.published}: {formatDateTime(script.publishedAt)}</small>}
+            <aside className="admin-story-workbench-side">
+              <IssuePanel issues={issues} onSelect={setSelectedNodeId} />
+              <StepEditor
+                node={selectedNode}
+                nodes={script.draft.nodes}
+                portraitOptions={portraitOptions}
+                skillCharacters={skillCharacters}
+                onPatch={(patch) => selectedNode && patchNode(selectedNode.id, patch)}
+                onPatchOption={(optionIndex, patch) => selectedNode && patchOption(selectedNode.id, optionIndex, patch)}
+                onAddOption={() => selectedNode && patchNode(selectedNode.id, { options: [...(selectedNode.options ?? []), { label: "", nextNodeId: "" }] })}
+                onRemoveOption={(optionIndex) => selectedNode && patchNode(selectedNode.id, { options: selectedNode.options.filter((_, index) => index !== optionIndex) })}
+                onAddBranch={addBranchStep}
+                onRemove={() => selectedNode && removeNode(selectedNode.id)}
+                onPickPoint={(field) => selectedNode && setPointPicker({ nodeId: selectedNode.id, field })}
+                onEditBoardSetup={() => selectedNode && setNodeBoardEditorId(selectedNode.id)}
+                onHelp={() => setHelpOpen(true)}
+              />
+            </aside>
           </div>
-        </section>
+        </main>
 
-        <aside className="admin-card admin-onboarding-preview">
-          <h3>{TEXT.preview}</h3>
-          <StoryPlayerModal script={script.draft} characters={characterCatalog} labels={{ title: script.title || TEXT.preview }} typewriterDisabled onClose={() => {}} />
+        <aside className="admin-story-workbench-preview">
+          <header>
+            <div>
+              <h3>预览</h3>
+              <p>{previewMode === "current" ? "已从起点静默推演到当前步骤" : "从脚本起点播放"}</p>
+            </div>
+            <div className="admin-story-workbench-segmented">
+              <button type="button" className={previewMode === "start" ? "active" : ""} onClick={() => setPreviewMode("start")}><Play size={14} />开头</button>
+              <button type="button" className={previewMode === "current" ? "active" : ""} onClick={() => setPreviewMode("current")}><Eye size={14} />当前</button>
+            </div>
+          </header>
+          <div className="admin-story-workbench-preview-stage">
+            <div className="admin-story-workbench-preview-summary">
+              <strong>{previewMode === "current" ? "从当前步骤全屏预览" : "从脚本起点全屏预览"}</strong>
+              <span>{previewScript.nodes.length} 个步骤</span>
+              <button
+                className="admin-story-workbench-button primary"
+                type="button"
+                onClick={() => {
+                  setPreviewBattleSession(null);
+                  setPreviewStoryStartId("");
+                  setPreviewOverlayOpen(true);
+                }}
+              >
+                <Play size={16} />打开全屏预览
+              </button>
+            </div>
+          </div>
         </aside>
+      </div>
+
+      {fieldError && <p className="admin-story-workbench-error" role="alert">{fieldError}</p>}
+      {feedback && <p className="admin-story-workbench-toast" role="status">{feedback}</p>}
+
+      {boardEditorOpen && (
+        <InitialBoardEditorModal
+          board={script.draft.initialBoard ?? { mode: "spark", stones: [] }}
+          title="初始棋盘"
+          onClose={() => setBoardEditorOpen(false)}
+          onSave={(stones) => {
+            updateInitialBoard({ stones });
+            setBoardEditorOpen(false);
+          }}
+        />
+      )}
+
+      {nodeBoardEditorId && (
+        <InitialBoardEditorModal
+          board={boardSetupForNode(script.draft.nodes.find((node) => node.id === nodeBoardEditorId), script.draft)}
+          title="设置局面"
+          onClose={() => setNodeBoardEditorId("")}
+          onSave={(stones) => {
+            const targetNode = script.draft.nodes.find((node) => node.id === nodeBoardEditorId);
+            patchNode(nodeBoardEditorId, {
+              boardSetup: {
+                ...boardSetupForNode(targetNode, script.draft),
+                stones
+              }
+            });
+            setNodeBoardEditorId("");
+          }}
+        />
+      )}
+
+      {pointPicker && (
+        <BoardPointPickerModal
+          board={replayInitialBoardToNode(script.draft, pointPicker.nodeId)}
+          title={pointPicker.field === "pointId" ? "选择棋盘坐标" : "选择技能目标"}
+          onClose={() => setPointPicker(null)}
+          onPick={(pointId) => {
+            patchNode(pointPicker.nodeId, { [pointPicker.field]: pointId });
+            setPointPicker(null);
+          }}
+        />
+      )}
+
+      {previewOverlayOpen && (
+        <div className="admin-story-workbench-fullscreen-preview" role="dialog" aria-modal="true" aria-label="剧情教学全屏预览">
+          {previewBattleSession ? (
+            <TutorialBattleScreen
+              audioSettings={{ master: 0, bgm: 0, sfx: 0, voice: 0 }}
+              characters={gameCharacterCatalog}
+              session={previewBattleSession}
+              user={ADMIN_PREVIEW_USER}
+              onClose={() => {
+                setPreviewBattleSession(null);
+                setPreviewOverlayOpen(false);
+              }}
+              onComplete={() => {
+                setPreviewBattleSession(null);
+                setPreviewOverlayOpen(false);
+              }}
+              onExitToStory={({ script: nextScript }) => {
+                setPreviewBattleSession(null);
+                setPreviewStoryStartId(nextScript?.startNodeId ?? "");
+              }}
+              onOpenMessageBoard={() => {}}
+              onOpenSettings={() => {}}
+              onToast={onNotice}
+            />
+          ) : (
+            <TutorialSessionModal
+              script={previewStoryStartId ? { ...previewScript, startNodeId: previewStoryStartId } : previewScript}
+              characters={characterCatalog}
+              labels={{ title: script.title || TEXT.title }}
+              typewriterDisabled
+              onClose={() => {
+                setPreviewStoryStartId("");
+                setPreviewOverlayOpen(false);
+              }}
+              onEnterBattle={(battleSession) => setPreviewBattleSession({
+                ...battleSession,
+                script: previewStoryStartId ? { ...previewScript, startNodeId: previewStoryStartId } : previewScript
+              })}
+            />
+          )}
+        </div>
+      )}
+
+      {helpOpen && <HelpDialog onClose={() => setHelpOpen(false)} />}
+    </section>
+  );
+}
+
+function ScriptLibrary({ scripts, selectedKey, onSelect, onCopy, onDelete, onCreate }) {
+  const groups = groupScripts(scripts);
+  return (
+    <aside className="admin-story-workbench-library" aria-label="脚本卡片库">
+      <header>
+        <div>
+          <h3>脚本库</h3>
+          <p>{scripts.length} 个脚本</p>
+        </div>
+        <button className="admin-story-workbench-icon-button" type="button" aria-label="新建脚本" onClick={onCreate}>
+          <FilePlus2 size={17} />
+        </button>
+      </header>
+      {PURPOSES.map((purpose) => (
+        <section key={purpose.group} className="admin-story-workbench-library-group">
+          <h4>{purpose.group}</h4>
+          {(groups.get(purpose.group) ?? []).map((entry) => (
+            <article key={entry.key} className={`admin-story-workbench-script-card ${selectedKey === entry.key ? "active" : ""}`}>
+              <button type="button" onClick={() => onSelect(entry.key)}>
+                <strong>{entry.title || entry.key}</strong>
+                <span>{entry.key}</span>
+                <small>{entry.isPublished ? "已发布" : "草稿"} · {entry.draft?.nodes?.length ?? 0} 步</small>
+              </button>
+              <div>
+                {isSystemScript(entry) && <AdminStatusPill tone="neutral">{TEXT.systemScript}</AdminStatusPill>}
+                <button type="button" className="admin-story-workbench-icon-button" title="复制" onClick={() => onCopy(entry)}><Copy size={15} /></button>
+                {!entry.isPublished && !isSystemScript(entry) && (
+                  <button type="button" className="admin-story-workbench-icon-button danger" title="删除" onClick={() => onDelete(entry)}><Trash2 size={15} /></button>
+                )}
+              </div>
+            </article>
+          ))}
+        </section>
+      ))}
+    </aside>
+  );
+}
+
+function WorkbenchToolbar({ script, dirty, issues, submitting, previewMode, onPreviewMode, onCopy, onSave, onPublish, onUnpublish, onDelete }) {
+  const hasBlockingIssues = issues.some((issue) => issue.severity === "error");
+  return (
+    <section className="admin-story-workbench-toolbar">
+      <div>
+        <AdminStatusPill tone={script.isPublished ? "green" : "neutral"}>{script.isPublished ? TEXT.published : TEXT.draft}</AdminStatusPill>
+        {dirty && <AdminStatusPill tone="amber">未保存</AdminStatusPill>}
+        <span>{issues.length ? `${issues.length} 个问题` : "校验正常"}</span>
+      </div>
+      <div>
+        <button className="admin-story-workbench-button secondary" type="button" onClick={() => onPreviewMode(previewMode === "current" ? "start" : "current")}>
+          <Eye size={16} />{previewMode === "current" ? TEXT.previewStart : TEXT.previewCurrent}
+        </button>
+        <button className="admin-story-workbench-button secondary" type="button" onClick={onCopy}><Copy size={16} />复制</button>
+        {!script.isPublished && !isSystemScript(script) && (
+          <button className="admin-story-workbench-button danger" type="button" onClick={onDelete}><Trash2 size={16} />删除</button>
+        )}
+        {script.isPublished && (
+          <button className="admin-story-workbench-button secondary" type="button" disabled={submitting} onClick={onUnpublish}><PauseCircle size={16} />{TEXT.unpublish}</button>
+        )}
+        <button className="admin-story-workbench-button secondary" type="button" disabled={submitting} onClick={onSave}><Save size={16} />{TEXT.saveDraft}</button>
+        <button className="admin-story-workbench-button primary" type="button" disabled={submitting || hasBlockingIssues} onClick={onPublish}><Upload size={16} />{TEXT.publish}</button>
       </div>
     </section>
   );
 }
 
-function updateTriggerParams(script, setScript, patch) {
-  setScript({
-    ...script,
-    triggerParams: {
-      ...script.triggerParams,
-      ...patch
-    }
-  });
+function InitialBoardSummary({ board, onMode, onOpen }) {
+  return (
+    <div className="admin-story-workbench-board-summary">
+      <label>
+        <span>初始棋盘</span>
+        <select value={board?.mode ?? "spark"} onChange={(event) => onMode(event.target.value)}>
+          <option value="spark">星烁 13 路</option>
+          <option value="standard">标准 19 路</option>
+          <option value="gomoku">五子棋 13 路</option>
+        </select>
+      </label>
+      <button className="admin-story-workbench-button secondary" type="button" onClick={onOpen}>
+        <MousePointer2 size={16} />棋盘点选
+      </button>
+      <small>{board?.stones?.length ?? 0} 颗初始棋子</small>
+    </div>
+  );
 }
 
-function nextTriggerScript(script, triggerType, characters) {
-  const triggerParams = triggerType === TRIGGER_TYPES.itemCharacterUse
-    ? { itemId: ITEM_OPTIONS[0].id, characterId: characters[0]?.slug ?? "" }
-    : {};
-  return { ...script, triggerType, triggerParams };
+function FlowGraph({ flow, nodes, selectedNodeId, issues, onSelect }) {
+  const issueNodeIds = new Set(issues.map((issue) => issue.nodeId).filter(Boolean));
+  const nodeById = new Map(nodes.map((node) => [node.id, node]));
+  return (
+    <div className="admin-story-workbench-flow-canvas">
+      {flow.main.map((nodeId, index) => {
+        const node = nodeById.get(nodeId);
+        if (!node) return null;
+        const branches = flow.branches.get(nodeId) ?? [];
+        return (
+          <div className="admin-story-workbench-flow-row" key={nodeId}>
+            <StepCard
+              node={node}
+              index={nodes.indexOf(node)}
+              active={selectedNodeId === node.id}
+              hasIssue={issueNodeIds.has(node.id)}
+              onSelect={() => onSelect(node.id)}
+            />
+            {branches.length > 0 && (
+              <div className="admin-story-workbench-flow-branches">
+                  {branches.map((branch) => branch.targetId === END_TARGET ? (
+                    <EndCard key={[nodeId, branch.optionIndex].join("-")} label={branch.label} />
+                  ) : (
+                    <div className="admin-story-workbench-branch-chain" key={[nodeId, branch.optionIndex, branch.targetId].join("-")}>
+                    {(branch.chain.length ? branch.chain : [branch.targetId]).map((branchNodeId, branchIndex) => (
+                      <Fragment key={branchNodeId}>
+                        <StepCard
+                          node={nodeById.get(branchNodeId)}
+                          index={nodes.findIndex((entry) => entry.id === branchNodeId)}
+                          active={selectedNodeId === branchNodeId}
+                          branchLabel={branchIndex === 0 ? branch.label : ""}
+                          hasIssue={issueNodeIds.has(branchNodeId)}
+                          onSelect={() => onSelect(branchNodeId)}
+                        />
+                        {branchIndex < branch.chain.length - 1 && <span className="admin-story-workbench-branch-line" />}
+                      </Fragment>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+            {index < flow.main.length - 1 && <span className="admin-story-workbench-flow-line" />}
+          </div>
+        );
+      })}
+      {flow.main.length === 0 && <p className="admin-story-workbench-empty">还没有步骤。先添加一个剧情步骤。</p>}
+      {flow.connectedExtras?.length > 0 && (
+        <div className="admin-story-workbench-branch-extras">
+          <h4>分支后续步骤</h4>
+          {flow.connectedExtras.map((nodeId) => (
+            <StepCard
+              key={nodeId}
+              node={nodeById.get(nodeId)}
+              index={nodes.findIndex((node) => node.id === nodeId)}
+              active={selectedNodeId === nodeId}
+              hasIssue={issueNodeIds.has(nodeId)}
+              onSelect={() => onSelect(nodeId)}
+            />
+          ))}
+        </div>
+      )}
+      {flow.orphans.length > 0 && (
+        <div className="admin-story-workbench-orphans">
+          <h4>未连接步骤</h4>
+          {flow.orphans.map((nodeId) => (
+            <StepCard
+              key={nodeId}
+              node={nodeById.get(nodeId)}
+              index={nodes.findIndex((node) => node.id === nodeId)}
+              active={selectedNodeId === nodeId}
+              hasIssue={issueNodeIds.has(nodeId)}
+              onSelect={() => onSelect(nodeId)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StepCard({ node, index, active, hasIssue, branchLabel = "", onSelect }) {
+  if (!node) return <EndCard label={branchLabel || "未选择目标"} missing />;
+  const className = ["admin-story-workbench-step-card", active ? "active" : "", hasIssue ? "has-issue" : ""].filter(Boolean).join(" ");
+  return (
+    <button className={className} type="button" onClick={onSelect}>
+      <span>{NODE_CATEGORY_LABELS[node.type] ?? "剧情步骤"}</span>
+      <strong>{stepName(node, index)}</strong>
+      <small>{branchLabel ? "选项：" + branchLabel : nodeSummary(node)}</small>
+    </button>
+  );
+}
+
+function EndCard({ label = "", missing = false }) {
+  return (
+    <div className={["admin-story-workbench-end-card", missing ? "missing" : ""].filter(Boolean).join(" ")}>
+      <span>{missing ? "待修复" : "结束剧情"}</span>
+      {label && <small>{label}</small>}
+    </div>
+  );
+}
+function IssuePanel({ issues, onSelect }) {
+  return (
+    <section className="admin-story-workbench-issues">
+      <header>
+        <h3>{TEXT.issues}</h3>
+        {issues.length ? <AlertCircle size={16} /> : <CheckCircle2 size={16} />}
+      </header>
+      {issues.length === 0 ? (
+        <p>{TEXT.noIssues}</p>
+      ) : (
+        <div>
+          {issues.map((issue) => (
+            <button key={issue.id} type="button" onClick={() => issue.nodeId && onSelect(issue.nodeId)}>
+              <span>{issue.severity === "error" ? "必须修复" : "建议检查"}</span>
+              <strong>{issue.message}</strong>
+            </button>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function StepEditor({
+  node,
+  nodes,
+  portraitOptions,
+  skillCharacters,
+  onPatch,
+  onPatchOption,
+  onAddOption,
+  onRemoveOption,
+  onAddBranch,
+  onRemove,
+  onPickPoint,
+  onEditBoardSetup,
+  onHelp
+}) {
+  if (!node) {
+    return (
+      <section className="admin-story-workbench-step-editor">
+        <p className="admin-story-workbench-empty">选择一个步骤后编辑。</p>
+      </section>
+    );
+  }
+  const skillCharacterId = node.skillCharacterId || node.skillId || node.characterId || skillCharacters[0]?.id || "";
+  const selectedSkillCharacter = skillCharacters.find((character) => character.id === skillCharacterId);
+  const selectedSkillId = node.skillId || selectedSkillCharacter?.id || "";
+  return (
+    <section className="admin-story-workbench-step-editor">
+      <header>
+        <div>
+          <h3>{stepName(node, nodes.indexOf(node))}</h3>
+          <p>{NODE_TYPE_LABELS[node.type] ?? "剧情对白"}</p>
+        </div>
+        <button className="admin-story-workbench-icon-button" type="button" aria-label={TEXT.help} onClick={onHelp}>
+          <HelpCircle size={17} />
+        </button>
+      </header>
+
+      <label>
+        <span>步骤名称</span>
+        <input value={node.name ?? ""} placeholder={autoStepName(node, nodes.indexOf(node))} onChange={(event) => onPatch({ name: event.target.value })} />
+        <small>留空时会按类型和内容自动生成。</small>
+      </label>
+
+      <label>
+        <span>步骤类型</span>
+        <select value={node.type ?? TUTORIAL_NODE_TYPES.story} onChange={(event) => onPatch(defaultPatchForType(event.target.value))}>
+          {NODE_TYPE_GROUPS.map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </optgroup>
+          ))}
+        </select>
+      </label>
+
+      {isStoryNodeType(node.type) ? (
+        <StoryStepFields node={node} nodes={nodes} portraitOptions={portraitOptions} onPatch={onPatch} onPatchOption={onPatchOption} onAddOption={onAddOption} onRemoveOption={onRemoveOption} onAddBranch={onAddBranch} />
+      ) : (
+        <BattleStepFields
+          node={node}
+          nodes={nodes}
+          portraitOptions={portraitOptions}
+          skillCharacters={skillCharacters}
+          skillCharacterId={skillCharacterId}
+          selectedSkillId={selectedSkillId}
+          onPatch={onPatch}
+          onPatchOption={onPatchOption}
+          onAddOption={onAddOption}
+          onRemoveOption={onRemoveOption}
+          onAddBranch={onAddBranch}
+          onPickPoint={onPickPoint}
+          onEditBoardSetup={onEditBoardSetup}
+        />
+      )}
+
+      <label>
+        <span>下一主线步骤</span>
+        <select value={node.nextNodeId || END_TARGET} onChange={(event) => onPatch({ nextNodeId: event.target.value === END_TARGET ? "" : event.target.value })}>
+          <option value={END_TARGET}>结束剧情</option>
+          {nodes.filter((entry) => entry.id !== node.id).map((entry) => <option key={entry.id} value={entry.id}>{stepName(entry, nodes.indexOf(entry))}</option>)}
+        </select>
+        <small>这里是主线连接，不需要手动画线。</small>
+      </label>
+
+      <button className="admin-story-workbench-button danger" type="button" onClick={onRemove}>
+        <Trash2 size={16} />删除当前步骤
+      </button>
+    </section>
+  );
+}
+
+function StoryStepFields({ node, nodes, portraitOptions, onPatch, onPatchOption, onAddOption, onRemoveOption, onAddBranch }) {
+  return (
+    <>
+      <label>
+        <span>立绘角色</span>
+        <select value={node.characterId ?? ""} onChange={(event) => onPatch({ characterId: event.target.value })}>
+          <option value="">无</option>
+          {portraitOptions.map((character) => <option key={character.slug} value={character.slug}>{character.name}</option>)}
+        </select>
+      </label>
+      <label>
+        <span>说话人</span>
+        <input value={node.speakerName ?? ""} onChange={(event) => onPatch({ speakerName: event.target.value })} />
+      </label>
+      <label>
+        <span>演出效果</span>
+        <select value={node.effect ?? STORY_NODE_EFFECTS.none} onChange={(event) => onPatch({ effect: event.target.value })}>
+          {STORY_NODE_EFFECT_OPTIONS.map((effect) => <option key={effect.value || "none"} value={effect.value}>{effect.label}</option>)}
+        </select>
+      </label>
+      <label>
+        <span>对白正文</span>
+        <textarea rows={6} value={node.text ?? ""} onChange={(event) => onPatch({ text: event.target.value })} />
+      </label>
+      <div className="admin-story-workbench-options">
+        <div>
+          <strong>剧情选项</strong>
+          <button className="admin-story-workbench-button secondary" type="button" onClick={onAddOption}><GitBranch size={16} />添加选项</button>
+        </div>
+        {(node.options ?? []).map((option, optionIndex) => (
+          <div className="admin-story-workbench-option-row" key={optionIndex}>
+            <label>
+              <span>文案</span>
+              <input value={option.label ?? ""} onChange={(event) => onPatchOption(optionIndex, { label: event.target.value })} />
+            </label>
+            <label>
+              <span>目标</span>
+              <select value={option.nextNodeId || END_TARGET} onChange={(event) => onPatchOption(optionIndex, { nextNodeId: event.target.value === END_TARGET ? "" : event.target.value, targetMissing: false })}>
+                <option value={END_TARGET}>结束剧情</option>
+                {nodes.filter((entry) => entry.id !== node.id).map((entry) => <option key={entry.id} value={entry.id}>{stepName(entry, nodes.indexOf(entry))}</option>)}
+              </select>
+            </label>
+            <label>
+              <span>出现时间</span>
+              <input type="number" min="0" step="0.1" value={option.revealDelaySeconds ?? ""} onChange={(event) => onPatchOption(optionIndex, { revealDelaySeconds: event.target.value })} />
+            </label>
+            <div className="admin-story-workbench-option-actions">
+              <button className="admin-story-workbench-button secondary" type="button" onClick={() => onAddBranch(node.id, optionIndex)}><Plus size={15} />分支步骤</button>
+              <button className="admin-story-workbench-icon-button danger" type="button" aria-label="删除选项" onClick={() => onRemoveOption(optionIndex)}><Trash2 size={15} /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function BattleStepFields({
+  node,
+  nodes,
+  portraitOptions,
+  skillCharacters,
+  skillCharacterId,
+  selectedSkillId,
+  onPatch,
+  onPatchOption,
+  onAddOption,
+  onRemoveOption,
+  onAddBranch,
+  onPickPoint,
+  onEditBoardSetup
+}) {
+  const isBoardSetup = node.type === TUTORIAL_NODE_TYPES.boardSetup;
+  const isSkill = node.type === TUTORIAL_NODE_TYPES.playerSkill || node.type === TUTORIAL_NODE_TYPES.npcSkill;
+  const needsPoint = nodeTypeRequiresPoint(node.type) || isSkill;
+  const isNpcStep = isTutorialNpcNodeType(node.type);
+  const supportsOptions = !isBoardSetup && [
+    TUTORIAL_NODE_TYPES.npcDialogue,
+    TUTORIAL_NODE_TYPES.playerChoice,
+    TUTORIAL_NODE_TYPES.playerMove,
+    TUTORIAL_NODE_TYPES.npcMove,
+    TUTORIAL_NODE_TYPES.playerSkill,
+    TUTORIAL_NODE_TYPES.npcSkill
+  ].includes(node.type);
+  const isSettlement = [
+    TUTORIAL_NODE_TYPES.countingStart,
+    TUTORIAL_NODE_TYPES.markDead,
+    TUTORIAL_NODE_TYPES.markNeutral,
+    TUTORIAL_NODE_TYPES.countingConfirm,
+    TUTORIAL_NODE_TYPES.resign
+  ].includes(node.type);
+  return (
+    <>
+      <label>
+        <span>教学提示</span>
+        <textarea rows={3} value={node.prompt ?? ""} onChange={(event) => onPatch({ prompt: event.target.value })} />
+      </label>
+      {isNpcStep && (
+        <>
+          <label>
+            <span>NPC 立绘</span>
+            <select value={node.characterId ?? ""} onChange={(event) => onPatch({ characterId: event.target.value })}>
+              <option value="">使用局面 NPC</option>
+              {portraitOptions.map((character) => <option key={character.slug} value={character.slug}>{character.name}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>NPC 显示名</span>
+            <input value={node.speakerName ?? ""} onChange={(event) => onPatch({ speakerName: event.target.value })} />
+          </label>
+          <label>
+            <span>NPC 对话</span>
+            <textarea rows={4} value={node.text ?? ""} onChange={(event) => onPatch({ text: event.target.value })} />
+          </label>
+          <div className="admin-story-workbench-delay-grid">
+            <label>
+              <span>操作前等待</span>
+              <input type="number" min="0" step="0.1" placeholder="默认 1.5" value={node.actionStartDelaySeconds ?? ""} onChange={(event) => onPatch({ actionStartDelaySeconds: event.target.value })} />
+            </label>
+            <label>
+              <span>回复前等待</span>
+              <input type="number" min="0" step="0.1" placeholder="默认 0.4" value={node.replyDelaySeconds ?? ""} onChange={(event) => onPatch({ replyDelaySeconds: event.target.value })} />
+            </label>
+            <label>
+              <span>无选项自动继续</span>
+              <input type="number" min="0" step="0.1" placeholder="留空则按步骤规则" value={node.autoContinueDelaySeconds ?? ""} onChange={(event) => onPatch({ autoContinueDelaySeconds: event.target.value })} />
+            </label>
+          </div>
+        </>
+      )}
+      {isBoardSetup ? (
+        <BoardSetupFields node={node} skillCharacters={skillCharacters} onPatch={onPatch} onEditBoardSetup={onEditBoardSetup} />
+      ) : (
+        <label>
+          <span>执行颜色</span>
+          <select value={node.color ?? ""} onChange={(event) => onPatch({ color: event.target.value })}>
+            {COLOR_OPTIONS.map((color) => <option key={color.value || "none"} value={color.value}>{color.label}</option>)}
+          </select>
+        </label>
+      )}
+      {isSettlement && (
+        <label>
+          <span>执行者</span>
+          <select value={node.actor ?? ""} onChange={(event) => onPatch({ actor: event.target.value })}>
+            <option value="">未指定</option>
+            <option value="player">玩家点击</option>
+            <option value="npc">NPC 自动</option>
+            <option value="system">系统自动</option>
+          </select>
+          <small>玩家点击会在对弈功能区高亮指定按钮；NPC/系统会按延迟自动推进。</small>
+        </label>
+      )}
+      {needsPoint && (
+        <div className="admin-story-workbench-point-field">
+          <label>
+            <span>{isSkill ? "技能目标" : "棋盘坐标"}</span>
+            <input value={node.pointId ?? ""} readOnly placeholder="点击右侧按钮选择棋盘交叉点" />
+          </label>
+          <button className="admin-story-workbench-button secondary" type="button" onClick={() => onPickPoint("pointId")}>
+            <MousePointer2 size={16} />棋盘点选
+          </button>
+        </div>
+      )}
+      {isSkill && (
+        <>
+          <label>
+            <span>角色</span>
+            <select value={skillCharacterId} onChange={(event) => onPatch({ skillCharacterId: event.target.value, skillId: event.target.value, characterId: event.target.value })}>
+              <option value="">未选择</option>
+              {skillCharacters.map((character) => <option key={character.id} value={character.id}>{character.name}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>技能</span>
+            <select value={selectedSkillId} onChange={(event) => onPatch({ skillId: event.target.value })}>
+              <option value="">未选择</option>
+              {skillCharacters.map((character) => (
+                <option key={character.id} value={character.id}>{character.skillName}</option>
+              ))}
+            </select>
+            <small>{skillHelpText(selectedSkillId)}</small>
+          </label>
+        </>
+      )}
+      {supportsOptions && (
+        <BattleOptionsFields
+          node={node}
+          nodes={nodes}
+          onPatchOption={onPatchOption}
+          onAddOption={onAddOption}
+          onRemoveOption={onRemoveOption}
+          onAddBranch={onAddBranch}
+        />
+      )}
+    </>
+  );
+}
+
+function BattleOptionsFields({ node, nodes, onPatchOption, onAddOption, onRemoveOption, onAddBranch }) {
+  return (
+    <div className="admin-story-workbench-options">
+      <div>
+        <strong>对弈内回复选项</strong>
+        <button className="admin-story-workbench-button secondary" type="button" onClick={onAddOption}><GitBranch size={16} />添加选项</button>
+      </div>
+      {(node.options ?? []).map((option, optionIndex) => (
+        <div className="admin-story-workbench-option-row" key={optionIndex}>
+          <label>
+            <span>文案</span>
+            <input value={option.label ?? ""} onChange={(event) => onPatchOption(optionIndex, { label: event.target.value })} />
+          </label>
+          <label>
+            <span>目标</span>
+            <select value={option.nextNodeId || END_TARGET} onChange={(event) => onPatchOption(optionIndex, { nextNodeId: event.target.value === END_TARGET ? "" : event.target.value, targetMissing: false })}>
+              <option value={END_TARGET}>结束剧情</option>
+              {nodes.filter((entry) => entry.id !== node.id).map((entry) => <option key={entry.id} value={entry.id}>{stepName(entry, nodes.indexOf(entry))}</option>)}
+            </select>
+          </label>
+          <div className="admin-story-workbench-option-actions">
+            <button className="admin-story-workbench-button secondary" type="button" onClick={() => onAddBranch(node.id, optionIndex)}><Plus size={15} />分支步骤</button>
+            <button className="admin-story-workbench-icon-button danger" type="button" aria-label="删除选项" onClick={() => onRemoveOption(optionIndex)}><Trash2 size={15} /></button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function BoardSetupFields({ node, skillCharacters, onPatch, onEditBoardSetup }) {
+  const board = boardSetupForNode(node);
+  return (
+    <div className="admin-story-workbench-board-summary">
+      <label>
+        <span>玩家执棋</span>
+        <select value={node.playerColor || "black"} onChange={(event) => onPatch({ playerColor: event.target.value })}>
+          <option value="black">黑棋</option>
+          <option value="white">白棋</option>
+        </select>
+      </label>
+      <label>
+        <span>玩家角色</span>
+        <select value={node.playerCharacterId ?? ""} onChange={(event) => onPatch({ playerCharacterId: event.target.value })}>
+          <option value="">无角色</option>
+          {skillCharacters.map((character) => <option key={character.id} value={character.id}>{character.name}</option>)}
+        </select>
+        <small>选择无角色时，教学对弈内玩家侧不显示立绘，技能也会置空。</small>
+      </label>
+      <label>
+        <span>NPC 角色</span>
+        <select value={node.npcCharacterId || "denia"} onChange={(event) => onPatch({ npcCharacterId: event.target.value })}>
+          {skillCharacters.map((character) => <option key={character.id} value={character.id}>{character.name}</option>)}
+        </select>
+      </label>
+      <label>
+        <span>NPC 名称</span>
+        <input value={node.npcName ?? ""} onChange={(event) => onPatch({ npcName: event.target.value })} placeholder="留空使用角色名" />
+      </label>
+      <label>
+        <span>入场提示</span>
+        <textarea rows={2} value={node.entryText ?? ""} onChange={(event) => onPatch({ entryText: event.target.value })} />
+      </label>
+      <label>
+        <span>切换到局面</span>
+        <select
+          value={board.mode}
+          onChange={(event) => onPatch({ boardSetup: { ...board, mode: event.target.value } })}
+        >
+          <option value="spark">星烁 13 路</option>
+          <option value="standard">标准 19 路</option>
+          <option value="gomoku">五子棋 13 路</option>
+        </select>
+      </label>
+      <button className="admin-story-workbench-button secondary" type="button" onClick={onEditBoardSetup}>
+        <MousePointer2 size={16} />编辑局面
+      </button>
+      <small>{board.stones.length} 颗棋子；运行到此步骤会替换当前教学棋盘。</small>
+    </div>
+  );
+}
+
+function InitialBoardEditorModal({ board, title = "初始棋盘", onClose, onSave }) {
+  const [tool, setTool] = useState("black");
+  const [stones, setStones] = useState(() => normalizeEditorStones(board.stones, boardSizeForMode(board.mode)));
+  const boardSize = boardSizeForMode(board.mode);
+  const editorGame = useMemo(() => createBoardEditorGame({ mode: board.mode, stones }), [board.mode, stones]);
+  function updatePoint(point) {
+    setStones((current) => updateStoneSet(current, point?.id, tool, boardSize));
+  }
+  return (
+    <div className="admin-story-workbench-modal-backdrop" role="dialog" aria-modal="true" aria-label="初始棋盘点选">
+      <section className="admin-story-workbench-board-modal">
+        <header>
+          <div>
+            <h3>{title}</h3>
+            <p>{boardSize} 路 · {stones.length} 颗棋子</p>
+          </div>
+          <button className="admin-story-workbench-icon-button" type="button" aria-label="关闭" onClick={onClose}><X size={18} /></button>
+        </header>
+        <div className="admin-story-workbench-board-tools" role="toolbar" aria-label="摆棋工具">
+          <button className={tool === "black" ? "active" : ""} type="button" onClick={() => setTool("black")}><span className="stone black" />黑棋</button>
+          <button className={tool === "white" ? "active" : ""} type="button" onClick={() => setTool("white")}><span className="stone white" />白棋</button>
+          <button className={tool === "erase" ? "active" : ""} type="button" onClick={() => setTool("erase")}><Eraser size={16} />擦除</button>
+          <button className="danger" type="button" onClick={() => setStones([])}><Trash2 size={16} />清空</button>
+        </div>
+        <BoardPickerStage game={editorGame} onPoint={updatePoint} />
+        <footer>
+          <button className="admin-story-workbench-button secondary" type="button" onClick={onClose}>取消</button>
+          <button className="admin-story-workbench-button primary" type="button" onClick={() => onSave(stones)}><Save size={16} />保存棋盘</button>
+        </footer>
+      </section>
+    </div>
+  );
+}
+
+function BoardPointPickerModal({ board, title, onClose, onPick }) {
+  const game = useMemo(() => createBoardEditorGame({ mode: board.mode, stones: board.stones }), [board.mode, board.stones]);
+  return (
+    <div className="admin-story-workbench-modal-backdrop" role="dialog" aria-modal="true" aria-label={title}>
+      <section className="admin-story-workbench-board-modal compact">
+        <header>
+          <div>
+            <h3>{title}</h3>
+            <p>点击棋盘交叉点写入当前步骤。</p>
+          </div>
+          <button className="admin-story-workbench-icon-button" type="button" aria-label="关闭" onClick={onClose}><X size={18} /></button>
+        </header>
+        <BoardPickerStage game={game} onPoint={(point) => onPick(point.id)} />
+      </section>
+    </div>
+  );
+}
+
+function BoardPickerStage({ game, onPoint }) {
+  return (
+    <div className="admin-story-workbench-board-scroll">
+      <div className="admin-story-workbench-board-stage">
+        <Board game={game} showCoords showMoves={false} skillEffectsEnabled={false} stoneJitter={false} onPoint={onPoint} />
+      </div>
+    </div>
+  );
+}
+
+function HelpDialog({ onClose }) {
+  return (
+    <div className="admin-story-workbench-modal-backdrop" role="dialog" aria-modal="true" aria-label="剧情教学编辑说明">
+      <section className="admin-story-workbench-help">
+        <header>
+          <h3>剧情教学编辑说明</h3>
+          <button className="admin-story-workbench-icon-button" type="button" aria-label="关闭" onClick={onClose}><X size={18} /></button>
+        </header>
+        <div>
+          <p><BookOpen size={16} />脚本仍保存为 StoryScript。界面隐藏底层字段，只通过步骤卡、步骤类型和目标选择维护流程关系。</p>
+          <p><GitBranch size={16} />剧情选项目标留空时表示结束剧情；流程图会显示虚拟“结束剧情”节点。</p>
+          <p><MousePointer2 size={16} />初始棋盘、落子和技能目标优先通过棋盘点选维护，减少坐标输入错误。</p>
+          <p><AlertCircle size={16} />问题面板会实时列出发布前需要修复的内容，点击问题可定位到对应步骤。</p>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function groupScripts(scripts) {
+  const groups = new Map(PURPOSES.map((purpose) => [purpose.group, []]));
+  for (const script of scripts) {
+    const group = purposeForScript(script).group;
+    groups.set(group, [...(groups.get(group) ?? []), normalizeStoryScript(script)]);
+  }
+  return groups;
+}
+
+function purposeForScript(script) {
+  if (script.triggerType === TRIGGER_TYPES.itemCharacterUse) return PURPOSES[1];
+  if (script.triggerType === TRIGGER_TYPES.battleTutorialStart && hasBattleNodes(script.draft?.nodes)) return PURPOSES[3];
+  if (script.triggerType === TRIGGER_TYPES.battleTutorialStart) return PURPOSES[2];
+  return PURPOSES[0];
+}
+
+function hasBattleNodes(nodes = []) {
+  return nodes.some((node) => !isStoryNodeType(node.type));
+}
+
+export function buildFlow(draft = emptyScript()) {
+  const nodeById = new Map(draft.nodes.map((node) => [node.id, node]));
+  const main = [];
+  const mainIds = new Set();
+  let currentId = draft.startNodeId || draft.nodes[0]?.id || "";
+  while (currentId && nodeById.has(currentId) && !mainIds.has(currentId)) {
+    main.push(currentId);
+    mainIds.add(currentId);
+    currentId = nodeById.get(currentId).nextNodeId;
+  }
+  const reachable = collectReachableNodeIds(draft, nodeById);
+  const renderedBranchIds = new Set();
+  const branches = new Map();
+  for (const nodeId of main) {
+    const node = nodeById.get(nodeId);
+    const nodeBranches = (node.options ?? []).map((option, optionIndex) => ({
+      optionIndex,
+      label: option.label || "选项 " + (optionIndex + 1),
+      targetId: option.nextNodeId || END_TARGET,
+      chain: option.nextNodeId ? collectBranchChain(option.nextNodeId, nodeById, mainIds) : []
+    }));
+    for (const branch of nodeBranches) {
+      for (const branchNodeId of branch.chain) renderedBranchIds.add(branchNodeId);
+    }
+    if (nodeBranches.length) branches.set(nodeId, nodeBranches);
+  }
+  const connectedExtras = draft.nodes
+    .map((node) => node.id)
+    .filter((nodeId) => reachable.has(nodeId) && !mainIds.has(nodeId) && !renderedBranchIds.has(nodeId));
+  const orphans = draft.nodes.map((node) => node.id).filter((nodeId) => !reachable.has(nodeId));
+  return { main, branches, connectedExtras, orphans };
+}
+
+function collectReachableNodeIds(draft, nodeById) {
+  const reachable = new Set();
+  const stack = [draft.startNodeId || draft.nodes[0]?.id || ""];
+  while (stack.length) {
+    const nodeId = stack.pop();
+    if (!nodeId || reachable.has(nodeId) || !nodeById.has(nodeId)) continue;
+    reachable.add(nodeId);
+    const node = nodeById.get(nodeId);
+    if (node.nextNodeId) stack.push(node.nextNodeId);
+    for (const option of node.options ?? []) {
+      if (option.nextNodeId) stack.push(option.nextNodeId);
+    }
+  }
+  return reachable;
+}
+
+function collectBranchChain(targetId, nodeById, mainIds) {
+  const chain = [];
+  const localSeen = new Set();
+  let currentId = targetId;
+  while (currentId && nodeById.has(currentId) && !localSeen.has(currentId)) {
+    chain.push(currentId);
+    localSeen.add(currentId);
+    const node = nodeById.get(currentId);
+    if ((node.options ?? []).length) break;
+    const nextId = node.nextNodeId;
+    if (!nextId || mainIds.has(nextId)) break;
+    currentId = nextId;
+  }
+  return chain;
+}
+
+function validateWorkbench(script, { itemOptions, skillCharacters }) {
+  const issues = [];
+  const draft = script.draft;
+  const nodeIds = new Set();
+  const duplicates = new Set();
+  if (!script.title.trim()) issues.push(issue("script-title", "error", "脚本标题不能为空"));
+  if (!script.key.trim()) issues.push(issue("script-key", "error", "脚本标识不能为空"));
+  if (script.triggerType === TRIGGER_TYPES.itemCharacterUse) {
+    if (!script.triggerParams.itemId || !itemOptions.some((item) => item.id === script.triggerParams.itemId)) {
+      issues.push(issue("trigger-item", "error", "道具互动需要选择真实道具"));
+    }
+    if (!script.triggerParams.characterId) issues.push(issue("trigger-character", "error", "道具互动需要选择目标角色"));
+  }
+  if (!draft.nodes.length) issues.push(issue("nodes", "error", "至少需要一个步骤"));
+  for (const node of draft.nodes) {
+    if (!node.id) issues.push(issue(`node-id-${nodeIds.size}`, "error", "步骤内部 ID 为空", node.id));
+    if (nodeIds.has(node.id)) duplicates.add(node.id);
+    nodeIds.add(node.id);
+  }
+  for (const duplicate of duplicates) issues.push(issue(`duplicate-${duplicate}`, "error", "存在重复步骤 ID", duplicate));
+  if (draft.startNodeId && !nodeIds.has(draft.startNodeId)) issues.push(issue("start", "error", "起始步骤不存在"));
+  for (const node of draft.nodes) {
+    const name = stepName(node, draft.nodes.indexOf(node));
+    if (isStoryNodeType(node.type) && !String(node.text ?? "").trim()) {
+      issues.push(issue(`text-${node.id}`, "error", `${name} 缺少对白正文`, node.id));
+    }
+    if (node.type === TUTORIAL_NODE_TYPES.npcDialogue && !String(node.text ?? "").trim() && !(node.options ?? []).length) {
+      issues.push(issue(`npc-dialogue-${node.id}`, "error", `${name} 需要 NPC 文本或回复选项`, node.id));
+    }
+    if (node.type === TUTORIAL_NODE_TYPES.playerChoice && !(node.options ?? []).length) {
+      issues.push(issue(`player-choice-${node.id}`, "error", `${name} 至少需要一个玩家回复选项`, node.id));
+    }
+    if (nodeTypeRequiresPoint(node.type) && !node.pointId) {
+      issues.push(issue(`point-${node.id}`, "error", `${name} 需要选择棋盘坐标`, node.id));
+    }
+    if (node.type === TUTORIAL_NODE_TYPES.boardSetup && !node.boardSetup) {
+      issues.push(issue(`board-setup-${node.id}`, "error", `${name} 需要配置局面快照`, node.id));
+    }
+    if ((node.type === TUTORIAL_NODE_TYPES.playerSkill || node.type === TUTORIAL_NODE_TYPES.npcSkill) && !skillCharacters.some((character) => character.id === (node.skillId || node.skillCharacterId))) {
+      issues.push(issue(`skill-${node.id}`, "error", `${name} 需要选择角色技能`, node.id));
+    }
+    if (settlementNodeType(node.type) && !["player", "npc", "system"].includes(node.actor ?? "")) {
+      issues.push(issue(`actor-${node.id}`, "error", `${name} 需要选择执行者`, node.id));
+    }
+    for (const field of ["actionStartDelaySeconds", "replyDelaySeconds", "autoContinueDelaySeconds"]) {
+      if (!validOptionalDelay(node[field])) {
+        issues.push(issue(`delay-${field}-${node.id}`, "error", `${name} 的延迟字段必须是非负数字`, node.id));
+      }
+    }
+    if (node.nextNodeId && !nodeIds.has(node.nextNodeId)) {
+      issues.push(issue(`next-${node.id}`, "error", `${name} 的下一步骤不存在`, node.id));
+    }
+    for (const [optionIndex, option] of (node.options ?? []).entries()) {
+      if (!String(option.label ?? "").trim()) {
+        issues.push(issue(`option-label-${node.id}-${optionIndex}`, "error", `${name} 有选项缺少文案`, node.id));
+      }
+      if (option.targetMissing) {
+        issues.push(issue(`option-missing-${node.id}-${optionIndex}`, "error", `${name} 有选项目标已被删除，需要重新选择或改为结束剧情`, node.id));
+      }
+      if (option.nextNodeId && !nodeIds.has(option.nextNodeId)) {
+        issues.push(issue(`option-target-${node.id}-${optionIndex}`, "error", `${name} 有选项目标不存在`, node.id));
+      }
+    }
+  }
+  return issues;
+}
+
+function issue(id, severity, message, nodeId = "") {
+  return { id, severity, message, nodeId };
+}
+
+function settlementNodeType(type) {
+  return [
+    TUTORIAL_NODE_TYPES.countingStart,
+    TUTORIAL_NODE_TYPES.markDead,
+    TUTORIAL_NODE_TYPES.markNeutral,
+    TUTORIAL_NODE_TYPES.countingConfirm,
+    TUTORIAL_NODE_TYPES.resign
+  ].includes(type);
+}
+
+function validOptionalDelay(value) {
+  if (value == null || value === "") return true;
+  const delay = Number(value);
+  return Number.isFinite(delay) && delay >= 0;
+}
+
+export function scriptForCurrentPreview(draft, selectedNodeId) {
+  if (!selectedNodeId) return draft;
+  const initialBoard = replayInitialBoardToNode(draft, selectedNodeId);
+  return {
+    ...draft,
+    startNodeId: selectedNodeId,
+    initialBoard
+  };
+}
+
+function replayInitialBoardToNode(draft, selectedNodeId) {
+  let state = createTutorialGameState({ initialBoard: draft.initialBoard });
+  const nodeById = new Map(draft.nodes.map((node) => [node.id, node]));
+  const replayPath = pathToNode(draft, selectedNodeId, nodeById);
+  for (const nodeId of replayPath.slice(0, -1)) {
+    const node = nodeById.get(nodeId);
+    if (!node) continue;
+    if (node.type === TUTORIAL_NODE_TYPES.playerSkill || node.type === TUTORIAL_NODE_TYPES.npcSkill) {
+      const result = applyTutorialSkillAction(state, node, { pendingSkillId: `preview-${node.id}`, resolvesAt: null });
+      state = result.resolvedState ?? result.state ?? state;
+    } else if (!isStoryNodeType(node.type)) {
+      const result = applyTutorialNodeAction(state, node, { pointId: node.pointId });
+      state = result.state ?? state;
+    }
+  }
+  return {
+    mode: state.mode ?? draft.initialBoard?.mode ?? "spark",
+    stones: state.points
+      .filter((point) => point.stone && isPlayerColor(point.stone))
+      .map((point) => ({ pointId: point.id, color: point.stone }))
+  };
+}
+
+function pathToNode(draft, selectedNodeId, nodeById = new Map(draft.nodes.map((node) => [node.id, node]))) {
+  const startId = draft.startNodeId || draft.nodes[0]?.id || "";
+  if (!startId || !selectedNodeId) return [];
+  const queue = [[startId]];
+  const seen = new Set();
+  while (queue.length) {
+    const path = queue.shift();
+    const nodeId = path.at(-1);
+    if (!nodeId || seen.has(nodeId) || !nodeById.has(nodeId)) continue;
+    if (nodeId === selectedNodeId) return path;
+    seen.add(nodeId);
+    const node = nodeById.get(nodeId);
+    const nextIds = [
+      node.nextNodeId,
+      ...(node.options ?? []).map((option) => option.nextNodeId)
+    ].filter(Boolean);
+    for (const nextId of nextIds) {
+      if (!seen.has(nextId)) queue.push([...path, nextId]);
+    }
+  }
+  return nodeById.has(selectedNodeId) ? [selectedNodeId] : [];
+}
+
+function normalizeStoryScript(value = {}) {
+  const normalized = {
+    ...emptyStoryScript(),
+    ...value,
+    triggerParams: value.triggerParams ?? {},
+    draft: normalizeDraftScript(value.draft),
+    publishedAt: value.publishedAt ?? value.firstPublishedAt ?? null
+  };
+  return normalized;
+}
+
+function normalizeDraftScript(value = {}) {
+  return {
+    ...emptyScript(),
+    ...value,
+    initialBoard: value?.initialBoard ?? null,
+    nodes: (value?.nodes ?? []).map(normalizeDraftNode)
+  };
+}
+
+function normalizeDraftNode(node = {}) {
+  return {
+    ...emptyStoryNode(),
+    ...node,
+    type: node.type || TUTORIAL_NODE_TYPES.story,
+    boardSetup: node.boardSetup ?? null,
+    options: node.options ?? []
+  };
+}
+
+function emptyStoryScript(overrides = {}) {
+  return {
+    key: ONBOARDING_STORY_KEY,
+    title: "新手引导",
+    triggerType: TRIGGER_TYPES.onboarding,
+    triggerParams: {},
+    draft: emptyScript(),
+    published: emptyScript(),
+    isPublished: false,
+    publishedAt: null,
+    ...overrides
+  };
+}
+
+function emptyScript() {
+  return { startNodeId: "", initialBoard: null, nodes: [] };
+}
+
+function emptyStoryNode(id = "", characterId = "", overrides = {}) {
+  return {
+    id,
+    name: "",
+    type: TUTORIAL_NODE_TYPES.story,
+    speakerName: "",
+    characterId,
+    skillCharacterId: "",
+    skillId: "",
+    effect: STORY_NODE_EFFECTS.none,
+    prompt: "",
+    wrongClickMessage: "",
+    pointId: "",
+    color: "",
+    playerColor: "black",
+    playerCharacterId: "",
+    npcCharacterId: "denia",
+    npcName: "",
+    entryText: "",
+    actor: "",
+    actionStartDelaySeconds: "",
+    replyDelaySeconds: "",
+    autoContinueDelaySeconds: "",
+    boardSetup: null,
+    text: "",
+    nextNodeId: "",
+    options: [],
+    ...overrides
+  };
+}
+
+function defaultPatchForType(type) {
+  if (isStoryNodeType(type)) return { type, boardSetup: null };
+  if (type === TUTORIAL_NODE_TYPES.boardSetup) {
+    return {
+      type,
+      effect: STORY_NODE_EFFECTS.none,
+      options: [],
+      pointId: "",
+      color: "",
+      playerColor: "black",
+      playerCharacterId: "",
+      npcCharacterId: "denia",
+      npcName: "",
+      entryText: "",
+      skillCharacterId: "",
+      skillId: "",
+      boardSetup: { mode: "spark", stones: [] }
+    };
+  }
+  return { type, effect: STORY_NODE_EFFECTS.none, options: [], boardSetup: null };
+}
+
+function boardSetupForNode(node, draft = emptyScript()) {
+  const fallbackMode = draft.initialBoard?.mode ?? "spark";
+  if (node?.boardSetup && typeof node.boardSetup === "object") {
+    return {
+      mode: node.boardSetup.mode ?? fallbackMode,
+      stones: Array.isArray(node.boardSetup.stones) ? node.boardSetup.stones : []
+    };
+  }
+  return { mode: fallbackMode, stones: [] };
 }
 
 function toSubmitPayload(script, action) {
@@ -318,74 +1713,186 @@ function toSubmitPayload(script, action) {
     title: script.title,
     triggerType: script.triggerType,
     triggerParams: script.triggerParams,
-    draft: script.draft
+    draft: stripUiOnlyDraft(script.draft)
   };
 }
 
-function updateOption(node, nodeIndex, optionIndex, patch, updateNode) {
-  updateNode(nodeIndex, {
-    options: node.options.map((option, index) => index === optionIndex ? { ...option, ...patch } : option)
-  });
-}
-
-function normalizeStoryScript(value = {}) {
+function stripUiOnlyDraft(draft) {
   return {
-    ...emptyStoryScript(),
-    ...value,
-    triggerParams: value.triggerParams ?? {},
-    draft: value.draft ?? emptyScript(),
-    publishedAt: value.publishedAt ?? value.firstPublishedAt ?? null
+    ...draft,
+    nodes: draft.nodes.map((node) => ({
+      ...node,
+      options: (node.options ?? []).map(({ targetMissing, ...option }) => option)
+    }))
   };
 }
 
-function uniqueScriptKey(scripts) {
+function cloneDraft(draft) {
+  return JSON.parse(JSON.stringify(draft ?? emptyScript()));
+}
+
+function isSystemScript(script) {
+  return script?.key === ONBOARDING_STORY_KEY;
+}
+
+function uniqueScriptKey(scripts, prefix = "story.custom") {
   let index = scripts.length + 1;
-  let key = `story.custom.${index}`;
+  let key = `${prefix}.${index}`;
   const existing = new Set(scripts.map((entry) => entry.key));
   while (existing.has(key)) {
     index += 1;
-    key = `story.custom.${index}`;
+    key = `${prefix}.${index}`;
   }
   return key;
 }
 
-function uniqueNodeId(nodes) {
+function uniqueNodeId(nodes, hint = "step") {
+  const safeHint = String(hint || "step").replace(/[^a-z0-9-]+/gi, "-").replace(/^-+|-+$/g, "").toLowerCase() || "step";
   let index = nodes.length + 1;
-  let id = `node-${index}`;
+  let id = `${safeHint}-${index}`;
   const existing = new Set(nodes.map((node) => node.id));
   while (existing.has(id)) {
     index += 1;
-    id = `node-${index}`;
+    id = `${safeHint}-${index}`;
   }
   return id;
 }
 
-function emptyStoryScript(overrides = {}) {
-  return {
-    key: "onboarding.default",
-    title: "新手引导",
-    triggerType: TRIGGER_TYPES.onboarding,
-    triggerParams: {},
-    draft: emptyScript(),
-    isPublished: false,
-    publishedAt: null,
-    ...overrides
-  };
+function stepName(node, index = 0) {
+  return String(node?.name ?? "").trim() || autoStepName(node, index);
 }
 
-function emptyScript() {
-  return { startNodeId: "", nodes: [] };
+function autoStepName(node, index = 0) {
+  const label = NODE_TYPE_LABELS[node?.type] ?? "剧情";
+  const summary = nodeSummary(node);
+  return summary ? `${label} · ${summary}` : `${label} ${index + 1}`;
 }
 
-function formatDateTime(value) {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-  return date.toLocaleString("zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+function nodeSummary(node) {
+  if (!node) return "";
+  if (isStoryNodeType(node.type)) return compactText(node.text || node.prompt || node.speakerName || "空对白");
+  if (node.type === TUTORIAL_NODE_TYPES.boardSetup) {
+    const board = boardSetupForNode(node);
+    return `${board.mode} · ${board.stones.length} 颗棋子`;
+  }
+  if (node.type === TUTORIAL_NODE_TYPES.playerMove || node.type === TUTORIAL_NODE_TYPES.npcMove) return `${node.color || "未指定"} ${node.pointId || "未选点"}`;
+  if (node.type === TUTORIAL_NODE_TYPES.playerSkill || node.type === TUTORIAL_NODE_TYPES.npcSkill) return `${node.skillId || node.characterId || "未选技能"} ${node.pointId || ""}`.trim();
+  if (node.type === TUTORIAL_NODE_TYPES.resign) return `${node.color || "未指定"}认输`;
+  return node.prompt || "结算动作";
+}
+
+function compactText(value) {
+  const text = String(value ?? "").replace(/\s+/g, " ").trim();
+  return text.length > 26 ? `${text.slice(0, 26)}...` : text;
+}
+
+function defaultCharacterId(characters) {
+  return characters[0]?.slug || characters[0]?.id || "sigrika";
+}
+
+function adminItemOptions(items) {
+  const realItems = (Array.isArray(items) ? items : [])
+    .filter((item) => item?.category === "item" && item.enabled !== false)
+    .map((item) => ({ id: item.id, name: item.name || item.id }));
+  if (realItems.length) return realItems;
+  return [{ id: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖" }];
+}
+
+function adminSkillCharacters(characters) {
+  const source = Array.isArray(characters) && characters.length
+    ? characters.map((character) => ({
+        id: character.slug || character.id,
+        name: character.name || character.slug || character.id,
+        skill: character.skill
+      }))
+    : characterListFromCatalog(CHARACTERS).map((character) => ({
+        id: character.id,
+        name: character.name,
+        skill: character.skill
+      }));
+  return source
+    .filter((character) => character.id && character.skill)
+    .map((character) => ({
+      id: character.id,
+      name: character.name,
+      skillName: character.skill?.name || SKILL_EFFECT_CATALOG[character.skill?.id]?.label || character.id
+    }));
+}
+
+function adminCharacterCatalog(characters) {
+  const catalog = { ...CHARACTERS };
+  if (!Array.isArray(characters)) return catalog;
+  for (const character of characters) {
+    const id = character?.slug || character?.id;
+    if (!id) continue;
+    catalog[id] = {
+      ...(catalog[id] ?? {}),
+      ...character,
+      id,
+      skill: {
+        ...(catalog[id]?.skill ?? {}),
+        ...(character.skill ?? {})
+      }
+    };
+  }
+  return catalog;
+}
+
+function skillHelpText(skillId) {
+  const effect = CHARACTERS[skillId]?.skill?.id;
+  if (!effect) return "发布时会校验技能是否可解析。";
+  const rule = SKILL_EFFECT_CATALOG[effect]?.targetRule ?? "none";
+  if (rule === "none") return "该技能通常不需要精确目标点。";
+  if (rule === "stone") return "该技能目标应选择已有棋子。";
+  return "该技能目标优先通过棋盘点选。";
+}
+
+function boardSizeForMode(mode) {
+  return gameModeById(mode ?? "spark").boardSize;
+}
+
+const BOARD_EDITOR_PLAYERS = Object.freeze([
+  { color: COLORS.black, name: "Black", characterId: "sigrika" },
+  { color: COLORS.white, name: "White", characterId: "denia" }
+]);
+
+function createBoardEditorGame({ mode = "spark", stones = [] } = {}) {
+  const game = createGameState(BOARD_EDITOR_PLAYERS, { mode });
+  for (const stone of stones ?? []) {
+    if (!isPlayerColor(stone?.color)) continue;
+    const point = getPoint(game, stone.pointId);
+    if (point?.valid) point.stone = stone.color;
+  }
+  return game;
+}
+
+function normalizeEditorStones(stones = [], boardSize = 13) {
+  return stonesFromMap(new Map((Array.isArray(stones) ? stones : [])
+    .filter((stone) => stone?.pointId && isPlayerColor(stone.color))
+    .map((stone) => [stone.pointId, stone.color])), boardSize);
+}
+
+function updateStoneSet(current, pointId, tool, boardSize) {
+  const next = new Map(current.map((stone) => [stone.pointId, stone.color]));
+  if (!pointId) return current;
+  if (tool === "erase") next.delete(pointId);
+  else next.set(pointId, tool);
+  return stonesFromMap(next, boardSize);
+}
+
+function stonesFromMap(stoneMap, boardSize = 13) {
+  return [...stoneMap.entries()]
+    .map(([pointId, color]) => ({ pointId, color }))
+    .filter((stone) => isPointInBoard(stone.pointId, boardSize) && isPlayerColor(stone.color))
+    .sort((left, right) => pointSortValue(left.pointId) - pointSortValue(right.pointId));
+}
+
+function isPointInBoard(pointId, boardSize) {
+  const [x, y] = String(pointId ?? "").split(",").map(Number);
+  return Number.isInteger(x) && Number.isInteger(y) && x >= 0 && y >= 0 && x < boardSize && y < boardSize;
+}
+
+function pointSortValue(pointId) {
+  const [x, y] = String(pointId ?? "").split(",").map(Number);
+  return (Number.isInteger(y) ? y : 0) * 1000 + (Number.isInteger(x) ? x : 0);
 }

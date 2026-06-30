@@ -29,6 +29,10 @@ describe("achievements", () => {
     expect(queried).toContain('PRAGMA table_info("Character")');
     expect(executed).toEqual(expect.arrayContaining([
       expect.stringContaining('ALTER TABLE "Character" ADD COLUMN "source"'),
+      expect.stringContaining('ALTER TABLE "Character" ADD COLUMN "cvName"'),
+      expect.stringContaining('ALTER TABLE "Character" ADD COLUMN "cvUrl"'),
+      expect.stringContaining('ALTER TABLE "ShopItem" ADD COLUMN "illustName"'),
+      expect.stringContaining('ALTER TABLE "ShopItem" ADD COLUMN "illustUrl"'),
       expect.stringContaining('CREATE TABLE IF NOT EXISTS "Achievement"'),
       expect.stringContaining('CREATE TABLE IF NOT EXISTS "UserAchievement"'),
       expect.stringContaining('CREATE TABLE IF NOT EXISTS "UserAchievementEquipment"')

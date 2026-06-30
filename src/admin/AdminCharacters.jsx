@@ -126,7 +126,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
     event.preventDefault();
     const body = characterDraftToBody(draft);
     if (!body) {
-      onNotice?.("排序和使用次数必须是整数；数值超频只能填数字，特殊超频需要填写文本", "danger");
+      onNotice?.("排序和使用次数必须是整数；数值超频只能填数字，特殊超频需要填写文本；CV 链接需为 http(s) 或站内路径且必须有 CV 名称", "danger");
       return;
     }
 
@@ -164,6 +164,12 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
         </label>
         <label><AdminFieldLabel text="角色名称" tip="显示在棋舍、对局资料和技能演出中的角色名。" />
           <input value={draft.name} onChange={(event) => updateDraft("name", event.target.value)} />
+        </label>
+        <label><AdminFieldLabel text="CV 名称" tip="角色详情中显示的配音人员名；留空则不展示 CV 标签。" />
+          <input value={draft.cvName} onChange={(event) => updateDraft("cvName", event.target.value)} />
+        </label>
+        <label><AdminFieldLabel text="CV 链接" tip="可选。支持 http(s) 链接或以 / 开头的站内路径；填写后详情里的 CV 标签会作为链接打开。" />
+          <input value={draft.cvUrl} onChange={(event) => updateDraft("cvUrl", event.target.value)} />
         </label>
         <label className="wide-field"><AdminFieldLabel text="角色描述" tip="展示在棋舍角色详情里，位于获得途径下方的角色介绍文本。" />
           <textarea value={draft.description} onChange={(event) => updateDraft("description", event.target.value)} />

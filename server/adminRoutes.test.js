@@ -498,6 +498,39 @@ describe("admin character routes", () => {
     expect(characterUpdates[0].skill.upsert.update.enabled).toBe(false);
   });
 
+  it("allows PATCH /characters/:id to update character CV metadata", async () => {
+    const { prisma, characterUpdates } = characterRoutePrisma();
+
+    const response = await requestAdminRoute(prisma, "/characters/danea", {
+      method: "PATCH",
+      body: {
+        cvName: "Voice Actor",
+        cvUrl: "https://example.com/voice-actor"
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.character.cvName).toBe("Voice Actor");
+    expect(response.body.character.cvUrl).toBe("https://example.com/voice-actor");
+    expect(characterUpdates[0].cvName).toBe("Voice Actor");
+    expect(characterUpdates[0].cvUrl).toBe("https://example.com/voice-actor");
+  });
+
+  it("rejects unsafe character CV links in admin character updates", async () => {
+    const { prisma } = characterRoutePrisma();
+
+    const response = await requestAdminRoute(prisma, "/characters/danea", {
+      method: "PATCH",
+      body: {
+        cvName: "Voice Actor",
+        cvUrl: "javascript:alert(1)"
+      }
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain("cvUrl");
+  });
+
   it("lists disabled character skills for admin editing", async () => {
     const fixture = characterFixture();
     const character = { ...fixture, skill: { ...fixture.skill, enabled: false } };
@@ -510,6 +543,8 @@ describe("admin character routes", () => {
     expect(response.status).toBe(200);
     expect(response.body.characters[0].skill.enabled).toBe(false);
     expect(response.body.characters[0].skill.name).toBe(character.skill.name);
+    expect(response.body.characters[0].cvName).toBe(character.cvName);
+    expect(response.body.characters[0].cvUrl).toBe(character.cvUrl);
   });
 
   it("returns JSON for unsupported portrait upload types", async () => {
@@ -657,15 +692,49 @@ describe("admin shop and decoration routes", () => {
         enabled: true,
         sortOrder: 1,
         description: "解锁角色",
-        imageUrl: "/assets/Danea_centered.webp"
+        imageUrl: "/assets/Danea_centered.webp",
+        illustName: "Artist",
+        illustUrl: "https://example.com/artist"
       }
     });
 
     expect(response.status).toBe(200);
     expect(response.body.item.finalPrice).toBe(80);
+    expect(response.body.item.illustName).toBe("Artist");
+    expect(response.body.item.illustUrl).toBe("https://example.com/artist");
     expect(calls).toEqual(["tx.shopItem.create", "tx.adminAuditLog.create"]);
     expect(auditWrites[0].action).toBe("shop-item.create");
     expect(auditWrites[0].targetType).toBe("shop-item");
+  });
+
+  it("rejects unsafe shop item illustration links", async () => {
+    const response = await requestAdminRoute({
+      character: {
+        findUnique: async () => ({ id: "character-1", slug: "danea" })
+      },
+      shopItem: {
+        create: async () => {
+          throw new Error("should not create invalid shop item");
+        }
+      }
+    }, "/shop-items", {
+      method: "POST",
+      body: {
+        name: "购买达妮娅",
+        category: "character",
+        targetId: "danea",
+        priceCoins: 100,
+        discountPercent: 0,
+        purchasable: true,
+        enabled: true,
+        sortOrder: 1,
+        illustName: "Artist",
+        illustUrl: "javascript:alert(1)"
+      }
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain("illustUrl");
   });
 
   it("rejects shop items whose target does not exist", async () => {
@@ -1219,6 +1288,8 @@ function characterFixture() {
     name: "Danea",
     portraitUrl: "/assets/danea.png",
     portraitSource: "url",
+    cvName: "Old Voice Actor",
+    cvUrl: "https://example.com/old-voice-actor",
     palette: "#6ab7ff",
     enabled: true,
     sortOrder: 1,

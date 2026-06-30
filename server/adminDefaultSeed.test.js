@@ -10,6 +10,21 @@ describe("admin default config seed", () => {
     expect(qiuyuan?.skill.description).not.toContain("超频+2");
   });
 
+  it("keeps the papa gan and peach deployment shop item visible and unique", () => {
+    const matches = ADMIN_DEFAULT_CONFIG.shopItems.filter((item) => (
+      item.category === "decoration" && item.targetId === "papagan-peach-stone"
+    ));
+
+    expect(matches).toHaveLength(1);
+    expect(matches[0]).toMatchObject({
+      name: "耙耙柑和水蜜桃",
+      priceCoins: 1000,
+      purchasable: true,
+      enabled: true,
+      sortOrder: 201
+    });
+  });
+
   it("creates missing non-user admin configuration from the snapshot", async () => {
     const calls = [];
     const prisma = adminDefaultSeedPrisma({ calls });
@@ -109,6 +124,82 @@ describe("admin default config seed", () => {
     })]);
     expect(calls).toContainEqual(["musicTrackSetting.upsert", expect.objectContaining({
       update: { displayName: "Snapshot Track" }
+    })]);
+  });
+
+  it("preserves saved character CV metadata when older deployment snapshots omit CV fields", async () => {
+    const calls = [];
+    const existing = {
+      characters: new Set(["snapshot-character"])
+    };
+    const prisma = adminDefaultSeedPrisma({ calls, existing });
+
+    await seedAdminDefaultConfig(prisma, sampleSnapshot);
+
+    const characterUpdate = calls.find(([name]) => name === "character.update")?.[1];
+    expect(characterUpdate.data).not.toHaveProperty("cvName");
+    expect(characterUpdate.data).not.toHaveProperty("cvUrl");
+  });
+
+  it("syncs character CV metadata when the deployment snapshot declares it", async () => {
+    const calls = [];
+    const existing = {
+      characters: new Set(["snapshot-character"])
+    };
+    const prisma = adminDefaultSeedPrisma({ calls, existing });
+
+    await seedAdminDefaultConfig(prisma, {
+      ...sampleSnapshot,
+      characters: [{
+        ...sampleSnapshot.characters[0],
+        cvName: "Snapshot CV",
+        cvUrl: "https://example.com/snapshot-cv"
+      }]
+    });
+
+    expect(calls).toContainEqual(["character.update", expect.objectContaining({
+      data: expect.objectContaining({
+        cvName: "Snapshot CV",
+        cvUrl: "https://example.com/snapshot-cv"
+      })
+    })]);
+  });
+
+  it("preserves saved shop item illustration credits when older deployment snapshots omit those fields", async () => {
+    const calls = [];
+    const existing = {
+      shopTargets: new Set(["decoration:snapshot-decoration"])
+    };
+    const prisma = adminDefaultSeedPrisma({ calls, existing });
+
+    await seedAdminDefaultConfig(prisma, sampleSnapshot);
+
+    const shopUpdate = calls.find(([name]) => name === "shopItem.update")?.[1];
+    expect(shopUpdate.data).not.toHaveProperty("illustName");
+    expect(shopUpdate.data).not.toHaveProperty("illustUrl");
+  });
+
+  it("syncs shop item illustration credits when the deployment snapshot declares them", async () => {
+    const calls = [];
+    const existing = {
+      shopTargets: new Set(["decoration:snapshot-decoration"])
+    };
+    const prisma = adminDefaultSeedPrisma({ calls, existing });
+
+    await seedAdminDefaultConfig(prisma, {
+      ...sampleSnapshot,
+      shopItems: [{
+        ...sampleSnapshot.shopItems[0],
+        illustName: "Snapshot Artist",
+        illustUrl: "https://example.com/snapshot-artist"
+      }]
+    });
+
+    expect(calls).toContainEqual(["shopItem.update", expect.objectContaining({
+      data: expect.objectContaining({
+        illustName: "Snapshot Artist",
+        illustUrl: "https://example.com/snapshot-artist"
+      })
     })]);
   });
 });

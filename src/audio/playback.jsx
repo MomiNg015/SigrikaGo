@@ -11,7 +11,8 @@ export {
   pauseBackgroundPlayback,
   primeBackgroundAudioRuntime,
   recoverBackgroundPlayback,
-  resumeBackgroundContextWithFallback
+  resumeBackgroundContextWithFallback,
+  stopBackgroundPlayback
 } from "./backgroundMusic.jsx";
 export {
   CAPTURE_SOUND,

@@ -208,6 +208,9 @@ Correct:
 - Persistent point-local visuals such as Mornye `protocol-takeover` and ChangLi `double-move-stone` belong on the existing point/stone DOM nodes. They must remain pointer-transparent and respect reduced motion. A transient cast-phase animation may still be a `BoardSkillEffects` Pixi renderer when the catalog marks that skill with `boardEffect: true`, as Mornye `protocol-takeover` and ChangLi `double-move` do.
 - QiuYuan `row-slash` is visible only until the opponent's next action. Store `clearAfterColor: opponent(owner)` and clear expired row effects from ordinary moves, passes, and turn-consuming skill resolution by action color, not by the row effect owner.
 - Board point buttons sit above the SVG grid; shared board CSS and theme guard layers must explicitly keep `.board .point` transparent with no appearance, no border/shadow/background image, zero min-size, and `touch-action: none` so broad button rules cannot cover the grid.
+- Board point buttons must be anchored by explicit center variables, not implicit grid-cell placement. `Board` writes `--board-point-center-x` and `--board-point-center-y` from `((point.x + 0.5) / boardSize) * 100%`; `.point` is absolutely positioned at those variables with `transform: translate(-50%, -50%)`, `.board .point` repeats that transform with `!important` so broad button hover/active transforms cannot replace the centering offset, and `.point::before` centers itself with its own `left/top: 50%` transform. This keeps hover/touch hints, stones, and SVG grid intersections sharing the same coordinate source. Mobile point feedback must compose scale with this centering transform, for example `translate(-50%, -50%) scale(...)`, and reduced-motion or confirming states must still keep `translate(-50%, -50%)` instead of `none`. Do not reintroduce `gridColumn/gridRow` as the visual point placement contract.
+- Tutorial boards call `Board` with `stoneJitter={false}` so scripted teaching positions are exact. Ordinary live boards may keep deterministic small stone offsets for hand-placed feel, but tutorial hints, initial stones, and clicked result stones must remain centered on intersections for clarity.
+- Admin visual initial-board editors must also reuse `Board` with a temporary `createGameState()` board and `stoneJitter={false}`. Do not create admin-only SVG grids, custom point buttons, custom star-point tables, or separate `--point-x/y` geometry; those drift from the real battle board and break setup accuracy on desktop and mobile.
 - The board grid SVG must be treated as a gameplay layer, not ordinary media. `.board-lines` must explicitly keep `display: block`, `width/height: 100%`, `max-width/max-height: none`, and theme guard stroke/opacity rules so global `img/svg/canvas` media resets such as `height: auto` cannot collapse or wash out the grid.
 - Board surface styling belongs on `.board-wrap` through `--board-wood-texture`. Bright School and other late theme repair layers may force `background: var(--board-wood-texture) !important`, but must not fork a separate board texture because those late layers override the base room surface.
 - `prefers-reduced-motion: reduce` must use a short static hit effect without fly-in, scale bursts, explosions, board shake, or explosive SFX.
@@ -732,7 +735,131 @@ Correct:
 
 <!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->
 
-(To be filled by the team)
+### Scenario: Admin Console Fullscreen Boundary
+
+#### 1. Scope / Trigger
+- Trigger: any change to `AdminShell`, `.admin-screen`, `admin.css`, `mobile-adaptive.css`, HUD/theme shell backgrounds, or admin-only tool layouts such as the story tutorial workbench.
+- The admin console is a production tool surface and must not inherit player-facing lobby, room, HUD, or theme composition constraints.
+
+#### 2. Signatures
+- `AdminShell` renders `<main className="admin-screen">`.
+- Base admin layout lives in `src/styles/admin/shell-layout.css`.
+- Final post-theme admin shell protection lives in `src/styles/mobile-adaptive/admin-fullscreen.css`, imported near the start of `src/styles/mobile-adaptive.css`.
+
+#### 3. Contracts
+- `.admin-screen` must override the shared 1280px page-width cap and use viewport-width layout on desktop so dense admin tools do not become narrow centered panels.
+- `.admin-sidebar` and `.admin-main` should own bounded internal scrolling with `max-height: calc(100dvh - padding)` so the full-screen shell stays stable.
+- `.app-shell:has(.admin-screen)` must be reset after HUD/theme layers to a light admin background and must suppress player-facing pseudo-backgrounds.
+- Do not fix admin width by editing shared `.auth-screen, .home-screen, .room-screen, .admin-screen` base rules unless the same change is intended for every app shell.
+- Admin fullscreen safety rules belong in the final safety layer because HUD hardening and active themes can use later `!important` app-shell backgrounds.
+
+#### 4. Validation & Error Matrix
+- Wide desktop viewport -> the admin console spans the viewport instead of staying at 1280px with side gutters.
+- Bright School or HUD theme active -> admin background remains light and does not show terminal black/green chrome.
+- Narrow desktop or phone -> responsive admin rules may collapse columns, but must not create horizontal overflow.
+- Story tutorial editor -> the flow graph, step editor, and preview gain the available width instead of compressing into a narrow centered work area.
+
+#### 5. Tests Required
+- `src/styles/styleContract.test.js` should assert the final `mobile-adaptive/admin-fullscreen.css` import and effective `.app-shell:has(.admin-screen)` / `.admin-screen` fullscreen rules.
+- Run `npm test -- src/styles/styleContract.test.js` and `npm run build` after changing this boundary.
+
+### Scenario: Story Tutorial Flow Graph Reachability
+
+#### 1. Scope / Trigger
+- Trigger: any change to `src/admin/AdminOnboardingStory.jsx` flow graph logic, StoryScript node navigation fields, or editor labels for connected/orphaned steps.
+- The editor visualizes existing StoryScript data; it must not invent a stricter graph model than the runtime player uses.
+
+#### 2. Signatures
+- `buildFlow(draft)` derives `{ main, branches, connectedExtras, orphans }`.
+- `scriptForCurrentPreview(draft, selectedNodeId)` derives a preview script whose `initialBoard` is the silently replayed board state immediately before `selectedNodeId`.
+- Runtime graph edges are `node.nextNodeId` and each non-empty `option.nextNodeId`.
+- Empty option targets still mean "end story" and should render as the virtual end card.
+- `TUTORIAL_NODE_TYPES.boardSetup` stores a node-local `boardSetup` snapshot and switches the local tutorial board without changing the script-level default `initialBoard`.
+
+#### 3. Contracts
+- Reachability must start from `draft.startNodeId` or the first node fallback and traverse both `nextNodeId` and option targets recursively.
+- The main vertical chain may still follow `nextNodeId` only, but orphan detection must use full graph reachability.
+- Branch targets should show their linear `nextNodeId` continuation where practical; reachable nodes that do not fit that branch chain can be grouped as connected branch follow-up, not "unconnected".
+- Only nodes unreachable from the start through runtime edges may appear under "unconnected steps".
+- Current-step preview must find a reachable path through both `nextNodeId` and option targets, then silently replay board setup, move, skill, and resign nodes on that path. Do not replay only the main chain.
+- Board setup editing belongs in the current-step form and should reuse the shared board picker/modal; do not expose raw `boardSetup` JSON or add a separate graph model.
+
+#### 4. Tests Required
+- `src/admin/AdminOnboardingStory.test.jsx` should cover an option target with a following `nextNodeId` chain and a deeper option target, asserting only a truly unreachable node remains in `orphans`.
+- `src/admin/AdminOnboardingStory.test.jsx` should cover current-step preview for a branch target after a `board-setup` node, asserting the preview `initialBoard` comes from the branch setup snapshot.
+
+### Scenario: Story Player Node Handoff Stability
+
+#### 1. Scope / Trigger
+- Trigger: any change to `StoryPlayerModal`, `OnboardingStoryModal`, or `TutorialSessionModal` story-node playback handoff logic.
+- Ordinary story continuation should feel like one stable window whose content changes, not a modal close/reopen or empty-state flash.
+
+#### 2. Contracts
+- Keep the story modal backdrop and shell mounted across `nextNodeId` transitions.
+- Reset typewriter counters before the browser paints the next node, so the user never sees a frame of old text, full new text, or blank text before typing restarts.
+- When a parent component swaps the temporary script window to `{ startNodeId: nextStoryNodeId, nodes: [nextNode] }`, render `startNodeId` immediately if the previous internal node id no longer exists; do not show the "no script" empty state for one frame.
+
+#### 3. Tests Required
+- `src/modals/StoryPlayerModal.test.jsx` should cover the render-node fallback used when the parent script window changes between story nodes.
+
+### Scenario: Story Tutorial Battle Runtime
+
+#### 1. Scope / Trigger
+- Trigger: any change to `TutorialBattleScreen`, tutorial node type constants, admin battle-step forms, `RoomBattleStage` tutorial props, or StoryScript node normalization for tutorial fields.
+- Battle tutorials must run inside the real battle room presentation, not a simplified board preview, because the teaching state depends on player/NPC panels, the action bar, chat history, skills, and board interaction affordances.
+
+#### 2. Signatures
+- Node types live in `src/shared/tutorialNodeTypes.js`.
+- Battle-only node types include `npc-dialogue` and `player-choice` in addition to board setup, move, skill, counting, and resign tutorial nodes.
+- `story` nodes reached while `TutorialBattleScreen` is active mean "exit the battle room and resume the normal story window at this node".
+- NPC timing fields are `actionStartDelaySeconds`, `actionDelaySeconds`, `replyDelaySeconds`, and `autoContinueDelaySeconds`, with a product default of `1.5` seconds where a delay field is omitted.
+- `RoomBattleStage` accepts tutorial overrides such as `actionPanelOverride`, `chatReadonly`, `chatDisabledInputMessage`, `chatCompactMessages`, `showPeoplePanel`, `tutorialTargetPointId`, and `tutorialAnyBoardTarget`.
+- `RoomHeader` accepts `exitLabel` and `showUtilityControls` so tutorial battles can keep only the exit/skip affordance without rendering room utility buttons.
+- `AssetPreloadScreen` accepts `showTips` for fixed-copy loading transitions that still need the shared preload template.
+
+#### 3. Contracts
+- `TutorialBattleScreen` must compose the existing full battle room stage, including both player information areas. Do not render battle teaching as an admin preview card or custom mini-board.
+- Tutorial battles must route desktop and mobile through the same layout shells as real rooms (`DesktopRoomLayout`, `MobileRoomLayout`, `useMobileRoomLayout`) instead of a desktop-only wrapper.
+- Tutorial battles must restore normal room audio by using `useRoomAudioEffects` for move/effect sounds and `BackgroundMusic`/`resolveBackgroundMusic` for battle and skill BGM.
+- NPC move and skill nodes execute automatically after their configured delays. Do not require a player-facing "let NPC act" button.
+- NPC dialogue nodes may show dialogue with no board action, or board action nodes may show dialogue while also moving/casting. The NPC bubble remains visible while player reply options are shown and is replaced only when the next NPC node begins.
+- `player-choice` nodes show centered reply options without changing the board. Chosen NPC and player replies are written to the read-only chat history.
+- `story` nodes reached from battle show the shared `AssetPreloadScreen` exit loading page for at least three seconds with "正在收拾棋盘..." before returning to the normal story modal.
+- Entering a board setup shows the shared `AssetPreloadScreen` entry loading page for at least three seconds with "正在激烈对局中..." and the participating NPC portraits.
+- Story-to-battle, battle-to-story, and in-battle board-setup handoffs must put the shared loading screen in place before the browser can paint the next route/node. Use initial state, navigation-handler state, or layout effects for the handoff boundary; do not rely only on a post-paint effect that briefly renders the battle room, home screen, or setup placeholder.
+- The teaching action panel replaces ordinary free-battle actions. Continue and reply controls belong under the board, not in a separate free-battle button group.
+- Player move targets must highlight the exact point with a gold ring rendered as a real child element inside the board point; do not use a `::after` point pseudo-element because theme guards also own point pseudo-elements. The ring must preserve `transform: translate(-50%, -50%)` after Bright School `button > *` reset layers and should animate as a visible gold glow. Clicking another point or the board surface shows "请在提示区域落子".
+- Player skill targets use the normal skill selection flow. If a skill has no concrete target point, the second phase still requires a board click and shows "点击棋盘区域任意位置即可".
+- Player button targets highlight the required action button. Clicking unrelated disabled/free actions should do nothing unless the node explicitly defines an error toast.
+- Player reply options should render above a full-screen scrim that focuses the choice area while keeping the current NPC bubble visible above the scrim. Choice and teaching action buttons use a left/right distributed row layout so the affordance does not collapse into centered free-battle controls.
+- Reply options should render as the buttons themselves, without a visible choice-panel title, extra close affordance, or framed card background. The scrim and NPC bubble provide the spatial context.
+- Teaching action buttons should stretch evenly across the action area with a small inset and a light-green target affordance on both desktop and mobile.
+- NPC dialogue bubbles should derive their low-saturation background, border, or glow accent from the active NPC character palette while preserving readable text contrast.
+- NPC dialogue bubble body text should type in progressively while the speaker name is shown immediately, and the animation must respect `prefers-reduced-motion`.
+- A player with no selected role keeps the same panel footprint as a character player, but the portrait and skill list are empty, placeholder slots preserve the side panel symmetry, and the rank is hidden.
+- Timer digit groups should stay centered inside their timer card in desktop room panels and mobile player strips.
+- Chat is read-only during battle tutorials; the input is disabled and can still display a disabled placeholder message. Tutorial chat messages must be compact, without hand number, timestamp, or `[使用角色]` suffixes.
+- Exit/skip uses the room header exit affordance, asks for confirmation, and ends the script like the normal story close/skip path.
+- Bubble slide-in/out motion should respect `prefers-reduced-motion`; keep the static visible state when motion is reduced.
+
+#### 4. Validation & Error Matrix
+- NPC action node with no options -> run the action, wait the continuation delay, then advance through `nextNodeId`.
+- NPC dialogue/action node with options -> keep the bubble visible while centered reply options are displayed.
+- Player move click on the wrong point -> reject the action and keep the node active.
+- Player no-target skill -> second-phase board click anywhere confirms the scripted skill action.
+- `story` node reached from battle -> never render it as an in-battle bubble; exit to the normal story player.
+- Missing player character -> render an empty-but-stable player panel and no skill options.
+- Story-to-battle handoff -> the entry loading page is the first visible battle route frame, not a one-frame room shell or setup placeholder.
+- Battle-to-story handoff -> keep exit loading mounted until the parent route/story modal handoff unmounts the battle screen.
+- Exit/skipping/return-to-story loading -> disable the local `TutorialBattleScreen` `BackgroundMusic` before the full-screen shared loading transition, pause global background music during the transition, and never reactivate battle BGM after the pause is released unless a new battle setup/session starts.
+- Close/skip confirmation accepted -> end the script; cancelled -> remain in the battle tutorial.
+
+#### 5. Tests Required
+- `src/tutorial/tutorialBattleRoom.test.js` should cover room construction invariants needed by `TutorialBattleScreen`.
+- `src/room/Board.test.js` should cover tutorial point and any-board targeting hooks.
+- `src/room/RoomScreen.test.js` should cover action-panel override, read-only chat wiring, and room header exit label behavior.
+- `src/app/AppOverlays.test.jsx` / app route tests should cover battle-to-story resume wiring.
+- `src/admin/AdminOnboardingStory.test.jsx` should cover admin form validation for `npc-dialogue`, `player-choice`, delay fields, actor fields, and story-exit previews where practical.
 
 ---
 

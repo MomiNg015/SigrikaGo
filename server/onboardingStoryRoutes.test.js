@@ -32,6 +32,21 @@ describe("onboarding story route handlers", () => {
     expect(res.body).toEqual({ ok: true });
   });
 
+  it("binds the authenticated user when marking tutorial completion", async () => {
+    const markOnboardingCompletedFn = vi.fn(async () => ({ ok: true }));
+    const handlers = createOnboardingStoryRouteHandlers({ prisma: {}, markOnboardingCompletedFn });
+    const req = { user: { id: "user-1" } };
+    const res = responseCollector();
+
+    await handlers.markCompleted(req, res);
+
+    expect(markOnboardingCompletedFn).toHaveBeenCalledWith({
+      prisma: {},
+      user: req.user
+    });
+    expect(res.body).toEqual({ ok: true });
+  });
+
   it("returns domain errors as JSON", async () => {
     const error = Object.assign(new Error("新手引导不存在"), { status: 404 });
     const handlers = createOnboardingStoryRouteHandlers({

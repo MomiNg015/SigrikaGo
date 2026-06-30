@@ -1,26 +1,54 @@
 import { describe, expect, it } from "vitest";
 import {
   defaultStoryScriptSeeds,
+  deleteStoryScript,
   ensureStoryScriptSchema,
   getPublishedStoryScriptForTrigger,
   seedDefaultStoryScripts,
   STORY_TRIGGER_TYPES,
+  toAdminStoryScriptPayload,
+  toPlayerStoryScriptPayload,
+  unpublishStoryScript,
   validateStoryScriptInput
 } from "./storyScripts.js";
 import { STORY_NODE_EFFECTS } from "../src/shared/storyPresentation.js";
 
 describe("story script domain", () => {
+  function makeStoryRecord(overrides = {}) {
+    return {
+      id: "script.test",
+      key: "script.test",
+      title: "Test script",
+      triggerType: STORY_TRIGGER_TYPES.onboarding,
+      triggerParamsJson: "{}",
+      isPublished: false,
+      draftStartNodeId: "start",
+      draftInitialBoardJson: "null",
+      draftNodesJson: JSON.stringify([{ id: "start", type: "story", text: "Hello", nextNodeId: "" }]),
+      publishedStartNodeId: "",
+      publishedInitialBoardJson: "null",
+      publishedNodesJson: "[]",
+      firstPublishedAt: null,
+      publishedAt: null,
+      createdAt: new Date("2026-06-29T08:00:00.000Z"),
+      updatedAt: new Date("2026-06-29T08:00:00.000Z"),
+      ...overrides
+    };
+  }
+
   it("creates the generic story script table for older local databases", async () => {
     const executed = [];
     await ensureStoryScriptSchema({
       $executeRawUnsafe: async (sql) => executed.push(sql)
     });
 
-    expect(executed).toEqual([
+    expect(executed).toEqual(expect.arrayContaining([
       expect.stringContaining('CREATE TABLE IF NOT EXISTS "StoryScript"'),
+      expect.stringContaining('ADD COLUMN "draftInitialBoardJson"'),
+      expect.stringContaining('ADD COLUMN "publishedInitialBoardJson"'),
       expect.stringContaining('CREATE UNIQUE INDEX IF NOT EXISTS "StoryScript_key_key"'),
       expect.stringContaining('CREATE INDEX IF NOT EXISTS "StoryScript_triggerType_isPublished_idx"')
-    ]);
+    ]));
   });
 
   it("validates publishable scripts with structured triggers", () => {
@@ -110,6 +138,72 @@ describe("story script domain", () => {
         ]
       }
     });
+  });
+
+  it("validates unified tutorial scripts with story and battle node types", () => {
+    expect(validateStoryScriptInput({
+      key: "tutorial.unified",
+      title: "Unified tutorial",
+      triggerType: STORY_TRIGGER_TYPES.onboarding,
+      triggerParams: {},
+      draft: {
+        startNodeId: "intro",
+        initialBoard: {
+          mode: "spark",
+          stones: [
+            { pointId: "3,3", color: "black" },
+            { pointId: "4,4", color: "white" }
+          ]
+        },
+        nodes: [
+          { id: "intro", type: "story", text: "Try a move.", nextNodeId: "setup-beginner" },
+          { id: "setup-beginner", type: "board-setup", boardSetup: { mode: "spark", stones: [{ pointId: "2,2", color: "black" }] }, nextNodeId: "move-1" },
+          { id: "move-1", type: "player-move", pointId: "5,5", color: "black", nextNodeId: "npc-1" },
+          { id: "npc-1", type: "npc-move", pointId: "6,6", color: "white", nextNodeId: "skill-1" },
+          { id: "skill-1", type: "player-skill", skillId: "denia", pointId: "4,4", color: "black", nextNodeId: "resign-1" },
+          { id: "resign-1", type: "resign", color: "black", nextNodeId: "ending" },
+          { id: "ending", type: "story", text: "That is the lesson.", options: [{ label: "Done", nextNodeId: "" }] }
+        ]
+      }
+    }, { publishing: true })).toMatchObject({
+      draft: {
+        initialBoard: {
+          mode: "spark",
+          stones: [
+            { pointId: "3,3", color: "black" },
+            { pointId: "4,4", color: "white" }
+          ]
+        },
+        nodes: expect.arrayContaining([
+          expect.objectContaining({ id: "intro", type: "story" }),
+          expect.objectContaining({ id: "setup-beginner", type: "board-setup", boardSetup: { mode: "spark", stones: [{ pointId: "2,2", color: "black" }] } }),
+          expect.objectContaining({ id: "move-1", type: "player-move", pointId: "5,5", color: "black" }),
+          expect.objectContaining({ id: "npc-1", type: "npc-move", pointId: "6,6", color: "white" }),
+          expect.objectContaining({ id: "skill-1", type: "player-skill", skillId: "denia", pointId: "4,4", color: "black" }),
+          expect.objectContaining({ id: "resign-1", type: "resign", color: "black" })
+        ])
+      }
+    });
+  });
+
+  it("allows draft skill nodes to stay incomplete but rejects invalid skills on publish", () => {
+    const input = {
+      key: "tutorial.invalid-skill",
+      title: "Invalid skill",
+      triggerType: STORY_TRIGGER_TYPES.onboarding,
+      triggerParams: {},
+      draft: {
+        startNodeId: "skill-1",
+        nodes: [
+          { id: "skill-1", type: "player-skill", skillId: "denia-rainbow-glow", pointId: "4,4", color: "black", nextNodeId: "" }
+        ]
+      }
+    };
+
+    expect(validateStoryScriptInput(input, { publishing: false }).draft.nodes[0]).toMatchObject({
+      skillId: "denia-rainbow-glow"
+    });
+    expect(() => validateStoryScriptInput(input, { publishing: true })).toThrow("教学技能 ID 无效");
   });
 
   it("rejects invalid story presentation fields", () => {
@@ -230,6 +324,139 @@ describe("story script domain", () => {
         })
       ]
     });
+  });
+
+  it("preserves tutorial initial board data in admin and player payloads", () => {
+    const record = {
+      id: "tutorial.unified",
+      key: "tutorial.unified",
+      title: "Unified tutorial",
+      triggerType: "onboarding",
+      triggerParamsJson: "{}",
+      isPublished: true,
+      draftStartNodeId: "intro",
+      draftInitialBoardJson: JSON.stringify({ mode: "spark", stones: [{ pointId: "3,3", color: "black" }] }),
+      draftNodesJson: JSON.stringify([{ id: "intro", type: "story", text: "Draft", nextNodeId: "" }]),
+      publishedStartNodeId: "intro",
+      publishedInitialBoardJson: JSON.stringify({ mode: "spark", stones: [{ pointId: "4,4", color: "white" }] }),
+      publishedNodesJson: JSON.stringify([{ id: "intro", type: "story", text: "Published", nextNodeId: "" }]),
+      publishedAt: new Date("2026-06-29T08:00:00.000Z")
+    };
+
+    expect(toAdminStoryScriptPayload(record)).toMatchObject({
+      draft: { initialBoard: { mode: "spark", stones: [{ pointId: "3,3", color: "black" }] } },
+      published: { initialBoard: { mode: "spark", stones: [{ pointId: "4,4", color: "white" }] } }
+    });
+    expect(toPlayerStoryScriptPayload(record)).toMatchObject({
+      initialBoard: { mode: "spark", stones: [{ pointId: "4,4", color: "white" }] }
+    });
+  });
+
+  it("unpublishes a published story script without deleting draft data", async () => {
+    const auditLogs = [];
+    const before = makeStoryRecord({ isPublished: true });
+    const prisma = {
+      $transaction: async (callback) => callback({
+        storyScript: {
+          findUnique: async ({ where }) => {
+            expect(where).toEqual({ key: "script.test" });
+            return before;
+          },
+          update: async ({ where, data }) => {
+            expect(where).toEqual({ key: "script.test" });
+            expect(data).toEqual({ isPublished: false });
+            return { ...before, ...data };
+          }
+        },
+        adminAuditLog: {
+          create: async ({ data }) => auditLogs.push(data)
+        }
+      })
+    };
+
+    await expect(unpublishStoryScript({
+      prisma,
+      adminUser: { id: "admin-1" },
+      key: "script.test"
+    })).resolves.toMatchObject({
+      script: {
+        key: "script.test",
+        isPublished: false,
+        draft: { startNodeId: "start" }
+      }
+    });
+
+    expect(auditLogs).toEqual([
+      expect.objectContaining({
+        adminUserId: "admin-1",
+        action: "story-script.unpublish",
+        targetId: "script.test",
+        targetType: "story-script"
+      })
+    ]);
+  });
+
+  it("deletes only unpublished non-system story scripts", async () => {
+    const auditLogs = [];
+    let deletedKey = "";
+    const record = makeStoryRecord();
+    const prisma = {
+      $transaction: async (callback) => callback({
+        storyScript: {
+          findUnique: async ({ where }) => {
+            expect(where).toEqual({ key: "script.test" });
+            return record;
+          },
+          delete: async ({ where }) => {
+            deletedKey = where.key;
+            return record;
+          }
+        },
+        adminAuditLog: {
+          create: async ({ data }) => auditLogs.push(data)
+        }
+      })
+    };
+
+    await expect(deleteStoryScript({
+      prisma,
+      adminUser: { id: "admin-1" },
+      key: "script.test"
+    })).resolves.toMatchObject({
+      deleted: true,
+      script: { key: "script.test" }
+    });
+
+    expect(deletedKey).toBe("script.test");
+    expect(auditLogs).toEqual([
+      expect.objectContaining({
+        action: "story-script.delete",
+        afterJson: null,
+        targetId: "script.test"
+      })
+    ]);
+  });
+
+  it("blocks deletion for system or published story scripts", async () => {
+    await expect(deleteStoryScript({
+      prisma: {},
+      adminUser: { id: "admin-1" },
+      key: "onboarding.default"
+    })).rejects.toMatchObject({ status: 400 });
+
+    const prisma = {
+      $transaction: async (callback) => callback({
+        storyScript: {
+          findUnique: async () => makeStoryRecord({ isPublished: true })
+        }
+      })
+    };
+
+    await expect(deleteStoryScript({
+      prisma,
+      adminUser: { id: "admin-1" },
+      key: "script.test"
+    })).rejects.toMatchObject({ status: 400 });
   });
 
   it("seeds default scripts only when their keys are missing", async () => {

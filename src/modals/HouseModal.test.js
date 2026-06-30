@@ -533,6 +533,67 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolStyles).toContain(".character-detail-copy .character-description");
     expect(brightSchoolStyles).toContain("text-align: left !important");
   });
+
+  it("renders optional character CV labels without default link styling", () => {
+    const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "sigrika",
+        name: "西格莉卡",
+        cvName: "配音者",
+        cvUrl: "https://example.com/cv",
+        portrait: "/assets/sigrika_centered.webp",
+        skill: { name: "星辉符文", description: "抹除交叉点。", cost: 3 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      onClose: () => {}
+    }));
+    const noCvHtml = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "denia",
+        name: "达妮娅",
+        portrait: "/assets/Danea_centered.webp",
+        skill: { name: "染秽", description: "翻转棋子。", cost: 3 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      onClose: () => {}
+    }));
+    const unsafeLinkHtml = renderToStaticMarkup(createElement(CharacterDetailDialog, {
+      character: {
+        id: "aemeath",
+        name: "爱弥斯",
+        cvName: "配音者",
+        cvUrl: "javascript:alert(1)",
+        portrait: "/assets/Aemeath_centered.webp",
+        skill: { name: "小爱出击", description: "隐藏手。", cost: 0 }
+      },
+      detailOwned: true,
+      itemEffects: {},
+      onClose: () => {}
+    }));
+    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
+
+    expect(html).toContain("character-detail-title-line");
+    expect(html).toContain("class=\"character-cv-label\"");
+    expect(html).toContain("CV：配音者");
+    expect(html).toContain("href=\"https://example.com/cv\"");
+    expect(html).toContain("target=\"_blank\"");
+    expect(html).toContain("rel=\"noreferrer\"");
+    expect(noCvHtml).not.toContain("character-cv-label");
+    expect(unsafeLinkHtml).toContain("<span class=\"character-cv-label\">CV：配音者</span>");
+    expect(unsafeLinkHtml).not.toContain("javascript:alert");
+    expect(css).toContain(".character-detail-title-line");
+    expect(css).toContain("align-items: baseline;");
+    expect(css).toMatch(/\.character-cv-label\s*\{[^}]*display:\s*block;[^}]*color:\s*inherit;[^}]*text-decoration:\s*none;[^}]*transform:\s*none;[^}]*white-space:\s*nowrap;/s);
+    expect(css).toContain(".character-cv-label:link");
+    expect(css).toContain(".character-cv-label:visited");
+    expect(css).toMatch(/\.character-cv-label:visited,\s*\.character-cv-label:hover,\s*\.character-cv-label:active\s*\{[^}]*filter:\s*none;[^}]*transform:\s*none;/s);
+    expect(css).toContain(".character-cv-label:focus-visible");
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    expect(brightSchoolCss).toMatch(/\.character-cv-label\s*\{[^}]*min-height:\s*0\s*!important;/s);
+  });
+
   it("renders the character skill BGM player in the detail heading", () => {
     const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
       character: {
@@ -559,6 +620,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("grid-template-columns: minmax(0, 1fr) minmax(150px, 188px);");
     expect(css).toContain("padding-right: calc(var(--modal-close-size, 44px) + 12px);");
     expect(css).toContain("background-color: transparent;");
+    expect(css).toContain(".character-detail-title-line");
     expect(css).toMatch(/\.character-detail-heading h3\s*\{[^}]*white-space:\s*nowrap;[^}]*word-break:\s*keep-all;[^}]*writing-mode:\s*horizontal-tb;/s);
     expect(css).toContain("width: 188px;");
     expect(css).toContain("height: 38px;");
@@ -583,13 +645,16 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolDesktopCss).toContain("border: 0 !important");
     expect(brightSchoolDesktopCss).toContain(".character-music-toggle::before");
     expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px);");
+    expect(phoneCss).toContain("flex-direction: column;");
     expect(phoneCss).toContain("width: min(164px, 48vw);");
     expect(phoneCss).toContain("justify-self: end;");
     expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px) !important");
+    expect(finalMobileCss).toContain("flex-direction: column !important");
     expect(finalMobileCss).toContain("padding-right: 0 !important");
     expect(finalMobileCss).toContain("width: min(164px, 48vw) !important");
     expect(finalMobileCss).toContain("writing-mode: horizontal-tb !important");
     expect(brightSchoolMobileCss).toContain(".character-detail-heading h3");
+    expect(brightSchoolMobileCss).toContain(".character-cv-label");
     expect(brightSchoolMobileCss).toContain("white-space: nowrap !important");
     expect(brightSchoolMobileCss).toContain("text-align: left !important");
   });

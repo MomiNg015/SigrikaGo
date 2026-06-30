@@ -104,7 +104,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
 
   useEffect(() => {
     if (tab !== "onboarding") return;
-    refreshCharacters();
+    Promise.all([refreshCharacters(), refreshShopItems()]);
   }, [tab, token]);
 
   useEffect(() => {
@@ -347,7 +347,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
       )}
       {tab === "recruitment" && <AdminRecruitmentSettings token={token} onNotice={notify} />}
       {tab === "announcements" && <AdminAnnouncements token={token} onNotice={notify} />}
-      {tab === "onboarding" && <AdminOnboardingStory token={token} characters={adminCharacters} onNotice={notify} />}
+      {tab === "onboarding" && <AdminOnboardingStory token={token} characters={adminCharacters} items={shopItems.filter((item) => item.category === "item")} onNotice={notify} />}
       {tab === "mailbox" && (
         <AdminMailbox
           token={token}

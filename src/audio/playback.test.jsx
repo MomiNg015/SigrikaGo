@@ -11,6 +11,7 @@ import {
   recoverBackgroundPlayback,
   resumeBackgroundContextWithFallback,
   speakText,
+  stopBackgroundPlayback,
   stopVoicePlayback
 } from "./playback.jsx";
 
@@ -215,6 +216,37 @@ describe("background music resume fallback", () => {
     expect(state.offset).toBe(16);
     expect(state.active).toEqual([]);
     expect(stopped).toEqual(["source"]);
+  });
+
+  it("stops background playback state when the BackgroundMusic owner unmounts", () => {
+    const stopped = [];
+    const paused = [];
+    const disconnected = [];
+    const state = {
+      active: [{
+        gain: { disconnect: () => disconnected.push("gain") },
+        sources: [{ stop: () => stopped.push("source") }]
+      }],
+      currentTrack: { id: "battle" },
+      generation: 3,
+      htmlFallback: {
+        audio: { pause: () => paused.push("fallback") },
+        src: "/assets/music/battle.ogg"
+      },
+      offset: 9,
+      retry: null
+    };
+
+    stopBackgroundPlayback(state);
+
+    expect(state.generation).toBe(4);
+    expect(state.currentTrack).toBeNull();
+    expect(state.offset).toBe(0);
+    expect(state.active).toEqual([]);
+    expect(state.htmlFallback).toBeNull();
+    expect(stopped).toEqual(["source"]);
+    expect(paused).toEqual(["fallback"]);
+    expect(disconnected).toEqual(["gain"]);
   });
 
   it("ignores procedural browser sounds when audio browser APIs are unavailable", () => {

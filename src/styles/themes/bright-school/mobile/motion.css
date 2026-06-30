@@ -39,10 +39,13 @@
     .replay-table-row,
     .friends-row,
     .watch-room-row,
-    .mobile-tab-button,
-    .point
-  ):active,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.touch-confirming {
+    .mobile-tab-button
+  ):active {
     transform: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.previewable:active,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .point.touch-confirming {
+    transform: translate(-50%, -50%) !important;
   }
 }

@@ -15,7 +15,7 @@
 
 ### Admin Deployment Defaults
 
-Non-user admin deployment defaults live in `server/adminDefaultSnapshot.js`, generated from the local `prisma/dev.db` admin configuration. `seedAdminDefaultConfig()` runs during startup after schema guards and before built-in seeders; it synchronizes existing and missing non-user admin rows to the committed deployment snapshot, so cloud deployments receive the current site settings, character/skill descriptions and system messages, decorations, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, and recruitment-related admin defaults. User accounts, user-owned assets, purchases, feedback, reports, audit logs, analytics events, mailbox history, game records, and live-room state are intentionally outside this snapshot.
+Non-user admin deployment defaults live in `server/adminDefaultSnapshot.js`, generated from the local `prisma/dev.db` admin configuration. `seedAdminDefaultConfig()` runs during startup after schema guards and before built-in seeders; it synchronizes existing and missing non-user admin rows to the committed deployment snapshot, so cloud deployments receive the current site settings, character/skill descriptions and system messages, decorations, shop items, gacha pools/prizes, achievement rewards/achievements, music display names, and recruitment-related admin defaults. User accounts, user-owned assets, purchases, feedback, reports, audit logs, analytics events, mailbox history, game records, and live-room state are intentionally outside this snapshot. For existing characters, startup preserves saved `cvName`/`cvUrl` when the committed snapshot omits those fields; for existing shop items, startup preserves saved `illustName`/`illustUrl` when the committed snapshot omits those fields. Snapshots that explicitly declare those metadata fields still sync them.
 
 ### User
 
@@ -128,6 +128,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `palette`: 代表色。
 - `acquisitionMethod`: 获得途径纯文本，显示在棋舍角色详情中。
 - `description`: 角色描述纯文本，显示在棋舍角色详情的获得途径下方，以紫色斜体正文展示且不额外显示字段标签，可由后台角色管理编辑；空值会回退到内置角色默认描述。
+- `cvName`, `cvUrl`: 角色配音人员展示信息。后台角色管理可填写 CV 名称和可选链接；`cvUrl` 只接受 `http://`、`https://` 或站内 `/...` 路径，并且必须与非空 `cvName` 同时存在。公开角色 payload 会透传这两个字段，棋舍角色详情在空名称时隐藏标签。
 - `enabled`: 是否启用。
 - `sortOrder`: 排序。
 - `skill`: 一对一 `CharacterSkill`。
@@ -187,7 +188,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 
 - `id`: 主键 cuid。
 - `name`: 商品名。
-- `category`: `character`、`item` 或 `decoration`。
+- `category`: `character`、`item`、`decoration` 或 `music`。
 - `targetId`: 商品对应角色 slug、道具 slug 或装饰 slug。
 - `itemTargetType`: 道具目标类型，`self` 表示用户自己，`character` 表示需要选择拥有角色；非道具商品忽略。
 - `stockQuantity`: 道具商店库存上限，`-1` 表示不限量，`0` 表示对每个用户均售罄，正整数表示每个用户可购买次数；非道具商品忽略。
@@ -198,6 +199,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `sortOrder`: 排序。
 - `description`: 描述。
 - `imageUrl`: 图片地址。
+- `illustName`, `illustUrl`: 商品图插画署名。后台商品管理可填写 illust 名称和可选链接；`illustUrl` 只接受 `http://`、`https://` 或站内 `/...` 路径，并且必须与非空 `illustName` 同时存在。公开商城 payload 会透传这两个字段，商品详情在空名称时隐藏标签。
 - `createdAt`, `updatedAt`: 创建和更新时间。
 
 ### AdminAuditLog
@@ -255,7 +257,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `UserAchievement` 记录用户已达成状态，包含 `achievedAt` 与 `rewardGrantedAt`，并以 `userId + achievementId` 保证幂等。`AchievementCounter` 保存上线后计数型指标，如购买次数、抽卡次数、登录天数或触发事件累计；可从历史数据回溯的对局、胜场、角色胜率、拥有资产数量等由 `server/achievements.js` 实时聚合。
 - `UserAchievementEquipment` 保存用户当前装备的 `titleAssetId`、`badgeAssetId` 和 `nameplateAssetId`。更新装备时只允许选择该用户已达成成就解锁的对应类型奖励资产。
 - 用户资料与装备接口除返回 `achievementEquipment` id 外，还会返回当前槽位对应的 `achievementEquipmentAssets` / `equipmentAssets`，让前端无需再次查表即可渲染称号、徽章和用户名背景图片。`attachAchievementEquipmentAssetsToUsers` 用于批量装饰用户列表，socket 登录用户、排行榜用户和社交用户列表/资料都走这条路径，确保任何拿到完整用户对象的用户名展示点具备同一套个性化资产。
-- `ensureAchievementSchema` 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 `Character`、`Decoration`、`ShopItem` 添加 `source` 字段；`server/serverStartup.js` 会在角色与商店种子任务之前执行该 guard，避免 Prisma 在旧库缺少 `source` 列时先读取这些模型。
+- `ensureAchievementSchema` 是旧 SQLite 兼容入口，负责创建成就相关表和索引，并为 `Character` 添加 `source`、`cvName`、`cvUrl` 字段，为 `Decoration` 添加 `source` 字段，为 `ShopItem` 添加 `source`、`illustName`、`illustUrl` 字段；`server/serverStartup.js` 会在角色与商店种子任务之前执行该 guard，避免 Prisma 在旧库缺少这些列时先读取这些模型。
 
 ## Mailbox Data Model
 
@@ -267,13 +269,13 @@ Character-target inventory item use loads structured `userCharacters` and valida
 
 ## Story Script Data Model
 
-- `StoryScript` is the generic剧情脚本 table. It is keyed by stable `key`, stores a display `title`, a controlled `triggerType`, structured trigger params serialized in `triggerParamsJson`, draft graph JSON (`draftStartNodeId`, `draftNodesJson`), optional published graph JSON (`publishedStartNodeId`, `publishedNodesJson`), publish timestamps, and normal create/update timestamps.
+- `StoryScript` is the generic剧情脚本 and local tutorial script table. It is keyed by stable `key`, stores a display `title`, a controlled `triggerType`, structured trigger params serialized in `triggerParamsJson`, draft graph JSON (`draftStartNodeId`, `draftInitialBoardJson`, `draftNodesJson`), optional published graph JSON (`publishedStartNodeId`, `publishedInitialBoardJson`, `publishedNodesJson`), publish timestamps, and normal create/update timestamps. `initialBoard` is structured as `{ mode, stones[] }`, where each stone has `pointId` and `color`; tutorial nodes use `type` values such as `story`, `board-setup`, `npc-dialogue`, `player-choice`, `player-move`, `npc-move`, `player-skill`, `npc-skill`, counting markers, and `resign`. `board-setup` stays inside node JSON and may carry a node-local `boardSetup` snapshot plus local battle scene fields (`playerColor`, optional `playerCharacterId`, `npcCharacterId`, `npcName`, `entryText`); this supports multiple branch-specific starting positions without a new table or DSL. Teaching battle timing and interaction metadata is also node JSON: NPC nodes may preserve `actionStartDelaySeconds`, `replyDelaySeconds`, `autoContinueDelaySeconds`, `actor`, `skillCharacterId`, dialogue text, and ordinary `options` targets. This is still the existing nodes/nextNodeId/options graph contract, not a new DSL.
 - Story nodes are still stored as normalized JSON because each script is a small ordered dialogue graph rather than a query-heavy entity. The service layer validates node ids, speaker/character metadata, text, default next-node links, option labels, and option target ids before publishing.
 - Supported MVP trigger types are `onboarding` and `item-character-use`; `battle-tutorial-start` is reserved as a future naming boundary for local teaching battle scenes. `item-character-use` trigger params require exact `{ itemId, characterId }`; `onboarding` and the reserved battle trigger currently require no params.
 - At publish time the server permits only one published script for the same trigger type and normalized trigger params. This keeps item-character interactions deterministic: using rainbow bean candy on Denia can resolve to at most one published script.
 - `OnboardingStoryScript` remains in the schema as a legacy singleton compatibility source keyed by `id = "singleton"`. `seedDefaultStoryScripts()` migrates a valid published legacy onboarding script into `StoryScript(key="onboarding.default")` only when the generic key is missing; it does not overwrite admin edits.
-- `User.onboardingRequired` defaults to `false` for historical users and is set to `true` when a new user registers after the feature is available. `User.onboardingAutoShownAt` is null until the automatic story modal is opened successfully from the home view. Recording auto-shown sets `onboardingRequired = false` and writes `onboardingAutoShownAt` once; completion, skip, browser refresh, or later manual replay do not reopen the automatic story.
-- The generic schema is backed by migration `202606280003_add_story_scripts` and startup guard `ensureStoryScriptSchema()`. The onboarding touch fields and legacy table remain backed by `202606280002_add_onboarding_story` and `ensureOnboardingStorySchema()`.
+- `User.onboardingRequired` defaults to `false` for historical users and is set to `true` when a new user registers after the feature is available. `User.onboardingAutoShownAt` is null until the automatic story/tutorial modal is opened successfully from the home view. Recording auto-shown sets `onboardingRequired = false` and writes `onboardingAutoShownAt` once; `User.onboardingCompletedAt` is written only by the explicit completion endpoint. Closing, skipping, browser refresh, or later manual replay do not count as completion and do not reopen the automatic story once auto-shown has been recorded.
+- The generic schema is backed by migration `202606280003_add_story_scripts`, the tutorial initial-board migration `202606290001_add_story_tutorial_initial_board`, and startup guard `ensureStoryScriptSchema()`. The onboarding touch/completion fields and legacy table are backed by `202606280002_add_onboarding_story`, `202606290002_add_onboarding_completed_at`, and `ensureOnboardingStorySchema()`.
 
 ## Source-Scoped Asset Sync
 

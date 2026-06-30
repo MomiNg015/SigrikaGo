@@ -119,20 +119,48 @@ export default function App() {
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
-  const [activeStoryPlayer, setActiveStoryPlayer] = useState({ script: null, labels: null });
-  const openStoryPlayer = useCallback((script, labels = null) => {
+  const [activeStoryPlayer, setActiveStoryPlayer] = useState({ script: null, labels: null, onComplete: null });
+  const [tutorialBattleSession, setTutorialBattleSession] = useState(null);
+  const openStoryPlayer = useCallback((script, labels = null, options = {}) => {
     setShowOnboardingStory(false);
-    setActiveStoryPlayer({ script, labels });
+    setActiveStoryPlayer({ script, labels, onComplete: options.onComplete ?? null });
     setShowStoryPlayer(true);
   }, [setShowOnboardingStory, setShowStoryPlayer]);
   const clearStoryPlayer = useCallback(() => {
-    setActiveStoryPlayer({ script: null, labels: null });
+    setActiveStoryPlayer({ script: null, labels: null, onComplete: null });
   }, []);
   const closeStoryPlayerOverlay = useCallback(() => {
     setShowOnboardingStory(false);
     setShowStoryPlayer(false);
     clearStoryPlayer();
   }, [clearStoryPlayer, setShowOnboardingStory, setShowStoryPlayer]);
+  const openTutorialBattleSession = useCallback((session) => {
+    setShowOnboardingStory(false);
+    setShowStoryPlayer(false);
+    setTutorialBattleSession({
+      ...session,
+      returnView: view === "tutorial-battle" ? "home" : view
+    });
+    setView("tutorial-battle");
+  }, [setShowOnboardingStory, setShowStoryPlayer, view]);
+  const closeTutorialBattleSession = useCallback(() => {
+    const nextView = tutorialBattleSession?.returnView && tutorialBattleSession.returnView !== "tutorial-battle"
+      ? tutorialBattleSession.returnView
+      : "home";
+    setTutorialBattleSession(null);
+    setView(nextView);
+    clearStoryPlayer();
+  }, [clearStoryPlayer, tutorialBattleSession]);
+  const exitTutorialBattleToStory = useCallback(({ script: nextScript, labels = null, onComplete: nextOnComplete = null } = {}) => {
+    const nextView = tutorialBattleSession?.returnView && tutorialBattleSession.returnView !== "tutorial-battle"
+      ? tutorialBattleSession.returnView
+      : "home";
+    setTutorialBattleSession(null);
+    setView(nextView);
+    if (nextScript) {
+      openStoryPlayer(nextScript, labels, { onComplete: nextOnComplete });
+    }
+  }, [openStoryPlayer, tutorialBattleSession]);
   const showAchievementUnlocks = useCallback((unlocks = []) => {
     for (const unlock of unlocks) {
       showToast(`达成成就：${unlock.name}`, "achievement");
@@ -408,6 +436,10 @@ export default function App() {
         socket={socket}
         startMatch={startMatch}
         token={token}
+        tutorialBattleSession={tutorialBattleSession}
+        onTutorialBattleClose={closeTutorialBattleSession}
+        onTutorialBattleComplete={tutorialBattleSession?.onComplete}
+        onTutorialBattleExitToStory={exitTutorialBattleToStory}
         updateUser={updateUser}
         user={user}
         view={view}
@@ -428,6 +460,7 @@ export default function App() {
         onMessageSubmitted={() => showToast("感谢您的反馈！", "success")}
         onAnnouncementSummaryChange={refreshAnnouncementSummary}
         onStoryPlayerClose={closeStoryPlayerOverlay}
+        onEnterTutorialBattle={openTutorialBattleSession}
         onRemoveToast={removeToast}
         onRecruitmentStatusChange={handleRecruitmentStatusChange}
         onResultClose={closeResultModal}

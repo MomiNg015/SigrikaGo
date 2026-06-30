@@ -353,7 +353,7 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain("pointer-events: none !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry::before");
     expect(themesCss).not.toContain('content: "匹配对局" !important');
-    expect(themesCss).not.toContain('content: "鍖归厤瀵瑰眬" !important');
+    expect(themesCss).not.toContain('content: "\u9356\u5f52\u53a4\u7035\u7470\u772c" !important');
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active");
     expect(themesCss).toContain("transform: translateY(1px) scale(0.985) !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title");

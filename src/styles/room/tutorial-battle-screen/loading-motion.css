@@ -1,0 +1,88 @@
+.tutorial-battle-preload-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100200;
+  pointer-events: auto;
+}
+
+.tutorial-battle-preload-overlay .asset-preload-screen {
+  min-height: 100dvh;
+  width: 100vw;
+  padding: 0;
+  background:
+    linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.92));
+}
+
+@keyframes tutorial-choice-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tutorial-battle-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateX(-18px) scaleX(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+@keyframes tutorial-battle-bubble-out {
+  from {
+    opacity: 1;
+    transform: translateX(0) scaleX(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-18px) scaleX(0.96);
+  }
+}
+
+@keyframes tutorial-target-pulse {
+  0%,
+  100% {
+    opacity: 0.78;
+    transform: translate(-50%, -50%) scale(0.95);
+    box-shadow:
+      0 0 0 4px rgba(255, 210, 77, 0.22),
+      0 0 16px rgba(255, 210, 77, 0.78),
+      0 0 30px rgba(245, 158, 11, 0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow:
+      0 0 0 7px rgba(255, 210, 77, 0.34),
+      0 0 24px rgba(255, 210, 77, 1),
+      0 0 46px rgba(245, 158, 11, 0.72);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-battle-choice button,
+  .tutorial-battle-continue,
+  .tutorial-battle-action,
+  .tutorial-action-bar button {
+    transition: none;
+  }
+
+  .tutorial-battle-dialogue,
+  .tutorial-battle-dialogue.closing,
+  .tutorial-battle-choice-scrim,
+  .board .point.tutorial-target-point .tutorial-target-ring,
+  .tutorial-action-bar .tutorial-highlight-action {
+    animation: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .tutorial-battle-dialogue {
+    width: min(360px, calc(100vw - 32px));
+  }
+}

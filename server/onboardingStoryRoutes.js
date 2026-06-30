@@ -1,13 +1,15 @@
 import express from "express";
 import {
   getPlayerOnboardingStory,
-  markOnboardingAutoShown
+  markOnboardingAutoShown,
+  markOnboardingCompleted
 } from "./onboardingStory.js";
 
 export function createOnboardingStoryRouteHandlers({
   prisma,
   getPlayerOnboardingStoryFn = getPlayerOnboardingStory,
-  markOnboardingAutoShownFn = markOnboardingAutoShown
+  markOnboardingAutoShownFn = markOnboardingAutoShown,
+  markOnboardingCompletedFn = markOnboardingCompleted
 }) {
   async function getStory(req, res) {
     try {
@@ -25,7 +27,15 @@ export function createOnboardingStoryRouteHandlers({
     }
   }
 
-  return { getStory, markAutoShown };
+  async function markCompleted(req, res) {
+    try {
+      res.json(await markOnboardingCompletedFn({ prisma, user: req.user }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  }
+
+  return { getStory, markAutoShown, markCompleted };
 }
 
 export function createOnboardingStoryRouter(deps) {
@@ -33,6 +43,7 @@ export function createOnboardingStoryRouter(deps) {
   const handlers = createOnboardingStoryRouteHandlers(deps);
   router.get("/onboarding-story", handlers.getStory);
   router.post("/onboarding-story/auto-shown", handlers.markAutoShown);
+  router.post("/onboarding-story/completed", handlers.markCompleted);
   return router;
 }
 

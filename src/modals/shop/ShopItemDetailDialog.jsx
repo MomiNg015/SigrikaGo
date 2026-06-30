@@ -1,4 +1,5 @@
 import { Package, ShoppingBag, X } from "lucide-react";
+import { normalizeShopItemIllustName, normalizeShopItemIllustUrl } from "../../shared/shopItemIllust.js";
 import { getStoneDecoration } from "../../shared/stoneDecorations.js";
 import StoneDecorationPreview from "../StoneDecorationPreview.jsx";
 import { getShopItemDescription } from "../shopModalHelpers.js";
@@ -12,6 +13,9 @@ export default function ShopItemDetailDialog({ item, user, onClose }) {
   if (!item) return null;
   const decoration = item.category === "decoration" ? getStoneDecoration(item.targetId) : null;
   const owned = getShopItemDetailOwned(item, user);
+  const illustName = normalizeShopItemIllustName(item.illustName);
+  const illustUrl = normalizeShopItemIllustUrl(item.illustUrl);
+  const illustLabel = illustName ? `illust：${illustName}` : "";
 
   return (
     <div className="nested-modal-backdrop shop-detail-backdrop" onClick={onClose}>
@@ -26,7 +30,14 @@ export default function ShopItemDetailDialog({ item, user, onClose }) {
         </div>
         <div className="shop-detail-copy">
           <span className="shop-detail-category">{getShopCategoryLabel(item.category)}</span>
-          <h3>{item.name}</h3>
+          <div className="shop-detail-title-row">
+            <h3>{item.name}</h3>
+            {illustLabel && (illustUrl ? (
+              <a className="shop-detail-illust-label" href={illustUrl} target="_blank" rel="noreferrer">{illustLabel}</a>
+            ) : (
+              <span className="shop-detail-illust-label">{illustLabel}</span>
+            ))}
+          </div>
           <p>{getShopItemDescription(item)}</p>
           <dl className="shop-detail-stats">
             <div className={owned ? "shop-detail-status-owned" : ""}>

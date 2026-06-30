@@ -83,6 +83,7 @@ export default function AssetPreloadScreen({
   loadingLinesText = DEFAULT_SITE_SETTINGS.characterLoadingLines,
   progress,
   statusText = "",
+  showTips = true,
   tipsText
 }) {
   const percent = Math.round(Math.max(0, Math.min(1, progress)) * 100);
@@ -151,7 +152,7 @@ export default function AssetPreloadScreen({
         <div className="preload-bar" aria-label={"\u8d44\u6e90\u52a0\u8f7d " + percent + "%"}>
           <span style={{ width: `${percent}%` }} />
         </div>
-        {currentTip && <p className="preload-tip" aria-live="polite">{currentTip}</p>}
+        {showTips && currentTip && <p className="preload-tip" aria-live="polite">{currentTip}</p>}
       </section>
     </main>
   );

@@ -1,0 +1,49 @@
+.portrait-wrap.no-character {
+  width: 100%;
+  height: var(--side-portrait);
+  min-height: var(--side-portrait);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.9), rgba(226, 232, 240, 0.82));
+}
+
+.portrait-wrap.no-character::after {
+  content: "";
+  width: 42%;
+  height: 42%;
+  border: 2px solid rgba(100, 116, 139, 0.32);
+  border-radius: 999px;
+}
+
+.tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character {
+  height: calc(var(--side-portrait) + 4px);
+  min-height: calc(var(--side-portrait) + 4px);
+}
+
+.tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character.black-portrait {
+  background: #2b2b2b;
+}
+
+.tutorial-battle-screen-stage .mobile-battle-layout .portrait-wrap.no-character.black-portrait {
+  background: #2b2b2b;
+}
+
+.tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character.white-portrait {
+  background: #ffffff;
+}
+
+.tutorial-battle-screen-stage .mobile-battle-layout .portrait-wrap.no-character.white-portrait {
+  background: #ffffff;
+}
+
+.tutorial-battle-screen-stage .battle-layout .portrait-wrap.no-character.black-portrait::after {
+  border-color: rgba(255, 255, 255, 0.42);
+}
+
+.tutorial-battle-screen-stage .mobile-battle-layout .portrait-wrap.no-character.black-portrait::after {
+  border-color: rgba(255, 255, 255, 0.42);
+}
+
+.mobile-room-screen .portrait-wrap.no-character {
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
+}

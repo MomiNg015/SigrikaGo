@@ -2,6 +2,7 @@ import AdminConsole from "../admin/AdminConsole.jsx";
 import AuthScreen from "../auth/AuthScreen.jsx";
 import HomeScreen from "../home/HomeScreen.jsx";
 import RoomScreen from "../room/RoomScreen.jsx";
+import TutorialBattleScreen from "../tutorial/TutorialBattleScreen.jsx";
 import { playUiHouseOpenSound, playUiMatchOpenSound, playUiRecruitmentOpenSound, playUiShopOpenSound } from "../audio/playback.jsx";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
 import BattleAssetPreloadScreen from "./BattleAssetPreloadScreen.jsx";
@@ -60,6 +61,10 @@ export default function AppRoutes({
   socket,
   startMatch,
   token,
+  tutorialBattleSession,
+  onTutorialBattleClose,
+  onTutorialBattleComplete,
+  onTutorialBattleExitToStory,
   updateUser,
   user,
   view,
@@ -193,6 +198,22 @@ export default function AppRoutes({
           progress={assetProgress}
           statusText="正在恢复对局..."
           tipsText={siteSettings.preloadTips}
+        />
+      )}
+      {view === "tutorial-battle" && tutorialBattleSession && user && (
+        <TutorialBattleScreen
+          audioSettings={audioSettings}
+          characters={characters}
+          musicTracks={musicTracks}
+          session={tutorialBattleSession}
+          siteSettings={siteSettings}
+          user={user}
+          onClose={onTutorialBattleClose}
+          onComplete={onTutorialBattleComplete}
+          onExitToStory={onTutorialBattleExitToStory}
+          onOpenMessageBoard={() => setShowMessageBoard(true)}
+          onOpenSettings={() => setShowSettings(true)}
+          onToast={onToast}
         />
       )}
     </>

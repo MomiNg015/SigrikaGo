@@ -9,6 +9,7 @@ import {
   decorationDraftToBody,
   emptyCharacterDraft,
   emptyGachaPoolDraft,
+  emptyShopItemDraft,
   gachaPoolDraftToBody,
   parseAdminInteger,
   shopCategoryLabel,
@@ -19,6 +20,8 @@ import {
 describe("admin draft helpers", () => {
   it("builds character drafts with safe skill defaults", () => {
     expect(emptyCharacterDraft().skill.systemMessage).toBe(DEFAULT_SKILL_SYSTEM_MESSAGE);
+    expect(emptyCharacterDraft().cvName).toBe("");
+    expect(emptyCharacterDraft().cvUrl).toBe("");
     expect(targetRuleForEffect("flip-stone")).toBe("stone");
     expect(targetRuleForEffect("erase-point")).toBe("empty-point");
 
@@ -27,6 +30,8 @@ describe("admin draft helpers", () => {
       dbId: "character-1",
       name: "Danea",
       description: "Moonlit tactician",
+      cvName: "Sample CV",
+      cvUrl: "https://example.com/cv",
       portrait: "/assets/danea.png",
       acquisitionMethod: "商城购买",
       skill: { effectType: "flip-stone", params: { radius: 1 } }
@@ -34,6 +39,8 @@ describe("admin draft helpers", () => {
 
     expect(draft.slug).toBe("danea");
     expect(draft.description).toBe("Moonlit tactician");
+    expect(draft.cvName).toBe("Sample CV");
+    expect(draft.cvUrl).toBe("https://example.com/cv");
     expect(draft.acquisitionMethod).toBe("商城购买");
     expect(draft.skill.targetRule).toBe("stone");
     expect(draft.skill.paramsJson).toBe("{\"radius\":1}");
@@ -46,6 +53,8 @@ describe("admin draft helpers", () => {
       slug: "new-character",
       name: "New Character",
       description: "New character description",
+      cvName: "Voice Actor",
+      cvUrl: "/voice/actor",
       portraitUrl: "/assets/new.png",
       acquisitionMethod: "商城购买",
       sortOrder: "2",
@@ -60,9 +69,13 @@ describe("admin draft helpers", () => {
 
     expect(characterDraftToBody(draft).skill.costValue).toBe("3");
     expect(characterDraftToBody(draft).description).toBe("New character description");
+    expect(characterDraftToBody(draft).cvName).toBe("Voice Actor");
+    expect(characterDraftToBody(draft).cvUrl).toBe("/voice/actor");
     expect(characterDraftToBody(draft).acquisitionMethod).toBe("商城购买");
     expect(characterDraftToBody({ ...draft, skill: { ...draft.skill, uses: "10" } })).toBeNull();
     expect(characterDraftToBody({ ...draft, skill: { ...draft.skill, costValue: "three" } })).toBeNull();
+    expect(characterDraftToBody({ ...draft, cvUrl: "javascript:alert(1)" })).toBeNull();
+    expect(characterDraftToBody({ ...draft, cvName: "", cvUrl: "https://example.com/cv" })).toBeNull();
   });
 
   it("preserves the skill enabled flag in character drafts", () => {
@@ -175,21 +188,29 @@ describe("admin draft helpers", () => {
   });
 
   it("validates shop and decoration drafts", () => {
+    expect(emptyShopItemDraft().illustName).toBe("");
+    expect(emptyShopItemDraft().illustUrl).toBe("");
     const shop = buildShopItemDraft({
       name: "Danea",
       targetId: "danea",
       priceCoins: "100",
       discountPercent: "20",
-      sortOrder: "1"
+      sortOrder: "1",
+      illustName: "  Artist  ",
+      illustUrl: "/credits/artist"
     });
     const validated = validateShopItemDraft(shop);
 
     expect(validated.ok).toBe(true);
     expect(validated.value.priceCoins).toBe(100);
     expect(validated.value.discountPercent).toBe(20);
+    expect(validated.value.illustName).toBe("Artist");
+    expect(validated.value.illustUrl).toBe("/credits/artist");
     expect(shopCategoryLabel("decoration")).toBe("装饰");
     expect(shopCategoryLabel("item")).toBe("道具");
     expect(validateShopItemDraft({ ...shop, discountPercent: "101" }).ok).toBe(false);
+    expect(validateShopItemDraft({ ...shop, illustUrl: "javascript:alert(1)" }).ok).toBe(false);
+    expect(validateShopItemDraft({ ...shop, illustName: "", illustUrl: "https://example.com/artist" }).ok).toBe(false);
 
     expect(decorationDraftToBody(buildDecorationDraft({
       slug: "moon-frame",

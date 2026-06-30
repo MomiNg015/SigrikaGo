@@ -1,5 +1,6 @@
 /* Final mobile adaptation pass for 320px-768px devices. */
 @import "./mobile-adaptive/desktop-home-footer.css";
+@import "./mobile-adaptive/admin-fullscreen.css";
 @import "./mobile-adaptive/phone-core.css";
 @import "./mobile-adaptive/phone-character-detail-music.css";
 @import "./mobile-adaptive/phone-gacha.css";

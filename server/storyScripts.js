@@ -1,5 +1,13 @@
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
+import { normalizeSkillConfig } from "../src/shared/gameSkills.js";
+import { isPlayerColor } from "../src/shared/gameConstants.js";
 import { normalizeStoryNodeEffect } from "../src/shared/storyPresentation.js";
+import {
+  TUTORIAL_NODE_TYPES,
+  isStoryNodeType,
+  nodeTypeRequiresPoint,
+  normalizeTutorialNodeType
+} from "../src/shared/tutorialNodeTypes.js";
 import { routeError } from "./adminRouteErrors.js";
 import { writeAudit } from "./adminAudit.js";
 import { RAINBOW_BEAN_CANDY_ID } from "./itemEffects.js";
@@ -38,8 +46,20 @@ const ERRORS = Object.freeze({
   invalidNodeEffect: "剧情节点效果无效",
   invalidOptionRevealDelay: "选项出现时间必须是非负数字",
   endingRequired: "至少需要一个结束节点",
-  triggerConflict: "同一个触发点只能发布一个剧情脚本"
+  triggerConflict: "同一个触发点只能发布一个剧情脚本",
+  scriptNotFound: "剧情脚本不存在",
+  systemScriptProtected: "系统剧情脚本不能删除",
+  publishedScriptDeleteDenied: "已发布剧情脚本请先停用后再删除"
 });
+
+const TUTORIAL_ERRORS = Object.freeze({
+  invalidNodeType: "剧情节点类型无效",
+  pointRequired: "教学节点坐标不能为空",
+  boardSetupRequired: "教学局面步骤必须配置棋盘局面",
+  colorRequired: "教学节点颜色无效"
+});
+
+const TUTORIAL_SKILL_REQUIRED_ERROR = "教学技能 ID 无效";
 
 export async function ensureStoryScriptSchema(client) {
   if (!client?.$executeRawUnsafe) return;
@@ -51,9 +71,11 @@ export async function ensureStoryScriptSchema(client) {
       "triggerType" TEXT NOT NULL,
       "triggerParamsJson" TEXT NOT NULL DEFAULT '{}',
       "draftStartNodeId" TEXT NOT NULL DEFAULT '',
+      "draftInitialBoardJson" TEXT NOT NULL DEFAULT '',
       "draftNodesJson" TEXT NOT NULL DEFAULT '[]',
       "isPublished" BOOLEAN NOT NULL DEFAULT false,
       "publishedStartNodeId" TEXT NOT NULL DEFAULT '',
+      "publishedInitialBoardJson" TEXT NOT NULL DEFAULT '',
       "publishedNodesJson" TEXT NOT NULL DEFAULT '[]',
       "firstPublishedAt" DATETIME,
       "publishedAt" DATETIME,
@@ -61,8 +83,20 @@ export async function ensureStoryScriptSchema(client) {
       "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  await addColumnIfMissing(client, "StoryScript", "draftInitialBoardJson", 'ALTER TABLE "StoryScript" ADD COLUMN "draftInitialBoardJson" TEXT NOT NULL DEFAULT \'\'');
+  await addColumnIfMissing(client, "StoryScript", "publishedInitialBoardJson", 'ALTER TABLE "StoryScript" ADD COLUMN "publishedInitialBoardJson" TEXT NOT NULL DEFAULT \'\'');
   await client.$executeRawUnsafe('CREATE UNIQUE INDEX IF NOT EXISTS "StoryScript_key_key" ON "StoryScript"("key")');
   await client.$executeRawUnsafe('CREATE INDEX IF NOT EXISTS "StoryScript_triggerType_isPublished_idx" ON "StoryScript"("triggerType", "isPublished")');
+}
+
+async function addColumnIfMissing(client, tableName, columnName, sql) {
+  if (!client.$queryRawUnsafe) {
+    await client.$executeRawUnsafe(sql);
+    return;
+  }
+  const columns = await client.$queryRawUnsafe(`PRAGMA table_info("${tableName}")`);
+  if (columns.some((column) => column.name === columnName)) return;
+  await client.$executeRawUnsafe(sql);
 }
 
 export function validateStoryScriptInput(input = {}, { publishing = false } = {}) {
@@ -90,10 +124,11 @@ export function validateStoryScriptInput(input = {}, { publishing = false } = {}
 export function validateStoryContent(input = {}, { publishing = false } = {}) {
   if (!input || typeof input !== "object") throw routeError(400, ERRORS.invalidInput);
   const startNodeId = normalizeText(input.startNodeId);
+  const initialBoard = normalizeInitialBoard(input.initialBoard);
   const sourceNodes = Array.isArray(input.nodes) ? input.nodes : [];
   const nodes = sourceNodes.map(normalizeNode);
 
-  if (!publishing) return { startNodeId, nodes };
+  if (!publishing) return { startNodeId, initialBoard, nodes };
   if (!nodes.length) throw routeError(400, ERRORS.missingNodes);
 
   const nodeIds = new Set();
@@ -101,7 +136,11 @@ export function validateStoryContent(input = {}, { publishing = false } = {}) {
     if (!node.id) throw routeError(400, ERRORS.nodeIdRequired);
     if (nodeIds.has(node.id)) throw routeError(400, ERRORS.duplicateNodeId);
     nodeIds.add(node.id);
-    if (!node.text) throw routeError(400, ERRORS.textRequired);
+    if (isStoryNodeType(node.type) && !node.text) throw routeError(400, ERRORS.textRequired);
+    if (nodeTypeRequiresPoint(node.type) && !node.pointId) throw routeError(400, TUTORIAL_ERRORS.pointRequired);
+    if (node.type === TUTORIAL_NODE_TYPES.boardSetup && !node.boardSetup) throw routeError(400, TUTORIAL_ERRORS.boardSetupRequired);
+    if (nodeTypeRequiresSkill(node.type) && !normalizeSkillConfig(node.skillId || node.characterId)) throw routeError(400, TUTORIAL_SKILL_REQUIRED_ERROR);
+    if (node.color && !isPlayerColor(node.color)) throw routeError(400, TUTORIAL_ERRORS.colorRequired);
   }
 
   if (!startNodeId || !nodeIds.has(startNodeId)) throw routeError(400, ERRORS.missingStart);
@@ -127,7 +166,7 @@ export function validateStoryContent(input = {}, { publishing = false } = {}) {
   }
 
   if (!hasEnding) throw routeError(400, ERRORS.endingRequired);
-  return { startNodeId, nodes };
+  return { startNodeId, initialBoard, nodes };
 }
 
 export async function listAdminStoryScripts({ prisma }) {
@@ -155,6 +194,7 @@ export async function updateStoryScriptDraft({ prisma, adminUser, input }) {
         triggerType: normalized.triggerType,
         triggerParamsJson: JSON.stringify(normalized.triggerParams),
         draftStartNodeId: normalized.draft.startNodeId,
+        draftInitialBoardJson: JSON.stringify(normalized.draft.initialBoard ?? null),
         draftNodesJson: JSON.stringify(normalized.draft.nodes)
       },
       update: {
@@ -162,6 +202,7 @@ export async function updateStoryScriptDraft({ prisma, adminUser, input }) {
         triggerType: normalized.triggerType,
         triggerParamsJson: JSON.stringify(normalized.triggerParams),
         draftStartNodeId: normalized.draft.startNodeId,
+        draftInitialBoardJson: JSON.stringify(normalized.draft.initialBoard ?? null),
         draftNodesJson: JSON.stringify(normalized.draft.nodes)
       }
     });
@@ -191,9 +232,11 @@ export async function publishStoryScript({ prisma, adminUser, input }) {
         triggerType: normalized.triggerType,
         triggerParamsJson: JSON.stringify(normalized.triggerParams),
         draftStartNodeId: normalized.draft.startNodeId,
+        draftInitialBoardJson: JSON.stringify(normalized.draft.initialBoard ?? null),
         draftNodesJson: JSON.stringify(normalized.draft.nodes),
         isPublished: true,
         publishedStartNodeId: normalized.draft.startNodeId,
+        publishedInitialBoardJson: JSON.stringify(normalized.draft.initialBoard ?? null),
         publishedNodesJson: JSON.stringify(normalized.draft.nodes),
         firstPublishedAt: now,
         publishedAt: now
@@ -203,9 +246,11 @@ export async function publishStoryScript({ prisma, adminUser, input }) {
         triggerType: normalized.triggerType,
         triggerParamsJson: JSON.stringify(normalized.triggerParams),
         draftStartNodeId: normalized.draft.startNodeId,
+        draftInitialBoardJson: JSON.stringify(normalized.draft.initialBoard ?? null),
         draftNodesJson: JSON.stringify(normalized.draft.nodes),
         isPublished: true,
         publishedStartNodeId: normalized.draft.startNodeId,
+        publishedInitialBoardJson: JSON.stringify(normalized.draft.initialBoard ?? null),
         publishedNodesJson: JSON.stringify(normalized.draft.nodes),
         firstPublishedAt: before?.firstPublishedAt ?? now,
         publishedAt: now
@@ -216,9 +261,41 @@ export async function publishStoryScript({ prisma, adminUser, input }) {
   });
 }
 
+export async function unpublishStoryScript({ prisma, adminUser, key }) {
+  const normalizedKey = normalizeText(key);
+  if (!normalizedKey) throw routeError(400, ERRORS.keyRequired);
+  const updated = await prisma.$transaction(async (tx) => {
+    const before = await tx.storyScript.findUnique({ where: { key: normalizedKey } });
+    if (!before) throw routeError(404, ERRORS.scriptNotFound);
+    const saved = await tx.storyScript.update({
+      where: { key: normalizedKey },
+      data: { isPublished: false }
+    });
+    await writeAudit(tx, adminUser, "story-script.unpublish", saved.key, toAdminStoryScriptPayload(before), toAdminStoryScriptPayload(saved), "story-script");
+    return saved;
+  });
+  return { script: toAdminStoryScriptPayload(updated) };
+}
+
+export async function deleteStoryScript({ prisma, adminUser, key }) {
+  const normalizedKey = normalizeText(key);
+  if (!normalizedKey) throw routeError(400, ERRORS.keyRequired);
+  if (normalizedKey === ONBOARDING_STORY_KEY) throw routeError(400, ERRORS.systemScriptProtected);
+  const deleted = await prisma.$transaction(async (tx) => {
+    const before = await tx.storyScript.findUnique({ where: { key: normalizedKey } });
+    if (!before) throw routeError(404, ERRORS.scriptNotFound);
+    if (before.isPublished) throw routeError(400, ERRORS.publishedScriptDeleteDenied);
+    await tx.storyScript.delete({ where: { key: normalizedKey } });
+    await writeAudit(tx, adminUser, "story-script.delete", normalizedKey, toAdminStoryScriptPayload(before), null, "story-script");
+    return before;
+  });
+  return { script: toAdminStoryScriptPayload(deleted), deleted: true };
+}
+
 export async function updateAdminStoryScript({ prisma, adminUser, input }) {
   const action = normalizeAdminAction(input?.action);
   if (action === "publish") return publishStoryScript({ prisma, adminUser, input });
+  if (action === "unpublish") return unpublishStoryScript({ prisma, adminUser, key: input?.key });
   return updateStoryScriptDraft({ prisma, adminUser, input });
 }
 
@@ -326,8 +403,8 @@ export function toAdminStoryScriptPayload(record, fallback = {}) {
       title: "",
       triggerType: STORY_TRIGGER_TYPES.onboarding,
       triggerParams: {},
-      draft: { ...EMPTY_SCRIPT, nodes: [] },
-      published: { ...EMPTY_SCRIPT, nodes: [] },
+      draft: { ...EMPTY_SCRIPT, initialBoard: null, nodes: [] },
+      published: { ...EMPTY_SCRIPT, initialBoard: null, nodes: [] },
       isPublished: false,
       firstPublishedAt: null,
       publishedAt: null,
@@ -343,10 +420,12 @@ export function toAdminStoryScriptPayload(record, fallback = {}) {
     triggerParams: parseObjectJson(record.triggerParamsJson),
     draft: {
       startNodeId: record.draftStartNodeId ?? "",
+      initialBoard: parseInitialBoardJson(record.draftInitialBoardJson),
       nodes: parseNodesJson(record.draftNodesJson)
     },
     published: {
       startNodeId: record.publishedStartNodeId ?? "",
+      initialBoard: parseInitialBoardJson(record.publishedInitialBoardJson),
       nodes: parseNodesJson(record.publishedNodesJson)
     },
     isPublished: Boolean(record.isPublished),
@@ -366,6 +445,7 @@ export function toPlayerStoryScriptPayload(record) {
     triggerType: record.triggerType,
     triggerParams: parseObjectJson(record.triggerParamsJson),
     startNodeId: record.publishedStartNodeId ?? "",
+    initialBoard: parseInitialBoardJson(record.publishedInitialBoardJson),
     nodes: parseNodesJson(record.publishedNodesJson),
     publishedAt: record.publishedAt ?? record.firstPublishedAt ?? null
   };
@@ -451,7 +531,7 @@ async function legacyOnboardingSeed(prisma) {
 
 function normalizeAdminAction(value) {
   const action = normalizeText(value || "save-draft");
-  if (action === "save-draft" || action === "publish") return action;
+  if (action === "save-draft" || action === "publish" || action === "unpublish") return action;
   throw routeError(400, ERRORS.invalidAction);
 }
 
@@ -494,15 +574,65 @@ function normalizeNode(node = {}) {
   const options = Array.isArray(node.options) ? node.options.map(normalizeOption) : [];
   const effect = normalizeStoryNodeEffect(node.effect);
   if (effect == null) throw routeError(400, ERRORS.invalidNodeEffect);
+  const type = normalizeTutorialNodeType(node.type);
+  if (!type) throw routeError(400, TUTORIAL_ERRORS.invalidNodeType);
   return {
     id: normalizeText(node.id),
+    name: normalizeText(node.name),
+    type,
     speakerName: normalizeText(node.speakerName),
     characterId: normalizeText(node.characterId),
+    skillCharacterId: normalizeText(node.skillCharacterId),
+    skillId: normalizeText(node.skillId),
     effect,
     text: normalizeText(node.text),
+    prompt: normalizeText(node.prompt),
+    wrongClickMessage: normalizeText(node.wrongClickMessage),
+    pointId: normalizePointId(node.pointId),
+    color: normalizeText(node.color),
+    playerColor: normalizeText(node.playerColor),
+    playerCharacterId: normalizeText(node.playerCharacterId),
+    npcCharacterId: normalizeText(node.npcCharacterId),
+    npcName: normalizeText(node.npcName),
+    entryText: normalizeText(node.entryText),
+    actor: normalizeText(node.actor),
+    actionStartDelaySeconds: normalizeNonNegativeDelaySeconds(node.actionStartDelaySeconds),
+    replyDelaySeconds: normalizeNonNegativeDelaySeconds(node.replyDelaySeconds),
+    autoContinueDelaySeconds: normalizeNonNegativeDelaySeconds(node.autoContinueDelaySeconds),
+    boardSetup: normalizeInitialBoard(node.boardSetup),
     nextNodeId: normalizeText(node.nextNodeId),
     options
   };
+}
+
+function nodeTypeRequiresSkill(type) {
+  return type === TUTORIAL_NODE_TYPES.playerSkill || type === TUTORIAL_NODE_TYPES.npcSkill;
+}
+
+function normalizeInitialBoard(board = null) {
+  if (!board || typeof board !== "object" || Array.isArray(board)) return null;
+  const mode = normalizeText(board.mode || "spark") || "spark";
+  const stones = Array.isArray(board.stones)
+    ? board.stones.map(normalizeBoardStone).filter(Boolean)
+    : [];
+  return { mode, stones };
+}
+
+function normalizeBoardStone(stone = {}) {
+  const pointIdValue = normalizePointId(stone.pointId ?? stone.id);
+  const color = normalizeText(stone.color);
+  if (!pointIdValue || !isPlayerColor(color)) return null;
+  return { pointId: pointIdValue, color };
+}
+
+function normalizePointId(value) {
+  const text = normalizeText(value);
+  if (!text) return "";
+  const [rawX, rawY] = text.split(",");
+  const x = Number(rawX);
+  const y = Number(rawY);
+  if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0) return "";
+  return `${x},${y}`;
 }
 
 function normalizeOption(option = {}) {
@@ -514,10 +644,14 @@ function normalizeOption(option = {}) {
 }
 
 function normalizeOptionRevealDelaySeconds(value) {
+  return normalizeNonNegativeDelaySeconds(value, ERRORS.invalidOptionRevealDelay);
+}
+
+function normalizeNonNegativeDelaySeconds(value, error = ERRORS.invalidOptionRevealDelay) {
   const normalized = typeof value === "string" ? value.trim() : value;
   if (normalized == null || normalized === "") return "";
   const delay = Number(normalized);
-  if (!Number.isFinite(delay) || delay < 0) throw routeError(400, ERRORS.invalidOptionRevealDelay);
+  if (!Number.isFinite(delay) || delay < 0) throw routeError(400, error);
   return delay;
 }
 
@@ -531,6 +665,15 @@ function parseNodesJson(value) {
     return Array.isArray(parsed) ? parsed.map(normalizeNode) : [];
   } catch {
     return [];
+  }
+}
+
+function parseInitialBoardJson(value) {
+  try {
+    const parsed = JSON.parse(value || "null");
+    return normalizeInitialBoard(parsed);
+  } catch {
+    return null;
   }
 }
 

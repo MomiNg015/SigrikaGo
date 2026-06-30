@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Frontend component and modal layout contracts"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "CSS contract and character detail BGM heading constraints"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Prisma schema, startup guard, and migration conventions"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Character CV data flows across database, API, admin UI, and player UI"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Reuse existing character payload and draft helpers"}

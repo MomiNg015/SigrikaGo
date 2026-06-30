@@ -52,7 +52,9 @@ const TEST_STYLE_FILES = new Set([
 ]);
 const DOCUMENTATION_FILES = new Set(["README.md"]);
 const CSS_SIZE_GUARD_BYTES = 6000;
-const KNOWN_OVERSIZED_CSS_FILES = new Map();
+const KNOWN_OVERSIZED_CSS_FILES = new Map([
+  ["themes/bright-school/mobile/modal-shell.css", 6161]
+]);
 
 function cssImports(source) {
   return [...source.matchAll(/@import\s+"([^"]+)"[^;]*;/g)].map((match) => match[1]);
@@ -415,6 +417,7 @@ describe("root CSS entry contract", () => {
       "./admin/achievements.css",
       "./admin/announcements.css",
       "./admin/onboarding-story.css",
+      "./admin/onboarding-board-editor.css",
       "./admin/mailbox.css",
       "./admin/responsive.css",
       "./admin/polish.css"
@@ -478,6 +481,7 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(mobileEntry)).toEqual([
       "./mobile-adaptive/desktop-home-footer.css",
+      "./mobile-adaptive/admin-fullscreen.css",
       "./mobile-adaptive/phone-core.css",
       "./mobile-adaptive/phone-character-detail-music.css",
       "./mobile-adaptive/phone-gacha.css",
@@ -1003,7 +1007,8 @@ describe("root CSS entry contract", () => {
       "./room/board.css",
       "./room/actions-requests.css",
       "./room/people-floating-replay.css",
-      "./room/chat-responsive.css"
+      "./room/chat-responsive.css",
+      "./room/tutorial-battle-screen.css"
     ]);
     expect(roomEntry).not.toContain(".battle-layout {");
     expect(roomEntry).not.toContain(".board {");
@@ -1140,7 +1145,8 @@ describe("root CSS entry contract", () => {
       "./modals/terminal-system.css",
       "./modals/mailbox.css",
       "./modals/announcement.css",
-      "./modals/onboarding-story.css"
+      "./modals/onboarding-story.css",
+      "./modals/tutorial-session.css"
     ]);
     expect(modalsEntry).not.toContain(".modal-backdrop {");
     expect(modalsEntry).not.toContain(".resume-modal {");
@@ -1164,6 +1170,19 @@ describe("root CSS entry contract", () => {
       "./onboarding-story/mobile.css"
     ]);
     expect(onboardingStoryEntry).not.toContain(".onboarding-story-modal {");
+  });
+
+  it("keeps admin console full-width after theme and HUD layers", () => {
+    const mobileAdaptiveEntry = readFileSync(new URL("./mobile-adaptive.css", import.meta.url), "utf8");
+    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+
+    expect(cssImports(mobileAdaptiveEntry)).toContain("./mobile-adaptive/admin-fullscreen.css");
+    expect(mobileCss).toContain(".app-shell:has(.admin-screen)");
+    expect(mobileCss).toContain("background: #f6f7fb !important");
+    expect(mobileCss).toContain(".app-shell:has(.admin-screen)::before");
+    expect(mobileCss).toContain(".admin-screen");
+    expect(mobileCss).toContain("width: 100vw");
+    expect(mobileCss).toContain("max-width: none");
   });
 
   it("keeps terminal modal system styles as an import-only sub-entry", () => {

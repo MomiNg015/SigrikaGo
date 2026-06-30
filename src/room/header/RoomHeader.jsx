@@ -12,6 +12,8 @@ export default function RoomHeader({
   onOpenMessageBoard,
   onOpenSettings,
   onBack,
+  exitLabel = "退出房间",
+  showUtilityControls = true,
   onToggleCoords,
   onToggleMoves
 }) {
@@ -25,7 +27,7 @@ export default function RoomHeader({
     <header className="room-header">
       <div className="room-title-stack">
         <p className="room-title-line">
-          <span className="room-code-label">房间号 {room.code}</span>
+          <span className="room-code-label">房间号{room.code}</span>
           {roomGameInfo && (
             <>
               <span className="room-info-tag black-side">黑方：{roomGameInfo.black}</span>
@@ -37,24 +39,24 @@ export default function RoomHeader({
         {showCloseCountdown && <RoomCloseCountdown closesAt={room.closesAt} />}
         {isReplay && <h1>棋谱回放</h1>}
       </div>
-      <div className="room-toggles">
+      {showUtilityControls && <div className="room-toggles">
         <button className="toggle" onClick={onOpenMessageBoard} title="留言板"><MessageSquareText size={16} /></button>
         <button className="toggle" onClick={onOpenSettings} title="设置"><Settings size={16} /></button>
         <button className={showMoves ? "toggle active" : "toggle"} onClick={onToggleMoves} title="显示手数"><Hash size={16} /></button>
         <button className={showCoords ? "toggle active" : "toggle"} onClick={onToggleCoords} title="显示坐标"><PanelRight size={16} /></button>
-      </div>
+      </div>}
       {onBack && (
         <button
           className="toggle room-mobile-exit"
           type="button"
-          aria-label="退出房间"
-          title="退出房间"
+          aria-label={exitLabel}
+          title={exitLabel}
           onClick={onBack}
         >
           <DoorOpen size={18} />
         </button>
       )}
-      <div className={`room-mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
+      {showUtilityControls && <div className={`room-mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
         <button
           className="toggle room-mobile-menu-toggle"
           type="button"
@@ -83,7 +85,7 @@ export default function RoomHeader({
             <span>坐标</span>
           </button>
         </div>
-      </div>
+      </div>}
     </header>
   );
 }

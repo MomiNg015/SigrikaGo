@@ -14,7 +14,7 @@ export const ADMIN_TAB_LABELS = {
   gacha: "扭蛋管理",
   recruitment: "招募配置",
   announcements: "公告管理",
-  onboarding: "新手引导",
+  onboarding: "剧情教学",
   mailbox: "邮箱管理",
   achievements: "成就管理",
   settings: "系统设置",

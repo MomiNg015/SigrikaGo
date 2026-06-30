@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { areChatBoxPropsEqual, playerChatCount } from "./ChatBox.jsx";
+import { areChatBoxPropsEqual, chatDisplayName, chatMessageMetaLabel, playerChatCount } from "./ChatBox.jsx";
 
 describe("ChatBox", () => {
   it("counts only player chat messages for the collapsed badge", () => {
@@ -58,6 +58,36 @@ describe("ChatBox", () => {
         players: [{ color: "black", user: { id: "black-user" }, character: "denia" }]
       }
     }))).toBe(false);
+  });
+
+  it("can render tutorial chat without move time or character suffix metadata", () => {
+    const room = {
+      chat: [],
+      players: [
+        { color: "black", user: { id: "npc" }, character: "sigrika", characterId: "sigrika" }
+      ]
+    };
+    const message = {
+      id: "chat-1",
+      type: "chat",
+      userId: "npc",
+      username: "西格莉卡",
+      moveNumber: 12,
+      createdAt: Date.UTC(2026, 0, 1, 1, 2, 3),
+      text: "请看这里"
+    };
+
+    expect(chatMessageMetaLabel(message)).toContain("12手");
+    expect(chatDisplayName(message, room)).toContain("[");
+    expect(chatMessageMetaLabel(message, { compactMessages: true })).toBe("");
+    expect(chatDisplayName(message, room, { compactMessages: true })).toBe("西格莉卡");
+  });
+
+  it("rerenders when tutorial compact chat mode changes", () => {
+    const previous = chatProps({ compactMessages: false });
+    const next = chatProps({ compactMessages: true });
+
+    expect(areChatBoxPropsEqual(previous, next)).toBe(false);
   });
 
   it("allows chat messages and names to wrap inside the battle chat log", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { listShopItems, purchaseShopItem, seedBuiltinShopItems } from "./shop.js";
+import { listShopItems, purchaseShopItem, seedBuiltinShopItems, validateShopItemInput } from "./shop.js";
 
 describe("shop", () => {
   it("lists enabled shop items with final prices", async () => {
@@ -16,12 +16,51 @@ describe("shop", () => {
           enabled: true,
           sortOrder: 1,
           description: "解锁角色",
-          imageUrl: "/assets/Danea_centered.webp"
+          imageUrl: "/assets/Danea_centered.webp",
+          illustName: "Artist",
+          illustUrl: "https://example.com/artist"
         }]
       }
     });
 
     expect(response.items[0].finalPrice).toBe(75);
+    expect(response.items[0].illustName).toBe("Artist");
+    expect(response.items[0].illustUrl).toBe("https://example.com/artist");
+  });
+
+  it("validates safe shop item illustration credits", () => {
+    const valid = validateShopItemInput({
+      name: "商品",
+      category: "item",
+      targetId: "rainbow-bean-candy",
+      priceCoins: 10,
+      illustName: "  画师  ",
+      illustUrl: "/credits/artist"
+    });
+    const unsafe = validateShopItemInput({
+      name: "商品",
+      category: "item",
+      targetId: "rainbow-bean-candy",
+      priceCoins: 10,
+      illustName: "画师",
+      illustUrl: "javascript:alert(1)"
+    });
+    const nameless = validateShopItemInput({
+      name: "商品",
+      category: "item",
+      targetId: "rainbow-bean-candy",
+      priceCoins: 10,
+      illustName: "",
+      illustUrl: "https://example.com/artist"
+    });
+
+    expect(valid.ok).toBe(true);
+    expect(valid.value.illustName).toBe("画师");
+    expect(valid.value.illustUrl).toBe("/credits/artist");
+    expect(unsafe.ok).toBe(false);
+    expect(unsafe.error).toContain("illustUrl");
+    expect(nameless.ok).toBe(false);
+    expect(nameless.error).toContain("illustName");
   });
 
   it("deducts coins and grants a purchased character", async () => {

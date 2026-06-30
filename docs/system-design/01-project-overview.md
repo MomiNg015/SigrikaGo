@@ -638,7 +638,7 @@ SigrikaGo/
 - 糖果效果只在有效对局结束并保存棋谱的链路清除；不超过 10 手的无效对局不会清除糖果效果。
 - 内置商品会 seed 猪小仙角色商品，价格 9999 金币；用户购买后才可出战该角色。
 - 内置装饰商品会 seed 爪印棋子和“耙耙柑和水蜜桃”两套棋子装饰；爪印棋子价格 500 金币，“耙耙柑和水蜜桃”价格 1000 金币。
-- `seedBuiltinShopItems` 只创建缺失的内置商城商品，不覆盖已经存在的 `ShopItem`。后台管理保存过的商品名、介绍、图片、售价、库存和上下架状态必须以数据库为准，服务重启或对局写库后不能被内置默认值改回。
+- `seedBuiltinShopItems` 只创建缺失的内置商城商品，不覆盖已经存在的 `ShopItem`。后台管理保存过的商品名、介绍、图片、售价、库存和上下架状态必须以数据库为准，服务重启或对局写库后不能被内置默认值改回。部署快照里的商城默认项按 `(category, targetId)` 同步到既有商品，同一目标不能重复；“耙耙柑和水蜜桃”只保留 `papagan-peach-stone` 这一条可展示的 1000 金币装饰商品。
 - 爪印棋子使用 image-gen 生成图裁切出的透明 PNG 贴图：`paw-stone-black.webp`、`paw-stone-white.webp` 和 `paw-stone-preview.webp`。“耙耙柑和水蜜桃”使用用户提供的 512x512 透明 PNG：`papagan-peach-stone-black.webp` 为耙耙柑黑子，`papagan-peach-stone-white.webp` 为水蜜桃白子，`papagan-peach-stone-preview.webp` 为 1024x512 商店预览图。
 - 后台保存装饰类商城商品时，`targetId` 校验同时认可数据库 `Decoration.slug` 与内置 `STONE_DECORATIONS` 配置，避免只修改内置装饰商品介绍时被误报为 `Shop decoration target does not exist`。
 - 玩家购买棋子装饰后会进入棋舍装饰区，可点击应用；空选择表示继续使用默认棋子。

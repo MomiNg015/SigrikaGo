@@ -88,11 +88,22 @@ describe("character fallback", () => {
     expect(Object.keys(merged)).toEqual(expect.arrayContaining(["sigrika", "denia", "custom"]));
     expect(merged.sigrika.name).toBe(CHARACTERS.sigrika.name);
     expect(merged.sigrika.description).toBe("API character description");
+    expect(merged.sigrika.cvName).toBe("");
+    expect(merged.sigrika.cvUrl).toBe("");
     expect(merged.sigrika.portrait).toBe(CHARACTERS.sigrika.portrait);
     expect(merged.sigrika.skill.name).toBe("API Skill");
     expect(merged.sigrika.skill.description).toBe(CHARACTERS.sigrika.skill.description);
     expect(merged.custom.portrait).toBe(CHARACTERS.sigrika.portrait);
     expect(merged.custom.skill.name).toBe(CHARACTERS.sigrika.skill.name);
+  });
+
+  it("merges optional character CV metadata from API characters", () => {
+    const merged = mergeCharacters([
+      { id: "sigrika", name: "Sigrika", cvName: "Voice Actor", cvUrl: "https://example.com/cv" }
+    ]);
+
+    expect(merged.sigrika.cvName).toBe("Voice Actor");
+    expect(merged.sigrika.cvUrl).toBe("https://example.com/cv");
   });
 
   it("falls back to built-in characters for empty or malformed API payloads", () => {

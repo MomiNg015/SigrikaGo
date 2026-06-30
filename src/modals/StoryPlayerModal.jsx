@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { FastForward, X } from "lucide-react";
 import { storyPortraitCatalog } from "../shared/storyPortraits.js";
 import { isLongTextCompressPortraitEffect } from "../shared/storyPresentation.js";
@@ -20,40 +20,45 @@ export const STORY_PLAYER_DEFAULT_TEXT = Object.freeze({
 
 const TYPEWRITER_INTERVAL_MS = 24;
 const LONG_TEXT_COMPRESS_TYPEWRITER_SPEED_MULTIPLIER = 1.5;
+const useStoryLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 export default function StoryPlayerModal({
   script,
   characters = {},
   labels = {},
   onClose,
+  onNavigate,
   typewriterDisabled = false
 }) {
   const textLabels = { ...STORY_PLAYER_DEFAULT_TEXT, ...labels };
   const nodesById = useMemo(() => new Map((script?.nodes ?? []).map((node) => [node.id, node])), [script]);
-  const [nodeId, setNodeId] = useState(script?.startNodeId ?? "");
-  const [visibleCount, setVisibleCount] = useState(typewriterDisabled ? currentNodeText(nodesById.get(script?.startNodeId ?? "")).length : 0);
-  const [nodeTimer, setNodeTimer] = useState(() => ({ nodeId: script?.startNodeId ?? "", elapsedMs: 0 }));
+  const startNodeId = String(script?.startNodeId ?? "");
+  const [nodeId, setNodeId] = useState(startNodeId);
+  const activeNodeId = resolveStoryRenderNodeId(nodeId, startNodeId, nodesById);
+  const [visibleCount, setVisibleCount] = useState(typewriterDisabled ? currentNodeText(nodesById.get(activeNodeId)).length : 0);
+  const [nodeTimer, setNodeTimer] = useState(() => ({ nodeId: activeNodeId, elapsedMs: 0 }));
   const [skipConfirmOpen, setSkipConfirmOpen] = useState(false);
-  const node = nodesById.get(nodeId) ?? null;
+  const node = nodesById.get(activeNodeId) ?? null;
   const text = currentNodeText(node);
   const typingComplete = typewriterDisabled || visibleCount >= text.length;
   const displayText = typingComplete ? text : text.slice(0, visibleCount);
   const character = resolveCharacter(node?.characterId, characters);
-  const nodeElapsedMs = nodeTimer.nodeId === nodeId ? nodeTimer.elapsedMs : 0;
+  const nodeElapsedMs = nodeTimer.nodeId === activeNodeId ? nodeTimer.elapsedMs : 0;
   const visibleOptions = visibleStoryOptions(node, { typingComplete, elapsedMs: nodeElapsedMs });
   const hasOptions = (node?.options?.length ?? 0) > 0;
   const compressPortrait = isLongTextCompressPortraitEffect(node?.effect);
   const typewriterIntervalMs = storyTypewriterIntervalMs(node?.effect);
   const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}`;
 
-  useEffect(() => {
-    setNodeId(script?.startNodeId ?? "");
-  }, [script?.startNodeId]);
+  useStoryLayoutEffect(() => {
+    setNodeId((currentNodeId) => (currentNodeId === startNodeId ? currentNodeId : startNodeId));
+    setSkipConfirmOpen(false);
+  }, [startNodeId]);
 
-  useEffect(() => {
+  useStoryLayoutEffect(() => {
     setVisibleCount(typewriterDisabled ? text.length : 0);
-    setNodeTimer({ nodeId, elapsedMs: 0 });
-  }, [nodeId, text.length, typewriterDisabled]);
+    setNodeTimer({ nodeId: activeNodeId, elapsedMs: 0 });
+  }, [activeNodeId, text.length, typewriterDisabled]);
 
   useEffect(() => {
     if (typewriterDisabled || !node || visibleCount >= text.length) return undefined;
@@ -69,15 +74,16 @@ export default function StoryPlayerModal({
     if (nextDelayMs == null) return undefined;
     const timer = window.setTimeout(() => {
       setNodeTimer((current) => (
-        current.nodeId === nodeId
-          ? { nodeId, elapsedMs: Math.max(current.elapsedMs, nextDelayMs) }
+        current.nodeId === activeNodeId
+          ? { nodeId: activeNodeId, elapsedMs: Math.max(current.elapsedMs, nextDelayMs) }
           : current
       ));
     }, Math.max(0, nextDelayMs - nodeElapsedMs));
     return () => window.clearTimeout(timer);
-  }, [hasOptions, node, nodeElapsedMs, nodeId, typewriterDisabled, typingComplete]);
+  }, [activeNodeId, hasOptions, node, nodeElapsedMs, typewriterDisabled, typingComplete]);
 
   function moveTo(nextId) {
+    if (onNavigate?.(nextId, { currentNode: node })) return;
     if (!nextId || !nodesById.has(nextId)) {
       onClose?.();
       return;
@@ -168,6 +174,12 @@ export default function StoryPlayerModal({
 
 export function nextStoryNodeId(node, option = null) {
   return String(option?.nextNodeId ?? node?.nextNodeId ?? "").trim();
+}
+
+export function resolveStoryRenderNodeId(currentNodeId, startNodeId, nodesById) {
+  const nodeId = String(currentNodeId ?? "");
+  if (nodeId && nodesById?.has(nodeId)) return nodeId;
+  return String(startNodeId ?? "");
 }
 
 export function visibleStoryOptions(node, { typingComplete = false, elapsedMs = 0 } = {}) {

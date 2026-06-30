@@ -44,8 +44,10 @@ function PlayerInfo({
     return () => document.removeEventListener("pointerdown", closeTooltip);
   }, [tapTooltip]);
   if (!player) return <aside className="player-info empty" />;
-  const baseCharacter = findCharacter(characters, player.character ?? player.characterId);
-  const activeSkill = effectiveSkillDisplayForPlayer(game, { ...player, character: baseCharacter });
+  const hasCharacter = !(player.character === null && !player.characterId);
+  const isNoCharacter = !hasCharacter;
+  const baseCharacter = hasCharacter ? findCharacter(characters, player.character ?? player.characterId) : null;
+  const activeSkill = hasCharacter ? effectiveSkillDisplayForPlayer(game, { ...player, character: baseCharacter }) : null;
   const character = activeSkill
     ? { ...baseCharacter, skill: { ...baseCharacter.skill, ...activeSkill } }
     : baseCharacter;
@@ -53,6 +55,8 @@ function PlayerInfo({
   const skillCost = game.skillCosts?.[player.color] ?? 0;
   const skillRemovals = player.skillRemovals ?? game.skillRemovals?.[player.color] ?? 0;
   const skillEnabled = game.skillEnabled !== false;
+  const showNoCharacterSkillPlaceholder = skillEnabled && player.isTutorialPlayer && isNoCharacter;
+  const showNoCharacterRolePlaceholder = player.isTutorialPlayer && isNoCharacter;
   const isGomoku = gameModeFamily(game.mode) === "gomoku";
   const showGoStats = !isGomoku;
   const resultBadge = resultBadgeForPlayer(player, game, { isWinner, isDrawResult });
@@ -60,7 +64,7 @@ function PlayerInfo({
   const requestFloatingLayer = () => onFloatingLayerRequest?.(floatingLayerId);
   return (
     <aside
-      className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${canSwitchView ? "switchable-view" : ""} ${canSwitchView && viewColor === player.color ? "view-selected" : ""}`}
+      className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${isNoCharacter ? "no-character-player" : ""} ${canSwitchView ? "switchable-view" : ""} ${canSwitchView && viewColor === player.color ? "view-selected" : ""}`}
       style={floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : undefined}
       onClick={canSwitchView ? () => onViewColor?.(player.color) : undefined}
       role={canSwitchView ? "button" : undefined}
@@ -73,18 +77,19 @@ function PlayerInfo({
         }
       } : undefined}
     >
-      <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${isDisconnected ? "disconnected-portrait" : ""}`}>
-        <img src={playerCandyPortrait(character, player)} alt={character.name} />
-        <CharacterChainBadge user={player.user} characterId={character.id} />
+      <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${isNoCharacter ? "no-character" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}>
+        {hasCharacter && <img src={playerCandyPortrait(character, player)} alt={character.name} />}
+        {hasCharacter && <CharacterChainBadge user={player.user} characterId={character.id} />}
         {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
       </div>
       <div className="player-meta">
         <button className="name-button">
           <UserIdentity user={player.user} compact />
         </button>
-        <span className="meta-tag rank-tag">{player.user.rank}</span>
+        {hasCharacter && player.user.rank && <span className="meta-tag rank-tag">{player.user.rank}</span>}
+        {showNoCharacterRolePlaceholder && <span className="meta-tag rank-tag meta-placeholder" aria-hidden="true" />}
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
-        <span className="meta-tag rating-tag">{player.user.rating}分</span>
+        {player.user.rating !== "" && player.user.rating != null && <span className="meta-tag rating-tag">{player.user.rating}分</span>}
       </div>
       <TimeBar time={player.time} />
       {showGoStats && <div className="captures">
@@ -130,7 +135,7 @@ function PlayerInfo({
           <strong>超频</strong>{skillCost}
         </span>}
       </div>}
-      {skillEnabled && <div
+      {skillEnabled && hasCharacter && <div
         className={`skill-chip-wrap ${skillDetailOpen ? "open" : ""}`}
         onMouseLeave={() => setSkillDetailOpen(false)}
         onPointerDownCapture={requestFloatingLayer}
@@ -170,6 +175,11 @@ function PlayerInfo({
           {character.skill.description || "暂无技能说明。"}
         </div>
       </div>}
+      {showNoCharacterSkillPlaceholder && (
+        <div className="skill-chip-wrap skill-chip-placeholder-wrap" aria-hidden="true">
+          <span className="skill-chip skill-chip-placeholder" />
+        </div>
+      )}
       {tapTooltip && (
         <div
           className="mobile-tap-tooltip"
@@ -213,6 +223,7 @@ function playerInfoSliceEqual(previousPlayer, nextPlayer) {
   return previousPlayer?.color === nextPlayer?.color
     && previousPlayer?.characterId === nextPlayer?.characterId
     && previousPlayer?.character === nextPlayer?.character
+    && previousPlayer?.isTutorialPlayer === nextPlayer?.isTutorialPlayer
     && previousPlayer?.user === nextPlayer?.user
     && previousPlayer?.captures === nextPlayer?.captures
     && previousPlayer?.skillRemovals === nextPlayer?.skillRemovals

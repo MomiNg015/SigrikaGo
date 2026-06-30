@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { CharacterMusicPreview } from "../../audio/CharacterMusicPreview.jsx";
 import { derivedSkillDefinitionsFromSkill } from "../../shared/derivedSkills.js";
+import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../../shared/characterCv.js";
 import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../shared/musicLibrary.js";
 import { ReplayList } from "../ReplayList.jsx";
 import { characterRecordColumns } from "../UserProfileCard.jsx";
@@ -30,6 +31,9 @@ export function CharacterDetailDialog({
     tracks: musicTracks
   });
   const derivedSkills = derivedSkillDefinitionsFromSkill(character.skill);
+  const cvName = normalizeCharacterCvName(character.cvName);
+  const cvUrl = normalizeCharacterCvUrl(character.cvUrl);
+  const cvLabel = cvName ? `CV：${cvName}` : "";
   const handleMusicChange = (trackId) => onSelectCharacterMusic?.({ characterId: character.id, trackId });
   return (
     <div className="nested-modal-backdrop" onClick={onClose}>
@@ -40,7 +44,14 @@ export function CharacterDetailDialog({
         </div>
         <div className="character-detail-copy">
           <div className="character-detail-heading">
-            <h3>{character.name}</h3>
+            <div className="character-detail-title-line">
+              <h3>{character.name}</h3>
+              {cvLabel && (cvUrl ? (
+                <a className="character-cv-label" href={cvUrl} target="_blank" rel="noreferrer">{cvLabel}</a>
+              ) : (
+                <span className="character-cv-label">{cvLabel}</span>
+              ))}
+            </div>
             <CharacterMusicPreview
               track={currentMusicTrack}
               options={musicOptions}

@@ -19,6 +19,7 @@ import {
 } from "./shop/shopItemDetail.js";
 import ShopModal from "./ShopModal.jsx";
 import ShopItemCard from "./shop/ShopItemCard.jsx";
+import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("ShopModal helpers", () => {
@@ -92,6 +93,56 @@ describe("ShopModal helpers", () => {
     expect(detailSource).toContain("shop-detail-status-owned");
     expect(detailSource).not.toContain("getShopItemQuantityLabel");
     expect(detailSource).not.toContain("finalPrice");
+  });
+
+  it("renders optional shop item illustration credits without changing link styling", () => {
+    const baseItem = {
+      id: "test-card",
+      category: "item",
+      targetId: "rainbow-bean-candy",
+      name: "测试商品",
+      description: "商品说明",
+      imageUrl: "/assets/items/rainbow-bean-candy.webp"
+    };
+    const linkedHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: { ...baseItem, illustName: "画师", illustUrl: "https://example.com/artist" },
+      user: {},
+      onClose: () => {}
+    }));
+    const plainHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: { ...baseItem, illustName: "画师", illustUrl: "" },
+      user: {},
+      onClose: () => {}
+    }));
+    const noCreditHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: baseItem,
+      user: {},
+      onClose: () => {}
+    }));
+    const unsafeLinkHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: { ...baseItem, illustName: "画师", illustUrl: "javascript:alert(1)" },
+      user: {},
+      onClose: () => {}
+    }));
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const themesCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(linkedHtml).toContain("class=\"shop-detail-illust-label\"");
+    expect(linkedHtml).toContain("illust：画师");
+    expect(linkedHtml).toContain("target=\"_blank\"");
+    expect(linkedHtml).toContain("rel=\"noreferrer\"");
+    expect(plainHtml).toContain("<span class=\"shop-detail-illust-label\">illust：画师</span>");
+    expect(noCreditHtml).not.toContain("shop-detail-illust-label");
+    expect(unsafeLinkHtml).toContain("<span class=\"shop-detail-illust-label\">illust：画师</span>");
+    expect(commerceCss).toMatch(/\.shop-detail-title-row\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*baseline;/s);
+    expect(commerceCss).toMatch(/\.shop-detail-illust-label\s*\{[^}]*display:\s*block;[^}]*min-height:\s*0;[^}]*border:\s*0;[^}]*border-radius:\s*0;[^}]*background:\s*transparent;[^}]*color:\s*inherit;[^}]*text-decoration:\s*none;[^}]*white-space:\s*nowrap;/s);
+    expect(commerceCss).toContain(".shop-detail-illust-label:visited");
+    expect(themesCss).toMatch(/\.shop-detail-illust-label\s*\{[^}]*min-height:\s*0\s*!important;[^}]*background:\s*transparent\s*!important;[^}]*color:\s*inherit\s*!important;[^}]*border:\s*0\s*!important;[^}]*border-radius:\s*0\s*!important;[^}]*text-decoration:\s*none\s*!important;/s);
+    expect(themesCss).toContain(".shop-detail-illust-label:link");
+    expect(mobileCss).toContain(".shop-detail-title-row");
+    expect(mobileCss).toContain("flex-direction: column");
+    expect(mobileCss).toMatch(/\.shop-detail-illust-label\s*\{[^}]*border-radius:\s*0;[^}]*background:\s*transparent;/s);
   });
 
   it("keeps unavailable shop purchase actions native disabled controls", () => {

@@ -47,6 +47,22 @@ describe("AssetPreloadScreen", () => {
     }, () => 0.75).id).toBe("mornye");
   });
 
+  it("can hide random tips while reusing the shared loading template", () => {
+    const html = renderToStaticMarkup(createElement(AssetPreloadScreen, {
+      character: { id: "sigrika", name: "西格莉卡", portrait: "/sigrika.webp" },
+      label: "正在激烈对局中...",
+      progress: 0.5,
+      tipsText: "不应显示",
+      showTips: false
+    }));
+
+    expect(html).toContain("asset-preload-screen");
+    expect(html).toContain("正在激烈对局中...");
+    expect(html).toContain("资源加载 50%");
+    expect(html).not.toContain("preload-tip");
+    expect(html).not.toContain("不应显示");
+  });
+
   it("advances to a different random character when rotating the login preload display", () => {
     expect(randomPreloadCharacter({
       sigrika: { id: "sigrika", portrait: "/sigrika.webp" },

@@ -106,6 +106,8 @@ export default function AdminShopItems({ items, token, onSaved, onClearError, on
               <label className="admin-checkbox"><input type="checkbox" checked={draft.purchasable} onChange={(e) => setDraft({ ...draft, purchasable: e.target.checked })} /><AdminFieldLabel text="可购买" tip="关闭后商品可展示但不能购买。" /></label>
               <label className="admin-checkbox"><input type="checkbox" checked={draft.enabled} onChange={(e) => setDraft({ ...draft, enabled: e.target.checked })} /><AdminFieldLabel text="展示" tip="关闭后不在商城显示。" /></label>
               <label className="wide-field"><AdminFieldLabel text="图片地址" tip="商城卡片图片。" /><input value={draft.imageUrl} onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })} /></label>
+              <label><AdminFieldLabel text="illust 名称" tip="商品图绘制人员名，留空则商品详情不显示 illust 标签。" /><input value={draft.illustName} onChange={(e) => setDraft({ ...draft, illustName: e.target.value })} /></label>
+              <label><AdminFieldLabel text="illust 链接" tip="可选，仅支持 http(s) 或站内 / 路径；填写链接时必须填写 illust 名称。" /><input value={draft.illustUrl} onChange={(e) => setDraft({ ...draft, illustUrl: e.target.value })} /></label>
               <label className="wide-field"><AdminFieldLabel text="商品描述" tip="商城中显示的商品说明。" /><textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></label>
             </div>
             <div className="inline-actions">

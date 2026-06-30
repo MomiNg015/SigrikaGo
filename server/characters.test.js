@@ -51,6 +51,8 @@ describe("character admin helpers", () => {
       slug: "danea",
       name: "Danea",
       description: "A moonlit tactician.",
+      cvName: "Voice Actor",
+      cvUrl: "https://example.com/cv",
       portraitUrl: "/uploads/characters/danea.png",
       portraitSource: "upload",
       acquisitionMethod: "商城购买",
@@ -61,6 +63,8 @@ describe("character admin helpers", () => {
 
     expect(payload.portraitSource).toBe("upload");
     expect(payload.description).toBe("A moonlit tactician.");
+    expect(payload.cvName).toBe("Voice Actor");
+    expect(payload.cvUrl).toBe("https://example.com/cv");
     expect(payload.acquisitionMethod).toBe("商城购买");
   });
 
@@ -113,6 +117,8 @@ describe("character admin helpers", () => {
 
     expect(result.ok).toBe(true);
     expect(result.value.description).toBe("A precise rune caster.");
+    expect(result.value.cvName).toBe("");
+    expect(result.value.cvUrl).toBe("");
     expect(result.value.skill.effectType).toBe("erase-point");
     expect(result.value.skill.targetRule).toBe("empty-point");
     expect(result.value.skill.costType).toBe("numeric");
@@ -264,6 +270,36 @@ describe("character admin helpers", () => {
 
     expect(result.ok).toBe(true);
     expect(result.value.skill.enabled).toBe(false);
+  });
+
+  it("accepts optional character CV metadata with safe links", () => {
+    const result = validateCharacterInput({
+      ...validInput,
+      cvName: "配音者",
+      cvUrl: "/credits/voice"
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.value.cvName).toBe("配音者");
+    expect(result.value.cvUrl).toBe("/credits/voice");
+  });
+
+  it("rejects unsafe or nameless character CV links", () => {
+    const unsafe = validateCharacterInput({
+      ...validInput,
+      cvName: "配音者",
+      cvUrl: "javascript:alert(1)"
+    });
+    const nameless = validateCharacterInput({
+      ...validInput,
+      cvName: "",
+      cvUrl: "https://example.com/cv"
+    });
+
+    expect(unsafe.ok).toBe(false);
+    expect(unsafe.error).toContain("cvUrl");
+    expect(nameless.ok).toBe(false);
+    expect(nameless.error).toContain("cvName");
   });
 
   it("accepts numeric skill costs and preserves them in payloads", () => {
@@ -446,6 +482,8 @@ describe("character admin helpers", () => {
               palette: "#6ab7ff",
               enabled: true,
               sortOrder: 7,
+              cvName: "Denia CV",
+              cvUrl: "https://example.com/denia",
               skill: null
             }];
           }
@@ -459,6 +497,8 @@ describe("character admin helpers", () => {
 
     expect(response.characters.map((character) => character.id)).toEqual(["denia"]);
     expect(response.characters[0].sortOrder).toBe(7);
+    expect(response.characters[0].cvName).toBe("Denia CV");
+    expect(response.characters[0].cvUrl).toBe("https://example.com/denia");
     expect(response.disabledSlugs).toEqual(["sigrika"]);
   });
 

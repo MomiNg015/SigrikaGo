@@ -21,4 +21,21 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item-detail-modal {
     grid-template-columns: minmax(0, 1fr) !important;
   }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-detail-title-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-detail-illust-label {
+    max-width: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 13px !important;
+  }
 }

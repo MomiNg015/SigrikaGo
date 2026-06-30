@@ -2,4 +2,5 @@
 @import "./shop/sidebar-wallet.css";
 @import "./shop/product-grid.css";
 @import "./shop/detail-dialog.css";
+@import "./shop/detail-credits.css";
 @import "./shop/responsive.css";

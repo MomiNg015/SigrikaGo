@@ -4,6 +4,8 @@ import { validateFeedbackContent } from "./feedback.js";
 import { publicUser, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
 
+const LEGACY_MOJIBAKE_DRAW_TEXT = "\u935c\u5c7e\ue5d0";
+
 export const RELATIONSHIP_TYPES = {
   friend: "friend",
   blacklist: "blacklist"
@@ -361,7 +363,7 @@ function recordStats(userId, records) {
 
 function recordIsDraw(record = {}) {
   if (record.resultReason === GAME_RESULT_REASONS.agreement) return true;
-  return String(record.resultText ?? "") === "和棋" || String(record.resultText ?? "") === "鍜屾";
+  return String(record.resultText ?? "") === "和棋" || String(record.resultText ?? "") === LEGACY_MOJIBAKE_DRAW_TEXT;
 }
 
 function characterStats(userId, records) {

@@ -8,6 +8,8 @@ function ChatBox({
   room,
   onChat,
   readonly = false,
+  disabledInputMessage = "",
+  compactMessages = false,
   trailingAction = null,
   floatingLayerZ,
   onFloatingLayerRequest
@@ -87,8 +89,10 @@ function ChatBox({
           <div className="chat-log" ref={logRef}>
             {room.chat.map((message) => (
               <p key={message.id} className={`${message.type} ${message.kind ?? ""}`}>
-                <span>[{message.moveNumber}手 {formatMessageTime(message.createdAt)}]</span>
-                {message.type === "chat" && <strong>{chatName(message, room)}：</strong>}
+                {chatMessageMetaLabel(message, { compactMessages }) && (
+                  <span>{chatMessageMetaLabel(message, { compactMessages })}</span>
+                )}
+                {message.type === "chat" && <strong>{chatDisplayName(message, room, { compactMessages })}：</strong>}
                 {message.text}
               </p>
             ))}
@@ -97,6 +101,12 @@ function ChatBox({
             <form onSubmit={submitChat}>
               <input value={text} onChange={(event) => setText(event.target.value)} placeholder="输入聊天内容" />
               <button type="submit" aria-label="发送聊天消息"><Send size={18} /></button>
+            </form>
+          )}
+          {readonly && disabledInputMessage && (
+            <form className="chat-form-disabled" aria-label={disabledInputMessage}>
+              <input value={disabledInputMessage} disabled readOnly />
+              <button type="button" disabled aria-label={disabledInputMessage}><Send size={18} /></button>
             </form>
           )}
         </section>
@@ -111,6 +121,8 @@ export function areChatBoxPropsEqual(previous, next) {
     && sameChatPlayers(previous.room?.players, next.room?.players)
     && previous.onChat === next.onChat
     && previous.readonly === next.readonly
+    && previous.disabledInputMessage === next.disabledInputMessage
+    && previous.compactMessages === next.compactMessages
     && previous.trailingAction === next.trailingAction
     && previous.floatingLayerZ === next.floatingLayerZ
     && previous.onFloatingLayerRequest === next.onFloatingLayerRequest;
@@ -133,11 +145,18 @@ function sameChatPlayer(previous, next) {
     && previous?.user?.id === next?.user?.id;
 }
 
-function chatName(message, room) {
+export function chatMessageMetaLabel(message, { compactMessages = false } = {}) {
+  if (compactMessages) return "";
+  return `[${message.moveNumber}手 ${formatMessageTime(message.createdAt)}]`;
+}
+
+export function chatDisplayName(message, room, { compactMessages = false } = {}) {
   const player = room.players?.find((candidate) => candidate.user?.id === message.userId);
-  if (!player) return message.username;
+  const username = message.username ?? player?.user?.username ?? "玩家";
+  if (compactMessages) return username;
+  if (!player) return username;
   const character = findCharacter(CHARACTERS, player.character ?? player.characterId);
-  return `${message.username}[${character.name}]`;
+  return `${username}[${character.name}]`;
 }
 
 export default memo(ChatBox, areChatBoxPropsEqual);

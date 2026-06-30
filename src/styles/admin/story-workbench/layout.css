@@ -1,0 +1,190 @@
+.admin-story-workbench {
+  --story-wb-bg: #f6f7fb;
+  --story-wb-surface: #ffffff;
+  --story-wb-surface-soft: #f8fafc;
+  --story-wb-border: #d9e1ef;
+  --story-wb-border-strong: #b7c4dc;
+  --story-wb-text: #182033;
+  --story-wb-muted: #647089;
+  --story-wb-primary: #4f6fdf;
+  --story-wb-primary-soft: #eef3ff;
+  --story-wb-success: #2f9d77;
+  --story-wb-danger: #c94a4a;
+  --story-wb-warning: #a86f18;
+  --story-wb-shadow: 0 10px 28px rgba(31, 43, 77, 0.08);
+  --story-wb-radius: 8px;
+  min-height: calc(100dvh - 112px);
+  display: grid;
+  gap: 16px;
+  padding-bottom: 24px;
+  color: var(--story-wb-text);
+}
+
+.admin-story-workbench * {
+  box-sizing: border-box;
+}
+
+.admin-story-workbench-create,
+.admin-story-workbench-shell,
+.admin-story-workbench-toolbar,
+.admin-story-workbench-script,
+.admin-story-workbench-library,
+.admin-story-workbench-preview,
+.admin-story-workbench-flow,
+.admin-story-workbench-side > section,
+.admin-story-workbench-step-editor {
+  border: 1px solid var(--story-wb-border);
+  border-radius: var(--story-wb-radius);
+  background: var(--story-wb-surface);
+  box-shadow: var(--story-wb-shadow);
+}
+
+.admin-story-workbench-create {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+.admin-story-workbench-create button,
+.admin-story-workbench-script-card > button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  border: 1px solid var(--story-wb-border);
+  border-radius: var(--story-wb-radius);
+  padding: 12px;
+  background: var(--story-wb-surface-soft);
+  color: var(--story-wb-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-story-workbench-create button:hover,
+.admin-story-workbench-script-card > button:hover {
+  border-color: var(--story-wb-primary);
+  background: var(--story-wb-primary-soft);
+}
+
+.admin-story-workbench h3,
+.admin-story-workbench h4,
+.admin-story-workbench p {
+  margin: 0;
+}
+
+.admin-story-workbench h3 {
+  font-size: 1rem;
+}
+
+.admin-story-workbench h4 {
+  color: var(--story-wb-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.admin-story-workbench p,
+.admin-story-workbench small {
+  color: var(--story-wb-muted);
+  line-height: 1.45;
+}
+
+.admin-story-workbench-toolbar {
+  padding: 10px 12px;
+  box-shadow: none;
+}
+
+.admin-story-workbench-toolbar > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-story-workbench-button,
+.admin-story-workbench-icon-button,
+.admin-story-workbench-segmented button,
+.admin-story-workbench-board-tools button {
+  min-height: 36px;
+  border: 1px solid var(--story-wb-border);
+  border-radius: var(--story-wb-radius);
+  background: var(--story-wb-surface);
+  color: var(--story-wb-text);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.admin-story-workbench-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 12px;
+}
+
+.admin-story-workbench-icon-button {
+  width: 36px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+}
+
+.admin-story-workbench-button.primary {
+  border-color: var(--story-wb-primary);
+  background: var(--story-wb-primary);
+  color: #fff;
+}
+
+.admin-story-workbench-button.secondary:hover,
+.admin-story-workbench-icon-button:hover {
+  border-color: var(--story-wb-primary);
+  background: var(--story-wb-primary-soft);
+}
+
+.admin-story-workbench-button.danger,
+.admin-story-workbench-icon-button.danger {
+  color: var(--story-wb-danger);
+}
+
+.admin-story-workbench-button:disabled,
+.admin-story-workbench-icon-button:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.admin-story-workbench-button:focus-visible,
+.admin-story-workbench-icon-button:focus-visible,
+.admin-story-workbench input:focus-visible,
+.admin-story-workbench select:focus-visible,
+.admin-story-workbench textarea:focus-visible {
+  outline: 3px solid rgba(79, 111, 223, 0.24);
+  outline-offset: 2px;
+}
+
+.admin-story-workbench-error,
+.admin-story-workbench-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2700;
+  max-width: 360px;
+  border-radius: var(--story-wb-radius);
+  padding: 10px 12px;
+  background: var(--story-wb-surface);
+  box-shadow: var(--story-wb-shadow);
+}
+
+.admin-story-workbench-error {
+  color: var(--story-wb-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-story-workbench *,
+  .admin-story-workbench *::before,
+  .admin-story-workbench *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

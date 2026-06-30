@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import AppOverlays from "./AppOverlays.jsx";
 import OnboardingStoryModal from "../modals/OnboardingStoryModal.jsx";
 import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
+import TutorialSessionModal from "../tutorial/TutorialSessionModal.jsx";
 
 describe("AppOverlays", () => {
   it("keeps the match success countdown visible during battle asset preloading", () => {
@@ -48,6 +49,26 @@ describe("AppOverlays", () => {
     expect(markup).toContain("道具互动");
     expect(markup).toContain("剧情对话文本");
   });
+  it("renders unified tutorial scripts through the tutorial session surface", () => {
+    const onComplete = vi.fn();
+    const tree = AppOverlays(overlayProps({
+      showStoryPlayer: true,
+      storyPlayerScript: {
+        script: {
+          startNodeId: "move-1",
+          nodes: [{ id: "move-1", type: "player-move", pointId: "5,5", color: "black", nextNodeId: "" }]
+        },
+        labels: { title: "对弈教学" },
+        onComplete,
+        clear: vi.fn(),
+        open: vi.fn()
+      }
+    }));
+
+    expect(findElementByType(tree, TutorialSessionModal).props.onComplete).toBe(onComplete);
+    expect(findElementByType(tree, StoryPlayerModal)).toBeNull();
+  });
+
   it("closes every story overlay state and clears the active script when the generic story closes", () => {
     const clear = vi.fn();
     const setShowOnboardingStory = vi.fn();

@@ -26,7 +26,7 @@ async function seedCharacters(prisma, rows = []) {
   if (!prisma?.character?.findUnique || !prisma?.character?.create) return;
   for (const row of rows) {
     const existing = await prisma.character.findUnique({ where: { slug: row.slug } });
-    const data = characterData(row);
+    const data = characterData(row, { existing: Boolean(existing) });
     if (existing) {
       if (!prisma.character.update) continue;
       await prisma.character.update({
@@ -86,7 +86,7 @@ async function seedShopItems(prisma, rows = []) {
         targetId: row.targetId
       }
     });
-    const data = shopItemData(row);
+    const data = shopItemData(row, { existing: Boolean(existing) });
     if (existing) {
       if (!prisma.shopItem.update) continue;
       await prisma.shopItem.update({
@@ -186,8 +186,8 @@ async function seedMusicTrackSettings(prisma, rows = []) {
   }
 }
 
-function characterData(row) {
-  return {
+function characterData(row, { existing = false } = {}) {
+  const data = {
     name: row.name,
     description: row.description ?? "",
     portraitUrl: row.portraitUrl,
@@ -198,6 +198,12 @@ function characterData(row) {
     enabled: row.enabled !== false,
     sortOrder: row.sortOrder ?? 0
   };
+  const hasCvFields = Object.hasOwn(row, "cvName") || Object.hasOwn(row, "cvUrl");
+  if (!existing || hasCvFields) {
+    data.cvName = row.cvName ?? "";
+    data.cvUrl = row.cvUrl ?? "";
+  }
+  return data;
 }
 
 function decorationData(row) {
@@ -211,8 +217,8 @@ function decorationData(row) {
   };
 }
 
-function shopItemData(row) {
-  return {
+function shopItemData(row, { existing = false } = {}) {
+  const data = {
     name: row.name,
     category: row.category,
     targetId: row.targetId,
@@ -227,6 +233,12 @@ function shopItemData(row) {
     imageUrl: row.imageUrl ?? "",
     source: row.source ?? "default"
   };
+  const hasIllustFields = Object.hasOwn(row, "illustName") || Object.hasOwn(row, "illustUrl");
+  if (!existing || hasIllustFields) {
+    data.illustName = row.illustName ?? "";
+    data.illustUrl = row.illustUrl ?? "";
+  }
+  return data;
 }
 
 function gachaPoolData(row) {

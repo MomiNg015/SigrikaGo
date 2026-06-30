@@ -56,6 +56,15 @@
   display: block;
 }
 
+.skill-chip-placeholder-wrap {
+  pointer-events: none;
+}
+
+.skill-chip-placeholder {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .skill-chip.targeting {
   animation: target-rainbow 1.2s linear infinite;
 }

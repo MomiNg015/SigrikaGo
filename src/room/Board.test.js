@@ -143,22 +143,79 @@ describe("areBoardPropsEqual", () => {
   });
 
   test("keeps ordinary placement hints centered on board intersections", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: [{ id: "5,5", x: 5, y: 5, valid: true, stone: null }],
+        history: []
+      }
+    })));
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const pointBlock = css.match(/\.point\s*\{[^}]+\}/)?.[0] ?? "";
+    const boardPointBlock = css.match(/\.board \.point\s*\{[^}]+\}/)?.[0] ?? "";
     const previewBlock = css.match(/\.point::before\s*\{[^}]+\}/)?.[0] ?? "";
     const pointConfirmBlock = css.match(/\.point\.touch-confirming::before\s*\{[^}]+\}/)?.[0] ?? "";
     const confirmBlock = css.match(/\.touch-confirm-marker\s*\{[^}]+\}/)?.[0] ?? "";
 
-    expect(pointBlock).toContain("display: grid");
-    expect(pointBlock).toContain("place-items: center");
-    expect(previewBlock).not.toContain("left: 50%");
-    expect(previewBlock).not.toContain("top: 50%");
-    expect(previewBlock).not.toContain("translate(-50%, -50%)");
+    expect(markup).toContain("--board-point-center-x:42.30769230769231%");
+    expect(markup).toContain("--board-point-center-y:42.30769230769231%");
+    expect(pointBlock).toContain("position: absolute");
+    expect(pointBlock).toContain("left: var(--board-point-center-x)");
+    expect(pointBlock).toContain("top: var(--board-point-center-y)");
+    expect(pointBlock).toContain("width: calc(100% / var(--size))");
+    expect(pointBlock).toContain("height: calc(100% / var(--size))");
+    expect(pointBlock).toContain("transform: translate(-50%, -50%)");
+    expect(boardPointBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(previewBlock).toContain("left: 50%");
+    expect(previewBlock).toContain("top: 50%");
+    expect(previewBlock).toContain("transform: translate(-50%, -50%)");
     expect(pointConfirmBlock).toContain("display: none");
     expect(pointConfirmBlock).toContain("opacity: 0");
     expect(confirmBlock).not.toContain("left: 50%");
     expect(confirmBlock).not.toContain("top: 50%");
     expect(confirmBlock).not.toContain("translate(-50%, -50%)");
+  });
+
+  test("keeps mobile board touch feedback centered on intersections", () => {
+    const touchCss = readCssWithImports(
+      new URL("../styles/themes/bright-school/mobile/room/touch-board-feedback.css", import.meta.url)
+    );
+    const motionCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile/motion.css", import.meta.url));
+    const activeBlock = touchCss.match(/\.mobile-room-screen \.point\.previewable:active\s*\{[^}]+\}/)?.[0] ?? "";
+    const confirmingBlock = touchCss.match(/\.mobile-room-screen \.point\.touch-confirming\s*\{[^}]+\}/)?.[0] ?? "";
+    const reducedMotionBlock = motionCss.match(/\.mobile-room-screen \.point\.previewable:active,[\s\S]*?\.mobile-room-screen \.point\.touch-confirming\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(activeBlock).toContain("transform: translate(-50%, -50%) scale(0.94) !important");
+    expect(confirmingBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(reducedMotionBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(activeBlock).not.toContain("transform: scale(0.94) !important");
+    expect(confirmingBlock).not.toContain("transform: none !important");
+  });
+
+  test("renders tutorial target rings as real child elements so theme pseudo-element guards cannot erase them", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: [{ id: "5,5", x: 5, y: 5, valid: true, stone: null }],
+        history: []
+      },
+      tutorialTargetPointId: "5,5"
+    })));
+    const css = readCssWithImports(new URL("../styles/room.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const targetRingBlock = css.match(/\.board \.point\.tutorial-target-point \.tutorial-target-ring\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightTargetRingBlock = brightSchoolCss.match(/\.theme-bright-school\.theme-bright-school \.board \.point\.tutorial-target-point \.tutorial-target-ring\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(markup).toContain("tutorial-target-point");
+    expect(markup).toContain("tutorial-target-ring");
+    expect(css).toContain(".board .point.tutorial-target-point .tutorial-target-ring");
+    expect(targetRingBlock).toContain("transform: translate(-50%, -50%)");
+    expect(targetRingBlock).toContain("animation: tutorial-target-pulse");
+    expect(targetRingBlock).toContain("rgba(255, 210, 77");
+    expect(brightTargetRingBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(css).not.toContain(".board .point.tutorial-target-point::after");
   });
 
   test("uses stable one-pixel directional stone offsets for a hand-placed board feel", () => {
@@ -173,6 +230,23 @@ describe("areBoardPropsEqual", () => {
     expect(Math.abs(first.y)).toBeLessThanOrEqual(1);
     expect(Math.abs(first.x) || Math.abs(first.y)).toBeGreaterThanOrEqual(1);
     expect(differentStone).not.toEqual(first);
+  });
+
+  test("can disable stone jitter for precision tutorial boards", () => {
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points: [{ id: "3,10", x: 3, y: 10, valid: true, stone: "black" }],
+        history: []
+      },
+      stoneJitter: false
+    })));
+
+    expect(markup).toContain("--stone-offset-x:0px");
+    expect(markup).toContain("--stone-offset-y:0px");
+    expect(markup).toContain("--board-point-center-x:26.923076923076923%");
+    expect(markup).toContain("--board-point-center-y:80.76923076923077%");
   });
 
   test("uses the shared warm wood texture for the board surface across theme guards", () => {
@@ -811,8 +885,14 @@ describe("areBoardPropsEqual", () => {
     expect(css).not.toMatch(/\.theme-bright-school\.theme-bright-school \.white\s*\{/);
     expect(boardPointBlock).toContain("min-width: 0");
     expect(boardPointBlock).toContain("min-height: 0");
+    expect(boardPointBlock).toContain("position: absolute");
+    expect(boardPointBlock).toContain("left: var(--board-point-center-x)");
+    expect(boardPointBlock).toContain("top: var(--board-point-center-y)");
+    expect(boardPointBlock).toContain("transform: translate(-50%, -50%)");
     expect(boardPointBlock).toContain("background: transparent");
     expect(boardPointBlock).toContain("background-image: none");
+    expect(boardPointBlock).toContain("width: calc(100% / var(--size))");
+    expect(boardPointBlock).toContain("height: calc(100% / var(--size))");
     expect(boardPointBlock).toContain("aspect-ratio: 1 / 1");
     expect(boardStoneBlock).toContain("aspect-ratio: 1 / 1");
     expect(boardStoneBlock).toContain("left: 50%");
@@ -1031,6 +1111,7 @@ function pointButtonProps(overrides = {}) {
     previewClass: "",
     showMoves: false,
     showScoringMarks: false,
+    stoneJitter: true,
     ...overrides
   };
 }
