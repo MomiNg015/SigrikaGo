@@ -720,6 +720,20 @@ describe("root CSS entry contract", () => {
     expect(shopSettingsEntry).not.toContain(".warehouse-grid {");
   });
 
+  it("keeps commerce warehouse-toast.css as an import-only commerce sub-entry", () => {
+    const warehouseToastEntry = readFileSync(new URL("./commerce/warehouse-toast.css", import.meta.url), "utf8");
+
+    expect(cssImports(warehouseToastEntry)).toEqual([
+      "./warehouse-toast/modal-list.css",
+      "./warehouse-toast/character-target.css",
+      "./warehouse-toast/toast-stack.css",
+      "./warehouse-toast/phone-layouts.css"
+    ]);
+    expect(warehouseToastEntry).not.toContain(".warehouse-modal {");
+    expect(warehouseToastEntry).not.toContain(".toast-stack {");
+    expect(warehouseToastEntry).not.toContain("@keyframes toast-fade");
+  });
+
   it("keeps commerce gacha.css as an import-only commerce sub-entry", () => {
     const gachaEntry = readFileSync(new URL("./commerce/gacha.css", import.meta.url), "utf8");
 

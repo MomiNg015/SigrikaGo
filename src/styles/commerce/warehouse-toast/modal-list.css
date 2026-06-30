@@ -1,0 +1,91 @@
+/* Warehouse item list and empty state. */
+.warehouse-modal {
+  width: min(760px, calc(100vw - (var(--page-pad) * 2)));
+  max-height: calc(100vh - (var(--page-pad) * 2));
+  overflow: auto;
+  display: grid;
+  gap: 16px;
+  text-align: left;
+}
+
+.warehouse-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.warehouse-header h2 {
+  margin: 0;
+}
+
+.warehouse-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.warehouse-item {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(115, 141, 205, 0.24);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f7fbff, #fff8ed);
+  min-width: 0;
+}
+
+.warehouse-item img,
+.warehouse-item > svg {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  color: #277f92;
+}
+
+.warehouse-item div {
+  min-width: 0;
+}
+
+.warehouse-item strong,
+.warehouse-item p {
+  overflow-wrap: anywhere;
+}
+
+.warehouse-item p {
+  margin: 4px 0;
+  color: #6b5a70;
+  line-height: 1.35;
+}
+
+.warehouse-item span {
+  font-weight: 800;
+  color: #277f92;
+}
+
+.warehouse-item .primary-action {
+  justify-self: end;
+  align-self: center;
+}
+
+.warehouse-item .primary-action:disabled {
+  border-color: rgba(128, 132, 136, 0.28);
+  background: linear-gradient(135deg, #d9d6d2, #c4c8ca);
+  color: #717678;
+  box-shadow: none;
+  filter: grayscale(0.45) saturate(0.55);
+  opacity: 0.78;
+  cursor: not-allowed;
+}
+
+.warehouse-empty {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  color: #776a7d;
+  border: 1px dashed #d5dce9;
+  border-radius: 8px;
+}

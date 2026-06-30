@@ -45,6 +45,11 @@ export const CSS_LAYER_GROUPS = [
       "modals/mailbox/detail.css",
       "modals/mailbox/mobile.css",
       "commerce-settings.css",
+      "commerce/warehouse-toast.css",
+      "commerce/warehouse-toast/modal-list.css",
+      "commerce/warehouse-toast/character-target.css",
+      "commerce/warehouse-toast/toast-stack.css",
+      "commerce/warehouse-toast/phone-layouts.css",
       "commerce/recruitment/board.css",
       "commerce/recruitment/board/surface.css",
       "commerce/recruitment/board/cards.css",
@@ -359,6 +364,15 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "commerce/recruitment/board/surface.css",
       "commerce/recruitment/board/cards.css",
       "commerce/recruitment/board/motion.css"
+    ]
+  },
+  {
+    entry: "commerce/warehouse-toast.css",
+    files: [
+      "commerce/warehouse-toast/modal-list.css",
+      "commerce/warehouse-toast/character-target.css",
+      "commerce/warehouse-toast/toast-stack.css",
+      "commerce/warehouse-toast/phone-layouts.css"
     ]
   }
 ];
