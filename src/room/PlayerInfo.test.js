@@ -134,6 +134,9 @@ describe("PlayerInfo labels", () => {
     const activeTurnBlock = cssBlock(roomCss, ".player-info.active-turn");
     expect(activeTurnBlock).toContain("#fff0a6");
     expect(activeTurnBlock).toContain("border-color: rgba(218, 152, 26, 0.72)");
+    const mainTimeTimerBlock = cssBlock(roomCss, ".timer.main-time .timer-digits");
+    expect(mainTimeTimerBlock).toContain("color: #1c171a");
+    expect(mainTimeTimerBlock).toContain("text-shadow: none");
     expect(roomCss).toContain(".player-info.active-turn .name-button");
     const terminalActiveTurnBlock = cssBlock(roomTerminalCss, ".player-info.active-turn");
     expect(terminalActiveTurnBlock).toContain("rgba(255, 225, 102, 0.92)");
@@ -256,8 +259,19 @@ describe("PlayerInfo labels", () => {
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const mobileCss = readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/qa-guard.css", import.meta.url));
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      player: {
+        color: COLORS.black,
+        characterId: "sigrika",
+        user: { itemEffects: {}, rank: "3段", rating: 1160 },
+        captures: 0,
+        time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+      }
+    })));
 
-    expect(renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps()))).toContain("timer-track");
+    expect(markup).toContain("timer-track");
+    expect(markup).toContain("timer-digits text-clock-value");
+    expect(markup).toContain("rating-tag text-rating-value");
     expect(cssBlock(roomCss, ".digital-timer")).toContain("align-content: center");
     expect(cssBlock(roomCss, ".digital-timer")).not.toContain("place-content: center");
     expect(cssBlock(roomCss, ".timer-digits")).toContain("align-items: baseline");

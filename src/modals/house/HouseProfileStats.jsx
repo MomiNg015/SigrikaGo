@@ -23,6 +23,7 @@ export default function HouseProfileStats({ stats, rank, recentResults = [], cha
         <Stat
           label="积分"
           value={stats.rating}
+          valueClassName="text-rating-value"
           icon={<Star size={16} />}
           tip="积分：每胜一局+20，负一局-20，和棋或无效对局不增减积分。"
         />
@@ -42,7 +43,7 @@ export default function HouseProfileStats({ stats, rank, recentResults = [], cha
   );
 }
 
-function Stat({ label, value, icon = null, tip = "", onClick = null }) {
+function Stat({ label, value, icon = null, tip = "", valueClassName = "", onClick = null }) {
   const Component = onClick ? "button" : "div";
   return (
     <Component className={`stat ${onClick ? "stat-button" : ""}`} type={onClick ? "button" : undefined} onClick={onClick}>
@@ -56,7 +57,7 @@ function Stat({ label, value, icon = null, tip = "", onClick = null }) {
           </span>
         )}
       </span>
-      <strong>{value}</strong>
+      <strong className={valueClassName || undefined}>{value}</strong>
     </Component>
   );
 }

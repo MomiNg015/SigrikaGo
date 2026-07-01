@@ -109,6 +109,7 @@ describe("tutorialGameState", () => {
       id: "tutorial-skill-1",
       color: "black",
       characterId: "denia",
+      skillName: "泡影幻梦",
       effectType: "flip-stone",
       targetId: "4,4"
     });

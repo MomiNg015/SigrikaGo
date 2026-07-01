@@ -17,7 +17,7 @@ async function seedSiteSettings(prisma, rows = []) {
     await prisma.siteSetting.upsert({
       where: { key: row.key },
       create: { key: row.key, value: row.value },
-      update: { value: row.value }
+      update: {}
     });
   }
 }
@@ -28,21 +28,6 @@ async function seedCharacters(prisma, rows = []) {
     const existing = await prisma.character.findUnique({ where: { slug: row.slug } });
     const data = characterData(row, { existing: Boolean(existing) });
     if (existing) {
-      if (!prisma.character.update) continue;
-      await prisma.character.update({
-        where: { slug: row.slug },
-        data: {
-          ...data,
-          ...(row.skill ? {
-            skill: {
-              upsert: {
-                create: skillCreateData(row.skill),
-                update: skillCreateData(row.skill)
-              }
-            }
-          } : {})
-        }
-      });
       continue;
     }
     await prisma.character.create({
@@ -61,11 +46,6 @@ async function seedDecorations(prisma, rows = []) {
     const existing = await prisma.decoration.findUnique({ where: { slug: row.slug } });
     const data = decorationData(row);
     if (existing) {
-      if (!prisma.decoration.update) continue;
-      await prisma.decoration.update({
-        where: { slug: row.slug },
-        data
-      });
       continue;
     }
     await prisma.decoration.create({
@@ -88,11 +68,6 @@ async function seedShopItems(prisma, rows = []) {
     });
     const data = shopItemData(row, { existing: Boolean(existing) });
     if (existing) {
-      if (!prisma.shopItem.update) continue;
-      await prisma.shopItem.update({
-        where: { id: existing.id },
-        data
-      });
       continue;
     }
     await prisma.shopItem.create({
@@ -107,17 +82,6 @@ async function seedGachaPools(prisma, rows = []) {
     const existing = await prisma.gachaPool.findUnique({ where: { id: row.id } });
     const data = gachaPoolData(row);
     if (existing) {
-      if (!prisma.gachaPool.update) continue;
-      await prisma.gachaPool.update({
-        where: { id: row.id },
-        data: {
-          ...data,
-          prizes: {
-            deleteMany: {},
-            create: gachaPrizeCreateData(row.prizes)
-          }
-        }
-      });
       continue;
     }
     await prisma.gachaPool.create({
@@ -136,11 +100,6 @@ async function seedAchievementRewardAssets(prisma, rows = []) {
     const existing = await prisma.achievementRewardAsset.findUnique({ where: { id: row.id } });
     const data = achievementRewardAssetData(row);
     if (existing) {
-      if (!prisma.achievementRewardAsset.update) continue;
-      await prisma.achievementRewardAsset.update({
-        where: { id: row.id },
-        data
-      });
       continue;
     }
     await prisma.achievementRewardAsset.create({
@@ -158,11 +117,6 @@ async function seedAchievements(prisma, rows = []) {
     const existing = await prisma.achievement.findUnique({ where: { key: row.key } });
     const data = achievementData(row);
     if (existing) {
-      if (!prisma.achievement.update) continue;
-      await prisma.achievement.update({
-        where: { key: row.key },
-        data
-      });
       continue;
     }
     await prisma.achievement.create({
@@ -181,7 +135,7 @@ async function seedMusicTrackSettings(prisma, rows = []) {
     await prisma.musicTrackSetting.upsert({
       where: { id: row.id },
       create: { id: row.id, displayName: row.displayName ?? "" },
-      update: { displayName: row.displayName ?? "" }
+      update: {}
     });
   }
 }

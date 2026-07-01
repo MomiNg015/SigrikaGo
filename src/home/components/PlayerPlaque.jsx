@@ -22,9 +22,9 @@ export default function PlayerPlaque({ character, user, onOpenResume }) {
               const stats = plaqueModeStats(user, mode.id);
               return (
                 <span className={`plaque-mode-stat plaque-mode-stat-${mode.id}`} key={mode.id}>
-                  <span className="plaque-mode-name">{mode.shortTitle}</span>
+                  <span className="plaque-mode-name text-display-accent">{mode.shortTitle}</span>
                   <span className="plaque-mode-rank">{stats.rank}</span>
-                  <span className="plaque-mode-rating">{stats.rating}分</span>
+                  <span className="plaque-mode-rating text-rating-value">{stats.rating}分</span>
                 </span>
               );
             })}

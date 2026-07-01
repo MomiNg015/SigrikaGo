@@ -220,7 +220,7 @@ describe("SigrikaGo rules", () => {
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, pointId(4, 4)).stone).toBe(COLORS.black);
     expect(result.state.skillUses.black).toBe(0);
-    expect(result.state.skillCosts.black).toBe(3);
+    expect(result.state.skillCosts.black).toBe(4);
     expect(result.state.turn).toBe(COLORS.white);
     expect(result.state.history.at(-1).skill).toBe(CHARACTERS.denia.skill.name);
   });
@@ -489,7 +489,7 @@ describe("SigrikaGo rules", () => {
       COLORS.black,
       {
         effectType: "flip-stone",
-        name: "染移",
+        name: "泡影幻梦",
         uses: 1,
         freeTurn: false,
         targetRule: "stone",

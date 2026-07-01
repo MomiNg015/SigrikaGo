@@ -1,5 +1,4 @@
-/* Bright School targeted fixes for stage transparency and decoration wrappers. */
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel.home-terminal-main,
+/* Bright School targeted fixes for stage content transparency and decoration wrappers. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel.home-terminal-main::before,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel.home-terminal-main::after,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel .home-stage,

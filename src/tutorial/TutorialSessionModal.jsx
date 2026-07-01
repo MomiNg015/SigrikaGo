@@ -1,13 +1,17 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import AssetPreloadScreen from "../app/AssetPreloadScreen.jsx";
 import StoryPlayerModal from "../modals/StoryPlayerModal.jsx";
 import SkillBanner from "../modals/SkillBanner.jsx";
 import Board from "../room/Board.jsx";
+import { findCharacter } from "../shared/characterDisplay.js";
 import { TUTORIAL_NODE_TYPES, isStoryNodeType } from "../shared/tutorialNodeTypes.js";
 import {
   applyTutorialSkillAction,
   applyTutorialNodeAction,
   createTutorialGameState
 } from "./tutorialGameState.js";
+
+const BOARD_SETUP_ENTRY_LOADING_TEXT = "正在激烈对局中...";
 
 export default function TutorialSessionModal({
   script,
@@ -158,6 +162,25 @@ export default function TutorialSessionModal({
   }
 
   if (node.type === TUTORIAL_NODE_TYPES.boardSetup) {
+    if (onEnterBattle) {
+      return (
+        <div
+          className="tutorial-session-handoff-preload"
+          data-tutorial-node-type={node.type}
+          role="status"
+          aria-live="assertive"
+        >
+          <AssetPreloadScreen
+            character={boardSetupLoadingCharacter(node, characters)}
+            characters={characters}
+            label={BOARD_SETUP_ENTRY_LOADING_TEXT}
+            progress={0}
+            showTips={false}
+          />
+        </div>
+      );
+    }
+
     return (
       <div className="modal-backdrop tutorial-session-backdrop">
         <section
@@ -248,6 +271,11 @@ function storyOnlyScript(script, node) {
     startNodeId: node.id,
     nodes: [node]
   };
+}
+
+function boardSetupLoadingCharacter(node, characters) {
+  const characterId = node?.npcCharacterId || node?.characterId || node?.playerCharacterId || "";
+  return characterId ? findCharacter(characters, characterId) : null;
 }
 
 function previewPlayerForNode(game, node) {

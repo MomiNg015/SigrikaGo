@@ -101,6 +101,25 @@ describe("root CSS entry contract", () => {
     expect(tailwindEntry).not.toContain("preflight");
   });
 
+  it("keeps art font usage semantic and opt-in", () => {
+    const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
+    const fontAssetPath = fileURLToPath(new URL("../../public/assets/fonts/WuWa-Lahai-Roi-Regular.ttf", import.meta.url));
+
+    expect(statSync(fontAssetPath).isFile()).toBe(true);
+    expect(baseCss).toContain('font-family: "Sigrika Accent Latin";');
+    expect(baseCss).toContain('src: url("/assets/fonts/WuWa-Lahai-Roi-Regular.ttf") format("truetype")');
+    expect(baseCss).toContain("U+0030-0039");
+    expect(baseCss).toContain("U+0041-005A");
+    expect(baseCss).toContain("U+0061-007A");
+    expect(baseCss).toContain('--font-display-accent: "Sigrika Accent Latin";');
+    expect(baseCss).toContain('--font-numeric-accent: "Sigrika Accent Latin";');
+    expect(baseCss).toContain(".text-display-accent");
+    expect(baseCss).toContain(".text-rating-value");
+    expect(baseCss).toContain(".text-clock-value");
+    expect(baseCss).toContain("font-variant-numeric: tabular-nums");
+    expect(baseCss).toContain("text-transform: uppercase");
+  });
+
   it("keeps top-level style files either imported or intentionally non-CSS tests", () => {
     const topLevelFiles = readdirSync(stylesDir).filter((entry) => !statSync(join(stylesDir, entry)).isDirectory());
     const unexpectedFiles = topLevelFiles.filter((entry) => {
@@ -522,7 +541,8 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/reduced-motion.css",
       "./mobile-adaptive/home-narrow-desktop.css",
       "./mobile-adaptive/bright-school-portrait.css",
-      "./mobile-adaptive/announcement-detail.css"
+      "./mobile-adaptive/announcement-detail.css",
+      "./mobile-adaptive/semantic-accent-typography.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
@@ -689,6 +709,33 @@ describe("root CSS entry contract", () => {
       "./settings-tabs/shared-active-tabs.css"
     ]);
     expect(settingsTabsEntry).not.toContain(".settings-modal h2");
+  });
+
+  it("keeps semantic accent typography above Bright School broad resets", () => {
+    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+    const semanticAccentCss = readFileSync(
+      new URL("./mobile-adaptive/semantic-accent-typography.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(semanticAccentCss).toContain(".text-display-accent");
+    expect(semanticAccentCss).toContain(".text-rating-value");
+    expect(semanticAccentCss).toContain(".text-clock-value");
+    expect(semanticAccentCss).toContain("font-family: var(--font-numeric-accent), var(--font-ui-default) !important");
+    expect(semanticAccentCss).toContain("text-transform: uppercase !important");
+    expect(semanticAccentCss).toContain(".timer .text-clock-value .timer-primary");
+    expect(semanticAccentCss).toContain(".timer.main-time .text-clock-value");
+    expect(semanticAccentCss).toContain("color: #1c171a !important");
+    expect(semanticAccentCss).toContain("color: #df2f2f !important");
+    expect(semanticAccentCss).toContain("border: 0 !important");
+    expect(semanticAccentCss).toContain("box-shadow: none !important");
+    expect(semanticAccentCss).toContain("background: var(--timer-track-fill) !important");
+    expect(semanticAccentCss).not.toContain(".digital-timer");
+
+    expect(mobileCss).toContain(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(\n  .text-rating-value,\n  .text-clock-value\n)"
+    );
+    expect(mobileCss).toContain(".timer.final-byo-yomi .text-clock-value");
   });
 
   it("keeps nested CSS files under approved domain entry maps", () => {
@@ -1059,6 +1106,7 @@ describe("root CSS entry contract", () => {
     expect(cssImports(tutorialBattleEntry)).toEqual([
       "./tutorial-battle-screen/overlay-choice.css",
       "./tutorial-battle-screen/actions-targets.css",
+      "./tutorial-battle-screen/target-ring.css",
       "./tutorial-battle-screen/no-character-portraits.css",
       "./tutorial-battle-screen/loading-motion.css"
     ]);

@@ -46,6 +46,7 @@ describe("LeaderboardModal layout", () => {
 
     expect(markup).toContain("露露米");
     expect(markup).toContain("3段");
+    expect(markup).toContain("text-rating-value");
     expect(markup).toContain("战绩 胜15 负17 和0");
     expect(markup).not.toContain(">西格莉卡<");
     expect(markup).not.toContain("alt=\"西格莉卡\"");

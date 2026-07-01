@@ -88,9 +88,9 @@ export default function HouseCharacterGrid({
       })}
       {emptySlots.map((slot) => (
         <div className="character-card portrait-card locked lock-character-card" key={`empty-${slot}`}>
-          <span className="locked-portrait lock-text-title">LOCK</span>
-          <strong>LOADING... (x_x)</strong>
-          <small>LOCK / LOADING... (x_x)</small>
+          <span className="locked-portrait lock-text-title text-display-accent">LOCK</span>
+          <strong className="text-display-accent">LOADING... (x_x)</strong>
+          <small className="text-display-accent">LOCK / LOADING... (x_x)</small>
         </div>
       ))}
     </div>

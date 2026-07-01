@@ -621,7 +621,7 @@ export const ADMIN_DEFAULT_CONFIG = {
     },
     {
       "id": "denia-skill-default",
-      "displayName": "枯音染秽无凭裂章"
+      "displayName": "枯音泡影无凭裂章"
     },
     {
       "id": "home-default",

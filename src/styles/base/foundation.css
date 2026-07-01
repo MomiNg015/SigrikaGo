@@ -1,9 +1,24 @@
 /* Base layout, shared controls, home entries */
 
+@font-face {
+  font-family: "Sigrika Accent Latin";
+  src: url("/assets/fonts/WuWa-Lahai-Roi-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range:
+    U+0030-0039,
+    U+0041-005A,
+    U+0061-007A;
+}
+
 :root {
   color: #2d2430;
   background: #fff8fb;
-  font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-ui-default: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-display-accent: "Sigrika Accent Latin";
+  --font-numeric-accent: "Sigrika Accent Latin";
+  font-family: var(--font-ui-default);
   letter-spacing: 0;
   --page-pad: clamp(10px, 1.6vw, 24px);
   --fluid-gap: clamp(10px, 1.35vw, 18px);
@@ -46,6 +61,18 @@ input[type="number"]::-webkit-inner-spin-button {
 button {
   cursor: pointer;
   touch-action: manipulation;
+}
+
+.text-display-accent {
+  font-family: var(--font-display-accent), var(--font-ui-default);
+  text-transform: uppercase;
+}
+
+.text-rating-value,
+.text-clock-value {
+  font-family: var(--font-numeric-accent), var(--font-ui-default);
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
 }
 
 .app-shell {

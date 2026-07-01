@@ -181,7 +181,9 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
   const [previewBattleSession, setPreviewBattleSession] = useState(null);
   const [previewStoryStartId, setPreviewStoryStartId] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [highlightedNodeId, setHighlightedNodeId] = useState("");
   const selectedNodeRef = useRef("");
+  const flowNodeRefs = useRef(new Map());
   const characterCatalog = useMemo(() => storyPortraitCatalog(characters), [characters]);
   const gameCharacterCatalog = useMemo(() => adminCharacterCatalog(characters), [characters]);
   const portraitOptions = useMemo(() => storyPortraitOptions(characters), [characters]);
@@ -403,7 +405,7 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
       startNodeId: script.draft.startNodeId || nextId,
       nodes
     });
-    setSelectedNodeId(nextId);
+    revealNode(nextId);
   }
 
   function addBranchStep(nodeId, optionIndex) {
@@ -419,7 +421,7 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
       };
     });
     patchDraft({ nodes: [...nodes, nextNode] });
-    setSelectedNodeId(nextId);
+    revealNode(nextId);
   }
 
   function removeNode(nodeId) {
@@ -440,7 +442,42 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
       startNodeId: script.draft.startNodeId === nodeId ? (removed.nextNodeId || nodes[0]?.id || "") : script.draft.startNodeId,
       nodes
     });
-    setSelectedNodeId(removed.nextNodeId || nodes[0]?.id || "");
+    revealNode(removed.nextNodeId || nodes[0]?.id || "", { scroll: false });
+  }
+
+  function registerFlowNode(nodeId, element) {
+    if (!nodeId) return;
+    if (element) {
+      flowNodeRefs.current.set(nodeId, element);
+    } else {
+      flowNodeRefs.current.delete(nodeId);
+    }
+  }
+
+  function revealNode(nodeId, { scroll = true } = {}) {
+    if (!nodeId) return;
+    setSelectedNodeId(nodeId);
+    setHighlightedNodeId(nodeId);
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => setHighlightedNodeId((current) => current === nodeId ? "" : current), 900);
+      if (scroll) {
+        window.setTimeout(() => {
+          flowNodeRefs.current.get(nodeId)?.scrollIntoView({ block: "nearest", inline: "center" });
+        }, 0);
+      }
+    }
+  }
+
+  function openPreview() {
+    if (previewMode === "current" && selectedNode?.id) {
+      const pathLabel = previewPathLabel(script.draft, selectedNode.id);
+      if (pathLabel.length > 1 && !window.confirm(`将沿以下路径静默推演棋盘状态：\n${pathLabel.join(" > ")}\n\n确认进入预览？`)) {
+        return;
+      }
+    }
+    setPreviewBattleSession(null);
+    setPreviewStoryStartId("");
+    setPreviewOverlayOpen(true);
   }
 
   function notify(message, tone = "neutral") {
@@ -550,6 +587,7 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
                 <div>
                   <h3>自动流程图</h3>
                   <p>主线自上而下，分支横向展开；节点不可拖拽，也不需要手动画线。</p>
+                  <small>将插入到：{selectedNode ? `${stepName(selectedNode, script.draft.nodes.indexOf(selectedNode))} 之后` : "脚本末尾"}</small>
                 </div>
                 <button className="admin-story-workbench-button secondary" type="button" onClick={() => addNodeAfter()}>
                   <Plus size={16} />插入步骤
@@ -559,13 +597,15 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
                 flow={flow}
                 nodes={script.draft.nodes}
                 selectedNodeId={selectedNode?.id}
+                highlightedNodeId={highlightedNodeId}
                 issues={issues}
-                onSelect={setSelectedNodeId}
+                onSelect={revealNode}
+                registerNodeRef={registerFlowNode}
               />
             </section>
 
-            <aside className="admin-story-workbench-side">
-              <IssuePanel issues={issues} onSelect={setSelectedNodeId} />
+            <div className="admin-story-workbench-support">
+              <IssuePanel issues={issues} flow={flow} nodes={script.draft.nodes} onSelect={(nodeId) => revealNode(nodeId)} />
               <StepEditor
                 node={selectedNode}
                 nodes={script.draft.nodes}
@@ -581,39 +621,35 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
                 onEditBoardSetup={() => selectedNode && setNodeBoardEditorId(selectedNode.id)}
                 onHelp={() => setHelpOpen(true)}
               />
-            </aside>
+
+              <aside className="admin-story-workbench-preview">
+                <header>
+                  <div>
+                    <h3>预览</h3>
+                    <p>{previewMode === "current" ? "已从起点静默推演到当前步骤" : "从脚本起点播放"}</p>
+                  </div>
+                  <div className="admin-story-workbench-segmented">
+                    <button type="button" className={previewMode === "start" ? "active" : ""} onClick={() => setPreviewMode("start")}><Play size={14} />开头</button>
+                    <button type="button" className={previewMode === "current" ? "active" : ""} onClick={() => setPreviewMode("current")}><Eye size={14} />当前</button>
+                  </div>
+                </header>
+                <div className="admin-story-workbench-preview-stage">
+                  <div className="admin-story-workbench-preview-summary">
+                    <strong>{previewMode === "current" ? "从当前步骤全屏预览" : "从脚本起点全屏预览"}</strong>
+                    <span>{previewScript.nodes.length} 个步骤</span>
+                    <button
+                      className="admin-story-workbench-button primary"
+                      type="button"
+                      onClick={openPreview}
+                    >
+                      <Play size={16} />打开全屏预览
+                    </button>
+                  </div>
+                </div>
+              </aside>
+            </div>
           </div>
         </main>
-
-        <aside className="admin-story-workbench-preview">
-          <header>
-            <div>
-              <h3>预览</h3>
-              <p>{previewMode === "current" ? "已从起点静默推演到当前步骤" : "从脚本起点播放"}</p>
-            </div>
-            <div className="admin-story-workbench-segmented">
-              <button type="button" className={previewMode === "start" ? "active" : ""} onClick={() => setPreviewMode("start")}><Play size={14} />开头</button>
-              <button type="button" className={previewMode === "current" ? "active" : ""} onClick={() => setPreviewMode("current")}><Eye size={14} />当前</button>
-            </div>
-          </header>
-          <div className="admin-story-workbench-preview-stage">
-            <div className="admin-story-workbench-preview-summary">
-              <strong>{previewMode === "current" ? "从当前步骤全屏预览" : "从脚本起点全屏预览"}</strong>
-              <span>{previewScript.nodes.length} 个步骤</span>
-              <button
-                className="admin-story-workbench-button primary"
-                type="button"
-                onClick={() => {
-                  setPreviewBattleSession(null);
-                  setPreviewStoryStartId("");
-                  setPreviewOverlayOpen(true);
-                }}
-              >
-                <Play size={16} />打开全屏预览
-              </button>
-            </div>
-          </div>
-        </aside>
       </div>
 
       {fieldError && <p className="admin-story-workbench-error" role="alert">{fieldError}</p>}
@@ -722,27 +758,31 @@ function ScriptLibrary({ scripts, selectedKey, onSelect, onCopy, onDelete, onCre
           <FilePlus2 size={17} />
         </button>
       </header>
-      {PURPOSES.map((purpose) => (
-        <section key={purpose.group} className="admin-story-workbench-library-group">
-          <h4>{purpose.group}</h4>
-          {(groups.get(purpose.group) ?? []).map((entry) => (
-            <article key={entry.key} className={`admin-story-workbench-script-card ${selectedKey === entry.key ? "active" : ""}`}>
-              <button type="button" onClick={() => onSelect(entry.key)}>
-                <strong>{entry.title || entry.key}</strong>
-                <span>{entry.key}</span>
-                <small>{entry.isPublished ? "已发布" : "草稿"} · {entry.draft?.nodes?.length ?? 0} 步</small>
-              </button>
-              <div>
-                {isSystemScript(entry) && <AdminStatusPill tone="neutral">{TEXT.systemScript}</AdminStatusPill>}
-                <button type="button" className="admin-story-workbench-icon-button" title="复制" onClick={() => onCopy(entry)}><Copy size={15} /></button>
-                {!entry.isPublished && !isSystemScript(entry) && (
-                  <button type="button" className="admin-story-workbench-icon-button danger" title="删除" onClick={() => onDelete(entry)}><Trash2 size={15} /></button>
-                )}
-              </div>
-            </article>
-          ))}
-        </section>
-      ))}
+      <div className="admin-story-workbench-library-scroll">
+        {PURPOSES.map((purpose) => (
+          <section key={purpose.group} className="admin-story-workbench-library-group">
+            <h4>{purpose.group}</h4>
+            <div className="admin-story-workbench-library-cards">
+              {(groups.get(purpose.group) ?? []).map((entry) => (
+                <article key={entry.key} className={`admin-story-workbench-script-card ${selectedKey === entry.key ? "active" : ""}`}>
+                  <button type="button" onClick={() => onSelect(entry.key)}>
+                    <strong>{entry.title || entry.key}</strong>
+                    <span>{entry.key}</span>
+                    <small>{entry.isPublished ? "已发布" : "草稿"} · {entry.draft?.nodes?.length ?? 0} 步</small>
+                  </button>
+                  <div>
+                    {isSystemScript(entry) && <AdminStatusPill tone="neutral">{TEXT.systemScript}</AdminStatusPill>}
+                    <button type="button" className="admin-story-workbench-icon-button" title="复制" onClick={() => onCopy(entry)}><Copy size={15} /></button>
+                    {!entry.isPublished && !isSystemScript(entry) && (
+                      <button type="button" className="admin-story-workbench-icon-button danger" title="删除" onClick={() => onDelete(entry)}><Trash2 size={15} /></button>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
     </aside>
   );
 }
@@ -793,11 +833,18 @@ function InitialBoardSummary({ board, onMode, onOpen }) {
   );
 }
 
-function FlowGraph({ flow, nodes, selectedNodeId, issues, onSelect }) {
+function FlowGraph({ flow, nodes, selectedNodeId, highlightedNodeId, issues, onSelect, registerNodeRef }) {
   const issueNodeIds = new Set(issues.map((issue) => issue.nodeId).filter(Boolean));
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
   return (
     <div className="admin-story-workbench-flow-canvas">
+      <FlowPathGuide
+        flow={flow}
+        nodeById={nodeById}
+        selectedNodeId={selectedNodeId}
+        nodes={nodes}
+        onSelect={onSelect}
+      />
       {flow.main.map((nodeId, index) => {
         const node = nodeById.get(nodeId);
         if (!node) return null;
@@ -808,29 +855,25 @@ function FlowGraph({ flow, nodes, selectedNodeId, issues, onSelect }) {
               node={node}
               index={nodes.indexOf(node)}
               active={selectedNodeId === node.id}
+              highlighted={highlightedNodeId === node.id}
               hasIssue={issueNodeIds.has(node.id)}
+              registerNodeRef={registerNodeRef}
               onSelect={() => onSelect(node.id)}
             />
             {branches.length > 0 && (
               <div className="admin-story-workbench-flow-branches">
-                  {branches.map((branch) => branch.targetId === END_TARGET ? (
-                    <EndCard key={[nodeId, branch.optionIndex].join("-")} label={branch.label} />
-                  ) : (
-                    <div className="admin-story-workbench-branch-chain" key={[nodeId, branch.optionIndex, branch.targetId].join("-")}>
-                    {(branch.chain.length ? branch.chain : [branch.targetId]).map((branchNodeId, branchIndex) => (
-                      <Fragment key={branchNodeId}>
-                        <StepCard
-                          node={nodeById.get(branchNodeId)}
-                          index={nodes.findIndex((entry) => entry.id === branchNodeId)}
-                          active={selectedNodeId === branchNodeId}
-                          branchLabel={branchIndex === 0 ? branch.label : ""}
-                          hasIssue={issueNodeIds.has(branchNodeId)}
-                          onSelect={() => onSelect(branchNodeId)}
-                        />
-                        {branchIndex < branch.chain.length - 1 && <span className="admin-story-workbench-branch-line" />}
-                      </Fragment>
-                    ))}
-                  </div>
+                {branches.map((branch) => (
+                  <BranchLane
+                    key={[nodeId, branch.optionIndex, branch.targetId || branch.status].join("-")}
+                    branch={branch}
+                    nodeById={nodeById}
+                    nodes={nodes}
+                    selectedNodeId={selectedNodeId}
+                    highlightedNodeId={highlightedNodeId}
+                    issueNodeIds={issueNodeIds}
+                    onSelect={onSelect}
+                    registerNodeRef={registerNodeRef}
+                  />
                 ))}
               </div>
             )}
@@ -873,14 +916,109 @@ function FlowGraph({ flow, nodes, selectedNodeId, issues, onSelect }) {
   );
 }
 
-function StepCard({ node, index, active, hasIssue, branchLabel = "", onSelect }) {
-  if (!node) return <EndCard label={branchLabel || "未选择目标"} missing />;
-  const className = ["admin-story-workbench-step-card", active ? "active" : "", hasIssue ? "has-issue" : ""].filter(Boolean).join(" ");
+function FlowPathGuide({ flow, nodeById, selectedNodeId, nodes, onSelect }) {
+  const path = flow.pathByNodeId?.get(selectedNodeId) ?? [];
+  if (!path.length) return null;
   return (
-    <button className={className} type="button" onClick={onSelect}>
+    <nav className="admin-story-workbench-flow-path" aria-label="当前流程路径">
+      {path.map((entry, index) => entry.type === "option" ? (
+        <span key={[entry.type, entry.label, index].join("-")}>选项：{entry.label}</span>
+      ) : (
+        <button key={[entry.type, entry.nodeId, index].join("-")} type="button" onClick={() => onSelect(entry.nodeId)}>
+          {index === 0 ? "开始" : stepName(nodeById.get(entry.nodeId), nodes.findIndex((node) => node.id === entry.nodeId))}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+function BranchLane({ branch, nodeById, nodes, selectedNodeId, highlightedNodeId, issueNodeIds, onSelect, registerNodeRef, nested = false }) {
+  const issueCount = branch.chain.filter((nodeId) => issueNodeIds.has(nodeId)).length;
+  const mergeTargetNode = nodeById.get(branch.mergeTargetId);
+  const mergeTargetIndex = nodes.findIndex((entry) => entry.id === branch.mergeTargetId);
+  return (
+    <div className={["admin-story-workbench-branch-lane", nested ? "nested" : ""].filter(Boolean).join(" ")}>
+      <div className="admin-story-workbench-lane-title">
+        <strong>选项：{branch.label}</strong>
+        <span>{branchStatusLabel(branch, issueCount, mergeTargetNode, mergeTargetIndex)}</span>
+      </div>
+      <div className="admin-story-workbench-branch-chain">
+        {branch.status === "end" && <EndCard label={branch.label} />}
+        {branch.status === "missing" && <EndCard label="未选择目标" missing />}
+        {branch.chain.map((branchNodeId, branchIndex) => (
+          <Fragment key={branchNodeId}>
+            <StepCard
+              node={nodeById.get(branchNodeId)}
+              index={nodes.findIndex((entry) => entry.id === branchNodeId)}
+              active={selectedNodeId === branchNodeId}
+              highlighted={highlightedNodeId === branchNodeId}
+              hasIssue={issueNodeIds.has(branchNodeId)}
+              registerNodeRef={registerNodeRef}
+              onSelect={() => onSelect(branchNodeId)}
+            />
+            {branchIndex < branch.chain.length - 1 && <span className="admin-story-workbench-branch-line" />}
+          </Fragment>
+        ))}
+        {branch.mergeTargetId && (
+          <MergeCard
+            targetNode={mergeTargetNode}
+            targetIndex={mergeTargetIndex}
+            onSelect={() => onSelect(branch.mergeTargetId)}
+          />
+        )}
+      </div>
+      {branch.lanes?.length > 0 && (
+        <div className="admin-story-workbench-nested-lanes">
+          {branch.lanes.map((nestedBranch) => (
+            <BranchLane
+              key={[branch.targetId, nestedBranch.optionIndex, nestedBranch.targetId || nestedBranch.status].join("-")}
+              branch={nestedBranch}
+              nodeById={nodeById}
+              nodes={nodes}
+              selectedNodeId={selectedNodeId}
+              highlightedNodeId={highlightedNodeId}
+              issueNodeIds={issueNodeIds}
+              onSelect={onSelect}
+              registerNodeRef={registerNodeRef}
+              nested
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function branchStatusLabel(branch, issueCount, mergeTargetNode, mergeTargetIndex) {
+  const problemText = issueCount ? ` · ${issueCount} 个问题` : "";
+  if (branch.status === "missing") return `未选择目标${problemText}`;
+  if (branch.status === "end") return `结束剧情${problemText}`;
+  if (branch.mergeTargetId) return `汇合到 ${stepName(mergeTargetNode, mergeTargetIndex)}${problemText}`;
+  return `${branch.chain.length} 个步骤${problemText}`;
+}
+
+function MergeCard({ targetNode, targetIndex, onSelect }) {
+  return (
+    <button className="admin-story-workbench-merge-card" type="button" onClick={onSelect}>
+      <span>汇合到</span>
+      <strong>{stepName(targetNode, targetIndex)}</strong>
+    </button>
+  );
+}
+
+function StepCard({ node, index, active, highlighted, hasIssue, onSelect, registerNodeRef }) {
+  if (!node) return <EndCard label="未选择目标" missing />;
+  const className = [
+    "admin-story-workbench-step-card",
+    active ? "active" : "",
+    highlighted ? "highlighted" : "",
+    hasIssue ? "has-issue" : ""
+  ].filter(Boolean).join(" ");
+  return (
+    <button className={className} type="button" ref={(element) => registerNodeRef?.(node.id, element)} onClick={onSelect}>
       <span>{NODE_CATEGORY_LABELS[node.type] ?? "剧情步骤"}</span>
       <strong>{stepName(node, index)}</strong>
-      <small>{branchLabel ? "选项：" + branchLabel : nodeSummary(node)}</small>
+      <small>{nodeSummary(node)}</small>
     </button>
   );
 }
@@ -893,7 +1031,8 @@ function EndCard({ label = "", missing = false }) {
     </div>
   );
 }
-function IssuePanel({ issues, onSelect }) {
+function IssuePanel({ issues, flow, nodes, onSelect }) {
+  const groups = groupIssuesByFlowPath(issues, flow, nodes);
   return (
     <section className="admin-story-workbench-issues">
       <header>
@@ -904,16 +1043,53 @@ function IssuePanel({ issues, onSelect }) {
         <p>{TEXT.noIssues}</p>
       ) : (
         <div>
-          {issues.map((issue) => (
-            <button key={issue.id} type="button" onClick={() => issue.nodeId && onSelect(issue.nodeId)}>
-              <span>{issue.severity === "error" ? "必须修复" : "建议检查"}</span>
-              <strong>{issue.message}</strong>
-            </button>
+          {groups.map((group) => (
+            <section className="admin-story-workbench-issue-group" key={group.id}>
+              <h4>{group.title}</h4>
+              {group.issues.map((issue) => (
+                <button key={issue.id} type="button" onClick={() => issue.nodeId && onSelect(issue.nodeId)}>
+                  <span>{issue.severity === "error" ? "必须修复" : "建议检查"}</span>
+                  <strong>{issue.message}</strong>
+                </button>
+              ))}
+            </section>
           ))}
         </div>
       )}
     </section>
   );
+}
+
+function groupIssuesByFlowPath(issues, flow, nodes) {
+  const nodeIds = new Set(nodes.map((node) => node.id));
+  const orphanIds = new Set(flow.orphans ?? []);
+  const mainIds = new Set(flow.main ?? []);
+  const groups = new Map();
+  function ensureGroup(id, title) {
+    if (!groups.has(id)) groups.set(id, { id, title, issues: [] });
+    return groups.get(id);
+  }
+  for (const issueEntry of issues) {
+    if (!issueEntry.nodeId || !nodeIds.has(issueEntry.nodeId)) {
+      ensureGroup("global", "全局问题").issues.push(issueEntry);
+      continue;
+    }
+    if (orphanIds.has(issueEntry.nodeId)) {
+      ensureGroup("orphans", "未连接步骤").issues.push(issueEntry);
+      continue;
+    }
+    if (mainIds.has(issueEntry.nodeId)) {
+      ensureGroup("main", "主线").issues.push(issueEntry);
+      continue;
+    }
+    const branchLabel = firstOptionLabelForPath(flow.pathByNodeId?.get(issueEntry.nodeId));
+    ensureGroup(`branch-${branchLabel || issueEntry.nodeId}`, branchLabel ? `分支：${branchLabel}` : "分支步骤").issues.push(issueEntry);
+  }
+  return [...groups.values()];
+}
+
+function firstOptionLabelForPath(path = []) {
+  return path.find((entry) => entry.type === "option")?.label ?? "";
 }
 
 function StepEditor({
@@ -1398,26 +1574,18 @@ export function buildFlow(draft = emptyScript()) {
     currentId = nodeById.get(currentId).nextNodeId;
   }
   const reachable = collectReachableNodeIds(draft, nodeById);
-  const renderedBranchIds = new Set();
+  const renderedNodeIds = new Set(mainIds);
   const branches = new Map();
   for (const nodeId of main) {
     const node = nodeById.get(nodeId);
-    const nodeBranches = (node.options ?? []).map((option, optionIndex) => ({
-      optionIndex,
-      label: option.label || "选项 " + (optionIndex + 1),
-      targetId: option.nextNodeId || END_TARGET,
-      chain: option.nextNodeId ? collectBranchChain(option.nextNodeId, nodeById, mainIds) : []
-    }));
-    for (const branch of nodeBranches) {
-      for (const branchNodeId of branch.chain) renderedBranchIds.add(branchNodeId);
-    }
+    const nodeBranches = buildOptionLanes(node.options ?? [], nodeById, renderedNodeIds);
     if (nodeBranches.length) branches.set(nodeId, nodeBranches);
   }
   const connectedExtras = draft.nodes
     .map((node) => node.id)
-    .filter((nodeId) => reachable.has(nodeId) && !mainIds.has(nodeId) && !renderedBranchIds.has(nodeId));
+    .filter((nodeId) => reachable.has(nodeId) && !renderedNodeIds.has(nodeId));
   const orphans = draft.nodes.map((node) => node.id).filter((nodeId) => !reachable.has(nodeId));
-  return { main, branches, connectedExtras, orphans };
+  return { main, branches, connectedExtras, orphans, pathByNodeId: buildFlowPathIndex(draft, nodeById) };
 }
 
 function collectReachableNodeIds(draft, nodeById) {
@@ -1436,20 +1604,76 @@ function collectReachableNodeIds(draft, nodeById) {
   return reachable;
 }
 
-function collectBranchChain(targetId, nodeById, mainIds) {
-  const chain = [];
+function buildOptionLanes(options, nodeById, renderedNodeIds) {
+  return options.map((option, optionIndex) => buildOptionLane(option, optionIndex, nodeById, renderedNodeIds));
+}
+
+function buildOptionLane(option, optionIndex, nodeById, renderedNodeIds) {
+  const missing = Boolean(option.targetMissing && !option.nextNodeId);
+  const lane = {
+    optionIndex,
+    label: option.label || "选项 " + (optionIndex + 1),
+    targetId: missing ? "" : option.nextNodeId || END_TARGET,
+    status: missing ? "missing" : option.nextNodeId ? "linked" : "end",
+    chain: [],
+    lanes: [],
+    mergeTargetId: ""
+  };
+  if (lane.status !== "linked") return lane;
   const localSeen = new Set();
-  let currentId = targetId;
+  let currentId = option.nextNodeId;
   while (currentId && nodeById.has(currentId) && !localSeen.has(currentId)) {
-    chain.push(currentId);
+    if (renderedNodeIds.has(currentId)) {
+      lane.mergeTargetId = currentId;
+      break;
+    }
+    lane.chain.push(currentId);
+    renderedNodeIds.add(currentId);
     localSeen.add(currentId);
     const node = nodeById.get(currentId);
-    if ((node.options ?? []).length) break;
+    if ((node.options ?? []).length) {
+      lane.lanes = buildOptionLanes(node.options, nodeById, renderedNodeIds);
+      break;
+    }
     const nextId = node.nextNodeId;
-    if (!nextId || mainIds.has(nextId)) break;
+    if (!nextId) break;
+    if (renderedNodeIds.has(nextId)) {
+      lane.mergeTargetId = nextId;
+      break;
+    }
     currentId = nextId;
   }
-  return chain;
+  return lane;
+}
+
+function buildFlowPathIndex(draft, nodeById) {
+  const startId = draft.startNodeId || draft.nodes[0]?.id || "";
+  const pathByNodeId = new Map();
+  if (!startId || !nodeById.has(startId)) return pathByNodeId;
+  const queue = [[startId, [{ type: "node", nodeId: startId }]]];
+  const seen = new Set();
+  while (queue.length) {
+    const [nodeId, path] = queue.shift();
+    if (!nodeId || seen.has(nodeId) || !nodeById.has(nodeId)) continue;
+    seen.add(nodeId);
+    pathByNodeId.set(nodeId, path);
+    const node = nodeById.get(nodeId);
+    if (node.nextNodeId) {
+      queue.push([node.nextNodeId, [...path, { type: "node", nodeId: node.nextNodeId }]]);
+    }
+    for (const [optionIndex, option] of (node.options ?? []).entries()) {
+      if (!option.nextNodeId) continue;
+      queue.push([
+        option.nextNodeId,
+        [
+          ...path,
+          { type: "option", label: option.label || "选项 " + (optionIndex + 1) },
+          { type: "node", nodeId: option.nextNodeId }
+        ]
+      ]);
+    }
+  }
+  return pathByNodeId;
 }
 
 function validateWorkbench(script, { itemOptions, skillCharacters }) {
@@ -1593,6 +1817,23 @@ function pathToNode(draft, selectedNodeId, nodeById = new Map(draft.nodes.map((n
     }
   }
   return nodeById.has(selectedNodeId) ? [selectedNodeId] : [];
+}
+
+function previewPathLabel(draft, selectedNodeId) {
+  const nodeById = new Map(draft.nodes.map((node) => [node.id, node]));
+  const path = pathToNode(draft, selectedNodeId, nodeById);
+  const labels = [];
+  for (const [index, nodeId] of path.entries()) {
+    const node = nodeById.get(nodeId);
+    if (!node) continue;
+    if (index > 0) {
+      const previous = nodeById.get(path[index - 1]);
+      const option = (previous?.options ?? []).find((entry) => entry.nextNodeId === nodeId);
+      if (option) labels.push(`选项：${option.label || "未命名选项"}`);
+    }
+    labels.push(index === 0 ? "开始" : stepName(node, draft.nodes.indexOf(node)));
+  }
+  return labels;
 }
 
 function normalizeStoryScript(value = {}) {

@@ -435,6 +435,7 @@ describe("player theme CSS contract", () => {
     expect(cssImports(roomEntry)).toEqual([
       "./room/header-exit.css",
       "./room/player-status.css",
+      "./room/tutorial-choice-interactions.css",
       "./room/skill-floating.css",
       "./room/player-name-controls.css",
       "./room/side-tags.css",

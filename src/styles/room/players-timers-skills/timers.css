@@ -59,8 +59,8 @@
 }
 
 .timer.main-time .timer-digits {
-  color: #83848a;
-  text-shadow: 0 0 8px rgba(120, 126, 140, 0.24);
+  color: #1c171a;
+  text-shadow: none;
 }
 
 .timer-primary {

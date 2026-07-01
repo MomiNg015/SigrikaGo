@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { areRoomPeopleListPropsEqual } from "./RoomPeopleList.jsx";
 
 describe("RoomPeopleList memo comparison", () => {
@@ -52,6 +53,12 @@ describe("RoomPeopleList memo comparison", () => {
         spectators: [spectator({ userId: "spectator-user" }), spectator({ userId: "new-spectator" })]
       })
     }))).toBe(false);
+  });
+
+  it("marks room member ratings with semantic rating typography", () => {
+    const source = readFileSync(new URL("./RoomPeopleList.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain('className="text-rating-value">{person.rating}分');
   });
 });
 

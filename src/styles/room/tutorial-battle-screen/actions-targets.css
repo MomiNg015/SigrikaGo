@@ -63,6 +63,16 @@
   outline: none;
 }
 
+.tutorial-battle-choice button:active,
+.tutorial-battle-continue:active,
+.tutorial-battle-action:active,
+.tutorial-action-bar button:active {
+  border-color: rgba(219, 39, 119, 0.48);
+  background: #ffd6e7;
+  color: #7a1d3d;
+  transform: translateY(1px);
+}
+
 .tutorial-action-bar {
   width: 100%;
   justify-content: stretch;
@@ -106,27 +116,6 @@
   box-shadow:
     inset 0 0 0 3px rgba(245, 158, 11, 0.46),
     0 0 0 4px rgba(245, 158, 11, 0.12);
-}
-
-.board .point.tutorial-target-point .tutorial-target-ring {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(88%, 54px);
-  height: min(88%, 54px);
-  min-width: 26px;
-  min-height: 26px;
-  border: 3px solid rgba(255, 210, 77, 0.98);
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, transparent 48%, rgba(255, 236, 153, 0.24) 52%, transparent 68%);
-  box-shadow:
-    0 0 0 4px rgba(255, 210, 77, 0.24),
-    0 0 18px rgba(255, 210, 77, 0.92),
-    0 0 36px rgba(245, 158, 11, 0.58);
-  pointer-events: none;
-  z-index: 8;
-  animation: tutorial-target-pulse 1.2s ease-in-out infinite;
 }
 
 .tutorial-battle-continue,

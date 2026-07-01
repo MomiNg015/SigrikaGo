@@ -24,7 +24,7 @@ export default function LeaderboardRow({ player, rank, characters, highlight = f
         <span>{player.rank}</span>
       </div>
       <span>{player.rank}</span>
-      <b>{player.rating}</b>
+      <b className="text-rating-value">{player.rating}</b>
       <div className="leaderboard-mobile-record" aria-label={`战绩 胜${player.wins} 负${player.losses} 和${draws}`}>
         <span><strong>胜</strong>{player.wins}</span>
         <span><strong>负</strong>{player.losses}</span>

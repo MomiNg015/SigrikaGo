@@ -46,13 +46,13 @@ Questions to answer:
 #### 3. Contracts
 - The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, and `MusicTrackSetting`.
 - The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, mailbox history, game records, and live-room state.
-- Seed behavior treats the snapshot as the deployment source of truth. Existing non-user admin rows are updated to the snapshot, and missing rows are created.
-- `SiteSetting` and `MusicTrackSetting` use `upsert` with non-empty `update` payloads. Catalog tables find the stable row first, then `update` existing rows or `create` missing rows.
-- `GachaPool` updates rebuild the pool's prize list with `deleteMany` plus nested `create`; this intentionally removes stale default prizes while preserving draw history through nullable `GachaDrawReward.prizeId`.
+- Seed behavior treats the snapshot as bootstrap defaults, not runtime source of truth. Missing non-user admin rows are created from the snapshot; existing rows must be preserved so admin-console saves survive backend restarts.
+- `SiteSetting` and `MusicTrackSetting` use `upsert` with empty `update` payloads. Catalog tables find the stable row first, then skip existing rows or `create` missing rows.
+- Existing `GachaPool` rows must not rebuild prizes during startup. Prize `deleteMany` belongs to explicit admin gacha-pool updates, not default seeding.
 - Startup order matters: schema guards for achievement, gacha, music track, and recruitment tables run first; snapshot seeding runs before built-in character/shop/site setting/achievement seeders so built-in defaults do not overwrite local admin defaults.
 
 #### 4. Validation & Error Matrix
-- Existing row found by stable key/slug/id -> update snapshot-managed fields.
+- Existing row found by stable key/slug/id -> skip without changing admin-managed fields.
 - Missing row -> create from the committed snapshot.
 - Delegate missing in a narrowed test double -> seeder returns without throwing.
 - User/history model requested for snapshot -> reject the change and keep it outside deployment defaults.
@@ -60,13 +60,15 @@ Questions to answer:
 
 #### 5. Good/Base/Bad Cases
 - Good: a fresh database receives current character skill descriptions and system messages from `server/adminDefaultSnapshot.js`.
-- Base: an existing cloud database with old defaults receives the current snapshot values on restart/deploy.
+- Base: an existing cloud database with runtime admin edits keeps those values on restart/deploy; only missing snapshot rows are added.
+- Bad: using startup defaults to "refresh" a live database after an admin edited system settings, characters, shop items, gacha pools, achievements, music names, or recruitment copy.
 - Bad: importing `prisma/dev.db` at runtime on the server.
 - Bad: adding `GachaDraw`, `User`, `UserItem`, `UserReport`, or audit rows to the snapshot.
 
 #### 6. Tests Required
 - Unit tests for `seedAdminDefaultConfig()` assert every included domain creates missing rows.
-- Unit tests assert existing rows are updated to the deployment snapshot.
+- Unit tests assert existing rows are not updated by startup seeding.
+- Unit tests assert `SiteSetting` and `MusicTrackSetting` seed upserts use empty `update` payloads.
 - Startup-order tests assert schema guards run before the snapshot seed and built-in seeders run afterward.
 - A smoke test against a temporary database copy should verify the committed snapshot can be replayed through real Prisma create paths when changing snapshot shape.
 
@@ -78,7 +80,7 @@ Wrong:
 await prisma.siteSetting.upsert({
   where: { key: row.key },
   create: row,
-  update: {}
+  update: { value: row.value }
 });
 ```
 
@@ -88,11 +90,11 @@ Correct:
 await prisma.siteSetting.upsert({
   where: { key: row.key },
   create: { key: row.key, value: row.value },
-  update: { value: row.value }
+  update: {}
 });
 ```
 
-The correct form upgrades already-deployed old defaults to the committed deployment snapshot.
+The correct form creates missing bootstrap defaults without overwriting a value saved later from the admin console.
 
 ### Scenario: Site Setting Public Configuration
 
@@ -113,6 +115,7 @@ The correct form upgrades already-deployed old defaults to the committed deploym
 - `getPublicSiteSettings(prisma)` must ignore unknown database rows and merge only supported keys over shared defaults.
 - `updateSiteSettings({ prisma, adminUser, body })` must sanitize every supported key, upsert each value, and write one `site-settings.update` audit entry.
 - New settings fields must be added to `DEFAULT_SITE_SETTINGS`, `SITE_SETTING_LIMITS`, admin settings UI, public/admin route tests, frontend rendering tests, and system-design docs together.
+- The player lobby header must consume both `siteSettings.homeTitle` and `siteSettings.homeSubtitle`; do not hard-code either copy in `HomeScreen`, `HomeHeader`, or theme-specific lobby components.
 - The frontend must render `footerText` links through a constrained parser rather than arbitrary HTML.
 - Loading-screen tips must stay plain text. Do not parse HTML or Markdown for `preloadTips`; React text rendering should escape all configured content.
 - `ratingRules` must be normalized through `normalizeRatingRules()` on both admin save and backend sanitize paths; backend persistence stores the normalized JSON string.
@@ -124,12 +127,14 @@ The correct form upgrades already-deployed old defaults to the committed deploym
 - Unknown stored key -> ignored by `rowsToSettings`.
 - Footer text containing raw HTML -> React escapes it as text; it must not be inserted with `dangerouslySetInnerHTML`.
 - Footer Markdown link with non-HTTP protocol -> stays plain text because only `http://` and `https://` links are recognized.
+- Admin saves a custom `homeSubtitle` and returns to the lobby -> the header renders the saved subtitle without requiring a reload.
 - Blank `preloadTips` request value -> falls back to `DEFAULT_SITE_SETTINGS.preloadTips`.
 - `preloadTips` containing blank lines -> blank lines are ignored by the frontend parser.
 - Invalid or partial `ratingRules` JSON -> merge with `DEFAULT_RATING_RULES` and clamp numeric values before storage.
 
 #### 5. Good/Base/Bad Cases
 - Good: adding `footerText` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, and home footer rendering tests in one change.
+- Good: `HomeScreen` passes `siteSettings.homeSubtitle` to `HomeHeader`, and the configured subtitle appears in `.home-brand-subtitle`.
 - Good: adding `preloadTips` updates shared defaults, backend limits, admin textarea, public settings merge tests, admin route tests, preload component tests, style contract tests, and system-design docs in one change.
 - Good: adding `ratingRules` updates shared defaults, backend limits, admin structured controls, settlement tests, admin/site settings tests, and system-design docs in one change.
 - Base: an old database without `footerText` rows serves the shared default until an admin saves a custom footer.
@@ -141,6 +146,7 @@ The correct form upgrades already-deployed old defaults to the committed deploym
 - Backend defaults tests assert `ensureDefaultSiteSettings()` seeds every supported key.
 - Admin route tests assert PATCH/GET round-trip for newly added keys.
 - Public settings loader tests assert API values merge over defaults without dropping new keys.
+- Home rendering tests assert configured `homeTitle` and `homeSubtitle` both render from `siteSettings`.
 - Frontend component tests assert configured footer text renders and raw HTML stays escaped.
 - Preload component tests assert configured tips are parsed from newline text and render below the progress bar.
 - CSS/static tests assert desktop footer remains viewport-fixed and mobile footer remains in normal document flow when those layout contracts are affected.
@@ -148,6 +154,21 @@ The correct form upgrades already-deployed old defaults to the committed deploym
 - Rating-rule tests assert sanitized defaults and admin-saved values cannot persist malformed/clashing rule objects.
 
 #### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<span className="home-brand-subtitle">连罗伊人的都爱玩的智力游戏</span>
+```
+
+Correct:
+
+```jsx
+<HomeHeader
+  siteTitle={siteSettings.homeTitle}
+  siteSubtitle={siteSettings.homeSubtitle}
+/>
+```
 
 Wrong:
 

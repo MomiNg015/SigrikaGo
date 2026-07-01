@@ -1,11 +1,12 @@
 /* Bright School portrait mobile home main stage. */
 @media (max-width: 760px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main {
+    --home-main-panel-bg: url("/assets/home/home-main-panel-mobile.webp");
     width: 100% !important;
     min-width: 0 !important;
     margin: 4px 0 0 !important;
-    padding: 14px 10px 16px !important;
-    border-width: 2px !important;
+    padding: clamp(34px, 9.8vw, 46px) clamp(32px, 9vw, 44px) clamp(30px, 8.6vw, 42px) !important;
+    border: 0 !important;
     border-radius: 20px !important;
     overflow: visible !important;
   }
@@ -34,7 +35,7 @@
       "manual"
       "utility" !important;
     gap: 14px !important;
-    padding: 20px 0 0 !important;
+    padding: 12px 0 0 !important;
     overflow: visible !important;
   }
 }

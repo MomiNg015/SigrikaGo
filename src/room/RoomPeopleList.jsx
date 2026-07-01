@@ -128,7 +128,7 @@ function RoomPeopleList({
                   <UserIdentity user={person} compact />
                 </span>
                 <span>{person.rank}</span>
-                <span>{person.rating}分</span>
+                <span className="text-rating-value">{person.rating}分</span>
               </button>
               {activeMenu?.id === person.id && (
                 <div

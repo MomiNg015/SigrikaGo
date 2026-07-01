@@ -36,6 +36,27 @@
   width: 100%;
 }
 
+.onboarding-story-options .primary-action {
+  border-color: rgba(22, 163, 74, 0.34);
+  background: #e4f8dc;
+  color: #14532d;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.onboarding-story-options .primary-action:hover,
+.onboarding-story-options .primary-action:focus-visible {
+  border-color: rgba(79, 111, 223, 0.58);
+  background: #d7f5ca;
+  color: #0f3f24;
+}
+
+.onboarding-story-options .primary-action:active:not(:disabled) {
+  border-color: rgba(219, 39, 119, 0.48);
+  background: #ffd6e7;
+  color: #7a1d3d;
+  transform: translateY(1px);
+}
+
 .onboarding-story-single-action {
   max-width: 280px;
 }

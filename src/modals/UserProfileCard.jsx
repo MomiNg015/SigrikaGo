@@ -197,7 +197,7 @@ export function UserProfileCard({
             <span className="profile-record-breakdown">{recordSummary.breakdown}</span>
           </b>
         </span>
-        <span><small><Star size={16} />积分</small><b>{profileUser.rating}分</b></span>
+        <span><small><Star size={16} />积分</small><b className="text-rating-value">{profileUser.rating}分</b></span>
         <span><small><Trophy size={16} />段位</small><b>{profileUser.rank}</b></span>
       </div>
       <RecentResultMarkers results={profileUser.recentResults} className="profile-rank-results" label="最近十盘的战绩" />

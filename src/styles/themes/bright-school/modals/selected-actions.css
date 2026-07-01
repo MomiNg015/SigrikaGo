@@ -36,3 +36,27 @@
   border-color: #73b79f !important;
   color: #245b4f !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal .onboarding-story-options .primary-action {
+  background: #e4f8dc !important;
+  background-image: none !important;
+  color: #14532d !important;
+  border-color: rgba(74, 55, 54, 0.92) !important;
+  box-shadow: 3px 3px 0 var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal .onboarding-story-options .primary-action:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal .onboarding-story-options .primary-action:focus-visible {
+  background: #d7f5ca !important;
+  background-image: none !important;
+  color: #0f3f24 !important;
+  border-color: var(--bright-border) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal .onboarding-story-options .primary-action:active:not(:disabled) {
+  background: #ffd6e7 !important;
+  background-image: none !important;
+  color: #7a1d3d !important;
+  border-color: var(--bright-border) !important;
+  transform: translateY(1px) !important;
+}

@@ -571,6 +571,11 @@ describe("RoomScreen helpers", () => {
     expect(brightPortraitMedia).toContain("content: attr(data-chain-count)");
     expect(brightPortraitMedia).toContain("box-shadow: none !important");
     expect(brightPortraitMedia).not.toContain("box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.48) !important");
+    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .timer .text-clock-value .timer-primary");
+    expect(mobileAdaptiveCss).toContain("min-width: 3.2ch !important");
+    expect(mobileAdaptiveCss).toContain("font-size: clamp(14px, 4vw, 16px) !important");
+    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .timer .text-clock-value .timer-periods");
+    expect(mobileAdaptiveCss).toContain("font-size: clamp(9px, 2.8vw, 10px) !important");
   });
 
   it("centers mobile replay move counts without extra icon offset", () => {

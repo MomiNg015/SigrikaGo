@@ -235,6 +235,7 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/bright-school-portrait/settings-tabs/shared-active-tabs.css",
       "mobile-adaptive/announcement-detail.css",
       "mobile-adaptive/announcement-detail/window.css",
+      "mobile-adaptive/semantic-accent-typography.css",
       "mobile-adaptive/reduced-motion.css"
     ],
     guidance: "This layer stays after themes.css imports. Move or split only with desktop and mobile verification."

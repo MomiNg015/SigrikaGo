@@ -16,6 +16,16 @@ describe("App startup preload wiring", () => {
     expect(preloadCall).not.toContain("socket,");
   });
 
+  it("schedules playable-ready prewarm from the authenticated home shell", () => {
+    const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("usePlayableReadyPreload({");
+    expect(source).toContain("view,");
+    expect(source).toContain("user");
+    expect(source).toContain("preloadPlayableIntent");
+    expect(source).toContain("onPreloadPlayableReady={preloadPlayableIntent}");
+  });
+
   it("keeps startup preload from covering a recovered room", () => {
     const source = readFileSync(new URL("./useStartupPreload.js", import.meta.url), "utf8");
 
@@ -75,6 +85,17 @@ describe("App startup preload wiring", () => {
 
     expect(routesSource).toContain('view === "room" && (!room || !user)');
     expect(routesSource).toContain("正在恢复对局");
+  });
+
+  it("uses the tutorial battle preload fallback for lazy teaching battle entry", () => {
+    const routesSource = readFileSync(new URL("./AppRoutes.jsx", import.meta.url), "utf8");
+
+    expect(routesSource).toContain("TUTORIAL_BATTLE_ENTRY_LOADING_TEXT");
+    expect(routesSource).toContain("tutorialBattleRouteLoadingScreen");
+    expect(routesSource).toContain("fallback={tutorialBattleRouteLoadingScreen}");
+    expect(routesSource).toContain("tutorialBattleLoadingCharacter");
+    expect(routesSource).toContain("findCharacter(characters, characterId)");
+    expect(routesSource).not.toMatch(/view === "tutorial-battle"[\s\S]*?<Suspense fallback=\{routeLoadingScreen\}>/);
   });
 
   it("passes the registered overlay setters through the shared overlay closer", () => {

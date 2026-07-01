@@ -95,6 +95,70 @@ Correct:
 }
 ```
 
+### Scenario: Player Accent Typography Contract
+
+#### 1. Scope / Trigger
+- Trigger: any player-facing change that displays chess clock numbers, rating values, short display labels, or site/home branding.
+- The current accent font only covers Latin letters and digits, and is an art font. It must stay opt-in and must not become the default UI, form, chat, admin, or username font.
+
+#### 2. Signatures
+- Font asset: `public/assets/fonts/WuWa-Lahai-Roi-Regular.ttf`.
+- CSS family alias: `"Sigrika Accent Latin"`.
+- Semantic tokens: `--font-display-accent` for atmospheric labels and `--font-numeric-accent` for clock/rating values.
+- Semantic classes: `.text-display-accent`, `.text-clock-value`, `.text-rating-value`.
+
+#### 3. Contracts
+- `@font-face` must use a Latin/digit `unicode-range` only: digits `U+0030-0039`, uppercase `U+0041-005A`, and lowercase `U+0061-007A`.
+- Chess clock countdown digits must use `.text-clock-value` through `TimeBar`, covering desktop, mobile, spectator, replay, main-time, byo-yomi, and final byo-yomi surfaces.
+- Player-visible rating values must use `.text-rating-value`, including room player cards, room member list, home plaque mode ratings, profile/resume stats, leaderboard rows, duel request challenger rating, and result rating deltas.
+- `.text-display-accent` is allowed only for player-side atmosphere/brand/short display labels such as the login `SigrikaGo` brand subtitle, home brand title, plaque mode labels, or locked placeholder chrome.
+- Do not apply the accent classes to usernames, `UserIdentity`, admin screens, chat, announcements/body/rules copy, form inputs, coins/prices/stock/probability/game counts/win-loss stats/room codes/move counts/dates/timestamps, or leaderboard rank positions.
+- The accent classes must use `text-transform: uppercase` so lowercase Latin text displays as the art font's uppercase letterforms while the source strings and data remain unchanged.
+- Bright School main-time clock digits must stay dark `#1c171a`, not gray, while byo-yomi and final byo-yomi keep their warning colors.
+- In mobile room player strips, the final post-theme guard must keep `.mobile-room-screen .timer .text-clock-value .timer-primary` compact at `min-width: 3.2ch` and `font-size: clamp(14px, 4vw, 16px)`, with `.timer-periods` at `font-size: clamp(9px, 2.8vw, 10px)`, so the timer track remains inside the strip after the accent font loads.
+
+#### 4. Validation & Error Matrix
+- Missing accent font asset -> fail style contract tests before shipping.
+- New clock numeric surface without `.text-clock-value` -> invalid; route through `TimeBar` or add the class explicitly.
+- New player rating display without `.text-rating-value` -> invalid, unless the surface is admin-only.
+- New coin/price/stock/count/rank-position display with `.text-rating-value` -> invalid because those numbers are not rating.
+- Accent applied to `UserIdentity` or a username container -> invalid because usernames must keep the identity/nameplate font contract.
+- Future font replacement -> update the token value and asset alias; do not rename the semantic classes to the font's display name.
+
+#### 5. Good/Base/Bad Cases
+- Good: `<div className="timer-digits text-clock-value">`.
+- Good: `<b className="text-rating-value">{player.rating}</b>`.
+- Good: `.text-rating-value { font-family: var(--font-numeric-accent), var(--font-ui-default); }`.
+- Base: Chinese text inside an accented label falls back to `--font-ui-default` because the font only covers Latin/digits.
+- Bad: setting `body { font-family: "Sigrika Accent Latin"; }`.
+- Bad: adding `.text-rating-value` to coins or leaderboard `#1` rank labels.
+
+#### 6. Tests Required
+- `src/styles/styleContract.test.js` must assert the font asset, `@font-face`, unicode range, tokens, semantic classes, tabular numeric font variant, and uppercase visual transform in the base and final guard layers.
+- `src/styles/styleContract.test.js` must assert the final Bright School main-time clock color is `#1c171a`, not a gray fallback.
+- `src/room/TimeBar.test.js` or a room panel test must assert `timer-digits text-clock-value`.
+- `src/room/RoomScreen.test.js` must assert the Bright School mobile strip compact art-font timer override so mobile digits cannot inherit desktop clock sizing.
+- Player rating surfaces changed in this scenario need focused markup/source tests asserting `.text-rating-value`, including leaderboard, profile/resume, room member/player panels, duel request, and result modal reward values.
+- Home/house display chrome tests should assert `.text-display-accent` only on allowed atmosphere labels.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<body className="wuwa-font">
+  <UserIdentity user={user} />
+  <span>{user.coins}</span>
+</body>
+```
+
+Correct:
+
+```jsx
+<span className="plaque-mode-rating text-rating-value">{stats.rating}分</span>
+<div className="timer-digits text-clock-value">{displayValue}</div>
+```
+
 ### Scenario: Game Mode UI Contracts
 
 #### 1. Scope / Trigger
@@ -832,12 +896,13 @@ Correct:
 - Player skill targets use the normal skill selection flow. If a skill has no concrete target point, the second phase still requires a board click and shows "点击棋盘区域任意位置即可".
 - Player button targets highlight the required action button. Clicking unrelated disabled/free actions should do nothing unless the node explicitly defines an error toast.
 - Player reply options should render above a full-screen scrim that focuses the choice area while keeping the current NPC bubble visible above the scrim. Choice and teaching action buttons use a left/right distributed row layout so the affordance does not collapse into centered free-battle controls.
+- In Bright School, `.tutorial-battle-choice button:hover:not(:disabled)` and `:focus-visible:not(:disabled)` reuse the home utility card hover motion: `7px 8px 0 #3d2b25` hard shadow, `0 12px 24px rgba(255, 158, 187, 0.2)` lift shadow, `saturate(1.04) brightness(1.01)`, and `translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018)`. Keep this in `src/styles/themes/bright-school/room/tutorial-choice-interactions.css` so the already-large `player-status.css` does not grow.
 - Reply options should render as the buttons themselves, without a visible choice-panel title, extra close affordance, or framed card background. The scrim and NPC bubble provide the spatial context.
 - Teaching action buttons should stretch evenly across the action area with a small inset and a light-green target affordance on both desktop and mobile.
 - NPC dialogue bubbles should derive their low-saturation background, border, or glow accent from the active NPC character palette while preserving readable text contrast.
 - NPC dialogue bubble body text should type in progressively while the speaker name is shown immediately, and the animation must respect `prefers-reduced-motion`.
 - A player with no selected role keeps the same panel footprint as a character player, but the portrait and skill list are empty, placeholder slots preserve the side panel symmetry, and the rank is hidden.
-- Timer digit groups should stay centered inside their timer card in desktop room panels and mobile player strips.
+- Timer digit groups should stay centered inside their timer card in desktop room panels and mobile player strips; mobile strips must keep compact art-font overrides so the timer track is not squeezed out of the player strip.
 - Chat is read-only during battle tutorials; the input is disabled and can still display a disabled placeholder message. Tutorial chat messages must be compact, without hand number, timestamp, or `[使用角色]` suffixes.
 - Exit/skip uses the room header exit affordance, asks for confirmation, and ends the script like the normal story close/skip path.
 - Bubble slide-in/out motion should respect `prefers-reduced-motion`; keep the static visible state when motion is reduced.
@@ -860,6 +925,7 @@ Correct:
 - `src/room/RoomScreen.test.js` should cover action-panel override, read-only chat wiring, and room header exit label behavior.
 - `src/app/AppOverlays.test.jsx` / app route tests should cover battle-to-story resume wiring.
 - `src/admin/AdminOnboardingStory.test.jsx` should cover admin form validation for `npc-dialogue`, `player-choice`, delay fields, actor fields, and story-exit previews where practical.
+- `src/tutorial/TutorialBattleScreen.test.jsx` should assert Bright School reply-choice hover imports and utility-card-equivalent hover motion.
 
 ---
 

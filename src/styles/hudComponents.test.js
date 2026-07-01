@@ -447,9 +447,16 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain('content: "" !important');
   });
 
-  it("keeps Bright School stage transparent and preserves match motion", () => {
-    expect(themesCss).toContain("Bright School targeted fixes for stage transparency and decoration wrappers.");
-    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel.home-terminal-main");
+  it("keeps Bright School stage content transparent and preserves match motion", () => {
+    const stageCleanup = themesCss.slice(themesCss.indexOf("Bright School targeted fixes for stage content transparency"));
+
+    expect(themesCss).toContain("Bright School targeted fixes for stage content transparency and decoration wrappers.");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel.home-terminal-main::before");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-main-panel .home-stage");
+    expect(themesCss).toContain('--home-main-panel-bg: url("/assets/home/home-main-panel-desktop.webp")');
+    expect(themesCss).toContain('--home-main-panel-bg: url("/assets/home/home-main-panel-mobile.webp")');
+    expect(themesCss).toContain("background-size: 100% 100% !important");
+    expect(stageCleanup).not.toContain(".home-main-panel.home-terminal-main,\n");
     expect(themesCss).toContain("background-color: transparent !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-modal > .owned-decoration-section.decoration-applied-box > .owned-decoration-list");
     expect(themesCss).toContain("border-style: none !important");
@@ -515,7 +522,7 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain(".friend-main .user-identity");
   });
 
-  it("keeps the Bright School lobby canvas free of solid panel fills", () => {
+  it("keeps the Bright School lobby stage free of solid fills behind the image panel", () => {
     expect(themesCss).toContain("Bright School lobby canvas background purge.");
     expect(themesCss).toContain(
       ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main",
@@ -527,6 +534,7 @@ describe("component-level HUD refinements", () => {
     const lobbyCanvasPurge = themesCss.slice(themesCss.indexOf("Bright School lobby canvas background purge."));
     expect(lobbyCanvasPurge).toContain("background: transparent !important");
     expect(lobbyCanvasPurge).toContain("background-image: none !important");
+    expect(themesCss).toContain('background-image: var(--home-main-panel-bg) !important');
     expect(lobbyCanvasPurge).not.toContain("theme-current");
     expect(lobbyCanvasPurge).not.toContain("theme-original");
     expect(lobbyCanvasPurge).not.toContain("admin-theme-isolated");

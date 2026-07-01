@@ -76,7 +76,7 @@ export function DuelRequestBanner({ request, onAccept, onReject, onTimeout }) {
           <UserIdentity user={request.from} compact />向你申请{gameMode.title}
         </strong>
         <small>{gameMode.rulesText}</small>
-        <span>{request.from.rank} · {request.from.rating}分</span>
+        <span>{request.from.rank} · <span className="text-rating-value">{request.from.rating}分</span></span>
       </div>
       <div className="duel-request-actions">
         <button className="agree" type="button" onClick={onAccept}>同意</button>

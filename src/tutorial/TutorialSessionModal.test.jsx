@@ -10,6 +10,8 @@ describe("TutorialSessionModal", () => {
 
     expect(source).toContain("useLayoutEffect");
     expect(source).toContain("onEnterBattle({ script, startNodeId: node.id })");
+    expect(source).toContain("tutorial-session-handoff-preload");
+    expect(source).toContain("AssetPreloadScreen");
   });
 
   it("renders story nodes through the story player surface", () => {
@@ -98,6 +100,41 @@ describe("TutorialSessionModal", () => {
     expect(html).toContain('data-tutorial-node-type="board-setup"');
     expect(html).toContain("Prepare beginner board.");
     expect(html).not.toContain("tutorial-battle-actions");
+  });
+
+  it("uses the shared preload surface while handing story playback to a full battle route", () => {
+    const html = renderToStaticMarkup(createElement(TutorialSessionModal, {
+      script: {
+        startNodeId: "setup-beginner",
+        nodes: [
+          {
+            id: "setup-beginner",
+            type: "board-setup",
+            npcCharacterId: "denia",
+            prompt: "Prepare beginner board.",
+            boardSetup: {
+              mode: "spark",
+              stones: [{ pointId: "5,5", color: "black" }]
+            },
+            nextNodeId: "move-1"
+          },
+          { id: "move-1", type: "player-move", pointId: "6,6", color: "white", nextNodeId: "" }
+        ]
+      },
+      characters: {
+        denia: { id: "denia", name: "达妮娅", portrait: "/assets/characters/denia.webp" }
+      },
+      onEnterBattle: () => {},
+      onClose: () => {}
+    }));
+
+    expect(html).toContain("tutorial-session-handoff-preload");
+    expect(html).toContain('data-tutorial-node-type="board-setup"');
+    expect(html).toContain("asset-preload-screen");
+    expect(html).toContain("正在激烈对局中...");
+    expect(html).toContain('src="/assets/characters/denia.webp"');
+    expect(html).not.toContain("Prepare beginner board.");
+    expect(html).not.toContain("tutorial-battle-session");
   });
 
   it("renders skill tutorial nodes with a guided skill action area", () => {

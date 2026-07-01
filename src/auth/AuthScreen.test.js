@@ -87,6 +87,7 @@ describe("AuthScreen submit validation", () => {
     expect(html).toContain("login-title-text");
     expect(html).toContain("login-submit-btn");
     expect(html).toContain("terminal-enter-btn");
+    expect(html).toContain('<p class="text-display-accent">SigrikaGo</p>');
     expect(html).toContain("autoComplete=\"username\"");
     expect(html).toContain("type=\"password\"");
   });

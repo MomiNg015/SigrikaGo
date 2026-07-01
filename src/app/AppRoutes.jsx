@@ -3,13 +3,15 @@ import AuthScreen from "../auth/AuthScreen.jsx";
 import HomeScreen from "../home/HomeScreen.jsx";
 import RoomScreen from "../room/RoomScreen.jsx";
 import { playUiHouseOpenSound, playUiMatchOpenSound, playUiRecruitmentOpenSound, playUiShopOpenSound } from "../audio/playback.jsx";
+import { findCharacter } from "../shared/characterDisplay.js";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
-import BattleAssetPreloadScreen from "./BattleAssetPreloadScreen.jsx";
 import { rememberDismissedResultRoom } from "./resumeSession.js";
 import { planRoomBackNavigation } from "./roomNavigation.js";
 
 const AdminConsole = lazy(() => import("../admin/AdminConsole.jsx"));
+const BattleAssetPreloadScreen = lazy(() => import("./BattleAssetPreloadScreen.jsx"));
 const TutorialBattleScreen = lazy(() => import("../tutorial/TutorialBattleScreen.jsx"));
+const TUTORIAL_BATTLE_ENTRY_LOADING_TEXT = "正在激烈对局中...";
 
 export default function AppRoutes({
   adminTab,
@@ -33,6 +35,7 @@ export default function AppRoutes({
   onSiteSettingsChanged,
   onToast,
   onOpenOnboardingStory,
+  onPreloadPlayableReady,
   pendingSkill,
   replayStep,
   room,
@@ -82,6 +85,7 @@ export default function AppRoutes({
       onLogout={logout}
       onSelectCharacter={selectCharacter}
       onStartMatch={startMatch}
+      onPreloadPlayableReady={onPreloadPlayableReady}
       onOpenMatch={() => playUiMatchOpenSound(audioSettings)}
       matchModePickerOpen={showMatchModePicker}
       onMatchModePickerOpenChange={setShowMatchModePicker}
@@ -122,6 +126,15 @@ export default function AppRoutes({
       tipsText={siteSettings.preloadTips}
     />
   );
+  const tutorialBattleRouteLoadingScreen = (
+    <AssetPreloadScreen
+      character={tutorialBattleLoadingCharacter(tutorialBattleSession, characters)}
+      characters={characters}
+      label={TUTORIAL_BATTLE_ENTRY_LOADING_TEXT}
+      progress={assetProgress}
+      showTips={false}
+    />
+  );
 
   return (
     <>
@@ -135,14 +148,16 @@ export default function AppRoutes({
         />
       )}
       {view === "match-preloading" && (
-        <BattleAssetPreloadScreen
-          characters={characters}
-          matchSuccess={matchSuccess}
-          musicTracks={musicTracks}
-          siteSettings={siteSettings}
-          socket={socket}
-          user={user}
-        />
+        <Suspense fallback={routeLoadingScreen}>
+          <BattleAssetPreloadScreen
+            characters={characters}
+            matchSuccess={matchSuccess}
+            musicTracks={musicTracks}
+            siteSettings={siteSettings}
+            socket={socket}
+            user={user}
+          />
+        </Suspense>
       )}
       {view === "home" && homeScreen}
       {view === "admin" && user?.role === "admin" && (
@@ -214,7 +229,7 @@ export default function AppRoutes({
         />
       )}
       {view === "tutorial-battle" && tutorialBattleSession && user && (
-        <Suspense fallback={routeLoadingScreen}>
+        <Suspense fallback={tutorialBattleRouteLoadingScreen}>
           <TutorialBattleScreen
             audioSettings={audioSettings}
             characters={characters}
@@ -233,4 +248,11 @@ export default function AppRoutes({
       )}
     </>
   );
+}
+
+function tutorialBattleLoadingCharacter(session, characters) {
+  const startNodeId = String(session?.startNodeId ?? session?.script?.startNodeId ?? "");
+  const startNode = (session?.script?.nodes ?? []).find((node) => node?.id === startNodeId);
+  const characterId = startNode?.npcCharacterId || startNode?.characterId || startNode?.playerCharacterId || "";
+  return characterId ? findCharacter(characters, characterId) : null;
 }

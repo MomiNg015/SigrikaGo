@@ -30,7 +30,7 @@ describe("game skill registry", () => {
 
   it("calls the matching skill handler with the shared dispatch payload", () => {
     const state = { phase: "playing" };
-    const skill = { effectType: "flip-stone", name: "染移" };
+    const skill = { effectType: "flip-stone", name: "泡影幻梦" };
     const handler = vi.fn(() => ({ ok: true }));
 
     const result = executeRegisteredSkill({

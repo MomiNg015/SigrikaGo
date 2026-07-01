@@ -14,13 +14,14 @@ export default function HomeStage({
   onOpenShop,
   onOpenWarehouse,
   onOpenWatch,
+  onPreloadPlayableReady,
   onStartMatch
 }) {
   return (
     <section className="home-grid-featured home-stage home-terminal-stage">
       <PlayerPlaque character={selectedCharacter} user={user} onOpenResume={onOpenResume} />
       <HouseManualEntry onOpenHouse={onOpenHouse} />
-      <MatchEntry onStartMatch={onStartMatch} />
+      <MatchEntry onStartMatch={onStartMatch} onPreloadPlayableReady={onPreloadPlayableReady} />
       <HomeUtilityDock
         onOpenFriends={onOpenFriends}
         recruitmentReady={recruitmentReady}

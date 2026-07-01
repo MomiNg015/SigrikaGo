@@ -85,7 +85,9 @@ describe("TutorialBattleScreen runtime integration", () => {
   it("uses full-screen loading and left-right distributed teaching buttons", () => {
     const overlayCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
     const actionCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/actions-targets.css", import.meta.url), "utf8");
+    const targetRingCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/target-ring.css", import.meta.url), "utf8");
     const loadingCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/loading-motion.css", import.meta.url), "utf8");
+    const brightChoiceCss = readFileSync(new URL("../styles/themes/bright-school/room/tutorial-choice-interactions.css", import.meta.url), "utf8");
 
     expect(loadingCss).toContain("position: fixed");
     expect(loadingCss).toContain("min-height: 100dvh");
@@ -94,6 +96,16 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(actionCss).toContain("background: #e4f8dc");
     expect(actionCss).toContain("flex: 1 1 0");
     expect(actionCss).toContain(".tutorial-action-bar button::after");
+    expect(actionCss).toContain(".tutorial-battle-choice button:active");
+    expect(actionCss).toContain("background: #ffd6e7");
+    expect(targetRingCss).toContain(".board .point.tutorial-target-point .tutorial-target-ring");
+    expect(targetRingCss).toContain("animation: tutorial-target-pulse 1.2s ease-in-out infinite");
+    expect(brightChoiceCss).toContain(".tutorial-battle-choice button:active:not(:disabled)");
+    expect(brightChoiceCss).toContain("background: #ffd6e7 !important");
+    expect(brightChoiceCss).toContain(".tutorial-battle-choice button:hover:not(:disabled)");
+    expect(brightChoiceCss).toContain("box-shadow: 7px 8px 0 #3d2b25, 0 12px 24px rgba(255, 158, 187, 0.2) !important");
+    expect(brightChoiceCss).toContain("filter: saturate(1.04) brightness(1.01) !important");
+    expect(brightChoiceCss).toContain("transform: translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018) !important");
     expect(actionCss).toContain(".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar");
     expect(actionCss).toContain("display: flex !important");
     expect(actionCss).toContain("flex-wrap: nowrap !important");

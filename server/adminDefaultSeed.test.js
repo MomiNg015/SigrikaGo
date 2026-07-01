@@ -34,7 +34,7 @@ describe("admin default config seed", () => {
     expect(calls).toContainEqual(["siteSetting.upsert", {
       where: { key: "homeTitle" },
       create: { key: "homeTitle", value: "Snapshot Home" },
-      update: { value: "Snapshot Home" }
+      update: {}
     }]);
     expect(calls).toContainEqual(["character.create", expect.objectContaining({
       data: expect.objectContaining({
@@ -65,11 +65,11 @@ describe("admin default config seed", () => {
     expect(calls).toContainEqual(["musicTrackSetting.upsert", {
       where: { id: "track-snapshot" },
       create: { id: "track-snapshot", displayName: "Snapshot Track" },
-      update: { displayName: "Snapshot Track" }
+      update: {}
     }]);
   });
 
-  it("syncs existing non-user admin rows to the deployment snapshot", async () => {
+  it("preserves existing non-user admin rows during startup seeding", async () => {
     const calls = [];
     const existing = {
       characters: new Set(["snapshot-character"]),
@@ -84,46 +84,22 @@ describe("admin default config seed", () => {
     await seedAdminDefaultConfig(prisma, sampleSnapshot);
 
     expect(calls.some(([name]) => name === "character.create")).toBe(false);
+    expect(calls.some(([name]) => name === "character.update")).toBe(false);
     expect(calls.some(([name]) => name === "decoration.create")).toBe(false);
+    expect(calls.some(([name]) => name === "decoration.update")).toBe(false);
     expect(calls.some(([name]) => name === "shopItem.create")).toBe(false);
+    expect(calls.some(([name]) => name === "shopItem.update")).toBe(false);
     expect(calls.some(([name]) => name === "gachaPool.create")).toBe(false);
+    expect(calls.some(([name]) => name === "gachaPool.update")).toBe(false);
     expect(calls.some(([name]) => name === "achievementRewardAsset.create")).toBe(false);
+    expect(calls.some(([name]) => name === "achievementRewardAsset.update")).toBe(false);
     expect(calls.some(([name]) => name === "achievement.create")).toBe(false);
+    expect(calls.some(([name]) => name === "achievement.update")).toBe(false);
     expect(calls).toContainEqual(["siteSetting.upsert", expect.objectContaining({
-      update: { value: "Snapshot Home" }
-    })]);
-    expect(calls).toContainEqual(["character.update", expect.objectContaining({
-      where: { slug: "snapshot-character" },
-      data: expect.objectContaining({
-        description: "Snapshot description.",
-        skill: { upsert: expect.objectContaining({
-          create: expect.objectContaining({ systemMessage: "{player} casts {skill}" }),
-          update: expect.objectContaining({ systemMessage: "{player} casts {skill}" })
-        }) }
-      })
-    })]);
-    expect(calls).toContainEqual(["decoration.update", expect.objectContaining({
-      where: { slug: "snapshot-decoration" },
-      data: expect.objectContaining({ description: "Snapshot decoration description." })
-    })]);
-    expect(calls).toContainEqual(["shopItem.update", expect.objectContaining({
-      where: { id: "shop-existing" },
-      data: expect.objectContaining({ description: "Snapshot shop item description." })
-    })]);
-    expect(calls).toContainEqual(["gachaPool.update", expect.objectContaining({
-      where: { id: "pool-snapshot" },
-      data: expect.objectContaining({ description: "Snapshot pool description." })
-    })]);
-    expect(calls).toContainEqual(["achievementRewardAsset.update", expect.objectContaining({
-      where: { id: "reward-snapshot" },
-      data: expect.objectContaining({ description: "Snapshot reward description." })
-    })]);
-    expect(calls).toContainEqual(["achievement.update", expect.objectContaining({
-      where: { key: "achievement-snapshot" },
-      data: expect.objectContaining({ content: "Snapshot achievement content." })
+      update: {}
     })]);
     expect(calls).toContainEqual(["musicTrackSetting.upsert", expect.objectContaining({
-      update: { displayName: "Snapshot Track" }
+      update: {}
     })]);
   });
 
@@ -136,12 +112,10 @@ describe("admin default config seed", () => {
 
     await seedAdminDefaultConfig(prisma, sampleSnapshot);
 
-    const characterUpdate = calls.find(([name]) => name === "character.update")?.[1];
-    expect(characterUpdate.data).not.toHaveProperty("cvName");
-    expect(characterUpdate.data).not.toHaveProperty("cvUrl");
+    expect(calls.some(([name]) => name === "character.update")).toBe(false);
   });
 
-  it("syncs character CV metadata when the deployment snapshot declares it", async () => {
+  it("preserves saved character CV metadata even when the deployment snapshot declares it", async () => {
     const calls = [];
     const existing = {
       characters: new Set(["snapshot-character"])
@@ -157,12 +131,7 @@ describe("admin default config seed", () => {
       }]
     });
 
-    expect(calls).toContainEqual(["character.update", expect.objectContaining({
-      data: expect.objectContaining({
-        cvName: "Snapshot CV",
-        cvUrl: "https://example.com/snapshot-cv"
-      })
-    })]);
+    expect(calls.some(([name]) => name === "character.update")).toBe(false);
   });
 
   it("preserves saved shop item illustration credits when older deployment snapshots omit those fields", async () => {
@@ -174,12 +143,10 @@ describe("admin default config seed", () => {
 
     await seedAdminDefaultConfig(prisma, sampleSnapshot);
 
-    const shopUpdate = calls.find(([name]) => name === "shopItem.update")?.[1];
-    expect(shopUpdate.data).not.toHaveProperty("illustName");
-    expect(shopUpdate.data).not.toHaveProperty("illustUrl");
+    expect(calls.some(([name]) => name === "shopItem.update")).toBe(false);
   });
 
-  it("syncs shop item illustration credits when the deployment snapshot declares them", async () => {
+  it("preserves saved shop item illustration credits even when the deployment snapshot declares them", async () => {
     const calls = [];
     const existing = {
       shopTargets: new Set(["decoration:snapshot-decoration"])
@@ -195,12 +162,7 @@ describe("admin default config seed", () => {
       }]
     });
 
-    expect(calls).toContainEqual(["shopItem.update", expect.objectContaining({
-      data: expect.objectContaining({
-        illustName: "Snapshot Artist",
-        illustUrl: "https://example.com/snapshot-artist"
-      })
-    })]);
+    expect(calls.some(([name]) => name === "shopItem.update")).toBe(false);
   });
 });
 

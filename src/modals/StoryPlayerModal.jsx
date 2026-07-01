@@ -49,6 +49,7 @@ export default function StoryPlayerModal({
   const compressPortrait = isLongTextCompressPortraitEffect(node?.effect);
   const typewriterIntervalMs = storyTypewriterIntervalMs(node?.effect);
   const modalClassName = `modal-panel onboarding-story-modal${compressPortrait ? " long-text-compress-portrait" : ""}`;
+  const portraitKey = `${activeNodeId}:${node?.characterId || ""}:${character.portraitUrl || ""}`;
 
   useStoryLayoutEffect(() => {
     setNodeId((currentNodeId) => (currentNodeId === startNodeId ? currentNodeId : startNodeId));
@@ -119,8 +120,22 @@ export default function StoryPlayerModal({
           <FastForward size={22} />
         </button>
 
-        <div className="onboarding-story-portrait" aria-label={character.name || node.speakerName || ""}>
-          {character.portraitUrl && <img src={character.portraitUrl} alt="" aria-hidden="true" />}
+        <div
+          className="onboarding-story-portrait"
+          data-story-node-id={activeNodeId}
+          data-story-character-id={node.characterId || ""}
+          aria-label={character.name || node.speakerName || ""}
+        >
+          {character.portraitUrl && (
+            <img
+              key={portraitKey}
+              src={character.portraitUrl}
+              alt=""
+              aria-hidden="true"
+              loading="eager"
+              decoding="sync"
+            />
+          )}
           <div>
             <span>{node.speakerName || character.name}</span>
           </div>

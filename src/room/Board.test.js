@@ -212,9 +212,14 @@ describe("areBoardPropsEqual", () => {
     expect(markup).toContain("tutorial-target-ring");
     expect(css).toContain(".board .point.tutorial-target-point .tutorial-target-ring");
     expect(targetRingBlock).toContain("transform: translate(-50%, -50%)");
+    expect(targetRingBlock).toContain("width: min(116%, 72px)");
+    expect(targetRingBlock).toContain("min-width: 34px");
     expect(targetRingBlock).toContain("animation: tutorial-target-pulse");
     expect(targetRingBlock).toContain("rgba(255, 210, 77");
+    expect(targetRingBlock).toContain("0 0 0 2px rgba(74, 55, 54");
+    expect(css).toContain(".board .point.tutorial-target-point .tutorial-target-ring::before");
     expect(brightTargetRingBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(brightTargetRingBlock).toContain("0 0 0 7px rgba(255, 210, 77");
     expect(css).not.toContain(".board .point.tutorial-target-point::after");
   });
 

@@ -5,6 +5,7 @@ import OnboardingStoryModal, { nextStoryNodeId } from "./OnboardingStoryModal.js
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 const onboardingStoryCss = readCssWithImports(new URL("../styles/modals/onboarding-story.css", import.meta.url));
+const brightSchoolModalCss = readCssWithImports(new URL("../styles/themes/bright-school/modals.css", import.meta.url));
 
 const script = {
   startNodeId: "start",
@@ -98,4 +99,30 @@ describe("OnboardingStoryModal", () => {
     expect(onboardingStoryCss).toContain("width: min(420px, 100%) !important");
     expect(onboardingStoryCss).toContain("max-height: 100% !important");
   });
+
+  it("keeps branch choices light green until press even under the Bright School primary-action reset", () => {
+    const optionBlock = cssBlock(onboardingStoryCss, ".onboarding-story-options .primary-action");
+    const optionActiveBlock = cssBlock(onboardingStoryCss, ".onboarding-story-options .primary-action:active:not(:disabled)");
+    const brightOptionBlock = cssBlock(
+      brightSchoolModalCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal .onboarding-story-options .primary-action"
+    );
+    const brightOptionActiveBlock = cssBlock(
+      brightSchoolModalCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal .onboarding-story-options .primary-action:active:not(:disabled)"
+    );
+
+    expect(optionBlock).toContain("background: #e4f8dc");
+    expect(optionActiveBlock).toContain("background: #ffd6e7");
+    expect(brightOptionBlock).toContain("background: #e4f8dc !important");
+    expect(brightOptionActiveBlock).toContain("background: #ffd6e7 !important");
+  });
 });
+
+function cssBlock(css, selector) {
+  const start = css.indexOf(`${selector} {`);
+  if (start === -1) return "";
+  const bodyStart = css.indexOf("{", start);
+  const bodyEnd = css.indexOf("}", bodyStart);
+  return css.slice(bodyStart + 1, bodyEnd);
+}

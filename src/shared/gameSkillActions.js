@@ -91,7 +91,7 @@ export function flipStone(state, color, id, options = {}) {
   next.skillUses[color] -= 1;
   applySkillCost(next, color, options.skill ?? "denia");
   next.ko = null;
-  next.history.push({ type: "skill", skill: "染移", effectType: "flip-stone", color, id, skillRemovalOwner: removalOwner, moveNumber: next.moveNumber });
+  next.history.push({ type: "skill", skill: "泡影幻梦", effectType: "flip-stone", color, id, skillRemovalOwner: removalOwner, moveNumber: next.moveNumber });
   if (options.skillName) next.history[next.history.length - 1].skill = options.skillName;
   return ok(resolveCapturesAfterMutation(next, color, options.consumesTurn ?? true, "skillRemovals"));
 }

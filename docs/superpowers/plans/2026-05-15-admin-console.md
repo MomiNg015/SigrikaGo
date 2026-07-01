@@ -409,7 +409,7 @@ it("uses configured flip-stone skill and consumes the turn", () => {
 
   const result = useSkill(state, COLORS.black, {
     effectType: "flip-stone",
-    name: "染移",
+    name: "泡影幻梦",
     uses: 1,
     freeTurn: false,
     targetRule: "stone",
@@ -458,7 +458,7 @@ function normalizeSkillConfig(skillOrCharacterId) {
     return { effectType: "erase-point", name: "星辰符文", uses: 1, freeTurn: true, targetRule: "empty-point", params: {} };
   }
   if (skillOrCharacterId === "danea") {
-    return { effectType: "flip-stone", name: "染移", uses: 1, freeTurn: false, targetRule: "stone", params: {} };
+    return { effectType: "flip-stone", name: "泡影幻梦", uses: 1, freeTurn: false, targetRule: "stone", params: {} };
   }
   return { effectType: "unknown", name: "", uses: 0, freeTurn: false, targetRule: "", params: {} };
 }
@@ -484,7 +484,7 @@ export function erasePoint(state, color, id, skill = { name: "星辰符文", fre
   return ok(resolveCapturesAfterMutation(next, color, !skill.freeTurn));
 }
 
-export function flipStone(state, color, id, skill = { name: "染移" }) {
+export function flipStone(state, color, id, skill = { name: "泡影幻梦" }) {
   const next = cloneState(state);
   const point = getPoint(next, id);
   if (!point?.valid || !point.stone) return fail("必须指定棋盘上的棋子");
@@ -1166,7 +1166,7 @@ export const FALLBACK_CHARACTERS = {
     skill: {
       id: "flip-stone",
       effectType: "flip-stone",
-      name: "染移",
+      name: "泡影幻梦",
       uses: 1,
       description: "指定棋盘上的某个棋子，将其反色。",
       freeTurn: false,

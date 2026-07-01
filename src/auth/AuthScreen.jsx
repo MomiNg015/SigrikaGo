@@ -89,7 +89,7 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
         <div className="brand-lockup">
           <img src={CHARACTERS.sigrika.portrait} alt="\u897f\u683c\u8389\u5361" />
           <div>
-            <p>SigrikaGo</p>
+            <p className="text-display-accent">SigrikaGo</p>
             <h1 className="login-title-text">{"\u661f\u70ac\u5b66\u9662\u56f4\u68cb\u90e8"}</h1>
           </div>
         </div>

@@ -16,7 +16,7 @@ export default function TimeBar({ time }) {
   return (
     <div className={`timer digital-timer ${timerClass}`}>
       <div className="timer-label">{inMain ? "主时间" : "读秒"}</div>
-      <div className="timer-digits">
+      <div className="timer-digits text-clock-value">
         <span className="timer-primary">{displayValue}</span>
         {!inMain && <span className="timer-periods" title={`还剩${time.periods}次读秒`}>{periodValue}</span>}
       </div>

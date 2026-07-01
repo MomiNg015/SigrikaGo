@@ -27,11 +27,11 @@ export const FALLBACK_CHARACTERS = {
     portrait: "/assets/Danea_centered.webp",
     skill: {
       id: "flip-stone",
-      name: "染秽",
+      name: "泡影幻梦",
       uses: 1,
-      cost: 3,
+      cost: 4,
       costType: "numeric",
-      costValue: "3",
+      costValue: "4",
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
       description: "指定棋盘上的某个棋子，将其反色。"
     }

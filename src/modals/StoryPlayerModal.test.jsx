@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
 import StoryPlayerModal, {
   nextStoryNodeId,
   resolveStoryRenderNodeId,
@@ -68,6 +69,30 @@ describe("StoryPlayerModal", () => {
 
     expect(resolveStoryRenderNodeId("previous", "next", nodesById)).toBe("next");
     expect(resolveStoryRenderNodeId("next", "start", nodesById)).toBe("next");
+  });
+
+  it("keys story portraits to the active node so swapped tutorial windows do not reuse stale images", () => {
+    const source = readFileSync(new URL("./StoryPlayerModal.jsx", import.meta.url), "utf8");
+    const html = renderToStaticMarkup(createElement(StoryPlayerModal, {
+      script: {
+        startNodeId: "next",
+        nodes: [
+          { id: "next", speakerName: "Sigrika", characterId: "sigrika", text: "下一句", nextNodeId: "" }
+        ]
+      },
+      characters: {
+        sigrika: { name: "Sigrika", portraitUrl: "/assets/characters/sigrika.webp" }
+      },
+      typewriterDisabled: true,
+      onClose: () => {}
+    }));
+
+    expect(source).toContain("const portraitKey = `${activeNodeId}:");
+    expect(source).toContain("key={portraitKey}");
+    expect(html).toContain('data-story-node-id="next"');
+    expect(html).toContain('data-story-character-id="sigrika"');
+    expect(html).toContain('loading="eager"');
+    expect(html).toContain('decoding="sync"');
   });
 
   it("marks long-text portrait compression nodes for effect styling", () => {

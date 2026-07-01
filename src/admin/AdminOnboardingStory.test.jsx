@@ -18,10 +18,27 @@ describe("AdminOnboardingStory", () => {
     expect(adminCss).toContain("--story-wb-bg: #f6f7fb");
     expect(adminCss).toContain("--story-wb-primary: #4f6fdf");
     expect(adminCss).toContain(".admin-story-workbench-shell");
-    expect(adminCss).toContain("grid-template-columns: minmax(220px, 280px) minmax(520px, 1fr) minmax(320px, 420px)");
+    expect(adminCss).toContain("grid-template-rows: auto minmax(0, 1fr)");
+    expect(adminCss).not.toContain("grid-template-columns: minmax(220px, 280px) minmax(520px, 1fr) minmax(320px, 420px)");
     expect(adminCss).not.toContain(".admin-onboarding-editor");
     expect(adminCss).not.toContain(".admin-onboarding-node-list");
     expect(adminCss).not.toContain(".admin-onboarding-node");
+  });
+
+  it("prioritizes a full-width flow row with the script library above it", () => {
+    const contentIndex = adminSource.indexOf('className="admin-story-workbench-content"');
+    const supportIndex = adminSource.indexOf('className="admin-story-workbench-support"');
+    const previewIndex = adminSource.indexOf('className="admin-story-workbench-preview"');
+
+    expect(contentIndex).toBeGreaterThan(-1);
+    expect(supportIndex).toBeGreaterThan(contentIndex);
+    expect(previewIndex).toBeGreaterThan(supportIndex);
+    expect(adminCss).toContain(".admin-story-workbench-support");
+    expect(adminCss).toContain("grid-template-areas:");
+    expect(adminCss).toContain('"flow"');
+    expect(adminCss).toContain('"support"');
+    expect(adminCss).toContain("grid-auto-flow: column");
+    expect(adminCss).toContain("grid-column: 1 / -1");
   });
 
   it("renders a card library, automatic flow canvas, current-step form, issues, and preview controls", () => {
@@ -34,13 +51,16 @@ describe("AdminOnboardingStory", () => {
     expect(adminSource).toContain("targetMissing");
     expect(adminSource).toContain("END_TARGET");
     expect(adminCss).toContain(".admin-story-workbench-flow-canvas");
+    expect(adminCss).toContain(".admin-story-workbench-flow-path");
+    expect(adminCss).toContain(".admin-story-workbench-lane-title");
+    expect(adminCss).toContain(".admin-story-workbench-merge-card");
     expect(adminCss).toContain(".admin-story-workbench-step-card");
     expect(adminCss).toContain(".admin-story-workbench-end-card");
     expect(adminCss).toContain(".admin-story-workbench-issues");
     expect(adminCss).toContain(".admin-story-workbench-preview-stage");
   });
 
-  it("treats option targets and their next chains as connected flow nodes", () => {
+  it("keeps option targets and deep branch continuations inside swimlanes", () => {
     const flow = buildFlow({
       startNodeId: "start",
       nodes: [
@@ -56,10 +76,73 @@ describe("AdminOnboardingStory", () => {
     expect(flow.main).toEqual(["start", "main-2"]);
     expect(flow.branches.get("start")[0]).toMatchObject({
       targetId: "branch-1",
-      chain: ["branch-1", "branch-2"]
+      chain: ["branch-1", "branch-2"],
+      lanes: [
+        expect.objectContaining({
+          label: "deep",
+          targetId: "branch-3",
+          chain: ["branch-3"]
+        })
+      ]
     });
-    expect(flow.connectedExtras).toEqual(["branch-3"]);
+    expect(flow.connectedExtras).toEqual([]);
     expect(flow.orphans).toEqual(["loose"]);
+  });
+
+  it("renders shared branch targets once and marks later lanes as merge links", () => {
+    const flow = buildFlow({
+      startNodeId: "start",
+      nodes: [
+        {
+          id: "start",
+          type: "story",
+          nextNodeId: "",
+          options: [
+            { label: "A", nextNodeId: "a-1" },
+            { label: "B", nextNodeId: "b-1" }
+          ]
+        },
+        { id: "a-1", type: "story", nextNodeId: "shared" },
+        { id: "b-1", type: "story", nextNodeId: "shared" },
+        { id: "shared", type: "story", nextNodeId: "" }
+      ]
+    });
+
+    const lanes = flow.branches.get("start");
+    expect(lanes[0]).toMatchObject({
+      label: "A",
+      chain: ["a-1", "shared"],
+      mergeTargetId: ""
+    });
+    expect(lanes[1]).toMatchObject({
+      label: "B",
+      chain: ["b-1"],
+      mergeTargetId: "shared"
+    });
+    expect(flow.connectedExtras).toEqual([]);
+    expect(flow.orphans).toEqual([]);
+  });
+
+  it("distinguishes valid end targets from missing option targets", () => {
+    const flow = buildFlow({
+      startNodeId: "start",
+      nodes: [
+        {
+          id: "start",
+          type: "story",
+          nextNodeId: "",
+          options: [
+            { label: "End", nextNodeId: "" },
+            { label: "Repair", nextNodeId: "", targetMissing: true }
+          ]
+        }
+      ]
+    });
+
+    expect(flow.branches.get("start")).toEqual([
+      expect.objectContaining({ label: "End", targetId: "__story-end__", status: "end" }),
+      expect.objectContaining({ label: "Repair", targetId: "", status: "missing" })
+    ]);
   });
 
   it("replays option-branch board setup nodes for current-step preview", () => {

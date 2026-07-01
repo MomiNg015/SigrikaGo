@@ -89,7 +89,7 @@ function PlayerInfo({
         {hasCharacter && player.user.rank && <span className="meta-tag rank-tag">{player.user.rank}</span>}
         {showNoCharacterRolePlaceholder && <span className="meta-tag rank-tag meta-placeholder" aria-hidden="true" />}
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
-        {player.user.rating !== "" && player.user.rating != null && <span className="meta-tag rating-tag">{player.user.rating}分</span>}
+        {player.user.rating !== "" && player.user.rating != null && <span className="meta-tag rating-tag text-rating-value">{player.user.rating}分</span>}
       </div>
       <TimeBar time={player.time} />
       {showGoStats && <div className="captures">

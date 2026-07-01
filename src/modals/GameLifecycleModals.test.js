@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { colorTextForPlayer, formatSignedDelta, resultRewardForRoom, resultVoiceEventForRoom, secondsSinceStarted, secondsUntilTimestamp } from "./GameLifecycleModals.jsx";
 import { COLORS } from "../shared/game.js";
 
@@ -19,6 +20,13 @@ describe("GameLifecycleModals helpers", () => {
     expect(formatSignedDelta(20)).toBe("+20");
     expect(formatSignedDelta(0)).toBe("0");
     expect(formatSignedDelta(-20)).toBe("-20");
+  });
+
+  it("uses semantic rating typography only for rating reward values", () => {
+    const source = readFileSync(new URL("./gameLifecycle/ResultModal.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain('<span className="text-rating-value">{formatSignedDelta(reward.rating)}</span>');
+    expect(source).toContain("<span><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>");
   });
 
   it("shows zero reward deltas for invalid early resign results", () => {

@@ -15,6 +15,13 @@ describe("FeedbackModals helpers", () => {
     expect(duelProgressPercent(30)).toBe("100%");
   });
 
+  it("uses semantic rating typography for challenger rating but not the duel countdown", () => {
+    const source = readFileSync(new URL("./FeedbackModals.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain('<span className="text-rating-value">{request.from.rating}分</span>');
+    expect(source).toContain("<b>{seconds}s</b>");
+  });
+
   it("keeps newest toasts at the top of the queue", () => {
     const queued = limitToastQueue([
       { id: 3, text: "third" },

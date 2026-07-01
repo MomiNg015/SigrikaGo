@@ -63,7 +63,7 @@ describe("HomeScreen", () => {
     expect(html).toContain('class="home-screen home-terminal-screen"');
     expect(html).not.toContain("home-terminal-status");
     expect(html).not.toContain("SYSTEM: ACTIVE // IN_LOBBY");
-    expect(html).toContain("home-brand-title");
+    expect(html).toContain("home-brand-title text-display-accent");
     expect(html).toContain("home-brand-subtitle");
     expect(html).toContain("连罗伊人的都爱玩的智力游戏");
     expect(html).toContain("home-online-tag");
@@ -102,9 +102,15 @@ describe("HomeScreen", () => {
   it("uses a compact WebP match image instead of the source PNG", () => {
     const webpUrl = new URL("../../public/assets/home/fantasy-match-entry.webp", import.meta.url);
     const pngUrl = new URL("../../public/assets/home/fantasy-match-entry.png", import.meta.url);
+    const desktopPanelUrl = new URL("../../public/assets/home/home-main-panel-desktop.webp", import.meta.url);
+    const mobilePanelUrl = new URL("../../public/assets/home/home-main-panel-mobile.webp", import.meta.url);
 
     expect(isWebp("../../public/assets/home/fantasy-match-entry.webp")).toBe(true);
+    expect(isWebp("../../public/assets/home/home-main-panel-desktop.webp")).toBe(true);
+    expect(isWebp("../../public/assets/home/home-main-panel-mobile.webp")).toBe(true);
     expect(statSync(webpUrl).size).toBeLessThan(statSync(pngUrl).size / 8);
+    expect(statSync(desktopPanelUrl).size).toBeGreaterThan(0);
+    expect(statSync(mobilePanelUrl).size).toBeGreaterThan(0);
   });
 
   it("renders hologram entry pods without changing the primary click targets", () => {
@@ -167,6 +173,19 @@ describe("HomeScreen", () => {
     expect(matchBlock).toContain("height: clamp(560px, 72vh, 760px)");
   });
 
+  it("wires desktop match intent prewarm through the match entry and mode options", () => {
+    const homeSource = readFileSync(new URL("./HomeScreen.jsx", import.meta.url), "utf8");
+    const stageSource = readFileSync(new URL("./components/HomeStage.jsx", import.meta.url), "utf8");
+    const entriesSource = readFileSync(new URL("./components/HomeImageEntries.jsx", import.meta.url), "utf8");
+
+    expect(homeSource).toContain("onPreloadPlayableReady");
+    expect(homeSource).toContain("onPreloadPlayableReady?.()");
+    expect(homeSource).toContain("onPreloadPlayableReady?.(mode.id)");
+    expect(stageSource).toContain("onPreloadPlayableReady");
+    expect(entriesSource).toContain("onPointerEnter={onPreloadPlayableReady}");
+    expect(entriesSource).toContain("onFocus={onPreloadPlayableReady}");
+  });
+
   it("uses a tactical ID card and skewed navigation cards", () => {
     const html = renderHome();
     const css = readCssFixture("../styles/home-terminal.css");
@@ -179,6 +198,7 @@ describe("HomeScreen", () => {
     const brightHomeCss = readCssFixture("../styles/themes/bright-school/home.css");
     const brightToolboxEntry = readCssFixture("../styles/themes/bright-school/home/utility-toolbox.css");
     const brightUtilityCss = readCssFixture("../styles/themes/bright-school/contrast-purge/home-utility-tabs.css");
+    const narrowDesktopCss = readCssFixture("../styles/mobile-adaptive/home-narrow-desktop.css");
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card strong\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongClipBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card > strong\s*\{[^}]+\}/)?.[0] ?? "";
@@ -187,6 +207,7 @@ describe("HomeScreen", () => {
     const brightPlaqueNameTagBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name-tag\s*\{[^}]+\}/g)?.find((block) => block.includes("box-sizing: border-box")) ?? "";
     const brightPlaqueFixedNameplateBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity\.has-nameplate \.user-identity-name-tag\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueNameOverflowBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity-name\s*\{[^}]+\}/g)?.find((block) => block.includes("overflow: visible")) ?? "";
+    const brightPanelBlock = brightHomeCss.match(/main\.home-screen\.home-terminal-screen > section\.home-main-panel\.home-terminal-main\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStageBlock = brightHomeCss.match(/main\.home-screen\.home-terminal-screen > section\.home-main-panel\.home-terminal-main > section\.home-grid-featured\.home-stage\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
@@ -198,6 +219,8 @@ describe("HomeScreen", () => {
     expect(html).toContain("plaque-mode-stat plaque-mode-stat-spark");
     expect(html).toContain("plaque-mode-stat plaque-mode-stat-standard");
     expect(html).toContain("plaque-mode-stat plaque-mode-stat-gomoku");
+    expect(html).toContain("plaque-mode-name text-display-accent");
+    expect(html).toContain("plaque-mode-rating text-rating-value");
     expect(html).toContain("1260分");
     expect(html).toContain("920分");
     expect(html).toContain("1010分");
@@ -244,6 +267,17 @@ describe("HomeScreen", () => {
     expect(brightPlaqueNameOverflowBlock).toContain("overflow: visible");
     expect(brightPlaqueNameOverflowBlock).toContain("text-overflow: clip");
     expect(brightPlaqueNameOverflowBlock).not.toContain("user-identity-fit-font-size");
+    expect(brightPanelBlock).toContain('--home-main-panel-bg: url("/assets/home/home-main-panel-desktop.webp")');
+    expect(brightPanelBlock).toContain("background-image: var(--home-main-panel-bg) !important");
+    expect(brightPanelBlock).toContain("background-size: 100% 100% !important");
+    expect(brightPanelBlock).toContain("border: 0 !important");
+    expect(brightPanelBlock).toContain("box-shadow: none !important");
+    expect(brightHomeCss).toContain("padding-top: clamp(44px, 7.2dvh, 58px) !important");
+    expect(brightHomeCss).toContain("padding-bottom: clamp(38px, 6.6dvh, 52px) !important");
+    expect(narrowDesktopCss).toContain("padding: clamp(48px, 5vw, 68px) clamp(58px, 6vw, 80px) clamp(42px, 4.6vw, 62px) !important");
+    expect(narrowDesktopCss).toContain("padding: clamp(44px, 5vw, 56px) clamp(52px, 6vw, 64px) clamp(38px, 4.5vw, 52px) !important");
+    expect(narrowDesktopCss).not.toContain("padding: clamp(12px, 2vw, 20px) !important");
+    expect(narrowDesktopCss).not.toContain("padding: clamp(16px, 2.6vw, 24px) !important");
     expect(brightStageBlock).toContain("padding-top: clamp(28px, 3vw, 48px)");
     expect(brightStatsBlock).toContain("width: 100%");
     expect(brightStatsBlock).toContain("min-width: 0");
@@ -343,6 +377,8 @@ describe("HomeScreen", () => {
     expect(brightMobileCss).toContain(".home-mobile-menu");
     expect(brightMobileCss).toContain(".home-mobile-menu-panel");
     expect(brightMobileCss).toContain("main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main");
+    expect(brightMobileCss).toContain('--home-main-panel-bg: url("/assets/home/home-main-panel-mobile.webp")');
+    expect(brightMobileCss).toContain("padding: clamp(34px, 9.8vw, 46px) clamp(32px, 9vw, 44px) clamp(30px, 8.6vw, 42px) !important");
     expect(brightMobileCss).not.toContain("main.home-screen.home-terminal-screen > section.home-orientation-guard");
     expect(brightMobileCss).toContain('"player"\n      "match"\n      "manual"\n      "utility" !important');
     expect(brightMobileCss).toContain("grid-template-rows: minmax(188px, clamp(210px, 58vw, 270px)) !important");
@@ -420,6 +456,7 @@ describe("HomeScreen", () => {
     });
 
     expect(html).toContain('class="home-footer-line"');
+    expect(html).toContain("测试服");
     expect(html).toContain('<a href="https://beian.miit.gov.cn/" rel="noreferrer" target="_blank">备案链接</a>');
     expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
   });

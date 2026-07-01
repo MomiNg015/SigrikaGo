@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { GAME_PHASES } from "../shared/game.js";
 import { completePendingMatchRoom } from "./matchTransition.js";
+import { preloadPlayableReady as defaultPreloadPlayableReady } from "./playableReadyPreload.js";
 
 export function useMatchActions({
   matchSuccess,
@@ -13,9 +14,13 @@ export function useMatchActions({
   setView
 }) {
   const startMatch = useCallback((mode = "spark") => {
-    setMatchSuccess(null);
-    setMatchStart({ startedAt: Date.now(), mode });
-    socket?.emit("match:join", { mode });
+    startMatchTransition({
+      mode,
+      preloadPlayableReady: defaultPreloadPlayableReady,
+      setMatchStart,
+      setMatchSuccess,
+      socket
+    });
   }, [setMatchStart, setMatchSuccess, socket]);
 
   const cancelMatch = useCallback(() => {
@@ -73,6 +78,24 @@ export function useMatchActions({
     respondDraw,
     startMatch
   };
+}
+
+export function startMatchTransition({
+  mode = "spark",
+  now = Date.now,
+  preloadPlayableReady = defaultPreloadPlayableReady,
+  setMatchStart,
+  setMatchSuccess,
+  socket
+}) {
+  try {
+    void preloadPlayableReady({ includePixi: true, mode, reason: "match-start" });
+  } catch {
+    // Prewarm is opportunistic; matchmaking must continue even if it fails.
+  }
+  setMatchSuccess(null);
+  setMatchStart({ startedAt: now(), mode });
+  socket?.emit("match:join", { mode });
 }
 
 export function matchSuccessCountdownCompletedTransition(matchSuccess, latestTransition = matchSuccess) {

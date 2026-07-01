@@ -1,0 +1,4 @@
+{"file":"docs/system-design/05-assets-audio-preload.md","reason":"Verify docs match updated preload behavior"}
+{"file":"docs/system-design/07-performance-tech-debt.md","reason":"Verify performance notes reflect playable-ready prewarm scope"}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify startup preload tests and docs expectations"}
+{"file":".trellis/spec/frontend/state-management.md","reason":"Verify app shell state changes follow existing preload boundaries"}

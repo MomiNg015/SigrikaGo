@@ -25,6 +25,7 @@ import {
   useRootBackExitGuard
 } from "./modalDismissal.js";
 import { dismissOverlayByKey } from "./overlayRegistry.js";
+import { preloadPlayableReady } from "./playableReadyPreload.js";
 import { useReplayRecords } from "./useReplayRecords.js";
 import { useMailboxSummary } from "./useMailboxSummary.js";
 import { useAnnouncementSummary } from "./useAnnouncementSummary.js";
@@ -35,6 +36,7 @@ import { useRecruitmentReadyState } from "./useRecruitmentReadyState.js";
 import { useRoomSessionState } from "./useRoomSessionState.js";
 import { useRoomMemory } from "./useRoomMemory.js";
 import { useSiteSettingsState } from "./useSiteSettingsState.js";
+import { usePlayableReadyPreload } from "./usePlayableReadyPreload.js";
 import { useStartupPreload } from "./useStartupPreload.js";
 import { useSyncedRefs } from "./useSyncedRefs.js";
 import { useToastQueue } from "./useToastQueue.js";
@@ -248,6 +250,19 @@ export default function App() {
     viewRef
   });
 
+  const preloadPlayableIntent = useCallback((mode) => {
+    void preloadPlayableReady({
+      includePixi: Boolean(mode),
+      mode,
+      reason: mode ? "match-mode-intent" : "match-intent"
+    });
+  }, []);
+
+  usePlayableReadyPreload({
+    view,
+    user
+  });
+
   const {
     applyStoneDecoration,
     cancelMatch,
@@ -401,6 +416,7 @@ export default function App() {
         onSiteSettingsChanged={setSiteSettings}
         onToast={showToast}
         onOpenOnboardingStory={openOnboardingStory}
+        onPreloadPlayableReady={preloadPlayableIntent}
         pendingSkill={pendingSkill}
         replayStep={replayStep}
         room={room}

@@ -4,6 +4,7 @@ import { CircleHelp, LogOut, Mail, Menu, MessageSquareText, Newspaper, Settings 
 export default function HomeHeader({
   isAdmin,
   onlineCount,
+  siteSubtitle,
   siteTitle,
   mailboxBadgeCount = 0,
   announcementUnread = false,
@@ -26,8 +27,8 @@ export default function HomeHeader({
   return (
     <header className="home-top-strip home-terminal-header">
       <div className="home-top-brand">
-        <span className="home-brand-title">{siteTitle}</span>
-        <span className="home-brand-subtitle">连罗伊人的都爱玩的智力游戏</span>
+        <span className="home-brand-title text-display-accent">{siteTitle}</span>
+        <span className="home-brand-subtitle">{siteSubtitle}</span>
       </div>
       <span className="home-online-tag">在线人数：{onlineCount}</span>
       <div className="topbar-actions">

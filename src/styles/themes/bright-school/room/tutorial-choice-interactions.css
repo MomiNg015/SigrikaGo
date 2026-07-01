@@ -1,0 +1,42 @@
+/* Bright School tutorial reply choices reuse the home utility card hover motion. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button {
+  transition:
+    transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 160ms ease-out,
+    background-color 160ms ease-out,
+    border-color 160ms ease-out,
+    color 160ms ease-out !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button:hover:not(:disabled),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button:focus-visible:not(:disabled) {
+  box-shadow: 7px 8px 0 #3d2b25, 0 12px 24px rgba(255, 158, 187, 0.2) !important;
+  filter: saturate(1.04) brightness(1.01) !important;
+  transform: translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button:active:not(:disabled),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar button:active:not(:disabled),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-action-bar .tutorial-highlight-action:active:not(:disabled) {
+  background: #ffd6e7 !important;
+  color: #7a1d3d !important;
+  border-color: var(--bright-border) !important;
+  transform: translateY(1px) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button:active:not(:disabled) {
+  box-shadow: 1px 1px 0 #3d2b25 !important;
+  filter: brightness(0.98) saturate(1.02) !important;
+  transform: translateY(1px) rotate(var(--utility-tilt, 0deg)) scale(0.98) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button:hover:not(:disabled),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button:focus-visible:not(:disabled),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .tutorial-battle-choice button:active:not(:disabled) {
+    transition-duration: 1ms !important;
+    transform: none !important;
+  }
+}

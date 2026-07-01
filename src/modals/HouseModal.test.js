@@ -104,6 +104,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(profileHtml).toContain("profile-social-actions");
     expect(profileHtml).toContain("profile-like-button");
     expect(profileHtml).toContain("profile-report-button");
+    expect(profileHtml).toContain("text-rating-value");
     expect(profileHtml).toContain(">3</span>");
     expect(profileHtml).toContain("background-image:url(/assets/nameplate.png)");
     expect(profileHtml).toContain(">五子棋</button>");
@@ -342,7 +343,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("is-deployed");
     expect(html).not.toContain("deploy-tag");
     expect(html).toContain("lock-character-card");
-    expect(html).toContain("lock-text-title");
+    expect(html).toContain("lock-text-title text-display-accent");
+    expect(html).toContain("<strong class=\"text-display-accent\">LOADING... (x_x)</strong>");
     expect(html).toContain("character-grid-container");
     expect(html).not.toContain("top-stats-bar");
     expect(html).not.toContain("对局回放");
@@ -378,6 +380,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).not.toContain(">来下五子棋吗？</button>");
     expect(html.indexOf("resume-replay-action")).toBeLessThan(html.indexOf("top-stats-bar"));
     expect(html).toContain("top-stats-bar");
+    expect(html).toContain("text-rating-value");
     expect(html).toContain("resume-wallet");
     expect(html).toContain("achievement-entry-action");
     expect(html).toContain("personalization-entry-action");
@@ -553,7 +556,7 @@ describe("deriveCharacterRecordStats", () => {
         id: "denia",
         name: "达妮娅",
         portrait: "/assets/Danea_centered.webp",
-        skill: { name: "染秽", description: "翻转棋子。", cost: 3 }
+        skill: { name: "泡影幻梦", description: "翻转棋子。", cost: 4 }
       },
       detailOwned: true,
       itemEffects: {},
