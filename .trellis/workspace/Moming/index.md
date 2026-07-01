@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 24
-- **Last Active**: 2026-06-30
+- **Total Sessions**: 25
+- **Last Active**: 2026-07-01
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~801 | Active |
+| `journal-1.md` | ~834 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 25 | 2026-07-01 | CSS depollution and standardization | `1dca2a59da0512f48196dd4450cd55aa4055b137` | `codex/css-tidy` |
 | 24 | 2026-06-30 | Improve repo hygiene CI and frontend splitting | `a43a436e` | `master` |
 | 23 | 2026-06-30 | Fix mobile replay scroll and mailbox badge | `93df23e4` | `codex/battle-tutorial-session` |
 | 22 | 2026-06-23 | Stabilize room runtime guardrails | `adab31a3` | `codex/stability-tech-debt-audit` |

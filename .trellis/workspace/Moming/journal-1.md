@@ -799,3 +799,36 @@ Ignored generated outputs and local logs, removed tracked generated artifacts fr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 25: CSS depollution and standardization
+
+**Date**: 2026-07-01
+**Task**: CSS depollution and standardization
+**Branch**: `codex/css-tidy`
+
+### Summary
+
+Replaced Bright School purge/firewall fallback CSS with explicit surface contracts, updated CSS architecture specs, tests, and system-design docs, and verified the aggregate check gate before commit.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1dca2a59da0512f48196dd4450cd55aa4055b137` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
