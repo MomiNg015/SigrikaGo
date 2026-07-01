@@ -13,11 +13,32 @@
   color: #ffffff;
 }
 
+.result-summary .result-outcome-label-win {
+  color: #ff4056;
+}
+
 .result-rewards span {
   border-radius: 2px;
-  background: rgba(0, 255, 190, 0.08);
   border-color: rgba(0, 255, 190, 0.28);
   color: #ffffff;
+}
+
+.result-rewards .result-reward-nonnegative {
+  border-color: rgba(120, 240, 166, 0.45);
+  background: rgba(130, 234, 159, 0.18);
+  color: #eaffee;
+}
+
+.result-rewards .result-reward-negative {
+  border-color: rgba(255, 132, 146, 0.48);
+  background: rgba(255, 128, 140, 0.2);
+  color: #ffe7ea;
+}
+
+.result-rewards .result-reward-coins {
+  border-color: rgba(255, 214, 107, 0.48);
+  background: rgba(255, 216, 119, 0.18);
+  color: #fff7d8;
 }
 
 .result-rewards strong {
@@ -36,25 +57,40 @@
   height: 40vh;
   max-height: calc(100dvh - 32px);
   min-height: 280px;
+  --result-portrait-size: min(152px, calc(40vh - 112px));
   box-sizing: border-box;
   grid-template-columns: minmax(110px, 32%) minmax(0, 1fr);
   gap: clamp(14px, 2vw, 22px);
   overflow: hidden;
 }
 
-.modal-backdrop:has(.result-modal) .result-modal.draw-result {
+.modal-backdrop:has(.result-modal) .result-modal.no-result-portrait {
   grid-template-columns: 1fr;
 }
 
-.modal-backdrop:has(.result-modal) .result-winner img {
-  width: min(150px, 100%);
-  height: min(150px, calc(40vh - 112px));
+.modal-backdrop:has(.result-modal) .result-winner-portrait-wrap {
+  width: min(152px, 100%);
+  height: var(--result-portrait-size);
+}
+
+.modal-backdrop:has(.result-modal) .result-defeat-weather {
+  width: var(--result-defeat-weather-width);
+  height: auto;
 }
 
 .match-portrait,
-.result-winner img,
 .character-detail-art img,
 .profile-resume-hero img,
 .warehouse-effect-result img {
   filter: drop-shadow(0 0 18px rgba(0, 255, 190, 0.26)) drop-shadow(0 16px 24px rgba(0, 0, 0, 0.34));
+}
+
+.result-winner .result-player-portrait-image {
+  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.28));
+}
+
+.result-modal.result-outcome-loss .result-player-portrait-image {
+  filter:
+    grayscale(1) saturate(0.12) brightness(0.82) contrast(0.94)
+    drop-shadow(0 16px 24px rgba(0, 0, 0, 0.28));
 }

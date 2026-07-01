@@ -14,15 +14,31 @@ import {
   resultVoiceEventForRoom
 } from "./lifecycleHelpers.js";
 
+const RESULT_DEFEAT_WEATHER_GIF = "/assets/effects/result-defeat-rain.gif";
+
 export default function ResultModal({ room, user, characters, audioSettings, onClose }) {
   const winnerColor = room.game.winner?.winnerColor ?? room.game.winner?.color;
   const isDraw = !winnerColor;
   const winner = room.players.find((player) => player.color === winnerColor) ?? room.players[0];
-  const character = findCharacter(characters, winner?.character ?? winner?.characterId);
   const currentPlayer = resultPlayerForRoom(room, user);
+  const displayPlayer = currentPlayer ?? (!isDraw ? winner : null);
+  const character = displayPlayer ? findCharacter(characters, displayPlayer?.character ?? displayPlayer?.characterId) : null;
   const voiceCharacter = findCharacter(characters, currentPlayer?.character ?? currentPlayer?.characterId);
   const reward = resultRewardForRoom(room, user);
   const isFriendlyMatch = reward?.rated === false || room.rated === false;
+  const ratingRewardClass = `result-reward-tile result-reward-rating ${reward?.rating < 0 ? "result-reward-negative" : "result-reward-nonnegative"}`;
+  const userWon = Boolean(winnerColor && currentPlayer?.color === winnerColor);
+  const userLost = Boolean(winnerColor && currentPlayer && currentPlayer.color !== winnerColor);
+  const outcome = isDraw ? "draw" : userWon ? "win" : userLost ? "loss" : "spectator";
+  const outcomeLabel = outcome === "win" ? "赢了耶！" : outcome === "loss" ? "输掉了..." : outcome === "draw" ? "平局" : "对局结束";
+  const showPortrait = Boolean(displayPlayer && character);
+  const resultClasses = [
+    "result-modal",
+    winnerColor === COLORS.black ? "black-win" : "",
+    isDraw ? "draw-result" : "",
+    `result-outcome-${outcome}`,
+    showPortrait ? "has-result-portrait" : "no-result-portrait"
+  ].filter(Boolean).join(" ");
   const playedResultSoundRef = useRef(false);
   const playedResultVoiceRef = useRef(false);
 
@@ -47,26 +63,38 @@ export default function ResultModal({ room, user, characters, audioSettings, onC
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <section className={`result-modal ${winnerColor === COLORS.black ? "black-win" : ""} ${isDraw ? "draw-result" : ""}`} onClick={(event) => event.stopPropagation()}>
-        {!isDraw && (
-          <div className="result-winner">
+      <section className={resultClasses} onClick={(event) => event.stopPropagation()}>
+        {showPortrait && (
+          <div className="result-winner result-player-portrait">
             <span className="result-winner-portrait-wrap">
-              <img src={resolveCandyPortrait(character, winner?.user?.itemEffects)} alt={character.name} />
-              <CharacterChainBadge user={winner?.user} characterId={character.id} />
+              <img
+                className="result-player-portrait-image"
+                src={resolveCandyPortrait(character, displayPlayer?.user?.itemEffects)}
+                alt={character.name}
+              />
+              {outcome === "loss" && (
+                <img
+                  className="result-defeat-weather"
+                  src={RESULT_DEFEAT_WEATHER_GIF}
+                  alt=""
+                  aria-hidden="true"
+                />
+              )}
+              <CharacterChainBadge user={displayPlayer?.user} characterId={character.id} />
             </span>
             <strong>
-              <UserIdentity user={winner?.user} />
+              <UserIdentity user={displayPlayer?.user} />
             </strong>
           </div>
         )}
         <div className="result-summary">
-          <h2>对局结果</h2>
-          <p>{room.game.winner?.text ?? "对局结束"}</p>
+          <span className={`result-outcome-label result-outcome-label-${outcome}`}>{outcomeLabel}</span>
+          <p className="result-detail-text">{room.game.winner?.text ?? "对局结束"}</p>
           {isFriendlyMatch && <p className="result-match-note">友谊对局 · 不计入积分与段位</p>}
           {reward && (
             <div className="result-rewards" aria-label="本局收益">
-              <span><strong>积分</strong><span className="text-rating-value">{formatSignedDelta(reward.rating)}</span></span>
-              <span><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>
+              <span className={ratingRewardClass}><strong>积分</strong><span className="text-rating-value">{formatSignedDelta(reward.rating)}</span></span>
+              <span className="result-reward-tile result-reward-coins"><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>
             </div>
           )}
           {reward?.rewardLimitReached && <p className="result-reward-limit-note">今日友谊对局奖励已达上限</p>}

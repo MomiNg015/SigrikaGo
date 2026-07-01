@@ -10,19 +10,87 @@
   height: 40vh !important;
   max-height: calc(100dvh - 32px) !important;
   min-height: 280px !important;
+  --result-portrait-size: min(152px, calc(40vh - 112px)) !important;
   box-sizing: border-box !important;
   grid-template-columns: minmax(110px, 32%) minmax(0, 1fr) !important;
   gap: clamp(14px, 2vw, 22px) !important;
   overflow: hidden !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-modal.draw-result {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-modal.no-result-portrait {
   grid-template-columns: 1fr !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-winner img {
-  width: min(150px, 100%) !important;
-  height: min(150px, calc(40vh - 112px)) !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-winner-portrait-wrap {
+  width: min(152px, 100%) !important;
+  height: var(--result-portrait-size) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-defeat-weather {
+  width: var(--result-defeat-weather-width) !important;
+  height: auto !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-summary {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-summary .result-outcome-label-win {
+  color: #d91528 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-summary .result-match-note {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-rewards .text-rating-value {
+  display: inline !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-rewards .result-reward-nonnegative {
+  border-color: rgba(77, 158, 99, 0.38) !important;
+  background: #e0f5df !important;
+  background-image: none !important;
+  color: #184f2e !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-rewards .result-reward-negative {
+  border-color: rgba(216, 88, 92, 0.38) !important;
+  background: #fde3e1 !important;
+  background-image: none !important;
+  color: #762225 !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.46) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-rewards .result-reward-coins {
+  border-color: rgba(202, 155, 45, 0.42) !important;
+  background: #fff1c8 !important;
+  background-image: none !important;
+  color: #604414 !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.46) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-winner .result-player-portrait-image {
+  filter: drop-shadow(0 14px 18px rgba(61, 43, 37, 0.18)) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop:has(.result-modal) .result-modal.result-outcome-loss .result-player-portrait-image {
+  filter:
+    grayscale(1) saturate(0.12) brightness(0.82) contrast(0.94)
+    drop-shadow(0 14px 18px rgba(61, 43, 37, 0.16)) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-person-popover {

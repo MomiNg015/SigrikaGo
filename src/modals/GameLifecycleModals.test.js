@@ -26,7 +26,28 @@ describe("GameLifecycleModals helpers", () => {
     const source = readFileSync(new URL("./gameLifecycle/ResultModal.jsx", import.meta.url), "utf8");
 
     expect(source).toContain('<span className="text-rating-value">{formatSignedDelta(reward.rating)}</span>');
-    expect(source).toContain("<span><strong>金币</strong>{formatSignedDelta(reward.coins)}</span>");
+    expect(source).toContain('className="result-reward-tile result-reward-coins"');
+    expect(source).toContain("<strong>金币</strong>{formatSignedDelta(reward.coins)}");
+  });
+
+  it("marks result reward cards with signed rating and coin classes", () => {
+    const source = readFileSync(new URL("./gameLifecycle/ResultModal.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain('reward?.rating < 0 ? "result-reward-negative" : "result-reward-nonnegative"');
+    expect(source).toContain("className={ratingRewardClass}");
+    expect(source).toContain("result-reward-tile result-reward-rating");
+    expect(source).not.toContain("result-reward-card");
+  });
+
+  it("renders the battle result portrait from the current room player", () => {
+    const source = readFileSync(new URL("./gameLifecycle/ResultModal.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("const displayPlayer = currentPlayer ?? (!isDraw ? winner : null);");
+    expect(source).toContain("src={resolveCandyPortrait(character, displayPlayer?.user?.itemEffects)}");
+    expect(source).toContain("<CharacterChainBadge user={displayPlayer?.user} characterId={character.id} />");
+    expect(source).toContain("`result-outcome-${outcome}`");
+    expect(source).toContain('outcome === "loss"');
+    expect(source).not.toContain("src={resolveCandyPortrait(character, winner?.user?.itemEffects)}");
   });
 
   it("shows zero reward deltas for invalid early resign results", () => {

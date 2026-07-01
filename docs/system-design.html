@@ -97,6 +97,9 @@
 <li>当前内置对局模式为 <code>spark</code>、<code>standard</code> 和 <code>gomoku</code>。五子棋沿用 13 路棋盘与星位、5 分钟 30 秒 3 次读秒、自动猜先和独立 <code>UserModeStats(mode=gomoku)</code> 段位/积分；需要出战角色但 <code>skillEnabled=false</code>，房间 UI 不显示弃手、数子、提子、除子、超频或技能信息。 Gomoku five-in-row results carry <code>winner.winningLine</code>; the board keeps a persistent gold highlight on those five stones, live games show the result modal immediately, and replay only shows the highlight.</li>
 </ul>
 <ul>
+<li>对局结果弹窗是当前玩家视角而不是胜方公告牌：<code>ResultModal</code> 通过 <code>resultPlayerForRoom</code> 取当前用户的房间玩家作为 <code>displayPlayer</code>，胜负/平局/观战只改变 <code>result-outcome-*</code> 状态、文案和视觉效果；胜利显示 <code>赢了耶！</code> 并保留角色跳动，失败显示 <code>输掉了...</code>、灰度冻结当前用户立绘，并叠加 <code>/assets/effects/result-defeat-rain.gif</code> 雨云效果。结果奖励中的 rating 数值继续使用 <code>.text-rating-value</code>，金币和用户名不使用艺术数字字体；奖励卡片必须有实色语义底，rating 负值用浅红、非负值用浅绿，金币用浅金色，rating 数值内层 span 只继承父奖励卡片底色，不再绘制独立背景、边框或阴影。</li>
+</ul>
+<ul>
 <li>站点公开配置通过 <code>SiteSetting</code> key/value 存储，并由 <code>src/shared/siteSettings.js</code> 定义前后端共享默认值；后台系统设置可编辑大厅标题/副标题、关于文本、首页 footer 长文本、加载页提示语集合和全局技能特效开关，<code>HomeHeader</code> 从公开配置消费 <code>homeTitle</code> 与 <code>homeSubtitle</code>，footer 支持受限 Markdown 链接，加载页提示语按行维护并在玩家预加载时随机轮播；加载屏内容在桌面、移动端和短视口中保持整屏居中，标题与提示语允许按容器宽度换行，中间加载面板保持透明且不覆盖整页主题背景。</li>
 </ul>
 <ul>
@@ -4313,6 +4316,12 @@
 </ul>
 <ul>
 <li>Mobile room portraits do not render character-chain badges; duplicate-chain data remains in user payloads but is hidden on player-facing portrait surfaces.</li>
+</ul>
+<ul>
+<li>Battle result modals are player-centered. <code>src/modals/gameLifecycle/ResultModal.jsx</code> keeps winner color only for result semantics, but the portrait, candy item effects, chain badge, and <code>UserIdentity</code> come from the current user's room player when available. The modal emits <code>result-outcome-win</code>, <code>result-outcome-loss</code>, <code>result-outcome-draw</code>, or <code>result-outcome-spectator</code>: win shows <code>赢了耶！</code> with the existing portrait hop, loss shows <code>输掉了...</code> with a grayscale frozen portrait plus <code>/assets/effects/result-defeat-rain.gif</code>, and draw/observer states keep the panel compact without victory motion.</li>
+</ul>
+<ul>
+<li>Desktop, Startorch terminal, Bright School, and final mobile result styles must keep the outcome label first and keep loss rain sized from <code>--result-defeat-weather-width/top</code>. Result reward tiles are intentionally filled rather than transparent: <code>result-reward-negative</code> uses a pale red surface, <code>result-reward-nonnegative</code> uses pale green, and <code>result-reward-coins</code> uses pale gold, with terminal/Bright School/mobile overrides preserving those semantic fills. The inner <code>.text-rating-value</code> in result rewards keeps only the semantic numeric font and must not draw its own background, border, or shadow. Mobile result sheets collapse to one column, cap the portrait through <code>--result-portrait-size</code>, and center the confirm action without reintroducing a winner-only layout.</li>
 </ul>
 <h2>Feedback Messages</h2>
 <ul>
