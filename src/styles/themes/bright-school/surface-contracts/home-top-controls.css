@@ -1,10 +1,4 @@
-/* ==========================================================================
-   BRIGHT SCHOOL THEME - RADICAL CONTRAST & PURGE LAYER (明亮校园风彻底去科技化精修)
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   1. 主界面右上按钮修正 (对应 image_e7717c.jpg 穿帮)
-   -------------------------------------------------------------------------- */
+/* Bright School top control cleanup. */
 .app-shell.player-theme-enabled.theme-bright-school .home-top-strip .icon-button,
 .app-shell.player-theme-enabled.theme-bright-school .home-top-strip .admin-nav-action,
 .app-shell.player-theme-enabled.theme-bright-school .room-header .icon-button,

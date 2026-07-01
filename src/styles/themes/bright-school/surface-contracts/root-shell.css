@@ -1,0 +1,98 @@
+/* Bright School root readability contract. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+  .auth-panel,
+  .asset-preload-panel,
+  .home-top-strip,
+  .home-player-plaque,
+  .home-image-entry,
+  .utility-entry,
+  .room-header,
+  .player-info,
+  .chat-box,
+  .chat-log,
+  .room-people,
+  .operation-hint,
+  .board-stage,
+  .small-modal,
+  .shop-modal,
+  .shop-item,
+  .house-modal,
+  .warehouse-modal,
+  .warehouse-item,
+  .leaderboard-modal,
+  .leaderboard-row,
+  .friends-modal,
+  .friend-row,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .settings-modal-content,
+  .settings-panel,
+  .about-panel-block,
+  .nested-modal,
+  .message-board-modal,
+  .room-floating-modal,
+  .replay-bar
+),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(
+  .auth-panel,
+  .asset-preload-panel,
+  .home-top-strip,
+  .home-player-plaque,
+  .home-image-entry,
+  .utility-entry,
+  .room-header,
+  .player-info,
+  .chat-box,
+  .chat-log,
+  .room-people,
+  .operation-hint,
+  .small-modal,
+  .shop-modal,
+  .shop-item,
+  .house-modal,
+  .warehouse-modal,
+  .warehouse-item,
+  .leaderboard-modal,
+  .leaderboard-row,
+  .friends-modal,
+  .friend-row,
+  .confirm-modal,
+  .result-modal,
+  .settings-modal,
+  .settings-modal-content,
+  .settings-panel,
+  .about-panel-block,
+  .nested-modal,
+  .message-board-modal,
+  .room-floating-modal,
+  .replay-bar
+) :where(h1, h2, h3, h4, p, span, strong, small, b, label, li, td, th, button) {
+  color: #3d2b25 !important;
+  font-weight: bold !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school {
+  background-color: #fffbf2 !important;
+  background-image: var(--theme-paper-grid) !important;
+  background-size: 20px 20px !important;
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.auth-screen),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.home-screen),
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.room-screen) {
+  background-color: #fffbf2 !important;
+  background-image: var(--theme-paper-grid) !important;
+  background-size: 20px 20px !important;
+  color: #3d2b25 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop {
+  background-color: rgba(61, 43, 37, 0.38) !important;
+  color: #3d2b25 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}

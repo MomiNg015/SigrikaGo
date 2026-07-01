@@ -142,11 +142,36 @@ export const CSS_LAYER_GROUPS = [
       "themes/theme-components/replay-outcome-draw.css",
       "themes/bright-school.css",
       "themes/bright-school/base.css",
-      "themes/bright-school/contrast-purge.css",
       "themes/bright-school/gallery-polish.css",
-      "themes/bright-school/specificity-overrides.css",
-      "themes/bright-school/radical-purge.css",
-      "themes/bright-school/firewall.css",
+      "themes/bright-school/surface-contracts.css",
+      "themes/bright-school/surface-contracts/root-shell.css",
+      "themes/bright-school/surface-contracts/surfaces.css",
+      "themes/bright-school/surface-contracts/controls.css",
+      "themes/bright-school/surface-contracts/forms.css",
+      "themes/bright-school/surface-contracts/cards-badges.css",
+      "themes/bright-school/surface-contracts/notebook-details.css",
+      "themes/bright-school/surface-contracts/meters-friend-scroll.css",
+      "themes/bright-school/surface-contracts/home-utility-tabs.css",
+      "themes/bright-school/surface-contracts/reset-known-hud-effects.css",
+      "themes/bright-school/surface-contracts/panel-shells.css",
+      "themes/bright-school/surface-contracts/forms-textareas.css",
+      "themes/bright-school/surface-contracts/settings-panels.css",
+      "themes/bright-school/surface-contracts/character-details.css",
+      "themes/bright-school/surface-contracts/buttons.css",
+      "themes/bright-school/surface-contracts/scrollbars.css",
+      "themes/bright-school/surface-contracts/home-top-controls.css",
+      "themes/bright-school/surface-contracts/home-utility-controls.css",
+      "themes/bright-school/surface-contracts/profile-handbook-cleanup.css",
+      "themes/bright-school/surface-contracts/character-detail-cleanup.css",
+      "themes/bright-school/surface-contracts/commerce-social-cleanup.css",
+      "themes/bright-school/surface-contracts/room-action-cleanup.css",
+      "themes/bright-school/surface-contracts/final-root-surfaces.css",
+      "themes/bright-school/surface-contracts/final-explicit-surfaces.css",
+      "themes/bright-school/surface-contracts/final-explicit-pseudo-elements.css",
+      "themes/bright-school/surface-contracts/final-controls-forms.css",
+      "themes/bright-school/surface-contracts/final-semantic-badges.css",
+      "themes/bright-school/surface-contracts/final-announcement-controls.css",
+      "themes/bright-school/surface-contracts/final-typography.css",
       "themes/bright-school/component-repairs.css",
       "themes/bright-school/component-repairs/foundation-home.css",
       "themes/bright-school/component-repairs/foundation-home/scrollbar-auth.css",
@@ -192,7 +217,7 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/mobile/room/dock-actions/action-button-labels.css",
       "themes/bright-school/effects.css"
     ],
-    guidance: "Bright School late repairs are intentional cascade boundaries. Keep high-specificity repairs unless a visual test proves they are obsolete."
+    guidance: "Bright School late repairs are intentional cascade boundaries. Use explicit surface contracts only; broad class-substring fallbacks and legacy cleanup layers are not public CSS contracts."
   },
   {
     id: "final-mobile-safety",
@@ -470,6 +495,39 @@ export const CSS_THEME_OVERLAY_SPLITS = [
     ]
   },
   {
+    entry: "themes/bright-school/surface-contracts.css",
+    files: [
+      "themes/bright-school/surface-contracts/root-shell.css",
+      "themes/bright-school/surface-contracts/surfaces.css",
+      "themes/bright-school/surface-contracts/controls.css",
+      "themes/bright-school/surface-contracts/forms.css",
+      "themes/bright-school/surface-contracts/cards-badges.css",
+      "themes/bright-school/surface-contracts/notebook-details.css",
+      "themes/bright-school/surface-contracts/meters-friend-scroll.css",
+      "themes/bright-school/surface-contracts/home-utility-tabs.css",
+      "themes/bright-school/surface-contracts/reset-known-hud-effects.css",
+      "themes/bright-school/surface-contracts/panel-shells.css",
+      "themes/bright-school/surface-contracts/forms-textareas.css",
+      "themes/bright-school/surface-contracts/settings-panels.css",
+      "themes/bright-school/surface-contracts/character-details.css",
+      "themes/bright-school/surface-contracts/buttons.css",
+      "themes/bright-school/surface-contracts/scrollbars.css",
+      "themes/bright-school/surface-contracts/home-top-controls.css",
+      "themes/bright-school/surface-contracts/home-utility-controls.css",
+      "themes/bright-school/surface-contracts/profile-handbook-cleanup.css",
+      "themes/bright-school/surface-contracts/character-detail-cleanup.css",
+      "themes/bright-school/surface-contracts/commerce-social-cleanup.css",
+      "themes/bright-school/surface-contracts/room-action-cleanup.css",
+      "themes/bright-school/surface-contracts/final-root-surfaces.css",
+      "themes/bright-school/surface-contracts/final-explicit-surfaces.css",
+      "themes/bright-school/surface-contracts/final-explicit-pseudo-elements.css",
+      "themes/bright-school/surface-contracts/final-controls-forms.css",
+      "themes/bright-school/surface-contracts/final-semantic-badges.css",
+      "themes/bright-school/surface-contracts/final-announcement-controls.css",
+      "themes/bright-school/surface-contracts/final-typography.css"
+    ]
+  },
+  {
     entry: "themes/bright-school/component-repairs/foundation-home.css",
     files: [
       "themes/bright-school/component-repairs/foundation-home/scrollbar-auth.css",
@@ -737,9 +795,45 @@ export const CSS_UTILITY_LAYER_DECISION = {
   rootOrder: { after: "hud-components.css", before: "themes.css" },
   guidance: [
     "Use only tw: prefixed utility classes for new low-risk surfaces.",
+    "Keep Tailwind as a staged long-term target: phase 1 documents contracts, phase 2 pilots new or admin surfaces, phase 3 evaluates shared modal/list/card migration after visual baselines.",
     "Do not migrate existing Bright School, board, skill, room, or final mobile CSS without a focused visual migration.",
     "Keep future player themes CSS-entry based through themes.css until imported, scoped, and visually verified."
   ]
+};
+
+export const CSS_FORBIDDEN_BROAD_FALLBACKS = {
+  id: "bright-school-no-broad-fallbacks",
+  files: [
+    "hud-components/pop-tech-terminal/character-deploy.css",
+    "hud-components/hud-hardening/inputs-settings-auth.css",
+    "hud-components/hud-hardening/inventory-state-tags.css",
+    "themes/bright-school.css",
+    "themes/bright-school/surface-contracts.css"
+  ],
+  forbiddenFragments: [
+    '[class*="panel"]',
+    '[class*="card"]',
+    '[class*="item"]',
+    '[class*="row"]',
+    '[class*="dock"]',
+    '[class*="setting"]',
+    '[class*="about"]',
+    '[class*="volume-row"]',
+    '[class*="enter-btn"]',
+    '[class*="submit-btn"]',
+    '[class*="lock"]',
+    '[class*="decor"]',
+    '[class*="owned"]',
+    "contrast-purge",
+    "radical-purge",
+    "specificity-overrides",
+    "anti-tech-bleed",
+    "generic-surfaces",
+    "generic-pseudo-elements",
+    ".app-shell.player-theme-enabled.theme-bright-school * {\n  text-shadow: none !important;\n  box-shadow: none;"
+  ],
+  guidance:
+    "Bright School and HUD cleanup must use explicit owner selectors. Do not add global theme substring fallbacks or all-element shadow resets."
 };
 
 export const CSS_ROUND4_REGRESSION_CHECKS = [

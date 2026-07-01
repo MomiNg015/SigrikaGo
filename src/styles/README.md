@@ -34,7 +34,13 @@ Do not move `mobile-adaptive.css` earlier in the cascade. It is the final overri
 
 Tailwind CSS v4 is installed, but only as the low-intrusion `src/styles/tailwind.css` utility layer. It is imported after `hud-components.css` and immediately before `themes.css`, imports only `tailwindcss/theme.css` and `tailwindcss/utilities.css` with `prefix(tw)`, and deliberately omits preflight/global resets.
 
-Use `tw:` utilities only for new low-risk surfaces. Do not migrate existing Bright School, room, board, skill-presentation, or final-mobile CSS to Tailwind without a focused migration plan and visual regression checks. Future player themes remain CSS-entry based through `themes.css` until the theme is imported, scoped, and visually verified.
+Use `tw:` utilities only for new low-risk surfaces. The long-term route is staged:
+
+1. Phase 1 keeps existing visuals stable, documents contracts, and removes polluted fallback CSS.
+2. Phase 2 pilots `tw:` utilities in new or isolated admin/tooling surfaces.
+3. Phase 3 can evaluate shared modal/list/card migration after desktop and mobile visual baselines exist.
+
+Do not migrate existing Bright School, room, board, skill-presentation, or final-mobile CSS to Tailwind without a focused migration plan and visual regression checks. Future player themes remain CSS-entry based through `themes.css` until the theme is imported, scoped, and visually verified.
 
 ## Layer Inventory
 
@@ -133,4 +139,5 @@ Rules for future CSS work:
 - Add future theme names to `VISUAL_THEME_OPTIONS`; only set `available: true` when the theme entry is imported and visually verified.
 - Split large domain files by moving rules into a clearly named top-level domain file only when it belongs in the root order.
 - If a split creates nested CSS, keep it under an approved import entry directory such as `src/styles/base/`, `src/styles/room/`, `src/styles/modals/`, `src/styles/commerce/`, `src/styles/home-terminal/`, `src/styles/mobile-home/`, `src/styles/responsive/`, `src/styles/mobile-room/`, `src/styles/hud-components/`, `src/styles/mobile-adaptive/`, or `src/styles/themes/`, and update the contract test with the import order.
+- Use explicit owner selectors for theme cleanup. Do not add broad `[class*="..."]` fallback selectors, all-element theme resets, or empty compatibility CSS files.
 - Run `npm test -- src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js` after changing CSS entry files. Run `npm run verify:battle-fixes` before handing off board, skill, room, mobile, or broad CSS refactors.

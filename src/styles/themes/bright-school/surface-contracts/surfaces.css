@@ -27,9 +27,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .about-panel-block,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-panel,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .audio-slider-item,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="about"],
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="setting"],
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="volume-row"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .volume-row,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-bar {
   background-color: #ffffff !important;
   background-image: none !important;

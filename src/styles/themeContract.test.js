@@ -163,56 +163,52 @@ describe("player theme CSS contract", () => {
     expect(brightBaseEntry).not.toContain(".board-stage {");
   });
 
-  it("keeps Bright School contrast purge as an import-only readability entry", () => {
-    const contrastPurgeEntry = readFileSync(new URL("./themes/bright-school/contrast-purge.css", import.meta.url), "utf8");
+  it("keeps Bright School semantic surface contracts as one import-only anti-bleed entry", () => {
+    let surfaceContractsEntry = "";
 
-    expect(cssImports(contrastPurgeEntry)).toEqual([
-      "./contrast-purge/root-shell.css",
-      "./contrast-purge/surfaces.css",
-      "./contrast-purge/controls.css",
-      "./contrast-purge/forms.css",
-      "./contrast-purge/cards-badges.css",
-      "./contrast-purge/notebook-details.css",
-      "./contrast-purge/meters-friend-scroll.css",
-      "./contrast-purge/home-utility-tabs.css"
+    try {
+      surfaceContractsEntry = readFileSync(
+        new URL("./themes/bright-school/surface-contracts.css", import.meta.url),
+        "utf8"
+      );
+    } catch {
+      surfaceContractsEntry = "";
+    }
+
+    expect(cssImports(surfaceContractsEntry)).toEqual([
+      "./surface-contracts/root-shell.css",
+      "./surface-contracts/surfaces.css",
+      "./surface-contracts/controls.css",
+      "./surface-contracts/forms.css",
+      "./surface-contracts/cards-badges.css",
+      "./surface-contracts/notebook-details.css",
+      "./surface-contracts/meters-friend-scroll.css",
+      "./surface-contracts/home-utility-tabs.css",
+      "./surface-contracts/reset-known-hud-effects.css",
+      "./surface-contracts/panel-shells.css",
+      "./surface-contracts/forms-textareas.css",
+      "./surface-contracts/settings-panels.css",
+      "./surface-contracts/character-details.css",
+      "./surface-contracts/buttons.css",
+      "./surface-contracts/scrollbars.css",
+      "./surface-contracts/home-top-controls.css",
+      "./surface-contracts/home-utility-controls.css",
+      "./surface-contracts/profile-handbook-cleanup.css",
+      "./surface-contracts/character-detail-cleanup.css",
+      "./surface-contracts/commerce-social-cleanup.css",
+      "./surface-contracts/room-action-cleanup.css",
+      "./surface-contracts/final-root-surfaces.css",
+      "./surface-contracts/final-explicit-surfaces.css",
+      "./surface-contracts/final-explicit-pseudo-elements.css",
+      "./surface-contracts/final-controls-forms.css",
+      "./surface-contracts/final-semantic-badges.css",
+      "./surface-contracts/final-announcement-controls.css",
+      "./surface-contracts/final-typography.css"
     ]);
-    expect(contrastPurgeEntry).not.toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school,");
-    expect(contrastPurgeEntry).not.toContain(".timer-track");
-    expect(contrastPurgeEntry).not.toContain(".home-grid-featured > .home-utility-grid .utility-entry");
-  });
-
-  it("keeps Bright School radical purge as an import-only emergency cleanup entry", () => {
-    const radicalPurgeEntry = readFileSync(new URL("./themes/bright-school/radical-purge.css", import.meta.url), "utf8");
-
-    expect(cssImports(radicalPurgeEntry)).toEqual([
-      "./radical-purge/home-top-controls.css",
-      "./radical-purge/home-utility-controls.css",
-      "./radical-purge/profile-handbook-cleanup.css",
-      "./radical-purge/character-detail-cleanup.css",
-      "./radical-purge/commerce-social-cleanup.css",
-      "./radical-purge/room-action-cleanup.css"
-    ]);
-    expect(radicalPurgeEntry).not.toContain(".home-top-strip .icon-button");
-    expect(radicalPurgeEntry).not.toContain(".friends-row");
-    expect(radicalPurgeEntry).not.toContain(".timer-track");
-  });
-
-  it("keeps Bright School specificity overrides as an import-only anti-bleed entry", () => {
-    const specificityEntry = readFileSync(new URL("./themes/bright-school/specificity-overrides.css", import.meta.url), "utf8");
-
-    expect(cssImports(specificityEntry)).toEqual([
-      "./specificity-overrides/global-reset.css",
-      "./specificity-overrides/panel-shells.css",
-      "./specificity-overrides/forms-textareas.css",
-      "./specificity-overrides/settings-panels.css",
-      "./specificity-overrides/character-details.css",
-      "./specificity-overrides/buttons.css",
-      "./specificity-overrides/scrollbars.css",
-      "./specificity-overrides/anti-tech-bleed-addendum.css"
-    ]);
-    expect(specificityEntry).not.toContain(".auth-panel");
-    expect(specificityEntry).not.toContain("input:not([type=\"checkbox\"]");
-    expect(specificityEntry).not.toContain("*::-webkit-scrollbar");
+    expect(surfaceContractsEntry).not.toContain("contrast-purge");
+    expect(surfaceContractsEntry).not.toContain("radical-purge");
+    expect(surfaceContractsEntry).not.toContain("specificity-overrides");
+    expect(surfaceContractsEntry).not.toContain("firewall");
   });
 
   it("keeps Bright School home as an import-only lobby entry", () => {
@@ -488,24 +484,18 @@ describe("player theme CSS contract", () => {
     expect(qualityBaseEntry).not.toContain(".home-image-entry:hover");
   });
 
-  it("keeps Bright School firewall as an import-only anti-HUD bleed entry", () => {
-    const firewallEntry = readFileSync(new URL("./themes/bright-school/firewall.css", import.meta.url), "utf8");
+  it("rejects legacy Bright School purge and broad fallback CSS from the theme tree", () => {
+    const themeCss = readCssWithImports(new URL("./themes/bright-school.css", import.meta.url));
 
-    expect(cssImports(firewallEntry)).toEqual([
-      "./firewall/root-surfaces.css",
-      "./firewall/explicit-surfaces.css",
-      "./firewall/explicit-pseudo-elements.css",
-      "./firewall/controls-forms.css",
-      "./firewall/semantic-badges.css",
-      "./firewall/generic-surfaces.css",
-      "./firewall/announcement-controls.css",
-      "./firewall/generic-pseudo-elements.css",
-      "./firewall/typography.css"
-    ]);
-    expect(firewallEntry).not.toContain(".auth-panel,");
-    expect(firewallEntry).not.toContain("[class*=\"panel\"]");
-    expect(firewallEntry).not.toContain("button,");
-    expect(firewallEntry).not.toContain("p,");
+    expect(themeCss).toContain("Bright School semantic surface contracts.");
+    expect(themeCss).not.toContain("BRIGHT SCHOOL THEME - RADICAL CONTRAST & PURGE LAYER");
+    expect(themeCss).not.toContain("anti-tech-bleed purge addendum");
+    expect(themeCss).not.toContain('[class*="panel"]');
+    expect(themeCss).not.toContain('[class*="card"]');
+    expect(themeCss).not.toContain('[class*="item"]');
+    expect(themeCss).not.toContain('[class*="row"]');
+    expect(themeCss).not.toContain('[class*="dock"]');
+    expect(themeCss).not.toContain(".app-shell.player-theme-enabled.theme-bright-school * {\n  text-shadow: none !important;\n  box-shadow: none;");
   });
 
   it("keeps volatile room and replay semantics in the final theme tree", () => {

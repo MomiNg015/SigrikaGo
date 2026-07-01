@@ -1,6 +1,6 @@
 /* 5. 解决部员手册二级窗口【角色详情】看不清技能名与途径的问题 */
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal,
-.app-shell.player-theme-enabled.theme-bright-school div[class*="details-modal"] {
+.app-shell.player-theme-enabled.theme-bright-school .character-detail {
   background: #ffffff !important;
   color: #4a3736 !important;
   border: 3px solid #4a3736 !important;
@@ -20,7 +20,7 @@
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal h3,
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal h4,
 .app-shell.player-theme-enabled.theme-bright-school .detail-label,
-.app-shell.player-theme-enabled.theme-bright-school span[class*="label"],
+.app-shell.player-theme-enabled.theme-bright-school .character-cv-label,
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row span,
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row strong:first-child,
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal .acquisition-method strong {

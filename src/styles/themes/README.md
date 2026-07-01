@@ -22,7 +22,8 @@ Rules for new skins:
 
 Bright School high-frequency edit path:
 
+- Use `bright-school/surface-contracts/` for explicit inherited HUD cleanup that must run after gallery polish and before component repairs. This layer replaces broad fallback cleanup; only use real owner classes and known surface selectors.
 - Use the focused files under `bright-school/component-repairs/` for normal visual polish; keep `bright-school/component-repairs.css` import-only.
 - Use `bright-school/qa-guard.css` only as the import-only compatibility entry for late guard layers.
 - Put overflow, clarity, and focus fixes in focused files under `bright-school/quality-base/`; keep `bright-school/quality-base.css` import-only. Shop/warehouse/profile commerce surfaces belong in `commerce.css`; lobby and plaque work in `home.css`; battle/replay room surfaces in `room.css`; handbook/settings/modal cleanup in `modals.css`; phone/tablet layout rules in `mobile.css`, with portrait battle-room rules delegated again to `mobile/room/`; and skill glow/keyframes/scoring effects in `effects.css`.
-- Avoid editing `bright-school/firewall/` unless a new family of inherited HUD bleed-through appears; keep `bright-school/firewall.css` import-only.
+- Do not add broad substring fallback selectors or new theme-wide `*` resets. If a leak appears, add the smallest explicit scoped selector and update `src/styles/themeContract.test.js` or `src/styles/hudComponents.test.js`.

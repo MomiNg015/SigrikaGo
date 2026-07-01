@@ -30,21 +30,19 @@ textarea:focus,
 
 .settings-modal-content,
 .about-panel-block,
-div[class*="about"],
-div[class*="setting"] {
+.settings-panel {
   background: rgba(6, 18, 26, 0.95) !important;
   color: #ffffff !important;
 }
 
 .about-panel-block text,
-.about-panel-block p,
-div[class*="about"] p {
+.about-panel-block p {
   color: #00ffbe !important;
   font-weight: 500 !important;
   text-shadow: 0 0 6px rgba(0, 255, 190, 0.3);
 }
 
-div[class*="volume-row"],
+.volume-row,
 .audio-slider-item {
   background: rgba(0, 0, 0, 0.4) !important;
   border: 1px solid rgba(0, 255, 190, 0.2) !important;
@@ -74,8 +72,7 @@ div[class*="volume-row"],
 }
 
 .login-submit-btn,
-button[class*="enter-btn"],
-div[class*="submit-btn"] {
+.terminal-enter-btn {
   background: #00ffbe !important;
   color: #030a10 !important;
   font-weight: 900 !important;

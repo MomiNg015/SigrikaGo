@@ -197,7 +197,7 @@ describe("HomeScreen", () => {
     const utilityHoverBeforeBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry:hover::before,[\s\S]+?\.utility-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
     const brightHomeCss = readCssFixture("../styles/themes/bright-school/home.css");
     const brightToolboxEntry = readCssFixture("../styles/themes/bright-school/home/utility-toolbox.css");
-    const brightUtilityCss = readCssFixture("../styles/themes/bright-school/contrast-purge/home-utility-tabs.css");
+    const brightUtilityCss = readCssFixture("../styles/themes/bright-school/surface-contracts/home-utility-tabs.css");
     const narrowDesktopCss = readCssFixture("../styles/mobile-adaptive/home-narrow-desktop.css");
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card strong\s*\{[^}]+\}/)?.[0] ?? "";
@@ -508,7 +508,7 @@ describe("HomeScreen", () => {
     expect(routeSource).toContain("setShowRecruitment(true)");
     expect(overlaySource).toContain("RecruitmentModal");
     const alertCss = readCssFixture("../styles/home-terminal/recruitment-alert.css");
-    const brightUtilityCss = readCssFixture("../styles/themes/bright-school/contrast-purge/home-utility-tabs.css");
+    const brightUtilityCss = readCssFixture("../styles/themes/bright-school/surface-contracts/home-utility-tabs.css");
     expect(alertCss).toContain(".recruitment-entry.has-alert");
     expect(alertCss).toContain("background: linear-gradient(90deg");
     expect(alertCss).not.toContain("home-entry-red-dot");

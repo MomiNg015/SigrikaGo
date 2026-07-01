@@ -1,8 +1,7 @@
 /* 4. 强行清洗系统设置面板、音量滑动条残留的科技风大黑块 */
 .app-shell.player-theme-enabled.theme-bright-school .settings-modal-content,
 .app-shell.player-theme-enabled.theme-bright-school .about-panel-block,
-.app-shell.player-theme-enabled.theme-bright-school div[class*="about"],
-.app-shell.player-theme-enabled.theme-bright-school div[class*="setting"] {
+.app-shell.player-theme-enabled.theme-bright-school .settings-panel {
   background-color: #fffbf2 !important;
   background-image: var(--theme-paper-grid) !important;
   background-size: 20px 20px !important;
@@ -10,13 +9,12 @@
   border-radius: 12px !important;
 }
 .app-shell.player-theme-enabled.theme-bright-school .about-panel-block text,
-.app-shell.player-theme-enabled.theme-bright-school .about-panel-block p,
-.app-shell.player-theme-enabled.theme-bright-school div[class*="about"] p {
+.app-shell.player-theme-enabled.theme-bright-school .about-panel-block p {
   color: #4a3736 !important;
   text-shadow: none !important;
   font-weight: bold !important;
 }
-.app-shell.player-theme-enabled.theme-bright-school div[class*="volume-row"],
+.app-shell.player-theme-enabled.theme-bright-school .volume-row,
 .app-shell.player-theme-enabled.theme-bright-school .audio-slider-item {
   background: #ffffff !important;
   border: 2px solid #4a3736 !important;

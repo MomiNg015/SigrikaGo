@@ -1,6 +1,6 @@
 /* Bright School component repair layer.
-   This block intentionally stays after the generic firewall: the firewall
-   prevents HUD bleed, then these rules restore the notebook-specific details. */
+   This block intentionally stays after the surface contract layer: the
+   contract prevents HUD bleed, then these rules restore notebook details. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school * {
   scrollbar-width: thin !important;

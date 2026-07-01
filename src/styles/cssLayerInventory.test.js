@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  CSS_FORBIDDEN_BROAD_FALLBACKS,
   CSS_FINAL_MOBILE_SAFETY_SPLITS,
   CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES,
   CSS_GAMEPLAY_ROOM_SPLITS,
@@ -17,6 +18,7 @@ import {
   CSS_UTILITY_LAYER_DECISION,
   inventoryFilesForGroup
 } from "./cssLayerInventory.js";
+import { readCssWithImports } from "./cssTestUtils.js";
 
 const stylesDir = dirname(fileURLToPath(new URL("./base.css", import.meta.url)));
 const projectRoot = dirname(dirname(stylesDir));
@@ -127,8 +129,23 @@ describe("CSS layer inventory", () => {
     }
 
     expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("tw:");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("staged long-term target");
     expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("Bright School");
     expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("themes.css");
+  });
+
+  it("documents and enforces the Bright School broad fallback ban", () => {
+    const missingFiles = CSS_FORBIDDEN_BROAD_FALLBACKS.files
+      .filter((filePath) => !existsSync(join(stylesDir, filePath)))
+      .map((filePath) => `missing file: ${filePath}`);
+    const existingFiles = CSS_FORBIDDEN_BROAD_FALLBACKS.files.filter((filePath) => existsSync(join(stylesDir, filePath)));
+    const source = existingFiles.map((filePath) => readCssWithImports(new URL(`./${filePath}`, import.meta.url))).join("\n");
+    const forbiddenFragments = CSS_FORBIDDEN_BROAD_FALLBACKS.forbiddenFragments
+      .filter((fragment) => source.includes(fragment))
+      .map((fragment) => `forbidden fragment: ${fragment}`);
+
+    expect(CSS_FORBIDDEN_BROAD_FALLBACKS.guidance).toContain("explicit owner selectors");
+    expect([...missingFiles, ...forbiddenFragments]).toEqual([]);
   });
 
   it("documents the round-4 desktop, mobile, and skill regression gates", () => {

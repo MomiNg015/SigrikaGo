@@ -508,7 +508,7 @@ describe("deriveCharacterRecordStats", () => {
   it("renders character descriptions in the character detail dialog", () => {
     const styles = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const brightSchoolStyles = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url))
-      + readCssWithImports(new URL("../styles/themes/bright-school/specificity-overrides.css", import.meta.url));
+      + readCssWithImports(new URL("../styles/themes/bright-school/surface-contracts.css", import.meta.url));
     const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
       character: {
         id: "sigrika",

@@ -83,7 +83,7 @@ describe("FriendsModal mobile layout", () => {
       onToggleAction: () => {}
     }));
     const hudFriendCss = readCssWithImports(new URL("../styles/hud-components/hud-hardening.css", import.meta.url));
-    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/contrast-purge.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/surface-contracts.css", import.meta.url));
 
     expect(html).toContain("<button type=\"button\" disabled=\"\">密谈</button>");
     expect(html).toContain("<button type=\"button\" disabled=\"\">对局申请</button>");

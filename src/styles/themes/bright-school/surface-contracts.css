@@ -1,0 +1,32 @@
+/* Bright School semantic surface contracts.
+   This layer keeps owner-oriented selectors only. Keep the order stable:
+   early readability repairs, known HUD effect resets, then final explicit
+   anti-bleed contracts. */
+@import "./surface-contracts/root-shell.css";
+@import "./surface-contracts/surfaces.css";
+@import "./surface-contracts/controls.css";
+@import "./surface-contracts/forms.css";
+@import "./surface-contracts/cards-badges.css";
+@import "./surface-contracts/notebook-details.css";
+@import "./surface-contracts/meters-friend-scroll.css";
+@import "./surface-contracts/home-utility-tabs.css";
+@import "./surface-contracts/reset-known-hud-effects.css";
+@import "./surface-contracts/panel-shells.css";
+@import "./surface-contracts/forms-textareas.css";
+@import "./surface-contracts/settings-panels.css";
+@import "./surface-contracts/character-details.css";
+@import "./surface-contracts/buttons.css";
+@import "./surface-contracts/scrollbars.css";
+@import "./surface-contracts/home-top-controls.css";
+@import "./surface-contracts/home-utility-controls.css";
+@import "./surface-contracts/profile-handbook-cleanup.css";
+@import "./surface-contracts/character-detail-cleanup.css";
+@import "./surface-contracts/commerce-social-cleanup.css";
+@import "./surface-contracts/room-action-cleanup.css";
+@import "./surface-contracts/final-root-surfaces.css";
+@import "./surface-contracts/final-explicit-surfaces.css";
+@import "./surface-contracts/final-explicit-pseudo-elements.css";
+@import "./surface-contracts/final-controls-forms.css";
+@import "./surface-contracts/final-semantic-badges.css";
+@import "./surface-contracts/final-announcement-controls.css";
+@import "./surface-contracts/final-typography.css";

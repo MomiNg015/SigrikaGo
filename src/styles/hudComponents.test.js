@@ -96,7 +96,7 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain("#03070a");
     expect(hudCss).toContain(".settings-modal-content");
     expect(hudCss).toContain(".about-panel-block");
-    expect(hudCss).toContain('div[class*="setting"]');
+    expect(hudCss).toContain(".settings-panel");
     expect(hudCss).toContain("background: rgba(6, 18, 26, 0.95) !important");
     expect(hudCss).toContain(".about-panel-block p");
     expect(hudCss).toContain("color: #00ffbe !important");
@@ -105,12 +105,14 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain(".register-card-container");
     expect(hudCss).toContain("border: 2px solid #00ffbe !important");
     expect(hudCss).toContain(".login-submit-btn");
-    expect(hudCss).toContain('button[class*="enter-btn"]');
+    expect(hudCss).toContain(".terminal-enter-btn");
     expect(hudCss).toContain("color: #030a10 !important");
     expect(hudCss).toContain(".lock-character-card");
+    expect(hudCss).toContain(".character-card.locked");
     expect(hudCss).toContain("color: #ff4e64 !important");
     expect(hudCss).toContain(".decoration-applied-box");
     expect(hudCss).toContain(".store-owned-tag");
+    expect(hudCss).not.toContain("[class*=");
   });
 
   it("adds the anime pop-tech palette, stickers, soft tabs, and character projection effects", () => {
@@ -276,9 +278,9 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain("background-size: 15px 15px !important");
   });
 
-  it("keeps the Bright School purge layer scoped against tech-HUD bleed-through", () => {
-    expect(themesCss).toContain("BRIGHT SCHOOL THEME - RADICAL CONTRAST & PURGE LAYER");
-    expect(themesCss).toContain("Bright School final firewall.");
+  it("keeps the Bright School surface contracts scoped against tech-HUD bleed-through", () => {
+    expect(themesCss).toContain("Bright School semantic surface contracts.");
+    expect(themesCss).toContain("Bright School final explicit anti-bleed contract.");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .home-top-strip .icon-button");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .utility-entry > *");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school .board-stage::before");
@@ -288,9 +290,11 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .small-modal::before");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry::before");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-chip::after");
-    expect(themesCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school [class*="panel"]');
-    expect(themesCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school [class*="card"]::before');
-    expect(themesCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school [class*="dock"]::after');
+    expect(themesCss).not.toContain('[class*="panel"]');
+    expect(themesCss).not.toContain('[class*="card"]');
+    expect(themesCss).not.toContain('[class*="item"]');
+    expect(themesCss).not.toContain('[class*="row"]');
+    expect(themesCss).not.toContain('[class*="dock"]');
     expect(themesCss).toContain("content: none !important");
     expect(themesCss).toContain("backdrop-filter: none !important");
     expect(themesCss).toContain("transform: none !important");
@@ -298,14 +302,16 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain("--bright-shadow: 4px 4px 0 #3d2b25");
     expect(themesCss).toContain("box-shadow: 3px 3px 0px #4a3736 !important");
 
-    const finalFirewall = themesCss.slice(themesCss.indexOf("Bright School final firewall."));
-    expect(finalFirewall).not.toContain("theme-current");
-    expect(finalFirewall).not.toContain("theme-original");
-    expect(finalFirewall).not.toContain("\n.shop-item");
-    expect(finalFirewall).not.toContain("\n.player-info");
+    const finalSurfaceContract = themesCss.slice(
+      themesCss.indexOf("Bright School final explicit anti-bleed contract.")
+    );
+    expect(finalSurfaceContract).not.toContain("theme-current");
+    expect(finalSurfaceContract).not.toContain("theme-original");
+    expect(finalSurfaceContract).not.toContain("\n.shop-item");
+    expect(finalSurfaceContract).not.toContain("\n.player-info");
   });
 
-  it("restores Bright School component details after the generic firewall", () => {
+  it("restores Bright School component details after the surface contracts", () => {
     expect(themesCss).toContain("Bright School component repair layer.");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble");

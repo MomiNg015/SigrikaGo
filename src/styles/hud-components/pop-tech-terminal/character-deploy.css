@@ -1,8 +1,8 @@
 .character-card.locked strong,
 .character-card.locked small,
 .lock-text-title,
-div[class*="lock"] span,
-div[class*="lock"] p {
+.character-card.locked span,
+.character-card.locked p {
   color: #ff9fbd !important;
   text-shadow: 0 0 8px rgba(255, 118, 163, 0.45);
 }

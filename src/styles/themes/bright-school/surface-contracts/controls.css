@@ -10,9 +10,8 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .close-button,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .primary-action,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .login-submit-btn,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .terminal-enter-btn,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-action,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button[class*="enter-btn"],
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="submit-btn"],
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .replay-bar button,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .exit-action {
   background-color: #ffffff !important;

@@ -16,7 +16,8 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decorations-section,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .decoration-applied-box,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="decor"] {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-section,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-chip {
   background-color: #fffdf8 !important;
   background-image: none !important;
   color: #3d2b25 !important;
@@ -27,7 +28,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .lock-character-card,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="lock"] {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked {
   background-color: #fff0f6 !important;
   background-image: none !important;
   color: #3d2b25 !important;
@@ -38,8 +39,8 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .lock-text-title,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="lock"] span,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school div[class*="lock"] p {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-card.locked p {
   color: #3d2b25 !important;
   font-weight: 900 !important;
   opacity: 1 !important;
