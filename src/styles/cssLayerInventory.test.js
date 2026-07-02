@@ -1,14 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  CSS_BREAKPOINT_CONTRACT,
+  CSS_DEBT_BASELINE,
   CSS_FORBIDDEN_BROAD_FALLBACKS,
   CSS_FINAL_MOBILE_SAFETY_SPLITS,
   CSS_FULL_REPO_CLEANUP_VERIFICATION_GATES,
   CSS_GAMEPLAY_ROOM_SPLITS,
   CSS_LAZY_ROUTE_STYLE_ENTRIES,
   CSS_LAYER_GROUPS,
+  CSS_MOTION_CONTRACT,
   CSS_PROTECTED_SURFACES,
   CSS_REFACTOR_ROUNDS,
   CSS_ROUND3_SHARED_SPLITS,
@@ -18,6 +21,7 @@ import {
   CSS_TAILWIND_MIGRATION_PHASES,
   CSS_THEME_OVERLAY_SPLITS,
   CSS_UTILITY_LAYER_DECISION,
+  CSS_Z_INDEX_CONTRACT,
   inventoryFilesForGroup
 } from "./cssLayerInventory.js";
 import { readCssWithImports } from "./cssTestUtils.js";
@@ -41,6 +45,58 @@ function concreteCssAfterImports(source) {
     .trim();
 }
 
+function cssMetricFiles() {
+  function cssFilesUnder(dir) {
+    return readdirSync(dir).flatMap((entry) => {
+      const fullPath = join(dir, entry);
+
+      if (statSync(fullPath).isDirectory()) return cssFilesUnder(fullPath);
+      return entry.endsWith(".css") ? [fullPath] : [];
+    });
+  }
+
+  return cssFilesUnder(stylesDir).map((filePath) => ({
+    path: relative(stylesDir, filePath).replaceAll("\\", "/"),
+    source: readFileSync(filePath, "utf8")
+  }));
+}
+
+function cssDebtMetrics() {
+  const files = cssMetricFiles();
+  const importantFiles = files.filter(({ source }) => source.includes("!important"));
+  const hardcodedHexMatches = files.flatMap(({ path, source }) =>
+    [...source.matchAll(/#[0-9a-fA-F]{3,8}\b/g)].map((match) => ({ path, value: match[0] }))
+  );
+  const mediaFiles = files.filter(({ source }) => /@media\b/.test(source));
+  const reducedMotionFiles = files.filter(({ source }) => source.includes("prefers-reduced-motion"));
+  const highZIndexDeclarations = files.flatMap(({ path, source }) =>
+    [...source.matchAll(/z-index:\s*(\d+)/g)]
+      .map((match) => ({ path, value: Number(match[1]) }))
+      .filter(({ value }) => value >= CSS_Z_INDEX_CONTRACT.highValueThreshold)
+  );
+
+  return {
+    totalFiles: files.length,
+    totalBytes: files.reduce((sum, { source }) => sum + Buffer.byteLength(source.replace(/\r\n/g, "\n"), "utf8"), 0),
+    importantCount: files.reduce((sum, { source }) => sum + (source.match(/!important/g) ?? []).length, 0),
+    importantFiles: importantFiles.length,
+    hardcodedHexCount: hardcodedHexMatches.length,
+    mediaFiles: mediaFiles.length,
+    reducedMotionFiles: reducedMotionFiles.length,
+    highZIndexFiles: new Set(highZIndexDeclarations.map(({ path }) => path)).size,
+    highZIndexDeclarations
+  };
+}
+
+function cssMediaQueries() {
+  return cssMetricFiles().flatMap(({ path, source }) =>
+    [...source.matchAll(/@media\s*([^{]+)\{/g)].map((match) => ({
+      path,
+      query: match[1].trim().replace(/\s+/g, " ")
+    }))
+  );
+}
+
 function expectedRelativeImports(split) {
   return split.files.map((filePath) => {
     const [, ...nestedPath] = filePath.split("/");
@@ -52,6 +108,91 @@ function expectedRelativeImports(split) {
 }
 
 describe("CSS layer inventory", () => {
+  it("records the current CSS debt baseline as a non-growth contract", () => {
+    const actual = cssDebtMetrics();
+    const baselineKeys = [
+      "totalFiles",
+      "totalBytes",
+      "importantCount",
+      "importantFiles",
+      "hardcodedHexCount",
+      "mediaFiles",
+      "reducedMotionFiles",
+      "highZIndexFiles"
+    ];
+
+    expect(CSS_DEBT_BASELINE.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(CSS_DEBT_BASELINE.scope).toContain("src/styles");
+
+    for (const key of baselineKeys) {
+      expect(actual[key], key).toBeLessThanOrEqual(CSS_DEBT_BASELINE.metrics[key]);
+    }
+
+    expect(CSS_DEBT_BASELINE.guidance).toContain("non-growth");
+    expect(CSS_DEBT_BASELINE.guidance).toContain("visual drift");
+  });
+
+  it("registers high z-index declarations and keeps future values on a named layer scale", () => {
+    const actual = cssDebtMetrics();
+    const registered = new Set(
+      CSS_Z_INDEX_CONTRACT.legacyHighValues.map(({ file, value }) => `${file}:${value}`)
+    );
+    const unregistered = actual.highZIndexDeclarations
+      .filter(({ path, value }) => !registered.has(`${path}:${value}`))
+      .map(({ path, value }) => `${path}:${value}`);
+
+    expect(CSS_Z_INDEX_CONTRACT.highValueThreshold).toBe(1000);
+    expect(CSS_Z_INDEX_CONTRACT.layers.map((layer) => layer.name)).toEqual([
+      "base",
+      "raised",
+      "floating",
+      "modal",
+      "system"
+    ]);
+    expect(CSS_Z_INDEX_CONTRACT.guidance).toContain("--room-floating-z");
+    expect(unregistered).toEqual([]);
+  });
+
+  it("documents motion tokens and verifies reduced-motion coverage exists in each motion-heavy family", () => {
+    const allFiles = new Set(cssMetricFiles().map(({ path }) => path));
+    const missingTokenFragments = CSS_MOTION_CONTRACT.requiredTokenFragments.filter((fragment) => {
+      const tokenSources = CSS_MOTION_CONTRACT.tokenFiles.map((filePath) =>
+        readFileSync(join(stylesDir, filePath), "utf8")
+      );
+      return !tokenSources.some((source) => source.includes(fragment));
+    });
+    const missingReducedMotionFiles = CSS_MOTION_CONTRACT.reducedMotionFiles
+      .filter((filePath) => !allFiles.has(filePath))
+      .map((filePath) => `missing file: ${filePath}`);
+    const missingReducedMotionFragments = CSS_MOTION_CONTRACT.reducedMotionFiles
+      .filter((filePath) => allFiles.has(filePath))
+      .filter((filePath) => !readFileSync(join(stylesDir, filePath), "utf8").includes("prefers-reduced-motion"))
+      .map((filePath) => `missing prefers-reduced-motion: ${filePath}`);
+
+    expect(CSS_MOTION_CONTRACT.durationRangeMs).toEqual({ micro: [100, 180], sheet: [180, 300] });
+    expect(CSS_MOTION_CONTRACT.guidance).toContain("transform");
+    expect(CSS_MOTION_CONTRACT.guidance).toContain("opacity");
+    expect([...missingTokenFragments, ...missingReducedMotionFiles, ...missingReducedMotionFragments]).toEqual([]);
+  });
+
+  it("registers responsive breakpoint families used by current CSS media queries", () => {
+    const queries = cssMediaQueries();
+    const allowedFragments = CSS_BREAKPOINT_CONTRACT.allowedQueryFragments;
+    const unexpectedQueries = queries
+      .filter(({ query }) => !allowedFragments.some((fragment) => query.includes(fragment)))
+      .map(({ path, query }) => `${path}: ${query}`);
+
+    expect(CSS_BREAKPOINT_CONTRACT.guidance).toContain("desktop");
+    expect(CSS_BREAKPOINT_CONTRACT.guidance).toContain("mobile");
+    expect(CSS_BREAKPOINT_CONTRACT.viewportChecks).toEqual([
+      "375px phone portrait",
+      "small phone landscape",
+      "narrow desktop",
+      "regular desktop"
+    ]);
+    expect(unexpectedQueries).toEqual([]);
+  });
+
   it("keeps every inventory file pointed at an existing CSS file", () => {
     const inventoryFiles = new Set([
       ...CSS_LAYER_GROUPS.flatMap((group) => group.entries),

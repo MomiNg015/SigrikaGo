@@ -61,6 +61,15 @@ Treat these as high-risk during cleanup:
 
 Do not migrate or restyle these surfaces unless the task explicitly targets them and includes visual or stability verification.
 
+## Debt And Expansion Contracts
+
+`src/styles/cssLayerInventory.js` owns the current CSS cleanup contracts.
+
+- `CSS_DEBT_BASELINE` is the 2026-07-02 all-`src/styles` non-growth baseline for CSS file count, bytes, `!important`, hardcoded hex values, media-query files, reduced-motion files, and high z-index files. Cleanup should reduce these counts or document why a contract update is necessary. Do not treat the baseline as permission to add visual drift.
+- `CSS_Z_INDEX_CONTRACT` registers the existing high z-index overlays. New values at or above `1000` must be registered there or replaced by an existing named layer, preferably a local token such as `--room-floating-z`.
+- `CSS_MOTION_CONTRACT` records the current timing token sources and reduced-motion families. Motion-heavy CSS should animate `transform` and `opacity` where possible and keep `prefers-reduced-motion` coverage beside the owning family.
+- `CSS_BREAKPOINT_CONTRACT` registers the current responsive media-query families. New breakpoint families need a desktop and mobile rationale plus contract-test registration.
+
 ## Tailwind Route
 
 Tailwind v4 is installed only as a low-intrusion utility layer through `src/styles/tailwind.css`.

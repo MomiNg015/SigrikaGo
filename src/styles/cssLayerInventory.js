@@ -1,3 +1,124 @@
+export const CSS_DEBT_BASELINE = {
+  date: "2026-07-02",
+  scope: "All CSS files under src/styles after the import-only split work already present on codex/css-cleanup.",
+  metrics: {
+    totalFiles: 581,
+    totalBytes: 1109913,
+    importantCount: 6868,
+    importantFiles: 274,
+    hardcodedHexCount: 2265,
+    mediaFiles: 215,
+    reducedMotionFiles: 23,
+    highZIndexFiles: 6
+  },
+  guidance:
+    "Use this as a non-growth contract for staged CSS cleanup. New cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
+};
+
+export const CSS_Z_INDEX_CONTRACT = {
+  highValueThreshold: 1000,
+  layers: [
+    { name: "base", range: [0, 9], use: "ordinary local stacking inside a component" },
+    { name: "raised", range: [10, 49], use: "local cards, ribbons, and decorative overlays" },
+    { name: "floating", range: [50, 199], use: "room popovers, tooltips, toasts, and anchored floating panels" },
+    { name: "modal", range: [200, 999], use: "ordinary modal shells and app-level overlays" },
+    { name: "system", range: [1000, 100300], use: "legacy tutorial, onboarding, admin workbench, and final mobile system overlays only" }
+  ],
+  legacyHighValues: [
+    { file: "admin/story-workbench/forms-preview.css", value: 2600, owner: "admin story preview drawer" },
+    { file: "admin/story-workbench/forms-preview.css", value: 3000, owner: "admin story preview modal" },
+    { file: "admin/story-workbench/layout.css", value: 2700, owner: "admin story branch tools" },
+    { file: "mobile-adaptive/phone-interactions.css", value: 99999, owner: "final mobile sheet/backdrop safety layer" },
+    { file: "modals/onboarding-story/shell.css", value: 100100, owner: "onboarding story modal shell" },
+    { file: "modals/tutorial-session.css", value: 100080, owner: "tutorial session backdrop" },
+    { file: "modals/tutorial-session.css", value: 100200, owner: "tutorial session controls" },
+    { file: "room/tutorial-battle-screen/loading-motion.css", value: 100200, owner: "tutorial battle route loading overlay" }
+  ],
+  guidance:
+    "Prefer named local variables such as --room-floating-z before adding numeric z-index values. Any new value at or above 1000 must be registered here or moved onto an existing layer contract."
+};
+
+export const CSS_MOTION_CONTRACT = {
+  tokenFiles: ["themes/shared/player-theme-tokens.css", "tailwind/tokens.css"],
+  requiredTokenFragments: ["--theme-transition: 180ms ease", "--ease-sigrika-standard"],
+  durationRangeMs: { micro: [100, 180], sheet: [180, 300] },
+  reducedMotionFiles: [
+    "admin/polish/forms-actions.css",
+    "admin/story-workbench/layout.css",
+    "base/asset-preload.css",
+    "base/message-feedback.css",
+    "commerce/recruitment/board/motion.css",
+    "mobile-adaptive/reduced-motion.css",
+    "mobile-modals/reduced-motion.css",
+    "mobile-room/reduced-motion.css",
+    "themes/bright-school/effects/reduced-motion.css",
+    "themes/bright-school/home/utility-toolbox/toolbox-interactions.css",
+    "themes/bright-school/mobile/motion.css",
+    "themes/bright-school/room/tutorial-choice-interactions.css",
+    "themes/bright-school/surface-contracts/home-utility-tabs.css"
+  ],
+  guidance:
+    "Motion cleanup should use tokenized duration/easing where practical, animate transform and opacity instead of layout properties, and keep prefers-reduced-motion coverage beside any motion-heavy family."
+};
+
+export const CSS_BREAKPOINT_CONTRACT = {
+  allowedQueryFragments: [
+    "(max-height: 520px) and (orientation: landscape)",
+    "(max-height: 520px), (max-width: 760px)",
+    "(max-width: 1100px)",
+    "(max-width: 1180px)",
+    "(max-width: 1260px)",
+    "(max-width: 340px) and (orientation: portrait)",
+    "(max-width: 360px) and (orientation: portrait)",
+    "(max-width: 560px)",
+    "(max-width: 620px)",
+    "(max-width: 640px)",
+    "(max-width: 700px)",
+    "(max-width: 760px)",
+    "(max-width: 760px) and (orientation: portrait)",
+    "(max-width: 760px) and (orientation: portrait) and (prefers-reduced-motion: reduce)",
+    "(max-width: 760px) and (orientation: portrait), (max-width: 420px)",
+    "(max-width: 760px), (max-height: 520px)",
+    "(max-width: 768px)",
+    "(max-width: 768px) and (orientation: landscape)",
+    "(max-width: 768px) and (orientation: portrait)",
+    "(max-width: 768px) and (prefers-reduced-motion: reduce)",
+    "(max-width: 800px)",
+    "(max-width: 800px) and (orientation: landscape)",
+    "(max-width: 860px)",
+    "(max-width: 900px)",
+    "(max-width: 900px) and (orientation: landscape)",
+    "(max-width: 900px) and (orientation: landscape) and (max-height: 520px)",
+    "(max-width: 900px) and (orientation: portrait)",
+    "(max-width: 900px), (pointer: coarse)",
+    "(max-width: 980px)",
+    "(min-width: 1024px) and (max-height: 560px)",
+    "(min-width: 1024px) and (max-width: 1180px)",
+    "(min-width: 1024px) and (max-width: 1180px), (min-width: 701px) and (max-height: 640px)",
+    "(min-width: 1181px) and (max-width: 1500px)",
+    "(min-width: 1181px) and (min-height: 960px)",
+    "(min-width: 701px)",
+    "(min-width: 701px) and (max-height: 760px)",
+    "(min-width: 701px) and (max-width: 1023px)",
+    "(min-width: 701px) and (max-width: 1180px)",
+    "(min-width: 701px) and (max-width: 1180px), (min-width: 701px) and (max-height: 959px)",
+    "(min-width: 761px)",
+    "(min-width: 769px)",
+    "(min-width: 901px)",
+    "(pointer: coarse)",
+    "(prefers-reduced-motion: reduce)",
+    "screen and (min-width: 769px)"
+  ],
+  viewportChecks: [
+    "375px phone portrait",
+    "small phone landscape",
+    "narrow desktop",
+    "regular desktop"
+  ],
+  guidance:
+    "Add responsive rules through an existing desktop, mobile, portrait, landscape, narrow-desktop, pointer, or reduced-motion family. New breakpoint families need both desktop and mobile rationale plus contract-test registration."
+};
+
 export const CSS_LAYER_GROUPS = [
   {
     id: "reorganizable-shared-domains",

@@ -66,6 +66,10 @@ Current Phase 7 pilot: `src/styles/cssLayerInventory.js` registers `mobile-adapt
 
 Round-2 CSS cleanup planning is encoded in `src/styles/cssLayerInventory.js` and guarded by `src/styles/cssLayerInventory.test.js`.
 
+`CSS_DEBT_BASELINE` records the 2026-07-02 all-`src/styles` non-growth baseline for file count, total CSS bytes, `!important` usage, hardcoded hex values, media-query files, reduced-motion files, and high z-index files. It is not a visual target; it is a guardrail for staged cleanup. Future CSS cleanup should reduce these numbers or update the contract with a documented reason, without changing the current interface appearance.
+
+`CSS_Z_INDEX_CONTRACT`, `CSS_MOTION_CONTRACT`, and `CSS_BREAKPOINT_CONTRACT` are the current expansion contracts for layered UI work. New z-index values at or above 1000 must be registered as legacy/system overlays or moved onto an existing named layer. Motion-heavy CSS should use the shared theme/Tailwind timing tokens where practical, prefer `transform` and `opacity`, and keep reduced-motion coverage near the owning family. New media-query families must be added to the breakpoint contract with desktop and mobile rationale instead of introducing one-off responsive ranges.
+
 The inventory divides CSS into five practical buckets:
 
 - `reorganizable-shared-domains`: low-to-medium risk import-only domains for Round 3 cleanup.
