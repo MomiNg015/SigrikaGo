@@ -93,10 +93,14 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("setPendingWait");
     expect(source).toContain("pendingWait");
     expect(source).toContain("revealsChoices: options.length > 0");
-    expect(source).toContain("const showPendingWaitHint = !pendingWait.revealsChoices");
     expect(source).toContain("if (choicesVisible && hasOptions)");
     expect(source).not.toContain("可继续，稍后自动推进");
     expect(source).not.toContain("请点击继续");
+    expect(source).not.toContain("tutorial-action-hint");
+    expect(source).not.toContain("继续中...");
+    expect(source).not.toContain("对方思考中...");
+    expect(source).not.toContain("等待剧情教学步骤");
+    expect(source).not.toContain("未选择教学步骤");
     expect(source).toContain("skipPendingWait");
     expect(source).toContain("previewControlsEnabled");
     expect(source).toContain("setChoicesVisible(false)");
@@ -138,8 +142,8 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(actionCss).toContain(".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar");
     expect(actionCss).toContain("display: flex !important");
     expect(actionCss).toContain("flex-wrap: nowrap !important");
-    expect(actionCss).toContain(".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar p");
-    expect(actionCss).toContain("grid-column: 1 / -1 !important");
+    expect(actionCss).not.toContain("tutorial-action-hint");
+    expect(actionCss).not.toContain(".tutorial-action-bar p");
     expect(actionCss).toContain(".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button");
     const mobileTeachingButtonBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button");
     const mobileTeachingButtonTextBlock = cssBlock(actionCss, ".mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button span");

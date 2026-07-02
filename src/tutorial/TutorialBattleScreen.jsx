@@ -32,7 +32,6 @@ import {
 } from "./tutorialGameState.js";
 import {
   createTutorialBattleRoom,
-  setupNodeEntryText,
   tutorialPlayersForSetup
 } from "./tutorialBattleRoom.js";
 
@@ -84,7 +83,6 @@ export default function TutorialBattleScreen({
   const [nodeId, setNodeId] = useState(session?.startNodeId ?? script?.startNodeId ?? "");
   const [pendingSkill, setPendingSkill] = useState(false);
   const [skillPhase, setSkillPhase] = useState("");
-  const [feedback, setFeedback] = useState("");
   const [choicesVisible, setChoicesVisible] = useState(false);
   const [npcBubble, setNpcBubble] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
@@ -177,9 +175,8 @@ export default function TutorialBattleScreen({
     });
   }, [clearTimers, currentNode]);
 
-  const goToNode = useCallback((nextId, options = {}) => {
+  const goToNode = useCallback((nextId) => {
     const targetId = String(nextId ?? "").trim();
-    if (!options.preserveFeedback) setFeedback("");
     setChoicesVisible(false);
     setPendingSkill(false);
     setSkillPhase("");
@@ -286,7 +283,6 @@ export default function TutorialBattleScreen({
   const completeAction = useCallback((node, result) => {
     if (!result?.ok) {
       const message = result?.message || "这一步没有执行成功，请检查脚本配置。";
-      setFeedback(message);
       onToast?.(message, "warning");
       return;
     }
@@ -302,13 +298,11 @@ export default function TutorialBattleScreen({
     });
     if (!result.ok) {
       const message = result.message || "技能施放失败，请检查角色、技能和目标配置。";
-      setFeedback(message);
       onToast?.(message, "warning");
       return;
     }
     setPendingSkill(false);
     setSkillPhase("");
-    setFeedback("");
     setGame(result.state);
     gameRef.current = result.state;
     setResolvedSkillState(result.resolvedState);
@@ -331,10 +325,8 @@ export default function TutorialBattleScreen({
     });
     setGame(nextGame);
     gameRef.current = nextGame;
-    const entryText = setupNodeEntryText(node);
-    setFeedback(entryText);
     schedulePendingWait(
-      () => goToNode(node.nextNodeId, { preserveFeedback: Boolean(entryText) }),
+      () => goToNode(node.nextNodeId),
       nodeAutoContinueDelayMs(node, 0),
       nodeAdvanceControls(node)
     );
@@ -357,7 +349,6 @@ export default function TutorialBattleScreen({
     setNodeId(startId);
     setPendingSkill(false);
     setSkillPhase("");
-    setFeedback("");
     setChoicesVisible(false);
     setNpcBubble(null);
     setChatMessages([]);
@@ -405,7 +396,6 @@ export default function TutorialBattleScreen({
     initializedNodeKeyRef.current = nodeExecutionKey;
     clearTimers();
     nodeRunRef.current += 1;
-    setFeedback("");
     setChoicesVisible(false);
     setPendingSkill(false);
     setSkillPhase("");
@@ -577,7 +567,6 @@ export default function TutorialBattleScreen({
     if (currentNode?.type !== TUTORIAL_NODE_TYPES.playerSkill) return;
     setPendingSkill(true);
     setSkillPhase("skill-board");
-    setFeedback(currentNode.pointId ? "请在提示区域落子" : "点击棋盘区域任意位置即可");
     if (!currentNode.pointId) onToast?.("点击棋盘区域任意位置即可", "info");
   }
 
@@ -598,7 +587,6 @@ export default function TutorialBattleScreen({
   }
 
   function warn(message) {
-    setFeedback(message);
     onToast?.(message, "warning");
   }
 
@@ -626,7 +614,6 @@ export default function TutorialBattleScreen({
             <TutorialActionPanel
               node={currentNode}
               phase={skillPhase}
-              feedback={feedback}
               pendingWait={pendingWait}
               choicesVisible={choicesVisible}
               previewControlsEnabled={previewControlsEnabled}
@@ -803,7 +790,6 @@ function prefersReducedMotion() {
 function TutorialActionPanel({
   node,
   phase,
-  feedback,
   pendingWait,
   choicesVisible,
   previewControlsEnabled,
@@ -813,17 +799,15 @@ function TutorialActionPanel({
   onPlayerButton,
   onSkipPendingWait
 }) {
-  if (!node) return <nav className="action-bar tutorial-action-bar"><p>未选择教学步骤</p></nav>;
+  if (!node) return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
   const hasOptions = Array.isArray(node.options) && node.options.length > 0;
   if (choicesVisible && hasOptions) {
     return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
   }
   if (pendingWait) {
     const buttonText = pendingWait.manualContinue ? "继续" : "立即继续";
-    const showPendingWaitHint = !pendingWait.revealsChoices;
     return (
-      <nav className="action-bar tutorial-action-bar tutorial-action-hint">
-        {showPendingWaitHint && <p>继续中...</p>}
+      <nav className="action-bar tutorial-action-bar">
         {(pendingWait.manualContinue || previewControlsEnabled) && (
           <button className="tutorial-highlight-action" type="button" onClick={onSkipPendingWait}>
             <Play size={18} />
@@ -854,11 +838,7 @@ function TutorialActionPanel({
     );
   }
   if (phase === "skill-board") {
-    return (
-      <nav className="action-bar tutorial-action-bar tutorial-action-hint">
-        <p>{node.pointId ? "请在提示区域落子" : "点击棋盘区域任意位置即可"}</p>
-      </nav>
-    );
+    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
   }
   if (phase === "button") {
     return (
@@ -871,12 +851,12 @@ function TutorialActionPanel({
     );
   }
   if (node.type === TUTORIAL_NODE_TYPES.playerMove) {
-    return <nav className="action-bar tutorial-action-bar tutorial-action-hint"><p>请在提示区域落子</p></nav>;
+    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
   }
   if (isTutorialNpcNodeType(node.type) || autoSettlementNode(node)) {
-    return <nav className="action-bar tutorial-action-bar tutorial-action-hint"><p>对方思考中...</p></nav>;
+    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
   }
-  return <nav className="action-bar tutorial-action-bar tutorial-action-hint"><p>{feedback || "等待剧情教学步骤"}</p></nav>;
+  return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
 }
 
 function TutorialBattleLoading({ loading, characters, players }) {
