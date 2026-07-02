@@ -898,3 +898,37 @@ Recorded and fixed the Bright School portrait-mobile max-width clamp that shorte
 ### Next Steps
 
 - None - task complete
+
+
+## Session 28: Home lobby adjustments and story close guard
+
+**Date**: 2026-07-02
+**Task**: Home lobby adjustments and story close guard
+**Branch**: `codex/css-cleanup`
+
+### Summary
+
+Applied requested home lobby UI refinements, added story-player backdrop/close confirmation behavior, updated system-design docs, and verified with npm run check before archiving the active Trellis task.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7674bd1e` | (see git log) |
+| `67af88fd` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
