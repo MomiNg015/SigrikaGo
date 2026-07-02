@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend layer pre-development checklist for CSS and UI behavior changes."}
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "CSS ownership, import-layer, and Bright School guardrail rules for board and skill presentation selectors."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Quality expectations for focused visual fixes and regression coverage."}
+{"file": ".trellis/spec/guides/index.md", "reason": "Shared cross-layer guidance required before implementation."}
+{"file": ".trellis/tasks/07-02-qiuyuan-row-slash-mobile-scar-width/research/root-cause.md", "reason": "Recorded root cause and fix boundary for the row-slash mobile width regression."}
