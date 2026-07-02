@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { adminApi } from "../api/client.js";
 import { parseAdminInteger } from "../shared/adminDrafts.js";
-import { AdminFieldLabel, AdminSectionHeader, AdminStatusPill } from "./adminComponents.jsx";
+import {
+  AdminActionButton,
+  AdminFieldLabel,
+  AdminSectionHeader,
+  AdminStatusPill,
+  AdminTableEmpty,
+  AdminTableScroll
+} from "./adminComponents.jsx";
 import { formatDateTime } from "./adminFormatters.js";
 import { buildUserDraft, parseOwnedItemsText } from "./adminUserDrafts.js";
 
@@ -10,7 +17,7 @@ export default function AdminUsers({ users, onSelect }) {
   return (
     <section className="admin-list-section">
       <AdminSectionHeader title="用户列表" meta={`${users.length} 个账号`} />
-      <div className="admin-table-wrap">
+      <AdminTableScroll>
         <table className="admin-table">
           <thead>
             <tr>
@@ -39,12 +46,12 @@ export default function AdminUsers({ users, onSelect }) {
             ))}
             {users.length === 0 && (
               <tr>
-                <td className="admin-table-empty" colSpan="8">暂无用户</td>
+                <AdminTableEmpty colSpan="8">暂无用户</AdminTableEmpty>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableScroll>
     </section>
   );
 }
@@ -182,14 +189,14 @@ export function UserEditor({ user, currentUserId, token, onClose, onRefresh, onC
         <label><AdminFieldLabel text="出战角色" tip="该用户当前默认出战角色的 slug。" />
           <input value={draft.selectedCharacter} onChange={(event) => updateDraft("selectedCharacter", event.target.value)} />
         </label>
-        <button className="primary-action" type="submit" disabled={saving}>保存</button>
+        <AdminActionButton variant="primary" type="submit" disabled={saving}>保存</AdminActionButton>
       </form>
       <div className="admin-replay-zone">
         <div className="admin-section-title">
           <AdminFieldLabel text="用户棋谱" tip="查看并回放该用户参与过的任意对局。" />
-          <button className="secondary-action" onClick={loadUserReplays} disabled={loadingReplays}>
+          <AdminActionButton variant="secondary" onClick={loadUserReplays} disabled={loadingReplays}>
             {loadingReplays ? "加载中" : "加载棋谱"}
-          </button>
+          </AdminActionButton>
         </div>
         <div className="admin-replay-list">
           {userReplays.map((record) => (
@@ -208,15 +215,15 @@ export function UserEditor({ user, currentUserId, token, onClose, onRefresh, onC
           }} />
         </label>
         <div className="inline-actions">
-          <button className="danger-action" onClick={banUser} disabled={saving || user.status === "banned"}>封禁</button>
-          <button className="secondary-action" onClick={unbanUser} disabled={saving || user.status !== "banned"}>解封</button>
+          <AdminActionButton variant="danger" onClick={banUser} disabled={saving || user.status === "banned"}>封禁</AdminActionButton>
+          <AdminActionButton variant="secondary" onClick={unbanUser} disabled={saving || user.status !== "banned"}>解封</AdminActionButton>
         </div>
         <label><AdminFieldLabel text="新密码" tip="为该用户重置登录密码，至少 4 个字符。" />
           <input type="password" value={newPassword} onChange={(event) => {
             setNewPassword(event.target.value);
           }} />
         </label>
-        <button className="secondary-action" onClick={resetPassword} disabled={saving}>重置密码</button>
+        <AdminActionButton variant="secondary" onClick={resetPassword} disabled={saving}>重置密码</AdminActionButton>
       </div>
     </aside>
   );

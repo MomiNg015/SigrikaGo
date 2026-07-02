@@ -32,8 +32,16 @@ describe("AdminAchievements", () => {
     expect(html).toContain("成就管理");
     expect(html).toContain("初次胜利");
     expect(html).toContain("first-win");
+    expect(html).toContain("admin-status-pill green tw:inline-flex tw:items-center tw:justify-center");
     expect(html).not.toContain("新增成就");
     expect(html).not.toContain("下线</button>");
+  });
+
+  it("uses the shared status pill primitive instead of raw badge class strings", () => {
+    const source = readFileSync(new URL("./AdminAchievements.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("AdminStatusPill");
+    expect(source).not.toContain("className={`admin-status-pill");
   });
 
   it("keeps achievement writes limited to editable fields", () => {

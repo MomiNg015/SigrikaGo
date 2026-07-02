@@ -14,6 +14,8 @@ import {
   CSS_ROUND3_SHARED_SPLITS,
   CSS_ROUND4_REGRESSION_CHECKS,
   CSS_SKILL_PRESENTATION_SPLITS,
+  CSS_TAILWIND_MIGRATION_EXCLUSIONS,
+  CSS_TAILWIND_MIGRATION_PHASES,
   CSS_THEME_OVERLAY_SPLITS,
   CSS_UTILITY_LAYER_DECISION,
   inventoryFilesForGroup
@@ -108,6 +110,8 @@ describe("CSS layer inventory", () => {
     const rootImports = cssImports(readFileSync(rootStylesPath, "utf8"))
       .map((importPath) => importPath.replace("./styles/", ""));
     const tailwindSource = readFileSync(join(stylesDir, CSS_UTILITY_LAYER_DECISION.entry), "utf8");
+    const tokenImport = CSS_UTILITY_LAYER_DECISION.localImports[0];
+    const tokenSource = readFileSync(join(stylesDir, tokenImport.entry), "utf8");
 
     expect(CSS_UTILITY_LAYER_DECISION.vitePlugin).toBe("@tailwindcss/vite");
     expect(CSS_UTILITY_LAYER_DECISION.rootOrder).toEqual({ after: "hud-components.css", before: "themes.css" });
@@ -117,21 +121,294 @@ describe("CSS layer inventory", () => {
     expect(rootImports[rootImports.indexOf(CSS_UTILITY_LAYER_DECISION.entry) - 1]).toBe(
       CSS_UTILITY_LAYER_DECISION.rootOrder.after
     );
+    expect(cssImports(tailwindSource)).toEqual([
+      "tailwindcss/theme.css",
+      tokenImport.source,
+      "tailwindcss/utilities.css"
+    ]);
 
     for (const importRule of CSS_UTILITY_LAYER_DECISION.imports) {
+      const sourceSuffix = importRule.scanSource ? ` source("${importRule.scanSource}")` : "";
       expect(tailwindSource).toContain(
-        `@import "${importRule.source}" layer(${importRule.layer}) prefix(${importRule.prefix});`
+        `@import "${importRule.source}" layer(${importRule.layer}) prefix(${importRule.prefix})${sourceSuffix};`
       );
     }
 
     for (const omittedImport of CSS_UTILITY_LAYER_DECISION.omittedImports) {
       expect(tailwindSource).not.toContain(omittedImport);
+      expect(tokenSource).not.toContain(omittedImport);
+    }
+
+    expect(tailwindSource).toContain(`@import "${tokenImport.source}";`);
+    expect(tokenImport.reason).toContain("Phase 1");
+    expect(tokenSource).toContain("@theme inline");
+    expect(tokenSource).not.toContain("@import");
+
+    expect(CSS_UTILITY_LAYER_DECISION.phase2Pilots).toEqual([
+      expect.objectContaining({
+        surface: "AdminAudit table shell",
+        file: "src/admin/AdminAudit.jsx",
+        utilities: ["tw:max-w-full", "tw:overflow-x-auto"],
+        replacedCss: "src/styles/admin/audit-feedback.css .audit-table-wrap"
+      })
+    ]);
+
+    expect(CSS_UTILITY_LAYER_DECISION.phase3Primitives).toEqual([
+      expect.objectContaining({
+        primitive: "ScrollArea",
+        file: "src/ui/primitives/ScrollArea.jsx",
+        utilities: ["tw:max-w-full", "tw:overflow-x-auto"],
+        firstConsumer: "src/admin/AdminAudit.jsx"
+      }),
+      expect.objectContaining({
+        primitive: "AdminTableScroll",
+        file: "src/admin/adminComponents.jsx",
+        utilities: ["tw:max-w-full", "tw:overflow-x-auto"],
+        firstConsumer: "src/admin/AdminAudit.jsx"
+      }),
+      expect.objectContaining({
+        primitive: "Badge",
+        file: "src/ui/primitives/Badge.jsx",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center"],
+        firstConsumer: "src/admin/adminComponents.jsx"
+      }),
+      expect.objectContaining({
+        primitive: "EmptyState",
+        file: "src/ui/primitives/EmptyState.jsx",
+        utilities: ["tw:text-center", "tw:px-3", "tw:py-6"],
+        firstConsumer: "src/admin/adminComponents.jsx"
+      }),
+      expect.objectContaining({
+        primitive: "Button",
+        file: "src/ui/primitives/Button.jsx",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        firstConsumer: "src/admin/adminComponents.jsx"
+      }),
+      expect.objectContaining({
+        primitive: "AdminActionButton",
+        file: "src/admin/adminComponents.jsx",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        firstConsumer: "src/admin/AdminSiteSettings.jsx"
+      })
+    ]);
+    expect(CSS_UTILITY_LAYER_DECISION.phase4Pilots).toEqual([
+      expect.objectContaining({
+        surface: "ConfirmModal action buttons",
+        file: "src/modals/FeedbackModals.jsx",
+        wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        preservedVisualClasses: ["danger-action", "secondary-action"]
+      }),
+      expect.objectContaining({
+        surface: "MessageBoardModal submit action",
+        file: "src/modals/MessageBoardModal.jsx",
+        wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        preservedVisualClasses: ["primary-action"]
+      }),
+      expect.objectContaining({
+        surface: "AnnouncementModal simple secondary actions",
+        file: "src/modals/AnnouncementModal.jsx",
+        wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        preservedVisualClasses: ["secondary-action"]
+      }),
+      expect.objectContaining({
+        surface: "PersonalizationModal save action",
+        file: "src/modals/PersonalizationModal.jsx",
+        wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        preservedVisualClasses: ["primary-action"]
+      }),
+      expect.objectContaining({
+        surface: "MailboxModal attachment claim action",
+        file: "src/modals/MailboxModal.jsx",
+        wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        preservedVisualClasses: ["primary-action"]
+      }),
+      expect.objectContaining({
+        surface: "FriendsOverlays duel-mode cancel action",
+        file: "src/modals/friends/FriendsOverlays.jsx",
+        wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        preservedVisualClasses: ["secondary-action"]
+      }),
+      expect.objectContaining({
+        surface: "UserProfileCard report submit action",
+        file: "src/modals/UserProfileCard.jsx",
+        wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        preservedVisualClasses: ["danger-action"]
+      })
+    ]);
+    expect(CSS_UTILITY_LAYER_DECISION.phase5Pilots).toEqual([
+      expect.objectContaining({
+        surface: "Home match-mode cancel action",
+        file: "src/home/HomeScreen.jsx",
+        wrapper: "src/home/homeComponents.jsx HomeActionButton",
+        utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+        preservedVisualClasses: ["secondary-action"]
+      })
+    ]);
+    expect(CSS_UTILITY_LAYER_DECISION.phase6Pilots).toEqual([
+      expect.objectContaining({
+        surface: "Bright School token scaffold",
+        files: [
+          "src/styles/tailwind/tokens.css",
+          "src/styles/themes/bright-school/surface-contracts/final-root-surfaces.css",
+          "src/styles/themes/bright-school/quality-base/refinement-foundation.css"
+        ],
+        contract: "Tailwind tokens map to Bright School paper, ink, accent, border, and shadow variables"
+      })
+    ]);
+    expect(CSS_UTILITY_LAYER_DECISION.phase7Pilots).toEqual([
+      expect.objectContaining({
+        surface: "mobile-adaptive final guard inventory",
+        files: ["src/styles/mobile-adaptive.css", "src/styles/cssLayerInventory.js"],
+        contract: "Only register mobile safety reduction candidates; do not move final guard rules yet"
+      })
+    ]);
+    expect(readFileSync(join(projectRoot, "src/ui/primitives/ScrollArea.jsx"), "utf8")).toContain(
+      "tw:max-w-full"
+    );
+    expect(readFileSync(join(projectRoot, "src/admin/adminComponents.jsx"), "utf8")).toContain(
+      "AdminTableScroll"
+    );
+    expect(readFileSync(join(projectRoot, "src/admin/adminComponents.jsx"), "utf8")).toContain("ScrollArea");
+    expect(readFileSync(join(projectRoot, "src/admin/AdminAudit.jsx"), "utf8")).toContain("AdminTableScroll");
+    expect(readFileSync(join(projectRoot, "src/admin/AdminAudit.jsx"), "utf8")).not.toContain("tw:max-w-full");
+    expect(readFileSync(join(projectRoot, "src/admin/AdminAudit.jsx"), "utf8")).not.toContain("ScrollArea");
+    expect(readFileSync(join(projectRoot, "src/ui/primitives/Badge.jsx"), "utf8")).toContain("tw:inline-flex");
+    expect(readFileSync(join(projectRoot, "src/ui/primitives/EmptyState.jsx"), "utf8")).toContain(
+      "tw:text-center"
+    );
+    expect(readFileSync(join(projectRoot, "src/ui/primitives/Button.jsx"), "utf8")).toContain("tw:gap-2");
+    expect(readFileSync(join(projectRoot, "src/admin/adminComponents.jsx"), "utf8")).toContain(
+      "AdminActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/admin/AdminSiteSettings.jsx"), "utf8")).toContain(
+      "AdminActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/admin/AdminSiteSettings.jsx"), "utf8")).not.toContain(
+      'className="primary-action"'
+    );
+    expect(readFileSync(join(projectRoot, "src/admin/AdminAchievements.jsx"), "utf8")).toContain(
+      "AdminStatusPill"
+    );
+    expect(readFileSync(join(projectRoot, "src/admin/AdminAchievements.jsx"), "utf8")).not.toContain(
+      "className={`admin-status-pill"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/modalComponents.jsx"), "utf8")).toContain(
+      "ModalActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/modalComponents.jsx"), "utf8")).toContain(
+      "Button"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/FeedbackModals.jsx"), "utf8")).toContain(
+      "ModalActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/FeedbackModals.jsx"), "utf8")).not.toContain(
+      'className="danger-action"'
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/FeedbackModals.jsx"), "utf8")).not.toContain(
+      'className="secondary-action"'
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/MessageBoardModal.jsx"), "utf8")).toContain(
+      "ModalActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/MessageBoardModal.jsx"), "utf8")).not.toContain(
+      'className="primary-action"'
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/AnnouncementModal.jsx"), "utf8")).toContain(
+      "ModalActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/AnnouncementModal.jsx"), "utf8")).toContain(
+      'className="announcement-load-more"'
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/AnnouncementModal.jsx"), "utf8")).not.toContain(
+      'className="secondary-action"'
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/AnnouncementModal.jsx"), "utf8")).not.toContain(
+      'className="secondary-action announcement-load-more"'
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/PersonalizationModal.jsx"), "utf8")).toContain(
+      "ModalActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/PersonalizationModal.jsx"), "utf8")).not.toContain(
+      'className="primary-action"'
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/MailboxModal.jsx"), "utf8")).toContain(
+      "ModalActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/MailboxModal.jsx"), "utf8")).not.toContain(
+      'className="primary-action"'
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/friends/FriendsOverlays.jsx"), "utf8")).toContain(
+      "ModalActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/friends/FriendsOverlays.jsx"), "utf8")).not.toContain(
+      'className="secondary-action"'
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/UserProfileCard.jsx"), "utf8")).toContain(
+      "ModalActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/modals/UserProfileCard.jsx"), "utf8")).not.toContain(
+      '<button className="danger-action" type="submit"'
+    );
+    expect(readFileSync(join(projectRoot, "src/home/homeComponents.jsx"), "utf8")).toContain(
+      "HomeActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/home/homeComponents.jsx"), "utf8")).toContain(
+      "Button"
+    );
+    expect(readFileSync(join(projectRoot, "src/home/HomeScreen.jsx"), "utf8")).toContain(
+      "HomeActionButton"
+    );
+    expect(readFileSync(join(projectRoot, "src/home/HomeScreen.jsx"), "utf8")).not.toContain(
+      'className="secondary-action"'
+    );
+
+    for (const token of CSS_UTILITY_LAYER_DECISION.semanticTokens) {
+      expect(tokenSource).toContain(token);
     }
 
     expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("tw:");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain('source("../")');
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("ScrollArea");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("AdminTableScroll");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("Badge");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("EmptyState");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("Button");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("AdminActionButton");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("ModalActionButton");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("HomeActionButton");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("Phase 6");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("Phase 7");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("Bright School tokens");
+    expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("mobile-adaptive final guard");
     expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("staged long-term target");
     expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("Bright School");
     expect(CSS_UTILITY_LAYER_DECISION.guidance.join("\n")).toContain("themes.css");
+  });
+
+  it("documents the phased Tailwind migration roadmap and protected exclusions", () => {
+    expect(CSS_TAILWIND_MIGRATION_PHASES.map((phase) => phase.phase)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(CSS_TAILWIND_MIGRATION_PHASES[0].focus).toContain("token scaffold");
+    expect(CSS_TAILWIND_MIGRATION_PHASES[0].allowedWork.join("\n")).toContain("semantic Tailwind token scaffold");
+    expect(CSS_TAILWIND_MIGRATION_PHASES[1].allowedWork.join("\n")).toContain("admin");
+    expect(CSS_TAILWIND_MIGRATION_PHASES[2].allowedWork.join("\n")).toContain("Button");
+    expect(CSS_TAILWIND_MIGRATION_PHASES[3].allowedWork.join("\n")).toContain("settings");
+    expect(CSS_TAILWIND_MIGRATION_PHASES[4].focus).toContain("Home");
+    expect(CSS_TAILWIND_MIGRATION_PHASES[5].focus).toContain("Bright School");
+    expect(CSS_TAILWIND_MIGRATION_PHASES[6].focus).toContain("Mobile safety");
+    expect(CSS_TAILWIND_MIGRATION_PHASES[6].verification.join("\n")).toContain("npm run verify:battle-fixes");
+
+    const exclusions = CSS_TAILWIND_MIGRATION_EXCLUSIONS.join("\n");
+    expect(exclusions).toContain("Pixi");
+    expect(exclusions).toContain("board point buttons");
+    expect(exclusions).toContain("Tailwind preflight");
+    expect(exclusions).toContain("tw prefix");
   });
 
   it("documents and enforces the Bright School broad fallback ban", () => {

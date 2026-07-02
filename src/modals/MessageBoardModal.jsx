@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Send, X } from "lucide-react";
 import { api } from "../api/client.js";
+import { ModalActionButton } from "./modalComponents.jsx";
 
 const FEEDBACK_MAX_LENGTH = 400;
 
@@ -50,9 +51,9 @@ export default function MessageBoardModal({ token, onSubmitted, onClose }) {
         />
         <div className="message-board-counter">还可以输入 {FEEDBACK_MAX_LENGTH - content.length} 个字符</div>
         {error && <p className="form-error">{error}</p>}
-        <button className="primary-action" type="submit" disabled={submitting}>
+        <ModalActionButton variant="primary" type="submit" disabled={submitting}>
           <Send size={18} />{submitting ? "提交中" : "提交"}
-        </button>
+        </ModalActionButton>
       </form>
     </div>
   );

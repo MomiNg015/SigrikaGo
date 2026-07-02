@@ -1,11 +1,11 @@
-import { AdminSectionHeader } from "./adminComponents.jsx";
+import { AdminSectionHeader, AdminTableScroll } from "./adminComponents.jsx";
 import { formatDateTime } from "./adminFormatters.js";
 
 export default function AdminFeedback({ messages }) {
   return (
     <section className="admin-list-section">
       <AdminSectionHeader title="留言反馈" meta={`${messages.length} 条最近反馈`} />
-      <div className="admin-table-wrap">
+      <AdminTableScroll>
         <table className="admin-table feedback-table">
           <thead>
             <tr>
@@ -29,7 +29,7 @@ export default function AdminFeedback({ messages }) {
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableScroll>
     </section>
   );
 }

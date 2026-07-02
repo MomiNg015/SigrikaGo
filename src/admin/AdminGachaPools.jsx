@@ -10,7 +10,7 @@ import {
 } from "../shared/adminDrafts.js";
 import { MUSIC_TRACKS } from "../shared/musicLibrary.js";
 import { STONE_DECORATIONS } from "../shared/stoneDecorations.js";
-import { AdminFieldLabel, AdminSectionHeader, AdminStatusPill } from "./adminComponents.jsx";
+import { AdminFieldLabel, AdminSectionHeader, AdminStatusPill, AdminTableEmpty, AdminTableScroll } from "./adminComponents.jsx";
 
 const COIN_PRIZE_OPTION = { value: "", name: "金币奖励", imageUrl: "" };
 
@@ -198,7 +198,7 @@ export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, o
   return (
     <section className="admin-list-section admin-gacha-board">
       <AdminSectionHeader title="扭蛋管理" meta={`${pools.length} 个池子`} actionLabel="新增池子" onAction={startNewPool} />
-      <div className="admin-table-wrap">
+      <AdminTableScroll>
         <table className="admin-table compact">
           <thead><tr><th>池子</th><th>开放时间</th><th>价格</th><th>大奖</th><th>奖项</th><th>状态</th><th>操作</th></tr></thead>
           <tbody>
@@ -222,10 +222,10 @@ export default function AdminGachaPools({ pools, token, resourceCatalogs = {}, o
                 <td><button className="admin-row-action" type="button">编辑</button></td>
               </tr>
             ))}
-            {pools.length === 0 && <tr><td className="admin-table-empty" colSpan="7">暂无扭蛋池</td></tr>}
+            {pools.length === 0 && <tr><AdminTableEmpty colSpan="7">暂无扭蛋池</AdminTableEmpty></tr>}
           </tbody>
         </table>
-      </div>
+      </AdminTableScroll>
 
       {draft && (
         <aside className="admin-crud-drawer">

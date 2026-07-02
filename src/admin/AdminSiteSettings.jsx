@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { adminApi } from "../api/client.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { normalizeRatingRules } from "../shared/ratingRules.js";
-import { AdminFieldLabel, AdminSectionHeader } from "./adminComponents.jsx";
+import { AdminActionButton, AdminFieldLabel, AdminSectionHeader } from "./adminComponents.jsx";
 
 export default function AdminSiteSettings({ token, onSaved, onNotice }) {
   const [draft, setDraft] = useState(DEFAULT_SITE_SETTINGS);
@@ -108,7 +108,7 @@ export default function AdminSiteSettings({ token, onSaved, onNotice }) {
           </label>
         </fieldset>
         <div className="inline-actions">
-          <button className="primary-action" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</button>
+          <AdminActionButton variant="primary" type="submit" disabled={saving}>{saving ? "保存中" : "保存"}</AdminActionButton>
         </div>
       </form>
     </section>

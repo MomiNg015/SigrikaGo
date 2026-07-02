@@ -211,6 +211,44 @@ describe("player theme CSS contract", () => {
     expect(surfaceContractsEntry).not.toContain("firewall");
   });
 
+  it("keeps Bright School theme tokens available to the Tailwind semantic scaffold", () => {
+    const brightSchoolCss = readThemeCssTree("bright-school");
+    const tailwindTokens = readFileSync(new URL("./tailwind/tokens.css", import.meta.url), "utf8");
+    const brightTokens = [
+      "--bright-paper",
+      "--bright-sheet",
+      "--bright-sheet-clean",
+      "--bright-ink",
+      "--bright-ink-soft",
+      "--bright-border",
+      "--bright-pink",
+      "--bright-pink-soft",
+      "--bright-blue",
+      "--bright-mint",
+      "--bright-shadow",
+      "--bright-shadow-soft",
+      "--bright-shadow-lift"
+    ];
+
+    for (const token of brightTokens) {
+      expect(brightSchoolCss).toContain(token);
+    }
+
+    expect(tailwindTokens).toContain("--color-sigrika-paper: var(--bright-paper");
+    expect(tailwindTokens).toContain("--color-sigrika-surface: var(--bright-sheet");
+    expect(tailwindTokens).toContain("--color-sigrika-surface-clean: var(--bright-sheet-clean");
+    expect(tailwindTokens).toContain("--color-sigrika-ink: var(--bright-ink");
+    expect(tailwindTokens).toContain("--color-sigrika-muted: var(--bright-ink-soft");
+    expect(tailwindTokens).toContain("--color-sigrika-border: var(--bright-border");
+    expect(tailwindTokens).toContain("--color-sigrika-accent: var(--bright-pink");
+    expect(tailwindTokens).toContain("--color-sigrika-accent-soft: var(--bright-pink-soft");
+    expect(tailwindTokens).toContain("--color-sigrika-info: var(--bright-blue");
+    expect(tailwindTokens).toContain("--color-sigrika-success: var(--bright-mint");
+    expect(tailwindTokens).toContain("--shadow-sigrika-paper: var(--bright-shadow");
+    expect(tailwindTokens).toContain("--shadow-sigrika-paper-soft: var(--bright-shadow-soft");
+    expect(tailwindTokens).toContain("--shadow-sigrika-paper-lift: var(--bright-shadow-lift");
+  });
+
   it("keeps Bright School home as an import-only lobby entry", () => {
     const brightHomeEntry = readFileSync(new URL("./themes/bright-school/home.css", import.meta.url), "utf8");
 

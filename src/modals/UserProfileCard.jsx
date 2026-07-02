@@ -8,6 +8,7 @@ import UserIdentity from "../shared/UserIdentity.jsx";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
+import { ModalActionButton } from "./modalComponents.jsx";
 import { ReplayList } from "./ReplayList.jsx";
 
 export function UserProfileCard({
@@ -271,7 +272,7 @@ export function UserProfileCard({
               />
               <small>{reportContent.length}/400</small>
               <div>
-                <button className="danger-action" type="submit" disabled={reportPending || reportContent.trim().length === 0}>提交</button>
+                <ModalActionButton variant="danger" type="submit" disabled={reportPending || reportContent.trim().length === 0}>提交</ModalActionButton>
               </div>
             </form>
           </section>

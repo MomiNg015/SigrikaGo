@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { adminApi } from "../api/client.js";
-import { AdminFieldLabel, AdminSectionHeader } from "./adminComponents.jsx";
+import { AdminFieldLabel, AdminSectionHeader, AdminTableEmpty, AdminTableScroll } from "./adminComponents.jsx";
 
 const MUSIC_TYPE_LABELS = {
   home: "大厅",
@@ -45,7 +45,7 @@ export default function AdminMusicTracks({ tracks, token, onSaved, onNotice }) {
   return (
     <section className="admin-list-section">
       <AdminSectionHeader title="音乐管理" meta={`${list.length} 首音乐`} />
-      <div className="admin-table-wrap">
+      <AdminTableScroll>
         <table className="admin-table compact">
           <thead><tr><th>轨道</th><th>类型</th><th>角色</th><th>默认名</th><th>显示名</th><th>操作</th></tr></thead>
           <tbody>
@@ -61,12 +61,12 @@ export default function AdminMusicTracks({ tracks, token, onSaved, onNotice }) {
             ))}
             {list.length === 0 && (
               <tr>
-                <td className="admin-table-empty" colSpan="6">暂无音乐</td>
+                <AdminTableEmpty colSpan="6">暂无音乐</AdminTableEmpty>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableScroll>
       {draft && (
         <aside className="admin-crud-drawer">
           <button className="close-button" type="button" onClick={() => setDraft(null)}><X size={18} /></button>

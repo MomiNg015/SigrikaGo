@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { ConfirmPanel, UserProfileCard } from "../UserProfileCard.jsx";
+import { ModalActionButton } from "../modalComponents.jsx";
 import MatchModeRuleText from "../../home/MatchModeRuleText.jsx";
 import { modeOrderedEntries } from "../../shared/gameModes.js";
 import UserIdentity from "../../shared/UserIdentity.jsx";
@@ -68,7 +69,7 @@ export default function FriendsOverlays({
                 </button>
               ))}
             </div>
-            <button className="secondary-action" type="button" onClick={onCloseDuelMode}>取消</button>
+            <ModalActionButton variant="secondary" type="button" onClick={onCloseDuelMode}>取消</ModalActionButton>
           </section>
         </div>
       )}

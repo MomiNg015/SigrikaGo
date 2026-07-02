@@ -26,6 +26,38 @@ Questions to answer:
 
 (To be filled by the team)
 
+## UI Primitive Layer
+
+Tailwind migration primitives live under `src/ui/primitives/`. They are the handoff layer between feature components and prefixed `tw:` utilities.
+
+Required patterns:
+
+- Keep primitive class composition centralized through `src/ui/classNames.js` unless the helper becomes insufficient enough to justify a dependency.
+- Keep primitive variants semantic and small. A feature component should consume a primitive or local domain wrapper such as `AdminTableScroll` instead of owning repeated raw `tw:` utility strings.
+- Preserve native element semantics. For example, a primitive that renders a button must still render a real `button`, and disabled states must use the native `disabled` attribute.
+- Start primitives on low-risk admin/tooling or non-gameplay surfaces. Do not use the primitive layer as permission to migrate room board geometry, Pixi canvas hosts, skill presentation, Bright School final mobile safety, or mobile gameplay controls.
+- Add focused tests for each primitive and for the first feature consumer that proves the feature consumes the primitive rather than retaining raw utility strings.
+
+Current primitives:
+
+- `src/ui/primitives/ScrollArea.jsx` centralizes `tw:max-w-full` and `tw:overflow-x-auto`; `src/admin/adminComponents.jsx` wraps it as `AdminTableScroll` so admin table shells keep the `.admin-table-wrap` visual contract while feature components stop owning overflow utilities or the raw wrapper class.
+- `src/ui/primitives/Badge.jsx` centralizes `tw:inline-flex`, `tw:items-center`, and `tw:justify-center`; `src/admin/adminComponents.jsx` wraps it as `AdminStatusPill` while existing admin CSS still owns status badge colors, borders, spacing, and typography.
+- `src/ui/primitives/EmptyState.jsx` centralizes `tw:text-center`, `tw:px-3`, and `tw:py-6`; `src/admin/adminComponents.jsx` wraps it as `AdminTableEmpty` for admin table cells while existing admin CSS still owns muted text color and the `.admin-table-empty` visual contract. Do not use this pilot as permission to migrate player-facing `quiet-text`, modal empty states, or Bright School repaired empty states.
+- `src/ui/primitives/Button.jsx` centralizes only visually equivalent action alignment utilities: `tw:inline-flex`, `tw:items-center`, `tw:justify-center`, and `tw:gap-2`; `src/admin/adminComponents.jsx` wraps it as `AdminActionButton` so admin features use semantic `primary`, `secondary`, and `danger` variants while existing CSS still owns `.primary-action`, `.secondary-action`, `.danger-action` colors, borders, disabled states, shadows, padding, and typography. Do not use this pilot as permission to restyle player-facing buttons or gameplay controls.
+
+Current Phase 4 domain wrappers:
+
+- `src/modals/modalComponents.jsx` wraps `Button` as `ModalActionButton` for shared modal action rows. It maps semantic modal variants back to existing `.primary-action`, `.secondary-action`, and `.danger-action` visual classes while the primitive owns only alignment utilities. The first consumers are `ConfirmModal` in `src/modals/FeedbackModals.jsx`, the submit action in `src/modals/MessageBoardModal.jsx`, simple retry/load-more secondary actions in `src/modals/AnnouncementModal.jsx`, the save action in `src/modals/PersonalizationModal.jsx`, the mailbox attachment claim action in `src/modals/MailboxModal.jsx`, the duel-mode cancel action in `src/modals/friends/FriendsOverlays.jsx`, and the profile report submit action in `src/modals/UserProfileCard.jsx`. Do not use this pilot as permission to migrate story-player choices, announcement tabs/list rows, personalization picker option grids, mailbox list rows/delete controls, friends match-mode option buttons, profile confirm panels, profile social action buttons, commerce cards, recruitment board actions, gacha controls, Bright School repaired modal surfaces, or mobile gameplay controls without focused tests and visual checks.
+
+Current Phase 5 domain wrappers:
+
+- `src/home/homeComponents.jsx` wraps `Button` as `HomeActionButton` for home-flow action rows. It maps semantic home variants back to existing `.primary-action`, `.secondary-action`, and `.danger-action` visual classes while the primitive owns only alignment utilities. The first consumer is the match-mode picker cancel action in `src/home/HomeScreen.jsx`. Do not use this pilot as permission to migrate match-mode option buttons, home entry cards, home utility entries, player plaque art, shop/warehouse/recruitment cards, or gameplay controls without focused desktop/mobile tests and visual checks.
+
+Current Phase 6/7 contracts:
+
+- Phase 6 currently provides Tailwind semantic tokens for existing Bright School variables only. Primitives may consume those tokens later, but this does not authorize changing Bright School owner selectors, rule values, or theme import order.
+- Phase 7 currently registers `mobile-adaptive.css` as a final-guard reduction candidate only. Component wrappers must own both desktop and mobile behavior before any final mobile rule is removed or migrated.
+
 ---
 
 ## Props Conventions

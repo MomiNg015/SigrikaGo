@@ -82,7 +82,8 @@ export const CSS_LAYER_GROUPS = [
       "hud-components/user-identity/core.css",
       "hud-components/user-identity/context-surfaces.css",
       "hud-components/user-identity/phone-layouts.css",
-      "tailwind.css"
+      "tailwind.css",
+      "tailwind/tokens.css"
     ],
     guidance: "Safe candidates for import-only splits, naming cleanup, and token documentation when feature tests own exact visual values."
   },
@@ -783,20 +784,315 @@ export const CSS_REFACTOR_ROUNDS = [
   }
 ];
 
+export const CSS_TAILWIND_MIGRATION_PHASES = [
+  {
+    phase: 1,
+    focus: "Baseline, contracts, and token scaffold",
+    risk: "low",
+    allowedWork: [
+      "record phased roadmap",
+      "add semantic Tailwind token scaffold",
+      "guard tw prefix, no-preflight, and import order with tests",
+      "sync architecture docs"
+    ],
+    verification: [
+      "npm test -- src/styles/cssLayerInventory.test.js src/styles/styleContract.test.js src/styles/themeContract.test.js src/styles/hudComponents.test.js",
+      "npm run docs:system-design"
+    ]
+  },
+  {
+    phase: 2,
+    focus: "Low-risk pilot surfaces",
+    risk: "low",
+    allowedWork: [
+      "new admin or tooling surfaces",
+      "route-lazy or isolated empty states",
+      "delete matching old CSS for each migrated slice"
+    ],
+    verification: ["focused component tests", "npm run build"]
+  },
+  {
+    phase: 3,
+    focus: "UI primitive layer",
+    risk: "low-to-medium",
+    allowedWork: [
+      "Button, IconButton, ModalShell, Tabs, form controls, Badge, ListRow, EmptyState, Toast",
+      "semantic variants instead of long ad hoc class strings",
+      "native disabled and form semantics"
+    ],
+    verification: ["primitive unit tests", "desktop and mobile contract checks"]
+  },
+  {
+    phase: 4,
+    focus: "Shared modal, list, card, and form migration",
+    risk: "medium",
+    allowedWork: [
+      "settings, friends, leaderboard, announcement, mailbox, achievement, warehouse, shop, recruitment internals",
+      "desktop and mobile migration together",
+      "remove replaced modals, commerce, mobile-modals, and focused theme repair CSS"
+    ],
+    verification: ["focused modal tests", "static CSS contracts", "npm run check for larger handoffs"]
+  },
+  {
+    phase: 5,
+    focus: "Home, lobby, and commerce main flow",
+    risk: "medium-to-high",
+    allowedWork: [
+      "non-gameplay player-facing layouts",
+      "layout and state affordances before decorative art migration",
+      "preserve Bright School scrapbook/campus identity"
+    ],
+    verification: ["desktop and mobile visual checks", "static CSS contracts", "npm run build"]
+  },
+  {
+    phase: 6,
+    focus: "Bright School theme tokenization",
+    risk: "medium-to-high",
+    allowedWork: [
+      "paper, ink, accent, border, shadow, selected, and disabled semantic variables",
+      "shrink surface-contracts to explicit owner selectors",
+      "future themes remain imported through themes.css until visually verified"
+    ],
+    verification: ["theme contract tests", "desktop and mobile theme visual checks"]
+  },
+  {
+    phase: 7,
+    focus: "Mobile safety layer reduction",
+    risk: "medium-to-high",
+    allowedWork: [
+      "mobile modal shells, tabs, lists, form controls, and non-gameplay action rows",
+      "move stable mobile behavior into component or primitive ownership",
+      "keep mobile-adaptive as final guard until replacement coverage exists"
+    ],
+    verification: [
+      "375px phone portrait check",
+      "small phone landscape check",
+      "narrow desktop check",
+      "npm run verify:battle-fixes for broad mobile changes"
+    ]
+  }
+];
+
+export const CSS_TAILWIND_MIGRATION_EXCLUSIONS = [
+  "room board geometry",
+  "board point buttons",
+  "Pixi canvas hosts",
+  "skill presentation keyframes and DOM marks",
+  "Bright School final mobile safety",
+  "mobile gameplay controls",
+  "Tailwind preflight",
+  "removing the tw prefix"
+];
+
 export const CSS_UTILITY_LAYER_DECISION = {
   id: "tailwind-prefixed-utility-layer",
   entry: "tailwind.css",
   vitePlugin: "@tailwindcss/vite",
   imports: [
     { source: "tailwindcss/theme.css", layer: "theme", prefix: "tw" },
-    { source: "tailwindcss/utilities.css", layer: "utilities", prefix: "tw" }
+    { source: "tailwindcss/utilities.css", layer: "utilities", prefix: "tw", scanSource: "../" }
+  ],
+  localImports: [
+    {
+      source: "./tailwind/tokens.css",
+      entry: "tailwind/tokens.css",
+      reason: "Phase 1 semantic token scaffold used by future tw: utilities without migrating existing UI."
+    }
+  ],
+  phase2Pilots: [
+    {
+      surface: "AdminAudit table shell",
+      file: "src/admin/AdminAudit.jsx",
+      utilities: ["tw:max-w-full", "tw:overflow-x-auto"],
+      replacedCss: "src/styles/admin/audit-feedback.css .audit-table-wrap",
+      reason: "Admin-only audit table wrapper has no player theme, board, skill, Pixi, or mobile gameplay dependency."
+    }
+  ],
+  phase3Primitives: [
+    {
+      primitive: "ScrollArea",
+      file: "src/ui/primitives/ScrollArea.jsx",
+      utilities: ["tw:max-w-full", "tw:overflow-x-auto"],
+      firstConsumer: "src/admin/AdminAudit.jsx",
+      reason:
+        "Phase 3 starts by centralizing the Phase 2 admin overflow shell utility classes in a shared primitive instead of keeping raw tw: strings in feature components."
+    },
+    {
+      primitive: "AdminTableScroll",
+      file: "src/admin/adminComponents.jsx",
+      utilities: ["tw:max-w-full", "tw:overflow-x-auto"],
+      firstConsumer: "src/admin/AdminAudit.jsx",
+      reason:
+        "The admin table wrapper consumes ScrollArea so admin feature components keep the existing admin-table-wrap visual shell while primitive-owned Tailwind utilities own horizontal overflow."
+    },
+    {
+      primitive: "Badge",
+      file: "src/ui/primitives/Badge.jsx",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center"],
+      firstConsumer: "src/admin/adminComponents.jsx",
+      reason:
+        "The badge primitive centralizes visually equivalent low-risk inline layout utilities while existing admin CSS continues to own status colors, borders, padding, and typography."
+    },
+    {
+      primitive: "EmptyState",
+      file: "src/ui/primitives/EmptyState.jsx",
+      utilities: ["tw:text-center", "tw:px-3", "tw:py-6"],
+      firstConsumer: "src/admin/adminComponents.jsx",
+      reason:
+        "The empty-state primitive centralizes admin table empty-cell alignment and spacing utilities while existing admin CSS continues to own muted text color and the admin-table-empty visual contract."
+    },
+    {
+      primitive: "Button",
+      file: "src/ui/primitives/Button.jsx",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      firstConsumer: "src/admin/adminComponents.jsx",
+      reason:
+        "The button primitive centralizes only visually equivalent action alignment utilities while domain CSS continues to own colors, borders, disabled states, shadows, padding, and typography."
+    },
+    {
+      primitive: "AdminActionButton",
+      file: "src/admin/adminComponents.jsx",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      firstConsumer: "src/admin/AdminSiteSettings.jsx",
+      reason:
+        "The admin action wrapper maps semantic admin variants back to primary-action, secondary-action, and danger-action visual classes so feature files stop owning repeated raw action class strings."
+    }
+  ],
+  phase4Pilots: [
+    {
+      surface: "ConfirmModal action buttons",
+      file: "src/modals/FeedbackModals.jsx",
+      wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      preservedVisualClasses: ["danger-action", "secondary-action"],
+      reason:
+        "The first Phase 4 modal slice moves repeated confirm action alignment through a modal wrapper while existing CSS still owns modal colors, spacing, disabled states, shadows, and typography."
+    },
+    {
+      surface: "MessageBoardModal submit action",
+      file: "src/modals/MessageBoardModal.jsx",
+      wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      preservedVisualClasses: ["primary-action"],
+      reason:
+        "The second Phase 4 modal slice proves the modal action wrapper is reusable on a simple form submit action while existing message-board CSS still owns the primary action placement and visual treatment."
+    },
+    {
+      surface: "AnnouncementModal simple secondary actions",
+      file: "src/modals/AnnouncementModal.jsx",
+      wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      preservedVisualClasses: ["secondary-action"],
+      reason:
+        "The third Phase 4 modal slice routes announcement retry and load-more actions through the modal wrapper while existing announcement modal CSS still owns tabs, list rows, spacing, disabled state, and themed visual treatment."
+    },
+    {
+      surface: "PersonalizationModal save action",
+      file: "src/modals/PersonalizationModal.jsx",
+      wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      preservedVisualClasses: ["primary-action"],
+      reason:
+        "The fourth Phase 4 modal slice routes the personalization save action through the modal wrapper while existing personalization CSS still owns preview, picker option grids, equipment states, disabled state, and themed visual treatment."
+    },
+    {
+      surface: "MailboxModal attachment claim action",
+      file: "src/modals/MailboxModal.jsx",
+      wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      preservedVisualClasses: ["primary-action"],
+      reason:
+        "The fifth Phase 4 modal slice routes the mailbox attachment claim action through the modal wrapper while existing mailbox CSS still owns list/detail layout, attachment states, disabled state, paper background, and mobile treatment."
+    },
+    {
+      surface: "FriendsOverlays duel-mode cancel action",
+      file: "src/modals/friends/FriendsOverlays.jsx",
+      wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      preservedVisualClasses: ["secondary-action"],
+      reason:
+        "The sixth Phase 4 modal slice routes only the friends duel-mode cancel action through the modal wrapper while existing friends/profile CSS still owns match-mode options, profile overlays, confirm panels, spacing, and mobile treatment."
+    },
+    {
+      surface: "UserProfileCard report submit action",
+      file: "src/modals/UserProfileCard.jsx",
+      wrapper: "src/modals/modalComponents.jsx ModalActionButton",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      preservedVisualClasses: ["danger-action"],
+      reason:
+        "The seventh Phase 4 modal slice routes only the profile report submit action through the modal wrapper while existing profile CSS still owns the report dialog form, confirm panels, social actions, spacing, and mobile treatment."
+    }
+  ],
+  phase5Pilots: [
+    {
+      surface: "Home match-mode cancel action",
+      file: "src/home/HomeScreen.jsx",
+      wrapper: "src/home/homeComponents.jsx HomeActionButton",
+      utilities: ["tw:inline-flex", "tw:items-center", "tw:justify-center", "tw:gap-2"],
+      preservedVisualClasses: ["secondary-action"],
+      reason:
+        "The first Phase 5 home-flow slice routes only the match-mode picker cancel action through a home wrapper while existing home/modal/mobile CSS still owns match-mode layout, option buttons, spacing, artboard behavior, and visual treatment."
+    }
+  ],
+  phase6Pilots: [
+    {
+      surface: "Bright School token scaffold",
+      files: [
+        "src/styles/tailwind/tokens.css",
+        "src/styles/themes/bright-school/surface-contracts/final-root-surfaces.css",
+        "src/styles/themes/bright-school/quality-base/refinement-foundation.css"
+      ],
+      contract: "Tailwind tokens map to Bright School paper, ink, accent, border, and shadow variables",
+      reason:
+        "Phase 6 starts as a no-visual-change token contract: Tailwind exposes the existing Bright School paper, clean surface, border, accent, and shadow scale without moving owner CSS rules."
+    }
+  ],
+  phase7Pilots: [
+    {
+      surface: "mobile-adaptive final guard inventory",
+      files: ["src/styles/mobile-adaptive.css", "src/styles/cssLayerInventory.js"],
+      contract: "Only register mobile safety reduction candidates; do not move final guard rules yet",
+      reason:
+        "Phase 7 starts by keeping mobile-adaptive as the final post-theme guard while documenting that future reductions require matching desktop/mobile component ownership and visual checks."
+    }
   ],
   omittedImports: ["tailwindcss/preflight.css"],
+  semanticTokens: [
+    "--font-sigrika-ui",
+    "--font-sigrika-display",
+    "--font-sigrika-numeric",
+    "--color-sigrika-paper",
+    "--color-sigrika-surface",
+    "--color-sigrika-surface-clean",
+    "--color-sigrika-ink",
+    "--color-sigrika-muted",
+    "--color-sigrika-border",
+    "--color-sigrika-accent",
+    "--color-sigrika-accent-soft",
+    "--color-sigrika-info",
+    "--color-sigrika-success",
+    "--spacing-sigrika-page",
+    "--spacing-sigrika-gap",
+    "--spacing-sigrika-control-x",
+    "--spacing-sigrika-control-y",
+    "--radius-sigrika-control",
+    "--radius-sigrika-card",
+    "--shadow-sigrika-paper",
+    "--shadow-sigrika-paper-soft",
+    "--shadow-sigrika-paper-lift",
+    "--ease-sigrika-standard"
+  ],
   rootOrder: { after: "hud-components.css", before: "themes.css" },
   guidance: [
     "Use only tw: prefixed utility classes for new low-risk surfaces.",
-    "Keep Tailwind as a staged long-term target: phase 1 documents contracts, phase 2 pilots new or admin surfaces, phase 3 evaluates shared modal/list/card migration after visual baselines.",
-    "Do not migrate existing Bright School, board, skill, room, or final mobile CSS without a focused visual migration.",
+    "Keep Tailwind as a staged long-term target: phase 1 establishes semantic tokens and contracts, phase 2 pilots new or admin surfaces, phase 3 creates primitives, phases 4-7 migrate shared UI, player non-gameplay flows, theme tokens, and mobile safety in order.",
+    "Phase 3 tw: utility strings should live in small primitives or local wrappers such as ScrollArea, AdminTableScroll, Badge, EmptyState, Button, and AdminActionButton before broad modal/list/card/form migration.",
+    "Phase 4 modal migration starts with narrow domain wrappers such as ModalActionButton; keep .primary-action, .secondary-action, and .danger-action visual ownership in CSS until a full modal surface is safely migrated.",
+    "Phase 5 home migration starts with narrow domain wrappers such as HomeActionButton; keep home layout, match-mode option buttons, decorative art, and responsive safety CSS-owned until a full surface has focused desktop/mobile checks.",
+    "Phase 6 starts with Bright School tokens mapped into the Tailwind semantic scaffold; do not move theme owner rules until token consumers have focused theme contract and visual checks.",
+    "Phase 7 starts with a mobile-adaptive final guard inventory only; do not shrink final mobile safety rules until replacement component ownership is proven on phone portrait, landscape, narrow desktop, and regular desktop.",
+    "Because Tailwind files are imported individually to omit preflight, keep source(\"../\") on the utilities import so src/ JSX pilots generate real tw: utilities.",
+    "Do not migrate existing Bright School, board, skill, room, Pixi, or final mobile CSS without a focused visual migration.",
     "Keep future player themes CSS-entry based through themes.css until imported, scoped, and visually verified."
   ]
 };

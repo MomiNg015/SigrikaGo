@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Pin, RefreshCw, X } from "lucide-react";
 import { api } from "../api/client.js";
 import MarkdownLiteContent from "../shared/MarkdownLiteContent.jsx";
+import { ModalActionButton } from "./modalComponents.jsx";
 
 const KINDS = Object.freeze([
   { id: "announcement", label: "\u516c\u544a", emptyText: "\u6682\u65e0\u516c\u544a" },
@@ -199,9 +200,9 @@ export default function AnnouncementModal({
             {activeList.error && (
               <div className="announcement-inline-error">
                 <span>{activeList.error}</span>
-                <button type="button" className="secondary-action" onClick={() => loadPage(activeKind, { reset: true })}>
+                <ModalActionButton variant="secondary" type="button" onClick={() => loadPage(activeKind, { reset: true })}>
                   <RefreshCw size={16} />{TEXT.retry}
-                </button>
+                </ModalActionButton>
               </div>
             )}
             <div className="announcement-list" role="list">
@@ -236,15 +237,15 @@ export default function AnnouncementModal({
             {activeList.loadMoreError && (
               <div className="announcement-inline-error">
                 <span>{activeList.loadMoreError}</span>
-                <button type="button" className="secondary-action" onClick={() => loadPage(activeKind)}>
+                <ModalActionButton variant="secondary" type="button" onClick={() => loadPage(activeKind)}>
                   <RefreshCw size={16} />{TEXT.retry}
-                </button>
+                </ModalActionButton>
               </div>
             )}
             {activeList.hasMore && !activeList.error && (
-              <button className="secondary-action announcement-load-more" type="button" disabled={activeList.loadingMore} onClick={() => loadPage(activeKind)}>
+              <ModalActionButton variant="secondary" className="announcement-load-more" type="button" disabled={activeList.loadingMore} onClick={() => loadPage(activeKind)}>
                 {activeList.loadingMore ? TEXT.loadingMore : TEXT.loadMore}
-              </button>
+              </ModalActionButton>
             )}
           </section>
 
@@ -283,9 +284,9 @@ export default function AnnouncementModal({
                 {detail.error && (
                   <div className="announcement-inline-error">
                     <span>{detail.error}</span>
-                    <button type="button" className="secondary-action" onClick={() => openDetail(detail.item)}>
+                    <ModalActionButton variant="secondary" type="button" onClick={() => openDetail(detail.item)}>
                       <RefreshCw size={16} />{TEXT.retry}
-                    </button>
+                    </ModalActionButton>
                   </div>
                 )}
                 {detail.entry && <MarkdownLiteContent className="announcement-detail-body" value={detail.entry.body} />}

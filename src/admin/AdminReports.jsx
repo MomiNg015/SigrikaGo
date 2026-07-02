@@ -1,11 +1,11 @@
-import { AdminSectionHeader } from "./adminComponents.jsx";
+import { AdminSectionHeader, AdminTableScroll } from "./adminComponents.jsx";
 import { formatDateTime } from "./adminFormatters.js";
 
 export default function AdminReports({ reports }) {
   return (
     <section className="admin-list-section">
       <AdminSectionHeader title="用户举报" meta={`${reports.length} 条最近举报`} />
-      <div className="admin-table-wrap">
+      <AdminTableScroll>
         <table className="admin-table feedback-table user-report-table">
           <thead>
             <tr>
@@ -31,7 +31,7 @@ export default function AdminReports({ reports }) {
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableScroll>
     </section>
   );
 }

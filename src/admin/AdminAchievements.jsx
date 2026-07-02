@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { adminApi } from "../api/client.js";
+import { AdminStatusPill, AdminTableScroll } from "./adminComponents.jsx";
 
 const EMPTY_REWARD = {
   type: "currency",
@@ -74,7 +75,7 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
       </div>
 
       {view === "achievements" && (
-        <div className="admin-table-wrap">
+        <AdminTableScroll>
           <table className="admin-table compact">
             <thead><tr><th>Key</th><th>成就名</th><th>条件</th><th>奖励</th><th>状态</th><th>达成人数</th><th>操作</th></tr></thead>
             <tbody>
@@ -84,7 +85,7 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
                   <td>{achievement.name}</td>
                   <td>{achievement.conditionType}</td>
                   <td>{achievement.reward?.name || "无"}</td>
-                  <td><span className={`admin-status-pill ${achievement.enabled ? "green" : "red"}`}>{achievement.enabled ? "启用" : "下线"}</span></td>
+                  <td><AdminStatusPill tone={achievement.enabled ? "green" : "red"}>{achievement.enabled ? "启用" : "下线"}</AdminStatusPill></td>
                   <td>{achievement.achievedCount ?? 0}</td>
                   <td>
                     <button className="admin-row-action" type="button" onClick={() => setDraftAchievement(achievementToDraft(achievement))}>编辑</button>
@@ -93,13 +94,13 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </AdminTableScroll>
       )}
 
       {view === "rewards" && (
         <>
           <button className="admin-add-button" type="button" onClick={() => setDraftReward({ ...EMPTY_REWARD })}>新增奖励资产</button>
-          <div className="admin-table-wrap">
+          <AdminTableScroll>
             <table className="admin-table compact">
               <thead><tr><th>类型</th><th>名称</th><th>目标</th><th>数量</th><th>状态</th><th>操作</th></tr></thead>
               <tbody>
@@ -109,7 +110,7 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
                     <td>{asset.name}</td>
                     <td>{asset.targetId || asset.targetType || "-"}</td>
                     <td>{asset.amount}</td>
-                    <td><span className={`admin-status-pill ${asset.enabled ? "green" : "red"}`}>{asset.enabled ? "启用" : "下线"}</span></td>
+                    <td><AdminStatusPill tone={asset.enabled ? "green" : "red"}>{asset.enabled ? "启用" : "下线"}</AdminStatusPill></td>
                     <td>
                       <button className="admin-row-action" type="button" onClick={() => setDraftReward({ ...asset })}>编辑</button>
                       <button className="admin-row-action" type="button" onClick={() => disableReward(asset)}>下线</button>
@@ -118,7 +119,7 @@ export default function AdminAchievements({ data, token, onSaved, onNotice }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </AdminTableScroll>
         </>
       )}
 

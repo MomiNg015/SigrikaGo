@@ -7,7 +7,7 @@ import {
   shopCategoryLabel,
   validateShopItemDraft
 } from "../shared/adminDrafts.js";
-import { AdminFieldLabel, AdminSectionHeader, AdminStatusPill } from "./adminComponents.jsx";
+import { AdminFieldLabel, AdminSectionHeader, AdminStatusPill, AdminTableEmpty, AdminTableScroll } from "./adminComponents.jsx";
 import { formatStockQuantity } from "./adminFormatters.js";
 
 export default function AdminShopItems({ items, token, onSaved, onClearError, onNotice, fixedCategory = "", title = "商城商品", metaSuffix = "个商品" }) {
@@ -60,7 +60,7 @@ export default function AdminShopItems({ items, token, onSaved, onClearError, on
   return (
     <section className="admin-list-section">
       <AdminSectionHeader title={title} meta={`${items.length} ${metaSuffix}`} actionLabel={fixedCategory === "item" ? "新增道具" : "新增商品"} onAction={startNewItem} />
-      <div className="admin-table-wrap">
+      <AdminTableScroll>
         <table className="admin-table compact">
           <thead><tr><th>商品</th><th>类别</th><th>目标</th><th>价格</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
           <tbody>
@@ -77,12 +77,12 @@ export default function AdminShopItems({ items, token, onSaved, onClearError, on
             ))}
             {items.length === 0 && (
               <tr>
-                <td className="admin-table-empty" colSpan="7">暂无商品</td>
+                <AdminTableEmpty colSpan="7">暂无商品</AdminTableEmpty>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableScroll>
       {draft && (
         <aside className="admin-crud-drawer">
           <button className="close-button" onClick={() => setDraft(null)}><X size={18} /></button>

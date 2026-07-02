@@ -6,7 +6,7 @@
 2. admin, lobby, room, modal, commerce/settings, and responsive domain files
 3. mobile and terminal compatibility files
 4. `hud-components.css`
-5. `tailwind.css` as a prefixed, low-intrusion utility layer
+5. `tailwind.css` as a prefixed, low-intrusion utility layer with project tokens in `tailwind/tokens.css`
 6. `themes.css` as the final root layer
 
 ## Player Theme Registry
@@ -32,15 +32,35 @@ Do not move `mobile-adaptive.css` earlier in the cascade. It is the final overri
 
 ## Utility Layer Decision
 
-Tailwind CSS v4 is installed, but only as the low-intrusion `src/styles/tailwind.css` utility layer. It is imported after `hud-components.css` and immediately before `themes.css`, imports only `tailwindcss/theme.css` and `tailwindcss/utilities.css` with `prefix(tw)`, and deliberately omits preflight/global resets.
+Tailwind CSS v4 is installed, but only as the low-intrusion `src/styles/tailwind.css` utility layer. It is imported after `hud-components.css` and immediately before `themes.css`, imports `tailwindcss/theme.css`, `./tailwind/tokens.css`, and `tailwindcss/utilities.css` with `prefix(tw)` on Tailwind imports, and deliberately omits preflight/global resets. Because Tailwind is imported as individual files to omit preflight, the utilities import must keep `source("../")` so `src/` JSX pilot classes generate real CSS.
+
+Full execution plan: `.trellis/tasks/07-01-tailwind-migration-roadmap/tailwind-full-migration-plan.md`. Use that file as the task-by-task handoff before broad Tailwind migration, protected gameplay migration, or any reevaluation of `tw:`/preflight policy.
+
+`src/styles/tailwind/tokens.css` is the Phase 1 semantic token scaffold and the current Phase 6 Bright School token bridge. It must stay `@theme inline`, must not import other CSS, and should reference existing project CSS variables or stable Sigrika values instead of inventing a parallel palette.
 
 Use `tw:` utilities only for new low-risk surfaces. The long-term route is staged:
 
-1. Phase 1 keeps existing visuals stable, documents contracts, and removes polluted fallback CSS.
+1. Phase 1 keeps existing visuals stable, records the roadmap, adds semantic tokens, and guards import order, no-preflight, and protected-surface exclusions with tests. It must not migrate JSX or existing business UI.
 2. Phase 2 pilots `tw:` utilities in new or isolated admin/tooling surfaces.
-3. Phase 3 can evaluate shared modal/list/card migration after desktop and mobile visual baselines exist.
+3. Phase 3 creates UI primitives before broad feature migration.
+4. Phase 4 migrates repeated modal, list, card, tab, and form internals one domain at a time.
+5. Phase 5 migrates home, lobby, and commerce main-flow non-gameplay layouts after primitives are stable.
+6. Phase 6 tokenises Bright School so theme CSS becomes variables plus explicit owner repairs.
+7. Phase 7 reduces final mobile safety layers only after matching desktop/mobile component ownership exists.
 
-Do not migrate existing Bright School, room, board, skill-presentation, or final-mobile CSS to Tailwind without a focused migration plan and visual regression checks. Future player themes remain CSS-entry based through `themes.css` until the theme is imported, scoped, and visually verified.
+Do not migrate existing room gameplay, board geometry, board point buttons, Pixi canvas hosts, skill-presentation keyframes/DOM marks, Bright School final mobile safety, or mobile gameplay controls to Tailwind without a focused migration plan and visual regression checks. Future player themes remain CSS-entry based through `themes.css` until the theme is imported, scoped, and visually verified. Tailwind preflight stays disabled and the `tw:` prefix stays required unless a later explicit architecture change replaces those contracts.
+
+Current Phase 2 pilot: `src/admin/AdminAudit.jsx` uses `AdminTableScroll`, backed by the `ScrollArea` primitive, for the admin-only audit table shell. The old `.audit-table-wrap` audit-specific CSS is gone, and the shared `.admin-table-wrap` no longer owns horizontal overflow while preserving its visual shell rules. This pilot is intentionally limited to isolated admin route surfaces; it does not authorize player-facing, room, board, skill, Pixi, or final-mobile migration.
+
+Current Phase 3 primitives: `src/ui/primitives/ScrollArea.jsx` centralizes overflow utilities, `src/admin/adminComponents.jsx` wraps it as `AdminTableScroll` for all admin table shells, `src/ui/primitives/Badge.jsx` centralizes low-risk inline badge layout utilities while existing CSS still owns visual treatments, `src/ui/primitives/EmptyState.jsx` centralizes admin table empty-cell alignment/spacing through `AdminTableEmpty`, and `src/ui/primitives/Button.jsx` centralizes only action alignment utilities through the admin-only `AdminActionButton` wrapper. The wrapper maps semantic admin variants back to existing `.primary-action`, `.secondary-action`, and `.danger-action` classes; it does not authorize player-facing button restyling. `src/ui/classNames.js` is the local class composition helper for primitives; add a dependency only if this helper becomes insufficient.
+
+Current Phase 4 pilot: `src/modals/modalComponents.jsx` exposes `ModalActionButton`, a modal-domain wrapper around `Button` that maps semantic modal variants back to existing `.primary-action`, `.secondary-action`, and `.danger-action` visual classes. `ConfirmModal` in `src/modals/FeedbackModals.jsx`, the submit action in `src/modals/MessageBoardModal.jsx`, simple retry/load-more secondary actions in `src/modals/AnnouncementModal.jsx`, the save action in `src/modals/PersonalizationModal.jsx`, the mailbox attachment claim action in `src/modals/MailboxModal.jsx`, the duel-mode cancel action in `src/modals/friends/FriendsOverlays.jsx`, and the profile report submit action in `src/modals/UserProfileCard.jsx` are the first consumers. This pilot moves only alignment utilities through Tailwind; shared modal/action, mailbox, and friends/profile CSS still owns visual styling, list/detail layout, paper background, match-mode option buttons, profile confirm panels, profile social action buttons, and mobile treatment until a full modal surface is migrated with focused desktop/mobile tests.
+
+Current Phase 5 pilot: `src/home/homeComponents.jsx` exposes `HomeActionButton`, a home-flow wrapper around `Button` that maps semantic home variants back to existing `.primary-action`, `.secondary-action`, and `.danger-action` visual classes. `MatchModePicker` in `src/home/HomeScreen.jsx` uses it only for the cancel action. This pilot moves only alignment utilities through Tailwind; home/modal/mobile CSS still owns match-mode layout, option buttons, spacing, artboard behavior, decorative imagery, colors, borders, shadows, typography, and responsive safety until a full home/lobby/commerce surface is migrated with focused desktop/mobile tests.
+
+Current Phase 6 pilot: `src/styles/tailwind/tokens.css` exposes existing Bright School paper, clean surface, ink, border, accent, and paper-shadow variables as semantic Tailwind tokens. The value owners remain `src/styles/themes/bright-school/surface-contracts/final-root-surfaces.css` and `src/styles/themes/bright-school/quality-base/refinement-foundation.css`; do not move owner selectors or change rule values as part of tokenization.
+
+Current Phase 7 pilot: `src/styles/cssLayerInventory.js` registers `mobile-adaptive.css` as the final guard reduction candidate only. The final mobile layer remains after `themes.css` until replacement component ownership has phone portrait, small landscape, narrow desktop, and regular desktop coverage.
 
 ## Layer Inventory
 

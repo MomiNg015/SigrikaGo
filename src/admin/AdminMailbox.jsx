@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { adminApi } from "../api/client.js";
+import { AdminActionButton, AdminTableScroll } from "./adminComponents.jsx";
 
 const TARGET_MODES = [
   { id: "user", label: "指定用户" },
@@ -124,7 +125,7 @@ export default function AdminMailbox({
               用户名搜索
               <input value={userQuery} onChange={(event) => setUserQuery(event.target.value)} placeholder="输入用户名" />
             </label>
-            <button type="button" className="secondary-action" onClick={searchUsers}>搜索</button>
+            <AdminActionButton variant="secondary" type="button" onClick={searchUsers}>搜索</AdminActionButton>
             <div className="admin-mailbox-user-results">
               {userResults.map((user) => (
                 <button
@@ -174,9 +175,9 @@ export default function AdminMailbox({
             </label>
           )}
         </div>
-        <button className="primary-action" type="submit" disabled={submitting}>
+        <AdminActionButton variant="primary" type="submit" disabled={submitting}>
           {submitting ? "发送中..." : "发送邮件"}
-        </button>
+        </AdminActionButton>
         {lastResult?.batch && (
           <p className="admin-success">成功 {lastResult.batch.deliveredCount}，跳过 {lastResult.batch.skippedCount}</p>
         )}
@@ -187,7 +188,7 @@ export default function AdminMailbox({
         {!loaded && <p>正在读取...</p>}
         {loaded && batches.length === 0 && <p>暂无发送记录</p>}
         {loaded && batches.length > 0 && (
-          <div className="admin-table-wrap">
+          <AdminTableScroll>
             <table className="admin-table">
               <thead>
                 <tr>
@@ -210,7 +211,7 @@ export default function AdminMailbox({
                 ))}
               </tbody>
             </table>
-          </div>
+          </AdminTableScroll>
         )}
       </section>
     </section>

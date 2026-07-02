@@ -6,7 +6,7 @@ import {
   decorationDraftToBody,
   emptyDecorationDraft
 } from "../shared/adminDrafts.js";
-import { AdminFieldLabel, AdminSectionHeader, AdminStatusPill } from "./adminComponents.jsx";
+import { AdminFieldLabel, AdminSectionHeader, AdminStatusPill, AdminTableEmpty, AdminTableScroll } from "./adminComponents.jsx";
 
 export default function AdminDecorations({ decorations, token, onSaved, onNotice }) {
   const [draft, setDraft] = useState(null);
@@ -43,7 +43,7 @@ export default function AdminDecorations({ decorations, token, onSaved, onNotice
   return (
     <section className="admin-list-section">
       <AdminSectionHeader title="装饰列表" meta={`${decorations.length} 个装饰`} actionLabel="新增装饰" onAction={startNewDecoration} />
-      <div className="admin-table-wrap">
+      <AdminTableScroll>
         <table className="admin-table compact">
           <thead><tr><th>装饰</th><th>标识</th><th>排序</th><th>状态</th><th>操作</th></tr></thead>
           <tbody>
@@ -58,12 +58,12 @@ export default function AdminDecorations({ decorations, token, onSaved, onNotice
             ))}
             {decorations.length === 0 && (
               <tr>
-                <td className="admin-table-empty" colSpan="5">暂无装饰</td>
+                <AdminTableEmpty colSpan="5">暂无装饰</AdminTableEmpty>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableScroll>
       {draft && (
         <aside className="admin-crud-drawer">
           <button className="close-button" onClick={() => setDraft(null)}><X size={18} /></button>

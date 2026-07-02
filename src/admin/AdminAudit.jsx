@@ -1,8 +1,9 @@
 import { formatDateTime } from "./adminFormatters.js";
+import { AdminTableScroll } from "./adminComponents.jsx";
 
 export default function AdminAudit({ logs }) {
   return (
-    <div className="admin-table-wrap audit-table-wrap">
+    <AdminTableScroll>
       <table className="admin-table audit-table">
         <thead>
           <tr>
@@ -28,6 +29,6 @@ export default function AdminAudit({ logs }) {
           )}
         </tbody>
       </table>
-    </div>
+    </AdminTableScroll>
   );
 }

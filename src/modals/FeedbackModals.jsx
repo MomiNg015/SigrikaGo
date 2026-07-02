@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gameModeById } from "../shared/gameModes.js";
 import UserIdentity from "../shared/UserIdentity.jsx";
+import { ModalActionButton } from "./modalComponents.jsx";
 
 export function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
   return (
@@ -9,8 +10,8 @@ export function ConfirmModal({ title, message, confirmText, onConfirm, onCancel 
         <h2>{title}</h2>
         <p>{message}</p>
         <div className="inline-actions confirm-actions">
-          <button className="danger-action" onClick={onConfirm}>{confirmText}</button>
-          <button className="secondary-action" onClick={onCancel}>取消</button>
+          <ModalActionButton variant="danger" onClick={onConfirm}>{confirmText}</ModalActionButton>
+          <ModalActionButton variant="secondary" onClick={onCancel}>取消</ModalActionButton>
         </div>
       </section>
     </div>

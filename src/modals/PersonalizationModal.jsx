@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Palette, ShieldCheck, Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
 import UserIdentity from "../shared/UserIdentity.jsx";
+import { ModalActionButton } from "./modalComponents.jsx";
 
 const SECTIONS = [
   { type: "title", field: "titleAssetId", label: "称号", icon: Trophy },
@@ -166,9 +167,9 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
             </section>
           </div>
         )}
-        <button className="primary-action" type="button" onClick={save} disabled={saving}>
+        <ModalActionButton variant="primary" type="button" onClick={save} disabled={saving}>
           保存
-        </button>
+        </ModalActionButton>
       </section>
     </div>
   );

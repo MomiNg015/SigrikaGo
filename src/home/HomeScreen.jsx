@@ -4,6 +4,7 @@ import { modeOrderedEntries } from "../shared/gameModes.js";
 import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
+import { HomeActionButton } from "./homeComponents.jsx";
 import MatchModeRuleText from "./MatchModeRuleText.jsx";
 
 export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
@@ -99,7 +100,7 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
             </button>
           ))}
         </div>
-        <button className="secondary-action" type="button" onClick={onClose}>取消</button>
+        <HomeActionButton variant="secondary" type="button" onClick={onClose}>取消</HomeActionButton>
       </section>
     </div>
   );

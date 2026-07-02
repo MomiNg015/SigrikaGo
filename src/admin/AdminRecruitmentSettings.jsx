@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "../api/client.js";
 import { DEFAULT_RECRUITMENT_CONFIG, RECRUITMENT_ITEMS } from "../shared/recruitment.js";
+import { AdminActionButton } from "./adminComponents.jsx";
 
 const CHARACTER_IDS = ["lynae", "mornye", "chisa", "qiuyuan", "changli"];
 
@@ -81,7 +82,7 @@ export default function AdminRecruitmentSettings({ token, onNotice }) {
             />
           </label>
         ))}
-        <button className="primary-action" type="submit" disabled={saving}>{saving ? "保存中" : "保存招募配置"}</button>
+        <AdminActionButton variant="primary" type="submit" disabled={saving}>{saving ? "保存中" : "保存招募配置"}</AdminActionButton>
       </form>
     </section>
   );

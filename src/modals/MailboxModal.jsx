@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { Archive, CheckCircle2, Coins, Gift, MailOpen, Trash2, X } from "lucide-react";
 import { api } from "../api/client.js";
+import { ModalActionButton } from "./modalComponents.jsx";
 
 export default function MailboxModal({
   token,
@@ -137,15 +138,15 @@ export default function MailboxModal({
               <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
               {hasAttachment(selected.attachment) && (
                 <div className="mailbox-actions">
-                  <button
-                    className="primary-action"
+                  <ModalActionButton
+                    variant="primary"
                     type="button"
                     disabled={!selected.claimable || busyId === selected.id}
                     onClick={() => claim(selected)}
                   >
                     {selected.claimable ? <Gift size={18} /> : <CheckCircle2 size={18} />}
                     {selected.claimable ? "领取附件" : "已领取"}
-                  </button>
+                  </ModalActionButton>
                 </div>
               )}
             </article>

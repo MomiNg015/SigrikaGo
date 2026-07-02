@@ -42,6 +42,7 @@ const DOMAIN_STYLE_DIRECTORIES = new Set([
   "responsive",
   "room",
   "room-terminal",
+  "tailwind",
   "themes"
 ]);
 const TEST_STYLE_FILES = new Set([
@@ -96,9 +97,23 @@ describe("root CSS entry contract", () => {
 
     expect(rootImports.indexOf("./styles/tailwind.css")).toBe(rootImports.indexOf("./styles/themes.css") - 1);
     expect(rootImports[rootImports.indexOf("./styles/tailwind.css") - 1]).toBe("./styles/hud-components.css");
+    expect(cssImports(tailwindEntry)).toEqual([
+      "tailwindcss/theme.css",
+      "./tailwind/tokens.css",
+      "tailwindcss/utilities.css"
+    ]);
     expect(tailwindEntry).toContain('@import "tailwindcss/theme.css" layer(theme) prefix(tw);');
-    expect(tailwindEntry).toContain('@import "tailwindcss/utilities.css" layer(utilities) prefix(tw);');
+    expect(tailwindEntry).toContain('@import "./tailwind/tokens.css";');
+    expect(tailwindEntry).toContain('@import "tailwindcss/utilities.css" layer(utilities) prefix(tw) source("../");');
     expect(tailwindEntry).not.toContain("preflight");
+
+    const tailwindTokens = readFileSync(new URL("./tailwind/tokens.css", import.meta.url), "utf8");
+    expect(tailwindTokens).toContain("@theme inline");
+    expect(tailwindTokens).toContain("--color-sigrika-surface");
+    expect(tailwindTokens).toContain("--spacing-sigrika-page");
+    expect(tailwindTokens).toContain("--shadow-sigrika-paper");
+    expect(tailwindTokens).not.toContain("@import");
+    expect(tailwindTokens).not.toContain("preflight");
   });
 
   it("keeps art font usage semantic and opt-in", () => {
