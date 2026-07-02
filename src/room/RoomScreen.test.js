@@ -680,6 +680,7 @@ describe("RoomScreen helpers", () => {
     expect(terminalCss).toContain(".timer-track span");
     expect(terminalCss).not.toContain(`transition: ${"width"}`);
     expect(terminalCss).toContain("background-color 0.25s linear");
+    expect(terminalCss).not.toMatch(/\.skill-detail-panel\s*\{[^}]*background:\s*rgba\(5,\s*17,\s*23,\s*0\.96\)/);
     expect(terminalCss).toContain(".board-stage");
     expect(terminalCss).toContain("2px solid rgba(0, 255, 190, 0.4)");
     expect(terminalCss).toContain(".action-bar button");

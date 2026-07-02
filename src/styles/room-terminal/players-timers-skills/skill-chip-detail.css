@@ -30,10 +30,3 @@
   box-shadow: none;
 }
 
-.skill-detail-panel {
-  border-radius: 0;
-  border-color: color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 36%, transparent);
-  background: rgba(5, 17, 23, 0.96);
-  color: var(--battle-text);
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.34), 0 0 16px color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 16%, transparent);
-}
