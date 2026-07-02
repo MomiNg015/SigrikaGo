@@ -865,3 +865,36 @@ Staged Tailwind migration roadmap and Phase 1-7 pilots with prefixed no-prefligh
 ### Next Steps
 
 - None - task complete
+
+
+## Session 27: Fix QiuYuan row slash mobile scar width
+
+**Date**: 2026-07-02
+**Task**: Fix QiuYuan row slash mobile scar width
+**Branch**: `codex/css-cleanup`
+
+### Summary
+
+Recorded and fixed the Bright School portrait-mobile max-width clamp that shortened QiuYuan's DOM row-slash scar; added regression coverage and updated system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b677ef58` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
