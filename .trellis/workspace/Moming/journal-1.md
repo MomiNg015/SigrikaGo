@@ -832,3 +832,36 @@ Replaced Bright School purge/firewall fallback CSS with explicit surface contrac
 ### Next Steps
 
 - None - task complete
+
+
+## Session 26: Tailwind migration roadmap and pilots
+
+**Date**: 2026-07-02
+**Task**: Tailwind migration roadmap and pilots
+**Branch**: `codex/css-tidy`
+
+### Summary
+
+Staged Tailwind migration roadmap and Phase 1-7 pilots with prefixed no-preflight Tailwind token scaffold, admin primitives, modal/home wrappers, CSS contracts, docs, and full npm run check verification. Archived task 07-01-tailwind-migration-roadmap.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `214bb6d1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
