@@ -1,0 +1,67 @@
+.admin-story-workbench-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2600;
+  display: grid;
+  place-items: center;
+  padding: clamp(12px, 3vw, 28px);
+  background: rgba(20, 28, 45, 0.42);
+}
+
+.admin-story-workbench-fullscreen-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  background: #eef2f7;
+}
+
+.admin-story-workbench-fullscreen-preview > .room-screen {
+  width: 100vw;
+  height: 100dvh;
+}
+
+.admin-story-workbench-fullscreen-preview > .tutorial-session-backdrop,
+.admin-story-workbench-fullscreen-preview > .onboarding-story-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1 !important;
+}
+
+.admin-story-workbench-preview-stage .tutorial-session-backdrop,
+.admin-story-workbench-preview-stage .onboarding-story-backdrop {
+  position: relative;
+  z-index: auto !important;
+  inset: auto;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.admin-story-workbench-help,
+.admin-story-workbench-board-modal {
+  width: min(760px, 100%);
+  max-height: min(860px, calc(100dvh - 24px));
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--story-wb-border);
+  border-radius: var(--story-wb-radius);
+  background: var(--story-wb-surface);
+  box-shadow: 0 24px 80px rgba(20, 28, 45, 0.24);
+  overflow: hidden;
+}
+
+.admin-story-workbench-help > div {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-story-workbench-help p {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}

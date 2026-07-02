@@ -82,6 +82,35 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(css).not.toContain(".tutorial-battle-choice svg");
   });
 
+  it("uses simplified node progression controls and option transition waits", () => {
+    const source = readSource();
+
+    expect(source).toContain("nodeAdvanceControls");
+    expect(source).toContain("DEFAULT_NPC_DIALOGUE_AUTO_CONTINUE_SECONDS");
+    expect(source).toContain("nodeAutoContinueDelayMs");
+    expect(source).toContain("npcDialogueTypewriterDurationMs");
+    expect(source).toContain("optionTransitionDelayMs");
+    expect(source).toContain("setPendingWait");
+    expect(source).toContain("pendingWait");
+    expect(source).toContain("revealsChoices: options.length > 0");
+    expect(source).toContain("const showPendingWaitHint = !pendingWait.revealsChoices");
+    expect(source).toContain("if (choicesVisible && hasOptions)");
+    expect(source).not.toContain("可继续，稍后自动推进");
+    expect(source).not.toContain("请点击继续");
+    expect(source).toContain("skipPendingWait");
+    expect(source).toContain("previewControlsEnabled");
+    expect(source).toContain("setChoicesVisible(false)");
+    expect(source).toContain("schedulePendingWait");
+  });
+
+  it("does not reinitialize the same node after a pending progression wait resolves", () => {
+    const source = readSource();
+
+    expect(source).toContain("initializedNodeKeyRef");
+    expect(source).toContain("if (initializedNodeKeyRef.current === nodeExecutionKey) return");
+    expect(source).toContain("initializedNodeKeyRef.current = nodeExecutionKey");
+  });
+
   it("uses full-screen loading and left-right distributed teaching buttons", () => {
     const overlayCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
     const actionCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/actions-targets.css", import.meta.url), "utf8");

@@ -28,6 +28,11 @@ import { SKILL_EFFECT_CATALOG } from "../shared/skillEffectCatalog.js";
 import { STORY_NODE_EFFECT_OPTIONS, STORY_NODE_EFFECTS } from "../shared/storyPresentation.js";
 import { storyPortraitCatalog, storyPortraitOptions } from "../shared/storyPortraits.js";
 import {
+  NODE_ADVANCE_MODES,
+  nodeAdvanceMode,
+  nodeAdvanceModePatch
+} from "../shared/storyTiming.js";
+import {
   TUTORIAL_NODE_TYPES,
   isStoryNodeType,
   isTutorialNpcNodeType,
@@ -720,6 +725,7 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
               onOpenMessageBoard={() => {}}
               onOpenSettings={() => {}}
               onToast={onNotice}
+              previewControlsEnabled
             />
           ) : (
             <TutorialSessionModal
@@ -727,6 +733,7 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
               characters={characterCatalog}
               labels={{ title: script.title || TEXT.title }}
               typewriterDisabled
+              previewControlsEnabled
               onClose={() => {
                 setPreviewStoryStartId("");
                 setPreviewOverlayOpen(false);
@@ -1228,6 +1235,10 @@ function StoryStepFields({ node, nodes, portraitOptions, onPatch, onPatchOption,
               <span>出现时间</span>
               <input type="number" min="0" step="0.1" value={option.revealDelaySeconds ?? ""} onChange={(event) => onPatchOption(optionIndex, { revealDelaySeconds: event.target.value })} />
             </label>
+            <label>
+              <span>选择后等待</span>
+              <input type="number" min="0" step="0.1" placeholder="留空 = 0 秒" value={option.transitionDelaySeconds ?? ""} onChange={(event) => onPatchOption(optionIndex, { transitionDelaySeconds: event.target.value })} />
+            </label>
             <div className="admin-story-workbench-option-actions">
               <button className="admin-story-workbench-button secondary" type="button" onClick={() => onAddBranch(node.id, optionIndex)}><Plus size={15} />分支步骤</button>
               <button className="admin-story-workbench-icon-button danger" type="button" aria-label="删除选项" onClick={() => onRemoveOption(optionIndex)}><Trash2 size={15} /></button>
@@ -1258,6 +1269,7 @@ function BattleStepFields({
   const isSkill = node.type === TUTORIAL_NODE_TYPES.playerSkill || node.type === TUTORIAL_NODE_TYPES.npcSkill;
   const needsPoint = nodeTypeRequiresPoint(node.type) || isSkill;
   const isNpcStep = isTutorialNpcNodeType(node.type);
+  const advanceMode = nodeAdvanceMode(node);
   const supportsOptions = !isBoardSetup && [
     TUTORIAL_NODE_TYPES.npcDialogue,
     TUTORIAL_NODE_TYPES.playerChoice,
@@ -1296,21 +1308,52 @@ function BattleStepFields({
             <span>NPC 对话</span>
             <textarea rows={4} value={node.text ?? ""} onChange={(event) => onPatch({ text: event.target.value })} />
           </label>
-          <div className="admin-story-workbench-delay-grid">
+        </>
+      )}
+      <div className="admin-story-workbench-progression-grid" aria-label="节点推进">
+        <strong>节点推进</strong>
+        <span>推进方式</span>
+        <label className="admin-story-workbench-checkbox">
+          <input
+            type="radio"
+            name={`node-advance-mode-${node.id}`}
+            checked={advanceMode === NODE_ADVANCE_MODES.auto}
+            onChange={() => onPatch(nodeAdvanceModePatch(NODE_ADVANCE_MODES.auto))}
+          />
+          <span>自动推进</span>
+          <small>{node.type === TUTORIAL_NODE_TYPES.npcDialogue ? "默认自动推进：NPC 打字结束后再等 1.5 秒进入下一节点或显示选项。" : "默认自动推进：节点完成后按等待时间进入下一节点或显示选项。"}</small>
+        </label>
+        <label className="admin-story-workbench-checkbox">
+          <input
+            type="radio"
+            name={`node-advance-mode-${node.id}`}
+            checked={advanceMode === NODE_ADVANCE_MODES.manual}
+            onChange={() => onPatch(nodeAdvanceModePatch(NODE_ADVANCE_MODES.manual))}
+          />
+          <span>手动继续</span>
+          <small>节点完成后给玩家“继续”按钮，点击后再进入下一节点或显示选项。</small>
+        </label>
+        {advanceMode === NODE_ADVANCE_MODES.auto && (
+          <label>
+            <span>自动推进等待</span>
+            <input type="number" min="0" step="0.1" placeholder={node.type === TUTORIAL_NODE_TYPES.npcDialogue ? "默认 1.5" : "留空 = 0 秒"} value={node.autoContinueDelaySeconds ?? ""} onChange={(event) => onPatch({ autoContinueDelaySeconds: event.target.value })} />
+          </label>
+        )}
+      </div>
+      {isNpcStep && (
+        <div className="admin-story-workbench-delay-grid" aria-label="NPC 表现节奏">
+          <strong>NPC 表现节奏</strong>
+          <label>
+            <span>NPC 操作前等待</span>
+            <input type="number" min="0" step="0.1" placeholder="默认 1.5" value={node.actionStartDelaySeconds ?? ""} onChange={(event) => onPatch({ actionStartDelaySeconds: event.target.value })} />
+          </label>
+          {node.type !== TUTORIAL_NODE_TYPES.npcDialogue && (
             <label>
-              <span>操作前等待</span>
-              <input type="number" min="0" step="0.1" placeholder="默认 1.5" value={node.actionStartDelaySeconds ?? ""} onChange={(event) => onPatch({ actionStartDelaySeconds: event.target.value })} />
-            </label>
-            <label>
-              <span>回复前等待</span>
+              <span>动作后停顿</span>
               <input type="number" min="0" step="0.1" placeholder="默认 0.4" value={node.replyDelaySeconds ?? ""} onChange={(event) => onPatch({ replyDelaySeconds: event.target.value })} />
             </label>
-            <label>
-              <span>无选项自动继续</span>
-              <input type="number" min="0" step="0.1" placeholder="留空则按步骤规则" value={node.autoContinueDelaySeconds ?? ""} onChange={(event) => onPatch({ autoContinueDelaySeconds: event.target.value })} />
-            </label>
-          </div>
-        </>
+          )}
+        </div>
       )}
       {isBoardSetup ? (
         <BoardSetupFields node={node} skillCharacters={skillCharacters} onPatch={onPatch} onEditBoardSetup={onEditBoardSetup} />
@@ -1399,6 +1442,10 @@ function BattleOptionsFields({ node, nodes, onPatchOption, onAddOption, onRemove
               <option value={END_TARGET}>结束剧情</option>
               {nodes.filter((entry) => entry.id !== node.id).map((entry) => <option key={entry.id} value={entry.id}>{stepName(entry, nodes.indexOf(entry))}</option>)}
             </select>
+          </label>
+          <label>
+            <span>选择后等待</span>
+            <input type="number" min="0" step="0.1" placeholder="留空 = 0 秒" value={option.transitionDelaySeconds ?? ""} onChange={(event) => onPatchOption(optionIndex, { transitionDelaySeconds: event.target.value })} />
           </label>
           <div className="admin-story-workbench-option-actions">
             <button className="admin-story-workbench-button secondary" type="button" onClick={() => onAddBranch(node.id, optionIndex)}><Plus size={15} />分支步骤</button>
@@ -1738,6 +1785,11 @@ function validateWorkbench(script, { itemOptions, skillCharacters }) {
       if (option.nextNodeId && !nodeIds.has(option.nextNodeId)) {
         issues.push(issue(`option-target-${node.id}-${optionIndex}`, "error", `${name} 有选项目标不存在`, node.id));
       }
+      for (const field of ["transitionDelaySeconds"]) {
+        if (!validOptionalDelay(option[field])) {
+          issues.push(issue(`delay-${field}-${node.id}-${optionIndex}`, "error", `${name} 的选项选择后等待必须是非负数字`, node.id));
+        }
+      }
     }
   }
   return issues;
@@ -1907,6 +1959,8 @@ function emptyStoryNode(id = "", characterId = "", overrides = {}) {
     actionStartDelaySeconds: "",
     replyDelaySeconds: "",
     autoContinueDelaySeconds: "",
+    manualContinueEnabled: false,
+    autoContinueEnabled: true,
     boardSetup: null,
     text: "",
     nextNodeId: "",
@@ -1931,10 +1985,19 @@ function defaultPatchForType(type) {
       entryText: "",
       skillCharacterId: "",
       skillId: "",
+      manualContinueEnabled: false,
+      autoContinueEnabled: true,
       boardSetup: { mode: "spark", stones: [] }
     };
   }
-  return { type, effect: STORY_NODE_EFFECTS.none, options: [], boardSetup: null };
+  return {
+    type,
+    effect: STORY_NODE_EFFECTS.none,
+    options: [],
+    boardSetup: null,
+    manualContinueEnabled: false,
+    autoContinueEnabled: true
+  };
 }
 
 function boardSetupForNode(node, draft = emptyScript()) {

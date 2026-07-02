@@ -39,38 +39,50 @@ Questions to answer:
 - Story scripts are stored as JSON in `StoryScript.draftNodesJson` and `StoryScript.publishedNodesJson`, so field additions must survive UI edit, API normalization, persistence, player playback, and legacy onboarding compatibility paths.
 
 #### 2. Signatures
-- Node fields: `{ id, speakerName, characterId, effect, text, nextNodeId, options }`.
+- Node fields: `{ id, speakerName, characterId, effect, text, nextNodeId, options }`, with battle tutorial progression fields `{ manualContinueEnabled, autoContinueEnabled, autoContinueDelaySeconds }` when present.
 - Supported node effects come from `src/shared/storyPresentation.js`; empty string means no special effect.
-- Option fields: `{ label, nextNodeId, revealDelaySeconds }`.
+- Option fields: `{ label, nextNodeId, revealDelaySeconds, transitionDelaySeconds }`.
 - `revealDelaySeconds` is either blank or a non-negative finite number of seconds.
+- `transitionDelaySeconds` is either blank or a non-negative finite number of seconds; blank means the option click transitions immediately.
+- `manualContinueEnabled` and `autoContinueEnabled` remain the persisted compatibility fields for battle tutorial node progression. Current admin authoring treats them as one advance mode and writes a mutually exclusive pair; new nodes default to automatic progression. `autoContinueDelaySeconds` is blank or a non-negative finite number of seconds; blank means the product default for the active auto-progression path.
 - `nextNodeId: ""` on an option is a close-window action, not a validation failure.
 
 #### 3. Contracts
 - Keep story presentation constants in `src/shared/storyPresentation.js` when both frontend and backend need the same ids.
-- `server/storyScripts.js` is the authoritative API normalization boundary for generic story scripts. It must preserve `effect` and per-option `revealDelaySeconds` when saving drafts, publishing, reading admin payloads, and returning player payloads.
+- `server/storyScripts.js` is the authoritative API normalization boundary for generic story scripts. It must preserve `effect`, per-option `revealDelaySeconds`, per-option `transitionDelaySeconds`, and battle tutorial progression fields when saving drafts, publishing, reading admin payloads, and returning player payloads.
 - The legacy onboarding compatibility normalizer in `server/onboardingStory.js` must stay aligned enough to preserve the same node and option presentation fields when it parses legacy JSON.
 - Admin editing should bind `effect` at node level and `revealDelaySeconds` at option level. Do not move reveal timing to the node unless the product contract changes.
 - Player rendering should treat blank reveal delays as "after typewriter complete" and numeric delays as timers from current-node entry. Completing the typewriter immediately reveals all options.
+- Player rendering should treat blank transition delays as 0 seconds. When an option has a positive transition delay, hide the options immediately, show the quiet "continuing" state, and enter the option target only after the timer completes. Admin preview may expose a preview-only skip-current-wait control; player playback must not expose per-wait skipping.
+- Battle tutorial rendering should treat node progression as one selected advance mode: automatic progression uses `autoContinueEnabled` plus `autoContinueDelaySeconds`, while manual continuation shows a completed-node "continue" button and does not run an automatic timer. Current admin writes new nodes as automatic by default; older saved boolean combinations must still parse and preserve through the API boundary.
 
 #### 4. Validation & Error Matrix
 - Unknown `effect` -> HTTP 400 story input error.
 - Blank `effect` or missing `effect` -> normalize to no effect.
 - Missing or blank `revealDelaySeconds` -> normalize to blank and wait for text completion.
 - `revealDelaySeconds < 0`, `NaN`, or infinite -> HTTP 400 story input error.
+- Missing or blank `transitionDelaySeconds` -> normalize to blank and transition immediately after click.
+- `transitionDelaySeconds < 0`, `NaN`, or infinite -> HTTP 400 story input error.
+- Missing `manualContinueEnabled` -> normalize to true.
+- Missing `autoContinueEnabled` on `npc-dialogue` -> normalize to true; missing on other nodes -> normalize to false.
+- Missing or blank `autoContinueDelaySeconds` -> normalize to blank and let the runtime apply the node-type default.
 - Option `nextNodeId === ""` -> valid terminal close action.
 - Non-empty option target missing from current script -> publish-time target error.
 
 #### 5. Good/Base/Bad Cases
 - Good: `{ effect: "long-text-compress-portrait" }` reaches the player and only that node switches story modal layout, with the default text region initial size, portrait compression after long typed content, and 1.5x typewriter speed.
 - Good: one option with `revealDelaySeconds: 0.5` appears while the text is still typing, while a blank-delay sibling waits for text completion.
+- Good: one option with `transitionDelaySeconds: 1.2` hides the option buttons on click, shows "continuing", then enters its target; a blank-delay sibling enters its target immediately.
+- Good: a newly authored `npc-dialogue` node uses automatic progression and advances 1.5 seconds after typewriter completion when `autoContinueDelaySeconds` is blank.
 - Base: older nodes with no `effect` or `revealDelaySeconds` continue playing with default behavior.
+- Base: older options with no `transitionDelaySeconds` continue using immediate post-click navigation.
 - Bad: adding an option timing field to the admin form but forgetting `normalizeOption()`, because the value will disappear on save.
 - Bad: using a node-level options reveal delay after the option-level contract is established.
 
 #### 6. Tests Required
-- Backend story-script tests must assert effect normalization, invalid effect rejection, option reveal-delay preservation, blank compatibility, and invalid delay rejection.
-- Player story tests must assert effect class/data hooks and option reveal timing before and after typewriter completion.
-- Admin story tests must assert the effect control, option-level numeric timing input, and responsive option-row layout.
+- Backend story-script tests must assert effect normalization, invalid effect rejection, option reveal-delay preservation, option transition-delay preservation, battle progression flag defaults/preservation, blank compatibility, and invalid delay rejection.
+- Player story tests must assert effect class/data hooks, option reveal timing before and after typewriter completion, and option transition-delay scheduling/pending feedback.
+- Admin story tests must assert the effect control, option-level reveal and transition numeric timing inputs, and responsive option-row layout.
 - CSS contract tests must keep default story layout unchanged, lock any special effect layout hooks, and prevent the long-text compression effect from starting with a smaller-than-default text region. Theme contract tests must also cover active mobile theme overrides, because Bright School mobile modal shell rules use `!important` and can otherwise revert effect nodes to the default onboarding story grid.
 
 #### 7. Wrong vs Correct
@@ -95,7 +107,8 @@ function normalizeOption(option = {}) {
   return {
     label: normalizeText(option.label),
     nextNodeId: normalizeText(option.nextNodeId),
-    revealDelaySeconds: normalizeOptionRevealDelaySeconds(option.revealDelaySeconds)
+    revealDelaySeconds: normalizeOptionRevealDelaySeconds(option.revealDelaySeconds),
+    transitionDelaySeconds: normalizeOptionTransitionDelaySeconds(option.transitionDelaySeconds)
   };
 }
 ```

@@ -20,7 +20,8 @@ export default function TutorialSessionModal({
   onClose,
   onComplete,
   onEnterBattle,
-  typewriterDisabled = false
+  typewriterDisabled = false,
+  previewControlsEnabled = false
 }) {
   const nodesById = useMemo(() => new Map((script?.nodes ?? []).map((node) => [node.id, node])), [script]);
   const [nodeId, setNodeId] = useState(script?.startNodeId ?? "");
@@ -157,6 +158,7 @@ export default function TutorialSessionModal({
         onClose={onClose}
         onNavigate={goToNode}
         typewriterDisabled={typewriterDisabled}
+        previewControlsEnabled={previewControlsEnabled}
       />
     );
   }

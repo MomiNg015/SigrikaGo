@@ -2,8 +2,8 @@ export const CSS_DEBT_BASELINE = {
   date: "2026-07-02",
   scope: "All CSS files under src/styles after the import-only split work already present on codex/css-cleanup.",
   metrics: {
-    totalFiles: 581,
-    totalBytes: 1109943,
+    totalFiles: 582,
+    totalBytes: 1111029,
     importantCount: 6869,
     importantFiles: 274,
     hardcodedHexCount: 2265,
@@ -25,8 +25,8 @@ export const CSS_Z_INDEX_CONTRACT = {
     { name: "system", range: [1000, 100300], use: "legacy tutorial, onboarding, admin workbench, and final mobile system overlays only" }
   ],
   legacyHighValues: [
-    { file: "admin/story-workbench/forms-preview.css", value: 2600, owner: "admin story preview drawer" },
-    { file: "admin/story-workbench/forms-preview.css", value: 3000, owner: "admin story preview modal" },
+    { file: "admin/story-workbench/overlays.css", value: 2600, owner: "admin story preview drawer" },
+    { file: "admin/story-workbench/overlays.css", value: 3000, owner: "admin story preview modal" },
     { file: "admin/story-workbench/layout.css", value: 2700, owner: "admin story branch tools" },
     { file: "mobile-adaptive/phone-interactions.css", value: 99999, owner: "final mobile sheet/backdrop safety layer" },
     { file: "modals/onboarding-story/shell.css", value: 100100, owner: "onboarding story modal shell" },

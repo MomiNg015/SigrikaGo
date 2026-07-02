@@ -61,6 +61,25 @@
   max-width: 280px;
 }
 
+.onboarding-story-pending {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #334155;
+  font-weight: 900;
+  text-align: center;
+}
+
+.onboarding-story-pending .secondary-action {
+  width: auto;
+  min-width: 112px;
+}
+
 .onboarding-story-skip-backdrop {
   position: absolute !important;
   inset: 0 !important;

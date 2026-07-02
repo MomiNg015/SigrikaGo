@@ -19,6 +19,13 @@ import {
   isTutorialNpcNodeType
 } from "../shared/tutorialNodeTypes.js";
 import {
+  DEFAULT_NPC_DIALOGUE_AUTO_CONTINUE_SECONDS,
+  delayMs,
+  nodeAdvanceControls,
+  nodeAutoContinueDelayMs,
+  optionTransitionDelayMs
+} from "../shared/storyTiming.js";
+import {
   applyTutorialNodeAction,
   applyTutorialSkillAction,
   createTutorialGameState
@@ -63,7 +70,8 @@ export default function TutorialBattleScreen({
   onExitToStory,
   onOpenMessageBoard,
   onOpenSettings,
-  onToast
+  onToast,
+  previewControlsEnabled = false
 }) {
   const script = session?.script;
   const nodesById = useMemo(() => new Map((script?.nodes ?? []).map((node) => [node.id, node])), [script]);
@@ -84,11 +92,14 @@ export default function TutorialBattleScreen({
   const [loading, setLoading] = useState(() => initialBattleLoadingForNode(startNode));
   const [battleMusicActive, setBattleMusicActive] = useState(true);
   const [confirmExit, setConfirmExit] = useState(null);
+  const [pendingWait, setPendingWait] = useState(null);
   const [showCoords, setShowCoords] = useState(true);
   const [showMoves, setShowMoves] = useState(false);
   const gameRef = useRef(game);
   const nodeRunRef = useRef(0);
   const timersRef = useRef([]);
+  const pendingWaitRef = useRef(null);
+  const initializedNodeKeyRef = useRef("");
   const currentNode = nodesById.get(nodeId) ?? null;
   const useMobileLayout = useMobileRoomLayout();
 
@@ -99,12 +110,48 @@ export default function TutorialBattleScreen({
   const clearTimers = useCallback(() => {
     for (const timerId of timersRef.current) window.clearTimeout(timerId);
     timersRef.current = [];
+    pendingWaitRef.current = null;
+    setPendingWait(null);
   }, []);
 
   const schedule = useCallback((callback, delayMs) => {
     const timerId = window.setTimeout(callback, Math.max(0, delayMs));
     timersRef.current.push(timerId);
     return timerId;
+  }, []);
+
+  const schedulePendingWait = useCallback((callback, delayValueMs, options = {}) => {
+    const manualContinue = Boolean(options.manualContinue);
+    const autoContinue = options.autoContinue !== false;
+    if (!manualContinue && (!autoContinue || delayValueMs <= 0)) {
+      callback();
+      return;
+    }
+    const pending = {
+      id: `wait-${Date.now()}`,
+      callback,
+      revealsChoices: Boolean(options.revealsChoices)
+    };
+    const timerId = autoContinue
+      ? schedule(() => {
+        if (pendingWaitRef.current?.id !== pending.id) return;
+        pendingWaitRef.current = null;
+        setPendingWait(null);
+        callback();
+      }, delayValueMs)
+      : null;
+    pending.timerId = timerId;
+    pendingWaitRef.current = pending;
+    setPendingWait({ id: pending.id, manualContinue, autoContinue, revealsChoices: pending.revealsChoices });
+  }, [schedule]);
+
+  const skipPendingWait = useCallback(() => {
+    const pending = pendingWaitRef.current;
+    if (!pending) return;
+    if (pending.timerId != null) window.clearTimeout(pending.timerId);
+    pendingWaitRef.current = null;
+    setPendingWait(null);
+    pending.callback();
   }, []);
 
   const finish = useCallback(() => {
@@ -118,6 +165,8 @@ export default function TutorialBattleScreen({
     setPendingSkill(false);
     setSkillPhase("");
     setResolvedSkillState(null);
+    pendingWaitRef.current = null;
+    setPendingWait(null);
     setBattleMusicActive(false);
     setLoading({
       id: `exit-${Date.now()}`,
@@ -220,21 +269,19 @@ export default function TutorialBattleScreen({
 
   const completeNodeFlow = useCallback((node) => {
     const options = Array.isArray(node?.options) ? node.options : [];
-    if (options.length) {
-      setChoicesVisible(true);
-      return;
-    }
-    const autoDelay = optionalDelayMs(node?.autoContinueDelaySeconds);
-    if (node?.type === TUTORIAL_NODE_TYPES.npcDialogue && autoDelay == null) {
-      setSkillPhase("continue");
-      return;
-    }
-    if (autoDelay != null) {
-      schedule(() => goToNode(node?.nextNodeId), autoDelay);
-      return;
-    }
-    goToNode(node?.nextNodeId);
-  }, [goToNode, schedule]);
+    const advance = options.length
+      ? () => setChoicesVisible(true)
+      : () => goToNode(node?.nextNodeId);
+    const isNpcDialogue = node?.type === TUTORIAL_NODE_TYPES.npcDialogue;
+    schedulePendingWait(
+      advance,
+      nodeAutoContinueDelayMs(node, isNpcDialogue ? DEFAULT_NPC_DIALOGUE_AUTO_CONTINUE_SECONDS : 0),
+      {
+        ...nodeAdvanceControls(node),
+        revealsChoices: options.length > 0
+      }
+    );
+  }, [goToNode, schedulePendingWait]);
 
   const completeAction = useCallback((node, result) => {
     if (!result?.ok) {
@@ -286,8 +333,12 @@ export default function TutorialBattleScreen({
     gameRef.current = nextGame;
     const entryText = setupNodeEntryText(node);
     setFeedback(entryText);
-    goToNode(node.nextNodeId, { preserveFeedback: Boolean(entryText) });
-  }, [characters, goToNode, script?.initialBoard, user]);
+    schedulePendingWait(
+      () => goToNode(node.nextNodeId, { preserveFeedback: Boolean(entryText) }),
+      nodeAutoContinueDelayMs(node, 0),
+      nodeAdvanceControls(node)
+    );
+  }, [characters, goToNode, schedulePendingWait, script?.initialBoard, user]);
 
   useEffect(() => {
     const startId = session?.startNodeId ?? script?.startNodeId ?? "";
@@ -299,6 +350,7 @@ export default function TutorialBattleScreen({
     });
     clearTimers();
     nodeRunRef.current = 0;
+    initializedNodeKeyRef.current = "";
     setPlayers(nextPlayers);
     setGame(nextGame);
     gameRef.current = nextGame;
@@ -347,7 +399,10 @@ export default function TutorialBattleScreen({
   }, [loading?.id, loading?.kind]);
 
   useEffect(() => {
-    if (!currentNode || loading) return;
+    if (!currentNode || loading || pendingWait) return;
+    const nodeExecutionKey = currentNode.id || nodeId;
+    if (initializedNodeKeyRef.current === nodeExecutionKey) return;
+    initializedNodeKeyRef.current = nodeExecutionKey;
     clearTimers();
     nodeRunRef.current += 1;
     setFeedback("");
@@ -370,14 +425,14 @@ export default function TutorialBattleScreen({
 
     if (currentNode.type === TUTORIAL_NODE_TYPES.playerChoice) {
       hideNpcBubble();
-      setChoicesVisible(true);
+      completeNodeFlow(currentNode);
       return;
     }
 
     if (isTutorialNpcNodeType(currentNode.type)) {
       showNpcBubble(currentNode);
       if (currentNode.type === TUTORIAL_NODE_TYPES.npcDialogue) {
-        schedule(() => completeNodeFlow(currentNode), delayMs(currentNode.replyDelaySeconds, DEFAULT_REPLY_DELAY_SECONDS));
+        schedule(() => completeNodeFlow(currentNode), npcDialogueTypewriterDurationMs(currentNode));
         return;
       }
       schedule(() => {
@@ -418,6 +473,7 @@ export default function TutorialBattleScreen({
     currentNode,
     hideNpcBubble,
     loading,
+    pendingWait,
     runSkillAction,
     schedule,
     showNpcBubble,
@@ -471,7 +527,7 @@ export default function TutorialBattleScreen({
   });
 
   function handlePoint(point) {
-    if (!point || loading || resolvedSkillState || isNpcLocked(currentNode)) return;
+    if (!point || loading || pendingWait || resolvedSkillState || isNpcLocked(currentNode)) return;
     if (currentNode?.type === TUTORIAL_NODE_TYPES.playerMove) {
       if (point.id !== currentNode.pointId) {
         warn(currentNode.wrongClickMessage || "请在提示区域落子");
@@ -495,7 +551,7 @@ export default function TutorialBattleScreen({
   }
 
   function handleGameAction(action) {
-    if (loading || isNpcLocked(currentNode)) return;
+    if (loading || pendingWait || isNpcLocked(currentNode)) return;
     if (action?.type === "resign" && currentNode?.type === TUTORIAL_NODE_TYPES.resign && playerButtonNode(currentNode)) {
       completeAction(currentNode, applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode));
       return;
@@ -526,17 +582,19 @@ export default function TutorialBattleScreen({
   }
 
   function handleContinue() {
-    if (skillPhase !== "continue") return;
+    if (skillPhase !== "continue" || pendingWait) return;
     goToNode(currentNode?.nextNodeId);
   }
 
   function handleChoice(option) {
+    if (pendingWait) return;
     appendChat({
       userId: me?.user?.id ?? PLAYER_ID,
       username: me?.user?.username ?? "Player",
       text: option?.label
     });
-    goToNode(option?.nextNodeId);
+    setChoicesVisible(false);
+    schedulePendingWait(() => goToNode(option?.nextNodeId), optionTransitionDelayMs(option));
   }
 
   function warn(message) {
@@ -569,10 +627,14 @@ export default function TutorialBattleScreen({
               node={currentNode}
               phase={skillPhase}
               feedback={feedback}
+              pendingWait={pendingWait}
+              choicesVisible={choicesVisible}
+              previewControlsEnabled={previewControlsEnabled}
               skillName={skillLabel(currentNode, characters)}
               onContinue={handleContinue}
               onSkillButton={handleSkillButton}
               onPlayerButton={() => completeAction(currentNode, applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode))}
+              onSkipPendingWait={skipPendingWait}
             />
           )}
           audioSettings={audioSettings}
@@ -724,6 +786,12 @@ function TypewriterText({ text }) {
   return visibleText;
 }
 
+function npcDialogueTypewriterDurationMs(node) {
+  const text = String(node?.text ?? node?.prompt ?? "");
+  if (!text || !canAnimateTypewriter() || prefersReducedMotion()) return 0;
+  return 80 + (text.length * 28);
+}
+
 function canAnimateTypewriter() {
   return typeof window !== "undefined" && typeof window.setTimeout === "function";
 }
@@ -732,8 +800,39 @@ function prefersReducedMotion() {
   return canAnimateTypewriter() && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 }
 
-function TutorialActionPanel({ node, phase, feedback, skillName, onContinue, onSkillButton, onPlayerButton }) {
+function TutorialActionPanel({
+  node,
+  phase,
+  feedback,
+  pendingWait,
+  choicesVisible,
+  previewControlsEnabled,
+  skillName,
+  onContinue,
+  onSkillButton,
+  onPlayerButton,
+  onSkipPendingWait
+}) {
   if (!node) return <nav className="action-bar tutorial-action-bar"><p>未选择教学步骤</p></nav>;
+  const hasOptions = Array.isArray(node.options) && node.options.length > 0;
+  if (choicesVisible && hasOptions) {
+    return <nav className="action-bar tutorial-action-bar" aria-hidden="true" />;
+  }
+  if (pendingWait) {
+    const buttonText = pendingWait.manualContinue ? "继续" : "立即继续";
+    const showPendingWaitHint = !pendingWait.revealsChoices;
+    return (
+      <nav className="action-bar tutorial-action-bar tutorial-action-hint">
+        {showPendingWaitHint && <p>继续中...</p>}
+        {(pendingWait.manualContinue || previewControlsEnabled) && (
+          <button className="tutorial-highlight-action" type="button" onClick={onSkipPendingWait}>
+            <Play size={18} />
+            <span>{buttonText}</span>
+          </button>
+        )}
+      </nav>
+    );
+  }
   if (phase === "continue") {
     return (
       <nav className="action-bar tutorial-action-bar">
@@ -886,22 +985,6 @@ function playerButtonText(node) {
 
 function isNpcLocked(node) {
   return isTutorialNpcNodeType(node?.type) || autoSettlementNode(node);
-}
-
-function delayMs(value, fallbackSeconds) {
-  const seconds = optionalDelaySeconds(value);
-  return Math.round((seconds ?? fallbackSeconds) * 1000);
-}
-
-function optionalDelayMs(value) {
-  const seconds = optionalDelaySeconds(value);
-  return seconds == null ? null : Math.round(seconds * 1000);
-}
-
-function optionalDelaySeconds(value) {
-  if (value == null || value === "") return null;
-  const seconds = Number(value);
-  return Number.isFinite(seconds) && seconds >= 0 ? seconds : null;
 }
 
 function skillPreviewDurationMs(pendingSkill) {

@@ -908,7 +908,10 @@ Correct:
 - Node types live in `src/shared/tutorialNodeTypes.js`.
 - Battle-only node types include `npc-dialogue` and `player-choice` in addition to board setup, move, skill, counting, and resign tutorial nodes.
 - `story` nodes reached while `TutorialBattleScreen` is active mean "exit the battle room and resume the normal story window at this node".
-- NPC timing fields are `actionStartDelaySeconds`, `actionDelaySeconds`, `replyDelaySeconds`, and `autoContinueDelaySeconds`, with a product default of `1.5` seconds where a delay field is omitted.
+- NPC timing fields are `actionStartDelaySeconds`, `actionDelaySeconds`, `replyDelaySeconds`, and `autoContinueDelaySeconds`, with a product default of `1.5` seconds where an NPC action-start delay is omitted and `0.4` seconds where an NPC reply delay is omitted.
+- Node progression is authored as one advance mode: `auto` or `manual`. The storage fields remain `manualContinueEnabled`, `autoContinueEnabled`, and `autoContinueDelaySeconds` for existing script compatibility, but new admin edits must write them as a mutually exclusive pair. New battle nodes default to `auto`.
+- `autoContinueDelaySeconds` is the automatic progression wait. In `auto` mode, blank means 1.5 seconds after typewriter completion for `npc-dialogue`, and 0 seconds for other battle nodes. In `manual` mode, the value is preserved but does not start a timer.
+- Option timing field: `transitionDelaySeconds` on both ordinary story options and in-battle reply options. In admin copy this is "选择后等待"; blank means 0 seconds after selection.
 - `RoomBattleStage` accepts tutorial overrides such as `actionPanelOverride`, `chatReadonly`, `chatDisabledInputMessage`, `chatCompactMessages`, `showPeoplePanel`, `tutorialTargetPointId`, and `tutorialAnyBoardTarget`.
 - `RoomHeader` accepts `exitLabel` and `showUtilityControls` so tutorial battles can keep only the exit/skip affordance without rendering room utility buttons.
 - `AssetPreloadScreen` accepts `showTips` for fixed-copy loading transitions that still need the shared preload template.
@@ -918,6 +921,11 @@ Correct:
 - Tutorial battles must route desktop and mobile through the same layout shells as real rooms (`DesktopRoomLayout`, `MobileRoomLayout`, `useMobileRoomLayout`) instead of a desktop-only wrapper.
 - Tutorial battles must restore normal room audio by using `useRoomAudioEffects` for move/effect sounds and `BackgroundMusic`/`resolveBackgroundMusic` for battle and skill BGM.
 - NPC move and skill nodes execute automatically after their configured delays. Do not require a player-facing "let NPC act" button.
+- Battle nodes with options must still run through the selected advance mode before options appear. This includes `player-choice`; do not special-case it to reveal options immediately when manual continuation is selected.
+- Option clicks must hide the option panel immediately, show a quiet pending state, and enter the target only after `transitionDelaySeconds`.
+- Pending waits must block repeated point/game/continue/choice actions, clear timers on node changes, close/skip, and unmount, and keep the global exit/skip affordance available.
+- The node initialization effect must be keyed by the current node id. Resolving a pending progression wait changes `pendingWait`, but must not reinitialize the same node, because reinitialization clears `choicesVisible` and can make just-revealed reply options flash and disappear.
+- Admin preview should use the real configured waits by default and may expose a preview-only "立即继续" control for timer-only waits. Player-facing playback must not expose per-wait skipping, but node-level manual continuation is a script-controlled player action.
 - NPC dialogue nodes may show dialogue with no board action, or board action nodes may show dialogue while also moving/casting. The NPC bubble remains visible while player reply options are shown and is replaced only when the next NPC node begins.
 - `player-choice` nodes show centered reply options without changing the board. Chosen NPC and player replies are written to the read-only chat history.
 - `story` nodes reached from battle show the shared `AssetPreloadScreen` exit loading page for at least three seconds with "正在收拾棋盘..." before returning to the normal story modal.
@@ -927,7 +935,7 @@ Correct:
 - Player move targets must highlight the exact point with a gold ring rendered as a real child element inside the board point; do not use a `::after` point pseudo-element because theme guards also own point pseudo-elements. The ring must preserve `transform: translate(-50%, -50%)` after Bright School `button > *` reset layers and should animate as a visible gold glow. Clicking another point or the board surface shows "请在提示区域落子".
 - Player skill targets use the normal skill selection flow. If a skill has no concrete target point, the second phase still requires a board click and shows "点击棋盘区域任意位置即可".
 - Player button targets highlight the required action button. Clicking unrelated disabled/free actions should do nothing unless the node explicitly defines an error toast.
-- Player reply options should render above a full-screen scrim that focuses the choice area while keeping the current NPC bubble visible above the scrim. Choice and teaching action buttons use a left/right distributed row layout so the affordance does not collapse into centered free-battle controls.
+- Player reply options should render above a full-screen scrim that focuses the choice area while keeping the current NPC bubble visible above the scrim. Choice and teaching action buttons use a left/right distributed row layout so the affordance does not collapse into centered free-battle controls. When a pending node wait will reveal reply options, or when reply options are already visible, the action panel must suppress hint copy; manual mode may show only the "继续" button.
 - In Bright School, `.tutorial-battle-choice button:hover:not(:disabled)` and `:focus-visible:not(:disabled)` reuse the home utility card hover motion: `7px 8px 0 #3d2b25` hard shadow, `0 12px 24px rgba(255, 158, 187, 0.2)` lift shadow, `saturate(1.04) brightness(1.01)`, and `translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018)`. Keep this in `src/styles/themes/bright-school/room/tutorial-choice-interactions.css` so the already-large `player-status.css` does not grow.
 - Reply options should render as the buttons themselves, without a visible choice-panel title, extra close affordance, or framed card background. The scrim and NPC bubble provide the spatial context.
 - Teaching action buttons should stretch evenly across the action area with a small inset and a light-green target affordance on both desktop and mobile.
@@ -942,6 +950,12 @@ Correct:
 #### 4. Validation & Error Matrix
 - NPC action node with no options -> run the action, wait the continuation delay, then advance through `nextNodeId`.
 - NPC dialogue/action node with options -> keep the bubble visible while centered reply options are displayed.
+- Node with options and `auto` advance mode -> keep the current battle surface visible, suppress action-panel hint copy, then reveal the options after the configured automatic wait.
+- Node with options and `manual` advance mode -> keep the current battle surface visible and show only "继续" before revealing the options.
+- `npc-dialogue` created with current admin defaults -> after typewriter completion, auto-advance or reveal options 1.5 seconds later without showing a player continue button.
+- Reply option with `transitionDelaySeconds: 1` -> hide choices immediately, show the pending state, then route to `nextNodeId` or finish.
+- Pending node progression wait resolves into reply options -> options remain visible until the user chooses one, and the same node is not initialized again.
+- Closing/skipping during a pending wait -> clear the timer and do not route to the old node afterwards.
 - Player move click on the wrong point -> reject the action and keep the node active.
 - Player no-target skill -> second-phase board click anywhere confirms the scripted skill action.
 - `story` node reached from battle -> never render it as an in-battle bubble; exit to the normal story player.
@@ -958,6 +972,9 @@ Correct:
 - `src/app/AppOverlays.test.jsx` / app route tests should cover battle-to-story resume wiring.
 - `src/admin/AdminOnboardingStory.test.jsx` should cover admin form validation for `npc-dialogue`, `player-choice`, delay fields, actor fields, and story-exit previews where practical.
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert Bright School reply-choice hover imports and utility-card-equivalent hover motion.
+- `src/tutorial/TutorialBattleScreen.test.jsx` should assert battle-node progression waits, option transition waits, pending feedback, preview-only skip-current-wait controls, and timer cleanup.
+- `src/tutorial/TutorialBattleScreen.test.jsx` should assert same-node initialization is guarded so pending-wait resolution cannot hide newly visible reply options.
+- `src/modals/StoryPlayerModal.test.jsx` should assert ordinary story option `transitionDelaySeconds` scheduling and the pending feedback path.
 
 ---
 

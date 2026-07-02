@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import StoryPlayerModal, {
   nextStoryNodeId,
+  optionTransitionDelayMs,
   resolveStoryRenderNodeId,
   storyTypewriterIntervalMs,
   visibleStoryOptions
@@ -72,6 +73,11 @@ describe("StoryPlayerModal", () => {
 
   it("treats an option with an empty target as the close-window path", () => {
     expect(nextStoryNodeId({ nextNodeId: "fallback" }, { label: "Sneak away", nextNodeId: "" })).toBe("");
+  });
+
+  it("supports post-click transition delays for normal story options", () => {
+    expect(optionTransitionDelayMs({ label: "Immediate" })).toBe(0);
+    expect(optionTransitionDelayMs({ label: "Pause", transitionDelaySeconds: "1.2" })).toBe(1200);
   });
 
   it("keeps the story shell on the next node when tutorial playback swaps the script window", () => {

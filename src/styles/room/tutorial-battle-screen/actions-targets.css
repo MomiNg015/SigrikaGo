@@ -95,6 +95,20 @@
   text-align: center;
 }
 
+.tutorial-action-bar.tutorial-action-hint {
+  flex-wrap: wrap;
+  align-content: center;
+}
+
+.tutorial-action-bar.tutorial-action-hint button {
+  flex: 0 1 min(180px, 100%);
+  max-width: 220px;
+}
+
+.tutorial-action-bar.tutorial-action-hint button::after {
+  display: none;
+}
+
 .tutorial-action-bar .tutorial-highlight-action {
   border-color: rgba(245, 158, 11, 0.72);
   background: linear-gradient(180deg, #e9fbe2, #d8f6cf);
@@ -176,6 +190,10 @@
 
 .mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar button::after {
   display: none !important;
+}
+
+.mobile-room-screen #mobile-room-panel-actions .tutorial-action-bar.tutorial-action-hint {
+  flex-wrap: wrap !important;
 }
 
 @keyframes tutorial-action-pulse {

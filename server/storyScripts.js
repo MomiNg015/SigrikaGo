@@ -45,6 +45,7 @@ const ERRORS = Object.freeze({
   optionTargetRequired: "选项目标不能为空",
   invalidNodeEffect: "剧情节点效果无效",
   invalidOptionRevealDelay: "选项出现时间必须是非负数字",
+  invalidOptionTransitionDelay: "选项选择后等待必须是非负数字",
   endingRequired: "至少需要一个结束节点",
   triggerConflict: "同一个触发点只能发布一个剧情脚本",
   scriptNotFound: "剧情脚本不存在",
@@ -599,6 +600,8 @@ function normalizeNode(node = {}) {
     actionStartDelaySeconds: normalizeNonNegativeDelaySeconds(node.actionStartDelaySeconds),
     replyDelaySeconds: normalizeNonNegativeDelaySeconds(node.replyDelaySeconds),
     autoContinueDelaySeconds: normalizeNonNegativeDelaySeconds(node.autoContinueDelaySeconds),
+    manualContinueEnabled: normalizeDefaultTrueFlag(node.manualContinueEnabled),
+    autoContinueEnabled: normalizeAutoContinueFlag(node.autoContinueEnabled, type),
     boardSetup: normalizeInitialBoard(node.boardSetup),
     nextNodeId: normalizeText(node.nextNodeId),
     options
@@ -639,12 +642,17 @@ function normalizeOption(option = {}) {
   return {
     label: normalizeText(option.label),
     nextNodeId: normalizeText(option.nextNodeId),
-    revealDelaySeconds: normalizeOptionRevealDelaySeconds(option.revealDelaySeconds)
+    revealDelaySeconds: normalizeOptionRevealDelaySeconds(option.revealDelaySeconds),
+    transitionDelaySeconds: normalizeOptionTransitionDelaySeconds(option.transitionDelaySeconds)
   };
 }
 
 function normalizeOptionRevealDelaySeconds(value) {
   return normalizeNonNegativeDelaySeconds(value, ERRORS.invalidOptionRevealDelay);
+}
+
+function normalizeOptionTransitionDelaySeconds(value) {
+  return normalizeNonNegativeDelaySeconds(value, ERRORS.invalidOptionTransitionDelay);
 }
 
 function normalizeNonNegativeDelaySeconds(value, error = ERRORS.invalidOptionRevealDelay) {
@@ -653,6 +661,17 @@ function normalizeNonNegativeDelaySeconds(value, error = ERRORS.invalidOptionRev
   const delay = Number(normalized);
   if (!Number.isFinite(delay) || delay < 0) throw routeError(400, error);
   return delay;
+}
+
+function normalizeDefaultTrueFlag(value) {
+  if (value === false || value === "false") return false;
+  return true;
+}
+
+function normalizeAutoContinueFlag(value, type) {
+  if (value == null || value === "") return type === TUTORIAL_NODE_TYPES.npcDialogue;
+  if (value === false || value === "false") return false;
+  return true;
 }
 
 function normalizeText(value) {

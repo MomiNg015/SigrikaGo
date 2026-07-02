@@ -193,10 +193,39 @@ describe("AdminOnboardingStory", () => {
     expect(adminSource).toContain('type="number"');
     expect(adminSource).toContain('step="0.1"');
     expect(adminSource).toContain("revealDelaySeconds");
+    expect(adminSource).toContain("transitionDelaySeconds");
     expect(adminSource).toContain("步骤类型");
     expect(adminSource).toContain("下一主线步骤");
     expect(adminSource).not.toContain("节点 ID");
     expect(adminSource).not.toContain("nextNodeId 默认");
+  });
+
+  it("exposes simplified progression controls for nodes and options", () => {
+    expect(adminSource).toContain("节点推进");
+    expect(adminSource).toContain("推进方式");
+    expect(adminSource).toContain('type="radio"');
+    expect(adminSource).toContain("nodeAdvanceMode(node)");
+    expect(adminSource).toContain("nodeAdvanceModePatch(NODE_ADVANCE_MODES.auto)");
+    expect(adminSource).toContain("nodeAdvanceModePatch(NODE_ADVANCE_MODES.manual)");
+    expect(adminSource).toContain("手动继续");
+    expect(adminSource).toContain("自动推进");
+    expect(adminSource).toContain("自动推进等待");
+    expect(adminSource).toContain("默认自动推进");
+    expect(adminSource).toContain("NPC 表现节奏");
+    expect(adminSource).toContain("选择后等待");
+    expect(adminSource).toContain("留空 = 0 秒");
+    expect(adminSource).toContain("默认 1.5");
+    expect(adminSource).toContain("动作后停顿");
+    expect(adminSource).toContain("previewControlsEnabled");
+    expect(adminSource).toContain("manualContinueEnabled");
+    expect(adminSource).toContain("autoContinueEnabled");
+    expect(adminSource).toContain("\"transitionDelaySeconds\"");
+    expect(adminSource).toContain("\"actionStartDelaySeconds\", \"replyDelaySeconds\", \"autoContinueDelaySeconds\"");
+    expect(adminSource).toContain("\"transitionDelaySeconds\"");
+    expect(adminSource).not.toContain("nodeManualContinueEnabled");
+    expect(adminSource).not.toContain("nodeAutoContinueEnabled");
+    expect(adminSource).not.toContain("如果也开启自动推进");
+    expect(adminSource).not.toContain("可提前点击");
   });
 
   it("supports unified battle tutorial controls through shared board point picking", () => {

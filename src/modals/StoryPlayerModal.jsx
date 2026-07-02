@@ -1,7 +1,8 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { FastForward, X } from "lucide-react";
 import { storyPortraitCatalog } from "../shared/storyPortraits.js";
 import { isLongTextCompressPortraitEffect } from "../shared/storyPresentation.js";
+import { optionTransitionDelayMs as sharedOptionTransitionDelayMs } from "../shared/storyTiming.js";
 
 export const STORY_PLAYER_DEFAULT_TEXT = Object.freeze({
   title: "剧情",
@@ -28,7 +29,8 @@ export default function StoryPlayerModal({
   labels = {},
   onClose,
   onNavigate,
-  typewriterDisabled = false
+  typewriterDisabled = false,
+  previewControlsEnabled = false
 }) {
   const textLabels = { ...STORY_PLAYER_DEFAULT_TEXT, ...labels };
   const nodesById = useMemo(() => new Map((script?.nodes ?? []).map((node) => [node.id, node])), [script]);
@@ -38,6 +40,8 @@ export default function StoryPlayerModal({
   const [visibleCount, setVisibleCount] = useState(typewriterDisabled ? currentNodeText(nodesById.get(activeNodeId)).length : 0);
   const [nodeTimer, setNodeTimer] = useState(() => ({ nodeId: activeNodeId, elapsedMs: 0 }));
   const [skipConfirmOpen, setSkipConfirmOpen] = useState(false);
+  const [pendingWait, setPendingWait] = useState(null);
+  const pendingWaitRef = useRef(null);
   const node = nodesById.get(activeNodeId) ?? null;
   const text = currentNodeText(node);
   const typingComplete = typewriterDisabled || visibleCount >= text.length;
@@ -54,12 +58,16 @@ export default function StoryPlayerModal({
   useStoryLayoutEffect(() => {
     setNodeId((currentNodeId) => (currentNodeId === startNodeId ? currentNodeId : startNodeId));
     setSkipConfirmOpen(false);
+    clearPendingWait();
   }, [startNodeId]);
 
   useStoryLayoutEffect(() => {
     setVisibleCount(typewriterDisabled ? text.length : 0);
     setNodeTimer({ nodeId: activeNodeId, elapsedMs: 0 });
+    clearPendingWait();
   }, [activeNodeId, text.length, typewriterDisabled]);
+
+  useEffect(() => () => clearPendingWait(), []);
 
   useEffect(() => {
     if (typewriterDisabled || !node || visibleCount >= text.length) return undefined;
@@ -90,6 +98,35 @@ export default function StoryPlayerModal({
       return;
     }
     setNodeId(nextId);
+  }
+
+  function clearPendingWait() {
+    if (pendingWaitRef.current?.timerId != null) {
+      window.clearTimeout(pendingWaitRef.current.timerId);
+    }
+    pendingWaitRef.current = null;
+    setPendingWait(null);
+  }
+
+  function finishPendingWait() {
+    const pending = pendingWaitRef.current;
+    if (!pending) return;
+    pendingWaitRef.current = null;
+    setPendingWait(null);
+    moveTo(pending.nextId);
+  }
+
+  function scheduleOptionTransition(option) {
+    const nextId = nextStoryNodeId(node, option);
+    const transitionMs = optionTransitionDelayMs(option);
+    if (transitionMs <= 0) {
+      moveTo(nextId);
+      return;
+    }
+    clearPendingWait();
+    const timerId = window.setTimeout(finishPendingWait, transitionMs);
+    pendingWaitRef.current = { timerId, nextId };
+    setPendingWait({ nextId });
   }
 
   function handleTextClick() {
@@ -175,16 +212,24 @@ export default function StoryPlayerModal({
         </div>
 
         <footer className="onboarding-story-actions">
-          {visibleOptions.length > 0 && (
+          {pendingWait && (
+            <div className="onboarding-story-pending" role="status" aria-live="polite">
+              <span>继续中...</span>
+              {previewControlsEnabled && (
+                <button className="secondary-action" type="button" onClick={finishPendingWait}>立即继续</button>
+              )}
+            </div>
+          )}
+          {!pendingWait && visibleOptions.length > 0 && (
             <div className="onboarding-story-options">
               {visibleOptions.map((option) => (
-                <button key={`${node.id}:${option.label}:${option.nextNodeId}`} className="primary-action" type="button" onClick={() => moveTo(nextStoryNodeId(node, option))}>
+                <button key={`${node.id}:${option.label}:${option.nextNodeId}`} className="primary-action" type="button" onClick={() => scheduleOptionTransition(option)}>
                   {option.label}
                 </button>
               ))}
             </div>
           )}
-          {typingComplete && !hasOptions && (
+          {typingComplete && !hasOptions && !pendingWait && (
             <button className="primary-action onboarding-story-single-action" type="button" onClick={() => moveTo(nextStoryNodeId(node))}>
               {node.nextNodeId ? textLabels.continue : textLabels.finish}
             </button>
@@ -199,6 +244,10 @@ export default function StoryPlayerModal({
 
 export function nextStoryNodeId(node, option = null) {
   return String(option?.nextNodeId ?? node?.nextNodeId ?? "").trim();
+}
+
+export function optionTransitionDelayMs(option) {
+  return sharedOptionTransitionDelayMs(option);
 }
 
 export function resolveStoryRenderNodeId(currentNodeId, startNodeId, nodesById) {

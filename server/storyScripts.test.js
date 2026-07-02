@@ -103,7 +103,7 @@ describe("story script domain", () => {
     });
   });
 
-  it("normalizes node effects and per-option reveal delays", () => {
+  it("normalizes node effects, per-option reveal delays, transition delays, and progression flags", () => {
     expect(validateStoryScriptInput({
       key: "item.rainbow-bean-candy.denia",
       title: "Timing story",
@@ -118,8 +118,11 @@ describe("story script domain", () => {
             characterId: "denia",
             effect: STORY_NODE_EFFECTS.longTextCompressPortrait,
             text: "Long speech",
+            manualContinueEnabled: false,
+            autoContinueEnabled: true,
+            autoContinueDelaySeconds: "1.5",
             options: [
-              { label: "Interrupt", nextNodeId: "", revealDelaySeconds: "0.5" },
+              { label: "Interrupt", nextNodeId: "", revealDelaySeconds: "0.5", transitionDelaySeconds: "1.2" },
               { label: "Wait", nextNodeId: "", revealDelaySeconds: "" }
             ]
           }
@@ -130,13 +133,35 @@ describe("story script domain", () => {
         nodes: [
           expect.objectContaining({
             effect: STORY_NODE_EFFECTS.longTextCompressPortrait,
+            manualContinueEnabled: false,
+            autoContinueEnabled: true,
+            autoContinueDelaySeconds: 1.5,
             options: [
-              expect.objectContaining({ label: "Interrupt", revealDelaySeconds: 0.5 }),
-              expect.objectContaining({ label: "Wait", revealDelaySeconds: "" })
+              expect.objectContaining({ label: "Interrupt", revealDelaySeconds: 0.5, transitionDelaySeconds: 1.2 }),
+              expect.objectContaining({ label: "Wait", revealDelaySeconds: "", transitionDelaySeconds: "" })
             ]
           })
         ]
       }
+    });
+  });
+
+  it("keeps legacy NPC dialogue progression defaults when fields are missing", () => {
+    expect(validateStoryScriptInput({
+      key: "tutorial.npc-dialogue-defaults",
+      title: "NPC dialogue defaults",
+      triggerType: STORY_TRIGGER_TYPES.onboarding,
+      triggerParams: {},
+      draft: {
+        startNodeId: "npc",
+        nodes: [
+          { id: "npc", type: "npc-dialogue", text: "看这里", nextNodeId: "" }
+        ]
+      }
+    }, { publishing: true }).draft.nodes[0]).toMatchObject({
+      manualContinueEnabled: true,
+      autoContinueEnabled: true,
+      autoContinueDelaySeconds: ""
     });
   });
 
@@ -236,6 +261,17 @@ describe("story script domain", () => {
         }]
       }
     }, { publishing: true })).toThrow("选项出现时间必须是非负数字");
+
+    expect(() => validateStoryScriptInput({
+      ...baseInput,
+      draft: {
+        ...baseInput.draft,
+        nodes: [{
+          ...baseInput.draft.nodes[0],
+          options: [{ label: "Done", nextNodeId: "", transitionDelaySeconds: "-1" }]
+        }]
+      }
+    }, { publishing: true })).toThrow("选项选择后等待必须是非负数字");
   });
 
   it("still rejects option targets that name a missing node", () => {
