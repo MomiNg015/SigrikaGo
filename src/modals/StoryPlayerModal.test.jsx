@@ -12,6 +12,18 @@ import { DENIA_RAINBOW_GLOW_STORY_PORTRAIT_ID } from "../shared/storyPortraits.j
 import { STORY_NODE_EFFECTS } from "../shared/storyPresentation.js";
 
 describe("StoryPlayerModal", () => {
+  it("routes backdrop and close affordance dismissal through skip confirmation", () => {
+    const source = readFileSync(new URL("./StoryPlayerModal.jsx", import.meta.url), "utf8");
+    const storyBackdropHandlers = source.match(/className="modal-backdrop onboarding-story-backdrop" onClick=\{requestCloseConfirmation\}/g) ?? [];
+
+    expect(source).toContain("function requestCloseConfirmation()");
+    expect(storyBackdropHandlers).toHaveLength(2);
+    expect(source).not.toContain('className="modal-backdrop onboarding-story-backdrop" onClick={onClose}');
+    expect(source).toContain('aria-label={textLabels.close} onClick={requestCloseConfirmation}');
+    expect(source).toContain('title={textLabels.skip} onClick={requestCloseConfirmation}');
+    expect(source).toContain('<button className="danger-action" type="button" onClick={onClose}>{textLabels.confirmSkip}</button>');
+  });
+
   it("renders configurable story player labels for non-onboarding interactions", () => {
     const html = renderToStaticMarkup(createElement(StoryPlayerModal, {
       script: {

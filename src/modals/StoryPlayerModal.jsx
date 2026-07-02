@@ -102,21 +102,42 @@ export default function StoryPlayerModal({
     handleTextClick();
   }
 
+  function requestCloseConfirmation() {
+    setSkipConfirmOpen(true);
+  }
+
+  function renderSkipConfirm() {
+    if (!skipConfirmOpen) return null;
+    return (
+      <div className="nested-modal-backdrop onboarding-story-skip-backdrop" onClick={() => setSkipConfirmOpen(false)}>
+        <section className="nested-modal onboarding-story-skip-confirm" onClick={(event) => event.stopPropagation()}>
+          <h3>{textLabels.skipTitle}</h3>
+          <p>{textLabels.skipMessage}</p>
+          <div className="inline-actions">
+            <button className="danger-action" type="button" onClick={onClose}>{textLabels.confirmSkip}</button>
+            <button className="secondary-action" type="button" onClick={() => setSkipConfirmOpen(false)}>{textLabels.cancel}</button>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   if (!node) {
     return (
-      <div className="modal-backdrop onboarding-story-backdrop" onClick={onClose}>
+      <div className="modal-backdrop onboarding-story-backdrop" onClick={requestCloseConfirmation}>
         <section className="modal-panel onboarding-story-modal empty" onClick={(event) => event.stopPropagation()}>
-          <button className="close-button" type="button" aria-label={textLabels.close} onClick={onClose}><X size={20} /></button>
+          <button className="close-button" type="button" aria-label={textLabels.close} onClick={requestCloseConfirmation}><X size={20} /></button>
           <p>{textLabels.noScript}</p>
+          {renderSkipConfirm()}
         </section>
       </div>
     );
   }
 
   return (
-    <div className="modal-backdrop onboarding-story-backdrop" onClick={onClose}>
+    <div className="modal-backdrop onboarding-story-backdrop" onClick={requestCloseConfirmation}>
       <section className={modalClassName} data-story-effect={node.effect || undefined} onClick={(event) => event.stopPropagation()} aria-label={textLabels.title}>
-        <button className="onboarding-story-fast-forward" type="button" aria-label={textLabels.fastForward} title={textLabels.skip} onClick={() => setSkipConfirmOpen(true)}>
+        <button className="onboarding-story-fast-forward" type="button" aria-label={textLabels.fastForward} title={textLabels.skip} onClick={requestCloseConfirmation}>
           <FastForward size={22} />
         </button>
 
@@ -170,18 +191,7 @@ export default function StoryPlayerModal({
           )}
         </footer>
 
-        {skipConfirmOpen && (
-          <div className="nested-modal-backdrop onboarding-story-skip-backdrop" onClick={() => setSkipConfirmOpen(false)}>
-            <section className="nested-modal onboarding-story-skip-confirm" onClick={(event) => event.stopPropagation()}>
-              <h3>{textLabels.skipTitle}</h3>
-              <p>{textLabels.skipMessage}</p>
-              <div className="inline-actions">
-                <button className="danger-action" type="button" onClick={onClose}>{textLabels.confirmSkip}</button>
-                <button className="secondary-action" type="button" onClick={() => setSkipConfirmOpen(false)}>{textLabels.cancel}</button>
-              </div>
-            </section>
-          </div>
-        )}
+        {renderSkipConfirm()}
       </section>
     </div>
   );
