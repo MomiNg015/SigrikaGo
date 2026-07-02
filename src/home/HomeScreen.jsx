@@ -1,6 +1,7 @@
 import { CHARACTERS } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 import { modeOrderedEntries } from "../shared/gameModes.js";
+import { UsersRound } from "lucide-react";
 import HomeFooter from "./components/HomeFooter.jsx";
 import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
@@ -93,9 +94,9 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
                 <strong>{mode.title}</strong>
                 <MatchModeRuleText rulesText={mode.rulesText} />
               </span>
-              <span className="match-mode-count">
+              <span className="match-mode-count" aria-label={`匹配中 ${Number(matchmakingCounts[mode.id] ?? 0)} 人`}>
+                <UsersRound size={16} aria-hidden="true" />
                 <b>{Number(matchmakingCounts[mode.id] ?? 0)}</b>
-                <small>匹配中</small>
               </span>
             </button>
           ))}

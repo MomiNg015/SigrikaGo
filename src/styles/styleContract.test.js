@@ -417,12 +417,25 @@ describe("root CSS entry contract", () => {
     expect(matchModeCss).toContain(".match-mode-rule-line");
     expect(matchModeCss).toContain("justify-content: stretch");
     expect(matchModeCss).toContain("margin-left: auto");
-    expect(matchModeCss).toContain(".match-mode-count small");
-    expect(matchModeCss).toContain("white-space: nowrap !important");
+    expect(matchModeCss).not.toContain(".match-mode-count small");
     expect(matchModeCss).toContain("overflow-wrap: normal !important");
     expect(mobileCss).toContain(".match-mode-count");
     expect(mobileCss).toContain("justify-self: end !important");
     expect(mobileCss).toContain("margin-left: auto !important");
+  });
+
+  it("keeps the message board textarea visibly tall on desktop and mobile", () => {
+    const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
+    const mobileCss = readCssWithImports(new URL("./mobile-adaptive.css", import.meta.url));
+    const messageBoardSource = readFileSync(new URL("../modals/MessageBoardModal.jsx", import.meta.url), "utf8");
+
+    expect(messageBoardSource).toContain('className="message-board-input"');
+    expect(baseCss).toContain(".message-board-modal textarea");
+    expect(baseCss).toContain("height: 480px");
+    expect(baseCss).toContain("min-height: 480px");
+    expect(mobileCss).toContain(".message-board-modal textarea");
+    expect(mobileCss).toContain("height: min(420px, 52dvh)");
+    expect(mobileCss).toContain("min-height: min(420px, 52dvh)");
   });
 
   it("keeps base.css as an import-only shared foundation entry", () => {

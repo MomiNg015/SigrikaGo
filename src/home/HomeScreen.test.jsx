@@ -64,10 +64,12 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("home-terminal-status");
     expect(html).not.toContain("SYSTEM: ACTIVE // IN_LOBBY");
     expect(html).toContain("home-brand-title text-display-accent");
-    expect(html).toContain("home-brand-subtitle");
+    expect(html).toContain("home-brand-subtitle text-display-accent");
     expect(html).toContain("连罗伊人的都爱玩的智力游戏");
     expect(html).toContain("home-online-tag");
-    expect(html).toContain("在线人数：2");
+    expect(html).toContain("aria-label=\"在线人数 2\"");
+    expect(html).toContain("<b>2</b>");
+    expect(html).not.toContain("在线人数：2");
     expect(html).toContain("home-mobile-menu");
     expect(html).toContain("home-mobile-menu-toggle");
     expect(html).toContain("home-mobile-menu-panel");
@@ -314,6 +316,9 @@ describe("HomeScreen", () => {
     expect(brightToolboxEntry).not.toContain(".home-match-mode-tickets");
     expect(brightToolboxEntry).toContain("grid-template-columns: repeat(3, minmax(0, 1fr)) !important");
     expect(brightToolboxEntry).toContain(".utility-tone-pink");
+    expect(brightToolboxEntry).toContain(".recruitment-entry:not(.has-alert)");
+    expect(brightToolboxEntry).toContain(".watch-entry");
+    expect(brightToolboxEntry).toContain("--utility-paper: var(--bright-sheet-clean)");
     expect(brightToolboxEntry).toContain("transform: translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018) !important");
     expect(brightUtilityCss).toContain(".utility-entry:hover:not(:disabled)");
     expect(brightUtilityCss).toContain("transform: translateY(-3px) scale(1.018) !important;");

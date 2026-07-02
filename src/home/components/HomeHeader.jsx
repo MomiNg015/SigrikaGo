@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircleHelp, LogOut, Mail, Menu, MessageSquareText, Newspaper, Settings } from "lucide-react";
+import { CircleHelp, LogOut, Mail, Menu, MessageSquareText, Newspaper, Settings, UsersRound } from "lucide-react";
 
 export default function HomeHeader({
   isAdmin,
@@ -28,9 +28,12 @@ export default function HomeHeader({
     <header className="home-top-strip home-terminal-header">
       <div className="home-top-brand">
         <span className="home-brand-title text-display-accent">{siteTitle}</span>
-        <span className="home-brand-subtitle">{siteSubtitle}</span>
+        <span className="home-brand-subtitle text-display-accent">{siteSubtitle}</span>
       </div>
-      <span className="home-online-tag">在线人数：{onlineCount}</span>
+      <span className="home-online-tag" aria-label={`在线人数 ${onlineCount}`}>
+        <UsersRound size={16} aria-hidden="true" />
+        <b>{onlineCount}</b>
+      </span>
       <div className="topbar-actions">
         <button
           className={`icon-button announcement-action ${announcementUnread ? "has-unread" : ""}`}

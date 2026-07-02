@@ -46,7 +46,8 @@
   }
 
   .message-board-modal textarea {
-    min-height: min(180px, 36dvh);
+    height: min(420px, 52dvh);
+    min-height: min(420px, 52dvh);
     resize: vertical;
   }
 

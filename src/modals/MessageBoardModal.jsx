@@ -41,6 +41,7 @@ export default function MessageBoardModal({ token, onSubmitted, onClose }) {
         <button className="close-button" type="button" onClick={onClose}><X size={20} /></button>
         <h2>留言板</h2>
         <textarea
+          className="message-board-input"
           maxLength={FEEDBACK_MAX_LENGTH}
           value={content}
           onChange={(event) => {

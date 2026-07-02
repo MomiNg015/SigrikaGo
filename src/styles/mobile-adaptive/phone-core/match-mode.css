@@ -29,15 +29,9 @@
   }
 
   .match-mode-count {
-    min-width: 72px !important;
+    min-width: 64px !important;
     justify-self: end !important;
     margin-left: auto !important;
-  }
-
-  .match-mode-count small {
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
   }
 
   .match-mode-modal .match-mode-options + .secondary-action {

@@ -41,6 +41,6 @@
   }
 
   .message-board-modal textarea {
-    min-height: min(160px, 36dvh);
+    min-height: min(420px, 52dvh);
   }
 }

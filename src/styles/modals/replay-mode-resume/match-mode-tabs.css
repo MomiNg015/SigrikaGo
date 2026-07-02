@@ -36,8 +36,7 @@
   line-height: 1.2;
 }
 
-.match-mode-copy small,
-.match-mode-count small {
+.match-mode-copy small {
   color: var(--muted-text, #68707a);
   line-height: 1.35;
 }
@@ -52,11 +51,13 @@
 }
 
 .match-mode-count {
-  display: grid;
-  justify-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   justify-self: end;
   margin-left: auto;
-  min-width: 64px;
+  min-width: 66px;
   padding: 8px 10px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.6);
@@ -81,11 +82,6 @@
     overflow-wrap: normal !important;
   }
 
-  .match-mode-count small {
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
-  }
 }
 
 .mode-tabs {

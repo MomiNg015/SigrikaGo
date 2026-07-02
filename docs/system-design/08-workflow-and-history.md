@@ -13,7 +13,7 @@
 
 ## Lobby Stats And Blacklist Match Blocking
 
-- The home user plaque receives live lobby stats from `lobby:stats` and shows `在线人数：[count]`; the main match button shows `匹配中人数：[count]` below its label.
+- The home header receives live lobby stats from `lobby:stats` and shows online presence as a transparent icon-plus-number tag; mode-specific matchmaking counts are shown inside the click-open match-mode picker as icon-plus-number chips.
 - The backend matchmaking wait state is now a queue instead of a single `waitingPlayer`. `match:join` checks both users' blacklist relationships before pairing, skips incompatible candidates, and keeps all skipped candidates waiting for later compatible players.
 - Direct duel requests also consult the target user's blacklist. If the target has blacklisted the requester, the target receives no incoming request; the requester receives the normal rejection event after a 3-second delay, matching an ordinary refusal without revealing blacklist state.
 - Socket disconnects use a session cleanup grace window. When the last socket for a user disconnects, the account is marked offline and room disconnect handling runs immediately, but the login session is cleared only after 30 minutes unless a new socket for the same session reconnects first. This prevents browser backgrounding, network sleep, and Socket.IO transient reconnects during a game from turning into silent authentication failures and frozen room UI.

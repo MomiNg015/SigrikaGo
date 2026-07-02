@@ -64,6 +64,11 @@
   --utility-tilt: 0.65deg;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid :is(.recruitment-entry:not(.has-alert), .watch-entry) {
+  --utility-paper: var(--bright-sheet-clean);
+  --utility-tilt: 0deg;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-icon {
   width: clamp(30px, 2.6vw, 36px) !important;
   height: clamp(30px, 2.6vw, 36px) !important;

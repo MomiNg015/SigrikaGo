@@ -15,7 +15,8 @@
 }
 
 .message-board-modal textarea {
-  min-height: 160px;
+  height: 480px;
+  min-height: 480px;
   resize: vertical;
 }
 

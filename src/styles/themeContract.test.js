@@ -522,6 +522,34 @@ describe("player theme CSS contract", () => {
     expect(qualityBaseEntry).not.toContain(".home-image-entry:hover");
   });
 
+  it("keeps the Bright School home online count transparent in final quality layers", () => {
+    const auditHomeCss = readFileSync(new URL("./themes/bright-school/quality-base/audit-home.css", import.meta.url), "utf8");
+    const refinementCss = readFileSync(
+      new URL("./themes/bright-school/quality-base/refinement-foundation.css", import.meta.url),
+      "utf8"
+    );
+    const onlineTagBlock = cssBlock(
+      auditHomeCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag"
+    );
+
+    expect(onlineTagBlock).toContain("background: transparent !important");
+    expect(onlineTagBlock).toContain("border: 0 !important");
+    expect(onlineTagBlock).toContain("box-shadow: none !important");
+    expect(refinementCss).not.toContain(".room-code-label,\n  .home-online-tag,");
+  });
+
+  it("keeps the Bright School generic touch target from shrinking message board textareas", () => {
+    const auditFoundationCss = readFileSync(
+      new URL("./themes/bright-school/quality-base/audit-foundation.css", import.meta.url),
+      "utf8"
+    );
+
+    expect(auditFoundationCss).toContain("textarea:not(.message-board-input)");
+    expect(auditFoundationCss).toContain("min-height: 44px !important");
+    expect(auditFoundationCss).not.toContain(".message-board-modal textarea {\n  height: 480px !important");
+  });
+
   it("rejects legacy Bright School purge and broad fallback CSS from the theme tree", () => {
     const themeCss = readCssWithImports(new URL("./themes/bright-school.css", import.meta.url));
 
