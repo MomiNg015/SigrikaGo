@@ -101,6 +101,25 @@ describe("HomeScreen", () => {
     expect(html).toContain("\u6253\u5f00\u516c\u544a");
   });
 
+  it("keeps the home header subtitle and online count scaled from the title", () => {
+    const terminalCss = readCssFixture("../styles/home-terminal.css");
+    const brightSchoolCss = readCssFixture("../styles/themes/bright-school.css");
+    const brightSchoolMobileCss = readCssFixture("../styles/themes/bright-school/mobile.css");
+    const finalMobileCss = readCssFixture("../styles/mobile-adaptive.css");
+    const expectedSubtitleScale = "--home-brand-subtitle-size: calc(var(--home-brand-title-size) * 2 / 3)";
+    const expectedOnlineSize = "font-size: var(--home-brand-subtitle-size)";
+
+    for (const css of [terminalCss, brightSchoolCss, brightSchoolMobileCss, finalMobileCss]) {
+      expect(css).toContain("--home-brand-title-size");
+      expect(css).toContain(expectedSubtitleScale);
+      expect(css).toContain(expectedOnlineSize);
+      expect(css).toContain("align-self: flex-end");
+      expect(css).toContain(".home-online-tag svg");
+      expect(css).toContain("width: 1em");
+      expect(css).toContain("height: 1em");
+    }
+  });
+
   it("uses a compact WebP match image instead of the source PNG", () => {
     const webpUrl = new URL("../../public/assets/home/fantasy-match-entry.webp", import.meta.url);
     const pngUrl = new URL("../../public/assets/home/fantasy-match-entry.png", import.meta.url);
@@ -386,6 +405,7 @@ describe("HomeScreen", () => {
     expect(brightMobileCss).toContain("padding: clamp(34px, 9.8vw, 46px) clamp(32px, 9vw, 44px) clamp(30px, 8.6vw, 42px) !important");
     expect(brightMobileCss).not.toContain("main.home-screen.home-terminal-screen > section.home-orientation-guard");
     expect(brightMobileCss).toContain('"player"\n      "match"\n      "manual"\n      "utility" !important');
+    expect(brightMobileCss).toContain('grid-template-areas: "brand online actions" !important');
     expect(brightMobileCss).toContain("grid-template-rows: minmax(188px, clamp(210px, 58vw, 270px)) !important");
     expect(brightMobileCss).toContain("grid-template-columns: 22px max-content !important");
     expect(brightMobileCss).toContain("word-break: keep-all !important");
@@ -401,7 +421,8 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain(".home-mobile-menu-panel button");
     expect(finalMobileCss).toContain("white-space: nowrap !important");
     expect(finalMobileCss).toContain(".home-brand-title");
-    expect(finalMobileCss).toContain("font-size: clamp(22px, 6.7vw, 32px) !important");
+    expect(finalMobileCss).toContain("--home-brand-title-size: clamp(22px, 6.7vw, 32px) !important");
+    expect(finalMobileCss).toContain("font-size: var(--home-brand-title-size) !important");
     expect(finalMobileCss).toContain("text-overflow: clip !important");
     expect(finalMobileCss).toContain("@media (min-width: 1181px) and (min-height: 960px)");
     expect(finalMobileCss).toContain(".home-screen.home-terminal-screen + .home-footer-strip");

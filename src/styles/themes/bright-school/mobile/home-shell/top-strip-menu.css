@@ -1,15 +1,15 @@
 /* Bright School portrait mobile home top strip and menu. */
 @media (max-width: 760px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip {
+    --home-brand-title-size: clamp(26px, 9vw, 38px);
+    --home-brand-subtitle-size: calc(var(--home-brand-title-size) * 2 / 3);
     width: 100% !important;
     min-width: 0 !important;
     display: grid !important;
-    grid-template-areas:
-      "brand actions"
-      "online actions" !important;
-    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-areas: "brand online actions" !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
     gap: 8px !important;
-    align-items: center !important;
+    align-items: end !important;
     padding: 10px 10px !important;
     border-radius: 18px !important;
     box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.64) !important;
@@ -22,7 +22,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title {
     min-width: 0 !important;
-    font-size: clamp(26px, 9vw, 38px) !important;
+    font-size: var(--home-brand-title-size) !important;
     line-height: 1 !important;
     white-space: normal !important;
     overflow: visible !important;
@@ -31,7 +31,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-subtitle {
     min-width: 0 !important;
-    font-size: 12px !important;
+    font-size: var(--home-brand-subtitle-size) !important;
     line-height: 1.25 !important;
     white-space: normal !important;
     overflow: visible !important;
@@ -39,11 +39,24 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag {
+    align-items: flex-end !important;
+    align-self: flex-end !important;
     justify-self: start !important;
     min-height: 32px !important;
     padding: 6px 4px !important;
-    font-size: 12px !important;
+    font-size: var(--home-brand-subtitle-size) !important;
+    line-height: 1 !important;
     white-space: nowrap !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag svg {
+    width: 1em;
+    height: 1em;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag b {
+    font-size: var(--home-brand-subtitle-size);
+    line-height: 1;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip .topbar-actions {

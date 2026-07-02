@@ -1,7 +1,12 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip {
+  --home-brand-title-size: clamp(28px, 3.4vw, 42px);
+  --home-brand-subtitle-size: calc(var(--home-brand-title-size) * 2 / 3);
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-title {
   color: var(--bright-ink) !important;
   font-family: "Microsoft YaHei UI", "Microsoft YaHei", sans-serif !important;
-  font-size: clamp(28px, 3.4vw, 42px) !important;
+  font-size: var(--home-brand-title-size) !important;
   font-weight: 900 !important;
   letter-spacing: 0 !important;
   line-height: 1 !important;
@@ -9,8 +14,9 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-brand-subtitle {
   color: rgba(61, 43, 37, 0.8) !important;
-  font-size: 15px !important;
+  font-size: var(--home-brand-subtitle-size) !important;
   font-weight: 800 !important;
+  line-height: 1 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-lobby-status,
@@ -27,13 +33,27 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag {
+  align-items: flex-end;
+  align-self: flex-end;
   gap: 6px;
   padding: 6px 8px !important;
   background: transparent !important;
   color: var(--bright-ink) !important;
   border: 0 !important;
   box-shadow: none !important;
+  font-size: var(--home-brand-subtitle-size) !important;
   font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag svg {
+  width: 1em;
+  height: 1em;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-online-tag b {
+  font-size: var(--home-brand-subtitle-size);
+  line-height: 1;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque .plaque-stats {
