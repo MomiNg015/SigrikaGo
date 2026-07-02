@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/index.md","reason":"Frontend spec index and pre-development checklist for app-shell architecture work."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Component composition and no-visual-migration constraints for app route and overlay boundaries."}
+{"file":".trellis/spec/frontend/state-management.md","reason":"App-shell state contracts for overlay, match, room, startup, and socket-sensitive wiring."}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Frontend quality and verification requirements for app-shell and handoff gates."}
