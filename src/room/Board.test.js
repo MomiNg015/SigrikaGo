@@ -944,6 +944,7 @@ describe("areBoardPropsEqual", () => {
     expect(rowSlashBlock).toContain("background:");
     expect(rowSlashBlock).toContain("radial-gradient(ellipse at 16% 34%");
     expect(rowSlashBlock).toContain("100% 10px no-repeat");
+    expect(rowSlashBlock).toContain("max-width: none !important");
     expect(rowSlashBlock).not.toContain("clip-path:");
     expect(rowSlashBlock).toContain("drop-shadow(0 0 11px rgba(221, 255, 248, 0.64))");
     expect(rowSlashBlock).not.toContain("background-color: var(--bright-sheet)");

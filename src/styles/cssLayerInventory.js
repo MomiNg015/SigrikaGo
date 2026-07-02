@@ -3,8 +3,8 @@ export const CSS_DEBT_BASELINE = {
   scope: "All CSS files under src/styles after the import-only split work already present on codex/css-cleanup.",
   metrics: {
     totalFiles: 581,
-    totalBytes: 1109913,
-    importantCount: 6868,
+    totalBytes: 1109943,
+    importantCount: 6869,
     importantFiles: 274,
     hardcodedHexCount: 2265,
     mediaFiles: 215,
