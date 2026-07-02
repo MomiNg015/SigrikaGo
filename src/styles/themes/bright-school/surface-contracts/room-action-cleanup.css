@@ -1,7 +1,3 @@
-/* --------------------------------------------------------------------------
-   6. 对局界面技能卡、倒计时进度条、斜体全面修复 (对应 image_e78104.png)
-   -------------------------------------------------------------------------- */
-/* 挽救消失的倒计时进度条：改造成精致的手账风格单色滑条 */
 .app-shell.player-theme-enabled.theme-bright-school .timer-track {
   display: block !important;
   height: 10px !important;
@@ -15,16 +11,14 @@
 .app-shell.player-theme-enabled.theme-bright-school .timer-track span {
   display: block !important;
   height: 100% !important;
-  background: #ff9ebb !important; /* 进度充满时呈现可爱的校园粉 */
+  background: #ff9ebb !important;
   box-shadow: none !important;
 }
-/* 清除对弈框顶部的 “[HOLO BREAKWATER...]” 等电磁科技感浮字 */
 .app-shell.player-theme-enabled.theme-bright-school .board-stage::before,
 .app-shell.player-theme-enabled.theme-bright-school .player-info::before {
   content: none !important;
   display: none !important;
 }
-/* 剥离角色血条/气条面板上技能名（星辉符文等）的渐变电磁色与棱角 */
 .app-shell.player-theme-enabled.theme-bright-school .skill-chip,
 .app-shell.player-theme-enabled.theme-bright-school .action-bar .skill-action,
 .app-shell.player-theme-enabled.theme-bright-school .action-bar .skill-action.active {
@@ -37,9 +31,8 @@
   animation: none !important;
 }
 .app-shell.player-theme-enabled.theme-bright-school .skill-chip::after {
-  display: none !important; /* 拔掉流光特效动画 */
+  display: none !important;
 }
-/* 对弈底部大操作栏（弃一手、认输等）全面扶正，干掉倾斜变形 */
 .app-shell.player-theme-enabled.theme-bright-school .action-bar,
 .app-shell.player-theme-enabled.theme-bright-school .action-bar button,
 .app-shell.player-theme-enabled.theme-bright-school .decision-actions button {
@@ -48,5 +41,5 @@
   border-radius: 12px !important;
 }
 .app-shell.player-theme-enabled.theme-bright-school .action-bar button::before {
-  display: none !important; /* 移除高光漂移伪元素 */
+  display: none !important;
 }

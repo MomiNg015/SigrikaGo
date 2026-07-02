@@ -1,26 +1,19 @@
-/* --------------------------------------------------------------------------
-   3. 部员手册数据字号、棱角、中划绿线清洗 (对应 image_e778df.png)
-   -------------------------------------------------------------------------- */
-/* 缩小四大块面板里大得吓人的数字 */
 .app-shell.player-theme-enabled.theme-bright-school .top-stats-bar .stat strong,
 .app-shell.player-theme-enabled.theme-bright-school .stat strong,
 .app-shell.player-theme-enabled.theme-bright-school .profile-resume-stats strong {
   font-size: 20px !important;
   line-height: 1.2 !important;
 }
-/* 彻底移除顶部、中间和部件下方残留的荧光绿/青色发光分割线 */
 .app-shell.player-theme-enabled.theme-bright-school .leaderboard-header,
 .app-shell.player-theme-enabled.theme-bright-school .warehouse-header,
 .app-shell.player-theme-enabled.theme-bright-school .house-header,
 .app-shell.player-theme-enabled.theme-bright-school .friends-modal-toolbar,
 .app-shell.player-theme-enabled.theme-bright-school .watch-list-header {
-  border-bottom: 2px dashed #4a3736 !important; /* 变成手账虚线 */
+  border-bottom: 2px dashed #4a3736 !important;
 }
-/* 清除角色列表右侧意义不明的分割绿线 */
 .app-shell.player-theme-enabled.theme-bright-school .character-grid-container {
   border-right: none !important;
 }
-/* 清洗底部“恢复初始装饰”等标签按钮的黑灰色棱角 */
 .app-shell.player-theme-enabled.theme-bright-school .decorations-section button,
 .app-shell.player-theme-enabled.theme-bright-school .decorations-section .owned-decoration-chip,
 .app-shell.player-theme-enabled.theme-bright-school .decorations-section {
