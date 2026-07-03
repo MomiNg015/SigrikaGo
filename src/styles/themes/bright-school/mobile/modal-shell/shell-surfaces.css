@@ -75,6 +75,7 @@
     display: grid !important;
     grid-template-rows: minmax(0, 4fr) minmax(96px, 5fr) auto !important;
     gap: 10px !important;
+    padding: 16px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal.long-text-compress-portrait {

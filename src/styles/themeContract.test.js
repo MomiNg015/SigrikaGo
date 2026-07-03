@@ -333,6 +333,46 @@ describe("player theme CSS contract", () => {
     expect(mobileEntry).not.toContain("@keyframes bright-mobile-sheet-in");
   });
 
+  it("hides Bright School portrait window scrollbars without disabling internal scrolling", () => {
+    const brightSchoolCss = readThemeCssTree("bright-school").replace(/\r\n/g, "\n");
+    const desktopScrollStart = brightSchoolCss.indexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(\n  .shop-grid,\n  .warehouse-grid"
+    );
+    const desktopScrollEnd = brightSchoolCss.indexOf(")::-webkit-scrollbar", desktopScrollStart);
+    const desktopScrollRegionBlock = brightSchoolCss.slice(desktopScrollStart, desktopScrollEnd);
+    const desktopHiddenIndex = brightSchoolCss.indexOf("scrollbar-width: none !important");
+    const desktopHiddenStart = brightSchoolCss.lastIndexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(",
+      desktopHiddenIndex
+    );
+    const desktopHiddenEnd = brightSchoolCss.indexOf("}", desktopHiddenIndex);
+    const desktopHiddenBlock = brightSchoolCss.slice(desktopHiddenStart, desktopHiddenEnd + 1);
+    const scrollRegionStart = brightSchoolCss.indexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(\n    .shop-layout"
+    );
+    const scrollRegionEnd = brightSchoolCss.indexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .close-button",
+      scrollRegionStart
+    );
+    const scrollRegionBlock = brightSchoolCss.slice(scrollRegionStart, scrollRegionEnd);
+
+    expect(desktopScrollStart).toBeGreaterThanOrEqual(0);
+    expect(desktopScrollRegionBlock).toContain("overscroll-behavior: contain !important");
+    expect(desktopHiddenBlock).toContain(".shop-grid");
+    expect(desktopHiddenBlock).toContain(".leaderboard-list");
+    expect(desktopHiddenBlock).toContain("scrollbar-width: none !important");
+    expect(scrollRegionStart).toBeGreaterThanOrEqual(0);
+    expect(scrollRegionBlock).toContain("overflow-y: auto !important");
+    expect(scrollRegionBlock).toContain("overscroll-behavior: contain !important");
+    expect(scrollRegionBlock).toContain("-webkit-overflow-scrolling: touch !important");
+    expect(scrollRegionBlock).toContain("scrollbar-width: none !important");
+    expect(brightSchoolCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(\n    .shop-layout");
+    expect(brightSchoolCss).toContain(")::-webkit-scrollbar");
+    expect(brightSchoolCss).toContain("display: none !important");
+    expect(brightSchoolCss).toContain("width: 0 !important");
+    expect(brightSchoolCss).toContain("height: 0 !important");
+  });
+
   it("keeps Bright School mobile home shell as an import-only portrait home entry", () => {
     const mobileHomeShellEntry = readFileSync(
       new URL("./themes/bright-school/mobile/home-shell.css", import.meta.url),
@@ -633,9 +673,14 @@ describe("player theme CSS contract", () => {
     const compressionStoryGridIndex = brightSchoolMobileCss.indexOf(
       ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal.long-text-compress-portrait {"
     );
+    const defaultStoryGridBlock = cssBlock(
+      brightSchoolMobileCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .onboarding-story-modal"
+    );
 
     expect(defaultStoryGridIndex).toBeGreaterThanOrEqual(0);
     expect(compressionStoryGridIndex).toBeGreaterThan(defaultStoryGridIndex);
+    expect(defaultStoryGridBlock).toContain("padding: 16px !important");
     expect(brightSchoolMobileCss).toContain(
       "grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) auto !important;"
     );

@@ -80,9 +80,16 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-row > span:nth-child(1) {
     grid-area: time !important;
+    justify-self: start !important;
+    text-align: left !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-row .replay-time-cell {
+    justify-content: flex-start !important;
+    text-align: left !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .nested-modal.replay-dialog .replay-table-row > .replay-player-cell:nth-child(2) {

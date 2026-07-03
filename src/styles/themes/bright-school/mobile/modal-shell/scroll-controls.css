@@ -26,6 +26,33 @@
     overflow-y: auto !important;
     overscroll-behavior: contain !important;
     -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+    .shop-layout,
+    .shop-content,
+    .house-layout,
+    .warehouse-grid,
+    .warehouse-empty,
+    .leaderboard-table,
+    .leaderboard-list,
+    .friends-list,
+    .settings-body,
+    .settings-panel,
+    .message-board-body,
+    .message-list,
+    .watch-room-table,
+    .profile-replay-list-scroll,
+    .character-record-list,
+    .character-grid-container,
+    .character-detail-body,
+    .about-panel
+  )::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .close-button {

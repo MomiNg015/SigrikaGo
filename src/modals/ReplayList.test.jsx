@@ -96,6 +96,10 @@ describe("ReplayList", () => {
   it("keeps desktop replay timestamps fully visible", () => {
     const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const replayTableCss = css.slice(css.indexOf(".replay-table-heading,"));
+    const desktopTimeCellBlock = replayTableCss.slice(
+      replayTableCss.indexOf(".replay-time-cell"),
+      replayTableCss.indexOf(".replay-time-cell > span:last-child")
+    );
     const desktopTimeCellRule = replayTableCss.slice(
       replayTableCss.indexOf(".replay-time-cell > span:last-child"),
       replayTableCss.indexOf(".replay-friendly-icon")
@@ -107,6 +111,7 @@ describe("ReplayList", () => {
     expect(replayTableCss).toContain(
       "grid-template-columns: 132px minmax(92px, 1fr) minmax(92px, 1fr) minmax(86px, 0.8fr) 52px;"
     );
+    expect(desktopTimeCellBlock).toContain("justify-content: flex-start;");
     expect(desktopTimeCellRule).toContain("overflow: visible;");
     expect(desktopTimeCellRule).toContain("text-overflow: clip;");
     expect(desktopTimeCellRule).not.toContain("text-overflow: ellipsis;");
@@ -185,6 +190,10 @@ describe("ReplayList", () => {
     expect(finalMobileCss).toContain('"time moves result"');
     expect(finalMobileCss).toContain('"black black white" !important');
     expect(finalMobileCss).toContain("grid-template-rows: auto minmax(26px, auto) !important");
+    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row > span:nth-child(1)");
+    expect(finalMobileCss).toContain("justify-self: start !important");
+    expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-table-row .replay-time-cell");
+    expect(finalMobileCss).toContain("justify-content: flex-start !important");
     expect(finalMobileCss).toContain("justify-self: center !important");
     expect(finalMobileCss).toContain(".nested-modal.replay-dialog .replay-player-cell img");
     expect(finalMobileCss).toContain("height: 22px !important");

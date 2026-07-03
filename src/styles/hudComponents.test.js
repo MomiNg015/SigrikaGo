@@ -581,7 +581,9 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain("background: var(--bright-pink) !important");
     expect(themesCss).toContain("color: var(--bright-ink) !important");
     expect(themesCss).toContain("background-image: none !important");
-    expect(themesCss).toContain("scrollbar-color: rgba(213, 140, 171, 0.9) transparent !important");
+    expect(themesCss).toContain("scrollbar-width: none !important");
+    expect(themesCss).toContain("::-webkit-scrollbar");
+    expect(themesCss).toContain("display: none !important");
     expect(themesCss).toContain("filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.16)) !important");
     expect(imageEntryButtonsLayer).not.toContain("drop-shadow(0 10px");
     expect(imageEntryButtonsLayer).not.toContain("drop-shadow(0 14px");

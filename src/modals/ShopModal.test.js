@@ -187,7 +187,7 @@ describe("ShopModal helpers", () => {
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .primary-action:disabled");
     expect(themesCss).toContain("background: #d8d1cb !important;");
     expect(mobileCss).toContain(".shop-item .primary-action:disabled");
-    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .primary-action:disabled");
+    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action:disabled");
   });
 
   it("hides purchase-limit text and centers prices for character and decoration cards", () => {
@@ -317,12 +317,12 @@ describe("ShopModal helpers", () => {
   it("keeps Bright School mobile decoration shop cards self-contained", () => {
     const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
-    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid");
+    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid");
     expect(css).toContain("grid-auto-rows: minmax(216px, auto) !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item");
     expect(css).toContain("display: flex !important");
     expect(css).toContain("overflow: hidden !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .primary-action");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action");
     expect(css).toContain("margin-top: auto !important");
     expect(css).toContain("align-self: stretch !important");
   });
@@ -330,26 +330,42 @@ describe("ShopModal helpers", () => {
   it("keeps Bright School mobile character shop cards self-contained", () => {
     const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
-    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid");
+    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid");
     expect(css).toContain("grid-auto-rows: minmax(216px, auto) !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item");
     expect(css).toContain("flex-direction: column !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item).shop-item > img");
-    expect(css).toContain(".shop-content.shop-category-character .shop-category-character.shop-item > img");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-music).shop-item > img");
+    expect(css).toContain("min-height: 52px !important");
     expect(css).toContain("height: 52px !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .primary-action");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action");
     expect(css).toContain("margin-top: auto !important");
   });
 
   it("keeps Bright School mobile item shop cards aligned with decoration cards", () => {
     const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
-    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration) .shop-grid");
-    expect(css).toContain(".shop-category-item.shop-item > svg");
-    expect(css).toContain(".shop-content.shop-category-item .shop-category-item.shop-item > svg");
+    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid");
+    expect(css).toContain(":is(.shop-category-item, .shop-category-music).shop-item > svg");
     expect(css).toContain("max-height: 52px !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration).shop-item .shop-card-meta");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta");
     expect(css).toContain("min-height: 30px !important");
+  });
+
+  it("keeps Bright School mobile music shop cards self-contained", () => {
+    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(css).toContain(".shop-content.shop-category-music .shop-grid");
+    expect(css).toContain("grid-auto-rows: minmax(224px, auto) !important");
+    expect(css).toContain(".shop-category-music.shop-item");
+    expect(css).toContain("display: flex !important");
+    expect(css).toContain("min-height: 224px !important");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-music).shop-item > img");
+    expect(css).toContain("flex: 0 0 52px !important");
+    expect(css).toContain(".shop-category-music.shop-item .shop-card-meta");
+    expect(css).toContain("display: grid !important");
+    expect(css).toContain("grid-template-columns: minmax(0, 1fr) auto !important");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action");
+    expect(css).toContain("margin-top: auto !important");
   });
 
   it("keeps the Bright School mobile shop category tablist chrome-free", () => {

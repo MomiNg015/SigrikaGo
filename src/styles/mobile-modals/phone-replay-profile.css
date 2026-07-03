@@ -40,8 +40,15 @@
 
   .replay-table-row > span:nth-child(1) {
     grid-area: time;
+    justify-self: start;
+    text-align: left;
     font-size: 12px;
     opacity: 0.88;
+  }
+
+  .replay-table-row .replay-time-cell {
+    justify-content: flex-start;
+    text-align: left;
   }
 
   .replay-table-row > .replay-player-cell:nth-child(2) {

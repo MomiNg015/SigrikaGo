@@ -111,52 +111,34 @@
   .shop-grid,
   .warehouse-grid,
   .leaderboard-table,
+  .leaderboard-list,
   .friends-list,
   .chat-log,
   .message-list,
-  .character-grid-container
+  .watch-room-table,
+  .profile-replay-list-scroll,
+  .character-record-list,
+  .character-grid-container,
+  .room-member-list
 ) {
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(213, 140, 171, 0.9) transparent !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
   .shop-grid,
   .warehouse-grid,
   .leaderboard-table,
+  .leaderboard-list,
   .friends-list,
   .chat-log,
   .message-list,
+  .watch-room-table,
+  .profile-replay-list-scroll,
+  .character-record-list,
   .character-grid-container
 )::-webkit-scrollbar {
-  width: 7px !important;
-  height: 7px !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
-  .shop-grid,
-  .warehouse-grid,
-  .leaderboard-table,
-  .friends-list,
-  .chat-log,
-  .message-list,
-  .character-grid-container
-)::-webkit-scrollbar-track {
-  background: transparent !important;
-  border: 0 !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
-  .shop-grid,
-  .warehouse-grid,
-  .leaderboard-table,
-  .friends-list,
-  .chat-log,
-  .message-list,
-  .character-grid-container
-)::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--bright-pink), var(--bright-blue)) !important;
-  border: 2px solid var(--bright-sheet-clean) !important;
-  border-radius: 999px !important;
-  box-shadow: 0 0 0 1px rgba(61, 43, 37, 0.42) !important;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }

@@ -62,7 +62,9 @@
   display: inline-flex;
   min-width: max-content;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  justify-self: start;
+  text-align: left;
   gap: 5px;
 }
 

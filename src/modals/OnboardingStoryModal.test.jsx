@@ -76,8 +76,10 @@ describe("OnboardingStoryModal", () => {
 
   it("keeps the requested story region ratio and responsive option layout contracts", () => {
     const backdropBlock = onboardingStoryCss.match(/\.onboarding-story-backdrop\s*\{[^}]+\}/)?.[0] ?? "";
+    const modalBlock = cssBlock(onboardingStoryCss, ".onboarding-story-modal");
 
     expect(backdropBlock).toContain("z-index: 100100 !important");
+    expect(modalBlock).toContain("padding: clamp(16px, 2.4vw, 24px)");
     expect(onboardingStoryCss).toContain("grid-template-rows: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 1fr)");
     expect(onboardingStoryCss).toContain(".onboarding-story-modal.long-text-compress-portrait");
     expect(onboardingStoryCss).toContain("grid-template-rows: minmax(0, 4fr) minmax(50%, max-content) minmax(56px, 1fr)");
@@ -90,6 +92,7 @@ describe("OnboardingStoryModal", () => {
     expect(onboardingStoryCss).toContain("background: transparent;");
     expect(onboardingStoryCss).toContain("box-shadow: none;");
     expect(onboardingStoryCss).toContain("padding: 12px;");
+    expect(onboardingStoryCss).toContain("padding: 16px;");
     expect(onboardingStoryCss).not.toContain("padding: 12px 56px 12px 12px");
     expect(onboardingStoryCss).toContain(".onboarding-story-skip-backdrop");
     expect(onboardingStoryCss).toContain("position: absolute !important;");

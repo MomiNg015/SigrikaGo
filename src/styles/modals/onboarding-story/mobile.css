@@ -4,7 +4,7 @@
     height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     grid-template-rows: minmax(0, 4fr) minmax(96px, 5fr) auto;
     gap: 10px;
-    padding: 14px;
+    padding: 16px;
   }
 
   .onboarding-story-portrait {
