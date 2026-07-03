@@ -114,7 +114,7 @@
   grid-area: support;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(240px, 0.72fr) minmax(420px, 1.36fr) minmax(260px, 0.8fr);
+  grid-template-columns: minmax(240px, 0.72fr) minmax(320px, 1.28fr);
   gap: 12px;
   overflow: hidden;
 }

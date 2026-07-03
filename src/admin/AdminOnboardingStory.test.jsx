@@ -7,6 +7,14 @@ import { buildFlow, scriptForCurrentPreview } from "./AdminOnboardingStory.jsx";
 const adminCss = readCssWithImports(new URL("../styles/admin.css", import.meta.url));
 const adminSource = readFileSync(new URL("./AdminOnboardingStory.jsx", import.meta.url), "utf8");
 
+function cssBlock(css, selector) {
+  const start = css.indexOf(`${selector} {`);
+  expect(start).toBeGreaterThan(-1);
+  const end = css.indexOf("\n}", start);
+  expect(end).toBeGreaterThan(start);
+  return css.slice(start, end);
+}
+
 describe("AdminOnboardingStory", () => {
   it("uses the isolated story workbench namespace instead of the old onboarding form namespace", () => {
     expect(adminSource).toContain('className="admin-story-workbench"');
@@ -58,6 +66,42 @@ describe("AdminOnboardingStory", () => {
     expect(adminCss).toContain(".admin-story-workbench-end-card");
     expect(adminCss).toContain(".admin-story-workbench-issues");
     expect(adminCss).toContain(".admin-story-workbench-preview-stage");
+  });
+
+  it("opens node settings as a scroll-attached floating window from graph nodes", () => {
+    const workbenchBlock = cssBlock(adminCss, ".admin-story-workbench");
+    const nodeSettingsBlock = cssBlock(adminCss, ".admin-story-workbench-node-settings-window");
+    const nodeSettingsHeaderBlock = cssBlock(adminCss, ".admin-story-workbench-node-settings-window .admin-story-workbench-step-editor > header");
+
+    expect(adminSource).toContain("nodeSettingsWindow");
+    expect(adminSource).toContain("openNodeSettings");
+    expect(adminSource).toContain("positionNodeSettingsWindow");
+    expect(adminSource).toContain("workbenchRef");
+    expect(adminSource).toContain('ref={workbenchRef}');
+    expect(adminSource).toContain("event?.clientX");
+    expect(adminSource).toContain("workbenchRef.current?.getBoundingClientRect()");
+    expect(adminSource).toContain("onOpenSettings");
+    expect(adminSource).toContain("aria-label=\"节点设置\"");
+    expect(adminSource).toContain("节点设置");
+    expect(adminSource).toContain("onInsertStep");
+    expect(adminSource).toContain("<Plus size={16} />插入步骤");
+    expect(adminSource).toContain("onClose={closeNodeSettings}");
+    expect(adminCss).toContain(".admin-story-workbench-node-settings-window");
+    expect(workbenchBlock).toContain("position: relative");
+    expect(workbenchBlock).toContain("padding-bottom: max(24px, var(--node-settings-scroll-reserve, 24px))");
+    expect(nodeSettingsBlock).toContain("position: absolute");
+    expect(nodeSettingsBlock).not.toContain("position: fixed");
+    expect(nodeSettingsBlock).toContain("max-height: min(760px, calc(100dvh - 24px))");
+    expect(nodeSettingsBlock).toContain("overflow: auto");
+    expect(nodeSettingsHeaderBlock).toContain("position: sticky");
+    expect(nodeSettingsHeaderBlock).toContain("top: 0");
+    expect(nodeSettingsHeaderBlock).toContain("z-index: 2");
+    expect(nodeSettingsHeaderBlock).toContain("background: var(--story-wb-surface)");
+    expect(nodeSettingsHeaderBlock).toContain("border-bottom: 1px solid var(--story-wb-border)");
+    expect(adminCss).toContain("@media (max-width: 760px)");
+    expect(adminCss).toContain("inset: auto 10px 10px 10px");
+    expect(adminCss).toContain("margin: -12px -12px 12px");
+    expect(adminCss).toContain("position: fixed");
   });
 
   it("keeps option targets and deep branch continuations inside swimlanes", () => {

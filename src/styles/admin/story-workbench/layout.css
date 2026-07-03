@@ -13,10 +13,11 @@
   --story-wb-warning: #a86f18;
   --story-wb-shadow: 0 10px 28px rgba(31, 43, 77, 0.08);
   --story-wb-radius: 8px;
+  position: relative;
   min-height: calc(100dvh - 112px);
   display: grid;
   gap: 16px;
-  padding-bottom: 24px;
+  padding-bottom: max(24px, var(--node-settings-scroll-reserve, 24px));
   color: var(--story-wb-text);
 }
 

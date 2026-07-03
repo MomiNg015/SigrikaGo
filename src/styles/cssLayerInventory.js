@@ -1,13 +1,13 @@
 export const CSS_DEBT_BASELINE = {
-  date: "2026-07-02",
-  scope: "All CSS files under src/styles after the import-only split work already present on codex/css-cleanup.",
+  date: "2026-07-03",
+  scope: "All CSS files under src/styles after the import-only split work and the admin story node settings window CSS.",
   metrics: {
     totalFiles: 582,
-    totalBytes: 1111029,
-    importantCount: 6869,
+    totalBytes: 1113736,
+    importantCount: 6867,
     importantFiles: 274,
-    hardcodedHexCount: 2265,
-    mediaFiles: 215,
+    hardcodedHexCount: 2262,
+    mediaFiles: 216,
     reducedMotionFiles: 23,
     highZIndexFiles: 6
   },

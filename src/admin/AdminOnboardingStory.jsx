@@ -187,6 +187,8 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
   const [previewStoryStartId, setPreviewStoryStartId] = useState("");
   const [feedback, setFeedback] = useState("");
   const [highlightedNodeId, setHighlightedNodeId] = useState("");
+  const [nodeSettingsWindow, setNodeSettingsWindow] = useState({ open: false, x: 24, y: 96 });
+  const workbenchRef = useRef(null);
   const selectedNodeRef = useRef("");
   const flowNodeRefs = useRef(new Map());
   const characterCatalog = useMemo(() => storyPortraitCatalog(characters), [characters]);
@@ -218,12 +220,26 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
   useEffect(() => {
     if (!script.draft.nodes.length) {
       setSelectedNodeId("");
+      closeNodeSettings();
       return;
     }
     if (!script.draft.nodes.some((node) => node.id === selectedNodeRef.current)) {
       setSelectedNodeId(script.draft.startNodeId || script.draft.nodes[0].id);
     }
   }, [script.draft.nodes, script.draft.startNodeId]);
+
+  useEffect(() => {
+    if (!nodeSettingsWindow.open) return undefined;
+    function onKeyDown(event) {
+      if (event.key === "Escape") closeNodeSettings();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [nodeSettingsWindow.open]);
+
+  useEffect(() => {
+    if (nodeSettingsWindow.open && !selectedNode) closeNodeSettings();
+  }, [nodeSettingsWindow.open, selectedNode]);
 
   useEffect(() => {
     function beforeUnload(event) {
@@ -262,6 +278,7 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
     setBoardEditorOpen(false);
     setNodeBoardEditorId("");
     setPointPicker(null);
+    closeNodeSettings();
     setFieldError("");
   }
 
@@ -392,6 +409,33 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
     patchDraft({ initialBoard: { ...current, ...patch } });
   }
 
+  function positionNodeSettingsWindow(event) {
+    const margin = 12;
+    const workbenchRect = workbenchRef.current?.getBoundingClientRect();
+    const pointerX = typeof event?.clientX === "number" ? event.clientX : (workbenchRect?.left ?? 0) + 24;
+    const pointerY = typeof event?.clientY === "number" ? event.clientY : (workbenchRect?.top ?? 0) + 96;
+    const relativeX = workbenchRect ? pointerX - workbenchRect.left : pointerX;
+    const relativeY = workbenchRect ? pointerY - workbenchRect.top : pointerY;
+    if (typeof window === "undefined") return { x: relativeX + margin, y: Math.max(margin, relativeY + margin) };
+    const viewportWidth = window.innerWidth || 1024;
+    const workbenchWidth = workbenchRect?.width ?? viewportWidth;
+    const windowWidth = Math.min(560, Math.max(320, workbenchWidth - margin * 2));
+    return {
+      x: clamp(relativeX + margin, margin, Math.max(margin, workbenchWidth - windowWidth - margin)),
+      y: Math.max(margin, relativeY + margin)
+    };
+  }
+
+  function openNodeSettings(nodeId, event) {
+    if (!nodeId) return;
+    revealNode(nodeId);
+    setNodeSettingsWindow({ open: true, ...positionNodeSettingsWindow(event) });
+  }
+
+  function closeNodeSettings() {
+    setNodeSettingsWindow((current) => ({ ...current, open: false }));
+  }
+
   function addNodeAfter(type = TUTORIAL_NODE_TYPES.story) {
     const currentId = selectedNode?.id || script.draft.startNodeId || script.draft.nodes.at(-1)?.id || "";
     const nextId = uniqueNodeId(script.draft.nodes, type);
@@ -498,7 +542,11 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
   }
 
   return (
-    <section className="admin-story-workbench">
+    <section
+      className="admin-story-workbench"
+      ref={workbenchRef}
+      style={nodeSettingsWindow.open ? { "--node-settings-scroll-reserve": "min(760px, calc(100dvh - 24px))" } : undefined}
+    >
       <AdminSectionHeader title={TEXT.title} meta={TEXT.meta} actionLabel="添加步骤" onAction={() => addNodeAfter()}>
         <button className="admin-story-workbench-button secondary" type="button" onClick={() => setCreateOpen((open) => !open)}>
           <FilePlus2 size={16} />新建脚本
@@ -605,28 +653,13 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
                 highlightedNodeId={highlightedNodeId}
                 issues={issues}
                 onSelect={revealNode}
+                onOpenSettings={openNodeSettings}
                 registerNodeRef={registerFlowNode}
               />
             </section>
 
             <div className="admin-story-workbench-support">
               <IssuePanel issues={issues} flow={flow} nodes={script.draft.nodes} onSelect={(nodeId) => revealNode(nodeId)} />
-              <StepEditor
-                node={selectedNode}
-                nodes={script.draft.nodes}
-                portraitOptions={portraitOptions}
-                skillCharacters={skillCharacters}
-                onPatch={(patch) => selectedNode && patchNode(selectedNode.id, patch)}
-                onPatchOption={(optionIndex, patch) => selectedNode && patchOption(selectedNode.id, optionIndex, patch)}
-                onAddOption={() => selectedNode && patchNode(selectedNode.id, { options: [...(selectedNode.options ?? []), { label: "", nextNodeId: "" }] })}
-                onRemoveOption={(optionIndex) => selectedNode && patchNode(selectedNode.id, { options: selectedNode.options.filter((_, index) => index !== optionIndex) })}
-                onAddBranch={addBranchStep}
-                onRemove={() => selectedNode && removeNode(selectedNode.id)}
-                onPickPoint={(field) => selectedNode && setPointPicker({ nodeId: selectedNode.id, field })}
-                onEditBoardSetup={() => selectedNode && setNodeBoardEditorId(selectedNode.id)}
-                onHelp={() => setHelpOpen(true)}
-              />
-
               <aside className="admin-story-workbench-preview">
                 <header>
                   <div>
@@ -656,6 +689,36 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
           </div>
         </main>
       </div>
+
+      {nodeSettingsWindow.open && selectedNode && (
+        <aside
+          className="admin-story-workbench-node-settings-window"
+          role="dialog"
+          aria-label="节点设置"
+          style={{
+            "--node-settings-x": `${nodeSettingsWindow.x}px`,
+            "--node-settings-y": `${nodeSettingsWindow.y}px`
+          }}
+        >
+          <StepEditor
+            node={selectedNode}
+            nodes={script.draft.nodes}
+            portraitOptions={portraitOptions}
+            skillCharacters={skillCharacters}
+            onPatch={(patch) => selectedNode && patchNode(selectedNode.id, patch)}
+            onPatchOption={(optionIndex, patch) => selectedNode && patchOption(selectedNode.id, optionIndex, patch)}
+            onAddOption={() => selectedNode && patchNode(selectedNode.id, { options: [...(selectedNode.options ?? []), { label: "", nextNodeId: "" }] })}
+            onRemoveOption={(optionIndex) => selectedNode && patchNode(selectedNode.id, { options: selectedNode.options.filter((_, index) => index !== optionIndex) })}
+            onAddBranch={addBranchStep}
+            onRemove={() => selectedNode && removeNode(selectedNode.id)}
+            onPickPoint={(field) => selectedNode && setPointPicker({ nodeId: selectedNode.id, field })}
+            onEditBoardSetup={() => selectedNode && setNodeBoardEditorId(selectedNode.id)}
+            onHelp={() => setHelpOpen(true)}
+            onInsertStep={() => addNodeAfter()}
+            onClose={closeNodeSettings}
+          />
+        </aside>
+      )}
 
       {fieldError && <p className="admin-story-workbench-error" role="alert">{fieldError}</p>}
       {feedback && <p className="admin-story-workbench-toast" role="status">{feedback}</p>}
@@ -840,7 +903,7 @@ function InitialBoardSummary({ board, onMode, onOpen }) {
   );
 }
 
-function FlowGraph({ flow, nodes, selectedNodeId, highlightedNodeId, issues, onSelect, registerNodeRef }) {
+function FlowGraph({ flow, nodes, selectedNodeId, highlightedNodeId, issues, onSelect, onOpenSettings, registerNodeRef }) {
   const issueNodeIds = new Set(issues.map((issue) => issue.nodeId).filter(Boolean));
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
   return (
@@ -865,7 +928,7 @@ function FlowGraph({ flow, nodes, selectedNodeId, highlightedNodeId, issues, onS
               highlighted={highlightedNodeId === node.id}
               hasIssue={issueNodeIds.has(node.id)}
               registerNodeRef={registerNodeRef}
-              onSelect={() => onSelect(node.id)}
+              onSelect={(event) => onOpenSettings(node.id, event)}
             />
             {branches.length > 0 && (
               <div className="admin-story-workbench-flow-branches">
@@ -879,6 +942,7 @@ function FlowGraph({ flow, nodes, selectedNodeId, highlightedNodeId, issues, onS
                     highlightedNodeId={highlightedNodeId}
                     issueNodeIds={issueNodeIds}
                     onSelect={onSelect}
+                    onOpenSettings={onOpenSettings}
                     registerNodeRef={registerNodeRef}
                   />
                 ))}
@@ -899,7 +963,7 @@ function FlowGraph({ flow, nodes, selectedNodeId, highlightedNodeId, issues, onS
               index={nodes.findIndex((node) => node.id === nodeId)}
               active={selectedNodeId === nodeId}
               hasIssue={issueNodeIds.has(nodeId)}
-              onSelect={() => onSelect(nodeId)}
+              onSelect={(event) => onOpenSettings(nodeId, event)}
             />
           ))}
         </div>
@@ -914,7 +978,7 @@ function FlowGraph({ flow, nodes, selectedNodeId, highlightedNodeId, issues, onS
               index={nodes.findIndex((node) => node.id === nodeId)}
               active={selectedNodeId === nodeId}
               hasIssue={issueNodeIds.has(nodeId)}
-              onSelect={() => onSelect(nodeId)}
+              onSelect={(event) => onOpenSettings(nodeId, event)}
             />
           ))}
         </div>
@@ -939,7 +1003,7 @@ function FlowPathGuide({ flow, nodeById, selectedNodeId, nodes, onSelect }) {
   );
 }
 
-function BranchLane({ branch, nodeById, nodes, selectedNodeId, highlightedNodeId, issueNodeIds, onSelect, registerNodeRef, nested = false }) {
+function BranchLane({ branch, nodeById, nodes, selectedNodeId, highlightedNodeId, issueNodeIds, onSelect, onOpenSettings, registerNodeRef, nested = false }) {
   const issueCount = branch.chain.filter((nodeId) => issueNodeIds.has(nodeId)).length;
   const mergeTargetNode = nodeById.get(branch.mergeTargetId);
   const mergeTargetIndex = nodes.findIndex((entry) => entry.id === branch.mergeTargetId);
@@ -961,7 +1025,7 @@ function BranchLane({ branch, nodeById, nodes, selectedNodeId, highlightedNodeId
               highlighted={highlightedNodeId === branchNodeId}
               hasIssue={issueNodeIds.has(branchNodeId)}
               registerNodeRef={registerNodeRef}
-              onSelect={() => onSelect(branchNodeId)}
+              onSelect={(event) => onOpenSettings(branchNodeId, event)}
             />
             {branchIndex < branch.chain.length - 1 && <span className="admin-story-workbench-branch-line" />}
           </Fragment>
@@ -970,7 +1034,7 @@ function BranchLane({ branch, nodeById, nodes, selectedNodeId, highlightedNodeId
           <MergeCard
             targetNode={mergeTargetNode}
             targetIndex={mergeTargetIndex}
-            onSelect={() => onSelect(branch.mergeTargetId)}
+            onSelect={(event) => onOpenSettings(branch.mergeTargetId, event)}
           />
         )}
       </div>
@@ -986,6 +1050,7 @@ function BranchLane({ branch, nodeById, nodes, selectedNodeId, highlightedNodeId
               highlightedNodeId={highlightedNodeId}
               issueNodeIds={issueNodeIds}
               onSelect={onSelect}
+              onOpenSettings={onOpenSettings}
               registerNodeRef={registerNodeRef}
               nested
             />
@@ -1112,7 +1177,9 @@ function StepEditor({
   onRemove,
   onPickPoint,
   onEditBoardSetup,
-  onHelp
+  onHelp,
+  onInsertStep,
+  onClose
 }) {
   if (!node) {
     return (
@@ -1131,9 +1198,21 @@ function StepEditor({
           <h3>{stepName(node, nodes.indexOf(node))}</h3>
           <p>{NODE_TYPE_LABELS[node.type] ?? "剧情对白"}</p>
         </div>
-        <button className="admin-story-workbench-icon-button" type="button" aria-label={TEXT.help} onClick={onHelp}>
-          <HelpCircle size={17} />
-        </button>
+        <div className="admin-story-workbench-step-editor-actions">
+          {onInsertStep && (
+            <button className="admin-story-workbench-button secondary" type="button" onClick={onInsertStep}>
+              <Plus size={16} />插入步骤
+            </button>
+          )}
+          <button className="admin-story-workbench-icon-button" type="button" aria-label={TEXT.help} onClick={onHelp}>
+            <HelpCircle size={17} />
+          </button>
+          {onClose && (
+            <button className="admin-story-workbench-icon-button" type="button" aria-label="关闭节点设置" onClick={onClose}>
+              <X size={17} />
+            </button>
+          )}
+        </div>
       </header>
 
       <label>
@@ -1813,6 +1892,10 @@ function validOptionalDelay(value) {
   if (value == null || value === "") return true;
   const delay = Number(value);
   return Number.isFinite(delay) && delay >= 0;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
 }
 
 export function scriptForCurrentPreview(draft, selectedNodeId) {

@@ -884,6 +884,28 @@ Correct:
 - `src/admin/AdminOnboardingStory.test.jsx` should cover an option target with a following `nextNodeId` chain and a deeper option target, asserting only a truly unreachable node remains in `orphans`.
 - `src/admin/AdminOnboardingStory.test.jsx` should cover current-step preview for a branch target after a `board-setup` node, asserting the preview `initialBoard` comes from the branch setup snapshot.
 
+### Scenario: Story Tutorial Node Settings Window
+
+#### 1. Scope / Trigger
+- Trigger: any change to `src/admin/AdminOnboardingStory.jsx`, `src/styles/admin/story-workbench/overlays.css`, or node settings window tests that affects the graph-opened settings window.
+- The settings window is a workbench editing surface, not a global app modal. It should keep the selected node, graph, issues, and preview context visible and should stay reachable while the admin scrolls.
+
+#### 2. Signatures
+- `AdminOnboardingStory` owns `nodeSettingsWindow` state and renders `.admin-story-workbench-node-settings-window`.
+- `positionNodeSettingsWindow(event)` derives coordinates from the workbench root, not from persistent viewport anchoring.
+- `StepEditor` supplies the window header, help action, close action, and insert-step action.
+
+#### 3. Contracts
+- Desktop node settings windows are positioned inside `.admin-story-workbench` with workbench-relative coordinates, so they move with the admin scroll container instead of staying fixed to the viewport.
+- Opening the window must reserve enough bottom scroll space on the workbench for the window's lower controls to become reachable.
+- The window owns its own vertical scrolling; the `StepEditor` header and action cluster remain sticky at the top of that internal scroll region.
+- Narrow screens may render the same window as a fixed bottom sheet, but the sheet must keep the same sticky header and reachable close/insert actions.
+- The window reuses `StepEditor`; do not fork a second node form or duplicate node mutation behavior.
+
+#### 4. Tests Required
+- `src/admin/AdminOnboardingStory.test.jsx` should assert the workbench-relative positioning hooks, bottom scroll reserve, base absolute positioning, narrow-screen fixed bottom-sheet override, internal overflow, sticky header, and insert/close actions.
+- `src/styles/cssLayerInventory.test.js` should be updated when the scoped CSS growth changes the current inventory baseline.
+
 ### Scenario: Story Player Node Handoff Stability
 
 #### 1. Scope / Trigger

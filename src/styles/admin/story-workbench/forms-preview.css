@@ -104,6 +104,14 @@
   gap: 12px;
 }
 
+.admin-story-workbench-step-editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .admin-story-workbench-options {
   display: grid;
   gap: 10px;
