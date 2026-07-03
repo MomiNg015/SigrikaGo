@@ -61,6 +61,9 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats {
     padding-inline: 6px !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
     place-content: center stretch !important;
     place-items: center stretch !important;
   }

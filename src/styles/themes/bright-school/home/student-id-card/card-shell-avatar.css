@@ -13,10 +13,13 @@
   overflow: hidden !important;
   isolation: isolate !important;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0 18px, transparent 18px),
-    linear-gradient(90deg, rgba(255, 158, 187, 0.34) 0 22%, transparent 22%),
-    radial-gradient(circle at 16% 52%, rgba(255, 255, 255, 0.82), transparent 28%),
+    image-set(
+      url("/assets/home/student-id-nameplate.webp") type("image/webp"),
+      url("/assets/home/student-id-nameplate.png") type("image/png")
+    ) center / 100% 100% no-repeat,
     linear-gradient(135deg, rgba(255, 241, 247, 0.94) 0%, rgba(255, 249, 229, 0.96) 52%, rgba(223, 246, 231, 0.94) 100%) !important;
+  background-origin: border-box !important;
+  background-clip: border-box !important;
   border: 3px solid #3d2b25 !important;
   border-radius: 18px !important;
   box-shadow:
@@ -39,18 +42,8 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card::before {
-  content: "" !important;
-  position: absolute !important;
-  top: 12px !important;
-  left: 13px !important;
-  width: 10px !important;
-  height: calc(100% - 24px) !important;
-  background:
-    radial-gradient(circle, rgba(61, 43, 37, 0.9) 36%, transparent 40%) 0 0 / 10px 20px,
-    linear-gradient(#bfe8dd, #ffd8e7) !important;
-  border-radius: 999px !important;
-  z-index: 2 !important;
-  opacity: 0.9 !important;
+  content: none !important;
+  display: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card::after {
@@ -73,15 +66,12 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar {
   width: 72px !important;
   height: 72px !important;
-  padding: 6px !important;
-  background:
-    linear-gradient(#fffaf1, #fffaf1) padding-box,
-    linear-gradient(135deg, #ff9ebb, #bfe8dd) border-box !important;
-  border: 2px solid transparent !important;
-  border-radius: 16px !important;
-  box-shadow:
-    2px 3px 0 rgba(61, 43, 37, 0.16),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.9) !important;
+  padding: 4px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar img {

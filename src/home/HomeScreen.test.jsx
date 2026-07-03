@@ -217,10 +217,13 @@ describe("HomeScreen", () => {
     const utilityTextBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry > \*\s*\{[^}]+\}/)?.[0] ?? "";
     const utilityHoverBeforeBlock = css.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry:hover::before,[\s\S]+?\.utility-entry:focus-visible::before\s*\{[^}]+\}/)?.[0] ?? "";
     const brightHomeCss = readCssFixture("../styles/themes/bright-school/home.css");
+    const brightMobilePlayerCss = readCssFixture("../styles/themes/bright-school/mobile/home-shell/player-plaque.css");
     const brightToolboxEntry = readCssFixture("../styles/themes/bright-school/home/utility-toolbox.css");
     const brightUtilityCss = readCssFixture("../styles/themes/bright-school/surface-contracts/home-utility-tabs.css");
     const narrowDesktopCss = readCssFixture("../styles/mobile-adaptive/home-narrow-desktop.css");
+    const finalPortraitPlayerCss = readCssFixture("../styles/mobile-adaptive/bright-school-portrait/home-player-plaque.css");
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightAvatarBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-avatar\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card strong\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueStrongClipBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card > strong\s*\{[^}]+\}/)?.[0] ?? "";
     const brightPlaqueIdentityBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.user-identity,[\s\S]+?max-width: 100% !important;[\s\S]+?\}/)?.[0] ?? "";
@@ -231,6 +234,8 @@ describe("HomeScreen", () => {
     const brightPanelBlock = brightHomeCss.match(/main\.home-screen\.home-terminal-screen > section\.home-main-panel\.home-terminal-main\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStageBlock = brightHomeCss.match(/main\.home-screen\.home-terminal-screen > section\.home-main-panel\.home-terminal-main > section\.home-grid-featured\.home-stage\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileStatsBlock = brightMobilePlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
+    const finalPortraitStatsBlock = finalPortraitPlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
     const brightNarrowDesktopMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-width: 1180px\)\s*\{[\s\S]+?@media \(max-width: 700px\)/)?.[0] ?? "";
 
@@ -270,8 +275,15 @@ describe("HomeScreen", () => {
     expect(statsBlock).toContain("min-width: 154px");
     expect(css).toContain(".home-player-zone .plaque-mode-stat");
     expect(brightPlaqueBlock).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
+    expect(brightPlaqueBlock).toContain('url("/assets/home/student-id-nameplate.webp")');
+    expect(brightPlaqueBlock).toContain('url("/assets/home/student-id-nameplate.png")');
+    expect(brightPlaqueBlock).toContain("background-origin: border-box");
+    expect(brightPlaqueBlock).toContain("background-clip: border-box");
     expect(brightPlaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(108px, 116px)");
     expect(brightPlaqueBlock).toContain("overflow: hidden");
+    expect(brightAvatarBlock).toContain("background: transparent !important");
+    expect(brightAvatarBlock).toContain("border: 0 !important");
+    expect(brightAvatarBlock).toContain("box-shadow: none !important");
     expect(brightPlaqueStrongBlock).toContain("padding-right: 6px");
     expect(brightPlaqueStrongClipBlock).toContain("overflow: hidden");
     expect(brightPlaqueStrongClipBlock).toContain("text-overflow: clip");
@@ -305,6 +317,15 @@ describe("HomeScreen", () => {
     expect(brightStatsBlock).toContain("box-sizing: border-box");
     expect(brightStatsBlock).toContain("container-type: inline-size");
     expect(brightStatsBlock).toContain("place-content: center stretch");
+    expect(brightStatsBlock).toContain("background: transparent !important");
+    expect(brightStatsBlock).toContain("border: 0 !important");
+    expect(brightStatsBlock).toContain("box-shadow: none !important");
+    expect(brightMobileStatsBlock).toContain("background: transparent !important");
+    expect(brightMobileStatsBlock).toContain("border: 0 !important");
+    expect(brightMobileStatsBlock).toContain("box-shadow: none !important");
+    expect(finalPortraitStatsBlock).toContain("background: transparent !important");
+    expect(finalPortraitStatsBlock).toContain("border: 0 !important");
+    expect(finalPortraitStatsBlock).toContain("box-shadow: none !important");
     expect(brightHomeCss).toContain("grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.7fr) minmax(0, 1fr)");
     expect(brightHomeCss).toContain("font-size: clamp(9px, 9cqw, 13px)");
     expect(brightHomeCss).toContain(".plaque-mode-rating");

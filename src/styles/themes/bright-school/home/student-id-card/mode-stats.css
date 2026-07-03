@@ -8,12 +8,10 @@
   align-self: stretch !important;
   place-content: center stretch !important;
   place-items: center stretch !important;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 248, 226, 0.92)),
-    repeating-linear-gradient(0deg, transparent 0 15px, rgba(118, 177, 193, 0.16) 15px 16px) !important;
-  border: 2px solid rgba(61, 43, 37, 0.78) !important;
-  border-radius: 15px !important;
-  box-shadow: 2px 3px 0 rgba(61, 43, 37, 0.14) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-stat {

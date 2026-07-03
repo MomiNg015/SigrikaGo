@@ -61,7 +61,9 @@
     width: 100% !important;
     min-width: 0 !important;
     padding: clamp(7px, 2.1vw, 9px) clamp(6px, 2vw, 8px) !important;
-    border-width: 2px !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
     place-content: center stretch !important;
     place-items: center stretch !important;
   }
