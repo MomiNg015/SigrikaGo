@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 28
-- **Last Active**: 2026-07-02
+- **Total Sessions**: 29
+- **Last Active**: 2026-07-03
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~934 | Active |
+| `journal-1.md` | ~967 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 29 | 2026-07-03 | Admin story node settings popup | `7b86d812` | `codex/story-tutorial-node-timing-controls` |
 | 28 | 2026-07-02 | Home lobby adjustments and story close guard | `7674bd1e`, `67af88fd` | `codex/css-cleanup` |
 | 27 | 2026-07-02 | Fix QiuYuan row slash mobile scar width | `b677ef58` | `codex/css-cleanup` |
 | 26 | 2026-07-02 | Tailwind migration roadmap and pilots | `214bb6d1` | `codex/css-tidy` |

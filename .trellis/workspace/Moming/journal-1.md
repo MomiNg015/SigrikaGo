@@ -932,3 +932,36 @@ Applied requested home lobby UI refinements, added story-player backdrop/close c
 ### Next Steps
 
 - None - task complete
+
+
+## Session 29: Admin story node settings popup
+
+**Date**: 2026-07-03
+**Task**: Admin story node settings popup
+**Branch**: `codex/story-tutorial-node-timing-controls`
+
+### Summary
+
+Added graph-opened node settings window with insert-step and close actions, workbench-relative scrollable positioning, sticky window header, regression tests, CSS inventory baseline, system-design docs, and frontend spec contract.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7b86d812` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
