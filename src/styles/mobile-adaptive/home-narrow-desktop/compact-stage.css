@@ -84,6 +84,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
     --home-plaque-name-column-min: calc(12ch + 1em);
+    --home-student-id-avatar-size: clamp(52px, 7vw, 62px);
     grid-template-columns: clamp(52px, 7vw, 62px) minmax(0, 1fr) minmax(98px, clamp(102px, 27%, 112px)) !important;
     column-gap: clamp(8px, 1.2vw, 12px) !important;
     min-height: 90px !important;

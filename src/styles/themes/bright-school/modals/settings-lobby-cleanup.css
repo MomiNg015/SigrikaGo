@@ -22,14 +22,6 @@
     drop-shadow(0 10px 18px rgba(255, 158, 187, 0.24)) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
-  background:
-    radial-gradient(circle at 16% 45%, rgba(255, 158, 187, 0.45), transparent 34%),
-    linear-gradient(135deg, #ffe5ee 0%, #fff4d8 48%, #dff5df 100%) !important;
-  color: #3d2b25 !important;
-  border-color: #3d2b25 !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-header .quiet-text {
   width: auto !important;
   margin: 0 !important;

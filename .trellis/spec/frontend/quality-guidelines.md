@@ -455,10 +455,10 @@ Correct:
 const plaqueBlock = cssBlockForSelector(themesCss, ".home-player-plaque.tactical-id-card");
 
 expect(plaqueBlock).toContain("grid-template-columns: 76px minmax(116px, 1fr) minmax(164px, max-content) !important");
-expect(themesCss).toContain(".home-player-row.tactical-id-row::before");
+expect(plaqueBlock).toContain('url("/assets/home/student-id-nameplate.webp")');
 ```
 
-The feature-level test still owns the exact layout, while the broader guard confirms the themed selector and paperclip polish remain present.
+The feature-level test still owns the exact layout, while the broader guard confirms the themed selector and generated shell asset remain present.
 
 ### CSS Domain Entry Ownership
 
@@ -853,8 +853,12 @@ Required assertion points:
 - Bright School player plaque names must stay inside the middle identity column. Equipped nameplates use the shared fixed `3.75:1` slot and scene-owned `--user-nameplate-scale`; do not use parent-width stretching, visible overflow, or per-username `--user-identity-fit-font-size` scaling if that lets the username cover `.plaque-stats`.
 - Generated Bright School home player plaque art must remain a shell/background asset. Avatar art, `UserIdentity`, username text, mode names, ranks, ratings, and labels stay rendered by React DOM/CSS rather than baked into the raster image.
 - The generated plaque shell background must draw from `border-box` rather than the default padding box so the full outer frame, holes, sticker, and stats panel art cover the entire clickable card.
+- The generated plaque shell must be the only `.home-player-plaque.tactical-id-card` background layer. Do not keep the old pink/green gradient fallback or any browser/theme button background, border, radius, or shadow on the card body.
 - When generated plaque art includes the portrait and stats panel frames, `.plaque-avatar` and `.plaque-stats` must stay transparent content layers with no independent background, border, or box-shadow; otherwise the generated shell gets duplicated by legacy inner cards.
-- When generated plaque art changes, feature tests should assert the WebP/PNG asset URLs and preserve the avatar/name/stats grid contract on both desktop and mobile layouts.
+- `.plaque-avatar` must anchor to the generated shell's portrait-frame center through shared center/size variables, and portrait art inside that box must stay horizontally and vertically centered with a stable grid/contain contract in both base theme CSS and final responsive safety layers.
+- Legacy `.home-player-row.tactical-id-row::before` / `::after` paperclip pseudo-elements must stay disabled (`content: none` and `display: none`) when the generated shell is active; do not reintroduce a separate clamp layer over the generated art.
+- Later Bright School layers such as `modals.css`, `mobile.css`, and the final `mobile-adaptive.css` safety pass must not redefine `.home-player-plaque.tactical-id-card` with a new background that covers the generated shell.
+- When generated plaque art changes, feature tests should assert the WebP/PNG asset URLs from the final expanded theme CSS and preserve the avatar/name/stats grid contract on both desktop and mobile layouts.
 - Compact desktop is 1024px-1180px and should switch the home stage to named CSS grid areas (`player`, `manual`, `utility`, `match`) while staying inside the viewport.
 - Micro desktop is 701px-1023px. It should use a controlled minimum home stage width, currently `960px`, with horizontal scroll localized to `.home-main-panel`; do not shrink core entries until their contents become unreadable.
 - The final `mobile-adaptive/home-narrow-desktop.css` layer owns compact and micro desktop safety after theme overrides. It must reset player/manual/match/utility regions to `position: static` and remove decorative transforms that can create invisible hit boxes or overlaps.

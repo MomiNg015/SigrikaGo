@@ -16,6 +16,39 @@
     filter: none !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--home-student-id-shell-bg) center / 100% 100% no-repeat;
+    background-color: transparent;
+    background-origin: border-box;
+    background-clip: border-box;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar {
+    position: absolute;
+    left: var(--home-student-id-avatar-center-x);
+    top: var(--home-student-id-avatar-center-y);
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    transform: translate(-50%, -50%);
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry {
     transform: none !important;

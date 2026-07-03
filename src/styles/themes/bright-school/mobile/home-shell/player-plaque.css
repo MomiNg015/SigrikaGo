@@ -19,34 +19,20 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+    --home-student-id-avatar-size: 56px;
     width: 100% !important;
     min-height: 92px !important;
     grid-template-columns: clamp(50px, 14vw, 58px) minmax(0, 1fr) minmax(106px, clamp(112px, 33vw, 132px)) !important;
     gap: clamp(7px, 2.3vw, 10px) !important;
     padding: 18px 12px 12px 22px !important;
-    border-width: 2px !important;
-    border-radius: 16px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::after {
-    top: -24px !important;
-    width: 28px !important;
-    height: 46px !important;
-    border-width: 3px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before {
-    left: 52px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::after {
-    right: 52px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar {
-    width: 56px !important;
-    height: 56px !important;
+    width: var(--home-student-id-avatar-size) !important;
+    height: var(--home-student-id-avatar-size) !important;
     padding: 4px !important;
   }
 

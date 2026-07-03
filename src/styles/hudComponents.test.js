@@ -400,6 +400,13 @@ describe("component-level HUD refinements", () => {
   });
 
   it("keeps Bright School final handbook/settings/lobby cleanup scoped", () => {
+    const finalCleanupStart = themesCss.indexOf("Bright School final surface cleanup");
+    const selectedActionsStart = themesCss.indexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mode-tabs button.active",
+      finalCleanupStart
+    );
+    const finalCleanup = themesCss.slice(finalCleanupStart, selectedActionsStart);
+
     expect(themesCss).toContain("Bright School final surface cleanup for handbook/settings/lobby comments.");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-decoration-list::after");
     expect(themesCss).toContain("border: 0 !important");
@@ -408,17 +415,18 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-modal .settings-panel.settings-modal-content");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-portrait");
     expect(themesCss).toContain("drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.2))");
-    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card");
+    expect(finalCleanup).not.toContain(".home-player-plaque.tactical-id-card");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-header .quiet-text");
 
-    const finalCleanup = themesCss.slice(themesCss.indexOf("Bright School final surface cleanup"));
     expect(finalCleanup).not.toContain("theme-current");
     expect(finalCleanup).not.toContain("theme-original");
     expect(finalCleanup).not.toContain("admin-theme-isolated");
   });
 
-  it("pins the Bright School home player plaque with paperclips instead of ropes", () => {
+  it("uses the Bright School generated student ID plaque shell instead of legacy paperclips", () => {
     const plaquePolish = themesCss.slice(themesCss.indexOf("Bright School lobby material polish for browser comments."));
+    const rowClipBlocks = plaquePolish.match(/\.home-player-row\.tactical-id-row::before,[\s\S]+?\.home-player-row\.tactical-id-row::after\s*\{[^}]+\}/g) ?? [];
+    const rowClipBlock = rowClipBlocks[rowClipBlocks.length - 1] ?? "";
     const plaqueBlock = cssBlockForSelector(
       plaquePolish,
       ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card"
@@ -428,12 +436,18 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("content: none !important");
     expect(plaquePolish).toContain("display: none !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before");
-    expect(plaquePolish).not.toContain(`border-${"left"}-width`);
-    expect(plaquePolish).toContain("inset 0 0 0 3px #d7e1e6");
-    expect(plaquePolish).toContain("border-bottom-color: transparent !important");
-    expect(plaquePolish).toContain("transform: rotate(-8deg) !important");
-    expect(plaquePolish).toContain("transform: rotate(8deg) !important");
+    expect(rowClipBlock).toContain("content: none !important");
+    expect(rowClipBlock).toContain("display: none !important");
+    expect(rowClipBlock).not.toContain("border-bottom-color: transparent !important");
+    expect(rowClipBlock).not.toContain("inset 0 0 0 3px #d7e1e6");
     expect(plaqueBlock).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
+    expect(plaqueBlock).toContain('url("/assets/home/student-id-nameplate.webp")');
+    expect(plaqueBlock).toContain('url("/assets/home/student-id-nameplate.png")');
+    expect(plaqueBlock).toContain("appearance: none !important");
+    expect(plaqueBlock).toContain("background-color: transparent !important");
+    expect(plaqueBlock).toContain("border: 0 !important");
+    expect(plaqueBlock).toContain("border-radius: 0 !important");
+    expect(plaqueBlock).toContain("box-shadow: none !important");
     expect(plaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(108px, 116px) !important");
     expect(plaqueBlock).toContain("column-gap: 10px !important");
     expect(plaqueBlock).toContain("overflow: hidden !important");

@@ -1,9 +1,19 @@
 /* Bright School portrait home player plaque safety rules. */
 @media (max-width: 768px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
+    --home-student-id-avatar-size: 58px;
+    appearance: none;
+    -webkit-appearance: none;
     grid-template-columns: clamp(54px, 14vw, 60px) minmax(112px, 1fr) minmax(96px, 30vw) !important;
     column-gap: 8px !important;
     padding: 17px 10px 12px 18px !important;
+    background: var(--home-student-id-shell-bg) center / 100% 100% no-repeat;
+    background-color: transparent;
+    background-origin: border-box;
+    background-clip: border-box;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card > strong {
@@ -42,9 +52,20 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar {
-    width: 58px !important;
-    height: 58px !important;
+    position: absolute;
+    left: var(--home-student-id-avatar-center-x);
+    top: var(--home-student-id-avatar-center-y);
+    z-index: 1;
+    width: var(--home-student-id-avatar-size) !important;
+    height: var(--home-student-id-avatar-size) !important;
     padding: 3px !important;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    transform: translate(-50%, -50%);
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar .character-chain-badge {
@@ -63,6 +84,7 @@
     padding-inline: 6px !important;
     background: transparent !important;
     border: 0 !important;
+    border-radius: 0;
     box-shadow: none !important;
     place-content: center stretch !important;
     place-items: center stretch !important;

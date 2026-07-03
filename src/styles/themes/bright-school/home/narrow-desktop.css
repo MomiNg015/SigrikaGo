@@ -5,21 +5,16 @@
     transform-origin: center !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before {
-    left: 52px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::after {
-    right: 48px !important;
-  }
-
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
     --home-plaque-name-column-min: calc(12ch + 1.2em);
+    --home-student-id-avatar-size: 62px;
     grid-template-columns: 62px minmax(0, 1fr) minmax(96px, clamp(100px, 26%, 110px)) !important;
     column-gap: 10px !important;
     min-height: 92px !important;
     padding: 17px 12px 12px 22px !important;
-    border-radius: 16px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card::after {
@@ -29,8 +24,8 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-avatar {
-    width: 62px !important;
-    height: 62px !important;
+    width: var(--home-student-id-avatar-size) !important;
+    height: var(--home-student-id-avatar-size) !important;
     padding: 5px !important;
     border-radius: 14px !important;
   }

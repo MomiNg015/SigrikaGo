@@ -10,14 +10,6 @@
   color: #d93645 !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::before {
-  transform: rotate(-8deg) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row::after {
-  transform: rotate(8deg) !important;
-}
-
 @media (max-width: 760px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
     padding: 12px !important;
