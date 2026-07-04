@@ -431,6 +431,8 @@ describe("component-level HUD refinements", () => {
       plaquePolish,
       ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card"
     );
+    const plaqueHoverBlock = plaquePolish.match(/\.home-player-plaque\.tactical-id-card:hover,[\s\S]+?\.home-player-plaque\.tactical-id-card:focus-visible\s*\{[^}]+\}/)?.[0] ?? "";
+    const studentIdImageShadow = "drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3))";
 
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone::before");
     expect(plaquePolish).toContain("content: none !important");
@@ -448,7 +450,15 @@ describe("component-level HUD refinements", () => {
     expect(plaqueBlock).toContain("border: 0 !important");
     expect(plaqueBlock).toContain("border-radius: 0 !important");
     expect(plaqueBlock).toContain("box-shadow: none !important");
-    expect(plaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(108px, 116px) !important");
+    expect(plaqueBlock).toContain(`filter: ${studentIdImageShadow} !important`);
+    expect(plaqueBlock).not.toContain("0 0 0 1px #ffffff");
+    expect(plaqueBlock).not.toContain("0 0 0 2px var(--bright-border)");
+    expect(plaqueHoverBlock).toContain("transform: rotate(2deg) !important");
+    expect(plaqueHoverBlock).not.toContain("box-shadow: none");
+    expect(plaqueBlock).toContain("--home-student-id-stats-center-x: 82%");
+    expect(plaqueBlock).toContain("--home-student-id-stats-width: clamp(144px, 30%, 164px)");
+    expect(plaqueBlock).toContain("--home-student-id-stats-height: 76px");
+    expect(plaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(144px, 158px) !important");
     expect(plaqueBlock).toContain("column-gap: 10px !important");
     expect(plaqueBlock).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card > strong");
@@ -598,7 +608,7 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain("scrollbar-width: none !important");
     expect(themesCss).toContain("::-webkit-scrollbar");
     expect(themesCss).toContain("display: none !important");
-    expect(themesCss).toContain("filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.16)) !important");
+    expect(themesCss).toContain("filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) !important");
     expect(imageEntryButtonsLayer).not.toContain("drop-shadow(0 10px");
     expect(imageEntryButtonsLayer).not.toContain("drop-shadow(0 14px");
     expect(imageEntryButtonsLayer).toContain("transform: rotate(2deg) !important");

@@ -10,27 +10,31 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
+  appearance: none !important;
+  -webkit-appearance: none !important;
   width: 100% !important;
   min-width: 0 !important;
-  min-height: clamp(58px, 5vw, 72px) !important;
+  min-height: clamp(58px, 5vw, 78px) !important;
   height: auto !important;
   display: grid !important;
-  grid-template-columns: clamp(30px, 2.6vw, 36px) minmax(0, 1fr) !important;
-  align-items: center !important;
-  justify-items: start !important;
-  gap: clamp(7px, 0.8vw, 10px) !important;
-  padding: clamp(10px, 1vw, 13px) !important;
-  border: 3px solid #3d2b25 !important;
-  border-radius: 18px !important;
-  background: var(--utility-paper, #ffffff) !important;
-  box-shadow: 4px 4px 0 #3d2b25 !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  place-items: center !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  clip-path: none !important;
   color: #3d2b25 !important;
-  text-align: left !important;
+  outline: 0 solid transparent;
+  outline-offset: 0;
+  text-align: center !important;
   text-shadow: none !important;
-  transform: rotate(var(--utility-tilt, 0deg)) !important;
+  transform: none !important;
+  overflow: visible !important;
   transition:
     transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1),
     filter 160ms ease-out !important;
 }
 
@@ -69,40 +73,42 @@
   --utility-tilt: 0deg;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-icon {
-  width: clamp(30px, 2.6vw, 36px) !important;
-  height: clamp(30px, 2.6vw, 36px) !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-art {
+  grid-area: 1 / 1 !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: auto !important;
   min-width: 0 !important;
-  display: grid !important;
-  place-items: center !important;
-  border: 2px solid rgba(61, 43, 37, 0.8) !important;
-  border-radius: 12px !important;
-  background: rgba(255, 255, 255, 0.72) !important;
-  box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.42) !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) !important;
+  pointer-events: none !important;
   transform: none !important;
+  transition:
+    transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 160ms ease-out !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-icon svg {
-  width: clamp(19px, 1.7vw, 23px) !important;
-  height: clamp(19px, 1.7vw, 23px) !important;
-  color: #3d2b25 !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-icon {
+  display: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry > strong {
-  grid-column: 2 !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry strong {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
   min-width: 0 !important;
+  margin: -1px !important;
+  padding: 0 !important;
   overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
   white-space: nowrap !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry strong {
-  display: block !important;
-  color: #3d2b25 !important;
-  font-size: clamp(14px, 1.12vw, 17px) !important;
-  font-weight: 900 !important;
-  letter-spacing: 0 !important;
 }

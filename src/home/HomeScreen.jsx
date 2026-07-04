@@ -7,6 +7,7 @@ import HomeHeader from "./components/HomeHeader.jsx";
 import HomeStage from "./components/HomeStage.jsx";
 import { HomeActionButton } from "./homeComponents.jsx";
 import MatchModeRuleText from "./MatchModeRuleText.jsx";
+import MatchModeWatermark from "./MatchModeWatermark.jsx";
 
 export default function HomeScreen({ user, characters, siteSettings = DEFAULT_SITE_SETTINGS, lobbyStats = {}, recruitmentReady = false, mailboxBadgeCount = 0, announcementUnread = false, matchModePickerOpen = false, onMatchModePickerOpenChange, onLogout, onStartMatch, onOpenMatch, onPreloadPlayableReady, onOpenHouse, onOpenResume, onOpenWarehouse, onOpenLeaderboard, onOpenWatch, onOpenShop, onOpenRecruitment, onOpenFriends, onOpenSettings, onOpenAnnouncements, onOpenMailbox, onOpenMessageBoard, onOpenOnboardingStory, onOpenAdmin }) {
   const selectedCharacter = characters[user.selectedCharacter] ?? CHARACTERS[user.selectedCharacter] ?? CHARACTERS.sigrika;
@@ -90,6 +91,7 @@ function MatchModePicker({ matchmakingCounts, onClose, onPreloadPlayableReady, o
               onPointerEnter={() => onPreloadPlayableReady?.(mode.id)}
               onClick={() => onSelect(mode.id)}
             >
+              <MatchModeWatermark mode={mode} />
               <span className="match-mode-copy">
                 <strong>{mode.title}</strong>
                 <MatchModeRuleText rulesText={mode.rulesText} />

@@ -12,6 +12,22 @@
     padding: 12px !important;
   }
 
+  .match-mode-watermark {
+    gap: 7px !important;
+    max-width: min(58%, calc(100% - 132px)) !important;
+    opacity: 0.2 !important;
+  }
+
+  .match-mode-watermark-icon {
+    width: clamp(32px, 10vw, 42px) !important;
+    height: clamp(32px, 10vw, 42px) !important;
+  }
+
+  .match-mode-watermark-label {
+    max-width: calc(100% - 50px) !important;
+    font-size: clamp(1rem, 6.8vw, 1.45rem) !important;
+  }
+
   .match-mode-copy small {
     white-space: normal !important;
     word-break: keep-all !important;

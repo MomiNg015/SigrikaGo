@@ -50,7 +50,8 @@
 
 .home-player-zone .plaque-stats {
   min-width: 104px;
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 5px;
   white-space: nowrap;
   padding: 7px 11px;

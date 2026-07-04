@@ -6,6 +6,7 @@ import HomeScreen from "./HomeScreen.jsx";
 import MatchModeRuleText, { splitMatchModeRules } from "./MatchModeRuleText.jsx";
 import { CHARACTERS } from "../shared/characters.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
+import { decodeRgbaPng } from "../../scripts/pngTrim.mjs";
 
 function renderHome(overrides = {}) {
   return renderToStaticMarkup(createElement(HomeScreen, {
@@ -45,6 +46,31 @@ function renderHome(overrides = {}) {
 function isWebp(path) {
   const bytes = readFileSync(new URL(path, import.meta.url));
   return bytes.toString("ascii", 0, 4) === "RIFF" && bytes.toString("ascii", 8, 12) === "WEBP";
+}
+
+function pngDimensions(path) {
+  const { width, height } = decodeRgbaPng(readFileSync(new URL(path, import.meta.url)));
+  return { width, height };
+}
+
+function webpDimensions(path) {
+  const bytes = readFileSync(new URL(path, import.meta.url));
+  if (!isWebp(path)) throw new Error(`${path} is not a WebP file`);
+
+  let offset = 12;
+  while (offset + 8 <= bytes.length) {
+    const chunkType = bytes.toString("ascii", offset, offset + 4);
+    const chunkLength = bytes.readUInt32LE(offset + 4);
+    const dataOffset = offset + 8;
+    if (chunkType === "VP8X") {
+      return {
+        width: bytes.readUIntLE(dataOffset + 4, 3) + 1,
+        height: bytes.readUIntLE(dataOffset + 7, 3) + 1
+      };
+    }
+    offset = dataOffset + chunkLength + (chunkLength % 2);
+  }
+  throw new Error(`${path} does not include a VP8X size chunk`);
 }
 
 function readCssFixture(path) {
@@ -120,18 +146,42 @@ describe("HomeScreen", () => {
     }
   });
 
-  it("uses a compact WebP match image instead of the source PNG", () => {
+  it("uses alpha-trimmed compact WebP home entry images instead of source PNGs", () => {
     const webpUrl = new URL("../../public/assets/home/fantasy-match-entry.webp", import.meta.url);
     const pngUrl = new URL("../../public/assets/home/fantasy-match-entry.png", import.meta.url);
+    const bookWebpUrl = new URL("../../public/assets/home/book-entry.webp", import.meta.url);
+    const bookPngUrl = new URL("../../public/assets/home/book-entry.png", import.meta.url);
     const desktopPanelUrl = new URL("../../public/assets/home/home-main-panel-desktop.webp", import.meta.url);
     const mobilePanelUrl = new URL("../../public/assets/home/home-main-panel-mobile.webp", import.meta.url);
+    const utilityAssets = [
+      "home-utility-recruitment",
+      "home-utility-shop",
+      "home-utility-warehouse",
+      "home-utility-leaderboard",
+      "home-utility-watch",
+      "home-utility-friends"
+    ];
 
     expect(isWebp("../../public/assets/home/fantasy-match-entry.webp")).toBe(true);
+    expect(isWebp("../../public/assets/home/book-entry.webp")).toBe(true);
     expect(isWebp("../../public/assets/home/home-main-panel-desktop.webp")).toBe(true);
     expect(isWebp("../../public/assets/home/home-main-panel-mobile.webp")).toBe(true);
+    expect(pngDimensions("../../public/assets/home/fantasy-match-entry.png")).toEqual({ width: 2386, height: 1914 });
+    expect(pngDimensions("../../public/assets/home/book-entry.png")).toEqual({ width: 709, height: 858 });
+    expect(webpDimensions("../../public/assets/home/fantasy-match-entry.webp")).toEqual({ width: 2386, height: 1914 });
+    expect(webpDimensions("../../public/assets/home/book-entry.webp")).toEqual({ width: 709, height: 858 });
     expect(statSync(webpUrl).size).toBeLessThan(statSync(pngUrl).size / 8);
+    expect(statSync(bookWebpUrl).size).toBeLessThan(statSync(bookPngUrl).size / 4);
     expect(statSync(desktopPanelUrl).size).toBeGreaterThan(0);
     expect(statSync(mobilePanelUrl).size).toBeGreaterThan(0);
+    for (const asset of utilityAssets) {
+      const utilityWebp = `../../public/assets/home/${asset}.webp`;
+      const utilityPng = `../../public/assets/home/${asset}.png`;
+      expect(isWebp(utilityWebp)).toBe(true);
+      expect(statSync(new URL(utilityWebp, import.meta.url)).size).toBeLessThan(
+        statSync(new URL(utilityPng, import.meta.url)).size / 4
+      );
+    }
   });
 
   it("renders hologram entry pods without changing the primary click targets", () => {
@@ -223,11 +273,14 @@ describe("HomeScreen", () => {
     const brightUtilityCss = readCssFixture("../styles/themes/bright-school/surface-contracts/home-utility-tabs.css");
     const narrowDesktopCss = readCssFixture("../styles/mobile-adaptive/home-narrow-desktop.css");
     const finalPortraitPlayerCss = readCssFixture("../styles/mobile-adaptive/bright-school-portrait/home-player-plaque.css");
+    const studentIdImageShadow = "drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3))";
     const brightPlaqueBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightPlaqueHoverBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card:hover,[\s\S]+?\.home-player-plaque\.tactical-id-card:focus-visible\s*\{[^}]+\}/)?.[0] ?? "";
     const finalPlaqueBackgroundBlocks = finalThemeCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.home-player-plaque\.tactical-id-card\s*\{[^}]+background:[^}]+\}/g) ?? [];
     const finalPlaqueBackgroundBlock = finalPlaqueBackgroundBlocks[finalPlaqueBackgroundBlocks.length - 1] ?? "";
     const narrowDesktopPlaqueBlock = narrowDesktopCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/g)?.find((block) => block.includes("--home-student-id-shell-bg")) ?? "";
     const narrowDesktopAvatarBlock = narrowDesktopCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.home-player-plaque\.tactical-id-card \.plaque-avatar\s*\{[^}]+\}/g)?.find((block) => block.includes("display: grid")) ?? "";
+    const brightMobilePlaqueBlock = brightMobilePlayerCss.match(/\.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const finalPortraitPlaqueBlock = finalPortraitPlayerCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.home-player-plaque\.tactical-id-card\s*\{[^}]+\}/)?.[0] ?? "";
     const finalPortraitAvatarBlock = finalPortraitPlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-avatar\s*\{[^}]+\}/)?.[0] ?? "";
     const brightRowClipBlocks = brightHomeCss.match(/\.home-player-row\.tactical-id-row::before,[\s\S]+?\.home-player-row\.tactical-id-row::after\s*\{[^}]+\}/g) ?? [];
@@ -244,6 +297,11 @@ describe("HomeScreen", () => {
     const brightPanelBlock = brightHomeCss.match(/main\.home-screen\.home-terminal-screen > section\.home-main-panel\.home-terminal-main\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStageBlock = brightHomeCss.match(/main\.home-screen\.home-terminal-screen > section\.home-main-panel\.home-terminal-main > section\.home-grid-featured\.home-stage\s*\{[^}]+\}/)?.[0] ?? "";
     const brightStatsBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightModeStatBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-stat\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightModeIconBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-icon\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightModeRankBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-rank\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightModeRankDanBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-rank-dan\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightModeRankKyuBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-rank-kyu\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileStatsBlock = brightMobilePlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
     const finalPortraitStatsBlock = finalPortraitPlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
@@ -255,12 +313,49 @@ describe("HomeScreen", () => {
     expect(html).toContain("plaque-mode-stat plaque-mode-stat-spark");
     expect(html).toContain("plaque-mode-stat plaque-mode-stat-standard");
     expect(html).toContain("plaque-mode-stat plaque-mode-stat-gomoku");
-    expect(html).toContain("plaque-mode-name text-display-accent");
-    expect(html).toContain("plaque-mode-rating text-rating-value");
-    expect(html).toContain("1260分");
-    expect(html).toContain("920分");
-    expect(html).toContain("1010分");
+    expect(html).toContain('aria-label="对弈模式段位"');
+    expect(html).toContain("plaque-mode-icon");
+    expect(html).toContain('src="/assets/match-modes/mode-spark.png"');
+    expect(html).toContain('src="/assets/match-modes/mode-standard.png"');
+    expect(html).toContain('src="/assets/match-modes/mode-gomoku.png"');
+    expect(html).toContain("plaque-mode-rank");
+    expect(html).toContain('aria-label="星炬 4段"');
+    expect(html).toContain('<span class="plaque-mode-rank plaque-mode-rank-dan" aria-hidden="true">4</span>');
+    expect(html).toContain('<span class="plaque-mode-rank plaque-mode-rank-dan" aria-hidden="true">3</span>');
+    expect(html).not.toContain(">4段</span>");
+    expect(html).not.toContain(">3段</span>");
+    const gradeRankHtml = renderHome({
+      user: {
+        modeStats: {
+          spark: { rating: 1260, rank: "4段", recentResults: [], wins: 3, losses: 1, draws: 0 },
+          standard: { rating: 920, rank: "5级", recentResults: [], wins: 1, losses: 2, draws: 0 },
+          gomoku: { rating: 1010, rank: "3段", recentResults: [], wins: 0, losses: 0, draws: 1 }
+        }
+      }
+    });
+    expect(gradeRankHtml).toContain('aria-label="标准 5级"');
+    expect(gradeRankHtml).toContain('<span class="plaque-mode-rank plaque-mode-rank-kyu" aria-hidden="true">5</span>');
+    expect(gradeRankHtml).not.toContain(">5级</span>");
+    expect(html).not.toContain("plaque-mode-name");
+    expect(html).not.toContain("plaque-mode-rating");
+    expect(html).not.toContain("1260分");
+    expect(html).not.toContain("920分");
+    expect(html).not.toContain("1010分");
+    expect(html).toContain("utility-image-entry");
+    expect(html).toContain("utility-entry-art");
     expect(html).toContain("utility-entry-icon");
+    expect(html).toContain('src="/assets/home/home-utility-recruitment.webp"');
+    expect(html).toContain('src="/assets/home/home-utility-shop.webp"');
+    expect(html).toContain('src="/assets/home/home-utility-warehouse.webp"');
+    expect(html).toContain('src="/assets/home/home-utility-leaderboard.webp"');
+    expect(html).toContain('src="/assets/home/home-utility-watch.webp"');
+    expect(html).toContain('src="/assets/home/home-utility-friends.webp"');
+    expect(html).toContain('aria-label="招募"');
+    expect(html).toContain('aria-label="商店"');
+    expect(html).toContain('aria-label="仓库"');
+    expect(html).toContain('aria-label="排行"');
+    expect(html).toContain('aria-label="观战"');
+    expect(html).toContain('aria-label="好友"');
     expect(html).not.toContain("utility-entry-description");
     expect(html).not.toContain("成员补给");
     expect(html).not.toContain("物资购入");
@@ -290,6 +385,10 @@ describe("HomeScreen", () => {
     expect(brightPlaqueBlock).toContain("--home-student-id-avatar-center-x: 14.7%");
     expect(brightPlaqueBlock).toContain("--home-student-id-avatar-center-y: 46%");
     expect(brightPlaqueBlock).toContain("--home-student-id-avatar-size: 72px");
+    expect(brightPlaqueBlock).toContain("--home-student-id-stats-center-x: 82%");
+    expect(brightPlaqueBlock).toContain("--home-student-id-stats-center-y: 57%");
+    expect(brightPlaqueBlock).toContain("--home-student-id-stats-width: clamp(144px, 30%, 164px)");
+    expect(brightPlaqueBlock).toContain("--home-student-id-stats-height: 76px");
     expect(brightPlaqueBlock).toContain("background-origin: border-box");
     expect(brightPlaqueBlock).toContain("background-clip: border-box");
     expect(finalThemeCss).toContain('url("/assets/home/student-id-nameplate.webp")');
@@ -301,19 +400,30 @@ describe("HomeScreen", () => {
     expect(finalThemeCss).not.toContain("linear-gradient(135deg, #ffe5ee");
     expect(brightDisabledRowClipBlock).toContain("content: none !important");
     expect(brightDisabledRowClipBlock).toContain("display: none !important");
-    expect(brightPlaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(108px, 116px)");
+    expect(brightPlaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(144px, 158px)");
     expect(brightPlaqueBlock).toContain("overflow: hidden");
     expect(brightPlaqueBlock).toContain("appearance: none !important");
     expect(brightPlaqueBlock).toContain("background-color: transparent !important");
     expect(brightPlaqueBlock).toContain("border: 0 !important");
     expect(brightPlaqueBlock).toContain("border-radius: 0 !important");
     expect(brightPlaqueBlock).toContain("box-shadow: none !important");
+    expect(brightPlaqueBlock).toContain(`filter: ${studentIdImageShadow} !important`);
+    expect(brightPlaqueBlock).not.toContain("0 0 0 1px #ffffff");
+    expect(brightPlaqueBlock).not.toContain("0 0 0 2px var(--bright-border)");
+    expect(brightPlaqueHoverBlock).toContain("transform: rotate(2deg) !important");
+    expect(brightPlaqueHoverBlock).not.toContain("translateY(-2px)");
+    expect(brightPlaqueHoverBlock).not.toContain("box-shadow: none");
     expect(narrowDesktopPlaqueBlock).toContain("var(--home-student-id-shell-bg)");
     expect(narrowDesktopPlaqueBlock).toContain("background-color: transparent");
     expect(narrowDesktopPlaqueBlock).toContain("border: 0");
     expect(narrowDesktopPlaqueBlock).toContain("border-radius: 0");
     expect(narrowDesktopPlaqueBlock).toContain("box-shadow: none");
+    expect(brightMobilePlaqueBlock).toContain("--home-student-id-stats-center-x: 80%");
+    expect(brightMobilePlaqueBlock).toContain("--home-student-id-stats-width: clamp(114px, 36%, 134px)");
+    expect(brightMobilePlaqueBlock).toContain("box-shadow: none !important");
     expect(finalPortraitPlaqueBlock).toContain("var(--home-student-id-shell-bg)");
+    expect(finalPortraitPlaqueBlock).toContain("--home-student-id-stats-center-x: 80%");
+    expect(finalPortraitPlaqueBlock).toContain("--home-student-id-stats-width: clamp(114px, 36%, 134px)");
     expect(finalPortraitPlaqueBlock).toContain("background-color: transparent");
     expect(finalPortraitPlaqueBlock).toContain("border: 0");
     expect(finalPortraitPlaqueBlock).toContain("border-radius: 0");
@@ -384,25 +494,44 @@ describe("HomeScreen", () => {
     expect(narrowDesktopCss).not.toContain("padding: clamp(12px, 2vw, 20px) !important");
     expect(narrowDesktopCss).not.toContain("padding: clamp(16px, 2.6vw, 24px) !important");
     expect(brightStageBlock).toContain("padding-top: clamp(28px, 3vw, 48px)");
-    expect(brightStatsBlock).toContain("width: 100%");
+    expect(brightStatsBlock).toContain("position: absolute");
+    expect(brightStatsBlock).toContain("left: var(--home-student-id-stats-center-x)");
+    expect(brightStatsBlock).toContain("top: var(--home-student-id-stats-center-y)");
+    expect(brightStatsBlock).toContain("width: var(--home-student-id-stats-width)");
+    expect(brightStatsBlock).toContain("height: var(--home-student-id-stats-height)");
     expect(brightStatsBlock).toContain("min-width: 0");
     expect(brightStatsBlock).toContain("box-sizing: border-box");
-    expect(brightStatsBlock).toContain("grid-column: 3");
+    expect(brightStatsBlock).toContain("grid-column: 1 / -1");
     expect(brightStatsBlock).toContain("container-type: inline-size");
-    expect(brightStatsBlock).toContain("place-content: center stretch");
+    expect(brightStatsBlock).toContain("place-content: center");
+    expect(brightStatsBlock).toContain("transform: translate(-50%, -50%)");
     expect(brightStatsBlock).toContain("background: transparent !important");
     expect(brightStatsBlock).toContain("border: 0 !important");
     expect(brightStatsBlock).toContain("box-shadow: none !important");
+    expect(brightStatsBlock).toContain("overflow: visible !important");
     expect(brightMobileStatsBlock).toContain("background: transparent !important");
     expect(brightMobileStatsBlock).toContain("border: 0 !important");
     expect(brightMobileStatsBlock).toContain("box-shadow: none !important");
+    expect(brightMobileStatsBlock).toContain("width: var(--home-student-id-stats-width) !important");
+    expect(brightMobileStatsBlock).toContain("transform: translate(-50%, -50%) !important");
     expect(finalPortraitStatsBlock).toContain("background: transparent !important");
     expect(finalPortraitStatsBlock).toContain("border: 0 !important");
     expect(finalPortraitStatsBlock).toContain("border-radius: 0");
     expect(finalPortraitStatsBlock).toContain("box-shadow: none !important");
-    expect(brightHomeCss).toContain("grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.7fr) minmax(0, 1fr)");
-    expect(brightHomeCss).toContain("font-size: clamp(9px, 9cqw, 13px)");
-    expect(brightHomeCss).toContain(".plaque-mode-rating");
+    expect(finalPortraitStatsBlock).toContain("width: var(--home-student-id-stats-width) !important");
+    expect(finalPortraitStatsBlock).toContain("transform: translate(-50%, -50%)");
+    expect(brightStatsBlock).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
+    expect(brightModeStatBlock).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(brightModeStatBlock).toContain("grid-template-rows: auto auto !important");
+    expect(brightModeStatBlock).toContain("align-content: center !important");
+    expect(brightModeIconBlock).toContain("width: clamp(30px, 21cqw, 38px) !important");
+    expect(brightModeIconBlock).toContain("object-fit: contain !important");
+    expect(brightModeRankBlock).toContain("font-family: var(--font-numeric-accent), var(--font-ui-default) !important");
+    expect(brightModeRankBlock).toContain("font-size: clamp(22px, 18cqw, 30px) !important");
+    expect(brightModeRankBlock).toContain("font-variant-numeric: tabular-nums !important");
+    expect(brightModeRankDanBlock).toContain("color: #c4322e !important");
+    expect(brightModeRankKyuBlock).toContain("color: #4a2772 !important");
+    expect(brightHomeCss).not.toContain(".plaque-mode-rating");
     expect(brightHomeCss).toContain("justify-self: center");
     expect(brightShortHeightMedia).not.toContain("max-height: calc(100dvh - 128px)");
     expect(brightShortHeightMedia).toContain("min-height: auto");
@@ -411,9 +540,11 @@ describe("HomeScreen", () => {
     expect(brightNarrowDesktopMedia).not.toContain("width: clamp(318px, 36vw, 386px)");
     expect(brightNarrowDesktopMedia).toContain("width: 100%");
     expect(brightNarrowDesktopMedia).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
-    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(0, 1fr) minmax(96px, clamp(100px, 26%, 110px))");
+    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(0, 1fr) minmax(132px, clamp(136px, 34%, 150px))");
     expect(brightNarrowDesktopMedia).toContain("font-size: clamp(20px, 2.1vw, 24px)");
-    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.7fr) minmax(0, 1fr)");
+    expect(brightNarrowDesktopMedia).toContain("grid-template-rows: auto auto !important");
+    expect(brightNarrowDesktopMedia).toContain("width: clamp(32px, 26cqw, 40px) !important");
+    expect(brightNarrowDesktopMedia).toContain("font-size: clamp(22px, 20cqw, 30px) !important");
     expect(utilityBlock).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
     expect(utilityBlock).toContain("grid-area: utility");
     expect(utilityBlock).toContain("width: 100%");
@@ -433,11 +564,16 @@ describe("HomeScreen", () => {
     expect(brightToolboxEntry).toContain(".recruitment-entry:not(.has-alert)");
     expect(brightToolboxEntry).toContain(".watch-entry");
     expect(brightToolboxEntry).toContain("--utility-paper: var(--bright-sheet-clean)");
-    expect(brightToolboxEntry).toContain("transform: translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018) !important");
+    expect(brightToolboxEntry).toContain(".utility-entry-art");
+    expect(brightToolboxEntry).toContain("filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) !important");
+    expect(brightToolboxEntry).toContain("outline: 0 solid transparent");
+    expect(brightToolboxEntry).toContain("transform: rotate(2deg) !important");
+    expect(brightToolboxEntry).toContain("transform: translateY(1px) rotate(1deg) scale(0.985) !important");
+    expect(brightToolboxEntry).toContain(".recruitment-entry.has-alert .utility-entry-art");
     expect(brightUtilityCss).toContain(".utility-entry:hover:not(:disabled)");
-    expect(brightUtilityCss).toContain("transform: translateY(-3px) scale(1.018) !important;");
+    expect(brightUtilityCss).toContain("transform: rotate(2deg) !important;");
     expect(brightUtilityCss).toContain(".utility-entry:active:not(:disabled)");
-    expect(brightUtilityCss).toContain("transform: translateY(2px) scale(0.985) !important;");
+    expect(brightUtilityCss).toContain("transform: translateY(1px) rotate(1deg) scale(0.985) !important;");
     expect(brightUtilityCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(brightUtilityCss).toContain("transition-duration: 1ms !important;");
     expect(brightUtilityCss).not.toContain(".utility-entry:nth-child(3n),\n.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:hover");
@@ -493,6 +629,12 @@ describe("HomeScreen", () => {
     expect(mobileMedia).toContain("transform: none");
 
     const brightMobileCss = readCssFixture("../styles/themes/bright-school/mobile.css");
+    const brightMobileStageBlock = brightMobileCss.match(/section\.home-grid-featured\.home-stage\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileMatchBlock = brightMobileCss.match(/\.home-match-feature\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileManualBlock = brightMobileCss.match(/\.house-manual-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileManualImageBlock = brightMobileCss.match(/\.house-manual-entry\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileUtilityGridBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/g)?.find((block) => block.includes("grid-area: utility")) ?? "";
+    const brightMobileUtilityEntryBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
     expect(brightMobileCss).toContain(".home-mobile-menu");
     expect(brightMobileCss).toContain(".home-mobile-menu-panel");
     expect(brightMobileCss).toContain("main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main");
@@ -500,8 +642,15 @@ describe("HomeScreen", () => {
     expect(brightMobileCss).toContain("padding: clamp(34px, 9.8vw, 46px) clamp(32px, 9vw, 44px) clamp(30px, 8.6vw, 42px) !important");
     expect(brightMobileCss).not.toContain("main.home-screen.home-terminal-screen > section.home-orientation-guard");
     expect(brightMobileCss).toContain('"player"\n      "match"\n      "manual"\n      "utility" !important');
+    expect(brightMobileStageBlock).toContain("grid-template-rows: auto clamp(176px, 52vw, 224px) clamp(148px, 42vw, 188px) auto !important");
+    expect(brightMobileStageBlock).toContain("gap: 8px !important");
     expect(brightMobileCss).toContain('grid-template-areas: "brand online actions" !important');
-    expect(brightMobileCss).toContain("grid-template-rows: minmax(188px, clamp(210px, 58vw, 270px)) !important");
+    expect(brightMobileMatchBlock).toContain("height: clamp(176px, 52vw, 224px) !important");
+    expect(brightMobileMatchBlock).toContain("grid-template-rows: minmax(0, 1fr) !important");
+    expect(brightMobileManualBlock).toContain("height: clamp(148px, 42vw, 188px) !important");
+    expect(brightMobileManualImageBlock).toContain("max-height: clamp(148px, 42vw, 188px) !important");
+    expect(brightMobileUtilityGridBlock).toContain("gap: 8px !important");
+    expect(brightMobileUtilityEntryBlock).toContain("min-height: 52px !important");
     expect(brightMobileCss).toContain("grid-template-columns: 22px max-content !important");
     expect(brightMobileCss).toContain("word-break: keep-all !important");
     expect(brightMobileCss).toContain(".topbar-actions > .icon-button");
@@ -540,7 +689,7 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("height: clamp(560px, 72dvh, 760px) !important");
     expect(finalMobileCss).toContain("width: 100% !important");
     expect(finalMobileCss).toContain("--home-plaque-name-column-min: calc(12ch + 1.4em)");
-    expect(finalMobileCss).toContain("grid-template-columns: 62px minmax(0, 1fr) minmax(106px, 116px) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: 62px minmax(0, 1fr) minmax(132px, 154px) !important");
     expect(finalMobileCss).toContain("font-size: clamp(18px, 1.45vw, 21px) !important");
     expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 1023px)");
     expect(finalMobileCss).toContain("--home-micro-stage-width: 960px");
@@ -549,7 +698,7 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("scrollbar-gutter: stable both-edges");
     expect(finalMobileCss).toContain("width: var(--home-micro-stage-width) !important");
     expect(finalMobileCss).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
-    expect(finalMobileCss).toContain("grid-template-columns: clamp(54px, 7vw, 64px) minmax(0, 1fr) minmax(100px, 27%) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: clamp(54px, 7vw, 64px) minmax(0, 1fr) minmax(128px, 34%) !important");
     expect(finalMobileCss).toContain("\"player match\"");
     expect(finalMobileCss).toContain("\"manual match\"");
     expect(finalMobileCss).toContain("\"utility match\"");
@@ -592,6 +741,71 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("margin-top: 14px !important;");
   });
 
+  it("centers translucent mode icon watermarks inside match mode choices", () => {
+    const html = renderHome({
+      matchModePickerOpen: true,
+      lobbyStats: {
+        onlineCount: 2,
+        matchmakingCounts: {
+          spark: 3,
+          standard: 0,
+          gomoku: 1
+        }
+      }
+    });
+    const modalCss = readCssFixture("../styles/modals.css");
+    const brightSchoolCss = readCssFixture("../styles/themes/bright-school.css");
+    const finalMobileCss = readCssFixture("../styles/mobile-adaptive.css");
+    const optionBlock = modalCss.match(/\.match-mode-option\s*\{[^}]+\}/)?.[0] ?? "";
+    const watermarkBlock = modalCss.match(/\.match-mode-watermark\s*\{[^}]+\}/)?.[0] ?? "";
+    const watermarkIconBlock = modalCss.match(/\.match-mode-watermark-icon\s*\{[^}]+\}/)?.[0] ?? "";
+    const watermarkLabelBlock = modalCss.match(/\.match-mode-watermark-label\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileWatermarkBlock = finalMobileCss.match(/\.match-mode-watermark\s*\{[^}]+\}/)?.[0] ?? "";
+    const copyBlock = modalCss.match(/\.match-mode-copy\s*\{[^}]+\}/)?.[0] ?? "";
+    const countBlock = modalCss.match(/\.match-mode-count\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightChildResetIndex = brightSchoolCss.lastIndexOf(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button > *");
+    const brightWatermarkBlock = brightSchoolCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.match-mode-option > \.match-mode-watermark\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightWatermarkIndex = brightSchoolCss.indexOf(brightWatermarkBlock);
+
+    expect(html).toContain("match-mode-watermark");
+    expect(html).toContain("match-mode-watermark-label text-display-accent");
+    expect(html).toContain('src="/assets/match-modes/mode-spark.png"');
+    expect(html).toContain('src="/assets/match-modes/mode-standard.png"');
+    expect(html).toContain('src="/assets/match-modes/mode-gomoku.png"');
+    expect(html).toContain("SIGRIKAGO MODE");
+    expect(html).toContain("STANDARD MODE");
+    expect(html).toContain("GOMOKU MODE");
+    expect(html).toContain("<strong>星炬对弈</strong>");
+    expect(html).toContain("<strong>标准对弈</strong>");
+    expect(html).toContain("<strong>来下五子棋吗？</strong>");
+    expect(html).toContain('aria-label="匹配中 3 人"');
+    expect(html).toContain('aria-label="匹配中 0 人"');
+    expect(html).toContain('aria-label="匹配中 1 人"');
+    expect(optionBlock).toContain("position: relative");
+    expect(optionBlock).toContain("isolation: isolate");
+    expect(optionBlock).toContain("overflow: hidden");
+    expect(watermarkBlock).toContain("position: absolute");
+    expect(watermarkBlock).toContain("top: 50%");
+    expect(watermarkBlock).toContain("left: 50%");
+    expect(watermarkBlock).toContain("opacity: 0.5");
+    expect(watermarkBlock).toContain("pointer-events: none");
+    expect(watermarkBlock).toContain("transform: translate(-50%, -50%)");
+    expect(brightChildResetIndex).toBeGreaterThan(-1);
+    expect(brightWatermarkIndex).toBeGreaterThan(brightChildResetIndex);
+    expect(brightWatermarkBlock).toContain("transform: translate(-50%, -50%) !important");
+    expect(watermarkIconBlock).toContain("object-fit: contain");
+    expect(watermarkLabelBlock).toContain("font-size: clamp(2rem, 4.8vw, 3.05rem)");
+    expect(watermarkLabelBlock).toContain("text-overflow: ellipsis");
+    expect(copyBlock).toContain("z-index: 1");
+    expect(countBlock).toContain("z-index: 1");
+    expect(countBlock).toContain("justify-self: end");
+    expect(finalMobileCss).toContain(".match-mode-watermark");
+    expect(mobileWatermarkBlock).toContain("opacity: 0.2 !important");
+    expect(finalMobileCss).toContain("max-width: min(58%, calc(100% - 132px)) !important;");
+    expect(finalMobileCss).toContain(".match-mode-watermark-label");
+    expect(finalMobileCss).toContain("font-size: clamp(1rem, 6.8vw, 1.45rem) !important;");
+  });
+
   it("splits match mode rules into stable mobile lines without a trailing time separator", () => {
     const split = splitMatchModeRules("13路 · 5分钟30秒3次 · 黑贴2又3/4子");
     const html = renderToStaticMarkup(createElement(MatchModeRuleText, {
@@ -608,7 +822,7 @@ describe("HomeScreen", () => {
     expect(html).not.toContain("5分钟30秒3次 ·</span>");
   });
 
-  it("renders the recruitment entry as an enabled home utility action with a ready background alert", () => {
+  it("renders the recruitment entry as an enabled image utility action with a ready accent", () => {
     const source = readFileSync(new URL("./components/HomeUtilityDock.jsx", import.meta.url), "utf8");
     const mobileCss = readCssFixture("../styles/mobile-adaptive.css");
     const stageSource = readFileSync(new URL("./components/HomeStage.jsx", import.meta.url), "utf8");
@@ -621,6 +835,9 @@ describe("HomeScreen", () => {
     expect(source).toContain("has-alert");
     expect(source).toContain("recruitmentReady");
     expect(source).toContain("招募");
+    expect(source).toContain("utility-image-entry");
+    expect(source).toContain("utility-entry-art");
+    expect(source).toContain("home-utility-recruitment.webp");
     expect(source).not.toContain("成员补给");
     expect(source).not.toContain("utility-entry-description");
     expect(source).not.toContain("<strong>扭蛋</strong>");
@@ -630,11 +847,14 @@ describe("HomeScreen", () => {
     expect(overlaySource).toContain("RecruitmentModal");
     const alertCss = readCssFixture("../styles/home-terminal/recruitment-alert.css");
     const brightUtilityCss = readCssFixture("../styles/themes/bright-school/surface-contracts/home-utility-tabs.css");
+    const brightToolboxCss = readCssFixture("../styles/themes/bright-school/home/utility-toolbox.css");
     expect(alertCss).toContain(".recruitment-entry.has-alert");
     expect(alertCss).toContain("background: linear-gradient(90deg");
     expect(alertCss).not.toContain("home-entry-red-dot");
     expect(brightUtilityCss).toContain(".recruitment-entry.has-alert");
-    expect(brightUtilityCss).toContain("background: #ff9ebb !important;");
+    expect(brightUtilityCss).toContain("background: transparent !important;");
+    expect(brightToolboxCss).toContain(".recruitment-entry.has-alert .utility-entry-art");
+    expect(brightToolboxCss).toContain("drop-shadow(0 0 10px rgba(255, 95, 149, 0.18))");
     expect(brightUtilityCss).not.toContain("home-entry-red-dot");
   });
 

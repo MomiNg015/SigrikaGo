@@ -17,14 +17,14 @@ export default function PlayerPlaque({ character, user, onOpenResume }) {
           <strong>
             <UserIdentity user={user} />
           </strong>
-          <span className="plaque-stats" aria-label="对弈模式段位积分">
+          <span className="plaque-stats" aria-label="对弈模式段位">
             {modeOrderedEntries().map((mode) => {
-              const stats = plaqueModeStats(user, mode.id);
+              const rank = plaqueModeRank(user, mode.id);
+              const rankDisplay = plaqueModeRankDisplay(rank);
               return (
-                <span className={`plaque-mode-stat plaque-mode-stat-${mode.id}`} key={mode.id}>
-                  <span className="plaque-mode-name text-display-accent">{mode.shortTitle}</span>
-                  <span className="plaque-mode-rank">{stats.rank}</span>
-                  <span className="plaque-mode-rating text-rating-value">{stats.rating}分</span>
+                <span className={`plaque-mode-stat plaque-mode-stat-${mode.id}`} key={mode.id} aria-label={`${mode.shortTitle} ${rank}`}>
+                  <img className="plaque-mode-icon" src={mode.iconUrl} alt="" aria-hidden="true" decoding="async" />
+                  <span className={`plaque-mode-rank plaque-mode-rank-${rankDisplay.tone}`} aria-hidden="true">{rankDisplay.value}</span>
                 </span>
               );
             })}
@@ -35,17 +35,15 @@ export default function PlayerPlaque({ character, user, onOpenResume }) {
   );
 }
 
-function plaqueModeStats(user, mode) {
+function plaqueModeRank(user, mode) {
   const stats = user.modeStats?.[mode];
-  const fallbackRating = mode === "spark" ? user.rating : 1000;
-  const rating = normalizeRating(stats?.rating ?? fallbackRating);
-  return {
-    rating,
-    rank: stats?.rank ?? user.rank ?? "3段",
-  };
+  return stats?.rank ?? user.rank ?? "3段";
 }
 
-function normalizeRating(value) {
-  const rating = Number(value);
-  return Number.isFinite(rating) ? rating : 1000;
+function plaqueModeRankDisplay(rank) {
+  const rankText = String(rank ?? "3段");
+  const value = rankText.match(/\d+/)?.[0] ?? rankText;
+  const tone = rankText.includes("级") ? "kyu" : "dan";
+
+  return { value, tone };
 }

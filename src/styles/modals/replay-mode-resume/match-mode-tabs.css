@@ -1,5 +1,5 @@
 .match-mode-modal {
-  width: min(520px, calc(100vw - 32px));
+  width: min(1260px, calc(100vw - 64px));
   gap: 16px;
 }
 
@@ -14,20 +14,26 @@
 }
 
 .match-mode-option {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   justify-content: stretch;
   align-items: center;
   gap: 16px;
-  min-height: 76px;
+  min-height: 108px;
   width: 100%;
-  padding: 14px 16px;
+  overflow: hidden;
+  padding: 16px 22px;
   text-align: left;
 }
 
 .match-mode-copy {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 5px;
+  justify-self: start;
   min-width: 0;
 }
 
@@ -50,7 +56,43 @@
   display: block;
 }
 
+.match-mode-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  max-width: min(64%, calc(100% - 260px));
+  color: #4a3736;
+  opacity: 0.5;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.match-mode-watermark-icon {
+  flex: 0 0 auto;
+  width: clamp(54px, 6vw, 78px);
+  height: clamp(54px, 6vw, 78px);
+  object-fit: contain;
+}
+
+.match-mode-watermark-label {
+  min-width: 0;
+  max-width: calc(100% - 92px);
+  overflow: hidden;
+  color: currentColor;
+  font-size: clamp(2rem, 4.8vw, 3.05rem);
+  line-height: 1;
+  text-overflow: ellipsis;
+}
+
 .match-mode-count {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;

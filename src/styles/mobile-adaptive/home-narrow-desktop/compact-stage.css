@@ -58,9 +58,9 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
-    min-height: 66px !important;
-    grid-template-columns: 30px minmax(0, 1fr) !important;
-    padding: 9px 10px !important;
+    min-height: 60px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 0 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry {
@@ -85,7 +85,10 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card {
     --home-plaque-name-column-min: calc(12ch + 1em);
     --home-student-id-avatar-size: clamp(52px, 7vw, 62px);
-    grid-template-columns: clamp(52px, 7vw, 62px) minmax(0, 1fr) minmax(98px, clamp(102px, 27%, 112px)) !important;
+    --home-student-id-stats-center-x: 81%;
+    --home-student-id-stats-width: clamp(128px, 34%, 150px);
+    --home-student-id-stats-height: 66px;
+    grid-template-columns: clamp(52px, 7vw, 62px) minmax(0, 1fr) minmax(128px, clamp(132px, 34%, 150px)) !important;
     column-gap: clamp(8px, 1.2vw, 12px) !important;
     min-height: 90px !important;
     padding: 16px 12px 12px 22px !important;
@@ -93,16 +96,18 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-stats {
     min-width: 0 !important;
-    padding: 8px 5px !important;
-    place-content: center stretch !important;
-    place-items: center stretch !important;
+    padding: 5px 2px !important;
+    place-content: center !important;
+    place-items: center !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-stat {
-    grid-template-columns: minmax(0, 0.86fr) minmax(0, 0.74fr) minmax(0, 1fr) !important;
-    gap: clamp(2px, 2.8cqw, 4px) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    gap: clamp(1px, 1.4cqw, 3px) !important;
+    align-content: center !important;
     align-items: center !important;
     justify-items: center !important;
-    justify-content: stretch !important;
+    justify-content: center !important;
   }
 }

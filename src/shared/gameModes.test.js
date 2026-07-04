@@ -13,12 +13,16 @@ describe("game modes", () => {
     expect(modeOrderedEntries().map((mode) => mode.id)).toEqual(["spark", "standard", "gomoku"]);
     expect(GAME_MODES.spark).toMatchObject({
       id: "spark",
+      englishLabel: "SIGRIKAGO MODE",
+      iconUrl: "/assets/match-modes/mode-spark.png",
       boardSize: 13,
       komi: 2.75,
       skillEnabled: true
     });
     expect(GAME_MODES.standard).toMatchObject({
       id: "standard",
+      englishLabel: "STANDARD MODE",
+      iconUrl: "/assets/match-modes/mode-standard.png",
       boardSize: 19,
       komi: 3.75,
       skillEnabled: false
@@ -27,6 +31,8 @@ describe("game modes", () => {
       id: "gomoku",
       title: "来下五子棋吗？",
       shortTitle: "五子棋",
+      englishLabel: "GOMOKU MODE",
+      iconUrl: "/assets/match-modes/mode-gomoku.png",
       boardSize: 13,
       skillEnabled: false,
       family: "gomoku"

@@ -19,6 +19,12 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
   home: Object.freeze([
     "/assets/home/book-entry.webp",
     "/assets/home/fantasy-match-entry.webp",
+    "/assets/home/home-utility-recruitment.webp",
+    "/assets/home/home-utility-shop.webp",
+    "/assets/home/home-utility-warehouse.webp",
+    "/assets/home/home-utility-leaderboard.webp",
+    "/assets/home/home-utility-watch.webp",
+    "/assets/home/home-utility-friends.webp",
     "/assets/home/multipurpose-classroom-bg.webp"
   ]),
   shop: Object.freeze([

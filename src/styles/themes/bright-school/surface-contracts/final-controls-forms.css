@@ -36,6 +36,10 @@
   text-shadow: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-mode-option > .match-mode-watermark {
+  transform: translate(-50%, -50%) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button:hover,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button:focus-visible,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .settings-tabs button.active,

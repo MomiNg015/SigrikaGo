@@ -167,7 +167,8 @@
 .home-player-zone .plaque-stats {
   min-width: 154px;
   display: grid;
-  gap: 3px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
   padding: 8px 9px;
   border: 1px solid rgba(0, 255, 190, 0.28);
   border-radius: 0;
@@ -178,17 +179,20 @@
 }
 
 .home-player-zone .plaque-mode-stat {
-  grid-template-columns: 34px minmax(32px, max-content) minmax(46px, max-content);
-  gap: 6px;
-  justify-content: start;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(22px, auto) auto;
+  gap: 4px;
+  justify-content: center;
+  justify-items: center;
+  text-align: center;
 }
 
-.home-player-zone .plaque-mode-name {
-  color: var(--home-terminal-cyan);
-  font-size: 11px;
+.home-player-zone .plaque-mode-icon {
+  width: 22px;
+  height: 22px;
 }
 
-.home-player-zone .plaque-mode-rank,
-.home-player-zone .plaque-mode-rating {
+.home-player-zone .plaque-mode-rank {
   color: var(--home-terminal-text);
+  white-space: nowrap;
 }

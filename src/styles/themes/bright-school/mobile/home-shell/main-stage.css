@@ -34,7 +34,8 @@
       "match"
       "manual"
       "utility" !important;
-    gap: 14px !important;
+    grid-template-rows: auto clamp(176px, 52vw, 224px) clamp(148px, 42vw, 188px) auto !important;
+    gap: 8px !important;
     padding: 12px 0 0 !important;
     overflow: visible !important;
   }

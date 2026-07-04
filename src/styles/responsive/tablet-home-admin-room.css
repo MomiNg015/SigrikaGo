@@ -167,7 +167,8 @@
   }
 
   .home-player-zone .plaque-mode-stat {
-    grid-template-columns: 28px max-content max-content;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(18px, auto) auto;
     gap: 4px;
   }
 

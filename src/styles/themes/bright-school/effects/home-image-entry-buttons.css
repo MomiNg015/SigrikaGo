@@ -53,7 +53,7 @@
   border: 0 !important;
   border-radius: 0 !important;
   padding: 0 !important;
-  filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.16)) !important;
+  filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover,
@@ -63,7 +63,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:hover img,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible img {
-  filter: drop-shadow(8px 10px 0 rgba(61, 43, 37, 0.16)) !important;
+  filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:focus-visible {
@@ -76,7 +76,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry:active img {
-  filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.14)) !important;
+  filter: drop-shadow(3px 4px 0 rgba(61, 43, 37, 0.26)) !important;
   transform: translateY(1px) scale(0.992) !important;
 }
 

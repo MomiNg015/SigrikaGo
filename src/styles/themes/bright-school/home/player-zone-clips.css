@@ -19,16 +19,6 @@
   display: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone::before {
-  left: 78px !important;
-  transform: rotate(5deg) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-zone::after {
-  right: 76px !important;
-  transform: rotate(-5deg) !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-row.tactical-id-row {
   position: relative !important;
   z-index: 3 !important;

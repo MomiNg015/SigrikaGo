@@ -1,10 +1,10 @@
 export const CSS_DEBT_BASELINE = {
   date: "2026-07-03",
-  scope: "All CSS files under src/styles after the import-only split work, admin story node settings CSS, and frontend layout polish contracts including story-player padding.",
+  scope: "All CSS files under src/styles after the import-only split work, admin story node settings CSS, frontend layout polish contracts including story-player padding, and game-mode icon watermark/player-plaque/utility image contracts.",
   metrics: {
     totalFiles: 582,
-    totalBytes: 1115169,
-    importantCount: 6881,
+    totalBytes: 1119188,
+    importantCount: 6943,
     importantFiles: 274,
     hardcodedHexCount: 2262,
     mediaFiles: 216,

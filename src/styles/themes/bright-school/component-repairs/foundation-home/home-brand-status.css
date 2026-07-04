@@ -68,9 +68,7 @@
   display: grid !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque .plaque-mode-name,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque .plaque-mode-rank,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque .plaque-mode-rating {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque .plaque-mode-rank {
   color: var(--bright-ink) !important;
   font-weight: 900 !important;
   white-space: nowrap !important;

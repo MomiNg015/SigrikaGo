@@ -7,4 +7,9 @@
     scroll-behavior: auto !important;
     transition-duration: 1ms !important;
   }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card:hover,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card:focus-visible {
+    transform: none !important;
+  }
 }
