@@ -4,6 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 import { CHARACTER_SKILL_VOICES, CHARACTER_SYSTEM_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
+import {
+  SHOP_MASCOT_DEFAULT_IMAGE,
+  SHOP_MASCOT_THANKS_IMAGE
+} from "./shopMascotAssets.js";
 import { battlePreloadAssets, deploymentSocketBase, loginPreloadAssets, playbackAssetSources, preloadLoginAssets, retrySkippedPreloadAssets } from "./preloadAssets.js";
 
 describe("deployment preload asset helpers", () => {
@@ -64,7 +68,9 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalImages).toContain("/assets/home/home-utility-watch.webp");
     expect(assets.criticalImages).toContain("/assets/home/home-utility-friends.webp");
     expect(assets.criticalImages).toContain("/assets/home/multipurpose-classroom-bg.webp");
-    expect(assets.images).toContain("/assets/zahiya_shop.webp");
+    expect(assets.images).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
+    expect(assets.images).toContain(SHOP_MASCOT_THANKS_IMAGE);
+    expect(assets.images).not.toContain("/assets/zahiya_shop.webp");
     expect(assets.images).toContain("/assets/items/qiuyuan-zhouwo.webp");
     expect(assets.images).toContain("/assets/items/rainbow-bean-candy.webp");
     expect(assets.criticalImages).toContain("/assets/items/shop-only.webp");
@@ -97,6 +103,9 @@ describe("deployment preload asset helpers", () => {
   it("derives static image preload groups from the runtime asset registry", () => {
     const assets = loginPreloadAssets();
 
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).toContain(SHOP_MASCOT_THANKS_IMAGE);
+    expect(RUNTIME_IMAGE_ASSETS.shop).not.toContain("/assets/zahiya_shop.webp");
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.home));
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
     expect(assets.deferredImages).toEqual([]);

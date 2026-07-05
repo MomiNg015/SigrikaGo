@@ -4,6 +4,14 @@ export const SHOP_MASCOT_LINES = [
   "欢迎来到扎希拉商店！"
 ];
 
+export {
+  SHOP_MASCOT_DEFAULT_IMAGE,
+  SHOP_MASCOT_MOODS,
+  SHOP_MASCOT_THANKS_DURATION_MS,
+  SHOP_MASCOT_THANKS_IMAGE,
+  SHOP_MASCOT_THANKS_LINE
+} from "../shared/shopMascotAssets.js";
+
 export const SHOP_PAGE_SIZE = 8;
 
 export function pickShopMascotLine(random = Math.random) {

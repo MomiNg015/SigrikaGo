@@ -14,6 +14,10 @@ import {
   UI_UNAVAILABLE_SOUND
 } from "./audioAssets.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import {
+  SHOP_MASCOT_DEFAULT_IMAGE,
+  SHOP_MASCOT_THANKS_IMAGE
+} from "./shopMascotAssets.js";
 
 export const RUNTIME_IMAGE_ASSETS = Object.freeze({
   home: Object.freeze([
@@ -28,7 +32,8 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
     "/assets/home/multipurpose-classroom-bg.webp"
   ]),
   shop: Object.freeze([
-    "/assets/zahiya_shop.webp",
+    SHOP_MASCOT_DEFAULT_IMAGE,
+    SHOP_MASCOT_THANKS_IMAGE,
     "/assets/items/qiuyuan-zhouwo.webp",
     "/assets/items/rainbow-bean-candy.webp"
   ]),

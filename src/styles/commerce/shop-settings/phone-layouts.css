@@ -26,16 +26,21 @@
   }
 
   .shop-sidebar {
-    grid-template-columns: 48px minmax(0, 1fr) auto;
-    grid-template-rows: auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 45%);
+    grid-template-areas:
+      "bubble mascot"
+      "wallet mascot";
+    grid-template-rows: auto auto;
     justify-items: stretch;
     gap: 8px;
-    padding: 6px 4px 8px;
+    padding: 8px 0 0 8px;
     border-right: 0;
     border-bottom: 1px solid rgba(226, 207, 231, 0.9);
+    overflow: hidden;
   }
 
   .shop-mascot-bubble {
+    grid-area: bubble;
     width: 100%;
     min-height: 0;
     margin: 0;
@@ -46,13 +51,20 @@
   }
 
   .shop-mascot-slot {
-    grid-row: 1;
-    width: 48px;
-    height: 54px;
+    grid-area: mascot;
+    align-self: end;
+    justify-self: end;
+    width: 100%;
+    height: auto;
   }
 
   .shop-wallet-wrap {
-    margin-top: 0;
+    grid-area: wallet;
+    position: static;
+    transform: none;
+    align-self: end;
+    justify-self: start;
+    margin: 0 0 8px;
     gap: 2px;
   }
 

@@ -10,7 +10,12 @@ import {
   isShopItemOwned,
   isShopItemSoldOut,
   pickShopMascotLine,
-  SHOP_MASCOT_LINES
+  SHOP_MASCOT_DEFAULT_IMAGE,
+  SHOP_MASCOT_LINES,
+  SHOP_MASCOT_MOODS,
+  SHOP_MASCOT_THANKS_DURATION_MS,
+  SHOP_MASCOT_THANKS_IMAGE,
+  SHOP_MASCOT_THANKS_LINE
 } from "./shopModalHelpers.js";
 import {
   getShopItemDetailOwned,
@@ -20,6 +25,11 @@ import {
 import ShopModal from "./ShopModal.jsx";
 import ShopItemCard from "./shop/ShopItemCard.jsx";
 import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
+import ShopSidebar from "./shop/ShopSidebar.jsx";
+import {
+  clearShopMascotThanksTimer,
+  scheduleShopMascotThanks
+} from "./shop/useShopCatalog.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("ShopModal helpers", () => {
@@ -41,9 +51,40 @@ describe("ShopModal helpers", () => {
     expect(html).toContain("shop-sidebar");
     expect(html).toContain("shop-content");
     expect(html).toContain("shop-wallet");
+    expect(html).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
+    expect(html).toContain(SHOP_MASCOT_THANKS_IMAGE);
     expect(html).toContain('decoding="async"');
     expect(html).not.toContain("<h2");
     expect(html).not.toContain("shop-header-display");
+  });
+
+  it("renders default and thank-you shop mascot portraits as preloaded crossfade layers", () => {
+    const defaultHtml = renderToStaticMarkup(createElement(ShopSidebar, {
+      mascotLine: "欢迎来到扎希拉商店！",
+      mascotMood: SHOP_MASCOT_MOODS.default,
+      user: { coins: 180 }
+    }));
+    const thanksHtml = renderToStaticMarkup(createElement(ShopSidebar, {
+      mascotLine: SHOP_MASCOT_THANKS_LINE,
+      mascotMood: SHOP_MASCOT_MOODS.thanks,
+      user: { coins: 180 }
+    }));
+
+    expect(defaultHtml).toContain(`src="${SHOP_MASCOT_DEFAULT_IMAGE}"`);
+    expect(defaultHtml).toContain(`src="${SHOP_MASCOT_THANKS_IMAGE}"`);
+    expect(defaultHtml).toContain(`data-mascot-mood="${SHOP_MASCOT_MOODS.default}"`);
+    expect(defaultHtml).toContain('class="shop-mascot-image shop-mascot-image-default is-active"');
+    expect(defaultHtml).toContain('class="shop-mascot-image shop-mascot-image-thanks"');
+    expect(defaultHtml).toContain('width="1448"');
+    expect(defaultHtml).toContain('height="1054"');
+    expect(defaultHtml).toContain('aria-live="polite"');
+    expect(defaultHtml).toContain('aria-hidden="true"');
+    expect(thanksHtml).toContain(`src="${SHOP_MASCOT_DEFAULT_IMAGE}"`);
+    expect(thanksHtml).toContain(`src="${SHOP_MASCOT_THANKS_IMAGE}"`);
+    expect(thanksHtml).toContain(`data-mascot-mood="${SHOP_MASCOT_MOODS.thanks}"`);
+    expect(thanksHtml).toContain('class="shop-mascot-image shop-mascot-image-default"');
+    expect(thanksHtml).toContain('class="shop-mascot-image shop-mascot-image-thanks is-active"');
+    expect(thanksHtml).toContain(SHOP_MASCOT_THANKS_LINE);
   });
 
   it("hides the shop blue-gem wallet while keeping the coin wallet visible", () => {
@@ -264,6 +305,64 @@ describe("ShopModal helpers", () => {
     expect(SHOP_MASCOT_LINES).toContain(pickShopMascotLine(() => 0.99));
   });
 
+  it("schedules the shop mascot thank-you state and refreshes repeated success timers", () => {
+    const timerRef = { current: null };
+    const moods = [];
+    const clearedTimers = [];
+    const scheduledTimers = [];
+    const setMascotMood = (mood) => moods.push(mood);
+    const setTimeoutFn = (callback, delayMs) => {
+      const id = `timer-${scheduledTimers.length + 1}`;
+      scheduledTimers.push({ id, callback, delayMs });
+      return id;
+    };
+    const clearTimeoutFn = (id) => clearedTimers.push(id);
+
+    scheduleShopMascotThanks({ timerRef, setMascotMood, setTimeoutFn, clearTimeoutFn });
+    scheduleShopMascotThanks({ timerRef, setMascotMood, setTimeoutFn, clearTimeoutFn });
+
+    expect(moods).toEqual([SHOP_MASCOT_MOODS.thanks, SHOP_MASCOT_MOODS.thanks]);
+    expect(scheduledTimers.map((timer) => timer.delayMs)).toEqual([
+      SHOP_MASCOT_THANKS_DURATION_MS,
+      SHOP_MASCOT_THANKS_DURATION_MS
+    ]);
+    expect(clearedTimers).toEqual(["timer-1"]);
+    expect(timerRef.current).toBe("timer-2");
+
+    scheduledTimers[1].callback();
+
+    expect(moods).toEqual([
+      SHOP_MASCOT_MOODS.thanks,
+      SHOP_MASCOT_MOODS.thanks,
+      SHOP_MASCOT_MOODS.default
+    ]);
+    expect(timerRef.current).toBe(null);
+  });
+
+  it("cleans up pending shop mascot thank-you timers", () => {
+    const timerRef = { current: "timer-1" };
+    const clearedTimers = [];
+
+    clearShopMascotThanksTimer(timerRef, (id) => clearedTimers.push(id));
+    clearShopMascotThanksTimer(timerRef, (id) => clearedTimers.push(id));
+
+    expect(clearedTimers).toEqual(["timer-1"]);
+    expect(timerRef.current).toBe(null);
+  });
+
+  it("keeps shop mascot purchase feedback limited to successful purchases", () => {
+    const source = readFileSync(new URL("./shop/useShopCatalog.js", import.meta.url), "utf8");
+    const successStart = source.indexOf("const data = await api(`/api/shop/${item.id}/purchase`");
+    const catchStart = source.indexOf("} catch", successStart);
+    const successBlock = source.slice(successStart, catchStart);
+    const catchBlock = source.slice(catchStart, source.indexOf("} finally", catchStart));
+
+    expect(successBlock).toContain("scheduleShopMascotThanks");
+    expect(catchBlock).not.toContain("scheduleShopMascotThanks");
+    expect(source).toMatch(/useEffect\(\(\) => \(\) => clearShopMascotThanksTimer\(mascotResetTimerRef\), \[\]\);/);
+    expect(source).toContain("mascotMood === SHOP_MASCOT_MOODS.thanks ? SHOP_MASCOT_THANKS_LINE : initialMascotLine");
+  });
+
   it("checks ownership against the right user collection", () => {
     const user = {
       ownedCharacters: ["denia"],
@@ -312,6 +411,96 @@ describe("ShopModal helpers", () => {
 
     expect(shopGridBlock).toContain("overflow: auto");
     expect(shopGridBlock).toContain("align-content: safe center");
+  });
+
+  it("keeps the desktop shop mascot full-width with the wallet at 30 percent and greeting 5 percent above the portrait", () => {
+    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const brightShopCss = readCssWithImports(new URL("../styles/themes/bright-school/commerce/shop.css", import.meta.url));
+    const baseSidebarBlock = cssBlock(commerceCss, ".shop-sidebar");
+    const baseWalletWrapBlock = cssBlock(commerceCss, ".shop-wallet-wrap");
+    const baseMascotSlotBlock = cssBlock(commerceCss, ".shop-mascot-slot");
+    const baseMascotImageBlock = cssBlock(commerceCss, ".shop-mascot-slot img");
+    const baseMascotLayerBlock = cssBlock(commerceCss, ".shop-mascot-image");
+    const baseMascotActiveBlock = cssBlock(commerceCss, ".shop-mascot-image.is-active");
+    const brightSidebarBlock = cssBlock(
+      brightShopCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar"
+    );
+    const brightWalletWrapBlock = cssBlock(
+      brightShopCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap"
+    );
+    const brightMascotSlotBlock = cssBlock(
+      brightShopCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot"
+    );
+    const brightMascotImageBlock = cssBlock(
+      brightShopCss,
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img"
+    );
+
+    expect(baseSidebarBlock).toContain('grid-template-areas:\n    "."\n    "bubble"\n    "."\n    "mascot";');
+    expect(baseSidebarBlock).toContain("grid-template-rows: minmax(0, 1fr) auto minmax(18px, 5%) auto;");
+    expect(baseSidebarBlock).toContain("position: relative;");
+    expect(baseSidebarBlock).toContain("padding: 0;");
+    expect(baseWalletWrapBlock).toContain("position: absolute;");
+    expect(baseWalletWrapBlock).toContain("top: 30%;");
+    expect(baseWalletWrapBlock).toContain("left: 50%;");
+    expect(baseWalletWrapBlock).toContain("transform: translate(-50%, -50%);");
+    expect(baseMascotSlotBlock).toContain("grid-area: mascot;");
+    expect(baseMascotSlotBlock).toContain("align-self: end;");
+    expect(baseMascotSlotBlock).toContain("width: 100%;");
+    expect(baseMascotSlotBlock).toContain("height: auto;");
+    expect(baseMascotImageBlock).toContain("width: 100%;");
+    expect(baseMascotImageBlock).toContain("height: auto;");
+    expect(baseMascotLayerBlock).toContain("grid-area: 1 / 1;");
+    expect(baseMascotLayerBlock).toContain("opacity: 0;");
+    expect(baseMascotLayerBlock).toContain("transition: opacity 120ms ease-out;");
+    expect(baseMascotActiveBlock).toContain("opacity: 1;");
+    expect(brightSidebarBlock).toContain('grid-template-areas:\n    "."\n    "bubble"\n    "."\n    "mascot" !important;');
+    expect(brightSidebarBlock).toContain("grid-template-rows: minmax(0, 1fr) auto minmax(18px, 5%) auto !important;");
+    expect(brightWalletWrapBlock).toContain("position: absolute !important;");
+    expect(brightWalletWrapBlock).toContain("top: 30% !important;");
+    expect(brightWalletWrapBlock).toContain("left: 50% !important;");
+    expect(brightWalletWrapBlock).toContain("transform: translate(-50%, -50%) !important;");
+    expect(brightMascotSlotBlock).toContain("align-self: end !important;");
+    expect(brightMascotSlotBlock).toContain("width: 100% !important;");
+    expect(brightMascotImageBlock).toContain("width: 100% !important;");
+    expect(brightMascotImageBlock).toContain("height: auto !important;");
+    expect(brightMascotImageBlock).toContain("max-height: none !important;");
+  });
+
+  it("keeps mobile shop mascot in the right-bottom 45 percent lane without covering wallet or greeting", () => {
+    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const brightMobileShopCss = readCssWithImports(
+      new URL("../styles/themes/bright-school/mobile/commerce-warehouse/shop-layout.css", import.meta.url)
+    );
+    const finalWalletCss = readCssWithImports(
+      new URL("../styles/mobile-adaptive/bright-school-portrait/shop-wallet.css", import.meta.url)
+    );
+
+    expect(mobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 45%);");
+    expect(mobileCss).toContain('grid-template-areas:\n      "bubble mascot"\n      "wallet mascot";');
+    expect(mobileCss).toContain("padding: 8px 0 0 8px;");
+    expect(mobileCss).toContain("grid-area: mascot;");
+    expect(mobileCss).toContain("align-self: end;");
+    expect(mobileCss).toContain("justify-self: end;");
+    expect(mobileCss).toContain("height: auto;");
+    expect(mobileCss).toContain("position: static;");
+    expect(mobileCss).toContain("transform: none;");
+    expect(brightMobileShopCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 45%) !important;");
+    expect(brightMobileShopCss).toContain('grid-template-areas:\n      "bubble mascot"\n      "wallet mascot" !important;');
+    expect(brightMobileShopCss).toContain("padding: 12px 0 0 12px !important;");
+    expect(brightMobileShopCss).toContain("align-self: end !important;");
+    expect(brightMobileShopCss).toContain("justify-self: end !important;");
+    expect(brightMobileShopCss).toContain("width: 100% !important;");
+    expect(brightMobileShopCss).toContain("height: auto !important;");
+    expect(brightMobileShopCss).toContain("max-height: none !important;");
+    expect(brightMobileShopCss).toContain("position: static !important;");
+    expect(brightMobileShopCss).toContain("transform: none !important;");
+    expect(finalWalletCss).toContain("grid-area: wallet !important;");
+    expect(finalWalletCss).toContain("align-self: end !important;");
+    expect(finalWalletCss).toContain("justify-self: start !important;");
   });
 
   it("keeps Bright School mobile decoration shop cards self-contained", () => {
@@ -428,13 +617,10 @@ describe("ShopModal helpers", () => {
   });
 });
 
-function readCssWithImports(url, seen = new Set()) {
-  const key = url.href;
-  if (seen.has(key)) return "";
-  seen.add(key);
-
-  const css = readFileSync(url, "utf8");
-  return css.replace(/@import\s+"([^"]+)";/g, (_match, importPath) => {
-    return readCssWithImports(new URL(importPath, url), seen);
-  });
+function cssBlock(source, selector) {
+  const start = source.indexOf(`${selector} {`);
+  if (start < 0) return "";
+  const bodyStart = source.indexOf("{", start);
+  const bodyEnd = source.indexOf("}", bodyStart);
+  return source.slice(start, bodyEnd + 1);
 }

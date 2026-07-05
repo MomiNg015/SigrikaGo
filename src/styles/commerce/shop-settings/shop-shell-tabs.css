@@ -14,15 +14,22 @@
 }
 
 .shop-sidebar {
+  position: relative;
   min-width: 0;
   display: grid;
-  grid-template-rows: auto auto auto;
-  align-content: safe center;
+  grid-template-areas:
+    "."
+    "bubble"
+    "."
+    "mascot";
+  grid-template-rows: minmax(0, 1fr) auto minmax(18px, 5%) auto;
+  align-content: stretch;
   align-items: center;
   justify-items: center;
   gap: 0;
-  padding: 16px 8px 22px;
+  padding: 0;
   border-right: 1px solid rgba(226, 207, 231, 0.9);
+  overflow: hidden;
 }
 
 .shop-content {
@@ -62,10 +69,16 @@
 }
 
 .shop-wallet-wrap {
+  grid-area: wallet;
+  position: absolute;
+  z-index: 2;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: grid;
   justify-items: center;
   gap: 5px;
-  margin-top: 15px;
+  margin: 0 8px 14px;
 }
 
 .shop-wallet-wrap > span {
@@ -79,11 +92,12 @@
 }
 
 .shop-mascot-bubble {
+  grid-area: bubble;
   position: relative;
   z-index: 1;
-  width: min(100%, 166px);
+  width: min(calc(100% - 16px), 166px);
   min-height: 42px;
-  margin-bottom: 5px;
+  margin: 0 8px;
   padding: 10px 13px;
   border: 2px solid #34253c;
   border-radius: 999px;
@@ -102,21 +116,43 @@
 }
 
 .shop-mascot-slot {
-  width: 172px;
-  height: 250px;
+  grid-area: mascot;
+  align-self: end;
+  width: 100%;
+  height: auto;
+  min-height: 0;
   margin: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
   display: grid;
   place-items: center;
+  isolation: isolate;
 }
 
 .shop-mascot-slot img {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
   display: block;
+}
+
+.shop-mascot-image {
+  grid-area: 1 / 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease-out;
+  will-change: opacity;
+}
+
+.shop-mascot-image.is-active {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-mascot-image {
+    transition: none;
+  }
 }
 
 .shop-tabs {

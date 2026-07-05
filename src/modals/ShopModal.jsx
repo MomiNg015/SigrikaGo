@@ -14,6 +14,7 @@ export default function ShopModal({ token, user, musicTracks, onPurchased, onNot
     buyItem,
     loading,
     mascotLine,
+    mascotMood,
     pageCount,
     purchasingId,
     selectCategory,
@@ -26,7 +27,7 @@ export default function ShopModal({ token, user, musicTracks, onPurchased, onNot
       <section className="shop-modal" onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={onClose}><X size={20} /></button>
         <div className="shop-layout">
-          <ShopSidebar mascotLine={mascotLine} user={user} />
+          <ShopSidebar mascotLine={mascotLine} mascotMood={mascotMood} user={user} />
           <div className={`shop-content shop-category-${activeCategory}`}>
             <ShopTabs activeCategory={activeCategory} onCategoryChange={selectCategory} />
             {loading && <p className="quiet-text">加载中...</p>}

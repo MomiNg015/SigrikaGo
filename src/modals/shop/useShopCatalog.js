@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../api/client.js";
 import {
   buildShopSlots,
   getShopPageCount,
-  pickShopMascotLine
+  pickShopMascotLine,
+  SHOP_MASCOT_MOODS,
+  SHOP_MASCOT_THANKS_LINE,
+  SHOP_MASCOT_THANKS_DURATION_MS
 } from "../shopModalHelpers.js";
 
 export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased }) {
@@ -11,8 +14,12 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("item");
   const [activePage, setActivePage] = useState(1);
-  const [mascotLine] = useState(() => pickShopMascotLine());
+  const [initialMascotLine] = useState(() => pickShopMascotLine());
+  const [mascotMood, setMascotMood] = useState(SHOP_MASCOT_MOODS.default);
   const [purchasingId, setPurchasingId] = useState("");
+  const mascotResetTimerRef = useRef(null);
+
+  useEffect(() => () => clearShopMascotThanksTimer(mascotResetTimerRef), []);
 
   useEffect(() => {
     let alive = true;
@@ -48,6 +55,10 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
       if (data.item) {
         setItems((current) => current.map((shopItem) => shopItem.id === data.item.id ? data.item : shopItem));
       }
+      scheduleShopMascotThanks({
+        timerRef: mascotResetTimerRef,
+        setMascotMood
+      });
       onNotice?.(`已购买${item.name}`, "success");
       notifyAchievementUnlocks(data.achievementUnlocks, onNotice);
     } catch (apiError) {
@@ -75,13 +86,34 @@ export function useShopCatalog({ token, user, musicTracks, onNotice, onPurchased
     activePage,
     buyItem,
     loading,
-    mascotLine,
+    mascotLine: mascotMood === SHOP_MASCOT_MOODS.thanks ? SHOP_MASCOT_THANKS_LINE : initialMascotLine,
+    mascotMood,
     pageCount,
     purchasingId,
     selectCategory,
     setActivePage,
     shopSlots
   };
+}
+
+export function scheduleShopMascotThanks({
+  timerRef,
+  setMascotMood,
+  setTimeoutFn = setTimeout,
+  clearTimeoutFn = clearTimeout
+}) {
+  clearShopMascotThanksTimer(timerRef, clearTimeoutFn);
+  setMascotMood(SHOP_MASCOT_MOODS.thanks);
+  timerRef.current = setTimeoutFn(() => {
+    setMascotMood(SHOP_MASCOT_MOODS.default);
+    timerRef.current = null;
+  }, SHOP_MASCOT_THANKS_DURATION_MS);
+}
+
+export function clearShopMascotThanksTimer(timerRef, clearTimeoutFn = clearTimeout) {
+  if (!timerRef.current) return;
+  clearTimeoutFn(timerRef.current);
+  timerRef.current = null;
 }
 
 function notifyAchievementUnlocks(unlocks = [], onNotice) {

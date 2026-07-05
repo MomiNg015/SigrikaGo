@@ -1,14 +1,14 @@
 export const CSS_DEBT_BASELINE = {
   date: "2026-07-05",
-  scope: "All CSS files under src/styles after the import-only split work, admin story node settings CSS, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, tutorial reply-option overflow containment, mobile announcement badge anchoring, and mobile utility-image feedback containment.",
+  scope: "All CSS files under src/styles after the import-only split work, admin story node settings CSS, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, and desktop/mobile shop mascot layout contracts.",
   metrics: {
     totalFiles: 583,
-    totalBytes: 1120731,
-    importantCount: 6955,
+    totalBytes: 1123374,
+    importantCount: 6998,
     importantFiles: 275,
     hardcodedHexCount: 2262,
-    mediaFiles: 217,
-    reducedMotionFiles: 23,
+    mediaFiles: 218,
+    reducedMotionFiles: 24,
     highZIndexFiles: 6
   },
   guidance:
@@ -48,6 +48,7 @@ export const CSS_MOTION_CONTRACT = {
     "base/asset-preload.css",
     "base/message-feedback.css",
     "commerce/recruitment/board/motion.css",
+    "commerce/shop-settings/shop-shell-tabs.css",
     "mobile-adaptive/reduced-motion.css",
     "mobile-modals/reduced-motion.css",
     "mobile-room/reduced-motion.css",

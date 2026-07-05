@@ -12,16 +12,17 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
     flex: 0 0 auto !important;
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 45%) !important;
     grid-template-areas:
       "bubble mascot"
       "wallet mascot" !important;
     gap: 8px 10px !important;
     align-items: center !important;
     justify-content: stretch !important;
-    padding: 12px !important;
+    padding: 12px 0 0 12px !important;
     border-width: 2px !important;
     border-radius: 16px !important;
+    overflow: hidden !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
@@ -35,21 +36,27 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot {
     grid-area: mascot !important;
-    width: 88px !important;
-    min-height: 96px !important;
-    height: 96px !important;
+    align-self: end !important;
+    justify-self: end !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img {
-    width: 92px !important;
-    max-height: 102px !important;
+    width: 100% !important;
+    max-height: none !important;
     filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.16)) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap {
     grid-area: wallet !important;
+    position: static !important;
+    transform: none !important;
+    align-self: end !important;
+    justify-self: start !important;
     align-items: start !important;
-    margin: 0 !important;
+    margin: 0 0 12px !important;
     max-width: 100% !important;
   }
 
