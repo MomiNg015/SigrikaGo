@@ -8,12 +8,12 @@
   --home-student-id-avatar-center-x: 14.7%;
   --home-student-id-avatar-center-y: 46%;
   --home-student-id-avatar-size: 72px;
-  --home-student-id-stats-center-x: 82%;
-  --home-student-id-stats-center-y: 57%;
-  --home-student-id-stats-width: clamp(144px, 30%, 164px);
-  --home-student-id-stats-height: 76px;
+  --home-student-id-stats-center-x: 88%;
+  --home-student-id-stats-center-y: 52%;
+  --home-student-id-stats-width: clamp(104px, 24%, 126px);
+  --home-student-id-stats-height: 70px;
   display: grid !important;
-  grid-template-columns: 72px minmax(0, 1fr) minmax(144px, 158px) !important;
+  grid-template-columns: 72px minmax(0, 1fr) var(--home-student-id-stats-width) !important;
   column-gap: 10px !important;
   align-items: center !important;
   cursor: pointer !important;

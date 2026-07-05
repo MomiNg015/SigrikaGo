@@ -11,8 +11,8 @@
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   box-sizing: border-box !important;
   container-type: inline-size !important;
-  padding: 6px 4px !important;
-  gap: clamp(2px, 1.2cqw, 4px) !important;
+  padding: 4px 3px !important;
+  gap: clamp(2px,1cqw,3px) !important;
   align-self: center !important;
   place-content: center !important;
   place-items: center !important;
@@ -29,7 +29,7 @@
   width: 100% !important;
   grid-template-columns: minmax(0, 1fr) !important;
   grid-template-rows: auto auto !important;
-  gap: clamp(1px, 1.4cqw, 3px) !important;
+  gap: clamp(1px, 1cqw, 2px) !important;
   align-content: center !important;
   align-items: center !important;
   justify-items: center !important;
@@ -41,15 +41,15 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-icon {
   display: block !important;
-  width: clamp(30px, 21cqw, 38px) !important;
-  height: clamp(30px, 21cqw, 38px) !important;
+  width: clamp(24px, 22cqw, 30px) !important;
+  height: clamp(24px, 22cqw, 30px) !important;
   object-fit: contain !important;
   opacity: 0.9 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .plaque-mode-rank {
   font-family: var(--font-numeric-accent), var(--font-ui-default) !important;
-  font-size: clamp(22px, 18cqw, 30px) !important;
+  font-size: clamp(18px, 17cqw, 24px) !important;
   font-weight: 900 !important;
   font-variant-numeric: tabular-nums !important;
   font-feature-settings: "tnum" 1 !important;

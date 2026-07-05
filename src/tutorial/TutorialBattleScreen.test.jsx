@@ -189,6 +189,30 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("currentNode?.type === TUTORIAL_NODE_TYPES.playerMove");
     expect(source).toContain("warn(currentNode.wrongClickMessage || \"请在提示区域落子\")");
   });
+
+  it("keeps reply choice buttons from creating local scrollbars", () => {
+    const overlayCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
+    const actionCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/actions-targets.css", import.meta.url), "utf8");
+    const baseChoiceBlock = cssBlock(overlayCss, ".tutorial-battle-choice");
+    const mobileChoiceBlock = cssBlocks(overlayCss, ".tutorial-battle-choice").at(-1) ?? "";
+    const choiceButtonBlock = cssBlock(actionCss, ".tutorial-battle-choice button,\n.tutorial-battle-continue,\n.tutorial-battle-action,\n.tutorial-action-bar button");
+
+    expect(baseChoiceBlock).toContain("min-width: 0");
+    expect(baseChoiceBlock).not.toContain("overflow-x");
+    expect(baseChoiceBlock).not.toContain("overflow-y");
+    expect(baseChoiceBlock).not.toContain("overflow: auto");
+    expect(baseChoiceBlock).not.toContain("overflow: scroll");
+    expect(baseChoiceBlock).not.toContain("overflow: hidden");
+    expect(mobileChoiceBlock).not.toContain("max-height");
+    expect(mobileChoiceBlock).not.toContain("overflow-x");
+    expect(mobileChoiceBlock).not.toContain("overflow-y");
+    expect(mobileChoiceBlock).not.toContain("overflow: auto");
+    expect(mobileChoiceBlock).not.toContain("overflow: scroll");
+    expect(mobileChoiceBlock).not.toContain("overflow: hidden");
+    expect(choiceButtonBlock).toContain("min-width: 0");
+    expect(choiceButtonBlock).toContain("max-width: 100%");
+    expect(choiceButtonBlock).toContain("overflow-wrap: anywhere");
+  });
 });
 
 function readSource() {
@@ -196,9 +220,25 @@ function readSource() {
 }
 
 function cssBlock(css, selector) {
-  const start = css.indexOf(`${selector} {`);
+  const source = css.replace(/\r\n/g, "\n");
+  const start = source.indexOf(`${selector} {`);
   if (start === -1) return "";
-  const bodyStart = css.indexOf("{", start);
-  const bodyEnd = css.indexOf("}", bodyStart);
-  return css.slice(bodyStart + 1, bodyEnd);
+  const bodyStart = source.indexOf("{", start);
+  const bodyEnd = source.indexOf("}", bodyStart);
+  return source.slice(bodyStart + 1, bodyEnd);
+}
+
+function cssBlocks(css, selector) {
+  const source = css.replace(/\r\n/g, "\n");
+  const blocks = [];
+  let searchIndex = 0;
+  while (searchIndex < source.length) {
+    const start = source.indexOf(`${selector} {`, searchIndex);
+    if (start === -1) break;
+    const bodyStart = source.indexOf("{", start);
+    const bodyEnd = source.indexOf("}", bodyStart);
+    blocks.push(source.slice(bodyStart + 1, bodyEnd));
+    searchIndex = bodyEnd + 1;
+  }
+  return blocks;
 }

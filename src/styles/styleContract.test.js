@@ -556,6 +556,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/phone-shop.css",
       "./mobile-adaptive/phone-social-warehouse.css",
       "./mobile-adaptive/phone-interactions.css",
+      "./mobile-adaptive/home-utility-interactions.css",
       "./mobile-adaptive/coarse-house.css",
       "./mobile-adaptive/motion-keyframes.css",
       "./mobile-adaptive/mobile-room-portrait.css",

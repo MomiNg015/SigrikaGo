@@ -455,10 +455,11 @@ describe("component-level HUD refinements", () => {
     expect(plaqueBlock).not.toContain("0 0 0 2px var(--bright-border)");
     expect(plaqueHoverBlock).toContain("transform: rotate(2deg) !important");
     expect(plaqueHoverBlock).not.toContain("box-shadow: none");
-    expect(plaqueBlock).toContain("--home-student-id-stats-center-x: 82%");
-    expect(plaqueBlock).toContain("--home-student-id-stats-width: clamp(144px, 30%, 164px)");
-    expect(plaqueBlock).toContain("--home-student-id-stats-height: 76px");
-    expect(plaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(144px, 158px) !important");
+    expect(plaqueBlock).toContain("--home-student-id-stats-center-x: 88%");
+    expect(plaqueBlock).toContain("--home-student-id-stats-center-y: 52%");
+    expect(plaqueBlock).toContain("--home-student-id-stats-width: clamp(104px, 24%, 126px)");
+    expect(plaqueBlock).toContain("--home-student-id-stats-height: 70px");
+    expect(plaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) var(--home-student-id-stats-width) !important");
     expect(plaqueBlock).toContain("column-gap: 10px !important");
     expect(plaqueBlock).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card > strong");
@@ -471,6 +472,7 @@ describe("component-level HUD refinements", () => {
     expect(plaquePolish).toContain("overflow: hidden !important");
     expect(plaquePolish).toContain("flex: 1 1 auto !important");
     expect(plaquePolish).toContain("width: var(--user-nameplate-width) !important");
+    expect(plaquePolish).toContain("font-size: var(--user-nameplate-font-size) !important");
     expect(plaquePolish).not.toContain("user-identity-fit-font-size");
     expect(plaquePolish).toContain("text-overflow: clip !important");
     expect(plaquePolish).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.hologram-entry::before");

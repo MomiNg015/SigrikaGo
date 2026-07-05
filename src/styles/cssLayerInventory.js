@@ -1,13 +1,13 @@
 export const CSS_DEBT_BASELINE = {
-  date: "2026-07-03",
-  scope: "All CSS files under src/styles after the import-only split work, admin story node settings CSS, frontend layout polish contracts including story-player padding, and game-mode icon watermark/player-plaque/utility image contracts.",
+  date: "2026-07-05",
+  scope: "All CSS files under src/styles after the import-only split work, admin story node settings CSS, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, tutorial reply-option overflow containment, mobile announcement badge anchoring, and mobile utility-image feedback containment.",
   metrics: {
-    totalFiles: 582,
-    totalBytes: 1119188,
-    importantCount: 6943,
-    importantFiles: 274,
+    totalFiles: 583,
+    totalBytes: 1120731,
+    importantCount: 6955,
+    importantFiles: 275,
     hardcodedHexCount: 2262,
-    mediaFiles: 216,
+    mediaFiles: 217,
     reducedMotionFiles: 23,
     highZIndexFiles: 6
   },
@@ -358,6 +358,7 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/phone-gacha/stage-machine.css",
       "mobile-adaptive/phone-gacha/controls-actions.css",
       "mobile-adaptive/phone-gacha/list-result-dialogs.css",
+      "mobile-adaptive/home-utility-interactions.css",
       "mobile-adaptive/mobile-room-portrait.css",
       "mobile-adaptive/mobile-room-landscape.css",
       "mobile-adaptive/mobile-profile-records.css",

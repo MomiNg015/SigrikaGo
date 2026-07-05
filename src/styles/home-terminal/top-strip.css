@@ -175,7 +175,7 @@
 }
 
 .home-mobile-announcement-action .announcement-badge-dot {
-  position: static;
-  margin-left: auto;
-  flex: 0 0 auto;
+  position: absolute;
+  top: -7px;
+  right: -7px;
 }

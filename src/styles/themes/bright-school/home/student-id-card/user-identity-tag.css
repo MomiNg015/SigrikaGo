@@ -31,6 +31,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-player-plaque.tactical-id-card .user-identity-name {
+  font-size: var(--user-nameplate-font-size) !important;
   overflow: visible !important;
   text-overflow: clip !important;
 }

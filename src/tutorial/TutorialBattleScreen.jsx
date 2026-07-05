@@ -729,7 +729,7 @@ function TutorialBattleDirector({
         <section className="tutorial-battle-choice">
           {options.map((option, index) => (
             <button key={`${node.id}-${index}`} type="button" onClick={() => onChoice(option)}>
-              {option.label || "继续"}
+              <span>{option.label || "继续"}</span>
             </button>
           ))}
         </section>

@@ -303,7 +303,11 @@ describe("HomeScreen", () => {
     const brightModeRankDanBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-rank-dan\s*\{[^}]+\}/)?.[0] ?? "";
     const brightModeRankKyuBlock = brightHomeCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-rank-kyu\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileStatsBlock = brightMobilePlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileModeIconBlock = brightMobilePlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-icon\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileModeRankBlock = brightMobilePlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-rank\s*\{[^}]+\}/)?.[0] ?? "";
     const finalPortraitStatsBlock = finalPortraitPlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-stats\s*\{[^}]+\}/)?.[0] ?? "";
+    const finalPortraitModeIconBlock = finalPortraitPlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-icon\s*\{[^}]+\}/)?.[0] ?? "";
+    const finalPortraitModeRankBlock = finalPortraitPlayerCss.match(/\.home-player-plaque\.tactical-id-card \.plaque-mode-rank\s*\{[^}]+\}/)?.[0] ?? "";
     const brightShortHeightMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-height: 760px\)\s*\{[\s\S]+?\n\}/)?.[0] ?? "";
     const brightNarrowDesktopMedia = brightHomeCss.match(/@media \(min-width: 701px\) and \(max-width: 1180px\)\s*\{[\s\S]+?@media \(max-width: 700px\)/)?.[0] ?? "";
 
@@ -385,10 +389,10 @@ describe("HomeScreen", () => {
     expect(brightPlaqueBlock).toContain("--home-student-id-avatar-center-x: 14.7%");
     expect(brightPlaqueBlock).toContain("--home-student-id-avatar-center-y: 46%");
     expect(brightPlaqueBlock).toContain("--home-student-id-avatar-size: 72px");
-    expect(brightPlaqueBlock).toContain("--home-student-id-stats-center-x: 82%");
-    expect(brightPlaqueBlock).toContain("--home-student-id-stats-center-y: 57%");
-    expect(brightPlaqueBlock).toContain("--home-student-id-stats-width: clamp(144px, 30%, 164px)");
-    expect(brightPlaqueBlock).toContain("--home-student-id-stats-height: 76px");
+    expect(brightPlaqueBlock).toContain("--home-student-id-stats-center-x: 88%");
+    expect(brightPlaqueBlock).toContain("--home-student-id-stats-center-y: 52%");
+    expect(brightPlaqueBlock).toContain("--home-student-id-stats-width: clamp(104px, 24%, 126px)");
+    expect(brightPlaqueBlock).toContain("--home-student-id-stats-height: 70px");
     expect(brightPlaqueBlock).toContain("background-origin: border-box");
     expect(brightPlaqueBlock).toContain("background-clip: border-box");
     expect(finalThemeCss).toContain('url("/assets/home/student-id-nameplate.webp")');
@@ -400,7 +404,7 @@ describe("HomeScreen", () => {
     expect(finalThemeCss).not.toContain("linear-gradient(135deg, #ffe5ee");
     expect(brightDisabledRowClipBlock).toContain("content: none !important");
     expect(brightDisabledRowClipBlock).toContain("display: none !important");
-    expect(brightPlaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) minmax(144px, 158px)");
+    expect(brightPlaqueBlock).toContain("grid-template-columns: 72px minmax(0, 1fr) var(--home-student-id-stats-width)");
     expect(brightPlaqueBlock).toContain("overflow: hidden");
     expect(brightPlaqueBlock).toContain("appearance: none !important");
     expect(brightPlaqueBlock).toContain("background-color: transparent !important");
@@ -418,12 +422,14 @@ describe("HomeScreen", () => {
     expect(narrowDesktopPlaqueBlock).toContain("border: 0");
     expect(narrowDesktopPlaqueBlock).toContain("border-radius: 0");
     expect(narrowDesktopPlaqueBlock).toContain("box-shadow: none");
-    expect(brightMobilePlaqueBlock).toContain("--home-student-id-stats-center-x: 80%");
-    expect(brightMobilePlaqueBlock).toContain("--home-student-id-stats-width: clamp(114px, 36%, 134px)");
+    expect(brightMobilePlaqueBlock).toContain("--home-student-id-stats-center-x: 88%");
+    expect(brightMobilePlaqueBlock).toContain("--home-student-id-stats-width: clamp(82px, 24%, 96px)");
+    expect(brightMobilePlaqueBlock).toContain("--home-student-id-stats-height: 60px");
     expect(brightMobilePlaqueBlock).toContain("box-shadow: none !important");
     expect(finalPortraitPlaqueBlock).toContain("var(--home-student-id-shell-bg)");
-    expect(finalPortraitPlaqueBlock).toContain("--home-student-id-stats-center-x: 80%");
-    expect(finalPortraitPlaqueBlock).toContain("--home-student-id-stats-width: clamp(114px, 36%, 134px)");
+    expect(finalPortraitPlaqueBlock).toContain("--home-student-id-stats-center-x: 88%");
+    expect(finalPortraitPlaqueBlock).toContain("--home-student-id-stats-width: clamp(82px, 24%, 96px)");
+    expect(finalPortraitPlaqueBlock).toContain("--home-student-id-stats-height: 60px");
     expect(finalPortraitPlaqueBlock).toContain("background-color: transparent");
     expect(finalPortraitPlaqueBlock).toContain("border: 0");
     expect(finalPortraitPlaqueBlock).toContain("border-radius: 0");
@@ -481,6 +487,7 @@ describe("HomeScreen", () => {
     expect(brightPlaqueFixedNameplateBlock).toContain("flex: 0 0 auto");
     expect(brightPlaqueNameOverflowBlock).toContain("overflow: visible");
     expect(brightPlaqueNameOverflowBlock).toContain("text-overflow: clip");
+    expect(brightPlaqueNameOverflowBlock).toContain("font-size: var(--user-nameplate-font-size) !important");
     expect(brightPlaqueNameOverflowBlock).not.toContain("user-identity-fit-font-size");
     expect(brightPanelBlock).toContain('--home-main-panel-bg: url("/assets/home/home-main-panel-desktop.webp")');
     expect(brightPanelBlock).toContain("background-image: var(--home-main-panel-bg) !important");
@@ -524,11 +531,15 @@ describe("HomeScreen", () => {
     expect(brightModeStatBlock).toContain("grid-template-columns: minmax(0, 1fr) !important");
     expect(brightModeStatBlock).toContain("grid-template-rows: auto auto !important");
     expect(brightModeStatBlock).toContain("align-content: center !important");
-    expect(brightModeIconBlock).toContain("width: clamp(30px, 21cqw, 38px) !important");
+    expect(brightModeIconBlock).toContain("width: clamp(24px, 22cqw, 30px) !important");
     expect(brightModeIconBlock).toContain("object-fit: contain !important");
     expect(brightModeRankBlock).toContain("font-family: var(--font-numeric-accent), var(--font-ui-default) !important");
-    expect(brightModeRankBlock).toContain("font-size: clamp(22px, 18cqw, 30px) !important");
+    expect(brightModeRankBlock).toContain("font-size: clamp(18px, 17cqw, 24px) !important");
     expect(brightModeRankBlock).toContain("font-variant-numeric: tabular-nums !important");
+    expect(brightMobileModeIconBlock).toContain("width: clamp(19.2px, 17.6cqw, 24px) !important");
+    expect(brightMobileModeRankBlock).toContain("font-size: clamp(14.4px, 13.6cqw, 19.2px) !important");
+    expect(finalPortraitModeIconBlock).toContain("width: clamp(19.2px, 17.6cqw, 24px) !important");
+    expect(finalPortraitModeRankBlock).toContain("font-size: clamp(14.4px, 13.6cqw, 19.2px) !important");
     expect(brightModeRankDanBlock).toContain("color: #c4322e !important");
     expect(brightModeRankKyuBlock).toContain("color: #4a2772 !important");
     expect(brightHomeCss).not.toContain(".plaque-mode-rating");
@@ -540,11 +551,13 @@ describe("HomeScreen", () => {
     expect(brightNarrowDesktopMedia).not.toContain("width: clamp(318px, 36vw, 386px)");
     expect(brightNarrowDesktopMedia).toContain("width: 100%");
     expect(brightNarrowDesktopMedia).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
-    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(0, 1fr) minmax(132px, clamp(136px, 34%, 150px))");
+    expect(brightNarrowDesktopMedia).toContain("grid-template-columns: 62px minmax(0, 1fr) var(--home-student-id-stats-width)");
     expect(brightNarrowDesktopMedia).toContain("font-size: clamp(20px, 2.1vw, 24px)");
     expect(brightNarrowDesktopMedia).toContain("grid-template-rows: auto auto !important");
-    expect(brightNarrowDesktopMedia).toContain("width: clamp(32px, 26cqw, 40px) !important");
-    expect(brightNarrowDesktopMedia).toContain("font-size: clamp(22px, 20cqw, 30px) !important");
+    expect(brightNarrowDesktopMedia).toContain("width: clamp(24px, 22cqw, 30px) !important");
+    expect(brightNarrowDesktopMedia).toContain("font-size: clamp(18px, 17cqw, 24px) !important");
+    expect(brightNarrowDesktopMedia).not.toContain("width: clamp(32px, 26cqw, 40px) !important");
+    expect(brightNarrowDesktopMedia).not.toContain("font-size: clamp(22px, 20cqw, 30px) !important");
     expect(utilityBlock).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
     expect(utilityBlock).toContain("grid-area: utility");
     expect(utilityBlock).toContain("width: 100%");
@@ -689,7 +702,7 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("height: clamp(560px, 72dvh, 760px) !important");
     expect(finalMobileCss).toContain("width: 100% !important");
     expect(finalMobileCss).toContain("--home-plaque-name-column-min: calc(12ch + 1.4em)");
-    expect(finalMobileCss).toContain("grid-template-columns: 62px minmax(0, 1fr) minmax(132px, 154px) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: 62px minmax(0, 1fr) var(--home-student-id-stats-width) !important");
     expect(finalMobileCss).toContain("font-size: clamp(18px, 1.45vw, 21px) !important");
     expect(finalMobileCss).toContain("@media (min-width: 701px) and (max-width: 1023px)");
     expect(finalMobileCss).toContain("--home-micro-stage-width: 960px");
@@ -698,7 +711,7 @@ describe("HomeScreen", () => {
     expect(finalMobileCss).toContain("scrollbar-gutter: stable both-edges");
     expect(finalMobileCss).toContain("width: var(--home-micro-stage-width) !important");
     expect(finalMobileCss).toContain("--home-plaque-name-column-min: calc(12ch + 1.2em)");
-    expect(finalMobileCss).toContain("grid-template-columns: clamp(54px, 7vw, 64px) minmax(0, 1fr) minmax(128px, 34%) !important");
+    expect(finalMobileCss).toContain("grid-template-columns: clamp(54px, 7vw, 64px) minmax(0, 1fr) var(--home-student-id-stats-width) !important");
     expect(finalMobileCss).toContain("\"player match\"");
     expect(finalMobileCss).toContain("\"manual match\"");
     expect(finalMobileCss).toContain("\"utility match\"");
@@ -842,6 +855,19 @@ describe("HomeScreen", () => {
     expect(source).not.toContain("utility-entry-description");
     expect(source).not.toContain("<strong>扭蛋</strong>");
     expect(mobileCss).toContain(".utility-entry:active:not(:disabled)");
+    const mobileUtilityContainerBlock = mobileCss.match(/:is\(\.utility-image-entry:hover:not\(:disabled\), \.utility-image-entry:focus-visible:not\(:disabled\), \.utility-image-entry:active:not\(:disabled\)\)\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileUtilityHoverArtBlock = mobileCss.match(/:is\(\.utility-image-entry:hover:not\(:disabled\), \.utility-image-entry:focus-visible:not\(:disabled\)\) \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileUtilityActiveArtBlock = mobileCss.match(/\.utility-image-entry:active:not\(:disabled\) \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
+    expect(mobileUtilityContainerBlock).toContain("background: transparent !important");
+    expect(mobileUtilityContainerBlock).toContain("border: 0 !important");
+    expect(mobileUtilityContainerBlock).toContain("padding: 0 !important");
+    expect(mobileUtilityContainerBlock).toContain("box-shadow: none !important");
+    expect(mobileUtilityContainerBlock).toContain("transform: none !important");
+    expect(mobileUtilityHoverArtBlock).toContain("brightness(1.04) saturate(1.06)");
+    expect(mobileUtilityHoverArtBlock).toContain("transform: translateY(-1px) rotate(0.6deg) !important");
+    expect(mobileUtilityActiveArtBlock).toContain("drop-shadow(3px 4px 0 rgba(61, 43, 37, 0.26))");
+    expect(mobileUtilityActiveArtBlock).toContain("transform: translateY(1px) !important");
+    expect(mobileUtilityActiveArtBlock).not.toContain("scale(");
     expect(stageSource).toContain("onOpenRecruitment");
     expect(routeSource).toContain("setShowRecruitment(true)");
     expect(overlaySource).toContain("RecruitmentModal");
@@ -859,13 +885,16 @@ describe("HomeScreen", () => {
   });
 
   it("renders mailbox actions in desktop topbar and mobile menu with badge hooks", () => {
-    const html = renderHome({ mailboxBadgeCount: 3 });
+    const html = renderHome({ mailboxBadgeCount: 3, announcementUnread: true });
     const homeCss = readCssFixture("../styles/home-terminal.css");
     const mobileBadgeRule = homeCss.match(/\.home-mobile-mailbox-action \.mailbox-badge\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileAnnouncementBadgeRule = homeCss.match(/\.home-mobile-announcement-action \.announcement-badge-dot\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(html).toContain("mailbox-action");
     expect(html).toContain("home-mobile-mailbox-action");
     expect(html).toContain("mailbox-badge");
+    expect(html).toContain("home-mobile-announcement-action has-unread");
+    expect(html).toContain("announcement-badge-dot");
     expect(html).toContain(">3</span>");
     expect(html).toContain("aria-label=\"打开邮箱，3封未处理邮件\"");
     expect(mobileBadgeRule).toContain("position: absolute");
@@ -873,6 +902,11 @@ describe("HomeScreen", () => {
     expect(mobileBadgeRule).toContain("right: -7px");
     expect(mobileBadgeRule).not.toContain("position: static");
     expect(mobileBadgeRule).not.toContain("margin-left: auto");
+    expect(mobileAnnouncementBadgeRule).toContain("position: absolute");
+    expect(mobileAnnouncementBadgeRule).toContain("top: -7px");
+    expect(mobileAnnouncementBadgeRule).toContain("right: -7px");
+    expect(mobileAnnouncementBadgeRule).not.toContain("position: static");
+    expect(mobileAnnouncementBadgeRule).not.toContain("margin-left: auto");
   });
 
   it("renders onboarding replay actions in desktop topbar and mobile menu", () => {
