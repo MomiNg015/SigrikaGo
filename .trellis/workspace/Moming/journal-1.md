@@ -1032,3 +1032,36 @@ Fixed tutorial choice overflow, mobile announcement badge placement, Bright Scho
 ### Next Steps
 
 - None - task complete
+
+
+## Session 32: Fix recruit modal duplicate background
+
+**Date**: 2026-07-05
+**Task**: Fix recruit modal duplicate background
+**Branch**: `codex/frontend-fixes-20260705`
+
+### Summary
+
+Removed the duplicate stationery background layer from item-backed recruitment modal cards, updated CSS/theme contracts, synced system-design docs, and validated with npm run check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a60c3db` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

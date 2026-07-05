@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 31
+- **Total Sessions**: 32
 - **Last Active**: 2026-07-05
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1034 | Active |
+| `journal-1.md` | ~1067 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 32 | 2026-07-05 | Fix recruit modal duplicate background | `a60c3db` | `codex/frontend-fixes-20260705` |
 | 31 | 2026-07-05 | Frontend mobile UI fixes | `4ad79258` | `codex/frontend-fixes-20260705` |
 | 30 | 2026-07-05 | Fix Pixi Vite optimizer skill effects | `59b66d6b`, `1cf9e623` | `codex/fix-pixi-vite-optimizer` |
 | 29 | 2026-07-03 | Admin story node settings popup | `7b86d812` | `codex/story-tutorial-node-timing-controls` |
