@@ -212,6 +212,7 @@ Required assertion points:
 - `npm run check:production` remains the strict production-env validator and must not silently inject sample secrets or origins.
 - `.github/workflows/ci.yml` is the hosted quality gate for pull requests and pushes to `master`. It should use Node 22, `npm ci`, `npm test`, `npm run build`, explicit sample-env production config validation, and `npm run docs:system-design`.
 - `vite.config.js` manually chunks React, Socket.IO client code, and Pixi into `react-vendor`, `realtime-vendor`, and `pixi-vendor` respectively. Do not add a catch-all `vendor` chunk unless the build is checked for circular chunk warnings.
+- `vite.config.js` keeps `pixi.js` and `pixi.js/unsafe-eval` in `optimizeDeps.exclude` for the dev server, and keeps Pixi nested runtime dependencies such as `pixi.js > @xmldom/xmldom`, `pixi.js > eventemitter3`, `pixi.js > gifuct-js`, and `pixi.js > ismobilejs` in `optimizeDeps.include`. Pixi lazily imports renderer modules such as WebGLRenderer; pre-optimizing the Pixi entries can leave browsers holding immutable stale `.vite/deps` renderer chunk URLs after the optimizer graph changes, while failing to optimize these nested CommonJS/conditional-export dependencies makes Pixi source modules load raw entries without the default or named exports they import.
 - `vite.config.js` configures the dev `/socket.io` websocket proxy with an error handler that keeps expected backend-watch restart disconnects quiet while still warning on unexpected proxy errors.
 
 #### 3. Contracts
@@ -262,7 +263,7 @@ Required assertion points:
 - Game socket tests must assert handlers install before `connect()` and that an immediate `room:resume` is queued after connecting.
 - Script contract tests must assert `npm run check` includes tests, build, production config validation, docs generation, and explicit sample production env.
 - Workflow review must assert `.github/workflows/ci.yml` keeps the hosted CI commands aligned with the local handoff gate when either command list changes.
-- Vite build config tests must assert manual chunk grouping, the absence of a catch-all vendor chunk, the intentional Pixi warning limit, and quiet handling for expected dev websocket proxy disconnects.
+- Vite build config tests must assert manual chunk grouping, the absence of a catch-all vendor chunk, the intentional Pixi warning limit, Pixi dev optimizer exclusions, and quiet handling for expected dev websocket proxy disconnects.
 - Run `npm run check` before handoff when changing preload or verification commands.
 
 #### 7. Wrong vs Correct

@@ -3,6 +3,13 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 const DEV_PROXY_QUIET_SOCKET_ERRORS = new Set(["ECONNRESET", "ECONNREFUSED"]);
+const PIXI_OPTIMIZE_DEPS_EXCLUDE = ["pixi.js", "pixi.js/unsafe-eval"];
+const PIXI_OPTIMIZE_DEPS_INCLUDE = [
+  "pixi.js > @xmldom/xmldom",
+  "pixi.js > eventemitter3",
+  "pixi.js > gifuct-js",
+  "pixi.js > ismobilejs"
+];
 
 function isQuietDevProxySocketError(error) {
   return DEV_PROXY_QUIET_SOCKET_ERRORS.has(error?.code);
@@ -17,6 +24,10 @@ function configureDevSocketProxy(proxy) {
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    exclude: PIXI_OPTIMIZE_DEPS_EXCLUDE,
+    include: PIXI_OPTIMIZE_DEPS_INCLUDE
+  },
   build: {
     chunkSizeWarningLimit: 900,
     rollupOptions: {

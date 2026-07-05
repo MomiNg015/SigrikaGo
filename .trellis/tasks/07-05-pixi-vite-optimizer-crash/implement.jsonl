@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend runtime and Vite config change"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Startup preload, build chunking, Vite config, and handoff contracts"}
+{"file": ".trellis/spec/guides/index.md", "reason": "Shared thinking guide index"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Config change requires search-first reuse check"}

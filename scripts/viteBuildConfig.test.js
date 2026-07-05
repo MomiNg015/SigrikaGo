@@ -20,6 +20,19 @@ describe("vite build config", () => {
     expect(config.build.chunkSizeWarningLimit).toBe(900);
   });
 
+  test("keeps Pixi renderer modules out of Vite dev dependency optimization", () => {
+    expect(config.optimizeDeps?.exclude).toEqual(expect.arrayContaining([
+      "pixi.js",
+      "pixi.js/unsafe-eval"
+    ]));
+    expect(config.optimizeDeps?.include).toEqual(expect.arrayContaining([
+      "pixi.js > @xmldom/xmldom",
+      "pixi.js > eventemitter3",
+      "pixi.js > gifuct-js",
+      "pixi.js > ismobilejs"
+    ]));
+  });
+
   test("keeps expected websocket proxy disconnects quiet during dev server restarts", () => {
     const proxy = new EventEmitter();
     const originalWarn = console.warn;
