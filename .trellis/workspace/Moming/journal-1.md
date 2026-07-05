@@ -1098,3 +1098,36 @@ Updated shop mascot assets, sidebar layout contracts, purchase feedback state, t
 ### Next Steps
 
 - None - task complete
+
+
+## Session 34: Mobile shop mascot clarity
+
+**Date**: 2026-07-05
+**Task**: Mobile shop mascot clarity
+**Branch**: `codex/frontend-fixes-20260705`
+
+### Summary
+
+Regenerated shop mascot WebP assets losslessly, widened mobile mascot lane to 50%, and updated tests, docs, and frontend spec contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b9f87a1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
