@@ -1065,3 +1065,36 @@ Removed the duplicate stationery background layer from item-backed recruitment m
 ### Next Steps
 
 - None - task complete
+
+
+## Session 33: Shop mascot purchase feedback
+
+**Date**: 2026-07-05
+**Task**: Shop mascot purchase feedback
+**Branch**: `codex/frontend-fixes-20260705`
+
+### Summary
+
+Updated shop mascot assets, sidebar layout contracts, purchase feedback state, tests, and system-design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b348e6d8` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
