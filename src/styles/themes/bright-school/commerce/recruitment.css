@@ -28,9 +28,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-status-card,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-card {
   background-color: #fffdf6 !important;
-  background-image:
-    linear-gradient(90deg, rgba(255, 253, 246, 0.72), rgba(255, 253, 246, 0.46)),
-    var(--recruitment-paper-background-image) !important;
+  background-image: linear-gradient(90deg, rgba(255, 253, 246, 0.72), rgba(255, 253, 246, 0.46)) !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-size: cover !important;
@@ -39,16 +37,12 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-success {
   background-color: #dff5df !important;
-  background-image:
-    linear-gradient(90deg, rgba(223, 245, 223, 0.74), rgba(255, 253, 246, 0.44)),
-    var(--recruitment-paper-background-image) !important;
+  background-image: linear-gradient(90deg, rgba(223, 245, 223, 0.74), rgba(255, 253, 246, 0.44)) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-result-miss {
   background-color: #fff8e5 !important;
-  background-image:
-    linear-gradient(90deg, rgba(255, 248, 229, 0.72), rgba(255, 253, 246, 0.42)),
-    var(--recruitment-paper-background-image) !important;
+  background-image: linear-gradient(90deg, rgba(255, 248, 229, 0.72), rgba(255, 253, 246, 0.42)) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .recruitment-selection-card p {

@@ -86,7 +86,7 @@ describe("player theme CSS contract", () => {
     expect(commerceEntry).not.toContain(".shop-layout {");
     expect(commerceEntry).not.toContain(".warehouse-grid {");
     expect(recruitmentPolish).toContain("var(--recruitment-board-background-image)");
-    expect(recruitmentPolish).toContain("var(--recruitment-paper-background-image)");
+    expect(recruitmentPolish).not.toContain("var(--recruitment-paper-background-image)");
     expect(recruitmentPolish).toContain("background-position: center center !important;");
     expect(recruitmentPolish).toContain("background-size: cover !important;");
     expect(recruitmentPolish).toContain(".recruitment-use-button:disabled");

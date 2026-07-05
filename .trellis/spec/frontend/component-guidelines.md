@@ -702,15 +702,16 @@ Correct:
 - `RecruitmentModal` renders `<main className="recruitment-board">` for idle, pending, ready, and result states.
 - Base CSS lives in `src/styles/commerce/recruitment/board.css`.
 - Bright School polish lives in `src/styles/themes/bright-school/commerce/recruitment.css`.
-- The board background image is `/assets/recruitment/notice-board-background.webp`.
+- The board background image is `/assets/recruitment/notice-board-flat-candidate.webp`.
 - The shared CSS hook is `--recruitment-board-background-image`.
 
 #### 3. Contracts
-- `.recruitment-board` must define `--recruitment-board-background-image: url("/assets/recruitment/notice-board-background.webp")`.
+- `.recruitment-board` must define `--recruitment-board-background-image: url("/assets/recruitment/notice-board-flat-candidate.webp")`.
 - The board must compose the image through `background-image`, not through extra JSX or an `<img>` element that can interfere with board state content.
 - Use `background-size: cover` and `background-position: center center` so the image scales proportionally, never stretches, and crops from the vertically centered portion of the artwork.
 - Bright School recruitment overrides may change border, shadow, and overlay tint, but must keep `var(--recruitment-board-background-image)` in `.recruitment-board`.
 - State cards inside the board own text readability; do not bake text or state UI into the background asset.
+- State cards that already render an active recruitment item watermark or result artwork must not also include `var(--recruitment-paper-background-image)`. The stationery paper image is allowed for the empty no-item prompt only, so item-backed selection, ready, and result surfaces do not show two overlapping background images.
 - The recruitment header should stay compact and use the single visible title `部员招募栏`; do not reintroduce a separate kicker/subtitle paragraph on mobile because it competes with the board stage.
 - Pending recruitment should not show a helper label to the left of the time. Render only the remaining time digits through `.recruitment-countdown-row` as CRT-style green glowing tabular text without adding a screen background, border, or scanlines; keep the dev-only fast-forward icon as a small plain adjacent control.
 - Selected-item confidence copy is a secondary cue and should stay visually distinct from the item name/scope, currently through `.recruitment-selection-card p` red text.
@@ -728,13 +729,14 @@ Correct:
 - Good: base CSS defines the image variable and Bright School uses `background-image: ..., var(--recruitment-board-background-image) !important`.
 - Good: mobile `.recruitment-item-button span` is hidden while the icon and `x<n>` quantity remain visible.
 - Good: `.recruitment-use-button:disabled` exists in the shared action CSS and Bright School override.
-- Base: item/result cards are semi-opaque surfaces layered above the image.
+- Base: empty no-item cards may use the stationery paper prompt, while item-backed cards are semi-opaque image-free surfaces layered above the board image.
 - Bad: adding an absolutely positioned `<img>` inside `RecruitmentModal` behind content.
 - Bad: a theme override that uses `background: #fff3d5 !important` and drops the image.
+- Bad: a selection, ready, or result card that combines `var(--recruitment-paper-background-image)` with `.recruitment-item-watermark`.
 
 #### 6. Tests Required
-- `src/styles/styleContract.test.js` asserts the base recruitment board image variable and `var(...)` usage.
-- `src/styles/themeContract.test.js` asserts Bright School recruitment CSS preserves the board image variable, sizing, and disabled use-button override.
+- `src/styles/styleContract.test.js` asserts the base recruitment board image variable and `var(...)` usage, and asserts item-backed state-card selectors do not include `var(--recruitment-paper-background-image)`.
+- `src/styles/themeContract.test.js` asserts Bright School recruitment CSS preserves the board image variable, sizing, disabled use-button override, and does not reintroduce the paper image variable into item-backed state cards.
 - Run `npm test -- src/styles/styleContract.test.js src/styles/themeContract.test.js src/modals/RecruitmentModal.test.js` after recruitment board CSS changes.
 
 #### 7. Wrong vs Correct

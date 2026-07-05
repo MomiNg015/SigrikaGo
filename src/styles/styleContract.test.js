@@ -79,6 +79,23 @@ function cssFilesUnder(dir) {
     });
 }
 
+function cssBlocksContaining(source, selector) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const selectorPattern = new RegExp(`(?:^|\\n)([^{}]*${escapedSelector}[^{}]*)\\{`, "g");
+  const blocks = [];
+  let match;
+
+  while ((match = selectorPattern.exec(source)) !== null) {
+    const bodyStart = source.indexOf("{", match.index);
+    const bodyEnd = source.indexOf("}", bodyStart);
+    if (bodyStart < 0 || bodyEnd < 0) continue;
+    blocks.push(source.slice(match.index, bodyEnd + 1));
+    selectorPattern.lastIndex = bodyEnd + 1;
+  }
+
+  return blocks;
+}
+
 describe("root CSS entry contract", () => {
   it("keeps styles.css import order stable", () => {
     const source = readFileSync(rootStylesPath, "utf8");
@@ -868,6 +885,18 @@ describe("root CSS entry contract", () => {
     expect(recruitmentBoard).toContain("/assets/recruitment/celebration-flat-candidate.webp");
     expect(recruitmentBoard).toContain("/assets/recruitment/recruitment-letter-paper-flat.webp");
     expect(recruitmentBoard).toContain("/assets/recruitment/recruitment-envelope-flat.webp");
+    expect(cssBlocksContaining(recruitmentBoard, ".recruitment-empty-board").join("\n")).toContain(
+      "var(--recruitment-paper-background-image)"
+    );
+    expect(cssBlocksContaining(recruitmentBoard, ".recruitment-selection-card").join("\n")).not.toContain(
+      "var(--recruitment-paper-background-image)"
+    );
+    expect(cssBlocksContaining(recruitmentBoard, ".recruitment-status-card").join("\n")).not.toContain(
+      "var(--recruitment-paper-background-image)"
+    );
+    expect(cssBlocksContaining(recruitmentBoard, ".recruitment-result-card").join("\n")).not.toContain(
+      "var(--recruitment-paper-background-image)"
+    );
     expect(recruitmentBoard).toContain(".recruitment-item-watermark-art");
     expect(recruitmentBoard).toContain("transform: translate(-50%, -50%) rotate(20deg) scale(1.04);");
     expect(recruitmentBoard).toContain("opacity: 0.3;");
