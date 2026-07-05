@@ -999,3 +999,36 @@ Fixed the Vite dev optimizer contract for Pixi skill effects by excluding Pixi r
 ### Next Steps
 
 - None - task complete
+
+
+## Session 31: Frontend mobile UI fixes
+
+**Date**: 2026-07-05
+**Task**: Frontend mobile UI fixes
+**Branch**: `codex/frontend-fixes-20260705`
+
+### Summary
+
+Fixed tutorial choice overflow, mobile announcement badge placement, Bright School plaque rank/name layout, and mobile home utility button hover stability; updated tests and system design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4ad79258` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
