@@ -87,6 +87,19 @@ describe("ShopModal helpers", () => {
     expect(thanksHtml).toContain(SHOP_MASCOT_THANKS_LINE);
   });
 
+  it("keeps shop mascot WebP assets lossless at source dimensions", () => {
+    expect(webpInfo("../../public/assets/zahira_shop_default.webp")).toEqual({
+      encoding: "VP8L",
+      width: 1448,
+      height: 1054
+    });
+    expect(webpInfo("../../public/assets/zahira_shop_laugh.webp")).toEqual({
+      encoding: "VP8L",
+      width: 1448,
+      height: 1054
+    });
+  });
+
   it("hides the shop blue-gem wallet while keeping the coin wallet visible", () => {
     const html = renderToStaticMarkup(createElement(ShopModal, {
       token: "token",
@@ -470,7 +483,7 @@ describe("ShopModal helpers", () => {
     expect(brightMascotImageBlock).toContain("max-height: none !important;");
   });
 
-  it("keeps mobile shop mascot in the right-bottom 45 percent lane without covering wallet or greeting", () => {
+  it("keeps mobile shop mascot in the right-bottom 50 percent lane without covering wallet or greeting", () => {
     const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const brightMobileShopCss = readCssWithImports(
       new URL("../styles/themes/bright-school/mobile/commerce-warehouse/shop-layout.css", import.meta.url)
@@ -479,7 +492,7 @@ describe("ShopModal helpers", () => {
       new URL("../styles/mobile-adaptive/bright-school-portrait/shop-wallet.css", import.meta.url)
     );
 
-    expect(mobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 45%);");
+    expect(mobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 50%);");
     expect(mobileCss).toContain('grid-template-areas:\n      "bubble mascot"\n      "wallet mascot";');
     expect(mobileCss).toContain("padding: 8px 0 0 8px;");
     expect(mobileCss).toContain("grid-area: mascot;");
@@ -488,7 +501,7 @@ describe("ShopModal helpers", () => {
     expect(mobileCss).toContain("height: auto;");
     expect(mobileCss).toContain("position: static;");
     expect(mobileCss).toContain("transform: none;");
-    expect(brightMobileShopCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 45%) !important;");
+    expect(brightMobileShopCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 50%) !important;");
     expect(brightMobileShopCss).toContain('grid-template-areas:\n      "bubble mascot"\n      "wallet mascot" !important;');
     expect(brightMobileShopCss).toContain("padding: 12px 0 0 12px !important;");
     expect(brightMobileShopCss).toContain("align-self: end !important;");
@@ -623,4 +636,24 @@ function cssBlock(source, selector) {
   const bodyStart = source.indexOf("{", start);
   const bodyEnd = source.indexOf("}", bodyStart);
   return source.slice(start, bodyEnd + 1);
+}
+
+function webpInfo(path) {
+  const buffer = readFileSync(new URL(path, import.meta.url));
+  const losslessChunk = buffer.indexOf(Buffer.from("VP8L"));
+
+  if (losslessChunk < 0) {
+    return { encoding: "lossy", width: 0, height: 0 };
+  }
+
+  const byte0 = buffer[losslessChunk + 9];
+  const byte1 = buffer[losslessChunk + 10];
+  const byte2 = buffer[losslessChunk + 11];
+  const byte3 = buffer[losslessChunk + 12];
+
+  return {
+    encoding: "VP8L",
+    width: 1 + (((byte1 & 0x3f) << 8) | byte0),
+    height: 1 + (((byte3 & 0x0f) << 10) | (byte2 << 2) | ((byte1 & 0xc0) >> 6))
+  };
 }

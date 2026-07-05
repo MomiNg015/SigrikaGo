@@ -787,6 +787,41 @@ Correct:
 
 ---
 
+### Scenario: Shop Mascot Portrait Asset Contract
+
+#### 1. Scope / Trigger
+- Trigger: any change to shop mascot portrait assets, `ShopSidebar`, `src/shared/shopMascotAssets.js`, `RUNTIME_IMAGE_ASSETS.shop`, or shop receptionist mobile layout CSS.
+
+#### 2. Signatures
+- Runtime mascot assets are `/assets/zahira_shop_default.webp` and `/assets/zahira_shop_laugh.webp`.
+- Retained source assets are the matching PNG files in `public/assets/`.
+- `ShopSidebar` renders both runtime mascot images as stacked `.shop-mascot-image` layers for opacity-based mood changes.
+
+#### 3. Contracts
+- Shop mascot WebP files must preserve the PNG source dimensions and alpha channel.
+- Because the mascot is a transparent character portrait that is enlarged on high-DPR mobile screens, runtime WebP files must use lossless encoding rather than lossy VP8 compression.
+- Mobile shop layout width values must be updated consistently across shared shop phone rules, Bright School responsive rules, Bright School portrait commerce rules, feature tests, and system-design docs.
+- Do not swap a single mascot `<img src>` during purchase feedback; keep both portrait layers mounted and switch visibility with opacity so browser decode cannot flash a blank frame.
+
+#### 4. Validation & Error Matrix
+- Lossy WebP output -> invalid, because line art and transparent edges can look blurry on mobile.
+- PNG and WebP dimensions diverge -> invalid, because declared image dimensions and layout tests no longer describe the real asset.
+- One CSS owner remains on the old mobile lane width -> invalid, because later mobile/theme layers can override the intended contract.
+- Purchase feedback replaces one `src` attribute -> invalid, because it can reintroduce white flashes during decode.
+
+#### 5. Good/Base/Bad Cases
+- Good: regenerate from PNG with a lossless WebP encoder and keep tests asserting `VP8L` plus `1448x1054`.
+- Base: PNG sources remain in `public/assets/` for future regeneration.
+- Bad: optimizing the mascot to a small lossy WebP just because the file size is lower.
+- Bad: changing only `mobile-adaptive/phone-shop.css` while Bright School mobile owner layers still reserve the old mascot lane width.
+
+#### 6. Tests Required
+- `src/modals/ShopModal.test.js` should assert both mascot WebP files are lossless and match the expected source dimensions.
+- Shop CSS contract tests should assert the mobile mascot lane width in shared mobile and Bright School owner layers.
+- `src/shared/preloadAssets.test.js` should keep `RUNTIME_IMAGE_ASSETS.shop` aligned with the actual runtime mascot images.
+
+---
+
 ### Scenario: Player Currency Visibility In Resume And Shop
 
 #### 1. Scope / Trigger

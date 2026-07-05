@@ -12,7 +12,7 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
     flex: 0 0 auto !important;
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 45%) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 50%) !important;
     grid-template-areas:
       "bubble mascot"
       "wallet mascot" !important;

@@ -16,7 +16,7 @@
   .shop-sidebar {
     min-width: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 45%);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 50%);
     grid-template-areas:
       "bubble mascot"
       "wallet mascot";
