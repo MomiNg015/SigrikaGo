@@ -965,3 +965,37 @@ Added graph-opened node settings window with insert-step and close actions, work
 ### Next Steps
 
 - None - task complete
+
+
+## Session 30: Fix Pixi Vite optimizer skill effects
+
+**Date**: 2026-07-05
+**Task**: Fix Pixi Vite optimizer skill effects
+**Branch**: `codex/fix-pixi-vite-optimizer`
+
+### Summary
+
+Fixed the Vite dev optimizer contract for Pixi skill effects by excluding Pixi runtime entries while explicitly pre-optimizing nested CommonJS dependencies, verified real-room canvas playback and npm run check, then archived the active Trellis task.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `59b66d6b` | (see git log) |
+| `1cf9e623` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
