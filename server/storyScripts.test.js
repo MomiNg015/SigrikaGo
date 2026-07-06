@@ -4,6 +4,7 @@ import {
   deleteStoryScript,
   ensureStoryScriptSchema,
   getPublishedStoryScriptForTrigger,
+  publishStoryScript,
   seedDefaultStoryScripts,
   STORY_TRIGGER_TYPES,
   toAdminStoryScriptPayload,
@@ -360,6 +361,104 @@ describe("story script domain", () => {
         })
       ]
     });
+  });
+
+  it("matches legacy item-character scripts that stored the shop item row id instead of the item target id", async () => {
+    const prisma = {
+      shopItem: {
+        findMany: async ({ where }) => {
+          expect(where).toMatchObject({
+            category: "item",
+            OR: [
+              { targetId: { in: ["rainbow-bean-candy", "shop-rainbow-row"] } },
+              { id: { in: ["rainbow-bean-candy", "shop-rainbow-row"] } }
+            ]
+          });
+          return [{ id: "shop-rainbow-row", targetId: "rainbow-bean-candy" }];
+        }
+      },
+      storyScript: {
+        findMany: async ({ where }) => {
+          expect(where).toEqual({
+            triggerType: "item-character-use",
+            isPublished: true
+          });
+          return [{
+            id: "story-1",
+            key: "item.rainbow-bean-candy.sigrika",
+            title: "西格莉卡的彩虹糖",
+            triggerType: "item-character-use",
+            triggerParamsJson: JSON.stringify({ itemId: "shop-rainbow-row", characterId: "sigrika" }),
+            publishedStartNodeId: "start",
+            publishedNodesJson: JSON.stringify([
+              { id: "start", speakerName: "西格莉卡", characterId: "sigrika", text: "新发布版本" }
+            ]),
+            publishedAt: new Date("2026-07-06T08:00:00.000Z")
+          }];
+        }
+      }
+    };
+
+    await expect(getPublishedStoryScriptForTrigger({
+      prisma,
+      triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+      triggerParams: { itemId: "rainbow-bean-candy", characterId: "sigrika" }
+    })).resolves.toMatchObject({
+      key: "item.rainbow-bean-candy.sigrika",
+      nodes: [
+        expect.objectContaining({ text: "新发布版本" })
+      ]
+    });
+  });
+
+  it("rejects publishing item-character scripts that conflict after legacy shop row ids are canonicalized", async () => {
+    const prisma = {
+      $transaction: async (callback) => callback({
+        shopItem: {
+          findMany: async ({ where }) => {
+            expect(where).toMatchObject({
+              category: "item",
+              OR: [
+                { targetId: { in: ["rainbow-bean-candy", "shop-rainbow-row"] } },
+                { id: { in: ["rainbow-bean-candy", "shop-rainbow-row"] } }
+              ]
+            });
+            return [{ id: "shop-rainbow-row", targetId: "rainbow-bean-candy" }];
+          }
+        },
+        storyScript: {
+          findUnique: async () => null,
+          findMany: async ({ where }) => {
+            expect(where).toEqual({
+              triggerType: "item-character-use",
+              isPublished: true
+            });
+            return [{
+              key: "legacy.sigrika.candy",
+              triggerParamsJson: JSON.stringify({ itemId: "shop-rainbow-row", characterId: "sigrika" })
+            }];
+          },
+          upsert: async () => {
+            throw new Error("should not publish conflicting story");
+          }
+        }
+      })
+    };
+
+    await expect(publishStoryScript({
+      prisma,
+      adminUser: { id: "admin-1" },
+      input: {
+        key: "item.rainbow-bean-candy.sigrika",
+        title: "西格莉卡的彩虹糖",
+        triggerType: STORY_TRIGGER_TYPES.itemCharacterUse,
+        triggerParams: { itemId: "rainbow-bean-candy", characterId: "sigrika" },
+        draft: {
+          startNodeId: "start",
+          nodes: [{ id: "start", text: "新版本", nextNodeId: "" }]
+        }
+      }
+    })).rejects.toThrow("同一个触发点只能发布一个剧情脚本");
   });
 
   it("preserves tutorial initial board data in admin and player payloads", () => {

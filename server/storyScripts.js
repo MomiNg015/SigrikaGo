@@ -310,7 +310,8 @@ export async function getPublishedStoryScriptForTrigger({ prisma, triggerType, t
       isPublished: true
     }
   });
-  const record = records.find((candidate) => triggerParamsEqual(parseObjectJson(candidate.triggerParamsJson), normalizedTriggerParams));
+  const exactRecord = records.find((candidate) => triggerParamsEqual(parseObjectJson(candidate.triggerParamsJson), normalizedTriggerParams));
+  const record = exactRecord ?? await findLegacyItemCharacterTriggerRecord({ prisma, records, normalizedTriggerType, normalizedTriggerParams });
   if (!record) return null;
   const script = toPlayerStoryScriptPayload(record);
   if (!script) return null;
@@ -476,7 +477,7 @@ async function assertNoPublishedTriggerConflict({ prisma, key, triggerType, trig
       isPublished: true
     }
   });
-  const conflict = records.find((record) => record.key !== key && triggerParamsEqual(parseObjectJson(record.triggerParamsJson), triggerParams));
+  const conflict = await findTriggerConflictRecord({ prisma, records, key, triggerType, triggerParams });
   if (conflict) throw routeError(400, ERRORS.triggerConflict);
 }
 
@@ -559,6 +560,71 @@ function normalizeTriggerParams(triggerType, params = {}) {
 
 function triggerParamsEqual(left, right) {
   return JSON.stringify(sortObject(left)) === JSON.stringify(sortObject(right));
+}
+
+async function findTriggerConflictRecord({ prisma, records, key, triggerType, triggerParams }) {
+  if (triggerType !== STORY_TRIGGER_TYPES.itemCharacterUse) {
+    return records.find((record) => record.key !== key && triggerParamsEqual(parseObjectJson(record.triggerParamsJson), triggerParams)) ?? null;
+  }
+  const itemIds = [triggerParams.itemId];
+  for (const record of records) {
+    const parsed = parseObjectJson(record.triggerParamsJson);
+    if (parsed.itemId) itemIds.push(normalizeText(parsed.itemId));
+  }
+  const itemTargetIdMap = await itemTriggerTargetIdMap(prisma, itemIds);
+  const canonicalTriggerParams = canonicalItemCharacterTriggerParams(triggerParams, itemTargetIdMap);
+  return records.find((record) => {
+    if (record.key === key) return false;
+    const canonicalRecordParams = canonicalItemCharacterTriggerParams(parseObjectJson(record.triggerParamsJson), itemTargetIdMap);
+    return canonicalRecordParams && triggerParamsEqual(canonicalRecordParams, canonicalTriggerParams);
+  }) ?? null;
+}
+
+async function findLegacyItemCharacterTriggerRecord({ prisma, records, normalizedTriggerType, normalizedTriggerParams }) {
+  if (normalizedTriggerType !== STORY_TRIGGER_TYPES.itemCharacterUse) return null;
+  const itemIds = [normalizedTriggerParams.itemId];
+  for (const record of records) {
+    const parsed = parseObjectJson(record.triggerParamsJson);
+    if (parsed.itemId) itemIds.push(normalizeText(parsed.itemId));
+  }
+  const itemTargetIdMap = await itemTriggerTargetIdMap(prisma, itemIds);
+  const canonicalTriggerParams = canonicalItemCharacterTriggerParams(normalizedTriggerParams, itemTargetIdMap);
+  return records.find((record) => {
+    const canonicalRecordParams = canonicalItemCharacterTriggerParams(parseObjectJson(record.triggerParamsJson), itemTargetIdMap);
+    return canonicalRecordParams && triggerParamsEqual(canonicalRecordParams, canonicalTriggerParams);
+  }) ?? null;
+}
+
+async function itemTriggerTargetIdMap(prisma, itemIds) {
+  const normalizedItemIds = [...new Set(itemIds.map(normalizeText).filter(Boolean))];
+  const itemTargetIdMap = new Map(normalizedItemIds.map((itemId) => [itemId, itemId]));
+  if (!normalizedItemIds.length || !prisma?.shopItem?.findMany) return itemTargetIdMap;
+  const items = await prisma.shopItem.findMany({
+    where: {
+      category: "item",
+      OR: [
+        { targetId: { in: normalizedItemIds } },
+        { id: { in: normalizedItemIds } }
+      ]
+    }
+  });
+  for (const item of items) {
+    const targetId = normalizeText(item.targetId);
+    if (!targetId) continue;
+    if (item.id) itemTargetIdMap.set(normalizeText(item.id), targetId);
+    itemTargetIdMap.set(targetId, targetId);
+  }
+  return itemTargetIdMap;
+}
+
+function canonicalItemCharacterTriggerParams(params, itemTargetIdMap) {
+  const itemId = normalizeText(params?.itemId);
+  const characterId = canonicalCharacterId(params?.characterId);
+  if (!itemId || !characterId) return null;
+  return {
+    itemId: itemTargetIdMap.get(itemId) ?? itemId,
+    characterId
+  };
 }
 
 function sortObject(value) {

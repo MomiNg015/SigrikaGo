@@ -2180,9 +2180,14 @@ function defaultCharacterId(characters) {
 function adminItemOptions(items) {
   const realItems = (Array.isArray(items) ? items : [])
     .filter((item) => item?.category === "item" && item.enabled !== false)
-    .map((item) => ({ id: item.id, name: item.name || item.id }));
+    .map((item) => ({
+      id: item.targetId,
+      sourceId: item.id,
+      name: item.name || item.targetId || item.id
+    }))
+    .filter((item) => item.id);
   if (realItems.length) return realItems;
-  return [{ id: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖" }];
+  return [{ id: "rainbow-bean-candy", sourceId: "rainbow-bean-candy", name: "彩虹豆豆跳跳糖" }];
 }
 
 function adminSkillCharacters(characters) {

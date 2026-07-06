@@ -244,6 +244,13 @@ describe("AdminOnboardingStory", () => {
     expect(adminSource).not.toContain("nextNodeId 默认");
   });
 
+  it("uses stable item target ids for item-character story trigger params", () => {
+    expect(adminSource).toContain("id: item.targetId");
+    expect(adminSource).toContain("sourceId: item.id");
+    expect(adminSource).toContain("value={item.id}");
+    expect(adminSource).not.toContain("id: item.id, name: item.name || item.id");
+  });
+
   it("exposes simplified progression controls for nodes and options", () => {
     expect(adminSource).toContain("节点推进");
     expect(adminSource).toContain("推进方式");

@@ -115,6 +115,56 @@ function normalizeOption(option = {}) {
 
 ### Match Preload Room Boundary
 
+### Scenario: Item-Character Story Trigger Identity
+
+#### 1. Scope / Trigger
+- Trigger: changing item-character story script authoring, `StoryScript.triggerParamsJson`, player item-use story lookup, shop item admin payloads, or publish-conflict logic.
+- This is a cross-layer contract: admin selects a shop item, the story script stores trigger params, player inventory uses owned item ids, and the backend resolves the published story before falling back to item `effectText`.
+
+#### 2. Signatures
+- Trigger type: `item-character-use`.
+- Trigger params: `{ itemId, characterId }`.
+- `itemId` must be the stable `ShopItem.targetId` used by item ownership and item-use settlement, for example `rainbow-bean-candy`.
+- `ShopItem.id` is only the database row id and must not be stored as the story trigger item id.
+
+#### 3. Contracts
+- `src/admin/AdminOnboardingStory.jsx` item trigger options must submit `item.targetId` while keeping the source row id available only for UI bookkeeping when needed.
+- `server/storyScripts.js` remains the normalization and lookup boundary for `StoryScript.triggerParamsJson`.
+- Player item-use story lookup must first try the exact normalized trigger params, then tolerate legacy item-character records whose stored `itemId` is a shop row id by mapping `ShopItem.id -> ShopItem.targetId`.
+- Publish-conflict checks must use the same canonical item id mapping so an old row-id script and a new target-id script cannot both publish for the same character.
+- If no published story is found after canonical lookup, the item-use response may continue to return the legacy item `effectText` fallback.
+
+#### 4. Validation & Error Matrix
+- Missing `itemId` or `characterId` -> story input error.
+- Admin item option has no `targetId` -> do not expose it as a selectable item-character trigger.
+- Stored legacy row id maps to a target id and character matches -> return that published story.
+- Stored legacy row id maps to a target id and a new script tries to publish with that target id and character -> reject as trigger conflict.
+- No exact or canonical story match -> return no story and let the caller use `effectText`.
+
+#### 5. Good/Base/Bad Cases
+- Good: using rainbow bean candy on Sigrika queries `{ itemId: "rainbow-bean-candy", characterId: "sigrika" }` and reaches the admin-published script even if an older saved row contains the shop row id.
+- Base: a fresh admin save stores `rainbow-bean-candy` directly and exact lookup succeeds without legacy mapping.
+- Bad: saving `triggerParamsJson.itemId = item.id`, because the player item-use path never sends that row id and will fall back to `effectText`.
+
+#### 6. Tests Required
+- Backend story-script tests assert legacy row-id records match target-id player lookup.
+- Backend publish tests assert canonical row-id/target-id conflicts are rejected.
+- Admin story editor tests assert item trigger options use `item.targetId` and not `item.id`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+{ id: item.id, name: item.name || item.id }
+```
+
+Correct:
+
+```jsx
+{ id: item.targetId, sourceId: item.id, name: item.name || item.targetId || item.id }
+```
+
 Matched and accepted-duel rooms must start in `GAME_PHASES.preloading` and use `server/roomPreparationLifecycle.js` as the only boundary for player resource readiness. Socket handlers may validate `room:preload-ready` and forward `{ roomCode, userId }`, but they must not mutate room phase directly. The lifecycle owns ready counts, the 90 second timeout, `match:preload-timeout`, transition into `opening`, and scheduling the existing game-start timer.
 
 Tests touching this boundary should cover room creation, ready count broadcasts, both-ready opening transition, timeout abort, and socket event registration.
