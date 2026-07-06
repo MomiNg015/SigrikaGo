@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 35
+- **Total Sessions**: 36
 - **Last Active**: 2026-07-06
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1166 | Active |
+| `journal-1.md` | ~1199 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 36 | 2026-07-06 | Fix clipped Bright School card shadows | `0b305b3d` | `codex/frontend-fixes-20260705` |
 | 35 | 2026-07-06 | Preserve admin default snapshot | `0deec8eb` | `codex/frontend-fixes-20260705` |
 | 34 | 2026-07-05 | Mobile shop mascot clarity | `b9f87a1` | `codex/frontend-fixes-20260705` |
 | 33 | 2026-07-05 | Shop mascot purchase feedback | `b348e6d8` | `codex/frontend-fixes-20260705` |

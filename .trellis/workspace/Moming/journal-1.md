@@ -1164,3 +1164,36 @@ Restored admin-saved CV and shop illustration defaults, added an export command 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 36: Fix clipped Bright School card shadows
+
+**Date**: 2026-07-06
+**Task**: Fix clipped Bright School card shadows
+**Branch**: `codex/frontend-fixes-20260705`
+
+### Summary
+
+Reserved right and bottom shadow bleed for Bright School home entries, house character cards, leaderboard rows, warehouse rows, shop sidebar, and friend rows; updated CSS contracts, docs, and regression tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0b305b3d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
