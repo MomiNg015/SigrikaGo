@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend pre-development checklist and desktop/mobile parity requirement for UI changes."}
+{"file": ".trellis/spec/frontend/css-architecture.md", "reason": "CSS layer order, Bright School ownership, final mobile guard, and scoped selector rules for style changes."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Commerce card primitive migration exclusions and component-level visual contract constraints."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Mobile layout, touch target, and visual regression requirements for player-facing surfaces."}
