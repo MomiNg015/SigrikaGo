@@ -50,11 +50,13 @@ Questions to answer:
 - When a local admin-console edit should become a durable project/deployment default, run `npm run admin:snapshot` and commit the resulting snapshot; otherwise the edit lives only in the ignored SQLite database.
 - Seed behavior treats the snapshot as bootstrap defaults, not runtime source of truth. Missing non-user admin rows are created from the snapshot; existing rows must be preserved so admin-console saves survive backend restarts.
 - `SiteSetting` and `MusicTrackSetting` use `upsert` with empty `update` payloads. Catalog tables find the stable row first, then skip existing rows or `create` missing rows.
+- When a built-in catalog resource has a code-owned current asset, API payload helpers should normalize that built-in row from the shared/static source of truth across every player-visible projection, including shop, inventory, and gacha reward/prize payloads. If an old default path must be cleaned up at startup, use a narrowly keyed `updateMany` for empty values or exact stale default paths only; do not overwrite arbitrary admin-managed custom image URLs.
 - Existing `GachaPool` rows must not rebuild prizes during startup. Prize `deleteMany` belongs to explicit admin gacha-pool updates, not default seeding.
 - Startup order matters: schema guards for achievement, gacha, music track, and recruitment tables run first; snapshot seeding runs before built-in character/shop/site setting/achievement seeders so built-in defaults do not overwrite local admin defaults.
 
 #### 4. Validation & Error Matrix
 - Existing row found by stable key/slug/id -> skip without changing admin-managed fields.
+- Existing built-in catalog row with an empty or exact stale default image path -> may be backfilled to the current code-owned asset path.
 - Missing row -> create from the committed snapshot.
 - Delegate missing in a narrowed test double -> seeder returns without throwing.
 - User/history model requested for snapshot -> reject the change and keep it outside deployment defaults.
@@ -63,9 +65,11 @@ Questions to answer:
 
 #### 5. Good/Base/Bad Cases
 - Good: a fresh database receives current site settings, character skill descriptions, system messages, character CV credits, and shop item illust credits from `server/adminDefaultSnapshot.js`.
+- Good: replacing a code-owned built-in shop item image updates the shared/static config, normalizes shop and inventory API payloads, and only backfills empty or exact stale default image paths during startup.
 - Good: after editing admin settings locally, running `npm run admin:snapshot` updates the committed bootstrap source instead of relying on ignored `prisma/dev.db`.
 - Base: an existing cloud database with runtime admin edits keeps those values on restart/deploy; only missing snapshot rows are added.
 - Bad: using startup defaults to "refresh" a live database after an admin edited system settings, characters, shop items, gacha pools, achievements, music names, or recruitment copy.
+- Bad: changing only `server/adminDefaultSnapshot.js` or a static config and assuming existing SQLite rows will update automatically.
 - Bad: importing `prisma/dev.db` at runtime on the server.
 - Bad: adding `GachaDraw`, `User`, `UserItem`, `UserReport`, or audit rows to the snapshot.
 
@@ -73,6 +77,7 @@ Questions to answer:
 - Unit tests for `seedAdminDefaultConfig()` assert every included domain creates missing rows.
 - Unit tests assert existing rows are not updated by startup seeding.
 - Unit tests assert `SiteSetting` and `MusicTrackSetting` seed upserts use empty `update` payloads.
+- Unit tests for built-in catalog resource replacements assert stale default rows are normalized in all player-visible API payloads, including shop, inventory, and gacha reward/prize payloads, and any startup backfill is limited to empty or exact stale default image paths.
 - Unit tests for `scripts/export-admin-default-snapshot.mjs` assert exported settings and catalog credit fields are present and dates serialize deterministically.
 - Startup-order tests assert schema guards run before the snapshot seed and built-in seeders run afterward.
 - A smoke test against a temporary database copy should verify the committed snapshot can be replayed through real Prisma create paths when changing snapshot shape.

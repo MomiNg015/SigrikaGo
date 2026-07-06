@@ -3,6 +3,7 @@ import { parseAssetList, parseCharacterAssetList, parseOwnedItemCounts, serializ
 import { PROGRESS_METRICS, PROGRESS_REASONS, progressLedgerCreateOperation } from "./userProgressLedger.js";
 import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
+import { gachaPrizeImageUrl } from "./itemImages.js";
 import { listMusicTrackMap } from "./musicTracks.js";
 
 const GACHA_DRAW_COUNTS = new Set([1, 10]);
@@ -238,7 +239,7 @@ function settlePrize(state, prize, drawIndex, musicTracks = null) {
     chainAdded: 0,
     coinsAdded: 0,
     name: (type === GACHA_REWARD_TYPES.music ? musicTracks?.[targetId]?.name : "") || prize.name || "",
-    imageUrl: prize.imageUrl ?? ""
+    imageUrl: gachaPrizeImageUrl(prize)
   };
 
   if (type === GACHA_REWARD_TYPES.coins) {
@@ -364,7 +365,7 @@ function toPrizePayload(prize, musicTracks = null) {
     probabilityBasisPoints: normalizedPositiveInt(prize.probabilityBasisPoints),
     probabilityPercent: normalizedPositiveInt(prize.probabilityBasisPoints) / 100,
     name: musicName || prize.name || "",
-    imageUrl: prize.imageUrl ?? ""
+    imageUrl: gachaPrizeImageUrl(prize)
   };
 }
 

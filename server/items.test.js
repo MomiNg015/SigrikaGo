@@ -21,6 +21,45 @@ describe("items", () => {
     ]);
   });
 
+  it("normalizes builtin recruitment inventory item images from current shared config", async () => {
+    const response = await listItemInventory({
+      userId: "user-1",
+      prisma: inventoryPrisma({
+        ownedItems: JSON.stringify({ "radio-recruitment-ticket": 1 }),
+        targetId: "radio-recruitment-ticket",
+        imageUrl: "/assets/items/radio-recruitment-ticket.svg"
+      })
+    });
+
+    expect(response.items).toMatchObject([
+      {
+        itemId: "radio-recruitment-ticket",
+        imageUrl: "/assets/items/radio-recruitment-ticket.webp",
+        usable: false
+      }
+    ]);
+  });
+
+  it("normalizes the builtin rainbow candy inventory image from the current item asset", async () => {
+    const response = await listItemInventory({
+      userId: "user-1",
+      prisma: inventoryPrisma({
+        ownedItems: JSON.stringify({ "rainbow-bean-candy": 1 }),
+        targetId: "rainbow-bean-candy",
+        itemTargetType: "character",
+        imageUrl: "/assets/items/rainbow-bean-candy.png"
+      })
+    });
+
+    expect(response.items).toMatchObject([
+      {
+        itemId: "rainbow-bean-candy",
+        imageUrl: "/assets/items/rainbow-bean-candy.webp",
+        usable: true
+      }
+    ]);
+  });
+
   it("uses a self-targeted item by consuming one quantity", async () => {
     const updates = [];
     const response = await useInventoryItem({
@@ -237,6 +276,7 @@ function inventoryPrisma({
   selectedCharacter = "sigrika",
   targetId = "dream-ticket",
   itemTargetType = "self",
+  imageUrl = "",
   updates = [],
   structuredWrites = []
   , storyScripts = []
@@ -272,7 +312,7 @@ function inventoryPrisma({
     enabled: true,
     sortOrder: 1,
     description: "效果待配置",
-    imageUrl: ""
+    imageUrl
   };
   const tx = {
     user: {

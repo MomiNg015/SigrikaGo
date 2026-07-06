@@ -17,6 +17,7 @@ import {
 } from "./userAssets.js";
 import { isRecruitmentInventoryItem } from "./recruitment.js";
 import { getPublishedStoryScriptForTrigger, STORY_TRIGGER_TYPES } from "./storyScripts.js";
+import { shopCatalogImageUrl } from "./itemImages.js";
 
 export { parseItemEffects } from "./itemEffects.js";
 
@@ -124,7 +125,7 @@ function toShopLikePayload(item) {
     enabled: item.enabled,
     sortOrder: item.sortOrder ?? 0,
     description: item.description ?? "",
-    imageUrl: item.imageUrl ?? ""
+    imageUrl: shopCatalogImageUrl(item)
   };
 }
 

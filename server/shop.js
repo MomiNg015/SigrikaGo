@@ -18,6 +18,11 @@ import { STONE_DECORATIONS } from "../src/shared/stoneDecorations.js";
 import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
 import { RECRUITMENT_ITEMS } from "../src/shared/recruitment.js";
 import { normalizeShopItemIllustName, normalizeShopItemIllustUrl } from "../src/shared/shopItemIllust.js";
+import {
+  RAINBOW_BEAN_CANDY_IMAGE_URL,
+  RAINBOW_BEAN_CANDY_STALE_IMAGE_URLS,
+  shopCatalogImageUrl
+} from "./itemImages.js";
 
 const SHOP_CATEGORIES = new Set(["character", "decoration", "item", "music"]);
 const QIUYUAN_ZHOUWO_TRACK_ID = "qiuyuan-skill-zhouwo";
@@ -61,7 +66,7 @@ const BUILTIN_SHOP_ITEMS = [
     enabled: true,
     sortOrder: 150,
     description: "产地不明的糖果，据说有神秘的效果",
-    imageUrl: "/assets/items/rainbow-bean-candy.webp"
+    imageUrl: RAINBOW_BEAN_CANDY_IMAGE_URL
   },
   {
     name: "肘我",
@@ -117,7 +122,7 @@ export function toShopItemPayload(item, purchaseCounts = {}) {
     enabled: item.enabled,
     sortOrder: item.sortOrder ?? 0,
     description: item.description ?? "",
-    imageUrl: item.imageUrl ?? "",
+    imageUrl: shopCatalogImageUrl(item),
     illustName: item.illustName ?? "",
     illustUrl: item.illustUrl ?? "",
     source: item.source ?? "default"
@@ -232,6 +237,28 @@ export async function seedBuiltinShopItems(prisma) {
     },
     data: {
       imageUrl: QIUYUAN_ZHOUWO_SHOP_IMAGE
+    }
+  });
+  for (const item of Object.values(RECRUITMENT_ITEMS)) {
+    await prisma.shopItem.updateMany?.({
+      where: {
+        category: "item",
+        targetId: item.itemType,
+        imageUrl: { in: ["", "/assets/items/radio-recruitment-ticket.svg"] }
+      },
+      data: {
+        imageUrl: item.imageUrl
+      }
+    });
+  }
+  await prisma.shopItem.updateMany?.({
+    where: {
+      category: "item",
+      targetId: RAINBOW_BEAN_CANDY_ID,
+      imageUrl: { in: RAINBOW_BEAN_CANDY_STALE_IMAGE_URLS }
+    },
+    data: {
+      imageUrl: RAINBOW_BEAN_CANDY_IMAGE_URL
     }
   });
   for (const item of BUILTIN_SHOP_ITEMS) {

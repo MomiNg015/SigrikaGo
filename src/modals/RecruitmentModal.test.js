@@ -19,10 +19,12 @@ describe("RecruitmentModal", () => {
     expect(modalSource).toContain("canUse ? \"使用\" : \"不可用\"");
     expect(modalSource).toContain("RecruitmentItemWatermark");
     expect(modalSource).toContain("item?.imageUrl || item?.itemImageUrl");
+    expect(modalSource).toContain("<img className=\"recruitment-item-watermark-art\"");
     expect(modalSource).toContain("recruitment-pending-panel");
-    expect(modalSource).toContain("PosterWatermarkIcon");
-    expect(modalSource).toContain("RadioWatermarkIcon");
-    expect(modalSource).toContain("fill=\"none\"");
+    expect(modalSource).not.toContain("PosterWatermarkIcon");
+    expect(modalSource).not.toContain("RadioWatermarkIcon");
+    expect(modalSource).not.toContain("function PosterWatermarkIcon");
+    expect(modalSource).not.toContain("function RadioWatermarkIcon");
     expect(modalSource).toContain("瞧瞧有没有新部员！");
     expect(modalSource).not.toContain("查看招新回应");
     expect(modalSource).not.toContain("<strong>{task.itemName}</strong>\n        <button className=\"primary-action\" type=\"button\" disabled={busy} onClick={onClaim}>");

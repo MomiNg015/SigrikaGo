@@ -19,7 +19,7 @@ export const RECRUITMENT_ITEMS = Object.freeze({
     name: "先约电台广播券",
     scopeLabel: "可以招募学院外的人",
     description: "给先约电台的广播券，可以招募学院外的人。",
-    imageUrl: "/assets/items/radio-recruitment-ticket.svg",
+    imageUrl: "/assets/items/radio-recruitment-ticket.webp",
     sortOrder: 121,
     priceCoins: 180,
     candidates: Object.freeze(["qiuyuan", "changli"])
@@ -61,4 +61,8 @@ export function isRecruitmentItemType(itemType) {
 
 export function recruitmentItemForType(itemType) {
   return RECRUITMENT_ITEMS[String(itemType ?? "")] ?? null;
+}
+
+export function recruitmentItemImageUrlForType(itemType, fallback = "") {
+  return recruitmentItemForType(itemType)?.imageUrl ?? String(fallback ?? "");
 }

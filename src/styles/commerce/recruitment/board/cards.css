@@ -75,10 +75,11 @@
   left: 50%;
   width: 82%;
   height: 136%;
-  color: #3d2b25;
+  object-fit: contain;
   opacity: 0.3;
   transform: translate(-50%, -50%) rotate(20deg) scale(1.04);
   transform-origin: center;
+  filter: saturate(0.82) contrast(0.96);
 }
 
 .recruitment-empty-board::before,

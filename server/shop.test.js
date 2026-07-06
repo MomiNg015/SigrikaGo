@@ -281,6 +281,66 @@ describe("shop", () => {
     });
   });
 
+  it("normalizes builtin recruitment shop item images from current shared config", async () => {
+    const response = await listShopItems({
+      shopItem: {
+        findMany: async () => [{
+          id: "shop-radio",
+          name: "先约电台广播券",
+          category: "item",
+          targetId: "radio-recruitment-ticket",
+          itemTargetType: "self",
+          stockQuantity: -1,
+          priceCoins: 180,
+          discountPercent: 0,
+          purchasable: true,
+          enabled: true,
+          sortOrder: 121,
+          description: "旧数据库里的广播券商品",
+          imageUrl: "/assets/items/radio-recruitment-ticket.svg"
+        }]
+      },
+      user: {
+        findUnique: async () => ({ itemPurchaseCounts: "{}" })
+      }
+    }, "user-1");
+
+    expect(response.items[0]).toMatchObject({
+      targetId: "radio-recruitment-ticket",
+      imageUrl: "/assets/items/radio-recruitment-ticket.webp"
+    });
+  });
+
+  it("normalizes the builtin rainbow candy shop image from the current item asset", async () => {
+    const response = await listShopItems({
+      shopItem: {
+        findMany: async () => [{
+          id: "shop-candy",
+          name: "彩虹豆豆跳跳糖",
+          category: "item",
+          targetId: "rainbow-bean-candy",
+          itemTargetType: "character",
+          stockQuantity: 10,
+          priceCoins: 10,
+          discountPercent: 0,
+          purchasable: true,
+          enabled: true,
+          sortOrder: 150,
+          description: "旧数据库里的糖果商品",
+          imageUrl: "/assets/items/rainbow-bean-candy.png"
+        }]
+      },
+      user: {
+        findUnique: async () => ({ itemPurchaseCounts: "{}" })
+      }
+    }, "user-1");
+
+    expect(response.items[0]).toMatchObject({
+      targetId: "rainbow-bean-candy",
+      imageUrl: "/assets/items/rainbow-bean-candy.webp"
+    });
+  });
+
   it("deducts coins, records per-user purchase count, and adds a purchased item quantity", async () => {
     const user = {
       id: "user-1",
@@ -401,8 +461,21 @@ describe("shop", () => {
         category: "item",
         targetId: "radio-recruitment-ticket",
         itemTargetType: "self",
-        imageUrl: "/assets/items/radio-recruitment-ticket.svg"
+        imageUrl: "/assets/items/radio-recruitment-ticket.webp"
       })
+    ]);
+    expect(calls).toContainEqual([
+      "updateMany",
+      {
+        where: {
+          category: "item",
+          targetId: "radio-recruitment-ticket",
+          imageUrl: { in: ["", "/assets/items/radio-recruitment-ticket.svg"] }
+        },
+        data: {
+          imageUrl: "/assets/items/radio-recruitment-ticket.webp"
+        }
+      }
     ]);
   });
 
@@ -552,6 +625,42 @@ describe("shop", () => {
         },
         data: {
           imageUrl: "/assets/items/qiuyuan-zhouwo.webp"
+        }
+      }
+    ]);
+  });
+
+  it("backfills stale rainbow candy shop images without touching arbitrary custom images", async () => {
+    const calls = [];
+    await seedBuiltinShopItems({
+      shopItem: {
+        updateMany: async (query) => {
+          calls.push(["updateMany", query]);
+          return { count: 1 };
+        },
+        findFirst: async (query) => {
+          calls.push(["findFirst", query]);
+          return query.where.targetId === "rainbow-bean-candy"
+            ? { id: "shop-candy", imageUrl: "/uploads/admin-candy.webp" }
+            : null;
+        },
+        create: async ({ data }) => {
+          calls.push(["create", data]);
+          return data;
+        }
+      }
+    });
+
+    expect(calls).toContainEqual([
+      "updateMany",
+      {
+        where: {
+          category: "item",
+          targetId: "rainbow-bean-candy",
+          imageUrl: { in: ["", "/assets/items/rainbow-bean-candy.png"] }
+        },
+        data: {
+          imageUrl: "/assets/items/rainbow-bean-candy.webp"
         }
       }
     ]);

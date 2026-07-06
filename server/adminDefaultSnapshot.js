@@ -370,7 +370,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "enabled": true,
       "sortOrder": 121,
       "description": "使用先约电台的广播券，可以招募星炬学院外的人。",
-      "imageUrl": "/assets/items/radio-recruitment-ticket.svg",
+      "imageUrl": "/assets/items/radio-recruitment-ticket.webp",
       "illustName": "",
       "illustUrl": "",
       "source": "default"
@@ -387,7 +387,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "enabled": true,
       "sortOrder": 150,
       "description": "产地不明的糖果，据说有神秘的效果",
-      "imageUrl": "/assets/items/rainbow-bean-candy.png",
+      "imageUrl": "/assets/items/rainbow-bean-candy.webp",
       "illustName": "",
       "illustUrl": "",
       "source": "default"
@@ -544,7 +544,7 @@ export const ADMIN_DEFAULT_CONFIG = {
           "probabilityBasisPoints": 5000,
           "enabled": true,
           "name": "彩虹豆豆跳跳糖",
-          "imageUrl": "/assets/items/rainbow-bean-candy.png",
+          "imageUrl": "/assets/items/rainbow-bean-candy.webp",
           "sortOrder": 0
         },
         {

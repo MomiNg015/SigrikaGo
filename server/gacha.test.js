@@ -96,6 +96,61 @@ describe("gacha domain", () => {
     ]);
   });
 
+  it("normalizes builtin rainbow candy prize images for player-facing gacha payloads", () => {
+    const payload = toGachaPoolPayload(poolFixture({
+      prizes: [{
+        id: "prize-candy",
+        type: "item",
+        targetId: "rainbow-bean-candy",
+        quantity: 3,
+        probabilityBasisPoints: 10000,
+        enabled: true,
+        name: "彩虹豆豆跳跳糖",
+        imageUrl: "/assets/items/rainbow-bean-candy.png"
+      }]
+    }));
+
+    expect(payload.featuredPrize).toMatchObject({
+      id: "prize-candy",
+      imageUrl: "/assets/items/rainbow-bean-candy.webp"
+    });
+    expect(payload.prizes[0]).toMatchObject({
+      id: "prize-candy",
+      imageUrl: "/assets/items/rainbow-bean-candy.webp"
+    });
+  });
+
+  it("normalizes builtin rainbow candy prize images in draw rewards", async () => {
+    const user = userFixture({ coins: 200 });
+    const pool = poolFixture({
+      prizes: [{
+        id: "prize-candy",
+        type: "item",
+        targetId: "rainbow-bean-candy",
+        quantity: 3,
+        probabilityBasisPoints: 10000,
+        enabled: true,
+        name: "彩虹豆豆跳跳糖",
+        imageUrl: "/assets/items/rainbow-bean-candy.png"
+      }]
+    });
+
+    const response = await executeGachaDraw({
+      prisma: transactionGachaPrisma({ user, pool }),
+      userId: user.id,
+      poolId: pool.id,
+      count: 1,
+      now: new Date("2026-06-12T12:00:00Z"),
+      random: () => 0.1
+    });
+
+    expect(response.rewards).toEqual([expect.objectContaining({
+      type: "item",
+      targetId: "rainbow-bean-candy",
+      imageUrl: "/assets/items/rainbow-bean-candy.webp"
+    })]);
+  });
+
   it("uses pool-specific draw prices and adds chains for duplicate character quantities", async () => {
     const user = userFixture({
       coins: 200,
@@ -249,7 +304,7 @@ function userFixture(overrides = {}) {
   };
 }
 
-function transactionGachaPrisma({ user, pool, calls }) {
+function transactionGachaPrisma({ user, pool, calls = [] }) {
   return {
     $transaction: async (callback) => callback({
       user: {

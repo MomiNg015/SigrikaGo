@@ -97,6 +97,9 @@
 <li>Bright School 首页的图片式匹配/手册入口和 2x3 工具按钮依赖 WebP 透明图像加 <code>drop-shadow</code> 表现纸片厚度；桌面和移动端都必须保持这些入口、工具 grid 与按钮容器 <code>overflow: visible</code>，工具按钮图像自身保留右/下透明 bleed，避免阴影被卡片或最终移动安全层裁切。</li>
 </ul>
 <ul>
+<li>“先约电台广播券”的运行期道具图标使用 <code>public/assets/items/radio-recruitment-ticket.webp</code>，由 <code>C:/codex/image/item/boardcast_ticket.png</code> 转换而来，并通过 <code>src/shared/recruitment.js</code> 同步给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 <code>imageUrl</code> 归一到当前共享配置，避免已有 SQLite 行继续显示旧 SVG。“彩虹豆豆跳跳糖”的运行期道具图标使用 <code>public/assets/items/rainbow-bean-candy.webp</code>，由 <code>C:/codex/image/item/rainbow-candy-cutout-full.png</code> 无损转换而来；<code>server/itemImages.js</code> 统一让商城商品、仓库道具和玩家侧抽卡奖项/结果归一到当前 WebP，默认快照中的糖果商品和卡池奖励也使用同一路径。<code>public/assets/promotional/</code> 仍保留未接入运行时引用的候选宣传图，例如“招新贴报”候选 <code>recruitment-poster-v1..v3.png</code> 与“先约电台广播券”候选 <code>radio-coupon-v1..v3.png</code>，候选图不进入启动预加载清单，除非后续 UI 明确引用。</li>
+</ul>
+<ul>
 <li>玩家侧艺术字体作为语义化、白名单式资源使用：<code>public/assets/fonts/WuWa-Lahai-Roi-Regular.ttf</code> 通过 <code>&quot;Sigrika Accent Latin&quot;</code> 字体族挂到 <code>--font-display-accent</code> 与 <code>--font-numeric-accent</code>，只覆盖拉丁字母和数字。倒计时数字必须经 <code>.text-clock-value</code>，玩家可见积分/rating 数值必须经 <code>.text-rating-value</code>，登录页 <code>SigrikaGo</code> 英文品牌短标签、首页品牌/模式选择英文水印/锁定占位等氛围短标签可经 <code>.text-display-accent</code>；这些艺术字语义类用 <code>text-transform: uppercase</code> 让小写拉丁字母视觉显示为大写，但不改源字符串和数据。用户名、后台管理、正文、表单、金币/价格/库存、局数胜负、房间号、时间戳和排行榜名次不使用该字体，后续替换字体只改 token/asset 而不改语义类名。最终 <code>mobile-adaptive/semantic-accent-typography.css</code> 在主题层之后回补这三个语义类，避免 Bright School 的广域 <code>!important</code> 字体/颜色重置压掉棋钟读秒颜色和 rating 数字字体，并清除 <code>.text-clock-value</code> 误继承的徽章背景、边框和阴影；主时间棋钟数字固定为 <code>#1c171a</code> 而不是灰色，读秒警告状态保留红色/多色语义，移动端房间玩家条内会把艺术字体棋钟压到更小字号与宽度，避免读秒条被挤出容器。</li>
 </ul>
 <ul>
@@ -2027,7 +2030,7 @@
 <li>页面顶部 toast 使用队列堆叠展示，新提示插入顶部，先出现的提示会被挤压到下方；每条提示最长显示 3 秒后淡出。toast 只用于普通错误、操作反馈和成功提示，不再自动弹出金币、积分或段位增减；对局收益继续在结果弹窗中展示，回到大厅后由 <code>/api/me</code> 刷新的铭牌统计体现最新段位积分。</li>
 </ul>
 <ul>
-<li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.webp</code>，介绍为“产地不明的糖果，据说有神秘的效果”。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
+<li>内置道具“彩虹豆豆跳跳糖”会 seed 为 <code>item</code> 商品，商店库存 10、价格 10、图片 <code>/assets/items/rainbow-bean-candy.webp</code>，介绍为“产地不明的糖果，据说有神秘的效果”。服务端会把商品、仓库和玩家侧抽卡奖项/结果中的内置糖果旧 PNG 图路径归一为当前 WebP，默认快照里的糖果商品和卡池奖励也使用同一路径。该道具只能对角色使用，目前仅西格莉卡和达妮娅有实际效果，其它角色会返回“这个角色暂时没有糖果效果”且不消耗道具。</li>
 </ul>
 <ul>
 <li>彩虹豆豆跳跳糖对西格莉卡使用后：消耗 1 个道具，用户获得 30 金币，<code>itemEffects.sigrikaCandyDisabled</code> 置为 true；西格莉卡棋舍出战按钮变灰，<code>/api/me/character</code> 与 socket 选角都会避开西格莉卡。如果当前出战是西格莉卡，后端自动随机切换到一名已拥有且可出战的其它角色；没有可替换角色时拒绝使用且不消耗道具。任意角色完成一盘有效对局后清除该状态。</li>
@@ -3719,6 +3722,9 @@
 <h2>当前结论</h2>
 <ul>
 <li>运行期图片优先引用 WebP；PNG/JPG/GIF 多作为源素材或兼容文件保留。</li>
+</ul>
+<ul>
+<li>“先约电台广播券”的运行期道具图标使用 <code>public/assets/items/radio-recruitment-ticket.webp</code>，由 <code>C:/codex/image/item/boardcast_ticket.png</code> 转换而来并通过 <code>src/shared/recruitment.js</code> 暴露给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 <code>imageUrl</code> 归一到当前共享配置，启动种子也会回填空值或旧 SVG 路径，避免已有 SQLite 行继续显示旧资源。内置道具“彩虹豆豆跳跳糖”的运行期图标使用 <code>public/assets/items/rainbow-bean-candy.webp</code>，由 <code>C:/codex/image/item/rainbow-candy-cutout-full.png</code> 无损 WebP 转换而来；服务端 <code>server/itemImages.js</code> 统一给商城商品、仓库道具和玩家侧抽卡奖项/结果归一化该内置道具图，默认快照中的商品和卡池奖励同样使用 WebP，启动回填只匹配空值或旧 <code>/assets/items/rainbow-bean-candy.png</code>。<code>public/assets/promotional/</code> 仍保存尚未接入运行时引用的宣传/道具候选图，当前包含“招新贴报”候选 <code>recruitment-poster-v1..v3.png</code> 和“先约电台广播券”候选 <code>radio-coupon-v1..v3.png</code>。这些候选 PNG 不进入 <code>RUNTIME_IMAGE_ASSETS</code> 或启动预加载，除非后续 UI 明确引用。</li>
 </ul>
 <ul>
 <li>Bright School 首页主面板背景板是运行期 home 资源：桌面/窄桌面使用 <code>/assets/home/home-main-panel-desktop.webp</code>，手机/竖屏使用 <code>/assets/home/home-main-panel-mobile.webp</code>。两张图由主题 CSS 挂到 <code>.home-main-panel.home-terminal-main</code>，使用 <code>background-size: 100% 100%</code> 随当前面板尺寸自适应伸缩，而不是通过 React 标记或外部绝对路径加载。</li>
