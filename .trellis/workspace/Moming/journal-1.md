@@ -1197,3 +1197,36 @@ Reserved right and bottom shadow bleed for Bright School home entries, house cha
 ### Next Steps
 
 - None - task complete
+
+
+## Session 37: Fix mobile shop card layout
+
+**Date**: 2026-07-06
+**Task**: Fix mobile shop card layout
+**Branch**: `codex/frontend-ui-issues`
+
+### Summary
+
+Removed music purchase-limit text and tightened Bright School mobile shop cards so media, titles, meta rows, and purchase buttons are centered; item cards keep quantity left and price right.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `66a5f454` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
