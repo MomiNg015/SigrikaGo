@@ -41,11 +41,13 @@ Questions to answer:
 #### 2. Signatures
 - `ADMIN_DEFAULT_CONFIG` in `server/adminDefaultSnapshot.js`.
 - `seedAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CONFIG)` in `server/adminDefaultSeed.js`.
+- `npm run admin:snapshot` runs `scripts/export-admin-default-snapshot.mjs` to regenerate `server/adminDefaultSnapshot.js` from the local `prisma/dev.db` non-user admin rows.
 - `initializeServerData()` in `server/serverStartup.js` must run schema guards for referenced tables before `seedAdminDefaultConfig()`, then run built-in seeders afterward.
 
 #### 3. Contracts
 - The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, and `MusicTrackSetting`.
 - The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, mailbox history, game records, and live-room state.
+- When a local admin-console edit should become a durable project/deployment default, run `npm run admin:snapshot` and commit the resulting snapshot; otherwise the edit lives only in the ignored SQLite database.
 - Seed behavior treats the snapshot as bootstrap defaults, not runtime source of truth. Missing non-user admin rows are created from the snapshot; existing rows must be preserved so admin-console saves survive backend restarts.
 - `SiteSetting` and `MusicTrackSetting` use `upsert` with empty `update` payloads. Catalog tables find the stable row first, then skip existing rows or `create` missing rows.
 - Existing `GachaPool` rows must not rebuild prizes during startup. Prize `deleteMany` belongs to explicit admin gacha-pool updates, not default seeding.
@@ -57,9 +59,11 @@ Questions to answer:
 - Delegate missing in a narrowed test double -> seeder returns without throwing.
 - User/history model requested for snapshot -> reject the change and keep it outside deployment defaults.
 - Date-like optional fields from snapshots -> pass as nullable values accepted by Prisma for the target model.
+- Snapshot export run after admin edits -> rewrites only `server/adminDefaultSnapshot.js` from allowed non-user admin tables.
 
 #### 5. Good/Base/Bad Cases
-- Good: a fresh database receives current character skill descriptions and system messages from `server/adminDefaultSnapshot.js`.
+- Good: a fresh database receives current site settings, character skill descriptions, system messages, character CV credits, and shop item illust credits from `server/adminDefaultSnapshot.js`.
+- Good: after editing admin settings locally, running `npm run admin:snapshot` updates the committed bootstrap source instead of relying on ignored `prisma/dev.db`.
 - Base: an existing cloud database with runtime admin edits keeps those values on restart/deploy; only missing snapshot rows are added.
 - Bad: using startup defaults to "refresh" a live database after an admin edited system settings, characters, shop items, gacha pools, achievements, music names, or recruitment copy.
 - Bad: importing `prisma/dev.db` at runtime on the server.
@@ -69,6 +73,7 @@ Questions to answer:
 - Unit tests for `seedAdminDefaultConfig()` assert every included domain creates missing rows.
 - Unit tests assert existing rows are not updated by startup seeding.
 - Unit tests assert `SiteSetting` and `MusicTrackSetting` seed upserts use empty `update` payloads.
+- Unit tests for `scripts/export-admin-default-snapshot.mjs` assert exported settings and catalog credit fields are present and dates serialize deterministically.
 - Startup-order tests assert schema guards run before the snapshot seed and built-in seeders run afterward.
 - A smoke test against a temporary database copy should verify the committed snapshot can be replayed through real Prisma create paths when changing snapshot shape.
 

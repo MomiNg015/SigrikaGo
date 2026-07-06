@@ -25,6 +25,24 @@ describe("admin default config seed", () => {
     });
   });
 
+  it("keeps admin-saved public settings and catalog credits in the deployment snapshot", () => {
+    const homeSubtitle = ADMIN_DEFAULT_CONFIG.siteSettings.find((row) => row.key === "homeSubtitle");
+    const sigrika = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "sigrika");
+    const papaganPeach = ADMIN_DEFAULT_CONFIG.shopItems.find((item) => (
+      item.category === "decoration" && item.targetId === "papagan-peach-stone"
+    ));
+
+    expect(homeSubtitle?.value).toBe("SIGRIKAGO");
+    expect(sigrika).toMatchObject({
+      cvName: "璃音",
+      cvUrl: "https://space.bilibili.com/68435776"
+    });
+    expect(papaganPeach).toMatchObject({
+      illustName: "憨态喵",
+      illustUrl: "https://space.bilibili.com/392815021"
+    });
+  });
+
   it("creates missing non-user admin configuration from the snapshot", async () => {
     const calls = [];
     const prisma = adminDefaultSeedPrisma({ calls });

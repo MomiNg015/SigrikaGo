@@ -22,6 +22,7 @@
     "docs:system-design": "node scripts/render-system-design-html.mjs",
     "docs:utf8": "node scripts/write-utf8-doc.mjs",
     "check:production": "node scripts/check-production-config.mjs",
+    "admin:snapshot": "node scripts/export-admin-default-snapshot.mjs",
     "backfill:user-assets": "node scripts/backfill-structured-user-assets.mjs",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push"

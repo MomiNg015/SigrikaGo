@@ -1,4 +1,4 @@
-// Generated from prisma/dev.db non-user admin configuration on 2026-06-25.
+// Generated from prisma/dev.db non-user admin configuration on 2026-07-06.
 // Do not include users, audit logs, feedback, reports, game records, mailbox history, or live state here.
 
 export const ADMIN_DEFAULT_CONFIG = {
@@ -9,7 +9,7 @@ export const ADMIN_DEFAULT_CONFIG = {
     },
     {
       "key": "characterLoadingLines",
-      "value": "sigrika=西格莉卡正在做死活题\nmornye=莫宁正在给双腿充电\nchangli=长离正在摇扇子\nlynae=琳奈正在摇匀颜料\nnabomo=娜波摩正在玩cosplay\ndenia=达妮娅正在睡大觉\nqiuyuan=仇远正在吹笛子\nchisa=千咲正在制作棋盘烤肉机\naemeath=爱弥斯正在打瘪猪小仙\nbaconbits=猪小仙正在被打爆"
+      "value": "sigrika=西格莉卡正在做死活题\nmornye=莫宁正在喝速醒能量补充胶\nchangli=长离正在摇扇子\nlynae=琳奈正在摇匀颜料\nnabomo=娜波摩正在玩cosplay\ndenia=达妮娅正在睡大觉\nqiuyuan=仇远正在吹笛子\nchisa=千咲正在制作棋盘烤肉机\naemeath=爱弥斯正在打瘪猪小仙\nbaconbits=猪小仙正在被打爆"
     },
     {
       "key": "footerText",
@@ -17,7 +17,7 @@ export const ADMIN_DEFAULT_CONFIG = {
     },
     {
       "key": "homeSubtitle",
-      "value": "连罗伊人都喜欢玩的智力游戏"
+      "value": "SIGRIKAGO"
     },
     {
       "key": "homeTitle",
@@ -48,6 +48,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/sigrika_centered.webp",
       "portraitSource": "url",
       "acquisitionMethod": "初始获得",
+      "cvName": "璃音",
+      "cvUrl": "https://space.bilibili.com/68435776",
       "source": "default",
       "palette": "#ff9b4d",
       "enabled": true,
@@ -73,6 +75,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/Danea_centered.webp",
       "portraitSource": "url",
       "acquisitionMethod": "初始获得",
+      "cvName": "璃音",
+      "cvUrl": "https://space.bilibili.com/68435776",
       "source": "default",
       "palette": "#f2a4d8",
       "enabled": true,
@@ -98,6 +102,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/Aemeath_centered.webp",
       "portraitSource": "url",
       "acquisitionMethod": "初始获得",
+      "cvName": "璃音",
+      "cvUrl": "https://space.bilibili.com/68435776",
       "source": "default",
       "palette": "#67d9e8",
       "enabled": true,
@@ -123,6 +129,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/characters/lynae_centered.webp",
       "portraitSource": "url",
       "acquisitionMethod": "招募获得",
+      "cvName": "云生",
+      "cvUrl": "https://space.bilibili.com/37599062",
       "source": "default",
       "palette": "#38d7c2",
       "enabled": true,
@@ -148,6 +156,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/characters/mornye.png",
       "portraitSource": "url",
       "acquisitionMethod": "招募获得",
+      "cvName": "璃音",
+      "cvUrl": "https://space.bilibili.com/68435776",
       "source": "default",
       "palette": "#8aa0ff",
       "enabled": true,
@@ -173,6 +183,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/characters/chisa.png",
       "portraitSource": "url",
       "acquisitionMethod": "招募获得",
+      "cvName": "云生",
+      "cvUrl": "https://space.bilibili.com/37599062",
       "source": "default",
       "palette": "#d74255",
       "enabled": true,
@@ -198,6 +210,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/characters/changli.png",
       "portraitSource": "url",
       "acquisitionMethod": "招募获得",
+      "cvName": "云生",
+      "cvUrl": "https://space.bilibili.com/37599062",
       "source": "default",
       "palette": "#e96c7d",
       "enabled": true,
@@ -223,6 +237,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/characters/qiuyuan.png",
       "portraitSource": "url",
       "acquisitionMethod": "招募获得",
+      "cvName": "mo",
+      "cvUrl": "",
       "source": "default",
       "palette": "#2f3a3d",
       "enabled": true,
@@ -248,6 +264,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/nabomo.webp",
       "portraitSource": "url",
       "acquisitionMethod": "首次升上6段后自动获得",
+      "cvName": "璃音",
+      "cvUrl": "https://space.bilibili.com/68435776",
       "source": "default",
       "palette": "#8fb4f7",
       "enabled": true,
@@ -273,6 +291,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "portraitUrl": "/assets/baconbits.webp",
       "portraitSource": "url",
       "acquisitionMethod": "？？？",
+      "cvName": "",
+      "cvUrl": "",
       "source": "default",
       "palette": "#f59ab2",
       "enabled": true,
@@ -317,6 +337,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "sortOrder": 100,
       "description": "获得角色猪小仙。",
       "imageUrl": "/assets/baconbits.png",
+      "illustName": "",
+      "illustUrl": "",
       "source": "default"
     },
     {
@@ -332,6 +354,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "sortOrder": 120,
       "description": "用于贴在学院公告栏上的招新贴报，可以招募星炬学院内的人。",
       "imageUrl": "/assets/items/recruitment-poster.svg",
+      "illustName": "",
+      "illustUrl": "",
       "source": "default"
     },
     {
@@ -347,6 +371,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "sortOrder": 121,
       "description": "使用先约电台的广播券，可以招募星炬学院外的人。",
       "imageUrl": "/assets/items/radio-recruitment-ticket.svg",
+      "illustName": "",
+      "illustUrl": "",
       "source": "default"
     },
     {
@@ -362,6 +388,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "sortOrder": 150,
       "description": "产地不明的糖果，据说有神秘的效果",
       "imageUrl": "/assets/items/rainbow-bean-candy.png",
+      "illustName": "",
+      "illustUrl": "",
       "source": "default"
     },
     {
@@ -377,6 +405,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "sortOrder": 200,
       "description": "曾经风靡一时，但现在过气了的猫爪棋子。",
       "imageUrl": "/assets/decorations/paw-stone-preview.png",
+      "illustName": "",
+      "illustUrl": "",
       "source": "default"
     },
     {
@@ -392,6 +422,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "sortOrder": 201,
       "description": "吃过的人都说好！\n（illust：憨态喵）",
       "imageUrl": "/assets/decorations/papagan-peach-stone-preview.png",
+      "illustName": "憨态喵",
+      "illustUrl": "https://space.bilibili.com/392815021",
       "source": "default"
     },
     {
@@ -407,8 +439,10 @@ export const ADMIN_DEFAULT_CONFIG = {
       "sortOrder": 320,
       "description": "仇远的第二版技能 BGM",
       "imageUrl": "/assets/items/qiuyuan-zhouwo.webp",
+      "illustName": "",
+      "illustUrl": "",
       "source": "default"
-    },
+    }
   ],
   "gachaPools": [
     {
@@ -417,13 +451,13 @@ export const ADMIN_DEFAULT_CONFIG = {
       "description": "大苏打实打实打算是",
       "enabled": true,
       "permanent": true,
-      "startsAt": null,
-      "endsAt": null,
       "singleDrawPrice": 50,
       "tenDrawPrice": 500,
       "featuredPrizeId": "cmqb3hn4i00027kd01666gee0",
       "featuredPrizeIds": "[\"cmqb3hn4i00027kd01666gee0\",\"cmqb3hn4l00067kd0nkrwkgra\",\"cmqb3hn4m00087kd02cu6z54p\"]",
       "sortOrder": 0,
+      "startsAt": null,
+      "endsAt": null,
       "prizes": [
         {
           "id": "cmqb3hn4i00027kd01666gee0",
@@ -550,8 +584,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "targetId": "",
       "amount": 100,
       "enabled": true,
-      "deletedAt": null,
-      "sortOrder": 100
+      "sortOrder": 100,
+      "deletedAt": null
     },
     {
       "id": "reward-sigrika-spark-100-wins-nameplate",
@@ -564,8 +598,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "targetId": "",
       "amount": 0,
       "enabled": true,
-      "deletedAt": null,
-      "sortOrder": 110
+      "sortOrder": 110,
+      "deletedAt": null
     }
   ],
   "achievements": [
@@ -578,8 +612,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "conditionParams": "{\"event\":\"denia-rainbow-bean-candy\"}",
       "rewardAssetId": "reward-denia-rainbow-bean-candy-coins",
       "enabled": true,
-      "deletedAt": null,
-      "sortOrder": 100
+      "sortOrder": 100,
+      "deletedAt": null
     },
     {
       "id": "achievement-sigrika-spark-100-wins",
@@ -590,8 +624,8 @@ export const ADMIN_DEFAULT_CONFIG = {
       "conditionParams": "{\"mode\":\"spark\",\"characterId\":\"sigrika\",\"value\":100}",
       "rewardAssetId": "reward-sigrika-spark-100-wins-nameplate",
       "enabled": true,
-      "deletedAt": null,
-      "sortOrder": 110
+      "sortOrder": 110,
+      "deletedAt": null
     }
   ],
   "musicTrackSettings": [
