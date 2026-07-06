@@ -244,7 +244,7 @@ describe("ShopModal helpers", () => {
     expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action:disabled");
   });
 
-  it("hides purchase-limit text and centers prices for character and decoration cards", () => {
+  it("hides purchase-limit text and centers prices for character, decoration, and music cards", () => {
     const baseItem = {
       id: "test-card",
       name: "测试商品",
@@ -270,11 +270,14 @@ describe("ShopModal helpers", () => {
 
     const characterHtml = renderCard("character");
     const decorationHtml = renderCard("decoration");
+    const musicHtml = renderCard("music");
 
     expect(characterHtml).not.toContain("限购");
     expect(decorationHtml).not.toContain("限购");
+    expect(musicHtml).not.toContain("限购");
     expect(characterHtml).toContain("shop-card-meta-price-only");
     expect(decorationHtml).toContain("shop-card-meta-price-only");
+    expect(musicHtml).toContain("shop-card-meta-price-only");
   });
 
   it("keeps a stable 8-slot grid for the active category", () => {
@@ -523,12 +526,15 @@ describe("ShopModal helpers", () => {
     const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid");
-    expect(css).toContain("grid-auto-rows: minmax(216px, auto) !important");
+    expect(css).toContain("grid-auto-rows: minmax(calc(clamp(96px,24vw,118px) + 132px),auto) !important");
     expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item");
-    expect(css).toContain("display: flex !important");
+    expect(css).toContain("display: grid !important");
+    expect(css).toContain("grid-template-rows: clamp(96px,24vw,118px) minmax(20px,auto) minmax(28px,1fr) 44px !important");
+    expect(css).toContain("justify-content: center !important");
+    expect(css).toContain("justify-items: center !important");
     expect(css).toContain("overflow: hidden !important");
     expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action");
-    expect(css).toContain("margin-top: auto !important");
+    expect(css).toContain("margin-top: 0 !important");
     expect(css).toContain("align-self: stretch !important");
   });
 
@@ -536,14 +542,15 @@ describe("ShopModal helpers", () => {
     const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid");
-    expect(css).toContain("grid-auto-rows: minmax(216px, auto) !important");
+    expect(css).toContain("grid-auto-rows: minmax(calc(clamp(96px,24vw,118px) + 132px),auto) !important");
     expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item");
-    expect(css).toContain("flex-direction: column !important");
+    expect(css).toContain("grid-template-rows: clamp(96px,24vw,118px) minmax(20px,auto) minmax(28px,1fr) 44px !important");
     expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-music).shop-item > img");
-    expect(css).toContain("min-height: 52px !important");
-    expect(css).toContain("height: 52px !important");
+    expect(css).toContain("min-height: 96px !important");
+    expect(css).toContain("height: clamp(96px,24vw,118px) !important");
+    expect(css).toContain("max-height: 118px !important");
     expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action");
-    expect(css).toContain("margin-top: auto !important");
+    expect(css).toContain("margin-top: 0 !important");
   });
 
   it("keeps Bright School mobile item shop cards aligned with decoration cards", () => {
@@ -551,26 +558,38 @@ describe("ShopModal helpers", () => {
 
     expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid");
     expect(css).toContain(":is(.shop-category-item, .shop-category-music).shop-item > svg");
-    expect(css).toContain("max-height: 52px !important");
+    expect(css).toContain("max-height: 118px !important");
     expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta");
-    expect(css).toContain("min-height: 30px !important");
+    expect(css).toContain("display: grid !important");
+    expect(css).toContain("grid-template-columns: minmax(0, 1fr) auto !important");
+    expect(css).toContain("width: 100% !important");
+    expect(css).toContain("min-height: 28px !important");
+    expect(css).toContain(".shop-category-item.shop-item .shop-card-meta > span");
+    expect(css).toContain("justify-self: start !important");
+    expect(css).toContain(".shop-category-item.shop-item .shop-price");
+    expect(css).toContain("justify-self: end !important");
+    expect(css).toContain("text-align: right !important");
   });
 
   it("keeps Bright School mobile music shop cards self-contained", () => {
     const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const shopCardsCss = readFileSync(
+      new URL("../styles/mobile-adaptive/bright-school-overrides/shop-cards.css", import.meta.url),
+      "utf8"
+    );
 
-    expect(css).toContain(".shop-content.shop-category-music .shop-grid");
-    expect(css).toContain("grid-auto-rows: minmax(224px, auto) !important");
     expect(css).toContain(".shop-category-music.shop-item");
-    expect(css).toContain("display: flex !important");
-    expect(css).toContain("min-height: 224px !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-music).shop-item > img");
-    expect(css).toContain("flex: 0 0 52px !important");
-    expect(css).toContain(".shop-category-music.shop-item .shop-card-meta");
     expect(css).toContain("display: grid !important");
-    expect(css).toContain("grid-template-columns: minmax(0, 1fr) auto !important");
+    expect(css).toContain("min-height: calc(clamp(96px,24vw,118px) + 132px) !important");
+    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-music).shop-item > img");
+    expect(css).toContain("height: clamp(96px,24vw,118px) !important");
+    expect(shopCardsCss).not.toContain("flex: 0 0 52px !important");
+    expect(shopCardsCss).not.toContain("height: 52px !important");
+    expect(css).toContain(".shop-card-meta-price-only");
+    expect(css).toContain(".shop-category-music.shop-item .shop-price");
+    expect(css).toContain("text-align: center !important");
     expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action");
-    expect(css).toContain("margin-top: auto !important");
+    expect(css).toContain("margin-top: 0 !important");
   });
 
   it("keeps the Bright School mobile shop category tablist chrome-free", () => {
@@ -595,7 +614,7 @@ describe("ShopModal helpers", () => {
     expect(css).toContain("scroll-padding: 2px 8px 12px 2px !important");
   });
 
-  it("centers character and decoration prices after removing the visible limit row", () => {
+  it("centers character, decoration, and music prices after removing the visible limit row", () => {
     const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const priceOnlyBlock = commerceCss.match(/\.shop-card-meta-price-only\s*\{[^}]+\}/)?.[0] ?? "";
@@ -603,8 +622,9 @@ describe("ShopModal helpers", () => {
 
     expect(priceOnlyBlock).toContain("justify-content: center");
     expect(priceOnlyPriceBlock).toContain("text-align: center");
-    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-decoration).shop-item .shop-card-meta-price-only");
-    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-decoration).shop-item .shop-card-meta-price-only .shop-price");
+    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta-price-only");
+    expect(mobileCss).toContain("grid-template-columns: 1fr !important");
+    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta-price-only .shop-price");
   });
 
   it("styles discounted original prices as a compact line above the current price", () => {

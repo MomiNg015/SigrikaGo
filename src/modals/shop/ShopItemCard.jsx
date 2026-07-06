@@ -22,7 +22,7 @@ export default function ShopItemCard({ item, index, activeCategory, purchasingId
   const soldOut = isShopItemSoldOut(item);
   const disabled = owned || soldOut || !item.purchasable || tooExpensive || purchasingId === item.id;
   const actionStateClass = owned ? "shop-action-owned" : soldOut ? "shop-action-sold-out" : "";
-  const showQuantityLabel = item.category !== "character" && item.category !== "decoration";
+  const showQuantityLabel = item.category === "item";
   const openDetail = () => onShowDetail?.(item);
   const openDetailFromKeyboard = (event) => {
     if (event.target !== event.currentTarget) return;
