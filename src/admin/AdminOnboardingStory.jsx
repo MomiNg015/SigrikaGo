@@ -7,6 +7,8 @@ import {
   Copy,
   Eraser,
   Eye,
+  FileDown,
+  FileUp,
   FilePlus2,
   GitBranch,
   HelpCircle,
@@ -47,6 +49,11 @@ import {
 import TutorialBattleScreen from "../tutorial/TutorialBattleScreen.jsx";
 import TutorialSessionModal from "../tutorial/TutorialSessionModal.jsx";
 import { AdminSectionHeader, AdminStatusPill } from "./adminComponents.jsx";
+import {
+  parseStoryScriptWorkbook,
+  storyScriptWorkbookFileName,
+  writeStoryScriptWorkbook
+} from "./storyScriptWorkbook.js";
 
 const TRIGGER_TYPES = Object.freeze({
   onboarding: "onboarding",
@@ -186,8 +193,12 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
   const [previewBattleSession, setPreviewBattleSession] = useState(null);
   const [previewStoryStartId, setPreviewStoryStartId] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [importErrors, setImportErrors] = useState([]);
+  const [pendingImport, setPendingImport] = useState(null);
   const [highlightedNodeId, setHighlightedNodeId] = useState("");
   const [nodeSettingsWindow, setNodeSettingsWindow] = useState({ open: false, x: 24, y: 96 });
+  const importInputRef = useRef(null);
   const workbenchRef = useRef(null);
   const selectedNodeRef = useRef("");
   const flowNodeRefs = useRef(new Map());
@@ -280,6 +291,8 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
     setPointPicker(null);
     closeNodeSettings();
     setFieldError("");
+    setImportErrors([]);
+    setPendingImport(null);
   }
 
   async function selectScript(key) {
@@ -407,6 +420,64 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
   function updateInitialBoard(patch) {
     const current = script.draft.initialBoard ?? { mode: "spark", stones: [] };
     patchDraft({ initialBoard: { ...current, ...patch } });
+  }
+
+  async function exportScript(target = script) {
+    const targetScript = normalizeStoryScript(target?.key === script.key ? script : target);
+    if (!targetScript.draft.nodes.length && !targetScript.published.nodes.length) {
+      notify("该脚本暂无可导出的节点", "danger");
+      return;
+    }
+    setFieldError("");
+    try {
+      const exportedAt = new Date();
+      const buffer = await writeStoryScriptWorkbook(targetScript, { exportedAt });
+      downloadWorkbook(buffer, storyScriptWorkbookFileName(targetScript, exportedAt));
+      notify("Excel 已导出", "success");
+    } catch (error) {
+      reportError(error);
+    }
+  }
+
+  function requestImportWorkbook() {
+    if (dirty && !window.confirm("当前脚本有未保存改动，导入 Excel 会覆盖当前未保存草稿。确定继续吗？")) return;
+    setImportErrors([]);
+    setPendingImport(null);
+    importInputRef.current?.click();
+  }
+
+  async function handleImportWorkbook(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setImporting(true);
+    setImportErrors([]);
+    setPendingImport(null);
+    setFieldError("");
+    try {
+      const result = await parseStoryScriptWorkbook(await file.arrayBuffer(), script, { itemOptions, skillCharacters });
+      if (!result.ok) {
+        setImportErrors(result.errors);
+        notify("Excel 导入校验失败", "danger");
+        return;
+      }
+      setPendingImport(result);
+      notify("Excel 校验通过，请确认变更摘要", "success");
+    } catch (error) {
+      reportError(error);
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  function applyPendingImport() {
+    if (!pendingImport) return;
+    selectLocalScript({
+      ...script,
+      title: pendingImport.title,
+      draft: pendingImport.draft
+    }, { dirty: true });
+    notify("Excel 已导入当前草稿，请预览后保存或发布", "success");
   }
 
   function positionNodeSettingsWindow(event) {
@@ -574,6 +645,7 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
           onSelect={selectScript}
           onCopy={copyScript}
           onDelete={deleteScript}
+          onExport={exportScript}
           onCreate={() => setCreateOpen((open) => !open)}
         />
 
@@ -586,10 +658,27 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
             previewMode={previewMode}
             onPreviewMode={setPreviewMode}
             onCopy={() => copyScript()}
+            onImport={requestImportWorkbook}
+            importing={importing}
             onSave={() => submit("save-draft")}
             onPublish={() => submit("publish")}
             onUnpublish={() => submit("unpublish")}
             onDelete={() => deleteScript()}
+          />
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            className="admin-story-workbench-file-input"
+            aria-label="导入剧情教学 Excel"
+            onChange={handleImportWorkbook}
+          />
+
+          <ImportWorkbookFeedback
+            errors={importErrors}
+            pendingImport={pendingImport}
+            onApply={applyPendingImport}
+            onCancel={() => setPendingImport(null)}
           />
 
           <section className="admin-story-workbench-script">
@@ -815,7 +904,7 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
   );
 }
 
-function ScriptLibrary({ scripts, selectedKey, onSelect, onCopy, onDelete, onCreate }) {
+function ScriptLibrary({ scripts, selectedKey, onSelect, onCopy, onDelete, onExport, onCreate }) {
   const groups = groupScripts(scripts);
   return (
     <aside className="admin-story-workbench-library" aria-label="脚本卡片库">
@@ -842,6 +931,7 @@ function ScriptLibrary({ scripts, selectedKey, onSelect, onCopy, onDelete, onCre
                   </button>
                   <div>
                     {isSystemScript(entry) && <AdminStatusPill tone="neutral">{TEXT.systemScript}</AdminStatusPill>}
+                    <button type="button" className="admin-story-workbench-icon-button" title="导出 Excel" aria-label={`导出 ${entry.title || entry.key} Excel`} onClick={() => onExport(entry)}><FileDown size={15} /></button>
                     <button type="button" className="admin-story-workbench-icon-button" title="复制" onClick={() => onCopy(entry)}><Copy size={15} /></button>
                     {!entry.isPublished && !isSystemScript(entry) && (
                       <button type="button" className="admin-story-workbench-icon-button danger" title="删除" onClick={() => onDelete(entry)}><Trash2 size={15} /></button>
@@ -857,7 +947,7 @@ function ScriptLibrary({ scripts, selectedKey, onSelect, onCopy, onDelete, onCre
   );
 }
 
-function WorkbenchToolbar({ script, dirty, issues, submitting, previewMode, onPreviewMode, onCopy, onSave, onPublish, onUnpublish, onDelete }) {
+function WorkbenchToolbar({ script, dirty, issues, submitting, importing, previewMode, onPreviewMode, onCopy, onImport, onSave, onPublish, onUnpublish, onDelete }) {
   const hasBlockingIssues = issues.some((issue) => issue.severity === "error");
   return (
     <section className="admin-story-workbench-toolbar">
@@ -871,6 +961,7 @@ function WorkbenchToolbar({ script, dirty, issues, submitting, previewMode, onPr
           <Eye size={16} />{previewMode === "current" ? TEXT.previewStart : TEXT.previewCurrent}
         </button>
         <button className="admin-story-workbench-button secondary" type="button" onClick={onCopy}><Copy size={16} />复制</button>
+        <button className="admin-story-workbench-button secondary" type="button" disabled={submitting || importing} onClick={onImport}><FileUp size={16} />{importing ? "导入中" : "导入 Excel"}</button>
         {!script.isPublished && !isSystemScript(script) && (
           <button className="admin-story-workbench-button danger" type="button" onClick={onDelete}><Trash2 size={16} />删除</button>
         )}
@@ -984,6 +1075,74 @@ function FlowGraph({ flow, nodes, selectedNodeId, highlightedNodeId, issues, onS
         </div>
       )}
     </div>
+  );
+}
+
+function ImportWorkbookFeedback({ errors, pendingImport, onApply, onCancel }) {
+  if (pendingImport) {
+    const summary = pendingImport.summary;
+    return (
+      <section className="admin-story-workbench-import-panel" aria-label="Excel 导入变更摘要">
+        <header>
+          <div>
+            <strong>Excel 校验通过</strong>
+            <span>确认后会覆盖当前编辑器草稿，但不会自动保存或发布。</span>
+          </div>
+          <div>
+            <button className="admin-story-workbench-button secondary" type="button" onClick={onCancel}>取消</button>
+            <button className="admin-story-workbench-button primary" type="button" onClick={onApply}>应用到草稿</button>
+          </div>
+        </header>
+        <dl className="admin-story-workbench-import-summary">
+          <div>
+            <dt>标题</dt>
+            <dd>{summary.titleChanged ? `${summary.previousTitle || "未命名"} → ${summary.nextTitle || "未命名"}` : "未变化"}</dd>
+          </div>
+          <div>
+            <dt>节点数</dt>
+            <dd>{summary.previousNodeCount} → {summary.nextNodeCount}</dd>
+          </div>
+          <div>
+            <dt>选项数</dt>
+            <dd>{summary.previousOptionCount} → {summary.nextOptionCount}</dd>
+          </div>
+          <div>
+            <dt>新增节点</dt>
+            <dd>{summary.addedNodeIds.length ? summary.addedNodeIds.join("、") : "无"}</dd>
+          </div>
+          <div>
+            <dt>删除节点</dt>
+            <dd>{summary.removedNodeIds.length ? summary.removedNodeIds.join("、") : "无"}</dd>
+          </div>
+          <div>
+            <dt>起始节点</dt>
+            <dd>{summary.previousStartNodeId || "未设置"} → {summary.nextStartNodeId || "未设置"}</dd>
+          </div>
+        </dl>
+      </section>
+    );
+  }
+  if (!errors.length) return null;
+  return (
+    <section className="admin-story-workbench-import-panel error" aria-label="Excel 导入错误">
+      <header>
+        <div>
+          <strong>Excel 导入校验失败</strong>
+          <span>已拒绝整份导入，当前编辑器状态未改变。</span>
+        </div>
+      </header>
+      <ol className="admin-story-workbench-import-errors">
+        {errors.slice(0, 12).map((error, index) => (
+          <li key={`${error.sheet}-${error.row}-${error.field}-${index}`}>
+            <b>{error.sheet}</b>
+            {error.row && <span>第 {error.row} 行</span>}
+            <span>{error.field}</span>
+            <em>{error.message}</em>
+          </li>
+        ))}
+      </ol>
+      {errors.length > 12 && <p>还有 {errors.length - 12} 条错误，请先修复以上错误后重新导入。</p>}
+    </section>
   );
 }
 
@@ -1892,6 +2051,19 @@ function validOptionalDelay(value) {
   if (value == null || value === "") return true;
   const delay = Number(value);
   return Number.isFinite(delay) && delay >= 0;
+}
+
+function downloadWorkbook(buffer, fileName) {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
 }
 
 function clamp(value, min, max) {

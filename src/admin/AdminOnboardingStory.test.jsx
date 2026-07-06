@@ -54,6 +54,11 @@ describe("AdminOnboardingStory", () => {
     expect(adminSource).toContain("自动流程图");
     expect(adminSource).toContain("实时问题");
     expect(adminSource).toContain("从当前步骤预览");
+    expect(adminSource).toContain("导出 Excel");
+    expect(adminSource).toContain("导入 Excel");
+    expect(adminSource).toContain("ImportWorkbookFeedback");
+    expect(adminSource).toContain("parseStoryScriptWorkbook");
+    expect(adminSource).toContain("writeStoryScriptWorkbook");
     expect(adminSource).toContain("scriptForCurrentPreview");
     expect(adminSource).toContain("replayInitialBoardToNode");
     expect(adminSource).toContain("targetMissing");
@@ -66,6 +71,8 @@ describe("AdminOnboardingStory", () => {
     expect(adminCss).toContain(".admin-story-workbench-end-card");
     expect(adminCss).toContain(".admin-story-workbench-issues");
     expect(adminCss).toContain(".admin-story-workbench-preview-stage");
+    expect(adminCss).toContain(".admin-story-workbench-import-panel");
+    expect(adminCss).toContain(".admin-story-workbench-import-errors");
   });
 
   it("opens node settings as a scroll-attached floating window from graph nodes", () => {
