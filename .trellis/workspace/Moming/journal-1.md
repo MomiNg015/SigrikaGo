@@ -1197,3 +1197,36 @@ Reserved right and bottom shadow bleed for Bright School home entries, house cha
 ### Next Steps
 
 - None - task complete
+
+
+## Session 37: Fix item-character story trigger lookup
+
+**Date**: 2026-07-06
+**Task**: Fix item-character story trigger lookup
+**Branch**: `codex/story-guidance-system-issues`
+
+### Summary
+
+Fixed item-character story trigger identity so admin-published rainbow bean candy stories use stable ShopItem.targetId, legacy row-id records still resolve for player item use, and system design/spec docs plus focused tests were updated.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9398ab77` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
