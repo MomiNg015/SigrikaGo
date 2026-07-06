@@ -36,7 +36,6 @@ export default function HouseModal({ user, characterListView, audioSettings, mus
   }
 
   function closeHouseModal() {
-    stopVoicePlayback();
     onClose?.();
   }
 

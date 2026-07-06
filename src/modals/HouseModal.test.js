@@ -272,13 +272,15 @@ describe("deriveCharacterRecordStats", () => {
     expect(calls).toEqual([]);
   });
 
-  it("stops active character voice playback when house detail surfaces close", () => {
+  it("stops active character voice playback only when the nested detail surface closes", () => {
     const source = readFileSync(new URL("./HouseModal.jsx", import.meta.url), "utf8");
 
     expect(source).toContain("function closeCharacterDetail()");
     expect(source).toContain("function closeHouseModal()");
     expect(source).toContain("function playCharacterDetailVoice(character)");
-    expect(source.match(/stopVoicePlayback\(\);/g)).toHaveLength(2);
+    expect(source.match(/stopVoicePlayback\(\);/g)).toHaveLength(1);
+    expect(source).toMatch(/function closeCharacterDetail\(\) \{\s*stopVoicePlayback\(\);\s*setDetailCharacter\(null\);\s*\}/);
+    expect(source).toMatch(/function closeHouseModal\(\) \{\s*onClose\?\.\(\);\s*\}/);
     expect(source).toContain("onClose={closeCharacterDetail}");
     expect(source).toContain("onPlayDetailVoice={() => playCharacterDetailVoice(detailCharacter)}");
     expect(source).toContain("onClick={closeHouseModal}");
