@@ -27,7 +27,10 @@
   display: grid;
   align-content: start;
   gap: 8px;
+  padding-right: 6px;
+  padding-bottom: 6px;
   overflow-y: auto;
+  scroll-padding: 0 6px 6px 0;
   scrollbar-gutter: stable;
 }
 
@@ -71,7 +74,8 @@
   display: grid;
   gap: 6px;
   padding-top: 10px;
-  padding-right: var(--leaderboard-scroll-gutter);
+  padding-right: calc(var(--leaderboard-scroll-gutter) + 6px);
+  padding-bottom: 6px;
   border-top: 1px solid rgba(128, 102, 142, 0.16);
   background: #fffafd;
 }

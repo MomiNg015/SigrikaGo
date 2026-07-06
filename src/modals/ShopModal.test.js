@@ -472,6 +472,8 @@ describe("ShopModal helpers", () => {
     expect(baseMascotActiveBlock).toContain("opacity: 1;");
     expect(brightSidebarBlock).toContain('grid-template-areas:\n    "."\n    "bubble"\n    "."\n    "mascot" !important;');
     expect(brightSidebarBlock).toContain("grid-template-rows: minmax(0, 1fr) auto minmax(18px, 5%) auto !important;");
+    expect(brightShopCss).toContain("padding: 0 7px 7px 0 !important");
+    expect(brightShopCss).toContain("box-sizing: border-box !important");
     expect(brightWalletWrapBlock).toContain("position: absolute !important;");
     expect(brightWalletWrapBlock).toContain("top: 30% !important;");
     expect(brightWalletWrapBlock).toContain("left: 50% !important;");
@@ -503,6 +505,7 @@ describe("ShopModal helpers", () => {
     expect(mobileCss).toContain("transform: none;");
     expect(brightMobileShopCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 50%) !important;");
     expect(brightMobileShopCss).toContain('grid-template-areas:\n      "bubble mascot"\n      "wallet mascot" !important;');
+    expect(brightMobileShopCss).toContain("padding: 4px 7px 12px 4px !important");
     expect(brightMobileShopCss).toContain("padding: 12px 0 0 12px !important;");
     expect(brightMobileShopCss).toContain("align-self: end !important;");
     expect(brightMobileShopCss).toContain("justify-self: end !important;");
@@ -584,7 +587,7 @@ describe("ShopModal helpers", () => {
     const css = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
 
     expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout");
-    expect(css).toContain("padding: 4px 6px 8px 4px !important");
+    expect(css).toContain("padding: 4px 7px 12px 4px !important");
     expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content");
     expect(css).toContain("padding: 2px 2px 6px !important");
     expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-grid");

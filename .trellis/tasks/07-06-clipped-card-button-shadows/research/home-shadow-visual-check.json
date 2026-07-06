@@ -1,0 +1,158 @@
+[
+  {
+    "viewport": {
+      "name": "mobile",
+      "width": 390,
+      "height": 900
+    },
+    "screenshot": "C:\\codex\\SigrikaGo\\.trellis\\tasks\\07-06-clipped-card-button-shadows\\research\\home-shadow-mobile.png",
+    "data": {
+      "imageCount": 8,
+      "loadedImageCount": 8,
+      "homeImage": {
+        "selector": ".home-image-entry",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 299.81,
+        "right": 344.91,
+        "viewportRightGap": 45.09
+      },
+      "matchImage": {
+        "selector": ".match-image-entry",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 299.81,
+        "right": 344.91,
+        "viewportRightGap": 45.09
+      },
+      "houseImage": {
+        "selector": ".house-manual-entry",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 299.81,
+        "right": 344.91,
+        "viewportRightGap": 45.09
+      },
+      "utilityGrid": {
+        "selector": ".home-utility-grid",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 299.81,
+        "right": 344.91,
+        "viewportRightGap": 45.09
+      },
+      "utilityButton": {
+        "selector": ".utility-image-entry",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 145.91,
+        "right": 191,
+        "viewportRightGap": 199
+      },
+      "utilityArt": {
+        "selector": ".utility-entry-art",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "filter": "drop-shadow(rgba(61, 43, 37, 0.3) 5px 6px 0px) drop-shadow(rgba(255, 95, 149, 0.18) 0px 0px 10px)",
+        "width": 145.91,
+        "right": 191,
+        "viewportRightGap": 199
+      }
+    }
+  },
+  {
+    "viewport": {
+      "name": "desktop",
+      "width": 1366,
+      "height": 900
+    },
+    "screenshot": "C:\\codex\\SigrikaGo\\.trellis\\tasks\\07-06-clipped-card-button-shadows\\research\\home-shadow-desktop.png",
+    "data": {
+      "imageCount": 8,
+      "loadedImageCount": 8,
+      "homeImage": {
+        "selector": ".home-image-entry",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 409.8,
+        "right": 591.77,
+        "viewportRightGap": 774.23
+      },
+      "matchImage": {
+        "selector": ".match-image-entry",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 420,
+        "right": 596.88,
+        "viewportRightGap": 769.13
+      },
+      "houseImage": {
+        "selector": ".house-manual-entry",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 409.8,
+        "right": 591.77,
+        "viewportRightGap": 774.23
+      },
+      "utilityGrid": {
+        "selector": ".home-utility-grid",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 420,
+        "right": 596.88,
+        "viewportRightGap": 769.13
+      },
+      "utilityButton": {
+        "selector": ".utility-image-entry",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "0px",
+        "paddingBottom": "0px",
+        "filter": "none",
+        "width": 130.89,
+        "right": 307.77,
+        "viewportRightGap": 1058.23
+      },
+      "utilityArt": {
+        "selector": ".utility-entry-art",
+        "overflowX": "visible",
+        "overflowY": "visible",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "filter": "drop-shadow(rgba(61, 43, 37, 0.3) 5px 6px 0px) drop-shadow(rgba(255, 95, 149, 0.18) 0px 0px 10px)",
+        "width": 130.89,
+        "right": 307.77,
+        "viewportRightGap": 1058.23
+      }
+    }
+  }
+]

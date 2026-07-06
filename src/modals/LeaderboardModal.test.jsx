@@ -103,7 +103,11 @@ describe("LeaderboardModal layout", () => {
     expect(headingRowBlock).toContain("grid-template-columns: var(--leaderboard-grid-columns)");
     expect(headingBlock).toContain("padding-right: calc(14px + var(--leaderboard-scroll-gutter))");
     expect(listBlock).toContain("scrollbar-gutter: stable");
-    expect(currentBlock).toContain("padding-right: var(--leaderboard-scroll-gutter)");
+    expect(listBlock).toContain("padding-right: 6px");
+    expect(listBlock).toContain("padding-bottom: 6px");
+    expect(listBlock).toContain("scroll-padding: 0 6px 6px 0");
+    expect(currentBlock).toContain("padding-right: calc(var(--leaderboard-scroll-gutter) + 6px)");
+    expect(currentBlock).toContain("padding-bottom: 6px");
   });
 
   it("keeps leaderboard and shared modals scrollable on phone-sized browsers", () => {
@@ -181,6 +185,9 @@ describe("LeaderboardModal layout", () => {
     expect(phoneModalMedia).toContain(".leaderboard-heading,");
     expect(phoneModalMedia).toContain(".leaderboard-row");
     expect(phoneModalMedia).toContain("min-width: 0");
+    expect(phoneModalMedia).toContain("padding-right: 6px");
+    expect(phoneModalMedia).toContain("padding-bottom: 6px");
+    expect(phoneModalMedia).toContain("scroll-padding: 0 6px 6px 0");
     expect(phoneModalMedia).toContain("grid-template-areas:");
     expect(phoneModalMedia).toContain('"rank avatar player score"');
     expect(phoneModalMedia).toContain('"rank avatar player record"');
@@ -205,6 +212,10 @@ describe("LeaderboardModal layout", () => {
     expect(finalMobileCss).toContain("background: transparent !important");
     expect(finalMobileCss).toContain("clip-path: none !important");
     expect(finalMobileCss).toContain("grid-template-rows: minmax(0, 1fr) auto !important");
+    expect(finalMobileCss).toContain(".leaderboard-current");
+    expect(finalMobileCss).toContain("padding: 4px 6px 6px 0 !important");
+    expect(finalMobileCss).toContain("padding-right: 6px !important");
+    expect(finalMobileCss).toContain("padding-bottom: 6px !important");
     expect(finalMobileCss).toContain('"rank avatar player score"');
     expect(finalMobileCss).toContain('"rank avatar player record"');
     expect(finalMobileCss).toContain('"rank avatar player rate"');

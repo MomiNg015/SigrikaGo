@@ -33,6 +33,13 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  .friends-list,
+  .warehouse-grid {
+    padding-right: 6px;
+    padding-bottom: 6px;
+    scroll-padding: 0 6px 6px 0;
+  }
+
   .leaderboard-table,
   .replay-table {
     overflow-x: auto;

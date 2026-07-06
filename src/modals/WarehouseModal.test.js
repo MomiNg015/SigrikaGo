@@ -113,7 +113,9 @@ describe("WarehouseModal candy feedback", () => {
   it("lays out desktop warehouse items as single-row entries while preserving mobile overrides", () => {
     const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-    const gridBlock = commerceCss.match(/\.warehouse-grid\s*\{[^}]+\}/)?.[0] ?? "";
+    const gridBlock = [...commerceCss.matchAll(/\.warehouse-grid\s*\{[^}]+\}/g)]
+      .map((match) => match[0])
+      .find((block) => block.includes("scroll-padding: 0 6px 6px 0")) ?? "";
     const itemBlock = [...commerceCss.matchAll(/\.warehouse-item\s*\{[^}]+\}/g)]
       .map((match) => match[0])
       .find((block) => block.includes("64px minmax(0, 1fr) auto")) ?? "";
@@ -122,11 +124,18 @@ describe("WarehouseModal candy feedback", () => {
       .find((block) => block.includes("align-self: center")) ?? "";
 
     expect(gridBlock).toContain("grid-template-columns: 1fr");
+    expect(gridBlock).toContain("padding-right: 6px");
+    expect(gridBlock).toContain("padding-bottom: 6px");
+    expect(gridBlock).toContain("scroll-padding: 0 6px 6px 0");
     expect(itemBlock).toContain("grid-template-columns: 64px minmax(0, 1fr) auto");
     expect(itemBlock).toContain("align-items: center");
     expect(actionBlock).not.toContain("grid-column: 1 / -1");
     expect(actionBlock).toContain("align-self: center");
     expect(finalMobileCss).toContain(".warehouse-item");
+    expect(finalMobileCss).toContain(".warehouse-grid");
+    expect(finalMobileCss).toContain("padding-right: 6px !important");
+    expect(finalMobileCss).toContain("padding-bottom: 6px !important");
+    expect(finalMobileCss).toContain("scroll-padding: 0 6px 6px 0 !important");
     expect(finalMobileCss).toContain("grid-template-columns: 36px minmax(0, 1fr) auto !important");
     expect(finalMobileCss).toContain("grid-row: 1 !important");
     expect(finalMobileCss).toContain("grid-row: 2 !important");

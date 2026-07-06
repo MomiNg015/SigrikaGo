@@ -22,6 +22,9 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
+  padding-right: 6px;
+  padding-bottom: 6px;
+  scroll-padding: 0 6px 6px 0;
 }
 
 .warehouse-item {

@@ -87,7 +87,8 @@
   background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
-  padding: 0 !important;
+  padding: 0 6px 6px 0 !important;
+  overflow: visible !important;
   filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) !important;
   pointer-events: none !important;
   transform: none !important;

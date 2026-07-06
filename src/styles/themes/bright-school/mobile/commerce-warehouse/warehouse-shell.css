@@ -19,6 +19,9 @@
     display: grid !important;
     grid-template-columns: 1fr !important;
     gap: 8px !important;
+    padding-right: 6px !important;
+    padding-bottom: 6px !important;
+    scroll-padding: 0 6px 6px 0 !important;
     align-content: start !important;
   }
 }

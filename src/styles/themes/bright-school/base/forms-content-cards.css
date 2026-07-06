@@ -54,6 +54,12 @@
   box-shadow: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school .house-modal .character-list {
+  padding-right: 6px !important;
+  padding-bottom: 6px !important;
+  scroll-padding: 0 6px 6px 0 !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school .decorations-section,
 .app-shell.player-theme-enabled.theme-bright-school .decoration-applied-box {
   background: rgba(255, 255, 255, 0.5) !important;

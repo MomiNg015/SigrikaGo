@@ -12,6 +12,9 @@
     overflow-x: hidden;
     display: grid;
     gap: 8px;
+    padding-right: 6px;
+    padding-bottom: 6px;
+    scroll-padding: 0 6px 6px 0;
   }
 
   .leaderboard-heading {
@@ -145,6 +148,8 @@
     align-content: start;
     gap: 7px;
     padding-top: 4px;
+    padding-right: 6px;
+    padding-bottom: 6px;
   }
 
   .leaderboard-current .leaderboard-row {

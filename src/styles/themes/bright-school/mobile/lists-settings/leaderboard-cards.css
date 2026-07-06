@@ -98,6 +98,8 @@
     align-content: start !important;
     gap: 4px !important;
     padding-top: 4px !important;
+    padding-right: 6px !important;
+    padding-bottom: 6px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .leaderboard-current .leaderboard-row {

@@ -141,16 +141,26 @@ describe("FriendsModal mobile layout", () => {
     expect(phoneModalMedia).toContain("justify-items: center");
     expect(phoneModalMedia).not.toContain(".friends-row .friend-stats");
     expect(phoneModalMedia).toContain(".friends-list .quiet-text");
+    expect(phoneModalMedia).toContain("padding-right: 6px");
+    expect(phoneModalMedia).toContain("padding-bottom: 6px");
+    expect(phoneModalMedia).toContain("scroll-padding: 0 6px 6px 0");
     expect(phoneModalMedia).toContain("width: 100%");
     expect(phoneModalMedia).not.toContain(".friends-row,\n  .friend-action-row {\n    min-width: 560px;");
     expect(adaptivePhoneMedia).toContain(".friends-list");
     expect(adaptivePhoneMedia).toContain("overflow-x: hidden");
+    expect(adaptivePhoneMedia).toContain("padding-right: 6px");
+    expect(adaptivePhoneMedia).toContain("padding-bottom: 6px");
+    expect(adaptivePhoneMedia).toContain("scroll-padding: 0 6px 6px 0");
     expect(adaptivePhoneMedia).toContain(".friends-row");
     expect(adaptivePhoneMedia).toContain("min-width: 0");
     expect(adaptivePhoneMedia).toContain("grid-template-areas:");
     expect(adaptivePhoneMedia).toContain("\"status avatar info action\"");
     expect(brightSchoolMobileCss).toContain(".friends-list,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .watch-room-table {\n    overflow-x: hidden !important;");
     expect(brightSchoolMobileCss).toContain(".friends-row,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friend-action-row {\n    min-width: 0 !important;");
+    expect(brightSchoolMobileCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-list");
+    expect(brightSchoolMobileCss).toContain("padding-right: 6px !important");
+    expect(brightSchoolMobileCss).toContain("padding-bottom: 6px !important");
+    expect(brightSchoolMobileCss).toContain("scroll-padding: 0 6px 6px 0 !important");
     expect(brightSchoolMobileCss).toContain(".watch-room-row {\n    min-width: 0 !important;");
   });
 

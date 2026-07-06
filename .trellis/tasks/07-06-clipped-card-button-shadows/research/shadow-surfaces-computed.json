@@ -1,0 +1,116 @@
+[
+  {
+    "name": "desktop",
+    "size": {
+      "width": 1200,
+      "height": 900
+    },
+    "metrics": [
+      {
+        "selector": ".house-modal .character-list",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "scrollPadding": "0px 6px 6px 0px",
+        "overflowX": "hidden",
+        "overflowY": "auto"
+      },
+      {
+        "selector": ".leaderboard-list",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "scrollPadding": "0px 6px 6px 0px",
+        "overflowX": "hidden",
+        "overflowY": "auto"
+      },
+      {
+        "selector": ".leaderboard-current",
+        "paddingRight": "23px",
+        "paddingBottom": "6px",
+        "scrollPadding": "auto",
+        "overflowX": "visible",
+        "overflowY": "visible"
+      },
+      {
+        "selector": ".warehouse-grid",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "scrollPadding": "0px 6px 6px 0px",
+        "overflowX": "hidden",
+        "overflowY": "auto"
+      },
+      {
+        "selector": ".shop-layout",
+        "paddingRight": "7px",
+        "paddingBottom": "7px",
+        "scrollPadding": "auto",
+        "overflowX": "hidden",
+        "overflowY": "hidden"
+      },
+      {
+        "selector": ".friends-list",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "scrollPadding": "0px 6px 6px 0px",
+        "overflowX": "hidden",
+        "overflowY": "auto"
+      }
+    ]
+  },
+  {
+    "name": "mobile",
+    "size": {
+      "width": 390,
+      "height": 844
+    },
+    "metrics": [
+      {
+        "selector": ".house-modal .character-list",
+        "paddingRight": "8px",
+        "paddingBottom": "6px",
+        "scrollPadding": "0px 8px 6px 0px",
+        "overflowX": "hidden",
+        "overflowY": "auto"
+      },
+      {
+        "selector": ".leaderboard-list",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "scrollPadding": "0px 6px 6px 0px",
+        "overflowX": "hidden",
+        "overflowY": "auto"
+      },
+      {
+        "selector": ".leaderboard-current",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "scrollPadding": "auto",
+        "overflowX": "visible",
+        "overflowY": "visible"
+      },
+      {
+        "selector": ".warehouse-grid",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "scrollPadding": "0px 6px 6px 0px",
+        "overflowX": "hidden",
+        "overflowY": "auto"
+      },
+      {
+        "selector": ".shop-layout",
+        "paddingRight": "7px",
+        "paddingBottom": "12px",
+        "scrollPadding": "auto",
+        "overflowX": "hidden",
+        "overflowY": "hidden"
+      },
+      {
+        "selector": ".friends-list",
+        "paddingRight": "6px",
+        "paddingBottom": "6px",
+        "scrollPadding": "0px 6px 6px 0px",
+        "overflowX": "hidden",
+        "overflowY": "auto"
+      }
+    ]
+  }
+]

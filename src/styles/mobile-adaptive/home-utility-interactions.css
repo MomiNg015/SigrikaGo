@@ -6,6 +6,7 @@
     padding: 0 !important;
     box-shadow: none !important;
     filter: none !important;
+    overflow: visible !important;
     transform: none !important;
   }
 

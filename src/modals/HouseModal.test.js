@@ -732,6 +732,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolComponentCss).toContain("background: linear-gradient(135deg, #ececef, #d9d9dd) !important");
     expect(finalThemeCss.lastIndexOf(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .profile-report-dialog"))
       .toBeGreaterThan(finalThemeCss.lastIndexOf("width: min(1120px, calc(100vw - 32px)) !important"));
+    expect(finalThemeCss).toContain(".house-modal .character-list");
+    expect(finalThemeCss).toContain("padding-right: 6px !important");
+    expect(finalThemeCss).toContain("padding-bottom: 6px !important");
+    expect(finalThemeCss).toContain("scroll-padding: 0 6px 6px 0 !important");
     const lobbyCss = readCssWithImports(new URL("../styles/lobby.css", import.meta.url));
     expect(lobbyCss).toContain(".character-item-effect-badges");
     expect(lobbyCss).toContain(".character-item-effect-icon");
@@ -759,6 +763,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("overflow-y: auto !important");
     expect(css).toContain(".character-card.portrait-card .lock-text-title");
     expect(css).toContain("box-sizing: border-box !important");
+    expect(css).toContain("padding-right: 8px !important");
+    expect(css).toContain("padding-bottom: 6px !important");
+    expect(css).toContain("scroll-padding: 0 8px 6px 0 !important");
     expect(css).toContain(".house-modal .owned-decoration-section");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain(".resume-modal .profile-grid.top-stats-bar");
     expect(readCssWithImports(new URL("../styles/mobile-modals.css", import.meta.url))).toContain("grid-template-columns: 1fr;");
@@ -857,6 +864,9 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("grid-auto-rows: 88px !important");
     expect(finalMobileCss).toContain("repeat(auto-fill, minmax(58px, 70px)) !important");
     expect(finalMobileCss).toContain(".house-modal .deploy-tag");
+    expect(finalMobileCss).toContain("padding-right: 6px !important");
+    expect(finalMobileCss).toContain("padding-bottom: 6px !important");
+    expect(finalMobileCss).toContain("scroll-padding: 0 6px 6px 0 !important");
     expect(finalMobileCss).toContain("display: none !important");
     expect(finalMobileCss).toContain(".character-record-row");
     expect(finalMobileCss).toContain("grid-template-columns: 42px minmax(52px, 0.82fr) repeat(4, minmax(24px, 0.34fr)) minmax(38px, 0.5fr) !important");

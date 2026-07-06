@@ -5,6 +5,12 @@
     min-width: 0 !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-list {
+    padding-right: 6px !important;
+    padding-bottom: 6px !important;
+    scroll-padding: 0 6px 6px 0 !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .friends-row {
     width: 100% !important;
     display: grid !important;

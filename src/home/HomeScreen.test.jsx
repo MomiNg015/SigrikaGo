@@ -648,6 +648,9 @@ describe("HomeScreen", () => {
     const brightMobileManualImageBlock = brightMobileCss.match(/\.house-manual-entry\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileUtilityGridBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/g)?.find((block) => block.includes("grid-area: utility")) ?? "";
     const brightMobileUtilityEntryBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileImageEntryBlock = brightMobileCss.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileMatchImageBlock = brightMobileCss.match(/\.match-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileUtilityArtBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
     expect(brightMobileCss).toContain(".home-mobile-menu");
     expect(brightMobileCss).toContain(".home-mobile-menu-panel");
     expect(brightMobileCss).toContain("main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main");
@@ -661,9 +664,15 @@ describe("HomeScreen", () => {
     expect(brightMobileMatchBlock).toContain("height: clamp(176px, 52vw, 224px) !important");
     expect(brightMobileMatchBlock).toContain("grid-template-rows: minmax(0, 1fr) !important");
     expect(brightMobileManualBlock).toContain("height: clamp(148px, 42vw, 188px) !important");
+    expect(brightMobileManualBlock).toContain("overflow: visible !important");
     expect(brightMobileManualImageBlock).toContain("max-height: clamp(148px, 42vw, 188px) !important");
+    expect(brightMobileImageEntryBlock).toContain("overflow: visible !important");
+    expect(brightMobileMatchImageBlock).toContain("overflow: visible !important");
     expect(brightMobileUtilityGridBlock).toContain("gap: 8px !important");
     expect(brightMobileUtilityEntryBlock).toContain("min-height: 52px !important");
+    expect(brightMobileUtilityEntryBlock).toContain("overflow: visible !important");
+    expect(brightMobileUtilityArtBlock).toContain("overflow: visible !important");
+    expect(brightMobileUtilityArtBlock).toContain("padding: 0 6px 6px 0 !important");
     expect(brightMobileCss).toContain("grid-template-columns: 22px max-content !important");
     expect(brightMobileCss).toContain("word-break: keep-all !important");
     expect(brightMobileCss).toContain(".topbar-actions > .icon-button");
@@ -862,6 +871,7 @@ describe("HomeScreen", () => {
     expect(mobileUtilityContainerBlock).toContain("border: 0 !important");
     expect(mobileUtilityContainerBlock).toContain("padding: 0 !important");
     expect(mobileUtilityContainerBlock).toContain("box-shadow: none !important");
+    expect(mobileUtilityContainerBlock).toContain("overflow: visible !important");
     expect(mobileUtilityContainerBlock).toContain("transform: none !important");
     expect(mobileUtilityHoverArtBlock).toContain("brightness(1.04) saturate(1.06)");
     expect(mobileUtilityHoverArtBlock).toContain("transform: translateY(-1px) rotate(0.6deg) !important");

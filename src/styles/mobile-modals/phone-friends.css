@@ -22,6 +22,9 @@
     overflow-x: hidden !important;
     display: grid;
     gap: 8px;
+    padding-right: 6px;
+    padding-bottom: 6px;
+    scroll-padding: 0 6px 6px 0;
   }
 
   .friends-list-heading {

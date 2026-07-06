@@ -28,7 +28,7 @@
     min-height: 0 !important;
     height: clamp(148px, 42vw, 188px) !important;
     transform: none !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry {
@@ -44,13 +44,13 @@
     border-radius: 18px !important;
     box-shadow: 3px 4px 0 rgba(61, 43, 37, 0.68) !important;
     transform: none !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .match-image-entry {
     height: 100% !important;
     transform: none !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-image-entry img {
@@ -106,6 +106,8 @@
     max-width: 100% !important;
     max-height: 100% !important;
     object-fit: contain !important;
+    overflow: visible !important;
+    padding: 0 6px 6px 0 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-icon {

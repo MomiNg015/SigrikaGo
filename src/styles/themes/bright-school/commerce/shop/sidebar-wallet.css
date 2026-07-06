@@ -2,6 +2,8 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout {
   grid-template-columns: minmax(210px, 260px) minmax(0, 1fr) !important;
   align-items: stretch !important;
+  padding: 0 7px 7px 0 !important;
+  box-sizing: border-box !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar {
