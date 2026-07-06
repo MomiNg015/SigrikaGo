@@ -1131,3 +1131,36 @@ Regenerated shop mascot WebP assets losslessly, widened mobile mascot lane to 50
 ### Next Steps
 
 - None - task complete
+
+
+## Session 35: Preserve admin default snapshot
+
+**Date**: 2026-07-06
+**Task**: Preserve admin default snapshot
+**Branch**: `codex/frontend-fixes-20260705`
+
+### Summary
+
+Restored admin-saved CV and shop illustration defaults, added an export command and regression tests, and documented the durable admin default snapshot workflow.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0deec8eb` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
