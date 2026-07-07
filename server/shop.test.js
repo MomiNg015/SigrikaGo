@@ -311,6 +311,36 @@ describe("shop", () => {
     });
   });
 
+  it("normalizes the builtin campus recruitment poster shop image from current shared config", async () => {
+    const response = await listShopItems({
+      shopItem: {
+        findMany: async () => [{
+          id: "shop-campus-poster",
+          name: "招新贴报",
+          category: "item",
+          targetId: "campus-recruitment-poster",
+          itemTargetType: "self",
+          stockQuantity: -1,
+          priceCoins: 120,
+          discountPercent: 0,
+          purchasable: true,
+          enabled: true,
+          sortOrder: 120,
+          description: "旧数据库里的招新贴报",
+          imageUrl: "/assets/items/recruitment-poster.svg"
+        }]
+      },
+      user: {
+        findUnique: async () => ({ itemPurchaseCounts: "{}" })
+      }
+    }, "user-1");
+
+    expect(response.items[0]).toMatchObject({
+      targetId: "campus-recruitment-poster",
+      imageUrl: "/assets/items/recruitment-poster.webp"
+    });
+  });
+
   it("normalizes the builtin rainbow candy shop image from the current item asset", async () => {
     const response = await listShopItems({
       shopItem: {
@@ -445,8 +475,21 @@ describe("shop", () => {
         category: "item",
         targetId: "campus-recruitment-poster",
         itemTargetType: "self",
-        imageUrl: "/assets/items/recruitment-poster.svg"
+        imageUrl: "/assets/items/recruitment-poster.webp"
       })
+    ]);
+    expect(calls).toContainEqual([
+      "updateMany",
+      {
+        where: {
+          category: "item",
+          targetId: "campus-recruitment-poster",
+          imageUrl: { in: ["", "/assets/items/recruitment-poster.svg"] }
+        },
+        data: {
+          imageUrl: "/assets/items/recruitment-poster.webp"
+        }
+      }
     ]);
     expect(calls).toContainEqual([
       "updateMany",

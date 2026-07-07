@@ -97,7 +97,7 @@
 <li>Bright School 首页的图片式匹配/手册入口和 2x3 工具按钮依赖 WebP 透明图像加 <code>drop-shadow</code> 表现纸片厚度；桌面和移动端都必须保持这些入口、工具 grid 与按钮容器 <code>overflow: visible</code>，工具按钮图像自身保留右/下透明 bleed，避免阴影被卡片或最终移动安全层裁切。</li>
 </ul>
 <ul>
-<li>“先约电台广播券”的运行期道具图标使用 <code>public/assets/items/radio-recruitment-ticket.webp</code>，由 <code>C:/codex/image/item/boardcast_ticket.png</code> 转换而来，并通过 <code>src/shared/recruitment.js</code> 同步给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 <code>imageUrl</code> 归一到当前共享配置，避免已有 SQLite 行继续显示旧 SVG。“彩虹豆豆跳跳糖”的运行期道具图标使用 <code>public/assets/items/rainbow-bean-candy.webp</code>，由 <code>C:/codex/image/item/rainbow-candy-cutout-full.png</code> 无损转换而来；<code>server/itemImages.js</code> 统一让商城商品、仓库道具和玩家侧抽卡奖项/结果归一到当前 WebP，默认快照中的糖果商品和卡池奖励也使用同一路径。<code>public/assets/promotional/</code> 仍保留未接入运行时引用的候选宣传图，例如“招新贴报”候选 <code>recruitment-poster-v1..v3.png</code> 与“先约电台广播券”候选 <code>radio-coupon-v1..v3.png</code>，候选图不进入启动预加载清单，除非后续 UI 明确引用。</li>
+<li>招募道具运行期图标通过 <code>src/shared/recruitment.js</code> 同步给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 <code>imageUrl</code> 归一到当前共享配置，启动回填只匹配每个道具声明的空值或旧默认 SVG 路径。“招新贴报/招新海报”使用 <code>public/assets/items/recruitment-poster.webp</code>，由 <code>C:/codex/image/item/Recruitment_paper.png</code> 无损转换而来；“先约电台广播券”使用 <code>public/assets/items/radio-recruitment-ticket.webp</code>，由 <code>C:/codex/image/item/boardcast_ticket.png</code> 转换而来。“彩虹豆豆跳跳糖”的运行期道具图标使用 <code>public/assets/items/rainbow-bean-candy.webp</code>，由 <code>C:/codex/image/item/rainbow-candy-cutout-full.png</code> 无损转换而来；<code>server/itemImages.js</code> 统一让商城商品、仓库道具和玩家侧抽卡奖项/结果归一到当前 WebP，默认快照中的糖果商品和卡池奖励也使用同一路径。<code>public/assets/promotional/</code> 仍保留未接入运行时引用的候选宣传图，例如“招新贴报”候选 <code>recruitment-poster-v1..v3.png</code> 与“先约电台广播券”候选 <code>radio-coupon-v1..v3.png</code>，候选图不进入启动预加载清单，除非后续 UI 明确引用。</li>
 </ul>
 <ul>
 <li>玩家侧艺术字体作为语义化、白名单式资源使用：<code>public/assets/fonts/WuWa-Lahai-Roi-Regular.ttf</code> 通过 <code>&quot;Sigrika Accent Latin&quot;</code> 字体族挂到 <code>--font-display-accent</code> 与 <code>--font-numeric-accent</code>，只覆盖拉丁字母和数字。倒计时数字必须经 <code>.text-clock-value</code>，玩家可见积分/rating 数值必须经 <code>.text-rating-value</code>，登录页 <code>SigrikaGo</code> 英文品牌短标签、首页品牌/模式选择英文水印/锁定占位等氛围短标签可经 <code>.text-display-accent</code>；这些艺术字语义类用 <code>text-transform: uppercase</code> 让小写拉丁字母视觉显示为大写，但不改源字符串和数据。用户名、后台管理、正文、表单、金币/价格/库存、局数胜负、房间号、时间戳和排行榜名次不使用该字体，后续替换字体只改 token/asset 而不改语义类名。最终 <code>mobile-adaptive/semantic-accent-typography.css</code> 在主题层之后回补这三个语义类，避免 Bright School 的广域 <code>!important</code> 字体/颜色重置压掉棋钟读秒颜色和 rating 数字字体，并清除 <code>.text-clock-value</code> 误继承的徽章背景、边框和阴影；主时间棋钟数字固定为 <code>#1c171a</code> 而不是灰色，读秒警告状态保留红色/多色语义，移动端房间玩家条内会把艺术字体棋钟压到更小字号与宽度，避免读秒条被挤出容器。</li>
@@ -206,6 +206,9 @@
 </ul>
 <ul>
 <li>App audio runtime state now lives in <code>src/app/useAudioRuntimeState.js</code>, keeping local audio settings persistence and socket-reconnect resume signaling out of the <code>src/app/App.jsx</code> composition root.</li>
+</ul>
+<ul>
+<li>首页 BGM 现在由 <code>MUSIC_TRACKS</code> 的 <code>home</code> 曲目池解析；默认包含 <code>home-default</code> 的 <code>/assets/music/main_bgm.ogg</code> 与 <code>home-main-bgm-1</code> 的 <code>/assets/music/main_bgm_1_once.ogg</code> + <code>/assets/music/main_bgm_1_loop.ogg</code>，用户每次进入 <code>home</code> 视图时随机抽取一首可用主界面 BGM，并在本次停留期间保持稳定。</li>
 </ul>
 <ul>
 <li>Admin console styles now follow the import-only CSS domain pattern through <code>src/styles/admin.css</code> and <code>src/styles/admin/</code>, so character, audit, gacha, achievement, and responsive rules no longer live in the root stylesheet entry. <code>src/styles/admin/polish.css</code> is the final desktop admin control skin, keeping buttons, inputs, tables, tabs, danger actions, and close controls light, readable, and consistent after feature-specific admin CSS; its <code>polish/hud-isolation.css</code> child owns the high-specificity resets that keep admin headings, setting containers, and form controls out of Startorch/HUD skins.</li>
@@ -402,7 +405,7 @@
 <li>莫宁（<code>mornye</code>）已接入完整角色语音：技能、出战、对局开始、读秒开始、剩余读秒次数、10 到 1 秒倒计时、胜负和结果，以及 <code>house-detail</code> 角色详情语音。部员手册中打开莫宁角色详情或点击详情内的“描述”文本区域会通过现有 <code>house-detail</code> 事件播放 <code>/assets/voice/mornye_detail.ogg</code>；关闭角色详情弹窗或关闭整个部员手册时会调用 <code>stopVoicePlayback()</code> 停止当前角色语音，避免详情长语音在窗口关闭后继续播放。</li>
 </ul>
 <ul>
-<li>角色技能 BGM 当前配置：达妮娅使用 canonical <code>denia-skill-default</code>（<code>bgm_*</code>），西格莉卡使用 <code>sigrika_intro_once.ogg</code> + <code>sigrika_loop.ogg</code>，爱弥斯“小爱出击”使用 <code>aemeath0_once.ogg</code> + <code>aemeath0_loop.ogg</code>，爱弥斯“远航星”使用 <code>lhl_intro_once.ogg</code> + <code>lhl_loop.ogg</code>，猪小仙使用 <code>matoya_*</code>，娜波摩使用 <code>busizhe_*</code>，千咲使用 <code>chisa_intro_once.ogg</code> + <code>chisa_loop.ogg</code>，长离使用 <code>changli_intro_once.ogg</code> + <code>changli_loop.ogg</code>，莫宁使用 <code>mornye_intro_once.ogg</code> + <code>mornye_loop.ogg</code>。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical <code>denia</code> 查找达妮娅技能 BGM；派生技能的 <code>musicTrackId</code> 会从 pending skill 延续到最新历史技能解析，避免演出中途回退到角色默认技能 BGM。未来爱弥斯商城技能 BGM 若替换“小爱出击”默认曲，可继续使用角色级 <code>musicSelections.skill.aemeath</code>；若替换“远航星”等派生技默认曲，则应新增按 <code>effectType</code> 作用域的选择键并在解析时优先于角色级选择。</li>
+<li>角色技能 BGM 当前配置：主界面默认曲池包含 <code>home-default</code>（<code>main_bgm.ogg</code>）和 <code>home-main-bgm-1</code>（<code>main_bgm_1_once.ogg</code> + <code>main_bgm_1_loop.ogg</code>），达妮娅使用 canonical <code>denia-skill-default</code>（<code>bgm_*</code>），西格莉卡使用 <code>sigrika_intro_once.ogg</code> + <code>sigrika_loop.ogg</code>，爱弥斯“小爱出击”使用 <code>aemeath0_once.ogg</code> + <code>aemeath0_loop.ogg</code>，爱弥斯“远航星”使用 <code>lhl_intro_once.ogg</code> + <code>lhl_loop.ogg</code>，猪小仙使用 <code>matoya_*</code>，娜波摩使用 <code>busizhe_*</code>，千咲使用 <code>chisa_intro_once.ogg</code> + <code>chisa_loop.ogg</code>，长离使用 <code>changli_intro_once.ogg</code> + <code>changli_loop.ogg</code>，莫宁使用 <code>mornye_intro_once.ogg</code> + <code>mornye_loop.ogg</code>。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical <code>denia</code> 查找达妮娅技能 BGM；派生技能的 <code>musicTrackId</code> 会从 pending skill 延续到最新历史技能解析，避免演出中途回退到角色默认技能 BGM。未来爱弥斯商城技能 BGM 若替换“小爱出击”默认曲，可继续使用角色级 <code>musicSelections.skill.aemeath</code>；若替换“远航星”等派生技默认曲，则应新增按 <code>effectType</code> 作用域的选择键并在解析时优先于角色级选择。</li>
 </ul>
 <ul>
 <li>Settings &gt; Audio persists optional per-channel mute flags under <code>audioSettings.muted</code>; clicking an audio row title toggles mute without changing the slider percentage, and moving the slider clears that channel's mute flag.</li>
@@ -3724,7 +3727,7 @@
 <li>运行期图片优先引用 WebP；PNG/JPG/GIF 多作为源素材或兼容文件保留。</li>
 </ul>
 <ul>
-<li>“先约电台广播券”的运行期道具图标使用 <code>public/assets/items/radio-recruitment-ticket.webp</code>，由 <code>C:/codex/image/item/boardcast_ticket.png</code> 转换而来并通过 <code>src/shared/recruitment.js</code> 暴露给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 <code>imageUrl</code> 归一到当前共享配置，启动种子也会回填空值或旧 SVG 路径，避免已有 SQLite 行继续显示旧资源。内置道具“彩虹豆豆跳跳糖”的运行期图标使用 <code>public/assets/items/rainbow-bean-candy.webp</code>，由 <code>C:/codex/image/item/rainbow-candy-cutout-full.png</code> 无损 WebP 转换而来；服务端 <code>server/itemImages.js</code> 统一给商城商品、仓库道具和玩家侧抽卡奖项/结果归一化该内置道具图，默认快照中的商品和卡池奖励同样使用 WebP，启动回填只匹配空值或旧 <code>/assets/items/rainbow-bean-candy.png</code>。<code>public/assets/promotional/</code> 仍保存尚未接入运行时引用的宣传/道具候选图，当前包含“招新贴报”候选 <code>recruitment-poster-v1..v3.png</code> 和“先约电台广播券”候选 <code>radio-coupon-v1..v3.png</code>。这些候选 PNG 不进入 <code>RUNTIME_IMAGE_ASSETS</code> 或启动预加载，除非后续 UI 明确引用。</li>
+<li>招募道具运行期图标由 <code>src/shared/recruitment.js</code> 统一暴露给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 <code>imageUrl</code> 归一到当前共享配置，启动种子也会按每个道具的 <code>staleImageUrls</code> 回填空值或精确旧默认 SVG 路径，避免已有 SQLite 行继续显示旧资源且不覆盖后台自定义图。“招新贴报/招新海报”使用 <code>public/assets/items/recruitment-poster.webp</code>，由 <code>C:/codex/image/item/Recruitment_paper.png</code> 无损 WebP 转换而来；“先约电台广播券”使用 <code>public/assets/items/radio-recruitment-ticket.webp</code>，由 <code>C:/codex/image/item/boardcast_ticket.png</code> 转换而来。内置道具“彩虹豆豆跳跳糖”的运行期图标使用 <code>public/assets/items/rainbow-bean-candy.webp</code>，由 <code>C:/codex/image/item/rainbow-candy-cutout-full.png</code> 无损 WebP 转换而来；服务端 <code>server/itemImages.js</code> 统一给商城商品、仓库道具和玩家侧抽卡奖项/结果归一化该内置道具图，默认快照中的商品和卡池奖励同样使用 WebP，启动回填只匹配空值或旧 <code>/assets/items/rainbow-bean-candy.png</code>。<code>public/assets/promotional/</code> 仍保存尚未接入运行时引用的宣传/道具候选图，当前包含“招新贴报”候选 <code>recruitment-poster-v1..v3.png</code> 和“先约电台广播券”候选 <code>radio-coupon-v1..v3.png</code>。这些候选 PNG 不进入 <code>RUNTIME_IMAGE_ASSETS</code> 或启动预加载，除非后续 UI 明确引用。</li>
 </ul>
 <ul>
 <li>Bright School 首页主面板背景板是运行期 home 资源：桌面/窄桌面使用 <code>/assets/home/home-main-panel-desktop.webp</code>，手机/竖屏使用 <code>/assets/home/home-main-panel-mobile.webp</code>。两张图由主题 CSS 挂到 <code>.home-main-panel.home-terminal-main</code>，使用 <code>background-size: 100% 100%</code> 随当前面板尺寸自适应伸缩，而不是通过 React 标记或外部绝对路径加载。</li>
@@ -4043,7 +4046,7 @@
 <li>角色 BGM 预览播放期间会向全局 <code>BackgroundMusic</code> 发出暂停请求；背景 BGM 会停止当前 source、保存 offset，并在预览暂停、切歌或关闭详情弹窗释放请求后按 offset 重新调度，从原进度恢复，避免双 BGM 叠播或大厅 BGM 从头重启。</li>
 </ul>
 <ul>
-<li>主界面默认 BGM 使用已可无缝循环的单文件曲目 <code>main_bgm.ogg</code>。</li>
+<li>主界面 BGM 由 <code>MUSIC_TRACKS</code> 中可用的 <code>home</code> 曲目池解析；默认池包含单文件循环 <code>home-default</code>（<code>/assets/music/main_bgm.ogg</code>）和两段式 <code>home-main-bgm-1</code>（<code>/assets/music/main_bgm_1_once.ogg</code> 播放一次后接 <code>/assets/music/main_bgm_1_loop.ogg</code> 循环）。<code>useBackgroundMusicTrack()</code> 在每次进入 <code>view === &quot;home&quot;</code> 时抽取一次随机值，本次停留在 home 期间保持同一曲目，离开并再次进入 home 时重新抽取；旧的 <code>musicSelections.home</code> 字段不参与首页随机解析，避免已有资料把大厅 BGM 固定到单曲。</li>
 </ul>
 <ul>
 <li>对弈常规 BGM 使用 <code>shanjifu_intro_once.ogg</code> + <code>shanjifu_loop.ogg</code>。</li>
@@ -4230,7 +4233,7 @@
 <li>Startup preload may show the generic login <code>preloading</code> route only while no room or pending match has already been restored by Socket.IO. If <code>roomRef.current</code> or <code>matchSuccessRef.current</code> exists after <code>/api/me</code>, startup asset loading continues without hiding the recovered battle route.</li>
 </ul>
 <ul>
-<li><code>MUSIC_TRACKS</code> remains the authority for playable BGM ids, types, character bindings, default unlock flags, purchasability, playback modes, and audio source paths.</li>
+<li><code>MUSIC_TRACKS</code> remains the authority for playable BGM ids, types, character bindings, default unlock flags, purchasability, playback modes, and audio source paths. Home BGM tracks share the same static catalog: adding a new default-unlocked or owned home track automatically makes it eligible for home-entry randomization and login preload.</li>
 </ul>
 <ul>
 <li><code>MusicTrackSetting</code> stores only per-track <code>displayName</code> overrides keyed by static track id. Blank or missing settings fall back to the static <code>track.name</code>.</li>

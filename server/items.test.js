@@ -40,6 +40,25 @@ describe("items", () => {
     ]);
   });
 
+  it("normalizes the builtin campus recruitment poster inventory image from current shared config", async () => {
+    const response = await listItemInventory({
+      userId: "user-1",
+      prisma: inventoryPrisma({
+        ownedItems: JSON.stringify({ "campus-recruitment-poster": 1 }),
+        targetId: "campus-recruitment-poster",
+        imageUrl: "/assets/items/recruitment-poster.svg"
+      })
+    });
+
+    expect(response.items).toMatchObject([
+      {
+        itemId: "campus-recruitment-poster",
+        imageUrl: "/assets/items/recruitment-poster.webp",
+        usable: false
+      }
+    ]);
+  });
+
   it("normalizes the builtin rainbow candy inventory image from the current item asset", async () => {
     const response = await listItemInventory({
       userId: "user-1",

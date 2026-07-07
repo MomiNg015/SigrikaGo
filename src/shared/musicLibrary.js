@@ -219,6 +219,14 @@ export const MUSIC_TRACKS = {
     purchasable: false,
     playback: { mode: "single-loop", src: "/assets/music/main_bgm.ogg", loop: true }
   },
+  "home-main-bgm-1": {
+    id: "home-main-bgm-1",
+    name: "Default Home BGM 2",
+    type: MUSIC_TYPES.home,
+    defaultUnlocked: true,
+    purchasable: false,
+    playback: introLoop("/assets/music/main_bgm_1_once.ogg", "/assets/music/main_bgm_1_loop.ogg")
+  },
   "battle-default": {
     id: "battle-default",
     name: "Default Battle BGM",
@@ -445,6 +453,7 @@ export function resolveBackgroundMusic({
   resultModalOpen = false,
   selections = {},
   ownedMusicIds = null,
+  random = Math.random,
   tracks = MUSIC_TRACKS,
   defaults = DEFAULT_MUSIC_SELECTIONS
 } = {}) {
@@ -470,7 +479,12 @@ export function resolveBackgroundMusic({
   }
 
   if (view === "home") {
-    return resolveTypedTrack(MUSIC_TYPES.home, selections.home, ownedMusicIds, tracks, defaults.home);
+    return resolveHomeMusicTrack({
+      ownedMusicIds,
+      random,
+      tracks,
+      defaultId: defaults.home
+    });
   }
 
   return null;
@@ -547,6 +561,26 @@ function resolveTypedTrack(type, selectedId, ownedMusicIds, tracks, defaultId) {
   if (isUsableTrack(defaultTrack, type, null)) return defaultTrack;
 
   return null;
+}
+
+function resolveHomeMusicTrack({ ownedMusicIds, random, tracks, defaultId }) {
+  const options = musicOptionsForType(MUSIC_TYPES.home, ownedMusicIds, tracks);
+  if (options.length > 0) return options[randomIndex(options.length, random)];
+
+  const defaultTrack = defaultId ? tracks[defaultId] : null;
+  if (isUsableTrack(defaultTrack, MUSIC_TYPES.home, null)) return defaultTrack;
+
+  return null;
+}
+
+function musicOptionsForType(type, ownedMusicIds, tracks) {
+  return Object.values(tracks ?? {}).filter((track) => isUsableTrack(track, type, ownedMusicIds));
+}
+
+function randomIndex(length, random = Math.random) {
+  const raw = typeof random === "function" ? random() : random;
+  const value = Number.isFinite(raw) ? raw : 0;
+  return Math.max(0, Math.min(length - 1, Math.floor(value * length)));
 }
 
 function isUsableTrack(track, type, ownedMusicIds) {

@@ -88,6 +88,8 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalAudio).toContain("/assets/music/godown_clear.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/ui_confirm.ogg");
     expect(assets.audio).toContain("/assets/music/main_bgm.ogg");
+    expect(assets.audio).toContain("/assets/music/main_bgm_1_once.ogg");
+    expect(assets.audio).toContain("/assets/music/main_bgm_1_loop.ogg");
     expect(assets.audio).toContain("/assets/music/shanjifu_loop.ogg");
     expect(assets.audio).toContain("/assets/music/sigrika_loop.ogg");
     expect(assets.audio).toContain("/assets/music/qiuyuan_zhouwo_loop.ogg");
@@ -222,6 +224,8 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalImages).toEqual(expect.arrayContaining(RUNTIME_IMAGE_ASSETS.shop));
     expect(assets.criticalAudio).toEqual(expect.arrayContaining(RUNTIME_AUDIO_ASSETS.interaction));
     expect(assets.criticalAudio).toContain("/assets/music/main_bgm.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_once.ogg");
+    expect(assets.criticalAudio).toContain("/assets/music/main_bgm_1_loop.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/shanjifu_loop.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/sigrika_loop.ogg");
     expect(assets.deferredImages).toEqual([]);

@@ -51,6 +51,7 @@ describe("publicUser", () => {
       ownedDecorations: [],
       ownedMusicIds: [
         "home-default",
+        "home-main-bgm-1",
         "battle-default",
         "denia-skill-default",
         "sigrika-skill-default",

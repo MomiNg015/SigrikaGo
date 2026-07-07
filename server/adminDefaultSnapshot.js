@@ -353,7 +353,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "enabled": true,
       "sortOrder": 120,
       "description": "用于贴在学院公告栏上的招新贴报，可以招募星炬学院内的人。",
-      "imageUrl": "/assets/items/recruitment-poster.svg",
+      "imageUrl": "/assets/items/recruitment-poster.webp",
       "illustName": "",
       "illustUrl": "",
       "source": "default"

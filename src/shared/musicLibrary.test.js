@@ -21,7 +21,7 @@ import {
 
 describe("background music library", () => {
   it("uses the configured loop file for the default home music", () => {
-    const track = resolveBackgroundMusic({ view: "home" });
+    const track = resolveBackgroundMusic({ view: "home", random: () => 0 });
 
     expect(track).toMatchObject({
       id: "home-default",
@@ -34,14 +34,53 @@ describe("background music library", () => {
     });
   });
 
-  it("lets owned player selection override the default home music", () => {
+  it("can randomly choose the second default home music", () => {
+    const track = resolveBackgroundMusic({ view: "home", random: () => 0.99 });
+
+    expect(track).toMatchObject({
+      id: "home-main-bgm-1",
+      type: "home",
+      playback: {
+        mode: "intro-loop",
+        introSrc: "/assets/music/main_bgm_1_once.ogg",
+        loopSrc: "/assets/music/main_bgm_1_loop.ogg",
+        loop: true
+      }
+    });
+  });
+
+  it("keeps home-entry randomization even when an old home selection exists", () => {
     const track = resolveBackgroundMusic({
       view: "home",
       selections: { home: "home-default" },
-      ownedMusicIds: ["home-default"]
+      ownedMusicIds: ["home-main-bgm-1"],
+      random: () => 0.99
     });
 
-    expect(track.id).toBe("home-default");
+    expect(track.id).toBe("home-main-bgm-1");
+  });
+
+  it("randomizes home music from owned or default-unlocked home tracks only", () => {
+    const tracks = {
+      ...MUSIC_TRACKS,
+      "home-shop-preview": {
+        id: "home-shop-preview",
+        name: "Home Shop Preview",
+        type: "home",
+        defaultUnlocked: false,
+        purchasable: true,
+        playback: { mode: "single-loop", src: "/assets/music/home-shop-preview.ogg", loop: true }
+      }
+    };
+
+    const track = resolveBackgroundMusic({
+      view: "home",
+      ownedMusicIds: [],
+      random: () => 0.99,
+      tracks
+    });
+
+    expect(track.id).toBe("home-main-bgm-1");
   });
 
   it("uses Shanjifu as the default battle music", () => {
@@ -486,7 +525,8 @@ describe("background music library", () => {
     const track = resolveBackgroundMusic({
       view: "home",
       gamePhase: "finished",
-      latestSkillCharacterId: "denia"
+      latestSkillCharacterId: "denia",
+      random: () => 0
     });
 
     expect(track).toMatchObject({

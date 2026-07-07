@@ -244,7 +244,7 @@ export async function seedBuiltinShopItems(prisma) {
       where: {
         category: "item",
         targetId: item.itemType,
-        imageUrl: { in: ["", "/assets/items/radio-recruitment-ticket.svg"] }
+        imageUrl: { in: ["", ...(item.staleImageUrls ?? [])] }
       },
       data: {
         imageUrl: item.imageUrl

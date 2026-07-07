@@ -9,7 +9,8 @@ export const RECRUITMENT_ITEMS = Object.freeze({
     name: "招新贴报",
     scopeLabel: "可以招募学院内的人",
     description: "贴在学院公告栏上的围棋部招新贴报，可以招募学院内的人。",
-    imageUrl: "/assets/items/recruitment-poster.svg",
+    imageUrl: "/assets/items/recruitment-poster.webp",
+    staleImageUrls: Object.freeze(["/assets/items/recruitment-poster.svg"]),
     sortOrder: 120,
     priceCoins: 120,
     candidates: Object.freeze(["lynae", "mornye", "chisa"])
@@ -20,6 +21,7 @@ export const RECRUITMENT_ITEMS = Object.freeze({
     scopeLabel: "可以招募学院外的人",
     description: "给先约电台的广播券，可以招募学院外的人。",
     imageUrl: "/assets/items/radio-recruitment-ticket.webp",
+    staleImageUrls: Object.freeze(["/assets/items/radio-recruitment-ticket.svg"]),
     sortOrder: 121,
     priceCoins: 180,
     candidates: Object.freeze(["qiuyuan", "changli"])
