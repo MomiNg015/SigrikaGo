@@ -5,6 +5,8 @@ import { SKILL_EFFECT_CATALOG } from "../shared/skillEffectCatalog.js";
 import {
   BOARD_SKILL_EFFECT_RENDERERS,
   boardSkillEffectAssetUrls,
+  meteorEraseCraterAlpha,
+  protocolTakeoverLockAlpha,
   playRegisteredBoardSkillEffect
 } from "./boardSkillEffectRegistry.js";
 
@@ -143,6 +145,13 @@ describe("boardSkillEffectRegistry", () => {
     expect(boardSkillEffectAssetUrls("voyage-star")).toEqual(["/assets/effects/voyage-star-crater.webp"]);
   });
 
+  test("fades targeted transient renderer residue to transparent before cleanup", () => {
+    expect(protocolTakeoverLockAlpha({ impact: 1, residue: 1, fade: 0 })).toBe(0);
+    expect(protocolTakeoverLockAlpha({ impact: 1, residue: 0.5, fade: 0.25 })).toBeGreaterThan(0);
+    expect(meteorEraseCraterAlpha({ progress: 1, craterProgress: 1 })).toBe(0);
+    expect(meteorEraseCraterAlpha({ progress: 0.7, craterProgress: 0.4 })).toBeGreaterThan(0);
+  });
+
   test("exposes renderer asset urls for banner-window preloading", () => {
     expect(boardSkillEffectAssetUrls("flip-stone")).toEqual(["/assets/effects/denia-bubble-pop.webp"]);
     expect(boardSkillEffectAssetUrls("random-blast")).toEqual(["/assets/baconbits.webp"]);
@@ -263,14 +272,13 @@ describe("boardSkillEffectRegistry", () => {
     expect(libertySource).toContain("0xff1733");
   });
 
-  test("keeps Sigrika meteor impact crater opaque dark gray so the resolved marker cannot show through early", () => {
+  test("keeps Sigrika meteor impact crater dark during impact but fades before cleanup", () => {
     const registrySource = fs.readFileSync(path.resolve("src/room/boardSkillEffectRegistry.js"), "utf8");
     const meteorSource = registrySource.match(/function playMeteorErase[\s\S]*?function playBubbleFlip/)?.[0] ?? "";
 
-    expect(meteorSource).toContain("const craterAlpha = craterProgress > 0 ? 1 : 0");
+    expect(meteorSource).toContain("const craterAlpha = meteorEraseCraterAlpha({ progress, craterProgress })");
     expect(meteorSource).toContain("fill({ color: 0x4a4648, alpha: craterAlpha })");
     expect(meteorSource).not.toContain("fill({ color: 0x000000");
-    expect(meteorSource).not.toContain("alpha: 0.64 * craterProgress");
   });
 
   test("plays QiuYuan row-slash as a Pixi ink-blade cast before the DOM row scar persists", () => {

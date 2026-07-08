@@ -11,6 +11,16 @@ const BOARD_SKILL_EFFECT_ASSET_URLS = Object.freeze({
   "voyage-star": Object.freeze([VOYAGE_STAR_CRATER_IMAGE])
 });
 
+const BOARD_SKILL_EFFECT_BLOCKING_ASSET_URLS = Object.freeze({
+  "double-move": BOARD_SKILL_EFFECT_ASSET_URLS["double-move"],
+  "flip-stone": BOARD_SKILL_EFFECT_ASSET_URLS["flip-stone"],
+  "random-blast": BOARD_SKILL_EFFECT_ASSET_URLS["random-blast"]
+});
+
 export function boardSkillEffectAssetUrls(effectType) {
   return BOARD_SKILL_EFFECT_ASSET_URLS[effectType] ?? [];
+}
+
+export function boardSkillEffectBlockingAssetUrls(effectType) {
+  return BOARD_SKILL_EFFECT_BLOCKING_ASSET_URLS[effectType] ?? [];
 }

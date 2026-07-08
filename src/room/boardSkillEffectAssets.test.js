@@ -5,7 +5,8 @@ import {
   CHANGLI_FLAME_SPRITE_IMAGE,
   DANEA_BUBBLE_IMAGE,
   VOYAGE_STAR_CRATER_IMAGE,
-  boardSkillEffectAssetUrls
+  boardSkillEffectAssetUrls,
+  boardSkillEffectBlockingAssetUrls
 } from "./boardSkillEffectAssets.js";
 
 describe("boardSkillEffectAssets", () => {
@@ -27,5 +28,15 @@ describe("boardSkillEffectAssets", () => {
     expect(boardSkillEffectAssetUrls("random-blast")).toEqual(["/assets/baconbits.webp"]);
     expect(boardSkillEffectAssetUrls("row-slash")).toEqual([]);
     expect(boardSkillEffectAssetUrls("unknown-effect")).toEqual([]);
+  });
+
+  test("keeps only Pixi-drawn sprite assets in the blocking playback list", () => {
+    expect(boardSkillEffectBlockingAssetUrls("double-move")).toEqual([
+      "/assets/effects/changli-fire-phoenix.svg",
+      "/assets/effects/changli-flame-sprite.svg"
+    ]);
+    expect(boardSkillEffectBlockingAssetUrls("flip-stone")).toEqual(["/assets/effects/denia-bubble-pop.webp"]);
+    expect(boardSkillEffectBlockingAssetUrls("random-blast")).toEqual(["/assets/baconbits.webp"]);
+    expect(boardSkillEffectBlockingAssetUrls("voyage-star")).toEqual([]);
   });
 });

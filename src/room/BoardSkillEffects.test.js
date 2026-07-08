@@ -153,7 +153,103 @@ describe("BoardSkillEffects", () => {
     expect(host.children).toEqual([]);
   });
 
-  test("mounts the real Pixi canvas without waiting for renderer assets to decode", async () => {
+  test("detaches the Pixi canvas before destroying the app to avoid mobile teardown flashes", async () => {
+    const destroySnapshots = [];
+    const host = {
+      clientWidth: 260,
+      clientHeight: 260,
+      dataset: {},
+      children: [],
+      replaceChildren(...children) {
+        this.children = children;
+      }
+    };
+    class Application {
+      constructor() {
+        this.canvas = { className: "" };
+        this.init = vi.fn(async () => {});
+        this.destroy = vi.fn(() => {
+          destroySnapshots.push([...host.children]);
+        });
+      }
+    }
+    const prepared = preparePixiEffect({
+      host,
+      pendingSkill: { id: "aemeath-hidden-hand", effectType: "hidden-hand" },
+      loadPixi: vi.fn(async () => ({
+        Application,
+        Assets: { load: vi.fn(async () => []) }
+      }))
+    });
+
+    const runtime = await prepared.ready;
+    expect(host.children).toEqual([runtime.app.canvas]);
+
+    prepared.cleanup();
+
+    expect(destroySnapshots).toEqual([[]]);
+    expect(host.children).toEqual([]);
+  });
+
+  test("does not expose a playable Pixi runtime until renderer assets decode", async () => {
+    let resolveAssets;
+    const assetsPromise = new Promise((resolve) => {
+      resolveAssets = resolve;
+    });
+    const appInstances = [];
+    class Application {
+      constructor() {
+        this.canvas = { className: "" };
+        this.init = vi.fn(async () => {});
+        this.destroy = vi.fn();
+        appInstances.push(this);
+      }
+    }
+    const pixi = {
+      Application,
+      Assets: {
+        load: vi.fn(() => assetsPromise)
+      }
+    };
+    const host = {
+      clientWidth: 260,
+      clientHeight: 260,
+      dataset: {},
+      children: [],
+      replaceChildren(...children) {
+        this.children = children;
+      }
+    };
+    const prepared = preparePixiEffect({
+      host,
+      pendingSkill: { id: "danea-flip", effectType: "flip-stone" },
+      loadPixi: vi.fn(async () => pixi)
+    });
+
+    let readySettled = false;
+    const runtimePromise = prepared.ready.then((runtime) => {
+      readySettled = true;
+      return runtime;
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(pixi.Assets.load).toHaveBeenCalledWith(["/assets/effects/denia-bubble-pop.webp"]);
+    expect(readySettled).toBe(false);
+    expect(host.children).toEqual([]);
+
+    resolveAssets([]);
+    const runtime = await runtimePromise;
+    expect(readySettled).toBe(true);
+    expect(host.children).toEqual([appInstances[0].canvas]);
+    expect(runtime.app.canvas.className).toBe("board-effects-canvas");
+
+    prepared.cleanup();
+    expect(host.children).toEqual([]);
+  });
+
+  test("does not block procedural Pixi casts on resolved DOM marker artwork", async () => {
     let resolveAssets;
     const assetsPromise = new Promise((resolve) => {
       resolveAssets = resolve;
@@ -186,21 +282,16 @@ describe("BoardSkillEffects", () => {
       loadPixi: vi.fn(async () => pixi)
     });
 
-    const runtime = await prepared.ready;
-    let assetsSettled = false;
-    runtime.assetsReady.then(() => {
-      assetsSettled = true;
-    });
-    await Promise.resolve();
+    const runtime = await Promise.race([
+      prepared.ready,
+      new Promise((resolve) => setTimeout(() => resolve(null), 20))
+    ]);
+    if (!runtime) resolveAssets([]);
 
-    expect(pixi.Assets.load).toHaveBeenCalledWith(["/assets/effects/voyage-star-crater.webp"]);
+    expect(runtime).toBeTruthy();
+    expect(pixi.Assets.load).not.toHaveBeenCalled();
     expect(host.children).toEqual([runtime.app.canvas]);
     expect(runtime.app.canvas.className).toBe("board-effects-canvas");
-    expect(assetsSettled).toBe(false);
-
-    resolveAssets([]);
-    await runtime.assetsReady;
-    expect(assetsSettled).toBe(true);
 
     prepared.cleanup();
     expect(host.children).toEqual([]);

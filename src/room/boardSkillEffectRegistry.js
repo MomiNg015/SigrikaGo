@@ -10,7 +10,8 @@ import {
   CHANGLI_FLAME_SPRITE_IMAGE,
   DANEA_BUBBLE_IMAGE,
   VOYAGE_STAR_CRATER_IMAGE,
-  boardSkillEffectAssetUrls
+  boardSkillEffectAssetUrls,
+  boardSkillEffectBlockingAssetUrls
 } from "./boardSkillEffectAssets.js";
 import { boardPointCenter, pointCenterForHost } from "./boardSkillEffectGeometry.js";
 
@@ -27,6 +28,15 @@ const MORNYE_PROTOCOL_COLORS = Object.freeze({
   lilac: 0x9f8cff,
   shadow: 0x6f7fb6
 });
+
+export function protocolTakeoverLockAlpha({ impact, residue, fade }) {
+  return Math.min(1, impact * 1.3) * (1 - residue * 0.18) * fade;
+}
+
+export function meteorEraseCraterAlpha({ progress, craterProgress }) {
+  const exitFade = 1 - clamp01((progress - 0.84) / 0.14);
+  return craterProgress > 0 ? exitFade : 0;
+}
 
 export function playRegisteredBoardSkillEffect({
   app,
@@ -63,7 +73,7 @@ export function playRegisteredBoardSkillEffect({
   }
 }
 
-export { boardSkillEffectAssetUrls };
+export { boardSkillEffectAssetUrls, boardSkillEffectBlockingAssetUrls };
 
 export async function loadPixiAssetList(pixi, urls) {
   if (!pixi?.Assets?.load || urls.length === 0) return [];
@@ -516,7 +526,7 @@ function playProtocolTakeover({ app, pixi, host, target, durationMs }) {
     }
 
     lock.clear();
-    const lockAlpha = Math.min(1, impact * 1.3) * (1 - residue * 0.18);
+    const lockAlpha = protocolTakeoverLockAlpha({ impact, residue, fade });
     if (lockAlpha > 0) {
       const radius = 13 + impact * 10 + residue * 4;
       lock.circle(target.x, target.y, radius)
@@ -623,7 +633,7 @@ function playMeteorErase({ app, pixi, target, durationMs }) {
       ring.circle(target.x, target.y, 4 + impact * 36).stroke({ width: 2, color: 0xffffff, alpha: 0.42 * (1 - impact) });
     }
     crater.clear();
-    const craterAlpha = craterProgress > 0 ? 1 : 0;
+    const craterAlpha = meteorEraseCraterAlpha({ progress, craterProgress });
     crater.ellipse(target.x, target.y + 1, 9 + craterProgress * 15, 4 + craterProgress * 8).fill({ color: 0x4a4648, alpha: craterAlpha });
     crater.ellipse(target.x - 2, target.y - 1, 5 + craterProgress * 8, 2 + craterProgress * 4).fill({ color: 0x86594b, alpha: 0.32 * craterProgress });
     cracks.clear();

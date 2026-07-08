@@ -2,6 +2,7 @@ import { skillEffectHasBoardEffect } from "./skillEffectCatalog.js";
 
 export const SKILL_BANNER_DURATION_MS = 2000;
 export const SKILL_BOARD_EFFECT_DURATION_MS = 1800;
+export const SKILL_BOARD_EFFECT_CLEANUP_GRACE_MS = 180;
 export const SKILL_PREVIEW_DELAY_MS = 4000;
 export const FLIP_STONE_BUBBLE_COVER_RESOLUTION_MS = 3040;
 export const HIDDEN_HAND_BOARD_EFFECT_DURATION_MS = 1500;

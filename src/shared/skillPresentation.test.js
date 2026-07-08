@@ -5,6 +5,7 @@ import {
   SKILL_EFFECT_REDUCED_MOTION_MS,
   SKILL_PREVIEW_DELAY_MS,
   SKILL_BANNER_DURATION_MS,
+  SKILL_BOARD_EFFECT_CLEANUP_GRACE_MS,
   SKILL_BOARD_EFFECT_DURATION_MS,
   VOYAGE_STAR_PREVIEW_DELAY_MS,
   VOYAGE_STAR_WHITEOUT_RESOLUTION_PROGRESS,
@@ -25,6 +26,7 @@ describe("skillPresentation", () => {
       startDelayMs: 2000,
       durationMs: SKILL_EFFECT_REDUCED_MOTION_MS
     });
+    expect(SKILL_BOARD_EFFECT_CLEANUP_GRACE_MS).toBe(180);
   });
 
   test("resolves pending skill timeline metadata through the shared layer", () => {

@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import {
   skillEffectPresentation,
   skillEffectTimeline,
+  SKILL_BOARD_EFFECT_CLEANUP_GRACE_MS,
   SKILL_EFFECT_REDUCED_MOTION_MS
 } from "../shared/skillPresentation.js";
 import {
-  boardSkillEffectAssetUrls,
+  boardSkillEffectBlockingAssetUrls,
   loadPixiAssetList,
   playRegisteredBoardSkillEffect
 } from "./boardSkillEffectRegistry.js";
@@ -126,7 +127,7 @@ export default function BoardSkillEffects({
 export function preparePixiEffect({ host, pendingSkill, loadPixi = loadPixiModule }) {
   let active = true;
   let app = null;
-  const assetUrls = boardSkillEffectAssetUrls(pendingSkill?.effectType);
+  const assetUrls = boardSkillEffectBlockingAssetUrls(pendingSkill?.effectType);
 
   const ready = loadPixi().then(async (pixi) => {
     if (!active) return;
@@ -142,20 +143,22 @@ export function preparePixiEffect({ host, pendingSkill, loadPixi = loadPixiModul
       resolution: boardEffectResolution()
     });
     const assetsReady = assetUrls.length > 0
-      ? loadPixiAssetList(pixi, assetUrls).then(
-        (assets) => ({ ok: true, assets }),
-        (error) => ({ ok: false, error })
-      )
-      : Promise.resolve({ ok: true, assets: [] });
-    await initPromise;
+      ? loadPixiAssetList(pixi, assetUrls)
+      : Promise.resolve([]);
+    const [, assets] = await Promise.all([initPromise, assetsReady]);
     if (!active) {
-      app.destroy(true);
+      destroyPixiEffectApp({ host, app });
+      app = null;
       return null;
     }
-    host.replaceChildren(app.canvas);
     app.canvas.className = "board-effects-canvas";
-    return { app, host, pixi, assetsReady };
+    host.replaceChildren(app.canvas);
+    return { app, host, pixi, assets };
   }).catch((error) => {
+    if (app) {
+      destroyPixiEffectApp({ host, app });
+      app = null;
+    }
     if (active) markPixiEffectFailed(host, error);
     return null;
   });
@@ -166,11 +169,24 @@ export function preparePixiEffect({ host, pendingSkill, loadPixi = loadPixiModul
     cleanup() {
       active = false;
       clearPixiEffectDiagnostics(host);
-      app?.destroy(true, { children: true });
-      host.replaceChildren();
+      destroyPixiEffectApp({ host, app });
       app = null;
     }
   };
+}
+
+function destroyPixiEffectApp({ host, app }) {
+  detachPixiEffectCanvas({ host, app });
+  app?.destroy(true, { children: true });
+}
+
+function detachPixiEffectCanvas({ host, app }) {
+  const canvas = app?.canvas;
+  if (!canvas || !host?.replaceChildren) return;
+  const children = Array.from(host.children ?? []);
+  if (canvas.parentNode === host || children.includes(canvas)) {
+    host.replaceChildren();
+  }
 }
 
 function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, presentation, durationMs, reducedMotion, audioSettings, onComplete = () => {} }) {
@@ -190,19 +206,20 @@ function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, prese
     timeoutId = window.setTimeout(() => {
       preparedEffect.cleanup();
       onComplete();
-    }, durationMs + 180);
+    }, durationMs + SKILL_BOARD_EFFECT_CLEANUP_GRACE_MS);
   };
 
   preparedEffect.ready.then((prepared) => {
-    if (!active || !prepared) return;
+    if (!active) return;
+    if (!prepared) {
+      failEffect(new Error("Pixi board effect did not prepare"));
+      return;
+    }
     delete preparedEffect.host.dataset.effectFailed;
     delete preparedEffect.host.dataset.effectError;
     preparedEffect.host.dataset.effectState = "running";
-    const { app, host, pixi, assetsReady } = prepared;
+    const { app, host, pixi } = prepared;
     restoreTicker = installPixiTickerErrorGuard(app, failEffect);
-    void assetsReady?.then((result) => {
-      if (active && result && result.ok === false) failEffect(result.error);
-    });
     soundTimers = presentation.layers.sound
       ? scheduleBoardSkillEffectSounds({ pendingSkill, durationMs, reducedMotion, audioSettings })
       : [];
@@ -220,7 +237,7 @@ function playPreparedPixiEffect({ preparedEffect, boardSize, pendingSkill, prese
       clearBoardSkillEffectSoundTimers(soundTimers);
       preparedEffect.cleanup();
       onComplete();
-    }, durationMs + 180);
+    }, durationMs + SKILL_BOARD_EFFECT_CLEANUP_GRACE_MS);
   });
 
   return () => {
