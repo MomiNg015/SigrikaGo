@@ -1,8 +1,11 @@
 /* Bright School portrait mobile home top strip and menu. */
 @media (max-width: 760px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-top-strip {
+    --home-floating-z: 120;
     --home-brand-title-size: clamp(26px, 9vw, 38px);
     --home-brand-subtitle-size: calc(var(--home-brand-title-size) * 2 / 3);
+    position: relative !important;
+    z-index: var(--home-floating-z) !important;
     width: 100% !important;
     min-width: 0 !important;
     display: grid !important;
@@ -83,7 +86,7 @@
     display: grid !important;
     justify-items: end !important;
     align-self: start !important;
-    z-index: 40 !important;
+    z-index: var(--home-floating-z) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-mobile-menu-toggle {
@@ -96,6 +99,7 @@
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-mobile-menu-panel {
     position: absolute !important;
+    z-index: var(--home-floating-z) !important;
     top: calc(100% + 8px) !important;
     right: 0 !important;
     width: min(178px, calc(100vw - 28px)) !important;

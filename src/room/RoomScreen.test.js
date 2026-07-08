@@ -303,7 +303,7 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain("display: none");
     expect(portraitMedia).toContain(".mobile-room-screen .room-mobile-exit");
     expect(portraitMedia).toContain(".mobile-room-screen .room-mobile-menu");
-    expect(portraitMedia).toContain("z-index: 4");
+    expect(portraitMedia).toContain("z-index: var(--room-floating-z, 120)");
     expect(portraitMedia).toContain(".mobile-room-screen .room-mobile-menu-panel");
     expect(portraitMedia).toContain("inline-size: min(176px, calc(100vw - 24px))");
     expect(portraitMedia).toContain("min-inline-size: min(156px, calc(100vw - 24px))");
@@ -495,8 +495,14 @@ describe("RoomScreen helpers", () => {
     expect(mobileAdaptiveCss).toContain(".mobile-room-screen .mobile-tab-button:active:not(:disabled)");
     expect(mobileAdaptiveCss).toContain("transform: none !important");
     expect(mobileAdaptiveCss).toContain(".mobile-room-screen .room-mobile-menu.open");
+    expect(mobileAdaptiveCss).toContain("z-index: var(--room-floating-z, 120) !important");
     expect(mobileAdaptiveCss).toContain(".mobile-tab-panel:has(.chat-widget.open)");
+    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .mobile-room-dock:has(.chat-widget.open)");
+    expect(mobileAdaptiveCss).toContain("z-index: var(--room-floating-z, 120) !important");
+    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .chat-widget.open");
+    expect(mobileAdaptiveCss).toContain("z-index: var(--room-floating-z, 120) !important");
     expect(mobileAdaptiveCss).toContain(".mobile-room-screen .chat-popover");
+    expect(mobileAdaptiveCss).toContain("z-index: var(--room-floating-z, 120) !important");
     expect(mobileAdaptiveCss).toContain(".mobile-room-screen .captures span,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .digital-timer");
     expect(mobileAdaptiveCss).toContain(".mobile-room-screen .replay-step-indicator");
     expect(mobileAdaptiveCss).toContain("#mobile-room-panel-actions .replay-bar");

@@ -41,6 +41,11 @@
     backdrop-filter: blur(14px) saturate(1.08);
   }
 
+  .mobile-room-screen .mobile-room-dock:has(.chat-widget.open) {
+    overflow: visible;
+    z-index: var(--room-floating-z, 120);
+  }
+
   .mobile-player-slot,
   .mobile-board-viewport {
     min-width: 0;

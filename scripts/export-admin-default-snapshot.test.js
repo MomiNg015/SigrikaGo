@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildAdminDefaultConfig, renderAdminDefaultSnapshot } from "./export-admin-default-snapshot.mjs";
 
 describe("admin default snapshot export", () => {
   it("serializes non-user admin configuration with catalog credit fields", async () => {
+    const { buildAdminDefaultConfig } = await import("./export-admin-default-snapshot.mjs");
     const config = await buildAdminDefaultConfig(snapshotPrisma());
 
     expect(config.siteSettings).toEqual([
@@ -37,9 +37,36 @@ describe("admin default snapshot export", () => {
     expect(config.musicTrackSettings).toEqual([
       { id: "home-default", displayName: "Home Theme" }
     ]);
+    expect(config.storyScripts[0]).toMatchObject({
+      id: "story-1",
+      key: "onboarding.default",
+      triggerType: "onboarding",
+      draftInitialBoardJson: JSON.stringify({ mode: "spark", stones: [] }),
+      publishedInitialBoardJson: JSON.stringify({ mode: "spark", stones: [] }),
+      firstPublishedAt: "2026-03-04T05:06:07.000Z",
+      publishedAt: null
+    });
+    expect(config.announcementEntries[0]).toMatchObject({
+      id: "announcement-1",
+      kind: "announcement",
+      title: "Welcome",
+      isPublished: true,
+      firstPublishedAt: "2026-04-05T06:07:08.000Z",
+      deletedAt: null
+    });
+    expect(config.onboardingStoryScripts[0]).toMatchObject({
+      id: "singleton",
+      draftStartNodeId: "start",
+      firstPublishedAt: "2026-05-06T07:08:09.000Z",
+      publishedAt: null
+    });
+    expect(config.mailboxBatches).toBeUndefined();
+    expect(config.mailboxMessages).toBeUndefined();
+    expect(config.announcementReads).toBeUndefined();
   });
 
-  it("renders a deterministic ES module snapshot", () => {
+  it("renders a deterministic ES module snapshot", async () => {
+    const { renderAdminDefaultSnapshot } = await import("./export-admin-default-snapshot.mjs");
     const rendered = renderAdminDefaultSnapshot(
       { siteSettings: [{ key: "homeTitle", value: "星炬学院围棋部" }] },
       { generatedAt: new Date("2026-07-06T00:00:00.000Z") }
@@ -48,6 +75,7 @@ describe("admin default snapshot export", () => {
     expect(rendered).toContain("Generated from prisma/dev.db non-user admin configuration on 2026-07-06.");
     expect(rendered).toContain("export const ADMIN_DEFAULT_CONFIG = {");
     expect(rendered).toContain('"homeTitle"');
+    expect(rendered).toContain("mailbox batches/history");
     expect(rendered.endsWith("\n")).toBe(true);
   });
 });
@@ -175,6 +203,48 @@ function snapshotPrisma() {
     },
     musicTrackSetting: {
       findMany: async () => [{ id: "home-default", displayName: "Home Theme" }]
+    },
+    storyScript: {
+      findMany: async () => [{
+        id: "story-1",
+        key: "onboarding.default",
+        title: "Onboarding",
+        triggerType: "onboarding",
+        triggerParamsJson: "{}",
+        draftStartNodeId: "start",
+        draftInitialBoardJson: JSON.stringify({ mode: "spark", stones: [] }),
+        draftNodesJson: JSON.stringify([{ id: "start", text: "hi" }]),
+        isPublished: true,
+        publishedStartNodeId: "start",
+        publishedInitialBoardJson: JSON.stringify({ mode: "spark", stones: [] }),
+        publishedNodesJson: JSON.stringify([{ id: "start", text: "hi" }]),
+        firstPublishedAt: new Date("2026-03-04T05:06:07.000Z"),
+        publishedAt: null
+      }]
+    },
+    announcementEntry: {
+      findMany: async () => [{
+        id: "announcement-1",
+        kind: "announcement",
+        title: "Welcome",
+        body: "Welcome to SigrikaGo.",
+        isPublished: true,
+        pinned: true,
+        firstPublishedAt: new Date("2026-04-05T06:07:08.000Z"),
+        deletedAt: null
+      }]
+    },
+    onboardingStoryScript: {
+      findMany: async () => [{
+        id: "singleton",
+        draftStartNodeId: "start",
+        draftNodesJson: JSON.stringify([{ id: "start", text: "legacy" }]),
+        isPublished: true,
+        publishedStartNodeId: "start",
+        publishedNodesJson: JSON.stringify([{ id: "start", text: "legacy" }]),
+        firstPublishedAt: new Date("2026-05-06T07:08:09.000Z"),
+        publishedAt: null
+      }]
     }
   };
 }

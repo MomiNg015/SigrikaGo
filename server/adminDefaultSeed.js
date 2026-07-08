@@ -9,6 +9,9 @@ export async function seedAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CO
   await seedAchievementRewardAssets(prisma, snapshot.achievementRewardAssets);
   await seedAchievements(prisma, snapshot.achievements);
   await seedMusicTrackSettings(prisma, snapshot.musicTrackSettings);
+  await seedStoryScripts(prisma, snapshot.storyScripts);
+  await seedAnnouncementEntries(prisma, snapshot.announcementEntries);
+  await seedOnboardingStoryScripts(prisma, snapshot.onboardingStoryScripts);
 }
 
 async function seedSiteSettings(prisma, rows = []) {
@@ -140,6 +143,49 @@ async function seedMusicTrackSettings(prisma, rows = []) {
   }
 }
 
+async function seedStoryScripts(prisma, rows = []) {
+  if (!prisma?.storyScript?.findUnique || !prisma?.storyScript?.create) return;
+  for (const row of rows) {
+    const existing = await prisma.storyScript.findUnique({ where: { key: row.key } });
+    if (existing) continue;
+    await prisma.storyScript.create({
+      data: {
+        id: row.id,
+        key: row.key,
+        ...storyScriptData(row)
+      }
+    });
+  }
+}
+
+async function seedAnnouncementEntries(prisma, rows = []) {
+  if (!prisma?.announcementEntry?.findUnique || !prisma?.announcementEntry?.create) return;
+  for (const row of rows) {
+    const existing = await prisma.announcementEntry.findUnique({ where: { id: row.id } });
+    if (existing) continue;
+    await prisma.announcementEntry.create({
+      data: {
+        id: row.id,
+        ...announcementEntryData(row)
+      }
+    });
+  }
+}
+
+async function seedOnboardingStoryScripts(prisma, rows = []) {
+  if (!prisma?.onboardingStoryScript?.findUnique || !prisma?.onboardingStoryScript?.create) return;
+  for (const row of rows) {
+    const existing = await prisma.onboardingStoryScript.findUnique({ where: { id: row.id } });
+    if (existing) continue;
+    await prisma.onboardingStoryScript.create({
+      data: {
+        id: row.id,
+        ...onboardingStoryScriptData(row)
+      }
+    });
+  }
+}
+
 function characterData(row, { existing = false } = {}) {
   const data = {
     name: row.name,
@@ -251,6 +297,47 @@ function achievementData(row) {
     enabled: row.enabled !== false,
     deletedAt: row.deletedAt ?? null,
     sortOrder: row.sortOrder ?? 0
+  };
+}
+
+function storyScriptData(row) {
+  return {
+    title: row.title ?? "",
+    triggerType: row.triggerType,
+    triggerParamsJson: row.triggerParamsJson ?? "{}",
+    draftStartNodeId: row.draftStartNodeId ?? "",
+    draftInitialBoardJson: row.draftInitialBoardJson ?? "",
+    draftNodesJson: row.draftNodesJson ?? "[]",
+    isPublished: Boolean(row.isPublished),
+    publishedStartNodeId: row.publishedStartNodeId ?? "",
+    publishedInitialBoardJson: row.publishedInitialBoardJson ?? "",
+    publishedNodesJson: row.publishedNodesJson ?? "[]",
+    firstPublishedAt: row.firstPublishedAt ?? null,
+    publishedAt: row.publishedAt ?? null
+  };
+}
+
+function announcementEntryData(row) {
+  return {
+    kind: row.kind,
+    title: row.title,
+    body: row.body ?? "",
+    isPublished: Boolean(row.isPublished),
+    pinned: Boolean(row.pinned),
+    firstPublishedAt: row.firstPublishedAt ?? null,
+    deletedAt: row.deletedAt ?? null
+  };
+}
+
+function onboardingStoryScriptData(row) {
+  return {
+    draftStartNodeId: row.draftStartNodeId ?? "",
+    draftNodesJson: row.draftNodesJson ?? "[]",
+    isPublished: Boolean(row.isPublished),
+    publishedStartNodeId: row.publishedStartNodeId ?? "",
+    publishedNodesJson: row.publishedNodesJson ?? "[]",
+    firstPublishedAt: row.firstPublishedAt ?? null,
+    publishedAt: row.publishedAt ?? null
   };
 }
 

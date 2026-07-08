@@ -2,6 +2,7 @@
 
 @media (max-width: 900px) {
   .mobile-room-screen {
+    --room-floating-z: 120;
     --mobile-room-edge-gap: 8px;
     --mobile-room-dock-panel-height: clamp(82px, 16dvh, 132px);
     --mobile-room-board-size: min(calc(100vw - 18px), calc(100dvh - 286px), 430px);
@@ -78,7 +79,7 @@
     position: relative;
     display: grid;
     justify-items: end;
-    z-index: 4;
+    z-index: var(--room-floating-z, 120);
   }
 
   .mobile-room-screen .room-mobile-exit {
@@ -125,6 +126,7 @@
     transform: translateY(-6px) scale(0.98);
     transform-origin: top right;
     pointer-events: none;
+    z-index: var(--room-floating-z, 120);
   }
 
   .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel {

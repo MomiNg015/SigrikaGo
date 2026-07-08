@@ -22,6 +22,7 @@
     transform: translateY(-6px) scale(0.98) !important;
     transform-origin: top right !important;
     pointer-events: none !important;
+    z-index: var(--room-floating-z, 120) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel {

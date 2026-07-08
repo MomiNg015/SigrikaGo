@@ -1,11 +1,13 @@
-/* Bright School portrait mobile room chat safety rules. */
 @media (max-width: 768px) and (orientation: portrait) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open {
-    z-index: 9 !important;
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-room-dock:has(.chat-widget.open),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-widget.open,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-popover {
+    z-index: var(--room-floating-z, 120) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel {
-    z-index: 9 !important;
     pointer-events: auto !important;
   }
 
@@ -16,12 +18,9 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-room-tabs:has(.chat-widget.open),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel:has(.chat-widget.open) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel:has(.chat-widget.open),
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-room-dock:has(.chat-widget.open) {
     overflow: visible !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-widget.open {
-    z-index: 8 !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-popover {
@@ -94,14 +93,12 @@
     z-index: 20 !important;
   }
 
-  /* Lock app shell scrolling when inside the mobile battle room */
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.mobile-room-screen) {
     height: 100dvh !important;
     overflow-y: hidden !important;
     touch-action: none !important;
   }
 
-  /* Prevent room menu from overlapping active modals and their close buttons */
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school:has(.modal-backdrop) .mobile-room-screen .room-mobile-menu {
     z-index: 1 !important;
     pointer-events: none !important;

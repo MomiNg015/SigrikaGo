@@ -21,6 +21,10 @@
     padding: 5px;
   }
 
+  .mobile-room-screen .mobile-tab-panel:has(.chat-widget.open) {
+    overflow: visible;
+  }
+
   .mobile-room-screen #mobile-room-panel-actions {
     overflow: visible;
   }

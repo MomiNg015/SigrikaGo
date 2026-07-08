@@ -230,6 +230,7 @@ describe("HomeScreen", () => {
     expect(imageEntryBlock).toContain("border: 1px solid rgba(0, 255, 190, 0.28)");
     expect(imageEntryBlock).toContain("clip-path: polygon");
     expect(imageEntryBlock).toContain("transition: transform 260ms");
+    expect(imageEntryBlock).toContain("will-change: transform");
     expect(hoverBlock).toContain("transform: rotate(2deg)");
     expect(hoverBlock).toContain("border-color: var(--home-terminal-cyan)");
     expect(hoverBlock).not.toContain("0 0 34px");
@@ -579,6 +580,7 @@ describe("HomeScreen", () => {
     expect(brightToolboxEntry).toContain("--utility-paper: var(--bright-sheet-clean)");
     expect(brightToolboxEntry).toContain(".utility-entry-art");
     expect(brightToolboxEntry).toContain("filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) !important");
+    expect(brightToolboxEntry).toContain("will-change: transform");
     expect(brightToolboxEntry).toContain("outline: 0 solid transparent");
     expect(brightToolboxEntry).toContain("transform: rotate(2deg) !important");
     expect(brightToolboxEntry).toContain("transform: translateY(1px) rotate(1deg) scale(0.985) !important");
@@ -642,6 +644,9 @@ describe("HomeScreen", () => {
     expect(mobileMedia).toContain("transform: none");
 
     const brightMobileCss = readCssFixture("../styles/themes/bright-school/mobile.css");
+    const brightMobileTopStripBlock = brightMobileCss.match(/\.home-top-strip\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileMenuBlock = brightMobileCss.match(/\.home-mobile-menu\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileMenuPanelBlock = brightMobileCss.match(/\.home-mobile-menu-panel\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileStageBlock = brightMobileCss.match(/section\.home-grid-featured\.home-stage\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileMatchBlock = brightMobileCss.match(/\.home-match-feature\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileManualBlock = brightMobileCss.match(/\.house-manual-entry\s*\{[^}]+\}/)?.[0] ?? "";
@@ -653,6 +658,11 @@ describe("HomeScreen", () => {
     const brightMobileUtilityArtBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
     expect(brightMobileCss).toContain(".home-mobile-menu");
     expect(brightMobileCss).toContain(".home-mobile-menu-panel");
+    expect(brightMobileTopStripBlock).toContain("--home-floating-z: 120");
+    expect(brightMobileTopStripBlock).toContain("position: relative !important");
+    expect(brightMobileTopStripBlock).toContain("z-index: var(--home-floating-z) !important");
+    expect(brightMobileMenuBlock).toContain("z-index: var(--home-floating-z) !important");
+    expect(brightMobileMenuPanelBlock).toContain("z-index: var(--home-floating-z) !important");
     expect(brightMobileCss).toContain("main.home-screen.home-terminal-screen > section.home-main-panel.home-terminal-main");
     expect(brightMobileCss).toContain('--home-main-panel-bg: url("/assets/home/home-main-panel-mobile.webp")');
     expect(brightMobileCss).toContain("padding: clamp(34px, 9.8vw, 46px) clamp(32px, 9vw, 44px) clamp(30px, 8.6vw, 42px) !important");

@@ -4,7 +4,7 @@
     display: grid !important;
     justify-items: end !important;
     min-width: 0 !important;
-    z-index: 4 !important;
+    z-index: var(--room-floating-z, 120) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-exit {

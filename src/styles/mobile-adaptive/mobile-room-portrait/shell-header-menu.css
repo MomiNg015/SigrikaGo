@@ -1,5 +1,6 @@
 @media (max-width: 768px) and (orientation: portrait) {
   .mobile-room-screen {
+    --room-floating-z: 120;
     --mobile-room-edge-gap: 6px;
     --mobile-room-board-size: min(calc(100vw - 18px), calc(100dvh - 386px), 390px);
     --mobile-room-dock-panel-height: clamp(106px, 16dvh, 134px);
@@ -48,7 +49,7 @@
     position: relative;
     display: grid;
     justify-items: end;
-    z-index: 4;
+    z-index: var(--room-floating-z, 120);
   }
 
   .mobile-room-screen .room-mobile-exit {
@@ -84,6 +85,7 @@
     transform: translateY(-6px) scale(0.98);
     transform-origin: top right;
     pointer-events: none;
+    z-index: var(--room-floating-z, 120);
   }
 
   .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel {

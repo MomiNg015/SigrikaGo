@@ -85,6 +85,27 @@ describe("admin default config seed", () => {
       create: { id: "track-snapshot", displayName: "Snapshot Track" },
       update: {}
     }]);
+    expect(calls).toContainEqual(["storyScript.create", expect.objectContaining({
+      data: expect.objectContaining({
+        id: "story-snapshot",
+        key: "story.snapshot",
+        draftInitialBoardJson: "{\"mode\":\"spark\",\"stones\":[]}",
+        publishedInitialBoardJson: "{\"mode\":\"spark\",\"stones\":[]}"
+      })
+    })]);
+    expect(calls).toContainEqual(["announcementEntry.create", expect.objectContaining({
+      data: expect.objectContaining({
+        id: "announcement-snapshot",
+        kind: "announcement",
+        title: "Snapshot Announcement"
+      })
+    })]);
+    expect(calls).toContainEqual(["onboardingStoryScript.create", expect.objectContaining({
+      data: expect.objectContaining({
+        id: "singleton",
+        draftStartNodeId: "start"
+      })
+    })]);
   });
 
   it("preserves existing non-user admin rows during startup seeding", async () => {
@@ -95,7 +116,10 @@ describe("admin default config seed", () => {
       shopTargets: new Set(["decoration:snapshot-decoration"]),
       gachaPools: new Set(["pool-snapshot"]),
       rewardAssets: new Set(["reward-snapshot"]),
-      achievements: new Set(["achievement-snapshot"])
+      achievements: new Set(["achievement-snapshot"]),
+      storyScripts: new Set(["story.snapshot"]),
+      announcements: new Set(["announcement-snapshot"]),
+      onboardingStoryScripts: new Set(["singleton"])
     };
     const prisma = adminDefaultSeedPrisma({ calls, existing });
 
@@ -113,6 +137,12 @@ describe("admin default config seed", () => {
     expect(calls.some(([name]) => name === "achievementRewardAsset.update")).toBe(false);
     expect(calls.some(([name]) => name === "achievement.create")).toBe(false);
     expect(calls.some(([name]) => name === "achievement.update")).toBe(false);
+    expect(calls.some(([name]) => name === "storyScript.create")).toBe(false);
+    expect(calls.some(([name]) => name === "storyScript.update")).toBe(false);
+    expect(calls.some(([name]) => name === "announcementEntry.create")).toBe(false);
+    expect(calls.some(([name]) => name === "announcementEntry.update")).toBe(false);
+    expect(calls.some(([name]) => name === "onboardingStoryScript.create")).toBe(false);
+    expect(calls.some(([name]) => name === "onboardingStoryScript.update")).toBe(false);
     expect(calls).toContainEqual(["siteSetting.upsert", expect.objectContaining({
       update: {}
     })]);
@@ -291,6 +321,42 @@ const sampleSnapshot = {
   musicTrackSettings: [{
     id: "track-snapshot",
     displayName: "Snapshot Track"
+  }],
+  storyScripts: [{
+    id: "story-snapshot",
+    key: "story.snapshot",
+    title: "Snapshot Story",
+    triggerType: "onboarding",
+    triggerParamsJson: "{}",
+    draftStartNodeId: "start",
+    draftInitialBoardJson: "{\"mode\":\"spark\",\"stones\":[]}",
+    draftNodesJson: "[{\"id\":\"start\",\"text\":\"draft\"}]",
+    isPublished: true,
+    publishedStartNodeId: "start",
+    publishedInitialBoardJson: "{\"mode\":\"spark\",\"stones\":[]}",
+    publishedNodesJson: "[{\"id\":\"start\",\"text\":\"published\"}]",
+    firstPublishedAt: "2026-03-04T05:06:07.000Z",
+    publishedAt: null
+  }],
+  announcementEntries: [{
+    id: "announcement-snapshot",
+    kind: "announcement",
+    title: "Snapshot Announcement",
+    body: "Snapshot announcement body.",
+    isPublished: true,
+    pinned: true,
+    firstPublishedAt: "2026-04-05T06:07:08.000Z",
+    deletedAt: null
+  }],
+  onboardingStoryScripts: [{
+    id: "singleton",
+    draftStartNodeId: "start",
+    draftNodesJson: "[{\"id\":\"start\",\"text\":\"legacy draft\"}]",
+    isPublished: true,
+    publishedStartNodeId: "start",
+    publishedNodesJson: "[{\"id\":\"start\",\"text\":\"legacy published\"}]",
+    firstPublishedAt: "2026-05-06T07:08:09.000Z",
+    publishedAt: null
   }]
 };
 
@@ -300,7 +366,10 @@ function adminDefaultSeedPrisma({ calls, existing = {} }) {
     findUnique: vi.fn(async ({ where }) => {
       const key = where?.id ?? where?.slug ?? where?.key;
       if (name === "achievement" && where?.key) return has("achievements", where.key) ? { id: "existing" } : null;
+      if (name === "storyScript" && where?.key) return has("storyScripts", where.key) ? { id: "existing" } : null;
       if (name === "achievementRewardAsset") return has("rewardAssets", key) ? { id: key } : null;
+      if (name === "announcementEntry") return has("announcements", key) ? { id: key } : null;
+      if (name === "onboardingStoryScript") return has("onboardingStoryScripts", key) ? { id: key } : null;
       if (name === "gachaPool") return has("gachaPools", key) ? { id: key } : null;
       if (name === "decoration") return has("decorations", key) ? { id: key } : null;
       if (name === "character") return has("characters", where?.slug) ? { id: "existing" } : null;
@@ -334,6 +403,12 @@ function adminDefaultSeedPrisma({ calls, existing = {} }) {
     gachaPool: delegate("gachaPool"),
     achievementRewardAsset: delegate("achievementRewardAsset"),
     achievement: delegate("achievement"),
-    musicTrackSetting: delegate("musicTrackSetting")
+    musicTrackSetting: delegate("musicTrackSetting"),
+    storyScript: delegate("storyScript"),
+    announcementEntry: delegate("announcementEntry"),
+    onboardingStoryScript: delegate("onboardingStoryScript"),
+    mailboxBatch: delegate("mailboxBatch"),
+    mailboxMessage: delegate("mailboxMessage"),
+    announcementRead: delegate("announcementRead")
   };
 }

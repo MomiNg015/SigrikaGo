@@ -666,6 +666,8 @@ Required assertion points:
 - Do not duplicate room exit actions beside desktop chat when the header or replay/action bar already provides an exit path.
 - Replay step counters should center their `current/max` text and any icon content.
 - Desktop room floating panels, including chat popovers, skill detail panels, hover/click stat tooltips, and room member action popovers, must use the shared `--room-floating-z` contract instead of fixed cross-surface z-index values. Opening, hovering, focusing, or clicking one of these panels should bring that surface to the front.
+- Mobile room floating panels, including the folded room menu, chat widget, chat popover, and any dock that contains an open chat popover, must mirror the `--room-floating-z` contract in base CSS, Bright School overrides, and the final `mobile-adaptive.css` safety layer. Modal-backdrop suppressors may lower those room controls while a real modal is open, but ordinary room panels must not cover the most recently opened floating surface.
+- Mobile home folded menu surfaces use `--home-floating-z` on `.home-top-strip`, `.home-mobile-menu`, and `.home-mobile-menu-panel` so the menu stays above the home main panel in both base and Bright School portrait rules.
 - Shared modal backdrops must stack above room `--room-floating-z` surfaces, including the member popover fallback of `140`, so request and confirmation modals dim skill chips, chat controls, and member popovers together.
 - Timed room request toasts for draw, counting, and result-confirmation flows must render through a `document.body` portal in browser environments and keep a non-document fallback for static rendering tests. Do not leave these fixed-position request toasts as children of `.mobile-room-screen`, because mobile board sizing uses viewport-derived grid constraints and the extra child can reintroduce visible board shifts.
 - Disconnected room players should use a portrait-background state such as `.disconnected-portrait`, not an overlaid text badge. Keep the cue on the portrait wrapper so desktop and mobile player strips stay the same size and the board/action layout is not affected by connection-state copy.
@@ -673,6 +675,7 @@ Required assertion points:
 - Keep player cards and skill wrappers overflow-visible so dynamically raised skill panels can escape the side panel without clipping.
 - Room member action popovers must keep their fixed-position anchor variables and use `--room-floating-z` in both base CSS and Bright School theme overrides.
 - Capture/removal/overclock chips should share stable heights so skill-only counters do not look shorter or taller than captures.
+- Hover/focus optimizations must preserve the visible transform/filter timing. If a home or utility entry already animates `transform`, prefer promoting that existing surface with `will-change: transform` and keep reduced-motion rules beside the owning selector instead of replacing the motion with a different effect.
 
 ### Modal and Tab Visual State Contracts
 

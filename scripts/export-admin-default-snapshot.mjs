@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { writeFile } from "node:fs/promises";
@@ -16,7 +15,10 @@ export async function buildAdminDefaultConfig(prisma) {
     gachaPools,
     achievementRewardAssets,
     achievements,
-    musicTrackSettings
+    musicTrackSettings,
+    storyScripts,
+    announcementEntries,
+    onboardingStoryScripts
   ] = await Promise.all([
     prisma.siteSetting.findMany({
       select: { key: true, value: true },
@@ -48,6 +50,16 @@ export async function buildAdminDefaultConfig(prisma) {
     }),
     prisma.musicTrackSetting.findMany({
       orderBy: { id: "asc" }
+    }),
+    prisma.storyScript.findMany({
+      orderBy: [{ triggerType: "asc" }, { key: "asc" }]
+    }),
+    prisma.announcementEntry.findMany({
+      where: { deletedAt: null },
+      orderBy: [{ kind: "asc" }, { isPublished: "desc" }, { pinned: "desc" }, { createdAt: "asc" }, { id: "asc" }]
+    }),
+    prisma.onboardingStoryScript.findMany({
+      orderBy: { id: "asc" }
     })
   ]);
 
@@ -59,7 +71,10 @@ export async function buildAdminDefaultConfig(prisma) {
     gachaPools: gachaPools.map(gachaPoolSnapshot),
     achievementRewardAssets: achievementRewardAssets.map(achievementRewardAssetSnapshot),
     achievements: achievements.map(achievementSnapshot),
-    musicTrackSettings: musicTrackSettings.map(musicTrackSettingSnapshot)
+    musicTrackSettings: musicTrackSettings.map(musicTrackSettingSnapshot),
+    storyScripts: storyScripts.map(storyScriptSnapshot),
+    announcementEntries: announcementEntries.map(announcementEntrySnapshot),
+    onboardingStoryScripts: onboardingStoryScripts.map(onboardingStoryScriptSnapshot)
   };
 }
 
@@ -67,7 +82,7 @@ export function renderAdminDefaultSnapshot(config, { generatedAt = new Date() } 
   const generatedDate = isoDate(generatedAt).slice(0, 10);
   return [
     `// Generated from prisma/dev.db non-user admin configuration on ${generatedDate}.`,
-    "// Do not include users, audit logs, feedback, reports, game records, mailbox history, or live state here.",
+    "// Do not include users, audit logs, feedback, reports, game records, mailbox batches/history, or live state here.",
     "",
     `export const ADMIN_DEFAULT_CONFIG = ${JSON.stringify(config, null, 2)};`,
     ""
@@ -209,6 +224,57 @@ function achievementSnapshot(row) {
 
 function musicTrackSettingSnapshot(row) {
   return pick(row, ["id", "displayName"]);
+}
+
+function storyScriptSnapshot(row) {
+  return {
+    ...pick(row, [
+      "id",
+      "key",
+      "title",
+      "triggerType",
+      "triggerParamsJson",
+      "draftStartNodeId",
+      "draftInitialBoardJson",
+      "draftNodesJson",
+      "isPublished",
+      "publishedStartNodeId",
+      "publishedInitialBoardJson",
+      "publishedNodesJson"
+    ]),
+    firstPublishedAt: nullableIsoDate(row.firstPublishedAt),
+    publishedAt: nullableIsoDate(row.publishedAt)
+  };
+}
+
+function announcementEntrySnapshot(row) {
+  return {
+    ...pick(row, [
+      "id",
+      "kind",
+      "title",
+      "body",
+      "isPublished",
+      "pinned"
+    ]),
+    firstPublishedAt: nullableIsoDate(row.firstPublishedAt),
+    deletedAt: nullableIsoDate(row.deletedAt)
+  };
+}
+
+function onboardingStoryScriptSnapshot(row) {
+  return {
+    ...pick(row, [
+      "id",
+      "draftStartNodeId",
+      "draftNodesJson",
+      "isPublished",
+      "publishedStartNodeId",
+      "publishedNodesJson"
+    ]),
+    firstPublishedAt: nullableIsoDate(row.firstPublishedAt),
+    publishedAt: nullableIsoDate(row.publishedAt)
+  };
 }
 
 function pick(row, keys) {

@@ -45,8 +45,8 @@ Questions to answer:
 - `initializeServerData()` in `server/serverStartup.js` must run schema guards for referenced tables before `seedAdminDefaultConfig()`, then run built-in seeders afterward.
 
 #### 3. Contracts
-- The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, and `MusicTrackSetting`.
-- The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, mailbox history, game records, and live-room state.
+- The snapshot may include only non-user admin-managed rows: `SiteSetting`, `Character`/`CharacterSkill`, `Decoration`, `ShopItem`, `GachaPool`/`GachaPrize`, `AchievementRewardAsset`, `Achievement`, `MusicTrackSetting`, `StoryScript`, `AnnouncementEntry`, and `OnboardingStoryScript`.
+- The snapshot must exclude users, user-owned assets, purchases, draw history, feedback, reports, audit logs, analytics, `AnnouncementRead`, `MailboxBatch`, `MailboxMessage`, game records, and live-room state.
 - When a local admin-console edit should become a durable project/deployment default, run `npm run admin:snapshot` and commit the resulting snapshot; otherwise the edit lives only in the ignored SQLite database.
 - Seed behavior treats the snapshot as bootstrap defaults, not runtime source of truth. Missing non-user admin rows are created from the snapshot; existing rows must be preserved so admin-console saves survive backend restarts.
 - `SiteSetting` and `MusicTrackSetting` use `upsert` with empty `update` payloads. Catalog tables find the stable row first, then skip existing rows or `create` missing rows.
@@ -64,14 +64,14 @@ Questions to answer:
 - Snapshot export run after admin edits -> rewrites only `server/adminDefaultSnapshot.js` from allowed non-user admin tables.
 
 #### 5. Good/Base/Bad Cases
-- Good: a fresh database receives current site settings, character skill descriptions, system messages, character CV credits, and shop item illust credits from `server/adminDefaultSnapshot.js`.
+- Good: a fresh database receives current site settings, character skill descriptions, system messages, character CV credits, shop item illust credits, published/draft story scripts, admin announcement/changelog entries, and the legacy onboarding singleton from `server/adminDefaultSnapshot.js`.
 - Good: replacing a code-owned built-in shop item image updates the shared/static config, normalizes shop and inventory API payloads, and only backfills empty or exact stale default image paths during startup.
 - Good: after editing admin settings locally, running `npm run admin:snapshot` updates the committed bootstrap source instead of relying on ignored `prisma/dev.db`.
 - Base: an existing cloud database with runtime admin edits keeps those values on restart/deploy; only missing snapshot rows are added.
 - Bad: using startup defaults to "refresh" a live database after an admin edited system settings, characters, shop items, gacha pools, achievements, music names, or recruitment copy.
 - Bad: changing only `server/adminDefaultSnapshot.js` or a static config and assuming existing SQLite rows will update automatically.
 - Bad: importing `prisma/dev.db` at runtime on the server.
-- Bad: adding `GachaDraw`, `User`, `UserItem`, `UserReport`, or audit rows to the snapshot.
+- Bad: adding `GachaDraw`, `User`, `UserItem`, `UserReport`, `AnnouncementRead`, `MailboxBatch`, `MailboxMessage`, or audit rows to the snapshot.
 
 #### 6. Tests Required
 - Unit tests for `seedAdminDefaultConfig()` assert every included domain creates missing rows.

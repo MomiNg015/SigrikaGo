@@ -24,6 +24,11 @@
     right: 0;
   }
 
+  .mobile-room-screen .room-mobile-menu.open,
+  .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel {
+    z-index: var(--room-floating-z, 120);
+  }
+
   .mobile-room-screen .room-title-stack {
     font-size: 10px;
   }
