@@ -1,13 +1,11 @@
 /* Bright School utility toolbox states and motion preferences. */
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:hover:not(:disabled),
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:focus-visible:not(:disabled) {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:is(:hover, :focus-visible):not(:disabled) {
   box-shadow: none !important;
   filter: none !important;
-  transform: rotate(2deg) !important;
+  transform: translate(var(--utility-x, 0), calc(var(--utility-y, 0px) - 3px)) rotate(calc(var(--utility-tilt, 0deg) + 1.4deg)) scale(1.015) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:hover:not(:disabled) .utility-entry-art,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:focus-visible:not(:disabled) .utility-entry-art {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:is(:hover, :focus-visible):not(:disabled) .utility-entry-art {
   filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) !important;
 }
 
@@ -19,7 +17,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:active:not(:disabled) {
   box-shadow: none !important;
   filter: none !important;
-  transform: translateY(1px) rotate(1deg) scale(0.985) !important;
+  transform: translate(var(--utility-x, 0), calc(var(--utility-y, 0px) + 1px)) rotate(calc(var(--utility-tilt, 0deg) + 0.7deg)) scale(0.985) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:active:not(:disabled) .utility-entry-art {
@@ -35,13 +33,14 @@
   filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) drop-shadow(0 0 10px rgba(255, 95, 149, 0.18)) !important;
 }
 
+@media (min-width: 761px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
+    transform: translate(var(--utility-x, 0), var(--utility-y, 0)) rotate(var(--utility-tilt, 0deg)) !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:hover:not(:disabled),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:focus-visible:not(:disabled),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:active:not(:disabled),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry .utility-entry-art,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:active:not(:disabled) .utility-entry-art {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid :is(.utility-entry, .utility-entry:is(:hover, :focus-visible, :active):not(:disabled), .utility-entry .utility-entry-art, .utility-entry:active:not(:disabled) .utility-entry-art) {
     transition-duration: 1ms !important;
     transform: none !important;
   }

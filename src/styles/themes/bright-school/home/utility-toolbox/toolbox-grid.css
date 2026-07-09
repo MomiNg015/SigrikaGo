@@ -32,6 +32,7 @@
   text-align: center !important;
   text-shadow: none !important;
   transform: none !important;
+  transform-origin: center;
   overflow: visible !important;
   will-change: transform;
   transition:
@@ -40,49 +41,51 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-pink {
-  --utility-paper: #ffdfeb;
   --utility-tilt: -0.7deg;
+  --utility-x: -6px;
+  --utility-y: -4px;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-cream {
-  --utility-paper: #fff6dd;
   --utility-tilt: 0.55deg;
+  --utility-x: 4px;
+  --utility-y: 3px;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-mint {
-  --utility-paper: #dff8ef;
   --utility-tilt: -0.35deg;
+  --utility-x: 8px;
+  --utility-y: -5px;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-blue {
-  --utility-paper: #e7f7fb;
   --utility-tilt: 0.4deg;
+  --utility-x: -4px;
+  --utility-y: 6px;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-teal {
-  --utility-paper: #ddfff4;
   --utility-tilt: -0.5deg;
+  --utility-x: 6px;
+  --utility-y: -1px;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-violet {
-  --utility-paper: #efe8ff;
   --utility-tilt: 0.65deg;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid :is(.recruitment-entry:not(.has-alert), .watch-entry) {
-  --utility-paper: var(--bright-sheet-clean);
-  --utility-tilt: 0deg;
+  --utility-x: -5px;
+  --utility-y: 4px;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-art {
   grid-area: 1 / 1 !important;
+  place-self: center !important;
   display: block !important;
   box-sizing: border-box !important;
-  width: 100% !important;
+  width: 121% !important;
   height: auto !important;
   min-width: 0 !important;
   min-height: 0 !important;
-  max-width: 100% !important;
+  max-width: none !important;
   max-height: 100% !important;
   object-fit: contain !important;
   background: transparent !important;

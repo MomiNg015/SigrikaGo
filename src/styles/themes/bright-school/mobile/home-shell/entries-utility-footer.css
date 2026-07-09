@@ -101,9 +101,6 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-art {
-    width: 100% !important;
-    height: auto !important;
-    max-width: 100% !important;
     max-height: 100% !important;
     object-fit: contain !important;
     overflow: visible !important;
