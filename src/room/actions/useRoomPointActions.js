@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { GAME_PHASES } from "../../shared/game.js";
+import { isLibertyPurgeForbiddenPoint } from "../../shared/gameSkillState.js";
 import { nextPointConfirmation, shouldUsePointConfirmation } from "../mobilePointConfirmation.js";
 
 export function useRoomPointActions({
@@ -19,6 +20,7 @@ export function useRoomPointActions({
   const [pointConfirmation, setPointConfirmation] = useState(null);
   const phase = displayRoom.game.phase;
   const meColor = me?.color;
+  const libertyPurgeMarks = displayRoom.game.libertyPurgeMarks;
 
   useEffect(() => {
     setPointConfirmation(null);
@@ -36,7 +38,15 @@ export function useRoomPointActions({
     if (phase !== GAME_PHASES.playing) return;
     if (role !== "player") return;
     const actionType = pendingSkill ? "skill" : "move";
-    if (!canConfirmPointAction({ point, actionType, canConfirmSkillPoint, me: { color: meColor }, skillUsesBoardConfirmation, skillUsesBoardSurfaceConfirmation })) {
+    if (!canConfirmPointAction({
+      point,
+      actionType,
+      canConfirmSkillPoint,
+      me: { color: meColor },
+      libertyPurgeForbidden: isLibertyPurgeForbiddenPoint({ libertyPurgeMarks }, meColor, point),
+      skillUsesBoardConfirmation,
+      skillUsesBoardSurfaceConfirmation
+    })) {
       setPointConfirmation(null);
       return;
     }
@@ -63,6 +73,7 @@ export function useRoomPointActions({
     canConfirmSkillPoint,
     handleScoringPoint,
     isReplay,
+    libertyPurgeMarks,
     meColor,
     onGameAction,
     pendingSkill,
@@ -96,6 +107,7 @@ export function canConfirmPointAction({
   actionType,
   canConfirmSkillPoint = () => false,
   me = null,
+  libertyPurgeForbidden = false,
   skillUsesBoardConfirmation = false,
   skillUsesBoardSurfaceConfirmation = false
 }) {
@@ -104,5 +116,5 @@ export function canConfirmPointAction({
     if (skillUsesBoardConfirmation) return Boolean(point?.valid);
     return canConfirmSkillPoint(point, me);
   }
-  return Boolean(point?.valid && !point.stone && point.protocolBan?.bannedColor !== me?.color);
+  return Boolean(point?.valid && !point.stone && point.protocolBan?.bannedColor !== me?.color && !libertyPurgeForbidden);
 }

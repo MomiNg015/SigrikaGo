@@ -127,7 +127,13 @@ describe("board view helpers", () => {
       phase: GAME_PHASES.playing,
       turn: COLORS.black,
       skillUses: { black: 1 },
-      ko: "6,6"
+      ko: "6,6",
+      libertyPurgeMarks: [{
+        effectType: "liberty-purge",
+        owner: COLORS.white,
+        clearAfterColor: COLORS.black,
+        pointIds: ["8,8"]
+      }]
     };
     const player = {
       color: COLORS.black,
@@ -158,6 +164,11 @@ describe("board view helpers", () => {
         stone: null,
         protocolBan: { owner: COLORS.white, bannedColor: COLORS.black, effect: "protocol-takeover" }
       }
+    })).toBe(false);
+    expect(canPreviewSkillTarget({
+      game,
+      player,
+      point: { id: "8,8", valid: true, stone: null }
     })).toBe(false);
   });
 

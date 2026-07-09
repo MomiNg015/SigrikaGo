@@ -53,6 +53,19 @@ describe("room point action confirmation", () => {
     })).toBe(false);
   });
 
+  it("rejects ordinary moves on active Chisa removal marks for the forbidden color", () => {
+    expect(canConfirmPointAction({
+      actionType: "move",
+      me: { color: "white" },
+      libertyPurgeForbidden: true,
+      point: {
+        id: "D4",
+        valid: true,
+        stone: null
+      }
+    })).toBe(false);
+  });
+
   it("keeps board point handlers stable across player timer object churn", () => {
     const source = readFileSync(new URL("./useRoomPointActions.js", import.meta.url), "utf8");
 

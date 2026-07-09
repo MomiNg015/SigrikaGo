@@ -18,6 +18,7 @@ import {
   clearStone,
   collectNeighborCaptures,
   cloneState,
+  isLibertyPurgeForbiddenPoint,
   resolveCapturesAfterMutation
 } from "./gameSkillState.js";
 
@@ -228,6 +229,7 @@ export function libertyPurge(state, color, id, options = {}) {
   }
   if (next.ko === id) return fail("此处为劫禁着点");
   if (point.protocolBan?.bannedColor === color) return fail("该交叉点为禁入点");
+  if (isLibertyPurgeForbiddenPoint(next, color, point)) return fail("该交叉点为禁入点");
 
   point.stone = color;
   point.hiddenHand = null;

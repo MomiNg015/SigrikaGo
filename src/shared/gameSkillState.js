@@ -28,6 +28,18 @@ export function clearExpiredLibertyPurgeMarks(state) {
   state.libertyPurgeMarks = (state.libertyPurgeMarks ?? []).filter((mark) => mark.owner !== state.turn);
 }
 
+export function isLibertyPurgeForbiddenPoint(state, color, pointOrId) {
+  if (!state || !color || !pointOrId) return false;
+  const point = typeof pointOrId === "string" ? getPoint(state, pointOrId) : pointOrId;
+  if (!point?.valid || point.stone) return false;
+  return (state.libertyPurgeMarks ?? []).some((mark) => {
+    const forbiddenColor = mark.clearAfterColor ?? (mark.owner ? opponent(mark.owner) : null);
+    return forbiddenColor === color
+      && Array.isArray(mark.pointIds)
+      && mark.pointIds.includes(point.id);
+  });
+}
+
 export function clearExpiredRowEffects(state, actionColor) {
   state.rowEffects = (state.rowEffects ?? []).filter((effect) => effect.clearAfterColor !== actionColor);
 }

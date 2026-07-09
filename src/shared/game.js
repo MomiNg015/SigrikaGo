@@ -37,7 +37,7 @@ import {
   sprayStone,
   voyageStar
 } from "./gameSkillActions.js";
-import { clearExpiredLibertyPurgeMarks, clearExpiredRowEffects, cloneState } from "./gameSkillState.js";
+import { clearExpiredLibertyPurgeMarks, clearExpiredRowEffects, cloneState, isLibertyPurgeForbiddenPoint } from "./gameSkillState.js";
 import {
   HIDDEN_HAND_NOTICE,
   exposeHiddenHands,
@@ -313,7 +313,7 @@ export function useSkill(state, color, skillOrCharacterId, targetId) {
     ? effectiveSkillUsesForColor(state, color)
     : (state.skillUses[color] ?? 0);
   if (remainingUses <= 0) return fail("技能次数已经用完");
-  if (isProtocolBannedEmptySkillTarget(state, color, targetId)) return fail("该交叉点为禁入点");
+  if (isForbiddenEmptySkillTarget(state, color, targetId)) return fail("该交叉点为禁入点");
   if (!canStartSkill(state, skill)) return fail("场上没有可作用的棋子");
   return executeActiveSkillHandler({
     state,
@@ -407,10 +407,13 @@ function createPassiveState(players = [], mode = gameModeById()) {
     .filter(Boolean));
 }
 
-function isProtocolBannedEmptySkillTarget(state, color, targetId) {
+function isForbiddenEmptySkillTarget(state, color, targetId) {
   if (!targetId) return false;
   const point = getPoint(state, targetId);
-  return Boolean(point?.valid && !point.stone && point.protocolBan?.bannedColor === color);
+  return Boolean(point?.valid && !point.stone && (
+    point.protocolBan?.bannedColor === color
+    || isLibertyPurgeForbiddenPoint(state, color, point)
+  ));
 }
 
 function passiveProbability(skill) {

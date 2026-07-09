@@ -4,6 +4,7 @@ import {
   buildBoardLines,
   coordLabel,
   formatClock,
+  canPreviewPoint,
   replayGameAt,
   replayRoomAt,
   roomPeople,
@@ -125,6 +126,35 @@ describe("roomView helpers", () => {
     expect(lines.map((line) => line.key)).toContain("col-6-7-12");
     expect(lines.map((line) => line.key)).not.toContain("row-6-0-12");
     expect(lines.map((line) => line.key)).not.toContain("col-6-0-12");
+  });
+
+  test("hides Chisa removal-marked points from ordinary move previews for the forbidden color", () => {
+    const game = {
+      phase: GAME_PHASES.playing,
+      turn: COLORS.white,
+      libertyPurgeMarks: [{
+        effectType: "liberty-purge",
+        owner: COLORS.black,
+        clearAfterColor: COLORS.white,
+        pointIds: [pointId(3, 3)]
+      }]
+    };
+    const player = { color: COLORS.white };
+
+    expect(canPreviewPoint(
+      game,
+      player,
+      { id: pointId(3, 3), valid: true, stone: null },
+      false,
+      false
+    )).toBe(false);
+    expect(canPreviewPoint(
+      { ...game, turn: COLORS.black },
+      { color: COLORS.black },
+      { id: pointId(3, 3), valid: true, stone: null },
+      false,
+      false
+    )).toBe(true);
   });
 
   test("opens replay snapshots that do not contain chat history", () => {

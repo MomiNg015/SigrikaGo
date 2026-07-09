@@ -1,6 +1,7 @@
 import { skillEffectTargetRule } from "./skillEffectCatalog.js";
 import { canSprayTransformStone } from "./gameConstants.js";
 import { effectiveSkillConfigForPlayer, effectiveSkillUsesForColor } from "./derivedSkills.js";
+import { isLibertyPurgeForbiddenPoint } from "./gameSkillState.js";
 
 export function lastMarkedAction(history = []) {
   return [...history].reverse().find((entry) => (
@@ -14,6 +15,7 @@ export function canPreviewSkillTarget({ game, player, point, fallbackCharacters 
   if (effectiveSkillUsesForColor(game, player.color) <= 0) return false;
   if (!point?.valid) return false;
   if (!point.stone && point.protocolBan?.bannedColor === player.color) return false;
+  if (isLibertyPurgeForbiddenPoint(game, player.color, point)) return false;
   const skill = effectiveSkillConfigForPlayer(game, {
     ...player,
     character: player.character ?? fallbackCharacters?.[player.characterId]

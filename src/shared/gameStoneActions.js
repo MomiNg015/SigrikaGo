@@ -13,7 +13,8 @@ import {
   clearOwnedBoardMarkers,
   collectNeighborCaptures,
   clearStone,
-  cloneState
+  cloneState,
+  isLibertyPurgeForbiddenPoint
 } from "./gameSkillState.js";
 
 export const HIDDEN_HAND_NOTICE = "发现隐藏手了！";
@@ -47,6 +48,7 @@ function placeStone(state, color, id, { hidden, skill = null, colorIllusion = un
   if (next.ko === id) return fail("此处为劫禁着点");
 
   if (isProtocolBannedEmptyPoint(point, color)) return fail("该交叉点为禁入点");
+  if (isLibertyPurgeForbiddenPoint(next, color, point)) return fail("该交叉点为禁入点");
   const doubleMovePlacement = next.extraTurn?.effectType === "double-move" && next.extraTurn.owner === color;
   point.stone = color;
   if (doubleMovePlacement) {

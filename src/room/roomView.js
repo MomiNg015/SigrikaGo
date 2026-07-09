@@ -15,7 +15,7 @@ import {
   sprayStone,
   useSkill
 } from "../shared/game.js";
-import { applySkillCost } from "../shared/gameSkillState.js";
+import { applySkillCost, isLibertyPurgeForbiddenPoint } from "../shared/gameSkillState.js";
 import { canPreviewSkillTarget } from "../shared/boardView.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 
@@ -23,7 +23,10 @@ export function canPreviewPoint(game, player, point, pendingSkill, isScoringMode
   if (isScoringMode) return false;
   if (!player || game.phase !== GAME_PHASES.playing || game.turn !== player.color) return false;
   if (pendingSkill) return canPreviewSkillTarget({ game, player, point, fallbackCharacters: CHARACTERS });
-  return Boolean(point?.valid && !point.stone);
+  return Boolean(point?.valid
+    && !point.stone
+    && point.protocolBan?.bannedColor !== player.color
+    && !isLibertyPurgeForbiddenPoint(game, player.color, point));
 }
 
 export function stoneDecorationsForRoom(room) {

@@ -1098,6 +1098,52 @@ describe("SigrikaGo rules", () => {
     expect(passResult.state.libertyPurgeMarks).toEqual([]);
   });
 
+  it("forbids the opponent from playing on active Chisa removal marks until their turn ends", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "chisa" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    forceStone(state, 3, 3, COLORS.white);
+    forceStone(state, 2, 3, COLORS.black);
+    forceStone(state, 4, 3, COLORS.black);
+    forceStone(state, 3, 2, COLORS.black);
+
+    const chisaResult = useSkill(state, COLORS.black, "chisa", pointId(0, 0));
+    expect(chisaResult.ok).toBe(true);
+
+    const blockedMove = playMove(chisaResult.state, COLORS.white, pointId(3, 3));
+    expect(blockedMove.ok).toBe(false);
+    expect(blockedMove.error).toBe("该交叉点为禁入点");
+    expect(chisaResult.state.libertyPurgeMarks?.[0]?.pointIds).toEqual([pointId(3, 3)]);
+
+    const passResult = passMove(chisaResult.state, COLORS.white);
+    expect(passResult.ok).toBe(true);
+    expect(passResult.state.libertyPurgeMarks).toEqual([]);
+
+    const laterMove = playMove(passResult.state, COLORS.black, pointId(3, 3));
+    expect(laterMove.ok).toBe(true);
+    expect(getPoint(laterMove.state, pointId(3, 3)).stone).toBe(COLORS.black);
+  });
+
+  it("rejects legal-move skills on active Chisa removal marks for the forbidden color", () => {
+    const state = createGameState([
+      { color: COLORS.black, characterId: "chisa" },
+      { color: COLORS.white, characterId: "chisa" }
+    ]);
+    forceStone(state, 3, 3, COLORS.white);
+    forceStone(state, 2, 3, COLORS.black);
+    forceStone(state, 4, 3, COLORS.black);
+    forceStone(state, 3, 2, COLORS.black);
+
+    const chisaResult = useSkill(state, COLORS.black, "chisa", pointId(0, 0));
+    expect(chisaResult.ok).toBe(true);
+
+    const blockedSkill = useSkill(chisaResult.state, COLORS.white, "chisa", pointId(3, 3));
+    expect(blockedSkill.ok).toBe(false);
+    expect(blockedSkill.error).toBe("该交叉点为禁入点");
+    expect(chisaResult.state.libertyPurgeMarks?.[0]?.pointIds).toEqual([pointId(3, 3)]);
+  });
+
   it("rejects Chisa targets that are not legal ordinary moves", () => {
     const occupied = createGameState([
       { color: COLORS.black, characterId: "chisa" },
