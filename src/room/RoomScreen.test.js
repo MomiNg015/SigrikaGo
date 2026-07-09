@@ -190,12 +190,24 @@ describe("RoomScreen helpers", () => {
     expect(source).toContain("const requestPassConfirm = useCallback");
     expect(source).toContain("onConfirm: () => onGameAction({ type: \"pass\" })");
     expect(source).toContain("const toggleCoords = useCallback");
-    expect(source).toContain("const toggleMoves = useCallback");
     expect(source).toContain("onToggleCoords={toggleCoords}");
-    expect(source).toContain("onToggleMoves={toggleMoves}");
     expect(source).toContain("是否弃一手");
     expect(battleSource).toContain("onPass={onPass}");
     expect(battleSource).not.toContain("onPass={() => onGameAction({ type: \"pass\" })}");
+  });
+
+  it("does not expose the move-number toggle in room header controls", () => {
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const headerSource = readText(new URL("./header/RoomHeader.jsx", import.meta.url), "utf8");
+    const tutorialSource = readText(new URL("../tutorial/TutorialBattleScreen.jsx", import.meta.url), "utf8");
+
+    expect(source).not.toContain("const toggleMoves");
+    expect(source).not.toContain("onToggleMoves=");
+    expect(headerSource).not.toContain("Hash");
+    expect(headerSource).not.toContain("显示手数");
+    expect(headerSource).not.toContain("<span>手数</span>");
+    expect(tutorialSource).not.toContain("onToggleMoves=");
+    expect(tutorialSource).not.toContain("setShowMoves");
   });
 
   it("passes a stable neutral-point handler into the memoized board", () => {

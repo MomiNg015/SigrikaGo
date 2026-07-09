@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DoorOpen, Hash, Menu, MessageSquareText, PanelRight, Settings } from "lucide-react";
+import { DoorOpen, Menu, MessageSquareText, PanelRight, Settings } from "lucide-react";
 import { roomCloseCountdownText } from "../roomState.js";
 
 export default function RoomHeader({
@@ -8,14 +8,12 @@ export default function RoomHeader({
   roomGameInfo,
   showCloseCountdown,
   showCoords,
-  showMoves,
   onOpenMessageBoard,
   onOpenSettings,
   onBack,
   exitLabel = "退出房间",
   showUtilityControls = true,
-  onToggleCoords,
-  onToggleMoves
+  onToggleCoords
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const closeMobileMenu = (action) => () => {
@@ -42,7 +40,6 @@ export default function RoomHeader({
       {showUtilityControls && <div className="room-toggles">
         <button className="toggle" onClick={onOpenMessageBoard} title="留言板"><MessageSquareText size={16} /></button>
         <button className="toggle" onClick={onOpenSettings} title="设置"><Settings size={16} /></button>
-        <button className={showMoves ? "toggle active" : "toggle"} onClick={onToggleMoves} title="显示手数"><Hash size={16} /></button>
         <button className={showCoords ? "toggle active" : "toggle"} onClick={onToggleCoords} title="显示坐标"><PanelRight size={16} /></button>
       </div>}
       {onBack && (
@@ -75,10 +72,6 @@ export default function RoomHeader({
           <button type="button" onClick={closeMobileMenu(onOpenSettings)}>
             <Settings size={17} />
             <span>设置</span>
-          </button>
-          <button className={showMoves ? "active" : ""} type="button" onClick={closeMobileMenu(onToggleMoves)}>
-            <Hash size={17} />
-            <span>手数</span>
           </button>
           <button className={showCoords ? "active" : ""} type="button" onClick={closeMobileMenu(onToggleCoords)}>
             <PanelRight size={17} />

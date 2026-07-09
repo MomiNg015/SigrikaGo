@@ -23,7 +23,6 @@ export { MOBILE_ROOM_MEDIA_QUERY };
 
 export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay, onToast }) {
   const [showCoords, setShowCoords] = useState(true);
-  const [showMoves, setShowMoves] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const {
     activePlayer,
@@ -128,9 +127,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   const toggleCoords = useCallback(() => {
     setShowCoords((current) => !current);
   }, []);
-  const toggleMoves = useCallback(() => {
-    setShowMoves((current) => !current);
-  }, []);
 
   const Layout = useMobileLayout ? MobileRoomLayout : DesktopRoomLayout;
   const battleLayoutClassName = useMobileLayout ? "mobile-battle-layout" : "battle-layout";
@@ -143,12 +139,10 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         roomGameInfo={roomGameInfo}
         showCloseCountdown={showCloseCountdown}
         showCoords={showCoords}
-        showMoves={showMoves}
         onOpenMessageBoard={onOpenMessageBoard}
         onOpenSettings={onOpenSettings}
         onBack={requestExitConfirm}
         onToggleCoords={toggleCoords}
-        onToggleMoves={toggleMoves}
       />
       <RoomBattleStage
         battleLayoutClassName={battleLayoutClassName}
@@ -188,7 +182,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         setSpectatorStep={setSpectatorStep}
         setViewColor={setViewColor}
         showCoords={showCoords}
-        showMoves={showMoves}
+        showMoves={false}
         skillAvailable={skillAvailable}
         skillPreview={skillPreview}
         skillEffectsEnabled={siteSettings?.skillEffectsEnabled !== false}

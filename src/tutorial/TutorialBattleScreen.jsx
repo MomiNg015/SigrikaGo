@@ -92,7 +92,6 @@ export default function TutorialBattleScreen({
   const [confirmExit, setConfirmExit] = useState(null);
   const [pendingWait, setPendingWait] = useState(null);
   const [showCoords, setShowCoords] = useState(true);
-  const [showMoves, setShowMoves] = useState(false);
   const gameRef = useRef(game);
   const nodeRunRef = useRef(0);
   const timersRef = useRef([]);
@@ -598,14 +597,12 @@ export default function TutorialBattleScreen({
         roomGameInfo={roomGameInfo}
         showCloseCountdown={false}
         showCoords={showCoords}
-        showMoves={showMoves}
         exitLabel="退出/跳过"
         showUtilityControls={false}
         onOpenMessageBoard={onOpenMessageBoard}
         onOpenSettings={onOpenSettings}
         onBack={() => setConfirmExit({ reason: "exit" })}
         onToggleCoords={() => setShowCoords((value) => !value)}
-        onToggleMoves={() => setShowMoves((value) => !value)}
       />
       <div className="tutorial-battle-screen-stage">
         <RoomBattleStage
@@ -664,7 +661,7 @@ export default function TutorialBattleScreen({
           setViewColor={() => {}}
           showPeoplePanel={false}
           showCoords={showCoords}
-          showMoves={showMoves}
+          showMoves={false}
           skillAvailable={currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill}
           skillEffectsEnabled={siteSettings?.skillEffectsEnabled !== false}
           skillPreview={skillPreview}
