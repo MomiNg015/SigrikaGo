@@ -166,10 +166,10 @@ describe("HomeScreen", () => {
     expect(isWebp("../../public/assets/home/book-entry.webp")).toBe(true);
     expect(isWebp("../../public/assets/home/home-main-panel-desktop.webp")).toBe(true);
     expect(isWebp("../../public/assets/home/home-main-panel-mobile.webp")).toBe(true);
-    expect(pngDimensions("../../public/assets/home/fantasy-match-entry.png")).toEqual({ width: 2386, height: 1914 });
-    expect(pngDimensions("../../public/assets/home/book-entry.png")).toEqual({ width: 709, height: 858 });
-    expect(webpDimensions("../../public/assets/home/fantasy-match-entry.webp")).toEqual({ width: 2386, height: 1914 });
-    expect(webpDimensions("../../public/assets/home/book-entry.webp")).toEqual({ width: 709, height: 858 });
+    expect(pngDimensions("../../public/assets/home/fantasy-match-entry.png")).toEqual({ width: 2374, height: 1960 });
+    expect(pngDimensions("../../public/assets/home/book-entry.png")).toEqual({ width: 705, height: 850 });
+    expect(webpDimensions("../../public/assets/home/fantasy-match-entry.webp")).toEqual({ width: 2374, height: 1960 });
+    expect(webpDimensions("../../public/assets/home/book-entry.webp")).toEqual({ width: 705, height: 850 });
     expect(statSync(webpUrl).size).toBeLessThan(statSync(pngUrl).size / 8);
     expect(statSync(bookWebpUrl).size).toBeLessThan(statSync(bookPngUrl).size / 4);
     expect(statSync(desktopPanelUrl).size).toBeGreaterThan(0);
@@ -665,6 +665,7 @@ describe("HomeScreen", () => {
     const brightMobileUtilityGridBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid\s*\{[^}]+\}/g)?.find((block) => block.includes("grid-area: utility")) ?? "";
     const brightMobileUtilityEntryBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileImageEntryBlock = brightMobileCss.match(/\.home-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
+    const brightMobileImageBlock = brightMobileCss.match(/\.home-image-entry img\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileMatchImageBlock = brightMobileCss.match(/\.match-image-entry\s*\{[^}]+\}/)?.[0] ?? "";
     const brightMobileUtilityArtBlock = brightMobileCss.match(/\.home-grid-featured > \.home-utility-grid \.utility-entry-art\s*\{[^}]+\}/)?.[0] ?? "";
     expect(brightMobileCss).toContain(".home-mobile-menu");
@@ -688,6 +689,7 @@ describe("HomeScreen", () => {
     expect(brightMobileManualBlock).toContain("overflow: visible !important");
     expect(brightMobileManualImageBlock).toContain("max-height: clamp(148px, 42vw, 188px) !important");
     expect(brightMobileImageEntryBlock).toContain("overflow: visible !important");
+    expect(brightMobileImageBlock).toContain("filter: drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important");
     expect(brightMobileMatchImageBlock).toContain("overflow: visible !important");
     expect(brightMobileUtilityGridBlock).toContain("gap: 8px !important");
     expect(brightMobileUtilityEntryBlock).toContain("min-height: 52px !important");

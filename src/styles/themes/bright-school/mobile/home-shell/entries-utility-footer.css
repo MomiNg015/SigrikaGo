@@ -60,7 +60,7 @@
     max-height: 100% !important;
     object-fit: contain !important;
     transform: none !important;
-    filter: drop-shadow(3px 4px 0 rgba(61, 43, 37, 0.3)) !important;
+    filter: drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .house-manual-entry.home-image-entry {

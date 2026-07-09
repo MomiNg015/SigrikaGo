@@ -610,7 +610,8 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain("scrollbar-width: none !important");
     expect(themesCss).toContain("::-webkit-scrollbar");
     expect(themesCss).toContain("display: none !important");
-    expect(themesCss).toContain("filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3)) !important");
+    expect(imageEntryButtonsLayer).toContain("filter: drop-shadow(6px 8px 0 rgba(61, 43, 37, 0.42)) !important");
+    expect(imageEntryButtonsLayer).toContain("filter: drop-shadow(4px 5px 0 rgba(61, 43, 37, 0.34)) !important");
     expect(imageEntryButtonsLayer).not.toContain("drop-shadow(0 10px");
     expect(imageEntryButtonsLayer).not.toContain("drop-shadow(0 14px");
     expect(imageEntryButtonsLayer).toContain("transform: rotate(2deg) !important");
