@@ -9,6 +9,7 @@ export function useAppActions({
   overlaySetters,
   room,
   socket,
+  showToast,
   token,
   updateUser,
   view,
@@ -35,6 +36,7 @@ export function useAppActions({
 
   const accountActions = useAccountActions({
     socket,
+    showToast,
     token,
     updateUser,
     setAssetProgress,
@@ -52,6 +54,7 @@ export function useAppActions({
     matchSuccessRef,
     room,
     socket,
+    showToast,
     setMatchStart,
     setMatchSuccess,
     setRoom,

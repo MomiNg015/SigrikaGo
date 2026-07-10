@@ -7,7 +7,10 @@ import { registerMatchSocketEvents } from "./socketMatchEvents.js";
 import { registerRoomSocketEvents } from "./socketRoomEvents.js";
 
 export function registerSocketEvents(socket, deps) {
-  installSocketRateGuard(socket);
+  installSocketRateGuard(socket, {
+    isDraining: () => deps.runtimeServiceState?.isDraining?.() ?? false,
+    metrics: deps.metrics
+  });
 
   registerMatchSocketEvents(socket, {
     io: deps.io,
@@ -18,7 +21,9 @@ export function registerSocketEvents(socket, deps) {
     joinMatchmaking: deps.joinMatchmaking,
     leaveMatchmaking: deps.leaveMatchmaking,
     broadcastLobbyStats: deps.broadcastLobbyStats,
-    normalizeGameModeId: deps.normalizeGameModeId
+    normalizeGameModeId: deps.normalizeGameModeId,
+    runtimeServiceState: deps.runtimeServiceState,
+    metrics: deps.metrics
   });
 
   registerRoomSocketEvents(socket, {
@@ -29,11 +34,13 @@ export function registerSocketEvents(socket, deps) {
     attachSocketToRoom: deps.attachSocketToRoom,
     leaveRoom: deps.leaveRoom,
     findRoomForUser: deps.findRoomForUser,
+    getRoom: deps.getRoom,
     resumePayloadForUser: deps.resumePayloadForUser,
     roomView: deps.roomView,
     broadcastRoom: deps.broadcastRoom,
     broadcastRoomPresencePatch: deps.broadcastRoomPresencePatch,
     markRoomPreloadReady: deps.markRoomPreloadReady,
+    runtimeServiceState: deps.runtimeServiceState,
     metrics: deps.metrics
   });
 
@@ -45,7 +52,9 @@ export function registerSocketEvents(socket, deps) {
     requestDraw: deps.requestDraw,
     respondDraw: deps.respondDraw,
     handleScoringAction: deps.handleScoringAction,
-    broadcastRoom: deps.broadcastRoom
+    broadcastRoom: deps.broadcastRoom,
+    getRoom: deps.getRoom,
+    metrics: deps.metrics
   });
 
   registerChatSocketEvents(socket, {
@@ -59,7 +68,9 @@ export function registerSocketEvents(socket, deps) {
     refreshSocketUser: deps.refreshSocketUser,
     duelRequests: deps.duelRequests,
     normalizeGameModeId: deps.normalizeGameModeId,
-    broadcastLobbyStats: deps.broadcastLobbyStats
+    broadcastLobbyStats: deps.broadcastLobbyStats,
+    runtimeServiceState: deps.runtimeServiceState,
+    metrics: deps.metrics
   });
 
   registerDisconnectSocketEvents(socket, {

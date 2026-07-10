@@ -35,6 +35,14 @@ describe("admin analytics", () => {
           roomResumeInitialConnectRequests: 10
         })
       },
+      runtimeServiceState: {
+        snapshot: () => ({
+          draining: false,
+          limits: { maxOnlineUsers: 500, maxActiveRooms: 100 },
+          current: { onlineUsers: 2, activeRooms: 1 },
+          process: { rssBytes: 1000 }
+        })
+      },
       now
     });
 
@@ -50,6 +58,7 @@ describe("admin analytics", () => {
     expect(data.serviceHealth.apiErrorsToday).toBe(6);
     expect(data.serviceHealth.runtimeStability.roomResumePatchGapRequests).toBe(8);
     expect(data.serviceHealth.runtimeStability.roomResumeInitialConnectRequests).toBe(10);
+    expect(data.serviceHealth.capacity.limits.maxActiveRooms).toBe(100);
     expect(data.alerts.items.some((item) => item.actionLabel === "查看举报")).toBe(true);
   });
 

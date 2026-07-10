@@ -5,6 +5,7 @@ import {
   flushRoomPersistence,
   hydratePersistedRoom,
   persistRoomState,
+  roomPersistenceStats,
   roomPersistenceSnapshot
 } from "./roomStatePersistence.js";
 
@@ -18,6 +19,9 @@ describe("room state persistence", () => {
       spectators: [{ user: { id: "viewer" }, socketId: "socket-v" }],
       game: { phase: GAME_PHASES.playing },
       chat: [],
+      actionReceipts: {
+        black: [{ ok: true, actionId: "action-1", roomCode: "ABCDE", revision: 3 }]
+      },
       revision: 3,
       clockSeq: 4,
       createdAt: 1,
@@ -33,7 +37,8 @@ describe("room state persistence", () => {
       players: [{ user: { id: "black" }, socketId: null, disconnectedAt: null }],
       spectators: [],
       game: room.game,
-      chat: []
+      chat: [],
+      actionReceipts: room.actionReceipts
     });
   });
 
@@ -54,6 +59,7 @@ describe("room state persistence", () => {
     expect(room.lastPersistedAt).toBe(0);
     expect(room.revision).toBe(0);
     expect(room.clockSeq).toBe(0);
+    expect(room.actionReceipts).toEqual({});
   });
 
   it("keeps finished room players without disconnected markers when hydrated", () => {
@@ -191,6 +197,23 @@ describe("room state persistence", () => {
       second.resolve();
       await flushRoomPersistence();
     }
+  });
+
+  it("reports pending persistence rooms for runtime capacity telemetry", async () => {
+    const write = deferred();
+    persistRoomState({
+      prisma: {},
+      room: roomForPersistence("METRICS"),
+      upsert: () => write.promise,
+      force: true,
+      now: () => 1000,
+      throttleMs: 5000
+    });
+
+    expect(roomPersistenceStats()).toEqual({ pendingRooms: 1 });
+    write.resolve();
+    await flushRoomPersistence();
+    expect(roomPersistenceStats()).toEqual({ pendingRooms: 0 });
   });
 });
 

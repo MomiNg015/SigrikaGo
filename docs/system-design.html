@@ -76,6 +76,9 @@
 <li>后端使用 Express、Socket.IO、Prisma 和 SQLite；<code>server/index.js</code> 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 <code>server/serverStartup.js</code>，Socket 连接事件套件由 <code>server/socketEvents.js</code> 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 <code>server/socket*Events.js</code> 模块，生产静态托管收口在 <code>server/staticAssets.js</code>，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块；匹配或约战创建的房间先进入 <code>preloading</code> 阶段，由 <code>room:preload-ready</code> 形成双方资源就绪屏障，双方都 ready 后才进入 opening/自动猜先，任一方超过 90 秒未 ready 时服务端发出 <code>match:preload-timeout</code> 并中止匹配。</li>
 </ul>
 <ul>
+<li>单实例生产运行新增显式排空与容量边界：<code>server/runtimeServiceState.js</code> 以 <code>MAX_ONLINE_USERS=500</code>、<code>MAX_ACTIVE_ROOMS=100</code>、<code>MAX_SPECTATORS_PER_ROOM=20</code> 为可配置软上限，达到上限时只拒绝新匹配、约战和新观战，已在房间中的玩家及原观战者仍可恢复；<code>/health/live</code> 与 <code>/health/ready</code> 分离存活和接流状态。SIGINT/SIGTERM 或受管子进程 shutdown 消息会先进入 drain 并通知客户端，再关闭 Socket.IO/HTTP、强制刷新房间快照、停止性能采样并断开 Prisma，整个过程有 15 秒硬超时。客户端 <code>game:action</code> 使用稳定 <code>actionId</code>、ack 和最多两次同 ID 重试，服务端把有限去重回执随房间快照持久化，确保 ack 丢失不会造成重复落子；真实子进程重启测试覆盖落子、停机、同库启动和玩家恢复。Phase 2 将观战黑方视图固定在 <code>game</code>、只把白方差异视图放入 <code>gameViews.white</code>，房间创建只发送包含创建通知的 <code>match:found</code> 权威快照，大厅统计通过 100ms trailing debounce 合并连接/断开风暴。</li>
+</ul>
+<ul>
 <li>Server entrypoints run <code>prisma generate</code> before <code>dev:server</code> and <code>start</code> so Prisma Client stays aligned with <code>prisma/schema.prisma</code> after schema edits such as StoryScript initial-board columns. On Windows, an already-running Node server can still hold Prisma's query engine DLL open; stop the old server before regenerating or restarting.</li>
 </ul>
 <ul>
@@ -3186,7 +3189,7 @@
 <li><code>server/roomActionPhaseGuards.js</code> declares the gameplay action phase matrix before lifecycle dispatch: move/pass/skill require <code>playing</code>, resign is limited to <code>playing</code>, <code>counting-requested</code>, and <code>draw-requested</code>, and opening, skill-preview, marking-dead, result-review, or finished phases reject generic board actions before they can mutate state.</li>
 </ul>
 <ul>
-<li>Graceful shutdown uses <code>installServerLifecycle(..., { beforeShutdown: [flushRoomPersistence] })</code> so SIGINT/SIGTERM first stops accepting new HTTP connections, waits for queued room snapshot writes, then disconnects Prisma. This reduces the chance that a deploy/restart loses the last authoritative room state.</li>
+<li>Graceful shutdown uses <code>runtimeServiceState</code> and <code>installServerLifecycle()</code>: it enters drain, cancels pending lobby broadcasts, closes Socket.IO and HTTP, waits for queued room snapshots, stops process metrics, then disconnects Prisma under a 15-second deadline.</li>
 </ul>
 <h2>Aemeath Derived Skill Realtime Contract</h2>
 <ul>
@@ -3208,6 +3211,16 @@
 <ul>
 <li>Refresh token rotation is an atomic compare-and-swap on the old refresh-token hash. Concurrent refreshes with the same token can produce at most one successor token.</li>
 </ul>
+<h1>生产排空、动作交付与恢复</h1>
+<p>生产入口通过 <code>runtimeServiceState</code> 维护 <code>ready / draining</code> 状态。排空开始后，Socket 包级 guard 拒绝新的匹配、约战、聊天和权威对局写操作，但继续允许 <code>room:resume</code>，避免已在对局中的玩家被容量保护挡在恢复路径之外。新匹配和新观战还会受 <code>MAX_ONLINE_USERS</code>、<code>MAX_ACTIVE_ROOMS</code> 软上限约束；这些限制只控制接入，不主动关闭现有房间。</p>
+<p><code>game:action</code> 的可靠交付合同如下：</p>
+<p>1. 客户端为一次用户操作生成稳定 <code>actionId</code>，在 4 秒未收到确认时以同一 payload 最多重试两次。 2. 服务端按房间和用户保存最近 64 个回执。首次执行后先把回执写入房间状态，再广播并返回 <code>{ ok, actionId, roomCode, revision }</code>。 3. 重复 <code>actionId</code> 不再次进入游戏状态机，只返回原回执；回执窗口进入持久化快照，因此进程重启后仍可去重。 4. 客户端不做本地乐观落子。确认耗尽时提示用户并请求 <code>room:resume</code>，最终始终以服务端完整快照和 revision 为准。</p>
+<p>停机顺序是：进入 drain 并广播 <code>server:draining</code>、关闭 Socket.IO、关闭仍在监听的 HTTP server、刷新所有 pending 房间快照、停止运行指标采样、断开 Prisma。15 秒仍未结束则以失败状态退出，让进程管理器记录并重启。<code>/health/live</code> 只表示进程存活；<code>/health/ready</code> 在 drain 时返回 503，供反向代理或编排系统停止发送新流量。</p>
+<p><code>server/serverProcessRestart.test.js</code> 使用独立临时 SQLite 和两个真实 Socket.IO 客户端，验证匹配、确认落子、受管优雅停机、同库重启和玩家房间恢复，不再只用页面刷新代替进程重启。</p>
+<h1>有界观战与大厅广播</h1>
+<p>单房首次观战接入受 <code>MAX_SPECTATORS_PER_ROOM</code> 控制，默认 20。<code>server/socketRoomEvents.js</code> 在产生加入副作用前返回明确“观战席已满”提示，<code>server/roomConnectionLifecycle.js</code> 在权威连接边界再次执行同一共享规则；已有观战者更换 Socket 重连不会占用新名额，也不会被全局软上限挡住。</p>
+<p><code>server/lobbyStatsBroadcaster.js</code> 把连接、断开、匹配加入/退出和约战完成触发的全局 <code>lobby:stats</code> 合并为 100ms trailing broadcast，并在 payload 与上次完全相同时跳过发送。新连接仍立即收到自己的初始统计；同一重连突发只产生有限的全局扇出。运行指标分别记录请求次数和实际发送次数，便于后台观察合并率。</p>
+<p>房间创建先写入创建/模式系统通知，再完成一次初始强制持久化，最后只向两名玩家分别发送 <code>match:found</code>。后续资源 ready、opening/playing 转换继续通过已有权威房间更新传播；不再为刚创建且没有观战者的房间立刻发送第二份等价 <code>room:update</code>。</p>
 <p>---</p>
 <h1>数据模型与领域系统</h1>
 <p>本文记录 Prisma 模型、核心领域数据、抽卡/商城/奖励/段位等跨前后端共享概念。新增模型、迁移、领域字段或兼容镜像字段时优先更新本分篇。</p>
@@ -4904,7 +4917,7 @@
 <li><code>server/roomRequestLifecycle.js</code> is the backend counting/draw/scoring request entry boundary. Room-code validation, room/player lookup, phase precondition checks, scoring point validation, and delegation into <code>server/roomScoringFlow.js</code> live there so future request types can share one validation and dispatch shape.</li>
 </ul>
 <ul>
-<li><code>server/roomCreationLifecycle.js</code> is the backend room creation orchestration boundary. Matched matchmaking joins and direct duel acceptance now share room registration, initial forced persistence, clock startup, opening scheduling, <code>match:found</code> delivery, creation notices, and initial full-room broadcast in one place.</li>
+<li><code>server/roomCreationLifecycle.js</code> is the backend room creation orchestration boundary. Matched matchmaking joins and direct duel acceptance share creation notices, room registration, one initial forced persistence, clock/preload scheduling, and one viewer-specific <code>match:found</code> delivery per player. It no longer follows <code>match:found</code> with a duplicate full-room broadcast.</li>
 </ul>
 <ul>
 <li><code>server/roomActionLifecycle.js</code> is the backend gameplay action entry boundary. Game actions now share room-code validation, room lookup, point validation, player lookup, pending-skill rejection, test-action dispatch, skill-action dispatch, and standard action delegation in one focused module.</li>
@@ -4919,10 +4932,10 @@
 <li><code>server/roomQueries.js</code> is the backend room read-model boundary. Active-room lists and watch-room summaries can delegate to an injected <code>roomReadModel</code>; the current single-process fallback still scans current rooms for projection. Active membership checks and user room lookup delegate to <code>server/roomMembershipIndex.js</code> when available. The index is populated by room creation and persisted-room restore, maintained during room connection/leave/disconnect, cleared by room close and tests, and prefers unfinished active rooms over finished review rooms for the same user so reconnect/resume lands on the playable match first; participant counts and player summaries continue to come from <code>server/roomPresence.js</code>.</li>
 </ul>
 <ul>
-<li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators still receive both black and white projections through <code>gameViews</code>, but players receive only their own visible board state.</li>
+<li><code>server/roomView.js</code> builds only the needed board projection for player viewers. Spectators use <code>game</code> as the canonical black projection and receive only the white difference projection as <code>gameViews.white</code>; the frontend keeps black/white switching compatible without serializing the black view twice.</li>
 </ul>
 <ul>
-<li><code>server/serverLifecycle.js</code> guards local development startup/shutdown: occupied port 3001 now gets an explicit <code>EADDRINUSE</code> message, and <code>SIGINT</code> / <code>SIGTERM</code> close the HTTP server plus Prisma before process exit.</li>
+<li><code>server/serverLifecycle.js</code> guards local development startup and production shutdown: occupied port 3001 gets an explicit <code>EADDRINUSE</code> message, while SIGINT/SIGTERM and managed child shutdown use the drain/Socket.IO/HTTP/persistence/Prisma sequence.</li>
 </ul>
 <ul>
 <li>The frontend applies full <code>room:update</code> snapshots, live <code>room:resume</code> snapshots, and pending match-success room snapshots through <code>src/app/roomSnapshot.js</code>. Same-room snapshots are structurally shared before entering React state, so duplicate updates, reconnect resumes, or match-success follow-up updates can return the current room object and unchanged <code>game.points</code>, player entries, chat messages, and nested view data keep their existing references. Duplicate pending match-success snapshots are consumed without scheduling a fresh <code>{ startedAt, room }</code> wrapper. Room views also carry the latest patch <code>revision</code> so clients can validate future patch continuity.</li>
@@ -4980,6 +4993,11 @@
 <ul>
 <li>Playwright E2E and stability runs must set a unique run-id-scoped <code>.tmp/playwright/*.db</code> <code>DATABASE_URL</code>, initialize a valid empty SQLite file before <code>prisma db push</code>, and never inherit or mutate <code>prisma/dev.db</code>. The npm suite runner owns final cleanup after Playwright has stopped its WebServer, because Windows may force-stop the server before child-process exit hooks can delete an open SQLite file.</li>
 </ul>
+<h1>2 核 2G 单实例容量保护与指标</h1>
+<p>当前默认软门槛为 500 在线用户、100 活跃房间和每房 20 名观战者，可通过 <code>MAX_ONLINE_USERS</code>、<code>MAX_ACTIVE_ROOMS</code>、<code>MAX_SPECTATORS_PER_ROOM</code> 下调。它们是未经目标云机压测前的保护线，不是容量承诺。达到任一门槛时停止接纳对应的新匹配、约战或观战，现有对局、玩家重连与原观战者重连继续工作。单实例 + SQLite 仍是当前唯一受支持的生产拓扑；在房间、匹配、在线状态共享化前不能用 PM2 cluster 或多副本扩容。</p>
+<p>管理员概况的服务健康区域会暴露在线/房间/匹配/观战计数、持久化 backlog、RSS/heap、进程 CPU、event-loop delay/utilization、动作 ack 成功/失败/重复/排空拒绝、软容量拒绝、恢复原因和结果。完整 <code>room:update</code> 会记录 viewer-specific 视图构建耗时，并每 50 次抽样一次 JSON 字节数，避免可观测本身成为显著负载。</p>
+<p>Phase 2 已删除观战 payload 内重复的黑方完整视图、把首次房间创建的 <code>match:found + room:update</code> 收敛为一份权威快照，并以 100ms debounce 合并大厅统计广播。后台可用 <code>lobbyStatsBroadcastEmissions / lobbyStatsBroadcastRequests</code> 观察合并效果。后续 move/skill delta 必须继续沿用现有 revision、gap detection 和 full snapshot 恢复合同，不能用不连续增量替代权威恢复。</p>
+<p>上线初期应以 <code>ack p95 &lt; 200ms</code>、<code>event-loop delay p95 &lt; 50ms</code>、<code>RSS &lt; 1.2GB</code>、恢复成功率大于 99%、持久化与结果保存错误为 0 作为压测观察线。只有在实际 2 核 2G 主机完成包含重连和观战的阶梯压测后，才能提高软上限。后续容量工作主要是目标机阶梯压测、静态资源 CDN 分流，以及在有完整 revision/恢复测试后按动作类型继续扩展 delta protocol。</p>
 <p>---</p>
 <h1>工作流、文档规则与历史记录</h1>
 <p>本文记录 Trellis 工作流、系统设计文档维护方式、编码安全和较难归类的历史更新。修改 Trellis 规则、文档生成方式、AI 协作约定或历史追踪方式时优先更新本分篇。</p>

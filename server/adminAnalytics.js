@@ -11,6 +11,7 @@ export async function buildAdminOverviewAnalytics({
   matchmakingCount = () => 0,
   matchmakingCountsByMode = () => emptyModeCounts(),
   runtimeStabilityMetrics = null,
+  runtimeServiceState = null,
   now = new Date()
 }) {
   const today = shanghaiDayRange(now);
@@ -45,6 +46,7 @@ export async function buildAdminOverviewAnalytics({
 
   const runtime = runtimeSummary({ onlineSessions, listActiveRooms, matchmakingCount, matchmakingCountsByMode });
   const stability = runtimeStabilitySnapshot(runtimeStabilityMetrics);
+  const capacity = runtimeServiceState?.snapshot?.() ?? null;
   const loginUserIds = unique(todayLoginSessions.map((session) => session.userId).filter(Boolean));
   const newUserIds = new Set(todayUsers.map((user) => user.id));
   const newUsersWithFirstGame = usersWithGame(todayUsers, todayGameRecords);
@@ -113,6 +115,7 @@ export async function buildAdminOverviewAnalytics({
       preloadTimeoutsToday: stability.matchPreloadTimeouts,
       apiErrorsToday: stability.runtimeErrorCount,
       runtimeStability: stability,
+      capacity,
       dataStatus: "运行时稳定性计数为本进程启动以来"
     },
     auditLogs
@@ -135,6 +138,16 @@ function runtimeStabilitySnapshot(metrics) {
     roomResumePatchGapRequests: number("roomResumePatchGapRequests"),
     roomResumeSocketConnectRequests: number("roomResumeSocketConnectRequests"),
     roomResumeInitialConnectRequests: number("roomResumeInitialConnectRequests"),
+    gameActionAttempts: number("gameActionAttempts"),
+    gameActionAckSuccesses: number("gameActionAckSuccesses"),
+    gameActionAckFailures: number("gameActionAckFailures"),
+    gameActionDuplicateAcks: number("gameActionDuplicateAcks"),
+    gameActionDrainRejections: number("gameActionDrainRejections"),
+    admissionRejectedMatches: number("admissionRejectedMatches"),
+    admissionRejectedSpectators: number("admissionRejectedSpectators"),
+    lobbyStatsBroadcastRequests: number("lobbyStatsBroadcastRequests"),
+    lobbyStatsBroadcastEmissions: number("lobbyStatsBroadcastEmissions"),
+    measurements: snapshot.measurements ?? {},
     runtimeErrorCount
   };
 }

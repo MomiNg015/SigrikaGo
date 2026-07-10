@@ -286,6 +286,7 @@ export default function App() {
     overlaySetters,
     room,
     socket,
+    showToast,
     token,
     updateUser,
     view,

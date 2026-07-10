@@ -25,6 +25,8 @@ function createDeps(overrides = {}) {
     leaveMatchmaking: vi.fn(),
     broadcastLobbyStats: vi.fn(),
     normalizeGameModeId: vi.fn(() => "standard"),
+    runtimeServiceState: { admission: vi.fn(() => ({ ok: true })) },
+    metrics: { increment: vi.fn() },
     now: vi.fn(() => 12345),
     ...overrides
   };
@@ -118,5 +120,19 @@ describe("socket match events", () => {
     expect(deps.leaveMatchmaking).toHaveBeenCalledWith("leaving-user");
     expect(socket.emit).toHaveBeenCalledWith("match:left");
     expect(deps.broadcastLobbyStats).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects new matchmaking while the service is over its soft capacity", async () => {
+    const socket = createSocket();
+    const deps = createDeps({
+      runtimeServiceState: { admission: vi.fn(() => ({ ok: false, error: "busy" })) }
+    });
+
+    registerMatchSocketEvents(socket, deps);
+    await socket.trigger("match:join");
+
+    expect(deps.joinMatchmaking).not.toHaveBeenCalled();
+    expect(socket.emit).toHaveBeenCalledWith("error:toast", "busy");
+    expect(deps.metrics.increment).toHaveBeenCalledWith("admissionRejectedMatches");
   });
 });

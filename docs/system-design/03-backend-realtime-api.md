@@ -148,7 +148,7 @@
 - `server/roomBroadcasts.js` declares `ROOM_BROADCAST_PERSISTENCE` as the code-level policy for persistence expectations: full room updates and default room patches force persistence, while clock and presence-patch categories remain lightweight/throttled.
 - The policy is guarded by `server/roomBroadcasts.test.js` so future realtime changes can adjust room protocol shape without accidentally turning high-frequency clock or presence traffic into forced snapshot writes, or weakening forced persistence for authoritative lifecycle updates.
 - `server/roomActionPhaseGuards.js` declares the gameplay action phase matrix before lifecycle dispatch: move/pass/skill require `playing`, resign is limited to `playing`, `counting-requested`, and `draw-requested`, and opening, skill-preview, marking-dead, result-review, or finished phases reject generic board actions before they can mutate state.
-- Graceful shutdown uses `installServerLifecycle(..., { beforeShutdown: [flushRoomPersistence] })` so SIGINT/SIGTERM first stops accepting new HTTP connections, waits for queued room snapshot writes, then disconnects Prisma. This reduces the chance that a deploy/restart loses the last authoritative room state.
+- Graceful shutdown uses `runtimeServiceState` and `installServerLifecycle()`: it enters drain, cancels pending lobby broadcasts, closes Socket.IO and HTTP, waits for queued room snapshots, stops process metrics, then disconnects Prisma under a 15-second deadline.
 
 ## Aemeath Derived Skill Realtime Contract
 
@@ -160,3 +160,25 @@
 - After all `/api` routers, `apiErrorHandler` converts uncaught domain failures into JSON with the original valid 4xx/5xx status and optional code. Unexpected production 500 responses use a generic message instead of exposing internal details.
 - Authenticated requests still validate the persisted login session, but `lastSeenAt` is written at most once per five minutes per active session to avoid SQLite write amplification.
 - Refresh token rotation is an atomic compare-and-swap on the old refresh-token hash. Concurrent refreshes with the same token can produce at most one successor token.
+# 生产排空、动作交付与恢复
+
+生产入口通过 `runtimeServiceState` 维护 `ready / draining` 状态。排空开始后，Socket 包级 guard 拒绝新的匹配、约战、聊天和权威对局写操作，但继续允许 `room:resume`，避免已在对局中的玩家被容量保护挡在恢复路径之外。新匹配和新观战还会受 `MAX_ONLINE_USERS`、`MAX_ACTIVE_ROOMS` 软上限约束；这些限制只控制接入，不主动关闭现有房间。
+
+`game:action` 的可靠交付合同如下：
+
+1. 客户端为一次用户操作生成稳定 `actionId`，在 4 秒未收到确认时以同一 payload 最多重试两次。
+2. 服务端按房间和用户保存最近 64 个回执。首次执行后先把回执写入房间状态，再广播并返回 `{ ok, actionId, roomCode, revision }`。
+3. 重复 `actionId` 不再次进入游戏状态机，只返回原回执；回执窗口进入持久化快照，因此进程重启后仍可去重。
+4. 客户端不做本地乐观落子。确认耗尽时提示用户并请求 `room:resume`，最终始终以服务端完整快照和 revision 为准。
+
+停机顺序是：进入 drain 并广播 `server:draining`、关闭 Socket.IO、关闭仍在监听的 HTTP server、刷新所有 pending 房间快照、停止运行指标采样、断开 Prisma。15 秒仍未结束则以失败状态退出，让进程管理器记录并重启。`/health/live` 只表示进程存活；`/health/ready` 在 drain 时返回 503，供反向代理或编排系统停止发送新流量。
+
+`server/serverProcessRestart.test.js` 使用独立临时 SQLite 和两个真实 Socket.IO 客户端，验证匹配、确认落子、受管优雅停机、同库重启和玩家房间恢复，不再只用页面刷新代替进程重启。
+
+# 有界观战与大厅广播
+
+单房首次观战接入受 `MAX_SPECTATORS_PER_ROOM` 控制，默认 20。`server/socketRoomEvents.js` 在产生加入副作用前返回明确“观战席已满”提示，`server/roomConnectionLifecycle.js` 在权威连接边界再次执行同一共享规则；已有观战者更换 Socket 重连不会占用新名额，也不会被全局软上限挡住。
+
+`server/lobbyStatsBroadcaster.js` 把连接、断开、匹配加入/退出和约战完成触发的全局 `lobby:stats` 合并为 100ms trailing broadcast，并在 payload 与上次完全相同时跳过发送。新连接仍立即收到自己的初始统计；同一重连突发只产生有限的全局扇出。运行指标分别记录请求次数和实际发送次数，便于后台观察合并率。
+
+房间创建先写入创建/模式系统通知，再完成一次初始强制持久化，最后只向两名玩家分别发送 `match:found`。后续资源 ready、opening/playing 转换继续通过已有权威房间更新传播；不再为刚创建且没有观战者的房间立刻发送第二份等价 `room:update`。

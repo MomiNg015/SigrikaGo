@@ -10,10 +10,18 @@ export function registerMatchSocketEvents(socket, {
   leaveMatchmaking,
   broadcastLobbyStats,
   normalizeGameModeId,
+  runtimeServiceState = null,
+  metrics = null,
   now = Date.now
 }) {
   socket.on("match:join", async ({ mode: modeInput } = {}) => {
     try {
+      const admission = runtimeServiceState?.admission?.("match") ?? { ok: true };
+      if (!admission.ok) {
+        metrics?.increment?.("admissionRejectedMatches");
+        socket.emit("error:toast", admission.error);
+        return;
+      }
       const mode = normalizeGameModeId(modeInput);
       await refreshSocketUser(socket);
       const blockedCandidateIds = new Set();

@@ -1,4 +1,5 @@
 import { GAME_PHASES } from "../src/shared/game.js";
+import { normalizeRoomActionReceipts } from "./roomActionReceipts.js";
 import { upsertPersistedRoom } from "./roomPersistence.js";
 
 export const CURRENT_ROOM_SNAPSHOT_VERSION = 1;
@@ -32,6 +33,10 @@ export async function flushRoomPersistence(roomCode = "") {
   while (pendingRoomPersistence.size > 0) {
     await Promise.allSettled([...pendingRoomPersistence.values()]);
   }
+}
+
+export function roomPersistenceStats() {
+  return { pendingRooms: pendingRoomPersistence.size };
 }
 
 function enqueueRoomPersistence(roomCode, persist, onError) {
@@ -69,6 +74,7 @@ export function roomPersistenceSnapshot(room) {
     spectators: [],
     game: room.game,
     chat: room.chat,
+    actionReceipts: normalizeRoomActionReceipts(room.actionReceipts),
     createdAt: room.createdAt,
     openingEndsAt: room.openingEndsAt,
     preload: room.preload ?? null,
@@ -99,6 +105,7 @@ export function hydratePersistedRoom(snapshot, { now = Date.now } = {}) {
     })),
     spectators: [],
     chat: snapshot.chat ?? [],
+    actionReceipts: normalizeRoomActionReceipts(snapshot.actionReceipts),
     revision: Number(snapshot.revision ?? 0),
     clockSeq: Number(snapshot.clockSeq ?? 0),
     timerId: null,

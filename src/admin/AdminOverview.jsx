@@ -208,6 +208,8 @@ function ModeBreakdown({ modes }) {
 }
 
 function ServiceHealth({ health = {} }) {
+  const capacity = health.capacity ?? {};
+  const process = capacity.process ?? {};
   const rows = [
     ["Socket 连接", health.socketConnections ?? 0],
     ["活跃房间", health.activeRooms ?? 0],
@@ -216,6 +218,15 @@ function ServiceHealth({ health = {} }) {
     ["重连恢复请求", health.reconnectsToday ?? 0],
     ["预加载超时", health.preloadTimeoutsToday ?? 0],
     ["运行错误计数", health.apiErrorsToday ?? 0],
+    ["服务状态", capacity.draining ? "排空中" : "可接入"],
+    ["在线软上限", capacity.limits?.maxOnlineUsers ?? "未设置"],
+    ["房间软上限", capacity.limits?.maxActiveRooms ?? "未设置"],
+    ["单房观战上限", capacity.limits?.maxSpectatorsPerRoom ?? "未设置"],
+    ["当前观战人数", capacity.current?.spectators ?? 0],
+    ["大厅广播合并", `${health.runtimeStability?.lobbyStatsBroadcastEmissions ?? 0}/${health.runtimeStability?.lobbyStatsBroadcastRequests ?? 0}`],
+    ["内存 RSS", formatBytes(process.rssBytes)],
+    ["CPU（进程）", process.cpuPercent == null ? "采集中" : `${Number(process.cpuPercent).toFixed(1)}%`],
+    ["事件循环 P95", `${Number(process.eventLoopDelayP95Ms ?? 0).toFixed(1)} ms`],
     ["事件状态", health.dataStatus ?? "可用"]
   ];
   return (
@@ -236,6 +247,12 @@ function ServiceHealth({ health = {} }) {
       </div>
     </section>
   );
+}
+
+function formatBytes(value) {
+  const bytes = Number(value ?? 0);
+  if (!Number.isFinite(bytes) || bytes <= 0) return "0 MB";
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
 export function AdminLoading({ title }) {

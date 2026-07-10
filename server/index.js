@@ -26,7 +26,8 @@ import { createLoginSessionStore } from "./loginSessions.js";
 import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
 import { apiErrorHandler, jsonSyntaxErrorHandler } from "./httpErrors.js";
-import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
+import { closeRealtimeServer, installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
+import { createHealthRouter } from "./healthRoutes.js";
 import { initializeServerData } from "./serverStartup.js";
 import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
 import { resolveSelectedCharacter } from "./characterSelection.js";
@@ -78,6 +79,9 @@ import {
 } from "./social.js";
 import { resumePayloadForUser } from "./resume.js";
 import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
+import { roomPersistenceStats } from "./roomStatePersistence.js";
+import { createRuntimeServiceState } from "./runtimeServiceState.js";
+import { createLobbyStatsBroadcaster } from "./lobbyStatsBroadcaster.js";
 
 const app = express();
 const server = createServer(app);
@@ -110,6 +114,18 @@ const upload = multer({
     }
   })
 });
+let onlineSessions;
+let duelRequests;
+const runtimeServiceState = createRuntimeServiceState({
+  onlineCount: () => onlineSessions?.onlineCount?.() ?? 0,
+  activeRoomCount: () => listActiveRooms().length,
+  spectatorCount: () => listActiveRooms().reduce(
+    (total, room) => total + Number(room.spectators?.length ?? 0),
+    0
+  ),
+  matchmakingCount,
+  persistenceStats: roomPersistenceStats
+});
 
 const corsOptions = {
   origin: (origin, callback) => corsOriginForRequest(origin, callback),
@@ -135,6 +151,7 @@ app.use(helmet({
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "64kb" }));
 app.use(jsonSyntaxErrorHandler);
+app.use("/health", createHealthRouter({ runtimeServiceState }));
 app.use("/api/auth", createAuthRateLimit());
 app.use("/api", createApiRateLimit());
 app.use("/uploads", express.static(uploadRoot));
@@ -142,11 +159,13 @@ app.use("/uploads", express.static(uploadRoot));
 const io = new Server(server, {
   cors: corsOptions
 });
+const lobbyStatsBroadcaster = createLobbyStatsBroadcaster({
+  io,
+  getStats: lobbyStats,
+  metrics: runtimeStabilityMetrics
+});
 
 await initializeServerData({ prisma });
-
-let onlineSessions;
-let duelRequests;
 
 app.use("/api", createPublicRouter({ prisma, authHttp, listWatchRooms }));
 
@@ -205,7 +224,8 @@ app.use("/api/admin", authHttp, requireAdmin, createAdminRouter({
   listActiveRooms,
   matchmakingCount,
   matchmakingCountsByMode,
-  runtimeStabilityMetrics
+  runtimeStabilityMetrics,
+  runtimeServiceState
 }));
 app.use("/api", authHttp, createPlayerRouter({
   prisma,
@@ -226,7 +246,7 @@ function lobbyStats() {
 }
 
 function broadcastLobbyStats() {
-  io.emit("lobby:stats", lobbyStats());
+  lobbyStatsBroadcaster.schedule();
 }
 
 io.use(async (socket, next) => {
@@ -263,6 +283,7 @@ io.on("connection", (socket) => {
     roomView,
     markRoomPreloadReady,
     metrics: runtimeStabilityMetrics,
+    runtimeServiceState,
     handleGameAction,
     requestCounting,
     respondCounting,
@@ -275,7 +296,8 @@ io.on("connection", (socket) => {
     detachSocket,
     broadcastRoom,
     broadcastRoomPatch,
-    broadcastRoomPresencePatch
+    broadcastRoomPresencePatch,
+    getRoom
   });
 });
 
@@ -303,5 +325,17 @@ function isUserOnline(userId) {
 
 installProductionStaticAssets(app, { distDir });
 
-installServerLifecycle(server, { beforeShutdown: [flushRoomPersistence], dependencies: [prisma] });
+installServerLifecycle(server, {
+  beginShutdown: [() => {
+    if (!runtimeServiceState.beginDrain("server-shutdown")) return;
+    lobbyStatsBroadcaster.close();
+    io.emit("server:draining", {
+      reason: "server-shutdown",
+      message: "服务器正在维护，将自动尝试恢复连接"
+    });
+  }],
+  closeRealtime: () => closeRealtimeServer(io),
+  beforeShutdown: [flushRoomPersistence, () => runtimeServiceState.close()],
+  dependencies: [prisma]
+});
 startHttpServer(server, { port: PORT });

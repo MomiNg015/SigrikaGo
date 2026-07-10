@@ -8,11 +8,13 @@ export function registerRoomSocketEvents(socket, {
   attachSocketToRoom,
   leaveRoom,
   findRoomForUser,
+  getRoom = () => null,
   resumePayloadForUser,
   roomView,
   broadcastRoom,
   broadcastRoomPresencePatch = broadcastRoom,
   markRoomPreloadReady = () => null,
+  runtimeServiceState = null,
   metrics = null
 }) {
   socket.on("room:join", ({ roomCode } = {}) => {
@@ -20,6 +22,19 @@ export function registerRoomSocketEvents(socket, {
     if (!validatedRoomCode.ok) {
       socket.emit("error:toast", validatedRoomCode.error);
       return;
+    }
+    const existingPlayerRoom = findRoomForUser?.(socket.user.id, validatedRoomCode.value);
+    const candidateRoom = getRoom(validatedRoomCode.value);
+    if (!existingPlayerRoom && candidateRoom) {
+      const admission = runtimeServiceState?.admission?.("spectator", {
+        room: candidateRoom,
+        userId: socket.user.id
+      }) ?? { ok: true };
+      if (!admission.ok) {
+        metrics?.increment?.("admissionRejectedSpectators");
+        socket.emit("error:toast", admission.error);
+        return;
+      }
     }
     const room = attachSocketToRoom(validatedRoomCode.value, socket, socket.user);
     if (!room) {

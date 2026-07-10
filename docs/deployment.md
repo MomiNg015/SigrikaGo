@@ -30,6 +30,9 @@ PUBLIC_ORIGIN="https://go.example.com"
 ADMIN_USERNAMES="moming"
 UPLOAD_DIR="/var/lib/sigrikago/uploads"
 ENABLE_TEST_ACTIONS="false"
+MAX_ONLINE_USERS="500"
+MAX_ACTIVE_ROOMS="100"
+MAX_SPECTATORS_PER_ROOM="20"
 ```
 
 字段说明：
@@ -40,6 +43,9 @@ ENABLE_TEST_ACTIONS="false"
 - `ADMIN_USERNAMES`: 逗号分隔的管理员用户名。服务启动时会把这些用户名提升为管理员。
 - `UPLOAD_DIR`: 用户上传资源的持久化根目录。角色立绘上传会保存到 `${UPLOAD_DIR}/characters`，并通过 `/uploads/characters/...` 对外访问。
 - `ENABLE_TEST_ACTIONS`: 已不再需要用于本地开发；测试 action 在非生产环境默认可用。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
+- `MAX_ONLINE_USERS`: 新匹配/约战/观战接入的在线用户软上限，默认 500。不是容量承诺；目标机压测前可保守下调。
+- `MAX_ACTIVE_ROOMS`: 新匹配/约战/观战接入的活跃房间软上限，默认 100。达到后已有对局和玩家恢复不受影响。
+- `MAX_SPECTATORS_PER_ROOM`: 单个房间首次加入的观战者软上限，默认 20；已有观战者更换连接时仍可恢复。
 
 开发环境若需要显示对局测试按钮，需要同时设置客户端与服务端开关：
 
@@ -95,6 +101,9 @@ EnvironmentFile=/opt/sigrikago/.env
 ExecStart=/usr/bin/npm start
 Restart=always
 RestartSec=5
+TimeoutStopSec=20
+KillSignal=SIGTERM
+LimitNOFILE=65535
 User=YOUR_LINUX_USER
 
 [Install]
@@ -114,6 +123,17 @@ sudo systemctl status sigrikago
 ```bash
 sudo journalctl -u sigrikago -f
 ```
+
+`TimeoutStopSec` 必须大于应用内部 15 秒 shutdown deadline。systemd 发出 SIGTERM 后，服务会先把 readiness 切到 503，停止新写操作并通知客户端，然后关闭 Socket.IO/HTTP、刷新 pending 房间状态并断开数据库；不要使用 `KillSignal=SIGKILL` 跳过该过程。
+
+健康检查：
+
+```bash
+curl --fail http://127.0.0.1:3001/health/live
+curl --fail http://127.0.0.1:3001/health/ready
+```
+
+`live` 用于判断进程是否存活；`ready` 用于判断能否继续接收新流量，排空期间会返回 HTTP 503。部署脚本应等待 `ready` 返回 200 后再认为重启完成。
 
 ## Nginx 与 HTTPS
 

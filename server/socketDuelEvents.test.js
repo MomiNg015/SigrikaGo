@@ -22,6 +22,8 @@ function createDeps(overrides = {}) {
     },
     normalizeGameModeId: vi.fn(() => "standard"),
     broadcastLobbyStats: vi.fn(),
+    runtimeServiceState: { admission: vi.fn(() => ({ ok: true })) },
+    metrics: { increment: vi.fn() },
     ...overrides
   };
 }
@@ -92,5 +94,18 @@ describe("socket duel events", () => {
 
     expect(socket.emit).toHaveBeenCalledWith("error:toast", expect.any(String));
     expect(deps.broadcastLobbyStats).not.toHaveBeenCalled();
+  });
+
+  it("rejects duel creation when soft capacity is reached", async () => {
+    const socket = createSocket();
+    const deps = createDeps({
+      runtimeServiceState: { admission: vi.fn(() => ({ ok: false, error: "busy" })) }
+    });
+
+    registerDuelSocketEvents(socket, deps);
+    await socket.trigger("duel:request", { targetUserId: "target" });
+
+    expect(deps.duelRequests.handleRequest).not.toHaveBeenCalled();
+    expect(socket.emit).toHaveBeenCalledWith("error:toast", "busy");
   });
 });

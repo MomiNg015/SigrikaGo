@@ -111,4 +111,37 @@ describe("socket guards", () => {
     expect(next).toHaveBeenCalledTimes(120);
     expect(socket.emit).toHaveBeenCalledWith("error:toast", "操作过于频繁，请稍后再试");
   });
+
+  it("rejects new mutations with an acknowledgement while draining", () => {
+    const socket = createSocket();
+    const metrics = { increment: vi.fn() };
+    const ack = vi.fn();
+    installSocketRateGuard(socket, { isDraining: () => true, metrics });
+    const next = vi.fn();
+
+    createSocket.middleware([
+      "game:action",
+      { roomCode: "12345", actionId: "action-a", action: { type: "pass" } },
+      ack
+    ], next);
+
+    expect(next).not.toHaveBeenCalled();
+    expect(ack).toHaveBeenCalledWith(expect.objectContaining({
+      ok: false,
+      code: "server_draining",
+      actionId: "action-a",
+      roomCode: "12345"
+    }));
+    expect(metrics.increment).toHaveBeenCalledWith("gameActionDrainRejections");
+  });
+
+  it("still permits room resume requests while draining", () => {
+    const socket = createSocket();
+    installSocketRateGuard(socket, { isDraining: () => true });
+    const next = vi.fn();
+
+    createSocket.middleware(["room:resume", { roomCode: "12345" }], next);
+
+    expect(next).toHaveBeenCalledOnce();
+  });
 });

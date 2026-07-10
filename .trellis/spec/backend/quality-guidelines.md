@@ -1543,6 +1543,160 @@ Correct:
 return { totalGames: row.totalGames, wins: row.wins, losses: row.losses, draws: row.draws };
 ```
 
+### Scenario: Production Realtime Drain and Idempotent Game Actions
+
+#### 1. Scope / Trigger
+- Trigger: changing Socket.IO gameplay delivery, room persistence snapshots, runtime admission limits, process shutdown, readiness, or player reconnect behavior.
+- This is a cross-layer and infrastructure contract. The browser, Socket.IO event boundary, authoritative room state, SQLite snapshot, health endpoints, and process manager must remain aligned.
+
+#### 2. Signatures
+- Client command: `game:action`, payload `{ roomCode, action, actionId }`, acknowledgement `{ ok, actionId, roomCode, revision, error?, code? }`.
+- Admission: `runtimeServiceState.admission(kind)` where `kind` is `match` or `spectator` and the result is `{ ok: true }` or `{ ok: false, code, error }`.
+- Runtime lifecycle: `beginDrain(reason)`, `isDraining()`, `readiness()`, and `snapshot()`.
+- Health endpoints: `GET /health/live` and `GET /health/ready`.
+- Environment keys: optional positive integers `MAX_ONLINE_USERS` (default 500) and `MAX_ACTIVE_ROOMS` (default 100).
+
+#### 3. Contracts
+- A client retry for one user intent must reuse the same non-empty `actionId`; it may retry only after ack timeout and must never apply a local optimistic board mutation.
+- The server stores the bounded per-user action receipt before the successful full-room broadcast. `actionReceipts` must remain in persisted room snapshots and hydrate with backward-compatible defaults.
+- Duplicate action ids return the stored acknowledgement without running the room action lifecycle or broadcasting the mutation again.
+- Drain rejects new authoritative mutations and new match/duel admission, emits a readable notice, and returns `code: "server_draining"` to acknowledged events. `room:resume` remains available until realtime shutdown.
+- Soft capacity rejects new matchmaking, accepted duel creation, and new spectators. Existing players identified by `findRoomForUser(userId, roomCode)` bypass spectator admission so reconnect remains available.
+- Graceful shutdown order is drain notification, Socket.IO close, HTTP close, forced room-persistence flush, runtime-metric close, then Prisma disconnect. The internal deadline is 15 seconds.
+
+#### 4. Validation & Error Matrix
+- Missing action id for a legacy client -> execute without deduplication and keep the optional ack backward compatible.
+- Invalid/non-string/overlong action id -> reject with `invalid_action_id`; do not enter gameplay logic.
+- Duplicate valid action id -> return the original receipt and increment duplicate-ack metrics.
+- Ack timeout after all retries -> request `room:resume` and show a warning; do not assume success or failure locally.
+- Draining mutation -> reject with `server_draining`; preserve `actionId` and `roomCode` in a game-action ack.
+- Online or room soft limit reached -> reject only new match/duel/spectator admission with the matching capacity code and message.
+- Existing player reconnect at a soft limit -> allow room attachment/resume.
+- Readiness during drain -> HTTP 503; liveness remains HTTP 200.
+
+#### 5. Good/Base/Bad Cases
+- Good: the server executes a move, the ack is lost, the browser retries the same id, and the server returns the stored receipt without a second move.
+- Good: a process drains, closes mutations, flushes the acknowledged move, restarts on the same SQLite file, and the player resumes the same board.
+- Base: an older snapshot without `actionReceipts` hydrates with an empty receipt map.
+- Bad: generating a new id for every retry, because an ack loss can become a duplicate move.
+- Bad: applying `MAX_ACTIVE_ROOMS` to `room:resume`, because overload protection would disconnect the games it is meant to protect.
+
+#### 6. Tests Required
+- `server/socketGameEvents.test.js` asserts success/failure ack fields, invalid ids, duplicate receipts, and exactly-once lifecycle/broadcast behavior.
+- `src/app/gameActionDelivery.test.js` asserts same-payload retries, matching-ack settlement, stale-ack rejection, retry exhaustion, and cancellation.
+- Persistence tests assert receipt snapshot/hydration compatibility and bounded storage.
+- Socket guard/admission tests assert drain mutation rejection, resume allowance, capacity rejection, and existing-player bypass.
+- Lifecycle/health tests assert shutdown ordering, idempotency, deadline failure, liveness, and draining readiness.
+- `server/serverProcessRestart.test.js` must start a real child process, acknowledge a move, perform managed graceful shutdown, restart on the same temporary SQLite database, and assert the restored point and move number.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+setTimeout(() => socket.emit("game:action", { roomCode, action, actionId: randomUUID() }), 4000);
+```
+
+Correct:
+
+```js
+const payload = { roomCode, action, actionId: randomUUID() };
+socket.emit("game:action", payload, acknowledge);
+setTimeout(() => socket.emit("game:action", payload, acknowledge), 4000);
+```
+
+Wrong:
+
+```js
+if (runtimeServiceState.admission("spectator").ok) attachSocketToRoom(roomCode, socket, user);
+```
+
+Correct:
+
+```js
+const existingPlayer = findRoomForUser(user.id, roomCode);
+if (existingPlayer || runtimeServiceState.admission("spectator").ok) {
+  attachSocketToRoom(roomCode, socket, user);
+}
+```
+
+### Scenario: Bounded Spectator and Lobby Realtime Load
+
+#### 1. Scope / Trigger
+- Trigger: changing spectator room views, live perspective switching, spectator admission, lobby-stat broadcasts, or initial room-creation delivery.
+- This is a backend/frontend realtime contract: payload shape and hidden-information projections must stay compatible while fan-out and serialized bytes remain bounded.
+
+#### 2. Signatures
+- Spectator room view: `{ role: "spectator", game: blackView, gameViews: { white: whiteView } }`.
+- Per-room admission: `roomSpectatorAdmission(room, userId, limits)` and `runtimeServiceState.admission("spectator", { room, userId })`.
+- Environment key: optional positive integer `MAX_SPECTATORS_PER_ROOM`, default `20`.
+- Lobby broadcaster: `createLobbyStatsBroadcaster({ io, getStats, delayMs, metrics }) -> { schedule, flush, close }`.
+- Creation delivery: one `match:found` per matched player after creation notices and initial persistence; no immediate duplicate `room:update`.
+
+#### 3. Contracts
+- `game` is the canonical black spectator projection. Never serialize the same black projection again as `gameViews.black`; `gameViews.white` is the only alternate live projection.
+- `useRoomBoardView` must use `room.game` for black and `room.gameViews.white` for white, while replay/history reconstruction continues through the shared game-view helpers.
+- First-time spectators are rejected when the room reaches the configured limit. Existing spectators may replace their socket and reconnect even when per-room or global soft limits are currently reached.
+- The socket boundary provides the readable rejection before side effects, and `roomConnectionLifecycle` applies the same shared rule as a defense-in-depth authority check.
+- Lobby-stat requests use one trailing 100ms timer and emit only the latest state. A payload equal to the last emitted payload is skipped; drain closes the broadcaster and cancels its timer.
+- Creation notices are appended before the initial forced snapshot. The resulting `match:found` is authoritative until preload/opening events produce a later full snapshot.
+
+#### 4. Validation & Error Matrix
+- New spectator at `spectators.length >= MAX_SPECTATORS_PER_ROOM` -> reject with `room_spectator_capacity` and `当前房间观战席已满，请稍后再试`.
+- Existing spectator at any soft limit -> allow socket replacement without adding a second spectator row or join notice.
+- Missing room during socket precheck -> continue to the normal attach boundary and return the existing room-unavailable result.
+- Repeated lobby-stat triggers inside 100ms -> one latest-state emission.
+- Scheduled lobby payload equals the last emitted payload -> no emission.
+- Drain before the timer fires -> cancel without emitting.
+- Legacy spectator payload with no alternate white view -> keep a safe frontend fallback; new servers must always send `gameViews.white`.
+
+#### 5. Good/Base/Bad Cases
+- Good: a 20-seat room rejects watcher 21, while watcher 5 can reconnect from a new socket.
+- Good: 100 reconnect/disconnect triggers in one debounce window produce one global lobby update.
+- Good: room creation persists notices and sends two viewer-specific `match:found` payloads without a follow-up duplicate full snapshot.
+- Base: player room views still contain only the viewer's own `game` and `gameViews: null`.
+- Bad: `{ game: blackView, gameViews: { black: blackView, white: whiteView } }`, because JSON serialization duplicates the largest subtree.
+- Bad: enforcing the spectator limit only after `attachSocketToRoom()` has added membership and emitted a join notice.
+
+#### 6. Tests Required
+- `server/roomView.test.js` asserts the compact spectator shape and both hidden-information perspectives.
+- `src/room/view/useRoomBoardView.test.js` asserts black uses `game`, white uses `gameViews.white`, and compatibility fallback does not crash.
+- `server/runtimeServiceState.test.js`, `server/socketRoomEvents.test.js`, and `server/roomConnectionLifecycle.test.js` assert first-time rejection plus existing-spectator reconnect.
+- `server/lobbyStatsBroadcaster.test.js` asserts burst coalescing, equal-payload suppression, metrics, and drain cancellation.
+- `server/roomCreationLifecycle.test.js` asserts notices precede persistence and only `match:found` is emitted during creation.
+- Room/preload/socket transition tests must remain green so removing the duplicate initial full snapshot cannot strand a player before `room:preload-ready`.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+return { game: views.black, gameViews: views };
+```
+
+Correct:
+
+```js
+return { game: blackView, gameViews: { white: whiteView } };
+```
+
+Wrong:
+
+```js
+function broadcastLobbyStats() {
+  io.emit("lobby:stats", lobbyStats());
+}
+```
+
+Correct:
+
+```js
+const lobbyStatsBroadcaster = createLobbyStatsBroadcaster({ io, getStats: lobbyStats });
+function broadcastLobbyStats() {
+  lobbyStatsBroadcaster.schedule();
+}
+```
+
 ---
 
 ## Testing Requirements

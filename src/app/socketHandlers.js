@@ -221,6 +221,9 @@ export function createSocketHandlers({
       setView("home");
       showToast(payload.message || "一方加载超时，匹配中止");
     },
+    serverDraining: (payload = {}) => {
+      showToast(payload.message || "服务器正在维护，将自动尝试恢复连接", "warning");
+    },
     errorToast: (message) => {
       if (String(message).includes("房间不存在")) {
         clearLastRoomCode();
@@ -297,6 +300,7 @@ export function installSocketHandlers(socket, handlers, { buildRoomResumeRequest
   });
   socket.on("room:closed", handlers.roomClosed);
   socket.on("match:preload-timeout", handlers.matchPreloadTimeout);
+  socket.on("server:draining", handlers.serverDraining);
   socket.on("error:toast", handlers.errorToast);
   socket.on("duel:incoming", handlers.duelIncoming);
   socket.on("duel:closed", handlers.duelClosed);

@@ -42,6 +42,7 @@ export function createRoom(first, second, {
     spectators: [],
     game,
     chat: [],
+    actionReceipts: {},
     revision: 0,
     clockSeq: 0,
     createdAt,

@@ -53,7 +53,6 @@ function createLifecycle(overrides = {}) {
     scheduleRoomPreloadTimeout: vi.fn(),
     roomView: vi.fn((room, viewerId) => ({ code: room.code, viewerId })),
     appendSystem: vi.fn(),
-    broadcastRoom: vi.fn(),
     ...overrides
   };
 
@@ -79,7 +78,6 @@ describe("room creation lifecycle", () => {
     expect(deps.registerRoom).not.toHaveBeenCalled();
     expect(deps.startGameClock).not.toHaveBeenCalled();
     expect(deps.scheduleRoomPreloadTimeout).not.toHaveBeenCalled();
-    expect(deps.broadcastRoom).not.toHaveBeenCalled();
   });
 
   test("registers matched matchmaking rooms and notifies both players", () => {
@@ -103,7 +101,9 @@ describe("room creation lifecycle", () => {
     expect(deps.startGameClock).toHaveBeenCalledWith(room, io);
     expect(deps.scheduleRoomPreloadTimeout).toHaveBeenCalledWith(room, io);
     expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("3"));
-    expect(deps.broadcastRoom).toHaveBeenCalledWith(io, room);
+    expect(deps.appendSystem.mock.invocationCallOrder[0]).toBeLessThan(
+      deps.persistRoom.mock.invocationCallOrder[0]
+    );
     expect(io.messages).toEqual([
       { socketId: "socket-a", event: "match:found", payload: { code: room.code, viewerId: "alice" } },
       { socketId: "socket-b", event: "match:found", payload: { code: room.code, viewerId: "bob" } }
@@ -133,7 +133,6 @@ describe("room creation lifecycle", () => {
     expect(deps.startGameClock).toHaveBeenCalledWith(room, io);
     expect(deps.scheduleRoomPreloadTimeout).toHaveBeenCalledWith(room, io);
     expect(deps.appendSystem).toHaveBeenCalledWith(room, expect.stringContaining("3"));
-    expect(deps.broadcastRoom).toHaveBeenCalledWith(io, room);
     expect(io.messages.map((message) => [message.socketId, message.event])).toEqual([
       ["socket-a", "match:found"],
       ["socket-b", "match:found"]

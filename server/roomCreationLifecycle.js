@@ -10,7 +10,6 @@ export function createRoomCreationLifecycle({
   scheduleRoomPreloadTimeout = () => {},
   roomView,
   appendSystem,
-  broadcastRoom,
   registerRoom = () => {}
 }) {
   function joinMatchmaking(player, io, { canPair = () => true } = {}) {
@@ -24,10 +23,9 @@ export function createRoomCreationLifecycle({
       matchSource: "matchmaking",
       isCodeTaken: isRoomCodeTaken
     });
+    appendRoomCreatedNotices(room, "匹配成功");
     registerCreatedRoom(room, io);
     emitMatchFound(io, room, first, player);
-    appendRoomCreatedNotices(room, "匹配成功");
-    broadcastRoom(io, room);
     return room;
   }
 
@@ -41,10 +39,9 @@ export function createRoomCreationLifecycle({
       matchSource: "duel",
       isCodeTaken: isRoomCodeTaken
     });
-    registerCreatedRoom(room, io);
     appendRoomCreatedNotices(room, "对局申请已同意");
+    registerCreatedRoom(room, io);
     emitMatchFound(io, room, first, second);
-    broadcastRoom(io, room);
     return room;
   }
 

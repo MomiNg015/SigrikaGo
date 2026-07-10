@@ -11,6 +11,7 @@ export function createRoomConnectionLifecycle({
   findRoomsForSocket = () => [...rooms.values()],
   registerRoomSocket = () => {},
   unregisterRoomSocket = () => {},
+  admitSpectator = () => ({ ok: true }),
   now = Date.now
 }) {
   function attachSocketToRoom(roomCode, socket, user) {
@@ -22,6 +23,7 @@ export function createRoomConnectionLifecycle({
     if (player) {
       attachPlayerSocket(room, player, socket);
     } else {
+      if (admitSpectator(room, user)?.ok === false) return null;
       attachSpectatorSocket(room, socket, user);
     }
     registerRoomSocket(room, socket.id);

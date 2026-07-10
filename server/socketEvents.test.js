@@ -37,6 +37,7 @@ function createDeps(overrides = {}) {
     requestDraw: vi.fn(() => ({ ok: true, room: { code: "12345" } })),
     respondDraw: vi.fn(() => ({ ok: true, room: { code: "12345" } })),
     handleScoringAction: vi.fn(() => ({ ok: true, room: { code: "12345" } })),
+    getRoom: vi.fn(() => null),
     addChat: vi.fn(() => null),
     duelRequests: {
       handleRequest: vi.fn(),

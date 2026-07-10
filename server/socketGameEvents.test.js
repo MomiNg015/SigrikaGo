@@ -9,7 +9,7 @@ function createSocket(user = { id: "user-a" }) {
     on: vi.fn((event, handler) => {
       handlers[event] = handler;
     }),
-    trigger: (event, payload) => handlers[event](payload)
+    trigger: (event, ...args) => handlers[event](...args)
   };
 }
 
@@ -31,6 +31,9 @@ function createDeps(overrides = {}) {
     respondDraw: vi.fn(() => okResult()),
     handleScoringAction: vi.fn(() => okResult()),
     broadcastRoom: vi.fn(),
+    getRoom: vi.fn(() => null),
+    metrics: { increment: vi.fn(), observe: vi.fn() },
+    now: vi.fn(),
     ...overrides
   };
 }
@@ -55,11 +58,23 @@ describe("socket game events", () => {
     const deps = createDeps({ handleGameAction: vi.fn(() => okResult(room)) });
 
     registerGameSocketEvents(socket, deps);
-    socket.trigger("game:action", { roomCode: "11111", action: { type: "play" } });
+    const acknowledge = vi.fn();
+    socket.trigger("game:action", {
+      roomCode: "11111",
+      actionId: "action-11111",
+      action: { type: "play" }
+    }, acknowledge);
 
     expect(deps.handleGameAction).toHaveBeenCalledWith("11111", "player-a", { type: "play" }, deps.io);
     expect(socket.emit).not.toHaveBeenCalled();
     expect(deps.broadcastRoom).toHaveBeenCalledWith(deps.io, room);
+    expect(acknowledge).toHaveBeenCalledWith({
+      ok: true,
+      actionId: "action-11111",
+      roomCode: "11111",
+      revision: 0
+    });
+    expect(room.actionReceipts["player-a"]).toEqual([expect.objectContaining({ actionId: "action-11111" })]);
   });
 
   it("emits an error toast and skips broadcast for failed game actions", () => {
@@ -67,10 +82,59 @@ describe("socket game events", () => {
     const deps = createDeps({ handleGameAction: vi.fn(() => errorResult("invalid move")) });
 
     registerGameSocketEvents(socket, deps);
-    socket.trigger("game:action", { roomCode: "11111", action: { type: "play" } });
+    const acknowledge = vi.fn();
+    socket.trigger("game:action", {
+      roomCode: "11111",
+      actionId: "action-failed",
+      action: { type: "play" }
+    }, acknowledge);
 
     expect(socket.emit).toHaveBeenCalledWith("error:toast", "invalid move");
     expect(deps.broadcastRoom).not.toHaveBeenCalled();
+    expect(acknowledge).toHaveBeenCalledWith(expect.objectContaining({
+      ok: false,
+      actionId: "action-failed",
+      error: "invalid move"
+    }));
+  });
+
+  it("returns a persisted receipt without executing or broadcasting a duplicate action", () => {
+    const socket = createSocket({ id: "player-a" });
+    const receipt = { ok: true, actionId: "action-duplicate", roomCode: "11111", revision: 4 };
+    const room = { code: "11111", actionReceipts: { "player-a": [receipt] } };
+    const deps = createDeps({ getRoom: vi.fn(() => room) });
+    const acknowledge = vi.fn();
+
+    registerGameSocketEvents(socket, deps);
+    socket.trigger("game:action", {
+      roomCode: "11111",
+      actionId: "action-duplicate",
+      action: { type: "move", pointId: "0,0" }
+    }, acknowledge);
+
+    expect(deps.handleGameAction).not.toHaveBeenCalled();
+    expect(deps.broadcastRoom).not.toHaveBeenCalled();
+    expect(acknowledge).toHaveBeenCalledWith(receipt);
+    expect(deps.metrics.increment).toHaveBeenCalledWith("gameActionDuplicateAcks");
+  });
+
+  it("rejects malformed action ids before invoking game rules", () => {
+    const socket = createSocket();
+    const deps = createDeps();
+    const acknowledge = vi.fn();
+
+    registerGameSocketEvents(socket, deps);
+    socket.trigger("game:action", {
+      roomCode: "11111",
+      actionId: "bad action id",
+      action: { type: "move", pointId: "0,0" }
+    }, acknowledge);
+
+    expect(deps.handleGameAction).not.toHaveBeenCalled();
+    expect(acknowledge).toHaveBeenCalledWith(expect.objectContaining({
+      ok: false,
+      code: "invalid_action_id"
+    }));
   });
 
   it("forwards counting request and response events", () => {

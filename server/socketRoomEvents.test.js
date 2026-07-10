@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { registerRoomSocketEvents } from "./socketRoomEvents.js";
+import { createRuntimeServiceState } from "./runtimeServiceState.js";
 
 function createSocket(user = { id: "user-a" }) {
   const handlers = {};
@@ -24,11 +25,13 @@ function createDeps(overrides = {}) {
     attachSocketToRoom: vi.fn(() => ({ code: "12345" })),
     leaveRoom: vi.fn(() => ({ code: "12345" })),
     findRoomForUser: vi.fn(),
+    getRoom: vi.fn(() => ({ code: "12345", spectators: [] })),
     resumePayloadForUser: vi.fn(async () => ({ type: "none" })),
     roomView: vi.fn((room, viewerId) => ({ code: room.code, viewerId })),
     broadcastRoom: vi.fn(),
     broadcastRoomPresencePatch: vi.fn(),
     markRoomPreloadReady: vi.fn(),
+    runtimeServiceState: { admission: vi.fn(() => ({ ok: true })) },
     metrics: { increment: vi.fn() },
     ...overrides
   };
@@ -85,6 +88,71 @@ describe("socket room events", () => {
     expect(socket.emit).toHaveBeenCalledWith("room:update", { code: "12345", viewerId: "viewer-a" });
     expect(deps.broadcastRoomPresencePatch).toHaveBeenCalledWith(deps.io, room);
     expect(deps.broadcastRoom).not.toHaveBeenCalledWith(deps.io, room);
+  });
+
+  it("rejects a new spectator when soft capacity is reached", () => {
+    const socket = createSocket({ id: "viewer-a" });
+    const deps = createDeps({
+      runtimeServiceState: { admission: vi.fn(() => ({ ok: false, error: "spectators busy" })) }
+    });
+
+    registerRoomSocketEvents(socket, deps);
+    socket.trigger("room:join", { roomCode: "12345" });
+
+    expect(deps.attachSocketToRoom).not.toHaveBeenCalled();
+    expect(socket.emit).toHaveBeenCalledWith("error:toast", "spectators busy");
+    expect(deps.metrics.increment).toHaveBeenCalledWith("admissionRejectedSpectators");
+  });
+
+  it("allows an existing player to rejoin even when soft capacity is reached", () => {
+    const socket = createSocket({ id: "player-a" });
+    const room = { code: "12345" };
+    const admission = vi.fn(() => ({ ok: false, error: "busy" }));
+    const deps = createDeps({
+      findRoomForUser: vi.fn(() => room),
+      attachSocketToRoom: vi.fn(() => room),
+      runtimeServiceState: { admission }
+    });
+
+    registerRoomSocketEvents(socket, deps);
+    socket.trigger("room:join", { roomCode: "12345" });
+
+    expect(admission).not.toHaveBeenCalled();
+    expect(deps.attachSocketToRoom).toHaveBeenCalled();
+  });
+
+  it("enforces the room spectator limit while allowing the same spectator to reconnect", () => {
+    const room = {
+      code: "12345",
+      spectators: [{ user: { id: "watcher-a" }, socketId: "socket-old" }]
+    };
+    const runtimeServiceState = createRuntimeServiceState({
+      env: {
+        MAX_ONLINE_USERS: "100",
+        MAX_ACTIVE_ROOMS: "100",
+        MAX_SPECTATORS_PER_ROOM: "1"
+      },
+      performanceMetrics: { snapshot: () => ({}), close: vi.fn() }
+    });
+    const newSocket = createSocket({ id: "watcher-b" });
+    const newDeps = createDeps({
+      getRoom: vi.fn(() => room),
+      runtimeServiceState
+    });
+    registerRoomSocketEvents(newSocket, newDeps);
+    newSocket.trigger("room:join", { roomCode: "12345" });
+    expect(newDeps.attachSocketToRoom).not.toHaveBeenCalled();
+    expect(newSocket.emit).toHaveBeenCalledWith("error:toast", "当前房间观战席已满，请稍后再试");
+
+    const reconnectSocket = createSocket({ id: "watcher-a" });
+    const reconnectDeps = createDeps({
+      getRoom: vi.fn(() => room),
+      attachSocketToRoom: vi.fn(() => room),
+      runtimeServiceState
+    });
+    registerRoomSocketEvents(reconnectSocket, reconnectDeps);
+    reconnectSocket.trigger("room:join", { roomCode: "12345" });
+    expect(reconnectDeps.attachSocketToRoom).toHaveBeenCalledWith("12345", reconnectSocket, reconnectSocket.user);
   });
 
   it("leaves a room, emits room:left, and broadcasts changed presence", () => {

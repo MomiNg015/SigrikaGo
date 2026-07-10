@@ -51,6 +51,7 @@ import { createRoomPreparationLifecycle } from "./roomPreparationLifecycle.js";
 import { createRoomRuntime } from "./roomRuntime.js";
 import { normalizeChatText, validateRoomCode } from "./security.js";
 import { runtimeStabilityMetrics } from "./runtimeStabilityMetrics.js";
+import { roomSpectatorAdmission, runtimeCapacityLimits } from "./runtimeServiceState.js";
 
 export { roomView };
 export { clearRoomTimers };
@@ -60,6 +61,7 @@ const rooms = new Map();
 const matchmakingQueue = createRoomMatchmakingQueue();
 const roomMembershipIndex = createRoomMembershipIndex({ rooms });
 const ROOM_PERSIST_THROTTLE_MS = 5000;
+const runtimeLimits = runtimeCapacityLimits();
 const roomRuntime = createRoomRuntime({
   prisma,
   persistRoomState,
@@ -200,7 +202,8 @@ const roomConnectionLifecycle = createRoomConnectionLifecycle({
   persistRoom,
   findRoomsForSocket: roomMembershipIndex.findRoomsForSocket,
   registerRoomSocket: roomMembershipIndex.registerSocket,
-  unregisterRoomSocket: roomMembershipIndex.unregisterSocket
+  unregisterRoomSocket: roomMembershipIndex.unregisterSocket,
+  admitSpectator: (room, user) => roomSpectatorAdmission(room, user?.id, runtimeLimits)
 });
 export const {
   attachSocketToRoom,
@@ -236,7 +239,6 @@ const roomCreationLifecycle = createRoomCreationLifecycle({
   scheduleRoomPreloadTimeout,
   roomView,
   appendSystem,
-  broadcastRoom,
   registerRoom: roomMembershipIndex.registerRoom
 });
 export const {

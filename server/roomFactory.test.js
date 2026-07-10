@@ -54,6 +54,7 @@ describe("roomFactory", () => {
       clockSeq: 0,
       spectators: [],
       chat: [],
+      actionReceipts: {},
       createdAt: 1000,
       openingEndsAt: null,
       preload: {

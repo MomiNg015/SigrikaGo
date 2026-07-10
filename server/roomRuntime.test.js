@@ -91,6 +91,28 @@ describe("room runtime", () => {
     });
   });
 
+  test("passes runtime metrics into room update broadcasts", () => {
+    const broadcastRoomUpdate = vi.fn();
+    const metrics = { increment: vi.fn(), observe: vi.fn() };
+    const runtime = createRoomRuntime({
+      prisma: "prisma",
+      persistRoomState: vi.fn(),
+      broadcastRoomUpdate,
+      broadcastRoomPatch: vi.fn(),
+      broadcastRoomPresencePatch: vi.fn(),
+      broadcastRoomToast: vi.fn(),
+      throttleMs: 5000,
+      metrics
+    });
+
+    runtime.broadcastRoom("io", { code: "12345" });
+
+    expect(broadcastRoomUpdate).toHaveBeenCalledWith("io", { code: "12345" }, {
+      persistRoom: runtime.persistRoom,
+      metrics
+    });
+  });
+
   test("broadcasts room patches with the runtime persist callback", () => {
     const broadcastRoomPatch = vi.fn();
     const runtime = createRoomRuntime({

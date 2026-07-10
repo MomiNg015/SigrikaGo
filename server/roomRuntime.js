@@ -27,7 +27,10 @@ export function createRoomRuntime({
   }
 
   function broadcastRoom(io, room) {
-    broadcastRoomUpdate(io, room, { persistRoom });
+    broadcastRoomUpdate(io, room, {
+      persistRoom,
+      ...(metrics ? { metrics } : {})
+    });
   }
 
   function broadcastRoomPatch(io, room, patch, { forcePersist = true } = {}) {
@@ -35,7 +38,10 @@ export function createRoomRuntime({
   }
 
   function broadcastRoomPresencePatch(io, room) {
-    broadcastRoomPresencePatchEvent(io, room, { persistRoom });
+    broadcastRoomPresencePatchEvent(io, room, {
+      persistRoom,
+      ...(metrics ? { metrics } : {})
+    });
   }
 
   function broadcastToast(io, room, text) {

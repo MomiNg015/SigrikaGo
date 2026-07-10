@@ -1,6 +1,6 @@
 import { EventEmitter } from "node:events";
 import { describe, expect, it, vi } from "vitest";
-import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
+import { closeRealtimeServer, installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
 
 describe("server lifecycle", () => {
   it("reports an occupied port with a clear message and exits", () => {
@@ -17,7 +17,7 @@ describe("server lifecycle", () => {
     expect(processLike.exit).toHaveBeenCalledWith(1);
   });
 
-  it("closes the server, runs shutdown tasks, and disconnects dependencies on shutdown signals", async () => {
+  it("drains, closes realtime and HTTP, flushes, then disconnects dependencies", async () => {
     const order = [];
     const signalHandlers = new Map();
     const server = {
@@ -27,19 +27,58 @@ describe("server lifecycle", () => {
       })
     };
     const beforeShutdown = vi.fn(async () => order.push("flush"));
+    const beginShutdown = vi.fn(async () => order.push("drain"));
+    const closeRealtime = vi.fn(async () => order.push("realtime"));
     const dependency = { $disconnect: vi.fn(async () => order.push("disconnect")) };
     const processLike = {
       on: vi.fn((signal, handler) => signalHandlers.set(signal, handler)),
       exit: vi.fn()
     };
 
-    installServerLifecycle(server, { processLike, beforeShutdown: [beforeShutdown], dependencies: [dependency] });
+    installServerLifecycle(server, {
+      processLike,
+      beginShutdown: [beginShutdown],
+      closeRealtime,
+      beforeShutdown: [beforeShutdown],
+      dependencies: [dependency]
+    });
     await signalHandlers.get("SIGTERM")();
 
     expect(server.close).toHaveBeenCalledOnce();
     expect(beforeShutdown).toHaveBeenCalledOnce();
     expect(dependency.$disconnect).toHaveBeenCalledOnce();
-    expect(order).toEqual(["close", "flush", "disconnect"]);
+    expect(order).toEqual(["drain", "realtime", "close", "flush", "disconnect"]);
     expect(processLike.exit).toHaveBeenCalledWith(0);
+  });
+
+  it("closes a Socket.IO-compatible realtime server through its callback", async () => {
+    const realtimeServer = { close: vi.fn((callback) => callback()) };
+    await closeRealtimeServer(realtimeServer);
+    expect(realtimeServer.close).toHaveBeenCalledOnce();
+  });
+
+  it("exits unsuccessfully when graceful shutdown exceeds its deadline", async () => {
+    vi.useFakeTimers();
+    const signalHandlers = new Map();
+    const processLike = {
+      on: vi.fn((signal, handler) => signalHandlers.set(signal, handler)),
+      exit: vi.fn()
+    };
+    const logger = { error: vi.fn() };
+    const pending = new Promise(() => {});
+    installServerLifecycle({ close: vi.fn() }, {
+      processLike,
+      beginShutdown: [() => pending],
+      logger,
+      shutdownTimeoutMs: 50
+    });
+
+    const shutdown = signalHandlers.get("SIGTERM")();
+    await vi.advanceTimersByTimeAsync(50);
+    await shutdown;
+
+    expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("50ms") }));
+    expect(processLike.exit).toHaveBeenCalledWith(1);
+    vi.useRealTimers();
   });
 });

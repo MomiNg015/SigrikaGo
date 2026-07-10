@@ -94,6 +94,22 @@ describe("roomBroadcasts", () => {
     ]);
   });
 
+  test("measures room view build time and samples update payload size", () => {
+    const io = fakeIo();
+    const metrics = { observe: vi.fn(), recordRoomUpdate: vi.fn() };
+    const times = [10, 11.25, 20, 22];
+
+    broadcastRoom(io, testRoom(), {
+      roomViewFn: (room, viewerId) => ({ code: room.code, viewerId }),
+      metrics,
+      now: () => times.shift()
+    });
+
+    expect(metrics.observe).toHaveBeenNthCalledWith(1, "roomViewBuildMs", 1.25);
+    expect(metrics.observe).toHaveBeenNthCalledWith(2, "roomViewBuildMs", 2);
+    expect(metrics.recordRoomUpdate).toHaveBeenCalledTimes(2);
+  });
+
   test("broadcasts lightweight clock payloads with throttled persistence", () => {
     const io = fakeIo();
     const persistRoom = vi.fn();

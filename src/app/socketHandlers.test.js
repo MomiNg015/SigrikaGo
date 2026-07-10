@@ -614,6 +614,15 @@ describe("socket handlers", () => {
     expect(deps.showToast).toHaveBeenCalledWith("账号已在其他地方登录");
   });
 
+  it("shows a maintenance notice when the server starts draining", () => {
+    const deps = handlerDeps();
+    const handlers = createSocketHandlers(deps);
+
+    handlers.serverDraining({ message: "maintenance" });
+
+    expect(deps.showToast).toHaveBeenCalledWith("maintenance", "warning");
+  });
+
   it("notifies audio recovery when the socket reconnects", () => {
     const listeners = new Map();
     const socket = {
@@ -631,6 +640,7 @@ describe("socket handlers", () => {
     expect(deps.onSocketReconnect).toHaveBeenCalledOnce();
     expect(socket.on).toHaveBeenCalledWith("room:patch", expect.any(Function));
     expect(socket.on).toHaveBeenCalledWith("match:preload-timeout", expect.any(Function));
+    expect(socket.on).toHaveBeenCalledWith("server:draining", expect.any(Function));
     expect(socket.emit).toHaveBeenCalledWith("room:resume", { roomCode: "12345", resumeReason: "socket-connect" });
   });
 

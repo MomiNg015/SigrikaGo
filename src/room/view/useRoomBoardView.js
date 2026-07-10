@@ -15,10 +15,12 @@ export function useRoomBoardView({ room, user, replayStep }) {
   const isLiveSpectator = effectiveRole === "spectator" && !isReplay;
   const effectiveSpectatorStep = spectatorStep ?? liveStep;
   const boardStep = isReplay ? replayStep : isLiveSpectator ? effectiveSpectatorStep : null;
+  const liveSpectatorGame = liveSpectatorGameForColor(room, viewColor);
+  const hasServerSpectatorView = viewColor === COLORS.black || Boolean(room.gameViews?.[viewColor]);
   const rawBoardGame = boardStep == null || boardStep >= liveStep
-    ? isLiveSpectator && room.gameViews?.[viewColor] ? room.gameViews[viewColor] : room.game
+    ? isLiveSpectator ? liveSpectatorGame : room.game
     : replayGameAt(room, boardStep);
-  const boardGame = (isReplay || isLiveSpectator) && !(isLiveSpectator && boardStep >= liveStep && room.gameViews?.[viewColor])
+  const boardGame = (isReplay || isLiveSpectator) && !(isLiveSpectator && boardStep >= liveStep && hasServerSpectatorView)
     ? gameViewForColor(rawBoardGame, viewColor)
     : rawBoardGame;
   const displayRoom = isReplay ? replayRoomAt(room, replayStep, viewColor) : isLiveSpectator ? { ...room, game: boardGame } : room;
@@ -82,4 +84,9 @@ export function useRoomBoardView({ room, user, replayStep }) {
     whitePlayer,
     winnerColor
   };
+}
+
+export function liveSpectatorGameForColor(room, color) {
+  if (color === COLORS.black) return room.game;
+  return room.gameViews?.[color] ?? room.game;
 }

@@ -54,6 +54,27 @@ describe("room connection lifecycle", () => {
     expect(registerRoomSocket).toHaveBeenNthCalledWith(2, room, "socket-watch-2");
   });
 
+  test("rejects a first-time spectator when the room admission boundary is full", () => {
+    const room = testRoom({
+      spectators: [{ user: user("existing"), socketId: "socket-existing" }]
+    });
+    const appendSystem = vi.fn();
+    const persistRoom = vi.fn();
+    const socket = { id: "socket-new", join: vi.fn() };
+    const lifecycle = createLifecycle({
+      rooms: new Map([[room.code, room]]),
+      appendSystem,
+      persistRoom,
+      admitSpectator: () => ({ ok: false, code: "room_spectator_capacity" })
+    });
+
+    expect(lifecycle.attachSocketToRoom(room.code, socket, user("new-watcher"))).toBeNull();
+    expect(room.spectators).toHaveLength(1);
+    expect(socket.join).not.toHaveBeenCalled();
+    expect(appendSystem).not.toHaveBeenCalled();
+    expect(persistRoom).not.toHaveBeenCalled();
+  });
+
   test("detaches player and spectator sockets, schedules empty-room close, and persists changed rooms", () => {
     const room = testRoom({
       players: [player("alice", { socketId: "socket-a" })],

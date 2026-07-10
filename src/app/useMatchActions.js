@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { GAME_PHASES } from "../shared/game.js";
+import { emitGameActionWithAck } from "./gameActionDelivery.js";
 import { completePendingMatchRoom } from "./matchTransition.js";
 import { preloadPlayableReady as defaultPreloadPlayableReady } from "./playableReadyPreload.js";
 
@@ -8,6 +9,7 @@ export function useMatchActions({
   matchSuccessRef,
   room,
   socket,
+  showToast = () => {},
   setMatchStart,
   setMatchSuccess,
   setRoom,
@@ -50,8 +52,13 @@ export function useMatchActions({
 
   const emitGame = useCallback((action) => {
     if (!room) return;
-    socket?.emit("game:action", { roomCode: room.code, action });
-  }, [room, socket]);
+    emitGameActionWithAck(socket, { roomCode: room.code, action }, {
+      onUnconfirmed: () => {
+        showToast("操作确认超时，正在同步对局状态", "warning");
+        socket?.emit("room:resume", { roomCode: room.code, resumeReason: "action-ack-timeout" });
+      }
+    });
+  }, [room, showToast, socket]);
 
   const emitScoring = useCallback((action) => {
     if (!room) return;

@@ -1,5 +1,6 @@
 import { buildRoomView } from "./roomView.js";
 import { roomParticipants } from "./roomPresence.js";
+import { performance } from "node:perf_hooks";
 
 export { roomParticipants };
 
@@ -14,14 +15,19 @@ export function roomView(room, viewerId) {
   return buildRoomView(room, viewerId);
 }
 
-export function broadcastRoom(io, room, { persistRoom = () => {}, roomViewFn = roomView } = {}) {
+export function broadcastRoom(io, room, {
+  persistRoom = () => {},
+  roomViewFn = roomView,
+  metrics = null,
+  now = () => performance.now()
+} = {}) {
   advanceRoomClockSeq(room);
   persistRoom(room, ROOM_BROADCAST_PERSISTENCE.fullUpdate);
   for (const player of room.players) {
-    emitRoomUpdate(io, room, player, roomViewFn);
+    emitRoomUpdate(io, room, player, roomViewFn, metrics, now);
   }
   for (const spectator of room.spectators) {
-    emitRoomUpdate(io, room, spectator, roomViewFn);
+    emitRoomUpdate(io, room, spectator, roomViewFn, metrics, now);
   }
 }
 
@@ -51,10 +57,15 @@ export function broadcastRoomPatch(io, room, patch, { persistRoom = () => {}, fo
   }
 }
 
-export function broadcastRoomPresencePatch(io, room, { persistRoom = () => {}, roomViewFn = roomView } = {}) {
+export function broadcastRoomPresencePatch(io, room, {
+  persistRoom = () => {},
+  roomViewFn = roomView,
+  metrics = null,
+  now = () => performance.now()
+} = {}) {
   const participant = roomParticipants(room).find((candidate) => candidate.socketId);
   if (!participant) return;
-  const view = roomViewFn(room, participant.user.id);
+  const view = measuredRoomView(room, participant.user.id, roomViewFn, metrics, now);
   broadcastRoomPatch(io, room, {
     type: "presence:update",
     players: view.players,
@@ -97,7 +108,16 @@ function emitToSocket(io, socketId, event, payload) {
   if (socketId) io.to(socketId).emit(event, payload);
 }
 
-function emitRoomUpdate(io, room, participant, roomViewFn) {
+function emitRoomUpdate(io, room, participant, roomViewFn, metrics, now) {
   if (!participant.socketId) return;
-  emitToSocket(io, participant.socketId, "room:update", roomViewFn(room, participant.user.id));
+  const view = measuredRoomView(room, participant.user.id, roomViewFn, metrics, now);
+  metrics?.recordRoomUpdate?.(view);
+  emitToSocket(io, participant.socketId, "room:update", view);
+}
+
+function measuredRoomView(room, viewerId, roomViewFn, metrics, now) {
+  const startedAt = now();
+  const view = roomViewFn(room, viewerId);
+  metrics?.observe?.("roomViewBuildMs", Math.max(0, now() - startedAt));
+  return view;
 }

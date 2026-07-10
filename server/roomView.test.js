@@ -73,13 +73,13 @@ describe("room view serialization", () => {
     expect(white).toMatchObject({ connected: false, disconnectedAt: 12345 });
   });
 
-  it("includes both color views for spectators", () => {
+  it("uses game as the black spectator view and includes only the white alternate view", () => {
     const view = buildRoomView(testRoom(), "spectator");
 
     expect(view.role).toBe("spectator");
-    expect(view.gameViews.black).toBeTruthy();
+    expect(view.gameViews).not.toHaveProperty("black");
     expect(view.gameViews.white).toBeTruthy();
-    expect(getPoint(view.gameViews.black, pointId(3, 3)).stone).toBe(COLORS.black);
+    expect(getPoint(view.game, pointId(3, 3)).stone).toBe(COLORS.black);
     expect(getPoint(view.gameViews.white, pointId(3, 3)).stone).toBeNull();
   });
 
@@ -89,7 +89,7 @@ describe("room view serialization", () => {
     const view = buildRoomView(room, "white-user");
 
     expect(view.role).toBe("spectator");
-    expect(view.gameViews.black).toBeTruthy();
+    expect(view.gameViews).not.toHaveProperty("black");
     expect(view.gameViews.white).toBeTruthy();
   });
 
