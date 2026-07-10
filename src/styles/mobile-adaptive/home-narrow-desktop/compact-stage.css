@@ -54,7 +54,7 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
     grid-area: utility !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: clamp(8px, 1.4vw, 12px) !important;
+    gap: clamp(4px, 0.55vw, 8px) !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {

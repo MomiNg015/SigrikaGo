@@ -1,8 +1,9 @@
 /* Bright School utility toolbox states and motion preferences. */
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:is(:hover, :focus-visible):not(:disabled) {
+  z-index: 2;
   box-shadow: none !important;
   filter: none !important;
-  transform: translate(var(--utility-x, 0), calc(var(--utility-y, 0px) - 3px)) rotate(calc(var(--utility-tilt, 0deg) + 1.4deg)) scale(1.015) !important;
+  transform: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:is(:hover, :focus-visible):not(:disabled) .utility-entry-art {
@@ -15,14 +16,14 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:active:not(:disabled) {
+  z-index: 2;
   box-shadow: none !important;
   filter: none !important;
-  transform: translate(var(--utility-x, 0), calc(var(--utility-y, 0px) + 1px)) rotate(calc(var(--utility-tilt, 0deg) + 0.7deg)) scale(0.985) !important;
+  transform: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:active:not(:disabled) .utility-entry-art {
   filter: drop-shadow(3px 4px 0 rgba(61, 43, 37, 0.26)) !important;
-  transform: translateY(1px) scale(0.992) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .recruitment-entry.has-alert {
@@ -34,8 +35,27 @@
 }
 
 @media (min-width: 761px) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid {
+    grid-auto-rows: clamp(70px, 5.5vw, 84px) !important;
+    gap: clamp(4px, 0.55vw, 8px) !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-art {
+    width: 128% !important;
     transform: translate(var(--utility-x, 0), var(--utility-y, 0)) rotate(var(--utility-tilt, 0deg)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:is(:hover, :focus-visible):not(:disabled) .utility-entry-art {
+    transform: translate(var(--utility-x, 0), var(--utility-y, 0)) rotate(var(--utility-hover-tilt, 4deg)) scale(1.015) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry:active:not(:disabled) .utility-entry-art {
+    transform: translate(var(--utility-x, 0), calc(var(--utility-y, 0px) + 1px)) rotate(1deg) scale(0.985) !important;
   }
 }
 

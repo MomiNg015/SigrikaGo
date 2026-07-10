@@ -27,6 +27,8 @@
   box-shadow: none !important;
   clip-path: none !important;
   color: #3d2b25 !important;
+  position: relative;
+  z-index: 0;
   outline: 0 solid transparent;
   outline-offset: 0;
   text-align: center !important;
@@ -34,46 +36,49 @@
   transform: none !important;
   transform-origin: center;
   overflow: visible !important;
-  will-change: transform;
-  transition:
-    transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
-    filter 160ms ease-out !important;
+  transition: none !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-pink {
-  --utility-tilt: -0.7deg;
-  --utility-x: -6px;
-  --utility-y: -4px;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-cream {
-  --utility-tilt: 0.55deg;
-  --utility-x: 4px;
-  --utility-y: 3px;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-mint {
-  --utility-tilt: -0.35deg;
-  --utility-x: 8px;
-  --utility-y: -5px;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-blue {
-  --utility-tilt: 0.4deg;
-  --utility-x: -4px;
-  --utility-y: 6px;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-teal {
-  --utility-tilt: -0.5deg;
-  --utility-x: 6px;
+  --utility-tilt: -1.15deg;
+  --utility-hover-tilt: -4.2deg;
+  --utility-x: -2px;
   --utility-y: -1px;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-cream {
+  --utility-tilt: 0.7deg;
+  --utility-hover-tilt: 4.1deg;
+  --utility-x: 1px;
+  --utility-y: 1px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-mint {
+  --utility-tilt: -0.4deg;
+  --utility-hover-tilt: -3.8deg;
+  --utility-x: 2px;
+  --utility-y: -1px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-blue {
+  --utility-tilt: 1.05deg;
+  --utility-hover-tilt: 4.4deg;
+  --utility-x: -1px;
+  --utility-y: 1px;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-teal {
+  --utility-tilt: -0.8deg;
+  --utility-hover-tilt: -4deg;
+  --utility-x: 2px;
+  --utility-y: 0px;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-tone-violet {
-  --utility-tilt: 0.65deg;
-  --utility-x: -5px;
-  --utility-y: 4px;
+  --utility-tilt: 0.5deg;
+  --utility-hover-tilt: 3.9deg;
+  --utility-x: -2px;
+  --utility-y: 1px;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .home-grid-featured > .home-utility-grid .utility-entry-art {

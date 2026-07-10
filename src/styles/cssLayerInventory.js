@@ -1,10 +1,10 @@
 export const CSS_DEBT_BASELINE = {
   date: "2026-07-10",
-  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, desktop/mobile shop mascot layout contracts, cloud-deployment mobile floating layer tokens, and transform-surface compositor hints.",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, desktop/mobile shop mascot layout contracts, cloud-deployment mobile floating layer tokens, and transform-surface compositor hints.",
   metrics: {
     totalFiles: 588,
-    totalBytes: 1137600,
-    importantCount: 7087,
+    totalBytes: 1138536,
+    importantCount: 7093,
     importantFiles: 277,
     hardcodedHexCount: 2246,
     mediaFiles: 219,
