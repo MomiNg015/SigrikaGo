@@ -180,6 +180,10 @@ export function createAdminRouter({
     });
   });
 
+  router.get("/runtime-capacity", (_req, res) => {
+    res.json(runtimeCapacityPayload({ runtimeStabilityMetrics, runtimeServiceState }));
+  });
+
   router.get("/analytics/overview", async (req, res) => {
     const overview = await buildAdminOverviewAnalytics({
       prisma,
@@ -786,6 +790,18 @@ export function createAdminRouter({
   }
 
   return router;
+}
+
+export function runtimeCapacityPayload({
+  runtimeStabilityMetrics = null,
+  runtimeServiceState = null,
+  now = new Date()
+} = {}) {
+  return {
+    generatedAt: now.toISOString(),
+    runtimeStability: runtimeStabilityMetrics?.snapshot?.() ?? {},
+    capacity: runtimeServiceState?.snapshot?.() ?? null
+  };
 }
 
 function sendRouteError(res, error) {

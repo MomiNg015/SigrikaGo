@@ -12,7 +12,10 @@ run(process.execPath, [
 ]);
 
 function run(command, args) {
-  const result = spawnSync(...spawnArgs(command, args), {
+  const invocation = command === process.execPath
+    ? [command, args]
+    : spawnArgs(command, args);
+  const result = spawnSync(...invocation, {
     cwd: process.cwd(),
     env: process.env,
     stdio: "inherit"

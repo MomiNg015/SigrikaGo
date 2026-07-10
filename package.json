@@ -18,6 +18,7 @@
     "test:stability": "node scripts/run-playwright-suite.mjs stability",
     "verify:battle-fixes": "node scripts/verify-battle-fixes.mjs",
     "verify:stability": "node scripts/verify-stability.mjs",
+    "verify:capacity": "node scripts/verify-capacity.mjs",
     "export:skill-gifs": "node scripts/export-skill-gifs.mjs",
     "test:e2e:ui": "node scripts/run-playwright-suite.mjs e2e --ui",
     "docs:system-design": "node scripts/render-system-design-html.mjs",

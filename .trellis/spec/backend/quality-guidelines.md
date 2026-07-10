@@ -1495,31 +1495,92 @@ registerDisconnectSocketEvents(socket, {
 
 Tests touching Socket.IO disconnect event registration, cleanup ordering, changed-room broadcasts, or lobby refresh behavior should update `server/socketDisconnectEvents.test.js`; room connection mutation behavior should stay in `server/roomConnectionLifecycle.test.js`.
 
-### Production Static Asset Boundary Contract
+### Scenario: Production Static Delivery and Capacity Verification
 
-`server/staticAssets.js` owns production Vite asset hosting and SPA fallback:
+#### 1. Scope / Trigger
+- Trigger: changing production static hosting, cache headers, Nginx/systemd templates, stability-server startup, runtime capacity telemetry, or the capacity verification command.
+- This is an infrastructure and cross-layer contract: Nginx, Express fallback, browser preload, Socket.IO, systemd shutdown, admin authorization, and load-test reporting must agree.
 
-- `installProductionStaticAssets(app, { distDir })` mounts nothing unless either `NODE_ENV === "production"` or `LOCAL_PROD_STATIC` is truthy, and `distDir` exists. `LOCAL_PROD_STATIC=1` is reserved for local production-like stability verification; it must not weaken production deployment validation.
-- When active, it mounts the built Vite directory with a short default cache and adds a one-year immutable `Cache-Control` header only for hashed Vite chunk/asset filenames. Public `/assets/**` runtime resources keep the shorter static cache and ETag behavior so same-name WebP/SVG/audio replacements are not pinned by immutable browser caches.
-- The SPA fallback must exclude `/api`, `/socket.io`, and `/uploads` so backend APIs, Socket.IO transport, and uploaded assets keep their existing routes.
-- `server/index.js` should provide the `distDir` and call this boundary once near the end of route/socket setup; it should not duplicate production checks, cache-header regexes, or fallback route patterns.
+#### 2. Signatures
+- Express fallback: `installProductionStaticAssets(app, { distDir, env }) -> boolean`.
+- Cache constants: `IMMUTABLE_ASSET_CACHE_CONTROL`, `RUNTIME_ASSET_CACHE_CONTROL`, and `HTML_CACHE_CONTROL` from `server/staticAssets.js`.
+- Deployment templates: `deploy/nginx/sigrikago.conf` and `deploy/systemd/sigrikago.service`.
+- Admin telemetry: `GET /api/admin/runtime-capacity -> { generatedAt, runtimeStability, capacity }` behind `authHttp` and `requireAdmin`.
+- Capacity command: `npm run verify:capacity -- --profile smoke|target [--sockets N --rooms N --spectators-per-room N --duration seconds --action-interval seconds --reconnect-ratio ratio]`.
+- Verification environments: `NODE_ENV=stability` for built-browser checks and `NODE_ENV=capacity` for the isolated load generator. Production remains `NODE_ENV=production`.
+
+#### 3. Contracts
+- Production Nginx sends only `/socket.io/`, `/api/`, and `/health/*` to Node. It serves `dist`, `/assets/**`, and `/uploads/**` directly; `/socket.io/` disables buffering and uses 90-second proxy read/write timeouts.
+- Hashed Vite JS/CSS receives `public, max-age=31536000, immutable`; named runtime `/assets/**` receives `public, max-age=3600, stale-while-revalidate=86400`; `index.html` receives `no-cache`; uploads receive a short revalidating cache.
+- Express fallback uses the same three cache values when Nginx is absent. `express.static` must use `index: false` so the SPA fallback owns the HTML header, and the fallback excludes `/api`, `/socket.io`, and `/uploads`.
+- Nginx gzip covers text formats only. OGG/WebP/PNG and other precompressed media are not recompressed; Nginx static delivery keeps native HTTP Range support for audio.
+- Same-origin CDN rollout keeps browser URLs under `/assets/**`. CDN rules mirror the Nginx cache contract and never cache/proxy Socket.IO, dynamic API, or health traffic.
+- systemd starts `/usr/bin/node /opt/sigrikago/server/index.js` directly, sends SIGTERM, grants 25 seconds to drain, sets `LimitNOFILE=65535`, and uses `MemoryHigh=1400M` / `MemoryMax=1600M` on the 2 GB template.
+- Capacity verification always creates an isolated temporary SQLite database, raises setup rate limits only in `NODE_ENV=capacity`, enables debug actions only outside production, samples the lightweight admin runtime endpoint, performs periodic reconnect plus optional managed restart, and writes ignored JSON reports under `artifacts/capacity/`.
+- The target profile is a candidate release line, not a capacity promise: 500 sockets, 100 rooms, two spectators per room, 7.5-second action intervals, 20% reconnect, and one restart. Production soft limits may be raised only after this profile passes on the actual 2-core/2-GB host.
+
+#### 4. Validation & Error Matrix
+- Hashed Vite JS/CSS -> one-year immutable cache in both Nginx and Express fallback.
+- Named image/audio/voice asset -> one-hour cache plus stale-while-revalidate; never immutable by filename description alone.
+- SPA shell or client route -> serve `index.html` with `no-cache`.
+- `/socket.io/` -> WebSocket proxy with buffering/cache disabled; never SPA fallback.
+- `/api/`, `/health/*`, or `/uploads/*` -> retain their dedicated backend/static boundary; never return SPA HTML.
+- Capacity profile with fewer than two sockets per requested room -> fail before starting load.
+- Runtime metrics unavailable or persistence/result error observed in any sample -> threshold report fails.
+- Production `NODE_ENV` with debug actions -> continue to reject through the production security contract.
+- `STABILITY_PORT` set while a generic `PORT` is inherited -> `STABILITY_PORT` wins so Playwright base URL and child listener stay aligned.
+
+#### 5. Good/Base/Bad Cases
+- Good: Nginx serves a 5 MB OGG with Range support while Node continues processing action acks without static-file syscalls.
+- Good: a deployment publishes assets first and `index.html` last; an old client can still request the prior hashed chunk during rollback.
+- Good: capacity smoke reports client ack/reconnect/resume percentiles plus peak RSS/event-loop metrics before and after a managed restart.
+- Base: local `LOCAL_PROD_STATIC=1` serves the same production build through Express for Playwright without enabling production guards.
+- Bad: proxying all `/` traffic with WebSocket upgrade headers, because large music/image transfers compete with realtime work.
+- Bad: reading database-heavy overview analytics every load-test interval instead of `/api/admin/runtime-capacity`.
+- Bad: running the capacity profile against the production database or public production instance.
+
+#### 6. Tests Required
+- `server/staticAssets.test.js` asserts mount conditions, `index: false`, SPA exclusions, hashed names including dash characters, runtime cache, and no-cache HTML.
+- `tests/stability/production-static.spec.js` asserts the effective desktop/mobile HTTP cache headers from a built server.
+- `scripts/deploymentConfig.test.js` asserts Nginx route separation/cache values and systemd shutdown/memory/file-limit values.
+- `server/adminRoutes.test.js` asserts the lightweight runtime capacity payload without database analytics.
+- `scripts/capacityVerification.test.js` asserts profile validation, target topology, percentile summaries, isolated server wiring, and restart/report command wiring.
+- `scripts/stabilityVerification.test.js` asserts direct Node spawning and `STABILITY_PORT` precedence. Run capacity smoke plus `npm run check` before handoff.
+
+#### 7. Wrong vs Correct
 
 Wrong:
 
-```js
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(distDir));
-  app.get("*", sendIndex);
+```nginx
+location / {
+    proxy_pass http://127.0.0.1:3001;
+    proxy_set_header Upgrade $http_upgrade;
 }
 ```
 
 Correct:
 
-```js
-installProductionStaticAssets(app, { distDir });
+```nginx
+location ^~ /socket.io/ { proxy_pass http://sigrikago_node; proxy_buffering off; }
+location ^~ /api/ { proxy_pass http://sigrikago_node; proxy_buffering on; }
+location /assets/ { try_files $uri =404; }
+location / { try_files $uri $uri/ /index.html; }
 ```
 
-Tests touching production asset mounting, local production-like static mode, SPA fallback exclusions, or immutable cache headers should update `server/staticAssets.test.js`.
+Wrong:
+
+```ini
+ExecStart=/usr/bin/npm start
+Restart=always
+```
+
+Correct:
+
+```ini
+ExecStart=/usr/bin/node /opt/sigrikago/server/index.js
+Restart=on-failure
+TimeoutStopSec=25
+```
 
 ### Leaderboard API Contract
 

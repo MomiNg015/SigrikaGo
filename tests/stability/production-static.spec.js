@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 test("serves the built app with production-like cache boundaries", async ({ request }) => {
   const index = await request.get("/");
   expect(index.status()).toBe(200);
+  expect(index.headers()["cache-control"]).toContain("no-cache");
   const html = await index.text();
   expect(html).toContain("/assets/");
   expect(html).not.toContain("/src/");
@@ -19,6 +20,8 @@ test("serves the built app with production-like cache boundaries", async ({ requ
   expect(runtimeAsset.status()).toBe(200);
   expect(runtimeAsset.headers()["cache-control"] ?? "").not.toContain("immutable");
   expect(runtimeAsset.headers()["cache-control"] ?? "").not.toContain("max-age=31536000");
+  expect(runtimeAsset.headers()["cache-control"]).toContain("max-age=3600");
+  expect(runtimeAsset.headers()["cache-control"]).toContain("stale-while-revalidate=86400");
 
   const health = await request.get("/api/health");
   expect(health.status()).toBe(200);

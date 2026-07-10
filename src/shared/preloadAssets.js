@@ -9,6 +9,7 @@ import {
   DEFEAT_SOUND,
   ownedMusicIdsWithDefaults,
   parseMusicIds,
+  resolveBackgroundMusic,
   resolveSkillMusicTrack
 } from "./musicLibrary.js";
 import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
@@ -58,17 +59,29 @@ export function loginPreloadAssets({
     canonicalCharacterId(character?.id ?? character?.slug)
   )));
   const visibleCharacterIdSet = new Set(visibleCharacterIds);
+  const selectedCharacterId = canonicalCharacterId(user?.selectedCharacter) || visibleCharacterIds[0] || "";
+  const criticalCharacters = visibleCharacters.filter((character) => (
+    canonicalCharacterId(character?.id ?? character?.slug) === selectedCharacterId
+  ));
+  const deferredCharacters = visibleCharacters.filter((character) => (
+    canonicalCharacterId(character?.id ?? character?.slug) !== selectedCharacterId
+  ));
   const visibleTracks = Object.values(tracks ?? {}).filter((track) => {
     if (!track?.id || !accessibleTrackIds.has(track.id)) return false;
     if (track.type !== MUSIC_TYPES.skill) return true;
     if (explicitlyOwnedTrackIds.has(track.id)) return true;
     return visibleCharacterIdSet.has(canonicalCharacterId(track.characterId));
   });
+  const homeTracks = visibleTracks.filter((track) => track?.type === MUSIC_TYPES.home);
+  const deferredTracks = visibleTracks.filter((track) => track?.type !== MUSIC_TYPES.home);
   const equipmentAssets = Object.values(achievementEquipmentAssets ?? {});
 
   const criticalImages = compactUnique([
-    ...visibleCharacters.map((character) => character?.portrait),
-    ...RUNTIME_IMAGE_ASSETS.home,
+    ...criticalCharacters.map((character) => character?.portrait),
+    ...RUNTIME_IMAGE_ASSETS.home
+  ]);
+  const deferredImages = compactUnique([
+    ...deferredCharacters.map((character) => character?.portrait),
     ...RUNTIME_IMAGE_ASSETS.shop,
     ...Object.values(RECRUITMENT_ITEMS).map((item) => item?.imageUrl),
     ...recruitmentSurfaceImages(),
@@ -81,20 +94,21 @@ export function loginPreloadAssets({
       decoration.images?.white
     ])
   ]);
-  const deferredImages = [];
-  const images = criticalImages;
+  const images = compactUnique([...criticalImages, ...deferredImages]);
 
   const criticalAudio = compactUnique([
     ...RUNTIME_AUDIO_ASSETS.interaction,
+    ...homeTracks.flatMap((track) => playbackAssetSources(track?.playback))
+  ]);
+  const deferredAudio = compactUnique([
     MATCH_SUCCESS_SOUND,
     VICTORY_SOUND,
     DEFEAT_SOUND,
-    ...visibleTracks.flatMap((track) => playbackAssetSources(track?.playback)),
+    ...deferredTracks.flatMap((track) => playbackAssetSources(track?.playback)),
     ...visibleCharacterIds.flatMap((characterId) => voiceSourceCandidates(skillVoices?.[characterId])),
     ...visibleCharacterIds.flatMap((characterId) => Object.values(systemVoices?.[characterId] ?? {}).flatMap(voiceSourceCandidates))
   ]);
-  const deferredAudio = [];
-  const audio = criticalAudio;
+  const audio = compactUnique([...criticalAudio, ...deferredAudio]);
 
   return { criticalImages, deferredImages, images, criticalAudio, deferredAudio, audio };
 }
@@ -103,6 +117,7 @@ export function battlePreloadAssets({
   room = null,
   characters = CHARACTERS,
   tracks = MUSIC_TRACKS,
+  user = null,
   skillVoices = CHARACTER_SKILL_VOICES,
   systemVoices = CHARACTER_SYSTEM_VOICES
 } = {}) {
@@ -115,15 +130,27 @@ export function battlePreloadAssets({
     .map((characterId) => characters?.[characterId] ?? CHARACTERS[characterId])
     .filter(Boolean);
   const skillTracks = characterIds
-    .map((characterId) => resolveSkillMusicTrack({ characterId, tracks }))
+    .map((characterId) => resolveSkillMusicTrack({
+      characterId,
+      selections: user?.musicSelections,
+      ownedMusicIds: user?.ownedMusicIds,
+      tracks
+    }))
     .filter(Boolean);
   const derivedSkillTracks = characterIds
-    .flatMap((characterId) => Object.values(tracks ?? {}).filter((track) => (
-      track?.type === MUSIC_TYPES.skill
-      && track.effectType
-      && canonicalCharacterId(track.characterId) === characterId
-    )));
-  const battleTracks = Object.values(tracks ?? {}).filter((track) => track?.type === MUSIC_TYPES.battle);
+    .flatMap((characterId) => selectedDerivedSkillTracks({
+      characterId,
+      selections: user?.musicSelections,
+      ownedMusicIds: user?.ownedMusicIds,
+      tracks
+    }));
+  const battleTrack = resolveBackgroundMusic({
+    view: "room",
+    gamePhase: room?.game?.phase ?? room?.phase ?? "preloading",
+    selections: user?.musicSelections,
+    ownedMusicIds: user?.ownedMusicIds,
+    tracks
+  });
 
   const criticalImages = compactUnique([
     ...roomCharacters.map((character) => character?.portrait),
@@ -132,7 +159,7 @@ export function battlePreloadAssets({
   const criticalAudio = compactUnique([
     MATCH_SUCCESS_SOUND,
     ...RUNTIME_AUDIO_ASSETS.interaction,
-    ...battleTracks.flatMap((track) => playbackAssetSources(track.playback)),
+    ...playbackAssetSources(battleTrack?.playback),
     ...(skillEnabled ? skillTracks.flatMap((track) => playbackAssetSources(track.playback)) : []),
     ...(skillEnabled ? derivedSkillTracks.flatMap((track) => playbackAssetSources(track.playback)) : []),
     ...(skillEnabled ? characterIds.flatMap((characterId) => voiceSourceCandidates(skillVoices?.[characterId])) : []),
@@ -149,6 +176,23 @@ export function battlePreloadAssets({
     deferredAudio: [],
     audio: criticalAudio
   };
+}
+
+function selectedDerivedSkillTracks({ characterId, selections, ownedMusicIds, tracks }) {
+  const candidates = Object.values(tracks ?? {}).filter((track) => (
+    track?.type === MUSIC_TYPES.skill
+    && track.effectType
+    && canonicalCharacterId(track.characterId) === characterId
+  ));
+  const effectTypes = compactUnique(candidates.map((track) => String(track.effectType ?? "").trim()));
+  return effectTypes.map((effectType) => resolveSkillMusicTrack({
+    characterId,
+    effectType,
+    fallbackTrackId: candidates.find((track) => String(track.effectType ?? "").trim() === effectType)?.id,
+    selections,
+    ownedMusicIds,
+    tracks
+  })).filter(Boolean);
 }
 
 export async function preloadLoginAssets(assets, {

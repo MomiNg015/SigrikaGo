@@ -9,6 +9,7 @@ import {
   detectImageMimeFromBuffer,
   requireUserUpdateData,
   resetUserPassword,
+  runtimeCapacityPayload,
   sanitizeUserUpdate,
   serializeAudit,
   unbanUser,
@@ -17,6 +18,18 @@ import {
 } from "./adminRoutes.js";
 
 describe("admin route helpers", () => {
+  it("builds a lightweight runtime capacity payload without database analytics", () => {
+    expect(runtimeCapacityPayload({
+      runtimeStabilityMetrics: { snapshot: () => ({ gameActionAttempts: 12 }) },
+      runtimeServiceState: { snapshot: () => ({ current: { activeRooms: 4 } }) },
+      now: new Date("2026-07-10T12:00:00.000Z")
+    })).toEqual({
+      generatedAt: "2026-07-10T12:00:00.000Z",
+      runtimeStability: { gameActionAttempts: 12 },
+      capacity: { current: { activeRooms: 4 } }
+    });
+  });
+
   it("rejects default JWT secrets in production", () => {
     expect(() => assertSafeJwtSecret("change-me-in-production", "production")).toThrow("JWT_SECRET");
     expect(() => assertSafeJwtSecret("dev-secret", "production")).toThrow("JWT_SECRET");

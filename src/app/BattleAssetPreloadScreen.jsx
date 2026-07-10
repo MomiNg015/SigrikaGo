@@ -33,7 +33,7 @@ export default function BattleAssetPreloadScreen({
     let cancelReadyReporter = () => {};
     setLocalProgress(0);
     const skippedAssets = [];
-    const assets = battlePreloadAssets({ room, characters, tracks: musicTracks });
+    const assets = battlePreloadAssets({ room, characters, tracks: musicTracks, user });
     preloadLoginAssets(assets, {
       concurrency: 4,
       taskTimeoutMs: 12000,
@@ -57,7 +57,7 @@ export default function BattleAssetPreloadScreen({
       cancelReadyReporter();
       cancelRetry();
     };
-  }, [characters, musicTracks, roomAssetKey, roomCode, socket]);
+  }, [characters, musicTracks, roomAssetKey, roomCode, socket, user]);
 
   return (
     <AssetPreloadScreen

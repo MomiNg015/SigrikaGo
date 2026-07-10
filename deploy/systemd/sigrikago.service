@@ -1,0 +1,27 @@
+[Unit]
+Description=SigrikaGo single-instance realtime server
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/sigrikago
+EnvironmentFile=/opt/sigrikago/.env
+Environment=NODE_OPTIONS=--max-old-space-size=1152
+ExecStart=/usr/bin/node /opt/sigrikago/server/index.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=25
+KillSignal=SIGTERM
+KillMode=control-group
+LimitNOFILE=65535
+TasksMax=512
+MemoryHigh=1400M
+MemoryMax=1600M
+OOMPolicy=stop
+User=YOUR_LINUX_USER
+
+[Install]
+WantedBy=multi-user.target

@@ -16,6 +16,7 @@ describe("local stability verification command", () => {
     expect(source).toContain('process.env.NODE_ENV = "stability"');
     expect(source).toContain('process.env.LOCAL_PROD_STATIC = "1"');
     expect(source).toContain("process.env.STABILITY_PORT");
+    expect(source).toContain("process.env.STABILITY_PORT ?? process.env.PORT");
     expect(source).toContain('process.env.ENABLE_TEST_ACTIONS');
     expect(source).toContain('await import("../server/index.js")');
   });
@@ -28,6 +29,7 @@ describe("local stability verification command", () => {
     expect(source).toContain('"stability"');
     expect(source).toContain('"cmd.exe"');
     expect(source).toContain("commandLineForWindows");
+    expect(source).toContain("command === process.execPath");
   });
 
   it("uses a dedicated Playwright config against the built Node server", async () => {

@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { installProductionStaticAssets } from "./staticAssets.js";
+import {
+  HTML_CACHE_CONTROL,
+  IMMUTABLE_ASSET_CACHE_CONTROL,
+  installProductionStaticAssets,
+  RUNTIME_ASSET_CACHE_CONTROL
+} from "./staticAssets.js";
 
 function createApp() {
   return {
@@ -35,7 +40,10 @@ describe("production static assets", () => {
       staticMiddleware
     });
 
-    expect(staticMiddleware).toHaveBeenCalledWith("/app/dist", expect.objectContaining({ maxAge: "1h" }));
+    expect(staticMiddleware).toHaveBeenCalledWith("/app/dist", expect.objectContaining({
+      index: false,
+      maxAge: "1h"
+    }));
     expect(app.use).toHaveBeenCalledWith(middleware);
     expect(app.get).toHaveBeenCalledWith(/^(?!\/api|\/socket\.io|\/uploads).*/, expect.any(Function));
   });
@@ -67,7 +75,10 @@ describe("production static assets", () => {
       staticMiddleware
     });
 
-    expect(staticMiddleware).toHaveBeenCalledWith("/app/dist", expect.objectContaining({ maxAge: "1h" }));
+    expect(staticMiddleware).toHaveBeenCalledWith("/app/dist", expect.objectContaining({
+      index: false,
+      maxAge: "1h"
+    }));
     expect(app.use).toHaveBeenCalledWith(middleware);
     expect(app.get).toHaveBeenCalledWith(/^(?!\/api|\/socket\.io|\/uploads).*/, expect.any(Function));
   });
@@ -89,10 +100,30 @@ describe("production static assets", () => {
     });
     setHeaders(res, "/app/dist/assets/index-abcdef12.js");
 
-    expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", "public, max-age=31536000, immutable");
+    expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", IMMUTABLE_ASSET_CACHE_CONTROL);
   });
 
-  it("leaves mutable public asset resources on the shorter static cache", () => {
+  it("marks Vite hashes containing dash characters as immutable", () => {
+    const app = createApp();
+    let setHeaders;
+    const staticMiddleware = vi.fn((_distDir, options) => {
+      setHeaders = options.setHeaders;
+      return vi.fn();
+    });
+    const res = { setHeader: vi.fn() };
+
+    installProductionStaticAssets(app, {
+      distDir: "/app/dist",
+      env: { NODE_ENV: "production" },
+      existsSync: () => true,
+      staticMiddleware
+    });
+    setHeaders(res, "/app/dist/assets/clock-HwmNdd-t.js");
+
+    expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", IMMUTABLE_ASSET_CACHE_CONTROL);
+  });
+
+  it("serves mutable runtime assets with a short stale-while-revalidate cache", () => {
     const app = createApp();
     let setHeaders;
     const staticMiddleware = vi.fn((_distDir, options) => {
@@ -109,7 +140,8 @@ describe("production static assets", () => {
     });
     setHeaders(res, "/app/dist/assets/music/main_bgm.ogg");
 
-    expect(res.setHeader).not.toHaveBeenCalledWith("Cache-Control", "public, max-age=31536000, immutable");
+    expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", RUNTIME_ASSET_CACHE_CONTROL);
+    expect(res.setHeader).not.toHaveBeenCalledWith("Cache-Control", IMMUTABLE_ASSET_CACHE_CONTROL);
   });
 
   it("does not treat descriptive hyphenated public effect filenames as Vite hashes", () => {
@@ -129,6 +161,26 @@ describe("production static assets", () => {
     });
     setHeaders(res, "/app/dist/assets/effects/changli-fire-phoenix.svg");
 
-    expect(res.setHeader).not.toHaveBeenCalledWith("Cache-Control", "public, max-age=31536000, immutable");
+    expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", RUNTIME_ASSET_CACHE_CONTROL);
+    expect(res.setHeader).not.toHaveBeenCalledWith("Cache-Control", IMMUTABLE_ASSET_CACHE_CONTROL);
+  });
+
+  it("keeps the SPA shell revalidating instead of caching an old release", () => {
+    const app = createApp();
+    const res = { setHeader: vi.fn(), sendFile: vi.fn() };
+
+    installProductionStaticAssets(app, {
+      distDir: "/app/dist",
+      env: { NODE_ENV: "production" },
+      existsSync: () => true,
+      joinPath: (...parts) => parts.join("/"),
+      staticMiddleware: vi.fn(() => vi.fn())
+    });
+
+    const fallback = app.get.mock.calls[0][1];
+    fallback({}, res);
+
+    expect(res.setHeader).toHaveBeenCalledWith("Cache-Control", HTML_CACHE_CONTROL);
+    expect(res.sendFile).toHaveBeenCalledWith("/app/dist/index.html");
   });
 });

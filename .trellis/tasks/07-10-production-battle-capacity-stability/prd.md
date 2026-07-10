@@ -47,10 +47,10 @@
 
 ### Phase 3 — deployment and capacity verification
 
-* 把生产 Nginx 示例拆分为 `/socket.io/`、`/api/`、静态资源边界，显式配置 WebSocket timeout、buffering、缓存和上传路径。
-* 更新 systemd 示例，加入合理的 `TimeoutStopSec`、文件描述符限制、退出/重启策略和 2GB 内存保护建议。
-* 增加可重复的容量验证入口，覆盖 idle sockets、并发对局、观战、断线恢复、冷登录和 SIGTERM restart 场景。
-* 同步 `docs/system-design.md`、相关分篇、`docs/deployment.md`，并生成 `docs/system-design.html`。
+* [x] 把生产 Nginx 示例拆分为 `/socket.io/`、`/api/`、静态资源边界，显式配置 WebSocket timeout、buffering、缓存和上传路径。
+* [x] 更新 systemd 示例，加入合理的 `TimeoutStopSec`、文件描述符限制、退出/重启策略和 2GB 内存保护建议。
+* [x] 增加可重复的容量验证入口，覆盖 idle sockets、并发对局、观战、断线恢复、冷登录和 SIGTERM restart 场景。
+* [x] 同步 `docs/system-design.md`、相关分篇、`docs/deployment.md`，并生成 `docs/system-design.html`。
 
 ## Acceptance Criteria (evolving)
 
@@ -60,10 +60,10 @@
 * [x] 真实进程重启测试验证棋盘、回合、时钟、房间阶段和持久化记录一致。
 * [x] 达到软容量上限时，已有对局继续运行，新匹配/观战得到明确拒绝，不出现进程崩溃或静默超时。
 * [x] spectator full payload 不再重复序列化同一 black view，前端观战和视角切换测试通过。
-* [ ] 容量测试能输出 CPU、RSS、event-loop delay、ack/resume 延迟、发送字节、SQLite/persistence 错误和成功率。
+* [x] 容量测试能输出 CPU、RSS、event-loop delay、ack/resume 延迟、发送字节、SQLite/persistence 错误和成功率。
 * [ ] 目标压测建议线：500 sockets、100 active rooms、动作间隔 5–10 秒、20% 周期性重连；ack p95 < 200ms、p99 < 500ms，event-loop delay p95 < 50ms，RSS < 1.2GB，恢复成功率 > 99%，无持久化/结果保存错误。
-* [ ] 相关单元、集成、稳定性测试与 `npm run check` 通过。
-* [ ] 系统设计 Markdown、HTML 和部署说明同步。
+* [x] 相关单元、集成、稳定性测试与 `npm run check` 通过。
+* [x] 系统设计 Markdown、HTML 和部署说明同步。
 
 ## Definition of Done
 

@@ -87,23 +87,39 @@ npm run check:production
 
 ## systemd 服务
 
-创建 `/etc/systemd/system/sigrikago.service`：
+仓库中的生产模板位于 `deploy/systemd/sigrikago.service`。先把模板中的 `YOUR_LINUX_USER` 改为实际运行用户，再安装：
+
+```bash
+sudo cp deploy/systemd/sigrikago.service /etc/systemd/system/sigrikago.service
+sudo sed -i 's/YOUR_LINUX_USER/实际用户名/' /etc/systemd/system/sigrikago.service
+```
+
+模板的核心配置如下：
 
 ```ini
 [Unit]
 Description=SigrikaGo
-After=network.target
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
 
 [Service]
 Type=simple
 WorkingDirectory=/opt/sigrikago
 EnvironmentFile=/opt/sigrikago/.env
-ExecStart=/usr/bin/npm start
-Restart=always
+Environment=NODE_OPTIONS=--max-old-space-size=1152
+ExecStart=/usr/bin/node /opt/sigrikago/server/index.js
+Restart=on-failure
 RestartSec=5
-TimeoutStopSec=20
+TimeoutStopSec=25
 KillSignal=SIGTERM
+KillMode=control-group
 LimitNOFILE=65535
+TasksMax=512
+MemoryHigh=1400M
+MemoryMax=1600M
+OOMPolicy=stop
 User=YOUR_LINUX_USER
 
 [Install]
@@ -124,7 +140,7 @@ sudo systemctl status sigrikago
 sudo journalctl -u sigrikago -f
 ```
 
-`TimeoutStopSec` 必须大于应用内部 15 秒 shutdown deadline。systemd 发出 SIGTERM 后，服务会先把 readiness 切到 503，停止新写操作并通知客户端，然后关闭 Socket.IO/HTTP、刷新 pending 房间状态并断开数据库；不要使用 `KillSignal=SIGKILL` 跳过该过程。
+`TimeoutStopSec` 必须大于应用内部 15 秒 shutdown deadline。systemd 发出 SIGTERM 后，服务会先把 readiness 切到 503，停止新写操作并通知客户端，然后关闭 Socket.IO/HTTP、刷新 pending 房间状态并断开数据库；不要使用 `KillSignal=SIGKILL` 跳过该过程。直接启动 Node 而不是通过 npm 作为常驻父进程，可以让 SIGTERM 明确到达游戏进程。`MemoryHigh=1400M` 是软压力线，`MemoryMax=1600M` 为 Node 留出硬边界并给 2GB 主机上的内核、Nginx 和 SQLite 保留空间；若目标机还有其他常驻服务，应继续下调。
 
 健康检查：
 
@@ -137,25 +153,25 @@ curl --fail http://127.0.0.1:3001/health/ready
 
 ## Nginx 与 HTTPS
 
-Nginx 需要代理 HTTP 与 Socket.IO WebSocket：
+仓库中的完整模板位于 `deploy/nginx/sigrikago.conf`。它不会再把所有请求统一交给 Node，而是按职责拆分：
 
-```nginx
-server {
-    listen 80;
-    server_name go.example.com;
+| 路径 | 处理方 | 生产合同 |
+| --- | --- | --- |
+| `/socket.io/` | Node/Socket.IO | WebSocket upgrade、关闭 buffering、读写超时 90 秒 |
+| `/api/`、`/health/*` | Node/Express | 普通 HTTP 代理，允许响应 buffering |
+| `/uploads/` | Nginx alias | 直接读取持久化上传目录，5 分钟可重新验证缓存 |
+| Vite hash 资源 | Nginx/CDN | 一年 `immutable` |
+| `/assets/**` 命名资源 | Nginx/CDN | 1 小时新鲜期、24 小时 `stale-while-revalidate` |
+| `index.html`、SPA 路由 | Nginx | `no-cache`，每次发布可及时发现新入口 |
 
-    location / {
-        proxy_pass http://127.0.0.1:3001;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}
+安装前按实际域名修改 `server_name`：
+
+```bash
+sudo cp deploy/nginx/sigrikago.conf /etc/nginx/sites-available/sigrikago
+sudo sed -i 's/go.example.com/实际域名/' /etc/nginx/sites-available/sigrikago
 ```
+
+模板使用 `/opt/sigrikago/dist` 作为前端根目录、`/var/lib/sigrikago/uploads` 作为上传目录。若实际目录不同，必须同步修改 `root` 和 `alias`。Nginx 原生支持音频 Range 请求；只对 HTML、CSS、JavaScript、JSON、XML 和 SVG 启用 gzip，不重复压缩 OGG、WebP、PNG 等已压缩媒体。
 
 启用并申请证书：
 
@@ -165,6 +181,32 @@ sudo nginx -t
 sudo systemctl reload nginx
 sudo certbot --nginx -d go.example.com
 ```
+
+### CDN 接入边界
+
+第一阶段不需要修改前端 `/assets/...` URL。可以让 CDN 以 `https://go.example.com/assets/` 为同源加速路径，源站仍指向上述 Nginx；这样不会引入额外的 CORS、媒体权限和 CSP 风险。CDN 规则必须与 Nginx 缓存合同一致：hash 资源可长期缓存，普通命名图片/音乐/语音保持短缓存并允许发布时清理，`index.html` 不进入长期缓存。
+
+后续如果把 `/assets/` 上传到对象存储，应先上传新资源并验证 HTTP 200、Range 和缓存头，最后再发布新的 `index.html`；回滚时保留前一版资源，不能先删除旧 hash 文件。CDN 只负责静态资源，不代理或缓存 `/socket.io/`、动态 `/api/` 和健康检查。
+
+## 2核2G 容量验证
+
+仓库提供隔离数据库、独立 Node 进程和 JSON 报告组成的容量入口。日常 smoke 验证：
+
+```bash
+npm run verify:capacity -- --profile smoke
+```
+
+smoke 默认覆盖 20 个 Socket、5 个活跃房间、观战、20% 周期重连、对局 action ack、冷静态入口和一次 SIGTERM 重启恢复。报告写入 `artifacts/capacity/`，该目录不提交到 Git。
+
+在实际 2核2G 目标机上运行目标建议线：
+
+```bash
+npm run verify:capacity -- --profile target
+```
+
+target 默认覆盖 500 Socket、100 个活跃房间、每房 2 个观战连接、动作间隔 7.5 秒、20% 周期重连和整机恢复，持续 120 秒。压测使用独立临时 SQLite 数据库和 `NODE_ENV=capacity`，会创建大量临时账号并启用仅限非生产环境的测试 action，禁止对正式生产数据库或公网正式实例执行。
+
+可用 `--sockets`、`--rooms`、`--spectators-per-room`、`--duration`、`--action-interval`、`--reconnect-ratio` 覆盖参数。报告同时输出冷登录、动作 ack、重连/恢复延迟、CPU、RSS、heap、event-loop delay、Socket/房间/观战数量、发送字节采样以及 SQLite/persistence 错误。建议门槛为 ack p95 `< 200ms`、p99 `< 500ms`、event-loop delay p95 `< 50ms`、RSS `< 1.2GB`、恢复成功率 `> 99%` 且无持久化/结果保存错误；只有目标机报告通过后，才能据此调整线上 soft limit。
 
 ## 备份
 

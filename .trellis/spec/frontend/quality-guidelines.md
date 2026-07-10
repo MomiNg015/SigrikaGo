@@ -208,10 +208,11 @@ Required assertion points:
 
 #### 1. Scope / Trigger
 - Trigger: any change to login/startup preload behavior, runtime asset manifests, Vite build chunking, project handoff verification commands, or the GitHub Actions CI quality gate.
-- Startup preload is user-visible performance infrastructure; it must block home entry on current-user-accessible home, shop, inventory, character, owned/default BGM, and relevant voice assets, while excluding inaccessible resources such as unpurchased music audio.
+- Startup preload is user-visible performance infrastructure. It must block only on the selected character, immediately visible home shell, interaction audio, and reachable home BGM; secondary accessible shop/inventory/character/battle/voice media stays in the bounded deferred queue, while inaccessible resources such as unpurchased music audio remain excluded.
 
 #### 2. Signatures
 - `loginPreloadAssets()` returns grouped assets: `criticalImages`, `deferredImages`, `images`, `criticalAudio`, `deferredAudio`, and `audio`.
+- `battlePreloadAssets({ room, characters, tracks, user, skillVoices, systemVoices })` returns the same grouped shape and resolves battle/skill tracks from the current user's ownership and selections.
 - `preloadLoginAssets(assets, { concurrency, loadImage, loadAudio, loadEffectAudio, onProgress, onSkipped, taskTimeoutMs })` waits for critical groups, starts deferred groups in the background when callers provide them, caps concurrent loaders, bounds each loader with a timeout, and reports timed-out or failed sources through `onSkipped`.
 - `retrySkippedPreloadAssets(skippedAssets, { concurrency, retryDelaysMs, taskTimeoutMs })` retries skipped login or battle resources after the target screen has been entered.
 - `useStartupPreload({ token, ... })` must not receive a transient Socket.IO `socket` instance or include one in its dependency list.
@@ -225,10 +226,10 @@ Required assertion points:
 
 #### 3. Contracts
 - Frontend API calls through `api()` must have a bounded request timeout. Startup begins on the `preloading` view before `/api/auth/refresh` completes, so a hung auth refresh or catalog/settings request must reject and enter existing recovery flow instead of leaving the app on the preload screen forever.
-- Critical login images include current-user-visible character portraits, home entry/background imagery, shop product images, owned inventory/recruitment item images, and equipped achievement asset images.
-- Critical login audio includes common board/UI effect sounds plus owned/default-unlocked BGM and relevant character/system voices that the current user can reach. Unpurchased music product audio must not be preloaded.
-- Deferred groups remain supported for compatibility, but the current login preload manifest should not put current-user-accessible home/shop/character/BGM/voice resources in deferred groups.
-- Battle preload must derive assets from the current room, players, and mode. Modes with `skillEnabled=false` must skip skill BGM, skill voices, and skill effect images.
+- Critical login images include only the selected character portrait and `RUNTIME_IMAGE_ASSETS.home`. Other owned character portraits, shop/recruitment/inventory/equipment images, and stone decorations remain accessible through `images` but belong to `deferredImages`.
+- Critical login audio includes `RUNTIME_AUDIO_ASSETS.interaction` plus reachable home BGM candidates because home playback chooses among them. Match/result sounds, battle/skill tracks, and character/system voices remain accessible through `audio` but belong to `deferredAudio`. Unpurchased music product audio must not be preloaded.
+- Deferred work starts only after critical completion and remains concurrency-limited. Moving an asset to deferred must not remove it from the flattened compatibility arrays.
+- Battle preload must derive assets from the current room, players, mode, and current user. It blocks on both player portraits, the one resolved battle track, one resolved track per relevant base/derived skill slot, required voice candidates, and mode-specific effect images; it must not preload every configured battle track or every purchasable alternative for a slot. Modes with `skillEnabled=false` must skip skill BGM, skill voices, and skill effect images.
 - Preload progress represents completion of the blocking manifest. Timed-out tasks count as completed preload work for the current pass, are reported through `onSkipped`, and should be retried after entry with lower concurrency.
 - Startup preload must be independent from transient socket object identity. Token/session cleanup can close sockets through the socket lifecycle hook after state changes; preloading should continue once for the confirmed token instead of restarting when a mobile WebSocket reconnects or a socket instance changes.
 - The game socket should fail its initial connection attempt quickly enough for mobile recovery feedback and Socket.IO retry logic to take over. Do not rely on Socket.IO's default long handshake timeout for this app shell path.
@@ -249,9 +250,11 @@ Required assertion points:
 - Mobile WebSocket handshake stalls -> Socket.IO connection attempt times out after 6 seconds and retries with the configured reconnect delays.
 - Production env missing real secrets/origins -> `npm run check:production` fails; `npm run check` may use explicit sample env for local validation.
 - CI workflow omits docs generation or production config validation -> invalid, because documentation drift and deploy config regressions can merge even when tests pass.
+- Selected battle/skill track is unavailable or not owned -> use the existing music-library fallback for that slot; never preload an arbitrary inaccessible alternative.
 
 #### 5. Good/Base/Bad Cases
-- Good: Login reaches home after current portraits, home art, and UI/board SFX are ready while BGM and voice assets keep loading in the background.
+- Good: Login reaches home after the selected portrait, home art, UI/board SFX, and reachable home BGM are ready while shop, inventory, battle tracks, and voices load in the background.
+- Good: Match preload fetches the user's selected battle track and the resolved skill-slot tracks for the two room characters, not the whole music catalog.
 - Good: A mobile client with a flaky `/socket.io` WebSocket keeps the asset preload flow stable while Socket.IO retries the realtime connection.
 - Good: React and Socket.IO runtime code are cached in stable vendor chunks, while Pixi stays in a lazy `pixi-vendor` chunk outside the initial room entry path.
 - Good: CI runs the same core quality surfaces as local handoff so pull requests catch tests, build, production config, and system-design docs regressions before merge.
@@ -262,7 +265,8 @@ Required assertion points:
 
 #### 6. Tests Required
 - API client tests must assert a hung request is aborted and rejected instead of staying pending forever.
-- Asset grouping tests must assert representative current-user-accessible home/shop/character/music/voice assets are critical and inaccessible unpurchased music audio is excluded.
+- Asset grouping tests must assert the selected portrait/home shell/home BGM are critical; secondary owned portraits, shop/inventory/equipment, battle/skill music, and voices are deferred; inaccessible unpurchased music audio is excluded.
+- Battle grouping tests must assert selected battle music replaces the default candidate, derived skill slots remain covered, both room portraits are present, and no-skill modes omit skill-only resources.
 - Preload behavior tests must assert critical completion resolves the awaited promise and deferred work is concurrency-limited.
 - Preload behavior tests must assert skipped/timeout assets are reported and can be retried in the background.
 - Preload behavior tests must assert a hung critical loader cannot keep login preload pending forever.
@@ -295,7 +299,7 @@ await preloadLoginAssets(loginPreloadAssets({ characters, user, shopItems, inven
 retrySkippedPreloadAssets(skipped, { concurrency: 2 });
 ```
 
-`loginPreloadAssets` derives the current user's accessible blocking manifest, while `preloadLoginAssets` bounds each asset and reports skipped sources for background retry.
+`loginPreloadAssets` splits the current user's accessible manifest into a small home-critical tier and a bounded deferred tier, while `preloadLoginAssets` bounds each asset and reports skipped sources for background retry.
 
 Wrong:
 

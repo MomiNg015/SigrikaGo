@@ -102,3 +102,7 @@
 Phase 2 已删除观战 payload 内重复的黑方完整视图、把首次房间创建的 `match:found + room:update` 收敛为一份权威快照，并以 100ms debounce 合并大厅统计广播。后台可用 `lobbyStatsBroadcastEmissions / lobbyStatsBroadcastRequests` 观察合并效果。后续 move/skill delta 必须继续沿用现有 revision、gap detection 和 full snapshot 恢复合同，不能用不连续增量替代权威恢复。
 
 上线初期应以 `ack p95 < 200ms`、`event-loop delay p95 < 50ms`、`RSS < 1.2GB`、恢复成功率大于 99%、持久化与结果保存错误为 0 作为压测观察线。只有在实际 2 核 2G 主机完成包含重连和观战的阶梯压测后，才能提高软上限。后续容量工作主要是目标机阶梯压测、静态资源 CDN 分流，以及在有完整 revision/恢复测试后按动作类型继续扩展 delta protocol。
+
+Phase 3 已把上述观察线做成 `npm run verify:capacity`：smoke profile 使用 20 Socket/5 房验证工具链，target profile 使用 500 Socket/100 房、每房 2 名观战、7.5 秒动作间隔、20% 重连并执行一次 SIGTERM 恢复。脚本使用独立临时数据库和 `NODE_ENV=capacity`，报告冷登录/静态入口、ack/reconnect/resume 分位数，以及管理员运行指标快照；`artifacts/capacity/` 仅保存本机报告且不提交。该入口禁止连接正式生产数据库。
+
+静态流量的生产边界由 `deploy/nginx/sigrikago.conf` 固化：Nginx 直接发送 `dist`、`/assets/` 和 `/uploads/`，Node 只处理实时 Socket、API 与健康检查。登录资源清单把商店、库存、非当前角色、战斗音轨和语音移到后台队列；战斗加载只阻塞实际选中的 battle/skill 音轨和当前房间资源，从而避免 97MB 音乐目录在冷登录或每次匹配时形成源站突发。

@@ -56,9 +56,10 @@ describe("deployment security helpers", () => {
     expect(canUseDebugTestActions({ NODE_ENV: "production", ENABLE_TEST_ACTIONS: "true" })).toBe(false);
   });
 
-  it("keeps production auth throttling strict while allowing stability verification setup traffic", () => {
+  it("keeps production throttling strict while allowing isolated verification setup traffic", () => {
     expect(authRateLimitOptions({ NODE_ENV: "production" }).limit).toBe(20);
     expect(authRateLimitOptions({ NODE_ENV: "stability" }).limit).toBeGreaterThanOrEqual(200);
+    expect(authRateLimitOptions({ NODE_ENV: "capacity" }).limit).toBeGreaterThanOrEqual(1000);
   });
 
   it("builds a production origin allowlist from configured domains", () => {
