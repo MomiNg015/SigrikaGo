@@ -1230,3 +1230,36 @@ Removed music purchase-limit text and tightened Bright School mobile shop cards 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 38: Harden stability and complete replay history
+
+**Date**: 2026-07-10
+**Task**: Harden stability and complete replay history
+**Branch**: `codex/work-20260708-2`
+
+### Summary
+
+Fixed review issues 2-7, unified Resume and public profile rated statistics, added 50-record cursor pagination for complete personal/public replay history, and verified lint, 1859 tests, production build, E2E, and desktop/mobile stability suites.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2e1d9431` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

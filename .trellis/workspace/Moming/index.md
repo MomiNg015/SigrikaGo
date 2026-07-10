@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 37
-- **Last Active**: 2026-07-06
+- **Total Sessions**: 38
+- **Last Active**: 2026-07-10
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1232 | Active |
+| `journal-1.md` | ~1265 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 38 | 2026-07-10 | Harden stability and complete replay history | `2e1d9431` | `codex/work-20260708-2` |
 | 37 | 2026-07-06 | Fix mobile shop card layout | `66a5f454` | `codex/frontend-ui-issues` |
 | 36 | 2026-07-06 | Fix clipped Bright School card shadows | `0b305b3d` | `codex/frontend-fixes-20260705` |
 | 35 | 2026-07-06 | Preserve admin default snapshot | `0deec8eb` | `codex/frontend-fixes-20260705` |
