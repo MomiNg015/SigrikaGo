@@ -1263,3 +1263,36 @@ Fixed review issues 2-7, unified Resume and public profile rated statistics, add
 ### Next Steps
 
 - None - task complete
+
+
+## Session 39: Refine desktop home utility button hover
+
+**Date**: 2026-07-10
+**Task**: Refine desktop home utility button hover
+**Branch**: `codex/character-music-player-polish`
+
+### Summary
+
+Adjusted the six Bright School desktop utility buttons to use stronger same-direction hover tilts with scale compensation, preserving stable button containers and panel height. Updated CSS contracts, tests, system-design docs, generated HTML, and archived the Trellis task. Full npm check passed with 264 test files and 1904 tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `80d37218` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
