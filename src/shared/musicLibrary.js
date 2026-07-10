@@ -412,35 +412,66 @@ export function ownedMusicIdsWithDefaults(value = [], tracks = MUSIC_TRACKS) {
   return [...owned];
 }
 
-export function skillMusicOptionsForCharacter({ characterId, ownedMusicIds = null, tracks = MUSIC_TRACKS } = {}) {
+export function skillMusicOptionsForCharacter({
+  characterId,
+  effectType = "",
+  ownedMusicIds = null,
+  tracks = MUSIC_TRACKS
+} = {}) {
   const normalizedCharacterId = canonicalCharacterId(characterId);
   if (!normalizedCharacterId) return [];
+  const normalizedEffectType = normalizeSkillMusicEffectType(effectType);
   return Object.values(tracks).filter((track) => (
     isUsableTrack(track, MUSIC_TYPES.skill, ownedMusicIds)
     && canonicalCharacterId(track.characterId) === normalizedCharacterId
+    && normalizeSkillMusicEffectType(track.effectType) === normalizedEffectType
     && track.selectable !== false
   ));
 }
 
 export function resolveSkillMusicTrack({
   characterId,
+  effectType = "",
+  fallbackTrackId = "",
   selections = {},
   ownedMusicIds = null,
   tracks = MUSIC_TRACKS
 } = {}) {
   const normalizedCharacterId = canonicalCharacterId(characterId);
   if (!normalizedCharacterId) return null;
+  const normalizedEffectType = normalizeSkillMusicEffectType(effectType);
   const normalizedSelections = parseMusicSelections(selections);
-  const selectedId = normalizedSelections.skill?.[normalizedCharacterId];
+  const selectedId = normalizedEffectType
+    ? normalizedSelections.derivedSkill?.[normalizedCharacterId]?.[normalizedEffectType]
+    : normalizedSelections.skill?.[normalizedCharacterId];
   const selectedTrack = selectedId ? tracks[selectedId] : null;
-  if (
-    isUsableTrack(selectedTrack, MUSIC_TYPES.skill, ownedMusicIds)
-    && canonicalCharacterId(selectedTrack.characterId) === normalizedCharacterId
-  ) {
+  if (isTrackForSkillSlot(selectedTrack, {
+    characterId: normalizedCharacterId,
+    effectType: normalizedEffectType,
+    ownedMusicIds
+  })) {
     return selectedTrack;
   }
 
-  return skillMusicOptionsForCharacter({ characterId: normalizedCharacterId, ownedMusicIds, tracks })[0] ?? null;
+  const fallbackTrack = fallbackTrackId ? tracks[fallbackTrackId] : null;
+  if (isTrackForSkillSlot(fallbackTrack, {
+    characterId: normalizedCharacterId,
+    effectType: normalizedEffectType,
+    ownedMusicIds: null
+  })) {
+    return fallbackTrack;
+  }
+
+  return skillMusicOptionsForCharacter({
+    characterId: normalizedCharacterId,
+    effectType: normalizedEffectType,
+    ownedMusicIds,
+    tracks
+  })[0] ?? null;
+}
+
+export function normalizeSkillMusicEffectType(effectType) {
+  return String(effectType ?? "").trim();
 }
 
 export function resolveBackgroundMusic({
@@ -543,14 +574,14 @@ export function characterVoiceMapForSkill(voices = CHARACTER_SKILL_VOICES, syste
 function findSkillTrack(skillPreview, tracks, selections = {}, ownedMusicIds = null) {
   const characterId = canonicalCharacterId(skillPreview?.characterId ?? skillPreview?.character?.id);
   if (!characterId) return null;
-  const fixedTrack = skillPreview?.musicTrackId ? tracks[skillPreview.musicTrackId] : null;
-  if (
-    isUsableTrack(fixedTrack, MUSIC_TYPES.skill, null)
-    && canonicalCharacterId(fixedTrack.characterId) === characterId
-  ) {
-    return fixedTrack;
-  }
-  return resolveSkillMusicTrack({ characterId, selections, ownedMusicIds, tracks });
+  return resolveSkillMusicTrack({
+    characterId,
+    effectType: skillPreview?.effectType,
+    fallbackTrackId: skillPreview?.musicTrackId,
+    selections,
+    ownedMusicIds,
+    tracks
+  });
 }
 
 function resolveTypedTrack(type, selectedId, ownedMusicIds, tracks, defaultId) {
@@ -612,11 +643,38 @@ function normalizeMusicSelections(value = {}) {
         .filter(([characterId, trackId]) => characterId && trackId)
     )
     : {};
+  const derivedSkill = value.derivedSkill && typeof value.derivedSkill === "object" && !Array.isArray(value.derivedSkill)
+    ? Object.fromEntries(
+      Object.entries(value.derivedSkill)
+        .map(([characterId, slotSelections]) => {
+          const normalizedCharacterId = canonicalCharacterId(characterId);
+          const normalizedSlots = slotSelections && typeof slotSelections === "object" && !Array.isArray(slotSelections)
+            ? Object.fromEntries(
+              Object.entries(slotSelections)
+                .map(([effectType, trackId]) => [
+                  normalizeSkillMusicEffectType(effectType),
+                  String(trackId ?? "").trim()
+                ])
+                .filter(([effectType, trackId]) => effectType && trackId)
+            )
+            : {};
+          return [normalizedCharacterId, normalizedSlots];
+        })
+        .filter(([characterId, slotSelections]) => characterId && Object.keys(slotSelections).length > 0)
+    )
+    : {};
   return {
     ...(typeof value.home === "string" && value.home.trim() ? { home: value.home.trim() } : {}),
     ...(typeof value.battle === "string" && value.battle.trim() ? { battle: value.battle.trim() } : {}),
-    skill
+    skill,
+    ...(Object.keys(derivedSkill).length > 0 ? { derivedSkill } : {})
   };
+}
+
+function isTrackForSkillSlot(track, { characterId, effectType, ownedMusicIds }) {
+  return isUsableTrack(track, MUSIC_TYPES.skill, ownedMusicIds)
+    && canonicalCharacterId(track.characterId) === characterId
+    && normalizeSkillMusicEffectType(track.effectType) === effectType;
 }
 
 function parseJsonObject(value) {

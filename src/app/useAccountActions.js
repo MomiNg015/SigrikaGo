@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { api } from "../api/client.js";
 import { CHARACTERS } from "../shared/characters.js";
 
@@ -15,6 +15,7 @@ export function useAccountActions({
   setUser,
   setView
 }) {
+  const musicSelectionRequestRef = useRef(new Map());
   const handleAuth = useCallback((nextToken, nextUser) => {
     setView("preloading");
     setAssetProgress(0);
@@ -66,13 +67,19 @@ export function useAccountActions({
     updateUser(data.user);
   }, [token, updateUser]);
 
-  const selectCharacterMusic = useCallback(async ({ characterId, trackId }) => {
+  const selectCharacterMusic = useCallback(async ({ characterId, trackId, effectType = "" }) => {
+    const requestKey = `${characterId}:${effectType}`;
+    const requestId = (musicSelectionRequestRef.current.get(requestKey) ?? 0) + 1;
+    musicSelectionRequestRef.current.set(requestKey, requestId);
     const data = await api("/api/me/music-selection", {
       method: "POST",
       token,
-      body: { characterId, trackId }
+      body: { characterId, trackId, ...(effectType ? { effectType } : {}) }
     });
-    updateUser(data.user);
+    if (musicSelectionRequestRef.current.get(requestKey) === requestId) {
+      updateUser(data.user);
+    }
+    return data.user;
   }, [token, updateUser]);
 
   return { applyStoneDecoration, handleAuth, logout, selectCharacter, selectCharacterMusic };

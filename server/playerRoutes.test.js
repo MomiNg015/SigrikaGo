@@ -107,6 +107,37 @@ describe("player route helpers", () => {
     expect(updatedUsers).toEqual([]);
   });
 
+  it("forwards derived skill slot identity to music selection logic", async () => {
+    let selectionArgs = null;
+    const handlers = createPlayerRouteHandlers({
+      prisma: { gameRecord: { findMany: async () => [] } },
+      findRoomForUser: () => null,
+      roomView: () => ({}),
+      characterSelectionData: async () => ({ characters: {}, disabledSlugs: new Set() }),
+      selectSkillMusic: async (args) => {
+        selectionArgs = args;
+        return { user: { id: "user-1" } };
+      }
+    });
+    const res = createResponse();
+
+    await handlers.updateMusicSelection({
+      user: { id: "user-1" },
+      body: {
+        characterId: "aemeath",
+        trackId: "aemeath-voyage-star-default",
+        effectType: "voyage-star"
+      }
+    }, res);
+
+    expect(selectionArgs).toMatchObject({
+      characterId: "aemeath",
+      trackId: "aemeath-voyage-star-default",
+      effectType: "voyage-star"
+    });
+    expect(res.statusCode).toBe(200);
+  });
+
   it("returns character chain counts after selecting a sortie character", async () => {
     const handlers = createPlayerRouteHandlers({
       prisma: {

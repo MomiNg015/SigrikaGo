@@ -30,6 +30,69 @@ describe("selectUserSkillMusic", () => {
     })).rejects.toMatchObject({ status: 403 });
   });
 
+  it("persists a derived-skill selection independently from the base skill", async () => {
+    const updates = [];
+    const tracks = {
+      "aemeath-skill-default": {
+        id: "aemeath-skill-default",
+        name: "Aemeath Skill BGM",
+        type: "skill",
+        characterId: "aemeath",
+        defaultUnlocked: true,
+        playback: { mode: "single-loop", src: "/base.ogg", loop: true }
+      },
+      "aemeath-voyage-star-alt": {
+        id: "aemeath-voyage-star-alt",
+        name: "Voyage Star Alt",
+        type: "skill",
+        characterId: "aemeath",
+        effectType: "voyage-star",
+        defaultUnlocked: false,
+        playback: { mode: "single-loop", src: "/derived.ogg", loop: true }
+      }
+    };
+    const user = testUser({
+      ownedMusicIds: JSON.stringify(["aemeath-voyage-star-alt"]),
+      musicSelections: JSON.stringify({ skill: { aemeath: "aemeath-skill-default" } })
+    });
+
+    await selectUserSkillMusic({
+      prisma: prismaWithUserUpdate(user, updates),
+      user,
+      characterId: "aemeath",
+      effectType: "voyage-star",
+      trackId: "aemeath-voyage-star-alt",
+      tracks
+    });
+
+    expect(JSON.parse(updates[0].data.musicSelections)).toEqual({
+      skill: { aemeath: "aemeath-skill-default" },
+      derivedSkill: { aemeath: { "voyage-star": "aemeath-voyage-star-alt" } }
+    });
+  });
+
+  it("rejects a base-skill track submitted to a derived slot", async () => {
+    const tracks = {
+      "aemeath-skill-default": {
+        id: "aemeath-skill-default",
+        name: "Aemeath Skill BGM",
+        type: "skill",
+        characterId: "aemeath",
+        defaultUnlocked: true,
+        playback: { mode: "single-loop", src: "/base.ogg", loop: true }
+      }
+    };
+
+    await expect(selectUserSkillMusic({
+      prisma: prismaWithUserUpdate(testUser()),
+      user: testUser(),
+      characterId: "aemeath",
+      effectType: "voyage-star",
+      trackId: "aemeath-skill-default",
+      tracks
+    })).rejects.toMatchObject({ status: 403 });
+  });
+
   it("rejects music that belongs to another character", async () => {
     await expect(selectUserSkillMusic({
       prisma: prismaWithUserUpdate(testUser({ ownedMusicIds: JSON.stringify(["sigrika-skill-dream"]) })),

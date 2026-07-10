@@ -252,6 +252,15 @@ describe("root CSS entry contract", () => {
     ]);
     expect(componentRepairsEntry).not.toContain(".home-top-strip {");
 
+    const characterMusicPlayerEntry = readFileSync(
+      new URL("./themes/bright-school/component-repairs/character-music-player.css", import.meta.url),
+      "utf8"
+    );
+    expect(cssImports(characterMusicPlayerEntry)).toEqual([
+      "./character-music-player/player-shell.css",
+      "./character-music-player/track-sheet.css"
+    ]);
+
     const foundationHomeEntry = readFileSync(
       new URL("./themes/bright-school/component-repairs/foundation-home.css", import.meta.url),
       "utf8"
@@ -1311,6 +1320,13 @@ describe("root CSS entry contract", () => {
     expect(modalsEntry).not.toContain(".modal-backdrop {");
     expect(modalsEntry).not.toContain(".resume-modal {");
     expect(modalsEntry).not.toContain(".character-detail {");
+
+    const characterMusicPlayerEntry = readFileSync(new URL("./modals/character-music-player.css", import.meta.url), "utf8");
+    expect(cssImports(characterMusicPlayerEntry)).toEqual([
+      "./character-music-player/shell-title.css",
+      "./character-music-player/track-sheet.css",
+      "./character-music-player/motion.css"
+    ]);
 
     const characterOpeningEntry = readFileSync(new URL("./modals/character-opening.css", import.meta.url), "utf8");
     expect(cssImports(characterOpeningEntry)).toEqual([

@@ -331,6 +331,57 @@ app.use("/api", authHttp, createPlayerRouter({
 
 Tests touching player self-service HTTP behavior should update `server/playerRoutes.test.js`; lower-level character resolution should stay in `server/characterSelection.test.js`, resume payload behavior in `server/resume.test.js`, and music selection rules in `server/musicSelection.test.js`.
 
+### Scenario: Ordinary and Derived Skill Music Selection
+
+#### 1. Scope / Trigger
+- Trigger: changing `/api/me/music-selection`, `saveMusicSelection()`, `MUSIC_TRACKS.effectType`, or `User.musicSelections` parsing/serialization.
+
+#### 2. Signatures
+- `POST /api/me/music-selection` accepts `{ category: "skill", characterId, trackId, effectType? }`.
+- `saveMusicSelection({ prisma, user, category, characterId, trackId, effectType, tracks? })` returns the updated public user.
+- Stored JSON uses `skill[characterId] = trackId` for ordinary skills and `derivedSkill[characterId][effectType] = trackId` for derived skills.
+
+#### 3. Contracts
+- Empty or missing `effectType` identifies the ordinary-skill slot; a normalized non-empty value identifies exactly one derived-skill slot.
+- The chosen track must be owned or `defaultUnlocked`, have `category === "skill"`, match `characterId`, and match normalized `effectType` exactly.
+- Updating one slot preserves every other ordinary and derived slot. Existing JSON without `derivedSkill` remains valid and needs no database migration.
+- `server/playerRoutes.js` forwards `req.body.effectType`; validation and persistence stay in `server/musicSelection.js`.
+
+#### 4. Validation & Error Matrix
+- Missing character or track -> existing required-selection error.
+- Track not owned -> ownership error; no write.
+- Track character mismatch -> character mismatch error; no write.
+- Ordinary track sent to derived slot, or derived track sent to ordinary/different derived slot -> slot mismatch error; no write.
+- Valid selection -> update only the addressed slot and return refreshed public user.
+
+#### 5. Good/Base/Bad Cases
+- Good: selecting Aemeath `voyage-star` writes `derivedSkill.aemeath["voyage-star"]` while keeping `skill.aemeath` unchanged.
+- Base: old `{ "skill": { "aemeath": "..." } }` JSON gains `derivedSkill` lazily on the first derived selection.
+- Bad: filtering skill tracks only by `characterId`, because ordinary and derived tracks then overwrite or appear in the wrong slot.
+
+#### 6. Tests Required
+- `server/musicSelection.test.js` asserts independent persistence, exact `effectType` validation, ownership, old JSON compatibility, and sibling-slot preservation.
+- `server/playerRoutes.test.js` asserts the route forwards `effectType` unchanged.
+- `src/shared/musicLibrary.test.js` asserts parse/normalize/serialize and exact ordinary/derived resolution.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+nextSelections.skill[characterId] = trackId;
+```
+
+Correct:
+
+```js
+if (effectType) {
+  nextSelections.derivedSkill[characterId][effectType] = trackId;
+} else {
+  nextSelections.skill[characterId] = trackId;
+}
+```
+
 ### Public/Lobby HTTP Boundary Contract
 
 `server/publicRoutes.js` owns public catalog and lobby HTTP handlers:

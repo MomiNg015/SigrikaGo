@@ -1,0 +1,22 @@
+@keyframes character-music-reel-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .character-music-toggle,
+  .character-music-title-trigger,
+  .character-music-chevron,
+  .character-music-option,
+  .character-music-glyph.is-loading {
+    animation: none;
+    transition-duration: 0.01ms;
+  }
+
+  .character-music-marquee-viewport {
+    overflow-x: auto;
+    scrollbar-width: none;
+    touch-action: pan-x;
+  }
+
+  .character-music-marquee-viewport::-webkit-scrollbar { display: none; }
+}

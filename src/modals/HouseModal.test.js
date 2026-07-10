@@ -6,7 +6,7 @@ import { activeCharacterItemEffects, characterCandyPortrait, characterSortieDisa
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
 import HouseModal from "./HouseModal.jsx";
 import ResumeModal from "./ResumeModal.jsx";
-import { CharacterDetailDialog, CharacterRecordsDialog } from "./house/HouseNestedDialogs.jsx";
+import { characterMusicSlots, CharacterDetailDialog, CharacterRecordsDialog } from "./house/HouseNestedDialogs.jsx";
 import { sortCharacterStatsByGames, splitRecordSummary, UserProfileCard } from "./UserProfileCard.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
@@ -628,15 +628,16 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain(".character-detail-title-line");
     expect(css).toMatch(/\.character-detail-heading h3\s*\{[^}]*white-space:\s*nowrap;[^}]*word-break:\s*keep-all;[^}]*writing-mode:\s*horizontal-tb;/s);
     expect(css).toContain("width: 188px;");
-    expect(css).toContain("height: 38px;");
+    expect(css).toContain("height: 46px;");
     expect(css).toContain(".character-music-sketch");
     expect(css).toContain("pointer-events: none;");
     expect(css).toContain("vector-effect: non-scaling-stroke;");
     expect(css).toContain("repeating-linear-gradient(0deg");
     expect(css).toMatch(/\.character-music-player\s*\{[^}]*border:\s*0;/s);
     expect(css).toMatch(/\.character-music-toggle\s*\{[^}]*border:\s*0;/s);
-    expect(css).toContain(".character-music-toggle::before");
-    expect(css).toContain("font-weight: 950;");
+    expect(css).toContain(".character-music-title-trigger");
+    expect(css).toContain(".character-music-sheet");
+    expect(css).toContain("font-weight: 700;");
     expect(css).toContain(".character-music-player.is-loading .character-music-toggle");
     expect(css).toContain(".character-music-player.is-playing .character-music-toggle");
     expect(css).toMatch(/\.character-music-toggle:hover:not\(:disabled\),\s*\.character-music-toggle:focus-visible\s*\{[^}]*transform:\s*translateY\(-1px\);/s);
@@ -652,11 +653,13 @@ describe("deriveCharacterRecordStats", () => {
     expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px);");
     expect(phoneCss).toContain("flex-direction: column;");
     expect(phoneCss).toContain("width: min(164px, 48vw);");
+    expect(phoneCss).toContain("height: 46px;");
     expect(phoneCss).toContain("justify-self: end;");
     expect(finalMobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px) !important");
     expect(finalMobileCss).toContain("flex-direction: column !important");
     expect(finalMobileCss).toContain("padding-right: 0 !important");
     expect(finalMobileCss).toContain("width: min(164px, 48vw) !important");
+    expect(finalMobileCss).toContain("height: 46px !important");
     expect(finalMobileCss).toContain("writing-mode: horizontal-tb !important");
     expect(brightSchoolMobileCss).toContain(".character-detail-heading h3");
     expect(brightSchoolMobileCss).toContain(".character-cv-label");
@@ -880,7 +883,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(finalMobileCss).toContain("overflow-wrap: normal !important");
   });
 
-  it("shows a selector when the user owns multiple skill BGM tracks for the character", () => {
+  it("shows a title disclosure when the user owns multiple base-skill BGM tracks", () => {
     const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
       character: {
         id: "sigrika",
@@ -899,9 +902,72 @@ describe("deriveCharacterRecordStats", () => {
       onClose: () => {}
     }));
 
-    expect(html).toContain("character-music-select");
-    expect(html).toContain("Sigrika Skill BGM");
+    expect(html).toContain("character-music-title-trigger");
+    expect(html).not.toContain("character-music-select");
     expect(html).toContain("Sigrika Dream BGM");
+  });
+
+  it("separates base and derived-skill music into independent slots", () => {
+    const character = {
+      id: "aemeath",
+      skill: {
+        name: "小爱出击",
+        params: {
+          derivedSkills: [{
+            id: "voyage-star",
+            effectType: "voyage-star",
+            name: "远航星",
+            musicTrackId: "aemeath-voyage-star-default"
+          }]
+        }
+      }
+    };
+    const musicTracks = {
+      "aemeath-skill-default": {
+        id: "aemeath-skill-default",
+        name: "小爱出击 BGM",
+        type: "skill",
+        characterId: "aemeath",
+        defaultUnlocked: true,
+        playback: { src: "/base.ogg" }
+      },
+      "aemeath-voyage-star-default": {
+        id: "aemeath-voyage-star-default",
+        name: "远航星 BGM",
+        type: "skill",
+        characterId: "aemeath",
+        effectType: "voyage-star",
+        defaultUnlocked: true,
+        playback: { src: "/derived.ogg" }
+      }
+    };
+
+    const slots = characterMusicSlots({
+      character,
+      derivedSkills: character.skill.params.derivedSkills,
+      musicTracks,
+      user: { ownedMusicIds: [], musicSelections: { skill: {} } }
+    });
+
+    expect(slots.map((slot) => ({
+      id: slot.id,
+      label: slot.label,
+      trackId: slot.track.id,
+      optionIds: slot.options.map((option) => option.id)
+    }))).toEqual([
+      {
+        id: "base",
+        label: "普通技·小爱出击",
+        trackId: "aemeath-skill-default",
+        optionIds: ["aemeath-skill-default"]
+      },
+      {
+        id: "derived:voyage-star",
+        label: "派生技·远航星",
+        trackId: "aemeath-voyage-star-default",
+        optionIds: ["aemeath-voyage-star-default"]
+      }
+    ]);
   });
 
   it("makes the character description area replay the detail voice", () => {

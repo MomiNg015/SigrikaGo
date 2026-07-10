@@ -46,6 +46,8 @@ Non-user admin deployment defaults live in `server/adminDefaultSnapshot.js`, gen
 
 `server/userAssets.js` 是账号资产兼容边界：`parseAssetList()` / `parseOwnedItemCounts()` 处理旧字符串和公开数组 payload，`syncStructuredUserAssets()` 将 legacy 字段替换式同步到 `UserCharacter`、`UserDecoration`、`UserItem` 和 `UserItemEffect`，`publicUserAssets()` 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。`server/db.js` 的 `publicUser()` 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。
 
+`User.musicSelections` 的技能选曲 JSON 保持向后兼容：普通技能使用 `skill[characterId] = trackId`，派生技使用 `derivedSkill[characterId][effectType] = trackId`。服务端音乐选择边界按角色与效果类型验证曲目归属和库存后只更新对应槽位，因此派生技选择不会覆盖普通技能选择，也不需要新增数据库列或迁移旧 JSON。
+
 Character-target inventory item use loads structured `userCharacters` and validates ownership through `publicUserAssets()`. During the legacy-to-structured migration, structured ownership rows can satisfy character targeting even when the old `ownedCharacters` string mirror is stale.
 
 仇远（`qiuyuan`）是内置剑客角色，立绘位于 `/assets/characters/qiuyuan.png`，获得方式文案为“部员招募获得”。莫宁（`mornye` / Mornye）是内置科学家角色，立绘位于 `/assets/characters/mornye.png`，获得方式文案为“招募获得”。部员招募尚未实装时，`server/userAssets.js` 将这类角色视为管理员限定资源：管理员公开资产会自动补齐 `qiuyuan` 和 `mornye`，普通玩家不会默认拥有或部署。

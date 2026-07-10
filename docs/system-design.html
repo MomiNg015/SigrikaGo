@@ -145,6 +145,9 @@
 <li>玩家资源包含角色、装饰、道具、音乐、抽卡奖励、蓝宝石和金币；结构化关系表与旧字符串字段仍处在兼容迁移期，legacy 解析、结构化同步和公开资产合并规则集中在 <code>server/userAssets.js</code>。</li>
 </ul>
 <ul>
+<li>部员手册角色详情 BGM 现在按普通技能与各派生技效果类型独立选曲：普通技继续使用 <code>musicSelections.skill[characterId]</code>，派生技使用 <code>musicSelections.derivedSkill[characterId][effectType]</code>，服务端按角色、效果类型和库存精确校验后只更新对应槽位。播放器共享磁带机结构、技能页签、单行溢出跑马灯、浮动选曲纸页和局部保存/播放错误恢复，Bright School 主题负责方格纸、硬阴影与 Rough.js 手绘皮肤；手机保留标题旁内联布局和 44px 播放触控目标。</li>
+</ul>
+<ul>
 <li>Warehouse inventory uses single-row item entries on desktop and compact single-column row cards on mobile. Mobile warehouse item rows place the quantity chip above the use button, right-aligned in the action column. Disabled warehouse use actions such as recruitment-only items render as gray native disabled buttons on desktop and mobile. Character-target item selection disables unavailable character cards with gray native disabled state only, without showing reason badges or reason text in the card/title.</li>
 </ul>
 <ul>
@@ -478,7 +481,7 @@
 <li>Player theme metadata now has one source of truth in <code>src/app/visualTheme.js</code>: <code>VISUAL_THEME_OPTIONS</code> includes both available and future settings choices, while <code>VISUAL_THEMES</code> / <code>VISUAL_THEME_IDS</code> expose only enabled themes that can be persisted and imported. Settings renders from the full option registry, so future styles can be listed without duplicating labels in the modal. CSS refactors must preserve the root theme order <code>shared -&gt; isolation -&gt; theme-components -&gt; bright-school -&gt; mobile-adaptive</code>; board, Pixi skill overlays, point buttons, and Bright School effect files remain protected skill-presentation surfaces and should not be broad-selector cleanup targets.</li>
 </ul>
 <ul>
-<li>CSS round-2 inventory lives in <code>src/styles/cssLayerInventory.js</code> with tests in <code>src/styles/cssLayerInventory.test.js</code>. The inventory separates reorganizable shared domains from high-risk gameplay/room CSS, Bright School-specific overrides, final mobile safety layers, and skill-presentation protected files so later cleanup can stay scoped before visual and skill regression verification.</li>
+<li>CSS round-2 inventory lives in <code>src/styles/cssLayerInventory.js</code> with tests in <code>src/styles/cssLayerInventory.test.js</code>. The inventory separates reorganizable shared domains from high-risk gameplay/room CSS, Bright School-specific overrides, final mobile safety layers, and skill-presentation protected files so later cleanup can stay scoped before visual and skill regression verification. Character detail music styling is registered as two import-only splits: shared shell/title, track-sheet, and motion files under <code>modals/character-music-player/</code>, plus Bright School shell and track-sheet skin files under <code>component-repairs/character-music-player/</code>.</li>
 </ul>
 <ul>
 <li>CSS scalability cleanup now records all-<code>src/styles</code> debt and expansion contracts in <code>CSS_DEBT_BASELINE</code>, <code>CSS_Z_INDEX_CONTRACT</code>, <code>CSS_MOTION_CONTRACT</code>, and <code>CSS_BREAKPOINT_CONTRACT</code>. The current baseline includes the admin story node settings window CSS, story workbook import feedback, plus the frontend layout-polish contracts for hidden player-window scrollbars, mobile music shop cards, left-aligned replay times, story-player parent padding, mobile announcement badges, and Bright School mobile utility-image feedback containment; it covers file count, CSS bytes, <code>!important</code>, hardcoded hex values, media-query files, reduced-motion files, and high z-index files as a non-growth guardrail rather than a visual target. New z-index values at or above <code>1000</code>, new motion-heavy families, and new media-query families must be registered or moved onto existing token/layer contracts so desktop and mobile expansion stays auditable.</li>
@@ -3294,6 +3297,7 @@
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
 <p><code>server/userAssets.js</code> 是账号资产兼容边界：<code>parseAssetList()</code> / <code>parseOwnedItemCounts()</code> 处理旧字符串和公开数组 payload，<code>syncStructuredUserAssets()</code> 将 legacy 字段替换式同步到 <code>UserCharacter</code>、<code>UserDecoration</code>、<code>UserItem</code> 和 <code>UserItemEffect</code>，<code>publicUserAssets()</code> 合并 legacy 字段与已加载结构化关系并补齐内置/积分解锁角色、角色羁绊次数和道具效果。<code>server/db.js</code> 的 <code>publicUser()</code> 只组合账号基础字段、模式战绩、音乐设置和该资产投影，不再重复资产兼容规则。</p>
+<p><code>User.musicSelections</code> 的技能选曲 JSON 保持向后兼容：普通技能使用 <code>skill[characterId] = trackId</code>，派生技使用 <code>derivedSkill[characterId][effectType] = trackId</code>。服务端音乐选择边界按角色与效果类型验证曲目归属和库存后只更新对应槽位，因此派生技选择不会覆盖普通技能选择，也不需要新增数据库列或迁移旧 JSON。</p>
 <p>Character-target inventory item use loads structured <code>userCharacters</code> and validates ownership through <code>publicUserAssets()</code>. During the legacy-to-structured migration, structured ownership rows can satisfy character targeting even when the old <code>ownedCharacters</code> string mirror is stale.</p>
 <p>仇远（<code>qiuyuan</code>）是内置剑客角色，立绘位于 <code>/assets/characters/qiuyuan.png</code>，获得方式文案为“部员招募获得”。莫宁（<code>mornye</code> / Mornye）是内置科学家角色，立绘位于 <code>/assets/characters/mornye.png</code>，获得方式文案为“招募获得”。部员招募尚未实装时，<code>server/userAssets.js</code> 将这类角色视为管理员限定资源：管理员公开资产会自动补齐 <code>qiuyuan</code> 和 <code>mornye</code>，普通玩家不会默认拥有或部署。</p>
 <h3>LoginSession</h3>
@@ -4061,13 +4065,13 @@
 <li>BGM 资源配置集中在 <code>MUSIC_TRACKS</code>，按 <code>home</code>、<code>battle</code>、<code>skill</code> 三类管理。</li>
 </ul>
 <ul>
-<li>用户音乐库存与选择使用 <code>User.ownedMusicIds</code> 和 <code>User.musicSelections</code> 持久化；公开用户信息会自动并入 <code>defaultUnlocked</code> 曲目。角色技能 BGM 选择保存在 <code>musicSelections.skill[characterId]</code>，对局中技能预览和最近技能角色 BGM 都优先使用该选择，未拥有或角色不匹配时回退默认曲目。</li>
+<li>用户音乐库存与选择使用 <code>User.ownedMusicIds</code> 和 <code>User.musicSelections</code> 持久化；公开用户信息会自动并入 <code>defaultUnlocked</code> 曲目。角色普通技能 BGM 继续保存在 <code>musicSelections.skill[characterId]</code>，派生技则按效果类型独立保存在 <code>musicSelections.derivedSkill[characterId][effectType]</code>。解析器按 <code>characterId + effectType</code> 精确匹配槽位，选中曲目必须属于该角色、该效果类型且已拥有；无有效选择时依次回退派生技定义的 <code>musicTrackId</code> 和该槽第一首可用曲目。旧用户只有 <code>skill</code> 字段时无需迁移即可继续工作。</li>
 </ul>
 <ul>
-<li>角色详情弹窗右上角包含独立的角色 BGM 预览播放器。播放器显示当前曲名，左侧播放/暂停按钮与播放器胶囊连为一体，支持播放/暂停并保留 intro/loop 进度；当该用户拥有同一角色的多首技能 BGM 时显示下拉选择，切换后通过 <code>/api/me/music-selection</code> 持久化并同步影响后续对局 BGM。</li>
+<li>角色详情弹窗右上角包含独立的角色 BGM 预览播放器。普通技与每个配置了曲目的派生技显示为独立技能页签，当前技能槽位使用自己的曲目列表和选择；切换技能页签或曲目时，如果预览正在播放，新曲会自动接续播放，未播放时不会自动起播。选择通过 <code>/api/me/music-selection</code> 持久化，派生技请求附带 <code>effectType</code>，保存失败时播放器内联提示并回滚到上一次有效曲目，且可就地重试。</li>
 </ul>
 <ul>
-<li>Character detail BGM preview enters an immediate <code>loading</code> UI state before first-use WebAudio fetch/decode completes, keeps <code>aria-busy</code> on the local player during startup, and releases the global background-music pause request if startup fails or the selected track changes. Its Rough.js sketch layer is decorative and generated after mount, outside hover/click handlers, so player interaction feedback is not coupled to audio decoding or hand-drawn SVG generation. The Rough.js layer owns the visible player frame and play-button ring; CSS borders remain disabled to prevent duplicate outlines while still providing paper texture and state fills.</li>
+<li>Character detail BGM preview enters an immediate <code>loading</code> UI state before first-use WebAudio fetch/decode completes, keeps <code>aria-busy</code> on the local player during startup, and releases the global background-music pause request if startup fails or the selected track changes. Its shared structure is a compact cassette player with a CSS play/pause/loading glyph, a single-line title, a slot marker, and a fixed-position track sheet rendered into the nearest modal backdrop (with the themed app shell as fallback), keeping the sheet above nested detail content without losing theme ancestry; Bright School adds the paper-grid skin plus the Rough.js frame, key ring, and title rules after mount. Overflowing titles use measured one-way marquee motion with start/end pauses, while short titles stay still; reduced-motion users receive a non-animated horizontally scrollable title instead. The sheet keeps at most about four rows before internal scrolling, remains open after selection, and closes on trigger, outside press, or Escape with focus restoration.</li>
 </ul>
 <ul>
 <li>角色 BGM 预览播放期间会向全局 <code>BackgroundMusic</code> 发出暂停请求；背景 BGM 会停止当前 source、保存 offset，并在预览暂停、切歌或关闭详情弹窗释放请求后按 offset 重新调度，从原进度恢复，避免双 BGM 叠播或大厅 BGM 从头重启。</li>
@@ -4396,6 +4400,9 @@
 </ul>
 <ul>
 <li>Bright School portrait mobile house/profile styling is also a nested import-only entry: <code>src/styles/themes/bright-school/mobile/house-profile.css</code> owns import order while <code>src/styles/themes/bright-school/mobile/house-profile/</code> contains shell-profile-stats, character-grid-cards, owned-decorations, and character-detail-music rules.</li>
+</ul>
+<ul>
+<li>部员手册角色详情的共享 BGM 控件使用紧凑磁带机结构：凸起圆形播放键、单行曲名、技能槽标记和浮动选曲纸页在所有主题下保持相同行为，Bright School 仅叠加方格纸、硬阴影、粉绿强调色与 Rough.js 手绘线条。共享 <code>modals/character-music-player.css</code> 与主题 <code>component-repairs/character-music-player.css</code> 都是 import-only 入口，分别把外壳/标题、选曲纸页、动效和 Bright School 外壳/纸页皮肤分到同名子目录，避免播放器迭代重新形成超大 CSS 文件。曲名只在溢出时单向自动滚动，选曲纸页内只有当前 hover/focus 的溢出行滚动；派生技与普通技通过页签明确分组。桌面和手机继续把播放器内联放在角色标题旁，手机宽度收束但播放键保持 44px 触控目标，选曲纸页使用视口约束和内部四行滚动而不把详情弹窗撑宽。</li>
 </ul>
 <ul>
 <li>Bright School portrait mobile commerce and warehouse layout is also a nested import-only entry: <code>src/styles/themes/bright-school/mobile/commerce-warehouse.css</code> owns import order while <code>src/styles/themes/bright-school/mobile/commerce-warehouse/</code> contains shop-layout, warehouse-shell, and warehouse-items rules. The portrait shop sub-entry mirrors the shared phone grid so the mascot stays right-bottom at 50% width with proportional scaling, while the coin wallet remains left-bottom.</li>

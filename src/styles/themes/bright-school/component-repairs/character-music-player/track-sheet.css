@@ -1,0 +1,68 @@
+/* Bright School hand-drawn track sheet skin. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-sheet {
+  border: 2px solid var(--bright-border) !important;
+  border-radius: 9px !important;
+  background-color: #fffdf6 !important;
+  background-image:
+    linear-gradient(rgba(154, 211, 222, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 211, 222, 0.12) 1px, transparent 1px) !important;
+  background-size: 14px 14px !important;
+  color: var(--bright-ink) !important;
+  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.22) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-tab {
+  min-height: 32px !important;
+  border: 1px solid var(--bright-border) !important;
+  border-radius: 6px 6px 3px 3px !important;
+  background: #e7f5f8 !important;
+  color: var(--bright-ink) !important;
+  box-shadow: none !important;
+  font-family: var(--font-ui-default) !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-tab:nth-child(even) { transform: rotate(0.7deg); }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-tab[aria-selected="true"] {
+  background: var(--bright-pink) !important;
+  color: var(--bright-ink) !important;
+  transform: translateY(1px) rotate(-0.5deg);
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-option {
+  min-height: 40px !important;
+  border: 1px solid rgba(61, 43, 37, 0.56) !important;
+  border-radius: 7px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  color: var(--bright-ink) !important;
+  box-shadow: none !important;
+  font-family: var(--font-ui-default) !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-option:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-option:focus-visible { background: #eaf7fa !important; transform: translateY(-1px) !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-option.is-selected { background: #d9f2df !important; color: #2a523d !important; }
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-option-check {
+  background: #fff4b9 !important;
+  color: #315f4b !important;
+  box-shadow: 1px 1px 0 rgba(61, 43, 37, 0.2) !important;
+}
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-sheet-error {
+  border: 1px solid #963b4c !important;
+  border-radius: 6px !important;
+  background: #ffe1e5 !important;
+  color: #7f2f3e !important;
+  box-shadow: none !important;
+  font-family: var(--font-ui-default) !important;
+  text-shadow: none !important;
+  transform: rotate(-0.4deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-slot-mark,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-tab,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-sheet-error { transform: none !important; }
+}

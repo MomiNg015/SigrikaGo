@@ -41,16 +41,22 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-player {
     width: min(164px, 48vw) !important;
     max-width: 100% !important;
-    height: 36px !important;
-    min-height: 36px !important;
-    padding: 3px 8px 3px 3px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 1px 5px 1px 1px !important;
     justify-self: end !important;
     align-self: start !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-name,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-select {
-    max-width: 112px !important;
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-title-trigger,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-title-static {
+    gap: 3px !important;
+    padding-inline: 3px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-slot-mark {
+    max-width: 38px !important;
+    padding-inline: 3px !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy p,

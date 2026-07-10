@@ -12,6 +12,7 @@ import {
   VICTORY_SOUND,
   latestSkillCharacterId,
   ownedMusicIdsWithDefaults,
+  parseMusicSelections,
   resolveSkillMusicTrack,
   resolveBackgroundMusic,
   resolveResultSound,
@@ -463,7 +464,7 @@ describe("background music library", () => {
     }).map((track) => track.id)).toEqual(["sigrika-skill-default"]);
   });
 
-  it("keeps Aemeath Voyage Star BGM fixed and selectable as a player skill music choice", () => {
+  it("keeps Aemeath base and Voyage Star music in separate selectable slots", () => {
     expect(MUSIC_TRACKS["aemeath-voyage-star-default"]).toMatchObject({
       type: "skill",
       characterId: "aemeath",
@@ -481,13 +482,18 @@ describe("background music library", () => {
     expect(skillMusicOptionsForCharacter({
       characterId: "aemeath",
       tracks: MUSIC_TRACKS
+    }).map((track) => track.id)).toEqual(["aemeath-skill-default"]);
+
+    expect(skillMusicOptionsForCharacter({
+      characterId: "aemeath",
+      effectType: "voyage-star",
+      tracks: MUSIC_TRACKS
     }).map((track) => track.id)).toEqual([
-      "aemeath-skill-default",
       "aemeath-voyage-star-default"
     ]);
   });
 
-  it("uses the fixed Voyage Star BGM before selected Aemeath skill music during skill preview", () => {
+  it("uses the Voyage Star slot fallback instead of the selected Aemeath base music", () => {
     const track = resolveBackgroundMusic({
       view: "room",
       skillPreview: {
@@ -500,6 +506,54 @@ describe("background music library", () => {
     });
 
     expect(track.id).toBe("aemeath-voyage-star-default");
+  });
+
+  it("lets an owned derived-skill selection override the configured slot fallback", () => {
+    const tracks = {
+      ...MUSIC_TRACKS,
+      "aemeath-voyage-star-alt": {
+        id: "aemeath-voyage-star-alt",
+        name: "Voyage Star Alt",
+        type: "skill",
+        characterId: "aemeath",
+        effectType: "voyage-star",
+        defaultUnlocked: false,
+        purchasable: true,
+        playback: { mode: "single-loop", src: "/assets/music/voyage-star-alt.ogg", loop: true }
+      }
+    };
+
+    const track = resolveBackgroundMusic({
+      view: "room",
+      skillPreview: {
+        characterId: "aemeath",
+        effectType: "voyage-star",
+        musicTrackId: "aemeath-voyage-star-default"
+      },
+      selections: {
+        skill: { aemeath: "aemeath-skill-default" },
+        derivedSkill: { aemeath: { "voyage-star": "aemeath-voyage-star-alt" } }
+      },
+      ownedMusicIds: ["aemeath-voyage-star-alt"],
+      tracks
+    });
+
+    expect(track.id).toBe("aemeath-voyage-star-alt");
+  });
+
+  it("normalizes derived-skill selections without changing the legacy base slot", () => {
+    expect(parseMusicSelections(JSON.stringify({
+      skill: { aemeath: "aemeath-skill-default" },
+      derivedSkill: {
+        aemeath: {
+          " voyage-star ": " aemeath-voyage-star-default ",
+          "": "ignored"
+        }
+      }
+    }))).toEqual({
+      skill: { aemeath: "aemeath-skill-default" },
+      derivedSkill: { aemeath: { "voyage-star": "aemeath-voyage-star-default" } }
+    });
   });
 
   it("uses Sigrika replacement BGM for the purchasable Sigrika music option", () => {

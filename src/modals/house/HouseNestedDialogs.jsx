@@ -19,22 +19,16 @@ export function CharacterDetailDialog({
   onClose
 }) {
   if (!character) return null;
-  const musicOptions = skillMusicOptionsForCharacter({
-    characterId: character.id,
-    ownedMusicIds: user?.ownedMusicIds,
-    tracks: musicTracks
-  });
-  const currentMusicTrack = resolveSkillMusicTrack({
-    characterId: character.id,
-    selections: user?.musicSelections,
-    ownedMusicIds: user?.ownedMusicIds,
-    tracks: musicTracks
-  });
   const derivedSkills = derivedSkillDefinitionsFromSkill(character.skill);
+  const musicSlots = characterMusicSlots({ character, derivedSkills, musicTracks, user });
   const cvName = normalizeCharacterCvName(character.cvName);
   const cvUrl = normalizeCharacterCvUrl(character.cvUrl);
   const cvLabel = cvName ? `CV：${cvName}` : "";
-  const handleMusicChange = (trackId) => onSelectCharacterMusic?.({ characterId: character.id, trackId });
+  const handleMusicChange = ({ trackId, effectType = "" }) => onSelectCharacterMusic?.({
+    characterId: character.id,
+    trackId,
+    ...(effectType ? { effectType } : {})
+  });
   return (
     <div className="nested-modal-backdrop" onClick={onClose}>
       <section className={`nested-modal character-detail character-details-modal ${detailOwned ? "" : "unowned"}`} onClick={(event) => event.stopPropagation()}>
@@ -53,8 +47,8 @@ export function CharacterDetailDialog({
               ))}
             </div>
             <CharacterMusicPreview
-              track={currentMusicTrack}
-              options={musicOptions}
+              characterId={character.id}
+              slots={musicSlots}
               audioSettings={audioSettings}
               onTrackChange={handleMusicChange}
             />
@@ -89,6 +83,46 @@ export function CharacterDetailDialog({
       </section>
     </div>
   );
+}
+
+export function characterMusicSlots({ character, derivedSkills = [], musicTracks, user }) {
+  if (!character?.id) return [];
+  const slotDefinitions = [
+    {
+      id: "base",
+      effectType: "",
+      label: `普通技·${character.skill?.name ?? "角色技能"}`,
+      shortLabel: "普通技",
+      fallbackTrackId: ""
+    },
+    ...derivedSkills.map((skill) => ({
+      id: `derived:${skill.effectType}`,
+      effectType: skill.effectType,
+      label: `派生技·${skill.name}`,
+      shortLabel: skill.name,
+      fallbackTrackId: skill.musicTrackId ?? ""
+    }))
+  ];
+
+  return slotDefinitions
+    .map((slot) => {
+      const options = skillMusicOptionsForCharacter({
+        characterId: character.id,
+        effectType: slot.effectType,
+        ownedMusicIds: user?.ownedMusicIds,
+        tracks: musicTracks
+      });
+      const track = resolveSkillMusicTrack({
+        characterId: character.id,
+        effectType: slot.effectType,
+        fallbackTrackId: slot.fallbackTrackId,
+        selections: user?.musicSelections,
+        ownedMusicIds: user?.ownedMusicIds,
+        tracks: musicTracks
+      });
+      return { ...slot, options, track };
+    })
+    .filter((slot) => slot.track || slot.options.length > 0);
 }
 
 export function HouseReplayDialog({ characterListView, currentUser, onClose, onOpenReplay, pagination }) {

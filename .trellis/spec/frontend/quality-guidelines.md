@@ -35,60 +35,68 @@ Questions to answer:
 ### Character Detail BGM Preview Interaction Contract
 
 #### 1. Scope / Trigger
-- Trigger: any change to `src/audio/CharacterMusicPreview.jsx`, `.character-music-*` CSS, Bright School character detail music overrides, or character skill BGM preview behavior.
+- Trigger: any change to `src/audio/CharacterMusicPreview.jsx`, `.character-music-*` CSS, Bright School character detail music overrides, or ordinary/derived skill BGM selection.
 - The player sits in a compact modal heading, so interaction feedback must stay immediate and layout-stable even when first-use audio decoding is slow.
 
 #### 2. Signatures
-- `CharacterMusicPreview({ track, options, audioSettings, onTrackChange })` renders `.character-music-player`.
-- Local playback states are `idle`, `loading`, and `playing`.
+- `CharacterMusicPreview({ characterId, slots, audioSettings, onTrackChange })` renders `.character-music-player`; each slot contains `{ id, effectType, label, shortLabel, fallbackTrackId, options, track }`.
+- `onTrackChange({ trackId, effectType })` persists the active ordinary- or derived-skill slot.
+- Local playback states are `idle`, `loading`, `playing`, and `error`.
 - The decorative Rough.js SVG layer renders as `.character-music-sketch` and is `aria-hidden`.
 
 #### 3. Contracts
 - Clicking play must enter a visible `loading` state before awaiting WebAudio fetch/decode.
 - The global background music pause request must be released when preview startup fails, the selected track changes, or the component unmounts.
-- Async preview startup must be guarded by a request id or equivalent stale-request check so old decode completions cannot set the player back to playing after track change/unmount.
+- Async preview startup must use an intent/request guard so old decode completions cannot play after a slot change, pause action, or unmount.
+- Ordinary skill and every derived `effectType` are independent selection slots. Switching slot or track while playing continues with the new track; switching while idle must not autoplay.
+- Track persistence is optimistic but reversible: keep a per-slot request id, ignore stale saves, roll back only the latest rejected save, keep the sheet open, show a player-local error, and expose retry.
+- The main title and track-sheet row titles stay single-line. Only measured overflow animates; the main title scrolls one way with start/end pauses, while rows animate only on hover/focus. Reduced motion disables automatic movement and keeps manual horizontal access.
+- The track sheet is rendered into the nearest nested/modal backdrop (falling back to the themed app shell), positioned against the trigger without expanding the modal, constrained to the viewport, and limited to about four rows before internal scrolling. This keeps it above the detail modal while retaining theme ancestry. Trigger, outside press, and Escape close it; Escape restores trigger focus.
+- Skill slots use tab semantics and keyboard arrow/Home/End navigation. Track choices use listbox/option semantics and retain selection state while the sheet stays open.
 - Rough.js decoration must be generated after mount and outside hover/click handlers. It must be pointer-transparent and must not become the source of layout or hit testing.
-- The visible outer frame and play-button ring must come from `.character-music-sketch`; CSS borders on `.character-music-player` and `.character-music-toggle` stay `0` to avoid duplicated hand-drawn outlines.
+- Under Bright School, the visible frame, play-button ring, and title rules come from `.character-music-sketch`; shared CSS owns neutral structure. Playback glyphs are solid CSS shapes and must not use Lucide play/pause icons.
 - Hover and press feedback for the play button must not change layout dimensions. Use transform, color, or opacity changes rather than width, height, border-width, padding, or DOM regeneration.
-- Mobile and desktop size contracts must be updated together for `.character-music-player` and the surrounding `.character-detail-heading` grid.
+- Mobile and desktop size contracts must be updated together for `.character-music-player` and the surrounding `.character-detail-heading` grid; the mobile playback key remains at least 44px.
 
 #### 4. Validation & Error Matrix
 - Slow first decode -> button shows loading state immediately and does not look inert.
-- Startup failure -> release background pause request and return to idle.
-- Track changes while startup is pending -> old completion must be ignored and stopped.
+- Startup failure -> release background pause request, enter local error state, and expose retry.
+- Track changes while startup is pending -> old completion is ignored and stopped.
+- Latest save fails -> active slot rolls back, local error remains retryable, and other slots stay untouched.
+- Older save settles after a newer save -> stale response cannot replace the newer selection or user payload.
+- Derived slot selected -> request includes its exact non-empty `effectType`; ordinary slot uses an empty value.
 - Bright School active -> themed hover/active rules keep transform-only feedback.
+- Reduced motion -> no automatic title animation; text remains horizontally reachable.
 - Portrait mobile -> final mobile safety layer preserves the same non-overlap grid contract as the theme layer.
 
 #### 5. Good/Base/Bad Cases
-- Good: set local state to `loading`, request background pause, await `playPreview()`, then set `playing` only if the request id is still current.
-- Base: an already cached buffer can move from loading to playing quickly; the loading state may be brief but still exists.
-- Bad: waiting for `decodeAudioData()` before updating any visible state.
+- Good: set local state to `loading`, request background pause, await playback, then set `playing` only if the current intent still wants playback.
+- Good: persist `{ trackId, effectType }` and reconcile only when that slot's request id is still current.
+- Base: characters without derived BGM render one slot and no tab strip; characters with one track render a non-sheet title.
+- Bad: waiting for `decodeAudioData()` before updating visible state.
+- Bad: storing derived selection in `musicSelections.skill[characterId]`, filtering only by character, or closing the sheet after every selection.
+- Bad: using an infinite CSS marquee without measuring overflow or honoring `prefers-reduced-motion`.
 - Bad: running Rough.js drawing or replacing SVG children inside hover, focus, active, or click handlers.
-- Bad: changing player width in desktop CSS without updating mobile heading grid contracts and tests.
 
 #### 6. Tests Required
-- `src/audio/CharacterMusicPreview.test.jsx` should assert the player exposes the sketch layer and accessible state hooks.
-- `src/modals/HouseModal.test.js` or focused style contract tests should assert desktop and mobile size hooks, `.is-loading` / `.is-playing` selectors, pointer-transparent sketch styling, and transform-only hover/press selectors.
-- Run `npm test -- src/audio/CharacterMusicPreview.test.jsx src/modals/HouseModal.test.js` after changing this surface.
-- Run `npm run build` after changing the Rough.js import path or player component module boundary.
+- `src/audio/CharacterMusicPreview.test.jsx` asserts the sketch layer, CSS playback glyph, and accessible state hooks without Lucide playback icons.
+- `src/audio/CharacterMusicPreview.dom.test.jsx` asserts tab semantics, slot switching, sheet persistence after selection, save rollback, and retry.
+- `src/modals/HouseModal.test.js` or focused style tests assert slot construction, desktop/mobile size hooks, state selectors, pointer-transparent sketch styling, and transform-only feedback.
+- `src/shared/musicLibrary.test.js`, `server/musicSelection.test.js`, and `server/playerRoutes.test.js` cover ordinary/derived slot separation and request forwarding.
+- Run the focused suites and `npm run build` after changing this surface or its Rough.js module boundary.
 
 #### 7. Wrong vs Correct
 
 Wrong:
 
 ```jsx
-const started = await playPreview({ state, track, volume });
-setPlaying(started);
+onTrackChange(trackId); // derived slot identity is lost
 ```
 
 Correct:
 
 ```jsx
-setPlaybackState("loading");
-const started = await playPreview({ state, track, volume });
-if (playRequestRef.current === requestId) {
-  setPlaybackState(started ? "playing" : "idle");
-}
+onTrackChange({ trackId, effectType: activeSlot.effectType });
 ```
 
 ### Social action disabled-state contract

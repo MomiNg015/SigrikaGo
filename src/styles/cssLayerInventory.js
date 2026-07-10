@@ -1,14 +1,14 @@
 export const CSS_DEBT_BASELINE = {
-  date: "2026-07-07",
-  scope: "All CSS files under src/styles after the import-only split work, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, desktop/mobile shop mascot layout contracts, cloud-deployment mobile floating layer tokens, and transform-surface compositor hints.",
+  date: "2026-07-10",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, desktop/mobile shop mascot layout contracts, cloud-deployment mobile floating layer tokens, and transform-surface compositor hints.",
   metrics: {
-    totalFiles: 583,
-    totalBytes: 1128782,
-    importantCount: 7026,
-    importantFiles: 276,
-    hardcodedHexCount: 2262,
-    mediaFiles: 218,
-    reducedMotionFiles: 24,
+    totalFiles: 588,
+    totalBytes: 1137600,
+    importantCount: 7087,
+    importantFiles: 277,
+    hardcodedHexCount: 2246,
+    mediaFiles: 219,
+    reducedMotionFiles: 25,
     highZIndexFiles: 6
   },
   guidance:
@@ -161,6 +161,10 @@ export const CSS_LAYER_GROUPS = [
       "modals/character-opening/replay-match.css",
       "modals/character-opening/opening-animation.css",
       "modals/character-opening/keyframes.css",
+      "modals/character-music-player.css",
+      "modals/character-music-player/shell-title.css",
+      "modals/character-music-player/track-sheet.css",
+      "modals/character-music-player/motion.css",
       "modals/mailbox.css",
       "modals/mailbox/layout.css",
       "modals/mailbox/list.css",
@@ -300,6 +304,9 @@ export const CSS_LAYER_GROUPS = [
       "themes/bright-school/component-repairs/foundation-home/scrollbar-auth.css",
       "themes/bright-school/component-repairs/foundation-home/home-brand-status.css",
       "themes/bright-school/component-repairs/foundation-home/home-image-entry.css",
+      "themes/bright-school/component-repairs/character-music-player.css",
+      "themes/bright-school/component-repairs/character-music-player/player-shell.css",
+      "themes/bright-school/component-repairs/character-music-player/track-sheet.css",
       "themes/bright-school/component-repairs/warehouse-character.css",
       "themes/bright-school/component-repairs/warehouse-character/decoration-owned.css",
       "themes/bright-school/component-repairs/warehouse-character/character-detail.css",
@@ -506,6 +513,14 @@ export const CSS_ROUND3_SHARED_SPLITS = [
     ]
   },
   {
+    entry: "modals/character-music-player.css",
+    files: [
+      "modals/character-music-player/shell-title.css",
+      "modals/character-music-player/track-sheet.css",
+      "modals/character-music-player/motion.css"
+    ]
+  },
+  {
     entry: "responsive/phone-portrait-room.css",
     files: [
       "responsive/phone-portrait-room/shell-layout.css",
@@ -657,6 +672,13 @@ export const CSS_THEME_OVERLAY_SPLITS = [
       "themes/bright-school/component-repairs/foundation-home/scrollbar-auth.css",
       "themes/bright-school/component-repairs/foundation-home/home-brand-status.css",
       "themes/bright-school/component-repairs/foundation-home/home-image-entry.css"
+    ]
+  },
+  {
+    entry: "themes/bright-school/component-repairs/character-music-player.css",
+    files: [
+      "themes/bright-school/component-repairs/character-music-player/player-shell.css",
+      "themes/bright-school/component-repairs/character-music-player/track-sheet.css"
     ]
   },
   {

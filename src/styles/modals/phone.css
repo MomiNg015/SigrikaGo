@@ -60,17 +60,23 @@
   .character-music-player {
     width: min(164px, 48vw);
     max-width: 100%;
-    height: 36px;
-    min-height: 36px;
-    padding: 3px 8px 3px 3px;
+    height: 46px;
+    min-height: 46px;
+    padding: 1px 5px 1px 1px;
     justify-content: flex-start;
     justify-self: end;
     align-self: start;
   }
 
-  .character-music-name,
-  .character-music-select {
-    max-width: 112px;
+  .character-music-title-trigger,
+  .character-music-title-static {
+    gap: 3px;
+    padding-inline: 3px;
+  }
+
+  .character-music-slot-mark {
+    max-width: 38px;
+    padding-inline: 3px;
   }
 
   .character-detail-copy p {

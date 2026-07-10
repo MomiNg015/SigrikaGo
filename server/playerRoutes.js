@@ -158,7 +158,8 @@ export function createPlayerRouteHandlers({
         prisma,
         user: req.user,
         characterId: req.body.characterId,
-        trackId: req.body.trackId
+        trackId: req.body.trackId,
+        effectType: req.body.effectType
       }));
     } catch (error) {
       if (error.status) {
