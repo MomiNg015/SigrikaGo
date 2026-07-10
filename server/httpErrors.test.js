@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { jsonSyntaxErrorHandler } from "./httpErrors.js";
+import { apiErrorHandler, jsonSyntaxErrorHandler } from "./httpErrors.js";
 
 describe("HTTP error handlers", () => {
   it("returns JSON for malformed JSON body errors", () => {
@@ -28,3 +28,36 @@ describe("HTTP error handlers", () => {
     expect(next).toHaveBeenCalledWith(error);
   });
 });
+
+describe("apiErrorHandler", () => {
+  it("preserves domain status, message, and code as JSON", () => {
+    const error = Object.assign(new Error("asset is locked"), { status: 400, code: "ASSET_LOCKED" });
+    const res = response();
+    apiErrorHandler(error, {}, res, () => {});
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({ error: "asset is locked", code: "ASSET_LOCKED" });
+  });
+
+  it("hides unexpected production error details", () => {
+    const previous = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
+    try {
+      const res = response();
+      apiErrorHandler(new Error("database password leaked"), {}, res, () => {});
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toEqual({ error: "服务器内部错误" });
+    } finally {
+      process.env.NODE_ENV = previous;
+    }
+  });
+});
+
+function response() {
+  return {
+    headersSent: false,
+    statusCode: 200,
+    body: null,
+    status(code) { this.statusCode = code; return this; },
+    json(body) { this.body = body; return this; }
+  };
+}

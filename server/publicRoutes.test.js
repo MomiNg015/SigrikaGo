@@ -113,7 +113,8 @@ describe("public and lobby route handlers", () => {
 
     await handlers.leaderboard({ query: { mode: "standard" } }, res);
 
-    expect(recordQuery.where).toEqual({ mode: "mode:standard" });
+    expect(recordQuery.where).toEqual({ mode: "mode:standard", rated: true });
+    expect(recordQuery.take).toBe(10_000);
     expect(leaderboardArgs).toEqual([[
       {
         id: "user-1",

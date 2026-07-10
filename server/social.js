@@ -3,6 +3,7 @@ import { achievementStatsForUser, attachAchievementEquipmentAssetsToUsers } from
 import { validateFeedbackContent } from "./feedback.js";
 import { publicUser, USER_ASSET_RELATION_SELECT } from "./db.js";
 import { normalizeGameModeId } from "../src/shared/gameModes.js";
+import { listReplaySummaryPage } from "./replayPagination.js";
 
 const LEGACY_MOJIBAKE_DRAW_TEXT = "\u935c\u5c7e\ue5d0";
 
@@ -159,13 +160,20 @@ export async function getUserProfile({ prisma, userId, viewerId, statusForUser, 
     profileLikeSummary({ prisma, targetUserId: userId, viewerId })
   ]);
   const decoratedUser = decoratedUsers[0] ?? user;
+  const profileStats = recordStats(userId, records);
 
   return {
     ...toSocialUser(decoratedUser, statusForUser?.(decoratedUser.id) ?? "offline", mode),
     achievementStats,
     likeCount: likeSummary.likeCount,
     likedToday: likeSummary.likedToday,
-    record: formatRecord(recordStats(userId, records)),
+    record: formatRecord(profileStats),
+    recordStats: {
+      totalGames: profileStats.total,
+      wins: profileStats.wins,
+      losses: profileStats.losses,
+      draws: profileStats.draws
+    },
     characterStats: characterStats(userId, records),
     relation: viewerId === userId ? "self" : viewerRelation?.[0]?.type ?? ""
   };
@@ -180,7 +188,7 @@ export async function getUserProfileByUsername({ prisma, username, viewerId, sta
   return getUserProfile({ prisma, userId: user.id, viewerId, statusForUser, mode });
 }
 
-export async function getUserReplays({ prisma, userId, mode: modeInput = "spark" }) {
+export async function getUserReplays({ prisma, userId, mode: modeInput = "spark", cursor = "" }) {
   const mode = normalizeGameModeId(modeInput);
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -188,37 +196,7 @@ export async function getUserReplays({ prisma, userId, mode: modeInput = "spark"
   });
   if (!user) return null;
 
-  const records = await prisma.gameRecord.findMany({
-    where: {
-      mode,
-      OR: [
-        { blackUserId: userId },
-        { whiteUserId: userId }
-      ]
-    },
-    select: replaySummarySelect(),
-    orderBy: { createdAt: "desc" },
-    take: 30
-  });
-
-  return records.map((record) => ({
-    id: record.id,
-    roomCode: record.roomCode,
-    blackName: record.blackName,
-    whiteName: record.whiteName,
-    resultText: record.resultText,
-    moveCount: record.moveCount,
-    blackCharacter: record.blackCharacter,
-    whiteCharacter: record.whiteCharacter,
-    rated: record.rated !== false,
-    matchSource: record.matchSource ?? (record.rated === false ? "private" : "matchmaking"),
-    blackRatingDelta: record.blackRatingDelta ?? 0,
-    whiteRatingDelta: record.whiteRatingDelta ?? 0,
-    blackCoinsDelta: record.blackCoinsDelta ?? 0,
-    whiteCoinsDelta: record.whiteCoinsDelta ?? 0,
-    mode: record.mode ?? "spark",
-    createdAt: record.createdAt
-  }));
+  return listReplaySummaryPage({ prisma, userId, mode, cursor });
 }
 
 export async function likeUserProfile({ prisma, likerUserId, targetUserId, now = new Date() }) {
@@ -381,6 +359,10 @@ function characterStats(userId, records) {
   }
   return [...stats.values()].map((row) => ({
     characterId: row.characterId,
+    total: row.total,
+    wins: row.wins,
+    losses: row.losses,
+    draws: row.draws,
     record: formatRecord(row),
     winRate: row.total ? `${((row.wins / row.total) * 100).toFixed(1)}%` : "0.0%"
   }));
@@ -396,27 +378,6 @@ function profileRecordSelect() {
     resultReason: true,
     resultText: true,
     mode: true
-  };
-}
-
-function replaySummarySelect() {
-  return {
-    id: true,
-    roomCode: true,
-    blackName: true,
-    whiteName: true,
-    resultText: true,
-    moveCount: true,
-    blackCharacter: true,
-    whiteCharacter: true,
-    rated: true,
-    matchSource: true,
-    blackRatingDelta: true,
-    whiteRatingDelta: true,
-    blackCoinsDelta: true,
-    whiteCoinsDelta: true,
-    mode: true,
-    createdAt: true
   };
 }
 

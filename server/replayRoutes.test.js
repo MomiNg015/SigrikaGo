@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createReplayRouteHandlers } from "./replayRoutes.js";
+import { createReplayRouteHandlers, PERSONAL_REPLAY_PAGE_SIZE } from "./replayRoutes.js";
 
 function createResponse() {
   return {
@@ -17,7 +17,7 @@ function createResponse() {
 }
 
 describe("personal replay route", () => {
-  it("does not limit records used by the player manual stats to the latest 30 games", async () => {
+  it("bounds personal replay history queries", async () => {
     let query = null;
     const handlers = createReplayRouteHandlers({
       prisma: {
@@ -33,8 +33,11 @@ describe("personal replay route", () => {
 
     await handlers.listUserReplays({ user: { id: "user-1" } }, res);
 
-    expect(query.take).toBeUndefined();
-    expect(query.where.OR).toEqual([
+    expect(PERSONAL_REPLAY_PAGE_SIZE).toBe(50);
+    expect(query.take).toBe(PERSONAL_REPLAY_PAGE_SIZE + 1);
+    expect(query.orderBy).toEqual([{ createdAt: "desc" }, { id: "desc" }]);
+    expect(query.where.mode).toBe("spark");
+    expect(query.where.AND[0].OR).toEqual([
       { blackUserId: "user-1" },
       { whiteUserId: "user-1" }
     ]);
@@ -85,6 +88,7 @@ describe("personal replay route", () => {
       blackCoinsDelta: 20,
       whiteCoinsDelta: 10
     });
+    expect(res.body.nextCursor).toBeNull();
   });
 
   it("returns parsed replay snapshots", async () => {

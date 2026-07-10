@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
-import LeaderboardRow, { leaderboardRankClass } from "./leaderboard/LeaderboardRow.jsx";
+import LeaderboardRow from "./leaderboard/LeaderboardRow.jsx";
 import { modeOrderedEntries } from "../shared/gameModes.js";
+import { ModalDialog } from "./modalComponents.jsx";
 
 export default function LeaderboardModal({ token, user, characters, onClose }) {
   const [mode, setMode] = useState("spark");
@@ -34,12 +35,12 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <section className="leaderboard-modal" onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" onClick={onClose}><X size={20} /></button>
+      <ModalDialog className="leaderboard-modal" ariaLabelledBy="leaderboard-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
+        <button className="close-button" type="button" aria-label="关闭排行榜" onClick={onClose}><X size={20} /></button>
         <header className="leaderboard-header">
           <Trophy size={26} />
           <div>
-            <h2>排行榜</h2>
+            <h2 id="leaderboard-modal-title">排行榜</h2>
             <p className="quiet-text">至少完成一盘对局的注册用户</p>
           </div>
         </header>
@@ -85,7 +86,7 @@ export default function LeaderboardModal({ token, user, characters, onClose }) {
             )}
           </div>
         )}
-      </section>
+      </ModalDialog>
     </div>
   );
 }

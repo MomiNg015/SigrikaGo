@@ -6,7 +6,7 @@ describe("local stability verification command", () => {
     const pkg = JSON.parse(await readFile("package.json", "utf8"));
 
     expect(pkg.scripts["verify:stability"]).toBe("node scripts/verify-stability.mjs");
-    expect(pkg.scripts["test:stability"]).toBe("playwright test -c playwright.stability.config.js");
+    expect(pkg.scripts["test:stability"]).toBe("node scripts/run-playwright-suite.mjs stability");
     expect(pkg.scripts.test).toContain('--exclude "tests/stability/**"');
   });
 
@@ -24,7 +24,8 @@ describe("local stability verification command", () => {
     const source = await readFile("scripts/verify-stability.mjs", "utf8");
 
     expect(source).toContain('run("npm", ["run", "build"])');
-    expect(source).toContain('"playwright.stability.config.js"');
+    expect(source).toContain('"scripts/run-playwright-suite.mjs"');
+    expect(source).toContain('"stability"');
     expect(source).toContain('"cmd.exe"');
     expect(source).toContain("commandLineForWindows");
   });

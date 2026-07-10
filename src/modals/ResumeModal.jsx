@@ -1,19 +1,54 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Award, CircleDollarSign, MonitorPlay, Palette, X } from "lucide-react";
-import { derivePlayerRecordStats } from "../shared/gameRecords.js";
+import { api } from "../api/client.js";
+import { findCharacter } from "../shared/characterDisplay.js";
 import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
 import { HouseReplayDialog } from "./house/HouseNestedDialogs.jsx";
 import HouseProfileStats from "./house/HouseProfileStats.jsx";
-import { deriveCharacterRecordStats } from "./house/houseStats.js";
+import { useReplayPagination } from "./useReplayPagination.js";
 
-export default function ResumeModal({ user, records, characterListView, onClose, onOpenAchievements, onOpenPersonalization, onOpenReplay }) {
+export default function ResumeModal({ user, token, characterListView, onClose, onOpenAchievements, onOpenPersonalization, onOpenReplay }) {
   const [mode, setMode] = useState("spark");
   const [showReplays, setShowReplays] = useState(false);
-  const modeRecords = records.filter((record) => normalizeGameModeId(record.mode) === mode);
-  const modeUser = userForMode(user, mode);
-  const stats = derivePlayerRecordStats(modeUser, modeRecords);
-  const characterRecords = deriveCharacterRecordStats(modeUser, modeRecords, characterListView);
+  const [profileResult, setProfileResult] = useState({ key: "", profile: null });
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState("");
+  const profileKey = `${user.id}:${mode}`;
+  const profile = profileResult.key === profileKey ? profileResult.profile : null;
+  const modeUser = profile ?? userForMode(user, mode);
+  const stats = profile?.recordStats
+    ? { ...profile.recordStats, rating: profile.rating }
+    : modeRecordStats(user, mode);
+  const characterRecords = useMemo(() => profileCharacterRecords(
+    profile?.characterStats,
+    characterListView
+  ), [characterListView, profile?.characterStats]);
   const itemEffects = user.itemEffects ?? {};
+  const replayPagination = useReplayPagination({
+    enabled: showReplays,
+    endpoint: `/api/replays?mode=${encodeURIComponent(mode)}`,
+    token
+  });
+
+  useEffect(() => {
+    if (!token || !user.id) return undefined;
+    let active = true;
+    setProfileLoading(true);
+    setProfileError("");
+    api(`/api/users/${user.id}/profile?mode=${encodeURIComponent(mode)}`, { token })
+      .then((data) => {
+        if (active) setProfileResult({ key: profileKey, profile: data.profile ?? null });
+      })
+      .catch((error) => {
+        if (active) setProfileError(error.message);
+      })
+      .finally(() => {
+        if (active) setProfileLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [mode, profileKey, token, user.id]);
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -43,6 +78,8 @@ export default function ResumeModal({ user, records, characterListView, onClose,
         <button className="replay-open-button resume-replay-action" onClick={() => setShowReplays(true)}>
           <MonitorPlay size={18} />对局回放
         </button>
+        {profileLoading && <p className="quiet-text resume-profile-status">正在同步真实战绩...</p>}
+        {profileError && <p className="room-people-error resume-profile-status">{profileError}</p>}
         <HouseProfileStats
           rank={modeUser.rank}
           stats={stats}
@@ -53,15 +90,39 @@ export default function ResumeModal({ user, records, characterListView, onClose,
         {showReplays && (
           <HouseReplayDialog
             characterListView={characterListView}
-            records={modeRecords}
             currentUser={modeUser}
             onClose={() => setShowReplays(false)}
             onOpenReplay={onOpenReplay}
+            pagination={replayPagination}
           />
         )}
       </section>
     </div>
   );
+}
+
+function modeRecordStats(user, mode) {
+  const stats = user.modeStats?.[mode] ?? {};
+  const wins = Number(stats.wins ?? 0);
+  const losses = Number(stats.losses ?? 0);
+  const draws = Number(stats.draws ?? 0);
+  return {
+    totalGames: wins + losses + draws,
+    wins,
+    losses,
+    draws,
+    rating: Number(stats.rating ?? user.rating ?? 1000)
+  };
+}
+
+function profileCharacterRecords(characterStats = [], characters = []) {
+  return [...(Array.isArray(characterStats) ? characterStats : [])]
+    .sort((a, b) => Number(b.total ?? 0) - Number(a.total ?? 0))
+    .map((entry) => {
+      const character = findCharacter(characters, entry.characterId);
+      return character ? { ...entry, character } : null;
+    })
+    .filter(Boolean);
 }
 
 function userForMode(user, mode) {

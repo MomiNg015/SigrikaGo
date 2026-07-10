@@ -386,6 +386,10 @@ model GameRecord {
   snapshot    String
   snapshotVersion Int @default(1)
   createdAt   DateTime @default(now())
+
+  @@index([blackUserId, createdAt])
+  @@index([whiteUserId, createdAt])
+  @@index([mode, rated, createdAt])
 }
 
 model Character {

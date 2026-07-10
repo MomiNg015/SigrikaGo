@@ -131,7 +131,7 @@ describe("social route handlers", () => {
       normalizeMode: (mode) => mode ?? "spark",
       getUserReplaysFn: async (args) => {
         replayArgs = args;
-        return [{ id: "record-1" }];
+        return { records: [{ id: "record-1" }], nextCursor: "next-1" };
       }
     });
     const res = createResponse();
@@ -141,8 +141,8 @@ describe("social route handlers", () => {
       query: {}
     }, res);
 
-    expect(replayArgs).toMatchObject({ userId: "target-1", mode: "spark" });
-    expect(res.body).toEqual({ records: [{ id: "record-1" }] });
+    expect(replayArgs).toMatchObject({ userId: "target-1", mode: "spark", cursor: undefined });
+    expect(res.body).toEqual({ records: [{ id: "record-1" }], nextCursor: "next-1" });
   });
 
   it("likes a profile through an authenticated route", async () => {

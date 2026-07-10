@@ -84,6 +84,30 @@ describe("Prisma schema integrity", () => {
     }
   });
 
+  it("indexes game record history queries through schema, migration, and runtime guard", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migration = readFileSync(join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202607100001_add_game_record_query_indexes",
+      "migration.sql"
+    ), "utf8");
+    const runtimeGuard = readFileSync(join(process.cwd(), "server", "db.js"), "utf8");
+
+    for (const indexName of [
+      "GameRecord_blackUserId_createdAt_idx",
+      "GameRecord_whiteUserId_createdAt_idx",
+      "GameRecord_mode_rated_createdAt_idx"
+    ]) {
+      expect(migration).toContain(indexName);
+      expect(runtimeGuard).toContain(indexName);
+    }
+    expect(schema).toContain("@@index([blackUserId, createdAt])");
+    expect(schema).toContain("@@index([whiteUserId, createdAt])");
+    expect(schema).toContain("@@index([mode, rated, createdAt])");
+  });
+
   it("tracks persisted rooms through a migration", () => {
     const migrationPath = join(
       process.cwd(),

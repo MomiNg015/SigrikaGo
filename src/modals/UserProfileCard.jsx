@@ -9,7 +9,8 @@ import { findCharacter } from "../shared/characterDisplay.js";
 import { modeOrderedEntries, normalizeGameModeId } from "../shared/gameModes.js";
 import RecentResultMarkers from "../components/RecentResultMarkers.jsx";
 import { ModalActionButton } from "./modalComponents.jsx";
-import { ReplayList } from "./ReplayList.jsx";
+import { PaginatedReplayList } from "./ReplayList.jsx";
+import { useReplayPagination } from "./useReplayPagination.js";
 
 export function UserProfileCard({
   user,
@@ -25,10 +26,7 @@ export function UserProfileCard({
   const [profileUser, setProfileUser] = useState({ ...user, mode: normalizeGameModeId(user.mode) });
   const mainCharacter = findCharacter(characters, profileUser.characterId) ?? CHARACTERS.sigrika;
   const characterStats = sortCharacterStatsByGames(profileUser.characterStats);
-  const [replays, setReplays] = useState([]);
   const [showReplays, setShowReplays] = useState(false);
-  const [loadingReplays, setLoadingReplays] = useState(false);
-  const [replayError, setReplayError] = useState("");
   const [profileError, setProfileError] = useState("");
   const [profileNotice, setProfileNotice] = useState("");
   const [loadingProfileMode, setLoadingProfileMode] = useState(false);
@@ -39,6 +37,13 @@ export function UserProfileCard({
   const recordSummary = splitRecordSummary(profileUser.record);
   const canActOnProfile = profileUser.relation !== "self";
   const canLikeProfile = canActOnProfile && !profileUser.likedToday && !likePending;
+  const replayPagination = useReplayPagination({
+    enabled: showReplays && !replayDisabled,
+    endpoint: profileUser.id
+      ? `/api/users/${profileUser.id}/replays?mode=${encodeURIComponent(mode)}`
+      : "",
+    token
+  });
 
   useEffect(() => {
     const nextMode = normalizeGameModeId(user.mode);
@@ -46,7 +51,6 @@ export function UserProfileCard({
     setMode(nextMode);
     setProfileError("");
     setProfileNotice("");
-    setReplays([]);
     setReportContent("");
     setShowReportDialog(false);
   }, [user]);
@@ -62,8 +66,6 @@ export function UserProfileCard({
     if (normalizedMode === mode || loadingProfileMode) return;
     const previousMode = mode;
     setMode(normalizedMode);
-    setReplays([]);
-    setReplayError("");
     setProfileError("");
     setProfileNotice("");
     if (!token || !profileUser.id) return;
@@ -82,17 +84,6 @@ export function UserProfileCard({
   async function openReplays() {
     if (replayDisabled) return;
     setShowReplays(true);
-    if (replays.length > 0 || loadingReplays) return;
-    setLoadingReplays(true);
-    setReplayError("");
-    try {
-      const data = await api(`/api/users/${profileUser.id}/replays?mode=${encodeURIComponent(mode)}`, { token });
-      setReplays(data.records ?? []);
-    } catch (error) {
-      setReplayError(error.message);
-    } finally {
-      setLoadingReplays(false);
-    }
   }
 
   async function likeProfile() {
@@ -247,12 +238,13 @@ export function UserProfileCard({
           <section className="room-floating-modal replay-dialog profile-replay-dialog" onClick={(event) => event.stopPropagation()}>
             <button className="close-button" onClick={() => setShowReplays(false)}><X size={18} /></button>
             <h3><UserIdentity user={profileUser} compact showNameplate={false} /> 的对局回放</h3>
-            <div className="profile-replay-list-scroll">
-              {loadingReplays && <p className="quiet-text">加载中...</p>}
-              {replayError && <p className="room-people-error">{replayError}</p>}
-              {!loadingReplays && !replayError && (
-                <ReplayList records={replays} characters={characters} currentUser={profileUser} onOpenReplay={onOpenReplay} />
-              )}
+            <div className="profile-replay-list-scroll" onScroll={replayPagination.onScroll}>
+              <PaginatedReplayList
+                pagination={replayPagination}
+                characters={characters}
+                currentUser={profileUser}
+                onOpenReplay={onOpenReplay}
+              />
             </div>
           </section>
         </div>

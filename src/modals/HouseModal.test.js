@@ -365,12 +365,12 @@ describe("deriveCharacterRecordStats", () => {
         rating: 1160,
         coins: 1070,
         ownedCharacters: ["sigrika"],
-        itemEffects: {}
+        itemEffects: {},
+        modeStats: {
+          spark: { rating: 1160, rank: "3段", recentResults: ["win", "loss"], wins: 1, losses: 1, draws: 0 }
+        }
       },
-      records: [
-        { blackUserId: 1, blackCharacter: "sigrika", winnerColor: "black" },
-        { whiteUserId: 1, whiteCharacter: "sigrika", winnerColor: "black" }
-      ],
+      token: "token",
       characterListView: [{ id: "sigrika", name: "西格莉卡", portrait: "/assets/sigrika_centered.webp", skill: { name: "技能", description: "", cost: 1 } }],
       onClose: () => {},
       onOpenReplay: () => {}
@@ -398,7 +398,7 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("resume-character-records");
     expect(html).toContain("角色战绩");
     expect(html).toContain("character-record-list");
-    expect(html).toContain("character-record-row");
+    expect(html).toContain("暂无角色战绩");
     expect(html).not.toContain("character-record-dialog");
     expect(html).toContain("金币");
 

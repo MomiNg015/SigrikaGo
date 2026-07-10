@@ -282,3 +282,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 
 - `server/userAssets.js` treats compatibility string fields as a legacy mirror. Rows projected from those fields use `source = "legacy"`.
 - Structured sync cleanup is source-scoped: it deletes only absent rows whose source is `legacy`. Rows written by achievements, gacha, mailbox, recruitment, or future feature domains stay owned by those flows and are merged by `publicUserAssets()` instead of being removed by legacy refresh.
+# Game Record Query Boundaries
+
+- `GameRecord` owns composite indexes for `(blackUserId, createdAt)`, `(whiteUserId, createdAt)`, and `(mode, rated, createdAt)`. Prisma schema, migration SQL, and the startup compatibility guard must stay synchronized.
+- Personal and public-profile replay lists use newest-first keyset pagination ordered by `(createdAt DESC, id DESC)`. Each response contains at most 50 summaries and an opaque `nextCursor`; clients may continue until the cursor is null, so old games remain readable without materializing the full history at once. Leaderboard and achievement compatibility aggregation still scan at most the newest 10,000 relevant records.

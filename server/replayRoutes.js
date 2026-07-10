@@ -1,66 +1,16 @@
 import express from "express";
+import { listReplaySummaryPage, REPLAY_PAGE_SIZE } from "./replayPagination.js";
+
+export const PERSONAL_REPLAY_PAGE_SIZE = REPLAY_PAGE_SIZE;
 
 export function createReplayRouteHandlers({ prisma }) {
   async function listUserReplays(req, res) {
-    const records = await prisma.gameRecord.findMany({
-      where: {
-        OR: [
-          { blackUserId: req.user.id },
-          { whiteUserId: req.user.id }
-        ]
-      },
-      select: {
-        id: true,
-        roomCode: true,
-        blackUserId: true,
-        whiteUserId: true,
-        blackName: true,
-        whiteName: true,
-        resultText: true,
-        winnerColor: true,
-        resultReason: true,
-        rated: true,
-        matchSource: true,
-        blackRatingDelta: true,
-        whiteRatingDelta: true,
-        blackCoinsDelta: true,
-        whiteCoinsDelta: true,
-        blackRankDelta: true,
-        whiteRankDelta: true,
-        moveCount: true,
-        mode: true,
-        blackCharacter: true,
-        whiteCharacter: true,
-        createdAt: true
-      },
-      orderBy: { createdAt: "desc" }
-    });
-    res.json({
-      records: records.map((record) => ({
-        id: record.id,
-        roomCode: record.roomCode,
-        blackUserId: record.blackUserId,
-        whiteUserId: record.whiteUserId,
-        blackName: record.blackName,
-        whiteName: record.whiteName,
-        resultText: record.resultText,
-        winnerColor: record.winnerColor,
-        resultReason: record.resultReason,
-        rated: record.rated !== false,
-        matchSource: record.matchSource ?? (record.rated === false ? "private" : "matchmaking"),
-        blackRatingDelta: record.blackRatingDelta ?? 0,
-        whiteRatingDelta: record.whiteRatingDelta ?? 0,
-        blackCoinsDelta: record.blackCoinsDelta ?? 0,
-        whiteCoinsDelta: record.whiteCoinsDelta ?? 0,
-        blackRankDelta: record.blackRankDelta ?? 0,
-        whiteRankDelta: record.whiteRankDelta ?? 0,
-        moveCount: record.moveCount,
-        mode: record.mode ?? "spark",
-        blackCharacter: record.blackCharacter,
-        whiteCharacter: record.whiteCharacter,
-        createdAt: record.createdAt
-      }))
-    });
+    res.json(await listReplaySummaryPage({
+      prisma,
+      userId: req.user.id,
+      mode: req.query?.mode,
+      cursor: req.query?.cursor
+    }));
   }
 
   async function getReplay(req, res) {

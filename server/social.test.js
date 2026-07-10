@@ -35,9 +35,10 @@ describe("social profiles and relationships", () => {
     });
 
     expect(profile.record).toBe("3局 · 1胜1负1和");
+    expect(profile.recordStats).toEqual({ totalGames: 3, wins: 1, losses: 1, draws: 1 });
     expect(profile.characterStats).toEqual([
-      { characterId: "aemeath", record: "2局 · 1胜0负1和", winRate: "50.0%" },
-      { characterId: "sigrika", record: "1局 · 0胜1负0和", winRate: "0.0%" }
+      { characterId: "aemeath", total: 2, wins: 1, losses: 0, draws: 1, record: "2局 · 1胜0负1和", winRate: "50.0%" },
+      { characterId: "sigrika", total: 1, wins: 0, losses: 1, draws: 0, record: "1局 · 0胜1负0和", winRate: "0.0%" }
     ]);
   });
 
@@ -79,8 +80,8 @@ describe("social profiles and relationships", () => {
 
     expect(profile.record).toBe("31局 · 30胜1负0和");
     expect(profile.characterStats).toEqual([
-      { characterId: "aemeath", record: "30局 · 30胜0负0和", winRate: "100.0%" },
-      { characterId: "sigrika", record: "1局 · 0胜1负0和", winRate: "0.0%" }
+      { characterId: "aemeath", total: 30, wins: 30, losses: 0, draws: 0, record: "30局 · 30胜0负0和", winRate: "100.0%" },
+      { characterId: "sigrika", total: 1, wins: 0, losses: 1, draws: 0, record: "1局 · 0胜1负0和", winRate: "0.0%" }
     ]);
   });
 
@@ -107,8 +108,8 @@ describe("social profiles and relationships", () => {
 
     expect(profile.record).toBe("3局 · 1胜1负1和");
     expect(profile.characterStats).toEqual([
-      { characterId: "aemeath", record: "2局 · 1胜0负1和", winRate: "50.0%" },
-      { characterId: "sigrika", record: "1局 · 0胜1负0和", winRate: "0.0%" }
+      { characterId: "aemeath", total: 2, wins: 1, losses: 0, draws: 1, record: "2局 · 1胜0负1和", winRate: "50.0%" },
+      { characterId: "sigrika", total: 1, wins: 0, losses: 1, draws: 0, record: "1局 · 0胜1负0和", winRate: "0.0%" }
     ]);
   });
 
@@ -229,7 +230,7 @@ describe("social profiles and relationships", () => {
       userId: "target-1"
     });
 
-    expect(records).toEqual([expect.objectContaining({
+    expect(records.records).toEqual([expect.objectContaining({
       id: "r-1",
       blackName: "black",
       whiteName: "white",
@@ -262,7 +263,7 @@ describe("social profiles and relationships", () => {
     const replays = await getUserReplays({ prisma, userId: "target-1" });
 
     expect(profile.record).toMatch(/^1/);
-    expect(replays.map((item) => [item.id, item.rated, item.matchSource])).toEqual([
+    expect(replays.records.map((item) => [item.id, item.rated, item.matchSource])).toEqual([
       ["rated-win", true, "matchmaking"],
       ["friendly-loss", false, "duel"]
     ]);
@@ -404,12 +405,16 @@ function socialProfilePrisma({ users = [], records = [] }) {
     gameRecord: {
       findMany: async ({ where, orderBy, take }) => {
         let result = records.filter((item) => {
-          const targetIds = where.OR.map((condition) => condition.blackUserId ?? condition.whiteUserId);
+          const participantGroup = where.AND?.find((group) => group.OR?.some((condition) => condition.blackUserId || condition.whiteUserId));
+          const participantConditions = participantGroup?.OR ?? where.OR ?? [];
+          const targetIds = participantConditions.map((condition) => condition.blackUserId ?? condition.whiteUserId);
           const matchesUser = targetIds.includes(item.blackUserId) || targetIds.includes(item.whiteUserId);
           const matchesRated = typeof where.rated === "boolean" ? item.rated !== false === where.rated : true;
-          return matchesUser && matchesRated;
+          const matchesMode = where.mode ? (item.mode ?? "spark") === where.mode : true;
+          return matchesUser && matchesRated && matchesMode;
         });
-        if (orderBy?.createdAt === "desc") {
+        const createdAtOrder = Array.isArray(orderBy) ? orderBy[0]?.createdAt : orderBy?.createdAt;
+        if (createdAtOrder === "desc") {
           result = [...result].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
         return Number.isInteger(take) ? result.slice(0, take) : result;

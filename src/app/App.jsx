@@ -26,7 +26,6 @@ import {
 } from "./modalDismissal.js";
 import { dismissOverlayByKey } from "./overlayRegistry.js";
 import { preloadPlayableReady } from "./playableReadyPreload.js";
-import { useReplayRecords } from "./useReplayRecords.js";
 import { useMailboxSummary } from "./useMailboxSummary.js";
 import { useAnnouncementSummary } from "./useAnnouncementSummary.js";
 import { useOnboardingStory } from "./useOnboardingStory.js";
@@ -101,7 +100,6 @@ export default function App() {
     resumeAudioPlayback,
     setAudioSettings
   } = useAudioRuntimeState();
-  const [replayRecords, setReplayRecords] = useState([]);
   const {
     dismissedResultRoom,
     pendingSkill,
@@ -373,7 +371,6 @@ export default function App() {
     onRequestExit: () => setShowExitConfirm(true)
   });
 
-  useReplayRecords({ enabled: showHouse || showResume, showToast, token, setReplayRecords });
   useHomeUserRefresh({ onAchievementUnlocks: showAchievementUnlocks, token, updateUser, user, view });
 
   useRoomMemory(room, matchSuccess?.room);
@@ -481,7 +478,6 @@ export default function App() {
         onRecruitmentStatusChange={handleRecruitmentStatusChange}
         onResultClose={closeResultModal}
         openReplay={openReplay}
-        replayRecords={replayRecords}
         resultModalOpen={resultModalOpen}
         room={room}
         selectCharacter={selectCharacter}

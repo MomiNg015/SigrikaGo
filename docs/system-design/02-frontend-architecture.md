@@ -109,7 +109,6 @@
   - `socket`
   - 各类弹窗开关
   - `characters`
-  - `replayRecords`
   - `replayStep`
   - 音频配置
 - 登录 access token 只存在 React 内存状态中；`src/app/sessionState.js` 初始进入 `preloading`，由 `src/app/App.jsx` 调用 `/api/auth/refresh` 尝试从 `HttpOnly` refresh cookie 恢复登录。恢复失败或刷新请求超时才进入登录页，避免服务器重启期间把玩家永久停在资源准备页。
@@ -210,7 +209,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
   - Desktop Bright School home polish removes the former `LOBBY_ROOM` debug/status pill from the top strip, keeps the current-user plaque on an explicit avatar/name/stats grid so the username cannot run into the portrait at wide sizes, and overrides the `部员手册` sticker label back to the rounded UI font stack with nowrap text for consistency with the rest of the interface.
   - The home current-user plaque now opens the cross-device `履历` modal. `履历` owns personal record, rank, coins, embedded selected-mode character records, recent ten-game results, and replay access, while `部员手册` is reduced to character deployment/details plus stone decoration selection on both desktop and mobile.
   - Incoming direct duel requests play a short synthesized doorbell SFX on the effects channel before showing the request banner; duplicate `requestId` payloads are filtered in the socket handler so reconnect/retry delivery does not replay the banner or sound.
-- The house/player manual record stat is clickable and opens a per-character record list for owned characters. Personal manual stats use the full current-user replay summary set, including black/white user ids, while leaderboard stats also use all `GameRecord` rows, so win/loss totals stay aligned even after a player has more than 30 records or changes username. On mobile, the per-character record list is a viewport-contained nested dialog with a scrollable list; each record row keeps the total/win/loss/draw text on one line.
+- The home resume modal loads the same mode-specific `/api/users/:id/profile` payload used by another viewer's “详细信息”, so total record and per-character record rows come from the full rated-history server calculation instead of the currently loaded replay page. Replay history is a separate concern: resume and public-profile replay dialogs share `useReplayPagination`, request 50 newest-first rows per page, and append older pages when their owning scroll region reaches the bottom until `nextCursor` is null. On mobile, the per-character record list remains a viewport-contained scroll region and each record row keeps total/win/loss/draw text on one line.
   - The house/player manual decoration picker renders owned decorations as icon-plus-status buttons with accessible labels and hover titles: decoration names stay out of the visible chip, while `应用` / `应用中` / `使用中` remains visible.
   - Player info now separates captures, skill removals ("除子"), and skill cost. Skill removals count opponent stones removed or converted by skills for the side that benefits from the removal/conversion.
   - Skill follow-up cleanup counts stones removed by skill-created no-liberty states as skill removals instead of normal captures, so "提子" remains only ordinary capture count.
@@ -283,3 +282,8 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 - 公告和更新日志都使用新闻式列表行：标题、首次发布时间、未读红点，公告额外显示置顶标签。点击列表行会在父公告窗口内部挂载 `nested-modal-backdrop` 二级详情弹窗，详情遮罩绝对定位到父窗口边界内，保持父窗口列表仍在背后挂载而不是被详情内容替换或被全屏遮罩覆盖；只有详情打开并成功调用 `POST /api/announcements/:id/read` 后才清除本条和全局未读摘要。
 - `MarkdownLiteContent` 是公告正文的安全 Markdown-lite 渲染边界，只支持段落、保留换行、无序列表、加粗和 `http/https` 链接，不使用 raw HTML。
 - 后台“公告管理”由 `AdminAnnouncements` 提供一个顶级 admin tab，内部再分“公告 / 更新日志”子 tab 和 `全部 / 已发布 / 草稿` 状态筛选。编辑区桌面显示编辑+预览双栏，移动端通过“编辑 / 预览”切换同一内容；发布、保存草稿、保存修改、取消发布和软删除都是显式按钮。
+# Shared Dialog Accessibility Boundary
+
+- `src/modals/modalComponents.jsx` exposes `ModalDialog` without replacing existing modal CSS classes or surface elements. It adds `role="dialog"`, `aria-modal`, accessible labelling, initial focus, Tab focus containment, Escape dismissal, and opener focus restoration.
+- Nested dialogs handle Escape at the innermost dialog and mark the keyboard event handled; `useModalDismissal()` ignores already-prevented Escape events so it does not close the parent app overlay.
+- Leaderboard, watch-list, personalization, and the nested personalization picker are the first migrated surfaces. Further modal migrations should preserve their existing desktop/mobile visual contracts while adopting the same primitive.

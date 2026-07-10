@@ -91,6 +91,9 @@ export async function ensureGameModeSchema(client = prisma) {
   await ensureGameRecordColumn(client, gameRecordColumns, "blackRankDelta", `ALTER TABLE "GameRecord" ADD COLUMN "blackRankDelta" INTEGER NOT NULL DEFAULT 0`);
   await ensureGameRecordColumn(client, gameRecordColumns, "whiteRankDelta", `ALTER TABLE "GameRecord" ADD COLUMN "whiteRankDelta" INTEGER NOT NULL DEFAULT 0`);
   await client.$executeRawUnsafe(`UPDATE "GameRecord" SET "mode" = 'spark' WHERE "mode" IS NULL OR "mode" = ''`);
+  await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "GameRecord_blackUserId_createdAt_idx" ON "GameRecord"("blackUserId", "createdAt")`);
+  await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "GameRecord_whiteUserId_createdAt_idx" ON "GameRecord"("whiteUserId", "createdAt")`);
+  await client.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "GameRecord_mode_rated_createdAt_idx" ON "GameRecord"("mode", "rated", "createdAt")`);
   await client.$executeRawUnsafe(`
     INSERT OR IGNORE INTO "UserModeStats" ("id", "userId", "mode", "rating", "wins", "losses", "draws", "createdAt", "updatedAt")
     SELECT "id" || ':spark', "id", 'spark', "rating", "wins", "losses", 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP

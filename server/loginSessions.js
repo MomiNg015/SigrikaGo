@@ -4,6 +4,7 @@ export const ALREADY_LOGGED_IN_CODE = "already_logged_in";
 export const ALREADY_LOGGED_IN_MESSAGE = "当前账号已登录了，确定继续登录吗？";
 export const REFRESH_COOKIE_NAME = "sigrika_refresh";
 export const REFRESH_SESSION_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000;
+export const SESSION_LAST_SEEN_WRITE_INTERVAL_MS = 5 * 60 * 1000;
 
 export async function ensureLoginSessionSchema(prisma) {
   await prisma.$executeRawUnsafe(`
@@ -91,11 +92,14 @@ export function createLoginSessionStore({ prisma = null, now = () => new Date(),
         return memorySessions.get(userId) === sessionId;
       }
       const session = await prisma.loginSession.findUnique({ where: { id: sessionId } });
-      if (!isValidSession(session, userId, now())) return false;
-      await prisma.loginSession.update({
-        where: { id: sessionId },
-        data: { lastSeenAt: now() }
-      });
+      const currentTime = now();
+      if (!isValidSession(session, userId, currentTime)) return false;
+      if (currentTime.getTime() - new Date(session.lastSeenAt).getTime() >= SESSION_LAST_SEEN_WRITE_INTERVAL_MS) {
+        await prisma.loginSession.updateMany({
+          where: { id: sessionId, userId, revokedAt: null },
+          data: { lastSeenAt: currentTime }
+        });
+      }
       return true;
     },
     async refresh(refreshToken) {
@@ -103,21 +107,29 @@ export function createLoginSessionStore({ prisma = null, now = () => new Date(),
       const session = await prisma.loginSession.findUnique({
         where: { refreshTokenHash: hashRefreshToken(refreshToken) }
       });
-      if (!isValidSession(session, session?.userId, now())) return null;
+      const currentTime = now();
+      if (!isValidSession(session, session?.userId, currentTime)) return null;
       const nextRefreshToken = createRefreshToken();
-      const updated = await prisma.loginSession.update({
-        where: { id: session.id },
+      const nextExpiresAt = new Date(currentTime.getTime() + maxAgeMs);
+      const rotated = await prisma.loginSession.updateMany({
+        where: {
+          id: session.id,
+          refreshTokenHash: hashRefreshToken(refreshToken),
+          revokedAt: null,
+          expiresAt: { gt: currentTime }
+        },
         data: {
           refreshTokenHash: hashRefreshToken(nextRefreshToken),
-          expiresAt: expiresAt(),
-          lastSeenAt: now()
+          expiresAt: nextExpiresAt,
+          lastSeenAt: currentTime
         }
       });
+      if (rotated.count !== 1) return null;
       return {
-        sessionId: updated.id,
-        userId: updated.userId,
+        sessionId: session.id,
+        userId: session.userId,
         refreshToken: nextRefreshToken,
-        expiresAt: updated.expiresAt
+        expiresAt: nextExpiresAt
       };
     },
     async clear(userId, sessionId) {

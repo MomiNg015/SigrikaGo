@@ -4,11 +4,9 @@ import process from "node:process";
 const extraPlaywrightArgs = process.argv.slice(2);
 
 run("npm", ["run", "build"]);
-run("npx", [
-  "playwright",
-  "test",
-  "-c",
-  "playwright.stability.config.js",
+run(process.execPath, [
+  "scripts/run-playwright-suite.mjs",
+  "stability",
   "--reporter=list",
   ...extraPlaywrightArgs
 ]);

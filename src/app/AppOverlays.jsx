@@ -44,7 +44,6 @@ export default function AppOverlays({
   onRecruitmentStatusChange,
   onResultClose,
   openReplay,
-  replayRecords,
   resultModalOpen,
   room,
   selectCharacter,
@@ -153,7 +152,6 @@ export default function AppOverlays({
         {showHouse && user && (
           <HouseModal
             user={user}
-            records={replayRecords}
             characterListView={characterListView}
             audioSettings={audioSettings}
             musicTracks={musicTracks}
@@ -166,7 +164,7 @@ export default function AppOverlays({
         {showResume && user && (
           <ResumeModal
             user={user}
-            records={replayRecords}
+            token={token}
             characterListView={characterListView}
             onClose={() => setShowResume(false)}
             onOpenAchievements={() => setShowAchievements(true)}

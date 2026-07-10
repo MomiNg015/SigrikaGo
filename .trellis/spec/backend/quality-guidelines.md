@@ -370,11 +370,11 @@ Tests touching public/lobby route status codes, auth/public route mounting, feed
 - `GET /api/replays`
 - `GET /api/replays/:id`
 
-It owns personal replay query shape, player id response fields, legacy `mode ?? "spark"` fallback, and snapshot JSON parsing. Tests should call `createReplayRouteHandlers()` directly instead of matching route source text inside `server/index.js`.
+`server/replayPagination.js` owns the shared summary query for personal and public-profile replay lists. Both list endpoints accept `mode` plus an opaque optional `cursor`, order by `(createdAt DESC, id DESC)`, fetch 51 rows, return at most 50, and expose `{ records, nextCursor }`. Summary rows include player ids so renamed users still get correct outcome display. `server/replayRoutes.js` continues to own personal route mounting and snapshot JSON parsing. Tests should call handlers/shared pagination directly instead of matching route source text inside `server/index.js`.
 
 `server/index.js` should mount the replay router with shared auth and `prisma`; it should not duplicate personal replay query projection or snapshot parsing.
 
-Tests touching personal replay route status codes, query fields, mode fallback, or snapshot parsing should update `server/replayRoutes.test.js`.
+Tests touching cursor encoding/decoding, page boundaries, stable tie ordering, or shared summary fields should update `server/replayPagination.test.js`; personal route status codes and snapshot parsing stay in `server/replayRoutes.test.js`.
 
 ### Social HTTP Boundary Contract
 
@@ -1507,3 +1507,85 @@ return { totalGames: row.totalGames, wins: row.wins, losses: row.losses, draws: 
 <!-- What reviewers should check -->
 
 (To be filled by the team)
+
+### Scenario: API, Session, Record Query, and Playwright Reliability
+
+#### 1. Scope / Trigger
+- Trigger: changing `/api` error propagation, refresh/login-session persistence, `GameRecord` list or aggregate queries, Playwright server startup, or SQLite test database wiring.
+
+#### 2. Signatures
+- API fallback: `apiErrorHandler(error, request, response, next)` mounted at `/api` after API routers and before static serving.
+- Refresh rotation: `loginSessions.refresh(refreshToken)` performs a compare-and-swap update against the old token hash and returns the next token only to the winner.
+- Activity adoption: `loginSessions.adopt(accessToken)` updates `lastSeenAt` only after `SESSION_LAST_SEEN_WRITE_INTERVAL_MS` (5 minutes).
+- Profile statistics: `GET /api/users/:id/profile?mode=<mode>` returns `recordStats: { totalGames, wins, losses, draws }` plus per-character `total`, `wins`, `losses`, and `draws`, calculated from the selected mode's complete rated history.
+- Replay pagination: `GET /api/replays?mode=<mode>&cursor=<opaque>` and public `GET /api/users/:id/replays?mode=<mode>&cursor=<opaque>` both return `{ records, nextCursor }`; `listReplaySummaryPage({ prisma, userId, mode, cursor })` is their shared query boundary.
+- Playwright database: `preparePlaywrightTestDatabase({ label, port }) -> { databasePath, databaseUrl, cleanup }`.
+- Playwright E2E URL: `E2E_CLIENT_PORT` must drive both `use.baseURL`/`webServer.url` in `playwright.config.js` and the Vite port in `start-e2e-environment.mjs`.
+- `GameRecord` indexes: `(blackUserId, createdAt)`, `(whiteUserId, createdAt)`, and `(mode, rated, createdAt)`.
+
+#### 3. Contracts
+- Every error reaching the `/api` fallback returns JSON with `error`; valid status/code metadata is preserved, while unexpected production 500 details are hidden.
+- A refresh token is single-use under concurrency: the database update must include the old hash, active state, and expiry in its predicate.
+- Replay list responses are newest-first and bounded to 50 rows per request, but `nextCursor` allows reading the complete history. Leaderboard and achievement record scans are newest-first and bounded to 10,000 rows; leaderboard scans request rated records only. Profile record statistics intentionally use all rated records for the selected user/mode and must not be derived from a replay page.
+- Playwright must never write `prisma/dev.db`. It creates a unique SQLite file under `.tmp/playwright`, initializes a valid empty SQLite header before Prisma `db push`, passes the URL to both services, and removes database sidecars on exit.
+
+#### 4. Validation & Error Matrix
+- Known API error with status/code -> same status and `{ error, code }` JSON.
+- Unexpected production error -> HTTP 500 with generic JSON message; no stack/internal message.
+- Two concurrent refreshes using one token -> exactly one succeeds; the other returns no session.
+- Access-token adoption inside 5 minutes -> no database write; adoption after the threshold -> one `lastSeenAt` update.
+- Replay cursor absent -> return the newest page of at most 50 rows.
+- Replay cursor valid with older rows -> append the next page and return another cursor only when more rows exist.
+- Replay cursor malformed or structurally invalid -> HTTP 400 with `{ error: "棋谱分页参数无效" }`.
+- Friendly replay present -> include it in replay history, but exclude it from profile `recordStats` and character statistics.
+- Same user opened through Resume and detailed profile -> both surfaces receive the same profile statistics for the same mode.
+- Prisma initialization failure -> remove the temporary database and fail Playwright startup.
+- Missing/invalid `GameRecord` query boundary -> reject in focused route/domain tests before E2E.
+
+#### 5. Good/Base/Bad Cases
+- Good: E2E creates `e2e-5173-<pid>.db`, runs the browser tests, then leaves `.tmp/playwright` without that database or WAL files.
+- Good: a 121-record history loads as 50, 50, and 21 rows through opaque cursors without duplicate or missing rows, while the profile total remains the complete rated total.
+- Base: a normal API domain error retains its current client-visible status and message.
+- Base: a history of 50 or fewer rows returns `nextCursor: null`.
+- Bad: calling `findMany()` without `take` for replay list pages, leaderboard, or achievement history; profile statistics are the separate full-rated-history contract.
+- Bad: deriving Resume totals or character statistics from the currently loaded replay page, because pagination and friendly records make that subset non-authoritative.
+- Bad: refreshing by session id alone, because two callers can both rotate the same old token.
+
+#### 6. Tests Required
+- `server/httpErrors.test.js` asserts known and unexpected error response shapes.
+- `server/loginSessions.test.js` asserts throttled adoption and one-winner concurrent refresh rotation.
+- `server/replayPagination.test.js` asserts the 50-row boundary, composite `(createdAt, id)` tie cursor, terminal cursor, and malformed-cursor error; replay/social route tests assert the common `{ records, nextCursor }` response.
+- `server/social.test.js` asserts that profile `recordStats` and character statistics use complete rated history; `src/modals/ResumeModal.dom.test.jsx` asserts Resume renders the profile response instead of local replay-derived totals.
+- Public/achievement/schema tests assert filters, ordering, limits, and indexes.
+- `scripts/playwrightTestDatabase.test.js` asserts the database path is temporary and cleanup removes it; `npm run test:e2e` and `npm run test:stability` must pass against isolated databases.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+await prisma.loginSession.update({ where: { id: session.id }, data: nextSession });
+```
+
+Correct:
+
+```js
+await prisma.loginSession.updateMany({
+  where: { id: session.id, refreshTokenHash: oldHash, revokedAt: null, expiresAt: { gt: now } },
+  data: nextSession
+});
+```
+
+Wrong:
+
+```js
+const recordStats = summarizeReplayRows(await fetch("/api/replays"));
+```
+
+Correct:
+
+```js
+const profile = await fetch(`/api/users/${userId}/profile?mode=${mode}`);
+const replayPage = await fetch(`/api/replays?mode=${mode}&cursor=${nextCursor}`);
+// Profile owns complete rated statistics; replay pages only own history presentation.
+```

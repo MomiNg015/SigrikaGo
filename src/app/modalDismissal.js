@@ -57,7 +57,7 @@ export function useModalDismissal({ activeId, onDismiss }) {
     if (typeof window === "undefined") return undefined;
 
     const handleKeyDown = (event) => {
-      if (event.key !== "Escape" || !activeIdRef.current) return;
+      if (event.defaultPrevented || event.key !== "Escape" || !activeIdRef.current) return;
       event.preventDefault();
       onDismissRef.current?.();
     };
@@ -69,7 +69,7 @@ export function useModalDismissal({ activeId, onDismiss }) {
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
 
-    const handlePopState = (event) => {
+    const handlePopState = (_event) => {
       if (suppressNextPopRef.current) {
         suppressNextPopRef.current = false;
         return;
@@ -156,7 +156,7 @@ export function useRootBackExitGuard({
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
 
-    const handlePopState = (event) => {
+    const handlePopState = (_event) => {
       if (modalBackDismissedInCurrentPop || modalHistoryCleanupInCurrentPop) {
         modalBackDismissedInCurrentPop = false;
         modalHistoryCleanupInCurrentPop = false;

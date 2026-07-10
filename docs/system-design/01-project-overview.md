@@ -178,8 +178,8 @@ SigrikaGo/
   - Owns background-music track selection from view, room phase, skill preview, result modal state, and user-owned music choices.
 - `src/app/useGameSocketConnection.js`
   - Owns the React lifecycle boundary for Socket.IO connection creation, installed game socket handlers, room resume request wiring, and audio resume signal updates.
-- `src/app/useReplayRecords.js` / `src/app/useRoomMemory.js` / `src/app/useAudioSettingsPersistence.js`
-  - Own small persistence and loading effects for house replay lists, remembered player room state, and local audio settings.
+- `src/modals/useReplayPagination.js` / `src/app/useRoomMemory.js` / `src/app/useAudioSettingsPersistence.js`
+  - Own cursor-paged replay loading for resume/profile dialogs, remembered player room state, and local audio settings.
 - `src/app/useAuthSession.js`
   - Owns startup refresh-cookie session recovery and the shared HTTP auth-refresh retry hook from `src/api/client.js`. It keeps the refresh promise, login reset fallback, token update, and silent startup refresh outside `src/main.jsx`.
 - `src/app/useStartupPreload.js`

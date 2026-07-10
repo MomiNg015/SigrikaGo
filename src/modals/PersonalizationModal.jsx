@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Palette, ShieldCheck, Trophy, X } from "lucide-react";
 import { api } from "../api/client.js";
 import UserIdentity from "../shared/UserIdentity.jsx";
-import { ModalActionButton } from "./modalComponents.jsx";
+import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
 
 const SECTIONS = [
   { type: "title", field: "titleAssetId", label: "称号", icon: Trophy },
@@ -95,9 +95,9 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <section className="house-modal personalization-modal" onClick={(event) => event.stopPropagation()}>
+      <ModalDialog className="house-modal personalization-modal" ariaLabelledBy="personalization-modal-title" onClose={onClose} onClick={(event) => event.stopPropagation()}>
         <header className="house-header achievement-header">
-          <h2>个性化</h2>
+          <h2 id="personalization-modal-title">个性化</h2>
           <button className="close-button" type="button" onClick={onClose} aria-label="关闭个性化窗口"><X size={20} /></button>
         </header>
         <div className="personalization-preview" aria-label="个性化试穿预览">
@@ -130,9 +130,10 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
         </div>
         {pickerSection && (
           <div className="nested-modal-backdrop personalization-picker-backdrop" onClick={() => setPickerType("")}>
-            <section
+            <ModalDialog
               className="nested-modal personalization-picker-modal"
-              aria-label={`选择${pickerSection.label}`}
+              ariaLabel={`选择${pickerSection.label}`}
+              onClose={() => setPickerType("")}
               onClick={(event) => event.stopPropagation()}
             >
               <header className="personalization-picker-header">
@@ -164,13 +165,13 @@ export default function PersonalizationModal({ token, user, onClose, onNotice, o
                   </button>
                 ))}
               </div>
-            </section>
+            </ModalDialog>
           </div>
         )}
         <ModalActionButton variant="primary" type="button" onClick={save} disabled={saving}>
           保存
         </ModalActionButton>
-      </section>
+      </ModalDialog>
     </div>
   );
 }

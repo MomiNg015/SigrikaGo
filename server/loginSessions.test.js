@@ -79,6 +79,19 @@ describe("login session store", () => {
     });
   });
 
+  it("allows only one concurrent rotation of the same refresh token", async () => {
+    const prisma = fakePrisma();
+    const sessions = createLoginSessionStore({ prisma });
+    const first = await sessions.replace("user-1");
+
+    const [left, right] = await Promise.all([
+      sessions.refresh(first.refreshToken),
+      sessions.refresh(first.refreshToken)
+    ]);
+
+    expect([left, right].filter(Boolean)).toHaveLength(1);
+  });
+
   it("builds http-only refresh cookies and can parse them back", () => {
     const cookie = buildRefreshCookie("refresh value", { env: "production", maxAgeMs: 1000 });
 

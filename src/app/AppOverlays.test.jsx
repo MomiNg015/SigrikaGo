@@ -156,7 +156,6 @@ function overlayProps(overrides = {}) {
     onRemoveToast: vi.fn(),
     onResultClose: vi.fn(),
     openReplay: vi.fn(),
-    replayRecords: [],
     resultModalOpen: false,
     room: null,
     selectCharacter: vi.fn(),

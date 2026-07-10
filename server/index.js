@@ -25,7 +25,7 @@ import { createSocialRouter } from "./socialRoutes.js";
 import { createLoginSessionStore } from "./loginSessions.js";
 import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
-import { jsonSyntaxErrorHandler } from "./httpErrors.js";
+import { apiErrorHandler, jsonSyntaxErrorHandler } from "./httpErrors.js";
 import { installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
 import { initializeServerData } from "./serverStartup.js";
 import { resolveCharacterUploadDir, resolveUploadRoot } from "./uploadPaths.js";
@@ -214,6 +214,7 @@ app.use("/api", authHttp, createPlayerRouter({
   characterSelectionData
 }));
 app.use("/api", authHttp, createReplayRouter({ prisma }));
+app.use("/api", apiErrorHandler);
 
 function lobbyStats() {
   const matchmakingCounts = matchmakingCountsByMode();

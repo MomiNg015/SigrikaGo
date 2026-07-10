@@ -39,6 +39,34 @@ export function ReplayList({ records = [], characters, onOpenReplay, compact = f
   );
 }
 
+export function PaginatedReplayList({ pagination, characters, currentUser, onOpenReplay, compact = false }) {
+  const { records, loading, error, hasMore, retry } = pagination;
+  return (
+    <>
+      {records.length > 0 && (
+        <ReplayList
+          records={records}
+          characters={characters}
+          currentUser={currentUser}
+          onOpenReplay={onOpenReplay}
+          compact={compact}
+        />
+      )}
+      {!loading && !error && records.length === 0 && <ReplayList records={[]} characters={characters} />}
+      {loading && <p className="quiet-text replay-pagination-status">{records.length > 0 ? "正在加载更早的棋谱..." : "加载中..."}</p>}
+      {error && (
+        <div className="replay-pagination-error">
+          <p className="room-people-error">{error}</p>
+          <button type="button" onClick={retry}>重新加载</button>
+        </div>
+      )}
+      {!loading && !error && records.length > 0 && !hasMore && (
+        <p className="quiet-text replay-pagination-status">已加载全部棋谱</p>
+      )}
+    </>
+  );
+}
+
 function ReplayPlayer({ name, characterId, characters }) {
   const character = findCharacter(characters, characterId);
   return (

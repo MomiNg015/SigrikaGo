@@ -8,6 +8,8 @@ import { attachAchievementEquipmentAssetsToUsers } from "./achievements.js";
 import { listShopItems } from "./shop.js";
 import { getPublicSiteSettings } from "./siteSettings.js";
 
+export const LEADERBOARD_RECORD_SCAN_LIMIT = 10_000;
+
 export function createPublicRouteHandlers({
   prisma,
   listWatchRooms,
@@ -60,7 +62,7 @@ export function createPublicRouteHandlers({
         }
       }),
       prisma.gameRecord.findMany({
-        where: { mode },
+        where: { mode, rated: true },
         select: {
           blackUserId: true,
           whiteUserId: true,
@@ -70,7 +72,9 @@ export function createPublicRouteHandlers({
           resultReason: true,
           resultText: true,
           mode: true
-        }
+        },
+        orderBy: { createdAt: "desc" },
+        take: LEADERBOARD_RECORD_SCAN_LIMIT
       })
     ]);
     const decoratedUsers = await attachAchievementEquipmentAssetsToUsers(prisma, users);

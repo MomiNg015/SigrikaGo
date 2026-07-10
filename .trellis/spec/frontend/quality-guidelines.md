@@ -734,6 +734,7 @@ Correct:
 - `UserProfileCard` renders the profile replay modal as `.profile-replay-dialog`.
 - `.profile-replay-list-scroll` is the only vertical scroll owner for profile/detail replay history on phones.
 - `.profile-replay-dialog .replay-table` is content inside that scroll owner.
+- `useReplayPagination({ enabled, endpoint, token })` owns 50-row page state for both resume and profile replay dialogs.
 
 #### 3. Contracts
 - Keep `.profile-replay-dialog` as a bounded fixed-height/mobile shell with a fixed title/close area and a `minmax(0, 1fr)` replay-list region.
@@ -741,11 +742,13 @@ Correct:
 - Keep `.profile-replay-dialog .replay-table` non-scrollable with `overflow: visible`, not only `overflow-y: visible`. CSS computes `overflow-y: visible` back to `auto` when the other axis is `hidden`/`auto`, which creates a dead inner scroll container that can intercept touch and wheel chaining.
 - Bright School final mobile overrides must repeat the same `overflow: visible !important` and `overscroll-behavior: auto !important` table contract after any generic `.replay-table` mobile scroll rules.
 - House nested replay dialogs may keep their own table scroll/card contract; do not use a broad `.replay-table` rule to change profile replay scroll ownership.
+- The owning scroll element must forward `onScroll` to the pagination hook. Reaching the final 48px loads `nextCursor`; a null cursor renders the completed state and makes no further request.
 
 #### 4. Validation & Error Matrix
 - Profile replay history has more rows than the visible mobile list -> swiping on row text or buttons scrolls `.profile-replay-list-scroll`.
 - `.profile-replay-dialog .replay-table` computes to `overflow-y: auto` with no scroll range -> invalid, because it can swallow scroll gestures before the outer list receives them.
 - Bright School portrait active -> same scroll owner contract as base mobile.
+- First page shorter than the full history -> scrolling to the bottom appends older records without replacing or duplicating the first page.
 
 #### 5. Good/Base/Bad Cases
 - Good: `.profile-replay-dialog .replay-table { overflow: visible; overscroll-behavior: auto; }`
@@ -755,6 +758,7 @@ Correct:
 
 #### 6. Tests Required
 - `src/modals/ReplayList.test.jsx` should assert the final mobile CSS contains the profile replay table `overflow: visible` contract for both base and Bright School final layers.
+- `src/modals/useReplayPagination.dom.test.jsx` should assert initial loading, cursor URL encoding, bottom detection, append semantics, and terminal `nextCursor = null`.
 - For browser-level regression checks, render a mobile Bright School profile replay fixture and verify wheel/touch scrolling changes `.profile-replay-list-scroll.scrollTop` while `.profile-replay-dialog .replay-table.scrollTop` stays `0`.
 
 #### 7. Wrong vs Correct
@@ -983,3 +987,54 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 <!-- What reviewers should check -->
 
 (To be filled by the team)
+
+### Scenario: Shared Modal Dialog and Lint Boundary
+
+#### 1. Scope / Trigger
+- Trigger: adding or changing a modal shell, nested picker, close behavior, keyboard navigation, focus management, or the repository lint baseline.
+
+#### 2. Signatures
+- Shared shell: `ModalDialog({ as = "section", labelledBy, ariaLabel, onClose, className, children, ...props })` from `src/modals/modalComponents.jsx`.
+- Quality command: `npm run lint`; the full repository gate starts with lint through `npm run check`.
+
+#### 3. Contracts
+- Interactive modal surfaces use `ModalDialog` with `role="dialog"`, `aria-modal="true"`, and either `aria-labelledby` or `aria-label`.
+- On mount, focus enters the first focusable control (or the dialog); Tab and Shift+Tab remain inside; Escape calls the closest dialog's `onClose`; unmount restores the prior focused element.
+- Nested dialogs handle Escape locally and prevent the global dismissal layer from closing the parent in the same event.
+- Close and icon-only controls expose an accessible name.
+- ESLint uses the flat configuration, React Hooks checks, JSX variable checks, and `jsx-a11y`; intentional backdrop click handling is documented through scoped rule configuration rather than disabling lint wholesale.
+
+#### 4. Validation & Error Matrix
+- Missing `aria-labelledby` and `aria-label` -> accessibility lint/review failure.
+- Escape in a nested picker -> close only the picker.
+- Tab from the last focusable item -> wrap to the first; Shift+Tab from the first -> wrap to the last.
+- Modal closes -> restore focus when the opener is still connected.
+- Hooks dependency mismatch or undefined JSX identifier -> lint failure.
+
+#### 5. Good/Base/Bad Cases
+- Good: a leaderboard modal passes its title id to `labelledBy` and its close button has `aria-label="关闭"`.
+- Base: a non-interactive visual wrapper remains a normal element and does not pretend to be a dialog.
+- Bad: a clickable `<div>` modal shell with no keyboard focus boundary.
+- Bad: adding a second document-level Escape handler inside each modal.
+
+#### 6. Tests Required
+- `src/modals/modalComponents.dom.test.jsx` asserts initial focus, forward/backward wrapping, Escape close, and opener focus restoration in jsdom.
+- Migrated modal tests assert the shared dialog shell and accessible title/controls.
+- `npm run lint`, `npm test`, and `npm run build` must pass before handoff.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<div className="modal" onClick={(event) => event.stopPropagation()}>{children}</div>
+```
+
+Correct:
+
+```jsx
+<ModalDialog className="modal" labelledBy="modal-title" onClose={onClose}>
+  <h2 id="modal-title">Title</h2>
+  {children}
+</ModalDialog>
+```

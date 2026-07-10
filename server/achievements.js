@@ -2,6 +2,8 @@ import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
 import { writeAudit } from "./adminAudit.js";
 import { routeError } from "./adminRouteErrors.js";
+
+export const ACHIEVEMENT_GAME_RECORD_SCAN_LIMIT = 10_000;
 import { publicUser, USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import { parseItemEffects } from "./itemEffects.js";
 import {
@@ -267,7 +269,9 @@ export async function evaluateAchievementsForUser({ prisma, userId, triggerEvent
         winnerColor: true,
         mode: true,
         resultText: true
-      }
+      },
+      orderBy: { createdAt: "desc" },
+      take: ACHIEVEMENT_GAME_RECORD_SCAN_LIMIT
     })
   ]);
   const existing = new Map(existingRows.map((row) => [row.achievementId, row]));

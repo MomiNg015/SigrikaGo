@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const clientPort = process.env.E2E_CLIENT_PORT ?? "5173";
+const baseURL = `http://127.0.0.1:${clientPort}`;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 30_000,
@@ -10,13 +13,13 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL,
     trace: "on-first-retry"
   },
   webServer: {
-    command: "npm run dev",
-    url: "http://127.0.0.1:5173",
-    reuseExistingServer: !process.env.CI,
+    command: "node scripts/start-e2e-environment.mjs",
+    url: baseURL,
+    reuseExistingServer: false,
     timeout: 120_000
   },
   projects: [

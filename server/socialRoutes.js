@@ -117,16 +117,17 @@ export function createSocialRouteHandlers({
   }
 
   async function getReplays(req, res) {
-    const records = await getUserReplaysFn({
+    const page = await getUserReplaysFn({
       prisma,
       userId: req.params.id,
-      mode: normalizeMode(req.query.mode)
+      mode: normalizeMode(req.query.mode),
+      cursor: req.query.cursor
     });
-    if (!records) {
+    if (!page) {
       res.status(404).json({ error: "\u7528\u6237\u4e0d\u5b58\u5728" });
       return;
     }
-    res.json({ records });
+    res.json(page);
   }
 
   async function likeProfile(req, res) {

@@ -3,7 +3,7 @@ import { CharacterMusicPreview } from "../../audio/CharacterMusicPreview.jsx";
 import { derivedSkillDefinitionsFromSkill } from "../../shared/derivedSkills.js";
 import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "../../shared/characterCv.js";
 import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../shared/musicLibrary.js";
-import { ReplayList } from "../ReplayList.jsx";
+import { PaginatedReplayList } from "../ReplayList.jsx";
 import { characterRecordColumns } from "../UserProfileCard.jsx";
 import { characterCandyPortrait } from "./houseStats.js";
 
@@ -91,13 +91,18 @@ export function CharacterDetailDialog({
   );
 }
 
-export function HouseReplayDialog({ characterListView, records, currentUser, onClose, onOpenReplay }) {
+export function HouseReplayDialog({ characterListView, currentUser, onClose, onOpenReplay, pagination }) {
   return (
     <div className="nested-modal-backdrop" onClick={onClose}>
-      <section className="nested-modal replay-dialog" onClick={(event) => event.stopPropagation()}>
+      <section className="nested-modal replay-dialog" onScroll={pagination.onScroll} onClick={(event) => event.stopPropagation()}>
         <button className="close-button" onClick={onClose}><X size={18} /></button>
         <h3>对局回放</h3>
-        <ReplayList records={records} characters={characterListView} currentUser={currentUser} onOpenReplay={onOpenReplay} />
+        <PaginatedReplayList
+          pagination={pagination}
+          characters={characterListView}
+          currentUser={currentUser}
+          onOpenReplay={onOpenReplay}
+        />
       </section>
     </div>
   );
