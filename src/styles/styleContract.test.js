@@ -1341,10 +1341,12 @@ describe("root CSS entry contract", () => {
 
     const windowMotion = readFileSync(new URL("./modals/window-motion.css", import.meta.url), "utf8");
     expect(windowMotion).toContain("@keyframes sigrika-paper-window-in");
-    expect(windowMotion).toContain("rotate: 1 -0.18 -0.34 9deg");
-    expect(windowMotion).toContain("animation: sigrika-paper-window-in 420ms");
-    expect(windowMotion).toContain("animation-duration: 300ms");
-    expect(windowMotion).toContain("perspective: 1200px");
+    expect(windowMotion).toContain("rotate: 1 -0.16 -0.32 5.5deg");
+    expect(windowMotion).toContain("animation: sigrika-paper-window-in 280ms");
+    expect(windowMotion).toContain("animation-duration: 220ms");
+    expect(windowMotion).toContain(":where(:not(.opening-modal))");
+    expect(windowMotion).not.toContain("perspective:");
+    expect(windowMotion).not.toMatch(/animation:[^;]+\bboth\b/);
     expect(windowMotion).toContain("@media (prefers-reduced-motion: reduce)");
     expect(windowMotion).not.toMatch(/@keyframes[^}]+\b(?:width|height|top|left|margin|padding)\s*:/s);
 

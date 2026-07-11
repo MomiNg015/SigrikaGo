@@ -169,7 +169,7 @@ describe("CSS layer inventory", () => {
       .filter((filePath) => !readFileSync(join(stylesDir, filePath), "utf8").includes("prefers-reduced-motion"))
       .map((filePath) => `missing prefers-reduced-motion: ${filePath}`);
 
-    expect(CSS_MOTION_CONTRACT.durationRangeMs).toEqual({ micro: [100, 180], sheet: [180, 420] });
+    expect(CSS_MOTION_CONTRACT.durationRangeMs).toEqual({ micro: [100, 180], sheet: [180, 300] });
     expect(CSS_MOTION_CONTRACT.guidance).toContain("transform");
     expect(CSS_MOTION_CONTRACT.guidance).toContain("opacity");
     expect([...missingTokenFragments, ...missingReducedMotionFiles, ...missingReducedMotionFragments]).toEqual([]);

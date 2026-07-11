@@ -107,9 +107,10 @@ Correct:
 - A player window is an immediate `section`, `form`, or dialog child of `.modal-backdrop` or `.nested-modal-backdrop` under `.app-shell.player-theme-enabled`.
 
 #### 3. Contracts
-- Ordinary player windows enter as a loose sheet landing flat: backdrop fade at `180ms`; main paper motion at `420ms`; compact/nested motion at `300ms`; calm lifecycle/story motion at `340ms`; phone motion at `360ms`.
+- Ordinary player windows enter as a loose sheet landing flat: backdrop fade at `140ms`; main paper motion at `280ms`; compact/nested motion at `220ms`; calm lifecycle/story motion at `240ms`; phone motion at `260ms`.
 - The four-beat motion is approach, contact compression, edge rebound, and a fully flat final state. It uses `translate`, `scale`, `rotate`, and `opacity` only; do not animate layout geometry, blur, or shadow.
-- Backdrops own perspective. Window transform longhands must compose with existing `transform` positioning, including fixed centered confirmation panels.
+- Never place `perspective`, `transform`, persistent transform longhands, `filter`, or `will-change: transform` on a backdrop or a modal that owns fixed descendants. Those properties create a containing block and can trap replay, profile, character-detail, or confirmation windows inside the parent panel.
+- Window transform longhands may compose with existing `transform` positioning only during the entrance. Do not use `animation-fill-mode: forwards` or `both`; after entry, computed `translate`, `scale`, and `rotate` must return to `none` so fixed descendants stay viewport-relative.
 - `OpeningModal` keeps its dedicated character-opening animation and is excluded from the shared paper surface animation; its backdrop may still use the shared fade.
 - Match success, result, story, and tutorial battle sessions use the calm variant so the window entrance does not compete with their internal presentation.
 - Shared desktop motion is authoritative. Final mobile and Bright School layers may change geometry or transform origin, but must not introduce a second modal entrance keyframe.
@@ -129,7 +130,7 @@ Correct:
 - Bad: animating width, height, top, left, padding, blur, or box-shadow during entry.
 
 #### 6. Tests Required
-- `styleContract.test.js` asserts the import, four-beat keyframes, timing, perspective, mobile deduplication, reduced-motion fallback, and absence of layout-property keyframes.
+- `styleContract.test.js` asserts the import, four-beat timing, absence of backdrop perspective or persistent animation fill, mobile deduplication, reduced-motion fallback, and absence of layout-property keyframes.
 - `cssLayerInventory.test.js` registers the motion family, expanded sheet timing range, and CSS debt baseline.
 - Browser checks cover desktop, phone, ordinary, nested, calm, and reduced-motion variants without position drift or first-frame flashing.
 

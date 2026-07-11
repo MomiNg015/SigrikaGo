@@ -41,7 +41,7 @@ export const CSS_Z_INDEX_CONTRACT = {
 export const CSS_MOTION_CONTRACT = {
   tokenFiles: ["themes/shared/player-theme-tokens.css", "tailwind/tokens.css"],
   requiredTokenFragments: ["--theme-transition: 180ms ease", "--ease-sigrika-standard"],
-  durationRangeMs: { micro: [100, 180], sheet: [180, 420] },
+  durationRangeMs: { micro: [100, 180], sheet: [180, 300] },
   reducedMotionFiles: [
     "admin/polish/forms-actions.css",
     "admin/story-workbench/layout.css",
