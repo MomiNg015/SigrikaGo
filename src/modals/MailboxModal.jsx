@@ -1,7 +1,10 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { Archive, CheckCircle2, Coins, Gift, MailOpen, Trash2, X } from "lucide-react";
+import { Archive, CheckCircle2, Coins, Gift, MailOpen, Trash2 } from "lucide-react";
 import { api } from "../api/client.js";
+import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
 import { ModalActionButton } from "./modalComponents.jsx";
+
+const EMPTY_TEXT = "这里空空如也~";
 
 export default function MailboxModal({
   token,
@@ -12,16 +15,17 @@ export default function MailboxModal({
   onSummaryChange,
   onUserChange
 }) {
+  const isNarrow = useNarrowInformationCenter();
   const [messages, setMessages] = useState(() => sortMailboxMessages(initialMessages));
   const [loaded, setLoaded] = useState(initialLoaded);
   const [error, setError] = useState("");
-  const [selectedId, setSelectedId] = useState(() => sortMailboxMessages(initialMessages)[0]?.id ?? "");
+  const [selectedId, setSelectedId] = useState(() => isNarrow ? "" : sortMailboxMessages(initialMessages)[0]?.id ?? "");
   const [busyId, setBusyId] = useState("");
   const selected = useMemo(
-    () => messages.find((message) => message.id === selectedId) ?? messages[0] ?? null,
+    () => messages.find((message) => message.id === selectedId) ?? null,
     [messages, selectedId]
   );
-  const listEmptyText = loaded ? "暂无邮件" : "正在读取邮件...";
+  const listEmptyText = loaded ? (isNarrow ? "暂无邮件" : EMPTY_TEXT) : "正在读取邮件...";
 
   async function refresh() {
     if (!token) return;
@@ -30,7 +34,9 @@ export default function MailboxModal({
       const data = await api("/api/mailbox", { token });
       const nextMessages = sortMailboxMessages(data.messages ?? []);
       setMessages(nextMessages);
-      setSelectedId((current) => nextMessages.some((message) => message.id === current) ? current : nextMessages[0]?.id ?? "");
+      setSelectedId((current) => nextMessages.some((message) => message.id === current)
+        ? current
+        : isNarrow ? "" : nextMessages[0]?.id ?? "");
       setLoaded(true);
       onSummaryChange?.();
     } catch (err) {
@@ -40,8 +46,11 @@ export default function MailboxModal({
   }
 
   useEffect(() => {
-    if (initialLoaded) return;
-    refresh();
+    if (initialLoaded && !isNarrow) {
+      markRead(messages[0]);
+    } else if (!initialLoaded) {
+      refresh();
+    }
   }, [token]);
 
   async function runMessageAction(messageId, action) {
@@ -81,84 +90,97 @@ export default function MailboxModal({
   }
 
   return (
-    <div className="modal-backdrop mailbox-backdrop" onClick={onClose}>
-      <section className="modal-panel mailbox-modal" onClick={(event) => event.stopPropagation()} aria-label="邮箱">
-        <header className="mailbox-header">
-          <h2>邮箱</h2>
-          <button className="close-button" type="button" aria-label="关闭邮箱" onClick={onClose}>
-            <X size={20} />
-          </button>
-        </header>
-
-        {error && <p className="form-error mailbox-error">{error}</p>}
-        <div className="mailbox-layout">
-          <div className="mailbox-list" role="list">
-            {messages.length === 0 && (
-              <div className="mailbox-list-empty" role="listitem">
-                {listEmptyText}
-              </div>
-            )}
-            {messages.map((message) => (
-              <button
-                className={`mailbox-list-item ${selected?.id === message.id ? "active" : ""} ${mailboxMessageStateClass(message)}`}
-                type="button"
-                key={message.id}
-                onClick={() => {
-                  setSelectedId(message.id);
-                  markRead(message);
-                }}
-              >
-                <span className="mailbox-list-title">{message.title}</span>
-                <span className="mailbox-list-time">{formatDateTime(message.createdAt)}</span>
-                <span className="mailbox-list-status">
-                  {!message.isRead && <b>未读</b>}
-                  {message.claimable && <b>待领取</b>}
-                  {message.isRead && !message.claimable && <b>已完成</b>}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {selected ? (
-            <article className="mailbox-detail">
-              <div className="mailbox-detail-topline">
-                <span className="mailbox-detail-time">{formatDateTime(selected.createdAt)}</span>
-                <button
-                  className="mailbox-delete-button"
-                  type="button"
-                  disabled={!selected.deletable || busyId === selected.id}
-                  onClick={() => remove(selected)}
-                  aria-label={selected.deletable ? "删除邮件" : "请先领取附件"}
-                >
-                  <Trash2 size={19} />
-                </button>
-              </div>
-              <h3>{selected.title}</h3>
-              <p className="mailbox-body">{selected.body}</p>
-              <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
-              {hasAttachment(selected.attachment) && (
-                <div className="mailbox-actions">
-                  <ModalActionButton
-                    variant="primary"
+    <InformationCenterLayout
+      backdropClassName="mailbox-backdrop"
+      modalClassName="mailbox-modal"
+      title="邮箱"
+      titleId="mailbox-modal-title"
+      closeLabel="关闭邮箱"
+      backLabel="返回邮件列表"
+      mobileView={selected ? "detail" : "list"}
+      onBack={selected ? () => setSelectedId("") : undefined}
+      onClose={onClose}
+      listLabel="邮件列表"
+      detailLabelledBy={selected ? "mailbox-detail-title" : undefined}
+      list={(
+        <div className="mailbox-list-region">
+          {error && <p className="form-error mailbox-error" role="alert">{error}</p>}
+          {messages.length > 0 && (
+            <ul className="mailbox-list">
+              {messages.map((message) => (
+                <li key={message.id}>
+                  <button
+                    className={`mailbox-list-item ${selected?.id === message.id ? "active" : ""} ${mailboxMessageStateClass(message)}`}
                     type="button"
-                    disabled={!selected.claimable || busyId === selected.id}
-                    onClick={() => claim(selected)}
+                    aria-current={selected?.id === message.id ? "true" : undefined}
+                    onClick={() => {
+                      setSelectedId(message.id);
+                      markRead(message);
+                    }}
                   >
-                    {selected.claimable ? <Gift size={18} /> : <CheckCircle2 size={18} />}
-                    {selected.claimable ? "领取附件" : "已领取"}
-                  </ModalActionButton>
-                </div>
-              )}
-            </article>
-          ) : (
-            <article className="mailbox-detail mailbox-detail-empty" aria-live="polite">
-              <MailOpen size={28} />
-              <h3>暂无选中邮件</h3>
-            </article>
+                    <span className="mailbox-list-title">
+                      {!message.isRead && <i className="mailbox-unread-dot" aria-hidden="true" />}
+                      {message.title}
+                    </span>
+                    <span className="mailbox-list-time">{formatDateTime(message.createdAt)}</span>
+                    <span className="mailbox-list-status">
+                      {!message.isRead && <b>未读</b>}
+                      {message.claimable && <b>待领取</b>}
+                      {message.isRead && !message.claimable && <b>已完成</b>}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
+          {messages.length === 0 && (
+            <div className="mailbox-list-empty">
+              {listEmptyText}
+            </div>
+          )}
+          <div className="information-center-status" role="status" aria-live="polite">
+            {!loaded ? listEmptyText : busyId ? "正在处理邮件" : error}
+          </div>
         </div>
-      </section>
-    </div>
+      )}
+      detail={selected ? (
+        <article className="mailbox-detail" aria-busy={busyId === selected.id || undefined}>
+          <div className="mailbox-detail-topline">
+            <span className="mailbox-detail-time">{formatDateTime(selected.createdAt)}</span>
+            <button
+              className="mailbox-delete-button"
+              type="button"
+              disabled={!selected.deletable || busyId === selected.id}
+              onClick={() => remove(selected)}
+              aria-label={selected.deletable ? "删除邮件" : "请先领取附件"}
+            >
+              <Trash2 size={19} />
+            </button>
+          </div>
+          <h3 id="mailbox-detail-title">{selected.title}</h3>
+          <p className="mailbox-body">{selected.body}</p>
+          <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
+          {hasAttachment(selected.attachment) && (
+            <div className="mailbox-actions">
+              <ModalActionButton
+                variant="primary"
+                type="button"
+                disabled={!selected.claimable || busyId === selected.id}
+                onClick={() => claim(selected)}
+              >
+                {selected.claimable ? <Gift size={18} /> : <CheckCircle2 size={18} />}
+                {selected.claimable ? "领取附件" : "已领取"}
+              </ModalActionButton>
+            </div>
+          )}
+        </article>
+      ) : (
+        <article className="mailbox-detail mailbox-detail-empty">
+          <MailOpen size={28} />
+          <h3>{EMPTY_TEXT}</h3>
+        </article>
+      )}
+    />
   );
 }
 

@@ -33,52 +33,6 @@
   text-shadow: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-tabs {
-  border: 3px solid #4a3736 !important;
-  background: #ffffff !important;
-  box-shadow: 2px 2px 0 rgba(74, 55, 54, 0.18) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-tabs button {
-  min-height: 44px !important;
-  padding: 8px 12px !important;
-  border: 3px solid transparent !important;
-  border-radius: 8px !important;
-  background: #fffaf4 !important;
-  color: #3d2b25 !important;
-  box-shadow: none !important;
-  line-height: 1.2 !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-tabs button.active,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-tabs button[aria-selected="true"] {
-  border-color: #4a3736 !important;
-  background: #ff9ebb !important;
-  color: #3d2b25 !important;
-  box-shadow: 2px 2px 0 #4a3736 !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-list-item {
-  min-height: 68px !important;
-  padding: 15px 16px !important;
-  border: 2px solid #4a3736 !important;
-  border-radius: 8px !important;
-  background: #fffdf8 !important;
-  color: #3d2b25 !important;
-  line-height: 1.32 !important;
-  box-shadow: 2px 3px 0 rgba(74, 55, 54, 0.18) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-list-item:hover,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-list-item:focus-visible {
-  background: #fff7eb !important;
-  box-shadow: 3px 4px 0 rgba(74, 55, 54, 0.24) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-list-item.is-unread {
-  background: #ffe4ef !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-list-meta,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-header p,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-kind {
@@ -88,40 +42,22 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-list-meta b,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-kind {
   border: 1px solid #c7b1a8 !important;
-  border-radius: 999px !important;
   background: #ffffff !important;
   color: #3d2b25 !important;
   box-shadow: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-kind {
-  display: inline-flex;
-  align-items: center;
-  width: max-content;
-  min-height: 28px;
-  padding: 5px 10px;
-  line-height: 1.2;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-inline-error,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-empty,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-body {
-  padding: 16px !important;
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-empty {
   border: 2px dashed #c7b1a8 !important;
-  border-radius: 8px !important;
   background: #fffdf8 !important;
   color: #5a4740 !important;
   box-shadow: none !important;
-  line-height: 1.35 !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-inline-error {
   border-color: #9d2c45 !important;
   color: #9d2c45 !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-backdrop {
-  background: rgba(74, 55, 54, 0.42) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-detail-body.markdown-lite-content,
@@ -132,9 +68,5 @@
 @media (max-width: 768px) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-modal {
     border-radius: 14px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .announcement-title-group {
-    display: block !important;
   }
 }

@@ -1,140 +1,133 @@
-import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+// @vitest-environment jsdom
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { api } from "../api/client.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
+import AnnouncementModal from "./AnnouncementModal.jsx";
 
-describe("AnnouncementModal detail popup contract", () => {
-  it("keeps announcement tabs, rows, and detail body aligned with shared modal styling", () => {
-    const source = readFileSync(new URL("./AnnouncementModal.jsx", import.meta.url), "utf8");
-    const rawEntry = readFileSync(new URL("../styles/modals/announcement.css", import.meta.url), "utf8");
-    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
-    const themeCss = readCssWithImports(new URL("../styles/themes.css", import.meta.url));
-    const tabButtonBlock = css.match(/\.announcement-tabs button\s*\{[^}]+\}/)?.[0] ?? "";
-    const brightTabBlock = css.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.announcement-tabs button\.active,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.announcement-tabs button\[aria-selected="true"\]\s*\{[^}]+\}/)?.[0] ?? "";
-    const brightRowBlock = css.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.announcement-list-item\s*\{[^}]+\}/)?.[0] ?? "";
-    const detailHeaderStackBlock = css.match(/\.announcement-detail-header > div\s*\{[^}]+\}/)?.[0] ?? "";
-    const detailHeaderMetaBlock = css.match(/\.announcement-detail-header p\s*\{[^}]+\}/)?.[0] ?? "";
-    const detailBodyBlock = css.match(/\.announcement-detail-body\s*\{[^}]+\}/)?.[0] ?? "";
-    const metaChipBlock = css.match(/\.announcement-list-meta b\s*\{[^}]+\}/)?.[0] ?? "";
-    const detailKindBlock = css.match(/\.announcement-detail-kind\s*\{[^}]+\}/)?.[0] ?? "";
+vi.mock("../api/client.js", () => ({ api: vi.fn() }));
 
-    expect(source).toContain('className="announcement-title-group"');
-    expect(source).not.toContain("announcement-title-lockup");
-    expect(source).not.toContain("announcement-title-icon");
-    expect(source).not.toContain("Megaphone");
-    expect(source).toContain("aria-controls={`announcement-panel-${kind.id}`}");
-    expect(source).toContain("role=\"tabpanel\"");
-    expect(css).not.toContain(".announcement-title-icon");
-    expect(css).not.toContain(".announcement-title-lockup");
-    expect(rawEntry).toContain('@import "./announcement/shell.css";');
-    expect(rawEntry).toContain('@import "./announcement/detail.css";');
-    expect(rawEntry).toContain('@import "./announcement/visual-consistency.css";');
-    expect(tabButtonBlock).toContain("min-height: 44px");
-    expect(tabButtonBlock).toContain("padding: 8px 12px");
-    expect(tabButtonBlock).toContain("line-height: 1.2");
-    expect(brightTabBlock).toContain("background: #ff9ebb !important");
-    expect(brightTabBlock).toContain("border-color: #4a3736 !important");
-    expect(themeCss).toContain(".announcement-tabs button.active");
-    expect(themeCss).toContain(".announcement-tabs button[aria-selected=\"true\"]");
-    expect(brightRowBlock).toContain("border: 2px solid #4a3736 !important");
-    expect(brightRowBlock).toContain("border-radius: 8px !important");
-    expect(metaChipBlock).toContain("min-height: 26px");
-    expect(metaChipBlock).toContain("padding: 4px 9px");
-    expect(detailKindBlock).toContain("min-height: 28px");
-    expect(detailKindBlock).toContain("padding: 5px 10px");
-    expect(detailHeaderStackBlock).toContain("display: flex");
-    expect(detailHeaderStackBlock).toContain("flex-direction: column");
-    expect(detailHeaderStackBlock).toContain("align-items: flex-start");
-    expect(detailHeaderStackBlock).toContain("gap: 8px");
-    expect(detailHeaderMetaBlock).toContain("margin: 0");
-    expect(detailBodyBlock).toContain("flex: 1 1 auto");
-    expect(detailBodyBlock).toContain("min-height: 0");
-    expect(detailBodyBlock).toContain("border: 1px solid #eaddea");
-    expect(detailBodyBlock).toContain("padding: 18px");
-    expect(css).toContain(".announcement-detail-body.markdown-lite-content");
-    expect(css).not.toContain("\n.markdown-lite-content {\n");
+const announcementItem = {
+  id: "announcement-1",
+  kind: "announcement",
+  title: "欢迎来到星炬学院",
+  firstPublishedAt: "2026-06-28T03:32:00.000Z",
+  pinned: true,
+  isUnread: true
+};
+
+const changelogItem = {
+  ...announcementItem,
+  id: "changelog-1",
+  kind: "changelog",
+  title: "版本更新笔记",
+  pinned: false
+};
+
+describe("AnnouncementModal information center", () => {
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllGlobals();
   });
 
-  it("renders entry details inside the parent announcement modal", () => {
-    const source = readFileSync(new URL("./AnnouncementModal.jsx", import.meta.url), "utf8").replace(/\r\n/g, "\n");
-    const parentBackdropIndex = source.indexOf('className="modal-backdrop announcement-backdrop"');
-    const parentModalIndex = source.indexOf('className="modal-panel announcement-modal"');
-    const detailBackdropIndex = source.indexOf('className="nested-modal-backdrop announcement-detail-backdrop"');
-    const parentModalCloseIndex = source.indexOf("\n        </section>\n      </div>", parentModalIndex);
-    const detailSource = source.slice(detailBackdropIndex);
-
-    expect(parentBackdropIndex).toBeGreaterThan(-1);
-    expect(parentModalIndex).toBeGreaterThan(parentBackdropIndex);
-    expect(detailBackdropIndex).toBeGreaterThan(parentModalIndex);
-    expect(detailBackdropIndex).toBeLessThan(parentModalCloseIndex);
-    expect(source).not.toContain('className="modal-backdrop announcement-detail-backdrop"');
-    expect(source.slice(parentModalCloseIndex)).not.toContain('className="nested-modal-backdrop announcement-detail-backdrop"');
-    expect(detailSource).toContain('className="nested-modal announcement-detail-modal"');
-    expect(detailSource).toContain('role="dialog"');
-    expect(detailSource).toContain('aria-modal="true"');
+  beforeEach(() => {
+    api.mockReset();
+    api.mockImplementation((path, options) => {
+      if (path === "/api/announcements?kind=announcement&offset=0&limit=20") {
+        return Promise.resolve({ items: [announcementItem], nextOffset: 1, hasMore: false });
+      }
+      if (path === "/api/announcements?kind=changelog&offset=0&limit=20") {
+        return Promise.resolve({ items: [changelogItem], nextOffset: 1, hasMore: false });
+      }
+      if (path === "/api/announcements/announcement-1" && !options?.method) {
+        return Promise.resolve({ entry: { ...announcementItem, body: "完整公告正文", updatedAt: "2026-06-28T04:00:00.000Z" } });
+      }
+      if (path === "/api/announcements/changelog-1" && !options?.method) {
+        return Promise.resolve({ entry: { ...changelogItem, body: "完整更新正文", updatedAt: "2026-06-28T04:00:00.000Z" } });
+      }
+      if (path === "/api/announcements/announcement-1/read" || path === "/api/announcements/changelog-1/read") {
+        return Promise.resolve({ summary: { announcement: false, changelog: false } });
+      }
+      throw new Error(`Unexpected api call: ${path}`);
+    });
   });
 
-  it("keeps the embedded detail window the same size as its parent modal on desktop and mobile", () => {
-    const css = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
-    const finalMobileCss = readCssWithImports(new URL("../styles/themes.css", import.meta.url));
-    const backdropBlock = css.match(/\.announcement-detail-backdrop\s*\{[^}]+\}/)?.[0] ?? "";
-    const modalBlock = css.match(/\.announcement-detail-modal\s*\{[^}]+\}/)?.[0] ?? "";
-    const phoneBlock = mediaBlock(css, "@media (max-width: 768px)");
-    const phoneDetailBlock = [...phoneBlock.matchAll(/\.announcement-detail-modal\s*\{[^}]+\}/g)].at(-1)?.[0] ?? "";
-    const brightDesktopBackdropBlock = finalMobileCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.announcement-modal \.announcement-detail-backdrop\s*\{[^}]+\}/)?.[0] ?? "";
-    const brightDesktopDetailBlock = finalMobileCss.match(/\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.announcement-modal \.announcement-detail-backdrop \.announcement-detail-modal\s*\{[^}]+\}/)?.[0] ?? "";
-    const finalPhoneBlock = mediaBlock(finalMobileCss, "@media (max-width: 768px)");
-    const finalBackdropBlock = finalPhoneBlock.match(/\.announcement-modal \.announcement-detail-backdrop,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.announcement-modal \.announcement-detail-backdrop\s*\{[^}]+\}/)?.[0] ?? "";
-    const finalDetailBlock = finalPhoneBlock.match(/\.announcement-modal \.announcement-detail-backdrop \.announcement-detail-modal,\s*\.app-shell\.player-theme-enabled\.theme-bright-school\.theme-bright-school \.announcement-modal \.announcement-detail-backdrop \.announcement-detail-modal\s*\{[^}]+\}/)?.[0] ?? "";
+  it("automatically opens and marks the newest announcement as read", async () => {
+    const onSummaryChange = vi.fn();
+    render(<AnnouncementModal token="token" onClose={() => {}} onSummaryChange={onSummaryChange} />);
 
-    expect(backdropBlock).toContain("position: absolute");
-    expect(backdropBlock).toContain("inset: 0");
-    expect(backdropBlock).toContain("z-index: 30");
-    expect(backdropBlock).toContain("display: grid");
-    expect(backdropBlock).toContain("padding: 0");
-    expect(backdropBlock).toContain("border-radius: inherit");
-    expect(backdropBlock).toContain("background: rgba(1, 9, 13, 0.38)");
-    expect(modalBlock).toContain("position: relative");
-    expect(modalBlock).toContain("inset: 0");
-    expect(modalBlock).toContain("width: 100%");
-    expect(modalBlock).toContain("max-width: 100%");
-    expect(modalBlock).toContain("min-height: 100%");
-    expect(modalBlock).toContain("height: 100%");
-    expect(modalBlock).toContain("max-height: 100%");
-    expect(modalBlock).toContain("margin: 0");
-    expect(modalBlock).toContain("border-radius: inherit");
-    expect(brightDesktopBackdropBlock).toContain("position: absolute !important");
-    expect(brightDesktopBackdropBlock).toContain("inset: 0 !important");
-    expect(brightDesktopBackdropBlock).toContain("padding: 0 !important");
-    expect(brightDesktopDetailBlock).toContain("width: 100% !important");
-    expect(brightDesktopDetailBlock).toContain("max-width: 100% !important");
-    expect(brightDesktopDetailBlock).toContain("height: 100% !important");
-    expect(brightDesktopDetailBlock).toContain("max-height: 100% !important");
-    expect(brightDesktopDetailBlock).not.toContain("min(620px");
-    expect(phoneDetailBlock).toContain("width: 100%");
-    expect(phoneDetailBlock).toContain("height: 100%");
-    expect(phoneDetailBlock).toContain("max-height: 100%");
-    expect(phoneDetailBlock).not.toContain("min(640px");
-    expect(finalBackdropBlock).toContain("position: absolute !important");
-    expect(finalBackdropBlock).toContain("inset: 0 !important");
-    expect(finalBackdropBlock).toContain("padding: 0 !important");
-    expect(finalBackdropBlock).not.toContain("position: fixed");
-    expect(finalDetailBlock).toContain("position: relative !important");
-    expect(finalDetailBlock).toContain("inset: 0 !important");
-    expect(finalDetailBlock).toContain("width: 100% !important");
-    expect(finalDetailBlock).toContain("height: 100% !important");
-    expect(finalDetailBlock).toContain("max-height: 100% !important");
-    expect(finalDetailBlock).toContain("margin: 0 !important");
-    expect(finalDetailBlock).not.toContain("100vw");
+    expect(screen.getByRole("dialog", { name: "公告中心" })).toBeTruthy();
+    const row = await screen.findByRole("button", { name: /欢迎来到星炬学院/ });
+    expect(row.closest("li")).toBeTruthy();
+    expect(await screen.findByText("完整公告正文")).toBeTruthy();
+    await waitFor(() => expect(api).toHaveBeenCalledWith(
+      "/api/announcements/announcement-1/read",
+      { method: "POST", token: "token" }
+    ));
+    expect(onSummaryChange).toHaveBeenCalledWith({ announcement: false, changelog: false });
+    expect(screen.getByRole("button", { name: /欢迎来到星炬学院/ }).getAttribute("aria-current")).toBe("true");
+  });
+
+  it("supports roving keyboard navigation and opens the newest changelog", async () => {
+    const user = userEvent.setup();
+    render(<AnnouncementModal token="token" onClose={() => {}} />);
+
+    const tabs = await screen.findByRole("tablist", { name: "公告中心" });
+    const announcementTab = within(tabs).getByRole("tab", { name: "公告" });
+    announcementTab.focus();
+    await user.keyboard("{ArrowRight}");
+
+    expect(within(tabs).getByRole("tab", { name: "更新日志" }).getAttribute("aria-selected")).toBe("true");
+    expect(await screen.findByText("完整更新正文")).toBeTruthy();
+    expect(api).toHaveBeenCalledWith(
+      "/api/announcements/changelog-1/read",
+      { method: "POST", token: "token" }
+    );
+  });
+
+  it("uses the shared friendly empty state when a kind has no entries", async () => {
+    api.mockImplementation((path) => {
+      if (path === "/api/announcements?kind=announcement&offset=0&limit=20") {
+        return Promise.resolve({ items: [], nextOffset: 0, hasMore: false });
+      }
+      throw new Error(`Unexpected api call: ${path}`);
+    });
+    render(<AnnouncementModal token="token" onClose={() => {}} />);
+
+    expect((await screen.findAllByText("这里空空如也~")).length).toBeGreaterThan(0);
+  });
+
+  it("keeps mobile list-first and does not auto-open the newest announcement", async () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn()
+    })));
+    render(<AnnouncementModal token="token" onClose={() => {}} />);
+
+    expect(await screen.findByRole("button", { name: /欢迎来到星炬学院/ })).toBeTruthy();
+    expect(screen.queryByText("完整公告正文")).toBeNull();
+    expect(api.mock.calls.some(([path]) => path.endsWith("/read"))).toBe(false);
+  });
+
+  it("uses shared master-detail CSS instead of a nested detail modal contract", () => {
+    const css = readCssWithImports(pathToFileURL(resolve("src/styles/modals.css")));
+    const themedCss = readCssWithImports(pathToFileURL(resolve("src/styles/themes.css")));
+    const source = AnnouncementModal.toString();
+
+    expect(css).toContain("grid-template-columns: minmax(288px, 312px) minmax(0, 1fr)");
+    expect(themedCss).toContain('.information-center-modal[data-mobile-view="detail"] .information-center-reader');
+    expect(themedCss).toContain("opacity 260ms cubic-bezier(0.22, 1, 0.36, 1)");
+    expect(themedCss).toContain("transform 260ms cubic-bezier(0.22, 1, 0.36, 1)");
+    expect(themedCss).toContain("transform: translateX(10px)");
+    expect(themedCss).toContain("transform: translateX(-8px)");
+    expect(themedCss).toContain(".announcement-modal .information-center-empty-reader");
+    expect(themedCss).toContain("visibility: hidden !important");
+    expect(themedCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(css).not.toContain(".announcement-detail-backdrop");
+    expect(source).not.toContain('role: "listitem"');
   });
 });
-
-function mediaBlock(css, marker) {
-  const blocks = [];
-  let start = css.indexOf(marker);
-  while (start >= 0) {
-    const next = css.indexOf("\n@media", start + 1);
-    blocks.push(css.slice(start, next >= 0 ? next : undefined));
-    start = css.indexOf(marker, start + marker.length);
-  }
-  return blocks.join("\n");
-}

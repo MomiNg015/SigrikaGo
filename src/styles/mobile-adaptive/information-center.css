@@ -1,0 +1,127 @@
+/* Final post-theme safety for shared announcement and mailbox information centers. */
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled .information-center-backdrop {
+    align-items: start !important;
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      calc(10px + env(safe-area-inset-right))
+      calc(10px + env(safe-area-inset-bottom))
+      calc(10px + env(safe-area-inset-left)) !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal {
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    min-width: 0 !important;
+    min-height: min(520px, calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom))) !important;
+    max-height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    margin: 0 auto !important;
+    padding: 14px !important;
+    overflow: hidden !important;
+    gap: 12px !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal .information-center-header {
+    min-width: 0 !important;
+    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+    gap: 8px !important;
+    padding: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-header h2 {
+    font-size: 25px !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-back-button {
+    display: inline-grid !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    transform: translateX(-6px) !important;
+    transition:
+      opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal[data-mobile-view="detail"] .information-center-back-button {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal .information-center-close-button,
+  .app-shell.player-theme-enabled .information-center-modal .information-center-back-button {
+    position: static !important;
+    inset: auto !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal .information-center-close-button {
+    transform: none !important;
+  }
+
+  .app-shell.player-theme-enabled .announcement-modal .information-center-empty-reader {
+    visibility: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal.mailbox-modal .information-center-header .information-center-close-button {
+    position: static !important;
+    inset: auto !important;
+    align-self: center !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal .information-center-layout,
+  .app-shell.player-theme-enabled .information-center-modal .information-center-master,
+  .app-shell.player-theme-enabled .information-center-modal .information-center-reader {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal .information-center-layout {
+    position: relative !important;
+    display: block !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal .information-center-master,
+  .app-shell.player-theme-enabled .information-center-modal .information-center-reader {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transition:
+      opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal .information-center-master {
+    padding: 10px !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal[data-mobile-view="list"] .information-center-master {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal[data-mobile-view="list"] .information-center-reader {
+    pointer-events: none !important;
+    opacity: 0 !important;
+    transform: translateX(10px) !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal[data-mobile-view="detail"] .information-center-master {
+    pointer-events: none !important;
+    opacity: 0 !important;
+    transform: translateX(-8px) !important;
+  }
+
+  .app-shell.player-theme-enabled .information-center-modal[data-mobile-view="detail"] .information-center-reader {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+}

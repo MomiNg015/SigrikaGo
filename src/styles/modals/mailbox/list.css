@@ -1,4 +1,5 @@
 .mailbox-list {
+  flex: 1 1 auto;
   height: 100%;
   min-height: 0;
   max-height: none;
@@ -6,16 +7,25 @@
   display: grid;
   align-content: start;
   gap: 8px;
-  padding-right: 4px;
+  margin: 0;
+  padding: 0 4px 0 0;
+  list-style: none;
+  overscroll-behavior: contain;
+}
+
+.mailbox-list > li {
+  min-width: 0;
 }
 
 .mailbox-list-item {
+  position: relative;
   width: 100%;
   display: grid;
   gap: 5px;
   padding: 12px;
-  border: 1px solid rgba(82, 63, 80, 0.12);
+  border: 1px solid rgba(82, 63, 80, 0.18);
   border-radius: 8px;
+  background: #fffdf8;
   color: #35283a;
   text-align: left;
   box-shadow: 0 2px 0 rgba(63, 45, 54, 0.08);
@@ -23,14 +33,14 @@
     border-color 140ms ease,
     box-shadow 140ms ease,
     transform 140ms ease,
-    filter 140ms ease;
+    background-color 140ms ease;
 }
 
 .mailbox-list-item:hover,
 .mailbox-list-item:focus-visible {
-  border-color: rgba(68, 91, 166, 0.38);
+  border-color: rgba(157, 44, 69, 0.48);
+  background: #fff8f1;
   box-shadow: 0 7px 16px rgba(73, 60, 76, 0.14);
-  filter: saturate(1.04);
 }
 
 .mailbox-list-item:active {
@@ -39,31 +49,29 @@
 }
 
 .mailbox-list-item.state-new {
-  background: linear-gradient(180deg, #ffe4ef 0%, #ffd4e5 100%);
+  box-shadow: inset 4px 0 0 #ff6f9f, 0 2px 0 rgba(63, 45, 54, 0.08);
 }
 
 .mailbox-list-item.state-claimable {
-  background: linear-gradient(180deg, #e4f7dc 0%, #d3efcd 100%);
+  box-shadow: inset 4px 0 0 #7fb36d, 0 2px 0 rgba(63, 45, 54, 0.08);
 }
 
 .mailbox-list-item.state-done {
-  background: linear-gradient(180deg, #f0eeee 0%, #dfdddd 100%);
   color: #5c555c;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-new {
-  background: linear-gradient(180deg, #ffe4ef 0%, #ffd4e5 100%) !important;
-  background-color: #ffd4e5 !important;
+  background: #fffdf8 !important;
+  box-shadow: inset 4px 0 0 #ff6f9f, 2px 3px 0 rgba(74, 55, 54, 0.16) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-claimable {
-  background: linear-gradient(180deg, #e4f7dc 0%, #d3efcd 100%) !important;
-  background-color: #d3efcd !important;
+  background: #fffdf8 !important;
+  box-shadow: inset 4px 0 0 #7fb36d, 2px 3px 0 rgba(74, 55, 54, 0.16) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.state-done {
-  background: linear-gradient(180deg, #f0eeee 0%, #dfdddd 100%) !important;
-  background-color: #dfdddd !important;
+  background: #fffdf8 !important;
   color: #5c555c !important;
 }
 
@@ -80,11 +88,11 @@
   text-align: center;
 }
 
-.mailbox-list-item.active {
-  border-color: #526be8;
-  box-shadow:
-    inset 4px 0 0 #526be8,
-    0 10px 22px rgba(93, 127, 232, 0.16);
+.mailbox-list-item.active,
+.app-shell.player-theme-enabled.theme-bright-school .mailbox-modal .mailbox-list .mailbox-list-item.active {
+  border-color: #9d2c45 !important;
+  background: #fff1f5 !important;
+  box-shadow: inset 4px 0 0 #ff6f9f, 0 9px 20px rgba(157, 44, 69, 0.14) !important;
 }
 
 .mailbox-list-item.state-new .mailbox-list-title,
@@ -94,10 +102,22 @@
 }
 
 .mailbox-list-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 800;
+}
+
+.mailbox-unread-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #ff3d66;
+  box-shadow: 0 0 8px rgba(255, 61, 102, 0.42);
 }
 
 .mailbox-list-time,
@@ -115,9 +135,10 @@
 .mailbox-list-status b {
   min-height: 22px;
   padding: 3px 7px;
+  border: 1px solid rgba(112, 83, 75, 0.18);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
+  background: #fff;
   color: #3e4f71;
   font-size: 12px;
-  box-shadow: inset 0 0 0 1px rgba(62, 79, 113, 0.1);
+  box-shadow: none;
 }

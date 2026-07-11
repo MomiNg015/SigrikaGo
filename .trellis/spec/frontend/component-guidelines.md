@@ -49,6 +49,54 @@ Current Phase 4 domain wrappers:
 
 - `src/modals/modalComponents.jsx` wraps `Button` as `ModalActionButton` for shared modal action rows. It maps semantic modal variants back to existing `.primary-action`, `.secondary-action`, and `.danger-action` visual classes while the primitive owns only alignment utilities. The first consumers are `ConfirmModal` in `src/modals/FeedbackModals.jsx`, the submit action in `src/modals/MessageBoardModal.jsx`, simple retry/load-more secondary actions in `src/modals/AnnouncementModal.jsx`, the save action in `src/modals/PersonalizationModal.jsx`, the mailbox attachment claim action in `src/modals/MailboxModal.jsx`, the duel-mode cancel action in `src/modals/friends/FriendsOverlays.jsx`, and the profile report submit action in `src/modals/UserProfileCard.jsx`. Do not use this pilot as permission to migrate story-player choices, announcement tabs/list rows, personalization picker option grids, mailbox list rows/delete controls, friends match-mode option buttons, profile confirm panels, profile social action buttons, commerce cards, recruitment board actions, gacha controls, Bright School repaired modal surfaces, or mobile gameplay controls without focused tests and visual checks.
 
+### Scenario: Player Information Center Master-Detail Layout
+
+#### 1. Scope / Trigger
+- Trigger: changes to the player announcement center, mailbox, or another modal that intentionally adopts the same desktop master/detail and mobile list/detail reading model.
+
+#### 2. Signatures
+- `InformationCenterLayout({ title, titleId, closeLabel, backLabel, mobileView, onBack, onClose, listLabel, list, detailLabelledBy, detail })` is an internal modal-domain wrapper built on `ModalDialog`.
+- `mobileView` is `list` or `detail`; feature components continue to own selection and server actions.
+
+#### 3. Contracts
+- Desktop renders both panes with a 288–312px master column and flexible reader; mobile keeps one pane semantically active through `aria-hidden` and `inert`.
+- On desktop, announcement, changelog, and mailbox lists automatically open their newest first row after initial loading; switching announcement kind opens that kind's first row. The existing open/read path remains authoritative, so an automatically opened unread row is marked read exactly like a clicked row. Mobile remains list-first and mutates read state only after a row click. Feature rows use `ul > li > button`; never replace button semantics with `role="listitem"`.
+- Mobile header always reserves the 44px back-control column so list/detail changes do not reflow the title or close control. Detail reveals the enabled back control with the same transform/opacity timing, moves focus to it, and restores focus to the originating row on return.
+- Desktop-only empty-reader guidance must be visually hidden on mobile, because replacing exiting detail content with that prompt exposes a one-frame text flash during the pane transition.
+- A feature reader that already renders its own framed surface, such as the mailbox paper article, must clear the shared `.information-center-reader` border, background, and shadow so the detail has one visual boundary rather than nested frames.
+- `ModalDialog` owns dialog naming, focus containment, Escape dismissal, and opener focus restoration. `InformationCenterLayout` must not duplicate those behaviors.
+- Shared structure lives in `modals/information-center.css`; feature CSS owns content visuals, and `mobile-adaptive/information-center.css` owns final post-theme safe-area and pane-transition rules.
+
+#### 4. Validation & Error Matrix
+- Empty list -> render `这里空空如也~` in the available list/reader surface and keep mobile on the list pane.
+- Explicit selection -> desktop reader updates; mobile master becomes inert and detail is visible.
+- Back from mobile detail -> selection clears or feature-defined detail closes, list becomes active, original row regains focus.
+- Empty/loading/error data -> keep the shell mounted and announce status through a dedicated live region.
+
+#### 5. Good/Base/Bad Cases
+- Good: announcement and mailbox reuse only the layout while retaining separate fetch/read/claim/delete logic.
+- Base: a desktop list with data opens its newest first row; an empty desktop list keeps a lightweight empty reader state.
+- Bad: nesting another full-size dialog over the information center or keeping a horizontal mailbox card strip above mobile detail.
+
+#### 6. Tests Required
+- `InformationCenterLayout.dom.test.jsx` covers mobile semantic hiding, back focus, and trigger focus restoration.
+- Feature DOM tests cover desktop automatic first-row selection, mobile list-first behavior, read mutation, semantic list rows, and action/error behavior.
+- CSS contracts cover shared import order, 44px controls, zero mobile horizontal overflow, and reduced-motion coverage through existing theme/mobile families.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+<button role="listitem" onClick={() => openDetail(item)}>{item.title}</button>
+```
+
+Correct:
+
+```jsx
+<li><button type="button" onClick={() => openDetail(item)}>{item.title}</button></li>
+```
+
 Current Phase 5 domain wrappers:
 
 - `src/home/homeComponents.jsx` wraps `Button` as `HomeActionButton` for home-flow action rows. It maps semantic home variants back to existing `.primary-action`, `.secondary-action`, and `.danger-action` visual classes while the primitive owns only alignment utilities. The first consumer is the match-mode picker cancel action in `src/home/HomeScreen.jsx`. Do not use this pilot as permission to migrate match-mode option buttons, home entry cards, home utility entries, player plaque art, shop/warehouse/recruitment cards, or gameplay controls without focused desktop/mobile tests and visual checks.
@@ -280,6 +328,7 @@ Correct:
 - `schedulePixiPrewarm({ enabled })` and `loadPixiModule()` live in `src/room/pixiPrewarm.js`; both prewarm and live board effects must share the same Pixi import promise.
 - `preparePixiEffect()` lives in `BoardSkillEffects.jsx`; it starts the live Pixi app initialization and per-renderer asset preload during the skill banner window, before the board-effect timer fires.
 - `BOARD_SKILL_EFFECT_RENDERERS`, `boardSkillEffectAssetUrls()`, and `playRegisteredBoardSkillEffect()` live in `src/room/boardSkillEffectRegistry.js`; concrete Pixi board animations and their preloadable image assets must register by `effectType` there instead of growing `BoardSkillEffects.jsx`.
+- `boardSkillEffectBlockingAssetUrls()` lists only assets that the live Pixi renderer reads through cache-backed sprites during visible playback. Assets used only by resolved DOM markers can remain in `boardSkillEffectAssetUrls()` for broader preloading, but they must not block a programmatic Pixi cast.
 - Board visuals that need only persistent DOM/CSS markers may keep `SKILL_EFFECT_CATALOG[effectType].boardEffect === false`; `BoardSkillEffects` then returns `null` for those active previews so no full-board overlay layer or Pixi canvas can cover the grid. QiuYuan `row-slash` is the exception: it uses a short full-board Pixi cast for transient white/teal ink-blade motion, while `BoardRowSlashOverlay` and the `row-slash` keyframes still own the persistent row scar.
 - `game.rowEffects`: DOM/CSS row markers shaped as `{ effectType: "row-slash", owner, clearAfterColor, y, id }`; `clearAfterColor` is the color whose next action clears the marker.
 - Lynae `spray-stone` history entries carry `randomTargetId`, `transformed`, `immediateRemovals`, and `cleanupRemovals`; replay reconstruction must use the recorded random target instead of calling the live random selection path again.
@@ -294,12 +343,13 @@ Correct:
 #### 3. Contracts
 - `Board` keeps DOM/SVG as the interaction source of truth; PixiJS is presentation-only.
 - The effects canvas and ambient layers must use `pointer-events: none` and must not replace point buttons, scoring marks, move numbers, coordinates, or skill targeting classes.
-- Board effects start after `bannerDurationMs`, not when the banner first appears. Pixi module loading, app initialization, and renderer image asset loading should begin during the banner window so the first visible board-effect frame appears immediately after the banner ends.
+- Board effects start after `bannerDurationMs`, not when the banner first appears. Pixi module loading, app initialization, and blocking renderer image asset loading should begin during the banner window. The visible Pixi runtime should mount only after both `app.init()` and blocking Pixi sprite assets are ready, so the first visible board-effect frame does not read empty cache-backed textures. Non-blocking resolved-marker art must not delay programmatic Pixi casts.
 - Skill banner voices must resolve effect-specific `skill-cast:<effectType>` assets before falling back to the character's generic `skill-cast` voice. Derived skills such as Aemeath `voyage-star` can therefore have a dedicated voice while the base character skill keeps its ordinary voice.
 - Skill GIF capture must use Playwright virtual time for frame sampling. The exporter may use an internal prep-only `bannerDurationMs` to let the real Board/BoardSkillEffects path load Pixi or DOM layers before the cast starts, but screenshots must advance `page.clock` by one frame per capture; do not schedule screenshots from `Date.now()` or wall-clock waits because slow screenshot I/O compresses the real animation into a faster GIF.
 - `BoardSkillEffects` must ask `src/shared/skillPresentation.js` whether presentation is enabled before scheduling Pixi prewarm, rendering the overlay host, mounting a Pixi app, or scheduling board-effect SFX.
 - Skill-enabled boards may schedule idle Pixi prewarm after the board mounts, but this prewarm must not block board rendering, preload screens, room entry, or standard no-skill rooms.
-- If a live Pixi effect is still preparing when the board-effect phase begins, `BoardSkillEffects` may expose the existing `data-effect-fallback="true"` pulse briefly, then replace it with the real Pixi renderer as soon as preparation completes. Do not leave a visually empty post-banner gap.
+- If a live Pixi effect is still preparing when the board-effect phase begins, `BoardSkillEffects` should keep the overlay hidden/transparent until the real Pixi renderer is playable or mark the effect failed. Do not reintroduce a visible DOM/CSS fallback pulse for failed or delayed Pixi effects.
+- Cleanup must detach `.board-effects-canvas` from its host before destroying the Pixi/WebGL app. Mobile context teardown can expose a white frame if `app.destroy()` runs while the canvas is still in the composed DOM tree.
 - Aemeath `hidden-hand` is a full-board effect: green electronic data streams move from the board edge toward the center, flash with white light, then dissipate outward/away without depending on a point-local impact.
 - Nabomo `color-illusion-passive` has ongoing gray/white board ambience while any color illusion passive is active; render it through `BoardAmbientEffects` as a pointer-transparent center-out CSS activation wave and through `.board-wrap.color-illusion-board-surface::before` as a center-out transition into `/assets/boards/nabomo-color-illusion-board.webp`, keep that background visible until the passive ends, avoid Pixi/ticker-based persistent ambience for this passive, and keep stones/intersections readable.
 - Board SFX must be scheduled from the same board effect timeline, use the existing `sfx` volume channel, and clean up timers with the Pixi overlay.
@@ -310,6 +360,7 @@ Correct:
 - Every catalog entry with `boardEffect: true` must have a matching `BOARD_SKILL_EFFECT_RENDERERS` entry; unknown effect types should no-op without touching the Pixi stage.
 - Effects that draw their persistent visual through React DOM/CSS generally should not be registered as Pixi `boardEffect` entries unless the Pixi renderer is strictly transient, pointer-transparent, and tested to leave the persistent DOM owner intact. A full-size Pixi canvas can become an opaque overlay in some browser/runtime paths and hide the board grid, star points, and stones if the renderer draws persistent visuals or opaque backgrounds.
 - Persistent point-local visuals such as Mornye `protocol-takeover` and ChangLi `double-move-stone` belong on the existing point/stone DOM nodes. They must remain pointer-transparent and respect reduced motion. A transient cast-phase animation may still be a `BoardSkillEffects` Pixi renderer when the catalog marks that skill with `boardEffect: true`, as Mornye `protocol-takeover` and ChangLi `double-move` do.
+- Transient Pixi residue such as target locks, impact craters, cover glows, full-board covers, and slash highlights must fade to transparent inside the renderer timeline before `BoardSkillEffects` cleanup removes the canvas. Cleanup is a resource boundary, not a visual fade-out. Persistent DOM markers that appear at the Pixi/DOM handoff must avoid near-white glow that can read as a mobile white flash.
 - QiuYuan `row-slash` is visible only until the opponent's next action. Store `clearAfterColor: opponent(owner)` and clear expired row effects from ordinary moves, passes, and turn-consuming skill resolution by action color, not by the row effect owner.
 - Board point buttons sit above the SVG grid; shared board CSS and theme guard layers must explicitly keep `.board .point` transparent with no appearance, no border/shadow/background image, zero min-size, and `touch-action: none` so broad button rules cannot cover the grid.
 - Board point buttons must be anchored by explicit center variables, not implicit grid-cell placement. `Board` writes `--board-point-center-x` and `--board-point-center-y` from `((point.x + 0.5) / boardSize) * 100%`; `.point` is absolutely positioned at those variables with `transform: translate(-50%, -50%)`, `.board .point` repeats that transform with `!important` so broad button hover/active transforms cannot replace the centering offset, and `.point::before` centers itself with its own `left/top: 50%` transform. This keeps hover/touch hints, stones, and SVG grid intersections sharing the same coordinate source. Mobile point feedback must compose scale with this centering transform, for example `translate(-50%, -50%) scale(...)`, and reduced-motion or confirming states must still keep `translate(-50%, -50%)` instead of `none`. Do not reintroduce `gridColumn/gridRow` as the visual point placement contract.
@@ -337,7 +388,7 @@ Correct:
 #### 5. Good/Base/Bad Cases
 - Good: Sigrika erase, Danea flip, Aemeath hidden-hand, and Baconbits blast all route from `effectType` supplied by the room snapshot.
 - Good: a skill-enabled room prewarms Pixi during browser idle time, and the first actual skill effect reuses that module promise instead of issuing a second dynamic import.
-- Good: when a pending skill with a Pixi board effect appears, `BoardSkillEffects` prepares the transparent Pixi canvas and any renderer image assets during the banner window; the `setTimeout` at `bannerDurationMs` only starts playback and SFX.
+- Good: when a pending skill with a Pixi board effect appears, `BoardSkillEffects` prepares the Pixi app and blocking renderer image assets during the banner window; the `setTimeout` at `bannerDurationMs` only starts playback and SFX after the real canvas can be mounted with ready textures.
 - Good: adding a new effect starts by extending `SKILL_EFFECT_CATALOG`, then wiring concrete rule handlers, server preview metadata, board animation, and tests.
 - Good: adding a new board animation updates `BOARD_SKILL_EFFECT_RENDERERS` and its registry test, while `BoardSkillEffects.jsx` remains the lifecycle host.
 - Good: changing presentation timing, per-effect Pixi/DOM layer capability, or the global effects-enabled state is done through `src/shared/skillPresentation.js` and covered by `src/shared/skillPresentation.test.js`.

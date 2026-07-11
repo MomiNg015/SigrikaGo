@@ -42,10 +42,10 @@ Add an in-game announcement center that lets players read game announcements and
 * Desktop player announcement modal is roughly 720-840px wide, has a stable minimum height around 520px, and caps height around 80vh.
 * Mobile player announcement modal occupies most of the viewport with safe margins, and parent list content scrolls inside the modal rather than expanding the page.
 * Announcement list displays title and first publish time.
-* Selecting an announcement opens a sibling second-level detail popup above the announcement window, matching the user `详细信息` popup pattern rather than replacing or covering content inside the parent announcement panel.
+* Selecting an announcement opens its detail in the shared information-center reader: the right pane on desktop and a list-to-detail view with a clear back action on mobile.
 * Changelog is managed as individual entries in admin, with each entry carrying title, first publish time, last edited time, body, and draft/published/soft-deleted state.
 * Player `更新日志` tab lists published changelog entries like news items, sorted newest first by first publish time, with title and first publish time.
-* Selecting a changelog entry opens a sibling second-level detail popup above the announcement window, matching the same separate-window pattern as announcement details.
+* Selecting a changelog entry uses the same desktop reader and mobile list-to-detail flow as announcements.
 * Closing the detail modal returns the player to the original announcement/changelog list without closing the parent announcement window.
 * Announcement and changelog body rendering supports a Markdown-lite whitelist: paragraphs, preserved line breaks, unordered lists, bold text, and `http`/`https` links.
 * Markdown-lite rendering must not support raw HTML, scripts, embedded images, or non-http link protocols.
@@ -54,7 +54,7 @@ Add an in-game announcement center that lets players read game announcements and
 * Individual unread announcement/changelog rows show a small red dot plus a subtle visual emphasis, so players can identify which entries are unread.
 * Unread badge summaries refresh when the player enters the lobby, opens the announcement modal, and after an entry is marked read by opening its detail.
 * The MVP does not use realtime push or periodic polling to refresh unread badges while a player idles in the lobby.
-* Only opening an announcement or changelog entry's second-level detail modal marks that specific entry as read for the current user.
+* Only explicitly opening an announcement or changelog entry in the detail reader marks that specific entry as read for the current user.
 * Entering a tab/list or opening the parent announcement window does not mark unread entries as read.
 * Publishing a new announcement/changelog entry creates unread state for eligible players.
 * Editing content that is already published does not make previously read entries unread again.
@@ -69,7 +69,7 @@ Add an in-game announcement center that lets players read game announcements and
 * Player announcement modal always opens on the `公告` tab by default.
 * Player announcement and changelog tabs each load the first 20 entries initially and append older entries through a `加载更多` action.
 * Player list pagination preserves the tab's defined order: pinned announcements first, then unpinned announcements; changelog entries by first publish time newest first.
-* Empty player tabs show lightweight empty states: `暂无公告` for announcements and `暂无更新日志` for changelog.
+* Empty player tabs use the shared friendly empty state `这里空空如也~` for both announcements and changelog.
 * Player list/detail loading failures show an inline error state with a `重试` action and do not close the announcement modal.
 * A failed `加载更多` request keeps already loaded rows visible and lets the player retry loading more.
 * Admin content supports draft/published visibility and soft-delete/unpublish behavior.
@@ -110,17 +110,17 @@ Add an in-game announcement center that lets players read game announcements and
 * [ ] The announcement entry does not appear in room-view controls.
 * [ ] Announcement modal renders with a stable minimum height and does not collapse when either tab has little content.
 * [ ] On desktop, the announcement modal renders as a medium-large dialog roughly 720-840px wide with about 520px minimum height and an 80vh height cap.
-* [ ] On mobile, the announcement modal renders as a near-fullscreen dialog with internal scrolling for lists, while entry details render in their own viewport-contained second-level popup.
+* [ ] On mobile, the announcement modal renders as a near-fullscreen dialog; selecting an entry transitions from the list to a viewport-contained detail view with a clear back action.
 * [ ] Announcement modal opens on the `公告` tab by default every time.
 * [ ] `公告` tab lists announcement title and first publish time, with pinned published announcements above unpinned announcements and newest-first ordering within each group.
 * [ ] `公告` tab initially loads up to 20 entries and can append older entries with `加载更多` when more results exist.
 * [ ] Empty `公告` tab shows `暂无公告`.
-* [ ] Clicking an announcement opens a sibling second-level detail popup with its full title, first publish time, optional last edited time, and content; the detail popup is not rendered as an inline replacement or cover inside the parent announcement panel.
+* [ ] Clicking an announcement renders its full title, first publish time, optional last edited time, and content in the desktop reader or mobile detail view without opening a nested dialog.
 * [ ] Announcement detail body scrolls internally when content is long and keeps primary close/navigation controls reachable.
 * [ ] `更新日志` tab lists published changelog entries with title and first publish time, sorted newest first by first publish time, with no pin controls.
 * [ ] `更新日志` tab initially loads up to 20 entries and can append older entries with `加载更多` when more results exist.
 * [ ] Empty `更新日志` tab shows `暂无更新日志`.
-* [ ] Clicking a changelog entry opens a sibling second-level detail popup with its full title, first publish time, optional last edited time, and content; the detail popup uses the same separate-window pattern as announcement details.
+* [ ] Clicking a changelog entry uses the same desktop reader and mobile detail-view pattern as announcement details.
 * [ ] Changelog detail body scrolls internally when content is long and keeps primary close/navigation controls reachable.
 * [ ] Closing the detail modal returns to the parent announcement window and preserves the selected tab/list context.
 * [ ] Player list/detail load failures show inline error text and a `重试` action without closing the modal.
@@ -200,7 +200,7 @@ Add an in-game announcement center that lets players read game announcements and
 * Toast-only player list/detail load errors without inline retry.
 * Compact-only player announcement modal layout for both desktop and mobile.
 * Fullscreen player announcement modal layout on desktop.
-* Inline split-pane detail inside the parent announcement window.
+* Nested or sibling second-level announcement detail dialogs.
 * Expanding detail content inside list rows.
 * Numeric unread count badges for this MVP.
 * `NEW` text labels for row-level unread state.
@@ -262,11 +262,11 @@ Add an in-game announcement center that lets players read game announcements and
 
 **Consequences**: Admin authors can format readable notices without introducing arbitrary HTML rendering. Implementation should use a constrained parser similar in spirit to `HomeFooter`'s safe link parser, with dedicated tests for escaping and unsupported protocols.
 
-**Context**: The player detail flow needed to decide whether list items expand in place, render split-pane detail, or open another modal.
+**Context**: The original implementation used a parent-sized nested detail layer. A later player UI review found that announcements and mailbox used inconsistent reading models and that the nested layer obscured desktop context.
 
-**Decision**: Clicking an announcement or changelog list item opens a sibling second-level detail popup above the parent announcement window, matching the user detail popup pattern. Closing the detail popup returns to the same tab and list context without replacing or covering content inside the parent announcement panel.
+**Decision**: Superseded on 2026-07-11. Announcements and changelog now use the shared information-center model: desktop left list/right reader, mobile list-to-detail navigation with an explicit back action. No nested detail dialog is mounted.
 
-**Consequences**: The UI gets a clear reading surface for long Markdown-lite content, at the cost of managing nested modal focus and mobile close behavior carefully.
+**Consequences**: Desktop preserves list context while reading, mobile gets a single clear navigation path, and announcement/mailbox share one responsive interaction model.
 
 **Context**: The unread indicator needed to communicate new content without competing with existing mailbox count badges.
 
@@ -274,9 +274,9 @@ Add an in-game announcement center that lets players read game announcements and
 
 **Consequences**: The toolbar stays visually light, while the parent modal still tells players which content type contains new entries.
 
-**Context**: The unread-clearing rule needed to match the chosen nested detail flow.
+**Context**: The unread-clearing rule must distinguish browsing the list from explicitly opening content.
 
-**Decision**: Mark a content entry as read only when the player opens that entry's second-level detail modal. Opening the parent announcement window or switching tabs does not clear unread state.
+**Decision**: Mark a content entry as read only when the player explicitly opens it in the detail reader. Opening the announcement window or switching tabs does not clear unread state.
 
 **Consequences**: Red dots keep their meaning as "unread full content exists," and read-state updates can target one content row at a time.
 

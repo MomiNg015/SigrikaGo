@@ -91,7 +91,7 @@
 <li>角色目录支持后台维护配音人员展示信息：<code>Character.cvName</code> 与可选 <code>cvUrl</code> 通过 admin/public character payload 下发，棋舍角色详情在桌面把 <code>CV：{cvName}</code> 放在角色名右侧，在移动端放在角色名下方；链接只接受 http(s) 或站内路径，并保持继承色、无下划线、无 visited/hover 变色，避免影响标题和 BGM 播放器布局。商城商品同样支持后台维护商品图插画署名：<code>ShopItem.illustName</code> 与可选 <code>illustUrl</code> 会在商品详情标题区显示 <code>illust：{illustName}</code>，移动端堆叠在商品名下方，链接态与纯文本态保持同色、无下划线、无边框、无背景和稳定行高。</li>
 </ul>
 <ul>
-<li>公告中心是登录玩家功能，不存在访客路径：玩家从大厅右上角操作区打开公告弹窗，弹窗内有“公告 / 更新日志”两类列表，点击条目会在父公告窗口内部挂载与父窗口等大的嵌入式详情层；详情遮罩只覆盖父公告窗口，不覆盖整个视口，也不替换父窗口内容。玩家公告窗口的标题组不使用额外粉色装饰底或虚线线框，标题容器类名避免包含 <code>lock</code> 片段以免被 Bright School 锁定态选择器误伤；分段标签、列表行、空/错状态、详情类型标签和详情正文必须沿用其它玩家窗口的 8px 控件圆角、44px 触控目标、Bright School 纸张边框与粉色选中态，并保留足够内边距和行高，避免圆角区域裁切文字。详情头部使用固定垂直节奏，类型标签到标题的距离必须等于标题到时间行的距离；正文面板在详情窗口内占满剩余高度并保留窗口内边距，使短正文也能拉到窗口底部前的安全边界。样式入口 <code>src/styles/modals/announcement.css</code> 保持 import-only 并委托到 <code>src/styles/modals/announcement/</code> 子文件；Bright School 公告控件修复在 <code>src/styles/themes/bright-school/surface-contracts/final-announcement-controls.css</code>，只使用显式公告类名，不再依赖通用子串兜底选择器。最终移动安全层 <code>src/styles/mobile-adaptive/announcement-detail.css</code> 会清除通用 <code>.nested-modal</code> 的手机全屏定位和 Bright School 全宽覆盖，确保详情层在桌面和移动端都保持父公告窗口内的同尺寸嵌入。后台新增“公告管理”顶级页，统一维护公告与更新日志草稿、发布、取消发布、软删除和预览。后端领域边界在 <code>server/announcements.js</code> 与 <code>server/announcementRoutes.js</code>，数据由 <code>AnnouncementEntry</code> 与 <code>AnnouncementRead</code> 持久化，玩家未读只按首次发布时间晚于账号创建时间且尚未打开详情计算。</li>
+<li>公告中心和邮箱是登录玩家的两个独立入口，但共用 <code>InformationCenterLayout</code> 阅读骨架与 <code>ModalDialog</code> 可访问性边界：桌面统一为约 1020px 的左侧列表/右侧阅读区，移动端在同一近全屏窗口内从列表进入详情并通过明确返回按钮回到原列表。桌面公告、更新日志和邮件加载完成后默认打开列表第一条，并沿用既有打开即已读路径；切换公告分类也会打开该分类第一条，桌面空列表显示“这里空空如也~”。移动端保持列表优先，只有点击条目后才进入详情并标记已读，空列表继续使用各领域简洁文案。共享样式由 <code>src/styles/modals/information-center.css</code> 与最终 <code>src/styles/mobile-adaptive/information-center.css</code> 负责尺寸、安全区、主从切换、约 260ms 的 transform/opacity 平滑减速动效和 reduced-motion；移动标题栏固定预留返回控件槽，避免切换时标题与关闭按钮重排，桌面空阅读提示不会参与移动端详情退出动画。公告/邮箱领域样式继续分别拥有列表状态、正文纸张、附件与动作，邮箱阅读区只保留邮件纸本身的单层边框。Bright School 使用纸张网格外壳、暖白阅读面和粉色选择/未读侧标，不再通过整卡大面积状态染色或嵌套详情弹窗表达层级。后台公告和邮箱管理、服务端 API、<code>AnnouncementEntry</code>/<code>AnnouncementRead</code> 与邮箱数据模型均不变。</li>
 </ul>
 <ul>
 <li>首页公告未读红点在桌面顶栏和移动菜单里都属于公告按钮自身的状态标记；移动端必须像邮箱角标一样以按钮为定位上下文贴到右上角，不能作为菜单行末尾的静态 flex 内容。</li>
@@ -2777,7 +2777,7 @@
 <li><code>src/app/useMailboxSummary.js</code> polls <code>GET /api/mailbox/summary</code> while a user session is active and refreshes again when the mailbox opens. <code>src/app/useRecruitmentReadyState.js</code> owns recruitment ready polling plus the readyAt timeout refresh. The app composition root consumes both hooks instead of hosting feature-specific polling loops.</li>
 </ul>
 <ul>
-<li><code>MailboxModal</code> owns list/detail selection, marks a message read when selected, and calls the player mailbox APIs for manual claim and delete. It reports successful coin or item claims through the existing toast and user-refresh paths.</li>
+<li><code>MailboxModal</code> owns list/detail selection. Desktop opens the newest first message after loading and routes it through the same read mutation as a clicked row; mobile remains list-first and marks a message read only after explicit selection. Claim and delete continue to call the existing player mailbox APIs, while deleting the current message clears the reader on mobile and advances desktop to the newest remaining message. It reports successful coin or item claims through the existing toast and user-refresh paths.</li>
 </ul>
 <ul>
 <li>Admin mailbox management is a first-class admin tab. <code>AdminConsole</code> loads recent batches and item options, <code>AdminShell</code> owns the tab label, and <code>AdminMailbox</code> provides user search, target mode selection, one optional attachment, send submission, and recent batch history.</li>
@@ -2815,7 +2815,7 @@
 <li><code>AnnouncementModal</code> 挂载在 <code>AppOverlays</code>，玩家只通过已登录会话访问 <code>/api/announcements*</code>。父弹窗固定默认打开“公告”tab，内部列表每次加载 20 条并用“加载更多”追加；切换 tab 不清除已读状态。</li>
 </ul>
 <ul>
-<li>公告和更新日志都使用新闻式列表行：标题、首次发布时间、未读红点，公告额外显示置顶标签。点击列表行会在父公告窗口内部挂载 <code>nested-modal-backdrop</code> 二级详情弹窗，详情遮罩绝对定位到父窗口边界内，保持父窗口列表仍在背后挂载而不是被详情内容替换或被全屏遮罩覆盖；只有详情打开并成功调用 <code>POST /api/announcements/:id/read</code> 后才清除本条和全局未读摘要。</li>
+<li>公告和更新日志都使用新闻式语义列表：每个 <code>li</code> 内含可操作按钮，展示标题、首次发布时间、未读红点，公告额外显示置顶标签。<code>InformationCenterLayout</code> 在桌面保持左侧列表与右侧阅读区同时可见，并在加载或切换分类后打开该列表第一条；移动端通过 <code>mobileView</code>、<code>aria-hidden</code>/<code>inert</code> 和返回按钮从列表进入详情，不再挂载二级详情 dialog。桌面默认打开与移动端显式点击都复用 <code>POST /api/announcements/:id/read</code>，只有打开成功后才清除本条和全局未读摘要。</li>
 </ul>
 <ul>
 <li><code>MarkdownLiteContent</code> 是公告正文的安全 Markdown-lite 渲染边界，只支持段落、保留换行、无序列表、加粗和 <code>http/https</code> 链接，不使用 raw HTML。</li>
@@ -2831,7 +2831,7 @@
 <li>Nested dialogs handle Escape at the innermost dialog and mark the keyboard event handled; <code>useModalDismissal()</code> ignores already-prevented Escape events so it does not close the parent app overlay.</li>
 </ul>
 <ul>
-<li>Leaderboard, watch-list, personalization, and the nested personalization picker are the first migrated surfaces. Further modal migrations should preserve their existing desktop/mobile visual contracts while adopting the same primitive.</li>
+<li>Leaderboard, watch-list, personalization、公告信息中心、邮箱信息中心和个性化选择器已迁移到该边界。公告/邮箱在其上复用 <code>InformationCenterLayout</code>，并保持各自业务和视觉域所有权。</li>
 </ul>
 <p>---</p>
 <h1>后端、HTTP API 与实时房间</h1>
@@ -4678,10 +4678,10 @@
 <li>The home mailbox entry uses a <code>lucide-react</code> mail icon in the existing top-right action cluster on desktop and the compact mobile menu on phones. The badge is the unread plus claimable count from the summary API.</li>
 </ul>
 <ul>
-<li><code>src/styles/modals/mailbox.css</code> defines the player mailbox modal as a two-column list/detail layout on desktop and a stacked list/detail layout on mobile, with bounded internal scroll regions so long mail bodies do not push the modal outside the viewport.</li>
+<li><code>src/styles/modals/information-center.css</code> defines the shared desktop list/reader grid for announcement and mailbox (<code>288–312px</code> master column plus a flexible reader). <code>src/styles/modals/mailbox.css</code> only owns mailbox list states, the existing mail-paper reader, attachments, and actions. Desktop opens the newest message after loading; mobile remains list-first and no longer renders a horizontal card strip above the reader.</li>
 </ul>
 <ul>
-<li>Empty player inboxes keep the same mailbox layout as populated inboxes: the left mail list renders a compact <code>暂无邮件</code> row, and the detail pane stays reserved instead of replacing the whole modal with a separate empty card.</li>
+<li>Desktop announcement, changelog, and mailbox information centers open the newest first row after loading; an unread default row follows the same read mutation path as a clicked row. Phones remain list-first, keep their existing domain empty copy, and mutate read state only after an explicit row selection.</li>
 </ul>
 <ul>
 <li>The mailbox modal is included in the shared terminal and Bright School modal shell layers so desktop renders as a centered sheet instead of a full-width strip, while mobile keeps a top sheet with safe-area padding.</li>
@@ -4700,7 +4700,7 @@
 <li>Bright School home image entries and image-only utility buttons keep their WebP artwork shadows outside the layout box. Mobile and desktop owner CSS must leave <code>.home-image-entry</code>, <code>.match-image-entry</code>, <code>.house-manual-entry</code>, <code>.home-utility-grid</code>, and <code>.utility-image-entry</code> overflow-visible, while <code>.utility-entry-art</code> keeps right/bottom transparent bleed so <code>drop-shadow</code> is not clipped by the image box or final mobile guard.</li>
 </ul>
 <ul>
-<li><code>src/styles/modals/announcement.css</code> is an import-only player announcement entry delegating to <code>src/styles/modals/announcement/</code>. The parent sheet stays bounded on desktop (<code>min-height</code> around 520px, capped by viewport) and near-fullscreen on phones, while its plain title lockup, segmented tabs, list rows, empty/error states, detail kind pill, and detail body use the same Bright School paper border, 8px control radius, pink selected tab, and 44px touch-target vocabulary as other player windows. The announcement title no longer carries a separate pink decorative badge or dashed frame; its wrapper class avoids the <code>lock</code> substring so Bright School locked-state selectors cannot misclassify it, and rounded controls reserve padding/line-height so labels are not clipped by their radii. Detail headers use one fixed vertical gap so the kind-to-title and title-to-time distances match, and the detail body flexes through the remaining modal height while keeping the sheet's bottom inset visible even for short announcement bodies. Bright School announcement row repairs live in <code>src/styles/themes/bright-school/surface-contracts/final-announcement-controls.css</code> and use explicit announcement selectors so row buttons keep their 8px row-card treatment without broad item/card fallbacks. Lists own their internal scroll regions, and details open through a child <code>.nested-modal-backdrop</code> inside the parent announcement modal; the detail backdrop is absolutely bounded by the parent window and the nested detail modal fills that parent-sized layer on desktop and phones. <code>src/styles/mobile-adaptive/announcement-detail/window.css</code> is the final mobile safety override that clears inherited nested-modal full-viewport positioning and restores parent-relative same-size embedding.</li>
+<li><code>src/styles/modals/announcement.css</code> remains an import-only player announcement entry delegating to <code>src/styles/modals/announcement/</code>. It owns compact segmented tabs, semantic list rows, side-marker unread state, empty/error states and a readable detail article capped near <code>68ch</code>; the shared information-center CSS owns the outer sheet and responsive navigation. Bright School announcement repairs remain in <code>src/styles/themes/bright-school/surface-contracts/final-announcement-controls.css</code> with explicit selectors and no broad item/card fallbacks. <code>src/styles/mobile-adaptive/information-center.css</code> is the final post-theme safety layer for both announcement and mailbox: it preserves safe-area sizing, static and centered 44px close/back controls, zero horizontal overflow, and a synchronized 260ms list-to-detail transform/opacity transition with 8–10px travel. The mobile header reserves the back-control column in both states so navigation never shifts the title or close control; reduced-motion disables the transition and announcement detail entrance animation.</li>
 </ul>
 <ul>
 <li><code>src/styles/admin/announcements.css</code> defines the admin management page as list + editor workspace on desktop and a single-column mobile flow. Desktop shows edit and Markdown-lite preview side by side; mobile uses an edit/preview segmented switch. Soft-delete uses a normal confirmation dialog that shows the entry title and warns there is no restore entry.</li>

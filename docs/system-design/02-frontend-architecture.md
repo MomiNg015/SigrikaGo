@@ -261,7 +261,7 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 
 - The player mailbox is mounted as an app-level overlay through `src/app/useOverlayState.js`, `src/app/modalDismissal.js`, `src/app/AppOverlays.jsx`, and `src/modals/MailboxModal.jsx`.
 - `src/app/useMailboxSummary.js` polls `GET /api/mailbox/summary` while a user session is active and refreshes again when the mailbox opens. `src/app/useRecruitmentReadyState.js` owns recruitment ready polling plus the readyAt timeout refresh. The app composition root consumes both hooks instead of hosting feature-specific polling loops.
-- `MailboxModal` owns list/detail selection, marks a message read when selected, and calls the player mailbox APIs for manual claim and delete. It reports successful coin or item claims through the existing toast and user-refresh paths.
+- `MailboxModal` owns list/detail selection. Desktop opens the newest first message after loading and routes it through the same read mutation as a clicked row; mobile remains list-first and marks a message read only after explicit selection. Claim and delete continue to call the existing player mailbox APIs, while deleting the current message clears the reader on mobile and advances desktop to the newest remaining message. It reports successful coin or item claims through the existing toast and user-refresh paths.
 - Admin mailbox management is a first-class admin tab. `AdminConsole` loads recent batches and item options, `AdminShell` owns the tab label, and `AdminMailbox` provides user search, target mode selection, one optional attachment, send submission, and recent batch history.
 - Any new app-level overlay must be added to `src/app/overlayRegistry.js`. `useOverlayState`, `modalDismissal`, `useOverlayActions`, and `App.jsx` derive visibility props, setter props, close-all behavior, and topmost-modal dismissal from that registry. The shared `closeAllOverlays()` callback is invoked by socket lifecycle paths such as `match:found` before recording the match-success transition, so overlay registration is a matchmaking stability contract on both desktop Escape and mobile/browser back paths.
 
@@ -279,11 +279,11 @@ This update reduces the highest-payoff frontend coupling without changing user-f
 ## Announcement Center UI
 
 - `AnnouncementModal` 挂载在 `AppOverlays`，玩家只通过已登录会话访问 `/api/announcements*`。父弹窗固定默认打开“公告”tab，内部列表每次加载 20 条并用“加载更多”追加；切换 tab 不清除已读状态。
-- 公告和更新日志都使用新闻式列表行：标题、首次发布时间、未读红点，公告额外显示置顶标签。点击列表行会在父公告窗口内部挂载 `nested-modal-backdrop` 二级详情弹窗，详情遮罩绝对定位到父窗口边界内，保持父窗口列表仍在背后挂载而不是被详情内容替换或被全屏遮罩覆盖；只有详情打开并成功调用 `POST /api/announcements/:id/read` 后才清除本条和全局未读摘要。
+- 公告和更新日志都使用新闻式语义列表：每个 `li` 内含可操作按钮，展示标题、首次发布时间、未读红点，公告额外显示置顶标签。`InformationCenterLayout` 在桌面保持左侧列表与右侧阅读区同时可见，并在加载或切换分类后打开该列表第一条；移动端通过 `mobileView`、`aria-hidden`/`inert` 和返回按钮从列表进入详情，不再挂载二级详情 dialog。桌面默认打开与移动端显式点击都复用 `POST /api/announcements/:id/read`，只有打开成功后才清除本条和全局未读摘要。
 - `MarkdownLiteContent` 是公告正文的安全 Markdown-lite 渲染边界，只支持段落、保留换行、无序列表、加粗和 `http/https` 链接，不使用 raw HTML。
 - 后台“公告管理”由 `AdminAnnouncements` 提供一个顶级 admin tab，内部再分“公告 / 更新日志”子 tab 和 `全部 / 已发布 / 草稿` 状态筛选。编辑区桌面显示编辑+预览双栏，移动端通过“编辑 / 预览”切换同一内容；发布、保存草稿、保存修改、取消发布和软删除都是显式按钮。
 # Shared Dialog Accessibility Boundary
 
 - `src/modals/modalComponents.jsx` exposes `ModalDialog` without replacing existing modal CSS classes or surface elements. It adds `role="dialog"`, `aria-modal`, accessible labelling, initial focus, Tab focus containment, Escape dismissal, and opener focus restoration.
 - Nested dialogs handle Escape at the innermost dialog and mark the keyboard event handled; `useModalDismissal()` ignores already-prevented Escape events so it does not close the parent app overlay.
-- Leaderboard, watch-list, personalization, and the nested personalization picker are the first migrated surfaces. Further modal migrations should preserve their existing desktop/mobile visual contracts while adopting the same primitive.
+- Leaderboard, watch-list, personalization、公告信息中心、邮箱信息中心和个性化选择器已迁移到该边界。公告/邮箱在其上复用 `InformationCenterLayout`，并保持各自业务和视觉域所有权。

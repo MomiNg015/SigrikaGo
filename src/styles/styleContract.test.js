@@ -596,7 +596,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/reduced-motion.css",
       "./mobile-adaptive/home-narrow-desktop.css",
       "./mobile-adaptive/bright-school-portrait.css",
-      "./mobile-adaptive/announcement-detail.css",
+      "./mobile-adaptive/information-center.css",
       "./mobile-adaptive/semantic-accent-typography.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
@@ -1312,6 +1312,7 @@ describe("root CSS entry contract", () => {
       "./modals/character-music-player.css",
       "./modals/phone.css",
       "./modals/terminal-system.css",
+      "./modals/information-center.css",
       "./modals/mailbox.css",
       "./modals/announcement.css",
       "./modals/onboarding-story.css",
