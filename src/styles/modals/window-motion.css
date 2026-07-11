@@ -1,0 +1,155 @@
+/* Shared player-window entrance motion: a loose paper sheet landing flat. */
+@keyframes sigrika-window-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sigrika-paper-window-in {
+  0% {
+    opacity: 0;
+    translate: -20px 24px;
+    scale: 0.92 0.94;
+    rotate: 1 -0.18 -0.34 9deg;
+  }
+
+  52% {
+    opacity: 1;
+    translate: 2px 1px;
+    scale: 1.018 0.982;
+    rotate: 1 0 0.08 0.7deg;
+  }
+
+  72% {
+    translate: -1px -2px;
+    scale: 0.994 1.008;
+    rotate: 0 0 1 -0.18deg;
+  }
+
+  88% {
+    translate: 0 1px;
+    scale: 1.003 0.997;
+    rotate: 0 0 1 0.06deg;
+  }
+
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1 1;
+    rotate: 0 0 1 0deg;
+  }
+}
+
+@keyframes sigrika-paper-window-compact-in {
+  0% {
+    opacity: 0;
+    translate: -11px 15px;
+    scale: 0.95 0.965;
+    rotate: 1 -0.14 -0.3 6deg;
+  }
+
+  56% {
+    opacity: 1;
+    translate: 1px 1px;
+    scale: 1.014 0.986;
+    rotate: 0 0 1 0.35deg;
+  }
+
+  78% {
+    translate: 0 -1px;
+    scale: 0.997 1.005;
+    rotate: 0 0 1 -0.1deg;
+  }
+
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1 1;
+    rotate: 0 0 1 0deg;
+  }
+}
+
+@keyframes sigrika-paper-window-calm-in {
+  0% {
+    opacity: 0;
+    translate: -10px 16px;
+    scale: 0.955 0.97;
+    rotate: 1 -0.12 -0.25 5deg;
+  }
+
+  62% {
+    opacity: 1;
+    translate: 1px 0;
+    scale: 1.008 0.992;
+    rotate: 0 0 1 0.16deg;
+  }
+
+  82% {
+    translate: 0 -1px;
+    scale: 0.998 1.003;
+    rotate: 0 0 1 -0.05deg;
+  }
+
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1 1;
+    rotate: 0 0 1 0deg;
+  }
+}
+
+.app-shell.player-theme-enabled :is(.modal-backdrop, .nested-modal-backdrop) {
+  perspective: 1200px;
+  animation: sigrika-window-backdrop-in 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.app-shell.player-theme-enabled :is(.modal-backdrop, .nested-modal-backdrop) > :where(section, form, [role="dialog"]):not(.opening-modal) {
+  transform-origin: 50% 28%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  animation: sigrika-paper-window-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.app-shell.player-theme-enabled :is(.nested-modal-backdrop, .nested-backdrop) > :where(section, form, [role="dialog"]),
+.app-shell.player-theme-enabled .modal-backdrop > :is(.confirm-modal, .confirm-inline-modal, .character-target-modal) {
+  animation-name: sigrika-paper-window-compact-in;
+  animation-duration: 300ms;
+}
+
+.app-shell.player-theme-enabled .modal-backdrop > :is(
+  .result-modal,
+  .match-success-modal,
+  .onboarding-story-modal,
+  .tutorial-battle-session
+) {
+  animation-name: sigrika-paper-window-calm-in;
+  animation-duration: 340ms;
+}
+
+@media (max-width: 768px) {
+  .app-shell.player-theme-enabled :is(.modal-backdrop, .nested-modal-backdrop) {
+    perspective: 900px;
+  }
+
+  .app-shell.player-theme-enabled :is(.modal-backdrop, .nested-modal-backdrop) > :where(section, form, [role="dialog"]):not(.opening-modal) {
+    transform-origin: 50% 18%;
+    animation-name: sigrika-paper-window-calm-in;
+    animation-duration: 360ms;
+  }
+
+  .app-shell.player-theme-enabled :is(.nested-modal-backdrop, .nested-backdrop) > :where(section, form, [role="dialog"]),
+  .app-shell.player-theme-enabled .modal-backdrop > :is(.confirm-modal, .confirm-inline-modal, .character-target-modal) {
+    animation-name: sigrika-paper-window-compact-in;
+    animation-duration: 300ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled :is(.modal-backdrop, .nested-modal-backdrop),
+  .app-shell.player-theme-enabled :is(.modal-backdrop, .nested-modal-backdrop) > :where(section, form, [role="dialog"]) {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    rotate: none !important;
+  }
+}

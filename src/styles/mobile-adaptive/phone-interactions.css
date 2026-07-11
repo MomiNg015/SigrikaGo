@@ -159,25 +159,4 @@
     scroll-behavior: smooth;
   }
 
-  .modal-backdrop {
-    animation: mobile-backdrop-in 180ms ease-out;
-  }
-
-  .small-modal,
-  .confirm-modal,
-  .result-modal,
-  .shop-modal,
-  .house-modal,
-  .warehouse-modal,
-  .leaderboard-modal,
-  .friends-modal,
-  .settings-modal,
-  .message-board-modal,
-  .room-floating-modal,
-  .character-target-modal,
-  .profile-replay-dialog,
-  .shop-item-detail-modal {
-    transform-origin: center bottom;
-    animation: mobile-sheet-in var(--mobile-sheet-duration) var(--mobile-tap-ease);
-  }
 }
