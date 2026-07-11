@@ -1,5 +1,9 @@
-/* Bright School portrait mobile room modal sheet geometry. Shared motion lives in modals/window-motion.css. */
+/* Bright School portrait mobile room modal sheets. */
 @media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .modal-backdrop {
+    animation: bright-mobile-backdrop-in 180ms ease-out !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
     .small-modal,
     .confirm-modal,
@@ -21,5 +25,6 @@
     .user-profile-modal
   ) {
     transform-origin: center bottom !important;
+    animation: bright-mobile-sheet-in 220ms cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 }

@@ -1,4 +1,21 @@
-/* Bright School portrait reduced-motion fallbacks. */
+/* Bright School portrait mobile motion and reduced-motion fallbacks. */
+@keyframes bright-mobile-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes bright-mobile-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (max-width: 760px) and (orientation: portrait) and (prefers-reduced-motion: reduce) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school *::before,

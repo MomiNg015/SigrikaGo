@@ -11,6 +11,7 @@
     min-height: 100dvh;
     --mobile-tap-duration: 120ms;
     --mobile-tap-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --mobile-sheet-duration: 220ms;
     --mobile-press-scale: 0.985;
   }
 

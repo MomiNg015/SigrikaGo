@@ -97,59 +97,6 @@ Correct:
 <li><button type="button" onClick={() => openDetail(item)}>{item.title}</button></li>
 ```
 
-### Scenario: Shared Player Window Center-Reveal Motion
-
-#### 1. Scope / Trigger
-- Trigger: adding or changing a player-facing modal, nested dialog, room popover, confirmation sheet, or shared window entrance animation.
-
-#### 2. Signatures
-- `src/styles/modals/window-motion.css` owns the shared backdrop and center-reveal keyframes.
-- A player window is an immediate `section`, `form`, or dialog child of `.modal-backdrop` or `.nested-modal-backdrop` under `.app-shell.player-theme-enabled`.
-
-#### 3. Contracts
-- Ordinary player windows enter like a display image scanning open from its horizontal center line: backdrop fade at `120ms`; main reveal at `260ms`; compact/nested reveal at `200ms`; calm lifecycle/story reveal at `220ms`; phone reveal at `240ms`.
-- The reveal progresses symmetrically from `clip-path: inset(49.5% 0 49.5% 0)` to a complete frame, with opacity reaching full visibility before the final edge expansion. Do not animate width, height, position, blur, shadow, translate, scale, or rotate.
-- Never place `perspective`, `transform`, persistent transform longhands, `filter`, or `will-change: transform` on a backdrop or a modal that owns fixed descendants. Those properties create a containing block and can trap replay, profile, character-detail, or confirmation windows inside the parent panel.
-- Do not use `animation-fill-mode: forwards` or `both`. The temporary reveal clip must disappear after entry so each theme's existing window clip-path and fixed descendants remain authoritative.
-- `OpeningModal` keeps its dedicated character-opening animation and is excluded from the shared paper surface animation; its backdrop may still use the shared fade.
-- Match success, result, story, and tutorial battle sessions use the calm variant so the window entrance does not compete with their internal presentation.
-- Shared desktop motion is authoritative. Final mobile and Bright School layers may change geometry, but must not introduce a second modal entrance keyframe.
-- Opening motion never delays focus, pointer input, Escape, or backdrop dismissal. No exit animation is required while overlays unmount synchronously.
-- Reduced motion renders the final visible state immediately without applying a reveal clip.
-
-#### 4. Validation & Error Matrix
-- Existing panel uses `transform: translate(...)` for positioning -> center reveal must not write any transform property and therefore cannot replace centering.
-- Nested confirmation opens over a parent modal -> use the compact timing and do not replay the parent window animation.
-- Cinematic opening modal -> keep the dedicated opening animation; no double animation.
-- `prefers-reduced-motion: reduce` -> no center-line reveal or delayed visibility.
-
-#### 5. Good/Base/Bad Cases
-- Good: a new player modal uses the shared backdrop/direct-child structure and receives the default center reveal without component-local keyframes.
-- Base: a lifecycle modal opts into the calm selector while preserving its own child animation.
-- Bad: adding another `mobile-sheet-in` or theme-specific modal entrance with `!important`.
-- Bad: animating width, height, top, left, padding, blur, or box-shadow during entry.
-
-#### 6. Tests Required
-- `styleContract.test.js` asserts the import, center-line clip stages, timing, absence of transform/perspective or persistent animation fill, mobile deduplication, reduced-motion fallback, and absence of layout-property keyframes.
-- `cssLayerInventory.test.js` registers the motion family, expanded sheet timing range, and CSS debt baseline.
-- Browser checks cover desktop, phone, ordinary, nested, calm, and reduced-motion variants without position drift or first-frame flashing.
-
-#### 7. Wrong vs Correct
-
-Wrong:
-
-```css
-.new-modal { animation: another-sheet-in 220ms ease-out !important; }
-```
-
-Correct:
-
-```jsx
-<div className="modal-backdrop">
-  <section className="new-modal">...</section>
-</div>
-```
-
 Current Phase 5 domain wrappers:
 
 - `src/home/homeComponents.jsx` wraps `Button` as `HomeActionButton` for home-flow action rows. It maps semantic home variants back to existing `.primary-action`, `.secondary-action`, and `.danger-action` visual classes while the primitive owns only alignment utilities. The first consumer is the match-mode picker cancel action in `src/home/HomeScreen.jsx`. Do not use this pilot as permission to migrate match-mode option buttons, home entry cards, home utility entries, player plaque art, shop/warehouse/recruitment cards, or gameplay controls without focused desktop/mobile tests and visual checks.

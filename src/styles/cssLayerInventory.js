@@ -1,14 +1,14 @@
 export const CSS_DEBT_BASELINE = {
   date: "2026-07-10",
-  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, desktop/mobile shop mascot layout contracts, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, and the shared player-window paper landing motion.",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, desktop/mobile shop mascot layout contracts, cloud-deployment mobile floating layer tokens, and transform-surface compositor hints.",
   metrics: {
     totalFiles: 588,
-    totalBytes: 1140821,
+    totalBytes: 1138536,
     importantCount: 7093,
-    importantFiles: 278,
+    importantFiles: 277,
     hardcodedHexCount: 2246,
-    mediaFiles: 220,
-    reducedMotionFiles: 26,
+    mediaFiles: 219,
+    reducedMotionFiles: 25,
     highZIndexFiles: 6
   },
   guidance:
@@ -49,7 +49,6 @@ export const CSS_MOTION_CONTRACT = {
     "base/message-feedback.css",
     "commerce/recruitment/board/motion.css",
     "commerce/shop-settings/shop-shell-tabs.css",
-    "modals/window-motion.css",
     "mobile-adaptive/reduced-motion.css",
     "mobile-modals/reduced-motion.css",
     "mobile-room/reduced-motion.css",
@@ -166,7 +165,6 @@ export const CSS_LAYER_GROUPS = [
       "modals/character-music-player/shell-title.css",
       "modals/character-music-player/track-sheet.css",
       "modals/character-music-player/motion.css",
-      "modals/window-motion.css",
       "modals/mailbox.css",
       "modals/mailbox/layout.css",
       "modals/mailbox/list.css",

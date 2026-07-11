@@ -565,7 +565,7 @@ describe("root CSS entry contract", () => {
     expect(mobileCss).toContain(".point.previewable:active");
     expect(mobileCss).toContain("touch-action: none");
     expect(touchConfirmBlock).not.toContain("transform: scale");
-    expect(mobileCss).not.toContain("@keyframes mobile-sheet-in");
+    expect(mobileCss).toContain("@keyframes mobile-sheet-in");
     expect(mobileCss).toContain("@media (max-width: 768px) and (prefers-reduced-motion: reduce)");
   });
 
@@ -584,6 +584,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/phone-interactions.css",
       "./mobile-adaptive/home-utility-interactions.css",
       "./mobile-adaptive/coarse-house.css",
+      "./mobile-adaptive/motion-keyframes.css",
       "./mobile-adaptive/mobile-room-portrait.css",
       "./mobile-adaptive/mobile-profile-records.css",
       "./mobile-adaptive/mobile-profile-hero-results.css",
@@ -1315,8 +1316,7 @@ describe("root CSS entry contract", () => {
       "./modals/mailbox.css",
       "./modals/announcement.css",
       "./modals/onboarding-story.css",
-      "./modals/tutorial-session.css",
-      "./modals/window-motion.css"
+      "./modals/tutorial-session.css"
     ]);
     expect(modalsEntry).not.toContain(".modal-backdrop {");
     expect(modalsEntry).not.toContain(".resume-modal {");
@@ -1338,25 +1338,6 @@ describe("root CSS entry contract", () => {
       "./character-opening/keyframes.css"
     ]);
     expect(characterOpeningEntry).not.toContain(".character-detail {");
-
-    const windowMotion = readFileSync(new URL("./modals/window-motion.css", import.meta.url), "utf8");
-    expect(windowMotion).toContain("@keyframes sigrika-window-center-reveal-in");
-    expect(windowMotion).toContain("clip-path: inset(49.5% 0 49.5% 0)");
-    expect(windowMotion).toContain("animation: sigrika-window-center-reveal-in 260ms");
-    expect(windowMotion).toContain("animation-duration: 200ms");
-    expect(windowMotion).toContain(":where(:not(.opening-modal))");
-    expect(windowMotion).not.toContain("perspective:");
-    expect(windowMotion).not.toMatch(/\b(?:translate|scale|rotate|transform)\s*:/);
-    expect(windowMotion).not.toMatch(/animation:[^;]+\bboth\b/);
-    expect(windowMotion).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(windowMotion).not.toMatch(/@keyframes[^}]+\b(?:width|height|top|left|margin|padding)\s*:/s);
-
-    const phoneInteractions = readFileSync(new URL("./mobile-adaptive/phone-interactions.css", import.meta.url), "utf8");
-    const brightMobileMotion = readFileSync(new URL("./themes/bright-school/mobile/motion.css", import.meta.url), "utf8");
-    const brightMobileModalSheets = readFileSync(new URL("./themes/bright-school/mobile/room/modal-sheets.css", import.meta.url), "utf8");
-    expect(phoneInteractions).not.toContain("mobile-sheet-in");
-    expect(brightMobileMotion).not.toContain("bright-mobile-sheet-in");
-    expect(brightMobileModalSheets).not.toContain("bright-mobile-sheet-in");
 
     const onboardingStoryEntry = readFileSync(new URL("./modals/onboarding-story.css", import.meta.url), "utf8");
     expect(cssImports(onboardingStoryEntry)).toEqual([

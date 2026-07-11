@@ -658,8 +658,8 @@ describe("player theme CSS contract", () => {
   it("keeps Bright School mobile interaction polish in the final theme tree", () => {
     const themeCss = readCssWithImports(new URL("./themes.css", import.meta.url));
 
-    expect(themeCss).not.toContain("@keyframes bright-mobile-sheet-in");
-    expect(themeCss).toContain("Shared motion lives in modals/window-motion.css");
+    expect(themeCss).toContain("@keyframes bright-mobile-sheet-in");
+    expect(themeCss).toContain("bright-mobile-backdrop-in");
     expect(themeCss).toContain(".mobile-room-screen .point.previewable:active");
     expect(themeCss).toContain("touch-action: none !important");
     expect(themeCss).toContain("(prefers-reduced-motion: reduce)");
