@@ -294,6 +294,8 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain(".shop-product-stage");
     expect(commerceCss).toContain("overflow: hidden");
     expect(commerceCss).toContain("transform: rotate(var(--shop-card-rotation))");
+    expect(commerceCss).toContain("--shop-card-float-travel: calc(var(--shop-card-float) * 2)");
+    expect(commerceCss).toContain("translateY(calc(var(--shop-card-float-travel) * -0.5))");
     expect(commerceCss).toContain("animation-play-state: paused");
     expect(commerceCss).toContain(".shop-card-position .shop-corner-badge");
     expect(commerceCss).toContain(".shop-card-position .shop-quantity-badge");
@@ -308,11 +310,20 @@ describe("Zahira shop window", () => {
     expect(mobileCss).toContain("max-width: none !important");
     expect(mobileCss).toContain(".shop-window .shop-card-scale");
     expect(mobileCss).toContain(".shop-window .shop-card-position .shop-item");
+    expect(mobileCss).toContain("grid-template-columns: minmax(0, 1fr) !important");
+    expect(mobileCss).toContain("justify-content: stretch !important");
+    expect(mobileCss).toContain("justify-items: stretch !important");
     expect(mobileCss).toContain("grid-template-rows: minmax(0, 1fr) 34px !important");
     expect(mobileCss).toContain("grid-template-rows: 88px 22px 24px !important");
     expect(mobileCss).toContain("height: 82px !important");
     expect(mobileCss).toContain("height: var(--shop-card-height) !important");
     expect(mobileCss).toContain("min-height: 0 !important");
+    expect(mobileCss).toContain("--shop-card-float-travel: var(--shop-card-float)");
+    expect(mobileCss).toContain(".shop-window .shop-card-position .shop-card-meta-price-only .shop-price");
+    expect(mobileCss).toContain("justify-content: center !important");
+    expect(mobileCss).toContain(".shop-window .shop-card-position .shop-item .primary-action");
+    expect(mobileCss).toContain("width: 100% !important");
+    expect(mobileCss).toContain("justify-self: stretch !important");
     expect(mobileCss.lastIndexOf(
       ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-card-position .shop-item"
     )).toBeGreaterThan(mobileCss.lastIndexOf(

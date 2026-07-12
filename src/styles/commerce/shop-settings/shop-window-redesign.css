@@ -148,6 +148,7 @@
 }
 
 .shop-card-float {
+  --shop-card-float-travel: calc(var(--shop-card-float) * 2);
   animation: shop-card-float var(--shop-card-float-duration) ease-in-out var(--shop-card-float-delay) infinite alternate;
   will-change: transform;
 }
@@ -237,8 +238,8 @@
 }
 
 @keyframes shop-card-float {
-  from { transform: translateY(calc(var(--shop-card-float) * -0.5)); }
-  to { transform: translateY(calc(var(--shop-card-float) * 0.5)); }
+  from { transform: translateY(calc(var(--shop-card-float-travel) * -0.5)); }
+  to { transform: translateY(calc(var(--shop-card-float-travel) * 0.5)); }
 }
 
 @keyframes shop-batch-arrive {

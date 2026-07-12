@@ -11,6 +11,11 @@
     max-height: none !important;
   }
 
+  .shop-window .shop-card-float,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-card-float {
+    --shop-card-float-travel: var(--shop-card-float);
+  }
+
   .shop-window .shop-card-position .shop-item,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-card-position .shop-item {
     width: var(--shop-card-width) !important;
@@ -20,7 +25,10 @@
     min-width: 0 !important;
     min-height: 0 !important;
     display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     grid-template-rows: minmax(0, 1fr) 34px !important;
+    justify-content: stretch !important;
+    justify-items: stretch !important;
     gap: 4px !important;
     padding: 8px !important;
     overflow: hidden !important;
@@ -84,10 +92,23 @@
     margin: 0 !important;
   }
 
+  .shop-window .shop-card-position .shop-card-meta-price-only .shop-price,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-card-position .shop-card-meta-price-only .shop-price {
+    justify-self: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    margin: 0 !important;
+  }
+
   .shop-window .shop-card-position .shop-item .primary-action,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-card-position .shop-item .primary-action {
+    width: 100% !important;
+    min-width: 0 !important;
     min-height: 34px !important;
     height: 34px !important;
+    justify-self: stretch !important;
+    align-self: stretch !important;
+    margin: 0 !important;
     padding: 5px 8px !important;
   }
 }

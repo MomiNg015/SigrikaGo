@@ -41,28 +41,6 @@
     min-height: 28px !important;
     align-items: center !important;
   }
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-item.shop-item .shop-card-meta > span {
-    justify-self: start !important;
-  }
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-item.shop-item .shop-price {
-    justify-self: end !important;
-    text-align: right !important;
-    white-space: nowrap !important;
-  }
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-category-music.shop-item .shop-price {
-    justify-content: center !important;
-    margin: 0 !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-  }
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta-price-only {
-    grid-template-columns: 1fr !important;
-    justify-content: center !important;
-  }
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta-price-only .shop-price {
-    justify-content: center !important;
-    text-align: center !important;
-  }
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action {
     width: 100% !important;
     min-height: 44px !important;
