@@ -1296,3 +1296,36 @@ Adjusted the six Bright School desktop utility buttons to use stronger same-dire
 ### Next Steps
 
 - None - task complete
+
+
+## Session 40: Redesign Zahira shop window
+
+**Date**: 2026-07-12
+**Task**: Redesign Zahira shop window
+**Branch**: `codex/shop-window-redesign`
+
+### Summary
+
+Rebuilt the Zahira shop into a responsive 1-5 item showcase with balanced desktop/mobile count topologies, prepared refresh batches, stable seeded card placement, anchored dialogue/character/wallet composition, dedicated wallet assets, focused tests, visual QA, and full repository validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6cb0c1ad` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
