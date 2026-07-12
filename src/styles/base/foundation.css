@@ -12,12 +12,21 @@
     U+0061-007A;
 }
 
+@font-face {
+  font-family: "Sigrika Window Title";
+  src: url("/assets/fonts/LXGWMarkerGothic-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
   color: #2d2430;
   background: #fff8fb;
   --font-ui-default: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
   --font-display-accent: "Sigrika Accent Latin";
   --font-numeric-accent: "Sigrika Accent Latin";
+  --font-window-title: "Sigrika Window Title";
   font-family: var(--font-ui-default);
   letter-spacing: 0;
   --page-pad: clamp(10px, 1.6vw, 24px);
@@ -66,6 +75,11 @@ button {
 .text-display-accent {
   font-family: var(--font-display-accent), var(--font-ui-default);
   text-transform: uppercase;
+}
+
+.text-window-title,
+:where(.modal-backdrop, .nested-modal-backdrop, [role="dialog"]) h2 {
+  font-family: var(--font-window-title), var(--font-ui-default);
 }
 
 .text-rating-value,

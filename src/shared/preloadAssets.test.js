@@ -83,6 +83,11 @@ describe("deployment preload asset helpers", () => {
     expect(assets.audio).toContain("/assets/music/ui_detail_open.ogg");
     expect(assets.audio).toContain("/assets/music/ui_house_open.ogg");
     expect(assets.audio).toContain("/assets/music/ui_match_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_resume_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_warehouse_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_watch_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_friends_open.ogg");
+    expect(assets.audio).toContain("/assets/music/ui_leaderboard_open.ogg");
     expect(assets.audio).toContain("/assets/music/ui_shop_open.ogg");
     expect(assets.audio).toContain("/assets/music/ui_unavailable.ogg");
     expect(assets.criticalAudio).toContain("/assets/music/godown_clear.ogg");

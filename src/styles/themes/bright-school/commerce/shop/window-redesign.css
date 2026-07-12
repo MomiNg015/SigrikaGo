@@ -15,7 +15,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-header h2 {
   color: #3d2b25 !important;
-  font-family: "Microsoft YaHei UI", "Microsoft YaHei", sans-serif !important;
+  font-family: var(--font-window-title), var(--font-ui-default) !important;
   font-weight: 900 !important;
   letter-spacing: 0.08em !important;
 }

@@ -89,7 +89,7 @@ describe("HomeScreen", () => {
     expect(html).toContain('class="home-screen home-terminal-screen"');
     expect(html).not.toContain("home-terminal-status");
     expect(html).not.toContain("SYSTEM: ACTIVE // IN_LOBBY");
-    expect(html).toContain("home-brand-title text-display-accent");
+    expect(html).toContain("home-brand-title text-window-title");
     expect(html).toContain("home-brand-subtitle text-display-accent");
     expect(html).toContain("连罗伊人的都爱玩的智力游戏");
     expect(html).toContain("home-online-tag");

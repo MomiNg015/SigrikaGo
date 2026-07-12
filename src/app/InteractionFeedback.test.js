@@ -29,16 +29,23 @@ describe("InteractionFeedback", () => {
     const homeImageEntriesSource = readFileSync(new URL("../home/components/HomeImageEntries.jsx", import.meta.url), "utf8");
     const houseGridSource = readFileSync(new URL("../modals/house/HouseCharacterGrid.jsx", import.meta.url), "utf8");
     const homeDockSource = readFileSync(new URL("../home/components/HomeUtilityDock.jsx", import.meta.url), "utf8");
+    const playerPlaqueSource = readFileSync(new URL("../home/components/PlayerPlaque.jsx", import.meta.url), "utf8");
 
     expect(appRoutesSource).toContain("playUiHouseOpenSound(audioSettings)");
     expect(appRoutesSource).toContain("playUiMatchOpenSound(audioSettings)");
     expect(appRoutesSource).toContain("playUiRecruitmentOpenSound(audioSettings)");
     expect(appRoutesSource).toContain("playUiShopOpenSound(audioSettings)");
+    expect(appRoutesSource).toContain("playUiResumeOpenSound(audioSettings)");
+    expect(appRoutesSource).toContain("playUiWarehouseOpenSound(audioSettings)");
+    expect(appRoutesSource).toContain("playUiWatchOpenSound(audioSettings)");
+    expect(appRoutesSource).toContain("playUiFriendsOpenSound(audioSettings)");
+    expect(appRoutesSource).toContain("playUiLeaderboardOpenSound(audioSettings)");
     expect(houseModalSource).toContain("playUiDetailOpenSound(audioSettings)");
     expect(homeImageEntriesSource).toContain("data-ui-sound=\"none\"");
     expect(houseGridSource).toContain("data-ui-sound=\"none\"");
     expect(houseGridSource).toContain("data-ui-sound=\"confirm\"");
     expect(homeDockSource).toContain("data-ui-sound=\"none\"");
+    expect(playerPlaqueSource).toContain("data-ui-sound=\"none\"");
   });
 
   it("restarts unavailable feedback without forcing synchronous layout", () => {

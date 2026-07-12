@@ -6,17 +6,27 @@ import {
   playBoardSound,
   playEffectSound,
   playRecruitmentResultSound,
+  playUiFriendsOpenSound,
+  playUiLeaderboardOpenSound,
   playUiRecruitmentOpenSound,
+  playUiResumeOpenSound,
+  playUiWarehouseOpenSound,
+  playUiWatchOpenSound,
   RECRUITMENT_MISS_SOUND,
   RECRUITMENT_SUCCESS_SOUND,
   STONE_SOUND,
   UI_CLOSE_WINDOW_SOUND,
   UI_CONFIRM_SOUND,
   UI_DETAIL_OPEN_SOUND,
+  UI_FRIENDS_OPEN_SOUND,
   UI_HOUSE_OPEN_SOUND,
+  UI_LEADERBOARD_OPEN_SOUND,
   UI_MATCH_OPEN_SOUND,
   UI_RECRUITMENT_OPEN_SOUND,
+  UI_RESUME_OPEN_SOUND,
   UI_SHOP_OPEN_SOUND,
+  UI_WAREHOUSE_OPEN_SOUND,
+  UI_WATCH_OPEN_SOUND,
   UI_UNAVAILABLE_SHAKE_MS,
   UI_UNAVAILABLE_SOUND
 } from "./effectPlayback.js";
@@ -58,10 +68,41 @@ describe("effect playback", () => {
     expect(UI_DETAIL_OPEN_SOUND).toBe("/assets/music/ui_detail_open.ogg");
     expect(UI_HOUSE_OPEN_SOUND).toBe("/assets/music/ui_house_open.ogg");
     expect(UI_MATCH_OPEN_SOUND).toBe("/assets/music/ui_match_open.ogg");
+    expect(UI_RESUME_OPEN_SOUND).toBe("/assets/music/ui_resume_open.ogg");
+    expect(UI_WAREHOUSE_OPEN_SOUND).toBe("/assets/music/ui_warehouse_open.ogg");
+    expect(UI_WATCH_OPEN_SOUND).toBe("/assets/music/ui_watch_open.ogg");
+    expect(UI_FRIENDS_OPEN_SOUND).toBe("/assets/music/ui_friends_open.ogg");
+    expect(UI_LEADERBOARD_OPEN_SOUND).toBe("/assets/music/ui_leaderboard_open.ogg");
     expect(UI_RECRUITMENT_OPEN_SOUND).toBe("/assets/music/recruitment-open.ogg");
     expect(UI_SHOP_OPEN_SOUND).toBe("/assets/music/ui_shop_open.ogg");
     expect(UI_UNAVAILABLE_SOUND).toBe("/assets/music/ui_unavailable.ogg");
     expect(UI_UNAVAILABLE_SHAKE_MS).toBe(1063);
+  });
+
+  it("routes home profile and utility interactions to their dedicated assets", () => {
+    const played = [];
+    class FakeAudio {
+      constructor(src) {
+        this.src = src;
+        this.play = vi.fn(() => Promise.resolve());
+        played.push(this);
+      }
+    }
+    vi.stubGlobal("Audio", FakeAudio);
+
+    playUiResumeOpenSound();
+    playUiWarehouseOpenSound();
+    playUiWatchOpenSound();
+    playUiFriendsOpenSound();
+    playUiLeaderboardOpenSound();
+
+    expect(played.map((audio) => audio.src)).toEqual([
+      UI_RESUME_OPEN_SOUND,
+      UI_WAREHOUSE_OPEN_SOUND,
+      UI_WATCH_OPEN_SOUND,
+      UI_FRIENDS_OPEN_SOUND,
+      UI_LEADERBOARD_OPEN_SOUND
+    ]);
   });
 
   it("routes recruitment interaction sounds to converted effect assets", () => {

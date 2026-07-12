@@ -27,7 +27,7 @@ export default function HomeHeader({
   return (
     <header className="home-top-strip home-terminal-header">
       <div className="home-top-brand">
-        <span className="home-brand-title text-display-accent">{siteTitle}</span>
+        <span className="home-brand-title text-window-title">{siteTitle}</span>
         <span className="home-brand-subtitle text-display-accent">{siteSubtitle}</span>
       </div>
       <span className="home-online-tag" aria-label={`在线人数 ${onlineCount}`}>

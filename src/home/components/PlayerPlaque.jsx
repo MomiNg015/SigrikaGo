@@ -9,7 +9,7 @@ export default function PlayerPlaque({ character, user, onOpenResume }) {
   return (
     <section className="home-player-zone" aria-label="当前用户与在线状态">
       <div className="home-player-row tactical-id-row" style={plaqueStyle}>
-        <button className="home-player-plaque tactical-id-card" type="button" onClick={onOpenResume} aria-label="打开履历">
+        <button className="home-player-plaque tactical-id-card" data-ui-sound="none" type="button" onClick={onOpenResume} aria-label="打开履历">
           <span className="plaque-avatar">
             <img src={resolveCandyPortrait(character, user.itemEffects)} alt="当前出战角色" />
             <CharacterChainBadge user={user} characterId={character.id} />

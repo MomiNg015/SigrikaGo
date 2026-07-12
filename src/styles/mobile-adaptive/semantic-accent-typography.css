@@ -4,6 +4,11 @@
   text-transform: uppercase;
 }
 
+.text-window-title,
+:where(.modal-backdrop, .nested-modal-backdrop, [role="dialog"]) h2 {
+  font-family: var(--font-window-title), var(--font-ui-default);
+}
+
 .text-rating-value,
 .text-clock-value {
   font-family: var(--font-numeric-accent), var(--font-ui-default);
@@ -15,6 +20,15 @@
   font-family: var(--font-display-accent), var(--font-ui-default) !important;
   letter-spacing: 0 !important;
   text-transform: uppercase !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .text-window-title,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
+  .modal-backdrop,
+  .nested-modal-backdrop,
+  [role="dialog"]
+) h2 {
+  font-family: var(--font-window-title), var(--font-ui-default) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(

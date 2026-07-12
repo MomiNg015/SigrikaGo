@@ -2,7 +2,17 @@ import { lazy, Suspense } from "react";
 import AuthScreen from "../auth/AuthScreen.jsx";
 import HomeScreen from "../home/HomeScreen.jsx";
 import RoomScreen from "../room/RoomScreen.jsx";
-import { playUiHouseOpenSound, playUiMatchOpenSound, playUiRecruitmentOpenSound, playUiShopOpenSound } from "../audio/playback.jsx";
+import {
+  playUiFriendsOpenSound,
+  playUiHouseOpenSound,
+  playUiLeaderboardOpenSound,
+  playUiMatchOpenSound,
+  playUiRecruitmentOpenSound,
+  playUiResumeOpenSound,
+  playUiShopOpenSound,
+  playUiWarehouseOpenSound,
+  playUiWatchOpenSound
+} from "../audio/playback.jsx";
 import { findCharacter } from "../shared/characterDisplay.js";
 import AssetPreloadScreen from "./AssetPreloadScreen.jsx";
 import { rememberDismissedResultRoom } from "./resumeSession.js";
@@ -93,10 +103,22 @@ export default function AppRoutes({
         playUiHouseOpenSound(audioSettings);
         setShowHouse(true);
       }}
-      onOpenResume={() => setShowResume(true)}
-      onOpenWarehouse={() => setShowWarehouse(true)}
-      onOpenLeaderboard={() => setShowLeaderboard(true)}
-      onOpenWatch={() => setShowWatch(true)}
+      onOpenResume={() => {
+        playUiResumeOpenSound(audioSettings);
+        setShowResume(true);
+      }}
+      onOpenWarehouse={() => {
+        playUiWarehouseOpenSound(audioSettings);
+        setShowWarehouse(true);
+      }}
+      onOpenLeaderboard={() => {
+        playUiLeaderboardOpenSound(audioSettings);
+        setShowLeaderboard(true);
+      }}
+      onOpenWatch={() => {
+        playUiWatchOpenSound(audioSettings);
+        setShowWatch(true);
+      }}
       onOpenShop={() => {
         playUiShopOpenSound(audioSettings);
         setShowShop(true);
@@ -108,7 +130,10 @@ export default function AppRoutes({
         playUiRecruitmentOpenSound(audioSettings);
         setShowRecruitment(true);
       }}
-      onOpenFriends={() => setShowFriends(true)}
+      onOpenFriends={() => {
+        playUiFriendsOpenSound(audioSettings);
+        setShowFriends(true);
+      }}
       onOpenSettings={() => setShowSettings(true)}
       onOpenAnnouncements={() => setShowAnnouncements(true)}
       onOpenMailbox={() => setShowMailbox(true)}

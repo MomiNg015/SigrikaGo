@@ -8,10 +8,15 @@ import {
   UI_CLOSE_WINDOW_SOUND,
   UI_CONFIRM_SOUND,
   UI_DETAIL_OPEN_SOUND,
+  UI_FRIENDS_OPEN_SOUND,
   UI_HOUSE_OPEN_SOUND,
+  UI_LEADERBOARD_OPEN_SOUND,
   UI_MATCH_OPEN_SOUND,
   UI_RECRUITMENT_OPEN_SOUND,
+  UI_RESUME_OPEN_SOUND,
   UI_SHOP_OPEN_SOUND,
+  UI_WAREHOUSE_OPEN_SOUND,
+  UI_WATCH_OPEN_SOUND,
   UI_UNAVAILABLE_SOUND
 } from "../shared/audioAssets.js";
 import { DEFAULT_AUDIO_SETTINGS, audioVolume } from "./audioSettings.js";
@@ -26,10 +31,15 @@ export {
   UI_CLOSE_WINDOW_SOUND,
   UI_CONFIRM_SOUND,
   UI_DETAIL_OPEN_SOUND,
+  UI_FRIENDS_OPEN_SOUND,
   UI_HOUSE_OPEN_SOUND,
+  UI_LEADERBOARD_OPEN_SOUND,
   UI_MATCH_OPEN_SOUND,
   UI_RECRUITMENT_OPEN_SOUND,
+  UI_RESUME_OPEN_SOUND,
   UI_SHOP_OPEN_SOUND,
+  UI_WAREHOUSE_OPEN_SOUND,
+  UI_WATCH_OPEN_SOUND,
   UI_UNAVAILABLE_SOUND
 };
 export const UI_UNAVAILABLE_SHAKE_MS = 1063;
@@ -154,6 +164,26 @@ export function playUiHouseOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
 
 export function playUiMatchOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
   playEffectSound(UI_MATCH_OPEN_SOUND, audioSettings);
+}
+
+export function playUiResumeOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_RESUME_OPEN_SOUND, audioSettings);
+}
+
+export function playUiWarehouseOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_WAREHOUSE_OPEN_SOUND, audioSettings);
+}
+
+export function playUiWatchOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_WATCH_OPEN_SOUND, audioSettings);
+}
+
+export function playUiFriendsOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_FRIENDS_OPEN_SOUND, audioSettings);
+}
+
+export function playUiLeaderboardOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  playEffectSound(UI_LEADERBOARD_OPEN_SOUND, audioSettings);
 }
 
 export function playUiRecruitmentOpenSound(audioSettings = DEFAULT_AUDIO_SETTINGS) {

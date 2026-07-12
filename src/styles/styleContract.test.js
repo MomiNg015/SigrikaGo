@@ -136,8 +136,11 @@ describe("root CSS entry contract", () => {
   it("keeps art font usage semantic and opt-in", () => {
     const baseCss = readCssWithImports(new URL("./base.css", import.meta.url));
     const fontAssetPath = fileURLToPath(new URL("../../public/assets/fonts/WuWa-Lahai-Roi-Regular.ttf", import.meta.url));
+    const windowTitleFontAssetPath = fileURLToPath(new URL("../../public/assets/fonts/LXGWMarkerGothic-Regular.ttf", import.meta.url));
+    const finalTypographyCss = readFileSync(new URL("./mobile-adaptive/semantic-accent-typography.css", import.meta.url), "utf8");
 
     expect(statSync(fontAssetPath).isFile()).toBe(true);
+    expect(statSync(windowTitleFontAssetPath).isFile()).toBe(true);
     expect(baseCss).toContain('font-family: "Sigrika Accent Latin";');
     expect(baseCss).toContain('src: url("/assets/fonts/WuWa-Lahai-Roi-Regular.ttf") format("truetype")');
     expect(baseCss).toContain("U+0030-0039");
@@ -145,11 +148,18 @@ describe("root CSS entry contract", () => {
     expect(baseCss).toContain("U+0061-007A");
     expect(baseCss).toContain('--font-display-accent: "Sigrika Accent Latin";');
     expect(baseCss).toContain('--font-numeric-accent: "Sigrika Accent Latin";');
+    expect(baseCss).toContain('font-family: "Sigrika Window Title";');
+    expect(baseCss).toContain('src: url("/assets/fonts/LXGWMarkerGothic-Regular.ttf") format("truetype")');
+    expect(baseCss).toContain('--font-window-title: "Sigrika Window Title";');
     expect(baseCss).toContain(".text-display-accent");
+    expect(baseCss).toContain(".text-window-title");
+    expect(baseCss).toContain(':where(.modal-backdrop, .nested-modal-backdrop, [role="dialog"]) h2');
     expect(baseCss).toContain(".text-rating-value");
     expect(baseCss).toContain(".text-clock-value");
     expect(baseCss).toContain("font-variant-numeric: tabular-nums");
     expect(baseCss).toContain("text-transform: uppercase");
+    expect(finalTypographyCss).toContain("font-family: var(--font-window-title), var(--font-ui-default)");
+    expect(finalTypographyCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .text-window-title");
   });
 
   it("keeps top-level style files either imported or intentionally non-CSS tests", () => {

@@ -301,6 +301,8 @@ describe("Zahira shop window", () => {
     expect(commerceCss).toContain(".shop-card-position .shop-quantity-badge");
     expect(commerceCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(themeCss).toContain(".shop-layout.shop-window-body");
+    expect(themeCss).toContain(".shop-header h2");
+    expect(themeCss).toContain("font-family: var(--font-window-title), var(--font-ui-default) !important");
     expect(themeCss).toContain("display: contents !important");
     expect(themeCss).toContain(".shop-category-badge-decoration");
     expect(themeCss).toContain("bottom: 52% !important");
