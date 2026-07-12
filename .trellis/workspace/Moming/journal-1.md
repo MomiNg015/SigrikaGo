@@ -1362,3 +1362,36 @@ Removed Bright School mobile CSS pollution from the shop scale chain, aligned re
 ### Next Steps
 
 - None - task complete
+
+
+## Session 42: Polish shop card alignment and desktop float
+
+**Date**: 2026-07-12
+**Task**: Polish shop card alignment and desktop float
+**Branch**: `codex/shop-window-redesign`
+
+### Summary
+
+Unified mobile shop purchase action widths and centered prices, increased desktop-only card float travel, removed obsolete legacy price overrides, added CSS contracts, and synchronized system design documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5058de53` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
