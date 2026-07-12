@@ -1,66 +1,73 @@
-import { X } from "lucide-react";
+import { RefreshCw, RotateCcw, X } from "lucide-react";
 import { useState } from "react";
-import ShopItemCard from "./shop/ShopItemCard.jsx";
+import { ModalDialog } from "./modalComponents.jsx";
 import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
+import ShopProductStage from "./shop/ShopProductStage.jsx";
 import ShopSidebar from "./shop/ShopSidebar.jsx";
-import ShopTabs from "./shop/ShopTabs.jsx";
 import { useShopCatalog } from "./shop/useShopCatalog.js";
 
 export default function ShopModal({ token, user, musicTracks, onPurchased, onNotice, onClose }) {
   const [detailItem, setDetailItem] = useState(null);
   const {
-    activeCategory,
-    activePage,
+    batchVersion,
     buyItem,
-    loading,
+    catalogState,
+    cooldownRemaining,
+    currentBatch,
     mascotLine,
     mascotMood,
-    pageCount,
     purchasingId,
-    selectCategory,
-    setActivePage,
-    shopSlots
+    refreshCatalog,
+    refreshDisabled,
+    refreshMode
   } = useShopCatalog({ token, user, musicTracks, onNotice, onPurchased });
+
+  const refreshLabel = refreshMode === "retry"
+    ? "重试获取商品"
+    : cooldownRemaining > 0
+      ? `${cooldownRemaining} 秒后可刷新商品`
+      : refreshDisabled ? "暂无可刷新商品" : "刷新商品";
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <section className="shop-modal" onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" onClick={onClose}><X size={20} /></button>
-        <div className="shop-layout">
+      <ModalDialog
+        className="shop-modal shop-window"
+        ariaLabelledBy="shop-window-title"
+        onClose={onClose}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="shop-header">
+          <button
+            className={`shop-refresh-button is-${refreshMode}`}
+            type="button"
+            aria-label={refreshLabel}
+            title={refreshLabel}
+            disabled={refreshDisabled}
+            onClick={refreshCatalog}
+            style={{ "--shop-refresh-progress": `${(cooldownRemaining / 3) * 360}deg` }}
+          >
+            {refreshMode === "retry" ? <RotateCcw aria-hidden="true" /> : <RefreshCw aria-hidden="true" />}
+            {cooldownRemaining > 0 && <span className="shop-refresh-count" aria-hidden="true">{cooldownRemaining}</span>}
+          </button>
+          <h2 id="shop-window-title">扎希拉商铺</h2>
+          <button className="close-button shop-close-button" type="button" aria-label="关闭扎希拉商铺" onClick={onClose}>
+            <X aria-hidden="true" />
+          </button>
+        </header>
+
+        <div className="shop-layout shop-window-body" data-catalog-state={catalogState}>
+          <ShopProductStage
+            batch={currentBatch}
+            batchVersion={batchVersion}
+            purchasingId={purchasingId}
+            user={user}
+            onBuy={buyItem}
+            onShowDetail={setDetailItem}
+          />
           <ShopSidebar mascotLine={mascotLine} mascotMood={mascotMood} user={user} />
-          <div className={`shop-content shop-category-${activeCategory}`}>
-            <ShopTabs activeCategory={activeCategory} onCategoryChange={selectCategory} />
-            {loading && <p className="quiet-text">加载中...</p>}
-            <div className="shop-grid">
-              {!loading && shopSlots.map((item, index) => (
-                <ShopItemCard
-                  key={item?.id ?? `empty-${activeCategory}-${index}`}
-                  activeCategory={activeCategory}
-                  index={index}
-                  item={item}
-                  purchasingId={purchasingId}
-                  user={user}
-                  onBuy={buyItem}
-                  onShowDetail={setDetailItem}
-                />
-              ))}
-            </div>
-            <div className="shop-pagination" aria-label="商品页码">
-              {Array.from({ length: pageCount }, (_, index) => index + 1).map((page) => (
-                <button
-                  key={page}
-                  className={activePage === page ? "active" : ""}
-                  type="button"
-                  onClick={() => setActivePage(page)}
-                >
-                  {page}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
         <ShopItemDetailDialog item={detailItem} user={user} onClose={() => setDetailItem(null)} />
-      </section>
+      </ModalDialog>
     </div>
   );
 }

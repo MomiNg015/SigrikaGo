@@ -1000,6 +1000,58 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 
 (To be filled by the team)
 
+### Scenario: Zahira shop offer-card density and corner badges
+
+#### 1. Scope / Trigger
+- Trigger: changing `ShopItemCard`, `ShopProductStage`, `shopLayout.js`, shop corner badges, or desktop/mobile offer spacing.
+
+#### 2. Signatures
+- `getShopItemCategoryLabel(item)` returns the player-facing `部员 / 道具 / 棋子 / 音乐` label.
+- `getShopItemQuantityBadge(item)` returns `{ text, ariaLabel }` for eligible consumable badges or `null`.
+- `layoutShopCards({ width, height, count, mobile, seed })` returns collision-free card rectangles and a uniform scale.
+
+#### 3. Contracts
+- Every real product card renders a non-interactive category badge in the upper-left corner.
+- The upper-right badge is consumable-only: finite stock above one shows remaining quantity, unlimited stock shows `∞`, and `stockQuantity === 1` or non-consumables render no quantity badge.
+- Desktop and mobile use the same count-aware topology: five offers use 2+3, four use 2+2, three use 2+1, and one or two stay centered on one row.
+- Mobile mode is selected from `window.matchMedia("(max-width: 768px)")`, not product-stage width. The desktop product lane can itself be narrower than 768px.
+- Desktop placement confines seeded jitter to balanced row cells and reserves at least 28px before rotation/float safety; it must never shuffle four offers into 1+3 or three offers into arbitrary free placement.
+- Final mobile shop CSS must clear the shared modal shell's padding/gap, give header/body the full paper width, and never use negative-margin width compensation. Mobile horizontal gaps stay at 4–5px; vertical geometry reserves the hard shadow while preserving roughly the same visible clearance, and the whole card still scales together.
+
+#### 4. Validation & Error Matrix
+- Unknown category -> category badge falls back to `商品`.
+- Unlimited item (`stockQuantity < 0`) -> `∞` with accessible name `不限量`.
+- Limit-one item -> no quantity badge.
+- Three items in either layout family -> two top placements plus one centered lower placement.
+- Four desktop items -> two balanced rows of two; five desktop items -> two top plus three bottom.
+- Desktop viewport with a sub-768px product lane -> still uses the desktop card base and spacing algorithm.
+
+#### 5. Good/Base/Bad Cases
+- Good: viewport media query selects the layout family while measured stage dimensions size cards inside the shared count-aware topology.
+- Base: one or two items remain centered on a single row while desktop cards keep only bounded slot jitter.
+- Bad: `size.width <= 760` selects mobile mode, because the normal desktop stage is commonly about 744px wide.
+- Bad: a generic mobile modal shell adds padding/gap back to `.shop-window`, or a `width: calc(100% + ...)` plus negative margin attempts to compensate for the lost card width.
+- Bad: repeating `不限量` or remaining stock in the card body after the corner badge is present.
+
+#### 6. Tests Required
+- `src/modals/ShopModal.test.js` covers category labels, finite/unlimited/limit-one quantity badges, desktop/mobile 2+3 / 2+2 / 2+1 geometry, mobile card width and visible gap safety, desktop separation, viewport-mode selection, and final CSS owner rules.
+- CSS import and size contracts must cover the shared, Bright School, final-mobile window, compact-height, and badge owner files.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const mobile = stageWidth <= 760;
+```
+
+Correct:
+
+```js
+const mobile = window.matchMedia("(max-width: 768px)").matches;
+const placements = layoutShopCards({ width: stageWidth, height: stageHeight, count, mobile });
+```
+
 ### Scenario: Shared Modal Dialog and Lint Boundary
 
 #### 1. Scope / Trigger

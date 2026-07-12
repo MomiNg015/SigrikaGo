@@ -16,7 +16,8 @@ import {
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import {
   SHOP_MASCOT_DEFAULT_IMAGE,
-  SHOP_MASCOT_THANKS_IMAGE
+  SHOP_MASCOT_THANKS_IMAGE,
+  SHOP_WALLET_IMAGE
 } from "./shopMascotAssets.js";
 
 export const RUNTIME_IMAGE_ASSETS = Object.freeze({
@@ -34,6 +35,7 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
   shop: Object.freeze([
     SHOP_MASCOT_DEFAULT_IMAGE,
     SHOP_MASCOT_THANKS_IMAGE,
+    SHOP_WALLET_IMAGE,
     "/assets/items/qiuyuan-zhouwo.webp",
     "/assets/items/rainbow-bean-candy.webp"
   ]),

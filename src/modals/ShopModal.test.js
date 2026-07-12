@@ -1,679 +1,377 @@
-import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import ShopModal from "./ShopModal.jsx";
+import ShopItemCard from "./shop/ShopItemCard.jsx";
+import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
+import ShopSidebar from "./shop/ShopSidebar.jsx";
+import { layoutShopCards } from "./shop/shopLayout.js";
 import {
-  buildShopSlots,
-  getShopPageCount,
+  buildShopCardPresentation,
+  eligibleShopItems,
+  getShopItemCategoryLabel,
   getShopItemDescription,
+  getShopItemQuantityBadge,
   getShopItemQuantityLabel,
   isShopItemOwned,
   isShopItemSoldOut,
   pickShopMascotLine,
+  selectShopBatch,
+  SHOP_BATCH_SIZE,
   SHOP_MASCOT_DEFAULT_IMAGE,
+  SHOP_MASCOT_EMPTY_LINE,
+  SHOP_MASCOT_ERROR_LINE,
   SHOP_MASCOT_LINES,
+  SHOP_MASCOT_LOADING_LINE,
   SHOP_MASCOT_MOODS,
+  SHOP_MASCOT_REFRESH_LINES,
   SHOP_MASCOT_THANKS_DURATION_MS,
   SHOP_MASCOT_THANKS_IMAGE,
-  SHOP_MASCOT_THANKS_LINE
+  SHOP_MASCOT_THANKS_LINE,
+  SHOP_REFRESH_COOLDOWN_MS,
+  SHOP_WALLET_IMAGE
 } from "./shopModalHelpers.js";
 import {
   getShopItemDetailOwned,
   getShopItemDetailStatus,
   getShopOwnedItemQuantity
 } from "./shop/shopItemDetail.js";
-import ShopModal from "./ShopModal.jsx";
-import ShopItemCard from "./shop/ShopItemCard.jsx";
-import ShopItemDetailDialog from "./shop/ShopItemDetailDialog.jsx";
-import ShopSidebar from "./shop/ShopSidebar.jsx";
 import {
   clearShopMascotThanksTimer,
   scheduleShopMascotThanks
 } from "./shop/useShopCatalog.js";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
-describe("ShopModal helpers", () => {
-  it("keeps non-component helpers out of the component module for Fast Refresh", () => {
-    const source = readFileSync(new URL("./ShopModal.jsx", import.meta.url), "utf8");
+const sampleItem = {
+  id: "test-card",
+  category: "item",
+  targetId: "rainbow-bean-candy",
+  name: "测试商品",
+  description: "商品说明",
+  imageUrl: "/assets/items/rainbow-bean-candy.webp",
+  priceCoins: 100,
+  finalPrice: 80,
+  discountPercent: 20,
+  stockQuantity: 10,
+  remainingStock: 4,
+  purchasable: true
+};
 
-    expect(source).not.toMatch(/export\s+(const|function)\s+(SHOP_MASCOT_LINES|pickShopMascotLine|buildShopSlots|getShopPageCount)/);
-  });
-
-  it("renders the shop as a left mascot column and right product column", () => {
+describe("Zahira shop window", () => {
+  it("renders the semantic refresh-title-close header and the new single product stage", () => {
     const html = renderToStaticMarkup(createElement(ShopModal, {
       token: "token",
-      user: { coins: 90610, ownedCharacters: [], ownedDecorations: [] },
+      user: { id: "user-1", coins: 90610, ownedCharacters: [], ownedDecorations: [], ownedMusicIds: [] },
       onPurchased: () => {},
       onClose: () => {}
     }));
 
-    expect(html).toContain("shop-layout");
-    expect(html).toContain("shop-sidebar");
-    expect(html).toContain("shop-content");
-    expect(html).toContain("shop-wallet");
-    expect(html).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
-    expect(html).toContain(SHOP_MASCOT_THANKS_IMAGE);
-    expect(html).toContain('decoding="async"');
-    expect(html).not.toContain("<h2");
-    expect(html).not.toContain("shop-header-display");
+    expect(html).toContain('role="dialog"');
+    expect(html).toContain('aria-labelledby="shop-window-title"');
+    expect(html).toContain("shop-refresh-button");
+    expect(html).toContain("扎希拉商铺");
+    expect(html).toContain("shop-close-button");
+    const headerHtml = html.slice(html.indexOf("<header"), html.indexOf("</header>"));
+    expect(headerHtml.indexOf("shop-refresh-button")).toBeLessThan(headerHtml.indexOf("shop-window-title"));
+    expect(headerHtml.indexOf("shop-window-title")).toBeLessThan(headerHtml.indexOf("shop-close-button"));
+    expect(html).toContain("shop-product-stage");
+    expect(html).not.toContain("shop-tabs");
+    expect(html).not.toContain("shop-pagination");
+    expect(html).not.toContain("暂未上架");
+    expect(html).toContain(SHOP_MASCOT_LOADING_LINE);
   });
 
-  it("renders default and thank-you shop mascot portraits as preloaded crossfade layers", () => {
-    const defaultHtml = renderToStaticMarkup(createElement(ShopSidebar, {
-      mascotLine: "欢迎来到扎希拉商店！",
-      mascotMood: SHOP_MASCOT_MOODS.default,
-      user: { coins: 180 }
-    }));
-    const thanksHtml = renderToStaticMarkup(createElement(ShopSidebar, {
+  it("renders both mascot layers and the replaceable wallet raster", () => {
+    const html = renderToStaticMarkup(createElement(ShopSidebar, {
       mascotLine: SHOP_MASCOT_THANKS_LINE,
       mascotMood: SHOP_MASCOT_MOODS.thanks,
       user: { coins: 180 }
     }));
 
-    expect(defaultHtml).toContain(`src="${SHOP_MASCOT_DEFAULT_IMAGE}"`);
-    expect(defaultHtml).toContain(`src="${SHOP_MASCOT_THANKS_IMAGE}"`);
-    expect(defaultHtml).toContain(`data-mascot-mood="${SHOP_MASCOT_MOODS.default}"`);
-    expect(defaultHtml).toContain('class="shop-mascot-image shop-mascot-image-default is-active"');
-    expect(defaultHtml).toContain('class="shop-mascot-image shop-mascot-image-thanks"');
-    expect(defaultHtml).toContain('width="1448"');
-    expect(defaultHtml).toContain('height="1054"');
-    expect(defaultHtml).toContain('aria-live="polite"');
-    expect(defaultHtml).toContain('aria-hidden="true"');
-    expect(thanksHtml).toContain(`src="${SHOP_MASCOT_DEFAULT_IMAGE}"`);
-    expect(thanksHtml).toContain(`src="${SHOP_MASCOT_THANKS_IMAGE}"`);
-    expect(thanksHtml).toContain(`data-mascot-mood="${SHOP_MASCOT_MOODS.thanks}"`);
-    expect(thanksHtml).toContain('class="shop-mascot-image shop-mascot-image-default"');
-    expect(thanksHtml).toContain('class="shop-mascot-image shop-mascot-image-thanks is-active"');
-    expect(thanksHtml).toContain(SHOP_MASCOT_THANKS_LINE);
+    expect(html).toContain(`src="${SHOP_MASCOT_DEFAULT_IMAGE}"`);
+    expect(html).toContain(`src="${SHOP_MASCOT_THANKS_IMAGE}"`);
+    expect(html).toContain('shop-mascot-image-thanks is-active');
+    expect(html).toContain(`src="${SHOP_WALLET_IMAGE}"`);
+    expect(html).toContain('width="1024"');
+    expect(html).toContain('height="768"');
+    expect(html).toContain('aria-label="持有金币 180"');
   });
 
-  it("keeps shop mascot WebP assets lossless at source dimensions", () => {
-    expect(webpInfo("../../public/assets/zahira_shop_default.webp")).toEqual({
-      encoding: "VP8L",
-      width: 1448,
-      height: 1054
-    });
-    expect(webpInfo("../../public/assets/zahira_shop_laugh.webp")).toEqual({
-      encoding: "VP8L",
-      width: 1448,
-      height: 1054
-    });
+  it("keeps mascot and wallet WebP assets at their source dimensions", () => {
+    expect(webpInfo("../../public/assets/zahira_shop_default.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
+    expect(webpInfo("../../public/assets/zahira_shop_laugh.webp")).toEqual({ encoding: "VP8L", width: 1448, height: 1054 });
+    expect(webpInfo("../../public/assets/shop/zahira-wallet-v1.webp")).toEqual({ encoding: "VP8L", width: 1024, height: 768 });
   });
 
-  it("hides the shop blue-gem wallet while keeping the coin wallet visible", () => {
-    const html = renderToStaticMarkup(createElement(ShopModal, {
-      token: "token",
-      user: { coins: 90610, blueGems: 12, ownedCharacters: [], ownedDecorations: [] },
-      onPurchased: () => {},
-      onClose: () => {}
-    }));
-    const baseShopCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
-
-    expect(html).toContain("shop-wallet");
-    expect(html).toContain("90610");
-    expect(html).not.toContain("blue-gem-wallet");
-    expect(html).not.toContain(">12</p>");
-    expect(baseShopCss).toContain(".shop-wallet-wrap");
-  });
-
-  it("adds category hooks for tactical rarity glow styling", () => {
-    const source = readFileSync(new URL("./shop/ShopItemCard.jsx", import.meta.url), "utf8");
-    const html = renderToStaticMarkup(createElement(ShopModal, {
-      token: "token",
-      user: { coins: 90610, ownedCharacters: [], ownedDecorations: [] },
-      onPurchased: () => {},
-      onClose: () => {}
-    }));
-
-    expect(html).toContain("shop-category-item");
-    expect(source).toContain("store-owned-tag");
-    expect(source).toContain("shop-item-empty terminal-locked-slot");
-  });
-
-  it("keeps shop cards compact and routes non-buy clicks to item details", () => {
-    const cardSource = readFileSync(new URL("./shop/ShopItemCard.jsx", import.meta.url), "utf8");
-    const modalSource = readFileSync(new URL("./ShopModal.jsx", import.meta.url), "utf8");
-    const detailSource = readFileSync(new URL("./shop/ShopItemDetailDialog.jsx", import.meta.url), "utf8");
-
-    expect(cardSource).not.toContain('<p className="shop-description">');
-    expect(cardSource).toContain("onShowDetail");
-    expect(cardSource).toContain("role=\"button\"");
-    expect(cardSource).toContain("tabIndex={0}");
-    expect(cardSource).toContain("event.stopPropagation()");
-    expect(cardSource).toContain("shop-action-owned");
-    expect(cardSource).toContain("shop-action-sold-out");
-    expect(modalSource).toContain("ShopItemDetailDialog");
-    expect(modalSource).toContain("setDetailItem");
-    expect(detailSource).toContain("shop-detail-status-owned");
-    expect(detailSource).not.toContain("getShopItemQuantityLabel");
-    expect(detailSource).not.toContain("finalPrice");
-  });
-
-  it("renders optional shop item illustration credits without changing link styling", () => {
-    const baseItem = {
-      id: "test-card",
-      category: "item",
-      targetId: "rainbow-bean-candy",
-      name: "测试商品",
-      description: "商品说明",
-      imageUrl: "/assets/items/rainbow-bean-candy.webp"
-    };
-    const linkedHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
-      item: { ...baseItem, illustName: "画师", illustUrl: "https://example.com/artist" },
-      user: {},
-      onClose: () => {}
-    }));
-    const plainHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
-      item: { ...baseItem, illustName: "画师", illustUrl: "" },
-      user: {},
-      onClose: () => {}
-    }));
-    const noCreditHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
-      item: baseItem,
-      user: {},
-      onClose: () => {}
-    }));
-    const unsafeLinkHtml = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
-      item: { ...baseItem, illustName: "画师", illustUrl: "javascript:alert(1)" },
-      user: {},
-      onClose: () => {}
-    }));
-    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
-    const themesCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
-    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-
-    expect(linkedHtml).toContain("class=\"shop-detail-illust-label\"");
-    expect(linkedHtml).toContain("illust：画师");
-    expect(linkedHtml).toContain("target=\"_blank\"");
-    expect(linkedHtml).toContain("rel=\"noreferrer\"");
-    expect(plainHtml).toContain("<span class=\"shop-detail-illust-label\">illust：画师</span>");
-    expect(noCreditHtml).not.toContain("shop-detail-illust-label");
-    expect(unsafeLinkHtml).toContain("<span class=\"shop-detail-illust-label\">illust：画师</span>");
-    expect(commerceCss).toMatch(/\.shop-detail-title-row\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*baseline;/s);
-    expect(commerceCss).toMatch(/\.shop-detail-illust-label\s*\{[^}]*display:\s*block;[^}]*min-height:\s*0;[^}]*border:\s*0;[^}]*border-radius:\s*0;[^}]*background:\s*transparent;[^}]*color:\s*inherit;[^}]*text-decoration:\s*none;[^}]*white-space:\s*nowrap;/s);
-    expect(commerceCss).toContain(".shop-detail-illust-label:visited");
-    expect(themesCss).toMatch(/\.shop-detail-illust-label\s*\{[^}]*min-height:\s*0\s*!important;[^}]*background:\s*transparent\s*!important;[^}]*color:\s*inherit\s*!important;[^}]*border:\s*0\s*!important;[^}]*border-radius:\s*0\s*!important;[^}]*text-decoration:\s*none\s*!important;/s);
-    expect(themesCss).toContain(".shop-detail-illust-label:link");
-    expect(mobileCss).toContain(".shop-detail-title-row");
-    expect(mobileCss).toContain("flex-direction: column");
-    expect(mobileCss).toMatch(/\.shop-detail-illust-label\s*\{[^}]*border-radius:\s*0;[^}]*background:\s*transparent;/s);
-  });
-
-  it("keeps unavailable shop purchase actions native disabled controls", () => {
-    const baseItem = {
-      id: "test-card",
-      category: "character",
-      targetId: "sigrika",
-      name: "test",
-      priceCoins: 100,
-      finalPrice: 100,
-      discountPercent: 0,
-      purchasable: true
-    };
-    const renderCard = (item, user) => renderToStaticMarkup(createElement(ShopItemCard, {
-      item,
-      index: 0,
-      activeCategory: item.category,
-      purchasingId: "",
-      user,
-      onBuy: () => {},
-      onShowDetail: () => {}
-    }));
-
-    const ownedHtml = renderCard(baseItem, { coins: 200, ownedCharacters: ["sigrika"], ownedDecorations: [] });
-    const soldOutHtml = renderCard({ ...baseItem, category: "item", targetId: "radio", stockQuantity: 1, remainingStock: 0 }, { coins: 200 });
-    const tooExpensiveHtml = renderCard(baseItem, { coins: 1, ownedCharacters: [], ownedDecorations: [] });
-
-    expect(ownedHtml).toContain("disabled=\"\"");
-    expect(ownedHtml).toContain("shop-action-owned");
-    expect(soldOutHtml).toContain("disabled=\"\"");
-    expect(soldOutHtml).toContain("shop-action-sold-out");
-    expect(tooExpensiveHtml).toContain("disabled=\"\"");
-  });
-
-  it("styles all unavailable shop purchase actions as gray across base, theme, and mobile layers", () => {
-    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
-    const themesCss = readCssWithImports(new URL("../styles/themes.css", import.meta.url));
-    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-
-    expect(commerceCss).toContain(".shop-item .primary-action:disabled");
-    expect(commerceCss).toContain("background: #d8d1cb;");
-    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-item .primary-action:disabled");
-    expect(themesCss).toContain("background: #d8d1cb !important;");
-    expect(mobileCss).toContain(".shop-item .primary-action:disabled");
-    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action:disabled");
-  });
-
-  it("hides purchase-limit text and centers prices for character, decoration, and music cards", () => {
-    const baseItem = {
-      id: "test-card",
-      name: "测试商品",
-      priceCoins: 100,
-      finalPrice: 100,
-      discountPercent: 0,
-      purchasable: true
-    };
-    const renderCard = (category) => renderToStaticMarkup(createElement(ShopItemCard, {
-      item: {
-        ...baseItem,
-        id: `test-${category}`,
-        category,
-        targetId: category === "decoration" ? "paw-stone" : "sigrika"
-      },
-      index: 0,
-      activeCategory: category,
-      purchasingId: "",
-      user: { coins: 200, ownedCharacters: [], ownedDecorations: [] },
-      onBuy: () => {},
-      onShowDetail: () => {}
-    }));
-
-    const characterHtml = renderCard("character");
-    const decorationHtml = renderCard("decoration");
-    const musicHtml = renderCard("music");
-
-    expect(characterHtml).not.toContain("限购");
-    expect(decorationHtml).not.toContain("限购");
-    expect(musicHtml).not.toContain("限购");
-    expect(characterHtml).toContain("shop-card-meta-price-only");
-    expect(decorationHtml).toContain("shop-card-meta-price-only");
-    expect(musicHtml).toContain("shop-card-meta-price-only");
-  });
-
-  it("keeps a stable 8-slot grid for the active category", () => {
+  it("filters owned one-time goods and per-user sold-out consumables from new batches", () => {
     const items = [
-      { id: "character-1", category: "character" },
-      { id: "decoration-1", category: "decoration" }
+      { ...sampleItem, id: "available", remainingStock: 1 },
+      { ...sampleItem, id: "sold", remainingStock: 0 },
+      { ...sampleItem, id: "owned", category: "decoration", targetId: "paw-stone" },
+      { ...sampleItem, id: "music", category: "music", targetId: "track-a" }
     ];
+    const user = { ownedDecorations: ["paw-stone"], ownedMusicIds: [] };
 
-    const slots = buildShopSlots(items, "character");
-
-    expect(slots).toHaveLength(8);
-    expect(slots[0]).toEqual(items[0]);
-    expect(slots.slice(1)).toEqual(Array(7).fill(null));
+    expect(eligibleShopItems(items, user).map((item) => item.id)).toEqual(["available", "music"]);
   });
 
-  it("paginates shop slots in 8-item pages", () => {
-    const items = Array.from({ length: 10 }, (_, index) => ({
-      id: `character-${index + 1}`,
-      category: "character"
+  it("selects at most five unique products and prioritizes the previous batch's unseen item", () => {
+    const items = Array.from({ length: 6 }, (_, index) => ({
+      ...sampleItem,
+      id: `item-${index + 1}`,
+      targetId: `target-${index + 1}`,
+      stockQuantity: -1,
+      remainingStock: -1
     }));
+    const previousIds = items.slice(0, 5).map((item) => item.id);
+    const batch = selectShopBatch(items, {}, previousIds, () => 0.4);
 
-    expect(getShopPageCount(items, "character")).toBe(2);
-    expect(buildShopSlots(items, "character", 1).map((item) => item?.id)).toEqual([
-      "character-1",
-      "character-2",
-      "character-3",
-      "character-4",
-      "character-5",
-      "character-6",
-      "character-7",
-      "character-8"
-    ]);
-    const secondPageSlots = buildShopSlots(items, "character", 2);
-    expect(secondPageSlots.slice(0, 2).map((item) => item?.id)).toEqual(["character-9", "character-10"]);
-    expect(secondPageSlots.slice(2)).toEqual([null, null, null, null, null, null]);
+    expect(batch).toHaveLength(SHOP_BATCH_SIZE);
+    expect(batch[0].id).toBe("item-6");
+    expect(new Set(batch.map((item) => item.id)).size).toBe(batch.length);
   });
 
-  it("selects one of the configured Zahiya shop lines", () => {
-    expect(SHOP_MASCOT_LINES).toHaveLength(3);
-    expect(SHOP_MASCOT_LINES).toContain(pickShopMascotLine(() => 0));
-    expect(SHOP_MASCOT_LINES).toContain(pickShopMascotLine(() => 0.99));
+  it("creates fixed per-batch rotation and only 4-6px, 5-8s float parameters", () => {
+    const presentation = buildShopCardPresentation([sampleItem], sequenceRandom([0, 0, 0, 0]))[0];
+    expect(presentation.rotation).toBe(-2);
+    expect(presentation.floatDistance).toBe(4);
+    expect(presentation.floatDuration).toBe(5);
+    expect(Math.abs(presentation.floatDelay)).toBe(0);
   });
 
-  it("schedules the shop mascot thank-you state and refreshes repeated success timers", () => {
-    const timerRef = { current: null };
-    const moods = [];
-    const clearedTimers = [];
-    const scheduledTimers = [];
-    const setMascotMood = (mood) => moods.push(mood);
-    const setTimeoutFn = (callback, delayMs) => {
-      const id = `timer-${scheduledTimers.length + 1}`;
-      scheduledTimers.push({ id, callback, delayMs });
-      return id;
-    };
-    const clearTimeoutFn = (id) => clearedTimers.push(id);
+  it("uses balanced desktop 2+3, 2+2, and 2+1 rows with safe seeded jitter", () => {
+    const five = layoutShopCards({ width: 760, height: 540, count: 5, seed: 22 });
+    const four = layoutShopCards({ width: 760, height: 540, count: 4, seed: 22 });
+    const three = layoutShopCards({ width: 760, height: 540, count: 3, seed: 22 });
+    const two = layoutShopCards({ width: 760, height: 540, count: 2, seed: 22 });
+    const one = layoutShopCards({ width: 760, height: 540, count: 1, seed: 22 });
+    const constrained = layoutShopCards({ width: 420, height: 330, count: 5, seed: 22 });
 
-    scheduleShopMascotThanks({ timerRef, setMascotMood, setTimeoutFn, clearTimeoutFn });
-    scheduleShopMascotThanks({ timerRef, setMascotMood, setTimeoutFn, clearTimeoutFn });
+    expect(five).toHaveLength(5);
+    expect(constrained).toHaveLength(5);
+    expect(constrained.every((placement) => placement.scale < 1)).toBe(true);
+    expectTwoRowTopology(five, 2, 760);
+    expectTwoRowTopology(four, 2, 760);
+    expectTwoRowTopology(three, 2, 760);
+    expect(Math.abs(rowCenter(two) - 380)).toBeLessThanOrEqual(32);
+    expect(Math.abs(rowCenter(one) - 380)).toBeLessThanOrEqual(32);
 
-    expect(moods).toEqual([SHOP_MASCOT_MOODS.thanks, SHOP_MASCOT_MOODS.thanks]);
-    expect(scheduledTimers.map((timer) => timer.delayMs)).toEqual([
-      SHOP_MASCOT_THANKS_DURATION_MS,
-      SHOP_MASCOT_THANKS_DURATION_MS
-    ]);
-    expect(clearedTimers).toEqual(["timer-1"]);
-    expect(timerRef.current).toBe("timer-2");
-
-    scheduledTimers[1].callback();
-
-    expect(moods).toEqual([
-      SHOP_MASCOT_MOODS.thanks,
-      SHOP_MASCOT_MOODS.thanks,
-      SHOP_MASCOT_MOODS.default
-    ]);
-    expect(timerRef.current).toBe(null);
+    for (const placements of [five, four, three, two, one]) {
+      for (let left = 0; left < placements.length; left += 1) {
+        for (let right = left + 1; right < placements.length; right += 1) {
+          expect(overlap(placements[left], placements[right])).toBe(false);
+          expect(cardSeparation(placements[left], placements[right])).toBeGreaterThanOrEqual(28);
+        }
+      }
+    }
   });
 
-  it("cleans up pending shop mascot thank-you timers", () => {
-    const timerRef = { current: "timer-1" };
-    const clearedTimers = [];
+  it("uses mobile 2+3 and 2+1 compositions, tighter gaps, wider cards, and sub-44px scaling", () => {
+    const stageSource = readFileSync(new URL("./shop/ShopProductStage.jsx", import.meta.url), "utf8");
+    const five = layoutShopCards({ width: 360, height: 470, count: 5, mobile: true });
+    const four = layoutShopCards({ width: 351, height: 407, count: 4, mobile: true });
+    const three = layoutShopCards({ width: 351, height: 407, count: 3, mobile: true });
+    const tiny = layoutShopCards({ width: 100, height: 90, count: 5, mobile: true });
 
-    clearShopMascotThanksTimer(timerRef, (id) => clearedTimers.push(id));
-    clearShopMascotThanksTimer(timerRef, (id) => clearedTimers.push(id));
-
-    expect(clearedTimers).toEqual(["timer-1"]);
-    expect(timerRef.current).toBe(null);
+    expect(new Set(five.slice(0, 2).map((placement) => placement.y)).size).toBe(1);
+    expect(new Set(five.slice(2).map((placement) => placement.y)).size).toBe(1);
+    expect(five[2].y).toBeGreaterThan(five[0].y);
+    expect(four[0].width).toBeGreaterThan(157);
+    expect(four[1].x - (four[0].x + four[0].width)).toBeGreaterThanOrEqual(4);
+    expect(four[1].x - (four[0].x + four[0].width)).toBeLessThanOrEqual(5);
+    expect(four[2].y - (four[0].y + four[0].height)).toBeGreaterThanOrEqual(8);
+    expect(four[0].y).toBeGreaterThanOrEqual(8);
+    expect(407 - (four[3].y + four[3].height)).toBeGreaterThanOrEqual(8);
+    expect(three[0].y).toBe(three[1].y);
+    expect(three[2].y).toBeGreaterThan(three[0].y);
+    expect(three[2].x + (three[2].width / 2)).toBeCloseTo(351 / 2);
+    expect(tiny.every((placement) => placement.width < 44)).toBe(true);
+    expect(stageSource).toContain('window.matchMedia("(max-width: 768px)").matches');
+    expect(stageSource).not.toContain("size.width <= 760");
   });
 
-  it("keeps shop mascot purchase feedback limited to successful purchases", () => {
-    const source = readFileSync(new URL("./shop/useShopCatalog.js", import.meta.url), "utf8");
-    const successStart = source.indexOf("const data = await api(`/api/shop/${item.id}/purchase`");
-    const catchStart = source.indexOf("} catch", successStart);
-    const successBlock = source.slice(successStart, catchStart);
-    const catchBlock = source.slice(catchStart, source.indexOf("} finally", catchStart));
+  it("uses category and quantity corner badges while preserving card interactions and disabled states", () => {
+    const availableHtml = renderCard(sampleItem, { coins: 200 });
+    const soldOutHtml = renderCard({ ...sampleItem, remainingStock: 0 }, { coins: 200 });
+    const unlimitedHtml = renderCard({ ...sampleItem, stockQuantity: -1, remainingStock: -1 }, { coins: 200 });
+    const limitOneHtml = renderCard({ ...sampleItem, stockQuantity: 1, remainingStock: 1 }, { coins: 200 });
+    const source = readFileSync(new URL("./shop/ShopItemCard.jsx", import.meta.url), "utf8");
 
-    expect(successBlock).toContain("scheduleShopMascotThanks");
-    expect(catchBlock).not.toContain("scheduleShopMascotThanks");
-    expect(source).toMatch(/useEffect\(\(\) => \(\) => clearShopMascotThanksTimer\(mascotResetTimerRef\), \[\]\);/);
-    expect(source).toContain("mascotMood === SHOP_MASCOT_MOODS.thanks ? SHOP_MASCOT_THANKS_LINE : initialMascotLine");
+    expect(availableHtml).toContain('aria-label="分类：道具"');
+    expect(availableHtml).toContain('aria-label="剩余 4"');
+    expect(availableHtml).toContain("shop-quantity-badge");
+    expect(unlimitedHtml).toContain('aria-label="不限量"');
+    expect(unlimitedHtml).toContain("∞");
+    expect(limitOneHtml).not.toContain("shop-quantity-badge");
+    expect(availableHtml).toContain("shop-original-price");
+    expect(availableHtml).toContain('role="button"');
+    expect(soldOutHtml).toContain("已售罄");
+    expect(soldOutHtml).toContain("disabled");
+    expect(source).toContain("event.stopPropagation()");
+    expect(source).toContain('event.key === "Enter" || event.key === " "');
+    expect(source).not.toContain("暂未上架");
   });
 
-  it("checks ownership against the right user collection", () => {
-    const user = {
-      ownedCharacters: ["denia"],
-      ownedDecorations: ["paw-stone"]
-    };
-
-    expect(isShopItemOwned({ category: "character", targetId: "denia" }, user)).toBe(true);
-    expect(isShopItemOwned({ category: "decoration", targetId: "paw-stone" }, user)).toBe(true);
-    expect(isShopItemOwned({ category: "character", targetId: "baconbits" }, user)).toBe(false);
+  it("does not show a limit line for one-time goods", () => {
+    expect(getShopItemCategoryLabel({ category: "character" })).toBe("部员");
+    expect(getShopItemCategoryLabel({ category: "decoration" })).toBe("棋子");
+    expect(getShopItemQuantityBadge({ category: "decoration" })).toBe(null);
+    expect(getShopItemQuantityBadge({ category: "item", stockQuantity: 1, remainingStock: 1 })).toBe(null);
+    expect(getShopItemQuantityBadge({ category: "item", stockQuantity: -1 })).toEqual({ text: "∞", ariaLabel: "不限量" });
+    expect(getShopItemQuantityLabel({ category: "decoration" })).toBe("");
+    expect(getShopItemQuantityLabel({ category: "music" })).toBe("");
+    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: -1 })).toBe("不限量");
   });
 
-  it("formats shop detail ownership status by category", () => {
+  it("preserves detail copy, ownership status, and illustration credit behavior", () => {
     const user = {
       ownedCharacters: ["denia"],
       ownedDecorations: ["paw-stone"],
       ownedItems: [{ itemId: "rainbow-bean-candy", quantity: 3 }]
     };
+    const html = renderToStaticMarkup(createElement(ShopItemDetailDialog, {
+      item: { ...sampleItem, illustName: "画师", illustUrl: "https://example.com/artist" },
+      user,
+      onClose: () => {}
+    }));
 
-    expect(getShopOwnedItemQuantity({ category: "item", targetId: "rainbow-bean-candy" }, user)).toBe(3);
-    expect(getShopItemDetailOwned({ category: "item", targetId: "rainbow-bean-candy" }, user)).toBe(true);
-    expect(getShopItemDetailOwned({ category: "item", targetId: "missing" }, user)).toBe(false);
-    expect(getShopItemDetailStatus({ category: "item", targetId: "rainbow-bean-candy" }, user)).toBe("拥有 3");
-    expect(getShopItemDetailStatus({ category: "character", targetId: "denia" }, user)).toBe("已持有");
-    expect(getShopItemDetailStatus({ category: "decoration", targetId: "paw-stone" }, user)).toBe("已持有");
-    expect(getShopItemDetailStatus({ category: "character", targetId: "baconbits" }, user)).toBe("尚未拥有该角色");
-  });
-
-  it("marks per-user item stock as sold out from remainingStock", () => {
-    expect(isShopItemSoldOut({ category: "item", stockQuantity: 10, remainingStock: 0 })).toBe(true);
-    expect(isShopItemSoldOut({ category: "item", stockQuantity: 10, remainingStock: 1 })).toBe(false);
-    expect(isShopItemSoldOut({ category: "item", stockQuantity: -1, remainingStock: -1 })).toBe(false);
-    expect(isShopItemSoldOut({ category: "character", stockQuantity: 0, remainingStock: 0 })).toBe(false);
-  });
-
-  it("builds compact item description and quantity labels for shop cards", () => {
+    expect(getShopOwnedItemQuantity(sampleItem, user)).toBe(3);
+    expect(getShopItemDetailOwned(sampleItem, user)).toBe(true);
+    expect(getShopItemDetailStatus(sampleItem, user)).toBe("拥有 3");
     expect(getShopItemDescription({ description: "  sample desc  " })).toBe("sample desc");
-    expect(getShopItemDescription({})).toBeTruthy();
-    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: 10, remainingStock: 4 })).toContain("4");
-    expect(getShopItemQuantityLabel({ category: "item", stockQuantity: -1 })).toBeTruthy();
-    expect(getShopItemQuantityLabel({ category: "decoration" })).toContain("1");
+    expect(html).toContain("illust：画师");
+    expect(html).toContain('target="_blank"');
   });
 
-  it("keeps the scrollable shop grid top reachable when viewport height is short", () => {
-    const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
-    const shopGridBlock = css.match(/\.shop-grid\s*\{[^}]+\}/)?.[0] ?? "";
-
-    expect(shopGridBlock).toContain("overflow: auto");
-    expect(shopGridBlock).toContain("align-content: safe center");
+  it("keeps opening, refresh, loading, empty, failure, and purchase dialogue contracts", () => {
+    expect(SHOP_MASCOT_LINES).toContain(pickShopMascotLine(() => 0));
+    expect(SHOP_MASCOT_REFRESH_LINES).toContain(pickShopMascotLine(() => 0.99, SHOP_MASCOT_REFRESH_LINES));
+    expect(SHOP_MASCOT_LOADING_LINE).toBe("稍等一下，我正在整理商品哦。");
+    expect(SHOP_MASCOT_EMPTY_LINE).toBe("还在进货中哦，请下次再来吧。");
+    expect(SHOP_MASCOT_ERROR_LINE).toBe("进货单好像出了点问题，请再试一次吧。");
+    expect(SHOP_MASCOT_THANKS_LINE).toBe("谢谢惠顾！");
   });
 
-  it("keeps the desktop shop mascot full-width with the wallet at 30 percent and greeting 5 percent above the portrait", () => {
+  it("keeps refresh local, preloads the prepared batch, and uses the three-second cooldown", () => {
+    const source = readFileSync(new URL("./shop/useShopCatalog.js", import.meta.url), "utf8");
+    const refreshBlock = source.slice(source.indexOf("function refreshCatalog"), source.indexOf("const eligibleCount"));
+
+    expect(SHOP_REFRESH_COOLDOWN_MS).toBe(3000);
+    expect(source).toContain("preloadImageAssets(nextItems.map");
+    expect(source).toContain("setPreparedBatch(nextPresentation)");
+    expect(refreshBlock).not.toContain('api("/api/shop"');
+    expect(refreshBlock).toContain("setCurrentBatch(preparedBatch)");
+  });
+
+  it("schedules thank-you feedback for five seconds and cleans repeated timers", () => {
+    const timerRef = { current: null };
+    const moods = [];
+    const cleared = [];
+    const scheduled = [];
+    const setTimeoutFn = (callback, delayMs) => {
+      const id = `timer-${scheduled.length + 1}`;
+      scheduled.push({ id, callback, delayMs });
+      return id;
+    };
+
+    scheduleShopMascotThanks({ timerRef, setMascotMood: (mood) => moods.push(mood), setTimeoutFn, clearTimeoutFn: (id) => cleared.push(id) });
+    scheduleShopMascotThanks({ timerRef, setMascotMood: (mood) => moods.push(mood), setTimeoutFn, clearTimeoutFn: (id) => cleared.push(id) });
+    expect(scheduled.map((entry) => entry.delayMs)).toEqual([SHOP_MASCOT_THANKS_DURATION_MS, SHOP_MASCOT_THANKS_DURATION_MS]);
+    expect(cleared).toEqual(["timer-1"]);
+    clearShopMascotThanksTimer(timerRef, (id) => cleared.push(id));
+    expect(cleared).toEqual(["timer-1", "timer-2"]);
+  });
+
+  it("encodes no-scroll, fixed rotation, float pause, reduced-motion, and final mobile overrides in CSS", () => {
     const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
-    const brightShopCss = readCssWithImports(new URL("../styles/themes/bright-school/commerce/shop.css", import.meta.url));
-    const baseSidebarBlock = cssBlock(commerceCss, ".shop-sidebar");
-    const baseWalletWrapBlock = cssBlock(commerceCss, ".shop-wallet-wrap");
-    const baseMascotSlotBlock = cssBlock(commerceCss, ".shop-mascot-slot");
-    const baseMascotImageBlock = cssBlock(commerceCss, ".shop-mascot-slot img");
-    const baseMascotLayerBlock = cssBlock(commerceCss, ".shop-mascot-image");
-    const baseMascotActiveBlock = cssBlock(commerceCss, ".shop-mascot-image.is-active");
-    const brightSidebarBlock = cssBlock(
-      brightShopCss,
-      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar"
-    );
-    const brightWalletWrapBlock = cssBlock(
-      brightShopCss,
-      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap"
-    );
-    const brightMascotSlotBlock = cssBlock(
-      brightShopCss,
-      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot"
-    );
-    const brightMascotImageBlock = cssBlock(
-      brightShopCss,
-      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot img"
-    );
-
-    expect(baseSidebarBlock).toContain('grid-template-areas:\n    "."\n    "bubble"\n    "."\n    "mascot";');
-    expect(baseSidebarBlock).toContain("grid-template-rows: minmax(0, 1fr) auto minmax(18px, 5%) auto;");
-    expect(baseSidebarBlock).toContain("position: relative;");
-    expect(baseSidebarBlock).toContain("padding: 0;");
-    expect(baseWalletWrapBlock).toContain("position: absolute;");
-    expect(baseWalletWrapBlock).toContain("top: 30%;");
-    expect(baseWalletWrapBlock).toContain("left: 50%;");
-    expect(baseWalletWrapBlock).toContain("transform: translate(-50%, -50%);");
-    expect(baseMascotSlotBlock).toContain("grid-area: mascot;");
-    expect(baseMascotSlotBlock).toContain("align-self: end;");
-    expect(baseMascotSlotBlock).toContain("width: 100%;");
-    expect(baseMascotSlotBlock).toContain("height: auto;");
-    expect(baseMascotImageBlock).toContain("width: 100%;");
-    expect(baseMascotImageBlock).toContain("height: auto;");
-    expect(baseMascotLayerBlock).toContain("grid-area: 1 / 1;");
-    expect(baseMascotLayerBlock).toContain("opacity: 0;");
-    expect(baseMascotLayerBlock).toContain("transition: opacity 120ms ease-out;");
-    expect(baseMascotActiveBlock).toContain("opacity: 1;");
-    expect(brightSidebarBlock).toContain('grid-template-areas:\n    "."\n    "bubble"\n    "."\n    "mascot" !important;');
-    expect(brightSidebarBlock).toContain("grid-template-rows: minmax(0, 1fr) auto minmax(18px, 5%) auto !important;");
-    expect(brightShopCss).toContain("padding: 0 7px 7px 0 !important");
-    expect(brightShopCss).toContain("box-sizing: border-box !important");
-    expect(brightWalletWrapBlock).toContain("position: absolute !important;");
-    expect(brightWalletWrapBlock).toContain("top: 30% !important;");
-    expect(brightWalletWrapBlock).toContain("left: 50% !important;");
-    expect(brightWalletWrapBlock).toContain("transform: translate(-50%, -50%) !important;");
-    expect(brightMascotSlotBlock).toContain("align-self: end !important;");
-    expect(brightMascotSlotBlock).toContain("width: 100% !important;");
-    expect(brightMascotImageBlock).toContain("width: 100% !important;");
-    expect(brightMascotImageBlock).toContain("height: auto !important;");
-    expect(brightMascotImageBlock).toContain("max-height: none !important;");
-  });
-
-  it("keeps mobile shop mascot in the right-bottom 50 percent lane without covering wallet or greeting", () => {
+    const themeCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
     const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-    const brightMobileShopCss = readCssWithImports(
-      new URL("../styles/themes/bright-school/mobile/commerce-warehouse/shop-layout.css", import.meta.url)
-    );
-    const finalWalletCss = readCssWithImports(
-      new URL("../styles/mobile-adaptive/bright-school-portrait/shop-wallet.css", import.meta.url)
-    );
 
-    expect(mobileCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 50%);");
-    expect(mobileCss).toContain('grid-template-areas:\n      "bubble mascot"\n      "wallet mascot";');
-    expect(mobileCss).toContain("padding: 8px 0 0 8px;");
-    expect(mobileCss).toContain("grid-area: mascot;");
-    expect(mobileCss).toContain("align-self: end;");
-    expect(mobileCss).toContain("justify-self: end;");
-    expect(mobileCss).toContain("height: auto;");
-    expect(mobileCss).toContain("position: static;");
-    expect(mobileCss).toContain("transform: none;");
-    expect(brightMobileShopCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 50%) !important;");
-    expect(brightMobileShopCss).toContain('grid-template-areas:\n      "bubble mascot"\n      "wallet mascot" !important;');
-    expect(brightMobileShopCss).toContain("padding: 4px 7px 12px 4px !important");
-    expect(brightMobileShopCss).toContain("padding: 12px 0 0 12px !important;");
-    expect(brightMobileShopCss).toContain("align-self: end !important;");
-    expect(brightMobileShopCss).toContain("justify-self: end !important;");
-    expect(brightMobileShopCss).toContain("width: 100% !important;");
-    expect(brightMobileShopCss).toContain("height: auto !important;");
-    expect(brightMobileShopCss).toContain("max-height: none !important;");
-    expect(brightMobileShopCss).toContain("position: static !important;");
-    expect(brightMobileShopCss).toContain("transform: none !important;");
-    expect(finalWalletCss).toContain("grid-area: wallet !important;");
-    expect(finalWalletCss).toContain("align-self: end !important;");
-    expect(finalWalletCss).toContain("justify-self: start !important;");
+    expect(commerceCss).toContain(".shop-product-stage");
+    expect(commerceCss).toContain("overflow: hidden");
+    expect(commerceCss).toContain("transform: rotate(var(--shop-card-rotation))");
+    expect(commerceCss).toContain("animation-play-state: paused");
+    expect(commerceCss).toContain(".shop-card-position .shop-corner-badge");
+    expect(commerceCss).toContain(".shop-card-position .shop-quantity-badge");
+    expect(commerceCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(themeCss).toContain(".shop-layout.shop-window-body");
+    expect(themeCss).toContain("display: contents !important");
+    expect(themeCss).toContain(".shop-category-badge-decoration");
+    expect(themeCss).toContain("bottom: 52% !important");
+    expect(mobileCss).toContain("height: 56% !important");
+    expect(mobileCss).toContain("padding: 0 !important");
+    expect(mobileCss).toContain("gap: 0 !important");
+    expect(mobileCss).toContain("max-width: none !important");
+    expect(mobileCss).toContain("bottom: -2% !important");
+    expect(mobileCss).toContain("height: 30% !important");
+    expect(mobileCss).toContain("width: min(56px, 15vw) !important");
+    expect(mobileCss).not.toContain("width: calc(100% + 32px) !important");
+    expect(mobileCss).not.toContain("margin-left: -16px !important");
+    expect(mobileCss).toContain("width: 44px !important");
+    expect(mobileCss).not.toContain(".shop-window-body {\n    overflow: auto");
   });
 
-  it("keeps Bright School mobile decoration shop cards self-contained", () => {
-    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-
-    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid");
-    expect(css).toContain("grid-auto-rows: minmax(calc(clamp(96px,24vw,118px) + 132px),auto) !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item");
-    expect(css).toContain("display: grid !important");
-    expect(css).toContain("grid-template-rows: clamp(96px,24vw,118px) minmax(20px,auto) minmax(28px,1fr) 44px !important");
-    expect(css).toContain("justify-content: center !important");
-    expect(css).toContain("justify-items: center !important");
-    expect(css).toContain("overflow: hidden !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action");
-    expect(css).toContain("margin-top: 0 !important");
-    expect(css).toContain("align-self: stretch !important");
-  });
-
-  it("keeps Bright School mobile character shop cards self-contained", () => {
-    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-
-    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid");
-    expect(css).toContain("grid-auto-rows: minmax(calc(clamp(96px,24vw,118px) + 132px),auto) !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item");
-    expect(css).toContain("grid-template-rows: clamp(96px,24vw,118px) minmax(20px,auto) minmax(28px,1fr) 44px !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-music).shop-item > img");
-    expect(css).toContain("min-height: 96px !important");
-    expect(css).toContain("height: clamp(96px,24vw,118px) !important");
-    expect(css).toContain("max-height: 118px !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action");
-    expect(css).toContain("margin-top: 0 !important");
-  });
-
-  it("keeps Bright School mobile item shop cards aligned with decoration cards", () => {
-    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-
-    expect(css).toContain(".shop-content:is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music) .shop-grid");
-    expect(css).toContain(":is(.shop-category-item, .shop-category-music).shop-item > svg");
-    expect(css).toContain("max-height: 118px !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta");
-    expect(css).toContain("display: grid !important");
-    expect(css).toContain("grid-template-columns: minmax(0, 1fr) auto !important");
-    expect(css).toContain("width: 100% !important");
-    expect(css).toContain("min-height: 28px !important");
-    expect(css).toContain(".shop-category-item.shop-item .shop-card-meta > span");
-    expect(css).toContain("justify-self: start !important");
-    expect(css).toContain(".shop-category-item.shop-item .shop-price");
-    expect(css).toContain("justify-self: end !important");
-    expect(css).toContain("text-align: right !important");
-  });
-
-  it("keeps Bright School mobile music shop cards self-contained", () => {
-    const css = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-    const shopCardsCss = readFileSync(
-      new URL("../styles/mobile-adaptive/bright-school-overrides/shop-cards.css", import.meta.url),
-      "utf8"
-    );
-
-    expect(css).toContain(".shop-category-music.shop-item");
-    expect(css).toContain("display: grid !important");
-    expect(css).toContain("min-height: calc(clamp(96px,24vw,118px) + 132px) !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-music).shop-item > img");
-    expect(css).toContain("height: clamp(96px,24vw,118px) !important");
-    expect(shopCardsCss).not.toContain("flex: 0 0 52px !important");
-    expect(shopCardsCss).not.toContain("height: 52px !important");
-    expect(css).toContain(".shop-card-meta-price-only");
-    expect(css).toContain(".shop-category-music.shop-item .shop-price");
-    expect(css).toContain("text-align: center !important");
-    expect(css).toContain(":is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item .primary-action");
-    expect(css).toContain("margin-top: 0 !important");
-  });
-
-  it("keeps the Bright School mobile shop category tablist chrome-free", () => {
-    const css = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
-
-    expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-tabs");
-    expect(css).toContain("padding: 0 !important");
-    expect(css).toContain("border: 0 !important");
-    expect(css).toContain("background: transparent !important");
-    expect(css).toContain("box-shadow: none !important");
-  });
-
-  it("keeps Bright School mobile shop shadows inside padded clipping containers", () => {
-    const css = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
-
-    expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout");
-    expect(css).toContain("padding: 4px 7px 12px 4px !important");
-    expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-content");
-    expect(css).toContain("padding: 2px 2px 6px !important");
-    expect(css).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-grid");
-    expect(css).toContain("padding: 2px 8px 12px 2px !important");
-    expect(css).toContain("scroll-padding: 2px 8px 12px 2px !important");
-  });
-
-  it("centers character, decoration, and music prices after removing the visible limit row", () => {
-    const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
-    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
-    const priceOnlyBlock = commerceCss.match(/\.shop-card-meta-price-only\s*\{[^}]+\}/)?.[0] ?? "";
-    const priceOnlyPriceBlock = commerceCss.match(/\.shop-card-meta-price-only \.shop-price\s*\{[^}]+\}/)?.[0] ?? "";
-
-    expect(priceOnlyBlock).toContain("justify-content: center");
-    expect(priceOnlyPriceBlock).toContain("text-align: center");
-    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta-price-only");
-    expect(mobileCss).toContain("grid-template-columns: 1fr !important");
-    expect(mobileCss).toContain(":is(.shop-category-character, .shop-category-decoration, .shop-category-music).shop-item .shop-card-meta-price-only .shop-price");
-  });
-
-  it("styles discounted original prices as a compact line above the current price", () => {
-    const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
-    const shopPriceBlock = css.match(/\.shop-price\s*\{[^}]+\}/)?.[0] ?? "";
-    const priceNumberWrapBlock = css.match(/\.shop-price-number-wrap\s*\{[^}]+\}/)?.[0] ?? "";
-    const originalPriceBlock = css.match(/\.shop-original-price\s*\{[^}]+\}/)?.[0] ?? "";
-
-    expect(shopPriceBlock).toContain("align-items: baseline");
-    expect(priceNumberWrapBlock).toContain("position: relative");
-    expect(originalPriceBlock).toContain("position: absolute");
-    expect(originalPriceBlock).toContain("right: 0");
-    expect(originalPriceBlock).toContain("color: #df3f4f");
-    expect(originalPriceBlock).toContain("font-size: 12px");
-  });
-
-  it("defines the shared Startorch tactical terminal modal system", () => {
-    const modalCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
-
-    expect(modalCss).toContain("--terminal-bg: rgba(12, 22, 29, 0.85)");
-    expect(modalCss).toContain("--terminal-cyan: #00ffbe");
-    expect(modalCss).toContain("--terminal-blue: #00bfff");
-    expect(modalCss).toContain("--terminal-text: #e0f7f4");
-    expect(modalCss).toContain("backdrop-filter: blur(12px)");
-    expect(modalCss).toContain("clip-path: polygon");
+  it("uses server ownership and stock fields without changing purchase semantics", () => {
+    expect(isShopItemOwned({ category: "character", targetId: "denia" }, { ownedCharacters: ["denia"] })).toBe(true);
+    expect(isShopItemOwned({ category: "decoration", targetId: "paw-stone" }, { ownedDecorations: ["paw-stone"] })).toBe(true);
+    expect(isShopItemSoldOut({ category: "item", stockQuantity: 10, remainingStock: 0 })).toBe(true);
+    expect(isShopItemSoldOut({ category: "item", stockQuantity: -1, remainingStock: -1 })).toBe(false);
   });
 });
 
-function cssBlock(source, selector) {
-  const start = source.indexOf(`${selector} {`);
-  if (start < 0) return "";
-  const bodyStart = source.indexOf("{", start);
-  const bodyEnd = source.indexOf("}", bodyStart);
-  return source.slice(start, bodyEnd + 1);
+function renderCard(item, user) {
+  return renderToStaticMarkup(createElement(ShopItemCard, {
+    item,
+    purchasingId: "",
+    user,
+    onBuy: () => {},
+    onShowDetail: () => {}
+  }));
+}
+
+function sequenceRandom(values) {
+  let index = 0;
+  return () => values[index++] ?? values.at(-1) ?? 0;
+}
+
+function overlap(a, b) {
+  return a.x < b.x + b.width
+    && a.x + a.width > b.x
+    && a.y < b.y + b.height
+    && a.y + a.height > b.y;
+}
+
+function cardSeparation(a, b) {
+  const horizontal = Math.max(0, Math.max(a.x, b.x) - Math.min(a.x + a.width, b.x + b.width));
+  const vertical = Math.max(0, Math.max(a.y, b.y) - Math.min(a.y + a.height, b.y + b.height));
+  return Math.max(horizontal, vertical);
+}
+
+function expectTwoRowTopology(placements, firstRowCount, width) {
+  const top = placements.slice(0, firstRowCount);
+  const bottom = placements.slice(firstRowCount);
+  expect(Math.max(...top.map((placement) => placement.y)) - Math.min(...top.map((placement) => placement.y))).toBeLessThanOrEqual(6);
+  expect(Math.max(...bottom.map((placement) => placement.y)) - Math.min(...bottom.map((placement) => placement.y))).toBeLessThanOrEqual(6);
+  expect(Math.min(...bottom.map((placement) => placement.y))).toBeGreaterThanOrEqual(
+    Math.max(...top.map((placement) => placement.y + placement.height)) + 28
+  );
+  expect(Math.abs(rowCenter(top) - (width / 2))).toBeLessThanOrEqual(32);
+  expect(Math.abs(rowCenter(bottom) - (width / 2))).toBeLessThanOrEqual(32);
+}
+
+function rowCenter(placements) {
+  return placements.reduce((sum, placement) => sum + placement.x + (placement.width / 2), 0) / placements.length;
 }
 
 function webpInfo(path) {
   const buffer = readFileSync(new URL(path, import.meta.url));
   const losslessChunk = buffer.indexOf(Buffer.from("VP8L"));
-
-  if (losslessChunk < 0) {
-    return { encoding: "lossy", width: 0, height: 0 };
-  }
-
+  if (losslessChunk < 0) return { encoding: "lossy", width: 0, height: 0 };
   const byte0 = buffer[losslessChunk + 9];
   const byte1 = buffer[losslessChunk + 10];
   const byte2 = buffer[losslessChunk + 11];
   const byte3 = buffer[losslessChunk + 12];
-
   return {
     encoding: "VP8L",
     width: 1 + (((byte1 & 0x3f) << 8) | byte0),

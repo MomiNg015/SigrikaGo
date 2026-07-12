@@ -1,39 +1,88 @@
 export const SHOP_MASCOT_LINES = [
   "今天想买些什么？",
   "刚刚进了一批好货哟~",
-  "欢迎来到扎希拉商店！"
+  "欢迎来到扎希拉商铺！"
 ];
+
+export const SHOP_MASCOT_REFRESH_LINES = [
+  "换一批看看吧，说不定会有惊喜哦。",
+  "这批也是我精心挑选的呢。",
+  "新到的商品已经摆好啦！"
+];
+
+export const SHOP_MASCOT_LOADING_LINE = "稍等一下，我正在整理商品哦。";
+export const SHOP_MASCOT_EMPTY_LINE = "还在进货中哦，请下次再来吧。";
+export const SHOP_MASCOT_ERROR_LINE = "进货单好像出了点问题，请再试一次吧。";
+export const SHOP_BATCH_SIZE = 5;
+export const SHOP_REFRESH_COOLDOWN_MS = 3000;
+
+export const SHOP_ITEM_CATEGORY_LABELS = Object.freeze({
+  character: "部员",
+  item: "道具",
+  decoration: "棋子",
+  music: "音乐"
+});
 
 export {
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_MOODS,
   SHOP_MASCOT_THANKS_DURATION_MS,
   SHOP_MASCOT_THANKS_IMAGE,
-  SHOP_MASCOT_THANKS_LINE
+  SHOP_MASCOT_THANKS_LINE,
+  SHOP_WALLET_IMAGE
 } from "../shared/shopMascotAssets.js";
 
-export const SHOP_PAGE_SIZE = 8;
-
-export function pickShopMascotLine(random = Math.random) {
+export function pickShopMascotLine(random = Math.random, lines = SHOP_MASCOT_LINES) {
+  const pool = Array.isArray(lines) && lines.length ? lines : SHOP_MASCOT_LINES;
   const value = Number(random());
   const index = Math.min(
-    SHOP_MASCOT_LINES.length - 1,
-    Math.max(0, Math.floor(value * SHOP_MASCOT_LINES.length))
+    pool.length - 1,
+    Math.max(0, Math.floor(value * pool.length))
   );
-  return SHOP_MASCOT_LINES[index];
+  return pool[index];
 }
 
-export function getShopPageCount(items = [], activeCategory = "character", pageSize = SHOP_PAGE_SIZE) {
-  const visibleCount = Array.isArray(items) ? items.filter((item) => item.category === activeCategory).length : 0;
-  return Math.max(1, Math.ceil(visibleCount / pageSize));
+export function eligibleShopItems(items = [], user = {}) {
+  if (!Array.isArray(items)) return [];
+  return items.filter((item) => (
+    item
+    && item.purchasable !== false
+    && !isShopItemOwned(item, user)
+    && !isShopItemSoldOut(item)
+  ));
 }
 
-export function buildShopSlots(items = [], activeCategory = "character", page = 1, pageSize = SHOP_PAGE_SIZE) {
-  const visibleItems = Array.isArray(items) ? items.filter((item) => item.category === activeCategory) : [];
-  const pageCount = Math.max(1, Math.ceil(visibleItems.length / pageSize));
-  const safePage = Math.min(Math.max(Number(page) || 1, 1), pageCount);
-  const start = (safePage - 1) * pageSize;
-  return Array.from({ length: pageSize }, (_, index) => visibleItems[start + index] ?? null);
+export function selectShopBatch(items = [], user = {}, previousIds = [], random = Math.random, size = SHOP_BATCH_SIZE) {
+  const previous = new Set(previousIds);
+  const candidates = eligibleShopItems(items, user);
+  const fresh = shuffleShopItems(candidates.filter((item) => !previous.has(item.id)), random);
+  const repeated = shuffleShopItems(candidates.filter((item) => previous.has(item.id)), random);
+  return [...fresh, ...repeated].slice(0, Math.max(0, Number(size) || 0));
+}
+
+export function shuffleShopItems(items = [], random = Math.random) {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const value = Math.min(0.999999, Math.max(0, Number(random()) || 0));
+    const target = Math.floor(value * (index + 1));
+    [result[index], result[target]] = [result[target], result[index]];
+  }
+  return result;
+}
+
+export function buildShopCardPresentation(items = [], random = Math.random) {
+  return items.map((item, index) => ({
+    item,
+    rotation: roundShopMotion(-2 + ((Number(random()) || 0) * 4)),
+    floatDistance: roundShopMotion(4 + ((Number(random()) || 0) * 2)),
+    floatDuration: roundShopMotion(5 + ((Number(random()) || 0) * 3)),
+    floatDelay: roundShopMotion(-((Number(random()) || 0) * 8)),
+    stableIndex: index
+  }));
+}
+
+function roundShopMotion(value) {
+  return Math.round(value * 100) / 100;
 }
 
 export function isShopItemOwned(item = {}, user = {}) {
@@ -52,9 +101,20 @@ export function getShopItemDescription(item = {}) {
 }
 
 export function getShopItemQuantityLabel(item = {}) {
-  if (item.category === "item") {
-    if (item.stockQuantity >= 0) return `库存 ${item.remainingStock ?? item.stockQuantity}`;
-    return "不限量";
-  }
-  return "限购 1";
+  if (item.category !== "item") return "";
+  if (item.stockQuantity >= 0) return `剩余 ${item.remainingStock ?? item.stockQuantity}`;
+  return "不限量";
+}
+
+export function getShopItemCategoryLabel(item = {}) {
+  return SHOP_ITEM_CATEGORY_LABELS[item.category] ?? "商品";
+}
+
+export function getShopItemQuantityBadge(item = {}) {
+  if (item.category !== "item") return null;
+  const stockQuantity = Number(item.stockQuantity);
+  if (stockQuantity === 1) return null;
+  if (stockQuantity < 0) return { text: "∞", ariaLabel: "不限量" };
+  const remaining = Math.max(0, Number(item.remainingStock ?? stockQuantity) || 0);
+  return { text: String(remaining), ariaLabel: `剩余 ${remaining}` };
 }

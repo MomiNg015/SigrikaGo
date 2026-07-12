@@ -1,0 +1,44 @@
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-corner-badge {
+  position: absolute !important;
+  top: 8px !important;
+  min-width: 34px !important;
+  min-height: 24px !important;
+  margin: 0 !important;
+  padding: 3px 8px !important;
+  border: 2px solid #3d2b25 !important;
+  border-radius: 8px !important;
+  color: #3d2b25 !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  box-shadow: 2px 2px 0 rgba(61, 43, 37, 0.52) !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-category-badge {
+  right: auto !important;
+  left: 8px !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-category-badge-character {
+  background: #dcecff !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-category-badge-item {
+  background: #ffe1eb !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-category-badge-decoration {
+  background: #e5f4df !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-category-badge-music {
+  background: #eee7ff !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-quantity-badge {
+  right: 8px !important;
+  left: auto !important;
+  min-width: 30px !important;
+  background: #fff0a8 !important;
+  font-variant-numeric: tabular-nums !important;
+}

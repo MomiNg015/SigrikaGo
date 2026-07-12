@@ -1,0 +1,32 @@
+@media (max-width: 768px) and (max-height: 620px) {
+  .shop-product-stage {
+    height: 58% !important;
+  }
+
+  .shop-mascot-bubble,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-bubble {
+    top: 59% !important;
+  }
+
+  .shop-wallet-wrap,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap {
+    top: 58% !important;
+    width: 26% !important;
+  }
+
+  .shop-wallet-image,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-image {
+    width: min(56px, 15vw) !important;
+  }
+
+  .shop-wallet,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet {
+    min-height: 26px !important;
+    padding: 3px 7px !important;
+  }
+
+  .shop-mascot-slot,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-mascot-slot {
+    height: 30% !important;
+  }
+}

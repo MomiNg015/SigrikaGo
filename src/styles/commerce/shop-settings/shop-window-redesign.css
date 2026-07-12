@@ -1,0 +1,304 @@
+.shop-window {
+  position: relative;
+  width: min(1120px, calc(100vw - (var(--page-pad) * 2)));
+  height: min(760px, calc(100dvh - (var(--page-pad) * 2)));
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.shop-header {
+  position: relative;
+  z-index: 20;
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  pointer-events: none;
+}
+
+.shop-header h2 {
+  min-width: 0;
+  margin: 0;
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1;
+  text-align: left;
+}
+
+.shop-header button {
+  pointer-events: auto;
+}
+
+.shop-refresh-button,
+.shop-close-button {
+  position: static !important;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 14px;
+}
+
+.shop-refresh-button {
+  position: relative !important;
+  overflow: hidden;
+}
+
+.shop-refresh-button::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: conic-gradient(currentColor var(--shop-refresh-progress, 0deg), transparent 0);
+  opacity: 0;
+  -webkit-mask: radial-gradient(circle, transparent 58%, #000 60%);
+  mask: radial-gradient(circle, transparent 58%, #000 60%);
+}
+
+.shop-refresh-button.is-cooldown::before {
+  opacity: 0.55;
+  transition: opacity 150ms ease-out;
+}
+
+.shop-refresh-button svg,
+.shop-close-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.shop-refresh-button.is-cooldown svg {
+  opacity: 0.2;
+}
+
+.shop-refresh-count {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.shop-refresh-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(1);
+  opacity: 0.55;
+  transform: none;
+}
+
+.shop-window-body {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: calc(100% - 68px);
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.shop-product-stage {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  width: 68%;
+  height: 78%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  contain: layout paint;
+}
+
+.shop-batch-layer {
+  position: absolute;
+  inset: 0;
+  animation: shop-batch-arrive 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.shop-card-position {
+  position: absolute;
+  left: var(--shop-card-left);
+  top: var(--shop-card-top);
+  width: calc(var(--shop-card-width) * var(--shop-card-scale));
+  height: calc(var(--shop-card-height) * var(--shop-card-scale));
+  transition: opacity 160ms ease-out;
+}
+
+.shop-card-scale,
+.shop-card-rotation,
+.shop-card-float {
+  width: var(--shop-card-width);
+  height: var(--shop-card-height);
+  transform-origin: top left;
+}
+
+.shop-card-scale {
+  transform: scale(var(--shop-card-scale));
+}
+
+.shop-card-rotation {
+  transform: rotate(var(--shop-card-rotation));
+  transform-origin: center;
+}
+
+.shop-card-float {
+  animation: shop-card-float var(--shop-card-float-duration) ease-in-out var(--shop-card-float-delay) infinite alternate;
+  will-change: transform;
+}
+
+.shop-card-position:has(.shop-item:hover, .shop-item:focus-within, .shop-item:active, .shop-item.is-purchasing) .shop-card-float {
+  animation-play-state: paused;
+}
+
+.shop-card-position .shop-item {
+  position: relative;
+  box-sizing: border-box;
+  width: var(--shop-card-width);
+  height: var(--shop-card-height);
+  min-width: 0;
+  min-height: 0;
+  grid-template-rows: 78px minmax(28px, auto) 1fr 40px;
+  gap: 8px;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.shop-card-position .shop-item > img,
+.shop-card-position .shop-item > svg,
+.shop-card-position .shop-item .stone-decoration-preview {
+  width: 100%;
+  height: 72px;
+  min-height: 0;
+  margin: 0;
+  object-fit: contain;
+}
+
+.shop-card-position .shop-item > strong {
+  font-size: 16px;
+}
+
+.shop-card-position .shop-card-meta,
+.shop-card-position .shop-price,
+.shop-card-position .shop-price b {
+  font-size: 14px;
+}
+
+.shop-card-position .shop-item .primary-action {
+  min-height: 40px;
+  padding: 7px 9px;
+}
+
+.shop-sidebar.shop-host {
+  position: static;
+  display: contents;
+}
+
+.shop-mascot-bubble {
+  position: absolute;
+  z-index: 16;
+  top: auto;
+  right: 74px;
+  bottom: 52%;
+  width: min(30%, 310px);
+  min-height: 64px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 12px 18px;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.shop-mascot-slot {
+  position: absolute;
+  z-index: 8;
+  right: -2%;
+  bottom: -2%;
+  width: 43%;
+  height: 82%;
+  display: grid;
+  place-items: end center;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.shop-mascot-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.shop-wallet-wrap {
+  position: absolute;
+  z-index: 12;
+  left: 24px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  transform: rotate(-1.5deg);
+}
+
+.shop-wallet-image {
+  width: 96px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(3px 4px 0 rgba(61, 43, 37, 0.26));
+}
+
+.shop-wallet {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 0;
+  padding: 8px 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.shop-wallet-value {
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.shop-wallet-unit {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+@keyframes shop-card-float {
+  from { transform: translateY(calc(var(--shop-card-float) * -0.5)); }
+  to { transform: translateY(calc(var(--shop-card-float) * 0.5)); }
+}
+
+@keyframes shop-batch-arrive {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-card-float {
+    animation: none;
+  }
+
+  .shop-batch-layer {
+    animation: shop-batch-fade 80ms linear both;
+  }
+
+  .shop-refresh-button.is-cooldown::before {
+    transition: none;
+  }
+}
+
+@keyframes shop-batch-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

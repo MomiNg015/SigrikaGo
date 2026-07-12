@@ -268,6 +268,16 @@ export function retrySkippedPreloadAssets(skippedAssets, {
   };
 }
 
+export async function preloadImageAssets(images = [], {
+  concurrency = 3,
+  loadImage = preloadImage,
+  onSkipped = () => {},
+  taskTimeoutMs = 3000
+} = {}) {
+  const tasks = compactUnique(images).map((src) => taskWithSource(src, () => loadImage(src)));
+  await runPreloadTasks(tasks, { concurrency, onSkipped, taskTimeoutMs });
+}
+
 function preloadImage(src) {
   return new Promise((resolve, reject) => {
     if (!src) {

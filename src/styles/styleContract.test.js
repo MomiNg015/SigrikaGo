@@ -597,7 +597,10 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/home-narrow-desktop.css",
       "./mobile-adaptive/bright-school-portrait.css",
       "./mobile-adaptive/information-center.css",
-      "./mobile-adaptive/semantic-accent-typography.css"
+      "./mobile-adaptive/semantic-accent-typography.css",
+      "./mobile-adaptive/shop-window-redesign.css",
+      "./mobile-adaptive/shop-window-compact.css",
+      "./mobile-adaptive/shop-card-badges.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
@@ -828,7 +831,9 @@ describe("root CSS entry contract", () => {
       "./shop-settings/shop-detail-pagination.css",
       "./shop-settings/compact-shop-media.css",
       "./shop-settings/compact-modal-safety.css",
-      "./shop-settings/phone-layouts.css"
+      "./shop-settings/phone-layouts.css",
+      "./shop-settings/shop-window-redesign.css",
+      "./shop-settings/shop-card-badges.css"
     ]);
     expect(shopSettingsEntry).not.toContain(".shop-modal {");
     expect(shopSettingsEntry).not.toContain(".shop-item {");

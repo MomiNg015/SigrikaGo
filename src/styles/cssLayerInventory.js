@@ -1,14 +1,14 @@
 export const CSS_DEBT_BASELINE = {
-  date: "2026-07-10",
-  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, desktop/mobile shop mascot layout contracts, cloud-deployment mobile floating layer tokens, and transform-surface compositor hints.",
+  date: "2026-07-12",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated shared/theme/final-mobile Zahira shop window plus compact-height and badge owner files with count-aware spacing, cloud-deployment mobile floating layer tokens, and transform-surface compositor hints.",
   metrics: {
-    totalFiles: 588,
-    totalBytes: 1138536,
-    importantCount: 7093,
-    importantFiles: 277,
-    hardcodedHexCount: 2246,
-    mediaFiles: 219,
-    reducedMotionFiles: 25,
+    totalFiles: 595,
+    totalBytes: 1159943,
+    importantCount: 7270,
+    importantFiles: 283,
+    hardcodedHexCount: 2268,
+    mediaFiles: 223,
+    reducedMotionFiles: 26,
     highZIndexFiles: 6
   },
   guidance:
