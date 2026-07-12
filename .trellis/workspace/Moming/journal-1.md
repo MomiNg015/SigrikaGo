@@ -1329,3 +1329,36 @@ Rebuilt the Zahira shop into a responsive 1-5 item showcase with balanced deskto
 ### Next Steps
 
 - None - task complete
+
+
+## Session 41: Fix responsive Zahira shop card layout
+
+**Date**: 2026-07-12
+**Task**: Fix responsive Zahira shop card layout
+**Branch**: `codex/shop-window-redesign`
+
+### Summary
+
+Removed Bright School mobile CSS pollution from the shop scale chain, aligned rendered card bounds with layout slots, enlarged product art, tightened internal spacing, separated detail and purchase button semantics, moved the mobile wallet clear of Zahira, added regression contracts, and verified desktop, phone, short-screen, focused tests, and the full repository check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ce30f305` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

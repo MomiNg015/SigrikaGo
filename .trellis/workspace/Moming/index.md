@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 40
+- **Total Sessions**: 41
 - **Last Active**: 2026-07-12
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1331 | Active |
+| `journal-1.md` | ~1364 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 41 | 2026-07-12 | Fix responsive Zahira shop card layout | `ce30f305` | `codex/shop-window-redesign` |
 | 40 | 2026-07-12 | Redesign Zahira shop window | `6cb0c1ad` | `codex/shop-window-redesign` |
 | 39 | 2026-07-10 | Refine desktop home utility button hover | `80d37218` | `codex/character-music-player-polish` |
 | 38 | 2026-07-10 | Harden stability and complete replay history | `2e1d9431` | `codex/work-20260708-2` |
