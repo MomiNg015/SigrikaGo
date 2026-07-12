@@ -1,8 +1,4 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window {
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.44)),
-    repeating-linear-gradient(0deg, transparent 0 31px, rgba(126, 177, 214, 0.15) 31px 32px),
-    #fffaf0 !important;
   border: 3px solid #3d2b25 !important;
   border-radius: 24px !important;
   box-shadow: 9px 11px 0 rgba(61, 43, 37, 0.82) !important;
@@ -44,11 +40,17 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout.shop-window-body {
+  --shop-wall-axis: 90deg;
+  --shop-display-end: 68%;
   position: relative !important;
   display: block !important;
   height: calc(100% - 68px) !important;
   padding: 0 !important;
   overflow: hidden !important;
+  background:
+    linear-gradient(0deg, oklch(64% 0.08 55) 0 12%, oklch(82% 0.07 78) 12% 15%, oklch(39% 0.05 45) 15% 15.7%, transparent 15.7%),
+    linear-gradient(oklch(82% 0.025 215) 1px, transparent 1px) 0 0 / 100% 32px,
+    linear-gradient(var(--shop-wall-axis), oklch(93% 0.025 215) 0 var(--shop-display-end), oklch(91% 0.035 145) var(--shop-display-end) 100%) !important;
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-sidebar.shop-host {

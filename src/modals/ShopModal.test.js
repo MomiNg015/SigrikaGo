@@ -306,7 +306,14 @@ describe("Zahira shop window", () => {
     expect(themeCss).toContain("display: contents !important");
     expect(themeCss).toContain(".shop-category-badge-decoration");
     expect(themeCss).toContain("bottom: 52% !important");
+    expect(themeCss).toContain("--shop-wall-axis: 90deg");
+    expect(themeCss).toContain("--shop-display-end: 68%");
+    expect(themeCss).toContain("oklch(93% 0.025 215)");
+    expect(themeCss).toContain("oklch(91% 0.035 145)");
+    expect(themeCss).toContain("oklch(64% 0.08 55)");
     expect(mobileCss).toContain("height: 56% !important");
+    expect(mobileCss).toContain("--shop-wall-axis: 180deg");
+    expect(mobileCss).toContain("--shop-display-end: 56%");
     expect(mobileCss).toContain("padding: 0 !important");
     expect(mobileCss).toContain("gap: 0 !important");
     expect(mobileCss).toContain("max-width: none !important");

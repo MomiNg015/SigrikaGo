@@ -35,6 +35,8 @@
 
   .shop-layout.shop-window-body,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-layout.shop-window-body {
+    --shop-wall-axis: 180deg;
+    --shop-display-end: 56%;
     display: block !important;
     width: 100% !important;
     max-width: none !important;

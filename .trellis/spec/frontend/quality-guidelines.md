@@ -1022,6 +1022,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - The offer shell and rendered card share `--shop-card-width` / `--shop-card-height`; the detail trigger owns enlarged media/name/price rows and the purchase action owns a separate fixed bottom row. Do not make the whole article a pseudo-button containing the purchase button.
 - The final mobile card owner must restore a full-width `minmax(0, 1fr)` column with stretched grid content, stretch every purchase action to the full card content width, and center `.shop-card-meta-price-only .shop-price` itself; button `width: 100%` is insufficient when a legacy `justify-content: center` rule leaves the grid column shrink-wrapped, while centering only the metadata parent still lets legacy item-category rules right-align the price child.
 - The 4–6px seeded float value is the mobile total travel. Desktop may multiply it to an 8–12px total travel inside the transform-only float layer, while mobile resets the effective travel and reduced-motion continues to disable continuous floating.
+- Bright School background depth belongs to `.shop-layout.shop-window-body`, not the outer modal or card layers. Desktop uses `--shop-wall-axis: 90deg` with `--shop-display-end: 68%`; final mobile switches the same owner to `180deg` and `56%`, so the pale-blue display wall ends exactly with the measured product stage before the mint reception wall begins. A bottom-anchored warm counter band may add depth behind the existing z-indexed content, but it must not add props, motion, or a new asset dependency.
 
 #### 4. Validation & Error Matrix
 - Unknown category -> category badge falls back to `商品`.
@@ -1032,6 +1033,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - Desktop viewport with a sub-768px product lane -> still uses the desktop card base and spacing algorithm.
 - Portrait mobile with four offers -> computed `.shop-item` bounds remain inside the corresponding placement plus rotation/float/shadow bleed; old minimum heights cannot create row overlap.
 - 375x600 with five offers -> the bottom purchase controls remain above the product-stage clip boundary.
+- Portrait mobile background -> the display-wall boundary equals the product-stage bottom; the bubble and wallet begin in the reception wall, while the counter remains behind Zahira and does not create horizontal overflow.
 
 #### 5. Good/Base/Bad Cases
 - Good: viewport media query selects the layout family while measured stage dimensions size cards inside the shared count-aware topology.
@@ -1046,6 +1048,7 @@ npm test -- src/shared/gameSkills.test.js src/room/actions/useRoomPointActions.t
 - `src/modals/ShopModal.test.js` covers category labels, finite/unlimited/limit-one quantity badges, desktop/mobile 2+3 / 2+2 / 2+1 geometry, mobile card width and visible gap safety, desktop separation, viewport-mode selection, and final CSS owner rules.
 - CSS import and size contracts must cover the shared, Bright School, final-mobile window, final card-layout isolation, compact-height, and badge owner files. The final `.shop-window` card selector must occur after the legacy portrait selector in the expanded mobile entry.
 - Browser QA must inspect real `.shop-item` rectangles, not only `.shop-card-position`, at 375x812 and 375x600 for three, four, and five offers.
+- Background QA must inspect both the rendered composition and computed boundary coordinates at 1440x900 and 375x812; static color-string assertions alone cannot prove that the desktop horizontal split or mobile vertical split aligns with content.
 
 #### 7. Wrong vs Correct
 
