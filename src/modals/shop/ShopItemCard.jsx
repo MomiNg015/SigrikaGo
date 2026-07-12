@@ -17,13 +17,6 @@ export default function ShopItemCard({ item, purchasingId, user, onBuy, onShowDe
   const categoryLabel = getShopItemCategoryLabel(item);
   const quantityBadge = getShopItemQuantityBadge(item);
   const openDetail = () => onShowDetail?.(item);
-  const openDetailFromKeyboard = (event) => {
-    if (event.target !== event.currentTarget) return;
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      openDetail();
-    }
-  };
   const buyWithoutOpeningDetail = (event) => {
     event.stopPropagation();
     onBuy(item);
@@ -33,11 +26,6 @@ export default function ShopItemCard({ item, purchasingId, user, onBuy, onShowDe
     <article
       className={`shop-item shop-category-${item.category} ${owned ? "owned store-owned-tag" : ""} ${purchasingId === item.id ? "is-purchasing" : ""}`}
       key={item.id}
-      role="button"
-      tabIndex={0}
-      aria-label={`查看${item.name}详情`}
-      onClick={openDetail}
-      onKeyDown={openDetailFromKeyboard}
     >
       <span
         className={`shop-corner-badge shop-category-badge shop-category-badge-${item.category}`}
@@ -50,19 +38,26 @@ export default function ShopItemCard({ item, purchasingId, user, onBuy, onShowDe
           {quantityBadge.text}
         </span>
       )}
-      {item.category === "decoration" && getStoneDecoration(item.targetId)
-        ? <StoneDecorationPreview decoration={getStoneDecoration(item.targetId)} label={item.name} large />
-        : item.imageUrl ? <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" /> : item.category === "item" ? <Package /> : <ShoppingBag />}
-      <strong>{item.name}</strong>
-      <div className="shop-card-meta shop-card-meta-price-only">
-        <p className="shop-price">
-          <span className="shop-price-number-wrap">
-            {item.discountPercent > 0 && <s className="shop-original-price">{item.priceCoins}</s>}
-            <b>{item.finalPrice}</b>
-          </span>
-          <span className="shop-price-unit">金币</span>
-        </p>
-      </div>
+      <button
+        className="shop-item-detail-trigger"
+        type="button"
+        aria-label={`查看${item.name}详情`}
+        onClick={openDetail}
+      >
+        {item.category === "decoration" && getStoneDecoration(item.targetId)
+          ? <StoneDecorationPreview decoration={getStoneDecoration(item.targetId)} label={item.name} large />
+          : item.imageUrl ? <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" /> : item.category === "item" ? <Package /> : <ShoppingBag />}
+        <strong>{item.name}</strong>
+        <div className="shop-card-meta shop-card-meta-price-only">
+          <p className="shop-price">
+            <span className="shop-price-number-wrap">
+              {item.discountPercent > 0 && <s className="shop-original-price">{item.priceCoins}</s>}
+              <b>{item.finalPrice}</b>
+            </span>
+            <span className="shop-price-unit">金币</span>
+          </p>
+        </div>
+      </button>
       <button className={`primary-action ${actionStateClass}`} disabled={disabled} onClick={buyWithoutOpeningDetail}>
         {owned ? "已拥有" : soldOut ? "已售罄" : purchasingId === item.id ? "购买中" : !item.purchasable ? "不可购买" : tooExpensive ? "金币不足" : "购买"}
       </button>

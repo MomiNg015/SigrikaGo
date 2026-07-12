@@ -205,11 +205,14 @@ describe("Zahira shop window", () => {
     expect(unlimitedHtml).toContain("∞");
     expect(limitOneHtml).not.toContain("shop-quantity-badge");
     expect(availableHtml).toContain("shop-original-price");
-    expect(availableHtml).toContain('role="button"');
+    expect(availableHtml).toContain("shop-item-detail-trigger");
+    expect(availableHtml).toContain('aria-label="查看测试商品详情"');
+    expect(availableHtml).not.toContain('role="button"');
     expect(soldOutHtml).toContain("已售罄");
     expect(soldOutHtml).toContain("disabled");
     expect(source).toContain("event.stopPropagation()");
-    expect(source).toContain('event.key === "Enter" || event.key === " "');
+    expect(source).not.toContain("openDetailFromKeyboard");
+    expect(source).toContain('className="shop-item-detail-trigger"');
     expect(source).not.toContain("暂未上架");
   });
 
@@ -303,7 +306,21 @@ describe("Zahira shop window", () => {
     expect(mobileCss).toContain("padding: 0 !important");
     expect(mobileCss).toContain("gap: 0 !important");
     expect(mobileCss).toContain("max-width: none !important");
+    expect(mobileCss).toContain(".shop-window .shop-card-scale");
+    expect(mobileCss).toContain(".shop-window .shop-card-position .shop-item");
+    expect(mobileCss).toContain("grid-template-rows: minmax(0, 1fr) 34px !important");
+    expect(mobileCss).toContain("grid-template-rows: 88px 22px 24px !important");
+    expect(mobileCss).toContain("height: 82px !important");
+    expect(mobileCss).toContain("height: var(--shop-card-height) !important");
+    expect(mobileCss).toContain("min-height: 0 !important");
+    expect(mobileCss.lastIndexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-window .shop-card-position .shop-item"
+    )).toBeGreaterThan(mobileCss.lastIndexOf(
+      ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :is(.shop-category-character, .shop-category-item, .shop-category-decoration, .shop-category-music).shop-item"
+    ));
     expect(mobileCss).toContain("bottom: -2% !important");
+    expect(mobileCss).toContain("top: 57.5% !important");
+    expect(mobileCss).toContain("width: min(70px, 19vw) !important");
     expect(mobileCss).toContain("height: 30% !important");
     expect(mobileCss).toContain("width: min(56px, 15vw) !important");
     expect(mobileCss).not.toContain("width: calc(100% + 32px) !important");

@@ -123,23 +123,3 @@
   min-height: 42px !important;
   padding: 8px 14px !important;
 }
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item {
-  width: var(--shop-card-width) !important;
-  height: var(--shop-card-height) !important;
-  min-height: 0 !important;
-  display: grid !important;
-  grid-template-rows: 78px minmax(28px, auto) 1fr 40px !important;
-  gap: 8px !important;
-  padding: 12px !important;
-  border-radius: 16px !important;
-  box-shadow: 4px 5px 0 rgba(61, 43, 37, 0.78) !important;
-}
-
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item > img,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item > svg,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item .stone-decoration-preview {
-  height: 72px !important;
-  min-height: 0 !important;
-  margin: 0 !important;
-}

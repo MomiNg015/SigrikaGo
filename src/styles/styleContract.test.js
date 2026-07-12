@@ -599,6 +599,7 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/information-center.css",
       "./mobile-adaptive/semantic-accent-typography.css",
       "./mobile-adaptive/shop-window-redesign.css",
+      "./mobile-adaptive/shop-window-card-layout.css",
       "./mobile-adaptive/shop-window-compact.css",
       "./mobile-adaptive/shop-card-badges.css"
     ]);
@@ -833,6 +834,7 @@ describe("root CSS entry contract", () => {
       "./shop-settings/compact-modal-safety.css",
       "./shop-settings/phone-layouts.css",
       "./shop-settings/shop-window-redesign.css",
+      "./shop-settings/shop-window-card-layout.css",
       "./shop-settings/shop-card-badges.css"
     ]);
     expect(shopSettingsEntry).not.toContain(".shop-modal {");

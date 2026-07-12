@@ -119,6 +119,7 @@ describe("player theme CSS contract", () => {
       "./shop/detail-credits.css",
       "./shop/responsive.css",
       "./shop/window-redesign.css",
+      "./shop/window-card-layout.css",
       "./shop/card-badges.css"
     ]);
     expect(shopEntry).not.toContain(".shop-layout {");

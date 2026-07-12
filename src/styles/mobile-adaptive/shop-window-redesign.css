@@ -103,7 +103,7 @@
   .shop-wallet-wrap,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-wrap {
     position: absolute !important;
-    top: 63% !important;
+    top: 57.5% !important;
     right: 4% !important;
     bottom: auto !important;
     left: auto !important;
@@ -118,7 +118,7 @@
 
   .shop-wallet-image,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-wallet-image {
-    width: min(82px, 22vw) !important;
+    width: min(70px, 19vw) !important;
     height: auto !important;
     aspect-ratio: 4 / 3 !important;
   }
@@ -142,39 +142,4 @@
     font-size: 10px !important;
   }
 
-  .shop-card-position .shop-item,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item {
-    width: var(--shop-card-width) !important;
-    height: var(--shop-card-height) !important;
-    display: grid !important;
-    grid-template-rows: 70px minmax(24px, auto) 1fr 38px !important;
-    gap: 6px !important;
-    padding: 9px !important;
-    overflow: hidden !important;
-  }
-
-  .shop-card-position .shop-item > img,
-  .shop-card-position .shop-item > svg,
-  .shop-card-position .shop-item .stone-decoration-preview,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item > img,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item > svg,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item .stone-decoration-preview {
-    width: 100% !important;
-    height: 64px !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    margin: 0 !important;
-  }
-
-  .shop-card-position .shop-item > strong,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item > strong {
-    margin: 0 !important;
-    font-size: 14px !important;
-  }
-
-  .shop-card-position .shop-item .primary-action,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .shop-card-position .shop-item .primary-action {
-    min-height: 38px !important;
-    padding: 6px 8px !important;
-  }
 }

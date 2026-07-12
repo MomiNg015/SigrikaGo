@@ -216,11 +216,11 @@
   transform: none;
 }
 
-.shop-item[role="button"] {
+.shop-item-detail-trigger {
   cursor: pointer;
 }
 
-.shop-item[role="button"]:focus-visible {
+.shop-item:has(.shop-item-detail-trigger:focus-visible) {
   outline: 3px solid rgba(0, 191, 255, 0.7);
   outline-offset: 3px;
 }

@@ -156,44 +156,6 @@
   animation-play-state: paused;
 }
 
-.shop-card-position .shop-item {
-  position: relative;
-  box-sizing: border-box;
-  width: var(--shop-card-width);
-  height: var(--shop-card-height);
-  min-width: 0;
-  min-height: 0;
-  grid-template-rows: 78px minmax(28px, auto) 1fr 40px;
-  gap: 8px;
-  padding: 12px;
-  overflow: hidden;
-}
-
-.shop-card-position .shop-item > img,
-.shop-card-position .shop-item > svg,
-.shop-card-position .shop-item .stone-decoration-preview {
-  width: 100%;
-  height: 72px;
-  min-height: 0;
-  margin: 0;
-  object-fit: contain;
-}
-
-.shop-card-position .shop-item > strong {
-  font-size: 16px;
-}
-
-.shop-card-position .shop-card-meta,
-.shop-card-position .shop-price,
-.shop-card-position .shop-price b {
-  font-size: 14px;
-}
-
-.shop-card-position .shop-item .primary-action {
-  min-height: 40px;
-  padding: 7px 9px;
-}
-
 .shop-sidebar.shop-host {
   position: static;
   display: contents;
