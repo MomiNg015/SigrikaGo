@@ -290,6 +290,10 @@ describe("Zahira shop window", () => {
     const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const themeCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
     const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const shopBackgroundSource = readFileSync(
+      new URL("../styles/themes/bright-school/commerce/shop/background-crayon.css", import.meta.url),
+      "utf8"
+    );
 
     expect(commerceCss).toContain(".shop-product-stage");
     expect(commerceCss).toContain("overflow: hidden");
@@ -308,12 +312,19 @@ describe("Zahira shop window", () => {
     expect(themeCss).toContain("bottom: 52% !important");
     expect(themeCss).toContain("--shop-wall-axis: 90deg");
     expect(themeCss).toContain("--shop-display-end: 68%");
-    expect(themeCss).toContain("oklch(93% 0.025 215)");
-    expect(themeCss).toContain("oklch(91% 0.035 145)");
-    expect(themeCss).toContain("oklch(64% 0.08 55)");
+    expect(themeCss).toContain("--shop-display-crayon: oklch(91% 0.035 215)");
+    expect(themeCss).toContain("--shop-reception-crayon: oklch(90% 0.045 145)");
+    expect(themeCss).toContain("--shop-counter-crayon: oklch(63% 0.085 55)");
+    expect(themeCss).toContain(".shop-layout.shop-window-body::before");
+    expect(themeCss).toContain(".shop-layout.shop-window-body::after");
+    expect(themeCss).toContain("68.35% 55%");
+    expect(themeCss).toContain("clip-path: polygon(");
+    expect(shopBackgroundSource).not.toContain("repeating-linear-gradient");
     expect(mobileCss).toContain("height: 56% !important");
     expect(mobileCss).toContain("--shop-wall-axis: 180deg");
     expect(mobileCss).toContain("--shop-display-end: 56%");
+    expect(mobileCss).toContain("100% 56.15%");
+    expect(mobileCss).toContain("61% 56.25%");
     expect(mobileCss).toContain("padding: 0 !important");
     expect(mobileCss).toContain("gap: 0 !important");
     expect(mobileCss).toContain("max-width: none !important");

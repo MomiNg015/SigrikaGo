@@ -119,6 +119,7 @@ describe("player theme CSS contract", () => {
       "./shop/detail-credits.css",
       "./shop/responsive.css",
       "./shop/window-redesign.css",
+      "./shop/background-crayon.css",
       "./shop/window-card-layout.css",
       "./shop/card-badges.css"
     ]);
@@ -642,6 +643,7 @@ describe("player theme CSS contract", () => {
       new URL("./themes/bright-school/component-repairs/notebook-polish.css", import.meta.url),
     );
     const defaultStoneBlock = cssBlock(sharedStoneCss, ".stone");
+    const sharedWhiteStoneBlock = cssBlock(sharedStoneCss, ".white .stone");
     const brightBlackStoneBlock = cssBlock(
       notebookPolishCss,
       ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .black .stone:not(.decorated-stone)"
@@ -652,8 +654,15 @@ describe("player theme CSS contract", () => {
     );
 
     expect(defaultStoneBlock).not.toContain("inset");
+    expect(defaultStoneBlock).toContain("width: 84%");
+    expect(defaultStoneBlock).toContain("height: 84%");
+    expect(sharedWhiteStoneBlock).toContain("#f3f0e8");
+    expect(sharedWhiteStoneBlock).not.toContain("#ffffff");
     expect(brightBlackStoneBlock).not.toContain("inset");
     expect(brightWhiteStoneBlock).not.toContain("inset");
+    expect(brightWhiteStoneBlock).toContain("#f3f0e8");
+    expect(brightWhiteStoneBlock).toContain("#bfae9b");
+    expect(brightWhiteStoneBlock).not.toContain("#ffffff");
     expect(brightBlackStoneBlock).toContain("border: 0 !important");
     expect(brightWhiteStoneBlock).toContain("border: 0 !important");
   });

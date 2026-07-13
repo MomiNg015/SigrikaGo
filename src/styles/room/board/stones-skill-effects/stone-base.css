@@ -2,8 +2,8 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 92%;
-  height: 92%;
+  width: 84%;
+  height: 84%;
   border-radius: 50%;
   z-index: 2;
   transform: translate(calc(-50% + var(--stone-offset-x, 0px)), calc(-50% + var(--stone-offset-y, 0px)));
@@ -17,7 +17,7 @@
 .white .stone {
   background:
     repeating-linear-gradient(18deg, rgba(160, 166, 174, 0.14) 0 2px, transparent 2px 8px),
-    radial-gradient(circle at 34% 26%, #ffffff 0 20%, #eef0f5 58%, #d9dce2 100%);
+    radial-gradient(circle at 34% 26%, #f3f0e8 0 20%, #e5e1d9 58%, #cbc6bd 100%);
 }
 
 .black .stone.decorated-stone,

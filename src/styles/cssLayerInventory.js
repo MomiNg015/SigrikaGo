@@ -1,18 +1,18 @@
 export const CSS_DEBT_BASELINE = {
   date: "2026-07-12",
-  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, and badge owner files with count-aware spacing, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, and the semantic home/window title font contract.",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, and the semantic home/window title font contract.",
   metrics: {
-    totalFiles: 598,
-    totalBytes: 1165271,
-    importantCount: 7328,
-    importantFiles: 285,
-    hardcodedHexCount: 2268,
+    totalFiles: 599,
+    totalBytes: 1168681,
+    importantCount: 7341,
+    importantFiles: 286,
+    hardcodedHexCount: 2269,
     mediaFiles: 224,
     reducedMotionFiles: 26,
     highZIndexFiles: 6
   },
   guidance:
-    "Use this as a non-growth contract for staged CSS cleanup. New cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
+    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-12 increase is limited to the dedicated Zahira shop crayon-background owner required by the approved visual redesign; future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
 };
 
 export const CSS_Z_INDEX_CONTRACT = {
