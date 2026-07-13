@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 43
-- **Last Active**: 2026-07-12
+- **Total Sessions**: 44
+- **Last Active**: 2026-07-13
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1430 | Active |
+| `journal-1.md` | ~1463 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 44 | 2026-07-13 | Story tutorial draft capacity and graph scrolling | `fdaa2290` | `codex/story-tutorial-system` |
 | 43 | 2026-07-12 | Deepen Zahira shop background | `2b3ee60b` | `codex/shop-window-redesign` |
 | 42 | 2026-07-12 | Polish shop card alignment and desktop float | `5058de53` | `codex/shop-window-redesign` |
 | 41 | 2026-07-12 | Fix responsive Zahira shop card layout | `ce30f305` | `codex/shop-window-redesign` |

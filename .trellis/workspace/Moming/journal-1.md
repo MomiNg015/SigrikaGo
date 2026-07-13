@@ -1428,3 +1428,36 @@ Added a restrained campus-store background with a pale-blue display wall, mint r
 ### Next Steps
 
 - None - task complete
+
+
+## Session 44: Story tutorial draft capacity and graph scrolling
+
+**Date**: 2026-07-13
+**Task**: Story tutorial draft capacity and graph scrolling
+**Branch**: `codex/story-tutorial-system`
+
+### Summary
+
+Added a route-scoped 2mb JSON budget and localized 413 handling for story-script saves, bounded the desktop flow canvas so horizontal scrolling stays reachable, added regression tests, and synchronized code specs plus system-design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fdaa2290` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
