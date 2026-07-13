@@ -3,7 +3,7 @@ import RecentResultMarkers from "../../components/RecentResultMarkers.jsx";
 import { splitRecordSummary } from "../UserProfileCard.jsx";
 import { CharacterRecordsPanel } from "./HouseNestedDialogs.jsx";
 
-export default function HouseProfileStats({ stats, rank, recentResults = [], characterRecords = [], itemEffects = {} }) {
+export default function HouseProfileStats({ stats, rank, recentResults = [], characterRecords = [], itemEffects = {}, replayAction = null }) {
   const recordSummary = splitRecordSummary(`${stats.totalGames}局 · ${stats.wins}胜${stats.losses}负${stats.draws}和`);
 
   return (
@@ -34,7 +34,15 @@ export default function HouseProfileStats({ stats, rank, recentResults = [], cha
           tip="段位：最近10盘胜负中胜7盘升段/级，负8盘降段/级；升降级后重新记录。"
         />
       </div>
-      <RecentResultMarkers results={recentResults} className="profile-rank-results" label="最近十盘的战绩" />
+      <section className="resume-recent-section" aria-label="最近十盘">
+        <div className="resume-section-heading">
+          <div>
+            <strong>最近十盘</strong>
+          </div>
+          {replayAction}
+        </div>
+        <RecentResultMarkers results={recentResults} className="profile-rank-results" />
+      </section>
       <section className="resume-character-records" aria-label="角色战绩">
         <strong>角色战绩</strong>
         <CharacterRecordsPanel characterRecords={characterRecords} itemEffects={itemEffects} />

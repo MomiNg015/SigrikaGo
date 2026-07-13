@@ -75,9 +75,6 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           <button className="close-button resume-close-button" onClick={onClose} aria-label="关闭履历"><X size={20} /></button>
         </header>
         <ModeTabs mode={mode} onModeChange={setMode} />
-        <button className="replay-open-button resume-replay-action" onClick={() => setShowReplays(true)}>
-          <MonitorPlay size={18} />对局回放
-        </button>
         {profileLoading && <p className="quiet-text resume-profile-status">正在同步真实战绩...</p>}
         {profileError && <p className="room-people-error resume-profile-status">{profileError}</p>}
         <HouseProfileStats
@@ -86,6 +83,11 @@ export default function ResumeModal({ user, token, characterListView, onClose, o
           recentResults={modeUser.recentResults}
           characterRecords={characterRecords}
           itemEffects={itemEffects}
+          replayAction={(
+            <button className="replay-open-button resume-replay-action" onClick={() => setShowReplays(true)}>
+              <MonitorPlay size={18} />对局回放
+            </button>
+          )}
         />
         {showReplays && (
           <HouseReplayDialog

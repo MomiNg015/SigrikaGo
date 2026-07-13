@@ -413,7 +413,7 @@
 <li>Desktop resume modals keep the outer window fixed inside the viewport with hidden outer overflow; embedded character records own the vertical scroll region, while the <code>.profile-grid.top-stats-bar</code> stats wrapper stays overflow-visible so rating/rank help tooltips can escape the stat cards without being clipped. Desktop user profile detail modals likewise give the character-record list a bounded scroll area, and character detail headers reserve right-side space so the compact BGM player cannot collide with the close button.</li>
 </ul>
 <ul>
-<li>Resume and user profile recent-result rows render a real <code>.recent-result-label</code> reading &quot;最近十盘的战绩&quot; above the marker chips inside <code>.profile-rank-results</code>; the label is small black text rather than a background watermark, and the chips/empty state remain the primary row content on desktop and mobile.</li>
+<li>The resume modal groups its existing recent-result markers under a &quot;最近十盘&quot; heading and places the existing replay action beside that heading instead of reserving a separate top-level row. Public user profiles retain their existing standalone recent-result label and replay action layout.</li>
 </ul>
 <ul>
 <li>Personalization sections now expose one &quot;style picker&quot; entry per equipment category. Each picker opens a nested modal containing default plus unlocked decorations, closes immediately after selection, and updates the local try-on preview while the existing save action remains the only persistence step.</li>
@@ -4617,7 +4617,7 @@
 <li>Resume character records in the final Bright School mobile layers mirror the detailed user profile character-record list: the section shell remains lightweight, and each compact row owns avatar/name plus five right-aligned stat columns for total games, wins, losses, draws, and win rate. The embedded resume list and standalone nested record dialogs keep those stats on one line with tabular numbers instead of a single combined record string.</li>
 </ul>
 <ul>
-<li>Resume and user profile recent-result rows share the same <code>.profile-rank-results</code> visual contract on desktop and mobile: a real <code>.recent-result-label</code> displays &quot;最近十盘的战绩&quot; as small black text above the green/red result chips, rather than as a faint background watermark.</li>
+<li>Resume and user profile recent-result rows share the same <code>.profile-rank-results</code> visual contract on desktop and mobile. The resume wraps its markers in a dedicated recent-results section and places the existing replay action beside the &quot;最近十盘&quot; heading; the public profile retains its existing inline label and replay layout.</li>
 </ul>
 <ul>
 <li>Mobile user profile stat cards use centered internal grids for record, rating, and rank. The record card sizes total games and win/loss/draw as two centered lines so long results stay inside the card instead of overflowing.</li>

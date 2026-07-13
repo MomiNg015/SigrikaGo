@@ -380,7 +380,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(html.indexOf("mode-tabs")).toBeLessThan(html.indexOf("resume-replay-action"));
     expect(html).toContain(">五子棋</button>");
     expect(html).not.toContain(">来下五子棋吗？</button>");
-    expect(html.indexOf("resume-replay-action")).toBeLessThan(html.indexOf("top-stats-bar"));
+    expect(html.indexOf("top-stats-bar")).toBeLessThan(html.indexOf("resume-replay-action"));
+    expect(html.indexOf("resume-replay-action")).toBeLessThan(html.indexOf("resume-character-records"));
     expect(html).toContain("top-stats-bar");
     expect(html).toContain("text-rating-value");
     expect(html).toContain("resume-wallet");
@@ -393,8 +394,8 @@ describe("deriveCharacterRecordStats", () => {
     expect(html).toContain("profile-record-lines");
     expect(html).toContain("profile-record-total");
     expect(html).toContain("profile-record-breakdown");
-    expect(html).toContain("recent-result-label");
-    expect(html).toContain("最近十盘的战绩");
+    expect(html).toContain("resume-recent-section");
+    expect(html).toContain(">最近十盘</strong>");
     expect(html).toContain("resume-character-records");
     expect(html).toContain("角色战绩");
     expect(html).toContain("character-record-list");
