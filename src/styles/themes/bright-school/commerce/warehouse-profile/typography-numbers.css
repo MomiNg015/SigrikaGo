@@ -43,7 +43,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
   .plaque-stats,
   .profile-resume-stats > span,
-  .warehouse-item span,
+  .warehouse-item-quantity,
   .shop-wallet,
   .timer-value,
   .score-chip

@@ -216,69 +216,17 @@
     min-width: 620px;
   }
 
-.warehouse-modal,
   .house-modal {
     display: grid;
     align-content: start;
   }
 
-  .warehouse-header,
   .house-header,
   .owned-decoration-header {
     min-width: 0;
     gap: 8px;
     padding-right: 34px;
     flex-wrap: wrap;
-  }
-
-  .warehouse-grid {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    align-content: start;
-  }
-
-  .warehouse-item {
-    grid-template-columns: 52px minmax(0, 1fr) auto;
-    grid-template-rows: auto auto;
-    gap: 4px 8px;
-    padding: 9px;
-  }
-
-  .warehouse-item img,
-  .warehouse-item > svg {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    width: 52px;
-    height: 52px;
-  }
-
-  .warehouse-item div {
-    display: contents;
-  }
-
-  .warehouse-item strong {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .warehouse-item p {
-    grid-column: 2;
-    grid-row: 2;
-  }
-
-  .warehouse-item span {
-    grid-column: 3;
-    grid-row: 1;
-    align-self: end;
-    justify-self: end;
-    text-align: right;
-  }
-
-  .warehouse-item .primary-action {
-    grid-column: 3;
-    grid-row: 2;
-    align-self: start;
-    justify-self: end;
   }
 
   .character-target-modal {

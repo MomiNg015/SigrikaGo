@@ -96,50 +96,60 @@ describe("WarehouseModal candy feedback", () => {
     expect(html).toContain("warehouse-item-category-character");
   });
 
-  it("keeps mobile warehouse item cards tall enough for item details", () => {
+  it("keeps mobile warehouse item cards spacious enough for enlarged artwork", () => {
     const brightSchoolMobileCss = readCssWithImports(
-      new URL("../styles/themes/bright-school/mobile.css", import.meta.url)
+      new URL("../styles/themes/bright-school.css", import.meta.url)
     );
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(brightSchoolMobileCss).toContain(".warehouse-item");
-    expect(brightSchoolMobileCss).toContain("min-height: 88px !important");
-    expect(brightSchoolMobileCss).toContain("padding: 10px 10px !important");
+    expect(brightSchoolMobileCss).toContain("--warehouse-item-media-size: clamp(64px, 20vw, 72px)");
+    expect(brightSchoolMobileCss).toContain("min-height: 120px !important");
+    expect(brightSchoolMobileCss).toContain("padding: 11px !important");
+    expect(brightSchoolMobileCss).toContain("font-size: 14px !important");
+    expect(brightSchoolMobileCss).toContain("font-size: 12px !important");
     expect(finalMobileCss).toContain(".warehouse-item");
-    expect(finalMobileCss).toContain("min-height: 88px !important");
-    expect(finalMobileCss).toContain("padding: 10px 10px !important");
+    expect(finalMobileCss).toContain("--warehouse-item-media-size: clamp(64px, 20vw, 72px)");
+    expect(finalMobileCss).toContain("min-height: 120px !important");
+    expect(finalMobileCss).toContain("padding: 11px !important");
+    expect(finalMobileCss).not.toContain(".warehouse-item:active");
   });
 
-  it("lays out desktop warehouse items as single-row entries while preserving mobile overrides", () => {
+  it("lays out desktop warehouse items as a two-column collection with mobile fallback", () => {
     const commerceCss = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
+    const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const gridBlock = [...commerceCss.matchAll(/\.warehouse-grid\s*\{[^}]+\}/g)]
       .map((match) => match[0])
       .find((block) => block.includes("scroll-padding: 0 6px 6px 0")) ?? "";
     const itemBlock = [...commerceCss.matchAll(/\.warehouse-item\s*\{[^}]+\}/g)]
       .map((match) => match[0])
-      .find((block) => block.includes("64px minmax(0, 1fr) auto")) ?? "";
+      .find((block) => block.includes("--warehouse-item-media-size: 80px")) ?? "";
     const actionBlock = [...commerceCss.matchAll(/\.warehouse-item \.primary-action\s*\{[^}]+\}/g)]
       .map((match) => match[0])
-      .find((block) => block.includes("align-self: center")) ?? "";
+      .find((block) => block.includes("align-self: end")) ?? "";
 
-    expect(gridBlock).toContain("grid-template-columns: 1fr");
+    expect(commerceCss).toContain("width: min(900px");
+    expect(gridBlock).toContain("grid-template-columns: repeat(2, minmax(0, 1fr))");
     expect(gridBlock).toContain("padding-right: 6px");
     expect(gridBlock).toContain("padding-bottom: 6px");
     expect(gridBlock).toContain("scroll-padding: 0 6px 6px 0");
-    expect(itemBlock).toContain("grid-template-columns: 64px minmax(0, 1fr) auto");
-    expect(itemBlock).toContain("align-items: center");
-    expect(actionBlock).not.toContain("grid-column: 1 / -1");
-    expect(actionBlock).toContain("align-self: center");
+    expect(itemBlock).toContain("grid-template-columns: var(--warehouse-item-media-size) minmax(0, 1fr)");
+    expect(itemBlock).toContain("align-items: stretch");
+    expect(actionBlock).toContain("grid-column: 2");
+    expect(actionBlock).toContain("grid-row: 2");
+    expect(actionBlock).toContain("align-self: end");
+    expect(brightSchoolCss).toContain("--warehouse-item-media-size: 104px");
+    expect(brightSchoolCss).toContain(".warehouse-item-media");
+    expect(brightSchoolCss).toContain("object-fit: contain !important");
     expect(finalMobileCss).toContain(".warehouse-item");
     expect(finalMobileCss).toContain(".warehouse-grid");
     expect(finalMobileCss).toContain("padding-right: 6px !important");
     expect(finalMobileCss).toContain("padding-bottom: 6px !important");
     expect(finalMobileCss).toContain("scroll-padding: 0 6px 6px 0 !important");
-    expect(finalMobileCss).toContain("grid-template-columns: 36px minmax(0, 1fr) auto !important");
-    expect(finalMobileCss).toContain("grid-row: 1 !important");
-    expect(finalMobileCss).toContain("grid-row: 2 !important");
-    expect(finalMobileCss).toContain("text-align: right !important");
+    expect(finalMobileCss).toContain("grid-template-columns: var(--warehouse-item-media-size) minmax(0, 1fr) !important");
+    expect(finalMobileCss).toContain(".warehouse-item-media");
+    expect(finalMobileCss).toContain(".warehouse-item-quantity");
   });
 
   it("renders unusable item actions as disabled gray buttons on desktop and mobile", () => {
@@ -162,6 +172,12 @@ describe("WarehouseModal candy feedback", () => {
     const disabledBlock = commerceCss.match(/\.warehouse-item \.primary-action:disabled\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(html).toContain('class="primary-action"');
+    expect(html).toContain('class="warehouse-item-media"');
+    expect(html).toContain('class="warehouse-item-copy"');
+    expect(html).toContain('class="warehouse-item-quantity"');
+    expect(html).toContain("×2");
+    expect(html).toContain('aria-label="数量 2"');
+    expect(html).toContain('aria-label="请去招募：招新贴报"');
     expect(html).toContain("disabled=\"\"");
     expect(html).toContain("请去招募");
     expect(disabledBlock).toContain("cursor: not-allowed");

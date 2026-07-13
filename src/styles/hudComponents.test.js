@@ -378,10 +378,10 @@ describe("component-level HUD refinements", () => {
     expect(themesCss).toContain("background: transparent !important");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item strong");
     expect(themesCss).toContain("background: linear-gradient(135deg, #ffdfeb, #fff8e5) !important");
-    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item span");
+    expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-item-quantity");
     expect(themesCss).toContain("position: absolute !important");
-    expect(themesCss).toContain("left: 18px !important");
-    expect(themesCss).toContain("bottom: 14px !important");
+    expect(themesCss).toContain("top: -8px !important");
+    expect(themesCss).toContain("right: -10px !important");
   });
 
   it("cleans up Bright School handbook roster and decoration controls", () => {

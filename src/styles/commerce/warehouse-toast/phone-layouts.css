@@ -22,15 +22,30 @@
   }
 
   .warehouse-item {
-    grid-template-columns: 52px minmax(0, 1fr);
-    gap: 8px;
-    padding: 9px;
+    --warehouse-item-media-size: clamp(64px, 20vw, 72px);
+    grid-template-columns: var(--warehouse-item-media-size) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 6px 10px;
+    min-height: 112px;
+    padding: 10px;
   }
 
-  .warehouse-item img,
-  .warehouse-item > svg {
-    width: 52px;
-    height: 52px;
+  .warehouse-item-media {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    width: var(--warehouse-item-media-size);
+    height: var(--warehouse-item-media-size);
+    padding: 4px;
+  }
+
+  .warehouse-item-copy {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .warehouse-item .primary-action {
+    grid-column: 2;
+    grid-row: 2;
   }
 
   .character-target-modal {
