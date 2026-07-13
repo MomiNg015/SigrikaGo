@@ -295,7 +295,11 @@ describe("background music library", () => {
   it("uses Chisa skill music", () => {
     const track = resolveBackgroundMusic({
       view: "room",
-      skillPreview: { characterId: "chisa" }
+      skillPreview: {
+        characterId: "chisa",
+        effectType: "liberty-purge",
+        musicEffectType: ""
+      }
     });
 
     expect(track).toMatchObject({
@@ -399,7 +403,11 @@ describe("background music library", () => {
 
     const track = resolveBackgroundMusic({
       view: "room",
-      skillPreview: { characterId: "denia" },
+      skillPreview: {
+        characterId: "denia",
+        effectType: "flip-stone",
+        musicEffectType: ""
+      },
       selections: { skill: { denia: "denia-skill-alt" } },
       ownedMusicIds: ["denia-skill-alt"],
       tracks
@@ -499,6 +507,7 @@ describe("background music library", () => {
       skillPreview: {
         characterId: "aemeath",
         effectType: "voyage-star",
+        musicEffectType: "voyage-star",
         musicTrackId: "aemeath-voyage-star-default"
       },
       selections: { skill: { aemeath: "aemeath-skill-default" } },
@@ -528,6 +537,7 @@ describe("background music library", () => {
       skillPreview: {
         characterId: "aemeath",
         effectType: "voyage-star",
+        musicEffectType: "voyage-star",
         musicTrackId: "aemeath-voyage-star-default"
       },
       selections: {
@@ -618,6 +628,7 @@ describe("background music library", () => {
             type: "skill",
             color: "white",
             effectType: "voyage-star",
+            musicEffectType: "voyage-star",
             musicTrackId: "aemeath-voyage-star-default"
           }
         ]
@@ -631,6 +642,7 @@ describe("background music library", () => {
     expect(preview).toEqual({
       characterId: "aemeath",
       effectType: "voyage-star",
+      musicEffectType: "voyage-star",
       musicTrackId: "aemeath-voyage-star-default"
     });
   });

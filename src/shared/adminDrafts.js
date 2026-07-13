@@ -1,5 +1,4 @@
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
-import { DEFAULT_VOYAGE_STAR_DERIVED_SKILL } from "./derivedSkills.js";
 import { skillEffectTargetRule } from "./skillEffectCatalog.js";
 import { normalizeCharacterCvName, normalizeCharacterCvUrl } from "./characterCv.js";
 import { normalizeShopItemIllustName, normalizeShopItemIllustUrl } from "./shopItemIllust.js";
@@ -30,7 +29,7 @@ export function emptyCharacterDraft() {
       paramsJson: "{}",
       costType: "numeric",
       costValue: "0",
-      derivedSkills: [defaultDerivedSkillDraft()],
+      derivedSkills: [],
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
       enabled: true
     }
@@ -39,7 +38,8 @@ export function emptyCharacterDraft() {
 
 export function buildCharacterDraft(character) {
   const skill = character.skill ?? {};
-  const derivedSkills = derivedSkillDraftsFromParams(skill.params ?? parseJsonObject(skill.paramsJson));
+  const serializedParams = skill.paramsJson == null ? null : parseJsonObject(skill.paramsJson);
+  const derivedSkills = derivedSkillDraftsFromParams(serializedParams ?? skill.params ?? {});
   return {
     dbId: character.dbId ?? "",
     originalSlug: character.id ?? "",
@@ -304,23 +304,14 @@ export function targetRuleForEffect(effectType) {
   return skillEffectTargetRule(effectType, "empty-point");
 }
 
-export function defaultDerivedSkillDraft() {
-  return {
-    ...DEFAULT_VOYAGE_STAR_DERIVED_SKILL,
-    costValue: String(DEFAULT_VOYAGE_STAR_DERIVED_SKILL.costValue)
-  };
-}
-
-export function updateDerivedSkillDraft(draft, effectType, field, value) {
-  const derivedSkills = Array.isArray(draft.skill?.derivedSkills) && draft.skill.derivedSkills.length
-    ? draft.skill.derivedSkills
-    : [defaultDerivedSkillDraft()];
+export function updateDerivedSkillDraft(draft, derivedSkillId, field, value) {
+  const derivedSkills = Array.isArray(draft.skill?.derivedSkills) ? draft.skill.derivedSkills : [];
   return {
     ...draft,
     skill: {
       ...draft.skill,
       derivedSkills: derivedSkills.map((skill) => (
-        skill.effectType === effectType ? { ...skill, [field]: value } : skill
+        derivedSkillIdentity(skill) === derivedSkillId ? { ...skill, [field]: value } : skill
       ))
     }
   };
@@ -329,11 +320,13 @@ export function updateDerivedSkillDraft(draft, effectType, field, value) {
 function skillParamsJsonWithDerivedSkills(skill) {
   const params = parseJsonObject(skill.paramsJson);
   if (params == null) return null;
-  const rawDerivedSkills = Array.isArray(skill.derivedSkills) ? skill.derivedSkills : [];
-  const derivedSkills = rawDerivedSkills
-    .map((definition) => sanitizeDerivedSkillDraft(definition))
-    .filter(Boolean);
-  if (derivedSkills.length !== rawDerivedSkills.length) return null;
+  const storedDerivedSkills = Array.isArray(params.derivedSkills) ? params.derivedSkills : [];
+  const draftDerivedSkills = Array.isArray(skill.derivedSkills) ? skill.derivedSkills : [];
+  if (storedDerivedSkills.length !== draftDerivedSkills.length) return null;
+  const derivedSkills = storedDerivedSkills.map((definition, index) => (
+    mergeDerivedSkillContent(definition, draftDerivedSkills[index])
+  ));
+  if (derivedSkills.some((definition) => definition == null)) return null;
   const nextParams = { ...params };
   if (derivedSkills.length) nextParams.derivedSkills = derivedSkills;
   else delete nextParams.derivedSkills;
@@ -342,26 +335,35 @@ function skillParamsJsonWithDerivedSkills(skill) {
 
 function derivedSkillDraftsFromParams(params = {}) {
   const raw = Array.isArray(params?.derivedSkills) ? params.derivedSkills : [];
-  const voyageStar = raw.find((definition) => (definition?.effectType ?? definition?.id) === "voyage-star");
-  return [{ ...defaultDerivedSkillDraft(), ...(voyageStar ?? {}) }];
+  return raw
+    .filter((definition) => definition && typeof definition === "object" && derivedSkillIdentity(definition))
+    .map((definition) => ({
+      ...definition,
+      name: String(definition.name ?? ""),
+      description: String(definition.description ?? ""),
+      costValue: String(definition.costValue ?? definition.cost ?? 0)
+    }));
 }
 
-function sanitizeDerivedSkillDraft(definition) {
-  if (!definition?.effectType) return null;
-  const costValue = String(definition.costValue ?? "").trim();
-  if (!/^-?\d+(\.\d+)?$/.test(costValue)) return null;
+function mergeDerivedSkillContent(definition, draft) {
+  if (!definition || typeof definition !== "object" || derivedSkillIdentity(definition) !== derivedSkillIdentity(draft)) return null;
+  const name = String(draft.name ?? "").trim();
+  const description = String(draft.description ?? "").trim();
+  const costType = definition.costType === "special" ? "special" : "numeric";
+  const costValue = String(draft.costValue ?? "").trim();
+  if (!name) return null;
+  if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) return null;
+  if (costType === "special" && !costValue) return null;
   return {
-    id: definition.id ?? definition.effectType,
-    effectType: definition.effectType,
-    name: String(definition.name ?? "").trim() || DEFAULT_VOYAGE_STAR_DERIVED_SKILL.name,
-    description: String(definition.description ?? "").trim(),
-    uses: Math.max(0, Math.min(9, parseAdminInteger(definition.uses) ?? 1)),
-    freeTurn: definition.freeTurn !== false,
-    targetRule: definition.targetRule ?? skillEffectTargetRule(definition.effectType, "none"),
-    costType: "numeric",
-    costValue,
-    musicTrackId: definition.musicTrackId ?? DEFAULT_VOYAGE_STAR_DERIVED_SKILL.musicTrackId
+    ...definition,
+    name,
+    description,
+    costValue
   };
+}
+
+function derivedSkillIdentity(definition) {
+  return String(definition?.effectType ?? definition?.id ?? "").trim();
 }
 
 function gachaPrizeDraftToBody(prize, index, errors) {

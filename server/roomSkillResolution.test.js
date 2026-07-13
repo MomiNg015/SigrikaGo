@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { COLORS, GAME_PHASES, createGameState } from "../src/shared/game.js";
+import { COLORS, GAME_PHASES, createGameState, useSkill } from "../src/shared/game.js";
 import { CHARACTERS } from "../src/shared/characters.js";
 import {
   SKILL_BOARD_EFFECT_DURATION_MS,
@@ -173,6 +173,7 @@ describe("room skill resolution helpers", () => {
       characterId: "sigrika",
       characterName: CHARACTERS.sigrika.name,
       skillName: CHARACTERS.sigrika.skill.name,
+      musicEffectType: "",
       effectType: "random-blast",
       targetId: "12-12",
       affectedPointIds: ["11-11", "12-12"],
@@ -213,6 +214,7 @@ describe("room skill resolution helpers", () => {
     expect(preview).toMatchObject({
       id: "skill-chisa",
       characterId: "chisa",
+      musicEffectType: "",
       effectType: "liberty-purge",
       targetId: "0,0",
       affectedPointIds: ["0,0", "3,3", "6,6"],
@@ -235,6 +237,7 @@ describe("room skill resolution helpers", () => {
       character: CHARACTERS.aemeath,
       skill: {
         effectType: "voyage-star",
+        sourceEffectType: "hidden-hand",
         name: "远航星",
         musicTrackId: "aemeath-voyage-star-default"
       },
@@ -260,6 +263,7 @@ describe("room skill resolution helpers", () => {
       id: "skill-voyage-star",
       characterId: "aemeath",
       skillName: "远航星",
+      musicEffectType: "voyage-star",
       effectType: "voyage-star",
       targetId: "6,6",
       musicTrackId: "aemeath-voyage-star-default",
@@ -404,6 +408,51 @@ describe("room skill resolution helpers", () => {
       action: { type: "skill", pointId: "0,0" },
       io: {}
     })).toEqual({ ok: false, error: "五子棋不能使用技能" });
+  });
+
+  test("persists derived music slot metadata in the resolved skill history", () => {
+    let game = createGameState([
+      { color: COLORS.black, characterId: "aemeath" },
+      { color: COLORS.white, characterId: "sigrika" }
+    ]);
+    game = useSkill(game, COLORS.black, "aemeath", "6,6").state;
+    game.turn = COLORS.black;
+    const player = {
+      color: COLORS.black,
+      characterId: "aemeath",
+      character: CHARACTERS.aemeath,
+      user: { username: "alice", itemEffects: {} }
+    };
+    const room = { code: "12345", players: [player], game };
+    const lifecycle = createRoomSkillLifecycle({
+      rooms: new Map([[room.code, room]]),
+      scheduleRoomTimeout: vi.fn(),
+      appendSystem: vi.fn(),
+      appendNotices: vi.fn(),
+      resetByoYomi: vi.fn(),
+      scheduleRoomClose: vi.fn(),
+      broadcastRoom: vi.fn(),
+      randomId: () => "skill-voyage-star"
+    });
+
+    const result = lifecycle.startActiveSkill({
+      room,
+      player,
+      action: { type: "skill" },
+      io: {}
+    });
+
+    expect(result.ok).toBe(true);
+    expect(room.game.pendingSkill).toMatchObject({
+      id: "skill-voyage-star",
+      effectType: "voyage-star",
+      musicEffectType: "voyage-star"
+    });
+    expect(room.pendingSkillResolution.game.history.at(-1)).toMatchObject({
+      type: "skill",
+      effectType: "voyage-star",
+      musicEffectType: "voyage-star"
+    });
   });
 
   test("schedules and completes pending skill resolutions through injected room lifecycle hooks", () => {

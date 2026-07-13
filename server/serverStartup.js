@@ -8,6 +8,7 @@ import { ensureGachaSchema, ensureGameModeSchema } from "./db.js";
 import { ensureLoginSessionSchema } from "./loginSessions.js";
 import { ensureMailboxSchema } from "./mailbox.js";
 import { cleanupLegacyDeniaCharacterData } from "./legacyDeniaCleanup.js";
+import { cleanupLegacyDerivedSkillLeak } from "./legacyDerivedSkillCleanup.js";
 import { ensureMusicTrackSettingsSchema } from "./musicTracks.js";
 import { ensureRecruitmentSchema } from "./recruitment.js";
 import { ensureRoomPersistenceSchema } from "./roomPersistence.js";
@@ -29,6 +30,7 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "seedDefaultStoryScripts",
   "seedBuiltinAchievements",
   "cleanupLegacyDeniaCharacterData",
+  "cleanupLegacyDerivedSkillLeak",
   "cleanupLegacyUsernames",
   "seedCharacters",
   "seedBuiltinShopItems",
@@ -62,11 +64,13 @@ export async function initializeServerData({
   seedAdminDefaultConfig: seedAdminDefaultConfigTask = seedAdminDefaultConfig,
   seedBuiltinAchievements: seedBuiltinAchievementsTask = seedBuiltinAchievements,
   cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask = cleanupLegacyDeniaCharacterData,
+  cleanupLegacyDerivedSkillLeak: cleanupLegacyDerivedSkillLeakTask = cleanupLegacyDerivedSkillLeak,
   cleanupLegacyUsernames: cleanupLegacyUsernamesTask = cleanupLegacyUsernames,
   promoteConfiguredAdmins: promoteConfiguredAdminsTask = promoteConfiguredAdmins
 }) {
   const tasks = {
     cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask,
+    cleanupLegacyDerivedSkillLeak: cleanupLegacyDerivedSkillLeakTask,
     cleanupLegacyUsernames: cleanupLegacyUsernamesTask,
     ensureAchievementSchema: ensureAchievementSchemaTask,
     ensureAnnouncementSchema: ensureAnnouncementSchemaTask,

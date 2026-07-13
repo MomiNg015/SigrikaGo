@@ -28,6 +28,7 @@ describe("server startup", () => {
     const seedAdminDefaultConfig = task("seedAdminDefaultConfig");
     const seedBuiltinAchievements = task("seedBuiltinAchievements");
     const cleanupLegacyDeniaCharacterData = task("cleanupLegacyDeniaCharacterData");
+    const cleanupLegacyDerivedSkillLeak = task("cleanupLegacyDerivedSkillLeak");
     const cleanupLegacyUsernames = task("cleanupLegacyUsernames");
     const promoteConfiguredAdmins = task("promoteConfiguredAdmins");
 
@@ -52,6 +53,7 @@ describe("server startup", () => {
       seedAdminDefaultConfig,
       seedBuiltinAchievements,
       cleanupLegacyDeniaCharacterData,
+      cleanupLegacyDerivedSkillLeak,
       cleanupLegacyUsernames,
       promoteConfiguredAdmins
     });
@@ -68,6 +70,7 @@ describe("server startup", () => {
       "seedDefaultStoryScripts",
       "seedBuiltinAchievements",
       "cleanupLegacyDeniaCharacterData",
+      "cleanupLegacyDerivedSkillLeak",
       "cleanupLegacyUsernames",
       "seedCharacters",
       "seedBuiltinShopItems",

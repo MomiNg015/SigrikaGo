@@ -41,6 +41,7 @@ Questions to answer:
 #### 2. Signatures
 - `CharacterMusicPreview({ characterId, slots, audioSettings, onTrackChange })` renders `.character-music-player`; each slot contains `{ id, effectType, label, shortLabel, fallbackTrackId, options, track }`.
 - `onTrackChange({ trackId, effectType })` persists the active ordinary- or derived-skill slot.
+- Runtime skill BGM metadata uses `{ effectType, musicEffectType, musicTrackId }`: `effectType` owns gameplay presentation, while `musicEffectType` alone selects the ordinary (`""`) or derived (non-empty) music slot.
 - Local playback states are `idle`, `loading`, `playing`, and `error`.
 - The decorative Rough.js SVG layer renders as `.character-music-sketch` and is `aria-hidden`.
 
@@ -49,6 +50,7 @@ Questions to answer:
 - The global background music pause request must be released when preview startup fails, the selected track changes, or the component unmounts.
 - Async preview startup must use an intent/request guard so old decode completions cannot play after a slot change, pause action, or unmount.
 - Ordinary skill and every derived `effectType` are independent selection slots. Switching slot or track while playing continues with the new track; switching while idle must not autoplay.
+- Pending skill previews must always carry `musicEffectType`; ordinary skills use an explicit empty string even when their gameplay `effectType` is non-empty, while derived skills use their exact derived effect type. Resolved skill history preserves non-empty derived `musicEffectType`; legacy history may infer it only from `musicTrackId` track metadata.
 - Track persistence is optimistic but reversible: keep a per-slot request id, ignore stale saves, roll back only the latest rejected save, keep the sheet open, show a player-local error, and expose retry.
 - The main title and track-sheet row titles stay single-line. Only measured overflow animates; the main title scrolls one way with start/end pauses, while rows animate only on hover/focus. Reduced motion disables automatic movement and keeps manual horizontal access.
 - The track sheet is rendered into the nearest nested/modal backdrop (falling back to the themed app shell), positioned against the trigger without expanding the modal, constrained to the viewport, and limited to about four rows before internal scrolling. This keeps it above the detail modal while retaining theme ancestry. Trigger, outside press, and Escape close it; Escape restores trigger focus.
@@ -65,6 +67,7 @@ Questions to answer:
 - Latest save fails -> active slot rolls back, local error remains retryable, and other slots stay untouched.
 - Older save settles after a newer save -> stale response cannot replace the newer selection or user payload.
 - Derived slot selected -> request includes its exact non-empty `effectType`; ordinary slot uses an empty value.
+- Ordinary runtime preview with gameplay `effectType: "flip-stone"` or `"liberty-purge"` -> resolve `musicSelections.skill[characterId]`, not a derived slot.
 - Bright School active -> themed hover/active rules keep transform-only feedback.
 - Reduced motion -> no automatic title animation; text remains horizontally reachable.
 - Portrait mobile -> final mobile safety layer preserves the same non-overlap grid contract as the theme layer.
@@ -75,6 +78,7 @@ Questions to answer:
 - Base: characters without derived BGM render one slot and no tab strip; characters with one track render a non-sheet title.
 - Bad: waiting for `decodeAudioData()` before updating visible state.
 - Bad: storing derived selection in `musicSelections.skill[characterId]`, filtering only by character, or closing the sheet after every selection.
+- Bad: using runtime gameplay `effectType` directly as the music slot discriminator, because every ordinary active skill also has a non-empty gameplay effect type.
 - Bad: using an infinite CSS marquee without measuring overflow or honoring `prefers-reduced-motion`.
 - Bad: running Rough.js drawing or replacing SVG children inside hover, focus, active, or click handlers.
 
@@ -82,7 +86,7 @@ Questions to answer:
 - `src/audio/CharacterMusicPreview.test.jsx` asserts the sketch layer, CSS playback glyph, and accessible state hooks without Lucide playback icons.
 - `src/audio/CharacterMusicPreview.dom.test.jsx` asserts tab semantics, slot switching, sheet persistence after selection, save rollback, and retry.
 - `src/modals/HouseModal.test.js` or focused style tests assert slot construction, desktop/mobile size hooks, state selectors, pointer-transparent sketch styling, and transform-only feedback.
-- `src/shared/musicLibrary.test.js`, `server/musicSelection.test.js`, and `server/playerRoutes.test.js` cover ordinary/derived slot separation and request forwarding.
+- `src/shared/musicLibrary.test.js`, `server/roomSkillResolution.test.js`, `server/musicSelection.test.js`, and `server/playerRoutes.test.js` cover realistic ordinary gameplay effect types, pending/history metadata, ordinary/derived slot separation, legacy history fallback, and request forwarding.
 - Run the focused suites and `npm run build` after changing this surface or its Rough.js module boundary.
 
 #### 7. Wrong vs Correct
@@ -97,6 +101,18 @@ Correct:
 
 ```jsx
 onTrackChange({ trackId, effectType: activeSlot.effectType });
+```
+
+Wrong:
+
+```js
+resolveSkillMusicTrack({ effectType: skillPreview.effectType });
+```
+
+Correct:
+
+```js
+resolveSkillMusicTrack({ effectType: skillPreview.musicEffectType });
 ```
 
 ### Social action disabled-state contract

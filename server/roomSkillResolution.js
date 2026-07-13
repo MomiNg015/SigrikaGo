@@ -74,6 +74,12 @@ export function createRoomSkillLifecycle({
   }) {
     const pendingSkillId = randomId();
     const effectType = resolvedSkillEffectType(result.state, skill);
+    const musicEffectType = skill?.sourceEffectType ? effectType : "";
+    const skillAction = latestSkillAction(result.state);
+    if (skillAction) {
+      if (musicEffectType) skillAction.musicEffectType = musicEffectType;
+      else delete skillAction.musicEffectType;
+    }
     room.pendingSkillResolution = createPendingSkillResolution({
       pendingSkillId,
       game: result.state,
@@ -90,6 +96,7 @@ export function createRoomSkillLifecycle({
       requestedTargetId: skillTargetId,
       resolvedGame: result.state,
       effectType,
+      musicEffectType,
       resolvesAt: room.pendingSkillResolution.resolvesAt,
       effectsEnabled: room.pendingSkillResolution.effectsEnabled
     });
@@ -196,11 +203,15 @@ export function buildPendingSkillPreview({
   requestedTargetId,
   resolvedGame,
   effectType: providedEffectType = "",
+  musicEffectType: providedMusicEffectType = null,
   resolvesAt,
   effectsEnabled = true
 }) {
   const skillAction = [...(resolvedGame.history ?? [])].reverse().find((entry) => entry.type === "skill");
   const effectType = providedEffectType || resolvedSkillEffectType(resolvedGame, skill);
+  const musicEffectType = providedMusicEffectType == null
+    ? (skill?.sourceEffectType ? effectType : "")
+    : String(providedMusicEffectType).trim();
   const targetId = skillAction?.id ?? requestedTargetId ?? null;
   const markedPointIds = Array.isArray(skillAction?.marked) ? skillAction.marked : [];
   const removalMarkIds = Array.isArray(skillAction?.removalMarkIds) ? skillAction.removalMarkIds : [];
@@ -231,6 +242,7 @@ export function buildPendingSkillPreview({
     itemEffects: player.user.itemEffects ?? {},
     skillName: skill.name,
     musicTrackId: skillAction?.musicTrackId ?? skill.musicTrackId ?? null,
+    musicEffectType,
     effectType,
     targetId,
     affectedPointIds,

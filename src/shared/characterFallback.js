@@ -1,4 +1,5 @@
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "./skillMessages.js";
+import { DEFAULT_VOYAGE_STAR_DERIVED_SKILL } from "./derivedSkills.js";
 
 export const FALLBACK_CHARACTERS = {
   sigrika: {
@@ -51,7 +52,10 @@ export const FALLBACK_CHARACTERS = {
       costValue: "0",
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
       description: "本轮落子为隐藏手。落下了电子幽灵般的一手，应该不会被发现吧...",
-      effectTags: ["隐藏手"]
+      effectTags: ["隐藏手"],
+      params: {
+        derivedSkills: [{ ...DEFAULT_VOYAGE_STAR_DERIVED_SKILL }]
+      }
     }
   },
   baconbits: {

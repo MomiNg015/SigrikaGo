@@ -535,6 +535,7 @@ export function latestSkillPreview(room) {
   return {
     characterId,
     ...(latestSkill.effectType ? { effectType: latestSkill.effectType } : {}),
+    ...(latestSkill.musicEffectType ? { musicEffectType: latestSkill.musicEffectType } : {}),
     ...(latestSkill.musicTrackId ? { musicTrackId: latestSkill.musicTrackId } : {})
   };
 }
@@ -574,14 +575,23 @@ export function characterVoiceMapForSkill(voices = CHARACTER_SKILL_VOICES, syste
 function findSkillTrack(skillPreview, tracks, selections = {}, ownedMusicIds = null) {
   const characterId = canonicalCharacterId(skillPreview?.characterId ?? skillPreview?.character?.id);
   if (!characterId) return null;
+  const musicEffectType = resolveSkillPreviewMusicEffectType(skillPreview, tracks);
   return resolveSkillMusicTrack({
     characterId,
-    effectType: skillPreview?.effectType,
+    effectType: musicEffectType,
     fallbackTrackId: skillPreview?.musicTrackId,
     selections,
     ownedMusicIds,
     tracks
   });
+}
+
+function resolveSkillPreviewMusicEffectType(skillPreview, tracks) {
+  if (Object.hasOwn(skillPreview ?? {}, "musicEffectType")) {
+    return normalizeSkillMusicEffectType(skillPreview.musicEffectType);
+  }
+  const fallbackTrack = skillPreview?.musicTrackId ? tracks?.[skillPreview.musicTrackId] : null;
+  return normalizeSkillMusicEffectType(fallbackTrack?.effectType);
 }
 
 function resolveTypedTrack(type, selectedId, ownedMusicIds, tracks, defaultId) {

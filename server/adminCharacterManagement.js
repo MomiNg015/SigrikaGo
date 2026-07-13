@@ -1,4 +1,5 @@
 import { DEFAULT_SKILL_SYSTEM_MESSAGE } from "../src/shared/skillMessages.js";
+import { isDeepStrictEqual } from "node:util";
 import { routeError } from "./adminRouteErrors.js";
 import { writeAudit } from "./adminAudit.js";
 import { toCharacterPayload, validateCharacterInput } from "./characters.js";
@@ -138,7 +139,7 @@ export function toAdminCharacterPayload(record) {
         description: record.skill.description,
         freeTurn: record.skill.freeTurn,
         targetRule: record.skill.targetRule,
-        params: {},
+        params: payload.skill?.params ?? {},
         costType: record.skill.costType ?? "numeric",
         costValue: record.skill.costValue ?? String(record.skill.cost ?? 0),
         cost: 0,
@@ -165,11 +166,120 @@ function mergeCharacterInput(record, body = {}) {
   return {
     ...current,
     ...incoming,
-    skill: {
-      ...current.skill,
-      ...incomingSkill
-    }
+    skill: mergeEditableSkillContent(current.skill, incomingSkill)
   };
+}
+
+const EDITABLE_SKILL_FIELDS = new Set(["name", "description", "costValue"]);
+const IMMUTABLE_SKILL_FIELDS = [
+  "effectType",
+  "uses",
+  "freeTurn",
+  "targetRule",
+  "costType",
+  "systemMessage",
+  "enabled"
+];
+const EDITABLE_DERIVED_SKILL_FIELDS = new Set(["name", "description", "costValue"]);
+
+function mergeEditableSkillContent(currentSkill, incomingSkill) {
+  for (const field of IMMUTABLE_SKILL_FIELDS) {
+    if (Object.hasOwn(incomingSkill, field) && !isDeepStrictEqual(incomingSkill[field], currentSkill[field])) {
+      throw routeError(400, `技能逻辑由代码管理，后台不能修改 ${field}`);
+    }
+  }
+
+  const merged = { ...currentSkill };
+  for (const field of EDITABLE_SKILL_FIELDS) {
+    if (Object.hasOwn(incomingSkill, field)) merged[field] = incomingSkill[field];
+  }
+  if (Object.hasOwn(incomingSkill, "paramsJson")) {
+    merged.paramsJson = mergeEditableDerivedSkillContent(currentSkill.paramsJson, incomingSkill.paramsJson);
+  }
+  return merged;
+}
+
+function mergeEditableDerivedSkillContent(currentParamsJson, incomingParamsJson) {
+  const currentParams = parseParamsObject(currentParamsJson);
+  const incomingParams = parseParamsObject(incomingParamsJson);
+  const currentDefinitions = Array.isArray(currentParams.derivedSkills) ? currentParams.derivedSkills : [];
+  const incomingDefinitions = Array.isArray(incomingParams.derivedSkills) ? incomingParams.derivedSkills : [];
+  const currentLogicParams = { ...currentParams };
+  const incomingLogicParams = { ...incomingParams };
+  delete currentLogicParams.derivedSkills;
+  delete incomingLogicParams.derivedSkills;
+
+  if (!isDeepStrictEqual(incomingLogicParams, currentLogicParams)) {
+    throw routeError(400, "技能参数由代码管理，后台不能修改");
+  }
+  if (incomingDefinitions.length !== currentDefinitions.length) {
+    throw routeError(400, "技能结构由代码管理，后台不能新增或删除派生技能");
+  }
+
+  const derivedSkills = currentDefinitions.map((currentDefinition, index) => {
+    const incomingDefinition = incomingDefinitions[index];
+    if (!isPlainObject(currentDefinition) || !isPlainObject(incomingDefinition)) {
+      throw routeError(400, "派生技能配置无效");
+    }
+    if (derivedSkillIdentity(currentDefinition) !== derivedSkillIdentity(incomingDefinition)) {
+      throw routeError(400, "技能结构由代码管理，后台不能替换或重排派生技能");
+    }
+    const currentLogic = omitEditableDerivedSkillFields(currentDefinition);
+    const incomingLogic = omitEditableDerivedSkillFields(incomingDefinition);
+    if (!isDeepStrictEqual(incomingLogic, currentLogic)) {
+      throw routeError(400, "派生技能逻辑由代码管理，后台只能修改名称、描述和超频");
+    }
+    return mergeDerivedSkillEditableFields(currentDefinition, incomingDefinition);
+  });
+
+  const mergedParams = { ...currentParams };
+  if (derivedSkills.length) mergedParams.derivedSkills = derivedSkills;
+  else delete mergedParams.derivedSkills;
+  return JSON.stringify(mergedParams);
+}
+
+function omitEditableDerivedSkillFields(definition) {
+  return Object.fromEntries(
+    Object.entries(definition).filter(([field]) => !EDITABLE_DERIVED_SKILL_FIELDS.has(field))
+  );
+}
+
+function mergeDerivedSkillEditableFields(currentDefinition, incomingDefinition) {
+  const merged = { ...currentDefinition };
+  if (Object.hasOwn(incomingDefinition, "name")) {
+    const name = String(incomingDefinition.name ?? "").trim();
+    if (!name) throw routeError(400, "派生技能名称不能为空");
+    merged.name = name;
+  }
+  if (Object.hasOwn(incomingDefinition, "description")) {
+    merged.description = String(incomingDefinition.description ?? "").trim();
+  }
+  if (Object.hasOwn(incomingDefinition, "costValue")) {
+    const costValue = String(incomingDefinition.costValue ?? "").trim();
+    const costType = currentDefinition.costType === "special" ? "special" : "numeric";
+    if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) {
+      throw routeError(400, "派生技能数值超频只能填写数字");
+    }
+    if (costType === "special" && !costValue) {
+      throw routeError(400, "派生技能特殊超频不能为空");
+    }
+    merged.costValue = costValue;
+  }
+  return merged;
+}
+
+function parseParamsObject(paramsJson) {
+  try {
+    const parsed = JSON.parse(paramsJson ?? "{}");
+    if (isPlainObject(parsed)) return parsed;
+  } catch {
+    // The public validator will never receive malformed content from this boundary.
+  }
+  throw routeError(400, "paramsJson must be a valid JSON object");
+}
+
+function derivedSkillIdentity(definition) {
+  return String(definition?.effectType ?? definition?.id ?? "").trim();
 }
 
 function legacySkillInput(input) {

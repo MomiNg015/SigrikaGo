@@ -161,6 +161,7 @@ export async function seedCharacters(prisma) {
     if (existing) {
       await syncBuiltinStaticPortrait(prisma, existing, character);
       await syncBuiltinSkillCost(prisma, existing, character);
+      await syncBuiltinDerivedSkillDefinitions(prisma, existing, character);
       continue;
     }
 
@@ -221,6 +222,30 @@ async function syncBuiltinSkillCost(prisma, existing, character) {
     data: {
       costType: character.skill.costType ?? "numeric",
       costValue: fallbackCost
+    }
+  });
+}
+
+async function syncBuiltinDerivedSkillDefinitions(prisma, existing, character) {
+  const builtinDefinitions = Array.isArray(character.skill?.params?.derivedSkills)
+    ? character.skill.params.derivedSkills
+    : [];
+  if (!builtinDefinitions.length || !existing.skill?.id || !prisma.characterSkill?.update) return;
+  if (existing.skill.effectType !== character.skill.id) return;
+  const params = parseParams(existing.skill.paramsJson);
+  const existingDefinitions = Array.isArray(params.derivedSkills) ? params.derivedSkills : [];
+  const existingIds = new Set(existingDefinitions.map((definition) => definition?.effectType ?? definition?.id).filter(Boolean));
+  const missingDefinitions = builtinDefinitions.filter((definition) => (
+    !existingIds.has(definition?.effectType ?? definition?.id)
+  ));
+  if (!missingDefinitions.length) return;
+  await prisma.characterSkill.update({
+    where: { id: existing.skill.id },
+    data: {
+      paramsJson: JSON.stringify({
+        ...params,
+        derivedSkills: [...existingDefinitions, ...missingDefinitions]
+      })
     }
   });
 }

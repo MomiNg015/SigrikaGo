@@ -148,12 +148,14 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `uses`: 每局使用次数。
 - `freeTurn`: 是否不消耗回合。
 - `targetRule`: Targeting rule; currently validated as `empty-point`, `stone`, `any-point`, `legal-move-point`, or `none`. `random-blast` and `double-move` use `none`; Chisa `liberty-purge` uses `legal-move-point` so the target must pass ordinary move legality on the server.
-- `paramsJson`: JSON 字符串，当前作为扩展参数保留。Hidden-hand skills may store future-proof derived skill definitions under `params.derivedSkills`; Aemeath uses this to configure `voyage-star` display name, description, one-use derived slot, fixed music track id, and numeric overclock cost without a Prisma migration.
+- `paramsJson`: JSON 字符串，当前作为扩展参数保留。基础技能可在 `params.derivedSkills[]` 显式保存代码定义的派生技能；每条定义包含稳定 `id`/`effectType` 以及名称、描述、次数、回合行为、目标规则、超频和可选音乐标识。空数组严格表示没有派生技能，通用解析不得从其他角色注入默认定义。爱弥斯在自己的默认数据中显式配置 `voyage-star`，未来角色沿用同一结构而不需要 Prisma migration。
 - `costType`: `numeric` 或 `special`。
 - `costValue`: 超频值；`numeric` 会参与数子扣分，`special` 当前仅展示。
 - `systemMessage`: 技能系统消息模板。
-- `enabled`: 是否启用；公开角色 payload 会过滤禁用技能，后台角色表单可独立控制角色启用与技能启用。
+- `enabled`: 是否启用；公开角色 payload 会过滤禁用技能。技能启用状态属于代码/数据结构逻辑，后台角色表单不允许修改。
 - `createdAt`, `updatedAt`: 创建和更新时间。
+
+后台角色技能写入是内容覆盖而不是结构覆盖：`PATCH /api/admin/characters/:id` 只接受基础技能与既有派生技能的 `name`、`description`、`costValue` 变化。服务端以当前 `CharacterSkill` 和 `params.derivedSkills[]` 为权威，拒绝效果类型、目标规则、次数、回合行为、参数、超频类别、音乐、启用状态以及派生数组身份/数量/顺序变化。`seedCharacters()` 只补代码默认数据中新出现而数据库缺失的派生定义，不覆盖已有定义的后台内容字段。
 
 ### Neutral Stones
 

@@ -75,7 +75,7 @@ export function normalizeSkillConfig(skillOrCharacterId) {
       costValue: String(fallback.skill.costValue ?? fallback.skill.cost ?? 0),
       systemMessage: fallback.skill.systemMessage,
       targetRule: "empty-point",
-      params: {}
+      params: fallback.skill.params ?? {}
     };
   }
   if (fallback?.skill?.id === "protocol-takeover") {

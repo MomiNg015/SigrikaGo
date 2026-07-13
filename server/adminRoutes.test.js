@@ -474,7 +474,7 @@ describe("admin site settings routes", () => {
 });
 
 describe("admin character routes", () => {
-  it("allows PATCH /characters/:id to update legacy top-level skill fields", async () => {
+  it("allows PATCH /characters/:id to update legacy top-level skill content fields", async () => {
     const { prisma, characterUpdates } = characterRoutePrisma();
 
     const response = await requestAdminRoute(prisma, "/characters/danea", {
@@ -482,19 +482,21 @@ describe("admin character routes", () => {
       body: {
         portraitSource: "upload",
         skillName: "Mirror Step",
-        uses: 2
+        skillDescription: "Updated display copy",
+        costValue: "3"
       }
     });
 
     expect(response.status).toBe(200);
     expect(response.body.character.skill.name).toBe("Mirror Step");
-    expect(response.body.character.skill.uses).toBe(2);
+    expect(response.body.character.skill.description).toBe("Updated display copy");
+    expect(response.body.character.skill.costValue).toBe("3");
     expect(characterUpdates[0].portraitSource).toBe("upload");
     expect(characterUpdates[0].skill.upsert.update.name).toBe("Mirror Step");
-    expect(characterUpdates[0].skill.upsert.update.uses).toBe(2);
+    expect(characterUpdates[0].skill.upsert.update.uses).toBe(1);
   });
 
-  it("allows PATCH /characters/:id to disable a character skill", async () => {
+  it("rejects PATCH /characters/:id attempts to change skill logic", async () => {
     const { prisma, characterUpdates } = characterRoutePrisma();
 
     const response = await requestAdminRoute(prisma, "/characters/danea", {
@@ -506,9 +508,102 @@ describe("admin character routes", () => {
       }
     });
 
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain("后台不能修改 enabled");
+    expect(characterUpdates).toHaveLength(0);
+  });
+
+  it("updates only content fields for existing derived skills", async () => {
+    const params = {
+      derivedSkills: [{
+        id: "voyage-star",
+        effectType: "voyage-star",
+        name: "远航星",
+        description: "Old derived copy",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "none",
+        costType: "numeric",
+        costValue: "5",
+        musicTrackId: "aemeath-voyage-star-default"
+      }]
+    };
+    const character = characterFixture();
+    character.slug = "aemeath";
+    character.skill.effectType = "hidden-hand";
+    character.skill.targetRule = "empty-point";
+    character.skill.paramsJson = JSON.stringify(params);
+    const { prisma, characterUpdates } = characterRoutePrisma(character);
+    const editedParams = structuredClone(params);
+    editedParams.derivedSkills[0].name = "新远航星";
+    editedParams.derivedSkills[0].description = "New derived copy";
+    editedParams.derivedSkills[0].costValue = "6";
+
+    const response = await requestAdminRoute(prisma, "/characters/aemeath", {
+      method: "PATCH",
+      body: { skill: { paramsJson: JSON.stringify(editedParams) } }
+    });
+
     expect(response.status).toBe(200);
-    expect(response.body.character.skill.enabled).toBe(false);
-    expect(characterUpdates[0].skill.upsert.update.enabled).toBe(false);
+    expect(JSON.parse(characterUpdates[0].skill.upsert.update.paramsJson).derivedSkills[0]).toMatchObject({
+      effectType: "voyage-star",
+      name: "新远航星",
+      description: "New derived copy",
+      costValue: "6",
+      uses: 1,
+      freeTurn: true
+    });
+  });
+
+  it("rejects adding or deleting derived skills through PATCH /characters/:id", async () => {
+    const { prisma, characterUpdates } = characterRoutePrisma();
+    const response = await requestAdminRoute(prisma, "/characters/danea", {
+      method: "PATCH",
+      body: {
+        skill: {
+          paramsJson: JSON.stringify({
+            derivedSkills: [{ effectType: "row-slash", name: "Injected", description: "", costValue: "0" }]
+          })
+        }
+      }
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain("不能新增或删除派生技能");
+    expect(characterUpdates).toHaveLength(0);
+  });
+
+  it("rejects invalid derived skill overclock content", async () => {
+    const params = {
+      derivedSkills: [{
+        id: "voyage-star",
+        effectType: "voyage-star",
+        name: "远航星",
+        description: "Derived copy",
+        uses: 1,
+        freeTurn: true,
+        targetRule: "none",
+        costType: "numeric",
+        costValue: "5",
+        musicTrackId: "aemeath-voyage-star-default"
+      }]
+    };
+    const character = characterFixture();
+    character.slug = "aemeath";
+    character.skill.effectType = "hidden-hand";
+    character.skill.targetRule = "empty-point";
+    character.skill.paramsJson = JSON.stringify(params);
+    const { prisma, characterUpdates } = characterRoutePrisma(character);
+    params.derivedSkills[0].costValue = "five";
+
+    const response = await requestAdminRoute(prisma, "/characters/aemeath", {
+      method: "PATCH",
+      body: { skill: { paramsJson: JSON.stringify(params) } }
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain("数值超频只能填写数字");
+    expect(characterUpdates).toHaveLength(0);
   });
 
   it("allows PATCH /characters/:id to update character CV metadata", async () => {
@@ -556,6 +651,7 @@ describe("admin character routes", () => {
     expect(response.status).toBe(200);
     expect(response.body.characters[0].skill.enabled).toBe(false);
     expect(response.body.characters[0].skill.name).toBe(character.skill.name);
+    expect(response.body.characters[0].skill.params).toEqual({});
     expect(response.body.characters[0].cvName).toBe(character.cvName);
     expect(response.body.characters[0].cvUrl).toBe(character.cvUrl);
   });
@@ -1251,9 +1347,8 @@ function transactionPrisma(options = {}) {
   };
 }
 
-function characterRoutePrisma() {
+function characterRoutePrisma(character = characterFixture()) {
   const characterUpdates = [];
-  const character = characterFixture();
   const tx = {
     character: {
       findFirst: async () => character,

@@ -1,5 +1,5 @@
 import { getPoint } from "./gameBoard.js";
-import { skillEffectTargetRule } from "./skillEffectCatalog.js";
+import { isSkillEffectType, skillEffectTargetRule } from "./skillEffectCatalog.js";
 
 export const DERIVED_SKILL_EFFECTS = Object.freeze({
   voyageStar: "voyage-star"
@@ -21,22 +21,19 @@ export const DEFAULT_VOYAGE_STAR_DERIVED_SKILL = Object.freeze({
 });
 
 export function derivedSkillDefinitionsFromSkill(skill = {}) {
-  if (skill === "aemeath") return [{ ...DEFAULT_VOYAGE_STAR_DERIVED_SKILL }];
   const params = skill?.params && typeof skill.params === "object" ? skill.params : {};
   const rawDefinitions = Array.isArray(params.derivedSkills) ? params.derivedSkills : [];
-  const definitions = rawDefinitions
+  return rawDefinitions
     .map((definition) => normalizeDerivedSkillDefinition(definition))
     .filter(Boolean);
-  if (shouldProvideBuiltinVoyageStar(skill, definitions)) {
-    definitions.push({ ...DEFAULT_VOYAGE_STAR_DERIVED_SKILL });
-  }
-  return definitions;
+}
+
+export function derivedSkillDefinitionForEffect(skill = {}, effectType) {
+  return derivedSkillDefinitionsFromSkill(skill).find((definition) => definition.effectType === effectType) ?? null;
 }
 
 export function voyageStarDefinitionFromSkill(skill = {}) {
-  return derivedSkillDefinitionsFromSkill(skill).find((definition) => (
-    definition.effectType === DERIVED_SKILL_EFFECTS.voyageStar
-  )) ?? null;
+  return derivedSkillDefinitionForEffect(skill, DERIVED_SKILL_EFFECTS.voyageStar);
 }
 
 export function createDerivedSkillState(definition, sourceHiddenHandId) {
@@ -68,7 +65,7 @@ export function normalizeDerivedSkillState(derived) {
   return {
     id: derived.id ?? derived.effectType,
     effectType: derived.effectType,
-    name: derived.name ?? DEFAULT_VOYAGE_STAR_DERIVED_SKILL.name,
+    name: String(derived.name ?? derived.effectType),
     description: derived.description ?? "",
     uses: Math.max(0, Math.floor(Number(derived.uses ?? 0)) || 0),
     costType: derived.costType ?? "numeric",
@@ -128,28 +125,26 @@ export function spentDerivedSkillState(derived) {
   };
 }
 
-function normalizeDerivedSkillDefinition(definition) {
+export function normalizeDerivedSkillDefinition(definition) {
   if (!definition || typeof definition !== "object") return null;
   const effectType = definition.effectType ?? definition.id;
-  if (!effectType) return null;
+  if (!effectType || !isSkillEffectType(effectType)) return null;
+  const name = String(definition.name ?? effectType).trim() || effectType;
+  const costType = definition.costType === "special" ? "special" : "numeric";
+  const costValue = String(definition.costValue ?? definition.cost ?? 0).trim();
+  if (costType === "numeric" && !/^-?\d+(\.\d+)?$/.test(costValue)) return null;
+  if (costType === "special" && !costValue) return null;
   return {
-    ...DEFAULT_VOYAGE_STAR_DERIVED_SKILL,
     ...definition,
     id: definition.id ?? effectType,
     effectType,
-    name: String(definition.name ?? DEFAULT_VOYAGE_STAR_DERIVED_SKILL.name).trim() || DEFAULT_VOYAGE_STAR_DERIVED_SKILL.name,
-    description: String(definition.description ?? DEFAULT_VOYAGE_STAR_DERIVED_SKILL.description),
-    uses: Math.max(0, Math.floor(Number(definition.uses ?? DEFAULT_VOYAGE_STAR_DERIVED_SKILL.uses)) || 0),
-    costType: definition.costType === "special" ? "special" : "numeric",
-    costValue: String(definition.costValue ?? definition.cost ?? DEFAULT_VOYAGE_STAR_DERIVED_SKILL.costValue),
+    name,
+    description: String(definition.description ?? ""),
+    uses: Math.max(0, Math.min(9, Math.floor(Number(definition.uses ?? 1)) || 0)),
+    costType,
+    costValue,
     targetRule: definition.targetRule ?? skillEffectTargetRule(effectType, "none"),
-    freeTurn: definition.freeTurn !== false,
-    musicTrackId: definition.musicTrackId ?? (effectType === DERIVED_SKILL_EFFECTS.voyageStar ? VOYAGE_STAR_MUSIC_TRACK_ID : null)
+    freeTurn: Boolean(definition.freeTurn),
+    musicTrackId: definition.musicTrackId ?? null
   };
-}
-
-function shouldProvideBuiltinVoyageStar(skill, definitions) {
-  if (definitions.some((definition) => definition.effectType === DERIVED_SKILL_EFFECTS.voyageStar)) return false;
-  return (skill?.characterId === "aemeath" || skill?.id === "hidden-hand" || skill?.effectType === "hidden-hand")
-    && skill?.effectType !== "color-illusion-passive";
 }

@@ -91,6 +91,9 @@
 <li>角色目录支持后台维护配音人员展示信息：<code>Character.cvName</code> 与可选 <code>cvUrl</code> 通过 admin/public character payload 下发，棋舍角色详情在桌面把 <code>CV：{cvName}</code> 放在角色名右侧，在移动端放在角色名下方；链接只接受 http(s) 或站内路径，并保持继承色、无下划线、无 visited/hover 变色，避免影响标题和 BGM 播放器布局。商城商品同样支持后台维护商品图插画署名：<code>ShopItem.illustName</code> 与可选 <code>illustUrl</code> 会在商品详情标题区显示 <code>illust：{illustName}</code>，移动端堆叠在商品名下方，链接态与纯文本态保持同色、无下划线、无边框、无背景和稳定行高。</li>
 </ul>
 <ul>
+<li>角色技能结构与逻辑由代码和角色默认数据管理，后台角色页只允许修改基础技能及代码已定义派生技能的名称、描述和超频；效果类型、目标规则、使用次数、回合行为、参数、音乐绑定、启用状态以及派生技能增删都不可由后台改变。派生技能只从当前基础技能显式的 <code>params.derivedSkills[]</code> 读取，通用草稿/解析器不再注入爱弥斯“远航星”；启动同步只补代码新增的缺失定义且保留运营文案覆盖，一次性迁移会清理旧版本误写到千咲等其他角色上的默认“远航星”。</li>
+</ul>
+<ul>
 <li>公告中心和邮箱是登录玩家的两个独立入口，但共用 <code>InformationCenterLayout</code> 阅读骨架与 <code>ModalDialog</code> 可访问性边界：桌面统一为约 1020px 的左侧列表/右侧阅读区，移动端在同一近全屏窗口内从列表进入详情并通过明确返回按钮回到原列表。桌面公告、更新日志和邮件加载完成后默认打开列表第一条，并沿用既有打开即已读路径；切换公告分类也会打开该分类第一条，桌面空列表显示“这里空空如也~”。移动端保持列表优先，只有点击条目后才进入详情并标记已读，空列表继续使用各领域简洁文案。共享样式由 <code>src/styles/modals/information-center.css</code> 与最终 <code>src/styles/mobile-adaptive/information-center.css</code> 负责尺寸、安全区、主从切换、约 260ms 的 transform/opacity 平滑减速动效和 reduced-motion；移动标题栏固定预留返回控件槽，避免切换时标题与关闭按钮重排，桌面空阅读提示不会参与移动端详情退出动画。公告/邮箱领域样式继续分别拥有列表状态、正文纸张、附件与动作，邮箱阅读区只保留邮件纸本身的单层边框。Bright School 使用纸张网格外壳、暖白阅读面和粉色选择/未读侧标，不再通过整卡大面积状态染色或嵌套详情弹窗表达层级。后台公告和邮箱管理、服务端 API、<code>AnnouncementEntry</code>/<code>AnnouncementRead</code> 与邮箱数据模型均不变。</li>
 </ul>
 <ul>
@@ -151,7 +154,7 @@
 <li>玩家资源包含角色、装饰、道具、音乐、抽卡奖励、蓝宝石和金币；结构化关系表与旧字符串字段仍处在兼容迁移期，legacy 解析、结构化同步和公开资产合并规则集中在 <code>server/userAssets.js</code>。</li>
 </ul>
 <ul>
-<li>部员手册角色详情 BGM 现在按普通技能与各派生技效果类型独立选曲：普通技继续使用 <code>musicSelections.skill[characterId]</code>，派生技使用 <code>musicSelections.derivedSkill[characterId][effectType]</code>，服务端按角色、效果类型和库存精确校验后只更新对应槽位。播放器共享磁带机结构、技能页签、单行溢出跑马灯、浮动选曲纸页和局部保存/播放错误恢复，Bright School 主题负责方格纸、硬阴影与 Rough.js 手绘皮肤；手机保留标题旁内联布局和 44px 播放触控目标。</li>
+<li>部员手册角色详情 BGM 现在按普通技能与各派生技效果类型独立选曲：普通技继续使用 <code>musicSelections.skill[characterId]</code>，派生技使用 <code>musicSelections.derivedSkill[characterId][effectType]</code>，服务端按角色、效果类型和库存精确校验后只更新对应槽位。对局技能预览把玩法 <code>effectType</code> 与音乐槽位 <code>musicEffectType</code> 分离：普通技能的 <code>musicEffectType</code> 固定为空，派生技才携带派生效果类型，并把该字段保留到最新技能历史；旧派生历史缺少此字段时只按 <code>musicTrackId</code> 的音轨元数据兼容推断，避免 <code>flip-stone</code>、<code>liberty-purge</code> 等普通玩法效果被误读为派生音乐槽位。播放器共享磁带机结构、技能页签、单行溢出跑马灯、浮动选曲纸页和局部保存/播放错误恢复，Bright School 主题负责方格纸、硬阴影与 Rough.js 手绘皮肤；手机保留标题旁内联布局和 44px 播放触控目标。</li>
 </ul>
 <ul>
 <li>Warehouse inventory uses a wider two-column collection grid on desktop and a single-column enlarged-art row layout on mobile. Each item card owns an explicit media mount and copy region: Bright School desktop media uses a 104px square mount, while mobile uses a <code>clamp(64px, 20vw, 72px)</code> mount so portrait posters, square items, and transparent-canvas tickets remain fully visible through <code>object-fit: contain</code>. Quantity is rendered as a shared <code>×N</code> sticker anchored to the media corner on both viewports, and mobile cards increase name/description hierarchy without making the non-interactive article itself look pressable. Compact mobile use buttons may stay below the general 44px target when the warehouse composition needs the tighter proportion, but must remain readable and non-overlapping. Disabled warehouse use actions such as recruitment-only items render as gray native disabled buttons on desktop and mobile. Character-target item selection disables unavailable character cards with gray native disabled state only, without showing reason badges or reason text in the card/title.</li>
@@ -420,7 +423,7 @@
 <li>莫宁（<code>mornye</code>）已接入完整角色语音：技能、出战、对局开始、读秒开始、剩余读秒次数、10 到 1 秒倒计时、胜负和结果，以及 <code>house-detail</code> 角色详情语音。部员手册中打开莫宁角色详情或点击详情内的“描述”文本区域会通过现有 <code>house-detail</code> 事件播放 <code>/assets/voice/mornye_detail.ogg</code>；关闭角色详情弹窗或关闭整个部员手册时会调用 <code>stopVoicePlayback()</code> 停止当前角色语音，避免详情长语音在窗口关闭后继续播放。</li>
 </ul>
 <ul>
-<li>角色技能 BGM 当前配置：主界面默认曲池包含 <code>home-default</code>（<code>main_bgm.ogg</code>）和 <code>home-main-bgm-1</code>（<code>main_bgm_1_once.ogg</code> + <code>main_bgm_1_loop.ogg</code>），达妮娅使用 canonical <code>denia-skill-default</code>（<code>bgm_*</code>），西格莉卡使用 <code>sigrika_intro_once.ogg</code> + <code>sigrika_loop.ogg</code>，爱弥斯“小爱出击”使用 <code>aemeath0_once.ogg</code> + <code>aemeath0_loop.ogg</code>，爱弥斯“远航星”使用 <code>lhl_intro_once.ogg</code> + <code>lhl_loop.ogg</code>，猪小仙使用 <code>matoya_*</code>，娜波摩使用 <code>busizhe_*</code>，千咲使用 <code>chisa_intro_once.ogg</code> + <code>chisa_loop.ogg</code>，长离使用 <code>changli_intro_once.ogg</code> + <code>changli_loop.ogg</code>，莫宁使用 <code>mornye_intro_once.ogg</code> + <code>mornye_loop.ogg</code>。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical <code>denia</code> 查找达妮娅技能 BGM；派生技能的 <code>musicTrackId</code> 会从 pending skill 延续到最新历史技能解析，避免演出中途回退到角色默认技能 BGM。未来爱弥斯商城技能 BGM 若替换“小爱出击”默认曲，可继续使用角色级 <code>musicSelections.skill.aemeath</code>；若替换“远航星”等派生技默认曲，则应新增按 <code>effectType</code> 作用域的选择键并在解析时优先于角色级选择。</li>
+<li>角色技能 BGM 当前配置：主界面默认曲池包含 <code>home-default</code>（<code>main_bgm.ogg</code>）和 <code>home-main-bgm-1</code>（<code>main_bgm_1_once.ogg</code> + <code>main_bgm_1_loop.ogg</code>），达妮娅使用 canonical <code>denia-skill-default</code>（<code>bgm_*</code>），西格莉卡使用 <code>sigrika_intro_once.ogg</code> + <code>sigrika_loop.ogg</code>，爱弥斯“小爱出击”使用 <code>aemeath0_once.ogg</code> + <code>aemeath0_loop.ogg</code>，爱弥斯“远航星”使用 <code>lhl_intro_once.ogg</code> + <code>lhl_loop.ogg</code>，猪小仙使用 <code>matoya_*</code>，娜波摩使用 <code>busizhe_*</code>，千咲使用 <code>chisa_intro_once.ogg</code> + <code>chisa_loop.ogg</code>，长离使用 <code>changli_intro_once.ogg</code> + <code>changli_loop.ogg</code>，莫宁使用 <code>mornye_intro_once.ogg</code> + <code>mornye_loop.ogg</code>。旧达妮娅 slug 会在启动清理阶段迁移/删除，运行时 BGM resolver 只按 canonical <code>denia</code> 查找达妮娅技能 BGM；pending skill 与最新历史技能使用独立 <code>musicEffectType</code> 选择普通或派生槽位，派生技能的 <code>musicTrackId</code> 同时作为槽位 fallback 延续，避免演出中途回退到角色普通技能 BGM。未来爱弥斯商城技能 BGM 若替换“小爱出击”默认曲，继续写入 <code>musicSelections.skill.aemeath</code>；若替换“远航星”等派生技默认曲，则写入现有 <code>musicSelections.derivedSkill.aemeath[effectType]</code> 槽位。</li>
 </ul>
 <ul>
 <li>Settings &gt; Audio persists optional per-channel mute flags under <code>audioSettings.muted</code>; clicking an audio row title toggles mute without changing the slider percentage, and moving the slider clears that channel's mute flag.</li>
@@ -1646,7 +1649,7 @@
 <li>Admin character mutation boundary.</li>
 </ul>
 <ul>
-<li>Owns admin-side character create/update/disable, character skill upsert payload construction, legacy top-level skill field compatibility, admin character response payload projection, and character-target audit entries.</li>
+<li>Owns admin-side character create/update/disable, content-only skill update enforcement, character skill upsert payload construction, legacy top-level editable skill-field compatibility, admin character response payload projection, and character-target audit entries. Existing skill and derived-skill structure is authoritative; only name, description, and overclock may change through admin updates.</li>
 </ul>
 </ul>
 <ul>
@@ -1887,6 +1890,9 @@
 </ul>
 <ul>
 <li>角色信息包含 <code>acquisitionMethod</code>/“获得途径”和 <code>description</code> 纯文本，可由后台维护；棋舍角色详情会在获得途径下方直接以斜体展示角色描述正文，数据库为空时前端回退到内置角色默认描述。</li>
+</ul>
+<ul>
+<li>角色技能逻辑由代码管理：后台仅编辑基础技能和已有派生技能的名称、描述、超频，不能修改效果、目标、次数、回合行为、参数、启用状态或增删技能。派生技由各基础技能自己的 <code>params.derivedSkills[]</code> 显式声明；启动任务 <code>cleanupLegacyDerivedSkillLeak</code> 通过一次性 marker 清理旧后台草稿误注入到非爱弥斯角色的默认“远航星”，随后 <code>seedCharacters</code> 可补齐代码中新增加但数据库缺失的派生定义而不覆盖已有内容。</li>
 </ul>
 <ul>
 <li>娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 <code>User.rating</code> 自动补充 <code>nabomo</code> 到已拥有角色列表。琳奈的获得途径为星炬模式首次升上 5 段自动获得；公开用户序列化时会根据星炬 <code>modeStats.rank</code>（缺省时回退 <code>User.rank</code>）自动补充 <code>lynae</code>，管理员用户不受段位限制直接拥有。</li>
@@ -2496,7 +2502,7 @@
 <li><code>voyage-star</code> is treated as a no-target board-surface confirmation skill. <code>skillUsesBoardSurfaceConfirmation()</code> keeps its action flow aligned with ChangLi <code>double-move</code>: the skill button can stay visible but disabled while the source hidden hand is missing, exposed, or no longer owned by the caster.</li>
 </ul>
 <ul>
-<li>Admin character drafts keep derived skill text and overclock in the base skill <code>params.derivedSkills</code> JSON through <code>buildCharacterDraft</code> and <code>characterDraftToBody</code>. The hidden-hand editor exposes two derived fields for Aemeath now, while the JSON shape is a list so future character derived skills can reuse the same draft and validation path.</li>
+<li>Admin character drafts keep code-defined derived skills in the base skill <code>params.derivedSkills</code> JSON through <code>buildCharacterDraft</code> and <code>characterDraftToBody</code>, but the editor is content-only: both the base skill and every existing derived skill expose only name, description, and overclock. Draft construction never invents a missing definition, serialization preserves each definition's identity and logic fields, and there are no add/remove or effect-rule controls. Future characters become editable automatically after their derived definitions are added to code/default data.</li>
 </ul>
 <ul>
 <li>Low-coupling modal components have been extracted from <code>src/main.jsx</code> into <code>src/modals/</code>.</li>
@@ -3525,7 +3531,7 @@
 <li><code>targetRule</code>: Targeting rule; currently validated as <code>empty-point</code>, <code>stone</code>, <code>any-point</code>, <code>legal-move-point</code>, or <code>none</code>. <code>random-blast</code> and <code>double-move</code> use <code>none</code>; Chisa <code>liberty-purge</code> uses <code>legal-move-point</code> so the target must pass ordinary move legality on the server.</li>
 </ul>
 <ul>
-<li><code>paramsJson</code>: JSON 字符串，当前作为扩展参数保留。Hidden-hand skills may store future-proof derived skill definitions under <code>params.derivedSkills</code>; Aemeath uses this to configure <code>voyage-star</code> display name, description, one-use derived slot, fixed music track id, and numeric overclock cost without a Prisma migration.</li>
+<li><code>paramsJson</code>: JSON 字符串，当前作为扩展参数保留。基础技能可在 <code>params.derivedSkills[]</code> 显式保存代码定义的派生技能；每条定义包含稳定 <code>id</code>/<code>effectType</code> 以及名称、描述、次数、回合行为、目标规则、超频和可选音乐标识。空数组严格表示没有派生技能，通用解析不得从其他角色注入默认定义。爱弥斯在自己的默认数据中显式配置 <code>voyage-star</code>，未来角色沿用同一结构而不需要 Prisma migration。</li>
 </ul>
 <ul>
 <li><code>costType</code>: <code>numeric</code> 或 <code>special</code>。</li>
@@ -3537,11 +3543,12 @@
 <li><code>systemMessage</code>: 技能系统消息模板。</li>
 </ul>
 <ul>
-<li><code>enabled</code>: 是否启用；公开角色 payload 会过滤禁用技能，后台角色表单可独立控制角色启用与技能启用。</li>
+<li><code>enabled</code>: 是否启用；公开角色 payload 会过滤禁用技能。技能启用状态属于代码/数据结构逻辑，后台角色表单不允许修改。</li>
 </ul>
 <ul>
 <li><code>createdAt</code>, <code>updatedAt</code>: 创建和更新时间。</li>
 </ul>
+<p>后台角色技能写入是内容覆盖而不是结构覆盖：<code>PATCH /api/admin/characters/:id</code> 只接受基础技能与既有派生技能的 <code>name</code>、<code>description</code>、<code>costValue</code> 变化。服务端以当前 <code>CharacterSkill</code> 和 <code>params.derivedSkills[]</code> 为权威，拒绝效果类型、目标规则、次数、回合行为、参数、超频类别、音乐、启用状态以及派生数组身份/数量/顺序变化。<code>seedCharacters()</code> 只补代码默认数据中新出现而数据库缺失的派生定义，不覆盖已有定义的后台内容字段。</p>
 <h3>Neutral Stones</h3>
 <p><code>src/shared/gameConstants.js</code> 维护命名中立棋子类型，当前内置 <code>spray</code>，由琳奈 <code>spray-stone</code> 技能生成。中立棋子不是黑白任一方，但同名中立棋子属于同一阵营并按围棋气规则连接；不同阵营之间互相阻断气和领地。黑/白棋子转化为喷涂棋子时立即给对手 <code>skillRemovals +1</code>，中立棋子被提、被爆破、被死子标记或在技能后无气清理时不提供黑白除子。数子阶段中立棋子不计入黑白子数，可作为边界参与空点归属；被中立棋子或多阵营共同围住的空点保持中立。</p>
 <h3>Capture Rules</h3>
@@ -4102,7 +4109,7 @@
 <li>BGM 资源配置集中在 <code>MUSIC_TRACKS</code>，按 <code>home</code>、<code>battle</code>、<code>skill</code> 三类管理。</li>
 </ul>
 <ul>
-<li>用户音乐库存与选择使用 <code>User.ownedMusicIds</code> 和 <code>User.musicSelections</code> 持久化；公开用户信息会自动并入 <code>defaultUnlocked</code> 曲目。角色普通技能 BGM 继续保存在 <code>musicSelections.skill[characterId]</code>，派生技则按效果类型独立保存在 <code>musicSelections.derivedSkill[characterId][effectType]</code>。解析器按 <code>characterId + effectType</code> 精确匹配槽位，选中曲目必须属于该角色、该效果类型且已拥有；无有效选择时依次回退派生技定义的 <code>musicTrackId</code> 和该槽第一首可用曲目。旧用户只有 <code>skill</code> 字段时无需迁移即可继续工作。</li>
+<li>用户音乐库存与选择使用 <code>User.ownedMusicIds</code> 和 <code>User.musicSelections</code> 持久化；公开用户信息会自动并入 <code>defaultUnlocked</code> 曲目。角色普通技能 BGM 继续保存在 <code>musicSelections.skill[characterId]</code>，派生技则按效果类型独立保存在 <code>musicSelections.derivedSkill[characterId][effectType]</code>。解析器按 <code>characterId + musicEffectType</code> 精确匹配槽位，不能直接拿玩法 <code>effectType</code> 当音乐槽位：普通技能预览写入 <code>musicEffectType: &quot;&quot;</code>，派生技能预览和最新技能历史写入对应派生效果类型。选中曲目必须属于该角色、该音乐效果类型且已拥有；无有效选择时依次回退技能定义的 <code>musicTrackId</code> 和该槽第一首可用曲目。旧用户只有 <code>skill</code> 字段时无需迁移；旧派生技能历史缺少 <code>musicEffectType</code> 时可由 <code>musicTrackId</code> 对应音轨的 <code>effectType</code> 兼容推断。</li>
 </ul>
 <ul>
 <li>角色详情弹窗右上角包含独立的角色 BGM 预览播放器。普通技与每个配置了曲目的派生技显示为独立技能页签，当前技能槽位使用自己的曲目列表和选择；切换技能页签或曲目时，如果预览正在播放，新曲会自动接续播放，未播放时不会自动起播。选择通过 <code>/api/me/music-selection</code> 持久化，派生技请求附带 <code>effectType</code>，保存失败时播放器内联提示并回滚到上一次有效曲目，且可就地重试。</li>
@@ -4126,7 +4133,7 @@
 <li>BGM 优先级为：角色技能 BGM &gt; 对弈常规 BGM &gt; 主界面 BGM。</li>
 </ul>
 <ul>
-<li>角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。</li>
+<li>角色释放技能后，后续 BGM 保持为该角色专属 BGM，直到对局结束；后触发的角色技能 BGM 会覆盖先触发的角色技能 BGM。普通技能即使拥有 <code>flip-stone</code>、<code>liberty-purge</code> 等非空玩法 <code>effectType</code>，也必须读取角色普通技能槽位；只有明确带有非空 <code>musicEffectType</code> 的派生技能才读取派生槽位。</li>
 </ul>
 <ul>
 <li>匹配成功倒计时、对局结果弹窗、对局房间的结束阶段会停止 BGM；如果用户从已结束棋谱回放退出到大厅，前端会清空回放房间快照，BGM resolver 以当前 <code>view = home</code> 为准恢复主界面 BGM。在线玩家从已结束房间主动退出回大厅时，前端也会把该房间号记为已处理结果，防止房间 5 分钟回收前的残留终局快照继续触发结果弹窗状态并压住大厅 BGM。</li>
@@ -4342,7 +4349,7 @@
 <li><code>voyage-star</code> is a full-board Pixi skill effect backed by <code>/assets/effects/voyage-star-crater.webp</code>, a transparent WebP converted from the supplied heart/star artwork. <code>src/room/boardSkillEffectRegistry.js</code> draws the white/ice-blue knight greatsword, target omen, impact glow, visual-only quake layer, yellow-white soft-edged explosion cover, and removal particles from pending preview geometry while leaving the crater artwork to the resolved board overlay. The greatsword drops from above with a short trail and stays visible through impact; the impact window adds concentric earthquake ellipses, 2-3 decaying shake pulses on the Pixi layer only, and deterministic dust sparks without moving the DOM board or hit areas. The explosion cover layer is added after the other Pixi layers so it can fully mask the impact frame; it expands from the skill center with a solid warm-white core whose radius is at least 2.2 board cells, covering the roughly four-cell crater footprint, then blends outward through low-alpha white and warm-yellow discs whose feathered outer edge fades to zero alpha. The separate impact glow fades before full-cover, then the renderer adds a fully opaque white full-board cover with no circular rim, holds that cover for resolution, and dissolves it with eased opacity plus outward yellow-white rings, radial streaks, and spark fragments instead of snapping directly back to the board; the sword alpha is forced to zero once that cover reaches every board corner. The Pixi cast starts from procedural Graphics and never draws a temporary crater sprite or fallback shape; the crater WebP is loaded through the renderer asset list only as monitored prewarm for the resolved DOM crater, so slow image decode cannot delay the real Pixi canvas or the full-board cast startup. <code>skillPreviewResolutionDelay({ effectType: &quot;voyage-star&quot; })</code> resolves at <code>2936ms</code>, which is the 2s banner plus 52% of the 1800ms board-effect window, placing the authoritative crater and stone removals under the full-cover explosion light. <code>BoardSkillEffects</code> keeps an already-started Pixi cast alive after that early resolved snapshot clears <code>pendingSkill</code>, so the opaque cover hides the resolved board until its dissolve phase instead of letting the crater show through the whiteout. The persistent DOM crater is a board-level <code>.voyage-star-crater-mark</code> overlay positioned by board-coordinate CSS variables from the source id, sized to 3.5 board cells, and animated with tight pink-purple/cyan drop-shadow glow that follows the WebP alpha shape instead of a round haze; the erased points remain stored on the points as <code>voyage-star-crater-point</code> or <code>voyage-star-erased-point</code>. This one-owner split keeps the crater from appearing inside the cover, avoids a sudden post-effect crater pop, and avoids a second flash when the resolved room state arrives.</li>
 </ul>
 <ul>
-<li><code>aemeath-skill-default</code> is the selectable base Aemeath “小爱出击” BGM and uses <code>/assets/music/aemeath0_once.ogg</code> followed by <code>/assets/music/aemeath0_loop.ogg</code>. <code>aemeath-voyage-star-default</code> is also selectable in Aemeath's regular character BGM list, but Voyage Star pending skill previews still provide <code>musicTrackId: &quot;aemeath-voyage-star-default&quot;</code>, so <code>findSkillTrack()</code> forces the previous <code>/assets/music/lhl_intro_once.ogg</code> + <code>/assets/music/lhl_loop.ogg</code> track for the derived skill regardless of the player's current Aemeath BGM selection. After <code>pendingSkill</code> clears, background music resolution derives <code>latestSkillPreview()</code> from room history and preserves <code>effectType</code> plus <code>musicTrackId</code>, so Voyage Star does not fall back to the base Aemeath skill BGM during its resolved animation window. <code>battlePreloadAssets()</code> preloads derived skill tracks by <code>effectType</code>, so Voyage Star remains preloaded even though the track is selectable. Future purchasable Aemeath skill BGMs should use the existing character-level selection only when they replace the base “小爱出击” default; if a shop track is meant to replace a derived skill such as Voyage Star, the selection model should add an effect-scoped key such as <code>aemeath:voyage-star</code> (or an equivalent nested shape) and resolve that scoped choice before falling back to <code>musicSelections.skill.aemeath</code>.</li>
+<li><code>aemeath-skill-default</code> is the selectable base Aemeath “小爱出击” BGM and uses <code>/assets/music/aemeath0_once.ogg</code> followed by <code>/assets/music/aemeath0_loop.ogg</code>. <code>aemeath-voyage-star-default</code> belongs to the independent <code>voyage-star</code> derived slot and uses <code>/assets/music/lhl_intro_once.ogg</code> followed by <code>/assets/music/lhl_loop.ogg</code>; Voyage Star pending previews and resolved skill history carry <code>musicEffectType: &quot;voyage-star&quot;</code>, so <code>findSkillTrack()</code> reads <code>musicSelections.derivedSkill.aemeath[&quot;voyage-star&quot;]</code> before falling back to that configured track. Ordinary Aemeath previews carry an empty music effect type and continue to read <code>musicSelections.skill.aemeath</code>. <code>battlePreloadAssets()</code> preloads derived skill tracks by <code>effectType</code>, and old Voyage Star history without <code>musicEffectType</code> remains compatible because its <code>musicTrackId</code> resolves to track metadata with <code>effectType: &quot;voyage-star&quot;</code>. Future purchasable Aemeath tracks use the character-level slot only when they replace “小爱出击”; tracks replacing Voyage Star or another derived skill use the existing effect-scoped nested selection.</li>
 </ul>
 <ul>
 <li>The Voyage Star track intentionally keeps Aemeath's previous <code>lhl_*</code> intro/loop files, while the base Aemeath track now uses the supplied <code>aemeath0_*</code> assets.</li>

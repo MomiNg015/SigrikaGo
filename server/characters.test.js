@@ -552,6 +552,40 @@ describe("character admin helpers", () => {
     });
   });
 
+  it("backfills missing code-defined derived skills without overwriting existing content", async () => {
+    const skillUpdates = [];
+    const existing = {
+      id: "character-db-aemeath",
+      slug: "aemeath",
+      portraitUrl: "/assets/Aemeath_centered.webp",
+      portraitSource: "url",
+      source: "default",
+      skill: {
+        id: "skill-aemeath",
+        effectType: "hidden-hand",
+        paramsJson: JSON.stringify({ other: true })
+      }
+    };
+    const prisma = {
+      character: {
+        findUnique: async ({ where }) => where.slug === "aemeath" ? existing : null,
+        update: async () => ({}),
+        create: async () => ({})
+      },
+      characterSkill: {
+        update: async (query) => skillUpdates.push(query)
+      }
+    };
+
+    await seedCharacters(prisma);
+
+    expect(skillUpdates).toHaveLength(1);
+    expect(JSON.parse(skillUpdates[0].data.paramsJson)).toMatchObject({
+      other: true,
+      derivedSkills: [expect.objectContaining({ effectType: "voyage-star", name: "远航星" })]
+    });
+  });
+
   it("omits legacy Denia rows from the public character response", async () => {
     const response = await listPublicCharacterResponse({
       character: {

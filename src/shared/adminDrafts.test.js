@@ -44,6 +44,7 @@ describe("admin draft helpers", () => {
     expect(draft.acquisitionMethod).toBe("商城购买");
     expect(draft.skill.targetRule).toBe("stone");
     expect(draft.skill.paramsJson).toBe("{\"radius\":1}");
+    expect(draft.skill.derivedSkills).toEqual([]);
     expect(targetRuleForEffect("random-blast")).toBe("none");
   });
 
@@ -68,6 +69,7 @@ describe("admin draft helpers", () => {
     };
 
     expect(characterDraftToBody(draft).skill.costValue).toBe("3");
+    expect(JSON.parse(characterDraftToBody(draft).skill.paramsJson).derivedSkills).toBeUndefined();
     expect(characterDraftToBody(draft).description).toBe("New character description");
     expect(characterDraftToBody(draft).cvName).toBe("Voice Actor");
     expect(characterDraftToBody(draft).cvUrl).toBe("/voice/actor");
@@ -156,6 +158,84 @@ describe("admin draft helpers", () => {
       name: "远航星",
       description: "New copy.",
       costValue: "5"
+    });
+  });
+
+  it("prefers the admin paramsJson payload when the compatibility params object is empty", () => {
+    const draft = buildCharacterDraft({
+      id: "aemeath",
+      name: "Aemeath",
+      portrait: "/assets/Aemeath_centered.webp",
+      skill: {
+        effectType: "hidden-hand",
+        name: "Little Ai",
+        description: "Hidden hand.",
+        params: {},
+        paramsJson: JSON.stringify({
+          derivedSkills: [{
+            id: "voyage-star",
+            effectType: "voyage-star",
+            name: "Admin Voyage Star",
+            description: "Admin copy.",
+            costType: "numeric",
+            costValue: "8"
+          }]
+        })
+      }
+    });
+
+    expect(draft.skill.derivedSkills[0]).toMatchObject({
+      name: "Admin Voyage Star",
+      description: "Admin copy.",
+      costValue: "8"
+    });
+  });
+
+  it("round-trips code-defined non-Aemeath derived content without changing its logic", () => {
+    const draft = buildCharacterDraft({
+      id: "future-character",
+      name: "Future Character",
+      portrait: "/assets/future.webp",
+      skill: {
+        effectType: "erase-point",
+        name: "Base",
+        description: "Base skill.",
+        params: {
+          derivedSkills: [{
+            id: "future-slash",
+            effectType: "row-slash",
+            name: "Future Slash",
+            description: "Old copy.",
+            uses: 2,
+            freeTurn: false,
+            targetRule: "any-point",
+            costType: "numeric",
+            costValue: "2",
+            musicTrackId: "future-track"
+          }]
+        }
+      }
+    });
+    draft.sortOrder = "1";
+    draft.skill.uses = "1";
+    draft.skill.costValue = "0";
+    draft.skill.derivedSkills[0].name = "Renamed Slash";
+    draft.skill.derivedSkills[0].description = "New copy.";
+    draft.skill.derivedSkills[0].costValue = "4";
+
+    const body = characterDraftToBody(draft);
+
+    expect(JSON.parse(body.skill.paramsJson).derivedSkills[0]).toEqual({
+      id: "future-slash",
+      effectType: "row-slash",
+      name: "Renamed Slash",
+      description: "New copy.",
+      uses: 2,
+      freeTurn: false,
+      targetRule: "any-point",
+      costType: "numeric",
+      costValue: "4",
+      musicTrackId: "future-track"
     });
   });
 

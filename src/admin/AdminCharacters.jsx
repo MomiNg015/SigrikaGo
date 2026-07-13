@@ -5,11 +5,8 @@ import {
   buildCharacterDraft,
   characterDraftToBody,
   emptyCharacterDraft,
-  targetRuleForEffect,
   updateDerivedSkillDraft
 } from "../shared/adminDrafts.js";
-import { SKILL_EFFECT_OPTIONS } from "../shared/skillEffectCatalog.js";
-import { SKILL_MESSAGE_TIP } from "../shared/skillMessages.js";
 import { AdminFieldLabel } from "./adminComponents.jsx";
 
 export default function AdminCharacters({ characters, token, onSaved, onNotice }) {
@@ -89,19 +86,8 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
     }));
   }
 
-  function updateDerivedSkill(effectType, field, value) {
-    setDraft((current) => updateDerivedSkillDraft(current, effectType, field, value));
-  }
-
-  function updateSkillEffect(effectType) {
-    setDraft((current) => ({
-      ...current,
-      skill: {
-        ...current.skill,
-        effectType,
-        targetRule: targetRuleForEffect(effectType)
-      }
-    }));
+  function updateDerivedSkill(derivedSkillId, field, value) {
+    setDraft((current) => updateDerivedSkillDraft(current, derivedSkillId, field, value));
   }
 
   async function handleUpload(file) {
@@ -126,7 +112,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
     event.preventDefault();
     const body = characterDraftToBody(draft);
     if (!body) {
-      onNotice?.("排序和使用次数必须是整数；数值超频只能填数字，特殊超频需要填写文本；CV 链接需为 http(s) 或站内路径且必须有 CV 名称", "danger");
+      onNotice?.("请检查排序、技能名称和超频内容；数值超频只能填数字，特殊超频不能为空；CV 链接需为 http(s) 或站内路径且必须有 CV 名称", "danger");
       return;
     }
 
@@ -211,65 +197,27 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
       )}
       <h3>技能</h3>
       <div className="admin-character-form-grid">
-        <label><AdminFieldLabel text="技能效果" tip="决定技能实际执行的规则类型。" />
-          <select value={draft.skill.effectType} onChange={(event) => updateSkillEffect(event.target.value)}>
-            {SKILL_EFFECT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-        </label>
         <label><AdminFieldLabel text="技能名" tip="展示给玩家看的技能名称。" />
           <input value={draft.skill.name} onChange={(event) => updateSkill("name", event.target.value)} />
         </label>
         <label className="wide-field"><AdminFieldLabel text="技能描述" tip="棋舍角色详情中展示的技能说明。" />
           <textarea value={draft.skill.description} onChange={(event) => updateSkill("description", event.target.value)} />
         </label>
-        <label className="wide-field"><AdminFieldLabel text="技能系统信息" tip={SKILL_MESSAGE_TIP} />
-          <textarea value={draft.skill.systemMessage} onChange={(event) => updateSkill("systemMessage", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="使用次数" tip="每局可使用该技能的次数，范围 0 到 9。" />
-          <input type="number" min="0" max="9" value={draft.skill.uses} onChange={(event) => updateSkill("uses", event.target.value)} />
-        </label>
-        <label><AdminFieldLabel text="目标规则" tip="限制技能可以点选空点还是已有棋子。" />
-          <select value={draft.skill.targetRule} onChange={(event) => updateSkill("targetRule", event.target.value)}>
-            <option value="empty-point">空交叉点</option>
-            <option value="stone">棋子</option>
-            <option value="any-point">任意点</option>
-            <option value="none">无目标</option>
-          </select>
-        </label>
-        <label className="admin-checkbox">
-          <input type="checkbox" checked={draft.skill.freeTurn} onChange={(event) => updateSkill("freeTurn", event.target.checked)} />
-          <AdminFieldLabel text="不消耗回合" tip="开启后释放技能不会交出当前回合。" />
-        </label>
-        <label className="admin-checkbox">
-          <input type="checkbox" checked={draft.skill.enabled} onChange={(event) => updateSkill("enabled", event.target.checked)} />
-          <AdminFieldLabel text="技能启用" tip="关闭后，该角色公开资料不会下发技能，玩家也不能使用该技能。" />
-        </label>
-        <label><AdminFieldLabel text="超频类别" tip="数值会在数子时扣除；特殊只展示文本，暂时不影响规则。" />
-          <select value={draft.skill.costType} onChange={(event) => updateSkill("costType", event.target.value)}>
-            <option value="numeric">数值</option>
-            <option value="special">特殊</option>
-          </select>
-        </label>
-        <label><AdminFieldLabel text="超频说明" tip="数值类别只能填写数字；特殊类别可填写展示文本。" />
+        <label><AdminFieldLabel text="超频" tip="只修改技能的超频数值或说明，不会改变技能规则。" />
           <input
             type={draft.skill.costType === "numeric" ? "number" : "text"}
             value={draft.skill.costValue}
             onChange={(event) => updateSkill("costValue", event.target.value)}
           />
         </label>
-        <label className="wide-field"><AdminFieldLabel text="技能参数" tip="保留给扩展技能使用的 JSON 参数。" />
-          <textarea value={draft.skill.paramsJson} onChange={(event) => updateSkill("paramsJson", event.target.value)} />
-        </label>
       </div>
-      {draft.skill.effectType === "hidden-hand" && (
+      {(draft.skill.derivedSkills ?? []).length > 0 && (
         <>
           <h3>派生技能</h3>
           <div className="admin-character-form-grid">
             {(draft.skill.derivedSkills ?? []).map((derivedSkill) => (
               <DerivedSkillEditor
-                key={derivedSkill.effectType}
+                key={derivedSkill.id ?? derivedSkill.effectType}
                 derivedSkill={derivedSkill}
                 onChange={updateDerivedSkill}
               />
@@ -282,20 +230,21 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
 }
 
 function DerivedSkillEditor({ derivedSkill, onChange }) {
+  const derivedSkillId = derivedSkill.effectType ?? derivedSkill.id;
   return (
     <>
-      <label><AdminFieldLabel text="派生技能名" tip="小爱出击成功后替换技能栏显示的技能名。" />
-        <input value={derivedSkill.name} onChange={(event) => onChange(derivedSkill.effectType, "name", event.target.value)} />
+      <label><AdminFieldLabel text="派生技能名" tip="展示给玩家看的派生技能名称。" />
+        <input value={derivedSkill.name} onChange={(event) => onChange(derivedSkillId, "name", event.target.value)} />
       </label>
-      <label><AdminFieldLabel text="派生超频" tip="发动派生技能时增加的超频数值。" />
+      <label><AdminFieldLabel text="派生超频" tip="只修改派生技能的超频数值或说明，不会改变技能规则。" />
         <input
-          type="number"
+          type={derivedSkill.costType === "special" ? "text" : "number"}
           value={derivedSkill.costValue}
-          onChange={(event) => onChange(derivedSkill.effectType, "costValue", event.target.value)}
+          onChange={(event) => onChange(derivedSkillId, "costValue", event.target.value)}
         />
       </label>
       <label className="wide-field"><AdminFieldLabel text="派生技能描述" tip="角色详情和对局技能说明中展示的派生技能文本。" />
-        <textarea value={derivedSkill.description} onChange={(event) => onChange(derivedSkill.effectType, "description", event.target.value)} />
+        <textarea value={derivedSkill.description} onChange={(event) => onChange(derivedSkillId, "description", event.target.value)} />
       </label>
     </>
   );

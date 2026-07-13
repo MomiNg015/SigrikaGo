@@ -467,7 +467,7 @@ SigrikaGo/
 
 - `server/adminCharacterManagement.js`
   - Admin character mutation boundary.
-  - Owns admin-side character create/update/disable, character skill upsert payload construction, legacy top-level skill field compatibility, admin character response payload projection, and character-target audit entries.
+  - Owns admin-side character create/update/disable, content-only skill update enforcement, character skill upsert payload construction, legacy top-level editable skill-field compatibility, admin character response payload projection, and character-target audit entries. Existing skill and derived-skill structure is authoritative; only name, description, and overclock may change through admin updates.
 
 - `server/adminUserManagement.js`
   - Admin user-management mutation boundary.
@@ -569,6 +569,7 @@ SigrikaGo/
 - Character `sortOrder` is admin-managed persistent order. `seedCharacters` only assigns builtin default order when creating missing rows, and must not overwrite existing character order on server restart.
 - 所有存在的角色都会出现在棋舍角色列表；未拥有角色以灰色状态展示，可查看信息但不可出战。
 - 角色信息包含 `acquisitionMethod`/“获得途径”和 `description` 纯文本，可由后台维护；棋舍角色详情会在获得途径下方直接以斜体展示角色描述正文，数据库为空时前端回退到内置角色默认描述。
+- 角色技能逻辑由代码管理：后台仅编辑基础技能和已有派生技能的名称、描述、超频，不能修改效果、目标、次数、回合行为、参数、启用状态或增删技能。派生技由各基础技能自己的 `params.derivedSkills[]` 显式声明；启动任务 `cleanupLegacyDerivedSkillLeak` 通过一次性 marker 清理旧后台草稿误注入到非爱弥斯角色的默认“远航星”，随后 `seedCharacters` 可补齐代码中新增加但数据库缺失的派生定义而不覆盖已有内容。
 - 娜波摩的获得途径为积分达到 1400 分自动获得；公开用户序列化时会根据 `User.rating` 自动补充 `nabomo` 到已拥有角色列表。琳奈的获得途径为星炬模式首次升上 5 段自动获得；公开用户序列化时会根据星炬 `modeStats.rank`（缺省时回退 `User.rank`）自动补充 `lynae`，管理员用户不受段位限制直接拥有。
 - 技能类型：
   - `erase-point`：抹除空交叉点，点位不可落子且不参与数子。 结算后的无效点使用 `/assets/effects/sigrika-erased-field-marker.webp` 作为 point-local 透明 WebP 坑洞标记，并由棋盘的 `erased-boundary-layer` 灰显周围格子、用一路线同粗细外边界线标出边界。
