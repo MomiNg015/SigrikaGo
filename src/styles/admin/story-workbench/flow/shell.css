@@ -10,7 +10,10 @@
 
 .admin-story-workbench-flow-canvas {
   min-height: 0;
+  height: clamp(420px, 62dvh, 760px);
   overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable both-edges;
   display: grid;
   align-content: start;
   gap: 10px;
@@ -21,6 +24,11 @@
     linear-gradient(var(--story-wb-surface-soft), var(--story-wb-surface-soft)) padding-box,
     repeating-linear-gradient(0deg, transparent 0 31px, rgba(100, 112, 137, 0.08) 31px 32px),
     repeating-linear-gradient(90deg, transparent 0 31px, rgba(100, 112, 137, 0.08) 31px 32px);
+}
+
+.admin-story-workbench-flow-canvas:focus-visible {
+  outline: 3px solid rgba(79, 111, 223, 0.24);
+  outline-offset: -3px;
 }
 
 .admin-story-workbench-flow-row {
@@ -41,6 +49,12 @@
 }
 
 @media (max-width: 980px) {
+  .admin-story-workbench-flow-canvas {
+    height: auto;
+    overscroll-behavior: auto;
+    scrollbar-gutter: auto;
+  }
+
   .admin-story-workbench-flow-row {
     grid-template-columns: minmax(0, 1fr);
   }

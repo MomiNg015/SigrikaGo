@@ -113,6 +113,56 @@ function normalizeOption(option = {}) {
 }
 ```
 
+### Scenario: Story Script Request Body Budget
+
+#### 1. Scope / Trigger
+- Trigger: changing global JSON parsing, `PATCH /api/admin/story-scripts/:key`, story draft save capacity, or HTTP 413 propagation.
+- Story drafts grow with node, option, dialogue, and board-setup JSON, but unrelated API routes must retain the smaller denial-of-service boundary.
+
+#### 2. Signatures
+- `createJsonBodyParser()` selects one Express JSON parser per request.
+- `isAdminStoryScriptWrite(req)` matches only `PATCH /api/admin/story-scripts/:key` with one non-empty key segment.
+- Limits: `STORY_SCRIPT_JSON_BODY_LIMIT = "2mb"`; `DEFAULT_JSON_BODY_LIMIT = "64kb"`.
+- Payload error response: HTTP 413 `{ error: string, code: "REQUEST_BODY_TOO_LARGE" }`.
+
+#### 3. Contracts
+- Keep the story-script budget route-scoped; do not raise the default parser to make one admin authoring surface work.
+- Parser selection occurs before the shared JSON parser consumes the body, so the larger route cannot first fail at `64kb`.
+- Story draft saves above `64kb` and at or below `2mb` must still enter the existing admin auth, validation, and persistence route unchanged.
+- `requestBodyErrorHandler` converts parser 413 errors into JSON before route dispatch. Story-script errors name the `2mb` limit and recovery action; unrelated parser errors use a generic localized message.
+
+#### 4. Validation & Error Matrix
+- Story-script PATCH body between `64kb` and `2mb` -> parse and continue to the admin route.
+- Story-script PATCH body above `2mb` -> HTTP 413 with the story-specific Chinese error and `REQUEST_BODY_TOO_LARGE`.
+- Unrelated JSON body above `64kb` -> HTTP 413 with the generic Chinese error and the same code.
+- Story-script GET, collection PATCH, or nested path -> use the default budget.
+- Malformed JSON within budget -> continue to `jsonSyntaxErrorHandler` and return the existing HTTP 400 JSON.
+
+#### 5. Good/Base/Bad Cases
+- Good: a 200kb onboarding draft saves through `/api/admin/story-scripts/onboarding.default` while `/api/admin/site-settings` still rejects the same body.
+- Base: ordinary API requests remain below `64kb` and behave exactly as before.
+- Bad: `app.use(express.json({ limit: "2mb" }))`, because it expands every public and authenticated JSON endpoint for one admin-only need.
+
+#### 6. Tests Required
+- `server/jsonBody.test.js` must exercise real Express parsing for a story payload above `64kb`, an unrelated rejection at `64kb`, and a story rejection above `2mb`.
+- `server/httpErrors.test.js` must assert both story-specific and generic localized 413 response shapes.
+- Production build/config checks must prove the parser module is wired by `server/index.js` without changing downstream admin route semantics.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+app.use(express.json({ limit: "2mb" }));
+```
+
+Correct:
+
+```js
+app.use(createJsonBodyParser());
+app.use(requestBodyErrorHandler);
+```
+
 ### Match Preload Room Boundary
 
 ### Scenario: Item-Character Story Trigger Identity

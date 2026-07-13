@@ -980,6 +980,62 @@ Correct:
 - `src/admin/AdminOnboardingStory.test.jsx` should cover an option target with a following `nextNodeId` chain and a deeper option target, asserting only a truly unreachable node remains in `orphans`.
 - `src/admin/AdminOnboardingStory.test.jsx` should cover current-step preview for a branch target after a `board-setup` node, asserting the preview `initialBoard` comes from the branch setup snapshot.
 
+### Scenario: Story Tutorial Flow Canvas Scroll Ownership
+
+#### 1. Scope / Trigger
+- Trigger: changing `.admin-story-workbench-flow-canvas`, story graph height, horizontal branch navigation, or narrow-screen workbench scrolling.
+- Long vertical graphs must not push the only horizontal scrollbar below every node.
+
+#### 2. Signatures
+- Desktop scroll owner: `.admin-story-workbench-flow-canvas`.
+- Desktop height: `clamp(420px, 62dvh, 760px)` with `overflow: auto`.
+- Narrow-screen boundary: `@media (max-width: 980px)` restores `height: auto`.
+- The canvas renders `tabIndex={0}` and `aria-label="剧情流程图，可上下或左右滚动"`.
+
+#### 3. Contracts
+- Desktop uses one two-axis native scroll owner. Do not add independently synchronized top/bottom scrollbars or another nested branch scroll controller for the same canvas.
+- Bounding the canvas height keeps its native horizontal scrollbar on the visible canvas edge as the node list grows.
+- The focused canvas must expose a visible outline so keyboard users can use arrow/Page keys for scroll navigation.
+- Desktop may contain scroll chaining and reserve stable scrollbar gutter space. At `980px` and below, return to natural height, normal scroll chaining, and automatic gutter behavior to avoid a competing narrow-screen vertical gesture region.
+- Preserve node cards, branch swimlanes, graph path guide, selection behavior, and floating node settings window geometry.
+
+#### 4. Validation & Error Matrix
+- Many vertical nodes plus wide branches on desktop -> canvas scrolls both axes and the horizontal bar remains at the canvas bottom edge.
+- Canvas focused by keyboard -> visible focus ring and keyboard scrolling work.
+- Width at or below `980px` -> canvas grows with content and does not trap vertical page gestures.
+- No horizontal overflow -> the canvas keeps its bounded vertical behavior without adding inert custom controls.
+
+#### 5. Good/Base/Bad Cases
+- Good: constrain the existing native canvas and keep one scroll position for nodes, paths, and branches.
+- Base: a short, narrow graph fits without requiring either scrollbar.
+- Bad: mirror `scrollLeft` across a second custom scrollbar, because resize synchronization and competing focus/gesture ownership add failure modes without solving vertical growth itself.
+
+#### 6. Tests Required
+- `src/admin/AdminOnboardingStory.test.jsx` must assert the focusable/labelled canvas, desktop height, native overflow, scroll containment/gutter, focus ring, and `980px` natural-height fallback.
+- `src/styles/cssLayerInventory.test.js` must remain within the CSS debt baseline; inherited unrelated baseline failures must not be hidden by raising limits for this scenario.
+- Run the focused admin story test, style contracts, and production build.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```css
+.admin-story-workbench-flow-canvas {
+  overflow-x: auto;
+}
+```
+
+This lets an indefinite grid row grow with every node, so the scrollbar still lands after the full graph.
+
+Correct:
+
+```css
+.admin-story-workbench-flow-canvas {
+  height: clamp(420px, 62dvh, 760px);
+  overflow: auto;
+}
+```
+
 ### Scenario: Story Tutorial Node Settings Window
 
 #### 1. Scope / Trigger

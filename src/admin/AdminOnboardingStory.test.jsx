@@ -75,6 +75,21 @@ describe("AdminOnboardingStory", () => {
     expect(adminCss).toContain(".admin-story-workbench-import-errors");
   });
 
+  it("keeps desktop horizontal graph navigation reachable as the node list grows", () => {
+    const flowCanvasBlock = cssBlock(adminCss, ".admin-story-workbench-flow-canvas");
+
+    expect(adminSource).toContain('aria-label="剧情流程图，可上下或左右滚动"');
+    expect(adminSource).toContain("tabIndex={0}");
+    expect(flowCanvasBlock).toContain("height: clamp(420px, 62dvh, 760px)");
+    expect(flowCanvasBlock).toContain("overflow: auto");
+    expect(flowCanvasBlock).toContain("overscroll-behavior: contain");
+    expect(flowCanvasBlock).toContain("scrollbar-gutter: stable both-edges");
+    expect(adminCss).toContain(".admin-story-workbench-flow-canvas:focus-visible");
+    expect(adminCss).toContain("@media (max-width: 980px)");
+    expect(adminCss).toContain("height: auto");
+    expect(adminCss).toContain("overscroll-behavior: auto");
+  });
+
   it("opens node settings as a scroll-attached floating window from graph nodes", () => {
     const workbenchBlock = cssBlock(adminCss, ".admin-story-workbench");
     const nodeSettingsBlock = cssBlock(adminCss, ".admin-story-workbench-node-settings-window");

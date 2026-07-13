@@ -1,7 +1,38 @@
 import { describe, expect, it, vi } from "vitest";
-import { apiErrorHandler, jsonSyntaxErrorHandler } from "./httpErrors.js";
+import { apiErrorHandler, jsonSyntaxErrorHandler, requestBodyErrorHandler } from "./httpErrors.js";
 
 describe("HTTP error handlers", () => {
+  it("returns a localized story-script payload limit error", () => {
+    const error = Object.assign(new Error("request entity too large"), { status: 413, type: "entity.too.large" });
+    const res = response();
+    const next = vi.fn();
+
+    requestBodyErrorHandler(error, {
+      method: "PATCH",
+      path: "/api/admin/story-scripts/onboarding.default"
+    }, res, next);
+
+    expect(res.statusCode).toBe(413);
+    expect(res.body).toEqual({
+      error: "剧情脚本草稿超过 2mb 上限，请拆分剧情或精简节点后重试",
+      code: "REQUEST_BODY_TOO_LARGE"
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("keeps unrelated payload limit errors generic", () => {
+    const error = Object.assign(new Error("request entity too large"), { status: 413, type: "entity.too.large" });
+    const res = response();
+
+    requestBodyErrorHandler(error, { method: "PATCH", path: "/api/admin/site-settings" }, res, () => {});
+
+    expect(res.statusCode).toBe(413);
+    expect(res.body).toEqual({
+      error: "请求内容过大，请减少提交内容后重试",
+      code: "REQUEST_BODY_TOO_LARGE"
+    });
+  });
+
   it("returns JSON for malformed JSON body errors", () => {
     const error = new SyntaxError("bad json");
     error.status = 400;

@@ -25,7 +25,8 @@ import { createSocialRouter } from "./socialRoutes.js";
 import { createLoginSessionStore } from "./loginSessions.js";
 import { createDuelRequestManager } from "./duelRequests.js";
 import { createOnlineSessionManager } from "./onlineSessions.js";
-import { apiErrorHandler, jsonSyntaxErrorHandler } from "./httpErrors.js";
+import { apiErrorHandler, jsonSyntaxErrorHandler, requestBodyErrorHandler } from "./httpErrors.js";
+import { createJsonBodyParser } from "./jsonBody.js";
 import { closeRealtimeServer, installServerLifecycle, startHttpServer } from "./serverLifecycle.js";
 import { createHealthRouter } from "./healthRoutes.js";
 import { initializeServerData } from "./serverStartup.js";
@@ -149,7 +150,8 @@ app.use(helmet({
   }
 }));
 app.use(cors(corsOptions));
-app.use(express.json({ limit: "64kb" }));
+app.use(createJsonBodyParser());
+app.use(requestBodyErrorHandler);
 app.use(jsonSyntaxErrorHandler);
 app.use("/health", createHealthRouter({ runtimeServiceState }));
 app.use("/api/auth", createAuthRateLimit());

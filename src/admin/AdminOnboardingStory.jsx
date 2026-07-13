@@ -998,7 +998,11 @@ function FlowGraph({ flow, nodes, selectedNodeId, highlightedNodeId, issues, onS
   const issueNodeIds = new Set(issues.map((issue) => issue.nodeId).filter(Boolean));
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
   return (
-    <div className="admin-story-workbench-flow-canvas">
+    <div
+      className="admin-story-workbench-flow-canvas"
+      tabIndex={0}
+      aria-label="剧情流程图，可上下或左右滚动"
+    >
       <FlowPathGuide
         flow={flow}
         nodeById={nodeById}
