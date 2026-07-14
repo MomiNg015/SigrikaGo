@@ -742,13 +742,20 @@ describe("RoomScreen helpers", () => {
     const brightRoomCss = readCssWithImports(new URL("../styles/themes/bright-school/room.css", import.meta.url));
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url));
     const modalBackdropZ = cssZIndexForSelector(modalCss, ".modal-backdrop");
+    const floatingLayerBaseZ = Number(
+      battleSource.match(/const ROOM_FLOATING_LAYER_BASE_Z = (\d+);/)?.[1]
+    );
+    const firstFloatingLayerZ = floatingLayerBaseZ + 1;
 
     expect(battleSource).not.toContain("chat-exit-action exit-action");
+    expect(battleSource).not.toContain("layerCounterRef");
     expect(battleSource).toContain("bringFloatingLayerToFront");
+    expect(battleSource).toContain("setFloatingLayers({ [layerId]: ROOM_FLOATING_LAYER_BASE_Z + 1 });");
     expect(battleSource).toContain("floatingLayerZ={floatingLayers.chat}");
     expect(battleSource).toContain("floatingLayerZ={floatingLayers.members}");
+    expect(firstFloatingLayerZ).toBeGreaterThan(140);
+    expect(firstFloatingLayerZ).toBeLessThan(modalBackdropZ);
     expect(modalBackdropZ).toBeGreaterThan(140);
-    expect(modalBackdropZ).toBeGreaterThan(90);
     expect(roomCss).toContain(".desktop-room-screen .room-header");
     expect(roomCss).toContain("grid-template-columns: minmax(0, 1fr) auto auto");
     expect(roomCss).toContain(".desktop-room-screen .room-toggles");

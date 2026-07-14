@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import ActionBar from "./ActionBar.jsx";
 import Board from "./Board.jsx";
 import ChatBox from "./ChatBox.jsx";
@@ -9,7 +9,7 @@ import { stoneDecorationsForRoom } from "./roomView.js";
 import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
 
 const SHOW_TEST_TOOLS = import.meta.env.DEV;
-const ROOM_FLOATING_LAYER_BASE_Z = 90;
+const ROOM_FLOATING_LAYER_BASE_Z = 140;
 
 export default function RoomBattleStage({
   battleLayoutClassName,
@@ -66,13 +66,10 @@ export default function RoomBattleStage({
   winnerColor
 }) {
   const [activeMobilePanel, setActiveMobilePanel] = useState("actions");
-  const layerCounterRef = useRef(ROOM_FLOATING_LAYER_BASE_Z);
   const [floatingLayers, setFloatingLayers] = useState({});
   const bringFloatingLayerToFront = useCallback((layerId) => {
     if (!layerId) return;
-    const nextZ = layerCounterRef.current + 1;
-    layerCounterRef.current = nextZ;
-    setFloatingLayers((current) => ({ ...current, [layerId]: nextZ }));
+    setFloatingLayers({ [layerId]: ROOM_FLOATING_LAYER_BASE_Z + 1 });
   }, []);
   const handleNeutralPoint = useCallback((id) => {
     onScoringAction({ type: "mark-neutral", pointId: id });
