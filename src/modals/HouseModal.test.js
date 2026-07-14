@@ -511,10 +511,13 @@ describe("deriveCharacterRecordStats", () => {
   it("renders character descriptions in the character detail dialog", () => {
     const styles = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const brightSchoolStyles = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
+    const auditProfileStyles = readFileSync(new URL("../styles/themes/bright-school/quality-base/audit-profile-modals.css", import.meta.url), "utf8");
+    const refinementStyles = readFileSync(new URL("../styles/themes/bright-school/quality-base/refinement-foundation.css", import.meta.url), "utf8");
     const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
       character: {
         id: "sigrika",
         name: "西格莉卡",
+        palette: "#67d9e8",
         portrait: "/assets/sigrika_centered.webp",
         acquisitionMethod: "初始获得",
         description: "来自星辉社团的棋手。",
@@ -526,6 +529,12 @@ describe("deriveCharacterRecordStats", () => {
     }));
 
     expect(html).toContain("character-description");
+    expect(html).toContain("--character-theme-color:#67d9e8");
+    expect(html).toContain("--detail-label-bg:color-mix(in srgb, var(--character-theme-color) 24%, #ffffff)");
+    expect(html).toContain("--detail-label-color:#111111");
+    expect(html).toContain("--detail-label-bg:#e5e7eb");
+    expect(html).toContain("--detail-label-border:2px solid #6b7280");
+    expect(html).toContain("--detail-label-radius:0");
     expect(html).not.toContain("skill-cost-badge");
     expect(html).toContain("skill-overclock-badge");
     expect(html).toContain("超频：3");
@@ -539,6 +548,13 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolStyles).toContain("color: #7b3fa0 !important");
     expect(brightSchoolStyles).toContain(".character-detail-copy .character-description");
     expect(brightSchoolStyles).toContain("text-align: left !important");
+    expect(auditProfileStyles).toContain("color: var(--detail-label-color, #3d2b25) !important");
+    expect(auditProfileStyles).toContain("background: var(--detail-label-bg, #ffdfeb) !important");
+    expect(auditProfileStyles).toContain("border: var(--detail-label-border, 2px solid #3d2b25) !important");
+    expect(auditProfileStyles).toContain("border-radius: var(--detail-label-radius, 999px) !important");
+    expect(refinementStyles).not.toContain("  .skill-title-row strong,");
+    expect(refinementStyles).not.toContain("  .acquisition-method strong,");
+    expect(brightSchoolStyles).not.toContain(".character-details-modal .skill-title-row strong:first-child");
     expect(brightSchoolStyles).toContain("button.skill-trait-token");
     expect(brightSchoolStyles).toContain("background: transparent !important");
     expect(brightSchoolStyles).toContain("border: 0 !important");

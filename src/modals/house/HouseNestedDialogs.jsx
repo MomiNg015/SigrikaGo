@@ -26,6 +26,16 @@ export function CharacterDetailDialog({
   const cvName = normalizeCharacterCvName(character.cvName);
   const cvUrl = normalizeCharacterCvUrl(character.cvUrl);
   const cvLabel = cvName ? `CV：${cvName}` : "";
+  const skillLabelStyle = {
+    "--detail-label-color": "#111111",
+    "--detail-label-bg": "color-mix(in srgb, var(--character-theme-color) 24%, #ffffff)"
+  };
+  const acquisitionLabelStyle = {
+    "--detail-label-color": "#111111",
+    "--detail-label-bg": "#e5e7eb",
+    "--detail-label-border": "2px solid #6b7280",
+    "--detail-label-radius": "0"
+  };
   const handleMusicChange = ({ trackId, effectType = "" }) => onSelectCharacterMusic?.({
     characterId: character.id,
     trackId,
@@ -33,7 +43,11 @@ export function CharacterDetailDialog({
   });
   return (
     <div className="nested-modal-backdrop" onClick={onClose}>
-      <section className={`nested-modal character-detail character-details-modal ${detailOwned ? "" : "unowned"}`} onClick={(event) => event.stopPropagation()}>
+      <section
+        className={`nested-modal character-detail character-details-modal ${detailOwned ? "" : "unowned"}`}
+        style={{ "--character-theme-color": character.palette || "#ff9b4d" }}
+        onClick={(event) => event.stopPropagation()}
+      >
         <button className="close-button" onClick={onClose}><X size={18} /></button>
         <div className="character-detail-art">
           <img src={characterCandyPortrait(character, itemEffects)} alt={character.name} />
@@ -56,7 +70,7 @@ export function CharacterDetailDialog({
             />
           </div>
           <div className="skill-title-row">
-            <strong>{character.skill.name}</strong>
+            <strong style={skillLabelStyle}>{character.skill.name}</strong>
             <span className="skill-overclock-badge">{formatSkillOverclock(character.skill)}</span>
           </div>
           <SkillDescription
@@ -66,7 +80,7 @@ export function CharacterDetailDialog({
           {derivedSkills.map((skill) => (
             <div className="derived-skill-detail" key={skill.effectType}>
               <div className="skill-title-row">
-                <strong>{skill.name}</strong>
+                <strong style={skillLabelStyle}>{skill.name}</strong>
                 <span className="skill-overclock-badge">{formatSkillOverclock(skill)}</span>
               </div>
               <SkillDescription
@@ -75,7 +89,7 @@ export function CharacterDetailDialog({
               />
             </div>
           ))}
-          <p className="acquisition-method"><strong>获得途径</strong>{character.acquisitionMethod || "初始可用"}</p>
+          <p className="acquisition-method"><strong style={acquisitionLabelStyle}>获得途径</strong>{character.acquisitionMethod || "初始可用"}</p>
           <p
             className="character-description"
             role={onPlayDetailVoice ? "button" : undefined}

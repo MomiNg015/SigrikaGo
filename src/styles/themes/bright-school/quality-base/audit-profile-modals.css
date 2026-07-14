@@ -31,10 +31,10 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .skill-title-row strong,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .acquisition-method strong {
-  color: #3d2b25 !important;
-  background: #ffdfeb !important;
-  border: 2px solid #3d2b25 !important;
-  border-radius: 999px !important;
+  color: var(--detail-label-color, #3d2b25) !important;
+  background: var(--detail-label-bg, #ffdfeb) !important;
+  border: var(--detail-label-border, 2px solid #3d2b25) !important;
+  border-radius: var(--detail-label-radius, 999px) !important;
   padding: 4px 12px !important;
 }
 

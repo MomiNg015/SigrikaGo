@@ -87,7 +87,6 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row span,
-.app-shell.player-theme-enabled.theme-bright-school .character-details-modal .skill-title-row strong:first-child,
 .app-shell.player-theme-enabled.theme-bright-school .character-details-modal .acquisition-method strong {
   color: #ff9ebb !important;
 }
