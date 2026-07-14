@@ -28,6 +28,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 
 - Read [CSS Architecture](./css-architecture.md) before changing `src/styles/**`, theme CSS, HUD compatibility CSS, or CSS contract tests.
 - Read [Quality Guidelines](./quality-guidelines.md) for feature-specific visual and mobile contracts that apply to the touched surface.
+- Read [Structured Skill Descriptions](../backend/skill-description-contract.md) before changing skill-copy parsing, trait popovers, overclock labels, or the admin trait editor.
 - For UI changes, update desktop and mobile contracts together unless the task explicitly scopes one viewport only.
 
 ---
