@@ -6,6 +6,8 @@ import { resolveSkillMusicTrack, skillMusicOptionsForCharacter } from "../../sha
 import { PaginatedReplayList } from "../ReplayList.jsx";
 import { characterRecordColumns } from "../UserProfileCard.jsx";
 import { characterCandyPortrait } from "./houseStats.js";
+import SkillDescription from "../../shared/SkillDescription.jsx";
+import { formatSkillOverclock } from "../../shared/skillTraits.js";
 
 export function CharacterDetailDialog({
   character,
@@ -55,14 +57,22 @@ export function CharacterDetailDialog({
           </div>
           <div className="skill-title-row">
             <strong>{character.skill.name}</strong>
+            <span className="skill-overclock-badge">{formatSkillOverclock(character.skill)}</span>
           </div>
-          <p>{character.skill.description}</p>
+          <SkillDescription
+            className="character-skill-description"
+            description={character.skill.description}
+          />
           {derivedSkills.map((skill) => (
             <div className="derived-skill-detail" key={skill.effectType}>
               <div className="skill-title-row">
                 <strong>{skill.name}</strong>
+                <span className="skill-overclock-badge">{formatSkillOverclock(skill)}</span>
               </div>
-              <p>{skill.description}</p>
+              <SkillDescription
+                className="character-skill-description"
+                description={skill.description}
+              />
             </div>
           ))}
           <p className="acquisition-method"><strong>获得途径</strong>{character.acquisitionMethod || "初始可用"}</p>

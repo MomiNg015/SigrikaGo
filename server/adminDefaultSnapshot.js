@@ -40,6 +40,32 @@ export const ADMIN_DEFAULT_CONFIG = {
       "value": "true"
     }
   ],
+  "skillTraits": [
+    {
+      "id": "skill-trait-sprint",
+      "name": "疾走",
+      "definition": "发动该技能不消耗当前回合落子。",
+      "sortOrder": 0
+    },
+    {
+      "id": "skill-trait-no-first",
+      "name": "禁先",
+      "definition": "对手尚未在本局成功发动过主动技能时，具有该特性的技能无法发动。",
+      "sortOrder": 1
+    },
+    {
+      "id": "skill-trait-passive",
+      "name": "被动",
+      "definition": "无需玩家主动发动，满足其技能条件时自动生效。",
+      "sortOrder": 2
+    },
+    {
+      "id": "skill-trait-derived",
+      "name": "派生",
+      "definition": "该技能不是角色初始持有的常驻技能，需要由其他技能或对局状态生成后才能使用。",
+      "sortOrder": 3
+    }
+  ],
   "characters": [
     {
       "slug": "sigrika",
@@ -57,7 +83,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "erase-point",
         "name": "星辉符文",
-        "description": "抹除棋盘上指定交叉点（使用该技能不消耗本次落子）。\n超频：3",
+        "description": "【疾走】抹除棋盘上指定交叉点。",
         "uses": 1,
         "freeTurn": true,
         "targetRule": "empty-point",
@@ -84,7 +110,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "flip-stone",
         "name": "泡影幻梦",
-        "description": "指定棋盘上的某个棋子，将其反色。\n超频：4",
+        "description": "指定棋盘上的某个棋子，将其反色。",
         "uses": 1,
         "freeTurn": false,
         "targetRule": "stone",
@@ -111,11 +137,11 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "hidden-hand",
         "name": "小爱出击",
-        "description": "本轮落子为隐藏手。\n超频：0",
+        "description": "本轮落子为隐藏手。",
         "uses": 1,
         "freeTurn": false,
         "targetRule": "empty-point",
-        "paramsJson": "{\"derivedSkills\":[{\"id\":\"voyage-star\",\"effectType\":\"voyage-star\",\"name\":\"远航星\",\"description\":\"派生技，仅限以“小爱出击”产生的隐藏手存在于场上且未暴露的情况下才可以使用。以该隐藏手为中心，抹除包括其在内的上下左右1路的交叉点；同时移除这些交叉点上下左右1路的棋子（该技能不消耗落子回合）。超频：5\",\"uses\":1,\"freeTurn\":true,\"targetRule\":\"none\",\"costType\":\"numeric\",\"costValue\":\"5\",\"musicTrackId\":\"aemeath-voyage-star-default\"}]}",
+        "paramsJson": "{\"derivedSkills\":[{\"id\":\"voyage-star\",\"effectType\":\"voyage-star\",\"name\":\"远航星\",\"description\":\"【派生】【疾走】仅限以“小爱出击”产生的隐藏手存在于场上且未暴露的情况下才可以使用。以该隐藏手为中心，抹除包括其在内的上下左右1路的交叉点；同时移除这些交叉点上下左右1路的棋子。\",\"uses\":1,\"freeTurn\":true,\"targetRule\":\"none\",\"costType\":\"numeric\",\"costValue\":\"5\",\"musicTrackId\":\"aemeath-voyage-star-default\"}]}",
         "costType": "numeric",
         "costValue": "0",
         "systemMessage": "{color}{player}使用了{character}的“{skill}”技能，落下了幽灵般的一手，应该没人发现吧。。。",
@@ -138,7 +164,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "spray-stone",
         "name": "流光溢彩",
-        "description": "指定棋盘上一枚棋子，将其变成喷涂棋子（喷涂棋子：一种中立棋子）。同时，随机将棋盘上另一枚可视棋子也变成喷涂棋子。超频：2",
+        "description": "指定棋盘上一枚棋子，将其变成喷涂棋子（喷涂棋子：一种中立棋子）。同时，随机将棋盘上另一枚可视棋子也变成喷涂棋子。",
         "uses": 1,
         "freeTurn": false,
         "targetRule": "stone",
@@ -165,7 +191,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "protocol-takeover",
         "name": "协议接管",
-        "description": "指定棋盘一处空置交叉点，将其变为对方的禁入点（对方无法指定该交叉点落子或发动技能）（使用该技能不消耗本次落子）。超频：2",
+        "description": "【疾走】指定棋盘一处空置交叉点，将其变为对方的禁入点（对方无法指定该交叉点落子或发动技能）。",
         "uses": 1,
         "freeTurn": true,
         "targetRule": "empty-point",
@@ -219,7 +245,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "double-move",
         "name": "谋定后动",
-        "description": "【仅限对手发动过主动技能后才可以发动】本回合，获得一把“飞刀”（可以连下2手）（使用该技能不消耗本次落子）。超频：3",
+        "description": "【禁先】【疾走】本回合，获得一把“飞刀”（可以连下2手）。",
         "uses": 1,
         "freeTurn": true,
         "targetRule": "none",
@@ -273,7 +299,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "color-illusion-passive",
         "name": "？？？",
-        "description": "被动技。自己的落子有80%概率在对手视角里会变成对手棋子颜色。",
+        "description": "【被动】自己的落子有80%概率在对手视角里会变成对手棋子颜色。",
         "uses": 0,
         "freeTurn": true,
         "targetRule": "none",
@@ -300,7 +326,7 @@ export const ADMIN_DEFAULT_CONFIG = {
       "skill": {
         "effectType": "random-blast",
         "name": "猪小仙爆炸",
-        "description": "随机以某个场上棋子为目标（除一路的棋子外），移除其为中心的3*3区域的棋子（使用该技能不消耗本次落子）。\n超频：0",
+        "description": "【疾走】随机以某个场上棋子为目标（除一路的棋子外），移除其为中心的3*3区域的棋子。",
         "uses": 1,
         "freeTurn": true,
         "targetRule": "none",

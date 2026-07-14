@@ -510,8 +510,7 @@ describe("deriveCharacterRecordStats", () => {
 
   it("renders character descriptions in the character detail dialog", () => {
     const styles = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
-    const brightSchoolStyles = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url))
-      + readCssWithImports(new URL("../styles/themes/bright-school/surface-contracts.css", import.meta.url));
+    const brightSchoolStyles = readCssWithImports(new URL("../styles/themes/bright-school.css", import.meta.url));
     const html = renderToStaticMarkup(createElement(CharacterDetailDialog, {
       character: {
         id: "sigrika",
@@ -528,6 +527,8 @@ describe("deriveCharacterRecordStats", () => {
 
     expect(html).toContain("character-description");
     expect(html).not.toContain("skill-cost-badge");
+    expect(html).toContain("skill-overclock-badge");
+    expect(html).toContain("超频：3");
     expect(html).not.toMatch(/class="character-description"><strong>/);
     expect(html).toContain("来自星辉社团的棋手。");
     expect(styles).toMatch(/\.character-description\s*\{[^}]*font-style:\s*italic;/s);
@@ -538,6 +539,10 @@ describe("deriveCharacterRecordStats", () => {
     expect(brightSchoolStyles).toContain("color: #7b3fa0 !important");
     expect(brightSchoolStyles).toContain(".character-detail-copy .character-description");
     expect(brightSchoolStyles).toContain("text-align: left !important");
+    expect(brightSchoolStyles).toContain("button.skill-trait-token");
+    expect(brightSchoolStyles).toContain("background: transparent !important");
+    expect(brightSchoolStyles).toContain("border: 0 !important");
+    expect(brightSchoolStyles).toContain("box-shadow: none !important");
   });
 
   it("renders optional character CV labels without default link styling", () => {
@@ -672,6 +677,10 @@ describe("deriveCharacterRecordStats", () => {
     const css = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
     const brightSchoolEffectsCss = readCssWithImports(new URL("../styles/themes/bright-school/effects.css", import.meta.url));
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+
+    expect(finalMobileCss).toContain(".character-details-modal");
+    expect(finalMobileCss).toContain("overflow-y: auto !important");
+    expect(finalMobileCss).toContain("overscroll-behavior: contain !important");
 
     expect(css).toContain(".house-modal");
     expect(css).toContain("grid-template-rows: auto auto minmax(0, 1fr) auto !important");

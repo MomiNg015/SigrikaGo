@@ -17,6 +17,7 @@ import { ensureDefaultSiteSettings } from "./siteSettings.js";
 import { ensureSocialSchema } from "./social.js";
 import { cleanupLegacyUsernames } from "./usernameCleanup.js";
 import { seedAdminDefaultConfig } from "./adminDefaultSeed.js";
+import { ensureSkillTraitSchema, migrateBuiltinSkillDescriptions } from "./skillTraits.js";
 
 export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureAchievementSchema",
@@ -26,6 +27,7 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureAnnouncementSchema",
   "ensureStoryScriptSchema",
   "ensureOnboardingStorySchema",
+  "ensureSkillTraitSchema",
   "seedAdminDefaultConfig",
   "seedDefaultStoryScripts",
   "seedBuiltinAchievements",
@@ -33,6 +35,7 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "cleanupLegacyDerivedSkillLeak",
   "cleanupLegacyUsernames",
   "seedCharacters",
+  "migrateBuiltinSkillDescriptions",
   "seedBuiltinShopItems",
   "ensureDefaultSiteSettings",
   "ensureSocialSchema",
@@ -58,6 +61,7 @@ export async function initializeServerData({
   ensureAnnouncementSchema: ensureAnnouncementSchemaTask = ensureAnnouncementSchema,
   ensureStoryScriptSchema: ensureStoryScriptSchemaTask = ensureStoryScriptSchema,
   ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask = ensureOnboardingStorySchema,
+  ensureSkillTraitSchema: ensureSkillTraitSchemaTask = ensureSkillTraitSchema,
   seedDefaultStoryScripts: seedDefaultStoryScriptsTask = seedDefaultStoryScripts,
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
@@ -66,6 +70,7 @@ export async function initializeServerData({
   cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask = cleanupLegacyDeniaCharacterData,
   cleanupLegacyDerivedSkillLeak: cleanupLegacyDerivedSkillLeakTask = cleanupLegacyDerivedSkillLeak,
   cleanupLegacyUsernames: cleanupLegacyUsernamesTask = cleanupLegacyUsernames,
+  migrateBuiltinSkillDescriptions: migrateBuiltinSkillDescriptionsTask = migrateBuiltinSkillDescriptions,
   promoteConfiguredAdmins: promoteConfiguredAdminsTask = promoteConfiguredAdmins
 }) {
   const tasks = {
@@ -75,6 +80,7 @@ export async function initializeServerData({
     ensureAchievementSchema: ensureAchievementSchemaTask,
     ensureAnnouncementSchema: ensureAnnouncementSchemaTask,
     ensureOnboardingStorySchema: ensureOnboardingStorySchemaTask,
+    ensureSkillTraitSchema: ensureSkillTraitSchemaTask,
     ensureDefaultSiteSettings: ensureDefaultSiteSettingsTask,
     ensureGachaSchema: ensureGachaSchemaTask,
     ensureGameModeSchema: ensureGameModeSchemaTask,
@@ -90,6 +96,7 @@ export async function initializeServerData({
     seedBuiltinAchievements: seedBuiltinAchievementsTask,
     seedBuiltinShopItems: seedBuiltinShopItemsTask,
     seedCharacters: seedCharactersTask,
+    migrateBuiltinSkillDescriptions: migrateBuiltinSkillDescriptionsTask,
     seedDefaultStoryScripts: seedDefaultStoryScriptsTask
   };
 

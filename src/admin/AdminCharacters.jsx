@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Plus, Upload } from "lucide-react";
 import { adminApi, uploadPortrait } from "../api/client.js";
 import {
@@ -7,9 +7,10 @@ import {
   emptyCharacterDraft,
   updateDerivedSkillDraft
 } from "../shared/adminDrafts.js";
+import { extractSkillTraitReferences } from "../shared/skillTraits.js";
 import { AdminFieldLabel } from "./adminComponents.jsx";
 
-export default function AdminCharacters({ characters, token, onSaved, onNotice }) {
+export default function AdminCharacters({ characters, skillTraits = [], token, onSaved, onNotice }) {
   const [draft, setDraft] = useState(null);
 
   function startNewCharacter() {
@@ -50,6 +51,7 @@ export default function AdminCharacters({ characters, token, onSaved, onNotice }
             draft={draft}
             setDraft={setDraft}
             token={token}
+            skillTraits={skillTraits}
             onCancel={() => setDraft(null)}
             onNotice={onNotice}
             onSaved={async (savedCharacter) => {
@@ -68,7 +70,7 @@ export default function AdminCharacters({ characters, token, onSaved, onNotice }
   );
 }
 
-function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }) {
+function CharacterEditor({ draft, setDraft, skillTraits, token, onCancel, onSaved, onNotice }) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -200,9 +202,13 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
         <label><AdminFieldLabel text="技能名" tip="展示给玩家看的技能名称。" />
           <input value={draft.skill.name} onChange={(event) => updateSkill("name", event.target.value)} />
         </label>
-        <label className="wide-field"><AdminFieldLabel text="技能描述" tip="棋舍角色详情中展示的技能说明。" />
-          <textarea value={draft.skill.description} onChange={(event) => updateSkill("description", event.target.value)} />
-        </label>
+        <TraitDescriptionField
+          label="技能描述"
+          tip="棋舍角色详情和对局中展示的技能说明；【词】可放在正文任意位置。"
+          value={draft.skill.description}
+          traits={skillTraits}
+          onChange={(value) => updateSkill("description", value)}
+        />
         <label><AdminFieldLabel text="超频" tip="只修改技能的超频数值或说明，不会改变技能规则。" />
           <input
             type={draft.skill.costType === "numeric" ? "number" : "text"}
@@ -219,6 +225,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
               <DerivedSkillEditor
                 key={derivedSkill.id ?? derivedSkill.effectType}
                 derivedSkill={derivedSkill}
+                skillTraits={skillTraits}
                 onChange={updateDerivedSkill}
               />
             ))}
@@ -229,7 +236,7 @@ function CharacterEditor({ draft, setDraft, token, onCancel, onSaved, onNotice }
   );
 }
 
-function DerivedSkillEditor({ derivedSkill, onChange }) {
+function DerivedSkillEditor({ derivedSkill, skillTraits, onChange }) {
   const derivedSkillId = derivedSkill.effectType ?? derivedSkill.id;
   return (
     <>
@@ -243,9 +250,69 @@ function DerivedSkillEditor({ derivedSkill, onChange }) {
           onChange={(event) => onChange(derivedSkillId, "costValue", event.target.value)}
         />
       </label>
-      <label className="wide-field"><AdminFieldLabel text="派生技能描述" tip="角色详情和对局技能说明中展示的派生技能文本。" />
-        <textarea value={derivedSkill.description} onChange={(event) => onChange(derivedSkillId, "description", event.target.value)} />
-      </label>
+      <TraitDescriptionField
+        label="派生技能描述"
+        tip="角色详情和对局技能说明中展示的派生技能文本；【词】可放在正文任意位置。"
+        value={derivedSkill.description}
+        traits={skillTraits}
+        onChange={(value) => onChange(derivedSkillId, "description", value)}
+      />
     </>
   );
+}
+
+function TraitDescriptionField({ label, tip, value, traits, onChange }) {
+  const textareaRef = useRef(null);
+  const referencedNames = new Set(extractSkillTraitReferences(value));
+  const availableTraits = traits.filter((trait) => !referencedNames.has(trait.name));
+
+  function insertTrait(event) {
+    const traitName = event.target.value;
+    event.target.value = "";
+    if (!traitName) return;
+    const insertion = insertSkillTraitToken(value, traitName, textareaRef.current);
+    if (!insertion) return;
+    onChange(insertion.value);
+    requestAnimationFrame(() => {
+      textareaRef.current?.focus();
+      textareaRef.current?.setSelectionRange(insertion.cursor, insertion.cursor);
+    });
+  }
+
+  return (
+    <label className="wide-field admin-trait-description-field">
+      <AdminFieldLabel text={label} tip={tip} />
+      <textarea
+        ref={textareaRef}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      <span className="admin-trait-insert-row">
+        <span>插入特性词</span>
+        <select
+          aria-label={`${label}插入特性词`}
+          defaultValue=""
+          disabled={!availableTraits.length}
+          onChange={insertTrait}
+        >
+          <option value="">{availableTraits.length ? "选择词条" : "没有可插入词条"}</option>
+          {availableTraits.map((trait) => (
+            <option key={trait.id} value={trait.name}>【{trait.name}】</option>
+          ))}
+        </select>
+      </span>
+    </label>
+  );
+}
+
+export function insertSkillTraitToken(value, traitName, textarea) {
+  const text = String(value ?? "");
+  if (extractSkillTraitReferences(text).includes(traitName)) return null;
+  const token = `【${traitName}】`;
+  const start = Number.isInteger(textarea?.selectionStart) ? textarea.selectionStart : text.length;
+  const end = Number.isInteger(textarea?.selectionEnd) ? textarea.selectionEnd : start;
+  return {
+    value: `${text.slice(0, start)}${token}${text.slice(end)}`,
+    cursor: start + token.length
+  };
 }

@@ -11,7 +11,7 @@ export const DEFAULT_VOYAGE_STAR_DERIVED_SKILL = Object.freeze({
   id: DERIVED_SKILL_EFFECTS.voyageStar,
   effectType: DERIVED_SKILL_EFFECTS.voyageStar,
   name: "远航星",
-  description: "以“小爱出击”产生的未暴露隐藏手为中心，抹除包括其在内的上下左右1路交叉点；同时移除这些抹除交叉点上下左右1路的棋子。超频5，不消耗落子次数，仅限自己的回合使用。",
+  description: "【派生】【疾走】以“小爱出击”产生的未暴露隐藏手为中心，抹除包括其在内的上下左右1路交叉点；同时移除这些抹除交叉点上下左右1路的棋子。仅限自己的回合使用。",
   uses: 1,
   freeTurn: true,
   costType: "numeric",
@@ -97,7 +97,20 @@ export function effectiveSkillUsesForColor(game, color) {
 
 export function effectiveSkillDisplayForPlayer(game, player) {
   const derived = normalizeDerivedSkillState(activeDerivedSkillState(game, player?.color));
-  if (derived) return derived;
+  if (derived) {
+    const currentDefinition = derivedSkillDefinitionForEffect(
+      player?.character?.skill,
+      derived.effectType
+    );
+    if (!currentDefinition) return derived;
+    return {
+      ...derived,
+      name: currentDefinition.name,
+      description: currentDefinition.description,
+      costType: currentDefinition.costType,
+      costValue: currentDefinition.costValue
+    };
+  }
   return player?.character?.skill ?? player?.skill ?? null;
 }
 

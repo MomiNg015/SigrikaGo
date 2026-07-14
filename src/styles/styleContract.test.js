@@ -486,7 +486,8 @@ describe("root CSS entry contract", () => {
       "./base/home-stage-artboard.css",
       "./base/home-stage-toolbox.css",
       "./base/home-unavailable-entry.css",
-      "./base/message-feedback.css"
+      "./base/message-feedback.css",
+      "./base/skill-description.css"
     ]);
     expect(baseEntry).not.toContain(":root {");
     expect(baseEntry).not.toContain(".home-screen {");
@@ -514,6 +515,7 @@ describe("root CSS entry contract", () => {
       "./admin/shared-surfaces.css",
       "./admin/analytics.css",
       "./admin/characters.css",
+      "./admin/skill-traits.css",
       "./admin/audit-feedback.css",
       "./admin/gacha.css",
       "./admin/achievements.css",

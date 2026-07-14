@@ -8,6 +8,12 @@ describe("admin default snapshot export", () => {
     expect(config.siteSettings).toEqual([
       { key: "homeSubtitle", value: "SIGRIKAGO" }
     ]);
+    expect(config.skillTraits).toEqual([{
+      id: "trait-sprint",
+      name: "疾走",
+      definition: "不消耗落子。",
+      sortOrder: 0
+    }]);
     expect(config.characters[0]).toMatchObject({
       slug: "sigrika",
       cvName: "璃音",
@@ -84,6 +90,14 @@ function snapshotPrisma() {
   return {
     siteSetting: {
       findMany: async () => [{ key: "homeSubtitle", value: "SIGRIKAGO" }]
+    },
+    skillTrait: {
+      findMany: async () => [{
+        id: "trait-sprint",
+        name: "疾走",
+        definition: "不消耗落子。",
+        sortOrder: 0
+      }]
     },
     character: {
       findMany: async () => [{

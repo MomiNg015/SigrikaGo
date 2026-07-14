@@ -29,20 +29,24 @@ describe("public and lobby route handlers", () => {
     expect(res.body).toEqual({ ok: true });
   });
 
-  it("loads public characters and site settings through their catalog helpers", async () => {
+  it("loads public characters, skill traits, and site settings through their catalog helpers", async () => {
     const handlers = createPublicRouteHandlers({
       prisma: { id: "prisma" },
       listWatchRooms: () => [],
       listPublicCharacterResponseFn: async (prisma) => ({ characters: [{ id: prisma.id }] }),
+      listPublicSkillTraitsFn: async (prisma) => [{ id: `trait:${prisma.id}` }],
       getPublicSiteSettingsFn: async (prisma) => ({ title: prisma.id })
     });
     const characterRes = createResponse();
+    const traitRes = createResponse();
     const settingsRes = createResponse();
 
     await handlers.characters({}, characterRes);
+    await handlers.skillTraits({}, traitRes);
     await handlers.siteSettings({}, settingsRes);
 
     expect(characterRes.body).toEqual({ characters: [{ id: "prisma" }] });
+    expect(traitRes.body).toEqual({ traits: [{ id: "trait:prisma" }] });
     expect(settingsRes.body).toEqual({ settings: { title: "prisma" } });
   });
 
@@ -170,6 +174,7 @@ describe("public and lobby route handlers", () => {
 
     expect(routeLayerCounts.get("/health")).toBe(1);
     expect(routeLayerCounts.get("/characters")).toBe(1);
+    expect(routeLayerCounts.get("/skill-traits")).toBe(1);
     expect(routeLayerCounts.get("/site-settings")).toBe(1);
     expect(routeLayerCounts.get("/shop")).toBe(2);
     expect(routeLayerCounts.get("/feedback")).toBe(2);

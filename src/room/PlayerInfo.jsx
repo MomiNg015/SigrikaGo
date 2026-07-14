@@ -5,9 +5,12 @@ import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
 import UserIdentity from "../shared/UserIdentity.jsx";
 import { resolveCandyPortrait } from "../shared/candyPortraits.js";
+import { CHARACTERS } from "../shared/characters.js";
 import { findCharacter } from "../shared/characterDisplay.js";
 import { effectiveSkillDisplayForPlayer, effectiveSkillUsesForColor } from "../shared/derivedSkills.js";
 import { gameModeFamily } from "../shared/gameModes.js";
+import SkillDescription from "../shared/SkillDescription.jsx";
+import { formatSkillOverclock } from "../shared/skillTraits.js";
 import TimeBar from "./TimeBar.jsx";
 
 export const PLAYER_INFO_TOOLTIPS = {
@@ -33,11 +36,14 @@ function PlayerInfo({
 }) {
   const [skillDetailOpen, setSkillDetailOpen] = useState(false);
   const [tapTooltip, setTapTooltip] = useState(null);
+  const [traitPopoverOpen, setTraitPopoverOpen] = useState(false);
   useEffect(() => {
     if (!tapTooltip) return undefined;
     const closeTooltip = (event) => {
+      if (event.__skillTraitTopLayer) return;
       if (event.target?.closest?.("[data-mobile-tooltip-trigger]")) return;
       if (event.target?.closest?.(".mobile-tap-tooltip")) return;
+      if (event.target?.closest?.(".skill-trait-popover")) return;
       setTapTooltip(null);
     };
     document.addEventListener("pointerdown", closeTooltip);
@@ -46,7 +52,7 @@ function PlayerInfo({
   if (!player) return <aside className="player-info empty" />;
   const hasCharacter = !(player.character === null && !player.characterId);
   const isNoCharacter = !hasCharacter;
-  const baseCharacter = hasCharacter ? findCharacter(characters, player.character ?? player.characterId) : null;
+  const baseCharacter = hasCharacter ? playerCharacterForDisplay(characters, player) : null;
   const activeSkill = hasCharacter ? effectiveSkillDisplayForPlayer(game, { ...player, character: baseCharacter }) : null;
   const character = activeSkill
     ? { ...baseCharacter, skill: { ...baseCharacter.skill, ...activeSkill } }
@@ -137,7 +143,9 @@ function PlayerInfo({
       </div>}
       {skillEnabled && hasCharacter && <div
         className={`skill-chip-wrap ${skillDetailOpen ? "open" : ""}`}
-        onMouseLeave={() => setSkillDetailOpen(false)}
+        onMouseLeave={() => {
+          if (!traitPopoverOpen) setSkillDetailOpen(false);
+        }}
         onPointerDownCapture={requestFloatingLayer}
       >
         <button
@@ -147,7 +155,7 @@ function PlayerInfo({
           data-mobile-tooltip-trigger
           onClick={(event) => {
             requestFloatingLayer();
-            if (openTapTooltip(event, skillTooltipText(character), setTapTooltip)) {
+            if (openTapTooltip(event, skillTooltipContent(character), setTapTooltip)) {
               setSkillDetailOpen(false);
               return;
             }
@@ -155,7 +163,7 @@ function PlayerInfo({
           }}
           onKeyDown={(event) => {
             requestFloatingLayer();
-            if (openTapTooltipFromKeyboard(event, skillTooltipText(character), setTapTooltip)) {
+            if (openTapTooltipFromKeyboard(event, skillTooltipContent(character), setTapTooltip)) {
               setSkillDetailOpen(false);
             }
           }}
@@ -172,7 +180,12 @@ function PlayerInfo({
           {character.skill.name} · {skillUses}
         </button>
         <div className="skill-detail-panel" aria-hidden={!skillDetailOpen}>
-          {character.skill.description || "暂无技能说明。"}
+          <SkillDescription
+            description={character.skill.description || "暂无技能说明。"}
+            overclockText={formatSkillOverclock(character.skill)}
+            floatingLayerZ={floatingLayerZ}
+            onPopoverOpenChange={setTraitPopoverOpen}
+          />
         </div>
       </div>}
       {showNoCharacterSkillPlaceholder && (
@@ -191,7 +204,14 @@ function PlayerInfo({
           data-placement={tapTooltip.placement}
           role="tooltip"
         >
-          {tapTooltip.text}
+          {tapTooltip.skill ? (
+            <SkillDescription
+              description={tapTooltip.skill.description || "暂无技能说明。"}
+              overclockText={formatSkillOverclock(tapTooltip.skill)}
+              floatingLayerZ={floatingLayerZ}
+              onPopoverOpenChange={setTraitPopoverOpen}
+            />
+          ) : tapTooltip.text}
         </div>
       )}
     </aside>
@@ -275,8 +295,8 @@ function skillChipStyle(character = {}) {
   };
 }
 
-function skillTooltipText(character = {}) {
-  return character.skill?.description || "暂无技能说明。";
+function skillTooltipContent(character = {}) {
+  return { skill: character.skill ?? { description: "暂无技能说明。", costValue: "0" } };
 }
 
 export function isMobileTooltipInput() {
@@ -297,15 +317,15 @@ export function tooltipPointFromEvent(event, viewport = globalThis) {
   };
 }
 
-function openTapTooltip(event, text, setTapTooltip) {
+function openTapTooltip(event, content, setTapTooltip) {
   if (!isMobileTooltipInput()) return false;
   event.preventDefault();
   event.stopPropagation();
-  setTapTooltip({ ...tooltipPointFromEvent(event), text });
+  setTapTooltip({ ...tooltipPointFromEvent(event), ...tooltipContent(content) });
   return true;
 }
 
-function openTapTooltipFromKeyboard(event, text, setTapTooltip) {
+function openTapTooltipFromKeyboard(event, content, setTapTooltip) {
   if (event.key !== "Enter" && event.key !== " ") return false;
   if (!isMobileTooltipInput()) return false;
   event.preventDefault();
@@ -316,9 +336,23 @@ function openTapTooltipFromKeyboard(event, text, setTapTooltip) {
       clientX: rect.left + rect.width / 2,
       clientY: rect.top + rect.height / 2
     }),
-    text
+    ...tooltipContent(content)
   });
   return true;
+}
+
+export function playerCharacterForDisplay(characters, player = {}) {
+  const characterId = canonicalCharacterId(player.characterId ?? player.character?.id);
+  const hasCurrentCatalogEntry = Boolean(
+    characterId && (characters?.[characterId] || CHARACTERS[characterId])
+  );
+  return hasCurrentCatalogEntry
+    ? findCharacter(characters, characterId)
+    : findCharacter(characters, player.character ?? characterId);
+}
+
+function tooltipContent(content) {
+  return typeof content === "string" ? { text: content } : content;
 }
 
 function clamp(value, min, max) {

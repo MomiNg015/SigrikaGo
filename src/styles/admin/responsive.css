@@ -1,4 +1,9 @@
 @media (max-width: 860px) {
+  .admin-skill-trait-layout,
+  .admin-character-layout {
+    grid-template-columns: 1fr;
+  }
+
   .admin-gacha-board .admin-crud-drawer {
     inset: 12px;
     width: auto;
@@ -26,6 +31,20 @@
 }
 
 @media (max-width: 560px) {
+  .admin-character-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-skill-trait-references li,
+  .admin-trait-description-field .admin-trait-insert-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-trait-description-field .admin-trait-insert-row select {
+    width: 100%;
+  }
+
   .admin-gacha-form .admin-character-form-grid,
   .admin-gacha-prize-controls,
   .admin-gacha-prize-metrics {

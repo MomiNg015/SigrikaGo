@@ -1,5 +1,14 @@
 /* Bright School portrait character detail safety rules. */
 @media (max-width: 768px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-details-modal {
+    min-height: 0 !important;
+    align-items: start !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-detail-copy {
     text-align: left !important;
   }

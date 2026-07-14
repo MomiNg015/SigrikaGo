@@ -3,9 +3,11 @@ import { isDeepStrictEqual } from "node:util";
 import { routeError } from "./adminRouteErrors.js";
 import { writeAudit } from "./adminAudit.js";
 import { toCharacterPayload, validateCharacterInput } from "./characters.js";
+import { assertSkillTraitReferences } from "./skillTraits.js";
 
 export async function createCharacter({ prisma, adminUser, input }) {
   return prisma.$transaction(async (tx) => {
+    await assertSkillTraitReferences(tx, input.skill);
     const character = await tx.character.create({
       data: characterCreateData(input),
       include: { skill: true }
@@ -25,6 +27,7 @@ export async function updateCharacter({ prisma, adminUser, characterId, body }) 
 
     const validated = validateCharacterInput(mergeCharacterInput(before, body));
     if (!validated.ok) throw routeError(400, validated.error);
+    await assertSkillTraitReferences(tx, validated.value.skill);
 
     const after = await tx.character.update({
       where: { id: before.id },

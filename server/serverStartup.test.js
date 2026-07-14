@@ -22,6 +22,7 @@ describe("server startup", () => {
     const ensureAnnouncementSchema = task("ensureAnnouncementSchema");
     const ensureStoryScriptSchema = task("ensureStoryScriptSchema");
     const ensureOnboardingStorySchema = task("ensureOnboardingStorySchema");
+    const ensureSkillTraitSchema = task("ensureSkillTraitSchema");
     const seedDefaultStoryScripts = task("seedDefaultStoryScripts");
     const ensureMusicTrackSettingsSchema = task("ensureMusicTrackSettingsSchema");
     const ensureAchievementSchema = task("ensureAchievementSchema");
@@ -30,6 +31,7 @@ describe("server startup", () => {
     const cleanupLegacyDeniaCharacterData = task("cleanupLegacyDeniaCharacterData");
     const cleanupLegacyDerivedSkillLeak = task("cleanupLegacyDerivedSkillLeak");
     const cleanupLegacyUsernames = task("cleanupLegacyUsernames");
+    const migrateBuiltinSkillDescriptions = task("migrateBuiltinSkillDescriptions");
     const promoteConfiguredAdmins = task("promoteConfiguredAdmins");
 
     await initializeServerData({
@@ -47,6 +49,7 @@ describe("server startup", () => {
       ensureAnnouncementSchema,
       ensureStoryScriptSchema,
       ensureOnboardingStorySchema,
+      ensureSkillTraitSchema,
       seedDefaultStoryScripts,
       ensureMusicTrackSettingsSchema,
       ensureAchievementSchema,
@@ -55,6 +58,7 @@ describe("server startup", () => {
       cleanupLegacyDeniaCharacterData,
       cleanupLegacyDerivedSkillLeak,
       cleanupLegacyUsernames,
+      migrateBuiltinSkillDescriptions,
       promoteConfiguredAdmins
     });
 
@@ -66,6 +70,7 @@ describe("server startup", () => {
       "ensureAnnouncementSchema",
       "ensureStoryScriptSchema",
       "ensureOnboardingStorySchema",
+      "ensureSkillTraitSchema",
       "seedAdminDefaultConfig",
       "seedDefaultStoryScripts",
       "seedBuiltinAchievements",
@@ -73,6 +78,7 @@ describe("server startup", () => {
       "cleanupLegacyDerivedSkillLeak",
       "cleanupLegacyUsernames",
       "seedCharacters",
+      "migrateBuiltinSkillDescriptions",
       "seedBuiltinShopItems",
       "ensureDefaultSiteSettings",
       "ensureSocialSchema",

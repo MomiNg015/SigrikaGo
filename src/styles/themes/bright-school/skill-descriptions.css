@@ -1,0 +1,26 @@
+/* Final Bright School owner for interactive skill-description text. */
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.skill-trait-token,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.skill-trait-token:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.skill-trait-token:active,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.skill-trait-token:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.skill-trait-token[aria-expanded="true"] {
+  padding: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  filter: none !important;
+  transform: none !important;
+  text-shadow: none !important;
+  letter-spacing: inherit !important;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.skill-trait-token:focus-visible {
+  border-radius: 2px !important;
+  outline: 2px solid currentColor !important;
+  outline-offset: 2px !important;
+}

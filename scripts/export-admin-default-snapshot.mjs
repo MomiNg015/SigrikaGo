@@ -9,6 +9,7 @@ const DEFAULT_OUTPUT = "server/adminDefaultSnapshot.js";
 export async function buildAdminDefaultConfig(prisma) {
   const [
     siteSettings,
+    skillTraits,
     characters,
     decorations,
     shopItems,
@@ -23,6 +24,9 @@ export async function buildAdminDefaultConfig(prisma) {
     prisma.siteSetting.findMany({
       select: { key: true, value: true },
       orderBy: { key: "asc" }
+    }),
+    prisma.skillTrait.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }, { id: "asc" }]
     }),
     prisma.character.findMany({
       include: { skill: true },
@@ -65,6 +69,7 @@ export async function buildAdminDefaultConfig(prisma) {
 
   return {
     siteSettings: siteSettings.map(siteSettingSnapshot),
+    skillTraits: skillTraits.map(skillTraitSnapshot),
     characters: characters.map(characterSnapshot),
     decorations: decorations.map(decorationSnapshot),
     shopItems: shopItems.map(shopItemSnapshot),
@@ -91,6 +96,10 @@ export function renderAdminDefaultSnapshot(config, { generatedAt = new Date() } 
 
 function siteSettingSnapshot(row) {
   return pick(row, ["key", "value"]);
+}
+
+function skillTraitSnapshot(row) {
+  return pick(row, ["id", "name", "definition", "sortOrder"]);
 }
 
 function characterSnapshot(row) {

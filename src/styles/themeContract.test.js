@@ -66,7 +66,8 @@ describe("player theme CSS contract", () => {
       "./room.css",
       "./modals.css",
       "./mobile.css",
-      "./effects.css"
+      "./effects.css",
+      "./skill-descriptions.css"
     ]);
     expect(themeEntry).not.toContain(".app-shell.player-theme-enabled .result-badge");
     expect(qaGuardEntry).not.toContain(".app-shell.player-theme-enabled.theme-bright-school");

@@ -16,7 +16,7 @@ export const FALLBACK_CHARACTERS = {
       costType: "numeric",
       costValue: "3",
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
-      description: "抹除棋盘上指定交叉点。该点不再可落子，也不参与数子。（使用该技能不消耗本次落子）",
+      description: "【疾走】抹除棋盘上指定交叉点。该点不再可落子，也不参与数子。",
       freeTurn: true
     }
   },
@@ -73,7 +73,7 @@ export const FALLBACK_CHARACTERS = {
       costType: "numeric",
       costValue: "0",
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
-      description: "随机移除棋盘上3*3区域的棋子。",
+      description: "【疾走】随机移除棋盘上3*3区域的棋子。",
       freeTurn: true,
       params: { size: 3 }
     }
@@ -93,7 +93,7 @@ export const FALLBACK_CHARACTERS = {
       costType: "numeric",
       costValue: "4",
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
-      description: "指定棋盘上一枚非喷涂、非隐藏手的棋子，在其变成喷涂棋子的同时，随机将棋盘上另一枚非喷涂、非隐藏手的棋子也变成喷涂棋子；若不存在另一枚可随机转换的棋子，则只转换指定棋子。超频2。"
+      description: "指定棋盘上一枚非喷涂、非隐藏手的棋子，在其变成喷涂棋子的同时，随机将棋盘上另一枚非喷涂、非隐藏手的棋子也变成喷涂棋子；若不存在另一枚可随机转换的棋子，则只转换指定棋子。"
     }
   },
   qiuyuan: {
@@ -129,7 +129,7 @@ export const FALLBACK_CHARACTERS = {
       costType: "numeric",
       costValue: "2",
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
-      description: "指定棋盘一处空置交叉点，将其变为对方的禁入点。该点为空时，对方不能在此落子，也不能把该空点作为技能目标；该点不计入对方领地。超频2，发动技能不会消耗本回合。",
+      description: "【疾走】指定棋盘一处空置交叉点，将其变为对方的禁入点。该点为空时，对方不能在此落子，也不能把该空点作为技能目标；该点不计入对方领地。",
       freeTurn: true
     }
   },
@@ -149,7 +149,7 @@ export const FALLBACK_CHARACTERS = {
       costType: "numeric",
       costValue: "3",
       systemMessage: DEFAULT_SKILL_SYSTEM_MESSAGE,
-      description: "发动后，本回合最多可以连续下 2 手。每一手均按普通落子规则逐手结算，也可以选择弃一手结束行动。该技能只有在对手成功发动过主动技能后才能发动。超频 3，发动技能不会消耗本回合。",
+      description: "【禁先】【疾走】发动后，本回合最多可以连续下 2 手。每一手均按普通落子规则逐手结算，也可以选择弃一手结束行动。",
       freeTurn: true,
       params: { moves: 2 }
     }
@@ -189,7 +189,7 @@ export const FALLBACK_CHARACTERS = {
       costType: "numeric",
       costValue: "0",
       systemMessage: "{fromColor}{player}使用了{character}的“{skill}”技能，之后自己的落子会在对手视角里千变万化。",
-      description: "被动技。自己的落子有80%概率在对手视角里会变成对手棋子颜色。",
+      description: "【被动】自己的落子有80%概率在对手视角里会变成对手棋子颜色。",
       freeTurn: true,
       passive: true,
       params: { probability: 0.8 }

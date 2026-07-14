@@ -7,6 +7,7 @@ import { buildLeaderboard } from "./leaderboard.js";
 import { attachAchievementEquipmentAssetsToUsers } from "./achievements.js";
 import { listShopItems } from "./shop.js";
 import { getPublicSiteSettings } from "./siteSettings.js";
+import { listPublicSkillTraits } from "./skillTraits.js";
 
 export const LEADERBOARD_RECORD_SCAN_LIMIT = 10_000;
 
@@ -17,6 +18,7 @@ export function createPublicRouteHandlers({
   createFeedbackMessageFn = createFeedbackMessage,
   getPublicSiteSettingsFn = getPublicSiteSettings,
   listPublicCharacterResponseFn = listPublicCharacterResponse,
+  listPublicSkillTraitsFn = listPublicSkillTraits,
   listShopItemsFn = listShopItems,
   normalizeMode = normalizeGameModeId
 }) {
@@ -26,6 +28,10 @@ export function createPublicRouteHandlers({
 
   async function characters(_req, res) {
     res.json(await listPublicCharacterResponseFn(prisma));
+  }
+
+  async function skillTraits(_req, res) {
+    res.json({ traits: await listPublicSkillTraitsFn(prisma) });
   }
 
   async function shop(req, res) {
@@ -89,6 +95,7 @@ export function createPublicRouteHandlers({
   return {
     health,
     characters,
+    skillTraits,
     shop,
     siteSettings,
     feedback,
@@ -102,6 +109,7 @@ export function createPublicRouter({ authHttp, ...deps }) {
   const handlers = createPublicRouteHandlers(deps);
   router.get("/health", handlers.health);
   router.get("/characters", handlers.characters);
+  router.get("/skill-traits", handlers.skillTraits);
   router.get("/shop", authHttp, handlers.shop);
   router.get("/site-settings", handlers.siteSettings);
   router.post("/feedback", authHttp, handlers.feedback);

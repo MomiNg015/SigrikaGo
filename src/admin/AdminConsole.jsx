@@ -17,6 +17,7 @@ import AdminOperations from "./AdminOperations.jsx";
 import AdminRecruitmentSettings from "./AdminRecruitmentSettings.jsx";
 import AdminReports from "./AdminReports.jsx";
 import AdminShopItems from "./AdminShopItems.jsx";
+import AdminSkillTraits from "./AdminSkillTraits.jsx";
 import AdminSiteSettings from "./AdminSiteSettings.jsx";
 import AdminUsers, { UserEditor } from "./AdminUsers.jsx";
 
@@ -27,6 +28,7 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
   const [adminLoading, setAdminLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [adminCharacters, setAdminCharacters] = useState([]);
+  const [skillTraits, setSkillTraits] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
   const [feedbackMessages, setFeedbackMessages] = useState([]);
   const [userReports, setUserReports] = useState([]);
@@ -60,7 +62,12 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
 
   useEffect(() => {
     if (tab !== "characters") return;
-    refreshCharacters();
+    Promise.all([refreshCharacters(), refreshSkillTraits()]);
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "skill-traits") return;
+    refreshSkillTraits();
   }, [tab, token]);
 
   useEffect(() => {
@@ -156,6 +163,16 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
     try {
       const data = await adminApi("/characters", token);
       setAdminCharacters(data.characters ?? []);
+    } catch (error) {
+      notify(error.message);
+    }
+  }
+
+  async function refreshSkillTraits() {
+    setAdminError("");
+    try {
+      const data = await adminApi("/skill-traits", token);
+      setSkillTraits(data.traits ?? []);
     } catch (error) {
       notify(error.message);
     }
@@ -303,11 +320,20 @@ export default function AdminConsole({ user, token, tab, setTab, musicTracks, on
       {tab === "characters" && (
         <AdminCharacters
           characters={adminCharacters}
+          skillTraits={skillTraits}
           token={token}
           onSaved={async () => {
             await refreshCharacters();
             await onCharactersChanged();
           }}
+          onNotice={notify}
+        />
+      )}
+      {tab === "skill-traits" && (
+        <AdminSkillTraits
+          traits={skillTraits}
+          token={token}
+          onSaved={refreshSkillTraits}
           onNotice={notify}
         />
       )}

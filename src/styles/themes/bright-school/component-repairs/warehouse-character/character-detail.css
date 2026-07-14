@@ -77,3 +77,10 @@
   box-shadow: none !important;
   font-weight: 900 !important;
 }
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-details-modal .skill-overclock-badge {
+  border-color: #d88f99 !important;
+  background: #f8e8ea !important;
+  color: #a82335 !important;
+  text-shadow: none !important;
+}

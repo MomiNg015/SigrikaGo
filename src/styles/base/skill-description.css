@@ -1,0 +1,174 @@
+.skill-description {
+  min-width: 0;
+  color: inherit;
+  line-height: 1.55;
+}
+
+.skill-description-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.skill-overclock-line {
+  margin-bottom: 4px;
+  color: #b42335;
+  font-weight: 900;
+}
+
+.skill-overclock-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border: 1px solid #d88f99;
+  border-radius: 999px;
+  background: #f8e8ea;
+  color: #a82335;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.skill-trait-token {
+  all: unset;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 900;
+  line-height: inherit;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: none;
+  transition: color 140ms ease, opacity 140ms ease, text-decoration-thickness 140ms ease;
+}
+
+.skill-trait-token:hover,
+.skill-trait-token[aria-expanded="true"] {
+  background: transparent;
+  text-decoration-style: solid;
+  text-decoration-thickness: 2px;
+}
+
+.skill-trait-token:active {
+  background: transparent;
+  opacity: 0.68;
+}
+
+.skill-trait-token:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.skill-trait-popover {
+  position: fixed;
+  z-index: calc(var(--room-floating-z, 180) + 21);
+  box-sizing: border-box;
+  width: min(280px, calc(100vw - 24px));
+  border: 1px solid rgba(130, 105, 149, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.98);
+  color: #3d3244;
+  box-shadow: 0 14px 32px rgba(39, 30, 45, 0.22);
+  pointer-events: auto;
+  animation: skill-trait-popover-in 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skill-trait-popover-content {
+  max-height: min(44dvh, calc(100dvh - 24px));
+  overflow: auto;
+  padding: 12px 14px;
+  overscroll-behavior: contain;
+}
+
+.skill-trait-popover::before,
+.skill-trait-popover::after {
+  content: "";
+  position: absolute;
+  left: var(--skill-trait-arrow-x);
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+}
+
+.skill-trait-popover[data-placement="above"]::before {
+  top: 100%;
+  border-top-color: rgba(130, 105, 149, 0.3);
+}
+
+.skill-trait-popover[data-placement="above"]::after {
+  top: calc(100% - 1px);
+  border-top-color: rgba(255, 255, 255, 0.98);
+}
+
+.skill-trait-popover[data-placement="below"]::before {
+  bottom: 100%;
+  border-bottom-color: rgba(130, 105, 149, 0.3);
+}
+
+.skill-trait-popover[data-placement="below"]::after {
+  bottom: calc(100% - 1px);
+  border-bottom-color: rgba(255, 255, 255, 0.98);
+}
+
+.skill-trait-popover strong {
+  display: block;
+  color: #8a3656;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.skill-trait-popover p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+@media (pointer: coarse) {
+  .skill-trait-token {
+    min-height: 0;
+    padding-inline: 2px;
+  }
+
+  .skill-trait-token::before {
+    content: "";
+    position: absolute;
+    inset: -12px -4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-trait-token {
+    transition: none;
+  }
+
+  .skill-trait-popover {
+    animation: none;
+  }
+}
+
+@keyframes skill-trait-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

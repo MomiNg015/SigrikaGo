@@ -1,7 +1,9 @@
 import { ADMIN_DEFAULT_CONFIG } from "./adminDefaultSnapshot.js";
+import { seedDefaultSkillTraits } from "./skillTraits.js";
 
 export async function seedAdminDefaultConfig(prisma, snapshot = ADMIN_DEFAULT_CONFIG) {
   await seedSiteSettings(prisma, snapshot.siteSettings);
+  await seedDefaultSkillTraits(prisma, snapshot.skillTraits);
   await seedCharacters(prisma, snapshot.characters);
   await seedDecorations(prisma, snapshot.decorations);
   await seedShopItems(prisma, snapshot.shopItems);

@@ -1,12 +1,13 @@
 import React from "react";
 
-export const ADMIN_TABS = ["overview", "operations", "users", "characters", "shop", "items", "decorations", "music", "gacha", "recruitment", "announcements", "onboarding", "mailbox", "achievements", "settings", "feedback", "reports", "audit"];
+export const ADMIN_TABS = ["overview", "operations", "users", "characters", "skill-traits", "shop", "items", "decorations", "music", "gacha", "recruitment", "announcements", "onboarding", "mailbox", "achievements", "settings", "feedback", "reports", "audit"];
 
 export const ADMIN_TAB_LABELS = {
   overview: "概况",
   operations: "运营分析",
   users: "用户管理",
   characters: "角色管理",
+  "skill-traits": "特性词",
   shop: "商城管理",
   items: "道具管理",
   decorations: "装饰管理",

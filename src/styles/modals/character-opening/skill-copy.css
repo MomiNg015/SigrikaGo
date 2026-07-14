@@ -33,6 +33,14 @@
   text-align: left;
 }
 
+.character-detail-copy .character-skill-description {
+  margin-block: 1em;
+  color: #6f5b74;
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: left;
+}
+
 .character-description {
   font-style: italic;
   color: #7b3fa0;

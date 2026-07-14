@@ -56,6 +56,12 @@ import {
   updateCharacter
 } from "./adminCharacterManagement.js";
 import {
+  createSkillTrait,
+  deleteSkillTrait,
+  listAdminSkillTraits,
+  updateSkillTrait
+} from "./skillTraits.js";
+import {
   assertGachaPrizeTargetsExist,
   createGachaPool,
   disableGachaPool,
@@ -478,6 +484,14 @@ export function createAdminRouter({
     res.json({ characters: characters.map(toAdminCharacterPayload) });
   });
 
+  router.get("/skill-traits", async (_req, res) => {
+    try {
+      res.json({ traits: await listAdminSkillTraits(prisma) });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
   router.get("/decorations", async (_req, res) => {
     const decorations = await prisma.decoration.findMany({
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }]
@@ -734,6 +748,42 @@ export function createAdminRouter({
     }
   });
 
+  router.post("/skill-traits", async (req, res) => {
+    try {
+      const trait = await createSkillTrait({ prisma, adminUser: req.user, input: req.body });
+      res.json({ trait });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.patch("/skill-traits/:id", async (req, res) => {
+    try {
+      const trait = await updateSkillTrait({
+        prisma,
+        adminUser: req.user,
+        traitId: req.params.id,
+        input: req.body
+      });
+      res.json({ trait });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
+  router.delete("/skill-traits/:id", async (req, res) => {
+    try {
+      const trait = await deleteSkillTrait({
+        prisma,
+        adminUser: req.user,
+        traitId: req.params.id
+      });
+      res.json({ trait });
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  });
+
   router.patch("/characters/:id", async (req, res) => {
     try {
       const character = await updateCharacter({
@@ -806,7 +856,7 @@ export function runtimeCapacityPayload({
 
 function sendRouteError(res, error) {
   if (error.status) {
-    res.status(error.status).json({ error: error.message });
+    res.status(error.status).json({ error: error.message, ...(error.details ?? {}) });
     return;
   }
   throw error;

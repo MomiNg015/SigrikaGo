@@ -96,4 +96,5 @@
 .skill-chip:focus + .skill-detail-panel {
   transform: translateY(0) scaleY(1);
   opacity: 1;
+  pointer-events: auto;
 }

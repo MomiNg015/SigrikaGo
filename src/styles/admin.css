@@ -2,6 +2,7 @@
 @import "./admin/shared-surfaces.css";
 @import "./admin/analytics.css";
 @import "./admin/characters.css";
+@import "./admin/skill-traits.css";
 @import "./admin/audit-feedback.css";
 @import "./admin/gacha.css";
 @import "./admin/achievements.css";

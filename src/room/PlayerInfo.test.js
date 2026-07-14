@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import PlayerInfo, { arePlayerInfoPropsEqual, isDisconnectedPlayer, playerCandyPortrait, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer, tooltipPointFromEvent } from "./PlayerInfo.jsx";
+import PlayerInfo, { arePlayerInfoPropsEqual, isDisconnectedPlayer, playerCandyPortrait, playerCharacterForDisplay, PLAYER_INFO_TOOLTIPS, resultBadgeForPlayer, tooltipPointFromEvent } from "./PlayerInfo.jsx";
 import { COLORS } from "../shared/game.js";
 import { DENIA_CANDY_PORTRAIT } from "../shared/candyPortraits.js";
+import { CHARACTERS } from "../shared/characters.js";
 
 const noop = () => {};
 const characters = {};
@@ -100,7 +101,45 @@ describe("PlayerInfo labels", () => {
     )).toBe("/assets/sigrika_centered.webp");
   });
 
+  it("uses current catalog skill copy instead of stale live or replay room snapshots", () => {
+    const currentCharacter = {
+      ...CHARACTERS.changli,
+      skill: {
+        ...CHARACTERS.changli.skill,
+        description: "【禁先】【疾走】当前角色目录文案。"
+      }
+    };
+    const player = {
+      characterId: "changli",
+      character: {
+        ...currentCharacter,
+        skill: {
+          ...currentCharacter.skill,
+          description: "旧房间快照文案。"
+        }
+      }
+    };
+
+    expect(playerCharacterForDisplay({ changli: currentCharacter }, player).skill.description)
+      .toBe("【禁先】【疾走】当前角色目录文案。");
+    expect(playerCharacterForDisplay({}, player).skill.description)
+      .toBe(CHARACTERS.changli.skill.description);
+
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      player: {
+        ...playerInfoProps().player,
+        ...player
+      },
+      characters: { changli: currentCharacter }
+    })));
+    expect(markup).toContain("【禁先】");
+    expect(markup).toContain("【疾走】");
+    expect(markup).toContain("当前角色目录文案。");
+    expect(markup).not.toContain("旧房间快照文案。");
+  });
+
   it("keeps overclock text red and timer tracks state-colored across themes", () => {
+    const baseCss = readCssWithImports(new URL("../styles/base.css", import.meta.url));
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const roomTerminalCss = readCssWithImports(new URL("../styles/room-terminal.css", import.meta.url));
     const themesCss = readFileSync(new URL("../styles/themes.css", import.meta.url), "utf8");
@@ -142,6 +181,19 @@ describe("PlayerInfo labels", () => {
     expect(terminalActiveTurnBlock).toContain("rgba(255, 225, 102, 0.92)");
     expect(terminalActiveTurnBlock).toContain("border-color: #ffd34f");
     expect(roomCss).toContain("color: #d93645 !important");
+    expect(baseCss).toContain("z-index: calc(var(--room-floating-z, 180) + 21)");
+    expect(baseCss).toContain(".skill-trait-token::before");
+    expect(baseCss).not.toContain("min-height: 44px");
+    const traitTokenSelector = ".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school button.skill-trait-token";
+    const traitTokenRuleStart = brightSchoolCss.indexOf(traitTokenSelector);
+    const traitTokenBlock = brightSchoolCss.slice(
+      brightSchoolCss.indexOf("{", traitTokenRuleStart) + 1,
+      brightSchoolCss.indexOf("}", traitTokenRuleStart)
+    );
+    expect(traitTokenRuleStart).toBeGreaterThanOrEqual(0);
+    expect(traitTokenBlock).toContain("background: transparent !important");
+    expect(traitTokenBlock).toContain("border: 0 !important");
+    expect(traitTokenBlock).toContain("box-shadow: none !important");
     expect(roomCss).toContain(".result-badge.draw");
     expect(roomCss).toContain("--skill-chip-accent");
     expect(roomCss).toContain(".skill-chip.spent");
@@ -179,7 +231,8 @@ describe("PlayerInfo labels", () => {
     expect(playerInfoSource).toContain("data-mobile-tooltip-trigger");
     expect(playerInfoSource).toContain("openTapTooltip(event, PLAYER_INFO_TOOLTIPS.skillRemovals");
     expect(playerInfoSource).toContain("openTapTooltip(event, PLAYER_INFO_TOOLTIPS.overclock");
-    expect(playerInfoSource).toContain("openTapTooltip(event, skillTooltipText(character)");
+    expect(playerInfoSource).toContain("openTapTooltip(event, skillTooltipContent(character)");
+    expect(playerInfoSource).toContain("overclockText={formatSkillOverclock(character.skill)}");
     expect(playerInfoSource).toContain("black-portrait");
     expect(playerInfoSource).toContain("white-portrait");
     expect(componentRepairsCss).toContain(".player-info .portrait-wrap.black-portrait");

@@ -3,6 +3,26 @@ import { ADMIN_DEFAULT_CONFIG } from "./adminDefaultSnapshot.js";
 import { seedAdminDefaultConfig } from "./adminDefaultSeed.js";
 
 describe("admin default config seed", () => {
+  it("ships the confirmed glossary and structured builtin skill copy", () => {
+    expect(ADMIN_DEFAULT_CONFIG.skillTraits.map((trait) => trait.name)).toEqual([
+      "疾走",
+      "禁先",
+      "被动",
+      "派生"
+    ]);
+    const changli = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "changli");
+    const nabomo = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "nabomo");
+    const aemeath = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "aemeath");
+    const voyageStar = JSON.parse(aemeath.skill.paramsJson).derivedSkills[0];
+
+    expect(changli.skill.description).toMatch(/^【禁先】【疾走】/);
+    expect(nabomo.skill.description).toMatch(/^【被动】/);
+    expect(voyageStar.description).toMatch(/^【派生】【疾走】/);
+    for (const description of [changli.skill.description, nabomo.skill.description, voyageStar.description]) {
+      expect(description).not.toMatch(/超频[：:]\s*\d/);
+    }
+  });
+
   it("keeps QiuYuan row-slash description aligned with the runtime overclock rule", () => {
     const qiuyuan = ADMIN_DEFAULT_CONFIG.characters.find((character) => character.slug === "qiuyuan");
 
@@ -85,6 +105,9 @@ describe("admin default config seed", () => {
       create: { id: "track-snapshot", displayName: "Snapshot Track" },
       update: {}
     }]);
+    expect(calls).toContainEqual(["skillTrait.create", {
+      data: { id: "trait-snapshot", name: "疾走", definition: "不消耗落子。", sortOrder: 0 }
+    }]);
     expect(calls).toContainEqual(["storyScript.create", expect.objectContaining({
       data: expect.objectContaining({
         id: "story-snapshot",
@@ -111,6 +134,7 @@ describe("admin default config seed", () => {
   it("preserves existing non-user admin rows during startup seeding", async () => {
     const calls = [];
     const existing = {
+      skillTraits: new Set(["trait-snapshot"]),
       characters: new Set(["snapshot-character"]),
       decorations: new Set(["snapshot-decoration"]),
       shopTargets: new Set(["decoration:snapshot-decoration"]),
@@ -126,6 +150,7 @@ describe("admin default config seed", () => {
     await seedAdminDefaultConfig(prisma, sampleSnapshot);
 
     expect(calls.some(([name]) => name === "character.create")).toBe(false);
+    expect(calls.some(([name]) => name === "skillTrait.create")).toBe(false);
     expect(calls.some(([name]) => name === "character.update")).toBe(false);
     expect(calls.some(([name]) => name === "decoration.create")).toBe(false);
     expect(calls.some(([name]) => name === "decoration.update")).toBe(false);
@@ -218,6 +243,12 @@ const sampleSnapshot = {
   siteSettings: [
     { key: "homeTitle", value: "Snapshot Home" }
   ],
+  skillTraits: [{
+    id: "trait-snapshot",
+    name: "疾走",
+    definition: "不消耗落子。",
+    sortOrder: 0
+  }],
   characters: [{
     slug: "snapshot-character",
     name: "Snapshot Character",
@@ -373,6 +404,7 @@ function adminDefaultSeedPrisma({ calls, existing = {} }) {
       if (name === "gachaPool") return has("gachaPools", key) ? { id: key } : null;
       if (name === "decoration") return has("decorations", key) ? { id: key } : null;
       if (name === "character") return has("characters", where?.slug) ? { id: "existing" } : null;
+      if (name === "skillTrait") return has("skillTraits", key) ? { id: key } : null;
       return null;
     }),
     findFirst: vi.fn(async ({ where }) => {
@@ -397,6 +429,7 @@ function adminDefaultSeedPrisma({ calls, existing = {} }) {
 
   return {
     siteSetting: delegate("siteSetting"),
+    skillTrait: delegate("skillTrait"),
     character: delegate("character"),
     decoration: delegate("decoration"),
     shopItem: delegate("shopItem"),

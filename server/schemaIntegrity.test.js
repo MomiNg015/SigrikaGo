@@ -138,6 +138,24 @@ describe("Prisma schema integrity", () => {
     expect(migration).toContain("ALTER TABLE \"Character\" ADD COLUMN \"cvUrl\"");
   });
 
+  it("tracks the skill trait glossary through schema, migration, and runtime guard", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migration = readFileSync(join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202607130001_add_skill_traits",
+      "migration.sql"
+    ), "utf8");
+    const runtimeGuard = readFileSync(join(process.cwd(), "server", "skillTraits.js"), "utf8");
+
+    expect(schema).toContain("model SkillTrait");
+    expect(schema).toContain("name       String   @unique");
+    expect(migration).toContain('CREATE TABLE IF NOT EXISTS "SkillTrait"');
+    expect(migration).toContain('CREATE UNIQUE INDEX IF NOT EXISTS "SkillTrait_name_key"');
+    expect(runtimeGuard).toContain('CREATE TABLE IF NOT EXISTS "SkillTrait"');
+  });
+
   it("tracks shop item illustration credit fields through a migration", () => {
     const schema = readFileSync(schemaPath, "utf8");
     const migrationPath = join(
