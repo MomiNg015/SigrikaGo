@@ -285,6 +285,10 @@ describe("RoomScreen helpers", () => {
     expect(headerSource).toContain("DoorOpen");
     expect(headerSource).toContain("room-mobile-exit");
     expect(source).toContain("onBack={requestExitConfirm}");
+    expect(source).toContain("mobileBackRequestId = 0");
+    expect(source).toContain("handledMobileBackRequestIdRef.current = mobileBackRequestId");
+    expect(source).toContain("requestExitConfirm();");
+    expect(source).toContain("对局还没结束，是否认输并退出房间？");
     expect(headerSource).toContain("room-mobile-menu");
     expect(headerSource).toContain("room-mobile-menu-toggle");
     expect(headerSource).toContain("room-mobile-menu-panel");

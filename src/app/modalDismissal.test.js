@@ -80,6 +80,8 @@ describe("modal dismissal", () => {
 
   it("wires the mobile root-back confirmation modal in the app shell", () => {
     const appSource = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+    const routesSource = readFileSync(new URL("./AppRoutes.jsx", import.meta.url), "utf8");
+    const roomSource = readFileSync(new URL("../room/RoomScreen.jsx", import.meta.url), "utf8");
 
     expect(appSource).toContain("const [showExitConfirm, setShowExitConfirm] = useState(false)");
     expect(appSource).toContain("useRootBackExitGuard({");
@@ -88,6 +90,14 @@ describe("modal dismissal", () => {
     expect(appSource).toContain("const EXIT_CONFIRM_TEXT = \"\\u9000\\u51fa\\u6e38\\u620f\"");
     expect(appSource).toContain("title={EXIT_CONFIRM_TITLE}");
     expect(appSource).toContain("confirmText={EXIT_CONFIRM_TEXT}");
+    expect(appSource).toContain("const [roomBackRequestId, setRoomBackRequestId] = useState(0)");
+    expect(appSource).toContain('if (view === "room" && room)');
+    expect(appSource).toContain("setRoomBackRequestId((current) => current + 1)");
+    expect(appSource).toContain("onRequestExit: requestRootBack");
+    expect(appSource).toContain("roomBackRequestId={roomBackRequestId}");
+    expect(routesSource).toContain("mobileBackRequestId={roomBackRequestId}");
+    expect(roomSource).toContain("handledMobileBackRequestIdRef");
+    expect(roomSource).toContain("requestExitConfirm();");
   });
 
   it("prevents modal back dismissal from also triggering root exit confirmation", () => {

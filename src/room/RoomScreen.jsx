@@ -21,9 +21,10 @@ import { useRoomBoardView } from "./view/useRoomBoardView.js";
 
 export { MOBILE_ROOM_MEDIA_QUERY };
 
-export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay, onToast }) {
+export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, mobileBackRequestId = 0, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay, onToast }) {
   const [showCoords, setShowCoords] = useState(true);
   const [confirmAction, setConfirmAction] = useState(null);
+  const handledMobileBackRequestIdRef = useRef(mobileBackRequestId);
   const {
     activePlayer,
     boardStep,
@@ -124,6 +125,11 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     }
     onBack();
   }, [displayRoom.game.phase, onBack, onGameAction, role]);
+  useEffect(() => {
+    if (mobileBackRequestId === handledMobileBackRequestIdRef.current) return;
+    handledMobileBackRequestIdRef.current = mobileBackRequestId;
+    requestExitConfirm();
+  }, [mobileBackRequestId, requestExitConfirm]);
   const toggleCoords = useCallback(() => {
     setShowCoords((current) => !current);
   }, []);

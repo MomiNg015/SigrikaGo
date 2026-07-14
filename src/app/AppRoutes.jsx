@@ -49,6 +49,7 @@ export default function AppRoutes({
   pendingSkill,
   replayStep,
   room,
+  roomBackRequestId,
   selectCharacter,
   setAdminTab,
   setDismissedResultRoom,
@@ -211,6 +212,7 @@ export default function AppRoutes({
           token={token}
           characters={characters}
           replayStep={replayStep}
+          mobileBackRequestId={roomBackRequestId}
           setReplayStep={setReplayStep}
           pendingSkill={pendingSkill}
           setPendingSkill={setPendingSkill}

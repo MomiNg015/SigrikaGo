@@ -116,6 +116,7 @@ export default function App() {
   const [adminTab, setAdminTab] = useState("overview");
   const { incomingDuel, setIncomingDuel } = useIncomingDuelState();
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [roomBackRequestId, setRoomBackRequestId] = useState(0);
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
@@ -365,11 +366,18 @@ export default function App() {
     topModalKey
   ]);
   useModalDismissal({ activeId: topModalKey, onDismiss: dismissTopModal });
+  const requestRootBack = useCallback(() => {
+    if (view === "room" && room) {
+      setRoomBackRequestId((current) => current + 1);
+      return;
+    }
+    setShowExitConfirm(true);
+  }, [room, view]);
   const exitThroughBack = useRootBackExitGuard({
     confirmationOpen: showExitConfirm,
     enabled: rootBackExitGuardEnabled({ activeId: topModalKey, view }),
     onCancelExit: () => setShowExitConfirm(false),
-    onRequestExit: () => setShowExitConfirm(true)
+    onRequestExit: requestRootBack
   });
 
   useHomeUserRefresh({ onAchievementUnlocks: showAchievementUnlocks, token, updateUser, user, view });
@@ -418,6 +426,7 @@ export default function App() {
         pendingSkill={pendingSkill}
         replayStep={replayStep}
         room={room}
+        roomBackRequestId={roomBackRequestId}
         selectCharacter={selectCharacter}
         setAdminTab={setAdminTab}
         setDismissedResultRoom={setDismissedResultRoom}

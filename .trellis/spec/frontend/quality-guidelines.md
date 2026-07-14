@@ -683,6 +683,57 @@ npm test -- src/room/RoomScreen.test.js src/room/ActionBar.test.js
 
 For broader confidence after shared CSS changes, also run `npm test` and `npm run build`.
 
+### Mobile room root-back contracts
+
+#### 1. Scope / Trigger
+- Trigger: changing `useRootBackExitGuard`, App/AppRoutes room routing, `RoomScreen` exit confirmation, replay exit, or spectator leave behavior.
+
+#### 2. Signatures
+- `App` owns the monotonic `roomBackRequestId` and increments it when root back occurs while `view === "room"` and a room snapshot is loaded.
+- `AppRoutes` forwards that value as `RoomScreen.mobileBackRequestId`.
+- `RoomScreen.requestExitConfirm()` remains the single owner for both the visible leave control and forwarded mobile root-back requests.
+
+#### 3. Contracts
+- A functional top overlay consumes mobile back before the room or app root handler.
+- Replay and spectator room views call the existing `onBack` path immediately; their navigation plan clears/leaves the room as already defined by `planRoomBackNavigation()`.
+- An unfinished player game opens the existing “是否认输并退出房间？” confirmation; confirmation sends `resign` and then runs `onBack`, while cancellation keeps the room mounted.
+- Login, preload, home, and admin root back continue to show the application exit confirmation.
+- Do not duplicate role/phase/replay branching in `App`; forward an intent to the room owner instead.
+
+#### 4. Validation & Error Matrix
+- Room view with no restored room snapshot -> keep the app-level exit guard behavior until recovery completes.
+- Replay room -> one back request returns home without a resign confirmation.
+- Live spectator -> one back request leaves the watched room and returns home.
+- Active player before `finished` -> show resign-and-exit confirmation without navigating immediately.
+- Finished player review -> return home directly through the existing room exit path.
+
+#### 5. Good/Base/Bad Cases
+- Good: App increments a request id and `RoomScreen` responds only when the id changes.
+- Base: clicking the room leave button still calls the same `requestExitConfirm()` callback.
+- Bad: root back in every view calls `setShowExitConfirm(true)`, because this replaces room semantics with “退出游戏”.
+- Bad: App reimplements `role === "player"` and phase checks separately from `RoomScreen`.
+
+#### 6. Tests Required
+- `src/app/modalDismissal.test.js` asserts room root back increments and forwards the request id while non-room views retain the app exit modal.
+- `src/room/RoomScreen.test.js` asserts request-id changes invoke `requestExitConfirm` and keep the resign confirmation copy.
+- `src/app/roomNavigation.test.js` covers replay, spectator, finished review, and active-player navigation plans.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```jsx
+useRootBackExitGuard({ onRequestExit: () => setShowExitConfirm(true) });
+```
+
+Correct:
+
+```jsx
+useRootBackExitGuard({ onRequestExit: requestRootBack });
+// requestRootBack increments roomBackRequestId for a loaded room;
+// RoomScreen invokes its existing requestExitConfirm when that id changes.
+```
+
 ### Room control layout contracts
 
 When changing desktop room headers, replay bars, or player side panels, update static layout tests in `src/room/RoomScreen.test.js` to lock shared room UI contracts.
