@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { api } from "../api/client.js";
-import { CHARACTERS } from "../shared/characters.js";
 
 export default function AuthScreen({ onAuth, initialMode = "login" }) {
   const [mode, setMode] = useState(initialMode);
@@ -87,7 +86,7 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
     <main className="auth-screen">
       <section className={`auth-panel login-card-container ${mode === "register" ? "register-card-container" : ""}`}>
         <div className="brand-lockup">
-          <img src={CHARACTERS.sigrika.portrait} alt="\u897f\u683c\u8389\u5361" />
+          <img src="/assets/login-sigrika-mascot.webp" alt="\u897f\u683c\u8389\u5361" />
           <div>
             <p className="text-display-accent">SigrikaGo</p>
             <h1 className="login-title-text">{"\u661f\u70ac\u5b66\u9662\u56f4\u68cb\u90e8"}</h1>

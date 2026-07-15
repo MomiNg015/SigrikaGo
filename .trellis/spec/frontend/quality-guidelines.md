@@ -115,6 +115,29 @@ Correct:
 resolveSkillMusicTrack({ effectType: skillPreview.musicEffectType });
 ```
 
+### Login mascot asset contract
+
+The login title mascot is a login-owned presentation asset, not the shared character portrait consumed by profiles, loading screens, character lists, or battles.
+
+Required assertion points:
+
+- `AuthScreen` must reference `/assets/login-sigrika-mascot.webp` directly and must not read `CHARACTERS.sigrika.portrait` for the title lockup.
+- Keep `public/assets/login-sigrika-mascot.png` and the runtime WebP on the same transparent 640x640 canvas used by the existing `.brand-lockup img` slots.
+- When artwork changes, measure non-zero-alpha bounds, crop transparent edges only, scale uniformly, and center the result. Do not stretch width and height independently; target a colored footprint within about 2% of the current 520x529 bounds so the 96px desktop slot and `clamp(62px, 18vw, 84px)` phone slot remain visually stable without new CSS overrides.
+- `AuthScreen.test.js` must assert the dedicated WebP URL, reject the shared portrait URL, verify the retained PNG/WebP signatures, and keep the runtime WebP smaller than its PNG source.
+
+Correct:
+
+```jsx
+<img src="/assets/login-sigrika-mascot.webp" alt="西格莉卡" />
+```
+
+Wrong:
+
+```jsx
+<img src={CHARACTERS.sigrika.portrait} alt="西格莉卡" />
+```
+
 ### Social action disabled-state contract
 
 Friend-list action rows, room member popovers, profile relation actions, and other user/social action menus must render unavailable actions as native disabled controls, not as active-looking inert buttons.

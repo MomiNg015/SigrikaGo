@@ -87,9 +87,21 @@ describe("AuthScreen submit validation", () => {
     expect(html).toContain("login-title-text");
     expect(html).toContain("login-submit-btn");
     expect(html).toContain("terminal-enter-btn");
+    expect(html).toContain('src="/assets/login-sigrika-mascot.webp"');
+    expect(html).not.toContain('src="/assets/sigrika_centered.webp"');
     expect(html).toContain('<p class="text-display-accent">SigrikaGo</p>');
     expect(html).toContain("autoComplete=\"username\"");
     expect(html).toContain("type=\"password\"");
+  });
+
+  it("ships the login-only mascot as a compressed WebP with its PNG source", () => {
+    const png = readFileSync(new URL("../../public/assets/login-sigrika-mascot.png", import.meta.url));
+    const webp = readFileSync(new URL("../../public/assets/login-sigrika-mascot.webp", import.meta.url));
+
+    expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
+    expect(webp.subarray(0, 4).toString("ascii")).toBe("RIFF");
+    expect(webp.subarray(8, 12).toString("ascii")).toBe("WEBP");
+    expect(webp.byteLength).toBeLessThan(png.byteLength);
   });
 
   it("renders registration input guidance as field placeholders", () => {
