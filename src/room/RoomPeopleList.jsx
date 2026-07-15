@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { useSocialRelations } from "../social/useSocialRelations.js";
@@ -20,6 +21,7 @@ function RoomPeopleList({
   const [confirmTarget, setConfirmTarget] = useState(null);
   const [error, setError] = useState("");
   const panelRef = useRef(null);
+  const popoverRef = useRef(null);
   const people = useMemo(() => roomPeople(room), [room]);
   const {
     blacklistIds,
@@ -41,7 +43,9 @@ function RoomPeopleList({
   useEffect(() => {
     if (!activeMenu) return;
     const close = (event) => {
-      if (!panelRef.current?.contains(event.target)) setActiveMenu(null);
+      if (!panelRef.current?.contains(event.target) && !popoverRef.current?.contains(event.target)) {
+        setActiveMenu(null);
+      }
     };
     document.addEventListener("pointerdown", close);
     return () => document.removeEventListener("pointerdown", close);
@@ -122,7 +126,12 @@ function RoomPeopleList({
           const connectionClass = person.role === "player" && person.connected === false ? "disconnected" : "";
           return (
             <div className="room-person-wrap" key={person.id}>
-              <button className={`room-person ${person.role} ${relationClass} ${connectionClass}`} type="button" onClick={(event) => openPersonMenu(person.id, event)}>
+              <button
+                className={`room-person ${person.role} ${relationClass} ${connectionClass}`}
+                type="button"
+                aria-expanded={activeMenu?.id === person.id}
+                onClick={(event) => openPersonMenu(person.id, event)}
+              >
                 <span className="room-person-name">
                   {person.color && <i className={`room-color-dot ${person.color}`} aria-label={person.color === COLORS.black ? "执黑" : "执白"} />}
                   <UserIdentity user={person} compact />
@@ -131,61 +140,74 @@ function RoomPeopleList({
                 <span className="text-rating-value">{person.rating}分</span>
               </button>
               {activeMenu?.id === person.id && (
-                <div
-                  className="room-person-popover"
-                  style={{
-                    "--room-person-popover-x": `${activeMenu.x}px`,
-                    "--room-person-popover-y": `${activeMenu.y}px`,
-                    ...(floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : {})
-                  }}
-                  onPointerDownCapture={onFloatingLayerRequest}
-                >
-                  <button type="button" onClick={() => openProfile(person)}>详细信息</button>
-                  <button type="button" disabled={isSelf} onClick={() => isFriend ? confirmFriendRemoval(person) : addFriend(person)}>
-                    {isFriend ? "解除好友" : "加好友"}
-                  </button>
-                  <button type="button" disabled={isSelf || isFriend} onClick={() => toggleBlacklist(person)}>
-                    {isBlocked ? "从黑名单解除" : "加入黑名单"}
-                  </button>
-                  <button type="button" disabled>密谈</button>
-                </div>
+                <RoomPeopleFloatingLayer anchor={panelRef.current}>
+                  <div
+                    ref={popoverRef}
+                    className="room-person-popover"
+                    style={{
+                      "--room-person-popover-x": `${activeMenu.x}px`,
+                      "--room-person-popover-y": `${activeMenu.y}px`,
+                      ...(floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : {})
+                    }}
+                    onPointerDownCapture={onFloatingLayerRequest}
+                  >
+                    <button type="button" onClick={() => openProfile(person)}>详细信息</button>
+                    <button type="button" disabled={isSelf} onClick={() => isFriend ? confirmFriendRemoval(person) : addFriend(person)}>
+                      {isFriend ? "解除好友" : "加好友"}
+                    </button>
+                    <button type="button" disabled={isSelf || isFriend} onClick={() => toggleBlacklist(person)}>
+                      {isBlocked ? "从黑名单解除" : "加入黑名单"}
+                    </button>
+                    <button type="button" disabled>密谈</button>
+                  </div>
+                </RoomPeopleFloatingLayer>
               )}
             </div>
           );
         })}
       </div>
       {profileUser && (
-        <div className="modal-backdrop room-overlay-backdrop" onClick={() => setProfileUser(null)}>
-          <section className="room-floating-modal user-profile-modal" onClick={(event) => event.stopPropagation()}>
-            <button className="close-button" onClick={() => setProfileUser(null)}><X size={18} /></button>
-            <UserProfileCard
-              user={profileUser}
-              characters={characters}
-              token={token}
-              replayDisabled
-              onAddFriend={addProfileFriend}
-              onAddBlacklist={addProfileBlacklist}
-              onOpenReplay={(recordId) => {
-                setProfileUser(null);
-                onOpenReplay?.(recordId);
-              }}
-            />
-          </section>
-        </div>
+        <RoomPeopleFloatingLayer anchor={panelRef.current}>
+          <div className="modal-backdrop room-overlay-backdrop" onClick={() => setProfileUser(null)}>
+            <section className="room-floating-modal user-profile-modal" onClick={(event) => event.stopPropagation()}>
+              <button className="close-button" onClick={() => setProfileUser(null)}><X size={18} /></button>
+              <UserProfileCard
+                user={profileUser}
+                characters={characters}
+                token={token}
+                replayDisabled
+                onAddFriend={addProfileFriend}
+                onAddBlacklist={addProfileBlacklist}
+                onOpenReplay={(recordId) => {
+                  setProfileUser(null);
+                  onOpenReplay?.(recordId);
+                }}
+              />
+            </section>
+          </div>
+        </RoomPeopleFloatingLayer>
       )}
       {confirmTarget && (
-        <div className="modal-backdrop room-overlay-backdrop" onClick={() => setConfirmTarget(null)}>
-          <section className="room-floating-modal confirm-inline-modal" onClick={(event) => event.stopPropagation()}>
-            <ConfirmPanel
-              message={<>确定解除<UserIdentity user={confirmTarget.user} compact />好友吗？</>}
-              onConfirm={() => removeFriend(confirmTarget.user)}
-              onCancel={() => setConfirmTarget(null)}
-            />
-          </section>
-        </div>
+        <RoomPeopleFloatingLayer anchor={panelRef.current}>
+          <div className="modal-backdrop room-overlay-backdrop" onClick={() => setConfirmTarget(null)}>
+            <section className="room-floating-modal confirm-inline-modal" onClick={(event) => event.stopPropagation()}>
+              <ConfirmPanel
+                message={<>确定解除<UserIdentity user={confirmTarget.user} compact />好友吗？</>}
+                onConfirm={() => removeFriend(confirmTarget.user)}
+                onCancel={() => setConfirmTarget(null)}
+              />
+            </section>
+          </div>
+        </RoomPeopleFloatingLayer>
       )}
     </section>
   );
+}
+
+function RoomPeopleFloatingLayer({ anchor, children }) {
+  if (typeof document === "undefined" || !document.body) return children;
+  const target = anchor?.closest?.(".app-shell") ?? document.body;
+  return createPortal(children, target);
 }
 
 export function areRoomPeopleListPropsEqual(previous, next) {

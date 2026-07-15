@@ -21,6 +21,7 @@ Improve the shared battle surface for live rooms, spectators, and replays withou
 - No mobile battle username may use ellipsis, marquee motion, horizontal scrolling, or a smaller fallback font to conceal overflow.
 - Existing title, emblem, and nameplate equipment remains visible; the nameplate container must accommodate the full username.
 - Preserve the existing Bright School visual language and control vocabulary.
+- Mobile member-row actions and their follow-up profile/confirmation overlays must escape the dock's scroll and clipping containers while retaining theme and floating-layer ownership.
 
 ## Acceptance Criteria
 
@@ -38,6 +39,7 @@ Improve the shared battle surface for live rooms, spectators, and replays withou
 - [ ] A legacy over-limit username wraps without being clipped.
 - [ ] Live, spectator, and replay variants are visually checked at 375x667 and 375x812.
 - [ ] Targeted room/component tests and the broad repository check pass.
+- [ ] Clicking a mobile member row reveals the full action area above the dock; interacting inside it does not trigger click-away, while an outside press closes it.
 - [ ] System-design Markdown and generated HTML describe the updated mobile room contracts.
 
 ## Definition of Done
@@ -59,6 +61,7 @@ Improve the shared battle surface for live rooms, spectators, and replays withou
 - Refactor `PlayerInfo` so the portrait owns viewpoint selection, the outer card is non-interactive, and the username uses non-button markup.
 - Add a battle-specific `UserIdentity` layout contract that gives the username intrinsic/full visibility and moves secondary metadata out of its way.
 - Keep the change component-owned; theme files should only preserve Bright School visual treatment, not redefine behavior.
+- Portal member actions and their follow-up overlays to the nearest `.app-shell`, and keep click-away containment aware of both the list and portaled action node.
 
 ## Decision (ADR-lite)
 
