@@ -560,7 +560,7 @@
 <li>Runtime stability note: room runtime uses lightweight <code>room:clock</code> / <code>room:patch</code> and full <code>room:update</code> paths, user/socket room indexes for resume and disconnect lookup, throttled persistence for chat/presence patches, forced persistence for key lifecycle updates, and room-code-specific persistence flush before close cleanup deletes a persisted room row so delayed upserts cannot recreate closed rooms.</li>
 </ul>
 <ul>
-<li>Development room test tools are non-production only. In development builds the room action area shows the test-tool group on desktop and mobile; <code>test-enter-byo-yomi</code> forces both room players into byo-yomi so countdown voice, timer UI, and clock recovery can be tested quickly. Production still rejects debug test actions even if legacy <code>ENABLE_TEST_ACTIONS</code> is set.</li>
+<li>Development room test tools are non-production only. In development builds the room action area shows the test-tool group on desktop and mobile, and the server accepts these actions without requiring <code>ENABLE_TEST_ACTIONS</code>; <code>test-enter-byo-yomi</code> forces both room players into byo-yomi so countdown voice, timer UI, and clock recovery can be tested quickly. Production builds hide the controls, and the production server still rejects debug test actions even if legacy <code>ENABLE_TEST_ACTIONS</code> is set.</li>
 </ul>
 <h2>Mailbox System Summary</h2>
 <ul>
@@ -2881,6 +2881,9 @@
 </ul>
 <ul>
 <li><code>server/runtimeStabilityMetrics.js</code> 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 <code>initial-connect</code>、<code>patch-gap</code> 或 <code>socket-connect</code> 的 <code>room:resume</code> 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。</li>
+</ul>
+<ul>
+<li>对局开发测试 action 在所有非生产服务环境默认可用，不依赖 <code>ENABLE_TEST_ACTIONS</code>；Vite 开发构建显示对应按钮，生产构建隐藏入口，而 <code>NODE_ENV=production</code> 的服务端即使收到伪造 action 或遗留开关也始终拒绝执行。</li>
 </ul>
 <ul>
 <li><code>server/serverStartup.js</code> exports <code>SERVER_STARTUP_TASK_ORDER</code> as the auditable startup/schema/seed order. Tests lock the order so future guards can be inserted intentionally instead of depending on incidental function order.</li>

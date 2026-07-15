@@ -145,7 +145,7 @@ export function multiInstanceDeploymentRequested(env = process.env) {
 }
 
 export function canUseDebugTestActions(env = process.env) {
-  return env.NODE_ENV !== "production" && debugTestActionsEnabled(env);
+  return env.NODE_ENV !== "production";
 }
 
 export function assertProductionDeployment(env = process.env) {

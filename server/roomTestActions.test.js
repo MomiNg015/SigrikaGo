@@ -53,7 +53,7 @@ describe("room test actions", () => {
     room.game.phase = GAME_PHASES.playing;
     const result = handleRoomTestAction({
       action: { type: "test-enter-byo-yomi" },
-      env: { NODE_ENV: "development", ENABLE_TEST_ACTIONS: "true" },
+      env: {},
       player: room.players[0],
       room
     });

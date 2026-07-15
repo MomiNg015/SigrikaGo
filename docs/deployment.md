@@ -42,18 +42,12 @@ MAX_SPECTATORS_PER_ROOM="20"
 - `PUBLIC_ORIGIN`: 用户访问站点的 HTTPS 地址，例如 `https://go.example.com`。
 - `ADMIN_USERNAMES`: 逗号分隔的管理员用户名。服务启动时会把这些用户名提升为管理员。
 - `UPLOAD_DIR`: 用户上传资源的持久化根目录。角色立绘上传会保存到 `${UPLOAD_DIR}/characters`，并通过 `/uploads/characters/...` 对外访问。
-- `ENABLE_TEST_ACTIONS`: 已不再需要用于本地开发；测试 action 在非生产环境默认可用。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
+- `ENABLE_TEST_ACTIONS`: 仅保留为旧部署配置的生产安全检查项，本地开发无需设置；测试 action 在非生产环境默认可用。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
 - `MAX_ONLINE_USERS`: 新匹配/约战/观战接入的在线用户软上限，默认 500。不是容量承诺；目标机压测前可保守下调。
 - `MAX_ACTIVE_ROOMS`: 新匹配/约战/观战接入的活跃房间软上限，默认 100。达到后已有对局和玩家恢复不受影响。
 - `MAX_SPECTATORS_PER_ROOM`: 单个房间首次加入的观战者软上限，默认 20；已有观战者更换连接时仍可恢复。
 
-开发环境若需要显示对局测试按钮，需要同时设置客户端与服务端开关：
-
-```env
-# 测试工具在非生产环境默认显示并可用；不要在生产环境开启 ENABLE_TEST_ACTIONS。
-```
-
-不要把测试 action 开关带到生产 `.env`。
+本地运行 `npm run dev` 时，对局测试按钮会默认显示并可用，无需增加客户端或服务端环境变量。生产构建不会渲染这些按钮，生产服务端也会拒绝测试 action；不要把 `ENABLE_TEST_ACTIONS=true` 带到生产 `.env`。
 
 ## 服务器目录
 

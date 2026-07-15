@@ -22,6 +22,7 @@ Improve the shared battle surface for live rooms, spectators, and replays withou
 - Existing title, emblem, and nameplate equipment remains visible; the nameplate container must accommodate the full username.
 - Preserve the existing Bright School visual language and control vocabulary.
 - Mobile member-row actions and their follow-up profile/confirmation overlays must escape the dock's scroll and clipping containers while retaining theme and floating-layer ownership.
+- Room development tools are visible and executable by default in local non-production runs without extra environment flags; production builds hide the controls and production servers reject the actions.
 
 ## Acceptance Criteria
 
@@ -40,6 +41,7 @@ Improve the shared battle surface for live rooms, spectators, and replays withou
 - [ ] Live, spectator, and replay variants are visually checked at 375x667 and 375x812.
 - [ ] Targeted room/component tests and the broad repository check pass.
 - [ ] Clicking a mobile member row reveals the full action area above the dock; interacting inside it does not trigger click-away, while an outside press closes it.
+- [ ] Local development can use random layout, restore skill, and enter byo-yomi without `ENABLE_TEST_ACTIONS`; production renders no entry and rejects forged debug actions.
 - [ ] System-design Markdown and generated HTML describe the updated mobile room contracts.
 
 ## Definition of Done
@@ -62,6 +64,7 @@ Improve the shared battle surface for live rooms, spectators, and replays withou
 - Add a battle-specific `UserIdentity` layout contract that gives the username intrinsic/full visibility and moves secondary metadata out of its way.
 - Keep the change component-owned; theme files should only preserve Bright School visual treatment, not redefine behavior.
 - Portal member actions and their follow-up overlays to the nearest `.app-shell`, and keep click-away containment aware of both the list and portaled action node.
+- Align the room debug-action server gate with the existing Vite visibility gate: allow every non-production environment by default and keep production denial independent of legacy flags.
 
 ## Decision (ADR-lite)
 

@@ -10,6 +10,7 @@
 - 匹配或约战创建的房间先进入 `GAME_PHASES.preloading`，`server/roomPreparationLifecycle.js` 管理 60 秒资源准备截止时间、`room:preload-ready` 玩家 ready 上报、`room.update.preload.readyCount/requiredCount` 广播和超时中止；`server/socketRoomEvents.js` 的 `room:preload-ready` 是可重复调用的 ack 协议，服务端在校验房间码后返回 `{ ok, roomCode, phase, readyCount, requiredCount }`，客户端未收到 `{ ok: true }` 前可以安全重发；双方都 ready 后才切到 `opening` 并排原有开局倒计时。
 - `room:resume` 的空 roomCode 只恢复仍可继续的玩家房间，不会自动拉起 finished room；finished 历史结果只有在客户端显式传入 roomCode 时才允许恢复。这样玩家关闭结果或退出 finished 房间后刷新，不会因为内存房间仍在 5 分钟 review window 内而再次弹出结果。
 - `server/runtimeStabilityMetrics.js` 提供本进程启动以来的轻量稳定性计数，覆盖房间持久化错误、恢复坏快照、结果保存重试错误、预加载超时、恢复请求/成功/未命中，以及客户端标记为 `initial-connect`、`patch-gap` 或 `socket-connect` 的 `room:resume` 请求；这些计数通过后台概况的服务健康区展示，用于上线后快速定位恢复/预加载/持久化异常。
+- 对局开发测试 action 在所有非生产服务环境默认可用，不依赖 `ENABLE_TEST_ACTIONS`；Vite 开发构建显示对应按钮，生产构建隐藏入口，而 `NODE_ENV=production` 的服务端即使收到伪造 action 或遗留开关也始终拒绝执行。
 - `server/serverStartup.js` exports `SERVER_STARTUP_TASK_ORDER` as the auditable startup/schema/seed order. Tests lock the order so future guards can be inserted intentionally instead of depending on incidental function order.
 - `server/roomQueries.js` remains the room read boundary. Active-room lists and watch-room summaries can delegate to an injected `roomReadModel`, while the current single-process runtime continues to use in-memory rooms as the default fallback.
 

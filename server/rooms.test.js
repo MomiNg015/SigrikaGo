@@ -886,7 +886,7 @@ describe("rooms removable test tools", () => {
     }
   });
 
-  test("rejects removable test tool actions unless explicitly enabled", () => {
+  test("allows removable test tool actions in local development without an explicit switch", () => {
     const originalNodeEnv = process.env.NODE_ENV;
     const originalEnableTestActions = process.env.ENABLE_TEST_ACTIONS;
     process.env.NODE_ENV = "development";
@@ -903,8 +903,8 @@ describe("rooms removable test tools", () => {
       const black = room.players.find((player) => player.color === COLORS.black);
       const result = handleGameAction(room.code, black.user.id, { type: "test-enter-byo-yomi" }, io);
 
-      expect(result.ok).toBe(false);
-      expect(result.error).toBe("测试工具仅开发环境可用");
+      expect(result.ok).toBe(true);
+      expect(room.players.every((player) => player.time.main === 0)).toBe(true);
     } finally {
       if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
       else process.env.NODE_ENV = originalNodeEnv;
