@@ -122,9 +122,10 @@ The login title mascot is a login-owned presentation asset, not the shared chara
 Required assertion points:
 
 - `AuthScreen` must reference `/assets/login-sigrika-mascot.webp` directly and must not read `CHARACTERS.sigrika.portrait` for the title lockup.
-- Keep `public/assets/login-sigrika-mascot.png` and the runtime WebP on the same transparent 640x640 canvas used by the existing `.brand-lockup img` slots.
-- When artwork changes, measure non-zero-alpha bounds, crop transparent edges only, scale uniformly, and center the result. Do not stretch width and height independently; target a colored footprint within about 2% of the current 520x529 bounds so the 96px desktop slot and `clamp(62px, 18vw, 84px)` phone slot remain visually stable without new CSS overrides.
-- `AuthScreen.test.js` must assert the dedicated WebP URL, reject the shared portrait URL, verify the retained PNG/WebP signatures, and keep the runtime WebP smaller than its PNG source.
+- Keep `public/assets/login-sigrika-mascot.png` and the runtime WebP on the same transparent 640x640 canvas. When artwork changes, measure non-zero-alpha bounds, crop transparent edges only, scale uniformly, and center the result; do not stretch width and height independently.
+- The title `h1` must use the semantic `.text-window-title` hook so the final typography layer resolves it to `var(--font-window-title)` (霞鹜漫黑) even after Bright School owner overrides.
+- The mascot is a pointer-transparent absolute decoration over the card's top-left corner, while `.brand-lockup` keeps the title copy in its original column. Desktop uses an equal 240x240 CSS box rotated `-6deg`; the final `bright-school-overrides/auth-login-lockup.css` owner gives portrait phone equal `clamp(140px, 39vw, 148px)` dimensions and a contained left offset so it cannot create page-level horizontal overflow.
+- `AuthScreen.test.js` must assert the dedicated WebP URL, reject the shared portrait URL, verify the retained PNG/WebP signatures, keep the runtime WebP smaller than its PNG source, and cover the desktop/mobile equal-dimension and rotation contracts.
 
 Correct:
 

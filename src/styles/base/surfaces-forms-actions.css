@@ -11,20 +11,38 @@
 }
 
 .auth-panel {
+  position: relative;
   width: min(440px, 100%);
   padding: 26px;
+  overflow: visible;
 }
 
 .brand-lockup {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 16px;
+  min-height: 96px;
+  padding-left: 112px;
+  gap: 0;
 }
 
-.brand-lockup img {
-  width: 96px;
-  height: 96px;
+.brand-lockup .login-title-mascot {
+  position: absolute;
+  z-index: 1;
+  top: -128px;
+  left: -143px;
+  width: 240px;
+  height: 240px;
+  max-width: none;
   object-fit: contain;
+  transform: rotate(-6deg);
+  transform-origin: 50% 82%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.brand-lockup > div {
+  min-width: 0;
 }
 
 .brand-lockup p,

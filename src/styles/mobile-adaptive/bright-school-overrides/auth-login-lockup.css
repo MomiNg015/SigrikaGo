@@ -1,0 +1,19 @@
+@media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup {
+    position: relative !important;
+    display: flex !important;
+    min-height: 84px !important;
+    padding-left: 96px !important;
+    gap: 0 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup .login-title-mascot {
+    position: absolute !important;
+    top: clamp(-84px, -21vw, -68px) !important;
+    left: clamp(-30px, -7vw, -22px) !important;
+    width: clamp(140px, 39vw, 148px) !important;
+    height: clamp(140px, 39vw, 148px) !important;
+    max-width: none !important;
+    transform: rotate(-6deg) !important;
+  }
+}

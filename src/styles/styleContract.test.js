@@ -679,6 +679,7 @@ describe("root CSS entry contract", () => {
     expect(cssImports(brightSchoolOverridesEntry)).toEqual([
       "./bright-school-overrides/character-deploy-state.css",
       "./bright-school-overrides/home-auth-header.css",
+      "./bright-school-overrides/auth-login-lockup.css",
       "./bright-school-overrides/replay-dialog.css",
       "./bright-school-overrides/profile-house-records.css",
       "./bright-school-overrides/shop-cards.css",

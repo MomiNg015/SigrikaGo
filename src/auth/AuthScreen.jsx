@@ -86,10 +86,10 @@ export default function AuthScreen({ onAuth, initialMode = "login" }) {
     <main className="auth-screen">
       <section className={`auth-panel login-card-container ${mode === "register" ? "register-card-container" : ""}`}>
         <div className="brand-lockup">
-          <img src="/assets/login-sigrika-mascot.webp" alt="\u897f\u683c\u8389\u5361" />
+          <img className="login-title-mascot" src="/assets/login-sigrika-mascot.webp" alt="\u897f\u683c\u8389\u5361" />
           <div>
             <p className="text-display-accent">SigrikaGo</p>
-            <h1 className="login-title-text">{"\u661f\u70ac\u5b66\u9662\u56f4\u68cb\u90e8"}</h1>
+            <h1 className="login-title-text text-window-title">{"\u661f\u70ac\u5b66\u9662\u56f4\u68cb\u90e8"}</h1>
           </div>
         </div>
         <form onSubmit={submit} className="auth-form">

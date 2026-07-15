@@ -84,7 +84,8 @@ describe("AuthScreen submit validation", () => {
     const html = renderToStaticMarkup(createElement(AuthScreen, { onAuth: () => {} }));
 
     expect(html).toContain("login-card-container");
-    expect(html).toContain("login-title-text");
+    expect(html).toContain('class="login-title-mascot"');
+    expect(html).toContain('class="login-title-text text-window-title"');
     expect(html).toContain("login-submit-btn");
     expect(html).toContain("terminal-enter-btn");
     expect(html).toContain('src="/assets/login-sigrika-mascot.webp"');
@@ -102,6 +103,25 @@ describe("AuthScreen submit validation", () => {
     expect(webp.subarray(0, 4).toString("ascii")).toBe("RIFF");
     expect(webp.subarray(8, 12).toString("ascii")).toBe("WEBP");
     expect(webp.byteLength).toBeLessThan(png.byteLength);
+  });
+
+  it("pins the login mascot above the card without stretching it and uses the window-title font", () => {
+    const baseCss = readCssWithImports(new URL("../styles/base.css", import.meta.url));
+    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const desktopBrandBlock = baseCss.match(/\.brand-lockup\s*\{[^}]+\}/)?.[0] ?? "";
+    const desktopMascotBlock = baseCss.match(/\.brand-lockup \.login-title-mascot\s*\{[^}]+\}/)?.[0] ?? "";
+    const mobileMascotBlock = mobileCss.match(/\.theme-bright-school\.theme-bright-school \.auth-panel \.brand-lockup \.login-title-mascot\s*\{[^}]+\}/)?.[0] ?? "";
+
+    expect(desktopBrandBlock).toContain("padding-left: 112px");
+    expect(desktopMascotBlock).toContain("position: absolute");
+    expect(desktopMascotBlock).toContain("width: 240px");
+    expect(desktopMascotBlock).toContain("height: 240px");
+    expect(desktopMascotBlock).toContain("transform: rotate(-6deg)");
+    expect(mobileMascotBlock).toContain("width: clamp(140px, 39vw, 148px) !important");
+    expect(mobileMascotBlock).toContain("height: clamp(140px, 39vw, 148px) !important");
+    expect(mobileMascotBlock).toContain("transform: rotate(-6deg) !important");
+    expect(mobileCss).toContain(".text-window-title");
+    expect(mobileCss).toContain("font-family: var(--font-window-title), var(--font-ui-default) !important");
   });
 
   it("renders registration input guidance as field placeholders", () => {

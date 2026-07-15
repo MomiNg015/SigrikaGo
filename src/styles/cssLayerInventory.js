@@ -1,18 +1,18 @@
 export const CSS_DEBT_BASELINE = {
-  date: "2026-07-14",
-  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
+  date: "2026-07-15",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
   metrics: {
-    totalFiles: 602,
-    totalBytes: 1176175,
+    totalFiles: 603,
+    totalBytes: 1176338,
     importantCount: 7316,
-    importantFiles: 287,
-    hardcodedHexCount: 2291,
-    mediaFiles: 225,
+    importantFiles: 288,
+    hardcodedHexCount: 2294,
+    mediaFiles: 226,
     reducedMotionFiles: 27,
     highZIndexFiles: 6
   },
   guidance:
-    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-14 increase is limited to the focused shared skill-description popover, admin skill-trait glossary, exact Bright School text-link resets, and mobile character-detail scroll ownership; future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
+    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-15 file/byte/media/important-file increase is limited to the final mobile login mascot lockup owner split required to keep home-auth-header.css under the per-file size limit; future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
 };
 
 export const CSS_Z_INDEX_CONTRACT = {
