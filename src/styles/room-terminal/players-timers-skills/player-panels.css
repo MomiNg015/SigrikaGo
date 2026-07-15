@@ -61,7 +61,7 @@
 
 .player-info.active-turn .name-button,
 .player-info.active-turn .player-meta span,
-.player-info.active-turn .captures span {
+.player-info.active-turn .captures > * {
   color: #2f2307;
   text-shadow: none;
 }

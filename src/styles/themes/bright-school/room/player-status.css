@@ -1,4 +1,4 @@
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures span {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures > * {
   min-height: 36px !important;
   box-sizing: border-box !important;
   align-items: center !important;
@@ -113,6 +113,6 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .name-button,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .player-meta span,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures span {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info.active-turn .captures > * {
   color: #3f2b08 !important;
 }

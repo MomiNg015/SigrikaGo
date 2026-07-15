@@ -7,7 +7,7 @@
   box-shadow: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-widget {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-widget:not(.embedded) {
   position: relative !important;
   align-self: flex-end !important;
   width: fit-content !important;
@@ -72,14 +72,14 @@
   animation: chat-popover-open 180ms cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-box header {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-popover header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   gap: 10px !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-box header span {
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .chat-popover header span {
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;

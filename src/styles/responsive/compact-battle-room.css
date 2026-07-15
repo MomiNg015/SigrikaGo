@@ -224,7 +224,7 @@
     gap: 4px;
   }
 
-  .mobile-room-screen .captures span {
+  .mobile-room-screen .captures > * {
     padding: 2px 4px;
   }
 

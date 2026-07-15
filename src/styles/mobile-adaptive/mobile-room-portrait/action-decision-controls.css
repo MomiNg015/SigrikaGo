@@ -16,6 +16,12 @@
     grid-template-rows: 1fr !important;
   }
 
+  .mobile-room-screen .mobile-tab-panel .replay-step-indicator {
+    min-width: 0 !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+
   .mobile-room-screen .mobile-tab-panel .decision-bar {
     grid-template-columns: minmax(0, 1fr) minmax(128px, 0.72fr) !important;
     grid-auto-rows: auto !important;

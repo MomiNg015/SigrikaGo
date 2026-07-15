@@ -116,7 +116,7 @@ Current Phase 6/7 contracts:
 
 #### 1. Scope / Trigger
 - Trigger: any change to `UserIdentity`, username/nameplate CSS, achievement personalization previews, leaderboard names, room member names, or home player plaques.
-- Username nameplates are a visual identity surface. Their size must be stable within each scene and must not depend on the username string length.
+- Username nameplates are a visual identity surface. Their size must be stable within each scene and must not depend on the username string length, except for the explicit mobile battle-room full-name fallback below.
 
 #### 2. Signatures
 - `UserIdentity({ user, name, className, compact, showNameplate })` renders title, badge, and username nameplate cosmetics.
@@ -127,7 +127,8 @@ Current Phase 6/7 contracts:
 #### 3. Contracts
 - Do not emit inline font-size styles based on username length. The old `--user-identity-fit-font-size` behavior is forbidden.
 - Without an equipped nameplate, the username stays ordinary natural-width text.
-- With an equipped nameplate, `.user-identity.has-nameplate .user-identity-name-tag` uses the fixed `3.75:1` slot, centers the username, and reserves fixed scaled horizontal padding.
+- Outside mobile battle player strips, an equipped `.user-identity.has-nameplate .user-identity-name-tag` uses the fixed `3.75:1` slot, centers the username, and reserves fixed scaled horizontal padding.
+- Inside mobile battle/replay/spectator player strips, the full username has priority over fixed nameplate width: keep the shared scaled slot as the minimum, allow the username tag to grow or wrap within the identity column, and preserve the title, badge, and nameplate background. Do not ellipsize, marquee, horizontally scroll, or shrink the username font.
 - Nameplate backgrounds may use the shared `--user-nameplate-font-size: calc(15px * var(--user-nameplate-scale))` so text and background scale together. Do not make that font size depend on username length.
 - Scene and viewport adaptation belongs in CSS via `--user-nameplate-scale`; do not use `ResizeObserver`, string measurement, or per-name JavaScript sizing.
 - Title and badge remain outside the nameplate background. The nameplate background wraps only the username.
@@ -137,7 +138,9 @@ Current Phase 6/7 contracts:
 - Two-character CJK username and eight half-width Latin username in the same scene -> same rendered username font size and same nameplate dimensions when equipped.
 - Equipped usernames may render with the shared nameplate font size, while unequipped usernames keep the scene font size.
 - Narrow mobile room/member surface -> reduce `--user-nameplate-scale`; do not shrink based on the actual username.
-- Extreme or legacy overlong username -> keep the fixed slot and allow the text span to ellipsize as the final fallback.
+- Mobile battle username within the current 8-half-width display limit -> render the complete username on one line at the normal scene font size.
+- Mobile battle legacy overlong username -> render the complete value with `overflow-wrap: anywhere`; wrapping is allowed, truncation is not.
+- Extreme or legacy overlong username outside mobile battle -> keep the fixed slot and allow the text span to ellipsize as the final fallback.
 - `showNameplate={false}` -> no nameplate background or fixed nameplate slot is applied.
 
 #### 5. Good/Base/Bad Cases
@@ -145,13 +148,14 @@ Current Phase 6/7 contracts:
 - Base: ordinary users without a nameplate render natural-width text.
 - Bad: calculating display width in React and writing `style={{ "--user-identity-fit-font-size": "0.86em" }}`.
 - Bad: defining per-surface arbitrary nameplate text sizes instead of the shared `--user-nameplate-font-size` contract.
-- Bad: stretching the equipped nameplate tag to `width: 100%` of every parent container.
+- Bad: stretching the equipped nameplate tag to `width: 100%` of every parent container. The mobile battle exception is content-driven and bounded by its identity column, not a full-width stretch.
 - Bad: reintroducing a left/center/right three-DOM-slice nameplate.
 
 #### 6. Tests Required
 - `src/shared/UserIdentity.test.jsx` asserts username length does not create inline font-size variables.
 - `src/styles/hudComponents.test.js` asserts the shared fixed-ratio nameplate variables and scale hooks.
 - Home, leaderboard, profile, or room CSS tests should assert scene-specific scale and high-specificity theme overrides when those surfaces are changed.
+- `src/room/PlayerInfo.test.js` and mobile viewport QA must assert mobile battle names remain passive and complete for an equipped 8-half-width username and a representative legacy overlong username.
 
 #### 7. Wrong vs Correct
 
@@ -1076,7 +1080,7 @@ Correct:
 
 #### 1. Scope / Trigger
 - Trigger: any change to `TutorialBattleScreen`, tutorial node type constants, admin battle-step forms, `RoomBattleStage` tutorial props, or StoryScript node normalization for tutorial fields.
-- Battle tutorials must run inside the real battle room presentation, not a simplified board preview, because the teaching state depends on player/NPC panels, the action bar, chat history, skills, and board interaction affordances.
+- Battle tutorials must run inside the real battle room presentation, not a simplified board preview, because the teaching state depends on player/NPC panels, the action bar, readonly story history, skills, and board interaction affordances.
 
 #### 2. Signatures
 - Node types live in `src/shared/tutorialNodeTypes.js`.
@@ -1086,7 +1090,7 @@ Correct:
 - Node progression is authored as one advance mode: `auto` or `manual`. The storage fields remain `manualContinueEnabled`, `autoContinueEnabled`, and `autoContinueDelaySeconds` for existing script compatibility, but new admin edits must write them as a mutually exclusive pair. New battle nodes default to `auto`.
 - `autoContinueDelaySeconds` is the automatic progression wait. In `auto` mode, blank means 1.5 seconds after typewriter completion for `npc-dialogue`, and 0 seconds for other battle nodes. In `manual` mode, the value is preserved but does not start a timer.
 - Option timing field: `transitionDelaySeconds` on both ordinary story options and in-battle reply options. In admin copy this is "选择后等待"; blank means 0 seconds after selection.
-- `RoomBattleStage` accepts tutorial overrides such as `actionPanelOverride`, `chatReadonly`, `chatDisabledInputMessage`, `chatCompactMessages`, `showPeoplePanel`, `tutorialTargetPointId`, and `tutorialAnyBoardTarget`.
+- `RoomBattleStage` accepts tutorial overrides such as `actionPanelOverride`, `showTutorialLog`, `showPeoplePanel`, `tutorialTargetPointId`, and `tutorialAnyBoardTarget`.
 - `RoomHeader` accepts `exitLabel` and `showUtilityControls` so tutorial battles can keep only the exit/skip affordance without rendering room utility buttons.
 - `AssetPreloadScreen` accepts `showTips` for fixed-copy loading transitions that still need the shared preload template.
 
@@ -1101,7 +1105,7 @@ Correct:
 - The node initialization effect must be keyed by the current node id. Resolving a pending progression wait changes `pendingWait`, but must not reinitialize the same node, because reinitialization clears `choicesVisible` and can make just-revealed reply options flash and disappear.
 - Admin preview should use the real configured waits by default and may expose a preview-only "立即继续" control for timer-only waits. Player-facing playback must not expose per-wait skipping, but node-level manual continuation is a script-controlled player action.
 - NPC dialogue nodes may show dialogue with no board action, or board action nodes may show dialogue while also moving/casting. The NPC bubble remains visible while player reply options are shown and is replaced only when the next NPC node begins.
-- `player-choice` nodes show centered reply options without changing the board. Chosen NPC and player replies are written to the read-only chat history.
+- `player-choice` nodes show centered reply options without changing the board. Chosen NPC and player replies are written to the readonly `剧情记录` history.
 - `story` nodes reached from battle show the shared `AssetPreloadScreen` exit loading page for at least three seconds with "正在收拾棋盘..." before returning to the normal story modal.
 - Entering a board setup shows the shared `AssetPreloadScreen` entry loading page for at least three seconds with "正在激烈对局中..." and the participating NPC portraits.
 - Story-to-battle, battle-to-story, and in-battle board-setup handoffs must put the shared loading screen in place before the browser can paint the next route/node. Use initial state, navigation-handler state, or layout effects for the handoff boundary; do not rely only on a post-paint effect that briefly renders the battle room, home screen, or setup placeholder.
@@ -1109,7 +1113,7 @@ Correct:
 - Player move targets must highlight the exact point with a gold ring rendered as a real child element inside the board point; do not use a `::after` point pseudo-element because theme guards also own point pseudo-elements. The ring must preserve `transform: translate(-50%, -50%)` after Bright School `button > *` reset layers and should animate as a visible gold glow. Clicking another point or the board surface shows "请在提示区域落子".
 - Player skill targets use the normal skill selection flow. If a skill has no concrete target point, the second phase still requires a board click and shows "点击棋盘区域任意位置即可".
 - Player button targets highlight the required action button. Clicking unrelated disabled/free actions should do nothing unless the node explicitly defines an error toast.
-- Player reply options should render above a full-screen scrim that focuses the choice area while keeping the current NPC bubble visible above the scrim. The choice container must not own horizontal or vertical scrolling; keep option labels inside the available width through shrinkable button text spans and wrapping. Choice and teaching action buttons use a left/right distributed row layout so the affordance does not collapse into centered free-battle controls. The action panel must never render free-text hints; it may show only concrete teaching buttons such as "继续", skill, counting, or resign, otherwise it remains empty while board highlights, reply options, NPC bubbles, chat, and toast feedback carry instructional text.
+- Player reply options should render above a full-screen scrim that focuses the choice area while keeping the current NPC bubble visible above the scrim. The choice container must not own horizontal or vertical scrolling; keep option labels inside the available width through shrinkable button text spans and wrapping. Choice and teaching action buttons use a left/right distributed row layout so the affordance does not collapse into centered free-battle controls. The action panel must never render free-text hints; it may show only concrete teaching buttons such as "继续", skill, counting, or resign, otherwise it remains empty while board highlights, reply options, NPC bubbles, the readonly story record, and toast feedback carry instructional text.
 - In Bright School, `.tutorial-battle-choice button:hover:not(:disabled)` and `:focus-visible:not(:disabled)` reuse the home utility card hover motion: `7px 8px 0 #3d2b25` hard shadow, `0 12px 24px rgba(255, 158, 187, 0.2)` lift shadow, `saturate(1.04) brightness(1.01)`, and `translateY(-4px) rotate(calc(var(--utility-tilt, 0deg) - 0.45deg)) scale(1.018)`. Keep this in `src/styles/themes/bright-school/room/tutorial-choice-interactions.css` so the already-large `player-status.css` does not grow.
 - Reply options should render as the buttons themselves, without a visible choice-panel title, extra close affordance, or framed card background. The scrim and NPC bubble provide the spatial context.
 - Teaching action buttons should stretch evenly across the action area with a small inset and a light-green target affordance on both desktop and mobile.
@@ -1117,7 +1121,7 @@ Correct:
 - NPC dialogue bubble body text should type in progressively while the speaker name is shown immediately, and the animation must respect `prefers-reduced-motion`.
 - A player with no selected role keeps the same panel footprint as a character player, but the portrait and skill list are empty, placeholder slots preserve the side panel symmetry, and the rank is hidden.
 - Timer digit groups should stay centered inside their timer card in desktop room panels and mobile player strips; mobile strips must keep compact art-font overrides so the timer track is not squeezed out of the player strip.
-- Chat is read-only during battle tutorials; the input is disabled and can still display a disabled placeholder message. Tutorial chat messages must be compact, without hand number, timestamp, or `[使用角色]` suffixes.
+- `showTutorialLog` is the only production room-stage opt-in for `ChatBox`. It renders as `剧情记录`, is always readonly, never receives a send callback, and uses compact messages without hand number, timestamp, or `[使用角色]` suffixes. Ordinary live, spectator, and replay rooms must not opt in.
 - Exit/skip uses the room header exit affordance, asks for confirmation, and ends the script like the normal story close/skip path.
 - Bubble slide-in/out motion should respect `prefers-reduced-motion`; keep the static visible state when motion is reduced.
 
@@ -1142,7 +1146,7 @@ Correct:
 #### 5. Tests Required
 - `src/tutorial/tutorialBattleRoom.test.js` should cover room construction invariants needed by `TutorialBattleScreen`.
 - `src/room/Board.test.js` should cover tutorial point and any-board targeting hooks.
-- `src/room/RoomScreen.test.js` should cover action-panel override, read-only chat wiring, and room header exit label behavior.
+- `src/room/RoomScreen.test.js` should cover action-panel override, ordinary-room chat-entry removal, readonly `showTutorialLog` wiring, and room header exit label behavior.
 - `src/app/AppOverlays.test.jsx` / app route tests should cover battle-to-story resume wiring.
 - `src/admin/AdminOnboardingStory.test.jsx` should cover admin form validation for `npc-dialogue`, `player-choice`, delay fields, actor fields, and story-exit previews where practical.
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert Bright School reply-choice hover imports and utility-card-equivalent hover motion.

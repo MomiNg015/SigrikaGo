@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import ActionBar from "./ActionBar.jsx";
 import Board from "./Board.jsx";
-import ChatBox from "./ChatBox.jsx";
+import ChatBox, { playerChatCount } from "./ChatBox.jsx";
 import OperationHint from "./OperationHint.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
 import RoomPeopleList from "./RoomPeopleList.jsx";
@@ -29,7 +29,6 @@ export default function RoomBattleStage({
   liveStep,
   me,
   onBack,
-  onChat,
   onCountingRequest,
   onCountingRespond,
   onDrawRequest,
@@ -44,6 +43,7 @@ export default function RoomBattleStage({
   pendingSkill,
   pointConfirmation,
   role,
+  roomViewStatus,
   scoring,
   setPendingSkill,
   setReplayStep,
@@ -54,10 +54,8 @@ export default function RoomBattleStage({
   skillAvailable,
   skillEffectsEnabled = true,
   skillPreview,
-  chatReadonly = false,
-  chatDisabledInputMessage = "",
-  chatCompactMessages = false,
   showPeoplePanel = true,
+  showTutorialLog = false,
   tutorialTargetPointId = "",
   tutorialAnyBoardTarget = false,
   token,
@@ -77,8 +75,8 @@ export default function RoomBattleStage({
   const handleMembersFloatingLayer = useCallback(() => {
     bringFloatingLayerToFront("members");
   }, [bringFloatingLayerToFront]);
-  const handleChatFloatingLayer = useCallback(() => {
-    bringFloatingLayerToFront("chat");
+  const handleStoryLogFloatingLayer = useCallback(() => {
+    bringFloatingLayerToFront("story-log");
   }, [bringFloatingLayerToFront]);
   const handleTestRandomLayout = useCallback(() => {
     onGameAction({ type: "test-random-layout" });
@@ -174,6 +172,7 @@ export default function RoomBattleStage({
       scoring={scoring}
       replayStep={boardStep ?? liveStep}
       replayMax={liveStep}
+      replayMode={roomViewStatus?.controlMode ?? (isReplay ? "replay" : "spectator")}
       onReplayStep={isReplay ? setReplayStep : isLiveSpectator ? setSpectatorStep : null}
       showTestTools={SHOW_TEST_TOOLS}
       onTestRandomLayout={handleTestRandomLayout}
@@ -206,15 +205,16 @@ export default function RoomBattleStage({
       onFloatingLayerRequest={bringFloatingLayerToFront}
     />
   );
-  const chatPanel = (
+  const storyLogPanel = showTutorialLog && (
     <ChatBox
       room={displayRoom}
-      onChat={onChat}
-      readonly={isReplay || chatReadonly}
-      disabledInputMessage={chatDisabledInputMessage}
-      compactMessages={chatCompactMessages}
-      floatingLayerZ={floatingLayers.chat}
-      onFloatingLayerRequest={handleChatFloatingLayer}
+      readonly
+      disabledInputMessage="剧情教学记录仅供查看"
+      compactMessages
+      label="剧情记录"
+      presentation={isMobileBattleLayout ? "embedded" : "floating"}
+      floatingLayerZ={floatingLayers["story-log"]}
+      onFloatingLayerRequest={handleStoryLogFloatingLayer}
     />
   );
 
@@ -222,7 +222,7 @@ export default function RoomBattleStage({
     const panels = [
       { id: "actions", label: "操作", content: <div className="mobile-action-panel">{hintPanel}{actionPanel}</div> },
       membersPanel && { id: "members", label: "成员", content: membersPanel },
-      { id: "chat", label: "聊天", content: chatPanel }
+      storyLogPanel && { id: "story-log", label: "剧情记录", badge: playerChatCount(displayRoom.chat), content: storyLogPanel }
     ].filter(Boolean);
     const selectedPanel = panels.find((panel) => panel.id === activeMobilePanel) ?? panels[0];
 
@@ -233,31 +233,40 @@ export default function RoomBattleStage({
         <div className="mobile-player-slot mobile-self-slot room-side">{selfInfo}</div>
         {selectedPanel && (
           <section className="mobile-room-dock mobile-room-tabs" aria-label="对局功能">
-            <div className="mobile-tab-list" role="tablist">
+            <div
+              className="mobile-tab-list"
+              role="tablist"
+              style={{ "--mobile-room-tab-count": panels.length }}
+            >
               {panels.map((panel) => (
                 <button
                   key={panel.id}
                   type="button"
                   className={panel.id === selectedPanel.id ? "mobile-tab-button active" : "mobile-tab-button"}
                   role="tab"
-                  aria-label={panel.label}
+                  aria-label={panel.badge == null ? panel.label : `${panel.label}，${panel.badge}条`}
                   aria-selected={panel.id === selectedPanel.id}
                   aria-controls={`mobile-room-panel-${panel.id}`}
                   id={`mobile-room-tab-${panel.id}`}
                   onClick={() => setActiveMobilePanel(panel.id)}
                 >
-                  {panel.label}
+                  <span>{panel.label}</span>
+                  {panel.badge != null && <strong className="mobile-tab-badge">{panel.badge}</strong>}
                 </button>
               ))}
             </div>
-            <div
-              className="mobile-tab-panel"
-              role="tabpanel"
-              id={`mobile-room-panel-${selectedPanel.id}`}
-              aria-labelledby={`mobile-room-tab-${selectedPanel.id}`}
-            >
-              {selectedPanel.content}
-            </div>
+            {panels.map((panel) => (
+              <div
+                key={panel.id}
+                className="mobile-tab-panel"
+                role="tabpanel"
+                id={`mobile-room-panel-${panel.id}`}
+                aria-labelledby={`mobile-room-tab-${panel.id}`}
+                hidden={panel.id !== selectedPanel.id}
+              >
+                {panel.content}
+              </div>
+            ))}
           </section>
         )}
       </section>
@@ -269,7 +278,6 @@ export default function RoomBattleStage({
       <div className="opponent-side">
         {opponentInfo}
         {membersPanel}
-        {hintPanel}
       </div>
       <div className="board-column">
         {boardPanel}
@@ -277,7 +285,8 @@ export default function RoomBattleStage({
       </div>
       <div className="room-side">
         {selfInfo}
-        {chatPanel}
+        {hintPanel}
+        {storyLogPanel}
       </div>
     </section>
   );

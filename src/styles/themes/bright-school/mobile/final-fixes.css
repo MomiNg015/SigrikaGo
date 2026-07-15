@@ -77,32 +77,18 @@
     .color-badge,
     .rank-tag,
     .rating-tag,
-    .captures span,
+    .captures > *,
     .info-stat,
     .digital-timer,
     .timer-track,
     .timer-track span,
     .skill-chip,
     .chat-widget,
-    .chat-toggle-button,
-    .chat-exit-action,
-    .chat-popover,
-    .chat-box,
-    .chat-close-button
+    .chat-box
   ) {
     box-shadow: none !important;
     filter: none !important;
     text-shadow: none !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .chat-widget {
-    width: 100% !important;
-    display: flex !important;
-    justify-content: flex-end !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .chat-toggle-button {
-    margin-left: auto !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .warehouse-character-grid {

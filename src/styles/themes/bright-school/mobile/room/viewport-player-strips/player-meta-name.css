@@ -15,9 +15,9 @@
     max-width: 100% !important;
     font-size: 12.5px !important;
     line-height: 1.05 !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .rank-tag,

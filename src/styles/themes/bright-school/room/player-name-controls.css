@@ -12,16 +12,6 @@
   text-shadow: none !important;
 }
 
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .name-button:hover,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .name-button:focus-visible {
-  background: transparent !important;
-  color: #3d2b25 !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  text-decoration: underline !important;
-  text-underline-offset: 4px !important;
-}
-
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .portrait-wrap img {
   filter: none !important;
 }

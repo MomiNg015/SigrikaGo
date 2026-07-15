@@ -1,9 +1,6 @@
 @media (max-width: 768px) and (orientation: portrait) {
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-room-dock:has(.chat-widget.open),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-widget.open,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-popover {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu.open .room-mobile-menu-panel {
     z-index: var(--room-floating-z, 120) !important;
   }
 
@@ -17,26 +14,7 @@
     pointer-events: none !important;
   }
 
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-room-tabs:has(.chat-widget.open),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel:has(.chat-widget.open),
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-room-dock:has(.chat-widget.open) {
-    overflow: visible !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-popover {
-    right: 0 !important;
-    bottom: calc(100% + 8px) !important;
-    width: min(340px, calc(100vw - 24px)) !important;
-    max-height: min(360px, calc(100dvh - 260px)) !important;
-    overflow: hidden !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-log {
-    height: min(190px, 32dvh) !important;
-    min-height: 112px !important;
-  }
-
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .captures span,
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .captures > *,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .digital-timer,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .timer-track,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .timer-track span,
@@ -45,8 +23,6 @@
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .replay-bar,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .replay-bar button,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .action-bar button,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-toggle-button,
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .chat-close-button,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-panel,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .room-mobile-menu-panel button {
     box-shadow: none !important;

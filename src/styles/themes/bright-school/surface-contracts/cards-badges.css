@@ -16,7 +16,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .rank-tag,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .rating-tag,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .color-badge,
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures span,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .captures > *,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .deploy-tag,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .store-owned-tag,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .owned-strip,

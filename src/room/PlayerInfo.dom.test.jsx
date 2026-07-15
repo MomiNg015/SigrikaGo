@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CHARACTERS } from "../shared/characters.js";
@@ -86,5 +86,51 @@ describe("PlayerInfo mobile skill traits", () => {
     expect(document.querySelector(".skill-trait-popover")?.style.getPropertyValue("--room-floating-z"))
       .toBe("120");
     expect(document.querySelector(".mobile-tap-tooltip")).toBeTruthy();
+  });
+
+  it("keeps the card and username passive while isolating viewpoint and stat controls", async () => {
+    const user = userEvent.setup();
+    const onViewColor = vi.fn();
+    render(
+      <PlayerInfo
+        player={{
+          color: COLORS.black,
+          characterId: "changli",
+          user: { username: "Moming88", itemEffects: {}, rank: "1段", rating: 1800 },
+          captures: 2,
+          time: { main: 300, byoYomi: 30, periodRemaining: 30, periods: 3 }
+        }}
+        game={{
+          mode: "spark",
+          phase: "playing",
+          turn: COLORS.black,
+          skillEnabled: true,
+          skillUses: { black: 1, white: 1 },
+          skillCosts: { black: 0, white: 0 },
+          skillRemovals: { black: 1, white: 0 },
+          winner: null
+        }}
+        characters={CHARACTERS}
+        align="self"
+        viewColor={COLORS.black}
+        canSwitchView
+        onViewColor={onViewColor}
+      />
+    );
+
+    const card = document.querySelector("aside.player-info");
+    expect(card).toBeTruthy();
+    expect(card.getAttribute("role")).not.toBe("button");
+    expect(card.getAttribute("tabindex")).toBeNull();
+    expect(screen.getByText("Moming88").closest("button")).toBeNull();
+
+    const portraitButton = within(card).getByRole("button", { name: "当前为黑方视角" });
+    const removalButton = within(card).getByRole("button", { name: /除子1/ });
+    await user.click(removalButton);
+    expect(onViewColor).not.toHaveBeenCalled();
+
+    await user.click(portraitButton);
+    expect(onViewColor).toHaveBeenCalledOnce();
+    expect(onViewColor).toHaveBeenCalledWith(COLORS.black);
   });
 });

@@ -10,6 +10,8 @@ function ChatBox({
   readonly = false,
   disabledInputMessage = "",
   compactMessages = false,
+  label = "对局聊天",
+  presentation = "floating",
   trailingAction = null,
   floatingLayerZ,
   onFloatingLayerRequest
@@ -20,14 +22,16 @@ function ChatBox({
   const widgetRef = useRef(null);
   const logRef = useRef(null);
   const chatCount = playerChatCount(room.chat);
+  const isEmbedded = presentation === "embedded";
+  const panelOpen = isEmbedded || isOpen;
 
   useEffect(() => {
     if (!logRef.current) return;
     logRef.current.scrollTop = logRef.current.scrollHeight;
-  }, [chatCount, isOpen]);
+  }, [chatCount, panelOpen]);
 
   useEffect(() => {
-    if (!isOpen) return undefined;
+    if (isEmbedded || !isOpen) return undefined;
 
     function handlePointerDown(event) {
       if (!widgetRef.current || widgetRef.current.contains(event.target)) return;
@@ -44,7 +48,7 @@ function ChatBox({
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isEmbedded, isOpen]);
 
   function submitChat(event) {
     event.preventDefault();
@@ -56,35 +60,41 @@ function ChatBox({
 
   return (
     <div
-      className={isOpen ? "chat-widget open" : "chat-widget"}
+      className={isEmbedded ? "chat-widget embedded" : isOpen ? "chat-widget open" : "chat-widget"}
       ref={widgetRef}
-      style={floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : undefined}
+      style={!isEmbedded && floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : undefined}
       onPointerDownCapture={() => {
-        if (isOpen) onFloatingLayerRequest?.();
+        if (!isEmbedded && isOpen) onFloatingLayerRequest?.();
       }}
     >
-      <button
-        type="button"
-        className="chat-toggle-button"
-        aria-expanded={isOpen}
-        aria-controls={panelId}
-        onClick={() => {
-          onFloatingLayerRequest?.();
-          setIsOpen((current) => !current);
-        }}
-      >
-        <MessageCircle size={18} />
-        <span>对局聊天</span>
-        <strong>{chatCount}</strong>
-      </button>
-      {trailingAction}
-      {isOpen && (
-        <section className="chat-box chat-popover" id={panelId}>
+      {!isEmbedded && (
+        <>
+          <button
+            type="button"
+            className="chat-toggle-button"
+            aria-expanded={isOpen}
+            aria-controls={panelId}
+            onClick={() => {
+              onFloatingLayerRequest?.();
+              setIsOpen((current) => !current);
+            }}
+          >
+            <MessageCircle size={18} aria-hidden="true" />
+            <span>{label}</span>
+            <strong>{chatCount}</strong>
+          </button>
+          {trailingAction}
+        </>
+      )}
+      {panelOpen && (
+        <section className={isEmbedded ? "chat-box chat-embedded" : "chat-box chat-popover"} id={panelId}>
           <header>
-            <span><MessageCircle size={18} />对局聊天</span>
-            <button type="button" className="chat-close-button" aria-label="关闭对局聊天" onClick={() => setIsOpen(false)}>
-              <X size={17} />
-            </button>
+            <span><MessageCircle size={18} aria-hidden="true" />{label}</span>
+            {!isEmbedded && (
+              <button type="button" className="chat-close-button" aria-label={`关闭${label}`} onClick={() => setIsOpen(false)}>
+                <X size={17} aria-hidden="true" />
+              </button>
+            )}
           </header>
           <div className="chat-log" ref={logRef}>
             {room.chat.map((message) => (
@@ -100,13 +110,18 @@ function ChatBox({
           {!readonly && (
             <form onSubmit={submitChat}>
               <input value={text} onChange={(event) => setText(event.target.value)} placeholder="输入聊天内容" />
-              <button type="submit" aria-label="发送聊天消息"><Send size={18} /></button>
+              <button type="submit" aria-label="发送聊天消息"><Send size={18} aria-hidden="true" /></button>
             </form>
           )}
-          {readonly && disabledInputMessage && (
+          {readonly && isEmbedded && (
+            <p className="chat-readonly-note" role="status">
+              {disabledInputMessage || "当前仅可查看聊天"}
+            </p>
+          )}
+          {readonly && !isEmbedded && disabledInputMessage && (
             <form className="chat-form-disabled" aria-label={disabledInputMessage}>
               <input value={disabledInputMessage} disabled readOnly />
-              <button type="button" disabled aria-label={disabledInputMessage}><Send size={18} /></button>
+              <button type="button" disabled aria-label={disabledInputMessage}><Send size={18} aria-hidden="true" /></button>
             </form>
           )}
         </section>
@@ -123,6 +138,8 @@ export function areChatBoxPropsEqual(previous, next) {
     && previous.readonly === next.readonly
     && previous.disabledInputMessage === next.disabledInputMessage
     && previous.compactMessages === next.compactMessages
+    && previous.label === next.label
+    && previous.presentation === next.presentation
     && previous.trailingAction === next.trailingAction
     && previous.floatingLayerZ === next.floatingLayerZ
     && previous.onFloatingLayerRequest === next.onFloatingLayerRequest;

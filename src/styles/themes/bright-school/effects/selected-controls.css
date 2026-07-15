@@ -24,8 +24,7 @@
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-tab-button.active:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-mobile-menu-panel button.active:not(:disabled),
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-toggles .toggle.active:not(:disabled),
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .sortie-button.selected:not(:disabled),
-.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .viewpoint-button.active:not(:disabled) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .sortie-button.selected:not(:disabled) {
   transform: translateY(4px) scale(0.97) !important;
   box-shadow:
     0 0 0 #3d2b25,

@@ -34,7 +34,7 @@
 .app-shell.player-theme-enabled.theme-bright-school .rank-tag,
 .app-shell.player-theme-enabled.theme-bright-school .rating-tag,
 .app-shell.player-theme-enabled.theme-bright-school .color-badge,
-.app-shell.player-theme-enabled.theme-bright-school .captures span {
+.app-shell.player-theme-enabled.theme-bright-school .captures > * {
   background: #ffffff !important;
   border: 2px solid #4a3736 !important;
   border-radius: 12px !important;

@@ -21,7 +21,7 @@ import { useRoomBoardView } from "./view/useRoomBoardView.js";
 
 export { MOBILE_ROOM_MEDIA_QUERY };
 
-export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, mobileBackRequestId = 0, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onChat, onOpenReplay, onToast }) {
+export default function RoomScreen({ room, user, token, characters, replayStep, setReplayStep, pendingSkill, setPendingSkill, mobileBackRequestId = 0, audioSettings, siteSettings, onOpenSettings, onOpenMessageBoard, onBack, onGameAction, onCountingRequest, onCountingRespond, onDrawRequest, onDrawRespond, onScoringAction, onOpenReplay, onToast }) {
   const [showCoords, setShowCoords] = useState(true);
   const [confirmAction, setConfirmAction] = useState(null);
   const handledMobileBackRequestIdRef = useRef(mobileBackRequestId);
@@ -41,6 +41,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
     opponentConnected,
     role,
     roomGameInfo,
+    roomViewStatus,
     scoring,
     setSpectatorStep,
     setViewColor,
@@ -140,9 +141,9 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
   return (
     <Layout>
       <RoomHeader
-        isReplay={isReplay}
         room={displayRoom}
         roomGameInfo={roomGameInfo}
+        roomViewStatus={roomViewStatus}
         showCloseCountdown={showCloseCountdown}
         showCoords={showCoords}
         onOpenMessageBoard={onOpenMessageBoard}
@@ -167,7 +168,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         liveStep={liveStep}
         me={me}
         onBack={requestExitConfirm}
-        onChat={onChat}
         onCountingRequest={onCountingRequest}
         onCountingRespond={onCountingRespond}
         onDrawRequest={onDrawRequest}
@@ -182,6 +182,7 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
         pendingSkill={pendingSkill}
         pointConfirmation={pointConfirmation}
         role={role}
+        roomViewStatus={roomViewStatus}
         scoring={scoring}
         setPendingSkill={setPendingSkill}
         setReplayStep={setReplayStep}

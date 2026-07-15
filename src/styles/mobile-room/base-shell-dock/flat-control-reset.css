@@ -16,7 +16,7 @@
     .color-badge,
     .rank-tag,
     .rating-tag,
-    .captures span,
+    .captures > *,
     .digital-timer,
     .timer-track,
     .timer-track span,
@@ -33,10 +33,6 @@
     .operation-hint,
     .room-people,
     .room-person,
-    .chat-toggle-button,
-    .chat-exit-action,
-    .chat-popover,
-    .chat-close-button,
     .skill-chip
   ) {
     box-shadow: none;

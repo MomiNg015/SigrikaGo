@@ -33,6 +33,7 @@ function ActionBar({
   scoring,
   replayStep = 0,
   replayMax = 0,
+  replayMode = "replay",
   showTestTools = false,
   onReplayStep,
   onTestRandomLayout,
@@ -50,6 +51,7 @@ function ActionBar({
       <ReplayActionBar
         replayStep={replayStep}
         replayMax={replayMax}
+        mode={replayMode}
         onReplayStep={onReplayStep}
       />
     );
@@ -110,6 +112,7 @@ export function areActionBarPropsEqual(previous, next) {
   if (previous.role === "spectator") {
     return previous.replayStep === next.replayStep
       && previous.replayMax === next.replayMax
+      && previous.replayMode === next.replayMode
       && previous.onReplayStep === next.onReplayStep;
   }
 

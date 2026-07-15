@@ -20,13 +20,6 @@
     align-self: center;
   }
 
-  .mobile-room-screen .viewpoint-button {
-    width: 30px;
-    height: 30px;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
   .mobile-room-screen .player-info img {
     height: 34px;
   }
@@ -86,7 +79,7 @@
     gap: 2px;
   }
 
-  .mobile-room-screen .captures span {
+  .mobile-room-screen .captures > * {
     min-height: 18px;
     padding: 1px 3px;
     font-size: 10px;

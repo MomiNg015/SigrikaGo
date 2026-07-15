@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { areChatBoxPropsEqual, chatDisplayName, chatMessageMetaLabel, playerChatCount } from "./ChatBox.jsx";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import ChatBox, { areChatBoxPropsEqual, chatDisplayName, chatMessageMetaLabel, playerChatCount } from "./ChatBox.jsx";
 
 describe("ChatBox", () => {
   it("counts only player chat messages for the collapsed badge", () => {
@@ -60,7 +62,7 @@ describe("ChatBox", () => {
     }))).toBe(false);
   });
 
-  it("can render tutorial chat without move time or character suffix metadata", () => {
+  it("can render tutorial records without move time or character suffix metadata", () => {
     const room = {
       chat: [],
       players: [
@@ -90,6 +92,50 @@ describe("ChatBox", () => {
     expect(areChatBoxPropsEqual(previous, next)).toBe(false);
   });
 
+  it("rerenders when switching between floating and embedded presentation", () => {
+    const previous = chatProps({ presentation: "floating" });
+    const next = chatProps({ presentation: "embedded" });
+
+    expect(areChatBoxPropsEqual(previous, next)).toBe(false);
+  });
+
+  it("rerenders when the readonly record label changes", () => {
+    const previous = chatProps({ label: "对局聊天" });
+    const next = chatProps({ label: "剧情记录" });
+
+    expect(areChatBoxPropsEqual(previous, next)).toBe(false);
+  });
+
+  it("renders mobile chat inline without a second toggle or close control", () => {
+    const markup = renderToStaticMarkup(createElement(ChatBox, chatProps({
+      presentation: "embedded",
+      room: {
+        code: "12345",
+        players: [{ color: "black", user: { id: "user-1", username: "玩家甲" } }],
+        chat: [{ id: "chat-1", type: "chat", userId: "user-1", username: "玩家甲", text: "你好" }]
+      }
+    })));
+
+    expect(markup).toContain("chat-box chat-embedded");
+    expect(markup).toContain("你好");
+    expect(markup).not.toContain("chat-toggle-button");
+    expect(markup).not.toContain("chat-close-button");
+  });
+
+  it("shows a clear readonly note in an embedded tutorial record", () => {
+    const markup = renderToStaticMarkup(createElement(ChatBox, chatProps({
+      presentation: "embedded",
+      readonly: true,
+      disabledInputMessage: "剧情教学记录仅供查看",
+      label: "剧情记录"
+    })));
+
+    expect(markup).toContain("chat-readonly-note");
+    expect(markup).toContain("剧情记录");
+    expect(markup).toContain("剧情教学记录仅供查看");
+    expect(markup).not.toContain("placeholder=\"输入聊天内容\"");
+  });
+
   it("allows chat messages and names to wrap inside the battle chat log", () => {
     const css = readFileSync(new URL("../styles/room/chat-responsive.css", import.meta.url), "utf8");
     const messageBlock = cssBlock(css, ".chat-log p");
@@ -108,6 +154,7 @@ function chatProps(overrides = {}) {
     room: { code: "12345", chat: [], players: [] },
     onChat: noop,
     readonly: false,
+    presentation: "floating",
     trailingAction: null,
     floatingLayerZ: undefined,
     onFloatingLayerRequest: noop,

@@ -42,6 +42,13 @@ export function useRoomBoardView({ room, user, replayStep }) {
   const winnerColor = displayRoom.game.winner?.winnerColor ?? displayRoom.game.winner?.color;
   const skillPreview = displayRoom.game.pendingSkill;
   const canSwitchView = role === "spectator";
+  const roomViewStatus = roomViewStatusFor({
+    isReplay,
+    isLiveSpectator,
+    boardStep,
+    liveStep,
+    viewColor
+  });
 
   useEffect(() => {
     if (!isLiveSpectator) {
@@ -73,6 +80,7 @@ export function useRoomBoardView({ room, user, replayStep }) {
     opponentConnected,
     role,
     roomGameInfo,
+    roomViewStatus,
     scoring,
     setSpectatorStep,
     setViewColor,
@@ -89,4 +97,26 @@ export function useRoomBoardView({ room, user, replayStep }) {
 export function liveSpectatorGameForColor(room, color) {
   if (color === COLORS.black) return room.game;
   return room.gameViews?.[color] ?? room.game;
+}
+
+export function roomViewStatusFor({ isReplay, isLiveSpectator, boardStep, liveStep, viewColor }) {
+  const viewpoint = viewColor === COLORS.white ? "白方" : "黑方";
+
+  if (isReplay) {
+    return {
+      controlMode: "replay",
+      isFollowingLive: false,
+      kind: "replay",
+      label: `棋谱回放 · ${viewpoint}视角`
+    };
+  }
+
+  if (!isLiveSpectator) return null;
+  const isFollowingLive = boardStep == null || boardStep >= liveStep;
+  return {
+    controlMode: "spectator",
+    isFollowingLive,
+    kind: isFollowingLive ? "spectator-live" : "spectator-history",
+    label: `${isFollowingLive ? "实时观战" : "观战回看"} · ${viewpoint}视角`
+  };
 }

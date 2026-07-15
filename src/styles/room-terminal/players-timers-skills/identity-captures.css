@@ -38,7 +38,7 @@
   border: 1px solid color-mix(in srgb, var(--side-glow, var(--battle-cyan)) 38%, transparent);
 }
 
-.captures span {
+.captures > * {
   border-radius: 0;
   border-color: rgba(0, 191, 255, 0.22);
   background: rgba(3, 16, 22, 0.72);

@@ -592,7 +592,6 @@ export default function TutorialBattleScreen({
   return (
     <Layout>
       <RoomHeader
-        isReplay={false}
         room={displayRoom}
         roomGameInfo={roomGameInfo}
         showCloseCountdown={false}
@@ -625,9 +624,6 @@ export default function TutorialBattleScreen({
           boardStep={null}
           canSwitchView={false}
           characters={characters}
-          chatReadonly
-          chatDisabledInputMessage="剧情教学中聊天记录只读"
-          chatCompactMessages
           displayRoom={displayRoom}
           drawRequest={null}
           handleBoardSurface={handleBoardSurface}
@@ -639,7 +635,6 @@ export default function TutorialBattleScreen({
           liveStep={displayRoom.game.history.length}
           me={me}
           onBack={() => setConfirmExit({ reason: "exit" })}
-          onChat={() => {}}
           onCountingRequest={() => handleGameAction({ type: "counting" })}
           onCountingRespond={() => {}}
           onDrawRequest={() => handleGameAction({ type: "draw" })}
@@ -660,6 +655,7 @@ export default function TutorialBattleScreen({
           setSpectatorStep={() => {}}
           setViewColor={() => {}}
           showPeoplePanel={false}
+          showTutorialLog
           showCoords={showCoords}
           showMoves={false}
           skillAvailable={currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill}

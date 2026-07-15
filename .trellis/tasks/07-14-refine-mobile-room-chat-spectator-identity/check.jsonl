@@ -1,0 +1,4 @@
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Verify mobile room behavior, semantics, visual geometry, and regression coverage."}
+{"file":".trellis/spec/frontend/css-architecture.md","reason":"Verify CSS ownership, import order, and protected mobile room surfaces."}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Verify accessible component markup and interaction boundaries."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Trace view-state and chat behavior through hooks, components, CSS, tests, and documentation."}

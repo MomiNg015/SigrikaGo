@@ -46,7 +46,7 @@
     overflow: hidden;
   }
 
-  .mobile-room-screen .captures span {
+  .mobile-room-screen .captures > * {
     min-height: 18px;
     padding: 1px 3px;
     font-size: 10px;

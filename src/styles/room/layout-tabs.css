@@ -75,7 +75,7 @@
 
 .mobile-tab-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--mobile-room-tab-count, 3), minmax(0, 1fr));
   gap: 4px;
   padding: 5px;
   border-bottom: 1px solid rgba(128, 102, 142, 0.1);
@@ -83,12 +83,26 @@
 
 .mobile-tab-button {
   min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: 1px solid transparent;
   border-radius: 7px;
   background: transparent;
   color: #5d5067;
   font-size: 13px;
   font-weight: 900;
+}
+
+.mobile-tab-badge {
+  min-width: 18px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: #e8eefc;
+  color: #4059a8;
+  font-size: 10px;
+  line-height: 1;
 }
 
 .mobile-tab-button.active {

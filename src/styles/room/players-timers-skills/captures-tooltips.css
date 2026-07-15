@@ -8,7 +8,7 @@
   font-size: clamp(12px, 1.05vw, 14px);
 }
 
-.captures span {
+.captures > * {
   position: relative;
   flex: 1;
   min-width: 0;
@@ -25,6 +25,9 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78), 0 6px 14px rgba(75, 58, 88, 0.08);
   font-weight: 800;
   line-height: 1;
+  appearance: none;
+  color: inherit;
+  font: inherit;
 }
 
 .captures strong {

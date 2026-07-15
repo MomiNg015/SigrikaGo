@@ -43,8 +43,7 @@
     line-height: 1.12;
   }
 
-  .mobile-room-screen .mobile-tab-panel .room-people,
-  .mobile-room-screen .mobile-tab-panel .chat-box {
+  .mobile-room-screen .mobile-tab-panel .room-people {
     display: block;
     margin: 0;
     padding: 9px;

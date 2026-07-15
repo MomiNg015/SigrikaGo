@@ -3,9 +3,9 @@ import { DoorOpen, Menu, MessageSquareText, PanelRight, Settings } from "lucide-
 import { roomCloseCountdownText } from "../roomState.js";
 
 export default function RoomHeader({
-  isReplay,
   room,
   roomGameInfo,
+  roomViewStatus,
   showCloseCountdown,
   showCoords,
   onOpenMessageBoard,
@@ -35,7 +35,11 @@ export default function RoomHeader({
           )}
         </p>
         {showCloseCountdown && <RoomCloseCountdown closesAt={room.closesAt} />}
-        {isReplay && <h1>棋谱回放</h1>}
+        {roomViewStatus && (
+          <h1 className={`room-view-status ${roomViewStatus.kind}`}>
+            {roomViewStatus.label}
+          </h1>
+        )}
       </div>
       {showUtilityControls && <div className="room-toggles">
         <button className="toggle" onClick={onOpenMessageBoard} title="留言板"><MessageSquareText size={16} /></button>
@@ -59,6 +63,7 @@ export default function RoomHeader({
           type="button"
           aria-expanded={mobileMenuOpen}
           aria-controls="room-mobile-menu-panel"
+          aria-label="选项"
           title="选项"
           onClick={() => setMobileMenuOpen((open) => !open)}
         >

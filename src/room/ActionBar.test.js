@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { areActionBarPropsEqual, canRequestOpponentDecision } from "./ActionBar.jsx";
+import ReplayActionBar from "./actionBar/ReplayActionBar.jsx";
 
 describe("ActionBar helpers", () => {
   it("disables opponent decision requests while the opponent is disconnected", () => {
@@ -29,11 +32,31 @@ describe("ActionBar helpers", () => {
     expect(source).not.toContain(">申请数子</span>");
     expect(source).not.toContain(">申请和棋</span>");
     expect(source).not.toContain("className=\"exit-action\"");
-    expect(replaySource).toContain("className=\"action-bar replay-bar\"");
+    expect(replaySource).toContain("action-bar replay-bar");
     expect(replaySource).not.toContain("DoorOpen");
     expect(replaySource).not.toContain("className=\"exit-action\"");
     expect(battleStageSource).not.toContain("trailingAction={");
     expect(battleStageSource).not.toContain("className=\"chat-exit-action exit-action\"");
+  });
+
+  it("distinguishes live spectator progress from historical review", () => {
+    const historyMarkup = renderToStaticMarkup(createElement(ReplayActionBar, {
+      mode: "spectator",
+      replayStep: 3,
+      replayMax: 8,
+      onReplayStep: noop
+    }));
+    const liveMarkup = renderToStaticMarkup(createElement(ReplayActionBar, {
+      mode: "spectator",
+      replayStep: 8,
+      replayMax: 8,
+      onReplayStep: noop
+    }));
+
+    expect(historyMarkup).toContain("回看 3/8");
+    expect(historyMarkup).toContain("replay-return-live-label\">回到实时");
+    expect(liveMarkup).toContain("实时 · 8手");
+    expect(liveMarkup).not.toContain("replay-return-live-label");
   });
 
   it("keeps timed opponent decisions out of the action bar", () => {
@@ -113,6 +136,17 @@ describe("ActionBar helpers", () => {
     expect(areActionBarPropsEqual(base, { ...base, pendingSkill: { id: "erase-point" } })).toBe(false);
   });
 
+  it("rerenders spectator controls when their semantic mode changes", () => {
+    const spectator = actionBarProps({
+      role: "spectator",
+      replayMode: "spectator",
+      replayStep: 3,
+      replayMax: 8
+    });
+
+    expect(areActionBarPropsEqual(spectator, { ...spectator, replayMode: "replay" })).toBe(false);
+  });
+
   it("keeps scoring decision updates visible while ignoring unrelated props", () => {
     const base = actionBarProps({
       phase: "marking-dead",
@@ -166,6 +200,7 @@ function actionBarProps(overrides = {}) {
     scoring: null,
     replayStep: 0,
     replayMax: 0,
+    replayMode: "replay",
     showTestTools: false,
     onReplayStep: noop,
     onTestRandomLayout: noop,

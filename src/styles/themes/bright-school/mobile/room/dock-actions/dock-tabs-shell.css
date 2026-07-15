@@ -9,7 +9,7 @@
   }
 
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(var(--mobile-room-tab-count, 3), minmax(0, 1fr)) !important;
     gap: 5px !important;
     padding: 5px !important;
   }

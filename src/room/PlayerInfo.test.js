@@ -101,6 +101,40 @@ describe("PlayerInfo labels", () => {
     )).toBe("/assets/sigrika_centered.webp");
   });
 
+  it("keeps mobile battle usernames complete and passive, including equipped nameplates", () => {
+    const markup = renderToStaticMarkup(createElement(PlayerInfo, playerInfoProps({
+      player: {
+        ...playerInfoProps().player,
+        user: {
+          id: "user-1",
+          username: "Moming88",
+          rank: "1段",
+          rating: 1800,
+          itemEffects: {},
+          achievementEquipmentAssets: {
+            title: { text: "棋社新星" },
+            badge: { text: "星" },
+            nameplate: { imageUrl: "/assets/achievements/semantic-nameplate.png" }
+          }
+        }
+      }
+    })));
+    const mobileCss = readCssWithImports(new URL("../styles/mobile-adaptive/mobile-room-portrait.css", import.meta.url));
+    const brightMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile/room/viewport-player-strips.css", import.meta.url));
+
+    expect(markup).toContain("name-button player-name");
+    expect(markup).toContain("Moming88");
+    expect(markup).toContain("has-nameplate");
+    expect(markup).not.toContain("<button class=\"name-button");
+    expect(mobileCss).toContain(".mobile-room-screen .player-name .user-identity-name");
+    expect(mobileCss).toContain("overflow-wrap: anywhere");
+    expect(mobileCss).toContain("text-overflow: clip");
+    expect(mobileCss).toContain("white-space: normal");
+    expect(brightMobileCss).toContain(".mobile-room-screen .name-button");
+    expect(brightMobileCss).toContain("text-overflow: clip !important");
+    expect(brightMobileCss).toContain("white-space: normal !important");
+  });
+
   it("uses current catalog skill copy instead of stale live or replay room snapshots", () => {
     const currentCharacter = {
       ...CHARACTERS.changli,

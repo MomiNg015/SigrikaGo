@@ -141,7 +141,7 @@
     font-size: 11px;
   }
 
-  .mobile-room-screen .captures span {
+  .mobile-room-screen .captures > * {
     padding: 3px 4px;
     gap: 2px;
   }

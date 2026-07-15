@@ -83,12 +83,21 @@
     overflow: hidden;
   }
 
-  .mobile-room-screen .captures span {
+  .mobile-room-screen .captures > * {
     min-width: 0;
     min-height: 22px;
     padding: 2px 4px;
     font-size: 10px;
     white-space: nowrap;
+  }
+
+  .mobile-room-screen .replay-return-live:has(.replay-return-live-label) svg {
+    display: none;
+  }
+
+  .mobile-room-screen .replay-return-live-label {
+    font-size: 10px;
+    line-height: 1.1;
   }
 
   .mobile-room-screen .skill-chip {
@@ -98,5 +107,41 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 900px) {
+  .mobile-room-screen .player-name,
+  .mobile-room-screen .player-name :is(.user-identity, .user-identity-main, .user-identity-name-tag, .user-identity-name) {
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  .mobile-room-screen .player-name {
+    min-width: 0;
+    white-space: normal;
+    text-overflow: clip;
+  }
+
+  .mobile-room-screen .player-name .user-identity {
+    width: auto;
+    padding-inline: 0;
+  }
+
+  .mobile-room-screen .player-name .user-identity-name-tag {
+    width: auto;
+    min-width: 0;
+    height: auto;
+  }
+
+  .mobile-room-screen .player-name .user-identity.has-nameplate .user-identity-name-tag {
+    min-width: var(--user-nameplate-width);
+    min-height: var(--user-nameplate-height);
+  }
+
+  .mobile-room-screen .player-name .user-identity-name {
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
   }
 }

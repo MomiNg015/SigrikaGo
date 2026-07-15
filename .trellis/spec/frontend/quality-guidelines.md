@@ -372,7 +372,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - Board-level memo comparison must not ignore handler identity if `handlersRef.current` is updated inside the board render. Handler changes should re-render the board shell to refresh the ref, while point buttons can still stay memoized because their `handlersRef` object identity is stable.
 - `useRoomPointActions()` callback dependencies should track click semantics, not whole room/player objects. Depend on fields such as `phase`, `role`, `pendingSkill`, and current player color instead of the full `displayRoom` or `me` object so room clock ticks do not churn board click handlers.
 - `RoomBattleStage` must pass named stable callbacks into `Board`; do not use inline handlers for board point props such as `onNeutral`, because board-level memo comparison treats handler identity as the signal that `handlersRef.current` needs refreshing.
-- `ChatBox` should ignore player `time` changes from `room:clock` while still rerendering for room code changes, chat array changes, and player metadata that affects chat names such as user id or character id.
+- `ChatBox` should ignore player `time` changes from `room:clock` while still rerendering for room code changes, chat array changes, player metadata that affects chat names such as user id or character id, and `presentation` changes between desktop floating and mobile embedded modes.
 - `RoomPeopleList` should ignore player `time` changes from `room:clock` while still rerendering for room code changes, player connection state, spectator membership, and user display metadata used by `roomPeople()`.
 - `OperationHint` should ignore player `time` changes from `room:clock` while still rerendering for action-relevant fields: room code, phase, turn, winner, current user id, scoring reference, draw request reference, and color-to-user mappings.
 - `RoomBattleStage` must also pass stable floating-layer callbacks into memoized room widgets such as `ChatBox`; inline `onFloatingLayerRequest` callbacks defeat memo comparison during parent renders.
@@ -391,7 +391,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - Player timer object changes while the current player color and click semantics stay the same -> `useRoomPointActions()` should keep point handler identities stable.
 - Parent room render with unchanged scoring callback -> `RoomBattleStage` should pass the same `onNeutral` handler identity into `Board`.
 - Room clock tick changes only player `time` -> `ChatBox` should stay memoized.
-- Chat content or chat-name player metadata changes -> `ChatBox` must rerender.
+- Chat content, chat-name player metadata, or floating/embedded presentation changes -> `ChatBox` must rerender.
 - Room clock tick changes only player `time` -> `RoomPeopleList` should stay memoized.
 - Player connected state, username/rank/rating, achievement display metadata, or spectator list changes -> `RoomPeopleList` must rerender.
 - Room clock tick changes only player `time` -> `OperationHint` should stay memoized.
@@ -421,7 +421,7 @@ The socket lifecycle hook owns realtime reconnects while startup preload remains
 - Board comparator tests must assert handler identity changes re-render the board shell, so the stable handler ref cannot become stale.
 - Point-action tests must assert `useRoomPointActions()` keeps handlers callback-stable and narrows player dependencies to current color instead of the whole player object.
 - Room screen source tests must assert `RoomBattleStage` passes a stable neutral-point handler into `Board`.
-- Chat tests must assert `areChatBoxPropsEqual()` ignores clock-only player time changes and rerenders on chat content or chat-name metadata changes.
+- Chat tests must assert `areChatBoxPropsEqual()` ignores clock-only player time changes and rerenders on chat content, chat-name metadata, or presentation changes; embedded-chat DOM tests must keep an unsent draft while its mounted tab panel is hidden and shown again.
 - Room people tests must assert `areRoomPeopleListPropsEqual()` ignores clock-only player time changes and rerenders on member visibility metadata changes.
 - Operation hint tests must assert `areOperationHintPropsEqual()` ignores clock-only player time changes and rerenders on action-relevant room changes.
 - Action bar tests must assert `areActionBarPropsEqual()` ignores clock-only player time changes, rerenders on skill/scoring changes, and source-guards stable `RoomBattleStage` callbacks.
@@ -619,16 +619,19 @@ When changing the mobile room or battle layout, update static layout tests in `s
 
 Required assertion points:
 
-- The mobile room shell stays fixed to `100dvh` with `overflow: hidden`; do not rely on page scrolling for normal play.
+- The mobile room shell stays fixed to `100dvh` with `overflow: hidden`; ordinary action/member panels must fit without page scrolling, and the board remains derived from viewport units.
 - Player strips use a bounded custom property such as `--mobile-room-player-strip-height` and grid rows reference that property, so opponent/self cards cannot grow into the board.
-- Portrait player strips should keep the avatar column fixed and large enough for readable art, give identity/capture metadata the flexible middle column, and keep the timer/skill column bounded with visible row gaps; shared mobile CSS, `mobile-adaptive.css`, and Bright School overrides must use the same player-info column contract and Bright School cards must remain flat without heavy card shadows. Mobile player metadata should stay on one row with the larger username on the left and rank/rating tags on the right; rank/rating pills must vertically center their text with selector-specific CSS. The small color dot may be hidden because portrait color styling already carries side identity, and Bright School black portrait frames must use `#2b2b2b`.
+- Portrait player strips should keep the avatar column fixed and large enough for readable art, give identity/capture metadata the flexible middle column, and keep the timer/skill column bounded with visible row gaps; shared mobile CSS, `mobile-adaptive.css`, and Bright School overrides must use the same player-info column contract and Bright School cards must remain flat without heavy card shadows. Mobile player metadata should keep a legal 8-half-width username on one line at the normal scene font size, with rank/rating tags on the right; the username and equipped title/badge/nameplate must never ellipsize, marquee, horizontally scroll, or shrink. Representative legacy overlong names may wrap with `overflow-wrap: anywhere`, and secondary tags must yield before the username is truncated. Rank/rating pills must vertically center their text with selector-specific CSS. The small color dot may be hidden because portrait color styling already carries side identity, and Bright School black portrait frames must use `#2b2b2b`.
 - Normal room timers keep the shared `TimeBar` layout contract. Do not add tutorial-specific centering overrides to `.digital-timer`, `.timer-digits`, or `.timer-track`; shared room CSS, mobile room CSS, and Bright School overrides should preserve the existing grid alignment, baseline digit alignment, and track sizing for both normal games and tutorial games.
-- Mobile replay step indicators should center the numeric move text horizontally. Hide decorative replay icons in the compact replay counter if they offset the `current/max` text.
-- Player info keeps the portrait/result badge column present across both rows (`"portrait meta time"` / `"portrait captures skill"`) and hides overflow inside the strip instead of spilling over the board.
+- Mobile replay/spectator step indicators should center a single-line semantic label horizontally. Record replay uses `current/max`; live spectator mode uses `实时 · N手`; spectator history uses `回看 current/max` and exposes a visible `回到实时` control. Hide decorative counter icons if they offset the label.
+- Player info keeps the portrait/result badge column present across both rows (`"portrait meta time"` / `"portrait captures skill"`) and hides ordinary overflow inside the strip instead of spilling over the board. The outer card is passive; when viewpoint switching is available, only the portrait is a real `button` with `aria-pressed`, and interactive stat explanations are real buttons independent of viewpoint switching.
 - The board stage keeps `aspect-ratio: 1`, is centered in the board viewport, and sizes from `--mobile-room-board-size`.
 - Board stone visual jitter is mode-aware. Spark mode stones may use up to 1px deterministic offset, but standard 19-line stones must use a maximum 0.5px offset on both desktop and mobile; the logic should live in the board offset helper so all responsive layouts share the same values.
-- The bottom dock has a capped panel height; operation hints inside `#mobile-room-panel-actions` must be bounded so action controls remain reachable on 375px/393px portrait screens.
-- Collapsed mobile chat badges should count only player-authored chat messages (`type === "chat"`), not system notices or skill/disconnect messages.
+- The bottom dock keeps compact natural-height action/member content; operation hints inside `#mobile-room-panel-actions` must remain bounded so action controls stay reachable on 375px/393px portrait screens.
+- Ordinary live rooms, spectator views, and record replays must not render a chat button, chat tab, chat panel, chat input, or client `chat:send` wiring. Backend chat events and stored room chat data may remain for compatibility, but `RoomScreen` must not expose a user-facing path to send or read them.
+- Battle tutorials may opt into `showTutorialLog` as a separate readonly `剧情记录` surface because scripted NPC/player replies are teaching history rather than public chat. The tutorial record never renders a send input, uses compact message metadata, and is the only production `RoomBattleStage` path that composes `ChatBox`.
+- On desktop, the player operation hint belongs in the right room column directly below the self player panel, replacing the former floating chat-control location. Do not leave a duplicate hint under the opponent/member column.
+- `roomViewStatusFor()` is the single presentation mapping for header and controls: player mode has no extra status, live spectators see `实时观战`, spectators browsing history see `观战回看`, and record replay shows `棋谱回放`; every non-player label includes the active black/white viewpoint.
 - Mobile leaderboard rows should be compact cards rather than cramped tables. Use rank/avatar/player/score lanes, left-align the username/rank block, show rating as the primary right-side value, and use a right metrics lane with explicit win/loss/draw chips above a small win-rate stat. Give the metrics lane its own `record` and `rate` grid rows instead of stacking both elements in the same grid area, and make the pinned current-user row follow the same rhythm instead of becoming a large separate panel. When the mobile heading is hidden, the table grid must use `grid-template-rows: minmax(0, 1fr) auto` so the pinned row is auto-height; do not keep the desktop `minmax(220px, 1fr)` row because it creates an empty "我的排名" panel.
 - Mobile replay lists are ordinary card flows, not leaderboard tables with a pinned current-user footer. When the mobile replay heading is hidden, the replay table must use `grid-auto-rows: auto`, `align-content: start`, and no explicit two-track `grid-template-rows`, so the first replay cards cannot overlap.
 - Mobile menu buttons with short Chinese labels should keep icon and text on one line. Use a fixed icon column plus a `max-content` label column, and pair `white-space: nowrap` with `word-break: keep-all`; do not use a compressible `minmax(0, 1fr)` text column for two-character labels such as 留言, 设置, or 退出.
@@ -659,6 +662,10 @@ Correct:
 ```css
 .mobile-room-screen {
   --mobile-room-player-strip-height: clamp(58px, 8.6dvh, 68px);
+  --mobile-room-dock-panel-height: clamp(82px, 16dvh, 132px);
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .mobile-room-screen .mobile-room-viewport {
@@ -673,7 +680,10 @@ Correct:
   width: var(--mobile-room-board-size);
   aspect-ratio: 1;
 }
+
 ```
+
+Static room layout tests must assert the absence of ordinary chat composition and `chat:send` client wiring, the readonly tutorial-record opt-in, desktop hint placement, compact portrait/landscape dock ceilings, and fixed `100dvh` overflow ownership in shared, Bright School, and final mobile safety owners.
 
 Before finishing mobile battle UI work, run:
 

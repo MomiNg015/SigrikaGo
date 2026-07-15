@@ -5,18 +5,18 @@
     overflow: hidden;
   }
 
-  .mobile-room-screen .mobile-room-dock:has(.chat-widget.open) {
-    overflow: visible;
-    z-index: var(--room-floating-z, 120) !important;
-  }
-
   .mobile-room-screen .mobile-tab-panel {
     max-height: var(--mobile-room-dock-panel-height);
     overflow-x: hidden;
     overflow-y: auto;
   }
 
-  .mobile-room-screen .mobile-tab-panel:has(.chat-widget.open) {
-    overflow: visible;
+  .mobile-room-screen .mobile-tab-panel[hidden] {
+    display: none !important;
   }
+
+  .mobile-room-screen .mobile-tab-panel:has(.chat-widget.embedded) {
+    overflow: hidden;
+  }
+
 }

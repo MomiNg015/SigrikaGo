@@ -14,7 +14,7 @@
   .name-button,
   .rank-tag,
   .rating-tag,
-  .captures span,
+  .captures > *,
   .digital-timer,
   .timer-track,
   .timer-track span,

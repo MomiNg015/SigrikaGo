@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Eye, Sparkles } from "lucide-react";
 import { COLORS } from "../shared/game.js";
 import { canonicalCharacterId } from "../shared/characterAliases.js";
 import CharacterChainBadge from "../shared/CharacterChainBadge.jsx";
@@ -67,31 +67,45 @@ function PlayerInfo({
   const showGoStats = !isGomoku;
   const resultBadge = resultBadgeForPlayer(player, game, { isWinner, isDrawResult });
   const isDisconnected = isDisconnectedPlayer(player, game);
+  const isSelectedView = canSwitchView && viewColor === player.color;
+  const viewpointLabel = player.color === COLORS.black ? "黑方" : "白方";
   const requestFloatingLayer = () => onFloatingLayerRequest?.(floatingLayerId);
+  const portraitContent = (
+    <>
+      {hasCharacter && <img src={playerCandyPortrait(character, player)} alt={character.name} />}
+      {hasCharacter && <CharacterChainBadge user={player.user} characterId={character.id} />}
+      {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
+      {canSwitchView && (
+        <span className="viewpoint-indicator" aria-hidden="true">
+          {isSelectedView ? "当前" : <Eye size={12} />}
+        </span>
+      )}
+    </>
+  );
   return (
     <aside
-      className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${isNoCharacter ? "no-character-player" : ""} ${canSwitchView ? "switchable-view" : ""} ${canSwitchView && viewColor === player.color ? "view-selected" : ""}`}
+      className={`player-info ${align} ${isWinner ? "winner" : ""} ${isActiveTurn ? "active-turn" : ""} ${isDrawResult ? "draw-result" : ""} ${isNoCharacter ? "no-character-player" : ""} ${canSwitchView ? "switchable-view" : ""} ${isSelectedView ? "view-selected" : ""}`}
       style={floatingLayerZ ? { "--room-floating-z": floatingLayerZ } : undefined}
-      onClick={canSwitchView ? () => onViewColor?.(player.color) : undefined}
-      role={canSwitchView ? "button" : undefined}
-      tabIndex={canSwitchView ? 0 : undefined}
-      aria-pressed={canSwitchView ? viewColor === player.color : undefined}
-      onKeyDown={canSwitchView ? (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onViewColor?.(player.color);
-        }
-      } : undefined}
     >
-      <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${isNoCharacter ? "no-character" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}>
-        {hasCharacter && <img src={playerCandyPortrait(character, player)} alt={character.name} />}
-        {hasCharacter && <CharacterChainBadge user={player.user} characterId={character.id} />}
-        {resultBadge && <span className={`result-badge ${resultBadge.tone}`}>{resultBadge.label}</span>}
-      </div>
-      <div className="player-meta">
-        <button className="name-button">
-          <UserIdentity user={player.user} compact />
+      {canSwitchView ? (
+        <button
+          type="button"
+          className={`portrait-wrap portrait-viewpoint-button ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${isNoCharacter ? "no-character" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}
+          aria-label={isSelectedView ? `当前为${viewpointLabel}视角` : `切换至${viewpointLabel}视角`}
+          aria-pressed={isSelectedView}
+          onClick={() => onViewColor?.(player.color)}
+        >
+          {portraitContent}
         </button>
+      ) : (
+        <div className={`portrait-wrap ${player.color === COLORS.black ? "black-portrait" : "white-portrait"} ${isNoCharacter ? "no-character" : ""} ${isDisconnected ? "disconnected-portrait" : ""}`}>
+          {portraitContent}
+        </div>
+      )}
+      <div className="player-meta">
+        <div className="name-button player-name">
+          <UserIdentity user={player.user} compact />
+        </div>
         {hasCharacter && player.user.rank && <span className="meta-tag rank-tag">{player.user.rank}</span>}
         {showNoCharacterRolePlaceholder && <span className="meta-tag rank-tag meta-placeholder" aria-hidden="true" />}
         <span className={`color-badge ${player.color}`} title={player.color === COLORS.black ? "执黑" : "执白"} />
@@ -100,46 +114,32 @@ function PlayerInfo({
       <TimeBar time={player.time} />
       {showGoStats && <div className="captures">
         <span><strong>提子</strong>{player.captures}</span>
-        {skillEnabled && <span
-          className="info-stat removal-stat"
-          data-tooltip={PLAYER_INFO_TOOLTIPS.skillRemovals}
+        {skillEnabled && <button
+          type="button"
+          className="info-stat removal-stat capture-control"
           data-mobile-tooltip-trigger
-          tabIndex={0}
+          data-tooltip={PLAYER_INFO_TOOLTIPS.skillRemovals}
           title={PLAYER_INFO_TOOLTIPS.skillRemovals}
-          role="button"
           onMouseEnter={requestFloatingLayer}
           onFocus={requestFloatingLayer}
           onClick={(event) => {
             requestFloatingLayer();
             openTapTooltip(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip);
           }}
-          onKeyDown={(event) => {
-            requestFloatingLayer();
-            openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.skillRemovals, setTapTooltip);
-          }}
-        >
-          <strong>除子</strong>{skillRemovals}
-        </span>}
-        {skillEnabled && <span
-          className="info-stat cost-stat"
-          data-tooltip={PLAYER_INFO_TOOLTIPS.overclock}
+        ><strong>除子</strong>{skillRemovals}</button>}
+        {skillEnabled && <button
+          type="button"
+          className="info-stat cost-stat capture-control"
           data-mobile-tooltip-trigger
-          tabIndex={0}
+          data-tooltip={PLAYER_INFO_TOOLTIPS.overclock}
           title={PLAYER_INFO_TOOLTIPS.overclock}
-          role="button"
           onMouseEnter={requestFloatingLayer}
           onFocus={requestFloatingLayer}
           onClick={(event) => {
             requestFloatingLayer();
             openTapTooltip(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip);
           }}
-          onKeyDown={(event) => {
-            requestFloatingLayer();
-            openTapTooltipFromKeyboard(event, PLAYER_INFO_TOOLTIPS.overclock, setTapTooltip);
-          }}
-        >
-          <strong>超频</strong>{skillCost}
-        </span>}
+        ><strong>超频</strong>{skillCost}</button>}
       </div>}
       {skillEnabled && hasCharacter && <div
         className={`skill-chip-wrap ${skillDetailOpen ? "open" : ""}`}

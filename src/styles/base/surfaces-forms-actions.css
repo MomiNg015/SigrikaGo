@@ -187,8 +187,7 @@ p {
   .mobile-tab-button.active,
   .room-mobile-menu-panel button.active,
   .room-toggles .toggle.active,
-  .sortie-button.selected,
-  .viewpoint-button.active
+  .sortie-button.selected
 ):not(:disabled) {
   transform: translateY(1px) scale(0.985);
   box-shadow:

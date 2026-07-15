@@ -57,7 +57,6 @@ describe("RoomScreen helpers", () => {
       onDrawRequest: () => {},
       onDrawRespond: () => {},
       onScoringAction: () => {},
-      onChat: () => {},
       onOpenReplay: () => {}
     }));
 
@@ -126,7 +125,6 @@ describe("RoomScreen helpers", () => {
       onDrawRequest: () => {},
       onDrawRespond: () => {},
       onScoringAction: () => {},
-      onChat: () => {},
       onOpenReplay: () => {}
     }));
 
@@ -218,14 +216,14 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).not.toContain("onNeutral={(id) => onScoringAction");
   });
 
-  it("passes stable floating-layer handlers into chat and member panels", () => {
+  it("passes stable floating-layer handlers into tutorial records and member panels", () => {
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
 
     expect(battleSource).toContain("const handleMembersFloatingLayer = useCallback");
-    expect(battleSource).toContain("const handleChatFloatingLayer = useCallback");
+    expect(battleSource).toContain("const handleStoryLogFloatingLayer = useCallback");
     expect(battleSource).toContain("onFloatingLayerRequest={handleMembersFloatingLayer}");
-    expect(battleSource).toContain("onFloatingLayerRequest={handleChatFloatingLayer}");
-    expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"chat\")}");
+    expect(battleSource).toContain("onFloatingLayerRequest={handleStoryLogFloatingLayer}");
+    expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"story-log\")}");
     expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"members\")}");
   });
 
@@ -311,9 +309,10 @@ describe("RoomScreen helpers", () => {
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-player-slot");
     expect(portraitMedia).toContain(".mobile-room-screen .portrait-wrap");
     expect(portraitMedia).toContain("align-self: center");
-    expect(playerInfoSource).not.toContain("viewpoint-button");
-    expect(playerInfoSource).toContain("onClick={canSwitchView ? () => onViewColor?.(player.color) : undefined}");
-    expect(playerInfoSource).toContain("aria-pressed={canSwitchView ? viewColor === player.color : undefined}");
+    expect(playerInfoSource).toContain("portrait-viewpoint-button");
+    expect(playerInfoSource).toContain("onClick={() => onViewColor?.(player.color)}");
+    expect(playerInfoSource).toContain("aria-pressed={isSelectedView}");
+    expect(playerInfoSource).not.toContain("onClick={canSwitchView ? () => onViewColor?.(player.color) : undefined}");
     expect(portraitMedia).not.toContain(".mobile-room-screen .viewpoint-button");
     expect(portraitMedia).toContain(".mobile-room-screen .room-toggles");
     expect(portraitMedia).toContain("display: none");
@@ -444,7 +443,7 @@ describe("RoomScreen helpers", () => {
     expect(layoutSource).not.toContain("Children.toArray");
   });
 
-  it("collapses low-priority mobile room tools into a shared tab dock", () => {
+  it("keeps ordinary mobile rooms chat-free while allowing a readonly tutorial record tab", () => {
     const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
     const css = readCssWithImports(new URL("../styles/room.css", import.meta.url))
       + readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
@@ -456,7 +455,14 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).toContain("mobile-tab-panel");
     expect(battleSource).toContain("actionPanel");
     expect(battleSource).toContain("membersPanel");
-    expect(battleSource).toContain("chatPanel");
+    expect(battleSource).toContain("showTutorialLog = false");
+    expect(battleSource).toContain("storyLogPanel");
+    expect(battleSource).toContain("storyLogPanel && { id: \"story-log\", label: \"剧情记录\"");
+    expect(battleSource).not.toContain("{ id: \"chat\", label: \"聊天\"");
+    expect(battleSource).toContain("presentation={isMobileBattleLayout ? \"embedded\" : \"floating\"}");
+    expect(battleSource).toContain("panels.map((panel) => (");
+    expect(battleSource).toContain("hidden={panel.id !== selectedPanel.id}");
+    expect(battleSource).toContain("panel.badge != null && <strong className=\"mobile-tab-badge\"");
     expect(battleSource).not.toContain("trailingAction={");
     expect(battleSource).not.toContain("chat-exit-action exit-action");
     expect(css).toContain("grid-area: dock");
@@ -483,7 +489,7 @@ describe("RoomScreen helpers", () => {
     const landscapeMedia = mediaBlock(mobileRoomCss, "@media (max-width: 900px) and (orientation: landscape)");
 
     expect(actionSource).toContain("mobile-action-button-label");
-    expect(battleSource).toContain("aria-label={panel.label}");
+    expect(battleSource).toContain("aria-label={panel.badge == null ? panel.label : `${panel.label}，${panel.badge}条`}");
     expect(portraitMedia).toContain("--mobile-room-dock-panel-height: clamp(112px, 17dvh, 150px)");
     expect(portraitMedia).toContain("--mobile-room-player-strip-height: clamp(64px, 8.8dvh, 74px)");
     expect(portraitMedia).toContain(".mobile-room-screen .mobile-action-panel");
@@ -501,7 +507,7 @@ describe("RoomScreen helpers", () => {
     expect(brightMobileCss).toContain(".mobile-room-screen :where(");
     expect(mobileRoomCss).toContain(".room-code-label");
     expect(mobileRoomCss).toContain(".room-info-tag");
-    expect(mobileRoomCss).toContain(".captures span");
+    expect(mobileRoomCss).toContain(".captures > *");
     expect(mobileRoomCss).toContain(".timer-track span");
     expect(mobileRoomCss).toContain(".action-bar button");
     expect(mobileRoomCss).toContain("text-shadow: none");
@@ -512,14 +518,10 @@ describe("RoomScreen helpers", () => {
     expect(mobileAdaptiveCss).toContain("transform: none !important");
     expect(mobileAdaptiveCss).toContain(".mobile-room-screen .room-mobile-menu.open");
     expect(mobileAdaptiveCss).toContain("z-index: var(--room-floating-z, 120) !important");
-    expect(mobileAdaptiveCss).toContain(".mobile-tab-panel:has(.chat-widget.open)");
-    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .mobile-room-dock:has(.chat-widget.open)");
-    expect(mobileAdaptiveCss).toContain("z-index: var(--room-floating-z, 120) !important");
-    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .chat-widget.open");
-    expect(mobileAdaptiveCss).toContain("z-index: var(--room-floating-z, 120) !important");
-    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .chat-popover");
-    expect(mobileAdaptiveCss).toContain("z-index: var(--room-floating-z, 120) !important");
-    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .captures span,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .digital-timer");
+    expect(mobileAdaptiveCss).not.toContain(":has(.chat-widget.open)");
+    expect(mobileAdaptiveCss).not.toContain(".mobile-room-screen .chat-widget.open");
+    expect(mobileAdaptiveCss).not.toContain(".mobile-room-screen .chat-popover");
+    expect(mobileAdaptiveCss).toContain(".mobile-room-screen .captures > *,\n  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .digital-timer");
     expect(mobileAdaptiveCss).toContain(".mobile-room-screen .replay-step-indicator");
     expect(mobileAdaptiveCss).toContain("#mobile-room-panel-actions .replay-bar");
     expect(mobileAdaptiveCss).toContain("#mobile-room-panel-actions .replay-bar button");
@@ -530,11 +532,10 @@ describe("RoomScreen helpers", () => {
     expect(mobileAdaptiveCss).toContain("z-index: 20 !important");
     expect(mobileAdaptiveCss).toContain("text-shadow: none !important");
     expect(brightMobileCss).toContain(".room-mobile-menu-toggle");
-    expect(brightMobileCss).toContain(".captures span");
+    expect(brightMobileCss).toContain(".captures > *");
     expect(brightMobileCss).toContain(".timer-track span");
     expect(brightMobileCss).toContain(".mobile-room-screen .mobile-tab-button:active:not(:disabled)");
-    expect(brightMobileCss).toContain(".chat-toggle-button");
-    expect(brightMobileCss).toContain(".chat-exit-action");
+    expect(brightMobileCss).toContain(".chat-box");
     expect(brightMobileCss).toContain("box-shadow: none !important");
     expect(brightMobileCss).toContain("filter: none !important");
     expect(brightMobileCss).toContain("text-shadow: none !important");
@@ -614,10 +615,20 @@ describe("RoomScreen helpers", () => {
     expect(mobileAdaptiveCss).toContain("justify-content: center !important");
   });
 
-  it("turns room chat into an anchored popover button", () => {
+  it("removes ordinary room chat entry points while keeping tutorial records readonly", () => {
     const chatSource = readText(new URL("./ChatBox.jsx", import.meta.url), "utf8");
+    const battleSource = readText(new URL("./RoomBattleStage.jsx", import.meta.url), "utf8");
+    const roomScreenSource = readText(new URL("./RoomScreen.jsx", import.meta.url), "utf8");
+    const appRoutesSource = readText(new URL("../app/AppRoutes.jsx", import.meta.url), "utf8");
+    const tutorialSource = readText(new URL("../tutorial/TutorialBattleScreen.jsx", import.meta.url), "utf8");
     const roomCss = readCssWithImports(new URL("../styles/room.css", import.meta.url));
     const brightSchoolCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    const chatCss = readText(new URL("../styles/room/chat-responsive.css", import.meta.url));
+    const mobileShellCss = readText(new URL("../styles/mobile-room/base-shell-dock/shell-header-menu.css", import.meta.url));
+    const finalPortraitShellCss = readText(new URL("../styles/mobile-adaptive/mobile-room-portrait/shell-header-menu.css", import.meta.url));
+    const finalLandscapeCss = readText(new URL("../styles/mobile-adaptive/mobile-room-landscape.css", import.meta.url));
+    const brightShellCss = readText(new URL("../styles/themes/bright-school/mobile/room/shell-header-menu/screen-shell.css", import.meta.url));
+    const brightFinalChatCss = readText(new URL("../styles/mobile-adaptive/bright-school-portrait/mobile-room-chat.css", import.meta.url));
 
     expect(chatSource).toContain("chat-toggle-button");
     expect(chatSource).toContain("aria-expanded={isOpen}");
@@ -628,16 +639,42 @@ describe("RoomScreen helpers", () => {
     expect(chatSource).toContain("document.addEventListener(\"keydown\", handleKeyDown)");
     expect(chatSource).toContain("event.key === \"Escape\"");
     expect(chatSource).toContain("setIsOpen(false)");
-    expect(chatSource).toContain("className=\"chat-box chat-popover\"");
+    expect(chatSource).toContain("chat-box chat-embedded\" : \"chat-box chat-popover");
+    expect(chatSource).toContain("!isEmbedded && (");
+    expect(chatSource).toContain("label = \"对局聊天\"");
+    expect(chatSource).toContain("aria-label={`关闭${label}`}");
+    expect(roomScreenSource).not.toContain("onChat");
+    expect(appRoutesSource).not.toContain("chat:send");
+    expect(battleSource).toContain("showTutorialLog = false");
+    expect(battleSource).toContain("const storyLogPanel = showTutorialLog && (");
+    expect(battleSource).toContain("label=\"剧情记录\"");
+    expect(battleSource).toContain("disabledInputMessage=\"剧情教学记录仅供查看\"");
+    expect(battleSource).toContain("readonly");
+    expect(tutorialSource).toContain("showTutorialLog");
+    expect(battleSource).toContain("presentation={isMobileBattleLayout ? \"embedded\" : \"floating\"}");
     expect(chatSource).toContain("const trimmedText = text.trim()");
     expect(roomCss).toContain(".chat-widget");
     expect(roomCss).toContain(".chat-toggle-button");
-    expect(roomCss).toContain(".mobile-room-screen .mobile-tab-panel .chat-toggle-button");
-    expect(roomCss).toContain("margin-left: auto");
+    expect(roomCss).not.toContain(".mobile-room-screen .mobile-tab-panel .chat-toggle-button");
+    expect(roomCss).toContain(".mobile-room-screen .mobile-tab-panel .chat-widget.embedded");
     expect(roomCss).toContain(".chat-popover");
     expect(roomCss).toContain("bottom: calc(100% + 10px)");
     expect(roomCss).toContain("transform-origin: right bottom");
     expect(roomCss).toContain("@keyframes chat-popover-open");
+    expect(roomCss).toContain(".chat-widget.embedded");
+    expect(roomCss).toContain(".chat-readonly-note");
+    expect(chatCss).not.toContain("calc(7.25em + 44px)");
+    expect(mobileShellCss).toContain("--mobile-room-dock-panel-height: clamp(82px, 16dvh, 132px)");
+    expect(mobileShellCss).toContain("height: 100dvh");
+    expect(mobileShellCss).toContain("overflow: hidden");
+    expect(finalPortraitShellCss).toContain("--mobile-room-dock-panel-height: clamp(106px, 16dvh, 134px)");
+    expect(finalPortraitShellCss).toContain("overflow: hidden");
+    expect(finalLandscapeCss).toContain("--mobile-room-dock-panel-height: 58px");
+    expect(finalLandscapeCss).toContain("overflow: hidden");
+    expect(brightShellCss).toContain("--mobile-room-dock-panel-height: clamp(112px, 17dvh, 150px)");
+    expect(brightShellCss).toContain("overflow: hidden !important");
+    expect(brightFinalChatCss).toContain("overflow-y: hidden !important");
+    expect(brightFinalChatCss).toContain("touch-action: none !important");
     expect(brightSchoolCss).toContain(".chat-toggle-button");
     expect(brightSchoolCss).toContain(".chat-popover");
   });
@@ -719,7 +756,7 @@ describe("RoomScreen helpers", () => {
     expect(defensiveMedia).toContain("transform: none");
   });
 
-  it("keeps short landscape mobile rooms within the viewport", () => {
+  it("keeps short landscape mobile rooms within the viewport after removing chat", () => {
     const css = readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
     const shortLandscapeMedia = mediaBlock(css, "@media (max-width: 900px) and (orientation: landscape) and (max-height: 520px)");
 
@@ -751,8 +788,10 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).not.toContain("layerCounterRef");
     expect(battleSource).toContain("bringFloatingLayerToFront");
     expect(battleSource).toContain("setFloatingLayers({ [layerId]: ROOM_FLOATING_LAYER_BASE_Z + 1 });");
-    expect(battleSource).toContain("floatingLayerZ={floatingLayers.chat}");
+    expect(battleSource).toContain("floatingLayerZ={floatingLayers[\"story-log\"]}");
     expect(battleSource).toContain("floatingLayerZ={floatingLayers.members}");
+    expect(battleSource).toContain("<div className=\"room-side\">\n        {selfInfo}\n        {hintPanel}\n        {storyLogPanel}");
+    expect(battleSource).not.toContain("{membersPanel}\n        {hintPanel}\n      </div>");
     expect(firstFloatingLayerZ).toBeGreaterThan(140);
     expect(firstFloatingLayerZ).toBeLessThan(modalBackdropZ);
     expect(modalBackdropZ).toBeGreaterThan(140);
@@ -791,12 +830,13 @@ describe("RoomScreen helpers", () => {
     expect(headerSource).toContain("{showUtilityControls && <div className={`room-mobile-menu");
     expect(battleSource).toContain("showPeoplePanel = true");
     expect(battleSource).toContain("showPeoplePanel && !isReplay");
-    expect(battleSource).toContain("chatCompactMessages = false");
-    expect(battleSource).toContain("compactMessages={chatCompactMessages}");
+    expect(battleSource).toContain("showTutorialLog = false");
+    expect(battleSource).toContain("compactMessages");
     expect(battleSource).toContain("membersPanel && { id: \"members\"");
     expect(tutorialSource).toContain("showUtilityControls={false}");
     expect(tutorialSource).toContain("showPeoplePanel={false}");
-    expect(tutorialSource).toContain("chatCompactMessages");
+    expect(tutorialSource).toContain("showTutorialLog");
+    expect(tutorialSource).not.toContain("onChat=");
   });
 });
 

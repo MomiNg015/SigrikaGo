@@ -500,7 +500,7 @@ describe("component-level HUD refinements", () => {
   it("keeps Bright School room player labels and board coordinates clean", () => {
     expect(themesCss).toContain("Bright School room replay/battle readability fixes.");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .player-info .name-button");
-    expect(themesCss).toContain("text-decoration: underline !important");
+    expect(themesCss).not.toContain(".player-info .name-button:hover");
     expect(themesCss).toContain(".app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .room-info-tag.black-side");
     expect(themesCss).toContain("background: #1f1714 !important");
     expect(themesCss).toContain("color: #ffffff !important");
