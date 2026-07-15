@@ -48,7 +48,7 @@ Improve the character detail music player so hovering and clicking the play butt
 * When only one track is available, render the same title label as non-interactive content without a misleading disclosure arrow.
 * Keep track-list titles on one line as well. Only an overflowing row that is hovered or keyboard-focused may scroll; inactive rows remain still.
 * Preserve each full track name in accessible labeling/tooltips so reduced-motion users and non-scrolling states do not lose the underlying text.
-* Replace the generic Lucide play/pause glyphs with a cassette-player-style raised round key: hand-drawn ink ring, slightly offset solid key face, solid play triangle, and sturdy pause bars.
+* Replace the generic Lucide play/pause glyphs with a compact rounded-square hardware key: thin CSS ink border, transparent resting face, solid play triangle, and sturdy pause bars. Do not surround the key with a second Rough.js ring.
 * Give hover, focus, press, loading, and playing states through the same physical key vocabulary rather than swapping to a visually unrelated control.
 * Keep the player beside the character title on both desktop and mobile; do not move it to a separate full-width row.
 * Preserve the compact inline footprint while making the key hit target touch-friendly and letting the marquee absorb narrow title space.
@@ -70,7 +70,7 @@ Improve the character detail music player so hovering and clicking the play butt
 * Filter selectable tracks by both character and slot identity so a derived track can never appear in or be persisted to the base-skill pool.
 * Put a keyboard-operable skill tab strip at the top of the floating track sheet, with one tab for the base skill and one for each derived skill.
 * Label tabs with both type and skill name, such as `普通技·小爱出击` and `派生技·远航星`; show only the active slot's tracks below the tabs.
-* Show a compact current-skill marker beside the closed player's scrolling title so users can tell whether they are previewing the base or a derived slot.
+* Keep the closed player's title visually limited to the current music name; do not prefix it with `普通技`, `派生技`, or a skill-name marker. Slot identity remains explicit in the open track sheet tabs.
 * Default the active slot to the character's base skill whenever the character detail opens.
 * Preserve the last active skill tab while the same character-detail window remains mounted, including after the track sheet is collapsed; reset the tab when the detail closes or the character changes.
 * If a preview is playing, switching skill tabs stops the old preview and automatically loads/plays the target slot's selected track from the beginning; if idle, tab switching does not autoplay.
@@ -90,7 +90,7 @@ Improve the character detail music player so hovering and clicking the play butt
 * [ ] Long track titles remain on one line and become fully discoverable through overflow-triggered horizontal auto-scroll rather than wrapping or ellipsis-only clipping.
 * [ ] Overflowing titles pause at both ends of their one-way scroll cycle; non-overflowing titles do not animate.
 * [ ] Track-list rows never wrap; only the hovered or keyboard-focused overflowing row scrolls, and opening the list does not start several simultaneous marquees.
-* [ ] Play, pause, loading, hover, focus, active, disabled, and selected-track states share one coherent hand-drawn control vocabulary.
+* [ ] Play, pause, loading, hover, focus, active, disabled, and selected-track states share one coherent, restrained campus-product control vocabulary.
 * [ ] The play/pause key no longer renders Lucide line icons and remains optically centered in every state.
 * [ ] Desktop and mobile both keep the player beside the character title without overlap, horizontal page scrolling, or a new full-width player row.
 * [ ] The floating track sheet is wider than the compact player where space permits, remains fully inside the viewport, and scrolls internally beyond roughly four rows.
@@ -107,7 +107,7 @@ Improve the character detail music player so hovering and clicking the play butt
 * [ ] Existing users retain their base-skill choice without migration; each derived slot falls back to its configured `musicTrackId` until the user chooses another valid track.
 * [ ] Battle playback resolves the slot from the actual skill `effectType`, validates ownership/slot membership, and uses the matching user selection before the slot fallback.
 * [ ] The skill tab strip exposes correct tab/tabpanel semantics, supports arrow-key navigation, and never mixes selected rows across slots.
-* [ ] The closed player identifies the currently previewed skill slot without forcing the music title to wrap.
+* [ ] The closed player shows only the current music title, while the open track sheet tabs identify the ordinary or derived skill slot.
 * [ ] Reopening the sheet during the same character-detail session returns to the last viewed skill tab, while a newly opened detail starts on the base skill.
 * [ ] Switching skill tabs while playing continues auditioning with the target slot's selected track; switching while idle remains idle.
 * [ ] Rapid tab/track changes cancel stale load and persistence intents so an earlier request cannot overwrite or start playback after a later choice.
@@ -135,7 +135,7 @@ Flagship implementation approach:
 * Detect actual title overflow so short titles stay still and long titles alone enter the marquee state; provide a reduced-motion fallback that keeps the full title available from the track list.
 * Compute marquee travel from the measured overflow distance so titles move at a consistent readable speed instead of sharing one duration regardless of length.
 * Reuse the same measured marquee primitive for the main title and list rows, with an activation mode of `overflow` for the main title and `overflow + hover/focus` for list rows.
-* Build the raised key face and solid playback glyphs from stable CSS/markup layers; keep Rough.js to the non-interactive frame/ring decoration so pressing the key does not regenerate paths.
+* Build the raised key border, face, and solid playback glyphs from stable CSS/markup layers; keep Rough.js only for a quiet non-interactive title underline so pressing the key does not regenerate paths.
 * Retain the existing two-column heading relationship at mobile breakpoints, but revise player height, internal hit areas, and title viewport as needed rather than preserving the exact old `164px × 36px` internals.
 * Render the track sheet outside the player's clipped paint containment/overflow context, using a portal or top-layer positioning strategy so the wider list cannot be cut off by the player or modal.
 * Carry a pending autoplay intent across the persisted track-selection update so the newly resolved track starts only if the previous preview was playing and the selection request is still current.
@@ -148,7 +148,7 @@ Flagship implementation approach:
 * Extend `/api/me/music-selection` with an explicit slot/effect identity and validate that the requested track matches the character, music type, ownership, and base/derived slot before persisting.
 * Update `findSkillTrack` to resolve a valid user selection for the exact base/derived slot first, then use preview/configured `musicTrackId` as that slot's fallback; base skills continue through the backward-compatible base slot.
 * Split `skillMusicOptionsForCharacter` into slot-aware option groups instead of returning one flat character-level list.
-* Derive slot labels from the actual character base skill and `derivedSkillDefinitionsFromSkill` data rather than hard-coding Aemeath/Voyage Star names into the player.
+* Derive track-sheet tab labels from the actual character base skill and `derivedSkillDefinitionsFromSkill` data rather than hard-coding Aemeath/Voyage Star names into the player; do not duplicate those labels in the closed title.
 * Keep the skill tabs on one line with bounded horizontal overflow if a future character gains several derived skills.
 * Keep active-slot state local to `CharacterMusicPreview`/the mounted detail session; do not add a server field for this temporary UI preference.
 * Reuse the request-generation/cancellation guard for both track changes and skill-tab changes so continuous auditioning cannot race across slots.
@@ -171,7 +171,9 @@ Flagship implementation approach:
 
 **Track-list title refinement**: All music titles stay on one line. In the open list, only a hovered or keyboard-focused overflowing title scrolls; all other rows stay still.
 
-**Playback-key refinement**: Use a raised round cassette-player key with a hand-drawn ring and solid play/pause shapes. Remove Lucide playback icons and express every state through the same tactile control.
+**Playback-key refinement**: Use a rounded-square hardware key with a thin CSS border, short bottom pedestal, and solid play/pause shapes. Remove Lucide playback icons and express every state through the same tactile control. The inset face is transparent at rest, green on hover/focus, and red while pressed. Hover raises the control slightly; press lowers it and shortens the pedestal instead of scaling the whole key. The outer 44px hit target remains transparent in every state so broad theme button rules cannot create an oversized color block.
+
+**Closed-shell visual correction**: Remove the bowed Rough.js outer rectangle, duplicate button ring, hard card shadow, and display title font after real screenshot review showed that the combination read like a legacy novelty widget. Keep a CSS-owned rounded-square hardware key, normal UI typography, transparent inline shell, and one subdued Rough.js underline.
 
 **Responsive placement refinement**: Keep the player inline beside the character title on desktop and mobile. Improve touch sizing and internal layout without moving the component to its own row.
 
@@ -189,7 +191,7 @@ Flagship implementation approach:
 
 **Skill-slot refinement**: Base skills and each derived `effectType` own independent selectable music slots. Preserve existing base selections, use configured derived `musicTrackId` values as defaults, and resolve battle music from the skill event's actual slot.
 
-**Skill-tab refinement**: Switch slots through a tab strip at the top of the floating track sheet. Only the active slot's tracks appear, and the compact player carries a short marker for the slot currently being previewed.
+**Skill-tab refinement**: Switch slots through a tab strip at the top of the floating track sheet. Only the active slot's tracks appear; the compact closed player deliberately omits the slot marker and shows only the current music title.
 
 **Skill-tab lifetime refinement**: Start each character-detail session on the base skill, retain the active tab while that detail remains open, and reset it when the detail closes or changes character.
 

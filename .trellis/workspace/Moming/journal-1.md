@@ -1461,3 +1461,36 @@ Added a route-scoped 2mb JSON budget and localized 413 handling for story-script
 ### Next Steps
 
 - None - task complete
+
+
+## Session 45: Restyle login title lockup
+
+**Date**: 2026-07-15
+**Task**: Restyle login title lockup
+**Branch**: `codex/mobile-battle-ui`
+
+### Summary
+
+Changed the login title to the semantic LXGW Marker Gothic window-title font, enlarged and rotated the login mascot as a top-left card decoration, added portrait-safe mobile ownership, regression tests, CSS inventory contracts, and synchronized system-design docs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `020ffa47` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
