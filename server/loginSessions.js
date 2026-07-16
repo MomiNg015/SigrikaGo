@@ -27,6 +27,7 @@ export async function ensureLoginSessionSchema(prisma) {
 export function createLoginSessionStore({ prisma = null, now = () => new Date(), maxAgeMs = REFRESH_SESSION_MAX_AGE_MS } = {}) {
   const memorySessions = new Map();
   const revokedSessions = new Set();
+  const replaceOperations = new Map();
   const sessionKey = (userId, sessionId) => `${userId}:${sessionId}`;
   const revokeMemory = (userId, sessionId) => {
     if (userId && sessionId) revokedSessions.add(sessionKey(userId, sessionId));
@@ -49,27 +50,35 @@ export function createLoginSessionStore({ prisma = null, now = () => new Date(),
       return this.replace(userId);
     },
     async replace(userId) {
-      const sessionId = randomUUID();
-      const refreshToken = createRefreshToken();
-      if (!prisma) {
-        revokeMemory(userId, memorySessions.get(userId));
-        memorySessions.set(userId, sessionId);
-        return { sessionId, refreshToken, expiresAt: expiresAt() };
-      }
-      await prisma.loginSession.updateMany({
-        where: { userId, revokedAt: null },
-        data: { revokedAt: now() }
-      });
-      const session = await prisma.loginSession.create({
-        data: {
-          id: sessionId,
-          userId,
-          refreshTokenHash: hashRefreshToken(refreshToken),
-          expiresAt: expiresAt(),
-          lastSeenAt: now()
+      return serializeByUser(replaceOperations, userId, async () => {
+        const sessionId = randomUUID();
+        const refreshToken = createRefreshToken();
+        if (!prisma) {
+          revokeMemory(userId, memorySessions.get(userId));
+          memorySessions.set(userId, sessionId);
+          return { sessionId, refreshToken, expiresAt: expiresAt() };
         }
+        const replaceInTransaction = async (transaction) => {
+          const currentTime = now();
+          await transaction.loginSession.updateMany({
+            where: { userId, revokedAt: null },
+            data: { revokedAt: currentTime }
+          });
+          const session = await transaction.loginSession.create({
+            data: {
+              id: sessionId,
+              userId,
+              refreshTokenHash: hashRefreshToken(refreshToken),
+              expiresAt: new Date(currentTime.getTime() + maxAgeMs),
+              lastSeenAt: currentTime
+            }
+          });
+          return { sessionId: session.id, refreshToken, expiresAt: session.expiresAt };
+        };
+        return typeof prisma.$transaction === "function"
+          ? prisma.$transaction(replaceInTransaction)
+          : replaceInTransaction(prisma);
       });
-      return { sessionId: session.id, refreshToken, expiresAt: session.expiresAt };
     },
     async hasActive(userId) {
       if (!prisma) return memorySessions.has(userId);
@@ -163,6 +172,17 @@ export function createLoginSessionStore({ prisma = null, now = () => new Date(),
       });
     }
   };
+}
+
+async function serializeByUser(operations, userId, operation) {
+  const previous = operations.get(userId) ?? Promise.resolve();
+  const current = previous.catch(() => {}).then(operation);
+  operations.set(userId, current);
+  try {
+    return await current;
+  } finally {
+    if (operations.get(userId) === current) operations.delete(userId);
+  }
 }
 
 export function createRefreshToken() {

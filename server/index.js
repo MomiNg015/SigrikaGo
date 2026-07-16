@@ -40,7 +40,8 @@ import {
   assertProductionDeployment,
   corsOriginForRequest,
   createApiRateLimit,
-  createAuthRateLimit,
+  createCredentialAuthRateLimit,
+  createSessionAuthRateLimit,
   validateRoomCode
 } from "./security.js";
 import {
@@ -154,7 +155,8 @@ app.use(createJsonBodyParser());
 app.use(requestBodyErrorHandler);
 app.use(jsonSyntaxErrorHandler);
 app.use("/health", createHealthRouter({ runtimeServiceState }));
-app.use("/api/auth", createAuthRateLimit());
+app.use(["/api/auth/register", "/api/auth/login"], createCredentialAuthRateLimit());
+app.use(["/api/auth/refresh", "/api/auth/logout"], createSessionAuthRateLimit());
 app.use("/api", createApiRateLimit());
 app.use("/uploads", express.static(uploadRoot));
 

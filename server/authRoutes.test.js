@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ALREADY_LOGGED_IN_CODE, REFRESH_COOKIE_NAME } from "./loginSessions.js";
 import { createAuthRouteHandlers } from "./authRoutes.js";
 
@@ -91,13 +91,13 @@ describe("auth route handlers", () => {
     const res = createResponse();
 
     await handlers.register({
-      body: { username: "alice", password: "secret1" }
+      body: { username: "alice", password: "secret12" }
     }, res);
 
     expect(res.statusCode).toBe(200);
     expect(createdUsers).toEqual([{
       username: "alice",
-      passwordHash: "hash:secret1:10",
+      passwordHash: "hash:secret12:10",
       onboardingRequired: true
     }]);
     expect(res.headers["Set-Cookie"]).toContain(`${REFRESH_COOKIE_NAME}=refresh-token`);
@@ -105,6 +105,42 @@ describe("auth route handlers", () => {
       token: "access-token",
       user: { id: "new-user", username: "alice" }
     });
+  });
+
+  it("maps only Prisma unique conflicts to the username-exists response", async () => {
+    const uniqueError = Object.assign(new Error("unique"), { code: "P2002" });
+    const { handlers } = createHandlers({
+      prisma: { user: { create: async () => { throw uniqueError; } } }
+    });
+    const res = createResponse();
+
+    await handlers.register({ body: { username: "alice", password: "secret12" } }, res);
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body).toEqual({ error: "\u7528\u6237\u540d\u5df2\u5b58\u5728" });
+  });
+
+  it("lets unexpected registration failures reach the shared error handler", async () => {
+    const { handlers } = createHandlers({
+      prisma: { user: { create: async () => { throw new Error("database offline"); } } }
+    });
+
+    await expect(handlers.register({
+      body: { username: "alice", password: "secret12" }
+    }, createResponse())).rejects.toThrow("database offline");
+  });
+
+  it("runs a dummy password comparison for missing users", async () => {
+    const comparePassword = vi.fn(async () => false);
+    const { handlers } = createHandlers({ deps: { comparePassword } });
+    const res = createResponse();
+
+    await handlers.login({ body: { username: "alice", password: "secret1" } }, res);
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body).toEqual({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
+    expect(comparePassword).toHaveBeenCalledTimes(1);
+    expect(comparePassword.mock.calls[0][1]).toEqual(expect.stringMatching(/^\$2[aby]\$/));
   });
 
   it("returns the active-session conflict response before creating a new login session", async () => {

@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
-  authRateLimitOptions,
   buildAllowedOrigins,
   canUseDebugTestActions,
+  credentialAuthRateLimitOptions,
   normalizeChatText,
+  sessionAuthRateLimitOptions,
   validateProductionDeployment,
+  validateNewPassword,
   validatePassword,
   validateRoomCode,
   validateUsername,
@@ -12,11 +14,15 @@ import {
 } from "./security.js";
 
 describe("deployment security helpers", () => {
-  it("accepts passwords from 6 to 14 characters only", () => {
+  it("keeps legacy login passwords compatible while strengthening new registrations", () => {
     expect(validatePassword("12345").ok).toBe(false);
     expect(validatePassword("123456").ok).toBe(true);
-    expect(validatePassword("12345678901234").ok).toBe(true);
-    expect(validatePassword("123456789012345").ok).toBe(false);
+    expect(validatePassword("1234567").ok).toBe(true);
+    expect(validatePassword("x".repeat(64)).ok).toBe(true);
+    expect(validateNewPassword("1234567").ok).toBe(false);
+    expect(validateNewPassword("12345678").ok).toBe(true);
+    expect(validateNewPassword("x".repeat(65)).ok).toBe(false);
+    expect(validateNewPassword("\u5bc6".repeat(25)).ok).toBe(false);
   });
 
   it("normalizes safe usernames and rejects unsafe usernames", () => {
@@ -57,9 +63,10 @@ describe("deployment security helpers", () => {
   });
 
   it("keeps production throttling strict while allowing isolated verification setup traffic", () => {
-    expect(authRateLimitOptions({ NODE_ENV: "production" }).limit).toBe(20);
-    expect(authRateLimitOptions({ NODE_ENV: "stability" }).limit).toBeGreaterThanOrEqual(200);
-    expect(authRateLimitOptions({ NODE_ENV: "capacity" }).limit).toBeGreaterThanOrEqual(1000);
+    expect(credentialAuthRateLimitOptions({ NODE_ENV: "production" }).limit).toBe(20);
+    expect(credentialAuthRateLimitOptions({ NODE_ENV: "stability" }).limit).toBeGreaterThanOrEqual(200);
+    expect(credentialAuthRateLimitOptions({ NODE_ENV: "capacity" }).limit).toBeGreaterThanOrEqual(1000);
+    expect(sessionAuthRateLimitOptions({ NODE_ENV: "production" }).limit).toBeGreaterThan(20);
   });
 
   it("builds a production origin allowlist from configured domains", () => {

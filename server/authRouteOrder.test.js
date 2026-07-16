@@ -11,4 +11,11 @@ describe("server auth route ordering", () => {
     expect(broadAuthenticatedMount).toBeGreaterThanOrEqual(0);
     expect(authMount).toBeLessThan(broadAuthenticatedMount);
   });
+
+  it("uses separate credential and session rate-limit buckets", () => {
+    const source = readFileSync(new URL("./index.js", import.meta.url), "utf8");
+
+    expect(source).toContain('app.use(["/api/auth/register", "/api/auth/login"], createCredentialAuthRateLimit())');
+    expect(source).toContain('app.use(["/api/auth/refresh", "/api/auth/logout"], createSessionAuthRateLimit())');
+  });
 });

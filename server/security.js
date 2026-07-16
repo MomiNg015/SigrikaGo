@@ -1,7 +1,9 @@
 import rateLimit from "express-rate-limit";
 
 export const PASSWORD_MIN_LENGTH = 6;
-export const PASSWORD_MAX_LENGTH = 14;
+export const NEW_PASSWORD_MIN_LENGTH = 8;
+export const PASSWORD_MAX_LENGTH = 64;
+export const PASSWORD_MAX_BYTES = 72;
 export const USERNAME_MIN_LENGTH = 2;
 export const USERNAME_MAX_WIDTH = 8;
 export const USERNAME_MAX_LENGTH = USERNAME_MAX_WIDTH;
@@ -10,7 +12,7 @@ export const PRODUCTION_JWT_SECRET_MIN_LENGTH = 32;
 
 const USERNAME_PATTERN = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}A-Za-z0-9_]+$/u;
 const CJK_USERNAME_CHAR = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]$/u;
-const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/g;
+const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/;
 const DEFAULT_JWT_SECRETS = new Set(["dev-secret", "change-me-in-production"]);
 
 export function validateUsername(input) {
@@ -43,12 +45,28 @@ export function truncateUsernameToMaxWidthFromEnd(input, maxWidth = USERNAME_MAX
 }
 
 export function validatePassword(input) {
+  return validateLoginPassword(input);
+}
+
+export function validateLoginPassword(input) {
+  return validatePasswordWithMinimum(input, PASSWORD_MIN_LENGTH, "密码长度不正确");
+}
+
+export function validateNewPassword(input) {
+  return validatePasswordWithMinimum(input, NEW_PASSWORD_MIN_LENGTH, `新密码需为 ${NEW_PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} 位`);
+}
+
+function validatePasswordWithMinimum(input, minimumLength, lengthError) {
   const value = String(input ?? "");
-  if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
-    return { ok: false, error: `密码需为 ${PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} 位` };
+  const length = [...value].length;
+  if (length < minimumLength || length > PASSWORD_MAX_LENGTH) {
+    return { ok: false, error: lengthError };
+  }
+  if (Buffer.byteLength(value, "utf8") > PASSWORD_MAX_BYTES) {
+    return { ok: false, error: "密码太长，请缩短后重试" };
   }
   if (CONTROL_CHARS.test(value)) {
-    return { ok: false, error: "密码不能包含控制字符" };
+    return { ok: false, error: "密码包含不支持的字符" };
   }
   return { ok: true, value };
 }
@@ -164,7 +182,7 @@ export function corsOriginForRequest(origin, callback, env = process.env) {
   callback(null, allowed.has(origin.replace(/\/+$/, "")));
 }
 
-export function authRateLimitOptions(env = process.env) {
+export function credentialAuthRateLimitOptions(env = process.env) {
   return {
     windowMs: 10 * 60 * 1000,
     limit: env.NODE_ENV === "capacity" ? 2000 : env.NODE_ENV === "stability" ? 240 : 20,
@@ -174,8 +192,30 @@ export function authRateLimitOptions(env = process.env) {
   };
 }
 
+export function sessionAuthRateLimitOptions(env = process.env) {
+  return {
+    windowMs: 10 * 60 * 1000,
+    limit: env.NODE_ENV === "capacity" ? 6000 : env.NODE_ENV === "stability" ? 1200 : 120,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "请求过于频繁，请稍后再试" }
+  };
+}
+
+export function authRateLimitOptions(env = process.env) {
+  return credentialAuthRateLimitOptions(env);
+}
+
+export function createCredentialAuthRateLimit(env = process.env) {
+  return rateLimit(credentialAuthRateLimitOptions(env));
+}
+
+export function createSessionAuthRateLimit(env = process.env) {
+  return rateLimit(sessionAuthRateLimitOptions(env));
+}
+
 export function createAuthRateLimit(env = process.env) {
-  return rateLimit(authRateLimitOptions(env));
+  return createCredentialAuthRateLimit(env);
 }
 
 export function createApiRateLimit(env = process.env) {

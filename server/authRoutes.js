@@ -12,7 +12,9 @@ import {
   REFRESH_COOKIE_NAME
 } from "./loginSessions.js";
 import { shouldBlockLoginForActiveAccount } from "./loginConflicts.js";
-import { validatePassword, validateUsername } from "./security.js";
+import { validateNewPassword, validatePassword, validateUsername } from "./security.js";
+
+const DUMMY_PASSWORD_HASH = "$2b$10$IvEAhFgqDEMheGwJ3R/kA.qCmfCeoDs7kPwyyfyCwFB4K1x6njnL.";
 
 export function createAuthRouteHandlers({
   prisma,
@@ -34,7 +36,7 @@ export function createAuthRouteHandlers({
 
   async function register(req, res) {
     const usernameResult = validateUsername(req.body.username);
-    const passwordResult = validatePassword(req.body.password);
+    const passwordResult = validateNewPassword(req.body.password);
     if (!usernameResult.ok) {
       res.status(400).json({ error: usernameResult.error });
       return;
@@ -46,15 +48,18 @@ export function createAuthRouteHandlers({
     const username = usernameResult.value;
     const password = passwordResult.value;
     const passwordHash = await hashPassword(password, 10);
+    let user;
     try {
-      const user = await prisma.user.create({
+      user = await prisma.user.create({
         data: { username, passwordHash, onboardingRequired: true }
       });
-      const syncedUser = await syncAdmin(user, prisma);
-      await sendLoginResponse(res, syncedUser);
-    } catch {
-      res.status(409).json({ error: "\u7528\u6237\u540d\u5df2\u5b58\u5728" });
+    } catch (error) {
+      if (!isPrismaUniqueConstraintError(error)) throw error;
+      res.status(409).json({ error: "用户名已存在" });
+      return;
     }
+    const syncedUser = await syncAdmin(user, prisma);
+    await sendLoginResponse(res, syncedUser);
   }
 
   async function login(req, res) {
@@ -70,7 +75,8 @@ export function createAuthRouteHandlers({
       where: { username },
       include: USER_ASSET_RELATION_INCLUDE
     });
-    if (!user || !(await comparePassword(password, user.passwordHash))) {
+    const passwordMatches = await comparePassword(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+    if (!user || !passwordMatches) {
       res.status(401).json({ error: "\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef" });
       return;
     }
@@ -138,6 +144,10 @@ export function createAuthRouteHandlers({
     refresh,
     logout
   };
+}
+
+function isPrismaUniqueConstraintError(error) {
+  return error?.code === "P2002";
 }
 
 export function createAuthRouter(deps) {

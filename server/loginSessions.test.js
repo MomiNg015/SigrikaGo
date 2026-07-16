@@ -92,6 +92,23 @@ describe("login session store", () => {
     expect([left, right].filter(Boolean)).toHaveLength(1);
   });
 
+  it("serializes concurrent session replacement so only the latest session remains active", async () => {
+    const prisma = fakePrisma();
+    const sessions = createLoginSessionStore({ prisma });
+
+    const [first, second] = await Promise.all([
+      sessions.replace("user-1"),
+      sessions.replace("user-1")
+    ]);
+    const active = await prisma.loginSession.findMany({
+      where: { userId: "user-1", revokedAt: null }
+    });
+
+    expect(active).toHaveLength(1);
+    expect(active[0].id).toBe(second.sessionId);
+    expect(await sessions.isActive("user-1", first.sessionId)).toBe(false);
+  });
+
   it("builds http-only refresh cookies and can parse them back", () => {
     const cookie = buildRefreshCookie("refresh value", { env: "production", maxAgeMs: 1000 });
 
@@ -114,7 +131,7 @@ function fakePrisma() {
     if (where.expiresAt?.gt && !(new Date(row.expiresAt).getTime() > where.expiresAt.gt.getTime())) return false;
     return true;
   };
-  return {
+  const prisma = {
     loginSession: {
       updateMany: async ({ where, data }) => {
         let count = 0;
@@ -145,6 +162,9 @@ function fakePrisma() {
           : [...rows.values()].find((candidate) => candidate.refreshTokenHash === where.refreshTokenHash);
         return row ? { ...row } : null;
       },
+      findMany: async ({ where }) => [...rows.values()]
+        .filter((candidate) => matches(candidate, where))
+        .map((row) => ({ ...row })),
       update: async ({ where, data }) => {
         const row = rows.get(where.id);
         Object.assign(row, data, { updatedAt: new Date() });
@@ -152,6 +172,8 @@ function fakePrisma() {
       }
     }
   };
+  prisma.$transaction = async (callback) => callback(prisma);
+  return prisma;
 }
 
 function testUser(id) {
