@@ -87,7 +87,7 @@
 }
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school :where(
-  img,
+  img:not(.preload-progress-mascot),
   svg,
   canvas,
   video

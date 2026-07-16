@@ -69,8 +69,8 @@ describe("AuthScreen submit validation", () => {
   });
 
   it("uses direct Chinese copy for the primary actions", () => {
-    expect(authSubmitText("login")).toBe("\u767b\u5f55\u5e76\u8fdb\u5165");
-    expect(authSubmitText("register")).toBe("\u521b\u5efa\u8d26\u53f7");
+    expect(authSubmitText("login")).toBe("开门！");
+    expect(authSubmitText("register")).toBe("登记入部信息");
   });
 
   it("reports overlong usernames instead of truncating them", () => {
@@ -149,6 +149,9 @@ describe("AuthScreen submit validation", () => {
     expect(themeCss).toContain(".auth-form input::placeholder");
     expect(themeCss).toContain(".auth-field.invalid input");
     expect(themeCss).toContain("border-color: #c0182d !important");
+    expect(themeCss).toContain(".auth-password-toggle:hover");
+    expect(themeCss).toContain("background: transparent !important");
+    expect(themeCss).toContain("color: #d8507a !important");
   });
 
   it("keeps the Bright School mobile auth title single-line without tinted blocks", () => {

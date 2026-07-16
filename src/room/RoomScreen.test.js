@@ -227,6 +227,20 @@ describe("RoomScreen helpers", () => {
     expect(battleSource).not.toContain("onFloatingLayerRequest={() => bringFloatingLayerToFront(\"members\")}");
   });
 
+  it("omits replay mode and viewpoint copy from the room header", () => {
+    const source = readText(new URL("./RoomScreen.jsx", import.meta.url));
+    const headerSource = readText(new URL("./header/RoomHeader.jsx", import.meta.url));
+    const baseCss = readCssWithImports(new URL("../styles/base.css", import.meta.url));
+    const mobileAdaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const headerCall = source.slice(source.indexOf("<RoomHeader"), source.indexOf("<RoomBattleStage"));
+
+    expect(headerCall).not.toContain("roomViewStatus");
+    expect(headerSource).not.toContain("roomViewStatus");
+    expect(headerSource).not.toContain("room-view-status");
+    expect(baseCss).not.toContain(".room-view-status");
+    expect(mobileAdaptiveCss).not.toContain(".room-view-status");
+  });
+
   it("seeds resumed room audio baseline before passive room audio effects", () => {
     const source = readText(new URL("./audio/useRoomAudioEffects.js", import.meta.url), "utf8");
 
@@ -601,18 +615,26 @@ describe("RoomScreen helpers", () => {
     expect(mobileAdaptiveCss).toContain("font-size: clamp(9px, 2.8vw, 10px) !important");
   });
 
-  it("centers mobile replay move counts without extra icon offset", () => {
+  it("centers icon-free mobile replay move counts in the seven-control grid", () => {
     const mobileRoomCss = readCssWithImports(new URL("../styles/mobile-room.css", import.meta.url));
     const mobileAdaptiveCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
+    const brightMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url));
     const portraitMedia = mediaBlock(mobileRoomCss, "@media (max-width: 760px) and (orientation: portrait), (max-width: 420px)");
+    const replaySource = readText(new URL("./actionBar/ReplayActionBar.jsx", import.meta.url), "utf8");
 
     expect(portraitMedia).toContain(".mobile-room-screen .replay-step-indicator");
     expect(portraitMedia).toContain("justify-content: center");
     expect(portraitMedia).toContain("text-align: center");
-    expect(portraitMedia).toContain(".mobile-room-screen .replay-step-indicator svg");
-    expect(portraitMedia).toContain("display: none");
+    expect(replaySource).not.toContain("MonitorPlay");
+    expect(mobileRoomCss).toContain(".action-bar.replay-bar");
+    expect(mobileRoomCss).toContain("grid-template-columns: repeat(7, minmax(0, 1fr))");
+    expect(mobileAdaptiveCss).toContain(".action-bar.replay-bar");
+    expect(mobileAdaptiveCss).toContain("grid-template-columns: repeat(7, minmax(0, 1fr)) !important");
+    expect(brightMobileCss).toContain(".action-bar.replay-bar");
+    expect(brightMobileCss).toContain("grid-template-columns: repeat(7, minmax(0, 1fr)) !important");
     expect(mobileAdaptiveCss).toContain("#mobile-room-panel-actions .replay-step-indicator");
     expect(mobileAdaptiveCss).toContain("justify-content: center !important");
+    expect(mobileAdaptiveCss).toContain("height: 46px !important");
   });
 
   it("removes ordinary room chat entry points while keeping tutorial records readonly", () => {

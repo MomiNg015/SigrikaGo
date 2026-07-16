@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
 import AssetPreloadScreen, {
   characterLoadingLine,
   characterLoadingLineMap,
+  isMeaningfulPreloadProgressMovement,
   preloadTipList,
   randomPreloadCharacter
 } from "./AssetPreloadScreen.jsx";
@@ -20,9 +22,57 @@ describe("AssetPreloadScreen", () => {
     expect(html).toContain("asset-preload-screen");
     expect(html).toContain("西格莉卡正在戳棋盘");
     expect(html).toContain("资源加载 100%");
-    expect(html).toContain("width:100%");
+    expect(html).toContain("--preload-progress:1");
+    expect(html).toContain("preload-progress-mascot");
+    expect(html).toContain("/assets/preload/orange-mascot.png");
+    expect(html).toContain("role=\"progressbar\"");
+    expect(html).toContain("aria-valuenow=\"100\"");
     expect(html).toContain("加载提示");
     expect(html).not.toContain("preload-mark");
+  });
+
+  it.each([
+    [0, "--preload-progress:0", "aria-valuenow=\"0\""],
+    [0.5, "--preload-progress:0.5", "aria-valuenow=\"50\""],
+    [1, "--preload-progress:1", "aria-valuenow=\"100\""]
+  ])("keeps fill and mascot position on the same normalized progress at %s", (progress, progressStyle, ariaValue) => {
+    const html = renderToStaticMarkup(createElement(AssetPreloadScreen, {
+      character: { id: "sigrika", name: "西格莉卡", portrait: "/sigrika.webp" },
+      progress,
+      showTips: false
+    }));
+
+    expect(html).toContain(progressStyle);
+    expect(html).toContain(ariaValue);
+  });
+
+  it("keeps the orange mascot three times the gradient progress bar without stretching it", () => {
+    const css = readFileSync(new URL("../styles/base/asset-preload.css", import.meta.url), "utf8");
+    const themeCss = readFileSync(new URL("../styles/themes/shared/player-theme-wiring.css", import.meta.url), "utf8");
+    const brightCss = readFileSync(new URL("../styles/themes/bright-school/surface-contracts/final-semantic-badges.css", import.meta.url), "utf8");
+    const brightFoundationCss = readFileSync(new URL("../styles/themes/bright-school/quality-base/audit-foundation.css", import.meta.url), "utf8");
+
+    expect(css).toContain("--bar-h: 16px");
+    expect(css).toContain("--mascot-h: calc(var(--bar-h) * 3)");
+    expect(css).toContain("height: var(--mascot-h)");
+    expect(css).toContain("width: auto");
+    expect(css).toContain("linear-gradient(90deg, #ffc15a 0%, #f28a24 54%, #e65f18 100%)");
+    expect(css).toContain(".preload-mascot-anchor");
+    expect(css).toContain("left: calc(var(--preload-progress) * 100%)");
+    expect(css).toContain("rotate(calc(var(--preload-progress) * 720deg))");
+    expect(css).toContain(".preload-progress.is-idle .preload-mascot-anchor");
+    expect(css).toContain("animation: hop");
+    expect(css).toContain("transform: scaleX(var(--preload-progress))");
+    expect(css).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(css).toContain("transform: translate(-50%, -50%);");
+    expect(themeCss).toContain("var(--preload-progress-fill, var(--timer-track-fill");
+    expect(brightCss).toContain("var(--preload-progress-fill, var(--bright-pink))");
+    expect(brightFoundationCss).toContain("img:not(.preload-progress-mascot)");
+  });
+
+  it("treats one-percent progress changes as near-idle movement", () => {
+    expect(isMeaningfulPreloadProgressMovement(20, 21)).toBe(false);
+    expect(isMeaningfulPreloadProgressMovement(20, 22)).toBe(true);
   });
 
   it("parses admin-configured preload tips from newline text", () => {

@@ -143,7 +143,6 @@ export default function RoomScreen({ room, user, token, characters, replayStep, 
       <RoomHeader
         room={displayRoom}
         roomGameInfo={roomGameInfo}
-        roomViewStatus={roomViewStatus}
         showCloseCountdown={showCloseCountdown}
         showCoords={showCoords}
         onOpenMessageBoard={onOpenMessageBoard}

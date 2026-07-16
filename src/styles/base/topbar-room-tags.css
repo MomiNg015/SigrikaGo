@@ -18,14 +18,6 @@
   gap: 6px;
 }
 
-.room-view-status {
-  margin: 4px 0 0;
-  color: #514258;
-  font-size: 13px;
-  font-weight: 900;
-  line-height: 1.2;
-}
-
 .room-code-label {
   display: inline-flex;
   align-items: center;

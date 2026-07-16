@@ -25,6 +25,7 @@
 - Credential rate limits cover register/login only. Refresh/logout use a separate, larger session bucket.
 - A form may have only one in-flight auth request. Mode changes keep the username, clear passwords, and invalidate stale work; unmount aborts the request. A late or aborted result must not call `onAuth` or overwrite current UI state, including under React Strict Mode effect rehearsal.
 - Default form copy stays terse. Registration may show only the username-width and `8-64 位` label notes; detailed causes appear beside invalid fields after blur or submit. Server/network/429 messages use the single form-level alert.
+- The login and registration submit buttons use `开门！` and `登记入部信息`; the segmented mode controls remain `登录` and `注册`. Bright School password visibility controls keep their 44px hit area, transparent hover background, and shadow-free owner rule so hover changes only the icon color instead of painting a filled square inside the input.
 - Active-session conflict uses the shared accessible `ConfirmModal`; do not call `window.confirm`.
 - Session replacement is serialized per `userId` inside the single Node instance. Prisma-backed revoke + create runs in one transaction so overlapping replacements leave only the latest session active.
 
@@ -49,7 +50,7 @@
 
 ### 6. Tests Required
 
-- `src/auth/AuthScreen.test.js` covers validation parity, terse copy, semantic markup, and CSS owner hooks.
+- `src/auth/AuthScreen.test.js` covers validation parity, terse copy, submit labels, semantic markup, and the transparent password-toggle hover owner.
 - `src/auth/AuthScreen.dom.test.jsx` covers first-invalid focus, mode switching, password visibility, synchronous submit lock, unmount abort, Strict Mode, conflict confirmation, and 429 recovery copy.
 - `src/api/client.test.js` covers caller abort/timeout distinction and `Retry-After` metadata.
 - `server/security.test.js` covers legacy login compatibility, new-password limits, byte limits, and both rate-limit buckets.

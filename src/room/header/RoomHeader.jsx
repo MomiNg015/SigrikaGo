@@ -5,7 +5,6 @@ import { roomCloseCountdownText } from "../roomState.js";
 export default function RoomHeader({
   room,
   roomGameInfo,
-  roomViewStatus,
   showCloseCountdown,
   showCoords,
   onOpenMessageBoard,
@@ -35,11 +34,6 @@ export default function RoomHeader({
           )}
         </p>
         {showCloseCountdown && <RoomCloseCountdown closesAt={room.closesAt} />}
-        {roomViewStatus && (
-          <h1 className={`room-view-status ${roomViewStatus.kind}`}>
-            {roomViewStatus.label}
-          </h1>
-        )}
       </div>
       {showUtilityControls && <div className="room-toggles">
         <button className="toggle" onClick={onOpenMessageBoard} title="留言板"><MessageSquareText size={16} /></button>

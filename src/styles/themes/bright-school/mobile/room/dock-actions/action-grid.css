@@ -12,6 +12,10 @@
     background-image: none !important;
   }
 
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .action-bar.replay-bar {
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .mobile-room-screen .mobile-tab-panel .action-bar button {
     grid-column: auto !important;
     grid-row: auto !important;

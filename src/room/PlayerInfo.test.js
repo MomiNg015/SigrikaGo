@@ -245,7 +245,7 @@ describe("PlayerInfo labels", () => {
     expect(themeComponentsCss).toContain("color: #121217 !important");
     expect(themeComponentsCss).toContain(".app-shell.player-theme-enabled .result-badge.draw");
     expect(themeComponentsCss).toContain("color: #138a46 !important");
-    expect(sharedCss).toContain("background: var(--timer-track-fill");
+    expect(sharedCss).toContain("background: var(--preload-progress-fill, var(--timer-track-fill");
     expect(brightSchoolCss).toContain(".timer-track span");
     expect(brightSchoolCss).toContain("background: var(--timer-track-fill");
     expect(brightSchoolCss).toContain(".captures .cost-stat");

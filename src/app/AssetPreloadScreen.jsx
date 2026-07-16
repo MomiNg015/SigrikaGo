@@ -4,6 +4,13 @@ import { CHARACTERS, characterListFromCatalog } from "../shared/characters.js";
 import { DEFAULT_SITE_SETTINGS } from "../shared/siteSettings.js";
 
 const TIP_ROTATION_MS = 10000;
+const PRELOAD_PROGRESS_MASCOT = "/assets/preload/orange-mascot.png";
+const PRELOAD_PROGRESS_IDLE_MS = 600;
+const PRELOAD_PROGRESS_MIN_MOVEMENT = 1;
+
+export function isMeaningfulPreloadProgressMovement(previousPercent, nextPercent) {
+  return Math.abs(nextPercent - previousPercent) > PRELOAD_PROGRESS_MIN_MOVEMENT;
+}
 
 export function preloadTipList(tipsText = DEFAULT_SITE_SETTINGS.preloadTips) {
   return String(tipsText || DEFAULT_SITE_SETTINGS.preloadTips)
@@ -95,7 +102,10 @@ export default function AssetPreloadScreen({
     characters,
     fixedCharacter: character
   }));
+  const [isProgressIdle, setIsProgressIdle] = useState(true);
   const didMountRef = useRef(false);
+  const previousPercentRef = useRef(percent);
+  const progressIdleTimerRef = useRef(null);
   const latestInputsRef = useRef({ character, characters, tips });
   const { tipIndex, randomCharacter } = displayState;
   const randomCharacterId = canonicalCharacterId(randomCharacter?.id);
@@ -137,6 +147,24 @@ export default function AssetPreloadScreen({
     return () => clearInterval(timer);
   }, [fixedCharacterId, tipsSignature]);
 
+  useEffect(() => {
+    const previousPercent = previousPercentRef.current;
+    previousPercentRef.current = percent;
+    window.clearTimeout(progressIdleTimerRef.current);
+
+    if (!isMeaningfulPreloadProgressMovement(previousPercent, percent)) {
+      setIsProgressIdle(true);
+      return undefined;
+    }
+
+    setIsProgressIdle(false);
+    progressIdleTimerRef.current = window.setTimeout(() => {
+      setIsProgressIdle(true);
+    }, PRELOAD_PROGRESS_IDLE_MS);
+
+    return () => window.clearTimeout(progressIdleTimerRef.current);
+  }, [percent]);
+
   return (
     <main className="asset-preload-screen">
       <section className="asset-preload-panel">
@@ -149,8 +177,31 @@ export default function AssetPreloadScreen({
         )}
         <p className="preload-title">{title}</p>
         {statusText && <p className="preload-status">{statusText}</p>}
-        <div className="preload-bar" aria-label={"\u8d44\u6e90\u52a0\u8f7d " + percent + "%"}>
-          <span style={{ width: `${percent}%` }} />
+        <div
+          className={`preload-progress${isProgressIdle ? " is-idle" : ""}`}
+          style={{ "--preload-progress": percent / 100 }}
+          role="progressbar"
+          aria-label={"\u8d44\u6e90\u52a0\u8f7d " + percent + "%"}
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow={percent}
+        >
+          <div className="preload-progress-track">
+            <div className="preload-bar" aria-hidden="true">
+              <span />
+            </div>
+            <span className="preload-mascot-anchor" aria-hidden="true">
+              <img
+                className="preload-progress-mascot"
+                src={PRELOAD_PROGRESS_MASCOT}
+                alt=""
+                decoding="sync"
+                draggable="false"
+                fetchPriority="high"
+                loading="eager"
+              />
+            </span>
+          </div>
         </div>
         {showTips && currentTip && <p className="preload-tip" aria-live="polite">{currentTip}</p>}
       </section>

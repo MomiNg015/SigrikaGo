@@ -54,9 +54,33 @@ describe("ActionBar helpers", () => {
     }));
 
     expect(historyMarkup).toContain("回看 3/8");
-    expect(historyMarkup).toContain("replay-return-live-label\">回到实时");
+    expect(historyMarkup).toContain("aria-label=\"回到实时\"");
+    expect(historyMarkup).not.toContain(">回到实时<");
     expect(liveMarkup).toContain("实时 · 8手");
-    expect(liveMarkup).not.toContain("replay-return-live-label");
+    expect(liveMarkup).not.toContain(">回到实时<");
+  });
+
+  it.each(["replay", "spectator"])("jumps five moves in %s mode and clamps to replay bounds", (mode) => {
+    const backFromThree = replayControlFor({ mode, replayStep: 3, replayMax: 8, label: "后退五手" });
+    const backFromEight = replayControlFor({ mode, replayStep: 8, replayMax: 8, label: "后退五手" });
+    const forwardFromThree = replayControlFor({ mode, replayStep: 3, replayMax: 8, label: "前进五手" });
+    const forwardFromSix = replayControlFor({ mode, replayStep: 6, replayMax: 8, label: "前进五手" });
+
+    expect(backFromThree.result()).toBe(0);
+    expect(backFromEight.result()).toBe(3);
+    expect(forwardFromThree.result()).toBe(8);
+    expect(forwardFromSix.result()).toBe(8);
+  });
+
+  it("renders move count without a replay icon and disables five-move controls at bounds", () => {
+    const replaySource = readFileSync(new URL("./actionBar/ReplayActionBar.jsx", import.meta.url), "utf8");
+    const startControls = replayControlsFor({ replayStep: 0, replayMax: 8 });
+    const endControls = replayControlsFor({ replayStep: 8, replayMax: 8 });
+
+    expect(replaySource).not.toContain("MonitorPlay");
+    expect(replaySource).not.toContain("replay-return-live-label");
+    expect(findReplayControl(startControls, "后退五手").props.disabled).toBe(true);
+    expect(findReplayControl(endControls, "前进五手").props.disabled).toBe(true);
   });
 
   it("keeps timed opponent decisions out of the action bar", () => {
@@ -179,6 +203,29 @@ describe("ActionBar helpers", () => {
 });
 
 function noop() {}
+
+function replayControlsFor({ mode = "replay", replayStep, replayMax, onReplayStep = noop }) {
+  return ReplayActionBar({ mode, replayStep, replayMax, onReplayStep }).props.children;
+}
+
+function findReplayControl(controls, label) {
+  return controls.find((control) => control?.props?.["aria-label"] === label);
+}
+
+function replayControlFor({ mode, replayStep, replayMax, label }) {
+  let nextStep = null;
+  const controls = replayControlsFor({
+    mode,
+    replayStep,
+    replayMax,
+    onReplayStep: (step) => {
+      nextStep = step;
+    }
+  });
+
+  findReplayControl(controls, label).props.onClick();
+  return { result: () => nextStep };
+}
 
 function actionBarProps(overrides = {}) {
   return {

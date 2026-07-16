@@ -91,15 +91,6 @@
     white-space: nowrap;
   }
 
-  .mobile-room-screen .replay-return-live:has(.replay-return-live-label) svg {
-    display: none;
-  }
-
-  .mobile-room-screen .replay-return-live-label {
-    font-size: 10px;
-    line-height: 1.1;
-  }
-
   .mobile-room-screen .skill-chip {
     min-height: 24px;
     padding: 3px 6px;

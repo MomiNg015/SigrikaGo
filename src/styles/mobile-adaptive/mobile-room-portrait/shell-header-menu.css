@@ -33,13 +33,6 @@
     overflow: hidden;
   }
 
-  .mobile-room-screen .room-view-status {
-    margin: 0;
-    font-size: 11px;
-    line-height: 1.1;
-    white-space: nowrap;
-  }
-
   .mobile-room-screen .room-code-label,
   .mobile-room-screen .room-info-tag.move-count,
   .mobile-room-screen .room-info-tag.close-countdown {

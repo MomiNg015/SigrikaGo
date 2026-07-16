@@ -11,10 +11,6 @@
     text-align: center;
   }
 
-  .mobile-room-screen .replay-step-indicator svg {
-    display: none;
-  }
-
   .mobile-room-screen .skill-detail-panel {
     display: block;
     top: auto;

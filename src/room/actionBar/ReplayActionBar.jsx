@@ -1,4 +1,4 @@
-import { MonitorPlay, SkipBack, SkipForward, StepBack, StepForward } from "lucide-react";
+import { FastForward, Rewind, SkipBack, SkipForward, StepBack, StepForward } from "lucide-react";
 
 export default function ReplayActionBar({ replayStep = 0, replayMax = 0, mode = "replay", onReplayStep }) {
   const isSpectator = mode === "spectator";
@@ -12,12 +12,18 @@ export default function ReplayActionBar({ replayStep = 0, replayMax = 0, mode = 
       <button type="button" title="回到第 0 手" aria-label="回到第 0 手" onClick={() => onReplayStep?.(0)} disabled={!onReplayStep || replayStep <= 0}>
         <SkipBack size={20} aria-hidden="true" />
       </button>
+      <button type="button" title="后退五手" aria-label="后退五手" onClick={() => onReplayStep?.(Math.max(0, replayStep - 5))} disabled={!onReplayStep || replayStep <= 0}>
+        <Rewind size={20} aria-hidden="true" />
+      </button>
       <button type="button" title="上一手" aria-label="上一手" onClick={() => onReplayStep?.(Math.max(0, replayStep - 1))} disabled={!onReplayStep || replayStep <= 0}>
         <StepBack size={20} aria-hidden="true" />
       </button>
-      <span className="replay-step-indicator" aria-live="polite"><MonitorPlay size={16} aria-hidden="true" />{stepLabel}</span>
+      <span className="replay-step-indicator" aria-live="polite">{stepLabel}</span>
       <button type="button" title="下一手" aria-label="下一手" onClick={() => onReplayStep?.(Math.min(replayMax, replayStep + 1))} disabled={!onReplayStep || replayStep >= replayMax}>
         <StepForward size={20} aria-hidden="true" />
+      </button>
+      <button type="button" title="前进五手" aria-label="前进五手" onClick={() => onReplayStep?.(Math.min(replayMax, replayStep + 5))} disabled={!onReplayStep || replayStep >= replayMax}>
+        <FastForward size={20} aria-hidden="true" />
       </button>
       <button
         type="button"
@@ -28,7 +34,6 @@ export default function ReplayActionBar({ replayStep = 0, replayMax = 0, mode = 
         disabled={!onReplayStep || replayStep >= replayMax}
       >
         <SkipForward size={20} aria-hidden="true" />
-        {isSpectator && !isFollowingLive && <span className="replay-return-live-label">回到实时</span>}
       </button>
     </nav>
   );

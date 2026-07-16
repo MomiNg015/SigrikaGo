@@ -19,7 +19,7 @@ describe("AuthScreen DOM interaction", () => {
     const user = userEvent.setup();
     const { container } = render(<AuthScreen initialMode="register" onAuth={() => {}} />);
 
-    await user.click(screen.getByRole("button", { name: "\u521b\u5efa\u8d26\u53f7" }));
+    await user.click(screen.getByRole("button", { name: "登记入部信息" }));
 
     expect(document.activeElement).toBe(screen.getByRole("textbox", { name: /\u7528\u6237\u540d/ }));
     expect(screen.getByText("\u8bf7\u8f93\u5165\u7528\u6237\u540d")).not.toBeNull();
@@ -87,7 +87,7 @@ describe("AuthScreen DOM interaction", () => {
     const { unmount } = render(<AuthScreen onAuth={onAuth} />);
     await user.type(screen.getByRole("textbox", { name: /\u7528\u6237\u540d/ }), "Alice_12");
     await user.type(screen.getByLabelText("\u5bc6\u7801"), "secret1");
-    await user.click(screen.getByRole("button", { name: "\u767b\u5f55\u5e76\u8fdb\u5165" }));
+    await user.click(screen.getByRole("button", { name: "开门！" }));
 
     await waitFor(() => expect(api).toHaveBeenCalledTimes(1));
     expect(requestSignal.aborted).toBe(false);
@@ -110,7 +110,7 @@ describe("AuthScreen DOM interaction", () => {
     );
     await user.type(screen.getByRole("textbox", { name: /\u7528\u6237\u540d/ }), "Alice_12");
     await user.type(screen.getByLabelText("\u5bc6\u7801"), "secret1");
-    await user.click(screen.getByRole("button", { name: "\u767b\u5f55\u5e76\u8fdb\u5165" }));
+    await user.click(screen.getByRole("button", { name: "开门！" }));
 
     await waitFor(() => expect(onAuth).toHaveBeenCalledWith("token", { id: "user-1" }));
   });
@@ -123,7 +123,7 @@ describe("AuthScreen DOM interaction", () => {
     render(<AuthScreen onAuth={() => {}} />);
     await user.type(screen.getByRole("textbox", { name: /\u7528\u6237\u540d/ }), "Alice_12");
     await user.type(screen.getByLabelText("\u5bc6\u7801"), "secret1");
-    await user.click(screen.getByRole("button", { name: "\u767b\u5f55\u5e76\u8fdb\u5165" }));
+    await user.click(screen.getByRole("button", { name: "开门！" }));
 
     expect(await screen.findByRole("dialog", { name: "\u8d26\u53f7\u5df2\u5728\u7ebf" })).not.toBeNull();
     await user.click(screen.getByRole("button", { name: "\u9000\u51fa\u5176\u4ed6\u4f1a\u8bdd\u5e76\u7ee7\u7eed" }));
@@ -139,7 +139,7 @@ describe("AuthScreen DOM interaction", () => {
     render(<AuthScreen onAuth={() => {}} />);
     await user.type(screen.getByRole("textbox", { name: /\u7528\u6237\u540d/ }), "Alice_12");
     await user.type(screen.getByLabelText("\u5bc6\u7801"), "secret1");
-    await user.click(screen.getByRole("button", { name: "\u767b\u5f55\u5e76\u8fdb\u5165" }));
+    await user.click(screen.getByRole("button", { name: "开门！" }));
 
     expect(await screen.findByText("\u8bf7\u6c42\u592a\u9891\u7e41\uff0c\u8bf7 2 \u5206\u949f\u540e\u518d\u8bd5")).not.toBeNull();
   });

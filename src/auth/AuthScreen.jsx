@@ -381,7 +381,7 @@ export function validateAuthSubmit({ mode, username = "", password = "", confirm
 }
 
 export function authSubmitText(mode) {
-  return mode === "login" ? "登录并进入" : "创建账号";
+  return mode === "login" ? "开门！" : "登记入部信息";
 }
 
 export function authPendingText(mode) {

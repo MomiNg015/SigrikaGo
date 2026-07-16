@@ -48,7 +48,7 @@
 
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .timer-track span,
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .preload-bar span {
-  background: var(--bright-pink) !important;
+  background: var(--preload-progress-fill, var(--bright-pink)) !important;
   border: 0 !important;
   box-shadow: none !important;
 }
