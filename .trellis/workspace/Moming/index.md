@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 46
+- **Total Sessions**: 47
 - **Last Active**: 2026-07-16
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1529 | Active |
+| `journal-1.md` | ~1562 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 47 | 2026-07-16 | Username nameplate V2 | `16677735` | `codex/username-background` |
 | 46 | 2026-07-16 | Replay, preload, and auth UI polish | `2a99a4f6` | `codex/auth-ui-review` |
 | 45 | 2026-07-15 | Restyle login title lockup | `020ffa47` | `codex/mobile-battle-ui` |
 | 44 | 2026-07-13 | Story tutorial draft capacity and graph scrolling | `fdaa2290` | `codex/story-tutorial-system` |

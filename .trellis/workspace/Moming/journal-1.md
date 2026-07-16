@@ -1527,3 +1527,36 @@ Added five-move replay controls, orange mascot loading motion, and refined auth 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 47: Username nameplate V2
+
+**Date**: 2026-07-16
+**Task**: Username nameplate V2
+**Branch**: `codex/username-background`
+
+### Summary
+
+Implemented asset-specific UserIdentity layers and rebuilt the Semantic Ignition nameplate with responsive high-energy motion, reduced-motion fallback, contract tests, system docs, and browser QA at desktop, narrow desktop, and portrait phone sizes.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `16677735` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
