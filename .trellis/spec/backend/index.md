@@ -18,6 +18,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Database Guidelines](./database-guidelines.md) | ORM patterns, queries, migrations | Partially filled |
 | [Error Handling](./error-handling.md) | Error types, handling strategies | To fill |
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | Partially filled |
+| [Authentication Form And Session Contract](./authentication-contract.md) | Auth form, validation, rate limits, and single-session replacement | Filled |
 | [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels | To fill |
 | [Structured Skill Descriptions](./skill-description-contract.md) | Persisted trait glossary, reference safety, and overclock display contract | Filled |
 

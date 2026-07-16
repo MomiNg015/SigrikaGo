@@ -63,6 +63,7 @@ Character-target inventory item use loads structured `userCharacters` and valida
 - `expiresAt`: refresh session 过期时间。
 - `lastSeenAt`: 最近一次 HTTP/Socket 鉴权或 refresh 时间。
 - `createdAt`, `updatedAt`: 创建和更新时间。
+- `createLoginSessionStore().replace(userId)` 在单实例进程内按 `userId` 串行执行；数据库路径在同一 Prisma 事务中撤销该用户全部 active rows 并创建新 row，两个重叠 replacement 最终只保留后完成的新 session。
 - 后台“今日登录用户数”和时长榜第一版从该表估算：`createdAt` 落在 Asia/Shanghai 当日的 session 计入登录事件，`userId` 去重得到唯一登录用户，`lastSeenAt - createdAt` 暂作为会话时长估算。后续若接入前端活跃事件或 Socket 活跃心跳，应新增专门活动表或快照，不应把估算口径伪装成精确活跃时长。
 
 ### UserRelationship
