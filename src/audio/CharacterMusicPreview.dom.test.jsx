@@ -22,7 +22,9 @@ describe("CharacterMusicPreview interaction", () => {
     const onTrackChange = vi.fn().mockResolvedValue({});
     renderPlayer(onTrackChange);
 
-    fireEvent.click(screen.getByRole("button", { name: /打开曲目单/ }));
+    const closedTitle = screen.getByRole("button", { name: /打开曲目单/ });
+    expect(closedTitle.textContent).toBe(baseTrack.name);
+    fireEvent.click(closedTitle);
     const baseTab = await screen.findByRole("tab", { name: "普通技·小爱出击" });
     expect(baseTab.getAttribute("aria-selected")).toBe("true");
     expect(screen.getByRole("region", { name: "角色技能曲目单" }).parentElement?.classList.contains("nested-modal-backdrop")).toBe(true);
@@ -30,6 +32,7 @@ describe("CharacterMusicPreview interaction", () => {
     fireEvent.click(await screen.findByRole("tab", { name: "派生技·远航星" }));
     expect(screen.getByRole("tab", { name: "派生技·远航星" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByRole("listbox", { name: "派生技·远航星曲目" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /当前曲目 远航星默认曲/ }).textContent).toBe(derivedTrack.name);
 
     fireEvent.click(screen.getByRole("option", { name: derivedAltTrack.name }));
     await waitFor(() => expect(onTrackChange).toHaveBeenCalledWith({
@@ -66,7 +69,6 @@ function renderPlayer(onTrackChange) {
               id: "base",
               effectType: "",
               label: "普通技·小爱出击",
-              shortLabel: "普通技",
               track: baseTrack,
               options: [baseTrack]
             },
@@ -74,7 +76,6 @@ function renderPlayer(onTrackChange) {
               id: "derived:voyage-star",
               effectType: "voyage-star",
               label: "派生技·远航星",
-              shortLabel: "远航星",
               track: derivedTrack,
               options: [derivedTrack, derivedAltTrack]
             }

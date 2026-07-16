@@ -4,6 +4,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .character-music-toggle,
+  .character-music-toggle::before,
   .character-music-title-trigger,
   .character-music-chevron,
   .character-music-option,

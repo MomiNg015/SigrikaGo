@@ -662,16 +662,35 @@ describe("deriveCharacterRecordStats", () => {
     expect(css).toContain("font-weight: 700;");
     expect(css).toContain(".character-music-player.is-loading .character-music-toggle");
     expect(css).toContain(".character-music-player.is-playing .character-music-toggle");
+    expect(css).toContain(".character-music-toggle::before");
     expect(css).toMatch(/\.character-music-toggle:hover:not\(:disabled\),\s*\.character-music-toggle:focus-visible\s*\{[^}]*transform:\s*translateY\(-1px\);/s);
 
     const phoneCss = readCssWithImports(new URL("../styles/modals.css", import.meta.url));
     const brightSchoolDesktopCss = readCssWithImports(new URL("../styles/themes/bright-school/component-repairs.css", import.meta.url));
+    const brightSchoolPlayerShellCss = readFileSync(
+      new URL("../styles/themes/bright-school/component-repairs/character-music-player/player-shell.css", import.meta.url),
+      "utf8"
+    );
     const finalMobileCss = readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
     const brightSchoolMobileCss = readCssWithImports(new URL("../styles/themes/bright-school/mobile.css", import.meta.url))
       + readCssWithImports(new URL("../styles/mobile-adaptive.css", import.meta.url));
 
     expect(brightSchoolDesktopCss).toContain("border: 0 !important");
     expect(brightSchoolDesktopCss).toContain(".character-music-toggle::before");
+    expect(brightSchoolPlayerShellCss).toContain("background-color: transparent !important");
+    expect(brightSchoolPlayerShellCss).toContain("background-image: none !important");
+    expect(brightSchoolPlayerShellCss).toContain("box-shadow: none !important");
+    expect(brightSchoolPlayerShellCss).toContain("border: 1px solid rgba(61, 43, 37, 0.72)");
+    expect(brightSchoolPlayerShellCss).toContain("border-radius: 10px");
+    expect(brightSchoolPlayerShellCss).toContain("background: rgba(137, 211, 155, 0.84)");
+    expect(brightSchoolPlayerShellCss).toContain("background: rgba(239, 124, 134, 0.88)");
+    expect(brightSchoolPlayerShellCss).toMatch(/\.character-music-toggle:hover:not\(:disabled\),[\s\S]*?\.character-music-toggle:active:not\(:disabled\)\s*\{[^}]*background:\s*transparent\s*!important;[^}]*box-shadow:\s*none\s*!important;/s);
+    expect(brightSchoolPlayerShellCss).toContain("transform: translateY(2px) !important");
+    expect(brightSchoolPlayerShellCss).toContain("box-shadow: 0 1px 0 rgba(158, 56, 68, 0.45)");
+    expect(brightSchoolPlayerShellCss).not.toMatch(/\.character-music-toggle:active[^}]*scale\(/s);
+    expect(brightSchoolPlayerShellCss).toContain("font-family: var(--font-ui-default) !important");
+    expect(brightSchoolPlayerShellCss).not.toContain("var(--font-window-title)");
+    expect(brightSchoolPlayerShellCss).not.toContain(".character-music-slot-mark");
     expect(phoneCss).toContain("grid-template-columns: minmax(0, 1fr) minmax(136px, 164px);");
     expect(phoneCss).toContain("flex-direction: column;");
     expect(phoneCss).toContain("width: min(164px, 48vw);");

@@ -11,7 +11,6 @@ describe("character music preview scheduling", () => {
         id: "base",
         effectType: "",
         label: "普通技·星辉符文",
-        shortLabel: "普通技",
         track: { id: "sigrika-skill-default", name: "Sigrika Skill BGM", playback: { src: "/assets/music/sigrika.ogg", loop: true } },
         options: [{ id: "sigrika-skill-default", name: "Sigrika Skill BGM", playback: { src: "/assets/music/sigrika.ogg", loop: true } }]
       }],
@@ -26,6 +25,7 @@ describe("character music preview scheduling", () => {
     expect(html).toContain("Sigrika Skill BGM");
     expect(html).toContain("aria-label=\"播放角色 BGM\"");
     expect(html).toContain("character-music-glyph is-play");
+    expect(html).not.toContain("character-music-slot-mark");
     expect(html).not.toContain("lucide-play");
   });
 

@@ -39,7 +39,7 @@ Questions to answer:
 - The player sits in a compact modal heading, so interaction feedback must stay immediate and layout-stable even when first-use audio decoding is slow.
 
 #### 2. Signatures
-- `CharacterMusicPreview({ characterId, slots, audioSettings, onTrackChange })` renders `.character-music-player`; each slot contains `{ id, effectType, label, shortLabel, fallbackTrackId, options, track }`.
+- `CharacterMusicPreview({ characterId, slots, audioSettings, onTrackChange })` renders `.character-music-player`; each slot contains `{ id, effectType, label, fallbackTrackId, options, track }`.
 - `onTrackChange({ trackId, effectType })` persists the active ordinary- or derived-skill slot.
 - Runtime skill BGM metadata uses `{ effectType, musicEffectType, musicTrackId }`: `effectType` owns gameplay presentation, while `musicEffectType` alone selects the ordinary (`""`) or derived (non-empty) music slot.
 - Local playback states are `idle`, `loading`, `playing`, and `error`.
@@ -55,9 +55,12 @@ Questions to answer:
 - The main title and track-sheet row titles stay single-line. Only measured overflow animates; the main title scrolls one way with start/end pauses, while rows animate only on hover/focus. Reduced motion disables automatic movement and keeps manual horizontal access.
 - The track sheet is rendered into the nearest nested/modal backdrop (falling back to the themed app shell), positioned against the trigger without expanding the modal, constrained to the viewport, and limited to about four rows before internal scrolling. This keeps it above the detail modal while retaining theme ancestry. Trigger, outside press, and Escape close it; Escape restores trigger focus.
 - Skill slots use tab semantics and keyboard arrow/Home/End navigation. Track choices use listbox/option semantics and retain selection state while the sheet stays open.
+- The closed title renders only the current music name. Ordinary/derived skill identity belongs to the open track-sheet tabs and must not be duplicated as a visible marker beside the closed title.
 - Rough.js decoration must be generated after mount and outside hover/click handlers. It must be pointer-transparent and must not become the source of layout or hit testing.
-- Under Bright School, the visible frame, play-button ring, and title rules come from `.character-music-sketch`; shared CSS owns neutral structure. Playback glyphs are solid CSS shapes and must not use Lucide play/pause icons.
+- Under Bright School, `.character-music-sketch` contributes only one quiet title underline. The closed player has no outer hand-drawn frame or card shadow; CSS owns a single rounded-square hardware key inside the 44px hit target and product-UI title typography. The 32px key face is transparent at rest, green on hover/focus, and red while pressed; playback glyphs are solid CSS shapes and must not use Lucide play/pause icons.
 - Hover and press feedback for the play button must not change layout dimensions. Use transform, color, or opacity changes rather than width, height, border-width, padding, or DOM regeneration.
+- Bright School button press feedback models depth instead of scale: hover raises the 44px control by 1px, active lowers it by 2px and shortens the pseudo-element shadow, and the active transform must not include `scale(...)`.
+- The theme-wide `final-controls-forms.css` `button:hover`/`button:focus-visible` rule colors the full 44px button and adds a hard shadow. The character-music owner must explicitly keep the real button background, background image, border color, and box shadow transparent/none in hover, focus, and active states so only the inset pseudo-element changes color.
 - Mobile and desktop size contracts must be updated together for `.character-music-player` and the surrounding `.character-detail-heading` grid; the mobile playback key remains at least 44px.
 
 #### 4. Validation & Error Matrix
@@ -75,15 +78,19 @@ Questions to answer:
 #### 5. Good/Base/Bad Cases
 - Good: set local state to `loading`, request background pause, await playback, then set `playing` only if the current intent still wants playback.
 - Good: persist `{ trackId, effectType }` and reconcile only when that slot's request id is still current.
+- Good: render only the current music name in the closed title and keep `普通技·技能名` / `派生技·技能名` in the open tab strip.
+- Good: let the surrounding Bright School grid/paper surface carry the campus context, while the closed control uses one transparent rounded-square hardware key that turns green on hover and red on press.
 - Base: characters without derived BGM render one slot and no tab strip; characters with one track render a non-sheet title.
 - Bad: waiting for `decodeAudioData()` before updating visible state.
 - Bad: storing derived selection in `musicSelections.skill[characterId]`, filtering only by character, or closing the sheet after every selection.
 - Bad: using runtime gameplay `effectType` directly as the music slot discriminator, because every ordinary active skill also has a non-empty gameplay effect type.
 - Bad: using an infinite CSS marquee without measuring overflow or honoring `prefers-reduced-motion`.
 - Bad: running Rough.js drawing or replacing SVG children inside hover, focus, active, or click handlers.
+- Bad: rendering `shortLabel`, `普通技`, `派生技`, or the skill name beside the closed music title, because it duplicates the track-sheet tabs and reduces marquee space.
+- Bad: enclosing the compact player in a bowed Rough.js rectangle, adding a second Rough.js ring around the solid key, or using the display title font for track data; together these make the control read like a novelty widget instead of a dependable player.
 
 #### 6. Tests Required
-- `src/audio/CharacterMusicPreview.test.jsx` asserts the sketch layer, CSS playback glyph, and accessible state hooks without Lucide playback icons.
+- `src/audio/CharacterMusicPreview.test.jsx` asserts the sketch layer, CSS playback glyph, accessible state hooks, and marker-free closed title without Lucide playback icons.
 - `src/audio/CharacterMusicPreview.dom.test.jsx` asserts tab semantics, slot switching, sheet persistence after selection, save rollback, and retry.
 - `src/modals/HouseModal.test.js` or focused style tests assert slot construction, desktop/mobile size hooks, state selectors, pointer-transparent sketch styling, and transform-only feedback.
 - `src/shared/musicLibrary.test.js`, `server/roomSkillResolution.test.js`, `server/musicSelection.test.js`, and `server/playerRoutes.test.js` cover realistic ordinary gameplay effect types, pending/history metadata, ordinary/derived slot separation, legacy history fallback, and request forwarding.

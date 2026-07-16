@@ -113,14 +113,14 @@
   display: flex;
   align-items: center;
   flex: 1 1 auto;
-  gap: 5px;
+  gap: 6px;
   min-width: 0;
   height: 32px;
   min-height: 32px;
   padding: 3px 4px;
   border: 0;
-  border-radius: 7px;
-  background: rgba(255, 255, 255, 0.66);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.72);
   color: var(--character-music-ink);
   font-family: var(--font-ui-default);
   font-size: 12px;
@@ -137,21 +137,6 @@
 
 .character-music-title-trigger:hover,
 .character-music-title-trigger[aria-expanded="true"] { background: rgba(255, 255, 255, 0.9); }
-
-.character-music-slot-mark {
-  flex: 0 0 auto;
-  max-width: 46px;
-  overflow: hidden;
-  padding: 3px 4px;
-  border-radius: 4px;
-  background: #dfe9f1;
-  color: #3b5062;
-  font-size: 9px;
-  font-weight: 800;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 .character-music-name,
 .character-music-option-name { display: block; flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; }

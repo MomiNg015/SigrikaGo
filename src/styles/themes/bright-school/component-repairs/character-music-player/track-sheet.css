@@ -62,7 +62,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-slot-mark,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-tab,
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .character-music-sheet-error { transform: none !important; }
 }

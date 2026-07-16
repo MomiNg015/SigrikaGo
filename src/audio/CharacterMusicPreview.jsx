@@ -342,13 +342,11 @@ export function CharacterMusicPreview({
           aria-label={`${activeSlot?.label ?? "角色技能"}，当前曲目 ${track?.name ?? "无可用曲目"}，${sheetOpen ? "收起" : "打开"}曲目单`}
           onClick={() => setSheetOpen((open) => !open)}
         >
-          <span className="character-music-slot-mark">{activeSlot?.shortLabel ?? "普通技"}</span>
           <MarqueeText className="character-music-name" text={title} active />
           <span className="character-music-chevron" aria-hidden="true" />
         </button>
       ) : (
         <span className="character-music-title-static">
-          <span className="character-music-slot-mark">{activeSlot?.shortLabel ?? "普通技"}</span>
           <MarqueeText className="character-music-name" text={title} active />
         </span>
       )}
@@ -578,37 +576,12 @@ export function CharacterMusicSketch() {
     if (!svg) return;
     svg.replaceChildren();
     const rc = rough.svg(svg, { options: { seed: 27 } });
-    const frame = rc.rectangle(3, 4, 182, 36, {
-      roughness: 1.4,
-      bowing: 1.1,
-      stroke: "#2f251f",
-      strokeWidth: 1.9,
-      fill: "none"
-    });
-    const buttonRing = rc.ellipse(24, 22, 38, 36, {
-      roughness: 1.35,
-      bowing: 1.05,
-      stroke: "#2f251f",
-      strokeWidth: 1.8,
-      fill: "#ff9ebb",
-      fillStyle: "solid"
-    });
-    const titleRuleTop = rc.line(50, 11, 177, 10, {
-      roughness: 0.95,
+    const titleRule = rc.line(52, 34, 178, 33, {
+      roughness: 0.7,
       stroke: "#71a9bf",
-      strokeWidth: 0.9
+      strokeWidth: 1
     });
-    const titleRuleBottom = rc.line(50, 33, 177, 32, {
-      roughness: 1.05,
-      stroke: "#f0c35d",
-      strokeWidth: 1.1
-    });
-    const tape = rc.line(8, 39, 179, 38, {
-      roughness: 1.25,
-      stroke: "#9c7b58",
-      strokeWidth: 0.8
-    });
-    svg.append(frame, buttonRing, titleRuleTop, titleRuleBottom, tape);
+    svg.append(titleRule);
   }, []);
 
   return (

@@ -116,14 +116,12 @@ export function characterMusicSlots({ character, derivedSkills = [], musicTracks
       id: "base",
       effectType: "",
       label: `普通技·${character.skill?.name ?? "角色技能"}`,
-      shortLabel: "普通技",
       fallbackTrackId: ""
     },
     ...derivedSkills.map((skill) => ({
       id: `derived:${skill.effectType}`,
       effectType: skill.effectType,
       label: `派生技·${skill.name}`,
-      shortLabel: skill.name,
       fallbackTrackId: skill.musicTrackId ?? ""
     }))
   ];
