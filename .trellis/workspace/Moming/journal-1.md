@@ -1494,3 +1494,36 @@ Changed the login title to the semantic LXGW Marker Gothic window-title font, en
 ### Next Steps
 
 - None - task complete
+
+
+## Session 46: Replay, preload, and auth UI polish
+
+**Date**: 2026-07-16
+**Task**: Replay, preload, and auth UI polish
+**Branch**: `codex/auth-ui-review`
+
+### Summary
+
+Added five-move replay controls, orange mascot loading motion, and refined auth copy/password toggle styling; npm run check passed.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2a99a4f6` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
