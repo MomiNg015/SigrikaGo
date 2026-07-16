@@ -35,6 +35,18 @@ describe("api client auth refresh", () => {
     expect(refresh).not.toHaveBeenCalled();
   });
 
+  it("preserves Retry-After metadata on API errors", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(
+      { error: "\u8bf7\u6c42\u8fc7\u4e8e\u9891\u7e41\uff0c\u8bf7\u7a0d\u540e\u518d\u8bd5" },
+      429,
+      { "retry-after": "75" }
+    )));
+
+    const error = await api("/api/auth/login", { method: "POST" }).catch((caught) => caught);
+
+    expect(error).toMatchObject({ status: 429, retryAfter: 75 });
+  });
+
   it("rejects instead of waiting forever when a request never settles", async () => {
     const fetchMock = vi.fn((_url, options = {}) => new Promise((_resolve, reject) => {
       options.signal?.addEventListener("abort", () => {
@@ -75,12 +87,14 @@ describe("api client auth refresh", () => {
   });
 });
 
-function jsonResponse(body, status = 200) {
+function jsonResponse(body, status = 200, responseHeaders = {}) {
   return {
     ok: status >= 200 && status < 300,
     status,
     headers: {
-      get: (name) => name.toLowerCase() === "content-type" ? "application/json" : ""
+      get: (name) => name.toLowerCase() === "content-type"
+        ? "application/json"
+        : responseHeaders[name.toLowerCase()] ?? ""
     },
     json: () => Promise.resolve(body)
   };

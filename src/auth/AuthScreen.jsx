@@ -1,191 +1,323 @@
-import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../api/client.js";
+import { ConfirmModal } from "../modals/FeedbackModals.jsx";
 
 export default function AuthScreen({ onAuth, initialMode = "login" }) {
   const [mode, setMode] = useState(initialMode);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [showSessionConflict, setShowSessionConflict] = useState(false);
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
+  const submitLockRef = useRef(false);
+  const requestControllerRef = useRef(null);
+  const requestVersionRef = useRef(0);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      requestVersionRef.current += 1;
+      requestControllerRef.current?.abort();
+    };
+  }, []);
 
   function switchMode(nextMode) {
+    if (submitting || nextMode === mode) return;
+    requestVersionRef.current += 1;
+    requestControllerRef.current?.abort();
     setMode(nextMode);
-    setError("");
+    setPassword("");
     setConfirmPassword("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setError("");
     setFieldErrors({});
     setTouchedFields({});
+    setShowSessionConflict(false);
   }
 
-  function updateRegisterField(field, value) {
-    if (field === "username") {
-      const nextUsername = truncateUsernameInput(value);
-      setUsername(nextUsername);
-      setRegisterFieldError("username", value === nextUsername ? validateAuthField("username", nextUsername) : USERNAME_WIDTH_ERROR);
-      return;
+  function updateField(field, value) {
+    if (field === "username") setUsername(value);
+    if (field === "password") setPassword(value);
+    if (field === "confirmPassword") setConfirmPassword(value);
+
+    if (touchedFields[field]) {
+      const nextPassword = field === "password" ? value : password;
+      setFieldErrors((current) => ({
+        ...current,
+        [field]: validateAuthField(field, value, { mode, password: nextPassword })
+      }));
     }
-    if (field === "password") {
-      setPassword(value);
-      setRegisterFieldError("password", validateAuthField("password", value));
-      if (confirmPassword) {
-        setRegisterFieldError("confirmPassword", validateAuthField("confirmPassword", confirmPassword, { password: value }));
-      }
-      return;
+    if (field === "password" && touchedFields.confirmPassword) {
+      setFieldErrors((current) => ({
+        ...current,
+        confirmPassword: validateAuthField("confirmPassword", confirmPassword, { mode, password: value })
+      }));
     }
-    setConfirmPassword(value);
-    setRegisterFieldError("confirmPassword", validateAuthField("confirmPassword", value, { password }));
   }
 
-  function setRegisterFieldError(field, nextError) {
-    setFieldErrors((current) => ({ ...current, [field]: nextError }));
-  }
-
-  function markRegisterFieldTouched(field) {
+  function markFieldTouched(field) {
+    const value = field === "username" ? username : field === "password" ? password : confirmPassword;
     setTouchedFields((current) => ({ ...current, [field]: true }));
-    setRegisterFieldError(field, validateAuthField(field, fieldValue(field), { password }));
+    setFieldErrors((current) => ({
+      ...current,
+      [field]: validateAuthField(field, value, { mode, password })
+    }));
   }
 
-  function fieldValue(field) {
-    if (field === "username") return username;
-    if (field === "password") return password;
-    return confirmPassword;
-  }
-
-  async function submit(event, forceLogin = false) {
+  function submit(event) {
     event.preventDefault();
+    void performSubmit(false);
+  }
+
+  async function performSubmit(forceLogin) {
+    if (submitLockRef.current) return;
     setError("");
-    const validation = validateAuthSubmit({ mode, username, password, confirmPassword });
+    const snapshot = { mode, username, password, confirmPassword };
+    const validation = validateAuthSubmit(snapshot);
     if (!validation.ok) {
-      if (validation.fieldErrors) {
-        setFieldErrors(validation.fieldErrors);
-        setTouchedFields(Object.fromEntries(Object.keys(validation.fieldErrors).map((field) => [field, true])));
-      }
-      setError(validation.error);
+      const invalidFields = Object.fromEntries(
+        Object.entries(validation.fieldErrors).map(([field, fieldError]) => [field, Boolean(fieldError)])
+      );
+      setFieldErrors(validation.fieldErrors);
+      setTouchedFields(invalidFields);
+      focusFirstInvalidField(validation.fieldErrors, { usernameRef, passwordRef, confirmPasswordRef });
       return;
     }
+
+    const requestVersion = requestVersionRef.current + 1;
+    requestVersionRef.current = requestVersion;
+    const controller = new AbortController();
+    requestControllerRef.current = controller;
+    submitLockRef.current = true;
+    setSubmitting(true);
+
     try {
       const body = mode === "login"
-        ? { username, password, forceLogin }
-        : { username, password };
+        ? { username: username.trim(), password, forceLogin }
+        : { username: username.trim(), password };
       const data = await api(`/api/auth/${mode}`, {
         method: "POST",
-        body
+        body,
+        signal: controller.signal
       });
+      if (!mountedRef.current || requestVersionRef.current !== requestVersion) return;
       onAuth(data.token, data.user);
-    } catch (err) {
-      if (mode === "login" && isAlreadyLoggedInError(err) && window.confirm(err.message)) {
-        submit({ preventDefault: () => {} }, true);
-        return;
+    } catch (caught) {
+      if (!mountedRef.current || requestVersionRef.current !== requestVersion || isAbortError(caught)) return;
+      if (mode === "login" && !forceLogin && isAlreadyLoggedInError(caught)) {
+        setShowSessionConflict(true);
+      } else {
+        setError(authErrorMessage(caught));
       }
-      setError(err.message);
+    } finally {
+      if (requestControllerRef.current === controller) requestControllerRef.current = null;
+      submitLockRef.current = false;
+      if (mountedRef.current && requestVersionRef.current === requestVersion) setSubmitting(false);
     }
   }
 
+  function confirmForcedLogin() {
+    setShowSessionConflict(false);
+    void performSubmit(true);
+  }
+
+  const passwordErrorId = visibleFieldError("password", fieldErrors, touchedFields) ? "auth-password-error" : undefined;
+  const confirmPasswordErrorId = visibleFieldError("confirmPassword", fieldErrors, touchedFields) ? "auth-confirm-password-error" : undefined;
+
   return (
-    <main className="auth-screen">
-      <section className={`auth-panel login-card-container ${mode === "register" ? "register-card-container" : ""}`}>
-        <div className="brand-lockup">
-          <img className="login-title-mascot" src="/assets/login-sigrika-mascot.webp" alt="\u897f\u683c\u8389\u5361" />
-          <div>
-            <p className="text-display-accent">SigrikaGo</p>
-            <h1 className="login-title-text text-window-title">{"\u661f\u70ac\u5b66\u9662\u56f4\u68cb\u90e8"}</h1>
+    <>
+      <main className="auth-screen">
+        <section className={`auth-panel login-card-container ${mode === "register" ? "register-card-container" : ""}`}>
+          <div className="brand-lockup">
+            <img className="login-title-mascot" src="/assets/login-sigrika-mascot.webp" alt="" aria-hidden="true" />
+            <div>
+              <p className="text-display-accent">SigrikaGo</p>
+              <h1 className="login-title-text text-window-title">星炬学院围棋部</h1>
+            </div>
           </div>
-        </div>
-        <form onSubmit={submit} className="auth-form">
-          <div className="segmented">
-            <button type="button" className={mode === "login" ? "active" : ""} onClick={() => switchMode("login")}>{"\u767b\u5f55"}</button>
-            <button type="button" className={mode === "register" ? "active" : ""} onClick={() => switchMode("register")}>{"\u6ce8\u518c"}</button>
-          </div>
-          <label className={authFieldClassName("username", fieldErrors, touchedFields)}>
-            {"\u7528\u6237\u540d"}
-            <input
-              value={username}
-              autoComplete="username"
-              placeholder={mode === "register" ? AUTH_REGISTER_HELP.username : undefined}
-              aria-describedby={mode === "register" && fieldErrors.username ? "register-username-error" : undefined}
-              aria-invalid={isFieldInvalid("username", fieldErrors, touchedFields) || undefined}
-              onBlur={() => mode === "register" && markRegisterFieldTouched("username")}
-              onChange={(event) => {
-                if (mode === "register") {
-                  updateRegisterField("username", event.target.value);
-                  return;
-                }
-                setUsername(truncateUsernameInput(event.target.value));
-              }}
-            />
-            {mode === "register" && <AuthFieldFeedback field="username" error={fieldErrors.username} touched={touchedFields.username} />}
-          </label>
-          <label className={authFieldClassName("password", fieldErrors, touchedFields)}>
-            {"\u5bc6\u7801"}
-            <input
-              type="password"
-              minLength={6}
-              maxLength={14}
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              value={password}
-              placeholder={mode === "register" ? AUTH_REGISTER_HELP.password : undefined}
-              aria-describedby={mode === "register" && fieldErrors.password ? "register-password-error" : undefined}
-              aria-invalid={isFieldInvalid("password", fieldErrors, touchedFields) || undefined}
-              onBlur={() => mode === "register" && markRegisterFieldTouched("password")}
-              onChange={(event) => {
-                if (mode === "register") {
-                  updateRegisterField("password", event.target.value);
-                  return;
-                }
-                setPassword(event.target.value);
-              }}
-            />
-            {mode === "register" && <AuthFieldFeedback field="password" error={fieldErrors.password} touched={touchedFields.password} />}
-          </label>
-          {mode === "register" && (
-            <label className={authFieldClassName("confirmPassword", fieldErrors, touchedFields)}>
-              {"\u786e\u8ba4\u5bc6\u7801"}
+          <form onSubmit={submit} className="auth-form" noValidate aria-busy={submitting || undefined}>
+            <div className="segmented" role="group" aria-label="账号操作">
+              <button
+                type="button"
+                className={mode === "login" ? "active" : ""}
+                aria-pressed={mode === "login"}
+                disabled={submitting}
+                onClick={() => switchMode("login")}
+              >登录</button>
+              <button
+                type="button"
+                className={mode === "register" ? "active" : ""}
+                aria-pressed={mode === "register"}
+                disabled={submitting}
+                onClick={() => switchMode("register")}
+              >注册</button>
+            </div>
+
+            <div className={authFieldClassName("username", fieldErrors, touchedFields)}>
+              <label className="auth-label-row" htmlFor="auth-username">
+                <span>用户名</span>
+                {mode === "register" && <small>{AUTH_REGISTER_LABEL_NOTES.username}</small>}
+              </label>
               <input
-                type="password"
-                minLength={6}
-                maxLength={14}
-                autoComplete="new-password"
-                value={confirmPassword}
-                placeholder={AUTH_REGISTER_HELP.confirmPassword}
-                aria-describedby={fieldErrors.confirmPassword ? "register-confirmPassword-error" : undefined}
-                aria-invalid={isFieldInvalid("confirmPassword", fieldErrors, touchedFields) || undefined}
-                onBlur={() => markRegisterFieldTouched("confirmPassword")}
-                onChange={(event) => updateRegisterField("confirmPassword", event.target.value)}
+                ref={usernameRef}
+                id="auth-username"
+                name="username"
+                value={username}
+                required
+                autoCapitalize="none"
+                spellCheck="false"
+                autoComplete="username"
+                aria-describedby={visibleFieldError("username", fieldErrors, touchedFields) ? "auth-username-error" : undefined}
+                aria-invalid={isFieldInvalid("username", fieldErrors, touchedFields) || undefined}
+                disabled={submitting}
+                onBlur={() => markFieldTouched("username")}
+                onChange={(event) => updateField("username", event.target.value)}
               />
-              <AuthFieldFeedback field="confirmPassword" error={fieldErrors.confirmPassword} touched={touchedFields.confirmPassword} />
-            </label>
-          )}
-          {error && <p className="form-error">{error}</p>}
-          <button className="primary-action login-submit-btn terminal-enter-btn" type="submit">{authSubmitText(mode)}</button>
-        </form>
-      </section>
-    </main>
+              <AuthFieldFeedback id="auth-username-error" error={fieldErrors.username} touched={touchedFields.username} />
+            </div>
+
+            <div className={authFieldClassName("password", fieldErrors, touchedFields)}>
+              <label className="auth-label-row" htmlFor="auth-password">
+                <span>密码</span>
+                {mode === "register" && <small>{AUTH_REGISTER_LABEL_NOTES.password}</small>}
+              </label>
+              <div className="auth-input-shell">
+                <input
+                  ref={passwordRef}
+                  id="auth-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  minLength={mode === "register" ? REGISTER_PASSWORD_MIN_LENGTH : LOGIN_PASSWORD_MIN_LENGTH}
+                  required
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  value={password}
+                  aria-describedby={passwordErrorId}
+                  aria-invalid={isFieldInvalid("password", fieldErrors, touchedFields) || undefined}
+                  disabled={submitting}
+                  onBlur={() => markFieldTouched("password")}
+                  onChange={(event) => updateField("password", event.target.value)}
+                />
+                <PasswordVisibilityButton
+                  visible={showPassword}
+                  inputRef={passwordRef}
+                  controls="auth-password"
+                  disabled={submitting}
+                  onToggle={() => setShowPassword((current) => !current)}
+                />
+              </div>
+              <AuthFieldFeedback id="auth-password-error" error={fieldErrors.password} touched={touchedFields.password} />
+            </div>
+
+            {mode === "register" && (
+              <div className={authFieldClassName("confirmPassword", fieldErrors, touchedFields)}>
+                <label className="auth-label-row" htmlFor="auth-confirm-password"><span>确认密码</span></label>
+                <div className="auth-input-shell">
+                  <input
+                    ref={confirmPasswordRef}
+                    id="auth-confirm-password"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    minLength={REGISTER_PASSWORD_MIN_LENGTH}
+                    required
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    aria-describedby={confirmPasswordErrorId}
+                    aria-invalid={isFieldInvalid("confirmPassword", fieldErrors, touchedFields) || undefined}
+                    disabled={submitting}
+                    onBlur={() => markFieldTouched("confirmPassword")}
+                    onChange={(event) => updateField("confirmPassword", event.target.value)}
+                  />
+                  <PasswordVisibilityButton
+                    visible={showConfirmPassword}
+                    inputRef={confirmPasswordRef}
+                    controls="auth-confirm-password"
+                    disabled={submitting}
+                    onToggle={() => setShowConfirmPassword((current) => !current)}
+                  />
+                </div>
+                <AuthFieldFeedback id="auth-confirm-password-error" error={fieldErrors.confirmPassword} touched={touchedFields.confirmPassword} />
+              </div>
+            )}
+
+            {error && <p className="form-error" role="alert">{error}</p>}
+            <p className="auth-live-region" aria-live="polite" aria-atomic="true">
+              {submitting ? authPendingText(mode) : ""}
+            </p>
+            <button
+              className="primary-action login-submit-btn terminal-enter-btn"
+              type="submit"
+              disabled={submitting}
+              aria-busy={submitting || undefined}
+            >{submitting ? authPendingText(mode) : authSubmitText(mode)}</button>
+          </form>
+        </section>
+      </main>
+      {showSessionConflict && (
+        <ConfirmModal
+          title="账号已在线"
+          message="要退出其他在线会话并继续登录吗？"
+          confirmText="退出其他会话并继续"
+          onConfirm={confirmForcedLogin}
+          onCancel={() => setShowSessionConflict(false)}
+        />
+      )}
+    </>
   );
 }
 
-export const AUTH_REGISTER_HELP = {
-  username: "\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf\uff1b\u6700\u591a 4 \u4e2a\u4e2d\u65e5\u97e9\u5b57\u6216 8 \u4e2a\u534a\u89d2\u5b57\u7b26\u3002",
-  password: "\u5bc6\u7801\u957f\u5ea6\u9700\u4e3a 6-14 \u4f4d\uff0c\u4e0d\u80fd\u5305\u542b\u63a7\u5236\u5b57\u7b26\u3002",
-  confirmPassword: "\u8bf7\u518d\u8f93\u5165\u4e00\u6b21\u5bc6\u7801\uff0c\u9700\u8981\u548c\u4e0a\u65b9\u5bc6\u7801\u5b8c\u5168\u4e00\u81f4\u3002"
+export const AUTH_REGISTER_LABEL_NOTES = {
+  username: "最多 4 个中日韩文字 / 8 个半角字符",
+  password: "8-64 位"
 };
 
 const USERNAME_MIN_WIDTH = 2;
 const USERNAME_MAX_WIDTH = 8;
-const PASSWORD_MIN_LENGTH = 6;
-const PASSWORD_MAX_LENGTH = 14;
+const LOGIN_PASSWORD_MIN_LENGTH = 6;
+const REGISTER_PASSWORD_MIN_LENGTH = 8;
+const PASSWORD_MAX_LENGTH = 64;
+const PASSWORD_MAX_BYTES = 72;
 const CJK_USERNAME_CHAR = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]$/u;
 const USERNAME_PATTERN = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}A-Za-z0-9_]+$/u;
 const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/;
-const USERNAME_WIDTH_ERROR = `\u7528\u6237\u540d\u9700\u4e3a ${USERNAME_MIN_WIDTH}-${USERNAME_MAX_WIDTH} \u4e2a\u534a\u89d2\u5b57\u7b26\u5bbd\u5ea6\uff0c\u6700\u591a 4 \u4e2a\u4e2d\u6587/\u65e5\u6587/\u97e9\u6587\u5b57\u6216 8 \u4e2a\u534a\u89d2\u82f1\u6587/\u6570\u5b57/\u4e0b\u5212\u7ebf`;
-const USERNAME_PATTERN_ERROR = "\u7528\u6237\u540d\u4ec5\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf";
-const PASSWORD_LENGTH_ERROR = `\u5bc6\u7801\u9700\u4e3a ${PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} \u4f4d`;
-const PASSWORD_CONTROL_ERROR = "\u5bc6\u7801\u4e0d\u80fd\u5305\u542b\u63a7\u5236\u5b57\u7b26";
-const CONFIRM_PASSWORD_ERROR = "\u4e24\u6b21\u8f93\u5165\u7684\u5bc6\u7801\u4e0d\u4e00\u81f4";
+const USERNAME_PATTERN_ERROR = "用户名仅支持中文、日文、韩文、半角英文、数字和下划线";
+const CONFIRM_PASSWORD_ERROR = "两次输入的密码不一致";
 
-function AuthFieldFeedback({ field, error, touched }) {
-  const visibleError = touched && error;
-  return visibleError ? <small id={`register-${field}-error`} className="auth-field-error" role="alert">{error}</small> : null;
+function PasswordVisibilityButton({ visible, inputRef, controls, disabled, onToggle }) {
+  const label = visible ? "隐藏密码" : "显示密码";
+  const Icon = visible ? EyeOff : Eye;
+  return (
+    <button
+      className="auth-password-toggle"
+      type="button"
+      aria-label={label}
+      aria-controls={controls}
+      aria-pressed={visible}
+      disabled={disabled}
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={(event) => {
+        onToggle();
+        if (event.detail > 0) inputRef.current?.focus({ preventScroll: true });
+      }}
+    >
+      <Icon size={20} aria-hidden="true" />
+    </button>
+  );
+}
+
+function AuthFieldFeedback({ id, error, touched }) {
+  return touched && error ? <small id={id} className="auth-field-error" role="alert">{error}</small> : null;
 }
 
 function authFieldClassName(field, fieldErrors, touchedFields) {
@@ -196,58 +328,85 @@ function isFieldInvalid(field, fieldErrors, touchedFields) {
   return Boolean(touchedFields[field] && fieldErrors[field]);
 }
 
-export function usernameDisplayWidth(value = "") {
-  return [...String(value)].reduce((width, char) => width + (CJK_USERNAME_CHAR.test(char) ? 2 : 1), 0);
+function visibleFieldError(field, fieldErrors, touchedFields) {
+  return isFieldInvalid(field, fieldErrors, touchedFields);
 }
 
-export function truncateUsernameInput(value = "", maxWidth = USERNAME_MAX_WIDTH) {
-  let width = 0;
-  let result = "";
-  for (const char of String(value)) {
-    const nextWidth = width + (CJK_USERNAME_CHAR.test(char) ? 2 : 1);
-    if (nextWidth > maxWidth) break;
-    width = nextWidth;
-    result += char;
-  }
-  return result;
+function focusFirstInvalidField(fieldErrors, refs) {
+  const firstInvalidField = ["username", "password", "confirmPassword"].find((field) => fieldErrors[field]);
+  refs[`${firstInvalidField}Ref`]?.current?.focus({ preventScroll: true });
+}
+
+export function usernameDisplayWidth(value = "") {
+  return [...String(value)].reduce((width, char) => width + (CJK_USERNAME_CHAR.test(char) ? 2 : 1), 0);
 }
 
 export function validateAuthField(field, value, context = {}) {
   if (field === "username") {
     const username = String(value ?? "").trim();
-    if (usernameDisplayWidth(username) < USERNAME_MIN_WIDTH || usernameDisplayWidth(username) > USERNAME_MAX_WIDTH) return USERNAME_WIDTH_ERROR;
+    const width = usernameDisplayWidth(username);
+    if (!username) return "请输入用户名";
+    if (width < USERNAME_MIN_WIDTH) return "用户名太短";
+    if (width > USERNAME_MAX_WIDTH) return "用户名最多 4 个中日韩文字或 8 个半角字符";
     if (!USERNAME_PATTERN.test(username)) return USERNAME_PATTERN_ERROR;
     return "";
   }
   if (field === "password") {
     const passwordValue = String(value ?? "");
-    if (passwordValue.length < PASSWORD_MIN_LENGTH || passwordValue.length > PASSWORD_MAX_LENGTH) return PASSWORD_LENGTH_ERROR;
-    if (CONTROL_CHARS.test(passwordValue)) return PASSWORD_CONTROL_ERROR;
+    const minimum = context.mode === "register" ? REGISTER_PASSWORD_MIN_LENGTH : LOGIN_PASSWORD_MIN_LENGTH;
+    if (!passwordValue) return "请输入密码";
+    if ([...passwordValue].length < minimum || [...passwordValue].length > PASSWORD_MAX_LENGTH) {
+      return context.mode === "register" ? "新密码需为 8-64 位" : "密码长度不正确";
+    }
+    if (new TextEncoder().encode(passwordValue).length > PASSWORD_MAX_BYTES) return "密码太长，请缩短后重试";
+    if (CONTROL_CHARS.test(passwordValue)) return "密码包含不支持的字符";
     return "";
   }
   if (field === "confirmPassword") {
-    return String(value ?? "") === String(context.password ?? "") ? "" : CONFIRM_PASSWORD_ERROR;
+    if (!String(value ?? "")) return "请再次输入密码";
+    return String(value) === String(context.password ?? "") ? "" : CONFIRM_PASSWORD_ERROR;
   }
   return "";
 }
 
-export function validateAuthSubmit({ mode, username = "", password, confirmPassword }) {
+export function validateAuthSubmit({ mode, username = "", password = "", confirmPassword = "" }) {
+  const fieldErrors = {
+    username: validateAuthField("username", username, { mode }),
+    password: validateAuthField("password", password, { mode })
+  };
   if (mode === "register") {
-    const fieldErrors = {
-      username: validateAuthField("username", username),
-      password: validateAuthField("password", password),
-      confirmPassword: validateAuthField("confirmPassword", confirmPassword, { password })
-    };
-    const firstError = Object.values(fieldErrors).find(Boolean);
-    if (firstError) return { ok: false, error: firstError, fieldErrors };
+    fieldErrors.confirmPassword = validateAuthField("confirmPassword", confirmPassword, { mode, password });
   }
-  return { ok: true };
+  return Object.values(fieldErrors).some(Boolean) ? { ok: false, fieldErrors } : { ok: true };
 }
 
 export function authSubmitText(mode) {
-  return mode === "login" ? "START CONNECTION!! >" : "\u521b\u5efa\u8d26\u53f7";
+  return mode === "login" ? "登录并进入" : "创建账号";
+}
+
+export function authPendingText(mode) {
+  return mode === "login" ? "登录中…" : "创建中…";
+}
+
+export function authErrorMessage(error) {
+  if (error?.status === 429) {
+    const seconds = Number(error.retryAfter);
+    if (Number.isFinite(seconds) && seconds > 0) {
+      const waitText = seconds >= 60 ? `${Math.ceil(seconds / 60)} 分钟` : `${Math.ceil(seconds)} 秒`;
+      return `请求太频繁，请 ${waitText}后再试`;
+    }
+    return "请求太频繁，请稍后再试";
+  }
+  if (error instanceof TypeError || /failed to fetch|network/i.test(String(error?.message ?? ""))) {
+    return "网络连接失败，请检查网络后重试";
+  }
+  return String(error?.message || "请求失败，请稍后重试");
 }
 
 export function isAlreadyLoggedInError(error) {
   return error?.status === 409 && error?.code === "already_logged_in";
+}
+
+function isAbortError(error) {
+  return error?.name === "AbortError";
 }

@@ -17,6 +17,16 @@
   overflow: visible;
 }
 
+.auth-screen {
+  height: 100dvh;
+  min-height: 100dvh;
+  place-items: start center;
+  padding-block: clamp(128px, 17dvh, 166px) 32px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .brand-lockup {
   position: relative;
   display: flex;
@@ -68,6 +78,60 @@ p {
   display: grid;
   gap: 6px;
   color: #6b596d;
+}
+
+.auth-field {
+  display: grid;
+  gap: 6px;
+}
+
+.auth-label-row {
+  display: flex !important;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.auth-label-row small {
+  color: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.72;
+  text-align: right;
+}
+
+.auth-input-shell {
+  position: relative;
+}
+
+.auth-input-shell input {
+  width: 100%;
+  padding-right: 56px !important;
+}
+
+.auth-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 3px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+  transform: translateY(-50%);
+}
+
+.auth-live-region {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .auth-field-error {

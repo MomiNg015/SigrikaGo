@@ -1,4 +1,14 @@
 @media (max-width: 760px) and (orientation: portrait) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-screen {
+    padding-top: clamp(108px, 17dvh, 142px) !important;
+    padding-bottom: max(28px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-screen .auth-panel {
+    width: min(100%, 440px) !important;
+    padding: clamp(18px, 5vw, 24px) !important;
+  }
+
   .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel .brand-lockup {
     position: relative !important;
     display: flex !important;
@@ -15,5 +25,30 @@
     height: clamp(140px, 39vw, 148px) !important;
     max-width: none !important;
     transform: rotate(-6deg) !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-label-row {
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-label-row small {
+    max-width: 68% !important;
+    line-height: 1.25 !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form {
+    gap: 10px !important;
+    margin-top: 16px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel :is(button, input) {
+    transition: none !important;
+  }
+
+  .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-panel button:not(.auth-password-toggle) {
+    transform: none !important;
   }
 }

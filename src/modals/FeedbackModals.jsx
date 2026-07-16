@@ -1,19 +1,27 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { gameModeById } from "../shared/gameModes.js";
 import UserIdentity from "../shared/UserIdentity.jsx";
-import { ModalActionButton } from "./modalComponents.jsx";
+import { ModalActionButton, ModalDialog } from "./modalComponents.jsx";
 
 export function ConfirmModal({ title, message, confirmText, onConfirm, onCancel }) {
+  const titleId = useId();
+  const messageId = useId();
   return (
     <div className="modal-backdrop" onClick={onCancel}>
-      <section className="confirm-modal" onClick={(event) => event.stopPropagation()}>
-        <h2>{title}</h2>
-        <p>{message}</p>
+      <ModalDialog
+        className="confirm-modal"
+        ariaLabelledBy={titleId}
+        aria-describedby={messageId}
+        onClose={onCancel}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2 id={titleId}>{title}</h2>
+        <p id={messageId}>{message}</p>
         <div className="inline-actions confirm-actions">
           <ModalActionButton variant="danger" onClick={onConfirm}>{confirmText}</ModalActionButton>
           <ModalActionButton variant="secondary" onClick={onCancel}>取消</ModalActionButton>
         </div>
-      </section>
+      </ModalDialog>
     </div>
   );
 }

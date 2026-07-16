@@ -14,7 +14,8 @@ export async function api(path, options = {}) {
       "Content-Type": "application/json",
       ...(options.token ? { Authorization: `Bearer ${options.token}` } : {})
     },
-    body: options.body ? JSON.stringify(options.body) : undefined
+    body: options.body ? JSON.stringify(options.body) : undefined,
+    signal: options.signal
   }, options.requestTimeoutMs);
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
@@ -40,6 +41,7 @@ export async function api(path, options = {}) {
     error.status = response.status;
     error.code = data.code;
     error.data = data;
+    error.retryAfter = parseRetryAfter(response.headers.get("retry-after"));
     throw error;
   }
   return data;
@@ -78,7 +80,15 @@ async function fetchWithTimeout(url, init, timeoutMs = DEFAULT_REQUEST_TIMEOUT_M
   if (!Number.isFinite(timeout) || timeout <= 0) return fetch(url, init);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  const externalSignal = init.signal;
+  let timedOut = false;
+  const abortFromExternalSignal = () => controller.abort(externalSignal?.reason);
+  if (externalSignal?.aborted) abortFromExternalSignal();
+  else externalSignal?.addEventListener("abort", abortFromExternalSignal, { once: true });
+  const timeoutId = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeout);
 
   try {
     return await fetch(url, {
@@ -86,11 +96,22 @@ async function fetchWithTimeout(url, init, timeoutMs = DEFAULT_REQUEST_TIMEOUT_M
       signal: controller.signal
     });
   } catch (error) {
-    if (controller.signal.aborted) {
+    if (timedOut) {
       throw new Error("\u8bf7\u6c42\u8d85\u65f6\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002");
     }
     throw error;
   } finally {
     clearTimeout(timeoutId);
+    externalSignal?.removeEventListener("abort", abortFromExternalSignal);
   }
+}
+
+function parseRetryAfter(value) {
+  const rawValue = String(value ?? "").trim();
+  if (!rawValue) return undefined;
+  const seconds = Number(rawValue);
+  if (Number.isFinite(seconds) && seconds >= 0) return seconds;
+  const retryAt = Date.parse(rawValue);
+  if (!Number.isFinite(retryAt)) return undefined;
+  return Math.max(0, Math.ceil((retryAt - Date.now()) / 1000));
 }

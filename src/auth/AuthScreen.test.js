@@ -3,23 +3,22 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import AuthScreen from "./AuthScreen.jsx";
-import { AUTH_REGISTER_HELP, authSubmitText, isAlreadyLoggedInError, truncateUsernameInput, usernameDisplayWidth, validateAuthField, validateAuthSubmit } from "./AuthScreen.jsx";
+import { AUTH_REGISTER_LABEL_NOTES, authSubmitText, isAlreadyLoggedInError, usernameDisplayWidth, validateAuthField, validateAuthSubmit } from "./AuthScreen.jsx";
 import { readCssWithImports } from "../styles/cssTestUtils.js";
 
 describe("AuthScreen submit validation", () => {
   it("allows login without a password confirmation", () => {
-    expect(validateAuthSubmit({ mode: "login", password: "secret1", confirmPassword: "" })).toEqual({ ok: true });
+    expect(validateAuthSubmit({ mode: "login", username: "Alice_12", password: "secret1", confirmPassword: "" })).toEqual({ ok: true });
   });
 
   it("rejects registration when password confirmation does not match", () => {
     expect(validateAuthSubmit({
       mode: "register",
       username: "Alice_12",
-      password: "secret1",
-      confirmPassword: "secret2"
+      password: "secret12",
+      confirmPassword: "secret21"
     })).toEqual({
       ok: false,
-      error: "\u4e24\u6b21\u8f93\u5165\u7684\u5bc6\u7801\u4e0d\u4e00\u81f4",
       fieldErrors: {
         username: "",
         password: "",
@@ -32,18 +31,19 @@ describe("AuthScreen submit validation", () => {
     expect(validateAuthSubmit({
       mode: "register",
       username: "Alice_12",
-      password: "secret1",
-      confirmPassword: "secret1"
+      password: "secret12",
+      confirmPassword: "secret12"
     })).toEqual({ ok: true });
   });
 
   it("validates registration fields with the same username and password limits as the server", () => {
     expect(usernameDisplayWidth("Alice_12")).toBe(8);
     expect(validateAuthField("username", "Alice_12")).toBe("");
-    expect(validateAuthField("username", "Alice_123")).toContain("2-8");
+    expect(validateAuthField("username", "Alice_123")).toContain("\u6700\u591a 4 \u4e2a");
     expect(validateAuthField("username", "bad-name")).toBe("\u7528\u6237\u540d\u4ec5\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf");
-    expect(validateAuthField("password", "12345")).toBe("\u5bc6\u7801\u9700\u4e3a 6-14 \u4f4d");
-    expect(validateAuthField("password", "123456789012345")).toBe("\u5bc6\u7801\u9700\u4e3a 6-14 \u4f4d");
+    expect(validateAuthField("password", "1234567", { mode: "register" })).toBe("\u65b0\u5bc6\u7801\u9700\u4e3a 8-64 \u4f4d");
+    expect(validateAuthField("password", "1234567", { mode: "login" })).toBe("");
+    expect(validateAuthField("password", "x".repeat(65), { mode: "register" })).toBe("\u65b0\u5bc6\u7801\u9700\u4e3a 8-64 \u4f4d");
     expect(validateAuthField("confirmPassword", "secret2", { password: "secret1" })).toBe("\u4e24\u6b21\u8f93\u5165\u7684\u5bc6\u7801\u4e0d\u4e00\u81f4");
   });
 
@@ -51,14 +51,13 @@ describe("AuthScreen submit validation", () => {
     expect(validateAuthSubmit({
       mode: "register",
       username: "bad-name",
-      password: "12345",
+      password: "1234567",
       confirmPassword: "123456"
     })).toEqual({
       ok: false,
-      error: "\u7528\u6237\u540d\u4ec5\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf",
       fieldErrors: {
         username: "\u7528\u6237\u540d\u4ec5\u652f\u6301\u4e2d\u6587\u3001\u65e5\u6587\u3001\u97e9\u6587\u3001\u534a\u89d2\u82f1\u6587\u3001\u6570\u5b57\u548c\u4e0b\u5212\u7ebf",
-        password: "\u5bc6\u7801\u9700\u4e3a 6-14 \u4f4d",
+        password: "\u65b0\u5bc6\u7801\u9700\u4e3a 8-64 \u4f4d",
         confirmPassword: "\u4e24\u6b21\u8f93\u5165\u7684\u5bc6\u7801\u4e0d\u4e00\u81f4"
       }
     });
@@ -69,15 +68,14 @@ describe("AuthScreen submit validation", () => {
     expect(isAlreadyLoggedInError({ status: 401, code: "already_logged_in" })).toBe(false);
   });
 
-  it("uses the pop-tech connection copy for login submit", () => {
-    expect(authSubmitText("login")).toBe("START CONNECTION!! >");
+  it("uses direct Chinese copy for the primary actions", () => {
+    expect(authSubmitText("login")).toBe("\u767b\u5f55\u5e76\u8fdb\u5165");
     expect(authSubmitText("register")).toBe("\u521b\u5efa\u8d26\u53f7");
   });
 
-  it("truncates username input by CJK and half-width display width", () => {
-    expect(truncateUsernameInput("\u4e00\u4e8c\u4e09\u56db\u4e94")).toBe("\u4e00\u4e8c\u4e09\u56db");
-    expect(truncateUsernameInput("Alice_123")).toBe("Alice_12");
-    expect(truncateUsernameInput("\u9732\u9732A_123")).toBe("\u9732\u9732A_12");
+  it("reports overlong usernames instead of truncating them", () => {
+    expect(validateAuthField("username", "\u4e00\u4e8c\u4e09\u56db\u4e94")).toContain("\u6700\u591a 4 \u4e2a");
+    expect(validateAuthField("username", "Alice_123")).toContain("\u6700\u591a 4 \u4e2a");
   });
 
   it("renders tactical terminal class hooks without changing the auth form", () => {
@@ -92,7 +90,12 @@ describe("AuthScreen submit validation", () => {
     expect(html).not.toContain('src="/assets/sigrika_centered.webp"');
     expect(html).toContain('<p class="text-display-accent">SigrikaGo</p>');
     expect(html).toContain("autoComplete=\"username\"");
+    expect(html).toContain("name=\"username\"");
     expect(html).toContain("type=\"password\"");
+    expect(html).toContain("aria-pressed=\"true\"");
+    expect(html).toContain("aria-label=\"\u663e\u793a\u5bc6\u7801\"");
+    expect(html).toContain("alt=\"\"");
+    expect(html).not.toContain("\\u897f\\u683c\\u8389\\u5361");
   });
 
   it("ships the login-only mascot as a compressed WebP with its PNG source", () => {
@@ -124,19 +127,14 @@ describe("AuthScreen submit validation", () => {
     expect(mobileCss).toContain("font-family: var(--font-window-title), var(--font-ui-default) !important");
   });
 
-  it("renders registration input guidance as field placeholders", () => {
+  it("keeps registration guidance short and outside placeholders", () => {
     const html = renderToStaticMarkup(createElement(AuthScreen, { onAuth: () => {}, initialMode: "register" }));
 
     expect(html).not.toContain("auth-field-hint");
-    expect(html).toContain(AUTH_REGISTER_HELP.username);
-    expect(html).toContain(AUTH_REGISTER_HELP.password);
-    expect(html).toContain(AUTH_REGISTER_HELP.confirmPassword);
-    expect(html).toContain(`placeholder="${AUTH_REGISTER_HELP.username}"`);
-    expect(html).toContain(`placeholder="${AUTH_REGISTER_HELP.password}"`);
-    expect(html).toContain(`placeholder="${AUTH_REGISTER_HELP.confirmPassword}"`);
-    expect(html).not.toContain("register-username-hint");
-    expect(html).not.toContain("register-password-hint");
-    expect(html).not.toContain("register-confirmPassword-hint");
+    expect(html).toContain(AUTH_REGISTER_LABEL_NOTES.username);
+    expect(html).toContain(AUTH_REGISTER_LABEL_NOTES.password);
+    expect(html).not.toContain("placeholder=");
+    expect(html).not.toContain("\u8bf7\u518d\u8f93\u5165\u4e00\u6b21\u5bc6\u7801");
   });
 
   it("styles registration placeholders and invalid inputs", () => {
@@ -146,6 +144,8 @@ describe("AuthScreen submit validation", () => {
     expect(css).toContain(".auth-form input::placeholder");
     expect(css).toContain(".auth-field-error");
     expect(css).toContain(".auth-field.invalid input");
+    expect(css).toContain(".auth-password-toggle");
+    expect(css).toContain("prefers-reduced-motion: reduce");
     expect(themeCss).toContain(".auth-form input::placeholder");
     expect(themeCss).toContain(".auth-field.invalid input");
     expect(themeCss).toContain("border-color: #c0182d !important");
