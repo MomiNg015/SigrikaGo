@@ -613,11 +613,20 @@ describe("root CSS entry contract", () => {
       "./mobile-adaptive/shop-window-redesign.css",
       "./mobile-adaptive/shop-window-card-layout.css",
       "./mobile-adaptive/shop-window-compact.css",
-      "./mobile-adaptive/shop-card-badges.css"
+      "./mobile-adaptive/shop-card-badges.css",
+      "./mobile-adaptive/user-nameplate-final.css"
     ]);
     expect(mobileEntry).not.toContain(".gacha-modal {");
     expect(mobileEntry).not.toContain(".mobile-room-screen {");
     expect(mobileEntry).not.toContain(".home-mobile-menu-panel");
+
+    const finalNameplateCss = readFileSync(new URL("./mobile-adaptive/user-nameplate-final.css", import.meta.url), "utf8");
+    expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/user-nameplate-final.css");
+    expect(finalNameplateCss).toContain('[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
+    expect(finalNameplateCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
+    expect(finalNameplateCss).toContain("color: #fff8ee !important");
+    expect(finalNameplateCss).toContain("text-shadow:");
+    expect(finalNameplateCss).toContain("overflow: visible !important");
 
     const phoneCoreEntry = readFileSync(new URL("./mobile-adaptive/phone-core.css", import.meta.url), "utf8");
     expect(cssImports(phoneCoreEntry)).toEqual([

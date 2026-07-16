@@ -1,18 +1,18 @@
 export const CSS_DEBT_BASELINE = {
   date: "2026-07-16",
-  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned Semantic Ignition nameplate shell plus reduced-motion owner, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned Semantic Ignition nameplate shell plus reduced-motion owner and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
   metrics: {
-    totalFiles: 605,
-    totalBytes: 1188314,
-    importantCount: 7356,
-    importantFiles: 290,
+    totalFiles: 606,
+    totalBytes: 1191028,
+    importantCount: 7375,
+    importantFiles: 291,
     hardcodedHexCount: 2295,
     mediaFiles: 227,
     reducedMotionFiles: 29,
     highZIndexFiles: 6
   },
   guidance:
-    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-16 file/byte/media/reduced-motion increase records the isolated Semantic Ignition nameplate shell and motion owners; keeping that effect out of core.css preserves the generic nameplate fallback and the per-file size guard. Future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
+    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-16 file/byte/important increase records the final exact-asset Semantic Ignition nameplate owner needed to beat post-HUD Bright School and responsive important resets; keeping it separate preserves the generic fallback and makes the winning cascade boundary testable. Future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
 };
 
 export const CSS_Z_INDEX_CONTRACT = {
@@ -394,6 +394,7 @@ export const CSS_LAYER_GROUPS = [
       "mobile-adaptive/bright-school-portrait/settings-tabs/shared-active-tabs.css",
       "mobile-adaptive/information-center.css",
       "mobile-adaptive/semantic-accent-typography.css",
+      "mobile-adaptive/user-nameplate-final.css",
       "mobile-adaptive/reduced-motion.css"
     ],
     guidance: "This layer stays after themes.css imports. Move or split only with desktop and mobile verification."

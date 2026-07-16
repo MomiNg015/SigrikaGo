@@ -542,7 +542,7 @@ Required assertion points:
 
 #### 1. Scope / Trigger
 
-- Trigger: changing `src/shared/UserIdentity.jsx`, nameplate reward assets, `hud-components/user-identity/**`, or a surface that sizes equipped usernames.
+- Trigger: changing `src/shared/UserIdentity.jsx`, nameplate reward assets, `hud-components/user-identity/**`, `mobile-adaptive/user-nameplate-final.css`, or a surface that sizes equipped usernames.
 - Achievement nameplates are fixed-ratio username skins shared by home, room, leaderboard, social, profile, watch, personalization, and result surfaces.
 
 #### 2. Signatures
@@ -554,12 +554,12 @@ Required assertion points:
 #### 3. Contracts
 
 - Generic image nameplates use the shared `96px x 25.6px` (`3.75:1`) slot and remain static. Scene-owned `--user-nameplate-scale` scales width, height, safe padding, and font together.
-- Bespoke presentation is selected only by exact `data-nameplate-id`. Keep its shell and motion in asset-owned files under `hud-components/user-identity/`; do not add effect branches to every consumer or add a backend field for code-owned effects.
+- Bespoke presentation is selected only by exact `data-nameplate-id`. Keep its shell and motion in asset-owned files under `hud-components/user-identity/`; when a later theme or responsive safety layer uses broad `!important` resets, add a last-imported exact-asset winner under `mobile-adaptive/` for only the declarations that must survive. Do not add effect branches to every consumer or add a backend field for code-owned effects.
 - Asset owners may replace base width, height, asymmetric safe padding, font size, and text color, but must continue deriving final dimensions from `--user-nameplate-scale`.
 - Background, effect, and text have stable local stacking. Effect nodes are `aria-hidden`, `pointer-events: none`, and must not affect layout.
 - Continuous motion changes only `transform` and `opacity`; the same asset-owned motion file must provide `prefers-reduced-motion` static fallback.
 - Parent surfaces align the whole `UserIdentity`. They must not stretch the nameplate to parent width or introduce per-username font scaling. Legal usernames render in full; legacy overlong names use the existing ellipsis fallback.
-- Nameplate PNGs remain alpha-trimmed and should use a stable `3.75:1` delivery canvas. Transparent padding may reserve safe glow bleed, but must be measured because it changes apparent art size. Use `node scripts/pngTrim.mjs <input.png> [output.png]` before final resampling.
+- Nameplate PNGs remain alpha-trimmed and should use a stable `3.75:1` delivery canvas. Transparent padding may reserve safe glow bleed, but must be measured because it changes apparent art size. For the built-in `900 x 240` Semantic Ignition raster, the visible alpha subject must occupy at least 197px vertically. Use `node scripts/pngTrim.mjs <input.png> [output.png]` before final resampling.
 
 #### 4. Validation & Error Matrix
 
@@ -574,7 +574,7 @@ Required assertion points:
 - Good: an exact asset-ID selector overrides base geometry and owns its effect while every consumer keeps rendering the same `UserIdentity` component.
 - Base: an admin-created image-only nameplate needs no code and uses the static generic background layer.
 - Bad: changing the shared base size to fit one decorated asset, branching on the asset ID in each page, or baking usernames into the raster.
-- Bad: relying on visible overflow for core readability; protected home/mobile surfaces may clip the tag, so the essential shell and text must fit the fixed slot.
+- Bad: relying on overflow outside the fixed slot for essential shell or text readability. Local `overflow: visible` is allowed only for pointer-transparent glow/sparkle bleed; the raster shell and username safe area must remain complete inside the fixed slot.
 
 #### 6. Tests Required
 
@@ -582,7 +582,7 @@ Required assertion points:
 - `src/styles/hudComponents.test.js` asserts generic `96px x 25.6px`, bespoke geometry, pointer transparency, keyframe durations, and reduced-motion coverage.
 - `src/home/HomeScreen.test.jsx` asserts the equipped built-in asset hook plus checked-in PNG dimensions and transparent corners.
 - `src/styles/styleContract.test.js` and `src/styles/cssLayerInventory.test.js` own import order, file-size boundaries, motion registration, and measured debt baselines.
-- Browser QA covers legal half-width/CJK names, a legacy overlong name, title + badge coexistence, ordinary fallback, compact scaling, and no horizontal overflow at desktop, narrow desktop, and portrait phone widths.
+- Browser QA must load the full active theme cascade, not an isolated shared-HUD stylesheet. It covers legal 8-half-width/CJK names, a legacy overlong name, title + badge coexistence, ordinary fallback, compact scaling, final computed color/shadow/overflow winners, adjacent stats bounds, and no horizontal overflow at desktop, narrow desktop, and portrait phone widths.
 
 #### 7. Wrong vs Correct
 
@@ -1012,7 +1012,7 @@ Required assertion points:
 - Base terminal layout must not force a fixed minimum viewport width; `.home-screen` and `.home-grid-featured` should keep `min-width: 0`.
 - Large desktop starts at 1181px. It can use the three-column composition, but should not create horizontal page scroll.
 - The 1181px-1500px middle desktop band must reserve enough left-column width for the fixed-structure Bright School player plaque; prefer reducing column gaps and secondary-column width before shrinking plaque text below readability.
-- Bright School player plaque names must stay inside the middle identity column. Equipped nameplates use the shared fixed `3.75:1` slot and scene-owned `--user-nameplate-scale`; do not use parent-width stretching, visible overflow, or per-username `--user-identity-fit-font-size` scaling if that lets the username cover `.plaque-stats`.
+- Bright School player plaque names must stay inside the middle identity column. Equipped nameplates use the shared fixed `3.75:1` slot and scene-owned `--user-nameplate-scale`; do not use parent-width stretching, geometry overflow, or per-username `--user-identity-fit-font-size` scaling if that lets the username cover `.plaque-stats`. An exact asset owner may expose only pointer-transparent effect bleed after computed bounds prove the fixed tag still ends before `.plaque-stats` at desktop, narrow desktop, and portrait widths.
 - Generated Bright School home player plaque art must remain a shell/background asset. Avatar art, `UserIdentity`, username text, mode icons, ranks, and labels stay rendered by React DOM/CSS rather than baked into the raster image.
 - The generated plaque shell background must draw from `border-box` rather than the default padding box so the full outer frame, holes, sticker, and stats panel art cover the entire clickable card.
 - The generated plaque shell must be the only `.home-player-plaque.tactical-id-card` background layer. Do not keep the old pink/green gradient fallback or any browser/theme button background, border, radius, outline, or `box-shadow` frame on the card body; the card body may use the shared home-image `filter: drop-shadow(5px 6px 0 rgba(61, 43, 37, 0.3))` treatment and transform-only hover/focus rotation, with reduced-motion coverage.

@@ -1,0 +1,39 @@
+/* Final exact-asset owner after Bright School and responsive safety layers. */
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-main,
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name-tag,
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"],
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-main,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect {
+  overflow: visible !important;
+}
+
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name-tag,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name-tag {
+  box-sizing: border-box !important;
+  flex: 0 0 var(--user-nameplate-width) !important;
+  width: var(--user-nameplate-width) !important;
+  min-width: var(--user-nameplate-width) !important;
+  max-width: var(--user-nameplate-width) !important;
+  height: var(--user-nameplate-height) !important;
+  min-height: var(--user-nameplate-height) !important;
+  padding-left: var(--user-nameplate-padding-left) !important;
+  padding-right: var(--user-nameplate-padding-right) !important;
+}
+
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-name {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  color: #fff8ee !important;
+  font-size: var(--user-nameplate-font-size) !important;
+  font-weight: 800 !important;
+  text-overflow: ellipsis !important;
+  text-shadow:
+    0 1px 1px rgba(31, 9, 48, 0.98),
+    0 0 4px rgba(255, 238, 204, 0.82) !important;
+  white-space: nowrap !important;
+}
