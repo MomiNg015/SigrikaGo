@@ -1150,7 +1150,9 @@ describe("root CSS entry contract", () => {
     expect(cssImports(userIdentityEntry)).toEqual([
       "./user-identity/core.css",
       "./user-identity/context-surfaces.css",
-      "./user-identity/phone-layouts.css"
+      "./user-identity/phone-layouts.css",
+      "./user-identity/semantic-ignition-nameplate.css",
+      "./user-identity/semantic-ignition-motion.css"
     ]);
     expect(userIdentityEntry).not.toContain(".user-identity {");
     expect(userIdentityEntry).not.toContain(".leaderboard-player .user-identity");

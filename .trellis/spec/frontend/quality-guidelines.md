@@ -540,41 +540,69 @@ Required assertion points:
 
 ### UserIdentity Nameplate Background Contract
 
-Achievement nameplate backgrounds are skins for a fixed-ratio username badge, not a separate floating layer. `src/shared/UserIdentity.jsx` should render one `.user-identity-name-tag` around `.user-identity-name`; when an equipped nameplate image exists, apply it as that tag's `backgroundImage`. Equipped nameplates use the shared `3.75:1` slot and scene-owned `--user-nameplate-scale`; the username text uses the shared nameplate font token so text and background scale together. Parent surfaces such as room player panels and leaderboard cells center or align the whole tag.
+#### 1. Scope / Trigger
 
-Nameplate PNG assets should still be alpha-trimmed before use. Transparent canvas padding changes the apparent center of the art even when the tag model is stable. Use `node scripts/pngTrim.mjs <input.png> [output.png]` for 8-bit RGBA PNG nameplates before wiring them into `AchievementRewardAsset.imageUrl`.
+- Trigger: changing `src/shared/UserIdentity.jsx`, nameplate reward assets, `hud-components/user-identity/**`, or a surface that sizes equipped usernames.
+- Achievement nameplates are fixed-ratio username skins shared by home, room, leaderboard, social, profile, watch, personalization, and result surfaces.
 
-Required assertion points:
+#### 2. Signatures
 
-- `src/styles/hudComponents.test.js` should assert that the unequipped username tag uses `width: auto`, transparent borderless default styling, and responsive max-width/padding variables, while the equipped nameplate tag uses the fixed `--user-nameplate-width` / `--user-nameplate-height` slot and the shared `--user-nameplate-font-size`.
-- Home player plaques should render nameplates through the nested `UserIdentity` tag, not a full-card plaque background layer. Bright School player plaque grids should keep a nonzero minimum username column so stats panels cannot collapse short names into ellipses, and plaque-scoped `UserIdentity` text must override list-style `text-overflow: ellipsis` so ordinary usernames render in full.
-- `scripts/pngTrim.test.js` should cover alpha-bound trimming before relying on the helper for checked-in nameplate assets.
+- `UserIdentity({ user, name, className = "", compact = false, showNameplate = true })` keeps its public props stable.
+- Equipped asset payloads remain `{ id, imageUrl, name?, text? }` under `user.achievementEquipmentAssets.nameplate`; no effect-specific API field is required.
+- An equipped image nameplate renders `data-nameplate-id`, `.user-identity-nameplate-background`, an `aria-hidden` `.user-identity-nameplate-effect`, and `.user-identity-name` inside `.user-identity-name-tag`.
+
+#### 3. Contracts
+
+- Generic image nameplates use the shared `96px x 25.6px` (`3.75:1`) slot and remain static. Scene-owned `--user-nameplate-scale` scales width, height, safe padding, and font together.
+- Bespoke presentation is selected only by exact `data-nameplate-id`. Keep its shell and motion in asset-owned files under `hud-components/user-identity/`; do not add effect branches to every consumer or add a backend field for code-owned effects.
+- Asset owners may replace base width, height, asymmetric safe padding, font size, and text color, but must continue deriving final dimensions from `--user-nameplate-scale`.
+- Background, effect, and text have stable local stacking. Effect nodes are `aria-hidden`, `pointer-events: none`, and must not affect layout.
+- Continuous motion changes only `transform` and `opacity`; the same asset-owned motion file must provide `prefers-reduced-motion` static fallback.
+- Parent surfaces align the whole `UserIdentity`. They must not stretch the nameplate to parent width or introduce per-username font scaling. Legal usernames render in full; legacy overlong names use the existing ellipsis fallback.
+- Nameplate PNGs remain alpha-trimmed and should use a stable `3.75:1` delivery canvas. Transparent padding may reserve safe glow bleed, but must be measured because it changes apparent art size. Use `node scripts/pngTrim.mjs <input.png> [output.png]` before final resampling.
+
+#### 4. Validation & Error Matrix
+
+- Missing `imageUrl` or `showNameplate={false}` -> render no nameplate layers or asset-ID hook.
+- Image asset without a bespoke owner -> render the generic static `96px x 25.6px` fallback.
+- Bespoke asset on phone/compact/room surfaces -> inherit the existing scene scale; do not add a parallel breakpoint-specific size system.
+- Legacy overlong username -> ellipsis inside the text safe area; never overlap the embedded core, independent badge, or adjacent stats.
+- Reduced-motion preference -> no running keyframe animation; retain a readable static highlight.
+
+#### 5. Good / Base / Bad Cases
+
+- Good: an exact asset-ID selector overrides base geometry and owns its effect while every consumer keeps rendering the same `UserIdentity` component.
+- Base: an admin-created image-only nameplate needs no code and uses the static generic background layer.
+- Bad: changing the shared base size to fit one decorated asset, branching on the asset ID in each page, or baking usernames into the raster.
+- Bad: relying on visible overflow for core readability; protected home/mobile surfaces may clip the tag, so the essential shell and text must fit the fixed slot.
+
+#### 6. Tests Required
+
+- `src/shared/UserIdentity.test.jsx` asserts asset ID, background/effect/text layers, `aria-hidden`, ordinary asset fallback, title + independent badge coexistence, and no username-length font variable.
+- `src/styles/hudComponents.test.js` asserts generic `96px x 25.6px`, bespoke geometry, pointer transparency, keyframe durations, and reduced-motion coverage.
+- `src/home/HomeScreen.test.jsx` asserts the equipped built-in asset hook plus checked-in PNG dimensions and transparent corners.
+- `src/styles/styleContract.test.js` and `src/styles/cssLayerInventory.test.js` own import order, file-size boundaries, motion registration, and measured debt baselines.
+- Browser QA covers legal half-width/CJK names, a legacy overlong name, title + badge coexistence, ordinary fallback, compact scaling, and no horizontal overflow at desktop, narrow desktop, and portrait phone widths.
+
+#### 7. Wrong vs Correct
 
 Wrong:
 
 ```css
-.user-identity.has-nameplate .user-identity-name {
-  font-size: calc(12px + var(--username-length) * 0.5px);
+.user-identity.has-nameplate {
+  --user-nameplate-base-width: 120px;
 }
 ```
 
-This makes the rendered size depend on username length again.
+This changes every nameplate to accommodate one asset.
 
 Correct:
 
 ```css
-.user-identity {
-  --user-nameplate-font-size: calc(15px * var(--user-nameplate-scale));
-}
-
-.user-identity.has-nameplate .user-identity-name-tag {
-  width: var(--user-nameplate-width);
-  height: var(--user-nameplate-height);
-  padding-inline: var(--user-nameplate-padding-x);
-}
-
-.user-identity.has-nameplate .user-identity-name {
-  font-size: var(--user-nameplate-font-size);
+.user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] {
+  --user-nameplate-base-width: 120px;
+  --user-nameplate-base-height: 32px;
+  --user-nameplate-padding-left: calc(34px * var(--user-nameplate-scale));
 }
 ```
 

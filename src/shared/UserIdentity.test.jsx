@@ -11,14 +11,21 @@ describe("UserIdentity", () => {
           achievementEquipmentAssets: {
             title: { name: "Semantic Keeper", text: "语义守夜人" },
             badge: { name: "Rune Badge", imageUrl: "/assets/badge.png" },
-            nameplate: { name: "Rune Nameplate", imageUrl: "/assets/nameplate.png" }
+            nameplate: { id: "rune-nameplate", name: "Rune Nameplate", imageUrl: "/assets/nameplate.png" }
           }
         }}
       />
     );
 
     expect(markup).toContain("user-identity has-nameplate has-title has-emblem");
+    expect(markup).toContain('data-nameplate-id="rune-nameplate"');
     expect(markup).toContain("user-identity-name-tag");
+    expect(markup).toContain("user-identity-nameplate-background");
+    expect(markup).toContain('class="user-identity-nameplate-effect" aria-hidden="true"');
+    expect(markup).toContain("user-identity-nameplate-glow");
+    expect(markup).toContain("user-identity-nameplate-core");
+    expect(markup).toContain("user-identity-nameplate-sweep");
+    expect(markup).toContain("user-identity-nameplate-sparkles");
     expect(markup).toContain("background-image:url(/assets/nameplate.png)");
     expect(markup).toContain("语义守夜人");
     expect(markup).toContain("src=\"/assets/badge.png\"");
@@ -55,5 +62,37 @@ describe("UserIdentity", () => {
     expect(longMarkup).not.toContain("--user-identity-fit-font-size");
     expect(shortMarkup).toContain("李白");
     expect(longMarkup).toContain("Moming88");
+  });
+
+  it("keeps asset-specific hooks data-driven without changing generic nameplates", () => {
+    const semanticMarkup = renderToStaticMarkup(
+      <UserIdentity
+        user={{
+          username: "语义守夜",
+          achievementEquipmentAssets: {
+            nameplate: {
+              id: "reward-sigrika-spark-100-wins-nameplate",
+              imageUrl: "/assets/achievements/semantic-nameplate.png"
+            }
+          }
+        }}
+      />
+    );
+    const genericMarkup = renderToStaticMarkup(
+      <UserIdentity
+        user={{
+          username: "LegacyUsernameThatNeedsEllipsis",
+          achievementEquipmentAssets: {
+            nameplate: { id: "plain-nameplate", imageUrl: "/assets/plain-nameplate.png" }
+          }
+        }}
+      />
+    );
+
+    expect(semanticMarkup).toContain('data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"');
+    expect(semanticMarkup).toContain("语义守夜");
+    expect(genericMarkup).toContain('data-nameplate-id="plain-nameplate"');
+    expect(genericMarkup).not.toContain("reward-sigrika-spark-100-wins-nameplate");
+    expect(genericMarkup).not.toContain("--user-identity-fit-font-size");
   });
 });

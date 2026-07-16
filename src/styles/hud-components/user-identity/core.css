@@ -5,7 +5,8 @@
   --user-nameplate-base-height: 25.6px;
   --user-nameplate-width: calc(var(--user-nameplate-base-width) * var(--user-nameplate-scale));
   --user-nameplate-height: calc(var(--user-nameplate-base-height) * var(--user-nameplate-scale));
-  --user-nameplate-padding-x: calc(15px * var(--user-nameplate-scale));
+  --user-nameplate-padding-left: calc(15px * var(--user-nameplate-scale));
+  --user-nameplate-padding-right: calc(15px * var(--user-nameplate-scale));
   --user-nameplate-font-size: calc(15px * var(--user-nameplate-scale));
   --user-identity-name-tag-min-height: 1.4em;
   --user-identity-name-tag-max-width: 100%;
@@ -30,6 +31,8 @@
 }
 
 .user-identity-name-tag {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
@@ -59,12 +62,41 @@
   height: var(--user-nameplate-height);
   min-height: var(--user-nameplate-height);
   max-width: min(100%, var(--user-nameplate-width));
-  padding-inline: var(--user-nameplate-padding-x);
+  padding-left: var(--user-nameplate-padding-left);
+  padding-right: var(--user-nameplate-padding-right);
   background-position: center;
+  overflow: visible;
 }
 
 .user-identity.has-nameplate .user-identity-name {
+  position: relative;
+  z-index: 2;
   font-size: var(--user-nameplate-font-size);
+}
+
+.user-identity-nameplate-background,
+.user-identity-nameplate-effect {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.user-identity-nameplate-background {
+  z-index: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.user-identity-nameplate-effect {
+  z-index: 1;
+  overflow: visible;
+}
+
+.user-identity-nameplate-effect > span {
+  position: absolute;
+  display: block;
+  pointer-events: none;
 }
 
 .user-identity-title,

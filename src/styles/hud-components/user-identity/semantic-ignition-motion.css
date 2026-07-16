@@ -1,0 +1,77 @@
+/* Asset-owned motion and reduced-motion fallback for “Semantic Ignition”. */
+@keyframes semantic-nameplate-glow {
+  from {
+    opacity: 0.58;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.035);
+  }
+}
+
+@keyframes semantic-nameplate-core {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes semantic-nameplate-sweep {
+  0%, 16% {
+    opacity: 0;
+    transform: translateX(-72%) skewX(-18deg);
+  }
+
+  34% { opacity: 0.92; }
+
+  62%, 100% {
+    opacity: 0;
+    transform: translateX(128%) skewX(-18deg);
+  }
+}
+
+@keyframes semantic-nameplate-sparkles-a {
+  from { opacity: 0.3; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1.08); }
+}
+
+@keyframes semantic-nameplate-sparkles-b {
+  from { opacity: 0.18; transform: scale(0.82) rotate(-2deg); }
+  to { opacity: 0.95; transform: scale(1.1) rotate(2deg); }
+}
+
+@keyframes semantic-nameplate-sparkles-c {
+  from { opacity: 0.22; transform: scale(0.88); }
+  to { opacity: 0.88; transform: scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect,
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect *,
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect *::before,
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-effect *::after {
+    animation: none !important;
+  }
+
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-glow {
+    opacity: 0.82;
+    transform: none;
+  }
+
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-core {
+    opacity: 0.72;
+    transform: none;
+  }
+
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sweep {
+    opacity: 0.16;
+    transform: translateX(24%) skewX(-18deg);
+  }
+
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles,
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::before,
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::after {
+    opacity: 0.72;
+    transform: none;
+  }
+}

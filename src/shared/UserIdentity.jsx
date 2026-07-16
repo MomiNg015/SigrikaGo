@@ -22,7 +22,7 @@ export default function UserIdentity({
   ].filter(Boolean).join(" ");
 
   return (
-    <span className={classes}>
+    <span className={classes} data-nameplate-id={nameplate?.id || undefined}>
       {titleText && <span className="user-identity-title">{titleText}</span>}
       <span className="user-identity-main">
         {emblem && (
@@ -32,8 +32,22 @@ export default function UserIdentity({
         )}
         <span
           className="user-identity-name-tag"
-          style={nameplate?.imageUrl ? { backgroundImage: `url(${nameplate.imageUrl})` } : undefined}
         >
+          {nameplate?.imageUrl && (
+            <>
+              <span
+                className="user-identity-nameplate-background"
+                aria-hidden="true"
+                style={{ backgroundImage: `url(${nameplate.imageUrl})` }}
+              />
+              <span className="user-identity-nameplate-effect" aria-hidden="true">
+                <span className="user-identity-nameplate-glow" />
+                <span className="user-identity-nameplate-core" />
+                <span className="user-identity-nameplate-sweep" />
+                <span className="user-identity-nameplate-sparkles" />
+              </span>
+            </>
+          )}
           <span className="user-identity-name">{displayName}</span>
         </span>
       </span>

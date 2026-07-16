@@ -535,7 +535,8 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain("width: var(--user-nameplate-width)");
     expect(hudCss).toContain("height: var(--user-nameplate-height)");
     expect(hudCss).toContain("--user-nameplate-font-size: calc(15px * var(--user-nameplate-scale))");
-    expect(hudCss).toContain(".user-identity.has-nameplate .user-identity-name {\n  font-size: var(--user-nameplate-font-size)");
+    expect(hudCss).toContain(".user-identity.has-nameplate .user-identity-name {");
+    expect(hudCss).toContain("font-size: var(--user-nameplate-font-size)");
     expect(hudCss).toContain(".leaderboard-player .user-identity {\n  justify-self: center");
     expect(hudCss).toContain(".leaderboard-player .user-identity-main {\n  justify-content: center");
     expect(hudCss).toContain(".leaderboard-player .user-identity-name-tag");
@@ -552,6 +553,18 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain(".user-identity-emblem");
     expect(hudCss).toContain(".leaderboard-player .user-identity");
     expect(hudCss).toContain(".friend-main .user-identity");
+    expect(hudCss).toContain('[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
+    expect(hudCss).toContain("--user-nameplate-base-width: 120px");
+    expect(hudCss).toContain("--user-nameplate-base-height: 32px");
+    expect(hudCss).toContain("--user-nameplate-padding-left: calc(34px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain(".user-identity-nameplate-background");
+    expect(hudCss).toContain(".user-identity-nameplate-effect");
+    expect(hudCss).toContain("pointer-events: none");
+    expect(hudCss).toContain("animation: semantic-nameplate-glow 1.6s");
+    expect(hudCss).toContain("animation: semantic-nameplate-core 3.6s");
+    expect(hudCss).toContain("animation: semantic-nameplate-sweep 2.2s");
+    expect(hudCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(hudCss).toContain("animation: none !important");
   });
 
   it("keeps the Bright School lobby stage free of solid fills behind the image panel", () => {

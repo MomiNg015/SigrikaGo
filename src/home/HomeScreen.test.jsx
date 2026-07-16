@@ -644,8 +644,19 @@ describe("HomeScreen", () => {
 
     expect(html).not.toContain("plaque-nameplate-bg");
     expect(html).toContain("user-identity has-nameplate");
+    expect(html).toContain('data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"');
     expect(html).toContain("user-identity-name-tag");
+    expect(html).toContain("user-identity-nameplate-effect");
     expect(html).toContain("background-image:url(/assets/achievements/semantic-nameplate.png)");
+
+    const source = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/semantic-nameplate.png", import.meta.url)));
+    expect({ width: source.width, height: source.height }).toEqual({ width: 900, height: 240 });
+    expect([
+      source.pixels[3],
+      source.pixels[(source.width - 1) * 4 + 3],
+      source.pixels[((source.height - 1) * source.width) * 4 + 3],
+      source.pixels[(source.width * source.height - 1) * 4 + 3]
+    ]).toEqual([0, 0, 0, 0]);
   });
 
   it("keeps the HUD footer minimal and rewrites the mobile lobby layout", () => {
