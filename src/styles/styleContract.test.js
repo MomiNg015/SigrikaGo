@@ -624,7 +624,7 @@ describe("root CSS entry contract", () => {
     expect(cssImports(mobileEntry).at(-1)).toBe("./mobile-adaptive/user-nameplate-final.css");
     expect(finalNameplateCss).toContain('[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
     expect(finalNameplateCss).toContain('.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .user-identity.has-nameplate[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"]');
-    expect(finalNameplateCss).toContain("color: #fff8ee !important");
+    expect(finalNameplateCss).toContain("color: #fffdf4 !important");
     expect(finalNameplateCss).toContain("text-shadow:");
     expect(finalNameplateCss).toContain("overflow: visible !important");
 

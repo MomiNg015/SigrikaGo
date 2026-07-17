@@ -650,7 +650,7 @@ describe("HomeScreen", () => {
     expect(html).toContain("background-image:url(/assets/achievements/semantic-nameplate.png)");
 
     const source = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/semantic-nameplate.png", import.meta.url)));
-    expect({ width: source.width, height: source.height }).toEqual({ width: 900, height: 240 });
+    expect({ width: source.width, height: source.height }).toEqual({ width: 1125, height: 240 });
     expect([
       source.pixels[3],
       source.pixels[(source.width - 1) * 4 + 3],

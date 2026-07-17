@@ -1,32 +1,30 @@
-/* Asset-owned motion and reduced-motion fallback for “Semantic Ignition”. */
+/* Hand-painted sunlight, citrus glint, wind-tail, and starlight motion for “Semantic Ignition”. */
 @keyframes semantic-nameplate-glow {
   from {
-    opacity: 0.58;
-    transform: scale(0.985);
+    opacity: 0.62;
+    transform: scale(0.99);
   }
 
   to {
     opacity: 1;
-    transform: scale(1.035);
+    transform: scale(1.018);
   }
 }
 
 @keyframes semantic-nameplate-core {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from { opacity: 0.52; transform: scale(0.94); }
+  to { opacity: 0.94; transform: scale(1.07); }
 }
 
 @keyframes semantic-nameplate-sweep {
-  0%, 16% {
-    opacity: 0;
-    transform: translateX(-72%) skewX(-18deg);
+  from {
+    opacity: 0.28;
+    transform: translate3d(-3%, 1%, 0) scaleX(0.96);
   }
 
-  34% { opacity: 0.92; }
-
-  62%, 100% {
-    opacity: 0;
-    transform: translateX(128%) skewX(-18deg);
+  to {
+    opacity: 0.9;
+    transform: translate3d(3%, -1%, 0) scaleX(1.03);
   }
 }
 
@@ -36,8 +34,8 @@
 }
 
 @keyframes semantic-nameplate-sparkles-b {
-  from { opacity: 0.18; transform: scale(0.82) rotate(-2deg); }
-  to { opacity: 0.95; transform: scale(1.1) rotate(2deg); }
+  from { opacity: 0.18; transform: translate3d(0, 1%, 0) scale(0.82); }
+  to { opacity: 0.95; transform: translate3d(0, -1%, 0) scale(1.1); }
 }
 
 @keyframes semantic-nameplate-sparkles-c {
@@ -54,7 +52,7 @@
   }
 
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-glow {
-    opacity: 0.82;
+    opacity: 0.86;
     transform: none;
   }
 
@@ -64,8 +62,8 @@
   }
 
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sweep {
-    opacity: 0.16;
-    transform: translateX(24%) skewX(-18deg);
+    opacity: 0.48;
+    transform: none;
   }
 
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles,

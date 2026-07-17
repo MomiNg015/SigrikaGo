@@ -28,12 +28,12 @@
   min-width: 0 !important;
   max-width: 100% !important;
   overflow: hidden !important;
-  color: #fff8ee !important;
+  color: #fffdf4 !important;
   font-size: var(--user-nameplate-font-size) !important;
   font-weight: 800 !important;
   text-overflow: ellipsis !important;
   text-shadow:
-    0 1px 1px rgba(31, 9, 48, 0.98),
-    0 0 4px rgba(255, 238, 204, 0.82) !important;
+    0 1px 1px rgba(48, 17, 79, 0.98),
+    0 0 3px rgba(255, 244, 211, 0.76) !important;
   white-space: nowrap !important;
 }

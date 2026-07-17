@@ -559,7 +559,8 @@ Required assertion points:
 - Background, effect, and text have stable local stacking. Effect nodes are `aria-hidden`, `pointer-events: none`, and must not affect layout.
 - Continuous motion changes only `transform` and `opacity`; the same asset-owned motion file must provide `prefers-reduced-motion` static fallback.
 - Parent surfaces align the whole `UserIdentity`. They must not stretch the nameplate to parent width or introduce per-username font scaling. Legal usernames render in full; legacy overlong names use the existing ellipsis fallback.
-- Nameplate PNGs remain alpha-trimmed and should use a stable `3.75:1` delivery canvas. Transparent padding may reserve safe glow bleed, but must be measured because it changes apparent art size. For the built-in `900 x 240` Semantic Ignition raster, the visible alpha subject must occupy at least 197px vertically. Use `node scripts/pngTrim.mjs <input.png> [output.png]` before final resampling.
+- Generic nameplate PNGs remain alpha-trimmed on the shared `3.75:1` delivery canvas. Asset-owned exceptions must keep their raster ratio identical to their exact-ID slot ratio. Transparent padding may reserve safe glow bleed, but must be measured because it changes apparent art size. For the built-in `1125 x 240` Semantic Ignition raster, the visible alpha subject must occupy at least 197px vertically. Use `node scripts/pngTrim.mjs <input.png> [output.png]` before final resampling.
+- The built-in Semantic Ignition asset is Sigrika-specific hand-painted art, not a generic energy badge. Preserve the sun-rune, dekopon citrus and fresh leaves, deep-plum username carrier, warm starlight, and cyan-violet wind tail vocabulary; do not replace it with hair, braids, ribbons, fur-like decoration, esports neon, a letter emblem, a character portrait, or baked text. Its CSS core may breathe through transform/opacity and its wind tail may drift locally, but it must not return to a continuously rotating mechanical ring or a full-width glossy sweep.
 
 #### 4. Validation & Error Matrix
 
@@ -590,7 +591,7 @@ Wrong:
 
 ```css
 .user-identity.has-nameplate {
-  --user-nameplate-base-width: 120px;
+  --user-nameplate-base-width: 150px;
 }
 ```
 
@@ -600,9 +601,9 @@ Correct:
 
 ```css
 .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] {
-  --user-nameplate-base-width: 120px;
+  --user-nameplate-base-width: 150px;
   --user-nameplate-base-height: 32px;
-  --user-nameplate-padding-left: calc(34px * var(--user-nameplate-scale));
+  --user-nameplate-padding-left: calc(39px * var(--user-nameplate-scale));
 }
 ```
 
