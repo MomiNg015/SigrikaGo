@@ -1,46 +1,33 @@
-/* Hand-painted sunlight, citrus glint, wind-tail, and starlight motion for “Semantic Ignition”. */
-@keyframes semantic-nameplate-glow {
-  from {
-    opacity: 0.62;
-    transform: scale(0.99);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1.018);
-  }
+/* Illustration-aligned sunlight, citrus glint, wind-tail, and starlight motion for “Semantic Ignition”. */
+@keyframes semantic-nameplate-sunlight {
+  from { opacity: 0.58; transform: scale(0.98); }
+  to { opacity: 0.86; transform: scale(1.035); }
 }
 
-@keyframes semantic-nameplate-core {
-  from { opacity: 0.52; transform: scale(0.94); }
-  to { opacity: 0.94; transform: scale(1.07); }
+@keyframes semantic-nameplate-citrus-glint {
+  0%, 58%, 100% { opacity: 0.18; transform: translate3d(-4%, 4%, 0) scale(0.72); }
+  72% { opacity: 0.9; transform: translate3d(7%, -6%, 0) scale(1); }
+  84% { opacity: 0.28; transform: translate3d(12%, -9%, 0) scale(0.78); }
 }
 
-@keyframes semantic-nameplate-sweep {
-  from {
-    opacity: 0.28;
-    transform: translate3d(-3%, 1%, 0) scaleX(0.96);
-  }
-
-  to {
-    opacity: 0.9;
-    transform: translate3d(3%, -1%, 0) scaleX(1.03);
-  }
+@keyframes semantic-nameplate-wind-tail {
+  from { opacity: 0.68; transform: translate3d(-8%, 1%, 0); }
+  to { opacity: 0.9; transform: translate3d(10%, -1%, 0); }
 }
 
-@keyframes semantic-nameplate-sparkles-a {
-  from { opacity: 0.3; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1.08); }
+@keyframes semantic-nameplate-stars-a {
+  from { opacity: 0.18; transform: scale(0.92); }
+  to { opacity: 0.58; transform: scale(1.03); }
 }
 
-@keyframes semantic-nameplate-sparkles-b {
-  from { opacity: 0.18; transform: translate3d(0, 1%, 0) scale(0.82); }
-  to { opacity: 0.95; transform: translate3d(0, -1%, 0) scale(1.1); }
+@keyframes semantic-nameplate-stars-b {
+  from { opacity: 0.12; transform: translate3d(0, 2%, 0) scale(0.86); }
+  to { opacity: 0.54; transform: translate3d(0, -2%, 0) scale(1.05); }
 }
 
-@keyframes semantic-nameplate-sparkles-c {
-  from { opacity: 0.22; transform: scale(0.88); }
-  to { opacity: 0.88; transform: scale(1.12); }
+@keyframes semantic-nameplate-stars-c {
+  from { opacity: 0.1; transform: scale(0.88); }
+  to { opacity: 0.5; transform: scale(1.06); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -52,24 +39,24 @@
   }
 
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-glow {
-    opacity: 0.86;
-    transform: none;
-  }
-
-  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-core {
     opacity: 0.72;
     transform: none;
   }
 
+  .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-core {
+    opacity: 0.34;
+    transform: none;
+  }
+
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sweep {
-    opacity: 0.48;
+    opacity: 0.78;
     transform: none;
   }
 
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles,
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::before,
   .user-identity[data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles::after {
-    opacity: 0.72;
+    opacity: 0.34;
     transform: none;
   }
 }

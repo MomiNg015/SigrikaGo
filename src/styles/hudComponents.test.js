@@ -562,10 +562,14 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain(".user-identity-nameplate-effect");
     expect(hudCss).toContain("pointer-events: none");
     expect(hudCss).toContain("Sigrika's hand-painted citrus-sun “Semantic Ignition” nameplate");
-    expect(hudCss).toContain("animation: semantic-nameplate-glow 2.4s");
-    expect(hudCss).toContain("animation: semantic-nameplate-core 2.8s ease-in-out");
-    expect(hudCss).toContain("animation: semantic-nameplate-sweep 2.6s ease-in-out");
-    expect(hudCss).toContain("translate3d(-3%, 1%, 0) scaleX(0.96)");
+    expect(hudCss).toContain("animation: semantic-nameplate-sunlight 3.4s ease-in-out");
+    expect(hudCss).toContain("animation: semantic-nameplate-citrus-glint 2.2s ease-in-out");
+    expect(hudCss).toContain("animation: semantic-nameplate-wind-tail 3.2s ease-in-out");
+    expect(hudCss).toContain("drop-shadow(0 0 calc(2.2px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain("rgba(255, 241, 190, 0.72) 46%");
+    expect(hudCss).toContain("background-size: 58% 78%, 48% 1px");
+    expect(hudCss).not.toContain("linear-gradient(90deg, transparent 20%");
+    expect(hudCss).not.toContain("inset: calc(-3px * var(--user-nameplate-scale))");
     expect(hudCss).not.toContain("to { transform: rotate(360deg); }");
     expect(hudCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(hudCss).toContain("animation: none !important");

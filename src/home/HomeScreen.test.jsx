@@ -660,7 +660,14 @@ describe("HomeScreen", () => {
     const visibleRows = Array.from({ length: source.height }, (_unused, y) => y)
       .filter((y) => Array.from({ length: source.width }, (_unused, x) => source.pixels[(y * source.width + x) * 4 + 3])
         .some((alpha) => alpha > 0));
+    const visibleColumns = Array.from({ length: source.width }, (_unused, x) => x)
+      .filter((x) => Array.from({ length: source.height }, (_unused, y) => source.pixels[(y * source.width + x) * 4 + 3])
+        .some((alpha) => alpha > 0));
     expect(visibleRows.at(-1) - visibleRows[0] + 1).toBeGreaterThanOrEqual(197);
+    expect(visibleRows[0]).toBeGreaterThanOrEqual(8);
+    expect(source.height - 1 - visibleRows.at(-1)).toBeGreaterThanOrEqual(8);
+    expect(visibleColumns[0]).toBeGreaterThanOrEqual(40);
+    expect(source.width - 1 - visibleColumns.at(-1)).toBeGreaterThanOrEqual(40);
   });
 
   it("keeps the HUD footer minimal and rewrites the mobile lobby layout", () => {
