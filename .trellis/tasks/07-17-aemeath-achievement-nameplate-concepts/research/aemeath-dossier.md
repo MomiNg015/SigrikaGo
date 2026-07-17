@@ -1,0 +1,38 @@
+# Aemeath text-first dossier research
+
+## Source access record
+
+- Primary: Kuro Wiki, `https://wiki.kurobbs.com/mc/item/1457744312692867072?wkFrom=catalog`, accessed 2026-07-17.
+- The static fetch returned only the application shell. Headless Chrome loaded the official entry and the story / voice accordions. The research pass opened all five story headings and the relevant individual voice headings instead of relying on search snippets or image captions.
+- Secondary cross-checks: the Fandom transcript pages for Aemeath's dossier and the `飞行雪绒` term entry. These were used only to cross-check the official text and the campus virtual-idol label.
+- Visual corroboration only: `public/assets/Aemeath_centered.webp` shows aqua/cyan, pink, white, and tiny warm-gold accents. It is not used to infer story or personality.
+
+## Mandatory text evidence matrix
+
+| Category | Status | Paraphrased evidence | Source locator | Design relevance |
+|---|---|---|---|---|
+| Personality and contradictions | found | She presents herself as lively, playful, sociable, and relaxed, yet hides a weighty wish and serious resolve behind jokes and an easy smile. | Kuro Wiki `基础资料`; story `年轻人们`; voices `心声2`, `心声5` | Pair buoyant flight and idol energy with a steadier protected core; avoid shallow bubbly-cute treatment. |
+| Personality and contradictions | found | Even while describing death, danger, and computation, she speaks with teasing asides, stretched particles, and self-aware jokes. | Kuro Wiki voices `心声1`, `心声2`, `凝音1`, `自我介绍` | Hand-painted marks can be lively and slightly mischievous, while the carrier remains composed. |
+| Biography and formative events | found | She grew up in a warm snowy home with her family, played games together, entered Star Torch Academy as a Tunnelbearer candidate, and shared ordinary campus life with close friends. | Kuro Wiki stories `在雪原上`, `年轻人们`; `基础资料` | Snow-soft paper, home warmth, campus ephemera, and game/pixel accents are legitimate supporting material. |
+| Biography and formative events | found | Her body was destroyed when she resonated with the Tunnelbearer to stop the disaster; she persists as an electronic ghost and can no longer be seen normally. | Kuro Wiki stories `唯不可见者可见`; voice `凝音2`; report `共鸣能力鉴定报告` | Use translucent data afterimages and interrupted contours, but not horror imagery. |
+| Goals, values, fears, and conflicts | found | She wants to become a savior and share the burden of protecting the world, even while recognizing that the role can be heavy and arrogant. | Kuro Wiki voices `心声5`, `抱负和理想`, `凝音2` | A forward flight trajectory and accumulated completion marks suit the 100-win achievement better than trophies. |
+| Goals, values, fears, and conflicts | found | Her deepest priority is that her family can live freely and happily; warmth and protection coexist with anger toward forces that caused suffering. | Kuro Wiki voices `心声3`, `心声4`; story `一切未曾说出的` | Keep the emotional core warm and protected inside the aqua electronic field; pink should read as affection rather than candy. |
+| Relationships and social behavior | found | She is close with four academy friends, reassures them, shares jokes and study plans, and likes helping different clubs because she enjoys doing lively things with others. | Kuro Wiki story `年轻人们`; voice `爱弥斯的喜好` | Concert/campus motifs may feel communal and layered rather than solitary or militaristic. |
+| Relationships and social behavior | found | The paper airplane was first folded for her by family in the warm home, remains a cherished memory, and is later released from the academy roof. | Kuro Wiki `珍贵之物 > 纸飞机`; voice `闲趣1` | Paper airplane is the strongest literal anchor and must remain readable at 32px height. |
+| Representative dialogue and speaking style | found | Her voice uses playful rhetorical questions, cheerful interjections, drawn-out endings, and technical jokes such as treating her mecha as a self-driving system and herself as dual-threaded. | Kuro Wiki voices `心声1`, `心声2`, `凝音1`, `自我介绍` | Use rhythmic, witty pixel/data punctuation rather than severe hard-surface sci-fi UI. |
+| Representative dialogue and speaking style | found | In serious moments her language becomes direct and protective, promising to keep walking alongside her family until a hoped-for tomorrow arrives. | Kuro Wiki voice `心声5`; story `一切未曾说出的` | Give the tail a clear forward closure rather than dissolving into meaningless particles. |
+| Major plot beats and character development | found | She moves from concealing her savior wish under a promise to live lightly, through death and electronic existence, to consciously accepting the task only she can perform. | Kuro Wiki stories `年轻人们`, `唯不可见者可见`; voice `凝音2` | The composition may progress from soft paper memory into confident luminous flight. |
+| Major plot beats and character development | found | Discovering the destructive truth produces grief and anger; she crushes a paper-plane projection, then later chooses protection, shared responsibility, and the hope of spring. | Kuro Wiki stories `问我何所惧，问我何所忧`, `一切未曾说出的`; voice `心声4`, `心声5` | Avoid presenting the plane as only carefree; controlled crease/fragment marks can add emotional depth without making the art bleak. |
+| Powers, abilities, and recurring actions | found | She manifests and merges with a self-designed Tunnelbearer armament, lets it run automatically, fires broad light-cannon coverage, and can enter data systems as an electronic ghost. | Kuro Wiki `共鸣能力鉴定报告`; voice `凝音1` | Aqua data ribbons, wing-like mecha panels, and controlled light pulses are supported action motifs. |
+| Powers, abilities, and recurring actions | found | Her ability and skill naming repeatedly use long voyage, star light, arrival, silence, resonance, and flight. | Kuro Wiki `技能说明`; `共鸣能力：长航的星辉` | Star-route and flight-line geometry can support the paper airplane without becoming generic space art. |
+| Meaningful objects, places, hobbies, and foods | found | Cherished objects include a game cartridge, a Tunnelbearer figure, and the paper airplane; hobbies include games, club activities, drawing a pixel seal, music, and trying popular foods. | Kuro Wiki `珍贵之物`; stories `在雪原上`; voices `心声1`, `爱弥斯的喜好`, `喜欢的食物` | Select only paper plane plus sparse pixel/music/campus accents; do not turn every hobby into decoration. |
+| Meaningful objects, places, hobbies, and foods | found | Her stage name is Flying Snowfluff, associated with a pixel snowfluff seal and songs; she is described as a campus virtual idol who held online concerts. | Kuro Wiki voice `心声1`; Fandom `飞行雪绒` term entry | Soft waveform/rhythm marks and a tiny pixel-seal abstraction are valid for the idol-led direction. |
+| Achievement/reward meaning | found | The reward represents winning 100 Spark-mode matches while using Aemeath. | Explicit user requirement, 2026-07-17 | Convey practiced persistence, repeated sorties, and a completed long journey without drawing `100`, a medal, crown, trophy, or laurel. |
+
+## Source boundaries
+
+- User-locked directions: hand-painted finish; Sigrika-tier complexity; aqua blue dominant; pink supporting; paper airplane included.
+- Text-sourced signals: electronic ghost, campus life, virtual idol / songs, paper airplane memory, family protection, long voyage, self-designed mecha, data-system traversal, snow/home warmth, games and pixel seal.
+- Visual-only corroboration: the local portrait supports aqua/pink/white/gold balance and small diamond/wing shapes. Those shapes are not treated as biography.
+- Forbidden guesses: no invented microphone ownership, headphones, idol logo, wings as anatomy, flower species, ribbons, citrus, sun medallion, leaves, or character portrait.
+

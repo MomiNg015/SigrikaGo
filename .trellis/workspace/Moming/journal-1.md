@@ -1692,3 +1692,36 @@ Added a repository-local character nameplate Skill with new/refine modes, a mand
 ### Next Steps
 
 - None - task complete
+
+
+## Session 52: Add mailbox sender metadata
+
+**Date**: 2026-07-17
+**Task**: Add mailbox sender metadata
+**Branch**: `codex/username-background`
+
+### Summary
+
+Added required mailbox sender snapshots across database, admin sending, delivery payloads, player list/detail UI, migration compatibility, tests, and system design; merged codex/email-system into codex/username-background after full npm run check.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `67dc18a9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
