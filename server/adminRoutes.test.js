@@ -358,6 +358,7 @@ describe("admin mailbox routes", () => {
       body: {
         targetMode: "user",
         recipientUserId: "user-1",
+        sender: "运营团队",
         title: "Gift",
         body: "Please claim.",
         attachmentType: "coins",
@@ -368,6 +369,7 @@ describe("admin mailbox routes", () => {
     expect(response.status).toBe(200);
     expect(response.body.batch).toMatchObject({
       targetMode: "user",
+      sender: "运营团队",
       title: "Gift",
       deliveredCount: 1,
       skippedCount: 0

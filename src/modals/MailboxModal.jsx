@@ -122,6 +122,7 @@ export default function MailboxModal({
                       {!message.isRead && <i className="mailbox-unread-dot" aria-hidden="true" />}
                       {message.title}
                     </span>
+                    <span className="mailbox-list-time">发件人：{displayMailboxSender(message.sender)}</span>
                     <span className="mailbox-list-time">{formatDateTime(message.createdAt)}</span>
                     <span className="mailbox-list-status">
                       {!message.isRead && <b>未读</b>}
@@ -158,6 +159,7 @@ export default function MailboxModal({
             </button>
           </div>
           <h3 id="mailbox-detail-title">{selected.title}</h3>
+          <span className="mailbox-detail-time">发件人：{displayMailboxSender(selected.sender)}</span>
           <p className="mailbox-body">{selected.body}</p>
           <AttachmentView attachment={selected.attachment} claimable={selected.claimable} />
           {hasAttachment(selected.attachment) && (
@@ -234,4 +236,8 @@ function formatDateTime(value) {
     hour: "2-digit",
     minute: "2-digit"
   });
+}
+
+function displayMailboxSender(value) {
+  return String(value ?? "").trim() || "系统";
 }

@@ -278,6 +278,7 @@ model MailboxBatch {
   adminUsername      String
   targetMode         String
   recipientUserId    String   @default("")
+  sender             String   @default("")
   title              String
   body               String
   attachmentType     String   @default("none")
@@ -299,6 +300,7 @@ model MailboxMessage {
   id                 String   @id @default(cuid())
   batchId            String?
   userId             String
+  sender             String   @default("")
   title              String
   body               String
   attachmentType     String   @default("none")

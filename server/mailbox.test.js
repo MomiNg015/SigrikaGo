@@ -20,8 +20,8 @@ describe("mailbox domain", () => {
     });
 
     expect(calls).toEqual([
-      expect.stringContaining('CREATE TABLE IF NOT EXISTS "MailboxBatch"'),
-      expect.stringContaining('CREATE TABLE IF NOT EXISTS "MailboxMessage"'),
+      expect.stringMatching(/CREATE TABLE IF NOT EXISTS "MailboxBatch"[\s\S]+"sender" TEXT NOT NULL DEFAULT ''/),
+      expect.stringMatching(/CREATE TABLE IF NOT EXISTS "MailboxMessage"[\s\S]+"sender" TEXT NOT NULL DEFAULT ''/),
       expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxBatch_targetMode_createdAt_idx"'),
       expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxBatch_includeFutureUsers_createdAt_idx"'),
       expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxBatch_adminUserId_createdAt_idx"'),
@@ -30,6 +30,36 @@ describe("mailbox domain", () => {
       expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_batchId_userId_idx"'),
       expect.stringContaining('CREATE INDEX IF NOT EXISTS "MailboxMessage_userId_deletedAt_createdAt_idx"')
     ]);
+  });
+
+  it("adds sender columns when upgrading existing mailbox tables", async () => {
+    const calls = [];
+    await ensureMailboxSchema({
+      $executeRawUnsafe: async (sql) => {
+        calls.push(sql);
+      },
+      $queryRawUnsafe: async (sql) => sql.includes('"MailboxBatch"')
+        ? [{ name: "id" }]
+        : [{ name: "id" }, { name: "deletedAt" }]
+    });
+
+    expect(calls).toContain('ALTER TABLE "MailboxBatch" ADD COLUMN "sender" TEXT NOT NULL DEFAULT \'\'');
+    expect(calls).toContain('ALTER TABLE "MailboxMessage" ADD COLUMN "sender" TEXT NOT NULL DEFAULT \'\'');
+    expect(calls).not.toContain('ALTER TABLE "MailboxMessage" ADD COLUMN "deletedAt" DATETIME');
+  });
+
+  it("requires a bounded sender when creating a mailbox batch", async () => {
+    const baseInput = {
+      targetMode: MAILBOX_TARGET_MODES.user,
+      recipientUserId: "user-1",
+      title: "Notice",
+      body: "Body"
+    };
+
+    await expect(createMailboxBatch({ prisma: {}, adminUser: {}, input: baseInput }))
+      .rejects.toMatchObject({ status: 400, message: "邮件发件人不能为空" });
+    await expect(createMailboxBatch({ prisma: {}, adminUser: {}, input: { ...baseInput, sender: "发".repeat(41) } }))
+      .rejects.toMatchObject({ status: 400, message: "邮件发件人不能超过40字" });
   });
 
   it("delivers mail by deleting the oldest read settled message when the mailbox is full", async () => {
@@ -56,6 +86,7 @@ describe("mailbox domain", () => {
       input: {
         targetMode: MAILBOX_TARGET_MODES.user,
         recipientUserId: "user-1",
+        sender: "运营团队",
         title: "Maintenance Gift",
         body: "Thanks for playing.",
         attachmentType: MAILBOX_ATTACHMENT_TYPES.coins,
@@ -69,6 +100,7 @@ describe("mailbox domain", () => {
     expect(messages.filter((message) => !message.deletedAt)).toHaveLength(20);
     expect(messages.at(-1)).toMatchObject({
       userId: "user-1",
+      sender: "运营团队",
       title: "Maintenance Gift",
       attachmentType: "coins",
       attachmentQuantity: 30
@@ -94,6 +126,7 @@ describe("mailbox domain", () => {
       input: {
         targetMode: MAILBOX_TARGET_MODES.user,
         recipientUserId: "user-1",
+        sender: "运营团队",
         title: "Full Inbox",
         body: "This should skip."
       }
@@ -113,6 +146,7 @@ describe("mailbox domain", () => {
         adminUserId: "admin-1",
         adminUsername: "admin",
         targetMode: MAILBOX_TARGET_MODES.allWithFuture,
+        sender: "学生会",
         title: "Launch Gift",
         body: "Welcome.",
         attachmentType: MAILBOX_ATTACHMENT_TYPES.none,
@@ -131,8 +165,21 @@ describe("mailbox domain", () => {
     expect(messages[0]).toMatchObject({
       batchId: "batch-1",
       userId: "future-user",
+      sender: "学生会",
       title: "Launch Gift"
     });
+    expect(result.messages[0].sender).toBe("学生会");
+  });
+
+  it("presents legacy mail without a sender as system mail", async () => {
+    const { prisma } = mailboxPrisma({
+      users: [userFixture("user-1")],
+      messages: [messageFixture("legacy-mail", { sender: "" })]
+    });
+
+    const result = await listMailboxMessages({ prisma, userId: "user-1" });
+
+    expect(result.messages[0].sender).toBe("系统");
   });
 
   it("does not redeliver a future-eligible global batch after the user deletes it", async () => {
@@ -151,6 +198,7 @@ describe("mailbox domain", () => {
         adminUserId: "admin-1",
         adminUsername: "admin",
         targetMode: MAILBOX_TARGET_MODES.allWithFuture,
+        sender: "学生会",
         title: "Launch Gift",
         body: "Welcome.",
         attachmentType: MAILBOX_ATTACHMENT_TYPES.coins,
@@ -305,6 +353,7 @@ function messageFixture(id, overrides = {}) {
     id,
     batchId: "",
     userId: "user-1",
+    sender: "",
     title: id,
     body: "Body",
     attachmentType: MAILBOX_ATTACHMENT_TYPES.none,

@@ -12,6 +12,7 @@ describe("AdminMailbox", () => {
         initialBatches={[{
           id: "batch-1",
           adminUsername: "admin",
+          sender: "学生会",
           targetMode: "all_with_future",
           title: "Launch",
           attachment: { type: "coins", quantity: 20 },
@@ -23,6 +24,7 @@ describe("AdminMailbox", () => {
         initialDraft={{
           targetMode: "user",
           recipientUserId: "",
+          sender: "",
           title: "",
           body: "",
           attachmentType: "item",
@@ -39,6 +41,9 @@ describe("AdminMailbox", () => {
     expect(html).toContain("当前全体");
     expect(html).toContain("包含未来用户");
     expect(html).toContain("Dream Ticket");
+    expect(html).toContain("发件人");
+    expect(html).toContain("required");
+    expect(html).toContain("学生会");
     expect(html).toContain("Launch");
     expect(html).toContain("成功 10");
     expect(html).toContain("跳过 1");

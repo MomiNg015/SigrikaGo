@@ -794,6 +794,67 @@ await seedCharacters(prisma);
 
 ---
 
+### Scenario: Mailbox Sender Snapshot And Legacy Projection
+
+#### 1. Scope / Trigger
+- Trigger: any change to mailbox compose fields, `MailboxBatch` / `MailboxMessage`, future-user delivery, mailbox payloads, or player/admin sender display.
+- This is cross-layer because one admin input must survive batch storage, current and deferred delivery, player API projection, and both list/detail rendering.
+
+#### 2. Signatures
+- `MailboxBatch.sender String @default("")` stores the display sender chosen for one send operation.
+- `MailboxMessage.sender String @default("")` stores the recipient-visible snapshot.
+- `POST /api/admin/mailbox/batches` accepts `sender`, `targetMode`, recipient fields, title/body, and attachment fields.
+- Admin batch payloads and player message payloads both return `sender` as a non-empty display string.
+
+#### 3. Contracts
+- New sends require a trimmed `sender` between 1 and 40 characters; the backend is authoritative even though the admin input also uses `required` and `maxLength={40}`.
+- Creating a batch persists `sender`, and every current or future delivery copies that value to `MailboxMessage` rather than looking up the current admin username later.
+- `ensureMailboxSchema()` must create the sender columns on fresh SQLite databases and idempotently add them to both existing mailbox tables.
+- Historical rows with an empty sender project as `系统`; never substitute `adminUsername`, because the internal operator identity is not the public display sender.
+- Admin history, the player mail list, and the player detail reader must all consume the payload sender. Existing read, claim, delete, ordering, and mobile list/detail behavior remains unchanged.
+
+#### 4. Validation & Error Matrix
+- Missing or whitespace-only sender on a new send -> `400 邮件发件人不能为空`.
+- Sender longer than 40 characters -> `400 邮件发件人不能超过40字`.
+- Existing batch/message sender is empty -> response sender is `系统`.
+- Legacy future-eligible batch is delivered after upgrade -> created message snapshots the normalized sender `系统`.
+- Explicit sender is present -> preserve the trimmed text through batch, message, audit payload, and UI.
+
+#### 5. Good/Base/Bad Cases
+- Good: `运营团队` is stored on the batch, copied to every message, and shown in admin history plus player list/detail.
+- Base: an old message with `sender = ""` remains readable and displays `系统` without destructive data backfill.
+- Bad: deriving the player-visible sender from `adminUsername`, because it can expose an internal account and change the meaning of historical mail.
+- Bad: validating only with the browser `required` attribute, because direct API requests could create senderless mail.
+
+#### 6. Tests Required
+- Domain tests assert blank/overlong validation, current and future delivery snapshots, payload projection, and legacy `系统` fallback.
+- Startup-schema tests assert both create-table definitions and both legacy `ALTER TABLE` paths include `sender`.
+- Admin route/component tests assert the sender request/payload field, required compose control, and history cell.
+- Player mailbox tests assert the same sender appears in both the semantic list button and detail reader without changing desktop/mobile selection behavior.
+- Schema validation, focused mailbox tests, CSS debt contracts, and the broad project check must pass.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```js
+const sender = batch.adminUsername;
+await prisma.mailboxMessage.create({ data: { batchId: batch.id, userId, title: batch.title } });
+```
+
+Correct:
+
+```js
+const sender = String(batch.sender ?? "").trim() || "系统";
+await prisma.mailboxMessage.create({
+  data: { batchId: batch.id, userId, sender, title: batch.title }
+});
+```
+
+The correct path preserves the explicit public sender and gives legacy data a stable non-sensitive projection.
+
+---
+
 ## Naming Conventions
 
 ### Scenario: User Profile Likes And Reports

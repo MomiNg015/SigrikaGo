@@ -17,6 +17,7 @@ const ATTACHMENT_TYPES = [
 const EMPTY_DRAFT = {
   targetMode: "user",
   recipientUserId: "",
+  sender: "",
   title: "",
   body: "",
   attachmentType: "none",
@@ -143,6 +144,15 @@ export default function AdminMailbox({
         )}
 
         <label>
+          发件人
+          <input
+            value={draft.sender}
+            required
+            maxLength={40}
+            onChange={(event) => updateDraft("sender", event.target.value)}
+          />
+        </label>
+        <label>
           标题
           <input value={draft.title} maxLength={40} onChange={(event) => updateDraft("title", event.target.value)} />
         </label>
@@ -193,6 +203,7 @@ export default function AdminMailbox({
               <thead>
                 <tr>
                   <th>时间</th>
+                  <th>发件人</th>
                   <th>标题</th>
                   <th>范围</th>
                   <th>附件</th>
@@ -203,6 +214,7 @@ export default function AdminMailbox({
                 {batches.map((batch) => (
                   <tr key={batch.id}>
                     <td>{formatDateTime(batch.createdAt)}</td>
+                    <td>{batch.sender}</td>
                     <td>{batch.title}</td>
                     <td>{targetModeLabel(batch.targetMode)}{batch.includeFutureUsers ? " · 未来用户" : ""}</td>
                     <td>{attachmentLabel(batch.attachment)}</td>

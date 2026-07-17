@@ -12,6 +12,7 @@ vi.mock("../api/client.js", () => ({ api: vi.fn() }));
 
 const giftMessage = {
   id: "mail-1",
+  sender: "学生会",
   title: "社团活动奖励",
   body: "请领取本周活动奖励。",
   createdAt: "2026-06-22T12:00:00.000Z",
@@ -43,6 +44,7 @@ describe("MailboxModal information center", () => {
     expect(screen.getByRole("dialog", { name: "邮箱" })).toBeTruthy();
     const row = screen.getByRole("button", { name: /社团活动奖励/ });
     expect(row.closest("li")).toBeTruthy();
+    expect(screen.getAllByText("发件人：学生会")).toHaveLength(2);
     expect(screen.getByText("请领取本周活动奖励。")).toBeTruthy();
     await waitFor(() => expect(api).toHaveBeenCalledWith(
       "/api/mailbox/mail-1/read",

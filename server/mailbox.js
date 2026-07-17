@@ -23,6 +23,8 @@ export const MAILBOX_TARGET_MODES = {
 
 const ATTACHMENT_TYPES = new Set(Object.values(MAILBOX_ATTACHMENT_TYPES));
 const TARGET_MODES = new Set(Object.values(MAILBOX_TARGET_MODES));
+const LEGACY_MAILBOX_SENDER = "系统";
+const SENDER_MAX_LENGTH = 40;
 const TITLE_MAX_LENGTH = 40;
 const BODY_MAX_LENGTH = 500;
 
@@ -35,6 +37,7 @@ export async function ensureMailboxSchema(client) {
       "adminUsername" TEXT NOT NULL,
       "targetMode" TEXT NOT NULL,
       "recipientUserId" TEXT NOT NULL DEFAULT '',
+      "sender" TEXT NOT NULL DEFAULT '',
       "title" TEXT NOT NULL,
       "body" TEXT NOT NULL,
       "attachmentType" TEXT NOT NULL DEFAULT 'none',
@@ -52,6 +55,7 @@ export async function ensureMailboxSchema(client) {
       "id" TEXT NOT NULL PRIMARY KEY,
       "batchId" TEXT,
       "userId" TEXT NOT NULL,
+      "sender" TEXT NOT NULL DEFAULT '',
       "title" TEXT NOT NULL,
       "body" TEXT NOT NULL,
       "attachmentType" TEXT NOT NULL DEFAULT 'none',
@@ -67,7 +71,14 @@ export async function ensureMailboxSchema(client) {
     )
   `);
   if (client?.$queryRawUnsafe) {
+    const batchColumns = await client.$queryRawUnsafe(`PRAGMA table_info("MailboxBatch")`);
+    if (!hasColumn(batchColumns, "sender")) {
+      await client.$executeRawUnsafe(`ALTER TABLE "MailboxBatch" ADD COLUMN "sender" TEXT NOT NULL DEFAULT ''`);
+    }
     const messageColumns = await client.$queryRawUnsafe(`PRAGMA table_info("MailboxMessage")`);
+    if (!hasColumn(messageColumns, "sender")) {
+      await client.$executeRawUnsafe(`ALTER TABLE "MailboxMessage" ADD COLUMN "sender" TEXT NOT NULL DEFAULT ''`);
+    }
     if (!hasColumn(messageColumns, "deletedAt")) {
       await client.$executeRawUnsafe(`ALTER TABLE "MailboxMessage" ADD COLUMN "deletedAt" DATETIME`);
     }
@@ -91,6 +102,7 @@ export async function createMailboxBatch({ prisma, adminUser, input }) {
         adminUsername: adminUser.username ?? "",
         targetMode: data.targetMode,
         recipientUserId: data.recipientUserId,
+        sender: data.sender,
         title: data.title,
         body: data.body,
         attachmentType: data.attachmentType,
@@ -252,6 +264,7 @@ export function toMailboxMessagePayload(message) {
   return {
     id: message.id,
     batchId: message.batchId ?? "",
+    sender: mailboxSender(message),
     title: message.title,
     body: message.body,
     attachment: attachmentPayload(message),
@@ -270,6 +283,7 @@ export function toMailboxBatchPayload(batch) {
     adminUsername: batch.adminUsername,
     targetMode: batch.targetMode,
     recipientUserId: batch.recipientUserId ?? "",
+    sender: mailboxSender(batch),
     title: batch.title,
     body: batch.body,
     attachment: attachmentPayload(batch),
@@ -341,6 +355,7 @@ async function deliverBatchToRecipient(prisma, batch, userId) {
     data: {
       batchId: batch.id,
       userId,
+      sender: mailboxSender(batch),
       title: batch.title,
       body: batch.body,
       attachmentType: batch.attachmentType,
@@ -364,6 +379,9 @@ function validateMailboxBatchInput(input = {}) {
   if (!TARGET_MODES.has(targetMode)) throw routeError(400, "收件范围无效");
   const recipientUserId = String(input.recipientUserId ?? "").trim();
   if (targetMode === MAILBOX_TARGET_MODES.user && !recipientUserId) throw routeError(400, "请选择收件用户");
+  const sender = String(input.sender ?? "").trim();
+  if (!sender) throw routeError(400, "邮件发件人不能为空");
+  if (sender.length > SENDER_MAX_LENGTH) throw routeError(400, "邮件发件人不能超过40字");
   const title = String(input.title ?? "").trim();
   if (!title) throw routeError(400, "邮件标题不能为空");
   if (title.length > TITLE_MAX_LENGTH) throw routeError(400, "邮件标题不能超过40字");
@@ -381,6 +399,7 @@ function validateMailboxBatchInput(input = {}) {
   return {
     targetMode,
     recipientUserId,
+    sender,
     title,
     body,
     attachmentType,
@@ -413,6 +432,10 @@ function positiveInteger(value) {
   if (typeof value === "number") return Number.isSafeInteger(value) && value > 0 ? value : 0;
   if (typeof value === "string" && /^\d+$/.test(value.trim())) return Number(value);
   return 0;
+}
+
+function mailboxSender(record) {
+  return String(record?.sender ?? "").trim() || LEGACY_MAILBOX_SENDER;
 }
 
 function hasColumn(columns, name) {
