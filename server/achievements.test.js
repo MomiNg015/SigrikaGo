@@ -115,6 +115,12 @@ describe("achievements", () => {
         type: "nameplate",
         imageUrl: "/assets/achievements/denia-spark-100-wins-nameplate.png",
         text: "用户名背景"
+      }),
+      expect.objectContaining({
+        id: "reward-aemeath-spark-100-wins-nameplate",
+        type: "nameplate",
+        imageUrl: "/assets/achievements/aemeath-spark-100-wins-nameplate.png",
+        text: "用户名背景"
       })
     ]));
     expect(achievementCreates).toEqual(expect.arrayContaining([
@@ -139,6 +145,14 @@ describe("achievements", () => {
         content: "使用达妮娅在星炬对弈中获得100胜",
         conditionType: "mode_character_wins",
         rewardAssetId: "reward-denia-spark-100-wins-nameplate"
+      }),
+      expect.objectContaining({
+        id: "achievement-aemeath-spark-100-wins",
+        key: "aemeath-spark-100-wins",
+        name: "飞行雪绒，出击！",
+        content: "使用爱弥斯在星炬对弈中获得100胜",
+        conditionType: "mode_character_wins",
+        rewardAssetId: "reward-aemeath-spark-100-wins-nameplate"
       })
     ]));
     expect(JSON.parse(achievementCreates.find((achievement) => achievement.key === "denia-rainbow-bean-candy").conditionParams)).toEqual({
@@ -154,6 +168,11 @@ describe("achievements", () => {
       characterId: "denia",
       value: 100
     });
+    expect(JSON.parse(achievementCreates.find((achievement) => achievement.key === "aemeath-spark-100-wins").conditionParams)).toEqual({
+      mode: "spark",
+      characterId: "aemeath",
+      value: 100
+    });
 
     prisma.achievementRewardAsset.findUnique.mockImplementation(async ({ where }) => (
       rewardCreates.find((asset) => asset.id === where.id) ?? null
@@ -163,8 +182,8 @@ describe("achievements", () => {
     ));
     await seedBuiltinAchievements(prisma);
 
-    expect(prisma.achievementRewardAsset.create).toHaveBeenCalledTimes(3);
-    expect(prisma.achievement.create).toHaveBeenCalledTimes(3);
+    expect(prisma.achievementRewardAsset.create).toHaveBeenCalledTimes(4);
+    expect(prisma.achievement.create).toHaveBeenCalledTimes(4);
   });
 
   it("marks built-in achievements as achieved for admins by default", async () => {
@@ -204,9 +223,13 @@ describe("achievements", () => {
       expect.objectContaining({
         userId: "admin-1",
         achievementId: "achievement-denia-spark-100-wins"
+      }),
+      expect.objectContaining({
+        userId: "admin-1",
+        achievementId: "achievement-aemeath-spark-100-wins"
       })
     ]));
-    expect(userAchievementCreates).toHaveLength(3);
+    expect(userAchievementCreates).toHaveLength(4);
     expect(userAchievementCreates[0].achievedAt).toBeInstanceOf(Date);
     expect(userAchievementCreates[0].rewardGrantedAt).toBe(userAchievementCreates[0].achievedAt);
   });
@@ -413,6 +436,77 @@ describe("achievements", () => {
       reward: {
         type: "nameplate",
         imageUrl: "/assets/achievements/denia-spark-100-wins-nameplate.png",
+        text: "用户名背景"
+      }
+    });
+    expect(userAchievementCreates).toHaveLength(1);
+    expect(rewardGrantUpdates[0]).toHaveProperty("rewardGrantedAt");
+  });
+
+  it("unlocks the Aemeath spark 100 wins nameplate only from Aemeath spark wins", async () => {
+    const achievement = aemeathSpark100WinsAchievement();
+    const userAchievementCreates = [];
+    const rewardGrantUpdates = [];
+    let gameRecords = [
+      ...sparkWins(99, "aemeath"),
+      {
+        blackUserId: "user-1",
+        whiteUserId: "op-standard",
+        blackCharacter: "aemeath",
+        whiteCharacter: "sigrika",
+        winnerColor: "black",
+        mode: "standard",
+        resultText: ""
+      }
+    ];
+    const prisma = {
+      user: {
+        findUnique: vi.fn(async () => baseUser())
+      },
+      achievement: {
+        findMany: vi.fn(async () => [achievement])
+      },
+      userAchievement: {
+        findMany: vi.fn(async () => []),
+        create: vi.fn(async ({ data }) => {
+          const created = { id: "ua-aemeath", ...data, achievedAt: new Date("2026-07-17T01:00:00.000Z") };
+          userAchievementCreates.push(created);
+          return created;
+        })
+      },
+      achievementCounter: {
+        findMany: vi.fn(async () => [])
+      },
+      gameRecord: {
+        findMany: vi.fn(async () => gameRecords)
+      },
+      $transaction: async (callback) => callback({
+        userAchievement: {
+          findUnique: async () => userAchievementCreates[0],
+          update: async ({ data }) => {
+            rewardGrantUpdates.push(data);
+            return { ...userAchievementCreates[0], ...data };
+          }
+        },
+        user: {
+          findUnique: async () => baseUser(),
+          update: vi.fn()
+        }
+      })
+    };
+
+    const before = await evaluateAchievementsForUser({ prisma, userId: "user-1" });
+    gameRecords = sparkWins(100, "aemeath");
+    const after = await evaluateAchievementsForUser({ prisma, userId: "user-1" });
+
+    expect(before).toEqual([]);
+    expect(after).toHaveLength(1);
+    expect(after[0]).toMatchObject({
+      key: "aemeath-spark-100-wins",
+      name: "飞行雪绒，出击！",
+      reward: {
+        type: "nameplate",
+        imageUrl: "/assets/achievements/aemeath-spark-100-wins-nameplate.png",
         text: "用户名背景"
       }
     });
@@ -631,6 +725,35 @@ function deniaSpark100WinsAchievement() {
       enabled: true,
       deletedAt: null,
       sortOrder: 120
+    }
+  };
+}
+
+function aemeathSpark100WinsAchievement() {
+  return {
+    id: "achievement-aemeath-spark-100-wins",
+    key: "aemeath-spark-100-wins",
+    name: "飞行雪绒，出击！",
+    content: "使用爱弥斯在星炬对弈中获得100胜",
+    conditionType: "mode_character_wins",
+    conditionParams: JSON.stringify({ mode: "spark", characterId: "aemeath", value: 100 }),
+    rewardAssetId: "reward-aemeath-spark-100-wins-nameplate",
+    enabled: true,
+    deletedAt: null,
+    sortOrder: 130,
+    rewardAsset: {
+      id: "reward-aemeath-spark-100-wins-nameplate",
+      type: "nameplate",
+      name: "飞行雪绒，出击！",
+      description: "使用爱弥斯在星炬对弈中获得100胜",
+      imageUrl: "/assets/achievements/aemeath-spark-100-wins-nameplate.png",
+      text: "用户名背景",
+      targetType: "",
+      targetId: "",
+      amount: 0,
+      enabled: true,
+      deletedAt: null,
+      sortOrder: 130
     }
   };
 }

@@ -583,6 +583,19 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).toContain("animation: denia-nameplate-echo-points 2.9s ease-in-out");
     expect(hudCss).toContain("rgba(255, 141, 211, 0.8)");
     expect(hudCss).toContain("rgba(98, 46, 143, 0.5)");
+    expect(hudCss).toContain('[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"]');
+    expect(hudCss).toContain("Aemeath's hand-painted paper-flight and virtual-idol nameplate");
+    expect(hudCss).toContain("--user-nameplate-padding-left: calc(42px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain("--user-nameplate-padding-right: calc(20px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain("--aemeath-nameplate-text-offset-y: calc(-1px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain("transform: translateY(var(--aemeath-nameplate-text-offset-y))");
+    expect(hudCss).toContain("color: #07516f");
+    expect(hudCss).toContain("animation: aemeath-nameplate-sortie-signal 2.6s ease-in-out");
+    expect(hudCss).toContain("animation: aemeath-nameplate-snowfluff-ping 2.15s steps(2, end)");
+    expect(hudCss).toContain("animation: aemeath-nameplate-speed-lanes 1.85s ease-in-out");
+    expect(hudCss).toContain("animation: aemeath-nameplate-pixel-beacons 2.4s steps(3, end)");
+    expect(hudCss).toContain("rgba(107, 240, 250, 0.82)");
+    expect(hudCss).toContain("rgba(255, 137, 196, 0.42)");
   });
 
   it("keeps the Bright School lobby stage free of solid fills behind the image panel", () => {

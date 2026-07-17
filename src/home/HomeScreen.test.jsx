@@ -709,6 +709,47 @@ describe("HomeScreen", () => {
     expect(deniaSource.height - 1 - deniaVisibleRows.at(-1)).toBeGreaterThanOrEqual(8);
     expect(deniaVisibleColumns[0]).toBeGreaterThanOrEqual(40);
     expect(deniaSource.width - 1 - deniaVisibleColumns.at(-1)).toBeGreaterThanOrEqual(40);
+
+    const aemeathHtml = renderHome({
+      user: {
+        achievementEquipment: {
+          titleAssetId: "",
+          badgeAssetId: "",
+          nameplateAssetId: "reward-aemeath-spark-100-wins-nameplate"
+        },
+        achievementEquipmentAssets: {
+          title: null,
+          badge: null,
+          nameplate: {
+            id: "reward-aemeath-spark-100-wins-nameplate",
+            type: "nameplate",
+            imageUrl: "/assets/achievements/aemeath-spark-100-wins-nameplate.png"
+          }
+        }
+      }
+    });
+    expect(aemeathHtml).toContain('data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"');
+    expect(aemeathHtml).toContain("background-image:url(/assets/achievements/aemeath-spark-100-wins-nameplate.png)");
+
+    const aemeathSource = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/aemeath-spark-100-wins-nameplate.png", import.meta.url)));
+    expect({ width: aemeathSource.width, height: aemeathSource.height }).toEqual({ width: 1125, height: 240 });
+    expect([
+      aemeathSource.pixels[3],
+      aemeathSource.pixels[(aemeathSource.width - 1) * 4 + 3],
+      aemeathSource.pixels[((aemeathSource.height - 1) * aemeathSource.width) * 4 + 3],
+      aemeathSource.pixels[(aemeathSource.width * aemeathSource.height - 1) * 4 + 3]
+    ]).toEqual([0, 0, 0, 0]);
+    const aemeathVisibleRows = Array.from({ length: aemeathSource.height }, (_unused, y) => y)
+      .filter((y) => Array.from({ length: aemeathSource.width }, (_unused, x) => aemeathSource.pixels[(y * aemeathSource.width + x) * 4 + 3])
+        .some((alpha) => alpha > 0));
+    const aemeathVisibleColumns = Array.from({ length: aemeathSource.width }, (_unused, x) => x)
+      .filter((x) => Array.from({ length: aemeathSource.height }, (_unused, y) => aemeathSource.pixels[(y * aemeathSource.width + x) * 4 + 3])
+        .some((alpha) => alpha > 0));
+    expect(aemeathVisibleRows.at(-1) - aemeathVisibleRows[0] + 1).toBeGreaterThanOrEqual(190);
+    expect(aemeathVisibleRows[0]).toBeGreaterThanOrEqual(8);
+    expect(aemeathSource.height - 1 - aemeathVisibleRows.at(-1)).toBeGreaterThanOrEqual(8);
+    expect(aemeathVisibleColumns[0]).toBeGreaterThanOrEqual(40);
+    expect(aemeathSource.width - 1 - aemeathVisibleColumns.at(-1)).toBeGreaterThanOrEqual(40);
   });
 
   it("keeps the HUD footer minimal and rewrites the mobile lobby layout", () => {

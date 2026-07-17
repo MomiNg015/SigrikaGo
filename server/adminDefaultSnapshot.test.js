@@ -63,6 +63,31 @@ describe("admin default onboarding story snapshot", () => {
     });
   });
 
+  it("ships the Aemeath 100 spark wins nameplate reward and achievement", () => {
+    const reward = ADMIN_DEFAULT_CONFIG.achievementRewardAssets.find(({ id }) => id === "reward-aemeath-spark-100-wins-nameplate");
+    const achievement = ADMIN_DEFAULT_CONFIG.achievements.find(({ key }) => key === "aemeath-spark-100-wins");
+
+    expect(reward).toMatchObject({
+      type: "nameplate",
+      name: "飞行雪绒，出击！",
+      imageUrl: "/assets/achievements/aemeath-spark-100-wins-nameplate.png",
+      text: "用户名背景",
+      sortOrder: 130
+    });
+    expect(achievement).toMatchObject({
+      name: "飞行雪绒，出击！",
+      content: "使用爱弥斯在星炬对弈中获得100胜",
+      conditionType: "mode_character_wins",
+      rewardAssetId: reward.id,
+      sortOrder: 130
+    });
+    expect(JSON.parse(achievement.conditionParams)).toEqual({
+      mode: "spark",
+      characterId: "aemeath",
+      value: 100
+    });
+  });
+
   it("publishes a complete four-chapter beginner graph without changing the other level branches", () => {
     const script = onboardingScript();
     const draftNodes = JSON.parse(script.draftNodesJson);
