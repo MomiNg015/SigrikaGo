@@ -120,21 +120,34 @@ export default function App() {
   const [lobbyStats, setLobbyStats] = useState({ onlineCount: 0, matchmakingCount: 0 });
   const [assetProgress, setAssetProgress] = useState(0);
   const { removeToast, showToast, toasts } = useToastQueue();
-  const [activeStoryPlayer, setActiveStoryPlayer] = useState({ script: null, labels: null, onComplete: null });
+  const [recruitmentInteractionLocked, setRecruitmentInteractionLocked] = useState(false);
+  const [activeStoryPlayer, setActiveStoryPlayer] = useState({
+    script: null,
+    labels: null,
+    onComplete: null,
+    onExit: null
+  });
   const [tutorialBattleSession, setTutorialBattleSession] = useState(null);
   const openStoryPlayer = useCallback((script, labels = null, options = {}) => {
     setShowOnboardingStory(false);
-    setActiveStoryPlayer({ script, labels, onComplete: options.onComplete ?? null });
+    setActiveStoryPlayer({
+      script,
+      labels,
+      onComplete: options.onComplete ?? null,
+      onExit: options.onExit ?? null
+    });
     setShowStoryPlayer(true);
   }, [setShowOnboardingStory, setShowStoryPlayer]);
   const clearStoryPlayer = useCallback(() => {
-    setActiveStoryPlayer({ script: null, labels: null, onComplete: null });
+    setActiveStoryPlayer({ script: null, labels: null, onComplete: null, onExit: null });
   }, []);
   const closeStoryPlayerOverlay = useCallback(() => {
+    const onExit = activeStoryPlayer.onExit;
     setShowOnboardingStory(false);
     setShowStoryPlayer(false);
     clearStoryPlayer();
-  }, [clearStoryPlayer, setShowOnboardingStory, setShowStoryPlayer]);
+    onExit?.();
+  }, [activeStoryPlayer.onExit, clearStoryPlayer, setShowOnboardingStory, setShowStoryPlayer]);
   const openTutorialBattleSession = useCallback((session) => {
     setShowOnboardingStory(false);
     setShowStoryPlayer(false);
@@ -151,15 +164,21 @@ export default function App() {
     setTutorialBattleSession(null);
     setView(nextView);
     clearStoryPlayer();
+    tutorialBattleSession?.onExit?.();
   }, [clearStoryPlayer, tutorialBattleSession]);
-  const exitTutorialBattleToStory = useCallback(({ script: nextScript, labels = null, onComplete: nextOnComplete = null } = {}) => {
+  const exitTutorialBattleToStory = useCallback(({
+    script: nextScript,
+    labels = null,
+    onComplete: nextOnComplete = null,
+    onExit: nextOnExit = null
+  } = {}) => {
     const nextView = tutorialBattleSession?.returnView && tutorialBattleSession.returnView !== "tutorial-battle"
       ? tutorialBattleSession.returnView
       : "home";
     setTutorialBattleSession(null);
     setView(nextView);
     if (nextScript) {
-      openStoryPlayer(nextScript, labels, { onComplete: nextOnComplete });
+      openStoryPlayer(nextScript, labels, { onComplete: nextOnComplete, onExit: nextOnExit });
     }
   }, [openStoryPlayer, tutorialBattleSession]);
   const showAchievementUnlocks = useCallback((unlocks = []) => {
@@ -343,6 +362,7 @@ export default function App() {
     ...overlayState
   });
   const dismissTopModal = useCallback(() => {
+    if (recruitmentInteractionLocked) return;
     switch (topModalKey) {
       case "result":
         closeResultModal();
@@ -363,6 +383,7 @@ export default function App() {
     closeStoryPlayerOverlay,
     closeResultModal,
     overlaySetters,
+    recruitmentInteractionLocked,
     topModalKey
   ]);
   useModalDismissal({ activeId: topModalKey, onDismiss: dismissTopModal });
@@ -486,6 +507,7 @@ export default function App() {
         onEnterTutorialBattle={openTutorialBattleSession}
         onRemoveToast={removeToast}
         onRecruitmentStatusChange={handleRecruitmentStatusChange}
+        onRecruitmentInteractionLockChange={setRecruitmentInteractionLocked}
         onResultClose={closeResultModal}
         openReplay={openReplay}
         resultModalOpen={resultModalOpen}

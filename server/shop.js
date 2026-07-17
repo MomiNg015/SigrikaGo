@@ -16,7 +16,11 @@ import {
 } from "./userProgressLedger.js";
 import { STONE_DECORATIONS } from "../src/shared/stoneDecorations.js";
 import { MUSIC_TRACKS, parseMusicIds, serializeMusicIds } from "../src/shared/musicLibrary.js";
-import { RECRUITMENT_ITEMS } from "../src/shared/recruitment.js";
+import {
+  RECRUITMENT_ITEMS,
+  isPlayerShopRecruitmentItem,
+  recruitmentItemForType
+} from "../src/shared/recruitment.js";
 import { normalizeShopItemIllustName, normalizeShopItemIllustUrl } from "../src/shared/shopItemIllust.js";
 import {
   RAINBOW_BEAN_CANDY_IMAGE_URL,
@@ -48,8 +52,8 @@ const BUILTIN_SHOP_ITEMS = [
     stockQuantity: -1,
     priceCoins: item.priceCoins,
     discountPercent: 0,
-    purchasable: true,
-    enabled: true,
+    purchasable: item.playerShopAvailability !== "hidden",
+    enabled: item.playerShopAvailability !== "hidden",
     sortOrder: item.sortOrder,
     description: item.description,
     imageUrl: item.imageUrl
@@ -215,7 +219,11 @@ export async function listShopItems(prisma, userId = "") {
     userId ? prisma.user.findUnique({ where: { id: userId } }) : null
   ]);
   const purchaseCounts = parseItemPurchaseCounts(user?.itemPurchaseCounts);
-  return { items: items.map((item) => toShopItemPayload(item, purchaseCounts)) };
+  return {
+    items: items
+      .filter((item) => !recruitmentItemForType(item.targetId) || isPlayerShopRecruitmentItem(item.targetId))
+      .map((item) => toShopItemPayload(item, purchaseCounts))
+  };
 }
 
 export async function seedBuiltinShopItems(prisma) {
@@ -280,6 +288,9 @@ export async function purchaseShopItem({ prisma, userId, itemId }) {
       tx.shopItem.findUnique({ where: { id: itemId } })
     ]);
     if (!user) throw routeError(404, "用户不存在");
+    if (recruitmentItemForType(item?.targetId) && !isPlayerShopRecruitmentItem(item.targetId)) {
+      throw routeError(400, "商品不可购买");
+    }
     if (!item || !item.enabled || !item.purchasable) throw routeError(400, "商品不可购买");
 
     const itemPurchaseCounts = parseItemPurchaseCounts(user.itemPurchaseCounts);

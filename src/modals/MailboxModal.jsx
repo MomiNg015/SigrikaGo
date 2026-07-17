@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { Archive, CheckCircle2, Coins, Gift, MailOpen, Trash2 } from "lucide-react";
+import { Archive, CheckCircle2, Coins, Gift, MailOpen, Ticket, Trash2 } from "lucide-react";
 import { api } from "../api/client.js";
+import { RECRUITMENT_ITEM_TYPES, recruitmentItemForType } from "../shared/recruitment.js";
 import InformationCenterLayout, { useNarrowInformationCenter } from "./InformationCenterLayout.jsx";
 import { ModalActionButton } from "./modalComponents.jsx";
 
@@ -206,10 +207,26 @@ function AttachmentView({ attachment, claimable }) {
     );
   }
   const isCoins = attachment.type === "coins";
+  const itemPresentation = isCoins ? null : mailboxAttachmentItemPresentation(attachment);
   return (
     <div className={`mailbox-attachment ${claimable ? "claimable" : "claimed"}`}>
-      {isCoins ? <Coins size={18} /> : <Archive size={18} />}
-      <span>{attachmentLabel(attachment)}</span>
+      {isCoins ? (
+        <Coins size={18} />
+      ) : (
+        <span className="mailbox-attachment-item-art" aria-hidden="true">
+          {itemPresentation.imageUrl ? (
+            <img src={itemPresentation.imageUrl} alt="" loading="lazy" decoding="async" />
+          ) : itemPresentation.itemId === RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket ? (
+            <Ticket size={30} />
+          ) : (
+            <Archive size={28} />
+          )}
+        </span>
+      )}
+      <span className="mailbox-attachment-name">
+        {isCoins ? `${attachment.quantity ?? 0} 金币` : itemPresentation.name}
+      </span>
+      {!isCoins && <span className="mailbox-attachment-quantity">x{attachment.quantity ?? 0}</span>}
       <b>{claimable ? "待领取" : "已领取"}</b>
     </div>
   );
@@ -219,10 +236,14 @@ function hasAttachment(attachment) {
   return attachment?.type && attachment.type !== "none";
 }
 
-function attachmentLabel(attachment) {
-  if (attachment?.type === "coins") return `${attachment.quantity ?? 0} 金币`;
-  if (attachment?.type === "item") return `${attachment.itemId ?? "道具"} x${attachment.quantity ?? 0}`;
-  return "无附件";
+export function mailboxAttachmentItemPresentation(attachment) {
+  const itemId = String(attachment?.itemId ?? "").trim();
+  const builtinItem = recruitmentItemForType(itemId);
+  return {
+    itemId,
+    name: String(attachment?.itemName ?? builtinItem?.name ?? "").trim() || "道具",
+    imageUrl: String(attachment?.imageUrl ?? builtinItem?.imageUrl ?? "").trim()
+  };
 }
 
 function formatDateTime(value) {

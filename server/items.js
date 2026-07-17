@@ -42,13 +42,14 @@ export async function useInventoryItem({ prisma, userId, itemId, characterId = "
     const [user, item] = await Promise.all([
       tx.user.findUnique({ where: { id: userId }, include: { userCharacters: true } }),
       tx.shopItem.findFirst({
-        where: { category: "item", targetId: itemId, enabled: true }
+        where: { category: "item", targetId: itemId }
       })
     ]);
     if (!user) throw routeError(404, "用户不存在");
     if (!item) throw routeError(404, "道具不存在");
 
     if (isRecruitmentInventoryItem(item.targetId)) throw routeError(400, "请在招募窗口使用这个道具");
+    if (!item.enabled) throw routeError(404, "道具不存在");
 
     const ownedItems = parseOwnedItems(user.ownedItems);
     if ((ownedItems[item.targetId] ?? 0) <= 0) throw routeError(400, "未拥有该道具");

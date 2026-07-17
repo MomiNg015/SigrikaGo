@@ -1,6 +1,47 @@
+import { AEMEATH_CHARACTER_ID } from "./aemeathAcquisition.js";
+
 export const RECRUITMENT_ITEM_TYPES = Object.freeze({
   campusPoster: "campus-recruitment-poster",
+  aemeathMemorialTicket: "aemeath-flight-snow-memorial-ticket",
   radioTicket: "radio-recruitment-ticket"
+});
+
+export const RECRUITMENT_NO_CANDIDATE_MESSAGE = "好像已经没有可以用该道具招募的角色了";
+
+export const RECRUITMENT_CINEMATIC_IDS = Object.freeze({
+  aemeathArrival: "aemeath-flight-snow-arrival"
+});
+
+export const AEMEATH_RECRUITMENT_TIMING = Object.freeze({
+  taskDurationMs: 11_250,
+  theatricalCountdownMs: 999 * 60 * 1000,
+  darkenAtMs: 0,
+  flightAtMs: 3_200,
+  hoverAtMs: 5_200,
+  glowAtMs: 5_800,
+  concealedSwapAtMs: 6_250,
+  unlockAtMs: 7_050
+});
+
+export const RECRUITMENT_READY_SETTLEMENT_BUFFER_MS = 400;
+
+export function recruitmentReadyDelayMs(task, now = Date.now(), readyAt = task?.readyAt) {
+  const remainingMs = new Date(readyAt).getTime() - now;
+  return Math.max(0, Number.isFinite(remainingMs) ? remainingMs : 0)
+    + RECRUITMENT_READY_SETTLEMENT_BUFFER_MS;
+}
+
+export function cinematicPresentationReadyAt(task, now = Date.now()) {
+  if (!task?.cinematic || task.status !== "pending") return "";
+  return new Date(now + AEMEATH_RECRUITMENT_TIMING.taskDurationMs).toISOString();
+}
+
+export const AEMEATH_RECRUITMENT_ASSET_SLOTS = Object.freeze({
+  ticketImageUrl: "",
+  cinematicSpriteUrl: "/assets/Aemeath_centered.webp",
+  cinematicSpriteSheetUrl: "/assets/recruitment/aemeath-pink-cyber-angel-spritesheet.webp",
+  flightSoundUrl: "",
+  flashSoundUrl: ""
 });
 
 export const RECRUITMENT_ITEMS = Object.freeze({
@@ -13,7 +54,33 @@ export const RECRUITMENT_ITEMS = Object.freeze({
     staleImageUrls: Object.freeze(["/assets/items/recruitment-poster.svg"]),
     sortOrder: 120,
     priceCoins: 120,
+    playerShopAvailability: "available",
+    catalogVisibility: "always",
+    resultMode: "probability",
+    configurableProbability: true,
     candidates: Object.freeze(["lynae", "mornye", "chisa"])
+  }),
+  [RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket]: Object.freeze({
+    itemType: RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket,
+    name: "飞行雪绒纪念券",
+    scopeLabel: "回应飞行雪绒歌友会的特别招募",
+    description: "从飞行雪绒歌友会那里收到的特殊的奖品。上面的儿童画是怎么一回事呢？",
+    imageUrl: AEMEATH_RECRUITMENT_ASSET_SLOTS.ticketImageUrl,
+    staleImageUrls: Object.freeze([]),
+    sortOrder: 121,
+    priceCoins: 0,
+    playerShopAvailability: "hidden",
+    catalogVisibility: "owned-only",
+    resultMode: "fixed",
+    configurableProbability: false,
+    fixedResultCharacterId: AEMEATH_CHARACTER_ID,
+    candidates: Object.freeze([AEMEATH_CHARACTER_ID]),
+    durationMs: AEMEATH_RECRUITMENT_TIMING.taskDurationMs,
+    cinematicId: RECRUITMENT_CINEMATIC_IDS.aemeathArrival,
+    theatricalCountdownMs: AEMEATH_RECRUITMENT_TIMING.theatricalCountdownMs,
+    appearanceId: "aemeath-holographic-ticket",
+    resultText: "爱弥斯，回应粉丝的期待，闪亮登台！嗯？是想让我加入围棋部吗？哼哼哼，也好，就让你们见识一下我的实力吧！",
+    assetSlots: AEMEATH_RECRUITMENT_ASSET_SLOTS
   }),
   [RECRUITMENT_ITEM_TYPES.radioTicket]: Object.freeze({
     itemType: RECRUITMENT_ITEM_TYPES.radioTicket,
@@ -22,8 +89,12 @@ export const RECRUITMENT_ITEMS = Object.freeze({
     description: "给先约电台的广播券，可以招募学院外的人。",
     imageUrl: "/assets/items/radio-recruitment-ticket.webp",
     staleImageUrls: Object.freeze(["/assets/items/radio-recruitment-ticket.svg"]),
-    sortOrder: 121,
+    sortOrder: 122,
     priceCoins: 180,
+    playerShopAvailability: "available",
+    catalogVisibility: "always",
+    resultMode: "probability",
+    configurableProbability: true,
     candidates: Object.freeze(["qiuyuan", "changli"])
   })
 });
@@ -67,4 +138,13 @@ export function recruitmentItemForType(itemType) {
 
 export function recruitmentItemImageUrlForType(itemType, fallback = "") {
   return recruitmentItemForType(itemType)?.imageUrl ?? String(fallback ?? "");
+}
+
+export function probabilityRecruitmentItems() {
+  return Object.values(RECRUITMENT_ITEMS).filter((item) => item.configurableProbability !== false);
+}
+
+export function isPlayerShopRecruitmentItem(itemType) {
+  const item = recruitmentItemForType(itemType);
+  return Boolean(item && item.playerShopAvailability !== "hidden");
 }

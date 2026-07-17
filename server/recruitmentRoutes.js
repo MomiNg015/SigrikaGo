@@ -1,11 +1,18 @@
 import express from "express";
-import { claimRecruitment, fastForwardRecruitment, getRecruitmentStatus, startRecruitment } from "./recruitment.js";
+import {
+  claimRecruitment,
+  fastForwardRecruitment,
+  getRecruitmentStatus,
+  interruptRecruitmentCinematic,
+  startRecruitment
+} from "./recruitment.js";
 
 export function createRecruitmentRouteHandlers({
   prisma,
   claimRecruitmentFn = claimRecruitment,
   fastForwardRecruitmentFn = fastForwardRecruitment,
   getRecruitmentStatusFn = getRecruitmentStatus,
+  interruptRecruitmentCinematicFn = interruptRecruitmentCinematic,
   startRecruitmentFn = startRecruitment
 }) {
   async function status(req, res) {
@@ -45,7 +52,19 @@ export function createRecruitmentRouteHandlers({
     }
   }
 
-  return { status, start, claim, fastForward };
+  async function interruptCinematic(req, res) {
+    try {
+      res.json(await interruptRecruitmentCinematicFn({
+        prisma,
+        userId: req.user.id,
+        now: new Date()
+      }));
+    } catch (error) {
+      res.status(error.status ?? 500).json({ error: error.message ?? "中断特殊招募演出失败" });
+    }
+  }
+
+  return { status, start, claim, fastForward, interruptCinematic };
 }
 
 export function createRecruitmentRouter(deps) {
@@ -54,6 +73,7 @@ export function createRecruitmentRouter(deps) {
   router.get("/recruitment", handlers.status);
   router.post("/recruitment/start", handlers.start);
   router.post("/recruitment/fast-forward", handlers.fastForward);
+  router.post("/recruitment/interrupt-cinematic", handlers.interruptCinematic);
   router.post("/recruitment/claim", handlers.claim);
   return router;
 }

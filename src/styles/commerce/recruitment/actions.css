@@ -9,8 +9,87 @@
 .recruitment-item-strip {
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--recruitment-item-count, 2), minmax(0, 1fr));
   gap: 10px;
+}
+
+.recruitment-item-button.recruitment-item-aemeath-holographic-ticket {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: #61516e;
+  background: #fff8fc;
+  color: #432b4d;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.96);
+}
+
+.recruitment-item-aemeath-holographic-ticket::before,
+.recruitment-item-aemeath-holographic-ticket::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.recruitment-item-aemeath-holographic-ticket::before {
+  z-index: 0;
+  inset: -70%;
+  background:
+    radial-gradient(circle at 18% 24%, #8de9ff 0 12%, transparent 31%),
+    radial-gradient(circle at 82% 24%, #ff8fc7 0 13%, transparent 32%),
+    radial-gradient(circle at 76% 78%, #a88aff 0 15%, transparent 35%),
+    radial-gradient(circle at 22% 80%, #8af4ca 0 14%, transparent 34%),
+    linear-gradient(118deg, #8de9ff 4%, #ff8fc7 26%, #a88aff 49%, #ffd66b 71%, #8af4ca 94%);
+  background-size: 150% 150%, 165% 165%, 145% 145%, 160% 160%, 240% 240%;
+  animation: aemeath-ticket-hologram-drift 9.6s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  transform: rotate(-7deg) scale(1.08);
+}
+
+.recruitment-item-aemeath-holographic-ticket::after {
+  z-index: 1;
+  inset: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.94);
+  border-radius: 9px;
+  background: linear-gradient(112deg, rgba(255, 255, 255, 0.88), rgba(251, 239, 255, 0.78));
+  box-shadow:
+    inset 0 0 14px rgba(191, 241, 255, 0.36),
+    0 0 12px rgba(255, 164, 218, 0.34);
+}
+
+.recruitment-item-aemeath-holographic-ticket > * {
+  position: relative;
+  z-index: 2;
+}
+
+.recruitment-item-button.recruitment-item-aemeath-holographic-ticket.active {
+  background: #fff0fa;
+  color: #35203e;
+}
+
+.recruitment-item-aemeath-holographic-ticket.active::after {
+  background: linear-gradient(112deg, rgba(255, 255, 255, 0.82), rgba(247, 225, 255, 0.7));
+  box-shadow:
+    inset 0 0 18px rgba(205, 249, 255, 0.48),
+    0 0 16px rgba(255, 144, 210, 0.5);
+}
+
+.recruitment-item-button.recruitment-item-aemeath-holographic-ticket:focus-visible {
+  outline: 3px solid #fff9c8;
+  outline-offset: 3px;
+}
+
+@keyframes aemeath-ticket-hologram-drift {
+  0% { background-position: 8% 22%, 91% 14%, 78% 88%, 14% 82%, 0% 42%; }
+  19% { background-position: 24% 9%, 72% 31%, 91% 64%, 8% 71%, 26% 60%; }
+  43% { background-position: 11% 44%, 94% 18%, 66% 93%, 31% 88%, 58% 37%; }
+  71% { background-position: 35% 18%, 63% 46%, 88% 72%, 4% 57%, 82% 66%; }
+  100% { background-position: 17% 31%, 86% 7%, 71% 84%, 27% 96%, 100% 48%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recruitment-item-aemeath-holographic-ticket::before {
+    animation: none;
+    background-position: 17% 31%, 86% 7%, 71% 84%, 27% 96%, 58% 48%;
+  }
 }
 
 .recruitment-item-button {

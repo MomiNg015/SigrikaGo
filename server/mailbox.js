@@ -1,6 +1,8 @@
 import { publicUser } from "./db.js";
 import { writeAudit } from "./adminAudit.js";
+import { shopCatalogImageUrl } from "./itemImages.js";
 import { parseOwnedItemCounts, serializeOwnedItemCounts, syncStructuredUserAssets } from "./userAssets.js";
+import { recruitmentItemForType } from "../src/shared/recruitment.js";
 import {
   PROGRESS_METRICS,
   PROGRESS_REASONS,
@@ -136,7 +138,8 @@ export async function listMailboxMessages({ prisma, userId }) {
     where: { userId, deletedAt: null },
     orderBy: { createdAt: "desc" }
   });
-  return { messages: messages.map(toMailboxMessagePayload) };
+  const itemCatalog = await mailboxAttachmentItemCatalog(prisma, messages);
+  return { messages: messages.map((message) => toMailboxMessagePayload(message, itemCatalog)) };
 }
 
 export async function mailboxSummary({ prisma, userId }) {
@@ -260,14 +263,14 @@ export async function searchMailboxUsers({ prisma, query }) {
   };
 }
 
-export function toMailboxMessagePayload(message) {
+export function toMailboxMessagePayload(message, itemCatalog = null) {
   return {
     id: message.id,
     batchId: message.batchId ?? "",
     sender: mailboxSender(message),
     title: message.title,
     body: message.body,
-    attachment: attachmentPayload(message),
+    attachment: attachmentPayload(message, itemCatalog),
     isRead: Boolean(message.isRead),
     claimedAt: message.claimedAt ?? null,
     createdAt: message.createdAt,
@@ -408,15 +411,36 @@ function validateMailboxBatchInput(input = {}) {
   };
 }
 
-function attachmentPayload(record) {
+function attachmentPayload(record, itemCatalog = null) {
   const type = String(record.attachmentType ?? MAILBOX_ATTACHMENT_TYPES.none);
   if (type === MAILBOX_ATTACHMENT_TYPES.none) return { type: MAILBOX_ATTACHMENT_TYPES.none };
+  const itemId = String(record.attachmentItemId ?? "").trim();
+  const catalogItem = itemCatalog?.get?.(itemId) ?? null;
+  const builtinItem = recruitmentItemForType(itemId);
   return {
     type,
-    itemId: record.attachmentItemId ?? "",
+    itemId,
+    itemName: type === MAILBOX_ATTACHMENT_TYPES.item
+      ? String(catalogItem?.name ?? builtinItem?.name ?? "").trim() || "道具"
+      : "",
+    imageUrl: type === MAILBOX_ATTACHMENT_TYPES.item
+      ? catalogItem ? shopCatalogImageUrl(catalogItem) : builtinItem?.imageUrl ?? ""
+      : "",
     quantity: record.attachmentQuantity ?? 0,
     claimed: Boolean(record.claimedAt)
   };
+}
+
+async function mailboxAttachmentItemCatalog(prisma, messages) {
+  const itemIds = [...new Set(messages
+    .filter((message) => message.attachmentType === MAILBOX_ATTACHMENT_TYPES.item)
+    .map((message) => String(message.attachmentItemId ?? "").trim())
+    .filter(Boolean))];
+  if (itemIds.length === 0) return new Map();
+  const items = await prisma.shopItem?.findMany?.({
+    where: { category: "item", targetId: { in: itemIds } }
+  }) ?? [];
+  return new Map(items.map((item) => [String(item.targetId ?? "").trim(), item]));
 }
 
 function isClaimableMessage(message) {

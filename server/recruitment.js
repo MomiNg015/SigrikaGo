@@ -2,7 +2,9 @@ import { publicUser } from "./db.js";
 import {
   DEFAULT_RECRUITMENT_CONFIG,
   RECRUITMENT_ITEMS,
+  RECRUITMENT_NO_CANDIDATE_MESSAGE,
   isRecruitmentItemType,
+  probabilityRecruitmentItems,
   recruitmentItemForType
 } from "../src/shared/recruitment.js";
 import {
@@ -86,24 +88,27 @@ export async function startRecruitment({ prisma, userId, itemType, now = new Dat
 
     const ownedCharacters = publicUserAssets(user).ownedCharacters;
     const candidateIds = item.candidates.filter((candidateId) => !ownedCharacters.includes(candidateId));
-    if (candidateIds.length === 0) {
-      throw routeError(400, "好像已经没有可以用该道具招募的角色了");
-    }
+    if (candidateIds.length === 0) throw routeError(400, RECRUITMENT_NO_CANDIDATE_MESSAGE);
 
     const ownedItems = parseOwnedItemCounts(user.ownedItems);
     if ((ownedItems[item.itemType] ?? 0) <= 0) throw routeError(400, "还没有这个招募道具");
     ownedItems[item.itemType] -= 1;
     if (ownedItems[item.itemType] <= 0) delete ownedItems[item.itemType];
 
-    const streak = await getRecruitmentStreak(tx, userId, item.itemType);
-    const rate = rateForStreak(config, streak);
-    const success = Number(random()) * 100 < rate;
-    const pickedCharacter = success ? pickOne(candidateIds, random) : "";
-    const responseText = success
-      ? config.successTexts[pickedCharacter] || DEFAULT_RECRUITMENT_CONFIG.successTexts[pickedCharacter] || ""
-      : pickOne(config.noResponseTexts[item.itemType] ?? DEFAULT_RECRUITMENT_CONFIG.noResponseTexts[item.itemType], random);
+    const fixedResult = item.resultMode === "fixed" && item.fixedResultCharacterId;
+    const streak = fixedResult ? 0 : await getRecruitmentStreak(tx, userId, item.itemType);
+    const rate = fixedResult ? 100 : rateForStreak(config, streak);
+    const success = fixedResult || Number(random()) * 100 < rate;
+    const pickedCharacter = fixedResult
+      ? item.fixedResultCharacterId
+      : success ? pickOne(candidateIds, random) : "";
+    const responseText = fixedResult
+      ? item.resultText
+      : success
+        ? config.successTexts[pickedCharacter] || DEFAULT_RECRUITMENT_CONFIG.successTexts[pickedCharacter] || ""
+        : pickOne(config.noResponseTexts[item.itemType] ?? DEFAULT_RECRUITMENT_CONFIG.noResponseTexts[item.itemType], random);
     const startedAt = new Date(now);
-    const readyAt = new Date(startedAt.getTime() + config.durationMs);
+    const readyAt = new Date(startedAt.getTime() + (item.durationMs ?? config.durationMs));
     const updatedUser = await tx.user.update({
       where: { id: user.id },
       data: { ownedItems: serializeOwnedItemCounts(ownedItems) }
@@ -167,10 +172,33 @@ export async function claimRecruitment({ prisma, userId, now = new Date() }) {
         claimedAt: new Date(now)
       }
     });
-    await setRecruitmentStreak(tx, userId, task.itemType, task.resultType === "success" ? 0 : task.missStreakAtStart + 1);
+    const item = recruitmentItemForType(task.itemType);
+    if (item?.resultMode !== "fixed") {
+      await setRecruitmentStreak(tx, userId, task.itemType, task.resultType === "success" ? 0 : task.missStreakAtStart + 1);
+    }
     return {
       user: publicUser(updatedUser),
       task: toRecruitmentTaskPayload(claimedTask, { now, reveal: true })
+    };
+  });
+}
+
+export async function interruptRecruitmentCinematic({ prisma, userId, now = new Date() }) {
+  return prisma.$transaction(async (tx) => {
+    const task = await findActiveRecruitmentTask(tx, userId);
+    if (!task) return { task: null };
+    const item = recruitmentItemForType(task.itemType);
+    if (!item?.cinematicId) throw routeError(400, "当前招募没有可中断的特殊演出");
+
+    const interruptedAt = new Date(now);
+    const updatedTask = new Date(task.readyAt).getTime() > interruptedAt.getTime()
+      ? await tx.recruitmentTask.update({
+        where: { id: task.id },
+        data: { readyAt: interruptedAt }
+      })
+      : task;
+    return {
+      task: toRecruitmentTaskPayload(updatedTask, { now: interruptedAt, reveal: false })
     };
   });
 }
@@ -223,18 +251,22 @@ function publicRecruitmentConfig(config) {
 
 function recruitmentItemsPayload({ user, streaks, config }) {
   const ownedItems = parseOwnedItemCounts(user.ownedItems);
-  return Object.values(RECRUITMENT_ITEMS).map((item) => {
+  return Object.values(RECRUITMENT_ITEMS).flatMap((item) => {
+    const quantity = ownedItems[item.itemType] ?? 0;
+    if (item.catalogVisibility === "owned-only" && quantity <= 0) return [];
     const streak = streaks[item.itemType] ?? 0;
     const confidenceIndex = Math.min(streak, config.confidenceTexts.length - 1);
-    return {
+    return [{
       itemType: item.itemType,
       name: item.name,
       scopeLabel: item.scopeLabel,
       description: item.description,
       imageUrl: item.imageUrl,
-      quantity: ownedItems[item.itemType] ?? 0,
-      confidenceText: config.confidenceTexts[confidenceIndex] ?? ""
-    };
+      quantity,
+      confidenceText: item.resultMode === "fixed" ? item.scopeLabel : config.confidenceTexts[confidenceIndex] ?? "",
+      appearanceId: item.appearanceId ?? "",
+      cinematicId: item.cinematicId ?? ""
+    }];
   });
 }
 
@@ -247,9 +279,9 @@ function normalizeRecruitmentConfig(value) {
     durationMs,
     successRates,
     confidenceTexts: normalizeTextArray(parsed?.confidenceTexts, fallback.confidenceTexts, 3),
-    noResponseTexts: Object.fromEntries(Object.keys(RECRUITMENT_ITEMS).map((itemType) => [
-      itemType,
-      normalizeTextArray(parsed?.noResponseTexts?.[itemType], fallback.noResponseTexts[itemType], 2)
+    noResponseTexts: Object.fromEntries(probabilityRecruitmentItems().map((item) => [
+      item.itemType,
+      normalizeTextArray(parsed?.noResponseTexts?.[item.itemType], fallback.noResponseTexts[item.itemType], 2)
     ])),
     successTexts: { ...fallback.successTexts, ...(parsed?.successTexts ?? {}) }
   };
@@ -277,15 +309,24 @@ function normalizeTextArray(value, fallback, length) {
 
 function toRecruitmentTaskPayload(task, { now = new Date(), reveal = false } = {}) {
   const ready = new Date(task.readyAt).getTime() <= new Date(now).getTime();
+  const item = recruitmentItemForType(task.itemType);
   return {
     id: task.id,
     itemType: task.itemType,
-    itemName: recruitmentItemForType(task.itemType)?.name ?? task.itemType,
-    itemImageUrl: recruitmentItemForType(task.itemType)?.imageUrl ?? "",
+    itemName: item?.name ?? task.itemType,
+    itemImageUrl: item?.imageUrl ?? "",
     status: task.claimedAt ? "claimed" : ready ? "ready" : "pending",
     startedAt: task.startedAt,
     readyAt: task.readyAt,
     remainingMs: Math.max(0, new Date(task.readyAt).getTime() - new Date(now).getTime()),
+    cinematic: item?.cinematicId ? {
+      id: item.cinematicId,
+      theatricalCountdownMs: item.theatricalCountdownMs,
+      spriteImageUrl: item.assetSlots?.cinematicSpriteUrl ?? "",
+      spriteSheetUrl: item.assetSlots?.cinematicSpriteSheetUrl ?? "",
+      flightSoundUrl: item.assetSlots?.flightSoundUrl ?? "",
+      flashSoundUrl: item.assetSlots?.flashSoundUrl ?? ""
+    } : null,
     result: reveal ? {
       type: task.resultType,
       characterId: task.resultCharacterSlug ?? "",

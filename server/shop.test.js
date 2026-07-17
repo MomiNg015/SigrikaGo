@@ -311,6 +311,30 @@ describe("shop", () => {
     });
   });
 
+  it("never exposes the memorial ticket in the player shop even if a stale row is enabled", async () => {
+    const response = await listShopItems({
+      shopItem: {
+        findMany: async () => [{
+          id: "shop-aemeath-ticket",
+          name: "飞行雪绒纪念券",
+          category: "item",
+          targetId: "aemeath-flight-snow-memorial-ticket",
+          itemTargetType: "self",
+          stockQuantity: -1,
+          priceCoins: 0,
+          discountPercent: 0,
+          purchasable: true,
+          enabled: true,
+          sortOrder: 121,
+          description: "stale",
+          imageUrl: ""
+        }]
+      }
+    });
+
+    expect(response.items).toEqual([]);
+  });
+
   it("normalizes the builtin campus recruitment poster shop image from current shared config", async () => {
     const response = await listShopItems({
       shopItem: {
@@ -505,6 +529,16 @@ describe("shop", () => {
         targetId: "radio-recruitment-ticket",
         itemTargetType: "self",
         imageUrl: "/assets/items/radio-recruitment-ticket.webp"
+      })
+    ]);
+    expect(calls).toContainEqual([
+      "create",
+      expect.objectContaining({
+        category: "item",
+        targetId: "aemeath-flight-snow-memorial-ticket",
+        priceCoins: 0,
+        purchasable: false,
+        enabled: false
       })
     ]);
     expect(calls).toContainEqual([

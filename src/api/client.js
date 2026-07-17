@@ -15,7 +15,8 @@ export async function api(path, options = {}) {
       ...(options.token ? { Authorization: `Bearer ${options.token}` } : {})
     },
     body: options.body ? JSON.stringify(options.body) : undefined,
-    signal: options.signal
+    signal: options.signal,
+    keepalive: options.keepalive
   }, options.requestTimeoutMs);
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {

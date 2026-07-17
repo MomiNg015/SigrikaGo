@@ -22,6 +22,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
     bufferCache: new Map(),
     failedSources: new Map(),
     htmlFallback: null,
+    htmlVolumeRampId: null,
     offset: 0,
     startedAt: 0,
     pauseRequested: false
@@ -35,7 +36,7 @@ export function BackgroundMusic({ track, audioSettings, resumeSignal = 0 }) {
 
   useEffect(() => {
     const state = playerRef.current;
-    const refresh = () => setBackgroundVolume(state);
+    const refresh = ({ durationMs } = {}) => setBackgroundVolume(state, durationMs);
     return subscribeBackgroundDuck(refresh);
   }, []);
 
@@ -214,6 +215,7 @@ function htmlFallbackSource(playback) {
 }
 
 function stopBackgroundHtmlFallback(state) {
+  clearHtmlVolumeRamp(state);
   const fallback = state.htmlFallback;
   state.htmlFallback = null;
   if (!fallback) return;
@@ -314,17 +316,45 @@ function setBackgroundBaseVolume(state, volume) {
   setBackgroundVolume(state);
 }
 
-function setBackgroundVolume(state) {
+function setBackgroundVolume(state, durationMs = 120) {
   const context = state.context;
-  if (state.htmlFallback?.audio) state.htmlFallback.audio.volume = currentBackgroundVolume(state);
+  const volume = currentBackgroundVolume(state);
+  if (state.htmlFallback?.audio) rampHtmlFallbackVolume(state, volume, durationMs);
   if (!context) return;
   const now = context.currentTime;
-  const volume = currentBackgroundVolume(state);
+  const durationSeconds = Math.max(0, Number(durationMs) || 0) / 1000;
   for (const player of state.active ?? []) {
     player.gain.gain.cancelScheduledValues(now);
     player.gain.gain.setValueAtTime(player.gain.gain.value, now);
-    player.gain.gain.linearRampToValueAtTime(volume, now + 0.12);
+    player.gain.gain.linearRampToValueAtTime(volume, now + durationSeconds);
   }
+}
+
+function rampHtmlFallbackVolume(state, targetVolume, durationMs) {
+  clearHtmlVolumeRamp(state);
+  const audio = state.htmlFallback?.audio;
+  if (!audio) return;
+  const duration = Math.max(0, Number(durationMs) || 0);
+  if (duration === 0 || typeof window === "undefined") {
+    audio.volume = targetVolume;
+    return;
+  }
+  const startedAt = performance.now();
+  const startVolume = audio.volume;
+  state.htmlVolumeRampId = window.setInterval(() => {
+    const progress = Math.min(1, (performance.now() - startedAt) / duration);
+    audio.volume = startVolume + ((targetVolume - startVolume) * progress);
+    if (progress >= 1) clearHtmlVolumeRamp(state);
+  }, 16);
+}
+
+function clearHtmlVolumeRamp(state) {
+  if (state.htmlVolumeRampId == null || typeof window === "undefined") {
+    state.htmlVolumeRampId = null;
+    return;
+  }
+  window.clearInterval(state.htmlVolumeRampId);
+  state.htmlVolumeRampId = null;
 }
 
 function currentBackgroundVolume(state) {

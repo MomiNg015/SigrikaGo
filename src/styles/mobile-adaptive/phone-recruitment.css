@@ -168,7 +168,7 @@
   }
 
   .recruitment-item-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(var(--recruitment-item-count, 2), minmax(0, 1fr)) !important;
     gap: 6px !important;
   }
 
@@ -189,7 +189,7 @@
     height: 28px !important;
   }
 
-  .recruitment-item-button span {
+  .recruitment-item-button span:not(.recruitment-item-icon) {
     display: none !important;
   }
 

@@ -371,7 +371,8 @@ export default function TutorialBattleScreen({
           onExitToStory({
             script: { ...script, startNodeId: loading.startNodeId },
             labels: session?.labels,
-            onComplete: session?.onComplete
+            onComplete: session?.onComplete,
+            onExit: session?.onExit
           });
         } else {
           finish();
@@ -381,7 +382,7 @@ export default function TutorialBattleScreen({
       finish();
     }, MIN_LOADING_MS);
     return () => window.clearTimeout(timerId);
-  }, [applyBoardSetup, finish, loading, onExitToStory, script, session?.labels, session?.onComplete]);
+  }, [applyBoardSetup, finish, loading, onExitToStory, script, session?.labels, session?.onComplete, session?.onExit]);
 
   useEffect(() => {
     if (!loading || loading.kind === "setup") return undefined;

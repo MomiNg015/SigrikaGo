@@ -23,7 +23,8 @@ describe("onboarding story domain", () => {
       expect.stringContaining('CREATE TABLE IF NOT EXISTS "OnboardingStoryScript"'),
       expect.stringContaining('ALTER TABLE "User" ADD COLUMN "onboardingRequired" BOOLEAN NOT NULL DEFAULT false'),
       expect.stringContaining('ALTER TABLE "User" ADD COLUMN "onboardingAutoShownAt" DATETIME'),
-      expect.stringContaining('ALTER TABLE "User" ADD COLUMN "onboardingCompletedAt" DATETIME')
+      expect.stringContaining('ALTER TABLE "User" ADD COLUMN "onboardingCompletedAt" DATETIME'),
+      expect.stringContaining('ALTER TABLE "User" ADD COLUMN "welcomeMailNoticeShownAt" DATETIME')
     ]);
     expect(queried).toContain('PRAGMA table_info("User")');
   });

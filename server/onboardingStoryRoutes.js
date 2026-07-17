@@ -4,12 +4,14 @@ import {
   markOnboardingAutoShown,
   markOnboardingCompleted
 } from "./onboardingStory.js";
+import { markAemeathWelcomeMailNoticeShown } from "./aemeathAcquisition.js";
 
 export function createOnboardingStoryRouteHandlers({
   prisma,
   getPlayerOnboardingStoryFn = getPlayerOnboardingStory,
   markOnboardingAutoShownFn = markOnboardingAutoShown,
-  markOnboardingCompletedFn = markOnboardingCompleted
+  markOnboardingCompletedFn = markOnboardingCompleted,
+  markWelcomeMailNoticeShownFn = markAemeathWelcomeMailNoticeShown
 }) {
   async function getStory(req, res) {
     try {
@@ -35,7 +37,19 @@ export function createOnboardingStoryRouteHandlers({
     }
   }
 
-  return { getStory, markAutoShown, markCompleted };
+  async function markExited(req, res) {
+    try {
+      res.json(await markWelcomeMailNoticeShownFn({
+        prisma,
+        userId: req.user.id,
+        now: new Date()
+      }));
+    } catch (error) {
+      sendRouteError(res, error);
+    }
+  }
+
+  return { getStory, markAutoShown, markCompleted, markExited };
 }
 
 export function createOnboardingStoryRouter(deps) {
@@ -44,6 +58,7 @@ export function createOnboardingStoryRouter(deps) {
   router.get("/onboarding-story", handlers.getStory);
   router.post("/onboarding-story/auto-shown", handlers.markAutoShown);
   router.post("/onboarding-story/completed", handlers.markCompleted);
+  router.post("/onboarding-story/exited", handlers.markExited);
   return router;
 }
 

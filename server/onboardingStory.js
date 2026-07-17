@@ -65,6 +65,11 @@ export async function ensureOnboardingStorySchema(client) {
     "onboardingCompletedAt",
     'ALTER TABLE "User" ADD COLUMN "onboardingCompletedAt" DATETIME'
   );
+  await addUserColumnIfMissing(
+    client,
+    "welcomeMailNoticeShownAt",
+    'ALTER TABLE "User" ADD COLUMN "welcomeMailNoticeShownAt" DATETIME'
+  );
 }
 
 export function validateOnboardingStoryScript(input = {}, { publishing = false } = {}) {

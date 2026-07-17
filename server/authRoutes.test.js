@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { ALREADY_LOGGED_IN_CODE, REFRESH_COOKIE_NAME } from "./loginSessions.js";
 import { createAuthRouteHandlers } from "./authRoutes.js";
+import { AEMEATH_WELCOME_MAIL } from "../src/shared/aemeathAcquisition.js";
+import { RECRUITMENT_ITEM_TYPES } from "../src/shared/recruitment.js";
 
 function createResponse() {
   return {
@@ -24,17 +26,25 @@ function createResponse() {
 function createHandlers(overrides = {}) {
   const users = overrides.users ?? new Map();
   const createdUsers = [];
+  const createdMailboxMessages = [];
   const clearedSessions = [];
   const clearedRefreshTokens = [];
   const forcedLogouts = [];
   const loginResponses = [];
   const prisma = overrides.prisma ?? {
+    $transaction: async (callback) => callback(prisma),
     user: {
       create: async ({ data }) => {
         createdUsers.push(data);
         return { id: "new-user", username: data.username, passwordHash: data.passwordHash };
       },
       findUnique: async ({ where }) => users.get(where.username ?? where.id) ?? null
+    },
+    mailboxMessage: {
+      create: async ({ data }) => {
+        createdMailboxMessages.push(data);
+        return { id: "welcome-mail", ...data };
+      }
     }
   };
   const loginSessions = overrides.loginSessions ?? {
@@ -78,6 +88,7 @@ function createHandlers(overrides = {}) {
       ...overrides.deps
     }),
     createdUsers,
+    createdMailboxMessages,
     clearedSessions,
     clearedRefreshTokens,
     forcedLogouts,
@@ -87,7 +98,7 @@ function createHandlers(overrides = {}) {
 
 describe("auth route handlers", () => {
   it("registers a user and returns the login response without leaking refresh fields", async () => {
-    const { handlers, createdUsers } = createHandlers();
+    const { handlers, createdUsers, createdMailboxMessages } = createHandlers();
     const res = createResponse();
 
     await handlers.register({
@@ -98,7 +109,17 @@ describe("auth route handlers", () => {
     expect(createdUsers).toEqual([{
       username: "alice",
       passwordHash: "hash:secret12:10",
-      onboardingRequired: true
+      onboardingRequired: true,
+      ownedCharacters: "sigrika,denia"
+    }]);
+    expect(createdMailboxMessages).toEqual([{
+      userId: "new-user",
+      sender: AEMEATH_WELCOME_MAIL.sender,
+      title: AEMEATH_WELCOME_MAIL.title,
+      body: AEMEATH_WELCOME_MAIL.body,
+      attachmentType: "item",
+      attachmentItemId: RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket,
+      attachmentQuantity: 1
     }]);
     expect(res.headers["Set-Cookie"]).toContain(`${REFRESH_COOKIE_NAME}=refresh-token`);
     expect(res.body).toEqual({
@@ -110,7 +131,12 @@ describe("auth route handlers", () => {
   it("maps only Prisma unique conflicts to the username-exists response", async () => {
     const uniqueError = Object.assign(new Error("unique"), { code: "P2002" });
     const { handlers } = createHandlers({
-      prisma: { user: { create: async () => { throw uniqueError; } } }
+      prisma: {
+        $transaction: async (callback) => callback({
+          user: { create: async () => { throw uniqueError; } },
+          mailboxMessage: { create: async () => {} }
+        })
+      }
     });
     const res = createResponse();
 
@@ -122,7 +148,12 @@ describe("auth route handlers", () => {
 
   it("lets unexpected registration failures reach the shared error handler", async () => {
     const { handlers } = createHandlers({
-      prisma: { user: { create: async () => { throw new Error("database offline"); } } }
+      prisma: {
+        $transaction: async (callback) => callback({
+          user: { create: async () => { throw new Error("database offline"); } },
+          mailboxMessage: { create: async () => {} }
+        })
+      }
     });
 
     await expect(handlers.register({

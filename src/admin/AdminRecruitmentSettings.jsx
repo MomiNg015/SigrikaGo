@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "../api/client.js";
-import { DEFAULT_RECRUITMENT_CONFIG, RECRUITMENT_ITEMS } from "../shared/recruitment.js";
+import {
+  DEFAULT_RECRUITMENT_CONFIG,
+  probabilityRecruitmentItems
+} from "../shared/recruitment.js";
 import { AdminActionButton } from "./adminComponents.jsx";
 
 const CHARACTER_IDS = ["lynae", "mornye", "chisa", "qiuyuan", "changli"];
@@ -56,7 +59,7 @@ export default function AdminRecruitmentSettings({ token, onNotice }) {
           回应把握文案（三行）
           <textarea value={draft.confidenceTexts} onChange={(event) => setDraft({ ...draft, confidenceTexts: event.target.value })} rows={4} />
         </label>
-        {Object.values(RECRUITMENT_ITEMS).map((item) => (
+        {probabilityRecruitmentItems().map((item) => (
           <label key={item.itemType}>
             {item.name} 未回应文案（每行一条）
             <textarea
@@ -93,9 +96,9 @@ function configToDraft(config) {
     durationSeconds: String(Math.round(Number(config.durationMs ?? DEFAULT_RECRUITMENT_CONFIG.durationMs) / 1000)),
     successRates: (config.successRates ?? DEFAULT_RECRUITMENT_CONFIG.successRates).map(String),
     confidenceTexts: (config.confidenceTexts ?? DEFAULT_RECRUITMENT_CONFIG.confidenceTexts).join("\n"),
-    noResponseTexts: Object.fromEntries(Object.keys(RECRUITMENT_ITEMS).map((itemType) => [
-      itemType,
-      (config.noResponseTexts?.[itemType] ?? DEFAULT_RECRUITMENT_CONFIG.noResponseTexts[itemType]).join("\n")
+    noResponseTexts: Object.fromEntries(probabilityRecruitmentItems().map((item) => [
+      item.itemType,
+      (config.noResponseTexts?.[item.itemType] ?? DEFAULT_RECRUITMENT_CONFIG.noResponseTexts[item.itemType]).join("\n")
     ])),
     successTexts: { ...DEFAULT_RECRUITMENT_CONFIG.successTexts, ...(config.successTexts ?? {}) }
   };

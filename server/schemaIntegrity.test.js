@@ -279,6 +279,23 @@ describe("Prisma schema integrity", () => {
     expect(completionMigration).toContain("ALTER TABLE \"User\" ADD COLUMN \"onboardingCompletedAt\"");
   });
 
+  it("tracks the Aemeath acquisition migration and new-user mail notice state", () => {
+    const schema = readFileSync(schemaPath, "utf8");
+    const migration = readFileSync(join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "202607170002_aemeath_ticket_acquisition",
+      "migration.sql"
+    ), "utf8");
+
+    expect(schema).toContain('ownedCharacters    String   @default("sigrika,denia")');
+    expect(schema).toContain("welcomeMailNoticeShownAt DateTime?");
+    expect(migration).toContain('ADD COLUMN "welcomeMailNoticeShownAt"');
+    expect(migration).toContain("'aemeath'");
+    expect(migration).toContain('INSERT OR IGNORE INTO "UserCharacter"');
+  });
+
   it("tracks generic story scripts through a migration", () => {
     const schema = readFileSync(schemaPath, "utf8");
     const migrationPath = join(

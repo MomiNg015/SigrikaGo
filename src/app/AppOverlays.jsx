@@ -41,6 +41,7 @@ export default function AppOverlays({
   onboardingStoryScript,
   storyPlayerScript,
   onRemoveToast,
+  onRecruitmentInteractionLockChange,
   onRecruitmentStatusChange,
   onResultClose,
   openReplay,
@@ -244,6 +245,7 @@ export default function AppOverlays({
             user={user}
             onUserChange={updateUser}
             onNotice={showToast}
+            onInteractionLockChange={onRecruitmentInteractionLockChange}
             onStatusChange={onRecruitmentStatusChange}
             onClose={() => setShowRecruitment(false)}
           />
@@ -294,11 +296,11 @@ export default function AppOverlays({
             onComplete={storyPlayerScript?.onComplete}
             onClose={closeStoryPlayer}
             onEnterBattle={(battleSession) => {
-              closeStoryPlayer();
               onEnterTutorialBattle?.({
                 ...battleSession,
                 labels: storyPlayerScript?.labels,
-                onComplete: storyPlayerScript?.onComplete
+                onComplete: storyPlayerScript?.onComplete,
+                onExit: storyPlayerScript?.onExit
               });
             }}
           />

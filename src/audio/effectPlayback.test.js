@@ -40,6 +40,20 @@ describe("effect playback", () => {
     expect(() => playEffectSound("/assets/music/missing.ogg")).not.toThrow();
   });
 
+  it("keeps optional cinematic sound slots silent when no asset is configured", () => {
+    const played = [];
+    class FakeAudio {
+      constructor(src) {
+        played.push(src);
+      }
+    }
+    vi.stubGlobal("Audio", FakeAudio);
+
+    playEffectSound("");
+
+    expect(played).toEqual([]);
+  });
+
   it("routes board sound actions to their effect assets", () => {
     const played = [];
     class FakeAudio {

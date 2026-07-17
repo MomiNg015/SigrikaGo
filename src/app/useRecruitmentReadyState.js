@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/client.js";
+import { recruitmentReadyDelayMs } from "../shared/recruitment.js";
+
+export { recruitmentReadyDelayMs } from "../shared/recruitment.js";
 
 export function recruitmentReadyFromTask(task) {
   return task?.status === "ready";
-}
-
-export function recruitmentReadyDelayMs(task, now = Date.now()) {
-  const remainingMs = new Date(task?.readyAt).getTime() - now;
-  return Math.max(0, Number.isFinite(remainingMs) ? remainingMs : 0) + 400;
 }
 
 export function useRecruitmentReadyState({ token, user }) {

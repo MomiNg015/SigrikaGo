@@ -22,6 +22,22 @@ const giftMessage = {
   attachment: { type: "coins", quantity: 30, claimed: false }
 };
 
+const memorialTicketMessage = {
+  ...giftMessage,
+  id: "mail-ticket",
+  sender: "飞行雪绒歌友会",
+  title: "飞行雪绒演唱会纪念奖品",
+  isRead: true,
+  attachment: {
+    type: "item",
+    itemId: "aemeath-flight-snow-memorial-ticket",
+    itemName: "飞行雪绒纪念券",
+    imageUrl: "",
+    quantity: 1,
+    claimed: false
+  }
+};
+
 describe("MailboxModal information center", () => {
   afterEach(() => {
     cleanup();
@@ -96,6 +112,17 @@ describe("MailboxModal information center", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "删除邮件" }).disabled).toBe(false));
     await user.click(screen.getByRole("button", { name: "删除邮件" }));
     await waitFor(() => expect(screen.getAllByText("这里空空如也~").length).toBeGreaterThan(0));
+  });
+
+  it("renders item attachments as item art, a player-facing name, and quantity", () => {
+    const { container } = render(
+      <MailboxModal token="token" initialLoaded initialMessages={[memorialTicketMessage]} onClose={() => {}} />
+    );
+
+    expect(screen.getByText("飞行雪绒纪念券")).toBeTruthy();
+    expect(screen.getByText("x1")).toBeTruthy();
+    expect(screen.queryByText(/aemeath-flight-snow-memorial-ticket/)).toBeNull();
+    expect(container.querySelector(".mailbox-attachment-item-art svg")).toBeTruthy();
   });
 
   it("keeps mobile list-first and does not auto-open or mark the newest mail read", () => {

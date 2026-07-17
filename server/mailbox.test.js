@@ -182,6 +182,34 @@ describe("mailbox domain", () => {
     expect(result.messages[0].sender).toBe("系统");
   });
 
+  it("projects item attachments with player-facing catalog names and images", async () => {
+    const { prisma } = mailboxPrisma({
+      users: [userFixture("user-1")],
+      messages: [messageFixture("item-mail", {
+        attachmentType: MAILBOX_ATTACHMENT_TYPES.item,
+        attachmentItemId: "dream-ticket",
+        attachmentQuantity: 1
+      })],
+      shopItems: [{
+        id: "shop-item-1",
+        category: "item",
+        targetId: "dream-ticket",
+        name: "梦境纪念券",
+        imageUrl: "/assets/items/dream-ticket.webp"
+      }]
+    });
+
+    const result = await listMailboxMessages({ prisma, userId: "user-1" });
+
+    expect(result.messages[0].attachment).toMatchObject({
+      type: "item",
+      itemId: "dream-ticket",
+      itemName: "梦境纪念券",
+      imageUrl: "/assets/items/dream-ticket.webp",
+      quantity: 1
+    });
+  });
+
   it("does not redeliver a future-eligible global batch after the user deletes it", async () => {
     const { prisma, messages } = mailboxPrisma({
       users: [userFixture("future-user")],
@@ -367,7 +395,7 @@ function messageFixture(id, overrides = {}) {
   };
 }
 
-function mailboxPrisma({ users: userRows = [], messages: messageRows = [], batches: batchRows = [] } = {}) {
+function mailboxPrisma({ users: userRows = [], messages: messageRows = [], batches: batchRows = [], shopItems = [] } = {}) {
   const users = new Map(userRows.map((user) => [user.id, { ...user }]));
   const messages = messageRows.map((message) => ({ ...message }));
   const batches = batchRows.map((batch) => ({ ...batch }));
@@ -434,6 +462,13 @@ function mailboxPrisma({ users: userRows = [], messages: messageRows = [], batch
         const index = messages.findIndex((message) => message.id === where.id);
         return messages.splice(index, 1)[0];
       }
+    },
+    shopItem: {
+      findMany: async ({ where } = {}) => shopItems.filter((item) => {
+        if (where?.category && item.category !== where.category) return false;
+        if (where?.targetId?.in && !where.targetId.in.includes(item.targetId)) return false;
+        return true;
+      })
     },
     userProgressLedger: {
       create: async ({ data }) => {

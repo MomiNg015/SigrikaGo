@@ -13,6 +13,10 @@ import {
 } from "./loginSessions.js";
 import { shouldBlockLoginForActiveAccount } from "./loginConflicts.js";
 import { validateNewPassword, validatePassword, validateUsername } from "./security.js";
+import {
+  aemeathWelcomeMailboxMessageData,
+  newUserInitialOwnedCharacters
+} from "./aemeathAcquisition.js";
 
 const DUMMY_PASSWORD_HASH = "$2b$10$IvEAhFgqDEMheGwJ3R/kA.qCmfCeoDs7kPwyyfyCwFB4K1x6njnL.";
 
@@ -50,8 +54,19 @@ export function createAuthRouteHandlers({
     const passwordHash = await hashPassword(password, 10);
     let user;
     try {
-      user = await prisma.user.create({
-        data: { username, passwordHash, onboardingRequired: true }
+      user = await prisma.$transaction(async (tx) => {
+        const createdUser = await tx.user.create({
+          data: {
+            username,
+            passwordHash,
+            onboardingRequired: true,
+            ownedCharacters: newUserInitialOwnedCharacters()
+          }
+        });
+        await tx.mailboxMessage.create({
+          data: aemeathWelcomeMailboxMessageData(createdUser.id)
+        });
+        return createdUser;
       });
     } catch (error) {
       if (!isPrismaUniqueConstraintError(error)) throw error;

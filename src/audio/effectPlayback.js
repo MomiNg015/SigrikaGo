@@ -49,6 +49,7 @@ const effectPromiseCache = new Map();
 let sharedEffectContext = null;
 
 export function playEffectSound(src, audioSettings = DEFAULT_AUDIO_SETTINGS) {
+  if (!String(src ?? "").trim()) return;
   const volume = audioVolume(audioSettings, "sfx");
   if (volume <= 0) return;
   if (!effectBufferCache.has(src)) {

@@ -194,6 +194,32 @@
   color: #47724f;
 }
 
+.mailbox-attachment-item-art {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: #9d2c68;
+}
+
+.mailbox-attachment-item-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mailbox-attachment-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mailbox-attachment-quantity {
+  flex: 0 0 auto;
+  color: currentColor;
+  font-variant-numeric: tabular-nums;
+}
+
 .mailbox-attachment b {
   margin-left: auto;
   white-space: nowrap;

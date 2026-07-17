@@ -232,6 +232,13 @@ describe("user asset list helpers", () => {
     }).ownedCharacters).not.toContain("lynae");
   });
 
+  it("does not auto-grant Aemeath when ownership is absent", () => {
+    expect(publicUserAssets({
+      role: "player",
+      ownedCharacters: "sigrika,denia"
+    }).ownedCharacters).not.toContain("aemeath");
+  });
+
   it("keeps existing admin-open recruitable characters without auto-granting Lynae", () => {
     expect(publicUserAssets({
       role: "admin",

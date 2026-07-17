@@ -2,7 +2,7 @@ import { canonicalCharacterId } from "../src/shared/characterAliases.js";
 import { DEFAULT_RANK, normalizeRank } from "../src/shared/rankProgression.js";
 import { parseItemEffects } from "./itemEffects.js";
 
-const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia", "aemeath"];
+const AVAILABLE_CHARACTER_IDS = ["sigrika", "denia"];
 const ADMIN_ONLY_CHARACTER_IDS = ["qiuyuan", "mornye", "changli", "chisa"];
 const RATING_UNLOCKS = [
   { characterId: "nabomo", rating: 1400 }

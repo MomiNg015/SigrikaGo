@@ -47,6 +47,22 @@ describe("onboarding story route handlers", () => {
     expect(res.body).toEqual({ ok: true });
   });
 
+  it("atomically records the one-time welcome-mail notice after onboarding exits", async () => {
+    const markWelcomeMailNoticeShownFn = vi.fn(async () => ({ ok: true, showNotice: true }));
+    const handlers = createOnboardingStoryRouteHandlers({ prisma: {}, markWelcomeMailNoticeShownFn });
+    const req = { user: { id: "user-1" } };
+    const res = responseCollector();
+
+    await handlers.markExited(req, res);
+
+    expect(markWelcomeMailNoticeShownFn).toHaveBeenCalledWith({
+      prisma: {},
+      userId: "user-1",
+      now: expect.any(Date)
+    });
+    expect(res.body).toEqual({ ok: true, showNotice: true });
+  });
+
   it("returns domain errors as JSON", async () => {
     const error = Object.assign(new Error("新手引导不存在"), { status: 404 });
     const handlers = createOnboardingStoryRouteHandlers({

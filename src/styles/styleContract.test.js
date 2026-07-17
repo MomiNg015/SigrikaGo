@@ -905,6 +905,7 @@ describe("root CSS entry contract", () => {
 
     expect(cssImports(recruitmentEntry)).toEqual([
       "./recruitment/modal-shell.css",
+      "./recruitment/cinematic.css",
       "./recruitment/board.css",
       "./recruitment/countdown.css",
       "./recruitment/actions.css"
@@ -917,6 +918,9 @@ describe("root CSS entry contract", () => {
     expect(recruitmentEntry).not.toContain(".recruitment-modal {");
     expect(recruitmentBoardEntry).not.toContain(".recruitment-board {");
     expect(recruitmentShell).toContain("position: relative;");
+    const recruitmentCinematic = readFileSync(new URL("./commerce/recruitment/cinematic.css", import.meta.url), "utf8");
+    expect(recruitmentCinematic).toContain(".recruitment-cinematic-overlay");
+    expect(recruitmentCinematic).toContain("aemeath-cinematic-flight-frames");
     const recruitmentCountdown = readFileSync(new URL("./commerce/recruitment/countdown.css", import.meta.url), "utf8");
     expect(recruitmentBoard).toContain("--recruitment-board-background-image: url(\"/assets/recruitment/notice-board-flat-candidate.webp\")");
     expect(recruitmentBoard).toContain("var(--recruitment-board-background-image)");
@@ -974,7 +978,7 @@ describe("root CSS entry contract", () => {
     expect(phoneRecruitment).toContain(".recruitment-item-watermark-art");
     expect(phoneRecruitment).toContain("height: 142% !important;");
     expect(phoneRecruitment).toContain("opacity: 0.28 !important;");
-    expect(phoneRecruitment).toContain(".recruitment-item-button span");
+    expect(phoneRecruitment).toContain(".recruitment-item-button span:not(.recruitment-item-icon)");
     expect(phoneRecruitment).toContain("display: none !important;");
     expect(phoneRecruitment).toContain(".recruitment-use-button:disabled");
   });

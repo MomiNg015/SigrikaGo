@@ -18,6 +18,7 @@ import { ensureSocialSchema } from "./social.js";
 import { cleanupLegacyUsernames } from "./usernameCleanup.js";
 import { seedAdminDefaultConfig } from "./adminDefaultSeed.js";
 import { ensureSkillTraitSchema, migrateBuiltinSkillDescriptions } from "./skillTraits.js";
+import { migrateLegacyAemeathOwnership } from "./aemeathAcquisition.js";
 
 export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureAchievementSchema",
@@ -29,6 +30,7 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureOnboardingStorySchema",
   "ensureSkillTraitSchema",
   "seedAdminDefaultConfig",
+  "migrateLegacyAemeathOwnership",
   "seedDefaultStoryScripts",
   "seedBuiltinAchievements",
   "cleanupLegacyDeniaCharacterData",
@@ -66,6 +68,7 @@ export async function initializeServerData({
   ensureMusicTrackSettingsSchema: ensureMusicTrackSettingsSchemaTask = ensureMusicTrackSettingsSchema,
   ensureAchievementSchema: ensureAchievementSchemaTask = ensureAchievementSchema,
   seedAdminDefaultConfig: seedAdminDefaultConfigTask = seedAdminDefaultConfig,
+  migrateLegacyAemeathOwnership: migrateLegacyAemeathOwnershipTask = migrateLegacyAemeathOwnership,
   seedBuiltinAchievements: seedBuiltinAchievementsTask = seedBuiltinAchievements,
   cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask = cleanupLegacyDeniaCharacterData,
   cleanupLegacyDerivedSkillLeak: cleanupLegacyDerivedSkillLeakTask = cleanupLegacyDerivedSkillLeak,
@@ -97,6 +100,7 @@ export async function initializeServerData({
     seedBuiltinShopItems: seedBuiltinShopItemsTask,
     seedCharacters: seedCharactersTask,
     migrateBuiltinSkillDescriptions: migrateBuiltinSkillDescriptionsTask,
+    migrateLegacyAemeathOwnership: migrateLegacyAemeathOwnershipTask,
     seedDefaultStoryScripts: seedDefaultStoryScriptsTask
   };
 

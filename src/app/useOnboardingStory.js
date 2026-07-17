@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "../api/client.js";
 import { closeOverlaySetters } from "./overlayRegistry.js";
+import { AEMEATH_WELCOME_MAIL_TOAST } from "../shared/aemeathAcquisition.js";
 
 const NO_SCRIPT_MESSAGE = "\u6682\u65e0\u5df2\u53d1\u5e03\u7684\u65b0\u624b\u5f15\u5bfc";
 
@@ -26,6 +27,16 @@ export function useOnboardingStory({
     await api("/api/onboarding-story/completed", { method: "POST", token });
   }, [token]);
 
+  const markExited = useCallback(async () => {
+    if (!token) return;
+    try {
+      const data = await api("/api/onboarding-story/exited", { method: "POST", token });
+      if (data.showNotice) showToast?.(AEMEATH_WELCOME_MAIL_TOAST);
+    } catch {
+      // The mailbox badge still exposes the mail if this informational toast cannot be recorded.
+    }
+  }, [showToast, token]);
+
   const openStory = useCallback(async ({ manual = false } = {}) => {
     if (!token) return;
     setLoading(true);
@@ -36,7 +47,10 @@ export function useOnboardingStory({
         return;
       }
       closeOverlaySetters(overlaySetters);
-      openStoryPlayer?.(data.script, onboardingStoryLabels(), { onComplete: markCompleted });
+      openStoryPlayer?.(data.script, onboardingStoryLabels(), {
+        onComplete: markCompleted,
+        onExit: markExited
+      });
       if (!manual && data.autoEligible && user?.id) {
         touchedAutoUsersRef.current.add(user.id);
         await api("/api/onboarding-story/auto-shown", { method: "POST", token });
@@ -46,7 +60,7 @@ export function useOnboardingStory({
     } finally {
       setLoading(false);
     }
-  }, [fetchStory, markCompleted, openStoryPlayer, overlaySetters, showToast, token, user?.id]);
+  }, [fetchStory, markCompleted, markExited, openStoryPlayer, overlaySetters, showToast, token, user?.id]);
 
   useEffect(() => {
     if (!token || !user?.id || view !== "home") return;
@@ -57,7 +71,10 @@ export function useOnboardingStory({
         const data = await fetchStory();
         if (cancelled || !data.script || !data.autoEligible) return;
         closeOverlaySetters(overlaySetters);
-        openStoryPlayer?.(data.script, onboardingStoryLabels(), { onComplete: markCompleted });
+        openStoryPlayer?.(data.script, onboardingStoryLabels(), {
+          onComplete: markCompleted,
+          onExit: markExited
+        });
         touchedAutoUsersRef.current.add(user.id);
         await api("/api/onboarding-story/auto-shown", { method: "POST", token });
       } catch {
@@ -67,7 +84,7 @@ export function useOnboardingStory({
     return () => {
       cancelled = true;
     };
-  }, [fetchStory, markCompleted, openStoryPlayer, overlaySetters, token, user?.id, view]);
+  }, [fetchStory, markCompleted, markExited, openStoryPlayer, overlaySetters, token, user?.id, view]);
 
   return {
     loading,

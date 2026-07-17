@@ -51,6 +51,8 @@ describe("AppOverlays", () => {
   });
   it("renders unified tutorial scripts through the tutorial session surface", () => {
     const onComplete = vi.fn();
+    const onExit = vi.fn();
+    const onEnterTutorialBattle = vi.fn();
     const tree = AppOverlays(overlayProps({
       showStoryPlayer: true,
       storyPlayerScript: {
@@ -60,12 +62,18 @@ describe("AppOverlays", () => {
         },
         labels: { title: "对弈教学" },
         onComplete,
+        onExit,
         clear: vi.fn(),
         open: vi.fn()
-      }
+      },
+      onEnterTutorialBattle
     }));
 
-    expect(findElementByType(tree, TutorialSessionModal).props.onComplete).toBe(onComplete);
+    const tutorial = findElementByType(tree, TutorialSessionModal);
+    expect(tutorial.props.onComplete).toBe(onComplete);
+    expect(tutorial.props.onClose).toBeDefined();
+    tutorial.props.onEnterBattle({ script: { startNodeId: "battle" } });
+    expect(onEnterTutorialBattle).toHaveBeenCalledWith(expect.objectContaining({ onComplete, onExit }));
     expect(findElementByType(tree, StoryPlayerModal)).toBeNull();
   });
 

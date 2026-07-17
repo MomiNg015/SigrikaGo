@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createRecruitmentRouteHandlers } from "./recruitmentRoutes.js";
 
 describe("recruitment route handlers", () => {
@@ -23,6 +23,26 @@ describe("recruitment route handlers", () => {
       userId: "user-1"
     });
     expect(calls[0].now).toBeInstanceOf(Date);
+  });
+
+  it("forwards cinematic interruption for the authenticated user", async () => {
+    const interruptRecruitmentCinematicFn = vi.fn(async () => ({
+      task: { id: "task-1", status: "ready" }
+    }));
+    const handlers = createRecruitmentRouteHandlers({
+      prisma: { tag: "prisma" },
+      interruptRecruitmentCinematicFn
+    });
+    const response = fakeResponse();
+
+    await handlers.interruptCinematic({ user: { id: "user-1" } }, response);
+
+    expect(interruptRecruitmentCinematicFn).toHaveBeenCalledWith({
+      prisma: { tag: "prisma" },
+      userId: "user-1",
+      now: expect.any(Date)
+    });
+    expect(response.body.task.status).toBe("ready");
   });
 });
 

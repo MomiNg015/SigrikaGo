@@ -20,6 +20,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [State Management](./state-management.md) | Local state, global state, server state | Partially filled |
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | Partially filled |
 | [CSS Architecture](./css-architecture.md) | Stylesheet layer order, theme contracts, Tailwind route | Filled |
+| [Recruitment Cinematic](./recruitment-cinematic-contract.md) | Aemeath payload, timing, interruption recovery, sprite assets, and CSS ownership | Filled |
 | [Type Safety](./type-safety.md) | Type patterns, validation | To fill |
 
 ---
@@ -27,6 +28,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 ## Pre-Development Checklist
 
 - Read [CSS Architecture](./css-architecture.md) before changing `src/styles/**`, theme CSS, HUD compatibility CSS, or CSS contract tests.
+- Read [Recruitment Cinematic](./recruitment-cinematic-contract.md) before changing Aemeath memorial-ticket timing, assets, recovery state, or presentation CSS.
 - Read [Quality Guidelines](./quality-guidelines.md) for feature-specific visual and mobile contracts that apply to the touched surface.
 - Read [Authentication Form And Session Contract](../backend/authentication-contract.md) before changing `AuthScreen`, auth API requests, or login/registration copy and validation.
 - Read [Structured Skill Descriptions](../backend/skill-description-contract.md) before changing skill-copy parsing, trait popovers, overclock labels, or the admin trait editor.

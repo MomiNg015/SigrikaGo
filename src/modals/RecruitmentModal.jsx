@@ -1,6 +1,9 @@
-import { useEffect, useRef } from "react";
-import { ClipboardList, Clock, Radio, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ClipboardList, Clock, Radio, Ticket, X } from "lucide-react";
 import { playRecruitmentResultSound } from "../audio/playback.jsx";
+import { RECRUITMENT_ITEM_TYPES } from "../shared/recruitment.js";
+import { ModalDialog } from "./modalComponents.jsx";
+import RecruitmentCinematicOverlay from "./recruitment/RecruitmentCinematicOverlay.jsx";
 import { formatRecruitmentCountdown, useRecruitmentCatalog } from "./recruitment/useRecruitmentCatalog.js";
 
 export default function RecruitmentModal({
@@ -11,16 +14,21 @@ export default function RecruitmentModal({
   onUserChange,
   onNotice,
   onClose,
-  onStatusChange
+  onStatusChange,
+  onInteractionLockChange
 }) {
   const {
     busy,
     canFastForward,
+    cinematicPlaybackTaskId,
     clearResult,
     claim,
     fastForward,
+    finishCinematic,
+    interruptCinematic,
     items,
     loading,
+    presentationReadyAt,
     result,
     selectedItem,
     selectedItemType,
@@ -32,6 +40,11 @@ export default function RecruitmentModal({
   const phase = result ? "result" : task?.status === "ready" ? "ready" : task?.status === "pending" ? "pending" : "idle";
   const canUse = phase === "idle" && selectedItem && selectedItem.quantity > 0 && !busy;
   const playedResultSoundRef = useRef(null);
+  const countdownRef = useRef(null);
+  const [cinematicElapsedMs, setCinematicElapsedMs] = useState(null);
+  const cinematicPlaying = phase === "pending"
+    && Boolean(task?.cinematic)
+    && cinematicPlaybackTaskId === task.id;
 
   useEffect(() => {
     if (!result) {
@@ -44,31 +57,57 @@ export default function RecruitmentModal({
     playRecruitmentResultSound(result.type, audioSettings);
   }, [audioSettings, result]);
 
+  useEffect(() => {
+    if (!cinematicPlaying) setCinematicElapsedMs(null);
+  }, [cinematicPlaying]);
+
+  const closeModal = cinematicPlaying ? undefined : onClose;
+
   return (
-    <div className="modal-backdrop recruitment-backdrop" onClick={onClose}>
-      <section className={`recruitment-modal recruitment-phase-${phase} ${result?.type === "success" ? "recruitment-result-success-phase" : result ? "recruitment-result-miss-phase" : ""}`} onClick={(event) => event.stopPropagation()}>
-        <button className="close-button" type="button" onClick={onClose}><X size={20} /></button>
+    <div className={`modal-backdrop recruitment-backdrop ${cinematicPlaying ? "is-cinematic-locked" : ""}`} onClick={closeModal}>
+      <ModalDialog
+        className={`recruitment-modal recruitment-phase-${phase} ${cinematicPlaying ? "recruitment-cinematic-playing" : ""} ${result?.type === "success" ? "recruitment-result-success-phase" : result ? "recruitment-result-miss-phase" : ""}`}
+        ariaLabelledBy="recruitment-modal-title"
+        onClose={closeModal}
+        onClick={(event) => event.stopPropagation()}
+      >
+        {!cinematicPlaying && <button className="close-button" type="button" onClick={onClose}><X size={20} /></button>}
         <header className="recruitment-header">
           <div>
-            <h2>部员招募栏</h2>
+            <h2 id="recruitment-modal-title">部员招募栏</h2>
           </div>
         </header>
 
         <main className={`recruitment-board recruitment-board-${phase}`}>
           {loading && <p className="quiet-text">加载招新公示中...</p>}
           {!loading && phase === "idle" && <IdleBoard selectedItem={selectedItem} />}
-          {!loading && phase === "pending" && <PendingBoard task={task} busy={busy} canFastForward={canFastForward} onFastForward={fastForward} />}
+          {!loading && phase === "pending" && (
+            <PendingBoard
+              task={task}
+              busy={busy}
+              canFastForward={canFastForward && !task.cinematic}
+              cinematicElapsedMs={cinematicPlaying ? cinematicElapsedMs : null}
+              presentationReadyAt={presentationReadyAt}
+              countdownRef={countdownRef}
+              onFastForward={fastForward}
+            />
+          )}
           {!loading && phase === "ready" && <ReadyBoard task={task} busy={busy} onClaim={claim} />}
           {!loading && phase === "result" && <ResultBoard result={result} task={task} characters={characters} />}
         </main>
 
         {phase === "idle" && (
           <footer className="recruitment-actions">
-            <div className="recruitment-item-strip" role="tablist" aria-label="招募道具">
+            <div
+              className="recruitment-item-strip"
+              role="tablist"
+              aria-label="招募道具"
+              style={{ "--recruitment-item-count": items.length }}
+            >
               {items.map((item) => (
                 <button
                   key={item.itemType}
-                  className={`recruitment-item-button ${selectedItemType === item.itemType ? "active" : ""}`}
+                  className={`recruitment-item-button ${item.appearanceId ? `recruitment-item-${item.appearanceId}` : ""} ${selectedItemType === item.itemType ? "active" : ""}`}
                   type="button"
                   onClick={() => setSelectedItemType(item.itemType)}
                 >
@@ -90,7 +129,18 @@ export default function RecruitmentModal({
             </button>
           </footer>
         )}
-      </section>
+      </ModalDialog>
+      {cinematicPlaying && (
+        <RecruitmentCinematicOverlay
+          audioSettings={audioSettings}
+          task={task}
+          targetRef={countdownRef}
+          onComplete={finishCinematic}
+          onElapsedChange={setCinematicElapsedMs}
+          onInteractionLockChange={onInteractionLockChange}
+          onInterrupt={interruptCinematic}
+        />
+      )}
     </div>
   );
 }
@@ -116,14 +166,14 @@ function IdleBoard({ selectedItem }) {
   );
 }
 
-function PendingBoard({ task, busy, canFastForward, onFastForward }) {
+function PendingBoard({ task, busy, canFastForward, cinematicElapsedMs, presentationReadyAt, countdownRef, onFastForward }) {
   return (
     <section className="recruitment-pending-panel">
       <RecruitmentItemWatermark item={task} />
       <div>
         <strong>{task.itemName}</strong>
         <div className={`recruitment-countdown-row ${canFastForward ? "has-fast-forward" : ""}`}>
-          <b>{formatRecruitmentCountdown(task)}</b>
+          <b ref={countdownRef}>{formatRecruitmentCountdown(task, cinematicElapsedMs, presentationReadyAt)}</b>
           {canFastForward && (
             <button
               className="recruitment-fast-forward-button"
@@ -180,10 +230,17 @@ function ResultBoard({ result, task, characters }) {
 
 function RecruitmentItemIcon({ item, large = false }) {
   const isRadio = String(item?.itemType ?? "").includes("radio");
+  const isAemeathTicket = item?.itemType === RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket;
   const className = `recruitment-item-icon ${large ? "large" : ""}`;
   const imageUrl = recruitmentItemImageUrl(item);
   if (imageUrl) return <img className={className} src={imageUrl} alt="" loading="lazy" decoding="async" />;
-  return <span className={className} aria-hidden="true">{isRadio ? <Radio size={large ? 36 : 22} /> : <ClipboardList size={large ? 36 : 22} />}</span>;
+  return (
+    <span className={className} aria-hidden="true">
+      {isAemeathTicket
+        ? <Ticket size={large ? 36 : 22} />
+        : isRadio ? <Radio size={large ? 36 : 22} /> : <ClipboardList size={large ? 36 : 22} />}
+    </span>
+  );
 }
 
 function RecruitmentItemWatermark({ item }) {

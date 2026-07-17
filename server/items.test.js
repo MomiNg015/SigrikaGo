@@ -40,6 +40,36 @@ describe("items", () => {
     ]);
   });
 
+  it("lists the disabled memorial ticket in the warehouse but reserves it for recruitment", async () => {
+    const response = await listItemInventory({
+      userId: "user-1",
+      prisma: inventoryPrisma({
+        ownedItems: JSON.stringify({ "aemeath-flight-snow-memorial-ticket": 1 }),
+        targetId: "aemeath-flight-snow-memorial-ticket",
+        enabled: false,
+        name: "飞行雪绒纪念券",
+        description: "从飞行雪绒歌友会那里收到的特殊的奖品。上面的儿童画是怎么一回事呢？"
+      })
+    });
+
+    expect(response.items).toMatchObject([{
+      itemId: "aemeath-flight-snow-memorial-ticket",
+      name: "飞行雪绒纪念券",
+      quantity: 1,
+      usable: false
+    }]);
+
+    await expect(useInventoryItem({
+      userId: "user-1",
+      itemId: "aemeath-flight-snow-memorial-ticket",
+      prisma: inventoryPrisma({
+        ownedItems: JSON.stringify({ "aemeath-flight-snow-memorial-ticket": 1 }),
+        targetId: "aemeath-flight-snow-memorial-ticket",
+        enabled: false
+      })
+    })).rejects.toThrow("请在招募窗口使用这个道具");
+  });
+
   it("normalizes the builtin campus recruitment poster inventory image from current shared config", async () => {
     const response = await listItemInventory({
       userId: "user-1",
@@ -296,6 +326,9 @@ function inventoryPrisma({
   targetId = "dream-ticket",
   itemTargetType = "self",
   imageUrl = "",
+  enabled = true,
+  name = "梦境券",
+  description = "效果待配置",
   updates = [],
   structuredWrites = []
   , storyScripts = []
@@ -320,7 +353,7 @@ function inventoryPrisma({
   };
   const item = {
     id: "shop-1",
-    name: "梦境券",
+    name,
     category: "item",
     targetId,
     itemTargetType,
@@ -328,9 +361,9 @@ function inventoryPrisma({
     priceCoins: 50,
     discountPercent: 0,
     purchasable: true,
-    enabled: true,
+    enabled,
     sortOrder: 1,
-    description: "效果待配置",
+    description,
     imageUrl
   };
   const tx = {

@@ -130,4 +130,12 @@ describe("App startup preload wiring", () => {
     expect(hookSource).toContain("initialIncomingDuelState");
     expect(hookSource).toContain("return { incomingDuel, setIncomingDuel }");
   });
+
+  it("blocks app-level modal dismissal while the recruitment cinematic owns input", () => {
+    const source = readFileSync(new URL("./App.jsx", import.meta.url), "utf8");
+
+    expect(source).toContain("const [recruitmentInteractionLocked, setRecruitmentInteractionLocked]");
+    expect(source).toContain("if (recruitmentInteractionLocked) return;");
+    expect(source).toContain("onRecruitmentInteractionLockChange={setRecruitmentInteractionLocked}");
+  });
 });
