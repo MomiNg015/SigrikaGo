@@ -607,6 +607,77 @@ Correct:
 }
 ```
 
+### Character Nameplate Production Skill Contract
+
+#### 1. Scope / Trigger
+
+- Trigger: creating or refining a character-specific achievement username nameplate, its raster, exact asset-ID owner, motion, preview evidence, or reusable production workflow.
+- The repository-local workflow lives at `.agents/skills/create-character-nameplate/`; keep it aligned with the `UserIdentity Nameplate Background Contract` above whenever the runtime structure or CSS ownership changes.
+
+#### 2. Signatures
+
+- Skill entry: `.agents/skills/create-character-nameplate/SKILL.md` with `name: create-character-nameplate`.
+- Asset validation: `node .agents/skills/create-character-nameplate/scripts/validate_nameplate_asset.mjs <asset.png> [--width N --height N --ratio N --min-left N --min-right N --min-top N --min-bottom N --alpha-threshold N --safe-left N --safe-right N --min-safe-ratio N --min-visible-height-ratio N --json <report>]`.
+- Preview preparation: `node .agents/skills/create-character-nameplate/scripts/prepare_nameplate_preview.mjs --task-dir <active-task> --asset-id <id> --image-url <url> [--style <repo-css-path>]...`.
+- Preview capture: `node .agents/skills/create-character-nameplate/scripts/capture_nameplate_preview.mjs --preview-dir <task-preview> [--output-dir <task-output>] [--port N]`.
+- Validator reports `{ ok, image, alphaBounds, margins, safeArea, cornersTransparent, alphaThreshold, errors }`; each error exposes `{ code, message, actual, expected }`.
+
+#### 3. Contracts
+
+- The Skill supports `new` and `refine` modes. New/major-redesign work must produce four structurally different, character-researched concepts and stop at a mandatory human selection gate before any production asset overwrite or CSS integration. Refine work may skip concepts only when the user explicitly locks the artwork and requests a technical repair.
+- Character research must produce an evidence-based visual-language card with representative motifs, forbidden/misleading motifs, palette/material, motion verbs, canvas/runtime geometry, and username safe area. Do not reuse another character's motif or generic neon/sparkle vocabulary as the default.
+- Reward seed/data wiring is opt-in only when the request explicitly includes a new achievement or reward. Visual requests must not silently change earning conditions or asset metadata.
+- Final assets are validated by `.agents/skills/create-character-nameplate/scripts/validate_nameplate_asset.mjs`, which reuses the shared RGBA PNG decoder and reports exact dimensions/ratio, four-corner transparency, non-zero Alpha bounds, four-edge safety margins, visible-height ratio, and declared username-safe-zone geometry as JSON with a non-zero failure exit.
+- Motion keeps continuously visible primary illumination, illustration-bound local narrative motion, and sparse secondary accents. Continuous keyframes change only `transform` and `opacity`; static filters/gradients own paint/light treatment, and reduced motion freezes a readable static state.
+- `.agents/skills/create-character-nameplate/scripts/prepare_nameplate_preview.mjs` may generate a Vite harness only under the active `.trellis/tasks/` directory. The harness imports the real `UserIdentity` and global CSS but never registers a production `AppRoutes` entry.
+- `.agents/skills/create-character-nameplate/scripts/capture_nameplate_preview.mjs` captures `1440x900`, `1024x768`, and `375x812` in normal and reduced-motion contexts. It may use Playwright Chromium or an installed Chrome/Edge fallback; task-local preview evidence does not replace final checks in real app consumers.
+- The workflow must snapshot and preserve unrelated dirty paths before work and staging. Unselected concepts, preview harnesses/screenshots, logs, and temporary tooling stay task artifacts rather than production assets.
+
+#### 4. Validation & Error Matrix
+
+- Invalid/non-RGBA/interlaced PNG -> `png_decode`, non-zero exit.
+- Delivered dimensions or ratio differ from the declared owner -> `width`, `height`, or `ratio`, non-zero exit.
+- No pixel exceeds the Alpha threshold -> `empty_alpha`, non-zero exit.
+- Any corner exceeds the Alpha threshold -> `corners`, non-zero exit.
+- Non-zero Alpha approaches an edge more closely than its declared minimum -> `margin_<side>`, non-zero exit.
+- Only one safe-area edge is supplied, bounds are reversed/outside the canvas, or safe width is too small -> `safe_area_pair`, `safe_area_bounds`, or `safe_area_ratio`, non-zero exit.
+- Preview or output path escapes `.trellis/tasks/` -> reject before copying, deleting, starting Vite, or writing screenshots.
+- Playwright Chromium is absent -> try installed Chrome/Edge; no usable Chromium browser -> fail with a direct diagnostic instead of downloading silently.
+- Existing art is locked in `refine` mode -> diagnose/repair without four concepts; visual direction changes -> return to the four-concept human gate.
+
+#### 5. Good / Base / Bad Cases
+
+- Good: a new role gets an evidence-backed visual-language card, four compositionally different concepts, an explicit user selection, measured RGBA delivery, character-owned motion, task-local preview evidence, real-consumer QA, and isolated staging.
+- Good: a locked existing asset with clipped art is re-canvased after Alpha-bound diagnosis instead of adding more CSS overflow.
+- Base: an image-only nameplate without a bespoke owner continues using the generic static fallback and does not need this motion workflow.
+- Bad: copying Sigrika's citrus/sun vocabulary, changing only colors across four concepts, using blink accents as the only light, or writing a production asset before the user selects a concept.
+- Bad: registering the preview page in `AppRoutes`, silently downloading a browser, weakening margin thresholds to pass a clipped raster, or modifying reward seeds from a visual-only request.
+
+#### 6. Tests Required
+
+- `scripts/characterNameplateSkill.test.js` owns Skill metadata, the mandatory human gate, `new`/`refine` and data boundaries, character-neutral templates, validator pass/fail geometry, task-local preview generation, production-route isolation, fixed capture viewports, and reduced-motion evidence.
+- Run the official `skill-creator` `quick_validate.py` against `.agents/skills/create-character-nameplate/` after changing Skill metadata or structure.
+- Forward-test material workflow changes with a planning-only new-character request that must stop at the four-concept gate without modifying production files.
+- Run the focused Skill test, the nameplate component/CSS/asset tests affected by an actual role asset, and `npm run check` before handoff.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```powershell
+# Adds a production tool route and skips the human gate.
+Copy-Item concept.png public/assets/achievements/new-role-nameplate.png
+```
+
+Correct:
+
+```powershell
+# Keep four concepts in the active task, wait for selection, then validate the chosen delivery.
+node .agents/skills/create-character-nameplate/scripts/validate_nameplate_asset.mjs `
+  public/assets/achievements/new-role-nameplate.png `
+  --width 1125 --height 240 --min-left 40 --min-right 40 --min-top 8 --min-bottom 8
+```
+
 ### Web Audio Pause/Resume Contracts
 
 When changing background music, character BGM previews, or shared playback schedules, preserve user-visible playback position across pause/resume.

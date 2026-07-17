@@ -1,0 +1,4 @@
+interface:
+  display_name: "角色用户名铭牌"
+  short_description: "为 SigrikaGo 制作角色专属用户名铭牌与动效"
+  default_prompt: "使用 $create-character-nameplate 为指定角色制作或返修专属用户名铭牌与动效。"

@@ -1,0 +1,46 @@
+/* Continuous keyframes may change only transform and opacity. */
+@keyframes __KEYFRAME_PREFIX__-primary-light {
+  from { opacity: __PRIMARY_LIGHT_MIN_OPACITY__; transform: __PRIMARY_LIGHT_FROM_TRANSFORM__; }
+  to { opacity: __PRIMARY_LIGHT_MAX_OPACITY__; transform: __PRIMARY_LIGHT_TO_TRANSFORM__; }
+}
+
+@keyframes __KEYFRAME_PREFIX__-local-motif {
+  0%, 100% { opacity: __CORE_MIN_OPACITY__; transform: __CORE_FROM_TRANSFORM__; }
+  50% { opacity: __CORE_MAX_OPACITY__; transform: __CORE_TO_TRANSFORM__; }
+}
+
+@keyframes __KEYFRAME_PREFIX__-carrier-light {
+  from { opacity: __CARRIER_MIN_OPACITY__; transform: __CARRIER_FROM_TRANSFORM__; }
+  to { opacity: __CARRIER_MAX_OPACITY__; transform: __CARRIER_TO_TRANSFORM__; }
+}
+
+@keyframes __KEYFRAME_PREFIX__-accents {
+  from { opacity: __ACCENT_MIN_OPACITY__; transform: __ACCENT_FROM_TRANSFORM__; }
+  to { opacity: __ACCENT_MAX_OPACITY__; transform: __ACCENT_TO_TRANSFORM__; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-effect,
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-effect *,
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-effect *::before,
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-effect *::after {
+    animation: none !important;
+  }
+
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-glow,
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-core,
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-sweep,
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-sparkles {
+    transform: none;
+  }
+
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-glow,
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-sweep {
+    opacity: __REDUCED_PRIMARY_OPACITY__;
+  }
+
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-core,
+  .user-identity[data-nameplate-id="__ASSET_ID__"] .user-identity-nameplate-sparkles {
+    opacity: __REDUCED_ACCENT_OPACITY__;
+  }
+}
