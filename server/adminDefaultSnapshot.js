@@ -640,6 +640,20 @@ export const ADMIN_DEFAULT_CONFIG = {
       "enabled": true,
       "sortOrder": 120,
       "deletedAt": null
+    },
+    {
+      "id": "reward-aemeath-spark-100-wins-nameplate",
+      "type": "nameplate",
+      "name": "飞行雪绒，出击！",
+      "description": "使用爱弥斯在星炬对弈中获得100胜",
+      "imageUrl": "/assets/achievements/aemeath-spark-100-wins-nameplate.png",
+      "text": "用户名背景",
+      "targetType": "",
+      "targetId": "",
+      "amount": 0,
+      "enabled": true,
+      "sortOrder": 130,
+      "deletedAt": null
     }
   ],
   "achievements": [
@@ -677,6 +691,18 @@ export const ADMIN_DEFAULT_CONFIG = {
       "rewardAssetId": "reward-denia-spark-100-wins-nameplate",
       "enabled": true,
       "sortOrder": 120,
+      "deletedAt": null
+    },
+    {
+      "id": "achievement-aemeath-spark-100-wins",
+      "key": "aemeath-spark-100-wins",
+      "name": "飞行雪绒，出击！",
+      "content": "使用爱弥斯在星炬对弈中获得100胜",
+      "conditionType": "mode_character_wins",
+      "conditionParams": "{\"mode\":\"spark\",\"characterId\":\"aemeath\",\"value\":100}",
+      "rewardAssetId": "reward-aemeath-spark-100-wins-nameplate",
+      "enabled": true,
+      "sortOrder": 130,
       "deletedAt": null
     }
   ],

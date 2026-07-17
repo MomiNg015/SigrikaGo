@@ -1,0 +1,95 @@
+/* Asset-owned presentation for Aemeath's hand-painted paper-flight and virtual-idol nameplate. */
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] {
+  --user-nameplate-base-width: 150px;
+  --user-nameplate-base-height: 32px;
+  --user-nameplate-padding-left: calc(42px * var(--user-nameplate-scale));
+  --user-nameplate-padding-right: calc(20px * var(--user-nameplate-scale));
+  --user-nameplate-font-size: calc(14px * var(--user-nameplate-scale));
+  --aemeath-nameplate-text-offset-y: calc(-1px * var(--user-nameplate-scale));
+  color: #07516f;
+  text-shadow:
+    0 1px 0 rgba(243, 255, 255, 0.96),
+    0 0 2px rgba(255, 255, 255, 0.9),
+    0 0 4px rgba(255, 143, 199, 0.42);
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-name {
+  transform: translateY(var(--aemeath-nameplate-text-offset-y));
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-effect,
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-effect * {
+  pointer-events: none;
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-background {
+  filter:
+    drop-shadow(0 0 calc(1.5px * var(--user-nameplate-scale)) rgba(107, 240, 250, 0.82))
+    drop-shadow(0 0 calc(2.5px * var(--user-nameplate-scale)) rgba(255, 137, 196, 0.42));
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-glow {
+  top: calc(1px * var(--user-nameplate-scale));
+  left: calc(5px * var(--user-nameplate-scale));
+  width: calc(43px * var(--user-nameplate-scale));
+  height: calc(30px * var(--user-nameplate-scale));
+  background:
+    linear-gradient(126deg, transparent 12%, rgba(255, 255, 255, 0.72) 37%, rgba(122, 241, 250, 0.36) 48%, transparent 66%),
+    radial-gradient(ellipse at 58% 58%, rgba(255, 169, 211, 0.3), rgba(118, 239, 249, 0.22) 36%, transparent 68%);
+  filter: drop-shadow(0 0 2px rgba(118, 239, 249, 0.72));
+  mix-blend-mode: screen;
+  opacity: 0.48;
+  transform-origin: 60% 55%;
+  animation: aemeath-nameplate-sortie-signal 2.6s ease-in-out infinite alternate;
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-core {
+  top: calc(12px * var(--user-nameplate-scale));
+  left: calc(26px * var(--user-nameplate-scale));
+  width: calc(15px * var(--user-nameplate-scale));
+  height: calc(14px * var(--user-nameplate-scale));
+  background:
+    linear-gradient(90deg, transparent 16%, rgba(255, 255, 255, 0.88) 17% 27%, transparent 28% 72%, rgba(255, 177, 216, 0.76) 73% 83%, transparent 84%),
+    linear-gradient(0deg, transparent 17%, rgba(255, 255, 255, 0.78) 18% 28%, transparent 29% 71%, rgba(122, 241, 250, 0.82) 72% 82%, transparent 83%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.92) 0 9%, rgba(117, 241, 250, 0.38) 24%, transparent 52%);
+  filter: drop-shadow(0 0 1.4px rgba(255, 164, 210, 0.62));
+  mix-blend-mode: screen;
+  opacity: 0.3;
+  transform-origin: 50% 50%;
+  animation: aemeath-nameplate-snowfluff-ping 2.15s steps(2, end) -0.45s infinite;
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-sweep {
+  top: calc(4px * var(--user-nameplate-scale));
+  left: 27%;
+  width: 65%;
+  height: calc(24px * var(--user-nameplate-scale));
+  background-image:
+    linear-gradient(166deg, transparent 0 32%, rgba(255, 255, 255, 0.08) 34%, rgba(255, 255, 255, 0.64) 36%, rgba(121, 241, 250, 0.14) 39%, transparent 42%),
+    linear-gradient(173deg, transparent 0 53%, rgba(255, 145, 202, 0.06) 55%, rgba(255, 145, 202, 0.56) 57%, transparent 61%),
+    repeating-linear-gradient(90deg, transparent 0 8%, rgba(229, 255, 255, 0.7) 8.4% 9%, transparent 9.4% 14%);
+  background-position: center, center, center 82%;
+  background-repeat: no-repeat;
+  background-size: 100% 100%, 100% 100%, 92% 1px;
+  filter: drop-shadow(0 0 1px rgba(118, 239, 249, 0.58));
+  mix-blend-mode: screen;
+  opacity: 0.42;
+  transform: translate3d(-5%, 0, 0);
+  transform-origin: right center;
+  animation: aemeath-nameplate-speed-lanes 1.85s ease-in-out infinite alternate;
+}
+
+.user-identity[data-nameplate-id="reward-aemeath-spark-100-wins-nameplate"] .user-identity-nameplate-sparkles {
+  inset: calc(2px * var(--user-nameplate-scale)) calc(4px * var(--user-nameplate-scale));
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)),
+    linear-gradient(rgba(114, 241, 250, 0.94), rgba(114, 241, 250, 0.94)),
+    linear-gradient(rgba(255, 150, 205, 0.9), rgba(255, 150, 205, 0.9)),
+    linear-gradient(rgba(255, 226, 139, 0.92), rgba(255, 226, 139, 0.92));
+  background-position: 10% 18%, 21% 86%, 88% 20%, 96% 72%;
+  background-repeat: no-repeat;
+  background-size: 2px 2px, 3px 1px, 2px 2px, 2px 2px;
+  opacity: 0.24;
+  transform-origin: center;
+  animation: aemeath-nameplate-pixel-beacons 2.4s steps(3, end) -0.8s infinite alternate;
+}
