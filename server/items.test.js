@@ -56,6 +56,7 @@ describe("items", () => {
       itemId: "aemeath-flight-snow-memorial-ticket",
       name: "飞行雪绒纪念券",
       quantity: 1,
+      imageUrl: "/assets/items/aemeath-flight-snow-memorial-ticket.webp",
       usable: false
     }]);
 

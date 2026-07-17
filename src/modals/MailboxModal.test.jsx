@@ -32,7 +32,7 @@ const memorialTicketMessage = {
     type: "item",
     itemId: "aemeath-flight-snow-memorial-ticket",
     itemName: "飞行雪绒纪念券",
-    imageUrl: "",
+    imageUrl: "/assets/items/aemeath-flight-snow-memorial-ticket.webp",
     quantity: 1,
     claimed: false
   }
@@ -122,7 +122,9 @@ describe("MailboxModal information center", () => {
     expect(screen.getByText("飞行雪绒纪念券")).toBeTruthy();
     expect(screen.getByText("x1")).toBeTruthy();
     expect(screen.queryByText(/aemeath-flight-snow-memorial-ticket/)).toBeNull();
-    expect(container.querySelector(".mailbox-attachment-item-art svg")).toBeTruthy();
+    expect(container.querySelector(".mailbox-attachment-item-art img")?.getAttribute("src")).toBe(
+      "/assets/items/aemeath-flight-snow-memorial-ticket.webp"
+    );
   });
 
   it("keeps mobile list-first and does not auto-open or mark the newest mail read", () => {

@@ -210,6 +210,24 @@ describe("mailbox domain", () => {
     });
   });
 
+  it("uses the built-in memorial-ticket art when a catalog row is unavailable", async () => {
+    const { prisma } = mailboxPrisma({
+      users: [userFixture("user-1")],
+      messages: [messageFixture("aemeath-ticket-mail", {
+        attachmentType: MAILBOX_ATTACHMENT_TYPES.item,
+        attachmentItemId: "aemeath-flight-snow-memorial-ticket",
+        attachmentQuantity: 1
+      })]
+    });
+
+    const result = await listMailboxMessages({ prisma, userId: "user-1" });
+
+    expect(result.messages[0].attachment).toMatchObject({
+      itemName: "飞行雪绒纪念券",
+      imageUrl: "/assets/items/aemeath-flight-snow-memorial-ticket.webp"
+    });
+  });
+
   it("does not redeliver a future-eligible global batch after the user deletes it", async () => {
     const { prisma, messages } = mailboxPrisma({
       users: [userFixture("future-user")],

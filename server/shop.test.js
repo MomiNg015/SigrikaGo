@@ -536,10 +536,24 @@ describe("shop", () => {
       expect.objectContaining({
         category: "item",
         targetId: "aemeath-flight-snow-memorial-ticket",
+        imageUrl: "/assets/items/aemeath-flight-snow-memorial-ticket.webp",
         priceCoins: 0,
         purchasable: false,
         enabled: false
       })
+    ]);
+    expect(calls).toContainEqual([
+      "updateMany",
+      {
+        where: {
+          category: "item",
+          targetId: "aemeath-flight-snow-memorial-ticket",
+          imageUrl: { in: [""] }
+        },
+        data: {
+          imageUrl: "/assets/items/aemeath-flight-snow-memorial-ticket.webp"
+        }
+      }
     ]);
     expect(calls).toContainEqual([
       "updateMany",

@@ -37,7 +37,7 @@ export function cinematicPresentationReadyAt(task, now = Date.now()) {
 }
 
 export const AEMEATH_RECRUITMENT_ASSET_SLOTS = Object.freeze({
-  ticketImageUrl: "",
+  ticketImageUrl: "/assets/items/aemeath-flight-snow-memorial-ticket.webp",
   cinematicSpriteUrl: "/assets/Aemeath_centered.webp",
   cinematicSpriteSheetUrl: "/assets/recruitment/aemeath-pink-cyber-angel-spritesheet.webp",
   flightSoundUrl: "",

@@ -27,7 +27,7 @@
 - The dimmer starts with the first `999:00` frame. The flash center must equal the settled sprite/countdown target, not the viewport center, and must be fully opaque while the sprite disappears and the countdown switches to five seconds.
 - `spriteSheetUrl` takes presentation priority when non-empty. The current `1536×1872` WebP uses `8×9` cells: row 1 supplies eight right-flight frames and row 3 supplies four wave frames. When the sheet slot is empty, `spriteImageUrl` remains the static or animated WebP fallback.
 - Portrait recruitment item rules may hide the item-name span, but must preserve `.recruitment-item-icon` and quantity.
-- Mailbox list projection resolves item names/images from the `ShopItem` catalog with built-in recruitment metadata as fallback. Missing metadata falls back to generic `道具`, never the internal English id; the Aemeath ticket uses its ticket icon when no image asset is configured.
+- Mailbox list projection resolves item names/images from the `ShopItem` catalog with built-in recruitment metadata as fallback. Missing metadata falls back to generic `道具`, never the internal English id. The Aemeath ticket uses `/assets/items/aemeath-flight-snow-memorial-ticket.webp`, a tightly cropped transparent `512×436` source whose colored bounds fill the shared item slots without non-uniform scaling.
 
 ### 4. Validation & Error Matrix
 
@@ -38,7 +38,7 @@
 - Page hidden/offline/unmounted before completion -> release BGM duck and interaction lock, request interruption with keepalive where supported.
 - `spriteSheetUrl` configured -> render atlas flight/wave frames; empty sheet plus image URL -> render the image fallback; both empty -> keep the timing/flash safe without a sprite.
 - Flash growth -> its early local orb, settled sprite center, and CSS target coordinates match; `concealedSwapAtMs` stays fully opaque so the visible countdown cannot expose the large numeric jump.
-- Item attachment with a catalog row -> show image, localized name, and quantity; built-in Aemeath attachment with an empty image slot -> show the ticket icon and localized name; unknown item -> show generic `道具` rather than `itemId`.
+- Item attachment with a catalog row -> show image, localized name, and quantity; built-in Aemeath attachment without a catalog row -> show the built-in memorial-ticket WebP and localized name; unknown item -> show generic `道具` rather than `itemId`.
 
 ### 5. Good/Base/Bad Cases
 
@@ -54,7 +54,8 @@
 ### 6. Tests Required
 
 - `src/modals/RecruitmentModal.test.js` asserts theatrical-to-display-deadline switching, client receipt anchoring, immediate presentation-ready projection, flash target wiring, sprite-sheet/image slots, lock wiring, and recovery truth table.
-- `server/mailbox.test.js` asserts item catalog metadata projection; `src/modals/MailboxModal.test.jsx` asserts item art/localized-name/quantity rendering and internal-id absence.
+- `server/mailbox.test.js` asserts item catalog metadata projection plus the built-in memorial-ticket WebP fallback; `src/modals/MailboxModal.test.jsx` asserts the memorial-ticket image/localized-name/quantity rendering and internal-id absence.
+- `src/modals/RecruitmentModal.test.js` verifies the shared ticket URL and committed RIFF/WebP signature so recruitment, Warehouse, and mailbox keep one asset owner.
 - `server/recruitment.test.js` asserts the fixed Aemeath result, 11.25-second `readyAt`, theatrical countdown, image/sheet/sound payload slots, and explicit interruption behavior.
 - `src/styles/styleContract.test.js` asserts `recruitment.css` imports `cinematic.css`, the modal shell remains separate, and portrait rules preserve the icon selector.
 - Chromium visual QA should inspect the light memorial-ticket surface, dimming before flight, flight-to-wave frame change, a local flash orb centered on the settled sprite, fully white concealed swap, portrait fit, and the portrait mailbox attachment row without overflow.

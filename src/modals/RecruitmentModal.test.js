@@ -6,7 +6,10 @@ import {
   shouldRecoverInterruptedCinematic
 } from "./recruitment/useRecruitmentCatalog.js";
 import {
+  AEMEATH_RECRUITMENT_ASSET_SLOTS,
   cinematicPresentationReadyAt,
+  RECRUITMENT_ITEMS,
+  RECRUITMENT_ITEM_TYPES,
   recruitmentReadyDelayMs
 } from "../shared/recruitment.js";
 
@@ -15,6 +18,16 @@ afterEach(() => {
 });
 
 describe("RecruitmentModal", () => {
+  it("uses the tightly cropped memorial-ticket WebP in recruitment item surfaces", () => {
+    const imageUrl = "/assets/items/aemeath-flight-snow-memorial-ticket.webp";
+    const asset = readFileSync(new URL(`../../public${imageUrl}`, import.meta.url));
+
+    expect(AEMEATH_RECRUITMENT_ASSET_SLOTS.ticketImageUrl).toBe(imageUrl);
+    expect(RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket].imageUrl).toBe(imageUrl);
+    expect(asset.subarray(0, 4).toString("ascii")).toBe("RIFF");
+    expect(asset.subarray(8, 12).toString("ascii")).toBe("WEBP");
+  });
+
   it("renders a clock fast-forward action during pending recruitment", () => {
     const modalSource = readFileSync(new URL("./RecruitmentModal.jsx", import.meta.url), "utf8");
     const hookSource = readFileSync(new URL("./recruitment/useRecruitmentCatalog.js", import.meta.url), "utf8");
