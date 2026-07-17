@@ -32,6 +32,7 @@ export const ACHIEVEMENT_TRIGGER_EVENTS = {
 
 const DENIA_RAINBOW_BEAN_CANDY_REWARD_ID = "reward-denia-rainbow-bean-candy-coins";
 const SIGRIKA_SPARK_100_WINS_REWARD_ID = "reward-sigrika-spark-100-wins-nameplate";
+const DENIA_SPARK_100_WINS_REWARD_ID = "reward-denia-spark-100-wins-nameplate";
 const BUILTIN_ACHIEVEMENT_REWARD_ASSETS = [{
   id: DENIA_RAINBOW_BEAN_CANDY_REWARD_ID,
   type: ACHIEVEMENT_REWARD_TYPES.currency,
@@ -56,6 +57,18 @@ const BUILTIN_ACHIEVEMENT_REWARD_ASSETS = [{
   amount: 0,
   enabled: true,
   sortOrder: 110
+}, {
+  id: DENIA_SPARK_100_WINS_REWARD_ID,
+  type: ACHIEVEMENT_REWARD_TYPES.nameplate,
+  name: "百次回响",
+  description: "使用达妮娅在星炬对弈中获得100胜",
+  imageUrl: "/assets/achievements/denia-spark-100-wins-nameplate.png",
+  text: "用户名背景",
+  targetType: "",
+  targetId: "",
+  amount: 0,
+  enabled: true,
+  sortOrder: 120
 }];
 const BUILTIN_ACHIEVEMENTS = [{
   id: "achievement-denia-rainbow-bean-candy",
@@ -77,6 +90,16 @@ const BUILTIN_ACHIEVEMENTS = [{
   rewardAssetId: SIGRIKA_SPARK_100_WINS_REWARD_ID,
   enabled: true,
   sortOrder: 110
+}, {
+  id: "achievement-denia-spark-100-wins",
+  key: "denia-spark-100-wins",
+  name: "百次回响",
+  content: "使用达妮娅在星炬对弈中获得100胜",
+  conditionType: "mode_character_wins",
+  conditionParams: JSON.stringify({ mode: "spark", characterId: "denia", value: 100 }),
+  rewardAssetId: DENIA_SPARK_100_WINS_REWARD_ID,
+  enabled: true,
+  sortOrder: 120
 }];
 
 const REWARD_TYPES = new Set(Object.values(ACHIEVEMENT_REWARD_TYPES));

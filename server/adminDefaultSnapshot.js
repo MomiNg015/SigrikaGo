@@ -626,6 +626,20 @@ export const ADMIN_DEFAULT_CONFIG = {
       "enabled": true,
       "sortOrder": 110,
       "deletedAt": null
+    },
+    {
+      "id": "reward-denia-spark-100-wins-nameplate",
+      "type": "nameplate",
+      "name": "百次回响",
+      "description": "使用达妮娅在星炬对弈中获得100胜",
+      "imageUrl": "/assets/achievements/denia-spark-100-wins-nameplate.png",
+      "text": "用户名背景",
+      "targetType": "",
+      "targetId": "",
+      "amount": 0,
+      "enabled": true,
+      "sortOrder": 120,
+      "deletedAt": null
     }
   ],
   "achievements": [
@@ -651,6 +665,18 @@ export const ADMIN_DEFAULT_CONFIG = {
       "rewardAssetId": "reward-sigrika-spark-100-wins-nameplate",
       "enabled": true,
       "sortOrder": 110,
+      "deletedAt": null
+    },
+    {
+      "id": "achievement-denia-spark-100-wins",
+      "key": "denia-spark-100-wins",
+      "name": "百次回响",
+      "content": "使用达妮娅在星炬对弈中获得100胜",
+      "conditionType": "mode_character_wins",
+      "conditionParams": "{\"mode\":\"spark\",\"characterId\":\"denia\",\"value\":100}",
+      "rewardAssetId": "reward-denia-spark-100-wins-nameplate",
+      "enabled": true,
+      "sortOrder": 120,
       "deletedAt": null
     }
   ],

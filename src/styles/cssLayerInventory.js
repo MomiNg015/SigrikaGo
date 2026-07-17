@@ -1,18 +1,18 @@
 export const CSS_DEBT_BASELINE = {
   date: "2026-07-17",
-  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned citrus-sun Semantic Ignition nameplate shell plus reduced-motion owner and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned citrus-sun Semantic Ignition nameplate and Danya echo-bubble nameplate shells plus their reduced-motion owners and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
   metrics: {
-    totalFiles: 606,
-    totalBytes: 1192125,
-    importantCount: 7375,
-    importantFiles: 291,
-    hardcodedHexCount: 2295,
-    mediaFiles: 227,
-    reducedMotionFiles: 29,
+    totalFiles: 608,
+    totalBytes: 1198370,
+    importantCount: 7376,
+    importantFiles: 292,
+    hardcodedHexCount: 2294,
+    mediaFiles: 228,
+    reducedMotionFiles: 30,
     highZIndexFiles: 6
   },
   guidance:
-    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-17 byte baseline records the final exact-asset Semantic Ignition owner plus its persistent alpha-following rim light and localized sun, citrus, wind-line, and star motion; keeping it separate preserves the generic fallback and makes the winning cascade boundary testable. Future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
+    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-17 byte baseline records the final exact-asset Semantic Ignition owner plus the Danya echo-bubble owner, including their persistent alpha-following rim lights, illustration-bound local motion, and reduced-motion states; keeping them separate preserves the generic fallback and makes each winning cascade boundary testable. Future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
 };
 
 export const CSS_Z_INDEX_CONTRACT = {
@@ -57,7 +57,8 @@ export const CSS_MOTION_CONTRACT = {
     "themes/bright-school/mobile/motion.css",
     "themes/bright-school/room/tutorial-choice-interactions.css",
     "themes/bright-school/surface-contracts/home-utility-tabs.css",
-    "hud-components/user-identity/semantic-ignition-motion.css"
+    "hud-components/user-identity/semantic-ignition-motion.css",
+    "hud-components/user-identity/denia-echo-nameplate-motion.css"
   ],
   guidance:
     "Motion cleanup should use tokenized duration/easing where practical, animate transform and opacity instead of layout properties, and keep prefers-reduced-motion coverage beside any motion-heavy family."
@@ -210,7 +211,9 @@ export const CSS_LAYER_GROUPS = [
       "hud-components/user-identity/context-surfaces.css",
       "hud-components/user-identity/phone-layouts.css",
       "hud-components/user-identity/semantic-ignition-nameplate.css",
+      "hud-components/user-identity/denia-echo-nameplate.css",
       "hud-components/user-identity/semantic-ignition-motion.css",
+      "hud-components/user-identity/denia-echo-nameplate-motion.css",
       "tailwind.css",
       "tailwind/tokens.css"
     ],
@@ -504,7 +507,9 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "hud-components/user-identity/context-surfaces.css",
       "hud-components/user-identity/phone-layouts.css",
       "hud-components/user-identity/semantic-ignition-nameplate.css",
-      "hud-components/user-identity/semantic-ignition-motion.css"
+      "hud-components/user-identity/denia-echo-nameplate.css",
+      "hud-components/user-identity/semantic-ignition-motion.css",
+      "hud-components/user-identity/denia-echo-nameplate-motion.css"
     ]
   },
   {

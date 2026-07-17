@@ -38,6 +38,31 @@ const RETRY_BRANCHES = [
 ];
 
 describe("admin default onboarding story snapshot", () => {
+  it("ships the Danya 100 spark wins nameplate reward and achievement", () => {
+    const reward = ADMIN_DEFAULT_CONFIG.achievementRewardAssets.find(({ id }) => id === "reward-denia-spark-100-wins-nameplate");
+    const achievement = ADMIN_DEFAULT_CONFIG.achievements.find(({ key }) => key === "denia-spark-100-wins");
+
+    expect(reward).toMatchObject({
+      type: "nameplate",
+      name: "百次回响",
+      imageUrl: "/assets/achievements/denia-spark-100-wins-nameplate.png",
+      text: "用户名背景",
+      sortOrder: 120
+    });
+    expect(achievement).toMatchObject({
+      name: "百次回响",
+      content: "使用达妮娅在星炬对弈中获得100胜",
+      conditionType: "mode_character_wins",
+      rewardAssetId: reward.id,
+      sortOrder: 120
+    });
+    expect(JSON.parse(achievement.conditionParams)).toEqual({
+      mode: "spark",
+      characterId: "denia",
+      value: 100
+    });
+  });
+
   it("publishes a complete four-chapter beginner graph without changing the other level branches", () => {
     const script = onboardingScript();
     const draftNodes = JSON.parse(script.draftNodesJson);

@@ -560,6 +560,12 @@
 <li>Repository-local Skill <code>.agents/skills/create-character-nameplate/</code> standardizes future character nameplate production in <code>new</code> and <code>refine</code> modes. It turns role sources into a visual-language card, requires four structurally different hand-painted concepts plus an explicit human selection gate for new/major-redesign work, keeps reward/data wiring opt-in, and guides exact asset-ID CSS integration without reusing another role's motifs. Its deterministic validator reports delivered PNG dimensions, RGBA/Alpha bounds, four-edge safety margins, visible-height ratio, and declared username-safe-zone geometry; its task-local Vite preview harness renders the real <code>UserIdentity</code> across representative usernames/scales, while the capture script records <code>1440x900</code>, <code>1024x768</code>, and <code>375x812</code> in normal and reduced-motion contexts using Playwright Chromium or an installed Chrome/Edge fallback. The preview never enters production routes and does not replace final checks in real identity consumers.</li>
 </ul>
 <ul>
+<li>内置成就“百次回响”使用 <code>mode_character_wins</code> 条件统计玩家使用达妮娅在 <code>spark</code>（星炬对弈）模式的胜场，达到 100 胜后解锁 <code>reward-denia-spark-100-wins-nameplate</code>，奖励资源为 <code>/assets/achievements/denia-spark-100-wins-nameplate.png</code>；<code>server/achievements.js</code> 与 <code>server/adminDefaultSnapshot.js</code> 保持相同种子定义，默认管理员快照会标记该内置成就已达成且奖励已发放。选定的 C 版“折光泡泡入口”是 <code>1125 x 240</code> 透明手绘 RGBA：粉色保护泡泡入口为主、相册/照片页碎片为辅，中央粉色载体连续可读，暗紫只负责轮廓、景深和对比，不包含缝补玩偶、布料修补、缝线、角色肖像或烘焙文字。</li>
+</ul>
+<ul>
+<li>达妮娅用户名背景只由精确 <code>data-nameplate-id=&quot;reward-denia-spark-100-wins-nameplate&quot;</code> 命中。<code>hud-components/user-identity/denia-echo-nameplate.css</code> 将同倍率运行槽设为 <code>150px x 32px</code>，用户名左右安全内边距为 <code>40px / 25px</code>，并维持暖白文字、梅紫阴影、稳定粉紫轮廓光和既有省略回退；<code>denia-echo-nameplate-motion.css</code> 只叠加左侧泡泡入口呼吸、载体内部回响、右侧折光漂移和稀疏回声点，连续关键帧仅改变 <code>transform</code> / <code>opacity</code>，<code>prefers-reduced-motion</code> 下移除运动并保留静态可读轮廓。真实主题级预览覆盖桌面、窄桌面、竖屏手机、亮/暗底、合法英文名、四个中日韩字符、历史超长用户名以及称号＋独立徽章组合，不新增消费端分支或后端特效字段。</li>
+</ul>
+<ul>
 <li>内置成就“你给我吃了什么！？”由 <code>seedBuiltinAchievements</code> 在启动时按需创建，监听新增后的 <code>denia-rainbow-bean-candy</code> 道具使用事件；玩家请达妮娅吃彩虹豆豆跳跳糖后解锁并获得 100 金币，不回溯统计成就上线前发生过的使用记录。</li>
 </ul>
 <ul>

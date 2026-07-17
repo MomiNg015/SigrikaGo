@@ -88,11 +88,28 @@ describe("UserIdentity", () => {
         }}
       />
     );
+    const deniaMarkup = renderToStaticMarkup(
+      <UserIdentity
+        user={{
+          username: "泡影留心",
+          achievementEquipmentAssets: {
+            nameplate: {
+              id: "reward-denia-spark-100-wins-nameplate",
+              imageUrl: "/assets/achievements/denia-spark-100-wins-nameplate.png"
+            }
+          }
+        }}
+      />
+    );
 
     expect(semanticMarkup).toContain('data-nameplate-id="reward-sigrika-spark-100-wins-nameplate"');
     expect(semanticMarkup).toContain("语义守夜");
+    expect(deniaMarkup).toContain('data-nameplate-id="reward-denia-spark-100-wins-nameplate"');
+    expect(deniaMarkup).toContain("background-image:url(/assets/achievements/denia-spark-100-wins-nameplate.png)");
+    expect(deniaMarkup).toContain("泡影留心");
     expect(genericMarkup).toContain('data-nameplate-id="plain-nameplate"');
     expect(genericMarkup).not.toContain("reward-sigrika-spark-100-wins-nameplate");
+    expect(genericMarkup).not.toContain("reward-denia-spark-100-wins-nameplate");
     expect(genericMarkup).not.toContain("--user-identity-fit-font-size");
   });
 });

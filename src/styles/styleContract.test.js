@@ -1161,7 +1161,9 @@ describe("root CSS entry contract", () => {
       "./user-identity/context-surfaces.css",
       "./user-identity/phone-layouts.css",
       "./user-identity/semantic-ignition-nameplate.css",
-      "./user-identity/semantic-ignition-motion.css"
+      "./user-identity/denia-echo-nameplate.css",
+      "./user-identity/semantic-ignition-motion.css",
+      "./user-identity/denia-echo-nameplate-motion.css"
     ]);
     expect(userIdentityEntry).not.toContain(".user-identity {");
     expect(userIdentityEntry).not.toContain(".leaderboard-player .user-identity");

@@ -705,6 +705,7 @@ await prisma.musicTrackSetting.upsert({
 #### 5. Good/Base/Bad Cases
 - Good: using a rainbow bean candy on Denia evaluates the trigger event, creates one `UserAchievement`, grants its reward once, and returns one unlock toast payload.
 - Good: the built-in `denia-rainbow-bean-candy` achievement unlocks only when `ACHIEVEMENT_TRIGGER_EVENTS.deniaRainbowBeanCandy` is passed after the achievement exists, not when the player merely opens the achievement list later.
+- Good: the built-in `achievement-denia-spark-100-wins` uses the shared `mode_character_wins` condition with `{ "mode": "spark", "characterId": "denia", "value": 100 }`, grants `reward-denia-spark-100-wins-nameplate` exactly once, and stays mirrored in `server/adminDefaultSnapshot.js` so fresh/default-admin databases expose the same reward definition.
 - Base: a player with no achievements receives enabled achievements with `isAchieved: false`, empty `achievedAt`, and zero stats.
 - Bad: adding an achievement by writing a `UserAchievement` row directly without running reward grant logic.
 - Bad: letting a badge slot equip a `title` asset or an asset the user has not unlocked.
@@ -717,6 +718,7 @@ await prisma.musicTrackSetting.upsert({
 - Equipment tests assert locked, disabled, wrong-type, and valid unlocked assets.
 - Commerce/gacha/item-use tests assert `achievementUnlocks` appears only when new achievements unlock.
 - Public profile/social tests assert only compact equipment/stat fields are exposed.
+- Built-in mode-character reward tests assert the Denia reward/achievement seed pair, the matching admin snapshot pair, no unlock at 99 qualifying wins, and one unlock at 100 Denia Spark wins without accepting another character's wins.
 
 #### 7. Wrong vs Correct
 

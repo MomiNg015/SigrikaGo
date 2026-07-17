@@ -573,6 +573,16 @@ describe("component-level HUD refinements", () => {
     expect(hudCss).not.toContain("to { transform: rotate(360deg); }");
     expect(hudCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(hudCss).toContain("animation: none !important");
+    expect(hudCss).toContain('[data-nameplate-id="reward-denia-spark-100-wins-nameplate"]');
+    expect(hudCss).toContain("Danya's hand-painted echo-bubble and memory-album nameplate");
+    expect(hudCss).toContain("--user-nameplate-padding-left: calc(40px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain("--user-nameplate-padding-right: calc(25px * var(--user-nameplate-scale))");
+    expect(hudCss).toContain("animation: denia-nameplate-portal-breathe 3.6s ease-in-out");
+    expect(hudCss).toContain("animation: denia-nameplate-inner-echo 2.7s ease-in-out");
+    expect(hudCss).toContain("animation: denia-nameplate-refraction-drift 3.3s ease-in-out");
+    expect(hudCss).toContain("animation: denia-nameplate-echo-points 2.9s ease-in-out");
+    expect(hudCss).toContain("rgba(255, 141, 211, 0.8)");
+    expect(hudCss).toContain("rgba(98, 46, 143, 0.5)");
   });
 
   it("keeps the Bright School lobby stage free of solid fills behind the image panel", () => {

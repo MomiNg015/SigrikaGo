@@ -668,6 +668,47 @@ describe("HomeScreen", () => {
     expect(source.height - 1 - visibleRows.at(-1)).toBeGreaterThanOrEqual(8);
     expect(visibleColumns[0]).toBeGreaterThanOrEqual(40);
     expect(source.width - 1 - visibleColumns.at(-1)).toBeGreaterThanOrEqual(40);
+
+    const deniaHtml = renderHome({
+      user: {
+        achievementEquipment: {
+          titleAssetId: "",
+          badgeAssetId: "",
+          nameplateAssetId: "reward-denia-spark-100-wins-nameplate"
+        },
+        achievementEquipmentAssets: {
+          title: null,
+          badge: null,
+          nameplate: {
+            id: "reward-denia-spark-100-wins-nameplate",
+            type: "nameplate",
+            imageUrl: "/assets/achievements/denia-spark-100-wins-nameplate.png"
+          }
+        }
+      }
+    });
+    expect(deniaHtml).toContain('data-nameplate-id="reward-denia-spark-100-wins-nameplate"');
+    expect(deniaHtml).toContain("background-image:url(/assets/achievements/denia-spark-100-wins-nameplate.png)");
+
+    const deniaSource = decodeRgbaPng(readFileSync(new URL("../../public/assets/achievements/denia-spark-100-wins-nameplate.png", import.meta.url)));
+    expect({ width: deniaSource.width, height: deniaSource.height }).toEqual({ width: 1125, height: 240 });
+    expect([
+      deniaSource.pixels[3],
+      deniaSource.pixels[(deniaSource.width - 1) * 4 + 3],
+      deniaSource.pixels[((deniaSource.height - 1) * deniaSource.width) * 4 + 3],
+      deniaSource.pixels[(deniaSource.width * deniaSource.height - 1) * 4 + 3]
+    ]).toEqual([0, 0, 0, 0]);
+    const deniaVisibleRows = Array.from({ length: deniaSource.height }, (_unused, y) => y)
+      .filter((y) => Array.from({ length: deniaSource.width }, (_unused, x) => deniaSource.pixels[(y * deniaSource.width + x) * 4 + 3])
+        .some((alpha) => alpha > 0));
+    const deniaVisibleColumns = Array.from({ length: deniaSource.width }, (_unused, x) => x)
+      .filter((x) => Array.from({ length: deniaSource.height }, (_unused, y) => deniaSource.pixels[(y * deniaSource.width + x) * 4 + 3])
+        .some((alpha) => alpha > 0));
+    expect(deniaVisibleRows.at(-1) - deniaVisibleRows[0] + 1).toBeGreaterThanOrEqual(197);
+    expect(deniaVisibleRows[0]).toBeGreaterThanOrEqual(8);
+    expect(deniaSource.height - 1 - deniaVisibleRows.at(-1)).toBeGreaterThanOrEqual(8);
+    expect(deniaVisibleColumns[0]).toBeGreaterThanOrEqual(40);
+    expect(deniaSource.width - 1 - deniaVisibleColumns.at(-1)).toBeGreaterThanOrEqual(40);
   });
 
   it("keeps the HUD footer minimal and rewrites the mobile lobby layout", () => {

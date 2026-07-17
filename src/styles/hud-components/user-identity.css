@@ -2,4 +2,6 @@
 @import "./user-identity/context-surfaces.css";
 @import "./user-identity/phone-layouts.css";
 @import "./user-identity/semantic-ignition-nameplate.css";
+@import "./user-identity/denia-echo-nameplate.css";
 @import "./user-identity/semantic-ignition-motion.css";
+@import "./user-identity/denia-echo-nameplate-motion.css";
