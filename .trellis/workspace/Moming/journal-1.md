@@ -1659,3 +1659,36 @@ Refined the hand-painted Sigrika nameplate with a persistent alpha-following rim
 ### Next Steps
 
 - None - task complete
+
+
+## Session 51: Add reusable character nameplate production workflow
+
+**Date**: 2026-07-17
+**Task**: Add reusable character nameplate production workflow
+**Branch**: `codex/username-background`
+
+### Summary
+
+Added a repository-local character nameplate Skill with new/refine modes, a mandatory four-concept human gate, character research and motion contracts, deterministic PNG Alpha/safe-area validation, task-local real-UserIdentity preview generation, normal/reduced-motion browser capture with system-browser fallback, contract tests, forward-test evidence, and synchronized system-design/spec documentation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fa7323bc` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
