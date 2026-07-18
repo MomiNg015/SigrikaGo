@@ -9,7 +9,7 @@ describe("AssetPreloadScreen progress motion", () => {
     vi.useRealTimers();
   });
 
-  it("hops while idle or barely moving and pauses the hop during clear progress", () => {
+  it("floats while idle or barely moving and switches to glide during clear progress", () => {
     vi.useFakeTimers();
     const props = {
       character: { id: "sigrika", name: "西格莉卡", portrait: "/sigrika.webp" },

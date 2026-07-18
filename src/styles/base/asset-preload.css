@@ -16,17 +16,25 @@
 
 .preload-progress { --bar-h: 16px; --mascot-h: calc(var(--bar-h) * 3); width: 100%; height: var(--mascot-h); display: grid; place-items: center; }
 
-.preload-progress-track { position: relative; width: calc(100% - var(--mascot-h)); }
+.preload-progress-track { position: relative; isolation: isolate; width: calc(100% - var(--mascot-h)); height: var(--mascot-h); display: grid; align-items: center; }
 
-.preload-bar { height: var(--bar-h); overflow: hidden; border-radius: 999px; background: rgba(128, 102, 142, 0.14); }
+.preload-progress-track::before { content: ""; position: absolute; z-index: 0; left: 0; top: 50%; width: 100%; height: 12px; border-radius: 999px; background: linear-gradient(90deg, rgba(255, 210, 105, 0.76), rgba(242, 138, 36, 0.48)); filter: blur(7px); opacity: 0.52; transform: translateY(-50%) scaleX(var(--preload-progress)); transform-origin: left center; transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1); }
 
-.preload-bar span { --preload-progress-fill: linear-gradient(90deg, #ffc15a 0%, #f28a24 54%, #e65f18 100%); display: block; height: 100%; background: var(--preload-progress-fill); transform: scaleX(var(--preload-progress)); transform-origin: left center; transition: transform 260ms linear; }
+.preload-bar { position: relative; z-index: 1; height: var(--bar-h); overflow: hidden; border-radius: 999px; background: rgba(128, 102, 142, 0.14); }
 
-.preload-mascot-anchor { position: absolute; left: calc(var(--preload-progress) * 100%); top: 50%; transform: translate(-50%, -50%); transition: left 260ms linear; }
+.preload-bar > span { --preload-progress-fill: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.72) 0 2px, transparent 2.5px) 0 0 / 28px 100% repeat-x, linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent 46%), linear-gradient(90deg, #ffd36a 0%, #f5a135 48%, #e96c20 100%); position: relative; display: block; height: 100%; overflow: hidden; background: var(--preload-progress-fill); transform: scaleX(var(--preload-progress)); transform-origin: left center; transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1); }
 
-.preload-progress-mascot { display: block; width: auto; height: var(--mascot-h); transform: rotate(calc(var(--preload-progress) * 720deg)); transition: transform 260ms linear; }
+.preload-bar > span::before { content: ""; position: absolute; inset: 1px auto 1px -42%; width: 42%; border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.88) 52%, transparent); animation: preload-fill-glide 1.2s ease-in-out infinite; }
 
-.preload-progress.is-idle .preload-mascot-anchor { animation: hop 760ms cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.preload-mascot-anchor { position: absolute; z-index: 3; left: calc(var(--preload-progress) * 100%); top: 50%; transform: translate(-50%, -50%); transition: left 360ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+.preload-mascot-motion { display: block; transform-origin: 50% 88%; }
+
+.preload-progress-mascot { display: block; width: auto; height: var(--mascot-h); }
+
+.preload-progress:not(.is-idle) .preload-mascot-motion { animation: preload-mascot-glide 480ms ease-in-out infinite; }
+
+.preload-progress.is-idle .preload-mascot-motion { animation: preload-mascot-idle 1.08s ease-in-out infinite; }
 
 .preload-tip { width: 100%; min-height: 3em; color: rgba(79, 61, 85, 0.78); font-size: 14px; font-weight: 700; line-height: 1.55; word-break: keep-all; overflow-wrap: anywhere; }
 
@@ -34,7 +42,11 @@
 
 @keyframes preload-character-hop { 0%, 100% { transform: translateY(0) scaleY(1); } 42% { transform: translateY(-16px) scaleY(1.01); } 58% { transform: translateY(2px) scaleY(0.985); } }
 
-@keyframes hop { 0%, 100% { translate: 0 0; } 45% { translate: 0 -7px; } 64% { translate: 0 1px; } }
+@keyframes preload-fill-glide { from { transform: translateX(0); opacity: 0; } 24%, 76% { opacity: 0.9; } to { transform: translateX(340%); opacity: 0; } }
+
+@keyframes preload-mascot-glide { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-2px) rotate(2deg); } }
+
+@keyframes preload-mascot-idle { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-4px) rotate(1deg); } }
 
 @media (max-width: 640px) {
   .asset-preload-panel { gap: 14px; }
@@ -43,7 +55,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .preload-character, .preload-mark { animation: none; }
-  .preload-bar span, .preload-mascot-anchor, .preload-progress-mascot { transition: none; }
-  .preload-progress-mascot { transform: none; }
-  .preload-progress.is-idle .preload-mascot-anchor { animation: none; }
+  .preload-progress-track::before, .preload-bar > span, .preload-mascot-anchor { transition: none; }
+  .preload-bar > span::before, .preload-progress:not(.is-idle) .preload-mascot-motion, .preload-progress.is-idle .preload-mascot-motion { animation: none; }
 }

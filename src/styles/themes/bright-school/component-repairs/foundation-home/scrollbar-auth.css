@@ -103,6 +103,15 @@
   transform: none !important;
 }
 
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:disabled,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:disabled:hover,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:disabled:focus-visible,
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .auth-password-toggle:disabled:active {
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: translateY(-50%) !important;
+}
+
 .app-shell.player-theme-enabled.theme-bright-school.theme-bright-school .auth-form .form-error {
   color: #c0182d !important;
   font-weight: 900 !important;

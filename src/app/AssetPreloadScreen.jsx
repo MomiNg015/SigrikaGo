@@ -191,15 +191,17 @@ export default function AssetPreloadScreen({
               <span />
             </div>
             <span className="preload-mascot-anchor" aria-hidden="true">
-              <img
-                className="preload-progress-mascot"
-                src={PRELOAD_PROGRESS_MASCOT}
-                alt=""
-                decoding="sync"
-                draggable="false"
-                fetchPriority="high"
-                loading="eager"
-              />
+              <span className="preload-mascot-motion">
+                <img
+                  className="preload-progress-mascot"
+                  src={PRELOAD_PROGRESS_MASCOT}
+                  alt=""
+                  decoding="sync"
+                  draggable="false"
+                  fetchPriority="high"
+                  loading="eager"
+                />
+              </span>
             </span>
           </div>
         </div>

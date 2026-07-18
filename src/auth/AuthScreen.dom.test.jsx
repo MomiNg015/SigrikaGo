@@ -75,6 +75,30 @@ describe("AuthScreen DOM interaction", () => {
     await waitFor(() => expect(onAuth).toHaveBeenCalledTimes(1));
   });
 
+  it("keeps both registration password toggles disabled without replacing their owner class", async () => {
+    let resolveRequest;
+    api.mockImplementation(() => new Promise((resolve) => { resolveRequest = resolve; }));
+    const onAuth = vi.fn();
+    const user = userEvent.setup();
+    render(<AuthScreen initialMode="register" onAuth={onAuth} />);
+
+    await user.type(screen.getByRole("textbox", { name: /\u7528\u6237\u540d/ }), "Alice_12");
+    await user.type(document.getElementById("auth-password"), "secret12");
+    await user.type(document.getElementById("auth-confirm-password"), "secret12");
+    await user.click(screen.getByRole("button", { name: "\u767b\u8bb0\u5165\u90e8\u4fe1\u606f" }));
+
+    await waitFor(() => expect(api).toHaveBeenCalledTimes(1));
+    const toggles = screen.getAllByRole("button", { name: "\u663e\u793a\u5bc6\u7801" });
+    expect(toggles).toHaveLength(2);
+    toggles.forEach((toggle) => {
+      expect(toggle.disabled).toBe(true);
+      expect(toggle.classList.contains("auth-password-toggle")).toBe(true);
+    });
+
+    resolveRequest({ token: "token", user: { id: "user-1" } });
+    await waitFor(() => expect(onAuth).toHaveBeenCalledTimes(1));
+  });
+
   it("aborts an in-flight request on unmount and ignores its later result", async () => {
     let requestSignal;
     let resolveRequest;

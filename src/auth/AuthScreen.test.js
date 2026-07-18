@@ -150,8 +150,10 @@ describe("AuthScreen submit validation", () => {
     expect(themeCss).toContain(".auth-field.invalid input");
     expect(themeCss).toContain("border-color: #c0182d !important");
     expect(themeCss).toContain(".auth-password-toggle:hover");
+    expect(themeCss).toContain(".auth-password-toggle:disabled");
     expect(themeCss).toContain("background: transparent !important");
     expect(themeCss).toContain("color: #d8507a !important");
+    expect(themeCss).toContain("transform: translateY(-50%) !important");
   });
 
   it("keeps the Bright School mobile auth title single-line without tinted blocks", () => {
