@@ -31,6 +31,13 @@
   box-shadow: 0 16px 36px rgba(35, 152, 95, 0.28);
 }
 
+.toast.mail {
+  background: linear-gradient(135deg, #e8f9e8, #ccefd5);
+  color: #28573b;
+  border-color: #78bd8d;
+  box-shadow: 0 16px 36px rgba(63, 142, 91, 0.2);
+}
+
 .toast.achievement {
   background:
     linear-gradient(135deg, #f6c946, #f08d38 52%, #d95e63);

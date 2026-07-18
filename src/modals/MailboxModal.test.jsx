@@ -127,6 +127,22 @@ describe("MailboxModal information center", () => {
     );
   });
 
+  it("keeps a claimed attachment action visibly gray in every interaction state", () => {
+    const css = readCssWithImports(pathToFileURL(resolve("src/styles/modals/mailbox.css")));
+    const claimedMessage = {
+      ...memorialTicketMessage,
+      claimable: false,
+      deletable: true,
+      attachment: { ...memorialTicketMessage.attachment, claimed: true }
+    };
+    render(<MailboxModal token="token" initialLoaded initialMessages={[claimedMessage]} onClose={() => {}} />);
+
+    expect(screen.getByRole("button", { name: "已领取" }).disabled).toBe(true);
+    expect(css).toContain(".mailbox-detail .mailbox-actions .primary-action:disabled");
+    expect(css).toContain("background: #d8d4d0 !important");
+    expect(css).toContain("color: #756f6a !important");
+  });
+
   it("keeps mobile list-first and does not auto-open or mark the newest mail read", () => {
     vi.stubGlobal("matchMedia", vi.fn(() => ({
       matches: true,

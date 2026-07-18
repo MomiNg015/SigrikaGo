@@ -1,4 +1,5 @@
 @import "./mailbox/layout.css";
 @import "./mailbox/list.css";
 @import "./mailbox/detail.css";
+@import "./mailbox/detail-actions.css";
 @import "./mailbox/mobile.css";

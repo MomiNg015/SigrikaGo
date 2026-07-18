@@ -31,7 +31,7 @@ export function useOnboardingStory({
     if (!token) return;
     try {
       const data = await api("/api/onboarding-story/exited", { method: "POST", token });
-      if (data.showNotice) showToast?.(AEMEATH_WELCOME_MAIL_TOAST);
+      if (data.showNotice) showToast?.(AEMEATH_WELCOME_MAIL_TOAST, "mail");
     } catch {
       // The mailbox badge still exposes the mail if this informational toast cannot be recorded.
     }

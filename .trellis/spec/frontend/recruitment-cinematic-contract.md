@@ -15,6 +15,7 @@
 - `shouldRecoverInterruptedCinematic({ task, cinematicPlaybackTaskId, cinematicCompletedTaskId })` returns whether the interruption endpoint should run.
 - `cinematicPresentationReadyAt(task, receivedAt)` anchors a newly created presentation to client receipt; `presentationReadyRecruitmentTask(task)` changes only the client view to ready at that display deadline.
 - Player mailbox item attachments expose `{ type, itemId, itemName, imageUrl, quantity, claimed }`; `MailboxModal` renders art/name/quantity and never uses `itemId` as player copy.
+- Recruitment settings expose fixed-result copy under `fixedItemTexts[itemType] = { scopeLabel, resultText }`. The player status projection may expose the effective `scopeLabel`, but must not expose the configured result line before the task resolves.
 - `src/styles/commerce/recruitment/cinematic.css` owns the application lock, dimmer, sprite/image presentation, flight path, glow, and full-screen flash; `modal-shell.css` remains the ordinary modal layout owner.
 
 ### 3. Contracts
@@ -27,6 +28,10 @@
 - The dimmer starts with the first `999:00` frame. The flash center must equal the settled sprite/countdown target, not the viewport center, and must be fully opaque while the sprite disappears and the countdown switches to five seconds.
 - `spriteSheetUrl` takes presentation priority when non-empty. The current `1536×1872` WebP uses `8×9` cells: row 1 supplies eight right-flight frames and row 3 supplies four wave frames. When the sheet slot is empty, `spriteImageUrl` remains the static or animated WebP fallback.
 - Portrait recruitment item rules may hide the item-name span, but must preserve `.recruitment-item-icon` and quantity.
+- A fixed-result item reads `scopeLabel` from the persisted recruitment config for its catalog/confidence copy and snapshots the configured `resultText` into `RecruitmentTask.responseText` when recruitment starts. Empty admin values normalize back to the shared defaults.
+- The idle selection card renders `scopeLabel` only when it differs from `confidenceText`; fixed-result items use the red confidence line as the single visible copy instead of duplicating the same sentence in black and red.
+- A quantity-zero recruitment action reads `数量不足`; it must not use the ambiguous generic label `不可用`.
+- The one-time welcome-mail toast uses the dedicated light-green `mail` tone. A claimed mailbox attachment action stays gray in default, hover, focus, and active states, including under Bright School late theme overrides.
 - Mailbox list projection resolves item names/images from the `ShopItem` catalog with built-in recruitment metadata as fallback. Missing metadata falls back to generic `道具`, never the internal English id. The Aemeath ticket uses `/assets/items/aemeath-flight-snow-memorial-ticket.webp`, a tightly cropped transparent `512×436` source whose colored bounds fill the shared item slots without non-uniform scaling.
 
 ### 4. Validation & Error Matrix
@@ -57,6 +62,7 @@
 - `server/mailbox.test.js` asserts item catalog metadata projection plus the built-in memorial-ticket WebP fallback; `src/modals/MailboxModal.test.jsx` asserts the memorial-ticket image/localized-name/quantity rendering and internal-id absence.
 - `src/modals/RecruitmentModal.test.js` verifies the shared ticket URL and committed RIFF/WebP signature so recruitment, Warehouse, and mailbox keep one asset owner.
 - `server/recruitment.test.js` asserts the fixed Aemeath result, 11.25-second `readyAt`, theatrical countdown, image/sheet/sound payload slots, and explicit interruption behavior.
+- `server/recruitment.test.js` also round-trips `fixedItemTexts` through persistence, verifies the effective player catalog copy, and verifies that a new task snapshots the configured Aemeath line. `src/admin/AdminRecruitmentSettings.test.jsx` saves both fields and reloads them from the admin API.
 - `src/styles/styleContract.test.js` asserts `recruitment.css` imports `cinematic.css`, the modal shell remains separate, and portrait rules preserve the icon selector.
 - Chromium visual QA should inspect the light memorial-ticket surface, dimming before flight, flight-to-wave frame change, a local flash orb centered on the settled sprite, fully white concealed swap, portrait fit, and the portrait mailbox attachment row without overflow.
 - Run `npm run check` after cross-layer changes.

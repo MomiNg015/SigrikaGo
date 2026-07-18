@@ -1,18 +1,18 @@
 export const CSS_DEBT_BASELINE = {
-  date: "2026-07-17",
-  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned citrus-sun Semantic Ignition, Danya echo-bubble, and Aemeath digital-flight nameplate shells plus their reduced-motion owners, the owned-only holographic memorial-ticket action, isolated Pink Cyber Angel sprite-atlas recruitment cinematic, player-mailbox item attachment art/name row, and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
+  date: "2026-07-18",
+  scope: "All CSS files under src/styles after the import-only split work, including the shared and Bright School character-music-player subdomains, admin story node settings CSS and story workbook import feedback, frontend layout polish contracts including story-player padding, game-mode icon watermark/player-plaque/nameplate/utility image contracts, the asset-owned citrus-sun Semantic Ignition, Danya echo-bubble, and Aemeath digital-flight nameplate shells plus their reduced-motion owners, the owned-only holographic memorial-ticket action, isolated Pink Cyber Angel sprite-atlas recruitment cinematic, player-mailbox item attachment art/name row, light-green mail toast, claimed-attachment action state, and final post-theme readability contract, stable desktop utility-art tilt with direction-preserving hover rotation and scale compensation, tutorial reply-option overflow containment, mobile announcement badge anchoring, mobile utility-image feedback containment, the dedicated final-mobile login mascot lockup owner plus accessible auth field, password-visibility, pending, short-height scrolling, and reduced-motion rules, the shared/theme/final-mobile Zahira shop window plus card-layout isolation, compact-height, badge, and crayon-background owner files, cloud-deployment mobile floating layer tokens, transform-surface compositor hints, semantic home/window title typography, and the shared skill-trait description popover, admin glossary, and mobile character-detail scrolling owner rules.",
   metrics: {
-    totalFiles: 611,
-    totalBytes: 1215036,
-    importantCount: 7377,
-    importantFiles: 293,
-    hardcodedHexCount: 2318,
+    totalFiles: 612,
+    totalBytes: 1215814,
+    importantCount: 7382,
+    importantFiles: 294,
+    hardcodedHexCount: 2328,
     mediaFiles: 230,
     reducedMotionFiles: 32,
     highZIndexFiles: 7
   },
   guidance:
-    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-17 byte baseline records the final exact-asset Semantic Ignition, Danya echo-bubble, and Aemeath digital-flight owners, including their persistent alpha-following rim lights, illustration-bound local motion, and reduced-motion states; it also records the isolated memorial-ticket hologram, the dedicated cinematic owner for the fixed lock/flight/atlas-frame/wave/flash timeline, and the mailbox item-attachment art/name row that keeps internal item ids out of player copy. Keeping these owners separate preserves the generic fallback and makes each winning cascade boundary testable. Future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
+    "Use this as a non-growth contract for staged CSS cleanup. The 2026-07-18 byte baseline records the final exact-asset Semantic Ignition, Danya echo-bubble, and Aemeath digital-flight owners, including their persistent alpha-following rim lights, illustration-bound local motion, and reduced-motion states; it also records the isolated memorial-ticket hologram, the dedicated cinematic owner for the fixed lock/flight/atlas-frame/wave/flash timeline, and the mailbox item-attachment art/name row that keeps internal item ids out of player copy. Keeping these owners separate preserves the generic fallback and makes each winning cascade boundary testable. Future cleanup should lower or explicitly justify these numbers while preserving existing visuals and avoiding visual drift."
 };
 
 export const CSS_Z_INDEX_CONTRACT = {
@@ -173,6 +173,7 @@ export const CSS_LAYER_GROUPS = [
       "modals/mailbox/layout.css",
       "modals/mailbox/list.css",
       "modals/mailbox/detail.css",
+      "modals/mailbox/detail-actions.css",
       "modals/mailbox/mobile.css",
       "commerce-settings.css",
       "commerce/warehouse-toast.css",
@@ -551,6 +552,7 @@ export const CSS_ROUND3_SHARED_SPLITS = [
       "modals/mailbox/layout.css",
       "modals/mailbox/list.css",
       "modals/mailbox/detail.css",
+      "modals/mailbox/detail-actions.css",
       "modals/mailbox/mobile.css"
     ]
   },

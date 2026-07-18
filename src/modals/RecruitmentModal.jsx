@@ -118,7 +118,7 @@ export default function RecruitmentModal({
               ))}
             </div>
             <button className="primary-action recruitment-use-button" type="button" disabled={!canUse} onClick={start}>
-              {busy ? "张贴中" : canUse ? "使用" : "不可用"}
+              {busy ? "张贴中" : canUse ? "使用" : "数量不足"}
             </button>
           </footer>
         )}
@@ -159,7 +159,7 @@ function IdleBoard({ selectedItem }) {
       <RecruitmentItemWatermark item={selectedItem} />
       <div>
         <strong>{selectedItem.name}</strong>
-        <span>{selectedItem.scopeLabel}</span>
+        {selectedItem.scopeLabel !== selectedItem.confidenceText && <span>{selectedItem.scopeLabel}</span>}
         <p>{selectedItem.confidenceText}</p>
       </div>
     </section>

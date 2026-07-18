@@ -1,0 +1,19 @@
+/* Claimed attachment state must win over late theme action-button rules. */
+.mailbox-actions .primary-action:disabled {
+  background: #d8d4d0;
+  color: #756f6a;
+  border-color: #aaa39d;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.app-shell.player-theme-enabled.theme-bright-school.theme-bright-school
+  .mailbox-detail .mailbox-actions .primary-action:disabled {
+  background: #d8d4d0 !important;
+  color: #756f6a !important;
+  border-color: #aaa39d !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+  transform: none !important;
+}

@@ -125,6 +125,12 @@ export const DEFAULT_RECRUITMENT_CONFIG = Object.freeze({
     chisa: "千咲站在门口确认了活动时间，然后认真地写下了自己的名字。",
     qiuyuan: "仇远收到广播后准时出现，只说了一句：棋盘在哪里？",
     changli: "长离循着广播找来，笑着问围棋部还缺不缺一个后手专家。"
+  }),
+  fixedItemTexts: Object.freeze({
+    [RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket]: Object.freeze({
+      scopeLabel: RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket].scopeLabel,
+      resultText: RECRUITMENT_ITEMS[RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket].resultText
+    })
   })
 });
 
@@ -142,6 +148,10 @@ export function recruitmentItemImageUrlForType(itemType, fallback = "") {
 
 export function probabilityRecruitmentItems() {
   return Object.values(RECRUITMENT_ITEMS).filter((item) => item.configurableProbability !== false);
+}
+
+export function fixedRecruitmentItems() {
+  return Object.values(RECRUITMENT_ITEMS).filter((item) => item.resultMode === "fixed");
 }
 
 export function isPlayerShopRecruitmentItem(itemType) {

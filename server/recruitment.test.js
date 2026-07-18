@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   claimRecruitment,
   fastForwardRecruitment,
+  getRecruitmentConfig,
   getRecruitmentStatus,
   interruptRecruitmentCinematic,
-  startRecruitment
+  startRecruitment,
+  updateRecruitmentConfig
 } from "./recruitment.js";
 import {
   AEMEATH_RECRUITMENT_ASSET_SLOTS,
@@ -237,6 +239,53 @@ describe("recruitment", () => {
     });
   });
 
+  it("persists fixed-item copy and uses it for both the catalog and Aemeath result", async () => {
+    const itemType = RECRUITMENT_ITEM_TYPES.aemeathMemorialTicket;
+    const customScopeLabel = "拿纪念券呼唤飞行雪绒";
+    const customResultText = "爱弥斯从舞台灯光中现身。";
+    let storedValue = null;
+    const user = recruitmentUser({
+      ownedCharacters: "sigrika,denia",
+      ownedItems: JSON.stringify({ [itemType]: 1 })
+    });
+    const calls = [];
+    const prisma = recruitmentPrisma(user, calls);
+    prisma.siteSetting = {
+      findUnique: async () => storedValue ? { value: storedValue } : null,
+      upsert: async ({ create, update }) => {
+        storedValue = storedValue ? update.value : create.value;
+        return { key: "recruitmentConfig", value: storedValue };
+      }
+    };
+
+    const saved = await updateRecruitmentConfig({
+      prisma,
+      input: {
+        fixedItemTexts: {
+          [itemType]: { scopeLabel: customScopeLabel, resultText: customResultText }
+        }
+      }
+    });
+    expect(saved.config.fixedItemTexts[itemType]).toEqual({
+      scopeLabel: customScopeLabel,
+      resultText: customResultText
+    });
+    expect((await getRecruitmentConfig(prisma)).fixedItemTexts[itemType]).toEqual(
+      saved.config.fixedItemTexts[itemType]
+    );
+
+    const status = await getRecruitmentStatus({ prisma, userId: user.id });
+    expect(status.items.find((item) => item.itemType === itemType)).toMatchObject({
+      scopeLabel: customScopeLabel,
+      confidenceText: customScopeLabel
+    });
+
+    await startRecruitment({ prisma, userId: user.id, itemType });
+    expect(calls).toContainEqual(["recruitmentTask.create", expect.objectContaining({
+      data: expect.objectContaining({ responseText: customResultText })
+    })]);
+  });
+
   it("rejects an owned-Aemeath memorial ticket before consuming it", async () => {
     const user = recruitmentUser({
       ownedCharacters: "sigrika,denia,aemeath",
@@ -363,6 +412,7 @@ function recruitmentPrisma(user, calls, activeTask = null) {
       }
     },
     recruitmentMissStreak: {
+      findMany: async () => [],
       findUnique: async () => null,
       upsert: async (args) => calls.push(["recruitmentMissStreak.upsert", args])
     },

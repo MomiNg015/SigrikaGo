@@ -10,6 +10,6 @@ describe("useOnboardingStory wiring", () => {
     expect(source).toContain("onComplete: markCompleted");
     expect(source).toContain("onExit: markExited");
     expect(source).toContain("AEMEATH_WELCOME_MAIL_TOAST");
-    expect(source).toContain("if (data.showNotice) showToast?.(AEMEATH_WELCOME_MAIL_TOAST)");
+    expect(source).toContain('if (data.showNotice) showToast?.(AEMEATH_WELCOME_MAIL_TOAST, "mail")');
   });
 });

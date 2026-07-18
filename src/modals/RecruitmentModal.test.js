@@ -42,8 +42,9 @@ describe("RecruitmentModal", () => {
     expect(modalSource).not.toContain("围棋部招新现场");
     expect(modalSource).not.toContain("公示板已经摆好");
     expect(modalSource).not.toContain("等待招新回应");
-    expect(modalSource).toContain("canUse ? \"使用\" : \"不可用\"");
+    expect(modalSource).toContain("canUse ? \"使用\" : \"数量不足\"");
     expect(modalSource).toContain("RecruitmentItemWatermark");
+    expect(modalSource).toContain("selectedItem.scopeLabel !== selectedItem.confidenceText");
     expect(modalSource).toContain("item?.imageUrl || item?.itemImageUrl");
     expect(modalSource).toContain("<img className=\"recruitment-item-watermark-art\"");
     expect(modalSource).toContain("recruitment-pending-panel");

@@ -3,6 +3,7 @@ import {
   DEFAULT_RECRUITMENT_CONFIG,
   RECRUITMENT_ITEMS,
   RECRUITMENT_NO_CANDIDATE_MESSAGE,
+  fixedRecruitmentItems,
   isRecruitmentItemType,
   probabilityRecruitmentItems,
   recruitmentItemForType
@@ -103,7 +104,7 @@ export async function startRecruitment({ prisma, userId, itemType, now = new Dat
       ? item.fixedResultCharacterId
       : success ? pickOne(candidateIds, random) : "";
     const responseText = fixedResult
-      ? item.resultText
+      ? config.fixedItemTexts[item.itemType]?.resultText || item.resultText
       : success
         ? config.successTexts[pickedCharacter] || DEFAULT_RECRUITMENT_CONFIG.successTexts[pickedCharacter] || ""
         : pickOne(config.noResponseTexts[item.itemType] ?? DEFAULT_RECRUITMENT_CONFIG.noResponseTexts[item.itemType], random);
@@ -238,7 +239,7 @@ export async function updateRecruitmentConfig({ prisma, input }) {
     create: { key: RECRUITMENT_CONFIG_KEY, value: JSON.stringify(config) },
     update: { value: JSON.stringify(config) }
   });
-  return { config: publicRecruitmentConfig(config) };
+  return { config };
 }
 
 function publicRecruitmentConfig(config) {
@@ -256,14 +257,16 @@ function recruitmentItemsPayload({ user, streaks, config }) {
     if (item.catalogVisibility === "owned-only" && quantity <= 0) return [];
     const streak = streaks[item.itemType] ?? 0;
     const confidenceIndex = Math.min(streak, config.confidenceTexts.length - 1);
+    const fixedItemText = config.fixedItemTexts[item.itemType];
+    const scopeLabel = fixedItemText?.scopeLabel || item.scopeLabel;
     return [{
       itemType: item.itemType,
       name: item.name,
-      scopeLabel: item.scopeLabel,
+      scopeLabel,
       description: item.description,
       imageUrl: item.imageUrl,
       quantity,
-      confidenceText: item.resultMode === "fixed" ? item.scopeLabel : config.confidenceTexts[confidenceIndex] ?? "",
+      confidenceText: item.resultMode === "fixed" ? scopeLabel : config.confidenceTexts[confidenceIndex] ?? "",
       appearanceId: item.appearanceId ?? "",
       cinematicId: item.cinematicId ?? ""
     }];
@@ -283,7 +286,20 @@ function normalizeRecruitmentConfig(value) {
       item.itemType,
       normalizeTextArray(parsed?.noResponseTexts?.[item.itemType], fallback.noResponseTexts[item.itemType], 2)
     ])),
-    successTexts: { ...fallback.successTexts, ...(parsed?.successTexts ?? {}) }
+    successTexts: { ...fallback.successTexts, ...(parsed?.successTexts ?? {}) },
+    fixedItemTexts: Object.fromEntries(fixedRecruitmentItems().map((item) => [
+      item.itemType,
+      {
+        scopeLabel: normalizeTextValue(
+          parsed?.fixedItemTexts?.[item.itemType]?.scopeLabel,
+          fallback.fixedItemTexts[item.itemType].scopeLabel
+        ),
+        resultText: normalizeTextValue(
+          parsed?.fixedItemTexts?.[item.itemType]?.resultText,
+          fallback.fixedItemTexts[item.itemType].resultText
+        )
+      }
+    ]))
   };
 }
 
@@ -305,6 +321,10 @@ function normalizeTextArray(value, fallback, length) {
     if (!texts.includes(text)) texts.push(text);
   }
   return texts;
+}
+
+function normalizeTextValue(value, fallback) {
+  return String(value ?? "").trim() || fallback;
 }
 
 function toRecruitmentTaskPayload(task, { now = new Date(), reveal = false } = {}) {

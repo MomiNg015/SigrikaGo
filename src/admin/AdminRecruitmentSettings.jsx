@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { adminApi } from "../api/client.js";
 import {
   DEFAULT_RECRUITMENT_CONFIG,
+  fixedRecruitmentItems,
   probabilityRecruitmentItems
 } from "../shared/recruitment.js";
 import { AdminActionButton } from "./adminComponents.jsx";
@@ -39,7 +40,7 @@ export default function AdminRecruitmentSettings({ token, onNotice }) {
       <div className="admin-section-heading">
         <div>
           <h2>招募配置</h2>
-          <p className="quiet-text">候选池第一版固定在代码里，这里只配置等待时间、概率和回应文案。</p>
+          <p className="quiet-text">候选池固定在代码里；等待时间、概率和各类招募文案可在这里修改。</p>
         </div>
       </div>
       <form className="admin-character-form" onSubmit={save}>
@@ -85,6 +86,45 @@ export default function AdminRecruitmentSettings({ token, onNotice }) {
             />
           </label>
         ))}
+        {fixedRecruitmentItems().map((item) => (
+          <fieldset className="admin-settings-fieldset" key={item.itemType}>
+            <legend>{item.name}固定结果文案</legend>
+            <label>
+              {item.name}招募说明
+              <textarea
+                value={draft.fixedItemTexts[item.itemType]?.scopeLabel ?? ""}
+                onChange={(event) => setDraft({
+                  ...draft,
+                  fixedItemTexts: {
+                    ...draft.fixedItemTexts,
+                    [item.itemType]: {
+                      ...draft.fixedItemTexts[item.itemType],
+                      scopeLabel: event.target.value
+                    }
+                  }
+                })}
+                rows={2}
+              />
+            </label>
+            <label>
+              爱弥斯招募台词
+              <textarea
+                value={draft.fixedItemTexts[item.itemType]?.resultText ?? ""}
+                onChange={(event) => setDraft({
+                  ...draft,
+                  fixedItemTexts: {
+                    ...draft.fixedItemTexts,
+                    [item.itemType]: {
+                      ...draft.fixedItemTexts[item.itemType],
+                      resultText: event.target.value
+                    }
+                  }
+                })}
+                rows={3}
+              />
+            </label>
+          </fieldset>
+        ))}
         <AdminActionButton variant="primary" type="submit" disabled={saving}>{saving ? "保存中" : "保存招募配置"}</AdminActionButton>
       </form>
     </section>
@@ -100,7 +140,14 @@ function configToDraft(config) {
       item.itemType,
       (config.noResponseTexts?.[item.itemType] ?? DEFAULT_RECRUITMENT_CONFIG.noResponseTexts[item.itemType]).join("\n")
     ])),
-    successTexts: { ...DEFAULT_RECRUITMENT_CONFIG.successTexts, ...(config.successTexts ?? {}) }
+    successTexts: { ...DEFAULT_RECRUITMENT_CONFIG.successTexts, ...(config.successTexts ?? {}) },
+    fixedItemTexts: Object.fromEntries(fixedRecruitmentItems().map((item) => [
+      item.itemType,
+      {
+        ...DEFAULT_RECRUITMENT_CONFIG.fixedItemTexts[item.itemType],
+        ...(config.fixedItemTexts?.[item.itemType] ?? {})
+      }
+    ]))
   };
 }
 
@@ -110,7 +157,8 @@ function draftToConfig(draft) {
     successRates: draft.successRates.map((rate) => Number(rate) || 0),
     confidenceTexts: lines(draft.confidenceTexts),
     noResponseTexts: Object.fromEntries(Object.entries(draft.noResponseTexts).map(([itemType, text]) => [itemType, lines(text)])),
-    successTexts: draft.successTexts
+    successTexts: draft.successTexts,
+    fixedItemTexts: draft.fixedItemTexts
   };
 }
 

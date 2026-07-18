@@ -38,8 +38,11 @@ describe("FeedbackModals helpers", () => {
   it("keeps toast styling focused on general notices and success feedback", () => {
     const css = readCssWithImports(new URL("../styles/commerce-settings.css", import.meta.url));
     const successBlock = css.match(/\.toast\.success\s*\{[^}]+\}/)?.[0] ?? "";
+    const mailBlock = css.match(/\.toast\.mail\s*\{[^}]+\}/)?.[0] ?? "";
 
     expect(successBlock).toContain("background: linear-gradient(135deg, #48b978, #23985f)");
+    expect(mailBlock).toContain("background: linear-gradient(135deg, #e8f9e8, #ccefd5)");
+    expect(mailBlock).toContain("color: #28573b");
     expect(css).not.toContain(".toast.reward");
     expect(css).not.toContain(".toast.penalty");
   });

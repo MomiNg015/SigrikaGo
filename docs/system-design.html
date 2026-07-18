@@ -112,7 +112,7 @@
 <li>招募道具运行期图标通过 <code>src/shared/recruitment.js</code> 同步给招募、商城和仓库等消费者；后端商品与背包 payload 会把内置招募道具的旧落库 <code>imageUrl</code> 归一到当前共享配置，启动回填只匹配每个道具声明的空值或旧默认 SVG 路径。“招新贴报/招新海报”使用 <code>public/assets/items/recruitment-poster.webp</code>，由 <code>C:/codex/image/item/Recruitment_paper.png</code> 无损转换而来；“先约电台广播券”使用 <code>public/assets/items/radio-recruitment-ticket.webp</code>，由 <code>C:/codex/image/item/boardcast_ticket.png</code> 转换而来。“彩虹豆豆跳跳糖”的运行期道具图标使用 <code>public/assets/items/rainbow-bean-candy.webp</code>，由 <code>C:/codex/image/item/rainbow-candy-cutout-full.png</code> 无损转换而来；<code>server/itemImages.js</code> 统一让商城商品、仓库道具和玩家侧抽卡奖项/结果归一到当前 WebP，默认快照中的糖果商品和卡池奖励也使用同一路径。<code>public/assets/promotional/</code> 仍保留未接入运行时引用的候选宣传图，例如“招新贴报”候选 <code>recruitment-poster-v1..v3.png</code> 与“先约电台广播券”候选 <code>radio-coupon-v1..v3.png</code>，候选图不进入启动预加载清单，除非后续 UI 明确引用。</li>
 </ul>
 <ul>
-<li>爱弥斯不再属于新用户初始角色；注册事务会同时创建“飞行雪绒歌友会”系统邮件并附带 1 张仅限招募使用的“飞行雪绒纪念券”，旧用户则通过一次性启动迁移保留爱弥斯。纪念券道具图使用从原始透明 PNG 有色边界等比裁切得到的 <code>512×436</code> WebP <code>/assets/items/aemeath-flight-snow-memorial-ticket.webp</code>，因此在招募按钮、仓库和邮件附件中与另外两种招募道具保持接近的有效画面占比。玩家邮箱把道具附件投影为物品图、中文名称与数量，不直接显示内部 <code>itemId</code>。新手引导关闭、完成或跳过后，<code>POST /api/onboarding-story/exited</code> 以 <code>User.welcomeMailNoticeShownAt</code> 保证“你有收到新的邮件！”只提示一次。纪念券在仓库可见、玩家商店隐藏、后台邮箱附件可选；持券时招募底栏按共享排序插入具有明亮高对比内层的五彩动态按钮。特殊招募由服务端固定爱弥斯和 11.25 秒领取 <code>readyAt</code>；新任务响应到达客户端时另建完整 11.25 秒展示期限，避免移动端响应耗时吃掉演出尾段。前端在不可操作的 7.05 秒演出中先显示持续运行的 999 分钟表演倒计时，从首帧开始渐暗，白光从小人停驻位置扩散，于 6.25 秒全白遮挡下切换到 5 秒展示倒计时；演出完成只解除交互锁，展示期限归零的同一节拍直接进入 ready，不停在 <code>00:00</code> 等网络刷新，领取接口仍以更早开始的服务端 <code>readyAt</code> 校验。刷新、离线或页面隐藏才会调用中断接口让任务立即可领取，不补演。演出素材支持静态/动态 WebP 与精灵图集两个稳定资源槽，当前使用 <code>/assets/recruitment/aemeath-pink-cyber-angel-spritesheet.webp</code> 的右飞行八帧和招手四帧，音效槽为空；BGM 从渐暗首帧以 350ms 降至 15%，解锁时以 500ms 恢复。</li>
+<li>爱弥斯不再属于新用户初始角色；注册事务会同时创建“飞行雪绒歌友会”系统邮件并附带 1 张仅限招募使用的“飞行雪绒纪念券”，旧用户则通过一次性启动迁移保留爱弥斯。纪念券道具图使用从原始透明 PNG 有色边界等比裁切得到的 <code>512×436</code> WebP <code>/assets/items/aemeath-flight-snow-memorial-ticket.webp</code>，因此在招募按钮、仓库和邮件附件中与另外两种招募道具保持接近的有效画面占比。玩家邮箱把道具附件投影为物品图、中文名称与数量，不直接显示内部 <code>itemId</code>；领取后动作按钮在所有交互状态下保持灰色。新手引导关闭、完成或跳过后，<code>POST /api/onboarding-story/exited</code> 以 <code>User.welcomeMailNoticeShownAt</code> 保证浅绿色“你有收到新的邮件！” toast 只提示一次。纪念券在仓库可见、玩家商店隐藏、后台邮箱附件可选；持券时招募底栏按共享排序插入具有明亮高对比内层的五彩动态按钮，道具数量为零的动作统一显示“数量不足”。后台“招募管理”通过 <code>recruitmentConfig.fixedItemTexts</code> 修改纪念券招募说明和爱弥斯招募台词：玩家状态只获得有效说明，新发起任务把当时的台词快照到 <code>RecruitmentTask.responseText</code>，不会提前泄露结果文案；选择卡在说明与红色状态文案相同时只显示红色文案，避免同一句话重复出现。特殊招募由服务端固定爱弥斯和 11.25 秒领取 <code>readyAt</code>；新任务响应到达客户端时另建完整 11.25 秒展示期限，避免移动端响应耗时吃掉演出尾段。前端在不可操作的 7.05 秒演出中先显示持续运行的 999 分钟表演倒计时，从首帧开始渐暗，白光从小人停驻位置扩散，于 6.25 秒全白遮挡下切换到 5 秒展示倒计时；演出完成只解除交互锁，展示期限归零的同一节拍直接进入 ready，不停在 <code>00:00</code> 等网络刷新，领取接口仍以更早开始的服务端 <code>readyAt</code> 校验。刷新、离线或页面隐藏才会调用中断接口让任务立即可领取，不补演。演出素材支持静态/动态 WebP 与精灵图集两个稳定资源槽，当前使用 <code>/assets/recruitment/aemeath-pink-cyber-angel-spritesheet.webp</code> 的右飞行八帧和招手四帧，音效槽为空；BGM 从渐暗首帧以 350ms 降至 15%，解锁时以 500ms 恢复。</li>
 </ul>
 <ul>
 <li>玩家侧艺术字体作为语义化、白名单式资源使用：<code>public/assets/fonts/WuWa-Lahai-Roi-Regular.ttf</code> 通过 <code>&quot;Sigrika Accent Latin&quot;</code> 字体族挂到 <code>--font-display-accent</code> 与 <code>--font-numeric-accent</code>，只覆盖拉丁字母和数字。倒计时数字必须经 <code>.text-clock-value</code>，玩家可见积分/rating 数值必须经 <code>.text-rating-value</code>，登录页 <code>SigrikaGo</code> 英文品牌短标签、首页品牌/模式选择英文水印/锁定占位等氛围短标签可经 <code>.text-display-accent</code>；这些艺术字语义类用 <code>text-transform: uppercase</code> 让小写拉丁字母视觉显示为大写，但不改源字符串和数据。用户名、后台管理、正文、表单、金币/价格/库存、局数胜负、房间号、时间戳和排行榜名次不使用该字体，后续替换字体只改 token/asset 而不改语义类名。最终 <code>mobile-adaptive/semantic-accent-typography.css</code> 在主题层之后回补这三个语义类，避免 Bright School 的广域 <code>!important</code> 字体/颜色重置压掉棋钟读秒颜色和 rating 数字字体，并清除 <code>.text-clock-value</code> 误继承的徽章背景、边框和阴影；主时间棋钟数字固定为 <code>#1c171a</code> 而不是灰色，读秒警告状态保留红色/多色语义，移动端房间玩家条内会把艺术字体棋钟压到更小字号与宽度，避免读秒条被挤出容器。</li>
@@ -570,8 +570,6 @@
 </ul>
 <ul>
 <li>内置成就“飞行雪绒，出击！”使用 <code>mode_character_wins</code> 条件统计玩家使用爱弥斯在 <code>spark</code>（星炬对弈）模式的胜场，达到 100 胜后解锁 <code>reward-aemeath-spark-100-wins-nameplate</code>；<code>server/achievements.js</code> 与 <code>server/adminDefaultSnapshot.js</code> 保持相同的奖励/成就定义，启动补种只创建缺失行，不覆盖后台已有配置。奖励图位于 <code>/assets/achievements/aemeath-spark-100-wins-nameplate.png</code>：<code>1125 x 240</code> 透明手绘画面以头部/胸口同源的天青色为主、粉色为辅，保留纸飞机、校园虚拟演出纸扇、像素雪绒、波形、观众灯点与右侧折纸收束，并用装甲切面、扫描短线、像素残影和蓝粉速度带取代水彩云。精确 ID owner 使用 <code>150px x 32px</code> 槽位、<code>42px / 20px</code> 用户名安全内边距、深青文字和浅色描光；文字层通过随 <code>--user-nameplate-scale</code> 缩放的 <code>-1px</code> 纵向偏移修正字体字面框偏低造成的视觉重心，不移动背景或动效层。动效只在插画已有锚点上叠加出击信号、雪绒像素脉冲、载体速度线与稀疏数字信标，连续关键帧只改变 <code>transform</code> / <code>opacity</code>，减弱动效时冻结为可读静态态。</li>
-</ul>
-<ul>
 </ul>
 <ul>
 <li>内置成就“你给我吃了什么！？”由 <code>seedBuiltinAchievements</code> 在启动时按需创建，监听新增后的 <code>denia-rainbow-bean-candy</code> 道具使用事件；玩家请达妮娅吃彩虹豆豆跳跳糖后解锁并获得 100 金币，不回溯统计成就上线前发生过的使用记录。</li>
@@ -3224,6 +3222,9 @@
 <li><code>POST /api/recruitment/start</code> recognizes <code>aemeath-flight-snow-memorial-ticket</code> as an owned-only, player-shop-hidden fixed-result item. It checks merged legacy/structured Aemeath ownership before consuming the ticket, returns <code>好像已经没有可以用该道具招募的角色了</code> when no candidate remains, otherwise decides Aemeath immediately and creates the normal single active <code>RecruitmentTask</code> with an 11.25-second <code>readyAt</code>.</li>
 </ul>
 <ul>
+<li><code>GET/PATCH /api/admin/recruitment-config</code> reads and persists the complete normalized recruitment configuration. Fixed-result copy lives at <code>fixedItemTexts[itemType] = { scopeLabel, resultText }</code>; blank or unknown-shaped values fall back to shared built-in copy. Player <code>GET /api/recruitment/status</code> continues to receive only the public timing/probability config plus each item's effective <code>scopeLabel</code>, while configured fixed-result <code>resultText</code> stays server-only until <code>POST /api/recruitment/start</code> snapshots it into the new task's <code>responseText</code>.</li>
+</ul>
+<ul>
 <li>The recruitment payload exposes stable cinematic metadata (<code>id</code>, theatrical countdown, sprite image, optional sprite sheet, flight sound, flash sound) without moving claim authority to the client. Normal client-side presentation completion does not call the interruption route and the task keeps its original server <code>readyAt</code>. A freshly created presentation anchors a separate display deadline to client response receipt so mobile request latency cannot shorten the authored five-second tail; reaching that display deadline changes only the client view to ready, while <code>/api/recruitment/claim</code> still rejects before server <code>readyAt</code>. <code>POST /api/recruitment/interrupt-cinematic</code> is authenticated and only accepts an active cinematic task; it shortens that task to the request time so refresh, tab hiding, page exit, or disconnection can skip directly to the ready state without replaying presentation. The claim route remains the only grant boundary and writes Aemeath through the existing legacy-plus-structured asset sync.</li>
 </ul>
 <h2>Announcement API</h2>
@@ -4793,6 +4794,9 @@
 </ul>
 <ul>
 <li><code>toast.achievement</code> 使用金橙色高亮渐变和更强阴影，作为成就达成反馈；普通成功/错误 toast 样式不变。</li>
+</ul>
+<ul>
+<li>新邮件一次性提醒使用独立的 <code>.toast.mail</code> 浅绿色语义面，不改变普通成功/错误 toast。邮箱附件领取后，禁用动作按钮在默认、hover、focus 和 active 下都保持中性灰色，Bright School 的后置粉色按钮规则不得覆盖该状态；招募道具数量为零时按钮文案为“数量不足”。</li>
 </ul>
 <h2>Mailbox UI And Mobile</h2>
 <ul>
