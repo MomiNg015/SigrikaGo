@@ -52,7 +52,9 @@ Create, select, and productionize a hand-painted, character-specific username na
 - [x] The natural-light refinement removes the detached polygon flash, large scale pulse, and reset-like speed sweep while keeping every effect aligned to an illustrated plane or beacon.
 - [x] Motion remains perceptible through restrained paper-flight breathing, smooth carrier-lane drift, snowfluff pulse, and sparse beacon shimmer, without moving the username or washing out the B-v4 raster.
 - [x] Natural-light previews and focused/full quality gates pass in normal and reduced-motion contexts across desktop, compact, and phone scales.
-- [ ] The final light pass remains clearly perceptible at `150 x 32`: a persistent cyan-pink alpha rim, a bounded carrier highlight, and a local snowfluff/paper-flight pulse remain visible without restoring a detached polygon or full-surface scanner overlay.
+- [x] The final light pass remains clearly perceptible at `150 x 32`: a persistent cyan-pink alpha rim, a bounded carrier highlight, and a local snowfluff/paper-flight pulse remain visible without restoring a detached polygon or full-surface scanner overlay.
+- [x] The animated snowfluff light is a soft radial pulse with no perpendicular line pair, checkerboard, cross, or scanner-grid reading at runtime size.
+- [x] Only the Aemeath exact-ID owner gives usernames a character-specific display treatment: deep-cyan heavy lettering, a thin pale edge, and restrained cyan/pink side light remain readable for Latin, CJK, legacy-overlong, compact, and phone samples.
 
 ## Definition of Done
 
@@ -79,6 +81,8 @@ Use the built-in image generation path once per direction. Generate each concept
 **Natural-light update:** The first stronger B-v4 motion pass read as a detached scanner-like light overlay. The accepted refinement removes the polygon mask and repeating scan-line layer, halves the persistent shadow radius, and replaces stepped flashes with `2.1–2.9s` eased local breathing and alternate-direction drift. Computed-style sampling confirmed the paper-flight light stays within roughly one pixel of travel and `0.985–1.025` scale, while normal/reduced-motion previews keep the raster and username clear at desktop, compact, and phone scales.
 
 **Perceived-light correction:** Runtime review showed that the restrained pass became effectively invisible because `screen` blending was stacked over an already bright cyan-white raster. The follow-up restores a clearly visible alpha-following cyan/pink rim and increases the illustration-bound paper-flight, carrier, snowfluff, and beacon contrast. Motion remains alternate-direction and transform/opacity-only; no detached polygon, repeating scanner texture, username motion, or full-plate haze returns.
+
+**Snowfluff/text correction:** The perpendicular highlight gradients inside the animated snowfluff core collapsed into an unrelated checkerboard/cross at `150 x 32`, so the core is reduced to one soft radial cyan-pink pulse. Aemeath's exact-ID username uses the readable UI font stack with heavy deep-cyan lettering, a narrow pale edge, and restrained cyan/pink side light; no generic username or other nameplate inherits this treatment. The Wuwa Latin display face was previewed and rejected because it turned ordinary usernames into symbol-like letterforms.
 
 ## Out of Scope
 

@@ -1725,3 +1725,38 @@ Added required mailbox sender snapshots across database, admin sending, delivery
 ### Next Steps
 
 - None - task complete
+
+
+## Session 53: Aemeath memorial-ticket recruitment
+
+**Date**: 2026-07-18
+**Task**: Aemeath memorial-ticket recruitment
+**Branch**: `codex/aemeath-acquisition`
+
+### Summary
+
+Moved Aemeath acquisition to a welcome-mail memorial ticket, added the fixed-result recruitment cinematic and ticket artwork, polished mail/recruitment states, and removed duplicated fixed-item selection copy.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `200df94b` | (see git log) |
+| `85519988` | (see git log) |
+| `82566ad9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
