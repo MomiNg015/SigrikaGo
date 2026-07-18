@@ -41,7 +41,7 @@ export const AEMEATH_RECRUITMENT_ASSET_SLOTS = Object.freeze({
   cinematicSpriteUrl: "/assets/Aemeath_centered.webp",
   cinematicSpriteSheetUrl: "/assets/recruitment/aemeath-pink-cyber-angel-spritesheet.webp",
   flightSoundUrl: "",
-  flashSoundUrl: ""
+  flashSoundUrl: "/assets/music/aemeath-recruitment-full-white-burst.ogg"
 });
 
 export const RECRUITMENT_ITEMS = Object.freeze({

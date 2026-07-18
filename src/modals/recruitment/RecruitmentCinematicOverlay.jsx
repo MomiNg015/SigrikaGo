@@ -78,7 +78,7 @@ export default function RecruitmentCinematicOverlay({
     }, AEMEATH_RECRUITMENT_TIMING.flightAtMs);
     const flashSoundTimer = window.setTimeout(() => {
       if (!interruptedRef.current && flashSoundUrl) playEffectSound(flashSoundUrl, audioSettings);
-    }, AEMEATH_RECRUITMENT_TIMING.glowAtMs);
+    }, AEMEATH_RECRUITMENT_TIMING.concealedSwapAtMs);
     const completeTimer = window.setTimeout(() => {
       if (interruptedRef.current) return;
       completedRef.current = true;
