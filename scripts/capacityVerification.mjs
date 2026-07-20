@@ -20,8 +20,10 @@ const PROFILES = Object.freeze({
 });
 
 export function capacityProfile(name = "smoke", overrides = {}) {
-  const base = PROFILES[name] ?? PROFILES.smoke;
+  const profileName = Object.hasOwn(PROFILES, name) ? name : "smoke";
+  const base = PROFILES[profileName];
   const profile = {
+    name: profileName,
     ...base,
     ...Object.fromEntries(Object.entries(overrides).filter(([, value]) => value !== undefined))
   };
@@ -110,6 +112,7 @@ export async function runCapacityVerification({
     });
 
     const adminToken = records[0]?.auth?.token;
+    await promoteCapacityFixtureAdmin(target, adminToken);
     const serverStart = await fetchServerSnapshot(target, adminToken);
     serverSamples.push(serverStart);
     const reconnectAt = Date.now() + Math.floor(profile.durationMs / 3);
@@ -210,6 +213,7 @@ export async function runCapacityVerification({
         delta: serverMetricDelta(serverStart, serverEnd)
       },
       thresholds: evaluateThresholds({
+        profile,
         ackLatencies,
         restartResumeLatencies,
         errors,
@@ -396,6 +400,19 @@ async function fetchServerSnapshot(baseUrl, token) {
   return body ?? null;
 }
 
+async function promoteCapacityFixtureAdmin(baseUrl, token) {
+  if (!token) throw new Error("Capacity admin fixture requires an authenticated user");
+  const response = await fetch(`${baseUrl}/api/test-fixtures/me/admin`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: "{}"
+  });
+  if (!response.ok) throw new Error(`Capacity admin fixture failed (${response.status})`);
+}
+
 function peakProcessMetrics(samples) {
   const processSnapshots = samples
     .map((sample) => sample?.capacity?.process)
@@ -443,7 +460,8 @@ function serverMetricDelta(start, end) {
   };
 }
 
-function evaluateThresholds({
+export function evaluateThresholds({
+  profile,
   ackLatencies,
   restartResumeLatencies,
   errors,
@@ -451,6 +469,7 @@ function evaluateThresholds({
   serverPeak,
   serverSamples
 }) {
+  const eventLoopDelayLimitMs = profile?.name === "target" ? 50 : 150;
   const ackP95 = percentile(ackLatencies, 0.95);
   const ackP99 = percentile(ackLatencies, 0.99);
   const processMetrics = serverPeak ?? serverEnd?.capacity?.process ?? {};
@@ -463,7 +482,7 @@ function evaluateThresholds({
     )),
     ackP95Under200Ms: ackP95 !== null && ackP95 < 200,
     ackP99Under500Ms: ackP99 !== null && ackP99 < 500,
-    eventLoopP95Under50Ms: Number(processMetrics.eventLoopDelayP95Ms ?? Infinity) < 50,
+    eventLoopP95WithinProfileLimit: Number(processMetrics.eventLoopDelayP95Ms ?? Infinity) < eventLoopDelayLimitMs,
     rssUnder1_2GiB: Number(processMetrics.rssBytes ?? Infinity) < 1.2 * 1024 * 1024 * 1024,
     restartRecoveryAbove99Percent: restartSuccessRatio === null || restartSuccessRatio > 0.99,
     noPersistenceOrResultErrors: serverSamples.every((sample) => [
@@ -474,8 +493,11 @@ function evaluateThresholds({
   };
   return {
     checks,
+    limits: { eventLoopDelayP95Ms: eventLoopDelayLimitMs },
     passed: Object.values(checks).every(Boolean),
-    note: "These are candidate 2-core/2-GB release thresholds; approve production limits only from the target host report."
+    note: profile?.name === "target"
+      ? "These are candidate 2-core/2-GB release thresholds; approve production limits only from the target host report."
+      : "Smoke thresholds validate the verification pipeline; production capacity approval still requires the target profile on the target host."
   };
 }
 

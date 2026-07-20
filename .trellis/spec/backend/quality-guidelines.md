@@ -1616,6 +1616,9 @@ Tests touching Socket.IO disconnect event registration, cleanup ordering, change
 - Same-origin CDN rollout keeps browser URLs under `/assets/**`. CDN rules mirror the Nginx cache contract and never cache/proxy Socket.IO, dynamic API, or health traffic.
 - systemd starts `/usr/bin/node /opt/sigrikago/server/index.js` directly, sends SIGTERM, grants 25 seconds to drain, sets `LimitNOFILE=65535`, and uses `MemoryHigh=1400M` / `MemoryMax=1600M` on the 2 GB template.
 - Capacity verification always creates an isolated temporary SQLite database, raises setup rate limits only in `NODE_ENV=capacity`, enables debug actions only outside production, samples the lightweight admin runtime endpoint, performs periodic reconnect plus optional managed restart, and writes ignored JSON reports under `artifacts/capacity/`.
+- Capacity verification promotes its metrics reader through the authenticated verification fixture route after registration; it must not depend on username-based administrator promotion. The route is usable only in explicitly enabled `stability` or `capacity` environments and returns 404 elsewhere.
+- Smoke uses a 150 ms event-loop p95 diagnostic line to verify the local 20-socket pipeline. Target retains the 50 ms event-loop p95 release line; smoke success is never a production capacity approval.
+- `npm run verify:release-candidate` is the fail-fast local orchestration boundary: Prisma generate, migration verification, production configuration, one build, stability without a repeated build, disposable backup/restore verification, then capacity smoke without a repeated build.
 - The target profile is a candidate release line, not a capacity promise: 500 sockets, 100 rooms, two spectators per room, 7.5-second action intervals, 20% reconnect, and one restart. Production soft limits may be raised only after this profile passes on the actual 2-core/2-GB host.
 
 #### 4. Validation & Error Matrix
@@ -1645,6 +1648,7 @@ Tests touching Socket.IO disconnect event registration, cleanup ordering, change
 - `server/adminRoutes.test.js` asserts the lightweight runtime capacity payload without database analytics.
 - `scripts/capacityVerification.test.js` asserts profile validation, target topology, percentile summaries, isolated server wiring, and restart/report command wiring.
 - `scripts/stabilityVerification.test.js` asserts direct Node spawning and `STABILITY_PORT` precedence. Run capacity smoke plus `npm run check` before handoff.
+- `scripts/releaseCandidateVerification.test.js` asserts the stage order, production-only configuration environment, and build reuse flags. `server/verificationFixtureRoutes.test.js` asserts fixture environment denial and exact database mutations.
 
 #### 7. Wrong vs Correct
 

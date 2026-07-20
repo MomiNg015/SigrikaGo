@@ -1,11 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { capacityProfile, percentile, summarizeLatency } from "./capacityVerification.mjs";
+import { capacityProfile, evaluateThresholds, percentile, summarizeLatency } from "./capacityVerification.mjs";
 
 describe("capacity verification", () => {
   it("defines the requested 2-core/2-GB target topology", () => {
     expect(capacityProfile("target")).toEqual({
+      name: "target",
       sockets: 500,
       rooms: 100,
       spectatorsPerRoom: 2,
@@ -13,6 +14,21 @@ describe("capacity verification", () => {
       actionIntervalMs: 7_500,
       reconnectRatio: 0.2
     });
+  });
+
+  it("keeps target event-loop acceptance stricter than the local smoke diagnostic", () => {
+    const common = {
+      ackLatencies: [20],
+      restartResumeLatencies: [100],
+      errors: [],
+      serverEnd: null,
+      serverPeak: { eventLoopDelayP95Ms: 100, rssBytes: 200_000_000 },
+      serverSamples: [{ capacity: { process: {} }, runtimeStability: {} }]
+    };
+
+    expect(evaluateThresholds({ ...common, profile: { name: "smoke" } }).passed).toBe(true);
+    expect(evaluateThresholds({ ...common, profile: { name: "target" } }).passed).toBe(false);
+    expect(evaluateThresholds({ ...common, profile: { name: "target" } }).limits.eventLoopDelayP95Ms).toBe(50);
   });
 
   it("rejects profiles that cannot provide two players per room", () => {

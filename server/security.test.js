@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   buildAllowedOrigins,
   canUseDebugTestActions,
+  canUseVerificationFixtures,
   credentialAuthRateLimitOptions,
   normalizeChatText,
   sessionAuthRateLimitOptions,
+  stabilityRateLimitKey,
   validateProductionDeployment,
   validateNewPassword,
   validatePassword,
@@ -60,6 +62,20 @@ describe("deployment security helpers", () => {
     expect(canUseDebugTestActions({ NODE_ENV: "development" })).toBe(true);
     expect(canUseDebugTestActions({ NODE_ENV: "test" })).toBe(true);
     expect(canUseDebugTestActions({ NODE_ENV: "production", ENABLE_TEST_ACTIONS: "true" })).toBe(false);
+  });
+
+  it("allows HTTP verification fixtures only in explicitly enabled isolated environments", () => {
+    expect(canUseVerificationFixtures({ NODE_ENV: "stability", ENABLE_TEST_ACTIONS: "true" })).toBe(true);
+    expect(canUseVerificationFixtures({ NODE_ENV: "capacity", ENABLE_TEST_ACTIONS: "1" })).toBe(true);
+    expect(canUseVerificationFixtures({ NODE_ENV: "development", ENABLE_TEST_ACTIONS: "true" })).toBe(false);
+    expect(canUseVerificationFixtures({ NODE_ENV: "production", ENABLE_TEST_ACTIONS: "true" })).toBe(false);
+  });
+
+  it("namespaces stability rate limits without trusting the header in production", () => {
+    const request = { ip: "127.0.0.1", get: () => "mobile-chromium" };
+    expect(stabilityRateLimitKey(request)).toBe("127.0.0.1:mobile-chromium");
+    expect(credentialAuthRateLimitOptions({ NODE_ENV: "stability" }).keyGenerator).toBe(stabilityRateLimitKey);
+    expect(credentialAuthRateLimitOptions({ NODE_ENV: "production" }).keyGenerator).toBeUndefined();
   });
 
   it("keeps production throttling strict while allowing isolated verification setup traffic", () => {

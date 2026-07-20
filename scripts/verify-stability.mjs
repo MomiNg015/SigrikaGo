@@ -1,9 +1,11 @@
 import { spawnSync } from "node:child_process";
 import process from "node:process";
 
-const extraPlaywrightArgs = process.argv.slice(2);
+const args = process.argv.slice(2);
+const skipBuild = args.includes("--skip-build");
+const extraPlaywrightArgs = args.filter((argument) => argument !== "--skip-build");
 
-run("npm", ["run", "build"]);
+if (!skipBuild) run("npm", ["run", "build"]);
 run(process.execPath, [
   "scripts/run-playwright-suite.mjs",
   "stability",

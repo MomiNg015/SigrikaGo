@@ -29,6 +29,7 @@ export default defineConfig({
       name: "desktop-chromium",
       use: {
         ...devices["Desktop Chrome"],
+        extraHTTPHeaders: { "x-stability-scope": "desktop-chromium" },
         channel: "chrome"
       }
     },
@@ -36,6 +37,7 @@ export default defineConfig({
       name: "mobile-chromium",
       use: {
         ...devices["Pixel 7"],
+        extraHTTPHeaders: { "x-stability-scope": "mobile-chromium" },
         channel: "chrome"
       }
     }

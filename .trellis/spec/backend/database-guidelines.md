@@ -989,6 +989,35 @@ npx prisma migrate resolve --applied 0_init
 npx prisma migrate deploy
 ```
 
+### Scenario: SQLite Backup And Restore Verification
+
+#### 1. Scope / Trigger
+- Trigger: changing SQLite backup commands, release-candidate verification, production restore documentation, or disposable database path guards.
+- Operator backup and automated restore rehearsal are separate contracts: the former accepts an explicit production path, while the latter must never touch a real development or production database.
+
+#### 2. Signatures
+- `npm run backup:sqlite -- --source <database> --output <backup>` creates an SQLite-native consistent copy.
+- `npm run verify:backup-restore` runs migration, sentinel, backup, restore, integrity, and sentinel-read checks below `.tmp/backup-restore/`.
+- `resolveOperatorBackupPaths()` requires distinct explicit paths and rejects `prisma/dev.db` unless the human provides `--allow-dev-database`.
+
+#### 3. Contracts
+- Operator backup refuses a missing source, an existing output, and source/output identity. It uses `VACUUM INTO` and validates the output with `PRAGMA integrity_check`.
+- Automated verification paths must resolve strictly below `.tmp/backup-restore/`; repository `prisma/dev.db` and external paths are rejected before database access.
+- The restore rehearsal changes the source after backup, restores to a third path, and proves that the backed-up sentinel—not the later source value—survives.
+- Production restore remains a stopped-service operator action. Preserve the failed database, validate the chosen backup, deploy forward migrations, and record post-backup data loss before reopening traffic.
+
+#### 4. Validation & Error Matrix
+- Missing source/output argument -> fail before opening SQLite.
+- Source equals output or output already exists -> fail without overwrite.
+- Disposable path escapes the verification root -> fail before file creation.
+- `integrity_check` returns anything other than one `ok` row -> fail the backup/release gate.
+- Restored sentinel differs -> fail and delete only the disposable run directory.
+
+#### 5. Tests Required
+- Unit tests cover disposable-root confinement, real development database rejection, explicit arguments, and source/output identity.
+- The end-to-end verifier must use the real Prisma migration baseline and clean its run directory in `finally`.
+- Release-candidate verification must run backup/restore before capacity smoke.
+
 <!-- Database-related mistakes your team has made -->
 
 (To be filled by the team)

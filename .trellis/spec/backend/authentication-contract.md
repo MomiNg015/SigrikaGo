@@ -23,6 +23,8 @@
 - Missing-user and wrong-password login paths both perform one bcrypt compare and return the same generic 401 message; missing users compare against a fixed valid dummy hash.
 - Only Prisma `P2002` from user creation maps to HTTP 409 “用户名已存在”. Other registration failures reach the shared API error handler.
 - Credential rate limits cover register/login only. Refresh/logout use a separate, larger session bucket.
+- `x-stability-scope` may namespace credential, session, and broad API limiters only when `NODE_ENV=stability`; production ignores the header and retains the IP-derived key.
+- Authenticated HTTP verification fixtures are available only when `NODE_ENV` is `stability` or `capacity` and `ENABLE_TEST_ACTIONS` is explicitly enabled. They may prepare owned characters or promote the capacity metrics reader, but must never alter public registration defaults or production authorization.
 - A form may have only one in-flight auth request. Mode changes keep the username, clear passwords, and invalidate stale work; unmount aborts the request. A late or aborted result must not call `onAuth` or overwrite current UI state, including under React Strict Mode effect rehearsal.
 - Default form copy stays terse. Registration may show only the username-width and `8-64 位` label notes; detailed causes appear beside invalid fields after blur or submit. Server/network/429 messages use the single form-level alert.
 - The login and registration submit buttons use `开门！` and `登记入部信息`; the segmented mode controls remain `登录` and `注册`. Bright School password visibility controls keep their 44px hit area, transparent hover background, and shadow-free owner rule so hover changes only the icon color instead of painting a filled square inside the input. Their component-owned disabled selector must load after the generic pending-button rule and preserve `translateY(-50%)`, so registration submission cannot move either absolutely centered visibility control.
@@ -57,6 +59,7 @@
 - `src/auth/AuthScreen.dom.test.jsx` covers first-invalid focus, mode switching, password visibility, both registration toggles during the pending submit lock, synchronous submit lock, unmount abort, Strict Mode, conflict confirmation, and 429 recovery copy.
 - `src/api/client.test.js` covers caller abort/timeout distinction and `Retry-After` metadata.
 - `server/security.test.js` covers legacy login compatibility, new-password limits, byte limits, and both rate-limit buckets.
+- Stability tests cover per-context limiter namespaces and verification fixtures; fixture route tests must assert production, development, and ordinary test environments return 404 without database writes.
 - `server/authRoutes.test.js` covers dummy compare, generic login errors, `P2002`, unexpected failure propagation, force-login flow, and database-authoritative roles across register/login/refresh.
 - `server/adminConfig.test.js` covers successful, idempotent, and unknown-user administrator promotion.
 - `server/loginSessions.test.js` covers one-winner refresh rotation and latest-winner session replacement.
