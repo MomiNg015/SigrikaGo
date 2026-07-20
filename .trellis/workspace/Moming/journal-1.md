@@ -1793,3 +1793,36 @@ Moved Aemeath acquisition to a welcome-mail memorial ticket, added the fixed-res
 ### Next Steps
 
 - None - task complete
+
+
+## Session 55: Prelaunch Phase 2 database baseline
+
+**Date**: 2026-07-20
+**Task**: Prelaunch Phase 2 database baseline
+**Branch**: `codex/prelaunch-phase2`
+
+### Summary
+
+Replaced the incomplete Prisma history with a full SQLite 0_init baseline, added disposable fresh/adoption verification and schema regression coverage, and documented safe existing-database adoption. Lint, migration verification, build, production config, docs, and 2024 non-CSS tests pass; npm run check retains the inherited CSS byte-budget failure only.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `66a80e9a` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
