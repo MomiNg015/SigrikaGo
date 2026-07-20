@@ -1,3 +1,0 @@
-ALTER TABLE "MailboxBatch" ADD COLUMN "sender" TEXT NOT NULL DEFAULT '';
-
-ALTER TABLE "MailboxMessage" ADD COLUMN "sender" TEXT NOT NULL DEFAULT '';

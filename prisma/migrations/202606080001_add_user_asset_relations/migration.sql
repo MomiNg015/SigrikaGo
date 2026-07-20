@@ -1,5 +1,0 @@
--- Prisma relation metadata for structured user asset tables.
--- The structured tables and userId columns were created in
--- 202606050001_add_structured_user_assets. No SQLite DDL is required here for
--- relation includes; Prisma resolves the relations through the existing userId
--- fields.

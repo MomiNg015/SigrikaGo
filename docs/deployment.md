@@ -15,6 +15,8 @@ npm run check:production
 npm test
 ```
 
+仓库的 Prisma 迁移历史从 `0_init` 完整基线开始。可在本地或 CI 额外执行 `npm run verify:migrations`：该命令只会在 `.tmp/migration-baseline/` 创建并清理一次性 SQLite 数据库，同时验证空库部署和现有库接管，不读取、迁移或重置 `prisma/dev.db`。
+
 `npm run check:production` 会检查生产环境中的 `JWT_SECRET`、站点 origin、调试开关和显式多实例配置。生产 origin 必须使用 HTTPS，不能启用测试工具 action；在房间状态和 Socket.IO 适配器改为共享之前，也不能配置 `WEB_CONCURRENCY`、`PM2_INSTANCES` 等多实例参数大于 1。
 
 依赖安全基线（2026-07-20）：`npm audit --omit=dev` 不再包含 high/critical；Multer、Socket.IO/`ws`、Express/`qs` 已升级到修复版本。仍有 2 条 moderate 记录，实际是 ExcelJS 4.4.0 经 `uuid` 8.3.2 形成的同一条传递依赖告警。项目不直接调用 `uuid`，ExcelJS 只在管理员剧情脚本工作簿导入/导出时按需加载；当前 ExcelJS 最新版尚未升级该依赖，而审计建议的 ExcelJS 3.4.0 是功能倒退，因此暂不使用 `npm audit fix --force` 或强制跨主版本 override。升级 ExcelJS 后应重新执行工作簿测试与审计并移除此例外。
@@ -76,6 +78,32 @@ npx prisma migrate deploy
 npm run build
 npm run check:production
 ```
+
+以上命令适用于尚未创建业务表的全新数据库。`npx prisma migrate deploy` 会从 `0_init` 建出 `prisma/schema.prisma` 的完整当前结构，并记录迁移历史；不要用 `prisma db push` 代替生产迁移。
+
+### 一次性接管已有预上线数据库
+
+如果数据库已经由旧版 `prisma db push` 或启动时 schema guard 建表，并且包含需要保留的数据，不能直接执行 `0_init`，也不能运行 `migrate reset`。只在该数据库从未应用过仓库旧迁移、当前结构与 `prisma/schema.prisma` 完全一致时，按以下顺序接管：
+
+```bash
+sudo systemctl stop sigrikago
+mkdir -p /var/backups/sigrikago
+sqlite3 /var/lib/sigrikago/prod.db ".backup '/var/backups/sigrikago/pre-baseline.db'"
+
+npx prisma migrate status
+npx prisma migrate diff \
+  --from-schema-datasource prisma/schema.prisma \
+  --to-schema-datamodel prisma/schema.prisma \
+  --exit-code
+
+npx prisma migrate resolve --applied 0_init
+npx prisma migrate deploy
+npx prisma migrate status
+sudo systemctl start sigrikago
+curl --fail http://127.0.0.1:3001/health/ready
+```
+
+接管前的 `migrate status` 应只显示 `0_init` 待应用；schema diff 必须以状态码 0 退出且不报告差异。如果 `_prisma_migrations` 已有其他记录、diff 返回 2、备份失败或数据库路径不明确，应立即停止并人工核对，不能继续 `resolve`。`migrate resolve` 只登记迁移历史，不执行 `0_init` SQL，因此它必须在结构已经匹配的旧库上使用；应用不会在启动时自动改写 `_prisma_migrations`。
 
 ### 初始化管理员
 
@@ -242,3 +270,5 @@ sudo systemctl status sigrikago
 ```
 
 更新前建议先备份数据库和上传目录。
+
+已经完成 `0_init` 接管的数据库，后续更新只需按正常流程执行新增迁移；不要重复执行基线接管步骤。

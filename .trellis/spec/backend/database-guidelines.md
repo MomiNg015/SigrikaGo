@@ -929,6 +929,66 @@ await prisma.$executeRaw`
 
 ## Common Mistakes
 
+### Scenario: Prisma Production Migration Baseline
+
+#### 1. Scope / Trigger
+- Trigger: changing `prisma/schema.prisma`, active migration history, production database setup, deployment migration commands, or startup schema compatibility behavior.
+- The migration directory is the production schema history; startup guards remain legacy-development compatibility helpers and do not replace reviewed migrations.
+
+#### 2. Signatures
+- `prisma/migrations/0_init/migration.sql` is the complete SQLite schema baseline.
+- `prisma/migrations/migration_lock.toml` pins `provider = "sqlite"`.
+- `npm run verify:migrations` verifies fresh deployment and existing-database adoption using disposable files only.
+
+#### 3. Contracts
+- Fresh databases use `prisma migrate deploy`; never use `prisma db push` for production deployment.
+- Do not edit a migration that may already be deployed. Add a new ordered migration for every later schema change.
+- An existing data-bearing database may adopt `0_init` only after service shutdown, a verified backup, confirmation that no conflicting migration history exists, and a zero schema diff against `prisma/schema.prisma`.
+- Existing-database adoption uses `prisma migrate resolve --applied 0_init`, then `prisma migrate deploy`; application startup must never write or infer `_prisma_migrations` rows.
+- Migration verification databases must resolve below `.tmp/migration-baseline/`; the verifier must reject `prisma/dev.db` and any caller-selected external path.
+
+#### 4. Validation & Error Matrix
+- Empty database -> `migrate deploy` creates the full schema and one completed `0_init` record.
+- Current-schema database with no migration history -> preserve a sentinel row, resolve `0_init`, deploy with no pending SQL, and retain the sentinel.
+- Schema diff exits 2 -> stop adoption and review the drift; do not resolve the baseline.
+- `_prisma_migrations` contains old or unknown rows -> stop for manual reconciliation.
+- Backup, database-path, or service-stop uncertainty -> stop before any migration-history write.
+
+#### 5. Good/Base/Bad Cases
+- Good: a fresh database records one completed `0_init`, a second deploy is a no-op, and schema diff is empty.
+- Good: a current-schema legacy database keeps sentinel data after the operator resolves the baseline and deploys.
+- Base: on Windows, initialize the disposable SQLite file with a harmless Prisma Client `PRAGMA` before invoking the Prisma 6 schema engine; this works around file-creation failures without creating application tables. Build the adoption fixture by executing `0_init` SQL directly so it has the baseline structure but no migration history.
+- Bad: resolving `0_init` before checking schema parity, because Prisma will then trust a structure it never created or verified.
+- Bad: retaining an incomplete pre-baseline migration chain whose first operation alters a table that no active migration creates.
+
+#### 6. Tests Required
+- Assert the active history contains only the full baseline plus the SQLite migration lock until a legitimate post-baseline migration is added.
+- Assert every Prisma model has a matching baseline `CREATE TABLE` statement.
+- Run the disposable end-to-end verifier for fresh deploy, repeated deploy, existing-schema adoption, sentinel preservation, migration status, and zero schema diff.
+- Unit-test path guards so repository and external database paths are rejected.
+
+#### 7. Wrong vs Correct
+
+Wrong:
+
+```bash
+npx prisma db push
+npx prisma migrate reset
+```
+
+Correct for a fresh production database:
+
+```bash
+npx prisma migrate deploy
+```
+
+Correct for a backed-up, stopped, schema-identical prelaunch database:
+
+```bash
+npx prisma migrate resolve --applied 0_init
+npx prisma migrate deploy
+```
+
 <!-- Database-related mistakes your team has made -->
 
 (To be filled by the team)

@@ -79,6 +79,9 @@
 <li>后端使用 Express、Socket.IO、Prisma 和 SQLite；<code>server/index.js</code> 负责 HTTP/Socket 入口组合，启动数据与 schema 初始化收口在 <code>server/serverStartup.js</code>，Socket 连接事件套件由 <code>server/socketEvents.js</code> 统一装配，速率保护与匹配、房间连接/恢复、对局/数子/求和/计分、聊天、约战、断线清理等行为继续分布在对应 <code>server/socket*Events.js</code> 模块，生产静态托管收口在 <code>server/staticAssets.js</code>，认证、商城、抽卡、社交、回放、房间生命周期等已拆为领域模块；匹配或约战创建的房间先进入 <code>preloading</code> 阶段，由 <code>room:preload-ready</code> 形成双方资源就绪屏障，双方都 ready 后才进入 opening/自动猜先，任一方超过 90 秒未 ready 时服务端发出 <code>match:preload-timeout</code> 并中止匹配。</li>
 </ul>
 <ul>
+<li>Prisma Migrate 的生产历史以完整 SQLite <code>0_init</code> 为唯一基线：新库直接 <code>migrate deploy</code>，已有预上线库必须停服备份并通过 schema diff 后再显式 <code>migrate resolve --applied 0_init</code>；<code>npm run verify:migrations</code> 在隔离临时库验证空库部署、旧库无损接管、重复 deploy 和 schema 一致性，应用启动不会自动修改迁移历史。</li>
+</ul>
+<ul>
 <li>单实例生产运行新增显式排空与容量边界：<code>server/runtimeServiceState.js</code> 以 <code>MAX_ONLINE_USERS=500</code>、<code>MAX_ACTIVE_ROOMS=100</code>、<code>MAX_SPECTATORS_PER_ROOM=20</code> 为可配置软上限，达到上限时只拒绝新匹配、约战和新观战，已在房间中的玩家及原观战者仍可恢复；<code>/health/live</code> 与 <code>/health/ready</code> 分离存活和接流状态。SIGINT/SIGTERM 或受管子进程 shutdown 消息会先进入 drain 并通知客户端，再关闭 Socket.IO/HTTP、强制刷新房间快照、停止性能采样并断开 Prisma，整个过程有 15 秒硬超时。客户端 <code>game:action</code> 使用稳定 <code>actionId</code>、ack 和最多两次同 ID 重试，服务端把有限去重回执随房间快照持久化，确保 ack 丢失不会造成重复落子；真实子进程重启测试覆盖落子、停机、同库启动和玩家恢复。Phase 2 将观战黑方视图固定在 <code>game</code>、只把白方差异视图放入 <code>gameViews.white</code>，房间创建只发送包含创建通知的 <code>match:found</code> 权威快照，大厅统计通过 100ms trailing debounce 合并连接/断开风暴。</li>
 </ul>
 <ul>
@@ -3341,6 +3344,9 @@
 <p>本文记录 Prisma 模型、核心领域数据、抽卡/商城/奖励/段位等跨前后端共享概念。新增模型、迁移、领域字段或兼容镜像字段时优先更新本分篇。</p>
 <h2>当前结论</h2>
 <ul>
+<li>Prisma Migrate 的生产历史从单条 <code>0_init</code> 完整 SQLite 基线开始：空库使用 <code>prisma migrate deploy</code> 建库，已有预上线数据库必须停服备份、确认无旧迁移记录并验证 schema 完全一致后，再以 <code>prisma migrate resolve --applied 0_init</code> 接管；业务启动流程不自动写 <code>_prisma_migrations</code>。</li>
+</ul>
+<ul>
 <li>账号资产正在从字符串字段逐步迁移到结构化关系表，旧字段仍承担兼容镜像职责；legacy 字段解析、结构化同步和公开资产合并边界集中在 <code>server/userAssets.js</code>。</li>
 </ul>
 <ul>
@@ -3354,6 +3360,10 @@
 </ul>
 <h2>4. 数据模型与字段说明</h2>
 <p>数据源定义在 <code>prisma/schema.prisma</code>，数据库为 SQLite。</p>
+<h3>Prisma migration baseline</h3>
+<p><code>prisma/migrations/0_init/migration.sql</code> 是当前模型从空 SQLite 数据库生成的完整起点，<code>migration_lock.toml</code> 固定 provider 为 <code>sqlite</code>。项目在公开上线前合并了此前缺少初始建表步骤的增量迁移；旧 SQL 只保留在 Git 历史中，不再作为活动迁移链执行。未来 schema 变更必须从这条基线继续新增迁移并提交迁移目录，不得修改已经部署的 <code>0_init</code>。</p>
+<p><code>npm run verify:migrations</code> 是迁移发布门禁。验证器只允许数据库位于仓库 <code>.tmp/migration-baseline/</code> 下，并覆盖两条路径：空库连续两次 <code>migrate deploy</code>；直接执行基线 SQL 构造无迁移历史的同结构旧库，写入哨兵数据后 <code>resolve --applied 0_init</code> 并连续两次 deploy。两条路径最后都运行 schema diff，旧库路径还验证哨兵数据和全部活动迁移记录。验证过程不使用 <code>db push</code>，生产部署同样禁止使用。</p>
+<p>已有数据的数据库接管是操作员动作：先停止服务和做 SQLite 在线备份，再确认迁移表没有非基线历史，并用 <code>migrate diff --exit-code</code> 验证数据库与 <code>schema.prisma</code> 无差异，最后才登记 <code>0_init</code>。任何迁移记录冲突或 schema drift 都进入人工审查，启动任务和部署脚本都不能猜测性修复或自动标记迁移。</p>
 <h3>Admin Deployment Defaults</h3>
 <p>Non-user admin deployment defaults live in <code>server/adminDefaultSnapshot.js</code>, generated from the local <code>prisma/dev.db</code> admin configuration with <code>npm run admin:snapshot</code>. <code>seedAdminDefaultConfig()</code> runs during startup after schema guards and before built-in seeders; it treats the committed snapshot as bootstrap defaults for missing non-user admin rows, so a fresh database receives the current site settings, skill-trait glossary, character/skill descriptions and system messages, character CV credits, decorations, shop items with illust credits, gacha pools/prizes, achievement rewards/achievements, music display names, story/tutorial scripts, announcement/changelog entries, the legacy onboarding singleton, and recruitment-related admin defaults. Existing rows are preserved so runtime edits made through the admin console remain durable across backend restarts. User accounts, user-owned assets, purchases, feedback, reports, audit logs, analytics events, announcement read-state, mailbox batches/messages, game records, and live-room state are intentionally outside this snapshot. <code>SiteSetting</code> and <code>MusicTrackSetting</code> use upsert create paths with empty update payloads; catalog/content seeders find rows by stable key/slug/id and skip existing rows instead of rewriting admin-managed fields. Default skill traits use committed stable IDs, so renaming a seeded term does not recreate its old name on the next startup. When an admin-console edit should become a durable project default instead of only a local SQLite value, regenerate the snapshot with <code>npm run admin:snapshot</code> and commit it.</p>
 <h3>User</h3>
