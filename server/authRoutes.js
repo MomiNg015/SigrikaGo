@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import express from "express";
 import { withToken } from "./auth.js";
-import { syncConfiguredAdmin, USER_STATUS } from "./adminConfig.js";
+import { USER_STATUS } from "./adminConfig.js";
 import { USER_ASSET_RELATION_INCLUDE } from "./db.js";
 import {
   ALREADY_LOGGED_IN_CODE,
@@ -27,7 +27,6 @@ export function createAuthRouteHandlers({
   onlineSessions,
   comparePassword = bcrypt.compare,
   hashPassword = bcrypt.hash,
-  syncAdmin = syncConfiguredAdmin,
   blockLoginForActiveAccount = shouldBlockLoginForActiveAccount,
   signWithToken = withToken
 }) {
@@ -73,8 +72,7 @@ export function createAuthRouteHandlers({
       res.status(409).json({ error: "用户名已存在" });
       return;
     }
-    const syncedUser = await syncAdmin(user, prisma);
-    await sendLoginResponse(res, syncedUser);
+    await sendLoginResponse(res, user);
   }
 
   async function login(req, res) {
@@ -111,8 +109,7 @@ export function createAuthRouteHandlers({
       return;
     }
     if (req.body.forceLogin) await onlineSessions.forceLogoutUser(user.id);
-    const syncedUser = await syncAdmin(user, prisma);
-    await sendLoginResponse(res, syncedUser);
+    await sendLoginResponse(res, user);
   }
 
   async function refresh(req, res) {
@@ -136,7 +133,7 @@ export function createAuthRouteHandlers({
       return;
     }
     res.setHeader("Set-Cookie", buildRefreshCookie(session.refreshToken));
-    res.json(signWithToken(await syncAdmin(user, prisma), jwtSecret, { sessionId: session.sessionId }));
+    res.json(signWithToken(user, jwtSecret, { sessionId: session.sessionId }));
   }
 
   async function logout(req, res) {

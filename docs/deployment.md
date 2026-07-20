@@ -17,6 +17,8 @@ npm test
 
 `npm run check:production` 会检查生产环境中的 `JWT_SECRET`、站点 origin、调试开关和显式多实例配置。生产 origin 必须使用 HTTPS，不能启用测试工具 action；在房间状态和 Socket.IO 适配器改为共享之前，也不能配置 `WEB_CONCURRENCY`、`PM2_INSTANCES` 等多实例参数大于 1。
 
+依赖安全基线（2026-07-20）：`npm audit --omit=dev` 不再包含 high/critical；Multer、Socket.IO/`ws`、Express/`qs` 已升级到修复版本。仍有 2 条 moderate 记录，实际是 ExcelJS 4.4.0 经 `uuid` 8.3.2 形成的同一条传递依赖告警。项目不直接调用 `uuid`，ExcelJS 只在管理员剧情脚本工作簿导入/导出时按需加载；当前 ExcelJS 最新版尚未升级该依赖，而审计建议的 ExcelJS 3.4.0 是功能倒退，因此暂不使用 `npm audit fix --force` 或强制跨主版本 override。升级 ExcelJS 后应重新执行工作簿测试与审计并移除此例外。
+
 ## 环境变量
 
 生产 `.env` 示例：
@@ -27,7 +29,6 @@ PORT=3001
 DATABASE_URL="file:/var/lib/sigrikago/prod.db"
 JWT_SECRET="replace-with-at-least-32-random-characters"
 PUBLIC_ORIGIN="https://go.example.com"
-ADMIN_USERNAMES="moming"
 UPLOAD_DIR="/var/lib/sigrikago/uploads"
 ENABLE_TEST_ACTIONS="false"
 MAX_ONLINE_USERS="500"
@@ -40,7 +41,6 @@ MAX_SPECTATORS_PER_ROOM="20"
 - `DATABASE_URL`: SQLite 数据库位置。生产环境建议放在 `/var/lib/sigrikago/prod.db`，不要放在仓库目录或 `dist/` 中。
 - `JWT_SECRET`: 生产环境必须换成至少 32 位的随机字符串。
 - `PUBLIC_ORIGIN`: 用户访问站点的 HTTPS 地址，例如 `https://go.example.com`。
-- `ADMIN_USERNAMES`: 逗号分隔的管理员用户名。服务启动时会把这些用户名提升为管理员。
 - `UPLOAD_DIR`: 用户上传资源的持久化根目录。角色立绘上传会保存到 `${UPLOAD_DIR}/characters`，并通过 `/uploads/characters/...` 对外访问。
 - `ENABLE_TEST_ACTIONS`: 仅保留为旧部署配置的生产安全检查项，本地开发无需设置；测试 action 在非生产环境默认可用。生产环境必须为 `false` 或不设置；`npm run check:production` 和服务端运行时都会拒绝生产环境测试 action。
 - `MAX_ONLINE_USERS`: 新匹配/约战/观战接入的在线用户软上限，默认 500。不是容量承诺；目标机压测前可保守下调。
@@ -76,6 +76,16 @@ npx prisma migrate deploy
 npm run build
 npm run check:production
 ```
+
+### 初始化管理员
+
+公开注册保持启用。先让管理员本人通过正常注册流程创建普通账号，再在服务器项目目录执行：
+
+```bash
+npm run admin:promote -- moming
+```
+
+该命令只提升数据库中已存在的精确用户名，不创建账号；找不到用户时返回非零退出码，已是管理员时成功退出且不重复写入。管理员身份以数据库 `User.role` 为准，注册、登录、刷新和服务启动都不会根据环境变量或用户名自动提权。提升完成后，让该账号重新登录或刷新访问令牌即可获得后台权限。
 
 当前用户资产仍保留旧 CSV/JSON 字段作为运行时读写来源，但 schema 已准备结构化资产表和进度流水表。生产迁移时必须先执行 `npx prisma migrate deploy`，后续切换读写路径前再单独运行数据回填脚本，不要在业务进程启动期间临时迁移用户资产。
 

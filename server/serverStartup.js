@@ -1,4 +1,3 @@
-import { promoteConfiguredAdmins } from "./adminConfig.js";
 import { ensureAchievementSchema, seedBuiltinAchievements } from "./achievements.js";
 import { ensureAnnouncementSchema } from "./announcements.js";
 import { ensureOnboardingStorySchema } from "./onboardingStory.js";
@@ -44,8 +43,7 @@ export const SERVER_STARTUP_TASK_ORDER = Object.freeze([
   "ensureRoomPersistenceSchema",
   "ensureLoginSessionSchema",
   "ensureGameModeSchema",
-  "ensureMailboxSchema",
-  "promoteConfiguredAdmins"
+  "ensureMailboxSchema"
 ]);
 
 export async function initializeServerData({
@@ -73,8 +71,7 @@ export async function initializeServerData({
   cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask = cleanupLegacyDeniaCharacterData,
   cleanupLegacyDerivedSkillLeak: cleanupLegacyDerivedSkillLeakTask = cleanupLegacyDerivedSkillLeak,
   cleanupLegacyUsernames: cleanupLegacyUsernamesTask = cleanupLegacyUsernames,
-  migrateBuiltinSkillDescriptions: migrateBuiltinSkillDescriptionsTask = migrateBuiltinSkillDescriptions,
-  promoteConfiguredAdmins: promoteConfiguredAdminsTask = promoteConfiguredAdmins
+  migrateBuiltinSkillDescriptions: migrateBuiltinSkillDescriptionsTask = migrateBuiltinSkillDescriptions
 }) {
   const tasks = {
     cleanupLegacyDeniaCharacterData: cleanupLegacyDeniaCharacterDataTask,
@@ -94,7 +91,6 @@ export async function initializeServerData({
     ensureRoomPersistenceSchema: ensureRoomPersistenceSchemaTask,
     ensureStoryScriptSchema: ensureStoryScriptSchemaTask,
     ensureSocialSchema: ensureSocialSchemaTask,
-    promoteConfiguredAdmins: promoteConfiguredAdminsTask,
     seedAdminDefaultConfig: seedAdminDefaultConfigTask,
     seedBuiltinAchievements: seedBuiltinAchievementsTask,
     seedBuiltinShopItems: seedBuiltinShopItemsTask,

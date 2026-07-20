@@ -28,6 +28,8 @@
 - The login and registration submit buttons use `开门！` and `登记入部信息`; the segmented mode controls remain `登录` and `注册`. Bright School password visibility controls keep their 44px hit area, transparent hover background, and shadow-free owner rule so hover changes only the icon color instead of painting a filled square inside the input. Their component-owned disabled selector must load after the generic pending-button rule and preserve `translateY(-50%)`, so registration submission cannot move either absolutely centered visibility control.
 - Active-session conflict uses the shared accessible `ConfirmModal`; do not call `window.confirm`.
 - Session replacement is serialized per `userId` inside the single Node instance. Prisma-backed revoke + create runs in one transaction so overlapping replacements leave only the latest session active.
+- `User.role` in the database is the only administrator authority. Registration, login, refresh, and server startup must never derive or mutate a role from a username or environment variable.
+- Administrator bootstrap uses the local operator command `npm run admin:promote -- <username>`. It may promote only an existing user, must be idempotent for existing administrators, and must fail without creating an account when the username is unknown.
 
 ### 4. Validation & Error Matrix
 
@@ -47,6 +49,7 @@
 - Base: a legacy seven-character password still logs in, while the same value is rejected for new registration.
 - Bad: truncating a pasted username, sharing the 20-attempt credential bucket with refresh, mapping every create failure to “用户名已存在”, or replacing sessions with separate non-transactional revoke/create calls.
 - Bad: leaving tutorial paragraphs, password rule checklists, or security education visible in the idle form.
+- Bad: granting administrator access because a public registrant chose a configured username, or reapplying administrator roles during login/startup.
 
 ### 6. Tests Required
 
@@ -54,7 +57,8 @@
 - `src/auth/AuthScreen.dom.test.jsx` covers first-invalid focus, mode switching, password visibility, both registration toggles during the pending submit lock, synchronous submit lock, unmount abort, Strict Mode, conflict confirmation, and 429 recovery copy.
 - `src/api/client.test.js` covers caller abort/timeout distinction and `Retry-After` metadata.
 - `server/security.test.js` covers legacy login compatibility, new-password limits, byte limits, and both rate-limit buckets.
-- `server/authRoutes.test.js` covers dummy compare, generic login errors, `P2002`, unexpected failure propagation, and force-login flow.
+- `server/authRoutes.test.js` covers dummy compare, generic login errors, `P2002`, unexpected failure propagation, force-login flow, and database-authoritative roles across register/login/refresh.
+- `server/adminConfig.test.js` covers successful, idempotent, and unknown-user administrator promotion.
 - `server/loginSessions.test.js` covers one-winner refresh rotation and latest-winner session replacement.
 - `server/authRouteOrder.test.js` asserts the two middleware path buckets are mounted before the broad API limiter.
 

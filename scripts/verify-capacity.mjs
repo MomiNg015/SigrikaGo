@@ -30,7 +30,6 @@ try {
       PORT: String(port),
       DATABASE_URL: database.databaseUrl,
       PUBLIC_ORIGIN: baseUrl,
-      ADMIN_USERNAMES: "capadmin",
       MAX_ONLINE_USERS: String(Math.max(profile.sockets + 50, Number(process.env.MAX_ONLINE_USERS) || 0)),
       MAX_ACTIVE_ROOMS: String(Math.max(profile.rooms + 10, Number(process.env.MAX_ACTIVE_ROOMS) || 0)),
       MAX_SPECTATORS_PER_ROOM: String(Math.max(profile.spectatorsPerRoom + 5, Number(process.env.MAX_SPECTATORS_PER_ROOM) || 0))
