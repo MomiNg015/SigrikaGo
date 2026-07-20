@@ -1760,3 +1760,36 @@ Moved Aemeath acquisition to a welcome-mail memorial ticket, added the fixed-res
 ### Next Steps
 
 - None - task complete
+
+
+## Session 54: 上线前阶段0与阶段1加固
+
+**Date**: 2026-07-20
+**Task**: 上线前阶段0与阶段1加固
+**Branch**: `codex/prelaunch-phase0-phase1`
+
+### Summary
+
+隔离发布分支，移除用户名自动提权并新增本地管理员提升命令；升级依赖使审计降至2项moderate，完成文档、单测、构建、生产配置与E2E验证，并记录既有CSS/爱弥斯稳定性基线问题。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8c0770f3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
