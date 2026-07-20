@@ -41,6 +41,33 @@ describe("tutorialGameState", () => {
     expect(getPoint(correct.state, "5,5").stone).toBe("black");
   });
 
+  it("routes matching wrong moves and only applies them when configured", () => {
+    const game = createTutorialGameState();
+    const branchNode = {
+      type: "player-move",
+      color: "black",
+      pointId: "5,5",
+      wrongMoveNextNodeId: "wrong-demo"
+    };
+
+    const rejectedButRouted = applyTutorialNodeAction(game, branchNode, { pointId: "4,4" });
+    expect(rejectedButRouted).toMatchObject({ ok: true, wrongMove: true, nextNodeId: "wrong-demo" });
+    expect(getPoint(rejectedButRouted.state, "4,4").stone).toBe(null);
+
+    const applied = applyTutorialNodeAction(game, { ...branchNode, applyWrongMove: true }, { pointId: "4,4" });
+    expect(applied).toMatchObject({ ok: true, wrongMove: true, nextNodeId: "wrong-demo" });
+    expect(getPoint(applied.state, "4,4").stone).toBe("black");
+
+    const ordinaryWrong = applyTutorialNodeAction(game, {
+      ...branchNode,
+      applyWrongMove: true,
+      wrongMovePointId: "3,3",
+      wrongClickMessage: "try again"
+    }, { pointId: "4,4" });
+    expect(ordinaryWrong).toMatchObject({ ok: false, message: "try again" });
+    expect(getPoint(ordinaryWrong.state, "4,4").stone).toBe(null);
+  });
+
   it("applies npc move and resign nodes through shared game rules", () => {
     let game = createTutorialGameState();
 
@@ -83,6 +110,25 @@ describe("tutorialGameState", () => {
     expect(result.ok).toBe(true);
     expect(getPoint(result.state, "3,3").stone).toBe(null);
     expect(getPoint(result.state, "5,5").stone).toBe("white");
+  });
+
+  it("shows a setup last-move marker until the first real action", () => {
+    const game = createTutorialGameState({
+      initialBoard: {
+        mode: "spark",
+        stones: [{ pointId: "3,3", color: "black" }],
+        lastMovePointId: "3,3"
+      }
+    });
+    expect(game.tutorialLastMovePointId).toBe("3,3");
+
+    const moved = applyTutorialNodeAction(game, {
+      type: "player-move",
+      color: "white",
+      pointId: "4,4"
+    }, { pointId: "4,4" });
+    expect(moved.ok).toBe(true);
+    expect(moved.state.tutorialLastMovePointId).toBe("");
   });
 
   it("creates a skill preview state and a resolved result for skill tutorial nodes", () => {

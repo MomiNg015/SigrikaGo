@@ -225,6 +225,12 @@ function normalizeNode(node = {}) {
     characterId: normalizeText(node.characterId),
     effect,
     text: normalizeText(node.text),
+    targetHighlightEnabled: normalizeDefaultTrueFlag(node.targetHighlightEnabled),
+    wrongMovePointId: normalizeText(node.wrongMovePointId),
+    wrongMoveNextNodeId: normalizeText(node.wrongMoveNextNodeId),
+    applyWrongMove: normalizeDefaultFalseFlag(node.applyWrongMove),
+    boardSetupLoadingEnabled: normalizeDefaultTrueFlag(node.boardSetupLoadingEnabled),
+    boardSetup: node.boardSetup && typeof node.boardSetup === "object" ? node.boardSetup : null,
     nextNodeId: normalizeText(node.nextNodeId),
     options
   };
@@ -248,6 +254,14 @@ function normalizeOptionRevealDelaySeconds(value) {
 
 function normalizeText(value) {
   return String(value ?? "").trim();
+}
+
+function normalizeDefaultTrueFlag(value) {
+  return value !== false && value !== "false";
+}
+
+function normalizeDefaultFalseFlag(value) {
+  return value === true || value === "true";
 }
 
 function parseNodesJson(value) {

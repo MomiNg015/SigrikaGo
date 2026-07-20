@@ -30,6 +30,7 @@ export function createTutorialGameState({ initialBoard = null, players = DEFAULT
     if (!point?.valid || !color) continue;
     point.stone = color;
   }
+  game.tutorialLastMovePointId = initialBoard?.lastMovePointId ?? "";
   return game;
 }
 
@@ -51,7 +52,25 @@ export function applyTutorialNodeAction(state, node, input = {}) {
       message: node.wrongClickMessage || "Missing tutorial point"
     };
   }
-  if (input.pointId && nodeTypeRequiresPoint(node.type) && !isAllowedTutorialPoint(node, input.pointId)) {
+  if (input.pointId && node.type === TUTORIAL_NODE_TYPES.playerMove && !isAllowedTutorialPoint(node, input.pointId)) {
+    const matchesWrongBranch = Boolean(
+      node.wrongMoveNextNodeId
+      && (!node.wrongMovePointId || node.wrongMovePointId === input.pointId)
+    );
+    if (matchesWrongBranch) {
+      if (!node.applyWrongMove) {
+        return {
+          ok: true,
+          state,
+          wrongMove: true,
+          nextNodeId: node.wrongMoveNextNodeId
+        };
+      }
+      const result = playTutorialMove(state, { ...node, pointId: input.pointId });
+      return result.ok
+        ? { ...result, wrongMove: true, nextNodeId: node.wrongMoveNextNodeId }
+        : result;
+    }
     return {
       ok: false,
       state,
@@ -88,6 +107,7 @@ export function applyTutorialSkillAction(state, node, input = {}) {
   if (!skill) return { ok: false, state, message: "Missing tutorial skill" };
 
   const prepared = cloneState(state);
+  prepared.tutorialLastMovePointId = "";
   prepared.turn = color;
   const result = useSkill(prepared, color, skill, targetId);
   if (!result.ok) return { ...result, state };
@@ -117,6 +137,7 @@ export function applyTutorialSkillAction(state, node, input = {}) {
 function playTutorialMove(state, node) {
   const color = normalizeTutorialColor(node.color) ?? state.turn ?? COLORS.black;
   const prepared = cloneState(state);
+  prepared.tutorialLastMovePointId = "";
   prepared.turn = color;
   return playMove(prepared, color, node.pointId);
 }

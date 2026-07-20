@@ -975,12 +975,12 @@ Correct:
 #### 2. Signatures
 - `buildFlow(draft)` derives `{ main, branches, connectedExtras, orphans }`.
 - `scriptForCurrentPreview(draft, selectedNodeId)` derives a preview script whose `initialBoard` is the silently replayed board state immediately before `selectedNodeId`.
-- Runtime graph edges are `node.nextNodeId` and each non-empty `option.nextNodeId`.
+- Runtime graph edges are `node.nextNodeId`, `node.wrongMoveNextNodeId`, and each non-empty `option.nextNodeId`.
 - Empty option targets still mean "end story" and should render as the virtual end card.
 - `TUTORIAL_NODE_TYPES.boardSetup` stores a node-local `boardSetup` snapshot and switches the local tutorial board without changing the script-level default `initialBoard`.
 
 #### 3. Contracts
-- Reachability must start from `draft.startNodeId` or the first node fallback and traverse both `nextNodeId` and option targets recursively.
+- Reachability must start from `draft.startNodeId` or the first node fallback and traverse `nextNodeId`, `wrongMoveNextNodeId`, and option targets recursively.
 - The main vertical chain may still follow `nextNodeId` only, but orphan detection must use full graph reachability.
 - Branch targets should show their linear `nextNodeId` continuation where practical; reachable nodes that do not fit that branch chain can be grouped as connected branch follow-up, not "unconnected".
 - Only nodes unreachable from the start through runtime edges may appear under "unconnected steps".
@@ -1097,6 +1097,8 @@ Correct:
 - Node progression is authored as one advance mode: `auto` or `manual`. The storage fields remain `manualContinueEnabled`, `autoContinueEnabled`, and `autoContinueDelaySeconds` for existing script compatibility, but new admin edits must write them as a mutually exclusive pair. New battle nodes default to `auto`.
 - `autoContinueDelaySeconds` is the automatic progression wait. In `auto` mode, blank means 1.5 seconds after typewriter completion for `npc-dialogue`, and 0 seconds for other battle nodes. In `manual` mode, the value is preserved but does not start a timer.
 - Option timing field: `transitionDelaySeconds` on both ordinary story options and in-battle reply options. In admin copy this is "选择后等待"; blank means 0 seconds after selection.
+- Player move branch fields are `targetHighlightEnabled` (default `true`), `wrongMovePointId`, `wrongMoveNextNodeId`, and `applyWrongMove` (default `false`). Blank `wrongMovePointId` matches any non-correct point when a wrong branch exists.
+- Board setup fields include `boardSetupLoadingEnabled` (default `true`) and display-only `boardSetup.lastMovePointId`.
 - `RoomBattleStage` accepts tutorial overrides such as `actionPanelOverride`, `showTutorialLog`, `showPeoplePanel`, `tutorialTargetPointId`, and `tutorialAnyBoardTarget`.
 - `RoomHeader` accepts `exitLabel` and `showUtilityControls` so tutorial battles can keep only the exit/skip affordance without rendering room utility buttons.
 - `AssetPreloadScreen` accepts `showTips` for fixed-copy loading transitions that still need the shared preload template.
@@ -1118,6 +1120,8 @@ Correct:
 - Story-to-battle, battle-to-story, and in-battle board-setup handoffs must put the shared loading screen in place before the browser can paint the next route/node. Use initial state, navigation-handler state, or layout effects for the handoff boundary; do not rely only on a post-paint effect that briefly renders the battle room, home screen, or setup placeholder.
 - The teaching action panel replaces ordinary free-battle actions. Continue and reply controls belong under the board, not in a separate free-battle button group.
 - Player move targets must highlight the exact point with a gold ring rendered as a real child element inside the board point; do not use a `::after` point pseudo-element because theme guards also own point pseudo-elements. The ring must preserve `transform: translate(-50%, -50%)` after Bright School `button > *` reset layers and should animate as a visible gold glow. Clicking another point or the board surface shows "请在提示区域落子".
+- `targetHighlightEnabled: false` suppresses only the player-move target ring; the correct point remains hard-gated. A matching wrong-move branch may leave the board unchanged or apply the actual wrong move before navigating, according to `applyWrongMove`; other wrong points keep the node active with `wrongClickMessage`.
+- `boardSetupLoadingEnabled: false` is reserved for silent in-battle restoration after an authored retry demonstration. It applies the setup immediately without the preload page. `boardSetup.lastMovePointId` renders the ordinary last-move marker without creating history, changing the move number, or affecting rules, and clears on the first real move or skill.
 - Player skill targets use the normal skill selection flow. If a skill has no concrete target point, the second phase still requires a board click and shows "点击棋盘区域任意位置即可".
 - Player button targets highlight the required action button. Clicking unrelated disabled/free actions should do nothing unless the node explicitly defines an error toast.
 - Player reply options should render above a full-screen scrim that focuses the choice area while keeping the current NPC bubble visible above the scrim. The choice container must not own horizontal or vertical scrolling; keep option labels inside the available width through shrinkable button text spans and wrapping. Choice and teaching action buttons use a left/right distributed row layout so the affordance does not collapse into centered free-battle controls. The action panel must never render free-text hints; it may show only concrete teaching buttons such as "继续", skill, counting, or resign, otherwise it remains empty while board highlights, reply options, NPC bubbles, the readonly story record, and toast feedback carry instructional text.
@@ -1142,6 +1146,9 @@ Correct:
 - Pending node progression wait resolves into reply options -> options remain visible until the user chooses one, and the same node is not initialized again.
 - Closing/skipping during a pending wait -> clear the timer and do not route to the old node afterwards.
 - Player move click on the wrong point -> reject the action and keep the node active.
+- Player move click matching `wrongMovePointId` (or any wrong point when blank) with `wrongMoveNextNodeId` -> enter the branch; apply the move first only when `applyWrongMove` is true.
+- Silent board setup -> replace the local board immediately; normal board setup -> keep the three-second shared preload.
+- Initial last-move marker -> display until the first real action without changing history or scoring.
 - Player no-target skill -> second-phase board click anywhere confirms the scripted skill action.
 - `story` node reached from battle -> never render it as an in-battle bubble; exit to the normal story player.
 - Missing player character -> render an empty-but-stable player panel and no skill options.
@@ -1156,6 +1163,7 @@ Correct:
 - `src/room/RoomScreen.test.js` should cover action-panel override, ordinary-room chat-entry removal, readonly `showTutorialLog` wiring, and room header exit label behavior.
 - `src/app/AppOverlays.test.jsx` / app route tests should cover battle-to-story resume wiring.
 - `src/admin/AdminOnboardingStory.test.jsx` should cover admin form validation for `npc-dialogue`, `player-choice`, delay fields, actor fields, and story-exit previews where practical.
+- Story/runtime/workbook tests should cover wrong-move branch reachability, optional move application, target-ring suppression, silent reset, last-move clearing, and legacy v1 workbook defaults.
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert Bright School reply-choice hover imports and utility-card-equivalent hover motion.
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert battle-node progression waits, option transition waits, pending feedback, preview-only skip-current-wait controls, and timer cleanup.
 - `src/tutorial/TutorialBattleScreen.test.jsx` should assert same-node initialization is guarded so pending-wait resolution cannot hide newly visible reply options.

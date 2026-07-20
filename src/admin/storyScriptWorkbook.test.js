@@ -16,7 +16,7 @@ function sampleScript() {
     publishedAt: "2026-07-06T10:00:00.000Z",
     draft: {
       startNodeId: "start",
-      initialBoard: { mode: "spark", stones: [{ pointId: "1,1", color: "black" }] },
+      initialBoard: { mode: "spark", stones: [{ pointId: "1,1", color: "black" }], lastMovePointId: "1,1" },
       nodes: [
         {
           id: "start",
@@ -25,6 +25,24 @@ function sampleScript() {
           characterId: "sigrika",
           effect: "none",
           text: "要开始了。",
+          nextNodeId: "setup"
+        },
+        {
+          id: "setup",
+          type: "board-setup",
+          boardSetupLoadingEnabled: false,
+          boardSetup: { mode: "spark", stones: [{ pointId: "2,2", color: "white" }], lastMovePointId: "2,2" },
+          nextNodeId: "move"
+        },
+        {
+          id: "move",
+          type: "player-move",
+          pointId: "3,3",
+          color: "black",
+          targetHighlightEnabled: false,
+          wrongMovePointId: "4,4",
+          wrongMoveNextNodeId: "start",
+          applyWrongMove: true,
           nextNodeId: "choice"
         },
         {
@@ -79,14 +97,55 @@ describe("storyScriptWorkbook", () => {
     expect(result.ok).toBe(true);
     expect(result.title).toBe(script.title);
     expect(result.draft.startNodeId).toBe("start");
-    expect(result.draft.nodes).toHaveLength(2);
-    expect(result.draft.nodes[1].options[0]).toMatchObject({
+    expect(result.draft.nodes).toHaveLength(4);
+    expect(result.draft.initialBoard).toMatchObject({ lastMovePointId: "1,1" });
+    expect(result.draft.nodes[1]).toMatchObject({
+      boardSetupLoadingEnabled: false,
+      boardSetup: { lastMovePointId: "2,2" }
+    });
+    expect(result.draft.nodes[2]).toMatchObject({
+      targetHighlightEnabled: false,
+      wrongMovePointId: "4,4",
+      wrongMoveNextNodeId: "start",
+      applyWrongMove: true
+    });
+    expect(result.draft.nodes[3].options[0]).toMatchObject({
       label: "继续",
       nextNodeId: "",
       transitionDelaySeconds: "0.5"
     });
     expect(result.draft.nodes[0]).not.toHaveProperty("__rowNumber");
-    expect(result.summary.nextNodeCount).toBe(2);
+    expect(result.summary.nextNodeCount).toBe(4);
+  });
+
+  it("imports legacy v1 sheets that do not contain the newly optional columns", async () => {
+    const script = sampleScript();
+    const workbook = await workbookFromBuffer(await writeStoryScriptWorkbook(script));
+    const optionalNodeHeaders = ["显示目标圈", "特殊错误坐标", "错误落子目标节点ID", "错误落子实际落盘", "局面切换显示加载页"];
+    for (const sheetName of ["草稿-节点", "发布版-节点"]) {
+      const sheet = workbook.getWorksheet(sheetName);
+      const indexes = optionalNodeHeaders
+        .map((header) => sheet.getRow(1).values.indexOf(header))
+        .filter((index) => index > 0)
+        .sort((left, right) => right - left);
+      for (const index of indexes) sheet.spliceColumns(index, 1);
+    }
+    for (const sheetName of ["草稿-棋盘动作", "发布版-棋盘动作"]) {
+      const sheet = workbook.getWorksheet(sheetName);
+      const index = sheet.getRow(1).values.indexOf("初始末手坐标");
+      if (index > 0) sheet.spliceColumns(index, 1);
+    }
+
+    const result = await parseStoryScriptWorkbook(await bufferFromWorkbook(workbook), script);
+    expect(result.ok).toBe(true);
+    expect(result.draft.nodes[2]).toMatchObject({
+      targetHighlightEnabled: true,
+      wrongMovePointId: "",
+      wrongMoveNextNodeId: "",
+      applyWrongMove: false
+    });
+    expect(result.draft.nodes[1]).toMatchObject({ boardSetupLoadingEnabled: true });
+    expect(result.draft.initialBoard).toMatchObject({ mode: "spark", stones: [{ pointId: "1,1", color: "black" }] });
   });
 
   it("allows the workbook title to update while rejecting script identity changes", async () => {

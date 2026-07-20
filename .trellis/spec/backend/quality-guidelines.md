@@ -45,6 +45,7 @@ Questions to answer:
 - `revealDelaySeconds` is either blank or a non-negative finite number of seconds.
 - `transitionDelaySeconds` is either blank or a non-negative finite number of seconds; blank means the option click transitions immediately.
 - `manualContinueEnabled` and `autoContinueEnabled` remain the persisted compatibility fields for battle tutorial node progression. Current admin authoring treats them as one advance mode and writes a mutually exclusive pair; new nodes default to automatic progression. `autoContinueDelaySeconds` is blank or a non-negative finite number of seconds; blank means the product default for the active auto-progression path.
+- Optional player-move fields are `targetHighlightEnabled` (default `true`), `wrongMovePointId`, `wrongMoveNextNodeId`, and `applyWrongMove` (default `false`). Optional board-setup fields are `boardSetupLoadingEnabled` (default `true`) and `boardSetup.lastMovePointId`.
 - `nextNodeId: ""` on an option is a close-window action, not a validation failure.
 
 #### 3. Contracts
@@ -55,6 +56,7 @@ Questions to answer:
 - Player rendering should treat blank reveal delays as "after typewriter complete" and numeric delays as timers from current-node entry. Completing the typewriter immediately reveals all options.
 - Player rendering should treat blank transition delays as 0 seconds. When an option has a positive transition delay, hide the options immediately, show the quiet "continuing" state, and enter the option target only after the timer completes. Admin preview may expose a preview-only skip-current-wait control; player playback must not expose per-wait skipping.
 - Battle tutorial rendering should treat node progression as one selected advance mode: automatic progression uses `autoContinueEnabled` plus `autoContinueDelaySeconds`, while manual continuation shows a completed-node "continue" button and does not run an automatic timer. Current admin writes new nodes as automatic by default; older saved boolean combinations must still parse and preserve through the API boundary.
+- Wrong-move targets are graph edges and must be checked at publish time like `nextNodeId` and option targets. All six optional tutorial fields must survive API normalization, draft/publish JSON, admin editing/preview, and v1 workbook round trips. A missing field or missing optional workbook column must use the documented default instead of failing an old script import.
 
 #### 4. Validation & Error Matrix
 - Unknown `effect` -> HTTP 400 story input error.
@@ -66,6 +68,8 @@ Questions to answer:
 - Missing `manualContinueEnabled` -> normalize to true.
 - Missing `autoContinueEnabled` on `npc-dialogue` -> normalize to true; missing on other nodes -> normalize to false.
 - Missing or blank `autoContinueDelaySeconds` -> normalize to blank and let the runtime apply the node-type default.
+- Missing `targetHighlightEnabled` or `boardSetupLoadingEnabled` -> normalize to `true`; missing `applyWrongMove` -> normalize to `false`.
+- Non-empty `wrongMoveNextNodeId` missing from the current script -> publish-time target error.
 - Option `nextNodeId === ""` -> valid terminal close action.
 - Non-empty option target missing from current script -> publish-time target error.
 
@@ -81,6 +85,7 @@ Questions to answer:
 
 #### 6. Tests Required
 - Backend story-script tests must assert effect normalization, invalid effect rejection, option reveal-delay preservation, option transition-delay preservation, battle progression flag defaults/preservation, blank compatibility, and invalid delay rejection.
+- Tutorial story tests must also assert wrong-move target validation, optional-field defaults/preservation, display-only last-move preservation, and old v1 workbook compatibility.
 - Player story tests must assert effect class/data hooks, option reveal timing before and after typewriter completion, and option transition-delay scheduling/pending feedback.
 - Admin story tests must assert the effect control, option-level reveal and transition numeric timing inputs, and responsive option-row layout.
 - CSS contract tests must keep default story layout unchanged, lock any special effect layout hooks, and prevent the long-text compression effect from starting with a smaller-than-default text region. Theme contract tests must also cover active mobile theme overrides, because Bright School mobile modal shell rules use `!important` and can otherwise revert effect nodes to the default onboarding story grid.

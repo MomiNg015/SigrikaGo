@@ -41,6 +41,11 @@ const NODE_COLUMNS = Object.freeze([
   ["text", "对白/NPC文本"],
   ["prompt", "教学提示"],
   ["wrongClickMessage", "错误点击提示"],
+  ["targetHighlightEnabled", "显示目标圈"],
+  ["wrongMovePointId", "特殊错误坐标"],
+  ["wrongMoveNextNodeId", "错误落子目标节点ID"],
+  ["applyWrongMove", "错误落子实际落盘"],
+  ["boardSetupLoadingEnabled", "局面切换显示加载页"],
   ["nextNodeId", "下一主线节点ID（空=结束）"],
   ["pointId", "棋盘坐标/技能目标"],
   ["color", "执行颜色"],
@@ -72,8 +77,18 @@ const BOARD_COLUMNS = Object.freeze([
   ["scope", "范围（script/node）"],
   ["nodeId", "节点ID（范围为node时必填）"],
   ["mode", "棋盘模式"],
-  ["stonesJson", "棋子JSON"]
+  ["stonesJson", "棋子JSON"],
+  ["lastMovePointId", "初始末手坐标"]
 ]);
+
+const OPTIONAL_NODE_HEADERS = new Set([
+  "targetHighlightEnabled",
+  "wrongMovePointId",
+  "wrongMoveNextNodeId",
+  "applyWrongMove",
+  "boardSetupLoadingEnabled"
+].map((key) => fieldHeader(NODE_COLUMNS, key)));
+const OPTIONAL_BOARD_HEADERS = new Set([fieldHeader(BOARD_COLUMNS, "lastMovePointId")]);
 
 const NODE_KEYS = NODE_COLUMNS.map(([key]) => key);
 const OPTION_KEYS = OPTION_COLUMNS.map(([key]) => key);
@@ -233,7 +248,8 @@ function addBoardRow(sheet, scope, nodeId, board) {
     scope,
     nodeId,
     mode: normalized?.mode ?? "",
-    stonesJson: normalized ? JSON.stringify(normalized.stones ?? []) : ""
+    stonesJson: normalized ? JSON.stringify(normalized.stones ?? []) : "",
+    lastMovePointId: normalized?.lastMovePointId ?? ""
   });
 }
 
@@ -339,7 +355,7 @@ function readDraftFromWorkbook(workbook, info, errors) {
 function readNodeSheet(workbook, sheetName, errors) {
   const sheet = requireSheet(workbook, sheetName, errors);
   if (!sheet) return [];
-  const headerMap = readHeaderMap(sheet, NODE_COLUMNS, errors);
+  const headerMap = readHeaderMap(sheet, NODE_COLUMNS, errors, { optionalHeaders: OPTIONAL_NODE_HEADERS });
   const nodes = [];
   sheet.eachRow((row, rowNumber) => {
     if (rowNumber === 1 || rowIsEmpty(row)) return;
@@ -351,6 +367,9 @@ function readNodeSheet(workbook, sheetName, errors) {
     node.type = node.type || TUTORIAL_NODE_TYPES.story;
     node.manualContinueEnabled = parseBooleanCell(node.manualContinueEnabled);
     node.autoContinueEnabled = parseBooleanCell(node.autoContinueEnabled, true);
+    node.targetHighlightEnabled = parseBooleanCell(node.targetHighlightEnabled, true);
+    node.applyWrongMove = parseBooleanCell(node.applyWrongMove);
+    node.boardSetupLoadingEnabled = parseBooleanCell(node.boardSetupLoadingEnabled, true);
     node.boardSetup = null;
     node.options = [];
     node.__rowNumber = rowNumber;
@@ -389,18 +408,19 @@ function readBoardSheet(workbook, sheetName, errors) {
   const sheet = requireSheet(workbook, sheetName, errors);
   const result = { initialBoard: null, nodeBoards: new Map() };
   if (!sheet) return result;
-  const headerMap = readHeaderMap(sheet, BOARD_COLUMNS, errors);
+  const headerMap = readHeaderMap(sheet, BOARD_COLUMNS, errors, { optionalHeaders: OPTIONAL_BOARD_HEADERS });
   sheet.eachRow((row, rowNumber) => {
     if (rowNumber === 1 || rowIsEmpty(row)) return;
     const scope = valueFromRow(row, headerMap, BOARD_COLUMNS, "scope");
     const nodeId = valueFromRow(row, headerMap, BOARD_COLUMNS, "nodeId");
     const mode = valueFromRow(row, headerMap, BOARD_COLUMNS, "mode");
     const stonesJson = valueFromRow(row, headerMap, BOARD_COLUMNS, "stonesJson");
+    const lastMovePointId = valueFromRow(row, headerMap, BOARD_COLUMNS, "lastMovePointId");
     const stones = stonesJson
       ? parseJsonCell(stonesJson, sheetName, rowNumber, "棋子JSON", errors, [])
       : [];
     if (stonesJson && !Array.isArray(stones)) errors.push(importError(sheetName, rowNumber, "棋子JSON", "棋子JSON必须是数组。"));
-    const board = mode ? { mode, stones: Array.isArray(stones) ? stones : [] } : null;
+    const board = mode ? { mode, stones: Array.isArray(stones) ? stones : [], lastMovePointId } : null;
     if (scope === "script") result.initialBoard = board;
     if (scope === "node") {
       if (!nodeId) errors.push(importError(sheetName, rowNumber, "节点ID", "节点棋盘快照必须填写节点ID。"));
@@ -469,6 +489,9 @@ function validateImportedScript({ title, draft, current, itemOptions, skillChara
     } else if (!(node.options ?? []).length) {
       hasEnding = true;
     }
+    if (node.wrongMoveNextNodeId && !nodeIds.has(node.wrongMoveNextNodeId)) {
+      errors.push(importError(SHEETS.draftNodes, row, fieldHeader(NODE_COLUMNS, "wrongMoveNextNodeId"), `错误落子目标不存在：${node.wrongMoveNextNodeId}`));
+    }
     for (const [optionIndex, option] of (node.options ?? []).entries()) {
       const optionRow = option.__rowNumber;
       if (!String(option.label ?? "").trim()) errors.push(importError(SHEETS.draftOptions, optionRow, "选项文案", "选项文案不能为空。"));
@@ -499,7 +522,7 @@ function requireSheet(workbook, name, errors) {
   return sheet;
 }
 
-function readHeaderMap(sheet, columns, errors) {
+function readHeaderMap(sheet, columns, errors, { optionalHeaders = new Set() } = {}) {
   const expected = columns.map(([, header]) => header);
   const actual = rowValues(sheet.getRow(1));
   const headerMap = new Map();
@@ -507,7 +530,7 @@ function readHeaderMap(sheet, columns, errors) {
     if (header) headerMap.set(header, index + 1);
   }
   for (const header of expected) {
-    if (!headerMap.has(header)) errors.push(importError(sheet.name, 1, header, `缺少必要列：${header}`));
+    if (!headerMap.has(header) && !optionalHeaders.has(header)) errors.push(importError(sheet.name, 1, header, `缺少必要列：${header}`));
   }
   return headerMap;
 }
@@ -606,7 +629,8 @@ function normalizeBoard(board) {
   if (!board || typeof board !== "object") return null;
   return {
     mode: board.mode ?? "spark",
-    stones: Array.isArray(board.stones) ? board.stones : []
+    stones: Array.isArray(board.stones) ? board.stones : [],
+    lastMovePointId: board.lastMovePointId ?? ""
   };
 }
 

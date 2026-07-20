@@ -211,6 +211,22 @@ describe("AdminOnboardingStory", () => {
     ]);
   });
 
+  it("treats wrong-move targets as reachable runtime branches", () => {
+    const flow = buildFlow({
+      startNodeId: "move",
+      nodes: [
+        { id: "move", type: "player-move", pointId: "5,5", nextNodeId: "done", wrongMoveNextNodeId: "wrong" },
+        { id: "done", type: "story", nextNodeId: "" },
+        { id: "wrong", type: "npc-dialogue", nextNodeId: "move" },
+        { id: "loose", type: "story", nextNodeId: "" }
+      ]
+    });
+
+    expect(flow.main).toEqual(["move", "done"]);
+    expect(flow.connectedExtras).toEqual(["wrong"]);
+    expect(flow.orphans).toEqual(["loose"]);
+  });
+
   it("replays option-branch board setup nodes for current-step preview", () => {
     const preview = scriptForCurrentPreview({
       startNodeId: "start",
@@ -318,6 +334,13 @@ describe("AdminOnboardingStory", () => {
     expect(adminSource).toContain("onPoint={onPoint}");
     expect(adminSource).toContain("skillCharacters");
     expect(adminSource).toContain("skillHelpText");
+    expect(adminSource).toContain("显示玩家落子目标圈");
+    expect(adminSource).toContain("特殊错误坐标");
+    expect(adminSource).toContain("错误落子进入");
+    expect(adminSource).toContain("错误落子实际落盘");
+    expect(adminSource).toContain("切换局面时显示加载页");
+    expect(adminSource).toContain("初始末手标记");
+    expect(adminSource).toContain("node.wrongMoveNextNodeId");
     expect(adminCss).toContain(".admin-story-workbench-board-modal");
     expect(adminCss).toContain(".admin-story-workbench-board-stage");
     expect(adminCss).toContain(".admin-story-workbench-board-stage .board-wrap");

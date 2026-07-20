@@ -121,6 +121,22 @@ describe("areBoardPropsEqual", () => {
     expect(latestMoveBlock).not.toContain("height: 9px");
   });
 
+  test("renders a tutorial setup marker when there is no real move history", () => {
+    const points = createPoints(13);
+    points.find((point) => point.id === "3,3").stone = "black";
+    const markup = renderToStaticMarkup(createElement(Board, boardProps({
+      game: {
+        phase: "playing",
+        size: 13,
+        points,
+        history: [],
+        tutorialLastMovePointId: "3,3"
+      }
+    })));
+
+    expect(markup).toMatch(/class="point\s+black[^"]*"[^>]*>[\s\S]*?<i><\/i>/);
+  });
+
   test("renders erased Sigrika field markers from the crater WebP asset at 1.5 board-cell scale", () => {
     const markup = renderToStaticMarkup(createElement(Board, boardProps({
       game: {

@@ -38,6 +38,7 @@ function Board({
   const boardSize = game.size ?? 13;
   const colorIllusionActive = hasColorIllusionFog(game) && skillEffectsEnabled !== false;
   const markedAction = lastMarkedAction(game.history);
+  const markedActionId = markedAction?.id ?? game.tutorialLastMovePointId ?? "";
   const moveNumbers = useMemo(
     () => new Map(game.history.filter((entry) => entry.type === "move").map((entry) => [entry.id, entry.moveNumber])),
     [game.history]
@@ -234,7 +235,7 @@ function Board({
               hasScoringPoint={Boolean(onScoringPoint)}
               isStar={isStarPoint(point.x, point.y, boardSize)}
               libertyPurgeMarked={libertyPurgeMarkIds.has(point.id)}
-              markedActionId={markedAction?.id ?? ""}
+              markedActionId={markedActionId}
               moveNumber={showMoves ? moveNumbers.get(point.id) ?? null : null}
               neutralMarked={showScoringMarks && Boolean(game.scoring?.neutralPoints?.includes(point.id))}
               point={point}

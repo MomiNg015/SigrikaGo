@@ -1,6 +1,6 @@
+import crypto from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { collectGroup, getPoint } from "../src/shared/game.js";
-import { prepareScoringState, scoreGame } from "../src/shared/gameScoring.js";
+import { getPoint } from "../src/shared/game.js";
 import {
   applyTutorialNodeAction,
   applyTutorialSkillAction,
@@ -9,33 +9,42 @@ import {
 import { ADMIN_DEFAULT_CONFIG } from "./adminDefaultSnapshot.js";
 import { validateStoryContent } from "./storyScripts.js";
 
-const CHAPTER_SETUP_IDS = [
-  "beginner-rules-setup",
-  "beginner-forbidden-ko-setup",
-  "beginner-connection-setup",
-  "beginner-life-setup",
-  "beginner-layout-setup",
-  "beginner-middle-setup",
-  "beginner-endgame-setup",
-  "beginner-skill-setup"
-];
+const EXPECTED_BEGINNER_HASH = "bf14f3de536415e715aeee62ecf39832dc6b0746d1786a3764e85db306813f1c";
+const EXPECTED_EXPERIENCED_HASH = "47bcf6c16625552e2fa9d1aa8297cf1cf28f33c716c19e2f86147d9ed143af27";
 
-const RETRY_BRANCHES = [
-  ["beginner-forbidden-wrong", "beginner-forbidden-question"],
-  ["beginner-ko-wrong-now", "beginner-ko-question"],
-  ["beginner-ko-wrong-never", "beginner-ko-question"],
-  ["beginner-connection-wrong-both", "beginner-connection-question"],
-  ["beginner-connection-wrong-neither", "beginner-connection-question"],
-  ["beginner-life-wrong-right", "beginner-life-question"],
-  ["beginner-life-wrong-both", "beginner-life-question"],
-  ["beginner-layout-wrong-edge", "beginner-layout-question"],
-  ["beginner-layout-wrong-center", "beginner-layout-question"],
-  ["beginner-middle-wrong-capture", "beginner-middle-question"],
-  ["beginner-middle-wrong-center", "beginner-middle-question"],
-  ["beginner-scoring-wrong-black", "beginner-scoring-question"],
-  ["beginner-scoring-wrong-equal", "beginner-scoring-question"],
-  ["beginner-skill-value-wrong", "beginner-skill-value-question"]
-];
+const BOARD_EXPECTATIONS = Object.freeze({
+  "doc-setup-1": expectedBoard(
+    "K11 D10 K10 D5 C4 D4 E4 N4 C3 D3 N3 L2 M2 N2",
+    "M5 N5 M4 B3 K3 M3 C2",
+    "K3"
+  ),
+  "doc-setup-2": expectedBoard(
+    "D11 L11 C10 E10 K10 M10 J9 L4 M4 A3 B3 K3 M3 N3 B2 C2 L2 N2 C1 L1 M1 N1",
+    "D10 J10 L10 K9 M9 L8 K5 L5 M5 N5 B4 C4 J4 K4 N4 C3 D3 H3 A2 D2 H2 J2 K2 B1 D1 K1",
+    "N4"
+  ),
+  "doc-setup-3": expectedBoard(
+    "B13 C13 D13 K13 A12 C12 E12 K12 L12 M12 N12 A11 E11 A7 B7 C7 M7 C6 L6 M6 D5 L5 D4 K4 D3 K3 D2 H2 K2 A1 B1 C1 D1",
+    "E13 F13 J13 F12 J12 C11 G11 J11 K11 L11 M11 N11 A10 B10 C10 D10 E10 F10 G10 A6 B6 B5 C5 M5 C4 L4 N4 C3 L3 A2 B2 C2 L2",
+    "H2"
+  ),
+  "doc-setup-4": expectedBoard(
+    "D13 K13 D12 K12 D11 K11 L11 M11 N11 A10 B10 C10 D10 B5 C5 D5 J5 K5 L5 M5 N5 A4 B4 D4 E4 J4 A3 E3 J3 K3 L3 M3 N3 D2 E2 C1 D1 L1",
+    "L13 M13 L12 M12 C4 B3 D3 A2 C2 J2 K2 L2 M2 N2 B1 J1 M1",
+    "N5"
+  ),
+  "doc-setup-5": expectedBoard(
+    "B13 H13 B12 C12 D12 F12 G12 H12 J12 C11 J11 K11 A10 B10 C10 K10 C9 D9 K9 J8 K8 C7 D7 E7 G7 H7 F6 F5 G5 H5 K5 B4 D4 J4 A3 B3 C3 D3 E3 F3 K3 E2 K2 L2 B1 E1 F1 L1",
+    "C13 D13 E13 F13 G13 A12 E12 A11 D11 E11 F11 G11 H11 D10 F10 H10 J10 B9 E9 J9 B8 E8 F8 G8 H8 B7 F7 E6 A5 B5 C5 D5 E5 A4 C4 E4 F4 G4 H4 G3 J3 F2 G2 J2 G1 J1 K1",
+    "H13"
+  ),
+  "doc-setup-6": expectedBoard(
+    "D13 D12 D11 A10 B10 C10 G8 H8 F7 J7 G6 H6 F3 G3 E2 H2 E1 H1",
+    "",
+    "H1"
+  ),
+  "doc-setup-7": expectedBoard("K10 K3", "C11 C4", "C11")
+});
 
 describe("admin default onboarding story snapshot", () => {
   it("ships the Danya 100 spark wins nameplate reward and achievement", () => {
@@ -88,7 +97,7 @@ describe("admin default onboarding story snapshot", () => {
     });
   });
 
-  it("publishes a complete four-chapter beginner graph without changing the other level branches", () => {
+  it("publishes the Word-authored beginner graph while retaining both experienced branches", () => {
     const script = onboardingScript();
     const draftNodes = JSON.parse(script.draftNodesJson);
     const publishedNodes = JSON.parse(script.publishedNodesJson);
@@ -96,322 +105,134 @@ describe("admin default onboarding story snapshot", () => {
 
     expect(publishedNodes).toEqual(draftNodes);
     expect(new Set(draftNodes.map((node) => node.id)).size).toBe(draftNodes.length);
-    expect(CHAPTER_SETUP_IDS.every((id) => nodesById.has(id))).toBe(true);
     expect(validateStoryContent({
       startNodeId: script.draftStartNodeId,
       initialBoard: JSON.parse(script.draftInitialBoardJson),
       nodes: draftNodes
     }, { publishing: true }).nodes).toHaveLength(draftNodes.length);
 
-    expect(nodesById.get("node-4-4-2")?.nextNodeId).toBe("beginner-course-denia");
-    expect(nodesById.get("beginner-course-sigrika-end")?.nextNodeId).toBe("node-4-5");
-    expect(nodesById.has("beginner-practice-denia")).toBe(false);
-
-    expect(nodesById.get("node-3")?.options).toEqual(expect.arrayContaining([
+    expect(nodesById.get("node-4-4-2")?.nextNodeId).toBe("doc-setup-1");
+    expect([...nodesById.keys()].some((id) => id.startsWith("beginner-"))).toBe(false);
+    expect(nodesById.get("node-3")?.options).toEqual([
       expect.objectContaining({ label: "其实我完全不会下围棋...", nextNodeId: "node-4" }),
       expect.objectContaining({ label: "略懂一些", nextNodeId: "story-46" }),
       expect.objectContaining({ label: "我超强的哦!", nextNodeId: "story-15" })
-    ]));
+    ]);
+    expect(hashNodes(draftNodes.filter((node) => node.id.startsWith("doc-")))).toBe(EXPECTED_BEGINNER_HASH);
+    expect(hashNodes(experiencedNodes(draftNodes))).toBe(EXPECTED_EXPERIENCED_HASH);
+  });
 
-    for (const [wrongNodeId, questionNodeId] of RETRY_BRANCHES) {
-      expect(nodesById.get(wrongNodeId)?.nextNodeId).toBe(questionNodeId);
+  it("locks all seven authored positions and their display-only last-move markers", () => {
+    const nodesById = onboardingNodesById();
+    for (const [nodeId, expected] of Object.entries(BOARD_EXPECTATIONS)) {
+      expect(nodesById.get(nodeId)?.boardSetup).toEqual(expected);
+      const state = createTutorialGameState({ initialBoard: expected });
+      expect(state.tutorialLastMovePointId).toBe(expected.lastMovePointId);
     }
+    expect(nodesById.get("doc-a1-reset")?.boardSetup).toEqual(BOARD_EXPECTATIONS["doc-setup-2"]);
+    expect(nodesById.get("doc-b11-reset")?.boardSetup).toEqual(BOARD_EXPECTATIONS["doc-setup-3"]);
+    expect(nodesById.get("doc-skill-setup")?.boardSetup).toEqual(nodesById.get("story-51")?.boardSetup);
   });
 
-  it("teaches escaping an atari before capturing a connected two-stone group", () => {
-    const nodesById = onboardingNodesById();
-    const state = createTutorialGameState({
-      initialBoard: nodesById.get("beginner-rules-setup").boardSetup
-    });
+  it("executes D9, L9, A1, J3, and L3 against the real rules", () => {
+    const nodes = onboardingNodesById();
+    let state = createTutorialGameState({ initialBoard: nodes.get("doc-setup-2").boardSetup });
 
-    const escaped = applyTutorialNodeAction(
-      state,
-      nodesById.get("beginner-escape-move"),
-      { pointId: "3,4" }
-    );
-    expect(escaped.ok).toBe(true);
-    expect(collectGroup(escaped.state, "3,3").stones.sort()).toEqual([
-      "3,3",
-      "3,4"
-    ]);
+    state = runMove(state, nodes.get("doc-capture-move"));
+    expect(getPoint(state, visiblePoint("D10"))?.stone).toBe(null);
+    expect(getPoint(state, visiblePoint("D9"))?.stone).toBe("black");
 
-    const captured = applyTutorialNodeAction(
-      escaped.state,
-      nodesById.get("beginner-capture-move"),
-      { pointId: "9,10" }
-    );
-    expect(captured.ok).toBe(true);
-    expect(getPoint(captured.state, "9,8")?.stone).toBe(null);
-    expect(getPoint(captured.state, "9,9")?.stone).toBe(null);
-    expect(getPoint(captured.state, "9,10")?.stone).toBe("black");
-    expect(captured.state.captures.black).toBe(2);
+    state = runMove(state, nodes.get("doc-forbidden-move"));
+    expect(getPoint(state, visiblePoint("L10"))?.stone).toBe(null);
+    expect(getPoint(state, visiblePoint("L9"))?.stone).toBe("black");
+
+    state = runMove(state, nodes.get("doc-a1-move"));
+    expect(getPoint(state, visiblePoint("A2"))?.stone).toBe(null);
+    expect(getPoint(state, visiblePoint("A1"))?.stone).toBe("black");
+
+    state = runMove(state, nodes.get("doc-false-eye-j3"));
+    state = runMove(state, nodes.get("doc-false-eye-l3"));
+    expect(getPoint(state, visiblePoint("J3"))?.stone).toBe("white");
+    expect(getPoint(state, visiblePoint("L3"))?.stone).toBe("white");
   });
 
-  it("uses the real rules for a forbidden point and a ko recapture ban", () => {
-    const nodesById = onboardingNodesById();
-    const state = createTutorialGameState({
-      initialBoard: nodesById.get("beginner-forbidden-ko-setup").boardSetup
-    });
+  it("applies the A1 wrong move, scripted A4 reply, and silent reset", () => {
+    const nodes = onboardingNodesById();
+    const initial = createTutorialGameState({ initialBoard: nodes.get("doc-setup-2").boardSetup });
+    const wrong = applyTutorialNodeAction(initial, nodes.get("doc-a1-move"), { pointId: visiblePoint("H13") });
 
-    const suicide = applyTutorialNodeAction(state, {
-      type: "player-move",
-      pointId: "2,2",
-      color: "black"
-    }, { pointId: "2,2" });
-    expect(suicide.ok).toBe(false);
-    expect(suicide.error).toContain("禁自杀");
-
-    const koCapture = applyTutorialNodeAction(
-      state,
-      nodesById.get("beginner-ko-capture"),
-      { pointId: "6,7" }
-    );
-    expect(koCapture.ok).toBe(true);
-    expect(getPoint(koCapture.state, "6,6")?.stone).toBe(null);
-    expect(koCapture.state.ko).toBe("6,6");
-
-    const immediateRecapture = applyTutorialNodeAction(koCapture.state, {
-      type: "player-move",
-      pointId: "6,6",
-      color: "white"
-    }, { pointId: "6,6" });
-    expect(immediateRecapture.ok).toBe(false);
-    expect(immediateRecapture.error).toContain("劫禁着点");
+    expect(wrong).toMatchObject({ ok: true, wrongMove: true, nextNodeId: "doc-a1-wrong-npc" });
+    expect(getPoint(wrong.state, visiblePoint("H13"))?.stone).toBe("black");
+    const reply = applyTutorialNodeAction(wrong.state, nodes.get("doc-a1-wrong-npc"), { pointId: visiblePoint("A4") });
+    expect(reply.ok).toBe(true);
+    expect(getPoint(reply.state, visiblePoint("A4"))?.stone).toBe("white");
+    const reset = applyTutorialNodeAction(reply.state, nodes.get("doc-a1-reset"));
+    expect(reset.ok).toBe(true);
+    expect(boardStones(reset.state)).toEqual(boardStones(initial));
+    expect(nodes.get("doc-a1-reset")).toMatchObject({ boardSetupLoadingEnabled: false, autoContinueDelaySeconds: 0 });
   });
 
-  it("connects the left stones while preserving the authored cut and eye diagrams", () => {
-    const nodesById = onboardingNodesById();
-    const connectionState = createTutorialGameState({
-      initialBoard: nodesById.get("beginner-connection-setup").boardSetup
-    });
-    const connected = applyTutorialNodeAction(
-      connectionState,
-      nodesById.get("beginner-connection-move"),
-      { pointId: "4,3" }
-    );
+  it("branches only D11 for the B11 counterattack and solves B11, M13, and A4", () => {
+    const nodes = onboardingNodesById();
+    const initial = createTutorialGameState({ initialBoard: nodes.get("doc-setup-3").boardSetup });
+    const ordinaryWrong = applyTutorialNodeAction(initial, nodes.get("doc-b11-move"), { pointId: visiblePoint("H13") });
+    expect(ordinaryWrong).toMatchObject({ ok: false, message: "再好好想想？" });
 
-    expect(connected.ok).toBe(true);
-    expect(collectGroup(connected.state, "3,3").stones.sort()).toEqual([
-      "3,3",
-      "4,3",
-      "5,3"
-    ]);
-    expect(collectGroup(connected.state, "8,8").stones).toHaveLength(1);
-    expect(collectGroup(connected.state, "9,9").stones).toHaveLength(1);
+    const specialWrong = applyTutorialNodeAction(initial, nodes.get("doc-b11-move"), { pointId: visiblePoint("D11") });
+    expect(specialWrong).toMatchObject({ ok: true, wrongMove: true, nextNodeId: "doc-b11-counter" });
+    expect(getPoint(specialWrong.state, visiblePoint("D11"))?.stone).toBe("black");
+    const counter = applyTutorialNodeAction(specialWrong.state, nodes.get("doc-b11-counter"), { pointId: visiblePoint("B11") });
+    expect(counter.ok).toBe(true);
+    expect(getPoint(counter.state, visiblePoint("B11"))?.stone).toBe("white");
 
-    const lifeState = createTutorialGameState({
-      initialBoard: nodesById.get("beginner-life-setup").boardSetup
-    });
-    expect(collectGroup(lifeState, "1,1").stones).toHaveLength(13);
-    expect(getPoint(lifeState, "2,2")?.stone).toBe(null);
-    expect(getPoint(lifeState, "4,2")?.stone).toBe(null);
-    expect(getPoint(lifeState, "8,2")?.stone).toBe(null);
-    expect(getPoint(lifeState, "11,1")?.stone).toBe(null);
-    expect(getPoint(lifeState, "10,0")?.stone).toBe("white");
-    expect(getPoint(lifeState, "12,0")?.stone).toBe("white");
+    let solved = runMove(initial, nodes.get("doc-b11-move"));
+    solved = runMove(solved, nodes.get("doc-m13-move"));
+    solved = runMove(solved, nodes.get("doc-knife-a4"));
+    expect(getPoint(solved, visiblePoint("B11"))?.stone).toBe("black");
+    expect(getPoint(solved, visiblePoint("M13"))?.stone).toBe("black");
+    expect(getPoint(solved, visiblePoint("A4"))?.stone).toBe("black");
   });
 
-  it("runs the corner-opening sequence and reuses the existing middle-game snapshot", () => {
-    const nodesById = onboardingNodesById();
-    let state = createTutorialGameState({
-      initialBoard: nodesById.get("beginner-layout-setup").boardSetup
+  it("runs the copied skill demonstration at F3, G4, and F5", () => {
+    const nodes = onboardingNodesById();
+    const initial = createTutorialGameState({ initialBoard: nodes.get("doc-skill-setup").boardSetup });
+    const sigrika = applyTutorialSkillAction(initial, nodes.get("doc-skill-f3"), {
+      pointId: visiblePoint("F3"),
+      pendingSkillId: "doc-sigrika-skill"
     });
+    expect(sigrika.ok).toBe(true);
+    expect(getPoint(sigrika.resolvedState, visiblePoint("F3"))?.valid).toBe(false);
 
-    for (const nodeId of [
-      "beginner-layout-first-move",
-      "beginner-layout-npc-move",
-      "beginner-layout-second-move"
-    ]) {
-      const node = nodesById.get(nodeId);
-      const result = applyTutorialNodeAction(state, node, { pointId: node.pointId });
-      expect(result.ok).toBe(true);
-      state = result.state;
+    const followed = applyTutorialNodeAction(sigrika.resolvedState, nodes.get("doc-skill-g4"), { pointId: visiblePoint("G4") });
+    expect(followed.ok).toBe(true);
+    expect(getPoint(followed.state, visiblePoint("G4"))?.stone).toBe("black");
+
+    const denia = applyTutorialSkillAction(followed.state, nodes.get("doc-skill-f5"), {
+      pointId: visiblePoint("F5"),
+      pendingSkillId: "doc-denia-skill"
+    });
+    expect(denia.ok).toBe(true);
+    expect(getPoint(denia.resolvedState, visiblePoint("F5"))?.stone).toBe("white");
+  });
+
+  it("keeps un-guided moves hidden, retry edges reachable, and authored pacing intact", () => {
+    const nodes = onboardingNodesById();
+    for (const nodeId of ["doc-capture-move", "doc-a1-move", "doc-b11-move", "doc-m13-move"]) {
+      expect(nodes.get(nodeId)?.targetHighlightEnabled).toBe(false);
     }
-
-    expect(getPoint(state, "3,3")?.stone).toBe("black");
-    expect(getPoint(state, "9,9")?.stone).toBe("white");
-    expect(getPoint(state, "9,3")?.stone).toBe("black");
-    expect(nodesById.get("beginner-middle-setup")?.boardSetup).toEqual(
-      nodesById.get("story-16")?.boardSetup
-    );
-    expect(nodesById.get("beginner-middle-choice")?.options[1]).toMatchObject({
-      label: "先看弱棋、连接和地盘，再决定攻击方向",
-      nextNodeId: "beginner-middle-correct"
-    });
-  });
-
-  it("finishes the authored endgame with the real Spark scoring result", () => {
-    const nodesById = onboardingNodesById();
-    const state = createTutorialGameState({
-      initialBoard: nodesById.get("beginner-endgame-setup").boardSetup
-    });
-    const closed = applyTutorialNodeAction(
-      state,
-      nodesById.get("beginner-endgame-move"),
-      { pointId: "3,4" }
-    );
-    closed.state.scoring = prepareScoringState(closed.state);
-
-    expect(closed.ok).toBe(true);
-    expect(closed.state.scoring.territory.black.sort()).toEqual([
-      "2,2",
-      "2,3",
-      "3,2",
-      "3,3"
-    ]);
-    expect(closed.state.scoring.territory.white.sort()).toEqual([
-      "10,8",
-      "10,9",
-      "8,8",
-      "8,9",
-      "9,8",
-      "9,9"
-    ]);
-    expect(scoreGame(closed.state)).toMatchObject({
-      blackStones: 10,
-      blackTerritory: 4,
-      whiteStones: 10,
-      whiteTerritory: 6,
-      blackSkillRemovals: 0,
-      whiteSkillRemovals: 0,
-      blackSkillCost: 0,
-      whiteSkillCost: 0,
-      winnerColor: "white",
-      margin: 3.75,
-      text: "白胜3又3/4子"
-    });
-  });
-
-  it("demonstrates Sigrika skill removals, overclock, and the retained free move", () => {
-    const nodesById = onboardingNodesById();
-    const state = createTutorialGameState({
-      initialBoard: nodesById.get("beginner-skill-setup").boardSetup
-    });
-    const skill = applyTutorialSkillAction(
-      state,
-      nodesById.get("beginner-skill-cast"),
-      { pointId: "6,7", pendingSkillId: "beginner-sigrika-skill" }
-    );
-
-    expect(skill.ok).toBe(true);
-    expect(getPoint(skill.resolvedState, "6,5")?.stone).toBe(null);
-    expect(getPoint(skill.resolvedState, "6,6")?.stone).toBe(null);
-    expect(skill.resolvedState.skillRemovals.white).toBe(2);
-    expect(skill.resolvedState.skillCosts.white).toBe(3);
-
-    const followMove = applyTutorialNodeAction(
-      skill.resolvedState,
-      nodesById.get("beginner-skill-follow-move"),
-      { pointId: "9,9" }
-    );
-    expect(followMove.ok).toBe(true);
-    expect(getPoint(followMove.state, "9,9")?.stone).toBe("white");
-  });
-
-  it("keeps dialogue manual, action nodes automatic, and all special-rule copy present", () => {
-    const nodesById = onboardingNodesById();
-    const beginnerNodes = [...nodesById.values()].filter((node) => node.id.startsWith("beginner-"));
-    const dialogues = beginnerNodes.filter((node) => node.type === "npc-dialogue");
-    const automaticTypes = new Set(["board-setup", "player-move", "npc-move", "player-choice", "npc-skill", "counting-start"]);
-    const automaticNodes = beginnerNodes.filter((node) => automaticTypes.has(node.type));
-    const combinedText = beginnerNodes.map((node) => node.text).filter(Boolean).join("\n");
-
-    expect(dialogues.every((node) => (
-      node.manualContinueEnabled === true && node.autoContinueEnabled === false
-    ))).toBe(true);
-    expect(automaticNodes.every((node) => (
-      node.manualContinueEnabled === false && node.autoContinueEnabled === true
-    ))).toBe(true);
-    expect(nodesById.get("beginner-counting-start")).toMatchObject({
-      type: "counting-start",
-      actor: "player"
-    });
-    expect(combinedText).toContain("金角银边草肚皮");
-    expect(combinedText).toContain("真眼");
-    expect(combinedText).toContain("假眼");
-    expect(combinedText).toContain("除子");
-    expect(combinedText).toContain("超频");
-    expect(combinedText).toContain("二又四分之三子");
-    expect(combinedText).toContain("标准 19 路模式关闭技能");
-    expect(combinedText).toContain("普通提子不会再重复加分");
-  });
-
-  it("keeps the existing experienced-player battle content while using a compact readable pace", () => {
-    const nodesById = onboardingNodesById();
-
-    expect(nodesById.get("story-15")).toMatchObject({
-      nextNodeId: "story-16",
-      text: "这么厉害的吗？哼哼，那要不现在跟我下一盘试试看？"
-    });
-    expect(nodesById.get("story-46")?.options).toEqual([
-      expect.objectContaining({
-        label: "好的",
-        nextNodeId: "story-16",
-        transitionDelaySeconds: 0.2
-      })
-    ]);
-
-    expect(nodesById.get("story-16")).toMatchObject({
-      type: "board-setup",
-      autoContinueDelaySeconds: 1
-    });
-    expect(nodesById.get("story-51")).toMatchObject({
-      type: "board-setup",
-      autoContinueDelaySeconds: 1
-    });
-    expect(nodesById.get("story-17")).toMatchObject({
-      actionStartDelaySeconds: 0.8,
-      replyDelaySeconds: 0.3,
-      autoContinueDelaySeconds: 0.75
-    });
-    expect(nodesById.get("story-24")).toMatchObject({
-      actionStartDelaySeconds: 0.7,
-      replyDelaySeconds: 0.35,
-      autoContinueDelaySeconds: 0.85
-    });
-    expect(nodesById.get("story-29")).toMatchObject({
-      type: "npc-skill",
-      actionStartDelaySeconds: 0.65,
-      replyDelaySeconds: 0.35,
-      autoContinueDelaySeconds: 0.3
-    });
-    expect(nodesById.get("story-55")).toMatchObject({
-      type: "npc-skill",
-      actionStartDelaySeconds: 0.65,
-      replyDelaySeconds: 0.35,
-      autoContinueDelaySeconds: 0.35
-    });
-    expect(nodesById.get("story-59")).toMatchObject({
-      type: "player-skill",
-      autoContinueDelaySeconds: 0.8
-    });
-    expect(nodesById.get("story-27")?.autoContinueDelaySeconds).toBe(1.2);
-    expect(nodesById.get("story-28")?.autoContinueDelaySeconds).toBe(1);
-    expect(nodesById.get("story-54")?.autoContinueDelaySeconds).toBe(1.2);
-    expect(nodesById.get("story-58")?.autoContinueDelaySeconds).toBe(1);
-
-    for (const nodeId of ["story-61", "story-62"]) {
-      expect(nodesById.get(nodeId)).toMatchObject({
-        type: "npc-dialogue",
-        manualContinueEnabled: true,
-        autoContinueEnabled: false,
-        autoContinueDelaySeconds: ""
-      });
+    expect(nodes.get("doc-forbidden-move")?.targetHighlightEnabled).toBe(true);
+    expect(nodes.get("doc-a1-move")).toMatchObject({ wrongMovePointId: "", applyWrongMove: true, wrongMoveNextNodeId: "doc-a1-wrong-npc" });
+    expect(nodes.get("doc-b11-move")).toMatchObject({ wrongMovePointId: visiblePoint("D11"), applyWrongMove: true, wrongMoveNextNodeId: "doc-b11-counter" });
+    for (const node of [...nodes.values()].filter((entry) => entry.id.startsWith("doc-"))) {
+      for (const entry of node.options ?? []) expect(entry.transitionDelaySeconds).toBe(0.2);
+      if (["npc-move", "npc-skill"].includes(node.type)) {
+        expect(Number(node.actionStartDelaySeconds)).toBeGreaterThanOrEqual(0.65);
+        expect(Number(node.replyDelaySeconds)).toBeGreaterThanOrEqual(0.35);
+      }
     }
-    for (const nodeId of [
-      "story-26",
-      "branch-25",
-      "story-31",
-      "branch-32",
-      "story-36",
-      "branch-37",
-      "story-52",
-      "story-53",
-      "story-57",
-      "story-60"
-    ]) {
-      expect(nodesById.get(nodeId)?.options[0]?.transitionDelaySeconds).toBe(0.2);
-    }
+    expect(nodes.get("doc-story-152")?.text).toContain("把自己地脸颊拍扁了");
+    expect(nodes.get("doc-skill-172")?.text).toContain("而是还是有代价的");
+    expect(nodes.get("doc-story-194")?.text).toBe("哦对了，忘记自我介绍了。我是星炬学院围棋部部长，西格莉卡！{username}，以后还请多多指教呢！");
   });
 });
 
@@ -424,4 +245,55 @@ function onboardingScript() {
 function onboardingNodesById() {
   const nodes = JSON.parse(onboardingScript().draftNodesJson);
   return new Map(nodes.map((node) => [node.id, node]));
+}
+
+function expectedBoard(black, white, lastMove) {
+  return {
+    mode: "spark",
+    stones: [
+      ...coordinateList(black).map((pointId) => ({ pointId, color: "black" })),
+      ...coordinateList(white).map((pointId) => ({ pointId, color: "white" }))
+    ],
+    lastMovePointId: visiblePoint(lastMove)
+  };
+}
+
+function coordinateList(value) {
+  return String(value ?? "").trim().split(/\s+/).filter(Boolean).map(visiblePoint);
+}
+
+function visiblePoint(value) {
+  const match = /^([A-T])(\d+)$/.exec(String(value));
+  const x = "ABCDEFGHJKLMNOPQRST".indexOf(match?.[1] ?? "");
+  if (x < 0 || !match) throw new Error(`Invalid coordinate ${value}`);
+  return `${x},${13 - Number(match[2])}`;
+}
+
+function runMove(state, node) {
+  const result = applyTutorialNodeAction(state, node, { pointId: node.pointId });
+  expect(result.ok).toBe(true);
+  return result.state;
+}
+
+function boardStones(state) {
+  return state.points.filter((point) => point.stone).map((point) => ({ pointId: point.id, color: point.stone }));
+}
+
+function hashNodes(nodes) {
+  return crypto.createHash("sha256").update(JSON.stringify(nodes)).digest("hex");
+}
+
+function experiencedNodes(nodes) {
+  const byId = new Map(nodes.map((node) => [node.id, node]));
+  const reachable = new Set();
+  const stack = ["story-15", "story-46"];
+  while (stack.length) {
+    const id = stack.pop();
+    if (!id || reachable.has(id) || !byId.has(id)) continue;
+    reachable.add(id);
+    const node = byId.get(id);
+    if (node.nextNodeId) stack.push(node.nextNodeId);
+    for (const entry of node.options ?? []) if (entry.nextNodeId) stack.push(entry.nextNodeId);
+  }
+  return nodes.filter((node) => reachable.has(node.id));
 }

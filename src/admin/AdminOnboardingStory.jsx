@@ -556,7 +556,8 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
         const options = (node.options ?? []).map((option) => option.nextNodeId === nodeId
           ? { ...option, nextNodeId: "", targetMissing: true }
           : option);
-        return { ...node, nextNodeId, options };
+        const wrongMoveNextNodeId = node.wrongMoveNextNodeId === nodeId ? "" : node.wrongMoveNextNodeId;
+        return { ...node, nextNodeId, wrongMoveNextNodeId, options };
       });
     patchDraft({
       startNodeId: script.draft.startNodeId === nodeId ? (removed.nextNodeId || nodes[0]?.id || "") : script.draft.startNodeId,
@@ -844,11 +845,20 @@ export default function AdminOnboardingStory({ token, characters = [], items = [
 
       {pointPicker && (
         <BoardPointPickerModal
-          board={replayInitialBoardToNode(script.draft, pointPicker.nodeId)}
-          title={pointPicker.field === "pointId" ? "选择棋盘坐标" : "选择技能目标"}
+          board={pointPicker.field === "boardSetupLastMovePointId"
+            ? boardSetupForNode(script.draft.nodes.find((node) => node.id === pointPicker.nodeId), script.draft)
+            : replayInitialBoardToNode(script.draft, pointPicker.nodeId)}
+          title={pointPicker.field === "boardSetupLastMovePointId" ? "选择初始末手标记" : pointPicker.field === "wrongMovePointId" ? "选择特殊错误坐标" : pointPicker.field === "pointId" ? "选择棋盘坐标" : "选择技能目标"}
           onClose={() => setPointPicker(null)}
           onPick={(pointId) => {
-            patchNode(pointPicker.nodeId, { [pointPicker.field]: pointId });
+            if (pointPicker.field === "boardSetupLastMovePointId") {
+              const targetNode = script.draft.nodes.find((node) => node.id === pointPicker.nodeId);
+              patchNode(pointPicker.nodeId, {
+                boardSetup: { ...boardSetupForNode(targetNode, script.draft), lastMovePointId: pointId }
+              });
+            } else {
+              patchNode(pointPicker.nodeId, { [pointPicker.field]: pointId });
+            }
             setPointPicker(null);
           }}
         />
@@ -1598,7 +1608,7 @@ function BattleStepFields({
         </div>
       )}
       {isBoardSetup ? (
-        <BoardSetupFields node={node} skillCharacters={skillCharacters} onPatch={onPatch} onEditBoardSetup={onEditBoardSetup} />
+        <BoardSetupFields node={node} skillCharacters={skillCharacters} onPatch={onPatch} onEditBoardSetup={onEditBoardSetup} onPickPoint={onPickPoint} />
       ) : (
         <label>
           <span>执行颜色</span>
@@ -1628,6 +1638,34 @@ function BattleStepFields({
           <button className="admin-story-workbench-button secondary" type="button" onClick={() => onPickPoint("pointId")}>
             <MousePointer2 size={16} />棋盘点选
           </button>
+        </div>
+      )}
+      {node.type === TUTORIAL_NODE_TYPES.playerMove && (
+        <div className="admin-story-workbench-board-summary">
+          <label className="admin-story-workbench-checkbox">
+            <input type="checkbox" checked={node.targetHighlightEnabled !== false} onChange={(event) => onPatch({ targetHighlightEnabled: event.target.checked })} />
+            <span>显示玩家落子目标圈</span>
+          </label>
+          <div className="admin-story-workbench-point-field">
+            <label>
+              <span>特殊错误坐标</span>
+              <input value={node.wrongMovePointId ?? ""} readOnly placeholder="留空 = 任意非正确落子" />
+            </label>
+            <button className="admin-story-workbench-button secondary" type="button" onClick={() => onPickPoint("wrongMovePointId")}>
+              <MousePointer2 size={16} />棋盘点选
+            </button>
+          </div>
+          <label>
+            <span>错误落子进入</span>
+            <select value={node.wrongMoveNextNodeId || END_TARGET} onChange={(event) => onPatch({ wrongMoveNextNodeId: event.target.value === END_TARGET ? "" : event.target.value })}>
+              <option value={END_TARGET}>不进入分支，仅显示错误提示</option>
+              {nodes.filter((entry) => entry.id !== node.id).map((entry) => <option key={entry.id} value={entry.id}>{stepName(entry, nodes.indexOf(entry))}</option>)}
+            </select>
+          </label>
+          <label className="admin-story-workbench-checkbox">
+            <input type="checkbox" checked={node.applyWrongMove === true} onChange={(event) => onPatch({ applyWrongMove: event.target.checked })} />
+            <span>错误落子实际落盘</span>
+          </label>
         </div>
       )}
       {isSkill && (
@@ -1699,7 +1737,7 @@ function BattleOptionsFields({ node, nodes, onPatchOption, onAddOption, onRemove
   );
 }
 
-function BoardSetupFields({ node, skillCharacters, onPatch, onEditBoardSetup }) {
+function BoardSetupFields({ node, skillCharacters, onPatch, onEditBoardSetup, onPickPoint }) {
   const board = boardSetupForNode(node);
   return (
     <div className="admin-story-workbench-board-summary">
@@ -1732,6 +1770,19 @@ function BoardSetupFields({ node, skillCharacters, onPatch, onEditBoardSetup }) 
         <span>入场提示</span>
         <textarea rows={2} value={node.entryText ?? ""} onChange={(event) => onPatch({ entryText: event.target.value })} />
       </label>
+      <label className="admin-story-workbench-checkbox">
+        <input type="checkbox" checked={node.boardSetupLoadingEnabled !== false} onChange={(event) => onPatch({ boardSetupLoadingEnabled: event.target.checked })} />
+        <span>切换局面时显示加载页</span>
+      </label>
+      <div className="admin-story-workbench-point-field">
+        <label>
+          <span>初始末手标记</span>
+          <input value={board.lastMovePointId ?? ""} readOnly placeholder="留空 = 不显示" />
+        </label>
+        <button className="admin-story-workbench-button secondary" type="button" onClick={() => onPickPoint("boardSetupLastMovePointId")}>
+          <MousePointer2 size={16} />棋盘点选
+        </button>
+      </div>
       <label>
         <span>切换到局面</span>
         <select
@@ -1886,6 +1937,7 @@ function collectReachableNodeIds(draft, nodeById) {
     reachable.add(nodeId);
     const node = nodeById.get(nodeId);
     if (node.nextNodeId) stack.push(node.nextNodeId);
+    if (node.wrongMoveNextNodeId) stack.push(node.wrongMoveNextNodeId);
     for (const option of node.options ?? []) {
       if (option.nextNodeId) stack.push(option.nextNodeId);
     }
@@ -2017,6 +2069,9 @@ function validateWorkbench(script, { itemOptions, skillCharacters }) {
     if (node.nextNodeId && !nodeIds.has(node.nextNodeId)) {
       issues.push(issue(`next-${node.id}`, "error", `${name} 的下一步骤不存在`, node.id));
     }
+    if (node.wrongMoveNextNodeId && !nodeIds.has(node.wrongMoveNextNodeId)) {
+      issues.push(issue(`wrong-next-${node.id}`, "error", `${name} 的错误落子分支不存在`, node.id));
+    }
     for (const [optionIndex, option] of (node.options ?? []).entries()) {
       if (!String(option.label ?? "").trim()) {
         issues.push(issue(`option-label-${node.id}-${optionIndex}`, "error", `${name} 有选项缺少文案`, node.id));
@@ -2088,23 +2143,28 @@ function replayInitialBoardToNode(draft, selectedNodeId) {
   let state = createTutorialGameState({ initialBoard: draft.initialBoard });
   const nodeById = new Map(draft.nodes.map((node) => [node.id, node]));
   const replayPath = pathToNode(draft, selectedNodeId, nodeById);
-  for (const nodeId of replayPath.slice(0, -1)) {
+  for (const [index, nodeId] of replayPath.slice(0, -1).entries()) {
     const node = nodeById.get(nodeId);
     if (!node) continue;
     if (node.type === TUTORIAL_NODE_TYPES.playerSkill || node.type === TUTORIAL_NODE_TYPES.npcSkill) {
       const result = applyTutorialSkillAction(state, node, { pendingSkillId: `preview-${node.id}`, resolvesAt: null });
       state = result.resolvedState ?? result.state ?? state;
     } else if (!isStoryNodeType(node.type)) {
-      const result = applyTutorialNodeAction(state, node, { pointId: node.pointId });
+      const followsWrongMove = replayPath[index + 1] === node.wrongMoveNextNodeId;
+      const pointId = followsWrongMove ? node.wrongMovePointId : node.pointId;
+      if (followsWrongMove && !pointId) continue;
+      const result = applyTutorialNodeAction(state, node, { pointId });
       state = result.state ?? state;
     }
   }
-  return {
+  const board = {
     mode: state.mode ?? draft.initialBoard?.mode ?? "spark",
     stones: state.points
       .filter((point) => point.stone && isPlayerColor(point.stone))
       .map((point) => ({ pointId: point.id, color: point.stone }))
   };
+  if (state.tutorialLastMovePointId) board.lastMovePointId = state.tutorialLastMovePointId;
+  return board;
 }
 
 function pathToNode(draft, selectedNodeId, nodeById = new Map(draft.nodes.map((node) => [node.id, node]))) {
@@ -2121,6 +2181,7 @@ function pathToNode(draft, selectedNodeId, nodeById = new Map(draft.nodes.map((n
     const node = nodeById.get(nodeId);
     const nextIds = [
       node.nextNodeId,
+      node.wrongMoveNextNodeId,
       ...(node.options ?? []).map((option) => option.nextNodeId)
     ].filter(Boolean);
     for (const nextId of nextIds) {
@@ -2208,6 +2269,10 @@ function emptyStoryNode(id = "", characterId = "", overrides = {}) {
     prompt: "",
     wrongClickMessage: "",
     pointId: "",
+    targetHighlightEnabled: true,
+    wrongMovePointId: "",
+    wrongMoveNextNodeId: "",
+    applyWrongMove: false,
     color: "",
     playerColor: "black",
     playerCharacterId: "",
@@ -2220,6 +2285,7 @@ function emptyStoryNode(id = "", characterId = "", overrides = {}) {
     autoContinueDelaySeconds: "",
     manualContinueEnabled: false,
     autoContinueEnabled: true,
+    boardSetupLoadingEnabled: true,
     boardSetup: null,
     text: "",
     nextNodeId: "",
@@ -2246,7 +2312,8 @@ function defaultPatchForType(type) {
       skillId: "",
       manualContinueEnabled: false,
       autoContinueEnabled: true,
-      boardSetup: { mode: "spark", stones: [] }
+      boardSetupLoadingEnabled: true,
+      boardSetup: { mode: "spark", stones: [], lastMovePointId: "" }
     };
   }
   return {
@@ -2264,10 +2331,11 @@ function boardSetupForNode(node, draft = emptyScript()) {
   if (node?.boardSetup && typeof node.boardSetup === "object") {
     return {
       mode: node.boardSetup.mode ?? fallbackMode,
-      stones: Array.isArray(node.boardSetup.stones) ? node.boardSetup.stones : []
+      stones: Array.isArray(node.boardSetup.stones) ? node.boardSetup.stones : [],
+      lastMovePointId: node.boardSetup.lastMovePointId ?? ""
     };
   }
-  return { mode: fallbackMode, stones: [] };
+  return { mode: fallbackMode, stones: [], lastMovePointId: "" };
 }
 
 function toSubmitPayload(script, action) {

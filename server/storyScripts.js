@@ -148,6 +148,9 @@ export function validateStoryContent(input = {}, { publishing = false } = {}) {
 
   let hasEnding = false;
   for (const node of nodes) {
+    if (node.wrongMoveNextNodeId && !nodeIds.has(node.wrongMoveNextNodeId)) {
+      throw routeError(400, ERRORS.targetMissing);
+    }
     if (node.options.length) {
       for (const option of node.options) {
         if (!option.label) throw routeError(400, ERRORS.optionLabelRequired);
@@ -656,6 +659,10 @@ function normalizeNode(node = {}) {
     prompt: normalizeText(node.prompt),
     wrongClickMessage: normalizeText(node.wrongClickMessage),
     pointId: normalizePointId(node.pointId),
+    targetHighlightEnabled: normalizeDefaultTrueFlag(node.targetHighlightEnabled),
+    wrongMovePointId: normalizePointId(node.wrongMovePointId),
+    wrongMoveNextNodeId: normalizeText(node.wrongMoveNextNodeId),
+    applyWrongMove: normalizeDefaultFalseFlag(node.applyWrongMove),
     color: normalizeText(node.color),
     playerColor: normalizeText(node.playerColor),
     playerCharacterId: normalizeText(node.playerCharacterId),
@@ -668,6 +675,7 @@ function normalizeNode(node = {}) {
     autoContinueDelaySeconds: normalizeNonNegativeDelaySeconds(node.autoContinueDelaySeconds),
     manualContinueEnabled: normalizeDefaultTrueFlag(node.manualContinueEnabled),
     autoContinueEnabled: normalizeAutoContinueFlag(node.autoContinueEnabled, type),
+    boardSetupLoadingEnabled: normalizeDefaultTrueFlag(node.boardSetupLoadingEnabled),
     boardSetup: normalizeInitialBoard(node.boardSetup),
     nextNodeId: normalizeText(node.nextNodeId),
     options
@@ -684,7 +692,8 @@ function normalizeInitialBoard(board = null) {
   const stones = Array.isArray(board.stones)
     ? board.stones.map(normalizeBoardStone).filter(Boolean)
     : [];
-  return { mode, stones };
+  const lastMovePointId = normalizePointId(board.lastMovePointId);
+  return lastMovePointId ? { mode, stones, lastMovePointId } : { mode, stones };
 }
 
 function normalizeBoardStone(stone = {}) {
@@ -732,6 +741,10 @@ function normalizeNonNegativeDelaySeconds(value, error = ERRORS.invalidOptionRev
 function normalizeDefaultTrueFlag(value) {
   if (value === false || value === "false") return false;
   return true;
+}
+
+function normalizeDefaultFalseFlag(value) {
+  return value === true || value === "true";
 }
 
 function normalizeAutoContinueFlag(value, type) {

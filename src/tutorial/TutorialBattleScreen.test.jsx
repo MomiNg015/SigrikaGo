@@ -190,6 +190,17 @@ describe("TutorialBattleScreen runtime integration", () => {
     expect(source).toContain("warn(currentNode.wrongClickMessage || \"请在提示区域落子\")");
   });
 
+  it("supports hidden targets, scripted wrong-move branches, and silent board resets", () => {
+    const source = readSource();
+
+    expect(source).toContain("node.targetHighlightEnabled !== false");
+    expect(source).toContain("if (result.wrongMove)");
+    expect(source).toContain("goToNode(result.nextNodeId)");
+    expect(source).toContain("targetNode.boardSetupLoadingEnabled !== false");
+    expect(source).toContain("currentNode.boardSetupLoadingEnabled === false");
+    expect(source).toContain("applyBoardSetup(currentNode)");
+  });
+
   it("keeps reply choice buttons from creating local scrollbars", () => {
     const overlayCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/overlay-choice.css", import.meta.url), "utf8");
     const actionCss = readFileSync(new URL("../styles/room/tutorial-battle-screen/actions-targets.css", import.meta.url), "utf8");

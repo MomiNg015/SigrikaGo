@@ -166,6 +166,68 @@ describe("story script domain", () => {
     });
   });
 
+  it("normalizes tutorial wrong-move, target-highlight, loading, and last-move fields", () => {
+    const input = {
+      key: "tutorial.wrong-move-fields",
+      title: "Wrong move fields",
+      triggerType: STORY_TRIGGER_TYPES.onboarding,
+      triggerParams: {},
+      draft: {
+        startNodeId: "setup",
+        nodes: [
+          {
+            id: "setup",
+            type: "board-setup",
+            boardSetupLoadingEnabled: false,
+            boardSetup: {
+              mode: "spark",
+              stones: [{ pointId: "3,3", color: "black" }],
+              lastMovePointId: "3,3"
+            },
+            nextNodeId: "move"
+          },
+          {
+            id: "move",
+            type: "player-move",
+            pointId: "5,5",
+            color: "white",
+            targetHighlightEnabled: false,
+            wrongMovePointId: "4,4",
+            wrongMoveNextNodeId: "wrong",
+            applyWrongMove: true,
+            nextNodeId: "end"
+          },
+          { id: "wrong", type: "npc-dialogue", text: "Try again", nextNodeId: "move" },
+          { id: "end", type: "story", text: "Done", nextNodeId: "" }
+        ]
+      }
+    };
+    const nodes = validateStoryScriptInput(input, { publishing: true }).draft.nodes;
+
+    expect(nodes.find((node) => node.id === "setup")).toMatchObject({
+      boardSetupLoadingEnabled: false,
+      boardSetup: { mode: "spark", stones: [{ pointId: "3,3", color: "black" }], lastMovePointId: "3,3" }
+    });
+    expect(nodes.find((node) => node.id === "move")).toMatchObject({
+      targetHighlightEnabled: false,
+      wrongMovePointId: "4,4",
+      wrongMoveNextNodeId: "wrong",
+      applyWrongMove: true
+    });
+    expect(nodes.find((node) => node.id === "end")).toMatchObject({
+      targetHighlightEnabled: true,
+      applyWrongMove: false,
+      boardSetupLoadingEnabled: true
+    });
+    expect(() => validateStoryScriptInput({
+      ...input,
+      draft: {
+        ...input.draft,
+        nodes: input.draft.nodes.map((node) => node.id === "move" ? { ...node, wrongMoveNextNodeId: "missing" } : node)
+      }
+    }, { publishing: true })).toThrow("跳转目标不存在");
+  });
+
   it("validates unified tutorial scripts with story and battle node types", () => {
     expect(validateStoryScriptInput({
       key: "tutorial.unified",

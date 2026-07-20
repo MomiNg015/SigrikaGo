@@ -1,0 +1,5 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"StoryScript normalization and compatibility contract"}
+{"file":".trellis/spec/frontend/component-guidelines.md","reason":"Tutorial runtime, admin graph, and preview contracts"}
+{"file":".trellis/spec/frontend/quality-guidelines.md","reason":"Desktop/mobile battle layout quality contract"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"New story fields cross server, admin, workbook, and runtime boundaries"}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Extend existing story and tutorial helpers without parallel mechanisms"}

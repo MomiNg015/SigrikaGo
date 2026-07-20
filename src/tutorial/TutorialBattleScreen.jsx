@@ -54,7 +54,9 @@ function loadingForBoardSetup(node) {
 }
 
 function initialBattleLoadingForNode(node) {
-  return node?.type === TUTORIAL_NODE_TYPES.boardSetup ? loadingForBoardSetup(node) : null;
+  return node?.type === TUTORIAL_NODE_TYPES.boardSetup && node.boardSetupLoadingEnabled !== false
+    ? loadingForBoardSetup(node)
+    : null;
 }
 
 export default function TutorialBattleScreen({
@@ -193,7 +195,9 @@ export default function TutorialBattleScreen({
     if (targetNode?.type === TUTORIAL_NODE_TYPES.boardSetup) {
       setNodeId(targetId);
       setNpcBubble(null);
-      setLoading(loadingForBoardSetup(targetNode));
+      if (targetNode.boardSetupLoadingEnabled !== false) {
+        setLoading(loadingForBoardSetup(targetNode));
+      }
       return;
     }
     if (targetNode?.type === TUTORIAL_NODE_TYPES.story) {
@@ -403,7 +407,11 @@ export default function TutorialBattleScreen({
 
     if (currentNode.type === TUTORIAL_NODE_TYPES.boardSetup) {
       hideNpcBubble();
-      setLoading(loadingForBoardSetup(currentNode));
+      if (currentNode.boardSetupLoadingEnabled === false) {
+        applyBoardSetup(currentNode);
+      } else {
+        setLoading(loadingForBoardSetup(currentNode));
+      }
       return;
     }
 
@@ -457,6 +465,7 @@ export default function TutorialBattleScreen({
       schedule(() => completeAction(currentNode, applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode)), delayMs(currentNode.actionStartDelaySeconds, DEFAULT_NPC_ACTION_DELAY_SECONDS));
     }
   }, [
+    applyBoardSetup,
     clearTimers,
     completeAction,
     completeNodeFlow,
@@ -519,11 +528,18 @@ export default function TutorialBattleScreen({
   function handlePoint(point) {
     if (!point || loading || pendingWait || resolvedSkillState || isNpcLocked(currentNode)) return;
     if (currentNode?.type === TUTORIAL_NODE_TYPES.playerMove) {
-      if (point.id !== currentNode.pointId) {
-        warn(currentNode.wrongClickMessage || "请在提示区域落子");
+      const result = applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode, { pointId: point.id });
+      if (!result.ok) {
+        warn(result.message || currentNode.wrongClickMessage || "请在提示区域落子");
         return;
       }
-      completeAction(currentNode, applyTutorialNodeAction(gameForAction(currentNode, gameRef.current), currentNode, { pointId: point.id }));
+      if (result.wrongMove) {
+        setGame(result.state);
+        gameRef.current = result.state;
+        goToNode(result.nextNodeId);
+        return;
+      }
+      completeAction(currentNode, result);
       return;
     }
     if (currentNode?.type === TUTORIAL_NODE_TYPES.playerSkill) {
@@ -923,7 +939,7 @@ function gameForAction(node, game) {
 }
 
 function targetPointForNode(node, phase) {
-  if (node?.type === TUTORIAL_NODE_TYPES.playerMove) return node.pointId || "";
+  if (node?.type === TUTORIAL_NODE_TYPES.playerMove && node.targetHighlightEnabled !== false) return node.pointId || "";
   if (node?.type === TUTORIAL_NODE_TYPES.playerSkill && phase === "skill-board") return node.pointId || "";
   return "";
 }
