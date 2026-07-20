@@ -23,7 +23,7 @@ export default function PlayerPlaque({ character, user, onOpenResume }) {
               const rankDisplay = plaqueModeRankDisplay(rank);
               return (
                 <span className={`plaque-mode-stat plaque-mode-stat-${mode.id}`} key={mode.id} aria-label={`${mode.shortTitle} ${rank}`}>
-                  <img className="plaque-mode-icon" src={mode.iconUrl} alt="" aria-hidden="true" decoding="async" />
+                  <img className="plaque-mode-icon" src={mode.iconUrl} alt="" aria-hidden="true" decoding="sync" />
                   <span className={`plaque-mode-rank plaque-mode-rank-${rankDisplay.tone}`} aria-hidden="true">{rankDisplay.value}</span>
                 </span>
               );

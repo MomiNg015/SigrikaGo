@@ -42,8 +42,10 @@ describe("RoomPeopleList floating actions", () => {
       </main>
     );
 
-    const memberButton = screen.getByText("对手").closest("button");
+    const memberButton = screen.getByText("ABCDEFGH").closest("button");
     expect(memberButton).toBeTruthy();
+    expect(memberButton?.querySelector(".user-identity")?.classList.contains("has-nameplate")).toBe(false);
+    expect(memberButton?.querySelector(".user-identity-nameplate-background")).toBeNull();
 
     fireEvent.click(memberButton, { clientX: 180, clientY: 560 });
 
@@ -77,11 +79,17 @@ function roomWithOpponent() {
         connected: true,
         user: {
           id: "opponent-user",
-          username: "对手",
+          username: "ABCDEFGH",
           rank: "2段",
           rating: 1500,
-          achievementEquipment: null,
-          achievementEquipmentAssets: null
+          achievementEquipment: { nameplate: "room-nameplate" },
+          achievementEquipmentAssets: {
+            nameplate: {
+              id: "room-nameplate",
+              name: "房间铭牌",
+              imageUrl: "/assets/achievements/room-nameplate.png"
+            }
+          }
         }
       }
     ],

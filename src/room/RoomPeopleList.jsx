@@ -134,7 +134,7 @@ function RoomPeopleList({
               >
                 <span className="room-person-name">
                   {person.color && <i className={`room-color-dot ${person.color}`} aria-label={person.color === COLORS.black ? "执黑" : "执白"} />}
-                  <UserIdentity user={person} compact />
+                  <UserIdentity user={person} compact showNameplate={false} />
                 </span>
                 <span>{person.rank}</span>
                 <span className="text-rating-value">{person.rating}分</span>

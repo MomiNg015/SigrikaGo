@@ -323,6 +323,9 @@ describe("HomeScreen", () => {
     expect(html).toContain('src="/assets/match-modes/mode-spark.png"');
     expect(html).toContain('src="/assets/match-modes/mode-standard.png"');
     expect(html).toContain('src="/assets/match-modes/mode-gomoku.png"');
+    const plaqueModeIcons = html.match(/<img class="plaque-mode-icon"[^>]+>/g) ?? [];
+    expect(plaqueModeIcons).toHaveLength(3);
+    plaqueModeIcons.forEach((icon) => expect(icon).toContain('decoding="sync"'));
     expect(html).toContain("plaque-mode-rank");
     expect(html).toContain('aria-label="星炬 4段"');
     expect(html).toContain('<span class="plaque-mode-rank plaque-mode-rank-dan" aria-hidden="true">4</span>');

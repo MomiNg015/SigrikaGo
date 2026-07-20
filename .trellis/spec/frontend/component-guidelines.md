@@ -142,6 +142,7 @@ Current Phase 6/7 contracts:
 - Mobile battle legacy overlong username -> render the complete value with `overflow-wrap: anywhere`; wrapping is allowed, truncation is not.
 - Extreme or legacy overlong username outside mobile battle -> keep the fixed slot and allow the text span to ellipsize as the final fallback.
 - `showNameplate={false}` -> no nameplate background or fixed nameplate slot is applied.
+- `RoomPeopleList` must pass `showNameplate={false}` for room member rows. The fixed desktop member-name column must prioritize the complete legal username instead of reserving the fixed-ratio nameplate slot; the compact list keeps usernames, titles, and emblems, but never renders equipped username-background/nameplate art. Player strips and opened profile details keep their existing full identity presentation.
 
 #### 5. Good/Base/Bad Cases
 - Good: `.home-player-plaque .user-identity { --user-nameplate-scale: 1.12; }`.
@@ -153,6 +154,7 @@ Current Phase 6/7 contracts:
 
 #### 6. Tests Required
 - `src/shared/UserIdentity.test.jsx` asserts username length does not create inline font-size variables.
+- `src/room/RoomPeopleList.dom.test.jsx` must render a member with an equipped nameplate and assert the list row has neither `.has-nameplate` nor `.user-identity-nameplate-background`.
 - `src/styles/hudComponents.test.js` asserts the shared fixed-ratio nameplate variables and scale hooks.
 - Home, leaderboard, profile, or room CSS tests should assert scene-specific scale and high-specificity theme overrides when those surfaces are changed.
 - `src/room/PlayerInfo.test.js` and mobile viewport QA must assert mobile battle names remain passive and complete for an equipped 8-half-width username and a representative legacy overlong username.
@@ -265,6 +267,7 @@ Correct:
 - Duel requests open the same mode picker before emitting `duel:request`; incoming request UI must show the selected mode title and rules text.
 - Mode tabs are required for leaderboard, watch list, profile/detail, and record/history views. These tabs must use each mode's `shortTitle`, stay in one non-wrapping row, and allocate the three current modes across one line.
 - Home player plaques render compact three-column mode stat rows from `modeOrderedEntries()`: spark icon/rank first, standard icon/rank second, gomoku icon/rank third. Do not render rating points on the plaque, do not collapse the stats back into a single global rank/rating pair, and do not show recent-result markers on the plaque.
+- Home plaque mode icons are immediately visible home-shell resources. `RUNTIME_IMAGE_ASSETS.home` must derive every `mode.iconUrl` from `modeOrderedEntries()` instead of duplicating an asset list, and `PlayerPlaque` must render these critical icons with `decoding="sync"` so the third icon cannot remain blank until a hover/focus/click repaint.
 - No-skill room UI must omit skill action buttons, both player skill labels, skill names, removal labels, and overclock labels. Gomoku additionally hides Go-only pass/counting/dead-stone controls and capture/removal/overclock info chips.
 - Standard scoring copy must omit overclock/skill-cost descriptions and use black komi `3.75`.
 - Coordinate labels must grid with `repeat(var(--size), minmax(0, 1fr))`; do not leave coordinate rows or columns hard-coded to 13 tracks.
@@ -275,10 +278,13 @@ Correct:
 - `standard` or `gomoku` with accidental skill state -> UI must still hide skill controls when `skillEnabled === false`.
 - Standard board actions on points such as `18,18` must be accepted by the backend because point validation uses the room game's size, not the legacy 13-line default.
 - Mobile mode controls -> keep 44px-plus touch targets; mode tabs must not wrap Chinese labels, and tab surfaces should show `五子棋` instead of the longer Gomoku entry copy.
+- A newly added or reordered mode whose icon is missing from `RUNTIME_IMAGE_ASSETS.home` -> invalid, because the home plaque can mount before that icon is fetched/decoded and leave a blank slot until interaction triggers repaint.
 
 #### 5. Good/Base/Bad Cases
 - Good: `ActionBar` receives `skillEnabled={displayRoom.game.skillEnabled !== false}` and conditionally renders the skill button.
+- Good: `RUNTIME_IMAGE_ASSETS.home` spreads `modeOrderedEntries().map((mode) => mode.iconUrl)` and plaque icon `<img>` elements use `decoding="sync"`.
 - Base: old replay snapshots with no mode continue through spark defaults.
+- Bad: maintaining a second hard-coded list of plaque icon URLs or leaving critical plaque icons on `decoding="async"`.
 - Bad: checking only `mode === "standard"` in one component while another component uses a separate hard-coded board size or komi.
 - Bad: rendering a 19-line board while `.coord-row` still uses `repeat(13, 1fr)`, which makes labels drift away from intersections.
 
@@ -290,6 +296,7 @@ Correct:
 - Gomoku decisive five-in-row results expose `game.winner.winningLine` with the five highlighted point ids. `Board` renders those stones with a persistent point-local `.gomoku-winning-line` gold effect in live rooms and replay snapshots; the effect stays pointer-transparent and includes a reduced-motion fallback.
 - Leaderboard/watch/profile-detail/history fetches or filters by selected mode and render three one-line tabs with short labels.
 - Home plaque tests assert `plaque-mode-stat-spark`, `plaque-mode-stat-standard`, and `plaque-mode-stat-gomoku` render shared mode icons plus stored ranks, while rating text is absent and recent result markers stay limited to profile/history detail surfaces.
+- Home plaque preload tests assert every shared `mode.iconUrl` belongs to `RUNTIME_IMAGE_ASSETS.home` and `criticalImages`; component markup tests assert all three plaque icon images use `decoding="sync"`.
 - Friend duel request payload and incoming banner include mode.
 
 #### 7. Wrong vs Correct

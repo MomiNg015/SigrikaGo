@@ -57,6 +57,9 @@ describe("ResumeModal authoritative record stats", () => {
     expect(screen.getByText("7胜3负2和")).toBeTruthy();
     expect(screen.getByText("58.3%")).toBeTruthy();
     expect(screen.getByText("1260")).toBeTruthy();
+    expect(screen.getByRole("tooltip", {
+      name: "对局中获得的积分会根据对手的实力动态增减。友谊赛不会增减积分。"
+    })).toBeTruthy();
     expect(api).toHaveBeenCalledWith("/api/users/user-1/profile?mode=spark", { token: "token" });
   });
 });

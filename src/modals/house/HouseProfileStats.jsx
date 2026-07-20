@@ -25,7 +25,7 @@ export default function HouseProfileStats({ stats, rank, recentResults = [], cha
           value={stats.rating}
           valueClassName="text-rating-value"
           icon={<Star size={16} />}
-          tip="积分：每胜一局+20，负一局-20，和棋或无效对局不增减积分。"
+          tip="对局中获得的积分会根据对手的实力动态增减。友谊赛不会增减积分。"
         />
         <Stat
           label="段位"

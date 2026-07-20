@@ -19,6 +19,7 @@ import {
   UI_UNAVAILABLE_SOUND
 } from "./audioAssets.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
+import { modeOrderedEntries } from "./gameModes.js";
 import {
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_THANKS_IMAGE,
@@ -35,7 +36,8 @@ export const RUNTIME_IMAGE_ASSETS = Object.freeze({
     "/assets/home/home-utility-leaderboard.webp",
     "/assets/home/home-utility-watch.webp",
     "/assets/home/home-utility-friends.webp",
-    "/assets/home/multipurpose-classroom-bg.webp"
+    "/assets/home/multipurpose-classroom-bg.webp",
+    ...modeOrderedEntries().map((mode) => mode.iconUrl)
   ]),
   shop: Object.freeze([
     SHOP_MASCOT_DEFAULT_IMAGE,

@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { CHARACTER_SKILL_VOICES, CHARACTER_SYSTEM_VOICES, MUSIC_TRACKS } from "./musicLibrary.js";
 import { DENIA_CANDY_PORTRAIT } from "./candyPortraits.js";
 import { RUNTIME_AUDIO_ASSETS, RUNTIME_IMAGE_ASSETS } from "./assetRegistry.js";
+import { modeOrderedEntries } from "./gameModes.js";
 import {
   SHOP_MASCOT_DEFAULT_IMAGE,
   SHOP_MASCOT_THANKS_IMAGE
@@ -69,6 +70,10 @@ describe("deployment preload asset helpers", () => {
     expect(assets.criticalImages).toContain("/assets/home/home-utility-watch.webp");
     expect(assets.criticalImages).toContain("/assets/home/home-utility-friends.webp");
     expect(assets.criticalImages).toContain("/assets/home/multipurpose-classroom-bg.webp");
+    for (const mode of modeOrderedEntries()) {
+      expect(assets.images).toContain(mode.iconUrl);
+      expect(assets.criticalImages).toContain(mode.iconUrl);
+    }
     expect(assets.images).toContain(SHOP_MASCOT_DEFAULT_IMAGE);
     expect(assets.images).toContain(SHOP_MASCOT_THANKS_IMAGE);
     expect(assets.images).not.toContain("/assets/zahiya_shop.webp");
